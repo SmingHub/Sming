@@ -1,0 +1,30 @@
+#######################################
+# Syntax Coloring Map For Debounce
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Bounce	 KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+update	 KEYWORD2
+interval	 KEYWORD2
+read	 KEYWORD2
+write	 KEYWORD2
+rebounce	 KEYWORD2
+risingEdge	KEYWORD2
+fallingEdge	KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+

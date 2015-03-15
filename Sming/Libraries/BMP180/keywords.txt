@@ -1,0 +1,31 @@
+#######################################
+# Syntax Coloring Map For Matrix
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+BMP180	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+Initialize	KEYWORD2
+GetUncompensatedTemperature	KEYWORD2
+GetUncompensatedPressure	KEYWORD2
+CompensateTemperature	KEYWORD2
+CompensatePressure	KEYWORD2
+SoftReset	KEYWORD2
+GetTemperature	KEYWORD2
+GetPressure	KEYWORD2
+GetAltitude	KEYWORD2
+SetResolution	KEYWORD2
+
+IsConnected	KEYWORD2
+EnsureConnected	KEYWORD2
+GetErrorText	KEYWORD2
+#######################################
+# Constants (LITERAL1)
+#######################################

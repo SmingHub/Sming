@@ -1,0 +1,79 @@
+Wiring Project - Open Source Electronics Prototyping Platform
+Created 2003 by Hernando Barragán.
+http://wiring.co/
+
+Wiring Head Developers
+----------------------
+Hernando Barragán
+ - Lead IDE Software Development
+ - Firmware Development
+ - Hardware Development
+ - Library Development
+ - http://barraganstudio.com/
+ - w@wiring.org.co
+
+Brett Hagman
+ - Lead Firmware Development
+ - Lead Hardware Development
+ - Library Development
+ - IDE Software Development
+ - http://roguerobotics.com/
+ - bhagman@wiring.org.co
+
+Alexander Brevig
+ - Lead Library Development
+ - Firmware Development
+ - IDE Software Development
+ - http://alexanderbrevig.com/
+ - abrevig@wiring.org.co
+
+
+Firmware Contributions
+----------------------
+Atmel AVR 8 Bit
+---------------
+Pascal Stang
+ - Plenty of inspiration from his AVRlib libraries/code
+ - http://www.mil.ufl.edu/~chrisarnold/components/microcontrollerBoard/AVR/avrlib/
+Nicholas Zambetti
+ - Plenty of early abstraction and realizations of Hernando's thesis.
+ - http://zambetti.com/
+Paul Stroffregen
+ - Plenty of optimizations for AVR 8 Bit.
+ - single instruction macro expansions for digitalWrite, etc.
+ - http://www.pjrc.com/
+Mikal Hart
+ - NewSoftSerial
+ - FlashString which became WConstantTypes
+ - http://arduiniana.org/
+Adrian Brzezinski
+Adrian McEwen
+Bernhard Benum
+Bjoern Hartmann
+Christoph Wartmann
+David A. Mellis
+Etienne Ribeiro
+Hans-Christoph Steiner
+John Raines
+Maarten Lamers
+Mark Stanley
+Michael Margolis
+Nameet Kumar
+Noah Shibley
+Pierre Perret
+Scott Klemmer
+Sebastian Gassner
+Sibylle Hauert
+Thomas Ouellet Fredericks
+Tom Igoe
+
+
+Processing IDE - http://processing.org/
+---------------------------------------
+Ben Fry
+ - http://benfry.com/
+Casey Reas
+ - http://reas.com/
+
+
+$Id: Contributors.txt 1215 2011-06-27 05:57:17Z bhagman $

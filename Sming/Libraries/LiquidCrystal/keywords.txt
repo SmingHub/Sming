@@ -1,0 +1,52 @@
+###########################################
+# Syntax Coloring Map For LiquidCrystal_I2C
+###########################################
+
+###########################################
+# Datatypes (KEYWORD1)
+###########################################
+
+LiquidCrystal_SR        KEYWORD1
+LiquidCrystal_I2C    	KEYWORD1
+LiquidCrystal_SR3W      KEYWORD1
+LiquidCrystal        	KEYWORD1
+LCD                  	KEYWORD1
+
+###########################################
+# Methods and Functions (KEYWORD2)
+###########################################
+begin                KEYWORD2
+clear                KEYWORD2
+home                 KEYWORD2
+noDisplay            KEYWORD2
+display              KEYWORD2
+noBlink              KEYWORD2
+blink                KEYWORD2
+noCursor             KEYWORD2
+cursor               KEYWORD2
+scrollDisplayLeft    KEYWORD2
+scrollDisplayRight   KEYWORD2
+leftToRight          KEYWORD2
+rightToLeft          KEYWORD2
+moveCursorLeft       KEYWORD2
+moveCursorRight      KEYWORD2
+autoscroll           KEYWORD2
+noAutoscroll         KEYWORD2
+createChar           KEYWORD2
+setCursor            KEYWORD2
+print                KEYWORD2
+write                KEYWORD2
+println              KEYWORD2
+backlight            KEYWORD2
+noBacklight          KEYWORD2
+on                   KEYWORD2
+off                  KEYWORD2
+setBacklightPin      KEYWORD2
+setBacklight         KEYWORD2
+###########################################
+# Constants (LITERAL1)
+###########################################
+POSITIVE             LITERAL1
+NEGATIVE             LITERAL1
+BACKLIGHT_ON         LITERAL1
+BACKLIGHT_OFF        LITERAL1

@@ -1,0 +1,20 @@
+16Mhz AVR
+Interface    ByteXfer    16x2FPS      Ftime
+----------------------------------------------
+4BIT          338uS        86.92     11.51ms (orignal Liquid Crystal)
+4BIT           98uS       298.58      3.35ms
+SR2W           76uS       388.62      2.57ms
+SR_2W          72uS       406.90      2.46ms
+SR_3W          61uS       480.03      2.08ms
+SR3W          102uS       287.92      3.47ms
+
+
+80Mhz Pic32 (ChipKit Uno32)
+Interface    ByteXfer    16x2FPS      Ftime
+----------------------------------------------
+4BIT          232uS       126.73      7.89ms (orignal mpide Liquid Crystal)
+4BIT           57uS       517.41      1.93ms
+SR2W           53uS       557.35      1.79ms
+SR_2W          53uS       554.66      1.80ms
+SR_3W          50uS       591.40      1.69ms
+SR3W           56uS       524.91      1.91ms

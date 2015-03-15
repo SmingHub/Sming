@@ -1,0 +1,1 @@
+Humidity: 25.50 %	Temperature: 25.70 *C
