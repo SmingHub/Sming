@@ -21,6 +21,7 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
 ## Examples
+More information at **[Wiki Examples](https://github.com/anakod/Sming/wiki/examples)** page.
 
 ### Simple GPIO input/output
 ```c++
