@@ -4,7 +4,7 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 [![ESP8266 C++ development framework](https://github.com/anakod/Sming/wiki/images/small/combine.png)](https://github.com/anakod/Sming/wiki/examples)
 
 ## Summary
-* Very easy and user friendly development
+* Fast & user friendly development
 * Work with GPIO in Arduino style
 * High effective in perfomance and memory usage (this is native firmware!)
 * Compatible with standard Arduino libraries - use any popular hardware in few lines of code
