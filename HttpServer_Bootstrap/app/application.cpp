@@ -88,11 +88,21 @@ void connectOk()
 {
 	Serial.println("I'm CONNECTED");
 
-	if (!fileExist("jquery.js.gz"))
+	if (!fileExist("index.html"))
 	{
 		// Download server content at first
 		downloadTimer.initializeMs(3000, downloadContentFiles).start();
 	}
+	else if (!fileExist("bootstrap.css.gz"))
+		{
+			// Download server content at first
+			downloadTimer.initializeMs(3000, downloadContentFiles).start();
+		}
+	else if (!fileExist("jquery.js.gz"))
+		{
+			// Download server content at first
+			downloadTimer.initializeMs(3000, downloadContentFiles).start();
+		}
 	else
 	{
 		startWebServer();
