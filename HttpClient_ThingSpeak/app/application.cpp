@@ -2,8 +2,8 @@
 #include <SmingCore/SmingCore.h>
 
 // Put you SSID and Password here
-#define WIFI_SSID "YouSSID"
-#define WIFI_PWD "YouPass"
+#define WIFI_SSID "EnterSSID"
+#define WIFI_PWD "EnterPassword"
 
 
 Timer procTimer;
@@ -52,16 +52,16 @@ void connectFail()
 {
 	Serial.println("I'm NOT CONNECTED. Need help :(");
 
-	// Soft access point
-	WifiAccessPoint.config("CONFIG ME PLEEEEASE...", "", AUTH_OPEN);
+	// Start soft access point
 	WifiAccessPoint.enable(true);
+	WifiAccessPoint.config("CONFIG ME PLEEEEASE...", "", AUTH_OPEN);
 
-	// .. some code for configuration ..
+	// .. some you code for configuration ..
 }
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 230400 by default
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(false); // Disable debug output to serial
 
 	WifiStation.config(WIFI_SSID, WIFI_PWD);

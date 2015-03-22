@@ -74,7 +74,7 @@ void scanBus()
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 230400 by default
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(false); // Disable debug output
 	Wire.begin();
 	procTimer.initializeMs(3000, scanBus).start();

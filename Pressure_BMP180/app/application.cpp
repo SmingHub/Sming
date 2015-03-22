@@ -5,7 +5,7 @@
 BMP180 barometer;
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 230400 by default
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
 	Wire.begin();
@@ -18,6 +18,8 @@ void init()
    // Now we initialize the sensor and pull the calibration data.
     barometer.Initialize();
 	barometer.PrintCalibrationData();
+
+	Serial.print("Start reading");
 
 	// Retrive the current pressure in Pascals.
 	long currentPressure = barometer.GetPressure();

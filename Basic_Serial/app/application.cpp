@@ -13,6 +13,6 @@ void sayHello()
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 230400 by default
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	procTimer.initializeMs(500, sayHello).start();
 }

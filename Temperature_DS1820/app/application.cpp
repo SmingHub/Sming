@@ -8,7 +8,7 @@ OneWire ds(WORK_PIN);
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 230400 by default
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
 	ds.begin(); // It's required for one-wire initialization!

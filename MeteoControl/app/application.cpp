@@ -26,7 +26,7 @@ void connectFail();
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 230400 by default
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(false); // Set debug output to serial
 
 	ActiveConfig = loadConfig();

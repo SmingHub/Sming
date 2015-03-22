@@ -2,8 +2,8 @@
 #include <SmingCore/SmingCore.h>
 
 // Put you SSID and Password here
-#define WIFI_SSID "YouSSID"
-#define WIFI_PWD "YouPass"
+#define WIFI_SSID "PleaseEnterSSID"
+#define WIFI_PWD "PleaseEnterPass"
 #define LED_PIN 0 // GPIO number
 
 HttpServer server;
@@ -103,11 +103,11 @@ void init()
 {
 	pinMode(LED_PIN, OUTPUT);
 
-	Serial.begin(SERIAL_BAUD_RATE); // 230400 by default
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
-	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
+	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP

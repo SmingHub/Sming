@@ -74,7 +74,7 @@ GPIO_INT_TYPE ConvertArduinoInterruptMode(uint8_t mode)
 	case LOW: // to trigger the interrupt whenever the pin is low,
 		return GPIO_PIN_INTR_LOLEVEL;
 	case CHANGE: // to trigger the interrupt whenever the pin changes value
-		return GPIO_PIN_INTR_ANYEGDE;
+		return (GPIO_INT_TYPE)3; // GPIO_PIN_INTR_ANYEDGE
 	case RISING: // to trigger when the pin goes from low to high,
 		return GPIO_PIN_INTR_POSEDGE;
 	case FALLING: // for when the pin goes from high to low.

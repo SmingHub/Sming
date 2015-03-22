@@ -16,7 +16,7 @@ TFT_ILI9163C tft(2, 0);
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 230400 by default
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
 	Serial.println("Display start");

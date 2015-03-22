@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "BMP180.h"
 #include "Arduino.h"
-#include <math.h>
+//#include <math.h>
 
 BMP180::BMP180()
 {
@@ -202,14 +202,14 @@ long BMP180::GetPressure()
     return CompensatePressure(GetUncompensatedPressure());
 }
 
-float BMP180::GetAltitude(float currentSeaLevelPressureInPa)
+/*float BMP180::GetAltitude(float currentSeaLevelPressureInPa)
 {
     // Get pressure in Pascals (Pa).
     float pressure = GetPressure();
     // Calculate altitude from sea level.
     float altitude = 44330.0 * (1.0 - powf(pressure / currentSeaLevelPressureInPa, (float)0.1902949571836346));
     return altitude;
-}
+}*/
 
 uint8_t BMP180::SetResolution(uint8_t sampleResolution, bool oversample)
 {

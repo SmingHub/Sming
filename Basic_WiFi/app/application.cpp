@@ -31,7 +31,7 @@ void connectOk()
 void connectFail()
 {
 	debugf("I'm NOT CONNECTED!");
-	WifiStation.waitConnection(connectOk, 10, connectFail); // Repeat check again
+	WifiStation.waitConnection(connectOk, 10, connectFail); // Repeat and check again
 }
 
 // Will be called when WiFi hardware and software initialization was finished
@@ -40,12 +40,12 @@ void ready()
 	debugf("READY!");
 
 	// If AP is enabled:
-	debugf("%d %s", WifiAccessPoint.getIP(), WifiAccessPoint.getMAC().c_str());
+	debugf("%d %s", WifiAccessPoint.getIP().toString().c_str(), WifiAccessPoint.getMAC().c_str());
 }
 
 void init()
 {
-	Serial.begin(230400);
+	Serial.begin(115200);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
 	Serial.println("Hello friendly world! :)");
 

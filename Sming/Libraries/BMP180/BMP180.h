@@ -64,7 +64,7 @@ class BMP180
 	  float GetTemperature();
 	  long GetPressure();
 
-	  float GetAltitude(float currentSeaLevelPressureInPa);
+	  //float GetAltitude(float currentSeaLevelPressureInPa);
 	  
 	  void SoftReset();
 	  uint8_t SetResolution(uint8_t sampleResolution, bool oversample);

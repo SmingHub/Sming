@@ -14,7 +14,7 @@ void readCompass();
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 230400 by default
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(false); // Disable debug output to serial
 
 	// join I2C bus (I2Cdev library doesn't do this automatically)
