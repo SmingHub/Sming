@@ -9,6 +9,7 @@
 #define _SMING_CORE_TCPCONNECTION_H_
 
 #include "../Wiring/WiringFrameworkDependencies.h"
+
 #define NETWORK_DEBUG
 
 #define NETWORK_SEND_BUFFER_SIZE 1024
@@ -39,12 +40,14 @@ public:
 
 public:
 	virtual bool connect(const char* server, int port);
+	virtual bool connect(IPAddress addr, uint16_t port);
 	virtual void close();
 
 	// return -1 on error
 	int writeString(const char* data, uint8_t apiflags = 0);
+	int writeString(const String data, uint8_t apiflags = 0);
 	// return -1 on error
-	int write(const char* data, int len, uint8_t apiflags = 0);
+	virtual int write(const char* data, int len, uint8_t apiflags = 0); // flags: TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
 	int write(IDataSourceStream* stream);
 	void flush();
 	void setTimeOut(uint16_t waitTimeOut);
@@ -68,7 +71,6 @@ protected:
 	void initialize(tcp_pcb* pcb);
 
 private:
-	bool connect(IPAddress addr, uint16_t port);
 	inline void checkSelfFree() { if (tcp == NULL && autoSelfDestruct) delete this; }
 
 protected:

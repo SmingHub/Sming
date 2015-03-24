@@ -23,16 +23,23 @@
 #include <user_config.h>
 #include <Printable.h>
 
+class String;
+
 // A class to make it easier to handle and pass around IP addresses
 
-class IPAddress : public Printable {
+class IPAddress : public Printable
+{
 private:
     uint8_t _address[4];  // IPv4 address
     // Access the raw byte array containing the address.  Because this returns a pointer
     // to the internal structure rather than a copy of the address this function should only
     // be used when you know that the usage of the returned uint8_t* will be transient and not
     // stored.
-    uint8_t* raw_address() { return _address; };
+	uint8_t* raw_address()
+	{
+		return _address;
+	}
+	void fromString(const String& address);
 
 public:
     // Constructors
@@ -41,6 +48,7 @@ public:
     IPAddress(uint32_t address);
     IPAddress(ip_addr address);
     IPAddress(const uint8_t *address);
+    IPAddress(const String address);
 
     // Overloaded cast operator to allow IPAddress objects to be used where a pointer
     // to a four-byte uint8_t array is expected
@@ -60,6 +68,7 @@ public:
     // Overloaded copy operators to allow initialisation of IPAddress objects from other types
     IPAddress& operator=(const uint8_t *address);
     IPAddress& operator=(uint32_t address);
+    IPAddress& operator=(const String address);
 
     virtual size_t printTo(Print& p) const;
 };

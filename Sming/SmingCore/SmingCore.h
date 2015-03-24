@@ -29,6 +29,7 @@
 #include "Network/HttpServer.h"
 #include "Network/HttpRequest.h"
 #include "Network/HttpResponse.h"
+#include "Network/FTPServer.h"
 #include "Network/NetUtils.h"
 #include "Network/TcpClient.h"
 #include "Network/TcpConnection.h"

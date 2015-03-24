@@ -135,6 +135,27 @@ uint32_t fileGetSize(const String fileName)
 	return size;
 }
 
+void fileRename(const String oldName, const String newName)
+{
+	SPIFFS_rename(&_filesystemStorageHandle, oldName.c_str(), newName.c_str());
+}
+
+Vector<String> fileList()
+{
+	Vector<String> result;
+	spiffs_DIR d;
+	spiffs_dirent info;
+
+	SPIFFS_opendir(&_filesystemStorageHandle, "/", &d);
+	while (true)
+	{
+		if (!SPIFFS_readdir(&d, &info)) break;
+		result.add(String((char*)info.name));
+	}
+	SPIFFS_closedir(&d);
+	return result;
+}
+
 String fileGetContent(const String fileName)
 {
 	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);

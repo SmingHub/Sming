@@ -9,6 +9,8 @@
 #define _SMING_CORE_FILESYSTEM_H_
 
 #include "spiffs.h"
+#include "../Wiring/WVector.h"
+
 class String;
 
 enum FileOpenFlags
@@ -46,6 +48,9 @@ int fileLastError(file_t fd);
 void fileClearLastError(file_t fd);
 void fileSetContent(const String fileName, const char *content);
 uint32_t fileGetSize(const String fileName);
+void fileRename(const String oldName, const String newName);
+Vector<String> fileList();
+
 String fileGetContent(const String fileName);
 int fileGetContent(const String fileName, char* buffer, int bufSize);
 

@@ -12,6 +12,7 @@
 
 class TcpClient;
 class MemoryDataStream;
+class IPAddress;
 
 typedef void (*TcpClientEventCallback)(TcpClient& client, TcpConnectionEvent sourceEvent);
 typedef void (*TcpClientBoolCallback)(TcpClient& client, bool successful);
@@ -37,6 +38,7 @@ public:
 
 public:
 	virtual bool connect(String server, int port);
+	virtual bool connect(IPAddress addr, uint16_t port);
 	virtual void close();
 
 	bool send(const char* data, uint8_t len, bool forceCloseAfterSent = false);
