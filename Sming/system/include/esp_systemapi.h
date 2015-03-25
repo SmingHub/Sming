@@ -76,6 +76,9 @@ extern void uart_tx_one_char(char ch);
 extern void ets_intr_lock();
 extern void ets_intr_unlock();
 
+//Cpu Freq.
+extern void os_update_cpu_frequency(int frq);
+
 typedef signed short file_t;
 
 extern void os_update_cpu_frequency(int frq);

@@ -48,6 +48,18 @@ void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 	readyInterfaces.add(readyHandler);
 }
 
+void SystemClass::cpuUpdate(uint8 freq)
+{
+
+	REG_SET_BIT(0x3ff00014, BIT(0));
+	os_update_cpu_frequency(freq);
+}
+
+uint8 SystemClass::getCpuFreq()
+{
+	return system_get_cpu_freq();
+}
+
 void SystemClass::staticReadyHandler()
 {
 	System.readyHandler();
