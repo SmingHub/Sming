@@ -54,6 +54,13 @@ CpuFrequency SystemClass::getCpuFrequency()
 	return (CpuFrequency)system_get_cpu_freq();
 }
 
+bool SystemClass::deepSleep(uint32 timeMilliseconds, DeepSleepOptions options /* = eDSO_RF_CAL_BY_INIT_DATA */)
+{
+	if (!system_deep_sleep_set_option((uint8)options)) return false;
+	system_deep_sleep(timeMilliseconds * 1000);
+	return true;
+}
+
 void SystemClass::staticReadyHandler()
 {
 	System.readyHandler();

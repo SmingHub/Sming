@@ -28,6 +28,14 @@ enum CpuFrequency
 	eCF_160MHz = 160,
 };
 
+enum DeepSleepOptions
+{
+	eDSO_RF_CAL_BY_INIT_DATA = 0, //  RF_CAL  or  not  after  deep-sleep  wake  up, depends on init data byte 108.
+	eDSO_RF_CAL_ALWAYS = 1, // RF_CAL after deep-sleep wake up, there will be large current.
+	eDSO_RF_CAL_NEVER = 2, //  no RF_CAL after deep-sleep wake up, there will only be small current.
+	eDSO_DISABLE_RF = 4, // disable RF after deep-sleep wake up, just like modem sleep, there will be the smallest current.
+};
+
 enum SystemState
 {
 	eSS_None,
@@ -46,6 +54,7 @@ public:
 
 	void setCpuFrequency(CpuFrequency freq);
 	CpuFrequency getCpuFrequency();
+	bool deepSleep(uint32 timeMilliseconds, DeepSleepOptions options = eDSO_RF_CAL_BY_INIT_DATA);
 
 	void onReady(SystemReadyCallback readyHandler);
 	void onReady(ISystemReadyHandler* readyHandler);
