@@ -26,7 +26,10 @@ file_t fileOpen(const String name, FileOpenFlags flags)
 		  notExist = (code == SPIFFS_ERR_NOT_FOUND || code == SPIFFS_ERR_DELETED || code == SPIFFS_ERR_FILE_DELETED || code == SPIFFS_ERR_IS_FREE);
 		  //debugf("recreate? %d %d %d", notExist, canRecreate, (repeats < 3));
 		  if (notExist && canRecreate)
+		  {
+			  debugf("trying to recreate problem file");
 			  fileDelete(name); // fix for deleted files
+		  }
 	  }
   } while (notExist && canRecreate && repeats++ < 3);
 

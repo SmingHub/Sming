@@ -16,6 +16,7 @@
 HttpServer::HttpServer()
 {
 	defaultHandler = NULL;
+	setTimeOut(90);
 
 	// Default processing headers
 	// Add more in you app!
@@ -32,7 +33,6 @@ HttpServer::~HttpServer()
 TcpConnection* HttpServer::createClient(tcp_pcb *clientTcp)
 {
 	TcpConnection* con = new HttpServerConnection(this, clientTcp);
-	con->setTimeOut(20);
 	return con;
 }
 

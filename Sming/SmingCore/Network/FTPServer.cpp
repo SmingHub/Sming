@@ -15,6 +15,7 @@
 
 FTPServer::FTPServer()
 {
+	setTimeOut(900); // Update timeout
 }
 
 FTPServer::~FTPServer()
@@ -24,7 +25,6 @@ FTPServer::~FTPServer()
 TcpConnection* FTPServer::createClient(tcp_pcb *clientTcp)
 {
 	TcpConnection* con = new FTPServerConnection(this, clientTcp);
-	con->setTimeOut(USHRT_MAX); // No timeout
 	return con;
 }
 

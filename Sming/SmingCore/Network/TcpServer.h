@@ -18,6 +18,7 @@ public:
 
 public:
 	virtual bool listen(int port);
+	void setTimeOut(uint16_t waitTimeOut);
 
 protected:
 	virtual err_t onAccept(tcp_pcb *clientTcp, err_t err);

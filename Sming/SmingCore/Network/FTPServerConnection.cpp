@@ -10,7 +10,8 @@ public:
 	FTPDataStream(FTPServerConnection* connection) : TcpConnection(true), parent(connection), completed(false), sent(0), written(0) {}
 	virtual err_t onConnected(err_t err)
 	{
-		response(125, "Connected");
+		//response(125, "Connected");
+		setTimeOut(300); // Update timeout
 		return TcpConnection::onConnected(err);
 	}
 	virtual err_t onSent(uint16_t len)
@@ -27,6 +28,12 @@ public:
 		written += len;
 		return TcpConnection::write(data, len, apiflags);
 	}
+	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent)
+	{
+		if (!parent->isCanTransfer()) return;
+		transferData(sourceEvent);
+	}
+	virtual void transferData(TcpConnectionEvent sourceEvent) {}
 
 protected:
 	FTPServerConnection* parent;
@@ -39,7 +46,7 @@ class FTPDataFileList : public FTPDataStream
 {
 public:
 	FTPDataFileList(FTPServerConnection* connection) : FTPDataStream(connection) {}
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent)
+	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
 		if (completed) return;
 		Vector<String> list = fileList();
@@ -60,7 +67,7 @@ public:
 	{
 		fileClose(file);
 	}
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent)
+	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
 		if (completed) return;
 		int p = fileTell(file);
@@ -128,6 +135,7 @@ FTPServerConnection::FTPServerConnection(FTPServer *parentServer, tcp_pcb *clien
 {
 	dataConnection = NULL;
 	port = 0;
+	canTransfer = true;
 }
 
 FTPServerConnection::~FTPServerConnection()
@@ -183,6 +191,7 @@ void FTPServerConnection::cmdPort(const String& data)
 
 void FTPServerConnection::onCommand(String cmd, String data)
 {
+	cmd.toUpperCase();
 	// We ready to quit always :)
 	if (cmd == "QUIT")
 	{
@@ -221,7 +230,7 @@ void FTPServerConnection::onCommand(String cmd, String data)
 	{
 		if (cmd == "SYST")
 		{
-			response(215, "Sming Framework OS");
+			response(215, "Windows_NT: Sming Framework"); // Why not? :)
 		}
 		else if (cmd == "PWD")
 		{
@@ -269,23 +278,52 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		}*/
 		else if (cmd == "RETR")
 		{
-			createDataConnection(new FTPDataRetrieve(this, data));
+			createDataConnection(new FTPDataRetrieve(this, makeFileName(data, false)));
 		}
 		else if (cmd == "STOR")
 		{
-			createDataConnection(new FTPDataStore(this, data));
+			createDataConnection(new FTPDataStore(this, makeFileName(data, true)));
 		}
 		else if (cmd == "LIST")
 		{
 			createDataConnection(new FTPDataFileList(this));
 		}
+		else if (cmd == "PASV")
+		{
+			response(500 , "Passive mode not supported");
+		}
+		else if (cmd == "NOOP")
+		{
+			response(200);
+		}
 		else
-			response(502);
+			response(502, "Not supported");
 
 		return;
 	}
 
 	debugf("CASE NOT IMPLEMENTED?");
+}
+
+err_t FTPServerConnection::onSent(uint16_t len)
+{
+	canTransfer = true;
+}
+
+String FTPServerConnection::makeFileName(String name, bool shortIt)
+{
+	if (name.startsWith("/"))
+		name = name.substring(1);
+
+	if (shortIt && name.length() > 20)
+	{
+		String ext = "";
+		if (name.lastIndexOf('.') != -1)
+			ext = name.substring(name.lastIndexOf('.'));
+
+		return name.substring(0, 16) + ext;
+	}
+	return name;
 }
 
 void FTPServerConnection::createDataConnection(TcpConnection* connection)
@@ -337,7 +375,10 @@ void FTPServerConnection::response(int code, String text /* = "" */)
 		response += " " + text;
 	response += "\r\n";
 
+	debugf("> %s", response.c_str());
 	writeString(response.c_str(), TCP_WRITE_FLAG_COPY); // Dynamic memory, should copy
+	canTransfer = false;
+	flush();
 }
 
 void FTPServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)

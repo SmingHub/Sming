@@ -22,10 +22,16 @@ TcpServer::~TcpServer()
 {
 }
 
-Timer stateTimer;
+//Timer stateTimer;
 void list_mem()
 {
 	debugf("Free heap size=%d, K=%d", system_get_free_heap_size(), TcpServer::totalConnections);
+}
+
+void TcpServer::setTimeOut(uint16_t waitTimeOut)
+{
+	debugf("Server timeout updating: %d -> %d", timeOut, waitTimeOut);
+	timeOut = waitTimeOut;
 }
 
 bool TcpServer::listen(int port)
@@ -37,7 +43,6 @@ bool TcpServer::listen(int port)
 	if (res != ERR_OK) return res;
 
 	tcp = tcp_listen(tcp);
-	//initialize(tcp);
 	tcp_accept(tcp, staticAccept);
 
 	//stateTimer.initializeMs(3500, list_mem).start();
@@ -49,9 +54,7 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 	// Anti DDoS :-)
 	if (system_get_free_heap_size() < 12000)
 	{
-		#ifdef NETWORK_DEBUG
 		debugf("\r\n\r\nCONNECTION DROPPED\r\n\r\n");
-		#endif
 		return ERR_MEM;
 	}
 

@@ -39,7 +39,7 @@ public:
 	virtual ~TcpConnection();
 
 public:
-	virtual bool connect(const char* server, int port);
+	virtual bool connect(String server, int port);
 	virtual bool connect(IPAddress addr, uint16_t port);
 	virtual void close();
 
@@ -53,6 +53,7 @@ public:
 	void setTimeOut(uint16_t waitTimeOut);
 
 protected:
+	bool intternalTcpConnect(IPAddress addr, uint16_t port);
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf *buf);
 	virtual err_t onSent(uint16_t len);
@@ -75,7 +76,7 @@ private:
 
 protected:
 	tcp_pcb *tcp;
-	int16_t sleep;
+	uint16_t sleep;
 	uint16_t timeOut;
 	bool canSend;
 	bool autoSelfDestruct;

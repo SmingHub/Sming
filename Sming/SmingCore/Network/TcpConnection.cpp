@@ -29,17 +29,17 @@ TcpConnection::~TcpConnection()
 	debugf("~TCP connection");
 }
 
-bool TcpConnection::connect(const char* server, int port)
+bool TcpConnection::connect(String server, int port)
 {
 	if (tcp == NULL)
 		initialize(tcp_new());
 
 	ip_addr_t addr;
 
-	debugf("connect to: %s", server);
+	debugf("connect to: %s", server.c_str());
 	canSend = false; // Wait for connection
 	DnsLookup *look = new DnsLookup { this, port };
-	err_t dnslook = dns_gethostbyname(server, &addr, staticDnsResponse, look);
+	err_t dnslook = dns_gethostbyname(server.c_str(), &addr, staticDnsResponse, look);
 	if (dnslook != ERR_OK)
 	{
 		if (dnslook == ERR_INPROGRESS)
@@ -52,19 +52,17 @@ bool TcpConnection::connect(const char* server, int port)
 	}
 	delete look;
 
-	return connect(addr, port);
+	return intternalTcpConnect(addr, port);
 }
 
 bool TcpConnection::connect(IPAddress addr, uint16_t port)
 {
-	NetUtils::FixNetworkRouting();
-	err_t res = tcp_connect(tcp, addr, port, staticOnConnected);
-	debugf("TcpConnection::connect port: %d, %d", port, res);
-	return res == ERR_OK;
+	return intternalTcpConnect(addr, port);
 }
 
 void TcpConnection::setTimeOut(uint16_t waitTimeOut)
 {
+	debugf("timeout updating: %d -> %d", timeOut, waitTimeOut);
 	timeOut = waitTimeOut;
 }
 
@@ -98,7 +96,7 @@ err_t TcpConnection::onPoll()
 {
 	if (sleep >= timeOut && timeOut != USHRT_MAX)
 	{
-		debugf("TCP connection closed by timeout");
+		debugf("TCP connection closed by timeout: %d (from %d)", sleep, timeOut);
 
 		close();
 		return ERR_OK;
@@ -269,9 +267,16 @@ void TcpConnection::flush()
 		tcp_output(tcp);
 }
 
+bool TcpConnection::intternalTcpConnect(IPAddress addr, uint16_t port)
+{
+	NetUtils::FixNetworkRouting();
+	err_t res = tcp_connect(tcp, addr, port, staticOnConnected);
+	debugf("TcpConnection::connect result:, %d", res);
+	return res == ERR_OK;
+}
+
 err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 {
-	debugf("OnConnected %X", (int)arg);
 	TcpConnection* con = (TcpConnection*)arg;
 	if (con == NULL)
 	{
@@ -280,6 +285,8 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 		tcp_abort(tcp);
 		return ERR_ABRT;
 	}
+	else
+		debugf("OnConnected");
 
 	err_t res = con->onConnected(err);
 	con->checkSelfFree();
@@ -401,7 +408,7 @@ void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void 
 		debugf("DNS record found: %s = %d.%d.%d.%d",
 				name, ip[0], ip[1], ip[2], ip[3]);
 
-		dlook->con->connect(ip, dlook->port);
+		dlook->con->intternalTcpConnect(ip, dlook->port);
 	}
 	else
 	{
