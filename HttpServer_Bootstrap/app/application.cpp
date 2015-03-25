@@ -93,7 +93,6 @@ void connectOk()
 		// Download server content at first
 		downloadTimer.initializeMs(3000, downloadContentFiles).start();
 	}
-
 	else
 	{
 		startWebServer();

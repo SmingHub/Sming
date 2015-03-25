@@ -113,7 +113,7 @@ void connectOk()
 
 	startWebClock();
 	// At first run we will download web server content
-	if (!fileExist("jquery.js.gz"))
+	if (!fileExist("index.html") || !fileExist("config.html") || !fileExist("api.html") || !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz"))
 		downloadContentFiles();
 	else
 		startWebServer();

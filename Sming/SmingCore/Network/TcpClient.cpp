@@ -6,7 +6,7 @@
  ****/
 
 #include "TcpClient.h"
-
+#include "../Wiring/IPAddress.h"
 #include "../../SmingCore/DataSourceStream.h"
 #include "../../Wiring/WString.h"
 
@@ -55,6 +55,14 @@ bool TcpClient::connect(String server, int port)
 
 	state = eTCS_Connecting;
 	return TcpConnection::connect(server.c_str(), port);
+}
+
+bool TcpClient::connect(IPAddress addr, uint16_t port)
+{
+	if (isProcessing()) return false;
+
+	state = eTCS_Connecting;
+	return TcpConnection::connect(addr, port);
 }
 
 bool TcpClient::sendString(String data, bool forceCloseAfterSent /* = false*/)

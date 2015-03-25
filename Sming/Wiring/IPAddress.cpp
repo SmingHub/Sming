@@ -19,6 +19,7 @@
 
 #include <Arduino.h>
 #include <IPAddress.h>
+#include "WString.h"
 
 IPAddress::IPAddress()
 {
@@ -48,6 +49,31 @@ IPAddress::IPAddress(const uint8_t *address)
     memcpy(_address, address, sizeof(_address));
 }
 
+void IPAddress::fromString(const String& address)
+{
+	int p = -1;
+	for (int i = 0; i < 3; i++)
+	{
+		int prev = p + 1;
+		p = address.indexOf('.', prev);
+		if (p == -1)
+		{
+			debugf("WRONG IP: %s", address.c_str());
+			break;
+		}
+		String sub = address.substring(prev, p);
+		_address[i] = sub.toInt();
+	}
+
+	String sub = address.substring(p + 1);
+	_address[3] = sub.toInt();
+}
+
+IPAddress::IPAddress(const String address)
+{
+	fromString(address);
+}
+
 IPAddress& IPAddress::operator=(const uint8_t *address)
 {
     memcpy(_address, address, sizeof(_address));
@@ -57,6 +83,12 @@ IPAddress& IPAddress::operator=(const uint8_t *address)
 IPAddress& IPAddress::operator=(uint32_t address)
 {
     memcpy(_address, (const uint8_t *)&address, sizeof(_address));
+    return *this;
+}
+
+IPAddress& IPAddress::operator=(const String address)
+{
+	fromString(address);
     return *this;
 }
 

@@ -136,6 +136,11 @@ void TcpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	debugf("onReadyToSendData: %d", sourceEvent);
 }
 
+int TcpConnection::writeString(const String data, uint8_t apiflags /* = 0*/)
+{
+	writeString(data.c_str(), apiflags);
+}
+
 int TcpConnection::writeString(const char* data, uint8_t apiflags /* = 0*/)
 {
 	return write(data, os_strlen(data), apiflags);
