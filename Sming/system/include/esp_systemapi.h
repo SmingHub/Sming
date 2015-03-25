@@ -78,4 +78,6 @@ extern void ets_intr_unlock();
 
 typedef signed short file_t;
 
+extern void os_update_cpu_frequency(int frq);
+
 #endif

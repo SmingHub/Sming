@@ -305,12 +305,12 @@ endif
 flash: all
 ifeq ($(app), 0)
 	$(shell taskkill /f /im termite.exe)
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
+	$(ESPTOOL) -p $(ESPPORT) -b 115200 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
 else
 ifeq ($(boot), none)
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
+	$(ESPTOOL) -p $(ESPPORT) -b 115200 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
 else
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
+	$(ESPTOOL) -p $(ESPPORT) -b 115200 write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
 endif
 endif
 
