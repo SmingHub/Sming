@@ -39,6 +39,8 @@ public:
 	void restart();
 	void cpuUpdate(uint8 freq);
 	uint8 getCpuFreq();
+	void dsleep(uint32 time_in_us);
+	void dsleepOption(uint8 option);
 	void onReady(SystemReadyCallback readyHandler);
 	void onReady(ISystemReadyHandler* readyHandler);
 

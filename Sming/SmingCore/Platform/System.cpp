@@ -54,6 +54,16 @@ uint8 SystemClass::getCpuFreq()
 	return system_get_cpu_freq();
 }
 
+void SystemClass::dsleep(uint32 time_in_us)
+{
+	system_deep_sleep(time_in_us);
+}
+
+void SystemClass::dsleepOption(uint8 option)
+{
+	system_deep_sleep_set_option(option);
+}
+
 void SystemClass::staticReadyHandler()
 {
 	System.readyHandler();
