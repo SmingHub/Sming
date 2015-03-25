@@ -4,6 +4,7 @@
 // Put you SSID and Password here
 #define WIFI_SSID "PleaseEnterSSID"
 #define WIFI_PWD "PleaseEnterPass"
+
 #define LED_PIN 0 // GPIO number
 
 HttpServer server;
@@ -113,8 +114,8 @@ void init()
 	// Run our method when station was connected to AP
 	WifiStation.waitConnection(connectOk);
 
-	//update Cpu freq. to 160MHZ
-	System.cpuUpdate(160);
-	Serial.print("New cpu freq. is:");
-	Serial.println(System.getCpuFreq());
+	//Change CPU freq. to 160MHZ
+	System.setCpuFrequency(eCF_160MHz);
+	Serial.print("New CPU frequency is:");
+	Serial.println((int)System.getCpuFrequency());
 }

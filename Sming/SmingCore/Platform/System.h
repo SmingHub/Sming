@@ -22,6 +22,12 @@ public:
 	virtual void onSystemReady() = 0;
 };
 
+enum CpuFrequency
+{
+	eCF_80MHz = 80,
+	eCF_160MHz = 160,
+};
+
 enum SystemState
 {
 	eSS_None,
@@ -37,8 +43,10 @@ public:
 
 	bool isReady(); // System initialization was completed?
 	void restart();
-	void cpuUpdate(uint8 freq);
-	uint8 getCpuFreq();
+
+	void setCpuFrequency(CpuFrequency freq);
+	CpuFrequency getCpuFrequency();
+
 	void onReady(SystemReadyCallback readyHandler);
 	void onReady(ISystemReadyHandler* readyHandler);
 
