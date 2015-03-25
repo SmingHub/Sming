@@ -2,11 +2,8 @@
 #include <SmingCore/SmingCore.h>
 
 // Put you SSID and Password here
-//#define WIFI_SSID "EnterSSID"
-//#define WIFI_PWD "EnterPassword"
-
-#define WIFI_SSID "DontConnect"
-#define WIFI_PWD "ignoreme"
+#define WIFI_SSID "EnterSSID"
+#define WIFI_PWD "EnterPassword"
 
 FTPServer ftp;
 

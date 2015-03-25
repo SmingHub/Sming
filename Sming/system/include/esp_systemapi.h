@@ -30,6 +30,8 @@ extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repe
 extern void ets_timer_disarm(ETSTimer *a);
 extern void ets_timer_setfn(ETSTimer *t, ETSTimerFunc *pfunction, void *parg);
 
+//extern void ets_wdt_init(uint32_t val); // signature?
+extern void ets_wdt_enable(void);
 extern void ets_wdt_disable(void);
 extern void wdt_feed(void);
 //extern void wd_reset_cnt(void);
