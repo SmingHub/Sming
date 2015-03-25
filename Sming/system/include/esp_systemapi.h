@@ -79,6 +79,9 @@ extern void ets_intr_unlock();
 //Cpu Freq.
 extern void os_update_cpu_frequency(int frq);
 
+// Deepsleep functions
+extern void system_deep_sleep(uint32 time_in_us);
+extern void system_deep_set_option(uint8 option);
 typedef signed short file_t;
 
 #endif
