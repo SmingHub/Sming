@@ -112,4 +112,9 @@ void init()
 
 	// Run our method when station was connected to AP
 	WifiStation.waitConnection(connectOk);
+
+	//update Cpu freq. to 160MHZ
+	System.cpuUpdate(160);
+	Serial.print("New cpu freq. is:");
+	Serial.println(System.getCpuFreq());
 }
