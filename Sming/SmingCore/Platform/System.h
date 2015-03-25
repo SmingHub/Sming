@@ -37,6 +37,7 @@ public:
 
 	bool isReady(); // System initialization was completed?
 	void restart();
+	void cpuUpdate();
 	void onReady(SystemReadyCallback readyHandler);
 	void onReady(ISystemReadyHandler* readyHandler);
 
