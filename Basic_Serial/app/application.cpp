@@ -15,4 +15,5 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	procTimer.initializeMs(500, sayHello).start();
+	System.cpuUpdate();
 }
