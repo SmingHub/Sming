@@ -1,18 +1,22 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-Timer procTimer;
+#define LED_PIN 4 // GPIO2
 
-void sayHello()
+Timer procTimer;
+bool state = true;
+
+void blink()
 {
-	Serial.println("Hello Sming! Let's do smart things.");
-	Serial.print("time: ");
-	Serial.println(micros());
-	Serial.println();
+    digitalWrite(LED_PIN, state);
+    state = !state;
 }
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	procTimer.initializeMs(500, sayHello).start();
+    Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+    pinMode(LED_PIN, OUTPUT);
+    //System.cpuUpdate(160);
+    procTimer.initializeUs(5, blink).start();
+    //Serial.println(System.getCpuFreq());
 }

@@ -16,12 +16,12 @@ FW_BASE		= out/firmware
 XTENSA_TOOLS_ROOT ?= c:/Espressif/xtensa-lx106-elf/bin
 
 # base directory of the ESP8266 SDK package, absolute
-SDK_BASE	?= c:/Espressif/ESP8266_SDK
+SDK_BASE	?= c:/Espressif/ESP8266_SDK_1_00
 
 # esptool path and port
 SDK_TOOLS	?= c:/Espressif/utils
 ESPTOOL		?= $(SDK_TOOLS)/esptool.exe
-ESPPORT		?= COM4
+ESPPORT		?= COM21
 
 # name for the target project
 TARGET		= app
@@ -35,7 +35,8 @@ USER_LIBDIR = $(SMF)compiler/lib
 LIBS		= c m gcc hal phy pp net80211 openlwip wpa main
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
+CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions \
+				-nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 
 # linker flags used to generate the main object file
@@ -304,12 +305,12 @@ endif
 flash: all
 ifeq ($(app), 0)
 	$(shell taskkill /f /im termite.exe)
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
+	$(ESPTOOL) -p $(ESPPORT) -b 115200 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
 else
 ifeq ($(boot), none)
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
+	$(ESPTOOL) -p $(ESPPORT) -b 115200 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
 else
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
+	$(ESPTOOL) -p $(ESPPORT) -b 115200 write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
 endif
 endif
 

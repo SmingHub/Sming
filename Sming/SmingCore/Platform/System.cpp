@@ -37,6 +37,12 @@ void SystemClass::onReady(SystemReadyCallback readyHandler)
 	readyHandlers.add(readyHandler);
 }
 
+void SystemClass::cpuUpdate()
+{
+	REG_SET_BIT(0x3ff00014, BIT(0));
+	os_update_cpu_frequency(160);
+}
+
 void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 {
 	readyInterfaces.add(readyHandler);
