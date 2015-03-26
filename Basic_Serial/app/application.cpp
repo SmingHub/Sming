@@ -20,4 +20,12 @@ void init()
     System.cpuUpdate();
     procTimer.initializeUs(5, blink).start();
     //Serial.println(System.getCpuFreq());
+    Serial.println("ESP 8266 started.");
+    Serial.print("CPU freq: ");
+    Serial.println(System.getCpuFreq());
+    pinMode(LED_PIN, OUTPUT);
+    Serial.print("CPU freq: ");
+    System.cpuUpdate();
+    Serial.println(System.getCpuFreq());
+    procTimer.initializeUs(1, blink).start();
 }
