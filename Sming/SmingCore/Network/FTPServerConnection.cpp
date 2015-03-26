@@ -18,9 +18,13 @@ public:
 	{
 		sent += len;
 		if (written < sent || !completed) return TcpConnection::onSent(len);
+		finishTransfer();
+		return TcpConnection::onSent(len);
+	}
+	void finishTransfer()
+	{
 		close();
 		parent->dataTransferFinished(this);
-		return TcpConnection::onSent(len);
 	}
 	void response(int code, String text = "") { parent->response(code, text); }
 	int write(const char* data, int len, uint8_t apiflags = 0)
@@ -31,6 +35,7 @@ public:
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent)
 	{
 		if (!parent->isCanTransfer()) return;
+		if (completed && written == 0) finishTransfer();
 		transferData(sourceEvent);
 	}
 	virtual void transferData(TcpConnectionEvent sourceEvent) {}
@@ -50,6 +55,7 @@ public:
 	{
 		if (completed) return;
 		Vector<String> list = fileList();
+		debugf("send file list: %d", list.count());
 		for (int i = 0; i < list.count(); i++)
 			writeString("01-01-15  01:00AM               " + String(fileGetSize(list[i])) + " " + list[i] + "\r\n");
 		completed = true;
@@ -251,6 +257,10 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		{
 			response(250);
 		}
+		else if (cmd == "SIZE")
+		{
+			response(213, String(fileGetSize(makeFileName(data, false))));
+		}
 		else if (cmd == "DELE")
 		{
 			if (fileExist(data))
@@ -296,7 +306,7 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		{
 			response(200);
 		}
-		else
+		else if (!server->onCommand(cmd, data, *this))
 			response(502, "Not supported");
 
 		return;

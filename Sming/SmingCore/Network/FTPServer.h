@@ -17,6 +17,7 @@ class FTPServerConnection;
 
 class FTPServer: public TcpServer
 {
+	friend class FTPServerConnection;
 public:
 	FTPServer();
 	virtual ~FTPServer();
@@ -26,6 +27,7 @@ public:
 
 protected:
 	virtual TcpConnection* createClient(tcp_pcb *clientTcp);
+	virtual bool onCommand(String cmd, String data, FTPServerConnection& connection);
 
 private:
 	HashMap<String, String> users;

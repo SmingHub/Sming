@@ -42,3 +42,14 @@ bool FTPServer::checkUser(String login, String pass)
 
 	return users[login] == pass;
 }
+
+bool FTPServer::onCommand(String cmd, String data, FTPServerConnection& connection)
+{
+	if (cmd == "FSFORMAT")
+	{
+		spiffs_format();
+		connection.response(200, "File system successfully formated");
+		return true;
+	}
+	return false;
+}

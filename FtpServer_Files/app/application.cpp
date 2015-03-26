@@ -16,6 +16,7 @@ void connectOk()
 	// Start FTP server
 	ftp.listen(21);
 	ftp.addUser("me", "123"); // FTP account
+	// You can also use special FTP comand: "fsformat" for clearing file system (for example from TotalCMD)
 }
 
 // Will be called when WiFi station timeout was reached
