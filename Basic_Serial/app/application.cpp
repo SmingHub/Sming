@@ -14,9 +14,10 @@ void blink()
 
 void init()
 {
+	System.onReady(ets_wdt_disable);
     Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
     pinMode(LED_PIN, OUTPUT);
-    //System.cpuUpdate(160);
+    System.cpuUpdate(160);
     procTimer.initializeUs(5, blink).start();
     //Serial.println(System.getCpuFreq());
 }
