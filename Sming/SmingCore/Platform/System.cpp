@@ -43,16 +43,14 @@ void SystemClass::cpuUpdate()
 	os_update_cpu_frequency(160);
 }
 
+void SystemClass::wdt_feed()
+{
+	wdt_feed();
+}
+
 void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 {
 	readyInterfaces.add(readyHandler);
-}
-
-void SystemClass::cpuUpdate(uint8 freq)
-{
-
-	REG_SET_BIT(0x3ff00014, BIT(0));
-	os_update_cpu_frequency(freq);
 }
 
 uint8 SystemClass::getCpuFreq()

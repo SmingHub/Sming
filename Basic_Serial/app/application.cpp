@@ -10,13 +10,19 @@ void blink()
 {
     digitalWrite(LED_PIN, state);
     state = !state;
+    //System.wdt_feed();
 }
 
 void init()
 {
+	System.onReady(ets_wdt_disable);
     Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+    Serial.println("ESP 8266 started.");
+    Serial.print("CPU freq: ");
+    Serial.println(System.getCpuFreq());
     pinMode(LED_PIN, OUTPUT);
-    //System.cpuUpdate(160);
-    procTimer.initializeUs(5, blink).start();
-    //Serial.println(System.getCpuFreq());
+    Serial.print("CPU freq: ");
+    System.cpuUpdate();
+    Serial.println(System.getCpuFreq());
+    procTimer.initializeUs(1, blink).start();
 }

@@ -82,5 +82,6 @@ extern void os_update_cpu_frequency(int frq);
 typedef signed short file_t;
 
 extern void os_update_cpu_frequency(int frq);
+extern void wdt_feed();
 
 #endif

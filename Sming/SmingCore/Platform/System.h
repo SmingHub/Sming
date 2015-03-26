@@ -37,7 +37,8 @@ public:
 
 	bool isReady(); // System initialization was completed?
 	void restart();
-	void cpuUpdate(uint8 freq);
+	void cpuUpdate();
+	void wdt_feed();
 	uint8 getCpuFreq();
 	void onReady(SystemReadyCallback readyHandler);
 	void onReady(ISystemReadyHandler* readyHandler);
