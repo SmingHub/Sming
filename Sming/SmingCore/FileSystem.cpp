@@ -10,28 +10,19 @@
 
 file_t fileOpen(const String name, FileOpenFlags flags)
 {
-  int repeats = 0;
-  bool notExist;
-  bool canRecreate = (flags & eFO_CreateIfNotExist) == eFO_CreateIfNotExist;
   int res;
 
-  do
+  // Special fix to prevent known spifFS bug: manual delete file
+  if ((flags & eFO_CreateNewAlways) == eFO_CreateNewAlways)
   {
-	  notExist = false;
-	  res = SPIFFS_open(&_filesystemStorageHandle, name.c_str(), (spiffs_flags)flags, 0);
-	  int code = SPIFFS_errno(&_filesystemStorageHandle);
-	  if (res < 0)
-	  {
-		  debugf("open errno %d\n", code);
-		  notExist = (code == SPIFFS_ERR_NOT_FOUND || code == SPIFFS_ERR_DELETED || code == SPIFFS_ERR_FILE_DELETED || code == SPIFFS_ERR_IS_FREE);
-		  //debugf("recreate? %d %d %d", notExist, canRecreate, (repeats < 3));
-		  if (notExist && canRecreate)
-		  {
-			  debugf("trying to recreate problem file");
-			  fileDelete(name); // fix for deleted files
-		  }
-	  }
-  } while (notExist && canRecreate && repeats++ < 3);
+	  if (fileExist(name))
+		  fileDelete(name);
+	  flags = (FileOpenFlags)((int)flags & ~eFO_Truncate);
+  }
+
+  res = SPIFFS_open(&_filesystemStorageHandle, name.c_str(), (spiffs_flags)flags, 0);
+  if (res < 0)
+	  debugf("open errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
 
   return res;
 }
