@@ -206,7 +206,7 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		return;
 	}
 
-	// Strong security check
+	// Strong security check :)
 	if (state == eFCS_Authorization)
 	{
 		if (cmd == "USER")
@@ -236,7 +236,7 @@ void FTPServerConnection::onCommand(String cmd, String data)
 	{
 		if (cmd == "SYST")
 		{
-			response(215, "Windows_NT: Sming Framework"); // Why not? :)
+			response(215, "Windows_NT: Sming Framework"); // Why not? It's look like Windows :)
 		}
 		else if (cmd == "PWD")
 		{
@@ -263,9 +263,10 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		}
 		else if (cmd == "DELE")
 		{
-			if (fileExist(data))
+			String name = makeFileName(data, false);
+			if (fileExist(name))
 			{
-				fileDelete(data);
+				fileDelete(name);
 				response(250);
 			}
 			else
@@ -312,7 +313,7 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		return;
 	}
 
-	debugf("CASE NOT IMPLEMENTED?");
+	debugf("!!!CASE NOT IMPLEMENTED?!!!");
 }
 
 err_t FTPServerConnection::onSent(uint16_t len)

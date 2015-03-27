@@ -19,6 +19,7 @@ enum FTPConnectionState
 class FTPServerConnection : public TcpConnection
 {
 	friend class FTPDataStream;
+	friend class FTPServer;
 public:
 	FTPServerConnection(FTPServer *parentServer, tcp_pcb *clientTcp);
 	virtual ~FTPServerConnection();
