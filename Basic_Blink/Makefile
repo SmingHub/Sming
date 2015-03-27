@@ -13,14 +13,17 @@ BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
 # Base directory for the compiler
-XTENSA_TOOLS_ROOT ?= c:/Espressif/xtensa-lx106-elf/bin
+#c:/Espressif/xtensa-lx106-elf/bin
+XTENSA_TOOLS_ROOT ?= /home/$USERNAME/esp-open-sdk/xtensa-lx106-elf/bin
 
 # base directory of the ESP8266 SDK package, absolute
-SDK_BASE	?= c:/Espressif/ESP8266_SDK
+#c:/Espressif/ESP8266_SDK
+SDK_BASE	?= /home/$USERNAME/esp-open-sdk/sdk/
+
 
 # esptool path and port
-SDK_TOOLS	?= c:/Espressif/utils
-ESPTOOL		?= $(SDK_TOOLS)/esptool.exe
+SDK_TOOLS	?= /home/$USERNAME/esp-open-sdk/utils
+ESPTOOL		?= /home/$USERNAME/esp-open-sdk/esptool/esptool.py #$(SDK_TOOLS)/esptool.exe
 ESPPORT		?= COM4
 COM_SPEED	?= 230400
 
