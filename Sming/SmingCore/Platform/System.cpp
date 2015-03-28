@@ -44,14 +44,17 @@ void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 
 void SystemClass::setCpuFrequency(CpuFrequency freq)
 {
+	if (freq == eCF_160MHz)
+		REG_SET_BIT(0x3ff00014, BIT(0));
+	else
+		REG_CLR_BIT(0x3ff00014, BIT(0));
 
-	REG_SET_BIT(0x3ff00014, BIT(0));
 	os_update_cpu_frequency(freq);
 }
 
 CpuFrequency SystemClass::getCpuFrequency()
 {
-	return (CpuFrequency)system_get_cpu_freq();
+	return (CpuFrequency)ets_get_cpu_frequency();
 }
 
 bool SystemClass::deepSleep(uint32 timeMilliseconds, DeepSleepOptions options /* = eDSO_RF_CAL_BY_INIT_DATA */)
