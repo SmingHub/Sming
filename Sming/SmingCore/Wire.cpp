@@ -27,6 +27,12 @@ TwoWire::~TwoWire()
 		delete master;
 }
 
+void TwoWire::pins(int pinSCL, int pinSDA)
+{
+	SCL = pinSCL;
+	SDA = pinSDA;
+}
+
 void TwoWire::begin()
 {
 	if (master != NULL) return;

@@ -23,6 +23,8 @@ class TwoWire : public Stream
 public:
 	TwoWire(int pinSCL, int pinSDA);
 	virtual ~TwoWire();
+
+	void pins(int pinSCL, int pinSDA); // Can be called only before begin()
 	void begin();
 
 	void beginTransmission(uint8_t address);
