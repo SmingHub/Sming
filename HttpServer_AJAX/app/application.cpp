@@ -57,7 +57,6 @@ void onAjaxFrequency(HttpRequest &request, HttpResponse &response)
 	JsonObject& json = stream->getRoot();
 	json["status"] = (bool)true;
 	json["value"] = (int)System.getCpuFrequency();
-	Serial.println((int)ets_get_cpu_frequency());
 
 	response.sendJsonObject(stream);
 }
