@@ -24,6 +24,9 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
  - **If you have SDK v0.9.5**, please rename "C:\Espressif\ESP8266_SDK\include\lwip" to lwip_old
  - Compile it and flash to chip!
 
+#### On Linux
+  - [Instructions](https://github.com/anakod/Sming/wiki/build-linux)
+
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
 ## Examples
