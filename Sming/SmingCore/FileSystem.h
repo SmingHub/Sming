@@ -8,7 +8,7 @@
 #ifndef _SMING_CORE_FILESYSTEM_H_
 #define _SMING_CORE_FILESYSTEM_H_
 
-#include "spiffs.h"
+#include "../Services/SpifFS/spiffs.h"
 #include "../Wiring/WVector.h"
 
 class String;
