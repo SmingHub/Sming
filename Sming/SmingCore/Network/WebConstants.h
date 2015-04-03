@@ -22,6 +22,7 @@ namespace ContentType
 	static const char* GIF = "image/gif";
 	static const char* PNG = "image/png";
 	static const char* SVG = "image/svg+xml";
+	static const char* ICO = "image/x-icon";
 
 	static const char* GZIP = "application/x-gzip";
 	static const char* ZIP = "application/zip";
