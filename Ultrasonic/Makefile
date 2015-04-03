@@ -6,6 +6,9 @@
 #
 #############################################################
 
+# Sming Framework Path
+SMF = ../Sming/
+
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
@@ -19,27 +22,28 @@ SDK_BASE	?= c:/Espressif/ESP8266_SDK
 SDK_TOOLS	?= c:/Espressif/utils
 ESPTOOL		?= $(SDK_TOOLS)/esptool.exe
 ESPPORT		?= COM5
+COM_SPEED	?= 230400
 
 # name for the target project
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= system system/helpers Wiring SmingCore SmingCore/Network SmingCore/Platform Services/SpifFS Services/ArduinoJson Services/WebHelpers Services/DateTime appinit apptest Libraries/DHT Libraries/LiquidCrystal Libraries/Bounce Libraries/Adafruit_GFX Libraries/TFT_ILI9163C Libraries/Adafruit_SSD1306 Libraries/OneWire Libraries/Ultrasonic
-EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
+MODULES		= $(SMF)system $(SMF)system/helpers $(SMF)Wiring $(SMF)SmingCore $(SMF)SmingCore/Network $(SMF)SmingCore/Platform $(SMF)Services/SpifFS $(SMF)Services/ArduinoJson $(SMF)Services/WebHelpers $(SMF)Services/DateTime $(SMF)appinit app $(SMF)Libraries/Ultrasonic
+EXTRA_INCDIR    = include $(SMF) $(SMF)system/include $(SMF)Wiring $(SMF)Libraries $(SMF)SmingCore $(SDK_BASE)/../include
 
 # libraries used in this project, mainly provided by the SDK
-USER_LIBDIR = compiler/lib
-LIBS		= c gcc hal phy pp net80211 openlwip wpa main m
+USER_LIBDIR = $(SMF)compiler/lib
+LIBS		= c m gcc hal phy pp net80211 openlwip wpa main
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -D ARDUINO=106
+CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
 
 # linker script used for the above linkier step
-LD_PATH     = compiler/ld/
+LD_PATH     = $(SMF)compiler/ld/
 LD_SCRIPT	= $(LD_PATH)eagle.app.v6.cpp.ld
 
 # BOOT = none
@@ -283,16 +287,16 @@ flashonefile: all
 	$(vecho) "No boot needed."
 	$(vecho) "Generate eagle.app.flash.bin successully in folder $(FW_BASE)."
 	$(vecho) "eagle.app.flash.bin-------->0x00000"
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.app.flash.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.app.flash.bin
 
 flashboot: all flashinit
 ifeq ($(boot), new)
 	$(vecho) "Flash boot_v1.2 and +"
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash 0x00000 $(SDK_BASE)/bin/boot_v1.2.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(COM_SPEED) write_flash 0x00000 $(SDK_BASE)/bin/boot_v1.2.bin
 endif
 ifeq ($(boot), old)
 	$(vecho) "Flash boot_v1.1 and +"
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash 0x00000 $(SDK_BASE)/bin/boot_v1.1.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(COM_SPEED) write_flash 0x00000 $(SDK_BASE)/bin/boot_v1.1.bin
 endif
 ifeq ($(boot), none)
 	$(vecho) "No boot needed."
@@ -301,12 +305,12 @@ endif
 flash: all
 ifeq ($(app), 0)
 	$(shell taskkill /f /im termite.exe)
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
 else
 ifeq ($(boot), none)
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
 else
-	$(ESPTOOL) -p $(ESPPORT) -b 256000 write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(COM_SPEED) write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
 endif
 endif
 
