@@ -15,6 +15,7 @@ namespace ContentType
 	static const char* TEXT = "text/plain";
 	static const char* JS = "text/javascript";
 	static const char* CSS = "text/css";
+	static const char* XML = "text/xml"
 
 	// Images
 	static const char* JPEG = "image/jpeg";
