@@ -18,6 +18,7 @@ class AccessPointClass : protected ISystemReadyHandler
 {
 public:
 	AccessPointClass();
+	virtual ~AccessPointClass() {}
 
 	void enable(bool enabled);
 	bool isEnabled();

@@ -19,6 +19,7 @@ typedef void (*SystemReadyCallback)(void);
 class ISystemReadyHandler
 {
 public:
+	virtual ~ISystemReadyHandler() {}
 	virtual void onSystemReady() = 0;
 };
 

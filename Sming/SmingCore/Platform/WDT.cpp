@@ -11,6 +11,7 @@ WDTClass WDT;
 
 WDTClass::WDTClass()
 {
+	enabled = true;
 	System.onReady(this);
 }
 
