@@ -29,6 +29,6 @@ void measure()
 
 void init()
 {
-	ultrasonic.init(TRIG_PIN, ECHO_PIN);
+	ultrasonic.begin(TRIG_PIN, ECHO_PIN);
 	procTimer.initializeMs(500, measure).start();
 }

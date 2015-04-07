@@ -22,7 +22,7 @@ Ultrasonic::Ultrasonic()
 /**
  * Initialize ultrasonic sensor
  */
-void Ultrasonic::init(uint8_t trigPin, uint8_t echoPin)
+void Ultrasonic::begin(uint8_t trigPin, uint8_t echoPin)
 {
 	pinTRIG = trigPin;
 	pinECHO = echoPin;

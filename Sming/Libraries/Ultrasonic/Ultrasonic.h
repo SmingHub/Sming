@@ -26,7 +26,7 @@ class Ultrasonic
 {
 public:
 	Ultrasonic();
-	void init(uint8_t trigPin, uint8_t echoPin);
+	void begin(uint8_t trigPin, uint8_t echoPin);
 	long ping();
 	long us2cm(long microseconds);
 	long us2inch(long microseconds);
