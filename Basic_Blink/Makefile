@@ -6,23 +6,30 @@
 #
 #############################################################
 
+ifeq ($(OS),Windows_NT)
+  # Windows detected
+  UNAME := Windows
+  include ./Makefile-windows.mk
+else
+  UNAME := $(shell uname -s)
+  ifeq ($(UNAME),Darwin)
+      UNAME := MacOS
+      include ./Makefile-macos.mk
+  endif
+  ifeq ($(UNAME),Linux)
+      #Linux
+      UNAME := Linux
+      include ./Makefile-linux.mk
+  endif
+endif
+
 # Sming Framework Path
 SMF = ../Sming/
 
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
-# Base directory for the compiler
-XTENSA_TOOLS_ROOT ?= c:/Espressif/xtensa-lx106-elf/bin
-
-# base directory of the ESP8266 SDK package, absolute
-SDK_BASE	?= c:/Espressif/ESP8266_SDK
-
-# esptool path and port
-SDK_TOOLS	?= c:/Espressif/utils
-ESPTOOL		?= $(SDK_TOOLS)/esptool.exe
-COM_PORT	?= COM3
-COM_SPEED	?= 230400
+COM_SPEED	?= 115200
 
 # name for the target project
 TARGET		= app
@@ -231,9 +238,9 @@ $(TARGET_OUT): $(APP_AR)
 	$(Q) $(OBJCOPY) --only-section .rodata -O binary $@ eagle.app.v6.rodata.bin
 	$(Q) $(OBJCOPY) --only-section .irom0.text -O binary $@ eagle.app.v6.irom0text.bin
 	$(vecho) "objcopy done"
-	$(vecho) "Run gen_appbin.exe"
+	$(vecho) "Run gen_appbin"
 ifeq ($(app), 0)
-	$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 0 $(mode) $(freqdiv) $(size)
+	$(Q) $(GEN_APPBIN) $@ 0 $(mode) $(freqdiv) $(size)
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin
 	$(Q) mv eagle.app.v6.irom0text.bin $(FW_BASE)/eagle.irom0text.bin
 	$(Q) rm eagle.app.v6.*
@@ -243,10 +250,10 @@ ifeq ($(app), 0)
 	$(vecho) "eagle.irom0text.bin---->0x10000"
 else
     ifeq ($(boot), new)
-		$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 2 $(mode) $(freqdiv) $(size)
+		$(Q) $(GEN_APPBIN) $@ 2 $(mode) $(freqdiv) $(size)
 		$(vecho) "Support boot_v1.2 and +"
     else
-		$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 1 $(mode) $(freqdiv) $(size)
+		$(Q) $(GEN_APPBIN) $@ 1 $(mode) $(freqdiv) $(size)
 		$(vecho) "Support boot_v1.1 and +"
     endif
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/upgrade/$(BIN_NAME).bin
@@ -275,8 +282,8 @@ flashonefile: all
 	$(OBJCOPY) --only-section .data -O binary $(TARGET_OUT) eagle.app.v6.data.bin
 	$(OBJCOPY) --only-section .rodata -O binary $(TARGET_OUT) eagle.app.v6.rodata.bin
 	$(OBJCOPY) --only-section .irom0.text -O binary $(TARGET_OUT) eagle.app.v6.irom0text.bin
-	$(SDK_TOOLS)/gen_appbin_old.exe $(TARGET_OUT) v6
-	$(SDK_TOOLS)/gen_flashbin.exe eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x10000
+	$(GEN_APPBIN) $(TARGET_OUT) v6
+	$(GEN_FLASHBIN) eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x10000
 	rm -f eagle.app.v6.data.bin
 	rm -f eagle.app.v6.flash.bin
 	rm -f eagle.app.v6.irom0text.bin
@@ -304,7 +311,7 @@ endif
 
 flash: all
 ifeq ($(app), 0)
-	$(shell taskkill /f /im termite.exe)
+	$(KILL_TERM)	
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
 else
 ifeq ($(boot), none)
