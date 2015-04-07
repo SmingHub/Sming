@@ -10,6 +10,7 @@
  * Changed: 2015-04-07
  *    TODO: Add multisampling to ping and range methods
  *    TODO: Add setMedium method to set current medium parameters
+ *    TODO: Fix bugs with sqrt in temp measurement
  */
 
 #ifndef ULTRASONIC_H
@@ -44,7 +45,7 @@ private:
 	// 100ms by default (spec recommend ~60ms, need to check stability)
 	unsigned long echoTimeout = 100000L;
 
-	// Õ - adiabatic index of medium (is about 1.4 for air under normal conditions of pressure and temperature)
+	// X - adiabatic index of medium (is about 1.4 for air under normal conditions of pressure and temperature)
 	// R - gas constant for medium (for air approximately 8.3145 J/mol·K, ~286.9 J/kg·K)
 	// See http://www.engineeringtoolbox.com/individual-universal-gas-constant-d_588.html for details
 	float X = 1.4;
@@ -56,6 +57,9 @@ private:
 
 	int usPerCM = 29;
 	int usPerInch = 74;
+
+	// fast square root
+	unsigned int root(unsigned int x);
 };
 
 #endif //#ifndef ULTRASONIC_H

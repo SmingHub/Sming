@@ -16,17 +16,19 @@
 #define ECHO_PIN 5
 
 Timer procTimer;
-
-Ultrasonic* ultrasonic;
+Ultrasonic ultrasonic = Ultrasonic();
 
 void measure()
 {
-	float dist_cm = ultrasonic->Ranging(CM);       // get distance
-	Serial.println(dist_cm);                      // print the distance
+	// get distance
+	long dist = ultrasonic.rangeCM();
+
+	// print the distance
+	Serial.println(dist);
 }
 
 void init()
 {
-	ultrasonic = new Ultrasonic(TRIG_PIN, ECHO_PIN);
+	ultrasonic.init(TRIG_PIN, ECHO_PIN);
 	procTimer.initializeMs(500, measure).start();
 }

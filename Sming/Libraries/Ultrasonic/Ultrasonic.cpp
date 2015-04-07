@@ -10,6 +10,7 @@
  * Changed: 2015-04-07
  *    TODO: Add multisampling to ping and range methods
  *    TODO: Add setMedium method to set current medium parameters
+ *    TODO: Fix bugs with sqrt in temp measurement
  */
 
 #include "Ultrasonic.h"
@@ -87,7 +88,7 @@ long Ultrasonic::rangeInch()
  *
  * c = sqrt(X*R*T), where:
  * ñ - speed of sound, m/s
- * Õ - adiabatic index (is about 1.4 for air under normal conditions of pressure and temperature)
+ * X - adiabatic index (is about 1.4 for air under normal conditions of pressure and temperature)
  * R - gas constant (for air approximately 8.3145 J/mol·K, ~286.9 J/kg·K)
  * T - the absolute temperature in kelvin
  *
@@ -110,8 +111,23 @@ long Ultrasonic::temp(float baseDist, float baseTemp, int samples)
 	dist /= samples;
 
 	// c = sqrt(X*R*T)
-	float speedOfSound = baseDist / dist * sqrt(XR * (K + baseTemp));
+	// TODO !!! Draft for compile, in root need to check types/overflows/signs here
+	float speedOfSound = baseDist / dist * root(XR * (K + baseTemp));
 
 	// T = (c*c)/(X*R) in Kelvin
 	return (speedOfSound * speedOfSound) / (XR) - K;
+}
+
+unsigned int Ultrasonic::root(unsigned int x)
+{
+	unsigned int a, b;
+	b = x;
+	a = x = 0x3f;
+	x = b / x;
+	a = x = (x + a) >> 1;
+	x = b / x;
+	a = x = (x + a) >> 1;
+	x = b / x;
+	x = (x + a) >> 1;
+	return (x);
 }
