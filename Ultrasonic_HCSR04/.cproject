@@ -26,6 +26,7 @@
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Network"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Platform"/>
+									<listOptionValue builtIn="false" value="../../Sming/system/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1833681201" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -38,6 +39,7 @@
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Network"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Platform"/>
+									<listOptionValue builtIn="false" value="../../Sming/system/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.501261625" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -49,6 +51,7 @@
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Network"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Platform"/>
+									<listOptionValue builtIn="false" value="../../Sming/system/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1700912488" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>

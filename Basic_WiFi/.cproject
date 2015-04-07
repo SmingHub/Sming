@@ -5,12 +5,12 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.mingw.base.1135534147" moduleId="org.eclipse.cdt.core.settings" name="Default">
 				<externalSettings/>
 				<extensions>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -20,12 +20,13 @@
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="cdt.managedbuild.target.gnu.platform.mingw.base.1721398479" name="Debug Platform" osList="win32" superClass="cdt.managedbuild.target.gnu.platform.mingw.base"/>
 							<builder arguments="-f ${ProjDirPath}/Makefile" command="mingw32-make.exe" id="cdt.managedbuild.builder.gnu.cross.1876460142" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.base.1056286588" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.base">
-								<option id="gnu.both.asm.option.include.paths.267456689" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.267456689" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="../../Sming"/>
 									<listOptionValue builtIn="false" value="../../Sming/Wiring"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Network"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Platform"/>
+									<listOptionValue builtIn="false" value="../../Sming/system/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1833681201" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -38,6 +39,7 @@
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Network"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Platform"/>
+									<listOptionValue builtIn="false" value="../../Sming/system/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.501261625" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -49,6 +51,7 @@
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Network"/>
 									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Platform"/>
+									<listOptionValue builtIn="false" value="../../Sming/system/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1700912488" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
