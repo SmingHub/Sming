@@ -1,6 +1,6 @@
 /**
  * WARNING !
- * Ultrasonic modules usually work with 5v power and TTL levels,
+ * Ultrasonic_HCSR04 modules usually work with 5v power and TTL levels,
  * so You need voltage divider or level shifter for ECHO pin.
  *
  * Trigger pin is tolerant for 3.3v and in my case work without problems

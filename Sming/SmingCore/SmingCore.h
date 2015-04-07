@@ -24,6 +24,7 @@
 #include "Platform/System.h"
 #include "Platform/Station.h"
 #include "Platform/AccessPoint.h"
+#include "Platform/WDT.h"
 
 #include "Network/HttpClient.h"
 #include "Network/HttpServer.h"

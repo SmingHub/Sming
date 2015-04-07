@@ -48,6 +48,8 @@ void scanBus()
 	Wire.beginTransmission(address);
 	error = Wire.endTransmission();
 
+	WDT.alive(); // Second option: notify Watch Dog what you are alive (feed it)
+
 	if (error == 0)
 	{
 	  Serial.print("I2C device found at address 0x");
@@ -76,7 +78,8 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(false); // Disable debug output
-	System.onReady(ets_wdt_disable); // Just example how you can disable watch dog timer
+
+	WDT.enable(false); // First (but not the best) option: fully disable watch dog timer
 
 	Wire.begin();
 	procTimer.initializeMs(3000, scanBus).start();
