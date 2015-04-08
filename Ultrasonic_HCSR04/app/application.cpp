@@ -12,7 +12,7 @@
 #include <SmingCore/SmingCore.h>
 #include <Libraries/Ultrasonic/Ultrasonic.h>
 
-#define TRIG_PIN 4
+#define TRIG_PIN 2
 #define ECHO_PIN 5
 
 Timer procTimer;
@@ -21,7 +21,7 @@ Ultrasonic ultrasonic = Ultrasonic();
 void measure()
 {
 	// get distance
-	long dist = ultrasonic.rangeCM();
+	uint16_t dist = ultrasonic.rangeCM();
 
 	// print the distance
 	Serial.println(dist);
