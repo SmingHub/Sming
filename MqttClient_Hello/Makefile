@@ -21,14 +21,14 @@ SDK_BASE	?= c:/Espressif/ESP8266_SDK
 # esptool path and port
 SDK_TOOLS	?= c:/Espressif/utils
 ESPTOOL		?= $(SDK_TOOLS)/esptool.exe
-COM_PORT	?= COM5
+COM_PORT	?= COM3
 COM_SPEED	?= 230400
 
 # name for the target project
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= $(SMF)system $(SMF)system/helpers $(SMF)Wiring $(SMF)SmingCore $(SMF)SmingCore/Network $(SMF)SmingCore/Platform $(SMF)Services/SpifFS $(SMF)Services/ArduinoJson $(SMF)Services/WebHelpers $(SMF)Services/DateTime $(SMF)appinit app $(SMF)Libraries/Ultrasonic
+MODULES		= $(SMF)system $(SMF)system/helpers $(SMF)Wiring $(SMF)SmingCore $(SMF)SmingCore/Network $(SMF)SmingCore/Platform $(SMF)Services/SpifFS $(SMF)Services/ArduinoJson $(SMF)Services/WebHelpers $(SMF)Services/DateTime $(SMF)Services/libemqtt $(SMF)appinit app $(SMF)Libraries/DHT $(SMF)Libraries/LiquidCrystal $(SMF)Libraries/Bounce $(SMF)Libraries/Adafruit_GFX $(SMF)Libraries/TFT_ILI9163C $(SMF)Libraries/BMP180 $(SMF)Libraries/BH1750FVI $(SMF)Libraries/Adafruit_SSD1306 $(SMF)Libraries/OneWire $(SMF)Libraries/I2Cdev $(SMF)Libraries/HMC5883L
 EXTRA_INCDIR    = include $(SMF) $(SMF)system/include $(SMF)Wiring $(SMF)Libraries $(SMF)SmingCore $(SDK_BASE)/../include
 
 # libraries used in this project, mainly provided by the SDK

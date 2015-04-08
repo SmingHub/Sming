@@ -11,33 +11,37 @@
 #include "../../Wiring/WString.h"
 
 TcpClient::TcpClient(bool autoDestruct)
-	: TcpConnection(autoDestruct), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0)
+	: TcpConnection(autoDestruct), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
 {
 	completed = NULL;
 	ready = NULL;
 	receive = NULL;
+	stream = NULL;
 }
 
 TcpClient::TcpClient(TcpClientBoolCallback onCompleted, TcpClientEventCallback onReadyToSend /* = NULL*/, TcpClientDataCallback onReceive /* = NULL*/)
-	: TcpConnection(false), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0)
+	: TcpConnection(false), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
 {
 	completed = onCompleted;
 	ready = onReadyToSend;
 	receive = onReceive;
+	stream = NULL;
 }
 
 TcpClient::TcpClient(TcpClientBoolCallback onCompleted, TcpClientDataCallback onReceive /* = NULL*/)
-	: TcpConnection(false), state(eTCS_Ready), ready(NULL), asyncTotalSent(0), asyncTotalLen(0)
+	: TcpConnection(false), state(eTCS_Ready), ready(NULL), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
 {
 	completed = onCompleted;
 	receive = onReceive;
+	stream = NULL;
 }
 
 
 TcpClient::TcpClient(TcpClientDataCallback onReceive)
-	: TcpConnection(false), state(eTCS_Ready), ready(NULL), completed(NULL), asyncTotalSent(0), asyncTotalLen(0)
+	: TcpConnection(false), state(eTCS_Ready), ready(NULL), completed(NULL), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
 {
 	receive = onReceive;
+	stream = NULL;
 }
 
 TcpClient::~TcpClient()
@@ -92,8 +96,7 @@ err_t TcpClient::onConnected(err_t err)
 	}
 	else
 	{
-		state = eTCS_Failed;
-		onFinished(state);
+		onError(err);
 	}
 
 	// Fire ReadyToSend callback

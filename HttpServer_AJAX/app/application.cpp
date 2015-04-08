@@ -2,8 +2,8 @@
 #include <SmingCore/SmingCore.h>
 
 // Put you SSID and Password here
-#define WIFI_SSID "PleaseEnterSSID"
-#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "CasinoMobile"
+#define WIFI_PWD "123asdASD"
 
 HttpServer server;
 FTPServer ftp;

@@ -15,6 +15,7 @@ class WDTClass : protected ISystemReadyHandler
 {
 public:
 	WDTClass();
+	virtual ~WDTClass() {}
 
 	void enable(bool enableWatchDog);
 	void alive();

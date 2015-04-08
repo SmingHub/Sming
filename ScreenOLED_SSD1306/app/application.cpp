@@ -14,8 +14,9 @@
  */
 // For spi oled module
 Adafruit_SSD1306 display(0, 16, 2);
-// For i2c oled module.
-// Default i2c pins 0 and 2
+
+//* For I2C mode:
+// Default I2C pins 0 and 2. Pin 4 - optional reset
 // Adafruit_SSD1306 display(4);
 
 void init()

@@ -22,6 +22,11 @@
 							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.base.1056286588" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.base">
 								<option id="gnu.both.asm.option.include.paths.267456689" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="../../Sming"/>
+									<listOptionValue builtIn="false" value="../../Sming/Wiring"/>
+									<listOptionValue builtIn="false" value="../../Sming/SmingCore"/>
+									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Network"/>
+									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Platform"/>
+									<listOptionValue builtIn="false" value="../../Sming/system/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1833681201" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -30,6 +35,11 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1710184728" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:\Espressif\ESP8266_SDK\include\&quot;"/>
 									<listOptionValue builtIn="false" value="../../Sming"/>
+									<listOptionValue builtIn="false" value="../../Sming/Wiring"/>
+									<listOptionValue builtIn="false" value="../../Sming/SmingCore"/>
+									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Network"/>
+									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Platform"/>
+									<listOptionValue builtIn="false" value="../../Sming/system/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.501261625" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -37,6 +47,11 @@
 								<option id="gnu.c.compiler.option.include.paths.1366260392" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:\Espressif\ESP8266_SDK\include\&quot;"/>
 									<listOptionValue builtIn="false" value="../../Sming"/>
+									<listOptionValue builtIn="false" value="../../Sming/Wiring"/>
+									<listOptionValue builtIn="false" value="../../Sming/SmingCore"/>
+									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Network"/>
+									<listOptionValue builtIn="false" value="../../Sming/SmingCore/Platform"/>
+									<listOptionValue builtIn="false" value="../../Sming/system/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1700912488" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
