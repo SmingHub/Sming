@@ -14,7 +14,8 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * Build-in file system: [spiffs](https://github.com/pellepl/spiffs)
 * Build-in powerfull network and wireless modules
 * Build-in great JSON library: [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
-* Open source [LWIP](https://github.com/kadamski/esp-lwip) implementation
+* MQTT protocol based on [libemqtt] (https://github.com/menudoproblema/libemqtt)
+* Open source [LWIP](https://github.com/kadamski/esp-lwip) stack
 * Simple and powerfull hardware API wrappers
 * Based on Espressif SDK v1.0
 
