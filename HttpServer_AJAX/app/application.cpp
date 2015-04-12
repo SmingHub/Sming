@@ -2,11 +2,12 @@
 #include <SmingCore/SmingCore.h>
 
 // Put you SSID and Password here
-#define WIFI_SSID "PleaseEnterSSID"
-#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "SSID"
+#define WIFI_PWD "PWD"
 
 HttpServer server;
 FTPServer ftp;
+TcpServer tserver;
 
 int inputs[] = {0, 2}; // Set input GPIO pins here
 Vector<String> namesInput;
@@ -74,6 +75,13 @@ void startWebServer()
 	Serial.println("==============================\r\n");
 }
 
+void startTcpServer()
+{
+	tserver.listen(23);
+
+	Serial.println("\r\n=== TCP SERVER STARTED ===\r\n");
+}
+
 void startFTP()
 {
 	if (!fileExist("index.html"))
@@ -91,11 +99,12 @@ void connectOk()
 
 	startFTP();
 	startWebServer();
+	startTcpServer();
 }
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(74880); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
 	WifiStation.enable(true);
