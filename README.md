@@ -4,7 +4,7 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 [![ESP8266 C++ development framework](https://github.com/anakod/Sming/wiki/images/small/combine.png)](https://github.com/anakod/Sming/wiki/examples)
 
 
-[![Join the chat at https://gitter.im/alonewolfx2/Sming](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alonewolfx2/Sming?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)[![Download](https://img.shields.io/badge/download-~1.7M-orange.svg)](https://github.com/nodemcu/nodemcu-firmware/releases/latest)
+[![Join the chat at https://gitter.im/alonewolfx2/Sming](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alonewolfx2/Sming?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Download](https://img.shields.io/badge/download-~1.7M-orange.svg)](https://github.com/nodemcu/nodemcu-firmware/releases/latest)
 
 
 ## Summary
