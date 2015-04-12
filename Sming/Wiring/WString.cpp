@@ -28,6 +28,12 @@ String::String(const char *cstr)
   if (cstr) copy(cstr, strlen(cstr));
 }
 
+String::String(const char *cstr, unsigned int length)
+{
+  init();
+  if (cstr) copy(cstr, length);
+}
+
 String::String(const String &value)
 {
   init();
@@ -115,6 +121,16 @@ String::~String()
 	os_free(buffer);
 }
 
+void String::setString(const char *cstr, int length /* = -1 */)
+{
+	if (cstr)
+	{
+		if (length == -1)
+			length = strlen(cstr);
+		copy(cstr, length);
+	}
+}
+
 /*********************************************/
 /*  Memory Management                        */
 /*********************************************/
@@ -172,7 +188,8 @@ String & String::copy(const char *cstr, unsigned int length)
     return *this;
   }
   len = length;
-  strcpy(buffer, cstr);
+  ets_strncpy(buffer, cstr, length);
+  buffer[length] = 0;
   return *this;
 }
 

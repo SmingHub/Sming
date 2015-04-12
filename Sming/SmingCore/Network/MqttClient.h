@@ -12,8 +12,9 @@
 
 #include "TcpClient.h"
 #include "../../Wiring/WString.h"
-#include "../../Wiring/WHashMap.h"
 #include "../../Services/libemqtt/libemqtt.h"
+
+typedef void (*MqttStringSubscriptionCallback)(String topic, String message);
 
 class MqttClient;
 class URL;
@@ -21,28 +22,33 @@ class URL;
 class MqttClient: protected TcpClient
 {
 public:
-	MqttClient(String serverHost, int serverPort);
+	MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback = NULL);
 	virtual ~MqttClient();
 
 	bool connect(String clientName);
 	bool connect(String clientName, String username, String password);
+
 	bool publish(String topic, String message, bool retained = false);
 	bool publishWithQoS(String topic, String message, int QoS, bool retained = false);
 
+	bool subscribe(String topic);
+
 protected:
-	static int staticSendPacket(void* userInfo, const void* buf, unsigned int count);
 	virtual err_t onReceive(pbuf *buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-	void debugPrintResponseType(int type);
+	void debugPrintResponseType(int type, int len);
+	static int staticSendPacket(void* userInfo, const void* buf, unsigned int count);
 
 private:
 	String server;
 	int port;
 	mqtt_broker_handle_t broker;
 	int waitingSize;
-
 	uint8_t buffer[MQTT_MAX_BUFFER_SIZE + 1];
 	uint8_t *current;
+	int posHeader;
+	MqttStringSubscriptionCallback callback;
+
 };
 
 #endif /* _SMING_CORE_NETWORK_MqttClient_H_ */
