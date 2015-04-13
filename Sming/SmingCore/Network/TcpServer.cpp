@@ -6,7 +6,6 @@
  ****/
 
 #include "TcpServer.h"
-#include "TcpClient.h"
 
 #include "../../SmingCore/Digital.h"
 #include "../../SmingCore/Timer.h"
@@ -21,22 +20,6 @@ TcpServer::TcpServer() : TcpConnection(false)
 
 TcpServer::~TcpServer()
 {
-}
-
-TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
-{
-	if (clientTcp == NULL)
-	{
-		debugf("TCP Server createClient NULL\r\n");
-	}
-	else
-	{
-		debugf("TCP Server createClient not NULL");
-	}
-//    clientReceive = (TcpClientDataCallback)&ClientReceive;
-	clientReceive = NULL;
-	TcpConnection* con = new TcpClient(clientTcp, clientReceive, false);
-	return con;
 }
 
 //Timer stateTimer;
@@ -96,7 +79,6 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 
 void TcpServer::onClient(TcpConnection *connection)
 {
-	debugf("Tcp Server onClient ") ; // %s",connection->getRemoteIp().toString().c_str());
 }
 
 err_t TcpServer::staticAccept(void *arg, tcp_pcb *new_tcp, err_t err)
