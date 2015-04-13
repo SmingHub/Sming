@@ -1,11 +1,13 @@
-# Base directory for the compiler
-XTENSA_TOOLS_ROOT ?= c:/Espressif/xtensa-lx106-elf/bin
+# ESP8266 sdk package home directory
+ESP_HOME ?= c:/Espressif
+
+XTENSA_TOOLS_ROOT ?= $(ESP_HOME)/xtensa-lx106-elf/bin
 
 # base directory of the ESP8266 SDK package, absolute
-SDK_BASE	?= c:/Espressif/ESP8266_SDK
+SDK_BASE	?= $(ESP_HOME)/ESP8266_SDK
+SDK_TOOLS	 ?= $(ESP_HOME)/utils
 
-# esptool path and port
-SDK_TOOLS	 ?= c:/Espressif/utils
+# Other tools mappings
 ESPTOOL		 ?= $(SDK_TOOLS)/esptool.exe
 GEN_APPBIN   ?= $(SDK_TOOLS)/gen_appbin.exe
 GEN_FLASHBIN ?= $(SDK_TOOLS)/gen_flashbin.exe

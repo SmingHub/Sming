@@ -1,5 +1,7 @@
 # Base directory for the compiler
-XTENSA_TOOLS_ROOT ?= /opt/esp-open-sdk/xtensa-lx106-elf/bin	
+
+# ESP_HOME = /opt/esp-open-sdk
+XTENSA_TOOLS_ROOT ?= $(ESP_HOME)/xtensa-lx106-elf/bin	
 
 # base directory of the ESP8266 SDK package, absolute
 SDK_BASE	?= /opt/esp-open-sdk/sdk
