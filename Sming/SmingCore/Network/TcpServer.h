@@ -9,7 +9,9 @@
 #define _SMING_CORE_TCPSERVER_H_
 
 #include "TcpConnection.h"
+#include "TcpClient.h"
 
+typedef bool (*TcpClientDataCallback)(TcpClient& client, pbuf *buf);
 
 class TcpServer: public TcpConnection {
 public:
@@ -22,10 +24,12 @@ public:
 
 protected:
 	virtual err_t onAccept(tcp_pcb *clientTcp, err_t err);
-	virtual TcpConnection* createClient(tcp_pcb *clientTcp) = 0;
+	virtual TcpConnection* createClient(tcp_pcb *clientTcp);
 	virtual void onClient(TcpConnection *client);
 
 	static err_t staticAccept(void *arg, tcp_pcb *new_tcp, err_t err);
+
+	TcpClientDataCallback clientReceive;
 
 public:
 	static int16_t totalConnections;

@@ -31,6 +31,7 @@ class TcpClient : public TcpConnection
 {
 public:
 	TcpClient(bool autoDestruct);
+	TcpClient(tcp_pcb *clientTcp, TcpClientDataCallback clientReceive, bool autoDestruct);
 	TcpClient(TcpClientBoolCallback onCompleted, TcpClientEventCallback onReadyToSend, TcpClientDataCallback onReceive = NULL);
 	TcpClient(TcpClientBoolCallback onCompleted, TcpClientDataCallback onReceive = NULL);
 	TcpClient(TcpClientDataCallback onReceive);
