@@ -19,6 +19,13 @@ TcpServer::TcpServer() : TcpConnection(false)
 	TcpConnection::setTimeOut(USHRT_MAX);
 }
 
+TcpServer::TcpServer(TcpClientDataCallback clientReceiveDataCallback) : TcpConnection(false)
+{
+	clientReceive = clientReceiveDataCallback;
+	timeOut = 40;
+	TcpConnection::setTimeOut(USHRT_MAX);
+}
+
 TcpServer::~TcpServer()
 {
 }
@@ -33,8 +40,7 @@ TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
 	{
 		debugf("TCP Server createClient not NULL");
 	}
-//    clientReceive = (TcpClientDataCallback)&ClientReceive;
-	clientReceive = NULL;
+
 	TcpConnection* con = new TcpClient(clientTcp, clientReceive, false);
 	return con;
 }
@@ -69,7 +75,7 @@ bool TcpServer::listen(int port)
 err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 {
 	// Anti DDoS :-)
-	if (system_get_free_heap_size() < 12000)
+	if (system_get_free_heap_size() < 7500)
 	{
 		debugf("\r\n\r\nCONNECTION DROPPED\r\n\r\n");
 		return ERR_MEM;
