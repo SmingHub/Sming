@@ -22,7 +22,7 @@ Ultrasonic::Ultrasonic()
 /**
  * Initialize ultrasonic sensor
  */
-void Ultrasonic::begin(uint8_t trigPin, uint8_t echoPin)
+void Ultrasonic::begin(uint16_t trigPin, uint8_t echoPin)
 {
 	pinTRIG = trigPin;
 	pinECHO = echoPin;
@@ -38,7 +38,7 @@ void Ultrasonic::begin(uint8_t trigPin, uint8_t echoPin)
  * The speed of sound is 1130 feet/s or 73.746 microseconds per inch.
  * The ping travels out and back, so to find the distance to the obstacle we take half of the distance traveled.
  */
-long Ultrasonic::us2inch(long microseconds)
+uint16_t Ultrasonic::us2inch(unsigned long microseconds)
 {
 	return microseconds / usPerInch;
 }
@@ -49,7 +49,7 @@ long Ultrasonic::us2inch(long microseconds)
  * The speed of sound is 340 m/s or 29 microseconds per centimeter.
  * The ping travels out and back, so to find the distance to the obstacle we take half of the distance traveled.
  */
-long Ultrasonic::us2cm(long microseconds)
+uint16_t Ultrasonic::us2cm(unsigned long microseconds)
 {
 	return microseconds / usPerCM;
 }
@@ -57,20 +57,21 @@ long Ultrasonic::us2cm(long microseconds)
 /**
  * Trigger pulse and wait for echo
  */
-long Ultrasonic::ping()
+uint32_t Ultrasonic::ping()
 {
 	digitalWrite(pinTRIG, LOW);
 	delayMicroseconds(2);
 	digitalWrite(pinTRIG, HIGH);
 	delayMicroseconds(trigDuration);
 	digitalWrite(pinTRIG, LOW);
+
 	return pulseIn(pinECHO, HIGH, echoTimeout);
 }
 
 /**
  * Measure distance in centimeters
  */
-long Ultrasonic::rangeCM()
+uint16_t Ultrasonic::rangeCM()
 {
 	return us2cm(ping()) / 2;
 }
@@ -78,7 +79,7 @@ long Ultrasonic::rangeCM()
 /**
  * Measure distance in inches
  */
-long Ultrasonic::rangeInch()
+uint16_t Ultrasonic::rangeInch()
 {
 	return us2inch(ping()) / 2;
 }
@@ -98,13 +99,13 @@ long Ultrasonic::rangeInch()
  *
  * See http://habrahabr.ru/post/243357/ for details
  */
-long Ultrasonic::temp(float baseDist, float baseTemp, int samples)
+uint16_t Ultrasonic::temp(uint16_t baseDist, uint16_t baseTemp, uint16_t samples)
 {
-	float dist = 0;
+	uint32_t dist = 0;
 	for (int i = 0; i < samples; i++)
 	{
 		dist += rangeCM();
-		delay(50);
+		delay(60);
 	}
 
 	// avg dist

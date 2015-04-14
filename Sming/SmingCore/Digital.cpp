@@ -97,7 +97,7 @@ void noPullup(uint16_t pin)
  * or LOW, the type of pulse to measure.  Works on pulses from 2-3 microseconds
  * to 3 minutes in length, but must be called at least a few dozen microseconds
  * before the start of the pulse. */
-unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout)
+unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 {
 	// cache the port and bit of the pin in order to speed up the
 	// pulse width measuring loop and achieve finer resolution.  calling
