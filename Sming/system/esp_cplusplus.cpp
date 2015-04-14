@@ -38,13 +38,6 @@ void operator delete[](void * ptr)
 		free(ptr);
 }
 
-extern "C" void abort()
-{
-	debugf("ABORT()");
-	system_restart();
-	while(true);
-}
-
 extern "C" void __cxa_pure_virtual(void)
 {
 	SYSTEM_ERROR("Bad pure_virtual_call");
