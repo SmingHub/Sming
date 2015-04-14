@@ -9,11 +9,12 @@
 #define _SMING_CORE_TCPSERVER_H_
 
 #include "TcpConnection.h"
-
+#include "TcpClient.h"
 
 class TcpServer: public TcpConnection {
 public:
 	TcpServer();
+	TcpServer(TcpClientDataCallback clientReceiveDataCallback);
 	virtual ~TcpServer();
 
 public:
@@ -21,8 +22,10 @@ public:
 	void setTimeOut(uint16_t waitTimeOut);
 
 protected:
+	// Overload this method in your derived class!
+	virtual TcpConnection* createClient(tcp_pcb *clientTcp);
+
 	virtual err_t onAccept(tcp_pcb *clientTcp, err_t err);
-	virtual TcpConnection* createClient(tcp_pcb *clientTcp) = 0;
 	virtual void onClient(TcpConnection *client);
 
 	static err_t staticAccept(void *arg, tcp_pcb *new_tcp, err_t err);
@@ -32,6 +35,7 @@ public:
 
 private:
 	uint16_t timeOut;
+	TcpClientDataCallback clientReceive;
 };
 
 #endif /* _SMING_CORE_TCPSERVER_H_ */

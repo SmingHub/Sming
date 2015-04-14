@@ -11,9 +11,9 @@ MeteoConfig loadConfig()
 	if (fileExist(METEO_CONFIG_FILE))
 	{
 		int size = fileGetSize(METEO_CONFIG_FILE);
-		char* json = new char[size + 1];
-		fileGetContent(METEO_CONFIG_FILE, json, size + 1);
-		JsonObject& root = jsonBuffer.parseObject(json);
+		char* jsonString = new char[size + 1];
+		fileGetContent(METEO_CONFIG_FILE, jsonString, size + 1);
+		JsonObject& root = jsonBuffer.parseObject(jsonString);
 
 		JsonObject& network = root["network"];
 		cfg.NetworkSSID = String((const char*)network["ssid"]);
@@ -29,7 +29,7 @@ MeteoConfig loadConfig()
 		cfg.RangeMin = trigger["min"];
 		cfg.RangeMax = trigger["max"];
 
-		delete[] json;
+		delete[] jsonString;
 	}
 	else
 	{

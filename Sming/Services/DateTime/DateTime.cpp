@@ -9,6 +9,8 @@
 
 #include "DateTime.h"
 #include <Arduino.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 //extern unsigned long _time;
 
@@ -68,7 +70,7 @@ bool DateTime::parseHttpDate(String httpDate)
 	if (httpDate[first] == ' ') first ++;
 
 	ptr += first;
-	Day = (int8_t)os_strtol(ptr, &ptr, 10);
+	Day = (int8_t)strtol(ptr, &ptr, 10);
 	if (*ptr == 0) return false;
 	ptr++;
 	char month[4] = {0};
@@ -92,20 +94,20 @@ bool DateTime::parseHttpDate(String httpDate)
 	else if (mon == "dec") Month = 11;
 	else return false;
 
-	Year = (int16_t)os_strtol(ptr, &ptr, 10);
+	Year = (int16_t)strtol(ptr, &ptr, 10);
 	if (*ptr == 0) return false;
 	if (Year < 69)
 		Year += 2000;
 	else if (Year < 100)
 		Year += 1900;
 
-	Hour = (int8_t)os_strtol(ptr, &ptr, 10);
+	Hour = (int8_t)strtol(ptr, &ptr, 10);
 	if (*ptr != ':') return false;
 	ptr++;
-	Minute = (int8_t)os_strtol(ptr, &ptr, 10);
+	Minute = (int8_t)strtol(ptr, &ptr, 10);
 	if (*ptr != ':') return false;
 	ptr++;
-	Second = (int8_t)os_strtol(ptr, &ptr, 10);
+	Second = (int8_t)strtol(ptr, &ptr, 10);
 	Milliseconds = 0;
 
 	return true;
@@ -119,7 +121,7 @@ time_t DateTime::toUnixTime()
 String DateTime::toShortDateString()
 {
 	char buf[64];
-	os_sprintf(buf, "%02d.%02d.%d", Day, Month + 1, Year);
+	sprintf(buf, "%02d.%02d.%d", Day, Month + 1, Year);
 	return String(buf);
 }
 
@@ -127,9 +129,9 @@ String DateTime::toShortTimeString(bool includeSeconds /* = false*/)
 {
 	char buf[64];
 	if (includeSeconds)
-		os_sprintf(buf, "%02d:%02d:%02d", Hour, Minute, Second);
+		sprintf(buf, "%02d:%02d:%02d", Hour, Minute, Second);
 	else
-		os_sprintf(buf, "%02d:%02d", Hour, Minute);
+		sprintf(buf, "%02d:%02d", Hour, Minute);
 
 	return String(buf);
 }

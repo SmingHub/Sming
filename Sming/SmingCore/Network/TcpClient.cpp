@@ -10,6 +10,15 @@
 #include "../../SmingCore/DataSourceStream.h"
 #include "../../Wiring/WString.h"
 
+TcpClient::TcpClient(tcp_pcb *clientTcp, TcpClientDataCallback clientReceive, bool autoDestruct )
+: TcpConnection(clientTcp, autoDestruct), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0)
+{
+	completed = NULL;
+	ready = NULL;
+	receive = clientReceive;
+	debugf("TcpClient instantiated");
+}
+
 TcpClient::TcpClient(bool autoDestruct)
 	: TcpConnection(autoDestruct), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
 {
@@ -107,6 +116,9 @@ err_t TcpClient::onConnected(err_t err)
 
 err_t TcpClient::onReceive(pbuf *buf)
 {
+	if (receive != NULL)
+		debugf("TCP Client onReceive, receive not NULL");
+
 	if (buf == NULL)
 	{
 		// Disconnected, close it
@@ -115,8 +127,16 @@ err_t TcpClient::onReceive(pbuf *buf)
 	else
 	{
 		if (receive != NULL)
-			if (!receive(*this, buf))
+		{
+			char* data = new char[buf->tot_len + 1];
+			pbuf_copy_partial(buf, data, buf->tot_len, 0);
+			data[buf->tot_len] = '\0';
+
+			if (!receive(*this, data, buf->tot_len))
 				return ERR_MEM;
+
+			delete[] data;
+		}
 
 		// Fire ReadyToSend callback
 		TcpConnection::onReceive(buf);

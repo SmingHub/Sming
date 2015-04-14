@@ -5,9 +5,6 @@
 extern "C" {
 #endif
 	#include "esp_systemapi.h"
-
-	extern void abort();
-
 #ifdef __cplusplus
 }
 #endif

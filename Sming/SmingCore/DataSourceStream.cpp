@@ -38,7 +38,7 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 	{
 		buf = new char[len + 1];
 		buf[len] = '\0';
-		os_memcpy(buf, data, len);
+		memcpy(buf, data, len);
 	}
 	else
 	{
@@ -49,15 +49,15 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 			capacity = required < 256 ? required + 128 : required + 64;
 			char* nbuf = new char[capacity];
 			buf[cur + len] = '\0';
-			os_memcpy(nbuf, buf, cur);
-			os_memcpy(nbuf + cur, data, len);
+			memcpy(nbuf, buf, cur);
+			memcpy(nbuf + cur, data, len);
 			delete[] buf;
 			buf = nbuf;
 		}
 		else
 		{
 			buf[cur + len] = '\0';
-			os_memcpy(buf + cur, data, len);
+			memcpy(buf + cur, data, len);
 		}
 	}
 	pos = buf;
@@ -231,7 +231,7 @@ uint16_t TemplateFileStream::getDataPointer(char** data)
 				{
 					int block = p - cur + 1;
 					char varname[TEMPLATE_MAX_VAR_NAME_LEN + 1] = {0};
-					os_memcpy(varname, cur + 1, p - cur - 1); // name without { and }
+					memcpy(varname, cur + 1, p - cur - 1); // name without { and }
 					varName = varname;
 					state = eTES_Found;
 					varWaitSize = cur - tpl;

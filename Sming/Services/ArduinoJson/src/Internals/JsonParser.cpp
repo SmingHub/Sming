@@ -6,7 +6,7 @@
 
 #include "../../include/ArduinoJson/Internals/JsonParser.hpp"
 
-//#include <stdlib.h>  // for strtol, strtod
+#include <stdlib.h>  // for strtol, strtod
 //#include <ctype.h>
 #include <user_config.h>
 
@@ -165,7 +165,7 @@ void JsonParser::parseBooleanTo(JsonVariant &destination) {
 
 void JsonParser::parseNumberTo(JsonVariant &destination) {
   char *endOfLong;
-  long longValue = os_strtol(_ptr, &endOfLong, 10);
+  long longValue = strtol(_ptr, &endOfLong, 10);
   char stopChar = *endOfLong;
 
   // Could it be a floating point value?
@@ -173,7 +173,7 @@ void JsonParser::parseNumberTo(JsonVariant &destination) {
 
   if (couldBeFloat) {
     // Yes => parse it as a double
-    double doubleValue = os_strtod(_ptr, &_ptr);
+    double doubleValue = strtod(_ptr, &_ptr);
     // Count the decimal digits
     uint8_t decimals = static_cast<uint8_t>(_ptr - endOfLong - 1);
     // Set the variant as a double

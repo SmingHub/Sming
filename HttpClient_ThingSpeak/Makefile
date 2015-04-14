@@ -33,7 +33,7 @@ EXTRA_INCDIR    = include $(SMF) $(SMF)system/include $(SMF)Wiring $(SMF)Librari
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMF)compiler/lib
-LIBS		= c m gcc hal phy pp net80211 openlwip wpa main
+LIBS		= microc gcc hal phy pp net80211 openlwip wpa main
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
@@ -316,7 +316,7 @@ endif
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(COM_PORT) write_flash 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin
+	$(ESPTOOL) -p $(COM_PORT) write_flash 0x32000 $(SMF)/compiler/data/blankfs.bin 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin
 
 rebuild: clean all
 

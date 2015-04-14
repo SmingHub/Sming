@@ -24,12 +24,12 @@ COM_PORT	?= COM3
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= system system/helpers Wiring SmingCore SmingCore/Network SmingCore/Platform Services/SpifFS Services/ArduinoJson Services/WebHelpers Services/DateTime appinit apptest Libraries/DHT Libraries/LiquidCrystal Libraries/Bounce Libraries/Adafruit_GFX Libraries/TFT_ILI9163C Libraries/Adafruit_SSD1306 Libraries/OneWire Libraries/Ultrasonic
+MODULES		= system system/helpers Wiring SmingCore SmingCore/Network SmingCore/Platform Services/SpifFS Services/ArduinoJson Services/WebHelpers Services/DateTime appinit apptest Libraries/DHT Libraries/LiquidCrystal Libraries/LCD5110 Libraries/Bounce Libraries/Adafruit_GFX Libraries/TFT_ILI9163C Libraries/Adafruit_SSD1306 Libraries/OneWire Libraries/Ultrasonic
 EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
-LIBS		= c gcc hal phy pp net80211 openlwip wpa main m
+LIBS		= microc gcc hal phy pp net80211 openlwip wpa main m
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -D ARDUINO=106
@@ -312,7 +312,7 @@ endif
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(COM_PORT) write_flash 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin
+	$(ESPTOOL) -p $(COM_PORT) write_flash 0x32000 $(SMF)/compiler/data/blankfs.bin 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin
 
 rebuild: clean all
 

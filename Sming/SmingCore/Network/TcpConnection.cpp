@@ -141,7 +141,7 @@ int TcpConnection::writeString(const String data, uint8_t apiflags /* = 0*/)
 
 int TcpConnection::writeString(const char* data, uint8_t apiflags /* = 0*/)
 {
-	return write(data, os_strlen(data), apiflags);
+	return write(data, strlen(data), apiflags);
 }
 
 int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = 0*/)
