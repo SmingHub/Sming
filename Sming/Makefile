@@ -29,7 +29,7 @@ EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
-LIBS		= c gcc hal phy pp net80211 openlwip wpa main m
+LIBS		= microc gcc hal phy pp net80211 openlwip wpa main m
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -D ARDUINO=106

@@ -8,6 +8,7 @@
 #include "HttpRequest.h"
 #include "HttpServer.h"
 #include "NetUtils.h"
+#include <stdlib.h>
 #include "../../Services/WebHelpers/escape.h"
 
 HttpRequest::HttpRequest()
@@ -174,7 +175,7 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 		//debugf("Continue POST len %d", itemValue.length());
 		char* buf = uri_unescape(NULL, 0, itemValue.c_str(), -1);
 		itemValue = buf;
-		os_free(buf);
+		free(buf);
 		(*requestPostParameters)[cur] += itemValue;
 		start = delimItem + 1;
 		postDataProcessed += start;
@@ -216,10 +217,10 @@ bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, c
 		String ItemValue = NetUtils::pbufStrCopy(buf, delimItem + 1, nextItem - delimItem - 1);
 		char* nam = uri_unescape(NULL, 0, ItemName.c_str(), -1);
 		ItemName = nam;
-		os_free(nam);
+		free(nam);
 		char* val = uri_unescape(NULL, 0, ItemValue.c_str(), -1);
 		ItemValue = val;
-		os_free(val);
+		free(val);
 		ItemName.trim();
 		if (!continued) ItemValue.trim();
 		debugf("Item: %s = %s", ItemName.c_str(), ItemValue.c_str());

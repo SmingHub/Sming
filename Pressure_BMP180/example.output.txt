@@ -1,5 +1,0 @@
-LightSensor initialized
-Reading
-Light: 110 lux
-Reading
-Light: 110 lux

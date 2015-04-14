@@ -1,5 +1,6 @@
 #include "../include/user_config.h"
 #include "../include/esp_cplusplus.h"
+#include <stdlib.h>
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -16,25 +17,25 @@ void cpp_core_initialize()
 void *operator new(size_t size)
 {
   //debugf("new: %d", size);
-  return os_zalloc(size);
+  return malloc(size);
 }
 
 void *operator new[](size_t size)
 {
   //debugf("new[]: %d", size);
-  return os_zalloc(size);
+  return malloc(size);
 }
 
 void operator delete(void * ptr)
 {
 	if (ptr != NULL)
-		os_free(ptr);
+		free(ptr);
 }
 
 void operator delete[](void * ptr)
 {
 	if (ptr != NULL)
-		os_free(ptr);
+		free(ptr);
 }
 
 extern "C" void abort()

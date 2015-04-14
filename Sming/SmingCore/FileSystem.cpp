@@ -115,7 +115,7 @@ void fileClearLastError(file_t fd)
 void fileSetContent(const String fileName, const char *content)
 {
 	file_t file = fileOpen(fileName.c_str(), eFO_CreateNewAlways | eFO_WriteOnly);
-	fileWrite(file, content, os_strlen(content));
+	fileWrite(file, content, strlen(content));
 	fileClose(file);
 }
 
