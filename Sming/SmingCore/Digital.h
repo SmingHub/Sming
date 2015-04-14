@@ -23,6 +23,6 @@ void pullup(uint16_t pin);
 void pulldown(uint16_t pin);
 void noPullup(uint16_t pin);
 
-unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout =
+unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout =
 		1000000L);
 #endif
