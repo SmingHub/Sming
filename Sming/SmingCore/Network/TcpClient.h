@@ -16,7 +16,7 @@ class IPAddress;
 
 typedef void (*TcpClientEventCallback)(TcpClient& client, TcpConnectionEvent sourceEvent);
 typedef void (*TcpClientBoolCallback)(TcpClient& client, bool successful);
-typedef bool (*TcpClientDataCallback)(TcpClient& client, char *data);
+typedef bool (*TcpClientDataCallback)(TcpClient& client, char *data, int size);
 
 enum TcpClientState
 {

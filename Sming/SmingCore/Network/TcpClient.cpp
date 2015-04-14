@@ -132,7 +132,7 @@ err_t TcpClient::onReceive(pbuf *buf)
 			pbuf_copy_partial(buf, data, buf->tot_len, 0);
 			data[buf->tot_len] = '\0';
 
-			if (!receive(*this, data))
+			if (!receive(*this, data, buf->tot_len))
 				return ERR_MEM;
 
 			delete[] data;
