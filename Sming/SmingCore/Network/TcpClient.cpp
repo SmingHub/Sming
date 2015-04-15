@@ -16,7 +16,7 @@ TcpClient::TcpClient(tcp_pcb *clientTcp, TcpClientDataCallback clientReceive, bo
 	completed = NULL;
 	ready = NULL;
 	receive = clientReceive;
-	debugf("TcpClient instantiated");
+	stream = NULL;
 }
 
 TcpClient::TcpClient(bool autoDestruct)
