@@ -27,7 +27,6 @@
 #include "Platform/WDT.h"
 
 #include "Network/HttpClient.h"
-#include "Network/MqttClient.h"
 #include "Network/HttpServer.h"
 #include "Network/HttpRequest.h"
 #include "Network/HttpResponse.h"
@@ -39,6 +38,5 @@
 
 #include "../Services/ArduinoJson/ArduinoJson.h"
 #include "../Services/DateTime/DateTime.h"
-#include "../Services/libemqtt/libemqtt.h"
 
 #endif

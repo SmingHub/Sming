@@ -108,7 +108,7 @@ void HttpResponse::sendString(const char* string)
 		stream = new MemoryDataStream();
 
 	MemoryDataStream *writable = (MemoryDataStream*)stream;
-	writable->write((const uint8_t*)string, strlen(string));
+	writable->write((const uint8_t*)string, os_strlen(string));
 }
 
 void HttpResponse::sendString(String string)

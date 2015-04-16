@@ -1,5 +1,4 @@
 #include "flashmem.h"
-#include <stdlib.h>
 
 // Based on NodeMCU platform_flash
 // https://github.com/nodemcu/nodemcu-firmware
@@ -180,15 +179,15 @@ uint32_t flashmem_write_internal( const void *from, uint32_t toaddr, uint32_t si
   const uint32_t blkmask = INTERNAL_FLASH_WRITE_UNIT_SIZE - 1;
   uint32_t *apbuf = NULL;
   if( ((uint32_t)from) & blkmask ){
-    apbuf = (uint32_t *)malloc(size);
+    apbuf = (uint32_t *)os_malloc(size);
     if(!apbuf)
       return 0;
-    memcpy(apbuf, from, size);
+    os_memcpy(apbuf, from, size);
   }
   WRITE_PERI_REG(0x60000914, 0x73);
   r = spi_flash_write(toaddr, apbuf?(uint32 *)apbuf:(uint32 *)from, size);
   if(apbuf)
-    free(apbuf);
+    os_free(apbuf);
   if(SPI_FLASH_RESULT_OK == r)
     return size;
   else{

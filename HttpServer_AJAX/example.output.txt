@@ -1,0 +1,5 @@
+LightSensor available: 1
+Reading
+Light: 75 lux
+Reading
+Light: 78 lux

@@ -9,7 +9,6 @@
 #define _SMING_CORE_TCPCONNECTION_H_
 
 #include "../Wiring/WiringFrameworkDependencies.h"
-#include "IPAddress.h"
 
 #define NETWORK_DEBUG
 
@@ -52,8 +51,6 @@ public:
 	int write(IDataSourceStream* stream);
 	void flush();
 	void setTimeOut(uint16_t waitTimeOut);
-	IPAddress getRemoteIp() { return IPAddress(tcp->remote_ip) ;};
-	uint16_t getRemotePort() { return tcp->remote_port; };
 
 protected:
 	bool intternalTcpConnect(IPAddress addr, uint16_t port);

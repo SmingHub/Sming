@@ -87,7 +87,7 @@ void spiffs_mount()
 	  return;
   }
 
-  debugf("fs.start: size:%d Kb, offset:%X\n", cfg.phys_size / 1024, cfg.phys_addr);
+  debugf("fs.start:%x, size:%d Kb\n", cfg.phys_addr, cfg.phys_size / 1024);
 
   cfg.hal_read_f = api_spiffs_read;
   cfg.hal_write_f = api_spiffs_write;

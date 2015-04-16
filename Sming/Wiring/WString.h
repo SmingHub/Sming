@@ -50,7 +50,6 @@ class String
     // fails, the string will be marked as invalid (i.e. "if (s)" will
     // be false).
     IRAM_ATTR String(const char *cstr = "");
-    IRAM_ATTR String(const char *cstr, unsigned int length);
     IRAM_ATTR String(const String &str);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     IRAM_ATTR String(String && rval);
@@ -65,8 +64,6 @@ class String
     explicit String(float, unsigned char decimalPlaces=2);
     explicit String(double, unsigned char decimalPlaces=2);
     ~String(void);
-
-    void setString(const char *cstr, int length = -1);
 
     // memory management
     // return true on success, false on failure (in which case, the string

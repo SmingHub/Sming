@@ -10,47 +10,34 @@
 #include "../../SmingCore/DataSourceStream.h"
 #include "../../Wiring/WString.h"
 
-TcpClient::TcpClient(tcp_pcb *clientTcp, TcpClientDataCallback clientReceive, bool autoDestruct )
-: TcpConnection(clientTcp, autoDestruct), state(eTCS_Connected), asyncTotalSent(0), asyncTotalLen(0)
-{
-	completed = NULL;
-	ready = NULL;
-	receive = clientReceive;
-	stream = NULL;
-}
-
 TcpClient::TcpClient(bool autoDestruct)
-	: TcpConnection(autoDestruct), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
+	: TcpConnection(autoDestruct), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0)
 {
 	completed = NULL;
 	ready = NULL;
 	receive = NULL;
-	stream = NULL;
 }
 
 TcpClient::TcpClient(TcpClientBoolCallback onCompleted, TcpClientEventCallback onReadyToSend /* = NULL*/, TcpClientDataCallback onReceive /* = NULL*/)
-	: TcpConnection(false), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
+	: TcpConnection(false), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0)
 {
 	completed = onCompleted;
 	ready = onReadyToSend;
 	receive = onReceive;
-	stream = NULL;
 }
 
 TcpClient::TcpClient(TcpClientBoolCallback onCompleted, TcpClientDataCallback onReceive /* = NULL*/)
-	: TcpConnection(false), state(eTCS_Ready), ready(NULL), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
+	: TcpConnection(false), state(eTCS_Ready), ready(NULL), asyncTotalSent(0), asyncTotalLen(0)
 {
 	completed = onCompleted;
 	receive = onReceive;
-	stream = NULL;
 }
 
 
 TcpClient::TcpClient(TcpClientDataCallback onReceive)
-	: TcpConnection(false), state(eTCS_Ready), ready(NULL), completed(NULL), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
+	: TcpConnection(false), state(eTCS_Ready), ready(NULL), completed(NULL), asyncTotalSent(0), asyncTotalLen(0)
 {
 	receive = onReceive;
-	stream = NULL;
 }
 
 TcpClient::~TcpClient()
@@ -105,7 +92,8 @@ err_t TcpClient::onConnected(err_t err)
 	}
 	else
 	{
-		onError(err);
+		state = eTCS_Failed;
+		onFinished(state);
 	}
 
 	// Fire ReadyToSend callback
@@ -116,9 +104,6 @@ err_t TcpClient::onConnected(err_t err)
 
 err_t TcpClient::onReceive(pbuf *buf)
 {
-	if (receive != NULL)
-		debugf("TCP Client onReceive, receive not NULL");
-
 	if (buf == NULL)
 	{
 		// Disconnected, close it
@@ -127,16 +112,8 @@ err_t TcpClient::onReceive(pbuf *buf)
 	else
 	{
 		if (receive != NULL)
-		{
-			char* data = new char[buf->tot_len + 1];
-			pbuf_copy_partial(buf, data, buf->tot_len, 0);
-			data[buf->tot_len] = '\0';
-
-			if (!receive(*this, data, buf->tot_len))
+			if (!receive(*this, buf))
 				return ERR_MEM;
-
-			delete[] data;
-		}
 
 		// Fire ReadyToSend callback
 		TcpConnection::onReceive(buf);

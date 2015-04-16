@@ -30,25 +30,20 @@ public:
 	HttpClient(bool autoDestruct = false);
 	virtual ~HttpClient();
 
-	// Text mode
 	bool downloadString(String url, HttpClientCompletedCallback onCompleted);
-	String getResponseString(); // Can be used only after calling downloadString!
+	String responseSting();
 
-	// File mode
 	bool downloadFile(String url, HttpClientCompletedCallback onCompleted = NULL);
 	bool downloadFile(String url, String saveFileName, HttpClientCompletedCallback onCompleted = NULL);
 
-	// Resulting HTTP status code
 	inline int getReponseCode() { return code; }
 
 	inline bool isProcessing()  { return TcpClient::isProcessing(); }
 	inline bool isSuccessful() { return (!writeError) && (code >= 200 && code <= 399); }
-
 	String getResponseHeader(String headerName, String defaultValue = "");
-	DateTime getLastModifiedDate(); // Last-Modified header
-	DateTime getServerDate(); // Date header
-
-	void reset(); // Reset current status, data and etc.
+	DateTime getLastModifiedDate();
+	DateTime getServerDate();
+	void reset();
 
 protected:
 	bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedCallback onCompleted);

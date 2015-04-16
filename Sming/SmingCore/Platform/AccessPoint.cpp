@@ -42,10 +42,10 @@ bool AccessPointClass::config(String ssid, String password, AUTH_MODE mode, bool
 	wifi_softap_get_config(&config);
 	config.channel = channel;
 	config.ssid_hidden = hidden;
-	memset(config.ssid, 0, sizeof(config.ssid));
-	memset(config.password, 0, sizeof(config.password));
-	strcpy((char*)config.ssid, ssid.c_str());
-	strcpy((char*)config.password, password.c_str());
+	os_memset(config.ssid, 0, sizeof(config.ssid));
+	os_memset(config.password, 0, sizeof(config.password));
+	ets_strcpy((char*)config.ssid, ssid.c_str());
+	ets_strcpy((char*)config.password, password.c_str());
 	config.ssid_len = ssid.length();
 	config.authmode = mode;
 	config.max_connection = 4; // max 4
@@ -70,7 +70,7 @@ bool AccessPointClass::config(String ssid, String password, AUTH_MODE mode, bool
 		if (runConfig != NULL)
 			delete runConfig;
 		runConfig = new softap_config();
-		memcpy(runConfig, &config, sizeof(softap_config));
+		os_memcpy(runConfig, &config, sizeof(softap_config));
 	}
 
 	wifi_softap_dhcps_start();
@@ -116,10 +116,7 @@ String AccessPointClass::getMAC()
 	uint8 hwaddr[6] = {0};
 	wifi_get_macaddr(SOFTAP_IF, hwaddr);
 	for (int i = 0; i < 6; i++)
-	{
-		if (hwaddr[i] < 0x10) mac += "0";
 		mac += String(hwaddr[i], HEX);
-	}
 	return mac;
 }
 

@@ -121,11 +121,6 @@ void startWebServer()
 	server.addPath("/config", onConfiguration);
 	server.setDefaultHandler(onFile);
 	serverStarted = true;
-
-	if (WifiStation.isEnabled())
-		debugf("STA: %s", WifiStation.getIP().toString().c_str());
-	if (WifiAccessPoint.isEnabled())
-		debugf("AP: %s", WifiAccessPoint.getIP().toString().c_str());
 }
 
 /// FileSystem Initialization ///

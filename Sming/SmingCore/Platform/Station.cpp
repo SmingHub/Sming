@@ -52,11 +52,11 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	bool cfgreaded = wifi_station_get_config(&config);
 	if (!cfgreaded) debugf("Can't read station configuration!");
 
-	memset(config.ssid, 0, sizeof(config.ssid));
-	memset(config.password, 0, sizeof(config.password));
+	os_memset(config.ssid, 0, sizeof(config.ssid));
+	os_memset(config.password, 0, sizeof(config.password));
 	config.bssid_set = false;
-	strcpy((char*)config.ssid, ssid.c_str());
-	strcpy((char*)config.password, password.c_str());
+	ets_strcpy((char*)config.ssid, ssid.c_str());
+	ets_strcpy((char*)config.password, password.c_str());
 
 	noInterrupts();
 	if(!wifi_station_set_config(&config))
@@ -101,10 +101,7 @@ String StationClass::getMAC()
 	uint8 hwaddr[6] = {0};
 	wifi_get_macaddr(STATION_IF, hwaddr);
 	for (int i = 0; i < 6; i++)
-	{
-		if (hwaddr[i] < 0x10) mac += "0";
 		mac += String(hwaddr[i], HEX);
-	}
 	return mac;
 }
 

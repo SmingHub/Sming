@@ -3,11 +3,7 @@
 #include <Libraries/LiquidCrystal/LiquidCrystal_I2C.h>
 #include <Libraries/DHT/DHT.h>
 
-///////////////////////////////////////////////////////////////////
-// Set your SSID & Pass for initial configuration
 #include "../include/configuration.h" // application configuration
-///////////////////////////////////////////////////////////////////
-
 #include "special_chars.h"
 #include "webserver.h"
 
@@ -31,7 +27,7 @@ void connectFail();
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(false); // Debug output to serial
+	Serial.systemDebugOutput(false); // Set debug output to serial
 
 	ActiveConfig = loadConfig();
 

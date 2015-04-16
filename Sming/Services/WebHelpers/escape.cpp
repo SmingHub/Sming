@@ -1,7 +1,6 @@
 /* escape.c - encode/decode URI and HTML style escapes. */
 /* PUBLIC DOMAIN - Jon Mayo - Aug 20, 2007 */
 #include "escape.h"
-#include <stdlib.h>
 #include <c_types.h>
 #include <ctype.h>
 #include <math.h>
@@ -12,11 +11,11 @@ static const char tohex[] = "0123456789ABCDEF";
 
 static unsigned safe_append(char *dest, size_t len, const char *str) {
 	unsigned len2;
-	len2=strlen((const char*)str);
+	len2=os_strlen((const char*)str);
 	if(len2>len) {
 		return 0; /* refuse to append */
 	}
-	memcpy(dest, str, len2+1);
+	os_memcpy(dest, str, len2+1);
 	return len2;
 }
 
@@ -99,7 +98,7 @@ char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len) {
 		/* src_len is non-negative because of earlier condition */
 		assert(src_len>=0);
 		dest_len=uri_escape_len(src, (unsigned)src_len)+1;
-		dest=(char*)malloc(dest_len);
+		dest=(char*)os_malloc(dest_len);
 		if(!dest) {
 			return 0; /* allocation failure */
 		}
@@ -136,7 +135,7 @@ char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len) {
 				/* check that there is room for "%XX\0" in dest */
 				if(dest_len<=3) {
 					if(ret_is_allocated) {
-						free(ret);
+						os_free(ret);
 					}
 					return 0;
 				}
@@ -154,7 +153,7 @@ char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len) {
 	/* check for errors - src was not fully consumed */
 	if(src_len!=0) {
 		if(ret_is_allocated) {
-			free(ret);
+			os_free(ret);
 		}
 		return 0;
 	}
@@ -183,7 +182,7 @@ char *uri_unescape(char *dest, size_t dest_len, const char *src, int src_len)
 	ret_is_allocated=!dest;
 	if(ret_is_allocated) {
 		dest_len=src_len+1; /* TODO: calculate the exact needed size? */
-		dest=(char*)malloc(dest_len);
+		dest=(char*)os_malloc(dest_len);
 		if(!dest) {
 			return 0; /* allocation failure */
 		}
@@ -206,7 +205,7 @@ char *uri_unescape(char *dest, size_t dest_len, const char *src, int src_len)
 	/* check for errors - src was not fully consumed */
 	if(src_len!=0) {
 		if(ret_is_allocated) {
-			free(ret);
+			os_free(ret);
 		}
 		return 0;
 	}

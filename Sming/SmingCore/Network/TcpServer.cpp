@@ -6,7 +6,6 @@
  ****/
 
 #include "TcpServer.h"
-#include "TcpClient.h"
 
 #include "../../SmingCore/Digital.h"
 #include "../../SmingCore/Timer.h"
@@ -19,30 +18,8 @@ TcpServer::TcpServer() : TcpConnection(false)
 	TcpConnection::setTimeOut(USHRT_MAX);
 }
 
-TcpServer::TcpServer(TcpClientDataCallback clientReceiveDataCallback) : TcpConnection(false)
-{
-	clientReceive = clientReceiveDataCallback;
-	timeOut = 40;
-	TcpConnection::setTimeOut(USHRT_MAX);
-}
-
 TcpServer::~TcpServer()
 {
-}
-
-TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
-{
-	if (clientTcp == NULL)
-	{
-		debugf("TCP Server createClient NULL\r\n");
-	}
-	else
-	{
-		debugf("TCP Server createClient not NULL");
-	}
-
-	TcpConnection* con = new TcpClient(clientTcp, clientReceive, false);
-	return con;
 }
 
 //Timer stateTimer;
@@ -75,7 +52,7 @@ bool TcpServer::listen(int port)
 err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 {
 	// Anti DDoS :-)
-	if (system_get_free_heap_size() < 7500)
+	if (system_get_free_heap_size() < 12000)
 	{
 		debugf("\r\n\r\nCONNECTION DROPPED\r\n\r\n");
 		return ERR_MEM;
@@ -102,7 +79,6 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 
 void TcpServer::onClient(TcpConnection *connection)
 {
-	debugf("Tcp Server onClient ") ; // %s",connection->getRemoteIp().toString().c_str());
 }
 
 err_t TcpServer::staticAccept(void *arg, tcp_pcb *new_tcp, err_t err)
