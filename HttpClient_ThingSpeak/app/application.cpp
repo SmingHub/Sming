@@ -17,7 +17,7 @@ void onDataSent(HttpClient& client, bool successful)
 	else
 		Serial.println("Failed");
 
-	String response = client.responseSting();
+	String response = client.getResponseString();
 	Serial.println("Server response: '" + response + "'");
 	if (response.length() > 0)
 	{

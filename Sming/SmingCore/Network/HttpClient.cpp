@@ -218,7 +218,7 @@ err_t HttpClient::onReceive(pbuf *buf)
 	return ERR_OK;
 }
 
-String HttpClient::responseSting()
+String HttpClient::getResponseString()
 {
 	if (mode == eHCM_String)
 		return responseStringData;
