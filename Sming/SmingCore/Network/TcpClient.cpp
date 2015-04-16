@@ -11,7 +11,7 @@
 #include "../../Wiring/WString.h"
 
 TcpClient::TcpClient(tcp_pcb *clientTcp, TcpClientDataCallback clientReceive, bool autoDestruct )
-: TcpConnection(clientTcp, autoDestruct), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0)
+: TcpConnection(clientTcp, autoDestruct), state(eTCS_Connected), asyncTotalSent(0), asyncTotalLen(0)
 {
 	completed = NULL;
 	ready = NULL;
