@@ -52,8 +52,8 @@ public:
 	int write(IDataSourceStream* stream);
 	void flush();
 	void setTimeOut(uint16_t waitTimeOut);
-	IPAddress getRemoteIp() { return IPAddress(tcp->remote_ip) ;};
-	uint16_t getRemotePort() { return tcp->remote_port; };
+	IPAddress getRemoteIp()  { return (tcp == NULL) ? INADDR_NONE : IPAddress(tcp->remote_ip);};
+	uint16_t getRemotePort() { return (tcp == NULL) ? 0 : tcp->remote_port; };
 
 protected:
 	bool intternalTcpConnect(IPAddress addr, uint16_t port);
