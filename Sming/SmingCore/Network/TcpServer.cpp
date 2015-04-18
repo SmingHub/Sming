@@ -41,7 +41,7 @@ TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
 		debugf("TCP Server createClient not NULL");
 	}
 
-	TcpConnection* con = new TcpClient(clientTcp, clientReceive, false);
+	TcpConnection* con = new TcpClient(clientTcp, clientReceive, true);
 	return con;
 }
 
