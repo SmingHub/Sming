@@ -253,6 +253,8 @@ ifeq ($(app), 0)
 	$(Q) $(GEN_APPBIN) $@ 0 $(mode) $(freqdiv) $(size)
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin
 	$(Q) mv eagle.app.v6.irom0text.bin $(FW_BASE)/eagle.irom0text.bin
+	$(vecho) "Make fs init stub"
+	$(Q) cat $(FW_BASE)/eagle.irom0text.bin $(SMF)/compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
 	$(Q) rm eagle.app.v6.*
 	$(vecho) "No boot needed."
 	$(vecho) "Generate eagle.flash.bin and eagle.irom0text.bin successully in folder $(FW_BASE)."
@@ -333,7 +335,7 @@ endif
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(COM_PORT) write_flash 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin
+	$(ESPTOOL) -p $(COM_PORT) write_flash 0x4B000 $(SMF)/compiler/data/blankfs.bin 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin
 
 rebuild: clean all
 
