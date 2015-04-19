@@ -43,6 +43,6 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true);
 
-    WifiStation.config(WIFI_SSID, WIFI_PWD);
-    WifiStation.waitConnection(onConnected);
+	WifiStation.config(WIFI_SSID, WIFI_PWD);
+	WifiStation.waitConnection(onConnected);
 }
