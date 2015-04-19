@@ -46,7 +46,7 @@ EXTRA_INCDIR    = include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HO
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib
-LIBS		= microc m gcc hal phy pp net80211 openlwip wpa main
+LIBS		= microc gcc hal phy pp net80211 openlwip wpa main
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
