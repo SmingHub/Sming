@@ -13,7 +13,6 @@
 #include <lwip/debug.h>
 #include <lwip/stats.h>
 #include <lwip/tcp.h>
-#include <lwip/udp.h>
 #include <lwip/dns.h>
 
 #endif /* SYSTEM_INCLUDE_ESPINC_LWIP_INCLUDES_H_ */

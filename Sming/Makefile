@@ -1,45 +1,88 @@
 #############################################################
 #
-# Root Level Makefile
-#
-# (c) by CHERTS <sleuthhound@gmail.com>
+# Created by Espressif
+# UDK modifications by CHERTS <sleuthhound@gmail.com>
+# Cross platform compatability by kireevco <dmitry@kireev.co>
 #
 #############################################################
 
+## Defaults for Sming Core
+
+## ESP_HOME sets the path where ESP tools and SDK are located.
+## Windows:
+# ESP_HOME = c:/Espressif
+
+## MacOS / Linux:
+# ESP_HOME = /opt/esp-open-sdk
+
+## SMING_HOME sets the path where Sming framework is located.
+## Windows:
+# SMING_HOME = c:/tools/sming/Sming 
+
+# MacOS / Linux
+# SMING_HOME = /opt/esp-open-sdk
+
+## COM port parameter is reqruied to flash firmware correctly.
+## Windows: 
+# COM_PORT = COM3
+
+# MacOS / Linux:
+# COM_PORT = /dev/tty.usbserial
+
+# Com port speed
+COM_SPEED = 115200
+
+
+ifeq ($(OS),Windows_NT)
+  # Windows detected
+  UNAME := Windows
+  SMING_HOME = $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
+  include $(SMING_HOME)/Makefile-windows.mk  
+else
+  UNAME := $(shell uname -s)
+  ifeq ($(UNAME),Darwin)
+      UNAME := MacOS
+      include $(SMING_HOME)/Makefile-macos.mk      
+  endif
+  ifeq ($(UNAME),Linux)
+      #Linux
+      UNAME := Linux
+      include $(SMING_HOME)/Makefile-linux.mk     
+  endif
+endif
+
+export COMPILE := gcc
+export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
+XTENSA_TOOLS_ROOT ?= $(ESP_HOME)/xtensa-lx106-elf/bin
+
+# Sming Framework Path
+SMF = $(SMING_HOME)
+
+SPIFF_FILES = files
+
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
-
-# Base directory for the compiler
-XTENSA_TOOLS_ROOT ?= c:/Espressif/xtensa-lx106-elf/bin
-
-# base directory of the ESP8266 SDK package, absolute
-SDK_BASE	?= c:/Espressif/ESP8266_SDK
-
-# esptool path and port
-SDK_TOOLS	?= c:/Espressif/utils
-ESPTOOL		?= $(SDK_TOOLS)/esptool.exe
-COM_PORT	?= COM3
 
 # name for the target project
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= system system/helpers Wiring SmingCore SmingCore/Network SmingCore/Platform Services/SpifFS Services/ArduinoJson Services/WebHelpers Services/DateTime appinit apptest Libraries/DHT Libraries/LiquidCrystal Libraries/LCD5110 Libraries/Bounce Libraries/Adafruit_GFX Libraries/TFT_ILI9163C Libraries/Adafruit_SSD1306 Libraries/OneWire Libraries/Ultrasonic
-EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
+MODULES		= $(SMING_HOME)/system $(SMING_HOME)/system/helpers $(SMING_HOME)/Wiring $(SMING_HOME)/SmingCore $(SMING_HOME)/SmingCore/Network $(SMING_HOME)/SmingCore/Platform $(SMING_HOME)/Services/SpifFS $(SMING_HOME)/Services/ArduinoJson $(SMING_HOME)/Services/WebHelpers $(SMING_HOME)/Services/DateTime $(SMING_HOME)/appinit app $(SMING_HOME)/Libraries/DHT $(SMING_HOME)/Libraries/LiquidCrystal $(SMING_HOME)/Libraries/Bounce $(SMING_HOME)/Libraries/Adafruit_GFX $(SMING_HOME)/Libraries/TFT_ILI9163C $(SMING_HOME)/Libraries/BMP180 $(SMING_HOME)/Libraries/BH1750FVI $(SMING_HOME)/Libraries/Adafruit_SSD1306 $(SMING_HOME)/Libraries/OneWire $(SMING_HOME)/Libraries/I2Cdev $(SMING_HOME)/Libraries/HMC5883L
+EXTRA_INCDIR    = include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include
 
 # libraries used in this project, mainly provided by the SDK
-USER_LIBDIR = compiler/lib
-LIBS		= microc gcc hal phy pp net80211 openlwip wpa main m
+USER_LIBDIR = $(SMING_HOME)/compiler/lib
+LIBS		= microc gcc hal phy pp net80211 openlwip wpa main
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -D ARDUINO=106
+CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
 
 # linker script used for the above linkier step
-LD_PATH     = compiler/ld/
+LD_PATH     = $(SMING_HOME)/compiler/ld/
 LD_SCRIPT	= $(LD_PATH)eagle.app.v6.cpp.ld
 
 # BOOT = none
@@ -202,6 +245,10 @@ Q := @
 vecho := @echo
 endif
 
+# test:
+# 	#$(vecho) $(OBJ) $(APP_AR)
+# 	$(vecho) $(BUILD_DIR)
+
 vpath %.c $(SRC_DIR)
 vpath %.cpp $(SRC_DIR)
 
@@ -227,24 +274,38 @@ $(TARGET_OUT): $(APP_AR)
 	$(Q) $(OBJCOPY) --only-section .rodata -O binary $@ eagle.app.v6.rodata.bin
 	$(Q) $(OBJCOPY) --only-section .irom0.text -O binary $@ eagle.app.v6.irom0text.bin
 	$(vecho) "objcopy done"
-	$(vecho) "Run gen_appbin.exe"
+	$(vecho) "Run gen_appbin"
 ifeq ($(app), 0)
-	$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 0 $(mode) $(freqdiv) $(size)
+	$(Q) $(GEN_APPBIN) $@ 0 $(mode) $(freqdiv) $(size)
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin
 	$(Q) mv eagle.app.v6.irom0text.bin $(FW_BASE)/eagle.irom0text.bin
-	$(vecho) "Make fs init stub"
-	$(Q) cat $(FW_BASE)/eagle.irom0text.bin $(SMF)/compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
+	$(vecho) "Adding init file with 0x10000 offset"
+	$(Q) srec_cat -output $(FW_BASE)/eagle.irom0text.fs.bin -binary $(FW_BASE)/eagle.flash.bin -binary -fill 0xff 0x00000 0x10000 $(FW_BASE)/eagle.irom0text.bin -binary -offset 0x10000 > srec_cat.log
+#	$(vecho) "Make fs init stub"
+	
+#	$(Q) cat $(FW_BASE)/eagle.irom0text.bin $(SMING_HOME)/compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
 	$(Q) rm eagle.app.v6.*
+#	$(vecho) "flash size: $$(printf '%X\n' $$($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))"
+#0x$(echo "obase=16; $(($(stat --format="%s" $BUILD_DIR/bin/${x00000})))" | bc)
+#	$(vecho) "main fw offset: $$(echo "obase=16; $(($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))" | bc)	
+	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
+        echo "Found $(SPIFF_FILES) directory. Creating spiff_rom.bin"; \
+        spiffy; \
+        mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
+	else \
+         echo "No files found in $(SPIFF_FILES)"; \
+	fi
+		
 	$(vecho) "No boot needed."
 	$(vecho) "Generate eagle.flash.bin and eagle.irom0text.bin successully in folder $(FW_BASE)."
 	$(vecho) "eagle.flash.bin-------->0x00000"
-	$(vecho) "eagle.irom0text.bin---->0x10000"
+	$(vecho) "eagle.irom0text.bin---->0x10000"	
 else
     ifeq ($(boot), new)
-		$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 2 $(mode) $(freqdiv) $(size)
+		$(Q) $(GEN_APPBIN) $@ 2 $(mode) $(freqdiv) $(size)
 		$(vecho) "Support boot_v1.2 and +"
     else
-		$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 1 $(mode) $(freqdiv) $(size)
+		$(Q) $(GEN_APPBIN) $@ 1 $(mode) $(freqdiv) $(size)
 		$(vecho) "Support boot_v1.1 and +"
     endif
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/upgrade/$(BIN_NAME).bin
@@ -273,8 +334,8 @@ flashonefile: all
 	$(OBJCOPY) --only-section .data -O binary $(TARGET_OUT) eagle.app.v6.data.bin
 	$(OBJCOPY) --only-section .rodata -O binary $(TARGET_OUT) eagle.app.v6.rodata.bin
 	$(OBJCOPY) --only-section .irom0.text -O binary $(TARGET_OUT) eagle.app.v6.irom0text.bin
-	$(SDK_TOOLS)/gen_appbin_old.exe $(TARGET_OUT) v6
-	$(SDK_TOOLS)/gen_flashbin.exe eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x10000
+	$(GEN_APPBIN) $(TARGET_OUT) v6
+	$(GEN_FLASHBIN) eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x10000
 	rm -f eagle.app.v6.data.bin
 	rm -f eagle.app.v6.flash.bin
 	rm -f eagle.app.v6.irom0text.bin
@@ -285,16 +346,16 @@ flashonefile: all
 	$(vecho) "No boot needed."
 	$(vecho) "Generate eagle.app.flash.bin successully in folder $(FW_BASE)."
 	$(vecho) "eagle.app.flash.bin-------->0x00000"
-	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.app.flash.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.app.flash.bin
 
 flashboot: all flashinit
 ifeq ($(boot), new)
 	$(vecho) "Flash boot_v1.2 and +"
-	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash 0x00000 $(SDK_BASE)/bin/boot_v1.2.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(SDK_BASE)/bin/boot_v1.2.bin
 endif
 ifeq ($(boot), old)
 	$(vecho) "Flash boot_v1.1 and +"
-	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash 0x00000 $(SDK_BASE)/bin/boot_v1.1.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(SDK_BASE)/bin/boot_v1.1.bin
 endif
 ifeq ($(boot), none)
 	$(vecho) "No boot needed."
@@ -302,13 +363,13 @@ endif
 
 flash: all
 ifeq ($(app), 0)
-	$(shell taskkill /f /im termite.exe)
-	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
+	$(KILL_TERM)	
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
 else
 ifeq ($(boot), none)
-	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
 else
-	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
 endif
 endif
 

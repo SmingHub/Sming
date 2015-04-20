@@ -35,7 +35,6 @@
 #include "Network/NetUtils.h"
 #include "Network/TcpClient.h"
 #include "Network/TcpConnection.h"
-#include "Network/UdpConnection.h"
 #include "Network/URL.h"
 
 #include "../Services/ArduinoJson/ArduinoJson.h"

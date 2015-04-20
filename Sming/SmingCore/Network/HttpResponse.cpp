@@ -83,11 +83,6 @@ void HttpResponse::setCache(int maxAgeSeconds, bool isPublic /* = false */)
 	setHeader("Cache-Control", chache);
 }
 
-void HttpResponse::setAllowCrossDomainOrigin(String controlAllowOrigin)
-{
-	setHeader("Access-Control-Allow-Origin", controlAllowOrigin);
-}
-
 void HttpResponse::setHeader(const String name, const String value)
 {
 	responseHeaders[name] = value;

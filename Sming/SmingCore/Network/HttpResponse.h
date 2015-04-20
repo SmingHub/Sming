@@ -32,10 +32,8 @@ public:
 	void setContentType(const String type);
 	void setCookie(const String name, const String value);
 	void setHeader(const String name, const String value);
-	bool hasHeader(const String name);
-
 	void setCache(int maxAgeSeconds = 3600, bool isPublic = false);
-	void setAllowCrossDomainOrigin(String controlAllowOrigin); // Access-Control-Allow-Origin for AJAX from a different domain
+	bool hasHeader(const String name);
 
 	String getStatusName();
 	int getStatusCode();
