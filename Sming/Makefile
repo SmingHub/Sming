@@ -287,7 +287,15 @@ ifeq ($(app), 0)
 	$(Q) rm eagle.app.v6.*
 #	$(vecho) "flash size: $$(printf '%X\n' $$($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))"
 #0x$(echo "obase=16; $(($(stat --format="%s" $BUILD_DIR/bin/${x00000})))" | bc)
-#	$(vecho) "main fw offset: $$(echo "obase=16; $(($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))" | bc)
+#	$(vecho) "main fw offset: $$(echo "obase=16; $(($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))" | bc)	
+	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
+        echo "Found $(SPIFF_FILES) directory. Creating spiff_rom.bin"; \
+        spiffy; \
+        mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
+	else \
+         echo "No files found in $(SPIFF_FILES)"; \
+	fi
+		
 	$(vecho) "No boot needed."
 	$(vecho) "Generate eagle.flash.bin and eagle.irom0text.bin successully in folder $(FW_BASE)."
 	$(vecho) "eagle.flash.bin-------->0x00000"
