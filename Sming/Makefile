@@ -6,6 +6,33 @@
 #
 #############################################################
 
+## Defaults for Sming Core
+
+## ESP_HOME sets the path where ESP tools and SDK are located.
+## Windows:
+# ESP_HOME = c:/Espressif
+
+## MacOS / Linux:
+# ESP_HOME = /opt/esp-open-sdk
+
+## SMING_HOME sets the path where Sming framework is located.
+## Windows:
+# SMING_HOME = c:/tools/sming/Sming 
+
+# MacOS / Linux
+# SMING_HOME = /opt/esp-open-sdk
+
+## COM port parameter is reqruied to flash firmware correctly.
+## Windows: 
+# COM_PORT = COM3
+
+# MacOS / Linux:
+# COM_PORT = /dev/tty.usbserial
+
+# Com port speed
+COM_SPEED = 115200
+
+
 ifeq ($(OS),Windows_NT)
   # Windows detected
   UNAME := Windows
@@ -28,11 +55,10 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT ?= $(ESP_HOME)/xtensa-lx106-elf/bin
 
-# Default COM_SPEED
-COM_SPEED	?= 115200
-
 # Sming Framework Path
 SMF = $(SMING_HOME)
+
+SPIFF_FILES = files
 
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
@@ -253,13 +279,19 @@ ifeq ($(app), 0)
 	$(Q) $(GEN_APPBIN) $@ 0 $(mode) $(freqdiv) $(size)
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin
 	$(Q) mv eagle.app.v6.irom0text.bin $(FW_BASE)/eagle.irom0text.bin
-	$(vecho) "Make fs init stub"
-	$(Q) cat $(FW_BASE)/eagle.irom0text.bin $(SMF)/compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
+	$(vecho) "Adding init file with 0x10000 offset"
+	$(Q) srec_cat -output eagle.irom0text.fs.bin -binary $x00000 -binary -fill 0xff 0x00000 0x10000 $x10000 -binary -offset 0x10000 > srec_cat.log
+#	$(vecho) "Make fs init stub"
+	
+#	$(Q) cat $(FW_BASE)/eagle.irom0text.bin $(SMING_HOME)/compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
 	$(Q) rm eagle.app.v6.*
+#	$(vecho) "flash size: $$(printf '%X\n' $$($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))"
+#0x$(echo "obase=16; $(($(stat --format="%s" $BUILD_DIR/bin/${x00000})))" | bc)
+#	$(vecho) "main fw offset: $$(echo "obase=16; $(($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))" | bc)
 	$(vecho) "No boot needed."
 	$(vecho) "Generate eagle.flash.bin and eagle.irom0text.bin successully in folder $(FW_BASE)."
 	$(vecho) "eagle.flash.bin-------->0x00000"
-	$(vecho) "eagle.irom0text.bin---->0x10000"
+	$(vecho) "eagle.irom0text.bin---->0x10000"	
 else
     ifeq ($(boot), new)
 		$(Q) $(GEN_APPBIN) $@ 2 $(mode) $(freqdiv) $(size)
