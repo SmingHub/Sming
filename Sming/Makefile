@@ -280,7 +280,7 @@ ifeq ($(app), 0)
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin
 	$(Q) mv eagle.app.v6.irom0text.bin $(FW_BASE)/eagle.irom0text.bin
 	$(vecho) "Adding init file with 0x10000 offset"
-	$(Q) srec_cat -output eagle.irom0text.fs.bin -binary $(FW_BASE)/eagle.flash.bin -binary -fill 0xff 0x00000 0x10000 $(FW_BASE)/eagle.irom0text.bin -binary -offset 0x10000 > srec_cat.log
+	$(Q) srec_cat -output $(FW_BASE)/eagle.irom0text.fs.bin -binary $(FW_BASE)/eagle.flash.bin -binary -fill 0xff 0x00000 0x10000 $(FW_BASE)/eagle.irom0text.bin -binary -offset 0x10000 > srec_cat.log
 #	$(vecho) "Make fs init stub"
 	
 #	$(Q) cat $(FW_BASE)/eagle.irom0text.bin $(SMING_HOME)/compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
