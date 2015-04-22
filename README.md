@@ -28,7 +28,7 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
  - Compile it and flash to chip!
 
 #### On Linux
-  - [Instructions](https://github.com/anakod/Sming/wiki/build-linux)
+  - [Quickstart](https://github.com/anakod/Sming/wiki/Linux-Quickstart)
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
