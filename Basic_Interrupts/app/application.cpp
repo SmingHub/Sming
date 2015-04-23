@@ -22,9 +22,9 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 or 9600 by default
 
 	delay(3000);
-	say("=========================== Bring GPIO");
+	say("======= Bring GPIO");
 	say( INT_PIN);
-	say( " low to trigger interrupt(s) ========================");
+	say( " low to trigger interrupt(s) =======");
 	Serial.println();
 
 	attachInterrupt(INT_PIN, interruptHandler, CHANGE);

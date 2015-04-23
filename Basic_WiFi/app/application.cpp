@@ -1,12 +1,16 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
+// Put you SSID and Password here
+#define WIFI_SSID "EnterSSID"
+#define WIFI_PWD "EnterPassword"
+
 // Will be called when WiFi station network scan was completed
 void listNetworks(bool succeeded, BssList list)
 {
 	if (!succeeded)
 	{
-		debugf("Failed to scan networks");
+		Serial.println("Failed to scan networks");
 		return;
 	}
 
@@ -25,6 +29,7 @@ void listNetworks(bool succeeded, BssList list)
 void connectOk()
 {
 	debugf("I'm CONNECTED");
+	Serial.println(WifiStation.getIP().toString());
 }
 
 // Will be called when WiFi station timeout was reached
@@ -35,35 +40,36 @@ void connectFail()
 }
 
 // Will be called when WiFi hardware and software initialization was finished
+// And system initialization was completed
 void ready()
 {
 	debugf("READY!");
 
 	// If AP is enabled:
-	debugf("%d %s", WifiAccessPoint.getIP().toString().c_str(), WifiAccessPoint.getMAC().c_str());
+	debugf("AP. ip: %s mac: %s", WifiAccessPoint.getIP().toString().c_str(), WifiAccessPoint.getMAC().c_str());
 }
 
 void init()
 {
 	Serial.begin(115200);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
-	Serial.println("Hello friendly world! :)");
+	Serial.println("Sming. Let's do smart things!");
 
 	// Set system ready callback method
 	System.onReady(ready);
 
 	// Soft access point
-	WifiAccessPoint.config("Sming InternetOfThings", "", AUTH_OPEN);
 	WifiAccessPoint.enable(true);
+	WifiAccessPoint.config("Sming InternetOfThings", "", AUTH_OPEN);
 
 	// Station - WiFi client
-	WifiStation.config("LOCAL-NETWORK", "123456789087"); // Put you SSID and Password here
 	WifiStation.enable(true);
+	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
-	// Change AP IP
-	ip_addr ip;
-	IP4_ADDR(&ip, 192, 168, 2, 1);
-	WifiAccessPoint.setIP(ip);
+	// Optional: Change IP addresses (and disable DHCP)
+	WifiAccessPoint.setIP(IPAddress(192, 168, 2, 1));
+	WifiStation.setIP(IPAddress(192, 168, 1, 171));
+
 
 	// Print available access points
 	WifiStation.startScan(listNetworks); // In Sming we can start network scan from init method without additional code
