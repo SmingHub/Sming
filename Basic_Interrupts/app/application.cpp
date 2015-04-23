@@ -4,11 +4,16 @@
 #define INT_PIN 0   // GPIO0
 #define say(a) ( Serial.print(a) )
 
-void interruptHandler()
+void IRAM_ATTR interruptHandler()
 {
-	say( micros());
+	// This is not very good idea - make actions in interrupt handler (it's just an example)
+	// Better set some flag and check it in main code (timers and etc) or read actual pins state and save it to variable
+	// Interrupt processing code should be as short as possible.
+	// flagInterruptOccurred = true;
+	
+	say(micros());
 	say( "   Pin changed, now   ");
-	say( digitalRead( INT_PIN));
+	say( digitalRead(INT_PIN));
 	Serial.println();
 }
 
@@ -22,5 +27,5 @@ void init()
 	say( " low to trigger interrupt(s) ========================");
 	Serial.println();
 
-	attachInterrupt( INT_PIN, interruptHandler, CHANGE);
+	attachInterrupt(INT_PIN, interruptHandler, CHANGE);
 }
