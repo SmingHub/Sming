@@ -53,7 +53,7 @@ endif
 
 export COMPILE := gcc
 export PATH := "$(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)"
-XTENSA_TOOLS_ROOT ?= $(ESP_HOME)/xtensa-lx106-elf/bin
+XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
 # Sming Framework Path
 SMF = $(SMING_HOME)
@@ -265,7 +265,7 @@ endef
 
 all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
 
-$(TARGET_OUT): $(APP_AR)
+$(TARGET_OUT): $(APP_AR)	
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 	$(vecho) "Run objcopy, please wait..."
