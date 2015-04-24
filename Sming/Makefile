@@ -37,6 +37,7 @@ ifeq ($(OS),Windows_NT)
   # Windows detected
   UNAME := Windows
   SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
+  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
   include $(SMING_HOME)/Makefile-windows.mk  
 else
   UNAME := $(shell uname -s)
