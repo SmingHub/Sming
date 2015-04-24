@@ -18,12 +18,12 @@ public:
 	~Timer();
 
 	// Init in Milliseconds. Method return "this" reference
-	Timer& initializeMs(uint32_t milliseconds=1000000, InterruptCallback interrupt = NULL);
+	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds=1000000, InterruptCallback interrupt = NULL);
 	// Init in Microseconds. Method return "this" reference
-	Timer& initializeUs(uint32_t microseconds=1000000, InterruptCallback interrupt = NULL);
-	void start(bool repeating=true);
-	void __inline startOnce() { start(false); }
-	void stop();
+	Timer& IRAM_ATTR initializeUs(uint32_t microseconds=1000000, InterruptCallback interrupt = NULL);
+	void IRAM_ATTR start(bool repeating=true);
+	void __inline IRAM_ATTR startOnce() { start(false); }
+	void IRAM_ATTR stop();
 	void restart();
 	bool isStarted();
 	uint32_t getIntervalUs();

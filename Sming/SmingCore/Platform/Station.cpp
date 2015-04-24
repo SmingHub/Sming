@@ -108,13 +108,14 @@ String StationClass::getMAC()
 	return mac;
 }
 
-/*bool StationClass::setIP(IPAddress address)
+bool StationClass::setIP(IPAddress address)
 {
 	if (System.isReady())
 	{
 		debugf("IP can be changed only in init() method");
 		return false;
 	}
+
 	wifi_station_disconnect();
 	wifi_station_dhcpc_stop();
 	struct ip_info ipinfo;
@@ -122,9 +123,9 @@ String StationClass::getMAC()
 	ipinfo.ip = address;
 	wifi_set_ip_info(STATION_IF, &ipinfo);
 	wifi_station_connect();
-	wifi_station_dhcpc_start();
+	//wifi_station_dhcpc_start();
 	return true;
-}*/
+}
 
 bool StationClass::startScan(ScanCompletedCallback scanCompleted)
 {

@@ -108,9 +108,6 @@ static void IRAM_ATTR interruptHandler(uint32 intr_mask, void *arg)
 		{
 			if ((gpio_status & BIT(i)) && _gpioInterruptsList[i] != NULL)
 			{
-				//disable interrupt
-				gpio_pin_intr_state_set(BIT(i), GPIO_PIN_INTR_DISABLE);
-
 				//clear interrupt status
 				GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(i));
 				_gpioInterruptsList[i]();

@@ -257,10 +257,10 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		{
 			response(250);
 		}
-		else if (cmd == "SIZE")
+		/*else if (cmd == "SIZE")
 		{
 			response(213, String(fileGetSize(makeFileName(data, false))));
-		}
+		}*/
 		else if (cmd == "DELE")
 		{
 			String name = makeFileName(data, false);
