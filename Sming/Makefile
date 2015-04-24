@@ -36,18 +36,40 @@ COM_SPEED = 115200
 ifeq ($(OS),Windows_NT)
   # Windows detected
   UNAME := Windows
+  
+  # Default SMING_HOME. Can be overriden.
+  SMING_HOME ?= c:\tools\Sming\Sming
+
+  # Default ESP_HOME. Can be overriden.
+  ESP_HOME ?= c:\Espressif
+
+  # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
   SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
   ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
   include $(SMING_HOME)/Makefile-windows.mk  
 else
   UNAME := $(shell uname -s)
   ifeq ($(UNAME),Darwin)
+      # MacOS Detected
       UNAME := MacOS
+
+      # Default SMING_HOME. Can be overriden.
+      SMING_HOME ?= /opt/sming/Sming
+
+      # Default ESP_HOME. Can be overriden.
+      ESP_HOME ?= /opt/esp-open-sdk
+
       include $(SMING_HOME)/Makefile-macos.mk      
   endif
   ifeq ($(UNAME),Linux)
-      #Linux
+      # Linux Detected
       UNAME := Linux
+
+      # Default SMING_HOME. Can be overriden.
+      SMING_HOME ?= /opt/sming/Sming
+
+      # Default ESP_HOME. Can be overriden.
+      ESP_HOME ?= /opt/esp-open-sdk
       include $(SMING_HOME)/Makefile-linux.mk     
   endif
 endif
