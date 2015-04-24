@@ -36,6 +36,7 @@ Timer& Timer::initializeMs(uint32_t milliseconds/* = 1000000*/, InterruptCallbac
 void Timer::start(bool repeating/* = true*/)
 {
 	stop();
+	if(interval == 0) return;
 	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);
 	started = true;
 	if (interval > 1000)
