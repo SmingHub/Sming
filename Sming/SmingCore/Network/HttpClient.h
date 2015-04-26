@@ -21,7 +21,8 @@ typedef void (*HttpClientCompletedCallback)(HttpClient& client, bool successful)
 enum HttpClientMode
 {
 	eHCM_String = 0,
-	eHCM_File
+	eHCM_File,
+	eHCM_UserDefined
 };
 
 class HttpClient: protected TcpClient
@@ -54,10 +55,14 @@ protected:
 	bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedCallback onCompleted);
 	void onFinished(TcpClientState finishState);
 	virtual err_t onReceive(pbuf *buf);
+	virtual void writeRawData(pbuf* buf, int startPos);
 	void parseHeaders(pbuf* buf, int headerEnd);
 
-private:;
+protected:
 	bool waitParse;
+	bool writeError;
+
+private:
 	int code;
 	HttpClientCompletedCallback onCompleted;
 	HttpClientMode mode;
@@ -65,7 +70,6 @@ private:;
 
 	String responseStringData;
 	file_t saveFile;
-	bool writeError;
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTPCLIENT_H_ */

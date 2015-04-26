@@ -11,5 +11,5 @@ extern "C" void user_init(void)
 	spiffs_mount();
 	System.initialize();
 
-	init(); // User init
+	init(); // User code init
 }

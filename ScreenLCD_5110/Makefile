@@ -36,11 +36,11 @@ USER_LIBDIR = $(SMF)compiler/lib
 LIBS		= microc gcc hal phy pp net80211 openlwip wpa main
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
+CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
+LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections
 
 # linker script used for the above linkier step
 LD_PATH     = $(SMF)compiler/ld/
@@ -242,7 +242,7 @@ ifeq ($(app), 0)
 	$(vecho) "No boot needed."
 	$(vecho) "Generate eagle.flash.bin and eagle.irom0text.bin successully in folder $(FW_BASE)."
 	$(vecho) "eagle.flash.bin-------->0x00000"
-	$(vecho) "eagle.irom0text.bin---->0x10000"
+	$(vecho) "eagle.irom0text.bin---->0x9000"
 else
     ifeq ($(boot), new)
 		$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 2 $(mode) $(freqdiv) $(size)
@@ -278,7 +278,7 @@ flashonefile: all
 	$(OBJCOPY) --only-section .rodata -O binary $(TARGET_OUT) eagle.app.v6.rodata.bin
 	$(OBJCOPY) --only-section .irom0.text -O binary $(TARGET_OUT) eagle.app.v6.irom0text.bin
 	$(SDK_TOOLS)/gen_appbin_old.exe $(TARGET_OUT) v6
-	$(SDK_TOOLS)/gen_flashbin.exe eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x10000
+	$(SDK_TOOLS)/gen_flashbin.exe eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x9000
 	rm -f eagle.app.v6.data.bin
 	rm -f eagle.app.v6.flash.bin
 	rm -f eagle.app.v6.irom0text.bin
@@ -307,10 +307,10 @@ endif
 flash: all
 ifeq ($(app), 0)
 	$(shell taskkill /f /im termite.exe)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.fs.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.fs.bin
 else
 ifeq ($(boot), none)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.fs.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.fs.bin
 else
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
 endif

@@ -150,6 +150,35 @@ void HttpClient::parseHeaders(pbuf* buf, int headerEnd)
 	} while (nextLine != -1 && nextLine < headerEnd);
 }
 
+void HttpClient::writeRawData(pbuf* buf, int startPos)
+{
+	switch (mode)
+	{
+		case eHCM_String:
+		{
+			responseStringData += NetUtils::pbufStrCopy(buf, startPos,
+					buf->tot_len - startPos);
+			break;
+		}
+		case eHCM_File:
+		{
+			pbuf *cur = buf;
+			while (cur != NULL && cur->len > 0 && !writeError)
+			{
+				char* ptr = (char*) cur->payload + startPos;
+				int len = cur->len - startPos;
+				int res = fileWrite(saveFile, ptr, len);
+				writeError |= (res < 0);
+				cur = cur->next;
+				startPos = 0;
+			}
+
+			if (writeError)
+				close();
+		}
+	}
+}
+
 err_t HttpClient::onReceive(pbuf *buf)
 {
 	if (buf == NULL)
@@ -187,29 +216,7 @@ err_t HttpClient::onReceive(pbuf *buf)
 			}
 		}
 
-		switch (mode)
-		{
-		case eHCM_String:
-			{
-				responseStringData += NetUtils::pbufStrCopy(buf, startPos, buf->tot_len - startPos);
-				break;
-			}
-		case eHCM_File:
-			{
-				pbuf *cur = buf;
-				while (cur != NULL && cur->len > 0 && !writeError)
-				{
-					char* ptr = (char*)cur->payload + startPos;
-					int len = cur->len - startPos;
-					int res = fileWrite(saveFile, ptr, len);
-					writeError |= (res < 0);
-					cur = cur->next;
-					startPos = 0;
-				}
-
-				if (writeError) close();
-			}
-		}
+		writeRawData(buf, startPos);
 
 		// Fire ReadyToSend callback
 		TcpClient::onReceive(buf);

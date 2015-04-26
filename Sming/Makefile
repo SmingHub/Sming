@@ -36,7 +36,7 @@ CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functio
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
+LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections
 
 # linker script used for the above linkier step
 LD_PATH     = compiler/ld/
@@ -238,7 +238,7 @@ ifeq ($(app), 0)
 	$(vecho) "No boot needed."
 	$(vecho) "Generate eagle.flash.bin and eagle.irom0text.bin successully in folder $(FW_BASE)."
 	$(vecho) "eagle.flash.bin-------->0x00000"
-	$(vecho) "eagle.irom0text.bin---->0x10000"
+	$(vecho) "eagle.irom0text.bin---->0x9000"
 else
     ifeq ($(boot), new)
 		$(Q) $(SDK_TOOLS)/gen_appbin.exe $@ 2 $(mode) $(freqdiv) $(size)
@@ -274,7 +274,7 @@ flashonefile: all
 	$(OBJCOPY) --only-section .rodata -O binary $(TARGET_OUT) eagle.app.v6.rodata.bin
 	$(OBJCOPY) --only-section .irom0.text -O binary $(TARGET_OUT) eagle.app.v6.irom0text.bin
 	$(SDK_TOOLS)/gen_appbin_old.exe $(TARGET_OUT) v6
-	$(SDK_TOOLS)/gen_flashbin.exe eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x10000
+	$(SDK_TOOLS)/gen_flashbin.exe eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x9000
 	rm -f eagle.app.v6.data.bin
 	rm -f eagle.app.v6.flash.bin
 	rm -f eagle.app.v6.irom0text.bin
@@ -303,10 +303,10 @@ endif
 flash: all
 ifeq ($(app), 0)
 	$(shell taskkill /f /im termite.exe)
-	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
+	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.bin
 else
 ifeq ($(boot), none)
-	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x10000 $(FW_BASE)/eagle.irom0text.bin
+	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.bin
 else
 	$(ESPTOOL) -p $(COM_PORT) -b 256000 write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
 endif
