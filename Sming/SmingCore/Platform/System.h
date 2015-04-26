@@ -60,9 +60,12 @@ public:
 	void onReady(SystemReadyCallback readyHandler);
 	void onReady(ISystemReadyHandler* readyHandler);
 
+	void applyFirmwareUpdate(uint32_t readFlashOffset, uint32_t targetFlashOffset, int firmwareSize);
+
 private:
 	static void staticReadyHandler();
 	void readyHandler();
+	void IRAM_ATTR internalApplyFirmwareUpdate(uint32_t readFlashOffset, uint32_t targetFlashOffset, int firmwareSize, bool outputDebug);
 
 private:
 	Vector<SystemReadyCallback> readyHandlers;

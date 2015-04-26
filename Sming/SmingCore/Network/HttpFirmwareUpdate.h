@@ -32,7 +32,7 @@ protected:
 	void onTimer();
 	virtual void writeRawData(pbuf* buf, int startPos);
 	uint32_t writeFlash(char* data, uint32_t pos, int size);
-	void IRAM_ATTR applyUpdate();
+	void applyUpdate();
 
 protected:
 	Vector<HttpFirmwareUpdateItem> items;

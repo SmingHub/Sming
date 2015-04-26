@@ -7,9 +7,7 @@
 
 #include "HttpFirmwareUpdate.h"
 #include "../../Services/SpifFS/spiffs.h"
-#include "../Interrupts.h"
 #include "../Platform/System.h"
-#include "../Platform/WDT.h"
 #include "URL.h"
 
 HttpFirmwareUpdate::HttpFirmwareUpdate()
@@ -105,46 +103,9 @@ uint32_t HttpFirmwareUpdate::writeFlash(char* data, uint32_t pos, int size)
 	return flashmem_write(data, pos, size);
 }
 
-void IRAM_ATTR HttpFirmwareUpdate::applyUpdate()
+void HttpFirmwareUpdate::applyUpdate()
 {
-	const int unit = INTERNAL_FLASH_SECTOR_SIZE;
-	char buf[unit];
-
-	ets_wdt_disable();
-	noInterrupts();
-
-	ets_uart_printf("Firmware upgrade started\n");
-
-	for (int i = 0; i < items.size(); i++)
-	{
-		uint32_t to = items[i].targetOffset;
-		uint32_t from = items[i].flash - INTERNAL_FLASH_START_ADDRESS;
-		int size = items[i].size;
-
-		ets_uart_printf("Start item %d: 0x%X -> 0x%X %d, align: %d\n", i, from, to, size, ((uint32_t)buf % 4) == 0);
-		while (size > 0)
-		{
-			int sect = to / unit;
-			int cur = unit;
-			if (cur > size) cur = size;
-			ets_uart_printf("write: 0x%X -> 0x%X (sect: %d), %d (%d)\n", from, to, sect, cur, size);
-			spi_flash_erase_sector(sect);
-			//ets_uart_printf("ers.");
-			spi_flash_read(from, (uint32*)buf, cur);
-			//ets_uart_printf("read.");
-			spi_flash_write(to, (uint32*)buf, cur);
-			//ets_uart_printf("wr.\r\n");
-			from += cur;
-			to += cur;
-			size -= cur;
-		}
-	}
-
-	ets_uart_printf("Firmware upgrade finished\n");
-
-	((void (*)(void))0x40000080)(); // Hardcore reset vector
-
-	ets_wdt_enable();
-	while (1)
-		; // Reboot anyway!
+	int size = items[items.count() - 1].targetOffset + items[items.count() - 1].size - items[0].targetOffset;
+	System.applyFirmwareUpdate(items[0].flash - INTERNAL_FLASH_START_ADDRESS, items[0].targetOffset, size);
+	return;
 }
