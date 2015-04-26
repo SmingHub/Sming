@@ -90,8 +90,8 @@ FW_BASE		= out/firmware
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= $(SMING_HOME)/system $(SMING_HOME)/system/helpers $(SMING_HOME)/Wiring $(SMING_HOME)/SmingCore $(SMING_HOME)/SmingCore/Network $(SMING_HOME)/SmingCore/Platform $(SMING_HOME)/Services/SpifFS $(SMING_HOME)/Services/ArduinoJson $(SMING_HOME)/Services/WebHelpers $(SMING_HOME)/Services/DateTime $(SMING_HOME)/appinit app $(SMING_HOME)/Libraries/DHT $(SMING_HOME)/Libraries/LiquidCrystal $(SMING_HOME)/Libraries/Bounce $(SMING_HOME)/Libraries/Adafruit_GFX $(SMING_HOME)/Libraries/TFT_ILI9163C $(SMING_HOME)/Libraries/BMP180 $(SMING_HOME)/Libraries/BH1750FVI $(SMING_HOME)/Libraries/Adafruit_SSD1306 $(SMING_HOME)/Libraries/OneWire $(SMING_HOME)/Libraries/I2Cdev $(SMING_HOME)/Libraries/HMC5883L
-EXTRA_INCDIR    = include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include
+MODULES		?= $(SMING_HOME)/system $(SMING_HOME)/system/helpers $(SMING_HOME)/Wiring $(SMING_HOME)/SmingCore $(SMING_HOME)/SmingCore/Network $(SMING_HOME)/SmingCore/Platform $(SMING_HOME)/Services/SpifFS $(SMING_HOME)/Services/ArduinoJson $(SMING_HOME)/Services/WebHelpers $(SMING_HOME)/Services/DateTime $(SMING_HOME)/appinit $(SMING_HOME)/apptest app $(SMING_HOME)/Libraries/DHT $(SMING_HOME)/Libraries/LiquidCrystal $(SMING_HOME)/Libraries/Bounce $(SMING_HOME)/Libraries/Adafruit_GFX $(SMING_HOME)/Libraries/TFT_ILI9163C $(SMING_HOME)/Libraries/BMP180 $(SMING_HOME)/Libraries/BH1750FVI $(SMING_HOME)/Libraries/Adafruit_SSD1306 $(SMING_HOME)/Libraries/OneWire $(SMING_HOME)/Libraries/I2Cdev $(SMING_HOME)/Libraries/HMC5883L 
+EXTRA_INCDIR    ?= $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib
@@ -288,7 +288,7 @@ endef
 
 all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
 
-$(TARGET_OUT): $(APP_AR)	
+$(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 	$(vecho) "Run objcopy, please wait..."
