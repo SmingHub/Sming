@@ -12,19 +12,20 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * Work with GPIO in Arduino style
 * High effective in perfomance and memory usage (this is native firmware!)
 * Compatible with standard Arduino libraries - use any popular hardware in few lines of code
+* OTA (cloud) firmware updating
 * Build-in file system: [spiffs](https://github.com/pellepl/spiffs)
 * Build-in powerfull network and wireless modules
 * Build-in great JSON library: [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 * MQTT protocol based on [libemqtt] (https://github.com/menudoproblema/libemqtt)
 * Open source [LWIP](https://github.com/kadamski/esp-lwip) stack
 * Simple and powerfull hardware API wrappers
-* Based on Espressif SDK v1.0
+* Based on Espressif SDK v1.0.1b1
 
 ## Getting started
 #### On Windows
  - Download [ESP8266 Unofficial DevKit](http://www.esp8266.com/viewtopic.php?f=9&t=820)
  - Import Sming example projects to Eclipse IDE
- - **If you have SDK v0.9.5**, please rename "C:\Espressif\ESP8266_SDK\include\lwip" to lwip_old
+ - Please upgrade SDK to v1.0.1b1
  - Compile it and flash to chip!
 
 #### On Linux
