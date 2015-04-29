@@ -51,7 +51,7 @@ void ready()
 
 void init()
 {
-	Serial.begin(115200);
+	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
 	Serial.println("Sming. Let's do smart things!");
 
