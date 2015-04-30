@@ -10,6 +10,7 @@
 
 #include "../Wiring/WiringFrameworkIncludes.h"
 
+#include "Delegate.h"
 #include "Boards.h"
 #include "Clock.h"
 #include "Digital.h"
