@@ -46,7 +46,7 @@ ifeq ($(OS),Windows_NT)
   # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
   SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
   ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-  include $(SMING_HOME)/Makefile-windows.mk  
+  include Makefile-windows.mk  
 else
   UNAME := $(shell uname -s)
   ifeq ($(UNAME),Darwin)
@@ -59,7 +59,7 @@ else
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /opt/esp-open-sdk
 
-      include $(SMING_HOME)/Makefile-macos.mk      
+      include Makefile-macos.mk      
   endif
   ifeq ($(UNAME),Linux)
       # Linux Detected
@@ -70,7 +70,7 @@ else
 
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /opt/esp-open-sdk
-      include $(SMING_HOME)/Makefile-linux.mk     
+      include Makefile-linux.mk     
   endif
 endif
 
@@ -90,11 +90,11 @@ FW_BASE		= out/firmware
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		?= $(SMING_HOME)/system $(SMING_HOME)/system/helpers $(SMING_HOME)/Wiring $(SMING_HOME)/SmingCore $(SMING_HOME)/SmingCore/Network $(SMING_HOME)/SmingCore/Platform $(SMING_HOME)/Services/SpifFS $(SMING_HOME)/Services/ArduinoJson $(SMING_HOME)/Services/WebHelpers $(SMING_HOME)/Services/DateTime $(SMING_HOME)/appinit $(SMING_HOME)/apptest app $(SMING_HOME)/Libraries/DHT $(SMING_HOME)/Libraries/LiquidCrystal $(SMING_HOME)/Libraries/Bounce $(SMING_HOME)/Libraries/Adafruit_GFX $(SMING_HOME)/Libraries/TFT_ILI9163C $(SMING_HOME)/Libraries/BMP180 $(SMING_HOME)/Libraries/BH1750FVI $(SMING_HOME)/Libraries/Adafruit_SSD1306 $(SMING_HOME)/Libraries/OneWire $(SMING_HOME)/Libraries/I2Cdev $(SMING_HOME)/Libraries/HMC5883L 
-EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include
+MODULES		?= appinit apptest app system system/helpers Wiring SmingCore SmingCore/Network SmingCore/Platform Services/SpifFS Services/ArduinoJson Services/WebHelpers Services/DateTime Libraries/DHT Libraries/LiquidCrystal Libraries/Bounce Libraries/Adafruit_GFX Libraries/TFT_ILI9163C Libraries/BMP180 Libraries/BH1750FVI Libraries/Adafruit_SSD1306 Libraries/OneWire Libraries/I2Cdev Libraries/HMC5883L 
+EXTRA_INCDIR    ?= include include  system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
 
 # libraries used in this project, mainly provided by the SDK
-USER_LIBDIR = $(SMING_HOME)/compiler/lib
+USER_LIBDIR = compiler/lib
 LIBS		= microc gcc hal phy pp net80211 openlwip wpa main
 
 # compiler flags using during compilation of source files
@@ -105,7 +105,7 @@ CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections
 
 # linker script used for the above linkier step
-LD_PATH     = $(SMING_HOME)/compiler/ld/
+LD_PATH     = compiler/ld/
 LD_SCRIPT	= $(LD_PATH)eagle.app.v6.cpp.ld
 
 # BOOT = none
@@ -305,7 +305,7 @@ ifeq ($(app), 0)
 	$(vecho) "Adding init with 0x9000 offset"
 #	$(Q) srec_cat -output $(FW_BASE)/eagle.irom0text.fs.bin -binary $(FW_BASE)/eagle.flash.bin -binary -fill 0xff 0x00000 0x9000 $(FW_BASE)/eagle.irom0text.bin -binary -offset 0x9000 > srec_cat.log
 	
-	$(Q) cat $(FW_BASE)/eagle.irom0text.bin $(SMING_HOME)/compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
+	$(Q) cat $(FW_BASE)/eagle.irom0text.bin compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
 	$(Q) rm eagle.app.v6.*
 	
 #	# Getting flash file size to get correct spiffs offset
