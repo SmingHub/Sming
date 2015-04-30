@@ -291,59 +291,8 @@ all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
 $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
-	$(vecho) "Run objcopy, please wait..."
-	$(Q) $(OBJCOPY) --only-section .text -O binary $@ eagle.app.v6.text.bin
-	$(Q) $(OBJCOPY) --only-section .data -O binary $@ eagle.app.v6.data.bin
-	$(Q) $(OBJCOPY) --only-section .rodata -O binary $@ eagle.app.v6.rodata.bin
-	$(Q) $(OBJCOPY) --only-section .irom0.text -O binary $@ eagle.app.v6.irom0text.bin
-	$(vecho) "objcopy done"
-	$(vecho) "Run gen_appbin"
-ifeq ($(app), 0)
-	$(Q) $(GEN_APPBIN) $@ 0 $(mode) $(freqdiv) $(size)
-	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin
-	$(Q) mv eagle.app.v6.irom0text.bin $(FW_BASE)/eagle.irom0text.bin
-	$(vecho) "Adding init with 0x9000 offset"
-#	$(Q) srec_cat -output $(FW_BASE)/eagle.irom0text.fs.bin -binary $(FW_BASE)/eagle.flash.bin -binary -fill 0xff 0x00000 0x9000 $(FW_BASE)/eagle.irom0text.bin -binary -offset 0x9000 > srec_cat.log
-	
-	$(Q) cat $(FW_BASE)/eagle.irom0text.bin compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
-	$(Q) rm eagle.app.v6.*
-	
-#	# Getting flash file size to get correct spiffs offset
-#	# Way 1
-#	$(vecho) "flash size: $$(printf '%X\n' $$($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))"
-
-#	# Way 2
-#	0x$(echo "obase=16; $(($(stat --format="%s" $BUILD_DIR/bin/${x00000})))" | bc)
-#	$(vecho) "main fw offset: $$(echo "obase=16; $(($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))" | bc)	
-	
-#	# Generating spiffs_bin
-#	$(vecho) "Checking for spiffs files"
-#	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
-#        echo "Found $(SPIFF_FILES) directory. Creating spiff_rom.bin"; \
-#        spiffy; \
-#        mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
-#	else \
-#         echo "No files found in $(SPIFF_FILES)"; \
-#	fi
-		
-	$(vecho) "No boot needed."
-	$(vecho) "Generate eagle.flash.bin and eagle.irom0text.bin successully in folder $(FW_BASE)."
-	$(vecho) "eagle.flash.bin-------->0x00000"
-	$(vecho) "eagle.irom0text.bin---->0x9000"	
-else
-    ifeq ($(boot), new)
-		$(Q) $(GEN_APPBIN) $@ 2 $(mode) $(freqdiv) $(size)
-		$(vecho) "Support boot_v1.2 and +"
-    else
-		$(Q) $(GEN_APPBIN) $@ 1 $(mode) $(freqdiv) $(size)
-		$(vecho) "Support boot_v1.1 and +"
-    endif
-	$(Q) mv eagle.app.flash.bin $(FW_BASE)/upgrade/$(BIN_NAME).bin
-	$(Q) rm eagle.app.v6.*
-	$(vecho) "Generate $(BIN_NAME).bin successully in folder $(FW_BASE)/upgrade."
-	$(vecho) "boot_v1.x.bin------->0x00000"
-	$(vecho) "$(BIN_NAME).bin--->$(addr)"
-endif
+	$(vecho) "Installing libsming"
+	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a	
 	$(vecho) "Done"
 
 $(APP_AR): $(OBJ)
@@ -358,54 +307,6 @@ $(BUILD_DIR):
 $(FW_BASE):
 	$(Q) mkdir -p $@
 	$(Q) mkdir -p $@/upgrade
-
-flashonefile: all
-	$(OBJCOPY) --only-section .text -O binary $(TARGET_OUT) eagle.app.v6.text.bin
-	$(OBJCOPY) --only-section .data -O binary $(TARGET_OUT) eagle.app.v6.data.bin
-	$(OBJCOPY) --only-section .rodata -O binary $(TARGET_OUT) eagle.app.v6.rodata.bin
-	$(OBJCOPY) --only-section .irom0.text -O binary $(TARGET_OUT) eagle.app.v6.irom0text.bin
-	$(GEN_APPBIN) $(TARGET_OUT) v6
-	$(GEN_FLASHBIN) eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x9000
-	rm -f eagle.app.v6.data.bin
-	rm -f eagle.app.v6.flash.bin
-	rm -f eagle.app.v6.irom0text.bin
-	rm -f eagle.app.v6.rodata.bin
-	rm -f eagle.app.v6.text.bin
-	rm -f eagle.app.sym
-	mv eagle.app.flash.bin $(FW_BASE)/
-	$(vecho) "No boot needed."
-	$(vecho) "Generate eagle.app.flash.bin successully in folder $(FW_BASE)."
-	$(vecho) "eagle.app.flash.bin-------->0x00000"
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.app.flash.bin
-
-flashboot: all flashinit
-ifeq ($(boot), new)
-	$(vecho) "Flash boot_v1.2 and +"
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(SDK_BASE)/bin/boot_v1.2.bin
-endif
-ifeq ($(boot), old)
-	$(vecho) "Flash boot_v1.1 and +"
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(SDK_BASE)/bin/boot_v1.1.bin
-endif
-ifeq ($(boot), none)
-	$(vecho) "No boot needed."
-endif
-
-flash: all
-ifeq ($(app), 0)
-	$(KILL_TERM)	
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.bin
-else
-ifeq ($(boot), none)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.bin
-else
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(addr) $(FW_BASE)/upgrade/$(BIN_NAME).bin
-endif
-endif
-
-flashinit:
-	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(COM_PORT) write_flash 0x4B000 $(SMF)/compiler/data/blankfs.bin 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin
 
 rebuild: clean all
 
