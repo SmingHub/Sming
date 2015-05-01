@@ -90,14 +90,14 @@ FW_BASE		= out/firmware
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		?= appinit apptest app system system/helpers Wiring SmingCore SmingCore/Network SmingCore/Platform Services/SpifFS Services/ArduinoJson Services/WebHelpers Services/DateTime Libraries/DHT Libraries/LiquidCrystal Libraries/Bounce Libraries/Adafruit_GFX Libraries/TFT_ILI9163C Libraries/BMP180 Libraries/BH1750FVI Libraries/Adafruit_SSD1306 Libraries/OneWire Libraries/I2Cdev Libraries/HMC5883L 
+MODULES		?= system system/helpers Wiring SmingCore SmingCore/Network SmingCore/Platform Services/SpifFS Services/ArduinoJson Services/WebHelpers Services/DateTime Libraries/DHT Libraries/LiquidCrystal Libraries/Bounce Libraries/Adafruit_GFX Libraries/TFT_ILI9163C Libraries/BMP180 Libraries/BH1750FVI Libraries/Adafruit_SSD1306 Libraries/OneWire Libraries/I2Cdev Libraries/HMC5883L 
 EXTRA_INCDIR    ?= include include  system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
 LIBS		= microc gcc hal phy pp net80211 openlwip wpa main
 
-# compiler flags using during compilation of source files
+# compiler flags using during compilation of source files. Add '-pg' for debugging
 CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 
@@ -294,18 +294,14 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
-
-$(TARGET_OUT): $(APP_AR)
-	$(vecho) "LD $@"
-	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
-	$(vecho) "Installing libsming"
-	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a	
-	$(vecho) "Done"
+all: checkdirs $(APP_AR) $(FW_FILE_1) $(FW_FILE_2)
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
+	$(vecho) "Installing libsming"
+	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
+	$(vecho) "Done"
 
 checkdirs: $(BUILD_DIR) $(FW_BASE)
 
