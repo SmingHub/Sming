@@ -281,6 +281,9 @@ vpath %.cpp $(SRC_DIR)
 vpath %.s $(SRC_DIR)
 
 define compile-objects
+$1/%.o: %.s
+	$(vecho) "AS $$<"
+	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@	
 $1/%.o: %.c
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
