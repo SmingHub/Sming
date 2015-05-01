@@ -6,7 +6,7 @@
 #
 #############################################################
 
-## Defaults for Sming Core
+## Defaults
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 ## Windows:
@@ -29,8 +29,8 @@
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
-# Com port speed
-COM_SPEED = 115200
+# Com port default speed
+COM_SPEED ?= 230400
 
 
 ifeq ($(OS),Windows_NT)
