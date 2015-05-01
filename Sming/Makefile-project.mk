@@ -95,10 +95,10 @@ EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/sy
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
-LIBS		= microc gcc hal phy pp net80211 lwip wpa main sming
+LIBS		= microc microgcc hal phy pp net80211 lwip wpa main sming
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
+CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -DARDUINO=106
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 
 # linker flags used to generate the main object file
