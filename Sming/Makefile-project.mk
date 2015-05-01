@@ -289,8 +289,7 @@ all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
 $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
-	$(vecho) "Run objcopy, please wait..."
-	
+	$(vecho) "Running objcopy, please wait..."	
 	$(Q) $(OBJCOPY) --only-section .text -O binary $@ eagle.app.v6.text.bin
 	$(Q) $(OBJCOPY) --only-section .data -O binary $@ eagle.app.v6.data.bin
 	$(Q) $(OBJCOPY) --only-section .rodata -O binary $@ eagle.app.v6.rodata.bin
@@ -358,24 +357,24 @@ $(FW_BASE):
 	$(Q) mkdir -p $@
 	$(Q) mkdir -p $@/upgrade
 
-flashonefile: all
-	$(OBJCOPY) --only-section .text -O binary $(TARGET_OUT) eagle.app.v6.text.bin
-	$(OBJCOPY) --only-section .data -O binary $(TARGET_OUT) eagle.app.v6.data.bin
-	$(OBJCOPY) --only-section .rodata -O binary $(TARGET_OUT) eagle.app.v6.rodata.bin
-	$(OBJCOPY) --only-section .irom0.text -O binary $(TARGET_OUT) eagle.app.v6.irom0text.bin
-	$(GEN_APPBIN) $(TARGET_OUT) v6
-	$(GEN_FLASHBIN) eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x9000
-	rm -f eagle.app.v6.data.bin
-	rm -f eagle.app.v6.flash.bin
-	rm -f eagle.app.v6.irom0text.bin
-	rm -f eagle.app.v6.rodata.bin
-	rm -f eagle.app.v6.text.bin
-	rm -f eagle.app.sym
-	mv eagle.app.flash.bin $(FW_BASE)/
-	$(vecho) "No boot needed."
-	$(vecho) "Generate eagle.app.flash.bin successully in folder $(FW_BASE)."
-	$(vecho) "eagle.app.flash.bin-------->0x00000"
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.app.flash.bin
+# flashonefile: all
+# 	$(OBJCOPY) --only-section .text -O binary $(TARGET_OUT) eagle.app.v6.text.bin
+# 	$(OBJCOPY) --only-section .data -O binary $(TARGET_OUT) eagle.app.v6.data.bin
+# 	$(OBJCOPY) --only-section .rodata -O binary $(TARGET_OUT) eagle.app.v6.rodata.bin
+# 	$(OBJCOPY) --only-section .irom0.text -O binary $(TARGET_OUT) eagle.app.v6.irom0text.bin
+# 	$(GEN_APPBIN) $(TARGET_OUT) v6
+# 	$(GEN_FLASHBIN) eagle.app.v6.flash.bin eagle.app.v6.irom0text.bin 0x9000
+# 	rm -f eagle.app.v6.data.bin
+# 	rm -f eagle.app.v6.flash.bin
+# 	rm -f eagle.app.v6.irom0text.bin
+# 	rm -f eagle.app.v6.rodata.bin
+# 	rm -f eagle.app.v6.text.bin
+# 	rm -f eagle.app.sym
+# 	mv eagle.app.flash.bin $(FW_BASE)/
+# 	$(vecho) "No boot needed."
+# 	$(vecho) "Generate eagle.app.flash.bin successully in folder $(FW_BASE)."
+# 	$(vecho) "eagle.app.flash.bin-------->0x00000"
+# 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.app.flash.bin
 
 flashboot: all flashinit
 ifeq ($(boot), new)
@@ -407,11 +406,6 @@ flashinit:
 	$(ESPTOOL) -p $(COM_PORT) write_flash 0x4B000 $(SMF)/compiler/data/blankfs.bin 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin
 
 rebuild: clean all
-
-test:
-	$(vecho) $(OBJ)
-#	-L$(USER_LIBDIR) -lsming 
-
 
 clean:
 	$(Q) rm -f $(APP_AR)
