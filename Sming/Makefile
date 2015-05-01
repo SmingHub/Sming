@@ -231,6 +231,7 @@ SDK_LDDIR	= ld
 SDK_INCDIR	= include include/json
 
 # select which tools to use as compiler, librarian and linker
+AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CXX		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-g++
 AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
@@ -244,10 +245,13 @@ BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
 SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
-SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c*))
-C_OBJ		:= $(patsubst %.c,%.o,$(SRC))
-CXX_OBJ		:= $(patsubst %.cpp,%.o,$(C_OBJ))
-OBJ		:= $(patsubst %.o,$(BUILD_BASE)/%.o,$(CXX_OBJ))
+AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.s))
+C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
+CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
+AS_OBJ		:= $(patsubst %.s,$(BUILD_BASE)/%.o,$(AS_SRC))
+C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
+CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
+OBJ		:= $(AS_OBJ) $(C_OBJ) $(CXX_OBJ)
 LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
@@ -274,6 +278,7 @@ endif
 
 vpath %.c $(SRC_DIR)
 vpath %.cpp $(SRC_DIR)
+vpath %.s $(SRC_DIR)
 
 define compile-objects
 $1/%.o: %.c
