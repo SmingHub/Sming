@@ -32,7 +32,7 @@ public:
 	bool publishWithQoS(String topic, String message, int QoS, bool retained = false);
 
 	bool subscribe(String topic);
-
+	bool unsubscribe(String topic);
 protected:
 	virtual err_t onReceive(pbuf *buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
