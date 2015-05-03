@@ -1,3 +1,8 @@
+// LiquidCrystal_I2C example
+// pinout:
+// GPIO0 SCL
+// GPIO2 SDA
+
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <Libraries/LiquidCrystal/LiquidCrystal_I2C.h>
