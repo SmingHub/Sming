@@ -95,10 +95,10 @@ EXTRA_INCDIR    ?= include include  system/include Wiring Libraries SmingCore $(
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
-LIBS		= microc gcc hal phy pp net80211 openlwip wpa main
+LIBS		= microc microgcc hal phy pp net80211 openlwip wpa main
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -fdata-sections -ffunction-sections -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
+CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
 
 # linker flags used to generate the main object file
