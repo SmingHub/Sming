@@ -32,11 +32,16 @@ public:
 
 	bool config(String ssid, String password, bool autoConnectOnStartup = true);
 
+	void setAutoConnectOnStartup(bool autoConnectOnStartup = true);
+	bool isAutoConnectOnStartup();
+
 	bool isConnected();
 	IPAddress getIP();
 	bool setIP(IPAddress address);
 	bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway);
 	String getMAC();
+
+	String getSSID();
 
 	bool startScan(ScanCompletedCallback scanCompleted);
 	void waitConnection(ConnectionCallback successfulConnected);

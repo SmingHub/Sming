@@ -42,8 +42,8 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 {
 	station_config config = {0};
 
-	if (ssid.length() >= sizeof(config.ssid)) return false;
-	if (password.length() >= sizeof(config.password)) return false;
+	if (ssid.length() >= sizeof(config.ssid)) return false; // @FIXME Maybe it should be ">" instead of ">=", so we can use 32 chars in ssid?
+	if (password.length() >= sizeof(config.password)) return false; // @FIXME Maybe it should be ">" instead of ">=", so we can use 64 chars in password?
 
 	bool enabled = isEnabled();
 	enable(true);
@@ -80,6 +80,16 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	return true;
 }
 
+void StationClass::setAutoConnectOnStartup(bool autoConnectOnStartup /* = true*/)
+{
+	wifi_station_set_auto_connect(autoConnectOnStartup);
+}
+
+bool StationClass::isAutoConnectOnStartup()
+{
+	return wifi_station_get_auto_connect();
+}
+
 bool StationClass::isConnected()
 {
 	if (wifi_station_get_connect_status() != STATION_GOT_IP) return false;
@@ -106,6 +116,20 @@ String StationClass::getMAC()
 		mac += String(hwaddr[i], HEX);
 	}
 	return mac;
+}
+
+String StationClass::getSSID()
+{
+	String ssid;
+	station_config config = {0};
+	bool cfgreaded = wifi_station_get_config(&config);
+	if (!cfgreaded){
+		debugf("Can't read station configuration!");
+		return ssid;
+	}
+	ssid = (char*)config.ssid;
+	if(ssid.length() >= sizeof(config.ssid)) ssid = ssid.substring(0, sizeof(config.ssid)-1); // @FIXME Maybe it should be ">" instead of ">=", so we can use 32 chars in ssid? Don't forget to remove "-1" in substring!
+	return ssid;
 }
 
 bool StationClass::setIP(IPAddress address)
