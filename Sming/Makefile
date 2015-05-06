@@ -90,8 +90,8 @@ FW_BASE		= out/firmware
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		?= system system/helpers Wiring SmingCore SmingCore/Network SmingCore/Platform Services/SpifFS Services/ArduinoJson Services/WebHelpers Services/DateTime Libraries/DHT Libraries/LiquidCrystal Libraries/Bounce Libraries/Adafruit_GFX Libraries/TFT_ILI9163C Libraries/BMP180 Libraries/BH1750FVI Libraries/Adafruit_SSD1306 Libraries/OneWire Libraries/I2Cdev Libraries/HMC5883L 
-EXTRA_INCDIR    ?= include include  system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
+MODULES		= system system/helpers Wiring SmingCore SmingCore/Network SmingCore/Platform Services/SpifFS Services/ArduinoJson Services/WebHelpers Services/DateTime appinit apptest Libraries/DHT Libraries/LiquidCrystal Libraries/LCD5110 Libraries/Bounce Libraries/Adafruit_GFX Libraries/TFT_ILI9163C Libraries/Adafruit_SSD1306 Libraries/OneWire Libraries/Ultrasonic
+EXTRA_INCDIR    = include include  system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
