@@ -35,6 +35,7 @@ public:
 	bool isConnected();
 	IPAddress getIP();
 	bool setIP(IPAddress address);
+	bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway);
 	String getMAC();
 
 	bool startScan(ScanCompletedCallback scanCompleted);

@@ -110,6 +110,13 @@ String StationClass::getMAC()
 
 bool StationClass::setIP(IPAddress address)
 {
+	IPAddress gateway = IPAddress(address);
+	gateway[3] = 1; // x.x.x.1
+	setIP(address, IPAddress(255, 255, 255, 0), gateway);
+}
+
+bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway)
+{
 	if (System.isReady())
 	{
 		debugf("IP can be changed only in init() method");
@@ -121,6 +128,8 @@ bool StationClass::setIP(IPAddress address)
 	struct ip_info ipinfo;
 	wifi_get_ip_info(STATION_IF, &ipinfo);
 	ipinfo.ip = address;
+	ipinfo.netmask = netmask;
+	ipinfo.gw = gateway;
 	wifi_set_ip_info(STATION_IF, &ipinfo);
 	wifi_station_connect();
 	//wifi_station_dhcpc_start();
