@@ -47,10 +47,16 @@ public:
 	EStationConnectionStatus getConnectionStatus();
 	const char* getConnectionStatusName();
 
+	bool isEnabledDHCP();
+	void enableDHCP(bool enable);
+
 	IPAddress getIP();
+	String getMAC();
+	IPAddress getNetworkMask();
+	IPAddress getNetworkGateway();
+
 	bool setIP(IPAddress address);
 	bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway);
-	String getMAC();
 
 	String getSSID();
 	String getPassword();
@@ -83,9 +89,11 @@ public:
 	BssInfo(bss_info* info);
 	bool isOpen();
 	const char* getAuthorizationMethodName();
+	uint32_t getHashId();
 
 public:
 	String ssid;
+	uint8 bssid[6];
 	AUTH_MODE authorization;
 	uint8 channel;
 	sint16 rssi;

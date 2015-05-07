@@ -46,9 +46,11 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	if (password.length() >= sizeof(config.password)) return false;
 
 	bool enabled = isEnabled();
-	enable(true);
+	bool dhcp = isEnabledDHCP();
+	enable(true); // Power on for configuration
+
 	wifi_station_disconnect();
-	wifi_station_dhcpc_stop();
+	if (dhcp) enableDHCP(false);
 	bool cfgreaded = wifi_station_get_config(&config);
 	if (!cfgreaded) debugf("Can't read station configuration!");
 
@@ -61,19 +63,19 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	noInterrupts();
 	if(!wifi_station_set_config(&config))
 	{
-		debugf("Can't set station configuration!");
 		interrupts();
+		debugf("Can't set station configuration!");
 		wifi_station_connect();
-		wifi_station_dhcpc_start();
+		enableDHCP(dhcp);
 		enable(enabled);
 		return false;
 	}
 	debugf("Station configuration was updated to: %s", ssid.c_str());
 
-	wifi_station_connect();
-	wifi_station_dhcpc_start();
-	enable(enabled);
 	interrupts();
+	wifi_station_connect();
+	enableDHCP(dhcp);
+	enable(enabled);
 
 	wifi_station_set_auto_connect(autoConnectOnStartup);
 
@@ -92,6 +94,20 @@ bool StationClass::isConnectionFailed()
 {
 	EStationConnectionStatus status = getConnectionStatus();
 	return status == eSCS_WrongPassword || status == eSCS_AccessPointNotFound || status == eSCS_ConnectionFailed;
+}
+
+
+bool StationClass::isEnabledDHCP()
+{
+	return wifi_station_dhcpc_status() == DHCP_STARTED;
+}
+
+void StationClass::enableDHCP(bool enable)
+{
+	if (enable)
+		wifi_station_dhcpc_start();
+	else
+		wifi_station_dhcpc_stop();
 }
 
 IPAddress StationClass::getIP()
@@ -114,11 +130,27 @@ String StationClass::getMAC()
 	return mac;
 }
 
+IPAddress StationClass::getNetworkMask()
+{
+	struct ip_info info = {0};
+	wifi_get_ip_info(STATION_IF, &info);
+	return info.netmask;
+}
+
+IPAddress StationClass::getNetworkGateway()
+{
+	struct ip_info info = {0};
+	wifi_get_ip_info(STATION_IF, &info);
+	return info.gw;
+}
+
+
 bool StationClass::setIP(IPAddress address)
 {
+	IPAddress mask = IPAddress(255, 255, 255, 0);
 	IPAddress gateway = IPAddress(address);
 	gateway[3] = 1; // x.x.x.1
-	setIP(address, IPAddress(255, 255, 255, 0), gateway);
+	setIP(address, mask, gateway);
 }
 
 bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway)
@@ -309,6 +341,7 @@ const char* StationClass::getConnectionStatusName()
 BssInfo::BssInfo(bss_info* info)
 {
 	ssid = String((char*)info->ssid);
+	memcpy(bssid, info->bssid, sizeof(bssid));
 	authorization = info->authmode;
 	channel = info->channel;
 	rssi = info->rssi;
@@ -338,4 +371,11 @@ const char* BssInfo::getAuthorizationMethodName()
 		SYSTEM_ERROR("Unknown auth: %d", authorization);
 		return "";
 	}
+}
+
+uint32_t BssInfo::getHashId()
+{
+	uint32_t a = *(uint16_t*)(&bssid[4]);
+	uint32_t b = *(uint32_t*)bssid;
+	return a ^ b;
 }
