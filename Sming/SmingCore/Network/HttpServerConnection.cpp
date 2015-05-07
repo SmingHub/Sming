@@ -55,7 +55,9 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 			debugf("Request: %s, %s", request.getRequestMethod().c_str(),
 					(request.getContentLength() > 0 ? (String(request.getContentLength()) + " bytes").c_str() : "nodata"));
 
-			if (request.getContentLength() > 0 && request.getContentType().equals(ContentType::FormUrlEncoded))
+			String contType = request.getContentType();
+			contType.toLowerCase();
+			if (request.getContentLength() > 0 && contType.indexOf(ContentType::FormUrlEncoded) != -1)
 				state = eHCS_ParsePostData;
 			else
 				state = eHCS_ParsingCompleted;

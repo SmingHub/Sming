@@ -14,6 +14,16 @@
 #include "../../Wiring/WVector.h"
 #include "../../Wiring/IPAddress.h"
 
+enum EStationConnectionStatus
+{
+    eSCS_Idle = 0,
+	eSCS_Connecting,
+	eSCS_WrongPassword,
+	eSCS_AccessPointNotFound,
+	eSCS_ConnectionFailed,
+	eSCS_GotIP
+};
+
 class BssInfo;
 class Timer;
 
@@ -33,10 +43,17 @@ public:
 	bool config(String ssid, String password, bool autoConnectOnStartup = true);
 
 	bool isConnected();
+	bool isConnectionFailed();
+	EStationConnectionStatus getConnectionStatus();
+	const char* getConnectionStatusName();
+
 	IPAddress getIP();
 	bool setIP(IPAddress address);
 	bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway);
 	String getMAC();
+
+	String getSSID();
+	String getPassword();
 
 	bool startScan(ScanCompletedCallback scanCompleted);
 	void waitConnection(ConnectionCallback successfulConnected);
@@ -46,7 +63,7 @@ protected:
 	virtual void onSystemReady();
 	static void staticScanCompleted(void *arg, STATUS status);
 
-	void checkConnection();
+	void internalCheckConnection();
 	static void staticCheckConnection();
 
 private:
@@ -65,7 +82,7 @@ class BssInfo
 public:
 	BssInfo(bss_info* info);
 	bool isOpen();
-	String getAuthorizationMethodName();
+	const char* getAuthorizationMethodName();
 
 public:
 	String ssid;
