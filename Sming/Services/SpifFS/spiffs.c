@@ -5,7 +5,7 @@
 spiffs _filesystemStorageHandle;
 
 static u8_t spiffs_work_buf[LOG_PAGE_SIZE*2];
-static u8_t spiffs_fds[32*4];
+static u8_t spiffs_fds[32*7]; // sizeof(spiffs_fd) * K
 static u8_t spiffs_cache[(LOG_PAGE_SIZE+32)*4];
 
 static s32_t api_spiffs_read(u32_t addr, u32_t size, u8_t *dst)
