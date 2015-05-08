@@ -259,6 +259,7 @@ LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
+SPIFF_BIN_OUT := $(FW_BASE)/spiff_rom.bin
 #LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
 LD_SCRIPT	:= $(addprefix -T,$(LD_SCRIPT))
 
@@ -287,10 +288,11 @@ $1/%.o: %.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs spiff clean
+.PHONY: all checkdirs spiff_update spiff_clean clean
 
-all: checkdirs $(TARGET_OUT) spiff $(FW_FILE_1) $(FW_FILE_2)
+all: checkdirs $(TARGET_OUT) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2)
 
+spiff_update: spiff_clean $(SPIFF_BIN_OUT)	
 $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
@@ -366,16 +368,22 @@ $(FW_BASE):
 # 	$(vecho) "eagle.app.flash.bin-------->0x00000"
 # 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.app.flash.bin
 
-spiff:
+
+
+spiff_clean: 
+	$(vecho) "Cleaning $(SPIFF_BIN_OUT)"
+	$(Q) rm -rf $(SPIFF_BIN_OUT)
+
+$(SPIFF_BIN_OUT):
 # Generating spiffs_bin
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
-    echo "$(SPIFF_FILES) directory exists. Creating spiff_rom.bin"; \
-    spiffy; \
-    mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
+    	echo "$(SPIFF_FILES) directory exists. Creating spiff_rom.bin"; \
+    	spiffy; \
+    	mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
 	else \
-    echo "No files found in ./$(SPIFF_FILES)."; \
-    echo "Creating empty spiff_rom.bin ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
+    	echo "No files found in ./$(SPIFF_FILES)."; \
+    	echo "Creating empty spiff_rom.bin ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
     cp $(SMING_HOME)/compiler/data/blankfs.bin $(FW_BASE)/spiff_rom.bin; \
 	fi
 	$(vecho) "spiff_rom.bin---------->$(SPIFF_START_OFFSET)"
