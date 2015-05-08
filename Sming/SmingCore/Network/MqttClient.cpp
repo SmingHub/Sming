@@ -78,6 +78,13 @@ bool MqttClient::subscribe(String topic)
 	mqtt_subscribe(&broker, topic.c_str(), &msgId);
 }
 
+bool MqttClient::unsubscribe(String topic)
+{
+	uint16_t msgId = 0;
+	debugf("unsubscribing from '%s'", topic.c_str());
+	mqtt_unsubscribe(&broker, topic.c_str(), &msgId);
+}
+
 void MqttClient::debugPrintResponseType(int type, int len)
 {
 	String tp;

@@ -19,6 +19,7 @@
 #define __ESP8266_EX__ // System definition ESP8266 SOC
 
 #define IRAM_ATTR __attribute__((section(".iram.text")))
+#define __forceinline __attribute__((always_inline)) inline
 #define STORE_TYPEDEF_ATTR __attribute__((aligned(4),packed))
 #define STORE_ATTR __attribute__((aligned(4)))
 

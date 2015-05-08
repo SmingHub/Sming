@@ -46,9 +46,11 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	if (password.length() >= sizeof(config.password)) return false;
 
 	bool enabled = isEnabled();
-	enable(true);
+	bool dhcp = isEnabledDHCP();
+	enable(true); // Power on for configuration
+
 	wifi_station_disconnect();
-	wifi_station_dhcpc_stop();
+	if (dhcp) enableDHCP(false);
 	bool cfgreaded = wifi_station_get_config(&config);
 	if (!cfgreaded) debugf("Can't read station configuration!");
 
@@ -61,10 +63,10 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	noInterrupts();
 	if(!wifi_station_set_config(&config))
 	{
-		debugf("Can't set station configuration!");
 		interrupts();
+		debugf("Can't set station configuration!");
 		wifi_station_connect();
-		wifi_station_dhcpc_start();
+		enableDHCP(dhcp);
 		enable(enabled);
 		return false;
 	}
@@ -72,20 +74,40 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 
 	interrupts();
 	wifi_station_connect();
-	wifi_station_dhcpc_start();
+	enableDHCP(dhcp);
+	enable(enabled);
 
 	wifi_station_set_auto_connect(autoConnectOnStartup);
-	enable(enabled);
 
 	return true;
 }
 
 bool StationClass::isConnected()
 {
-	if (wifi_station_get_connect_status() != STATION_GOT_IP) return false;
+	if (getConnectionStatus() != eSCS_GotIP) return false;
 	if (getIP().isNull()) return false;
 
 	return true;
+}
+
+bool StationClass::isConnectionFailed()
+{
+	EStationConnectionStatus status = getConnectionStatus();
+	return status == eSCS_WrongPassword || status == eSCS_AccessPointNotFound || status == eSCS_ConnectionFailed;
+}
+
+
+bool StationClass::isEnabledDHCP()
+{
+	return wifi_station_dhcpc_status() == DHCP_STARTED;
+}
+
+void StationClass::enableDHCP(bool enable)
+{
+	if (enable)
+		wifi_station_dhcpc_start();
+	else
+		wifi_station_dhcpc_stop();
 }
 
 IPAddress StationClass::getIP()
@@ -108,7 +130,30 @@ String StationClass::getMAC()
 	return mac;
 }
 
+IPAddress StationClass::getNetworkMask()
+{
+	struct ip_info info = {0};
+	wifi_get_ip_info(STATION_IF, &info);
+	return info.netmask;
+}
+
+IPAddress StationClass::getNetworkGateway()
+{
+	struct ip_info info = {0};
+	wifi_get_ip_info(STATION_IF, &info);
+	return info.gw;
+}
+
+
 bool StationClass::setIP(IPAddress address)
+{
+	IPAddress mask = IPAddress(255, 255, 255, 0);
+	IPAddress gateway = IPAddress(address);
+	gateway[3] = 1; // x.x.x.1
+	setIP(address, mask, gateway);
+}
+
+bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway)
 {
 	if (System.isReady())
 	{
@@ -121,10 +166,41 @@ bool StationClass::setIP(IPAddress address)
 	struct ip_info ipinfo;
 	wifi_get_ip_info(STATION_IF, &ipinfo);
 	ipinfo.ip = address;
+	ipinfo.netmask = netmask;
+	ipinfo.gw = gateway;
 	wifi_set_ip_info(STATION_IF, &ipinfo);
 	wifi_station_connect();
 	//wifi_station_dhcpc_start();
 	return true;
+}
+
+String StationClass::getSSID()
+{
+	station_config config = {0};
+	if (!wifi_station_get_config(&config))
+	{
+		debugf("Can't read station configuration!");
+		return "";
+	}
+	debugf("SSID: %s", (char*)config.ssid);
+	return String((char*)config.ssid);
+}
+
+String StationClass::getPassword()
+{
+	station_config config = {0};
+	if (!wifi_station_get_config(&config))
+	{
+		debugf("Can't read station configuration!");
+		return "";
+	}
+	debugf("Pass: %s", (char*)config.password);
+	return String((char*)config.password);
+}
+
+EStationConnectionStatus StationClass::getConnectionStatus()
+{
+	return (EStationConnectionStatus)wifi_station_get_connect_status();
 }
 
 bool StationClass::startScan(ScanCompletedCallback scanCompleted)
@@ -205,7 +281,7 @@ void StationClass::onSystemReady()
 	}
 }
 
-void StationClass::checkConnection()
+void StationClass::internalCheckConnection()
 {
 	uint32 duration = millis() - connectionStarted;
 	if (isConnected())
@@ -235,7 +311,29 @@ void StationClass::checkConnection()
 
 void StationClass::staticCheckConnection()
 {
-	WifiStation.checkConnection();
+	WifiStation.internalCheckConnection();
+}
+
+const char* StationClass::getConnectionStatusName()
+{
+	switch (getConnectionStatus())
+	{
+	case eSCS_Idle:
+		return "Idle";
+	case eSCS_Connecting:
+		return "Connecting";
+	case eSCS_WrongPassword:
+		return "Wrong password";
+	case eSCS_AccessPointNotFound:
+		return "Access point not found";
+	case eSCS_ConnectionFailed:
+		return "Connection failed";
+	case eSCS_GotIP:
+		return "Successful connected";
+	default:
+		SYSTEM_ERROR("Unknown status: %d", getConnectionStatus());
+		return "";
+	};
 }
 
 ////////////
@@ -243,6 +341,7 @@ void StationClass::staticCheckConnection()
 BssInfo::BssInfo(bss_info* info)
 {
 	ssid = String((char*)info->ssid);
+	memcpy(bssid, info->bssid, sizeof(bssid));
 	authorization = info->authmode;
 	channel = info->channel;
 	rssi = info->rssi;
@@ -254,7 +353,7 @@ bool BssInfo::isOpen()
 	return authorization == AUTH_OPEN;
 }
 
-String BssInfo::getAuthorizationMethodName()
+const char* BssInfo::getAuthorizationMethodName()
 {
 	switch (authorization)
 	{
@@ -270,5 +369,13 @@ String BssInfo::getAuthorizationMethodName()
 		return "WPA_WPA2_PSK";
 	default:
 		SYSTEM_ERROR("Unknown auth: %d", authorization);
+		return "";
 	}
+}
+
+uint32_t BssInfo::getHashId()
+{
+	uint32_t a = *(uint16_t*)(&bssid[4]);
+	uint32_t b = *(uint32_t*)bssid;
+	return a ^ b;
 }
