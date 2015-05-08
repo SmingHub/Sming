@@ -287,7 +287,7 @@ $1/%.o: %.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean
+.PHONY: all checkdirs spiff clean
 
 all: checkdirs $(TARGET_OUT) spiff $(FW_FILE_1) $(FW_FILE_2)
 
@@ -377,7 +377,7 @@ spiff:
     echo "No files found in ./$(SPIFF_FILES)."; \
     echo "Creating empty spiff_rom.bin ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
     cp $(SMING_HOME)/compiler/data/blankfs.bin $(FW_BASE)/spiff_rom.bin; \
-	fi	
+	fi
 	$(vecho) "spiff_rom.bin---------->$(SPIFF_START_OFFSET)"
 
 	
@@ -418,7 +418,7 @@ endif
 
 flash: all
 ifeq ($(app), 0)	
-	$(KILL_TERM)
+#	$(Q) $(KILL_TERM)
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.bin $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
 else
 ifeq ($(boot), none)

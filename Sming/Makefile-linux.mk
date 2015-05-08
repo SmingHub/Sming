@@ -9,7 +9,7 @@ SDK_TOOLS	 ?= $(SDK_BASE)/tools
 ESPTOOL		 ?= $(ESP_HOME)/esptool/esptool.py
 GEN_APPBIN   := PATH="$(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)" && $(SDK_TOOLS)/gen_appbin.py
 GEN_FLASHBIN := PATH="$(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)" && $(SDK_TOOLS)/gen_flashbin.py
-KILL_TERM    ?= $(shell pkill screen)
+KILL_TERM    ?= pkill screen
 GET_FILESIZE ?= stat --printf="%s"
 
 COM_PORT     ?= /dev/tty.usbserial
