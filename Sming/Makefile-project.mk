@@ -86,6 +86,12 @@ SPIFF_FILES = files
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
+#$(eval fw_start_offset := $(shell printf '0x%X\n' $$( $(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin )))
+#$(eval spiff_start_offset := $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.bin) + 16384 + 36864) & (0xFFFFC000) )) ))
+FW_START_OFFSET = $(shell printf '0x%X\n' $$( $(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin ))
+SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.bin) + 16384 + 36864) & (0xFFFFC000) )) )
+
+	
 # name for the target project
 TARGET		= app
 
@@ -283,7 +289,7 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
+all: checkdirs $(TARGET_OUT) spiff $(FW_FILE_1) $(FW_FILE_2)
 
 $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
@@ -299,34 +305,19 @@ ifeq ($(app), 0)
 	$(Q) $(GEN_APPBIN) $@ 0 $(mode) $(freqdiv) $(size)
 	$(Q) mv eagle.app.flash.bin $(FW_BASE)/eagle.flash.bin
 	$(Q) mv eagle.app.v6.irom0text.bin $(FW_BASE)/eagle.irom0text.bin
-	$(vecho) "Adding init with 0x9000 offset"
+#	$(vecho) "Adding init with 0x9000 offset"
 #	$(Q) srec_cat -output $(FW_BASE)/eagle.irom0text.fs.bin -binary $(FW_BASE)/eagle.flash.bin -binary -fill 0xff 0x00000 0x9000 $(FW_BASE)/eagle.irom0text.bin -binary -offset 0x9000 > srec_cat.log
 	
-	$(Q) cat $(FW_BASE)/eagle.irom0text.bin $(SMING_HOME)/compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
-	$(Q) rm eagle.app.v6.*
-	
-#	# Getting flash file size to get correct spiffs offset
-#	# Way 1
-#	$(vecho) "flash size: $$(printf '%X\n' $$($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))"
+#	$(Q) cat $(FW_BASE)/eagle.irom0text.bin $(SMING_HOME)/compiler/data/blankfs.bin > $(FW_BASE)/eagle.irom0text.fs.bin
 
-#	# Way 2
-#	0x$(echo "obase=16; $(($(stat --format="%s" $BUILD_DIR/bin/${x00000})))" | bc)
-#	$(vecho) "main fw offset: $$(echo "obase=16; $(($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))" | bc)	
-	
-#	# Generating spiffs_bin
-#	$(vecho) "Checking for spiffs files"
-#	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
-#        echo "Found $(SPIFF_FILES) directory. Creating spiff_rom.bin"; \
-#        spiffy; \
-#        mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
-#	else \
-#         echo "No files found in $(SPIFF_FILES)"; \
-#	fi
-		
+	$(Q) rm eagle.app.v6.*
+#	$(vecho) "Firmware offset: $(FW_START_OFFSET)"
+#	$(vecho) "Spiffs offset: $(SPIFF_START_OFFSET)"
+
 	$(vecho) "No boot needed."
 	$(vecho) "Generate eagle.flash.bin and eagle.irom0text.bin successully in folder $(FW_BASE)."
 	$(vecho) "eagle.flash.bin-------->0x00000"
-	$(vecho) "eagle.irom0text.bin---->0x9000"	
+	$(vecho) "eagle.irom0text.bin---->0x9000"
 else
     ifeq ($(boot), new)
 		$(Q) $(GEN_APPBIN) $@ 2 $(mode) $(freqdiv) $(size)
@@ -375,6 +366,43 @@ $(FW_BASE):
 # 	$(vecho) "eagle.app.flash.bin-------->0x00000"
 # 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.app.flash.bin
 
+spiff:
+# Generating spiffs_bin
+	$(vecho) "Checking for spiffs files"
+	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
+    echo "$(SPIFF_FILES) directory exists. Creating spiff_rom.bin"; \
+    spiffy; \
+    mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
+	else \
+    echo "No files found in ./$(SPIFF_FILES)."; \
+    echo "Creating empty spiff_rom.bin ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
+    cp $(SMING_HOME)/compiler/data/blankfs.bin $(FW_BASE)/spiff_rom.bin; \
+	fi	
+	$(vecho) "spiff_rom.bin---------->$(SPIFF_START_OFFSET)"
+
+	
+
+########################################################
+#	# Getting flash file size to get correct spiffs offset
+#	# Way 1
+# Set fw_start_offset & spiff_start_offset using bc
+#	$(eval fw_start_offset := $(shell echo 0x$$(echo "obase=16; $$( $(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin)" | bc)))
+#	$(eval spiff_start_offset := $(shell echo 0x$$(echo "obase=16; $$(( ($$($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.bin) + 16384 + 36864) & (0xFFFFC000) ))" | bc) ))
+
+
+#	# Way 2
+#	0x$(echo "obase=16; $(($(stat --format="%s" $BUILD_DIR/bin/${x00000})))" | bc)
+#  $(vecho) "main fw offset $$(echo "obase=16; $(($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))" | bc)
+
+# 0x$(echo "obase=16; $((($(stat --format="%s" $TRAVIS_BUILD_DIR/bin/0x00000.bin) + 16384) & (0xFFFFC000))) " | bc)
+#	$(vecho) "spiffy offset $$(echo "obase=16; $((($($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.fs.bin) + 16384) & (0xFFFFC000))) " | bc)"
+
+#       spiff_start_offset=0x$(echo "obase=16; $((($(stat --format="%s" $TRAVIS_BUILD_DIR/bin/0x00000.bin) + 16384) & (0xFFFFC000))) " | bc)
+#       echo $spiff_start_offset
+# echo "obase=16; $((($(stat --format="%s" $TRAVIS_BUILD_DIR/bin/0x00000.bin) + 16384) & (0xFFFFC000))) " | bc
+#	$(vecho) "spiffy offset: $$($((($($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.fs.bin) + 16384))) | bc)"
+########################################################
+
 flashboot: all flashinit
 ifeq ($(boot), new)
 	$(vecho) "Flash boot_v1.2 and +"
@@ -389,9 +417,9 @@ ifeq ($(boot), none)
 endif
 
 flash: all
-ifeq ($(app), 0)
-	$(KILL_TERM)	
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.bin
+ifeq ($(app), 0)	
+	$(KILL_TERM)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.bin $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
 else
 ifeq ($(boot), none)
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash 0x00000 $(FW_BASE)/eagle.flash.bin 0x9000 $(FW_BASE)/eagle.irom0text.bin
