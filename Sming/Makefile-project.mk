@@ -388,29 +388,6 @@ $(SPIFF_BIN_OUT):
 	fi
 	$(vecho) "spiff_rom.bin---------->$(SPIFF_START_OFFSET)"
 
-	
-
-########################################################
-#	# Getting flash file size to get correct spiffs offset
-#	# Way 1
-# Set fw_start_offset & spiff_start_offset using bc
-#	$(eval fw_start_offset := $(shell echo 0x$$(echo "obase=16; $$( $(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin)" | bc)))
-#	$(eval spiff_start_offset := $(shell echo 0x$$(echo "obase=16; $$(( ($$($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.bin) + 16384 + 36864) & (0xFFFFC000) ))" | bc) ))
-
-
-#	# Way 2
-#	0x$(echo "obase=16; $(($(stat --format="%s" $BUILD_DIR/bin/${x00000})))" | bc)
-#  $(vecho) "main fw offset $$(echo "obase=16; $(($(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin))" | bc)
-
-# 0x$(echo "obase=16; $((($(stat --format="%s" $TRAVIS_BUILD_DIR/bin/0x00000.bin) + 16384) & (0xFFFFC000))) " | bc)
-#	$(vecho) "spiffy offset $$(echo "obase=16; $((($($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.fs.bin) + 16384) & (0xFFFFC000))) " | bc)"
-
-#       spiff_start_offset=0x$(echo "obase=16; $((($(stat --format="%s" $TRAVIS_BUILD_DIR/bin/0x00000.bin) + 16384) & (0xFFFFC000))) " | bc)
-#       echo $spiff_start_offset
-# echo "obase=16; $((($(stat --format="%s" $TRAVIS_BUILD_DIR/bin/0x00000.bin) + 16384) & (0xFFFFC000))) " | bc
-#	$(vecho) "spiffy offset: $$($((($($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.fs.bin) + 16384))) | bc)"
-########################################################
-
 flashboot: all flashinit
 ifeq ($(boot), new)
 	$(vecho) "Flash boot_v1.2 and +"
