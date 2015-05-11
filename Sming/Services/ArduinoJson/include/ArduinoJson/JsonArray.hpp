@@ -63,6 +63,9 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
   // Adds a reference to the specified JsonObject at the end of the array.
   void add(JsonObject &obejct) { add().set(obejct); }
 
+  // Adds the specified key with a reference to the String
+  void add(const String &stringVal) { add().set(stringVal); }
+
   // Creates a JsonArray and adds a reference at the end of the array.
   // It's a shortcut for JsonBuffer::createArray() and JsonArray::add()
   JsonArray &createNestedArray();

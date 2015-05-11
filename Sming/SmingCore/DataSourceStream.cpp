@@ -20,7 +20,7 @@ MemoryDataStream::MemoryDataStream()
 
 MemoryDataStream::~MemoryDataStream()
 {
-	delete[] buf;
+	free(buf);
 	buf = NULL;
 	pos = NULL;
 	size = 0;
@@ -36,7 +36,7 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 	//TODO: add queued buffers without full copy
 	if (buf == NULL)
 	{
-		buf = new char[len + 1];
+		buf = (char*)malloc(len + 1);
 		buf[len] = '\0';
 		memcpy(buf, data, len);
 	}
@@ -47,18 +47,11 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 		if (required > capacity)
 		{
 			capacity = required < 256 ? required + 128 : required + 64;
-			char* nbuf = new char[capacity];
-			buf[cur + len] = '\0';
-			memcpy(nbuf, buf, cur);
-			memcpy(nbuf + cur, data, len);
-			delete[] buf;
-			buf = nbuf;
+			debugf("realloc %d -> %d", size, capacity);
+			buf = (char*)realloc(buf, capacity);
 		}
-		else
-		{
-			buf[cur + len] = '\0';
-			memcpy(buf + cur, data, len);
-		}
+		buf[cur + len] = '\0';
+		memcpy(buf + cur, data, len);
 	}
 	pos = buf;
 	size += len;

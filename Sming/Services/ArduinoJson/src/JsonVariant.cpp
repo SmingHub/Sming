@@ -27,6 +27,10 @@ JsonVariant::operator bool() const {
   return _type == JSON_BOOLEAN ? _content.asBoolean : false;
 }
 
+JsonVariant::operator const String *() const {
+  return _type == JSON_CSTRING ? _content.asCString : NULL;
+}
+
 JsonVariant::operator const char *() const {
   return _type == JSON_STRING ? _content.asString : NULL;
 }
@@ -49,6 +53,12 @@ void JsonVariant::set(const char *value) {
   if (_type == JSON_INVALID) return;
   _type = JSON_STRING;
   _content.asString = value;
+}
+
+void JsonVariant::set(const String& value) {
+  if (_type == JSON_INVALID) return;
+  _type = JSON_CSTRING;
+  _content.asCString = &value;
 }
 
 void JsonVariant::set(double value, uint8_t decimals) {
@@ -98,6 +108,8 @@ void JsonVariant::writeTo(JsonWriter &writer) const {
     as<const JsonObject &>().writeTo(writer);
   else if (is<const char *>())
     writer.writeString(as<const char *>());
+  else if (is<const String *>())
+    writer.writeString(as<const String *>()->c_str());
   else if (is<long>())
     writer.writeLong(as<long>());
   else if (is<bool>())

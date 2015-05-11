@@ -72,6 +72,9 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Adds the specified key with a reference to the specified JsonObject.
   void add(key_type key, JsonObject &object) { add(key).set(object); }
 
+  // Adds the specified key with a reference to the String
+  void add(key_type key, const String &stringVal) { add(key).set(stringVal); }
+
   // Creates and adds a JsonArray.
   // This is a shortcut for JsonBuffer::createArray() and JsonObject::add().
   JsonArray &createNestedArray(key_type key);

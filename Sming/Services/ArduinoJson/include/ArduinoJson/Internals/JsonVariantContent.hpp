@@ -23,6 +23,7 @@ union JsonVariantContent {
   const char* asString;  // asString can be null
   JsonArray* asArray;    // asArray cannot be null
   JsonObject* asObject;  // asObject cannot be null
+  const String* asCString;  // asCString cannot be null
 };
 }
 }
