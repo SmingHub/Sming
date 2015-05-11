@@ -100,6 +100,27 @@ int HardwareSerial::read()
 	return res;
 }
 
+int HardwareSerial::readBlock(uint8_t* buf, int max_len) {
+	RcvMsgBuff &rxBuf = UartDev.rcv_buff;
+	int num = 0;
+
+	noInterrupts();
+	if (rxBuf.pWritePos != rxBuf.pReadPos) {
+		while ((rxBuf.pWritePos != rxBuf.pReadPos) && (max_len-- > 0)) {
+			*buf = *rxBuf.pReadPos;		// Read data from Buffer
+			num++;						// Increase counter of read bytes
+			buf++;						// Increase Buffer pointer
+
+			// Set pointer to next data word in ring buffer
+			rxBuf.pReadPos++;
+			if (rxBuf.pReadPos == (rxBuf.pRcvMsgBuff + RX_BUFF_SIZE))
+				rxBuf.pReadPos = rxBuf.pRcvMsgBuff ;
+		}
+	}
+	interrupts();
+
+	return num;
+}
 
 int HardwareSerial::peek()
 {
