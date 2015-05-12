@@ -35,6 +35,17 @@ JsonVariant::operator const char *() const {
   return _type == JSON_STRING ? _content.asString : NULL;
 }
 
+// Just for simple usage and reading
+String JsonVariant::toString() const {
+  if (_type == JSON_CSTRING)
+	  return *_content.asCString;
+  else if (_type == JSON_STRING)
+	  return String(_content.asString);
+  else
+	  return String(); // ?
+}
+
+
 JsonVariant::operator double() const {
   return _type >= JSON_DOUBLE_0_DECIMALS ? _content.asDouble : 0;
 }

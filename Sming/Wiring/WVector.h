@@ -26,6 +26,8 @@ template <typename Element>
 class Vector : public Countable<Element>
 {
   public:
+	typedef int (*Comparer)(const Element& lhs, const Element& rhs);
+
     // constructors
 	Vector(unsigned int initialCapacity = 10, unsigned int capacityIncrement = 10);
 	Vector(const Vector& rhv);
@@ -92,6 +94,8 @@ class Vector : public Countable<Element>
          other._increment = 0;
          return *this;
      }
+
+     void sort(Comparer compareFunction);
 
   protected:
      void copyFrom(const Vector& rhv);
@@ -425,6 +429,21 @@ Element & Vector<Element>::operator[](unsigned int index)
   }
   return *_data[ index ];
 };
+
+template <class Element>
+void Vector<Element>::sort(Comparer compareFunction)
+{
+   int i, j;
+   for(j = 1; j < _size; j++)   // Start with 1 (not 0)
+   {
+    	Element* key = _data[j];
+		for(i = j - 1; (i >= 0) && compareFunction(*_data[i], *key) > 0; i--)   // Smaller values move up
+		{
+			_data[i+1] = _data[i];
+		}
+		_data[i+1] = key;    //Put key into its proper location
+    }
+}
 
 #endif
 // WVECTOR_H

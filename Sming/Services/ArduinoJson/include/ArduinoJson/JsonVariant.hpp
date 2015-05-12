@@ -125,6 +125,9 @@ class JsonVariant : public Internals::JsonPrintable<JsonVariant> {
   operator const char *() const;
   const char *asString() const { return as<const char *>(); }
 
+  // Just for simple usage and reading
+  String toString() const;
+
   // Gets the variant as an array.
   // Returns a reference to the JsonArray or JsonArray::invalid() if the variant
   // is not an array.

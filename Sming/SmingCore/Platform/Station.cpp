@@ -168,7 +168,13 @@ bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway
 	ipinfo.ip = address;
 	ipinfo.netmask = netmask;
 	ipinfo.gw = gateway;
-	wifi_set_ip_info(STATION_IF, &ipinfo);
+	if (wifi_set_ip_info(STATION_IF, &ipinfo))
+		debugf("AP IP succesfully updated");
+	else
+	{
+		debugf("AP IP can't be updated");
+		enableDHCP(true);
+	}
 	wifi_station_connect();
 	//wifi_station_dhcpc_start();
 	return true;

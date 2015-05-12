@@ -156,9 +156,9 @@ ERROR_MISSING_COMMA:
 
 void JsonParser::parseBooleanTo(JsonVariant &destination) {
   if (skip("true"))
-    destination = true;
+    destination = (bool)true;
   else if (skip("false"))
-    destination = false;
+    destination = (bool)false;
   else
     destination = JsonVariant::invalid();
 }

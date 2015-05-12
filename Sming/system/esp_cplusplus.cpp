@@ -16,13 +16,13 @@ void cpp_core_initialize()
 
 void *operator new(size_t size)
 {
-  //debugf("new: %d", size);
+  //debugf("new: %d (%d)", size, system_get_free_heap_size());
   return malloc(size);
 }
 
 void *operator new[](size_t size)
 {
-  //debugf("new[]: %d", size);
+  //debugf("new[]: %d (%d)", size, system_get_free_heap_size());
   return malloc(size);
 }
 
