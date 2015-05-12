@@ -1,0 +1,298 @@
+<!--http://192.168.4.1/ajax/get-networks-->
+<!--http://192.168.4.1/ajax/connect     -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Sming Framework WiFi Network configuration</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+	<script src="jquery.js"></script>
+	
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <script>
+      $(document).ready(function () {
+          App.GetNetworks(false);
+          App.Events.ReloadNetworks();
+      });
+
+      var App = {
+          GetNetworksURL: '/ajax/get-networks',
+          ConnectURL: '/ajax/connect',
+          Connect: null,
+          CurrentNetwork: null,
+          GetNetworks: function (reconect) {
+              (function worker() {
+                  $('#floatingCirclesG').show();
+                  var ajax = $.ajax({
+                      url: App.GetNetworksURL,
+                      type: 'POST',
+                      data: {
+                          'reconnect': reconect
+                      },
+                      success: function (data) {
+                          App.SetNetworks(data.available, data.network);
+                          App.ShowConnectToNetwork();
+                          App.ConnectToNetwork();
+                          if (data.network) {
+                                App.Utilities.ShowCurrentNetwork($('div[data-name="' + data.network + '"]').parent());
+                          }
+                      }
+                  })
+                  .done(function () {
+                        $('#floatingCirclesG').hide();
+                  })
+                  .fail(function () {
+                        setTimeout(worker, 5000);
+                  });
+                  App.Utilities.AbortConnection(ajax);
+              })();
+          },
+          ConnectToNetwork: function () {
+              $(".connect-btn").unbind('click');
+              $('.connect-btn').on('click', function () {
+                  var that = this;
+                  var item = $(that).parent().parent().parent();
+                  var password = item.find('input[type=password]').val();
+                  var network = item.find('h4').text();
+                  App.Utilities.ShowLoader(that);
+                  if (App.Connect) {
+                      clearInterval(App.Connect);
+                      App.Utilities.HideLoader();
+                  }
+                  App.Utilities.ShowLoader(that);
+                  (function worker() {
+                      $('.error').empty();
+                      var ajax = $.ajax({
+                          url: App.ConnectURL,
+                          type: 'POST',
+                          data: {
+                              'network': network,
+                              'password': password
+                          },
+                          success: function (data) {
+                              if (data.connected == true) {
+                                  $(that).parent().parent().empty();
+                                  App.Utilities.HideLoader();
+                                  App.Utilities.ShowCurrentNetwork(item);
+                              }
+                              if (data.error) {
+                                  $('.error').append('<div class="alert alert-danger" role="alert">' +
+                                          '<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>' +
+                                          '<span>Error:</span> ' + data.error +
+                                          '</div>');
+                                  App.Utilities.HideLoader();
+                              } else if (data.connected == false) {
+                                  if(data.status == true){
+                                        network = null;
+                                        password = null;
+                                        App.Connect = setTimeout(worker, 50);
+                                  }else{
+                                      App.Utilities.HideLoader();
+                                  }
+                              }
+                          },
+                          error: function(){
+                              setTimeout(worker, 5000);
+                          }
+                      })
+                      App.Utilities.AbortConnection(ajax);
+                  })()
+              })
+          },
+          SetNetworks: function (data, network) {
+              var ids = App.Utilities.GetNetworksId();
+              $.each(data, function (key, val) {
+                  if (ids.indexOf(val.id) != -1) {
+                      App.Utilities.UpdateNetworkValues($('.network[data-id=' + val.id + ']'), val);
+                      ids.splice(ids.indexOf(val.id), 1);
+                  } else {
+                      App.AddNetwork(val, network);
+                  }
+              });
+              $.each(ids, function (key, val) {
+                  App.Utilities.RemoveNetwork($('.network[data-id=' + val + ']'));
+              });
+          },
+          ShowConnectToNetwork: function () {
+              $(".network").unbind('click');
+              $('.network').on('click', function (e) {
+                  $('.connect').each(function () {
+                      $(this).hide();
+                  })
+                  $(this).find('.connect').show();
+              })
+          },
+          AddNetwork: function (val, network) {
+              var connect = '';
+              if(val.title != network){
+                  var input = '';
+                  if (val.encryption != 'OPEN') {
+                      input += '<label>Password: </label><input class="form-control" style="width: 200px" type="password">'
+                  }
+
+                  connect += input +
+                          '<div class="connect-btn-wrapper"><button class="btn btn-success connect-btn">Connect</button></div>';
+              }
+              $('.networks').append(
+                      '<div class="list-group-item network" href="#" data-id="' + val.id + '">' +
+                              '<p class="list-group-item-text">' +
+                                  '<div>'+
+                                  '<div class="wifi '+App.Utilities.GetNetworkSignalClass(val.signal)+'"></div>' +
+                                  '<div class="network-info">'+
+                                  '<h4 class="list-group-item-heading">' + val.title + '</h4>' +
+                                  '<div><span class="encryption"> '+val.encryption+'</span></div>'+
+                                  '</div></div>'+
+                              '</p>' +
+                              '<div class="form-group connect"  style="display: none" data-name="'+val.title+'">'+connect +
+                              '</div>'+
+                              '</div>'
+              );
+
+              return true;
+          },
+          Events: {
+              ReloadNetworks: function(){
+                  $('.reload').on('click', function(){App.GetNetworks(true)})
+              }
+          },
+          Utilities: {
+              AbortConnection: function(ajax){
+                  if(ajax.readyState != 4){
+                      setTimeout(function(){ajax.abort()}, 6000);
+                  }
+              },
+              RemoveNetwork: function (network) {
+                  $(network).remove();
+              },
+              GetNetworkSignalClass: function(signal){
+                  if(signal  >= -100 && signal <= -80){
+                      return 'wifi-1';
+                  }else if(signal > -80 && signal <= -65 ){
+                      return 'wifi-2';
+                  }else if (signal > -65 && signal < -50){
+                      return 'wifi-3';
+                  }else{
+                      return 'wifi-4';
+                  }
+              },
+              UpdateNetworkValues: function (network, data) {
+                  $(network).find('h4').text(' ' + data.title);
+                  $(network).find('.encryption').text(' ' + data.encryption);
+                  $(network).find('.wifi').removeClass().addClass('wifi').addClass(App.Utilities.GetNetworkSignalClass(data.signal));
+              },
+              ShowCurrentNetwork: function (obj) {
+                  console.log(obj);
+                  if (App.CurrentNetwork) {
+                      $(App.CurrentNetwork).css('background', '');
+                  }
+                  App.CurrentNetwork = obj;
+                  $(App.CurrentNetwork).css('background', '#5BC0DE');
+              },
+              GetNetworksId: function () {
+                  var ids = [];
+                  $('.network').each(function () {
+                      ids.push(parseInt($(this).attr('data-id')));
+                  })
+                  return ids;
+              },
+              ShowLoader: function (obj) {
+                  var loader = $('#circularG');
+                  loader.show();
+                  loader.css('margin-left', '100px');
+                  $(obj).parent().append(loader);
+              },
+              HideLoader: function(){
+                  $('#circularG').hide();
+              }
+          }
+      }
+	</script>
+  <body>
+
+  <div class="container">
+      <div class="header">
+          <nav>
+              <ul class="nav nav-pills pull-right">
+                  <li role="presentation" class="active"><a href="/">Networks</a></li>
+                  <li role="presentation"><a href="/ipconfig">Settings</a></li>
+              </ul>
+          </nav>
+          <h3 class="text-muted">Sming Based</h3>
+      </div>
+
+      <div class="jumbotron">
+          <h1>Network Settings</h1>
+
+          <p class="lead">Wireless network connection
+          </p>
+      </div>
+
+      <div class="row">
+          <div class="col-lg-6 col-md-offset-7">
+              <button class="btn btn-success reload">Reload Networks</button>
+          </div>
+          <div class="col-lg-6 col-md-offset-3">
+              <div class="error"></div>
+              <h3>Networks</h3>
+
+              <div id="floatingCirclesG">
+                  <div class="f_circleG" id="frotateG_01">
+                  </div>
+                  <div class="f_circleG" id="frotateG_02">
+                  </div>
+                  <div class="f_circleG" id="frotateG_03">
+                  </div>
+                  <div class="f_circleG" id="frotateG_04">
+                  </div>
+                  <div class="f_circleG" id="frotateG_05">
+                  </div>
+                  <div class="f_circleG" id="frotateG_06">
+                  </div>
+                  <div class="f_circleG" id="frotateG_07">
+                  </div>
+                  <div class="f_circleG" id="frotateG_08">
+                  </div>
+              </div>
+              <div class="networks list-group">
+              </div>
+          </div>
+      </div>
+      <div id="circularG" style="display: none">
+          <div id="circularG_1" class="circularG">
+          </div>
+          <div id="circularG_2" class="circularG">
+          </div>
+          <div id="circularG_3" class="circularG">
+          </div>
+          <div id="circularG_4" class="circularG">
+          </div>
+          <div id="circularG_5" class="circularG">
+          </div>
+          <div id="circularG_6" class="circularG">
+          </div>
+          <div id="circularG_7" class="circularG">
+          </div>
+          <div id="circularG_8" class="circularG">
+          </div>
+      </div>
+      <footer class="footer">
+          <!--<p>&copy; Company 2014</p>-->
+      </footer>
+
+    </div> <!-- /container -->
+  </body>
+</html>
