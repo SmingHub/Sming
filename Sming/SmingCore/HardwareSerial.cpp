@@ -100,7 +100,8 @@ int HardwareSerial::read()
 	return res;
 }
 
-int HardwareSerial::readBlock(uint8_t* buf, int max_len) {
+int HardwareSerial::readMemoryBlock(char* buf, int max_len)
+{
 	RcvMsgBuff &rxBuf = UartDev.rcv_buff;
 	int num = 0;
 

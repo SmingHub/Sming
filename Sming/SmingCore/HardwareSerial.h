@@ -23,7 +23,7 @@ public:
 
 	int available();
 	int read();
-	int readBlock(uint8_t* buf, int max_len);
+	int readMemoryBlock(char* buf, int max_len);
 	int peek();
 	void flush();
 	size_t write(uint8_t oneChar);
