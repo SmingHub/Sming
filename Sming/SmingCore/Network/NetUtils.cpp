@@ -114,26 +114,27 @@ String NetUtils::pbufStrCopy(pbuf *buf, int startPos, int length)
 
 bool NetUtils::FixNetworkRouting()
 {
-	if (ipClientRoutingFixed) return true;
-	if (wifi_get_opmode() != STATIONAP_MODE) return true;
-
-	ip_info info;
-	wifi_get_ip_info(STATION_IF, &info);
-
-	if (info.ip.addr == 0) return false;
-
-	for (netif *netif = netif_list; netif != NULL; netif = netif->next)
-	{
-		if (netif->ip_addr.addr == info.ip.addr)
-		{
-			debugf("Fixed default network interface: %d.%d.%d.%d", IP2STR(&info.ip));
-			netif_default = netif;
-			ipClientRoutingFixed = true;
-			return true;
-		}
-	}
-
-	return false;
+//	if (ipClientRoutingFixed) return true;
+//	if (wifi_get_opmode() != STATIONAP_MODE) return true;
+//
+//	ip_info info;
+//	wifi_get_ip_info(STATION_IF, &info);
+//
+//	if (info.ip.addr == 0) return false;
+//
+//	for (netif *netif = netif_list; netif != NULL; netif = netif->next)
+//	{
+//		if (netif->ip_addr.addr == info.ip.addr)
+//		{
+//			debugf("Fixed default network interface: %d.%d.%d.%d", IP2STR(&info.ip));
+//			netif_default = netif;
+//			ipClientRoutingFixed = true;
+//			return true;
+//		}
+//	}
+//
+//	return false;
+	return true; // Should work on standard lwip
 }
 
 /////////////////////////////////
