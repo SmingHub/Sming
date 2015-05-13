@@ -105,6 +105,8 @@ void makeConnection()
 	AppSettings.ssid = network;
 	AppSettings.password = password;
 	AppSettings.save();
+
+	network = ""; // completed
 }
 
 void onAjaxConnect(HttpRequest &request, HttpResponse &response)
@@ -112,11 +114,11 @@ void onAjaxConnect(HttpRequest &request, HttpResponse &response)
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject& json = stream->getRoot();
 
-	network = request.getPostParameter("network");
-	password = request.getPostParameter("password");
+	String curNet = request.getPostParameter("network");
+	String curPass = request.getPostParameter("password");
 
-	bool updating = network.length() > 0 && (WifiStation.getSSID() != network || WifiStation.getPassword() != password);
-	bool connectingNow = WifiStation.getConnectionStatus() == eSCS_Connecting;
+	bool updating = curNet.length() > 0 && (WifiStation.getSSID() != curNet || WifiStation.getPassword() != curPass);
+	bool connectingNow = WifiStation.getConnectionStatus() == eSCS_Connecting || network.length() > 0;
 
 	if (updating && connectingNow)
 	{
@@ -129,6 +131,8 @@ void onAjaxConnect(HttpRequest &request, HttpResponse &response)
 		json["status"] = (bool)true;
 		if (updating)
 		{
+			network = curNet;
+			password = curPass;
 			debugf("CONNECT TO: %s %s", network.c_str(), password.c_str());
 			json["connected"] = false;
 			connectionTimer.initializeMs(1200, makeConnection).startOnce();
@@ -140,7 +144,7 @@ void onAjaxConnect(HttpRequest &request, HttpResponse &response)
 		}
 	}
 
-	if (!updating && WifiStation.isConnectionFailed())
+	if (!updating && !connectingNow && WifiStation.isConnectionFailed())
 		json["error"] = WifiStation.getConnectionStatusName();
 
 	response.setAllowCrossDomainOrigin("*");
