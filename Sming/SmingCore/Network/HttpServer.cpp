@@ -66,7 +66,7 @@ bool HttpServer::process(HttpServerConnection &connection, HttpRequest &request,
 		return true;
 	}
 
-	if (defaultHandler != NULL)
+	if (defaultHandler)
 	{
 		debugf("Default server handler for: '%s'", path.c_str());
 		defaultHandler(request, response);

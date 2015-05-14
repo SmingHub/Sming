@@ -11,10 +11,12 @@
 #define MQTT_MAX_BUFFER_SIZE 1024
 
 #include "TcpClient.h"
+#include "../Delegate.h"
 #include "../../Wiring/WString.h"
 #include "../../Services/libemqtt/libemqtt.h"
 
-typedef void (*MqttStringSubscriptionCallback)(String topic, String message);
+//typedef void (*MqttStringSubscriptionCallback)(String topic, String message);
+typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
 
 class MqttClient;
 class URL;
@@ -28,11 +30,15 @@ public:
 	bool connect(String clientName);
 	bool connect(String clientName, String username, String password);
 
+	__forceinline bool isProcessing()  { return TcpClient::isProcessing(); }
+	__forceinline TcpClientState getState() { return TcpClient::getState(); }
+
 	bool publish(String topic, String message, bool retained = false);
 	bool publishWithQoS(String topic, String message, int QoS, bool retained = false);
 
 	bool subscribe(String topic);
 	bool unsubscribe(String topic);
+
 protected:
 	virtual err_t onReceive(pbuf *buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);

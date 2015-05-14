@@ -11,13 +11,15 @@
 #include "TcpServer.h"
 #include "../../Wiring/WHashMap.h"
 #include "../../Wiring/WVector.h"
+#include "../Delegate.h"
 
 class String;
 class HttpServerConnection;
 class HttpRequest;
 class HttpResponse;
 
-typedef void (*HttpPathCallback)(HttpRequest &request, HttpResponse &response);
+//typedef void (*HttpPathCallback)(HttpRequest &request, HttpResponse &response);
+typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathCallback;
 
 class HttpServer: public TcpServer
 {

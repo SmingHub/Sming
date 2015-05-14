@@ -12,11 +12,13 @@
 #include "../../Wiring/WString.h"
 #include "../../Wiring/WHashMap.h"
 #include "../../Services/DateTime/DateTime.h"
+#include "../Delegate.h"
 
 class HttpClient;
 class URL;
 
-typedef void (*HttpClientCompletedCallback)(HttpClient& client, bool successful);
+//typedef void (*HttpClientCompletedCallback)(HttpClient& client, bool successful);
+typedef Delegate<void(HttpClient& client, bool successful)> HttpClientCompletedCallback;
 
 enum HttpClientMode
 {
@@ -40,10 +42,11 @@ public:
 	bool downloadFile(String url, String saveFileName, HttpClientCompletedCallback onCompleted = NULL);
 
 	// Resulting HTTP status code
-	inline int getReponseCode() { return code; }
+	__forceinline int getReponseCode() { return code; }
+	__forceinline bool isSuccessful() { return (!writeError) && (code >= 200 && code <= 399); }
 
-	inline bool isProcessing()  { return TcpClient::isProcessing(); }
-	inline bool isSuccessful() { return (!writeError) && (code >= 200 && code <= 399); }
+	__forceinline bool isProcessing()  { return TcpClient::isProcessing(); }
+	__forceinline TcpClientState getState() { return TcpClient::getState(); }
 
 	String getResponseHeader(String headerName, String defaultValue = "");
 	DateTime getLastModifiedDate(); // Last-Modified header

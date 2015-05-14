@@ -212,7 +212,7 @@ err_t MqttClient::onReceive(pbuf *buf)
 							String topic, msg;
 							topic.setString((char*)ptrTopic, lenTopic);
 							msg.setString((char*)ptrMsg, lenMsg);
-							if (callback != NULL)
+							if (callback)
 								callback(topic, msg);
 						}
 						else

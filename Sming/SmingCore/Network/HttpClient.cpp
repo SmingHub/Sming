@@ -117,7 +117,7 @@ void HttpClient::onFinished(TcpClientState finishState)
 		fileClose(saveFile);
 	}
 
-	if (onCompleted != NULL)
+	if (onCompleted)
 		onCompleted(*this, isSuccessful());
 
 	TcpClient::onFinished(finishState);

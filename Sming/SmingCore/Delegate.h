@@ -75,6 +75,12 @@ class Delegate <ReturnType (ParamsList ...)>
 	template<typename ClassType> using MethodDeclaration = ReturnType (ClassType::*)(ParamsList ...);
 
 public:
+	Delegate()
+	{
+		impl = nullptr;
+	}
+
+	// Class method
 	template <class ClassType>
     Delegate(MethodDeclaration<ClassType> m, ClassType* c)
 	{
@@ -84,6 +90,7 @@ public:
 			impl = nullptr;
 	}
 
+	// Function
     Delegate(FunctionDeclaration m)
 	{
 		if (m != NULL)
