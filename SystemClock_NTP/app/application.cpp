@@ -2,8 +2,8 @@
 #include <SmingCore/SmingCore.h>
 
 // Put you SSID and Password here
-#define WIFI_SSID "EnterSSID"
-#define WIFI_PWD "EnterPassword"
+#define WIFI_SSID "ssid"
+#define WIFI_PWD "password"
 
 
 void onNtpReceive(NtpClient& client, uint32_t timestamp);
@@ -26,6 +26,8 @@ void onNtpReceive(NtpClient& client, uint32_t timestamp) {
 
 	Serial.print("Time synchronized: ");
 	Serial.println(SystemClock.getSystemTimeString());		
+	
+
 }
 
 

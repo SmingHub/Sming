@@ -10,8 +10,10 @@
 #define NTP_MODE_CLIENT 3
 #define NTP_MODE_SERVER 4
 
+#define NTP_SERVER_DEFAULT "1.pool.ntp.org"
+
 #define NTP_LISTEN_PORT 57001
-#define DEFAULT_AUTO_UPDATE_INTERVAL 600000 // 10 minutes
+#define NTP_DEFAULT_AUTO_UPDATE_INTERVAL 600000 // 10 minutes
 
 
 class NtpClient;
@@ -26,6 +28,7 @@ public:
 	virtual ~NtpClient();
 
 	void requestTime();
+	void setNtpServer(String server);
 	void setAutoQuery(bool autoQuery);
 	void setAutoQueryInterval(int seconds);
 		
@@ -34,6 +37,7 @@ protected:
 	void onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort);
 	
 protected: 
+	String server;
 	IPAddress serverAddress;
 	NtpTimeResultCallback onCompleted;
 		

@@ -4,7 +4,8 @@ NtpClient::NtpClient(NtpTimeResultCallback onTimeReceivedCb)
 {
 	this->onCompleted = onTimeReceivedCb;
 	this->autoUpdate = false;
-	this->autoUpdateInteval = DEFAULT_AUTO_UPDATE_INTERVAL;
+	this->autoUpdateInteval = NTP_DEFAULT_AUTO_UPDATE_INTERVAL;
+	this->server = NTP_SERVER_DEFAULT;
 }
 
 NtpClient::~NtpClient()
@@ -16,8 +17,7 @@ int NtpClient::init()
 	this->listen(NTP_LISTEN_PORT);
 
 	struct ip_addr resolved;
-
-	switch (dns_gethostbyname("1.pool.ntp.org", &resolved, staticDnsResponse,
+	switch (dns_gethostbyname(NTP_SERVER_DEFAULT, &resolved, staticDnsResponse,
 			(void*) this))
 	{
 	case ERR_OK:
@@ -55,6 +55,13 @@ void NtpClient::requestTime()
 	packet[1] = 0;     	// Stratum, or type of clock, unspecified.
 
 	NtpClient::sendTo(serverAddress, NTP_PORT, (char*) packet, NTP_PACKET_SIZE);
+}
+
+void NtpClient::setNtpServer(String server) 
+{
+	server = server;
+	// force new DNS lookup
+	serverAddress = (uint32_t)0;
 }
 
 void NtpClient::setAutoQuery(bool autoQuery)
