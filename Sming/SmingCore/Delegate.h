@@ -78,12 +78,18 @@ public:
 	template <class ClassType>
     Delegate(MethodDeclaration<ClassType> m, ClassType* c)
 	{
-    	impl = new MethodCaller< MethodDeclaration<ClassType> >(c, m);
+		if (m != NULL)
+			impl = new MethodCaller< MethodDeclaration<ClassType> >(c, m);
+		else
+			impl = nullptr;
 	}
 
     Delegate(FunctionDeclaration m)
 	{
-    	impl = new FunctionCaller< FunctionDeclaration, ReturnType, ParamsList... >(m);
+		if (m != NULL)
+			impl = new FunctionCaller< FunctionDeclaration, ReturnType, ParamsList... >(m);
+		else
+			impl = nullptr;
 	}
 
     ~Delegate()
@@ -124,6 +130,12 @@ public:
 		return *this;
 	}
 
+    // Check for nullptr
+    operator bool() const
+    {
+        return impl != nullptr;
+    }
+
 protected:
     void copy(const Delegate& other)
 	{
@@ -132,7 +144,8 @@ protected:
 			if (impl)
 				impl->decrease();
 			impl = other.impl;
-			impl->increase();
+			if (impl)
+				impl->increase();
 		}
 	}
 

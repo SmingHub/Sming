@@ -16,35 +16,40 @@ Timer::~Timer()
 	stop();
 }
 
-Timer& Timer::initializeUs(uint32_t microseconds/* = 1000000*/, InterruptCallback interrupt/* = NULL*/)
+Timer& Timer::initializeUs(uint32_t microseconds/* = 1000000*/, InterruptCallback callback/* = NULL*/)
 {
-	setCallback(interrupt);
+	setCallback(callback);
 	setIntervalUs(microseconds);
 	return *this;
 }
 
-Timer& Timer::initializeMs(uint32_t milliseconds/* = 1000000*/, InterruptCallback interrupt/* = NULL*/)
+Timer& Timer::initializeMs(uint32_t milliseconds/* = 1000000*/, InterruptCallback callback/* = NULL*/)
 {
-	return initializeUs(milliseconds * 1000, interrupt);
+	return initializeUs(milliseconds * 1000, callback);
 }
 
-Timer& Timer::initializeMs(uint32_t milliseconds, Delegate<void()> delegatefunction)
+Timer& Timer::initializeUs(uint32_t milliseconds, Delegate<void()> delegateFunction)
 {
-	setCallback(delegatefunction);
-	setIntervalMs(milliseconds);
+	setCallback(delegateFunction);
+	setIntervalUs(milliseconds);
 	return *this;
+}
+
+Timer& Timer::initializeMs(uint32_t milliseconds, Delegate<void()> delegateFunction)
+{
+	return initializeUs(milliseconds * 1000, delegateFunction);
 }
 
 void Timer::start(bool repeating/* = true*/)
 {
 	stop();
-	if(interval == 0) return;
+	if(interval == 0 || (!callback && !delegate_func)) return;
 	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);
-	started = true;
 	if (interval > 1000)
 		ets_timer_arm_new(&timer, interval / 1000, repeating, 1); // msec
 	else
 		ets_timer_arm_new(&timer, interval, repeating, 0); 		  // usec
+	started = true;
 }
 
 void Timer::stop()
@@ -78,7 +83,8 @@ uint32_t Timer::getIntervalMs()
 void Timer::setIntervalUs(uint32_t microseconds/* = 1000000*/)
 {
 	interval = microseconds;
-	if (started) restart();
+	if (started)
+		restart();
 }
 
 void Timer::setIntervalMs(uint32_t milliseconds/* = 1000000*/)
@@ -88,17 +94,24 @@ void Timer::setIntervalMs(uint32_t milliseconds/* = 1000000*/)
 
 void Timer::setCallback(InterruptCallback interrupt/* = NULL*/)
 {
-//	setCallback(Delegate<void()> (interrupt));
+	ETS_INTR_LOCK();
 	callback = interrupt;
-	delegate_func = NULL;
-	delegated = false;
+	delegate_func = nullptr;
+	ETS_INTR_UNLOCK();
+
+	if (!interrupt)
+		stop();
 }
 
-void Timer::setCallback(Delegate<void()> delegatefunction)
+void Timer::setCallback(Delegate<void()> delegateFunction)
 {
-	callback = NULL;
-	delegate_func = delegatefunction;
-	delegated = true;
+	ETS_INTR_LOCK();
+	callback = nullptr;
+	delegate_func = delegateFunction;
+	ETS_INTR_UNLOCK();
+
+	if (!delegateFunction)
+		stop();
 }
 
 void Timer::processing(void *arg)
@@ -108,11 +121,11 @@ void Timer::processing(void *arg)
 	{
 	   return;
 	}
-	if (ptimer->callback != NULL)
+	else if (ptimer->callback)
 	{
 		ptimer->callback();
 	}
-	if (ptimer->delegated)
+	else if (ptimer->delegate_func)
 	{
 		ptimer->delegate_func();
 	}

@@ -191,7 +191,7 @@ void networkScanCompleted(bool succeeded, BssList list)
 
 void init()
 {
-	Serial.begin(230400); // 115200 by default
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 	AppSettings.load();
 
