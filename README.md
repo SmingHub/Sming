@@ -22,14 +22,9 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * Based on Espressif SDK v1.0.1b1
 
 ## Getting started
-#### On Windows
- - Download [ESP8266 Unofficial DevKit](http://www.esp8266.com/viewtopic.php?f=9&t=820)
- - Import Sming example projects to Eclipse IDE
- - Please upgrade SDK to v1.0.1b1
- - Compile it and flash to chip!
-
-#### On Linux
-  - [Quickstart](https://github.com/anakod/Sming/wiki/Linux-Quickstart)
+- [Windows](https://github.com/anakod/Sming/wiki/Windows-Quickstart)
+- [Linux](https://github.com/anakod/Sming/wiki/Linux-Quickstart)
+- [MacOS](https://github.com/anakod/Sming/wiki/MacOS-Quickstart)
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
