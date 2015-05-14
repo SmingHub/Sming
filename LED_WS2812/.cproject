@@ -26,7 +26,7 @@
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/system/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/Libraries&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/sdk/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/ESP8266_SDK/include&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.313321806" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -35,7 +35,7 @@
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/system/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/Libraries&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/sdk/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/ESP8266_SDK/include&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1330530366" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -52,7 +52,7 @@
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/system/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/Libraries&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/sdk/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/ESP8266_SDK/include&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.651581712" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
