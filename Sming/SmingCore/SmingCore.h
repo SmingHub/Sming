@@ -13,6 +13,7 @@
 #include "Delegate.h"
 #include "Boards.h"
 #include "Clock.h"
+#include "SystemClock.h"
 #include "Digital.h"
 #include "ESP8266EX.h"
 #include "FileSystem.h"
@@ -29,6 +30,7 @@
 
 #include "Network/HttpClient.h"
 #include "Network/MqttClient.h"
+#include "Network/NtpClient.h"
 #include "Network/HttpServer.h"
 #include "Network/HttpRequest.h"
 #include "Network/HttpResponse.h"
