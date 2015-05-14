@@ -142,3 +142,8 @@ void noAnalogWrite(uint8_t pin)
 {
 	EspPWM.noAnalogWrite(pin);
 }
+
+uint16_t analogRead(uint16_t pin)
+{
+	return system_adc_read();
+}
