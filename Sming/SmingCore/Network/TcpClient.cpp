@@ -116,9 +116,6 @@ err_t TcpClient::onConnected(err_t err)
 
 err_t TcpClient::onReceive(pbuf *buf)
 {
-	if (receive != NULL)
-		debugf("TCP Client onReceive, receive not NULL");
-
 	if (buf == NULL)
 	{
 		// Disconnected, close it
@@ -126,7 +123,7 @@ err_t TcpClient::onReceive(pbuf *buf)
 	}
 	else
 	{
-		if (receive != NULL)
+		if (receive)
 		{
 			char* data = new char[buf->tot_len + 1];
 			pbuf_copy_partial(buf, data, buf->tot_len, 0);
@@ -151,7 +148,7 @@ err_t TcpClient::onReceive(pbuf *buf)
 void TcpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	TcpConnection::onReadyToSendData(sourceEvent);
-	if (ready != NULL)
+	if (ready)
 		ready(*this, sourceEvent);
 
 	pushAsyncPart();
@@ -218,6 +215,6 @@ void TcpClient::onFinished(TcpClientState finishState)
 		delete stream; // Free memory now!
 	stream = NULL;
 
-	if (completed != NULL)
+	if (completed)
 		completed(*this, state == eTCS_Successful);
 }

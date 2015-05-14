@@ -6,28 +6,33 @@
 #include <SmingCore/SmingCore.h>
 
 // Несколько параметров (укажите свои)
-#define MY_SSID "YOUR_SSID"
-#define MY_SSID_PWD "YOUR_SSID_PWD"
+#define WIFI_SSID "PleaseEnterSSID"
+#define WIFI_PWD "PleaseEnterPass"
+
 #define NARODM_HOST "narodmon.ru"
 #define NARODM_PORT 8283
+
 
 Timer procTimer; // Таймер для периодического вызова отправки данных
 String mac; // Переменная для хранения mac-адреса
 float t1 = -2.5; // Переменная, в которой у нас хранится температура с датчика
 
-void nmOnCompleted(TcpClient& client, bool successful){
+void nmOnCompleted(TcpClient& client, bool successful)
+{
 	// debug msg
 	debugf("nmOnCompleted");
 	debugf("successful: %d", successful);
 }
 
-void nmOnReadyToSend(TcpClient& client, TcpConnectionEvent sourceEvent){
+void nmOnReadyToSend(TcpClient& client, TcpConnectionEvent sourceEvent)
+{
 	// debug msg
 	debugf("nmOnReadyToSend");
 	debugf("sourceEvent: %d", sourceEvent);
 
-	// только если sourceEvent = eTCE_Connected
-	if(sourceEvent == eTCE_Connected){
+	// в момент соединения осуществляем отправку
+	if(sourceEvent == eTCE_Connected)
+	{
 		/* отправляем данные по датчикам (3 штуки)
 		 * T1 = t1 (температура)
 		 * H1 = 8 (влажность)
@@ -39,7 +44,8 @@ void nmOnReadyToSend(TcpClient& client, TcpConnectionEvent sourceEvent){
 	}
 }
 
-bool nmOnReceive(TcpClient& client, char *buf, int size){
+bool nmOnReceive(TcpClient& client, char *buf, int size)
+{
 	// debug msg
 	debugf("nmOnReceive");
 	debugf("%s", buf);
@@ -49,7 +55,8 @@ bool nmOnReceive(TcpClient& client, char *buf, int size){
 TcpClient narodMon(nmOnCompleted, nmOnReadyToSend, nmOnReceive);
 
 // эта функция будет вызываться по таймеру
-void sendData(){
+void sendData()
+{
 	// считываем показания датчиков
 	// ...
 	// для отладки просто увеличиваем каждый раз значение переменной t1 на 1.39 градуса
@@ -70,8 +77,9 @@ void connectOk()
 	// в верхний регистр
 	mac.toUpperCase();
 	// преобразуем из XXXXXXXXXXXX в XX-XX-XX-XX-XX-XX
-	mac = mac.substring(0,2)+"-"+mac.substring(2,4)+"-"+mac.substring(4,6)+"-"+
-			mac.substring(6,8)+"-"+mac.substring(8,10)+"-"+mac.substring(10,12);
+	for (int i = 2; i < mac.length(); i += 2)
+		mac = mac.substring(0, i) + "-" + mac.substring(i++);
+
 	debugf("mac: %s", mac.c_str());
 
 	// вызываем по таймеру функцию sendData
@@ -99,7 +107,7 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Настраиваем и включаем Station
-	WifiStation.config(MY_SSID, MY_SSID_PWD);
+	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
 
 	/* connectOk будет вызвана, когда (если) подключимся к роутеру

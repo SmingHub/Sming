@@ -9,14 +9,19 @@
 #define _SMING_CORE_TCPCLIENT_H_
 
 #include "TcpConnection.h"
+#include "../Delegate.h"
 
 class TcpClient;
 class MemoryDataStream;
 class IPAddress;
 
-typedef void (*TcpClientEventCallback)(TcpClient& client, TcpConnectionEvent sourceEvent);
-typedef void (*TcpClientBoolCallback)(TcpClient& client, bool successful);
-typedef bool (*TcpClientDataCallback)(TcpClient& client, char *data, int size);
+//typedef void (*TcpClientEventCallback)(TcpClient& client, TcpConnectionEvent sourceEvent);
+//typedef void (*TcpClientBoolCallback)(TcpClient& client, bool successful);
+//typedef bool (*TcpClientDataCallback)(TcpClient& client, char *data, int size);
+
+typedef Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)> TcpClientEventCallback;
+typedef Delegate<void(TcpClient& client, bool successful)> TcpClientBoolCallback;
+typedef Delegate<bool(TcpClient& client, char *data, int size)> TcpClientDataCallback;
 
 enum TcpClientState
 {
