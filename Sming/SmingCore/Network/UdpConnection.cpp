@@ -105,7 +105,7 @@ void UdpConnection::sendStringTo(IPAddress remoteIP, uint16_t remotePort, const 
 void UdpConnection::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 {
 	debugf("UDP received: %d bytes", buf->tot_len);
-	if (onDataCallback != NULL)
+	if (onDataCallback)
 	{
 		char* data = new char[buf->tot_len + 1];
 		pbuf_copy_partial(buf, data, buf->tot_len, 0);

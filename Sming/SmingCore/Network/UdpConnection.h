@@ -9,11 +9,13 @@
 #define SMINGCORE_NETWORK_UDPCONNECTION_H_
 
 #include "../Wiring/WiringFrameworkDependencies.h"
+#include "../Delegate.h"
 #include "IPAddress.h"
 
 class UdpConnection;
 
-typedef void (*UdpConnectionDataCallback)(UdpConnection& connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort);
+//typedef void (*UdpConnectionDataCallback)(UdpConnection& connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort);
+typedef Delegate<void(UdpConnection& connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort)> UdpConnectionDataCallback;
 
 class UdpConnection
 {
