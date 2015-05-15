@@ -93,7 +93,7 @@ void Timer::setIntervalUs(uint32_t microseconds/* = 1000000*/)
 
 void Timer::setIntervalMs(uint32_t milliseconds/* = 1000000*/)
 {
-	setIntervalUs(milliseconds * 1000);
+	setIntervalUs(((uint64_t)milliseconds) * 1000);
 }
 
 void Timer::setCallback(InterruptCallback interrupt/* = NULL*/)
