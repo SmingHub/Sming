@@ -1,6 +1,7 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
+
 // Put you SSID and Password here
 #define WIFI_SSID "ssid"
 #define WIFI_PWD "password"
@@ -26,8 +27,6 @@ void onNtpReceive(NtpClient& client, uint32_t timestamp) {
 
 	Serial.print("Time synchronized: ");
 	Serial.println(SystemClock.getSystemTimeString());		
-	
-
 }
 
 
@@ -39,7 +38,7 @@ void connectOk()
 	// no need for query for time every 60 sec, should be at least 10 minutes or so.
 	ntpClient.setAutoQueryInterval(60);
 	ntpClient.setAutoQuery(true);	
-	
+
 	// Request to update time now. 
 	// Otherwise the set interval will pass before time
 	// is updated.
@@ -52,8 +51,6 @@ void connectFail()
 	debugf("I'm NOT CONNECTED!");
 	WifiStation.waitConnection(connectOk, 10, connectFail); // Repeat and check again
 }
-
-
 
 
 // Will be called when WiFi hardware and software initialization was finished
