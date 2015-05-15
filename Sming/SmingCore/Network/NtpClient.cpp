@@ -14,27 +14,34 @@ NtpClient::~NtpClient()
 
 int NtpClient::init()
 {
-	this->listen(NTP_LISTEN_PORT);
-
-	struct ip_addr resolved;
-	switch (dns_gethostbyname(NTP_SERVER_DEFAULT, &resolved, staticDnsResponse,
-			(void*) this))
+	if (this->server != NULL)
 	{
-	case ERR_OK:
-		serverAddress = resolved;
-		break;
-	case ERR_INPROGRESS:
-		return 0; // currently finding ip, requestTime() will be called later.
-	default:
-		debugf("DNS Lookup error occurred.");
-		return 0;
+		struct ip_addr resolved;
+		switch (dns_gethostbyname(this->server.c_str(), &resolved,
+				staticDnsResponse, (void*) this))
+		{
+		case ERR_OK:
+			serverAddress = resolved;
+			return 1;
+			break;
+		case ERR_INPROGRESS:
+			return 0; // currently finding ip, requestTime() will be called later.
+		default:
+			debugf("DNS Lookup error occurred.");
+			return 0;
+		}
 	}
 
-	return 1;
+	return 0;
 }
 
 void NtpClient::requestTime()
 {
+	// Start listening for incomming packets.
+	// may already been started in that case nothing happens.
+	this->listen(NTP_LISTEN_PORT);
+	
+	
 	if (serverAddress.isNull())
 	{
 		if (!init())
@@ -57,11 +64,17 @@ void NtpClient::requestTime()
 	NtpClient::sendTo(serverAddress, NTP_PORT, (char*) packet, NTP_PACKET_SIZE);
 }
 
-void NtpClient::setNtpServer(String server) 
+void NtpClient::setNtpServer(String server)
 {
-	server = server;
+	this->server = server;
 	// force new DNS lookup
 	serverAddress = (uint32_t)0;
+}
+
+void NtpClient::setNtpServer(IPAddress serverIp)
+{
+	this->server = NULL;
+	this->serverAddress = serverIp;
 }
 
 void NtpClient::setAutoQuery(bool autoQuery)
@@ -101,7 +114,6 @@ void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
 
 	if (onCompleted != NULL)
 	{
-
 		uint8_t versionMode = pbuf_get_at(buf, 0);
 		uint8_t ver = (versionMode & 0b00111000) >> 3;
 		uint8_t mode = (versionMode & 0x07);
@@ -124,8 +136,7 @@ void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
 	}
 }
 
-void NtpClient::staticDnsResponse(const char *name, struct ip_addr *ip,
-		void *arg)
+void NtpClient::staticDnsResponse(const char *name, struct ip_addr *ip, void *arg)
 {
 	// DNS has been resolved
 
