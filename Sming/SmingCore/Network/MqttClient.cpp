@@ -51,16 +51,12 @@ bool MqttClient::connect(String clientName, String username, String password)
 
 bool MqttClient::publish(String topic, String message, bool retained /* = false*/)
 {
-	if (getState() != eTCS_Connected) return false;
-
 	int res = mqtt_publish(&broker, topic.c_str(), message.c_str(), retained);
 	return res > 0;
 }
 
 bool MqttClient::publishWithQoS(String topic, String message, int QoS, bool retained /* = false*/)
 {
-	if (getState() != eTCS_Connected) return false;
-
 	int res = mqtt_publish_with_qos(&broker, topic.c_str(), message.c_str(), retained, QoS, NULL);
 	return res > 0;
 }
@@ -75,14 +71,16 @@ bool MqttClient::subscribe(String topic)
 {
 	uint16_t msgId = 0;
 	debugf("subscription '%s' registered", topic.c_str());
-	mqtt_subscribe(&broker, topic.c_str(), &msgId);
+	int res = mqtt_subscribe(&broker, topic.c_str(), &msgId);
+	return res > 0;
 }
 
 bool MqttClient::unsubscribe(String topic)
 {
 	uint16_t msgId = 0;
 	debugf("unsubscribing from '%s'", topic.c_str());
-	mqtt_unsubscribe(&broker, topic.c_str(), &msgId);
+	int res = mqtt_unsubscribe(&broker, topic.c_str(), &msgId);
+	return res > 0;
 }
 
 void MqttClient::debugPrintResponseType(int type, int len)
