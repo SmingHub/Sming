@@ -22,7 +22,7 @@ public:
     {
     	references++;
     }
-    void decrease()
+    __forceinline void decrease()
     {
     	references--;
 		if (references == 0)
@@ -75,14 +75,14 @@ class Delegate <ReturnType (ParamsList ...)>
 	template<typename ClassType> using MethodDeclaration = ReturnType (ClassType::*)(ParamsList ...);
 
 public:
-	Delegate()
+	__forceinline Delegate()
 	{
 		impl = nullptr;
 	}
 
 	// Class method
 	template <class ClassType>
-    Delegate(MethodDeclaration<ClassType> m, ClassType* c)
+	__forceinline Delegate(MethodDeclaration<ClassType> m, ClassType* c)
 	{
 		if (m != NULL)
 			impl = new MethodCaller< MethodDeclaration<ClassType> >(c, m);
@@ -91,7 +91,7 @@ public:
 	}
 
 	// Function
-    Delegate(FunctionDeclaration m)
+	__forceinline Delegate(FunctionDeclaration m)
 	{
 		if (m != NULL)
 			impl = new FunctionCaller< FunctionDeclaration, ReturnType, ParamsList... >(m);
@@ -99,7 +99,7 @@ public:
 			impl = nullptr;
 	}
 
-    ~Delegate()
+	__forceinline ~Delegate()
     {
     	if (impl != nullptr)
     		impl->decrease();
@@ -110,16 +110,16 @@ public:
         return impl->invoke(params...);
     }
 
-    Delegate(Delegate&& that)
+    __forceinline Delegate(Delegate&& that)
     {
     	impl = that.impl;
 		that.impl = nullptr;
 	}
-    Delegate(const Delegate& that)
+    __forceinline Delegate(const Delegate& that)
     {
     	copy(that);
     }
-    Delegate& operator=(const Delegate& that) // copy assignment
+    __forceinline Delegate& operator=(const Delegate& that) // copy assignment
     {
 		copy(that);
         return *this;
@@ -138,7 +138,7 @@ public:
 	}
 
     // Check for nullptr
-    operator bool() const
+    __forceinline operator bool() const
     {
         return impl != nullptr;
     }
