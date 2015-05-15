@@ -28,6 +28,7 @@ public:
 	virtual bool connect(IPAddress ip, uint16_t port);
 	virtual void close();
 
+	// After connect(..)
 	virtual void send(const char* data, int length);
 	void sendString(const char* data);
 	void sendString(const String data);

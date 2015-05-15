@@ -3,6 +3,7 @@
 
 #include "UdpConnection.h"
 #include "../Platform/System.h"
+#include "../Timer.h"
 
 #define NTP_PORT 123
 #define NTP_PACKET_SIZE 48
@@ -36,7 +37,7 @@ public:
 	void setAutoQueryInterval(int seconds);
 		
 protected:
-	int init();
+	int resolveServer();
 	void onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort);
 	
 protected: 
@@ -44,13 +45,9 @@ protected:
 	IPAddress serverAddress;
 	NtpTimeResultCallback onCompleted;
 		
-	os_timer_t autoUpdateTimer;
-	bool autoUpdate;
-	unsigned int autoUpdateInteval;
+	Timer autoUpdateTimer;
 		
 	static void staticDnsResponse(const char *name, struct ip_addr *ip, void *arg);		
-	static void staticAutoUpdateCallback(void *arg);
-	
 };
 
 #endif /* APP_NTPCLIENT_H_ */

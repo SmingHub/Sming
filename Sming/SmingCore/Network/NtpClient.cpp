@@ -3,16 +3,15 @@
 NtpClient::NtpClient(NtpTimeResultCallback onTimeReceivedCb)
 {
 	this->onCompleted = onTimeReceivedCb;
-	this->autoUpdate = false;
-	this->autoUpdateInteval = NTP_DEFAULT_AUTO_UPDATE_INTERVAL;
 	this->server = NTP_SERVER_DEFAULT;
+	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
 }
 
 NtpClient::~NtpClient()
 {
 }
 
-int NtpClient::init()
+int NtpClient::resolveServer()
 {
 	if (this->server != NULL)
 	{
@@ -44,7 +43,7 @@ void NtpClient::requestTime()
 	
 	if (serverAddress.isNull())
 	{
-		if (!init())
+		if (!resolveServer())
 		{
 			return;
 		}
@@ -80,30 +79,18 @@ void NtpClient::setNtpServer(IPAddress serverIp)
 void NtpClient::setAutoQuery(bool autoQuery)
 {
 	if (autoQuery)
-	{
-		this->autoUpdate = true;
-		ets_timer_disarm(&autoUpdateTimer);
-		ets_timer_setfn(&autoUpdateTimer,
-				(os_timer_func_t *) staticAutoUpdateCallback, this);
-		ets_timer_arm_new(&autoUpdateTimer, autoUpdateInteval, true, 1);
-	}
+		autoUpdateTimer.start();
 	else
-	{
-		ets_timer_disarm(&autoUpdateTimer);
-		this->autoUpdate = false;
-	}
+		autoUpdateTimer.stop();
 }
 
 void NtpClient::setAutoQueryInterval(int seconds)
 {
 	// minimum 10 seconds interval.
 	if (seconds < 10)
-		this->autoUpdateInteval = 10000;
+		autoUpdateTimer.setIntervalMs(10000);
 	else
-		this->autoUpdateInteval = seconds * 1000;
-
-	// Restart timer since interval has changed.
-	setAutoQuery(this->autoUpdate);
+		autoUpdateTimer.setIntervalMs(seconds * 1000);
 }
 
 void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
@@ -148,12 +135,4 @@ void NtpClient::staticDnsResponse(const char *name, struct ip_addr *ip, void *ar
 		// We do a new request since the last one was never done.
 		self->requestTime();
 	}
-}
-
-void NtpClient::staticAutoUpdateCallback(void *arg)
-{
-	NtpClient *self = (NtpClient*) arg;
-
-	// Request a time update.
-	self->requestTime();
 }
