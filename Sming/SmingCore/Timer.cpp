@@ -16,28 +16,32 @@ Timer::~Timer()
 	stop();
 }
 
-Timer& Timer::initializeUs(uint32_t microseconds/* = 1000000*/, InterruptCallback callback/* = NULL*/)
+Timer& Timer::initializeMs(uint32_t milliseconds, InterruptCallback callback/* = NULL*/)
+{
+	setCallback(callback);
+	setIntervalMs(milliseconds);
+	return *this;
+}
+
+Timer& Timer::initializeUs(uint32_t microseconds, InterruptCallback callback/* = NULL*/)
 {
 	setCallback(callback);
 	setIntervalUs(microseconds);
 	return *this;
 }
 
-Timer& Timer::initializeMs(uint32_t milliseconds/* = 1000000*/, InterruptCallback callback/* = NULL*/)
-{
-	return initializeUs(milliseconds * 1000, callback);
-}
-
-Timer& Timer::initializeUs(uint32_t milliseconds, Delegate<void()> delegateFunction)
+Timer& Timer::initializeMs(uint32_t milliseconds, Delegate<void()> delegateFunction)
 {
 	setCallback(delegateFunction);
-	setIntervalUs(milliseconds);
+	setIntervalMs(milliseconds);
 	return *this;
 }
 
-Timer& Timer::initializeMs(uint32_t milliseconds, Delegate<void()> delegateFunction)
+Timer& Timer::initializeUs(uint32_t microseconds, Delegate<void()> delegateFunction)
 {
-	return initializeUs(milliseconds * 1000, delegateFunction);
+	setCallback(delegateFunction);
+	setIntervalUs(microseconds);
+	return *this;
 }
 
 void Timer::start(bool repeating/* = true*/)
@@ -72,12 +76,12 @@ bool Timer::isStarted()
 
 uint32_t Timer::getIntervalUs()
 {
-	return interval;
+	return (uint32_t)interval;
 }
 
 uint32_t Timer::getIntervalMs()
 {
-	return interval / 1000;
+	return (uint32_t)interval / 1000;
 }
 
 void Timer::setIntervalUs(uint32_t microseconds/* = 1000000*/)
