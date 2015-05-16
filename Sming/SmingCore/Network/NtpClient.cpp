@@ -7,6 +7,31 @@ NtpClient::NtpClient(NtpTimeResultCallback onTimeReceivedCb)
 	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
 }
 
+NtpClient::NtpClient()
+{
+	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
+	setAutoQuery(true);
+	requestTime();
+}
+
+NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, int reqTimezone, NtpTimeResultCallback onTimeReceivedCb /* = NULL*/)
+{
+	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
+	this->server = reqServer;
+	this->onCompleted = onTimeReceivedCb;
+	setTimezone(reqTimezone);
+	if (reqIntervalSeconds == 0)
+	{
+		setAutoQuery(false);
+	}
+	else
+	{
+		setAutoQueryInterval(reqIntervalSeconds);
+		setAutoQuery(true);
+		requestTime();
+	}
+}
+
 NtpClient::~NtpClient()
 {
 }
@@ -36,11 +61,11 @@ int NtpClient::resolveServer()
 
 void NtpClient::requestTime()
 {
-	// Start listening for incomming packets.
-	// may already been started in that case nothing happens.
-	this->listen(NTP_LISTEN_PORT);
-	
-	
+	if (!WifiStation.isConnected())
+	{
+		connectionTimer.initializeMs(1000, Delegate<void()>(&NtpClient::requestTime, this)).startOnce();
+		return;
+	}
 	if (serverAddress.isNull())
 	{
 		if (!resolveServer())
@@ -48,6 +73,9 @@ void NtpClient::requestTime()
 			return;
 		}
 	}
+
+//	connect to current active serverAddress, on NTP_PORT
+	this->connect(serverAddress,NTP_PORT);
 
 	uint8_t packet[NTP_PACKET_SIZE];
 
@@ -60,7 +88,8 @@ void NtpClient::requestTime()
 	packet[0] = (NTP_VERSION << 3 | 0x03); // LI (0 = no warning), Protocol version (4), Client mode (3)
 	packet[1] = 0;     	// Stratum, or type of clock, unspecified.
 
-	NtpClient::sendTo(serverAddress, NTP_PORT, (char*) packet, NTP_PACKET_SIZE);
+//	Send to server, serverAddress & port is set in connect
+	NtpClient::send((char*) packet, NTP_PACKET_SIZE);
 }
 
 void NtpClient::setNtpServer(String server)
@@ -93,32 +122,46 @@ void NtpClient::setAutoQueryInterval(int seconds)
 		autoUpdateTimer.setIntervalMs(seconds * 1000);
 }
 
+void NtpClient::setTimezone(int reqTimezone)
+{
+	if ( (reqTimezone >= -12) && (reqTimezone <= 12) )
+	{
+		timezone = reqTimezone;
+	}
+}
+
 void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
 {
 	// We do some basic check to see if it really is a ntp packet we receive.
 	// NTP version should be set to same as we used to send, NTP_VERSION
+	// NTP_VERSION 3 has time in same location so accept that too
 	// Mode should be set to NTP_MODE_SERVER
 
-	if (onCompleted != NULL)
+	uint8_t versionMode = pbuf_get_at(buf, 0);
+	uint8_t ver = (versionMode & 0b00111000) >> 3;
+	uint8_t mode = (versionMode & 0x07);
+
+	if (mode == NTP_MODE_SERVER && (ver == NTP_VERSION || ver == (NTP_VERSION -1)))
 	{
-		uint8_t versionMode = pbuf_get_at(buf, 0);
-		uint8_t ver = (versionMode & 0b00111000) >> 3;
-		uint8_t mode = (versionMode & 0x07);
+		//Most likely a correct NTP packet received.
 
-		if (mode == NTP_MODE_SERVER && ver == NTP_VERSION)
-		{
-			//Most likely a correct NTP packet received.
+		uint8_t data[4];
+		pbuf_copy_partial(buf, data, 4, 40); // Copy only timestamp.
 
-			uint8_t data[4];
-			pbuf_copy_partial(buf, data, 4, 40); // Copy only timestamp.
+		uint32_t timestamp = (data[0] << 24 | data[1] << 16 | data[2] << 8
+				| data[3]);
 
-			uint32_t timestamp = (data[0] << 24 | data[1] << 16 | data[2] << 8
-					| data[3]);
+		// Unix time starts on Jan 1 1970, subtract 70 years:
+		uint32_t epoch = timestamp - 0x83AA7E80;
 
-			// Unix time starts on Jan 1 1970, subtract 70 years:
-			uint32_t epoch = timestamp - 0x83AA7E80;
-
+		// if onCompleted is set use callback otherwise set systemtime
+		if (onCompleted != NULL)
+			{
 			this->onCompleted(*this, epoch);
+			}
+		else
+		{
+			SystemClock.setTime(epoch + (timezone * 3600));
 		}
 	}
 }

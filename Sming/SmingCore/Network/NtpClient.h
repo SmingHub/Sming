@@ -4,6 +4,8 @@
 #include "UdpConnection.h"
 #include "../Platform/System.h"
 #include "../Timer.h"
+#include "../SystemClock.h"
+#include "../Platform/Station.h"
 
 #define NTP_PORT 123
 #define NTP_PACKET_SIZE 48
@@ -13,19 +15,18 @@
 
 #define NTP_SERVER_DEFAULT "pool.ntp.org"
 
-#define NTP_LISTEN_PORT 57001
 #define NTP_DEFAULT_AUTO_UPDATE_INTERVAL 600000 // 10 minutes
-
 
 class NtpClient;
 typedef void (*NtpTimeResultCallback)(NtpClient& client, uint32_t unixTime);
-
 
 class NtpClient : protected UdpConnection
 {
 public:
 	
+	NtpClient();
 	NtpClient(NtpTimeResultCallback onTimeReceivedCb);
+	NtpClient(String reqServer, int reqIntervalSeconds, int reqTimezone, NtpTimeResultCallback onTimeReceivedCb = NULL);
 	virtual ~NtpClient();
 
 	void requestTime();
@@ -35,17 +36,21 @@ public:
 	
 	void setAutoQuery(bool autoQuery);
 	void setAutoQueryInterval(int seconds);
+
+	void setTimezone(int reqTimezone);
 		
 protected:
 	int resolveServer();
 	void onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort);
 	
 protected: 
-	String server;
-	IPAddress serverAddress;
-	NtpTimeResultCallback onCompleted;
+	String server = NTP_SERVER_DEFAULT;
+	IPAddress serverAddress = (uint32_t)0;
+	NtpTimeResultCallback onCompleted = nullptr;
+	int timezone = 0;
 		
 	Timer autoUpdateTimer;
+	Timer connectionTimer;
 		
 	static void staticDnsResponse(const char *name, struct ip_addr *ip, void *arg);		
 };
