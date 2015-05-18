@@ -14,12 +14,15 @@ NtpClient::NtpClient()
 	requestTime();
 }
 
-NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, int reqTimezone, NtpTimeResultCallback onTimeReceivedCb /* = NULL*/)
+NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb /* = NULL*/)
 {
 	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
 	this->server = reqServer;
 	this->onCompleted = onTimeReceivedCb;
-	setTimezone(reqTimezone);
+	if (!onTimeReceivedCb)
+	{
+		autoUpdateSystemClock = true;
+	}
 	if (reqIntervalSeconds == 0)
 	{
 		setAutoQuery(false);
@@ -30,6 +33,29 @@ NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, int reqTimezone, 
 		setAutoQuery(true);
 		requestTime();
 	}
+}
+
+NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, Delegate<void()> delegateFunction /* = NULL */)
+{
+	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
+	this->server = reqServer;
+	this->delegateCompleted = delegateFunction;
+	if (!delegateFunction)
+	{
+		autoUpdateSystemClock = true;
+	}
+
+	if (reqIntervalSeconds == 0)
+	{
+		setAutoQuery(false);
+	}
+	else
+	{
+		setAutoQueryInterval(reqIntervalSeconds);
+		setAutoQuery(true);
+		requestTime();
+	}
+
 }
 
 NtpClient::~NtpClient()
@@ -122,12 +148,9 @@ void NtpClient::setAutoQueryInterval(int seconds)
 		autoUpdateTimer.setIntervalMs(seconds * 1000);
 }
 
-void NtpClient::setTimezone(int reqTimezone)
+void NtpClient::setAutoUpdateSystemClock(bool autoUpdateClock)
 {
-	if ( (reqTimezone >= -12) && (reqTimezone <= 12) )
-	{
-		timezone = reqTimezone;
-	}
+	autoUpdateSystemClock = autoUpdateClock;
 }
 
 void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
@@ -154,15 +177,16 @@ void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
 		// Unix time starts on Jan 1 1970, subtract 70 years:
 		uint32_t epoch = timestamp - 0x83AA7E80;
 
+		if (autoUpdateSystemClock)
+		{
+			SystemClock.setTime(epoch, true); // update systemclock utc value
+		}
+
 		// if onCompleted is set use callback otherwise set systemtime
 		if (onCompleted != NULL)
 			{
 			this->onCompleted(*this, epoch);
 			}
-		else
-		{
-			SystemClock.setTime(epoch + (timezone * 3600));
-		}
 	}
 }
 

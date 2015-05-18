@@ -6,6 +6,7 @@
 #include "../Timer.h"
 #include "../SystemClock.h"
 #include "../Platform/Station.h"
+#include "../Delegate.h"
 
 #define NTP_PORT 123
 #define NTP_PACKET_SIZE 48
@@ -26,7 +27,8 @@ public:
 	
 	NtpClient();
 	NtpClient(NtpTimeResultCallback onTimeReceivedCb);
-	NtpClient(String reqServer, int reqIntervalSeconds, int reqTimezone, NtpTimeResultCallback onTimeReceivedCb = NULL);
+	NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb = NULL);
+	NtpClient(String reqServer, int reqIntervalSeconds, Delegate<void()> delegateFunction = NULL);
 	virtual ~NtpClient();
 
 	void requestTime();
@@ -37,8 +39,8 @@ public:
 	void setAutoQuery(bool autoQuery);
 	void setAutoQueryInterval(int seconds);
 
-	void setTimezone(int reqTimezone);
-		
+	void setAutoUpdateSystemClock(bool autoUpdateClock);
+
 protected:
 	int resolveServer();
 	void onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort);
@@ -47,7 +49,8 @@ protected:
 	String server = NTP_SERVER_DEFAULT;
 	IPAddress serverAddress = (uint32_t)0;
 	NtpTimeResultCallback onCompleted = nullptr;
-	int timezone = 0;
+	Delegate<void()> delegateCompleted = nullptr;
+	bool autoUpdateSystemClock = false;
 		
 	Timer autoUpdateTimer;
 	Timer connectionTimer;
