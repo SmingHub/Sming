@@ -19,7 +19,8 @@
 #define NTP_DEFAULT_AUTO_UPDATE_INTERVAL 600000 // 10 minutes
 
 class NtpClient;
-typedef void (*NtpTimeResultCallback)(NtpClient& client, uint32_t unixTime);
+typedef void (*NtpTimeResultCallback)(NtpClient& client, time_t unixTime);
+// typedef Delegate<void(time_t ntptime)> NtpTimeResultDelegate;
 
 class NtpClient : protected UdpConnection
 {
@@ -27,8 +28,8 @@ public:
 	
 	NtpClient();
 	NtpClient(NtpTimeResultCallback onTimeReceivedCb);
-	NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb = NULL);
-	NtpClient(String reqServer, int reqIntervalSeconds, Delegate<void()> delegateFunction = NULL);
+	NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb);
+	NtpClient(String reqServer, int reqIntervalSeconds, Delegate<void(time_t ntptime)> delegateFunction = NULL);
 	virtual ~NtpClient();
 
 	void requestTime();
@@ -49,7 +50,8 @@ protected:
 	String server = NTP_SERVER_DEFAULT;
 	IPAddress serverAddress = (uint32_t)0;
 	NtpTimeResultCallback onCompleted = nullptr;
-	Delegate<void()> delegateCompleted = nullptr;
+//	Delegate<void(time_t ntptime)> delegateCompleted = nullptr;
+	Delegate<void(time_t ntptime)> delegateCompleted = nullptr;
 	bool autoUpdateSystemClock = false;
 		
 	Timer autoUpdateTimer;

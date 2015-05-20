@@ -1,6 +1,6 @@
 #include "SystemClock.h"
 
-uint32_t SystemClockClass::now(bool timeUtc /* = false */)
+DateTime SystemClockClass::now(bool timeUtc /* = false */)
 {
 	// calculate number of seconds passed since last call to now()
 	while (millis() - prevMillis >= 1000)
@@ -12,15 +12,15 @@ uint32_t SystemClockClass::now(bool timeUtc /* = false */)
 	}
     if (timeUtc)
     {
-    	return systemTime -  (timezoneDiff * SECS_PER_HOUR); // utc time
+    	return DateTime(systemTime -  (timezoneDiff * SECS_PER_HOUR)); // utc time
     }
     else
     {
-    	return systemTime; // local time
+    	return DateTime(systemTime); // local time
     }
 }
 
-void SystemClockClass::setTime(uint32_t time, bool timeUtc /* = false */)
+void SystemClockClass::setTime(time_t time, bool timeUtc /* = false */)
 {
 	systemTime = timeUtc ? (time + (timezoneDiff * SECS_PER_HOUR)) : time;
 	prevMillis = millis();
@@ -40,6 +40,16 @@ bool SystemClockClass::setTimezone(double reqTimezone)
 		return true;
 	}
 	return false;
+}
+
+void SystemClockClass::setNtpSync(String reqServer, int reqInterval)
+{
+	if (ntpClient)
+	{
+		delete ntpClient;
+		ntpClient = nullptr;
+	}
+	ntpClient = new NtpClient(reqServer, reqInterval);
 }
 
 SystemClockClass SystemClock;

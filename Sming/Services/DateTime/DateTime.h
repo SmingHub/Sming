@@ -52,6 +52,8 @@ public:
 	DateTime();
 	DateTime(time_t time);
 
+	operator time_t() { return toUnixTime(); }
+
 	void setTime(time_t time);
 	void setTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year);
 	bool parseHttpDate(String httpDate);
