@@ -1,6 +1,6 @@
 #include "SystemClock.h"
 
-uint32_t SystemClockClass::now()
+DateTime SystemClockClass::now(bool timeUtc /* = false */)
 {
 	// calculate number of seconds passed since last call to now()
 	while (millis() - prevMillis >= 1000)
@@ -10,20 +10,46 @@ uint32_t SystemClockClass::now()
 		systemTime++;
 		prevMillis += 1000;
 	}
-
-	return systemTime;
+    if (timeUtc)
+    {
+    	return DateTime(systemTime -  (timezoneDiff * SECS_PER_HOUR)); // utc time
+    }
+    else
+    {
+    	return DateTime(systemTime); // local time
+    }
 }
 
-void SystemClockClass::setTime(uint32_t time)
+void SystemClockClass::setTime(time_t time, bool timeUtc /* = false */)
 {
-	systemTime = (uint32_t) time;
+	systemTime = timeUtc ? (time + (timezoneDiff * SECS_PER_HOUR)) : time;
 	prevMillis = millis();
 }
 
-String SystemClockClass::getSystemTimeString()
+String SystemClockClass::getSystemTimeString(bool timeUtc /* = false */)
 {
-	dateTime.setTime(now());
+	dateTime.setTime(now(timeUtc));
 	return dateTime.toFullDateTimeString();
+}
+
+bool SystemClockClass::setTimezone(double reqTimezone)
+{
+	if ( (reqTimezone >= -12) && (reqTimezone <= 12) )
+	{
+		timezoneDiff = reqTimezone;
+		return true;
+	}
+	return false;
+}
+
+void SystemClockClass::setNtpSync(String reqServer, int reqInterval)
+{
+	if (ntpClient)
+	{
+		delete ntpClient;
+		ntpClient = nullptr;
+	}
+	ntpClient = new NtpClient(reqServer, reqInterval);
 }
 
 SystemClockClass SystemClock;

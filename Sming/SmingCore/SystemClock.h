@@ -4,19 +4,27 @@
 #include "Clock.h"
 #include "../../Services/DateTime/DateTime.h"
 #include "../../Wiring/WString.h"
+#include "../SmingCore/Network/NtpClient.h"
+
+class NtpClient;
 
 class SystemClockClass
 {
 public:
-	uint32_t now();
-	void setTime(uint32_t time);	
-	String getSystemTimeString();
-	
+	DateTime now(bool timeUtc = false);
+	void setTime(time_t time, bool timeUtc = false);
+	String getSystemTimeString(bool timeUtc = false);
+	bool setTimezone(double reqTimezone);
+
+	void setNtpSync(String reqServer, int reqInterval);
+
 private:
 	uint32_t systemTime;
 	uint32_t prevMillis;
+	double timezoneDiff = 0.0;
 	
 	DateTime dateTime;
+	NtpClient* ntpClient = nullptr;
 	
 };
 
