@@ -49,10 +49,10 @@ void Timer::start(bool repeating/* = true*/)
 	stop();
 	if(interval == 0 || (!callback && !delegate_func)) return;
 	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);
-	if (interval > 1000)
-		ets_timer_arm_new(&timer, interval / 1000, repeating, 1); // msec
+	if (interval > 10000)
+		ets_timer_arm_new(&timer, (uint32_t)(interval / 1000), repeating, 1); // msec
 	else
-		ets_timer_arm_new(&timer, interval, repeating, 0); 		  // usec
+		ets_timer_arm_new(&timer, (uint32_t)interval, repeating, 0); 		  // usec
 	started = true;
 }
 

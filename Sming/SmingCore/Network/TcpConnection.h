@@ -45,12 +45,14 @@ public:
 	virtual void close();
 
 	// return -1 on error
-	int writeString(const char* data, uint8_t apiflags = 0);
-	int writeString(const String data, uint8_t apiflags = 0);
+	int writeString(const char* data, uint8_t apiflags = TCP_WRITE_FLAG_COPY);
+	int writeString(const String data, uint8_t apiflags = TCP_WRITE_FLAG_COPY);
 	// return -1 on error
-	virtual int write(const char* data, int len, uint8_t apiflags = 0); // flags: TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
+	virtual int write(const char* data, int len, uint8_t apiflags = TCP_WRITE_FLAG_COPY); // flags: TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
 	int write(IDataSourceStream* stream);
+	__forceinline uint16_t getAvailableWriteSize() { return tcp_sndbuf(tcp); }
 	void flush();
+
 	void setTimeOut(uint16_t waitTimeOut);
 	IPAddress getRemoteIp()  { return (tcp == NULL) ? INADDR_NONE : IPAddress(tcp->remote_ip);};
 	uint16_t getRemotePort() { return (tcp == NULL) ? 0 : tcp->remote_port; };

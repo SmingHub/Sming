@@ -75,9 +75,9 @@ bool TcpServer::listen(int port)
 err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 {
 	// Anti DDoS :-)
-	if (system_get_free_heap_size() < 7500)
+	if (system_get_free_heap_size() < 6500)
 	{
-		debugf("\r\n\r\nCONNECTION DROPPED\r\n\r\n");
+		debugf("\r\n\r\nCONNECTION DROPPED\r\n\t(%d)\r\n\r\n", system_get_free_heap_size());
 		return ERR_MEM;
 	}
 

@@ -134,40 +134,37 @@ void TcpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	debugf("onReadyToSendData: %d", sourceEvent);
 }
 
-int TcpConnection::writeString(const String data, uint8_t apiflags /* = 0*/)
+int TcpConnection::writeString(const String data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
 	writeString(data.c_str(), apiflags);
 }
 
-int TcpConnection::writeString(const char* data, uint8_t apiflags /* = 0*/)
+int TcpConnection::writeString(const char* data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
 	return write(data, strlen(data), apiflags);
 }
 
-int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = 0*/)
+int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
-   int original = len;
-   err_t err;
-   do
+   //int original = len;
+
+   u16_t available = getAvailableWriteSize();
+   if (available < len)
    {
-	 err = tcp_write(tcp, data, len, apiflags);
-	 if (err == ERR_MEM)
-	 {
-	   if ((tcp_sndbuf(tcp) == 0) || (tcp_sndqueuelen(tcp) >= TCP_SND_QUEUELEN)) {
-		 /* no need to try smaller sizes */
-		 len = 1;
-	   } else {
-		 len /= 2;
-	   }
-	 }
-   } while ((err == ERR_MEM) && (len > 1));
+	   if (available == 0)
+		   return -1; // No memory
+	   else
+		   len = available;
+   }
+
+   err_t err = tcp_write(tcp, data, len, apiflags);
 
    if (err == ERR_OK)
    {
-		debugf("TCP connection send: %d (%d)", len, original);
+		//debugf("TCP connection send: %d (%d)", len, original);
 		return len;
    } else {
-		debugf("TCP connection failed with err %d (\"%s\")", err, lwip_strerr(err));
+		//debugf("TCP connection failed with err %d (\"%s\")", err, lwip_strerr(err));
 		return -1;
    }
 }
@@ -184,7 +181,7 @@ int TcpConnection::write(IDataSourceStream* stream)
 		if (!space)
 		{
 			debugf("WAIT FOR FREE SPACE");
-			//connection.flush();
+			flush();
 			break; // don't try to send buffers if no free space available
 		}
 
@@ -228,6 +225,7 @@ void TcpConnection::initialize(tcp_pcb* pcb)
 	tcp = pcb;
 	sleep = 0;
 	canSend = true;
+	tcp_nagle_disable(tcp);
 	tcp_arg(tcp, (void*)this);
 	tcp_sent(tcp, staticOnSent);
 	tcp_recv(tcp, staticOnReceive);
@@ -264,7 +262,10 @@ void TcpConnection::closeTcpConnection(tcp_pcb *tpcb)
 void TcpConnection::flush()
 {
 	if (tcp->state == ESTABLISHED)
+	{
+		//debugf("TCP flush()");
 		tcp_output(tcp);
+	}
 }
 
 bool TcpConnection::intternalTcpConnect(IPAddress addr, uint16_t port)
@@ -321,14 +322,14 @@ err_t TcpConnection::staticOnReceive(void *arg, tcp_pcb *tcp, pbuf *p, err_t err
 		if (p != NULL)
 		{
 		  /* Inform TCP that we have taken the data. */
-		  //tcp_recved(tcp, p->tot_len);
+		  tcp_recved(tcp, p->tot_len);
 		  pbuf_free(p);
 		}
 		closeTcpConnection(tcp); // ??
 		con->tcp = NULL;
 		con->onError(err);
 		//con->close();
-		return err;
+		return err == ERR_ABRT ? ERR_ABRT : ERR_OK;
 	}
 
 	//if (tcp != NULL && tcp->state == ESTABLISHED) // If active
