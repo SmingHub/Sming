@@ -64,7 +64,8 @@ bool MqttClient::publishWithQoS(String topic, String message, int QoS, bool reta
 int MqttClient::staticSendPacket(void* userInfo, const void* buf, unsigned int count)
 {
 	MqttClient* client = (MqttClient*)userInfo;
-	client->send((const char*)buf, count);
+	bool sent = client->send((const char*)buf, count);
+	return sent ? count : 0;
 }
 
 bool MqttClient::subscribe(String topic)
