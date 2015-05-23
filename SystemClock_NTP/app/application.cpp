@@ -84,7 +84,7 @@ void connectFail()
 
 void init()
 {
-	Serial.begin(74880);
+	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
 	Serial.println("Sming. Let's do smart things!");
 
