@@ -20,9 +20,11 @@ Timer printTimer;
 
 // Option 2
 // Use this option if you want control but other server/timeout options
-// Default : automatic NTP requests are sent, no automatic update of SystemTime
+// Default : use server as defined in call, no automatic update of SystemTime
+// Default : automatic NTP request at myrequestinterval seconds
+// Default : if myrequestinterval == 0 -> no automatic NTP request
 
-// NtpClient ntpClient_myoptins ("my_ntp_server",myrefreshinterval, onNtpReceive);
+// NtpClient ntpClient ("my_ntp_server",myrefreshinterval, onNtpReceive);
 
 // Option 3
 // Use this option if you want to start wit autorefresh and autosystemupdate
