@@ -6,6 +6,24 @@
 #define WIFI_SSID "PleaseEnterSSID"
 #define WIFI_PWD "PleaseEnterPass"
 
+class ntpClientDemo
+{
+public:
+	ntpClientDemo()
+	{
+		ntpcp = new NtpClient("my_ntpserver", 30, &ntpClientDemo::ntpResult);
+	};
+	~ntpClientDemo() {};
+
+	NtpClient *ntpcp;
+	NtpClientResultCallback ntpResult(NtpClient &client, time_t ntpTime)
+	{
+		Serial.print("ntpClientDemo Callback Time = ");
+		Serial.println(ntpTime);
+	}
+
+};
+
 
 void onNtpReceive(NtpClient& client, time_t timestamp);
 
