@@ -3,26 +3,65 @@
 
 
 // Put you SSID and Password here
-#define WIFI_SSID "ssid"
-#define WIFI_PWD "pw"
+#define WIFI_SSID "PleaseEnterSSID"
+#define WIFI_PWD "PleaseEnterPass"
+
+class ntpClientDemo
+{
+public:
+	ntpClientDemo()
+	{
+		ntpcp = new NtpClient("my_ntpserver", 30, &ntpClientDemo::ntpResult);
+	};
+	~ntpClientDemo() {};
+
+	NtpClient *ntpcp;
+	NtpClientResultCallback ntpResult(NtpClient &client, time_t ntpTime)
+	{
+		Serial.print("ntpClientDemo Callback Time = ");
+		Serial.println(ntpTime);
+	}
+
+};
 
 
 void onNtpReceive(NtpClient& client, time_t timestamp);
 
 Timer printTimer;
-//NtpClient ntpClient(onNtpReceive);
-//NtpClient ntpc("fritz.box",30, onNtpReceive);
 
+// Option 1
+// Use this option if you want to have full control of NtpTime client
+// Default : no automatic NTP requests sent, no automatic update of SystemTime
+// Default : NTP_DEFAULT_SERVER and NTP_DEFAULT_AUTO_UPDATE_INTERVAL from ntpclient.h
+
+// NtpClient ntpClient(onNtpReceive);
+
+// Option 2
+// Use this option if you want control but other server/timeout options
+// Default : use server as defined in call, no automatic update of SystemTime
+// Default : automatic NTP request at myrequestinterval seconds
+// Default : if myrequestinterval == 0 -> no automatic NTP request
+
+// NtpClient ntpClient ("my_ntp_server",myrefreshinterval, onNtpReceive);
+
+// Option 3
+// Use this option if you want to start wit autorefresh and autosystemupdate
+// No further callback from ntpClient
+NtpClient ntpClient("pool.ntp.org", 30);
+
+// Option 4
+// only create pointer and initialize on ConnectOK
+// NtpClient *ntpClient;
 
 void onPrintSystemTime() {
 	Serial.print("Time    : ");
 	Serial.println(SystemClock.getSystemTimeString());
-	Serial.print("UTC Time:");
+	Serial.print("UTC Time: ");
 	Serial.println(SystemClock.getSystemTimeString(true));
 }
 
 
-// Called when time has been received by NtpClient.
+// Called when time has been received by NtpClient (option 1 or 2)
 // Either after manual requestTime() or when
 // and automatic request has been made.
 void onNtpReceive(NtpClient& client, time_t timestamp) {
@@ -30,26 +69,26 @@ void onNtpReceive(NtpClient& client, time_t timestamp) {
 
 	Serial.print("Time synchronized: ");
 	Serial.println(SystemClock.getSystemTimeString());
-	client.setNtpServer("pool.ntp.org");
 }
-
-NtpClient *nt;
 
 // Will be called when WiFi station was connected to AP
 void connectOk()
 {
+// Set specific parameters if started by option 1 or 2
 	// Set client to do automatic time requests every 60 seconds.
 	// NOTE: you should have longer interval in a real world application
 	// no need for query for time every 60 sec, should be at least 10 minutes or so.
-//	ntpClient.setAutoQueryInterval(30);
+//	ntpClient.setAutoQueryInterval(60);
 //	ntpClient.setAutoQuery(true);
-
+//  ntpClient.setAutoUpdateSystemClock(true);
 	// Request to update time now. 
 	// Otherwise the set interval will pass before time
 	// is updated.
 //	ntpClient.requestTime();
-	SystemClock.setNtpSync("fritz.box",30);
-//	nt = new NtpClient("fritz.box",30);
+
+//  When using option 4 -> create client after connect OK
+//  ntpClient = new NtpClient("my_ntp_server", myrefreshinterval);
+
 }
 
 // Will be called when WiFi station timeout was reached
@@ -65,7 +104,7 @@ void connectFail()
 
 void init()
 {
-	Serial.begin(74880);
+	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
 	Serial.println("Sming. Let's do smart things!");
 
@@ -73,6 +112,7 @@ void init()
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
+	// set timezone to hourly difference to UTC
 	SystemClock.setTimezone(2);
 
 	printTimer.initializeMs(1000, onPrintSystemTime).start();

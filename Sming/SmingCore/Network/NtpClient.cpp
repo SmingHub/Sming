@@ -14,8 +14,8 @@ NtpClient::NtpClient()
 	requestTime();
 }
 
-NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb /* = NULL*/)
-//: NtpClient(reqServer, reqIntervalSeconds, Delegate<void(time_t ntptime)> (onTimeReceivedCb))
+NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb)
+// : NtpClient(reqServer, reqIntervalSeconds, NtpClientResultCallback (onTimeReceivedCb))
 {
 	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
 	this->server = reqServer;
@@ -36,11 +36,11 @@ NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCall
 	}
 }
 
-NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, Delegate<void(time_t ntptime)> delegateFunction /* = NULL */)
+NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpClientResultCallback delegateFunction /* = NULL */)
 {
 	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
 	this->server = reqServer;
-	// this->delegateCompleted = delegateFunction;
+	this->delegateCompleted = delegateFunction;
 	if (!delegateFunction)
 	{
 		autoUpdateSystemClock = true;
@@ -196,7 +196,7 @@ void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
 		if (delegateCompleted)
 		{
 			debugf("NtpClient onreceive delegated");
-			this->delegateCompleted(epoch);
+			this->delegateCompleted(*this, epoch);
 		}
 	}
 }
