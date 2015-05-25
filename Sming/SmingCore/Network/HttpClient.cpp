@@ -64,9 +64,41 @@ bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompleted
 	debugf("Download: %s", uri.toString().c_str());
 
 	connect(uri.Host, uri.Port);
-	sendString("GET " + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n\r\n");
+	if (body.length() == 0){ //Not a POST
+        sendString("GET " + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n\r\n");
+	}
+	else{
+        sendString("POST " + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n");
+        sendString("Content-Type: " + content_type + "\r\n");
+        String content_length = "";
+        content_length = body.length();
+        sendString("Content-Length: " + content_length + "\r\n\r\n");
+        sendString(body);
+	}
 
 	return true;
+}
+
+
+void HttpClient::setContentType(String _content_type){
+    content_type = _content_type;
+}
+
+String HttpClient::getContentType(){
+    return content_type;
+}
+
+void HttpClient::setPostBody(String _body){
+    if (content_type == ""){
+        content_type = ContentType::FormUrlEncoded;
+    }
+    body = _body;
+}
+
+
+String HttpClient::getPostBody(){
+
+    return body;
 }
 
 void HttpClient::reset()
