@@ -12,8 +12,6 @@
 HttpClient::HttpClient(bool autoDestruct /* = false */) : TcpClient(autoDestruct)
 {
 	waitParse = false;
-	body = "";
-	content_type = "";
 	reset();
 }
 
@@ -73,7 +71,7 @@ bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompleted
         sendString("POST " + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n");
         sendString("Content-Type: " + content_type + "\r\n");
         String content_length = "";
-        content_length += body.length();
+        content_length = body.length();
         sendString("Content-Length: " + content_length + "\r\n\r\n");
         sendString(body);
 	}
@@ -91,8 +89,8 @@ String HttpClient::getContentType(){
 }
 
 void HttpClient::setPostBody(String _body){
-    if (content_type == NULL){
-        content_type = "application/x-www-form-urlencoded";
+    if (content_type == ""){
+        content_type = ContentType::FormUrlEncoded;
     }
     body = _body;
 }

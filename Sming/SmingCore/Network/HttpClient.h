@@ -78,8 +78,8 @@ private:
 	HashMap<String, String> responseHeaders;
 
 	String responseStringData;
-	String content_type;
-	String body;
+	String content_type = "";
+	String body = "";
 	file_t saveFile;
 };
 
