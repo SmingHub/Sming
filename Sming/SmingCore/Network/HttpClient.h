@@ -41,6 +41,12 @@ public:
 	bool downloadFile(String url, HttpClientCompletedCallback onCompleted = NULL);
 	bool downloadFile(String url, String saveFileName, HttpClientCompletedCallback onCompleted = NULL);
 
+	void setPostBody(String _method);
+	String getPostBody();
+
+	void setContentType(String _content_type);
+	String getContentType();
+
 	// Resulting HTTP status code
 	__forceinline int getReponseCode() { return code; }
 	__forceinline bool isSuccessful() { return (!writeError) && (code >= 200 && code <= 399); }
@@ -72,6 +78,8 @@ private:
 	HashMap<String, String> responseHeaders;
 
 	String responseStringData;
+	String content_type;
+	String body;
 	file_t saveFile;
 };
 
