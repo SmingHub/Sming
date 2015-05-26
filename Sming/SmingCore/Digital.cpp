@@ -75,21 +75,12 @@ uint8_t digitalRead(uint16_t pin)
 void pullup(uint16_t pin)
 {
 	if (pin >= 16) return;
-	PIN_PULLDWN_DIS((EspDigitalPins[pin].mux));
 	PIN_PULLUP_EN((EspDigitalPins[pin].mux));
-}
-
-void pulldown(uint16_t pin)
-{
-	if (pin >= 16) return;
-	PIN_PULLUP_DIS((EspDigitalPins[pin].mux));
-	PIN_PULLDWN_EN((EspDigitalPins[pin].mux));
 }
 
 void noPullup(uint16_t pin)
 {
 	if (pin >= 16) return;
-	PIN_PULLDWN_DIS((EspDigitalPins[pin].mux));
 	PIN_PULLUP_DIS((EspDigitalPins[pin].mux));
 }
 
