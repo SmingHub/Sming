@@ -88,7 +88,6 @@ int NtpClient::resolveServer()
 
 void NtpClient::requestTime()
 {
-	debugf("NtpClient request Time");
 	if (!WifiStation.isConnected())
 	{
 		connectionTimer.initializeMs(1000, Delegate<void()>(&NtpClient::requestTime, this)).startOnce();
@@ -118,7 +117,6 @@ void NtpClient::requestTime()
 
 //	Send to server, serverAddress & port is set in connect
 	NtpClient::send((char*) packet, NTP_PACKET_SIZE);
-	debugf("NtpClient request sent");
 }
 
 void NtpClient::setNtpServer(String server)
@@ -163,8 +161,6 @@ void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
 	// NTP_VERSION 3 has time in same location so accept that too
 	// Mode should be set to NTP_MODE_SERVER
 
-	debugf("NtpClient onReceive");
-
 	uint8_t versionMode = pbuf_get_at(buf, 0);
 	uint8_t ver = (versionMode & 0b00111000) >> 3;
 	uint8_t mode = (versionMode & 0x07);
@@ -184,18 +180,15 @@ void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
 
 		if (autoUpdateSystemClock)
 		{
-			debugf("NtpClient onreceive autoupdate");
-			SystemClock.setTime(epoch, true); // update systemclock utc value
+			SystemClock.setTime(epoch, eSCUtc); // update systemclock utc value
 		}
 
 		if (onCompleted != NULL)
 		{
-			debugf("NtpClient onreceive oncompleted");
 			this->onCompleted(*this, epoch);
 		}
 		if (delegateCompleted)
 		{
-			debugf("NtpClient onreceive delegated");
 			this->delegateCompleted(*this, epoch);
 		}
 	}

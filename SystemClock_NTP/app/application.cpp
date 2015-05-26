@@ -11,16 +11,29 @@ class ntpClientDemo
 public:
 	ntpClientDemo()
 	{
-		ntpcp = new NtpClient("my_ntpserver", 30, &ntpClientDemo::ntpResult);
+		ntpResultCB = NtpClientResultCallback(&ntpClientDemo::ntpResult, this);
+		ntpcp = new NtpClient("pool.ntp.org", 30, ntpResultCB);
+
+		// 			Alternative way without private member variable
+		//	 		ntpcp = new NtpClient("pool.ntp.org",30, NtpClientResultCallback (&ntpClientDemo::ntpResult, this));
+
 	};
 	~ntpClientDemo() {};
 
 	NtpClient *ntpcp;
-	NtpClientResultCallback ntpResult(NtpClient &client, time_t ntpTime)
+
+	bool ntpResult(NtpClient& client, time_t ntpTime)
 	{
-		Serial.print("ntpClientDemo Callback Time = ");
-		Serial.println(ntpTime);
+		SystemClock.setTime(ntpTime);
+		Serial.print("ntpClientDemo Callback Time_t = ");
+		Serial.print(ntpTime);
+		Serial.print(" Time = ");
+		Serial.println(SystemClock.getSystemTimeString());
+
+		return true;
 	}
+
+	NtpClientResultCallback ntpResultCB = NtpClientResultCallback(&ntpClientDemo::ntpResult, this);
 
 };
 
@@ -53,11 +66,18 @@ NtpClient ntpClient("pool.ntp.org", 30);
 // only create pointer and initialize on ConnectOK
 // NtpClient *ntpClient;
 
+
+// Callback example using defined class ntpClientDemo
+ntpClientDemo *demo;
+
+// CallBack example 1 
+//ntpClientDemo dm1 = ntpClientDemo();
+
 void onPrintSystemTime() {
 	Serial.print("Time    : ");
 	Serial.println(SystemClock.getSystemTimeString());
 	Serial.print("UTC Time: ");
-	Serial.println(SystemClock.getSystemTimeString(true));
+	Serial.println(SystemClock.getSystemTimeString(eSCUtc));
 }
 
 
@@ -88,6 +108,9 @@ void connectOk()
 
 //  When using option 4 -> create client after connect OK
 //  ntpClient = new NtpClient("my_ntp_server", myrefreshinterval);
+
+//	When usind Delegate Callback Option 2
+//	demo = new ntpClientDemo();
 
 }
 

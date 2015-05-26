@@ -1,6 +1,6 @@
 #include "SystemClock.h"
 
-DateTime SystemClockClass::now(bool timeUtc /* = false */)
+DateTime SystemClockClass::now(eSysClockTime timeType /* = eSCLocal */)
 {
 	// calculate number of seconds passed since last call to now()
 	while (millis() - prevMillis >= 1000)
@@ -10,25 +10,26 @@ DateTime SystemClockClass::now(bool timeUtc /* = false */)
 		systemTime++;
 		prevMillis += 1000;
 	}
-    if (timeUtc)
-    {
-    	return DateTime(systemTime -  (timezoneDiff * SECS_PER_HOUR)); // utc time
-    }
-    else
+    if ((timeType == eSCLocal) || (SCStatus == eSCInitial))
     {
     	return DateTime(systemTime); // local time
     }
+    else
+    {
+    	return DateTime(systemTime -  (timezoneDiff * SECS_PER_HOUR)); // utc time
+    }
 }
 
-void SystemClockClass::setTime(time_t time, bool timeUtc /* = false */)
+void SystemClockClass::setTime(time_t time, eSysClockTime timeType /* = eSCLocal */)
 {
-	systemTime = timeUtc ? (time + (timezoneDiff * SECS_PER_HOUR)) : time;
+	systemTime = (timeType == eSCLocal) ? (time + (timezoneDiff * SECS_PER_HOUR)) : time;
 	prevMillis = millis();
+	SCStatus = eSCSet;
 }
 
-String SystemClockClass::getSystemTimeString(bool timeUtc /* = false */)
+String SystemClockClass::getSystemTimeString(eSysClockTime timeType /* = eSCLocal */)
 {
-	dateTime.setTime(now(timeUtc));
+	dateTime.setTime(now(timeType));
 	return dateTime.toFullDateTimeString();
 }
 
