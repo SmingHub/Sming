@@ -1,6 +1,5 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include "smartconfig.h"
 
 void smartconfigDone(sc_status status, void *pdata)
 {
