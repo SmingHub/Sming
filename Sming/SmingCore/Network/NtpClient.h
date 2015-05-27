@@ -20,8 +20,8 @@
 
 class NtpClient;
 
-typedef void (*NtpTimeResultCallback)(NtpClient& client, time_t unixTime);
-typedef Delegate<bool(NtpClient& client, time_t ntptime)> NtpClientResultCallback;
+typedef void (*NtpTimeResultCallback)(NtpClient& client, time_t ntpTime);
+typedef Delegate<void(NtpClient& client, time_t ntpTime)> NtpClientResultCallback;
 
 class NtpClient : protected UdpConnection
 {
@@ -30,7 +30,6 @@ public:
 	NtpClient();
 	NtpClient(NtpTimeResultCallback onTimeReceivedCb);
 	NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb);
-//	NtpClient(String reqServer, int reqIntervalSeconds, Delegate<void(time_t ntptime)> delegateFunction = NULL);
 	NtpClient(String reqServer, int reqIntervalSeconds, NtpClientResultCallback delegateFunction = NULL);
 	virtual ~NtpClient();
 
@@ -51,9 +50,6 @@ protected:
 protected: 
 	String server = NTP_SERVER_DEFAULT;
 	IPAddress serverAddress = (uint32_t)0;
-	NtpTimeResultCallback onCompleted = nullptr;
-//	Delegate<void(time_t ntptime)> delegateCompleted = nullptr;
-//	Delegate<void(time_t ntptime)> delegateCompleted = nullptr;
 	NtpClientResultCallback delegateCompleted = nullptr;
 	bool autoUpdateSystemClock = false;
 		

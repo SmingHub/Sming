@@ -43,14 +43,4 @@ bool SystemClockClass::setTimezone(double reqTimezone)
 	return false;
 }
 
-void SystemClockClass::setNtpSync(String reqServer, int reqInterval)
-{
-	if (ntpClient)
-	{
-		delete ntpClient;
-		ntpClient = nullptr;
-	}
-	ntpClient = new NtpClient(reqServer, reqInterval);
-}
-
 SystemClockClass SystemClock;

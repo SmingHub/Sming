@@ -1,39 +1,18 @@
 #include "NtpClient.h"
 
 NtpClient::NtpClient(NtpTimeResultCallback onTimeReceivedCb)
+ : NtpClient(NTP_SERVER_DEFAULT, NTP_DEFAULT_AUTO_UPDATE_INTERVAL,NtpClientResultCallback (onTimeReceivedCb)  )
 {
-	this->onCompleted = onTimeReceivedCb;
-	this->server = NTP_SERVER_DEFAULT;
-	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
 }
 
 NtpClient::NtpClient()
+ : NtpClient(NTP_SERVER_DEFAULT,0 )
 {
-	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
-	setAutoQuery(true);
-	requestTime();
 }
 
 NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb)
-// : NtpClient(reqServer, reqIntervalSeconds, NtpClientResultCallback (onTimeReceivedCb))
+ : NtpClient(reqServer, reqIntervalSeconds, NtpClientResultCallback (onTimeReceivedCb))
 {
-	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
-	this->server = reqServer;
-	this->onCompleted = onTimeReceivedCb;
-	if (!onTimeReceivedCb)
-	{
-		autoUpdateSystemClock = true;
-	}
-	if (reqIntervalSeconds == 0)
-	{
-		setAutoQuery(false);
-	}
-	else
-	{
-		setAutoQueryInterval(reqIntervalSeconds);
-		setAutoQuery(true);
-		requestTime();
-	}
 }
 
 NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpClientResultCallback delegateFunction /* = NULL */)
@@ -183,10 +162,6 @@ void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
 			SystemClock.setTime(epoch, eSCUtc); // update systemclock utc value
 		}
 
-		if (onCompleted != NULL)
-		{
-			this->onCompleted(*this, epoch);
-		}
 		if (delegateCompleted)
 		{
 			this->delegateCompleted(*this, epoch);
