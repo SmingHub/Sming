@@ -22,7 +22,7 @@ public:
 
 	NtpClient *ntpcp;
 
-	bool ntpResult(NtpClient& client, time_t ntpTime)
+	void ntpResult(NtpClient& client, time_t ntpTime)
 	{
 		SystemClock.setTime(ntpTime);
 		Serial.print("ntpClientDemo Callback Time_t = ");

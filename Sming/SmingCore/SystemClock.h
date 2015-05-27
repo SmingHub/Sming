@@ -28,9 +28,6 @@ public:
 	String getSystemTimeString(eSysClockTime timeType = eSCLocal);
 	bool setTimezone(double reqTimezone);
 
-	void setNtpSync(String reqServer, int reqInterval);
-
-	NtpClient* ntpClient = nullptr;
 private:
 	uint32_t systemTime;
 	uint32_t prevMillis;
