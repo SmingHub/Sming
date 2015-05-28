@@ -1,7 +1,7 @@
 #include "NtpClient.h"
 
 NtpClient::NtpClient(NtpTimeResultCallback onTimeReceivedCb)
- : NtpClient(NTP_SERVER_DEFAULT, NTP_DEFAULT_AUTO_UPDATE_INTERVAL,NtpClientResultCallback (onTimeReceivedCb)  )
+ : NtpClient(NTP_SERVER_DEFAULT, NTP_DEFAULT_AUTO_UPDATE_INTERVAL,NtpTimeResultDelegate (onTimeReceivedCb)  )
 {
 }
 
@@ -11,13 +11,13 @@ NtpClient::NtpClient()
 }
 
 NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb)
- : NtpClient(reqServer, reqIntervalSeconds, NtpClientResultCallback (onTimeReceivedCb))
+ : NtpClient(reqServer, reqIntervalSeconds, NtpTimeResultDelegate (onTimeReceivedCb))
 {
 }
 
-NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpClientResultCallback delegateFunction /* = NULL */)
+NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDelegate delegateFunction /* = NULL */)
 {
-	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, Delegate<void()>(&NtpClient::requestTime, this));
+	autoUpdateTimer.initializeMs(NTP_DEFAULT_AUTO_UPDATE_INTERVAL, TimerDelegate(&NtpClient::requestTime, this));
 	this->server = reqServer;
 	this->delegateCompleted = delegateFunction;
 	if (!delegateFunction)
@@ -69,7 +69,7 @@ void NtpClient::requestTime()
 {
 	if (!WifiStation.isConnected())
 	{
-		connectionTimer.initializeMs(1000, Delegate<void()>(&NtpClient::requestTime, this)).startOnce();
+		connectionTimer.initializeMs(1000, TimerDelegate(&NtpClient::requestTime, this)).startOnce();
 		return;
 	}
 	if (serverAddress.isNull())
