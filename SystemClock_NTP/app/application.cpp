@@ -24,7 +24,7 @@ public:
 
 	void ntpResult(NtpClient& client, time_t ntpTime)
 	{
-		SystemClock.setTime(ntpTime);
+		SystemClock.setTime(ntpTime, eSCUtc);
 		Serial.print("ntpClientDemo Callback Time_t = ");
 		Serial.print(ntpTime);
 		Serial.print(" Time = ");
