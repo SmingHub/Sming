@@ -22,7 +22,7 @@ DateTime SystemClockClass::now(eSysClockTime timeType /* = eSCLocal */)
 
 void SystemClockClass::setTime(time_t time, eSysClockTime timeType /* = eSCLocal */)
 {
-	systemTime = (timeType == eSCLocal) ? (time + (timezoneDiff * SECS_PER_HOUR)) : time;
+	systemTime = (timeType == eSCUtc) ? (time + (timezoneDiff * SECS_PER_HOUR)) : time;
 	prevMillis = millis();
 	SCStatus = eSCSet;
 }
