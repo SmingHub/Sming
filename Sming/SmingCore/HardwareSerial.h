@@ -10,9 +10,12 @@
 
 #include "../Wiring/WiringFrameworkDependencies.h"
 #include "../Wiring/Stream.h"
+#include "../SmingCore/Delegate.h"
 
 #define UART_ID_0   0
 #define UART_ID_1   1
+
+DELEGATE_CALLBACK (HardwareSerial,void,unsigned short)
 
 class HardwareSerial : public Stream
 {
@@ -30,11 +33,16 @@ public:
 
 	//void printf(const char *fmt, ...);
 	void systemDebugOutput(bool enabled);
+	void setCallback(HardwareSerialCallback reqCallback);
+	void setCallback(HardwareSerialDelegate reqDelegate);
+	void resetCallback();
 
 	static void IRAM_ATTR uart0_rx_intr_handler(void *para);
 
 private:
 	int uart;
+	static HardwareSerialDelegate HWSDelegates[2];
+
 };
 
 extern HardwareSerial Serial;
