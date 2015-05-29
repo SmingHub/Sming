@@ -28,7 +28,7 @@ class NtpClient : protected UdpConnection
 public:
 	NtpClient();
 	NtpClient(NtpTimeResultDelegate onTimeReceivedCb);
-	NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb);
+	NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb = nullptr);
 	virtual ~NtpClient();
 
 	void requestTime();
