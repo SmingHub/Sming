@@ -11,11 +11,11 @@ class ntpClientDemo
 public:
 	ntpClientDemo()
 	{
-		ntpResultCB = NtpClientResultCallback(&ntpClientDemo::ntpResult, this);
+		ntpResultCB = NtpTimeResultDelegate(&ntpClientDemo::ntpResult, this);
 		ntpcp = new NtpClient("pool.ntp.org", 30, ntpResultCB);
 
 		// 			Alternative way without private member variable
-		//	 		ntpcp = new NtpClient("pool.ntp.org",30, NtpClientResultCallback (&ntpClientDemo::ntpResult, this));
+		//	 		ntpcp = new NtpClient("pool.ntp.org",30, NtpTimeResultDelegate (&ntpClientDemo::ntpResult, this));
 
 	};
 	~ntpClientDemo() {};
@@ -33,7 +33,7 @@ public:
 		return true;
 	}
 
-	NtpClientResultCallback ntpResultCB = NtpClientResultCallback(&ntpClientDemo::ntpResult, this);
+	NtpTimeResultDelegate ntpResultCB = NtpTimeResultDelegate(&ntpClientDemo::ntpResult, this);
 
 };
 
