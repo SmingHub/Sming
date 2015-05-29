@@ -6,14 +6,12 @@
  ****/
 
 #include "../SmingCore/Interrupts.h"
-
 #include "../SmingCore/Digital.h"
 #include "../Wiring/WiringFrameworkIncludes.h"
 
 InterruptCallback _gpioInterruptsList[16] = {0};
+Delegate<void()> _delegateFunctionList[16];
 bool _gpioInterruptsInitialied = false;
-
-static void interruptHandler(uint32 intr_mask, void *arg);
 
 void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode)
 {
@@ -21,11 +19,30 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode)
 	attachInterrupt(pin, callback, type);
 }
 
+void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, uint8_t mode)
+{
+	GPIO_INT_TYPE type = ConvertArduinoInterruptMode(mode);
+	attachInterrupt(pin, delegateFunction, type);
+}
+
 void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode)
 {
 	if (pin >= 16) return; // WTF o_O
 	_gpioInterruptsList[pin] = callback;
+	_delegateFunctionList[pin] = nullptr;
+	attachInterruptHandler(pin, mode);
+}
 
+void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, GPIO_INT_TYPE mode)
+{
+	if (pin >= 16) return; // WTF o_O
+	_gpioInterruptsList[pin] = NULL;
+	_delegateFunctionList[pin] = delegateFunction;
+	attachInterruptHandler(pin, mode);
+}
+
+void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
+{
 	ETS_GPIO_INTR_DISABLE();
 
 	if (!_gpioInterruptsInitialied)
@@ -45,7 +62,9 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode
 
 void detachInterrupt(uint8_t pin)
 {
-	attachInterrupt(pin, NULL, GPIO_PIN_INTR_DISABLE);
+	_gpioInterruptsList[pin] = NULL;
+	_delegateFunctionList[pin] = nullptr;
+	attachInterruptHandler(pin, GPIO_PIN_INTR_DISABLE);
 }
 
 void interruptMode(uint8_t pin, uint8_t mode)
@@ -106,13 +125,19 @@ static void IRAM_ATTR interruptHandler(uint32 intr_mask, void *arg)
 		processed = false;
 		for (uint8 i = 0; i < ESP_MAX_INTERRUPTS; i++, gpio_status<<1)
 		{
-			if ((gpio_status & BIT(i)) && _gpioInterruptsList[i] != NULL)
+			if ((gpio_status & BIT(i)) && (_gpioInterruptsList[i]||_delegateFunctionList[i]))
 			{
 				//clear interrupt status
 				GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(i));
-				_gpioInterruptsList[i]();
+
+				if (_gpioInterruptsList[i])
+					_gpioInterruptsList[i]();
+				else if (_delegateFunctionList[i])
+					_delegateFunctionList[i]();
+
 				processed = true;
 			}
+
 		}
 	} while (processed);
 }
