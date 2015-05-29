@@ -52,12 +52,12 @@ bool TcpConnection::connect(String server, int port)
 	}
 	delete look;
 
-	return intternalTcpConnect(addr, port);
+	return internalTcpConnect(addr, port);
 }
 
 bool TcpConnection::connect(IPAddress addr, uint16_t port)
 {
-	return intternalTcpConnect(addr, port);
+	return internalTcpConnect(addr, port);
 }
 
 void TcpConnection::setTimeOut(uint16_t waitTimeOut)
@@ -268,7 +268,7 @@ void TcpConnection::flush()
 	}
 }
 
-bool TcpConnection::intternalTcpConnect(IPAddress addr, uint16_t port)
+bool TcpConnection::internalTcpConnect(IPAddress addr, uint16_t port)
 {
 	NetUtils::FixNetworkRouting();
 	err_t res = tcp_connect(tcp, addr, port, staticOnConnected);
@@ -409,7 +409,7 @@ void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void 
 		debugf("DNS record found: %s = %d.%d.%d.%d",
 				name, ip[0], ip[1], ip[2], ip[3]);
 
-		dlook->con->intternalTcpConnect(ip, dlook->port);
+		dlook->con->internalTcpConnect(ip, dlook->port);
 	}
 	else
 	{
