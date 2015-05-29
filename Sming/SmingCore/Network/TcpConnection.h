@@ -58,7 +58,7 @@ public:
 	uint16_t getRemotePort() { return (tcp == NULL) ? 0 : tcp->remote_port; };
 
 protected:
-	bool intternalTcpConnect(IPAddress addr, uint16_t port);
+	bool internalTcpConnect(IPAddress addr, uint16_t port);
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf *buf);
 	virtual err_t onSent(uint16_t len);
