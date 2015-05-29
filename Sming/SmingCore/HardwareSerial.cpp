@@ -17,9 +17,13 @@
 // UartDev is defined and initialized in ROM code.
 extern UartDevice UartDev;
 
+HardwareSerialDelegate HardwareSerial::HWSDelegates[2];
+
+
 HardwareSerial::HardwareSerial(const int uartPort)
 	: uart(uartPort)
 {
+//	resetCallback();
 }
 
 void HardwareSerial::begin(const uint32_t baud/* = 9600*/)
@@ -157,6 +161,22 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	//	os_install_putc1(enabled ? (void *)uart1_tx_one_char : NULL); //TODO: Debug serial
 }
 
+void HardwareSerial::setCallback(HardwareSerialCallback reqCallback)
+{
+	setCallback( HardwareSerialDelegate(reqCallback) );
+}
+
+void HardwareSerial::setCallback(HardwareSerialDelegate reqDelegate)
+{
+	HardwareSerial::HWSDelegates[uart] = reqDelegate;
+}
+
+void HardwareSerial::resetCallback()
+{
+	HWSDelegates[uart] = nullptr;
+}
+
+
 void HardwareSerial::uart0_rx_intr_handler(void *para)
 {
     /* uart0 and uart1 intr combine togther, when interrupt occur, see reg 0x3ff20020, bit2, bit0 represents
@@ -199,7 +219,15 @@ void HardwareSerial::uart0_rx_intr_handler(void *para)
 				pRxBuff->pReadPos++;
 			}
 		}
+        if (HardwareSerial::HWSDelegates[UART_ID_0])
+        {
+        	unsigned short cc;
+        	cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
+        													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
+        	HardwareSerial::HWSDelegates[UART_ID_0](cc);
+        }
     }
+
 }
 
 
