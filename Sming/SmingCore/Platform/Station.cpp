@@ -82,6 +82,11 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	return true;
 }
 
+void StationClass::disconnect()
+{
+	wifi_station_disconnect();
+}
+
 bool StationClass::isConnected()
 {
 	if (getConnectionStatus() != eSCS_GotIP) return false;

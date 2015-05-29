@@ -79,11 +79,6 @@ bool AccessPointClass::config(String ssid, String password, AUTH_MODE mode, bool
 	return true;
 }
 
-void AccessPointClass::disconnect()
-{
-	wifi_station_disconnect();
-}
-
 IPAddress AccessPointClass::getIP()
 {
 	struct ip_info info = {0};

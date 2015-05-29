@@ -41,9 +41,10 @@ public:
 	bool isEnabled();
 
 	bool config(String ssid, String password, bool autoConnectOnStartup = true);
-
+	void disconnect();
 	bool isConnected();
 	bool isConnectionFailed();
+
 	EStationConnectionStatus getConnectionStatus();
 	const char* getConnectionStatusName();
 
