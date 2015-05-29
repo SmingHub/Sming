@@ -34,6 +34,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Debug output to serial
 
+	WifiAccessPoint.enable(false);
 	WifiStation.enable(true);
 	smartconfig_start(SC_TYPE_ESPTOUCH, smartconfigDone);
 }
