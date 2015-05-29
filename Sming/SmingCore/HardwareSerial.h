@@ -15,12 +15,14 @@
 #define UART_ID_0   0
 #define UART_ID_1   1
 
-DELEGATE_CALLBACK (HardwareSerial,void,unsigned short)
+// Delegate constructor usage: (&YourClass::method, this)
+typedef Delegate<void(Stream &self, uint16_t availableCount)> StreamDataAvailableDelegate;
 
 class HardwareSerial : public Stream
 {
 public:
 	HardwareSerial(const int uartPort);
+	~HardwareSerial() {}
 
 	void begin(const uint32_t baud = 9600);
 
@@ -33,15 +35,14 @@ public:
 
 	//void printf(const char *fmt, ...);
 	void systemDebugOutput(bool enabled);
-	void setCallback(HardwareSerialCallback reqCallback);
-	void setCallback(HardwareSerialDelegate reqDelegate);
+	void setCallback(StreamDataAvailableDelegate reqCallback);
 	void resetCallback();
 
 	static void IRAM_ATTR uart0_rx_intr_handler(void *para);
 
 private:
 	int uart;
-	static HardwareSerialDelegate HWSDelegates[2];
+	static StreamDataAvailableDelegate HWSDelegates[2];
 
 };
 

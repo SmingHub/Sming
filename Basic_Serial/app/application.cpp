@@ -8,7 +8,7 @@ class hwsDelegateDemo
 	public :
 		hwsDelegateDemo()
 		{
-			Serial.setCallback(HardwareSerialDelegate(&hwsDelegateDemo::hwsDelegate,this));
+			Serial.setCallback(StreamDataAvailableDelegate(&hwsDelegateDemo::hwsDelegate,this));
 			debugf("hwsDelegateDemo instantiated");
 		};
 

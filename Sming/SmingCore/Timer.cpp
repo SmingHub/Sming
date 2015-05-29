@@ -16,14 +16,14 @@ Timer::~Timer()
 	stop();
 }
 
-Timer& Timer::initializeMs(uint32_t milliseconds, TimerCallback callback/* = NULL*/)
+Timer& Timer::initializeMs(uint32_t milliseconds, InterruptCallback callback/* = NULL*/)
 {
 	setCallback(callback);
 	setIntervalMs(milliseconds);
 	return *this;
 }
 
-Timer& Timer::initializeUs(uint32_t microseconds, TimerCallback callback/* = NULL*/)
+Timer& Timer::initializeUs(uint32_t microseconds, InterruptCallback callback/* = NULL*/)
 {
 	setCallback(callback);
 	setIntervalUs(microseconds);
@@ -49,10 +49,10 @@ void Timer::start(bool repeating/* = true*/)
 	stop();
 	if(interval == 0 || (!callback && !delegate_func)) return;
 	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);
-	if (interval > 1000)
-		ets_timer_arm_new(&timer, interval / 1000, repeating, 1); // msec
+	if (interval > 10000)
+		ets_timer_arm_new(&timer, (uint32_t)(interval / 1000), repeating, 1); // msec
 	else
-		ets_timer_arm_new(&timer, interval, repeating, 0); 		  // usec
+		ets_timer_arm_new(&timer, (uint32_t)interval, repeating, 0); 		  // usec
 	started = true;
 }
 
@@ -96,7 +96,7 @@ void Timer::setIntervalMs(uint32_t milliseconds/* = 1000000*/)
 	setIntervalUs(((uint64_t)milliseconds) * 1000);
 }
 
-void Timer::setCallback(TimerCallback interrupt/* = NULL*/)
+void Timer::setCallback(InterruptCallback interrupt/* = NULL*/)
 {
 	ETS_INTR_LOCK();
 	callback = interrupt;

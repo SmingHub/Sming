@@ -10,11 +10,6 @@
 
 #include <user_config.h>
 
-#define DELEGATE_CALLBACK(PARTIAL_NAME, REQTYPE, ...) \
-	using PARTIAL_NAME ## Callback = REQTYPE (*)(__VA_ARGS__); \
-	using PARTIAL_NAME ## Delegate = Delegate<REQTYPE(__VA_ARGS__)>;
-
-
 template<class ReturnType, typename... ParamsList>
 class IDelegateCaller
 {

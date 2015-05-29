@@ -1,17 +1,12 @@
 #include "NtpClient.h"
 
-NtpClient::NtpClient(NtpTimeResultCallback onTimeReceivedCb)
- : NtpClient(NTP_SERVER_DEFAULT, NTP_DEFAULT_AUTO_UPDATE_INTERVAL,NtpTimeResultDelegate (onTimeReceivedCb)  )
-{
-}
-
 NtpClient::NtpClient()
- : NtpClient(NTP_SERVER_DEFAULT,0 )
+ : NtpClient(NTP_SERVER_DEFAULT, 0, nullptr)
 {
 }
 
-NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb)
- : NtpClient(reqServer, reqIntervalSeconds, NtpTimeResultDelegate (onTimeReceivedCb))
+NtpClient::NtpClient(NtpTimeResultDelegate onTimeReceivedCb)
+ : NtpClient(NTP_SERVER_DEFAULT, NTP_DEFAULT_AUTO_UPDATE_INTERVAL, onTimeReceivedCb)
 {
 }
 

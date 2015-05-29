@@ -17,7 +17,7 @@
 // UartDev is defined and initialized in ROM code.
 extern UartDevice UartDev;
 
-HardwareSerialDelegate HardwareSerial::HWSDelegates[2];
+StreamDataAvailableDelegate HardwareSerial::HWSDelegates[2];
 
 
 HardwareSerial::HardwareSerial(const int uartPort)
@@ -161,12 +161,7 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	//	os_install_putc1(enabled ? (void *)uart1_tx_one_char : NULL); //TODO: Debug serial
 }
 
-void HardwareSerial::setCallback(HardwareSerialCallback reqCallback)
-{
-	setCallback( HardwareSerialDelegate(reqCallback) );
-}
-
-void HardwareSerial::setCallback(HardwareSerialDelegate reqDelegate)
+void HardwareSerial::setCallback(StreamDataAvailableDelegate reqDelegate)
 {
 	HardwareSerial::HWSDelegates[uart] = reqDelegate;
 }
@@ -219,12 +214,12 @@ void HardwareSerial::uart0_rx_intr_handler(void *para)
 				pRxBuff->pReadPos++;
 			}
 		}
-        if (HardwareSerial::HWSDelegates[UART_ID_0])
+        if (HWSDelegates[UART_ID_0])
         {
         	unsigned short cc;
         	cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
         													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
-        	HardwareSerial::HWSDelegates[UART_ID_0](cc);
+        	HWSDelegates[UART_ID_0](Serial, cc);
         }
     }
 

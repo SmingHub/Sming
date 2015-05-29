@@ -20,17 +20,15 @@
 
 class NtpClient;
 
-// Define Callback and Delegate
-DELEGATE_CALLBACK (NtpTimeResult,void,NtpClient& client, time_t ntpTime)
+// Delegate constructor usage: (&YourClass::method, this)
+typedef Delegate<void(NtpClient& client, time_t ntpTime)> NtpTimeResultDelegate;
 
 class NtpClient : protected UdpConnection
 {
 public:
-	
 	NtpClient();
-	NtpClient(NtpTimeResultCallback onTimeReceivedCb);
-	NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultCallback onTimeReceivedCb);
-	NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDelegate delegateFunction = NULL);
+	NtpClient(NtpTimeResultDelegate onTimeReceivedCb);
+	NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb);
 	virtual ~NtpClient();
 
 	void requestTime();
@@ -50,7 +48,7 @@ protected:
 protected: 
 	String server = NTP_SERVER_DEFAULT;
 	IPAddress serverAddress = (uint32_t)0;
-	NtpTimeResultDelegate delegateCompleted = nullptr;
+	NtpTimeResultDelegate delegateCompleted;
 	bool autoUpdateSystemClock = false;
 		
 	Timer autoUpdateTimer;
