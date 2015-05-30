@@ -11,12 +11,22 @@ public:
 		debugf("hwsDelegateDemo instantiated, waiting for data");
 	};
 
-	void hwsDelegate(Stream& stream, unsigned short charCount)
+	void hwsDelegate(Stream& stream, char recvChar, unsigned short charCount)
 	{
 		Serial.print("hwsDelegateDemo Delegate Time = ");
 		Serial.print(micros());
 		Serial.print(" charCount = ");
-		Serial.println(charCount);
+		Serial.print(charCount);
+		Serial.print(" character = ");
+		Serial.println(recvChar);
+
+		numCallback++;
+
+		if (recvChar == 'X') // Toggle useRxBuff
+		{
+			useRxFlag = !useRxFlag;
+			Serial.setCallback(StreamDataAvailableDelegate(&SerialReadingDelegateDemo::hwsDelegate,this),useRxFlag);
+		}
 
 		if (charCount >= 10) // Just for example
 		{
@@ -34,6 +44,8 @@ public:
 
 private:
 	unsigned charReceived = 0;
+	unsigned numCallback = 0;
+	bool useRxFlag = true;
 };
 
 
