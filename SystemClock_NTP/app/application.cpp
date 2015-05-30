@@ -1,42 +1,11 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
+#include "NtpClientDelegateDemo.h"
 
 // Put you SSID and Password here
 #define WIFI_SSID "PleaseEnterSSID"
 #define WIFI_PWD "PleaseEnterPass"
-
-class ntpClientDemo
-{
-public:
-	ntpClientDemo()
-	{
-		ntpResultCB = NtpTimeResultDelegate(&ntpClientDemo::ntpResult, this);
-		ntpcp = new NtpClient("pool.ntp.org", 30, ntpResultCB);
-
-		// 			Alternative way without private member variable
-		//	 		ntpcp = new NtpClient("pool.ntp.org",30, NtpTimeResultDelegate (&ntpClientDemo::ntpResult, this));
-
-	};
-	~ntpClientDemo() {};
-
-	NtpClient *ntpcp;
-
-	void ntpResult(NtpClient& client, time_t ntpTime)
-	{
-		SystemClock.setTime(ntpTime, eSCUtc);
-		Serial.print("ntpClientDemo Callback Time_t = ");
-		Serial.print(ntpTime);
-		Serial.print(" Time = ");
-		Serial.println(SystemClock.getSystemTimeString());
-
-		return true;
-	}
-
-	NtpTimeResultDelegate ntpResultCB = NtpTimeResultDelegate(&ntpClientDemo::ntpResult, this);
-
-};
-
 
 void onNtpReceive(NtpClient& client, time_t timestamp);
 
@@ -60,7 +29,7 @@ Timer printTimer;
 // Option 3
 // Use this option if you want to start wit autorefresh and autosystemupdate
 // No further callback from ntpClient
-NtpClient ntpClient("pool.ntp.org", 30);
+// NtpClient ntpClient("pool.ntp.org", 30);
 
 // Option 4
 // only create pointer and initialize on ConnectOK
@@ -112,7 +81,7 @@ void connectOk()
 //  ntpClient = new NtpClient("my_ntp_server", myrefreshinterval);
 
 //	When usind Delegate Callback Option 2
-//	demo = new ntpClientDemo();
+	demo = new ntpClientDemo();
 
 }
 

@@ -48,7 +48,7 @@ protected:
 protected: 
 	String server = NTP_SERVER_DEFAULT;
 	IPAddress serverAddress = (uint32_t)0;
-	NtpTimeResultDelegate delegateCompleted;
+	NtpTimeResultDelegate delegateCompleted = nullptr;
 	bool autoUpdateSystemClock = false;
 		
 	Timer autoUpdateTimer;
