@@ -52,8 +52,6 @@ void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
 	}
 
 	pinMode(pin, INPUT);
-	if (mode == GPIO_PIN_INTR_HILEVEL)
-		pulldown(pin);
 
 	gpio_pin_intr_state_set(GPIO_ID_PIN(pin), mode); // Enable GPIO pin interrupt
 
@@ -78,8 +76,6 @@ void interruptMode(uint8_t pin, GPIO_INT_TYPE type)
 	ETS_GPIO_INTR_DISABLE();
 
 	pinMode(pin, INPUT);
-	if (type == GPIO_PIN_INTR_HILEVEL)
-		pulldown(pin);
 
 	gpio_pin_intr_state_set(GPIO_ID_PIN(pin), type);
 
