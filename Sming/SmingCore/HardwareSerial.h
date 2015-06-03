@@ -18,13 +18,13 @@
 #define NUMBER_UARTS 2
 
 // Delegate constructor usage: (&YourClass::method, this)
-typedef Delegate<void(Stream &self, char recvChar, uint16_t availableCount)> StreamDataAvailableDelegate;
+typedef Delegate<void(Stream &source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
 
 typedef struct
 {
-	StreamDataAvailableDelegate HWSDelegate;
+	StreamDataReceivedDelegate HWSDelegate;
 	bool useRxBuff;
-} MemberData;
+} HWSerialMemberData;
 
 class HardwareSerial : public Stream
 {
@@ -43,14 +43,14 @@ public:
 
 	//void printf(const char *fmt, ...);
 	void systemDebugOutput(bool enabled);
-	void setCallback(StreamDataAvailableDelegate reqCallback, bool reqUseRxBuff = true);
+	void setCallback(StreamDataReceivedDelegate reqCallback, bool useSerialRxBuffer = true);
 	void resetCallback();
 
 	static void IRAM_ATTR uart0_rx_intr_handler(void *para);
 
 private:
 	int uart;
-	static MemberData memberData[NUMBER_UARTS];
+	static HWSerialMemberData memberData[NUMBER_UARTS];
 
 };
 

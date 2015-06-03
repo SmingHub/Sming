@@ -1,44 +1,42 @@
 #ifndef INCLUDE_SERIALREADINGDELEGATEDEMO_H_
 #define INCLUDE_SERIALREADINGDELEGATEDEMO_H_
 
+//*** Example of global callback routine
+void onDataCallback(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
+{
+}
 
+//*** Example of class callback processing
 class SerialReadingDelegateDemo
 {
 public:
 	void begin()
 	{
-		Serial.setCallback(StreamDataAvailableDelegate(&SerialReadingDelegateDemo::hwsDelegate,this));
+		Serial.setCallback(StreamDataReceivedDelegate(&SerialReadingDelegateDemo::onData, this));
 		debugf("hwsDelegateDemo instantiated, waiting for data");
 	};
 
-	void hwsDelegate(Stream& stream, char recvChar, unsigned short charCount)
+	void onData(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
 	{
-		Serial.print("hwsDelegateDemo Delegate Time = ");
+		Serial.print("Class Delegate Demo Time = ");
 		Serial.print(micros());
-		Serial.print(" charCount = ");
-		Serial.print(charCount);
-		Serial.print(" character = ");
-		Serial.println(recvChar);
+		Serial.print(" char = 0x");
+		Serial.print(String(arrivedChar, HEX)); // char hex code
+		Serial.print(" available = ");
+		Serial.println(availableCharsCount);
 
 		numCallback++;
 
-		if (recvChar == 'X') // Toggle useRxBuff
+		if (arrivedChar == '\n') // Lets show data!
 		{
-			useRxFlag = !useRxFlag;
-			Serial.setCallback(StreamDataAvailableDelegate(&SerialReadingDelegateDemo::hwsDelegate,this),useRxFlag);
-		}
-
-		if (charCount >= 10) // Just for example
-		{
+			Serial.println("<New line received>");
 			while (stream.available())
 			{
-				char c = stream.read();
+				char cur = stream.read();
 				charReceived++;
-				Serial.print("Received ");
-				Serial.print(charReceived);
-				Serial.print(" Characters, this is : ");
-				Serial.println(c);
+				Serial.print(cur);
 			}
+			Serial.println();
 		}
 	}
 

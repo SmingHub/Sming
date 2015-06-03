@@ -19,7 +19,7 @@ extern UartDevice UartDev;
 
 // StreamDataAvailableDelegate HardwareSerial::HWSDelegates[2];
 
-MemberData HardwareSerial::memberData[NUMBER_UARTS];
+HWSerialMemberData HardwareSerial::memberData[NUMBER_UARTS];
 
 HardwareSerial::HardwareSerial(const int uartPort)
 	: uart(uartPort)
@@ -162,10 +162,10 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	//	os_install_putc1(enabled ? (void *)uart1_tx_one_char : NULL); //TODO: Debug serial
 }
 
-void HardwareSerial::setCallback(StreamDataAvailableDelegate reqDelegate, bool reqUseRxBuff /* = true */)
+void HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate, bool useSerialRxBuffer /* = true */)
 {
 	memberData[uart].HWSDelegate = reqDelegate;
-	memberData[uart].useRxBuff = reqUseRxBuff;
+	memberData[uart].useRxBuff = useSerialRxBuffer;
 }
 
 void HardwareSerial::resetCallback()
