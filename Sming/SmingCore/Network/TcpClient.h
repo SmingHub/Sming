@@ -50,7 +50,7 @@ public:
 	bool send(const char* data, uint8_t len, bool forceCloseAfterSent = false);
 	bool sendString(String data, bool forceCloseAfterSent = false);
 	__forceinline bool isProcessing()  { return state == eTCS_Connected || state == eTCS_Connecting; }
-	__forceinline TcpClientState getState() { return state; }
+	__forceinline TcpClientState getConnectionState() { return state; }
 
 protected:
 	virtual err_t onConnected(err_t err);

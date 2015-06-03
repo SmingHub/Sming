@@ -11,7 +11,6 @@
 
 HttpClient::HttpClient(bool autoDestruct /* = false */) : TcpClient(autoDestruct)
 {
-	waitParse = false;
 	reset();
 }
 

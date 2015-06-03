@@ -9,6 +9,7 @@
 #define SMINGCORE_NETWORK_HTTPFIRMWAREUPDATE_H_
 
 #include "HttpClient.h"
+#include <Timer.h>
 
 struct HttpFirmwareUpdateItem
 {
@@ -27,16 +28,19 @@ public:
 	void addItem(int offset, String firmwareFileUrl);
 	void start();
 
+	__forceinline bool isProcessing()  { return TcpClient::isProcessing(); }
+	__forceinline TcpClientState getConnectionState() { return TcpClient::getConnectionState(); }
+
 protected:
-	static void staticOnTimer(void* ptrSelf);
 	void onTimer();
 	virtual void writeRawData(pbuf* buf, int startPos);
 	uint32_t writeFlash(char* data, uint32_t pos, int size);
 	void applyUpdate();
+	void updateFailed();
 
 protected:
 	Vector<HttpFirmwareUpdateItem> items;
-	ETSTimer timer;
+	Timer timer;
 	int currentItem;
 	uint32_t pos;
 };

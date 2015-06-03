@@ -52,7 +52,7 @@ public:
 	__forceinline bool isSuccessful() { return (!writeError) && (code >= 200 && code <= 399); }
 
 	__forceinline bool isProcessing()  { return TcpClient::isProcessing(); }
-	__forceinline TcpClientState getState() { return TcpClient::getState(); }
+	__forceinline TcpClientState getConnectionState() { return TcpClient::getConnectionState(); }
 
 	String getResponseHeader(String headerName, String defaultValue = "");
 	DateTime getLastModifiedDate(); // Last-Modified header
@@ -68,8 +68,8 @@ protected:
 	void parseHeaders(pbuf* buf, int headerEnd);
 
 protected:
-	bool waitParse;
-	bool writeError;
+	bool waitParse = false;
+	bool writeError = false;
 
 private:
 	int code;
