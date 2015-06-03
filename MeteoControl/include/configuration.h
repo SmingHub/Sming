@@ -4,9 +4,11 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-// Put you SSID and Password here
-#define WIFI_SSID "PleaseEnterSSID"
-#define WIFI_PWD "PleaseEnterPass"
+// If you want, you can define WiFi settings globally in Eclipse Environment Variables
+#ifndef WIFI_SSID
+	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+	#define WIFI_PWD "PleaseEnterPass"
+#endif
 
 // Pin for communication with DHT sensor
 //#define DHT_PIN 1 // UART0 TX pin

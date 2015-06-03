@@ -3,9 +3,11 @@
 
 #include "NtpClientDelegateDemo.h"
 
-// Put you SSID and Password here
-#define WIFI_SSID "PleaseEnterSSID"
-#define WIFI_PWD "PleaseEnterPass"
+// If you want, you can define WiFi settings globally in Eclipse Environment Variables
+#ifndef WIFI_SSID
+	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+	#define WIFI_PWD "PleaseEnterPass"
+#endif
 
 void onNtpReceive(NtpClient& client, time_t timestamp);
 

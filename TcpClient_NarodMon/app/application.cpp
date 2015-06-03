@@ -5,9 +5,11 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-// Несколько параметров (укажите свои)
-#define WIFI_SSID "PleaseEnterSSID"
-#define WIFI_PWD "PleaseEnterPass"
+// If you want, you can define WiFi settings globally in Eclipse Environment Variables
+#ifndef WIFI_SSID
+	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+	#define WIFI_PWD "PleaseEnterPass"
+#endif
 
 #define NARODM_HOST "narodmon.ru"
 #define NARODM_PORT 8283
