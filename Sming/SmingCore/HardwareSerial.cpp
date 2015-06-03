@@ -17,13 +17,14 @@
 // UartDev is defined and initialized in ROM code.
 extern UartDevice UartDev;
 
-StreamDataAvailableDelegate HardwareSerial::HWSDelegates[2];
+// StreamDataAvailableDelegate HardwareSerial::HWSDelegates[2];
 
+MemberData HardwareSerial::memberData[NUMBER_UARTS];
 
 HardwareSerial::HardwareSerial(const int uartPort)
 	: uart(uartPort)
 {
-//	resetCallback();
+	resetCallback();
 }
 
 void HardwareSerial::begin(const uint32_t baud/* = 9600*/)
@@ -161,14 +162,16 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	//	os_install_putc1(enabled ? (void *)uart1_tx_one_char : NULL); //TODO: Debug serial
 }
 
-void HardwareSerial::setCallback(StreamDataAvailableDelegate reqDelegate)
+void HardwareSerial::setCallback(StreamDataAvailableDelegate reqDelegate, bool reqUseRxBuff /* = true */)
 {
-	HardwareSerial::HWSDelegates[uart] = reqDelegate;
+	memberData[uart].HWSDelegate = reqDelegate;
+	memberData[uart].useRxBuff = reqUseRxBuff;
 }
 
 void HardwareSerial::resetCallback()
 {
-	HWSDelegates[uart] = nullptr;
+	memberData[uart].HWSDelegate = nullptr;
+	memberData[uart].useRxBuff = true;
 }
 
 
@@ -190,7 +193,8 @@ void HardwareSerial::uart0_rx_intr_handler(void *para)
         RcvChar = READ_PERI_REG(UART_FIFO(UART_ID_0)) & 0xFF;
 
         /* you can add your handle code below.*/
-
+      if (memberData[UART_ID_0].useRxBuff)
+      {
         *(pRxBuff->pWritePos) = RcvChar;
 
         // insert here for get one command line from uart
@@ -214,12 +218,13 @@ void HardwareSerial::uart0_rx_intr_handler(void *para)
 				pRxBuff->pReadPos++;
 			}
 		}
-        if (HWSDelegates[UART_ID_0])
+      }
+      if (memberData[UART_ID_0].HWSDelegate)
         {
         	unsigned short cc;
         	cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
         													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
-        	HWSDelegates[UART_ID_0](Serial, cc);
+        	memberData[UART_ID_0].HWSDelegate(Serial, RcvChar, cc);
         }
     }
 

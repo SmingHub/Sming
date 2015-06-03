@@ -13,7 +13,7 @@ void sayHello()
 	Serial.println();
 }
 
-void hwsDelegate(Stream& stream, unsigned short charCount)
+void onDataCallback(Stream& stream, char recvChar, unsigned short charCount)
 {
 
 }
