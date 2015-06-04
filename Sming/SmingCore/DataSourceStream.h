@@ -39,7 +39,7 @@ public:
 
 	virtual StreamType getStreamType() = 0;
 
-	virtual uint16_t getDataPointer(char** data) = 0;
+	virtual uint16_t readMemoryBlock(char* data, int bufSize) = 0;
 	virtual bool seek(int len) = 0;
 	virtual bool isFinished() = 0;
 };
@@ -55,7 +55,7 @@ public:
 	virtual size_t write(uint8_t charToWrite);
 	virtual size_t write(const uint8_t *buffer, size_t size);
 
-	virtual uint16_t getDataPointer(char** data);
+	virtual uint16_t readMemoryBlock(char* data, int bufSize);
 	virtual bool seek(int len);
 	virtual bool isFinished();
 
@@ -74,7 +74,7 @@ public:
 
 	virtual StreamType getStreamType() { return eSST_File; }
 
-	virtual uint16_t getDataPointer(char** data);
+	virtual uint16_t readMemoryBlock(char* data, int bufSize);
 	virtual bool seek(int len);
 	virtual bool isFinished();
 
@@ -84,7 +84,6 @@ public:
 
 private:
 	file_t handle;
-	char* buffer;
 	int pos;
 	int size;
 };
@@ -105,7 +104,7 @@ public:
 
 	virtual StreamType getStreamType() { return eSST_TepmplateFile; }
 
-	virtual uint16_t getDataPointer(char** data);
+	virtual uint16_t readMemoryBlock(char* data, int bufSize);
 	virtual bool seek(int len);
 
 	void setVar(String name, String value);
@@ -131,7 +130,7 @@ public:
 
 	JsonObject& getRoot();
 
-	virtual uint16_t getDataPointer(char** data);
+	virtual uint16_t readMemoryBlock(char* data, int bufSize);
 
 private:
 	DynamicJsonBuffer buffer;

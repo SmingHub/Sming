@@ -8,6 +8,7 @@
 #include "TcpConnection.h"
 
 #include "../../SmingCore/DataSourceStream.h"
+#include "../../SmingCore/Platform/WDT.h"
 #include "NetUtils.h"
 #include "../Wiring/WString.h"
 #include "../Wiring/IPAddress.h"
@@ -73,10 +74,8 @@ err_t TcpConnection::onReceive(pbuf *buf)
 	else
 		debugf("TCP received: %d bytes", buf->tot_len);
 
-	if (buf != NULL)
+	if (buf != NULL && getAvailableWriteSize() > 0)
 		onReadyToSendData(eTCE_Received);
-	//else
-	//	canSend = false;
 
 	return ERR_OK;
 }
@@ -86,7 +85,7 @@ err_t TcpConnection::onSent(uint16_t len)
 	debugf("TCP sent: %d", len);
 
 	//debugf("%d %d", tcp->state, tcp->flags); // WRONG!
-	if (len >= 0 && tcp != NULL && canSend)
+	if (len >= 0 && tcp != NULL && getAvailableWriteSize() > 0)
 		onReadyToSendData(eTCE_Sent);
 
 	return ERR_OK;
@@ -102,7 +101,7 @@ err_t TcpConnection::onPoll()
 		return ERR_OK;
 	}
 
-	if (tcp != NULL && canSend) //(tcp->state >= SYN_SENT && tcp->state <= ESTABLISHED))
+	if (tcp != NULL && getAvailableWriteSize() > 0) //(tcp->state >= SYN_SENT && tcp->state <= ESTABLISHED))
 		onReadyToSendData(eTCE_Poll);
 
 	return ERR_OK;
@@ -157,6 +156,7 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WR
 		   len = available;
    }
 
+   WDT.alive();
    err_t err = tcp_write(tcp, data, len, apiflags);
 
    if (err == ERR_OK)
@@ -174,7 +174,10 @@ int TcpConnection::write(IDataSourceStream* stream)
 	// Send data from DataStream
 	bool repeat;
 	bool space;
+	int available;
 	int total = 0;
+	char buffer[NETWORK_SEND_BUFFER_SIZE];
+
 	do
 	{
 		space = (tcp_sndqueuelen(tcp) < TCP_SND_QUEUELEN);
@@ -185,24 +188,27 @@ int TcpConnection::write(IDataSourceStream* stream)
 			break; // don't try to send buffers if no free space available
 		}
 
-		char* pointer;
-
 		// Join small fragments
-		int curPart = 0;
 		int pushCount = 0;
 		do
 		{
-			if (pushCount > 25) break;
 			pushCount++;
-			int available = stream->getDataPointer(&pointer);
-			if (available <= 0) continue;
-			int len = min(available, 4096);
-			int written = write(pointer, len, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
-			curPart += written;
-			total += written;
-			stream->seek(max(written, 0));
-			repeat = len > 0 && written == len && !stream->isFinished();
-		} while (repeat && curPart < NETWORK_SEND_BUFFER_SIZE);
+			int read = min(NETWORK_SEND_BUFFER_SIZE, getAvailableWriteSize());
+			if (read > 0)
+				available = stream->readMemoryBlock(buffer, read);
+			else
+				available = 0;
+
+			if (available > 0)
+			{
+				int written = write(buffer, available, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
+				total += written;
+				stream->seek(max(written, 0));
+				repeat = written == available && !stream->isFinished() && pushCount < 25;
+			}
+			else
+				repeat = false;
+		} while (repeat);
 
 		space = (tcp_sndqueuelen(tcp) < TCP_SND_QUEUELEN);// && tcp_sndbuf(tcp) >= FILE_STREAM_BUFFER_SIZE;
 	} while (repeat && space);
@@ -253,7 +259,7 @@ void TcpConnection::closeTcpConnection(tcp_pcb *tpcb)
 	auto err = tcp_close(tpcb);
 	if (err != ERR_OK)
 	{
-		debugf("TCP CAN'T CLOSE CONNECTION");
+		debugf("tcp wait close connection");
 		/* error closing, try again later in poll */
 		tcp_poll(tpcb, staticOnPoll, 4);
 	}
