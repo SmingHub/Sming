@@ -23,10 +23,10 @@ Timer printTimer;
 // Option 2
 // Use this option if you want control but other server/timeout options
 // Default : use server as defined in call, no automatic update of SystemTime
-// Default : automatic NTP request at myrequestinterval seconds
-// Default : if myrequestinterval == 0 -> no automatic NTP request
+// Default : automatic NTP request at myRequestInterval seconds
+// Default : if myRequestInterval == 0 -> no automatic NTP request
 
-// NtpClient ntpClient ("my_ntp_server",myrefreshinterval, onNtpReceive);
+// NtpClient ntpClient ("my_ntp_server", myRequestInterval, onNtpReceive);
 
 // Option 3
 // Use this option if you want to start wit autorefresh and autosystemupdate
@@ -47,10 +47,10 @@ ntpClientDemo *demo;
 // ntpClientDemo dm1;
 
 void onPrintSystemTime() {
-	Serial.print("Time    : ");
+	Serial.print("Local Time    : ");
 	Serial.println(SystemClock.getSystemTimeString());
 	Serial.print("UTC Time: ");
-	Serial.println(SystemClock.getSystemTimeString(eSCUtc));
+	Serial.println(SystemClock.getSystemTimeString(eTZ_UTC));
 }
 
 
@@ -82,7 +82,7 @@ void connectOk()
 //  When using option 4 -> create client after connect OK
 //  ntpClient = new NtpClient("my_ntp_server", myrefreshinterval);
 
-//	When usind Delegate Callback Option 2
+//	When using Delegate Callback Option 2
 	demo = new ntpClientDemo();
 
 }
@@ -108,8 +108,8 @@ void init()
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
-	// set timezone to hourly difference to UTC
-	SystemClock.setTimezone(2);
+	// set timezone hourly difference to UTC
+	SystemClock.setTimeZone(2);
 
 	printTimer.initializeMs(1000, onPrintSystemTime).start();
 	

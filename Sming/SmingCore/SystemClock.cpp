@@ -1,6 +1,6 @@
 #include "SystemClock.h"
 
-DateTime SystemClockClass::now(eSysClockTime timeType /* = eSCLocal */)
+DateTime SystemClockClass::now(TimeZone timeType /* = eTZ_Local */)
 {
 	// calculate number of seconds passed since last call to now()
 	while (millis() - prevMillis >= 1000)
@@ -10,34 +10,34 @@ DateTime SystemClockClass::now(eSysClockTime timeType /* = eSCLocal */)
 		systemTime++;
 		prevMillis += 1000;
 	}
-    if ((timeType == eSCLocal) || (SCStatus == eSCInitial))
+    if ((timeType == eTZ_Local) || (status == eSCS_Initial))
     {
     	return DateTime(systemTime); // local time
     }
     else
     {
-    	return DateTime(systemTime -  (timezoneDiff * SECS_PER_HOUR)); // utc time
+    	return DateTime(systemTime - (timezoneDiff * SECS_PER_HOUR)); // utc time
     }
 }
 
-void SystemClockClass::setTime(time_t time, eSysClockTime timeType /* = eSCLocal */)
+void SystemClockClass::setTime(time_t time, TimeZone timeType /* = eTZ_Local */)
 {
-	systemTime = (timeType == eSCUtc) ? (time + (timezoneDiff * SECS_PER_HOUR)) : time;
+	systemTime = (timeType == eTZ_UTC) ? (time + (timezoneDiff * SECS_PER_HOUR)) : time;
 	prevMillis = millis();
-	SCStatus = eSCSet;
+	status = eSCS_Set;
 }
 
-String SystemClockClass::getSystemTimeString(eSysClockTime timeType /* = eSCLocal */)
+String SystemClockClass::getSystemTimeString(TimeZone timeType /* = eTZ_Local */)
 {
 	dateTime.setTime(now(timeType));
 	return dateTime.toFullDateTimeString();
 }
 
-bool SystemClockClass::setTimezone(double reqTimezone)
+bool SystemClockClass::setTimeZone(double localTimezone)
 {
-	if ( (reqTimezone >= -12) && (reqTimezone <= 12) )
+	if ( (localTimezone >= -12) && (localTimezone <= 12) )
 	{
-		timezoneDiff = reqTimezone;
+		timezoneDiff = localTimezone;
 		return true;
 	}
 	return false;

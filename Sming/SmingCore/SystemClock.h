@@ -6,27 +6,27 @@
 #include "../../Wiring/WString.h"
 #include "../SmingCore/Network/NtpClient.h"
 
-typedef enum
+enum TimeZone
 {
-	eSCUtc 		= 0,
-	eSCLocal	= 1
-} eSysClockTime;
+	eTZ_UTC		= 0,
+	eTZ_Local	= 1
+};
 
-typedef enum
+enum SystemClockStatus
 {
-	eSCInitial	= 0,
-	eSCSet		= 1
-} eSysClockStatus;
+	eSCS_Initial	= 0,
+	eSCS_Set		= 1
+};
 
 class NtpClient;
 
 class SystemClockClass
 {
 public:
-	DateTime now(eSysClockTime timeType = eSCLocal);
-	void setTime(time_t time, eSysClockTime timeType = eSCLocal);
-	String getSystemTimeString(eSysClockTime timeType = eSCLocal);
-	bool setTimezone(double reqTimezone);
+	DateTime now(TimeZone timeType = eTZ_Local);
+	void setTime(time_t time, TimeZone timeType = eTZ_Local);
+	String getSystemTimeString(TimeZone timeType = eTZ_Local);
+	bool setTimeZone(double localTimezoneOffset);
 
 private:
 	uint32_t systemTime;
@@ -35,7 +35,7 @@ private:
 	
 	DateTime dateTime;
 
-	eSysClockStatus SCStatus = eSCInitial;
+	SystemClockStatus status = eSCS_Initial;
 	
 };
 

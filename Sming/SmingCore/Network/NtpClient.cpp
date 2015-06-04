@@ -154,7 +154,7 @@ void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
 
 		if (autoUpdateSystemClock)
 		{
-			SystemClock.setTime(epoch, eSCUtc); // update systemclock utc value
+			SystemClock.setTime(epoch, eTZ_UTC); // update systemclock utc value
 		}
 
 		if (delegateCompleted)
