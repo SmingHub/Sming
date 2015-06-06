@@ -51,6 +51,7 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Gets or create the JsonVariant associated with the specified key.
   // Returns a reference or JsonVariant::invalid() if allocation failed.
   JsonVariant &operator[](key_type key);
+  JsonVariant &operator[](const String& key);
 
   // Gets the JsonVariant associated with the specified key.
   // Returns a constant reference or JsonVariant::invalid() if not found.
@@ -59,29 +60,40 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
   // Adds an uninitialized JsonVariant associated with the specified key.
   // Return a reference or JsonVariant::invalid() if allocation fails.
   JsonVariant &add(key_type key) { return (*this)[key]; }
+  JsonVariant &add(const String& key);
 
   // Adds the specified key with the specified value.
   template <typename T>
   void add(key_type key, T value) {
     add(key).set(value);
   }
+  template <typename T>
+  void add(const String& key, T value) {
+    add(key).set(value);
+  }
 
   // Adds the specified key with a reference to the specified JsonArray.
   void add(key_type key, JsonArray &array) { add(key).set(array); }
+  void add(const String& stringKey, JsonArray &array) { add(stringKey).set(array); }
 
   // Adds the specified key with a reference to the specified JsonObject.
   void add(key_type key, JsonObject &object) { add(key).set(object); }
+  void add(const String& stringKey, JsonObject &object) { add(stringKey).set(object); }
 
-  // Adds the specified key with a reference to the String
-  void add(key_type key, const String &stringVal) { add(key).set(stringVal); }
+  // Add item by value: create copy of string (in JSON buffer memory) and add it to object childs
+  // memory will be freed automatically
+  void addCopy(key_type stringKey, const String &stringVal);
+  void addCopy(const String& stringKey, const String &stringVal);
 
   // Creates and adds a JsonArray.
   // This is a shortcut for JsonBuffer::createArray() and JsonObject::add().
   JsonArray &createNestedArray(key_type key);
+  JsonArray &createNestedArray(const String& stringKey);
 
   // Creates and adds a JsonObject.
   // This is a shortcut for JsonBuffer::createObject() and JsonObject::add().
   JsonObject &createNestedObject(key_type key);
+  JsonObject &createNestedObject(const String& stringKey);
 
   // Tells weither the specified key is present and associated with a value.
   bool containsKey(key_type key) const { return at(key).success(); }
@@ -96,6 +108,14 @@ class JsonObject : public Internals::JsonPrintable<JsonObject>,
 
   // Serialize the object to the specified JsonWriter
   void writeTo(Internals::JsonWriter &writer) const;
+
+  String toJsonString(bool prettyPrintStyle = true) const;
+
+ protected:
+  // Don't use this methods. Convert value to "const char*" (if it will be available) or use "addCopy" instead
+  void add(key_type key, const String &stringVal) { add(key).set(stringVal); }
+  void add(const String& stringKey, const String &stringVal) { add(stringKey).set(stringVal); }
+
 
  private:
   // Create an empty JsonArray attached to the specified JsonBuffer.

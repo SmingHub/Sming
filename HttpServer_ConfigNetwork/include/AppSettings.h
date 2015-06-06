@@ -54,22 +54,18 @@ struct ApplicationSettingsStorage
 
 		JsonObject& network = jsonBuffer.createObject();
 		root["network"] = network;
-		network["ssid"] = ssid;
-		network["password"] = password;
+		network["ssid"] = ssid.c_str();
+		network["password"] = password.c_str();
 
 		network["dhcp"] = dhcp;
 
-		// Temporary string variables to save reference
-		String strip = ip.toString();
-		String strn = netmask.toString();
-		String strg = gateway.toString();
-		network["ip"] = strip;
-		network["netmask"] = strn;
-		network["gateway"] = strg;
+		// Make copy by value for temporary string objects
+		network.addCopy("ip", ip.toString());
+		network.addCopy("netmask", netmask.toString());
+		network.addCopy("gateway", gateway.toString());
 
-		char buf[3048];
-		root.prettyPrintTo(buf, sizeof(buf)); //TODO: add file stream writing
-		fileSetContent(APP_SETTINGS_FILE, buf);
+		//TODO: add direct file stream writing
+		fileSetContent(APP_SETTINGS_FILE, root.toJsonString());
 	}
 
 	bool exist() { return fileExist(APP_SETTINGS_FILE); }

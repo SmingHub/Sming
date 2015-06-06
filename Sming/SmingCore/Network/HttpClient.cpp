@@ -63,40 +63,46 @@ bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompleted
 	debugf("Download: %s", uri.toString().c_str());
 
 	connect(uri.Host, uri.Port);
-	if (body.length() == 0){ //Not a POST
-        sendString("GET " + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n\r\n");
+	bool isPost = body.length();
+
+	sendString((isPost ? "POST " : "GET ") + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n");
+	for (int i = 0; i < requestHeaders.count(); i++)
+	{
+		String write = requestHeaders.keyAt(i) + ": " + requestHeaders.valueAt(i) + "\r\n";
+		sendString(write.c_str());
 	}
-	else{
-        sendString("POST " + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n");
-        sendString("Content-Type: " + content_type + "\r\n");
-        String content_length = "";
-        content_length = body.length();
-        sendString("Content-Length: " + content_length + "\r\n\r\n");
-        sendString(body);
-	}
+	sendString("\r\n");
+	sendString(body);
 
 	return true;
 }
 
-
-void HttpClient::setContentType(String _content_type){
-    content_type = _content_type;
+void HttpClient::setRequestHeader(const String name, const String value)
+{
+	requestHeaders[name] = value;
 }
 
-String HttpClient::getContentType(){
-    return content_type;
+bool HttpClient::hasRequestHeader(const String name)
+{
+	return requestHeaders.contains(name);
 }
 
-void HttpClient::setPostBody(String _body){
-    if (content_type == ""){
-        content_type = ContentType::FormUrlEncoded;
-    }
+void HttpClient::setRequestContentType(String contentType)
+{
+    setRequestHeader("Content-Type", contentType);
+}
+
+void HttpClient::setPostBody(const String& _body)
+{
+    if (!hasRequestHeader("Content-Type"))
+    	setRequestContentType(ContentType::FormUrlEncoded);
     body = _body;
+    setRequestHeader("Content-Length", String(body.length()));
 }
 
 
-String HttpClient::getPostBody(){
-
+String HttpClient::getPostBody()
+{
     return body;
 }
 

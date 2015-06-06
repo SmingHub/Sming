@@ -6,7 +6,7 @@ HttpServer server;
 FTPServer ftp;
 
 BssList networks;
-String network, password, currentNetwork;
+String network, password;
 Timer connectionTimer;
 
 void onIndex(HttpRequest &request, HttpResponse &response)
@@ -77,18 +77,18 @@ void onAjaxNetworkList(HttpRequest &request, HttpResponse &response)
 	json["connected"] = connected;
 	if (connected)
 	{
-		currentNetwork = WifiStation.getSSID();
-		json["network"] = currentNetwork;
+		// Copy full string to JSON buffer memory
+		json.addCopy("network", WifiStation.getSSID());
 	}
 
 	JsonArray& netlist = json.createNestedArray("available");
 	for (int i = 0; i < networks.count(); i++)
 	{
-		//if (networks[i].hidden) continue;
+		if (networks[i].hidden) continue;
 		JsonObject &item = netlist.createNestedObject();
-		//debugf("%s %s", test.c_str(), networks[i].ssid.c_str());
 		item.add("id", (int)networks[i].getHashId());
-		item.add("title", networks[i].ssid);
+		// Copy full string to JSON buffer memory
+		item.addCopy("title", networks[i].ssid);
 		item.add("signal", networks[i].rssi);
 		item.add("encryption", networks[i].getAuthorizationMethodName());
 	}
@@ -106,7 +106,7 @@ void makeConnection()
 	AppSettings.password = password;
 	AppSettings.save();
 
-	network = ""; // completed
+	network = ""; // task completed
 }
 
 void onAjaxConnect(HttpRequest &request, HttpResponse &response)

@@ -8,6 +8,7 @@
 
 #include "../include/ArduinoJson/JsonBuffer.hpp"
 #include "../include/ArduinoJson/JsonObject.hpp"
+#include "../include/ArduinoJson/Internals/JsonStringStorage.hpp"
 
 using namespace ArduinoJson;
 using namespace ArduinoJson::Internals;
@@ -27,6 +28,12 @@ JsonVariant &JsonArray::add() {
   addNode(node);
 
   return node->content;
+}
+
+void JsonArray::addCopy(const String &stringVal)
+{
+	auto& val = _buffer->createStringStorage(stringVal);
+	add().set(val.c_str());
 }
 
 JsonArray &JsonArray::createNestedArray() {

@@ -18,7 +18,6 @@ enum JsonVariantType {
   JSON_OBJECT,     // the JsonVariant stores a pointer to a JsonObject
   JSON_BOOLEAN,    // the JsonVariant stores a bool
   JSON_STRING,     // the JsonVariant stores a const char*
-  JSON_CSTRING,     // the JsonVariant stores a const String*
   JSON_LONG,       // the JsonVariant stores a long
 
   // The following values are reserved for double values
