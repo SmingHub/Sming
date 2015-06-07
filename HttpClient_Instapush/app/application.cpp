@@ -4,6 +4,7 @@
 /*** Direct PUSH notifications on your mobile phone!
  *
  * At first you should create new event in Instapush
+ * 0. Go to http://instapush.im
  * 1. Create Application: "SmingTest"
  * 2. Add event:
  *    - Event Title: "notify"
