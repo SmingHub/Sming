@@ -51,6 +51,8 @@ public:
 	virtual ~MemoryDataStream();
 
 	virtual StreamType getStreamType() { return eSST_Memory; }
+	const char* getStreamPointer() { return pos; }
+	int getStreamLength() { return size; }
 
 	virtual size_t write(uint8_t charToWrite);
 	virtual size_t write(const uint8_t *buffer, size_t size);

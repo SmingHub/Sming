@@ -99,7 +99,7 @@ LIBS		= microc microgcc hal phy pp net80211 lwip wpa main
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
 CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
-CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
+CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections

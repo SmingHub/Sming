@@ -47,6 +47,7 @@ int fileFlush(file_t file);
 int fileLastError(file_t fd);
 void fileClearLastError(file_t fd);
 void fileSetContent(const String fileName, const char *content);
+void fileSetContent(const String fileName, const String& content);
 uint32_t fileGetSize(const String fileName);
 void fileRename(const String oldName, const String newName);
 Vector<String> fileList();

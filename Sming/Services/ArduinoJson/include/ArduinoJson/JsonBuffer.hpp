@@ -19,6 +19,7 @@
 namespace ArduinoJson {
 class JsonArray;
 class JsonObject;
+class JsonStringStorage;
 
 // Entry point for using the library.
 //
@@ -43,6 +44,8 @@ class JsonBuffer {
   // Returns a reference to the new JsonObject or JsonObject::invalid() if the
   // allocation fails.
   JsonObject &createObject();
+
+  JsonStringStorage& createStringStorage(const String& text);
 
   // Allocates and populate a JsonArray from a JSON string.
   //

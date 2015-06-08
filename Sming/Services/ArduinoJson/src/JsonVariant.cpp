@@ -27,24 +27,9 @@ JsonVariant::operator bool() const {
   return _type == JSON_BOOLEAN ? _content.asBoolean : false;
 }
 
-JsonVariant::operator const String *() const {
-  return _type == JSON_CSTRING ? _content.asCString : NULL;
-}
-
 JsonVariant::operator const char *() const {
   return _type == JSON_STRING ? _content.asString : NULL;
 }
-
-// Just for simple usage and reading
-String JsonVariant::toString() const {
-  if (_type == JSON_CSTRING)
-	  return *_content.asCString;
-  else if (_type == JSON_STRING)
-	  return String(_content.asString);
-  else
-	  return String(); // ?
-}
-
 
 JsonVariant::operator double() const {
   return _type >= JSON_DOUBLE_0_DECIMALS ? _content.asDouble : 0;
@@ -64,12 +49,6 @@ void JsonVariant::set(const char *value) {
   if (_type == JSON_INVALID) return;
   _type = JSON_STRING;
   _content.asString = value;
-}
-
-void JsonVariant::set(const String& value) {
-  if (_type == JSON_INVALID) return;
-  _type = JSON_CSTRING;
-  _content.asCString = &value;
 }
 
 void JsonVariant::set(double value, uint8_t decimals) {
@@ -96,6 +75,24 @@ void JsonVariant::set(JsonObject &object) {
   _content.asObject = &object;
 }
 
+void JsonVariant::set(const String& value) {
+  if (_type == JSON_INVALID) return;
+  _type = JSON_STRING;
+  _content.asString = value.c_str();
+}
+
+String JsonVariant::toString() const {
+  if (_type == JSON_STRING)
+      return String(_content.asString);
+  else
+      return String(); //TODO: Convert numbers
+}
+
+JsonVariant &JsonVariant::operator=(const String& value) {
+  set(value);
+  return *this;
+}
+
 size_t JsonVariant::size() const {
   if (_type == JSON_ARRAY) return _content.asArray->size();
   if (_type == JSON_OBJECT) return _content.asObject->size();
@@ -119,8 +116,6 @@ void JsonVariant::writeTo(JsonWriter &writer) const {
     as<const JsonObject &>().writeTo(writer);
   else if (is<const char *>())
     writer.writeString(as<const char *>());
-  else if (is<const String *>())
-    writer.writeString(as<const String *>()->c_str());
   else if (is<long>())
     writer.writeLong(as<long>());
   else if (is<bool>())

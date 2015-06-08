@@ -65,7 +65,6 @@ class JsonVariant : public Internals::JsonPrintable<JsonVariant> {
 
   // Sets the variant to be a string.
   void set(const char *value);
-  void set(const String& value);
 
   // Sets the variant to be a reference to an array.
   void set(JsonArray &array);
@@ -92,12 +91,6 @@ class JsonVariant : public Internals::JsonPrintable<JsonVariant> {
     return *this;
   }
 
-  // Sets the variant to be a reference to an String
-  JsonVariant &operator=(const String& value) {
-    set(value);
-    return *this;
-  }
-
   // Gets the variant as a boolean value.
   // Returns false if the variant is not a boolean value.
   operator bool() const;
@@ -117,8 +110,6 @@ class JsonVariant : public Internals::JsonPrintable<JsonVariant> {
   operator unsigned int() const { return cast_long_to<unsigned int>(); }
   operator unsigned long() const { return cast_long_to<unsigned long>(); }
   operator unsigned short() const { return cast_long_to<unsigned short>(); }
-
-  operator const String *() const;
 
   // Gets the variant as a string.
   // Returns NULL if variant is not a string.
@@ -177,6 +168,11 @@ class JsonVariant : public Internals::JsonPrintable<JsonVariant> {
   // Return JsonVariant::invalid() if the variant is not an object.
   JsonVariant &operator[](const char *key);
 
+ protected:
+   // Don't use this methods. Convert string value to "const char*" (if it will be available) or use "<parent>.addCopy(<value>)" instead
+  void set(const String& value);
+  JsonVariant &operator=(const String& value);
+
  private:
   // Special constructor used only to create _invalid.
   explicit JsonVariant(Internals::JsonVariantType type) : _type(type) {}
@@ -195,6 +191,9 @@ class JsonVariant : public Internals::JsonPrintable<JsonVariant> {
 
   // The instance returned by JsonVariant::invalid()
   static JsonVariant _invalid;
+
+  friend class JsonObject;
+  friend class JsonArray;
 };
 
 template <>
@@ -215,11 +214,6 @@ inline bool JsonVariant::is<bool>() const {
 template <>
 inline bool JsonVariant::is<const char *>() const {
   return _type == Internals::JSON_STRING;
-}
-
-template <>
-inline bool JsonVariant::is<const String *>() const {
-  return _type == Internals::JSON_CSTRING;
 }
 
 template <>

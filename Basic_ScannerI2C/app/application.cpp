@@ -81,6 +81,9 @@ void init()
 
 	WDT.enable(false); // First (but not the best) option: fully disable watch dog timer
 
+	// You can change pins:
+	//Wire.pins(12, 14); // SCL, SDA
+
 	Wire.begin();
 	procTimer.initializeMs(3000, scanBus).start();
 }

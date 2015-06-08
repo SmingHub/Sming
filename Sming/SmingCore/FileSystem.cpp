@@ -112,6 +112,11 @@ void fileClearLastError(file_t fd)
   _filesystemStorageHandle.errno = SPIFFS_OK;
 }
 
+void fileSetContent(const String fileName, const String& content)
+{
+	fileSetContent(fileName, content.c_str());
+}
+
 void fileSetContent(const String fileName, const char *content)
 {
 	file_t file = fileOpen(fileName.c_str(), eFO_CreateNewAlways | eFO_WriteOnly);

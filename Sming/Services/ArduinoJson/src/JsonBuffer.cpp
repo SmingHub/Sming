@@ -9,9 +9,12 @@
 #include "../include/ArduinoJson/Internals/JsonParser.hpp"
 #include "../include/ArduinoJson/JsonArray.hpp"
 #include "../include/ArduinoJson/JsonObject.hpp"
+#include "../include/ArduinoJson/Internals/JsonStringStorage.hpp"
 
 using namespace ArduinoJson;
 using namespace ArduinoJson::Internals;
+
+JsonStringStorage JsonStringStorage::_invalid(NULL);
 
 JsonArray &JsonBuffer::createArray() {
   JsonArray *ptr = new (this) JsonArray(this);
@@ -31,4 +34,10 @@ JsonArray &JsonBuffer::parseArray(char *json, uint8_t nestingLimit) {
 JsonObject &JsonBuffer::parseObject(char *json, uint8_t nestingLimit) {
   JsonParser parser(this, json, nestingLimit);
   return parser.parseObject();
+}
+
+JsonStringStorage& ArduinoJson::JsonBuffer::createStringStorage(const String& text)
+{
+	JsonStringStorage *ptr = new (this) JsonStringStorage(text);
+	return ptr ? *ptr : JsonStringStorage::invalid();
 }
