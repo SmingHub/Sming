@@ -23,7 +23,7 @@
 #include <user_config.h>
 #include <Printable.h>
 
-class String;
+#include "WString.h"
 
 // A class to make it easier to handle and pass around IP addresses
 
