@@ -1,5 +1,5 @@
 # ESP8266 sdk package home directory
-ESP_HOME ?= /usr/home/shurik/src/esp8266/esp-open-sdk
+ESP_HOME ?= /usr/local/esp-open-sdk
 
 # base directory of the ESP8266 SDK package, absolute
 SDK_BASE	?= $(ESP_HOME)/sdk
