@@ -197,6 +197,33 @@ size_t Print::println(const Printable &p)
   return n;
 }
 
+size_t Print::printf(const char *fmt, ...)
+{
+	size_t sz = 0;
+	size_t buffSize = INITIAL_PRINTF_BUFFSIZE;
+	bool retry = false;
+	do {
+		char tempBuff[buffSize];
+		va_list va;
+		va_start(va, fmt);
+		sz = ets_vsnprintf(tempBuff,buffSize, fmt, va);
+		va_end(va);
+		if (sz > (buffSize -1))
+		{
+			buffSize = sz + 1; // Leave room for terminating null char
+			retry = true;
+		}
+		else
+		{
+			if (sz > 0)
+			{
+				write(tempBuff,sz);
+			}
+			return sz;
+		}
+	} while (retry);
+}
+
 // private methods
 
 size_t Print::printNumber(unsigned long n, uint8_t base)

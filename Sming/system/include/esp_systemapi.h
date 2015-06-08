@@ -14,6 +14,8 @@
 #include "espinc/uart_register.h"
 #include "espinc/spi_register.h"
 
+#include <stdarg.h>
+
 #include <user_config.h>
 
 #define __ESP8266_EX__ // System definition ESP8266 SOC
@@ -60,6 +62,7 @@ extern char *ets_strncpy(char *dest, const char *src, size_t n);
 extern char *ets_strstr(const char *haystack, const char *needle);
 extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
 extern int os_snprintf(char *str, size_t size, const char *format, ...) __attribute__ ((format (printf, 3, 4)));
+extern int ets_vsnprintf(char * s, size_t n, const char * format, va_list arg) __attribute__ ((format (printf, 3, 0)));
 
 extern void *pvPortMalloc(size_t xWantedSize);
 extern void *pvPortZalloc(size_t);
