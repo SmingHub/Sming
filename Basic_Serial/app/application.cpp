@@ -4,6 +4,7 @@
 
 Timer procTimer;
 SerialReadingDelegateDemo delegateDemoClass;
+int helloCounter = 0;
 
 void sayHello()
 {
@@ -11,6 +12,8 @@ void sayHello()
 	Serial.print(" Time : ");
 	Serial.println(micros());
 	Serial.println();
+
+	Serial.printf("This is Hello message %d \r\n", ++helloCounter);
 }
 
 void init()

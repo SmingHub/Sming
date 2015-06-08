@@ -24,6 +24,8 @@
 #include "WiringFrameworkDependencies.h"
 #include "Printable.h"
 
+#define INITIAL_PRINTF_BUFFSIZE 128
+
 class String;
 
 class Print
@@ -81,6 +83,9 @@ class Print
 
     size_t println(const Printable &p);
     size_t println(const String &s);
+
+    // printf
+    size_t printf(const char *fmt, ...);
 
   private:
     int write_error;
