@@ -89,7 +89,6 @@ void DebugClass::dbgOutputChar(char c)
 		if (c == '\n')
 		{
 			Self->newDebugLine = true;
-			Self->print("!!");
 		}
 	}
 }
