@@ -14,8 +14,8 @@ StationClass::StationClass()
 {
 	System.onReady(this);
 	runScan = false;
-	onConnectOk = NULL;
-	onConnectFail = NULL;
+	onConnectOk = nullptr;
+	onConnectFail = nullptr;
 	connectionTimeOut = 0;
 	connectionTimer = NULL;
 }
@@ -214,10 +214,10 @@ EStationConnectionStatus StationClass::getConnectionStatus()
 	return (EStationConnectionStatus)wifi_station_get_connect_status();
 }
 
-bool StationClass::startScan(ScanCompletedCallback scanCompleted)
+bool StationClass::startScan(ScanCompletedDelegate scanCompleted)
 {
 	scanCompletedCallback = scanCompleted;
-	if (scanCompleted == NULL) return false;
+	if (!scanCompleted) return false;
 
 	bool res = wifi_station_scan(NULL, staticScanCompleted);
 	if (!res)
@@ -233,14 +233,14 @@ bool StationClass::startScan(ScanCompletedCallback scanCompleted)
 	return res;
 }
 
-void StationClass::waitConnection(ConnectionCallback successfulConnected)
+void StationClass::waitConnection(ConnectionDelegate successfulConnected)
 {
 	waitConnection(successfulConnected, -1, NULL);
 }
 
-void StationClass::waitConnection(ConnectionCallback successfulConnected, int secondsTimeOut, ConnectionCallback connectionNotEstablished)
+void StationClass::waitConnection(ConnectionDelegate successfulConnected, int secondsTimeOut, ConnectionDelegate connectionNotEstablished)
 {
-	if (onConnectOk != NULL || onConnectFail != NULL)
+	if (onConnectOk || onConnectFail )
 	{
 		SYSTEM_ERROR("WRONG CALL waitConnection method..");
 		return;
@@ -261,7 +261,7 @@ void StationClass::staticScanCompleted(void *arg, STATUS status)
 	BssList list;
 	if (status == OK)
 	{
-		if (WifiStation.scanCompletedCallback != NULL)
+		if (WifiStation.scanCompletedCallback )
 		{
 			bss_info *cur = (bss_info*)arg;
 
@@ -278,7 +278,7 @@ void StationClass::staticScanCompleted(void *arg, STATUS status)
 	else
 	{
 		debugf("scan failed %d", status);
-		if (WifiStation.scanCompletedCallback != NULL)
+		if (WifiStation.scanCompletedCallback )
 			WifiStation.scanCompletedCallback(false, list);
 	}
 }
@@ -297,21 +297,25 @@ void StationClass::internalCheckConnection()
 	uint32 duration = millis() - connectionStarted;
 	if (isConnected())
 	{
-		ConnectionCallback call = onConnectOk;
-		onConnectOk = NULL;
-		onConnectFail = NULL;
+		ConnectionDelegate callOk = nullptr;
+		if (onConnectOk) {
+			callOk = onConnectOk;
+		}
+
+		onConnectOk = nullptr;
+		onConnectFail = nullptr;
 		delete connectionTimer;
 		connectionTimeOut = 0;
 
-		if (call)
-			call();
-
+		if (callOk) {
+			callOk();
+		}
 	}
 	else if (connectionTimeOut > 0 && duration > (uint32)connectionTimeOut * 1000)
 	{
-		ConnectionCallback call = onConnectFail;
-		onConnectOk = NULL;
-		onConnectFail = NULL;
+		ConnectionDelegate call = onConnectFail;
+		onConnectOk = nullptr;
+		onConnectFail = nullptr;
 		delete connectionTimer;
 		connectionTimeOut = 0;
 
