@@ -34,7 +34,7 @@ bool SystemClass::isReady()
 	return state == eSS_Ready;
 }
 
-void SystemClass::onReady(SystemReadyCallback readyHandler)
+void SystemClass::onReady(SystemReadyDelegate readyHandler)
 {
 	readyHandlers.add(readyHandler);
 }
