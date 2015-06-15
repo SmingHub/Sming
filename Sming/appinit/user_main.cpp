@@ -15,7 +15,7 @@ extern "C" void user_init(void)
 }
 
 // For compatibility with SDK v1.1
-void __attribute__((weak)) user_rf_pre_init(void)
+extern "C" void __attribute__((weak)) user_rf_pre_init(void)
 {
 	// RTC startup fix, author pvvx
     volatile uint32 * ptr_reg_rtc_ram = (volatile uint32 *)0x60001000;
