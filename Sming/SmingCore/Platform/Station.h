@@ -10,6 +10,7 @@
 
 #include <user_config.h>
 #include "System.h"
+#include "../SmingCore/Delegate.h"
 #include "../../Wiring/WString.h"
 #include "../../Wiring/WVector.h"
 #include "../../Wiring/IPAddress.h"
@@ -28,8 +29,8 @@ class BssInfo;
 class Timer;
 
 typedef Vector<BssInfo> BssList;
-typedef void (*ScanCompletedCallback)(bool succeeded, BssList list);
-typedef void (*ConnectionCallback)();
+typedef Delegate<void(bool, BssList)> ScanCompletedDelegate;
+typedef Delegate<void()> ConnectionDelegate;
 
 class StationClass : protected ISystemReadyHandler
 {
@@ -62,9 +63,9 @@ public:
 	String getSSID();
 	String getPassword();
 
-	bool startScan(ScanCompletedCallback scanCompleted);
-	void waitConnection(ConnectionCallback successfulConnected);
-	void waitConnection(ConnectionCallback successfulConnected, int secondsTimeOut, ConnectionCallback connectionNotEstablished);
+	bool startScan(ScanCompletedDelegate scanCompleted);
+	void waitConnection(ConnectionDelegate successfulConnected);
+	void waitConnection(ConnectionDelegate successfulConnected, int secondsTimeOut, ConnectionDelegate connectionNotEstablished);
 
 protected:
 	virtual void onSystemReady();
@@ -74,11 +75,11 @@ protected:
 	static void staticCheckConnection();
 
 private:
-	ScanCompletedCallback scanCompletedCallback;
+	ScanCompletedDelegate scanCompletedCallback;
 	bool runScan;
 
-	ConnectionCallback onConnectOk;
-	ConnectionCallback onConnectFail;
+	ConnectionDelegate onConnectOk;
+	ConnectionDelegate onConnectFail;
 	int connectionTimeOut;
 	uint32 connectionStarted;
 	Timer* connectionTimer;
