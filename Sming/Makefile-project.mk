@@ -77,10 +77,10 @@ else
       UNAME := FreeBSD
 
       # Default SMING_HOME. Can be overriden.
-      SMING_HOME ?= /usr/home/shurik/src/esp8266/Sming/Sming
+      SMING_HOME ?= /usr/local/esp8266/Sming/Sming
 
       # Default ESP_HOME. Can be overriden.
-      ESP_HOME ?= /usr/home/shurik/src/esp8266/esp-open-sdk
+      ESP_HOME ?= /usr/local/esp8266/esp-open-sdk
       include $(SMING_HOME)/Makefile-bsd.mk     
   endif
 endif
