@@ -37,7 +37,17 @@ public:
 	void setDebug(Stream &reqStream, eDBGPrefix reqUsePrefix, bool reqStart = true);
 
 	template <typename... Args>
-	size_t lprintf(int level, const char* fmt, Args... args);
+	size_t lprintf(int level, const char* fmt, Args... args)
+	{
+		if (level == 0)
+		{
+			return 0;
+		}
+		else
+		{
+			return printf(fmt, args...);
+		}
+	}
 
 	// implementation of virtual from Print
 	size_t write(uint8_t);

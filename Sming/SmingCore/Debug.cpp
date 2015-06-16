@@ -98,7 +98,7 @@ void DebugClass::dbgOutputChar(char c)
 		}
 	}
 }
-
+/*
 template <typename... Args>
 size_t DebugClass::lprintf(int level, const char* fmt, Args... args)
 {
@@ -111,6 +111,7 @@ size_t DebugClass::lprintf(int level, const char* fmt, Args... args)
 		return printf(fmt, args...);
 	}
 }
+*/
 
 DebugClass Debug;
 

@@ -14,7 +14,7 @@ void sayHello()
 	Serial.println();
 
 	Serial.printf("This is Hello message %d \r\n", ++helloCounter);
-
+	/*
 	if ((helloCounter % 3) == 0)
 	{
 		if (Debug.status())
@@ -28,6 +28,9 @@ void sayHello()
 	}
 	debugf("Debug from sayHello %d", helloCounter);
 }
+*/
+	Debug.lprintf((helloCounter + 1) % 2, "Debug.lprintf  %d \r\n", helloCounter);
+	lprintf2((helloCounter % 2), "lprintf2 %d\r\n", helloCounter);
 
 void init()
 {
