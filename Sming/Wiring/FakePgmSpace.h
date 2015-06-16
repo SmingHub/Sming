@@ -3,7 +3,6 @@
 
 #include "WiringFrameworkDependencies.h"
 
-#define PROGMEM
 #define PGM_P  const char *
 #define PSTR(str) (str)
 
@@ -17,6 +16,23 @@ typedef uint16_t prog_uint16_t;
 typedef int32_t prog_int32_t;
 typedef uint32_t prog_uint32_t;
 
+#ifdef ICACHE_FLASH
+
+#define PROGMEM STORE_ATTR ICACHE_RODATA_ATTR
+
+#define memcpy_P(dest, src, num) ets_memcpy((dest), (src), (num))
+#define strcpy_P(dest, src) ets_strcpy((dest), (src))
+#define strlen_P(a) ets_strlen((a))
+
+uint8_t pgm_read_byte(const void* pgm_addr);
+uint16_t pgm_read_word(const void* pgm_addr);
+uint32_t pgm_read_dword(const void* pgm_addr);
+float pgm_read_float(const void* pgm_addr);
+
+#else
+
+#define PROGMEM
+
 #define memcpy_P(dest, src, num) memcpy((dest), (src), (num))
 #define strcpy_P(dest, src) strcpy((dest), (src))
 #define strcat_P(dest, src) strcat((dest), (src))
@@ -29,6 +45,8 @@ typedef uint32_t prog_uint32_t;
 #define pgm_read_word(addr) (*(const unsigned short *)(addr))
 #define pgm_read_dword(addr) (*(const unsigned long *)(addr))
 #define pgm_read_float(addr) (*(const float *)(addr))
+
+#endif
 
 #define pgm_read_byte_near(addr) pgm_read_byte(addr)
 #define pgm_read_word_near(addr) pgm_read_word(addr)
