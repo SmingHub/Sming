@@ -18,6 +18,12 @@ typedef struct
 	Stream *debugStream;
 } DebugOuputOptions;
 
+typedef enum
+{
+	eDBGnoPrefix  = 0,
+	eDBGusePrefix = 1
+} eDBGPrefix;
+
 class DebugClass : public Print
 {
 public:
@@ -26,14 +32,19 @@ public:
 	void start();
 	void stop();
 	bool status();
-	void setDebug(DebugPrintCharDelegate reqDelegate, bool reqStart = true);
-	void setDebug(Stream &reqStream, bool reqStart = true);
+	void setOptions(eDBGPrefix reqUsePrefix, bool reqStart);
+	void setDebug(DebugPrintCharDelegate reqDelegate, eDBGPrefix reqUsePrefix, bool reqStart = true);
+	void setDebug(Stream &reqStream, eDBGPrefix reqUsePrefix, bool reqStart = true);
+
+	template <typename... Args>
+	size_t lprintf(int level, const char* fmt, Args... args);
+
 	// implementation of virtual from Print
 	size_t write(uint8_t);
 
 private:
 	static void dbgOutputChar(char c);
-	void printHeader();
+	void printPrefix();
 	static DebugClass *Self;
 	bool newDebugLine = true;
 	bool started = false;
@@ -42,5 +53,18 @@ private:
 };
 
 extern DebugClass Debug;
+
+template <typename... Args>
+size_t lprintf2(int level, const char* fmt, Args... args)
+{
+	if (level == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		return Debug.printf(fmt, args...);
+	}
+}
 
 #endif /* SMINGCORE_DEBUG_H_ */

@@ -20,13 +20,13 @@ DebugClass::~DebugClass()
 void DebugClass::start()
 {
 	started = true;
-	printHeader();
+	printPrefix();
 	println("Debug started");
 }
 
 void DebugClass::stop()
 {
-	printHeader();
+	printPrefix();
 	println("Debug stopped");
 	started = false;
 }
@@ -36,20 +36,26 @@ bool DebugClass::status()
 	return started;
 }
 
-void DebugClass::setDebug(DebugPrintCharDelegate reqDelegate, bool reqStart /*= true */)
+void DebugClass::setDebug(DebugPrintCharDelegate reqDelegate, eDBGPrefix reqUsePrefix, bool reqStart /*= true */)
 {
 	os_install_putc1((void *)DebugClass::dbgOutputChar);
 	debugOut.debugStream = nullptr;
 	debugOut.debugDelegate = reqDelegate;
-	if (reqStart) {started = true;}
+	setOptions(reqUsePrefix,reqStart);
 }
 
-void DebugClass::setDebug(Stream &reqStream, bool reqStart /*= true */)
+void DebugClass::setDebug(Stream &reqStream, eDBGPrefix reqUsePrefix, bool reqStart /*= true */)
 {
 	os_install_putc1((void *)DebugClass::dbgOutputChar);
 	debugOut.debugDelegate = nullptr;
 	debugOut.debugStream = &reqStream;
-	if (reqStart) {started = true;}
+	setOptions(reqUsePrefix,reqStart);
+}
+
+void DebugClass::setOptions(eDBGPrefix reqUsePrefix, bool reqStart)
+{
+	useDebugPrefix = reqUsePrefix;
+	started = reqStart;
 }
 
 size_t DebugClass::write(uint8_t c)
@@ -67,7 +73,7 @@ size_t DebugClass::write(uint8_t c)
 	return 0;
 }
 
-void DebugClass::printHeader()
+void DebugClass::printPrefix()
 {
 	if (useDebugPrefix)
 	{
@@ -82,7 +88,7 @@ void DebugClass::dbgOutputChar(char c)
 	{
 		if (Self->newDebugLine)
 		{
-			Self->printHeader();
+			Self->printPrefix();
 			Self->newDebugLine = false;
 		}
 		Self->write(c);
@@ -90,6 +96,19 @@ void DebugClass::dbgOutputChar(char c)
 		{
 			Self->newDebugLine = true;
 		}
+	}
+}
+
+template <typename... Args>
+size_t DebugClass::lprintf(int level, const char* fmt, Args... args)
+{
+	if (level == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		return printf(fmt, args...);
 	}
 }
 
