@@ -12,6 +12,7 @@ extern "C" {
 	#define DEBUG_DEFAULT_OUTPUT Serial
 	#define DEBUG_DEFAULT_START true
 	#define DEBUG_DEFAULT_PREFIX eDBGnoPrefix
+	#define DEBUG_DEFAULT_LEVEL logDebug
 
 	// ESP SDK config
 	#define LWIP_OPEN_SRC

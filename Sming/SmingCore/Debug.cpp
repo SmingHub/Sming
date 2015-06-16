@@ -58,6 +58,16 @@ void DebugClass::setOptions(eDBGPrefix reqUsePrefix, bool reqStart)
 	started = reqStart;
 }
 
+void DebugClass::setDebugLevel(int reqLevel)
+{
+	debugLevel = ((reqLevel < logInfo) || (reqLevel > logDebug)) ? logUndefined : reqLevel;
+}
+
+int DebugClass::getDebugLevel()
+{
+	return debugLevel;
+}
+
 size_t DebugClass::write(uint8_t c)
 {
 	if (debugOut.debugDelegate)
@@ -98,20 +108,6 @@ void DebugClass::dbgOutputChar(char c)
 		}
 	}
 }
-/*
-template <typename... Args>
-size_t DebugClass::lprintf(int level, const char* fmt, Args... args)
-{
-	if (level == 0)
-	{
-		return 0;
-	}
-	else
-	{
-		return printf(fmt, args...);
-	}
-}
-*/
 
 DebugClass Debug;
 

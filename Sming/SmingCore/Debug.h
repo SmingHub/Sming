@@ -8,6 +8,7 @@
 
 #include "HardwareSerial.h"
 #include "Clock.h"
+#include "WString.h"
 
 // Delegate constructor usage: (&YourClass::method, this)
 typedef Delegate<void(char dbgChar)> DebugPrintCharDelegate;
@@ -24,6 +25,14 @@ typedef enum
 	eDBGusePrefix = 1
 } eDBGPrefix;
 
+enum DebugValues
+{
+	logUndefined 	= 0,
+	logInfo 		= 1,
+	logWarning		= 2,
+	logDebug		= 3
+};
+
 class DebugClass : public Print
 {
 public:
@@ -35,16 +44,21 @@ public:
 	void setOptions(eDBGPrefix reqUsePrefix, bool reqStart);
 	void setDebug(DebugPrintCharDelegate reqDelegate, eDBGPrefix reqUsePrefix, bool reqStart = true);
 	void setDebug(Stream &reqStream, eDBGPrefix reqUsePrefix, bool reqStart = true);
+	void setDebugLevel(int reqLevel);
+	int getDebugLevel();
 
 	template <typename... Args>
 	size_t lprintf(int level, const char* fmt, Args... args)
 	{
-		if (level == 0)
+		if (level >= debugLevel)
 		{
 			return 0;
 		}
 		else
 		{
+			String logString[] = {"Undefined","Info","Warning","Debug"};
+			print(logString[level]);
+			print(" ");
 			return printf(fmt, args...);
 		}
 	}
@@ -59,11 +73,13 @@ private:
 	bool newDebugLine = true;
 	bool started = false;
 	bool useDebugPrefix = true;
+	int debugLevel = logUndefined;
 	DebugOuputOptions debugOut;
 };
 
 extern DebugClass Debug;
 
+/*
 template <typename... Args>
 size_t lprintf2(int level, const char* fmt, Args... args)
 {
@@ -76,5 +92,5 @@ size_t lprintf2(int level, const char* fmt, Args... args)
 		return Debug.printf(fmt, args...);
 	}
 }
-
+*/
 #endif /* SMINGCORE_DEBUG_H_ */

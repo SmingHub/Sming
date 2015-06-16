@@ -29,7 +29,7 @@ void sayHello()
 	debugf("Debug from sayHello %d", helloCounter);
 }
 */
-	Debug.lprintf((helloCounter + 1) % 2, "Debug.lprintf  %d \r\n", helloCounter);
+	Debug.lprintf((helloCounter) % 4, "This is a info/warning/debug message %d, debug level = %d \r\n", helloCounter, Debug.getDebugLevel());;
 	lprintf2((helloCounter % 2), "lprintf2 %d\r\n", helloCounter);
 
 void init()
