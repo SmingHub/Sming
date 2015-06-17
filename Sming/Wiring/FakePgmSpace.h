@@ -16,13 +16,13 @@ typedef uint16_t prog_uint16_t;
 typedef int32_t prog_int32_t;
 typedef uint32_t prog_uint32_t;
 
+#define strcpy_P(dest, src) strcpy((dest), (src))
+#define strlen_P(a) strlen((a))
+#define strcat_P(dest, src) strcat((dest), (src))
+
 #ifdef ICACHE_FLASH
 
 #define PROGMEM STORE_ATTR ICACHE_RODATA_ATTR
-
-#define memcpy_P(dest, src, num) ets_memcpy((dest), (src), (num))
-#define strcpy_P(dest, src) ets_strcpy((dest), (src))
-#define strlen_P(a) ets_strlen((a))
 
 #define pgm_read_byte(addr) \
 ({ \
@@ -43,22 +43,37 @@ typedef uint32_t prog_uint32_t;
 #define pgm_read_dword(addr) (*(const unsigned long *)(addr))
 #define pgm_read_float(addr) (*(const float *)(addr))
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+void *memcpy_P(void *dest, const void *src_P, size_t length);
+int strcmp_P(const char *str1, const char *str2_P);
+char *strstr_P(char *haystack, const char *needle_P);
+#define sprintf_P(s, f_P, ...) \
+({ \
+	char *__localF = (char *)malloc(strlen_P(f_P) + 1); \
+	strcpy_P(__localF, f_P); \
+	int __result = sprintf(s, __localF, ##__VA_ARGS__); \
+	free(__localF); \
+	__result; \
+})
+#ifdef __cplusplus
+}
+#endif
+
 #else
 
 #define PROGMEM
-
-#define memcpy_P(dest, src, num) memcpy((dest), (src), (num))
-#define strcpy_P(dest, src) strcpy((dest), (src))
-#define strcat_P(dest, src) strcat((dest), (src))
-#define strcmp_P(a, b) strcmp((a), (b))
-#define strstr_P(a, b) strstr((a), (b))
-#define strlen_P(a) strlen((a))
-#define sprintf_P(s, f, ...) sprintf((s), (f), __VA_ARGS__)
 
 #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
 #define pgm_read_word(addr) (*(const unsigned short *)(addr))
 #define pgm_read_dword(addr) (*(const unsigned long *)(addr))
 #define pgm_read_float(addr) (*(const float *)(addr))
+
+#define memcpy_P(dest, src, num) memcpy((dest), (src), (num))
+#define strcmp_P(a, b) strcmp((a), (b))
+#define strstr_P(a, b) strstr((a), (b))
+#define sprintf_P(s, f, ...) sprintf((s), (f), ##__VA_ARGS__)
 
 #endif
 

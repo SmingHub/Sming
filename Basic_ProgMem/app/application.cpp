@@ -9,12 +9,14 @@
 
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
+#include <stdio.h>
 
-const uint8_t demoRam[] = {1};
-const PROGMEM uint8_t demoPgm[] = {1};
+const uint8_t demoRam[] = {1, 2, 3, 4, 5};
+const PROGMEM uint8_t demoPgm[] = {1, 2, 3, 4, 5};
 
 const PROGMEM char demoString[] = "Demo";
 const PROGMEM char demoString2[] = "Demo";
+const PROGMEM char demoFormat[] = "Demo %d";
 
 const PROGMEM uint8_t bytes[] = {1, 2, 3, 4, 5, 6, 7, 8};
 const PROGMEM uint16_t words[] = {11, 21, 31, 41, 51, 61, 71, 81};
@@ -94,6 +96,28 @@ void testPgm()
 	assertEqualsString("Demo", buf);
 	assertEquals8(4, strlen_P(demoString));
 	Serial.println(buf);
+
+	strcat_P(buf, demoString);
+	assertEqualsString("DemoDemo", buf);
+
+	assertEquals8(1, strcmp_P(buf, demoString));
+	assertEquals8(0, strcmp_P("Demo", demoString));
+
+	sprintf(buf, "SuperDemo");
+	assertEqualsString("Demo", strstr_P(buf, demoString));
+
+	sprintf_P(buf, demoFormat, 1);
+	assertEqualsString("Demo 1", buf);
+
+	Serial.println("> Copy bytes from PROGMEM:");
+	memcpy_P(buf, demoPgm, sizeof(demoPgm));
+	for (uint8_t i = 0; i < sizeof(demoPgm); i++)
+	{
+		assertEquals8(demoRam[i], buf[i]);
+		Serial.print((unsigned char)buf[i]);
+		Serial.print(" ");
+	}
+	Serial.println("");
 }
 
 void init()
