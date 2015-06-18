@@ -3,6 +3,7 @@
 	<name>Ultrasonic_HCSR04</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

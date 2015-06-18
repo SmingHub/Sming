@@ -3,6 +3,7 @@
 	<name>Accelerometer_MMA7455</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

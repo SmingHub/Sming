@@ -3,6 +3,7 @@
 	<name>TcpClient_NarodMon</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

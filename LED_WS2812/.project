@@ -3,6 +3,7 @@
 	<name>LED_WS2812</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

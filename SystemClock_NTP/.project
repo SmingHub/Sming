@@ -3,6 +3,7 @@
 	<name>SystemClock_NTP</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

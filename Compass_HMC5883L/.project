@@ -3,6 +3,7 @@
 	<name>Compass_HMC5883L</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

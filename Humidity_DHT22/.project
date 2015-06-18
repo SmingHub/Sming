@@ -3,6 +3,7 @@
 	<name>Humidity_DHT22</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
