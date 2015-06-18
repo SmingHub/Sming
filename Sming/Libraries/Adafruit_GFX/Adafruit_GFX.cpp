@@ -36,8 +36,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <cstdlib>
 
 #include "glcdfont.c"
-#ifdef __AVR__
+#if defined(__AVR__)
  #include <avr/pgmspace.h>
+#elif defined(__ESP8266_EX__)
 #else
  #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
 #endif
