@@ -3,6 +3,7 @@
 	<name>Temperature_DS1820</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
