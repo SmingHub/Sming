@@ -6,9 +6,9 @@ extern void init();
 extern "C" void user_init(void)
 {
 	system_timer_reinit();
-	uart_div_modify(UART_ID_0, UART_CLK_FREQ / 115200);
+	uart_div_modify(UART_ID_0, UART_CLK_FREQ / SERIAL_BAUD_RATE);
 	cpp_core_initialize();
-	Debug.setDebug(Serial);
+	Debug.setDebug(DEBUG_DEFAULT_OUTPUT, DEBUG_DEFAULT_PREFIX, DEBUG_DEFAULT_START);
 	spiffs_mount();
 	System.initialize();
 
