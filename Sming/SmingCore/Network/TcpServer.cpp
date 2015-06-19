@@ -19,9 +19,9 @@ TcpServer::TcpServer() : TcpConnection(false)
 	TcpConnection::setTimeOut(USHRT_MAX);
 }
 
-TcpServer::TcpServer(TcpClientDataCallback clientReceiveDataCallback) : TcpConnection(false)
+TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler) : TcpConnection(false)
 {
-	clientReceive = clientReceiveDataCallback;
+	clientReceive = clientReceiveDataHandler;
 	timeOut = 40;
 	TcpConnection::setTimeOut(USHRT_MAX);
 }

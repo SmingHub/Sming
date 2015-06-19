@@ -23,6 +23,7 @@ public:
 	HttpResponse();
 	virtual ~HttpResponse();
 
+	void switchingProtocols();
 	void badRequest();
 	void notFound();
 	void forbidden();

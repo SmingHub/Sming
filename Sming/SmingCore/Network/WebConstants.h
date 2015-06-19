@@ -78,11 +78,14 @@ namespace RequestMethod
 namespace HttpStatusCode
 {
 	static const char* OK = "200 OK";
+	static const char* SwitchingProtocols = "101 Switching Protocols";
+	static const char* Found = "302 Found";
+
 	static const char* BadRequest = "400 Bad Request";
 	static const char* NotFound = "404 Not Found";
 	static const char* Forbidden = "403 Forbidden";
 	static const char* Unauthorized = "401 Unauthorized";
-	static const char* Found = "302 Found";
+
 	static const char* NotImplemented = "501 Not Implemented";
 };
 

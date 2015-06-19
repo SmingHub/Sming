@@ -14,7 +14,7 @@
 class TcpServer: public TcpConnection {
 public:
 	TcpServer();
-	TcpServer(TcpClientDataCallback clientReceiveDataCallback);
+	TcpServer(TcpClientDataDelegate clientReceiveDataHandler);
 	virtual ~TcpServer();
 
 public:
@@ -35,7 +35,7 @@ public:
 
 private:
 	uint16_t timeOut;
-	TcpClientDataCallback clientReceive;
+	TcpClientDataDelegate clientReceive;
 };
 
 #endif /* _SMING_CORE_TCPSERVER_H_ */

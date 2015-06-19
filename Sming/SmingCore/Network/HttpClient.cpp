@@ -18,7 +18,7 @@ HttpClient::~HttpClient()
 {
 }
 
-bool HttpClient::downloadString(String url, HttpClientCompletedCallback onCompleted)
+bool HttpClient::downloadString(String url, HttpClientCompletedDelegate onCompleted)
 {
 	if (isProcessing()) return false;
 	URL uri = URL(url);
@@ -26,12 +26,12 @@ bool HttpClient::downloadString(String url, HttpClientCompletedCallback onComple
 	return startDownload(uri, eHCM_String, onCompleted);
 }
 
-bool HttpClient::downloadFile(String url, HttpClientCompletedCallback onCompleted /* = NULL */)
+bool HttpClient::downloadFile(String url, HttpClientCompletedDelegate onCompleted /* = NULL */)
 {
 	return downloadFile(url, "", onCompleted);
 }
 
-bool HttpClient::downloadFile(String url, String saveFileName, HttpClientCompletedCallback onCompleted /* = NULL */)
+bool HttpClient::downloadFile(String url, String saveFileName, HttpClientCompletedDelegate onCompleted /* = NULL */)
 {
 	if (isProcessing()) return false;
 	URL uri = URL(url);
@@ -53,7 +53,7 @@ bool HttpClient::downloadFile(String url, String saveFileName, HttpClientComplet
 	return startDownload(uri, eHCM_File, onCompleted);
 }
 
-bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompletedCallback onCompleted)
+bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted)
 {
 	reset();
 	this->mode = mode;

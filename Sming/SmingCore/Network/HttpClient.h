@@ -18,7 +18,7 @@ class HttpClient;
 class URL;
 
 //typedef void (*HttpClientCompletedCallback)(HttpClient& client, bool successful);
-typedef Delegate<void(HttpClient& client, bool successful)> HttpClientCompletedCallback;
+typedef Delegate<void(HttpClient& client, bool successful)> HttpClientCompletedDelegate;
 
 enum HttpClientMode
 {
@@ -34,12 +34,12 @@ public:
 	virtual ~HttpClient();
 
 	// Text mode
-	bool downloadString(String url, HttpClientCompletedCallback onCompleted);
+	bool downloadString(String url, HttpClientCompletedDelegate onCompleted);
 	String getResponseString(); // Can be used only after calling downloadString!
 
 	// File mode
-	bool downloadFile(String url, HttpClientCompletedCallback onCompleted = NULL);
-	bool downloadFile(String url, String saveFileName, HttpClientCompletedCallback onCompleted = NULL);
+	bool downloadFile(String url, HttpClientCompletedDelegate onCompleted = NULL);
+	bool downloadFile(String url, String saveFileName, HttpClientCompletedDelegate onCompleted = NULL);
 
 	void setPostBody(const String& _method);
 	String getPostBody();
@@ -62,7 +62,7 @@ public:
 	void reset(); // Reset current status, data and etc.
 
 protected:
-	bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedCallback onCompleted);
+	bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
 	void onFinished(TcpClientState finishState);
 	virtual err_t onReceive(pbuf *buf);
 	virtual void writeRawData(pbuf* buf, int startPos);
@@ -74,7 +74,7 @@ protected:
 
 private:
 	int code;
-	HttpClientCompletedCallback onCompleted;
+	HttpClientCompletedDelegate onCompleted;
 	HttpClientMode mode;
 	HashMap<String, String> requestHeaders;
 	HashMap<String, String> responseHeaders;

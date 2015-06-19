@@ -25,6 +25,10 @@ HttpResponse::~HttpResponse()
 	stream = NULL;
 }
 
+void HttpResponse::switchingProtocols()
+{
+	status = HttpStatusCode::SwitchingProtocols;
+}
 void HttpResponse::badRequest()
 {
 	status = HttpStatusCode::BadRequest;

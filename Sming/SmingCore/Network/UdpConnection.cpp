@@ -13,7 +13,7 @@ UdpConnection::UdpConnection() : onDataCallback(NULL)
 	initialize();
 }
 
-UdpConnection::UdpConnection(UdpConnectionDataCallback dataCallback) : onDataCallback(dataCallback)
+UdpConnection::UdpConnection(UdpConnectionDataDelegate dataHandler) : onDataCallback(dataHandler)
 {
 	initialize();
 }

@@ -34,6 +34,10 @@ public:
 	inline String getPath() { return path; }
 	String getContentType();
 	int getContentLength();
+
+	bool isAjax();
+	bool isWebSocket();
+
 	String getQueryParameter(String parameterName, String defaultValue = "");
 	String getPostParameter(String parameterName, String defaultValue = "");
 	String getHeader(String headerName, String defaultValue = "");

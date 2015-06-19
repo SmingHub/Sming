@@ -229,3 +229,15 @@ bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, c
 	}
 	return continued;
 }
+
+bool HttpRequest::isAjax()
+{
+	String req = getHeader("HTTP_X_REQUESTED_WITH");
+	return req.equalsIgnoreCase("xmlhttprequest");
+}
+
+bool HttpRequest::isWebSocket()
+{
+	String req = getHeader("Upgrade");
+	return req.equalsIgnoreCase("websocket");
+}
