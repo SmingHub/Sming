@@ -5,21 +5,17 @@ html_files := $(shell find web/dev/ -name \*.html)
 
 .PHONY: ${css_files}
 ${css_files}:
-	@yuicompressor -o $(web_dst)/$(notdir $(basename $@))-min.css $@
-	@gzip -9 -f $(web_dst)/$(notdir $(basename $@))-min.css
+	@yuicompressor -o $(web_dst)/$(notdir $(basename $@)).css $@
+	@gzip -9 -f $(web_dst)/$(notdir $(basename $@)).css
 
 .PHONY: ${js_files}
 ${js_files}:
-	@yuicompressor -o $(web_dst)/$(notdir $(basename $@))-min.js $@
-	@gzip -9 -f $(web_dst)/$(notdir $(basename $@))-min.js
+	@yuicompressor -o $(web_dst)/$(notdir $(basename $@)).js $@
+	@gzip -9 -f $(web_dst)/$(notdir $(basename $@)).js
 
 .PHONY: ${html_files}
 ${html_files}:
 	@cp $@ $(web_dst)/$(notdir $@)
-	@sed -r 's/script src=\"([a-zA-Z0-9]+).js\"/script src=\"\1-min.js.gz\"/' $(web_dst)/$(notdir $@) > $(web_dst)/$(notdir $@).new
-	@mv $(web_dst)/$(notdir $@).new $(web_dst)/$(notdir $@)
-	@sed -r 's/link href=\"([a-zA-Z0-9]+).css\"/link href=\"\1-min.css.gz\"/' $(web_dst)/$(notdir $@) > $(web_dst)/$(notdir $@).new
-	@mv $(web_dst)/$(notdir $@).new $(web_dst)/$(notdir $@)
 
 .PHONY: ${web_dst}
 ${web_dst}: 
