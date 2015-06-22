@@ -102,6 +102,9 @@ FW_BASE		= out/firmware
 FW_START_OFFSET = $(shell printf '0x%X\n' $$( $(GET_FILESIZE) $(FW_BASE)/eagle.flash.bin ))
 SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.bin) + 16384 + 36864) & (0xFFFFC000) )) )
 
+# firmware memory layout info file 
+FW_MEMINFO = $(FW_BASE)/fwMeminfo.txt
+FW_MEMINFO_OLD = out/fwMeminfo.old
 	
 # name for the target project
 TARGET		= app
@@ -321,8 +324,14 @@ $(TARGET_OUT): $(APP_AR)
 	
 	$(vecho) "------------------------------------------------------------------------------"
 ifeq ($(UNAME),Windows)
-	$(vecho) "Memory layout info:"
-	$(Q) $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe $@
+	$(vecho) "Memory layout info:";
+#Redirect to file for keeping track over multiple git revisions	
+#Check for existing meminfo file
+	$(Q) if [ -f "$(FW_MEMINFO_OLD)" ]; then \
+    	mv $(FW_MEMINFO_OLD) $(FW_MEMINFO).old; \
+	fi	
+	$(Q) $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe $@ > $(FW_MEMINFO)
+	$(Q) cat $(FW_MEMINFO)
 else
 	$(vecho) "Section info:"
 	$(Q) $(OBJDUMP) -h -j .data -j .rodata -j .bss -j .text -j .irom0.text $@
@@ -453,6 +462,11 @@ flashinit:
 rebuild: clean all
 
 clean:
+#preserve meminfo file
+	$(Q) if [ -f "$(FW_MEMINFO)" ]; then \
+    	mv $(FW_MEMINFO) $(FW_MEMINFO_OLD); \
+	fi	
+#remove build artifacts	
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f $(TARGET_OUT)
 	$(Q) rm -rf $(BUILD_DIR)
