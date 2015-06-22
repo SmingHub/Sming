@@ -54,7 +54,6 @@ void wsDisconnected(WebSocket& socket)
 {
 	totalActiveSockets--;
 
-
 	// Notify everybody about lost connection
 	WebSocketsList &clients = server.getActiveWebSockets();
 	for (int i = 0; i < clients.count(); i++)
