@@ -29,3 +29,6 @@ ${web_dst}:
 web: ${web_dst} ${css_files} ${js_files} ${html_files}
 	@echo "HTML, CSS and JS packing done"
 
+.PHONY: clean-web
+clean-web:
+	@rm -rf ${web_dst}
