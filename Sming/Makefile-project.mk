@@ -103,8 +103,8 @@ FW_START_OFFSET = $(shell printf '0x%X\n' $$( $(GET_FILESIZE) $(FW_BASE)/eagle.f
 SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.bin) + 16384 + 36864) & (0xFFFFC000) )) )
 
 # firmware memory layout info file 
-FW_MEMINFO = $(FW_BASE)/fwMeminfo.txt
-FW_MEMINFO_OLD = out/fwMeminfo.old
+FW_MEMINFO = $(FW_BASE)/fwMeminfo
+FW_MEMINFO_SAVED = out/fwMeminfo
 	
 # name for the target project
 TARGET		= app
@@ -322,21 +322,24 @@ spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
-	
 	$(vecho) "------------------------------------------------------------------------------"
+#Check for existing old meminfo file and move it to /out/firmware
+	$(Q) if [ -f "$(FW_MEMINFO_SAVED)" ]; then \
+    	mv $(FW_MEMINFO_SAVED) $(FW_MEMINFO).old; \
+	fi
 ifeq ($(UNAME),Windows)
-	$(vecho) "Memory layout info:";
-#Redirect to file for keeping track over multiple git revisions	
-#Check for existing meminfo file
-	$(Q) if [ -f "$(FW_MEMINFO_OLD)" ]; then \
-    	mv $(FW_MEMINFO_OLD) $(FW_MEMINFO).old; \
-	fi	
-	$(Q) $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe $@ > $(FW_MEMINFO)
-	$(Q) cat $(FW_MEMINFO)
+	$(vecho) "Memory layout info:"
+#Redirect to file (to keep track over multiple git revisions add /out/firmware to .gitignore)		
+	$(Q) $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe $@ > $(FW_MEMINFO).new
 else
 	$(vecho) "Section info:"
-	$(Q) $(OBJDUMP) -h -j .data -j .rodata -j .bss -j .text -j .irom0.text $@
+#Redirect to file (to keep track over multiple git revisions add /out/firmware to .gitignore)
+	$(Q) $(OBJDUMP) -h -j .data -j .rodata -j .bss -j .text -j .irom0.text $@ > $(FW_MEMINFO).new
 endif
+#Display to console if file exists
+	$(Q) if [ -f "$(FW_MEMINFO).new" ]; then \
+    	cat $(FW_MEMINFO).new; \
+	fi
 	$(vecho) "------------------------------------------------------------------------------"
 	
 	$(vecho) "Running objcopy, please wait..."	
