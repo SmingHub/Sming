@@ -54,7 +54,7 @@ public:
 		}
 
 		setPostBody(root.toJsonString());
-		downloadString(url, HttpClientCompletedCallback(&InstapushApplication::processed, this));
+		downloadString(url, HttpClientCompletedDelegate(&InstapushApplication::processed, this));
 	}
 
 	void processed(HttpClient& client, bool successful)

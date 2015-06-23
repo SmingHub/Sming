@@ -51,10 +51,11 @@
 #define LSBFIRST 0x0
 #define MSBFIRST 0x1
 
-#define true     0x1
-#define false    0x0
-#define TRUE     0x1
-#define FALSE    0x0
+// Defined in ctypes
+//#define true     0x1
+//#define false    0x0
+//#define TRUE     0x1
+//#define FALSE    0x0
 #define null     NULL
 
 #define DEC      10

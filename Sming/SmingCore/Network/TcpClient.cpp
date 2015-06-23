@@ -10,7 +10,7 @@
 #include "../../SmingCore/DataSourceStream.h"
 #include "../../Wiring/WString.h"
 
-TcpClient::TcpClient(tcp_pcb *clientTcp, TcpClientDataCallback clientReceive, bool autoDestruct )
+TcpClient::TcpClient(tcp_pcb *clientTcp, TcpClientDataDelegate clientReceive, bool autoDestruct )
 : TcpConnection(clientTcp, autoDestruct), state(eTCS_Connected), asyncTotalSent(0), asyncTotalLen(0)
 {
 	completed = NULL;
@@ -28,7 +28,7 @@ TcpClient::TcpClient(bool autoDestruct)
 	stream = NULL;
 }
 
-TcpClient::TcpClient(TcpClientBoolCallback onCompleted, TcpClientEventCallback onReadyToSend /* = NULL*/, TcpClientDataCallback onReceive /* = NULL*/)
+TcpClient::TcpClient(TcpClientBoolDelegate onCompleted, TcpClientEventDelegate onReadyToSend /* = NULL*/, TcpClientDataDelegate onReceive /* = NULL*/)
 	: TcpConnection(false), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
 {
 	completed = onCompleted;
@@ -37,7 +37,7 @@ TcpClient::TcpClient(TcpClientBoolCallback onCompleted, TcpClientEventCallback o
 	stream = NULL;
 }
 
-TcpClient::TcpClient(TcpClientBoolCallback onCompleted, TcpClientDataCallback onReceive /* = NULL*/)
+TcpClient::TcpClient(TcpClientBoolDelegate onCompleted, TcpClientDataDelegate onReceive /* = NULL*/)
 	: TcpConnection(false), state(eTCS_Ready), ready(NULL), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
 {
 	completed = onCompleted;
@@ -46,7 +46,7 @@ TcpClient::TcpClient(TcpClientBoolCallback onCompleted, TcpClientDataCallback on
 }
 
 
-TcpClient::TcpClient(TcpClientDataCallback onReceive)
+TcpClient::TcpClient(TcpClientDataDelegate onReceive)
 	: TcpConnection(false), state(eTCS_Ready), ready(NULL), completed(NULL), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
 {
 	receive = onReceive;

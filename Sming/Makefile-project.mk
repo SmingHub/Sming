@@ -111,6 +111,7 @@ TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
+MODULES 	?= app  # if not initialized by user 
 MODULES		+= $(SMING_HOME)/appinit
 EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include
 

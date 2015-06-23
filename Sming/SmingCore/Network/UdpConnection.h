@@ -15,13 +15,13 @@
 class UdpConnection;
 
 //typedef void (*UdpConnectionDataCallback)(UdpConnection& connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort);
-typedef Delegate<void(UdpConnection& connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort)> UdpConnectionDataCallback;
+typedef Delegate<void(UdpConnection& connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort)> UdpConnectionDataDelegate;
 
 class UdpConnection
 {
 public:
 	UdpConnection();
-	UdpConnection(UdpConnectionDataCallback dataCallback);
+	UdpConnection(UdpConnectionDataDelegate dataHandler);
 	virtual ~UdpConnection();
 
 	virtual bool listen(int port);
@@ -46,7 +46,7 @@ protected:
 
 protected:
 	udp_pcb* udp;
-	UdpConnectionDataCallback onDataCallback;
+	UdpConnectionDataDelegate onDataCallback;
 };
 
 #endif /* SMINGCORE_NETWORK_UDPCONNECTION_H_ */

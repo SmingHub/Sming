@@ -9,6 +9,7 @@
 #define _SMING_CORE_HTTPSERVER_H_
 
 #include "TcpServer.h"
+#include "WebSocket.h"
 #include "../../Wiring/WHashMap.h"
 #include "../../Wiring/WVector.h"
 #include "../Delegate.h"
@@ -18,11 +19,15 @@ class HttpServerConnection;
 class HttpRequest;
 class HttpResponse;
 
-//typedef void (*HttpPathCallback)(HttpRequest &request, HttpResponse &response);
-typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathCallback;
+typedef Vector<WebSocket> WebSocketsList;
+
+typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathDelegate;
+typedef Delegate<void(WebSocket&)> WebSocketDelegate;
+typedef Delegate<void(WebSocket&, const String&)> WebSocketMessageDelegate;
 
 class HttpServer: public TcpServer
 {
+	friend class HttpServerConnection;
 public:
 	HttpServer();
 	virtual ~HttpServer();
@@ -30,17 +35,36 @@ public:
 	void enableHeaderProcessing(String headerName);
 	bool isHeaderProcessingEnabled(String name);
 
-	void addPath(String path, HttpPathCallback callback);
-	void setDefaultHandler(HttpPathCallback callback);
-	bool process(HttpServerConnection &connection, HttpRequest &request, HttpResponse &response);
+	void addPath(String path, HttpPathDelegate callback);
+	void setDefaultHandler(HttpPathDelegate callback);
+
+	/// Web Sockets
+	void enableWebSockets(bool enabled);
+	__forceinline WebSocketsList& getActiveWebSockets() { return wsocks; }
+	void setWebSocketConnectionHandler(WebSocketDelegate handler);
+	void setWebSocketMessageHandler(WebSocketMessageDelegate handler);
+	void setWebSocketDisconnectionHandler(WebSocketDelegate handler);
 
 protected:
 	virtual TcpConnection* createClient(tcp_pcb *clientTcp);
+	virtual bool initWebSocket(HttpServerConnection &connection, HttpRequest &request, HttpResponse &response);
+	virtual bool processRequest(HttpServerConnection &connection, HttpRequest &request, HttpResponse &response);
+	virtual void processWebSocketFrame(pbuf *buf, HttpServerConnection &connection);
+
+	WebSocket* getWebSocket(HttpServerConnection &connection);
+	void removeWebSocket(HttpServerConnection &connection);
+	void onCloseWebSocket(HttpServerConnection &connection);
 
 private:
-	HttpPathCallback defaultHandler;
+	HttpPathDelegate defaultHandler;
 	Vector<String> processingHeaders;
-	HashMap<String, HttpPathCallback> paths;
+	HashMap<String, HttpPathDelegate> paths;
+	WebSocketsList wsocks;
+
+	bool wsEnabled = false;
+	WebSocketDelegate wsConnect;
+	WebSocketMessageDelegate wsMessage;
+	WebSocketDelegate wsDisconnect;
 };
 
 #endif /* _SMING_CORE_HTTPSERVER_H_ */
