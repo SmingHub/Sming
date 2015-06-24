@@ -11,46 +11,36 @@
 #include "../../Wiring/WString.h"
 
 TcpClient::TcpClient(tcp_pcb *clientTcp, TcpClientDataCallback clientReceive, bool autoDestruct )
-: TcpConnection(clientTcp, autoDestruct), state(eTCS_Connected), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
+: TcpConnection(clientTcp, autoDestruct), state(eTCS_Connected)
 {
-	completed = NULL;
-	ready = NULL;
 	receive = clientReceive;
-	stream = NULL;
 }
 
 TcpClient::TcpClient(bool autoDestruct)
-	: TcpConnection(autoDestruct), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
+	: TcpConnection(autoDestruct), state(eTCS_Ready)
 {
-	completed = NULL;
-	ready = NULL;
-	receive = NULL;
-	stream = NULL;
 }
 
 TcpClient::TcpClient(TcpClientBoolCallback onCompleted, TcpClientEventCallback onReadyToSend /* = NULL*/, TcpClientDataCallback onReceive /* = NULL*/)
-	: TcpConnection(false), state(eTCS_Ready), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
+	: TcpConnection(false), state(eTCS_Ready)
 {
 	completed = onCompleted;
 	ready = onReadyToSend;
 	receive = onReceive;
-	stream = NULL;
 }
 
 TcpClient::TcpClient(TcpClientBoolCallback onCompleted, TcpClientDataCallback onReceive /* = NULL*/)
-	: TcpConnection(false), state(eTCS_Ready), ready(NULL), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
+	: TcpConnection(false), state(eTCS_Ready)
 {
 	completed = onCompleted;
 	receive = onReceive;
-	stream = NULL;
 }
 
 
 TcpClient::TcpClient(TcpClientDataCallback onReceive)
-	: TcpConnection(false), state(eTCS_Ready), ready(NULL), completed(NULL), asyncTotalSent(0), asyncTotalLen(0), asyncCloseAfterSent(false)
+	: TcpConnection(false), state(eTCS_Ready)
 {
 	receive = onReceive;
-	stream = NULL;
 }
 
 TcpClient::~TcpClient()

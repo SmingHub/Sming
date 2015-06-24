@@ -64,13 +64,13 @@ protected:
 
 private:
 	TcpClientState state;
-	TcpClientBoolCallback completed;
-	TcpClientDataCallback receive;
-	TcpClientEventCallback ready;
-	MemoryDataStream* stream;
-	bool asyncCloseAfterSent;
-	int16_t asyncTotalSent;
-	int16_t asyncTotalLen;
+	TcpClientBoolCallback completed = nullptr;
+	TcpClientDataCallback receive = nullptr;
+	TcpClientEventCallback ready = nullptr;
+	MemoryDataStream* stream = nullptr;
+	bool asyncCloseAfterSent = false;
+	int16_t asyncTotalSent = 0;
+	int16_t asyncTotalLen = 0;
 };
 
 #endif /* _SMING_CORE_TCPCLIENT_H_ */
