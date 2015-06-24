@@ -158,7 +158,7 @@ void HttpServer::setWebSocketMessageHandler(WebSocketMessageDelegate handler)
 
 void HttpServer::setWebSocketBinaryHandler(WebSocketBinaryDelegate handler)
 {
-	wsMessage = handler;
+	wsBinary = handler;
 }
 
 void HttpServer::setWebSocketDisconnectionHandler(WebSocketDelegate handler)
