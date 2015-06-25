@@ -103,7 +103,8 @@ FW_START_OFFSET = $(shell printf '0x%X\n' $$( $(GET_FILESIZE) $(FW_BASE)/eagle.f
 SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/eagle.irom0text.bin) + 16384 + 36864) & (0xFFFFC000) )) )
 
 # firmware memory layout info file 
-FW_MEMINFO = $(FW_BASE)/fwMeminfo
+FW_MEMINFO_NEW = $(FW_BASE)/fwMeminfo.new
+FW_MEMINFO_OLD = $(FW_BASE)/fwMeminfo.old
 FW_MEMINFO_SAVED = out/fwMeminfo
 	
 # name for the target project
@@ -325,20 +326,20 @@ $(TARGET_OUT): $(APP_AR)
 	$(vecho) "------------------------------------------------------------------------------"
 #Check for existing old meminfo file and move it to /out/firmware
 	$(Q) if [ -f "$(FW_MEMINFO_SAVED)" ]; then \
-    	mv $(FW_MEMINFO_SAVED) $(FW_MEMINFO).old; \
+    	mv $(FW_MEMINFO_SAVED) $(FW_MEMINFO_OLD); \
 	fi
 ifeq ($(UNAME),Windows)
 	$(vecho) "Memory layout info:"
 #Redirect to file (to keep track over multiple git revisions add /out/firmware to .gitignore)		
-	$(Q) $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe $@ > $(FW_MEMINFO).new
+	$(Q) $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe $@ > $(FW_MEMINFO_NEW)
 else
 	$(vecho) "Section info:"
 #Redirect to file (to keep track over multiple git revisions add /out/firmware to .gitignore)
-	$(Q) $(OBJDUMP) -h -j .data -j .rodata -j .bss -j .text -j .irom0.text $@ > $(FW_MEMINFO).new
+	$(Q) $(OBJDUMP) -h -j .data -j .rodata -j .bss -j .text -j .irom0.text $@ > $(FW_MEMINFO_NEW)
 endif
 #Display to console if file exists
-	$(Q) if [ -f "$(FW_MEMINFO).new" ]; then \
-    	cat $(FW_MEMINFO).new; \
+	$(Q) if [ -f "$(FW_MEMINFO_NEW)" ]; then \
+    	cat $(FW_MEMINFO_NEW); \
 	fi
 	$(vecho) "------------------------------------------------------------------------------"
 	
@@ -466,9 +467,9 @@ flashinit:
 rebuild: clean all
 
 clean:
-#preserve meminfo file
-	$(Q) if [ -f "$(FW_MEMINFO)" ]; then \
-    	mv $(FW_MEMINFO) $(FW_MEMINFO_OLD); \
+#preserve meminfo file from /out/firmware to /out/
+	$(Q) if [ -f "$(FW_MEMINFO_NEW)" ]; then \
+    	mv $(FW_MEMINFO_NEW) $(FW_MEMINFO_SAVED); \
 	fi	
 #remove build artifacts	
 	$(Q) rm -f $(APP_AR)

@@ -6,7 +6,8 @@
  #include "WProgram.h"
 #endif
 
-#define COUNT_RECALCULATED_FOR_DEFAULT_ESP_FREQUENCY (6*80/16) // I'm not sure, but it working anyway :)
+#define ONE_DURATION_THRESH_US 35 //From datasheet: '0' if HIGH lasts 26-28us,
+								  //				'1' if HIGH lasts 70us
 
 /* DHT library 
 
@@ -31,7 +32,7 @@ class DHT {
   boolean firstreading;
 
  public:
-  DHT(uint8_t pin, uint8_t type, uint8_t count=COUNT_RECALCULATED_FOR_DEFAULT_ESP_FREQUENCY);
+  DHT(uint8_t pin, uint8_t type, uint8_t count=ONE_DURATION_THRESH_US);
   void begin(void);
   float readTemperature(bool S=false);
   float convertCtoF(float);
