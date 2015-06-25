@@ -13,6 +13,7 @@
 #include "../../Wiring/WHashMap.h"
 #include "../../Wiring/WVector.h"
 #include "../Delegate.h"
+#include "../../Libraries/cWebsocket/websocket.h"
 
 class HttpServer;
 
@@ -21,8 +22,9 @@ class WebSocket
 	friend class HttpServer;
 public:
 	WebSocket(HttpServerConnection* conn);
-	virtual void send(const char* message, int length);
+	virtual void send(const char* message, int length, wsFrameType type = WS_TEXT_FRAME);
 	void sendString(const String& message);
+	void sendBinary(const uint8_t* data, int size);
 
 protected:
 	bool initialize(HttpRequest &request, HttpResponse &response);
