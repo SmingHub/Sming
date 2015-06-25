@@ -132,6 +132,10 @@ void HttpServer::processWebSocketFrame(pbuf *buf, HttpServerConnection& connecti
 		debugf("WS: %s", msg.c_str());
 		if (sock && wsMessage) wsMessage(*sock, msg);
 	}
+	if (frameType == WS_BINARY_FRAME)
+	{
+		if (sock && wsMessage) wsBinary(*sock, data, size);
+	}
 	else if (frameType == WS_CLOSING_FRAME)
 	{
 		connection.close(); // it will be processed automatically in onCloseWebSocket callback
@@ -150,6 +154,11 @@ void HttpServer::setWebSocketConnectionHandler(WebSocketDelegate handler)
 void HttpServer::setWebSocketMessageHandler(WebSocketMessageDelegate handler)
 {
 	wsMessage = handler;
+}
+
+void HttpServer::setWebSocketBinaryHandler(WebSocketBinaryDelegate handler)
+{
+	wsBinary = handler;
 }
 
 void HttpServer::setWebSocketDisconnectionHandler(WebSocketDelegate handler)

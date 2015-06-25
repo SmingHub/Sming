@@ -24,6 +24,7 @@ typedef Vector<WebSocket> WebSocketsList;
 typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathDelegate;
 typedef Delegate<void(WebSocket&)> WebSocketDelegate;
 typedef Delegate<void(WebSocket&, const String&)> WebSocketMessageDelegate;
+typedef Delegate<void(WebSocket&, uint8_t* data, size_t size)> WebSocketBinaryDelegate;
 
 class HttpServer: public TcpServer
 {
@@ -43,6 +44,7 @@ public:
 	__forceinline WebSocketsList& getActiveWebSockets() { return wsocks; }
 	void setWebSocketConnectionHandler(WebSocketDelegate handler);
 	void setWebSocketMessageHandler(WebSocketMessageDelegate handler);
+	void setWebSocketBinaryHandler(WebSocketBinaryDelegate handler);
 	void setWebSocketDisconnectionHandler(WebSocketDelegate handler);
 
 protected:
@@ -64,6 +66,7 @@ private:
 	bool wsEnabled = false;
 	WebSocketDelegate wsConnect;
 	WebSocketMessageDelegate wsMessage;
+	WebSocketBinaryDelegate wsBinary;
 	WebSocketDelegate wsDisconnect;
 };
 
