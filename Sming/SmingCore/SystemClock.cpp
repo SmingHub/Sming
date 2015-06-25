@@ -1,29 +1,28 @@
 #include "SystemClock.h"
 
+
 DateTime SystemClockClass::now(TimeZone timeType /* = eTZ_Local */)
 {
-	// calculate number of seconds passed since last call to now()
-	while (millis() - prevMillis >= 1000)
+	uint32_t systemTime = Rtc.getRtcSeconds();
+
+	if ((timeType == eTZ_Local) || (status == eSCS_Initial))
 	{
-		// millis() and prevMillis are both unsigned ints thus the subtraction
-		// will always be the absolute value of the difference
-		systemTime++;
-		prevMillis += 1000;
+		return DateTime(systemTime); // local time
 	}
-    if ((timeType == eTZ_Local) || (status == eSCS_Initial))
-    {
-    	return DateTime(systemTime); // local time
-    }
-    else
-    {
-    	return DateTime(systemTime - (timezoneDiff * SECS_PER_HOUR)); // utc time
-    }
+	else
+	{
+		return DateTime(systemTime - (timezoneDiff * SECS_PER_HOUR)); // utc time
+	}
 }
+
+
+
 
 void SystemClockClass::setTime(time_t time, TimeZone timeType /* = eTZ_Local */)
 {
-	systemTime = (timeType == eTZ_UTC) ? (time + (timezoneDiff * SECS_PER_HOUR)) : time;
-	prevMillis = millis();
+	bool timeSet =
+	(timeType == eTZ_UTC) ?	Rtc.setRtcSeconds((time + (timezoneDiff * SECS_PER_HOUR))) : Rtc.setRtcSeconds(time);
+	debugf("time updated? %d", timeSet);
 	status = eSCS_Set;
 }
 
