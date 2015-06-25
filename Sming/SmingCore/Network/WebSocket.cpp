@@ -36,11 +36,11 @@ bool WebSocket::initialize(HttpRequest& request, HttpResponse& response)
 	return true;
 }
 
-void WebSocket::send(const char* message, int length)
+void WebSocket::send(const char* message, int length, wsFrameType type)
 {
 	uint8_t frameHeader[16] = {0};
 	size_t headSize = sizeof(frameHeader);
-	wsMakeFrame(NULL, length, frameHeader, &headSize, WS_TEXT_FRAME);
+	wsMakeFrame(NULL, length, frameHeader, &headSize, type);
 	connection->write((char*)frameHeader, headSize, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
 	connection->writeString(message, TCP_WRITE_FLAG_COPY);
 	connection->flush();
@@ -50,3 +50,9 @@ void WebSocket::sendString(const String& message)
 {
 	send(message.c_str(), message.length());
 }
+
+void WebSocket::sendBinary(const uint8_t* data, int size)
+{
+	send((char*)data, size, WS_BINARY_FRAME);
+}
+
