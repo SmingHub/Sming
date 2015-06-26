@@ -10,7 +10,7 @@ MODULES = app
 # ESP_HOME = c:/Espressif
 
 ## MacOS / Linux:
-#ESP_HOME = /opt/esp-open-sdk
+# ESP_HOME = /opt/esp-open-sdk
 
 ## SMING_HOME sets the path where Sming framework is located.
 ## Windows:
@@ -28,3 +28,6 @@ MODULES = app
 
 # Com port speed
 # COM_SPEED	= 115200
+
+## Configure flash parameters (for ESP12-E and other new boards):
+# SPI_MODE = dio
