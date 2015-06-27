@@ -8,6 +8,15 @@
 	#define WIFI_PWD "PleaseEnterPass"
 #endif
 
+
+HttpServer server;
+FTPServer ftp;
+
+void telnetUserCommand(TcpClient* client, char* cmd, int size)
+{
+	client->sendString("Delegated Telnet Command output \r\n");
+}
+
 void clConnected (TcpClient* client)
 {
 	debugf("Application onClientCallback : %s\r\n",client->getRemoteIp().toString().c_str());
@@ -24,6 +33,14 @@ bool clReceive (TcpClient& client, char *data, int size)
 		debugf("Closing client");
 		client.close();
 	};
+	if (strcmp(data,"htr") == 0)
+	{
+		debugf("Closing Http");
+		server.close();
+		debugf("Restarting Http");
+		server.listen(80);
+
+	};
 	return true;
 }
 
@@ -35,9 +52,6 @@ void clComplete(TcpClient& client, bool succesfull)
 TcpServer tserver(clConnected, clReceive, clComplete);
 TelnetServer telserver;
 
-
-HttpServer server;
-FTPServer ftp;
 
 int inputs[] = {0, 2}; // Set input GPIO pins here
 Vector<String> namesInput;
@@ -110,12 +124,12 @@ void startWebServer()
 	Serial.println(WifiStation.getIP());
 	Serial.println("==============================\r\n");
 
+	telserver.setCommandDelegate(telnetUserCommand);
 	telserver.listen(23);
 
 	Serial.println("\r\n=== Telnet SERVER Port 23 STARTED ===");
 	Serial.println(WifiStation.getIP());
 	Serial.println("==============================\r\n");
-
 }
 
 void startFTP()
