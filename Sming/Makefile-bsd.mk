@@ -10,5 +10,7 @@ SDK_TOOLS	 ?= $(SDK_BASE)/tools
 
 # Other tools mappings
 ESPTOOL		 ?= $(ESP_HOME)/esptool/esptool.py
-KILL_TERM    ?= pkill -9 -f /dev/cuaU0
+KILL_TERM    ?= pkill -9 -f $(COM_PORT)
 GET_FILESIZE ?= stat -f "%-15z"
+TERMINAL     ?= python -m serial.tools.miniterm $(COM_PORT) $(COM_SPEED)
+MEMANALYZER  ?= $(OBJDUMP) -h -j .data -j .rodata -j .bss -j .text -j .irom0.text
