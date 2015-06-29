@@ -254,7 +254,7 @@ $(TARGET_OUT): $(APP_AR)
 
 	$(vecho) "Memory / Section info:"
 	$(Q) $(MEMANALYZER) $@
-endif
+	
 	$(vecho) "------------------------------------------------------------------------------"
 	
 	$(vecho) "# Generating image..."
