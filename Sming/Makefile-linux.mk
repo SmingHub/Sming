@@ -10,5 +10,5 @@ ESPTOOL		 ?= $(ESP_HOME)/esptool/esptool.py
 KILL_TERM    ?= pkill screen
 GET_FILESIZE ?= stat --printf="%s"
 
-COM_PORT     ?= /dev/tty.usbserial
+COM_PORT     ?= /dev/ttyUSB0
 
