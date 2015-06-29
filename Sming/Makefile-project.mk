@@ -251,13 +251,10 @@ $(TARGET_OUT): $(APP_AR)
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 	
 	$(vecho) "------------------------------------------------------------------------------"
-ifeq ($(UNAME),Windows)
-	$(vecho) "Memory layout info:"
-	$(Q) $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe $@
-else
-	$(vecho) "Section info:"
-	$(Q) $(OBJDUMP) -h -j .data -j .rodata -j .bss -j .text -j .irom0.text $@
-endif
+
+	$(vecho) "Memory / Section info:"
+	$(Q) $(MEMANALYZER) $@
+
 	$(vecho) "------------------------------------------------------------------------------"
 	
 	$(vecho) "# Generating image..."
@@ -296,8 +293,11 @@ $(SPIFF_BIN_OUT):
 	$(vecho) "spiff_rom.bin---------->$(SPIFF_START_OFFSET)"
 
 flash: all
-	-$(KILL_TERM)
+	$(vecho) "Killing Terminal to free $(COM_PORT)"
+  -$(Q) $(KILL_TERM)
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
+	$(TERMINAL)
+
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
