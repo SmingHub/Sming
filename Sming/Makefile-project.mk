@@ -9,7 +9,7 @@
 ### Defaults ###
 
 # Com port default speed
-COM_SPEED ?= 230400
+COM_SPEED ?= 115200
 
 ## Flash parameters
 # SPI_SPEED = 40, 26, 20, 80
