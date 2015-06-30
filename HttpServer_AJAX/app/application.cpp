@@ -1,5 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
+#include <SmingCore/Network/TelnetServer.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -7,8 +8,50 @@
 	#define WIFI_PWD "PleaseEnterPass"
 #endif
 
+
 HttpServer server;
 FTPServer ftp;
+
+void telnetUserCommand(TcpClient* client, char* cmd, int size)
+{
+	client->sendString("Delegated Telnet Command output \r\n");
+}
+
+void clConnected (TcpClient* client)
+{
+	debugf("Application onClientCallback : %s\r\n",client->getRemoteIp().toString().c_str());
+}
+
+bool clReceive (TcpClient& client, char *data, int size)
+{
+	debugf("Application DataCallback : %s, %d bytes \r\n",client.getRemoteIp().toString().c_str(),size );
+	debugf("Data : %s", data);
+	client.sendString("sendString data\r\n", false);
+	client.writeString("writeString data\r\n",0 );
+	if (strcmp(data,"close") == 0)
+	{
+		debugf("Closing client");
+		client.close();
+	};
+	if (strcmp(data,"htr") == 0)
+	{
+		debugf("Closing Http");
+		server.close();
+		debugf("Restarting Http");
+		server.listen(80);
+
+	};
+	return true;
+}
+
+void clComplete(TcpClient& client, bool succesfull)
+{
+	debugf("Application CompleteCallback : %s \r\n",client.getRemoteIp().toString().c_str() );
+}
+
+TcpServer tserver(clConnected, clReceive, clComplete);
+TelnetServer telserver;
+
 
 int inputs[] = {0, 2}; // Set input GPIO pins here
 Vector<String> namesInput;
@@ -72,6 +115,19 @@ void startWebServer()
 	server.setDefaultHandler(onFile);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
+	Serial.println(WifiStation.getIP());
+	Serial.println("==============================\r\n");
+
+	tserver.listen(8023);
+
+	Serial.println("\r\n=== TCP SERVER Port 8023 STARTED ===");
+	Serial.println(WifiStation.getIP());
+	Serial.println("==============================\r\n");
+
+	telserver.setCommandDelegate(telnetUserCommand);
+	telserver.listen(23);
+
+	Serial.println("\r\n=== Telnet SERVER Port 23 STARTED ===");
 	Serial.println(WifiStation.getIP());
 	Serial.println("==============================\r\n");
 }
