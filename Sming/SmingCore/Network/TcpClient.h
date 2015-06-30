@@ -15,9 +15,9 @@ class TcpClient;
 class MemoryDataStream;
 class IPAddress;
 
-//typedef void (*TcpClientEventCallback)(TcpClient& client, TcpConnectionEvent sourceEvent);
-//typedef void (*TcpClientBoolCallback)(TcpClient& client, bool successful);
-//typedef bool (*TcpClientDataCallback)(TcpClient& client, char *data, int size);
+//typedef void (*TcpClientEventDelegate)(TcpClient& client, TcpConnectionEvent sourceEvent);
+//typedef void (*TcpClientBoolDelegate)(TcpClient& client, bool successful);
+//typedef bool (*TcpClientDataDelegate)(TcpClient& client, char *data, int size);
 
 typedef Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)> TcpClientEventDelegate;
 typedef Delegate<void(TcpClient& client, bool successful)> TcpClientBoolDelegate;
@@ -64,13 +64,13 @@ protected:
 
 private:
 	TcpClientState state;
-	TcpClientBoolDelegate completed;
-	TcpClientDataDelegate receive;
-	TcpClientEventDelegate ready;
-	MemoryDataStream* stream;
-	bool asyncCloseAfterSent;
-	int16_t asyncTotalSent;
-	int16_t asyncTotalLen;
+	TcpClientBoolDelegate completed = nullptr;
+	TcpClientDataDelegate receive = nullptr;
+	TcpClientEventDelegate ready = nullptr;
+	MemoryDataStream* stream = nullptr;
+	bool asyncCloseAfterSent = false;
+	int16_t asyncTotalSent = 0;
+	int16_t asyncTotalLen = 0;
 };
 
 #endif /* _SMING_CORE_TCPCLIENT_H_ */
