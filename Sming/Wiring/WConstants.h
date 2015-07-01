@@ -28,8 +28,8 @@
 
 // passed in at compile-time
 #ifndef F_CPU
-#define F_CPU 16000000L
-#warning "F_CPU was not defined.  Default to 16 MHz."
+#define F_CPU 80000000L
+#warning "F_CPU was not defined.  Default to 80 MHz."
 #endif
 
 /*************************************************************
@@ -62,7 +62,6 @@
 #define HEX      16
 #define OCT      8
 #define BIN      2
-#define BYTE     0
 
 #define PI                             (3.1415926535897932384626433832795)
 #define TWO_PI                         (6.283185307179586476925286766559)

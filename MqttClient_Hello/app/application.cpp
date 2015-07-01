@@ -7,7 +7,9 @@
 	#define WIFI_PWD "PleaseEnterPass"
 #endif
 
-void onMessageReceived(String topic, String message); // Forward declaration for our callback
+// Forward declarations
+void startMqttClient();
+void onMessageReceived(String topic, String message);
 
 Timer procTimer;
 
@@ -18,6 +20,9 @@ MqttClient mqtt("test.mosquitto.org", 1883, onMessageReceived);
 // Publish our message
 void publishMessage()
 {
+	if (mqtt.getConnectionState() != eTCS_Connected)
+		startMqttClient(); // Auto reconnect
+
 	Serial.println("Let's publish message now!");
 	mqtt.publish("main/frameworks/sming", "Hello friends, from Internet of things :)"); // or publishWithQoS
 }
@@ -30,14 +35,20 @@ void onMessageReceived(String topic, String message)
 	Serial.println(message);
 }
 
+// Run MQTT client
+void startMqttClient()
+{
+	mqtt.connect("esp8266");
+	mqtt.subscribe("main/status/#");
+}
+
 // Will be called when WiFi station was connected to AP
 void connectOk()
 {
 	Serial.println("I'm CONNECTED");
 
 	// Run MQTT client
-	mqtt.connect("esp8266");
-	mqtt.subscribe("main/status/#");
+	startMqttClient();
 
 	// Start publishing loop
 	procTimer.initializeMs(20 * 1000, publishMessage).start(); // every 20 seconds
