@@ -22,9 +22,9 @@ public:
 
 private:
 	bool hardwareReset;
-	bool saveToRtcMemory(RtcData &data);
+	bool saveTime(RtcData &data);
 	void updateRtcTime(RtcData &data);
-	void readFromRtcMemory(RtcData &data);
+	void loadTime(RtcData &data);
 };
 
 extern RTC Rtc;
