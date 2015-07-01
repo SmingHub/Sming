@@ -26,13 +26,17 @@ MqttClient::~MqttClient()
 
 bool MqttClient::connect(String clientName)
 {
-	if (getConnectionState() != eTCS_Ready)
-		close();
 	return MqttClient::connect(clientName, "", "");
 }
 
 bool MqttClient::connect(String clientName, String username, String password)
 {
+	if (getConnectionState() != eTCS_Ready)
+	{
+		close();
+		debugf("MQTT closed previous connection");
+	}
+
 	debugf("MQTT start connection");
 	mqtt_init(&broker, clientName.c_str());
 	if (clientName.length() > 0)
