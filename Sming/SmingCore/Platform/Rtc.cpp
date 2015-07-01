@@ -1,4 +1,4 @@
-#include "../SmingCore/Rtc.h"
+#include "../SmingCore/Platform/Rtc.h"
 
 RTC::RTC() {
 	rst_info* info = system_get_rst_info();
