@@ -7,9 +7,9 @@ RTC::RTC() {
 
 uint32_t RTC::getRtcSeconds() {
 	RtcData rtcTime;
-	readFromRtcMemory(rtcTime);
+	loadTime(rtcTime);
 	updateRtcTime(rtcTime);
-	saveToRtcMemory(rtcTime);
+	saveTime(rtcTime);
 	return (rtcTime.time / NS_PER_SECOND);
 }
 
@@ -18,11 +18,11 @@ uint32_t RTC::getRtcSeconds() {
 bool RTC::setRtcSeconds(uint32_t seconds) {
 
 	RtcData rtcTime;
-	readFromRtcMemory(rtcTime);
+	loadTime(rtcTime);
 	uint64_t offsetNs = ((uint64_t) seconds * NS_PER_SECOND) - rtcTime.time;
 	rtcTime.time += offsetNs; // adjust time in nanoseconds by the ntp time offset in nanoseconds
 	updateRtcTime(rtcTime);
-	return saveToRtcMemory(rtcTime);
+	return saveTime(rtcTime);
 }
 
 
@@ -44,10 +44,10 @@ void RTC::updateRtcTime(RtcData &data) {
 	data.cycles = rtc_cycles; // update last number of cycles
 }
 
-bool RTC::saveToRtcMemory(RtcData &data) {
+bool RTC::saveTime(RtcData &data) {
 	return system_rtc_mem_write(RTC_DES_ADDR, &data, sizeof(data));
 }
-void RTC::readFromRtcMemory(RtcData &data) {
+void RTC::loadTime(RtcData &data) {
 
 	system_rtc_mem_read(RTC_DES_ADDR, &data, sizeof(data));
 
