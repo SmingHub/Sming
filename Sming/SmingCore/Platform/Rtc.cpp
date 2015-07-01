@@ -31,7 +31,6 @@ void RTC::updateRtcTime(RtcData &data) {
 	uint32 rtc_cycles;
 	uint32 cal, cal1, cal2;
 	cal1 = system_rtc_clock_cali_proc();
-	os_delay_us(300);
 	cal2 = system_rtc_clock_cali_proc();
 	cal = (cal1 + cal2) / 2; // get average cal in case one is out
 	rtc_cycles = system_get_rtc_time();
