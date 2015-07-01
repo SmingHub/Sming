@@ -26,6 +26,8 @@ MqttClient::~MqttClient()
 
 bool MqttClient::connect(String clientName)
 {
+	if (getConnectionState() != eTCS_Ready)
+		close();
 	return MqttClient::connect(clientName, "", "");
 }
 
