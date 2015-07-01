@@ -55,6 +55,15 @@ spiffs_config spiffs_get_storage_config()
 	cfg.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE; // according to datasheet
 	cfg.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2; // Important to make large
 	cfg.log_page_size = LOG_PAGE_SIZE; // as we said
+
+	if (cfg.phys_size > 512 * 1024)
+	{
+		// To prevent internal Espressif configuration overwriting
+		const unsigned int relocate = 1024L * 1024;
+		debugf("relocate fs: %d", relocate);
+		cfg.phys_addr = INTERNAL_FLASH_START_ADDRESS + relocate;
+		cfg.phys_size = flashmem_get_size_sectors() * INTERNAL_FLASH_SECTOR_SIZE - relocate;
+	}
 	return cfg;
 }
 
@@ -73,9 +82,16 @@ bool spiffs_format_internal()
   sect_last = cfg.phys_addr + cfg.phys_size;
   sect_last = flashmem_get_sector_of_address(sect_last);
   debugf("sect_first: %x, sect_last: %x\n", sect_first, sect_last);
+  ETS_INTR_LOCK();
   while( sect_first <= sect_last )
-	if(!flashmem_erase_sector( sect_first ++ ))
+  {
+	if(flashmem_erase_sector( sect_first++ ))
+	  debugf("sect: %d", sect_first-1);
+	else
 	  return false;
+  }
+  debugf("formated");
+  ETS_INTR_UNLOCK();
 }
 
 void spiffs_mount()
@@ -87,7 +103,7 @@ void spiffs_mount()
 	  return;
   }
 
-  debugf("fs.start: size:%d Kb, offset:%X\n", cfg.phys_size / 1024, cfg.phys_addr);
+  debugf("fs.start: size:%d Kb, offset:0x%X\n", cfg.phys_size / 1024, cfg.phys_addr - INTERNAL_FLASH_START_ADDRESS);
 
   cfg.hal_read_f = api_spiffs_read;
   cfg.hal_write_f = api_spiffs_write;
