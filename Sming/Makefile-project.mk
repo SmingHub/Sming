@@ -322,11 +322,7 @@ flash: all
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-ifeq ($(SPI_SIZE), 512K)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(flashimageoptions) 0x79000 $(SDK_BASE)/bin/clear_eep.bin 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x4B000 $(SMING_HOME)/compiler/data/blankfs.bin
-else
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(flashimageoptions) 0x79000 $(SDK_BASE)/bin/clear_eep.bin 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x100000 $(SMING_HOME)/compiler/data/blankfs.bin
-endif
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(flashimageoptions) 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x4B000 $(SMING_HOME)/compiler/data/blankfs.bin
 
 rebuild: clean all
 

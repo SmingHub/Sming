@@ -24,16 +24,9 @@
 #ifndef WEBSOCKET_H
 #define	WEBSOCKET_H
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-#include <stdint.h> /* uint8_t */
-#include <stdlib.h> /* strtoul */
-#include <string.h>
-#include <stdio.h> /* sscanf */
-#include <ctype.h> /* isdigit */
 #include <user_config.h>
+#include <stdint.h> /* uint8_t */
+#include <string.h>
 #include "../../Wiring/FakePgmSpace.h"
 
 #ifdef __AVR__
@@ -94,8 +87,8 @@ enum wsState {
      * @param outLength Length of out frame buffer. Return length of out frame
      * @param frameType [WS_TEXT_FRAME] frame type to build
      */
-    void wsMakeFrame(const uint8_t *data, size_t dataLength,
-                     uint8_t *outFrame, size_t *outLength, enum wsFrameType frameType);
+    extern void wsMakeFrame(const uint8_t *data, size_t dataLength,
+                     uint8_t *outFrame, size_t *outLength, wsFrameType frameType);
 
     /**
      *
@@ -105,11 +98,7 @@ enum wsState {
      * @param outLen Return length of extracted data
      * @return Type of parsed frame
      */
-    enum wsFrameType wsParseInputFrame(uint8_t *inputFrame, size_t inputLength,
+    extern wsFrameType wsParseInputFrame(uint8_t *inputFrame, size_t inputLength,
                                        uint8_t **dataPtr, size_t *dataLength);
-
-#ifdef	__cplusplus
-}
-#endif
 
 #endif	/* WEBSOCKET_H */

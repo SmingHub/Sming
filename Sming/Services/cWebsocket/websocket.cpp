@@ -25,7 +25,7 @@
 #include "aw-sha1.h"
 
 void wsMakeFrame(const uint8_t *data, size_t dataLength,
-                 uint8_t *outFrame, size_t *outLength, enum wsFrameType frameType)
+                 uint8_t *outFrame, size_t *outLength, wsFrameType frameType)
 {
     assert(outFrame && *outLength);
     assert(frameType < 0x10);
@@ -59,7 +59,7 @@ void wsMakeFrame(const uint8_t *data, size_t dataLength,
 }
 
 static size_t getPayloadLength(const uint8_t *inputFrame, size_t inputLength,
-                               uint8_t *payloadFieldExtraBytes, enum wsFrameType *frameType) 
+                               uint8_t *payloadFieldExtraBytes, wsFrameType *frameType)
 {
     size_t payloadLength = inputFrame[1] & 0x7F;
     *payloadFieldExtraBytes = 0;
@@ -96,7 +96,7 @@ static size_t getPayloadLength(const uint8_t *inputFrame, size_t inputLength,
     return payloadLength;
 }
 
-enum wsFrameType wsParseInputFrame(uint8_t *inputFrame, size_t inputLength,
+wsFrameType wsParseInputFrame(uint8_t *inputFrame, size_t inputLength,
                                    uint8_t **dataPtr, size_t *dataLength)
 {
     assert(inputFrame && inputLength);
@@ -118,7 +118,7 @@ enum wsFrameType wsParseInputFrame(uint8_t *inputFrame, size_t inputLength,
             opcode == WS_PING_FRAME ||
             opcode == WS_PONG_FRAME
     ){
-        enum wsFrameType frameType = opcode;
+        wsFrameType frameType = (wsFrameType)opcode;
 
         uint8_t payloadFieldExtraBytes = 0;
         size_t payloadLength = getPayloadLength(inputFrame, inputLength,

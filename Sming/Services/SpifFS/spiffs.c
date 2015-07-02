@@ -56,14 +56,6 @@ spiffs_config spiffs_get_storage_config()
 	cfg.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2; // Important to make large
 	cfg.log_page_size = LOG_PAGE_SIZE; // as we said
 
-	if (cfg.phys_size > 512 * 1024)
-	{
-		// To prevent internal Espressif configuration overwriting
-		const unsigned int relocate = 1024L * 1024;
-		debugf("relocate fs: %d", relocate);
-		cfg.phys_addr = INTERNAL_FLASH_START_ADDRESS + relocate;
-		cfg.phys_size = flashmem_get_size_sectors() * INTERNAL_FLASH_SECTOR_SIZE - relocate;
-	}
 	return cfg;
 }
 
@@ -83,12 +75,22 @@ bool spiffs_format_internal()
   sect_last = flashmem_get_sector_of_address(sect_last);
   debugf("sect_first: %x, sect_last: %x\n", sect_first, sect_last);
   ETS_INTR_LOCK();
+  int total = sect_last - sect_first;
+  int last = -1;
   while( sect_first <= sect_last )
   {
 	if(flashmem_erase_sector( sect_first++ ))
-	  debugf("sect: %d", sect_first-1);
+	{
+		int percent = sect_first * 100 / total;
+		if (percent > last)
+			debugf("%d%%", percent);
+		last = percent;
+	}
 	else
-	  return false;
+	{
+		ETS_INTR_UNLOCK();
+		return false;
+	}
   }
   debugf("formated");
   ETS_INTR_UNLOCK();
