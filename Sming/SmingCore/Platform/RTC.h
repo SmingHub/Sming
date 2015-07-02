@@ -13,19 +13,19 @@ typedef struct {
 	uint32_t cycles;
 } RtcData;
 
-class RTC
+class RtcClass
 {
 public:
-	RTC();
+	RtcClass();
 	uint32_t getRtcSeconds();
 	bool setRtcSeconds(uint32_t seconds);
 
 private:
 	bool hardwareReset;
 	bool saveTime(RtcData &data);
-	void updateRtcTime(RtcData &data);
+	void updateTime(RtcData &data);
 	void loadTime(RtcData &data);
 };
 
-extern RTC Rtc;
+extern RtcClass RTC;
 #endif /* SMINGCORE_RTC_H_ */

@@ -5,7 +5,7 @@
 #include "../../Services/DateTime/DateTime.h"
 #include "../../Wiring/WString.h"
 #include "../SmingCore/Network/NtpClient.h"
-#include "../SmingCore/Platform/Rtc.h"
+#include "../SmingCore/Platform/RTC.h"
 
 enum TimeZone
 {

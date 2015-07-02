@@ -3,7 +3,7 @@
 
 DateTime SystemClockClass::now(TimeZone timeType /* = eTZ_Local */)
 {
-	uint32_t systemTime = Rtc.getRtcSeconds();
+	uint32_t systemTime = RTC.getRtcSeconds();
 
 	if ((timeType == eTZ_Local) || (status == eSCS_Initial))
 	{
@@ -21,7 +21,7 @@ DateTime SystemClockClass::now(TimeZone timeType /* = eTZ_Local */)
 void SystemClockClass::setTime(time_t time, TimeZone timeType /* = eTZ_Local */)
 {
 	bool timeSet =
-	(timeType == eTZ_UTC) ?	Rtc.setRtcSeconds((time + (timezoneDiff * SECS_PER_HOUR))) : Rtc.setRtcSeconds(time);
+	(timeType == eTZ_UTC) ?	RTC.setRtcSeconds((time + (timezoneDiff * SECS_PER_HOUR))) : RTC.setRtcSeconds(time);
 	debugf("time updated? %d", timeSet);
 	status = eSCS_Set;
 }
