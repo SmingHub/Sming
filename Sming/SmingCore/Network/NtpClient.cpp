@@ -1,7 +1,7 @@
 #include "NtpClient.h"
 
 NtpClient::NtpClient()
- : NtpClient(NTP_SERVER_DEFAULT, 0, nullptr)
+ : NtpClient(NTP_SERVER_DEFAULT, NTP_DEFAULT_AUTO_UPDATE_INTERVAL, nullptr)
 {
 }
 

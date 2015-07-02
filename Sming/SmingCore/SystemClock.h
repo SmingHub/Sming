@@ -5,6 +5,7 @@
 #include "../../Services/DateTime/DateTime.h"
 #include "../../Wiring/WString.h"
 #include "../SmingCore/Network/NtpClient.h"
+#include "../SmingCore/Platform/Rtc.h"
 
 enum TimeZone
 {
@@ -29,14 +30,9 @@ public:
 	bool setTimeZone(double localTimezoneOffset);
 
 private:
-	uint32_t systemTime;
-	uint32_t prevMillis;
 	double timezoneDiff = 0.0;
-	
 	DateTime dateTime;
-
 	SystemClockStatus status = eSCS_Initial;
-	
 };
 
 extern SystemClockClass SystemClock;
