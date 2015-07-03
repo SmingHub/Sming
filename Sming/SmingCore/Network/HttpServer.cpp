@@ -12,7 +12,7 @@
 #include "HttpServerConnection.h"
 #include "TcpClient.h"
 #include "../Wiring/WString.h"
-#include "../../Libraries/cWebsocket/websocket.h"
+#include "../../Services/cWebsocket/websocket.h"
 
 HttpServer::HttpServer()
 {

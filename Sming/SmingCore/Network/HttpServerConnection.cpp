@@ -9,7 +9,7 @@
 
 #include "HttpServer.h"
 #include "TcpServer.h"
-#include "../../Libraries/cWebsocket/websocket.h"
+#include "../../Services/cWebsocket/websocket.h"
 
 HttpServerConnection::HttpServerConnection(HttpServer *parentServer, tcp_pcb *clientTcp)
 	: TcpConnection(clientTcp, true), server(parentServer), state(eHCS_Ready)

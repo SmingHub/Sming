@@ -13,7 +13,7 @@
 #include "../../Wiring/WHashMap.h"
 #include "../../Wiring/WVector.h"
 #include "../Delegate.h"
-#include "../../Libraries/cWebsocket/websocket.h"
+#include "../../Services/cWebsocket/websocket.h"
 
 class HttpServer;
 
