@@ -8,7 +8,6 @@
 #include "WebSocket.h"
 #include "../../Services/WebHelpers/aw-sha1.h"
 #include "../../Services/WebHelpers/base64.h"
-#include "../../Libraries/cWebsocket/websocket.h"
 
 WebSocket::WebSocket(HttpServerConnection* conn)
 {
@@ -40,7 +39,7 @@ void WebSocket::send(const char* message, int length, wsFrameType type)
 {
 	uint8_t frameHeader[16] = {0};
 	size_t headSize = sizeof(frameHeader);
-	wsMakeFrame(NULL, length, frameHeader, &headSize, type);
+	wsMakeFrame(nullptr, length, frameHeader, &headSize, type);
 	connection->write((char*)frameHeader, headSize, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
 	connection->writeString(message, TCP_WRITE_FLAG_COPY);
 	connection->flush();

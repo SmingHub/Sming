@@ -103,6 +103,11 @@ FW_BASE		= out/firmware
 
 SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/0x09000.bin) + 16384 + 36864) & (0xFFFFC000) )) )
 
+#Firmware memory layout info files
+FW_MEMINFO_NEW = $(FW_BASE)/fwMeminfo.new
+FW_MEMINFO_OLD = $(FW_BASE)/fwMeminfo.old
+FW_MEMINFO_SAVED = out/fwMeminfo
+
 # name for the target project
 TARGET		= app
 
@@ -250,15 +255,25 @@ $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 	
+	$(vecho) ""	
+	$(vecho) "#Memory / Section info:"	
 	$(vecho) "------------------------------------------------------------------------------"
-
-	$(vecho) "Memory / Section info:"
-	$(Q) $(MEMANALYZER) $@
-
-	$(vecho) "------------------------------------------------------------------------------"
+#Check for existing old meminfo file and move it to /out/firmware as the infofile from previous build
+	$(Q) if [ -f "$(FW_MEMINFO_SAVED)" ]; then \
+	  mv $(FW_MEMINFO_SAVED) $(FW_MEMINFO_OLD); \
+	fi
 	
+	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
+	
+	$(Q) if [[ -f "$(FW_MEMINFO_NEW)" && -f "$(FW_MEMINFO_OLD)" ]]; then \
+	  awk -F "|" 'FILENAME == "$(FW_MEMINFO_OLD)" { arr[$$1]=$$5 } FILENAME == "$(FW_MEMINFO_NEW)" { if (arr[$$1] != $$5){printf "%s%s%+d%s", substr($$0, 1, length($$0) - 1)," (",$$5 - arr[$$1],")\n" } else {print $$0} }' $(FW_MEMINFO_OLD) $(FW_MEMINFO_NEW); \
+	elif [ -f "$(FW_MEMINFO_NEW)" ]; then \
+	  cat $(FW_MEMINFO_NEW); \
+	fi
+
+	$(vecho) "------------------------------------------------------------------------------"
 	$(vecho) "# Generating image..."
-	$(ESPTOOL) elf2image $@ $(flashimageoptions) -o $(FW_BASE)/
+	$(Q) $(ESPTOOL) elf2image $@ $(flashimageoptions) -o $(FW_BASE)/
 	$(vecho) "Generate firmware images successully in folder $(FW_BASE)."
 	$(vecho) "Done"
 
@@ -301,11 +316,16 @@ flash: all
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(flashimageoptions) 0x79000 $(SDK_BASE)/bin/clear_eep.bin 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x4B000 $(SMING_HOME)/compiler/data/blankfs.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(flashimageoptions) 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x4B000 $(SMING_HOME)/compiler/data/blankfs.bin
 
 rebuild: clean all
 
 clean:
+#preserve meminfo file from /out/firmware to /out/
+	$(Q) if [ -f "$(FW_MEMINFO_NEW)" ]; then \
+		mv $(FW_MEMINFO_NEW) $(FW_MEMINFO_SAVED); \
+	fi
+#remove build artifacts
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f $(TARGET_OUT)
 	$(Q) rm -rf $(BUILD_DIR)

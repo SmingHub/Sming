@@ -55,6 +55,7 @@ spiffs_config spiffs_get_storage_config()
 	cfg.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE; // according to datasheet
 	cfg.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2; // Important to make large
 	cfg.log_page_size = LOG_PAGE_SIZE; // as we said
+
 	return cfg;
 }
 
@@ -73,9 +74,26 @@ bool spiffs_format_internal()
   sect_last = cfg.phys_addr + cfg.phys_size;
   sect_last = flashmem_get_sector_of_address(sect_last);
   debugf("sect_first: %x, sect_last: %x\n", sect_first, sect_last);
+  ETS_INTR_LOCK();
+  int total = sect_last - sect_first;
+  int last = -1;
   while( sect_first <= sect_last )
-	if(!flashmem_erase_sector( sect_first ++ ))
-	  return false;
+  {
+	if(flashmem_erase_sector( sect_first++ ))
+	{
+		int percent = sect_first * 100 / total;
+		if (percent > last)
+			debugf("%d%%", percent);
+		last = percent;
+	}
+	else
+	{
+		ETS_INTR_UNLOCK();
+		return false;
+	}
+  }
+  debugf("formated");
+  ETS_INTR_UNLOCK();
 }
 
 void spiffs_mount()
@@ -87,7 +105,7 @@ void spiffs_mount()
 	  return;
   }
 
-  debugf("fs.start: size:%d Kb, offset:%X\n", cfg.phys_size / 1024, cfg.phys_addr);
+  debugf("fs.start: size:%d Kb, offset:0x%X\n", cfg.phys_size / 1024, cfg.phys_addr - INTERNAL_FLASH_START_ADDRESS);
 
   cfg.hal_read_f = api_spiffs_read;
   cfg.hal_write_f = api_spiffs_write;
