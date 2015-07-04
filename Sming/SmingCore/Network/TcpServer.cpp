@@ -143,7 +143,6 @@ void TcpServer::onClientComplete(TcpClient& client, bool succesfull)
 	{
 		clientCompleteDelegate(client,succesfull);
 	}
-
 }
 
 bool TcpServer::onClientReceive (TcpClient& client, char *data, int size)

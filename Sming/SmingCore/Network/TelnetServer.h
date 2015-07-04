@@ -14,6 +14,7 @@
 #include "TcpClient.h"
 #include "TcpServer.h"
 #include "SystemClock.h"
+#include "../Services/CommandProcessing/CommandExecutor.h"
 
 #include <stdio.h>
 
@@ -33,14 +34,8 @@ private:
 	bool onClientReceive (TcpClient& client, char *data, int size);
 	void onClientComplete(TcpClient& client, bool succesfull);
 	void wrchar(char c);
-	char commandBuf [TELNETSERVER_MAX_COMMANDSIZE+1];
-	TelnetServerCommandDelegate commandDelegate = nullptr;
 	TcpClient *curClient;
-	uint16_t commandIndex = 0;
-	void processCommandLine(char *cmdBuf, int size);
-	void showStatus();
-	char prompt[1] = {'>'};
-
+	CommandExecutor* commandExecutor;
 };
 
 #endif /* APP_TELNETSERVER_H_ */
