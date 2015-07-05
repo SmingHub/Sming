@@ -12,8 +12,9 @@
 #include "Delegate.h"
 #include "Network/TcpClient.h"
 #include "WiringFrameworkIncludes.h"
+#include "CommandOutput.h"
 
-typedef Delegate<void(String commandLine  ,TcpClient* commandClient)> commandFunctionDelegate;
+typedef Delegate<void(String commandLine  ,CommandOutput* commandOutput)> commandFunctionDelegate;
 
 class CommandDelegate
 {

@@ -14,6 +14,9 @@ CommandHandler::CommandHandler()
 	 registerCommand(CommandDelegate("status", "Displays System Information", "system", commandFunctionDelegate(&CommandHandler::procesStatusCommand,this)));
 	 registerCommand(CommandDelegate("echo", "Displays command entered", "system", commandFunctionDelegate(&CommandHandler::procesEchoCommand,this)));
 	 registerCommand(CommandDelegate("help", "Displays all available commands", "system", commandFunctionDelegate(&CommandHandler::procesHelpCommand,this)));
+	 registerCommand(CommandDelegate("debugon", "Set Serial debug on", "system", commandFunctionDelegate(&CommandHandler::procesDebugOnCommand,this)));
+	 registerCommand(CommandDelegate("debugoff", "Set Serial debug off", "system", commandFunctionDelegate(&CommandHandler::procesDebugOffCommand,this)));
+
 }
 
 CommandHandler::~CommandHandler()
@@ -40,11 +43,13 @@ bool CommandHandler::registerCommand(CommandDelegate reqDelegate)
 	if (registeredCommands->contains(reqDelegate.commandName))
 	{
 		// Command already registered, don't allow  duplicates
+		debugf("Commandhandler duplicate command %s", reqDelegate.commandName.c_str());
 		return false;
 	}
 	else
 	{
 		(*registeredCommands)[reqDelegate.commandName] = reqDelegate;
+		debugf("Commandhandlercommand %s registered", reqDelegate.commandName.c_str());
 		return true;
 	}
 }
@@ -64,43 +69,54 @@ bool CommandHandler::unregisterCommand(CommandDelegate reqDelegate)
 	}
 }
 
-void CommandHandler::procesHelpCommand(String commandLine, TcpClient* commandClient)
+void CommandHandler::procesHelpCommand(String commandLine, CommandOutput* commandOutput)
 {
 	debugf("HelpCommand entered");
-	commandClient->sendString("Commands available are : \r\n");
+	commandOutput->printf("Commands available are : \r\n");
 	for (int idx = 0;idx < registeredCommands->count();idx++)
 	{
-		commandClient->sendString(registeredCommands->valueAt(idx).commandName);
-		commandClient->sendString(" | ");
-		commandClient->sendString(registeredCommands->valueAt(idx).commandGroup);
-		commandClient->sendString(" | ");
-		commandClient->sendString(registeredCommands->valueAt(idx).commandHelp);
-		commandClient->sendString("\r\n");
+		commandOutput->printf(registeredCommands->valueAt(idx).commandName.c_str());
+		commandOutput->printf(" | ");
+		commandOutput->printf(registeredCommands->valueAt(idx).commandGroup.c_str());
+		commandOutput->printf(" | ");
+		commandOutput->printf(registeredCommands->valueAt(idx).commandHelp.c_str());
+		commandOutput->printf("\r\n");
 	}
 }
 
-void CommandHandler::procesStatusCommand(String commandLine  ,TcpClient* commandClient)
+void CommandHandler::procesStatusCommand(String commandLine, CommandOutput* commandOutput)
 {
 	debugf("StatusCommand entered");
 	char tempBuf[64];
-	commandClient->sendString("System information : ESP8266 Sming Framework\r\n");
-	commandClient->sendString("Sming Framework Version : 1.2.0\r\n");
-	commandClient->sendString("ESP SDK version : ");
-	commandClient->sendString(system_get_sdk_version());
-	commandClient->sendString("\r\n");
-	commandClient->sendString("Time = ");
-	commandClient->sendString(SystemClock.getSystemTimeString());
-	commandClient->sendString("\r\n");
-	int sz = sprintf(tempBuf,"System Start Reason : %d\r\n", system_get_rst_info()->reason);
-	commandClient->send(tempBuf,sz);
+	commandOutput->printf("System information : ESP8266 Sming Framework\r\n");
+	commandOutput->printf("Sming Framework Version : 1.2.0\r\n");
+	commandOutput->printf("ESP SDK version : ");
+	commandOutput->printf(system_get_sdk_version());
+	commandOutput->printf("\r\n");
+	commandOutput->printf("Time = ");
+	commandOutput->printf(SystemClock.getSystemTimeString().c_str());
+	commandOutput->printf("\r\n");
+	commandOutput->printf("System Start Reason : %d\r\n", system_get_rst_info()->reason);
 }
 
-void CommandHandler::procesEchoCommand(String commandLine, TcpClient* commandClient)
+void CommandHandler::procesEchoCommand(String commandLine, CommandOutput* commandOutput)
 {
 	debugf("HelpCommand entered");
-	commandClient->sendString("You entered : '");
-	commandClient->sendString(commandLine);
-	commandClient->sendString("'\r\n");
+	commandOutput->printf("You entered : '");
+	commandOutput->printf(commandLine.c_str());
+	commandOutput->printf("'\r\n");
+}
+
+void CommandHandler::procesDebugOnCommand(String commandLine, CommandOutput* commandOutput)
+{
+	Serial.systemDebugOutput(true);
+	commandOutput->printf("Debug set to : On\r\n");
+}
+
+void CommandHandler::procesDebugOffCommand(String commandLine, CommandOutput* commandOutput)
+{
+	Serial.systemDebugOutput(false);
+	commandOutput->printf("Debug set to : Off\r\n");
 }
 
 CommandHandler commandHandler;

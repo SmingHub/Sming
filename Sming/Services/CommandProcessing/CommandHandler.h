@@ -13,6 +13,7 @@
 #include "../Wiring/Whashmap.h"
 #include "SystemClock.h"
 #include <stdio.h>
+#include "HardwareSerial.h"
 
 
 class CommandHandler
@@ -27,9 +28,13 @@ public:
 
 private :
 	HashMap<String, CommandDelegate> *registeredCommands;
-	void procesHelpCommand(String commandLine, TcpClient* commandClient);
-	void procesStatusCommand(String commandLine  ,TcpClient* commandClient);
-	void procesEchoCommand(String commandLine, TcpClient* commandClient);
+	void procesHelpCommand(String commandLine, CommandOutput* commandOutput);
+	void procesStatusCommand(String commandLine, CommandOutput* commandOutput);
+	void procesEchoCommand(String commandLine, CommandOutput* commandOutput);
+	void procesDebugOnCommand(String commandLine, CommandOutput* commandOutput);
+	void procesDebugOffCommand(String commandLine, CommandOutput* commandOutput);
+
+
 };
 
 extern CommandHandler commandHandler;

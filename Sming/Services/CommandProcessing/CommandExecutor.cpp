@@ -6,11 +6,18 @@
  */
 
 #include "CommandExecutor.h"
+#include "HardwareSerial.h"
 
 CommandExecutor::CommandExecutor(TcpClient* cmdClient)
-: commandClient(cmdClient)
 {
-	commandClient->sendString("Welcome to Sming Command Executor\r\n");
+	commandOutput = new CommandOutput(cmdClient);
+	commandOutput->printf("Welcome to the TcpS Command executor\r\n");
+}
+
+CommandExecutor::CommandExecutor(Stream* reqStream)
+{
+	commandOutput = new CommandOutput(reqStream);
+	commandOutput->printf("Welcome to the Stream Command executor\r\n");
 }
 
 CommandExecutor::~CommandExecutor()
@@ -33,14 +40,13 @@ int CommandExecutor::executorReceive(char *recvData, int recvSize)
 
 int CommandExecutor::executorReceive(char recvChar)
 {
-	debugf("CommandExecutor Char received\r\n" );
-	if ((recvChar >= 240) || (recvChar == '\r'))
+	if ((recvChar >= 240) || (recvChar == '\n'))
 	{
-		debugf("CommandExecutor : Character ignored\r\n");
+//		debugf("CommandExecutor : Character ignored value = %u\r\n", recvChar);
 	}
 	else
 	{
-		if (recvChar == '\n')
+		if (recvChar == '\r')
 		{
 			processCommandLine(String(commandBuf));
 			commandIndex = 0;
@@ -54,7 +60,7 @@ int CommandExecutor::executorReceive(char recvChar)
 			}
 		}
 	}
-	debugf("CommandExecutor commandIndex = %d",commandIndex);
+//	debugf("CommandExecutor commandIndex = %d, cmd = %s",commandIndex,commandBuf);
 	return 0;
 }
 
@@ -78,15 +84,15 @@ void CommandExecutor::processCommandLine(String cmdString)
 
 	if (!cmdDelegate.commandFunction)
 	{
-		commandClient->sendString("Command not found, cmd = '");
-		commandClient->sendString(cmdCommand);
-		commandClient->sendString("'\r\n");
+		commandOutput->printf("Command not found, cmd = '");
+		commandOutput->printf(cmdCommand.c_str());
+		commandOutput->printf("'\r\n");
 	}
 	else
 	{
-		cmdDelegate.commandFunction(cmdString.c_str(),commandClient);
+		cmdDelegate.commandFunction(cmdString.c_str(),commandOutput);
 	}
-	commandClient->sendString("Sming>");
+	commandOutput->printf("Sming>");
 }
 
 

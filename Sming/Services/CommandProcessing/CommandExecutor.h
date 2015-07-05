@@ -11,6 +11,7 @@
 #include "WiringFrameworkIncludes.h"
 #include "Network/TcpClient.h"
 #include "CommandHandler.h"
+#include "CommandOutput.h"
 
 #define MAX_COMMANDSIZE 64
 
@@ -18,16 +19,17 @@ class CommandExecutor
 {
 public:
 	CommandExecutor(TcpClient* cmdClient);
+	CommandExecutor(Stream* reqStream);
 	~CommandExecutor();
 
 	int executorReceive(char *recvData, int recvSize);
 	int executorReceive(char recvChar);
 
 private :
-	TcpClient* commandClient;
 	void processCommandLine(String cmdString);
 	char commandBuf [MAX_COMMANDSIZE+1];
 	uint16_t commandIndex = 0;
+	CommandOutput* commandOutput;
 
 };
 
