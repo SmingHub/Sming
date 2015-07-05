@@ -10,11 +10,11 @@
 	#define WIFI_PWD "PleaseEnterPass"
 #endif
 
-void applicationCommand(String commandLine  ,TcpClient* commandClient)
+void applicationCommand(String commandLine  ,CommandOutput* commandOutput)
 {
-	commandClient->sendString("Hello from Telnet Example application\r\nYou entered : '");
-	commandClient->sendString(commandLine);
-	commandClient->sendString("'\r\n");
+	commandOutput->printf("Hello from Telnet Example application\r\nYou entered : '");
+	commandOutput->printf(commandLine.c_str());
+	commandOutput->printf("'\r\n");
 
 }
 
@@ -80,7 +80,7 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
-
+	Serial.commandProcessing(true);
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiAccessPoint.enable(false);
