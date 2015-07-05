@@ -8,18 +8,41 @@
 #include "../SmingCore/Digital.h"
 #include "../Wiring/WiringFrameworkIncludes.h"
 
+//Store pin modes to be able
+// to detect pin writes to INPUT pins
+// and activate the pullup accordingly.
+bool gIsPinInput[TOTAL_PINS+1] = {0};
+
 void pinMode(uint16_t pin, uint8_t mode)
 {
+	if (pin <= TOTAL_PINS)
+	{
+		if (mode == INPUT_PULLUP)
+		{
+			pullup(pin);
+			gIsPinInput[pin] = true;
+		}
+		else if (mode == INPUT)
+		{
+			noPullup(pin);
+			gIsPinInput[pin] = true;
+		}
+		else if (mode == OUTPUT)
+		{
+			gIsPinInput[pin] = false;
+		}
+	}
+
 	if (pin < 16)
 	{
 		// Set as GPIO
 		PIN_FUNC_SELECT((EspDigitalPins[pin].mux), (EspDigitalPins[pin].gpioFunc));
 
-		// Default Pull-up
-		pullup(pin);
+		//Default Pull-up
+		//pullup(pin);  Handled above and in digitalWrite() for older Android libs
 
 		// Switch to Input or Output
-		if (mode == INPUT)
+		if (mode == INPUT || mode == INPUT_PULLUP)
 			GPIO_REG_WRITE(GPIO_ENABLE_W1TC_ADDRESS, (1<<pin));
 		else
 			GPIO_REG_WRITE(GPIO_ENABLE_W1TS_ADDRESS, (1<<pin));
@@ -54,6 +77,16 @@ void pinMode(uint16_t pin, uint8_t mode)
 
 void digitalWrite(uint16_t pin, uint8_t val)
 {
+	//make compatible with Arduino < version 100
+	//enable pullup == setting a pin to input and writing 1 to it
+	if (pin <= TOTAL_PINS)
+	{
+		if (gIsPinInput[pin] && val == HIGH)
+			pullup(pin);
+		else
+			noPullup(pin);
+	}
+
 	if (pin != 16)
 		GPIO_REG_WRITE((((val != 0) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), (1<<pin));
 	else
