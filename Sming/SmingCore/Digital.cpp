@@ -11,35 +11,17 @@
 //Store pin modes to be able
 // to detect pin writes to INPUT pins
 // and activate the pullup accordingly.
-bool gIsPinInput[TOTAL_PINS+1] = {0};
+static bool gIsPinInput[TOTAL_PINS+1] = {0};
 
 void pinMode(uint16_t pin, uint8_t mode)
 {
-	if (pin <= TOTAL_PINS)
-	{
-		if (mode == INPUT_PULLUP)
-		{
-			pullup(pin);
-			gIsPinInput[pin] = true;
-		}
-		else if (mode == INPUT)
-		{
-			noPullup(pin);
-			gIsPinInput[pin] = true;
-		}
-		else if (mode == OUTPUT)
-		{
-			gIsPinInput[pin] = false;
-		}
-	}
-
 	if (pin < 16)
 	{
 		// Set as GPIO
 		PIN_FUNC_SELECT((EspDigitalPins[pin].mux), (EspDigitalPins[pin].gpioFunc));
 
 		//Default Pull-up
-		//pullup(pin);  Handled above and in digitalWrite() for older Android libs
+		//pullup(pin);  Handled below and in digitalWrite() for older Android libs
 
 		// Switch to Input or Output
 		if (mode == INPUT || mode == INPUT_PULLUP)
@@ -73,15 +55,33 @@ void pinMode(uint16_t pin, uint8_t mode)
 		}
 	} else
 		SYSTEM_ERROR("No pin %d, can't set mode", pin); // NO PIN!
+
+	if (pin <= TOTAL_PINS)
+	{
+		if (mode == INPUT_PULLUP)
+		{
+			pullup(pin);
+			gIsPinInput[pin] = true;
+		}
+		else if (mode == INPUT)
+		{
+			noPullup(pin);
+			gIsPinInput[pin] = true;
+		}
+		else if (mode == OUTPUT)
+		{
+			gIsPinInput[pin] = false;
+		}
+	}
 }
 
 void digitalWrite(uint16_t pin, uint8_t val)
 {
 	//make compatible with Arduino < version 100
 	//enable pullup == setting a pin to input and writing 1 to it
-	if (pin <= TOTAL_PINS)
+	if (pin <= TOTAL_PINS && gIsPinInput[pin])
 	{
-		if (gIsPinInput[pin] && val == HIGH)
+		if(val == HIGH)
 			pullup(pin);
 		else
 			noPullup(pin);
