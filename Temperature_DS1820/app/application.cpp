@@ -17,7 +17,7 @@ void readData()
 	byte addr[8];
 	float celsius, fahrenheit;
 
-	ds.reset();
+	ds.reset_search();
 	if (!ds.search(addr))
 	{
 		Serial.println("No addresses found.");
