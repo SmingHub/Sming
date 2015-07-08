@@ -22,18 +22,38 @@ TelnetServer::~TelnetServer()
 void TelnetServer::onClient(TcpClient *client)
 {
 	debugf("TelnetServer onClient %s", client->getRemoteIp().toString().c_str() );
-	curClient = client;
-	TcpServer::onClient(client);
-	curClient->setTimeOut(USHRT_MAX);
 
-	curClient->sendString("Welcome to Sming / ESP6266 Telnet\r\n");
-	commandExecutor = new  CommandExecutor(client);
+	TcpServer::onClient(client);
+
+	if (curClient)
+	{
+		debugf("TCP Client already connected");
+		client->sendString("Telnet Client already connected\r\n");
+		client->close();
+	}
+	else
+	{
+		curClient = client;
+		curClient->setTimeOut(USHRT_MAX);
+		curClient->sendString("Welcome to Sming / ESP6266 Telnet\r\n");
+		commandExecutor = new  CommandExecutor(client);
+	}
 }
 
 void TelnetServer::onClientComplete(TcpClient& client, bool succesfull)
 {
-	delete commandExecutor;
-	curClient = nullptr;
+	if ( &client == curClient)
+	{
+		delete commandExecutor;
+		commandExecutor = nullptr;
+		curClient = nullptr;
+		debugf("TelnetServer onClientComplete %s", client.getRemoteIp().toString().c_str() );
+	}
+	else
+	{
+		debugf("Telnet server unconnected client close");
+	}
+
 	debugf("TelnetServer onClientComplete %s", client.getRemoteIp().toString().c_str() );
 	TcpServer::onClientComplete(client, succesfull);
 }

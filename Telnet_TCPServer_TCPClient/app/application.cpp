@@ -15,7 +15,14 @@ void applicationCommand(String commandLine  ,CommandOutput* commandOutput)
 	commandOutput->printf("Hello from Telnet Example application\r\nYou entered : '");
 	commandOutput->printf(commandLine.c_str());
 	commandOutput->printf("'\r\n");
+	commandOutput->printf("Tokenized commandLine is : \r\n");
 
+	Vector<String> commandToken;
+	int numToken = splitString(commandLine, ' ' , commandToken);
+	for (int i=0;i<numToken;i++)
+	{
+		commandOutput->printf("%d : %s\r\n",i,commandToken.at(i).c_str());
+	}
 }
 
 void tcpServerClientConnected (TcpClient* client)
@@ -36,6 +43,8 @@ bool tcpServerClientReceive (TcpClient& client, char *data, int size)
 	};
 	return true;
 }
+
+
 
 void tcpServerClientComplete(TcpClient& client, bool succesfull)
 {
@@ -87,4 +96,5 @@ void init()
 
 	// Run our method when station was connected to AP
 	WifiStation.waitConnection(connectOk, 30, connectFail);
+
 }

@@ -11,7 +11,7 @@
 CommandExecutor::CommandExecutor(TcpClient* cmdClient)
 {
 	commandOutput = new CommandOutput(cmdClient);
-	commandOutput->printf("Welcome to the TcpS Command executor\r\n");
+	commandOutput->printf("Welcome to the Tcp Command executor\r\n");
 }
 
 CommandExecutor::CommandExecutor(Stream* reqStream)
@@ -40,27 +40,27 @@ int CommandExecutor::executorReceive(char *recvData, int recvSize)
 
 int CommandExecutor::executorReceive(char recvChar)
 {
-	if ((recvChar >= 240) || (recvChar == '\n'))
+	if (recvChar == 27) // ESC -> delete current commandLine
 	{
-//		debugf("CommandExecutor : Character ignored value = %u\r\n", recvChar);
+		commandIndex = 0;
+		commandBuf[commandIndex] = 0;
+		commandOutput->printf("\r\n%s",prompt.c_str());
+	}
+	else if (recvChar == eolChar)
+	{
+
+		processCommandLine(String(commandBuf));
+		commandIndex = 0;
 	}
 	else
 	{
-		if (recvChar == '\r')
+		if ((commandIndex < MAX_COMMANDSIZE) && (isprint(recvChar)))
 		{
-			processCommandLine(String(commandBuf));
-			commandIndex = 0;
+			commandBuf[commandIndex++] = recvChar;
+			commandBuf[commandIndex] = 0;
 		}
-		else
-		{
-			if (commandIndex < MAX_COMMANDSIZE)
-			{
-				commandBuf[commandIndex++] = recvChar;
-				commandBuf[commandIndex] = 0;
-			}
-		}
+
 	}
-//	debugf("CommandExecutor commandIndex = %d, cmd = %s",commandIndex,commandBuf);
 	return 0;
 }
 
@@ -93,6 +93,15 @@ void CommandExecutor::processCommandLine(String cmdString)
 		cmdDelegate.commandFunction(cmdString.c_str(),commandOutput);
 	}
 	commandOutput->printf("Sming>");
+}
+
+void CommandExecutor::setCommandPrompt(String reqPrompt)
+{
+	prompt = reqPrompt;
+}
+void CommandExecutor::setCommandEOL(char reqEOL)
+{
+	eolChar = reqEOL;
 }
 
 

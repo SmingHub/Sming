@@ -24,12 +24,16 @@ public:
 
 	int executorReceive(char *recvData, int recvSize);
 	int executorReceive(char recvChar);
+	void setCommandPrompt(String reqPrompt);
+	void setCommandEOL(char reqEOL);
 
 private :
 	void processCommandLine(String cmdString);
 	char commandBuf [MAX_COMMANDSIZE+1];
 	uint16_t commandIndex = 0;
 	CommandOutput* commandOutput;
+	String prompt = "Sming>";
+	char eolChar = '\r';
 
 };
 
