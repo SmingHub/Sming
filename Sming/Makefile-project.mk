@@ -8,8 +8,15 @@
 
 ### Defaults ###
 
-# Com port default speed
-COM_SPEED ?= 230400
+## COM port parameters
+# Default COM port speed (generic)
+COM_SPEED ?= 115200
+
+# Default COM port speed (used for flashing)
+COM_SPEED_ESPTOOL ?= $(COM_SPEED)
+
+# Default COM port speed (used in code)
+COM_SPEED_SERIAL  ?= $(COM_SPEED)
 
 ## Flash parameters
 # SPI_SPEED = 40, 26, 20, 80
@@ -255,34 +262,25 @@ $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 	
+	$(vecho) ""	
+	$(vecho) "#Memory / Section info:"	
 	$(vecho) "------------------------------------------------------------------------------"
 #Check for existing old meminfo file and move it to /out/firmware as the infofile from previous build
 	$(Q) if [ -f "$(FW_MEMINFO_SAVED)" ]; then \
-		mv $(FW_MEMINFO_SAVED) $(FW_MEMINFO_OLD); \
+	  mv $(FW_MEMINFO_SAVED) $(FW_MEMINFO_OLD); \
 	fi
-ifeq ($(UNAME),Windows)
-	$(vecho) "Memory layout info:"
-#Redirect to file (to keep track over multiple git revisions add /out/firmware to .gitignore)
-	$(Q) $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe $@ > $(FW_MEMINFO_NEW)
-#Use awk to subtract values on the "Used space" column from old and new memInfo file and in case of delta print the delta in brackets (+/-delta)
+	
+	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
+	
 	$(Q) if [[ -f "$(FW_MEMINFO_NEW)" && -f "$(FW_MEMINFO_OLD)" ]]; then \
-		awk -F "|" 'FILENAME == "$(FW_MEMINFO_OLD)" { arr[$$1]=$$5 } FILENAME == "$(FW_MEMINFO_NEW)" { if (arr[$$1] != $$5){printf "%s%s%+d%s", substr($$0, 1, length($$0) - 1)," (",$$5 - arr[$$1],")\n" } else {print $$0} }' $(FW_MEMINFO_OLD) $(FW_MEMINFO_NEW); \
+	  awk -F "|" 'FILENAME == "$(FW_MEMINFO_OLD)" { arr[$$1]=$$5 } FILENAME == "$(FW_MEMINFO_NEW)" { if (arr[$$1] != $$5){printf "%s%s%+d%s", substr($$0, 1, length($$0) - 1)," (",$$5 - arr[$$1],")\n" } else {print $$0} }' $(FW_MEMINFO_OLD) $(FW_MEMINFO_NEW); \
 	elif [ -f "$(FW_MEMINFO_NEW)" ]; then \
-		cat $(FW_MEMINFO_NEW); \
+	  cat $(FW_MEMINFO_NEW); \
 	fi
-else
-	$(vecho) "Section info:"
-#Redirect to file (to keep track over multiple git revisions add /out/firmware to .gitignore)
-	$(Q) $(OBJDUMP) -h -j .data -j .rodata -j .bss -j .text -j .irom0.text $@ > $(FW_MEMINFO_NEW)
-#Display to console if file exists
-	if [ -f "$(FW_MEMINFO_NEW)" ]; then \
-		cat $(FW_MEMINFO_NEW); \
-	fi
-endif
 
 	$(vecho) "------------------------------------------------------------------------------"
 	$(vecho) "# Generating image..."
-	$(ESPTOOL) elf2image $@ $(flashimageoptions) -o $(FW_BASE)/
+	$(Q) $(ESPTOOL) elf2image $@ $(flashimageoptions) -o $(FW_BASE)/
 	$(vecho) "Generate firmware images successully in folder $(FW_BASE)."
 	$(vecho) "Done"
 
@@ -317,12 +315,14 @@ $(SPIFF_BIN_OUT):
 	$(vecho) "spiff_rom.bin---------->$(SPIFF_START_OFFSET)"
 
 flash: all
-	-$(KILL_TERM)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
+	$(vecho) "Killing Terminal to free $(COM_PORT)"
+	-$(Q) $(KILL_TERM)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
+	$(TERMINAL)
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED) write_flash $(flashimageoptions) 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x4B000 $(SMING_HOME)/compiler/data/blankfs.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x4B000 $(SMING_HOME)/compiler/data/blankfs.bin
 
 rebuild: clean all
 

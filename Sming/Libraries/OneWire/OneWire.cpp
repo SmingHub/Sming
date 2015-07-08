@@ -157,8 +157,8 @@ uint8_t OneWire::reset(void)
 	} while ( !DIRECT_READ(reg, mask));
 
 	noInterrupts();
-	DIRECT_WRITE_LOW(reg, mask);
 	DIRECT_MODE_OUTPUT(reg, mask);	// drive output low
+	DIRECT_WRITE_LOW(reg, mask);
 	interrupts();
 	delayMicroseconds(480);
 	noInterrupts();
@@ -181,16 +181,16 @@ void OneWire::write_bit(uint8_t v)
 
 	if (v & 1) {
 		noInterrupts();
-		DIRECT_WRITE_LOW(reg, mask);
 		DIRECT_MODE_OUTPUT(reg, mask);	// drive output low
+		DIRECT_WRITE_LOW(reg, mask);
 		delayMicroseconds(10);
 		DIRECT_WRITE_HIGH(reg, mask);	// drive output high
 		interrupts();
 		delayMicroseconds(55);
 	} else {
 		noInterrupts();
-		DIRECT_WRITE_LOW(reg, mask);
 		DIRECT_MODE_OUTPUT(reg, mask);	// drive output low
+		DIRECT_WRITE_LOW(reg, mask);
 		delayMicroseconds(65);
 		DIRECT_WRITE_HIGH(reg, mask);	// drive output high
 		interrupts();
@@ -236,7 +236,8 @@ void OneWire::write(uint8_t v, uint8_t power /* = 0 */) {
     if ( !power) {
 	noInterrupts();
 	DIRECT_MODE_INPUT(baseReg, bitmask);
-	DIRECT_WRITE_LOW(baseReg, bitmask);
+	//DIRECT_WRITE_LOW(baseReg, bitmask);
+	noPullup(pin);
 	interrupts();
     }
 }
@@ -247,7 +248,8 @@ void OneWire::write_bytes(const uint8_t *buf, uint16_t count, bool power /* = 0 
   if (!power) {
     noInterrupts();
     DIRECT_MODE_INPUT(baseReg, bitmask);
-    DIRECT_WRITE_LOW(baseReg, bitmask);
+    //DIRECT_WRITE_LOW(baseReg, bitmask);
+    noPullup(pin);
     interrupts();
   }
 }
