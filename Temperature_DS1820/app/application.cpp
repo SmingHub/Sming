@@ -2,16 +2,13 @@
 #include <SmingCore/SmingCore.h>
 #include <Libraries/OneWire/OneWire.h>
 
-#define WORK_PIN 0 // GPIO0
+#define WORK_PIN 3 // GPIO0
 
 OneWire ds(WORK_PIN);
+Timer procTimer;
 
-void init()
+void readData()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(true); // Allow debug output to serial
-
-	ds.begin(); // It's required for one-wire initialization!
 
 	byte i;
 	byte present = 0;
@@ -20,6 +17,7 @@ void init()
 	byte addr[8];
 	float celsius, fahrenheit;
 
+	ds.reset();
 	if (!ds.search(addr))
 	{
 		Serial.println("No addresses found.");
@@ -117,4 +115,14 @@ void init()
 	Serial.print(fahrenheit);
 	Serial.println(" Fahrenheit");
 	Serial.println();
+}
+
+void init()
+{
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.systemDebugOutput(true); // Allow debug output to serial
+
+	ds.begin(); // It's required for one-wire initialization!
+
+	procTimer.initializeMs(3000, readData).start();
 }
