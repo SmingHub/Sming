@@ -8,20 +8,12 @@
 #include "../SmingCore/Digital.h"
 #include "../Wiring/WiringFrameworkIncludes.h"
 
-//Store pin modes to be able
-// to detect pin writes to INPUT pins
-// and activate the pullup accordingly.
-static bool gIsPinInput[TOTAL_PINS+1] = {0};
-
 void pinMode(uint16_t pin, uint8_t mode)
 {
 	if (pin < 16)
 	{
 		// Set as GPIO
 		PIN_FUNC_SELECT((EspDigitalPins[pin].mux), (EspDigitalPins[pin].gpioFunc));
-
-		//Default Pull-up
-		//pullup(pin);  Handled below and in digitalWrite() for older Android libs
 
 		// Switch to Input or Output
 		if (mode == INPUT || mode == INPUT_PULLUP)
@@ -31,7 +23,7 @@ void pinMode(uint16_t pin, uint8_t mode)
 	}
 	else if (pin == 16)
 	{
-		if (mode == INPUT)
+		if (mode == INPUT  || mode == INPUT_PULLUP)
 		{
 		    WRITE_PERI_REG(PAD_XPD_DCDC_CONF,
 		                   (READ_PERI_REG(PAD_XPD_DCDC_CONF) & 0xffffffbc) | (uint32)0x1); 		// mux configuration for XPD_DCDC and rtc_gpio0 connection
@@ -56,30 +48,38 @@ void pinMode(uint16_t pin, uint8_t mode)
 	} else
 		SYSTEM_ERROR("No pin %d, can't set mode", pin); // NO PIN!
 
-	if (pin <= TOTAL_PINS)
+	//Decide to enable or disable the pullup
+	if (mode == INPUT_PULLUP)
 	{
-		if (mode == INPUT_PULLUP)
-		{
-			pullup(pin);
-			gIsPinInput[pin] = true;
-		}
-		else if (mode == INPUT)
-		{
-			noPullup(pin);
-			gIsPinInput[pin] = true;
-		}
-		else if (mode == OUTPUT)
-		{
-			gIsPinInput[pin] = false;
-		}
+		pullup(pin);
 	}
+	else if (mode == INPUT)
+	{
+		noPullup(pin);
+	}
+}
+
+//Detect if pin is input
+bool isInputPin(uint16_t pin)
+{
+	bool result = false;
+
+	if(pin != 16)
+	{
+		result =((GPIO_REG_READ(GPIO_ENABLE_ADDRESS)>>pin) & 1);
+	}
+	else
+	{
+		result = (READ_PERI_REG(RTC_GPIO_ENABLE) & 1);
+	}
+	return result;
 }
 
 void digitalWrite(uint16_t pin, uint8_t val)
 {
 	//make compatible with Arduino < version 100
 	//enable pullup == setting a pin to input and writing 1 to it
-	if (pin <= TOTAL_PINS && gIsPinInput[pin])
+	if (isInputPin(pin))
 	{
 		if(val == HIGH)
 			pullup(pin);
@@ -88,7 +88,7 @@ void digitalWrite(uint16_t pin, uint8_t val)
 	}
 
 	if (pin != 16)
-		GPIO_REG_WRITE((((val != 0) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), (1<<pin));
+		GPIO_REG_WRITE((((val != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), (1<<pin));
 	else
 		WRITE_PERI_REG(RTC_GPIO_OUT, (READ_PERI_REG(RTC_GPIO_OUT) & (uint32)0xfffffffe) | (uint32)(val & 1));
 
