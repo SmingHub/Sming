@@ -22,6 +22,8 @@ uint8_t digitalRead(uint16_t pin);
 void pullup(uint16_t pin);
 void noPullup(uint16_t pin);
 
+bool isInputPin(uint16_t pin);
+
 unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout =
 		1000000L);
 #endif
