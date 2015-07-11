@@ -85,6 +85,7 @@ void digitalWrite(uint16_t pin, uint8_t val)
 			pullup(pin);
 		else
 			noPullup(pin);
+		return;
 	}
 
 	if (pin != 16)
