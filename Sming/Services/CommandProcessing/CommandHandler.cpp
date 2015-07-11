@@ -8,20 +8,25 @@
 #include "CommandHandler.h"
 #include "CommandDelegate.h"
 
+#define CLASS_TAG "[CommandHandler]"
+
 CommandHandler::CommandHandler()
 {
-	 registeredCommands = new HashMap<String, CommandDelegate>;
-	 registerCommand(CommandDelegate("status", "Displays System Information", "system", commandFunctionDelegate(&CommandHandler::procesStatusCommand,this)));
-	 registerCommand(CommandDelegate("echo", "Displays command entered", "system", commandFunctionDelegate(&CommandHandler::procesEchoCommand,this)));
-	 registerCommand(CommandDelegate("help", "Displays all available commands", "system", commandFunctionDelegate(&CommandHandler::procesHelpCommand,this)));
-	 registerCommand(CommandDelegate("debugon", "Set Serial debug on", "system", commandFunctionDelegate(&CommandHandler::procesDebugOnCommand,this)));
-	 registerCommand(CommandDelegate("debugoff", "Set Serial debug off", "system", commandFunctionDelegate(&CommandHandler::procesDebugOffCommand,this)));
-
+	registeredCommands = new HashMap<String, CommandDelegate>;
 }
 
 CommandHandler::~CommandHandler()
 {
 	// TODO Auto-generated destructor stub
+}
+
+void CommandHandler::begin()
+{
+	registerCommand(CommandDelegate("status", "Displays System Information", "system", commandFunctionDelegate(&CommandHandler::procesStatusCommand,this)));
+	registerCommand(CommandDelegate("echo", "Displays command entered", "system", commandFunctionDelegate(&CommandHandler::procesEchoCommand,this)));
+	registerCommand(CommandDelegate("help", "Displays all available commands", "system", commandFunctionDelegate(&CommandHandler::procesHelpCommand,this)));
+	registerCommand(CommandDelegate("debugon", "Set Serial debug on", "system", commandFunctionDelegate(&CommandHandler::procesDebugOnCommand,this)));
+	registerCommand(CommandDelegate("debugoff", "Set Serial debug off", "system", commandFunctionDelegate(&CommandHandler::procesDebugOffCommand,this)));
 }
 
 CommandDelegate CommandHandler::getCommandDelegate(String commandString)

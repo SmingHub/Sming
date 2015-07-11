@@ -24,6 +24,7 @@ public:
 	bool registerCommand(CommandDelegate);
 	bool unregisterCommand(CommandDelegate);
 	CommandDelegate getCommandDelegate(String commandString);
+	void begin();
 //	int deleteGroup(String reqGroup);
 
 private :

@@ -23,12 +23,13 @@ typedef Delegate<void(Stream &source, char arrivedChar, uint16_t availableCharsC
 
 class CommandExecutor;
 
-typedef struct
+struct HWSerialMemberData
 {
+	HWSerialMemberData():commandExecutor(nullptr){}
 	StreamDataReceivedDelegate HWSDelegate;
 	bool useRxBuff;
-	CommandExecutor* commandExecutor = nullptr;
-} HWSerialMemberData;
+	CommandExecutor* commandExecutor;
+};
 
 class HardwareSerial : public Stream
 {
