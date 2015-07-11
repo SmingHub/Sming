@@ -244,6 +244,7 @@ class String
   
     friend int splitString(String &what, int delim, Vector<long> &splits);
     friend int splitString(String &what, int delim, Vector<int> &splits);
+    friend int splitString(String &what, int delim, Vector<String> &splits);
 
     //void printTo(Print &p) const;
 
