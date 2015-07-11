@@ -8,7 +8,6 @@
 #include "CommandHandler.h"
 #include "CommandDelegate.h"
 
-#define CLASS_TAG "[CommandHandler]"
 
 CommandHandler::CommandHandler()
 {
