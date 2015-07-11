@@ -11,6 +11,7 @@
 #include "../Wiring/WiringFrameworkDependencies.h"
 #include "../Wiring/Stream.h"
 #include "../SmingCore/Delegate.h"
+#include "../Services/CommandProcessing/CommandProcessingIncludes.h"
 
 #define UART_ID_0   0
 #define UART_ID_1   1
@@ -20,10 +21,13 @@
 // Delegate constructor usage: (&YourClass::method, this)
 typedef Delegate<void(Stream &source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
 
+class CommandExecutor;
+
 typedef struct
 {
 	StreamDataReceivedDelegate HWSDelegate;
 	bool useRxBuff;
+	CommandExecutor* commandExecutor = nullptr;
 } HWSerialMemberData;
 
 class HardwareSerial : public Stream
@@ -43,6 +47,7 @@ public:
 
 	//void printf(const char *fmt, ...);
 	void systemDebugOutput(bool enabled);
+	void commandProcessing(bool reqEnable);
 	void setCallback(StreamDataReceivedDelegate reqCallback, bool useSerialRxBuffer = true);
 	void resetCallback();
 

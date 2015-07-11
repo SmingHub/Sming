@@ -10,5 +10,7 @@ SDK_TOOLS	 ?= $(ESP_HOME)/utils
 
 # Other tools mappings
 ESPTOOL		 ?= $(SDK_TOOLS)/esptool.exe
-KILL_TERM    ?= taskkill.exe -f -im termite.exe
+KILL_TERM    ?= taskkill.exe -f -im Terminal.exe || exit 0
 GET_FILESIZE ?= stat --printf="%s"
+TERMINAL     ?= $(SDK_TOOLS)/Terminal.exe $(COM_PORT) $(COM_SPEED_SERIAL)
+MEMANALYZER  ?= $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe

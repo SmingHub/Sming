@@ -40,8 +40,9 @@
 #define HIGH     0x1
 //#define HIGH     0xFF
 
-#define INPUT    0x0
-#define OUTPUT   0x1
+#define INPUT        0x0
+#define OUTPUT       0x1
+#define INPUT_PULLUP 0x2 //defined in Arduino > 100
 //#define OUTPUT   0xFF
 
 #define CHANGE   32 // to avoid conflict with HIGH value

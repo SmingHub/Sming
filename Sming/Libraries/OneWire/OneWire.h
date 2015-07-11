@@ -107,15 +107,15 @@
 #define DIRECT_WRITE_HIGH(base, mask)   ((*(base+8+2)) = (mask))          //LATXSET + 0x28
 
 #elif defined(__ESP8266_EX__)
-#define PIN_TO_BASEREG(pin)             (portOutputRegister(digitalPinToPort(pin)))
-#define PIN_TO_BITMASK(pin)             (digitalPinToBitMask(pin))
-#define IO_REG_TYPE uint8_t
+#define PIN_TO_BASEREG(pin)             nullptr
+#define PIN_TO_BITMASK(pin)             (pin)
+#define IO_REG_TYPE						uint16_t
 #define IO_REG_ASM
-#define DIRECT_READ(base, mask)         (((*((base)+GPIO_IN_ADDRESS)) & (mask)) ? 1 : 0)
-#define DIRECT_MODE_INPUT(base, mask)   ((*((base)+GPIO_ENABLE_ADDRESS)) &= ~(mask))
-#define DIRECT_MODE_OUTPUT(base, mask)  ((*((base)+GPIO_ENABLE_ADDRESS)) |= (mask))
-#define DIRECT_WRITE_LOW(base, mask)    ((*(base)) &= ~(mask))
-#define DIRECT_WRITE_HIGH(base, mask)   ((*(base)) |= (mask))
+#define DIRECT_READ(base, mask)         (digitalRead(mask) ? 1 : 0)
+#define DIRECT_MODE_INPUT(base, mask)   pinMode(mask, INPUT)
+#define DIRECT_MODE_OUTPUT(base, mask)  pinMode(mask, OUTPUT)
+#define DIRECT_WRITE_LOW(base, mask)    digitalWrite(mask, LOW);
+#define DIRECT_WRITE_HIGH(base, mask)   digitalWrite(mask, HIGH);
 
 #else
 #define PIN_TO_BASEREG(pin)             NULL

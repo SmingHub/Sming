@@ -19,9 +19,31 @@ TcpServer::TcpServer() : TcpConnection(false)
 	TcpConnection::setTimeOut(USHRT_MAX);
 }
 
-TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler) : TcpConnection(false)
+TcpServer::TcpServer(TcpClientConnectDelegate onClientHandler, TcpClientDataDelegate clientReceiveDataHandler, TcpClientCompleteDelegate clientCompleteHandler)
+: TcpConnection(false)
 {
-	clientReceive = clientReceiveDataHandler;
+	clientConnectDelegate = onClientHandler;
+	clientReceiveDelegate = clientReceiveDataHandler;
+	clientCompleteDelegate = clientCompleteHandler;
+	timeOut = 40;
+	TcpConnection::setTimeOut(USHRT_MAX);
+
+}
+
+
+TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler, TcpClientCompleteDelegate clientCompleteHandler)
+: TcpConnection(false)
+{
+	clientReceiveDelegate = clientReceiveDataHandler;
+	clientCompleteDelegate = clientCompleteHandler;
+	timeOut = 40;
+	TcpConnection::setTimeOut(USHRT_MAX);
+}
+
+TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler)
+: TcpConnection(false)
+{
+	clientReceiveDelegate = clientReceiveDataHandler;
 	timeOut = 40;
 	TcpConnection::setTimeOut(USHRT_MAX);
 }
@@ -41,7 +63,10 @@ TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
 		debugf("TCP Server createClient not NULL");
 	}
 
-	TcpConnection* con = new TcpClient(clientTcp, clientReceive, true);
+	TcpConnection* con = new TcpClient(clientTcp,
+									   TcpClientDataDelegate(&TcpServer::onClientReceive,this),
+									   TcpClientCompleteDelegate(&TcpServer::onClientComplete,this));
+
 	return con;
 }
 
@@ -95,15 +120,42 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 	TcpConnection* client = createClient(clientTcp);
 	if (client == NULL) return ERR_MEM;
 	client->setTimeOut(timeOut);
-	onClient(client);
+	onClient((TcpClient*)client);
 
 	return ERR_OK;
 }
 
-void TcpServer::onClient(TcpConnection *connection)
+void TcpServer::onClient(TcpClient *client)
 {
-	debugf("Tcp Server onClient ") ; // %s",connection->getRemoteIp().toString().c_str());
+	activeClients++;
+	debugf("TcpServer onClient  %s, activeClients = %d\r\n ",client->getRemoteIp().toString().c_str(),activeClients);
+	if (clientConnectDelegate)
+	{
+		clientConnectDelegate(client);
+	}
 }
+
+void TcpServer::onClientComplete(TcpClient& client, bool succesfull)
+{
+	activeClients--;
+	debugf("TcpSever onComplete : %s activeClients = %d\r\n",client.getRemoteIp().toString().c_str(),activeClients );
+	if (clientCompleteDelegate)
+	{
+		clientCompleteDelegate(client,succesfull);
+	}
+}
+
+bool TcpServer::onClientReceive (TcpClient& client, char *data, int size)
+{
+	debugf("TcpSever onReceive : %s, %d bytes \r\n",client.getRemoteIp().toString().c_str(),size );
+	debugf("Data : %s", data);
+	if (clientReceiveDelegate)
+	{
+		return clientReceiveDelegate(client, data, size);
+	}
+	return true;
+}
+
 
 err_t TcpServer::staticAccept(void *arg, tcp_pcb *new_tcp, err_t err)
 {

@@ -174,6 +174,22 @@ void HardwareSerial::resetCallback()
 	memberData[uart].useRxBuff = true;
 }
 
+void HardwareSerial::commandProcessing(bool reqEnable)
+{
+	if (reqEnable)
+	{
+		if (!memberData[uart].commandExecutor)
+		{
+			memberData[uart].commandExecutor = new CommandExecutor(&Serial);
+		}
+	}
+	else
+	{
+		delete memberData[uart].commandExecutor;
+		memberData[uart].commandExecutor = nullptr;
+	}
+}
+
 
 void HardwareSerial::uart0_rx_intr_handler(void *para)
 {
@@ -226,6 +242,10 @@ void HardwareSerial::uart0_rx_intr_handler(void *para)
         													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
         	memberData[UART_ID_0].HWSDelegate(Serial, RcvChar, cc);
         }
+      if (memberData[UART_ID_0].commandExecutor)
+      {
+    	  memberData[UART_ID_0].commandExecutor->executorReceive(RcvChar);
+      }
     }
 
 }

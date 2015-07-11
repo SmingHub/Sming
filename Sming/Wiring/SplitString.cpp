@@ -67,3 +67,28 @@ int splitString(String &what, int delim,  Vector<int> &splits)
 
   return pieceCount;
 }
+
+int splitString(String &what, int delim,  Vector<String> &splits)
+{
+	what.trim();
+	splits.removeAllElements();
+	const char *chars = what.buffer;
+	int splitCount = 0;
+
+	int splitIndex = 0;
+	int startIndex = 0;
+	for (int i = 0; i < what.length(); i++)
+	{
+	  if (chars[i] == delim)
+	  {
+	    splits.addElement(what.substring(startIndex, i).buffer);
+	    splitIndex++;
+	    startIndex = i + 1;
+	    splitCount++;
+	  }
+	}
+	splits.addElement(what.substring(startIndex, what.length()).buffer);
+
+	return (splitCount + 1);
+
+}

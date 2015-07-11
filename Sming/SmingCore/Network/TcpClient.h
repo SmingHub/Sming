@@ -20,7 +20,7 @@ class IPAddress;
 //typedef bool (*TcpClientDataDelegate)(TcpClient& client, char *data, int size);
 
 typedef Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)> TcpClientEventDelegate;
-typedef Delegate<void(TcpClient& client, bool successful)> TcpClientBoolDelegate;
+typedef Delegate<void(TcpClient& client, bool successful)> TcpClientCompleteDelegate;
 typedef Delegate<bool(TcpClient& client, char *data, int size)> TcpClientDataDelegate;
 
 enum TcpClientState
@@ -36,9 +36,9 @@ class TcpClient : public TcpConnection
 {
 public:
 	TcpClient(bool autoDestruct);
-	TcpClient(tcp_pcb *clientTcp, TcpClientDataDelegate clientReceive, bool autoDestruct);
-	TcpClient(TcpClientBoolDelegate onCompleted, TcpClientEventDelegate onReadyToSend, TcpClientDataDelegate onReceive = NULL);
-	TcpClient(TcpClientBoolDelegate onCompleted, TcpClientDataDelegate onReceive = NULL);
+	TcpClient(tcp_pcb *clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted);
+	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend, TcpClientDataDelegate onReceive = NULL);
+	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive = NULL);
 	TcpClient(TcpClientDataDelegate onReceive);
 	virtual ~TcpClient();
 
@@ -64,7 +64,7 @@ protected:
 
 private:
 	TcpClientState state;
-	TcpClientBoolDelegate completed = nullptr;
+	TcpClientCompleteDelegate completed = nullptr;
 	TcpClientDataDelegate receive = nullptr;
 	TcpClientEventDelegate ready = nullptr;
 	MemoryDataStream* stream = nullptr;
