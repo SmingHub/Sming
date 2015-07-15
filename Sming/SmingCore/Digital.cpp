@@ -72,7 +72,7 @@ bool isInputPin(uint16_t pin)
 	{
 		result = (READ_PERI_REG(RTC_GPIO_ENABLE) & 1);
 	}
-	return result;
+	return !result;
 }
 
 void digitalWrite(uint16_t pin, uint8_t val)
@@ -86,13 +86,15 @@ void digitalWrite(uint16_t pin, uint8_t val)
 		else
 			noPullup(pin);
 	}
-
-	if (pin != 16)
-		GPIO_REG_WRITE((((val != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), (1<<pin));
 	else
-		WRITE_PERI_REG(RTC_GPIO_OUT, (READ_PERI_REG(RTC_GPIO_OUT) & (uint32)0xfffffffe) | (uint32)(val & 1));
+	{
+		if (pin != 16)
+			GPIO_REG_WRITE((((val != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), (1<<pin));
+		else
+			WRITE_PERI_REG(RTC_GPIO_OUT, (READ_PERI_REG(RTC_GPIO_OUT) & (uint32)0xfffffffe) | (uint32)(val & 1));
 
-	//GPIO_OUTPUT_SET(pin, (val ? 0xFF : 00));
+		//GPIO_OUTPUT_SET(pin, (val ? 0xFF : 00));
+	}
 }
 
 uint8_t digitalRead(uint16_t pin)
