@@ -1,1 +1,27 @@
-TODO: fill
+***with SIZE optimisation in /Sming/SmingCore/SPISoft.cpp
+
+SDCard benchmark - see code for HW setup
+
+Write 1 kBytes in 1 Bytes increment: 12.73 kB/s
+Write 1 kBytes in 64 Bytes increment: 23.17 kB/s
+Write 1 kBytes in 128 Bytes increment: 23.13 kB/s
+Write 1 kBytes in 512 Bytes increment: 23.15 kB/s
+Write 1 kBytes in 1024 Bytes increment: 24.00 kB/s
+Write 4 kBytes in 1024 Bytes increment: 50.48 kB/s
+Write 8 kBytes in 512 Bytes increment: 91.82 kB/s
+Write 8 kBytes in 1024 Bytes increment: 102.80 kB/s
+Write 8 kBytes in 8192 Bytes increment: 95.96 kB/s
+
+***with SPEED optimisation in /Sming/SmingCore/SPISoft.cpp
+
+SDCard benchmark - see code for HW setup
+
+Write 1 kBytes in 1 Bytes increment: 12.74 kB/s
+Write 1 kBytes in 64 Bytes increment: 23.96 kB/s
+Write 1 kBytes in 128 Bytes increment: 23.97 kB/s
+Write 1 kBytes in 512 Bytes increment: 23.94 kB/s
+Write 1 kBytes in 1024 Bytes increment: 24.79 kB/s
+Write 4 kBytes in 1024 Bytes increment: 73.78 kB/s
+Write 8 kBytes in 512 Bytes increment: 75.77 kB/s
+Write 8 kBytes in 1024 Bytes increment: 105.86 kB/s
+Write 8 kBytes in 8192 Bytes increment: 103.30 kB/s

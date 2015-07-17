@@ -1,9 +1,9 @@
 /*
-Author: ADiea
-Project: Sming for ESP8266
+Author: (github.com/)ADiea
+Project: Sming for ESP8266 - https://github.com/anakod/Sming
 License: MIT
-Date: 16.07.2015
-Descr: low level SDCard functions
+Date: 15.07.2015
+Descr: Low-level SDCard functions
 */
 #ifndef _SD_CARD_
 #define _SD_CARD_
@@ -34,6 +34,6 @@ private:
 	FATFS mFatFs;		/* FatFs work area needed for each volume */
 };
 
-extern SDCardClass SDCard;
+extern SDCardClass *SDCard;
 
 #endif /*_SD_CARD_*/

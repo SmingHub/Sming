@@ -30,11 +30,11 @@ public:
 	/**
 	\brief Set microsecond delay for the SCK signal. Impacts SPI speed
 	*/
-	inline void setDelay(uint8_t dly){m_usDelay = dly;}
+	inline void setDelay(uint8_t dly){m_delay = dly;}
 
 private:
 	uint16_t mMISO, mMOSI, mCLK, mSS;
-	uint8_t m_usDelay;
+	uint8_t m_delay;
 };
 
 #endif /*_SPI_SOFT_*/

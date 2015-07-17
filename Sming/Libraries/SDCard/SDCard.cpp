@@ -1,3 +1,10 @@
+/*
+Modified by: (github.com/)ADiea
+Project: Sming for ESP8266 - https://github.com/anakod/Sming
+License: MIT
+Date: 15.07.2015
+Descr: Low-level SDCard functions
+*/
 /*------------------------------------------------------------------------/
 /  Foolproof MMCv3/SDv1/SDv2 (in SPI mode) control module
 /-------------------------------------------------------------------------/
@@ -28,18 +35,15 @@
 #include "SDCard.h"
 #include "diskio.h"		/* Declarations of disk I/O functions */
 
-#define PIN_CARD_DO 5
-#define PIN_CARD_DI 4
-#define PIN_CARD_CK 15
-#define PIN_CARD_SS 12
-
-#define SCK_SLOW_INIT 100
+#define SCK_SLOW_INIT 10
 #define SCK_NORMAL 0
 
-SDCardClass SDCard(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, PIN_CARD_SS);
+SDCardClass *SDCard;
 
 void SDCardClass::begin()
 {
+	FIL file;
+
 	mSPI.begin();
 
 	/* Give a work area to the default drive */
@@ -52,6 +56,10 @@ void SDCardClass::begin()
 	{
 		debugf( "f_mount: SUCCESS\n");
 	}
+
+	/* open dummy file to force card init */
+	if(FR_OK == f_open(&file, "dummy", FA_READ))
+		f_close(&file);
 }
 
 void SDCardClass::send(const uint8_t* buffer, uint32_t size)
@@ -121,7 +129,7 @@ int wait_ready (void)	/* 1:OK, 0:Timeout */
 	UINT tmr;
 
 	for (tmr = 5000; tmr; tmr--) {	/* Wait for ready in timeout of 500ms */
-		SDCard.recv(&d, 1);
+		SDCard->recv(&d, 1);
 		if (d == 0xFF)
 			break;
 
@@ -142,8 +150,8 @@ void deselect (void)
 {
 	BYTE d;
 
-	SDCard.disable();				/* Set CS# high */
-	SDCard.recv(&d, 1);	/* Dummy clock (force DO hi-z for multiple slave SPI) */
+	SDCard->disable();				/* Set CS# high */
+	SDCard->recv(&d, 1);	/* Dummy clock (force DO hi-z for multiple slave SPI) */
 }
 
 
@@ -157,8 +165,8 @@ int select (void)	/* 1:OK, 0:Timeout */
 {
 	BYTE d;
 
-	SDCard.enable();				/* Set CS# low */
-	SDCard.recv(&d, 1);	/* Dummy clock (force DO enabled) */
+	SDCard->enable();				/* Set CS# low */
+	SDCard->recv(&d, 1);	/* Dummy clock (force DO enabled) */
 	if (wait_ready()) return 1;	/* Wait for card ready */
 
 	debugf( "SDCard select() failed\n");
@@ -183,14 +191,14 @@ int rcvr_datablock (	/* 1:OK, 0:Failed */
 
 
 	for (tmr = 1000; tmr; tmr--) {	/* Wait for data packet in timeout of 100ms */
-		SDCard.recv(d, 1);
+		SDCard->recv(d, 1);
 		if (d[0] != 0xFF) break;
 		dly_us(100);
 	}
 	if (d[0] != 0xFE) return 0;		/* If not valid data token, return with error */
 
-	SDCard.recv(buff, btr);			/* Receive the data block into buffer */
-	SDCard.recv(d, 2);					/* Discard CRC */
+	SDCard->recv(buff, btr);			/* Receive the data block into buffer */
+	SDCard->recv(d, 2);					/* Discard CRC */
 
 	return 1;						/* Return with success */
 }
@@ -213,11 +221,11 @@ int xmit_datablock (	/* 1:OK, 0:Failed */
 	if (!wait_ready()) return 0;
 
 	d[0] = token;
-	SDCard.send(d, 1);				/* Xmit a token */
+	SDCard->send(d, 1);				/* Xmit a token */
 	if (token != 0xFD) {		/* Is it data token? */
-		SDCard.send(buff, 512);	/* Xmit the 512 byte data block to MMC */
-		SDCard.recv(d, 2);			/* Xmit dummy CRC (0xFF,0xFF) */
-		SDCard.recv(d, 1);			/* Receive data response */
+		SDCard->send(buff, 512);	/* Xmit the 512 byte data block to MMC */
+		SDCard->recv(d, 2);			/* Xmit dummy CRC (0xFF,0xFF) */
+		SDCard->recv(d, 1);			/* Receive data response */
 		if ((d[0] & 0x1F) != 0x05)	/* If not accepted, return with error */
 			return 0;
 	}
@@ -262,13 +270,13 @@ BYTE send_cmd (		/* Returns command response (bit7==1:Send failed)*/
 	if (cmd == CMD0) n = 0x95;		/* (valid CRC for CMD0(0)) */
 	if (cmd == CMD8) n = 0x87;		/* (valid CRC for CMD8(0x1AA)) */
 	buf[5] = n;
-	SDCard.send(buf, 6);
+	SDCard->send(buf, 6);
 
 	/* Receive command response */
-	if (cmd == CMD12) SDCard.recv(&d, 1);	/* Skip a stuff byte when stop reading */
+	if (cmd == CMD12) SDCard->recv(&d, 1);	/* Skip a stuff byte when stop reading */
 	n = 10;								/* Wait for a valid response in timeout of 10 attempts */
 	do
-		SDCard.recv(&d, 1);
+		SDCard->recv(&d, 1);
 	while ((d & 0x80) && --n);
 	//os_printf("SDcard send_cmd %d (%d try)\n", d, n);
 	return d;			/* Return with the response value */
@@ -313,11 +321,11 @@ DSTATUS disk_initialize (
 
 	if (drv) return RES_NOTRDY;
 
-	SDCard.setSPIDelay(SCK_SLOW_INIT);
+	SDCard->setSPIDelay(SCK_SLOW_INIT);
 
 	dly_us(10000);			/* 10ms */
 
-	for (n = 10; n; n--) SDCard.recv(buf, 1);	/* Apply 80 dummy clocks and the card gets ready to receive command */
+	for (n = 10; n; n--) SDCard->recv(buf, 1);	/* Apply 80 dummy clocks and the card gets ready to receive command */
 
 	ty = 0;
 
@@ -335,14 +343,14 @@ DSTATUS disk_initialize (
 	{
 		/* Enter Idle state */
 		if (send_cmd(CMD8, 0x1AA) == 1) {	/* SDv2? */
-			SDCard.recv(buf, 4);							/* Get trailing return value of R7 resp */
+			SDCard->recv(buf, 4);							/* Get trailing return value of R7 resp */
 			if (buf[2] == 0x01 && buf[3] == 0xAA) {		/* The card can work at vdd range of 2.7-3.6V */
 				for (tmr = 1000; tmr; tmr--) {			/* Wait for leaving idle state (ACMD41 with HCS bit) */
 					if (send_cmd(ACMD41, 1UL << 30) == 0) break;
 					dly_us(1000);
 				}
 				if (tmr && send_cmd(CMD58, 0) == 0) {	/* Check CCS bit in the OCR */
-					SDCard.recv(buf, 4);
+					SDCard->recv(buf, 4);
 					ty = (buf[0] & 0x40) ? CT_SD2 | CT_BLOCK : CT_SD2;	/* SDv2 */
 				}
 			}
@@ -374,7 +382,7 @@ DSTATUS disk_initialize (
 	deselect();
 	debugf("SDCard init TYPE %d STAT %d\n", ty, s);
 
-	SDCard.setSPIDelay(SCK_NORMAL);
+	SDCard->setSPIDelay(SCK_NORMAL);
 
 	return s;
 }
