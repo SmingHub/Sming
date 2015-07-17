@@ -20,10 +20,12 @@ class CommandExecutor
 public:
 	CommandExecutor(TcpClient* cmdClient);
 	CommandExecutor(Stream* reqStream);
+	CommandExecutor(WebSocket* reqSocket);
 	~CommandExecutor();
 
 	int executorReceive(char *recvData, int recvSize);
 	int executorReceive(char recvChar);
+	int executorReceive(String recvString);
 	void setCommandPrompt(String reqPrompt);
 	void setCommandEOL(char reqEOL);
 

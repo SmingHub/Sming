@@ -17,6 +17,11 @@ CommandOutput::CommandOutput(Stream* reqStream)
 {
 }
 
+CommandOutput::CommandOutput(WebSocket* reqSocket)
+:  outputSocket(reqSocket)
+{
+}
+
 CommandOutput::~CommandOutput()
 {
 	debugf("destruct");
@@ -29,11 +34,20 @@ size_t CommandOutput::write(uint8_t outChar)
 		char outBuf[1] = { outChar };
 		outputTcpClient->write(outBuf,1);
 	}
-	else
+	else if (outputStream)
 	{
-		if (outputStream)
+		outputStream->write(outChar);
+	}
+	else if (outputSocket)
+	{
+		if (outChar == '\r')
 		{
-			outputStream->write(outChar);
+			outputSocket->sendString(tempSocket);
+			tempSocket = "";
+		}
+		else
+		{
+			tempSocket = tempSocket+String(char(outChar));
 		}
 	}
 }

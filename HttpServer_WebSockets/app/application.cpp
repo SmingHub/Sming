@@ -1,6 +1,7 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
+
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
@@ -9,6 +10,10 @@
 
 HttpServer server;
 int totalActiveSockets = 0;
+FTPServer ftp;
+Timer msgTimer;
+
+CommandExecutor* commandExecutor;
 
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
@@ -33,14 +38,27 @@ void onFile(HttpRequest &request, HttpResponse &response)
 	}
 }
 
+int msgCount = 0;
+
+void msgTimerDelegate()
+{
+	WebSocketsList &clients = server.getActiveWebSockets();
+	for (int i = 0; i < clients.count(); i++)
+		clients[i].sendString("New message for all clients : " + String(msgCount++));
+}
+
+WebSocket* wsActive;
+
 void wsConnected(WebSocket& socket)
 {
 	totalActiveSockets++;
-
+	Serial.printf("Socket connected\r\n");
 	// Notify everybody about new connection
 	WebSocketsList &clients = server.getActiveWebSockets();
 	for (int i = 0; i < clients.count(); i++)
 		clients[i].sendString("New friend arrived! Total: " + String(totalActiveSockets));
+	wsActive = new WebSocket(socket);
+	commandExecutor = new CommandExecutor(wsActive);
 }
 
 void wsMessageReceived(WebSocket& socket, const String& message)
@@ -48,6 +66,7 @@ void wsMessageReceived(WebSocket& socket, const String& message)
 	Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
 	String response = "Echo: " + message;
 	socket.sendString(response);
+	commandExecutor->executorReceive(message+"\r");
 }
 
 void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
@@ -81,6 +100,12 @@ void startWebServer()
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());
 	Serial.println("==============================\r\n");
+
+	// Start FTP server
+	ftp.listen(21);
+	ftp.addUser("me", "123"); // FTP account
+
+//	msgTimer.initializeMs(2000,msgTimerDelegate).start();
 }
 
 // Will be called when WiFi station was connected to AP
