@@ -13,28 +13,28 @@ Descr: Implement software SPI for HW configs other than hardware SPI pins(GPIO 1
 class SPISoft
 {
 public:
-SPISoft(uint16_t miso, uint16_t mosi, uint16_t sck, uint16_t ss):mMISO(miso), mMOSI(mosi), mCLK(sck), mSS(ss){}
+	SPISoft(uint16_t miso, uint16_t mosi, uint16_t sck, uint16_t ss):mMISO(miso), mMOSI(mosi), mCLK(sck), mSS(ss){}
 
-void begin();//setup pins
+	void begin();//setup pins
 
-void IRAM_ATTR send(uint8_t);
+	void IRAM_ATTR send(const uint8_t* buffer, uint32_t size);
 
-uint8_t IRAM_ATTR recv();
+	void IRAM_ATTR recv(uint8_t* buffer, uint32_t size);
 
-inline void enable(){digitalWrite(mSS, LOW);}
+	inline void enable(){digitalWrite(mSS, LOW);}
 
-inline void disable(){digitalWrite(mSS, HIGH);}
+	inline void disable(){digitalWrite(mSS, HIGH);}
 
-inline void setMOSI(uint8_t val){digitalWrite(mMOSI, val);}
+	inline void setMOSI(uint8_t val){digitalWrite(mMOSI, val);}
 
-/**
-\brief Set microsecond delay for the SCK signal. Causes SPI speed to slow down.
-*/
-inline void setDelay(uint8_t dly){m_usDelay = dly;}
+	/**
+	\brief Set microsecond delay for the SCK signal. Impacts SPI speed
+	*/
+	inline void setDelay(uint8_t dly){m_usDelay = dly;}
 
 private:
-uint16_t mMISO, mMOSI, mCLK, mSS;
-uint8_t m_usDelay;
+	uint16_t mMISO, mMOSI, mCLK, mSS;
+	uint8_t m_usDelay;
 };
 
 #endif /*_SPI_SOFT_*/

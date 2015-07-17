@@ -56,20 +56,13 @@ void SDCardClass::begin()
 
 void SDCardClass::send(const uint8_t* buffer, uint32_t size)
 {
-	do	{
-		mSPI.send(*buffer);
-		++buffer;
-	} while (--size);
+	mSPI.send(buffer, size);
 }
 
 void SDCardClass::recv(uint8_t* buffer, uint32_t size)
 {
 	mSPI.setMOSI(HIGH); /* Send 0xFF */
-
-	do	{
-		*buffer = mSPI.recv(); /* Store a received byte */
-		++buffer;
-	} while (--size);
+	mSPI.recv(buffer, size);
 }
 
 /*-------------------------------------------------------------------------*/

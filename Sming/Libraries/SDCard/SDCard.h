@@ -18,9 +18,9 @@ public:
 
 	void begin();
 
-	void send(const uint8_t* buffer, uint32_t size);
+	void IRAM_ATTR send(const uint8_t* buffer, uint32_t size);
 
-	void recv(uint8_t* buffer, uint32_t size);
+	void IRAM_ATTR recv(uint8_t* buffer, uint32_t size);
 
 	inline void enable(){mSPI.enable();}
 
@@ -28,7 +28,7 @@ public:
 
 	inline void setSPIDelay(uint8_t dly){mSPI.setDelay(dly);}
 
-	//inline SPISoft* getSPI(){return &mSPI;}
+	//inline SPISoft& getSPI(){return mSPI;}
 private:
 	SPISoft mSPI;
 	FATFS mFatFs;		/* FatFs work area needed for each volume */

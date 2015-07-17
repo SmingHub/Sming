@@ -11,7 +11,7 @@ Descr: Implement software SPI for HW configs other than hardware SPI pins(GPIO 1
 
 #define GP_IN(pin)	/*digitalRead(pin) */((GPIO_REG_READ(GPIO_IN_ADDRESS)>>(pin)) & 1)
 
-#define GP_OUT(pin, val) /*digitalWrite(pin,val)*/GPIO_REG_WRITE((((val != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), ((uint16_t)1<<(pin)))
+#define GP_OUT(pin, val) /*digitalWrite(pin,val) */GPIO_REG_WRITE(((((val) != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), ((uint16_t)1<<(pin)))
 
 #define SCK_PULSE	GP_OUT(mCLK, HIGH); \
 					delayMicroseconds(m_usDelay); \
@@ -35,52 +35,60 @@ void SPISoft::begin()
 	digitalWrite(mCLK, LOW);
 
 	pinMode(mMISO, INPUT);
-	digitalWrite(mMISO, HIGH); //activate pullup
-	//pullup(mMISO);
+	digitalWrite(mMISO, HIGH);
 
 	pinMode(mMOSI, OUTPUT);
 }
 
-void SPISoft::send(uint8_t d)
+void SPISoft::send(const uint8_t* buffer, uint32_t size)
 {
-	GP_OUT(mMOSI, d & 0x80);	/* bit7 */
-	SCK_PULSE
-	GP_OUT(mMOSI, d & 0x40);	/* bit6 */
-	SCK_PULSE
-	GP_OUT(mMOSI, d & 0x20);	/* bit5 */
-	SCK_PULSE
-	GP_OUT(mMOSI, d & 0x10);	/* bit4 */
-	SCK_PULSE
-	GP_OUT(mMOSI, d & 0x08);	/* bit3 */
-	SCK_PULSE
-	GP_OUT(mMOSI, d & 0x04);	/* bit2 */
-	SCK_PULSE
-	GP_OUT(mMOSI, d & 0x02);	/* bit1 */
-	SCK_PULSE
-	GP_OUT(mMOSI, d & 0x01);	/* bit0 */
-	SCK_PULSE
+	uint8_t d;
+	do {
+		d = *buffer++;
+
+		GP_OUT(mMOSI, d & 0x80);	/* bit7 */
+		SCK_PULSE
+		GP_OUT(mMOSI, d & 0x40);	/* bit6 */
+		SCK_PULSE
+		GP_OUT(mMOSI, d & 0x20);	/* bit5 */
+		SCK_PULSE
+		GP_OUT(mMOSI, d & 0x10);	/* bit4 */
+		SCK_PULSE
+		GP_OUT(mMOSI, d & 0x08);	/* bit3 */
+		SCK_PULSE
+		GP_OUT(mMOSI, d & 0x04);	/* bit2 */
+		SCK_PULSE
+		GP_OUT(mMOSI, d & 0x02);	/* bit1 */
+		SCK_PULSE
+		GP_OUT(mMOSI, d & 0x01);	/* bit0 */
+		SCK_PULSE
+
+	} while (--size);
 }
 
-uint8_t SPISoft::recv()
+void SPISoft::recv(uint8_t* buffer, uint32_t size)
 {
 	uint8_t r;
-	
-	r = 		  GP_IN(mMISO); //bit 7
-	SCK_PULSE
-	r = r << 1 | GP_IN(mMISO); //bit 6
-	SCK_PULSE
-	r = r << 1 | GP_IN(mMISO); //bit 5
-	SCK_PULSE
-	r = r << 1 | GP_IN(mMISO); //bit 4
-	SCK_PULSE
-	r = r << 1 | GP_IN(mMISO); //bit 3
-	SCK_PULSE	
-	r = r << 1 | GP_IN(mMISO); //bit 2
-	SCK_PULSE
-	r = r << 1 | GP_IN(mMISO); //bit 1
-	SCK_PULSE
-	r = r << 1 | GP_IN(mMISO); //bit 0
-	SCK_PULSE
 
-	return r;
+	do {
+
+		r = 		 GP_IN(mMISO); //bit 7
+		SCK_PULSE
+		r = r << 1 | GP_IN(mMISO); //bit 6
+		SCK_PULSE
+		r = r << 1 | GP_IN(mMISO); //bit 5
+		SCK_PULSE
+		r = r << 1 | GP_IN(mMISO); //bit 4
+		SCK_PULSE
+		r = r << 1 | GP_IN(mMISO); //bit 3
+		SCK_PULSE
+		r = r << 1 | GP_IN(mMISO); //bit 2
+		SCK_PULSE
+		r = r << 1 | GP_IN(mMISO); //bit 1
+		SCK_PULSE
+		r = r << 1 | GP_IN(mMISO); //bit 0
+		SCK_PULSE
+
+		*buffer++ = r;
+	}	while (--size);
 }

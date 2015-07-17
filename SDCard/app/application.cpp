@@ -1,12 +1,8 @@
 
-
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <Libraries/SDCard/SDCard.h>
 
-
-
-void displayComfort();
 
 void init()
 {
@@ -20,18 +16,18 @@ void init()
 	uint32_t t1, t2, td, byteswritten, i;
 	uint8_t sensor_data[1024];
 
-	for(i=0; i<sizeof(sensor_data); i++) 												//init our data
-		sensor_data[i] = '0'+(i%10);									//0123..890123...
+	for(i = 0; i < sizeof(sensor_data); i++) 							//init our data
+		sensor_data[i] = '0' + (i%10);									//0123..890123...
 
 	t1 = system_get_time();												//get time at test start
 
 	Serial.print("SDCard test - see code for HW setup\n");
 	Serial.print("Write 1K in 1K increment\n");
-	fRes = f_open(&file, "file_1k.txt", FA_WRITE | FA_CREATE_ALWAYS);	//open file
+	fRes = f_open(&file, "file1k.txt", FA_WRITE | FA_CREATE_ALWAYS);	//open file
 
 	if (fRes == FR_OK)
 	{
-		f_write(&file, sensor_data, sizeof(sensor_data), &byteswritten);				//write data to the file
+		f_write(&file, sensor_data, sizeof(sensor_data), &byteswritten);//write data to the file
 
 		f_close(&file);													//close the file
 
@@ -48,7 +44,7 @@ void init()
 
 	t2 = system_get_time();												//get the time at test end
 
-	Serial.print("Test end: ");											//print the write speed
+	Serial.print("\nTest end: ");										//print the write speed
 	Serial.print(1000000.0f / (t2-t1));
 	Serial.print(" kBps\n");
 
