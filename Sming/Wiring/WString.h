@@ -34,6 +34,9 @@
 //     -felide-constructors
 //     -std=c++0x
 
+class __FlashStringHelper;
+#define F(string_literal) (reinterpret_cast<const __FlashStringHelper *>(PSTR(string_literal)))
+
 // An inherited class for holding the result of a concatenation.  These
 // result objects are assumed to be writable by subsequent concatenations.
 class StringSumHelper;
@@ -45,7 +48,7 @@ class String
     // complications of an operator bool(). for more information, see:
     // http://www.artima.com/cppsource/safebool.html
     typedef void (String::*StringIfHelperType)() const;
-    void IRAM_ATTR StringIfHelper() const {}
+    void StringIfHelper() const {}
 
   public:
     // constructors
@@ -53,12 +56,13 @@ class String
     // if the initial value is null or invalid, or if memory allocation
     // fails, the string will be marked as invalid (i.e. "if (s)" will
     // be false).
-    IRAM_ATTR String(const char *cstr = "");
-    IRAM_ATTR String(const char *cstr, unsigned int length);
-    IRAM_ATTR String(const String &str);
+    String(const char *cstr = "");
+    String(const char *cstr, unsigned int length);
+    String(const String &str);
+    String(const __FlashStringHelper *str);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    IRAM_ATTR String(String && rval);
-    IRAM_ATTR String(StringSumHelper && rval);
+    String(String && rval);
+    String(StringSumHelper && rval);
 #endif
     explicit String(char c);
     explicit String(unsigned char, unsigned char base = 10);
@@ -85,8 +89,9 @@ class String
     // creates a copy of the assigned value.  if the value is null or
     // invalid, or if the memory allocation fails, the string will be
     // marked as invalid ("if (s)" will be false).
-    String & IRAM_ATTR operator = (const String &rhs);
-    String & IRAM_ATTR operator = (const char *cstr);
+    String & operator = (const String &rhs);
+    String & operator = (const char *cstr);
+    String & operator = (const __FlashStringHelper *str);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     String & operator = (String && rval);
     String & operator = (StringSumHelper && rval);
@@ -107,6 +112,7 @@ class String
     unsigned char concat(unsigned long num);
     unsigned char concat(float num);
     unsigned char concat(double num);
+    unsigned char concat(const __FlashStringHelper * str);
   
     // if there's not enough memory for the concatenated value, the string
     // will be left unchanged (but this isn't signalled in any way)
@@ -160,6 +166,10 @@ class String
       concat(num);
       return (*this);
     }
+    String & operator += (const __FlashStringHelper *str){
+      concat(str);
+      return (*this);
+    }
 
     friend StringSumHelper & operator + (const StringSumHelper &lhs, const String &rhs);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, const char *cstr);
@@ -171,28 +181,29 @@ class String
     friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned long num);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, float num);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, double num);
+    friend StringSumHelper & operator +(const StringSumHelper &lhs, const __FlashStringHelper *rhs);
 
     // comparison (only works w/ Strings and "strings")
     operator StringIfHelperType() const
     {
       return buffer ? &String::StringIfHelper : 0;
     }
-    int IRAM_ATTR compareTo(const String &s) const;
-    unsigned char IRAM_ATTR equals(const String &s) const;
-    unsigned char IRAM_ATTR equals(const char *cstr) const;
-    unsigned char IRAM_ATTR operator == (const String &rhs) const
+    int compareTo(const String &s) const;
+    unsigned char equals(const String &s) const;
+    unsigned char equals(const char *cstr) const;
+    unsigned char operator == (const String &rhs) const
     {
       return equals(rhs);
     }
-    unsigned char IRAM_ATTR operator == (const char *cstr) const
+    unsigned char operator == (const char *cstr) const
     {
       return equals(cstr);
     }
-    unsigned char IRAM_ATTR operator != (const String &rhs) const
+    unsigned char operator != (const String &rhs) const
     {
       return !equals(rhs);
     }
-    unsigned char IRAM_ATTR operator != (const char *cstr) const
+    unsigned char operator != (const char *cstr) const
     {
       return !equals(cstr);
     }
@@ -206,10 +217,10 @@ class String
     unsigned char endsWith(const String &suffix) const;
 
     // character acccess
-    char IRAM_ATTR charAt(unsigned int index) const;
-    void IRAM_ATTR setCharAt(unsigned int index, char c);
-    char IRAM_ATTR operator [](unsigned int index) const;
-    char& IRAM_ATTR operator [](unsigned int index);
+    char charAt(unsigned int index) const;
+    void setCharAt(unsigned int index, char c);
+    char operator [](unsigned int index) const;
+    char& operator [](unsigned int index);
     void getBytes(unsigned char *buf, unsigned int bufsize, unsigned int index = 0) const;
     void toCharArray(char *buf, unsigned int bufsize, unsigned int index = 0) const
     {
@@ -218,9 +229,9 @@ class String
     const char * c_str() const { return buffer; }
   
     // search
-    int IRAM_ATTR indexOf(char ch) const;
+    int indexOf(char ch) const;
     int indexOf(char ch, unsigned int fromIndex) const;
-    int IRAM_ATTR indexOf(const String &str) const;
+    int indexOf(const String &str) const;
     int indexOf(const String &str, unsigned int fromIndex) const;
     int lastIndexOf(char ch) const;
     int lastIndexOf(char ch, int fromIndex) const;
@@ -255,13 +266,14 @@ class String
     uint16_t len;       // the String length (not counting the '\0')
     //unsigned char flags;    // unused, for future features
   protected:
-    void IRAM_ATTR init(void);
-    void IRAM_ATTR invalidate(void);
-    unsigned char IRAM_ATTR changeBuffer(unsigned int maxStrLen);
-    unsigned char IRAM_ATTR concat(const char *cstr, unsigned int length);
+    void init(void);
+    void invalidate(void);
+    unsigned char changeBuffer(unsigned int maxStrLen);
+    unsigned char concat(const char *cstr, unsigned int length);
 
     // copy and move
     String & copy(const char *cstr, unsigned int length);
+    String & copy(const __FlashStringHelper *pstr, unsigned int length);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     void move(String &rhs);
 #endif

@@ -20,9 +20,10 @@
 #define PRINT_H
 
 #ifdef __cplusplus
-
+#include <user_config.h>
 #include "WiringFrameworkDependencies.h"
 #include "Printable.h"
+#include "WString.h"
 
 #define INITIAL_PRINTF_BUFFSIZE 128
 
@@ -54,6 +55,7 @@ class Print
     }
   
     // print
+    size_t print(const __FlashStringHelper *);
     size_t print(char);
     size_t print(const char[]);
 
@@ -69,6 +71,7 @@ class Print
     size_t print(const String &s);
   
     // println
+    size_t println(const __FlashStringHelper *);
     size_t println(void);
 
     size_t println(const char[]);
