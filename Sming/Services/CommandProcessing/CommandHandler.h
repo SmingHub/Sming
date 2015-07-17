@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include "HardwareSerial.h"
 
+typedef enum {VERBOSE,SILENT} VerboseMode;
 
 class CommandHandler
 {
@@ -25,6 +26,15 @@ public:
 	bool unregisterCommand(CommandDelegate);
 	void registerSystemCommands();
 	CommandDelegate getCommandDelegate(String commandString);
+	VerboseMode getVerboseMode();
+	void setVerboseMode(VerboseMode reqVerboseMode);
+	String getCommandPrompt();
+	void setCommandPrompt(String reqPrompt);
+	char getCommandEOL();
+	void setCommandEOL(char reqEOL);
+	String getCommandWelcomeMessage();
+	void setCommandWelcomeMessage(String reqWelcomeMessage);
+
 //	int deleteGroup(String reqGroup);
 
 private :
@@ -34,8 +44,12 @@ private :
 	void procesEchoCommand(String commandLine, CommandOutput* commandOutput);
 	void procesDebugOnCommand(String commandLine, CommandOutput* commandOutput);
 	void procesDebugOffCommand(String commandLine, CommandOutput* commandOutput);
+	void processCommandOptions(String commandLine  ,CommandOutput* commandOutput);
 
-
+	VerboseMode verboseMode = VERBOSE;
+	String currentPrompt = "Sming>";
+	char currentEOL = '\r';
+	String currentWelcomeMessage = "Welcome to the Sming CommandProcessing\r\n";
 };
 
 extern CommandHandler commandHandler;
