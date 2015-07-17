@@ -13,13 +13,13 @@ Descr: Implement software SPI for HW configs other than hardware SPI pins(GPIO 1
 class SPISoft
 {
 public:
-SPISoft(uint8_t miso, uint8_t mosi, uint8_t sck, uint8_t ss):mMISO(miso), mMOSI(mosi), mCLK(sck), mSS(ss){}
+SPISoft(uint16_t miso, uint16_t mosi, uint16_t sck, uint16_t ss):mMISO(miso), mMOSI(mosi), mCLK(sck), mSS(ss){}
 
 void begin();//setup pins
 
-void send(uint8_t payload);
+void IRAM_ATTR send(uint8_t);
 
-uint8_t recv();
+uint8_t IRAM_ATTR recv();
 
 inline void enable(){digitalWrite(mSS, LOW);}
 
@@ -33,7 +33,7 @@ inline void setMOSI(uint8_t val){digitalWrite(mMOSI, val);}
 inline void setDelay(uint8_t dly){m_usDelay = dly;}
 
 private:
-uint8_t mMISO, mMOSI, mCLK, mSS;
+uint16_t mMISO, mMOSI, mCLK, mSS;
 uint8_t m_usDelay;
 };
 

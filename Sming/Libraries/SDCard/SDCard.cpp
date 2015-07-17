@@ -33,7 +33,7 @@
 #define PIN_CARD_CK 15
 #define PIN_CARD_SS 12
 
-#define SCK_SLOW_INIT 4
+#define SCK_SLOW_INIT 100
 #define SCK_NORMAL 0
 
 SDCardClass SDCard(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, PIN_CARD_SS);
@@ -50,14 +50,15 @@ void SDCardClass::begin()
 	}
 	else
 	{
-		debugf( "f_mount: SUCCESS %d\n", mountRes);
+		debugf( "f_mount: SUCCESS\n");
 	}
 }
 
 void SDCardClass::send(const uint8_t* buffer, uint32_t size)
 {
 	do	{
-		mSPI.send(*buffer++);
+		mSPI.send(*buffer);
+		++buffer;
 	} while (--size);
 }
 
@@ -66,7 +67,8 @@ void SDCardClass::recv(uint8_t* buffer, uint32_t size)
 	mSPI.setMOSI(HIGH); /* Send 0xFF */
 
 	do	{
-		*buffer++ = mSPI.recv(); /* Store a received byte */
+		*buffer = mSPI.recv(); /* Store a received byte */
+		++buffer;
 	} while (--size);
 }
 
@@ -275,7 +277,7 @@ BYTE send_cmd (		/* Returns command response (bit7==1:Send failed)*/
 	do
 		SDCard.recv(&d, 1);
 	while ((d & 0x80) && --n);
-	//LOG(INFO, "SDcard send_cmd %d (%d try)\n", d, n);
+	//os_printf("SDcard send_cmd %d (%d try)\n", d, n);
 	return d;			/* Return with the response value */
 }
 
@@ -327,16 +329,15 @@ DSTATUS disk_initialize (
 	ty = 0;
 
 	BYTE retCmd;
-/*
+
 	n=5;
 	do
 	{
-*/
 		retCmd = send_cmd(CMD0, 0);
-/*		n--;
+		n--;
 	}
 	while(n && retCmd != 1);
-*/
+
 	if (retCmd == 1)
 	{
 		/* Enter Idle state */
@@ -378,7 +379,7 @@ DSTATUS disk_initialize (
 	Stat = s;
 
 	deselect();
-	debugf("SD init TYPE %d STAT %d\n", ty, s);
+	debugf("SDCard init TYPE %d STAT %d\n", ty, s);
 
 	SDCard.setSPIDelay(SCK_NORMAL);
 

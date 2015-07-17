@@ -25,6 +25,7 @@ void init()
 
 	t1 = system_get_time();												//get time at test start
 
+	Serial.print("SDCard test - see code for HW setup\n");
 	Serial.print("Write 1K in 1K increment\n");
 	fRes = f_open(&file, "file_1k.txt", FA_WRITE | FA_CREATE_ALWAYS);	//open file
 

@@ -9,9 +9,9 @@ Descr: Implement software SPI for HW configs other than hardware SPI pins(GPIO 1
 */
 #include "SPISoft.h"
 
-#define GP_IN(pin)			((GPIO_REG_READ(GPIO_IN_ADDRESS)>>(pin)) & 1)
+#define GP_IN(pin)	/*digitalRead(pin) */((GPIO_REG_READ(GPIO_IN_ADDRESS)>>(pin)) & 1)
 
-#define GP_OUT(pin, val) 	GPIO_REG_WRITE((((val != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), (1<<(pin)))
+#define GP_OUT(pin, val) /*digitalWrite(pin,val)*/GPIO_REG_WRITE((((val != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), ((uint16_t)1<<(pin)))
 
 #define SCK_PULSE	GP_OUT(mCLK, HIGH); \
 					delayMicroseconds(m_usDelay); \
@@ -28,16 +28,17 @@ void SPISoft::begin()
 		debugf("SPISoft: GPIO 16 not supported\n"); /*...by this lib. Please choose a different pin*/
 	}
 	
-	pinMode(mMISO, INPUT);
-	digitalWrite(mMISO, HIGH);
-
-	pinMode(mMOSI, OUTPUT);
+	pinMode(mSS, OUTPUT);
+	disable();
 	
 	pinMode(mCLK, OUTPUT);
 	digitalWrite(mCLK, LOW);
 
-	pinMode(mSS, OUTPUT);
-	disable();
+	pinMode(mMISO, INPUT);
+	digitalWrite(mMISO, HIGH); //activate pullup
+	//pullup(mMISO);
+
+	pinMode(mMOSI, OUTPUT);
 }
 
 void SPISoft::send(uint8_t d)
@@ -62,7 +63,7 @@ void SPISoft::send(uint8_t d)
 
 uint8_t SPISoft::recv()
 {
-	uint8_t r=0;
+	uint8_t r;
 	
 	r = 		  GP_IN(mMISO); //bit 7
 	SCK_PULSE
@@ -80,4 +81,6 @@ uint8_t SPISoft::recv()
 	SCK_PULSE
 	r = r << 1 | GP_IN(mMISO); //bit 0
 	SCK_PULSE
+
+	return r;
 }
