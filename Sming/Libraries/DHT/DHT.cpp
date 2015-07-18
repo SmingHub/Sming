@@ -84,6 +84,9 @@ void DHT::begin()
 			}
 			m_wakeupTimeMs = WAKEUP_DHT22;
 			debugf("libDHT: Detected DHT-22 compatible sensor.");
+
+			if(m_lastError == errDHT_OK)
+				updateInternalCache();
 		}
 		else /* If sensor timedout it's probably a DHT11 */
 		{
@@ -438,8 +441,11 @@ void DHT::updateInternalCache()
 			/*Humidity*/
 			m_lastHumid = (((uint32_t)m_data[0])<<8 | m_data[1]) / 10.0f;
 			break;
+		case DHT_AUTO:
+			/*Sensor type unknown yet*/
+			break;
 		default:
-			debugf("libDHT: Unknown sensor type");
+			debugf("(update)libDHT: Unknown sensor type");
 			break;
 	}
 }

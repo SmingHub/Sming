@@ -2,7 +2,7 @@
 #include <SmingCore/SmingCore.h>
 #include <Libraries/DHT/DHT.h>
 
-#define WORK_PIN 0 // GPIO0
+#define WORK_PIN 14 // GPIO14
 
 DHT dht(WORK_PIN);
 
@@ -13,10 +13,18 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
+	Serial.println("\t\t DHT improved lib");
+	Serial.println("wait 1 second for the sensor to boot up");
+
+	//disable watchdog
+	WDT.enable(false);
+	//wait for sensor startup
+	delay(1000);
+
 	dht.begin();
 
 	/*first reading method (Adafruit compatible) */
-
+	Serial.print("Read using Adafruit API methods\n");
 	float h = dht.readHumidity();
 	float t = dht.readTemperature();
 
@@ -25,25 +33,24 @@ void init()
 	{
 		Serial.println("Failed to read from DHT");
 	} else {
-		Serial.print("Humidity: ");
+		Serial.print("\tHumidity: ");
 		Serial.print(h);
-		Serial.print(" %\t");
-		Serial.print("Temperature: ");
+		Serial.print("% Temperature: ");
 		Serial.print(t);
-		Serial.println(" *C\n");
+		Serial.print(" *C\n");
 	}
 
 
 	/* improved reading method */
+	Serial.print("\nRead using new API methods\n");
 	TempAndHumidity th;
 	if(dht.readTempAndHumidity(th))
 	{
-		Serial.print("Humidity: ");
+		Serial.print("\tHumidity: ");
 		Serial.print(h);
-		Serial.print(" %\t");
-		Serial.print("Temperature: ");
+		Serial.print("% Temperature: ");
 		Serial.print(t);
-		Serial.println(" *C\n");
+		Serial.print(" *C\n");
 	}
 	else
 	{
@@ -57,14 +64,18 @@ void init()
 	 * Heatindex is the percieved temperature taking humidity into account
 	 * More: https://en.wikipedia.org/wiki/Heat_index
 	 * */
-	Serial.printf("Heatindex: %d *C\n", dht.getHeatIndex());
+	Serial.print("Heatindex: ");
+	Serial.print(dht.getHeatIndex());
+	Serial.print("*C\n");
 
 	/*
 	 * Dewpoint is the temperature where condensation starts.
 	 * Water vapors will start condensing on an object having this temperature or below.
 	 * More: https://en.wikipedia.org/wiki/Dew_point
 	 * */
-	Serial.printf("Dewpoint: %d *C\n", dht.getDewPoint(DEW_ACCURATE_FAST));
+	Serial.printf("Dewpoint: ");
+	Serial.print(dht.getDewPoint(DEW_ACCURATE_FAST));
+	Serial.print("*C\n");
 
 	/*
 	 * Determine thermal comfort according to http://epb.apogee.net/res/refcomf.asp
@@ -79,7 +90,7 @@ void displayComfort()
 
 	Serial.print("Comfort is at ");
 	Serial.print(dht.getComfortRatio(cf));
-	Serial.print(" percent, which is ");
+	Serial.print(" percent, (");
 
 	switch(cf)
 	{
@@ -116,6 +127,6 @@ void displayComfort()
 		break;
 	}
 
-	Serial.print("\n");
+	Serial.print(")\n");
 }
 
