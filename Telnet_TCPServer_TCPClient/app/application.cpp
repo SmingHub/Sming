@@ -1,7 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <SmingCore/Network/TelnetServer.h>
-#include <SmingCore/Network/TcpStream.h>
 #include "Services/CommandProcessing/CommandProcessingIncludes.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
