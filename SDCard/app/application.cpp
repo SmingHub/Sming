@@ -149,8 +149,8 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
-	SDCard = new SDCardClass(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, PIN_CARD_SS);
-	SDCard->begin();
+	SDCardSPI = new SPISoft(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, PIN_CARD_SS);
+	SDCard_begin();
 
 	Serial.print("\nSDCard example - !!! see code for HW setup !!! \n\n");
 
