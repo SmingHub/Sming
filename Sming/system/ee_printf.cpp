@@ -1,3 +1,17 @@
+/*
+Modified: (github.com/)ADiea
+Project: Sming for ESP8266 - https://github.com/anakod/Sming
+License: MIT
+Date: 20.07.2015
+Descr: embedded version of printf with float support
+Contribution: simplify the original implementation even more e.g. remove some format sub-specifiers like
+				-uppercase
+				-left-justify
+				-width and precision specified separately with * and .*
+				-zeropadding
+				-plus and space for sign display
+*/
+
 /* File : barebones/ee_printf.c
 	This file contains an implementation of ee_printf that only requires a method to output a char to a UART without pulling in library code.
 
@@ -31,21 +45,21 @@ This code is based on a file that contains the following:
 
 */
 
-#include <coremark.h>
 #include <stdarg.h>
+#include "../../SmingCore/SmingCore.h"
 
-#define ZEROPAD  	(1<<0)	/* Pad with zero */
+//if undefined %f not supported (- Bytes ROM)
+#define HAS_FLOAT 1
+
+void (*cbc_printchar)(char ch) = uart_tx_one_char;
+
 #define SIGN    	(1<<1)	/* Unsigned/signed long */
-#define PLUS    	(1<<2)	/* Show plus */
-#define SPACE   	(1<<3)	/* Spacer */
-#define LEFT    	(1<<4)	/* Left justified */
 #define HEX_PREP 	(1<<5)	/* 0x */
-#define UPPERCASE   (1<<6)	/* 'ABCDEF' */
 
 #define is_digit(c) ((c) >= '0' && (c) <= '9')
 
-static char *lower_digits = "0123456789abcdefghijklmnopqrstuvwxyz";
-static char *upper_digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static const char *lower_digits = "0123456789abcdefghijklmnopqrstuvwxyz";
+
 static size_t strnlen(const char *s, size_t count);
 
 static size_t strnlen(const char *s, size_t count)
@@ -65,14 +79,12 @@ static int ee_skip_atoi(const char **s)
 static char *ee_number(char *str, long num, int base, int size, int precision, int type)
 {
   char c, sign, tmp[66];
-  char *dig = lower_digits;
+  const char *dig = lower_digits;
   int i;
 
-  if (type & UPPERCASE)  dig = upper_digits;
-  if (type & LEFT) type &= ~ZEROPAD;
   if (base < 2 || base > 36) return 0;
   
-  c = (type & ZEROPAD) ? '0' : ' ';
+  c = ' ';
   sign = 0;
   if (type & SIGN)
   {
@@ -80,16 +92,6 @@ static char *ee_number(char *str, long num, int base, int size, int precision, i
     {
       sign = '-';
       num = -num;
-      size--;
-    }
-    else if (type & PLUS)
-    {
-      sign = '+';
-      size--;
-    }
-    else if (type & SPACE)
-    {
-      sign = ' ';
       size--;
     }
   }
@@ -117,7 +119,7 @@ static char *ee_number(char *str, long num, int base, int size, int precision, i
 
   if (i > precision) precision = i;
   size -= precision;
-  if (!(type & (ZEROPAD | LEFT))) while (size-- > 0) *str++ = ' ';
+  while (size-- > 0) *str++ = ' ';
   if (sign) *str++ = sign;
   
   if (type & HEX_PREP)
@@ -131,7 +133,7 @@ static char *ee_number(char *str, long num, int base, int size, int precision, i
     }
   }
 
-  if (!(type & LEFT)) while (size-- > 0) *str++ = c;
+  while (size-- > 0) *str++ = c;
   while (i < precision--) *str++ = '0';
   while (i-- > 0) *str++ = tmp[i];
   while (size-- > 0) *str++ = ' ';
@@ -142,10 +144,9 @@ static char *ee_number(char *str, long num, int base, int size, int precision, i
 static char *eaddr(char *str, unsigned char *addr, int size, int precision, int type)
 {
   char tmp[24];
-  char *dig = lower_digits;
+  const char *dig = lower_digits;
   int i, len;
 
-  if (type & UPPERCASE)  dig = upper_digits;
   len = 0;
   for (i = 0; i < 6; i++)
   {
@@ -154,9 +155,9 @@ static char *eaddr(char *str, unsigned char *addr, int size, int precision, int 
     tmp[len++] = dig[addr[i] & 0x0F];
   }
 
-  if (!(type & LEFT)) while (len < size--) *str++ = ' ';
-  for (i = 0; i < len; ++i) *str++ = tmp[i];
   while (len < size--) *str++ = ' ';
+  for (i = 0; i < len; ++i) *str++ = tmp[i];
+
 
   return str;
 }
@@ -193,14 +194,14 @@ static char *iaddr(char *str, unsigned char *addr, int size, int precision, int 
     }
   }
 
-  if (!(type & LEFT)) while (len < size--) *str++ = ' ';
-  for (i = 0; i < len; ++i) *str++ = tmp[i];
   while (len < size--) *str++ = ' ';
+  for (i = 0; i < len; ++i) *str++ = tmp[i];
+
 
   return str;
 }
 
-#ifdef HAS_FLOAT
+#if HAS_FLOAT == 1
 
 char *ecvtbuf(double arg, int ndigits, int *decpt, int *sign, char *buf);
 char *fcvtbuf(double arg, int ndigits, int *decpt, int *sign, char *buf);
@@ -364,11 +365,8 @@ static char *flt(char *str, double num, int size, int precision, char fmt, int f
   char c, sign;
   int n, i;
 
-  // Left align means no zero padding
-  if (flags & LEFT) flags &= ~ZEROPAD;
-
   // Determine padding and sign char
-  c = (flags & ZEROPAD) ? '0' : ' ';
+  c = ' ';
   sign = 0;
   if (flags & SIGN)
   {
@@ -376,16 +374,6 @@ static char *flt(char *str, double num, int size, int precision, char fmt, int f
     {
       sign = '-';
       num = -num;
-      size--;
-    }
-    else if (flags & PLUS)
-    {
-      sign = '+';
-      size--;
-    }
-    else if (flags & SPACE)
-    {
-      sign = ' ';
       size--;
     }
   }
@@ -404,11 +392,11 @@ static char *flt(char *str, double num, int size, int precision, char fmt, int f
 
   // Output number with alignment and padding
   size -= n;
-  if (!(flags & (ZEROPAD | LEFT))) while (size-- > 0) *str++ = ' ';
-  if (sign) *str++ = sign;
-  if (!(flags & LEFT)) while (size-- > 0) *str++ = c;
-  for (i = 0; i < n; i++) *str++ = tmp[i];
   while (size-- > 0) *str++ = ' ';
+  if (sign) *str++ = sign;
+
+  for (i = 0; i < n; i++) *str++ = tmp[i];
+
 
   return str;
 }
@@ -421,7 +409,7 @@ static int ee_vsprintf(char *buf, const char *fmt, va_list args)
   unsigned long num;
   int i, base;
   char *str;
-  char *s;
+  const char *s;
 
   int flags;            // Flags to number()
 
@@ -443,27 +431,14 @@ repeat:
     fmt++; // This also skips first '%'
     switch (*fmt)
     {
-      case '-': flags |= LEFT; goto repeat;
-      case '+': flags |= PLUS; goto repeat;
-      case ' ': flags |= SPACE; goto repeat;
       case '#': flags |= HEX_PREP; goto repeat;
-      case '0': flags |= ZEROPAD; goto repeat;
     }
           
     // Get field width
-    field_width = -1;
+    field_width = 0;
     if (is_digit(*fmt))
       field_width = ee_skip_atoi(&fmt);
-    else if (*fmt == '*')
-    {
-      fmt++;
-      field_width = va_arg(args, int);
-      if (field_width < 0)
-      {
-        field_width = -field_width;
-        flags |= LEFT;
-      }
-    }
+
 
     // Get the precision
     precision = -1;
@@ -472,11 +447,7 @@ repeat:
       ++fmt;    
       if (is_digit(*fmt))
         precision = ee_skip_atoi(&fmt);
-      else if (*fmt == '*')
-      {
-        ++fmt;
-        precision = va_arg(args, int);
-      }
+
       if (precision < 0) precision = 0;
     }
 
@@ -494,32 +465,29 @@ repeat:
     switch (*fmt)
     {
       case 'c':
-        if (!(flags & LEFT)) while (--field_width > 0) *str++ = ' ';
-        *str++ = (unsigned char) va_arg(args, int);
         while (--field_width > 0) *str++ = ' ';
+        *str++ = (unsigned char) va_arg(args, int);
+
         continue;
 
       case 's':
         s = va_arg(args, char *);
         if (!s) s = "<NULL>";
         len = strnlen(s, precision);
-        if (!(flags & LEFT)) while (len < field_width--) *str++ = ' ';
-        for (i = 0; i < len; ++i) *str++ = *s++;
         while (len < field_width--) *str++ = ' ';
+        for (i = 0; i < len; ++i) *str++ = *s++;
+
         continue;
 
       case 'p':
         if (field_width == -1)
         {
           field_width = 2 * sizeof(void *);
-          flags |= ZEROPAD;
         }
         str = ee_number(str, (unsigned long) va_arg(args, void *), 16, field_width, precision, flags);
         continue;
 
       case 'A':
-        flags |= UPPERCASE;
-
       case 'a':
         if (qualifier == 'l')
           str = eaddr(str, va_arg(args, unsigned char *), field_width, precision, flags);
@@ -533,8 +501,6 @@ repeat:
         break;
 
       case 'X':
-        flags |= UPPERCASE;
-
       case 'x':
         base = 16;
         break;
@@ -546,9 +512,13 @@ repeat:
       case 'u':
         break;
 
-#ifdef HAS_FLOAT
+#if HAS_FLOAT == 1
 
       case 'f':
+      case 'g':
+      case 'G':
+      case 'e':
+      case 'E':
         str = flt(str, va_arg(args, double), field_width, precision, *fmt, flags | SIGN);
         continue;
 
@@ -577,12 +547,6 @@ repeat:
   return str - buf;
 }
 
-void uart_send_char(char c) {
-  char str[2];
-  str[0] = c;
-  str[1] = '\0';
-  putsnonl(str);
-}
 
 int ee_printf(const char *fmt, ...)
 {
@@ -595,7 +559,7 @@ int ee_printf(const char *fmt, ...)
   va_end(args);
   p=buf;
   while (*p) {
-	uart_send_char(*p);
+	  cbc_printchar(*p);
 	n++;
 	p++;
   }

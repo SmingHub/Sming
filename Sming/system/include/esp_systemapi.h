@@ -87,6 +87,8 @@ extern void ets_intr_unlock();
 extern void ets_update_cpu_frequency(uint32_t frq);
 extern uint32_t ets_get_cpu_frequency();
 
+int ee_printf(const char *fmt, ...);
+
 typedef signed short file_t;
 
 #endif
