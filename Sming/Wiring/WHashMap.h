@@ -44,16 +44,7 @@ class HashMap
 
     ~HashMap()
     {
-    	if (keys != NULL)
-    	{
-    		for (int i = 0; i < size; i++)
-			{
-				delete keys[i];
-				delete values[i];
-			}
-			delete[] keys;
-			delete[] values;
-    	}
+    	clear();
     }
 
     /*
@@ -249,6 +240,24 @@ class HashMap
         }
         currentIndex--;
       }
+    }
+
+    void clear()
+    {
+    	if (keys != NULL)
+    	{
+    		for (int i = 0; i < size; i++)
+			{
+				delete keys[i];
+				delete values[i];
+			}
+			delete[] keys;
+			delete[] values;
+			keys = NULL;
+			values = NULL;
+    	}
+    	currentIndex = 0;
+    	size = 0;
     }
 
     void setMultiple(const HashMap<K, V>& map)

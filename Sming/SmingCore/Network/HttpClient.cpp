@@ -112,6 +112,7 @@ void HttpClient::reset()
 	responseStringData = "";
 	waitParse = true;
 	writeError = false;
+	responseHeaders.clear();
 }
 
 String HttpClient::getResponseHeader(String headerName, String defaultValue /* = "" */)
