@@ -34,33 +34,111 @@ char* ultoa(unsigned long val, char* buffer, unsigned int base)
 	return buffer;
 }
 
+char* ftoa(char *buf, float f)
+{
+
+	size_t n = 0;
+	uint8_t digits = 6;
+
+	do
+	{
+
+	  if (isnan(f))
+	  {
+		  *buf++ = 'n'; *buf++ = 'a'; *buf++ = 'n';
+		  break;
+	  }
+	  if (isinf(f))
+	  {
+		  *buf++ = 'i'; *buf++ = 'n'; *buf++ = 'f';
+		  break;
+	  }
+	  if (f > 4294967040.0)
+	  {
+		  *buf++ = 'o'; *buf++ = 'v'; *buf++ = 'f';
+		  break;
+	  }
+	  if (f <-4294967040.0)
+	  {
+		  *buf++ = '-'; *buf++ = 'o'; *buf++ = 'v'; *buf++ = 'f';
+		  break;
+	  }
+
+	  // Handle negative numbers
+	  if (f < 0.0)
+	  {
+		  *buf++ = '-';
+	    f = -f;
+	  }
+
+	  // Round correctly so that print(1.999, 2) prints as "2.00"
+	  double rounding = 0.0000005;
+
+	  f += rounding;
+
+	  // Extract the integer part of the number and print it
+	  unsigned long int_part = (unsigned long)f;
+	  double remainder = f - (double)int_part;
+
+	  buf = ee_number(buf, int_part, 10, 0);
+
+	  // Print the decimal point, but only if there are digits beyond
+	  *buf++ = '.';
+
+	  // Extract digits from the remainder one at a time
+	  while (digits-- > 0)
+	  {
+	    remainder *= 10.0;
+	    uint8_t toPrint = uint8_t(remainder);
+	    *buf++ = toPrint + '0';
+	    remainder -= toPrint;
+	  }
+
+
+		for (--buf; buf[0] == '0' && buf[-1] != '.'; --buf)
+			;
+		++buf;
+
+	}
+	while(0);
+
+	return buf;
+}
+
+
+//extern char * ets_strcat ( char * destination, const char * source );
+//#define strcat ets_strcat
 // Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
+//some modif by ADiea
 char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer)
 {
 	 if (outputBuffer == NULL) return NULL;
 
+	 char *buf = outputBuffer;
+
 	 *outputBuffer = 0;
 
 	 if (isnan(floatVar))
-		 strcpy(outputBuffer, "NaN");
+	 {*buf++ = 'N'; *buf++ = 'a'; *buf++ = 'N';}
 	 else if (isinf(floatVar))
-		 strcpy(outputBuffer, "Inf");
+	 {*buf++ = 'I'; *buf++ = 'n'; *buf++ = 'f';}
 	 else if (floatVar > 4294967040.0)
-		 strcpy(outputBuffer, "OVF");  // constant determined empirically
+	 {*buf++ = 'O'; *buf++ = 'V'; *buf++ = 'F';}  // constant determined empirically
 	 else if (floatVar <-4294967040.0)
-		 strcpy(outputBuffer, "OVF");  // constant determined empirically
+	 {*buf++ = 'o'; *buf++ = 'v'; *buf++ = 'f';}  // constant determined empirically
 
 	 if (*outputBuffer != 0)
+	 {
+		 *buf++ = 0;
 		 return outputBuffer;
+	 }
 
 	 char temp[24];
 	 int16_t i;
 
-	 temp[0]='\0';
-	 outputBuffer[0]='\0';
 
 	 if(floatVar < 0.0){
-	   strcpy(outputBuffer,"-\0");  //print "-" sign
+		*buf++ = '-';  //print "-" sign
 	   floatVar *= -1;
 	 }
 
@@ -76,7 +154,7 @@ char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsA
 
 	   int16_t k = processedFracLen;
 	   while (k-- > 0)
-	     mult *= 10;
+	     mult = mult<<3 + mult<<2; //mult *= 10
 
 	   floatVar += 0.5/(float)mult;      // compute rounding factor
 

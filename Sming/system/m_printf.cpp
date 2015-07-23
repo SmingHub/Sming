@@ -12,7 +12,7 @@ Descr: embedded very simple version of printf with float support
 void (*cbc_printchar)(char ch) = uart_tx_one_char;
 
 #define SIGN    	(1<<1)	/* Unsigned/signed long */
-
+/*
 static const char *lower_digits = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 static char *ee_number(char *str, long num, int base, int type)
@@ -120,7 +120,7 @@ char* ftoa(char *buf, float f)
 	    remainder -= toPrint;
 	  }
 
-		/* delete ending zeroes */
+
 		for (--buf; buf[0] == '0' && buf[-1] != '.'; --buf)
 			;
 		++buf;
@@ -130,7 +130,7 @@ char* ftoa(char *buf, float f)
 
 	return buf;
 }
-
+*/
 
 
 
@@ -141,6 +141,8 @@ static int ee_vsprintf(char *buf, const char *fmt, va_list args)
   int i, base;
   char *str;
   const char *s;
+
+  char tempNum[24];
 
   int flags;            // Flags to number()
   int qualifier;        // 'h', 'l', or 'L' for integer fields
@@ -196,8 +198,9 @@ static int ee_vsprintf(char *buf, const char *fmt, va_list args)
         continue;
 
       case 'p':
-
-        str = ee_number(str, (unsigned long) va_arg(args, void *), 16, flags);
+      	s = ultoa((unsigned long) va_arg(args, void *), tempNum, 16);
+      	for (i = 0; *s; ++i) *str++ = *s++;
+       // str = ee_number(str, , 16, flags);
         continue;
 
       // Integer number formats - set up the flags and "break"
@@ -205,7 +208,7 @@ static int ee_vsprintf(char *buf, const char *fmt, va_list args)
         base = 8;
         break;
 
-      case 'X':
+
       case 'x':
         base = 16;
         break;
@@ -218,11 +221,9 @@ static int ee_vsprintf(char *buf, const char *fmt, va_list args)
 
 
       case 'f':
-      case 'g':
-      case 'G':
-      case 'e':
-      case 'E':
-        str = ftoa(str, va_arg(args, double));
+    	s = dtostrf(va_arg(args, double), 0, 6, tempNum);
+    	for (i = 0; *s; ++i) *str++ = *s++;
+        //str = ftoa(str, va_arg(args, double));
         continue;
 
 
@@ -242,7 +243,16 @@ static int ee_vsprintf(char *buf, const char *fmt, va_list args)
     else
       num = va_arg(args, unsigned int);
 
-    str = ee_number(str, num, base, flags);
+    if(flags & SIGN)
+    {
+    	s = ltoa(num, tempNum, base);
+    }
+    else
+    {
+      	s = ultoa(num, tempNum, base);
+    }
+    for (i = 0; *s; ++i) *str++ = *s++;
+    //str = ee_number(str, num, base, flags);
   }
 
   *str = '\0';
