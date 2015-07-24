@@ -24,7 +24,6 @@
 #include "PWM.h"
 #include "Timer.h"
 #include "Wire.h"
-#include "SPISoft.h"
 
 #include "Platform/System.h"
 #include "Platform/Station.h"
@@ -48,6 +47,5 @@
 #include "../Services/ArduinoJson/ArduinoJson.h"
 #include "../Services/DateTime/DateTime.h"
 #include "../Services/libemqtt/libemqtt.h"
-#include "../Services/FATFS/ff.h"
 
 #endif
