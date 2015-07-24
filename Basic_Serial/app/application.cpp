@@ -14,7 +14,23 @@ void sayHello()
 	Serial.println();
 
 	Serial.printf("This is Hello message %d \r\n", ++helloCounter);
+	/*
+	if ((helloCounter % 3) == 0)
+	{
+		if (Debug.status())
+		{
+			Debug.stop();
+		}
+		else
+		{
+			Debug.start();
+		}
+	}
+	debugf("Debug from sayHello %d", helloCounter);
 }
+*/
+	Debug.lprintf((helloCounter) % 4, "This is a info/warning/debug message %d, debug level = %d \r\n", helloCounter, Debug.getDebugLevel());;
+	lprintf2((helloCounter % 2), "lprintf2 %d\r\n", helloCounter);
 
 void init()
 {

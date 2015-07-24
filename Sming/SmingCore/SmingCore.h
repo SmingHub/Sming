@@ -24,6 +24,7 @@
 #include "PWM.h"
 #include "Timer.h"
 #include "Wire.h"
+#include "Debug.h"
 
 #include "Platform/System.h"
 #include "Platform/Station.h"

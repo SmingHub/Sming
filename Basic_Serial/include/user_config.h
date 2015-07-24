@@ -5,8 +5,15 @@
 extern "C" {
 #endif
 
+
 	// UART config
-	#define SERIAL_BAUD_RATE 115200
+	#define SERIAL_BAUD_RATE 74880
+
+	// Debug configuration
+	#define DEBUG_DEFAULT_OUTPUT Serial
+	#define DEBUG_DEFAULT_START true
+	#define DEBUG_DEFAULT_PREFIX eDBGnoPrefix
+	#define DEBUG_DEFAULT_LEVEL logDebug
 
 	// ESP SDK config
 	#define LWIP_OPEN_SRC
