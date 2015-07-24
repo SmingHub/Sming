@@ -35,7 +35,7 @@ char* ultoa(unsigned long val, char* buffer, unsigned int base)
 }
 
 // Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
-// modif by ADiea: remove dependencies from strcat floor round
+// modified by ADiea: remove dependencies strcat, floor, round; reorganize+speedup code
 char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer)
 {
 	char temp[24], num[24];
@@ -59,6 +59,7 @@ char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsA
 	else
 	{
 		//start building the number
+		//buf will be the end pointer
 		buf = num;
 
 		if (floatVar < 0.0)
@@ -77,39 +78,46 @@ char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsA
 		while (i-- > 0)
 			mult *= 10;
 
-		floatVar += 0.5 / (float) mult;      // compute rounding factor
+		//round the number
+		floatVar += 0.5 / (float) mult;
 
 		int_part = (unsigned long) floatVar;
 
+		//print the int part into num
 		s = ltoa(int_part, buf, 10);
 
+		//adjust end pointer
 		buf += strlen(s); //go to end of string
 
-
+		//deal with digits after the decimal
 		if (numDigitsAfterDecimal != 0)
 		{
 			*buf++ = '.'; // print the decimal point
 
-			long x = ((floatVar - int_part) * mult);
-
-			s = ltoa( x, temp, 10);
+			//print the fraction part into temp
+			s = ltoa( ((floatVar - int_part) * mult), temp, 10);
 
 			i = processedFracLen - strlen(s) + 1;
 
+			//print the first zeros of the fraction part
 			while (--i > 0)
-				*buf++ = '0';    // print padding zeros
+				*buf++ = '0';
 
+			//print the fraction part
 			while (*s)
 				*buf++ = *s++;
 
 			i = numDigitsAfterDecimal - processedFracLen;
 
+			// padding fraction zeroes
 			while (i-- > 0)
-				*buf++ = '0';    // ending fraction zeroes
+				*buf++ = '0';
 		}
 
 		//terminate num
 		*buf = 0;
+
+		//switch buf to outputBuffer
 		buf = outputBuffer;
 
 		// generate width space padding

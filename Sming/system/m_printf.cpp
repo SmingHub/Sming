@@ -9,42 +9,88 @@ Descr: embedded very simple version of printf with float support
 #include <stdarg.h>
 #include "../../SmingCore/SmingCore.h"
 
+#define MPRINTF_BUF_SIZE 256
+
 void (*cbc_printchar)(char ch) = uart_tx_one_char;
 
 #define SIGN    	(1<<1)	/* Unsigned/signed long */
 
-static int m_vsprintf(char *buf, const char *fmt, va_list args)
+static int m_vsprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args);
+
+void setMPrintfPrinterCbc(void (*callback)(char))
+{
+	cbc_printchar = callback;
+}
+
+int _m_printf(const char *fmt, ...)
+{
+	char buf[MPRINTF_BUF_SIZE], *p;
+	va_list args;
+	int n = 0;
+
+	va_start(args, fmt);
+	m_vsprintf(buf, sizeof(buf), fmt, args);
+	va_end(args);
+
+	p = buf;
+	while (*p)
+	{
+		cbc_printchar(*p);
+		n++;
+		p++;
+	}
+
+	return n;
+}
+
+static int m_vsprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args)
 {
 	int i, base, flags, qualifier;
 	char *str;
 	const char *s;
+	uint8_t precision = 6;
+
+	const uint8_t overflowGuard = 24;
 
 	char tempNum[24];
 
 	for (str = buf; *fmt; fmt++)
 	{
+		if(maxLen - (str - buf) < overflowGuard)
+		{
+			*str++ = '.';
+			*str++ = '.';
+			*str++ = '.';
+			break;
+		}
+
 		if (*fmt != '%')
 		{
 			*str++ = *fmt;
 			continue;
 		}
 
-		// Process flags
 		flags = 0;
-
 		fmt++; // This skips first '%'
 
-		//actual percent sign
-		if (*fmt == '%')
+		do
 		{
-			*str++ = *fmt;
-			continue;
-		}
+			//skip width and flags data - not supported
+			while ((*fmt >= '0' && *fmt <= '9') || '+' == *fmt
+					|| '-' == *fmt || '#' == *fmt || '*' == *fmt)
+				fmt++;
 
-		//skip precision, width and flags data - not supported
-		while ((*fmt >= '0' && *fmt <= '9') || '.' == *fmt || '+' == *fmt
-				|| '-' == *fmt || '#' == *fmt || '*' == *fmt)
-			fmt++;
+			if('.' == *fmt)
+			{
+				fmt++;
+				if((*fmt >= '0' && *fmt <= '9'))
+				{
+					precision = *fmt++ - '0';
+				}
+			}
+			else
+				break;
+		}while(1);
 
 		// Get the conversion qualifier
 		qualifier = -1;
@@ -102,7 +148,7 @@ static int m_vsprintf(char *buf, const char *fmt, va_list args)
 
 		case 'f':
 
-			s = dtostrf(va_arg(args, double), 0, 6, tempNum);
+			s = dtostrf(va_arg(args, double), 10, precision, tempNum);
 			while (*s)
 				*str++ = *s++;
 			continue;
@@ -130,26 +176,4 @@ static int m_vsprintf(char *buf, const char *fmt, va_list args)
 
 	*str = '\0';
 	return str - buf;
-}
-
-
-int m_printf(const char *fmt, ...)
-{
-	char buf[15 * 80], *p;
-	va_list args;
-	int n = 0;
-
-	va_start(args, fmt);
-	m_vsprintf(buf, fmt, args);
-	va_end(args);
-
-	p = buf;
-	while (*p)
-	{
-		cbc_printchar(*p);
-		n++;
-		p++;
-	}
-
-	return n;
 }

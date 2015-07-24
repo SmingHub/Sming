@@ -25,8 +25,19 @@
 #define STORE_TYPEDEF_ATTR __attribute__((aligned(4),packed))
 #define STORE_ATTR __attribute__((aligned(4)))
 
+int _m_printf(const char *fmt, ...);
+#define USE_OPTIMIZE_PRINTF
+#ifdef USE_OPTIMIZE_PRINTF
+#define m_printf(fmt, ...) do {	\
+	static const char flash_str[] ICACHE_RODATA_ATTR = fmt;	\
+	_m_printf(flash_str, ##__VA_ARGS__);	\
+	} while(0)
+#else
+#define m_printf	_m_printf
+#endif
+
 #undef assert
-#define debugf(fmt, ...) os_printf(fmt"\r\n", ##__VA_ARGS__)
+#define debugf(fmt, ...) m_printf(fmt"\r\n", ##__VA_ARGS__)
 #define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
 #define SYSTEM_ERROR(fmt, ...) os_printf("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
