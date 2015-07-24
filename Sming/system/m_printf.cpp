@@ -15,21 +15,21 @@ void (*cbc_printchar)(char ch) = uart_tx_one_char;
 
 #define SIGN    	(1<<1)	/* Unsigned/signed long */
 
-static int m_vsprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args);
+int m_vsnprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args);
 
 void setMPrintfPrinterCbc(void (*callback)(char))
 {
 	cbc_printchar = callback;
 }
 
-int _m_printf(const char *fmt, ...)
+int m_printf(const char *fmt, ...)
 {
 	char buf[MPRINTF_BUF_SIZE], *p;
 	va_list args;
 	int n = 0;
 
 	va_start(args, fmt);
-	m_vsprintf(buf, sizeof(buf), fmt, args);
+	m_vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
 
 	p = buf;
@@ -43,7 +43,7 @@ int _m_printf(const char *fmt, ...)
 	return n;
 }
 
-static int m_vsprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args)
+int m_vsnprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args)
 {
 	int i, base, flags, qualifier;
 	char *str;
