@@ -89,11 +89,13 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 	Serial.commandProcessing(true);
+
+	commandHandler.begin();
+
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP
 	WifiStation.waitConnection(connectOk, 30, connectFail);
-
 }

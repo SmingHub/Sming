@@ -185,8 +185,11 @@ void HardwareSerial::commandProcessing(bool reqEnable)
 	}
 	else
 	{
-		delete memberData[uart].commandExecutor;
-		memberData[uart].commandExecutor = nullptr;
+		if(memberData[uart].commandExecutor)
+		{
+			delete memberData[uart].commandExecutor;
+			memberData[uart].commandExecutor = nullptr;
+		}
 	}
 }
 
