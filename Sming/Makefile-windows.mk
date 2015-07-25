@@ -2,7 +2,7 @@
 ESP_HOME ?= c:/Espressif
 
 # Default COM port
-COM_PORT	 ?= COM3
+COM_PORT	 ?= COM10
 
 # base directory of the ESP8266 SDK package, absolute
 SDK_BASE	?= $(ESP_HOME)/ESP8266_SDK
