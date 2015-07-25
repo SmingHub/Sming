@@ -20,7 +20,6 @@
 #define PRINT_H
 
 #ifdef __cplusplus
-#include <user_config.h>
 #include "WiringFrameworkDependencies.h"
 #include "Printable.h"
 #include "WString.h"
