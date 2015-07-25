@@ -89,9 +89,9 @@ class String
     // creates a copy of the assigned value.  if the value is null or
     // invalid, or if the memory allocation fails, the string will be
     // marked as invalid ("if (s)" will be false).
-    IRAM_ATTR String & operator = (const String &rhs);
-    IRAM_ATTR String & operator = (const char *cstr);
-    IRAM_ATTR String & operator = (const __FlashStringHelper *str);
+    String & IRAM_ATTR operator = (const String &rhs);
+    String & IRAM_ATTR operator = (const char *cstr);
+    String & IRAM_ATTR operator = (const __FlashStringHelper *str);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     String & operator = (String && rval);
     String & operator = (StringSumHelper && rval);
@@ -188,22 +188,22 @@ class String
     {
       return buffer ? &String::StringIfHelper : 0;
     }
-    IRAM_ATTR int compareTo(const String &s) const;
-    IRAM_ATTR unsigned char equals(const String &s) const;
-    IRAM_ATTR unsigned char equals(const char *cstr) const;
-    IRAM_ATTR unsigned char operator == (const String &rhs) const
+    int IRAM_ATTR compareTo(const String &s) const;
+    unsigned char IRAM_ATTR equals(const String &s) const;
+    unsigned char IRAM_ATTR equals(const char *cstr) const;
+    unsigned char IRAM_ATTR operator == (const String &rhs) const
     {
       return equals(rhs);
     }
-    IRAM_ATTR unsigned char operator == (const char *cstr) const
+    unsigned char IRAM_ATTR operator == (const char *cstr) const
     {
       return equals(cstr);
     }
-    IRAM_ATTR unsigned char operator != (const String &rhs) const
+    unsigned char IRAM_ATTR operator != (const String &rhs) const
     {
       return !equals(rhs);
     }
-    IRAM_ATTR unsigned char operator != (const char *cstr) const
+    unsigned char IRAM_ATTR operator != (const char *cstr) const
     {
       return !equals(cstr);
     }
@@ -217,10 +217,10 @@ class String
     unsigned char endsWith(const String &suffix) const;
 
     // character acccess
-    IRAM_ATTR char charAt(unsigned int index) const;
-    IRAM_ATTR void setCharAt(unsigned int index, char c);
-    IRAM_ATTR char operator [](unsigned int index) const;
-    IRAM_ATTR char& operator [](unsigned int index);
+    char IRAM_ATTR charAt(unsigned int index) const;
+    void IRAM_ATTR setCharAt(unsigned int index, char c);
+    char IRAM_ATTR operator[](unsigned int index) const;
+    char& IRAM_ATTR operator[](unsigned int index);
     void getBytes(unsigned char *buf, unsigned int bufsize, unsigned int index = 0) const;
     void toCharArray(char *buf, unsigned int bufsize, unsigned int index = 0) const
     {
@@ -229,9 +229,9 @@ class String
     const char * c_str() const { return buffer; }
   
     // search
-    IRAM_ATTR int indexOf(char ch) const;
+    int IRAM_ATTR indexOf(char ch) const;
     int indexOf(char ch, unsigned int fromIndex) const;
-    IRAM_ATTR int indexOf(const String &str) const;
+    int IRAM_ATTR indexOf(const String &str) const;
     int indexOf(const String &str, unsigned int fromIndex) const;
     int lastIndexOf(char ch) const;
     int lastIndexOf(char ch, int fromIndex) const;
@@ -266,10 +266,10 @@ class String
     uint16_t len;       // the String length (not counting the '\0')
     //unsigned char flags;    // unused, for future features
   protected:
-    IRAM_ATTR void init(void);
-    IRAM_ATTR void invalidate(void);
-    IRAM_ATTR unsigned char changeBuffer(unsigned int maxStrLen);
-    IRAM_ATTR unsigned char concat(const char *cstr, unsigned int length);
+    void IRAM_ATTR init(void);
+    void IRAM_ATTR invalidate(void);
+    unsigned char IRAM_ATTR changeBuffer(unsigned int maxStrLen);
+    unsigned char IRAM_ATTR concat(const char *cstr, unsigned int length);
 
     // copy and move
     String & copy(const char *cstr, unsigned int length);

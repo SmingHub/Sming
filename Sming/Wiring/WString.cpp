@@ -562,7 +562,6 @@ void String::getBytes(unsigned char *buf, unsigned int bufsize, unsigned int ind
 /*********************************************/
 /*  Search                                   */
 /*********************************************/
-ICACHE_FLASH_ATTR
 
 int String::indexOf(char c) const
 {
