@@ -28,6 +28,7 @@ public:
 	void setCommandEOL(char reqEOL);
 
 private :
+	CommandExecutor();
 	void processCommandLine(String cmdString);
 	char commandBuf [MAX_COMMANDSIZE+1];
 	uint16_t commandIndex = 0;

@@ -23,6 +23,7 @@ public:
 	~CommandHandler();
 	bool registerCommand(CommandDelegate);
 	bool unregisterCommand(CommandDelegate);
+	void registerSystemCommands();
 	CommandDelegate getCommandDelegate(String commandString);
 //	int deleteGroup(String reqGroup);
 
