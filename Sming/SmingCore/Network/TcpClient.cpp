@@ -205,6 +205,9 @@ void TcpClient::onFinished(TcpClientState finishState)
 	if (stream != NULL)
 		delete stream; // Free memory now!
 	stream = NULL;
+	// Initialize async variables for next connection
+	asyncTotalSent = 0;
+	asyncTotalLen = 0;
 
 	if (completed)
 		completed(*this, state == eTCS_Successful);
