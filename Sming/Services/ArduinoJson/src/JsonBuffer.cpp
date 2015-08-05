@@ -14,7 +14,7 @@
 using namespace ArduinoJson;
 using namespace ArduinoJson::Internals;
 
-JsonStringStorage JsonStringStorage::_invalid(NULL);
+JsonStringStorage JsonStringStorage::_invalid("");
 
 JsonArray &JsonBuffer::createArray() {
   JsonArray *ptr = new (this) JsonArray(this);

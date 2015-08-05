@@ -34,6 +34,9 @@
 //     -felide-constructors
 //     -std=c++0x
 
+class __FlashStringHelper;
+#define F(string_literal) (reinterpret_cast<const __FlashStringHelper *>(PSTR(string_literal)))
+
 // An inherited class for holding the result of a concatenation.  These
 // result objects are assumed to be writable by subsequent concatenations.
 class StringSumHelper;
@@ -56,6 +59,7 @@ class String
     IRAM_ATTR String(const char *cstr = "");
     IRAM_ATTR String(const char *cstr, unsigned int length);
     IRAM_ATTR String(const String &str);
+    IRAM_ATTR String(const __FlashStringHelper *str);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     IRAM_ATTR String(String && rval);
     IRAM_ATTR String(StringSumHelper && rval);
@@ -87,6 +91,7 @@ class String
     // marked as invalid ("if (s)" will be false).
     String & IRAM_ATTR operator = (const String &rhs);
     String & IRAM_ATTR operator = (const char *cstr);
+    String & IRAM_ATTR operator = (const __FlashStringHelper *str);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     String & operator = (String && rval);
     String & operator = (StringSumHelper && rval);
@@ -107,6 +112,7 @@ class String
     unsigned char concat(unsigned long num);
     unsigned char concat(float num);
     unsigned char concat(double num);
+    unsigned char concat(const __FlashStringHelper * str);
   
     // if there's not enough memory for the concatenated value, the string
     // will be left unchanged (but this isn't signalled in any way)
@@ -160,6 +166,10 @@ class String
       concat(num);
       return (*this);
     }
+    String & operator += (const __FlashStringHelper *str){
+      concat(str);
+      return (*this);
+    }
 
     friend StringSumHelper & operator + (const StringSumHelper &lhs, const String &rhs);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, const char *cstr);
@@ -171,6 +181,7 @@ class String
     friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned long num);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, float num);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, double num);
+    friend StringSumHelper & operator +(const StringSumHelper &lhs, const __FlashStringHelper *rhs);
 
     // comparison (only works w/ Strings and "strings")
     operator StringIfHelperType() const
@@ -208,8 +219,8 @@ class String
     // character acccess
     char IRAM_ATTR charAt(unsigned int index) const;
     void IRAM_ATTR setCharAt(unsigned int index, char c);
-    char IRAM_ATTR operator [](unsigned int index) const;
-    char& IRAM_ATTR operator [](unsigned int index);
+    char IRAM_ATTR operator[](unsigned int index) const;
+    char& IRAM_ATTR operator[](unsigned int index);
     void getBytes(unsigned char *buf, unsigned int bufsize, unsigned int index = 0) const;
     void toCharArray(char *buf, unsigned int bufsize, unsigned int index = 0) const
     {
@@ -262,6 +273,7 @@ class String
 
     // copy and move
     String & copy(const char *cstr, unsigned int length);
+    String & copy(const __FlashStringHelper *pstr, unsigned int length);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     void move(String &rhs);
 #endif

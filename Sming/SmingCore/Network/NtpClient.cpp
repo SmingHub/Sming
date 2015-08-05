@@ -102,7 +102,7 @@ void NtpClient::setNtpServer(String server)
 
 void NtpClient::setNtpServer(IPAddress serverIp)
 {
-	this->server = NULL;
+	this->server = "";
 	this->serverAddress = serverIp;
 }
 
