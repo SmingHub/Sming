@@ -130,7 +130,7 @@ void TcpConnection::onError(err_t err)
 
 void TcpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	debugf("onReadyToSendData: %d", sourceEvent);
+	//debugf("onReadyToSendData: %d", sourceEvent); // It is filling up debug screen
 }
 
 int TcpConnection::writeString(const String data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
