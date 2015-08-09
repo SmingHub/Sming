@@ -3,12 +3,34 @@
 #define MAX_TRANSMIT_TIMEOUT 200
 
 
+
+#define BAUD_RATE_REGS 12
+struct baudRateCfg
+{
+	uint8_t reg[BAUD_RATE_REGS];
+};
+
+baudRateCfg BaudRates[e_Baud_numBauds] =
+{
+	//0x1C  0x20  0x21  0x22   0x23  0x24  0x25  0x6E  0x6F  0x70  0x71  0x72
+	{ 0x02, 0x68, 0x01, 0x3A, 0x93, 0x04, 0xEE, 0x09, 0xD5, 0x0C, 0x23, 0x1F}, //38k4
+	{ 0x82, 0x68, 0x01, 0x3A, 0x93, 0x04, 0xEE, 0x1D, 0x7E, 0x0C, 0x23, 0x5C}, //115k2
+	{ 0x8B, 0x34, 0x02, 0x75, 0x25, 0x07, 0xFF, 0x3A, 0xFB, 0x0C, 0x23, 0xB8} //230k4
+
+/*
+calc by esp	=> veriify with integer baud rate values in excel file
+	{ 0x89, 0x3c, 0x20, 0x67, 0xc4, 0x00, 0x36, 0x09, 0xBA, 0x0C, 0x23, 0xF0}, //38k
+	{ 0x8A, 0x68, 0x01, 0x3A, 0x07, 0x01, 0xE5, 0x1D, 0x71, 0x0C, 0x23, 0xF0}, //115k
+	{ 0x8D, 0x34, 0x02, 0x74, 0x0E, 0x07, 0x8E, 0x3A, 0xE1, 0x0C, 0x23, 0xF0}, //230k
+*/
+};
+
 //values here are kept in khz x 10 format (for not to deal with decimals) - look at AN440 page 26 for whole table
 const uint16_t IFFilterTable[][2] = { { 322, 0x26 }, { 3355, 0x88 }, { 3618, 0x89 }, { 4202, 0x8A }, { 4684, 0x8B }, {
 		5188, 0x8C }, { 5770, 0x8D }, { 6207, 0x8E } };
 
 Si4432::Si4432(SPISoft *pSpi, uint8_t InterruptPin) :
-		_spi(pSpi), _sdnPin(0), _intPin(InterruptPin), _freqCarrier(433000000), _freqChannel(0), _kbps(100), _packageSign(
+		_spi(pSpi), _sdnPin(0), _intPin(InterruptPin), _freqCarrier(433000000), _freqChannel(0), _kbps(eBaud_38k4), _packageSign(
 				0xDEAD) { // default is 450 mhz
 
 }
@@ -94,8 +116,14 @@ void Si4432::boot() {
 
 	ChangeRegister(REG_CHANNEL_STEPSIZE, 0x64); // each channel is of 1 Mhz interval
 
-	setFrequency(_freqCarrier); // default freq
-	setBaudRate(_kbps); // default baud rate is 100kpbs
+	//setFrequency(_freqCarrier); // default freq
+
+	//set frequency to 433Mhz
+	ChangeRegister(REG_FREQBAND, 0x53);
+	ChangeRegister(REG_FREQCARRIER_H, 0x0);
+	ChangeRegister(REG_FREQCARRIER_L, 0x0);
+
+	setBaudRateFast(_kbps); // default baud rate is 38k4
 	setChannel(_freqChannel); // default channel is 0
 	setCommsSignature(_packageSign); // default signature
 
@@ -103,9 +131,13 @@ void Si4432::boot() {
 
 }
 
-bool Si4432::sendPacket(uint8_t length, const byte* data, bool waitResponse, uint32_t ackTimeout,
-		uint8_t* responseLength, byte* responseBuffer) {
-
+bool Si4432::sendPacket(uint8_t length,
+						const byte* data,
+						bool waitResponse/* = false*/,
+						uint32_t ackTimeout/* = 100*/,
+						uint8_t *responseLength/* = 0*/,
+						byte* responseBuffer/* = 0*/)
+{
 	clearTxFIFO();
 	ChangeRegister(REG_PKG_LEN, length);
 
@@ -150,9 +182,8 @@ bool Si4432::sendPacket(uint8_t length, const byte* data, bool waitResponse, uin
 	}
 
 	//timeout occured.
-//#if DEBUG_SI4432
-	debugf("Timeout in Transit -- ");
-//#endif
+	debugf("TX timeout");
+
 	switchMode(Ready);
 
 	if (ReadRegister(REG_DEV_STATUS) & 0x80) {
@@ -179,7 +210,7 @@ bool Si4432::waitForPacket(uint64_t waitMs) {
 	}
 	//timeout occured.
 
-	debugf("Timeout in receive-- ");
+	debugf("RX timeout");
 
 	switchMode(Ready);
 	clearRxFIFO();
@@ -218,15 +249,25 @@ void Si4432::ChangeRegister(Registers reg, byte value) {
 	BurstWrite(reg, &value, 1);
 }
 
+void Si4432::setBaudRateFast(eBaudRate baud)
+{
+	_kbps = baud;
+
+	BurstWrite(REG_IF_FILTER_BW, &(BaudRates[baud].reg[0]), 1);
+
+	BurstWrite(REG_CLOCK_RECOVERY_OVERSAMPLING, &(BaudRates[baud].reg[1]), 6);
+
+	BurstWrite(REG_TX_DATARATE1, &(BaudRates[baud].reg[7]), 5);
+}
+
 void Si4432::setBaudRate(uint16_t kbps) {
 
 	// chip normally supports very low bps values, but they are cumbersome to implement - so I just didn't implement lower bps values
 	if ((kbps > 256) || (kbps < 1))
 		return;
-	_kbps = kbps;
 
 	byte freqDev = kbps <= 10 ? 15 : 150;		// 15khz / 150 khz
-	byte modulationValue = _kbps < 30 ? 0x4c : 0x0c;		// use FIFO Mode, GFSK, low baud mode on / off
+	byte modulationValue = kbps < 30 ? 0x4c : 0x0c;		// use FIFO Mode, GFSK, low baud mode on / off
 
 	byte modulationVals[] = { modulationValue, 0x23, (byte)(0.5f + (freqDev * 1000.0) / 625.0) }; // msb of the kpbs to 3rd bit of register
 	BurstWrite(REG_MODULATION_MODE1, modulationVals, 3);
@@ -334,10 +375,17 @@ void Si4432::readAll() {
 
 	BurstRead(REG_DEV_TYPE, allValues, 0x7F);
 
-	for (byte i = 0; i < 0x7f; ++i) {
-		debugf("REG(%x) : %x ", (int) REG_DEV_TYPE + i, (int) allValues[i]);
-	}
+	debugf("REGS  00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");
 
+	for (byte i = 0; i < 0x7f; i+=16)
+	{
+		debugf("(%2x): %2x %2x %2x %2# %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x ", i,
+				(int ) allValues[i+0], (int ) allValues[i+1], (int ) allValues[i+2], (int ) allValues[i+3],
+				(int ) allValues[i+4], (int ) allValues[i+5], (int ) allValues[i+6], (int ) allValues[i+7],
+				(int ) allValues[i+8], (int ) allValues[i+9], (int ) allValues[i+10], (int ) allValues[i+11],
+				(int ) allValues[i+12], (int ) allValues[i+13], (int ) allValues[i+14], (int ) allValues[i+15]
+				);
+	}
 }
 
 void Si4432::clearTxFIFO() {
@@ -378,12 +426,14 @@ void Si4432::hardReset() {
 	delay(1);
 
 	byte reg = ReadRegister(REG_INT_STATUS2);
-	uint8_t count=10;
-	while ((reg & 0x02) != 0x02 && reg != 0xFF && --count) {
-
+	uint8_t count = 25;
+	while ((reg & 0x02) != 0x02 && reg != 0xFF && --count)
+	{
+#if DEBUG_SI4432
 		debugf("POR: %x ", reg);
-		delay(100);
+		delay(1);
 		reg = ReadRegister(REG_INT_STATUS2);
+#endif
 	}
 
 	boot();
@@ -420,13 +470,13 @@ bool Si4432::isPacketReceived() {
 
 	if (intStat2 & 0x40) { //interrupt occured, check it && read the Interrupt Status1 register for 'preamble '
 
-		debugf("HEY!! HEY!! Valid Preamble detected -- %x", intStat2);
+		debugf("Valid Preamble detected -- %x", intStat2);
 
 	}
 
 	if (intStat2 & 0x80) { //interrupt occured, check it && read the Interrupt Status1 register for 'preamble '
 
-		debugf("HEY!! HEY!! SYNC WORD detected -- %x", intStat2);
+		debugf("SYNC WORD detected -- %x", intStat2);
 
 	}
 #else
