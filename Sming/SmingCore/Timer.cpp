@@ -61,6 +61,7 @@ void Timer::stop()
 	if (!started) return;
 	ets_timer_disarm(&timer);
 	started = false;
+	long_intvl_cntr = 0;
 }
 
 void Timer::restart()
@@ -74,19 +75,43 @@ bool Timer::isStarted()
 	return started;
 }
 
-uint32_t Timer::getIntervalUs()
+uint64_t Timer::getIntervalUs()
 {
-	return (uint32_t)interval;
+	if(long_intvl_cntr_lim > 0) {
+		return interval * long_intvl_cntr_lim;
+	}
+
+	return interval;
 }
 
 uint32_t Timer::getIntervalMs()
 {
-	return (uint32_t)interval / 1000;
+	return (uint32_t)getIntervalUs() / 1000;
 }
 
-void Timer::setIntervalUs(uint32_t microseconds/* = 1000000*/)
+void Timer::setIntervalUs(uint64_t microseconds/* = 1000000*/)
 {
-	interval = microseconds;
+	if(interval > MAX_OS_TIMER_INTERVAL_US)
+	{
+		// interval to large, calculate a good divider.
+		int div = (microseconds / MAX_OS_TIMER_INTERVAL_US) + 1; // integer division, intended
+
+		// We will lose some precision here but its so small it won't matter.
+		// Error will be microseconds mod div which can at most be div-1.
+		// For small long intervals (and thus div) we are talking a few us.
+		// Nothing to worry about since we are going to use the millisecond timer
+		// so we wont have that accuracy anyway.
+
+		interval = microseconds / div;
+		long_intvl_cntr = 0;
+		long_intvl_cntr_lim = div;
+	}
+	else {
+		interval = microseconds;
+		long_intvl_cntr = 0;
+		long_intvl_cntr = 0;
+	}
+
 	if (started)
 		restart();
 }
@@ -125,12 +150,30 @@ void Timer::processing(void *arg)
 	{
 	   return;
 	}
-	else if (ptimer->callback)
-	{
-		ptimer->callback();
+	else {
+
+		if(ptimer->long_intvl_cntr_lim > 0)
+		{
+			// we need to handle a long interval.
+			ptimer->long_intvl_cntr++;
+
+			if(ptimer->long_intvl_cntr < ptimer->long_intvl_cntr_lim) {
+				return;
+			}
+			else {
+				// reset counter since callback will fire.
+				ptimer->long_intvl_cntr = 0;
+			}
+		}
+
+		if (ptimer->callback)
+		{
+			ptimer->callback();
+		}
+		else if (ptimer->delegate_func)
+		{
+			ptimer->delegate_func();
+		}
 	}
-	else if (ptimer->delegate_func)
-	{
-		ptimer->delegate_func();
-	}
+
 }

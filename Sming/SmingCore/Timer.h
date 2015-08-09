@@ -8,9 +8,16 @@
 #ifndef _SMING_CORE_Timer_H_
 #define _SMING_CORE_Timer_H_
 
+
 #include "../SmingCore/Interrupts.h"
 #include "../SmingCore/Delegate.h"
 #include "../Wiring/WiringFrameworkDependencies.h"
+
+
+// Default timer is millisecond timer and the maximum value is 6871947ms.
+// After call system_timer_reinit,the timer will change to microsecond,
+// timer and the maximum value of os_timer_arm() is 429496ms.
+#define MAX_OS_TIMER_INTERVAL_US 420000000  // some haedroom ;)
 
 typedef Delegate<void()> TimerDelegate;
 
@@ -37,10 +44,10 @@ public:
 	void IRAM_ATTR restart();
 	bool isStarted();
 
-	uint32_t getIntervalUs();
+	uint64_t getIntervalUs();
 	uint32_t getIntervalMs();
 
-    void IRAM_ATTR setIntervalUs(uint32_t microseconds = 1000000);
+    void IRAM_ATTR setIntervalUs(uint64_t microseconds = 1000000);
     void IRAM_ATTR setIntervalMs(uint32_t milliseconds = 1000000);
 
     void IRAM_ATTR setCallback(InterruptCallback interrupt = NULL);
@@ -56,6 +63,12 @@ private:
     InterruptCallback callback = nullptr;
     TimerDelegate delegate_func = nullptr;
     bool started = false;
+
+
+    // Because of the limitation in Espressif SDK a workargound
+    // was added to allow for longer timer intervals.
+    uint16_t long_intvl_cntr = 0;
+    uint16_t long_intvl_cntr_lim = 0;
 };
 
 #endif /* _SMING_CORE_Timer_H_ */
