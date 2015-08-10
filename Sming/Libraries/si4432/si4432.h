@@ -21,6 +21,14 @@
 
 #define DEBUG_SI4432 1
 
+enum eBaudRate
+{
+	eBaud_38k4 = 0,
+	eBaud_115k2,
+	eBaud_230k4,
+	e_Baud_numBauds
+};
+
 /* Now, according to the this design, you must
  * 1- Create an instance
  * 2- Call init()
@@ -36,6 +44,7 @@ public:
 	void setFrequency(unsigned long baseFrequency); // sets the freq. call before boot
 	void setChannel(byte channel); // sets the channel. call before switching to tx or rx mode
 	void setBaudRate(uint16_t kbps); // sets the  bps. call before switching to tx or rx mode - min:1, max: 256
+	void setBaudRateFast(eBaudRate baud);
 	void init();
 	void setCommsSignature(uint16_t signature); // used to 'sign' packets with a predetermined signature - call before boot
 
@@ -70,7 +79,7 @@ protected:
 
 	uint64_t _freqCarrier;
 	uint8_t _freqChannel;
-	uint16_t _kbps;
+	eBaudRate _kbps;
 	uint16_t _packageSign;
 
 	void boot(); // sets SPI and pins ready and boot the radio
