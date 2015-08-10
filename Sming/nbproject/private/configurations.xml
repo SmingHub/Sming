@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="appinit">
+        <in>user_main.cpp</in>
+      </df>
+      <df name="apptest">
+        <in>apptest.cpp</in>
+      </df>
+      <df name="compiler">
+        <df name="data">
+        </df>
+        <df name="ld">
+        </df>
+        <df name="lib">
+        </df>
+      </df>
+      <df name="include">
+        <in>user_config.h</in>
+      </df>
+      <df name="Libraries">
+        <df name="Adafruit_GFX">
+          <in>Adafruit_GFX.cpp</in>
+          <in>Adafruit_GFX.h</in>
+          <in>glcdfont.c</in>
+        </df>
+        <df name="Adafruit_ILI9341">
+          <df name="examples">
+            <df name="breakouttouchpaint">
+            </df>
+            <df name="graphicstest">
+            </df>
+            <df name="onoffbutton">
+            </df>
+            <df name="onoffbutton_breakout">
+            </df>
+            <df name="spitftbitmap">
+            </df>
+            <df name="touchpaint">
+            </df>
+          </df>
+          <in>Adafruit_ILI9341.cpp</in>
+          <in>Adafruit_ILI9341.h</in>
+          <in>hspi.c</in>
+          <in>hspi.h</in>
+          <in>spi_register.h</in>
+        </df>
+        <df name="Adafruit_PCD8544">
+          <df name="examples">
+            <df name="pcdtest">
+            </df>
+          </df>
+          <in>Adafruit_PCD8544.cpp</in>
+          <in>Adafruit_PCD8544.h</in>
+        </df>
+        <df name="Adafruit_SSD1306">
+          <df name="examples">
+            <df name="ssd1306_128x32_i2c">
+            </df>
+            <df name="ssd1306_128x32_spi">
+            </df>
+            <df name="ssd1306_128x64_i2c">
+            </df>
+            <df name="ssd1306_128x64_spi">
+            </df>
+          </df>
+          <in>Adafruit_SSD1306.cpp</in>
+          <in>Adafruit_SSD1306.h</in>
+        </df>
+        <df name="BH1750FVI">
+          <df name="BH1750_LCD">
+          </df>
+          <df name="BH1750_Led">
+          </df>
+          <df name="BH1750_serial">
+          </df>
+          <in>BH1750FVI.cpp</in>
+          <in>BH1750FVI.h</in>
+        </df>
+        <df name="BMP180">
+          <df name="BMP180_Example">
+          </df>
+          <in>BMP180.cpp</in>
+          <in>BMP180.h</in>
+        </df>
+        <df name="Bounce">
+          <df name="examples">
+            <df name="bounce">
+            </df>
+            <df name="change">
+            </df>
+            <df name="duration">
+            </df>
+            <df name="edge">
+            </df>
+            <df name="rebounce">
+            </df>
+          </df>
+          <in>Bounce.cpp</in>
+          <in>Bounce.h</in>
+        </df>
+        <df name="CapacitiveSensor">
+          <df name="examples">
+            <df name="CapacitiveSensorSketch">
+            </df>
+          </df>
+          <in>CapacitiveSensor.cpp</in>
+          <in>CapacitiveSensor.h</in>
+        </df>
+        <df name="DHT">
+          <in>DHT.cpp</in>
+          <in>DHT.h</in>
+        </df>
+        <df name="HMC5883L">
+          <df name="Examples">
+            <df name="HMC5883L_raw">
+            </df>
+          </df>
+          <in>HMC5883L.cpp</in>
+          <in>HMC5883L.h</in>
+        </df>
+        <df name="I2Cdev">
+          <in>I2Cdev.cpp</in>
+          <in>I2Cdev.h</in>
+        </df>
+        <df name="IR">
+          <in>IRremote.cpp</in>
+          <in>IRremote.h</in>
+          <in>IRremoteInt.h</in>
+        </df>
+        <df name="LiquidCrystal">
+          <df name="docs">
+            <df name="def">
+            </df>
+            <df name="html">
+              <df name="search">
+              </df>
+            </df>
+          </df>
+          <df name="examples">
+            <df name="HelloWorld_4bit">
+            </df>
+            <df name="HelloWorld_i2c">
+            </df>
+            <df name="HelloWorld_SR">
+            </df>
+            <df name="i2cLCDextraIO">
+            </df>
+            <df name="i2cLCDextraIO_tempLeonardo">
+            </df>
+            <df name="LCDiSpeed">
+            </df>
+            <df name="performanceLCD">
+            </df>
+            <df name="SerialDisplay">
+            </df>
+          </df>
+          <in>FastIO.cpp</in>
+          <in>FastIO.h</in>
+          <in>I2CIO.cpp</in>
+          <in>I2CIO.h</in>
+          <in>LCD.cpp</in>
+          <in>LCD.h</in>
+          <in>LiquidCrystal.cpp</in>
+          <in>LiquidCrystal.h</in>
+          <in>LiquidCrystal_I2C.cpp</in>
+          <in>LiquidCrystal_I2C.h</in>
+          <in>LiquidCrystal_SR.cpp</in>
+          <in>LiquidCrystal_SR.h</in>
+          <in>LiquidCrystal_SR2W.cpp</in>
+          <in>LiquidCrystal_SR2W.h</in>
+          <in>LiquidCrystal_SR3W.cpp</in>
+          <in>LiquidCrystal_SR3W.h</in>
+        </df>
+        <df name="Mirf">
+          <df name="examples">
+            <df name="attiny84_mirf">
+            </df>
+            <df name="attiny85_counter_example">
+            </df>
+            <df name="ping_client">
+            </df>
+            <df name="ping_server">
+            </df>
+            <df name="ping_server_interupt">
+            </df>
+            <df name="reg_read">
+            </df>
+          </df>
+          <in>Mirf.cpp</in>
+          <in>Mirf.h</in>
+          <in>MirfHardwareSpi85Driver.h</in>
+          <in>MirfHardwareSpiDriver.h</in>
+          <in>MirfSpiDriver.h</in>
+          <in>Mirf_nRF24L01.h</in>
+        </df>
+        <df name="MMA_7455">
+          <df name="examples">
+            <df name="MMA_7455_simpleRead">
+            </df>
+          </df>
+          <in>MMA_7455.cpp</in>
+          <in>MMA_7455.h</in>
+        </df>
+        <df name="OneWire">
+          <df name="examples">
+            <df name="DS18x20_Temperature">
+            </df>
+            <df name="DS2408_Switch">
+            </df>
+            <df name="DS250x_PROM">
+            </df>
+          </df>
+          <in>OneWire.cpp</in>
+          <in>OneWire.h</in>
+        </df>
+        <df name="RF24">
+          <df name="examples">
+            <df name="GettingStarted">
+              <in>printf.h</in>
+            </df>
+            <df name="led_remote">
+              <in>printf.h</in>
+            </df>
+            <df name="nordic_fob">
+              <in>printf.h</in>
+            </df>
+            <df name="pingpair">
+              <in>printf.h</in>
+            </df>
+            <df name="pingpair_dyn">
+              <in>printf.h</in>
+            </df>
+            <df name="pingpair_irq">
+              <in>printf.h</in>
+            </df>
+            <df name="pingpair_maple">
+              <in>main.cpp</in>
+            </df>
+            <df name="pingpair_pl">
+              <in>printf.h</in>
+            </df>
+            <df name="pingpair_sleepy">
+              <in>printf.h</in>
+            </df>
+            <df name="scanner">
+              <in>printf.h</in>
+            </df>
+            <df name="starping">
+              <in>printf.h</in>
+            </df>
+          </df>
+          <df name="tests">
+            <df name="native">
+              <in>printf.h</in>
+            </df>
+            <df name="pingpair_blocking">
+              <in>printf.h</in>
+            </df>
+            <df name="pingpair_test">
+              <in>printf.h</in>
+            </df>
+          </df>
+          <in>RF24.cpp</in>
+          <in>RF24.h</in>
+          <in>RF24_config.h</in>
+          <in>nRF24L01.h</in>
+        </df>
+        <df name="SDCard">
+          <in>SDCard.cpp</in>
+          <in>SDCard.h</in>
+        </df>
+        <df name="TFT_ILI9163C">
+          <df name="examples">
+            <df name="bigtest">
+            </df>
+            <df name="cube">
+            </df>
+            <df name="graphicstest">
+            </df>
+            <df name="minimal">
+            </df>
+            <df name="test">
+            </df>
+          </df>
+          <in>TFT_ILI9163C.cpp</in>
+          <in>TFT_ILI9163C.h</in>
+        </df>
+        <df name="Ultrasonic">
+          <df name="docs">
+          </df>
+          <in>Ultrasonic.cpp</in>
+          <in>Ultrasonic.h</in>
+        </df>
+        <df name="WS2812">
+          <in>WS2812.cpp</in>
+          <in>WS2812.h</in>
+        </df>
+      </df>
+      <df name="out">
+        <df name="build">
+          <df name="appinit">
+          </df>
+          <df name="Libraries">
+            <df name="Adafruit_GFX">
+            </df>
+            <df name="Adafruit_ILI9341">
+            </df>
+            <df name="Adafruit_PCD8544">
+            </df>
+            <df name="Adafruit_SSD1306">
+            </df>
+            <df name="BH1750FVI">
+            </df>
+            <df name="BMP180">
+            </df>
+            <df name="Bounce">
+            </df>
+            <df name="CapacitiveSensor">
+            </df>
+            <df name="DHT">
+            </df>
+            <df name="HMC5883L">
+            </df>
+            <df name="I2Cdev">
+            </df>
+            <df name="IR">
+            </df>
+            <df name="LiquidCrystal">
+            </df>
+            <df name="Mirf">
+            </df>
+            <df name="MMA_7455">
+            </df>
+            <df name="OneWire">
+            </df>
+            <df name="RF24">
+            </df>
+            <df name="SDCard">
+            </df>
+            <df name="TFT_ILI9163C">
+            </df>
+            <df name="Ultrasonic">
+            </df>
+            <df name="WS2812">
+            </df>
+          </df>
+          <df name="Services">
+            <df name="ArduinoJson">
+            </df>
+            <df name="CommandProcessing">
+            </df>
+            <df name="cWebsocket">
+            </df>
+            <df name="DateTime">
+            </df>
+            <df name="FATFS">
+            </df>
+            <df name="libemqtt">
+            </df>
+            <df name="SpifFS">
+            </df>
+            <df name="WebHelpers">
+            </df>
+          </df>
+          <df name="SmingCore">
+            <df name="Network">
+            </df>
+            <df name="Platform">
+            </df>
+          </df>
+          <df name="system">
+            <df name="helpers">
+            </df>
+          </df>
+          <df name="Wiring">
+          </df>
+        </df>
+        <df name="firmware">
+          <df name="upgrade">
+          </df>
+        </df>
+      </df>
+      <df name="Services">
+        <df name="ArduinoJson">
+          <df name="examples">
+            <df name="IndentedPrintExample">
+            </df>
+            <df name="JsonGeneratorExample">
+            </df>
+            <df name="JsonParserExample">
+            </df>
+            <df name="JsonServer">
+            </df>
+            <df name="JsonUdpBeacon">
+            </df>
+          </df>
+          <df name="include">
+            <df name="ArduinoJson">
+              <df name="Internals">
+                <in>IndentedPrint.hpp</in>
+                <in>JsonBufferAllocated.hpp</in>
+                <in>JsonParser.hpp</in>
+                <in>JsonPrintable.hpp</in>
+                <in>JsonStringStorage.hpp</in>
+                <in>JsonVariantContent.hpp</in>
+                <in>JsonVariantType.hpp</in>
+                <in>JsonWriter.hpp</in>
+                <in>List.hpp</in>
+                <in>ListConstIterator.hpp</in>
+                <in>ListIterator.hpp</in>
+                <in>ListNode.hpp</in>
+                <in>Prettyfier.hpp</in>
+                <in>QuotedString.hpp</in>
+                <in>ReferenceType.hpp</in>
+                <in>StringBuilder.hpp</in>
+              </df>
+              <in>DynamicJsonBuffer.hpp</in>
+              <in>JsonArray.hpp</in>
+              <in>JsonBuffer.hpp</in>
+              <in>JsonObject.hpp</in>
+              <in>JsonPair.hpp</in>
+              <in>JsonVariant.hpp</in>
+              <in>StaticJsonBuffer.hpp</in>
+            </df>
+            <in>ArduinoJson.h</in>
+          </df>
+          <df name="scripts">
+          </df>
+          <df name="src">
+            <df name="Internals">
+              <in>IndentedPrint.cpp</in>
+              <in>JsonParser.cpp</in>
+              <in>List.cpp</in>
+              <in>Prettyfier.cpp</in>
+              <in>QuotedString.cpp</in>
+              <in>StringBuilder.cpp</in>
+            </df>
+            <in>JsonArray.cpp</in>
+            <in>JsonBuffer.cpp</in>
+            <in>JsonObject.cpp</in>
+            <in>JsonVariant.cpp</in>
+          </df>
+          <in>ArduinoJson.cpp</in>
+          <in>ArduinoJson.h</in>
+        </df>
+        <df name="CommandProcessing">
+          <in>CommandDelegate.cpp</in>
+          <in>CommandDelegate.h</in>
+          <in>CommandExecutor.cpp</in>
+          <in>CommandExecutor.h</in>
+          <in>CommandHandler.cpp</in>
+          <in>CommandHandler.h</in>
+          <in>CommandOutput.cpp</in>
+          <in>CommandOutput.h</in>
+          <in>CommandProcessingDependencies.h</in>
+          <in>CommandProcessingIncludes.h</in>
+        </df>
+        <df name="cWebsocket">
+          <in>websocket.cpp</in>
+          <in>websocket.h</in>
+        </df>
+        <df name="DateTime">
+          <in>DateTime.cpp</in>
+          <in>DateTime.h</in>
+        </df>
+        <df name="FATFS">
+          <in>diskio.h</in>
+          <in>ff.c</in>
+          <in>ff.h</in>
+          <in>ffconf.h</in>
+          <in>integer.h</in>
+        </df>
+        <df name="libemqtt">
+          <in>libemqtt.c</in>
+          <in>libemqtt.h</in>
+        </df>
+        <df name="SpifFS">
+          <df name="docs">
+          </df>
+          <in>spiffs.c</in>
+          <in>spiffs.h</in>
+          <in>spiffs_cache.c</in>
+          <in>spiffs_check.c</in>
+          <in>spiffs_config.h</in>
+          <in>spiffs_gc.c</in>
+          <in>spiffs_hydrogen.c</in>
+          <in>spiffs_nucleus.c</in>
+          <in>spiffs_nucleus.h</in>
+        </df>
+        <df name="WebHelpers">
+          <in>aw-sha1.h</in>
+          <in>base64.cpp</in>
+          <in>base64.h</in>
+          <in>escape.cpp</in>
+          <in>escape.h</in>
+        </df>
+      </df>
+      <df name="SmingCore">
+        <df name="Network">
+          <in>FTPServer.cpp</in>
+          <in>FTPServer.h</in>
+          <in>FTPServerConnection.cpp</in>
+          <in>FTPServerConnection.h</in>
+          <in>HttpClient.cpp</in>
+          <in>HttpClient.h</in>
+          <in>HttpFirmwareUpdate.cpp</in>
+          <in>HttpFirmwareUpdate.h</in>
+          <in>HttpRequest.cpp</in>
+          <in>HttpRequest.h</in>
+          <in>HttpResponse.cpp</in>
+          <in>HttpResponse.h</in>
+          <in>HttpServer.cpp</in>
+          <in>HttpServer.h</in>
+          <in>HttpServerConnection.cpp</in>
+          <in>HttpServerConnection.h</in>
+          <in>MqttClient.cpp</in>
+          <in>MqttClient.h</in>
+          <in>NetUtils.cpp</in>
+          <in>NetUtils.h</in>
+          <in>NtpClient.cpp</in>
+          <in>NtpClient.h</in>
+          <in>TcpClient.cpp</in>
+          <in>TcpClient.h</in>
+          <in>TcpConnection.cpp</in>
+          <in>TcpConnection.h</in>
+          <in>TcpServer.cpp</in>
+          <in>TcpServer.h</in>
+          <in>TelnetServer.cpp</in>
+          <in>TelnetServer.h</in>
+          <in>URL.cpp</in>
+          <in>URL.h</in>
+          <in>UdpConnection.cpp</in>
+          <in>UdpConnection.h</in>
+          <in>WebConstants.h</in>
+          <in>WebSocket.cpp</in>
+          <in>WebSocket.h</in>
+          <in>WebsocketClient.cpp</in>
+          <in>WebsocketClient.h</in>
+        </df>
+        <df name="Platform">
+          <in>AccessPoint.cpp</in>
+          <in>AccessPoint.h</in>
+          <in>RTC.cpp</in>
+          <in>RTC.h</in>
+          <in>Station.cpp</in>
+          <in>Station.h</in>
+          <in>System.cpp</in>
+          <in>System.h</in>
+          <in>WDT.cpp</in>
+          <in>WDT.h</in>
+        </df>
+        <in>Boards.h</in>
+        <in>Clock.cpp</in>
+        <in>Clock.h</in>
+        <in>DataSourceStream.cpp</in>
+        <in>DataSourceStream.h</in>
+        <in>Delegate.h</in>
+        <in>Digital.cpp</in>
+        <in>Digital.h</in>
+        <in>ESP8266EX.cpp</in>
+        <in>ESP8266EX.h</in>
+        <in>FileSystem.cpp</in>
+        <in>FileSystem.h</in>
+        <in>HardwareSerial.cpp</in>
+        <in>HardwareSerial.h</in>
+        <in>Interrupts.cpp</in>
+        <in>Interrupts.h</in>
+        <in>PWM.cpp</in>
+        <in>PWM.h</in>
+        <in>SPI.cpp</in>
+        <in>SPI.h</in>
+        <in>SPISoft.cpp</in>
+        <in>SPISoft.h</in>
+        <in>SmingCore.h</in>
+        <in>SystemClock.cpp</in>
+        <in>SystemClock.h</in>
+        <in>Timer.cpp</in>
+        <in>Timer.h</in>
+        <in>Wire.cpp</in>
+        <in>Wire.h</in>
+        <in>pins_arduino.h</in>
+      </df>
+      <df name="system">
+        <df name="include">
+          <df name="arch">
+            <in>cc.h</in>
+            <in>perf.h</in>
+            <in>sys_arch.h</in>
+          </df>
+          <df name="espinc">
+            <in>c_types_compatible.h</in>
+            <in>lwip_includes.h</in>
+            <in>spi_register.h</in>
+            <in>uart.h</in>
+            <in>uart_register.h</in>
+          </df>
+          <df name="lwip">
+            <df name="app">
+              <in>dhcpserver.h</in>
+              <in>espconn.h</in>
+              <in>espconn_tcp.h</in>
+              <in>espconn_udp.h</in>
+              <in>ping.h</in>
+            </df>
+            <in>api.h</in>
+            <in>api_msg.h</in>
+            <in>arch.h</in>
+            <in>autoip.h</in>
+            <in>debug.h</in>
+            <in>def.h</in>
+            <in>dhcp.h</in>
+            <in>dns.h</in>
+            <in>err.h</in>
+            <in>icmp.h</in>
+            <in>igmp.h</in>
+            <in>inet.h</in>
+            <in>inet_chksum.h</in>
+            <in>init.h</in>
+            <in>ip.h</in>
+            <in>ip_addr.h</in>
+            <in>ip_frag.h</in>
+            <in>mem.h</in>
+            <in>memp.h</in>
+            <in>memp_std.h</in>
+            <in>netbuf.h</in>
+            <in>netdb.h</in>
+            <in>netif.h</in>
+            <in>netifapi.h</in>
+            <in>opt.h</in>
+            <in>pbuf.h</in>
+            <in>raw.h</in>
+            <in>sio.h</in>
+            <in>snmp.h</in>
+            <in>snmp_asn1.h</in>
+            <in>snmp_msg.h</in>
+            <in>snmp_structs.h</in>
+            <in>sockets.h</in>
+            <in>stats.h</in>
+            <in>sys.h</in>
+            <in>tcp.h</in>
+            <in>tcp_impl.h</in>
+            <in>tcpip.h</in>
+            <in>timers.h</in>
+            <in>udp.h</in>
+          </df>
+          <in>esp_cplusplus.h</in>
+          <in>esp_systemapi.h</in>
+          <in>lwipopts.h</in>
+          <in>mem_manager.h</in>
+          <in>stringconversion.h</in>
+        </df>
+        <in>esp_cplusplus.cpp</in>
+        <in>flashmem.c</in>
+        <in>flashmem.h</in>
+        <in>irq_check.s</in>
+        <in>stringconversion.cpp</in>
+      </df>
+      <df name="Wiring">
+        <in>Arduino.h</in>
+        <in>Binary.h</in>
+        <in>BitManipulations.h</in>
+        <in>Countable.h</in>
+        <in>Display.h</in>
+        <in>FIFO.h</in>
+        <in>FILO.h</in>
+        <in>FakePgmSpace.cpp</in>
+        <in>FakePgmSpace.h</in>
+        <in>I2cMaster.cpp</in>
+        <in>I2cMaster.h</in>
+        <in>IPAddress.cpp</in>
+        <in>IPAddress.h</in>
+        <in>Print.cpp</in>
+        <in>Print.h</in>
+        <in>Printable.h</in>
+        <in>SplitString.cpp</in>
+        <in>SplitString.h</in>
+        <in>Stream.cpp</in>
+        <in>Stream.h</in>
+        <in>WCharacter.h</in>
+        <in>WConstants.h</in>
+        <in>WHashMap.h</in>
+        <in>WMath.cpp</in>
+        <in>WMath.h</in>
+        <in>WProgram.h</in>
+        <in>WShift.cpp</in>
+        <in>WShift.h</in>
+        <in>WString.cpp</in>
+        <in>WString.h</in>
+        <in>WVector.h</in>
+        <in>WiringFrameworkDependencies.h</in>
+        <in>WiringFrameworkIncludes.h</in>
+        <in>wiring_private.h</in>
+      </df>
+    </df>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>3</platform>
+      </toolsSet>
+      <compile>
+        <compiledirpicklist>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
+          <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+        </compiledirpicklist>
+        <compiledir>${AUTO_FOLDER}</compiledir>
+        <compilecommandpicklist>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+        </compilecommandpicklist>
+        <compilecommand>${AUTO_COMPILE}</compilecommand>
+      </compile>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <rundir>.</rundir>
+        <buildfirst>false</buildfirst>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+  </confs>
+</configurationDescriptor>

@@ -1,4 +1,9 @@
 eclipse.preferences.version=1
+environment/project/cdt.managedbuild.toolchain.gnu.mingw.base.1135534147/WIFI_SSID/delimiter=;
+environment/project/cdt.managedbuild.toolchain.gnu.mingw.base.1135534147/WIFI_SSID/operation=replace
+environment/project/cdt.managedbuild.toolchain.gnu.mingw.base.1135534147/WIFI_SSID/value=Savla-N
+environment/project/cdt.managedbuild.toolchain.gnu.mingw.base.1135534147/append=true
+environment/project/cdt.managedbuild.toolchain.gnu.mingw.base.1135534147/appendContributed=true
 org.eclipse.cdt.core.formatter.alignment_for_arguments_in_method_invocation=16
 org.eclipse.cdt.core.formatter.alignment_for_assignment=16
 org.eclipse.cdt.core.formatter.alignment_for_base_clause_in_type_declaration=80

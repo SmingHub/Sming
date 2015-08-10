@@ -11,8 +11,8 @@
 
 #ifndef WEBSOCKETCLIENT_H
 #define	WEBSOCKETCLIENT_H
-#include <user_config.h>
-#include "../SmingCore.h"
+
+#include "../Wiring/WiringFrameworkIncludes.h"
 #include "TcpClient.h"
 #include "../Delegate.h"
 #include "URL.h"
@@ -22,39 +22,40 @@
 #include "../PWM.h"
 
 typedef Delegate<void(String message)> WebSocketRxCallback;
+class WebsocketClient;
 enum wsMode
 {
-	ws_Disconnected = 0,
-	ws_Connecting,
-	ws_Connected
+	ws_Disconnected = 0, ws_Connecting, ws_Connected
 };
-class WebsocketClient : protected TcpClient
+class WebsocketClient: protected TcpClient
 {
 public:
-   //  TcpClient wsClient(wsOnCompleted, wsOnReceive);
-    WebsocketClient(bool autoDestruct = false);//
-    virtual ~WebsocketClient();
-    bool startWS(String url, WebSocketRxCallback _callback = NULL);
-    void sendPing();
-    void sendPong();
-    void endWS();
-    void sendMessage(char* msg, uint16_t length);
-    void sendMessage(String str);
-    void sendBinary(uint8_t* msg, uint16_t length);
-    wsMode getWSMode();
+	//  TcpClient wsClient(wsOnCompleted, wsOnReceive);
+	WebsocketClient(bool autoDestruct = false); //
+	virtual ~WebsocketClient();
+	bool connect(String url, WebSocketRxCallback _callback = NULL);
+	void sendPing();
+	void sendPong();
+	void disconnect();
+	void sendMessage(char* msg, uint16_t length);
+	void sendMessage(String str);
+	void sendBinary(uint8_t* msg, uint16_t length);
+	wsMode getWSMode();
 protected:
-    void onFinished(TcpClientState finishState);
-    virtual err_t onReceive(pbuf *buf);
-    void restart();
-    bool verifyKey(char *buf, int size);
+	virtual void onFinished(TcpClientState finishState);
+	virtual err_t onConnected(err_t err);
+	virtual void onError(err_t err);
+	virtual err_t onReceive(pbuf *buf);
+	void restart();
+	bool verifyKey(char *buf, int size);
 private:
-       
-        URL uri;
-        String _url;
-        wsMode Mode ;
+
+	URL uri;
+	String _url;
+	wsMode Mode;
 	WebSocketRxCallback callback;
-        bool connected;
-        String key;
+	bool connected;
+	String key;
 };
 
 #endif	/* WEBSOCKETCLIENT_H */
