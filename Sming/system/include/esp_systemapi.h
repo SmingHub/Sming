@@ -29,7 +29,7 @@ extern int m_vsnprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args
 extern int m_printf(const char *fmt, ...);
 
 #undef assert
-#define debugf(fmt, ...) /*m_printf(fmt"\r\n", ##__VA_ARGS__)*/
+#define debugf(fmt, ...) m_printf(fmt"\r\n", ##__VA_ARGS__)
 #define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
 #define SYSTEM_ERROR(fmt, ...) os_printf("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
