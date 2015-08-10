@@ -8,13 +8,18 @@
 #include "CommandExecutor.h"
 #include "HardwareSerial.h"
 
-CommandExecutor::CommandExecutor(TcpClient* cmdClient)
+CommandExecutor::CommandExecutor()
+{
+	commandHandler.registerSystemCommands();
+}
+
+CommandExecutor::CommandExecutor(TcpClient* cmdClient) : CommandExecutor()
 {
 	commandOutput = new CommandOutput(cmdClient);
 	commandOutput->printf("Welcome to the Tcp Command executor\r\n");
 }
 
-CommandExecutor::CommandExecutor(Stream* reqStream)
+CommandExecutor::CommandExecutor(Stream* reqStream) : CommandExecutor()
 {
 	commandOutput = new CommandOutput(reqStream);
 	commandOutput->printf("Welcome to the Stream Command executor\r\n");
