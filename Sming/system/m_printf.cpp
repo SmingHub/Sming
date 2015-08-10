@@ -11,11 +11,21 @@ Descr: embedded very simple version of printf with float support
 
 #define MPRINTF_BUF_SIZE 256
 
+#define OVERFLOW_GUARD 24
+
 void (*cbc_printchar)(char ch) = uart_tx_one_char;
 
 #define SIGN    	(1<<1)	/* Unsigned/signed long */
 
-int m_vsnprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args);
+#define is_digit(c) ((c) >= '0' && (c) <= '9')
+
+static int skip_atoi(const char **s)
+{
+	int i = 0;
+	while (is_digit(**s))
+		i = i * 10 + *((*s)++) - '0';
+	return i;
+}
 
 void setMPrintfPrinterCbc(void (*callback)(char))
 {
@@ -43,25 +53,30 @@ int m_printf(const char *fmt, ...)
 	return n;
 }
 
-int m_vsnprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args)
+int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 {
-	int i, base, flags, qualifier;
+	int i, base, flags;
 	char *str;
 	const char *s;
-	uint8_t precision = 6;
-
-	const uint8_t overflowGuard = 24;
+	int8_t precision, width;
 
 	char tempNum[24];
 
 	for (str = buf; *fmt; fmt++)
 	{
-		if(maxLen - (str - buf) < overflowGuard)
+		if(maxLen - (uint32_t)(str - buf) < OVERFLOW_GUARD)
 		{
+			*str++ = '(';
 			*str++ = '.';
 			*str++ = '.';
 			*str++ = '.';
-			break;
+			*str++ = ')';
+
+			//mark end of string
+			*str = '\0';
+
+			//return maximum buffer len, so caller can detect not_enough_space
+			return maxLen;
 		}
 
 		if (*fmt != '%')
@@ -73,35 +88,29 @@ int m_vsnprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args)
 		flags = 0;
 		fmt++; // This skips first '%'
 
+		//reset attributes to defaults
+		precision = -1;
+		width = 0;
+		base = 10;
+
 		do
 		{
 			//skip width and flags data - not supported
-			while ((*fmt >= '0' && *fmt <= '9') || '+' == *fmt
-					|| '-' == *fmt || '#' == *fmt || '*' == *fmt)
+			while ('+' == *fmt || '-' == *fmt || '#' == *fmt || '*' == *fmt || 'l' == *fmt)
 				fmt++;
+
+			if (is_digit(*fmt))
+				width = skip_atoi(&fmt);
 
 			if('.' == *fmt)
 			{
 				fmt++;
-				if((*fmt >= '0' && *fmt <= '9'))
-				{
-					precision = *fmt++ - '0';
-				}
+				if (is_digit(*fmt))
+					precision = skip_atoi(&fmt);
 			}
 			else
 				break;
 		}while(1);
-
-		// Get the conversion qualifier
-		qualifier = -1;
-		if (*fmt == 'l' || *fmt == 'L')
-		{
-			qualifier = 'l';
-			fmt++;
-		}
-
-		// Default base
-		base = 10;
 
 		switch (*fmt)
 		{
@@ -148,7 +157,7 @@ int m_vsnprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args)
 
 		case 'f':
 
-			s = dtostrf(va_arg(args, double), 10, precision, tempNum);
+			s = dtostrf(va_arg(args, double), width, precision, tempNum);
 			while (*s)
 				*str++ = *s++;
 			continue;
@@ -163,12 +172,10 @@ int m_vsnprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args)
 			continue;
 		}
 
-		if (qualifier == 'l')
-			s = ultoa(va_arg(args, unsigned long), tempNum, base);
-		else if (flags & SIGN)
-			s = ltoa(va_arg(args, int), tempNum, base);
+		if (flags & SIGN)
+			s = ltoa_w(va_arg(args, int), tempNum, base, width);
 		else
-			s = ultoa(va_arg(args, unsigned int), tempNum, base);
+			s = ultoa_w(va_arg(args, unsigned int), tempNum, base, width);
 
 		while (*s)
 			*str++ = *s++;

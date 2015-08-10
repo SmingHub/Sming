@@ -3,7 +3,14 @@
 #include <stdlib.h>
 #include "../include/stringconversion.h"
 
+//Since C does not support default func parameters, keep this function as used by framework
+//and create extended _w funct to handle width
 char* ltoa(long val, char* buffer, int base)
+{
+	return ltoa_w(val, buffer, base, 0);
+}
+
+char* ltoa_w(long val, char* buffer, int base, int width)
 {
 	int i = 34, p = 0;
 	char buf[36] = {0};
@@ -17,11 +24,27 @@ char* ltoa(long val, char* buffer, int base)
 	if (ngt)
 		buf[i--] = '-';
 
-	strcpy(buffer, &buf[i+1]);
+	if(width != 0)
+	{
+		width -= strlen(&buf[i+1]);
+		if(width > 0)
+		{
+			memset(buffer, ' ', width);
+		}
+	}
+
+	strcpy(buffer + width, &buf[i+1]);
 	return buffer;
 }
 
+//Since C does not support default func parameters, keep this function as used by framework
+//and create extended _w funct to handle width
 char* ultoa(unsigned long val, char* buffer, unsigned int base)
+{
+	return ultoa_w(val, buffer, base, 0);
+}
+
+char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width)
 {
 	int i = 34, p = 0;
 	char buf[36] = {0};
@@ -30,7 +53,16 @@ char* ultoa(unsigned long val, char* buffer, unsigned int base)
 		buf[i] = "0123456789abcdef"[val % base];
 	if (p == 0) buf[i--] = '0'; // case for zero
 
-	strcpy(buffer, &buf[i+1]);
+	if(width != 0)
+	{
+		width -= strlen(&buf[i+1]);
+		if(width > 0)
+		{
+			memset(buffer, ' ', width);
+		}
+	}
+	strcpy(buffer + width, &buf[i+1]);
+
 	return buffer;
 }
 
@@ -41,6 +73,10 @@ char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsA
 	char temp[24], num[24];
 	unsigned long mult = 1, int_part;
 	int16_t i, processedFracLen = numDigitsAfterDecimal;
+
+	if(processedFracLen < 0)
+		processedFracLen = 9;
+
 	double remainder;
 
 	if (outputBuffer == NULL)
@@ -107,11 +143,21 @@ char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsA
 			while (*s)
 				*buf++ = *s++;
 
-			i = numDigitsAfterDecimal - processedFracLen;
+			//trim back on the last fraction zeroes
+			while(*(buf - 1) == '0')
+			{
+				--buf;
+				--processedFracLen;
+			}
 
-			// padding fraction zeroes
-			while (i-- > 0)
-				*buf++ = '0';
+			if(numDigitsAfterDecimal > 0)
+			{
+				i = numDigitsAfterDecimal - processedFracLen;
+
+				// padding fraction zeroes
+				while (i-- > 0)
+					*buf++ = '0';
+			}
 		}
 
 		//terminate num
@@ -121,7 +167,7 @@ char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsA
 		buf = outputBuffer;
 
 		// generate width space padding
-		i = minStringWidthIncDecimalPoint - strlen(num);
+		i = minStringWidthIncDecimalPoint - strlen(num) + 1;
 		while (--i > 0)
 		{
 			*buf++ = ' ';

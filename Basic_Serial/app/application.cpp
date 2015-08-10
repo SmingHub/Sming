@@ -18,35 +18,52 @@ void sayHello()
 
 void testPrintf()
 {
-	Serial.printf("Float numbers display test: \n");
+	Serial.printf("\n== PRINTF TEST START ==\n");
+
+	Serial.printf("\nFloat numbers display test: \n");
 
 	Serial.printf( "Pi with 2 decimals: %.2f and with 4 decimals: %.4f \n", PI, PI);
-	Serial.printf( "Pi without specifying precision: %f\n", PI);
+	Serial.printf( "Pi without specifying precision(default 9): %f\n", PI);
 	Serial.printf( "A number with leading fraction zeroes like 1.050250=%f\n", 1.050250);
 
-	Serial.printf("Show a string '%s', a decimal %d, a hex %#x, a float with 2 decimals %.2f, " \
-			 	 	"unsigned value %u, octal %o.\n",
-	        "red", 123456, 0x00C0FFEE, 3.14159, 250, 06675);
+	Serial.printf("\nTest crazy line lengths: wait for it, wait for it, wait for it, wait for it, "\
+			"wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, " \
+			"wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, " \
+			"wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, got to the end :)\n");
 
-	Serial.printf("Test format specifiers on the same parameters\n");
+	Serial.printf("\nShow a decimal %d, a hex %#x, an unsigned %u, an octal %o.\n",
+	        123456, 0x00C0FFEE, 250, 06675);
 
-	Serial.printf( "Display -99:%d, -3.010:%f, 'abc'=%s, 3/4:%f, 8/9:%f\n",
+	Serial.printf("\nPrint pretty table\n");
+
+	Serial.printf("LENGTH \t\tWIDTH \t\tHEIGHT \n");
+	Serial.printf("%6d \t\t%5d \t\t%6d \n", 1, 2, 3);
+	Serial.printf("%6d \t\t%5d \t\t%6d \n", 10, 20, 300);
+	Serial.printf("%6.3f \t\t%5d \t\t%6.4f \n", 1.654, 200, 3.654);
+	Serial.printf("%6.3f \t\t%5.2f \t\t%6.4f \n", PI, PI, PI);
+
+	Serial.printf("\nTest crazy format specifiers on the same parameters\n");
+
+	Serial.printf( "Display -99:%d, \t\t-3.0104:%f, \t'abc'=%s, \t\t0.75:%f, \t\t0.888888889:%f\n",
 			-99, -3.01040, "abc", 3.0/4, 8.0/9);
 
-	Serial.printf( "Display -99:%3d, -3.010:%.3f, 'abc'=%5s, 3/4:%-+.5f, 8/9:%#*f\n",
+	Serial.printf( "Display '   -99':%6d, \t-3.010:%.3f, \t\t'abc'=%5s, \t\t0.75000:%-+.5f, \t0.888888889:%#*f\n",
 			-99, -3.01040, "abc", 3.0/4, 8.0/9);
 
-	Serial.printf( "Display -99:%3d, -3.010:%.3f, 'abc'=%#s, 3/4:%5f, 8/9:%.3f\n",
+	Serial.printf( "Display -99:%3d, \t\t-3.010:%.3f, \t\t'abc'=%#s, \t\t' 0.75':%5f, \t\t0.889:%.3f\n",
 			-99, -3.01040, "abc", 3.0/4, 8.0/9);
 
-	Serial.printf( "Display -99:%d, -3.010:%f, 'abc'=%s, 3/4:%f, 8/9:%f\n",
+	Serial.printf( "Display -99:%.3d, \t\t-3.0104000:%.7f, \t'abc'=%s, \t\t0.750:%.3f, \t\t' 0.889':%6.3f\n",
 			-99, -3.01040, "abc", 3.0/4, 8.0/9);
 
-	Serial.printf( "Test invalid specifiers and escaping of '%%': %j %w %%% %%%% % %zk \n");
+	Serial.printf( "\nTest invalid specifiers and escaping of '%%': %j %w %%% %%%% % %zk \n");
 
-	Serial.printf("Show int limits %d .. %d \n Show uint limits 0 .. %u \n Show long limits %ld .. %ld \n",
-			INT_MIN, INT_MAX, UINT_MAX, LONG_MIN, LONG_MAX);
+	Serial.printf("\nShow limits:\n");
 
+	Serial.printf("Int: %d .. %d \nUint limits 0 .. %u \nLong %ld .. %ld \n",
+			INT_MIN + 1, INT_MAX, UINT_MAX, LONG_MIN + 1, LONG_MAX);
+
+	Serial.printf("\n== TEST FINISH ==\n");
 }
 
 void init()

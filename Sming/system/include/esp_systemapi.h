@@ -25,7 +25,7 @@
 #define STORE_TYPEDEF_ATTR __attribute__((aligned(4),packed))
 #define STORE_ATTR __attribute__((aligned(4)))
 
-extern int m_vsnprintf(char *buf, uint32_t maxLen, const char *fmt, va_list args);
+extern int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args);
 extern int m_printf(const char *fmt, ...);
 
 #undef assert
@@ -89,8 +89,6 @@ extern void ets_intr_unlock();
 // CPU Frequency
 extern void ets_update_cpu_frequency(uint32_t frq);
 extern uint32_t ets_get_cpu_frequency();
-
-int ee_printf(const char *fmt, ...);
 
 typedef signed short file_t;
 
