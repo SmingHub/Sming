@@ -130,7 +130,9 @@ void TcpConnection::onError(err_t err)
 
 void TcpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	debugf("onReadyToSendData: %d", sourceEvent);
+	//Only on Polling event we will get this message
+	if (sourceEvent != eTCE_Poll)
+		debugf("onReadyToSendData: %d", sourceEvent);
 }
 
 int TcpConnection::writeString(const String data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
