@@ -16,12 +16,11 @@ uint32_t RtcClass::getRtcSeconds() {
 
 
 bool RtcClass::setRtcSeconds(uint32_t seconds) {
-
 	RtcData rtcTime;
 	loadTime(rtcTime);
-	uint64_t offsetNs = ((uint64_t) seconds * NS_PER_SECOND) - rtcTime.time;
-	rtcTime.time += offsetNs; // adjust time in nanoseconds by the ntp time offset in nanoseconds
 	updateTime(rtcTime);
+	uint64_t time= ((uint64_t) seconds * NS_PER_SECOND);
+	rtcTime.time = time;
 	return saveTime(rtcTime);
 }
 
