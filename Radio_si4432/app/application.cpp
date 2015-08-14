@@ -34,6 +34,7 @@ void loopListen()
 	byte len = 0;
 
 	//1. Ping from time to time, and wait for incoming response
+/*
 	if(millis() - lastPingTime > PING_PERIOD_MS)
 	{
 		lastPingTime = millis();
@@ -62,7 +63,7 @@ void loopListen()
 			Serial.println();
 		}
 	}
-
+*/
 	//2. Listen for any other incoming packet
 	bool pkg = radio->isPacketReceived();
 
@@ -79,7 +80,7 @@ void loopListen()
 			Serial.print((char) payLoad[i]);
 		}
 		Serial.println();
-
+/*
 		Serial.print("Response -> ");
 		if (!radio->sendPacket(strlen((const char*)ack), ack))
 		{
@@ -89,7 +90,7 @@ void loopListen()
 		{
 			Serial.println("SENT!");
 		}
-
+*/
 		radio->startListening(); // restart the listening.
 	}
 }
@@ -99,7 +100,7 @@ void init()
 
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(true); // Allow debug output to serial
+	Serial.systemDebugOutput(false); // Allow debug output to serial
 
 	Serial.print("\nRadio si4432 example - !!! see code for HW setup !!! \n\n");
 
