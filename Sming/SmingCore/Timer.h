@@ -14,10 +14,12 @@
 #include "../Wiring/WiringFrameworkDependencies.h"
 
 
-// Default timer is millisecond timer and the maximum value is 6871947ms.
-// After call system_timer_reinit,the timer will change to microsecond,
-// timer and the maximum value of os_timer_arm() is 429496ms.
-#define MAX_OS_TIMER_INTERVAL_US 420000000  // some haedroom ;)
+// According to documentation maximum value of interval for ms
+// timer after doing system_timer_reinit is 268435ms.
+// If we do some testing we find that higher values works, 
+// the actual limit seems to be about twice as high
+// but we use the documented value anyway to be on the safe side.
+#define MAX_OS_TIMER_INTERVAL_US 268435000
 
 typedef Delegate<void()> TimerDelegate;
 
@@ -62,10 +64,10 @@ private:
     uint64_t interval = 0;
     InterruptCallback callback = nullptr;
     TimerDelegate delegate_func = nullptr;
+    bool repeating = false;
     bool started = false;
-
-
-    // Because of the limitation in Espressif SDK a workargound
+    
+    // Because of the limitation in Espressif SDK a workaround
     // was added to allow for longer timer intervals.
     uint16_t long_intvl_cntr = 0;
     uint16_t long_intvl_cntr_lim = 0;

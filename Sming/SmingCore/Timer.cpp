@@ -46,13 +46,22 @@ Timer& Timer::initializeUs(uint32_t microseconds, TimerDelegate delegateFunction
 
 void Timer::start(bool repeating/* = true*/)
 {
+	this->repeating = repeating;
 	stop();
-	if(interval == 0 || (!callback && !delegate_func)) return;
-	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);
-	if (interval > 10000)
-		ets_timer_arm_new(&timer, (uint32_t)(interval / 1000), repeating, 1); // msec
-	else
+	if(interval == 0 || (!callback && !delegate_func)) 
+		return;
+	
+	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);	
+	if (interval > 10000) 
+	{
+		ets_timer_arm_new(&timer, (uint32_t)(interval / 1000), 
+				(long_intvl_cntr_lim > 0 ? true : repeating), 1); // msec
+	}
+	else 
+	{
 		ets_timer_arm_new(&timer, (uint32_t)interval, repeating, 0); 		  // usec
+	}
+	
 	started = true;
 }
 
@@ -91,7 +100,7 @@ uint32_t Timer::getIntervalMs()
 
 void Timer::setIntervalUs(uint64_t microseconds/* = 1000000*/)
 {
-	if(interval > MAX_OS_TIMER_INTERVAL_US)
+	if(microseconds > MAX_OS_TIMER_INTERVAL_US)
 	{
 		// interval to large, calculate a good divider.
 		int div = (microseconds / MAX_OS_TIMER_INTERVAL_US) + 1; // integer division, intended
@@ -106,7 +115,8 @@ void Timer::setIntervalUs(uint64_t microseconds/* = 1000000*/)
 		long_intvl_cntr = 0;
 		long_intvl_cntr_lim = div;
 	}
-	else {
+	else 
+	{
 		interval = microseconds;
 		long_intvl_cntr = 0;
 		long_intvl_cntr = 0;
@@ -151,18 +161,25 @@ void Timer::processing(void *arg)
 	   return;
 	}
 	else {
-
 		if(ptimer->long_intvl_cntr_lim > 0)
 		{
 			// we need to handle a long interval.
 			ptimer->long_intvl_cntr++;
 
-			if(ptimer->long_intvl_cntr < ptimer->long_intvl_cntr_lim) {
+			if(ptimer->long_intvl_cntr < ptimer->long_intvl_cntr_lim)
+			{
 				return;
 			}
-			else {
+			else 
+			{
 				// reset counter since callback will fire.
 				ptimer->long_intvl_cntr = 0;
+				
+				// stop timer if it was not a repeating timer.
+				// for long intervals os_timer is set to repeating,
+				// therefore it must be stopped.
+				if(!ptimer->repeating)
+					ptimer->stop();
 			}
 		}
 
