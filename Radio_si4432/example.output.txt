@@ -1,57 +1,66 @@
 
-f_mount: SUCCESS
+Radio si4432 example - !!! see code for HW setup !!!
 
+SPI is initialized now.
 
-SDCard init TYPE 12 STAT 0
+== DEV STATUS: 20 ==
 
+Package signature is set!
 
+== DEV STATUS: 20 ==
 
-SDCard example - !!! see code for HW setup !!!
+REGS  00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
 
-1. Listing files in the root folder:
-Size    Name            Date            Attributes
-0       [ DCIM ]        2008/01/01, 12:00       D----
-0       ENCFIL~1.MEN    2011/08/22, 00:26       ----A
-0       [ RECYCLER ]    2011/08/21, 17:29       DRHS-
-0       [ LOST.DIR ]    2013/07/02, 10:41       D----
-11      NEWFILE.TXT     2015/02/01, 00:00       ----A
-0       [ AUTORUN.INF ] 2011/08/21, 17:29       D----
-2822090 E_PPCM~1.CAB    2011/08/21, 16:52       ----A
-0       [ ANDROI~1 ]    2013/07/02, 10:41       D----
-0       [ ANDROID ]     2015/06/27, 15:36       D----
-1024    B1K.TXT         2015/02/01, 00:00       ----A
-1024    B1K4.TXT        2015/02/01, 00:00       ----A
-0       B128K128.TXT    2015/02/01, 00:00       -----
-0       B1K64.TXT       2015/02/01, 00:00       -----
-0       B8K128.TXT      2015/02/01, 00:00       -----
-32768   B8K512.TXT      2015/02/01, 00:00       ----A
-1024    FILE_1K.TXT     2015/02/01, 00:00       ----A
-1024    FILE1K.TXT      2015/02/01, 00:00       ----A
-1024    F1.TXT          2015/02/01, 00:00       ----A
-1024    F2.TXT          2015/02/01, 00:00       ----A
-1024    F3.TXT          2015/02/01, 00:00       ----A
-1024    F4.TXT          2015/02/01, 00:00       ----A
-1024    F5.TXT          2015/02/01, 00:00       ----A
-4096    F6.TXT          2015/02/01, 00:00       ----A
-8192    F7.TXT          2015/02/01, 00:00       ----A
-8192    F8.TXT          2015/02/01, 00:00       ----A
-8192    F9.TXT          2015/02/01, 00:00       ----A
-21      TEST            2015/02/01, 00:00       ----A
+(00): 08 06 20 20 00 00 03 01 00 7f 06 00 00 00 00 00
 
-2. Open file "test" and write some data...
+(10): 00 00 20 00 03 00 01 00 00 01 14 00 02 3c 02 03
 
-3. Open file "test" and read
-Read: hello has 5 letters
+(20): 68 01 3a 93 04 ee 00 1e 00 00 ff 00 18 bc 26 08
 
+(30): ad 00 0c 22 08 3a 2d d4 00 00 de ad 00 00 00 de
 
+(40): ad 00 00 ff ff ff ff 00 00 00 00 ff 08 08 08 10
 
-4. Write speed benchamark:
-Write 1 kBytes in 1 Bytes increment: 23.17 kB/s
-Write 1 kBytes in 64 Bytes increment: 23.13 kB/s
-Write 1 kBytes in 128 Bytes increment: 23.09 kB/s
-Write 1 kBytes in 512 Bytes increment: 23.09 kB/s
-Write 1 kBytes in 1024 Bytes increment: 24.01 kB/s
-Write 4 kBytes in 1024 Bytes increment: 71.36 kB/s
-Write 8 kBytes in 512 Bytes increment: 91.49 kB/s
-Write 8 kBytes in 1024 Bytes increment: 102.11 kB/s
-Write 8 kBytes in 8192 Bytes increment: 96.95 kB/s
+(50): 00 00 df 52 20 64 00 01 87 00 01 00 0e 00 00 00
+
+(60): a0 00 24 00 00 82 42 1f 03 60 9d 00 01 1f 09 d5
+
+(70): 0c 23 1f 00 00 53 00 00 19 00 64 03 37 04 37 40
+
+Listening...
+
+== DEV STATUS: 21 ==
+
+Ping -> == DEV STATUS: 22 ==
+
+== DEV STATUS: 20 ==
+
+Package sent! -- 24
+
+== DEV STATUS: 21 ==
+
+  SENT!
+SYNC RX (2): OK
+
+Ping -> == DEV STATUS: 22 ==
+
+== DEV STATUS: 20 ==
+
+Package sent! -- 24
+
+== DEV STATUS: 21 ==
+
+  SENT!
+SYNC RX (2): OK
+
+Ping -> == DEV STATUS: 22 ==
+
+== DEV STATUS: 20 ==
+
+Package sent! -- 24
+
+== DEV STATUS: 21 ==
+
+  SENT!
+SYNC RX (2): OK
+

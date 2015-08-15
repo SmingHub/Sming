@@ -1,10 +1,12 @@
 /*
-Author: (github.com/)ADiea
+Modified by: (github.com/)ADiea
 Project: Sming for ESP8266 - https://github.com/anakod/Sming
 License: MIT
-Date: 17.07.2015
-Descr: SDCard/FAT file usage and write benchmark.
+Date: 15.08.2015
+Descr: Example applicatin for radio module Si4432 aka RF22 driver
+Link: http://www.electrodragon.com/w/SI4432_433M-Wireless_Transceiver_Module_%281.5KM_Range,_Shield-Protected%29
 */
+
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <Libraries/si4432/si4432.h>
@@ -25,7 +27,6 @@ SPISoft *pRadioSPI = NULL;
 #define PING_WAIT_PONG_MS 100
 unsigned long lastPingTime;
 
-
 void loopListen()
 {
 	const byte* ack = (const byte*)"OK";//{ 0x01, 0x3, 0x11, 0x13 };
@@ -34,7 +35,6 @@ void loopListen()
 	byte len = 0;
 
 	//1. Ping from time to time, and wait for incoming response
-/*
 	if(millis() - lastPingTime > PING_PERIOD_MS)
 	{
 		lastPingTime = millis();
@@ -63,7 +63,7 @@ void loopListen()
 			Serial.println();
 		}
 	}
-*/
+
 	//2. Listen for any other incoming packet
 	bool pkg = radio->isPacketReceived();
 
@@ -74,13 +74,12 @@ void loopListen()
 		Serial.print(len, DEC);
 		Serial.print("): ");
 
-		for (byte i = 0; i < len; ++i) {
-			//Serial.print((int) payLoad[i], HEX);
-			//Serial.print(" ");
+		for (byte i = 0; i < len; ++i)
+		{
 			Serial.print((char) payLoad[i]);
 		}
 		Serial.println();
-/*
+
 		Serial.print("Response -> ");
 		if (!radio->sendPacket(strlen((const char*)ack), ack))
 		{
@@ -90,17 +89,16 @@ void loopListen()
 		{
 			Serial.println("SENT!");
 		}
-*/
+
 		radio->startListening(); // restart the listening.
 	}
 }
 
 void init()
 {
-
-
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(false); // Allow debug output to serial
+
+	Serial.systemDebugOutput(true); //Allow debug output to serial
 
 	Serial.print("\nRadio si4432 example - !!! see code for HW setup !!! \n\n");
 
@@ -113,27 +111,26 @@ void init()
 
 	if(radio)
 	{
-		delay(100); //300
+		delay(100);
 
 		//initialise radio with default settings
 		radio->init();
 
-		//explicitly set the frequency, baudrate and channel
+		//explicitly set baudrate and channel
 		radio->setBaudRateFast(eBaud_38k4);
-		//radio->setFrequency(433);
 		radio->setChannel(0);
-
-		//start listening for incoming packets
-		radio->startListening();
 
 		//dump the register configuration to console
 		radio->readAll();
 
-		procTimer.initializeMs(10, loopListen).start();
+		//start listening for incoming packets
 		Serial.println("Listening...");
+		radio->startListening();
 
 		lastPingTime = millis();
+
+		//start listen loop
+		procTimer.initializeMs(10, loopListen).start();
 	}
 	else Serial.print("Error not enough heap\n");
-
 }

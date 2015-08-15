@@ -1,4 +1,13 @@
 /*
+Modified by: (github.com/)ADiea
+Project: Sming for ESP8266 - https://github.com/anakod/Sming
+License: MIT
+Date: 15.08.2015
+Descr: Header for radio module Si4432 aka RF22 driver
+Link: http://www.electrodragon.com/w/SI4432_433M-Wireless_Transceiver_Module_%281.5KM_Range,_Shield-Protected%29
+*/
+
+/*
  * SI4432 library for Arduino - v0.1
  *
  * Please note that Library uses standart SS pin for NSEL pin on the chip. This is 53 for Mega, 10 for Uno.
@@ -19,7 +28,8 @@
 
 #include <SPISoft.h>
 
-#define DEBUG_SI4432 0
+#define DEBUG_SI4432 1
+#define DEBUG_VERBOSE_SI4432 0
 
 enum eBaudRate
 {

@@ -1,8 +1,18 @@
+/*
+Modified by: (github.com/)ADiea
+Project: Sming for ESP8266 - https://github.com/anakod/Sming
+License: MIT
+Date: 15.08.2015
+Descr: Implementation for radio module Si4432 aka RF22 driver
+Link: http://www.electrodragon.com/w/SI4432_433M-Wireless_Transceiver_Module_%281.5KM_Range,_Shield-Protected%29
+*/
+
+/*
+ * See si4432.h for original author and license.
+ */
 #include "si4432.h"
 
 #define MAX_TRANSMIT_TIMEOUT 200
-
-
 
 #define BAUD_RATE_REGS 12
 struct baudRateCfg
@@ -16,13 +26,6 @@ baudRateCfg BaudRates[e_Baud_numBauds] =
 	{ 0x02, 0x68, 0x01, 0x3A, 0x93, 0x04, 0xEE, 0x09, 0xD5, 0x0C, 0x23, 0x1F}, //38k4
 	{ 0x82, 0x68, 0x01, 0x3A, 0x93, 0x04, 0xEE, 0x1D, 0x7E, 0x0C, 0x23, 0x5C}, //115k2
 	{ 0x8B, 0x34, 0x02, 0x75, 0x25, 0x07, 0xFF, 0x3A, 0xFB, 0x0C, 0x23, 0xB8} //230k4
-
-/*
-calc by esp	=> veriify with integer baud rate values in excel file
-	{ 0x89, 0x3c, 0x20, 0x67, 0xc4, 0x00, 0x36, 0x09, 0xBA, 0x0C, 0x23, 0xF0}, //38k
-	{ 0x8A, 0x68, 0x01, 0x3A, 0x07, 0x01, 0xE5, 0x1D, 0x71, 0x0C, 0x23, 0xF0}, //115k
-	{ 0x8D, 0x34, 0x02, 0x74, 0x0E, 0x07, 0x8E, 0x3A, 0xE1, 0x0C, 0x23, 0xF0}, //230k
-*/
 };
 
 //values here are kept in khz x 10 format (for not to deal with decimals) - look at AN440 page 26 for whole table
@@ -32,7 +35,6 @@ const uint16_t IFFilterTable[][2] = { { 322, 0x26 }, { 3355, 0x88 }, { 3618, 0x8
 Si4432::Si4432(SPISoft *pSpi, uint8_t InterruptPin) :
 		_spi(pSpi), _sdnPin(0), _intPin(InterruptPin), _freqCarrier(433000000), _freqChannel(0), _kbps(eBaud_38k4), _packageSign(
 				0xDEAD) { // default is 450 mhz
-
 }
 
 void Si4432::setFrequency(unsigned long baseFrequencyMhz) {
@@ -128,7 +130,6 @@ void Si4432::boot() {
 	setCommsSignature(_packageSign); // default signature
 
 	switchMode(Ready);
-
 }
 
 bool Si4432::sendPacket(uint8_t length,
@@ -241,7 +242,6 @@ void Si4432::switchMode(byte mode) {
 	delay(1);
 	byte val = ReadRegister(REG_DEV_STATUS);
 	debugf("== DEV STATUS: %x ==", val);
-
 #endif
 }
 
@@ -341,7 +341,7 @@ void Si4432::BurstWrite(Registers startReg, const byte value[], uint8_t length) 
 	delayMicroseconds(1);
 	_spi->send(&regVal, 1);
 
-#if DEBUG_SI4432
+#if DEBUG_VERBOSE_SI4432
 		debugf("Writing: %x | %x ... %x (%d bytes)", (regVal != 0xFF ? (regVal) & 0x7F : 0x7F),
 				value[0], value[length-1], length);
 #endif
@@ -362,7 +362,7 @@ void Si4432::BurstRead(Registers startReg, byte value[], uint8_t length) {
 	_spi->setMOSI(HIGH); /* Send 0xFF */
 	_spi->recv(value, length);
 
-#if DEBUG_SI4432
+#if DEBUG_VERBOSE_SI4432
 		debugf("Reading: %x  | %x..%x (%d bytes)", (regVal != 0x7F ? (regVal) & 0x7F : 0x7F),
 				value[0], value[length-1], length);
 #endif
