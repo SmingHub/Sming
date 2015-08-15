@@ -14,14 +14,16 @@
 #define NTP_MODE_CLIENT 3
 #define NTP_MODE_SERVER 4
 
-#define NTP_SERVER_DEFAULT "pool.ntp.org"
-
-#define NTP_DEFAULT_AUTO_UPDATE_INTERVAL 600000 // 10 minutes
+#define NTP_DEFAULT_SERVER "pool.ntp.org"
+#define NTP_DEFAULT_QUERY_INTERVAL_SECONDS 600 // 10 minutes
+#define NTP_RESPONSE_TIMEOUT_MS 20000 // 20 seconds
 
 class NtpClient;
 
 // Delegate constructor usage: (&YourClass::method, this)
 typedef Delegate<void(NtpClient& client, time_t ntpTime)> NtpTimeResultDelegate;
+
+
 
 class NtpClient : protected UdpConnection
 {
@@ -34,7 +36,6 @@ public:
 	void requestTime();
 	
 	void setNtpServer(String server);
-	void setNtpServer(IPAddress adress);
 	
 	void setAutoQuery(bool autoQuery);
 	void setAutoQueryInterval(int seconds);
@@ -42,16 +43,17 @@ public:
 	void setAutoUpdateSystemClock(bool autoUpdateClock);
 
 protected:
-	int resolveServer();
 	void onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort);
-	
+	void internalRequestTime(IPAddress serverIp);
+
 protected: 
-	String server = NTP_SERVER_DEFAULT;
-	IPAddress serverAddress = (uint32_t)0;
+	String server = NTP_DEFAULT_SERVER;
+
 	NtpTimeResultDelegate delegateCompleted = nullptr;
 	bool autoUpdateSystemClock = false;
 		
 	Timer autoUpdateTimer;
+	Timer timeoutTimer;
 	Timer connectionTimer;
 		
 	static void staticDnsResponse(const char *name, struct ip_addr *ip, void *arg);		
