@@ -1,15 +1,29 @@
 /*
+ * SI4432 library for Arduino - v0.1
+ *
+ * Please note that Library uses standart SS pin for NSEL pin on the chip. This is 53 for Mega, 10 for Uno.
+ * NOTES:
+ *
+ * V0.1
+ * * Library supports no `custom' changes and usages of GPIO pin. Modify/add/remove your changes if necessary
+ * * Radio use variable packet field format with 4 byte address header, first data field as length. Change if necessary
+ *
+ * made by Ahmet (theGanymedes) Ipkin
+ *
+ * 2014
+ */
+
+/*
 Modified by: (github.com/)ADiea
 Project: Sming for ESP8266 - https://github.com/anakod/Sming
 License: MIT
 Date: 15.08.2015
-Descr: Implementation for radio module Si4432 aka RF22 driver
+Descr: Header for radio module Si4432 aka RF22 driver
 Link: http://www.electrodragon.com/w/SI4432_433M-Wireless_Transceiver_Module_%281.5KM_Range,_Shield-Protected%29
-*/
 
-/*
- * See si4432.h for original author and license.
- */
+Original author license: MIT (https://github.com/theGanymedes/si4432/issues/2)
+Original location: https://github.com/theGanymedes/si4432/
+*/
 #include "si4432.h"
 
 #define MAX_TRANSMIT_TIMEOUT 200
