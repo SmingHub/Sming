@@ -18,3 +18,7 @@ endif
 
 # Include main Sming Makefile
 include $(SMING_HOME)/Makefile-project.mk
+
+include ./Makefile-web.mk
+
+

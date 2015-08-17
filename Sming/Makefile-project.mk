@@ -305,7 +305,7 @@ $(SPIFF_BIN_OUT):
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
     	echo "$(SPIFF_FILES) directory exists. Creating spiff_rom.bin"; \
-    	spiffy; \
+    	spiffy $(SPIFFS_SIZE); \
     	mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
 	else \
     	echo "No files found in ./$(SPIFF_FILES)."; \

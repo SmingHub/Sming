@@ -28,3 +28,5 @@ MODULES = app
 
 # Com port speed
 # COM_SPEED	= 115200
+
+SPIFFS_SIZE = 92160 # 90kB
