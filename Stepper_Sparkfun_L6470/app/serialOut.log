@@ -1,0 +1,33 @@
+Terminal log file
+Date: 8/18/2015 - 1:14:04 AM
+-----------------------------------------------
+r<0>lœØrß<0>Œ#ânÀàŒ‚ìpŒ|‚ß<0>ì8’ßÇ’ÜäŒpònnä„;ònÄ’Üäbç$‰rrpònàÃÜ<0>à‚ÇÀl€€€b€nâãnÀÄŒxŒònnîÄÁŒ<0>l`üœ#‚nÀ$Œl`ä8`rn|’’nÀàÇ’`¹~„Àœ#‚n€$ŒŒònnîÄØl`nnàÃÜ<0>àrÇâÜ€pp’Ü<ÄÃìpŒònnîÄÁŒ<0>l`üÜ#‚nÀrnr’ß;ÄÀ?Œœ;pònàƒÜ<0>àr‡âœlØpp’Ü<„Ø’ŒpŒònnîÄğrœ#‚nÀ$Œl`ä8`rn|’’n€à‡Ãl`ä8’Ÿ;ÄÀ‚lrŒÿÕ(¤SQS(RQ¨)HT¨)SHHHC…äÿr‚ERROR: No pin 17, can't set mode
+ERROR: No pin 255, can't set mode
+fs.start: size:272 Kb, offset:0x38000
+
+m
+
+L6470 test start
+Config start
+Config end.
+mode : nullDirection=1
+Fatal exception (3):epc1=0x40237139, epc2=0x00000000, epc3=0x00000000, excvaddr=0x4000003f, depc=0x00000000
+ ets Jan  8 2013,rst cause:2, boot mode:(3,6)
+
+load 0x40100000, len 23836, room 16 
+tail 12
+chksum 0x0f
+ho 0 tail 12 room 4
+load 0x3ffe8000, len 1340, room 12 
+tail 0
+chksum 0x2d
+load 0x3ffe8540, len 4052, room 8 
+tail 12
+chksum 0x11
+äÿr‚ERROR: No pin 17, can't set mode
+ERROR: No pin 255, can't set mode
+fs.start: size:272 Kb, offset:0x38000
+
+csum 0x11
+ŒÿÕ(¤SQS(RQ¨)HT¨)SHHHC…m
+
