@@ -15,6 +15,9 @@ WebsocketClient::WebsocketClient(bool autoDestruct /*= false*/) :
 		TcpClient(autoDestruct)
 {
 	this->Mode = ws_Disconnected;
+	this->rxcallback = NULL;
+	this->completecallback = NULL;
+	this->connectedcallback = NULL;
 }
 
 WebsocketClient::~WebsocketClient()
@@ -22,9 +25,48 @@ WebsocketClient::~WebsocketClient()
 
 }
 
-bool WebsocketClient::connect(String url, WebSocketRxCallback _callback)
+
+/* Function Name: setOnReceiveCallback
+ * Description: This function is used to set Receive callback function
+ * Parameters: Callback function like wsMessageReceived(String message)
+ */
+void WebsocketClient::setOnReceiveCallback(WebSocketRxCallback _rxcallback)
 {
-	this->callback = _callback;
+    this->rxcallback = _rxcallback;
+}
+
+/* Function Name: setOnDisconnectedCallback
+ * Description: This function is used to set Disconnected callback function
+ * Parameters: Callback function like  wsDisconnected(bool success)
+ */
+void WebsocketClient::setOnDisconnectedCallback(WebSocketCompleteCallback _completecallback)
+{
+	this->completecallback =_completecallback;
+}
+
+
+/* Function Name: setOnConnectedCallback
+ * Description: This function is used to set Connected callback function
+ * Parameters: Callback function like connectedCallback(wsMode  Mode)
+ */
+void WebsocketClient::setOnConnectedCallback(WebSocketConnectedCallback _connectedcallback)
+{
+	this->connectedcallback = _connectedcallback;
+}
+
+
+
+/* Function Name: connect
+ * Description: This function is called to start Websocket Client connection to Server
+ * Parameters: url  - Url of server in String like echo.websocket.org
+ * 			  WebsocketRxCallback  - Callback function for recieved messages like wsMessageReceived(String message)
+ * 			  WebSocketCompleteCallback - Callback function which lets user know
+ * 			  							websocket client connection is closed.
+ * 			  							eg. wsDisconnected(bool success)
+ *
+ */
+bool WebsocketClient::connect(String url)
+{
 	this->uri = URL(url);
 	this->_url = url;
 	TcpClient::connect(uri.Host,uri.Port);
@@ -159,22 +201,17 @@ void WebsocketClient::onFinished(TcpClientState finishState)
 	{
 		//  restart();
 		debugf("Tcp Client failure...");
+		this->completecallback(false);
 	}
 	else
 	{
 		debugf("Websocket Closed Normally.");
+		this->completecallback(true);
 	}
 	TcpClient::onFinished(finishState);
 }
 
-/* Function Name: restart
- * Description: restart / reconnect websocket client to server
- * Parameters:       
- */
-void WebsocketClient::restart()
-{
-	this->connect(_url, callback);
-}
+
 
 /* Function Name: sendPing
  * Description: Sending Ping packet to verify Server is connected
@@ -212,9 +249,9 @@ void WebsocketClient::disconnect()
 	// Should send 0x87, 0x00 to server to tell it that I'm quitting here.
 	uint8_t buf[2] =
 	{ 0x87, 0x00 };
-	send((char*) buf, 2, false);
-	flush();
-	close();
+	send((char*) buf, 2, true);
+	//TcpClient::flush();
+	//TcpClient::close();
 }
 
 
@@ -357,12 +394,14 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 			if (verifyKey(data, size) == true)
 			{
 				Mode = ws_Connected;
+				this->connectedcallback(Mode);
 				//   debugf("Key Verified. Websocket Handshake completed");
 				sendPing();
 			}
 			else
 			{
 				Mode = ws_Disconnected; // Handshake was not proper.
+				this->connectedcallback(Mode);
 			}
 			break;
 
@@ -416,7 +455,7 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 					// debugf("Frame Contents :");
 					//   debugf("%s",(char* )rxdata);
 					//This is UTF-8 code, but for the general ASCII table UTF8 and ASCII are the same, so it wont matter if we dont send/recieve special chars.
-					this->callback((char*) rxdata); //send data to callback function;
+					this->rxcallback((char*) rxdata); //send data to callback function;
 				} //Currently this code does not handle fragmented messenges, since a single message can be 64bit long, only streaming binary data seems likely to need fragmentation.
 
 			}
@@ -460,7 +499,6 @@ void WebsocketClient::sendMessage(String str)
 
 	str.toCharArray(cstr, size);
 	sendMessage(cstr, size);
-
 }
 /* Function Name: getWSMode
  * Description: Gets present Mode of Websocet client

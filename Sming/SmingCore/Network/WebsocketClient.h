@@ -21,19 +21,26 @@
 #include "../../Wiring/WString.h"
 #include "../PWM.h"
 
-typedef Delegate<void(String message)> WebSocketRxCallback;
-class WebsocketClient;
 enum wsMode
 {
 	ws_Disconnected = 0, ws_Connecting, ws_Connected
 };
+
+typedef Delegate<void(String message)> WebSocketRxCallback;
+typedef Delegate<void(bool  successful)> WebSocketCompleteCallback;
+typedef Delegate<void(wsMode  Mode)> WebSocketConnectedCallback;
+class WebsocketClient;
+
 class WebsocketClient: protected TcpClient
 {
 public:
 	//  TcpClient wsClient(wsOnCompleted, wsOnReceive);
 	WebsocketClient(bool autoDestruct = false); //
 	virtual ~WebsocketClient();
-	bool connect(String url, WebSocketRxCallback _callback = NULL);
+	void setOnReceiveCallback(WebSocketRxCallback _rxcallback);
+	void setOnDisconnectedCallback(WebSocketCompleteCallback _completecallback);
+	void setOnConnectedCallback(WebSocketConnectedCallback _connectedcallback);
+	bool connect(String url);//, WebSocketRxCallback _rxcallback = NULL, WebSocketCompleteCallback _completecallback = NULL);
 	void sendPing();
 	void sendPong();
 	void disconnect();
@@ -46,14 +53,15 @@ protected:
 	virtual err_t onConnected(err_t err);
 	virtual void onError(err_t err);
 	virtual err_t onReceive(pbuf *buf);
-	void restart();
 	bool verifyKey(char *buf, int size);
 private:
 
 	URL uri;
 	String _url;
 	wsMode Mode;
-	WebSocketRxCallback callback;
+	WebSocketRxCallback rxcallback;
+	WebSocketCompleteCallback completecallback;
+	WebSocketConnectedCallback connectedcallback;
 	bool connected;
 	String key;
 };
