@@ -1,4 +1,4 @@
-#include <hspi.h>
+#include "hspi.h"
 #include "Sparkfun_L6470.h"
 #include "../SmingCore/Digital.h"
 /*
@@ -11,24 +11,26 @@
 // Constructors
 Sparkfun_L6470::Sparkfun_L6470(uint8_t CSPin, uint8_t resetPin, uint8_t busyPin)
 {
+	os_printf("Sparkfun_L6470(uint8_t CSPin, uint8_t resetPin, uint8_t busyPin)");
 	_CSPin = CSPin;
 	_resetPin = resetPin;
 	_busyPin = busyPin;
 
-	SPIConfig();
 }
 
 Sparkfun_L6470::Sparkfun_L6470(uint8_t CSPin, uint8_t resetPin)
 {
+	os_printf("Sparkfun_L6470(uint8_t CSPin, uint8_t resetPin)");
 	_CSPin = CSPin;
 	_resetPin = resetPin;
-	_busyPin = -1;
+	_busyPin = 0;
 
 	SPIConfig();
 }
 
 void Sparkfun_L6470::SPIConfig()
 {
+	os_printf("SPI config.\n cs=%d reset=%d\n", _CSPin, _resetPin);
 	uint16_t MOSI=13;
 	uint16_t MISO=12;
 	uint16_t SCK=14;
@@ -39,12 +41,13 @@ void Sparkfun_L6470::SPIConfig()
 	pinMode(_CSPin, OUTPUT);
 	digitalWrite(_CSPin, HIGH);
 	pinMode(_resetPin, OUTPUT);
-	if (_busyPin != -1)
+	if (_busyPin != 0)
 		pinMode(_busyPin, INPUT_PULLUP);
 
 	// TO-DO
 	// how can I properly initialize SPI on esp8266 esp-07 ??
 	hspi_start_tx();
+
 
 	// this is line from arduino example of sparkfun
 	//SPISettings settings(5000000, MSBFIRST, SPI_MODE3);

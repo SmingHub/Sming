@@ -18,7 +18,7 @@
  */
 
 //Adafruit_ILI9341 tft;
-Sparkfun_L6470 stepper(15, 17);
+Sparkfun_L6470 stepper(4, 5);
 
 Timer guiTimer;
 int stepDir = 1;

@@ -10,6 +10,7 @@
 
 void pinMode(uint16_t pin, uint8_t mode)
 {
+	os_printf("Trying to set PIN: %d to mode: %d\n", pin, mode);
 	if (pin < 16)
 	{
 		// Set as GPIO

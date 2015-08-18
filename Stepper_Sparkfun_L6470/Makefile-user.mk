@@ -14,17 +14,19 @@ ESP_HOME = c:\Espressif
 
 ## SMING_HOME sets the path where Sming framework is located.
 ## Windows:
-SMING_HOME = c:\Users\klemen\git\SmingAnakod\Sming\Sming
+SMING_HOME = c:\Users\klemen\git\Sming\Sming
 
 # MacOS / Linux
 # SMING_HOME = /opt/sming/Sming
 
 ## COM port parameter is reqruied to flash firmware correctly.
 ## Windows: 
-COM_PORT = COM23
+COM_PORT = COM16
 
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
 # Com port speed
-COM_SPEED	= 115200
+COM_SPEED	= 175200
+
+#V = 1

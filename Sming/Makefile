@@ -113,7 +113,7 @@ CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections
+LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections,-Map=build/map.file
 
 # linker script used for the above linkier step
 LD_PATH     = compiler/ld/
