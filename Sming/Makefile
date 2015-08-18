@@ -157,8 +157,8 @@ INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
-ifeq ($(NO_SPIFFS), y)
-	CFLAGS += -DNO_SPIFFS=1
+ifeq ($(DISABLE_SPIFFS), 1)
+	CFLAGS += -DDISABLE_SPIFFS=1
 endif
 
 V ?= $(VERBOSE)
@@ -198,8 +198,8 @@ $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 	$(vecho) "Installing libsming"
-ifeq ($(NO_SPIFFS), y)
-	$(vecho) "(!) Spiffs support disabled. Remove 'NO_SPIFFS' make argument to enable spiffs."
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(vecho) "(!) Spiffs support disabled. Remove 'DISABLE_SPIFFS' make argument to enable spiffs."
 endif
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
 	$(vecho) "Done"

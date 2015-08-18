@@ -9,7 +9,7 @@ extern "C" void  __attribute__((weak)) user_init(void)
 	uart_div_modify(UART_ID_0, UART_CLK_FREQ / 115200);
 	cpp_core_initialize();
 	System.initialize();
-#ifndef NO_SPIFFS
+#ifndef DISABLE_SPIFFS
 	spiffs_mount();
 #endif
 	init(); // User code init

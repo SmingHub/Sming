@@ -141,8 +141,8 @@ endif
 ifneq ($(WIFI_PWD), "")
 	CFLAGS += -DWIFI_PWD=\"$(WIFI_PWD)\"
 endif
-ifeq ($(NO_SPIFFS), y)
-	CFLAGS += -DNO_SPIFFS=1
+ifeq ($(DISABLE_SPIFFS), 1)
+	CFLAGS += -DDISABLE_SPIFFS=1
 endif
 
 # linker flags used to generate the main object file
@@ -304,8 +304,8 @@ spiff_clean:
 	$(Q) rm -rf $(SPIFF_BIN_OUT)
 
 $(SPIFF_BIN_OUT):
-ifeq ($(NO_SPIFFS),y)
-	$(vecho) "(!) Spiffs support disabled. Remove 'NO_SPIFFS' make argument to enable spiffs."
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(vecho) "(!) Spiffs support disabled. Remove 'DISABLE_SPIFFS' make argument to enable spiffs."
 else
 	# Generating spiffs_bin
 	$(vecho) "Checking for spiffs files"
@@ -324,7 +324,7 @@ endif
 flash: all
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
 	-$(Q) $(KILL_TERM)
-ifeq ($(NO_SPIFFS), y)
+ifeq ($(DISABLE_SPIFFS), 1)
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin
 else
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
