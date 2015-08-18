@@ -1,10 +1,11 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-// Put you SSID and Password here
-#define WIFI_SSID "EnterSSID"
-#define WIFI_PWD "EnterPassword"
-
+// If you want, you can define WiFi settings globally in Eclipse Environment Variables
+#ifndef WIFI_SSID
+	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+	#define WIFI_PWD "PleaseEnterPass"
+#endif
 
 Timer procTimer;
 int sensorValue = 0;
@@ -17,7 +18,7 @@ void onDataSent(HttpClient& client, bool successful)
 	else
 		Serial.println("Failed");
 
-	String response = client.responseSting();
+	String response = client.getResponseString();
 	Serial.println("Server response: '" + response + "'");
 	if (response.length() > 0)
 	{

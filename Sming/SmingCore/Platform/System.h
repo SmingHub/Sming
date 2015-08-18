@@ -11,14 +11,16 @@
 #include <user_config.h>
 #include "../../Wiring/WString.h"
 #include "../../Wiring/WVector.h"
+#include "../SmingCore/Delegate.h"
 
 class BssInfo;
 
-typedef void (*SystemReadyCallback)(void);
+typedef Delegate<void()> SystemReadyDelegate;
 
 class ISystemReadyHandler
 {
 public:
+	virtual ~ISystemReadyHandler() {}
 	virtual void onSystemReady() = 0;
 };
 
@@ -56,15 +58,18 @@ public:
 	CpuFrequency getCpuFrequency();
 	bool deepSleep(uint32 timeMilliseconds, DeepSleepOptions options = eDSO_RF_CAL_BY_INIT_DATA);
 
-	void onReady(SystemReadyCallback readyHandler);
+	void onReady(SystemReadyDelegate readyHandler);
 	void onReady(ISystemReadyHandler* readyHandler);
+
+	void applyFirmwareUpdate(uint32_t readFlashOffset, uint32_t targetFlashOffset, int firmwareSize);
 
 private:
 	static void staticReadyHandler();
 	void readyHandler();
+	void IRAM_ATTR internalApplyFirmwareUpdate(uint32_t readFlashOffset, uint32_t targetFlashOffset, int firmwareSize, bool outputDebug);
 
 private:
-	Vector<SystemReadyCallback> readyHandlers;
+	Vector<SystemReadyDelegate> readyHandlers;
 	Vector<ISystemReadyHandler*> readyInterfaces;
 	SystemState state;
 };

@@ -3,6 +3,7 @@
 	<name>FtpServer_Files</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

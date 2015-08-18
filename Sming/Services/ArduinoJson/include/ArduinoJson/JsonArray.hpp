@@ -63,6 +63,10 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
   // Adds a reference to the specified JsonObject at the end of the array.
   void add(JsonObject &obejct) { add().set(obejct); }
 
+  // Add item by value: create copy of string (in JSON buffer memory) and add it to JsonArray childs
+  // memory will be freed automatically
+  void addCopy(const String &stringVal);
+
   // Creates a JsonArray and adds a reference at the end of the array.
   // It's a shortcut for JsonBuffer::createArray() and JsonArray::add()
   JsonArray &createNestedArray();
@@ -78,6 +82,10 @@ class JsonArray : public Internals::JsonPrintable<JsonArray>,
 
   // Serialize the array to the specified JsonWriter.
   void writeTo(Internals::JsonWriter &writer) const;
+
+ protected:
+  // Don't use this methods. Convert value to "const char*" (if it will be available) or use "addCopy" instead
+  void add(const String &stringVal) { add().set(stringVal); }
 
  private:
   // Create an empty JsonArray attached to the specified JsonBuffer.

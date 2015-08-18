@@ -4,17 +4,19 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-// Put you SSID and Password here
-#define WIFI_SSID "AnakondaMobile"
-#define WIFI_PWD "YouPass"
+// If you want, you can define WiFi settings globally in Eclipse Environment Variables
+#ifndef WIFI_SSID
+	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+	#define WIFI_PWD "PleaseEnterPass"
+#endif
 
 // Pin for communication with DHT sensor
-#define DHT_PIN 1 // UART0 TX pin
-//#define DHT_PIN 12
+//#define DHT_PIN 1 // UART0 TX pin
+#define DHT_PIN 12
 
 // Pin for trigger control output
-#define CONTROL_PIN 3 // UART0 RX pin
-//#define CONTROL_PIN 15
+//#define CONTROL_PIN 3 // UART0 RX pin
+#define CONTROL_PIN 15
 
 #define METEO_CONFIG_FILE ".meteo.conf" // leading point for security reasons :)
 

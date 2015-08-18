@@ -18,9 +18,13 @@ public:
 	{
 		sent += len;
 		if (written < sent || !completed) return TcpConnection::onSent(len);
+		finishTransfer();
+		return TcpConnection::onSent(len);
+	}
+	void finishTransfer()
+	{
 		close();
 		parent->dataTransferFinished(this);
-		return TcpConnection::onSent(len);
 	}
 	void response(int code, String text = "") { parent->response(code, text); }
 	int write(const char* data, int len, uint8_t apiflags = 0)
@@ -31,6 +35,7 @@ public:
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent)
 	{
 		if (!parent->isCanTransfer()) return;
+		if (completed && written == 0) finishTransfer();
 		transferData(sourceEvent);
 	}
 	virtual void transferData(TcpConnectionEvent sourceEvent) {}
@@ -50,6 +55,7 @@ public:
 	{
 		if (completed) return;
 		Vector<String> list = fileList();
+		debugf("send file list: %d", list.count());
 		for (int i = 0; i < list.count(); i++)
 			writeString("01-01-15  01:00AM               " + String(fileGetSize(list[i])) + " " + list[i] + "\r\n");
 		completed = true;
@@ -200,7 +206,7 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		return;
 	}
 
-	// Strong security check
+	// Strong security check :)
 	if (state == eFCS_Authorization)
 	{
 		if (cmd == "USER")
@@ -230,7 +236,7 @@ void FTPServerConnection::onCommand(String cmd, String data)
 	{
 		if (cmd == "SYST")
 		{
-			response(215, "Windows_NT: Sming Framework"); // Why not? :)
+			response(215, "Windows_NT: Sming Framework"); // Why not? It's look like Windows :)
 		}
 		else if (cmd == "PWD")
 		{
@@ -251,11 +257,16 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		{
 			response(250);
 		}
+		/*else if (cmd == "SIZE")
+		{
+			response(213, String(fileGetSize(makeFileName(data, false))));
+		}*/
 		else if (cmd == "DELE")
 		{
-			if (fileExist(data))
+			String name = makeFileName(data, false);
+			if (fileExist(name))
 			{
-				fileDelete(data);
+				fileDelete(name);
 				response(250);
 			}
 			else
@@ -296,13 +307,13 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		{
 			response(200);
 		}
-		else
+		else if (!server->onCommand(cmd, data, *this))
 			response(502, "Not supported");
 
 		return;
 	}
 
-	debugf("CASE NOT IMPLEMENTED?");
+	debugf("!!!CASE NOT IMPLEMENTED?!!!");
 }
 
 err_t FTPServerConnection::onSent(uint16_t len)

@@ -14,16 +14,20 @@
 #include "espinc/uart_register.h"
 #include "espinc/spi_register.h"
 
+#include <stdarg.h>
+
 #include <user_config.h>
 
 #define __ESP8266_EX__ // System definition ESP8266 SOC
 
 #define IRAM_ATTR __attribute__((section(".iram.text")))
+#define __forceinline __attribute__((always_inline)) inline
 #define STORE_TYPEDEF_ATTR __attribute__((aligned(4),packed))
 #define STORE_ATTR __attribute__((aligned(4)))
 
+#undef assert
 #define debugf(fmt, ...) os_printf(fmt"\r\n", ##__VA_ARGS__)
-#define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %d", __LINE__)
+#define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
 #define SYSTEM_ERROR(fmt, ...) os_printf("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
 extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
@@ -59,6 +63,7 @@ extern char *ets_strncpy(char *dest, const char *src, size_t n);
 extern char *ets_strstr(const char *haystack, const char *needle);
 extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
 extern int os_snprintf(char *str, size_t size, const char *format, ...) __attribute__ ((format (printf, 3, 4)));
+extern int ets_vsnprintf(char * s, size_t n, const char * format, va_list arg) __attribute__ ((format (printf, 3, 0)));
 
 extern void *pvPortMalloc(size_t xWantedSize);
 extern void *pvPortZalloc(size_t);
@@ -79,7 +84,8 @@ extern void ets_intr_lock();
 extern void ets_intr_unlock();
 
 // CPU Frequency
-extern void os_update_cpu_frequency(int frq);
+extern void ets_update_cpu_frequency(uint32_t frq);
+extern uint32_t ets_get_cpu_frequency();
 
 typedef signed short file_t;
 

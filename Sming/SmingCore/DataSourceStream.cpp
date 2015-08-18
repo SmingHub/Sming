@@ -20,7 +20,7 @@ MemoryDataStream::MemoryDataStream()
 
 MemoryDataStream::~MemoryDataStream()
 {
-	delete[] buf;
+	free(buf);
 	buf = NULL;
 	pos = NULL;
 	size = 0;
@@ -36,9 +36,9 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 	//TODO: add queued buffers without full copy
 	if (buf == NULL)
 	{
-		buf = new char[len + 1];
+		buf = (char*)malloc(len + 1);
 		buf[len] = '\0';
-		os_memcpy(buf, data, len);
+		memcpy(buf, data, len);
 	}
 	else
 	{
@@ -47,28 +47,21 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 		if (required > capacity)
 		{
 			capacity = required < 256 ? required + 128 : required + 64;
-			char* nbuf = new char[capacity];
-			buf[cur + len] = '\0';
-			os_memcpy(nbuf, buf, cur);
-			os_memcpy(nbuf + cur, data, len);
-			delete[] buf;
-			buf = nbuf;
+			debugf("realloc %d -> %d", size, capacity);
+			buf = (char*)realloc(buf, capacity);
 		}
-		else
-		{
-			buf[cur + len] = '\0';
-			os_memcpy(buf + cur, data, len);
-		}
+		buf[cur + len] = '\0';
+		memcpy(buf + cur, data, len);
 	}
 	pos = buf;
 	size += len;
 	return len;
 }
 
-uint16_t MemoryDataStream::getDataPointer(char** data)
+uint16_t MemoryDataStream::readMemoryBlock(char* data, int bufSize)
 {
-	*data = pos;
-	int available = size - (pos - buf);
+	int available = min(size - (pos - buf), bufSize);
+	memcpy(data, pos, available);
 	return available;
 }
 
@@ -93,7 +86,6 @@ FileStream::FileStream(String fileName)
 	if (handle == -1)
 	{
 		debugf("File wasn't found: %s", fileName.c_str());
-		buffer = NULL;
 		size = -1;
 		pos = 0;
 	}
@@ -104,7 +96,6 @@ FileStream::FileStream(String fileName)
 
 	fileSeek(handle, 0, eSO_FileStart);
 	pos = 0;
-	buffer = new char[min(size, NETWORK_SEND_BUFFER_SIZE)];
 
 	debugf("send file: %s (%d bytes)", fileName.c_str(), size);
 }
@@ -114,17 +105,13 @@ FileStream::~FileStream()
 	fileClose(handle);
 	handle = 0;
 	pos = 0;
-	if (buffer != NULL)
-		delete[] buffer;
-	buffer = NULL;
 }
 
-uint16_t FileStream::getDataPointer(char** data)
+uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 {
-	int len = min(NETWORK_SEND_BUFFER_SIZE, size - pos);
-	int available = fileRead(handle, buffer, len);
-	fileSeek(handle, pos, eSO_FileStart); // Don't move cursor now
-	*data = buffer;
+	int len = min(bufSize, size - pos);
+	int available = fileRead(handle, data, len);
+	fileSeek(handle, pos, eSO_FileStart); // Don't move cursor now (waiting seek)
 	return available;
 }
 
@@ -166,9 +153,10 @@ TemplateFileStream::~TemplateFileStream()
 {
 }
 
-uint16_t TemplateFileStream::getDataPointer(char** data)
+uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 {
 	debugf("READ Template (%d)", state);
+	int available;
 
 	if (state == eTES_StartVar)
 	{
@@ -176,17 +164,18 @@ uint16_t TemplateFileStream::getDataPointer(char** data)
 		{
 			// Return variable value
 			debugf("StartVar %s", varName.c_str());
-			*data = (char*)templateData[varName].c_str();
+			available = templateData[varName].length();
+			memcpy(data, (char*)templateData[varName].c_str(), available);
 			seek(skipBlockSize);
 			varDataPos = 0;
 			state = eTES_SendingVar;
-			return templateData[varName].length();
+			return available;
 		}
 		else
 		{
 			debugf("var %s not found", varName.c_str());
 			state = eTES_Wait;
-			int len = FileStream::getDataPointer(data);
+			int len = FileStream::readMemoryBlock(data, bufSize);
 			return min(len, skipBlockSize);
 		}
 	}
@@ -196,9 +185,9 @@ uint16_t TemplateFileStream::getDataPointer(char** data)
 		if (varDataPos < val->length())
 		{
 			debugf("continue TRANSFER variable value (not completed)");
-			*data = (char*)val->c_str();
-			*data += varDataPos;
-			return val->length() - varDataPos;
+			available = val->length() - varDataPos;
+			memcpy(data, ((char*)val->c_str()) + varDataPos, available);
+			return available;
 		}
 		else
 		{
@@ -207,8 +196,8 @@ uint16_t TemplateFileStream::getDataPointer(char** data)
 		}
 	}
 
-	int len = FileStream::getDataPointer(data);
-	char* tpl = *data;
+	int len = FileStream::readMemoryBlock(data, bufSize);
+	char* tpl = data;
 	if (tpl && len > 0)
 	{
 		char* end = tpl + len;
@@ -231,7 +220,7 @@ uint16_t TemplateFileStream::getDataPointer(char** data)
 				{
 					int block = p - cur + 1;
 					char varname[TEMPLATE_MAX_VAR_NAME_LEN + 1] = {0};
-					os_memcpy(varname, cur + 1, p - cur - 1); // name without { and }
+					memcpy(varname, cur + 1, p - cur - 1); // name without { and }
 					varName = varname;
 					state = eTES_Found;
 					varWaitSize = cur - tpl;
@@ -302,7 +291,7 @@ JsonObject& JsonObjectStream::getRoot()
 	return rootNode;
 }
 
-uint16_t JsonObjectStream::getDataPointer(char** data)
+uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 {
 	if (rootNode != JsonObject::invalid() && send)
 	{
@@ -310,5 +299,5 @@ uint16_t JsonObjectStream::getDataPointer(char** data)
 		send = false;
 	}
 
-	return MemoryDataStream::getDataPointer(data);
+	return MemoryDataStream::readMemoryBlock(data, bufSize);
 }

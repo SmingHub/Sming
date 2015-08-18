@@ -3,6 +3,7 @@
 	<name>HttpServer_Bootstrap</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

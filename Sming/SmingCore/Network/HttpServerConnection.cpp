@@ -9,6 +9,7 @@
 
 #include "HttpServer.h"
 #include "TcpServer.h"
+#include "../../Services/cWebsocket/websocket.h"
 
 HttpServerConnection::HttpServerConnection(HttpServer *parentServer, tcp_pcb *clientTcp)
 	: TcpConnection(clientTcp, true), server(parentServer), state(eHCS_Ready)
@@ -55,11 +56,17 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 			debugf("Request: %s, %s", request.getRequestMethod().c_str(),
 					(request.getContentLength() > 0 ? (String(request.getContentLength()) + " bytes").c_str() : "nodata"));
 
-			if (request.getContentLength() > 0 && request.getContentType().equals(ContentType::FormUrlEncoded))
+			String contType = request.getContentType();
+			contType.toLowerCase();
+			if (request.getContentLength() > 0 && contType.indexOf(ContentType::FormUrlEncoded) != -1)
 				state = eHCS_ParsePostData;
 			else
 				state = eHCS_ParsingCompleted;
 		}
+	}
+	else if (state == eHCS_WebSocketFrames)
+	{
+		server->processWebSocketFrame(buf, *this);
 	}
 
 	if (state == eHCS_ParsePostData)
@@ -88,14 +95,14 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 
 void HttpServerConnection::beginSendData()
 {
-	if (!server->process(*this, request, response))
+	if (!server->processRequest(*this, request, response))
 	{
 		response.notFound();
 		sendError();
 		return;
 	}
 
-	if (!response.hasBody() && (response.getStatusCode() < 200 || response.getStatusCode() > 399))
+	if (!response.hasBody() && (response.getStatusCode() < 100 || response.getStatusCode() > 399))
 	{
 		// Show default error message
 		sendError();
@@ -104,7 +111,15 @@ void HttpServerConnection::beginSendData()
 
 	debugf("response sendHeader");
 	response.sendHeader(*this);
-	state = eHCS_Sending;
+
+	if (request.isWebSocket())
+	{
+		debugf("Switched to WebSocket Protocol");
+		state = eHCS_WebSocketFrames; // Stay opened
+		setTimeOut(USHRT_MAX);
+	}
+	else
+		state = eHCS_Sending;
 }
 
 void HttpServerConnection::sendError(const char* message /* = NULL*/)
@@ -136,4 +151,29 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 	if (state == eHCS_Sent)
 		close();
+}
+
+void HttpServerConnection::close()
+{
+	if (disconnection)
+	{
+		disconnection(*this);
+		disconnection = nullptr;
+	}
+	TcpConnection::close();
+}
+
+void HttpServerConnection::onError(err_t err)
+{
+	if (disconnection)
+	{
+		disconnection(*this);
+		disconnection = nullptr;
+	}
+	TcpConnection::onError(err);
+}
+
+void HttpServerConnection::setDisconnectionHandler(HttpServerConnectionDelegate handler)
+{
+	disconnection = handler;
 }

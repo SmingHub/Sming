@@ -3,6 +3,7 @@
 	<name>Light_BH1750</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

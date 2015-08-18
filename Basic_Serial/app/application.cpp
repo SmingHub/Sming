@@ -1,18 +1,33 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
+#include "SerialReadingDelegateDemo.h"
 
 Timer procTimer;
+SerialReadingDelegateDemo delegateDemoClass;
+int helloCounter = 0;
 
 void sayHello()
 {
-	Serial.println("Hello Sming! Let's do smart things.");
-	Serial.print("time: ");
+	Serial.print("Hello Sming! Let's do smart things.");
+	Serial.print(" Time : ");
 	Serial.println(micros());
 	Serial.println();
+
+	Serial.printf("This is Hello message %d \r\n", ++helloCounter);
 }
 
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	procTimer.initializeMs(500, sayHello).start();
+
+	procTimer.initializeMs(2000, sayHello).start();
+
+	/// Reading callback example:
+	//  * Option 1
+	//	Set Serial Callback to global routine:
+	//	   Serial.setCallback(onDataCallback);
+
+	// 	* Option 2
+	//  Instantiate hwsDelegateDemo which includes Serial Delegate class
+	delegateDemoClass.begin();
 }

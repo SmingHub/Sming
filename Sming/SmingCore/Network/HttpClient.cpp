@@ -11,7 +11,6 @@
 
 HttpClient::HttpClient(bool autoDestruct /* = false */) : TcpClient(autoDestruct)
 {
-	waitParse = false;
 	reset();
 }
 
@@ -19,7 +18,7 @@ HttpClient::~HttpClient()
 {
 }
 
-bool HttpClient::downloadString(String url, HttpClientCompletedCallback onCompleted)
+bool HttpClient::downloadString(String url, HttpClientCompletedDelegate onCompleted)
 {
 	if (isProcessing()) return false;
 	URL uri = URL(url);
@@ -27,12 +26,12 @@ bool HttpClient::downloadString(String url, HttpClientCompletedCallback onComple
 	return startDownload(uri, eHCM_String, onCompleted);
 }
 
-bool HttpClient::downloadFile(String url, HttpClientCompletedCallback onCompleted /* = NULL */)
+bool HttpClient::downloadFile(String url, HttpClientCompletedDelegate onCompleted /* = NULL */)
 {
 	return downloadFile(url, "", onCompleted);
 }
 
-bool HttpClient::downloadFile(String url, String saveFileName, HttpClientCompletedCallback onCompleted /* = NULL */)
+bool HttpClient::downloadFile(String url, String saveFileName, HttpClientCompletedDelegate onCompleted /* = NULL */)
 {
 	if (isProcessing()) return false;
 	URL uri = URL(url);
@@ -54,7 +53,7 @@ bool HttpClient::downloadFile(String url, String saveFileName, HttpClientComplet
 	return startDownload(uri, eHCM_File, onCompleted);
 }
 
-bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompletedCallback onCompleted)
+bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted)
 {
 	reset();
 	this->mode = mode;
@@ -64,9 +63,47 @@ bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompleted
 	debugf("Download: %s", uri.toString().c_str());
 
 	connect(uri.Host, uri.Port);
-	sendString("GET " + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n\r\n");
+	bool isPost = body.length();
+
+	sendString((isPost ? "POST " : "GET ") + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n");
+	for (int i = 0; i < requestHeaders.count(); i++)
+	{
+		String write = requestHeaders.keyAt(i) + ": " + requestHeaders.valueAt(i) + "\r\n";
+		sendString(write.c_str());
+	}
+	sendString("\r\n");
+	sendString(body);
 
 	return true;
+}
+
+void HttpClient::setRequestHeader(const String name, const String value)
+{
+	requestHeaders[name] = value;
+}
+
+bool HttpClient::hasRequestHeader(const String name)
+{
+	return requestHeaders.contains(name);
+}
+
+void HttpClient::setRequestContentType(String contentType)
+{
+    setRequestHeader("Content-Type", contentType);
+}
+
+void HttpClient::setPostBody(const String& _body)
+{
+    if (!hasRequestHeader("Content-Type"))
+    	setRequestContentType(ContentType::FormUrlEncoded);
+    body = _body;
+    setRequestHeader("Content-Length", String(body.length()));
+}
+
+
+String HttpClient::getPostBody()
+{
+    return body;
 }
 
 void HttpClient::reset()
@@ -75,6 +112,7 @@ void HttpClient::reset()
 	responseStringData = "";
 	waitParse = true;
 	writeError = false;
+	responseHeaders.clear();
 }
 
 String HttpClient::getResponseHeader(String headerName, String defaultValue /* = "" */)
@@ -117,7 +155,7 @@ void HttpClient::onFinished(TcpClientState finishState)
 		fileClose(saveFile);
 	}
 
-	if (onCompleted != NULL)
+	if (onCompleted)
 		onCompleted(*this, isSuccessful());
 
 	TcpClient::onFinished(finishState);
@@ -148,6 +186,35 @@ void HttpClient::parseHeaders(pbuf* buf, int headerEnd)
 		}
 		line = nextLine + 2;
 	} while (nextLine != -1 && nextLine < headerEnd);
+}
+
+void HttpClient::writeRawData(pbuf* buf, int startPos)
+{
+	switch (mode)
+	{
+		case eHCM_String:
+		{
+			responseStringData += NetUtils::pbufStrCopy(buf, startPos,
+					buf->tot_len - startPos);
+			break;
+		}
+		case eHCM_File:
+		{
+			pbuf *cur = buf;
+			while (cur != NULL && cur->len > 0 && !writeError)
+			{
+				char* ptr = (char*) cur->payload + startPos;
+				int len = cur->len - startPos;
+				int res = fileWrite(saveFile, ptr, len);
+				writeError |= (res < 0);
+				cur = cur->next;
+				startPos = 0;
+			}
+
+			if (writeError)
+				close();
+		}
+	}
 }
 
 err_t HttpClient::onReceive(pbuf *buf)
@@ -187,29 +254,7 @@ err_t HttpClient::onReceive(pbuf *buf)
 			}
 		}
 
-		switch (mode)
-		{
-		case eHCM_String:
-			{
-				responseStringData += NetUtils::pbufStrCopy(buf, startPos, buf->tot_len - startPos);
-				break;
-			}
-		case eHCM_File:
-			{
-				pbuf *cur = buf;
-				while (cur != NULL && cur->len > 0 && !writeError)
-				{
-					char* ptr = (char*)cur->payload + startPos;
-					int len = cur->len - startPos;
-					int res = fileWrite(saveFile, ptr, len);
-					writeError |= (res < 0);
-					cur = cur->next;
-					startPos = 0;
-				}
-
-				if (writeError) close();
-			}
-		}
+		writeRawData(buf, startPos);
 
 		// Fire ReadyToSend callback
 		TcpClient::onReceive(buf);
@@ -218,7 +263,7 @@ err_t HttpClient::onReceive(pbuf *buf)
 	return ERR_OK;
 }
 
-String HttpClient::responseSting()
+String HttpClient::getResponseString()
 {
 	if (mode == eHCM_String)
 		return responseStringData;

@@ -6,6 +6,8 @@
  ****/
 
 #include "System.h"
+#include "../Interrupts.h"
+#include "../../Services/SpifFS/spiffs.h"
 
 SystemClass System;
 
@@ -32,7 +34,7 @@ bool SystemClass::isReady()
 	return state == eSS_Ready;
 }
 
-void SystemClass::onReady(SystemReadyCallback readyHandler)
+void SystemClass::onReady(SystemReadyDelegate readyHandler)
 {
 	readyHandlers.add(readyHandler);
 }
@@ -44,14 +46,17 @@ void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 
 void SystemClass::setCpuFrequency(CpuFrequency freq)
 {
+	if (freq == eCF_160MHz)
+		REG_SET_BIT(0x3ff00014, BIT(0));
+	else
+		REG_CLR_BIT(0x3ff00014, BIT(0));
 
-	REG_SET_BIT(0x3ff00014, BIT(0));
-	os_update_cpu_frequency(freq);
+	ets_update_cpu_frequency(freq);
 }
 
 CpuFrequency SystemClass::getCpuFrequency()
 {
-	return (CpuFrequency)system_get_cpu_freq();
+	return (CpuFrequency)ets_get_cpu_frequency();
 }
 
 bool SystemClass::deepSleep(uint32 timeMilliseconds, DeepSleepOptions options /* = eDSO_RF_CAL_BY_INIT_DATA */)
@@ -76,4 +81,52 @@ void SystemClass::readyHandler()
 
 	readyHandlers.clear();
 	readyInterfaces.clear();
+}
+
+void SystemClass::applyFirmwareUpdate(uint32_t readFlashOffset, uint32_t targetFlashOffset, int firmwareSize)
+{
+	ets_wdt_disable();
+	noInterrupts();
+
+	bool outputDebug = true; // For future
+
+	if (outputDebug)
+	{
+		ets_uart_printf("Firmware upgrade started\n");
+		ets_uart_printf("start write: 0x%X -> 0x%X %d\n", readFlashOffset, targetFlashOffset, firmwareSize);
+	}
+	internalApplyFirmwareUpdate(readFlashOffset, targetFlashOffset, firmwareSize, outputDebug);
+}
+
+void IRAM_ATTR SystemClass::internalApplyFirmwareUpdate(uint32_t readFlashOffset, uint32_t targetFlashOffset, int firmwareSize, bool outputDebug)
+{
+	uint32_t to = targetFlashOffset;
+	uint32_t from = readFlashOffset;
+	int size = firmwareSize;
+
+	const int unit = INTERNAL_FLASH_SECTOR_SIZE;
+	char buf[unit];
+
+	while (size > 0)
+	{
+		int sect = to / unit;
+		if (outputDebug) ets_uart_printf("write: 0x%X -> 0x%X (sect: %d), %d\n", from, to, sect, size);
+		spi_flash_erase_sector(sect);
+		//ets_uart_printf("ers.");
+		spi_flash_read(from, (uint32*)buf, unit);
+		//ets_uart_printf("read.");
+		spi_flash_write(to, (uint32*)buf, unit);
+		//ets_uart_printf("wr.\r\n");
+		from += unit;
+		to += unit;
+		size -= unit;
+	}
+
+	if (outputDebug) ets_uart_printf("Firmware upgrade finished\n");
+
+	((void (*)(void))0x40000080)(); // Hardcore reset vector
+
+	ets_wdt_enable();
+	while (1)
+		; // Reboot anyway!
 }

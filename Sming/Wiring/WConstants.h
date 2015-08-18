@@ -28,8 +28,8 @@
 
 // passed in at compile-time
 #ifndef F_CPU
-#define F_CPU 16000000L
-#warning "F_CPU was not defined.  Default to 16 MHz."
+#define F_CPU 80000000L
+#warning "F_CPU was not defined.  Default to 80 MHz."
 #endif
 
 /*************************************************************
@@ -40,8 +40,9 @@
 #define HIGH     0x1
 //#define HIGH     0xFF
 
-#define INPUT    0x0
-#define OUTPUT   0x1
+#define INPUT        0x0
+#define OUTPUT       0x1
+#define INPUT_PULLUP 0x2 //defined in Arduino > 100
 //#define OUTPUT   0xFF
 
 #define CHANGE   32 // to avoid conflict with HIGH value
@@ -51,17 +52,17 @@
 #define LSBFIRST 0x0
 #define MSBFIRST 0x1
 
-#define true     0x1
-#define false    0x0
-#define TRUE     0x1
-#define FALSE    0x0
+// Defined in ctypes
+//#define true     0x1
+//#define false    0x0
+//#define TRUE     0x1
+//#define FALSE    0x0
 #define null     NULL
 
 #define DEC      10
 #define HEX      16
 #define OCT      8
 #define BIN      2
-#define BYTE     0
 
 #define PI                             (3.1415926535897932384626433832795)
 #define TWO_PI                         (6.283185307179586476925286766559)

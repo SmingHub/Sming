@@ -45,6 +45,15 @@ typedef unsigned long long  u64;
 typedef float               real32;
 typedef double              real64;
 
+/* Additional type names */
+typedef unsigned char       u8_t;
+typedef unsigned short      u16_t;
+typedef unsigned long       u32_t;
+
+typedef signed char         s8_t;
+typedef signed short        s16_t;
+typedef signed long         s32_t;
+
 #define __le16      u16
 
 typedef unsigned int        size_t;
@@ -84,8 +93,8 @@ typedef enum {
 #ifndef __cplusplus
 typedef unsigned char   bool;
 #define BOOL            bool
-#define true            (1)
-#define false           (0)
+#define true            ((bool)1)
+#define false           ((bool)0)
 #define TRUE            true
 #define FALSE           false
 

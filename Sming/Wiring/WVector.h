@@ -20,11 +20,14 @@
 
 #include "Countable.h"
 #include "WiringFrameworkDependencies.h"
+#include <stdlib.h>
 
 template <typename Element>
 class Vector : public Countable<Element>
 {
   public:
+	typedef int (*Comparer)(const Element& lhs, const Element& rhs);
+
     // constructors
 	Vector(unsigned int initialCapacity = 10, unsigned int capacityIncrement = 10);
 	Vector(const Vector& rhv);
@@ -72,6 +75,31 @@ class Vector : public Countable<Element>
      const Element& operator[](unsigned int index) const;
      Element& operator[](unsigned int index);
 
+     const Vector<Element>& operator=(const Vector<Element>& rhv)
+     {
+    	 if (this != &rhv)
+    		 copyFrom(rhv);
+    	 return *this;
+     }
+     const Vector<Element>& operator=(const Vector<Element>&& other) // move assignment
+     {
+         delete[] _data;        // delete this storage
+         _data = other._data;  // move
+         _size = other._size;
+         _capacity = other._capacity;
+         _increment = other._increment;
+         other._data = nullptr; // leave moved-from in valid state
+         other._size = 0;
+         other._capacity = 0;
+         other._increment = 0;
+         return *this;
+     }
+
+     void sort(Comparer compareFunction);
+
+  protected:
+     void copyFrom(const Vector& rhv);
+
   protected:
     unsigned int _size;
     unsigned int _capacity;
@@ -91,6 +119,12 @@ Vector<Element>::Vector(unsigned int initialCapacity, unsigned int capacityIncre
 
 template <class Element>
 Vector<Element>::Vector(const Vector<Element>& rhv)
+{
+	copyFrom(rhv);
+};
+
+template <class Element>
+void Vector<Element>::copyFrom(const Vector<Element>& rhv)
 {
   _size = rhv._size;
   _capacity = rhv._capacity;
@@ -395,6 +429,21 @@ Element & Vector<Element>::operator[](unsigned int index)
   }
   return *_data[ index ];
 };
+
+template <class Element>
+void Vector<Element>::sort(Comparer compareFunction)
+{
+   int i, j;
+   for(j = 1; j < _size; j++)   // Start with 1 (not 0)
+   {
+    	Element* key = _data[j];
+		for(i = j - 1; (i >= 0) && compareFunction(*_data[i], *key) > 0; i--)   // Smaller values move up
+		{
+			_data[i+1] = _data[i];
+		}
+		_data[i+1] = key;    //Put key into its proper location
+    }
+}
 
 #endif
 // WVECTOR_H

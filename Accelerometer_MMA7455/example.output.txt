@@ -1,0 +1,12 @@
+Reading..
+Accelerometer data: 9, -12, 79
+Reading..
+Accelerometer data: 10, -12, 78
+Reading..
+Accelerometer data: 10, -11, 79
+Reading..
+Accelerometer data: 10, -11, 77
+Reading..
+Accelerometer data: 10, -11, 77
+Reading..
+Accelerometer data: 11, -12, 78

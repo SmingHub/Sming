@@ -25,6 +25,10 @@ HttpResponse::~HttpResponse()
 	stream = NULL;
 }
 
+void HttpResponse::switchingProtocols()
+{
+	status = HttpStatusCode::SwitchingProtocols;
+}
 void HttpResponse::badRequest()
 {
 	status = HttpStatusCode::BadRequest;
@@ -83,6 +87,11 @@ void HttpResponse::setCache(int maxAgeSeconds, bool isPublic /* = false */)
 	setHeader("Cache-Control", chache);
 }
 
+void HttpResponse::setAllowCrossDomainOrigin(String controlAllowOrigin)
+{
+	setHeader("Access-Control-Allow-Origin", controlAllowOrigin);
+}
+
 void HttpResponse::setHeader(const String name, const String value)
 {
 	responseHeaders[name] = value;
@@ -108,7 +117,7 @@ void HttpResponse::sendString(const char* string)
 		stream = new MemoryDataStream();
 
 	MemoryDataStream *writable = (MemoryDataStream*)stream;
-	writable->write((const uint8_t*)string, os_strlen(string));
+	writable->write((const uint8_t*)string, strlen(string));
 }
 
 void HttpResponse::sendString(String string)
@@ -125,13 +134,16 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 		stream = NULL;
 	}
 
-	if (allowGzipFileCheck && fileExist(fileName + ".gz"))
+	String compressed = fileName + ".gz";
+	if (allowGzipFileCheck && fileExist(compressed))
 	{
-		stream = new FileStream(fileName + ".gz");
+		debugf("found %s", compressed.c_str());
+		stream = new FileStream(compressed);
 		setHeader("Content-Encoding", "gzip");
 	}
 	else if (fileExist(fileName))
 	{
+		debugf("found %s", fileName.c_str());
 		stream = new FileStream(fileName);
 	}
 	else

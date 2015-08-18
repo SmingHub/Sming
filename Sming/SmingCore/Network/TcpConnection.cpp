@@ -8,6 +8,7 @@
 #include "TcpConnection.h"
 
 #include "../../SmingCore/DataSourceStream.h"
+#include "../../SmingCore/Platform/WDT.h"
 #include "NetUtils.h"
 #include "../Wiring/WString.h"
 #include "../Wiring/IPAddress.h"
@@ -52,12 +53,12 @@ bool TcpConnection::connect(String server, int port)
 	}
 	delete look;
 
-	return intternalTcpConnect(addr, port);
+	return internalTcpConnect(addr, port);
 }
 
 bool TcpConnection::connect(IPAddress addr, uint16_t port)
 {
-	return intternalTcpConnect(addr, port);
+	return internalTcpConnect(addr, port);
 }
 
 void TcpConnection::setTimeOut(uint16_t waitTimeOut)
@@ -73,10 +74,8 @@ err_t TcpConnection::onReceive(pbuf *buf)
 	else
 		debugf("TCP received: %d bytes", buf->tot_len);
 
-	if (buf != NULL)
+	if (buf != NULL && getAvailableWriteSize() > 0)
 		onReadyToSendData(eTCE_Received);
-	//else
-	//	canSend = false;
 
 	return ERR_OK;
 }
@@ -86,7 +85,7 @@ err_t TcpConnection::onSent(uint16_t len)
 	debugf("TCP sent: %d", len);
 
 	//debugf("%d %d", tcp->state, tcp->flags); // WRONG!
-	if (len >= 0 && tcp != NULL && canSend)
+	if (len >= 0 && tcp != NULL && getAvailableWriteSize() > 0)
 		onReadyToSendData(eTCE_Sent);
 
 	return ERR_OK;
@@ -102,7 +101,7 @@ err_t TcpConnection::onPoll()
 		return ERR_OK;
 	}
 
-	if (tcp != NULL && canSend) //(tcp->state >= SYN_SENT && tcp->state <= ESTABLISHED))
+	if (tcp != NULL && getAvailableWriteSize() > 0) //(tcp->state >= SYN_SENT && tcp->state <= ESTABLISHED))
 		onReadyToSendData(eTCE_Poll);
 
 	return ERR_OK;
@@ -134,40 +133,38 @@ void TcpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	debugf("onReadyToSendData: %d", sourceEvent);
 }
 
-int TcpConnection::writeString(const String data, uint8_t apiflags /* = 0*/)
+int TcpConnection::writeString(const String data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
 	writeString(data.c_str(), apiflags);
 }
 
-int TcpConnection::writeString(const char* data, uint8_t apiflags /* = 0*/)
+int TcpConnection::writeString(const char* data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
-	return write(data, os_strlen(data), apiflags);
+	return write(data, strlen(data), apiflags);
 }
 
-int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = 0*/)
+int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
-   int original = len;
-   err_t err;
-   do
+   //int original = len;
+
+   u16_t available = getAvailableWriteSize();
+   if (available < len)
    {
-	 err = tcp_write(tcp, data, len, apiflags);
-	 if (err == ERR_MEM)
-	 {
-	   if ((tcp_sndbuf(tcp) == 0) || (tcp_sndqueuelen(tcp) >= TCP_SND_QUEUELEN)) {
-		 /* no need to try smaller sizes */
-		 len = 1;
-	   } else {
-		 len /= 2;
-	   }
-	 }
-   } while ((err == ERR_MEM) && (len > 1));
+	   if (available == 0)
+		   return -1; // No memory
+	   else
+		   len = available;
+   }
+
+   WDT.alive();
+   err_t err = tcp_write(tcp, data, len, apiflags);
 
    if (err == ERR_OK)
    {
-		debugf("TCP connection send: %d (%d)", len, original);
+		//debugf("TCP connection send: %d (%d)", len, original);
 		return len;
    } else {
-		debugf("TCP connection failed with err %d (\"%s\")", err, lwip_strerr(err));
+		//debugf("TCP connection failed with err %d (\"%s\")", err, lwip_strerr(err));
 		return -1;
    }
 }
@@ -177,35 +174,41 @@ int TcpConnection::write(IDataSourceStream* stream)
 	// Send data from DataStream
 	bool repeat;
 	bool space;
+	int available;
 	int total = 0;
+	char buffer[NETWORK_SEND_BUFFER_SIZE];
+
 	do
 	{
 		space = (tcp_sndqueuelen(tcp) < TCP_SND_QUEUELEN);
 		if (!space)
 		{
 			debugf("WAIT FOR FREE SPACE");
-			//connection.flush();
+			flush();
 			break; // don't try to send buffers if no free space available
 		}
 
-		char* pointer;
-
 		// Join small fragments
-		int curPart = 0;
 		int pushCount = 0;
 		do
 		{
-			if (pushCount > 25) break;
 			pushCount++;
-			int available = stream->getDataPointer(&pointer);
-			if (available <= 0) continue;
-			int len = min(available, 4096);
-			int written = write(pointer, len, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
-			curPart += written;
-			total += written;
-			stream->seek(max(written, 0));
-			repeat = len > 0 && written == len && !stream->isFinished();
-		} while (repeat && curPart < NETWORK_SEND_BUFFER_SIZE);
+			int read = min(NETWORK_SEND_BUFFER_SIZE, getAvailableWriteSize());
+			if (read > 0)
+				available = stream->readMemoryBlock(buffer, read);
+			else
+				available = 0;
+
+			if (available > 0)
+			{
+				int written = write(buffer, available, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
+				total += written;
+				stream->seek(max(written, 0));
+				repeat = written == available && !stream->isFinished() && pushCount < 25;
+			}
+			else
+				repeat = false;
+		} while (repeat);
 
 		space = (tcp_sndqueuelen(tcp) < TCP_SND_QUEUELEN);// && tcp_sndbuf(tcp) >= FILE_STREAM_BUFFER_SIZE;
 	} while (repeat && space);
@@ -228,6 +231,7 @@ void TcpConnection::initialize(tcp_pcb* pcb)
 	tcp = pcb;
 	sleep = 0;
 	canSend = true;
+	tcp_nagle_disable(tcp);
 	tcp_arg(tcp, (void*)this);
 	tcp_sent(tcp, staticOnSent);
 	tcp_recv(tcp, staticOnReceive);
@@ -255,7 +259,7 @@ void TcpConnection::closeTcpConnection(tcp_pcb *tpcb)
 	auto err = tcp_close(tpcb);
 	if (err != ERR_OK)
 	{
-		debugf("TCP CAN'T CLOSE CONNECTION");
+		debugf("tcp wait close connection");
 		/* error closing, try again later in poll */
 		tcp_poll(tpcb, staticOnPoll, 4);
 	}
@@ -264,10 +268,13 @@ void TcpConnection::closeTcpConnection(tcp_pcb *tpcb)
 void TcpConnection::flush()
 {
 	if (tcp->state == ESTABLISHED)
+	{
+		//debugf("TCP flush()");
 		tcp_output(tcp);
+	}
 }
 
-bool TcpConnection::intternalTcpConnect(IPAddress addr, uint16_t port)
+bool TcpConnection::internalTcpConnect(IPAddress addr, uint16_t port)
 {
 	NetUtils::FixNetworkRouting();
 	err_t res = tcp_connect(tcp, addr, port, staticOnConnected);
@@ -321,14 +328,14 @@ err_t TcpConnection::staticOnReceive(void *arg, tcp_pcb *tcp, pbuf *p, err_t err
 		if (p != NULL)
 		{
 		  /* Inform TCP that we have taken the data. */
-		  //tcp_recved(tcp, p->tot_len);
+		  tcp_recved(tcp, p->tot_len);
 		  pbuf_free(p);
 		}
 		closeTcpConnection(tcp); // ??
 		con->tcp = NULL;
 		con->onError(err);
 		//con->close();
-		return err;
+		return err == ERR_ABRT ? ERR_ABRT : ERR_OK;
 	}
 
 	//if (tcp != NULL && tcp->state == ESTABLISHED) // If active
@@ -408,7 +415,7 @@ void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void 
 		debugf("DNS record found: %s = %d.%d.%d.%d",
 				name, ip[0], ip[1], ip[2], ip[3]);
 
-		dlook->con->intternalTcpConnect(ip, dlook->port);
+		dlook->con->internalTcpConnect(ip, dlook->port);
 	}
 	else
 	{

@@ -17,6 +17,7 @@
 */
 
 #include "WiringFrameworkIncludes.h"
+#include <stdlib.h>
 
 /*********************************************/
 /*  Constructors                             */
@@ -26,6 +27,12 @@ String::String(const char *cstr)
 {
   init();
   if (cstr) copy(cstr, strlen(cstr));
+}
+
+String::String(const char *cstr, unsigned int length)
+{
+  init();
+  if (cstr) copy(cstr, length);
 }
 
 String::String(const String &value)
@@ -112,7 +119,17 @@ String::String(double value, unsigned char decimalPlaces)
 
 String::~String()
 {
-	os_free(buffer);
+	free(buffer);
+}
+
+void String::setString(const char *cstr, int length /* = -1 */)
+{
+	if (cstr)
+	{
+		if (length == -1)
+			length = strlen(cstr);
+		copy(cstr, length);
+	}
 }
 
 /*********************************************/
@@ -129,7 +146,7 @@ inline void String::init(void)
 
 void String::invalidate(void)
 {
-  if (buffer) os_free(buffer);
+  if (buffer) free(buffer);
   buffer = NULL;
   capacity = len = 0;
 }
@@ -147,10 +164,7 @@ unsigned char String::reserve(unsigned int size)
 
 unsigned char String::changeBuffer(unsigned int maxStrLen)
 {
-  char *newbuffer = (char *)os_malloc(maxStrLen + 1);
-  if (buffer != NULL && len > 0 && newbuffer != NULL)
-	  os_memcpy(newbuffer, buffer, len);
-  os_free(buffer);
+  char *newbuffer = (char *)realloc(buffer, maxStrLen + 1);
   if (newbuffer)
   {
     buffer = newbuffer;
@@ -172,7 +186,8 @@ String & String::copy(const char *cstr, unsigned int length)
     return *this;
   }
   len = length;
-  strcpy(buffer, cstr);
+  strncpy(buffer, cstr, length);
+  buffer[length] = 0;
   return *this;
 }
 
@@ -180,19 +195,7 @@ String & String::copy(const char *cstr, unsigned int length)
 void String::move(String &rhs)
 {
   if (buffer)
-  {
-    if (capacity >= rhs.len)
-    {
-      strcpy(buffer, rhs.buffer);
-      len = rhs.len;
-      rhs.len = 0;
-      return;
-    }
-    else
-    {
-      os_free(buffer);
-    }
-  }
+	  free(buffer);
   buffer = rhs.buffer;
   capacity = rhs.capacity;
   len = rhs.len;
@@ -721,7 +724,7 @@ long String::toInt(void) const
 
 float String::toFloat(void) const
 {
-  if (buffer) return (float)os_atof(buffer);
+  if (buffer) return (float)atof(buffer);
   return 0;
 }
 

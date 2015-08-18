@@ -75,6 +75,24 @@ void JsonVariant::set(JsonObject &object) {
   _content.asObject = &object;
 }
 
+void JsonVariant::set(const String& value) {
+  if (_type == JSON_INVALID) return;
+  _type = JSON_STRING;
+  _content.asString = value.c_str();
+}
+
+String JsonVariant::toString() const {
+  if (_type == JSON_STRING)
+      return String(_content.asString);
+  else
+      return String(); //TODO: Convert numbers
+}
+
+JsonVariant &JsonVariant::operator=(const String& value) {
+  set(value);
+  return *this;
+}
+
 size_t JsonVariant::size() const {
   if (_type == JSON_ARRAY) return _content.asArray->size();
   if (_type == JSON_OBJECT) return _content.asObject->size();

@@ -1,9 +1,11 @@
 #ifndef FONT5X7_H
 #define FONT5X7_H
 
-#ifdef __AVR__
+#if defined(__AVR__)
  #include <avr/io.h>
  #include <avr/pgmspace.h>
+#elif defined(__ESP8266_EX__)
+ #include "../../Wiring/WiringFrameworkDependencies.h"
 #else
  #define PROGMEM
 #endif

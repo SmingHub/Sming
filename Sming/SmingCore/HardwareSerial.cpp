@@ -17,9 +17,14 @@
 // UartDev is defined and initialized in ROM code.
 extern UartDevice UartDev;
 
+// StreamDataAvailableDelegate HardwareSerial::HWSDelegates[2];
+
+HWSerialMemberData HardwareSerial::memberData[NUMBER_UARTS];
+
 HardwareSerial::HardwareSerial(const int uartPort)
 	: uart(uartPort)
 {
+	resetCallback();
 }
 
 void HardwareSerial::begin(const uint32_t baud/* = 9600*/)
@@ -100,6 +105,28 @@ int HardwareSerial::read()
 	return res;
 }
 
+int HardwareSerial::readMemoryBlock(char* buf, int max_len)
+{
+	RcvMsgBuff &rxBuf = UartDev.rcv_buff;
+	int num = 0;
+
+	noInterrupts();
+	if (rxBuf.pWritePos != rxBuf.pReadPos) {
+		while ((rxBuf.pWritePos != rxBuf.pReadPos) && (max_len-- > 0)) {
+			*buf = *rxBuf.pReadPos;		// Read data from Buffer
+			num++;						// Increase counter of read bytes
+			buf++;						// Increase Buffer pointer
+
+			// Set pointer to next data word in ring buffer
+			rxBuf.pReadPos++;
+			if (rxBuf.pReadPos == (rxBuf.pRcvMsgBuff + RX_BUFF_SIZE))
+				rxBuf.pReadPos = rxBuf.pRcvMsgBuff ;
+		}
+	}
+	interrupts();
+
+	return num;
+}
 
 int HardwareSerial::peek()
 {
@@ -135,6 +162,35 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	//	os_install_putc1(enabled ? (void *)uart1_tx_one_char : NULL); //TODO: Debug serial
 }
 
+void HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate, bool useSerialRxBuffer /* = true */)
+{
+	memberData[uart].HWSDelegate = reqDelegate;
+	memberData[uart].useRxBuff = useSerialRxBuffer;
+}
+
+void HardwareSerial::resetCallback()
+{
+	memberData[uart].HWSDelegate = nullptr;
+	memberData[uart].useRxBuff = true;
+}
+
+void HardwareSerial::commandProcessing(bool reqEnable)
+{
+	if (reqEnable)
+	{
+		if (!memberData[uart].commandExecutor)
+		{
+			memberData[uart].commandExecutor = new CommandExecutor(&Serial);
+		}
+	}
+	else
+	{
+		delete memberData[uart].commandExecutor;
+		memberData[uart].commandExecutor = nullptr;
+	}
+}
+
+
 void HardwareSerial::uart0_rx_intr_handler(void *para)
 {
     /* uart0 and uart1 intr combine togther, when interrupt occur, see reg 0x3ff20020, bit2, bit0 represents
@@ -153,7 +209,8 @@ void HardwareSerial::uart0_rx_intr_handler(void *para)
         RcvChar = READ_PERI_REG(UART_FIFO(UART_ID_0)) & 0xFF;
 
         /* you can add your handle code below.*/
-
+      if (memberData[UART_ID_0].useRxBuff)
+      {
         *(pRxBuff->pWritePos) = RcvChar;
 
         // insert here for get one command line from uart
@@ -177,7 +234,20 @@ void HardwareSerial::uart0_rx_intr_handler(void *para)
 				pRxBuff->pReadPos++;
 			}
 		}
+      }
+      if (memberData[UART_ID_0].HWSDelegate)
+        {
+        	unsigned short cc;
+        	cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
+        													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
+        	memberData[UART_ID_0].HWSDelegate(Serial, RcvChar, cc);
+        }
+      if (memberData[UART_ID_0].commandExecutor)
+      {
+    	  memberData[UART_ID_0].commandExecutor->executorReceive(RcvChar);
+      }
     }
+
 }
 
 

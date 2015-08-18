@@ -3,6 +3,7 @@
 	<name>ScreenTFT_ILI9163C</name>
 	<comment></comment>
 	<projects>
+		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

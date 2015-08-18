@@ -116,6 +116,9 @@ class JsonVariant : public Internals::JsonPrintable<JsonVariant> {
   operator const char *() const;
   const char *asString() const { return as<const char *>(); }
 
+  // Just for simple usage and reading
+  String toString() const;
+
   // Gets the variant as an array.
   // Returns a reference to the JsonArray or JsonArray::invalid() if the variant
   // is not an array.
@@ -165,6 +168,11 @@ class JsonVariant : public Internals::JsonPrintable<JsonVariant> {
   // Return JsonVariant::invalid() if the variant is not an object.
   JsonVariant &operator[](const char *key);
 
+ protected:
+   // Don't use this methods. Convert string value to "const char*" (if it will be available) or use "<parent>.addCopy(<value>)" instead
+  void set(const String& value);
+  JsonVariant &operator=(const String& value);
+
  private:
   // Special constructor used only to create _invalid.
   explicit JsonVariant(Internals::JsonVariantType type) : _type(type) {}
@@ -183,6 +191,9 @@ class JsonVariant : public Internals::JsonPrintable<JsonVariant> {
 
   // The instance returned by JsonVariant::invalid()
   static JsonVariant _invalid;
+
+  friend class JsonObject;
+  friend class JsonArray;
 };
 
 template <>

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "../../../../../Wiring/WString.h"
 #include "IndentedPrint.hpp"
 #include "JsonWriter.hpp"
 #include "Prettyfier.hpp"

@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Sming Framework WiFi Network configuration</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap.css" rel="stylesheet">
+    <script src="jquery.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<script>
+    $(document).ready(function () {
+        ToggleReadonly($('input[checked=checked]').val());
+        $('input[name=dhcp]').on('click', function(){
+            $('input[name=dhcp]').each(function(e){
+                $(e).removeAttr('checked');
+            })
+            $(this).attr('checked', 'checked');
+            ToggleReadonly($(this).val());
+        })
+    });
+
+    function ToggleReadonly(value){
+        if(value == '1'){
+            $('.form-control').each(function(){
+                $(this).attr('readonly', 'readonly');
+            })
+        }
+        else
+        {
+            $('.form-control').each(function(){
+                $(this).removeAttr('readonly');
+            })
+        }
+    }
+</script>
+
+<body>
+
+<div class="container">
+    <div class="header">
+        <nav>
+            <ul class="nav nav-pills pull-right">
+                <li role="presentation"><a href="/">Networks</a></li>
+                <li role="presentation" class="active"><a href="/ipconfig">Settings</a></li>
+            </ul>
+        </nav>
+        <h3 class="text-muted">Sming Based</h3>
+    </div>
+
+    <div class="jumbotron">
+        <h1>Network Settings</h1>
+        <p class="lead">Wireless network connection
+        </p>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-md-offset-3">
+		<div class="alert alert-warning" role="alert">Changes will be applied after reboot</div>
+        <h2>Settings</h2>
+            <form method="post" action="">
+                <fieldset>
+                    <legend>IP Address</legend>
+                    <div class="col-md-offset-2">
+                        <div class="form-group">
+                            <label>Use DHCP</label>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="radio" value="1" name="dhcp" {dhcpon}> Yes
+                                </label>
+                                <label>
+                                    <input type="radio" value="0" name="dhcp" {dhcpoff}> No
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>IP Address</label>
+                            <input class="form-control" style="width: 250px" type="text" name="ip" value="{ip}">
+                        </div>
+                        <div class="form-group">
+                            <label>Network Mask</label>
+                            <input class="form-control" style="width: 250px" type="text" name="netmask" value="{netmask}">
+                        </div>
+                        <div class="form-group">
+                            <label>Gateway</label>
+                            <input class="form-control" style="width: 250px" type="text" name="gateway" value="{gateway}">
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="col-md-offset-3">
+                    <input type="submit" class="btn btn-success">
+                </div>
+            </form>
+        </div>
+    </div>
+    <footer class="footer">
+        <!--<p>&copy; Company 2014</p>-->
+    </footer>
+
+</div> <!-- /container -->
+</body>
+</html>

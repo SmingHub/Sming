@@ -10,16 +10,27 @@
 
 #include <user_config.h>
 #include "System.h"
+#include "../SmingCore/Delegate.h"
 #include "../../Wiring/WString.h"
 #include "../../Wiring/WVector.h"
 #include "../../Wiring/IPAddress.h"
+
+enum EStationConnectionStatus
+{
+    eSCS_Idle = 0,
+	eSCS_Connecting,
+	eSCS_WrongPassword,
+	eSCS_AccessPointNotFound,
+	eSCS_ConnectionFailed,
+	eSCS_GotIP
+};
 
 class BssInfo;
 class Timer;
 
 typedef Vector<BssInfo> BssList;
-typedef void (*ScanCompletedCallback)(bool succeeded, BssList list);
-typedef void (*ConnectionCallback)();
+typedef Delegate<void(bool, BssList)> ScanCompletedDelegate;
+typedef Delegate<void()> ConnectionDelegate;
 
 class StationClass : protected ISystemReadyHandler
 {
@@ -31,29 +42,44 @@ public:
 	bool isEnabled();
 
 	bool config(String ssid, String password, bool autoConnectOnStartup = true);
-
+	void disconnect();
 	bool isConnected();
-	IPAddress getIP();
-	//bool setIP(ip_addr address);
-	String getMAC();
+	bool isConnectionFailed();
 
-	bool startScan(ScanCompletedCallback scanCompleted);
-	void waitConnection(ConnectionCallback successfulConnected);
-	void waitConnection(ConnectionCallback successfulConnected, int secondsTimeOut, ConnectionCallback connectionNotEstablished);
+	EStationConnectionStatus getConnectionStatus();
+	const char* getConnectionStatusName();
+
+	bool isEnabledDHCP();
+	void enableDHCP(bool enable);
+
+	IPAddress getIP();
+	String getMAC();
+	IPAddress getNetworkMask();
+	IPAddress getNetworkGateway();
+
+	bool setIP(IPAddress address);
+	bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway);
+
+	String getSSID();
+	String getPassword();
+
+	bool startScan(ScanCompletedDelegate scanCompleted);
+	void waitConnection(ConnectionDelegate successfulConnected);
+	void waitConnection(ConnectionDelegate successfulConnected, int secondsTimeOut, ConnectionDelegate connectionNotEstablished);
 
 protected:
 	virtual void onSystemReady();
 	static void staticScanCompleted(void *arg, STATUS status);
 
-	void checkConnection();
+	void internalCheckConnection();
 	static void staticCheckConnection();
 
 private:
-	ScanCompletedCallback scanCompletedCallback;
+	ScanCompletedDelegate scanCompletedCallback;
 	bool runScan;
 
-	ConnectionCallback onConnectOk;
-	ConnectionCallback onConnectFail;
+	ConnectionDelegate onConnectOk;
+	ConnectionDelegate onConnectFail;
 	int connectionTimeOut;
 	uint32 connectionStarted;
 	Timer* connectionTimer;
@@ -64,10 +90,12 @@ class BssInfo
 public:
 	BssInfo(bss_info* info);
 	bool isOpen();
-	String getAuthorizationMethodName();
+	const char* getAuthorizationMethodName();
+	uint32_t getHashId();
 
 public:
 	String ssid;
+	uint8 bssid[6];
 	AUTH_MODE authorization;
 	uint8 channel;
 	sint16 rssi;
