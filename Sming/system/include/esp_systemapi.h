@@ -30,6 +30,15 @@
 #define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
 #define SYSTEM_ERROR(fmt, ...) os_printf("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
+//SDK Pwm API 
+extern void pwm_start(void);
+extern void pwm_init(uint32 period, uint32 *duty,uint32 pwm_channel_num,uint32 (*pin_info_list)[3]);
+extern void pwm_set_duty(uint32 duty, uint8 channel);
+extern uint32 pwm_get_duty(uint8 channel);
+extern void pwm_set_period(uint32 period);
+extern uint32 pwm_get_period(void);
+extern uint32 get_pwm_version(void);
+
 extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
 extern void ets_timer_disarm(ETSTimer *a);
 extern void ets_timer_setfn(ETSTimer *t, ETSTimerFunc *pfunction, void *parg);
