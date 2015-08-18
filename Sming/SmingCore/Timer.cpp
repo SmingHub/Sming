@@ -46,13 +46,22 @@ Timer& Timer::initializeUs(uint32_t microseconds, TimerDelegate delegateFunction
 
 void Timer::start(bool repeating/* = true*/)
 {
+	this->repeating = repeating;
 	stop();
-	if(interval == 0 || (!callback && !delegate_func)) return;
-	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);
-	if (interval > 10000)
-		ets_timer_arm_new(&timer, (uint32_t)(interval / 1000), repeating, 1); // msec
-	else
+	if(interval == 0 || (!callback && !delegate_func)) 
+		return;
+	
+	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);	
+	if (interval > 10000) 
+	{
+		ets_timer_arm_new(&timer, (uint32_t)(interval / 1000), 
+				(long_intvl_cntr_lim > 0 ? true : repeating), 1); // msec
+	}
+	else 
+	{
 		ets_timer_arm_new(&timer, (uint32_t)interval, repeating, 0); 		  // usec
+	}
+	
 	started = true;
 }
 
@@ -61,6 +70,7 @@ void Timer::stop()
 	if (!started) return;
 	ets_timer_disarm(&timer);
 	started = false;
+	long_intvl_cntr = 0;
 }
 
 void Timer::restart()
@@ -74,19 +84,44 @@ bool Timer::isStarted()
 	return started;
 }
 
-uint32_t Timer::getIntervalUs()
+uint64_t Timer::getIntervalUs()
 {
-	return (uint32_t)interval;
+	if(long_intvl_cntr_lim > 0) {
+		return interval * long_intvl_cntr_lim;
+	}
+
+	return interval;
 }
 
 uint32_t Timer::getIntervalMs()
 {
-	return (uint32_t)interval / 1000;
+	return (uint32_t)getIntervalUs() / 1000;
 }
 
-void Timer::setIntervalUs(uint32_t microseconds/* = 1000000*/)
+void Timer::setIntervalUs(uint64_t microseconds/* = 1000000*/)
 {
-	interval = microseconds;
+	if(microseconds > MAX_OS_TIMER_INTERVAL_US)
+	{
+		// interval to large, calculate a good divider.
+		int div = (microseconds / MAX_OS_TIMER_INTERVAL_US) + 1; // integer division, intended
+
+		// We will lose some precision here but its so small it won't matter.
+		// Error will be microseconds mod div which can at most be div-1.
+		// For small long intervals (and thus div) we are talking a few us.
+		// Nothing to worry about since we are going to use the millisecond timer
+		// so we wont have that accuracy anyway.
+
+		interval = microseconds / div;
+		long_intvl_cntr = 0;
+		long_intvl_cntr_lim = div;
+	}
+	else 
+	{
+		interval = microseconds;
+		long_intvl_cntr = 0;
+		long_intvl_cntr = 0;
+	}
+
 	if (started)
 		restart();
 }
@@ -125,12 +160,37 @@ void Timer::processing(void *arg)
 	{
 	   return;
 	}
-	else if (ptimer->callback)
-	{
-		ptimer->callback();
+	else {
+		if(ptimer->long_intvl_cntr_lim > 0)
+		{
+			// we need to handle a long interval.
+			ptimer->long_intvl_cntr++;
+
+			if(ptimer->long_intvl_cntr < ptimer->long_intvl_cntr_lim)
+			{
+				return;
+			}
+			else 
+			{
+				// reset counter since callback will fire.
+				ptimer->long_intvl_cntr = 0;
+				
+				// stop timer if it was not a repeating timer.
+				// for long intervals os_timer is set to repeating,
+				// therefore it must be stopped.
+				if(!ptimer->repeating)
+					ptimer->stop();
+			}
+		}
+
+		if (ptimer->callback)
+		{
+			ptimer->callback();
+		}
+		else if (ptimer->delegate_func)
+		{
+			ptimer->delegate_func();
+		}
 	}
-	else if (ptimer->delegate_func)
-	{
-		ptimer->delegate_func();
-	}
+
 }
