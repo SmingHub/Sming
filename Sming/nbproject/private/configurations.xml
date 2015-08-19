@@ -561,6 +561,8 @@
         <in>Digital.h</in>
         <in>ESP8266EX.cpp</in>
         <in>ESP8266EX.h</in>
+        <in>ESP_PWM.cpp</in>
+        <in>ESP_PWM.h</in>
         <in>FileSystem.cpp</in>
         <in>FileSystem.h</in>
         <in>HardwareSerial.cpp</in>
@@ -592,6 +594,7 @@
           <df name="espinc">
             <in>c_types_compatible.h</in>
             <in>lwip_includes.h</in>
+            <in>pwm.h</in>
             <in>spi_register.h</in>
             <in>uart.h</in>
             <in>uart_register.h</in>
