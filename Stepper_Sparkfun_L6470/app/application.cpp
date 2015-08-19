@@ -70,7 +70,8 @@ void playNote()
 
 void basicGui()
 {
-	playNote();
+	//playNote();
+	stepper.run(FWD, 40);
 }
 
 
@@ -79,13 +80,14 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 	//WifiStation.config(WIFI_SSID, WIFI_PWD);
-	WifiStation.enable(false);
-	WifiAccessPoint.enable(false);
-	delay(3000);
+	//WifiStation.enable(false);
+	//WifiAccessPoint.enable(false);
+	//delay(3000);
 	Serial.println("L6470 test start");
 	Serial.println("Config start");
 	dSPINConfig();
 	Serial.println("Config end.");
 
-	guiTimer.initializeMs(5000, basicGui).start();
+	guiTimer.initializeMs(2000, basicGui).start();
+
 }

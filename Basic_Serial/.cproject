@@ -3,6 +3,10 @@
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.toolchain.gnu.mingw.base.1135534147">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.mingw.base.1135534147" moduleId="org.eclipse.cdt.core.settings" name="Sming">
+				<macros>
+					<stringMacro name="ESP_HOME" type="VALUE_TEXT" value="c:\Espressif"/>
+					<stringMacro name="SMING_HOME" type="VALUE_TEXT" value="c:\Users\klemen\git\Sming\Sming"/>
+				</macros>
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -35,7 +39,7 @@
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/system/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/Libraries&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/sdk/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/ESP8266_SDK/include&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1330530366" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
