@@ -1,4 +1,4 @@
-#include "hspi.h"
+#include "ESP8266_SPI.h"
 #include "Sparkfun_L6470.h"
 #include "../SmingCore/Digital.h"
 /*
@@ -16,6 +16,8 @@ Sparkfun_L6470::Sparkfun_L6470(uint8_t CSPin, uint8_t resetPin, uint8_t busyPin)
 	_resetPin = resetPin;
 	_busyPin = busyPin;
 
+	SPIConfig();
+
 }
 
 Sparkfun_L6470::Sparkfun_L6470(uint8_t CSPin, uint8_t resetPin)
@@ -30,6 +32,7 @@ Sparkfun_L6470::Sparkfun_L6470(uint8_t CSPin, uint8_t resetPin)
 
 void Sparkfun_L6470::SPIConfig()
 {
+	/*
 	os_printf("SPI config.\n cs=%d reset=%d\n", _CSPin, _resetPin);
 	uint16_t MOSI=13;
 	uint16_t MISO=12;
@@ -56,6 +59,11 @@ void Sparkfun_L6470::SPIConfig()
 	delay(5);
 	digitalWrite(_resetPin, HIGH);
 	delay(5);
+	*/
+	Sparkfun_L6470::hwspi = HwSPIClass(HSPI);
+	Sparkfun_L6470::hwspi.spi_init(HSPI);
+	Sparkfun_L6470::hwspi.spi_clock(HSPI,SPI_CLKDIV_PRE, 4);
+
 }
 
 uint8_t Sparkfun_L6470::busyCheck(void)

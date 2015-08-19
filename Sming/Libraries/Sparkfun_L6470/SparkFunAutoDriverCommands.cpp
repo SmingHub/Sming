@@ -1,5 +1,6 @@
 #include "Sparkfun_L6470.h"
 
+
 //commands.ino - Contains high-level command implementations- movement
 //   and configuration commands, for example.
 
@@ -55,8 +56,11 @@ long Sparkfun_L6470::getMark()
 //  appropriate integer values for this function.
 void Sparkfun_L6470::run(byte dir, float stepsPerSec)
 {
+  os_printf("try 1\n");
   SPIXfer(RUN | dir);
+  os_printf("try 2\n");
   unsigned long integerSpeed = spdCalc(stepsPerSec);
+  os_printf("try 3\n");
   if (integerSpeed > 0xFFFFF) integerSpeed = 0xFFFFF;
   
   // Now we need to push this value out to the dSPIN. The 32-bit value is
@@ -71,6 +75,7 @@ void Sparkfun_L6470::run(byte dir, float stepsPerSec)
   //  integerSpeed starting with byte 2 and ending with byte 0.
   for (char i = 2; i >= 0; i--)
   {
+	os_printf("try 4..%c\n", i);
     SPIXfer(bytePointer[i]);
   }
 }
