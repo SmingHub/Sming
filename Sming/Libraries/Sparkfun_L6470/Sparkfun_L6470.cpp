@@ -49,7 +49,7 @@ void Sparkfun_L6470::SPIConfig()
 
 	// TO-DO
 	// how can I properly initialize SPI on esp8266 esp-07 ??
-	hspi_start_tx();
+	hspi_init();
 
 	// this is line from arduino example of sparkfun
 	//SPISettings settings(5000000, MSBFIRST, SPI_MODE3);
