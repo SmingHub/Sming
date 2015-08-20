@@ -3,8 +3,8 @@
 #include <Libraries/Sparkfun_L6470/Sparkfun_L6470.h>
 
 // Put you SSID and Password here
-#define WIFI_SSID "test"
-#define WIFI_PWD "test"
+#define WIFI_SSID "AndroidAP"
+#define WIFI_PWD "Doitman1"
 #define NOTE_DIVISOR 2  // My cheesy way of reducing the note frequencies to a ranges
 
 /*
