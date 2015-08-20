@@ -21,7 +21,7 @@ SMING_HOME = c:\Users\klemen\git\Sming\Sming
 
 ## COM port parameter is reqruied to flash firmware correctly.
 ## Windows: 
-COM_PORT = COM16
+COM_PORT = COM23
 
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial

@@ -1,5 +1,5 @@
 #include "Sparkfun_L6470.h"
-#include "ESP8266_SPI.h"
+#include "SPI.h"
 
 // AutoDriverSupport.cpp - Contains utility functions for converting real-world 
 //  units (eg, steps/s) to values usable by the dsPIN controller. These are all
@@ -315,20 +315,20 @@ byte Sparkfun_L6470::SPIXfer(byte data)
   //SPI.beginTransaction(settings);
   // TO - DO is I am using here: hspi_start_tx
   //hspi_start_tx();
-  Sparkfun_L6470::hwspi.begin(HSPI);
+  spi.begin();
 
   //SPI.begin();
   digitalWrite(_CSPin, LOW);
   //rxData = SPI.transfer(data);
   //const uint8_t d = (const uint8_t)data;
-  rxData = Sparkfun_L6470::hwspi.transfer((uint8_t)data);
+  rxData = spi.transfer(data);
 
   digitalWrite(_CSPin, HIGH);
   //SPI.endTransaction();
   //SPI.end();
 
   //return rxData;
-  Sparkfun_L6470::hwspi.end(HSPI);
+  spi.end();
   return rxData;
 }
 

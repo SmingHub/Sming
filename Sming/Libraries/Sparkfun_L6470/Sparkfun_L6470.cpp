@@ -1,4 +1,4 @@
-#include "ESP8266_SPI.h"
+#include "hspi.h"
 #include "Sparkfun_L6470.h"
 #include "../SmingCore/Digital.h"
 /*
@@ -32,8 +32,8 @@ Sparkfun_L6470::Sparkfun_L6470(uint8_t CSPin, uint8_t resetPin)
 
 void Sparkfun_L6470::SPIConfig()
 {
-	/*
-	os_printf("SPI config.\n cs=%d reset=%d\n", _CSPin, _resetPin);
+
+	//os_printf("SPI config.\n cs=%d reset=%d\n", _CSPin, _resetPin);
 	uint16_t MOSI=13;
 	uint16_t MISO=12;
 	uint16_t SCK=14;
@@ -51,7 +51,6 @@ void Sparkfun_L6470::SPIConfig()
 	// how can I properly initialize SPI on esp8266 esp-07 ??
 	hspi_start_tx();
 
-
 	// this is line from arduino example of sparkfun
 	//SPISettings settings(5000000, MSBFIRST, SPI_MODE3);
 
@@ -59,10 +58,10 @@ void Sparkfun_L6470::SPIConfig()
 	delay(5);
 	digitalWrite(_resetPin, HIGH);
 	delay(5);
-	*/
-	Sparkfun_L6470::hwspi = HwSPIClass(HSPI);
-	Sparkfun_L6470::hwspi.spi_init(HSPI);
-	Sparkfun_L6470::hwspi.spi_clock(HSPI,SPI_CLKDIV_PRE, 4);
+
+	//Sparkfun_L6470::hwspi = HwSPIClass(HSPI);
+	//Sparkfun_L6470::hwspi.spi_init(HSPI);
+	//Sparkfun_L6470::hwspi.spi_clock(HSPI,SPI_CLKDIV_PRE, 4);
 
 }
 

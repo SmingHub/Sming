@@ -3,7 +3,8 @@
 
 #include "Arduino.h"
 #include "SparkFundSPINConstants.h"
-#include "ESP8266_SPI.h"
+//#include "ESP8266_SPI.h"
+#include "SPI.h"
 
 class Sparkfun_L6470
 {
@@ -119,7 +120,6 @@ class Sparkfun_L6470
     uint8_t _resetPin;
     uint8_t _busyPin;
 
-    HwSPIClass hwspi;
 };
 
 // User constants for public functions.
