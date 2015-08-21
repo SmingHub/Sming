@@ -1,6 +1,15 @@
 Terminal log file
-Date: 8/21/2015 - 3:34:45 PM
+Date: 8/21/2015 - 3:40:35 PM
 -----------------------------------------------
+r<0>lśŘrß<0>ŚcânŔŕŚ‚ěpŚ|Ž‚ź<0>ěx’źÇ’śäŚpňnnä„;ňn„’śäŽbŽcl`$`üpňnŕÜ<0>ŕ‚ÇŔl€€€b€nâăn€ÄŽŽŚŽ8ŚňnnîÄÁŚŽ<0>l`üś#‚nŔ$Śl`ä8`rn|’’nŔŕbÇĂl`9~ŚŔś#‚n€$ŚŚňnnîÄČl`nnŕÜ<0>ŕr‡âś€pp’ś<„ĂěpŚňnnîÄÁŚ<0>l`üÜ#‚nŔrnrŽ’ß;„Ŕ?ŚěrpňnŕĂÜ<0>ŕrÇâÜlŽŘpp’Ü<ÄÇl€pŚňnnîÄđrÜ#‚nŔ$Śl`ä8`rn|’’n€ŕŚrrźŰ’n€ŕŚrŚ˙Ő(¤SQS(RQ¨)HT¨)SHHHC…ä˙rfs.start: size:256 Kb, offset:0x3C000
+
+mo
+
+Station configuration was updated to: AndroidAP
+L6470 test start
+Config start
+Config end.
+mode : sta(18:fe:34:9b:64:4f)add if0f 0, add 0aid 2pm open phy_2,type:2 0 0cnt connected with AndroidAP, channel 6dhcp client start...ip:192.168.43.32,mask:255.255.255.0,gw:192.168.43.1runned
 Speed is 2684
  ets Jan  8 2013,rst cause:2, boot mode:(3,7)
 
@@ -13,11 +22,11 @@ tail 0
 chksum 0x23
 load 0x3ffe8540, len 3908, room 8 
 tail 12
+ä˙rfs.start: size:256 Kb, offset:0x3C000
+
 chksum 0x92
 csum 0x92
-Ś˙Ő(¤SQS(RQ¨)HT¨)SHHHC…ä˙rfs.start: size:256 Kb, offset:0x3C000
-
-mo
+Ś
 
 Station configuration was updated to: AndroidAP
 L6470 test start
@@ -48,5 +57,5 @@ Config start
 Config end.
 
 -----------------------------------------------
-Date: 8/21/2015 - 3:34:51 PM
+Date: 8/21/2015 - 3:40:54 PM
 End log file
