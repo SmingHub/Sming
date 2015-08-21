@@ -103,7 +103,7 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
-SPIFF_FILES = files
+SPIFF_FILES ?= web/build
 
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
@@ -180,17 +180,22 @@ endif
 # flash larger than 1024KB only use 1024KB to storage user1.bin and user2.bin
 ifeq ($(SPI_SIZE), 256K)
 	flashimageoptions += -fs 2m
+	SPIFF_SIZE ?= 131072  #128K
 else
     ifeq ($(SPI_SIZE), 1M)
 	flashimageoptions += -fs 8m
+	SPIFF_SIZE ?= 524288  #512K
     else
         ifeq ($(SPI_SIZE), 2M)
 		flashimageoptions += -fs 16m
+		SPIFF_SIZE ?= 524288  #512K
         else
             ifeq ($(SPI_SIZE), 4M)
 			flashimageoptions += -fs 32m
+			SPIFF_SIZE ?= 524288  #512K
             else
 			flashimageoptions += -fs 4m
+			SPIFF_SIZE ?= 262144  #256K
             endif
         endif
     endif
@@ -305,7 +310,7 @@ $(SPIFF_BIN_OUT):
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
     	echo "$(SPIFF_FILES) directory exists. Creating spiff_rom.bin"; \
-    	spiffy; \
+    	spiffy $(SPIFF_SIZE) $(SPIFF_FILES); \
     	mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
 	else \
     	echo "No files found in ./$(SPIFF_FILES)."; \
