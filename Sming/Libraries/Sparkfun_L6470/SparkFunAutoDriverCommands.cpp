@@ -60,11 +60,8 @@ long Sparkfun_L6470::getMark()
 //  appropriate integer values for this function.
 void Sparkfun_L6470::run(byte dir, float stepsPerSec)
 {
-  os_printf("try 1\n");
   SPIXfer(RUN | dir);
-  os_printf("try 2\n");
   unsigned long integerSpeed = spdCalc(stepsPerSec);
-  os_printf("try 3\n");
   if (integerSpeed > 0xFFFFF) integerSpeed = 0xFFFFF;
   
   // Now we need to push this value out to the dSPIN. The 32-bit value is
@@ -72,14 +69,14 @@ void Sparkfun_L6470::run(byte dir, float stepsPerSec)
   //  big-endian output, so we need to reverse the byte-order of the
   //  data as we're sending it out. Note that only 3 of the 4 bytes are
   //  valid here.
-  
+  os_printf("Speed is %lu\n", integerSpeed);
   // We begin by pointing bytePointer at the first byte in integerSpeed.
   byte* bytePointer = (byte*)&integerSpeed;
   // Next, we'll iterate through a for loop, indexing across the bytes in
   //  integerSpeed starting with byte 2 and ending with byte 0.
   for (char i = 2; i >= 0; i--)
   {
-	os_printf("try 4..%c\n", i);
+	//os_printf("try 4..%d\n", i);
     SPIXfer(bytePointer[i]);
   }
 }

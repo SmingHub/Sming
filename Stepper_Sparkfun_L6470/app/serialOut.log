@@ -1,33 +1,52 @@
 Terminal log file
-Date: 8/18/2015 - 1:14:04 AM
+Date: 8/21/2015 - 3:34:45 PM
 -----------------------------------------------
-r<0>lœØrß<0>Œ#ânÀàŒ‚ìpŒ|‚ß<0>ì8’ßÇ’ÜäŒpònnä„;ònÄ’Üäbç$‰rrpònàÃÜ<0>à‚ÇÀl€€€b€nâãnÀÄŒxŒònnîÄÁŒ<0>l`üœ#‚nÀ$Œl`ä8`rn|’’nÀàÇ’`¹~„Àœ#‚n€$ŒŒònnîÄØl`nnàÃÜ<0>àrÇâÜ€pp’Ü<ÄÃìpŒònnîÄÁŒ<0>l`üÜ#‚nÀrnr’ß;ÄÀ?Œœ;pònàƒÜ<0>àr‡âœlØpp’Ü<„Ø’ŒpŒònnîÄğrœ#‚nÀ$Œl`ä8`rn|’’n€à‡Ãl`ä8’Ÿ;ÄÀ‚lrŒÿÕ(¤SQS(RQ¨)HT¨)SHHHC…äÿr‚ERROR: No pin 17, can't set mode
-ERROR: No pin 255, can't set mode
-fs.start: size:272 Kb, offset:0x38000
-
-m
-
-L6470 test start
-Config start
-Config end.
-mode : nullDirection=1
-Fatal exception (3):epc1=0x40237139, epc2=0x00000000, epc3=0x00000000, excvaddr=0x4000003f, depc=0x00000000
- ets Jan  8 2013,rst cause:2, boot mode:(3,6)
+Speed is 2684
+ ets Jan  8 2013,rst cause:2, boot mode:(3,7)
 
 load 0x40100000, len 23836, room 16 
 tail 12
-chksum 0x0f
+chksum 0x21
 ho 0 tail 12 room 4
 load 0x3ffe8000, len 1340, room 12 
 tail 0
-chksum 0x2d
-load 0x3ffe8540, len 4052, room 8 
+chksum 0x23
+load 0x3ffe8540, len 3908, room 8 
 tail 12
-chksum 0x11
-äÿr‚ERROR: No pin 17, can't set mode
-ERROR: No pin 255, can't set mode
-fs.start: size:272 Kb, offset:0x38000
+chksum 0x92
+csum 0x92
+ÅšË™Å(Â¤SQSÂ(RQÂ¨)HTÂ¨)SHHHCâ€¦Ã¤Ë™rfs.start: size:256 Kb, offset:0x3C000
 
-csum 0x11
-ŒÿÕ(¤SQS(RQ¨)HT¨)SHHHC…m
+mo
 
+Station configuration was updated to: AndroidAP
+L6470 test start
+Config start
+Config end.
+mode : sta(18:fe:34:9b:64:4f)add if0f 0, scandoneadd 0aid 2pm open phy_2,type:2 0 0cnt connected with AndroidAP, channel 6dhcp client start...ip:192.168.43.32,mask:255.255.255.0,gw:192.168.43.1runned
+Speed is 2684
+ ets Jan  8 2013,rst cause:2, boot mode:(3,7)
+
+load 0x40100000, len 23836, room 16 
+tail 12
+chksum 0x21
+ho 0 tail 12 room 4
+load 0x3ffe8000, len 1340, room 12 
+tail 0
+chksum 0x23
+load 0x3ffe8540, len 3908, room 8 
+tail 12
+chksum 0x92
+csum 0x92
+ÅšË™Å(Â¤SQSÂ(RQÂ¨)HTÂ¨)SHHHCâ€¦Ã¤Ë™rfs.start: size:256 Kb, offset:0x3C000
+
+mo
+
+Station configuration was updated to: AndroidAP
+L6470 test start
+Config start
+Config end.
+
+-----------------------------------------------
+Date: 8/21/2015 - 3:34:51 PM
+End log file

@@ -82,6 +82,7 @@ void basicGui()
 
 void init()
 {
+	WDT.enable(false);
     Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
     Serial.systemDebugOutput(true); // Allow debug output to serial
     WifiStation.config(WIFI_SSID, WIFI_PWD);

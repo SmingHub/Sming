@@ -317,8 +317,8 @@ byte Sparkfun_L6470::SPIXfer(byte data)
   //spi.begin();
   //hspi_prepare_tx(1);
 
-  digitalWrite(_cs, LOW);
   SPI.begin();
+  digitalWrite(_cs, LOW);
   rxData = SPI.transfer(data);
   //const uint8_t d = (const uint8_t)data;
   //rxData = spi.transfer(data);
