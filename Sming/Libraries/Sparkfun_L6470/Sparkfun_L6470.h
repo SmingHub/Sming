@@ -25,7 +25,6 @@ All text above, and the splash screen must be included in any redistribution
   #define WIRE_WRITE Wire.send
 #endif
 
-# include "SparkFundSPINConstants.h"
 #include "../../SmingCore/SPI.h"
 #define PCD8544_SPI_CLOCK_DIV SPI_CLOCK_DIV4
 

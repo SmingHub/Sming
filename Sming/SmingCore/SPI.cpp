@@ -9,6 +9,8 @@
 
 #include "../SmingCore/SPI.h"
 #include "../SmingCore/Digital.h"
+#include "c:/Espressif/ESP8266_SDK/include/eagle_soc.h"
+#include "c:/Espressif/ESP8266_SDK/include/osapi.h"
 
 SPIClass SPI(SPI_ID_HSPI);
 

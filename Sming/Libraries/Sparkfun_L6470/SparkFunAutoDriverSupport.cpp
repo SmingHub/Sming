@@ -1,5 +1,6 @@
 #include "Sparkfun_L6470.h"
-#include "hspi.h"
+#include "SparkFundSPINConstants.h"
+
 
 // AutoDriverSupport.cpp - Contains utility functions for converting real-world 
 //  units (eg, steps/s) to values usable by the dsPIN controller. These are all
@@ -321,7 +322,7 @@ byte Sparkfun_L6470::SPIXfer(byte data)
   rxData = SPI.transfer(data);
   //const uint8_t d = (const uint8_t)data;
   //rxData = spi.transfer(data);
-  hspi_send_uint8(data);
+  //hspi_send_uint8(data);
 
 
   digitalWrite(_cs, HIGH);
