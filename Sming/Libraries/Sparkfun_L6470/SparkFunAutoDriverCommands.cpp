@@ -1,6 +1,6 @@
 #include "Sparkfun_L6470.h"
 #include "SparkFundSPINConstants.h"
-#include "c:/Espressif/ESP8266_SDK/include/osapi.h"
+//#include "c:/Espressif/ESP8266_SDK/include/osapi.h"
 
 
 

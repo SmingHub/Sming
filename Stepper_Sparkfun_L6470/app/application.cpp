@@ -1,7 +1,7 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <Libraries/Sparkfun_L6470/Sparkfun_L6470.h>
-#include <Libraries/Sparkfun_L6470/SparkFundSPINConstants.h>
+//#include <Libraries/Sparkfun_L6470/SparkFundSPINConstants.h>
 
 
 // Put you SSID and Password here
@@ -10,18 +10,19 @@
 #define NOTE_DIVISOR 2  // My cheesy way of reducing the note frequencies to a ranges
 
 
-// Pinout:
+/* Pinout:
 int8_t  MISO = 12;
 int8_t  MOSI= 13;
 int8_t  CLK= 14;
 int8_t  CS =15;
 int8_t  DC =5;
 int8_t  RST= 4;
-
+*/
 
 //Adafruit_ILI9341 tft;
 //Sparkfun_L6470(int8_t SCLK, int8_t DIN, int8_t DC, int8_t RST);
-Sparkfun_L6470 stepper = Sparkfun_L6470(CLK, MISO, DC, RST);
+
+Sparkfun_L6470 stepper = Sparkfun_L6470(14, 12, 5, 4);
 
 Timer guiTimer;
 int stepDir = 1;

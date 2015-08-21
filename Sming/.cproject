@@ -5,6 +5,7 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.mingw.base.1135534147" moduleId="org.eclipse.cdt.core.settings" name="Sming">
 				<macros>
 					<stringMacro name="ESP_HOME" type="VALUE_TEXT" value="c:\Espressif"/>
+					<stringMacro name="SMING_HOME" type="VALUE_TEXT" value="c:\Users\klemen\git\Sming\Sming"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -30,13 +31,14 @@
 							</builder>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1904387915" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
 								<option id="gnu.c.compiler.option.include.paths.378707889" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;../${ESP_HOME}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/ESP8266_SDK/include&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.376550230" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1308693941" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
 								<option id="gnu.cpp.compiler.option.include.paths.511077226" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;../${ESP_HOME}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/ESP8266_SDK/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1606285752" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
