@@ -103,7 +103,7 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
-SPIFF_FILES ?= web/build
+SPIFF_FILES ?= files
 
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
