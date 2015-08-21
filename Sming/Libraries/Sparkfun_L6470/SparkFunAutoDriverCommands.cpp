@@ -1,4 +1,6 @@
 #include "Sparkfun_L6470.h"
+#include "c:/Espressif/ESP8266_SDK/include/osapi.h"
+
 
 
 //commands.ino - Contains high-level command implementations- movement

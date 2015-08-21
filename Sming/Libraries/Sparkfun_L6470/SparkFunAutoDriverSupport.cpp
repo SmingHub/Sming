@@ -307,8 +307,6 @@ unsigned long Sparkfun_L6470::xferParam(unsigned long value, byte bitLen)
   return value;
 }
 
-//SPISettings settings(5000000, MSBFIRST, SPI_MODE3);
-
 byte Sparkfun_L6470::SPIXfer(byte data)
 {
   byte rxData;
@@ -316,22 +314,22 @@ byte Sparkfun_L6470::SPIXfer(byte data)
   // TO - DO is I am using here: hspi_start_tx
   //hspi_start_tx();
   //spi.begin();
-  hspi_prepare_tx(1);
+  //hspi_prepare_tx(1);
 
-  //SPI.begin();
-  digitalWrite(_CSPin, LOW);
-  //rxData = SPI.transfer(data);
+  digitalWrite(_cs, LOW);
+  SPI.begin();
+  rxData = SPI.transfer(data);
   //const uint8_t d = (const uint8_t)data;
   //rxData = spi.transfer(data);
   hspi_send_uint8(data);
-  rxData =hsp
 
-  digitalWrite(_CSPin, HIGH);
+
+  digitalWrite(_cs, HIGH);
   //SPI.endTransaction();
   //SPI.end();
 
   //return rxData;
-  spi.end();
+  SPI.end();
   return rxData;
 }
 
