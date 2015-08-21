@@ -147,7 +147,7 @@ class Sparkfun_L6470 {
   // NOTE: MISO and SS will be set as an input and output respectively, so be careful sharing those pins!
   Sparkfun_L6470(int8_t DC, int8_t CS, int8_t RST);
 
-  void begin(uint8_t contrast = 40, uint8_t bias = 0x04);
+  void begin();
   
   void command(uint8_t c);
   void data(uint8_t c);
