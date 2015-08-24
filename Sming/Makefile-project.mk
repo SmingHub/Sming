@@ -141,6 +141,9 @@ endif
 ifneq ($(WIFI_PWD), "")
 	CFLAGS += -DWIFI_PWD=\"$(WIFI_PWD)\"
 endif
+ifeq ($(DISABLE_SPIFFS), 1)
+	CFLAGS += -DDISABLE_SPIFFS=1
+endif
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections
@@ -266,7 +269,7 @@ spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
-	
+
 	$(vecho) ""	
 	$(vecho) "#Memory / Section info:"	
 	$(vecho) "------------------------------------------------------------------------------"
@@ -306,6 +309,9 @@ spiff_clean:
 	$(Q) rm -rf $(SPIFF_BIN_OUT)
 
 $(SPIFF_BIN_OUT):
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(vecho) "(!) Spiffs support disabled. Remove 'DISABLE_SPIFFS' make argument to enable spiffs."
+else
 	# Generating spiffs_bin
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
@@ -318,11 +324,16 @@ $(SPIFF_BIN_OUT):
     cp $(SMING_HOME)/compiler/data/blankfs.bin $(FW_BASE)/spiff_rom.bin; \
 	fi
 	$(vecho) "spiff_rom.bin---------->$(SPIFF_START_OFFSET)"
+endif
 
 flash: all
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
 	-$(Q) $(KILL_TERM)
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin
+else
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
+endif
 	$(TERMINAL)
 
 flashinit:
