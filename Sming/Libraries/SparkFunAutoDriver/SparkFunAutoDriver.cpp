@@ -11,7 +11,7 @@ AutoDriver::AutoDriver(int CSPin, int resetPin, int busyPin)
 	//zhivko: commented out SPIConfig arduino code
 	//SPIConfig();
 	//metalphreak spi driver descriebed in: http://www.esp8266.com/viewtopic.php?f=13&t=1467
-	spi_init(HSPI);
+	spi_init((uint8)HSPI);
 }
 
 AutoDriver::AutoDriver(int CSPin, int resetPin)
@@ -22,7 +22,7 @@ AutoDriver::AutoDriver(int CSPin, int resetPin)
 
 	//zhivko: commented out SPIConfig arduino code
 	//SPIConfig();
-	spi_init(HSPI);
+	spi_init((uint8)HSPI);
 }
 
 int AutoDriver::busyCheck(void)
