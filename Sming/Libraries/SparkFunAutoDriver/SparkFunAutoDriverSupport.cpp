@@ -339,7 +339,8 @@ byte AutoDriver::SPIXfer(byte data)
 	return rxData;
 	*/
 
-	byte rxData = hwSpi.transfer((uint8_t)data);
+	hwSpi.spi_tx8(1,(uint8_t)data);
+	byte rxData = hwSpi.spi_rx8(1);
 	return rxData;
 }
 

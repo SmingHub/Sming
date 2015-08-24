@@ -38,8 +38,8 @@ public:
 	void begin(uint8_t spi_no); // Default
 	void end(uint8_t spi_no);
 
-	void transfer(uint8_t * data, uint8_t count);
-	byte transfer(uint8_t data);
+	//void transfer(uint8_t * data, uint8_t count);
+	//byte transfer(uint8_t data);
 	
         void spi_init_gpio(uint8_t spi_no, uint8_t sysclk_as_spiclk);
         void spi_clock(uint8_t spi_no, uint16 prediv, uint8_t cntdiv);

@@ -1,10 +1,9 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <Libraries/SparkFunAutoDriver/SparkFunAutoDriver.h>
-//#include <Libraries/Sparkfun_L6470/SparkFundSPINConstants.h>
 
 // Put you SSID and Password here
-#define WIFI_SSID "AndroidAP"
+#define WIFI_SSID "AsusKZ"
 #define WIFI_PWD "Doitman1"
 #define NOTE_DIVISOR 2  // My cheesy way of reducing the note frequencies to a ranges
 
