@@ -3,7 +3,14 @@
 #include <stdlib.h>
 #include "../include/stringconversion.h"
 
+//Since C does not support default func parameters, keep this function as used by framework
+//and create extended _w funct to handle width
 char* ltoa(long val, char* buffer, int base)
+{
+	return ltoa_w(val, buffer, base, 0);
+}
+
+char* ltoa_w(long val, char* buffer, int base, int width)
 {
 	int i = 34, p = 0;
 	char buf[36] = {0};
@@ -17,11 +24,27 @@ char* ltoa(long val, char* buffer, int base)
 	if (ngt)
 		buf[i--] = '-';
 
-	strcpy(buffer, &buf[i+1]);
+	if(width != 0)
+	{
+		width -= strlen(&buf[i+1]);
+		if(width > 0)
+		{
+			memset(buffer, ' ', width);
+		}
+	}
+
+	strcpy(buffer + width, &buf[i+1]);
 	return buffer;
 }
 
+//Since C does not support default func parameters, keep this function as used by framework
+//and create extended _w funct to handle width
 char* ultoa(unsigned long val, char* buffer, unsigned int base)
+{
+	return ultoa_w(val, buffer, base, 0);
+}
+
+char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width)
 {
 	int i = 34, p = 0;
 	char buf[36] = {0};
@@ -30,89 +53,134 @@ char* ultoa(unsigned long val, char* buffer, unsigned int base)
 		buf[i] = "0123456789abcdef"[val % base];
 	if (p == 0) buf[i--] = '0'; // case for zero
 
-	strcpy(buffer, &buf[i+1]);
+	if(width != 0)
+	{
+		width -= strlen(&buf[i+1]);
+		if(width > 0)
+		{
+			memset(buffer, ' ', width);
+		}
+	}
+	strcpy(buffer + width, &buf[i+1]);
+
 	return buffer;
 }
 
 // Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
+// modified by ADiea: remove dependencies strcat, floor, round; reorganize+speedup code
 char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer)
 {
-	 if (outputBuffer == NULL) return NULL;
+	char temp[24], num[24];
+	unsigned long mult = 1, int_part;
+	int16_t i, processedFracLen = numDigitsAfterDecimal;
 
-	 *outputBuffer = 0;
+	if(processedFracLen < 0)
+		processedFracLen = 9;
 
-	 if (isnan(floatVar))
-		 strcpy(outputBuffer, "NaN");
-	 else if (isinf(floatVar))
-		 strcpy(outputBuffer, "Inf");
-	 else if (floatVar > 4294967040.0)
-		 strcpy(outputBuffer, "OVF");  // constant determined empirically
-	 else if (floatVar <-4294967040.0)
-		 strcpy(outputBuffer, "OVF");  // constant determined empirically
+	double remainder;
 
-	 if (*outputBuffer != 0)
-		 return outputBuffer;
+	if (outputBuffer == NULL)
+		return NULL ;
 
-	 char temp[24];
-	 int16_t i;
+	char *buf = outputBuffer, *s;
 
-	 temp[0]='\0';
-	 outputBuffer[0]='\0';
+	if (isnan(floatVar))
+		strcpy(outputBuffer, "NaN");
+	else if (isinf(floatVar))
+		strcpy(outputBuffer, "Inf");
+	else if (floatVar > 4294967040.0)  // constant determined empirically
+		strcpy(outputBuffer, "OVF");
+	else if (floatVar < -4294967040.0)   // constant determined empirically
+		strcpy(outputBuffer, "ovf");
+	else
+	{
+		//start building the number
+		//buf will be the end pointer
+		buf = num;
 
-	 if(floatVar < 0.0){
-	   strcpy(outputBuffer,"-\0");  //print "-" sign
-	   floatVar *= -1;
-	 }
+		if (floatVar < 0.0)
+		{
+			*buf++ = '-';  //print "-" sign
+			floatVar = -floatVar;
+		}
 
-	 if( numDigitsAfterDecimal == 0) {
-	   strcat(outputBuffer, ltoa(round(floatVar), temp, 10));  //prints the int part
-	 }
-	 else {
-	   unsigned long frac, mult = 1;
-	   int16_t  processedFracLen = numDigitsAfterDecimal;
-	   if (processedFracLen > 9) processedFracLen = 9; // Prevent overflow!
+		// Extract the integer part of the number and print it
 
-	   int16_t padding = processedFracLen - 1;
+		if (processedFracLen > 9)
+			processedFracLen = 9; // Prevent overflow!
 
-	   int16_t k = processedFracLen;
-	   while (k-- > 0)
-	     mult *= 10;
+		i = processedFracLen;
 
-	   floatVar += 0.5/(float)mult;      // compute rounding factor
+		while (i-- > 0)
+			mult *= 10;
 
-	   strcat(outputBuffer, ltoa(floor(floatVar), temp, 10));  //prints the integer part without rounding
-	   strcat(outputBuffer, ".\0"); // print the decimal point
+		//round the number
+		floatVar += 0.5 / (float) mult;
 
-	   frac = (floatVar - floor(floatVar)) * mult;
+		int_part = (unsigned long) floatVar;
 
-	   unsigned long frac1 = frac;
+		//print the int part into num
+		s = ltoa(int_part, buf, 10);
 
-	   while(frac1 /= 10)
-	     padding--;
+		//adjust end pointer
+		buf += strlen(s); //go to end of string
 
-	   while(padding--)
-	     strcat(outputBuffer,"0\0");    // print padding zeros
+		//deal with digits after the decimal
+		if (numDigitsAfterDecimal != 0)
+		{
+			*buf++ = '.'; // print the decimal point
 
-	   strcat(outputBuffer,ltoa(frac,temp,10));  // print fraction part
+			//print the fraction part into temp
+			s = ltoa( ((floatVar - int_part) * mult), temp, 10);
 
-	   k = numDigitsAfterDecimal - processedFracLen;
-	   while (k-- > 0)
-	     strcat(outputBuffer,"0\0"); // ending fraction zeroes
-	 }
+			i = processedFracLen - strlen(s) + 1;
 
-	 // generate width space padding
-	 if ((minStringWidthIncDecimalPoint != 0) && (minStringWidthIncDecimalPoint >= strlen(outputBuffer))){
-	   int16_t J=0;
-	   J = minStringWidthIncDecimalPoint - strlen(outputBuffer);
+			//print the first zeros of the fraction part
+			while (--i > 0)
+				*buf++ = '0';
 
-	   for (i=0; i< J; i++) {
-	     temp[i] = ' ';
-	   }
+			//print the fraction part
+			while (*s)
+				*buf++ = *s++;
 
-	   temp[i++] = '\0';
-	   strcat(temp,outputBuffer);
-	   strcpy(outputBuffer,temp);
-	 }
+			//trim back on the last fraction zeroes
+			while(*(buf - 1) == '0')
+			{
+				--buf;
+				--processedFracLen;
+			}
 
-	 return outputBuffer;
+			if(numDigitsAfterDecimal > 0)
+			{
+				i = numDigitsAfterDecimal - processedFracLen;
+
+				// padding fraction zeroes
+				while (i-- > 0)
+					*buf++ = '0';
+			}
+		}
+
+		//terminate num
+		*buf = 0;
+
+		//switch buf to outputBuffer
+		buf = outputBuffer;
+
+		// generate width space padding
+		i = minStringWidthIncDecimalPoint - strlen(num) + 1;
+		while (--i > 0)
+		{
+			*buf++ = ' ';
+		}
+
+		//Write output buffer
+		s = num;
+		while (*s)
+			*buf++ = *s++;
+
+		//termninate outputBuffer
+		*buf = 0;
+	}
+
+	return outputBuffer;
 }
