@@ -13,12 +13,11 @@
  int8_t  MOSI= 13;
  int8_t  CLK= 14;
  int8_t  CS =15;
- int8_t  DC =5;
  int8_t  RST= 4;
  */
 
-//Sparkfun_L6470::Sparkfun_L6470(int8_t SCLK, int8_t DIN, int8_t DC, int8_t CS,	int8_t RST)
-Sparkfun_L6470 stepper = Sparkfun_L6470(14, 13, 5, 15, 4);
+//Sparkfun_L6470::Sparkfun_L6470(int8_t SCLK, int8_t DIN, int8_t DC, int8_t CS, int8_t RST)
+Sparkfun_L6470 stepper = Sparkfun_L6470(14, 13, 15, 4);
 
 Timer guiTimer;
 int stepDir = 1;

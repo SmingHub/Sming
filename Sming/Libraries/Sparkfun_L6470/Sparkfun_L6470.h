@@ -140,17 +140,15 @@ Sparkfun driver
 class Sparkfun_L6470 {
  public:
   // Software SPI with explicit CS pin.
-  Sparkfun_L6470(int8_t SCLK, int8_t DIN, int8_t DC, int8_t CS, int8_t RST);
+  Sparkfun_L6470(int8_t SCLK, int8_t DIN, int8_t CS, int8_t RST);
   // Software SPI with CS tied to ground.  Saves a pin but other pins can't be shared with other hardware.
-  Sparkfun_L6470(int8_t SCLK, int8_t DIN, int8_t DC, int8_t RST);
+  Sparkfun_L6470(int8_t SCLK, int8_t DIN, int8_t RST);
   // Hardware SPI based on hardware controlled SCK (SCLK) and MOSI (DIN) pins. CS is still controlled by any IO pin.
   // NOTE: MISO and SS will be set as an input and output respectively, so be careful sharing those pins!
-  Sparkfun_L6470(int8_t DC, int8_t CS, int8_t RST);
+  Sparkfun_L6470(int8_t CS, int8_t RST);
 
   void begin();
-  
-  void command(uint8_t c);
-  void data(uint8_t c);
+
 
   // These are super-common things to do: checking if the device is busy,
   //  and checking the status of the device. We make a couple of functions

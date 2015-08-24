@@ -108,22 +108,3 @@ bool Sparkfun_L6470::isHardwareSPI()
 	return (_din == -1 && _sclk == -1);
 }
 
-void Sparkfun_L6470::command(uint8_t c)
-{
-	digitalWrite(_dc, LOW);
-	if (_cs > 0)
-		digitalWrite(_cs, LOW);
-	shiftOut(_din, _sclk, MSBFIRST, c);
-	if (_cs > 0)
-		digitalWrite(_cs, HIGH);
-}
-
-void Sparkfun_L6470::data(uint8_t c)
-{
-	digitalWrite(_dc, HIGH);
-	if (_cs > 0)
-		digitalWrite(_cs, LOW);
-	shiftOut(_din, _sclk, MSBFIRST, c);
-	if (_cs > 0)
-		digitalWrite(_cs, HIGH);
-}
