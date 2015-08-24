@@ -338,9 +338,8 @@ byte AutoDriver::SPIXfer(byte data)
 	SPI.endTransaction();
 	return rxData;
 	*/
-	byte rxData;
 	uint32 rxData32 = spi_tx8(HSPI, data);
-	uint8 rxData = (uint8)rxData32;
+	byte rxData = (uint8)rxData32;
 	return rxData;
 }
 
