@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include "SparkFundSPINConstants.h"
+#include "ESP8266_SPI.h"
 
 class AutoDriver
 {
@@ -118,6 +119,8 @@ class AutoDriver
     int _CSPin;
     int _resetPin;
     int _busyPin;
+
+    HwSPIClass hwSpiClass;
 };
 
 // User constants for public functions.
