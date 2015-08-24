@@ -120,7 +120,7 @@ class AutoDriver
     int _resetPin;
     int _busyPin;
 
-    HwSPIClass hwSpiClass;
+    HwSPIClass hwSpi;
 };
 
 // User constants for public functions.

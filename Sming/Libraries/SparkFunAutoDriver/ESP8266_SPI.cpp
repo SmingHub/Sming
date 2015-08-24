@@ -72,7 +72,7 @@ void HwSPIClass::spi_init_gpio(uint8_t spi_no, uint8_t sysclk_as_spiclk)
 		clock_div_flag = 0x0001;	
 	} 
 
-	if(spi_no==SPI){
+	if(spi_no==0){
 		WRITE_PERI_REG(PERIPHS_IO_MUX, 0x005|(clock_div_flag<<8)); //Set bit 8 if 80MHz sysclock required
 		PIN_FUNC_SELECT(PERIPHS_IO_MUX_SD_CLK_U, 1);
 		PIN_FUNC_SELECT(PERIPHS_IO_MUX_SD_CMD_U, 1);

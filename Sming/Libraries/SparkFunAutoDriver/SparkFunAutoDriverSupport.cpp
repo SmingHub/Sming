@@ -1,5 +1,5 @@
 #include "SparkFunAutoDriver.h"
-#include "spi.h"
+#include "ESP8266_SPI.h"
 
 // AutoDriverSupport.cpp - Contains utility functions for converting real-world 
 //  units (eg, steps/s) to values usable by the dsPIN controller. These are all
@@ -339,7 +339,7 @@ byte AutoDriver::SPIXfer(byte data)
 	return rxData;
 	*/
 
-	byte rxData = hwSpiClass.transfer((uint8_t)data);
+	byte rxData = hwSpi.transfer((uint8_t)data);
 	return rxData;
 }
 
