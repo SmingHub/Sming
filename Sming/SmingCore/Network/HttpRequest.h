@@ -32,6 +32,7 @@ public:
 
 	inline String getRequestMethod() { return method; }
 	inline String getPath() { return path; }
+	inline String getHeaderData() { return content; }
 	String getContentType();
 	int getContentLength();
 
@@ -46,6 +47,7 @@ public:
 public:
 	HttpParseResult parseHeader(HttpServer *server, pbuf* buf);
 	HttpParseResult parsePostData(HttpServer *server, pbuf* buf);
+	HttpParseResult parseHeaderData(HttpServer *server, pbuf* buf);
 	bool extractParsingItemsList(pbuf* buf, int startPos, int endPos,
 			char delimChar, char endChar,
 			HashMap<String, String> *resultItems);
@@ -53,6 +55,7 @@ public:
 private:
 	String method;
 	String path;
+	String content;
 	HashMap<String, String> *requestHeaders;
 	HashMap<String, String> *requestGetParameters;
 	HashMap<String, String> *requestPostParameters;
