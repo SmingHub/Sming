@@ -25,8 +25,11 @@
 #endif
 
 //Define some default SPI clock settings
-#define SPI_CLK_PREDIV 10
+//#define SPI_CLK_PREDIV 10
+//#define SPI_CLK_CNTDIV 2
+#define SPI_CLK_PREDIV 8
 #define SPI_CLK_CNTDIV 2
+
 #define SPI_CLK_FREQ CPU_CLK_FREQ/(SPI_CLK_PREDIV*SPI_CLK_CNTDIV) // 80 / 20 = 4 MHz
 
 
@@ -64,7 +67,7 @@ private:
 	//uint8_t order; // = MSBFIRST
 };
 
-extern HwSPIClass HwSPI;
+//extern HwSPIClass HwSPI;
 
 #endif	/* ESP8266_SPI_H */
 

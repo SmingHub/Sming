@@ -322,7 +322,7 @@ unsigned long AutoDriver::xferParam(unsigned long value, byte bitLen)
 	return value;
 }
 
-//zhivko: commented out because metalphreak uses it
+//zhivko: commented out because metalphreak uses it diferently
 //SPISettings settings(5000000, MSBFIRST, SPI_MODE3);
 
 byte AutoDriver::SPIXfer(byte data)
@@ -330,17 +330,18 @@ byte AutoDriver::SPIXfer(byte data)
 
 	//zhivko: commented out because metalphreak uses it differently
 	/*
-	byte rxData;
-	SPI.beginTransaction(settings);
-	digitalWrite(_CSPin, LOW);
-	rxData = SPI.transfer(data);
-	digitalWrite(_CSPin, HIGH);
-	SPI.endTransaction();
-	return rxData;
-	*/
+	 byte rxData;
+	 SPI.beginTransaction(settings);
+	 digitalWrite(_CSPin, LOW);
+	 rxData = SPI.transfer(data);
+	 digitalWrite(_CSPin, HIGH);
+	 SPI.endTransaction();
+	 return rxData;
+	 */
 
-	hwSpi.spi_tx8(1,(uint8_t)data);
-	byte rxData = hwSpi.spi_rx8(1);
+	hwSpi.spi_tx8(HSPI, (uint8_t) data);
+	byte rxData = hwSpi.spi_rx8(HSPI);
+
 	return rxData;
 }
 

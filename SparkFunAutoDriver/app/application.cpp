@@ -12,7 +12,7 @@
  int8_t  MOSI= 13;
  int8_t  CLK= 14;
  int8_t  CS =15;
- int8_t  RST= 4;
+ int8_t  RST= 4;   pin4 and pin5 are swapped on ESP07 !!
  */
 
 AutoDriver stepper = AutoDriver(15,4);
@@ -22,7 +22,6 @@ int stepDir = 1;
 
 void dSPINConfig(void)
 {
-
 	stepper.configSyncPin(BUSY_PIN, 0); // BUSY pin low during operations;
 										//  second paramter ignored.
 	stepper.configStepMode(STEP_FS);   // 0 microsteps per step
@@ -50,6 +49,7 @@ void dSPINConfig(void)
 
 void playNote()
 {
+
 	if (stepDir == 1)
 	{
 		Serial.println("Direction=1");
@@ -63,14 +63,15 @@ void playNote()
 		stepDir = 1;
 	}
 
+	//playNote();
+	Serial.println("playNote\r");
+	os_printf_plus("Status: %d\r", stepper.getStatus());
 }
 
 void basicGui()
 {
-	//playNote();
-	Serial.println("Runned\n");
-	os_printf_plus("Status: %d\n", stepper.getStatus());
-	stepper.run(FWD, 40);
+	guiTimer.initializeMs(500, playNote).start();
+
 }
 
 void init()
@@ -84,9 +85,9 @@ void init()
 	//delay(3000);
 	Serial.println("L6470 test start");
 	Serial.println("Config start");
-	//dSPINConfig();
+	dSPINConfig();
 	Serial.println("Config end.");
 
-	//guiTimer.initializeMs(2000, basicGui).start();
+
 	WifiStation.waitConnection(basicGui, 30, playNote);
 }
