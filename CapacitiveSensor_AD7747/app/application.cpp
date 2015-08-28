@@ -42,7 +42,7 @@ void readAD7747()
 	// http://opensourceecology.org/w/images/e/ec/Cap_Sensor_Email_Chain_7-11-2014.pdf
 	// http://opensourceecology.org/wiki/Paul_Log
 
-	System.onReady(ets_wdt_disable);
+	system_soft_wdt_feed();
 
 	Wire.begin();                   //sets up i2c for operation
 	Wire.beginTransmission(0x48);
@@ -71,6 +71,7 @@ void readAD7747()
 	Serial.println("Loop will start");   //test to make sure serial connection is working
 	//WDT.alive();
 	//system_soft_wdt_restart();
+
 	while (true)
 	{
 		Wire.beginTransmission(0x48);   //talking to chip
@@ -78,24 +79,27 @@ void readAD7747()
 		Wire.endTransmission();
 		Wire.requestFrom(0x48, 1);   //request status register data
 		int readycap;
-		//Serial.println("Trying read...");   //try read
+		Serial.println("Trying read...");   //try read
 		readycap = Wire.read();
 		if ((readycap & 0x1) == 0)
 		{                // ready?
-			//Serial.println("Data Ready");
-			delay(5);
+			Serial.print(system_get_time());
+			Serial.println("Data Ready");
+			delay(50);
 			Wire.beginTransmission(0x48);    //arduino asks for data from ad7747
 			Wire.write(0x01);   		     //set address point to capacitive DAC register 1
 
 			Wire.endTransmission();          //pointer is set so now we can read the
 
-			//Serial.println("Data Incoming");
-			delay(5);
+			Serial.print(system_get_time());
+			Serial.println("Data Incoming");
+			delay(50);
 			Wire.requestFrom(0x48, 3,false);   //reads data from cap DAC registers 1-3
 
 			while (Wire.available())
 			{
-				//Serial.println("  Wire available.");
+				Serial.print(system_get_time());
+				Serial.println("  Wire available.");
 				unsigned char hi, mid, lo;      //1 byte numbers
 				long capacitance;      //will be a 3byte number
 				float pf;      //scaled value of capacitance
@@ -108,10 +112,10 @@ void readAD7747()
 			}
 			//Serial.println();
 		}
-		//Serial.println("Loop Done");
+		Serial.print(system_get_time());
+		Serial.println("Loop Done");
 		//Serial.println("  ");
-		//system_soft_wdt_restart();
-		system_soft_wdt_restart();
+		system_soft_wdt_feed();
 	}
 }
 
@@ -161,6 +165,8 @@ void scanBus()
 
 void init()
 {
+	System.setCpuFrequency(eCF_160MHz);
+
 	Serial.systemDebugOutput(false); // Disable debug output
 	Serial.print("rst_info.reason: ");
 	Serial.println(system_get_rst_info()->reason);

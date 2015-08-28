@@ -3,7 +3,6 @@
 	<name>CapacitiveSensor_AD7747</name>
 	<comment></comment>
 	<projects>
-		<project>SmingFramework</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
