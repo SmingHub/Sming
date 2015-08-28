@@ -33,6 +33,7 @@
 #include "../../Sming/SmingCore/Wire.h"
 #include "../../Sming/Wiring/WConstants.h"
 #include "../include/user_config.h"
+#include <SmingCore/SmingCore.h>
 
 Timer procTimer;
 
@@ -61,14 +62,15 @@ void readAD7747()
 	delay(4);
 	Wire.beginTransmission(0x48);
 	Wire.write(0x0A);           //address pointer for the configuration register
-	Wire.write(0x21); //b'00100001' for continuous conversion, arbitrary VTF setting, and mid-range capacitive conversion time
+	Wire.write(0x21); 			//b'00100001' for continuous conversion, arbitrary VTF setting, and mid-range capacitive conversion time
 	Wire.endTransmission();
 	Wire.beginTransmission(0x48);
 	Wire.write(0x0B);           //CAP DAC A Register address (Positive pin data)
-	Wire.write(0x80);                   //b'10111111' for enable Cap DAC A
+	Wire.write(0x80);           //b'10111111' for enable Cap DAC A
 	Wire.endTransmission();
-	Serial.println("Hello!");   //test to make sure serial connection is working
-
+	Serial.println("Loop will start");   //test to make sure serial connection is working
+	//WDT.alive();
+	//system_soft_wdt_restart();
 	while (true)
 	{
 		Wire.beginTransmission(0x48);   //talking to chip
@@ -76,24 +78,24 @@ void readAD7747()
 		Wire.endTransmission();
 		Wire.requestFrom(0x48, 1);   //request status register data
 		int readycap;
+		//Serial.println("Trying read...");   //try read
 		readycap = Wire.read();
 		if ((readycap & 0x1) == 0)
 		{                // ready?
-			Serial.println("Data Ready");
-			delay(500);
+			//Serial.println("Data Ready");
+			delay(5);
 			Wire.beginTransmission(0x48);    //arduino asks for data from ad7747
-			Wire.write(0x01);   //set address point to capacitive DAC register 1
+			Wire.write(0x01);   		     //set address point to capacitive DAC register 1
 
-			Wire.endTransmission();      //pointer is set so now we can read the
+			Wire.endTransmission();          //pointer is set so now we can read the
 
-			Serial.println("Data Incoming");
-			delay(500);
-			//WDT.alive();
+			//Serial.println("Data Incoming");
+			delay(5);
 			Wire.requestFrom(0x48, 3,false);   //reads data from cap DAC registers 1-3
 
 			while (Wire.available())
 			{
-				Serial.println("  Wire available.");
+				//Serial.println("  Wire available.");
 				unsigned char hi, mid, lo;      //1 byte numbers
 				long capacitance;      //will be a 3byte number
 				float pf;      //scaled value of capacitance
@@ -102,15 +104,14 @@ void readAD7747()
 				lo = Wire.read();
 				capacitance = (hi << 16) + (mid << 8) + lo - 0x800000;
 				pf = (float) capacitance * -1 / (float) 0x800000 * 8.192f;
-				Serial.print(pf, DEC); //prints the capacitance data in decimal through serial port
-
-				Serial.print(",");
+				Serial.println(pf, DEC); //prints the capacitance data in decimal through serial port
 			}
-			Serial.println();
+			//Serial.println();
 		}
-		Serial.println("Loop Done");
-		Serial.println("  ");
-		delay(1000);
+		//Serial.println("Loop Done");
+		//Serial.println("  ");
+		//system_soft_wdt_restart();
+		system_soft_wdt_restart();
 	}
 }
 
@@ -120,7 +121,7 @@ void scanBus()
 	int nDevices;
 
 	Serial.println("Scanning...");
-	WDT.enable(false);
+	//WDT.enable(false);
 
 	nDevices = 0;
 	for (address = 1; address < 127; address++)
@@ -128,10 +129,9 @@ void scanBus()
 		// The i2c_scanner uses the return value of
 		// the Write.endTransmisstion to see if
 		// a device did acknowledge to the address.
+
 		Wire.beginTransmission(address);
 		error = Wire.endTransmission();
-
-		//WDT.alive(); // Second option: notify Watch Dog what you are alive (feed it)
 
 		if (error == 0)
 		{
@@ -177,7 +177,8 @@ void init()
 	Serial.print("rst_info.excvaddr ");
 	Serial.println(system_get_rst_info()->excvaddr, HEX);
 
-	WDT.enable(false); // First (but not the best) option: fully disable watch dog timer
+	//WDT.enable(false); // First (but not the best) option: fully disable watch dog timer
+	system_soft_wdt_stop();
 
 	// You can change pins:
 	//Wire.pins(12, 14); // SCL, SDA
