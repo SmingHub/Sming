@@ -5,7 +5,7 @@
 #include "os_type.h"
 
 #if 0
-#define espconn_printf(fmt, args...) os_printf(fmt,## args)
+#define espconn_printf(fmt, args...) m_printf(fmt,## args)
 #else 
 #define espconn_printf(fmt, args...)
 #endif
