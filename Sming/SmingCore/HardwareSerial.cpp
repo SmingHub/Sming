@@ -17,6 +17,9 @@
 // UartDev is defined and initialized in ROM code.
 extern UartDevice UartDev;
 
+//set m_printf callback
+extern void setMPrintfPrinterCbc(void (*callback)(char));
+
 // StreamDataAvailableDelegate HardwareSerial::HWSDelegates[2];
 
 HWSerialMemberData HardwareSerial::memberData[NUMBER_UARTS];
@@ -157,7 +160,7 @@ void HardwareSerial::flush()
 void HardwareSerial::systemDebugOutput(bool enabled)
 {
 	if (uart == UART_ID_0)
-		os_install_putc1(enabled ? (void *)uart_tx_one_char : NULL);
+		setMPrintfPrinterCbc(enabled ? uart_tx_one_char : NULL);
 	//else
 	//	os_install_putc1(enabled ? (void *)uart1_tx_one_char : NULL); //TODO: Debug serial
 }

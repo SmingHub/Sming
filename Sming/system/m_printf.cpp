@@ -34,6 +34,11 @@ void setMPrintfPrinterCbc(void (*callback)(char))
 
 int m_printf(const char *fmt, ...)
 {
+	if(!cbc_printchar)
+	{
+		return 0;
+	}
+
 	char buf[MPRINTF_BUF_SIZE], *p;
 	va_list args;
 	int n = 0;
@@ -144,6 +149,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 			break;
 
 		case 'x':
+		case 'X':
 			*str++ = '0';
 			*str++ = 'x';
 			base = 16;
