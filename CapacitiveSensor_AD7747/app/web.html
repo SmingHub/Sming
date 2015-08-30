@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>WebSockets Streaming Smoothie Charts Demo</title>
+	<script type="text/javascript" src="smoothie.js"></script>
+	<script type="text/javascript">
+		window.onload = function() {
+			var log = document.getElementById("log");
+			var timeSeries = new TimeSeries();
+			var smoothieChart = new SmoothieChart({
+				minValue: 0.0,
+				maxValue: 1.0,
+				grid: {
+					strokeStyle: 'rgb(125, 0, 0)',
+					fillStyle: 'rgb(60, 0, 0)',
+					lineWidth: 1,
+					millisPerLine: 1000,
+					verticalSections: 4
+				}
+			});
+			smoothieChart.addTimeSeries(timeSeries, {
+				strokeStyle:'rgb(0, 255, 0)',
+				fillStyle:'rgba(0, 255, 0, 0.4)',
+				lineWidth:3
+			});
+			smoothieChart.streamTo(document.getElementById("mycanvas"), 1000);
+			if (window["WebSocket"]) {
+				var conn = new WebSocket("ws://192.168.1.19");
+				conn.onmessage = function(evt) {
+					log.innerHTML = evt.data;
+					timeSeries.append(new Date().getTime(), parseFloat(evt.data));
+				};
+				conn.onclose = function(evt) {
+					log.innerHTML = "Connection closed";
+				};
+			} else {
+				log.innerHTML = "Browser does not support WebSockets";
+			}
+		};
+	</script>
+</head>
+
+<body>
+	<div id="log" style="font-family:Courier,monospace"></div>
+	<canvas id="mycanvas" width="400" height="180"></canvas>
+</body>
+
+</html>

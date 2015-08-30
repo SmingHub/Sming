@@ -28,3 +28,6 @@ MODULES = app
 
 # Com port speed
 # COM_SPEED	= 115200
+
+# SPIFFs Location
+SPIFF_FILES = web
