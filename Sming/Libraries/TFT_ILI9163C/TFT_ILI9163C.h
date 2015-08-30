@@ -95,8 +95,9 @@
 #include "../Adafruit_GFX/Adafruit_GFX.h"
 
 //----- Define here witch display you own
-#define __144_RED_PCB__//128x128
+//#define __144_RED_PCB__//128x128
 //#define __22_RED_PCB__//240x320
+#define __128x160_BLUE_PCB__  //1.8 TFT MODULE 160x128 INTEFORM (with SDC slot)
 //---------------------------------------
 
 #if defined(__SAM3X8E__)
@@ -119,8 +120,27 @@
 	#define CTAR_4MHz    (SPI_CTAR_PBR(1) | SPI_CTAR_BR(1) | SPI_CTAR_CSSCK(1))
 #endif
 
+
+#if defined(__128x160_BLUE_PCB__)
+	/*
+	This display:
+	  1.8 TFT MODULE 160x128 INTEFORM (with SDC slot)
+	  http://www.banggood.com/1_8-Inch-Serial-SPI-TFT-LCD-Display-Module-With-Power-IC-SD-Socket-p-909802.html
+	  Note: there are the various drivers
+	*/
+		#define _TFTWIDTH  		128//the REAL W resolution of the TFT
+		#define _TFTHEIGHT 		160//the REAL H resolution of the TFT
+		#define _GRAMWIDTH      128
+		#define _GRAMHEIGH      160
+		#define _GRAMSIZE		_GRAMWIDTH * _GRAMHEIGH//*see note 1
+		#define __COLORSPC		0// 1:GBR - 0:RGB
+		#define __GAMMASET1		//uncomment for another gamma
+		#define __OFFSET		0//*see note 2
+		//Tested!!
+
 //ILI9163C versions------------------------
-#if defined(__144_RED_PCB__)
+#elif defined(__144_RED_PCB__)
+
 /*
 This display:
 http://www.ebay.com/itm/Replace-Nokia-5110-LCD-1-44-Red-Serial-128X128-SPI-Color-TFT-LCD-Display-Module-/271422122271

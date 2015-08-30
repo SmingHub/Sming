@@ -27,6 +27,7 @@
 // Devices with higher bit address might not be seen properly.
 //
 
+/*
 #include "../../Sming/SmingCore/HardwareSerial.h"
 #include "../../Sming/SmingCore/Platform/WDT.h"
 #include "../../Sming/SmingCore/Timer.h"
@@ -34,8 +35,131 @@
 #include "../../Sming/Wiring/WConstants.h"
 #include "../include/user_config.h"
 #include <SmingCore/SmingCore.h>
+*/
+
+
+#include <user_config.h>
+#include <SmingCore/SmingCore.h>
+
+// If you want, you can define WiFi settings globally in Eclipse Environment Variables
+#ifndef WIFI_SSID
+	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+	#define WIFI_PWD "PleaseEnterPass"
+#endif
+
 
 Timer procTimer;
+
+HttpServer server;
+int totalActiveSockets = 0;
+float pf;
+
+void onIndex(HttpRequest &request, HttpResponse &response)
+{
+	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
+	auto &vars = tmpl->variables();
+	//vars["counter"] = String(counter);
+	response.sendTemplate(tmpl); // this template object will be deleted automatically
+}
+
+void onFile(HttpRequest &request, HttpResponse &response)
+{
+	String file = request.getPath();
+	if (file[0] == '/')
+		file = file.substring(1);
+
+	if (file[0] == '.')
+		response.forbidden();
+	else
+	{
+		response.setCache(86400, true); // It's important to use cache for better performance.
+		response.sendFile(file);
+	}
+}
+
+void wsConnected(WebSocket& socket)
+{
+	totalActiveSockets++;
+
+	// Notify everybody about new connection
+	WebSocketsList &clients = server.getActiveWebSockets();
+	for (int i = 0; i < clients.count(); i++)
+	{
+		//clients[i].sendString("New friend arrived! Total: " + String(totalActiveSockets));
+		char buf[15];
+		os_sprintf(buf,"%f",pf);
+		clients[i].sendString(buf);
+
+		Serial.print("Capacitance: ");
+		Serial.println(buf);
+	}
+}
+
+void wsMessageReceived(WebSocket& socket, const String& message)
+{
+	Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
+	String response = "Echo: " + message;
+	socket.sendString(response);
+}
+
+void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
+{
+	Serial.printf("Websocket binary data recieved, size: %d\r\n", size);
+}
+
+void wsDisconnected(WebSocket& socket)
+{
+	totalActiveSockets--;
+
+	// Notify everybody about lost connection
+	WebSocketsList &clients = server.getActiveWebSockets();
+	for (int i = 0; i < clients.count(); i++)
+		clients[i].sendString("We lost our friend :( Total: " + String(totalActiveSockets));
+}
+
+void readPeriodically()
+{
+	Wire.beginTransmission(0x48);   //talking to chip
+	Wire.write(byte(0x00));   //status register address
+	Wire.endTransmission();
+	Wire.requestFrom(0x48, 1);   //request status register data
+	int readycap;
+	//Serial.println(" Trying read...");   //try read
+	readycap = Wire.read();
+	if ((readycap & 0x1) == 0)
+	{                // ready?
+		//Serial.print(system_get_time());
+		//Serial.println(" Data Ready");
+		//delay(10);
+		Wire.beginTransmission(0x48);    //arduino asks for data from ad7747
+		Wire.write(0x01);   		     //set address point to capacitive DAC register 1
+		Wire.endTransmission();          //pointer is set so now we can read the
+
+		//Serial.print(system_get_time());
+		//Serial.println(" Data Incoming");
+		//delay(10);
+		Wire.requestFrom(0x48, 3,false);   //reads data from cap DAC registers 1-3
+		while (Wire.available())
+		{
+			//Serial.print(system_get_time());
+			//Serial.println("  Wire available.");
+			unsigned char hi, mid, lo;      //1 byte numbers
+			long capacitance;      //will be a 3byte number
+			hi = Wire.read();
+			mid = Wire.read();
+			lo = Wire.read();
+			capacitance = (hi << 16) + (mid << 8) + lo - 0x800000;
+			pf = (float) capacitance * -1 / (float) 0x800000 * 8.192f;
+			//Serial.print(system_get_time());
+			//Serial.print(" ");
+			//Serial.println(pf, DEC); //prints the capacitance data in decimal through serial port
+		}
+		//Serial.println();
+	}
+	//Serial.print(system_get_time());
+	//Serial.println(" Loop Done");
+	system_soft_wdt_feed();
+}
 
 void readAD7747()
 {
@@ -72,52 +196,10 @@ void readAD7747()
 	//WDT.alive();
 	//system_soft_wdt_restart();
 
-	while (true)
-	{
-		Wire.beginTransmission(0x48);   //talking to chip
-		Wire.write(byte(0x00));   //status register address
-		Wire.endTransmission();
-		Wire.requestFrom(0x48, 1);   //request status register data
-		int readycap;
-		Serial.println("Trying read...");   //try read
-		readycap = Wire.read();
-		if ((readycap & 0x1) == 0)
-		{                // ready?
-			Serial.print(system_get_time());
-			Serial.println("Data Ready");
-			delay(50);
-			Wire.beginTransmission(0x48);    //arduino asks for data from ad7747
-			Wire.write(0x01);   		     //set address point to capacitive DAC register 1
+	procTimer.initializeMs(200, readPeriodically).start();
 
-			Wire.endTransmission();          //pointer is set so now we can read the
-
-			Serial.print(system_get_time());
-			Serial.println("Data Incoming");
-			delay(50);
-			Wire.requestFrom(0x48, 3,false);   //reads data from cap DAC registers 1-3
-
-			while (Wire.available())
-			{
-				Serial.print(system_get_time());
-				Serial.println("  Wire available.");
-				unsigned char hi, mid, lo;      //1 byte numbers
-				long capacitance;      //will be a 3byte number
-				float pf;      //scaled value of capacitance
-				hi = Wire.read();
-				mid = Wire.read();
-				lo = Wire.read();
-				capacitance = (hi << 16) + (mid << 8) + lo - 0x800000;
-				pf = (float) capacitance * -1 / (float) 0x800000 * 8.192f;
-				Serial.println(pf, DEC); //prints the capacitance data in decimal through serial port
-			}
-			//Serial.println();
-		}
-		Serial.print(system_get_time());
-		Serial.println("Loop Done");
-		//Serial.println("  ");
-		system_soft_wdt_feed();
-	}
 }
+
 
 void scanBus()
 {
@@ -157,14 +239,44 @@ void scanBus()
 	}
 	if (nDevices == 0)
 		Serial.println("No I2C devices found\n");
-	else
-	{
-		readAD7747();
-	}
+}
+
+void startWebServer()
+{
+	server.listen(80);
+	server.addPath("/", onIndex);
+	server.setDefaultHandler(onFile);
+
+	// Web Sockets configuration
+	server.enableWebSockets(true);
+	server.setWebSocketConnectionHandler(wsConnected);
+	server.setWebSocketMessageHandler(wsMessageReceived);
+	server.setWebSocketBinaryHandler(wsBinaryReceived);
+	server.setWebSocketDisconnectionHandler(wsDisconnected);
+
+	Serial.println("\r\n=== WEB SERVER STARTED ===");
+	Serial.println(WifiStation.getIP());
+	Serial.println("==============================\r\n");
+
+}
+
+// Will be called when WiFi station was connected to AP
+void connectOk()
+{
+	Serial.println("I'm CONNECTED");
+	Serial.println(WifiStation.getIP().toString());
+	startWebServer();
+	readAD7747();
+}
+
+void couldntConnect()
+{
+	Serial.println("Couldn't connect");
 }
 
 void init()
 {
+
 	System.setCpuFrequency(eCF_160MHz);
 
 	Serial.systemDebugOutput(false); // Disable debug output
@@ -190,8 +302,12 @@ void init()
 	//Wire.pins(12, 14); // SCL, SDA
 	Wire.pins(4, 5);
 	Wire.begin();
-	procTimer.initializeMs(3000, scanBus).start();
+
+	WifiStation.enable(true);
+	WifiStation.config(WIFI_SSID, WIFI_PWD);
+	WifiAccessPoint.enable(false);
+
+	// Run our method when station was connected to AP
+	WifiStation.waitConnection(connectOk);
 }
-
-
 

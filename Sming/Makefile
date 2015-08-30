@@ -113,7 +113,7 @@ CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,-Map=file.map,--gc-sections
+LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections
 
 # linker script used for the above linkier step
 LD_PATH     = compiler/ld/
@@ -157,6 +157,10 @@ INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
+ifeq ($(DISABLE_SPIFFS), 1)
+	CFLAGS += -DDISABLE_SPIFFS=1
+endif
+
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
 Q :=
@@ -194,6 +198,9 @@ $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 	$(vecho) "Installing libsming"
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(vecho) "(!) Spiffs support disabled. Remove 'DISABLE_SPIFFS' make argument to enable spiffs."
+endif
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
 	$(vecho) "Done"
 
