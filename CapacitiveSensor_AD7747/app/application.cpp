@@ -41,6 +41,7 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
+
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
@@ -85,21 +86,16 @@ void wsConnected(WebSocket& socket)
 	WebSocketsList &clients = server.getActiveWebSockets();
 	for (int i = 0; i < clients.count(); i++)
 	{
-		//clients[i].sendString("New friend arrived! Total: " + String(totalActiveSockets));
-		char buf[15];
-		os_sprintf(buf,"%f",pf);
-		clients[i].sendString(buf);
-
-		Serial.print("Capacitance: ");
-		Serial.println(buf);
+		clients[i].sendString("New friend arrived! Total: " + String(totalActiveSockets));
 	}
 }
 
 void wsMessageReceived(WebSocket& socket, const String& message)
 {
-	Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
-	String response = "Echo: " + message;
-	socket.sendString(response);
+	//Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
+	char buf[22];
+	dtostrf(pf, 10, 8, buf);
+	socket.sendString(buf);
 }
 
 void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
@@ -196,7 +192,7 @@ void readAD7747()
 	//WDT.alive();
 	//system_soft_wdt_restart();
 
-	procTimer.initializeMs(200, readPeriodically).start();
+	procTimer.initializeMs(150, readPeriodically).start();
 
 }
 
