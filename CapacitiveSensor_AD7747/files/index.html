@@ -8,7 +8,7 @@
   </head>
   <body>
 
-    <h1>Smoothie Example</h1>
+    <h1>AD7747 reading from ESP8266</h1>
     <canvas id="mycanvas" width="400" height="100"></canvas>
 
     <script type="text/javascript">
@@ -28,8 +28,8 @@
 	  }
 	  function testWebSocket()
 	  {
-		//var wsUri = "ws://" + location.host + "/";
-		var wsUri = "ws://192.168.1.19/";
+		var wsUri = "ws://" + location.host + "/";
+		//var wsUri = "ws://192.168.1.19/";
 		websocket = new WebSocket(wsUri);
 		websocket.onopen = function(evt) { onOpen(evt) };
 		websocket.onclose = function(evt) { onClose(evt) };
