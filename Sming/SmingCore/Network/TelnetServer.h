@@ -10,7 +10,7 @@
 
 #include <user_config.h>
 #include "../Delegate.h"
-// #include "../Debug.h"
+#include "../Debug.h"
 #include "TcpClient.h"
 #include "TcpServer.h"
 #include "SystemClock.h"
@@ -27,7 +27,8 @@ class TelnetServer : public TcpServer
 public:
 	TelnetServer();
 	virtual ~TelnetServer();
-	void setCommandDelegate(TelnetServerCommandDelegate reqDelegate);
+//	void setCommandDelegate(TelnetServerCommandDelegate reqDelegate);
+	void setDebug(bool reqStatus);
 
 private:
 	void onClient(TcpClient *client);
@@ -36,6 +37,7 @@ private:
 	void wrchar(char c);
 	TcpClient *curClient;
 	CommandExecutor* commandExecutor;
+	bool telnetDebug = true;
 };
 
 #endif /* APP_TELNETSERVER_H_ */

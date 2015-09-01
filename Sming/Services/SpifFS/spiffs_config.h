@@ -23,7 +23,7 @@
 #define SPIFFS_CHACHE 0
 
 #define c_memcpy os_memcpy
-#define c_printf os_printf
+#define c_printf m_printf
 #define c_memset os_memset
 
 /*typedef int32_t s32_t;

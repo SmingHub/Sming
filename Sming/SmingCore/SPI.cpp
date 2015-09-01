@@ -45,11 +45,14 @@ void SPIClass::begin()
 	// SPI clock = CPU clock / 10 / 4
 	// time length HIGHT level = (CPU clock / 10 / 2) ^ -1,
 	// time length LOW level = (CPU clock / 10 / 2) ^ -1
+	// Frequency calculation: 80Mhz / predivider / divider
+	uint16 predivider = 2;	// (1 ... 8192)
+	uint8 divider = 4;		// (1 ... 64)
 	WRITE_PERI_REG(SPI_FLASH_CLOCK(id),
-	   ((1 & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
-	   ((3 & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
-	   ((1 & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) |
-	   ((3 & SPI_CLKCNT_L) << SPI_CLKCNT_L_S));
+		(((predivider-1) & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
+		(((divider-1) & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
+		(((divider / 2 - 1) & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) |
+		(((divider-1) & SPI_CLKCNT_L) << SPI_CLKCNT_L_S));
 }
 
 void SPIClass::writeData(uint8_t * data, uint8_t numberByte)

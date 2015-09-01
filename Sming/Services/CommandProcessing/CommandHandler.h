@@ -10,7 +10,7 @@
 
 #include "../Wiring/WiringFrameworkIncludes.h"
 #include "CommandDelegate.h"
-#include "../Wiring/Whashmap.h"
+#include "../Wiring/WHashMap.h"
 #include "SystemClock.h"
 #include <stdio.h>
 #include "HardwareSerial.h"
@@ -23,6 +23,7 @@ public:
 	~CommandHandler();
 	bool registerCommand(CommandDelegate);
 	bool unregisterCommand(CommandDelegate);
+	void registerSystemCommands();
 	CommandDelegate getCommandDelegate(String commandString);
 //	int deleteGroup(String reqGroup);
 

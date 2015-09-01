@@ -1,0 +1,31 @@
+#######################################
+# Syntax Coloring Map For Mirf
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+init	KEYWORD2
+config	KEYWORD2
+send	KEYWORD2
+setRADDR	KEYWORD2
+setTADDR	KEYWORD2
+dataReady	KEYWORD2
+getData	KEYWORD2
+getStatus	KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+Mirf	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+

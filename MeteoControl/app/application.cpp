@@ -154,7 +154,7 @@ void onClockUpdating(HttpClient& client, bool successful)
 {
 	if (!successful)
 	{
-		debugf("CLOCK UPDATE FAILED %d (code: %d)", successful, client.getReponseCode());
+		debugf("CLOCK UPDATE FAILED %d (code: %d)", successful, client.getResponseCode());
 		lastClockUpdate = 0;
 		return;
 	}

@@ -49,7 +49,7 @@ public:
 	void setRequestContentType(String _content_type);
 
 	// Resulting HTTP status code
-	__forceinline int getReponseCode() { return code; }
+	__forceinline int getResponseCode() { return code; }
 	__forceinline bool isSuccessful() { return (!writeError) && (code >= 200 && code <= 399); }
 
 	__forceinline bool isProcessing()  { return TcpClient::isProcessing(); }
