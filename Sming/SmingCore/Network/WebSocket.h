@@ -16,22 +16,27 @@
 #include "../../Services/cWebsocket/websocket.h"
 
 class HttpServer;
+class CommandExecutor;
 
 class WebSocket
 {
 	friend class HttpServer;
 public:
 	WebSocket(HttpServerConnection* conn);
+	~WebSocket();
+
 	virtual void send(const char* message, int length, wsFrameType type = WS_TEXT_FRAME);
 	void sendString(const String& message);
 	void sendBinary(const uint8_t* data, int size);
 
 protected:
 	bool initialize(HttpRequest &request, HttpResponse &response);
-	bool is(HttpServerConnection* conn) { return connection == conn; }
+	bool is(HttpServerConnection* conn) { return connection == conn; };
+	void enableCommand();
 
 private:
 	HttpServerConnection* connection;
+	CommandExecutor* commandExecutor = nullptr;
 };
 
 #endif /* SMINGCORE_NETWORK_WEBSOCKET_H_ */

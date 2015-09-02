@@ -13,6 +13,7 @@
 #include "../../Wiring/WHashMap.h"
 #include "../../Wiring/WVector.h"
 #include "../Delegate.h"
+#include "../../Services/CommandProcessing/CommandProcessingIncludes.h"
 
 class String;
 class HttpServerConnection;
@@ -41,6 +42,7 @@ public:
 
 	/// Web Sockets
 	void enableWebSockets(bool enabled);
+	void enableWebSocketsCommand(bool enabled, String reqReqestParam);
 	__forceinline WebSocketsList& getActiveWebSockets() { return wsocks; }
 	void setWebSocketConnectionHandler(WebSocketDelegate handler);
 	void setWebSocketMessageHandler(WebSocketMessageDelegate handler);
@@ -68,6 +70,9 @@ private:
 	WebSocketMessageDelegate wsMessage;
 	WebSocketBinaryDelegate wsBinary;
 	WebSocketDelegate wsDisconnect;
+
+	bool wsCommandEnabled = false;
+	String wsCommandRequestParam;
 };
 
 #endif /* _SMING_CORE_HTTPSERVER_H_ */

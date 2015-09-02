@@ -35,9 +35,6 @@ private :
 	char commandBuf [MAX_COMMANDSIZE+1];
 	uint16_t commandIndex = 0;
 	CommandOutput* commandOutput;
-	String prompt = "Sming>";
-	char eolChar = '\r';
-
 };
 
 #endif /* SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_ */

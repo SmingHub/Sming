@@ -16,23 +16,35 @@ CommandExecutor::CommandExecutor()
 CommandExecutor::CommandExecutor(TcpClient* cmdClient) : CommandExecutor()
 {
 	commandOutput = new CommandOutput(cmdClient);
-	commandOutput->printf("Welcome to the Tcp Command executor\r\n");
+	if (commandHandler.getVerboseMode() != SILENT)
+	{
+		commandOutput->printf("Welcome to the Tcp Command executor\r\n");
+	}
 }
 
 CommandExecutor::CommandExecutor(Stream* reqStream) : CommandExecutor()
 {
 	commandOutput = new CommandOutput(reqStream);
-	commandOutput->printf("Welcome to the Stream Command executor\r\n");
+	if (commandHandler.getVerboseMode() != SILENT)
+	{
+		commandOutput->printf("Welcome to the Stream Command executor\r\n");
+	}
+
 }
 
 CommandExecutor::CommandExecutor(WebSocket* reqSocket)
 {
 	commandOutput = new CommandOutput(reqSocket);
-	reqSocket->sendString("Welcome to the Websocket Command Executor");
+	if (commandHandler.getVerboseMode() != SILENT)
+	{
+		reqSocket->sendString("Welcome to the Websocket Command Executor");
+	}
+
 }
 
 CommandExecutor::~CommandExecutor()
 {
+	delete commandOutput;
 }
 
 int CommandExecutor::executorReceive(char *recvData, int recvSize)
@@ -68,9 +80,12 @@ int CommandExecutor::executorReceive(char recvChar)
 	{
 		commandIndex = 0;
 		commandBuf[commandIndex] = 0;
-		commandOutput->printf("\r\n%s",prompt.c_str());
+		if (commandHandler.getVerboseMode() == VERBOSE)
+		{
+			commandOutput->printf("\r\n%s",commandHandler.getCommandPrompt().c_str());
+		}
 	}
-	else if (recvChar == eolChar)
+	else if (recvChar == commandHandler.getCommandEOL())
 	{
 
 		processCommandLine(String(commandBuf));
@@ -116,16 +131,8 @@ void CommandExecutor::processCommandLine(String cmdString)
 	{
 		cmdDelegate.commandFunction(cmdString.c_str(),commandOutput);
 	}
-	commandOutput->printf("Sming>");
+	if (commandHandler.getVerboseMode() == VERBOSE)
+	{
+		commandOutput->printf(commandHandler.getCommandPrompt().c_str());
+	}
 }
-
-void CommandExecutor::setCommandPrompt(String reqPrompt)
-{
-	prompt = reqPrompt;
-}
-void CommandExecutor::setCommandEOL(char reqEOL)
-{
-	eolChar = reqEOL;
-}
-
-
