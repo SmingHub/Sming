@@ -28,11 +28,11 @@ public:
 	virtual void send(const char* message, int length, wsFrameType type = WS_TEXT_FRAME);
 	void sendString(const String& message);
 	void sendBinary(const uint8_t* data, int size);
+	void enableCommand();
 
 protected:
 	bool initialize(HttpRequest &request, HttpResponse &response);
 	bool is(HttpServerConnection* conn) { return connection == conn; };
-	void enableCommand();
 
 private:
 	HttpServerConnection* connection;
