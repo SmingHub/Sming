@@ -19,7 +19,7 @@ TelnetServer::~TelnetServer()
 	// TODO Auto-generated destructor stub
 }
 
-void TelnetServer::setDebug(bool reqStatus)
+void TelnetServer::enableDebug(bool reqStatus)
 {
 	telnetDebug = reqStatus;
 	if (telnetDebug && curClient) /* only setSetDebug when already connected */
@@ -32,6 +32,19 @@ void TelnetServer::setDebug(bool reqStatus)
 	}
 }
 
+void TelnetServer::enableCommand(bool reqStatus)
+{
+	if (reqStatus && curClient && !commandExecutor)
+	{
+		commandExecutor = new  CommandExecutor(curClient);
+	}
+	if (!reqStatus && commandExecutor)
+	{
+		delete commandExecutor;
+		commandExecutor = nullptr;
+	}
+	telnetCommand = reqStatus;
+}
 void TelnetServer::onClient(TcpClient *client)
 {
 	debugf("TelnetServer onClient %s", client->getRemoteIp().toString().c_str() );
@@ -49,7 +62,10 @@ void TelnetServer::onClient(TcpClient *client)
 		curClient = client;
 		curClient->setTimeOut(USHRT_MAX);
 		curClient->sendString("Welcome to Sming / ESP6266 Telnet\r\n");
-		commandExecutor = new  CommandExecutor(client);
+		if (telnetCommand)
+		{
+			commandExecutor = new  CommandExecutor(client);
+		}
 		if (telnetDebug)
 		{
 			Debug.setDebug(DebugPrintCharDelegate(&TelnetServer::wrchar,this));

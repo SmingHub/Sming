@@ -42,7 +42,7 @@ public:
 
 	/// Web Sockets
 	void enableWebSockets(bool enabled);
-	void enableWebSocketsCommand(bool enabled, String reqReqestParam);
+	void commandProcessing(bool enabled, String reqReqestParam);
 	__forceinline WebSocketsList& getActiveWebSockets() { return wsocks; }
 	void setWebSocketConnectionHandler(WebSocketDelegate handler);
 	void setWebSocketMessageHandler(WebSocketMessageDelegate handler);

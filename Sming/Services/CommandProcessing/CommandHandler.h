@@ -44,6 +44,8 @@ private :
 	void procesEchoCommand(String commandLine, CommandOutput* commandOutput);
 	void procesDebugOnCommand(String commandLine, CommandOutput* commandOutput);
 	void procesDebugOffCommand(String commandLine, CommandOutput* commandOutput);
+	void processCommandOptions(String commandLine  ,CommandOutput* commandOutput);
+
 	VerboseMode verboseMode = VERBOSE;
 	String currentPrompt = "Sming>";
 	char currentEOL = '\r';

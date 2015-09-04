@@ -208,7 +208,7 @@ void HttpServer::enableWebSockets(bool enabled)
 	}
 }
 
-void HttpServer::enableWebSocketsCommand(bool reqEnabled, String reqRequestParam)
+void HttpServer::commandProcessing(bool reqEnabled, String reqRequestParam)
 {
 	wsCommandEnabled = reqEnabled;
 	wsCommandRequestParam = reqRequestParam;

@@ -29,7 +29,6 @@ CommandExecutor::CommandExecutor(Stream* reqStream) : CommandExecutor()
 	{
 		commandOutput->printf("Welcome to the Stream Command executor\r\n");
 	}
-
 }
 
 CommandExecutor::CommandExecutor(WebSocket* reqSocket)

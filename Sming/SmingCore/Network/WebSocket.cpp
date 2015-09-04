@@ -66,5 +66,8 @@ void WebSocket::sendBinary(const uint8_t* data, int size)
 
 void WebSocket::enableCommand()
 {
-	commandExecutor = new CommandExecutor(this);
+	if (!commandExecutor)
+	{
+		commandExecutor = new CommandExecutor(this);
+	}
 }

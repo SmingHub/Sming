@@ -25,6 +25,8 @@ void CommandHandler::registerSystemCommands()
 	registerCommand(CommandDelegate("help", "Displays all available commands", "system", commandFunctionDelegate(&CommandHandler::procesHelpCommand,this)));
 	registerCommand(CommandDelegate("debugon", "Set Serial debug on", "system", commandFunctionDelegate(&CommandHandler::procesDebugOnCommand,this)));
 	registerCommand(CommandDelegate("debugoff", "Set Serial debug off", "system", commandFunctionDelegate(&CommandHandler::procesDebugOffCommand,this)));
+	registerCommand(CommandDelegate("command","Usage verbose/silent/prompt for command options\r\n","system", commandFunctionDelegate(&CommandHandler::processCommandOptions,this)));
+
 }
 
 CommandDelegate CommandHandler::getCommandDelegate(String commandString)
@@ -160,5 +162,59 @@ void CommandHandler::procesDebugOffCommand(String commandLine, CommandOutput* co
 	Serial.systemDebugOutput(false);
 	commandOutput->printf("Debug set to : Off\r\n");
 }
+
+void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* commandOutput)
+{
+	Vector<String> commandToken;
+	int numToken = splitString(commandLine, ' ' , commandToken);
+	bool errorCommand = false;
+	bool printUsage = false;
+
+	switch (numToken)
+	{
+		case 2 :
+			if (commandToken[1] == "help")
+			{
+				printUsage = true;
+			}
+			if (commandToken[1] == "verbose")
+			{
+				commandHandler.setVerboseMode(VERBOSE);
+				commandOutput->printf("Verbose mode selected\r\n");
+				break;
+			}
+			if (commandToken[1] == "silent")
+			{
+				commandHandler.setVerboseMode(SILENT);
+				commandOutput->printf("Silent mode selected\r\n");
+				break;
+			}
+			errorCommand = true;
+			break;
+		case 3 :
+			if (commandToken[1] != "prompt")
+			{
+				errorCommand = true;
+				break;
+			}
+			commandHandler.setCommandPrompt(commandToken[2]);
+			commandOutput->printf("Prompt set to : %s\r\n",commandToken[2].c_str());
+			break;
+		default :
+			errorCommand = true;
+	}
+	if (errorCommand)
+	{
+		commandOutput->printf("Unknown command : %s\r\n",commandLine.c_str());
+	}
+	if (printUsage)
+	{
+		commandOutput->printf("command usage : \r\n\r\n");
+		commandOutput->printf("command verbose : Set verbose mode\r\n");
+		commandOutput->printf("command silent : Set silent mode\r\n");
+		commandOutput->printf("command prompt 'new prompt' : Set prompt to use\r\n");
+	}
+}
+
 
 CommandHandler commandHandler;
