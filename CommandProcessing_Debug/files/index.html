@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8" />
+
+<title>WebSocket Command Test</title>
+
+<script language="javascript" type="text/javascript">
+
+  var wsUri = "ws://" + location.host + "/index.html?command=true";
+  var output;
+
+  function init()
+  {
+    output = document.getElementById("output");
+    testWebSocket();
+  }
+
+  function testWebSocket()
+  {
+    websocket = new WebSocket(wsUri);
+    websocket.onopen = function(evt) { onOpen(evt) };
+    websocket.onclose = function(evt) { onClose(evt) };
+    websocket.onmessage = function(evt) { onMessage(evt) };
+    websocket.onerror = function(evt) { onError(evt) };
+  }
+
+  function onOpen(evt)
+  {
+ //   addCommandReply("CONNECTED");
+	addCommandReply('<span style="color: red;">CONNECTED </span>');
+    doSend("help");
+  }
+
+  function onClose(evt)
+  {
+//    addCommandReply("DISCONNECTED");
+	addCommandReply('<span style="color: red;">DISCONNECTED </span>');
+  }
+
+  function onMessage(evt)
+  {
+//    addCommandReply('<span style="color: blue;">RESP: ' + evt.data+'</span>');
+//    websocket.close();
+//    document.getElementById("commandReply").innerHTML += "<br>"+evt.data;
+	addCommandReply('<span style="color: blue;">' + evt.data+'</span>');
+
+  }
+
+  function onError(evt)
+  {
+    addCommandReply('<span style="color: red;">ERROR:</span> ' + evt.data);
+  }
+
+  function doSend(message)
+  {
+    addCommandReply("SENT: " + message); 
+    websocket.send(message);
+  }
+
+  function writeToScreen(message)
+  {
+    var pre = document.createElement("p");
+    pre.style.wordWrap = "break-word";
+    pre.innerHTML = message;
+    output.appendChild(pre);
+  }
+
+  window.addEventListener("load", init, false);
+
+</script>
+
+<script>
+function addCommandReply(addString) {
+   document.getElementById("commandReply").innerHTML += "<br>"+addString;
+}
+</script>
+
+<h2>WebSocket Command Test</h2>
+
+<button onclick="connectBtn()">Connect</button>
+<script>
+function connectBtn() {
+	testWebSocket();
+}
+</script>
+<button onclick="disConnectBtn()">Disconnect</button>
+<br>
+<br>
+
+<script>
+function disConnectBtn() {
+    websocket.close();
+}
+</script>
+
+<input id="sendMessage" size="35" value="help">
+<button onclick="sendMessageBtn()">Send Message</button>
+
+<br>
+<br>
+
+<script>
+function sendMessageBtn() {
+//    document.getElementById("field2").value = document.getElementById("field1").value;
+// writeToScreen("This is button click");
+// writeToScreen(document.getElementById("sendMessage").value);
+doSend(document.getElementById("sendMessage").value);
+}
+</script>
+
+<button onclick="clearOutputBtn()">Clear Output</button>
+
+<script>
+function clearOutputBtn() {
+document.getElementById("commandReply").innerHTML = "";
+}
+</script>
+
+<div id="commandReply"style="width:500px; height:500px; overflow-y: scroll;border:1px solid black;font-size:15px" >
+</div>
+ 
+<div id="output"></div>

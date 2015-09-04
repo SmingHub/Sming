@@ -105,17 +105,21 @@ bool HttpServer::initWebSocket(HttpServerConnection& connection, HttpRequest& re
 	if (!wsEnabled)
 		return false;
 
-	auto sock = WebSocket(&connection);
-	if (!sock.initialize(request, response))
-		return false;
+    WebSocket *sock = new WebSocket(&connection);
+    if (!sock->initialize(request, response))
+        return false;
 
 	connection.setDisconnectionHandler(HttpServerConnectionDelegate(&HttpServer::onCloseWebSocket, this)); // auto remove on close
 	response.sendHeader(connection); // Will push header before user data
 
-	wsocks.add(sock);
-	if (wsConnect) wsConnect(sock);
+    wsocks.addElement(sock);
+    if (wsConnect) wsConnect(*sock);
 
-	return true;
+    if (wsCommandEnabled &&  (request.getQueryParameter(wsCommandRequestParam) == "true"))
+    {
+        debugf("WebSocket Commandprocessor started");
+    	sock->enableCommand();
+    }
 }
 
 void HttpServer::processWebSocketFrame(pbuf *buf, HttpServerConnection& connection)
@@ -131,6 +135,7 @@ void HttpServer::processWebSocketFrame(pbuf *buf, HttpServerConnection& connecti
 		msg.setString((char*)data, size);
 		debugf("WS: %s", msg.c_str());
 		if (sock && wsMessage) wsMessage(*sock, msg);
+		if (sock && sock->commandExecutor) sock->commandExecutor->executorReceive(msg+"\r");
 	}
 	if (frameType == WS_BINARY_FRAME)
 	{
@@ -201,4 +206,10 @@ void HttpServer::enableWebSockets(bool enabled)
 		enableHeaderProcessing("Sec-WebSocket-Key");
 		enableHeaderProcessing("Sec-WebSocket-Version");
 	}
+}
+
+void HttpServer::commandProcessing(bool reqEnabled, String reqRequestParam)
+{
+	wsCommandEnabled = reqEnabled;
+	wsCommandRequestParam = reqRequestParam;
 }
