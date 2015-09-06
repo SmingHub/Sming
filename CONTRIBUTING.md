@@ -15,6 +15,7 @@ __Proposed flow__:
 - Commit changes
 - Push your changes to your fork on github
 - Submit PR to the main Sming repo, __develop__ or __feature/websocket-client__ branch.
+- Work with other contributors to test your feature and get it merged to _develop_
 
 This is the most common approach for a git-flow:
 http://nvie.com/posts/a-successful-git-branching-model/
