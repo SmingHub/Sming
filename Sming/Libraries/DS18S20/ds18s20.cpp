@@ -84,7 +84,7 @@ void DS18S20::DoSearch(void)
 	  ds.select(addr);
 	  ds.write(0x44, 1);        // start conversion, with parasite power on at the end
 
-	  DelaysTimer.initializeMs(1000, TimerDelegate(&DS18S20::DoMesure, this)).start(false);
+	  DelaysTimer.initializeMs(1000, TimerDelegate(&DS18S20::DoMeasure, this)).start(false);
 
 	}
 	else
@@ -98,7 +98,7 @@ void DS18S20::DoSearch(void)
 
 
 
-void DS18S20::DoMesure()
+void DS18S20::DoMeasure()
 {
 
 	uint8_t present,i;
