@@ -250,7 +250,7 @@ void Adafruit_SSD1306::begin(uint8_t vccstate, uint8_t i2caddr, bool reset) {
     ssd1306_command(SSD1306_NORMALDISPLAY);                 // 0xA6
   #endif
 
-  #if defined SSD1306_128_64
+  #if defined SSD1306_128_64 || defined SH1106_128_64
     // Init sequence for 128x64 OLED module
     ssd1306_command(SSD1306_DISPLAYOFF);                    // 0xAE
     ssd1306_command(SSD1306_SETDISPLAYCLOCKDIV);            // 0xD5
