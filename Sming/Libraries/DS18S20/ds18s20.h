@@ -26,7 +26,7 @@ public:
 
 private:
 
-	void DoMesure();
+	void DoMeasure();
 	void DoSearch();
 
 private:
