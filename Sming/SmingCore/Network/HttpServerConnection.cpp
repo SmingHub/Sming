@@ -11,8 +11,9 @@
 #include "TcpServer.h"
 #include "../../Services/cWebsocket/websocket.h"
 
-HttpServerConnection::HttpServerConnection(HttpServer *parentServer, tcp_pcb *clientTcp)
-	: TcpConnection(clientTcp, true), server(parentServer), state(eHCS_Ready)
+HttpServerConnection::HttpServerConnection(HttpServer *parentServer,
+		tcp_pcb *clientTcp) :
+		TcpConnection(clientTcp, true), server(parentServer), state(eHCS_Ready)
 {
 	TcpServer::totalConnections++;
 	response.setHeader("Connection", "close");
@@ -32,13 +33,13 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 	}
 
 	/*{
-	 	// split.buf.test
-		pbuf* dbghack = new pbuf();
-		dbghack->payload = (char*)buf->payload + 100;
-		dbghack->len = buf->len - 100;
-		buf->len = 100;
-		buf->next = dbghack;
-	}*/
+	 // split.buf.test
+	 pbuf* dbghack = new pbuf();
+	 dbghack->payload = (char*)buf->payload + 100;
+	 dbghack->len = buf->len - 100;
+	 buf->len = 100;
+	 buf->next = dbghack;
+	 }*/
 
 	if (state == eHCS_Ready)
 	{
@@ -54,11 +55,14 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 		else if (res == eHPR_Successful)
 		{
 			debugf("Request: %s, %s", request.getRequestMethod().c_str(),
-					(request.getContentLength() > 0 ? (String(request.getContentLength()) + " bytes").c_str() : "nodata"));
+					(request.getContentLength() > 0 ?
+							(String(request.getContentLength()) + " bytes").c_str() :
+							"nodata"));
 
 			String contType = request.getContentType();
 			contType.toLowerCase();
-			if (request.getContentLength() > 0 && contType.indexOf(ContentType::FormUrlEncoded) != -1)
+			if (request.getContentLength() > 0
+					&& contType.indexOf(ContentType::FormUrlEncoded) != -1)
 				state = eHCS_ParsePostData;
 			else
 				state = eHCS_ParsingCompleted;
@@ -86,6 +90,10 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 			state = eHCS_ParsingCompleted;
 		}
 	}
+	else if (state == eHCS_ParsingCompleted && request.getContentLength() > 0)
+	{
+		request.parseRawData(server, buf);
+	}
 
 	// Fire callbacks
 	TcpConnection::onReceive(buf);
@@ -102,7 +110,8 @@ void HttpServerConnection::beginSendData()
 		return;
 	}
 
-	if (!response.hasBody() && (response.getStatusCode() < 100 || response.getStatusCode() > 399))
+	if (!response.hasBody()
+			&& (response.getStatusCode() < 100 || response.getStatusCode() > 399))
 	{
 		// Show default error message
 		sendError();
@@ -173,7 +182,8 @@ void HttpServerConnection::onError(err_t err)
 	TcpConnection::onError(err);
 }
 
-void HttpServerConnection::setDisconnectionHandler(HttpServerConnectionDelegate handler)
+void HttpServerConnection::setDisconnectionHandler(
+		HttpServerConnectionDelegate handler)
 {
 	disconnection = handler;
 }

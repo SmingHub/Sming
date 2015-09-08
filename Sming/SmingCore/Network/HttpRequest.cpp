@@ -19,6 +19,7 @@ HttpRequest::HttpRequest()
 	cookies = NULL;
 	postDataProcessed = 0;
 	combinePostFrag = false;
+	bodyBuf = NULL;
 }
 
 HttpRequest::~HttpRequest()
@@ -30,17 +31,19 @@ HttpRequest::~HttpRequest()
 	postDataProcessed = 0;
 }
 
-String HttpRequest::getQueryParameter(String parameterName, String defaultValue /* = "" */)
+String HttpRequest::getQueryParameter(String parameterName,
+		String defaultValue /* = "" */)
 {
 	if (requestGetParameters && requestGetParameters->contains(parameterName))
-			return (*requestGetParameters)[parameterName];
+		return (*requestGetParameters)[parameterName];
 
 	return defaultValue;
 }
-String HttpRequest::getPostParameter(String parameterName, String defaultValue /* = "" */)
+String HttpRequest::getPostParameter(String parameterName,
+		String defaultValue /* = "" */)
 {
 	if (requestPostParameters && requestPostParameters->contains(parameterName))
-			return (*requestPostParameters)[parameterName];
+		return (*requestPostParameters)[parameterName];
 
 	return defaultValue;
 }
@@ -64,7 +67,8 @@ String HttpRequest::getCookie(String name, String defaultValue /* = "" */)
 int HttpRequest::getContentLength()
 {
 	String len = getHeader("Content-Length");
-	if (len.length() == 0) return -1;
+	if (len.length() == 0)
+		return -1;
 
 	return len.toInt();
 }
@@ -77,7 +81,8 @@ String HttpRequest::getContentType()
 HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 {
 	int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
-	if (headerEnd == -1) return eHPR_Wait;
+	if (headerEnd == -1)
+		return eHPR_Wait;
 	if (headerEnd > NETWORK_MAX_HTTP_PARSING_LEN)
 	{
 		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
@@ -97,15 +102,17 @@ HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 	if (urlParamsStart != -1 && urlParamsStart < urlEnd)
 	{
 		path = NetUtils::pbufStrCopy(buf, urlStart, urlParamsStart - urlStart);
-		if (requestGetParameters == NULL) requestGetParameters = new HashMap<String, String>();
-		extractParsingItemsList(buf, urlParamsStart + 1, urlEnd, '&', ' ', requestGetParameters);
+		if (requestGetParameters == NULL)
+			requestGetParameters = new HashMap<String, String>();
+		extractParsingItemsList(buf, urlParamsStart + 1, urlEnd, '&', ' ',
+				requestGetParameters);
 	}
 	else
 		path = NetUtils::pbufStrCopy(buf, urlStart, urlEnd - urlStart);
 	debugf("path=%s", path.c_str());
 
 	int line, nextLine;
-	line = NetUtils::pbufFindStr(buf, "\r\n", urlEnd)  + 2;
+	line = NetUtils::pbufFindStr(buf, "\r\n", urlEnd) + 2;
 	do
 	{
 		nextLine = NetUtils::pbufFindStr(buf, "\r\n", line);
@@ -119,14 +126,18 @@ HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 				{
 					if (name == "Cookie")
 					{
-						if (cookies == NULL) cookies = new HashMap<String, String>();
-						extractParsingItemsList(buf, delim + 1, nextLine, ';', '\r', cookies);
+						if (cookies == NULL)
+							cookies = new HashMap<String, String>();
+						extractParsingItemsList(buf, delim + 1, nextLine, ';',
+								'\r', cookies);
 					}
 					else
 					{
-						String value = NetUtils::pbufStrCopy(buf, delim + 1, nextLine - (delim + 1));
+						String value = NetUtils::pbufStrCopy(buf, delim + 1,
+								nextLine - (delim + 1));
 						value.trim();
-						if (requestHeaders == NULL) requestHeaders = new HashMap<String, String>();
+						if (requestHeaders == NULL)
+							requestHeaders = new HashMap<String, String>();
 						(*requestHeaders)[name] = value;
 						debugf("%s === %s", name.c_str(), value.c_str());
 					}
@@ -134,7 +145,7 @@ HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 			}
 		}
 		line = nextLine + 2;
-	} while(nextLine != -1);
+	} while (nextLine != -1);
 
 	if (headerEnd != -1)
 	{
@@ -152,7 +163,8 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 	if (requestPostParameters == NULL)
 	{
 		int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
-		if (headerEnd == -1) return eHPR_Failed;
+		if (headerEnd == -1)
+			return eHPR_Failed;
 		if (headerEnd + getContentLength() > NETWORK_MAX_HTTP_PARSING_LEN)
 		{
 			debugf("NETWORK_MAX_HTTP_PARSING_LEN");
@@ -164,7 +176,8 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 	}
 	else if (combinePostFrag)
 	{
-		String cur = requestPostParameters->keyAt(requestPostParameters->count() - 1);
+		String cur = requestPostParameters->keyAt(
+				requestPostParameters->count() - 1);
 		debugf("Continue POST frag %s", cur.c_str());
 		int delimItem = NetUtils::pbufFindChar(buf, '&', 0);
 		if (delimItem == -1)
@@ -181,7 +194,8 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 		postDataProcessed += start;
 	}
 
-	bool notFinished = extractParsingItemsList(buf, start, buf->tot_len, '&', ' ', requestPostParameters);
+	bool notFinished = extractParsingItemsList(buf, start, buf->tot_len, '&',
+			' ', requestPostParameters);
 	if (notFinished)
 		combinePostFrag = true; // continue reading this parameter value
 	//TODO: continue for param name
@@ -193,19 +207,21 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 		return eHPR_Wait;
 }
 
-bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, char delimChar, char endChar,
-													HashMap<String, String>* resultItems)
+bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos,
+		char delimChar, char endChar, HashMap<String, String>* resultItems)
 {
 	bool continued = false;
 	int delimItem, nextItem, startItem = startPos;
 	while (startItem < endPos)
 	{
 		delimItem = NetUtils::pbufFindStr(buf, "=", startItem);
-		if (delimItem == -1 || delimItem > endPos) break;
+		if (delimItem == -1 || delimItem > endPos)
+			break;
 		nextItem = NetUtils::pbufFindChar(buf, delimChar, delimItem + 1);
 		if (nextItem == -1)
 			nextItem = NetUtils::pbufFindChar(buf, endChar, delimItem + 1);
-		if (nextItem > endPos) break;
+		if (nextItem > endPos)
+			break;
 
 		if (nextItem == -1)
 		{
@@ -213,8 +229,10 @@ bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, c
 			continued = true;
 		}
 
-		String ItemName = NetUtils::pbufStrCopy(buf, startItem, delimItem - startItem);
-		String ItemValue = NetUtils::pbufStrCopy(buf, delimItem + 1, nextItem - delimItem - 1);
+		String ItemName = NetUtils::pbufStrCopy(buf, startItem,
+				delimItem - startItem);
+		String ItemValue = NetUtils::pbufStrCopy(buf, delimItem + 1,
+				nextItem - delimItem - 1);
 		char* nam = uri_unescape(NULL, 0, ItemName.c_str(), -1);
 		ItemName = nam;
 		free(nam);
@@ -222,12 +240,33 @@ bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, c
 		ItemValue = val;
 		free(val);
 		ItemName.trim();
-		if (!continued) ItemValue.trim();
+		if (!continued)
+			ItemValue.trim();
 		debugf("Item: %s = %s", ItemName.c_str(), ItemValue.c_str());
 		(*resultItems)[ItemName] = ItemValue;
 		startItem = nextItem + 1;
 	}
 	return continued;
+}
+
+void HttpRequest::parseRawData(HttpServer *server, pbuf* buf)
+{
+	if (!combinePostFrag)
+	{
+		bodyBuf = (char *) os_zalloc(sizeof(char) * buf->tot_len);
+	}
+	int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
+	if (headerEnd + getContentLength() > NETWORK_MAX_HTTP_PARSING_LEN)
+	{
+		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
+		return;
+	}
+	pbuf_copy_partial(buf, bodyBuf, buf->tot_len, headerEnd + 4);
+}
+
+char* HttpRequest::getBody()
+{
+	return bodyBuf;
 }
 
 bool HttpRequest::isAjax()
