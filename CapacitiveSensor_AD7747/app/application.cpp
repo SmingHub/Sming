@@ -142,7 +142,9 @@ void readPeriodically()
 			unsigned char hi, mid, lo;      //1 byte numbers
 			long capacitance;      //will be a 3byte number
 			hi = Wire.read();
+			//delay(3);
 			mid = Wire.read();
+			//delay(3);
 			lo = Wire.read();
 			capacitance = (hi << 16) + (mid << 8) + lo - 0x800000;
 			pf = (float) capacitance * -1 / (float) 0x800000 * 8.192f;
@@ -155,6 +157,8 @@ void readPeriodically()
 	//Serial.print(system_get_time());
 	//Serial.println(" Loop Done");
 	system_soft_wdt_feed();
+	procTimer.initializeMs(150, readPeriodically).startOnce();
+
 }
 
 void readAD7747()
@@ -163,7 +167,6 @@ void readAD7747()
 	// http://opensourceecology.org/wiki/Paul_Log
 
 	system_soft_wdt_feed();
-
 	Wire.begin();                   //sets up i2c for operation
 	Wire.beginTransmission(0x48);
 	Wire.write(0xBF);
@@ -191,8 +194,7 @@ void readAD7747()
 	Serial.println("Loop will start");   //test to make sure serial connection is working
 	//WDT.alive();
 	//system_soft_wdt_restart();
-
-	procTimer.initializeMs(150, readPeriodically).start();
+	procTimer.initializeMs(150, readPeriodically).startOnce();
 
 }
 

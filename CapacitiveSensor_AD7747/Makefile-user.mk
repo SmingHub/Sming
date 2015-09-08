@@ -27,6 +27,6 @@ COM_PORT = COM16
 # COM_PORT = /dev/tty.usbserial
 
 # Com port speed
-COM_SPEED	= 115200
+COM_SPEED	= 215200
 
 #V = 1
