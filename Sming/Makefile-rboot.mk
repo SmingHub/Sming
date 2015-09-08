@@ -19,6 +19,8 @@ RBOOT_LD_0 ?= rom0.ld
 RBOOT_LD_1 ?= rom1.ld
 # esptool2 path
 ESPTOOL2 ?= esptool2
+# path to spiffy
+SPIFFY ?= spiffy
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS     ?= .text .data .rodata
 RBOOT_E2_USER_ARGS ?= -quiet -bin -boot2
@@ -248,7 +250,7 @@ CXX_OBJ		:= $(patsubst %.cpp,%.o,$(C_OBJ))
 OBJ		:= $(patsubst %.o,$(BUILD_BASE)/%.o,$(CXX_OBJ))
 
 LIBS		:= $(addprefix -l,$(LIBS))
-APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET).a)
+APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT_0 := $(addprefix $(BUILD_BASE)/,$(TARGET)_0.out)
 TARGET_OUT_1 := $(addprefix $(BUILD_BASE)/,$(TARGET)_1.out)
 
@@ -357,7 +359,7 @@ else
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
 		echo "$(SPIFF_FILES) directory exists. Creating spiff_rom.bin"; \
-		spiffy $(SPIFF_SIZE) $(SPIFF_FILES); \
+		$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES); \
 		mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
 	else \
 		echo "No files found in ./$(SPIFF_FILES)."; \
