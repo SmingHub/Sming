@@ -175,11 +175,21 @@ void init() {
 	int slot = rboot_get_current_rom();
 #ifndef DISABLE_SPIFFS
 	if (slot == 0) {
+#ifdef SPIFFS_0_OFFSET
+		debugf("trying to mount spiffs at %x, length %d", SPIFFS_0_OFFSET + 0x40200000, SPIFF_SIZE);
+		spiffs_mount_manual(SPIFFS_0_OFFSET + 0x40200000, SPIFF_SIZE);
+#else
 		debugf("trying to mount spiffs at %x, length %d", 0x40300000, SPIFF_SIZE);
 		spiffs_mount_manual(0x40300000, SPIFF_SIZE);
+#endif
 	} else {
+#ifdef SPIFFS_1_OFFSET
+		debugf("trying to mount spiffs at %x, length %d", SPIFFS_1_OFFSET + 0x40200000, SPIFF_SIZE);
+		spiffs_mount_manual(SPIFFS_1_OFFSET + 0x40200000, SPIFF_SIZE);
+#else
 		debugf("trying to mount spiffs at %x, length %d", 0x40500000, SPIFF_SIZE);
 		spiffs_mount_manual(0x40500000, SPIFF_SIZE);
+#endif
 	}
 #else
 	debugf("spiffs disabled");
