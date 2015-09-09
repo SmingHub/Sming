@@ -67,7 +67,7 @@ how to use this sample without bigflash support.
 - Adjust the rom offsets and length as appropriate in each ld file.
 - Uncomment 'RBOOT_TWO_ROMS ?= 1' in Makefile-user.mk (or set as an environment
   variable).
-- Ensure RBOOT_BIG_FLASH is unset or set to 0.
+- Ensure RBOOT_BIG_FLASH is set to 0 in Makefile-user.mk
 - If using a very small flash (e.g. 512k) there may be no room for a spiffs
   fileystem, disable it with DISABLE_SPIFFS = 1
 - If you are using spiffs set RBOOT_SPIFFS_0 & RBOOT_SPIFFS_1 to indicate where

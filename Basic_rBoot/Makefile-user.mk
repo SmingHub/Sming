@@ -40,7 +40,7 @@ SPI_SIZE        = 4M
 #RBOOT_ROM_1     = rom1
 #RBOOT_LD_1      = rom1.ld
 # flash offsets for spiffs, if using two rom mode or not on a 4mb flash
-# (where spiffs location defaults to the mb after the rom slot)
+# (spiffs location defaults to the mb after the rom slot on 4mb flash)
 #RBOOT_SPIFFS_0  = 0x100000
 #RBOOT_SPIFFS_1  = 0x300000
 # option to completely disable spiffs

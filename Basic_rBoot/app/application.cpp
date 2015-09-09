@@ -49,22 +49,21 @@ void OtaUpdate() {
 #ifndef RBOOT_TWO_ROMS
 	// flash rom to position indicated in the rBoot config rom table
 	otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
-#ifndef DISABLE_SPIFFS
-	// flash spiffs to the mb after the rom slot
-	otaUpdater->addItem((bootconf.roms[slot] & 0xFFF00000) + 0x100000, SPIFFS_URL);
-#endif
 #else
-	// not as easy to pick default values for spiffs, use user supplied values
+	// flash appropriate rom
 	if (slot == 0) {
 		otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
-#ifndef DISABLE_SPIFFS
-		otaUpdater->addItem(SPIFFS_0_OFFSET, SPIFFS_URL);
-#endif
 	} else {
 		otaUpdater->addItem(bootconf.roms[slot], ROM_1_URL);
-#ifndef DISABLE_SPIFFS
-		otaUpdater->addItem(SPIFFS_1_OFFSET, SPIFFS_URL);
+	}
 #endif
+	
+#ifndef DISABLE_SPIFFS
+	// use user supplied values (defaults for 4mb flash in makefile)
+	if (slot == 0) {
+		otaUpdater->addItem(RBOOT_SPIFFS_0, SPIFFS_URL);
+	} else {
+		otaUpdater->addItem(RBOOT_SPIFFS_1, SPIFFS_URL);
 	}
 #endif
 
@@ -175,17 +174,17 @@ void init() {
 	int slot = rboot_get_current_rom();
 #ifndef DISABLE_SPIFFS
 	if (slot == 0) {
-#ifdef SPIFFS_0_OFFSET
-		debugf("trying to mount spiffs at %x, length %d", SPIFFS_0_OFFSET + 0x40200000, SPIFF_SIZE);
-		spiffs_mount_manual(SPIFFS_0_OFFSET + 0x40200000, SPIFF_SIZE);
+#ifdef RBOOT_SPIFFS_0
+		debugf("trying to mount spiffs at %x, length %d", RBOOT_SPIFFS_0 + 0x40200000, SPIFF_SIZE);
+		spiffs_mount_manual(RBOOT_SPIFFS_0 + 0x40200000, SPIFF_SIZE);
 #else
 		debugf("trying to mount spiffs at %x, length %d", 0x40300000, SPIFF_SIZE);
 		spiffs_mount_manual(0x40300000, SPIFF_SIZE);
 #endif
 	} else {
-#ifdef SPIFFS_1_OFFSET
-		debugf("trying to mount spiffs at %x, length %d", SPIFFS_1_OFFSET + 0x40200000, SPIFF_SIZE);
-		spiffs_mount_manual(SPIFFS_1_OFFSET + 0x40200000, SPIFF_SIZE);
+#ifdef RBOOT_SPIFFS_1
+		debugf("trying to mount spiffs at %x, length %d", RBOOT_SPIFFS_1 + 0x40200000, SPIFF_SIZE);
+		spiffs_mount_manual(RBOOT_SPIFFS_1 + 0x40200000, SPIFF_SIZE);
 #else
 		debugf("trying to mount spiffs at %x, length %d", 0x40500000, SPIFF_SIZE);
 		spiffs_mount_manual(0x40500000, SPIFF_SIZE);

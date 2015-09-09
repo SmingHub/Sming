@@ -224,6 +224,8 @@ else
     endif
 endif
 CFLAGS += -DSPIFF_SIZE=$(SPIFF_SIZE)
+CFLAGS += -DRBOOT_SPIFFS_0=$(RBOOT_SPIFFS_0)
+CFLAGS += -DRBOOT_SPIFFS_1=$(RBOOT_SPIFFS_1)
 
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
