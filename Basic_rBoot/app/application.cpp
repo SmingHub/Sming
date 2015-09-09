@@ -90,18 +90,9 @@ void ShowInfo() {
     Serial.printf("\r\nSDK: v%s\r\n", system_get_sdk_version());
     Serial.printf("Free Heap: %d\r\n", system_get_free_heap_size());
     Serial.printf("CPU Frequency: %d MHz\r\n", system_get_cpu_freq());
-    Serial.printf("System Chip ID: 0x%x\r\n", system_get_chip_id());
-    Serial.printf("SPI Flash ID: 0x%x\r\n", spi_flash_get_id());
+    Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
+    Serial.printf("SPI Flash ID: %x\r\n", spi_flash_get_id());
     //Serial.printf("SPI Flash Size: %d\r\n", (1 << ((spi_flash_get_id() >> 16) & 0xff)));
-
-	uint8 slot;
-	rboot_config bootconf;
-
-	bootconf = rboot_get_config();
-	slot = bootconf.current_rom;
-	if (slot == 0) slot = 1; else slot = 0;
-	debugf("bootconf.roms[slot] = %x", bootconf.roms[slot]);
-	debugf("(bootconf.roms[slot] & 0xFFF00000) + 0x100000 = %x", (bootconf.roms[slot] & 0xFFF00000) + 0x100000);
 }
 
 void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCharsCount) {
