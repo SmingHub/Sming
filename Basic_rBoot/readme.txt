@@ -10,9 +10,10 @@ want to use big flash support (e.g. for a device with smaller flash) see the
 separate instructions below. You can easily take the ota files and add them to
 your own project to add OTA support.
 
-To build any project (in threory) with rBoot support edit the Makefile to
-include Makefile-rboot.mk instead of Makefile-project.mk. Then add variables
-to Makefile-user.mk as in this sample.
+To build any Sming project (in threory) with rBoot support you should use
+Makefile-rboot.mk instead of Makefile-project.mk. In the sample the correct mk
+file is chosen automatically because of the setting RBOOT_ENABLED=1 in
+Makefile-user.mk
 
 Building
 --------
@@ -36,11 +37,11 @@ Using the correct -fs parameter is important. This will be -fs 32m on an ESP12.
 
 You can also flash rom0.bin to 0x202000, but booting and using OTA is quicker!
 
-Notes
------
+Technical Notes
+---------------
 spiffs_mount_manual(address, length) must be called from init. The address must
-be 0x40200000 + physical flash address. It does not use memory mapped flash so
-the reason for this strange addressing is not clear.
+be 0x40200000 + physical flash address. Sming does not use memory mapped flash
+so the reason for this strange addressing is not clear.
 
 Important compiler flags used:
 BOOT_BIG_FLASH - when using big flash mode, ensures flash mapping code is built
@@ -71,7 +72,8 @@ how to use this sample without bigflash support.
 - If using a very small flash (e.g. 512k) there may be no room for a spiffs
   fileystem, disable it with DISABLE_SPIFFS = 1
 - If you are using spiffs set RBOOT_SPIFFS_0 & RBOOT_SPIFFS_1 to indicate where
-  the filesystems are located on the flash.
+  the filesystems are located on the flash. This is the real flash offset, not
+  the address + 0x40200000 used in the mount call.
 - After building copy all the rom*.bin files to the root of your web server.
 
 If you want more than two roms you must be an advanced user and should be able

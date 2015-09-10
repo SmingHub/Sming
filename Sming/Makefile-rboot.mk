@@ -8,7 +8,7 @@
 
 ### Defaults ###
 
-# rBoot options, overwrite then in the projects Makefile-user.mk
+# rBoot options, overwrite them in the projects Makefile-user.mk
 RBOOT_BIG_FLASH  ?= 1
 RBOOT_TWO_ROMS   ?= 0
 RBOOT_ROM_0      ?= rom0
@@ -256,7 +256,8 @@ APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT_0 := $(addprefix $(BUILD_BASE)/,$(TARGET)_0.out)
 TARGET_OUT_1 := $(addprefix $(BUILD_BASE)/,$(TARGET)_1.out)
 
-SPIFF_BIN_OUT := $(FW_BASE)/spiff_rom.bin
+SPIFF_BIN_OUT ?= spiff_rom
+SPIFF_BIN_OUT := $(FW_BASE)/$(SPIFF_BIN_OUT).bin
 RBOOT_LD_0	:= $(addprefix -T,$(RBOOT_LD_0))
 RBOOT_LD_1	:= $(addprefix -T,$(RBOOT_LD_1))
 
@@ -360,13 +361,13 @@ else
 # Generating spiffs_bin
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
-		echo "$(SPIFF_FILES) directory exists. Creating spiff_rom.bin"; \
+		echo "$(SPIFF_FILES) directory exists. Creating $(SPIFF_BIN_OUT)"; \
 		$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES); \
-		mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
+		mv spiff_rom.bin $(SPIFF_BIN_OUT); \
 	else \
 		echo "No files found in ./$(SPIFF_FILES)."; \
-		echo "Creating empty spiff_rom.bin ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
-		cp $(SMING_HOME)/compiler/data/blankfs.bin $(FW_BASE)/spiff_rom.bin; \
+		echo "Creating empty $(SPIFF_BIN_OUT) ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
+		cp $(SMING_HOME)/compiler/data/blankfs.bin $(SPIFF_BIN_OUT); \
 	fi
 endif
 

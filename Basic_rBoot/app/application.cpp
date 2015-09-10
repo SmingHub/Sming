@@ -1,9 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-#include <rboot-api.h>
-#include <rBootHttpUpdate.h>
-
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
