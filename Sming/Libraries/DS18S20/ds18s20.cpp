@@ -2,12 +2,23 @@
  * ds18s20.cpp
  *
  *  Created on: 01-09-2015
- *      Author: mariuszb
+ *      Author: flexiti and Anakod
  */
 
 #include "Arduino.h"
 #include "OneWire.h"
 #include "ds18s20.h"
+
+
+#define DEBUG_DS18S20
+
+
+#ifdef DEBUG_DS18S20
+  #define debugx(fmt, ...) m_printf(fmt"\r\n", ##__VA_ARGS__)
+#else
+ #define debugx(fmt, ...)
+#endif
+
 
 
 
@@ -26,14 +37,15 @@ DS18S20::~DS18S20()
 void DS18S20::Init(uint8_t pinOneWire)
 {
    ds.begin(pinOneWire);
+   InProgress=false;
 }
 
-void DS18S20::StartMeasure(void)
+void DS18S20::StartMeasure()
 {
-
 	if (!InProgress)
 	{
-		debugf("  DS1820 reading task start");
+
+		debugx("  DBG: DS1820 reading task start, try to read up to %d sensors",MAX_SENSORS);
 		InProgress=true;
 		ds.begin();
 		ds.reset_search();
@@ -44,58 +56,102 @@ void DS18S20::StartMeasure(void)
 
 
 
+uint8_t DS18S20::FindAlladdresses()
+{
+	uint8_t counter=0;
+	uint8_t thermoNo=0;
+	uint8_t a;
+
+	while (counter++ < MAX_SENSORS)
+	{
+		if (!ds.search(addr))
+		{
+			debugx("  DBG: No more address found");
+            break;
+		}
+		else
+		if (OneWire::crc8(addr, 7) == addr[7])
+			{
+			  debugx("  DBG: CRC is valid");
+				switch (addr[0]) {
+				case 0x10:
+				  debugx("  DBG: Chip = DS18S20");  // or old DS1820
+				  type_s[thermoNo] = 1;
+				  break;
+				case 0x28:
+				  debugx("  DBG: Chip = DS18B20");
+				  type_s[thermoNo] = 0;
+				  break;
+				case 0x22:
+				  debugx("  DBG: Chip = DS1822");
+				  type_s[thermoNo] = 0;
+				  break;
+				default:
+				  debugx("  DBG: This Device is not a DS18x20 family device.");
+				  break;
+				}
+
+			    // address ok, copy uwaga na default teraz zle
+				for(a=0;a<8;a++)
+				addresses[thermoNo]=(addresses[thermoNo]<<8) +(uint64_t)addr[a];
+                thermoNo++;
+			}
+			else
+			{
+			debugx("  DBG: CRC is not valid");
+			}
+	}
+
+
+  return thermoNo;
+}
+
 void DS18S20::DoSearch(void)
 {
-	if (!ds.search(addr))
+
+	numberOf=FindAlladdresses();
+
+	if (!numberOf)
 	{
-		debugf("  No addresses found.");
-        ValidTemperature=false;
+		debugx("  DBG: No DS1820 sensor found");
         InProgress=false;
 
 	}
 	else
 	{
+      debugx("  DBG: %d DS1820 sensors found",numberOf);
 
-	if (OneWire::crc8(addr, 7) == addr[7])
-	{
-	  debugf("  DS1820 CRC is valid!");
-
-		switch (addr[0]) {
-		case 0x10:
-		  debugf("  Chip = DS18S20");  // or old DS1820
-		  type_s = 1;
-		  break;
-		case 0x28:
-		  debugf("  Chip = DS18B20");
-		  type_s = 0;
-		  break;
-		case 0x22:
-		  debugf("  Chip = DS1822");
-		  type_s = 0;
-		  break;
-		default:
-		  debugf("  Device is not a DS18x20 family device.");
-		  ValidTemperature=false;
-		  InProgress=false;
-		  return;
-		}
-
-	  ds.reset();
-	  ds.select(addr);
-	  ds.write(0x44, 1);        // start conversion, with parasite power on at the end
-
-	  DelaysTimer.initializeMs(1000, TimerDelegate(&DS18S20::DoMeasure, this)).start(false);
-
+      numberOfread=0;
+      StartReadNext();
 	}
-	else
-	{
-	debugf("  Thermometer ROM CRC ERROR");
-    ValidTemperature=false;
-    InProgress=false;
-	}
-	}
+
+
 }
 
+void DS18S20::StartReadNext()
+{
+   if (numberOf > numberOfread )
+   {
+	ds.reset();
+
+	  uint64_t tmp=addresses[numberOfread];
+	  for (uint8_t a=0;a<8;a++)
+	  {
+	    addr[7-a]=(uint8_t)tmp;
+	    tmp=tmp>>8;
+	  }
+
+	  ds.select(addr);
+	  ds.write(STARTCONVO, 1);        // start conversion, with parasite power on at the end
+
+	  DelaysTimer.initializeMs(900, TimerDelegate(&DS18S20::DoMeasure, this)).start(false);
+   }
+   else
+   {
+	   debugx("  DBG: DS18S20 reading task end");
+	   InProgress=false;
+   }
+}
 
 
 void DS18S20::DoMeasure()
@@ -104,22 +160,23 @@ void DS18S20::DoMeasure()
 	uint8_t present,i;
 	present = ds.reset();
 	ds.select(addr);
-	ds.write(0xBE);         // Read Scratchpad
+	ds.write(READSCRATCH);         // Read Scratchpad
 
+	debugx("  DBG: T%d",numberOfread+1);
 
 	for ( i = 0; i < 9; i++)
 	{
 		// we need 9 bytes
 		data[i] = ds.read();
 	}
-	debugf("  Data = %x %x %x %x %x %x %x %x %x %x  CRC=%x",present,data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],OneWire::crc8(data, 8));
+	debugx("  DBG: Data = %x %x %x %x %x %x %x %x %x %x  CRC=%x",present,data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],OneWire::crc8(data, 8));
 
 	// Convert the data to actual temperature
 	// because the result is a 16 bit signed integer, it should
 	// be stored to an "int16_t" type, which is always 16 bits
 	// even when compiled on a 32 bit processor.
 	unsigned int raw = (data[1] << 8) | data[0];
-	if (type_s)
+	if (type_s[numberOfread])
 	{
 		raw = raw << 3; // 9 bit resolution default
 		if (data[7] == 0x10)
@@ -136,35 +193,60 @@ void DS18S20::DoMeasure()
 		//// default is 12 bit resolution, 750 ms conversion time
 	}
 
-	celsius = (float)raw / 16.0;
-	fahrenheit = celsius * 1.8 + 32.0;
+	ValidTemperature[numberOfread]=true;
+	celsius[numberOfread] = (float)raw / 16.0;
+	fahrenheit[numberOfread] = celsius[numberOfread] * 1.8 + 32.0;
 
-	debugf("  Temperature = %f Celsius, %f Fahrenheit",celsius,fahrenheit);
-	debugf("  DS18S20 reading task end");
+	debugx("  DBG: Temperature = %f Celsius, %f Fahrenheit",celsius[numberOfread],fahrenheit[numberOfread]);
 
-	ValidTemperature=true;
-	InProgress=false;
+	numberOfread++;
+	DelaysTimer.initializeMs(100, TimerDelegate(&DS18S20::StartReadNext, this)).start(false);
 
 }
 
-float DS18S20::GetCelsius()
+float DS18S20::GetCelsius(uint8_t index)
 {
-	return celsius;
+	  if (index < numberOf)
+	     return celsius[index];
+	  else
+		 return 0;
+
 }
 
-float DS18S20::GetFahrenheit()
+float DS18S20::GetFahrenheit(uint8_t index)
 {
-	return fahrenheit;
+	  if (index <= numberOf)
+	     return fahrenheit[index];
+	  else
+		 return 0;
+
 }
 
 
-bool DS18S20::IsValidTemperature()
+bool DS18S20::IsValidTemperature(uint8_t index)
 {
-	return ValidTemperature;
+	  if (index <= numberOf)
+		  return ValidTemperature[index];
+	  else
+		  return false;
 }
 
-bool DS18S20::Status()
+bool DS18S20::MeasureStatus()
 {
 	return InProgress;
+}
+
+uint64_t DS18S20::GetSensorID(uint8_t index)
+{
+	  if (index <= numberOf)
+		  return addresses[index];
+	  else
+		  return 0;
+}
+
+uint8_t DS18S20::GetSensorsCount()
+{
+		  return numberOf;
+
 }
 
