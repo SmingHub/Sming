@@ -133,8 +133,6 @@ void readPeriodically()
 	system_soft_wdt_feed();
 	char buf[22];
 	dtostrf(pf, 10, 8, buf);
-	socket.sendString(buf);	
-	
 	WebSocketsList &clients = server.getActiveWebSockets();
 	for (int i = 0; i < clients.count(); i++)
 	{
@@ -149,6 +147,7 @@ void readAD7747()
 {
 	// http://opensourceecology.org/w/images/e/ec/Cap_Sensor_Email_Chain_7-11-2014.pdf
 	// http://opensourceecology.org/wiki/Paul_Log
+	// http://www.analog.com/media/en/technical-documentation/data-sheets/AD7747.pdf
 
 	system_soft_wdt_feed();
 	Wire.begin();                   //sets up i2c for operation
@@ -258,7 +257,7 @@ void couldntConnect()
 
 void init()
 {
-	debugf("Memory info: flashID %d size: %d\n",spi_flash_get_id(),fs_size());
+	//debugf("Memory info: flashID %d size: %d\n",spi_flash_get_id(),fs_size());
 	
 	System.setCpuFrequency(eCF_160MHz);
 

@@ -14,11 +14,12 @@
     <script type="text/javascript">
 	
       var line1 = new TimeSeries();
+      var currentTimeMs=(new Date()).getTime();
 	  
-      //var smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(125, 0, 0)', fillStyle: 'rgb(60, 0, 0)', lineWidth: 1, millisPerLine: 250, verticalSections: 6 } });
-	  var smoothie = new SmoothieChart({interpolation:'step',minValue:8.00422,maxValue:8.008790,labels:{precision:5}});
+      //var smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(125, 0, 0)', fillStyle: 'rgb(60, 0, 0)', lineWidth: 1, millisPerLine: 250, verticalSections: 10 } });
+	  var smoothie = new SmoothieChart({interpolation:'step',minValue:8.00000,maxValue:8.00310,labels:{precision:5}, grid:{strokeStyle:'rgba(133,49,189,0.13)',sharpLines:true,millisPerLine:150,verticalSections:7}});
       smoothie.addTimeSeries(line1, { strokeStyle: 'rgb(0, 255, 0)', fillStyle: 'rgba(0, 255, 0, 0.4)', lineWidth: 3 });
-      smoothie.streamTo(document.getElementById("mycanvas"), 1000);	
+      smoothie.streamTo(document.getElementById("mycanvas"), 0);	
 	
 	  var output;
 	  function init()
@@ -39,9 +40,9 @@
 	  function onOpen(evt)
 	  {
 		writeToScreen("CONNECTED");
-		setInterval(function() {
-			doSend("GiveMeData");
-		}, 150);	
+		//setInterval(function() {
+		//	doSend("GiveMeData");
+		//}, 150);	
 	  }
 	  function onClose(evt)
 	  {
@@ -49,9 +50,10 @@
 	  }
 	  function onMessage(evt)
 	  {
-		//writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
+		writeToScreen('<span style="color: blue;">Time: ' + ((new Date()).getTime()-currentTimeMs) +'ms Capacity: ' + evt.data+'</span>');
 		document.getElementById("result").innerHTML = evt.data;
 		line1.append(new Date().getTime(), evt.data);
+	  	currentTimeMs = (new Date()).getTime();
 		//websocket.close();
 	  }
 	  function onError(evt)
