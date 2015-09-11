@@ -1,9 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-#include <rboot-api.h>
-#include <rBootHttpUpdate.h>
-
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
@@ -49,22 +46,21 @@ void OtaUpdate() {
 #ifndef RBOOT_TWO_ROMS
 	// flash rom to position indicated in the rBoot config rom table
 	otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
-#ifndef DISABLE_SPIFFS
-	// flash spiffs to the mb after the rom slot
-	otaUpdater->addItem((bootconf.roms[slot] & 0xFFF00000) + 0x100000, SPIFFS_URL);
-#endif
 #else
-	// not as easy to pick default values for spiffs, use user supplied values
+	// flash appropriate rom
 	if (slot == 0) {
 		otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
-#ifndef DISABLE_SPIFFS
-		otaUpdater->addItem(SPIFFS_0_OFFSET, SPIFFS_URL);
-#endif
 	} else {
 		otaUpdater->addItem(bootconf.roms[slot], ROM_1_URL);
-#ifndef DISABLE_SPIFFS
-		otaUpdater->addItem(SPIFFS_1_OFFSET, SPIFFS_URL);
+	}
 #endif
+	
+#ifndef DISABLE_SPIFFS
+	// use user supplied values (defaults for 4mb flash in makefile)
+	if (slot == 0) {
+		otaUpdater->addItem(RBOOT_SPIFFS_0, SPIFFS_URL);
+	} else {
+		otaUpdater->addItem(RBOOT_SPIFFS_1, SPIFFS_URL);
 	}
 #endif
 
@@ -91,18 +87,9 @@ void ShowInfo() {
     Serial.printf("\r\nSDK: v%s\r\n", system_get_sdk_version());
     Serial.printf("Free Heap: %d\r\n", system_get_free_heap_size());
     Serial.printf("CPU Frequency: %d MHz\r\n", system_get_cpu_freq());
-    Serial.printf("System Chip ID: 0x%x\r\n", system_get_chip_id());
-    Serial.printf("SPI Flash ID: 0x%x\r\n", spi_flash_get_id());
+    Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
+    Serial.printf("SPI Flash ID: %x\r\n", spi_flash_get_id());
     //Serial.printf("SPI Flash Size: %d\r\n", (1 << ((spi_flash_get_id() >> 16) & 0xff)));
-
-	uint8 slot;
-	rboot_config bootconf;
-
-	bootconf = rboot_get_config();
-	slot = bootconf.current_rom;
-	if (slot == 0) slot = 1; else slot = 0;
-	debugf("bootconf.roms[slot] = %x", bootconf.roms[slot]);
-	debugf("(bootconf.roms[slot] & 0xFFF00000) + 0x100000 = %x", (bootconf.roms[slot] & 0xFFF00000) + 0x100000);
 }
 
 void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCharsCount) {
@@ -175,11 +162,21 @@ void init() {
 	int slot = rboot_get_current_rom();
 #ifndef DISABLE_SPIFFS
 	if (slot == 0) {
+#ifdef RBOOT_SPIFFS_0
+		debugf("trying to mount spiffs at %x, length %d", RBOOT_SPIFFS_0 + 0x40200000, SPIFF_SIZE);
+		spiffs_mount_manual(RBOOT_SPIFFS_0 + 0x40200000, SPIFF_SIZE);
+#else
 		debugf("trying to mount spiffs at %x, length %d", 0x40300000, SPIFF_SIZE);
 		spiffs_mount_manual(0x40300000, SPIFF_SIZE);
+#endif
 	} else {
+#ifdef RBOOT_SPIFFS_1
+		debugf("trying to mount spiffs at %x, length %d", RBOOT_SPIFFS_1 + 0x40200000, SPIFF_SIZE);
+		spiffs_mount_manual(RBOOT_SPIFFS_1 + 0x40200000, SPIFF_SIZE);
+#else
 		debugf("trying to mount spiffs at %x, length %d", 0x40500000, SPIFF_SIZE);
 		spiffs_mount_manual(0x40500000, SPIFF_SIZE);
+#endif
 	}
 #else
 	debugf("spiffs disabled");

@@ -8,12 +8,6 @@ extern "C" {
 	#define ROM_0_URL  "http://192.168.7.5:80/rom0.bin"
 	#define ROM_1_URL  "http://192.168.7.5:80/rom1.bin"
 	#define SPIFFS_URL "http://192.168.7.5:80/spiff_rom.bin"
-	#ifdef RBOOT_TWO_ROMS
-		// spiffs offsets only needed for two rom mode,
-		// otherwise defaults to next mb after rom
-		#define SPIFFS_0_OFFSET 0x50000
-		#define SPIFFS_1_OFFSET 0xD0000
-	#endif
 
 	// UART config
 	#define SERIAL_BAUD_RATE 115200

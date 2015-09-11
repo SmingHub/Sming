@@ -5,13 +5,13 @@
  *      Author: Richard A Burton & Anakod
  */
 
-#ifndef _rBootHttpUpdate_H_
-#define _rBootHttpUpdate_H_
+#ifndef SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
+#define SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
 
-#include <Network/HttpClient.h>
+#include "HttpClient.h"
 #include <Timer.h>
 
-#include "rboot-api.h"
+#include <rboot-api.h>
 
 #define NO_ROM_SWITCH 0xff
 
@@ -48,4 +48,4 @@ protected:
 	otaCallback callback;
 };
 
-#endif /* _rBootHttpUpdate_H_ */
+#endif /* SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_ */
