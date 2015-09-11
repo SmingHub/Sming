@@ -13,10 +13,8 @@
 #define IRremoteint_h
 
 #define LED_PIN 2 // GPIO2
-#define IR_OUT_PIN 13 // GPIO13
 #define BLINKLED_ON()  (digitalWrite(LED_PIN, HIGH))
 #define BLINKLED_OFF() (digitalWrite(LED_PIN, LOW))
-
 
 // Pulse parms are *50-100 for the Mark and *50+100 for the space
 // First MARK is the one after the long gap
@@ -46,13 +44,13 @@
 // SA 8650B
 #define SANYO_HDR_MARK	3500  // seen range 3500
 #define SANYO_HDR_SPACE	950 //  seen 950
-#define SANYO_ONE_MARK	2400 // seen 2400  
+#define SANYO_ONE_MARK	2400 // seen 2400
 #define SANYO_ZERO_MARK 700 //  seen 700
 #define SANYO_DOUBLE_SPACE_USECS  800  // usually ssee 713 - not using ticks as get number wrapround
 #define SANYO_RPT_LENGTH 45000
 
 // Mitsubishi RM 75501
-// 14200 7 41 7 42 7 42 7 17 7 17 7 18 7 41 7 18 7 17 7 17 7 18 7 41 8 17 7 17 7 18 7 17 7 
+// 14200 7 41 7 42 7 42 7 17 7 17 7 18 7 41 7 18 7 17 7 17 7 18 7 41 8 17 7 17 7 18 7 17 7
 
 // #define MITSUBISHI_HDR_MARK	250  // seen range 3500
 #define MITSUBISHI_HDR_SPACE	350 //  7*50+100
@@ -117,8 +115,8 @@
 #define DISH_BITS 16
 
 #define TOLERANCE 25  // percent tolerance in measurements
-#define LTOL (1.0 - TOLERANCE/100.) 
-#define UTOL (1.0 + TOLERANCE/100.) 
+#define LTOL (1.0 - TOLERANCE/100.)
+#define UTOL (1.0 + TOLERANCE/100.)
 
 #define TICKS_LOW(us) (int) (((us)*LTOL/USECPERTICK))
 #define TICKS_HIGH(us) (int) (((us)*UTOL/USECPERTICK + 1))
@@ -138,12 +136,13 @@
 // information for the interrupt handler
 typedef struct {
   uint8_t recvpin;           // pin for IR data from detector
+  uint8_t sendpin;           // pin to send data
   uint8_t rcvstate;          // state machine
   uint8_t blinkflag;         // TRUE to enable blinking of pin 13 on IR processing
   unsigned int timer;     // state timer, counts 50uS ticks.
   unsigned int rawbuf[RAWBUF]; // raw data
   uint8_t rawlen;         // counter of entries in rawbuf
-} 
+}
 irparams_t;
 
 // Defined in IRremote.cpp
@@ -168,4 +167,3 @@ extern volatile irparams_t irparams;
 #define WHYNTER_BITS 32
 
 #endif
-

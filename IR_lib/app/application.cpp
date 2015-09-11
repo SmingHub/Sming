@@ -12,7 +12,7 @@
 Timer irTimer;
 decode_results dresults;
 IRrecv irrecv(IR_PIN);
-IRsend irsend;
+IRsend irsend(IR_PIN);
 
 void receiveIR()
 {
