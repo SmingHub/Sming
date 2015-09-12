@@ -8,8 +8,13 @@ ESPTOOL2 ?= ../esptool2/esptool2
 RBOOT_BUILD_BASE ?= build
 RBOOT_FW_BASE    ?= firmware
 
+ifndef XTENSA_BINDIR
 CC := xtensa-lx106-elf-gcc
 LD := xtensa-lx106-elf-gcc
+else
+CC := $(addprefix $(XTENSA_BINDIR)/,xtensa-lx106-elf-gcc)
+LD := $(addprefix $(XTENSA_BINDIR)/,xtensa-lx106-elf-gcc)
+endif
 
 CFLAGS    = -Os -O3 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
 LDFLAGS   = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static

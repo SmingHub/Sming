@@ -102,7 +102,7 @@ TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES		= system system/helpers Wiring SmingCore appinit $(filter %/, $(wildcard SmingCore/*/)) $(filter %/, $(wildcard Services/*/)) $(filter %/, $(wildcard Libraries/*/))
-EXTRA_INCDIR    = include include  system/include Wiring Libraries SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
+EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore rboot rboot/appcode $(SDK_BASE)/../include
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
