@@ -185,7 +185,7 @@ bool spiffs_format_manual(u32_t phys_addr, u32_t phys_size)
   cfg.phys_addr = phys_addr;
   cfg.phys_size = phys_size;
   spiffs_format_internal(&cfg);
-  spiffs_mount();
+  spiffs_mount_manual(phys_addr, phys_size);
   return true;
 }
 
