@@ -232,7 +232,8 @@ LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
-SPIFF_BIN_OUT := $(FW_BASE)/spiff_rom.bin
+SPIFF_BIN_OUT ?= spiff_rom
+SPIFF_BIN_OUT := $(FW_BASE)/$(SPIFF_BIN_OUT).bin
 LD_SCRIPT	:= $(addprefix -T,$(LD_SCRIPT))
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
@@ -315,15 +316,15 @@ else
 	# Generating spiffs_bin
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
-    	echo "$(SPIFF_FILES) directory exists. Creating spiff_rom.bin"; \
+    	echo "$(SPIFF_FILES) directory exists. Creating $(SPIFF_BIN_OUT)"; \
     	spiffy $(SPIFF_SIZE) $(SPIFF_FILES); \
-    	mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
+    	mv spiff_rom.bin $(SPIFF_BIN_OUT); \
 	else \
     	echo "No files found in ./$(SPIFF_FILES)."; \
-    	echo "Creating empty spiff_rom.bin ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
-    cp $(SMING_HOME)/compiler/data/blankfs.bin $(FW_BASE)/spiff_rom.bin; \
+    	echo "Creating empty $(SPIFF_BIN_OUT) ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
+    	cp $(SMING_HOME)/compiler/data/blankfs.bin $(SPIFF_BIN_OUT); \
 	fi
-	$(vecho) "spiff_rom.bin---------->$(SPIFF_START_OFFSET)"
+	$(vecho) "$(SPIFF_BIN_OUT)---------->$(SPIFF_START_OFFSET)"
 endif
 
 flash: all
@@ -332,7 +333,7 @@ flash: all
 ifeq ($(DISABLE_SPIFFS), 1)
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin
 else
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
 endif
 	$(TERMINAL)
 
