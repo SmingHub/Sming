@@ -22,7 +22,7 @@ static unsigned safe_append(char *dest, size_t len, const char *str) {
 
 /* return true if 2 characters are valid hexidecimal */
 static int ishex(const char code[2]) {
-	return isxdigit(code[0]) && isxdigit(code[0]);
+	return isxdigit(code[0]) && isxdigit(code[1]);
 }
 
 /* verify with ishex() before calling */
