@@ -96,7 +96,7 @@ public:
 class IRsend
 {
 public:
-  IRsend() {}
+  IRsend(int sendpin);
   void sendWhynter(unsigned long data, int nbits);
   void sendNEC(unsigned long data, int nbits);
   void sendSony(unsigned long data, int nbits);
@@ -129,4 +129,3 @@ void bitbangOutput(int time);
 #define MARK_EXCESS 100
 
 #endif
-
