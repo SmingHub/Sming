@@ -136,7 +136,7 @@ TARGET		= app
 MODULES 	?= app  # if not initialized by user 
 MODULES		+= $(SMING_HOME)/appinit
 MODULES		+= $(SMING_HOME)/rboot/appcode
-EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/user
+EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
@@ -274,6 +274,7 @@ export RBOOT_BUILD_BASE
 export RBOOT_FW_BASE
 export SPI_SIZE
 export ESPTOOL2
+export SDK_BASE
 
 # multiple roms per 1mb block?
 ifeq ($(RBOOT_TWO_ROMS),1)
