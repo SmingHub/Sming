@@ -385,7 +385,7 @@ void Si4432::BurstRead(Registers startReg, byte value[], uint8_t length) {
 
 void Si4432::readAll() {
 
-	byte allValues[0x7F];
+	byte allValues[0x80];
 
 	BurstRead(REG_DEV_TYPE, allValues, 0x7F);
 
