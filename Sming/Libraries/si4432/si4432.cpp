@@ -391,7 +391,7 @@ void Si4432::readAll() {
 
 	debugf("REGS  00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");
 
-	for (unsigned int i = 0; i < 0x7f; i+=16)
+	for (byte i = 0; i < 0x7f; i+=16)
 	{
 		debugf("(%02x): %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x", i,
 				(int ) allValues[i+0], (int ) allValues[i+1], (int ) allValues[i+2], (int ) allValues[i+3],
