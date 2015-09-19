@@ -160,6 +160,9 @@ MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 ifeq ($(DISABLE_SPIFFS), 1)
 	CFLAGS += -DDISABLE_SPIFFS=1
 endif
+ifeq ($(DISABLE_SPIFFS_AUTO), 1)
+	CFLAGS += -DDISABLE_SPIFFS_AUTO=1
+endif
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -200,6 +203,9 @@ $(APP_AR): $(OBJ)
 	$(vecho) "Installing libsming"
 ifeq ($(DISABLE_SPIFFS), 1)
 	$(vecho) "(!) Spiffs support disabled. Remove 'DISABLE_SPIFFS' make argument to enable spiffs."
+endif
+ifeq ($(DISABLE_SPIFFS_AUTO), 1)
+	$(vecho) "(!) Spiffs auto-mount disabled. Call spiffs_mount or spiffs_mount_manual from init to use spiffs."
 endif
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
 	$(vecho) "Done"

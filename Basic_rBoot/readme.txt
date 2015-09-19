@@ -17,10 +17,15 @@ Makefile-user.mk
 
 Building
 --------
- 1) Set ESP_HOME & SMING_HOME, as environment variables or edit the Makefile, as
-    you would for general Sming compiling.
- 2) Set ESPTOOL2 (env var or in the Makefile) to point to the esptool2 binary.
- 3) Set WIFI_SSID & WIFI_PWD environment variable with your wifi details.
+ 0) Set environment variable DISABLE_SPIFFS_AUTO=1 before building Sming itself
+    (libsming), this prevents Sming trying to auto-mount a spiffs filesystem
+    from the wrong flash location (which is potentially destructive to flash
+    contents).
+ 1) Set ESP_HOME & SMING_HOME, as environment variables or edit Makefile-user.mk
+    as you would for general Sming app compiling.
+ 2) Set ESPTOOL2 (env var or in Makefile-user.mk) to point to the esptool2
+    binary.
+ 3) Set WIFI_SSID & WIFI_PWD environment variables with your wifi details.
  4) Edit the OTA server details in include/user_config.h
  5) Check overridable variables in Makefile-user.mk, or set as env vars.
  6) make && make flash
