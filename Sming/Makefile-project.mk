@@ -26,6 +26,9 @@ SPI_MODE ?= qio
 # SPI_SIZE: 512K, 256K, 1M, 2M, 4M
 SPI_SIZE ?= 512K
 
+# Full path spiffy command, if not in path.
+SPIFFY ?= spiffy
+
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 ## Windows:
 # ESP_HOME = c:/Espressif
@@ -317,7 +320,7 @@ else
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
     	echo "$(SPIFF_FILES) directory exists. Creating $(SPIFF_BIN_OUT)"; \
-    	spiffy $(SPIFF_SIZE) $(SPIFF_FILES); \
+    	$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES); \
     	mv spiff_rom.bin $(SPIFF_BIN_OUT); \
 	else \
     	echo "No files found in ./$(SPIFF_FILES)."; \
