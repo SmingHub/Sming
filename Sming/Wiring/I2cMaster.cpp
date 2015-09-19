@@ -94,6 +94,9 @@ bool SoftI2cMaster::restart(uint8_t addressRW) {
  * \return The value true, 1, for success or false, 0, for failure.
  */
 bool SoftI2cMaster::start(uint8_t addressRW) {
+  digitalWrite(sdaPin_, HIGH);
+  digitalWrite(sclPin_, HIGH);
+  delayMicroseconds(I2C_DELAY_USEC);
   digitalWrite(sdaPin_, LOW);
   delayMicroseconds(I2C_DELAY_USEC);
   digitalWrite(sclPin_, LOW);
