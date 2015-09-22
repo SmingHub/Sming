@@ -30,7 +30,7 @@ IRsend::IRsend(int sendpin)
 //provide backwards compatibility
 IRsend::IRsend()
 {
-  irparams.sendpin = 0;
+  irparams.sendpin = 13;
 }
 
 void IRsend::sendNEC(unsigned long data, int nbits)
