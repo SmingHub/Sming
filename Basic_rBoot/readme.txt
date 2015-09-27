@@ -24,7 +24,7 @@ Building
  1) Set ESP_HOME & SMING_HOME, as environment variables or edit Makefile-user.mk
     as you would for general Sming app compiling.
  2) Set ESPTOOL2 (env var or in Makefile-user.mk) to point to the esptool2
-    binary.
+    binary. Source for esptool2 is here: https://github.com/raburton/esp8266
  3) Set WIFI_SSID & WIFI_PWD environment variables with your wifi details.
  4) Edit the OTA server details in include/user_config.h
  5) Check overridable variables in Makefile-user.mk, or set as env vars.
