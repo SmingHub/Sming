@@ -254,7 +254,7 @@ err_t HttpClient::onReceive(pbuf *buf)
 			}
 		}
 
-		writeRawData(buf, startPos);
+		if (!waitParse) writeRawData(buf, startPos);
 
 		// Fire ReadyToSend callback
 		TcpClient::onReceive(buf);
