@@ -2,14 +2,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AD7747 reading from ESP8266</title>
+    <title>ESP8266 - 4 stepper control</title>
     <script type="text/javascript" src="http://smoothiecharts.org/smoothie.js"></script>
 	 <meta charset="UTF-8"> 
   </head>
   <body>
 
     <h1>AD7747 reading from ESP8266</h1>
-    <canvas id="mycanvas" width="1500" height="400"></canvas>
+    <canvas id="mycanvas" width="800" height="400"></canvas>
 
     <script type="text/javascript">
 	
@@ -17,7 +17,7 @@
       var currentTimeMs=(new Date()).getTime();
 	  
       //var smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(125, 0, 0)', fillStyle: 'rgb(60, 0, 0)', lineWidth: 1, millisPerLine: 250, verticalSections: 10 } });
-	  var smoothie = new SmoothieChart({interpolation:'step',minValue:8.00000,maxValue:8.00310,labels:{precision:5}, grid:{strokeStyle:'rgba(133,49,189,0.13)',sharpLines:true,millisPerLine:150,verticalSections:7}});
+	  var smoothie = new SmoothieChart({interpolation:'step',minValue:8.00000,maxValue:8.00810,labels:{precision:5}, grid:{strokeStyle:'rgba(133,49,189,0.13)',sharpLines:true,millisPerLine:150,verticalSections:7}});
       smoothie.addTimeSeries(line1, { strokeStyle: 'rgb(0, 255, 0)', fillStyle: 'rgba(0, 255, 0, 0.4)', lineWidth: 3 });
       smoothie.streamTo(document.getElementById("mycanvas"), 0);	
 	

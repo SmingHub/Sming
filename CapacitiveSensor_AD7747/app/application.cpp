@@ -75,7 +75,7 @@ void wsMessageReceived(WebSocket& socket, const String& message)
 
 void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
 {
-	Serial.printf("Websocket binary data recieved, size: %d\r\n", size);
+	Serial.printf("Websocket binary data receieved, size: %d\r\n", size);
 }
 
 void wsDisconnected(WebSocket& socket)
