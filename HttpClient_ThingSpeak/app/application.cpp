@@ -62,6 +62,8 @@ void connectFail()
 
 void init()
 {
+	spiffs_mount(); // Mount file system, in order to work with files
+
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(false); // Disable debug output to serial
 

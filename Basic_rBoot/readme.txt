@@ -17,10 +17,6 @@ Makefile-user.mk
 
 Building
 --------
- 0) Set environment variable DISABLE_SPIFFS_AUTO=1 before building Sming itself
-    (libsming), this prevents Sming trying to auto-mount a spiffs filesystem
-    from the wrong flash location (which is potentially destructive to flash
-    contents).
  1) Set ESP_HOME & SMING_HOME, as environment variables or edit Makefile-user.mk
     as you would for general Sming app compiling.
  2) Set ESPTOOL2 (env var or in Makefile-user.mk) to point to the esptool2
@@ -51,8 +47,6 @@ so the reason for this strange addressing is not clear.
 Important compiler flags used:
 BOOT_BIG_FLASH - when using big flash mode, ensures flash mapping code is built
   in to the rom.
-DISABLE_SPIFFS_AUTO - prevents automounting at the wrong location. (by code in
-  Sming/appinit/user_main.cpp). Instead we call spiffs_mount_manual from init.
 RBOOT_BUILD_SMING - ensures big flash support function is correcly marked to
   remain in iram (plus potentially other sming specific code in future).
 SPIFF_SIZE=value - passed through to code for mounting the filesystem. Also used
