@@ -396,9 +396,8 @@ void Si4432::readAll() {
 		debugf("(%02x): %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x", i,
 				(int ) allValues[i+0], (int ) allValues[i+1], (int ) allValues[i+2], (int ) allValues[i+3],
 				(int ) allValues[i+4], (int ) allValues[i+5], (int ) allValues[i+6], (int ) allValues[i+7],
-				(int ) allValues[i+8], (int ) allValues[i+9], (int ) allValues[i+10], (int ) allValues[i+11],
-				(int ) allValues[i+12], (int ) allValues[i+13], (int ) allValues[i+14], (int ) allValues[i+15]
-				);
+				(int ) allValues[i+8], (int ) allValues[i+9], (int ) allValues[i+10], (int ) allValues[i+11]);
+		//,(int ) allValues[i+12], (int ) allValues[i+13], (int ) allValues[i+14], (int ) allValues[i+15]);
 	}
 }
 

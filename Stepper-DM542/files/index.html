@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>4 stepper control from ESP8266</title>
+	<meta charset="UTF-8"> 
+  </head>
+  <body>
+
+    <h1>4 stepper control from ESP8266</h1>
+    <input type="text" id="gCodeCmd" onkeypress="return searchKeyPress(event);" />
+    <input type="button" id="btn" Value="Search" onclick="doSend();" />
+
+    <script type="text/javascript">
+	
+      var currentTimeMs=(new Date()).getTime();
+	  
+	  var output;
+
+		function searchKeyPress(e)
+		{
+		    // look for window.event in case event isn't passed in
+		    e = e || window.event;
+		    if (e.keyCode == 13)
+		    {
+		        document.getElementById('btn').click();
+		        return false;
+		    }
+		    return true;
+		}
+
+	  function init()
+	  {
+		output = document.getElementById("output");
+		testWebSocket();	
+	  }
+	  function testWebSocket()
+	  {
+		wsUri = "ws://" + location.host + "/";
+		//var wsUri = "ws://192.168.1.21/";
+		websocket = new WebSocket(wsUri);
+		websocket.onopen = function(evt) { onOpen(evt) };
+		websocket.onclose = function(evt) { onClose(evt) };
+		websocket.onmessage = function(evt) { onMessage(evt) };
+		websocket.onerror = function(evt) { onError(evt) };		
+	  }
+	  function onOpen(evt)
+	  {
+		writeToScreen("CONNECTED");
+		//setInterval(function() {
+		//	doSend("GiveMeData");
+		//}, 150);	
+	  }
+	  function onClose(evt)
+	  {
+		writeToScreen("DISCONNECTED");
+	  }
+	  function onMessage(evt)
+	  {
+		writeToScreen('<span style="color: blue;">Time: ' + ((new Date()).getTime()-currentTimeMs) +'ms Received: ' + evt.data+'</span>');
+		document.getElementById("result").innerHTML = evt.data;
+		line1.append(new Date().getTime(), evt.data);
+	  	currentTimeMs = (new Date()).getTime();
+		//websocket.close();
+	  }
+	  function onError(evt)
+	  {
+		writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+	  }
+	  function doSend()
+	  {
+		//writeToScreen("SENT: " + message); 
+		textToSend = document.getElementById("gCodeCmd").value;
+		websocket.send(textToSend);
+	  }
+	  function writeToScreen(message)
+	  {
+		var pre = document.createElement("p");
+		pre.style.wordWrap = "break-word";
+		pre.innerHTML = message;
+		output.appendChild(pre);
+	  }
+	  function doDisconnect()
+	  {
+		var disconnect = document.getElementById("disconnect");
+		disconnect.disabled = true;
+		websocket.close();
+	  }
+	  window.addEventListener("load", init, false);
+    </script>
+	<div id="output"></div>
+  </body>
+</html>

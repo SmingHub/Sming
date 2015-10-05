@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Insert title here</title>
+    <script src='http://cdn.zingchart.com/zingchart.min.js'></script>
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</head>
+
+<body>
+    <script>
+    var chartData = {
+        "type":"line",
+		"refresh":{
+			"type":"feed",
+			"transport":"websockets",
+			"url":"ws://65.50.232.201:8888/",
+			"method":"pull",
+			"interval":200
+		},
+        "series":[
+            {
+                "values":[]
+            }
+        ]
+    };
+
+    window.onload = function() {
+        zingchart.render({
+            id: "chartDiv",
+            data: chartData,
+            height: 600,
+            width: "100%"
+        });
+    };
+
+    window.feed = function(callback) {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            headers: {
+                Accept: "application/json",
+                "Access-Control-Allow-Origin": "*"
+            },
+            url: "/PerformanceMonitor/showProcessUsage/chrome",
+            success: function (data) {
+                var mem = data.mem.size/10000;
+                var tick = {
+                    plot0: parseInt(mem)
+                };
+                callback(JSON.stringify(tick));
+            }
+        });
+    };
+    </script>
+    <div id="processInfo"></div>
+    <div id='chartDiv'></div>
+
+</body>

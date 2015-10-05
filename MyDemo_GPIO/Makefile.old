@@ -1,0 +1,269 @@
+#############################################################
+#
+# Root Level Makefile
+#
+# (c) by CHERTS <sleuthhound@gmail.com>
+#
+#############################################################
+
+# Sming Framework Path
+SMF = ~/esp8266/Sming
+VERBOSE = 1
+
+BUILD_BASE	= out/build
+FW_BASE		= out/firmware
+
+# Base directory for the compiler
+XTENSA_TOOLS_ROOT ?= ~/esp8266/esp-open-sdk/xtensa-lx106-elf/bin
+
+# base directory of the ESP8266 SDK package, absolute
+SDK_BASE	?= ~/esp8266/esp-open-sdk/sdk
+
+# esptool path and port
+SDK_TOOLS	?= c:/Espressif/utils
+ESPTOOL		?= ~/home/klemen/esp8266/esp-open-sdk/esptool/esptool.py
+ESPPORT		?= /dev/ttyUSB0
+
+# name for the target project
+TARGET		= app
+
+# which modules (subdirectories) of the project to include in compiling
+MODULES		= $(SMF)system $(SMF)system/helpers $(SMF)Wiring $(SMF)SmingCore $(SMF)SmingCore/Network $(SMF)SmingCore/Platform $(SMF)Services/SpifFS $(SMF)Services/ArduinoJson $(SMF)Services/WebHelpers $(SMF)Services/DateTime $(SMF)appinit app $(SMF)Libraries/DHT $(SMF)Libraries/LiquidCrystal $(SMF)Libraries/Bounce $(SMF)Libraries/Adafruit_GFX $(SMF)Libraries/TFT_ILI9163C $(SMF)Libraries/BMP180 $(SMF)Libraries/BH1750FVI $(SMF)Libraries/Adafruit_SSD1306 $(SMF)Libraries/OneWire $(SMF)Libraries/I2Cdev $(SMF)Libraries/HMC5883L
+EXTRA_INCDIR    = include $(SMF) $(SMF)system/include $(SMF)Wiring $(SMF)Libraries $(SMF)SmingCore $(SDK_BASE)/../include
+
+# libraries used in this project, mainly provided by the SDK
+LIBS		= c m gcc hal phy pp net80211 lwip wpa main
+
+# compiler flags using during compilation of source files
+CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -D ARDUINO=106
+CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11
+
+# linker flags used to generate the main object file
+LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
+
+# linker script used for the above linkier step
+LD_PATH     = ~/esp8266/esp-open-sdk/sdk/ld
+LD_SCRIPT   = eagle.app.v6.ld
+
+# BOOT = none
+# BOOT = old - boot_v1.1
+# BOOT = new - boot_v1.2+
+BOOT?=none
+# APP = 0 - eagle.flash.bin + eagle.irom0text.bin
+# APP = 1 - user1.bin
+# APP = 2 - user2.bin
+APP?=0
+# SPI_SPEED = 20MHz, 26.7MHz, 40MHz, 80MHz
+SPI_SPEED?=40
+# SPI_MODE: QIO, QOUT, DIO, DOUT
+SPI_MODE?=QIO
+# SPI_SIZE: 256KB, 512KB, 1024KB, 2048KB, 4096KB
+SPI_SIZE?=512
+
+ifeq ($(BOOT), new)
+    boot = new
+else
+    ifeq ($(BOOT), old)
+        boot = old
+    else
+        boot = none
+    endif
+endif
+
+ifeq ($(APP), 1)
+    app = 1
+else
+    ifeq ($(APP), 2)
+        app = 2
+    else
+        app = 0
+    endif
+endif
+
+ifeq ($(SPI_SPEED), 26.7)
+    freqdiv = 1
+else
+    ifeq ($(SPI_SPEED), 20)
+        freqdiv = 2
+    else
+        ifeq ($(SPI_SPEED), 80)
+            freqdiv = 15
+        else
+            freqdiv = 0
+        endif
+    endif
+endif
+
+
+ifeq ($(SPI_MODE), QOUT)
+    mode = 1
+else
+    ifeq ($(SPI_MODE), DIO)
+        mode = 2
+    else
+        ifeq ($(SPI_MODE), DOUT)
+            mode = 3
+        else
+            mode = 0
+        endif
+    endif
+endif
+
+# flash larger than 1024KB only use 1024KB to storage user1.bin and user2.bin
+ifeq ($(SPI_SIZE), 256)
+    size = 1
+    flash = 256
+else
+    ifeq ($(SPI_SIZE), 1024)
+        size = 2
+        flash = 1024
+    else
+        ifeq ($(SPI_SIZE), 2048)
+            size = 3
+            flash = 1024
+        else
+            ifeq ($(SPI_SIZE), 4096)
+                size = 4
+                flash = 1024
+            else
+                size = 0
+                flash = 512
+            endif
+        endif
+    endif
+endif
+
+ifeq ($(flash), 512)
+  ifeq ($(app), 1)
+    addr = 0x01000
+  else
+    ifeq ($(app), 2)
+      addr = 0x41000
+    endif
+  endif
+else
+  ifeq ($(flash), 1024)
+    ifeq ($(app), 1)
+      addr = 0x01000
+    else
+      ifeq ($(app), 2)
+        addr = 0x81000
+      endif
+    endif
+  endif
+endif
+
+ifneq ($(boot), none)
+ifneq ($(app),0)
+	LD_SCRIPT = $(LD_PATH)eagle.app.v6.$(boot).$(flash).app$(app).cpp.ld
+	BIN_NAME = user$(app).$(flash).$(boot)
+endif
+else
+    app = 0
+endif
+
+# various paths from the SDK used in this project
+SDK_LIBDIR	= lib
+SDK_LDDIR	= ld
+SDK_INCDIR	= include include/json
+
+# select which tools to use as compiler, librarian and linker
+CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
+CXX		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-g++
+AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
+LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
+OBJCOPY := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objcopy
+OBJDUMP := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objdump
+
+SRC_DIR		:= $(MODULES)
+BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
+
+SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
+# Sming Framework Path
+USER_LIBDIR     := $(addprefix $(SMF),/Sming/compiler/lib) 
+SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
+
+SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c*))
+C_OBJ		:= $(patsubst %.c,%.o,$(SRC))
+CXX_OBJ		:= $(patsubst %.cpp,%.o,$(C_OBJ))
+OBJ		:= $(patsubst %.o,$(BUILD_BASE)/%.o,$(CXX_OBJ))
+LIBS		:= $(addprefix -l,$(LIBS))
+APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
+TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
+
+#LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
+LD_SCRIPT	:= $(addprefix -T,$(LD_SCRIPT))
+
+INCDIR	:= $(addprefix -I,$(SRC_DIR))
+EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
+MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
+
+V ?= $(VERBOSE)
+ifeq ("$(V)","1")
+Q :=
+vecho := @true
+else
+Q := @
+vecho := @echo
+endif
+
+vpath %.c $(SRC_DIR)
+vpath %.cpp $(SRC_DIR)
+
+define compile-objects
+$1/%.o: %.c
+	$(vecho) "CC $$<"
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
+$1/%.o: %.cpp
+	$(vecho) "C+ $$<"
+	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS)  -c $$< -o $$@
+endef
+
+.PHONY: all checkdirs clean
+
+all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
+
+$(FW_FILE_1): $(TARGET_OUT)
+	$(vecho) "FW $@"
+	$(Q) $(FW_TOOL) -eo $(TARGET_OUT) $(FW_FILE_1_ARGS)
+
+$(FW_FILE_2): $(TARGET_OUT)
+	$(vecho) "FW $@"
+	$(Q) $(FW_TOOL) -eo $(TARGET_OUT) $(FW_FILE_2_ARGS)
+
+$(TARGET_OUT): $(APP_AR)
+	$(vecho) "PWD"
+	$(vecho) "LD $@"
+	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
+	
+
+$(APP_AR): $(OBJ)
+	$(vecho) "AR $@"
+	$(Q) $(AR) cru $@ $^
+
+checkdirs: $(BUILD_DIR) $(FW_BASE)
+
+$(BUILD_DIR):
+	$(Q) mkdir -p $@
+
+firmware:
+	$(Q) mkdir -p $@
+
+flash: firmware/0x00000.bin firmware/0x40000.bin
+	$(ESPTOOL) --port $(ESPPORT) write_flash 0x40000 firmware/0x40000.bin
+	sleep 3
+	$(ESPTOOL) --port $(ESPPORT) write_flash 0x00000 firmware/0x00000.bin
+
+test: flash
+	screen $(ESPPORT) 115200
+
+clean:
+	$(Q) rm -f $(APP_AR)
+	$(Q) rm -f $(TARGET_OUT)
+	$(Q) rm -rf $(BUILD_DIR)
+	$(Q) rm -rf $(BUILD_BASE)
+	$(Q) rm -f $(FW_FILE_1)
+	$(Q) rm -f $(FW_FILE_2)
+	$(Q) rm -rf $(FW_BASE)
+
+$(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
