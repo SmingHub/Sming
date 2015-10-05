@@ -17,4 +17,8 @@ $(error ESP_HOME is not set. Please configure it in Makefile-user.mk)
 endif
 
 # Include main Sming Makefile
+ifeq ($(RBOOT_ENABLED), 1)
+include $(SMING_HOME)/Makefile-rboot.mk
+else
 include $(SMING_HOME)/Makefile-project.mk
+endif

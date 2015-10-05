@@ -33,8 +33,8 @@ void HttpFirmwareUpdate::start()
 {
 	WDT.enable(false);
 	spiffs_unmount();
-	spiffs_format_internal();
 	spiffs_config cfg = spiffs_get_storage_config();
+	spiffs_format_internal(&cfg);
 	pos = cfg.phys_addr;
 
 	timer.initializeMs(500, TimerDelegate(&HttpFirmwareUpdate::onTimer, this)).start();
