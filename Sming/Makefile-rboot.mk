@@ -134,7 +134,6 @@ TARGET		= app
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
 MODULES 	?= app  # if not initialized by user 
-MODULES		+= $(SMING_HOME)/appinit
 MODULES		+= $(SMING_HOME)/rboot/appcode
 EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
 
@@ -263,7 +262,6 @@ RBOOT_LD_1	:= $(addprefix -T,$(RBOOT_LD_1))
 
 # extra flags
 CFLAGS += -DRBOOT_BUILD_SMING
-CFLAGS += -DDISABLE_SPIFFS_AUTO
 
 RBOOT_BIN := $(FW_BASE)/rboot.bin
 RBOOT_BUILD_BASE := $(abspath $(BUILD_BASE))
