@@ -14,7 +14,7 @@
 rBootHttpUpdate::rBootHttpUpdate() {
 	currentItem = 0;
 	romSlot = NO_ROM_SWITCH;
-	callback = 0;
+	updateDelegate = nullptr;
 }
 
 rBootHttpUpdate::~rBootHttpUpdate() {
@@ -36,15 +36,19 @@ void rBootHttpUpdate::switchToRom(uint8 romSlot) {
 	this->romSlot = romSlot;
 }
 
-void rBootHttpUpdate::setCallback(otaCallback callback) {
-	this->callback = callback;
+void rBootHttpUpdate::setCallback(otaUpdateDelegate reqUpdateDelegate) {
+	setDelegate(reqUpdateDelegate);
+}
+
+void rBootHttpUpdate::setDelegate(otaUpdateDelegate reqUpdateDelegate) {
+	this->updateDelegate = reqUpdateDelegate;
 }
 
 void rBootHttpUpdate::updateFailed() {
 	timer.stop();
 	items.clear();
 	debugf("\r\nFirmware download failed..");
-	if (callback) callback(false);
+	if (updateDelegate) updateDelegate(false);
 }
 
 void rBootHttpUpdate::onTimer() {
@@ -100,7 +104,7 @@ void rBootHttpUpdate::applyUpdate() {
 	items.clear();
 	if (romSlot == NO_ROM_SWITCH) {
 		debugf("Firmware updated.");
-		if (callback) callback(true);
+		if (updateDelegate) updateDelegate(true);
 	} else {
 		// set to boot new rom and then reboot
 		debugf("Firmware updated, rebooting to rom %d...\r\n", romSlot);
