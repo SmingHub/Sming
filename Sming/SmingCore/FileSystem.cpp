@@ -5,7 +5,7 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "../SmingCore/FileSystem.h"
+#include "FileSystem.h"
 #include "../Wiring/WString.h"
 
 file_t fileOpen(const String name, FileOpenFlags flags)
@@ -109,7 +109,7 @@ int fileLastError(file_t fd)
 
 void fileClearLastError(file_t fd)
 {
-  _filesystemStorageHandle.errno = SPIFFS_OK;
+  SPIFFS_clearerr(&_filesystemStorageHandle);
 }
 
 void fileSetContent(const String fileName, const String& content)
