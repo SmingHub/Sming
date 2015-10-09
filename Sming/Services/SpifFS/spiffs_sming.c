@@ -1,4 +1,4 @@
-#include "spiffs.h"
+#include "spiffs_sming.h"
 
 #define LOG_PAGE_SIZE       256
 
