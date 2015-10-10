@@ -1,3 +1,10 @@
+
+#ifndef SPIFFS_SMING_H_
+#define SPIFFS_SMING_H_
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "spiffs.h"
 
 void spiffs_mount();
@@ -11,3 +18,7 @@ extern void test_spiffs();
 
 extern spiffs _filesystemStorageHandle;
 
+#if defined(__cplusplus)
+}
+#endif
+#endif /* SPIFFS_H_ */
