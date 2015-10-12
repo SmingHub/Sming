@@ -20,8 +20,29 @@ MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscription
 	current = NULL;
 }
 
+MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback /* = NULL*/)
+	: TcpClient((bool)false)
+{
+	this->serverIp = serverIp;
+	port = serverPort;
+	this->callback = callback;
+	waitingSize = 0;
+	posHeader = 0;
+	current = NULL;
+}
+
 MqttClient::~MqttClient()
 {
+}
+
+void MqttClient::setKeepAlive(int seconds)
+{
+	keepAlive = seconds;
+}
+
+void MqttClient::setWill(String topic, String message, int QoS, bool retained /* = false*/)
+{
+	mqtt_set_will(&broker, topic.c_str(), message.c_str(), QoS, retained);
 }
 
 bool MqttClient::connect(String clientName)
@@ -42,11 +63,14 @@ bool MqttClient::connect(String clientName, String username, String password)
 	if (clientName.length() > 0)
 		mqtt_init_auth(&broker, username.c_str(), password.c_str());
 
-	int keepalive = 20; // Seconds
+	if(server) {
+		TcpClient::connect(server, port);
+	}
+	else {
+		TcpClient::connect(serverIp, port);
+	}
 
-	TcpClient::connect(server, port);
-
-	mqtt_set_alive(&broker, keepalive);
+	mqtt_set_alive(&broker, keepAlive);
 	broker.socket_info = (void*)this;
 	broker.send = staticSendPacket;
 
