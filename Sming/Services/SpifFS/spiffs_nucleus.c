@@ -101,7 +101,7 @@ s32_t spiffs_phys_cpy(
 
 // Find object lookup entry containing given id with visitor.
 // Iterate over object lookup pages in each block until a given object id entry is found.
-// When found, the visitor function is called with block index, entry index and user_data.
+// When found, the visitor function is called with block index, entry index and user data.
 // If visitor returns SPIFFS_VIS_CONTINUE, the search goes on. Otherwise, the search will be
 // ended and visitor's return code is returned to caller.
 // If no visitor is given (0) the search returns on first entry with matching object id.

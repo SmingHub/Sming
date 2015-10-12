@@ -547,7 +547,7 @@ s32_t SPIFFS_gc_quick(spiffs *fs, u16_t max_free_pages);
  * @param size          amount of bytes that should be freed
  */
 s32_t SPIFFS_gc(spiffs *fs, u32_t size);
-	
+
 /**
  * Check if EOF reached.
  * @param fs            the file system struct
@@ -560,7 +560,6 @@ s32_t SPIFFS_eof(spiffs *fs, spiffs_file fh);
  * @param fs            the file system struct
  * @param fh            the filehandle of the file to check
  */
-
 s32_t SPIFFS_tell(spiffs *fs, spiffs_file fh);
 
 #if SPIFFS_TEST_VISUALISATION
