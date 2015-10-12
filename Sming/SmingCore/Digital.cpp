@@ -53,10 +53,6 @@ void pinMode(uint16_t pin, uint8_t mode)
 	{
 		pullup(pin);
 	}
-	else if (mode == INPUT)
-	{
-		noPullup(pin);
-	}
 }
 
 //Detect if pin is input

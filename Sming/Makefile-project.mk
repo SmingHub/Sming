@@ -26,6 +26,9 @@ SPI_MODE ?= qio
 # SPI_SIZE: 512K, 256K, 1M, 2M, 4M
 SPI_SIZE ?= 512K
 
+# Full path spiffy command, if not in path.
+SPIFFY ?= spiffy
+
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 ## Windows:
 # ESP_HOME = c:/Espressif
@@ -103,7 +106,7 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
-SPIFF_FILES = files
+SPIFF_FILES ?= files
 
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
@@ -122,7 +125,7 @@ TARGET		= app
 # define your custom directories in the project's own Makefile before including this one
 MODULES 	?= app  # if not initialized by user 
 MODULES		+= $(SMING_HOME)/appinit
-EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include
+EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
@@ -141,9 +144,12 @@ endif
 ifneq ($(WIFI_PWD), "")
 	CFLAGS += -DWIFI_PWD=\"$(WIFI_PWD)\"
 endif
+ifeq ($(DISABLE_SPIFFS), 1)
+	CFLAGS += -DDISABLE_SPIFFS=1
+endif
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections
+LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-Map=$(FW_BASE)/firmware.map
 
 # linker script used for the above linkier step
 LD_PATH     = $(SMING_HOME)/compiler/ld/
@@ -180,17 +186,22 @@ endif
 # flash larger than 1024KB only use 1024KB to storage user1.bin and user2.bin
 ifeq ($(SPI_SIZE), 256K)
 	flashimageoptions += -fs 2m
+	SPIFF_SIZE ?= 131072  #128K
 else
     ifeq ($(SPI_SIZE), 1M)
 	flashimageoptions += -fs 8m
+	SPIFF_SIZE ?= 524288  #512K
     else
         ifeq ($(SPI_SIZE), 2M)
 		flashimageoptions += -fs 16m
+		SPIFF_SIZE ?= 524288  #512K
         else
             ifeq ($(SPI_SIZE), 4M)
 			flashimageoptions += -fs 32m
+			SPIFF_SIZE ?= 524288  #512K
             else
 			flashimageoptions += -fs 4m
+			SPIFF_SIZE ?= 262144  #256K
             endif
         endif
     endif
@@ -224,7 +235,8 @@ LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
-SPIFF_BIN_OUT := $(FW_BASE)/spiff_rom.bin
+SPIFF_BIN_OUT ?= spiff_rom
+SPIFF_BIN_OUT := $(FW_BASE)/$(SPIFF_BIN_OUT).bin
 LD_SCRIPT	:= $(addprefix -T,$(LD_SCRIPT))
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
@@ -261,7 +273,7 @@ spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
-	
+
 	$(vecho) ""	
 	$(vecho) "#Memory / Section info:"	
 	$(vecho) "------------------------------------------------------------------------------"
@@ -301,23 +313,31 @@ spiff_clean:
 	$(Q) rm -rf $(SPIFF_BIN_OUT)
 
 $(SPIFF_BIN_OUT):
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(vecho) "(!) Spiffs support disabled. Remove 'DISABLE_SPIFFS' make argument to enable spiffs."
+else
 	# Generating spiffs_bin
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
-    	echo "$(SPIFF_FILES) directory exists. Creating spiff_rom.bin"; \
-    	spiffy; \
-    	mv spiff_rom.bin $(FW_BASE)/spiff_rom.bin; \
+    	echo "$(SPIFF_FILES) directory exists. Creating $(SPIFF_BIN_OUT)"; \
+    	$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES); \
+    	mv spiff_rom.bin $(SPIFF_BIN_OUT); \
 	else \
     	echo "No files found in ./$(SPIFF_FILES)."; \
-    	echo "Creating empty spiff_rom.bin ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
-    cp $(SMING_HOME)/compiler/data/blankfs.bin $(FW_BASE)/spiff_rom.bin; \
+    	echo "Creating empty $(SPIFF_BIN_OUT) ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
+    	cp $(SMING_HOME)/compiler/data/blankfs.bin $(SPIFF_BIN_OUT); \
 	fi
-	$(vecho) "spiff_rom.bin---------->$(SPIFF_START_OFFSET)"
+	$(vecho) "$(SPIFF_BIN_OUT)---------->$(SPIFF_START_OFFSET)"
+endif
 
 flash: all
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
 	-$(Q) $(KILL_TERM)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(FW_BASE)/spiff_rom.bin
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin
+else
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
+endif
 	$(TERMINAL)
 
 flashinit:
