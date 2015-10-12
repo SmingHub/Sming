@@ -21,4 +21,4 @@ extern spiffs _filesystemStorageHandle;
 #if defined(__cplusplus)
 }
 #endif
-#endif /* SPIFFS_H_ */
+#endif /* SPIFFS_SMING_H_ */
