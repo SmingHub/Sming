@@ -188,7 +188,12 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(APP_AR) $(FW_FILE_1) $(FW_FILE_2)
+all: checkdirs $(APP_AR) spiffy/spiffy
+
+spiffy/spiffy:
+	$(vecho) "Making spiffy utility"
+	$(Q) $(MAKE) --no-print-directory -C spiffy V=$(V)
+	$(vecho) "Done"
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
@@ -214,5 +219,6 @@ clean:
 	$(Q) rm -rf $(BUILD_DIR)
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
+	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))

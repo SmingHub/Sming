@@ -20,7 +20,7 @@ RBOOT_LD_1 ?= rom1.ld
 # esptool2 path
 ESPTOOL2 ?= esptool2
 # path to spiffy
-SPIFFY ?= spiffy
+SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS     ?= .text .data .rodata
 RBOOT_E2_USER_ARGS ?= -quiet -bin -boot2

@@ -26,8 +26,8 @@ SPI_MODE ?= qio
 # SPI_SIZE: 512K, 256K, 1M, 2M, 4M
 SPI_SIZE ?= 512K
 
-# Full path spiffy command, if not in path.
-SPIFFY ?= spiffy
+# Path to spiffy
+SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 ## Windows:
