@@ -5,6 +5,10 @@
 // See license.txt for license terms.
 //////////////////////////////////////////////////
 
+#ifdef RBOOT_INTEGRATION
+#include <rboot-integration.h>
+#endif
+
 #include "rboot-private.h"
 #include <rboot-hex2a.h>
 

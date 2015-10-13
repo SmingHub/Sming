@@ -5,6 +5,10 @@
 // See license.txt for license terms.
 //////////////////////////////////////////////////
 
+#ifdef RBOOT_INTEGRATION
+#include <rboot-integration.h>
+#endif
+
 typedef unsigned int uint32;
 typedef unsigned char uint8;
 
@@ -12,11 +16,8 @@ typedef unsigned char uint8;
 
 #ifdef BOOT_BIG_FLASH
 
-#ifdef RBOOT_BUILD_SMING
-// for sming mark for iram
-#define IRAM_ATTR __attribute__((section(".iram.text")))
-#else
-// for plain sdk don't mark, defaults to iram
+// plain sdk defaults to iram
+#ifndef IRAM_ATTR
 #define IRAM_ATTR
 #endif
 
