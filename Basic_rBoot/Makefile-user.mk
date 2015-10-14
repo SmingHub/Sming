@@ -55,5 +55,3 @@ SPIFF_SIZE      ?= 65536
 #RBOOT_SPIFFS_1  ?= 0x300000
 ## esptool2 path
 #ESPTOOL2        ?= esptool2
-## path to spiffy
-#SPIFFY          ?= spiffy
