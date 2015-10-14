@@ -25,6 +25,12 @@
 #define STORE_TYPEDEF_ATTR __attribute__((aligned(4),packed))
 #define STORE_ATTR __attribute__((aligned(4)))
 
+#ifdef ENABLE_GDB
+	#define GDB_IRAM_ATTR IRAM_ATTR
+#else
+	#define GDB_IRAM_ATTR
+#endif
+
 extern int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args);
 extern int m_printf(const char *fmt, ...);
 

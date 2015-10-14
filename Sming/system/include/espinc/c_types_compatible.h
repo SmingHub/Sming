@@ -66,6 +66,7 @@ typedef unsigned int        size_t;
 #define NULL (void *)0
 #endif /* NULL */
 
+#ifndef GDBSTUB_H
 /* probably should not put STATUS here */
 typedef enum {
     OK = 0,
@@ -74,6 +75,7 @@ typedef enum {
     BUSY,
     CANCEL,
 } STATUS;
+#endif
 
 #define BIT(nr)                 (1UL << (nr))
 
@@ -91,10 +93,12 @@ typedef enum {
 #endif /* ICACHE_FLASH */
 
 #ifndef __cplusplus
+#ifndef GDBSTUB_H
 typedef unsigned char   bool;
 #define BOOL            bool
 #define true            ((bool)1)
 #define false           ((bool)0)
+#endif
 #define TRUE            true
 #define FALSE           false
 
