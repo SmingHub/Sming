@@ -186,9 +186,11 @@ $1/%.o: %.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean
+.PHONY: all checkdirs clean spiffy
 
-all: checkdirs $(APP_AR) spiffy/spiffy
+all: checkdirs $(APP_AR)
+
+spiffy: spiffy/spiffy
 
 spiffy/spiffy:
 	$(vecho) "Making spiffy utility"
