@@ -165,17 +165,14 @@ int add_file(const char* fdir, char* fname) {
 	} else {
 		struct stat st;
 		sprintf(path, "%s/%s", fdir, fname);
-		stat(path, &st);
-		if (!S_ISREG(st.st_mode)) {
+		if (stat(path, &st) || !S_ISREG(st.st_mode)) {
 			S_DBG("Skipping non-file '%s'.\n", fname);
 		} else {
 			fp = fopen(path, "rb");
 			if (!fp) {
 				S_DBG("Unable to open '%s'.\n", fname);
 			} else {
-				fseek(fp, 0L, SEEK_END);
-				size = ftell(fp);
-				fseek(fp, 0L, SEEK_SET);
+				size = (int)st.st_size;
 				buff = malloc(size);
 				if (!buff) {
 					printf("Unable to malloc %d bytes.\n", size);
