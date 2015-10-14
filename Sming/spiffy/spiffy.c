@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <spiffs.h>
+#include <sys/stat.h>
 
 #define LOG_PAGE_SIZE       256
 #define SPI_FLASH_SEC_SIZE 4096
@@ -162,25 +163,31 @@ int add_file(const char* fdir, char* fname) {
 	if (!path) {
 		printf("Unable to malloc %d bytes.\n", 1024);
 	} else {
+		struct stat st;
 		sprintf(path, "%s/%s", fdir, fname);
-		fp = fopen(path, "rb");
-		if (!fp) {
-			S_DBG("Unable to open '%s'.\n", path);
+		stat(path, &st);
+		if (!S_ISREG(st.st_mode)) {
+			S_DBG("Skipping non-file '%s'.\n", fname);
 		} else {
-			fseek(fp, 0L, SEEK_END);
-			size = ftell(fp);
-			fseek(fp, 0L, SEEK_SET);
-			buff = malloc(size);
-			if (!buff) {
-				printf("Unable to malloc %d bytes.\n", size);
+			fp = fopen(path, "rb");
+			if (!fp) {
+				S_DBG("Unable to open '%s'.\n", fname);
 			} else {
-				if (fread(buff, 1, size, fp) != size) {
-					printf("Unable to read file '%s'.\n", fname);
+				fseek(fp, 0L, SEEK_END);
+				size = ftell(fp);
+				fseek(fp, 0L, SEEK_SET);
+				buff = malloc(size);
+				if (!buff) {
+					printf("Unable to malloc %d bytes.\n", size);
 				} else {
-					S_DBG("%d bytes read from '%s'.\n", size, fname);
-					if (write_to_spiffs(fname, buff, size)) {
-						printf("Added '%s' to spiffs (%d bytes).\n", fname, size);
-						ret = 1;
+					if (fread(buff, 1, size, fp) != size) {
+						printf("Unable to read file '%s'.\n", fname);
+					} else {
+						S_DBG("%d bytes read from '%s'.\n", size, fname);
+						if (write_to_spiffs(fname, buff, size)) {
+							printf("Added '%s' to spiffs (%d bytes).\n", fname, size);
+							ret = 1;
+						}
 					}
 				}
 			}
@@ -256,9 +263,7 @@ int main(int argc, char **argv) {
 			struct dirent *ent;
 			if ((dir = opendir(folder)) != NULL) {
 				while ((ent = readdir(dir)) != NULL) {
-					if (ent->d_type == DT_REG) {
-						add_file(folder, ent->d_name);
-					}
+					add_file(folder, ent->d_name);
 				}
 				closedir(dir);
 			} else {
