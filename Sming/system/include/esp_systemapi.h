@@ -27,6 +27,12 @@
 #define STORE_TYPEDEF_ATTR __attribute__((aligned(4),packed))
 #define STORE_ATTR __attribute__((aligned(4)))
 
+#ifdef ENABLE_GDB
+	#define GDB_IRAM_ATTR IRAM_ATTR
+#else
+	#define GDB_IRAM_ATTR
+#endif
+
 #undef assert
 #define debugf(fmt, ...) m_printf(fmt"\r\n", ##__VA_ARGS__)
 #define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
