@@ -38,6 +38,7 @@ void onMessageReceived(String topic, String message)
 // Run MQTT client
 void startMqttClient()
 {
+	mqtt.setWill("last/will","The connection from this device is lost:(", 1, true);
 	mqtt.connect("esp8266");
 	mqtt.subscribe("main/status/#");
 }
