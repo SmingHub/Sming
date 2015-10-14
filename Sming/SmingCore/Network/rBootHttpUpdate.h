@@ -15,7 +15,8 @@
 
 #define NO_ROM_SWITCH 0xff
 
-typedef void (*otaCallback)(bool result);
+//typedef void (*otaCallback)(bool result);
+typedef Delegate<void(bool result)> otaUpdateDelegate;
 
 struct rBootHttpUpdateItem {
 	String url;
@@ -31,7 +32,8 @@ public:
 	void addItem(int offset, String firmwareFileUrl);
 	void start();
 	void switchToRom(uint8 romSlot);
-	void setCallback(otaCallback callback);
+	void setCallback(otaUpdateDelegate reqUpdateDelegate);
+	void setDelegate(otaUpdateDelegate reqUpdateDelegate);
 
 protected:
 	void onTimer();
@@ -45,7 +47,7 @@ protected:
 	int currentItem;
 	rboot_write_status rBootWriteStatus;
 	uint8 romSlot;
-	otaCallback callback;
+	otaUpdateDelegate updateDelegate;
 };
 
 #endif /* SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_ */
