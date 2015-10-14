@@ -1,0 +1,3 @@
+[submodule "Sming/gdbstub"]
+	path = Sming/gdbstub
+	url = https://github.com/espressif/esp-gdbstub.git
