@@ -261,7 +261,7 @@ RBOOT_LD_0	:= $(addprefix -T,$(RBOOT_LD_0))
 RBOOT_LD_1	:= $(addprefix -T,$(RBOOT_LD_1))
 
 # extra flags
-CFLAGS += -DRBOOT_BUILD_SMING
+CFLAGS += -DRBOOT_INTEGRATION
 
 RBOOT_BIN := $(FW_BASE)/rboot.bin
 RBOOT_BUILD_BASE := $(abspath $(BUILD_BASE))

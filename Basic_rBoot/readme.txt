@@ -47,8 +47,8 @@ so the reason for this strange addressing is not clear.
 Important compiler flags used:
 BOOT_BIG_FLASH - when using big flash mode, ensures flash mapping code is built
   in to the rom.
-RBOOT_BUILD_SMING - ensures big flash support function is correcly marked to
-  remain in iram (plus potentially other sming specific code in future).
+RBOOT_INTEGRATION - ensures Sming specific options are pulled in to the rBoot
+  source at compile time.
 SPIFF_SIZE=value - passed through to code for mounting the filesystem. Also used
   in the Makefile to create the spiffs.
 
