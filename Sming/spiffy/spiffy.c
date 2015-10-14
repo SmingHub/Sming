@@ -49,26 +49,42 @@ static s32_t my_spiffs_read(u32_t addr, u32_t size, u8_t *dst) {
 	}
 
 	S_DBG("Read %d bytes from offset %d.\n", size, addr);
-	hexdump_mem(dst, size);
+	//hexdump_mem(dst, size);
 	return SPIFFS_OK;
 }
 
 static s32_t my_spiffs_write(u32_t addr, u32_t size, u8_t *src) {
 
-	if (fseek(rom, addr, SEEK_SET)) {
-		printf("Unable to seek to %d.\n", addr);
-		return SPIFFS_ERR_END_OF_OBJECT;
+	int ret = SPIFFS_OK;
+	u8_t *buff = 0;
+
+	buff = malloc(size);
+	if (!buff) {
+		printf("Unable to malloc %d bytes.\n", size);
+		ret = SPIFFS_ERR_INTERNAL;
+	} else {
+		ret = my_spiffs_read(addr, size, buff);
+		if (ret == SPIFFS_OK) {
+			int i;
+			for(i = 0; i < size; i++) buff[i] &= src[i];
+			//hexdump_mem(buff, size);
+			if (fseek(rom, addr, SEEK_SET)) {
+				printf("Unable to seek to %d.\n", addr);
+				ret = SPIFFS_ERR_END_OF_OBJECT;
+			} else {
+				if (fwrite(src, 1, size, rom) != size) {
+					printf("Unable to write.\n");
+					ret = SPIFFS_ERR_NOT_WRITABLE;
+				} else {
+					fflush(rom);
+					S_DBG("Wrote %d bytes to offset %d.\n", size, addr);
+				}
+			}
+		}
 	}
 
-	if (fwrite(src, 1, size, rom) != size) {
-		printf("Unable to write.\n");
-		return SPIFFS_ERR_NOT_WRITABLE;
-	}
-
-	fflush(rom);
-	S_DBG("Wrote %d bytes to offset %d.\n", size, addr);
-
-	return SPIFFS_OK;
+	if (buff) free (buff);
+	return ret;
 }
 
 static s32_t my_spiffs_erase(u32_t addr, u32_t size) {
