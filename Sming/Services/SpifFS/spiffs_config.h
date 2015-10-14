@@ -27,7 +27,6 @@ typedef signed short s16_t;
 typedef unsigned short u16_t;
 typedef signed char s8_t;
 typedef unsigned char u8_t;
-#define spiffs_printf(...) printf(__VA_ARGS__)
 #endif /* __ets__ */
 // ----------- >8 ------------
 
@@ -196,7 +195,7 @@ typedef unsigned char u8_t;
 // in the api. This function will visualize all filesystem using given printf
 // function.
 #ifndef SPIFFS_TEST_VISUALISATION
-#define SPIFFS_TEST_VISUALISATION         1
+#define SPIFFS_TEST_VISUALISATION         0
 #endif
 #if SPIFFS_TEST_VISUALISATION
 #ifndef spiffs_printf
