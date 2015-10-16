@@ -16,5 +16,8 @@ script:
 # Make Sming initially
 - cd Sming
 - make
+# Check if a file in LibSming was changes
+- export SMING_HAS_CHANGED=`for i in $CHANGED_PROJECTS; do  if [ "$i" == "Sming" ]; then echo 1; break; fi; done`
+- if [ ! -z "$SMING_HAS_CHANGED" ]; then CHANGED_PROJECTS=`ls -d */`; fi 
 # And then make all changed projects
-- for i in $CHANGED_PROJECTS; do if [ "$i" == "Sming" ]; then continue; fi; echo "Compiling $i"; cd "$i"; make; done 
+- for i in $CHANGED_PROJECTS; do if [ "$i" == "Sming" ] || [ ! -d "$i" ]; then continue; fi; echo "Compiling $i"; cd "$i"; make; done
