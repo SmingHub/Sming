@@ -20,7 +20,7 @@ RBOOT_LD_1 ?= rom1.ld
 # esptool2 path
 ESPTOOL2 ?= esptool2
 # path to spiffy
-SPIFFY ?= spiffy
+SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS     ?= .text .data .rodata
 RBOOT_E2_USER_ARGS ?= -quiet -bin -boot2
@@ -361,8 +361,7 @@ else
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
 		echo "$(SPIFF_FILES) directory exists. Creating $(SPIFF_BIN_OUT)"; \
-		$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES); \
-		mv spiff_rom.bin $(SPIFF_BIN_OUT); \
+		$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES) $(SPIFF_BIN_OUT); \
 	else \
 		echo "No files found in ./$(SPIFF_FILES)."; \
 		echo "Creating empty $(SPIFF_BIN_OUT) ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \

@@ -7,7 +7,7 @@
 
 #include "System.h"
 #include "../Interrupts.h"
-#include "../../Services/SpifFS/spiffs.h"
+#include "../../Services/SpifFS/spiffs_sming.h"
 
 SystemClass System;
 
