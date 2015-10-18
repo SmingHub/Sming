@@ -60,7 +60,7 @@ private:
 	uint8_t *current;
 	int posHeader;
 	MqttStringSubscriptionCallback callback;
-	int keepAlive = 50;
+	int keepAlive = 20;
 
 };
 
