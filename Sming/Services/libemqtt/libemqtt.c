@@ -27,6 +27,7 @@
 
 #include <string.h>
 #include <libemqtt.h>
+#include <stdlib.h>
 
 #define MQTT_DUP_FLAG     1<<3
 #define MQTT_QOS0_FLAG    0<<1
@@ -192,8 +193,8 @@ void mqtt_init(mqtt_broker_handle_t* broker, const char* clientid) {
 	memset(broker->clientid, 0, sizeof(broker->clientid));
 	memset(broker->username, 0, sizeof(broker->username));
 	memset(broker->password, 0, sizeof(broker->password));
-	memset(broker->will_topic, 0, sizeof(broker->will_topic));
-	memset(broker->will_message, 0, sizeof(broker->will_message));
+	broker->will_topic = NULL;
+	broker->will_message = NULL;
 	if(clientid) {
 		strncpy(broker->clientid, clientid, sizeof(broker->clientid));
 	} else {
@@ -210,6 +211,8 @@ void mqtt_init_auth(mqtt_broker_handle_t* broker, const char* username, const ch
 }
 
 void mqtt_set_will(mqtt_broker_handle_t* broker, const char* topic, const char* message, uint8_t qos, uint8_t retain) {
+	broker->will_topic = (char *)malloc(sizeof(topic));
+	broker->will_message = (char *)malloc(sizeof(message));
 	strncpy(broker->will_topic, topic, sizeof(broker->will_topic)-1);
 	strncpy(broker->will_message, message, sizeof(broker->will_message)-1);
 	broker->will_qos = qos;
@@ -227,7 +230,10 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 	uint16_t clientidlen = strlen(broker->clientid);
 	uint16_t usernamelen = strlen(broker->username);
 	uint16_t passwordlen = strlen(broker->password);
-	uint16_t willtopiclen = strlen(broker->will_topic);
+	uint16_t willtopiclen = 0;
+	if(broker->will_topic!= NULL) {
+		willtopiclen = strlen(broker->will_topic);
+	}
 	uint16_t payload_len = clientidlen + 2;
 
 	// Preparing the flags
