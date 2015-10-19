@@ -119,7 +119,7 @@ bool FileStream::seek(int len)
 {
 	if (len < 0) return false;
 
-	bool result = fileSeek(handle, len, eSO_CurrentPos) == 0;
+	bool result = fileSeek(handle, len, eSO_CurrentPos) >= 0;
 	if (result) pos += len;
 	return result;
 }
