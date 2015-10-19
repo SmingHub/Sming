@@ -8,7 +8,7 @@
 #ifndef _NET_WIRING_
 #define _NET_WIRING_
 
-#define SMING_VERSION 120 // Major Minor Sub
+#define SMING_VERSION 140 // Major Minor Sub
 
 #include "../Wiring/WiringFrameworkIncludes.h"
 
