@@ -33,6 +33,7 @@ MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptio
 
 MqttClient::~MqttClient()
 {
+	mqtt_free(&broker);
 }
 
 void MqttClient::setKeepAlive(int seconds)

@@ -300,6 +300,13 @@ int mqtt_unsubscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* 
  */
 int mqtt_ping(mqtt_broker_handle_t* broker);
 
+/**
+ * Frees dynamically allocated resources
+ *
+ * @param broker Data structure that contains the connection information with the broker.
+ */
+void mqtt_free(mqtt_broker_handle_t* broker);
+
 #ifdef __cplusplus
 }
 #endif

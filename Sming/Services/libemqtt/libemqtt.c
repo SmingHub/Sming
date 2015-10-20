@@ -211,10 +211,10 @@ void mqtt_init_auth(mqtt_broker_handle_t* broker, const char* username, const ch
 }
 
 void mqtt_set_will(mqtt_broker_handle_t* broker, const char* topic, const char* message, uint8_t qos, uint8_t retain) {
-	broker->will_topic = (char *)malloc(sizeof(topic));
-	broker->will_message = (char *)malloc(sizeof(message));
-	strncpy(broker->will_topic, topic, sizeof(broker->will_topic)-1);
-	strncpy(broker->will_message, message, sizeof(broker->will_message)-1);
+	broker->will_topic = (char *)malloc(strlen(topic)+1);
+	broker->will_message = (char *)malloc(strlen(message)+1);
+	strcpy(broker->will_topic, topic);
+	strcpy(broker->will_message, message);
 	broker->will_qos = qos;
 	broker->will_retain = retain;
 }
@@ -530,4 +530,11 @@ int mqtt_unsubscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* 
 	}
 
 	return 1;
+}
+
+void mqtt_free(mqtt_broker_handle_t* broker) {
+	if(broker->will_topic != NULL) {
+		free(broker->will_topic);
+		free(broker->will_message);
+	}
 }
