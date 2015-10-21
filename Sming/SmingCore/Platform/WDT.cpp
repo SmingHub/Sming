@@ -1,7 +1,7 @@
 /*
  * WDT.cpp
  *
- *  Created on: 06 ΰοπ. 2015 γ.
+ *  Created on: 06 Γ Γ―Γ°. 2015 Γ£.
  *      Author: Anakod
  */
 
@@ -25,7 +25,7 @@ void WDTClass::enable(bool enableWatchDog)
 
 void WDTClass::alive()
 {
-	WRITE_PERI_REG(0x60000914, 0x73);
+	system_soft_wdt_restart();
 }
 
 void WDTClass::onSystemReady()
@@ -36,7 +36,7 @@ void WDTClass::onSystemReady()
 void WDTClass::internalApplyEnabled()
 {
 	if (enabled)
-		ets_wdt_enable();
+		system_soft_wdt_restart();
 	else
-		ets_wdt_disable();
+		system_soft_wdt_stop();
 }

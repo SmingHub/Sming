@@ -26,8 +26,8 @@ SPI_MODE ?= qio
 # SPI_SIZE: 512K, 256K, 1M, 2M, 4M
 SPI_SIZE ?= 512K
 
-# Full path spiffy command, if not in path.
-SPIFFY ?= spiffy
+# Path to spiffy
+SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 ## Windows:
@@ -124,7 +124,6 @@ TARGET		= app
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
 MODULES 	?= app  # if not initialized by user 
-MODULES		+= $(SMING_HOME)/appinit
 EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
 
 # libraries used in this project, mainly provided by the SDK
@@ -320,8 +319,7 @@ else
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
     	echo "$(SPIFF_FILES) directory exists. Creating $(SPIFF_BIN_OUT)"; \
-    	$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES); \
-    	mv spiff_rom.bin $(SPIFF_BIN_OUT); \
+    	$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES) $(SPIFF_BIN_OUT); \
 	else \
     	echo "No files found in ./$(SPIFF_FILES)."; \
     	echo "Creating empty $(SPIFF_BIN_OUT) ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \

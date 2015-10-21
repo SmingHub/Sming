@@ -6,9 +6,8 @@
 // OTA code based on SDK sample from Espressif.
 //////////////////////////////////////////////////
 
-#ifdef RBOOT_BUILD_SMING
-// prevent sming user_config.h being included
-#define __USER_CONFIG_H__
+#ifdef RBOOT_INTEGRATION
+#include <rboot-integration.h>
 #endif
 
 #include <c_types.h>

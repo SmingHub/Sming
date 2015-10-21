@@ -8,15 +8,15 @@
 static void ICACHE_FLASH_ATTR send_ws_0(uint8_t gpio)
 {
     uint8_t i;
-    i = 4; while (i--) GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, 1 << gpio);
-    i = 9; while (i--) GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, 1 << gpio);
+    i = 3; while (i--) GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, 1 << gpio);
+    i = 8; while (i--) GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, 1 << gpio);
 }
 
 static void ICACHE_FLASH_ATTR send_ws_1(uint8_t gpio)
 {
     uint8_t i;
-    i = 8; while (i--) GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, 1 << gpio);
-    i = 6; while (i--) GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, 1 << gpio);
+    i = 7; while (i--) GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, 1 << gpio);
+    i = 5; while (i--) GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, 1 << gpio);
 }
 
 // Byte triples in the buffer are interpreted as R G B values and sent to the hardware as G R B.

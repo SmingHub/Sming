@@ -157,13 +157,6 @@ INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
-ifeq ($(DISABLE_SPIFFS), 1)
-	CFLAGS += -DDISABLE_SPIFFS=1
-endif
-ifeq ($(DISABLE_SPIFFS_AUTO), 1)
-	CFLAGS += -DDISABLE_SPIFFS_AUTO=1
-endif
-
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
 Q :=
@@ -193,20 +186,21 @@ $1/%.o: %.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean
+.PHONY: all checkdirs clean spiffy
 
-all: checkdirs $(APP_AR) $(FW_FILE_1) $(FW_FILE_2)
+all: checkdirs $(APP_AR)
+
+spiffy: spiffy/spiffy
+
+spiffy/spiffy:
+	$(vecho) "Making spiffy utility"
+	$(Q) $(MAKE) --no-print-directory -C spiffy V=$(V)
+	$(vecho) "Done"
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 	$(vecho) "Installing libsming"
-ifeq ($(DISABLE_SPIFFS), 1)
-	$(vecho) "(!) Spiffs support disabled. Remove 'DISABLE_SPIFFS' make argument to enable spiffs."
-endif
-ifeq ($(DISABLE_SPIFFS_AUTO), 1)
-	$(vecho) "(!) Spiffs auto-mount disabled. Call spiffs_mount or spiffs_mount_manual from init to use spiffs."
-endif
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
 	$(vecho) "Done"
 
@@ -227,5 +221,6 @@ clean:
 	$(Q) rm -rf $(BUILD_DIR)
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
+	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))

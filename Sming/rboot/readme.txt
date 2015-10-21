@@ -33,11 +33,15 @@ below for instructions.
 
 Building
 --------
-Makefile is included, which should work with the gcc xtensa cross compiler.
+A Makefile is included, which should work with the gcc xtensa cross compiler.
 There are two source files, the first is compiled and included as data in the
 second. When run this code is copied to memory and executed (there is a good
 reason for this, see my blog for an explanation). The make file will handle this
 for you, but you'll need my esptool2 (see github).
+
+To use the Makefile set SDK_BASE to point to the root of the Espressif SDK and
+either set XTENSA_BINDIR to the gcc xtensa bin directory or include it in your
+PATH. These can be set as environment variables or by editing the Makefile.
 
 Two small assembler stub functions allow the bootloader to launch the user code
 without reserving any space on the stack (while the SDK boot loader uses 144
@@ -204,3 +208,11 @@ make sure you are getting your version into the rom.
 Now when rBoot starts your rom, the SDK code linked in it that normally performs
 the memory mapping will delegate part of that task to rBoot code (linked in your
 rom, not in rBoot itself) to choose which part of the flash to map.
+
+Integration into other frameworks
+---------------------------------
+If you wish to integrate rBoot into a development framework (e.g. Sming) you
+can set the define RBOOT_INTEGRATION and at compile time the file
+rboot-integration.h will be included into the source. This should allow you to
+set some platform specific options without having to modify the source of rBoot
+which makes it easier to integrate and maintain.

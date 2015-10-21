@@ -9,9 +9,6 @@ extern "C" void  __attribute__((weak)) user_init(void)
 	uart_div_modify(UART_ID_0, UART_CLK_FREQ / 115200);
 	cpp_core_initialize();
 	System.initialize();
-#if !defined(DISABLE_SPIFFS) && !defined(DISABLE_SPIFFS_AUTO)
-	spiffs_mount();
-#endif
 	init(); // User code init
 }
 

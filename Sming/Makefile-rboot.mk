@@ -20,7 +20,7 @@ RBOOT_LD_1 ?= rom1.ld
 # esptool2 path
 ESPTOOL2 ?= esptool2
 # path to spiffy
-SPIFFY ?= spiffy
+SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS     ?= .text .data .rodata
 RBOOT_E2_USER_ARGS ?= -quiet -bin -boot2
@@ -134,7 +134,6 @@ TARGET		= app
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
 MODULES 	?= app  # if not initialized by user 
-MODULES		+= $(SMING_HOME)/appinit
 MODULES		+= $(SMING_HOME)/rboot/appcode
 EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
 
@@ -262,8 +261,7 @@ RBOOT_LD_0	:= $(addprefix -T,$(RBOOT_LD_0))
 RBOOT_LD_1	:= $(addprefix -T,$(RBOOT_LD_1))
 
 # extra flags
-CFLAGS += -DRBOOT_BUILD_SMING
-CFLAGS += -DDISABLE_SPIFFS_AUTO
+CFLAGS += -DRBOOT_INTEGRATION
 
 RBOOT_BIN := $(FW_BASE)/rboot.bin
 RBOOT_BUILD_BASE := $(abspath $(BUILD_BASE))
@@ -363,8 +361,7 @@ else
 	$(vecho) "Checking for spiffs files"
 	$(Q) if [ -d "$(SPIFF_FILES)" ]; then \
 		echo "$(SPIFF_FILES) directory exists. Creating $(SPIFF_BIN_OUT)"; \
-		$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES); \
-		mv spiff_rom.bin $(SPIFF_BIN_OUT); \
+		$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES) $(SPIFF_BIN_OUT); \
 	else \
 		echo "No files found in ./$(SPIFF_FILES)."; \
 		echo "Creating empty $(SPIFF_BIN_OUT) ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \

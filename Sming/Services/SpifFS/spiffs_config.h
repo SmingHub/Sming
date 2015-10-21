@@ -11,61 +11,42 @@
 // ----------- 8< ------------
 // Following includes are for the linux test build of spiffs
 // These may/should/must be removed/altered/replaced in your target
-// #include "params_test.h"
-//#include "c_stdio.h"
-//#include "c_stdlib.h"
-//#include "c_string.h"
-//#include "c_stddef.h"
-//#include "c_types.h"
+//#include "params_test.h"
+#ifdef __ets__
 #include <user_config.h>
+#include "../system/flashmem.h"
+#else
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
+#include <ctype.h>
+typedef signed int s32_t;
+typedef unsigned int u32_t;
+typedef signed short s16_t;
+typedef unsigned short u16_t;
+typedef signed char s8_t;
+typedef unsigned char u8_t;
+#endif /* __ets__ */
 // ----------- >8 ------------
-
-#define SPIFFS_CHACHE 0
-
-#define c_memcpy os_memcpy
-#define c_printf m_printf
-#define c_memset os_memset
-
-/*typedef int32_t s32_t;
-typedef uint32_t u32_t;
-typedef int16_t s16_t;
-typedef uint16_t u16_t;
-typedef int8_t s8_t;
-typedef uint8_t u8_t;*/
-
-#ifndef SEEK_SET
-#define	SEEK_SET	0	/* set file offset to offset */
-#endif
-
-#ifndef SEEK_CUR
-#define	SEEK_CUR	1	/* set file offset to current plus offset */
-#endif
-
-#ifndef SEEK_END
-#define	SEEK_END	2	/* set file offset to EOF plus offset */
-#endif
-
-#ifndef EOF
-#define	EOF	(-1)
-#endif
 
 // compile time switches
 
 // Set generic spiffs debug output call.
-#ifndef SPIFFS_DGB
-#define SPIFFS_DBG(...)
+#ifndef SPIFFS_DBG
+#define SPIFFS_DBG(...) //printf(__VA_ARGS__)
 #endif
 // Set spiffs debug output call for garbage collecting.
-#ifndef SPIFFS_GC_DGB
-#define SPIFFS_GC_DBG(...)
+#ifndef SPIFFS_GC_DBG
+#define SPIFFS_GC_DBG(...) //printf(__VA_ARGS__)
 #endif
 // Set spiffs debug output call for caching.
-#ifndef SPIFFS_CACHE_DGB
-#define SPIFFS_CACHE_DBG(...)
+#ifndef SPIFFS_CACHE_DBG
+#define SPIFFS_CACHE_DBG(...) //printf(__VA_ARGS__)
 #endif
 // Set spiffs debug output call for system consistency checks.
-#ifndef SPIFFS_CHECK_DGB
-#define SPIFFS_CHECK_DBG(...)
+#ifndef SPIFFS_CHECK_DBG
+#define SPIFFS_CHECK_DBG(...) //printf(__VA_ARGS__)
 #endif
 
 // Enable/disable API functions to determine exact number of bytes
@@ -142,14 +123,22 @@ typedef uint8_t u8_t;*/
 #define SPIFFS_COPY_BUFFER_STACK        (64)
 #endif
 
+// Enable this to have an identifiable spiffs filesystem. This will look for
+// a magic in all sectors to determine if this is a valid spiffs system or
+// not on mount point. If not, SPIFFS_format must be called prior to mounting
+// again.
+#ifndef SPIFFS_USE_MAGIC
+#define SPIFFS_USE_MAGIC                (0)
+#endif
+
 // SPIFFS_LOCK and SPIFFS_UNLOCK protects spiffs from reentrancy on api level
 // These should be defined on a multithreaded system
 
-// define this to entering a mutex if you're running on a multithreaded system
+// define this to enter a mutex if you're running on a multithreaded system
 #ifndef SPIFFS_LOCK
 #define SPIFFS_LOCK(fs)
 #endif
-// define this to exiting a mutex if you're running on a multithreaded system
+// define this to exit a mutex if you're running on a multithreaded system
 #ifndef SPIFFS_UNLOCK
 #define SPIFFS_UNLOCK(fs)
 #endif
@@ -182,11 +171,31 @@ typedef uint8_t u8_t;*/
 #endif
 #endif
 
-// Set SPFIFS_TEST_VISUALISATION to non-zero to enable SPIFFS_vis function
+// Enable this if your target needs aligned data for index tables
+#ifndef SPIFFS_ALIGNED_OBJECT_INDEX_TABLES
+#define SPIFFS_ALIGNED_OBJECT_INDEX_TABLES       1
+#endif
+
+// Enable this if you want the HAL callbacks to be called with the spiffs struct
+#ifndef SPIFFS_HAL_CALLBACK_EXTRA
+#define SPIFFS_HAL_CALLBACK_EXTRA         0
+#endif
+
+// Enable this if you want to add an integer offset to all file handles
+// (spiffs_file). This is useful if running multiple instances of spiffs on
+// same target, in order to recognise to what spiffs instance a file handle
+// belongs.
+// NB: This adds config field fh_ix_offset in the configuration struct when
+// mounting, which must be defined.
+#ifndef SPIFFS_FILEHDL_OFFSET
+#define SPIFFS_FILEHDL_OFFSET                 0
+#endif
+
+// Set SPIFFS_TEST_VISUALISATION to non-zero to enable SPIFFS_vis function
 // in the api. This function will visualize all filesystem using given printf
 // function.
 #ifndef SPIFFS_TEST_VISUALISATION
-#define SPIFFS_TEST_VISUALISATION         1
+#define SPIFFS_TEST_VISUALISATION         0
 #endif
 #if SPIFFS_TEST_VISUALISATION
 #ifndef spiffs_printf
