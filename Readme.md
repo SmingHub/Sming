@@ -6,32 +6,65 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 [![Gitter (chat)](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/SmingHub/Sming?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Donate](http://img.shields.io/paypal/donate.png?color=yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WAQ8XDHCKU3PL&lc=US&item_name=Sming%20Framework%20development&item_number=sming&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
 [![Download](https://img.shields.io/badge/download-~1.7M-orange.svg)](https://github.com/anakod/Sming/releases/latest)
-
+[![Build](https://travis-ci.org/SmingHub/Sming.svg?branch=develop)](https://travis-ci.org/SmingHub/Sming)
 
 ## Summary
 * Fast & user friendly development
 * Work with GPIO in Arduino style
 * High effective in perfomance and memory usage (this is native firmware!)
 * Compatible with standard Arduino libraries - use any popular hardware in few lines of code
-* OTA (cloud) firmware updating
-* Build-in file system: [spiffs](https://github.com/pellepl/spiffs)
-* Build-in powerfull network and wireless modules
-* Build-in great JSON library: [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
+* rBoot OTA firmware updating
+* Built-in file system: [spiffs](https://github.com/pellepl/spiffs)
+* Built-in powerfull network and wireless modules
+* Built-in JSON library: [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 * HTTP, AJAX, WebSockets support
 * MQTT protocol based on [libemqtt] (https://github.com/menudoproblema/libemqtt)
 * Open source [LWIP](https://github.com/kadamski/esp-lwip) stack
 * Simple and powerfull hardware API wrappers
-* Based on Espressif SDK v1.0.1b1
+* Based on Espressif SDK v1.3.0
 
 ## Getting started
 - [Windows](https://github.com/anakod/Sming/wiki/Windows-Quickstart)
 - [Linux](https://github.com/anakod/Sming/wiki/Linux-Quickstart)
 - [MacOS](https://github.com/anakod/Sming/wiki/MacOS-Quickstart)
 
+## Additional needed software 
+- [Spiffy] (https://github.com/alonewolfx2/spiffy) master branch
+- [ESPtool2] (https://github.com/raburton/esp8266) esptool2 
+
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
 ## Examples
 More information at **[Wiki Examples](https://github.com/anakod/Sming/wiki/examples)** page.
+
+### OTA application update based on rBoot
+```c++
+void OtaUpdate() {
+	
+	uint8 slot;
+	rboot_config bootconf;
+	
+	Serial.println("Updating...");
+	
+	// need a clean object, otherwise if run before and failed will not run again
+	if (otaUpdater) delete otaUpdater;
+	otaUpdater = new rBootHttpUpdate();
+	
+	// select rom slot to flash
+	bootconf = rboot_get_config();
+	slot = bootconf.current_rom;
+	if (slot == 0) slot = 1; else slot = 0;
+
+	// flash rom to position indicated in the rBoot config rom table
+	otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
+
+	// and/or set a callback (called on failure or success without switching requested)
+	otaUpdater->setCallback(OtaUpdate_CallBack);
+
+	// start update
+	otaUpdater->start();
+}
+```
 
 ### Simple GPIO input/output
 ```c++
