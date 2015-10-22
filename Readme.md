@@ -19,9 +19,12 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * Built-in JSON library: [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 * HTTP, AJAX, WebSockets support
 * MQTT protocol based on [libemqtt] (https://github.com/menudoproblema/libemqtt)
-* Open source [LWIP](https://github.com/kadamski/esp-lwip) stack
+* Networking based on LWIP stack
 * Simple and powerfull hardware API wrappers
 * Based on Espressif SDK v1.3.0
+
+## Latest Release
+- [Sming V1.4.0](https://github.com/SmingHub/Sming/releases/tag/1.4.0)
 
 ## Getting started
 - [Windows](https://github.com/anakod/Sming/wiki/Windows-Quickstart)
@@ -29,7 +32,7 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 - [MacOS](https://github.com/anakod/Sming/wiki/MacOS-Quickstart)
 
 ## Additional needed software 
-- [Spiffy] (https://github.com/alonewolfx2/spiffy) master branch
+- [Spiffy] Source included in Sming repository
 - [ESPtool2] (https://github.com/raburton/esp8266) esptool2 
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
