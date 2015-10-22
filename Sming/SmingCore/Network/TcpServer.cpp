@@ -128,7 +128,7 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 void TcpServer::onClient(TcpClient *client)
 {
 	activeClients++;
-	debugf("TcpServer onClient  %s, activeClients = %d\r\n ",client->getRemoteIp().toString().c_str(),activeClients);
+	debugf("TcpServer onClient  %s\r\n ",client->getRemoteIp().toString().c_str());
 	if (clientConnectDelegate)
 	{
 		clientConnectDelegate(client);
@@ -138,7 +138,7 @@ void TcpServer::onClient(TcpClient *client)
 void TcpServer::onClientComplete(TcpClient& client, bool succesfull)
 {
 	activeClients--;
-	debugf("TcpSever onComplete : %s activeClients = %d\r\n",client.getRemoteIp().toString().c_str(),activeClients );
+	debugf("TcpSever onComplete : %s \r\n",client.getRemoteIp().toString().c_str());
 	if (clientCompleteDelegate)
 	{
 		clientCompleteDelegate(client,succesfull);
