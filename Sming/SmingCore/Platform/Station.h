@@ -15,6 +15,8 @@
 #include "../../Wiring/WVector.h"
 #include "../../Wiring/IPAddress.h"
 
+#define MAX_HOSTNAME_LEN 32
+
 enum EStationConnectionStatus
 {
     eSCS_Idle = 0,
@@ -52,11 +54,13 @@ public:
 	bool isEnabledDHCP();
 	void enableDHCP(bool enable);
 
+	String getHostname();
 	IPAddress getIP();
 	String getMAC();
 	IPAddress getNetworkMask();
 	IPAddress getNetworkGateway();
-
+	
+	bool setHostname(String hostname);
 	bool setIP(IPAddress address);
 	bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway);
 
