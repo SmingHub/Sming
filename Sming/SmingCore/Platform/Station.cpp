@@ -115,6 +115,12 @@ void StationClass::enableDHCP(bool enable)
 		wifi_station_dhcpc_stop();
 }
 
+String StationClass::getHostname()
+{
+	char* hname = wifi_station_get_hostname();
+	return String((char*)hname);
+}
+
 IPAddress StationClass::getIP()
 {
 	struct ip_info info = {0};
@@ -149,6 +155,15 @@ IPAddress StationClass::getNetworkGateway()
 	return info.gw;
 }
 
+bool StationClass::setHostname(String hostname)
+{
+	char* hname = new char[MAX_HOSTNAME_LEN + 1];
+	memset(hname, 0, sizeof(hname));
+	strcpy(hname, hostname.substring(0, hostname.length()).c_str());
+	bool res = wifi_station_set_hostname(hname);
+	delete[] hname;
+	return res;
+}
 
 bool StationClass::setIP(IPAddress address)
 {
