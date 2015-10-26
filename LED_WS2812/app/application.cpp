@@ -1,21 +1,29 @@
 #include <user_config.h>
-
+#include <SmingCore/SmingCore.h>
 #include <WS2812/WS2812.h>
 
 #define LED_PIN 2 // GPIO2
 
-void init()
+Timer procTimer;
+int step;
+
+void readWS2812()
 {
-    while (true) {
+    if ((step++) & 1) {
         char buffer1[] = "\x40\x00\x00\x00\x40\x00\x00\x00\x40";
         ws2812_writergb(LED_PIN, buffer1, sizeof(buffer1));
-        os_delay_us(500000);
-        
-        //We need to feed WDT.
-        WDT.alive();
-        
+    }
+    else
+    {
         char buffer2[] = "\x00\x40\x40\x40\x00\x40\x40\x40\x00";
         ws2812_writergb(LED_PIN, buffer2, sizeof(buffer2));
-        os_delay_us(500000);
-    }
+    }        
+}
+
+void init()
+{
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.systemDebugOutput(true); // Allow debug output to serial
+
+	procTimer.initializeMs(500, readWS2812).start();   // every 0.5 seconds
 }
