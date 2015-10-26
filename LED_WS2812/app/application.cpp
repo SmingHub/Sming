@@ -7,7 +7,7 @@
 Timer procTimer;
 int step;
 
-void readWS2812()
+void writeWS2812()
 {
     if ((step++) & 1) {
         char buffer1[] = "\x40\x00\x00\x00\x40\x00\x00\x00\x40";
@@ -25,5 +25,5 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
-	procTimer.initializeMs(500, readWS2812).start();   // every 0.5 seconds
+	procTimer.initializeMs(500, writeWS2812).start();   // every 0.5 seconds
 }
