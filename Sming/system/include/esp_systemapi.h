@@ -90,15 +90,6 @@ extern void ets_intr_unlock();
 extern void ets_update_cpu_frequency(uint32_t frq);
 extern uint32_t ets_get_cpu_frequency();
 
-//SDK Pwm API 
-extern void pwm_start(void);
-extern void pwm_init(uint32 period, uint32 *duty,uint32 pwm_channel_num,uint32 (*pin_info_list)[3]);
-extern void pwm_set_duty(uint32 duty, uint8 channel);
-extern uint32 pwm_get_duty(uint8 channel);
-extern void pwm_set_period(uint32 period);
-extern uint32 pwm_get_period(void);
-extern uint32 get_pwm_version(void);
-
 typedef signed short file_t;
 
 #endif
