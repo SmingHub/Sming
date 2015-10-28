@@ -62,6 +62,8 @@ public:
 
 	String getSSID();
 	String getPassword();
+	sint8 getRssi();
+	uint8 getChannel();
 
 	bool startScan(ScanCompletedDelegate scanCompleted);
 	void waitConnection(ConnectionDelegate successfulConnected);
