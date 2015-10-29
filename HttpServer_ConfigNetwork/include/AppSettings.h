@@ -34,14 +34,14 @@ struct ApplicationSettingsStorage
 			JsonObject& root = jsonBuffer.parseObject(jsonString);
 
 			JsonObject& network = root["network"];
-			ssid = network["ssid"].toString();
-			password = network["password"].toString();
+			ssid = network["ssid"].asString();
+			password = network["password"].asString();
 
 			dhcp = network["dhcp"];
 
-			ip = network["ip"].toString();
-			netmask = network["netmask"].toString();
-			gateway = network["gateway"].toString();
+			ip = network["ip"].asString();
+			netmask = network["netmask"].asString();
+			gateway = network["gateway"].asString();
 
 			delete[] jsonString;
 		}
@@ -60,12 +60,14 @@ struct ApplicationSettingsStorage
 		network["dhcp"] = dhcp;
 
 		// Make copy by value for temporary string objects
-		network.addCopy("ip", ip.toString());
-		network.addCopy("netmask", netmask.toString());
-		network.addCopy("gateway", gateway.toString());
+		network["ip"] = ip.toString();
+		network["netmask"] = netmask.toString();
+		network["gateway"] = gateway.toString();
 
 		//TODO: add direct file stream writing
-		fileSetContent(APP_SETTINGS_FILE, root.toJsonString());
+		String rootString;
+		root.printTo(rootString);
+		fileSetContent(APP_SETTINGS_FILE, rootString);
 	}
 
 	bool exist() { return fileExist(APP_SETTINGS_FILE); }
