@@ -69,10 +69,6 @@ static void prvHeapInit( void ) ;//ICACHE_FLASH_ATTR;
 
 void vApplicationMallocFailedHook( void ) ;//ICACHE_FLASH_ATTR;
 
-void *pvPortMalloc( size_t xWantedSize ) ;//ICACHE_FLASH_ATTR;
-
-void vPortFree( void *pv ) ;//ICACHE_FLASH_ATTR;
-
 size_t xPortGetFreeHeapSize( void ) ;//ICACHE_FLASH_ATTR;
 
 void vPortInitialiseBlocks( void ) ;//ICACHE_FLASH_ATTR;
