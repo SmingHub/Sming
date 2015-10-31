@@ -27,6 +27,7 @@
 
 #include <string.h>
 #include <libemqtt.h>
+#include <stdlib.h>
 
 #define MQTT_DUP_FLAG     1<<3
 #define MQTT_QOS0_FLAG    0<<1
@@ -187,17 +188,18 @@ uint16_t mqtt_parse_pub_msg_ptr(const uint8_t* buf, const uint8_t **msg_ptr) {
 void mqtt_init(mqtt_broker_handle_t* broker, const char* clientid) {
 	// Connection options
 	broker->alive = 300; // 300 seconds = 5 minutes
-	broker->seq = 1; // Sequency for message indetifiers
+	broker->seq = 1; // Sequence for message identifiers
 	// Client options
 	memset(broker->clientid, 0, sizeof(broker->clientid));
 	memset(broker->username, 0, sizeof(broker->username));
 	memset(broker->password, 0, sizeof(broker->password));
+	broker->will_topic = NULL;
+	broker->will_message = NULL;
 	if(clientid) {
 		strncpy(broker->clientid, clientid, sizeof(broker->clientid));
 	} else {
 		strcpy(broker->clientid, "emqtt");
 	}
-	// Will topic
 	broker->clean_session = 1;
 }
 
@@ -206,6 +208,15 @@ void mqtt_init_auth(mqtt_broker_handle_t* broker, const char* username, const ch
 		strncpy(broker->username, username, sizeof(broker->username)-1);
 	if(password && password[0] != '\0')
 		strncpy(broker->password, password, sizeof(broker->password)-1);
+}
+
+void mqtt_set_will(mqtt_broker_handle_t* broker, const char* topic, const char* message, uint8_t qos, uint8_t retain) {
+	broker->will_topic = (char *)malloc(strlen(topic)+1);
+	broker->will_message = (char *)malloc(strlen(message)+1);
+	strcpy(broker->will_topic, topic);
+	strcpy(broker->will_message, message);
+	broker->will_qos = qos;
+	broker->will_retain = retain;
 }
 
 void mqtt_set_alive(mqtt_broker_handle_t* broker, uint16_t alive) {
@@ -219,6 +230,10 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 	uint16_t clientidlen = strlen(broker->clientid);
 	uint16_t usernamelen = strlen(broker->username);
 	uint16_t passwordlen = strlen(broker->password);
+	uint16_t willtopiclen = 0;
+	if(broker->will_topic!= NULL) {
+		willtopiclen = strlen(broker->will_topic);
+	}
 	uint16_t payload_len = clientidlen + 2;
 
 	// Preparing the flags
@@ -229,6 +244,10 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 	if(passwordlen) {
 		payload_len += passwordlen + 2;
 		flags |= MQTT_PASSWORD_FLAG;
+	}
+	if(willtopiclen) {
+		payload_len += willtopiclen + strlen(broker->will_message) + 4;
+		flags |= MQTT_WILL_FLAG;
 	}
 	if(broker->clean_session) {
 		flags |= MQTT_CLEAN_SESSION;
@@ -292,6 +311,20 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 		packet[offset++] = passwordlen&0xFF;
 		memcpy(packet+offset, broker->password, passwordlen);
 		offset += passwordlen;
+	}
+
+	if(willtopiclen) {
+		// Add Last Will And Testament
+		packet[offset++] = willtopiclen>>8;
+		packet[offset++] = willtopiclen&0xFF;
+		memcpy(packet+offset, broker->will_topic, willtopiclen);
+		offset += willtopiclen;
+
+		uint16_t willmessagelen = strlen(broker->will_message);
+		packet[offset++] = willmessagelen>>8;
+		packet[offset++] = willmessagelen&0xFF;
+		memcpy(packet+offset, broker->will_message, willmessagelen);
+		offset += willmessagelen;
 	}
 
 	// Send the packet
@@ -497,4 +530,11 @@ int mqtt_unsubscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* 
 	}
 
 	return 1;
+}
+
+void mqtt_free(mqtt_broker_handle_t* broker) {
+	if(broker->will_topic != NULL) {
+		free(broker->will_topic);
+		free(broker->will_message);
+	}
 }
