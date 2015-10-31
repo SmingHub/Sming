@@ -33,17 +33,19 @@ class HardwarePWM {
 public:
 	HardwarePWM(uint8 *pins, uint8 no_of_pins);
 	virtual ~HardwarePWM();
-	void analogWrite(uint8 pin, uint32 duty);
-	void setDuty(uint8 pin, uint32 duty);
+	bool analogWrite(uint8 pin, uint32 duty);
+	bool setDuty(uint8 pin, uint32 duty);
 	uint32 getDuty(uint8 pin);
 	void setPeriod(uint32 period);
 	uint32 getPeriod(void);
 	uint8 getChannel(uint8 pin);
+	uint32 getMaxDuty();
 protected:
 
 private:
 	uint8 channel_count;
 	uint8 channels[PWM_CHANNEL_NUM_MAX];
+	uint32 maxduty;
 };
 
 #endif	/* HARDWAREPWM_H */

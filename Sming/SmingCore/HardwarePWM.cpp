@@ -6,8 +6,8 @@
  * Period of PWM is fixed to 1000ms / Frequency = 1khz
  * Duty at 100% = 22222. Duty at 0% = 0
  * You can use function setPeriod() to change frequency/period.
- * Calculate the Duty as per the formulae give in ESP8266 SDK
- * Duty = (Period *1000)/45
+ * Calculate the max duty as per the formulae give in ESP8266 SDK
+ * Max Duty = (Period * 1000) / 45
  *
  * PWM can be generated on upto 8 pins (ie All pins except pin 16)
  * Created on August 17, 2015, 2:27 PM
@@ -32,6 +32,7 @@ HardwarePWM::HardwarePWM(uint8 *pins, uint8 no_of_pins) {
 		}
 		pwm_init(1000, pwm_duty_init, no_of_pins, io_info);
 		pwm_start();
+		maxduty = 22222; // for period of 1000
 	}
 }
 
@@ -57,11 +58,11 @@ uint8 HardwarePWM::getChannel(uint8 pin) {
 /* Function Name: analogWrite
  * Description: This function is used to set the pwm duty cycle for a given pin
  * Parameters: pin - Esp8266 pin number
- *             duty - duty cycle value (valid values are 0-22222)
+ *             duty - duty cycle value
  * Default frequency is 1khz but can be varied by various function
  */
-void HardwarePWM::analogWrite(uint8 pin, uint32 duty) {
-	setDuty(pin, duty);
+bool HardwarePWM::analogWrite(uint8 pin, uint32 duty) {
+	return setDuty(pin, duty);
 }
 
 /* Function Name: getDuty
@@ -77,18 +78,27 @@ uint32 HardwarePWM::getDuty(uint8 pin) {
 /* Function Name: setDuty
  * Description: This function is used to set the pwm duty cycle for a given pin
  * Parameters: pin - pin number
- *             duty - duty cycle value (valid values are 0-22222)
+ *             duty - duty cycle value
  */
-void HardwarePWM::setDuty(uint8 pin, uint32 duty) {
+bool HardwarePWM::setDuty(uint8 pin, uint32 duty) {
 	uint8 chan = getChannel(pin);
-	if (chan == PWM_BAD_CHANNEL) return;
-	if (duty <= 22222) {
+	if (chan == PWM_BAD_CHANNEL) {
+		return false;
+	} else if (duty <= maxduty) {
 		pwm_set_duty(duty, chan);
 		pwm_start();
-		delay(25); // delay is needed otherwise PWM is not set
+		return true;
 	} else {
-		debugf("Duty cycle value too high. Should be less than 22222.");
+		debugf("Duty cycle value too high for current period.");
+		return false;
 	}
+}
+
+/* Function Name: getMaxDuty
+ * Description: This function is used to get the max duty cycle for the currently set period
+ */
+uint32 HardwarePWM::getMaxDuty() {
+	return maxduty;
 }
 
 /* Function Name: getPeriod
@@ -105,6 +115,7 @@ uint32 HardwarePWM::getPeriod() {
  *				Period / frequency will remain same for all pins.
  */
 void HardwarePWM::setPeriod(uint32 period) {
+	maxduty = (period * 1000) / 45;
 	pwm_set_period(period);
 	pwm_start();
 }
