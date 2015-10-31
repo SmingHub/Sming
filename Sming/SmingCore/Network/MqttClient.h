@@ -25,7 +25,12 @@ class MqttClient: protected TcpClient
 {
 public:
 	MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback = NULL);
+	MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback = NULL);
 	virtual ~MqttClient();
+
+	void setKeepAlive(int seconds);
+	// Sets Last Will and Testament
+	void setWill(String topic, String message, int QoS, bool retained = false);
 
 	bool connect(String clientName);
 	bool connect(String clientName, String username, String password);
@@ -47,6 +52,7 @@ protected:
 
 private:
 	String server;
+	IPAddress serverIp;
 	int port;
 	mqtt_broker_handle_t broker;
 	int waitingSize;
@@ -54,6 +60,7 @@ private:
 	uint8_t *current;
 	int posHeader;
 	MqttStringSubscriptionCallback callback;
+	int keepAlive = 20;
 
 };
 
