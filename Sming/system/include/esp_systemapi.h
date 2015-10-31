@@ -68,10 +68,10 @@ extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (prin
 extern int os_snprintf(char *str, size_t size, const char *format, ...) __attribute__ ((format (printf, 3, 4)));
 extern int ets_vsnprintf(char * s, size_t n, const char * format, va_list arg) __attribute__ ((format (printf, 3, 0)));
 
-extern void *pvPortMalloc(size_t xWantedSize, char *file, uint32 line);
-extern void *pvPortZalloc(size_t xWantedSize, char *file, uint32 line);
+extern void *pvPortMalloc(size_t xWantedSize, const char *file, uint32 line);
+extern void *pvPortZalloc(size_t xWantedSize, const char *file, uint32 line);
 extern void pvPortFree(void *ptr);
-extern void vPortFree(void *ptr, char *file, uint32 line);
+extern void vPortFree(void *ptr, const char *file, uint32 line);
 extern void *vPortMalloc(size_t xWantedSize);
 
 extern void uart_div_modify(int no, unsigned int freq);

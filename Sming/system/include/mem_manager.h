@@ -2,6 +2,7 @@
 #define __MEM_MANAGER_H__
 
 //#include "c_types.h"
+#include <mem.h>
 
 /*------------------------变量定义------------------------*/
 
