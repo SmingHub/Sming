@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 	// UART config
-	#define SERIAL_BAUD_RATE 74880
+	#define SERIAL_BAUD_RATE 115200
 
 	// ESP SDK config
 	#define LWIP_OPEN_SRC
@@ -34,6 +34,9 @@ extern "C" {
 	#include <stringconversion.h>
 	// Network base API
 	#include <espinc/lwip_includes.h>
+
+	// smart config support
+	#include <smartconfig.h>
 
 	// Beta boards
 	#define BOARD_ESP01

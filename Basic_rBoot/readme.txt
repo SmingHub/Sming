@@ -22,7 +22,7 @@ Building
  2) Set ESPTOOL2 (env var or in Makefile-user.mk) to point to the esptool2
     binary. Source for esptool2 is here: https://github.com/raburton/esp8266
  3) Set WIFI_SSID & WIFI_PWD environment variables with your wifi details.
- 4) Edit the OTA server details in include/user_config.h
+ 4) Edit the OTA server details at the top of app/application.cpp
  5) Check overridable variables in Makefile-user.mk, or set as env vars.
  6) make && make flash
  7) Put rom0.bin and spiff_rom.bin in the root of your webserver for OTA.

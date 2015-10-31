@@ -25,6 +25,13 @@ enum EStationConnectionStatus
 	eSCS_GotIP
 };
 
+enum SmartConfigType
+{
+    SCT_EspTouch = SC_TYPE_ESPTOUCH,
+	SCT_AirKiss = SC_TYPE_AIRKISS,
+	SCT_EspTouch_AirKiss = SC_TYPE_ESPTOUCH_AIRKISS
+};
+
 class BssInfo;
 class Timer;
 
@@ -66,6 +73,9 @@ public:
 	bool startScan(ScanCompletedDelegate scanCompleted);
 	void waitConnection(ConnectionDelegate successfulConnected);
 	void waitConnection(ConnectionDelegate successfulConnected, int secondsTimeOut, ConnectionDelegate connectionNotEstablished);
+
+	void smartConfigStart(SmartConfigType sctype);
+	void smartConfigStop();
 
 protected:
 	virtual void onSystemReady();

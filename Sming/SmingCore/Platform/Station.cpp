@@ -351,6 +351,43 @@ const char* StationClass::getConnectionStatusName()
 	};
 }
 
+void smartConfigDone(sc_status status, void *pdata) {
+
+	switch (status) {
+		case SC_STATUS_WAIT:
+			debugf("SC_STATUS_WAIT\n");
+			break;
+		case SC_STATUS_FIND_CHANNEL:
+			debugf("SC_STATUS_FIND_CHANNEL\n");
+			break;
+		case SC_STATUS_GETTING_SSID_PSWD:
+			debugf("SC_STATUS_GETTING_SSID_PSWD\n");
+			break;
+		case SC_STATUS_LINK:
+			{
+				debugf("SC_STATUS_LINK\n");
+				station_config *sta_conf = (station_config *)pdata;
+				char *ssid = (char*)sta_conf->ssid;
+				char *password = (char*)sta_conf->password;
+				WifiStation.config(ssid, password);
+			}
+			break;
+		case SC_STATUS_LINK_OVER:
+			debugf("SC_STATUS_LINK_OVER\n");
+			WifiStation.smartConfigStop();
+			break;
+	}
+}
+
+void StationClass::smartConfigStart(SmartConfigType sctype) {
+	smartconfig_set_type((sc_type)sctype);
+	smartconfig_start(smartConfigDone);
+}
+
+void StationClass::smartConfigStop() {
+	smartconfig_stop();
+}
+
 ////////////
 
 BssInfo::BssInfo(bss_info* info)

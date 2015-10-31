@@ -35,7 +35,8 @@ extern "C" {
 	// Network base API
 	#include <espinc/lwip_includes.h>
 
-	#include "smartconfig.h"
+	// smart config support
+	#include <smartconfig.h>
 
 	// Beta boards
 	#define BOARD_ESP01

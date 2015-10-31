@@ -4,10 +4,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
-	#define ROM_0_URL  "http://192.168.7.5:80/rom0.bin"
-	#define ROM_1_URL  "http://192.168.7.5:80/rom1.bin"
-	#define SPIFFS_URL "http://192.168.7.5:80/spiff_rom.bin"
 
 	// UART config
 	#define SERIAL_BAUD_RATE 115200
@@ -38,6 +34,9 @@ extern "C" {
 	#include <stringconversion.h>
 	// Network base API
 	#include <espinc/lwip_includes.h>
+
+	// smart config support
+	#include <smartconfig.h>
 
 	// Beta boards
 	#define BOARD_ESP01
