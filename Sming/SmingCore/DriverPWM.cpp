@@ -5,12 +5,10 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "../SmingCore/PWM.h"
+
 #include <limits.h>
-
-#include "../SmingCore/Digital.h"
-
-DriverPWM EspPWM;
+#include "DriverPWM.h"
+#include "Digital.h"
 
 DriverPWM::DriverPWM() : initialized(false)
 {
@@ -128,22 +126,4 @@ void ChannelPWM::processingStatic(void *arg)
 {
 	ChannelPWM *self = (ChannelPWM*)arg;
 	digitalWrite(self->pin, LOW);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-
-void analogWrite(uint8_t pin, int duty)
-{
-	EspPWM.initialize();
-	EspPWM.analogWrite(pin, duty);
-}
-
-void noAnalogWrite(uint8_t pin)
-{
-	EspPWM.noAnalogWrite(pin);
-}
-
-uint16_t analogRead(uint16_t pin)
-{
-	return system_adc_read();
 }
