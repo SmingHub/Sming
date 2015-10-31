@@ -211,7 +211,9 @@ void mqtt_init_auth(mqtt_broker_handle_t* broker, const char* username, const ch
 }
 
 void mqtt_set_will(mqtt_broker_handle_t* broker, const char* topic, const char* message, uint8_t qos, uint8_t retain) {
+	if(broker->will_topic != NULL) free(broker->will_topic);
 	broker->will_topic = (char *)malloc(strlen(topic)+1);
+	if(broker->will_message != NULL) free(broker->will_message);
 	broker->will_message = (char *)malloc(strlen(message)+1);
 	strcpy(broker->will_topic, topic);
 	strcpy(broker->will_message, message);
@@ -230,10 +232,7 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 	uint16_t clientidlen = strlen(broker->clientid);
 	uint16_t usernamelen = strlen(broker->username);
 	uint16_t passwordlen = strlen(broker->password);
-	uint16_t willtopiclen = 0;
-	if(broker->will_topic!= NULL) {
-		willtopiclen = strlen(broker->will_topic);
-	}
+	uint16_t willtopiclen = (broker->will_topic != NULL) ? strlen(broker->will_topic) : 0;
 	uint16_t payload_len = clientidlen + 2;
 
 	// Preparing the flags
@@ -535,6 +534,10 @@ int mqtt_unsubscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* 
 void mqtt_free(mqtt_broker_handle_t* broker) {
 	if(broker->will_topic != NULL) {
 		free(broker->will_topic);
+		broker->will_topic = NULL;
+	}
+	if(broker->will_message != NULL) {
 		free(broker->will_message);
+		broker->will_message = NULL;
 	}
 }
