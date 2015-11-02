@@ -153,7 +153,7 @@ else
 endif
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming $(EXTRA_LIBS)
+LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming pwm $(EXTRA_LIBS)
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 WIFI_SSID ?= ""

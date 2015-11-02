@@ -59,9 +59,3 @@ private:
 
 // OOP style
 extern DriverPWM EspPWM;
-
-// Arduino like style
-void analogWrite(uint8_t pin, int duty);
-void noAnalogWrite(uint8_t pin);
-
-uint16_t analogRead(uint16_t pin);
