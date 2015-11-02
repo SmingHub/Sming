@@ -156,54 +156,40 @@ LD_SCRIPT	= $(LD_PATH)eagle.app.v6.cpp.ld
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m
+else ifeq ($(SPI_SPEED), 20)
+	flashimageoptions = -ff 20m
+else ifeq ($(SPI_SPEED), 80)
+	flashimageoptions = -ff 80m
 else
-    ifeq ($(SPI_SPEED), 20)
-        flashimageoptions = -ff 20m
-    else
-        ifeq ($(SPI_SPEED), 80)
-		flashimageoptions = -ff 80m
-        else
-		flashimageoptions = -ff 40m
-        endif
-    endif
+	flashimageoptions = -ff 40m
 endif
 
 ifeq ($(SPI_MODE), qout)
 	flashimageoptions += -fm qout
-else
-    ifeq ($(SPI_MODE), dio)
+else ifeq ($(SPI_MODE), dio)
 	flashimageoptions += -fm dio
-    else
-        ifeq ($(SPI_MODE), dout)
-		flashimageoptions += -fm dout
-        else
-		flashimageoptions += -fm qio
-        endif
-    endif
+else ifeq ($(SPI_MODE), dout)
+	flashimageoptions += -fm dout
+else
+	flashimageoptions += -fm qio
 endif
 
 # flash larger than 1024KB only use 1024KB to storage user1.bin and user2.bin
 ifeq ($(SPI_SIZE), 256K)
 	flashimageoptions += -fs 2m
 	SPIFF_SIZE ?= 131072  #128K
-else
-    ifeq ($(SPI_SIZE), 1M)
+else ifeq ($(SPI_SIZE), 1M)
 	flashimageoptions += -fs 8m
 	SPIFF_SIZE ?= 524288  #512K
-    else
-        ifeq ($(SPI_SIZE), 2M)
-		flashimageoptions += -fs 16m
-		SPIFF_SIZE ?= 524288  #512K
-        else
-            ifeq ($(SPI_SIZE), 4M)
-			flashimageoptions += -fs 32m
-			SPIFF_SIZE ?= 524288  #512K
-            else
-			flashimageoptions += -fs 4m
-			SPIFF_SIZE ?= 262144  #256K
-            endif
-        endif
-    endif
+else ifeq ($(SPI_SIZE), 2M)
+	flashimageoptions += -fs 16m
+	SPIFF_SIZE ?= 524288  #512K
+else ifeq ($(SPI_SIZE), 4M)
+	flashimageoptions += -fs 32m
+	SPIFF_SIZE ?= 524288  #512K
+else
+	flashimageoptions += -fs 4m
+	SPIFF_SIZE ?= 196608  #192K
 endif
 
 # various paths from the SDK used in this project
