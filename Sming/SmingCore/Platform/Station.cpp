@@ -351,7 +351,18 @@ const char* StationClass::getConnectionStatusName()
 	};
 }
 
-void smartConfigDone(sc_status status, void *pdata) {
+bool StationClass::callSmartConfigCallback(sc_status status, void *pdata) {
+	if (smartConfigCallback) {
+		smartConfigCallback(status, pdata);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void smartConfigDefaultCallback(sc_status status, void *pdata) {
+
+	if (WifiStation.callSmartConfigCallback(status, pdata)) return;
 
 	switch (status) {
 		case SC_STATUS_WAIT:
@@ -379,9 +390,10 @@ void smartConfigDone(sc_status status, void *pdata) {
 	}
 }
 
-void StationClass::smartConfigStart(SmartConfigType sctype) {
+void StationClass::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback) {
+	smartConfigCallback = callback;
 	smartconfig_set_type((sc_type)sctype);
-	smartconfig_start(smartConfigDone);
+	smartconfig_start(smartConfigDefaultCallback);
 }
 
 void StationClass::smartConfigStop() {
