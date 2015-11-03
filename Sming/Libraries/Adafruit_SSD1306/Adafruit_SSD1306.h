@@ -38,6 +38,8 @@ All text above, and the splash screen must be included in any redistribution
 #elif defined(__AVR__)
   typedef volatile uint8_t PortReg;
   typedef uint8_t PortMask;
+  typedef volatile uint8_t PortReg;
+  typedef uint8_t PortMask;
   #define HAVE_PORTREG
 #else
   // chances are its 32 bit so assume that

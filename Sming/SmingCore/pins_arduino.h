@@ -20,7 +20,7 @@ extern const unsigned int A0; // Single ESP8266EX analog input pin (TOUT) 10 bit
 #define PB 2
 #define PC 3
 
-#define GPIO_REG_TYPE uint8_t
+#define GPIO_REG_TYPE uint32_t
 
 // We use maximum compatibility to standard Arduino logic.
 
@@ -34,9 +34,9 @@ extern const unsigned int A0; // Single ESP8266EX analog input pin (TOUT) 10 bit
 #define STD_GPIO_IN (PERIPHS_GPIO_BASEADDR + GPIO_IN_ADDRESS)
 #define STD_GPIO_ENABLE (PERIPHS_GPIO_BASEADDR + GPIO_ENABLE_ADDRESS)
 
-#define portOutputRegister(P) ( ((volatile uint8_t*)(P != PC ? STD_GPIO_OUT : RTC_GPIO_OUT)) + ( ( ((int)P) == PB ) ? 1 : 0) )
-#define portInputRegister(P)  ( ((volatile uint8_t*)(P != PC ? STD_GPIO_IN : RTC_GPIO_IN_DATA)) + ( ( ((int)P) == PB ) ? 1 : 0) )
-#define portModeRegister(P)	  ( ((volatile uint8_t*)(P != PC ? STD_GPIO_ENABLE : RTC_GPIO_ENABLE)) + ( ( ((int)P) == PB ) ? 1 : 0) ) // Stored bits: 0=In, 1=Out
+#define portOutputRegister(P) ( ((GPIO_REG_TYPE*)(P != PC ? STD_GPIO_OUT : RTC_GPIO_OUT)) + ( ( ((int)P) == PB ) ? 1 : 0) )
+#define portInputRegister(P)  ( ((GPIO_REG_TYPE*)(P != PC ? STD_GPIO_IN : RTC_GPIO_IN_DATA)) + ( ( ((int)P) == PB ) ? 1 : 0) )
+#define portModeRegister(P)	  ( ((GPIO_REG_TYPE*)(P != PC ? STD_GPIO_ENABLE : RTC_GPIO_ENABLE)) + ( ( ((int)P) == PB ) ? 1 : 0) ) // Stored bits: 0=In, 1=Out
 
 
 #endif /* WIRING_PINS_ARDUINO_H_ */
