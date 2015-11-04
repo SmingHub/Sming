@@ -1,11 +1,11 @@
 # Sming
 Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native development with C++ language.
 
-[![ESP8266 C++ development framework](https://github.com/anakod/Sming/wiki/images/small/combine.png)](https://github.com/anakod/Sming/wiki/examples)
+[![ESP8266 C++ development framework](https://github.com/SmingHub/Sming/wiki/images/small/combine.png)](https://github.com/SmingHub/Sming/wiki/examples)
 
 [![Gitter (chat)](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/SmingHub/Sming?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Donate](http://img.shields.io/paypal/donate.png?color=yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WAQ8XDHCKU3PL&lc=US&item_name=Sming%20Framework%20development&item_number=sming&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
-[![Download](https://img.shields.io/badge/download-~1.7M-orange.svg)](https://github.com/anakod/Sming/releases/latest)
+[![Download](https://img.shields.io/badge/download-~1.7M-orange.svg)](https://github.com/SmingHub/Sming/releases/latest)
 [![Build](https://travis-ci.org/SmingHub/Sming.svg?branch=develop)](https://travis-ci.org/SmingHub/Sming)
 
 ## Summary
@@ -27,9 +27,9 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 - [Sming V1.4.0](https://github.com/SmingHub/Sming/releases/tag/1.4.0)
 
 ## Getting started
-- [Windows](https://github.com/anakod/Sming/wiki/Windows-Quickstart)
-- [Linux](https://github.com/anakod/Sming/wiki/Linux-Quickstart)
-- [MacOS](https://github.com/anakod/Sming/wiki/MacOS-Quickstart)
+- [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
+- [Linux](https://github.com/SmingHub/Sming/wiki/Linux-Quickstart)
+- [MacOS](https://github.com/SmingHub/Sming/wiki/MacOS-Quickstart)
 
 ## Additional needed software 
 - Spiffy  : Source included in Sming repository
@@ -38,34 +38,34 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
 ## Examples
-More information at **[Wiki Examples](https://github.com/anakod/Sming/wiki/examples)** page.
+More information at **[Wiki Examples](https://github.com/SmingHub/Sming/wiki/examples)** page.
 
 ### OTA application update based on rBoot
 ```c++
 void OtaUpdate() {
-	
-	uint8 slot;
-	rboot_config bootconf;
-	
-	Serial.println("Updating...");
-	
-	// need a clean object, otherwise if run before and failed will not run again
-	if (otaUpdater) delete otaUpdater;
-	otaUpdater = new rBootHttpUpdate();
-	
-	// select rom slot to flash
-	bootconf = rboot_get_config();
-	slot = bootconf.current_rom;
-	if (slot == 0) slot = 1; else slot = 0;
+  
+  uint8 slot;
+  rboot_config bootconf;
+  
+  Serial.println("Updating...");
+  
+  // need a clean object, otherwise if run before and failed will not run again
+  if (otaUpdater) delete otaUpdater;
+  otaUpdater = new rBootHttpUpdate();
+  
+  // select rom slot to flash
+  bootconf = rboot_get_config();
+  slot = bootconf.current_rom;
+  if (slot == 0) slot = 1; else slot = 0;
 
-	// flash rom to position indicated in the rBoot config rom table
-	otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
+  // flash rom to position indicated in the rBoot config rom table
+  otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
 
-	// and/or set a callback (called on failure or success without switching requested)
-	otaUpdater->setCallback(OtaUpdate_CallBack);
+  // and/or set a callback (called on failure or success without switching requested)
+  otaUpdater->setCallback(OtaUpdate_CallBack);
 
-	// start update
-	otaUpdater->start();
+  // start update
+  otaUpdater->start();
 }
 ```
 
@@ -95,10 +95,10 @@ DHT dht(WORK_PIN, DHT22);
 
 void init()
 {
-	dht.begin();
+  dht.begin();
 
-	float h = dht.readHumidity();
-	float t = dht.readTemperature();
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
 }
 ```
 
@@ -110,10 +110,10 @@ thingSpeak.downloadString("http://api.thingspeak.com/update?key=XXXXXXX&field1="
 
 void onDataSent(HttpClient& client, bool successful)
 {
-	if (successful)
-		Serial.println("Successful!");
-	else
-		Serial.println("Failed");
+  if (successful)
+    Serial.println("Successful!");
+  else
+    Serial.println("Failed");
 }
 ```
 
@@ -131,21 +131,21 @@ Serial.println(WifiStation.getIP());
 
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
-	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
-	auto &vars = tmpl->variables();
-	vars["counter"] = String(counter);
-	vars["IP"] = WifiStation.getIP().toString();
-	vars["MAC"] = WifiStation.getMAC();
-	response.sendTemplate(tmpl);
+  TemplateFileStream *tmpl = new TemplateFileStream("index.html");
+  auto &vars = tmpl->variables();
+  vars["counter"] = String(counter);
+  vars["IP"] = WifiStation.getIP().toString();
+  vars["MAC"] = WifiStation.getMAC();
+  response.sendTemplate(tmpl);
 }
 
 void onFile(HttpRequest &request, HttpResponse &response)
 {
-	String file = request.getPath();
-	if (file[0] == '/')
-		file = file.substring(1);
-		
-	response.setCache(86400, true);
-	response.sendFile(file);
+  String file = request.getPath();
+  if (file[0] == '/')
+    file = file.substring(1);
+    
+  response.setCache(86400, true);
+  response.sendFile(file);
 }
 ```
