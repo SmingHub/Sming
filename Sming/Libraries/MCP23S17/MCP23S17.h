@@ -96,7 +96,7 @@ public:
 	unsigned int digitalRead(void); // Reads all input  pins at once. Be sure it ignore the value of pins configured as output!
 private:
 	uint8_t _address;                        // Address of the MCP23S17 in use
-	uint8_T _cs;							// CS pin number for MCP23S17
+	uint8_t _cs;							// CS pin number for MCP23S17
 	unsigned int _modeCache; // Caches the mode (input/output) configuration of I/O pins
 	unsigned int _pullupCache; // Caches the internal pull-up configuration of input pins (values persist across mode changes)
 	unsigned int _invertCache; // Caches the input pin inversion selection (values persist across mode changes)
