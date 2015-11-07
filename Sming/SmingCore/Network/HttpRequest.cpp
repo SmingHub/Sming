@@ -223,7 +223,7 @@ bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, c
 		free(val);
 		ItemName.trim();
 		if (!continued) ItemValue.trim();
-		debugf("Item: %s = %s", ItemName.c_str(), ItemValue.c_str());
+		debugf("Item: Name = %s, Size = %d, Value = %s",ItemName.c_str(),ItemValue.length(),ItemValue.substring(0,80).c_str());
 		(*resultItems)[ItemName] = ItemValue;
 		startItem = nextItem + 1;
 	}
