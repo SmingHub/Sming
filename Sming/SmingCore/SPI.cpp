@@ -38,8 +38,10 @@ void SPIClass::begin()
 		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, 2); // HSPID MOSI == GPIO13
 		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, 2); // CLK		 == GPIO14
 	}
-	else
+	else {
 		SYSTEM_ERROR("UNSUPPORTED SPI id: %d", id);
+		return;
+	}
 
 
 	// SPI clock = CPU clock / 10 / 4
@@ -102,6 +104,8 @@ void SPIClass::transfer(uint8_t * data, uint8_t count)
 
 	while (READ_PERI_REG(SPI_FLASH_CMD(id))&SPI_FLASH_USR);
 
+	// Retain current CPHA setting
+	regvalue = READ_PERI_REG(SPI_FLASH_USER(id)) & SPI_CK_OUT_EDGE;
 	regvalue |=  SPI_FLASH_DOUT | SPI_DOUTDIN | SPI_CK_I_EDGE;
 	regvalue &= ~(BIT2 | SPI_FLASH_USR_ADDR | SPI_FLASH_USR_DUMMY | SPI_FLASH_USR_DIN | SPI_USR_COMMAND); //clear bit 2 see example IoT_Demo
 	WRITE_PERI_REG(SPI_FLASH_USER(id), regvalue);
@@ -127,7 +131,42 @@ byte SPIClass::transfer(uint8_t data)
 	return data;
 }
 
-/*void SPIClass::setBitOrder(uint8_t bitOrder)
+void SPIClass::setBitOrder(spi_bit_order bitOrder)
 {
-	order = bitOrder;
-}*/
+	if (bitOrder == SPI_MSBFIRST)
+		SET_PERI_REG_MASK(SPI_FLASH_USER(id), SPI_CK_OUT_EDGE);
+	else
+		CLEAR_PERI_REG_MASK(SPI_FLASH_USER(id), SPI_CK_OUT_EDGE);
+}
+
+void SPIClass::setCPHA(cpha_mode cpha)
+{
+	if (cpha == CPHA1)
+		SET_PERI_REG_MASK(SPI_FLASH_USER(id), SPI_CK_OUT_EDGE);
+	else
+		CLEAR_PERI_REG_MASK(SPI_FLASH_USER(id), SPI_CK_OUT_EDGE);
+}
+
+void SPIClass::setFrequency(uint32_t freq)
+{
+	if (freq > 60000000) {  // set to max freq of 80MHz
+		SET_PERI_REG_MASK(PERIPHS_IO_MUX_CONF_U,
+				id == 0 ? SPI0_CLK_EQU_SYS_CLK: SPI1_CLK_EQU_SYS_CLK);
+		WRITE_PERI_REG(SPI_FLASH_CLOCK(id), 0x80000000);
+		return;
+	}
+	if (freq < 4880)
+		freq = 4880;
+	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX_CONF_U,
+			id == 0 ? SPI0_CLK_EQU_SYS_CLK: SPI1_CLK_EQU_SYS_CLK);
+	uint32_t regN = 1;
+	// round off 8MHz/(2*freq) - 1
+	uint32_t regPre = (80000000 + freq)/(2*freq) - 1;
+	if ((regPre == 0) && (freq <= 32000000))
+		regN = 1;
+	WRITE_PERI_REG(SPI_FLASH_CLOCK(id),
+			((regPre & SPI_CLKDIV_PRE)<<SPI_CLKDIV_PRE_S) |
+			((regN & SPI_CLKCNT_N)<<SPI_CLKCNT_N_S) |
+			((0 & SPI_CLKCNT_H)<<SPI_CLKCNT_H_S) |
+			((1 & SPI_CLKCNT_L)<<SPI_CLKCNT_L_S));
+}
