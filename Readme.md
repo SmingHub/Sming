@@ -40,35 +40,6 @@ You can find more information about compilation and flashing process by reading 
 ## Examples
 More information at **[Wiki Examples](https://github.com/anakod/Sming/wiki/examples)** page.
 
-### OTA application update based on rBoot
-```c++
-void OtaUpdate() {
-	
-	uint8 slot;
-	rboot_config bootconf;
-	
-	Serial.println("Updating...");
-	
-	// need a clean object, otherwise if run before and failed will not run again
-	if (otaUpdater) delete otaUpdater;
-	otaUpdater = new rBootHttpUpdate();
-	
-	// select rom slot to flash
-	bootconf = rboot_get_config();
-	slot = bootconf.current_rom;
-	if (slot == 0) slot = 1; else slot = 0;
-
-	// flash rom to position indicated in the rBoot config rom table
-	otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
-
-	// and/or set a callback (called on failure or success without switching requested)
-	otaUpdater->setCallback(OtaUpdate_CallBack);
-
-	// start update
-	otaUpdater->start();
-}
-```
-
 ### Simple GPIO input/output
 ```c++
 #define LED_PIN 2 // GPIO2
@@ -114,6 +85,35 @@ void onDataSent(HttpClient& client, bool successful)
 		Serial.println("Successful!");
 	else
 		Serial.println("Failed");
+}
+```
+
+### OTA application update based on rBoot
+```c++
+void OtaUpdate() {
+	
+	uint8 slot;
+	rboot_config bootconf;
+	
+	Serial.println("Updating...");
+	
+	// need a clean object, otherwise if run before and failed will not run again
+	if (otaUpdater) delete otaUpdater;
+	otaUpdater = new rBootHttpUpdate();
+	
+	// select rom slot to flash
+	bootconf = rboot_get_config();
+	slot = bootconf.current_rom;
+	if (slot == 0) slot = 1; else slot = 0;
+
+	// flash rom to position indicated in the rBoot config rom table
+	otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
+
+	// and/or set a callback (called on failure or success without switching requested)
+	otaUpdater->setCallback(OtaUpdate_CallBack);
+
+	// start update
+	otaUpdater->start();
 }
 ```
 
