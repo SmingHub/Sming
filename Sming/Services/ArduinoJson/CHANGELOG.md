@@ -1,5 +1,82 @@
-Arduino JSON: change log
-========================
+ArduinoJson: change log
+=======================
+
+v5.0.4
+------
+
+* Fixed ambiguous overload with `JsonArraySubscript` and `JsonObjectSubscript` (issue #122)
+
+v5.0.3
+------
+
+* Fixed `printTo(String)` which wrote numbers instead of strings (issue #120)
+* Fixed return type of `JsonArray::is<T>()` and some others (issue #121)
+
+v5.0.2
+------
+
+* Fixed segmentation fault in `parseObject(String)` and `parseArray(String)`, when the 
+  `StaticJsonBuffer` is too small to hold a copy of the string
+* Fixed Clang warning "register specifier is deprecated" (issue #102)
+* Fixed GCC warning "declaration shadows a member" (issue #103)
+* Fixed memory alignment, which made ESP8266 crash (issue #104)
+* Fixed compilation on Visual Studio 2010 and 2012 (issue #107)
+
+v5.0.1
+------
+
+* Fixed compilation with Arduino 1.0.6 (issue #99)
+
+v5.0.0
+------
+
+* Added support of `String` class (issues #55, #56, #70, #77)
+* Added `JsonBuffer::strdup()` to make a copy of a string (issues #10, #57)
+* Implicitly call `strdup()` for `String` but not for `char*` (issues #84, #87)
+* Added support of non standard JSON input (issue #44)
+* Added support of comments in JSON input (issue #88)
+* Added implicit cast between numerical types (issues #64, #69, #93)
+* Added ability to read number values as string (issue #90)
+* Redesigned `JsonVariant` to leverage converting constructors instead of assignment operators (issue #66)
+* Switched to new the library layout (requires Arduino 1.0.6 or above)
+
+**BREAKING CHANGES**:
+- `JsonObject::add()` was renamed to `set()`
+- `JsonArray::at()` and `JsonObject::at()` were renamed to `get()`
+- Number of digits of floating point value are now set with `double_with_n_digits()`
+
+**Personal note about the `String` class**:
+Support of the `String` class has been added to the library because many people use it in their programs.
+However, you should not see this as an invitation to use the `String` class.
+The `String` class is **bad** because it uses dynamic memory allocation.
+Compared to static allocation, it compiles to a bigger, slower program, and is less predictable.
+You certainly don't want that in an embedded environment!
+
+v4.6
+----
+
+* Fixed segmentation fault in `DynamicJsonBuffer` when memory allocation fails (issue #92)
+
+v4.5
+----
+
+* Fixed buffer overflow when input contains a backslash followed by a terminator (issue #81)
+
+**Upgrading is recommended** since previous versions contain a potential security risk.
+
+Special thanks to [Giancarlo Canales Barreto](https://github.com/gcanalesb) for finding this nasty bug.
+
+v4.4
+----
+
+* Added `JsonArray::measureLength()` and `JsonObject::measureLength()` (issue #75)
+
+v4.3
+----
+
+* Added `JsonArray::removeAt()` to remove an element of an array (issue #58)
+* Fixed stack-overflow in `DynamicJsonBuffer` when parsing huge JSON files (issue #65)
+* Fixed wrong return value of `parseArray()` and `parseObject()` when allocation fails (issue #68)
 
 v4.2
 ----
