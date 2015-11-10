@@ -20,7 +20,7 @@ The additional parameter for websocket is used to allow multiple connections on 
 When the websocket open request has queryparameter "command=true" command processing is enabled
 
 ##usage##
-The usage of CommandProcessor is the same for all imnplemenations, except for specific requirements.
+The usage of CommandProcessor is the same for all implementations, except for specific requirements.
 Commandprocesor options implemented are :
 - Verbose -> sets display of welcome message
 - Prompt -> set prompt string
@@ -50,3 +50,8 @@ To test the Websocket, open a web browser with the ESP
 To test Serial, use your "Serial program" and make sure "local echo" is activated.
 
 For all implementations "Type help" to show the available Commands
+
+The possibilities of extending commands with the application are shown in 
+- The class ExampleCommand
+- The functions startExampleApplicationCommand() and processApplicationCommands()
+

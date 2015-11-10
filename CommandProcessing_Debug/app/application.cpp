@@ -2,7 +2,7 @@
 #include <SmingCore/SmingCore.h>
 #include <SmingCore/Network/TelnetServer.h>
 #include <SmingCore/Debug.h>
-
+#include <ExampleCommand.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -11,11 +11,12 @@
 #endif
 
 HttpServer server;
-
 FTPServer ftp;
-Timer msgTimer;
 TelnetServer telnet;
 
+Timer msgTimer;
+
+ExampleCommand exampleCommand;
 
 
 void onIndex(HttpRequest &request, HttpResponse &response)
@@ -62,7 +63,12 @@ void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
 
 void wsDisconnected(WebSocket& socket)
 {
+	Serial.printf("Socket disconnected");
+}
 
+void processApplicationCommands(String commandLine, CommandOutput* commandOutput)
+{
+	commandOutput->printf("This command is handle by the application\r\n");
 }
 
 void StartServers()
@@ -98,26 +104,33 @@ void StartServers()
 	Serial.println("==============================\r\n");
 }
 
+void startExampleApplicationCommand()
+{
+	exampleCommand.initCommand();
+	commandHandler.registerCommand(CommandDelegate("example","Example Command from Class","Application",processApplicationCommands));
+}
+
 
 // Will be called when WiFi station was connected to AP
 void connectOk()
 {
 	Serial.println("I'm CONNECTED");
-
 	StartServers();
+
+	startExampleApplicationCommand();
 }
 
 void init()
 {
-	Serial.begin(74880); // 115200 by default
+	spiffs_mount(); // Mount file system, in order to work with files
+
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
 	commandHandler.registerSystemCommands();
 	Debug.setDebug(Serial);
 
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 	Serial.commandProcessing(true);
-
-
 
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);

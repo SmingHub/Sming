@@ -25,8 +25,7 @@ void CommandHandler::registerSystemCommands()
 	registerCommand(CommandDelegate("help", "Displays all available commands", "system", commandFunctionDelegate(&CommandHandler::procesHelpCommand,this)));
 	registerCommand(CommandDelegate("debugon", "Set Serial debug on", "system", commandFunctionDelegate(&CommandHandler::procesDebugOnCommand,this)));
 	registerCommand(CommandDelegate("debugoff", "Set Serial debug off", "system", commandFunctionDelegate(&CommandHandler::procesDebugOffCommand,this)));
-	registerCommand(CommandDelegate("command","Usage verbose/silent/prompt for command options\r\n","system", commandFunctionDelegate(&CommandHandler::processCommandOptions,this)));
-
+	registerCommand(CommandDelegate("command","Use verbose/silent/prompt as command options","system", commandFunctionDelegate(&CommandHandler::processCommandOptions,this)));
 }
 
 CommandDelegate CommandHandler::getCommandDelegate(String commandString)
