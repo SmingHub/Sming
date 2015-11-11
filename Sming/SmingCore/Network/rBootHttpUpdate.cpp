@@ -6,7 +6,6 @@
  */
 
 #include "rBootHttpUpdate.h"
-#include "../../Services/SpifFS/spiffs.h"
 #include "../Platform/System.h"
 #include "URL.h"
 #include "../Platform/WDT.h"

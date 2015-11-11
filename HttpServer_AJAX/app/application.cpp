@@ -43,6 +43,21 @@ void onAjaxInput(HttpRequest &request, HttpResponse &response)
 	JsonObject& json = stream->getRoot();
 	json["status"] = (bool)true;
 
+	String stringKey = "StringKey";
+	String stringValue = "StringValue";
+
+	json[stringKey] = stringValue;
+
+    for( int i = 0; i < 11; i++)
+    {
+        char buff[3];
+        itoa(i, buff, 10);
+        String desiredString = "sensor_";
+        desiredString += buff;
+        json[desiredString] = desiredString;
+    }
+
+
 	JsonObject& gpio = json.createNestedObject("gpio");
 	for (int i = 0; i < countInputs; i++)
 		gpio[namesInput[i].c_str()] = digitalRead(inputs[i]);

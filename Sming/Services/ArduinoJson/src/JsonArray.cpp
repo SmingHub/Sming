@@ -8,32 +8,16 @@
 
 #include "../include/ArduinoJson/JsonBuffer.hpp"
 #include "../include/ArduinoJson/JsonObject.hpp"
-#include "../include/ArduinoJson/Internals/JsonStringStorage.hpp"
 
 using namespace ArduinoJson;
 using namespace ArduinoJson::Internals;
 
 JsonArray JsonArray::_invalid(NULL);
 
-JsonVariant &JsonArray::at(int index) const {
+JsonArray::node_type *JsonArray::getNodeAt(size_t index) const {
   node_type *node = _firstNode;
   while (node && index--) node = node->next;
-  return node ? node->content : JsonVariant::invalid();
-}
-
-JsonVariant &JsonArray::add() {
-  node_type *node = createNode();
-  if (!node) return JsonVariant::invalid();
-
-  addNode(node);
-
-  return node->content;
-}
-
-void JsonArray::addCopy(const String &stringVal)
-{
-	auto& val = _buffer->createStringStorage(stringVal);
-	add().set(val.c_str());
+  return node;
 }
 
 JsonArray &JsonArray::createNestedArray() {
@@ -49,6 +33,8 @@ JsonObject &JsonArray::createNestedObject() {
   add(object);
   return object;
 }
+
+void JsonArray::removeAt(size_t index) { removeNode(getNodeAt(index)); }
 
 void JsonArray::writeTo(JsonWriter &writer) const {
   writer.beginArray();

@@ -6,11 +6,16 @@
 
 #pragma once
 
-#include "../../../../../Wiring/WString.h"
+#include "DummyPrint.hpp"
 #include "IndentedPrint.hpp"
 #include "JsonWriter.hpp"
 #include "Prettyfier.hpp"
-#include "StringBuilder.hpp"
+#include "StaticStringBuilder.hpp"
+#include "DynamicStringBuilder.hpp"
+
+#ifdef ARDUINOJSON_ENABLE_STD_STREAM
+#include "StreamPrintAdapter.hpp"
+#endif
 
 namespace ArduinoJson {
 namespace Internals {
@@ -28,8 +33,21 @@ class JsonPrintable {
     return writer.bytesWritten();
   }
 
+#ifdef ARDUINOJSON_ENABLE_STD_STREAM
+  std::ostream &printTo(std::ostream &os) const {
+    StreamPrintAdapter adapter(os);
+    printTo(adapter);
+    return os;
+  }
+#endif
+
   size_t printTo(char *buffer, size_t bufferSize) const {
-    StringBuilder sb(buffer, bufferSize);
+    StaticStringBuilder sb(buffer, bufferSize);
+    return printTo(sb);
+  }
+
+  size_t printTo(String &str) const {
+    DynamicStringBuilder sb(str);
     return printTo(sb);
   }
 
@@ -39,7 +57,7 @@ class JsonPrintable {
   }
 
   size_t prettyPrintTo(char *buffer, size_t bufferSize) const {
-    StringBuilder sb(buffer, bufferSize);
+    StaticStringBuilder sb(buffer, bufferSize);
     return prettyPrintTo(sb);
   }
 
@@ -48,8 +66,30 @@ class JsonPrintable {
     return prettyPrintTo(indentedPrint);
   }
 
+  size_t prettyPrintTo(String &str) const {
+    DynamicStringBuilder sb(str);
+    return prettyPrintTo(sb);
+  }
+
+  size_t measureLength() const {
+    DummyPrint dp;
+    return printTo(dp);
+  }
+
+  size_t measurePrettyLength() const {
+    DummyPrint dp;
+    return prettyPrintTo(dp);
+  }
+
  private:
   const T &downcast() const { return *static_cast<const T *>(this); }
 };
+
+#ifdef ARDUINOJSON_ENABLE_STD_STREAM
+template <typename T>
+inline std::ostream &operator<<(std::ostream &os, const JsonPrintable<T> &v) {
+  return v.printTo(os);
+}
+#endif
 }
 }
