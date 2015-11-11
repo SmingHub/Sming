@@ -86,6 +86,13 @@ IPAddress AccessPointClass::getIP()
 	return info.ip;
 }
 
+IPAddress AccessPointClass::getBCast()
+{
+	struct ip_info info = {0};
+	wifi_get_ip_info(SOFTAP_IF, &info);
+	return (info.ip.addr | ~info.netmask.addr);
+}
+
 bool AccessPointClass::setIP(IPAddress address)
 {
 	if (System.isReady())

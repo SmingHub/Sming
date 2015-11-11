@@ -53,6 +53,7 @@ public:
 	void enableDHCP(bool enable);
 
 	IPAddress getIP();
+	IPAddress getBCast();
 	String getMAC();
 	IPAddress getNetworkMask();
 	IPAddress getNetworkGateway();
