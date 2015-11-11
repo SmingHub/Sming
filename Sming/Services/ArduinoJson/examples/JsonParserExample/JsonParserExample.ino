@@ -1,4 +1,4 @@
-// Copyright Benoit Blanchon 2014
+// Copyright Benoit Blanchon 2014-2015
 // MIT License
 //
 // Arduino JSON library
@@ -8,6 +8,7 @@
 
 void setup() {
   Serial.begin(9600);
+  // delay(1000); <--needed for some boards (like Teensy)
 
   StaticJsonBuffer<200> jsonBuffer;
 

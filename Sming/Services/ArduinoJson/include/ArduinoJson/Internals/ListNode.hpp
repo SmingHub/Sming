@@ -6,8 +6,7 @@
 
 #pragma once
 
-//#include <stddef.h>  // for NULL
-#include <user_config.h>
+#include <stddef.h>  // for NULL
 
 #include "JsonBufferAllocated.hpp"
 

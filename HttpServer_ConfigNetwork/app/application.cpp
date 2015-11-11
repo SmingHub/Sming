@@ -78,7 +78,7 @@ void onAjaxNetworkList(HttpRequest &request, HttpResponse &response)
 	if (connected)
 	{
 		// Copy full string to JSON buffer memory
-		json.addCopy("network", WifiStation.getSSID());
+		json["network"]= WifiStation.getSSID();
 	}
 
 	JsonArray& netlist = json.createNestedArray("available");
@@ -86,11 +86,11 @@ void onAjaxNetworkList(HttpRequest &request, HttpResponse &response)
 	{
 		if (networks[i].hidden) continue;
 		JsonObject &item = netlist.createNestedObject();
-		item.add("id", (int)networks[i].getHashId());
+		item["id"] = (int)networks[i].getHashId();
 		// Copy full string to JSON buffer memory
-		item.addCopy("title", networks[i].ssid);
-		item.add("signal", networks[i].rssi);
-		item.add("encryption", networks[i].getAuthorizationMethodName());
+		item["title"] = networks[i].ssid;
+		item["signal"] = networks[i].rssi;
+		item["encryption"] = networks[i].getAuthorizationMethodName();
 	}
 
 	response.setAllowCrossDomainOrigin("*");
@@ -198,12 +198,14 @@ void init()
 	AppSettings.load();
 
 	WifiStation.enable(true);
+
 	if (AppSettings.exist())
 	{
 		WifiStation.config(AppSettings.ssid, AppSettings.password);
 		if (!AppSettings.dhcp && !AppSettings.ip.isNull())
 			WifiStation.setIP(AppSettings.ip, AppSettings.netmask, AppSettings.gateway);
 	}
+
 	WifiStation.startScan(networkScanCompleted);
 
 	// Start AP for configuration

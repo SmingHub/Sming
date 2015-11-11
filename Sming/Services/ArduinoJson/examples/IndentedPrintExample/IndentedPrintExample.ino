@@ -1,7 +1,8 @@
-/*
- * Arduino JSON library - IndentedPrint example
- * Benoit Blanchon 2014 - MIT License
- */
+// Copyright Benoit Blanchon 2014-2015
+// MIT License
+//
+// Arduino JSON library
+// https://github.com/bblanchon/ArduinoJson
 
 #include <ArduinoJson.h>
 
@@ -9,6 +10,7 @@ using namespace ArduinoJson::Internals;
 
 void setup() {
   Serial.begin(9600);
+  // delay(1000); <--needed for some boards (like Teensy)
 
   IndentedPrint serial(Serial);
   serial.setTabSize(4);

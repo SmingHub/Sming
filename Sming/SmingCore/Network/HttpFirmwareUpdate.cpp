@@ -6,7 +6,7 @@
  */
 
 #include "HttpFirmwareUpdate.h"
-#include "../../Services/SpifFS/spiffs.h"
+#include "../../Services/SpifFS/spiffs_sming.h"
 #include "../Platform/System.h"
 #include "URL.h"
 #include "../Platform/WDT.h"

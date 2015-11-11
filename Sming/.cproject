@@ -95,6 +95,14 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
+			<target name="spiffy" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>mingw32-make.exe</buildCommand>
+				<buildArguments>-f ${ProjDirPath}/Makefile</buildArguments>
+				<buildTarget>spiffy</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
 			<target name="clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>mingw32-make.exe</buildCommand>
 				<buildArguments>-f ${ProjDirPath}/Makefile</buildArguments>
