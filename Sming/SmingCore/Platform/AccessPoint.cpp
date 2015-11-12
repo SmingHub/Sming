@@ -86,11 +86,25 @@ IPAddress AccessPointClass::getIP()
 	return info.ip;
 }
 
-IPAddress AccessPointClass::getBCast()
+IPAddress AccessPointClass::getNetworkBroadcast()
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(SOFTAP_IF, &info);
 	return (info.ip.addr | ~info.netmask.addr);
+}
+
+IPAddress AccessPointClass::getNetworkMask()
+{
+	struct ip_info info = {0};
+	wifi_get_ip_info(SOFTAP_IF, &info);
+	return info.netmask;
+}
+
+IPAddress AccessPointClass::getNetworkGateway()
+{
+	struct ip_info info = {0};
+	wifi_get_ip_info(SOFTAP_IF, &info);
+	return info.gw;
 }
 
 bool AccessPointClass::setIP(IPAddress address)

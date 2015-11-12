@@ -53,10 +53,10 @@ public:
 	void enableDHCP(bool enable);
 
 	IPAddress getIP();
-	IPAddress getBCast();
 	String getMAC();
 	IPAddress getNetworkMask();
 	IPAddress getNetworkGateway();
+	IPAddress getNetworkBroadcast();
 
 	bool setIP(IPAddress address);
 	bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway);

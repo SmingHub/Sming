@@ -122,13 +122,6 @@ IPAddress StationClass::getIP()
 	return info.ip;
 }
 
-IPAddress StationClass::getBCast()
-{
-	struct ip_info info = {0};
-	wifi_get_ip_info(STATION_IF, &info);
-	return (info.ip.addr | ~info.netmask.addr);
-}
-
 String StationClass::getMAC()
 {
 	String mac;
@@ -140,6 +133,13 @@ String StationClass::getMAC()
 		mac += String(hwaddr[i], HEX);
 	}
 	return mac;
+}
+
+IPAddress StationClass::getNetworkBroadcast()
+{
+	struct ip_info info = {0};
+	wifi_get_ip_info(STATION_IF, &info);
+	return (info.ip.addr | ~info.netmask.addr);
 }
 
 IPAddress StationClass::getNetworkMask()
