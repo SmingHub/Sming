@@ -26,6 +26,7 @@ public:
 	bool config(String ssid, String password, AUTH_MODE mode, bool hidden = false, int channel = 7, int beaconInterval = 200);
 
 	IPAddress getIP();
+	IPAddress getBCast();
 	bool setIP(IPAddress address);
 	String getMAC();
 
