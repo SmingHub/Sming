@@ -56,6 +56,7 @@ public:
 	String getMAC();
 	IPAddress getNetworkMask();
 	IPAddress getNetworkGateway();
+	IPAddress getNetworkBroadcast();
 
 	bool setIP(IPAddress address);
 	bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway);
