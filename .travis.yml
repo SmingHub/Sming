@@ -8,5 +8,16 @@ install:
   - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
   - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-open-sdk
 script:
+
+# Get a list of all modified, added or deleted files and run make in those projects
+- export CHANGED_FILES=`git diff --diff-filter=AMD HEAD HEAD^ --name-only`
+# Get unique project directories
+- export CHANGED_PROJECTS=`for i in $CHANGED_FILES; do echo "$i" | cut -d'/' -f1; done | uniq`
+# Make Sming initially
 - cd Sming
 - make
+# Check if a file in LibSming was changes
+- export SMING_HAS_CHANGED=`for i in $CHANGED_PROJECTS; do  if [ "$i" == "Sming" ]; then echo 1; break; fi; done`
+- if [ ! -z "$SMING_HAS_CHANGED" ]; then CHANGED_PROJECTS=`ls -d */`; fi 
+# And then make all changed projects
+- for i in $CHANGED_PROJECTS; do if [ "$i" == "Sming" ] || [ ! -d "$i" ]; then continue; fi; echo "Compiling $i"; cd "$i"; make; done
