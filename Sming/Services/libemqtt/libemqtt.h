@@ -89,7 +89,6 @@ extern "C" {
  */
 #define MQTTParseMessageRetain(buffer) ( *buffer & 0x01 )
 
-
 /** Parse packet buffer for number of bytes in remaining length field.
  *
  * Given a packet, return number of bytes in remaining length
@@ -201,9 +200,12 @@ void mqtt_init_auth(mqtt_broker_handle_t* broker, const char* username, const ch
 * @param qos The Quality of Service for the last will (0,1 or 2)
 * @param retain Sets if the last will should be retained
 *
+* @retval  1 On success.
+* @retval  0 On error.
+*
 * @note Only has effect before to call mqtt_connect
 */
-void mqtt_set_will(mqtt_broker_handle_t* broker, const char* topic, const char* message, uint8_t qos, uint8_t retain);
+int mqtt_set_will(mqtt_broker_handle_t* broker, const char* topic, const char* message, uint8_t qos, uint8_t retain);
 
 /** Set the keep alive timer.
  * @param broker Data structure that contains the connection information with the broker.

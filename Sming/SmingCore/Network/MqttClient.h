@@ -30,7 +30,7 @@ public:
 
 	void setKeepAlive(int seconds);
 	// Sets Last Will and Testament
-	void setWill(String topic, String message, int QoS, bool retained = false);
+	bool setWill(String topic, String message, int QoS, bool retained = false);
 
 	bool connect(String clientName);
 	bool connect(String clientName, String username, String password);

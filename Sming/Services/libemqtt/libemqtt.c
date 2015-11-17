@@ -42,7 +42,6 @@
 #define MQTT_USERNAME_FLAG  1<<7
 #define MQTT_PASSWORD_FLAG  1<<6
 
-
 uint8_t mqtt_num_rem_len_bytes(const uint8_t* buf) {
 	uint8_t num_bytes = 1;
 	
@@ -210,15 +209,20 @@ void mqtt_init_auth(mqtt_broker_handle_t* broker, const char* username, const ch
 		strncpy(broker->password, password, sizeof(broker->password)-1);
 }
 
-void mqtt_set_will(mqtt_broker_handle_t* broker, const char* topic, const char* message, uint8_t qos, uint8_t retain) {
+int mqtt_set_will(mqtt_broker_handle_t* broker, const char* topic, const char* message, uint8_t qos, uint8_t retain) {
 	if(broker->will_topic != NULL) free(broker->will_topic);
 	broker->will_topic = (char *)malloc(strlen(topic)+1);
 	if(broker->will_message != NULL) free(broker->will_message);
 	broker->will_message = (char *)malloc(strlen(message)+1);
+	if(!(broker->will_topic && broker->will_message)) {
+		return 0;
+	}
 	strcpy(broker->will_topic, topic);
 	strcpy(broker->will_message, message);
 	broker->will_qos = qos;
 	broker->will_retain = retain;
+
+	return 1;
 }
 
 void mqtt_set_alive(mqtt_broker_handle_t* broker, uint16_t alive) {
