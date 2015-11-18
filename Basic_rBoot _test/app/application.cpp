@@ -95,7 +95,7 @@ void ShowInfo() {
 void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCharsCount) {
 	
 
-	if (arrivedChar == '\r') {
+	if (arrivedChar == '\n') {
 		char str[availableCharsCount];
 		for (int i = 0; i < availableCharsCount; i++) {
 			str[i] = stream.read();
@@ -182,8 +182,6 @@ void init() {
 	debugf("spiffs disabled");
 #endif
 	WifiAccessPoint.enable(false);
-	WifiStation.config(WIFI_SSID, WIFI_PWD);
-	WifiStation.enable(true);
 	
 	Serial.printf("\r\nCurrently running rom %d.\r\n", slot);
 	Serial.println("Type 'help' and press enter for instructions.");

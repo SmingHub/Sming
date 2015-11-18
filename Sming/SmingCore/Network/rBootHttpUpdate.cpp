@@ -60,7 +60,7 @@ void rBootHttpUpdate::onTimer() {
 			updateFailed();
 			return;
 		}
-		
+		debugf("Firmware Loading");
 		currentItem++;
 		if (currentItem >= items.count()) {
 			debugf("\r\nFirmware download finished!");

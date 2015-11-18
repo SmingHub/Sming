@@ -18,7 +18,7 @@ RBOOT_SPIFFS_1   ?= 0x300000
 RBOOT_LD_0 ?= rom0.ld
 RBOOT_LD_1 ?= rom1.ld
 # esptool2 path
-ESPTOOL2 ?= esptool2
+ESPTOOL2 ?= c:\userdata\esp8266\esptool2\esptool2.exe
 # path to spiffy
 SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 # filenames and options for generating rBoot rom images with esptool2
