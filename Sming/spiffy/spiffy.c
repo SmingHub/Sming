@@ -111,35 +111,39 @@ static s32_t my_spiffs_erase(u32_t addr, u32_t size) {
 
 int my_spiffs_mount(u32_t msize) {
 
-  spiffs_config cfg;
+	spiffs_config cfg;
 
-  cfg.phys_size = msize;
-  cfg.phys_addr = 0;
+	cfg.phys_size = msize;
+	cfg.phys_addr = 0;
 
-  cfg.phys_erase_block = SPI_FLASH_SEC_SIZE;
-  cfg.log_block_size = SPI_FLASH_SEC_SIZE * 2;
-  cfg.log_page_size = LOG_PAGE_SIZE;
+	cfg.phys_erase_block = SPI_FLASH_SEC_SIZE;
+	cfg.log_block_size = SPI_FLASH_SEC_SIZE * 2;
+	cfg.log_page_size = LOG_PAGE_SIZE;
 
-  cfg.hal_read_f = my_spiffs_read;
-  cfg.hal_write_f = my_spiffs_write;
-  cfg.hal_erase_f = my_spiffs_erase;
+	cfg.hal_read_f = my_spiffs_read;
+	cfg.hal_write_f = my_spiffs_write;
+	cfg.hal_erase_f = my_spiffs_erase;
 
-  int res = SPIFFS_mount(&fs,
-		  &cfg,
-		  spiffs_work_buf,
-		  spiffs_fds,
-		  sizeof(spiffs_fds),
-		  spiffs_cache_buf,
-		  sizeof(spiffs_cache_buf),
-		  0);
-  S_DBG("Mount result: %d.\n", res);
+	int res = SPIFFS_mount(&fs,
+			&cfg,
+			spiffs_work_buf,
+			spiffs_fds,
+			sizeof(spiffs_fds),
+			spiffs_cache_buf,
+			sizeof(spiffs_cache_buf),
+			0);
+	S_DBG("Mount result: %d.\n", res);
 
-  if (res < SPIFFS_OK) {
-	  printf("Failed to mount spiffs, error %d.\n", res);
-	  return 0;
-  } else {
-	  return 1;
-  }
+	if (res < SPIFFS_OK) {
+		printf("Failed to mount spiffs, error %d.\n", res);
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
+void my_spiffs_unmount() {
+	SPIFFS_unmount(&fs);
 }
 
 
@@ -240,10 +244,10 @@ int main(int argc, char **argv) {
 		folder = DEFAULT_FOLDER;
 		romfile = DEFAULT_ROM_NAME;
 		printf("Usage: %s maxFsSizeinByte spiffsBaseDir [outfile.bin]\n"
-			   "There is no specific size or files directory.\n"
-			   "Starting in compatibility mode.\n"
-			   "Default fs size is 0x%x (%d) bytes and directory is '%s'.\n",
-			   argv[0], romsize, romsize, DEFAULT_FOLDER);
+			"There is no specific size or files directory.\n"
+			"Starting in compatibility mode.\n"
+			"Default fs size is 0x%x (%d) bytes and directory is '%s'.\n",
+			argv[0], romsize, romsize, DEFAULT_FOLDER);
 	} else if (argc == 3) {
 		romsize = get_rom_size(argv[1]);
 		folder = argv[2];
@@ -254,6 +258,8 @@ int main(int argc, char **argv) {
 		romfile = argv[3];
 	} else {
 		printf ("Usage: %s <FsSizeInBytes> <FilesDir> [OutFile.bin]\n", argv[0]);
+		printf ("  FsSizeInBytes can be in hex (starting with 0x) or decimal.\n");
+		printf ("  To create an empty filesystem pass 'dummy.dir' as FilesDir.\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -271,10 +277,12 @@ int main(int argc, char **argv) {
 		fflush(rom);
 
 		if (my_spiffs_mount(romsize)) {
-			printf("Adding files in directory '%s'.\n", folder);
 			DIR *dir;
 			struct dirent *ent;
-			if ((dir = opendir(folder)) != NULL) {
+			if (!strcmp(folder, "dummy.dir")) {
+				printf("Creating empty filesystem.\n");
+			} else if ((dir = opendir(folder)) != NULL) {
+				printf("Adding files in directory '%s'.\n", folder);
 				while ((ent = readdir(dir)) != NULL) {
 					add_file(folder, ent->d_name);
 				}
@@ -285,6 +293,7 @@ int main(int argc, char **argv) {
 				unlink(romfile);
 				exit(EXIT_FAILURE);
 			}
+			my_spiffs_unmount();
 		}
 	}
 
