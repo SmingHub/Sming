@@ -75,7 +75,7 @@ static inline uint32_t _getCycleCount(void) {
   __asm__ __volatile__("rsr %0,ccount":"=a" (ccount));
   return ccount;
 }
-void Adafruit_NeoPixel::show(void) {
+void IRAM_ATTR Adafruit_NeoPixel::show(void) {
 
   if(!pixels) return;
 
