@@ -134,18 +134,18 @@ int my_spiffs_mount(u32_t msize) {
 			0);
 	S_DBG("Mount result: %d.\n", res);
 
-	if (res < SPIFFS_OK) {
-		printf("Failed to mount spiffs, error %d.\n", res);
-		return 0;
-	} else {
-		return 1;
-	}
+	return res;
 }
 
 void my_spiffs_unmount() {
 	SPIFFS_unmount(&fs);
 }
 
+int my_spiffs_format() {
+	int res  = SPIFFS_format(&fs);
+	S_DBG("Format result: %d.\n", res);
+	return res;
+}
 
 int write_to_spiffs(char *fname, u8_t *data, int size) {
 
@@ -238,6 +238,7 @@ int main(int argc, char **argv) {
 	const char *folder;
 	const char *romfile;
 	int romsize;
+	int res, ret = EXIT_SUCCESS;
 
 	if (argc == 1) {
 		romsize = DEFAULT_ROM_SIZE;
@@ -270,13 +271,21 @@ int main(int argc, char **argv) {
 		printf("Unable to open file '%s' for writing.\n", romfile);
 	} else {
 
-		int i;
-		for (i = 0; i < romsize; i++) {
-			fputc(ROM_ERASE, rom);
-		}
-		fflush(rom);
+		fseek(rom, romsize - 1, SEEK_SET);
+		fputc(ROM_ERASE, rom);
 
-		if (my_spiffs_mount(romsize)) {
+		// we have to do this before calling format
+		if (!my_spiffs_mount(romsize)) {
+			my_spiffs_unmount();
+		}
+
+		if ((res =  my_spiffs_format())) {
+			printf("Failed to format spiffs, error %d.\n", res);
+			ret = EXIT_FAILURE;
+		} else if ((res = my_spiffs_mount(romsize))) {
+			printf("Failed to mount spiffs, error %d.\n", res);
+			ret = EXIT_FAILURE;
+		} else {
 			DIR *dir;
 			struct dirent *ent;
 			if (!strcmp(folder, "dummy.dir")) {
@@ -289,14 +298,13 @@ int main(int argc, char **argv) {
 				closedir(dir);
 			} else {
 				printf("Unable to open directory '%s'.\n", folder);
-				fclose(rom);
-				unlink(romfile);
-				exit(EXIT_FAILURE);
+				ret = EXIT_FAILURE;
 			}
 			my_spiffs_unmount();
 		}
 	}
 
 	if (rom) fclose(rom);
-	exit(EXIT_SUCCESS);
+	if (ret == EXIT_FAILURE) unlink(romfile);
+	exit(ret);
 }
