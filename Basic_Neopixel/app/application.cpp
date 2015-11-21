@@ -73,6 +73,7 @@ void TheaterChase() {
          for (i=0; i < strip.numPixels(); i=i+3)
                         strip.setPixelColor(i+TheaterChaseQ, StripColor);    //turn every third pixel on
          strip.show();
+         TheaterChaseQ++;
 	 }
 	 else
 	 {
