@@ -11,15 +11,10 @@ extern "C"
 #include "hw_timer.h"
 }
 
-#define DEBUG 1
-#define SERVO_PERIOD (20000*DEBUG)
-#define SERVO_MIN (1000*DEBUG)
-#define SERVO_MAX (2000*DEBUG)
-/*
-#define SERVO_PERIOD 1000000
-#define SERVO_MIN 100000
-#define SERVO_MAX 200000
-*/
+#define SERVO_PERIOD 20000
+#define SERVO_MIN 700
+#define SERVO_MAX 2300
+
 HardwareServo::HardwareServo()
 {
 	memset(values,0,sizeof(values));
@@ -41,7 +36,7 @@ void IRAM_ATTR ServoTimerInt()
 	hw_timer_arm(timing[actIndex]);
 
 	if (actIndex < maxTimingIdx) {
-		bool out = (actIndex%2);
+		bool out = !(actIndex%2);
 		digitalWrite(pin[actIndex/2],out);
 	}
 
