@@ -53,6 +53,7 @@ class Vector : public Countable<Element>
       return true;
     }
      void addElement(const Element& obj);
+     void addElement(Element* objp);
      inline void clear()
     {
       removeAllElements();
@@ -269,6 +270,15 @@ void Vector<Element>::addElement(const Element &obj)
     ensureCapacity(_capacity + _increment);
   if (_size < _capacity)
     _data[ _size++ ] = new Element(obj);
+};
+
+template <class Element>
+void Vector<Element>::addElement(Element* objp)
+{
+  if (_size == _capacity)
+    ensureCapacity(_capacity + _increment);
+  if (_size < _capacity)
+    _data[ _size++ ] = objp;
 };
 
 template <class Element>

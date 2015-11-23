@@ -28,7 +28,8 @@ public:
 	TelnetServer();
 	virtual ~TelnetServer();
 //	void setCommandDelegate(TelnetServerCommandDelegate reqDelegate);
-	void setDebug(bool reqStatus);
+	void enableDebug(bool reqStatus);
+	void enableCommand(bool reqStatus);
 
 private:
 	void onClient(TcpClient *client);
@@ -38,6 +39,7 @@ private:
 	TcpClient *curClient;
 	CommandExecutor* commandExecutor;
 	bool telnetDebug = true;
+	bool telnetCommand = true;
 };
 
 #endif /* APP_TELNETSERVER_H_ */

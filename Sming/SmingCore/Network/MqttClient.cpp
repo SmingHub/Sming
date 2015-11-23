@@ -41,9 +41,9 @@ void MqttClient::setKeepAlive(int seconds)
 	keepAlive = seconds;
 }
 
-void MqttClient::setWill(String topic, String message, int QoS, bool retained /* = false*/)
+bool MqttClient::setWill(String topic, String message, int QoS, bool retained /* = false*/)
 {
-	mqtt_set_will(&broker, topic.c_str(), message.c_str(), QoS, retained);
+	return mqtt_set_will(&broker, topic.c_str(), message.c_str(), QoS, retained);
 }
 
 bool MqttClient::connect(String clientName)

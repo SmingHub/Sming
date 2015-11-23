@@ -135,6 +135,13 @@ String StationClass::getMAC()
 	return mac;
 }
 
+IPAddress StationClass::getNetworkBroadcast()
+{
+	struct ip_info info = {0};
+	wifi_get_ip_info(STATION_IF, &info);
+	return (info.ip.addr | ~info.netmask.addr);
+}
+
 IPAddress StationClass::getNetworkMask()
 {
 	struct ip_info info = {0};
@@ -349,6 +356,54 @@ const char* StationClass::getConnectionStatusName()
 		SYSTEM_ERROR("Unknown status: %d", getConnectionStatus());
 		return "";
 	};
+}
+
+void StationClass::staticSmartConfigCallback(sc_status status, void *pdata) {
+	WifiStation.internalSmartConfig(status, pdata);
+}
+
+void StationClass::internalSmartConfig(sc_status status, void *pdata) {
+
+	if (smartConfigCallback) {
+		smartConfigCallback(status, pdata);
+		return;
+	}
+
+	switch (status) {
+		case SC_STATUS_WAIT:
+			debugf("SC_STATUS_WAIT\n");
+			break;
+		case SC_STATUS_FIND_CHANNEL:
+			debugf("SC_STATUS_FIND_CHANNEL\n");
+			break;
+		case SC_STATUS_GETTING_SSID_PSWD:
+			debugf("SC_STATUS_GETTING_SSID_PSWD\n");
+			break;
+		case SC_STATUS_LINK:
+			{
+				debugf("SC_STATUS_LINK\n");
+				station_config *sta_conf = (station_config *)pdata;
+				char *ssid = (char*)sta_conf->ssid;
+				char *password = (char*)sta_conf->password;
+				config(ssid, password);
+			}
+			break;
+		case SC_STATUS_LINK_OVER:
+			debugf("SC_STATUS_LINK_OVER\n");
+			smartConfigStop();
+			break;
+	}
+}
+
+void StationClass::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback) {
+	smartConfigCallback = callback;
+	smartconfig_set_type((sc_type)sctype);
+	smartconfig_start(staticSmartConfigCallback);
+}
+
+void StationClass::smartConfigStop() {
+	smartconfig_stop();
+	smartConfigCallback = NULL;
 }
 
 ////////////

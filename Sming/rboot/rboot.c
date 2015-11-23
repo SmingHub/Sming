@@ -170,7 +170,7 @@ uint32 NOINLINE find_image() {
 	uint32 flashsize;
 	int32 romToBoot;
 	uint8 gpio_boot = FALSE;
-	uint8 updateConfig = TRUE;
+	uint8 updateConfig = FALSE;
 	uint8 buffer[SECTOR_SIZE];
 
 	rboot_config *romconf = (rboot_config*)buffer;

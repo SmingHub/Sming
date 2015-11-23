@@ -1,14 +1,9 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-void smartconfigDone(sc_status status, void *pdata)
-{
-	station_config *sta_conf = reinterpret_cast<station_config *>(pdata);
-	char *ssid = reinterpret_cast<char *>(sta_conf->ssid);
-	char *password = reinterpret_cast<char *>(sta_conf->password);
+void smartConfigCallback(sc_status status, void *pdata) {
 
-	switch (status)
-	{
+	switch (status) {
 		case SC_STATUS_WAIT:
 			debugf("SC_STATUS_WAIT\n");
 			break;
@@ -19,12 +14,17 @@ void smartconfigDone(sc_status status, void *pdata)
 			debugf("SC_STATUS_GETTING_SSID_PSWD\n");
 			break;
 		case SC_STATUS_LINK:
-			debugf("SC_STATUS_LINK\n");
-			WifiStation.config(ssid, password);
+			{
+				debugf("SC_STATUS_LINK\n");
+				station_config *sta_conf = (station_config *)pdata;
+				char *ssid = (char*)sta_conf->ssid;
+				char *password = (char*)sta_conf->password;
+				WifiStation.config(ssid, password);
+			}
 			break;
 		case SC_STATUS_LINK_OVER:
 			debugf("SC_STATUS_LINK_OVER\n");
-			smartconfig_stop();
+			WifiStation.smartConfigStop();
 			break;
 	}
 }
@@ -36,5 +36,8 @@ void init()
 
 	WifiAccessPoint.enable(false);
 	WifiStation.enable(true);
-	smartconfig_start(SC_TYPE_ESPTOUCH, smartconfigDone);
+	// autmoatic (acts as the sample callback above)
+	//WifiStation.smartConfigStart(SCT_EspTouch);
+	// manual, use callback above
+	WifiStation.smartConfigStart(SCT_EspTouch, smartConfigCallback);
 }
