@@ -8,26 +8,27 @@
 #ifndef APP_HARDWARESERVO_H_
 #define APP_HARDWARESERVO_H_
 #include <SmingCore/SmingCore.h>
+#include "HardwareServoChannel.h"
 
 #define SERVO_CHANNEL_NUM_MAX 4
+
 
 class HardwareServo
 {
 public:
 	HardwareServo();
-	HardwareServo(uint8 *pins, uint8 no_of_pins);
 	virtual ~HardwareServo();
 
-	void Init(uint8 *pins, uint8 no_of_pins);
-	bool SetValues(uint32 value[]);
-
-private:
-
+//	void Init();
+//	bool SetValues(uint32 value[]);
+	bool addChannel(HardwareServoChannel *channel);
+	bool removeChannel(HardwareServoChannel *channel);
 	void calcTiming();
 
-	InterruptCallback isrServo;
-	uint8 channel_count;
-	uint32 values[SERVO_CHANNEL_NUM_MAX];
+private:
+	void getPins();
+	bool started = false;
+	Vector<HardwareServoChannel*> channels;
 };
 
 extern HardwareServo hardwareServo;
