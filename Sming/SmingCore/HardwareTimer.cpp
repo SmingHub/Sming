@@ -55,16 +55,16 @@ Hardware_Timer::~Hardware_Timer()
 	stop();
 }
 
-Hardware_Timer& Hardware_Timer::initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction)
+Hardware_Timer& Hardware_Timer::initializeMs(uint32_t milliseconds, InterruptCallback callback)
 {
-	setCallback(delegateFunction);
+	setCallback(callback);
 	setIntervalMs(milliseconds);
 	return *this;
 }
 
-Hardware_Timer& Hardware_Timer::initializeUs(uint32_t microseconds, TimerDelegate delegateFunction)
+Hardware_Timer& Hardware_Timer::initializeUs(uint32_t microseconds, InterruptCallback callback)
 {
-	setCallback(delegateFunction);
+	setCallback(callback);
 	setIntervalUs(microseconds);
 	return *this;
 }
@@ -73,7 +73,7 @@ bool Hardware_Timer::start(bool repeating/* = true*/)
 {
 	this->repeating = repeating;
 	stop();
-	if(interval == 0 || !delegate_func)
+	if(interval == 0 || !callback)
 		return started;
 
 	if (this->repeating == 1) {
@@ -143,13 +143,13 @@ bool Hardware_Timer::setIntervalMs(uint32_t milliseconds/* = 1000000*/)
 	return setIntervalUs(((uint32_t)milliseconds) * 1000);
 }
 
-void Hardware_Timer::setCallback(TimerDelegate delegateFunction)
+void Hardware_Timer::setCallback(InterruptCallback interrupt)
 {
 	ETS_INTR_LOCK();
-	delegate_func = delegateFunction;
+	callback = interrupt;
 	ETS_INTR_UNLOCK();
 
-	if (!delegateFunction)
+	if (!interrupt)
 		stop();
 }
 

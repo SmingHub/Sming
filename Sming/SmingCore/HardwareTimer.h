@@ -24,8 +24,8 @@ public:
 	Hardware_Timer();
 	virtual ~Hardware_Timer();
 
-	Hardware_Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = NULL); // Init in Microseconds.
-	Hardware_Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = NULL); // Init in Milliseconds.
+	Hardware_Timer& IRAM_ATTR initializeUs(uint32_t microseconds, InterruptCallback callback = NULL); // Init in Microseconds.
+	Hardware_Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, InterruptCallback callback = NULL); // Init in Milliseconds.
 
 	bool IRAM_ATTR start(bool repeating = true);
 	bool __forceinline IRAM_ATTR startOnce() { return start(false); }
@@ -39,18 +39,18 @@ public:
     bool IRAM_ATTR setIntervalUs(uint32_t microseconds = 1000000);
     bool IRAM_ATTR setIntervalMs(uint32_t milliseconds = 1000000);
 
-    void IRAM_ATTR setCallback(TimerDelegate delegateFunction);
+    void IRAM_ATTR setCallback(InterruptCallback callback);
 
     void __forceinline IRAM_ATTR call() {
-    	if (delegate_func) {
-    		delegate_func();
+    	if (callback) {
+    		callback();
     	}
 	}
 
 
 private:
     uint32_t interval = 0;
-    TimerDelegate delegate_func = nullptr;
+    InterruptCallback callback = nullptr;
     bool repeating = false;
     bool started = false;
 };
