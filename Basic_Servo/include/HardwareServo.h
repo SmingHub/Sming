@@ -25,7 +25,7 @@ private:
 
 	void calcTiming();
 
-	TimerDelegate isrServo;
+	InterruptCallback isrServo;
 	uint8 channel_count;
 	uint32 values[SERVO_CHANNEL_NUM_MAX];
 };
