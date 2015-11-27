@@ -5,7 +5,7 @@
 
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include "HardwareServoChannel.h"
+#include <Libraries/HardwareServo/HardwareServoChannel.h>
 
 #ifndef WIFI_SSID
 	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here

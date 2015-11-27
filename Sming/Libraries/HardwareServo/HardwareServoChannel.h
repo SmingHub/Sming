@@ -8,7 +8,7 @@
 #ifndef APP_HARDWARESERVOCHANNEL_H_
 #define APP_HARDWARESERVOCHANNEL_H_
 
-#include <SmingCore/SmingCore.h>
+#include "../../SmingCore/SmingCore.h"
 
 class HardwareServoChannel
 {

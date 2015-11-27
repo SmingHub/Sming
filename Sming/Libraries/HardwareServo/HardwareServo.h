@@ -7,7 +7,7 @@
 
 #ifndef APP_HARDWARESERVO_H_
 #define APP_HARDWARESERVO_H_
-#include <SmingCore/SmingCore.h>
+#include "../../SmingCore/SmingCore.h"
 #include "HardwareServoChannel.h"
 
 #define SERVO_CHANNEL_NUM_MAX 4
