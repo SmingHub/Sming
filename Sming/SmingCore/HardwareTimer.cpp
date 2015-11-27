@@ -7,7 +7,7 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "HWTimer.h"
+#include "HardwareTimer.h"
 
 #define US_TO_RTC_TIMER_TICKS(t)          \
     ((t) ?                                   \
@@ -41,35 +41,35 @@ typedef enum {
 
 static void IRAM_ATTR hw_timer_isr_cb(void *arg)
 {
-	HW_Timer *ptimer = (HW_Timer*)arg;
+	Hardware_Timer *ptimer = (Hardware_Timer*)arg;
 	ptimer->call();
 }
 
-HW_Timer::HW_Timer()
+Hardware_Timer::Hardware_Timer()
 {
     ETS_FRC_TIMER1_INTR_ATTACH((void*)hw_timer_isr_cb, (void *)this);
 }
 
-HW_Timer::~HW_Timer()
+Hardware_Timer::~Hardware_Timer()
 {
 	stop();
 }
 
-HW_Timer& HW_Timer::initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction)
+Hardware_Timer& Hardware_Timer::initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction)
 {
 	setCallback(delegateFunction);
 	setIntervalMs(milliseconds);
 	return *this;
 }
 
-HW_Timer& HW_Timer::initializeUs(uint32_t microseconds, TimerDelegate delegateFunction)
+Hardware_Timer& Hardware_Timer::initializeUs(uint32_t microseconds, TimerDelegate delegateFunction)
 {
 	setCallback(delegateFunction);
 	setIntervalUs(microseconds);
 	return *this;
 }
 
-bool HW_Timer::start(bool repeating/* = true*/)
+bool Hardware_Timer::start(bool repeating/* = true*/)
 {
 	this->repeating = repeating;
 	stop();
@@ -92,7 +92,7 @@ bool HW_Timer::start(bool repeating/* = true*/)
     return started;
 }
 
-bool HW_Timer::stop()
+bool Hardware_Timer::stop()
 {
 	if (!started) return started;
 	TM1_EDGE_INT_DISABLE();
@@ -101,29 +101,29 @@ bool HW_Timer::stop()
 	return started;
 }
 
-bool HW_Timer::restart()
+bool Hardware_Timer::restart()
 {
 	stop();
 	start(repeating);
 	return started;
 }
 
-bool HW_Timer::isStarted()
+bool Hardware_Timer::isStarted()
 {
 	return started;
 }
 
-uint32_t HW_Timer::getIntervalUs()
+uint32_t Hardware_Timer::getIntervalUs()
 {
 	return interval;
 }
 
-uint32_t HW_Timer::getIntervalMs()
+uint32_t Hardware_Timer::getIntervalMs()
 {
 	return (uint32_t)getIntervalUs() / 1000;
 }
 
-bool HW_Timer::setIntervalUs(uint32_t microseconds/* = 1000000*/)
+bool Hardware_Timer::setIntervalUs(uint32_t microseconds/* = 1000000*/)
 {
 	if(microseconds < MAX_HW_TIMER_INTERVAL_US && microseconds > MIN_HW_TIMER_INTERVAL_US)
 	{
@@ -138,12 +138,12 @@ bool HW_Timer::setIntervalUs(uint32_t microseconds/* = 1000000*/)
 	return started;
 }
 
-bool HW_Timer::setIntervalMs(uint32_t milliseconds/* = 1000000*/)
+bool Hardware_Timer::setIntervalMs(uint32_t milliseconds/* = 1000000*/)
 {
 	return setIntervalUs(((uint32_t)milliseconds) * 1000);
 }
 
-void HW_Timer::setCallback(TimerDelegate delegateFunction)
+void Hardware_Timer::setCallback(TimerDelegate delegateFunction)
 {
 	ETS_INTR_LOCK();
 	delegate_func = delegateFunction;
@@ -154,4 +154,4 @@ void HW_Timer::setCallback(TimerDelegate delegateFunction)
 }
 
 
-HW_Timer hwTimer;
+Hardware_Timer hardwareTimer;

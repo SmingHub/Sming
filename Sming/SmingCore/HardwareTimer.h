@@ -18,14 +18,14 @@
 
 typedef Delegate<void()> TimerDelegate;
 
-class HW_Timer
+class Hardware_Timer
 {
 public:
-	HW_Timer();
-	virtual ~HW_Timer();
+	Hardware_Timer();
+	virtual ~Hardware_Timer();
 
-	HW_Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = NULL); // Init in Microseconds.
-	HW_Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = NULL); // Init in Milliseconds.
+	Hardware_Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = NULL); // Init in Microseconds.
+	Hardware_Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = NULL); // Init in Milliseconds.
 
 	bool IRAM_ATTR start(bool repeating = true);
 	bool __forceinline IRAM_ATTR startOnce() { return start(false); }
@@ -55,6 +55,6 @@ private:
     bool started = false;
 };
 
-extern HW_Timer hwTimer;
+extern Hardware_Timer hardwareTimer;
 
 #endif /* _SMING_CORE_HWTIMER_H_ */
