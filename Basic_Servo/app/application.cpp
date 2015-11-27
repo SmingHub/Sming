@@ -17,9 +17,11 @@
 #define SERVO_PIN 2 // GPIO2
 
 HardwareServoChannel *channel;
+
 Timer procTimer;
 uint16 centerdelay = 0;
 uint32 value = 0;
+int degree=0;
 
 
 void calcValue() {
@@ -40,7 +42,12 @@ void calcValue() {
 	Serial.print(value);
 	Serial.println();
 
+#ifdef raw
 	channel->setValue(value);				// set all values
+#else
+	if(degree++>90) degree=-90;
+	channel->setDegree(degree);
+#endif
 }
 
 TimerDelegate calcDelegate = calcValue;
