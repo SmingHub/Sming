@@ -105,7 +105,10 @@ void HardwareServo::calcTiming()
 void HardwareServo::getPins()
 {
 	for (uint8 i=0;i<channels.size();i++) {
-		pins[i++] = channels[i]->getPin();
+		HardwareServoChannel *ch = channels.get(i);
+		if (ch != null) {
+			pins[i++] = ch->getPin();
+		}
 	}
 }
 
