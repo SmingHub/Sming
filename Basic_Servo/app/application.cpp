@@ -5,7 +5,7 @@
 
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include "HardwareServo.h"
+#include "HardwareServoChannel.h"
 
 #ifndef WIFI_SSID
 	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
@@ -16,36 +16,31 @@
 #define noPins 1
 #define SERVO_PIN 2 // GPIO2
 
-
+HardwareServoChannel *channel;
 Timer procTimer;
-uint8 pins[noPins] = {SERVO_PIN};
-
-uint32 value[noPins] = {0};
-
 uint16 centerdelay = 0;
+uint32 value = 0;
+
 
 void calcValue() {
 	// wait some time at middle of the servo range
-	if (value[0] == 800) {
+	if (value == 800) {
 		centerdelay--;
-		if (centerdelay == 0) value[0] +=10;	// restart after waiting
+		if (centerdelay == 0) value +=10;	// restart after waiting
 	}
 	else {										// linear ramp by increasing the value in steps
 		centerdelay=50;							// delay 50 times 200ms = 10s
-		value[0] +=10;
+		value +=10;
 	}
 
 
-	if (value[0] >= 1600) value[0] = 0;			// overflow and restart linear ramp
+	if (value >= 1600) value = 0;			// overflow and restart linear ramp
 
-	for (uint8 i=0; i<noPins; i++) {			// store all values and print to serial
-		value[i] = value[0]+i;
-		Serial.print(" Value: ");
-		Serial.print(value[i]);
-	}
+	Serial.print(" Value: ");
+	Serial.print(value);
 	Serial.println();
 
-	hardwareServo.SetValues(value);				// set all values
+	channel->setValue(value);				// set all values
 }
 
 TimerDelegate calcDelegate = calcValue;
@@ -55,8 +50,9 @@ TimerDelegate calcDelegate = calcValue;
 void connectOk()
 {
 	Serial.println("I'm CONNECTED");
-	hardwareServo.Init(pins,noPins);
-	procTimer.initializeMs(200,calcDelegate).start();
+	channel = new(HardwareServoChannel);
+	channel->attach(SERVO_PIN);
+	procTimer.initializeMs(2000,calcDelegate).start();
 }
 
 void connectFail()
