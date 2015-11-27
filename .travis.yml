@@ -10,6 +10,7 @@ install:
   - cd googletest/googletest
   - cmake .
   - make
+  - export GTEST_ROOT=$TRAVIS_BUILD_DIR/googletest/googletest
   - mkdir -p $TRAVIS_BUILD_DIR/libgtest
   - mv libgtest* $TRAVIS_BUILD_DIR/libgtest
   - cd "${TRAVIS_BUILD_DIR}"
