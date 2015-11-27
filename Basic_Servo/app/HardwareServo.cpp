@@ -6,7 +6,7 @@
  */
 
 #include "HardwareServo.h"
-#include <HWTimer.h>
+#include <HardwareTimer.h>
 
 // DEBUG for visual check of impulses with a LED instead of the servo
 //#define DEBUG
@@ -37,8 +37,8 @@ uint8 actIndex;
 
 void IRAM_ATTR ServoTimerInt()
 {
-	hwTimer.setIntervalUs(timing[actIndex]);
-	hwTimer.startOnce();
+	hardwareTimer.setIntervalUs(timing[actIndex]);
+	hardwareTimer.startOnce();
 
 	if (actIndex < maxTimingIdx) {
 		bool out = !(actIndex%2);
@@ -80,8 +80,8 @@ void HardwareServo::Init(uint8 *pins, uint8 no_of_pins)
 		}
 		calcTiming();
 		isrServo = ServoTimerInt;
-		hwTimer.initializeUs(100000,isrServo);
-		hwTimer.startOnce();
+		hardwareTimer.initializeUs(100000,isrServo);
+		hardwareTimer.startOnce();
 	}
 }
 
