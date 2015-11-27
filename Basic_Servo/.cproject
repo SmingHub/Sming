@@ -69,7 +69,7 @@
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Sming">
-			<resource resourceType="PROJECT" workspacePath="/Basic_PWM"/>
+			<resource resourceType="PROJECT" workspacePath="/Basic_Servo"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
