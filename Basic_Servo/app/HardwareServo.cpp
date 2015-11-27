@@ -6,14 +6,19 @@
  */
 
 #include "HardwareServo.h"
-extern "C"
-{
-#include "hw_timer.h"
-}
+#include <HWTimer.h>
 
-#define SERVO_PERIOD 20000
-#define SERVO_MIN 700
-#define SERVO_MAX 2300
+// DEBUG for visual check of impulses with a LED instead of the servo
+//#define DEBUG
+#ifdef DEBUG
+#define FACTOR 500
+#else
+#define FACTOR 1
+#endif
+
+#define SERVO_PERIOD (20000*FACTOR)
+#define SERVO_MIN (700*FACTOR)
+#define SERVO_MAX (2300*FACTOR)
 
 HardwareServo::HardwareServo()
 {
@@ -23,7 +28,6 @@ HardwareServo::HardwareServo()
 
 HardwareServo::~HardwareServo()
 {
-	// TODO Auto-generated destructor stub
 }
 
 uint8 pin[SERVO_CHANNEL_NUM_MAX];
@@ -33,16 +37,19 @@ uint8 actIndex;
 
 void IRAM_ATTR ServoTimerInt()
 {
-	hw_timer_arm(timing[actIndex]);
+	hwTimer.setIntervalUs(timing[actIndex]);
+	hwTimer.startOnce();
 
 	if (actIndex < maxTimingIdx) {
 		bool out = !(actIndex%2);
 		digitalWrite(pin[actIndex/2],out);
 	}
 
-	if (++actIndex > maxTimingIdx) {
-		actIndex = 0;
-	}
+	if (++actIndex > maxTimingIdx) actIndex = 0;
+
+#ifdef DEBUG
+	Serial.print("Interrupt");
+#endif
 }
 
 void HardwareServo::calcTiming()
@@ -72,9 +79,9 @@ void HardwareServo::Init(uint8 *pins, uint8 no_of_pins)
 			pin[i] = pins[i];
 		}
 		calcTiming();
-		hw_timer_init(FRC1_SOURCE,NO_RELOAD);
-		hw_timer_set_func(ServoTimerInt);
-		hw_timer_arm(1000000);
+		isrServo = ServoTimerInt;
+		hwTimer.initializeUs(100000,isrServo);
+		hwTimer.startOnce();
 	}
 }
 

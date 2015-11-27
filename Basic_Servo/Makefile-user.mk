@@ -3,7 +3,7 @@
 ## Uncomment and change examples:
 
 #Add your source directories here separated by space
-MODULES = app hwtimer
+MODULES = app
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 ## Windows:
