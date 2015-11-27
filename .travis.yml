@@ -4,9 +4,10 @@ addons:
   apt:
     packages:
     - cmake
-    - libgtest-dev
+
 install:
-  - cd /usr/src/gtest
+  - git clone https://github.com/google/googletest.git
+  - cd googletest/googletest
   - cmake .
   - make
   - mv libgtest* /usr/lib/
