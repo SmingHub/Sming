@@ -1,35 +1,13 @@
 sudo: false
 language: cpp
-addons:
-  apt:
-    packages:
-#    - cmake
 
 install:
-#  - git clone https://github.com/google/googletest.git
-#  - cd googletest/googletest
-#  - cmake .
-#  - make
-#  - export GTEST_ROOT=$TRAVIS_BUILD_DIR/googletest/googletest
-#  - mkdir -p $TRAVIS_BUILD_DIR/libgtest
-#  - mv libgtest* $TRAVIS_BUILD_DIR/libgtest
-#  - cd "${TRAVIS_BUILD_DIR}"
-
   - mkdir -p $TRAVIS_BUILD_DIR/opt/esp-open-sdk
   - wget https://bintray.com/artifact/download/kireevco/generic/esp-open-sdk-1.2-linux-x86_64.tar.gz
   - tar -zxf esp-open-sdk-1.2-linux-x86_64.tar.gz -C $TRAVIS_BUILD_DIR/opt/esp-open-sdk
   - export PATH=$PATH:$TRAVIS_BUILD_DIR/opt/esp-open-sdk/sdk:$TRAVIS_BUILD_DIR/opt/esp-open-sdk/xtensa-lx106-elf/bin
   - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
   - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-open-sdk
-
-
-
 script:
 - cd Sming
 - make
-#- cd unittest
-#- mkdir _builds
-#- cd _builds
-#- cmake ..
-#- make
-#- ctest
