@@ -1,6 +1,6 @@
 sudo: false
 language: cpp
-install:  
+install:
   - mkdir -p $TRAVIS_BUILD_DIR/opt/esp-open-sdk
   - wget https://bintray.com/artifact/download/kireevco/generic/esp-open-sdk-1.2-linux-x86_64.tar.gz
   - tar -zxf esp-open-sdk-1.2-linux-x86_64.tar.gz -C $TRAVIS_BUILD_DIR/opt/esp-open-sdk
