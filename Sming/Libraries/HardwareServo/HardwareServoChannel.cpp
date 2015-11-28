@@ -12,8 +12,8 @@ HardwareServoChannel::HardwareServoChannel()
 {
 	pin = 0;
 	value = 0;
-	maxValue=2300;
-	minValue=700;
+	maxValue=DEFAULTMAXVALUE;
+	minValue=DEFAULTMINVALUE;
 }
 
 HardwareServoChannel::~HardwareServoChannel()
@@ -21,10 +21,20 @@ HardwareServoChannel::~HardwareServoChannel()
 	// TODO Auto-generated destructor stub
 }
 
+void HardwareServoChannel::plausValue()
+{
+	uint32 range = maxValue-minValue;
+	if (value > range) {
+		value = range;
+		hardwareServo.calcTiming();
+	}
+}
+
 bool HardwareServoChannel::setMaxValue(uint32 maxValue)
 {
 	if (maxValue < minValue) return false;
 	this->maxValue = maxValue;
+	plausValue();
 	return true;
 }
 
@@ -32,6 +42,7 @@ bool HardwareServoChannel::setMinValue(uint32 minValue )
 {
 	if (minValue > maxValue) return false;
 	this->minValue = minValue;
+	plausValue();
 	return true;
 }
 
@@ -48,21 +59,36 @@ bool HardwareServoChannel::setValue(uint32 value)
 	return true;
 }
 
-void HardwareServoChannel::attach(uint8 pin)
+bool HardwareServoChannel::attach(uint8 pin)
 {
-	pinMode(pin, OUTPUT);
 	this->pin = pin;
-	hardwareServo.addChannel(this);
+	if (hardwareServo.addChannel(this)) {
+		pinMode(pin, OUTPUT);
+		return true;
+	} else {
+		return false;
+	}
 }
 
-void HardwareServoChannel::detach()
+bool HardwareServoChannel::detach()
 {
-	hardwareServo.removeChannel(this);
+	if (hardwareServo.removeChannel(this)) {
+		pinMode(pin, INPUT);
+		return true;
+	} else {
+		return false;
+	}
 }
+
+long map(long x, long in_min, long in_max, long out_min, long out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 
 bool HardwareServoChannel::setDegree(int8 value)
 {
 	if ((value < -90) || (value > 90)) return false;
-	setValue(map(value,-90,90,minValue,maxValue));
+	setValue(map(value,-90,90,0,maxValue-minValue));
 	return true;
 }

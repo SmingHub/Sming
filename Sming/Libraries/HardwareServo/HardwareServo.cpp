@@ -23,9 +23,11 @@ uint8 pins[SERVO_CHANNEL_NUM_MAX];
 uint32 timing[SERVO_CHANNEL_NUM_MAX*2+1];
 uint8 maxTimingIdx;
 uint8 actIndex;
+bool started = false;
 
 void IRAM_ATTR ServoTimerInt()
 {
+	assert(started);
 	hardwareTimer.setIntervalUs(timing[actIndex]);
 	hardwareTimer.startOnce();
 
@@ -53,8 +55,12 @@ bool HardwareServo::addChannel(HardwareServoChannel* channel)
 	uint8 channel_count = channels.size();
 	if (channel_count > SERVO_CHANNEL_NUM_MAX) return false;
 	channels.add(channel);
+
+	ETS_INTR_LOCK();
 	getPins();
 	calcTiming();
+	ETS_INTR_UNLOCK();
+
 	if (!started) {
 		started = true;
 		hardwareTimer.initializeUs(100000,ServoTimerInt);
@@ -66,7 +72,14 @@ bool HardwareServo::addChannel(HardwareServoChannel* channel)
 bool HardwareServo::removeChannel(HardwareServoChannel* channel)
 {
 	if (channels.removeElement(channel)) {
+		ETS_INTR_LOCK();
 		getPins();
+		calcTiming();
+		ETS_INTR_UNLOCK();
+		if (channels.size() == 0) {
+			started = false;
+			hardwareTimer.stop();
+		}
 		return true;
 	}
 	return false;

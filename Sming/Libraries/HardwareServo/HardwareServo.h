@@ -27,7 +27,6 @@ public:
 
 private:
 	void getPins();
-	bool started = false;
 	Vector<HardwareServoChannel*> channels;
 };
 
