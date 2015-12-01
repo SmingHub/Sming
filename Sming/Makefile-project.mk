@@ -29,6 +29,16 @@ SPI_SIZE ?= 512K
 # Path to spiffy
 SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 
+#ESPTOOL2 config to generate rBootLESS images
+IMAGE_MAIN	?= 0x00000.bin
+IMAGE_SDK	?= 0x09000.bin
+# esptool2 path
+ESPTOOL2 ?= esptool2
+# esptool2 parameters for rBootLESS images
+ESPTOOL2_SECTS		?= .text .data .rodata
+ESPTOOL2_MAIN_ARGS	?= -quiet -bin -boot0
+ESPTOOL2_SDK_ARGS	?= -quiet -lib
+
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 ## Windows:
 # ESP_HOME = c:/Espressif
@@ -269,7 +279,7 @@ $(TARGET_OUT): $(APP_AR)
 	
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 	
-	$(Q) if [[ -f "$(FW_MEMINFO_NEW)" && -f "$(FW_MEMINFO_OLD)" ]]; then \
+	$(Q) if [ -f "$(FW_MEMINFO_NEW)" -a -f "$(FW_MEMINFO_OLD)" ]; then \
 	  awk -F "|" 'FILENAME == "$(FW_MEMINFO_OLD)" { arr[$$1]=$$5 } FILENAME == "$(FW_MEMINFO_NEW)" { if (arr[$$1] != $$5){printf "%s%s%+d%s", substr($$0, 1, length($$0) - 1)," (",$$5 - arr[$$1],")\n" } else {print $$0} }' $(FW_MEMINFO_OLD) $(FW_MEMINFO_NEW); \
 	elif [ -f "$(FW_MEMINFO_NEW)" ]; then \
 	  cat $(FW_MEMINFO_NEW); \
@@ -277,7 +287,9 @@ $(TARGET_OUT): $(APP_AR)
 
 	$(vecho) "------------------------------------------------------------------------------"
 	$(vecho) "# Generating image..."
-	$(Q) $(ESPTOOL) elf2image $@ $(flashimageoptions) -o $(FW_BASE)/
+#	$(Q) $(ESPTOOL2) elf2image $@ $(flashimageoptions) -o $(FW_BASE)/
+	@$(ESPTOOL2) $(ESPTOOL2_MAIN_ARGS) $@ $(FW_BASE)/$(IMAGE_MAIN) $(ESPTOOL2_SECTS)
+	@$(ESPTOOL2) $(ESPTOOL2_SDK_ARGS) $@ $(FW_BASE)/$(IMAGE_SDK)
 	$(vecho) "Generate firmware images successully in folder $(FW_BASE)."
 	$(vecho) "Done"
 
