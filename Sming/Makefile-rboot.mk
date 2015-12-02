@@ -256,6 +256,7 @@ export RBOOT_BIG_FLASH
 export RBOOT_BUILD_BASE
 export RBOOT_FW_BASE
 export SPI_SIZE
+export SPI_MODE
 export ESPTOOL2
 export SDK_BASE
 
