@@ -388,18 +388,16 @@ DSTATUS disk_initialize (
 
 	if(ty == 0)
 	{
-		Stat = STA_NOINIT;
+		s = Stat = STA_NOINIT;
 		debugf("SDCard init FAIL\n", ty);
 	}
 	else
 	{
-		Stat = 0;
+		s = Stat = 0;
 		debugf("SDCard OK: TYPE %d\n", ty);
 	}
 
 	deselect();
-
-
 
 	SDCardSPI->setDelay(SCK_NORMAL);
 
