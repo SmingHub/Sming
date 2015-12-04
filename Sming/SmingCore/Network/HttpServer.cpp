@@ -137,7 +137,7 @@ void HttpServer::processWebSocketFrame(pbuf *buf, HttpServerConnection& connecti
 		if (sock && wsMessage) wsMessage(*sock, msg);
 		if (sock && sock->commandExecutor) sock->commandExecutor->executorReceive(msg+"\r");
 	}
-	if (frameType == WS_BINARY_FRAME)
+	else if (frameType == WS_BINARY_FRAME)
 	{
 		if (sock && wsMessage) wsBinary(*sock, data, size);
 	}
