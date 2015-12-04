@@ -32,6 +32,14 @@ void connectOk()
 {
 	debugf("I'm CONNECTED");
 	Serial.println(WifiStation.getIP().toString());
+	
+	Serial.print("Connected to: ");
+	Serial.print(WifiStation.getSSID());
+	Serial.print(" Channel: ");
+	Serial.print(WifiStation.getChannel());
+	Serial.print(" Strength: ");
+	Serial.print(WifiStation.getRssi());
+	Serial.println(" dBm");
 }
 
 // Will be called when WiFi station timeout was reached
