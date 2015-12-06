@@ -1,14 +1,15 @@
 /*
- * HardwareServoChannel.cpp
+ * ServoChannel.cpp
  *
  *  Created on: 27.11.2015
  *      Author: johndoe
  */
 
-#include "HardwareServoChannel.h"
-#include <HardwareServo.h>
+#include "ServoChannel.h"
 
-HardwareServoChannel::HardwareServoChannel()
+#include "Servo.h"
+
+ServoChannel::ServoChannel()
 {
 	pin = 0;
 	value = 0;
@@ -16,21 +17,21 @@ HardwareServoChannel::HardwareServoChannel()
 	minValue=DEFAULTMINVALUE;
 }
 
-HardwareServoChannel::~HardwareServoChannel()
+ServoChannel::~ServoChannel()
 {
 	// TODO Auto-generated destructor stub
 }
 
-void HardwareServoChannel::plausValue()
+void ServoChannel::plausValue()
 {
 	uint32 range = maxValue-minValue;
 	if (value > range) {
 		value = range;
-		hardwareServo.calcTiming();
+		servo.calcTiming();
 	}
 }
 
-bool HardwareServoChannel::setMaxValue(uint32 maxValue)
+bool ServoChannel::setMaxValue(uint32 maxValue)
 {
 	if (maxValue < minValue) return false;
 	this->maxValue = maxValue;
@@ -38,7 +39,7 @@ bool HardwareServoChannel::setMaxValue(uint32 maxValue)
 	return true;
 }
 
-bool HardwareServoChannel::setMinValue(uint32 minValue )
+bool ServoChannel::setMinValue(uint32 minValue )
 {
 	if (minValue > maxValue) return false;
 	this->minValue = minValue;
@@ -46,23 +47,23 @@ bool HardwareServoChannel::setMinValue(uint32 minValue )
 	return true;
 }
 
-uint32 HardwareServoChannel::getValue() const
+uint32 ServoChannel::getValue() const
 {
 	return value;
 }
 
-bool HardwareServoChannel::setValue(uint32 value)
+bool ServoChannel::setValue(uint32 value)
 {
 	if (value > maxValue-minValue) return false;
 	this->value = value;
-	hardwareServo.calcTiming();
+	servo.calcTiming();
 	return true;
 }
 
-bool HardwareServoChannel::attach(uint8 pin)
+bool ServoChannel::attach(uint8 pin)
 {
 	this->pin = pin;
-	if (hardwareServo.addChannel(this)) {
+	if (servo.addChannel(this)) {
 		pinMode(pin, OUTPUT);
 		return true;
 	} else {
@@ -70,9 +71,9 @@ bool HardwareServoChannel::attach(uint8 pin)
 	}
 }
 
-bool HardwareServoChannel::detach()
+bool ServoChannel::detach()
 {
-	if (hardwareServo.removeChannel(this)) {
+	if (servo.removeChannel(this)) {
 		pinMode(pin, INPUT);
 		return true;
 	} else {
@@ -86,7 +87,7 @@ long map(long x, long in_min, long in_max, long out_min, long out_max)
 }
 
 
-bool HardwareServoChannel::setDegree(int8 value)
+bool ServoChannel::setDegree(int8 value)
 {
 	if ((value < -90) || (value > 90)) return false;
 	setValue(map(value,-90,90,0,maxValue-minValue));

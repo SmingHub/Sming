@@ -55,6 +55,4 @@ private:
     bool started = false;
 };
 
-extern Hardware_Timer hardwareTimer;
-
 #endif /* _SMING_CORE_HWTIMER_H_ */

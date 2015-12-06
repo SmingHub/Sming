@@ -1,12 +1,12 @@
 /*
- * HardwareServoChannel.h
+ * ServoChannel.h
  *
  *  Created on: 27.11.2015
  *      Author: johndoe
  */
 
-#ifndef APP_HARDWARESERVOCHANNEL_H_
-#define APP_HARDWARESERVOCHANNEL_H_
+#ifndef LIB_SERVOCHANNEL_H_
+#define LIB_SERVOCHANNEL_H_
 
 #include "../../SmingCore/SmingCore.h"
 
@@ -14,11 +14,11 @@
 #define DEFAULTMINVALUE 700
 
 
-class HardwareServoChannel
+class ServoChannel
 {
 public:
-	HardwareServoChannel();
-	virtual ~HardwareServoChannel();
+	ServoChannel();
+	virtual ~ServoChannel();
 
 	bool attach(uint8 pin);
 	bool detach();
@@ -43,4 +43,4 @@ private:
 	uint32 maxValue;
 };
 
-#endif /* APP_HARDWARESERVOCHANNEL_H_ */
+#endif /* LIB_SERVOCHANNEL_H_ */

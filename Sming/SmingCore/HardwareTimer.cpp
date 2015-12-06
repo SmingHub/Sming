@@ -152,6 +152,3 @@ void Hardware_Timer::setCallback(InterruptCallback interrupt)
 	if (!interrupt)
 		stop();
 }
-
-
-Hardware_Timer hardwareTimer;

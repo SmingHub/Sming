@@ -1,11 +1,12 @@
 /*
- * HardwareServo.cpp
+ * Servo.cpp
  *
  *  Created on: 22.11.2015
  *      Author: johndoe
  */
 
-#include "HardwareServo.h"
+#include "Servo.h"
+
 #include <HardwareTimer.h>
 
 // DEBUG for visual check of impulses with a LED instead of the servo
@@ -39,18 +40,18 @@ void IRAM_ATTR ServoTimerInt()
 	if (++actIndex > maxTimingIdx) actIndex = 0;
 }
 
-HardwareServo::HardwareServo()
+Servo::Servo()
 {
 	for(uint8 i=0; i<SERVO_CHANNEL_NUM_MAX*2+1; i++) timing[i] = 1000;
 	maxTimingIdx=0;
 }
 
-HardwareServo::~HardwareServo()
+Servo::~Servo()
 {
 	channels.removeAllElements();
 }
 
-bool HardwareServo::addChannel(HardwareServoChannel* channel)
+bool Servo::addChannel(ServoChannel* channel)
 {
 	uint8 channel_count = channels.size();
 	if (channel_count > SERVO_CHANNEL_NUM_MAX) return false;
@@ -69,7 +70,7 @@ bool HardwareServo::addChannel(HardwareServoChannel* channel)
 	return true;
 }
 
-bool HardwareServo::removeChannel(HardwareServoChannel* channel)
+bool Servo::removeChannel(ServoChannel* channel)
 {
 	if (channels.removeElement(channel)) {
 		ETS_INTR_LOCK();
@@ -85,7 +86,7 @@ bool HardwareServo::removeChannel(HardwareServoChannel* channel)
 	return false;
 }
 
-void HardwareServo::calcTiming()
+void Servo::calcTiming()
 {
 	uint32 sumTime=0;
 	uint8 channel_count = channels.size();
@@ -115,15 +116,15 @@ void HardwareServo::calcTiming()
 }
 
 
-void HardwareServo::getPins()
+void Servo::getPins()
 {
 	for (uint8 i=0;i<channels.size();i++) {
-		HardwareServoChannel *ch = channels.get(i);
+		ServoChannel *ch = channels.get(i);
 		if (ch != null) {
 			pins[i++] = ch->getPin();
 		}
 	}
 }
 
-HardwareServo hardwareServo;
+Servo servo;
 
