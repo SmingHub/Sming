@@ -19,6 +19,7 @@ HttpRequest::HttpRequest()
 	cookies = NULL;
 	postDataProcessed = 0;
 	combinePostFrag = false;
+	bodyBuf = NULL;
 }
 
 HttpRequest::~HttpRequest()
@@ -28,6 +29,10 @@ HttpRequest::~HttpRequest()
 	delete requestPostParameters;
 	delete cookies;
 	postDataProcessed = 0;
+	if (bodyBuf != NULL)
+	{
+		os_free(bodyBuf);
+	}
 }
 
 String HttpRequest::getQueryParameter(String parameterName, String defaultValue /* = "" */)
@@ -231,10 +236,7 @@ bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, c
 }
 void HttpRequest::parseRawData(HttpServer *server, pbuf* buf)
 {
-	if (!combinePostFrag)
-	{
-		bodyBuf = (char *) os_zalloc(sizeof(char) * buf->tot_len);
-	}
+	bodyBuf = (char *) os_zalloc(sizeof(char) * buf->tot_len);
 	int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
 	if (headerEnd + getContentLength() > NETWORK_MAX_HTTP_PARSING_LEN)
 	{
