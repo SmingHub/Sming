@@ -40,6 +40,15 @@ else ifeq ($(SPI_SIZE), 2M)
 else ifeq ($(SPI_SIZE), 4M)
 	E2_OPTS += -4096
 endif
+ifeq ($(SPI_MODE), qio)
+	E2_OPTS += -qio
+else ifeq ($(SPI_MODE), dio)
+	E2_OPTS += -dio
+else ifeq ($(SPI_MODE), qout)
+	E2_OPTS += -qout
+else ifeq ($(SPI_MODE), dout)
+	E2_OPTS += -dout
+endif
 
 RBOOT_EXTRA_INCDIR := $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
 

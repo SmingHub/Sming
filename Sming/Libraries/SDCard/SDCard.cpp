@@ -321,8 +321,6 @@ DSTATUS disk_initialize (
 {
 	BYTE n, ty, cmd, buf[4];
 	UINT tmr;
-	DSTATUS s;
-
 
 	if (drv) return RES_NOTRDY;
 
@@ -399,11 +397,9 @@ DSTATUS disk_initialize (
 
 	deselect();
 
-
-
 	SDCardSPI->setDelay(SCK_NORMAL);
 
-	return s;
+	return Stat;
 }
 
 
