@@ -86,7 +86,10 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 			state = eHCS_ParsingCompleted;
 		}
 	}
-
+	else if (state == eHCS_ParsingCompleted && request.getContentLength() > 0)
+	{
+		request.parseRawData(server, buf);
+	}
 	// Fire callbacks
 	TcpConnection::onReceive(buf);
 

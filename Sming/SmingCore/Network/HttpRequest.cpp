@@ -229,6 +229,25 @@ bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, c
 	}
 	return continued;
 }
+void HttpRequest::parseRawData(HttpServer *server, pbuf* buf)
+{
+	if (!combinePostFrag)
+	{
+		bodyBuf = (char *) os_zalloc(sizeof(char) * buf->tot_len);
+	}
+	int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
+	if (headerEnd + getContentLength() > NETWORK_MAX_HTTP_PARSING_LEN)
+	{
+		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
+		return;
+	}
+	pbuf_copy_partial(buf, bodyBuf, buf->tot_len, headerEnd + 4);
+}
+
+char* HttpRequest::getBody()
+{
+	return bodyBuf;
+}
 
 bool HttpRequest::isAjax()
 {
