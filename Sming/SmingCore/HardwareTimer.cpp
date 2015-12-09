@@ -41,6 +41,7 @@ typedef enum {
 
 static void IRAM_ATTR hw_timer_isr_cb(void *arg)
 {
+	if (arg == null) return;
 	Hardware_Timer *ptimer = (Hardware_Timer*)arg;
 	ptimer->call();
 }
@@ -52,6 +53,7 @@ Hardware_Timer::Hardware_Timer()
 
 Hardware_Timer::~Hardware_Timer()
 {
+    ETS_FRC_TIMER1_INTR_ATTACH((void*)hw_timer_isr_cb, null);
 	stop();
 }
 
