@@ -135,7 +135,9 @@ void HttpServer::processWebSocketFrame(pbuf *buf, HttpServerConnection& connecti
 		msg.setString((char*)data, size);
 		debugf("WS: %s", msg.c_str());
 		if (sock && wsMessage) wsMessage(*sock, msg);
+#ifndef DISABLE_FEATURE_COMMAND_EXECUTOR
 		if (sock && sock->commandExecutor) sock->commandExecutor->executorReceive(msg+"\r");
+#endif
 	}
 	else if (frameType == WS_BINARY_FRAME)
 	{

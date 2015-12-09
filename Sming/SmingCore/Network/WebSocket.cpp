@@ -17,10 +17,12 @@ WebSocket::WebSocket(HttpServerConnection* conn)
 
 WebSocket::~WebSocket()
 {
+#ifndef DISABLE_FEATURE_COMMAND_EXECUTOR
 	if (commandExecutor)
 	{
 		delete commandExecutor;
 	}
+#endif
 }
 
 bool WebSocket::initialize(HttpRequest& request, HttpResponse& response)
@@ -66,8 +68,10 @@ void WebSocket::sendBinary(const uint8_t* data, int size)
 
 void WebSocket::enableCommand()
 {
+#ifndef DISABLE_FEATURE_COMMAND_EXECUTOR
 	if (!commandExecutor)
 	{
 		commandExecutor = new CommandExecutor(this);
 	}
+#endif
 }
