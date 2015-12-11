@@ -1,257 +1,670 @@
-/****
- * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
- * Created 2015 by Skurydin Alexey
- * http://github.com/anakod/Sming
- * All files of the Sming Core are provided under the LGPL v3 license.
- ****/
+/*
+ HardwareSerial.cpp - esp8266 UART support
 
-// HardwareSerial based on Espressif Systems code
+ Copyright (c) 2014 Ivan Grokhotkov. All rights reserved.
+ This file is part of the esp8266 core for Arduino environment.
 
-#include "../SmingCore/HardwareSerial.h"
-#include "../Wiring/WiringFrameworkIncludes.h"
-#include <cstdarg>
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+ Modified 31 March 2015 by Markus Sattler (rewrite the code for UART0 + UART1 support in ESP8266)
+ Modified 25 April 2015 by Thomas Flayols (add configuration different from 8N1 in ESP8266)
+ Modified 3 May 2015 by Hristo Gochkov (change register access methods)
+ */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "cbuf.h"
+#include "esp8266_peri.h"
 #include "../SmingCore/Clock.h"
 #include "../SmingCore/Interrupts.h"
+#include "../SmingCore/Digital.h"
 
-// UartDev is defined and initialized in ROM code.
-extern UartDevice UartDev;
 
-//set m_printf callback
+extern "C" {
+#include "osapi.h"
+#include "ets_sys.h"
+#include "mem.h"
+#include "user_interface.h"
+}
+
+#include "HardwareSerial.h"
+
+#define UART_TX_FIFO_SIZE 0x80
+
+struct uart_ {
+    int uart_nr;
+    int baud_rate;
+    bool rxEnabled;
+    bool txEnabled;
+    uint8_t rxPin;
+    uint8_t txPin;
+};
+
+static const int UART0 = 0;
+static const int UART1 = 1;
+static const int UART_NO = -1;
+
 extern void setMPrintfPrinterCbc(void (*callback)(char));
 
-// StreamDataAvailableDelegate HardwareSerial::HWSDelegates[2];
+/**
+ *  UART GPIOs
+ *
+ * UART0 TX: 1 or 2
+ * UART0 RX: 3
+ *
+ * UART0 SWAP TX: 15
+ * UART0 SWAP RX: 13
+ *
+ *
+ * UART1 TX: 7 (NC) or 2
+ * UART1 RX: 8 (NC)
+ *
+ * UART1 SWAP TX: 11 (NC)
+ * UART1 SWAP RX: 6 (NC)
+ *
+ * NC = Not Connected to Module Pads --> No Access
+ *
+ */
 
-HWSerialMemberData HardwareSerial::memberData[NUMBER_UARTS];
+// ####################################################################################################
+// ####################################################################################################
+// ####################################################################################################
+HardwareSerial Serial(UART0);
+HardwareSerial Serial1(UART1);
 
-HardwareSerial::HardwareSerial(const int uartPort)
-	: uart(uartPort)
-{
-	resetCallback();
-}
+// ####################################################################################################
+// ####################################################################################################
+// ####################################################################################################
 
-void HardwareSerial::begin(const uint32_t baud/* = 9600*/)
-{
-	//TODO: Move to params!
-	UartDev.baut_rate = (UartBautRate)baud;
-	UartDev.parity = NONE_BITS;
-	UartDev.exist_parity = STICK_PARITY_DIS;
-	UartDev.stop_bits = ONE_STOP_BIT;
-	UartDev.data_bits = EIGHT_BITS;
+void uart_interrupt_handler(uart_t* uart);
+void uart_wait_for_tx_fifo(uart_t* uart, size_t size_needed);
 
-	ETS_UART_INTR_ATTACH((void*)uart0_rx_intr_handler,  &(UartDev.rcv_buff));
-	PIN_PULLUP_DIS(PERIPHS_IO_MUX_U0TXD_U);
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_U0TXD);
+size_t uart_get_tx_fifo_room(uart_t* uart);
+void uart_wait_for_transmit(uart_t* uart);
+void uart_transmit_char(uart_t* uart, char c);
+void uart_transmit(uart_t* uart, const char* buf, size_t size);
+void uart_flush(uart_t* uart);
+void uart_interrupt_enable(uart_t* uart);
+void uart_interrupt_disable(uart_t* uart);
+void uart_arm_tx_interrupt(uart_t* uart);
+void uart_disarm_tx_interrupt(uart_t* uart);
+void uart_set_baudrate(uart_t* uart, int baud_rate);
+int uart_get_baudrate(uart_t* uart);
 
-	uart_div_modify(uart, UART_CLK_FREQ / (UartDev.baut_rate));
+uart_t* uart_init(int uart_nr, int baudrate, byte config);
+void uart_uninit(uart_t* uart);
+void uart_swap(uart_t* uart);
 
-	WRITE_PERI_REG(UART_CONF0(uart),    UartDev.exist_parity
-				   | UartDev.parity
-				   | (UartDev.stop_bits << UART_STOP_BIT_NUM_S)
-				   | (UartDev.data_bits << UART_BIT_NUM_S));
+void uart_ignore_char(char c);
+void uart0_write_char(char c);
+void uart1_write_char(char c);
 
+void uart_set_debug(int uart_nr);
+int uart_get_debug();
 
-	//clear rx and tx fifo,not ready
-	SET_PERI_REG_MASK(UART_CONF0(uart), UART_RXFIFO_RST | UART_TXFIFO_RST);
-	CLEAR_PERI_REG_MASK(UART_CONF0(uart), UART_RXFIFO_RST | UART_TXFIFO_RST);
+// ####################################################################################################
+// ####################################################################################################
+// ####################################################################################################
 
-	//set rx fifo trigger
-	WRITE_PERI_REG(UART_CONF1(uart), (UartDev.rcv_buff.TrigLvl & UART_RXFIFO_FULL_THRHD) << UART_RXFIFO_FULL_THRHD_S);
+void IRAM_ATTR uart_interrupt_handler(uart_t* uart) {
 
-	//clear all interrupt
-	WRITE_PERI_REG(UART_INT_CLR(uart), 0xffff);
-	//enable rx_interrupt
-	SET_PERI_REG_MASK(UART_INT_ENA(uart), UART_RXFIFO_FULL_INT_ENA);
-
-	ETS_UART_INTR_ENABLE();
-	delay(10);
-	Serial.println("\r\n"); // after SPAM :)
-}
-
-size_t HardwareSerial::write(uint8_t oneChar)
-{
-	//if (oneChar == '\0') return 0;
-
-	uart_tx_one_char(oneChar);
-
-	return 1;
-}
-
-int HardwareSerial::available()
-{
-	RcvMsgBuff &rxBuf = UartDev.rcv_buff;
-	if (rxBuf.pWritePos != rxBuf.pReadPos)
-	{
-		if (rxBuf.pWritePos > rxBuf.pReadPos)
-			return rxBuf.pWritePos - rxBuf.pReadPos;
-		else
-			return (((uint32_t)rxBuf.pRcvMsgBuff + RX_BUFF_SIZE) - (uint32_t)UartDev.rcv_buff.pReadPos) + (uint32_t)rxBuf.pWritePos;
-	}
-	else
-		return 0;
-}
-
-int HardwareSerial::read()
-{
-	if (available() == 0)
-		return -1;
-
-	noInterrupts();
-	RcvMsgBuff &rxBuf = UartDev.rcv_buff;
-	char res = *(rxBuf.pReadPos);
-	rxBuf.pReadPos++;
-
-	if (rxBuf.pReadPos >= (rxBuf.pRcvMsgBuff + RX_BUFF_SIZE))
-		rxBuf.pReadPos = rxBuf.pRcvMsgBuff ;
-
-	interrupts();
-	return res;
-}
-
-int HardwareSerial::readMemoryBlock(char* buf, int max_len)
-{
-	RcvMsgBuff &rxBuf = UartDev.rcv_buff;
-	int num = 0;
-
-	noInterrupts();
-	if (rxBuf.pWritePos != rxBuf.pReadPos) {
-		while ((rxBuf.pWritePos != rxBuf.pReadPos) && (max_len-- > 0)) {
-			*buf = *rxBuf.pReadPos;		// Read data from Buffer
-			num++;						// Increase counter of read bytes
-			buf++;						// Increase Buffer pointer
-
-			// Set pointer to next data word in ring buffer
-			rxBuf.pReadPos++;
-			if (rxBuf.pReadPos >= (rxBuf.pRcvMsgBuff + RX_BUFF_SIZE))
-				rxBuf.pReadPos = rxBuf.pRcvMsgBuff ;
-		}
-	}
-	interrupts();
-
-	return num;
-}
-
-int HardwareSerial::peek()
-{
-	if (available() == 0)
-		return -1;
-
-	noInterrupts();
-	RcvMsgBuff &rxBuf = UartDev.rcv_buff;
-	char res = *(rxBuf.pReadPos);
-	interrupts();
-	return res;
-}
-
-void HardwareSerial::flush()
-{
-}
-
-
-/*void HardwareSerial::printf(const char *fmt, ...)
-{
-	// Doesn't work :(
-	va_list va;
-	va_start(va, fmt);
-	ets_uart_printf(fmt, va);
-	va_end(va);
-}*/
-
-void HardwareSerial::systemDebugOutput(bool enabled)
-{
-	if (uart == UART_ID_0)
-		setMPrintfPrinterCbc(enabled ? uart_tx_one_char : NULL);
-	//else
-	//	os_install_putc1(enabled ? (void *)uart1_tx_one_char : NULL); //TODO: Debug serial
-}
-
-void HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate, bool useSerialRxBuffer /* = true */)
-{
-	memberData[uart].HWSDelegate = reqDelegate;
-	memberData[uart].useRxBuff = useSerialRxBuffer;
-}
-
-void HardwareSerial::resetCallback()
-{
-	memberData[uart].HWSDelegate = nullptr;
-	memberData[uart].useRxBuff = true;
-}
-
-void HardwareSerial::commandProcessing(bool reqEnable)
-{
-	if (reqEnable)
-	{
-		if (!memberData[uart].commandExecutor)
-		{
-			memberData[uart].commandExecutor = new CommandExecutor(&Serial);
-		}
-	}
-	else
-	{
-		delete memberData[uart].commandExecutor;
-		memberData[uart].commandExecutor = nullptr;
-	}
-}
-
-
-void HardwareSerial::uart0_rx_intr_handler(void *para)
-{
-    /* uart0 and uart1 intr combine togther, when interrupt occur, see reg 0x3ff20020, bit2, bit0 represents
-     * uart1 and uart0 respectively
-     */
-    RcvMsgBuff *pRxBuff = (RcvMsgBuff *)para;
-    uint8 RcvChar;
-
-    if (UART_RXFIFO_FULL_INT_ST != (READ_PERI_REG(UART_INT_ST(UART_ID_0)) & UART_RXFIFO_FULL_INT_ST))
-        return;
-
-    WRITE_PERI_REG(UART_INT_CLR(UART_ID_0), UART_RXFIFO_FULL_INT_CLR);
-
-    while (READ_PERI_REG(UART_STATUS(UART_ID_0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S))
-    {
-        RcvChar = READ_PERI_REG(UART_FIFO(UART_ID_0)) & 0xFF;
-
-        /* you can add your handle code below.*/
-      if (memberData[UART_ID_0].useRxBuff)
-      {
-        *(pRxBuff->pWritePos) = RcvChar;
-
-        // insert here for get one command line from uart
-        if (RcvChar == '\n' )
-            pRxBuff->BuffState = WRITE_OVER;
-
-        pRxBuff->pWritePos++;
-
-        if (pRxBuff->pWritePos == (pRxBuff->pRcvMsgBuff + RX_BUFF_SIZE))
-        {
-            // overflow ...we may need more error handle here.
-        	pRxBuff->pWritePos = pRxBuff->pRcvMsgBuff;
+    // -------------- UART 0 --------------
+    if(Serial.isRxEnabled()) {
+        while(U0IS & (1 << UIFF)) {
+            Serial._rx_complete_irq((char) (U0F & 0xff));
+            U0IC = (1 << UIFF);
         }
-
-        if (pRxBuff->pWritePos == pRxBuff->pReadPos)
-        {   // Prevent readbuffer overflow
-			if (pRxBuff->pReadPos == (pRxBuff->pRcvMsgBuff + RX_BUFF_SIZE))
-			{
-				pRxBuff->pReadPos = pRxBuff->pRcvMsgBuff ;
-			} else {
-				pRxBuff->pReadPos++;
-			}
-		}
-      }
-      if (memberData[UART_ID_0].HWSDelegate)
-        {
-        	unsigned short cc;
-        	cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
-        													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
-        	memberData[UART_ID_0].HWSDelegate(Serial, RcvChar, cc);
+    }
+    if(Serial.isTxEnabled()) {
+        if(U0IS & (1 << UIFE)) {
+            U0IC = (1 << UIFE);
+            Serial._tx_empty_irq();
         }
-      if (memberData[UART_ID_0].commandExecutor)
-      {
-    	  memberData[UART_ID_0].commandExecutor->executorReceive(RcvChar);
-      }
     }
 
+    // -------------- UART 1 --------------
+
+    if(Serial1.isRxEnabled()) {
+        while(U1IS & (1 << UIFF)) {
+            Serial1._rx_complete_irq((char) (U1F & 0xff));
+            U1IC = (1 << UIFF);
+        }
+    }
+    if(Serial1.isTxEnabled()) {
+        if(U1IS & (1 << UIFE)) {
+            U1IC = (1 << UIFE);
+            Serial1._tx_empty_irq();
+        }
+    }
+}
+
+// ####################################################################################################
+
+void uart_wait_for_tx_fifo(uart_t* uart, size_t size_needed) {
+    if(uart == 0)
+        return;
+    if(uart->txEnabled) {
+        while(true) {
+            size_t tx_count = (USS(uart->uart_nr) >> USTXC) & 0xff;
+            if(tx_count <= (UART_TX_FIFO_SIZE - size_needed))
+                break;
+        }
+    }
+}
+
+size_t uart_get_tx_fifo_room(uart_t* uart) {
+    if(uart == 0)
+        return 0;
+    if(uart->txEnabled) {
+        return UART_TX_FIFO_SIZE - ((USS(uart->uart_nr) >> USTXC) & 0xff);
+    }
+    return 0;
+}
+
+void uart_wait_for_transmit(uart_t* uart) {
+    if(uart == 0)
+        return;
+    if(uart->txEnabled) {
+        uart_wait_for_tx_fifo(uart, UART_TX_FIFO_SIZE);
+    }
+}
+
+void uart_transmit_char(uart_t* uart, char c) {
+    if(uart == 0)
+        return;
+    if(uart->txEnabled) {
+        USF(uart->uart_nr) = c;
+    }
+}
+
+void uart_transmit(uart_t* uart, const char* buf, size_t size) {
+    if(uart == 0)
+        return;
+    if(uart->txEnabled) {
+        while(size) {
+            size_t part_size = (size > UART_TX_FIFO_SIZE) ? UART_TX_FIFO_SIZE : size;
+            size -= part_size;
+
+            uart_wait_for_tx_fifo(uart, part_size);
+            for(; part_size; --part_size, ++buf)
+                USF(uart->uart_nr) = *buf;
+        }
+    }
+}
+
+void uart_flush(uart_t* uart) {
+    uint32_t tmp = 0x00000000;
+
+    if(uart == 0)
+        return;
+
+    if(uart->rxEnabled) {
+        tmp |= (1 << UCRXRST);
+    }
+
+    if(uart->txEnabled) {
+        tmp |= (1 << UCTXRST);
+    }
+
+    USC0(uart->uart_nr) |= (tmp);
+    USC0(uart->uart_nr) &= ~(tmp);
+}
+
+void uart_interrupt_enable(uart_t* uart) {
+    if(uart == 0)
+        return;
+    USIC(uart->uart_nr) = 0x1ff;
+    ETS_UART_INTR_ATTACH((void*)&uart_interrupt_handler, &uart); // uart parameter is not osed in irq function!
+    if(uart->rxEnabled) {
+        USIE(uart->uart_nr) |= (1 << UIFF);
+    }
+    ETS_UART_INTR_ENABLE();
+}
+
+void uart_interrupt_disable(uart_t* uart) {
+    if(uart == 0)
+        return;
+    if(uart->rxEnabled) {
+        USIE(uart->uart_nr) &= ~(1 << UIFF);
+    }
+    if(uart->txEnabled) {
+        USIE(uart->uart_nr) &= ~(1 << UIFE);
+    }
+    //ETS_UART_INTR_DISABLE(); // never disable irq complete may its needed by the other Serial Interface!
+}
+
+void uart_arm_tx_interrupt(uart_t* uart) {
+    if(uart == 0)
+        return;
+    if(uart->txEnabled) {
+        USIE(uart->uart_nr) |= (1 << UIFE);
+    }
+}
+
+void uart_disarm_tx_interrupt(uart_t* uart) {
+    if(uart == 0)
+        return;
+    if(uart->txEnabled) {
+        USIE(uart->uart_nr) &= ~(1 << UIFE);
+    }
+}
+
+void uart_set_baudrate(uart_t* uart, int baud_rate) {
+    if(uart == 0)
+        return;
+    uart->baud_rate = baud_rate;
+    USD(uart->uart_nr) = (ESP8266_CLOCK / uart->baud_rate);
+}
+
+int uart_get_baudrate(uart_t* uart) {
+    if(uart == 0)
+        return 0;
+    return uart->baud_rate;
+}
+
+uart_t* uart_init(int uart_nr, int baudrate, byte config, byte mode) {
+
+    uint32_t conf1 = 0x00000000;
+    uart_t* uart = (uart_t*) os_malloc(sizeof(uart_t));
+
+    if(uart == 0) {
+        return 0;
+    }
+
+    uart->uart_nr = uart_nr;
+
+    switch(uart->uart_nr) {
+        case UART0:
+            uart->rxEnabled = (mode != SERIAL_TX_ONLY);
+            uart->txEnabled = (mode != SERIAL_RX_ONLY);
+            uart->rxPin = (uart->rxEnabled)?3:255;
+            uart->txPin = (uart->txEnabled)?1:255;
+            if(uart->rxEnabled) pinMode(uart->rxPin, SPECIAL);
+            if(uart->txEnabled) pinMode(uart->txPin, SPECIAL);
+            IOSWAP &= ~(1 << IOSWAPU0);
+            break;
+        case UART1:
+            uart->rxEnabled = false;
+            uart->txEnabled = (mode != SERIAL_RX_ONLY);
+            uart->rxPin = 255;
+            uart->txPin = (uart->txEnabled)?2:255;
+            if(uart->txEnabled) pinMode(uart->txPin, SPECIAL);
+            break;
+        case UART_NO:
+        default:
+            // big fail!
+            os_free(uart);
+            return 0;
+    }
+    uart_set_baudrate(uart, baudrate);
+    USC0(uart->uart_nr) = config;
+
+    uart_flush(uart);
+    uart_interrupt_enable(uart);
+
+    if(uart->rxEnabled) {
+        conf1 |= (0x01 << UCFFT);
+    }
+
+    if(uart->txEnabled) {
+        conf1 |= (0x20 << UCFET);
+    }
+
+    USC1(uart->uart_nr) = conf1;
+
+    return uart;
+}
+
+void uart_uninit(uart_t* uart) {
+    if(uart == 0)
+        return;
+    uart_interrupt_disable(uart);
+
+    switch(uart->rxPin) {
+        case 3:
+            pinMode(3, INPUT);
+            break;
+        case 13:
+            pinMode(13, INPUT);
+            break;
+    }
+
+    switch(uart->txPin) {
+        case 1:
+            pinMode(1, INPUT);
+            break;
+        case 2:
+            pinMode(2, INPUT);
+            break;
+        case 15:
+            pinMode(15, INPUT);
+            break;
+    }
+
+    os_free(uart);
+}
+
+void uart_swap(uart_t* uart) {
+    if(uart == 0)
+        return;
+    switch(uart->uart_nr) {
+        case UART0:
+            if((uart->txPin == 1 && uart->txEnabled) || (uart->rxPin == 3 && uart->rxEnabled)) {
+                if(uart->txEnabled) pinMode(15, FUNCTION_4); //TX
+                if(uart->rxEnabled) pinMode(13, FUNCTION_4); //RX
+                IOSWAP |= (1 << IOSWAPU0);
+                if(uart->txEnabled){ //TX
+                  pinMode(1, INPUT);
+                  uart->txPin = 15;
+                }
+                if(uart->rxEnabled){ //RX
+                  pinMode(3, INPUT);
+                  uart->rxPin = 13;
+                }
+            } else {
+                if(uart->txEnabled) pinMode(1, SPECIAL); //TX
+                if(uart->rxEnabled) pinMode(3, SPECIAL); //RX
+                IOSWAP &= ~(1 << IOSWAPU0);
+                if(uart->txEnabled){ //TX
+                  pinMode(15, INPUT);
+                  uart->txPin = 1;
+                }
+                if(uart->rxEnabled){ //RX
+                  pinMode(13, INPUT); //RX
+                  uart->rxPin = 3;
+                }
+            }
+
+            break;
+        case UART1:
+            // current no swap possible! see GPIO pins used by UART
+            break;
+        default:
+            break;
+    }
+}
+
+// ####################################################################################################
+// ####################################################################################################
+// ####################################################################################################
+
+void uart_ignore_char(char c) {
+}
+
+void uart0_write_char(char c) {
+    if(&Serial != NULL && Serial.isTxEnabled()) {
+        if(Serial.availableForWrite() > 0) {
+            if(c == '\n') {
+                Serial.write('\r');
+            }
+            Serial.write(c);
+            return;
+        }
+    }
+
+    // wait for the Hardware FIFO
+    while(true) {
+        if(((USS(0) >> USTXC) & 0xff) <= (UART_TX_FIFO_SIZE - 2)) {
+            break;
+        }
+    }
+
+    if(c == '\n') {
+        USF(0) = '\r';
+    }
+    USF(0) = c;
+}
+
+void uart1_write_char(char c) {
+    if(&Serial1 != NULL && Serial1.isTxEnabled()) {
+        if(Serial1.availableForWrite() > 0) {
+            if(c == '\n') {
+                Serial1.write('\r');
+            }
+            Serial1.write(c);
+            return;
+        }
+    }
+
+    // wait for the Hardware FIFO
+    while(true) {
+        if(((USS(1) >> USTXC) & 0xff) <= (UART_TX_FIFO_SIZE - 2)) {
+            break;
+        }
+    }
+
+    if(c == '\n') {
+        USF(1) = '\r';
+    }
+    USF(1) = c;
+}
+
+static int s_uart_debug_nr = UART0;
+
+void uart_set_debug(int uart_nr) {
+    s_uart_debug_nr = uart_nr;
+    switch(s_uart_debug_nr) {
+        case UART0:
+            system_set_os_print(1);
+            ets_install_putc1((void *) &uart0_write_char);
+            setMPrintfPrinterCbc(uart0_write_char);
+            break;
+        case UART1:
+            system_set_os_print(1);
+            ets_install_putc1((void *) &uart1_write_char);
+            setMPrintfPrinterCbc(uart1_write_char);
+            break;
+        case UART_NO:
+        default:
+            system_set_os_print(0);
+            ets_install_putc1((void *) &uart_ignore_char);
+            setMPrintfPrinterCbc(NULL);
+            break;
+    }
+}
+
+int uart_get_debug() {
+    return s_uart_debug_nr;
+}
+
+// ####################################################################################################
+// ####################################################################################################
+// ####################################################################################################
+
+HardwareSerial::HardwareSerial(int uart_nr) :
+        _uart_nr(uart_nr), _uart(0), _tx_buffer(0), _rx_buffer(0), _written(false) {
+}
+
+void HardwareSerial::begin(unsigned long baud, byte config, byte mode) {
+
+    // disable debug for this interface
+    if(uart_get_debug() == _uart_nr) {
+        uart_set_debug(UART_NO);
+    }
+
+    _uart = uart_init(_uart_nr, baud, config, mode);
+
+    if(_uart == 0) {
+        return;
+    }
+
+    if(_uart->rxEnabled) {
+        if(!_rx_buffer)
+            _rx_buffer = new cbuf(SERIAL_RX_BUFFER_SIZE);
+    }
+    if(_uart->txEnabled) {
+        if(!_tx_buffer)
+            _tx_buffer = new cbuf(SERIAL_TX_BUFFER_SIZE);
+    }
+    _written = false;
+    delay(1);
+}
+
+void HardwareSerial::end() {
+    if(uart_get_debug() == _uart_nr) {
+        uart_set_debug(UART_NO);
+    }
+    uart_uninit(_uart);
+    delete _rx_buffer;
+    delete _tx_buffer;
+    _uart = 0;
+    _rx_buffer = 0;
+    _tx_buffer = 0;
+}
+
+void HardwareSerial::swap() {
+    if(_uart == 0)
+        return;
+    uart_swap(_uart);
+}
+
+void HardwareSerial::setDebugOutput(bool en) {
+    if(_uart == 0)
+        return;
+    if(en) {
+        if(_uart->txEnabled)
+          uart_set_debug(_uart->uart_nr);
+        else
+          uart_set_debug(UART_NO);
+    } else {
+        // disable debug for this interface
+        if(uart_get_debug() == _uart_nr) {
+            uart_set_debug(UART_NO);
+        }
+    }
+}
+
+bool HardwareSerial::isTxEnabled(void) {
+    if(_uart == 0)
+        return false;
+    return _uart->txEnabled;
+}
+
+bool HardwareSerial::isRxEnabled(void) {
+    if(_uart == 0)
+        return false;
+    return _uart->rxEnabled;
+}
+
+int HardwareSerial::available(void) {
+    int result = 0;
+
+    if (_uart != NULL && _uart->rxEnabled) {
+        result = static_cast<int>(_rx_buffer->getSize());
+    }
+
+    return result;
+}
+
+int HardwareSerial::peek(void) {
+    if(_uart == 0)
+        return -1;
+    if(_uart->rxEnabled) {
+        return _rx_buffer->peek();
+    } else {
+        return -1;
+    }
+}
+
+int HardwareSerial::read(void) {
+    if(_uart == 0)
+        return -1;
+    if(_uart->rxEnabled) {
+        return _rx_buffer->read();
+    } else {
+        return -1;
+    }
 }
 
 
-HardwareSerial Serial(UART_ID_0);
+int HardwareSerial::readMemoryBlock(char* buf, int max_len) {
+    if (_uart !=0 && _uart->rxEnabled) {
+        return _rx_buffer->read(buf, max_len);
+    }
+    return -1;
+}
+
+int HardwareSerial::availableForWrite(void) {
+    if(_uart == 0)
+        return 0;
+    if(_uart->txEnabled) {
+        return static_cast<int>(_tx_buffer->room());
+    } else {
+        return 0;
+    }
+}
+
+void HardwareSerial::flush() {
+    if(_uart == 0)
+        return;
+    if(!_uart->txEnabled)
+        return;
+    if(!_written)
+        return;
+
+    while(_tx_buffer->getSize() || uart_get_tx_fifo_room(_uart) < UART_TX_FIFO_SIZE) {
+
+    }
+
+    _written = false;
+}
+
+size_t HardwareSerial::write(uint8_t c) {
+    if(_uart == 0 || !_uart->txEnabled)
+        return 0;
+    _written = true;
+    size_t room = uart_get_tx_fifo_room(_uart);
+    if(room > 0 && _tx_buffer->empty()) {
+        uart_transmit_char(_uart, c);
+        return 1;
+    }
+
+    while(_tx_buffer->room() == 0) {
+
+    }
+
+    _tx_buffer->write(c);
+    uart_arm_tx_interrupt(_uart);
+    return 1;
+}
+
+HardwareSerial::operator bool() const {
+    return _uart != 0;
+}
+
+void HardwareSerial::_rx_complete_irq(char c) {
+    if(_rx_buffer) {
+        _rx_buffer->write(c);
+    }
+}
+
+void HardwareSerial::_tx_empty_irq(void) {
+    if(_uart == 0)
+        return;
+    if(_tx_buffer == 0)
+        return;
+    size_t queued = _tx_buffer->getSize();
+    if(!queued) {
+        uart_disarm_tx_interrupt(_uart);
+        return;
+    }
+
+    size_t room = uart_get_tx_fifo_room(_uart);
+    int n = static_cast<int>((queued < room) ? queued : room);
+    while(n--) {
+        uart_transmit_char(_uart, _tx_buffer->read());
+    }
+}
