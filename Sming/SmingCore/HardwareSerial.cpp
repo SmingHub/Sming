@@ -570,31 +570,38 @@ int HardwareSerial::available(void) {
 }
 
 int HardwareSerial::peek(void) {
-    if(_uart == 0)
-        return -1;
-    if(_uart->rxEnabled) {
-        return _rx_buffer->peek();
-    } else {
-        return -1;
-    }
+    int ret = 0;
+
+    noInterrupts();
+
+    if(_uart != 0 && _uart->rxEnabled) {
+        ret = _rx_buffer->peek();
+    } 
+    interrupts();
+    return ret;
 }
 
 int HardwareSerial::read(void) {
-    if(_uart == 0)
-        return -1;
-    if(_uart->rxEnabled) {
-        return _rx_buffer->read();
-    } else {
-        return -1;
-    }
+    int c = -1;
+    noInterrupts();
+    if(_uart != 0 && _uart->rxEnabled) {
+        c = _rx_buffer->read();
+    } 
+    interrupts();
+    return c;
 }
 
 
 int HardwareSerial::readMemoryBlock(char* buf, int max_len) {
+    int ret = -1;
+
+    noInterrupts();
     if (_uart !=0 && _uart->rxEnabled) {
-        return _rx_buffer->read(buf, max_len);
+        ret = _rx_buffer->read(buf, max_len);
     }
-    return -1;
+
+    interrupts();
+    return ret;
 }
 
 int HardwareSerial::availableForWrite(void) {
@@ -623,12 +630,19 @@ void HardwareSerial::flush() {
 }
 
 size_t HardwareSerial::write(uint8_t c) {
+    int ret = 0;
+
     if(_uart == 0 || !_uart->txEnabled)
         return 0;
+
     _written = true;
+
+    noInterrupts();
+
     size_t room = uart_get_tx_fifo_room(_uart);
     if(room > 0 && _tx_buffer->empty()) {
         uart_transmit_char(_uart, c);
+        interrupts();
         return 1;
     }
 
@@ -638,6 +652,7 @@ size_t HardwareSerial::write(uint8_t c) {
 
     _tx_buffer->write(c);
     uart_arm_tx_interrupt(_uart);
+    interrupts();
     return 1;
 }
 
