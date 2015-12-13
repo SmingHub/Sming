@@ -4,7 +4,7 @@ install:
   - mkdir -p $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
   - wget https://bintray.com/artifact/download/kireevco/generic/esp-alt-sdk-1.5.0-linux-x86_64.tar.gz
   - tar -zxf esp-alt-sdk-1.5.0-linux-x86_64.tar.gz -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-  - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming/Sming
+  - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
   - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
   - export ESPTOOl2=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk/esptool2/esptool2
 script:
