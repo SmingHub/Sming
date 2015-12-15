@@ -1,18 +1,16 @@
 // NetWeather
 
-
-#include <user_config.h>
+#include "configuration.h"
 #include <SmingCore/SmingCore.h>
 #include <Libraries/LiquidCrystal/LiquidCrystal.h>
 #include <math.h>
 
-#define HEARTBEAT_LED_PIN 16 // GPIO0 16 on ESP8266; red LED
+// CANDIDATE FOR A FSM???
 
 #define MODE_SWITCH_DELAY 4000 // Switch every 4 seconds
 
 #include "special_chars.h"
 
-// For more information visit useful wiki page: http://arduino-info.wikispaces.com/LCD-Blue-I2C
 LiquidCrystal lcd(4,2,14,12,13,15);
 
 Timer heartBeatTimer;
@@ -24,7 +22,8 @@ Timer secondsUpdaterTimer;
 
 HttpClient httpWeather;
 
-
+bool readyWeather = false;
+bool readyTime = false;
 
 
 void onGetWeather(HttpClient& client, bool successful);
@@ -36,12 +35,12 @@ void showTime();
 void secondsUpdater();
 void getWeather();
 void showWeather();
+void onGotTime(NtpClient& client, time_t time);
 
-// Update time every 60 minutes ; no delegate function
-NtpClient ntpClient("pool.ntp.org", 60*60);
 
-//  Don't use Dynamic Json Buffer. Go to static
-StaticJsonBuffer<5000>  jsonBuffer;
+NtpClient ntpClient("pool.ntp.org", 60*60, onGotTime);
+
+
 
 //JSON only knows double
 int weather_Temperature;
@@ -50,10 +49,55 @@ String weather_Description;
 DateTime weather_SunRise;
 DateTime weather_SunSet;
 
+
+DynamicJsonBuffer jsonConfigBuffer;
+
+
+
+
+JsonObject& getConfig(){
+
+	if (fileExist(NETWEATHER_CONFIG_FILE))
+	{
+		int size = fileGetSize(NETWEATHER_CONFIG_FILE);
+		char* jsonString = new char[size + 1];
+		fileGetContent(NETWEATHER_CONFIG_FILE, jsonString, size + 1);
+
+		JsonObject& config = jsonConfigBuffer.parseObject(jsonString);
+
+		if (config.success())
+		{
+
+			return config;
+
+		}
+
+	}
+
+	JsonObject& config=jsonConfigBuffer.createObject();
+		JsonObject& network=jsonConfigBuffer.createObject();
+	config["network"]=network;
+		network["ssid"] = WIFI_SSID;
+		network["password"] = WIFI_PWD;
+
+//		saveCfg();
+
+	return config;
+}
+
+
 void init()
 {
+	spiffs_mount(); // Mount file system, in order to work with files
+	JsonObject& cfg=getConfig();
+
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
+
+	Serial.print("JSON CONFIG: ");
+	cfg.printTo(Serial);
+	Serial.println();
+
 
 	//Change CPU freq. to 160MHZ
 	System.setCpuFrequency(eCF_160MHz);
@@ -65,9 +109,8 @@ void init()
 	pinMode(HEARTBEAT_LED_PIN, OUTPUT);
 	heartBeatTimer.initializeMs(1000, heartBeatBlink).start();
 
-
+	WifiStation.config( cfg["network"]["ssid"].toString() , cfg["network"]["password"].toString());
 	WifiStation.enable(true);
-	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiAccessPoint.enable(false);
 
 
@@ -81,6 +124,7 @@ void init()
 	lcd.createChar(3, celsius);
 	lcd.createChar(4, icon_clock);
 	lcd.createChar(5, icon_wifi);
+
 //-------- Write characters on the display ------------------
 // NOTE: Cursor Position: (CHAR, LINE) start at 0
   lcd.clear();
@@ -98,6 +142,12 @@ void init()
 
 
 
+}
+
+void onGotTime(NtpClient &client, time_t time){
+
+	readyTime=true;
+	Serial.println("GOT TIME !!!!!");
 }
 
 void WiFiConnected(){
@@ -136,19 +186,23 @@ void getTime(){
 	lcd.print("Time & Weather...");
 	lcd.blink();
 
-	// Wait 5 seconds then show the time
-	stagingTimer.initializeMs(5000, showTime).start(false);
-
+	// Wait until we have ready weather and time
+	if (readyWeather && readyTime ){
+		showTime();
+	} else {
+		stagingTimer.initializeMs(100, getTime).start(false);
+	}
 }
 
 void showTime(){
-
 	lcd.clear();
 	lcd.noBlink();
 	lcd.setCursor(2,0);
 	lcd.print("\4 ");
 	// check if time is good in the future
-	lcd.print(SystemClock.getSystemShortTimeString(eTZ_Local,true));
+	DateTime time_now = SystemClock.now(eTZ_Local);
+
+	lcd.print(time_now.toShortTimeString(true));
 	// Wait 3 seconds then show the weather
 	lcd.setCursor(0,1);
 	lcd.print("R ");
@@ -163,8 +217,10 @@ void showTime(){
 }
 
 void secondsUpdater(){
+
 	lcd.setCursor(4,0);
-	lcd.print(SystemClock.getSystemShortTimeString(eTZ_Local,true));
+	DateTime time_now = SystemClock.now(eTZ_Local);
+	lcd.print(time_now.toShortTimeString(true));
 
 }
 
@@ -206,7 +262,9 @@ void onGetWeather(HttpClient& client, bool successful)
 	{
 		char *response_char = new char[response.length() + 1];
 		strcpy(response_char, response.c_str());
+		response = "";
 
+		DynamicJsonBuffer jsonBuffer;
 		// apparently "ArduinoJson v5.0-beta, you can avoid the String copy because JsonBuffer::parseObject() can take a String as a parameter"
 		JsonObject& root = jsonBuffer.parseObject(response_char);
 		if (!root.success()) {                            // everything OK
@@ -250,8 +308,9 @@ void onGetWeather(HttpClient& client, bool successful)
 
 		// Clean up the response_char we just used and the JSON Buffer we just used so we don't fill it up
 		delete [] response_char;
-		jsonBuffer = StaticJsonBuffer<5000>();
+		// Jsonbuffer distructor will take care of that
 
+		readyWeather = true;
 	}
 }
 

@@ -4,8 +4,9 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
+
 #define HEARTBEAT_LED_PIN 16 // GPIO0 16 on ESP8266; red LED
-#define NETWEATHER_CONFIG_FILE ".netweather.conf" // leading point for security reasons :)
+#define NETWEATHER_CONFIG_FILE "netweather.conf" // leading point for security reasons :)
 
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -16,18 +17,24 @@
 
 
 
-struct NetWeatherCfg
-{
+//class NetWeatherCfg : public DynamicJsonBuffer , public JsonObject (DynamicJsonBuffer.) {
+//
+//String NetworkSSID;
+//String NetworkPassword;
+//
+//
+//
+//public:
+////JsonObject& cfg ( jsonBuffer.createObject() )
+////	JsonObject *cfg;
+//	NetWeatherCfg ();
+//	String getNetSSID ();
+//	String getNetPassword ();
+//
+//	void saveCfg ();
+//};
 
-	String NetworkSSID;
-	String NetworkPassword;
 
 
-};
-
-NetWeatherCfg loadConfig();
-void saveConfig(NetWeatherCfg& cfg);
-
-//extern NetWeatherCfg ActiveConfig;
 
 #endif /* INCLUDE_CONFIGURATION_H_ */
