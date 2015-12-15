@@ -147,7 +147,9 @@ void init()
 void onGotTime(NtpClient &client, time_t time){
 
 	readyTime=true;
-	Serial.println("GOT TIME !!!!!");
+	client.setAutoQuery(true);
+	client.setAutoUpdateSystemClock(true);
+	SystemClock.setTime(time, eTZ_UTC); // update systemclock utc value
 }
 
 void WiFiConnected(){
@@ -165,7 +167,7 @@ void WiFiConnected(){
 
 	getWeather();
 
-	stagingTimer.initializeMs(5000, getTime).start(false);
+	stagingTimer.initializeMs(5000, getTime).startOnce();
 
 }
 
@@ -190,7 +192,7 @@ void getTime(){
 	if (readyWeather && readyTime ){
 		showTime();
 	} else {
-		stagingTimer.initializeMs(100, getTime).start(false);
+		stagingTimer.initializeMs(100, getTime).startOnce();
 	}
 }
 
@@ -213,7 +215,7 @@ void showTime(){
 	// Update the time every 1s so it looks like it's moving and repeat
 	secondsUpdaterTimer.initializeMs(1000, secondsUpdater).start(true);
 
-	stagingTimer.initializeMs(MODE_SWITCH_DELAY, showWeather).start(false);
+	stagingTimer.initializeMs(MODE_SWITCH_DELAY, showWeather).startOnce();
 }
 
 void secondsUpdater(){
@@ -239,7 +241,7 @@ void showWeather(){
 	lcd.print(weather_Description);
 
 	// Wait 3 seconds then show the time
-	stagingTimer.initializeMs(MODE_SWITCH_DELAY, showTime).start(false);
+	stagingTimer.initializeMs(MODE_SWITCH_DELAY, showTime).startOnce();
 }
 
 void onGetWeather(HttpClient& client, bool successful)
@@ -247,13 +249,13 @@ void onGetWeather(HttpClient& client, bool successful)
 	if (successful){
 		Serial.println("Successful onGetWeather");
 	  // Get weather every 5 minutes
-	  weatherTimer.initializeMs(5*60*1000, getWeather).start(true);
-//	  weatherTimer.initializeMs(5*1000, getWeather).start(true);
+	  weatherTimer.initializeMs(5*60*1000, getWeather).start();
+
 	}
 	else{
 		Serial.println("Failed onGetWeather");
 		// Get weather every 30s
-		weatherTimer.initializeMs(30*1000, getWeather).start(true);
+		weatherTimer.initializeMs(30*1000, getWeather).start();
 	}
 
 	String response = client.getResponseString();
