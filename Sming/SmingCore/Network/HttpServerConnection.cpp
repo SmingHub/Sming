@@ -61,7 +61,12 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 			if (request.getContentLength() > 0 && contType.indexOf(ContentType::FormUrlEncoded) != -1)
 				state = eHCS_ParsePostData;
 			else
+			{
+				request.parseRawData(server, buf);
 				state = eHCS_ParsingCompleted;
+				TcpConnection::onReceive(buf);
+				return ERR_OK;
+			}
 		}
 	}
 	else if (state == eHCS_WebSocketFrames)
@@ -86,10 +91,10 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 			state = eHCS_ParsingCompleted;
 		}
 	}
-	else if (state == eHCS_ParsingCompleted && request.getContentLength() > 0)
-	{
-		request.parseRawData(server, buf);
-	}
+//	else if (state == eHCS_ParsingCompleted && request.getContentLength() > 0)
+//	{
+//		request.parseRawData(server, buf);
+//	}
 	// Fire callbacks
 	TcpConnection::onReceive(buf);
 
