@@ -190,7 +190,7 @@ void WiFiConnected(){
 
 
 	getWeather();
-	weatherTimer.initializeMs(cfg_local["weather"]["refresh_rate"], getWeather).start(true);
+	weatherTimer.initializeMs(cfg_local["weather"]["refresh_rate"], getWeather).start();
 
 	stagingTimer.initializeMs(cfg_local["display_time"].as<int>(), waitForTimeWeather).startOnce();
 
@@ -220,7 +220,7 @@ void waitForTimeWeather(){
 		showTime();
 	} else {
 		Serial.println("WeatherTime NOT READY !!!");
-		stagingTimer.initializeMs(100, waitForTimeWeather).startOnce();
+		stagingTimer.initializeMs(500, waitForTimeWeather).startOnce();
 	}
 }
 
