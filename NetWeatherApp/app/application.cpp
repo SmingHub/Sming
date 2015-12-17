@@ -217,9 +217,9 @@ void waitForTimeWeather(){
 
 	// Wait until we have ready weather and time
 	if (readyWeather && readyTime ){
-		Serial.println("WeatherTime NOT READY !!!");
-		stagingTimer.initializeMs(cfg_local["display_time"].as<int>(), showTime).startOnce();
+		showTime();
 	} else {
+		Serial.println("WeatherTime NOT READY !!!");
 		stagingTimer.initializeMs(100, waitForTimeWeather).startOnce();
 	}
 }
