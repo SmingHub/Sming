@@ -21,10 +21,10 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * MQTT protocol based on [libemqtt] (https://github.com/menudoproblema/libemqtt)
 * Networking based on LWIP stack
 * Simple and powerfull hardware API wrappers
-* Based on Espressif SDK v1.3.0
+* Based on Espressif NONOS SDK 1.4.0 & 1.5.0
 
 ## Latest Release
-- [Sming V1.4.0](https://github.com/SmingHub/Sming/releases/tag/1.4.0)
+- [Sming V2.0.0](https://github.com/SmingHub/Sming/releases/tag/2.0.0)
 
 ## Getting started
 - [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
