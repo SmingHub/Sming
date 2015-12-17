@@ -28,6 +28,10 @@ HardwareSerial::HardwareSerial(const int uartPort)
 	: uart(uartPort)
 {
 	resetCallback();
+	// Start Serial task
+	serialQueue = (os_event_t *)os_malloc(sizeof(os_event_t)*TEST_QUEUE_LEN);
+	system_os_task(delegateTask,USER_TASK_PRIO_0,serialQueue,TEST_QUEUE_LEN);
+
 }
 
 void HardwareSerial::begin(const uint32_t baud/* = 9600*/)
@@ -238,20 +242,38 @@ void HardwareSerial::uart0_rx_intr_handler(void *para)
 			}
 		}
       }
-      if (memberData[UART_ID_0].HWSDelegate)
-        {
-        	unsigned short cc;
-        	cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
-        													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
-        	memberData[UART_ID_0].HWSDelegate(Serial, RcvChar, cc);
-        }
-      if (memberData[UART_ID_0].commandExecutor)
-      {
-    	  memberData[UART_ID_0].commandExecutor->executorReceive(RcvChar);
-      }
+
+      system_os_post(USER_TASK_PRIO_0, SIG_RX, RcvChar);
+
     }
 
 }
+
+
+void HardwareSerial::delegateTask (os_event_t *inputEvent)
+{
+	switch (inputEvent->sig)
+	{
+		case SIG_RX:
+
+	      if (memberData[UART_ID_0].HWSDelegate)
+          {
+//        	 unsigned short cc;
+//		     cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
+//		        													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
+		     memberData[UART_ID_0].HWSDelegate(Serial, (char)inputEvent->par, 1);
+		   }
+		   if (memberData[UART_ID_0].commandExecutor)
+		   {
+		      memberData[UART_ID_0].commandExecutor->executorReceive((char)inputEvent->par);
+		    }
+			break;
+
+		default:
+			break;
+	}
+}
+
 
 
 HardwareSerial Serial(UART_ID_0);
