@@ -10,7 +10,7 @@
 
 #include <user_config.h>
 #include "../SmingCore/FileSystem.h"
-#include "../Services/ArduinoJson/ArduinoJson.h"
+#include "../Services/ArduinoJson/include/ArduinoJson.h"
 #include "../Wiring/WString.h"
 #include "../Wiring/WHashMap.h"
 

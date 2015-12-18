@@ -222,6 +222,7 @@ void TcpConnection::close()
 	if (tcp == NULL) return;
 	debugf("TCP connection closing");
 
+	tcp_poll(tcp, staticOnPoll, 1);
 	tcp_arg(tcp, NULL); // reset pointer to close connection on next callback
 	tcp = NULL;
 }

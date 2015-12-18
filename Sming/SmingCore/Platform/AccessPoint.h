@@ -29,6 +29,10 @@ public:
 	bool setIP(IPAddress address);
 	String getMAC();
 
+	IPAddress getNetworkMask();
+	IPAddress getNetworkGateway();
+	IPAddress getNetworkBroadcast();
+
 protected:
 	virtual void onSystemReady();
 
