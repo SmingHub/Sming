@@ -29,9 +29,8 @@ HardwareSerial::HardwareSerial(const int uartPort)
 {
 	resetCallback();
 	// Start Serial task
-	serialQueue = (os_event_t *)os_malloc(sizeof(os_event_t)*TEST_QUEUE_LEN);
-	system_os_task(delegateTask,USER_TASK_PRIO_0,serialQueue,TEST_QUEUE_LEN);
-
+	serialQueue = (os_event_t *)os_malloc(sizeof(os_event_t) * SERIAL_QUEUE_LEN);
+	system_os_task(delegateTask,USER_TASK_PRIO_0,serialQueue,SERIAL_QUEUE_LEN);
 }
 
 void HardwareSerial::begin(const uint32_t baud/* = 9600*/)
@@ -243,36 +242,54 @@ void HardwareSerial::uart0_rx_intr_handler(void *para)
 		}
       }
 
-      system_os_post(USER_TASK_PRIO_0, SIG_RX, RcvChar);
+      if ((memberData[UART_ID_0].HWSDelegate) || (memberData[UART_ID_0].commandExecutor))
+      {
+    	  uint32 serialQueueParameter;
+    	  uint16 cc;
+    	  cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
+      													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
+    	  serialQueueParameter = (cc * 256) + RcvChar; // can be done by bitlogic, avoid casting to ETSParam
 
+          if (memberData[UART_ID_0].HWSDelegate)
+		  {
+        	  system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_DELEGATE, serialQueueParameter);
+		  }
+          if (memberData[UART_ID_0].commandExecutor)
+      	  {
+        	  system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_COMMAND, serialQueueParameter);
+      	  }
+      }
     }
-
 }
-
 
 void HardwareSerial::delegateTask (os_event_t *inputEvent)
 {
+	uint8 rcvChar = inputEvent->par % 256;  // can be done by bitlogic, avoid casting from ETSParam
+	uint16 charCount = inputEvent->par / 256 ;
+
 	switch (inputEvent->sig)
 	{
-		case SIG_RX:
+		case SERIAL_SIGNAL_DELEGATE:
 
-	      if (memberData[UART_ID_0].HWSDelegate)
-          {
-//        	 unsigned short cc;
-//		     cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
-//		        													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
-		     memberData[UART_ID_0].HWSDelegate(Serial, (char)inputEvent->par, 1);
-		   }
-		   if (memberData[UART_ID_0].commandExecutor)
-		   {
-		      memberData[UART_ID_0].commandExecutor->executorReceive((char)inputEvent->par);
-		    }
+			if (memberData[UART_ID_0].HWSDelegate) //retest for thread safety
+			{
+				memberData[UART_ID_0].HWSDelegate(Serial, rcvChar, charCount );
+			}
+			break;
+
+		case SERIAL_SIGNAL_COMMAND:
+
+			if (memberData[UART_ID_0].commandExecutor)  //retest for thread safety
+			{
+				memberData[UART_ID_0].commandExecutor->executorReceive(rcvChar);
+			}
 			break;
 
 		default:
 			break;
 	}
 }
+
 
 
 
