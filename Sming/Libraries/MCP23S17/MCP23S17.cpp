@@ -34,21 +34,8 @@
 
 #include <SPI.h>                 // Arduino IDE SPI library - uses AVR hardware SPI features
 #include "MCP23S17.h"            // Header files for this class
-
-// Defines to keep logical information symbolic go here
-
-//#define    HIGH          (1)
-//#define    LOW           (0)
-#define    ON            (1)
-#define    OFF           (0)
-#define    _OUTPUT        (0)
-#define    _INPUT         (1)
-
-// Control byte and configuration register information - Control Byte: "0100 A2 A1 A0 R/W" -- W=0
-
-#define    OPCODEW       (0b01000000)  // Opcode for MCP23S17 with LSB (bit0) set to write (0), address OR'd in later, bits 1-3
-#define    OPCODER       (0b01000001)  // Opcode for MCP23S17 with LSB (bit0) set to read (1), address OR'd in later, bits 1-3
-#define    ADDR_ENABLE   (0b00001000)  // Configuration register for MCP23S17, the only thing we change is enabling hardware addressing
+using namespace MCP23S17Registers;
+using namespace MCP23S17Constants;
 
 // Constructor to instantiate an instance of MCP to a specific chip (address)
 
@@ -56,6 +43,8 @@ MCP::MCP(uint8_t address, uint8_t cs)
 {
 	_cs = cs;
 	_address = address;
+	_rcmd = (OPCODER | (_address << 1)); //Read command for chip address
+	_wcmd = (OPCODEW | (_address << 1)); //Write command for chip addres
 	_modeCache = 0xFFFF;                // Default I/O mode is all input, 0xFFFF
 	_outputCache = 0x0000;            // Default output state is all off, 0x0000
 	_pullupCache = 0x0000;           // Default pull-up state is all off, 0x0000
@@ -76,7 +65,7 @@ void MCP::begin()
 void MCP::byteWrite(uint8_t reg, uint8_t value)
 {      // Accept the register and byte
 	::digitalWrite(_cs, LOW);
-	SPI.transfer(OPCODEW | (_address << 1)); // Send the MCP23S17 opcode, chip address, and write bit
+	SPI.transfer(_wcmd); // Send the MCP23S17 opcode, chip address, and write bit
 	SPI.transfer(reg);                     // Send the register we want to write
 	SPI.transfer(value);                                 // Send the byte
 	::digitalWrite(_cs, HIGH);
@@ -87,7 +76,7 @@ void MCP::byteWrite(uint8_t reg, uint8_t value)
 void MCP::wordWrite(uint8_t reg, unsigned int word)
 {  // Accept the start register and word
 	::digitalWrite(_cs, LOW);
-	SPI.transfer(OPCODEW | (_address << 1)); // Send the MCP23S17 opcode, chip address, and write bit
+	SPI.transfer(_wcmd); // Send the MCP23S17 opcode, chip address, and write bit
 	SPI.transfer(reg);                    // Send the register we want to write
 	SPI.transfer((uint8_t) (word)); // Send the low byte (register address pointer will auto-increment after write)
 	SPI.transfer((uint8_t) (word >> 8)); // Shift the high byte down to the low byte location and send
@@ -100,7 +89,7 @@ void MCP::pinMode(uint8_t pin, uint8_t mode)
 {  // Accept the pin # and I/O mode
 	if (pin < 1 | pin > 16)
 		return; // If the pin value is not valid (1-16) return, do nothing and return
-	if (mode == _INPUT)
+	if (mode == INPUT)
 	{      // Determine the mode before changing the bit state in the mode cache
 		_modeCache |= 1 << (pin - 1); // Since input = "HIGH", OR in a 1 in the appropriate place
 	}
@@ -196,7 +185,7 @@ unsigned int MCP::digitalRead(void)
 { // This function will read all 16 bits of I/O, and return them as a word in the format 0x(portB)(portA)
 	unsigned int value = 0; // Initialize a variable to hold the read values to be returned
 	::digitalWrite(_cs, LOW);
-	SPI.transfer(OPCODER | (_address << 1)); // Send the MCP23S17 opcode, chip address, and read bit
+	SPI.transfer(_rcmd); // Send the MCP23S17 opcode, chip address, and read bit
 	SPI.transfer(GPIOA);                    // Send the register we want to read
 	value = SPI.transfer(0x00); // Send any byte, the function will return the read value (register address pointer will auto-increment after write)
 	value |= (SPI.transfer(0x00) << 8); // Read in the "high byte" (portB) and shift it up to the high location and merge with the "low byte"
@@ -208,7 +197,7 @@ uint8_t MCP::byteRead(uint8_t reg)
 {        // This function will read a single register, and return it
 	uint8_t value = 0; // Initialize a variable to hold the read values to be returned
 	::digitalWrite(_cs, LOW);
-	SPI.transfer(OPCODER | (_address << 1)); // Send the MCP23S17 opcode, chip address, and read bit
+	SPI.transfer(_rcmd); // Send the MCP23S17 opcode, chip address, and read bit
 	SPI.transfer(reg);                      // Send the register we want to read
 	value = SPI.transfer(0x00); // Send any byte, the function will return the read value
 	::digitalWrite(_cs, HIGH);

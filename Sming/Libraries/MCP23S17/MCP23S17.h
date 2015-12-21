@@ -37,38 +37,49 @@
 
 // REGISTERS ARE DEFINED HERE SO THAT THEY MAY BE USED IN THE MAIN PROGRAM
 
-#define    IODIRA    (0x00)      // MCP23x17 I/O Direction Register
-#define    IODIRB    (0x01)      // 1 = Input (default), 0 = Output
+namespace MCP23S17Registers {
+			static const uint8_t IODIRA = 0x00; // MCP23x17 I/O Direction Register
+			static const uint8_t IODIRB = 0x01; // 1 = Input (default), 0 = Output
 
-#define    IPOLA     (0x02)      // MCP23x17 Input Polarity Register
-#define    IPOLB     (0x03)      // 0 = Normal (default)(low reads as 0), 1 = Inverted (low reads as 1)
+			static const uint8_t IPOLA = 0x02; // MCP23x17 Input Polarity Register
+			static const uint8_t IPOLB = 0x03; // 0 = Normal (default)(low reads as 0), 1 = Inverted (low reads as 1)
 
-#define    GPINTENA  (0x04)      // MCP23x17 Interrupt on Change Pin Assignements
-#define    GPINTENB  (0x05)      // 0 = No Interrupt on Change (default), 1 = Interrupt on Change
+			static const uint8_t GPINTENA = 0x04; // MCP23x17 Interrupt on Change Pin Assignements
+			static const uint8_t GPINTENB = 0x05; // 0 = No Interrupt on Change (default), 1 = Interrupt on Change
 
-#define    DEFVALA   (0x06)      // MCP23x17 Default Compare Register for Interrupt on Change
-#define    DEFVALB   (0x07)      // Opposite of what is here will trigger an interrupt (default = 0)
+			static const uint8_t DEFVALA = 0x06; // MCP23x17 Default Compare Register for Interrupt on Change
+			static const uint8_t DEFVALB = 0x07; // Opposite of what is here will trigger an interrupt (default = 0)
 
-#define    INTCONA   (0x08)      // MCP23x17 Interrupt on Change Control Register
-#define    INTCONB   (0x09)      // 1 = pin is compared to DEFVAL, 0 = pin is compared to previous state (default)
+			static const uint8_t INTCONA = 0x08; // MCP23x17 Interrupt on Change Control Register
+			static const uint8_t INTCONB = 0x09; // 1 = pin is compared to DEFVAL, 0 = pin is compared to previous state (default)
 
-#define    IOCON     (0x0A)      // MCP23x17 Configuration Register
-//                   (0x0B)      //     Also Configuration Register
+			static const uint8_t IOCON = 0x0A; // MCP23x17 Configuration Register
+//                   (0x0Bu) //     Also Configuration Register
 
-#define    GPPUA     (0x0C)      // MCP23x17 Weak Pull-Up Resistor Register
-#define    GPPUB     (0x0D)      // INPUT ONLY: 0 = No Internal 100k Pull-Up (default) 1 = Internal 100k Pull-Up 
+			static const uint8_t GPPUA = 0x0C; // MCP23x17 Weak Pull-Up Resistor Register
+			static const uint8_t GPPUB = 0x0D; // INPUT ONLY: 0 = No Internal 100k Pull-Up (default) 1 = Internal 100k Pull-Up
 
-#define    INTFA     (0x0E)      // MCP23x17 Interrupt Flag Register
-#define    INTFB     (0x0F)      // READ ONLY: 1 = This Pin Triggered the Interrupt
+			static const uint8_t INTFA = 0x0E; // MCP23x17 Interrupt Flag Register
+			static const uint8_t INTFB = 0x0F; // READ ONLY: 1 = This Pin Triggered the Interrupt
 
-#define    INTCAPA   (0x10)      // MCP23x17 Interrupt Captured Value for Port Register
-#define    INTCAPB   (0x11)      // READ ONLY: State of the Pin at the Time the Interrupt Occurred
+			static const uint8_t INTCAPA = 0x10; // MCP23x17 Interrupt Captured Value for Port Register
+			static const uint8_t INTCAPB = 0x11; // READ ONLY: State of the Pin at the Time the Interrupt Occurred
 
-#define    GPIOA     (0x12)      // MCP23x17 GPIO Port Register
-#define    GPIOB     (0x13)      // Value on the Port - Writing Sets Bits in the Output Latch
+			static const uint8_t GPIOA = 0x12; // MCP23x17 GPIO Port Register
+			static const uint8_t GPIOB = 0x13; // Value on the Port - Writing Sets Bits in the Output Latch
 
-#define    OLATA     (0x14)      // MCP23x17 Output Latch Register
-#define    OLATB     (0x15)      // 1 = Latch High, 0 = Latch Low (default) Reading Returns Latch State, Not Port Value!
+			static const uint8_t OLATA = 0x14; // MCP23x17 Output Latch Register
+			static const uint8_t OLATB = 0x15;  // 1 = Latch High, 0 = Latch Low (default) Reading Returns Latch State, Not Port Value!
+};
+
+namespace MCP23S17Constants {
+			static const uint8_t ON = 1;  // For pull-up ON
+			static const uint8_t OFF = 0; // For pull-up OFF
+			static const uint8_t OPCODEW = 0b01000000;  // Opcode for MCP23S17 with LSB (bit0) set to write (0), address OR'd in later, bits 1-3
+			static const uint8_t OPCODER = 0b01000001;  // Opcode for MCP23S17 with LSB (bit0) set to read (1), address OR'd in later, bits 1-3
+			static const uint8_t ADDR_ENABLE = 0b00001000;  // Configuration register for MCP23S17, the only thing we change is enabling hardware addressing
+
+};
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
@@ -95,8 +106,10 @@ public:
 	uint8_t byteRead(uint8_t); // Reads an individual register and returns the byte. Argument is the register address
 	unsigned int digitalRead(void); // Reads all input  pins at once. Be sure it ignore the value of pins configured as output!
 private:
-	uint8_t _address;                        // Address of the MCP23S17 in use
-	uint8_t _cs;							// CS pin number for MCP23S17
+	uint8_t _address; // Address of the MCP23S17 in use
+	uint8_t _cs; // CS pin number for MCP23S17
+	uint8_t _rcmd;
+	uint8_t _wcmd;
 	unsigned int _modeCache; // Caches the mode (input/output) configuration of I/O pins
 	unsigned int _pullupCache; // Caches the internal pull-up configuration of input pins (values persist across mode changes)
 	unsigned int _invertCache; // Caches the input pin inversion selection (values persist across mode changes)
