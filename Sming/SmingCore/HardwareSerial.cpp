@@ -101,7 +101,7 @@ int HardwareSerial::read()
 	char res = *(rxBuf.pReadPos);
 	rxBuf.pReadPos++;
 
-	if (rxBuf.pReadPos == (rxBuf.pRcvMsgBuff + RX_BUFF_SIZE))
+	if (rxBuf.pReadPos >= (rxBuf.pRcvMsgBuff + RX_BUFF_SIZE))
 		rxBuf.pReadPos = rxBuf.pRcvMsgBuff ;
 
 	interrupts();
@@ -122,7 +122,7 @@ int HardwareSerial::readMemoryBlock(char* buf, int max_len)
 
 			// Set pointer to next data word in ring buffer
 			rxBuf.pReadPos++;
-			if (rxBuf.pReadPos == (rxBuf.pRcvMsgBuff + RX_BUFF_SIZE))
+			if (rxBuf.pReadPos >= (rxBuf.pRcvMsgBuff + RX_BUFF_SIZE))
 				rxBuf.pReadPos = rxBuf.pRcvMsgBuff ;
 		}
 	}
