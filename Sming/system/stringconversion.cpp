@@ -46,6 +46,10 @@ char* ultoa(unsigned long val, char* buffer, unsigned int base)
 
 char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width)
 {
+	return ultoa_wp(val, buffer, base, 0, ' ');
+}
+char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad)
+{
 	int i = 34, p = 0;
 	char buf[36] = {0};
 
@@ -58,7 +62,7 @@ char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width)
 		width -= strlen(&buf[i+1]);
 		if(width > 0)
 		{
-			memset(buffer, ' ', width);
+			memset(buffer, pad, width);
 		}
 	}
 	strcpy(buffer + width, &buf[i+1]);
