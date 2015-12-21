@@ -21,10 +21,10 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * MQTT protocol based on [libemqtt] (https://github.com/menudoproblema/libemqtt)
 * Networking based on LWIP stack
 * Simple and powerfull hardware API wrappers
-* Based on Espressif SDK v1.3.0
+* Based on Espressif NONOS SDK 1.4.0 & 1.5.0
 
 ## Latest Release
-- [Sming V1.4.0](https://github.com/SmingHub/Sming/releases/tag/1.4.0)
+- [Sming V2.0.0](https://github.com/SmingHub/Sming/releases/tag/2.0.0)
 
 ## Getting started
 - [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
@@ -33,41 +33,12 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 
 ## Additional needed software 
 - Spiffy  : Source included in Sming repository
-- [ESPtool2] (https://github.com/raburton/esp8266) esptool2 
+- [ESPtool2] (https://github.com/raburton/esptool2) esptool2 
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
 ## Examples
 More information at **[Wiki Examples](https://github.com/SmingHub/Sming/wiki/examples)** page.
-
-### OTA application update based on rBoot
-```c++
-void OtaUpdate() {
-  
-  uint8 slot;
-  rboot_config bootconf;
-  
-  Serial.println("Updating...");
-  
-  // need a clean object, otherwise if run before and failed will not run again
-  if (otaUpdater) delete otaUpdater;
-  otaUpdater = new rBootHttpUpdate();
-  
-  // select rom slot to flash
-  bootconf = rboot_get_config();
-  slot = bootconf.current_rom;
-  if (slot == 0) slot = 1; else slot = 0;
-
-  // flash rom to position indicated in the rBoot config rom table
-  otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
-
-  // and/or set a callback (called on failure or success without switching requested)
-  otaUpdater->setCallback(OtaUpdate_CallBack);
-
-  // start update
-  otaUpdater->start();
-}
-```
 
 ### Simple GPIO input/output
 ```c++
@@ -114,6 +85,35 @@ void onDataSent(HttpClient& client, bool successful)
     Serial.println("Successful!");
   else
     Serial.println("Failed");
+}
+```
+
+### OTA application update based on rBoot
+```c++
+void OtaUpdate() {
+	
+	uint8 slot;
+	rboot_config bootconf;
+	
+	Serial.println("Updating...");
+	
+	// need a clean object, otherwise if run before and failed will not run again
+	if (otaUpdater) delete otaUpdater;
+	otaUpdater = new rBootHttpUpdate();
+	
+	// select rom slot to flash
+	bootconf = rboot_get_config();
+	slot = bootconf.current_rom;
+	if (slot == 0) slot = 1; else slot = 0;
+
+	// flash rom to position indicated in the rBoot config rom table
+	otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
+
+	// and/or set a callback (called on failure or success without switching requested)
+	otaUpdater->setCallback(OtaUpdate_CallBack);
+
+	// start update
+	otaUpdater->start();
 }
 ```
 

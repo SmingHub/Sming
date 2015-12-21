@@ -32,6 +32,35 @@ void setMPrintfPrinterCbc(void (*callback)(char))
 	cbc_printchar = callback;
 }
 
+/**
+ * @fn int m_snprintf(char* buf, int length, const char *fmt, ...);
+ *
+ * @param buf - destination buffer
+ * @param length - destination buffer size
+ * @param fmt - printf compatible format string
+ *
+ * @retval int - number of characters written
+ */
+int m_snprintf(char* buf, int length, const char *fmt, ...)
+{
+	char *p;
+	va_list args;
+	int n = 0;
+
+	va_start(args, fmt);
+	n = m_vsnprintf(buf, length, fmt, args);
+	va_end(args);
+
+	return n;
+}
+
+/**
+ * @fn int m_printf(const char *fmt, ...);
+ *
+ * @param fmt - printf compatible format string
+ *
+ * @retval int - number of characters written to console
+ */
 int m_printf(const char *fmt, ...)
 {
 	if(!cbc_printchar)
@@ -132,7 +161,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 			}
 			else
 			{
-				while (*s)
+				while (*s && (maxLen - (uint32_t)(str - buf) > OVERFLOW_GUARD))
 					*str++ = *s++;
 			}
 
