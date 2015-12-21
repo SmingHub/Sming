@@ -133,9 +133,9 @@ TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
-MODULES 	?= app  # if not initialized by user 
+MODULES 	+= app  # append app, or set to app if not initialized by user 
 MODULES		+= $(SMING_HOME)/rboot/appcode
-EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
+EXTRA_INCDIR    += include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 $(USER_CFLAGS)
