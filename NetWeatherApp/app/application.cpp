@@ -42,12 +42,20 @@ NtpClient ntpClient("pool.ntp.org", SECS_PER_HOUR, onGotTime);
 
 
 
-//JSON only knows double
-int weather_Temperature;
-int weather_Humidity;
-String weather_Description;
-DateTime weather_SunRise;
-DateTime weather_SunSet;
+struct display_data_struct {
+	int weather_Temp;
+	int weather_Humidity;
+	String weather_Description;
+	DateTime weather_SunRise;
+	DateTime weather_SunSet;
+
+} display_data;
+
+enum tempUnit {
+	tFahrenheit,
+	tKelvin,
+	tCelcius,
+};
 
 
 DynamicJsonBuffer jsonConfigBuffer;
@@ -87,7 +95,7 @@ JsonObject& getConfig(){
 	weather["city_id"]="6094817";
 	weather["url"]="http://api.openweathermap.org/data/2.5/weather";
 	weather["api_key"]="a5e4c3d55c24560c4327ca0a862897c5";
-	weather["units"]="metric";
+	weather["units"] = tCelcius;
 	weather["refresh_rate"]= 5*SECS_PER_MIN*1000;
 
 	// Eastern Standard Time - EST
@@ -238,9 +246,9 @@ void showTime(){
 	// Wait 3 seconds then show the weather
 	lcd.setCursor(0,1);
 	lcd.print("R ");
-	lcd.print(weather_SunRise.toShortTimeString());
+	lcd.print(display_data.weather_SunRise.toShortTimeString());
 	lcd.print(" S ");
-	lcd.print(weather_SunSet.toShortTimeString());
+	lcd.print(display_data.weather_SunSet.toShortTimeString());
 
 	// Update the time every 1s so it looks like it's moving and repeat
 	secondsUpdaterTimer.initializeMs(1000, secondsUpdater).start(true);
@@ -263,14 +271,23 @@ void showWeather(){
 	lcd.clear();
 	lcd.noBlink();
 	lcd.print("\1 ");
-	lcd.print(weather_Temperature);
-	lcd.print("\3C");
+	lcd.print(display_data.weather_Temp);
+	lcd.print("\3");
+
+	char temp_units;
+	switch ( cfg_local["weather"]["units"].as<int>() ) {
+	case tFahrenheit: temp_units = 'F'; break;
+	case tKelvin: temp_units = 'K'; break;
+	case tCelcius: temp_units = 'C'; break;
+	default: temp_units = 'C';
+	}
+	lcd.print(temp_units);
 	lcd.setCursor(10,0);
 	lcd.print("\2 ");
-	lcd.print(weather_Humidity);
+	lcd.print(display_data.weather_Humidity);
 	lcd.print("%");
 	lcd.setCursor(0,1);
-	lcd.print(weather_Description);
+	lcd.print(display_data.weather_Description);
 
 
 	stagingTimer.initializeMs(cfg_local["display_time"].as<int>(), showTime).startOnce();
@@ -280,17 +297,6 @@ void onGetWeather(HttpClient& client, bool successful) {
 	// Localize the config
 	JsonObject& cfg_local = *cfg;
 
-//	if (successful){
-//		Serial.println("Successful onGetWeather");
-//	  // Get weather every 5 minutes
-//	  weatherTimer.initializeMs(5*60*1000, getWeather).start();
-//
-//	}
-//	else{
-//		Serial.println("Failed onGetWeather");
-//		// Get weather every 30s
-//		weatherTimer.initializeMs(30*1000, getWeather).start();
-//	}
 
 	String response = client.getResponseString();
 	Serial.println("Server response: '" + response + "'");
@@ -310,33 +316,34 @@ void onGetWeather(HttpClient& client, bool successful) {
 
 		if (jsonWeather["main"]["temp"].is<double>()) {
 			// we have a double
-			double temp_temp = jsonWeather["main"]["temp"];
-			weather_Temperature = round(temp_temp);
+			// cast_long_to ????
+			double temp_temp = jsonWeather["main"]["temp"].as<double>();
+			display_data.weather_Temp = round(temp_temp);
 		} else {
 			// most likely an integer
-			weather_Temperature = jsonWeather["main"]["temp"];
+			display_data.weather_Temp = jsonWeather["main"]["temp"].as<int>();
 		}
 
 
 
-		weather_Humidity = (int) jsonWeather["main"]["humidity"];
-		weather_Description = jsonWeather["weather"][0]["description"];
+		display_data.weather_Humidity = (int) jsonWeather["main"]["humidity"];
+		display_data.weather_Description = jsonWeather["weather"][0]["description"];
 
 		// Adjust for timezone
-		weather_SunRise = (long) jsonWeather["sys"]["sunrise"] + (SECS_PER_HOUR * cfg_local["time_zone"].as<double>());
-		weather_SunSet = (long) jsonWeather["sys"]["sunset"] + (SECS_PER_HOUR * cfg_local["time_zone"].as<double>());
+		display_data.weather_SunRise = (long) jsonWeather["sys"]["sunrise"] + (SECS_PER_HOUR * cfg_local["time_zone"].as<double>());
+		display_data.weather_SunSet = (long) jsonWeather["sys"]["sunset"] + (SECS_PER_HOUR * cfg_local["time_zone"].as<double>());
 
 		Serial.println("===========");
 		Serial.print("Temperature: ");
-		Serial.println(weather_Temperature);
+		Serial.println(display_data.weather_Temp);
 		Serial.print("Humidity: ");
-		Serial.println(weather_Humidity);
+		Serial.println(display_data.weather_Humidity);
 		Serial.print("Weather Description: ");
-		Serial.println(weather_Description);
+		Serial.println(display_data.weather_Description);
 		Serial.print("Sunrise Time: ");
-		Serial.println(weather_SunRise);
+		Serial.println(display_data.weather_SunRise);
 		Serial.print("Sunset Time: ");
-		Serial.println(weather_SunSet);
+		Serial.println(display_data.weather_SunSet);
 		Serial.println("===========");
 		Serial.print("HEAP Free size: ");
 	    Serial.println(system_get_free_heap_size());
@@ -360,15 +367,19 @@ void getWeather(){
 	// Extract only weather related config
 	JsonObject& cfg_weather = cfg_local["weather"];
 
-	String url = cfg_weather["url"].toString() + "?id=" + cfg_weather["city_id"].toString() + "&units=" + cfg_weather["units"].toString() + "&appid=" + cfg_weather["api_key"].toString();
+	String temp_url_req;
+	switch ( cfg_weather["units"].as<int>() ) {
+	case tFahrenheit: temp_url_req = "&units=imperial"; break;
+	case tKelvin: temp_url_req = ""; break;
+	case tCelcius: temp_url_req = "&units=metric"; break;
+	default: temp_url_req = "&units=metric";
+	}
+
+	String url = cfg_weather["url"].toString() + "?id=" + cfg_weather["city_id"].toString() + temp_url_req  + "&appid=" + cfg_weather["api_key"].toString();
 //	String url = "http://www.quanttrom.com/weather.json";
 
 	httpWeather.downloadString( url ,onGetWeather);
 
-	Serial.println("===========");
-	Serial.println("WIFI Status:");
-	Serial.println(WifiStation.getConnectionStatusName());
-	Serial.println("===========");
 }
 
 
