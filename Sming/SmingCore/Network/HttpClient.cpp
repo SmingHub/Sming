@@ -78,8 +78,13 @@ bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompleted
 	return true;
 }
 
-bool HttpClient::doRequest(URL uri, String method, HttpClientCompletedDelegate onCompleted)
+bool HttpClient::doRequest(String url, String method, HttpClientCompletedDelegate onCompleted)
 {
+        if (isProcessing()) 
+            return false;
+    
+        URL uri = URL(url);
+        
 	reset();
 	this->mode = eHCM_String;
 	this->onCompleted = onCompleted;
@@ -104,47 +109,27 @@ bool HttpClient::doRequest(URL uri, String method, HttpClientCompletedDelegate o
 
 bool HttpClient::doGet(String url, HttpClientCompletedDelegate onCompleted)
 {
-    if (isProcessing()) 
-        return false;
-    
-    URL uri = URL(url);
-    return doRequest( uri , "GET" , onCompleted);
+    return doRequest( url , "GET" , onCompleted);
 }
 
 bool HttpClient::doPost(String url, HttpClientCompletedDelegate onCompleted)
 {    
-    if (isProcessing()) 
-        return false;
-    
-    URL uri = URL(url);
-    return doRequest( uri , "POST" , onCompleted);
+    return doRequest( url , "POST" , onCompleted);
 }
 
 bool HttpClient::doPut(String url, HttpClientCompletedDelegate onCompleted)
 {
-    if (isProcessing()) 
-        return false;
-    
-    URL uri = URL(url);
-    return doRequest( uri , "PUT" , onCompleted);
+    return doRequest( url , "PUT" , onCompleted);
 }
 
 bool HttpClient::doDelete(String url, HttpClientCompletedDelegate onCompleted)
 {
-    if (isProcessing()) 
-        return false;
-    
-    URL uri = URL(url);
-    return doRequest( uri , "DELETE" , onCompleted);
+    return doRequest( url , "DELETE" , onCompleted);
 }
 
 bool HttpClient::doRestVerb(String url, String verb, HttpClientCompletedDelegate onCompleted)
 {
-    if (isProcessing()) 
-        return false;
-    
-    URL uri = URL(url);
-    return doRequest( uri , verb , onCompleted);
+    return doRequest( url , verb , onCompleted);
 }
 
 void HttpClient::setRequestHeader(const String name, const String value)

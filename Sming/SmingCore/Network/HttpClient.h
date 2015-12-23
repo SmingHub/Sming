@@ -70,7 +70,7 @@ public:
 
 protected:
 	bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
-        bool doRequest(URL uri, String method, HttpClientCompletedDelegate onCompleted);
+        bool doRequest(String url, String method, HttpClientCompletedDelegate onCompleted);
 	void onFinished(TcpClientState finishState);
 	virtual err_t onReceive(pbuf *buf);
 	virtual void writeRawData(pbuf* buf, int startPos);
