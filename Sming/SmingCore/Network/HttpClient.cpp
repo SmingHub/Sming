@@ -59,7 +59,8 @@ bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompleted
 	this->mode = mode;
 	this->onCompleted = onCompleted;
 
-	if (uri.Protocol != "http") return false;
+	if (uri.Protocol != "http") 
+            return false;
 	debugf("Download: %s", uri.toString().c_str());
 
 	connect(uri.Host, uri.Port);
@@ -75,6 +76,75 @@ bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompleted
 	sendString(body);
 
 	return true;
+}
+
+bool HttpClient::doRequest(URL uri, String method, HttpClientCompletedDelegate onCompleted)
+{
+	reset();
+	this->mode = eHCM_String;
+	this->onCompleted = onCompleted;
+
+	if (uri.Protocol != "http") 
+            return false;
+	debugf("Download: %s", uri.toString().c_str());
+
+	connect(uri.Host, uri.Port);
+
+	sendString( method + " " + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n");
+	for (int i = 0; i < requestHeaders.count(); i++)
+	{
+		String write = requestHeaders.keyAt(i) + ": " + requestHeaders.valueAt(i) + "\r\n";
+		sendString(write.c_str());
+	}
+	sendString("\r\n");
+	sendString(body);
+
+	return true;
+}
+
+bool HttpClient::doGet(String url, HttpClientCompletedDelegate onCompleted)
+{
+    if (isProcessing()) 
+        return false;
+    
+    URL uri = URL(url);
+    return doRequest( uri , "GET" , onCompleted);
+}
+
+bool HttpClient::doPost(String url, HttpClientCompletedDelegate onCompleted)
+{    
+    if (isProcessing()) 
+        return false;
+    
+    URL uri = URL(url);
+    return doRequest( uri , "POST" , onCompleted);
+}
+
+bool HttpClient::doPut(String url, HttpClientCompletedDelegate onCompleted)
+{
+    if (isProcessing()) 
+        return false;
+    
+    URL uri = URL(url);
+    return doRequest( uri , "PUT" , onCompleted);
+}
+
+bool HttpClient::doDelete(String url, HttpClientCompletedDelegate onCompleted)
+{
+    if (isProcessing()) 
+        return false;
+    
+    URL uri = URL(url);
+    return doRequest( uri , "DELETE" , onCompleted);
+}
+
+bool HttpClient::doRestVerb(String url, String verb, HttpClientCompletedDelegate onCompleted)
+{
+    if (isProcessing()) 
+        return false;
+    
+    URL uri = URL(url);
+    return doRequest( uri , verb , onCompleted);
 }
 
 void HttpClient::setRequestHeader(const String name, const String value)
