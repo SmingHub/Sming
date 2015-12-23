@@ -69,8 +69,8 @@ public:
 	void reset(); // Reset current status, data and etc.
 
 protected:
-	bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
-        bool doRequest(String url, String method, HttpClientCompletedDelegate onCompleted);
+        bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
+	bool startDownload(URL uri, String method, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
 	void onFinished(TcpClientState finishState);
 	virtual err_t onReceive(pbuf *buf);
 	virtual void writeRawData(pbuf* buf, int startPos);
