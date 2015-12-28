@@ -18,7 +18,7 @@ MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscription
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
-	mqtt_init(&broker, 0);
+	mqtt_init(&broker, NULL);
 }
 
 MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback /* = NULL*/)
@@ -30,7 +30,7 @@ MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptio
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
-	mqtt_init(&broker, 0);
+	mqtt_init(&broker, NULL);
 }
 
 MqttClient::~MqttClient()
