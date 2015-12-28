@@ -29,7 +29,7 @@ void onGetWeather(HttpClient& client, bool successful);
 void heartBeatBlink();
 void WiFiConnected();
 void WiFiFail();
-void waitForTimeWeather();
+void waitForData();
 void showTime();
 void secondsUpdater();
 void getWeather();
@@ -52,10 +52,18 @@ struct display_data_struct {
 } display_data;
 
 enum tempUnit {
-	tFahrenheit,
-	tKelvin,
-	tCelcius,
+	Fahrenheit,
+	Kelvin,
+	Celcius,
 };
+
+enum fsm_states {
+	init,
+	waitForData,
+	showingTime,
+	showingWeather,
+	reboot
+} stage;
 
 
 DynamicJsonBuffer jsonConfigBuffer;
@@ -95,7 +103,7 @@ JsonObject& getConfig(){
 	weather["city_id"]="6094817";
 	weather["url"]="http://api.openweathermap.org/data/2.5/weather";
 	weather["api_key"]="a5e4c3d55c24560c4327ca0a862897c5";
-	weather["units"] = tCelcius;
+	weather["units"] = Celcius;
 	weather["refresh_rate"]= 5*SECS_PER_MIN*1000;
 
 	// Eastern Standard Time - EST
@@ -107,6 +115,44 @@ JsonObject& getConfig(){
 	saveConfig(config);
 
 	return config;
+}
+
+
+void stageHandler(){
+
+	switch ( stage ) {
+		case init:
+			// Initialize our system and start requesting Data from the net
+			init_system();
+			break;
+		case waitForData:
+			waitForData();
+			break;
+		case showingTime:
+			break;
+		case showingWeather:
+			break;
+		case reboot:
+
+			break;
+		default:
+			// We shouldn't be here...
+			stage = reboot;
+	}
+
+
+
+}
+
+void init_system(){
+
+
+}
+
+void reboot(){
+	// save config
+	// reboot system
+
 }
 
 
@@ -200,7 +246,7 @@ void WiFiConnected(){
 	getWeather();
 	weatherTimer.initializeMs(cfg_local["weather"]["refresh_rate"], getWeather).start();
 
-	stagingTimer.initializeMs(cfg_local["display_time"].as<int>(), waitForTimeWeather).startOnce();
+	stagingTimer.initializeMs(cfg_local["display_time"].as<int>(), waitForData).startOnce();
 
 }
 
@@ -214,7 +260,7 @@ void WiFiFail(){
 	WifiStation.waitConnection(WiFiConnected, 10, WiFiFail); // Repeat and check again
 }
 
-void waitForTimeWeather(){
+void waitForData(){
 	// Localize the config
 	JsonObject& cfg_local = *cfg;
 	lcd.clear();
@@ -228,7 +274,7 @@ void waitForTimeWeather(){
 		showTime();
 	} else {
 		Serial.println("WeatherTime NOT READY !!!");
-		stagingTimer.initializeMs(500, waitForTimeWeather).startOnce();
+		stagingTimer.initializeMs(500, waitForData).startOnce();
 	}
 }
 
@@ -276,9 +322,9 @@ void showWeather(){
 
 	char temp_units;
 	switch ( cfg_local["weather"]["units"].as<int>() ) {
-	case tFahrenheit: temp_units = 'F'; break;
-	case tKelvin: temp_units = 'K'; break;
-	case tCelcius: temp_units = 'C'; break;
+	case Fahrenheit: temp_units = 'F'; break;
+	case Kelvin: temp_units = 'K'; break;
+	case Celcius: temp_units = 'C'; break;
 	default: temp_units = 'C';
 	}
 	lcd.print(temp_units);
@@ -369,9 +415,9 @@ void getWeather(){
 
 	String temp_url_req;
 	switch ( cfg_weather["units"].as<int>() ) {
-	case tFahrenheit: temp_url_req = "&units=imperial"; break;
-	case tKelvin: temp_url_req = ""; break;
-	case tCelcius: temp_url_req = "&units=metric"; break;
+	case Fahrenheit: temp_url_req = "&units=imperial"; break;
+	case Kelvin: temp_url_req = ""; break;
+	case Celcius: temp_url_req = "&units=metric"; break;
 	default: temp_url_req = "&units=metric";
 	}
 
