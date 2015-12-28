@@ -1,12 +1,12 @@
 sudo: false
 language: cpp
 install:  
-  - mkdir -p $TRAVIS_BUILD_DIR/opt/esp-open-sdk
-  - wget https://bintray.com/artifact/download/kireevco/generic/esp-open-sdk-1.4-linux-x86_64.tar.gz
-  - tar -zxf esp-open-sdk-1.4-linux-x86_64.tar.gz -C $TRAVIS_BUILD_DIR/opt/esp-open-sdk
-  - export PATH=$PATH:$TRAVIS_BUILD_DIR/opt/esp-open-sdk/sdk:$TRAVIS_BUILD_DIR/opt/esp-open-sdk/xtensa-lx106-elf/bin
+  - mkdir -p $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
+  - wget https://bintray.com/artifact/download/kireevco/generic/esp-alt-sdk-1.5.0-linux-x86_64.tar.gz
+  - tar -zxf esp-alt-sdk-1.5.0-linux-x86_64.tar.gz -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
   - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
-  - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-open-sdk
+  - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
+  - export ESPTOOl2=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk/esptool2/esptool2
 script:
-- cd Sming
+- cd $SMING_HOME
 - make

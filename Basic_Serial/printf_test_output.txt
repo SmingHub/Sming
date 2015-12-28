@@ -6,7 +6,9 @@ Pi without specifying precision(default 9): 3.141592654
 A number with leading fraction zeroes like 1.050250=1.05025
 
 Test crazy line lengths: wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait f or it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, got to the  end :)
-Show a decimal 123456, a hex 0xc0ffee, an unsigned 250, an octal 6675.
+
+Show a decimal 123456, a hex c0ffee, an unsigned 250, an octal 6675.
+Field width is supported: [  123456], with optional zero-padding: 0x00c0ffee
 
 Print pretty table
 LENGTH          WIDTH           HEIGHT

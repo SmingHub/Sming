@@ -31,8 +31,11 @@ void testPrintf()
 			"wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, " \
 			"wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, got to the end :)\n");
 
+        // Note that the leading '#' (as in %#x) is currently ignored
 	Serial.printf("\nShow a decimal %d, a hex %#x, an unsigned %u, an octal %o.\n",
 	        123456, 0x00C0FFEE, 250, 06675);
+	Serial.printf("Field width is supported: [%8d], with optional zero-padding: 0x%08x\n",
+	        123456, 0xC0FFEE);
 
 	Serial.printf("\nPrint pretty table\n");
 
