@@ -45,15 +45,17 @@ public:
 
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject& root = jsonBuffer.createObject();
-		root["event"] = event.c_str();
+		root["event"] = event;
 		JsonObject& trackers = root.createNestedObject("trackers");
 		for (int i = 0; i < trackersInfo.count(); i++)
 		{
 			debugf("%s: %s", trackersInfo.keyAt(i).c_str(), trackersInfo.valueAt(i).c_str());
-			trackers.addCopy(trackersInfo.keyAt(i), trackersInfo[trackersInfo.keyAt(i)]);
+			trackers[trackersInfo.keyAt(i)] =  trackersInfo[trackersInfo.keyAt(i)];
 		}
 
-		setPostBody(root.toJsonString());
+		String tempString;
+		root.printTo(tempString);
+		setPostBody(tempString);
 		downloadString(url, HttpClientCompletedDelegate(&InstapushApplication::processed, this));
 	}
 

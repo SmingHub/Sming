@@ -18,15 +18,14 @@
 
 #include <user_config.h>
 
+#include "m_printf.h"
+
 #define __ESP8266_EX__ // System definition ESP8266 SOC
 
 #define IRAM_ATTR __attribute__((section(".iram.text")))
 #define __forceinline __attribute__((always_inline)) inline
 #define STORE_TYPEDEF_ATTR __attribute__((aligned(4),packed))
 #define STORE_ATTR __attribute__((aligned(4)))
-
-extern int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args);
-extern int m_printf(const char *fmt, ...);
 
 #undef assert
 #define debugf(fmt, ...) m_printf(fmt"\r\n", ##__VA_ARGS__)
@@ -68,16 +67,11 @@ extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (prin
 extern int os_snprintf(char *str, size_t size, const char *format, ...) __attribute__ ((format (printf, 3, 4)));
 extern int ets_vsnprintf(char * s, size_t n, const char * format, va_list arg) __attribute__ ((format (printf, 3, 0)));
 
-extern void *pvPortMalloc(size_t xWantedSize);
-extern void *pvPortZalloc(size_t);
+extern void *pvPortMalloc(size_t xWantedSize, const char *file, uint32 line);
+extern void *pvPortZalloc(size_t xWantedSize, const char *file, uint32 line);
 extern void pvPortFree(void *ptr);
-extern void vPortFree(void *ptr);
+extern void vPortFree(void *ptr, const char *file, uint32 line);
 extern void *vPortMalloc(size_t xWantedSize);
-
-// Shortcuts for memory functions
-#define os_malloc   pvPortMalloc
-#define os_free     vPortFree
-#define os_zalloc   pvPortZalloc
 
 extern void uart_div_modify(int no, unsigned int freq);
 extern int ets_uart_printf(const char *fmt, ...);

@@ -133,12 +133,13 @@ TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
-MODULES 	?= app  # if not initialized by user 
-MODULES		+= $(SMING_HOME)/rboot/appcode
-EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
+MODULES      ?= app     # default to app if not set by user
+MODULES      += $(SMING_HOME)/rboot/appcode
+EXTRA_INCDIR ?= include # default to include if not set by user
+EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
+CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 $(USER_CFLAGS)
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # libmain must be modified for rBoot big flash support (just one symbol gets weakened)
@@ -153,7 +154,7 @@ else
 endif
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming $(EXTRA_LIBS)
+LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming crypto pwm smartconfig $(EXTRA_LIBS)
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 WIFI_SSID ?= ""
@@ -173,54 +174,39 @@ LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m
+else ifeq ($(SPI_SPEED), 20)
+	flashimageoptions = -ff 20m
+else ifeq ($(SPI_SPEED), 80)
+	flashimageoptions = -ff 80m
 else
-    ifeq ($(SPI_SPEED), 20)
-        flashimageoptions = -ff 20m
-    else
-        ifeq ($(SPI_SPEED), 80)
-		flashimageoptions = -ff 80m
-        else
-		flashimageoptions = -ff 40m
-        endif
-    endif
+	flashimageoptions = -ff 40m
 endif
 
 ifeq ($(SPI_MODE), qout)
 	flashimageoptions += -fm qout
-else
-    ifeq ($(SPI_MODE), dio)
+else ifeq ($(SPI_MODE), dio)
 	flashimageoptions += -fm dio
-    else
-        ifeq ($(SPI_MODE), dout)
-		flashimageoptions += -fm dout
-        else
-		flashimageoptions += -fm qio
-        endif
-    endif
+else ifeq ($(SPI_MODE), dout)
+	flashimageoptions += -fm dout
+else
+	flashimageoptions += -fm qio
 endif
 
-# flash larger than 1024KB only use 1024KB to storage user1.bin and user2.bin
 ifeq ($(SPI_SIZE), 256K)
 	flashimageoptions += -fs 2m
 	SPIFF_SIZE ?= 131072  #128K
-else
-    ifeq ($(SPI_SIZE), 1M)
+else ifeq ($(SPI_SIZE), 1M)
 	flashimageoptions += -fs 8m
 	SPIFF_SIZE ?= 524288  #512K
-    else
-        ifeq ($(SPI_SIZE), 2M)
-		flashimageoptions += -fs 16m
-		SPIFF_SIZE ?= 524288  #512K
-        else
-            ifeq ($(SPI_SIZE), 4M)
-			flashimageoptions += -fs 32m
-			SPIFF_SIZE ?= 524288  #512K
-            else
-			flashimageoptions += -fs 4m
-			SPIFF_SIZE ?= 262144  #256K
-            endif
-        endif
-    endif
+else ifeq ($(SPI_SIZE), 2M)
+	flashimageoptions += -fs 16m
+	SPIFF_SIZE ?= 524288  #512K
+else ifeq ($(SPI_SIZE), 4M)
+	flashimageoptions += -fs 32m
+	SPIFF_SIZE ?= 524288  #512K
+else
+	flashimageoptions += -fs 4m
+	SPIFF_SIZE ?= 196608  #192K
 endif
 CFLAGS += -DSPIFF_SIZE=$(SPIFF_SIZE)
 CFLAGS += -DRBOOT_SPIFFS_0=$(RBOOT_SPIFFS_0)
@@ -271,6 +257,7 @@ export RBOOT_BIG_FLASH
 export RBOOT_BUILD_BASE
 export RBOOT_FW_BASE
 export SPI_SIZE
+export SPI_MODE
 export ESPTOOL2
 export SDK_BASE
 
@@ -364,8 +351,8 @@ else
 		$(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES) $(SPIFF_BIN_OUT); \
 	else \
 		echo "No files found in ./$(SPIFF_FILES)."; \
-		echo "Creating empty $(SPIFF_BIN_OUT) ($$($(GET_FILESIZE) $(SMING_HOME)/compiler/data/blankfs.bin) bytes)"; \
-		cp $(SMING_HOME)/compiler/data/blankfs.bin $(SPIFF_BIN_OUT); \
+		echo "Creating empty $(SPIFF_BIN_OUT)"; \
+		$(SPIFFY) $(SPIFF_SIZE) dummy.dir $(SPIFF_BIN_OUT); \
 	fi
 endif
 

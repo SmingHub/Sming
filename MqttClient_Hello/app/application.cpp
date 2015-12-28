@@ -38,6 +38,9 @@ void onMessageReceived(String topic, String message)
 // Run MQTT client
 void startMqttClient()
 {
+	if(!mqtt.setWill("last/will","The connection from this device is lost:(", 1, true)) {
+		debugf("Unable to set the last will and testament. Most probably there is not enough memory on the device.");
+	}
 	mqtt.connect("esp8266");
 	mqtt.subscribe("main/status/#");
 }

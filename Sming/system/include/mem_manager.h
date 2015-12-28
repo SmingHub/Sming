@@ -2,6 +2,7 @@
 #define __MEM_MANAGER_H__
 
 //#include "c_types.h"
+#include <mem.h>
 
 /*------------------------变量定义------------------------*/
 
@@ -68,10 +69,6 @@ static void prvInsertBlockIntoFreeList( xBlockLink *pxBlockToInsert ) ;//ICACHE_
 static void prvHeapInit( void ) ;//ICACHE_FLASH_ATTR;
 
 void vApplicationMallocFailedHook( void ) ;//ICACHE_FLASH_ATTR;
-
-void *pvPortMalloc( size_t xWantedSize ) ;//ICACHE_FLASH_ATTR;
-
-void vPortFree( void *pv ) ;//ICACHE_FLASH_ATTR;
 
 size_t xPortGetFreeHeapSize( void ) ;//ICACHE_FLASH_ATTR;
 

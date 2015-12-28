@@ -20,10 +20,12 @@ class CommandExecutor
 public:
 	CommandExecutor(TcpClient* cmdClient);
 	CommandExecutor(Stream* reqStream);
+	CommandExecutor(WebSocket* reqSocket);
 	~CommandExecutor();
 
 	int executorReceive(char *recvData, int recvSize);
 	int executorReceive(char recvChar);
+	int executorReceive(String recvString);
 	void setCommandPrompt(String reqPrompt);
 	void setCommandEOL(char reqEOL);
 
@@ -33,9 +35,6 @@ private :
 	char commandBuf [MAX_COMMANDSIZE+1];
 	uint16_t commandIndex = 0;
 	CommandOutput* commandOutput;
-	String prompt = "Sming>";
-	char eolChar = '\r';
-
 };
 
 #endif /* SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_ */

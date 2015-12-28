@@ -42,7 +42,7 @@ namespace ContentType
 		if (ext.equals("js")) return JS;
 		if (ext.equals("css")) return CSS;
 
-		if (ext.equals("jpg") | ext.equals("jpeg")) return TEXT;
+		if (ext.equals("jpg") || ext.equals("jpeg")) return JPEG;
 		if (ext.equals("gif")) return GIF;
 		if (ext.equals("png")) return PNG;
 		if (ext.equals("svg")) return SVG;
