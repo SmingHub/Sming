@@ -29,9 +29,6 @@ public:
 	void sendString(const String& message);
 	void sendBinary(const uint8_t* data, int size);
 	void enableCommand();
-	void setUserData(void* userData);
-	void *getUserData();
-	void disconnect();
 
 protected:
 	bool initialize(HttpRequest &request, HttpResponse &response);
@@ -40,7 +37,6 @@ protected:
 private:
 	HttpServerConnection* connection;
 	CommandExecutor* commandExecutor = nullptr;
-	void* m_pUserData = nullptr;
 };
 
 #endif /* SMINGCORE_NETWORK_WEBSOCKET_H_ */
