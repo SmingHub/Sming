@@ -11,11 +11,15 @@
 #include "../include/user_config.h"
 
 #include <c_types.h>
+
 #include <ctype.h>
+
 #include <math.h>
 #include <string.h>
 
-#define F_CPU 80000000L ////?
+#ifndef F_CPU
+	#define F_CPU 80000000L ////?
+#endif
 
 #include "WConstants.h"
 #include "BitManipulations.h"

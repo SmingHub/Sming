@@ -11,6 +11,8 @@
 #include "../Wiring/WiringFrameworkDependencies.h"
 #include "../Delegate.h"
 #include "IPAddress.h"
+#include "lwip/pbuf.h"
+#include "lwip/udp.h"
 
 class UdpConnection;
 

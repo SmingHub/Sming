@@ -21,6 +21,7 @@
 #define IPAddress_h
 
 #include <user_config.h>
+#include "lwip/ip_addr.h"
 #include <Printable.h>
 
 #include "WString.h"

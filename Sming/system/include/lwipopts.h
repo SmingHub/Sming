@@ -40,6 +40,15 @@
 
 
 /*
+User runtime var table
+MEMP_NUM_TCP_PCB                (*(volatile uint32*)0x600011FC) // =5 (init.c)
+TCP_WND                         (*(volatile uint32*)0x600011F0) // = 4*TCP_MSS (init.c)
+TCP_MAXRTX                      (*(volatile uint32*)0x600011E8) // = 12 (init.c)
+TCP_SYNMAXRTX                   (*(volatile uint32*)0x600011E4) // = 6 (init.c)
+DHCP_MAXRTX						(*(volatile uint32*)0x600011E0)
+*/
+
+/*
    -----------------------------------------------
    ---------- Platform specific locking ----------
    -----------------------------------------------
@@ -266,7 +275,7 @@
  * reassembly (whole packets, not fragments!)
  */
 #ifndef MEMP_NUM_REASSDATA
-#define MEMP_NUM_REASSDATA              0
+#define MEMP_NUM_REASSDATA              0 //TODO: try 2
 #endif
 
 /**
@@ -403,7 +412,7 @@
  * PBUF_POOL_SIZE: the number of buffers in the pbuf pool. 
  */
 #ifndef PBUF_POOL_SIZE
-#define PBUF_POOL_SIZE                  10
+#define PBUF_POOL_SIZE                  10 //TODO: try 20
 #endif
 
 /*
@@ -513,7 +522,7 @@
  * via IP_FRAG.
  */
 #ifndef IP_REASSEMBLY
-#define IP_REASSEMBLY                   0
+#define IP_REASSEMBLY                   0 //TODO: try 1
 #endif
 
 /**
@@ -560,7 +569,7 @@
  * (requires IP_FRAG_USES_STATIC_BUF==1)
  */
 #if IP_FRAG_USES_STATIC_BUF && !defined(IP_FRAG_MAX_MTU)
-#define IP_FRAG_MAX_MTU                 1500
+#define IP_FRAG_MAX_MTU                 (TCP_MSS+40) // 1500
 #endif
 
 /**
@@ -659,6 +668,29 @@
 #define DHCP_DOES_ARP_CHECK             ((LWIP_DHCP) && (LWIP_ARP))
 #endif
 
+/**
+ * DHCP_MAXRTX: Maximum number of retries of current request.
+ */
+#ifndef DHCP_MAXRTX
+#define DHCP_MAXRTX						(*(volatile uint32*)0x600011E0)
+#endif
+
+/**
+ * DHCP network time protocol option
+ */
+#ifndef LWIP_DHCP_NTP
+	#ifdef USE_OPEN_DHCPS
+		#define LWIP_DHCP_NTP 1
+	#else
+		#define LWIP_DHCP_NTP 0
+	#endif
+#endif
+
+/** The maximum of NTP servers */
+#ifndef NTP_MAX_SERVERS
+#define NTP_MAX_SERVERS 1
+#endif
+
 /*
    ------------------------------------
    ---------- AUTOIP options ----------
@@ -689,6 +721,13 @@
 #ifndef LWIP_DHCP_AUTOIP_COOP_TRIES
 #define LWIP_DHCP_AUTOIP_COOP_TRIES     9
 #endif
+
+/*
+   ----------------------------------
+   ---------- SNTP options ----------
+   ----------------------------------
+*/
+#define LWIP_SNTP 0
 
 /*
    ----------------------------------
@@ -770,6 +809,17 @@
  */
 #ifndef LWIP_IGMP
 #define LWIP_IGMP                       1
+#endif
+/*
+   ----------------------------------
+   ---------- MDNS options ----------
+   ----------------------------------
+*/
+/**
+ * LWIP_MDNS==1: Turn on MDNS module.
+ */
+#ifndef LWIP_MDNS
+#define LWIP_MDNS                      1
 #endif
 
 /*
@@ -887,21 +937,21 @@
  * (2 * TCP_MSS) for things to work well
  */
 #ifndef TCP_WND
-#define TCP_WND                         (4 * TCP_MSS)
+#define TCP_WND                         (*(volatile uint32*)0x600011F0)
 #endif 
 
 /**
  * TCP_MAXRTX: Maximum number of retransmissions of data segments.
  */
 #ifndef TCP_MAXRTX
-#define TCP_MAXRTX                      3
+#define TCP_MAXRTX                      (*(volatile uint32*)0x600011E8)
 #endif
 
 /**
  * TCP_SYNMAXRTX: Maximum number of retransmissions of SYN segments.
  */
 #ifndef TCP_SYNMAXRTX
-#define TCP_SYNMAXRTX                   3
+#define TCP_SYNMAXRTX                   (*(volatile uint32*)0x600011E4)
 #endif
 
 /**
@@ -923,7 +973,7 @@
  * Define to 0 if your device is low on memory.
  */
 #ifndef TCP_QUEUE_OOSEQ
-#define TCP_QUEUE_OOSEQ                 0
+#define TCP_QUEUE_OOSEQ                 1 //TODO: test memory gain when disabled
 #endif
 
 /**
@@ -1081,7 +1131,7 @@
  * field.
  */
 #ifndef LWIP_NETIF_HOSTNAME
-#define LWIP_NETIF_HOSTNAME             0
+#define LWIP_NETIF_HOSTNAME             1
 #endif
 
 /**
@@ -1789,6 +1839,15 @@
    ---------- Debugging options ----------
    ---------------------------------------
 */
+
+#ifndef LWIP_DEBUG
+	#define LWIP_DEBUG
+#endif
+
+//#ifdef LWIP_DEBUG
+//	#undef LWIP_DEBUG
+//#endif
+
 /**
  * LWIP_DBG_MIN_LEVEL: After masking, the value of the debug is
  * compared against this value. If it is smaller, then debugging
@@ -1803,21 +1862,21 @@
  * debug messages of certain types.
  */
 #ifndef LWIP_DBG_TYPES_ON
-#define LWIP_DBG_TYPES_ON               LWIP_DBG_OFF
+#define LWIP_DBG_TYPES_ON               LWIP_DBG_ON
 #endif
 
 /**
  * ETHARP_DEBUG: Enable debugging in etharp.c.
  */
 #ifndef ETHARP_DEBUG
-#define ETHARP_DEBUG                    LWIP_DBG_OFF
+#define ETHARP_DEBUG                    (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
 #endif
 
 /**
  * NETIF_DEBUG: Enable debugging in netif.c.
  */
 #ifndef NETIF_DEBUG
-#define NETIF_DEBUG                     LWIP_DBG_OFF
+#define NETIF_DEBUG                     (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
 #endif
 
 /**
@@ -1859,7 +1918,7 @@
  * IGMP_DEBUG: Enable debugging in igmp.c.
  */
 #ifndef IGMP_DEBUG
-#define IGMP_DEBUG                      LWIP_DBG_OFF
+#define IGMP_DEBUG                      (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
 #endif
 
 /**
@@ -1887,21 +1946,21 @@
  * RAW_DEBUG: Enable debugging in raw.c.
  */
 #ifndef RAW_DEBUG
-#define RAW_DEBUG                       LWIP_DBG_OFF
+#define RAW_DEBUG                       (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
 #endif
 
 /**
  * MEM_DEBUG: Enable debugging in mem.c.
  */
 #ifndef MEM_DEBUG
-#define MEM_DEBUG                       LWIP_DBG_OFF
+#define MEM_DEBUG                       (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
 #endif
 
 /**
  * MEMP_DEBUG: Enable debugging in memp.c.
  */
 #ifndef MEMP_DEBUG
-#define MEMP_DEBUG                      LWIP_DBG_OFF
+#define MEMP_DEBUG                      (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
 #endif
 
 /**
@@ -1922,7 +1981,7 @@
  * TCP_DEBUG: Enable debugging for TCP.
  */
 #ifndef TCP_DEBUG
-#define TCP_DEBUG                       LWIP_DBG_OFF
+#define TCP_DEBUG                       (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
 #endif
 
 /**
@@ -1972,7 +2031,7 @@
  * TCP_RST_DEBUG: Enable debugging for TCP with the RST message.
  */
 #ifndef TCP_RST_DEBUG
-#define TCP_RST_DEBUG                   LWIP_DBG_OFF
+#define TCP_RST_DEBUG                   (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
 #endif
 
 /**
@@ -2014,7 +2073,7 @@
  * DHCP_DEBUG: Enable debugging in dhcp.c.
  */
 #ifndef DHCP_DEBUG
-#define DHCP_DEBUG                      LWIP_DBG_OFF
+#define DHCP_DEBUG                      (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
 #endif
 
 /**
@@ -2045,4 +2104,19 @@
 #define DNS_DEBUG                       LWIP_DBG_OFF
 #endif
 
+/**
+ * ESP platform specific debug levels
+ */
+
+#ifndef ESPCONN_TCP_DEBUG
+#define ESPCONN_TCP_DEBUG 				(LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
+#endif
+
+#ifndef ESPCONN_UDP_DEBUG
+#define ESPCONN_UDP_DEBUG 				(LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
+#endif
+
+#ifndef ESPCONN_DEBUG
+#define ESPCONN_DEBUG 					(LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
+#endif
 #endif /* __LWIP_OPT_H__ */

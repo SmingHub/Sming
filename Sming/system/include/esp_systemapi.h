@@ -36,6 +36,10 @@ extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repe
 extern void ets_timer_disarm(ETSTimer *a);
 extern void ets_timer_setfn(ETSTimer *t, ETSTimerFunc *pfunction, void *parg);
 
+void *ets_bzero(void *block, size_t size);
+bool ets_post(uint32_t prio, ETSSignal sig, ETSParam par);
+void ets_task(ETSTask task, uint32_t prio, ETSEvent * queue, uint8 qlen);
+
 //extern void ets_wdt_init(uint32_t val); // signature?
 extern void ets_wdt_enable(void);
 extern void ets_wdt_disable(void);
@@ -67,11 +71,25 @@ extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (prin
 extern int os_snprintf(char *str, size_t size, const char *format, ...) __attribute__ ((format (printf, 3, 4)));
 extern int ets_vsnprintf(char * s, size_t n, const char * format, va_list arg) __attribute__ ((format (printf, 3, 0)));
 
-extern void *pvPortMalloc(size_t xWantedSize, const char *file, uint32 line);
-extern void *pvPortZalloc(size_t xWantedSize, const char *file, uint32 line);
-extern void pvPortFree(void *ptr);
-extern void vPortFree(void *ptr, const char *file, uint32 line);
-extern void *vPortMalloc(size_t xWantedSize);
+void system_pp_recycle_rx_pkt(void *eb);
+
+#ifndef MEMLEAK_DEBUG
+	extern void *pvPortMalloc( size_t xWantedSize );
+	extern void vPortFree( void *pv );
+	extern void *pvPortZalloc(size_t size);
+#else
+	extern void *pvPortMalloc(size_t xWantedSize, const char *file, uint32 line);
+	extern void *pvPortZalloc(size_t xWantedSize, const char *file, uint32 line);
+	extern void vPortFree(void *ptr, const char *file, uint32 line);
+
+	extern void pvPortFree(void *ptr);
+	extern void *vPortMalloc(size_t xWantedSize);
+#endif /*MEMLEAK_DEBUG*/
+
+extern void *pvPortCalloc(unsigned int n, unsigned int count);
+extern void *pvPortRealloc(void * p, size_t size);
+extern size_t xPortGetFreeHeapSize(void);
+extern void prvHeapInit(void) ICACHE_FLASH_ATTR ;
 
 extern void uart_div_modify(int no, unsigned int freq);
 extern int ets_uart_printf(const char *fmt, ...);

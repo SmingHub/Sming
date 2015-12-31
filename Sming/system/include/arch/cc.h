@@ -34,11 +34,24 @@
 #ifndef __ARCH_CC_H__
 #define __ARCH_CC_H__
 
-//#include <string.h>
-#include "c_types.h"
-#include "ets_sys.h"
+// Override c_types.h include and remove buggy espconn
+#define _C_TYPES_H_
+#include <espinc/c_types_compatible.h>
+#include "eagle_soc.h"
+
+//prevent inclusion of user_config.h here
+#define __USER_CONFIG_H__
 #include "osapi.h"
+#include <stdarg.h>
+#include "m_printf.h"
+
 #define EFAULT 14
+
+#ifdef USE_MAX_IRAM
+#define LWIP_DATA_IRAM_ATTR __attribute__((aligned(4), section(".iram.data")))
+#else
+#define LWIP_DATA_IRAM_ATTR
+#endif
 
 //#define LWIP_PROVIDE_ERRNO
 
@@ -73,11 +86,11 @@ typedef unsigned long   mem_ptr_t;
 #define PACK_STRUCT_BEGIN
 #define PACK_STRUCT_END
 
-//#define LWIP_DEBUG
-
 #ifdef LWIP_DEBUG
 #define LWIP_PLATFORM_DIAG(x) m_printf x
-#define LWIP_PLATFORM_ASSERT(x) ETS_ASSERT(x)
+#define LWIP_PLATFORM_ASSERT(x) m_printf("ASSERT: %s %s %d", (x), __FUNCTION__, __LINE__)
+
+
 #else
 #define LWIP_PLATFORM_DIAG(x)
 #define LWIP_PLATFORM_ASSERT(x)

@@ -209,13 +209,6 @@ u8_t ip4_addr_netmask_valid(u32_t netmask)ICACHE_FLASH_ATTR;
 
 #define ip_addr_islinklocal(addr1) (((addr1)->addr & PP_HTONL(0xffff0000UL)) == PP_HTONL(0xa9fe0000UL))
 
-#define ip_addr_debug_print(debug, ipaddr) \
-  LWIP_DEBUGF(debug, ("%" U16_F ".%" U16_F ".%" U16_F ".%" U16_F,             \
-                      ipaddr != NULL ? ip4_addr1_16(ipaddr) : 0,       \
-                      ipaddr != NULL ? ip4_addr2_16(ipaddr) : 0,       \
-                      ipaddr != NULL ? ip4_addr3_16(ipaddr) : 0,       \
-                      ipaddr != NULL ? ip4_addr4_16(ipaddr) : 0))
-
 /* Get one byte from the 4-byte address */
 #define ip4_addr1(ipaddr) (((u8_t*)(ipaddr))[0])
 #define ip4_addr2(ipaddr) (((u8_t*)(ipaddr))[1])
@@ -249,6 +242,12 @@ struct ip_info {
     struct ip_addr netmask;
     struct ip_addr gw;
 };
+
+//Originally macro, was causing warning/error for static allocated variables:
+//Fix warning/error: the comparison will always evaluate as 'true' for the address of 'allsystems' will never be NULL [-Werror=address]
+void ip_addr_debug_print(uint32 debug, void* ipaddr);
+
+
 #ifdef __cplusplus
 }
 #endif

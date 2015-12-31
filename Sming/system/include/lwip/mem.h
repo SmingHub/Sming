@@ -33,7 +33,18 @@
 #define __LWIP_MEM_H__
 
 #include "lwip/opt.h"
-#include "mem_manager.h"
+
+#define _C_TYPES_H_
+
+#include "esp_systemapi.h"
+
+#define os_malloc   pvPortMalloc
+#define os_free     vPortFree
+#define os_zalloc   pvPortZalloc
+#define os_calloc   pvPortCalloc
+#define os_realloc  pvPortRealloc
+#define system_get_free_heap_size xPortGetFreeHeapSize
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,6 +61,7 @@ typedef size_t mem_size_t;
 /* in case C library malloc() needs extra protection,
  * allow these defines to be overridden.
  */
+#ifndef MEMLEAK_DEBUG
 #ifndef mem_free
 #define mem_free vPortFree
 #endif
@@ -64,6 +76,28 @@ typedef size_t mem_size_t;
 #endif
 #ifndef mem_zalloc
 #define mem_zalloc pvPortZalloc
+#endif
+#else
+#ifndef mem_free
+#define mem_free(s) \
+do{\
+	const char *file = mem_debug_file;\
+    vPortFree(s, file, __LINE__);\
+}while(0)
+#endif
+#ifndef mem_malloc
+#define mem_malloc(s) ({const char *file = mem_debug_file; pvPortMalloc(s, file, __LINE__);})
+#endif
+#ifndef mem_calloc
+#define mem_calloc(s) ({const char *file = mem_debug_file; pvPortCalloc(s, file, __LINE__);})
+#endif
+#ifndef mem_realloc
+#define mem_realloc(p, s) ({const char *file = mem_debug_file; pvPortRealloc(p, s, file, __LINE__);})
+#endif
+#ifndef mem_zalloc
+#define mem_zalloc(s) ({const char *file = mem_debug_file; pvPortZalloc(s, file, __LINE__);})
+#endif
+
 #endif
 
 #ifndef os_malloc

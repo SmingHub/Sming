@@ -40,6 +40,8 @@
 extern "C" {
 #endif
 
+#define LWIP_RAND()  os_random()
+
 #define LWIP_MAX(x , y)  (((x) > (y)) ? (x) : (y))
 #define LWIP_MIN(x , y)  (((x) < (y)) ? (x) : (y))
 
