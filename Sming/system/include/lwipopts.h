@@ -1840,14 +1840,6 @@ DHCP_MAXRTX						(*(volatile uint32*)0x600011E0)
    ---------------------------------------
 */
 
-#ifndef LWIP_DEBUG
-	#define LWIP_DEBUG
-#endif
-
-//#ifdef LWIP_DEBUG
-//	#undef LWIP_DEBUG
-//#endif
-
 /**
  * LWIP_DBG_MIN_LEVEL: After masking, the value of the debug is
  * compared against this value. If it is smaller, then debugging
