@@ -259,7 +259,6 @@ export RBOOT_FW_BASE
 export SPI_SIZE
 export SPI_MODE
 export ESPTOOL2
-export SDK_BASE
 
 # multiple roms per 1mb block?
 ifeq ($(RBOOT_TWO_ROMS),1)
