@@ -44,9 +44,9 @@
 
 uint8_t mqtt_num_rem_len_bytes(const uint8_t* buf) {
 	uint8_t num_bytes = 1;
-	
+
 	//printf("mqtt_num_rem_len_bytes\n");
-	
+
 	if ((buf[1] & 0x80) == 0x80) {
 		num_bytes++;
 		if ((buf[2] & 0x80) == 0x80) {
@@ -63,9 +63,9 @@ uint16_t mqtt_parse_rem_len(const uint8_t* buf) {
 	uint16_t multiplier = 1;
 	uint16_t value = 0;
 	uint8_t digit;
-	
+
 	//printf("mqtt_parse_rem_len\n");
-	
+
 	buf++;	// skip "flags" byte in fixed header
 
 	do {
@@ -82,9 +82,9 @@ uint16_t mqtt_parse_msg_id(const uint8_t* buf) {
 	uint8_t type = MQTTParseMessageType(buf);
 	uint8_t qos = MQTTParseMessageQos(buf);
 	uint16_t id = 0;
-	
+
 	//printf("mqtt_parse_msg_id\n");
-	
+
 	if(type >= MQTT_MSG_PUBLISH && type <= MQTT_MSG_UNSUBACK) {
 		if(type == MQTT_MSG_PUBLISH) {
 			if(qos != 0) {
@@ -111,19 +111,19 @@ uint16_t mqtt_parse_msg_id(const uint8_t* buf) {
 uint16_t mqtt_parse_pub_topic(const uint8_t* buf, uint8_t* topic) {
 	const uint8_t* ptr;
 	uint16_t topic_len = mqtt_parse_pub_topic_ptr(buf, &ptr);
-	
+
 	//printf("mqtt_parse_pub_topic\n");
-	
+
 	if(topic_len != 0 && ptr != NULL) {
 		memcpy(topic, ptr, topic_len);
 	}
-	
+
 	return topic_len;
 }
 
 uint16_t mqtt_parse_pub_topic_ptr(const uint8_t* buf, const uint8_t **topic_ptr) {
 	uint16_t len = 0;
-	
+
 	//printf("mqtt_parse_pub_topic_ptr\n");
 
 	if(MQTTParseMessageType(buf) == MQTT_MSG_PUBLISH) {
@@ -141,23 +141,23 @@ uint16_t mqtt_parse_pub_topic_ptr(const uint8_t* buf, const uint8_t **topic_ptr)
 
 uint16_t mqtt_parse_publish_msg(const uint8_t* buf, uint8_t* msg) {
 	const uint8_t* ptr;
-	
+
 	//printf("mqtt_parse_publish_msg\n");
-	
+
 	uint16_t msg_len = mqtt_parse_pub_msg_ptr(buf, &ptr);
-	
+
 	if(msg_len != 0 && ptr != NULL) {
 		memcpy(msg, ptr, msg_len);
 	}
-	
+
 	return msg_len;
 }
 
 uint16_t mqtt_parse_pub_msg_ptr(const uint8_t* buf, const uint8_t **msg_ptr) {
 	uint16_t len = 0;
-	
+
 	//printf("mqtt_parse_pub_msg_ptr\n");
-	
+
 	if(MQTTParseMessageType(buf) == MQTT_MSG_PUBLISH) {
 		// message starts at
 		// fixed header length + Topic (UTF encoded) + msg id (if QoS>0)
@@ -171,13 +171,13 @@ uint16_t mqtt_parse_pub_msg_ptr(const uint8_t* buf, const uint8_t **msg_ptr) {
 		}
 
 		*msg_ptr = (buf + offset);
-				
+
 		// offset is now pointing to start of message
 		// length of the message is remaining length - variable header
 		// variable header is offset - fixed header
 		// fixed header is 1 + rlb
 		// so, lom = remlen - (offset - (1+rlb))
-      	len = mqtt_parse_rem_len(buf) - (offset-(rlb+1));
+		len = mqtt_parse_rem_len(buf) - (offset-(rlb+1));
 	} else {
 		*msg_ptr = NULL;
 	}
@@ -258,34 +258,34 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 
 	// Variable header
 	uint8_t var_header[] = {
-		0x00,0x06,0x4d,0x51,0x49,0x73,0x64,0x70, // Protocol name: MQIsdp
-		0x03, // Protocol version
-		flags, // Connect flags
-		broker->alive>>8, broker->alive&0xFF, // Keep alive
+			0x00,0x06,0x4d,0x51,0x49,0x73,0x64,0x70, // Protocol name: MQIsdp
+			0x03, // Protocol version
+			flags, // Connect flags
+			broker->alive>>8, broker->alive&0xFF, // Keep alive
 	};
 
 
-   	// Fixed header
-    uint8_t fixedHeaderSize = 2;    // Default size = one byte Message Type + one byte Remaining Length
-    uint8_t remainLen = sizeof(var_header)+payload_len;
-    if (remainLen > 127) {
-        fixedHeaderSize++;          // add an additional byte for Remaining Length
-    }
-    uint8_t fixed_header[fixedHeaderSize];
-    
-    // Message Type
-    fixed_header[0] = MQTT_MSG_CONNECT;
+	// Fixed header
+	uint8_t fixedHeaderSize = 2;    // Default size = one byte Message Type + one byte Remaining Length
+	uint8_t remainLen = sizeof(var_header)+payload_len;
+	if (remainLen > 127) {
+		fixedHeaderSize++;          // add an additional byte for Remaining Length
+	}
+	uint8_t fixed_header[fixedHeaderSize];
 
-    // Remaining Length
-    if (remainLen <= 127) {
-        fixed_header[1] = remainLen;
-    } else {
-        // first byte is remainder (mod) of 128, then set the MSB to indicate more bytes
-        fixed_header[1] = remainLen % 128;
-        fixed_header[1] = fixed_header[1] | 0x80;
-        // second byte is number of 128s
-        fixed_header[2] = remainLen / 128;
-    }
+	// Message Type
+	fixed_header[0] = MQTT_MSG_CONNECT;
+
+	// Remaining Length
+	if (remainLen <= 127) {
+		fixed_header[1] = remainLen;
+	} else {
+		// first byte is remainder (mod) of 128, then set the MSB to indicate more bytes
+		fixed_header[1] = remainLen % 128;
+		fixed_header[1] = fixed_header[1] | 0x80;
+		// second byte is number of 128s
+		fixed_header[2] = remainLen / 128;
+	}
 
 	uint16_t offset = 0;
 	uint8_t packet[sizeof(fixed_header)+sizeof(var_header)+payload_len];
@@ -299,6 +299,20 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 	packet[offset++] = clientidlen&0xFF;
 	memcpy(packet+offset, broker->clientid, clientidlen);
 	offset += clientidlen;
+
+	if(willtopiclen) {
+		// Add Last Will And Testament
+		packet[offset++] = willtopiclen>>8;
+		packet[offset++] = willtopiclen&0xFF;
+		memcpy(packet+offset, broker->will_topic, willtopiclen);
+		offset += willtopiclen;
+
+		uint16_t willmessagelen = strlen(broker->will_message);
+		packet[offset++] = willmessagelen>>8;
+		packet[offset++] = willmessagelen&0xFF;
+		memcpy(packet+offset, broker->will_message, willmessagelen);
+		offset += willmessagelen;
+	}
 
 	if(usernamelen) {
 		// Username - UTF encoded
@@ -316,20 +330,6 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 		offset += passwordlen;
 	}
 
-	if(willtopiclen) {
-		// Add Last Will And Testament
-		packet[offset++] = willtopiclen>>8;
-		packet[offset++] = willtopiclen&0xFF;
-		memcpy(packet+offset, broker->will_topic, willtopiclen);
-		offset += willtopiclen;
-
-		uint16_t willmessagelen = strlen(broker->will_message);
-		packet[offset++] = willmessagelen>>8;
-		packet[offset++] = willmessagelen&0xFF;
-		memcpy(packet+offset, broker->will_message, willmessagelen);
-		offset += willmessagelen;
-	}
-
 	// Send the packet
 	if(broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
 		return -1;
@@ -340,8 +340,8 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 
 int mqtt_disconnect(mqtt_broker_handle_t* broker) {
 	uint8_t packet[] = {
-		MQTT_MSG_DISCONNECT, // Message Type, DUP flag, QoS level, Retain
-		0x00 // Remaining length
+			MQTT_MSG_DISCONNECT, // Message Type, DUP flag, QoS level, Retain
+			0x00 // Remaining length
 	};
 
 	// Send the packet
@@ -354,8 +354,8 @@ int mqtt_disconnect(mqtt_broker_handle_t* broker) {
 
 int mqtt_ping(mqtt_broker_handle_t* broker) {
 	uint8_t packet[] = {
-		MQTT_MSG_PINGREQ, // Message Type, DUP flag, QoS level, Retain
-		0x00 // Remaining length
+			MQTT_MSG_PINGREQ, // Message Type, DUP flag, QoS level, Retain
+			0x00 // Remaining length
 	};
 
 	// Send the packet
@@ -410,22 +410,22 @@ int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const
 		fixedHeaderSize++;          // add an additional byte for Remaining Length
 	}
 	uint8_t fixed_header[fixedHeaderSize];
-    
-   // Message Type, DUP flag, QoS level, Retain
-   fixed_header[0] = MQTT_MSG_PUBLISH | qos_flag;
+
+	// Message Type, DUP flag, QoS level, Retain
+	fixed_header[0] = MQTT_MSG_PUBLISH | qos_flag;
 	if(retain) {
 		fixed_header[0] |= MQTT_RETAIN_FLAG;
-   }
-   // Remaining Length
-   if (remainLen <= 127) {
-       fixed_header[1] = remainLen;
-   } else {
-       // first byte is remainder (mod) of 128, then set the MSB to indicate more bytes
-       fixed_header[1] = remainLen % 128;
-       fixed_header[1] = fixed_header[1] | 0x80;
-       // second byte is number of 128s
-       fixed_header[2] = remainLen / 128;
-   }
+	}
+	// Remaining Length
+	if (remainLen <= 127) {
+		fixed_header[1] = remainLen;
+	} else {
+		// first byte is remainder (mod) of 128, then set the MSB to indicate more bytes
+		fixed_header[1] = remainLen % 128;
+		fixed_header[1] = fixed_header[1] | 0x80;
+		// second byte is number of 128s
+		fixed_header[2] = remainLen / 128;
+	}
 
 	uint8_t packet[sizeof(fixed_header)+sizeof(var_header)+msglen];
 	memset(packet, 0, sizeof(packet));
@@ -443,10 +443,10 @@ int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const
 
 int mqtt_pubrel(mqtt_broker_handle_t* broker, uint16_t message_id) {
 	uint8_t packet[] = {
-		MQTT_MSG_PUBREL | MQTT_QOS1_FLAG, // Message Type, DUP flag, QoS level, Retain
-		0x02, // Remaining length
-		message_id>>8,
-		message_id&0xFF
+			MQTT_MSG_PUBREL | MQTT_QOS1_FLAG, // Message Type, DUP flag, QoS level, Retain
+			0x02, // Remaining length
+			message_id>>8,
+			message_id&0xFF
 	};
 
 	// Send the packet
@@ -478,8 +478,8 @@ int mqtt_subscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* me
 
 	// Fixed header
 	uint8_t fixed_header[] = {
-		MQTT_MSG_SUBSCRIBE | MQTT_QOS1_FLAG, // Message Type, DUP flag, QoS level, Retain
-		sizeof(var_header)+sizeof(utf_topic)
+			MQTT_MSG_SUBSCRIBE | MQTT_QOS1_FLAG, // Message Type, DUP flag, QoS level, Retain
+			sizeof(var_header)+sizeof(utf_topic)
 	};
 
 	uint8_t packet[sizeof(var_header)+sizeof(fixed_header)+sizeof(utf_topic)];
@@ -517,8 +517,8 @@ int mqtt_unsubscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* 
 
 	// Fixed header
 	uint8_t fixed_header[] = {
-		MQTT_MSG_UNSUBSCRIBE | MQTT_QOS1_FLAG, // Message Type, DUP flag, QoS level, Retain
-		sizeof(var_header)+sizeof(utf_topic)
+			MQTT_MSG_UNSUBSCRIBE | MQTT_QOS1_FLAG, // Message Type, DUP flag, QoS level, Retain
+			sizeof(var_header)+sizeof(utf_topic)
 	};
 
 	uint8_t packet[sizeof(var_header)+sizeof(fixed_header)+sizeof(utf_topic)];

@@ -18,6 +18,8 @@
 //typedef void (*MqttStringSubscriptionCallback)(String topic, String message);
 typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
 
+typedef Delegate<void()> MqttDisconnectCallback;
+
 class MqttClient;
 class URL;
 
@@ -31,6 +33,8 @@ public:
 	void setKeepAlive(int seconds);
 	// Sets Last Will and Testament
 	bool setWill(String topic, String message, int QoS, bool retained = false);
+
+	void setDisconnectCb(MqttDisconnectCallback dcb = NULL);
 
 	bool connect(String clientName);
 	bool connect(String clientName, String username, String password);
@@ -60,6 +64,7 @@ private:
 	uint8_t *current;
 	int posHeader;
 	MqttStringSubscriptionCallback callback;
+	MqttDisconnectCallback disCallback;
 	int keepAlive = 20;
 
 };

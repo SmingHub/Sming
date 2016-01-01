@@ -10,7 +10,7 @@
 #include "../SmingCore.h"
 
 MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback /* = NULL*/)
-	: TcpClient((bool)false)
+: TcpClient((bool)false)
 {
 	server = serverHost;
 	port = serverPort;
@@ -18,10 +18,11 @@ MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscription
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
+	mqtt_init(&broker, NULL);
 }
 
 MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback /* = NULL*/)
-	: TcpClient((bool)false)
+: TcpClient((bool)false)
 {
 	this->serverIp = serverIp;
 	port = serverPort;
@@ -29,6 +30,7 @@ MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptio
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
+	mqtt_init(&broker, NULL);
 }
 
 MqttClient::~MqttClient()
@@ -59,10 +61,17 @@ bool MqttClient::connect(String clientName, String username, String password)
 		debugf("MQTT closed previous connection");
 	}
 
-	debugf("MQTT start connection");
-	mqtt_init(&broker, clientName.c_str());
-	if (clientName.length() > 0)
+	debugf("MQTT starting connection");
+
+	if (clientName.c_str())
+		strncpy(broker.clientid, clientName.c_str(), sizeof(broker.clientid));
+
+	if (username.length() > 0 && password.length() > 0){
 		mqtt_init_auth(&broker, username.c_str(), password.c_str());
+		//strncpy(broker.username, username.c_str(), sizeof(broker.username));
+		//strncpy(broker.password, password.c_str(), sizeof(broker.password));
+	}
+	//debugf("Username: %s, Pass: %s, Will: %s", broker.username, broker.password, broker.will_message);
 
 	if(server) {
 		TcpClient::connect(server, port);
@@ -155,7 +164,9 @@ err_t MqttClient::onReceive(pbuf *buf)
 	if (buf == NULL)
 	{
 		// Disconnected, close it
+		this->disCallback();
 		TcpClient::onReceive(buf);
+
 	}
 	else
 	{
@@ -266,10 +277,15 @@ err_t MqttClient::onReceive(pbuf *buf)
 
 void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	if (sleep >= 10)
+	if (sleep >= 20)
 	{
 		mqtt_ping(&broker);
 		sleep = 0;
 	}
 	TcpClient::onReadyToSendData(sourceEvent);
+}
+
+void MqttClient::setDisconnectCb(MqttDisconnectCallback dcb /* = NULL */){
+	if(dcb)
+		this->disCallback = dcb;
 }
