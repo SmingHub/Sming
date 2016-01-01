@@ -223,10 +223,12 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 					memcpy(varname, cur + 1, p - cur - 1); // name without { and }
 					varName = varname;
 					state = eTES_Found;
-					varWaitSize = cur - tpl;
-					debugf("found var: %s, at %d (%d) - %d, send size %d", varName.c_str(), cur - tpl + 1, cur - tpl + getPos(), p - tpl, cur - tpl);
+					int sz = cur - tpl;
+					varWaitSize = sz;
+					debugf("found var: %s, at %d (%d) - %d, send size %d", varName.c_str(), sz + 1, sz + getPos(), p - tpl, sz);
 					skipBlockSize = block;
-					return cur - tpl; // return only plain text from template without our variable
+					if (sz == 0) state = eTES_StartVar;
+					return sz; // return only plain text from template without our variable
 				}
 			}
 			cur = (char*)memchr(p, '{', len - (p - tpl)); // continue searching..
