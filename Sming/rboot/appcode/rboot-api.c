@@ -10,11 +10,10 @@
 #include <rboot-integration.h>
 #endif
 
+#include <string.h>
 #include <c_types.h>
 #include <user_interface.h>
-#include <espconn.h>
 #include <mem.h>
-#include <osapi.h>
 
 #include "rboot-api.h"
 
