@@ -10,6 +10,9 @@
 
 #include "special_chars.h"
 
+// Some Bug for now??
+int __errno;
+
 LiquidCrystal lcd(4,2,14,12,13,15);
 
 Timer heartBeatTimer;
@@ -34,6 +37,8 @@ void showTime();
 void secondsUpdater();
 void getWeather();
 void showWeather();
+void init_system();
+void reboot_system();
 void onGotTime(NtpClient& client, time_t time);
 
 
@@ -58,12 +63,12 @@ enum tempUnit {
 };
 
 enum fsm_states {
-	init,
-	waitForData,
-	showingTime,
-	showingWeather,
-	reboot
-} stage;
+	state_init,
+	state_waitingForData,
+	state_showingTime,
+	state_showingWeather,
+	state_reboot
+} current_state;
 
 
 DynamicJsonBuffer jsonConfigBuffer;
@@ -118,26 +123,27 @@ JsonObject& getConfig(){
 }
 
 
+
 void stageHandler(){
 
-	switch ( stage ) {
-		case init:
+	switch ( current_state ) {
+		case state_init:
 			// Initialize our system and start requesting Data from the net
 			init_system();
 			break;
-		case waitForData:
+		case state_waitingForData:
 			waitForData();
 			break;
-		case showingTime:
+		case state_showingTime:
 			break;
-		case showingWeather:
+		case state_showingWeather:
 			break;
-		case reboot:
-
+		case state_reboot:
+			reboot_system();
 			break;
 		default:
 			// We shouldn't be here...
-			stage = reboot;
+			current_state = state_reboot;
 	}
 
 
@@ -146,10 +152,10 @@ void stageHandler(){
 
 void init_system(){
 
-
+return;
 }
 
-void reboot(){
+void reboot_system(){
 	// save config
 	// reboot system
 
@@ -189,7 +195,7 @@ void init()
 	heartBeatTimer.initializeMs(1000, heartBeatBlink).start();
 
 	WifiAccessPoint.enable(false);
-	WifiStation.config( cfg_local["network"]["ssid"].toString() , cfg_local["network"]["password"].toString());
+	WifiStation.config( cfg_local["network"]["ssid"].as<String>() , cfg_local["network"]["password"].as<String>() );
 	WifiStation.enable(true);
 
 
@@ -360,10 +366,10 @@ void onGetWeather(HttpClient& client, bool successful) {
 		      return;
 		  }
 
-		if (jsonWeather["main"]["temp"].is<double>()) {
-			// we have a double
+		if (jsonWeather["main"]["temp"].is<long>()) {
+			// we have a long
 			// cast_long_to ????
-			double temp_temp = jsonWeather["main"]["temp"].as<double>();
+			double temp_temp = jsonWeather["main"]["temp"].as<long>();
 			display_data.weather_Temp = round(temp_temp);
 		} else {
 			// most likely an integer
@@ -373,7 +379,7 @@ void onGetWeather(HttpClient& client, bool successful) {
 
 
 		display_data.weather_Humidity = (int) jsonWeather["main"]["humidity"];
-		display_data.weather_Description = jsonWeather["weather"][0]["description"];
+		display_data.weather_Description = jsonWeather["weather"][0]["description"].as<String>();
 
 		// Adjust for timezone
 		display_data.weather_SunRise = (long) jsonWeather["sys"]["sunrise"] + (SECS_PER_HOUR * cfg_local["time_zone"].as<double>());
@@ -421,7 +427,7 @@ void getWeather(){
 	default: temp_url_req = "&units=metric";
 	}
 
-	String url = cfg_weather["url"].toString() + "?id=" + cfg_weather["city_id"].toString() + temp_url_req  + "&appid=" + cfg_weather["api_key"].toString();
+	String url = cfg_weather["url"].as<String>() + "?id=" + cfg_weather["city_id"].as<String>() + temp_url_req  + "&appid=" + cfg_weather["api_key"].as<String>();
 //	String url = "http://www.quanttrom.com/weather.json";
 
 	httpWeather.downloadString( url ,onGetWeather);
