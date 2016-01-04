@@ -157,6 +157,8 @@ INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
+SAMPLES := $(shell find ../samples -maxdepth 1 -mindepth 1 -type d -not -name ".*" -printf '%P\n')
+
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
 Q :=
@@ -166,9 +168,23 @@ Q := @
 vecho := @echo
 endif
 
-# test:
-# 	#$(vecho) $(OBJ) $(APP_AR)
-# 	$(vecho) $(BUILD_DIR)
+test: all spiffy samples
+
+samples: Basic_BlinkTest HttpServer_BootstrapTest
+
+recurse-samples: $(SAMPLES)
+$(SAMPLES):
+	cd $(SMING_HOME)/../samples/; export ESP_HOME=$(ESP_HOME); export SMING_HOME=$(SMING_HOME); $(MAKE) -C $@
+	
+Basic_BlinkTest:
+	cd $(SMING_HOME)/../samples/Basic_Blink; export ESP_HOME=$(ESP_HOME); export SMING_HOME=$(SMING_HOME); make
+	
+Basic_rBootTest:
+	cd $(SMING_HOME)/../samples/Basic_rBoot; export ESP_HOME=$(ESP_HOME); export SMING_HOME=$(SMING_HOME); make
+
+HttpServer_BootstrapTest:
+	cd $(SMING_HOME)/../samples/HttpServer_Bootstrap; export ESP_HOME=$(ESP_HOME); export SMING_HOME=$(SMING_HOME); make
+
 
 vpath %.c $(SRC_DIR)
 vpath %.cpp $(SRC_DIR)

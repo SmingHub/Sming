@@ -4,7 +4,6 @@
 #
 
 ESPTOOL2 ?= ../esptool2/esptool2
-SDK_BASE ?= /opt/esp-open-sdk/sdk
 
 RBOOT_BUILD_BASE ?= build
 RBOOT_FW_BASE    ?= firmware
@@ -18,8 +17,8 @@ LD := $(addprefix $(XTENSA_BINDIR)/,xtensa-lx106-elf-gcc)
 endif
 
 CFLAGS    = -Os -O3 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
-LDFLAGS   = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -L $(SDK_BASE)/ld/
-LD_SCRIPT = $(SDK_BASE)/ld/eagle.app.v6.ld
+LDFLAGS   = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
+LD_SCRIPT = eagle.app.v6.ld
 
 E2_OPTS = -quiet -bin -boot0
 
