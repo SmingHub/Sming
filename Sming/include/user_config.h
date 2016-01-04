@@ -9,8 +9,26 @@ extern "C" {
 	#define SERIAL_BAUD_RATE 115200
 
 	// ESP SDK config
-	#define LWIP_OPEN_SRC
 	#define USE_US_TIMER
+
+	//------------------------------------------------------------------------------
+	/* LwIP Options */
+	#ifndef USE_ESPCONN
+		#define USE_ESPCONN
+	#endif
+
+	#ifndef LWIP_OPEN_SRC
+		#define LWIP_OPEN_SRC
+	#endif
+
+	#ifndef PBUF_RSV_FOR_WLAN
+		#define PBUF_RSV_FOR_WLAN
+	#endif
+
+	#ifndef EBUF_LWIP
+		#define EBUF_LWIP
+	#endif
+	//------------------------------------------------------------------------------
 
 	// Default types
 	#define __CORRECT_ISO_CPP_STDLIB_H_PROTO
