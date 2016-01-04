@@ -1,12 +1,29 @@
 sudo: false
 language: cpp
-install:  
+os:
+  - linux
+  - osx
+env:
+  global:
+    - SDK_BUILD=258
+  matrix:
+    - SDK_VERSION=1.4.0
+    - SDK_VERSION=1.5.0  
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:     
+      - bsdtar
+install:
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-linux-x86_64.tar.gz"; fi
   - mkdir -p $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-  - wget https://bintray.com/artifact/download/kireevco/generic/esp-alt-sdk-1.5.0-linux-x86_64.tar.gz
-  - tar -zxf esp-alt-sdk-1.5.0-linux-x86_64.tar.gz -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-  - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
-  - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-  - export ESPTOOl2=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk/esptool2/esptool2
+  - wget https://bintray.com/artifact/download/kireevco/generic/${SDK_FILE_NAME}
+  - bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk  
 script:
-- cd $SMING_HOME
-- make
+  - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
+  - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk  
+  - export PATH=$PATH:$TRAVIS_BUILD_DIR/opt/esp-alt-sdk/utils/
+  - cd $SMING_HOME
+  - make test
