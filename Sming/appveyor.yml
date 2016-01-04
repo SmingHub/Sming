@@ -4,7 +4,7 @@ init:
 environment:
   PATH: C:\MinGW\msys\1.0\bin;C:\MinGW\bin;C:\Program Files (x86)\Mono-3.2.3\bin;C:\Python27\scripts;%PATH%  
   SDK_BUILD: 258
-  matrix:    
+  matrix:
     - build_platform: "x86"
       build_compiler: "mingw"
       build_bindings: 1
@@ -23,12 +23,12 @@ install:
 
 build_script:
   - SET SDK_FILE_NAME=esp-alt-sdk-v%SDK_VERSION%.%SDK_BUILD%-windows-x86.zip
-  - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "echo ${SDK_FILE_NAME}"
-  - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "mkdir -p /c/projects/%APPVEYOR_PROJECT_NAME%/opt/esp-alt-sdk"
-  - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "wget https://bintray.com/artifact/download/kireevco/generic/${SDK_FILE_NAME}"
-  - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk"
-  
   - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "export SMING_HOME=/c/projects/%APPVEYOR_PROJECT_NAME%/Sming"
   - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "export PATH=$PATH:/c/projects/%APPVEYOR_PROJECT_NAME%/opt/esp-alt-sdk/utils/"
   - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "export ESP_HOME=/c/projects/%APPVEYOR_PROJECT_NAME%/opt/esp-alt-sdk"
+  
+  - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "echo ${SDK_FILE_NAME}"
+  - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "mkdir -p /c/projects/%APPVEYOR_PROJECT_NAME%/opt/esp-alt-sdk"
+  - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "wget https://bintray.com/artifact/download/kireevco/generic/${SDK_FILE_NAME}"
+  - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk"  
   - C:\MinGW\msys\1.0\bin\bash.exe -i -l -c "cd /c/projects/%APPVEYOR_PROJECT_NAME%/Sming; make test"
