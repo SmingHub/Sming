@@ -258,6 +258,7 @@ export RBOOT_BUILD_BASE
 export RBOOT_FW_BASE
 export SPI_SIZE
 export SPI_MODE
+export SPI_SPEED
 export ESPTOOL2
 
 # multiple roms per 1mb block?
