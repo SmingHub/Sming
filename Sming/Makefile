@@ -159,7 +159,7 @@ INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
-SAMPLES_DIRS := $(shell find ../samples -maxdepth 1 -mindepth 1 -type d -not -name ".*" -printf '%P\n')
+SAMPLES_DIRS := $(shell ls -1 ../samples)
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
