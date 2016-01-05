@@ -231,7 +231,7 @@ samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot
 recurse-samples: $(SAMPLES_DIRS)
 
 $(SAMPLES_DIRS):
-	$(Q) $(MAKE) -C $(SMING_HOME)../samples/$@
+	$(Q) $(MAKE) -C $(SMING_HOME)/../samples/$@
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
 
