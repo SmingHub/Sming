@@ -81,10 +81,12 @@ else
 
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /usr/local/esp8266/esp-open-sdk
-      include $(SMING_HOME)/Makefile-bsd.mk     
+      include Makefile-bsd.mk
   endif
 endif
 
+export ESP_HOME
+export SMING_HOME
 export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
@@ -157,7 +159,7 @@ INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
-SAMPLES := $(shell find ../samples -maxdepth 1 -mindepth 1 -type d -not -name ".*" -printf '%P\n')
+SAMPLES_DIRS := $(shell find ../samples -maxdepth 1 -mindepth 1 -type d -not -name ".*" -printf '%P\n')
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -167,24 +169,6 @@ else
 Q := @
 vecho := @echo
 endif
-
-test: all spiffy samples
-
-samples: Basic_BlinkTest HttpServer_BootstrapTest
-
-recurse-samples: $(SAMPLES)
-$(SAMPLES):
-	cd $(SMING_HOME)/../samples/; export ESP_HOME=$(ESP_HOME); export SMING_HOME=$(SMING_HOME); $(MAKE) -C $@
-	
-Basic_BlinkTest:
-	cd $(SMING_HOME)/../samples/Basic_Blink; export ESP_HOME=$(ESP_HOME); export SMING_HOME=$(SMING_HOME); make
-	
-Basic_rBootTest:
-	cd $(SMING_HOME)/../samples/Basic_rBoot; export ESP_HOME=$(ESP_HOME); export SMING_HOME=$(SMING_HOME); make
-
-HttpServer_BootstrapTest:
-	cd $(SMING_HOME)/../samples/HttpServer_Bootstrap; export ESP_HOME=$(ESP_HOME); export SMING_HOME=$(SMING_HOME); make
-
 
 vpath %.c $(SRC_DIR)
 vpath %.cpp $(SRC_DIR)
@@ -202,7 +186,7 @@ $1/%.o: %.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean spiffy
+.PHONY: all checkdirs clean spiffy test samples recurse-samples $(SAMPLES_DIRS)
 
 all: checkdirs $(APP_AR)
 
@@ -239,4 +223,15 @@ clean:
 	$(Q) rm -rf $(FW_BASE)
 	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
 
+
+test: all spiffy samples
+
+samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot
+
+recurse-samples: $(SAMPLES_DIRS)
+
+$(SAMPLES_DIRS):
+	$(Q) $(MAKE) -C $(SMING_HOME)/../samples/$@
+
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
+

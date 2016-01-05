@@ -143,7 +143,7 @@ void init()
 	Debug.initCommand();
 	Debug.start();
 	Debug.printf("This is the debug output\r\n");
-	telnetServer.setDebug(true);/* is default but here to show possibility */
+	telnetServer.enableDebug(true);/* is default but here to show possibility */
 	commandHandler.registerCommand(CommandDelegate("appheap","Usage appheap on/off/now for heapdisplay\r\n","testGroup", appheapCommand));
 	memoryTimer.initializeMs(250,checkHeap).start();
 
