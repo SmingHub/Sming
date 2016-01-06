@@ -81,10 +81,12 @@ else
 
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /usr/local/esp8266/esp-open-sdk
-      include $(SMING_HOME)/Makefile-bsd.mk     
+      include Makefile-bsd.mk
   endif
 endif
 
+export ESP_HOME
+export SMING_HOME
 export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
@@ -157,6 +159,8 @@ INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
+SAMPLES_DIRS := $(shell ls -1 ../samples)
+
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
 Q :=
@@ -165,10 +169,6 @@ else
 Q := @
 vecho := @echo
 endif
-
-# test:
-# 	#$(vecho) $(OBJ) $(APP_AR)
-# 	$(vecho) $(BUILD_DIR)
 
 vpath %.c $(SRC_DIR)
 vpath %.cpp $(SRC_DIR)
@@ -186,7 +186,7 @@ $1/%.o: %.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean spiffy
+.PHONY: all checkdirs clean spiffy test samples recurse-samples $(SAMPLES_DIRS)
 
 all: checkdirs $(APP_AR)
 
@@ -223,4 +223,15 @@ clean:
 	$(Q) rm -rf $(FW_BASE)
 	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
 
+
+test: all spiffy samples
+
+samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot
+
+recurse-samples: $(SAMPLES_DIRS)
+
+$(SAMPLES_DIRS):
+	$(Q) $(MAKE) -C $(SMING_HOME)/../samples/$@
+
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
+

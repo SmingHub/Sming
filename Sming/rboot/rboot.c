@@ -281,6 +281,7 @@ uint32 NOINLINE find_image() {
 		ets_printf("Booting GPIO-selected.\r\n");
 		romToBoot = romconf->gpio_rom;
 		gpio_boot = TRUE;
+		updateConfig = TRUE;
 	} else if (romconf->current_rom >= romconf->count) {
 		// if invalid rom selected try rom 0
 		ets_printf("Invalid rom selected, defaulting.\r\n");

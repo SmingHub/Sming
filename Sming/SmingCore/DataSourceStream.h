@@ -22,7 +22,7 @@ enum StreamType
 {
 	eSST_Memory,
 	eSST_File,
-	eSST_TepmplateFile,
+	eSST_TemplateFile,
 	eSST_JsonObject,
 	eSST_User,
 	eSST_Unknown
@@ -104,7 +104,7 @@ public:
 	TemplateFileStream(String templateFileName);
 	virtual ~TemplateFileStream();
 
-	virtual StreamType getStreamType() { return eSST_TepmplateFile; }
+	virtual StreamType getStreamType() { return eSST_TemplateFile; }
 
 	virtual uint16_t readMemoryBlock(char* data, int bufSize);
 	virtual bool seek(int len);
