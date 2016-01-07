@@ -140,13 +140,18 @@ int TcpConnection::writeString(const String data, uint8_t apiflags /* = TCP_WRIT
 
 int TcpConnection::writeString(const char* data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
+	if (getAvailableWriteSize() < strlen(data))
+	{
+		// we should not write part of the String if we now that is doesn't fit to the buffer
+		// it allows to react on this situation with repeat attempt next iteration
+		return -1;
+	}
+
 	return write(data, strlen(data), apiflags);
 }
 
 int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
-   //int original = len;
-
    u16_t available = getAvailableWriteSize();
    if (available < len)
    {

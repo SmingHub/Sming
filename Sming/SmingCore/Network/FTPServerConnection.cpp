@@ -50,16 +50,39 @@ protected:
 class FTPDataFileList : public FTPDataStream
 {
 public:
-	FTPDataFileList(FTPServerConnection* connection) : FTPDataStream(connection) {}
+	FTPDataFileList(FTPServerConnection* connection) : FTPDataStream(connection)
+	{
+		SPIFFS_opendir(&_filesystemStorageHandle, "/", &d);
+	}
+	~FTPDataFileList()
+	{
+		SPIFFS_closedir(&d);
+	}
+
 	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
-		if (completed) return;
-		Vector<String> list = fileList();
-		debugf("send file list: %d", list.count());
-		for (int i = 0; i < list.count(); i++)
-			writeString("01-01-15  01:00AM               " + String(fileGetSize(list[i])) + " " + list[i] + "\r\n");
-		completed = true;
+		do {
+			if (nextRequested) {
+				if (!SPIFFS_readdir(&d, &info)) {
+					completed = true;
+					return;
+				}
+				nextRequested = true;
+			}
+			size = writeString("01-01-15  01:00AM               " + String(fileGetSize((char*)info.name)) + " " + (char*)info.name + "\r\n");
+			if (size >= 0) {
+				nextRequested = true;
+			} else {
+				return;
+			}
+		} while (true);
 	}
+protected:
+	Vector<String> result;
+	spiffs_DIR d;
+	spiffs_dirent info;
+	int size;
+	bool nextRequested = true;
 };
 
 class FTPDataRetrieve : public FTPDataStream
