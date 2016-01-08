@@ -338,6 +338,12 @@ void init()
 
 	debugf("Initialized in %d ms\n", startTime);
 
+	uint16_t time = millis();
+	tft.fillScreen(ST7735_BLACK);
+	time = millis() - time;
+
+	Serial.println(time, DEC);
+
 	DemoScreenTimer.initializeMs(500, screen1).start(FALSE);
 
 }
