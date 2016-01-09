@@ -2,6 +2,8 @@
 #include <SmingCore/SmingCore.h>
 #include <Libraries/Adafruit_ST7735/Adafruit_ST7735.h>
 
+#include "BPMDraw.h"
+
 /*
  * Hardware SPI mode:
  * GND      (GND)         GND
@@ -22,6 +24,7 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RS
 
 Timer DemoScreenTimer;
 float p = 3.1415926;
+uint32_t startTime;
 
 
 void testdrawtext(const char text[], uint16_t color) {
@@ -50,7 +53,6 @@ void tftPrintTest1() {
 }
 
 void tftPrintTest2() {
-//  delay(1500);
   tft.setCursor(0, 0);
   tft.fillScreen(ST7735_BLACK);
   tft.setTextColor(ST7735_WHITE);
@@ -90,6 +92,7 @@ void testlines(uint16_t color) {
     tft.drawLine(tft.width()-1, 0, 0, y, color);
   }
 
+  // TODO: drawing from all 4 corners does kick in a watchdog reboot !
   /*
 
   tft.fillScreen(ST7735_BLACK);
@@ -211,81 +214,109 @@ void mediabuttons() {
   tft.fillTriangle(42, 20, 42, 60, 90, 40, ST7735_GREEN);
 }
 
+void screen13() {
+	startTime = millis();
+	debugf("screen13: bmpDraw rotaton %d ms", millis() - startTime);
+	tft.fillScreen(ST7735_BLACK); // Clear display
+	tft.setRotation(tft.getRotation() + 1); // Inc rotation 90 degrees
+	for (uint8_t i = 0; i < 4; i++)    // Draw 4 parrots
+		bmpDraw(tft, "sming.bmp", tft.width() / 4 * i, tft.height() / 4 * i);
+}
 
+void screen12() {
+	startTime = millis();
+	bmpDraw(tft, "sming.bmp", 0, 0);
+	debugf("screen12: bmpDraw %d ms", millis() - startTime);
+//	DemoScreenTimer.initializeMs(2000, screen13).start(FALSE);
+}
 
 void screen11() {
-	Serial.println("demo: mediabuttons");
+	startTime = millis();
 	mediabuttons();
+	debugf("screen11: mediabuttons %d ms", millis() - startTime);
+	DemoScreenTimer.initializeMs(1000, screen12).start(FALSE);
 }
 
 void screen10() {
-	Serial.println("demo: testtriangles");
+	startTime = millis();
 	testtriangles();
+	debugf("screen10: testtriangles %d ms", millis() - startTime);
 	DemoScreenTimer.initializeMs(1000, screen11).start(FALSE);
 }
 
 void screen9() {
-	Serial.println("demo: testroundrects");
+	startTime = millis();
 	testroundrects();
+	debugf("screen9: testroundrects %d ms", millis() - startTime);
 	DemoScreenTimer.initializeMs(1000, screen10).start(FALSE);
 }
 
 void screen8() {
-	Serial.println("demo: testfillcircles");
+	startTime = millis();
 	tft.fillScreen(ST7735_BLACK);
 	testfillcircles(10, ST7735_BLUE);
 	testdrawcircles(10, ST7735_WHITE);
+	debugf("screen8: testfillcircles %d ms", millis() - startTime);
 	DemoScreenTimer.initializeMs(1000, screen9).start(FALSE);
 }
 
 void screen7() {
-	Serial.println("demo: testfillrects");
+	startTime = millis();
 	testfillrects(ST7735_YELLOW, ST7735_MAGENTA);
+	debugf("screen7: testfillrects %d ms", millis() - startTime);
 	DemoScreenTimer.initializeMs(1000, screen8).start(FALSE);
 }
 
 void screen6() {
-	Serial.println("demo: testdrawrects");
+	startTime = millis();
 	testdrawrects(ST7735_GREEN);
+	debugf("screen6: testdrawrects %d ms", millis() - startTime);
 	DemoScreenTimer.initializeMs(1000, screen7).start(FALSE);
 }
 
 void screen5() {
+	startTime = millis();
 	  // optimized lines
-	Serial.println("demo: testfastlines");
 	testfastlines(ST7735_RED, ST7735_BLUE);
+	debugf("screen5: testfastlines %d ms", millis() - startTime);
 	DemoScreenTimer.initializeMs(1000, screen6).start(FALSE);
 }
 
 void screen4() {
+	startTime = millis();
 	// line draw test
-	Serial.println("demo: testlines");
 	testlines(ST7735_YELLOW);
+	debugf("screen4: testlines %d ms", millis() - startTime);
 	DemoScreenTimer.initializeMs(1000, screen5).start(FALSE);
 }
 
 void screen3() {
-	Serial.println("demo: tftPrintTest1");
+	startTime = millis();
 	tftPrintTest2();
+	debugf("screen3: tftPrintTest2 %d ms", millis() - startTime);
 	DemoScreenTimer.initializeMs(1000, screen4).start(FALSE);
 }
 
 void screen2() {
-	Serial.println("demo: tftPrintTest1");
+	startTime = millis();
 	tftPrintTest1();
+	debugf("screen2: tftPrintTest1 %d ms", millis() - startTime);
 	DemoScreenTimer.initializeMs(1000, screen3).start(FALSE);
 }
 
 void screen1() {
-	Serial.println("demo: testdrawtext");
+	startTime = millis();
     // large block of text
     tft.fillScreen(ST7735_BLACK);
     testdrawtext("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur adipiscing ante sed nibh tincidunt feugiat. Maecenas enim massa, fringilla sed malesuada et, malesuada sit amet turpis. Sed porttitor neque ut ante pretium vitae malesuada nunc bibendum. Nullam aliquet ultrices massa eu hendrerit. Ut sed nisi lorem. In vestibulum purus a tortor imperdiet posuere. ", ST7735_WHITE);
+	debugf("screen1: testdrawtext %d ms", millis() - startTime);
 	DemoScreenTimer.initializeMs(1000, screen2).start(FALSE);
 }
 
 void init()
 {
+	spiffs_mount(); // Mount file system, in order to work with files
+
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
@@ -293,7 +324,8 @@ void init()
 	WifiStation.enable(false);
 	WifiAccessPoint.enable(false);
 
-	Serial.println("Display start");
+	debugf("Display start");
+	startTime = millis();
 
 	// Use this initializer if you're using a 1.8" TFT
 	// tft.initR(INITR_BLACKTAB);   // initialize a ST7735S chip, black tab
@@ -301,13 +333,10 @@ void init()
 	// Use this initializer (uncomment) if you're using a 1.44" TFT
 	tft.initR(INITR_144GREENTAB);   // initialize a ST7735S chip, black tab
 
-	Serial.println("Initialized");
-
-	uint16_t time = millis();
 	tft.fillScreen(ST7735_BLACK);
-	time = millis() - time;
+	startTime = millis() - startTime;
 
-	Serial.println(time, DEC);
+	debugf("Initialized in %d ms\n", startTime);
 
 	DemoScreenTimer.initializeMs(500, screen1).start(FALSE);
 
