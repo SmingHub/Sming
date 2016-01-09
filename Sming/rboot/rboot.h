@@ -40,25 +40,27 @@ extern "C" {
 #define MODE_STANDARD 0x00
 #define MODE_GPIO_ROM 0x01
 
-// boot config structure
-// rom addresses must be multiples of 0x1000 (flash sector aligned)
-// without BOOT_BIG_FLASH only the first 8Mbit of the chip will be memory mapped
-// so rom slots containing .irom0.text sections must remain below 0x100000
-// slots beyond this will only be accessible via spi read calls, so
-// use these for stored resources, not code
-// with BOOT_BIG_FLASH the flash will be mapped in chunks of 8MBit, so roms can
-// be anywhere, but must not straddle two 8MBit blocks
+/** @brief  Structure containing rBoot configuration
+ *  @note   ROM addresses must be multiples of 0x1000 (flash sector aligned).
+ *          Without BOOT_BIG_FLASH only the first 8Mbit (1MB) of the chip will be memory mapped
+ *          so ROM slots containing .irom0.text sections must remain below 0x100000.
+ *          Slots beyond this will only be accessible via spi read calls, so
+ *          use these for stored resources, not code.
+ *          With BOOT_BIG_FLASH the flash will be mapped in chunks of 8MBit (1MB), so ROMs can
+ *           be anywhere, but must not straddle two 8MBit (1MB) blocks.
+ *  @ingroup    rboot
+*/
 typedef struct {
-	uint8 magic;		   // our magic
-	uint8 version;		   // config struct version
-	uint8 mode;			   // boot loader mode
-	uint8 current_rom;	   // currently selected rom
-	uint8 gpio_rom;		   // rom to use for gpio boot
-	uint8 count;		   // number of roms in use
-	uint8 unused[2];	   // padding
-	uint32 roms[MAX_ROMS]; // flash addresses of the roms
+	uint8 magic;		   ///< Our magic, identifies rBoot configuration - should be BOOT_CONFIG_MAGIC
+	uint8 version;		   ///< Version of configuration structure - should be BOOT_CONFIG_VERSION
+	uint8 mode;			   ///< Boot loader mode (MODE_STANDARD | MODE_GPIO_ROM)
+	uint8 current_rom;	   ///< Currently selected ROM (will be used for next boot)
+	uint8 gpio_rom;		   ///< ROM to use for GPIO boot if mode=MODE_GPIO_ROM and GPIO16=low
+	uint8 count;		   ///< Quantity of ROMs available to boot
+	uint8 unused[2];	   ///< Padding (not used)
+	uint32 roms[MAX_ROMS]; ///< Flash addresses of each ROM
 #ifdef BOOT_CONFIG_CHKSUM
-	uint8 chksum;		   // config chksum
+	uint8 chksum;		   ///< Checksum of this configuration structure (if CONFIG_CHKSUM defined)
 #endif
 } rboot_config;
 
