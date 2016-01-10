@@ -1,0 +1,33 @@
+== PRINTF TEST START ==
+
+Float numbers display test:
+Pi with 2 decimals: 3.14 and with 4 decimals: 3.1416
+Pi without specifying precision(default 9): 3.141592654
+A number with leading fraction zeroes like 1.050250=1.05025
+
+Test crazy line lengths: wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait f or it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, wait for it, got to the  end :)
+
+Show a decimal 123456, a hex c0ffee, an unsigned 250, an octal 6675.
+Field width is supported: [  123456], with optional zero-padding: 0x00c0ffee
+
+Print pretty table
+LENGTH          WIDTH           HEIGHT
+     1              2                3
+    10             20              300
+ 1.654            200           3.6540
+ 3.142           3.14           3.1416
+
+Test crazy format specifiers on the same parameters
+Display -99:-99,                -3.0104:-3.0104,        'abc'=abc,              0.75:0.75,              0.888888889:0.888888889
+Display '   -99':   -99,        -3.010:-3.010,          'abc'=abc,              0.75000:0.75000,        0.888888889:0.888888889
+Display -99:-99,                -3.010:-3.010,          'abc'=abc,              ' 0.75': 0.75,          0.889:0.889
+Display -99:-99,                -3.0104000:-3.0104000,  'abc'=abc,              0.750:0.750,            ' 0.889': 0.889
+
+Test invalid specifiers and escaping of '%': %j %w %% %% % %zk
+
+Show limits:
+Int: -2147483647 .. 2147483647
+Uint limits 0 .. 4294967295
+Long -2147483647 .. 2147483647
+
+== TEST FINISH ==

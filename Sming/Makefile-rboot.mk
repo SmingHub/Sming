@@ -133,9 +133,10 @@ TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
-MODULES 	?= app  # if not initialized by user 
-MODULES		+= $(SMING_HOME)/rboot/appcode
-EXTRA_INCDIR    ?= include $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
+MODULES      ?= app     # default to app if not set by user
+MODULES      += $(SMING_HOME)/rboot/appcode
+EXTRA_INCDIR ?= include # default to include if not set by user
+EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 $(USER_CFLAGS)
@@ -153,7 +154,7 @@ else
 endif
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming crypto pwm $(EXTRA_LIBS)
+LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming crypto pwm smartconfig $(EXTRA_LIBS)
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 WIFI_SSID ?= ""
@@ -257,8 +258,8 @@ export RBOOT_BUILD_BASE
 export RBOOT_FW_BASE
 export SPI_SIZE
 export SPI_MODE
+export SPI_SPEED
 export ESPTOOL2
-export SDK_BASE
 
 # multiple roms per 1mb block?
 ifeq ($(RBOOT_TWO_ROMS),1)

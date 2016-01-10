@@ -58,7 +58,7 @@ flash size correctly with your chosen flash tool (e.g. for esptool.py use the
 -fs option). When run rBoot will create it's own config at the start of sector
 two for a simple two rom system. You can can then write your two roms to flash
 addresses 0x2000 and (half chip size + 0x2000). E.g. for 8Mbit flash:
-  esptool.py -fs 8m 0x0000 rboot.bin 0x2000 user1.bin 0x82000 user2.bin
+  esptool.py write_flash -fs 8m 0x0000 rboot.bin 0x2000 user1.bin 0x82000 user2.bin
 
 Note: your device may need other options specified. E.g. The nodemcu devkit v1.0
 (commonly, but incorrectly, sold as v2) also needs the "-fm dio" option.
@@ -98,7 +98,8 @@ Rom addresses must be sector aligned i.e start on a multiple of 4096.
   - mode can be 0x00 (MODE_STANDARD) or 0x01 (MODE_GPIO_ROM). If you set GPIO
     you will need to set gpio_rom as well. The sample GPIO code uses GPIO 16 on
     a nodemcu dev board, if you want to use a different GPIO you'll need to
-    adapt the code in rBoot slightly.
+    adapt the code in rBoot slightly. Booting with GPIO will update current_rom
+    in the config, so the GPIO booted rom should change this again if required.
   - current_rom is the rom to boot, numbered 0 to count-1.
   - gpio_rom is the rom to boot when the GPIO is triggered at boot.
   - count is the number of roms available (may be less than MAX_ROMS, but not

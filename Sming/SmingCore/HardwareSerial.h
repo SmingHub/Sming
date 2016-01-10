@@ -18,10 +18,15 @@
 
 #define NUMBER_UARTS 2
 
+#define SERIAL_SIGNAL_DELEGATE	0
+#define SERIAL_SIGNAL_COMMAND	1
+#define SERIAL_QUEUE_LEN		10
+
 // Delegate constructor usage: (&YourClass::method, this)
 typedef Delegate<void(Stream &source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
 
 class CommandExecutor;
+
 
 typedef struct
 {
@@ -52,11 +57,13 @@ public:
 	void resetCallback();
 
 	static void IRAM_ATTR uart0_rx_intr_handler(void *para);
+	static void delegateTask (os_event_t *inputEvent);
 
 private:
 	int uart;
 	static HWSerialMemberData memberData[NUMBER_UARTS];
 
+	os_event_t * serialQueue;
 };
 
 extern HardwareSerial Serial;

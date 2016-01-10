@@ -32,6 +32,35 @@ void setMPrintfPrinterCbc(void (*callback)(char))
 	cbc_printchar = callback;
 }
 
+/**
+ * @fn int m_snprintf(char* buf, int length, const char *fmt, ...);
+ *
+ * @param buf - destination buffer
+ * @param length - destination buffer size
+ * @param fmt - printf compatible format string
+ *
+ * @retval int - number of characters written
+ */
+int m_snprintf(char* buf, int length, const char *fmt, ...)
+{
+	char *p;
+	va_list args;
+	int n = 0;
+
+	va_start(args, fmt);
+	n = m_vsnprintf(buf, length, fmt, args);
+	va_end(args);
+
+	return n;
+}
+
+/**
+ * @fn int m_printf(const char *fmt, ...);
+ *
+ * @param fmt - printf compatible format string
+ *
+ * @retval int - number of characters written to console
+ */
 int m_printf(const char *fmt, ...)
 {
 	if(!cbc_printchar)
@@ -64,6 +93,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 	char *str;
 	const char *s;
 	int8_t precision, width;
+	char pad;
 
 	char tempNum[24];
 
@@ -96,6 +126,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 		//reset attributes to defaults
 		precision = -1;
 		width = 0;
+		pad = ' ';
 		base = 10;
 
 		do
@@ -104,8 +135,13 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 			while ('+' == *fmt || '-' == *fmt || '#' == *fmt || '*' == *fmt || 'l' == *fmt)
 				fmt++;
 
-			if (is_digit(*fmt))
+			if (is_digit(*fmt)) {
+				if (*fmt == '0') {
+					pad = '0';
+					fmt++;
+				}
 				width = skip_atoi(&fmt);
+			}
 
 			if('.' == *fmt)
 			{
@@ -132,7 +168,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 			}
 			else
 			{
-				while (*s)
+				while (*s && (maxLen - (uint32_t)(str - buf) > OVERFLOW_GUARD))
 					*str++ = *s++;
 			}
 
@@ -150,8 +186,6 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 
 		case 'x':
 		case 'X':
-			*str++ = '0';
-			*str++ = 'x';
 			base = 16;
 			break;
 
@@ -181,7 +215,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 		if (flags & SIGN)
 			s = ltoa_w(va_arg(args, int), tempNum, base, width);
 		else
-			s = ultoa_w(va_arg(args, unsigned int), tempNum, base, width);
+			s = ultoa_wp(va_arg(args, unsigned int), tempNum, base, width, pad);
 
 		while (*s)
 			*str++ = *s++;
