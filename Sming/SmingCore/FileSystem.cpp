@@ -126,7 +126,12 @@ void fileSetContent(const String fileName, const char *content)
 
 uint32_t fileGetSize(const String fileName)
 {
-	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
+	return fileGetSize(fileName.c_str());
+}
+
+uint32_t fileGetSize(const char* fileName)
+{
+	file_t file = fileOpen(fileName, eFO_ReadOnly);
 	// Get size
 	fileSeek(file, 0, eSO_FileEnd);
 	int size = fileTell(file);
