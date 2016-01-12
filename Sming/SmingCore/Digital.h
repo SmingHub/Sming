@@ -16,13 +16,13 @@
 
 void pinMode(uint16_t pin, uint8_t mode);
 
-void digitalWrite(uint16_t pin, uint8_t val);
-uint8_t digitalRead(uint16_t pin);
+void IRAM_ATTR digitalWrite(uint16_t pin, uint8_t val);
+uint8_t IRAM_ATTR digitalRead(uint16_t pin);
 
-void pullup(uint16_t pin);
-void noPullup(uint16_t pin);
+void IRAM_ATTR pullup(uint16_t pin);
+void IRAM_ATTR noPullup(uint16_t pin);
 
-bool isInputPin(uint16_t pin);
+bool IRAM_ATTR isInputPin(uint16_t pin);
 
 unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout =
 		1000000L);

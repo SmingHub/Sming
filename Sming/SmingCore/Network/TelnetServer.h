@@ -36,8 +36,8 @@ private:
 	bool onClientReceive (TcpClient& client, char *data, int size);
 	void onClientComplete(TcpClient& client, bool succesfull);
 	void wrchar(char c);
-	TcpClient *curClient;
-	CommandExecutor* commandExecutor;
+	TcpClient *curClient = nullptr;
+	CommandExecutor* commandExecutor = nullptr;
 	bool telnetDebug = true;
 	bool telnetCommand = true;
 };

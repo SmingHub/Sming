@@ -34,8 +34,8 @@
 # SPI_MODE = dio
 
 ## SPIFFS options
-DISABLE_SPIFFS = 1
-# SPIFF_FILES = files
+# DISABLE_SPIFFS = 1
+SPIFF_FILES = files
 
 #### overridable rBoot options ####
 ## use rboot build mode
