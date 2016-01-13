@@ -1,19 +1,25 @@
 #!/bin/bash -e
 # Passing '-e' parameter to bash to exit script immediately if any command fails
 
-# Only run on first Travis-ci job to avoid running for each platform / version
-if [ "${TRAVIS_JOB_NUMBER: -1}" != "1" ]
-then
-  exit 0
-fi
-
 # Settings
-REPO_PATH=git@github.com:riban-bw/Sming.git
-HTML_PATH=gh-pages
+REPO="SmingHub/Sming"
+REPO_PATH="git@github.com:$REPO.git"
+HTML_PATH="gh-pages"
 BUILD_PATH="${TRAVIS_BUILD_DIR}"
 COMMIT_USER="riban-bw"
 COMMIT_EMAIL="brian@riban.co.uk"
 CHANGESET=$(git rev-parse --verify HEAD)
+
+# Only run on first Travis-CI job to avoid running for each platform / version. Only run for core repository to avoid failure due to wrong encryption keys.
+if [ "${TRAVIS_JOB_NUMBER: -1}" != "1" -o "$TRAVIS_REPO_SLUG" != "$REPO" ]
+then
+  echo "Not publishing documentation. Only publish for build 1 of github repository $REPO"
+  exit 0
+fi
+
+# Decrypt ssh key
+openssl aes-256-cbc -K $encrypted_3a0bfac64d5a_key -iv $encrypted_3a0bfac64d5a_iv -in travisci_rsa.enc -out  ~/.ssh/id_rsa -d
+chmod 0600  ~/.ssh/id_rsa
 
 # Get a clean version of the HTML documentation repo.
 rm -rf ${HTML_PATH}
@@ -25,7 +31,7 @@ git rm -rf --ignore-unmatch ${HTML_PATH}/api
 
 # Generate the HTML documentation.
 echo "Starting doxygen..."
-doxygen >doxygen.log 2>error.log
+doxygen > doxygen.log
 echo "doxygen complete"
 
 # Generate report
