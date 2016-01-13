@@ -3,7 +3,7 @@
 /* $Id: base64.c 156 2007-07-12 23:29:10Z orange $ */
 #include "base64.h"
 
-#include <c_types.h>
+//#include <c_types.h>
 #include <ctype.h>
 
 
@@ -51,7 +51,8 @@ int base64decode(const char in[4], char out[3])
 	return (v[0]|v[1]|v[2]|v[3])!=255 ? in[3]=='=' ? in[2]=='=' ? 1 : 2 : 3 : 0;
 }
 
-/* decode a base64 string in one shot */
+/*
+ decode a base64 string in one shot
 int base64_decode(size_t in_len, const char *in, size_t out_len, unsigned char *out) {
 	unsigned ii, io;
 	uint_least32_t v;
@@ -60,25 +61,26 @@ int base64_decode(size_t in_len, const char *in, size_t out_len, unsigned char *
 	for(io=0,ii=0,v=0,rem=0;ii<in_len;ii++) {
 		unsigned char ch;
 		if(isspace(in[ii])) continue;
-		if(in[ii]=='=') break; /* stop at = */
+		if(in[ii]=='=') break;  stop at =
 		ch=base64dec_tab[(unsigned)in[ii]];
-		if(ch==255) break; /* stop at a parse error */
+		if(ch==255) break;  stop at a parse error
 		v=(v<<6)|ch;
 		rem+=6;
 		if(rem>=8) {
 			rem-=8;
-			if(io>=out_len) return -1; /* truncation is failure */
+			if(io>=out_len) return -1;  truncation is failure
 			out[io++]=(v>>rem)&255;
 		}
 	}
 	if(rem>=8) {
 		rem-=8;
-		if(io>=out_len) return -1; /* truncation is failure */
+		if(io>=out_len) return -1;  truncation is failure
 		out[io++]=(v>>rem)&255;
 	}
 	return io;
 }
 
+*/
 int base64_encode(size_t in_len, const unsigned char *in, size_t out_len, char *out) {
 	unsigned ii, io;
 	uint_least32_t v;
