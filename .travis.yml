@@ -15,6 +15,7 @@ addons:
     - ubuntu-toolchain-r-test
     packages:     
       - bsdtar
+      - doxygen
 install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-linux-x86_64.tar.gz"; fi
@@ -27,3 +28,6 @@ script:
   - export PATH=$PATH:$TRAVIS_BUILD_DIR/opt/esp-alt-sdk/utils/
   - cd $SMING_HOME
   - make test
+after_success:
+- cd $TRAVIS_BUILD_DIR/docs
+- ./publish_api.sh
