@@ -20,7 +20,9 @@
 //        ( ((PIN) == 2) ? EXTERNAL_INTERRUPT_0 : \
 //        ( ((PIN) == 3) ? EXTERNAL_INTERRUPT_1 : -1))
 
-
+/** @brief  ESP GPIO pin configuration
+ *  @ingroup constants
+ */
 struct EspDigitalPin
 {
 	uint8_t id;
@@ -33,6 +35,9 @@ struct EspDigitalPin
 	uint8_t read();
 };
 
+/** @brief  ESP GPIO pin configuration
+ *  @ingroup gpio
+ */
 static EspDigitalPin EspDigitalPins[] =
 {
 	{ 0, PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0}, // FLASH
