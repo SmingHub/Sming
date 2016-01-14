@@ -96,6 +96,7 @@ int MqttClient::staticSendPacket(void* userInfo, const void* buf, unsigned int c
 {
 	MqttClient* client = (MqttClient*)userInfo;
 	bool sent = client->send((const char*)buf, count);
+	client->lastMessage = millis();
 	return sent ? count : 0;
 }
 
@@ -266,10 +267,9 @@ err_t MqttClient::onReceive(pbuf *buf)
 
 void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	if (sleep >= 10)
+	if (lastMessage and millis() - lastMessage >= 10000)
 	{
 		mqtt_ping(&broker);
-		sleep = 0;
 	}
 	TcpClient::onReadyToSendData(sourceEvent);
 }
