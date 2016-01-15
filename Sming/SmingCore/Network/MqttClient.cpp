@@ -267,7 +267,8 @@ err_t MqttClient::onReceive(pbuf *buf)
 
 void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	if (lastMessage and millis() - lastMessage >= 10000)
+	// Send PINGREQ every keepAlive time, if there is no outgoing traffic
+	if (lastMessage && (millis() - lastMessage >= keepAlive*1000))
 	{
 		mqtt_ping(&broker);
 	}
