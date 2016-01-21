@@ -37,6 +37,7 @@ typedef enum
 	eDBGusePrefix = 1 ///< Use debug prefix
 } eDBGPrefix;
 
+/// Debug print class
 class DebugClass : public Print
 {
 public:
