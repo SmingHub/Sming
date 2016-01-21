@@ -18,6 +18,7 @@
 
 class String;
 
+/// File open flags
 enum FileOpenFlags
 {
   eFO_ReadOnly = SPIFFS_RDONLY, ///< Read only file
@@ -34,6 +35,7 @@ static FileOpenFlags operator|(FileOpenFlags lhs, FileOpenFlags rhs)
     return (FileOpenFlags) ((int)lhs| (int)rhs);
 }
 
+/// File seek flags
 typedef enum
 {
 	eSO_FileStart = SPIFFS_SEEK_SET, ///< Start of file
