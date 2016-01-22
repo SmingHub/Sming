@@ -182,6 +182,8 @@ public:
 	 *	@retval	String WiFi station password
 	 */
 	String getPassword();
+	sint8 getRssi();
+	uint8 getChannel(); 
 
 	/**	@brief	Start WiFi station network scan
 	 *	@param	scanCompleted Function to call when scan completes
