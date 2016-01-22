@@ -225,6 +225,7 @@ void TcpConnection::close()
 	tcp_poll(tcp, staticOnPoll, 1);
 	tcp_arg(tcp, NULL); // reset pointer to close connection on next callback
 	tcp = NULL;
+	checkSelfFree();
 }
 
 void TcpConnection::initialize(tcp_pcb* pcb)
