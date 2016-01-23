@@ -47,7 +47,7 @@ public:
 	virtual bool connect(IPAddress addr, uint16_t port);
 	virtual void close();
 
-	void setTcpCompleteCb(TcpClientCompleteDelegate completeCb);
+	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = NULL);
 	
 	bool send(const char* data, uint8_t len, bool forceCloseAfterSent = false);
 	bool sendString(String data, bool forceCloseAfterSent = false);
