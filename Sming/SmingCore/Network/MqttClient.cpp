@@ -273,8 +273,3 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 	TcpClient::onReadyToSendData(sourceEvent);
 }
-
-void MqttClient::setDisconnectCb(TcpClientCompleteDelegate dcb /* = NULL*/){
-	if(dcb)
-		TcpClient::setTcpCompleteCb(dcb);
-}
