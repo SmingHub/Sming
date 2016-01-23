@@ -35,6 +35,8 @@ public:
 	bool connect(String clientName);
 	bool connect(String clientName, String username, String password);
 
+	using TcpClient::setCompleteDelegate;
+
 	__forceinline bool isProcessing()  { return TcpClient::isProcessing(); }
 	__forceinline TcpClientState getConnectionState() { return TcpClient::getConnectionState(); }
 

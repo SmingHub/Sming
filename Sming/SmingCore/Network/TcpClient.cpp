@@ -212,3 +212,8 @@ void TcpClient::onFinished(TcpClientState finishState)
 	if (completed)
 		completed(*this, state == eTCS_Successful);
 }
+
+void TcpClient::setTcpCompleteCb(TcpClientCompleteDelegate completeCb)
+{
+	completed = completeCb;
+}

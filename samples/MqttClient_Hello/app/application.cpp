@@ -17,6 +17,19 @@ Timer procTimer;
 // For quickly check you can use: http://www.hivemq.com/demos/websocket-client/ (Connection= test.mosquitto.org:8080)
 MqttClient mqtt("test.mosquitto.org", 1883, onMessageReceived);
 
+// Check for MQTT Disconnection
+void checkMQTTDisconnect(TcpClient& client, bool flag){
+	
+	// Called whenever MQTT connection is failed.
+	if (flag == true)
+		Serial.println("MQTT Broker Disconnected!!");
+	else
+		Serial.println("MQTT Broker Unreachable!!");
+	
+	// Restart connection attempt after few seconds
+	procTimer.initializeMs(2 * 1000, startMqttClient).start(); // every 2 seconds
+}
+
 // Publish our message
 void publishMessage()
 {
@@ -38,9 +51,12 @@ void onMessageReceived(String topic, String message)
 // Run MQTT client
 void startMqttClient()
 {
+	procTimer.stop();
 	if(!mqtt.setWill("last/will","The connection from this device is lost:(", 1, true)) {
 		debugf("Unable to set the last will and testament. Most probably there is not enough memory on the device.");
 	}
+	// Assign a disconnect callback function
+	mqtt.setCompleteDelegate(checkMQTTDisconnect);
 	mqtt.connect("esp8266");
 	mqtt.subscribe("main/status/#");
 }
