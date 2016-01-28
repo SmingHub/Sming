@@ -10,6 +10,8 @@
 #ifndef WIRING_PINS_ARDUINO_H_
 #define WIRING_PINS_ARDUINO_H_
 
+#define A0 17 // Single ESP8266EX analog input pin (TOUT) 10 bit, 0..1v
+
 #define NOT_A_PIN 0
 #define NOT_A_PORT 0
 #define NOT_ON_TIMER 0
