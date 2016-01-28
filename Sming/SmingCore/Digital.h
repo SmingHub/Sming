@@ -24,6 +24,11 @@ void noPullup(uint16_t pin);
 
 bool isInputPin(uint16_t pin);
 
-unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout =
-		1000000L);
+unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout = 1000000L);
+
+inline uint16_t analogRead(uint16_t pin)
+{
+	return system_adc_read();
+}
+
 #endif
