@@ -188,7 +188,14 @@ endef
 
 .PHONY: all checkdirs clean spiffy test samples recurse-samples $(SAMPLES_DIRS)
 
-all: checkdirs $(APP_AR)
+all: checkdirs $(APP_AR) esptool2
+
+esptool2: esptool2/esptool2
+
+esptool2/esptool2:
+	$(vecho) "Making esptool2 utility"
+	$(Q) $(MAKE) --no-print-directory -C esptool2 V=$(V)
+	$(vecho) "Done"
 
 spiffy: spiffy/spiffy
 
@@ -222,6 +229,7 @@ clean:
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
 	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
+	$(Q) $(MAKE) --no-print-directory -C esptool2 clean V=$(V)
 
 
 test: all spiffy samples
