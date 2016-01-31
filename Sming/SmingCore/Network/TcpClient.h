@@ -47,6 +47,8 @@ public:
 	virtual bool connect(IPAddress addr, uint16_t port);
 	virtual void close();
 
+	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = NULL);
+	
 	bool send(const char* data, uint8_t len, bool forceCloseAfterSent = false);
 	bool sendString(String data, bool forceCloseAfterSent = false);
 	__forceinline bool isProcessing()  { return state == eTCS_Connected || state == eTCS_Connecting; }
