@@ -17,7 +17,13 @@
 #include "WiringFrameworkIncludes.h"
 #include "CommandOutput.h"
 
-typedef Delegate<void(String commandLine  ,CommandOutput* commandOutput)> commandFunctionDelegate;
+/** @brief  Command delegate function
+ *  @param  commandLine Command line entered by user at CLI, including command and parameters
+ *  @param  commandOutput Pointer to the CLI print stream
+ *  @note   commandFunctionDelegate defines the structure of a function that handles individual commands
+ *  @note   Can use standard print functions on commandOutput
+ */
+typedef Delegate<void(String commandLine, CommandOutput* commandOutput)> commandFunctionDelegate;
 
 /** @brief  Command delegate class */
 class CommandDelegate
