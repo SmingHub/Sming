@@ -18,7 +18,6 @@
  ********************************/
 
 #include "Adafruit_ILI9341.h"
-#include <limits.h>
 #include "pins_arduino.h"
 #include "wiring_private.h"
 #include <SPI.h>
@@ -171,6 +170,9 @@ void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color) {
 	transmitData(SWAPBYTES(color));
 }
 
+void Adafruit_ILI9341::pushColor(uint16_t color) {
+	transmitData(SWAPBYTES(color));
+}
 
 
 void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y, int16_t h,
