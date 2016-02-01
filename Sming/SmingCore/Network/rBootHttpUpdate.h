@@ -35,6 +35,11 @@ public:
 	void setCallback(otaUpdateDelegate reqUpdateDelegate);
 	void setDelegate(otaUpdateDelegate reqUpdateDelegate);
 
+	using HttpClient::addSslOptions;
+#ifdef ENABLE_SSL
+	using HttpClient::getSsl;
+#endif
+
 protected:
 	void onTimer();
 	virtual void writeRawData(pbuf* buf, int startPos);

@@ -33,8 +33,8 @@ public:
 	// Sets Last Will and Testament
 	bool setWill(String topic, String message, int QoS, bool retained = false);
 
-	bool connect(String clientName);
-	bool connect(String clientName, String username, String password);
+	bool connect(String clientName, boolean useSsl = false, uint32_t sslOptions = 0);
+	bool connect(String clientName, String username, String password, boolean useSsl = false, uint32_t sslOptions = 0);
 
 	using TcpClient::setCompleteDelegate;
 
@@ -46,6 +46,11 @@ public:
 
 	bool subscribe(String topic);
 	bool unsubscribe(String topic);
+
+	using TcpClient::addSslOptions;
+#ifdef ENABLE_SSL
+	using TcpClient::getSsl;
+#endif
 
 protected:
 	virtual err_t onReceive(pbuf *buf);

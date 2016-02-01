@@ -59,10 +59,15 @@ bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompleted
 	this->mode = mode;
 	this->onCompleted = onCompleted;
 
-	if (uri.Protocol != "http") return false;
 	debugf("Download: %s", uri.toString().c_str());
 
-	connect(uri.Host, uri.Port);
+	if(uri.Protocol == HTTPS_URL_PROTOCOL) {
+		connect(uri.Host, uri.Port, true);
+	}
+	else {
+		connect(uri.Host, uri.Port);
+	}
+
 	bool isPost = body.length();
 
 	sendString((isPost ? "POST " : "GET ") + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n");

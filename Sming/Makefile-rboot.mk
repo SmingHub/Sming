@@ -121,6 +121,8 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
+CURRENT_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+
 SPIFF_FILES ?= files
 
 BUILD_BASE	= out/build
@@ -165,6 +167,19 @@ endif
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
 LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming crypto pwm smartconfig $(EXTRA_LIBS)
+
+# SSL support using axTLS
+ifeq ($(ENABLE_SSL),1)
+	LIBS += axtls	
+	EXTRA_INCDIR += $(SMING_HOME)/axtls-8266 $(SMING_HOME)/axtls-8266/ssl $(SMING_HOME)/axtls-8266/crypto 
+	AXTLS_FLAGS = -DESP8266 -DLWIP_RAW=1 -DENABLE_SSL=1
+	ifeq ($(SSL_DEBUG),1) # 
+		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1
+	endif
+endif
+
+CFLAGS += $(AXTLS_FLAGS)  
+CXXFLAGS += $(AXTLS_FLAGS)
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 WIFI_SSID ?= ""
@@ -344,7 +359,22 @@ $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 
-checkdirs: $(BUILD_DIR) $(FW_BASE)
+include/ssl/private_key.h:
+	$(vecho) "Generating unique certificate and key. This may take some time"
+	$(Q) mkdir -p $(CURRENT_DIR)/include/ssl/
+	$(Q) AXDIR=$(CURRENT_DIR)/include/ssl/  $(SMING_HOME)/axtls-8266/tools/make_certs.sh 
+
+prepare-ssl: include/ssl/private_key.h
+
+ifeq ($(ENABLE_SSL), 1)
+compile-ssl: prepare-ssl
+else	
+compile-ssl:
+	$(vecho) "(!) SSL support is not enabled. To enable it type: 'make clean; make ENABLE_SSL=1'"
+endif	
+
+
+checkdirs: compile-ssl $(BUILD_DIR) $(FW_BASE)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@

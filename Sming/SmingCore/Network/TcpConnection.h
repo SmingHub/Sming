@@ -8,8 +8,13 @@
 #ifndef _SMING_CORE_TCPCONNECTION_H_
 #define _SMING_CORE_TCPCONNECTION_H_
 
+#ifdef ENABLE_SSL
+#include "../../axtls-8266/compat/lwipr_compat.h"
+#endif
+
 #include "../Wiring/WiringFrameworkDependencies.h"
 #include "IPAddress.h"
+
 
 #define NETWORK_DEBUG
 
@@ -40,8 +45,8 @@ public:
 	virtual ~TcpConnection();
 
 public:
-	virtual bool connect(String server, int port);
-	virtual bool connect(IPAddress addr, uint16_t port);
+	virtual bool connect(String server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(IPAddress addr, uint16_t port, boolean useSsl = false, uint32_t sslOptions = 0);
 	virtual void close();
 
 	// return -1 on error
@@ -56,6 +61,11 @@ public:
 	void setTimeOut(uint16_t waitTimeOut);
 	IPAddress getRemoteIp()  { return (tcp == NULL) ? INADDR_NONE : IPAddress(tcp->remote_ip);};
 	uint16_t getRemotePort() { return (tcp == NULL) ? 0 : tcp->remote_port; };
+
+	void addSslOptions(uint32_t sslOptions);
+#ifdef ENABLE_SSL
+	SSL* getSsl();
+#endif
 
 protected:
 	bool internalTcpConnect(IPAddress addr, uint16_t port);
@@ -85,6 +95,14 @@ protected:
 	uint16_t timeOut;
 	bool canSend;
 	bool autoSelfDestruct;
+#ifdef ENABLE_SSL
+	SSL *ssl = nullptr;
+	SSLCTX *sslContext = nullptr;
+#endif
+	boolean useSsl = false;
+	boolean sslConnected = false;
+	uint32_t sslOptions=0;
+	String hostname = "";
 };
 
 #endif /* _SMING_CORE_TCPCONNECTION_H_ */

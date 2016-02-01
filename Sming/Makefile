@@ -149,6 +149,20 @@ SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
 SDK_INCDIR	= include include/json
 
+# SSL support using axTLS
+ifeq ($(ENABLE_SSL),1)
+	LIBS += axtls
+	MODULES		 += axtls-8266/compat axtls-8266/replacements
+	EXTRA_INCDIR += axtls-8266 axtls-8266/ssl axtls-8266/crypto 
+	AXTLS_FLAGS = -DESP8266 -DLWIP_RAW=1 -DENABLE_SSL=1
+	ifeq ($(SSL_DEBUG),1) # 
+		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1 -DAXL_DEBUG=1
+	endif 
+endif
+
+CFLAGS += $(AXTLS_FLAGS)  
+CXXFLAGS += $(AXTLS_FLAGS)
+
 # select which tools to use as compiler, librarian and linker
 AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
@@ -244,6 +258,11 @@ $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 	$(vecho) "Installing libsming"
+ifeq ($(ENABLE_SSL), 1)
+	$(vecho) "+ SSL support is enabled"
+else
+	$(vecho) "(!) SSL support is not enabled. To enable it type: 'make clean; make ENABLE_SSL=1'"
+endif
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
 	$(vecho) "Done"
 
@@ -265,6 +284,7 @@ clean:
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
 	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
+	$(Q) $(MAKE) --no-print-directory -C axtls-8266 clean V=$(V) BIN_DIR=$(SMING_HOME)/$(USER_LIBDIR)
 
 
 test: all spiffy samples
