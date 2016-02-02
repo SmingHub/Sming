@@ -82,6 +82,11 @@ void tftPrintTest2() {
 }
 
 void testlines(uint16_t color) {
+
+  // testlines takes more than 3000ms on SW SPI
+  // so we need to prevent the watchdog from kicking in
+  WDT.enable(false);
+
   tft.fillScreen(ST7735_BLACK);
   for (int16_t x=0; x < tft.width(); x+=6) {
     tft.drawLine(0, 0, x, tft.height()-1, color);
@@ -98,8 +103,6 @@ void testlines(uint16_t color) {
     tft.drawLine(tft.width()-1, 0, 0, y, color);
   }
 
-  /*  Hangs on SW SPI -> ok with HW SPI !!
-
   tft.fillScreen(ST7735_BLACK);
   for (int16_t x=0; x < tft.width(); x+=6) {
     tft.drawLine(0, tft.height()-1, x, 0, color);
@@ -115,7 +118,9 @@ void testlines(uint16_t color) {
   for (int16_t y=0; y < tft.height(); y+=6) {
     tft.drawLine(tft.width()-1, tft.height()-1, 0, y, color);
   }
-  */
+
+  WDT.enable(true);
+
 }
 
 void testfastlines(uint16_t color1, uint16_t color2) {
