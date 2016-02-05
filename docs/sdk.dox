@@ -1,0 +1,33 @@
+// This file documents elements of the SDK used by Sming that are insufficiently documented within the SDK source files.
+
+
+/**	@addtogroup constants
+	@{
+	@enum	GPIO_INT_TYPE
+	@brief	Defines the GPIO interrupt type
+	@var	GPIO_PIN_INTR_DISABLE
+			Interrupt disabled for this pin	
+	@var	GPIO_PIN_INTR_POSEDGE
+			Interrupt occurs on positive edge
+	@var	GPIO_PIN_INTR_NEGEDGE
+			Interrupt occurs on negative edge
+	@var	GPIO_PIN_INTR_ANYEDGE
+			Interrupt occurs on both positive and negative edge
+	@var	GPIO_PIN_INTR_LOLEVEL
+			Interrupt occurs when GPIO low
+	@var	GPIO_PIN_INTR_HILEVEL
+			Interrupt occurs when GPIO high
+	@}
+ */
+ 
+
+/*
+typedef enum {
+    GPIO_PIN_INTR_DISABLE = 0,
+    GPIO_PIN_INTR_POSEDGE = 1,
+    GPIO_PIN_INTR_NEGEDGE = 2,
+    GPIO_PIN_INTR_ANYEDGE = 3,
+    GPIO_PIN_INTR_LOLEVEL = 4,
+    GPIO_PIN_INTR_HILEVEL = 5
+} GPIO_INT_TYPE;
+*/
