@@ -119,7 +119,7 @@ void Timer::setIntervalUs(uint64_t microseconds/* = 1000000*/)
 	{
 		interval = microseconds;
 		long_intvl_cntr = 0;
-		long_intvl_cntr = 0;
+		long_intvl_cntr_lim = 0;
 	}
 
 	if (started)

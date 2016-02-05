@@ -74,7 +74,7 @@ bool TcpClient::sendString(String data, bool forceCloseAfterSent /* = false*/)
 	return send(data.c_str(), data.length(), forceCloseAfterSent);
 }
 
-bool TcpClient::send(const char* data, uint8_t len, bool forceCloseAfterSent /* = false*/)
+bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent /* = false*/)
 {
 	if (state != eTCS_Connecting && state != eTCS_Connected) return false;
 
@@ -211,4 +211,9 @@ void TcpClient::onFinished(TcpClientState finishState)
 
 	if (completed)
 		completed(*this, state == eTCS_Successful);
+}
+
+void TcpClient::setCompleteDelegate(TcpClientCompleteDelegate completeCb)
+{
+	completed = completeCb;
 }
