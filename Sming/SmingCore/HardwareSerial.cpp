@@ -29,7 +29,7 @@ HardwareSerial::HardwareSerial(const int uartPort)
 {
 	resetCallback();
 	// Start Serial task
-	serialQueue = (os_event_t *)os_malloc(sizeof(os_event_t) * SERIAL_QUEUE_LEN);
+	serialQueue = (os_event_t *)malloc(sizeof(os_event_t) * SERIAL_QUEUE_LEN);
 	system_os_task(delegateTask,USER_TASK_PRIO_0,serialQueue,SERIAL_QUEUE_LEN);
 }
 

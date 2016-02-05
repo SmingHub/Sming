@@ -62,8 +62,17 @@ bool IRAM_ATTR isInputPin(uint16_t pin);
  *  @note   Works on pulses from 2-3 microseconds to 3 minutes in length.
  *  @note   Must be called at least a few dozen microseconds before the start of the pulse.
  */
-unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout =
-		1000000L);
+unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout = 1000000L);
+
+inline uint16_t analogRead(uint16_t pin)
+{
+	if (pin == A0)
+		return system_adc_read();
+	else
+		return -1; // Not supported
+}
 
 /** @} */
+		
+
 #endif
