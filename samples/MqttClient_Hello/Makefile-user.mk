@@ -36,4 +36,17 @@
 ## SPIFFS options
 DISABLE_SPIFFS = 1
 # SPIFF_FILES = files
+# we will use global WiFi settings from Eclipse Environment Variables, if possible
+
+ifdef MQTT_USERNAME
+	USER_CFLAGS += -DMQTT_USERNAME=\"$(MQTT_USERNAME)\" -DMQTT_PWD=\"$(MQTT_PWD)\"
+endif
+
+ifdef MQTT_HOST
+	USER_CFLAGS += -DMQTT_HOST=\"$(MQTT_HOST)\"
+endif
+
+ifdef MQTT_PORT
+	USER_CFLAGS += -DMQTT_PORT=$(MQTT_PORT)
+endif
 
