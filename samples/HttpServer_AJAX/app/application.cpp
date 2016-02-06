@@ -78,12 +78,40 @@ void onAjaxFrequency(HttpRequest &request, HttpResponse &response)
 	response.sendJsonObject(stream);
 }
 
+void onByteStream(HttpRequest &request, HttpResponse &response)
+{
+	int len, size = 0;;
+	static void * buf[20];
+
+	MemoryDataStream *stream = new MemoryDataStream();
+
+	file_t fav = fileOpen("favicon", eFO_ReadOnly);
+
+	if (fav) {
+		response.setContentType(ContentType::ICO);
+		response.sendDataStream(stream);
+
+		while (!fileIsEOF(fav))  {
+			len = fileRead(fav, buf, sizeof(buf));
+			stream->write((unsigned char *) buf, len);
+			size = size+len;
+		}
+		Serial.printf("send file: favicon.ico (%d bytes)\n", size);
+	}
+	response.notFound();
+}
+
+
 void startWebServer()
 {
 	server.listen(80);
 	server.addPath("/", onIndex);
 	server.addPath("/ajax/input", onAjaxInput);
 	server.addPath("/ajax/frequency", onAjaxFrequency);
+
+	// favicon loaded with byteStream for testing
+	server.addPath("/favicon.ico", onByteStream);
+
 	server.setDefaultHandler(onFile);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
