@@ -125,6 +125,42 @@ void HttpResponse::sendString(String string)
 	sendString(string.c_str());
 }
 
+// Send a binary data stream
+/*
+bool HttpResponse::sendDataStream(MemoryDataStream* newMemoryDataStream)
+{
+	if (stream != NULL)
+	{
+		SYSTEM_ERROR("Stream already created");
+		delete stream;
+		stream = NULL;
+	}
+
+	stream = newMemoryDataStream;
+
+	if (!hasHeader("Content-Type"))
+		setContentType(ContentType::Binary);
+	return true;
+}
+*/
+bool HttpResponse::sendDataStream( IDataSourceStream * newDataStream , String reqContentType)
+{
+    if (stream != NULL)
+    {
+        SYSTEM_ERROR("Stream already created");
+        delete stream;
+        stream = NULL;
+    }
+    if (reqContentType != "")
+    {
+        setContentType(reqContentType);
+    }
+    stream = newDataStream;
+
+    return true;
+}
+
+
 bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)
 {
 	if (stream != NULL)
