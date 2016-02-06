@@ -14,7 +14,7 @@
 
 
 #ifdef DEBUG_DS18S20
-  #define debugx(fmt, ...) m_printf(fmt"\r\n", ##__VA_ARGS__)
+  #define debugx(fmt, ...) debugf(fmt, ##__VA_ARGS__)
 #else
  #define debugx(fmt, ...)
 #endif
