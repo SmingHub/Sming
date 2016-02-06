@@ -1,0 +1,125 @@
+Function Information And Resolution Table
+-----------------------------------------
+
+Resolution Table: 14-bit Temp <-> 12-bit Humidity
+                  13-bit Temp <-> 10-bit Humidity
+                  12-bit Temp <->  8-bit Humidity
+                  11-bit Temp <-> 11-bit Humidity
+
+
+
+/* Main Functions */
+
+void begin();
+	action	= Calls : Wire.begin() + reset()
+	returns	= Void
+	info	= Start I2C interface and reset sensor to default
+
+float readHumidity();
+	action	= Get new humidity reading from Si7021 sensor
+	returns	= Float : Humidity value from Si7021 sensor
+	info	= Time taken to return is based on the sensor resolution that has been set
+
+float readTemp();
+	action	= Get new temperature reading from Si7021 sensor
+	returns	= Float : Temperature value from Si7021 sensor
+	info	= Time taken to return is based on the sensor resolution that has been set
+
+float readTempPrev();
+	action	= Get previous temperature reading stored on Si7021 sensor
+	returns	= Float : Previous temperature reading
+	info	= A previous reading of temperature or humidity should first be taken
+
+
+/* Resolution Functions */
+
+void setHumidityRes(uint8_t res);
+   @param 1	= Possible values are :  12, 11, 10, 8 (bit)
+	action	= Set a humidity resolution for future readings
+	returns	= Void
+	info	= This will also change the temperature resolution (See resolution table)
+
+void setTempRes(uint8_t res);
+   @param 1	= Possible values are :  14, 13, 12, 11 (bit)
+	action	= Set a temperature resolution for future readings
+	returns	= Void
+	info	= This will also change the humidity resolution (See resolution table)
+
+uint8_t getHumidityRes();
+	action	= Get the humidity resolution currently in use
+	returns	= uint8_t : Humidity resolution.
+	info	= Resolution values are : 12, 11, 10, 8 (bit)
+
+uint8_t getTempRes();
+	action	= Get the temperature resolution currently in use
+	returns	= uint8_t : Temperature resolution.
+	info	= Resolution values are : 14, 13, 12, 11 (bit)
+
+
+/* Heater Functions */
+
+void setHeater(uint8_t hBit);
+   @param 1 = Possible values are : 1=ON, 0=OFF 
+	action	= Turn the internal heater ON or OFF
+	returns	= Void
+	info	= The sensor will draw an additional 3.09mA when the heater is turned ON
+
+uint8_t getHeater();
+	action	= Get the status of the internal heater
+	returns	= uint8_t : Heater status
+	info	= 1 = ON / 0 = OFF
+
+
+/* Device ID And Reset Functions */
+
+uint16_t getDeviceID();
+	action	= Get the device ID name from the sensor
+	returns	= uint16_t : Device ID
+	info	= Device ID Table : 7021 = Si7021
+								7020 = Si7020
+								7013 = Si7013
+								255  = Engineering Sample
+								0    = Unknown
+
+uint8_t getFirmwareVer();
+	action	= Get the firmware version from the sensor
+	returns	= uint8_t : Firmware version
+	info	= 2 = 2.0fw / 1 = 1.0fw / 0 = unknown
+
+uint8_t checkVDD();
+	action	= Check voltage indicator on the sensor
+	returns	= uint8_t : Voltage Indicator
+	info	= 1 = Greater than 1.9v / 0 = Between 1.8v and 1.9v
+
+void reset(uint8_t delayR = 15);
+   @param 1 = Delay to wait for reset to finish (Milliseconds) - Default = 15ms
+	action	= Reset non-volatile register values to factory defaults
+	returns	= Void
+	info	= Typical reset time is 5ms, maximum is 15ms (datasheet)
+
+
+/* Conversion Functions */
+
+uint16_t floatToInt(float FtoI);
+   @param 1 = Float value to convert to an integer
+	action	= Convert a float to an integer
+	returns	= uint16_t : Integer value of the given float
+	info	= Example ... (float) 24.07 C = (uint16_t) 2407 C
+
+float intToFloat(uint16_t ItoF);
+   @param 1 = Integer value to convert to a float
+	action	= Convert an integer to a float
+	returns	= Float : Float value of the given integer
+	info	= Example ... (uint16_t) 2407 C = (float) 24.07 C
+
+float CtoF(float tempC);
+   @param 1 = Temperature in Celsius
+	action	= Convert a temperature from Celsius to Fahrenheit
+	returns	= Float : Temperature in Fahrenheit
+	info	= ---
+
+float FtoC(float tempF);
+   @param 1 = Temperature in Fahrenheit.
+	action	= Convert a temperature from Fahrenheit to Celsius
+	returns	= uint16_t : Temperature in Celsius
+	info	= ---

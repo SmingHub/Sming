@@ -1,0 +1,28 @@
+#######################################
+# Syntax Coloring Map For Si7021
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+SI7021			KEYWORD1
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+readHumidity	KEYWORD2
+readTemp		KEYWORD2
+readTempPrev	KEYWORD2
+setHumidityRes	KEYWORD2
+setTempRes		KEYWORD2
+getHumidityRes 	KEYWORD2
+getTempRes		KEYWORD2
+setHeater		KEYWORD2
+getHeater		KEYWORD2
+getDeviceID		KEYWORD2
+getFirmwareVer	KEYWORD2
+getCheckVDD		KEYWORD2
+reset			KEYWORD2
+floatToInt		KEYWORD2
+intToFloat		KEYWORD2
+CtoF			KEYWORD2
+FtoC			KEYWORD2
