@@ -105,15 +105,8 @@ void IRAM_ATTR Adafruit_NeoPixel::show(void) {
 
   boolean is800KHz=true;
 
- #define CYCLES_800_T0H  (F_CPU / 2500000) // 0.4us
- #define CYCLES_800_T1H  (F_CPU / 1250000) // 0.8us
- #define CYCLES_800      (F_CPU /  800000) // 1.25us per bit
- #define CYCLES_400_T0H  (F_CPU / 2000000) // 0.5uS
- #define CYCLES_400_T1H  (F_CPU /  833333) // 1.2us
- #define CYCLES_400      (F_CPU /  400000) // 2.5us per bit
-
    uint8_t *p, *end, pix, mask;
-   uint32_t t, time0, time1, period, c, startTime, pinMask;
+   uint32_t f_cpu, t, time0, time1, period, c, startTime, pinMask;
 
    pinMask   = _BV(pin);
    p         =  pixels;
@@ -121,18 +114,19 @@ void IRAM_ATTR Adafruit_NeoPixel::show(void) {
    pix       = *p++;
    mask      = 0x80;
    startTime = 0;
+   f_cpu     = system_get_cpu_freq() * 1000000L; // Hz
 
  #ifdef NEO_KHZ400
    if(is800KHz) {
  #endif
-     time0  = CYCLES_800_T0H;
-     time1  = CYCLES_800_T1H;
-     period = CYCLES_800;
+     time0  = f_cpu / 2500000; // 0.4us
+     time1  = f_cpu / 1250000; // 0.8us
+     period = f_cpu / 800000;  // 1.25us per bit
  #ifdef NEO_KHZ400
    } else { // 400 KHz bitstream
-     time0  = CYCLES_400_T0H;
-     time1  = CYCLES_400_T1H;
-     period = CYCLES_400;
+     time0  = f_cpu / 2000000; // 0.5us
+     time1  = f_cpu / 833333;  // 1.2us
+     period = f_cpu / 400000;  // 2.5us per bit
    }
  #endif
 
