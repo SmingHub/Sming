@@ -1,6 +1,8 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
+#include <favicon.h>
+
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
@@ -80,25 +82,22 @@ void onAjaxFrequency(HttpRequest &request, HttpResponse &response)
 
 void onByteStream(HttpRequest &request, HttpResponse &response)
 {
-	int len, size = 0;;
-	static void * buf[20];
+#define BUFFER_LENGHT 20
+
+	// favicon defined in favicone.h
+	int imgsize = sizeof(favicon);
+	int len = BUFFER_LENGHT;
+	int index = 0;
 
 	MemoryDataStream *stream = new MemoryDataStream();
+	response.sendDataStream(stream, ContentType::ICO);
 
-	file_t fav = fileOpen("favicon", eFO_ReadOnly);
-
-	if (fav) {
-		response.setContentType(ContentType::ICO);
-		response.sendDataStream(stream);
-
-		while (!fileIsEOF(fav))  {
-			len = fileRead(fav, buf, sizeof(buf));
-			stream->write((unsigned char *) buf, len);
-			size = size+len;
-		}
-		Serial.printf("send file: favicon.ico (%d bytes)\n", size);
+	while (len > 0) {
+		len = min (BUFFER_LENGHT, imgsize - index);
+		unsigned char *pos = &favicon[index];
+		stream->write(pos, BUFFER_LENGHT);
 	}
-	response.notFound();
+
 }
 
 

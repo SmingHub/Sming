@@ -126,6 +126,7 @@ void HttpResponse::sendString(String string)
 }
 
 // Send a binary data stream
+/*
 bool HttpResponse::sendDataStream(MemoryDataStream* newMemoryDataStream)
 {
 	if (stream != NULL)
@@ -140,6 +141,23 @@ bool HttpResponse::sendDataStream(MemoryDataStream* newMemoryDataStream)
 	if (!hasHeader("Content-Type"))
 		setContentType(ContentType::Binary);
 	return true;
+}
+*/
+bool HttpResponse::sendDataStream( IDataSourceStream * newDataStream , String reqContentType)
+{
+    if (stream != NULL)
+    {
+        SYSTEM_ERROR("Stream already created");
+        delete stream;
+        stream = NULL;
+    }
+    if (reqContentType != "")
+    {
+        setContentType(reqContentType);
+    }
+    stream = newDataStream;
+
+    return true;
 }
 
 
