@@ -95,7 +95,7 @@ void onByteStream(HttpRequest &request, HttpResponse &response)
 	while (len > 0) {
 		len = min (BUFFER_LENGHT, imgsize - index);
 		unsigned char *pos = &favicon[index];
-		stream->write(pos, BUFFER_LENGHT);
+		stream->write(pos, len);
 	}
 
 }
