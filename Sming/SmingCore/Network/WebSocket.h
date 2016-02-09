@@ -29,9 +29,7 @@ public:
 	void sendString(const String& message);
 	void sendBinary(const uint8_t* data, int size);
 	void enableCommand();
-	void setUserData(void* userData);
-	void *getUserData();
-	void disconnect();
+	void close();
 
 protected:
 	bool initialize(HttpRequest &request, HttpResponse &response);

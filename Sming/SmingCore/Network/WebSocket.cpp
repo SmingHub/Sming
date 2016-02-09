@@ -73,17 +73,7 @@ void WebSocket::enableCommand()
 	}
 }
 
-void WebSocket::setUserData(void* userData)
-{
-	m_pUserData = userData;
-}
-
-void* WebSocket::getUserData()
-{
-	return m_pUserData;
-}
-
-void WebSocket::disconnect()
+void WebSocket::close()
 {
 	connection->close();
 }

@@ -251,6 +251,12 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 	if(willtopiclen) {
 		payload_len += willtopiclen + strlen(broker->will_message) + 4;
 		flags |= MQTT_WILL_FLAG;
+		if ( broker->will_retain ){
+			flags |= MQTT_WILL_RETAIN;
+		}
+		if ( broker->will_qos ){
+			flags |= (((unsigned)broker->will_qos & 0x03) << 3);
+		}
 	}
 	if(broker->clean_session) {
 		flags |= MQTT_CLEAN_SESSION;
@@ -300,6 +306,21 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 	memcpy(packet+offset, broker->clientid, clientidlen);
 	offset += clientidlen;
 
+	if (willtopiclen) {
+		// Add Last Will And Testament
+		packet[offset++] = willtopiclen >> 8;
+		packet[offset++] = willtopiclen & 0xFF;
+		memcpy(packet + offset, broker->will_topic, willtopiclen);
+		offset += willtopiclen;
+
+		uint16_t willmessagelen = strlen(broker->will_message);
+		packet[offset++] = willmessagelen >> 8;
+		packet[offset++] = willmessagelen & 0xFF;
+		memcpy(packet + offset, broker->will_message, willmessagelen);
+		offset += willmessagelen;
+	}
+
+
 	if(usernamelen) {
 		// Username - UTF encoded
 		packet[offset++] = usernamelen>>8;
@@ -314,20 +335,6 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 		packet[offset++] = passwordlen&0xFF;
 		memcpy(packet+offset, broker->password, passwordlen);
 		offset += passwordlen;
-	}
-
-	if(willtopiclen) {
-		// Add Last Will And Testament
-		packet[offset++] = willtopiclen>>8;
-		packet[offset++] = willtopiclen&0xFF;
-		memcpy(packet+offset, broker->will_topic, willtopiclen);
-		offset += willtopiclen;
-
-		uint16_t willmessagelen = strlen(broker->will_message);
-		packet[offset++] = willmessagelen>>8;
-		packet[offset++] = willmessagelen&0xFF;
-		memcpy(packet+offset, broker->will_message, willmessagelen);
-		offset += willmessagelen;
 	}
 
 	// Send the packet
