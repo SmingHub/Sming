@@ -25,7 +25,7 @@ typedef unsigned char uint8;
 extern "C" {
 #endif
 
-extern void Cache_Read_Disable();
+extern void Cache_Read_Disable(void);
 extern uint32 SPIRead(uint32, void*, uint32);
 extern void ets_printf(const char*, ...);
 extern void Cache_Read_Enable(uint32, uint32, uint32);
@@ -34,7 +34,7 @@ uint8 rBoot_mmap_1 = 0xff;
 uint8 rBoot_mmap_2 = 0xff;
 
 // this function must remain in iram
-void IRAM_ATTR Cache_Read_Enable_New() {
+void IRAM_ATTR Cache_Read_Enable_New(void) {
 	
 	if (rBoot_mmap_1 == 0xff) {
 		uint32 addr;

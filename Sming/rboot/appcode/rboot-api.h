@@ -18,16 +18,18 @@
 extern "C" {
 #endif
 
-/**	@brief	Structure defining flash write status
+/**	@brief  Structure defining flash write status
+ *  @note   The user application should not modify the contents of this
+ *          structure.
  *	@see    rboot_write_flash
 */
 typedef struct {
-	uint32 start_addr; ///<Start address for flash write
-	uint32 start_sector; ///<RAB to describe
+	uint32 start_addr;
+	uint32 start_sector;
 	//uint32 max_sector_count;
-	uint32 last_sector_erased; ///<RAB to describe
-	uint8 extra_count; ///<RAB to describe
-	uint8 extra_bytes[4]; ///<RAB to describe
+	uint32 last_sector_erased;
+	uint8 extra_count;
+	uint8 extra_bytes[4];
 } rboot_write_status;
 
 /**	@brief	Read rBoot configuration from flash
@@ -35,7 +37,7 @@ typedef struct {
  *  @note   Returns rboot_config (defined in rboot.h) allowing you to modify any values
  *          in it, including the ROM layout.
 */
-rboot_config ICACHE_FLASH_ATTR rboot_get_config();
+rboot_config ICACHE_FLASH_ATTR rboot_get_config(void);
 
 /**	@brief	Write rBoot configuration to flash memory
  *	@param	conf pointer to a rboot_config structure containing configuration to save
@@ -50,10 +52,9 @@ bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf);
 /**	@brief	Get index of current ROM
  *	@retval uint8 Index of the current ROM
  *  @note   Get the currently selected boot ROM (the currently running ROM, as long as
- *          you haven't changed it since boot).
-
+ *          you haven't changed it since boot)
 */
-uint8 ICACHE_FLASH_ATTR rboot_get_current_rom();
+uint8 ICACHE_FLASH_ATTR rboot_get_current_rom(void);
 
 /**	@brief	Set the index of current ROM
  *	@param	rom The index of the ROM to use on next boot
