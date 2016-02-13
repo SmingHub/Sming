@@ -6,14 +6,21 @@
 // OTA code based on SDK sample from Espressif.
 //////////////////////////////////////////////////
 
+#include <string.h>
+#include <c_types.h>
+#include <spi_flash.h>
+
+// detect rtos sdk (not ideal method!)
+#ifdef IRAM_ATTR
+#define os_free(s)   vPortFree(s)
+#define os_malloc(s) pvPortMalloc(s)
+#else
+#include <mem.h>
+#endif
+
 #ifdef RBOOT_INTEGRATION
 #include <rboot-integration.h>
 #endif
-
-#include <string.h>
-#include <c_types.h>
-#include <user_interface.h>
-#include <mem.h>
 
 #include "rboot-api.h"
 
@@ -22,7 +29,7 @@ extern "C" {
 #endif
 
 // get the rboot config
-rboot_config ICACHE_FLASH_ATTR rboot_get_config() {
+rboot_config ICACHE_FLASH_ATTR rboot_get_config(void) {
 	rboot_config conf;
 	spi_flash_read(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32*)&conf, sizeof(rboot_config));
 	return conf;
@@ -53,17 +60,18 @@ bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf) {
 	conf->chksum = chksum;
 #endif
 	
-	spi_flash_read(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32*)buffer, SECTOR_SIZE);
+	spi_flash_read(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32*)((void*)buffer), SECTOR_SIZE);
 	memcpy(buffer, conf, sizeof(rboot_config));
 	spi_flash_erase_sector(BOOT_CONFIG_SECTOR);
-	spi_flash_write(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32*)buffer, SECTOR_SIZE);
+	//spi_flash_write(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32*)((void*)buffer), SECTOR_SIZE);
+	spi_flash_write(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32*)((void*)buffer), SECTOR_SIZE);
 	
 	os_free(buffer);
 	return true;
 }
 
 // get current boot rom
-uint8 ICACHE_FLASH_ATTR rboot_get_current_rom() {
+uint8 ICACHE_FLASH_ATTR rboot_get_current_rom(void) {
 	rboot_config conf;
 	conf = rboot_get_config();
 	return conf.current_rom;
@@ -101,7 +109,7 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8 *data
 	}
 	
 	// get a buffer
-	buffer = (uint8 *)os_zalloc(len + status->extra_count);
+	buffer = (uint8 *)os_malloc(len + status->extra_count);
 	if (!buffer) {
 		//os_printf("No ram!\r\n");
 		return false;
@@ -136,7 +144,7 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8 *data
 
 		// write current chunk
 		//os_printf("write addr: 0x%08x, len: 0x%04x\r\n", status->start_addr, len);
-		if (spi_flash_write(status->start_addr, (uint32 *)buffer, len) == SPI_FLASH_RESULT_OK) {
+		if (spi_flash_write(status->start_addr, (uint32 *)((void*)buffer), len) == SPI_FLASH_RESULT_OK) {
 			ret = true;
 			status->start_addr += len;
 		}
