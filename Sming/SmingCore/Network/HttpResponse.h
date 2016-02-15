@@ -56,6 +56,8 @@ public:
 
 	// Build and send JSON string
 	bool sendJsonObject(JsonObjectStream* newJsonStreamInstance);
+	// Send Datastream, can be called with Classes derived from
+	bool sendDataStream( IDataSourceStream * newDataStream , String reqContentType = "" );
 	//***
 
 public:
