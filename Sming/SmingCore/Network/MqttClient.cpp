@@ -100,6 +100,7 @@ int MqttClient::staticSendPacket(void* userInfo, const void* buf, unsigned int c
 {
 	MqttClient* client = (MqttClient*)userInfo;
 	bool sent = client->send((const char*)buf, count);
+	client->lastMessage = millis();
 	return sent ? count : 0;
 }
 
@@ -270,10 +271,10 @@ err_t MqttClient::onReceive(pbuf *buf)
 
 void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	if (sleep >= 10)
+	// Send PINGREQ every keepAlive time, if there is no outgoing traffic
+	if (lastMessage && (millis() - lastMessage >= keepAlive*1000))
 	{
 		mqtt_ping(&broker);
-		sleep = 0;
 	}
 	TcpClient::onReadyToSendData(sourceEvent);
 }

@@ -63,7 +63,7 @@ private:
 	int posHeader;
 	MqttStringSubscriptionCallback callback;
 	int keepAlive = 20;
-
+	unsigned long lastMessage;
 };
 
 #endif /* _SMING_CORE_NETWORK_MqttClient_H_ */
