@@ -9,6 +9,7 @@ class SI7021
 			SI7021(int pinSCL, int pinSDA);
 			/* Main Functions */
 			void begin();
+			bool isPresent();
 			float readHumidity();
 			float readTemp();
 			float readTempPrev();
@@ -38,11 +39,12 @@ class SI7021
 			float FtoC(float tempF);
 
 		private:
+			int SCL;
+			int SDA;
+			bool present;
 			void writeRegister(uint8_t reg, uint8_t value);
 			uint8_t readRegister(uint8_t reg);
 			uint16_t readSensor(uint8_t reg);
-			int SCL;
-			int SDA;
 
 };
 

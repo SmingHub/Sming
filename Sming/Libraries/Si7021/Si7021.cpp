@@ -16,7 +16,13 @@ void SI7021::begin()
 {
 	Wire.pins(SCL,SDA);
 	Wire.begin();											// Begin I2C
+    Wire.beginTransmission(SI7021_ADDR);
+    present = (Wire.endTransmission() == 0);				// check if present
 	reset();												// Reset sensor
+}
+
+bool SI7021::isPresent() {
+    return present;
 }
 
 float SI7021::readHumidity()
