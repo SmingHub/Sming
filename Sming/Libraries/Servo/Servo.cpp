@@ -121,7 +121,7 @@ void Servo::getPins()
 	for (uint8 i=0;i<channels.size();i++) {
 		ServoChannel *ch = channels.get(i);
 		if (ch != null) {
-			pins[i++] = ch->getPin();
+			pins[i] = ch->getPin();
 		}
 	}
 }
