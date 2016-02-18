@@ -71,7 +71,7 @@ void init() {
 	}
 
 	// Initialize interrupt service routine
-	pinMode(APDS9960_INT, INPUT);
+	pinMode(APDS9960_INT, (GPIO_INT_TYPE)GPIO_PIN_INTR_ANYEDGE);
 	attachInterrupt(APDS9960_INT, interruptRoutine, FALLING);
 
 
