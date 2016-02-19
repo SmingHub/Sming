@@ -135,7 +135,7 @@ TARGET		= app
 # define your custom directories in the project's own Makefile before including this one
 MODULES      ?= app     # default to app if not set by user
 EXTRA_INCDIR ?= include # default to include if not set by user
-EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
+EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode $(wildcard $(SMING_HOME)/Libraries/*)
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
