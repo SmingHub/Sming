@@ -8,9 +8,6 @@
 #ifndef _APA102_H_
 #define _APA102_H_
 
-//#include <stdint.h>
-//#include "../Wiring/WiringFrameworkDependencies.h"
-
 typedef struct {
     //uint8_t br;
     uint8_t r;
@@ -25,6 +22,7 @@ public:
     ~APA102(void);
 
     void begin(void);
+    void begin(uint16_t prediv, uint8_t div);
     void end(void);
     
     /* send data buffer to LEDs, including start & stop sequences */
@@ -57,11 +55,26 @@ public:
 
 protected:
     uint16_t numLEDs;
-
-private:
     uint8_t *LEDbuffer;
     uint8_t brightness;                 // global brightness 0..31 -> 0..100%
+
+private:
+    virtual void SPI_transfer(uint8_t * data, uint8_t count);
+};
+
+
+
+class APA102Soft : public APA102 {
+public:
+    APA102Soft(uint16_t n, SPISoft *_ptr);
     
+    void begin(void);
+    void begin(uint16_t prediv, uint8_t div);       // unused function
+    void end(void);
+    
+private:
+    SPISoft *pSPI;
+    void SPI_transfer(uint8_t * data, uint8_t count);
 };
 
 //extern SPIClass SPI;

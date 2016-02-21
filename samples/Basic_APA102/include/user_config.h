@@ -37,10 +37,6 @@ extern "C" {
 
 	// Beta boards
 	#define BOARD_ESP01
-
-    // SPI: if defined use software SPI, else hardware SPI
-//#define _USE_SOFTSPI
-    
     
 #ifdef __cplusplus
 }

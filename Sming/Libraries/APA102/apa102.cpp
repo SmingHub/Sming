@@ -7,10 +7,9 @@
 
 // APA102 LED class
 
-#include <SmingCore/SmingCore.h>
 #include <SPI.h>
+#include <SPISoft.h>
 #include "apa102.h"
-//#include "hwSPI.h"
 
 
 #define LED_PREAMBLE     (uint8_t)0xE0          // LED frame preamble
@@ -33,8 +32,11 @@ APA102::~APA102() {
 }
 
 void APA102::begin(void) {
-    //SPI.begin(10,4);       // 2MHz clk
-    //SPI.begin(10, 8); // 1MHz clk
+    SPI.begin(10, 8);       // 1MHz clk @ f_cpu==80MHz
+}
+
+void APA102::begin(uint16_t prediv, uint8_t div) {
+    SPI.begin(prediv,div);
 }
 
 void APA102::end() {
@@ -47,7 +49,7 @@ void APA102::show(void) {
     sendStart();
     for (uint16_t i = 0; i < numLEDs; i++) {
         elem = buf[i];
-        SPI.transfer((uint8_t*)&elem, 4);
+        SPI_transfer((uint8_t*)&elem, 4);
     }
     sendStop();
 }
@@ -59,7 +61,7 @@ void APA102::show(int16_t SPos) {
     sendStart();
     for (int i = 0; i < numLEDs; i++) {
         elem = buf[(i + sp) % numLEDs];
-        SPI.transfer((uint8_t*)&elem, 4);
+        SPI_transfer((uint8_t*)&elem, 4);
     }
     sendStop();
 }
@@ -132,12 +134,12 @@ uint8_t APA102::getBrightness(void) {
 
 void APA102::sendStart(void) {
     uint8_t startFrame[] = {0x00, 0x00, 0x00, 0x00};
-    SPI.transfer(startFrame, sizeof (startFrame));
+    SPI_transfer(startFrame, sizeof (startFrame));
 }
 
 void APA102::sendStop(void) {
     uint8_t stopFrame[] = {0xff, 0xff, 0xff, 0xff};
-    SPI.transfer(stopFrame, sizeof (stopFrame));
+    SPI_transfer(stopFrame, sizeof (stopFrame));
 }
 
 void APA102::directWrite(uint8_t r, uint8_t g, uint8_t b, uint8_t br) {
@@ -146,7 +148,31 @@ void APA102::directWrite(uint8_t r, uint8_t g, uint8_t b, uint8_t br) {
     pix[bOfs] = b;
     pix[gOfs] = g;
     pix[rOfs] = r;
-    SPI.transfer(pix, sizeof (pix));
+    SPI_transfer(pix, sizeof (pix));
+}
+
+inline void APA102::SPI_transfer(uint8_t * data, uint8_t count) {
+    SPI.transfer(data, count);
 }
 
 
+/* APA102 class for software SPI */
+
+APA102Soft::APA102Soft(uint16_t n, SPISoft *_ptr) : APA102(n), pSPI(_ptr) {
+}
+
+
+void APA102Soft::begin(void) {
+    pSPI->begin();
+    pSPI->setDelay(200);
+}
+void APA102Soft::begin(uint16_t prediv, uint8_t div) {
+    begin();
+}
+
+void APA102Soft::end() {
+}
+
+inline void APA102Soft::SPI_transfer(uint8_t * data, uint8_t count) {
+    pSPI->send(data, count);
+}

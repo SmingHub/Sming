@@ -1,7 +1,7 @@
 /*
  * File: APA102 LED class demo for Sming framework
  * 
- * Original Author: https://github.com/happycodingrobot
+ * Original Author: https://github.com/HappyCodingRobot
  *
  * This library support the APA102 LED with integrated controller chip.
  * 
@@ -13,19 +13,27 @@
 #include "user_config.h"
 #include <SmingCore/SmingCore.h>
 
+// SPI: if defined use software SPI, else hardware SPI
+//#define _USE_SOFTSPI
+
 #ifdef _USE_SOFTSPI             // set in "user_config.h"
 #include <SPISoft.h>
-SPISoft SPI(12,13,14,2);        // clk=GPIO14 , mosi=GPIO13
 #else
 #include <SPI.h>
 #endif
 
-#include <apa102.h>
+#include <Libraries/APA102/apa102.h>
 
 #define NUM_LED 60              // number of LEDs on strip
 
 Timer procTimer;
+
+#ifdef _USE_SOFTSPI
+SPISoft sSPI(12,13,14,2);       // mosi=GPIO13, clk=GPIO14
+APA102Soft LED(NUM_LED, &sSPI); // APA102 constructor for software SPI, call with number of LEDs
+#else
 APA102 LED(NUM_LED);            // APA102 constructor, call with number of LEDs
+#endif
 
 int cnt = 0;
 col_t pixel;
@@ -44,6 +52,7 @@ void updateLED() {
         cnt = 0;
     }
     
+    Serial.printf("ping %u\n",cnt);
     LED.show(cnt);                          // show shifted LED buffer
     
     WDT.alive();
@@ -54,18 +63,18 @@ void init() {
     WDT.enable(false);
     WifiAccessPoint.enable(false);
     WifiStation.enable(false);
-    //Serial.begin(SERIAL_BAUD_RATE);       // 115200 by default
+    Serial.begin(SERIAL_BAUD_RATE);       // 115200 by default
     /* configure SPI */
 #ifdef _USE_SOFTSPI
-    // TBD: not implemented yet...
+    LED.begin();
 #else
-    //SPI.begin(10,2);        // 4MHz clk @ f_cpu==80MHz
-    //SPI.begin(10,4);        // 2MHz clk @ f_cpu==80MHz
-    SPI.begin(10,8);        // 1MHz clk @ f_cpu==80MHz
-    //SPI.begin(10,16);       // 512kHz clk @ f_cpu==80MHz
+    LED.begin();              // default 1MHz clk
+    //LED.begin(10,2);        // 4MHz clk @ f_cpu==80MHz
+    //LED.begin(10,4);        // 2MHz clk @ f_cpu==80MHz
+    //LED.begin(10,8);        // 1MHz clk @ f_cpu==80MHz
+    //LED.begin(10,16);       // 512kHz clk @ f_cpu==80MHz
 #endif
     Serial.printf("start\n");
-    LED.begin();
     LED.setBrightness(10);          // brightness [0..31]
     LED.clear();
     
