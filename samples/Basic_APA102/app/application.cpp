@@ -30,7 +30,7 @@ Timer procTimer;
 
 #ifdef _USE_SOFTSPI
 SPISoft sSPI(12,13,14,2);       // mosi=GPIO13, clk=GPIO14
-APA102Soft LED(NUM_LED, &sSPI); // APA102 constructor for software SPI, call with number of LEDs
+APA102Soft LED(NUM_LED, sSPI);  // APA102 constructor for software SPI, call with number of LEDs
 #else
 APA102 LED(NUM_LED);            // APA102 constructor, call with number of LEDs
 #endif

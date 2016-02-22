@@ -16,14 +16,13 @@ typedef struct {
 } col_t;
 
 
-class APA102 {
+class APA102_Base {
 public:
-    APA102(uint16_t n);
-    ~APA102(void);
+    APA102_Base(uint16_t n);
+    ~APA102_Base(void);
 
-    void begin(void);
-    void begin(uint16_t prediv, uint8_t div);
-    void end(void);
+    virtual void begin(void) = 0;
+    virtual void end(void) = 0;
     
     /* send data buffer to LEDs, including start & stop sequences */
     void show(void);
@@ -59,24 +58,35 @@ protected:
     uint8_t brightness;                 // global brightness 0..31 -> 0..100%
 
 private:
-    virtual void SPI_transfer(uint8_t * data, uint8_t count);
+    virtual void SPI_transfer(uint8_t * data, uint8_t count) = 0;
 };
 
 
 
-class APA102Soft : public APA102 {
+class APA102 : public APA102_Base {
 public:
-    APA102Soft(uint16_t n, SPISoft *_ptr);
+    APA102(uint16_t n);
     
     void begin(void);
     void begin(uint16_t prediv, uint8_t div);       // unused function
     void end(void);
     
 private:
-    SPISoft *pSPI;
     void SPI_transfer(uint8_t * data, uint8_t count);
 };
 
-//extern SPIClass SPI;
+
+class APA102Soft : public APA102_Base {
+public:
+    APA102Soft(uint16_t n, SPISoft & spiRef);
+    
+    void begin(void);
+    void end(void);
+    
+private:
+    SPISoft & pSPI;
+    void SPI_transfer(uint8_t * data, uint8_t count);
+};
+
 
 #endif /* _APA102_H_ */
