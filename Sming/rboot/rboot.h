@@ -22,6 +22,13 @@ extern "C" {
 // uncomment to enable big flash support (>1MB)
 //#define BOOT_BIG_FLASH
 
+// uncomment to enable 2 way communication between
+// rBoot and the user app via the esp rtc data area
+#define BOOT_RTC_ENABLED
+
+// uncomment to enable GPIO booting
+//#define BOOT_GPIO_ENABLED
+
 // uncomment to include .irom0.text section in the checksum
 // roms must be built with esptool2 using -iromchksum option
 //#define BOOT_IROM_CHKSUM
@@ -39,6 +46,12 @@ extern "C" {
 
 #define MODE_STANDARD 0x00
 #define MODE_GPIO_ROM 0x01
+#define MODE_TEMP_ROM 0x02
+
+#define RBOOT_RTC_MAGIC 0x2334ae68
+#define RBOOT_RTC_READ 1
+#define RBOOT_RTC_WRITE 0
+#define RBOOT_RTC_ADDR 64
 
 /**	@brief  Structure containing rBoot configuration
  *  @note   ROM addresses must be multiples of 0x1000 (flash sector aligned).
@@ -63,6 +76,17 @@ typedef struct {
 	uint8 chksum;          ///< Checksum of this configuration structure (if BOOT_CONFIG_CHKSUM defined)
 #endif
 } rboot_config;
+
+#ifdef BOOT_RTC_ENABLED
+typedef struct {
+	uint32 magic;
+	uint8 next_mode;
+	uint8 last_mode;
+	uint8 last_rom;
+	uint8 temp_rom;
+	uint8 chksum;
+} rboot_rtc_data;
+#endif
 
 #ifdef __cplusplus
 }

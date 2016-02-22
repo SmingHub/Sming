@@ -88,6 +88,41 @@ void Switch() {
 	System.restart();
 }
 
+#ifdef BOOT_RTC_ENABLED
+void ShowMode() {
+	char msg[50];
+	rboot_rtc_data rtc;
+
+	if (rboot_get_rtc_data(&rtc)) {
+		debugf("Last boot mode: %d ", rtc.last_mode);
+		if (rtc.last_mode == MODE_STANDARD) {
+			debugf("(normal)");
+		} else if (rtc.last_mode == MODE_GPIO_ROM) {
+			debugf("(gpio)");
+		} else if (rtc.last_mode == MODE_TEMP_ROM) {
+			debugf("(temp)");
+		} else {
+			debugf("(unknown!)");
+		}
+
+		debugf("Last boot rom: %d", rtc.last_rom);
+	} else {
+		debugf("rBoot rtc boot data not available.");
+	}
+}
+
+void TempSwitch() {
+	char msg[50];
+	uint8 before, after;
+	before = rboot_get_current_rom();
+	if (before == 0) after = 1; else after = 0;
+	debugf("Rebooting to rom %d (from rom %d).\r\n", after, before);
+	rboot_set_temp_rom(after);
+	debugf("Restarting...");
+	System.restart();
+}
+#endif
+
 void ShowInfo() {
     Serial.printf("\r\nSDK: v%s\r\n", system_get_sdk_version());
     Serial.printf("Free Heap: %d\r\n", system_get_free_heap_size());
@@ -119,6 +154,19 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 			OtaUpdate();
 		} else if (!strcmp(str, "switch")) {
 			Switch();
+#ifdef BOOT_RTC_ENABLED
+		} else if (!strcmp(str, "temp")) {
+			TempSwitch();
+		} else if (!strcmp(str, "seg")) {
+			debugf("The device should segfault...");
+			char *x = (char *)malloc(3999999999);
+			debugf("%d", strlen(x));
+		} else if (!strcmp(str, "wdreset")) {
+			debugf("The device should be reset from the watch dog timer...");
+			while(1) {}
+		} else if (!strcmp(str, "mode")) {
+			ShowMode();
+#endif
 		} else if (!strcmp(str, "restart")) {
 			System.restart();
 		} else if (!strcmp(str, "ls")) {
@@ -145,6 +193,12 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 			Serial.println("  connect - connect to wifi");
 			Serial.println("  restart - restart the esp8266");
 			Serial.println("  switch - switch to the other rom and reboot");
+#ifdef BOOT_RTC_ENABLED
+			Serial.println("  temp - temp switch to the other rom and reboot");
+			Serial.println("  seg - cause the device to segfault. Useful for testing the temp switch");
+			Serial.println("  wdreset - cause the device to reset due to watch dog timer. Useful for testing the temp switch");
+			Serial.println("  mode - show last boot mode");
+#endif
 			Serial.println("  ota - perform ota update, switch rom and reboot");
 			Serial.println("  info - show esp8266 info");
 #ifndef DISABLE_SPIFFS
@@ -163,8 +217,21 @@ void init() {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Debug output to serial
 	
+	uint8 slot = 0;
+
+#ifdef BOOT_RTC_ENABLED
+	debugf("Temp Mode is enabled");
+	if (rboot_get_last_boot_rom(&slot)) {
+		debugf("Slot: %d.", slot);
+	} else {
+		debugf("(rBoot rtc data unavailable)");
+	}
+#else
+	slot = rboot_get_current_rom();
+	debugf("Slot: %d.", slot);
+#endif
+
 	// mount spiffs
-	int slot = rboot_get_current_rom();
 #ifndef DISABLE_SPIFFS
 	if (slot == 0) {
 #ifdef RBOOT_SPIFFS_0
