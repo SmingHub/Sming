@@ -18,6 +18,7 @@ HttpRequest::HttpRequest()
 	requestPostParameters = NULL;
 	cookies = NULL;
 	postDataProcessed = 0;
+	headerDataProcessed = 0;
 	combinePostFrag = false;
 	bodyBuf = NULL;
 }
@@ -82,8 +83,10 @@ String HttpRequest::getContentType()
 HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 {
 	int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
+	headerDataProcessed += buf->tot_len;
+	debugf("header length %i", headerDataProcessed);
 	if (headerEnd == -1) return eHPR_Wait;
-	if (headerEnd > NETWORK_MAX_HTTP_PARSING_LEN)
+	if (headerEnd > NETWORK_MAX_HTTP_PARSING_LEN || headerDataProcessed > NETWORK_MAX_HTTP_PARSING_LEN )
 	{
 		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
 		return eHPR_Failed;
@@ -193,9 +196,17 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 	postDataProcessed += buf->tot_len - start;
 
 	if (postDataProcessed == getContentLength())
+	{
 		return eHPR_Successful;
-	else
+	}
+	else if (postDataProcessed > getContentLength())
+	{
+		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
+		return eHPR_Failed;
+	}
+	else {
 		return eHPR_Wait;
+	}
 }
 
 bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, char delimChar, char endChar,

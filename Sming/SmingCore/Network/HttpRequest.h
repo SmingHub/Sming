@@ -59,6 +59,7 @@ private:
 	HashMap<String, String> *requestGetParameters;
 	HashMap<String, String> *requestPostParameters;
 	HashMap<String, String> *cookies;
+	int headerDataProcessed;
 	int postDataProcessed;
 	bool combinePostFrag;
 	char *bodyBuf;
