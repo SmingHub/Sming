@@ -30,6 +30,7 @@ HttpRequest::~HttpRequest()
 	delete requestPostParameters;
 	delete cookies;
 	postDataProcessed = 0;
+	headerDataProcessed = 0;
 	if (bodyBuf != NULL)
 	{
 		os_free(bodyBuf);
