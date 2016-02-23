@@ -1,7 +1,3 @@
-
-
-
-
 #ifndef __USER_CONFIG_H__
 #define __USER_CONFIG_H__
 
@@ -41,7 +37,6 @@ extern "C" {
 
 	// Beta boards
 	#define BOARD_ESP01
-
 
 #ifdef __cplusplus
 }

@@ -10,16 +10,22 @@
 
 //*****************************************************************************
 //
-// Select ONLY the image formats that are needed here
+// Select ONLY the image format that is needed here
 // as code size will grow for each decoder and this
-// could lead to stack overflows/crashes
+// WILL lead to stack overflows/crashes. Micro controlers
+// have limited resources!
 
-#define STBI_ONLY_JPEG
-//#define STBI_ONLY_PNG
+//#define STBI_ONLY_JPEG
 //#define STBI_ONLY_BMP
+#define STBI_ONLY_GIF
+
+
+// PNG currently doesn't work -- anyone wants to fix?
+//#define STBI_ONLY_PNG
+
+// Untested
 //#define STBI_ONLY_PSD
 //#define STBI_ONLY_TGA
-//#define STBI_ONLY_GIF
 //#define STBI_ONLY_HDR
 //#define STBI_ONLY_PIC
 //#define STBI_ONLY_PNM
@@ -37,15 +43,6 @@
 // uncomment this to get verbose messages from allocation/free
 //#define __IMAGE_MEMDEBUG
 
-
-#ifdef __IMAGE_MEMDEBUG
-#define IMAGE_MEMDEBUG_STORE_MEM startStack = sp;
-#define IMAGE_MEMDEBUG_PRINT_STACK(a) {printCurStackSpace((uint32)&a,__FILE__,__LINE__);}
-#else
-#define IMAGE_MEMDEBUG_PRINT_STACK(a)
-#define IMAGE_MEMDEBUG_STORE_MEM
-#endif
-
 #define STBI_MALLOC(sz) my_malloc(sz,__FILE__,__LINE__)
 #define STBI_REALLOC(pt,sz) my_realloc(pt,sz)
 #define STBI_FREE(ptr) my_free(ptr)
@@ -58,7 +55,6 @@
 #pragma message "image library compiled with JPEG support only."
 #define STBI_ONLY_JPEG
 #endif
-
 
 // Include stb image library as header.  Implementation include is
 // done inside image.cpp.  It needs to be included here, after
@@ -80,7 +76,7 @@ typedef struct {
 	String fileName;
 } image_struct;
 
-image_struct * image_load(String file_name, int req_channels);
+image_struct * image_load(const String file_name, int req_channels);
 void image_free(image_struct * imageData);
 void image_dump_pointers();
 void * my_malloc(size_t size, const char * filename,uint32 lineno);

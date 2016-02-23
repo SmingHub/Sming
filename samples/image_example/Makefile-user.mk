@@ -10,29 +10,27 @@ MODULES = app
 # ESP_HOME = c:/Espressif
 
 ## MacOS / Linux:
-ESP_HOME = /opt/esp-open-sdk
+#ESP_HOME = /opt/esp-open-sdk
 
 ## SMING_HOME sets the path where Sming framework is located.
 ## Windows:
 # SMING_HOME = c:/tools/sming/Sming 
 
 # MacOS / Linux
-SMING_HOME = /opt/Sming/Sming
+#SMING_HOME = /opt/Sming/Sming
 
-## COM port parameter is reqruied to flash firmware correctly.
+## COM port parameter is reqruied /opt/Sming/Sming/compiler/ld/eagle.app.v6.cpp.ldto flash firmware correctly.
 ## Windows: 
 # COM_PORT = COM3
 
 # MacOS / Linux:
-#COM_PORT = /dev/ttyUSB1
+COM_PORT = /dev/ttyUSB0
 
 # Com port speed
 # COM_SPEED	= 576000
 
 # SPIFFs Location
 SPIFF_FILES = pic
-
-
 
 # Com port speed
 COM_SPEED	=  691200 #460800 #691200 #	345600

@@ -781,7 +781,6 @@ static void stbi__start_callbacks(stbi__context *s, stbi_io_callbacks *c, void *
    s->img_buffer_original = s->buffer_start;
    stbi__refill_buffer(s);
    s->img_buffer_original_end = s->img_buffer_end;
-   IMAGE_MEMDEBUG_PRINT_STACK(s);
 }
 
 #ifndef STBI_NO_STDIO
@@ -938,7 +937,7 @@ STBIDEF void stbi_set_flip_vertically_on_load(int flag_true_if_should_flip)
     stbi__vertically_flip_on_load = flag_true_if_should_flip;
 }
 
-static unsigned char *stbi__load_main(stbi__context *s, int *x, int *y, int *comp, int req_comp)
+static unsigned char *  stbi__load_main(stbi__context *s, int *x, int *y, int *comp, int req_comp)
 {
    #ifndef STBI_NO_JPEG
    if (stbi__jpeg_test(s)) return stbi__jpeg_load(s,x,y,comp,req_comp);
@@ -974,7 +973,6 @@ static unsigned char *stbi__load_main(stbi__context *s, int *x, int *y, int *com
    if (stbi__tga_test(s))
       return stbi__tga_load(s,x,y,comp,req_comp);
    #endif
-   IMAGE_MEMDEBUG_PRINT_STACK(s);
    return stbi__errpuc("unknown image type", "Image not of any known type, or corrupt");
 }
 
@@ -999,7 +997,6 @@ static unsigned char *stbi__load_flip(stbi__context *s, int *x, int *y, int *com
          }
       }
    }
-   IMAGE_MEMDEBUG_PRINT_STACK(s);
    return result;
 }
 
@@ -1073,9 +1070,8 @@ STBIDEF stbi_uc *stbi_load_from_memory(stbi_uc const *buffer, int len, int *x, i
    clean_return(s,return result);
 }
 
-STBIDEF stbi_uc *stbi_load_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
+STBIDEF stbi_uc *  stbi_load_from_callbacks(stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp)
 {
-	IMAGE_MEMDEBUG_PRINT_STACK(clbk);
 	stbi__context * s = (stbi__context *)STBI_MALLOC(sizeof(stbi__context));
    stbi__start_callbacks(s, (stbi_io_callbacks *) clbk, user);
    stbi_uc * result = stbi__load_flip(s,x,y,comp,req_comp);
@@ -1274,7 +1270,7 @@ static void stbi__skip(stbi__context *s, int n)
    s->img_buffer += n;
 }
 
-static int stbi__getn(stbi__context *s, stbi_uc *buffer, int n)
+static int  stbi__getn(stbi__context *s, stbi_uc *buffer, int n)
 {
    if (s->io.read) {
       int blen = (int) (s->img_buffer_end - s->img_buffer);
@@ -1347,7 +1343,7 @@ static stbi_uc stbi__compute_y(int r, int g, int b)
    return (stbi_uc) (((r*77) + (g*150) +  (29*b)) >> 8);
 }
 
-static unsigned char *stbi__convert_format(unsigned char *data, int img_n, int req_comp, unsigned int x, unsigned int y)
+static unsigned char *  stbi__convert_format(unsigned char *data, int img_n, int req_comp, unsigned int x, unsigned int y)
 {
    int i,j;
    unsigned char *good;
@@ -2787,7 +2783,6 @@ static int stbi__process_frame_header(stbi__jpeg *z, int scan)
          z->img_comp[i].raw_coeff = 0;
       }
    }
-   IMAGE_MEMDEBUG_PRINT_STACK(s);
    return 1;
 }
 
@@ -2803,7 +2798,6 @@ static int stbi__process_frame_header(stbi__jpeg *z, int scan)
 static int stbi__decode_jpeg_header(stbi__jpeg *z, int scan)
 {
    int m;
-   IMAGE_MEMDEBUG_PRINT_STACK(z);
    z->marker = STBI__MARKER_none; // initialize cached marker to empty
    m = stbi__get_marker(z);
    if (!stbi__SOI(m)) return stbi__err("no SOI","Corrupt JPEG");
@@ -2827,7 +2821,6 @@ static int stbi__decode_jpeg_header(stbi__jpeg *z, int scan)
 static int stbi__decode_jpeg_image(stbi__jpeg *j)
 {
    int m;
-   IMAGE_MEMDEBUG_PRINT_STACK(j);
    for (m = 0; m < 4; m++) {
       j->img_comp[m].raw_data = NULL;
       j->img_comp[m].raw_coeff = NULL;
@@ -2859,7 +2852,6 @@ static int stbi__decode_jpeg_image(stbi__jpeg *j)
    }
    if (j->progressive)
       stbi__jpeg_finish(j);
-   IMAGE_MEMDEBUG_PRINT_STACK(j);
    return 1;
 }
 
@@ -3417,7 +3409,6 @@ static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp
       *out_x = z->s->img_x;
       *out_y = z->s->img_y;
       if (comp) *comp  = z->s->img_n; // report original components, not output
-      IMAGE_MEMDEBUG_PRINT_STACK(z);
       return output;
    }
 }
@@ -3427,7 +3418,6 @@ static unsigned char *stbi__jpeg_load(stbi__context *s, int *x, int *y, int *com
    stbi__jpeg j;
    j.s = s;
    stbi__setup_jpeg(&j);
-   IMAGE_MEMDEBUG_PRINT_STACK(s);
    return load_jpeg_image(&j, x,y,comp,req_comp);
 }
 
@@ -3439,7 +3429,6 @@ static int stbi__jpeg_test(stbi__context *s)
    stbi__setup_jpeg(&j);
    r = stbi__decode_jpeg_header(&j, STBI__SCAN_type);
    stbi__rewind(s);
-   IMAGE_MEMDEBUG_PRINT_STACK(s);
    return r;
 }
 
@@ -4495,7 +4484,7 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
    }
 }
 
-static unsigned char *stbi__do_png(stbi__png *p, int *x, int *y, int *n, int req_comp)
+static unsigned char *  stbi__do_png(stbi__png *p, int *x, int *y, int *n, int req_comp)
 {
    unsigned char *result=NULL;
    if (req_comp < 0 || req_comp > 4) return stbi__errpuc("bad req_comp", "Internal error");
@@ -4518,7 +4507,7 @@ static unsigned char *stbi__do_png(stbi__png *p, int *x, int *y, int *n, int req
    return result;
 }
 
-static unsigned char *stbi__png_load(stbi__context *s, int *x, int *y, int *comp, int req_comp)
+static unsigned char *  stbi__png_load(stbi__context *s, int *x, int *y, int *comp, int req_comp)
 {
 	Serial.printf("Loading png...\n");
    stbi__png p;

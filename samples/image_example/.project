@@ -3,6 +3,7 @@
 	<name>image_example</name>
 	<comment></comment>
 	<projects>
+		<project>Sming</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
