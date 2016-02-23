@@ -28,6 +28,19 @@
 extern "C" {
 #endif
 
+#if defined(BOOT_CONFIG_CHKSUM) || defined(BOOT_RTC_ENABLED)
+// calculate checksum for block of data
+// from start up to (but excluding) end
+static uint8 calc_chksum(uint8 *start, uint8 *end) {
+	uint8 chksum = CHKSUM_INIT;
+	while(start < end) {
+		chksum ^= *start;
+		start++;
+	}
+	return chksum;
+}
+#endif
+
 // get the rboot config
 rboot_config ICACHE_FLASH_ATTR rboot_get_config(void) {
 	rboot_config conf;
@@ -53,11 +66,7 @@ bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf) {
 	}
 	
 #ifdef BOOT_CONFIG_CHKSUM
-	chksum = CHKSUM_INIT;
-	for (ptr = (uint8*)conf; ptr < &conf->chksum; ptr++) {
-		chksum ^= *ptr;
-	}
-	conf->chksum = chksum;
+	conf->chksum = calc_chksum((uint8*)conf, (uint8*)&conf->chksum);
 #endif
 	
 	spi_flash_read(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32*)((void*)buffer), SECTOR_SIZE);
@@ -153,6 +162,56 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8 *data
 	os_free(buffer);
 	return ret;
 }
+
+#ifdef BOOT_RTC_ENABLED
+bool ICACHE_FLASH_ATTR rboot_get_rtc_data(rboot_rtc_data *rtc) {
+	if (system_rtc_mem_read(RBOOT_RTC_ADDR, rtc, sizeof(rboot_rtc_data))) {
+		return (rtc->chksum == calc_chksum((uint8*)rtc, (uint8*)&rtc->chksum));
+	}
+}
+
+bool ICACHE_FLASH_ATTR rboot_set_rtc_data(rboot_rtc_data *rtc) {
+	uint8 chksum;
+	uint8 *ptr;
+	// calculate checksum
+	rtc->chksum = calc_chksum((uint8*)rtc, (uint8*)&rtc->chksum);
+	return system_rtc_mem_write(RBOOT_RTC_ADDR, rtc, sizeof(rboot_rtc_data));
+}
+
+bool ICACHE_FLASH_ATTR rboot_set_temp_rom(uint8 rom) {
+	rboot_rtc_data rtc;
+	// invalid data in rtc?
+	if (!rboot_get_rtc_data(&rtc)) {
+		// set basics
+		rtc.magic = RBOOT_RTC_MAGIC;
+		rtc.last_mode = MODE_STANDARD;
+		rtc.last_rom = 0;
+	}
+	// set next boot to temp mode with specified rom
+	rtc.next_mode = MODE_TEMP_ROM;
+	rtc.temp_rom = rom;
+
+	return rboot_set_rtc_data(&rtc);
+}
+
+bool ICACHE_FLASH_ATTR rboot_get_last_boot_rom(uint8 *rom) {
+	rboot_rtc_data rtc;
+	if (rboot_get_rtc_data(&rtc)) {
+		*rom = rtc.last_rom;
+		return true;
+	}
+	return false;
+}
+
+bool ICACHE_FLASH_ATTR rboot_get_last_boot_mode(uint8 *mode) {
+	rboot_rtc_data rtc;
+	if (rboot_get_rtc_data(&rtc)) {
+		*mode = rtc.last_mode;
+		return true;
+	}
+	return false;
+}
+#endif
 
 #ifdef __cplusplus
 }

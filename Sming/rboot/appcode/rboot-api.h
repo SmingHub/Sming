@@ -85,6 +85,14 @@ rboot_write_status ICACHE_FLASH_ATTR rboot_write_init(uint32 start_addr);
 */
 bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8 *data, uint16 len);
 
+#ifdef BOOT_RTC_ENABLED
+bool ICACHE_FLASH_ATTR rboot_get_rtc_data(rboot_rtc_data *rtc);
+bool ICACHE_FLASH_ATTR rboot_set_rtc_data(rboot_rtc_data *rtc);
+bool ICACHE_FLASH_ATTR rboot_set_temp_rom(uint8 rom);
+bool ICACHE_FLASH_ATTR rboot_get_last_boot_rom(uint8 *rom);
+bool ICACHE_FLASH_ATTR rboot_get_last_boot_mode(uint8 *mode);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

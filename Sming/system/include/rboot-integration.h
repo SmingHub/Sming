@@ -1,6 +1,8 @@
 #ifndef __RBOOT_INTEGRATION_H__
 #define __RBOOT_INTEGRATION_H__
 
+#define BOOT_GPIO_ENABLED
+
 // prevent sming user_config.h being included
 #define __USER_CONFIG_H__
 
