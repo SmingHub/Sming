@@ -84,9 +84,12 @@ String HttpRequest::getContentType()
 HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 {
 	int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
-	headerDataProcessed += buf->tot_len;
+	if (headerEnd == -1) {
+		headerDataProcessed += buf->tot_len;
+		return eHPR_Wait;
+	}
+	headerDataProcessed += headerEnd;
 	debugf("header length %i", headerDataProcessed);
-	if (headerEnd == -1) return eHPR_Wait;
 	if (headerEnd > NETWORK_MAX_HTTP_PARSING_LEN || headerDataProcessed > NETWORK_MAX_HTTP_PARSING_LEN )
 	{
 		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
