@@ -35,7 +35,9 @@
 #define UART_TXFIFO_EMPTY_INT_ST (BIT(1))
 #define UART_RXFIFO_FULL_INT_ST (BIT(0))
 
+#ifndef GDBSTUB_H
 #define UART_INT_ENA( i )                       (REG_UART_BASE( i ) + 0xC)
+#endif
 #define UART_RXFIFO_TOUT_INT_ENA (BIT(8))
 #define UART_BRK_DET_INT_ENA (BIT(7))
 #define UART_CTS_CHG_INT_ENA (BIT(6))
@@ -46,7 +48,9 @@
 #define UART_TXFIFO_EMPTY_INT_ENA (BIT(1))
 #define UART_RXFIFO_FULL_INT_ENA (BIT(0))
 
+#ifndef GDBSTUB_H
 #define UART_INT_CLR( i )                       (REG_UART_BASE( i ) + 0x10)
+#endif
 #define UART_RXFIFO_TOUT_INT_CLR (BIT(8))
 #define UART_BRK_DET_INT_CLR (BIT(7))
 #define UART_CTS_CHG_INT_CLR (BIT(6))

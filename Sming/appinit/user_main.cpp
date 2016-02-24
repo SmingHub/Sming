@@ -1,6 +1,10 @@
 #include <user_config.h>
 #include "../SmingCore/SmingCore.h"
 
+#ifdef ENABLE_GDB
+	#include "../gdbstub/gdbstub.h"
+#endif
+
 extern void init();
 
 extern "C" void  __attribute__((weak)) user_init(void)
@@ -9,6 +13,9 @@ extern "C" void  __attribute__((weak)) user_init(void)
 	uart_div_modify(UART_ID_0, UART_CLK_FREQ / 115200);
 	cpp_core_initialize();
 	System.initialize();
+#ifdef ENABLE_GDB
+	gdbstub_init();
+#endif
 	init(); // User code init
 }
 
