@@ -33,7 +33,7 @@ SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 IMAGE_MAIN	?= 0x00000.bin
 IMAGE_SDK	?= 0x09000.bin
 # esptool2 path
-ESPTOOL2 ?= esptool2
+ESPTOOL2 ?= $(SMING_HOME)/esptool2/esptool2
 # esptool2 parameters for rBootLESS images
 ESPTOOL2_SECTS		?= .text .data .rodata
 ESPTOOL2_MAIN_ARGS	?= -quiet -bin -boot0

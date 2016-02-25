@@ -32,8 +32,8 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 - [MacOS](https://github.com/SmingHub/Sming/wiki/MacOS-Quickstart)
 
 ## Additional needed software 
-- Spiffy  : Source included in Sming repository
-- [ESPtool2] (https://github.com/raburton/esptool2) esptool2 
+- [Spiffy](https://github.com/xlfe/spiffy): Source included in Sming repository
+- [ESPtool2](https://github.com/raburton/esptool2): Source included in Sming repository
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 

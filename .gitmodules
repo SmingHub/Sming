@@ -1,0 +1,3 @@
+[submodule "Sming/esptool2"]
+	path = Sming/esptool2
+	url = git@github.com:raburton/esptool2.git
