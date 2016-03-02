@@ -21,30 +21,20 @@ Timer printTimer;
 NtpClient ntpClient ("pool.ntp.org", 30, onNtpReceive);
 
 void onPrintSystemTime() {
-	Serial.print("Local Time    : ");
-	Serial.println(SystemClock.getSystemTimeString());
-	Serial.print("UTC Time: ");
-	Serial.println(SystemClock.getSystemTimeString(eTZ_UTC));
-
-	Serial.print("dsRTC Time: ");
 	DateTime _date_time = DSRTC.get();
-	Serial.println(_date_time.toFullDateTimeString());
+	Serial.printf("Current time\nSystem(LOCAL TZ): %s\nUTC(UTC TZ): %s\nDSRTC(UTC TZ): %s\n\n", SystemClock.getSystemTimeString().c_str(),
+								SystemClock.getSystemTimeString(eTZ_UTC).c_str(),
+								_date_time.toFullDateTimeString().c_str());
 }
 
 void onNtpReceive(NtpClient& client, time_t timestamp) {
-	SystemClock.setTime(timestamp);
-	
-	DSRTC.set(timestamp);
-	
-	Serial.print("Time synchronized: ");
-	Serial.println(SystemClock.getSystemTimeString());
+	SystemClock.setTime(timestamp, eTZ_UTC); //System timezone is LOCAL so to set it from UTC we specify TZ
+	DSRTC.set(timestamp); //DSRTC timezone is UTC so we need TZ-correct DSRTC.get()
+	Serial.printf("Time synchronized: %s\n", SystemClock.getSystemTimeString().c_str());
 }
 
 void connectOk()
 {
-	ntpClient.setAutoQueryInterval(20);
-	ntpClient.setAutoQuery(true);
-	ntpClient.setAutoUpdateSystemClock(true);
 	ntpClient.requestTime();
 }
 
@@ -58,9 +48,10 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
-	Serial.println("Sming. Let's do smart things!");
-
-	Wire.pins(0, 2); //Change to your SCL,SDA GPIO pin number
+	Serial.println("Sming DSRTC_NTP_SETTER started!");
+//Uncomment proper line, or set right pins by hand
+	Wire.pins(0, 2); //Change to your SCL - 0,SDA - 2 GPIO pin number
+//	Wire.pins(5, 4); //Change to your SCL - 5,SDA - 4 GPIO pin number
         Wire.begin();
 
 	// Run our method when station was connected to AP (or not connected)
@@ -71,7 +62,7 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
 	// set timezone hourly difference to UTC
-	SystemClock.setTimeZone(3);
+	SystemClock.setTimeZone(2); // GMT+2
 
 	printTimer.initializeMs(2000, onPrintSystemTime).start();
 }
