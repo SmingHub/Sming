@@ -8,14 +8,15 @@
 #pragma once
 
 namespace ArduinoJson {
-namespace Internals {
-class Unparsed {
- public:
-  explicit Unparsed(const char* str) : _str(str) {}
-  operator const char*() const { return _str; }
+namespace TypeTraits {
 
- private:
-  const char* _str;
+// A meta-function that return the type T if Condition is true.
+template <bool Condition, typename T = void>
+struct EnableIf {};
+
+template <typename T>
+struct EnableIf<true, T> {
+  typedef T type;
 };
 }
 }

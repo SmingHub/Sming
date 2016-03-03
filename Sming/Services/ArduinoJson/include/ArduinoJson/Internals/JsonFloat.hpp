@@ -7,15 +7,15 @@
 
 #pragma once
 
+#include "../Configuration.hpp"
+
 namespace ArduinoJson {
 namespace Internals {
-class Unparsed {
- public:
-  explicit Unparsed(const char* str) : _str(str) {}
-  operator const char*() const { return _str; }
 
- private:
-  const char* _str;
-};
+#if ARDUINOJSON_USE_DOUBLE
+typedef double JsonFloat;
+#else
+typedef float JsonFloat;
+#endif
 }
 }
