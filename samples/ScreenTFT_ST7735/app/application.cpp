@@ -334,7 +334,7 @@ void init()
 	// Use this initializer (uncomment) if you're using a 1.44" TFT
 	tft.initR(INITR_144GREENTAB);   // initialize a ST7735S chip, black tab
 
-	tft.fillScreen(ST7735_BLACK);
+	tft.fillScreen(ST7735_RED);
 	startTime = millis() - startTime;
 
 	debugf("Initialized in %d ms\n", startTime);

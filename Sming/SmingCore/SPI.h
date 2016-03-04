@@ -17,55 +17,40 @@
 #include "SPISettings.h"
 
 
-#define SPI_DEBUG  1
+//#define SPI_DEBUG  1
 
 // for compatibility when porting from Arduino
-#define SPI_HAS_TRANSACTION  1
-
-#define SPI_CONTINUE	1
+#define SPI_HAS_TRANSACTION  0
 
 #define	SPI_NO	1
 
-//Define some default SPI clock settings
-#define SPI_CLK_PREDIV 10
-#define SPI_CLK_CNTDIV 2
 
-// Byte Order definitions
-#define SPI_BYTE_ORDER_HIGH_TO_LOW 1
-#define SPI_BYTE_ORDER_LOW_TO_HIGH 0
-
-
-class SPIhw: public SPIBase {
+class SPIClass: public SPIBase {
 public:
-	SPIhw();
-	virtual ~SPIhw();
+	SPIClass();
+	virtual ~SPIClass();
 
-	/*
-	 * Arduino Standard API
-	 */
-	/* Standard API
-	 *
-	 */
-
+	//  Arduino Standard API
 	/*
 	 *  begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
 	 */
-	void begin();
+	virtual void begin();
+
 
 	/*
 	 * end(): Disables the SPI bus (leaving pin modes unchanged).
 	 */
-	void end();
+	virtual void end();
 
 	/*
 	 * beginTransaction(): Initializes the SPI bus using the defined SPISettings.
 	 */
-	void beginTransaction(SPISettings mySettings);
+	virtual void beginTransaction(SPISettings mySettings);
 
 	/*
 	 * endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.
 	 */
-	void endTransaction();
+	virtual void endTransaction();
 
 	/*
 	 * transfer(), transfer16()
@@ -76,43 +61,40 @@ public:
 	 * 		receivedVal16 = SPI.transfer16(val16)
 	 * 		SPI.transfer(buffer, size)
 	 */
-	virtual unsigned char transfer(unsigned char val);
-//	{
-//		return (unsigned char) transfer32((uint32) val, 1);
-//	};
-	virtual unsigned short transfer16(unsigned short val) {
-		return (unsigned short) transfer32((uint32) val, 2);
+	virtual unsigned char transfer(unsigned char val) {
+		return transfer32((uint32)val, 8);
 	};
+
+
+	virtual unsigned short transfer16(unsigned short val) {
+		return transfer32((uint32)val, 16);
+	};
+
 	virtual void transfer(uint8 * buffer, size_t numberBytes);
 
+	SPISettings SPIDefaultSettings = SPISettings(2000000, MSBFIRST, SPI_MODE0);
 
-	/*
-	 * Extended Arduino DUO API: enabling CS pin usage
-	 */
-	void begin(uint8 CS_PIN);
-
-	uint8 transfer(uint8 CS_PIN, uint8 val);
-	uint16 transfer16(uint8 CS_PIN, uint16 val);
-	void transfer(uint8 CS_PIN, uint8 * buffer, size_t size);
-
-	// same with transaction HANDLING
-	uint8 transfer(uint8 CS_PIN, uint8 val, bool endTX);
-	uint16 transfer16(uint8 CS_PIN, uint16 val, bool endTX);
-	void transfer(uint8 CS_PIN, uint8 * buffer, size_t size, bool endTX);
 
 private:
 
+	virtual uint32 transfer32(uint32 val, uint8 bits);
+
 	// prepare/configure HSPI with settings
 	void prepare(SPISettings mySettings);
-	uint32 transfer32(uint32 val, uint8 bytes);
 
-	uint8 _CS_PIN;
+	void spi_byte_order(uint8 byte_order);
+	void spi_mode(uint8 mode);
+	void setClock(uint8 prediv, uint8 cntdiv);
+	uint32_t getFrequency(int freq, int &pre, int clk);
+	void setFrequency(int freq);
+
+
 	SPISettings _SPISettings;
 	uint8	_isTX = false;
 	uint8	_init = false;
 
 };
 
-extern SPIhw SPI;
+extern SPIClass SPI;
 
 #endif /* SMINGCORE_SPI_H_ */

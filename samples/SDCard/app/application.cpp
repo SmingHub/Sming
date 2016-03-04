@@ -12,10 +12,10 @@ Descr: SDCard/FAT file usage and write benchmark.
 
 /*(!) Warning on some hardware versions (ESP07, maybe ESP12)
  * 		pins GPIO4 and GPIO5 are swapped !*/
-#define PIN_CARD_DO 5	/* Master In Slave Out */
-#define PIN_CARD_DI 4	/* Master Out Slave In */
-#define PIN_CARD_CK 15	/* Serial Clock */
-#define PIN_CARD_SS 12	/* Slave Select */
+#define PIN_CARD_DO 12	/* Master In Slave Out */
+#define PIN_CARD_DI 13	/* Master Out Slave In */
+#define PIN_CARD_CK 14	/* Serial Clock */
+#define PIN_CARD_SS 4	/* Slave Select */
 
 void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRound)
 {
@@ -149,8 +149,11 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
-	SDCardSPI = new SPISoft(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, PIN_CARD_SS);
-	SDCard_begin();
+//	SDCardSPI = new SPISoft(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, 0);
+	SDCardSPI = new SPIClass();
+	SDCardSPI->beginTransaction(SPISettings(40000000, MSBFIRST, SPI_MODE0));
+
+	SDCard_begin(PIN_CARD_SS);
 
 	Serial.print("\nSDCard example - !!! see code for HW setup !!! \n\n");
 

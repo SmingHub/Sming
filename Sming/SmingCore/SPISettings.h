@@ -8,7 +8,7 @@
 #ifndef SMINGCORE_SPISETTINGS_H_
 #define SMINGCORE_SPISETTINGS_H_
 
-#include "Arduino.h"
+#include "Digital.h"
 
 // Mode			Clock Polarity (CPOL)	Clock Phase (CPHA)
 //	SPI_MODE0		0					0
@@ -37,8 +37,9 @@ public:
 	// overload operator to check wheter the settings are equal
 	bool operator==(const SPISettings &other) const;
 
-//	void print(String s);
+	void print(const char *s);
 
+	friend class SPIClass;
 
 private:
 	int 	_speed;

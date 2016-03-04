@@ -1,0 +1,29 @@
+Display start
+Initialized in 2427 ms
+
+mode : null
+screen1: testdrawtext 443 ms
+screen2: tftPrintTest1 220 ms
+screen3: tftPrintTest2 242 ms
+screen4: testlines 1213 ms
+screen5: testfastlines 238 ms
+screen6: testdrawrects 229 ms
+screen7: testfillrects 1469 ms
+screen8: testfillcircles 573 ms
+screen9: testroundrects 663 ms
+screen10: testtriangles 422 ms
+screen11: mediabuttons 1377 ms
+
+Loading image 'sming.bmp'
+File size: 49208
+
+Image Offset: 54
+
+Header size: 40
+
+Bit Depth: 24
+
+Image size: 128 x 128
+
+Loaded in 266 ms
+screen12: bmpDraw 267 ms
