@@ -9,9 +9,12 @@ Descr: Low-level SDCard functions
 #define _SD_CARD_
 
 #include <SmingCore.h>
+#include "SPISoft.h"
 
-void SDCard_begin();
+void SDCard_begin(uint8 PIN_CARD_SS);
 
 extern SPISoft *SDCardSPI;
+
+//extern SPIBase	*SDCardSPI;
 
 #endif /*_SD_CARD_*/

@@ -20,7 +20,7 @@
 #define SPI_DEBUG  1
 
 // for compatibility when porting from Arduino
-#define SPI_HAS_TRANSACTION  1
+#define SPI_HAS_TRANSACTION  0
 
 #define SPI_CONTINUE	1
 
@@ -35,10 +35,10 @@
 #define SPI_BYTE_ORDER_LOW_TO_HIGH 0
 
 
-class SPIhw: public SPIBase {
+class SPIClass: public SPIBase {
 public:
-	SPIhw();
-	virtual ~SPIhw();
+	SPIClass();
+	virtual ~SPIClass();
 
 	/*
 	 * Arduino Standard API
@@ -50,22 +50,24 @@ public:
 	/*
 	 *  begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
 	 */
-	void begin();
+	virtual void begin();
+
+	void begin(uint16_t predivider, uint8_t divider);
 
 	/*
 	 * end(): Disables the SPI bus (leaving pin modes unchanged).
 	 */
-	void end();
+	virtual void end();
 
 	/*
 	 * beginTransaction(): Initializes the SPI bus using the defined SPISettings.
 	 */
-	void beginTransaction(SPISettings mySettings);
+	virtual void beginTransaction(SPISettings mySettings);
 
 	/*
 	 * endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.
 	 */
-	void endTransaction();
+	virtual void endTransaction();
 
 	/*
 	 * transfer(), transfer16()
@@ -85,34 +87,28 @@ public:
 	};
 	virtual void transfer(uint8 * buffer, size_t numberBytes);
 
+	SPISettings SPIDefaultSettings = SPISettings(2000000, MSBFIRST, SPI_MODE0);
 
-	/*
-	 * Extended Arduino DUO API: enabling CS pin usage
-	 */
-	void begin(uint8 CS_PIN);
-
-	uint8 transfer(uint8 CS_PIN, uint8 val);
-	uint16 transfer16(uint8 CS_PIN, uint16 val);
-	void transfer(uint8 CS_PIN, uint8 * buffer, size_t size);
-
-	// same with transaction HANDLING
-	uint8 transfer(uint8 CS_PIN, uint8 val, bool endTX);
-	uint16 transfer16(uint8 CS_PIN, uint16 val, bool endTX);
-	void transfer(uint8 CS_PIN, uint8 * buffer, size_t size, bool endTX);
 
 private:
 
+	// methods
+	void setClock(uint8 prediv, uint8 cntdiv);
+	uint32_t getFrequency(int freq, uint8 &pre, uint8 clk);
+	void setFrequency(uint32_t freq);
+
 	// prepare/configure HSPI with settings
 	void prepare(SPISettings mySettings);
+
+
 	uint32 transfer32(uint32 val, uint8 bytes);
 
-	uint8 _CS_PIN;
 	SPISettings _SPISettings;
 	uint8	_isTX = false;
 	uint8	_init = false;
 
 };
 
-extern SPIhw SPI;
+extern SPIClass SPI;
 
 #endif /* SMINGCORE_SPI_H_ */

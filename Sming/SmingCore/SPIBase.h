@@ -14,8 +14,8 @@
 #ifndef SMINGCORE_SPIBASE_H_
 #define SMINGCORE_SPIBASE_H_
 
-#include "Arduino.h"
 #include "SPISettings.h"
+
 
 class SPIBase {
 public:
@@ -58,6 +58,8 @@ public:
 	virtual unsigned char transfer(unsigned char val) = 0;
 	virtual unsigned short transfer16(unsigned short val) = 0;
 	virtual void transfer(uint8 * buffer, size_t size) = 0;
+
+	SPISettings SPIDefaultSettings;
 
 };
 

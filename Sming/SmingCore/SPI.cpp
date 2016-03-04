@@ -16,30 +16,30 @@
 
 #include "SPI.h"
 
+#include <SmingCore.h>
+#include <stdlib.h>
 #include "eagle_soc.h"
 #include "espinc/spi_register.h"
 #include "espinc/c_types_compatible.h"
 
 // define the static singleton
-SPIhw SPI;
+SPIClass SPI;
 
-SPIhw::SPIhw() {
-	_CS_PIN = 255;
-	_SPISettings = SPISettings(200000, MSBFIRST, SPI_MODE1);;
-	_isTX = false;
-	_init = false;
+SPIClass::SPIClass() {
+	_SPISettings = SPISettings(4000000, MSBFIRST, SPI_MODE1);;
 }
 
-SPIhw::~SPIhw() {
+SPIClass::~SPIClass() {
 	// TODO Auto-generated destructor stub
 }
 
 /*
  * 	Initialize HW SPI with HW SS (PIN 15)
  */
-void SPIhw::begin() {
+void SPIClass::begin() {
 
 #ifdef SPI_DEBUG
+	debugf("ESP clock frequency %i", ets_get_cpu_frequency());
 	debugf("SPIhw::begin()");
 #endif
 
@@ -49,48 +49,26 @@ void SPIhw::begin() {
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, 2); //GPIO15 is HSPI CS pin (Chip Select / Slave Select)
 
 	prepare(_SPISettings);
-
 }
 
-/*
- * 	Initialize HW SPI with Software controlled CS (ANY GPIO)
- */
-void SPIhw::begin(uint8 CS_PIN) {
 
-//#ifdef SPI_DEBUG
-//	debugf("SPIhw::begin(uint8 %d)", CS_PIN);
-//#endif
 
-	_CS_PIN = CS_PIN;
-	pinMode(_CS_PIN, OUTPUT);
-
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, 2); //GPIO12 is HSPI MISO pin (Master Data In)
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, 2); //GPIO13 is HSPI MOSI pin (Master Data Out)
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, 2); //GPIO14 is HSPI CLK pin (Clock)
-
-	prepare(_SPISettings);
-
-}
 
 /*
  * end(): Disables the SPI bus (leaving pin modes unchanged).
  */
-void SPIhw::end() {
+void SPIClass::end() {
 
 //#ifdef SPI_DEBUG
 //	debugf("SPIhw::end()");
 //#endif
-	// disable client active
-//	digitalWrite(_CS_PIN, HIGH);
-	// remeber state
-	_isTX = false;
 };
 
 
 /*
  * beginTransaction(): Initializes the SPI bus using the defined SPISettings.
  */
-void SPIhw::beginTransaction(SPISettings mySettings) {
+void SPIClass::beginTransaction(SPISettings mySettings) {
 
 //#ifdef SPI_DEBUG
 //	debugf("SPIhw::beginTransaction(SPISettings mySettings)");
@@ -98,32 +76,24 @@ void SPIhw::beginTransaction(SPISettings mySettings) {
 
 	// prepare SPI settings
 	prepare(mySettings);
-	// enable client active
-//	digitalWrite(_CS_PIN, LOW);
-	// remeber state
-	_isTX = true;
 }
 
 /*
  * endTransaction(): Stop using the SPI bus. Normally this is called after
  * de-asserting the chip select, to allow other libraries to use the SPI bus.
  */
-void SPIhw::endTransaction() {
+void SPIClass::endTransaction() {
 
 //#ifdef SPI_DEBUG
 //	debugf("SPIhw::endTransaction()");
 //#endif
 
-	// disable client active
-//	digitalWrite(_CS_PIN, HIGH);
-	// remember state
-	_isTX = false;
 };
 
 
 // Receive numberBytes byte of data
 // use SetCS and enable() for SW controlled CS GPIO Ports
-void SPIhw::transfer(uint8 * buffer, size_t numberBytes) {
+void SPIClass::transfer(uint8 * buffer, size_t numberBytes) {
 
 #define BLOCKSIZE 64		// the max length of the ESP SPI_W0 registers
 
@@ -178,7 +148,7 @@ void SPIhw::transfer(uint8 * buffer, size_t numberBytes) {
 
 
 // Private method implementation
-void SPIhw::prepare(SPISettings mySettings) {
+void SPIClass::prepare(SPISettings mySettings) {
 
 	// TODO: use settings instead of defaults
 //#ifdef SPI_DEBUG
@@ -188,23 +158,11 @@ void SPIhw::prepare(SPISettings mySettings) {
 //#endif
 
 	// check if we need to change settings
-	if (_init & _SPISettings == mySettings)
+	if (_SPISettings == mySettings)
 		return;
 
-	// Setup Clock devider
-	uint8 prediv = SPI_CLK_PREDIV;
-	uint8 cntdiv = SPI_CLK_CNTDIV;
-
-	if((prediv==0)|(cntdiv==0)){
-		// go full speed = SYSTEMCLOCK
-		WRITE_PERI_REG(SPI_CLOCK(SPI_NO), SPI_CLK_EQU_SYSCLK);
-	} else {
-		WRITE_PERI_REG(SPI_CLOCK(SPI_NO),
-					(((prediv-1)&SPI_CLKDIV_PRE)<<SPI_CLKDIV_PRE_S)|
-					(((cntdiv-1)&SPI_CLKCNT_N)<<SPI_CLKCNT_N_S)|
-					(((cntdiv>>1)&SPI_CLKCNT_H)<<SPI_CLKCNT_H_S)|
-					((0&SPI_CLKCNT_L)<<SPI_CLKCNT_L_S));
-	}
+	//  setup clock
+	setFrequency(mySettings._speed);
 
 	//  Setup Byte Order
 	uint8 byte_order = SPI_BYTE_ORDER_LOW_TO_HIGH;
@@ -237,15 +195,15 @@ void SPIhw::prepare(SPISettings mySettings) {
 	SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CS_SETUP|SPI_CS_HOLD);
 	CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_FLASH_MODE);
 
-//#ifdef SPI_DEBUG
-//	debugf("SPIhw::prepare(SPISettings mySettings) -> updated settings");
-//#endif
+#ifdef SPI_DEBUG
+	debugf("SPIhw::prepare(SPISettings mySettings) -> updated settings");
+#endif
 	_SPISettings = mySettings;
 };
 
 // send out a single byte of data
 // cs = 0 is using hardware SS any other pin handles Software controlled client select
-unsigned char SPIhw::transfer(unsigned char data){
+unsigned char SPIClass::transfer(unsigned char data){
 
 
 //#ifdef SPI_DEBUG
@@ -270,8 +228,8 @@ unsigned char SPIhw::transfer(unsigned char data){
 	SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MISO);
 
 //	// Setup Bitlengths MISO
-	WRITE_PERI_REG(SPI_USER1(SPI_NO), ((8-1)&SPI_USR_MOSI_BITLEN)<<SPI_USR_MOSI_BITLEN_S |
-									  ((8-1)&SPI_USR_MISO_BITLEN)<<SPI_USR_MISO_BITLEN_S );  //Number of bits to receive
+	WRITE_PERI_REG(SPI_USER1(SPI_NO), ((8-1)&SPI_USR_MOSI_BITLEN)<<SPI_USR_MOSI_BITLEN_S ); //|
+//									  ((8-1)&SPI_USR_MISO_BITLEN)<<SPI_USR_MISO_BITLEN_S );  //Number of bits to receive
 
 	// Begin SPI Transaction
 	SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);
@@ -288,6 +246,8 @@ unsigned char SPIhw::transfer(unsigned char data){
 	return data;
 };
 
+
+
 /*
  * transfer32()
  *
@@ -295,7 +255,7 @@ unsigned char SPIhw::transfer(unsigned char data){
  *
  * 		receivedVal = SPI.transfer(long val, uint8 numerBytes)
  */
-uint32 SPIhw::transfer32(uint32 val, uint8 bytes) {
+uint32 SPIClass::transfer32(uint32 val, uint8 bytes) {
 
 #ifdef SPI_DEBUG
 	debugf("SPIhw::transfer32(unsigned long %X,%d bytes)", val, bytes);
@@ -349,6 +309,96 @@ uint32 SPIhw::transfer32(uint32 val, uint8 bytes) {
 		}
 
 };
+
+
+void SPIClass::setClock(uint8 prediv, uint8 cntdiv) {
+
+	if((prediv==0)|(cntdiv==0)){
+		// go full speed = SYSTEMCLOCK
+		WRITE_PERI_REG(SPI_CLOCK(SPI_NO), SPI_CLK_EQU_SYSCLK);
+	} else {
+		WRITE_PERI_REG(SPI_CLOCK(SPI_NO),
+					(((prediv-1)&SPI_CLKDIV_PRE)<<SPI_CLKDIV_PRE_S)|
+					(((cntdiv-1)&SPI_CLKCNT_N)<<SPI_CLKCNT_N_S)|
+					(((cntdiv>>1)&SPI_CLKCNT_H)<<SPI_CLKCNT_H_S)|
+					((0&SPI_CLKCNT_L)<<SPI_CLKCNT_L_S));
+	}
+}
+
+int CPU_MAX = 8000000UL;
+
+
+// div from stdlib
+div_t div (int numer, int denom) {
+  div_t result;
+  result.quot = numer / denom;
+  result.rem = numer % denom;
+
+  if (numer >= 0 && result.rem < 0)
+    {
+      ++result.quot;
+      result.rem -= denom;
+    }
+  return result;
+}
+
+uint32_t SPIClass::getFrequency(int freq, uint8 &pre, uint8 clk) {
+
+	int divider = CPU_MAX / freq;
+
+	div_t divresult = div (divider,clk);
+	pre = divresult.quot;
+
+	int f = CPU_MAX/pre/clk;
+	while (f > freq) {
+		pre++;
+		f = CPU_MAX/pre/clk;
+	}
+
+//	printf ("-> freq %d result %d devider %d pre %d clk %d\n", freq, f, pre*clk, pre, clk);
+
+	return f;
+}
+
+void SPIClass::setFrequency(uint32_t freq) {
+
+	// dont run code if there are no changes
+	if (freq == _SPISettings._speed) return;
+
+	_SPISettings._speed = freq;
+
+	uint8 pre2;
+	uint32_t f2 = getFrequency(freq, pre2, 2);
+	if (f2 == freq) {
+		debugf ("-> Hit!! -> target freq %d -> result %d", freq, CPU_MAX/pre2/2);
+		setClock(pre2, 2);
+		return;
+	}
+
+	uint8 pre3;
+	uint32_t f3  = getFrequency(freq, pre3, 3);
+	uint8 pre5;
+	uint32_t f5 = getFrequency(freq, pre5, 5);
+	if (f3 <= f2 && f2 >= f5) {
+		debugf ("-> Hit!! -> target freq %d -> result %d", freq, CPU_MAX/pre2/2);
+		setClock(pre2, 2);
+		return;
+	} else {
+		if (f5 <= f3) {
+			debugf ("-> Hit!! -> target freq %d -> result %d", freq, CPU_MAX/pre3/3);
+			debugf ("  setClock(%d, %d)\n", pre3, 3);
+			setClock(pre3, 3);
+			return;
+		} else {
+			debugf ("-> Hit!! -> target freq %d -> result %d", freq, CPU_MAX/pre5/5);
+			debugf ("  setClock(%d, %d)\n", pre5, 5);
+			setClock(pre5, 5);
+			return;
+		}
+	}
+
+}
+
 
 
 
