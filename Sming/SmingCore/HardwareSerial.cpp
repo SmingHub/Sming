@@ -33,7 +33,7 @@ HardwareSerial::HardwareSerial(const int uartPort)
 	system_os_task(delegateTask,USER_TASK_PRIO_0,serialQueue,SERIAL_QUEUE_LEN);
 }
 
-void HardwareSerial::begin(const uint32_t baud/* = 9600*/, bool disableRx /*=false*/)
+void HardwareSerial::internalBegin(const uint32_t baud/* = 9600*/, bool disableRx /*=false*/)
 {
 	rxDisabled = disableRx;
 	//TODO: Move to params!

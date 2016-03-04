@@ -55,7 +55,7 @@ public:
      *  @param  baud BAUD rate of the serial port (Default: 9600)
      *  @todo   This code only initialises UART0, uartPort is never used.           
      */
-	void inline begin(const uint32_t baud = 9600) { begin(baud, false); };
+	void inline begin(const uint32_t baud = 9600) { internalBegin(baud, false); };
 
     /** @brief   Initialise the serial port but disable the receiving part of the UART.
      *  @param   baud BAUD rate of the serial port (Default: 9600)
@@ -65,7 +65,7 @@ public:
      *           e.g. your usb serial adapter. Use a >= 10Kohm resistor if you must
      *           flash the device over serial.
      */
-	void inline beginNoRx(const uint32_t baud = 9600) { begin(baud, true); };
+	void inline beginNoRx(const uint32_t baud = 9600) { internalBegin(baud, true); };
 
     /** @brief  Get quantity characters available from serial input
      *  @retval int Quantity of characters in receive buffer
@@ -140,14 +140,14 @@ public:
 	static void delegateTask (os_event_t *inputEvent);
 
 protected:
-    /** @brief  Initialise the serial port
+    /** @brief  Initialise the serial port. (named 'internal' as a disambiguation)
      *  @param  baud BAUD rate of the serial port (Default: 9600)
      *  @param  disableRx when true the UART won't use the RX pin.
      *          read(), peek() and available() won't work anymore but you will 
      *          be able to use the RX pin as a GPIO.
      *  @todo   This code only initialises UART0, uartPort is never used.
      */
-	void begin(const uint32_t baud = 9600, bool disableRx=false);
+	void internalBegin(const uint32_t baud = 9600, bool disableRx=false);
 
 private:
 	bool rxDisabled = false;
