@@ -53,13 +53,11 @@ public:
 
     /** @brief  Initialise the serial port
      *  @param  baud BAUD rate of the serial port (Default: 9600)
-     *  @todo   This code only initialises UART0, uartPort is never used.           
      */
 	void inline begin(const uint32_t baud = 9600) { internalBegin(baud, false); };
 
     /** @brief   Initialise the serial port but disable the receiving part of the UART.
      *  @param   baud BAUD rate of the serial port (Default: 9600)
-     *  @todo    This code only initialises UART0, uartPort is never used.
      *  @warning If you use this method you must make sure that 
      *           the RX pin is *not* hardwired to something that drives the pin.
      *           e.g. your usb serial adapter. Use a >= 10Kohm resistor if you must
