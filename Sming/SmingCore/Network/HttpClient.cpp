@@ -11,11 +11,29 @@
 
 HttpClient::HttpClient(bool autoDestruct /* = false */) : TcpClient(autoDestruct)
 {
+	parser = (http_parser *)malloc(sizeof(http_parser));
 	reset();
+}
+
+HttpClient::HttpClient(ResponseBodyDelegate responseBodyDelegate, bool autoDestruct /* = false */) : HttpClient(autoDestruct)
+{
+	this->responseBodyDelegate = responseBodyDelegate;
+}
+
+HttpClient::HttpClient(HeadersCompleteDelegate headersCompleteDelegate,
+			   ResponseBodyDelegate responseBodyDelegate /* = NULL */, bool autoDestruct /* = false */) : HttpClient(autoDestruct)
+{
+	this->headersCompleteDelegate = headersCompleteDelegate;
+	if(responseBodyDelegate) {
+		this->responseBodyDelegate = responseBodyDelegate;
+	}
 }
 
 HttpClient::~HttpClient()
 {
+	if(parser != NULL) {
+		free(parser);
+	}
 }
 
 bool HttpClient::downloadString(String url, HttpClientCompletedDelegate onCompleted)
@@ -118,6 +136,16 @@ void HttpClient::reset()
 	waitParse = true;
 	writeError = false;
 	responseHeaders.clear();
+
+	lastWasValue = true;
+	lastData = "";
+	currentField  = "";
+	totalHeadersSize = 0;
+}
+
+HashMap<String, String> &HttpClient::getResponseHeaders()
+{
+	return responseHeaders;
 }
 
 String HttpClient::getResponseHeader(String headerName, String defaultValue /* = "" */)
@@ -166,104 +194,165 @@ void HttpClient::onFinished(TcpClientState finishState)
 	TcpClient::onFinished(finishState);
 }
 
-void HttpClient::parseHeaders(pbuf* buf, int headerEnd)
+err_t HttpClient::onResponseBody(const char *at, size_t length)
 {
-	int line, nextLine;
-	line = NetUtils::pbufFindStr(buf, "\r\n", 0) + 2;
-	do
-	{
-		nextLine = NetUtils::pbufFindStr(buf, "\r\n", line);
-		if (nextLine - line > 2)
-		{
-			int delim = NetUtils::pbufFindStr(buf, ":", line);
-			if (delim != -1)
-			{
-				String name = NetUtils::pbufStrCopy(buf, line, delim - line);
-				//if (server->isHeaderProcessingEnabled(name))
-				{
-					String value = NetUtils::pbufStrCopy(buf, delim + 1,
-							nextLine - (delim + 1));
-					value.trim();
-					responseHeaders[name] = value;
-					debugf("%s === %s", name.c_str(), value.c_str());
-				}
-			}
-		}
-		line = nextLine + 2;
-	} while (nextLine != -1 && nextLine < headerEnd);
-}
+	if(responseBodyDelegate) {
+		return responseBodyDelegate(*this, at, length);
+	}
 
-void HttpClient::writeRawData(pbuf* buf, int startPos)
-{
 	switch (mode)
 	{
 		case eHCM_String:
 		{
-			responseStringData += NetUtils::pbufStrCopy(buf, startPos,
-					buf->tot_len - startPos);
+			responseStringData += String(at, length);
 			break;
 		}
 		case eHCM_File:
 		{
-			pbuf *cur = buf;
-			while (cur != NULL && cur->len > 0 && !writeError)
-			{
-				char* ptr = (char*) cur->payload + startPos;
-				int len = cur->len - startPos;
-				int res = fileWrite(saveFile, ptr, len);
-				writeError |= (res < 0);
-				cur = cur->next;
-				startPos = 0;
-			}
+			int res = fileWrite(saveFile, &at, length);
+			writeError |= (res < 0);
 
 			if (writeError)
 				close();
 		}
 	}
+
+	return ERR_OK;
 }
 
-err_t HttpClient::onReceive(pbuf *buf)
+err_t HttpClient::onProtocolUpgrade(http_parser* parser)
+{
+	debugf("HttpClient::onProtocolUpgrade: Protocol upgrade is not supported");
+	return ERR_ABRT;
+}
+
+int HttpClient::staticOnMessageComplete(http_parser* parser)
+{
+	debugf("HttpClient::staticOnMessageComplete: .");
+
+	return 0;
+}
+
+int HttpClient::staticOnHeadersComplete(http_parser* parser)
+{
+	HttpClient *client = (HttpClient*)parser->data;
+	if(client == NULL) {
+		// something went wrong
+		return -1;
+	}
+
+	client->code = parser->status_code;
+
+	debugf("The headers are complete");
+	if(client->headersCompleteDelegate) {
+		return client->headersCompleteDelegate(*client);
+	}
+
+	return 0;
+}
+
+int GDB_IRAM_ATTR HttpClient::staticOnHeaderField(http_parser *parser, const char *at, size_t length)
+{
+	HttpClient *client = (HttpClient*)parser->data;
+	if(client == NULL) {
+		// something went wrong
+		return -1;
+	}
+
+	if(client->lastWasValue) {
+		// we are starting to process new header
+		client->lastData = "";
+		client->lastWasValue = false;
+	}
+	client->lastData += String(at, length);
+
+	return 0;
+}
+
+int HttpClient::staticOnHeaderValue(http_parser *parser, const char *at, size_t length)
+{
+	HttpClient *client = (HttpClient*)parser->data;
+	if (client == NULL) {
+		// something went wrong
+		return -1;
+	}
+
+	if(!client->lastWasValue) {
+		client->currentField = client->lastData;
+		client->responseHeaders[client->currentField] = "";
+		client->lastWasValue = true;
+	}
+	client->responseHeaders[client->currentField] += String(at, length);
+
+	return 0;
+}
+
+int HttpClient::staticOnBody(http_parser *parser, const char *at, size_t length)
+{
+	HttpClient *client = (HttpClient*)parser->data;
+	if (client == NULL) {
+		// something went wrong
+		return -1;
+	}
+
+	client->onResponseBody(at, length);
+
+	return 0;
+}
+
+err_t GDB_IRAM_ATTR HttpClient::onConnected(err_t err)
+{
+	if (err == ERR_OK)
+	{
+		http_parser_init(parser, HTTP_RESPONSE);
+		parser->data = (void*)this;
+
+		// Callbacks: on_message_begin, on_headers_complete, on_message_complete.
+		parserSettings.on_message_begin     = staticOnMessageComplete;
+		parserSettings.on_message_complete  = staticOnMessageComplete;
+		parserSettings.on_headers_complete  = staticOnHeadersComplete;
+
+		// on_url, (common) on_header_field, on_header_value, on_body;
+		parserSettings.on_header_field      = staticOnHeaderField;
+		parserSettings.on_header_value      = staticOnHeaderValue;
+		parserSettings.on_body              = staticOnBody;
+	}
+
+	// Fire ReadyToSend callback
+	TcpClient::onConnected(err);
+
+	return ERR_OK;
+}
+
+err_t GDB_IRAM_ATTR HttpClient::onReceive(pbuf *buf)
 {
 	if (buf == NULL)
 	{
 		// Disconnected, close it
-		TcpClient::onReceive(buf);
+		return TcpClient::onReceive(buf);
 	}
-	else
-	{
-		int startPos = 0;
-		if (waitParse)
-		{
-			String http = NetUtils::pbufStrCopy(buf, 0, 4);
-			http.toUpperCase();
-			if (http == "HTTP" && code == 0)
-			{
-				int codeStart = NetUtils::pbufFindChar(buf, ' ', 4);
-				int codeEnd = NetUtils::pbufFindChar(buf, ' ', codeStart + 1);
-				if (codeStart != -1 && codeEnd != -1 && codeEnd - codeStart < 5)
-				{
-					String strCode = NetUtils::pbufStrCopy(buf, codeStart, codeEnd);
-					code = strCode.toInt();
-				}
-				else
-					code = 0;
-			}
-			int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
-			if (headerEnd != -1)
-			{
-				debugf("Header pos: %d", headerEnd);
-				startPos = headerEnd + 4;
-				waitParse = false;
-				if (headerEnd < NETWORK_MAX_HTTP_PARSING_LEN)
-					parseHeaders(buf, headerEnd);
-			}
-		}
 
-		if (!waitParse) writeRawData(buf, startPos);
-
-		// Fire ReadyToSend callback
-		TcpClient::onReceive(buf);
+	/* Basic sanity check */
+	totalHeadersSize += buf->tot_len;
+	if(totalHeadersSize > MAX_HTTP_HEADERS_SIZE) {
+		return ERR_ABRT;
 	}
+
+	char *data = (char *)malloc(buf->tot_len);
+	pbuf_copy_partial(buf, data, buf->tot_len,0 );
+	int parsedBytes = http_parser_execute(parser, &parserSettings, data, buf->tot_len);
+	free(data);
+
+	if (parser->upgrade) {
+		return onProtocolUpgrade(parser);
+	} else if (parsedBytes != buf->tot_len) {
+		TcpClient::onReceive(NULL);
+
+		return ERR_ABRT;
+	}
+
+	// Fire ReadyToSend callback
+	TcpClient::onReceive(buf);
 
 	return ERR_OK;
 }

@@ -13,12 +13,19 @@
 #include "../../Wiring/WHashMap.h"
 #include "../../Services/DateTime/DateTime.h"
 #include "../Delegate.h"
+#include "../../Services/WebHelpers/http_parser.h"
+
+#define MAX_HTTP_HEADERS_SIZE  16*1024
 
 class HttpClient;
 class URL;
 
 //typedef void (*HttpClientCompletedCallback)(HttpClient& client, bool successful);
 typedef Delegate<void(HttpClient& client, bool successful)> HttpClientCompletedDelegate;
+
+/* The below 2 delegates have to return 0 on success or negative value on failure */
+typedef Delegate<int(HttpClient& client, const char *at, size_t length)> ResponseBodyDelegate;
+typedef Delegate<int(HttpClient& client)> HeadersCompleteDelegate;
 
 enum HttpClientMode
 {
@@ -31,6 +38,9 @@ class HttpClient: protected TcpClient
 {
 public:
 	HttpClient(bool autoDestruct = false);
+	HttpClient(ResponseBodyDelegate responseBodyDelegate, bool autoDestruct = false);
+	HttpClient(HeadersCompleteDelegate headersCompleteDelegate,
+			   ResponseBodyDelegate responseBodyDelegate = NULL, bool autoDestruct = false);
 	virtual ~HttpClient();
 
 	// Text mode
@@ -56,6 +66,7 @@ public:
 	__forceinline TcpClientState getConnectionState() { return TcpClient::getConnectionState(); }
 
 	String getResponseHeader(String headerName, String defaultValue = "");
+	HashMap<String, String> &getResponseHeaders();
 	DateTime getLastModifiedDate(); // Last-Modified header
 	DateTime getServerDate(); // Date header
 
@@ -73,13 +84,33 @@ public:
 protected:
 	bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
 	void onFinished(TcpClientState finishState);
+	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf *buf);
-	virtual void writeRawData(pbuf* buf, int startPos);
-	void parseHeaders(pbuf* buf, int headerEnd);
+
+	virtual err_t onResponseBody(const char *at, size_t length);
+
+	/**
+	 * Method that handles protocol upgrade. Implement this metheod in child classes.
+	 * For example in WebSockets client class.
+	 *
+	 * @param http_parser* parser
+	 * - the parser->data contains pointer to the current object that called the method
+	 *
+	 * @return err_t
+	 */
+	virtual err_t onProtocolUpgrade(http_parser* parser);
 
 protected:
 	bool waitParse = false;
 	bool writeError = false;
+
+
+	static int staticOnMessageComplete(http_parser* parser);
+	static int staticOnHeadersComplete(http_parser* parser);
+
+	static int staticOnHeaderField(http_parser *parser, const char *at, size_t length);
+	static int staticOnHeaderValue(http_parser *parser, const char *at, size_t length);
+	static int staticOnBody(http_parser *parser, const char *at, size_t length);
 
 private:
 	int code;
@@ -91,6 +122,16 @@ private:
 	String responseStringData;
 	String body = "";
 	file_t saveFile;
+
+	http_parser_settings parserSettings;
+	http_parser *parser = NULL;
+	bool lastWasValue = true;
+	String lastData = "";
+	String currentField  = "";
+
+	ResponseBodyDelegate responseBodyDelegate;
+	HeadersCompleteDelegate headersCompleteDelegate;
+	int totalHeadersSize = 0;
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTPCLIENT_H_ */
