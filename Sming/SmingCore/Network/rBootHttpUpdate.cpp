@@ -51,32 +51,32 @@ void rBootHttpUpdate::updateFailed() {
 }
 
 void rBootHttpUpdate::onTimer() {
-	
+
 	if (TcpClient::isProcessing()) return; // Will wait
-	
+
 	if (TcpClient::getConnectionState() == eTCS_Successful) {
-		
+
 		if (!isSuccessful()) {
 			updateFailed();
 			return;
 		}
-		
+
 		currentItem++;
 		if (currentItem >= items.count()) {
 			debugf("\r\nFirmware download finished!");
 			for (int i = 0; i < items.count(); i++) {
 				debugf(" - item: %d, addr: %X, len: %d bytes", i, items[i].targetOffset, items[i].size);
 			}
-			
+
 			applyUpdate();
 			return;
 		}
-		
+
 	} else if (TcpClient::getConnectionState() == eTCS_Failed) {
 		updateFailed();
 		return;
 	}
-	
+
 	rBootHttpUpdateItem &it = items[currentItem];
 	debugf("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
 	rBootWriteStatus = rboot_write_init(items[currentItem].targetOffset);

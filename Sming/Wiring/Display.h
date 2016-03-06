@@ -22,7 +22,7 @@
 
 class Display : public Print
 {
-  public:        
+  public:
     virtual void clear(void) = 0;
     virtual void home(void) = 0;
     virtual void setCursor(uint8_t, uint8_t) = 0;

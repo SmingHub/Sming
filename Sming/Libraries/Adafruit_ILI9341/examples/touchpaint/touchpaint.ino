@@ -42,10 +42,10 @@ int oldcolor, currentcolor;
 
 void setup(void) {
  // while (!Serial);     // used for leonardo debugging
- 
+
   Serial.begin(9600);
   Serial.println(F("Touch Paint!"));
-  
+
   tft.begin();
 
   if (!ts.begin()) {
@@ -53,9 +53,9 @@ void setup(void) {
     while (1);
   }
   Serial.println("Touchscreen started");
-  
+
   tft.fillScreen(ILI9341_BLACK);
-  
+
   // make the color selection boxes
   tft.fillRect(0, 0, BOXSIZE, BOXSIZE, ILI9341_RED);
   tft.fillRect(BOXSIZE, 0, BOXSIZE, BOXSIZE, ILI9341_YELLOW);
@@ -63,7 +63,7 @@ void setup(void) {
   tft.fillRect(BOXSIZE*3, 0, BOXSIZE, BOXSIZE, ILI9341_CYAN);
   tft.fillRect(BOXSIZE*4, 0, BOXSIZE, BOXSIZE, ILI9341_BLUE);
   tft.fillRect(BOXSIZE*5, 0, BOXSIZE, BOXSIZE, ILI9341_MAGENTA);
- 
+
   // select the current color 'red'
   tft.drawRect(0, 0, BOXSIZE, BOXSIZE, ILI9341_WHITE);
   currentcolor = ILI9341_RED;
@@ -83,15 +83,15 @@ void loop()
   }
   */
 
-  // Retrieve a point  
+  // Retrieve a point
   TS_Point p = ts.getPoint();
-  
+
  /*
   Serial.print("X = "); Serial.print(p.x);
   Serial.print("\tY = "); Serial.print(p.y);
-  Serial.print("\tPressure = "); Serial.println(p.z);  
+  Serial.print("\tPressure = "); Serial.println(p.z);
  */
- 
+
   // Scale from ~0->4000 to tft.width using the calibration #'s
   p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft.width());
   p.y = map(p.y, TS_MINY, TS_MAXY, 0, tft.height());
@@ -105,8 +105,8 @@ void loop()
   if (p.y < BOXSIZE) {
      oldcolor = currentcolor;
 
-     if (p.x < BOXSIZE) { 
-       currentcolor = ILI9341_RED; 
+     if (p.x < BOXSIZE) {
+       currentcolor = ILI9341_RED;
        tft.drawRect(0, 0, BOXSIZE, BOXSIZE, ILI9341_WHITE);
      } else if (p.x < BOXSIZE*2) {
        currentcolor = ILI9341_YELLOW;
@@ -126,17 +126,17 @@ void loop()
      }
 
      if (oldcolor != currentcolor) {
-        if (oldcolor == ILI9341_RED) 
+        if (oldcolor == ILI9341_RED)
           tft.fillRect(0, 0, BOXSIZE, BOXSIZE, ILI9341_RED);
-        if (oldcolor == ILI9341_YELLOW) 
+        if (oldcolor == ILI9341_YELLOW)
           tft.fillRect(BOXSIZE, 0, BOXSIZE, BOXSIZE, ILI9341_YELLOW);
-        if (oldcolor == ILI9341_GREEN) 
+        if (oldcolor == ILI9341_GREEN)
           tft.fillRect(BOXSIZE*2, 0, BOXSIZE, BOXSIZE, ILI9341_GREEN);
-        if (oldcolor == ILI9341_CYAN) 
+        if (oldcolor == ILI9341_CYAN)
           tft.fillRect(BOXSIZE*3, 0, BOXSIZE, BOXSIZE, ILI9341_CYAN);
-        if (oldcolor == ILI9341_BLUE) 
+        if (oldcolor == ILI9341_BLUE)
           tft.fillRect(BOXSIZE*4, 0, BOXSIZE, BOXSIZE, ILI9341_BLUE);
-        if (oldcolor == ILI9341_MAGENTA) 
+        if (oldcolor == ILI9341_MAGENTA)
           tft.fillRect(BOXSIZE*5, 0, BOXSIZE, BOXSIZE, ILI9341_MAGENTA);
      }
   }

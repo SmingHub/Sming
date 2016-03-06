@@ -1,12 +1,12 @@
 #include <Bounce.h>
 
 /*
-This example uses a mercury tilt switch to detect the orientation 
-of a robot. If you turn the bot over, it falls asleep to conserve 
+This example uses a mercury tilt switch to detect the orientation
+of a robot. If you turn the bot over, it falls asleep to conserve
 battery life.  If you have ever used a tilt switch before,
-you know they can be very "noisy" - they jump around a lot!  
-The bounce library can handle sensing when a noisy switch has 
-"settled down"  with the "duration" method that tells you how long 
+you know they can be very "noisy" - they jump around a lot!
+The bounce library can handle sensing when a noisy switch has
+"settled down"  with the "duration" method that tells you how long
 the pin has been in the current state.
 */
 

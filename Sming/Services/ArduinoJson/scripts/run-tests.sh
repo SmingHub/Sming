@@ -25,7 +25,7 @@ run_tests() {
 	0)
 		test_succeed
 		;;
-	1)	
+	1)
 		test_failed
 		;;
 	esac
@@ -34,7 +34,7 @@ run_tests() {
 while true
 do
 	if file_changed
-	then	
+	then
 		run_tests
 	else
 		sleep 2

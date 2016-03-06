@@ -3,17 +3,17 @@
 // Copyright 2012 - Under creative commons license 3.0:
 //        Attribution-ShareAlike CC BY-SA
 //
-// This software is furnished "as is", without technical support, and with no 
+// This software is furnished "as is", without technical support, and with no
 // warranty, express or implied, as to its usefulness for any purpose.
 //
 // Thread Safe: No
 // Extendable: Yes
 //
 // @file LiquidCrystal_SR2W.cpp
-// Connects a hd44780 LCD using 2 pins from the Arduino, via an 8-bit 
+// Connects a hd44780 LCD using 2 pins from the Arduino, via an 8-bit
 // ShiftRegister (SR2W from now on).
-// 
-// @brief 
+//
+// @brief
 // This is a port of the ShiftRegLCD library from raron and ported to the
 // LCD library.
 //
@@ -21,7 +21,7 @@
 // See the corresponding SR2W header file for full details.
 //
 // History
-// 2012.03.29  bperrybap - Fixed incorrect use of 5x10 for default font 
+// 2012.03.29  bperrybap - Fixed incorrect use of 5x10 for default font
 //                         (now matches original LQ library)
 //                         Fixed typo in SR2W mask define names
 //                         changed default backlight state to on
@@ -51,11 +51,11 @@ void LiquidCrystal_SR2W::init(uint8_t srdata, uint8_t srclock, t_backlighPol blp
 	_srDataMask = fio_pinToBit(srdata);
 	_srClockRegister = fio_pinToOutputRegister(srclock);
 	_srClockMask = fio_pinToBit(srclock);
-   
+
 	_blPolarity = blpol;
-   
+
 	_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
-   
+
 	backlight(); // set default backlight state to on
 }
 
@@ -65,17 +65,17 @@ void LiquidCrystal_SR2W::loadSR(uint8_t val)
 {
 	// Clear to keep Enable LOW while clocking in new bits
 	fio_shiftOut(_srDataRegister, _srDataMask, _srClockRegister, _srClockMask);
-   
-   
+
+
 	// clock out SR data byte
 	fio_shiftOut(_srDataRegister, _srDataMask, _srClockRegister, _srClockMask, val, MSBFIRST);
-   
- 	
+
+
 	// strobe LCD enable which can now be toggled by the data line
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
 	{
 		fio_digitalWrite_HIGH(_srDataRegister, _srDataMask);
-		waitUsec (1);         // enable pulse must be >450ns               
+		waitUsec (1);         // enable pulse must be >450ns
 		fio_digitalWrite_SWITCHTO(_srDataRegister, _srDataMask, LOW);
 	} // end critical section
 }
@@ -89,8 +89,8 @@ void LiquidCrystal_SR2W::loadSR(uint8_t val)
 // send
 void LiquidCrystal_SR2W::send(uint8_t value, uint8_t mode)
 {
-	uint8_t myMode = ( mode == DATA ) ? SR2W_RS_MASK : 0; 
-   
+	uint8_t myMode = ( mode == DATA ) ? SR2W_RS_MASK : 0;
+
 	myMode = myMode | SR2W_EN_MASK | _blMask;
 
 	if ( mode != FOUR_BITS )
@@ -99,7 +99,7 @@ void LiquidCrystal_SR2W::send(uint8_t value, uint8_t mode)
 	}
 
 	loadSR(myMode | ((value << 3) & SR2W_DATA_MASK)); // lower nibble
-   
+
 	/*
 	 * Don't call waitUsec()
 	 * do our own delay optmization since this code is so fast it needs some added delay
@@ -114,22 +114,22 @@ void LiquidCrystal_SR2W::send(uint8_t value, uint8_t mode)
 
 //
 // setBacklight
-void LiquidCrystal_SR2W::setBacklight ( uint8_t value ) 
-{ 
+void LiquidCrystal_SR2W::setBacklight ( uint8_t value )
+{
 	// Check for polarity to configure mask accordingly
 	// ----------------------------------------------------------
-	if  ( ((_blPolarity == POSITIVE) && (value > 0)) || 
+	if  ( ((_blPolarity == POSITIVE) && (value > 0)) ||
         ((_blPolarity == NEGATIVE ) && ( value == 0 )) )
 	{
 		_blMask = SR2W_BL_MASK;
 	}
-	else 
+	else
 	{
 		_blMask = 0;
 	}
-   
+
 	// send dummy data of blMask to set BL pin
 	// Note: loadSR() will strobe the data line trying to pulse EN
 	// but E will not strobe because the EN output bit is not set.
-	loadSR(_blMask); 
+	loadSR(_blMask);
 }

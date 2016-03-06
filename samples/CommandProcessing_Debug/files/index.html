@@ -53,7 +53,7 @@
 
   function doSend(message)
   {
-    addCommandReply("SENT: " + message); 
+    addCommandReply("SENT: " + message);
     websocket.send(message);
   }
 
@@ -118,5 +118,5 @@ document.getElementById("commandReply").innerHTML = "";
 
 <div id="commandReply"style="width:500px; height:500px; overflow-y: scroll;border:1px solid black;font-size:15px" >
 </div>
- 
+
 <div id="output"></div>

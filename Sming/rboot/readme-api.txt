@@ -32,7 +32,7 @@ use in your own projects).
     the address on the SPI flash to write from. Returns a status structure which
     must be passed back on each write. The contents of the structure should not
     be modified by the calling code.
-	
+
   bool rboot_write_flash(rboot_write_status *status, uint8 *data, uint16 len);
     Call repeatedly to write data to the flash, starting at the address
     specified on the prior call to rboot_write_init. Current write position is

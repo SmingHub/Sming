@@ -5,7 +5,7 @@
 
  // Updated, compatible version of c_types.h
  // Just removed types declared in <stdint.h>
- 
+
 #ifndef _ESP_C_TYPES_COMPATIBLE_H
 #define _ESP_C_TYPES_COMPATIBLE_H
 

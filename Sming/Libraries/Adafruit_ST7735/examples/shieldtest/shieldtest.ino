@@ -55,10 +55,10 @@ void setup(void) {
 
 uint8_t readButton(void) {
   float a = analogRead(3);
-  
+
   a *= 5.0;
   a /= 1024.0;
-  
+
   Serial.print("Button read analog = ");
   Serial.println(a);
   if (a < 0.2) return BUTTON_DOWN;
@@ -89,7 +89,7 @@ void loop() {
   if (b == BUTTON_UP) {
     tft.setTextColor(ST7735_GREEN);
     tft.setCursor(0, 60);
-    tft.print("Up"); 
+    tft.print("Up");
     buttonhistory |= 4;
   }
   if (b == BUTTON_RIGHT) {

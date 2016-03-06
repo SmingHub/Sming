@@ -19,9 +19,9 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   Constructor method
-    @discussion Class constructor constructor. 
+    @discussion Class constructor constructor.
 _EnD_oF_dEf_TeXt_;
     }; /* sec-member */
     sec-member = {
@@ -203,9 +203,9 @@ _EnD_oF_dEf_TeXt_;
     @method
     @abstract   Write a value to the device.
     @discussion Writes to a set of pins in the device. The value is the binary
-    representation of all the pins in device. The value written is masked with 
+    representation of all the pins in device. The value written is masked with
     the configuration of the direction of the pins; to change the state of
-    a particular pin with this method, such pin has to be configured as OUTPUT 
+    a particular pin with this method, such pin has to be configured as OUTPUT
     using the portMode or pinMode methods. If no pins have been configured as
     OUTPUTs this method will have no effect.
     @param      value: value to be written to the device.
@@ -241,7 +241,7 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @method
     @abstract   Writes a digital level to a particular pin.
-    @discussion Write a level to the indicated pin of the device. For this 
+    @discussion Write a level to the indicated pin of the device. For this
     method to have effect, the pin has to be configured as OUTPUT using the
     pinMode or portMode methods.
     @param      pin: device pin to change level. Range (0..7).
@@ -439,8 +439,8 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Clears the LCD.
-    @discussion Clears the LCD screen and positions the cursor in the upper-left 
-    corner. 
+    @discussion Clears the LCD screen and positions the cursor in the upper-left
+    corner.
 
     This operation is time consuming for the LCD.
 
@@ -464,8 +464,8 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Sets the cursor to the upper-left corner.
-    @discussion Positions the cursor in the upper-left of the LCD. 
-    That is, use that location in outputting subsequent text to the display. 
+    @discussion Positions the cursor in the upper-left of the LCD.
+    That is, use that location in outputting subsequent text to the display.
     To also clear the display, use the clear() function instead.
 
     This operation is time consuming for the LCD.
@@ -490,7 +490,7 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Turns off the LCD display.
-    @discussion Turns off the LCD display, without losing the text currently 
+    @discussion Turns off the LCD display, without losing the text currently
     being displayed on it.
 
     @param      none
@@ -513,8 +513,8 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Turns on the LCD display.
-    @discussion Turns on the LCD display, after it's been turned off with 
-    noDisplay(). This will restore the text (and cursor location) that was on 
+    @discussion Turns on the LCD display, after it's been turned off with
+    noDisplay(). This will restore the text (and cursor location) that was on
     the display prior to calling noDisplay().
 
     @param      none
@@ -558,7 +558,7 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Display the cursor of the LCD.
-    @discussion Display the blinking LCD cursor. If used in combination with 
+    @discussion Display the blinking LCD cursor. If used in combination with
     the cursor() function, the result will depend on the particular display.
 
     @param      none
@@ -602,7 +602,7 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Display the LCD cursor.
-    @discussion Display the LCD cursor: an underscore (line) at the location 
+    @discussion Display the LCD cursor: an underscore (line) at the location
     where the next character will be written.
 
     @param      none
@@ -624,7 +624,7 @@ _EnD_oF_dEf_TeXt_;
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
-    @abstract   Scrolls the contents of the display (text and cursor) one space 
+    @abstract   Scrolls the contents of the display (text and cursor) one space
     to the left.
 
     @param      none
@@ -646,7 +646,7 @@ _EnD_oF_dEf_TeXt_;
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
-    @abstract   Scrolls the contents of the display (text and cursor) one space 
+    @abstract   Scrolls the contents of the display (text and cursor) one space
     to the right.
 
     @param      none
@@ -669,8 +669,8 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Set the direction for text written to the LCD to left-to-right.
-    @discussion Set the direction for text written to the LCD to left-to-right. 
-    All subsequent characters written to the display will go from left to right, 
+    @discussion Set the direction for text written to the LCD to left-to-right.
+    All subsequent characters written to the display will go from left to right,
     but does not affect previously-output text.
 
     This is the default configuration.
@@ -695,8 +695,8 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Set the direction for text written to the LCD to right-to-left.
-    @discussion Set the direction for text written to the LCD to right-to-left. 
-    All subsequent characters written to the display will go from right to left, 
+    @discussion Set the direction for text written to the LCD to right-to-left.
+    All subsequent characters written to the display will go from right to left,
     but does not affect previously-output text.
 
     left-to-right is the default configuration.
@@ -721,12 +721,12 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Turns on automatic scrolling of the LCD.
-    @discussion Turns on automatic scrolling of the LCD. This causes each 
-    character output to the display to push previous characters over by one 
-    space. If the current text direction is left-to-right (the default), 
-    the display scrolls to the left; if the current direction is right-to-left, 
-    the display scrolls to the right. 
-    This has the effect of outputting each new character to the same location on 
+    @discussion Turns on automatic scrolling of the LCD. This causes each
+    character output to the display to push previous characters over by one
+    space. If the current text direction is left-to-right (the default),
+    the display scrolls to the left; if the current direction is right-to-left,
+    the display scrolls to the right.
+    This has the effect of outputting each new character to the same location on
     the LCD.
 
     @param      none
@@ -785,13 +785,13 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Creates a custom character for use on the LCD.
-    @discussion Create a custom character (glyph) for use on the LCD. 
+    @discussion Create a custom character (glyph) for use on the LCD.
     Most chipsets only support up to eight characters of 5x8 pixels. Therefore,
-    this methods has been limited to locations (numbered 0 to 7). 
+    this methods has been limited to locations (numbered 0 to 7).
 
-    The appearance of each custom character is specified by an array of eight 
-    bytes, one for each row. The five least significant bits of each byte 
-    determine the pixels in that row. To display a custom character on screen, 
+    The appearance of each custom character is specified by an array of eight
+    bytes, one for each row. The five least significant bits of each byte
+    determine the pixels in that row. To display a custom character on screen,
     write()/print() its number, i.e. lcd.print (char(x)); // Where x is 0..7.
 
     @param      location: LCD memory location of the character to create
@@ -828,7 +828,7 @@ _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @function
     @abstract   Position the LCD cursor.
-    @discussion Sets the position of the LCD cursor. Set the location at which 
+    @discussion Sets the position of the LCD cursor. Set the location at which
     subsequent text written to the LCD will be displayed.
 
     @param      col LCD column
@@ -1142,7 +1142,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   8 bit LCD constructors.
     @discussion Defines the pin assignment that the LCD will have.
     The constructor does not initialize the LCD.
@@ -1289,7 +1289,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   4 bit LCD constructors.
     @discussion Defines the pin assignment that the LCD will have.
     The constructor does not initialize the LCD.
@@ -1526,7 +1526,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   Initializes the LCD pin allocation
     @discussion Initializes the LCD pin allocation and configuration.
 _EnD_oF_dEf_TeXt_;
@@ -1552,7 +1552,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   Writes an 8 bit value to the LCD.
     @discussion Writes 8 bits to the LCD control data lines.
 _EnD_oF_dEf_TeXt_;
@@ -1578,7 +1578,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   Writes an 4 bit value to the LCD.
     @discussion Writes 4 bits (the least significant) to the LCD control data lines.
 _EnD_oF_dEf_TeXt_;
@@ -1598,7 +1598,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   Pulse the LCD enable line (En).
     @discussion Sends a pulse of 1 uS to the Enable pin to execute an command
     or write operation.
@@ -1763,8 +1763,8 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
-    @abstract   Class constructor. 
+    @method
+    @abstract   Class constructor.
     @discussion Initializes class variables and defines the I2C address of the
     LCD. The constructor does not initialize the LCD.
 
@@ -1923,7 +1923,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   Initializes the LCD class
     @discussion Initializes the LCD class and IO expansion module.
 _EnD_oF_dEf_TeXt_;
@@ -1949,7 +1949,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   Writes an 4 bit value to the LCD.
     @discussion Writes 4 bits (the least significant) to the LCD control data lines.
 _EnD_oF_dEf_TeXt_;
@@ -1975,7 +1975,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   Pulse the LCD enable line (En).
     @discussion Sends a pulse of 1 uS to the Enable pin to execute an command
     or write operation.
@@ -2002,7 +2002,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       sec-mem-documentation = <<_EnD_oF_dEf_TeXt_
-    @method     
+    @method
     @abstract   Writes to the expansion module.
     @discussion Writes a byte to the IO expansion module. This will be applied
     to all its outputs.
@@ -2242,8 +2242,8 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       define-mem-documentation = <<_EnD_oF_dEf_TeXt_
- @defined 
- @abstract   All these definitions shouldn't be used unless you are writing 
+ @defined
+ @abstract   All these definitions shouldn't be used unless you are writing
  a driver.
  @discussion All these definitions are for driver implementation only and
  shouldn't be used by applications.
@@ -2836,11 +2836,11 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       define-mem-documentation = <<_EnD_oF_dEf_TeXt_
- @warning These definitions will have to be changed should the IOExpander be 
+ @warning These definitions will have to be changed should the IOExpander be
  connected differently to this default.
 
 
- @defined 
+ @defined
  @abstract   Enable bit of the LCD
  @discussion Defines the IO of the expander connected to the LCD Enable
 _EnD_oF_dEf_TeXt_;
@@ -2860,7 +2860,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       define-mem-documentation = <<_EnD_oF_dEf_TeXt_
- @defined 
+ @defined
  @abstract   Read/Write bit of the LCD
  @discussion Defines the IO of the expander connected to the LCD Rw pin
 _EnD_oF_dEf_TeXt_;
@@ -2880,7 +2880,7 @@ _EnD_oF_dEf_TeXt_;
 
 _EnD_oF_dEf_TeXt_;
       define-mem-documentation = <<_EnD_oF_dEf_TeXt_
- @defined 
+ @defined
  @abstract   Register bit of the LCD
  @discussion Defines the IO of the expander connected to the LCD Register select pin
 _EnD_oF_dEf_TeXt_;

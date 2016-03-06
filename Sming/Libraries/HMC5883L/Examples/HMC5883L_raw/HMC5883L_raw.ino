@@ -79,7 +79,7 @@ void loop() {
     Serial.print(mx); Serial.print("\t");
     Serial.print(my); Serial.print("\t");
     Serial.print(mz); Serial.print("\t");
-    
+
 // To calculate heading in degrees. 0 degree indicates North
     float heading = atan2(my, mx);
     if(heading < 0)

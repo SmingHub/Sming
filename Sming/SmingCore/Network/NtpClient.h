@@ -34,9 +34,9 @@ public:
 	virtual ~NtpClient();
 
 	void requestTime();
-	
+
 	void setNtpServer(String server);
-	
+
 	void setAutoQuery(bool autoQuery);
 	void setAutoQueryInterval(int seconds);
 
@@ -46,17 +46,17 @@ protected:
 	void onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort);
 	void internalRequestTime(IPAddress serverIp);
 
-protected: 
+protected:
 	String server = NTP_DEFAULT_SERVER;
 
 	NtpTimeResultDelegate delegateCompleted = nullptr;
 	bool autoUpdateSystemClock = false;
-		
+
 	Timer autoUpdateTimer;
 	Timer timeoutTimer;
 	Timer connectionTimer;
-		
-	static void staticDnsResponse(const char *name, struct ip_addr *ip, void *arg);		
+
+	static void staticDnsResponse(const char *name, struct ip_addr *ip, void *arg);
 };
 
 #endif /* APP_NTPCLIENT_H_ */

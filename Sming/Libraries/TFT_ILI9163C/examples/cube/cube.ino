@@ -13,25 +13,25 @@
 #define	GREEN   0x07E0
 #define CYAN    0x07FF
 #define MAGENTA 0xF81F
-#define YELLOW  0xFFE0  
+#define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 
-float sin_d[] = { 
+float sin_d[] = {
   0,0.17,0.34,0.5,0.64,0.77,0.87,0.94,0.98,1,0.98,0.94,
   0.87,0.77,0.64,0.5,0.34,0.17,0,-0.17,-0.34,-0.5,-0.64,
   -0.77,-0.87,-0.94,-0.98,-1,-0.98,-0.94,-0.87,-0.77,
   -0.64,-0.5,-0.34,-0.17 };
-float cos_d[] = { 
+float cos_d[] = {
   1,0.98,0.94,0.87,0.77,0.64,0.5,0.34,0.17,0,-0.17,-0.34,
   -0.5,-0.64,-0.77,-0.87,-0.94,-0.98,-1,-0.98,-0.94,-0.87,
   -0.77,-0.64,-0.5,-0.34,-0.17,0,0.17,0.34,0.5,0.64,0.77,
   0.87,0.94,0.98};
 float d = 10;
-float px[] = { 
+float px[] = {
   -d,  d,  d, -d, -d,  d,  d, -d };
-float py[] = { 
+float py[] = {
   -d, -d,  d,  d, -d, -d,  d,  d };
-float pz[] = { 
+float pz[] = {
   -d, -d, -d, -d,  d,  d,  d,  d };
 
 float p2x[] = {
@@ -80,7 +80,7 @@ void loop(){
     tft.drawLine(p2x[i],p2y[i],p2x[i+1],p2y[i+1],BLACK);
     tft.drawLine(p2x[i+4],p2y[i+4],p2x[i+5],p2y[i+5],BLACK);
     tft.drawLine(p2x[i],p2y[i],p2x[i+4],p2y[i+4],BLACK);
-  }   
+  }
   tft.drawLine(p2x[3],p2y[3],p2x[0],p2y[0],BLACK);
   tft.drawLine(p2x[7],p2y[7],p2x[4],p2y[4],BLACK);
   tft.drawLine(p2x[3],p2y[3],p2x[7],p2y[7],BLACK);

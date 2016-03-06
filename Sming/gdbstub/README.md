@@ -6,11 +6,11 @@ Intro
 -----
 
 While the ESP8266 supports the standard Gnu set of C programming utilities, for now the choice of debuggers
-has been limited: there is an attempt at [OpenOCD support](https://github.com/projectgus/openocd), but at 
+has been limited: there is an attempt at [OpenOCD support](https://github.com/projectgus/openocd), but at
 the time of writing, it doesn't support hardware watchpoints and breakpoints yet, and it needs a separate
-JTAG adapter connecting to the ESP8266s JTAG pins. As an alternative, [Cesanta](https://www.cesanta.com/) 
+JTAG adapter connecting to the ESP8266s JTAG pins. As an alternative, [Cesanta](https://www.cesanta.com/)
 has implemented a barebones[GDB stub](https://blog.cesanta.com/esp8266-gdb) in their Smart.js solution -
-unfortunately, this only supports exception catching and needs some work before you can use it outside of 
+unfortunately, this only supports exception catching and needs some work before you can use it outside of
 the Smart.js platform. Moreover, it also does not work with FreeRTOS.
 
 For internal use, we at Espressif desired a GDB stub that works with FreeRTOS and is a bit more capable,

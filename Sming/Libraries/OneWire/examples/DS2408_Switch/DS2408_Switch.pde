@@ -25,7 +25,7 @@ void ReadAndReport(OneWire* net, uint8_t* addr) {
   Serial.print("  Reading DS2408 ");
   PrintBytes(addr, 8);
   Serial.println();
-	
+
   uint8_t buf[13];  // Put everything in the buffer so we can compute CRC easily.
   buf[0] = 0xF0;    // Read PIO Registers
   buf[1] = 0x88;    // LSB address
@@ -54,19 +54,19 @@ void loop(void) {
   byte i;
   byte present = 0;
   byte addr[8];
-  
+
   if (!net.search(addr)) {
     Serial.print("No more addresses.\n");
     net.reset_search();
     delay(1000);
     return;
   }
-  
+
   if (OneWire::crc8(addr, 7) != addr[7]) {
     Serial.print("CRC is not valid!\n");
     return;
   }
-  
+
   if (addr[0] != 0x29) {
     PrintBytes(addr, 8);
     Serial.print(" is not a DS2408.\n");

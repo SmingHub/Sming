@@ -7,7 +7,7 @@
 //  the display because the switch is not debounced.
 //
 // The  bounce library also detects the rising or falling edge of the input.
-//  This is often called a one-shot and is usefull if you want something to only 
+//  This is often called a one-shot and is usefull if you want something to only
 //  happen once when a button is pressed or released. The risingEdge method is true
 //  for only one scan when the input goes from off-to-on. The fallingEdge method is
 //  true for only one scan when the input goes from on-to-off. Even if you are not
@@ -21,7 +21,7 @@
 //  the rising edge test on button1 to a falling edge test.
 //
 //  Since PB2 is not debounced, the edge detection is done directly in the sketch.
-//   
+//
 
 
 #include <Bounce.h>
@@ -45,7 +45,7 @@
 
 // Shift register bit values to display 0-9 on the seven-segment display
 const byte ledCharSet[16] = {
-  B00111111, B00000110, B01011011, B01001111, B01100110, 
+  B00111111, B00000110, B01011011, B01001111, B01100110,
   B01101101, B01111101, B00000111, B01111111, B01101111,
   B01110111, // a
   B01111100, // b
@@ -59,22 +59,22 @@ byte pressCount= 0;
 bool lastButton2;
 
 // Instantiate a Bounce object with a 5 millisecond debounce time
-Bounce bouncer1 = Bounce(BUTTON1, 5); 
+Bounce bouncer1 = Bounce(BUTTON1, 5);
 
 void setup() {
   pinMode(BUTTON1, INPUT);
   pinMode(LED1, OUTPUT);
-  
+
   pinMode(BUTTON2, INPUT);
   pinMode(LED2, OUTPUT);
-  
+
   pinMode(BUTTON3, INPUT);
   pinMode(BUZZER, OUTPUT);
-  
+
   pinMode(LATCH, OUTPUT);
   pinMode(CLOCK, OUTPUT);
   pinMode(DATA, OUTPUT);
-  
+
   lastButton2 = digitalRead(BUTTON2);
 
   displayDigit(255, true);
@@ -83,7 +83,7 @@ void setup() {
 
 void loop() {
 
-  // Update debouncer 
+  // Update debouncer
   boolean button1Changed = bouncer1.update();
 
   // Turn on or off the LED
@@ -92,7 +92,7 @@ void loop() {
   } else {
     digitalWrite(LED1, LOW);
   }
-    
+
   int buttonValue2 = digitalRead(BUTTON2);
   if (buttonValue2 == LOW) {
     digitalWrite(LED2, HIGH);
@@ -102,11 +102,11 @@ void loop() {
 
   if ( bouncer1.fallingEdge() ||          // rising edge of button 1
       (lastButton2 && !buttonValue2)) {   // rising edge of button 2
-    displayDigit(pressCount, false); 
+    displayDigit(pressCount, false);
     pressCount++;
     if (pressCount > 15) { pressCount = 0; }
   }
- 
+
   lastButton2 = digitalRead(BUTTON2);
 
 }

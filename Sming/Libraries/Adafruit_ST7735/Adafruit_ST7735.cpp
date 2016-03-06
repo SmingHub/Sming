@@ -27,7 +27,7 @@ as well as Adafruit raw 1.8" TFT display
 #include "wiring_private.h"
 #include <SPI.h>
 
-inline uint16_t swapcolor(uint16_t x) { 
+inline uint16_t swapcolor(uint16_t x) {
   return (x << 11) | (x & 0x07E0) | (x >> 11);
 }
 
@@ -41,7 +41,7 @@ inline uint16_t swapcolor(uint16_t x) {
 
 
 // Constructor when using software SPI.  All output pins are configurable.
-Adafruit_ST7735::Adafruit_ST7735(int8_t cs, int8_t rs, int8_t sid, int8_t sclk, int8_t rst) 
+Adafruit_ST7735::Adafruit_ST7735(int8_t cs, int8_t rs, int8_t sid, int8_t sclk, int8_t rst)
   : Adafruit_GFX(ST7735_TFTWIDTH, ST7735_TFTHEIGHT_18)
 {
   _cs   = cs;
@@ -55,7 +55,7 @@ Adafruit_ST7735::Adafruit_ST7735(int8_t cs, int8_t rs, int8_t sid, int8_t sclk, 
 
 // Constructor when using hardware SPI.  Faster, but must use SPI pins
 // specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
-Adafruit_ST7735::Adafruit_ST7735(int8_t cs, int8_t rs, int8_t rst) 
+Adafruit_ST7735::Adafruit_ST7735(int8_t cs, int8_t rs, int8_t rst)
   : Adafruit_GFX(ST7735_TFTWIDTH, ST7735_TFTHEIGHT_18) {
   _cs   = cs;
   _rs   = rs;
@@ -122,7 +122,7 @@ void Adafruit_ST7735::writedata(uint8_t c) {
 #endif
   *rsport |=  rspinmask;
   *csport &= ~cspinmask;
-    
+
   //Serial.print("D ");
   spiwrite(c);
 
@@ -224,7 +224,7 @@ static const uint8_t PROGMEM
       0x00,                   //     Boost frequency
     ST7735_PWCTR4 , 2      ,  // 10: Power control, 2 args, no delay:
       0x8A,                   //     BCLK/2, Opamp current small & Medium low
-      0x2A,  
+      0x2A,
     ST7735_PWCTR5 , 2      ,  // 11: Power control, 2 args, no delay:
       0x8A, 0xEE,
     ST7735_VMCTR1 , 1      ,  // 12: Power control, 1 arg, no delay:
@@ -399,7 +399,7 @@ void Adafruit_ST7735::setAddrWindow(uint8_t x0, uint8_t y0, uint8_t x1,
 
   writecommand(ST7735_CASET); // Column addr set
   writedata(0x00);
-  writedata(x0+colstart);     // XSTART 
+  writedata(x0+colstart);     // XSTART
   writedata(0x00);
   writedata(x1+colstart);     // XEND
 
@@ -419,7 +419,7 @@ void Adafruit_ST7735::pushColor(uint16_t color) {
 #endif
   *rsport |=  rspinmask;
   *csport &= ~cspinmask;
-  
+
   spiwrite(color >> 8);
   spiwrite(color);
 
@@ -440,7 +440,7 @@ void Adafruit_ST7735::drawPixel(int16_t x, int16_t y, uint16_t color) {
 #endif
   *rsport |=  rspinmask;
   *csport &= ~cspinmask;
-  
+
   spiwrite(color >> 8);
   spiwrite(color);
 
@@ -460,7 +460,7 @@ void Adafruit_ST7735::drawFastVLine(int16_t x, int16_t y, int16_t h,
   setAddrWindow(x, y, x, y+h-1);
 
   uint8_t hi = color >> 8, lo = color;
-    
+
 #if defined (SPI_HAS_TRANSACTION)
     SPI.beginTransaction(mySPISettings);
 #endif
@@ -522,7 +522,7 @@ void Adafruit_ST7735::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
   setAddrWindow(x, y, x+w-1, y+h-1);
 
   uint8_t hi = color >> 8, lo = color;
-    
+
 #if defined (SPI_HAS_TRANSACTION)
     SPI.beginTransaction(mySPISettings);
 #endif
@@ -569,7 +569,7 @@ void Adafruit_ST7735::setRotation(uint8_t m) {
      }
      _width  = ST7735_TFTWIDTH;
 
-     if (tabcolor == INITR_144GREENTAB) 
+     if (tabcolor == INITR_144GREENTAB)
        _height = ST7735_TFTHEIGHT_144;
      else
        _height = ST7735_TFTHEIGHT_18;
@@ -582,7 +582,7 @@ void Adafruit_ST7735::setRotation(uint8_t m) {
        writedata(MADCTL_MY | MADCTL_MV | MADCTL_BGR);
      }
 
-     if (tabcolor == INITR_144GREENTAB) 
+     if (tabcolor == INITR_144GREENTAB)
        _width = ST7735_TFTHEIGHT_144;
      else
        _width = ST7735_TFTHEIGHT_18;
@@ -596,7 +596,7 @@ void Adafruit_ST7735::setRotation(uint8_t m) {
        writedata(MADCTL_BGR);
      }
      _width  = ST7735_TFTWIDTH;
-     if (tabcolor == INITR_144GREENTAB) 
+     if (tabcolor == INITR_144GREENTAB)
        _height = ST7735_TFTHEIGHT_144;
      else
        _height = ST7735_TFTHEIGHT_18;
@@ -608,7 +608,7 @@ void Adafruit_ST7735::setRotation(uint8_t m) {
      } else {
        writedata(MADCTL_MX | MADCTL_MV | MADCTL_BGR);
      }
-     if (tabcolor == INITR_144GREENTAB) 
+     if (tabcolor == INITR_144GREENTAB)
        _width = ST7735_TFTHEIGHT_144;
      else
        _width = ST7735_TFTHEIGHT_18;
@@ -641,14 +641,14 @@ void Adafruit_ST7735::invertDisplay(boolean i) {
  //  SCLK_PORT |= _BV(SCLK);
  //}
  //SID_DDR |= _BV(SID);
- 
+
  }
  return r;
  }
- 
- 
+
+
  void Adafruit_ST7735::dummyclock(void) {
- 
+
  if (_sid > 0) {
  digitalWrite(_sclk, LOW);
  digitalWrite(_sclk, HIGH);
@@ -659,44 +659,44 @@ void Adafruit_ST7735::invertDisplay(boolean i) {
  }
  uint8_t Adafruit_ST7735::readdata(void) {
  *portOutputRegister(rsport) |= rspin;
- 
+
  *portOutputRegister(csport) &= ~ cspin;
- 
+
  uint8_t r = spiread();
- 
+
  *portOutputRegister(csport) |= cspin;
- 
+
  return r;
- 
- } 
- 
+
+ }
+
  uint8_t Adafruit_ST7735::readcommand8(uint8_t c) {
  digitalWrite(_rs, LOW);
- 
+
  *portOutputRegister(csport) &= ~ cspin;
- 
+
  spiwrite(c);
- 
+
  digitalWrite(_rs, HIGH);
  pinMode(_sid, INPUT); // input!
  digitalWrite(_sid, LOW); // low
  spiread();
  uint8_t r = spiread();
- 
- 
+
+
  *portOutputRegister(csport) |= cspin;
- 
- 
+
+
  pinMode(_sid, OUTPUT); // back to output
  return r;
  }
- 
- 
+
+
  uint16_t Adafruit_ST7735::readcommand16(uint8_t c) {
  digitalWrite(_rs, LOW);
  if (_cs)
  digitalWrite(_cs, LOW);
- 
+
  spiwrite(c);
  pinMode(_sid, INPUT); // input!
  uint16_t r = spiread();
@@ -704,21 +704,21 @@ void Adafruit_ST7735::invertDisplay(boolean i) {
  r |= spiread();
  if (_cs)
  digitalWrite(_cs, HIGH);
- 
+
  pinMode(_sid, OUTPUT); // back to output
  return r;
  }
- 
+
  uint32_t Adafruit_ST7735::readcommand32(uint8_t c) {
  digitalWrite(_rs, LOW);
  if (_cs)
  digitalWrite(_cs, LOW);
  spiwrite(c);
  pinMode(_sid, INPUT); // input!
- 
+
  dummyclock();
  dummyclock();
- 
+
  uint32_t r = spiread();
  r <<= 8;
  r |= spiread();
@@ -728,9 +728,9 @@ void Adafruit_ST7735::invertDisplay(boolean i) {
  r |= spiread();
  if (_cs)
  digitalWrite(_cs, HIGH);
- 
+
  pinMode(_sid, OUTPUT); // back to output
  return r;
  }
- 
+
  */

@@ -40,8 +40,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -93,13 +93,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00030"></a>00030 <span class="comment">//   cores/pic32/wiring_digital.c)</span>
 <a name="l00031"></a>00031 <span class="comment">// ---------------------------------------------------------------------------</span>
 <a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="_fast_i_o_8h.html">FastIO.h</a>&quot;</span>
-<a name="l00033"></a>00033 
-<a name="l00034"></a>00034 
+<a name="l00033"></a>00033
+<a name="l00034"></a>00034
 <a name="l00035"></a><a class="code" href="_fast_i_o_8h.html#a385ae40d960c1a57e86818332476a802">00035</a> <a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> <a class="code" href="_fast_i_o_8cpp.html#a04210cc785c3b4a11c86f794949c327f">fio_pinToOutputRegister</a>(uint8_t pin, uint8_t initial_state)
 <a name="l00036"></a>00036 {
 <a name="l00037"></a>00037         pinMode(pin, OUTPUT);
-<a name="l00038"></a>00038    
-<a name="l00039"></a>00039         <span class="keywordflow">if</span>(initial_state != <a class="code" href="_fast_i_o_8h.html#a688a4adbb87520a2b68681bd6bfb199e">SKIP</a>) 
+<a name="l00038"></a>00038
+<a name="l00039"></a>00039         <span class="keywordflow">if</span>(initial_state != <a class="code" href="_fast_i_o_8h.html#a688a4adbb87520a2b68681bd6bfb199e">SKIP</a>)
 <a name="l00040"></a>00040    {
 <a name="l00041"></a>00041       digitalWrite(pin, initial_state); <span class="comment">// also turns off pwm timer</span>
 <a name="l00042"></a>00042    }
@@ -110,8 +110,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00047"></a>00047 <span class="preprocessor"></span>        <span class="keywordflow">return</span> portOutputRegister(digitalPinToPort(pin));
 <a name="l00048"></a>00048 <span class="preprocessor">#endif</span>
 <a name="l00049"></a>00049 <span class="preprocessor"></span>}
-<a name="l00050"></a>00050 
-<a name="l00051"></a>00051 
+<a name="l00050"></a>00050
+<a name="l00051"></a>00051
 <a name="l00052"></a><a class="code" href="_fast_i_o_8h.html#afb934fc0ded94cbb5ed8ed14e2a123ed">00052</a> <a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> <a class="code" href="_fast_i_o_8cpp.html#afb934fc0ded94cbb5ed8ed14e2a123ed">fio_pinToInputRegister</a>(uint8_t pin)
 <a name="l00053"></a>00053 {
 <a name="l00054"></a>00054         pinMode(pin, INPUT);
@@ -123,8 +123,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00060"></a>00060 <span class="preprocessor"></span>        <span class="keywordflow">return</span> portInputRegister(digitalPinToPort(pin));
 <a name="l00061"></a>00061 <span class="preprocessor">#endif</span>
 <a name="l00062"></a>00062 <span class="preprocessor"></span>}
-<a name="l00063"></a>00063 
-<a name="l00064"></a>00064 
+<a name="l00063"></a>00063
+<a name="l00064"></a>00064
 <a name="l00065"></a><a class="code" href="_fast_i_o_8h.html#a07a19dfbdca1afaca5d666bdaa3be7d5">00065</a> <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> <a class="code" href="_fast_i_o_8cpp.html#a07a19dfbdca1afaca5d666bdaa3be7d5">fio_pinToBit</a>(uint8_t pin)
 <a name="l00066"></a>00066 {
 <a name="l00067"></a>00067 <span class="preprocessor">#ifdef FIO_FALLBACK</span>
@@ -134,9 +134,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00071"></a>00071 <span class="preprocessor"></span>        <span class="keywordflow">return</span> digitalPinToBitMask(pin);
 <a name="l00072"></a>00072 <span class="preprocessor">#endif</span>
 <a name="l00073"></a>00073 <span class="preprocessor"></span>}
-<a name="l00074"></a>00074 
-<a name="l00075"></a>00075 
-<a name="l00076"></a><a class="code" href="_fast_i_o_8h.html#ae91bbe682b02a5842c291055c0e998b5">00076</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#ae91bbe682b02a5842c291055c0e998b5">fio_digitalWrite</a>(<a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> pinRegister, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> pinBit, uint8_t value) 
+<a name="l00074"></a>00074
+<a name="l00075"></a>00075
+<a name="l00076"></a><a class="code" href="_fast_i_o_8h.html#ae91bbe682b02a5842c291055c0e998b5">00076</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#ae91bbe682b02a5842c291055c0e998b5">fio_digitalWrite</a>(<a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> pinRegister, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> pinBit, uint8_t value)
 <a name="l00077"></a>00077 {
 <a name="l00078"></a>00078 <span class="preprocessor">#ifdef FIO_FALLBACK</span>
 <a name="l00079"></a>00079 <span class="preprocessor"></span>        digitalWrite(pinBit, value);
@@ -154,7 +154,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00091"></a>00091    }
 <a name="l00092"></a>00092 <span class="preprocessor">#endif</span>
 <a name="l00093"></a>00093 <span class="preprocessor"></span>}
-<a name="l00094"></a>00094 
+<a name="l00094"></a>00094
 <a name="l00095"></a><a class="code" href="_fast_i_o_8h.html#a197336e47e1c3f929056ce3abbbc7e8d">00095</a> <span class="keywordtype">int</span> <a class="code" href="_fast_i_o_8cpp.html#a83fc2fdc19ab3f9aade9e1a2f39e81a6">fio_digitalRead</a>(<a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> pinRegister, uint8_t pinBit)
 <a name="l00096"></a>00096 {
 <a name="l00097"></a>00097 <span class="preprocessor">#ifdef FIO_FALLBACK</span>
@@ -167,14 +167,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00104"></a>00104         <span class="keywordflow">return</span> LOW;
 <a name="l00105"></a>00105 <span class="preprocessor">#endif</span>
 <a name="l00106"></a>00106 <span class="preprocessor"></span>}
-<a name="l00107"></a>00107 
-<a name="l00108"></a><a class="code" href="_fast_i_o_8h.html#a56c72b9f00680662229895ab22aaa743">00108</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#a56c72b9f00680662229895ab22aaa743">fio_shiftOut</a> (<a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> dataRegister, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> dataBit, 
-<a name="l00109"></a>00109                    <a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> clockRegister, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> clockBit, 
+<a name="l00107"></a>00107
+<a name="l00108"></a><a class="code" href="_fast_i_o_8h.html#a56c72b9f00680662229895ab22aaa743">00108</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#a56c72b9f00680662229895ab22aaa743">fio_shiftOut</a> (<a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> dataRegister, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> dataBit,
+<a name="l00109"></a>00109                    <a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> clockRegister, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> clockBit,
 <a name="l00110"></a>00110                    uint8_t value, uint8_t bitOrder)
 <a name="l00111"></a>00111 {
 <a name="l00112"></a>00112         <span class="comment">// # disable interrupts</span>
 <a name="l00113"></a>00113         int8_t i;
-<a name="l00114"></a>00114    
+<a name="l00114"></a>00114
 <a name="l00115"></a>00115         <span class="keywordflow">if</span>(bitOrder == LSBFIRST)
 <a name="l00116"></a>00116         {
 <a name="l00117"></a>00117                 <span class="keywordflow">for</span>(i = 0; i &lt; 8; i++)
@@ -194,7 +194,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00131"></a>00131                                 <a class="code" href="_fast_i_o_8h.html#ac8f00a1bccb98109531b88fbb6e91478">fio_digitalWrite_LOW</a> (clockRegister,clockBit);
 <a name="l00132"></a>00132                         }
 <a name="l00133"></a>00133                 }
-<a name="l00134"></a>00134       
+<a name="l00134"></a>00134
 <a name="l00135"></a>00135         }
 <a name="l00136"></a>00136         <span class="keywordflow">else</span>
 <a name="l00137"></a>00137         {
@@ -217,16 +217,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00154"></a>00154                 }
 <a name="l00155"></a>00155         }
 <a name="l00156"></a>00156 }
-<a name="l00157"></a>00157 
-<a name="l00158"></a>00158 
-<a name="l00159"></a><a class="code" href="_fast_i_o_8h.html#a5d8d5977294d614d15bda19f75d6b787">00159</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#a56c72b9f00680662229895ab22aaa743">fio_shiftOut</a>(<a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> dataRegister, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> dataBit, 
+<a name="l00157"></a>00157
+<a name="l00158"></a>00158
+<a name="l00159"></a><a class="code" href="_fast_i_o_8h.html#a5d8d5977294d614d15bda19f75d6b787">00159</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#a56c72b9f00680662229895ab22aaa743">fio_shiftOut</a>(<a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> dataRegister, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> dataBit,
 <a name="l00160"></a>00160                   <a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> clockRegister, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> clockBit)
 <a name="l00161"></a>00161 {
 <a name="l00162"></a>00162    <a class="code" href="_fast_i_o_8h.html#a04971fe5fabe4129736708c494e08e6d">ATOMIC_BLOCK</a>(<a class="code" href="_fast_i_o_8h.html#a362c18b15a09703e42e1c246c47420ef">ATOMIC_RESTORESTATE</a>)
 <a name="l00163"></a>00163    {
 <a name="l00164"></a>00164       <span class="comment">// shift out 0x0 (B00000000) fast, byte order is irrelevant</span>
 <a name="l00165"></a>00165       <a class="code" href="_fast_i_o_8h.html#ac8f00a1bccb98109531b88fbb6e91478">fio_digitalWrite_LOW</a> (dataRegister, dataBit);
-<a name="l00166"></a>00166       
+<a name="l00166"></a>00166
 <a name="l00167"></a>00167       <span class="keywordflow">for</span>(uint8_t i = 0; i&lt;8; ++i)
 <a name="l00168"></a>00168       {
 <a name="l00169"></a>00169          <a class="code" href="_fast_i_o_8h.html#a89e1c62276052100c62b6c82a2e95622">fio_digitalWrite_HIGH</a> (clockRegister, clockBit);
@@ -234,13 +234,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00171"></a>00171       }
 <a name="l00172"></a>00172    }
 <a name="l00173"></a>00173 }
-<a name="l00174"></a>00174 
-<a name="l00175"></a>00175 
+<a name="l00174"></a>00174
+<a name="l00175"></a>00175
 <a name="l00176"></a><a class="code" href="_fast_i_o_8h.html#ae4b2e099f8ade9ee674d1565669e870a">00176</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#ae4b2e099f8ade9ee674d1565669e870a">fio_shiftOut1_init</a>(uint8_t pin)
 <a name="l00177"></a>00177 {
 <a name="l00178"></a>00178         <a class="code" href="_fast_i_o_8cpp.html#ae4b2e099f8ade9ee674d1565669e870a">fio_shiftOut1_init</a>(<a class="code" href="_fast_i_o_8cpp.html#a04210cc785c3b4a11c86f794949c327f">fio_pinToOutputRegister</a>(pin,HIGH),<a class="code" href="_fast_i_o_8cpp.html#a07a19dfbdca1afaca5d666bdaa3be7d5">fio_pinToBit</a>(pin));
 <a name="l00179"></a>00179 }
-<a name="l00180"></a>00180 
+<a name="l00180"></a>00180
 <a name="l00181"></a><a class="code" href="_fast_i_o_8h.html#a2d0e4495eb12504255bbd3f82405b17b">00181</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#ae4b2e099f8ade9ee674d1565669e870a">fio_shiftOut1_init</a>(<a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> shift1Register, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> shift1Bit)
 <a name="l00182"></a>00182 {
 <a name="l00183"></a>00183         <span class="comment">// Make sure that capacitors are charged</span>
@@ -248,9 +248,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00185"></a>00185         <a class="code" href="_fast_i_o_8cpp.html#ae91bbe682b02a5842c291055c0e998b5">fio_digitalWrite</a>(shift1Register,shift1Bit,HIGH);
 <a name="l00186"></a>00186         delayMicroseconds(300);
 <a name="l00187"></a>00187 }
-<a name="l00188"></a>00188 
-<a name="l00189"></a>00189 
-<a name="l00190"></a><a class="code" href="_fast_i_o_8h.html#a33ce251dcd6b448185cda415a99001cf">00190</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#a5b4d1684030dc620938b7c2fbdf5ced8">fio_shiftOut1</a>(<a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> shift1Register, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> shift1Bit, uint8_t value, 
+<a name="l00188"></a>00188
+<a name="l00189"></a>00189
+<a name="l00190"></a><a class="code" href="_fast_i_o_8h.html#a33ce251dcd6b448185cda415a99001cf">00190</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#a5b4d1684030dc620938b7c2fbdf5ced8">fio_shiftOut1</a>(<a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> shift1Register, <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a> shift1Bit, uint8_t value,
 <a name="l00191"></a>00191                    <span class="keywordtype">boolean</span> noLatch)
 <a name="l00192"></a>00192 {
 <a name="l00193"></a>00193         <span class="comment">/*</span>
@@ -267,11 +267,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00204"></a>00204 <span class="comment">    *                   arduino-one-wire-shift-register-prototype)</span>
 <a name="l00205"></a>00205 <span class="comment">         *      7HC595N</span>
 <a name="l00206"></a>00206 <span class="comment">         */</span>
-<a name="l00207"></a>00207    
+<a name="l00207"></a>00207
 <a name="l00208"></a>00208         <span class="comment">// iterate but ignore last bit (is it correct now?)</span>
 <a name="l00209"></a>00209         <span class="keywordflow">for</span>(int8_t i = 7; i&gt;=0; --i)
 <a name="l00210"></a>00210    {
-<a name="l00211"></a>00211       
+<a name="l00211"></a>00211
 <a name="l00212"></a>00212                 <span class="comment">// assume that pin is HIGH (smokin&#39; pot all day... :) - requires </span>
 <a name="l00213"></a>00213       <span class="comment">// initialization</span>
 <a name="l00214"></a>00214                 <span class="keywordflow">if</span>(value &amp; _BV(i))
@@ -296,16 +296,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00233"></a>00233             delayMicroseconds(15);
 <a name="l00234"></a>00234             <a class="code" href="_fast_i_o_8h.html#accae9687fdfc5f3492fb6344d62eb190">fio_digitalWrite_SWITCHTO</a>(shift1Register,shift1Bit,HIGH);
 <a name="l00235"></a>00235          } <span class="comment">// end critical section</span>
-<a name="l00236"></a>00236          
+<a name="l00236"></a>00236
 <a name="l00237"></a>00237          <span class="comment">// hold pin HIGH for 30us</span>
-<a name="l00238"></a>00238          delayMicroseconds(30);         
+<a name="l00238"></a>00238          delayMicroseconds(30);
 <a name="l00239"></a>00239                 }
 <a name="l00240"></a>00240                 <span class="keywordflow">if</span>(!noLatch &amp;&amp; i==1)
 <a name="l00241"></a>00241       {
 <a name="l00242"></a>00242          <span class="keywordflow">break</span>;
 <a name="l00243"></a>00243       }
 <a name="l00244"></a>00244         }
-<a name="l00245"></a>00245    
+<a name="l00245"></a>00245
 <a name="l00246"></a>00246         <span class="keywordflow">if</span>(!noLatch)
 <a name="l00247"></a>00247    {
 <a name="l00248"></a>00248       <a class="code" href="_fast_i_o_8h.html#a04971fe5fabe4129736708c494e08e6d">ATOMIC_BLOCK</a>(<a class="code" href="_fast_i_o_8h.html#a362c18b15a09703e42e1c246c47420ef">ATOMIC_RESTORESTATE</a>)
@@ -314,7 +314,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00251"></a>00251          <a class="code" href="_fast_i_o_8h.html#accae9687fdfc5f3492fb6344d62eb190">fio_digitalWrite_SWITCHTO</a>(shift1Register,shift1Bit,LOW);
 <a name="l00252"></a>00252       } <span class="comment">// end critical section</span>
 <a name="l00253"></a>00253       delayMicroseconds(199);           <span class="comment">// Hold pin low for 200us</span>
-<a name="l00254"></a>00254       
+<a name="l00254"></a>00254
 <a name="l00255"></a>00255       <a class="code" href="_fast_i_o_8h.html#a04971fe5fabe4129736708c494e08e6d">ATOMIC_BLOCK</a>(<a class="code" href="_fast_i_o_8h.html#a362c18b15a09703e42e1c246c47420ef">ATOMIC_RESTORESTATE</a>)
 <a name="l00256"></a>00256       {
 <a name="l00257"></a>00257          <a class="code" href="_fast_i_o_8h.html#a89e1c62276052100c62b6c82a2e95622">fio_digitalWrite_HIGH</a>(shift1Register,shift1Bit);
@@ -323,7 +323,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00260"></a>00260       <span class="comment">// way - using explicit HIGH here, just in case.</span>
 <a name="l00261"></a>00261         }
 <a name="l00262"></a>00262 }
-<a name="l00263"></a>00263 
+<a name="l00263"></a>00263
 <a name="l00264"></a><a class="code" href="_fast_i_o_8h.html#af2aac35d9a8ab7a2c87672f2c7cbbafb">00264</a> <span class="keywordtype">void</span> <a class="code" href="_fast_i_o_8cpp.html#a5b4d1684030dc620938b7c2fbdf5ced8">fio_shiftOut1</a>(uint8_t pin, uint8_t value, <span class="keywordtype">boolean</span> noLatch)
 <a name="l00265"></a>00265 {
 <a name="l00266"></a>00266         <a class="code" href="_fast_i_o_8cpp.html#a5b4d1684030dc620938b7c2fbdf5ced8">fio_shiftOut1</a>(<a class="code" href="_fast_i_o_8cpp.html#a04210cc785c3b4a11c86f794949c327f">fio_pinToOutputRegister</a>(pin, <a class="code" href="_fast_i_o_8h.html#a688a4adbb87520a2b68681bd6bfb199e">SKIP</a>),<a class="code" href="_fast_i_o_8cpp.html#a07a19dfbdca1afaca5d666bdaa3be7d5">fio_pinToBit</a>(pin),value, noLatch);
@@ -339,7 +339,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>

@@ -7,7 +7,7 @@ Timer procTimer;
 bool state = true;
 
 /*
-* Notice:  Software breakpoints work only on code that is in RAM. 
+* Notice:  Software breakpoints work only on code that is in RAM.
 *          In Sming you have to use the GDB_IRAM_ATTR to do this.
 */
 void GDB_IRAM_ATTR blink()

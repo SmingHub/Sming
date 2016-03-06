@@ -73,6 +73,6 @@ inline uint16_t analogRead(uint16_t pin)
 }
 
 /** @} */
-		
+
 
 #endif

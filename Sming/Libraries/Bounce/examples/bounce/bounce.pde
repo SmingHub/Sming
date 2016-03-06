@@ -7,7 +7,7 @@
 #define LED 13
 
 // Instantiate a Bounce object with a 5 millisecond debounce time
-Bounce bouncer = Bounce( BUTTON,5 ); 
+Bounce bouncer = Bounce( BUTTON,5 );
 
 void setup() {
   pinMode(BUTTON,INPUT);
@@ -17,16 +17,16 @@ void setup() {
 void loop() {
  // Update the debouncer
   bouncer.update ( );
- 
+
  // Get the update value
  int value = bouncer.read();
- 
+
  // Turn on or off the LED
  if ( value == HIGH) {
    digitalWrite(LED, HIGH );
  } else {
     digitalWrite(LED, LOW );
  }
- 
+
 }
 

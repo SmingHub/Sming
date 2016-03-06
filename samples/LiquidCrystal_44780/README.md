@@ -1,4 +1,4 @@
-# Sming 
+# Sming
 ## LiquidCrystal_44780 Example
 
 Example code for I2C LiquidCrystal LCDs

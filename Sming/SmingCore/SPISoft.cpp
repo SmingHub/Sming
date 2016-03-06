@@ -33,10 +33,10 @@ void SPISoft::begin()
 		debugf("SPISoft: GPIO 16 not supported\n");
 		return;
 	}
-	
+
 	pinMode(mSS, OUTPUT);
 	disable();
-	
+
 	pinMode(mCLK, OUTPUT);
 	digitalWrite(mCLK, LOW);
 

@@ -32,10 +32,10 @@ class Print
 {
   public:
 	Print() : write_error(0) {}
-  
+
     int getWriteError() { return write_error; }
     void clearWriteError() { setWriteError(0); }
-  
+
     // pure virtual - must be implemented by derived class
     //virtual void write(uint8_t) = 0;
 
@@ -52,7 +52,7 @@ class Print
     size_t write(const char *buffer, size_t size) {
       return write((const uint8_t *)buffer, size);
     }
-  
+
     // print
     size_t print(char);
     size_t print(const char[]);
@@ -67,7 +67,7 @@ class Print
 
     size_t print(const Printable &p);
     size_t print(const String &s);
-  
+
     // println
     size_t println(void);
 

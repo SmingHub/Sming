@@ -40,8 +40,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -124,43 +124,43 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00061"></a>00061 <span class="preprocessor">#include &lt;inttypes.h&gt;</span>
 <a name="l00062"></a>00062 <span class="preprocessor">#include &quot;<a class="code" href="_l_c_d_8h.html">LCD.h</a>&quot;</span>
 <a name="l00063"></a>00063 <span class="preprocessor">#include &quot;<a class="code" href="_fast_i_o_8h.html">FastIO.h</a>&quot;</span>
-<a name="l00064"></a>00064 
-<a name="l00065"></a>00065 
-<a name="l00066"></a><a class="code" href="class_liquid_crystal___s_r3_w.html">00066</a> <span class="keyword">class </span><a class="code" href="class_liquid_crystal___s_r3_w.html">LiquidCrystal_SR3W</a> : <span class="keyword">public</span> <a class="code" href="class_l_c_d.html">LCD</a> 
+<a name="l00064"></a>00064
+<a name="l00065"></a>00065
+<a name="l00066"></a><a class="code" href="class_liquid_crystal___s_r3_w.html">00066</a> <span class="keyword">class </span><a class="code" href="class_liquid_crystal___s_r3_w.html">LiquidCrystal_SR3W</a> : <span class="keyword">public</span> <a class="code" href="class_l_c_d.html">LCD</a>
 <a name="l00067"></a>00067 {
 <a name="l00068"></a>00068 <span class="keyword">public</span>:
-<a name="l00069"></a>00069    
+<a name="l00069"></a>00069
 <a name="l00090"></a>00090    <a class="code" href="class_liquid_crystal___s_r3_w.html#ae1396bcd5e9c5b7ed13182c166de776b">LiquidCrystal_SR3W</a>(uint8_t data, uint8_t clk, uint8_t strobe);
 <a name="l00091"></a>00091    <span class="comment">// Constructor with backlight control</span>
-<a name="l00092"></a>00092    <a class="code" href="class_liquid_crystal___s_r3_w.html#ae1396bcd5e9c5b7ed13182c166de776b">LiquidCrystal_SR3W</a>(uint8_t data, uint8_t clk, uint8_t strobe, 
-<a name="l00093"></a>00093                       uint8_t backlighPin, <a class="code" href="_l_c_d_8h.html#aeeef728bf4726268aa5e99391a1502bc">t_backlighPol</a> pol);   
-<a name="l00094"></a>00094    
-<a name="l00112"></a>00112    <a class="code" href="class_liquid_crystal___s_r3_w.html#ae1396bcd5e9c5b7ed13182c166de776b">LiquidCrystal_SR3W</a>(uint8_t data, uint8_t clk, uint8_t strobe, 
-<a name="l00113"></a>00113                       uint8_t En, uint8_t Rw, uint8_t Rs, 
+<a name="l00092"></a>00092    <a class="code" href="class_liquid_crystal___s_r3_w.html#ae1396bcd5e9c5b7ed13182c166de776b">LiquidCrystal_SR3W</a>(uint8_t data, uint8_t clk, uint8_t strobe,
+<a name="l00093"></a>00093                       uint8_t backlighPin, <a class="code" href="_l_c_d_8h.html#aeeef728bf4726268aa5e99391a1502bc">t_backlighPol</a> pol);
+<a name="l00094"></a>00094
+<a name="l00112"></a>00112    <a class="code" href="class_liquid_crystal___s_r3_w.html#ae1396bcd5e9c5b7ed13182c166de776b">LiquidCrystal_SR3W</a>(uint8_t data, uint8_t clk, uint8_t strobe,
+<a name="l00113"></a>00113                       uint8_t En, uint8_t Rw, uint8_t Rs,
 <a name="l00114"></a>00114                       uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7 );
 <a name="l00115"></a>00115    <span class="comment">// Constructor with backlight control</span>
 <a name="l00116"></a>00116    <a class="code" href="class_liquid_crystal___s_r3_w.html#ae1396bcd5e9c5b7ed13182c166de776b">LiquidCrystal_SR3W</a>( uint8_t data, uint8_t clk, uint8_t strobe,
-<a name="l00117"></a>00117                       uint8_t En, uint8_t Rw, uint8_t Rs, 
+<a name="l00117"></a>00117                       uint8_t En, uint8_t Rw, uint8_t Rs,
 <a name="l00118"></a>00118                       uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
 <a name="l00119"></a>00119                       uint8_t backlighPin, <a class="code" href="_l_c_d_8h.html#aeeef728bf4726268aa5e99391a1502bc">t_backlighPol</a> pol);
-<a name="l00120"></a>00120    
+<a name="l00120"></a>00120
 <a name="l00133"></a>00133    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_liquid_crystal___s_r3_w.html#ade34af5b7fe795482f1848c2176d6e56">send</a>(uint8_t value, uint8_t mode);
-<a name="l00134"></a>00134    
+<a name="l00134"></a>00134
 <a name="l00143"></a>00143    <span class="keywordtype">void</span> <a class="code" href="class_liquid_crystal___s_r3_w.html#a894d0ea8ea61c1d15acd8a26d417e477">setBacklightPin</a> ( uint8_t value, <a class="code" href="_l_c_d_8h.html#aeeef728bf4726268aa5e99391a1502bc">t_backlighPol</a> pol );
-<a name="l00144"></a>00144    
+<a name="l00144"></a>00144
 <a name="l00154"></a>00154    <span class="keywordtype">void</span> <a class="code" href="class_liquid_crystal___s_r3_w.html#a6d0fc7907ef9fd87c408a21b9bd49295">setBacklight</a> ( uint8_t value );
-<a name="l00155"></a>00155    
+<a name="l00155"></a>00155
 <a name="l00156"></a>00156 <span class="keyword">private</span>:
-<a name="l00157"></a>00157    
-<a name="l00163"></a>00163    <span class="keywordtype">int</span>  init(uint8_t data, uint8_t clk, uint8_t strobe, 
+<a name="l00157"></a>00157
+<a name="l00163"></a>00163    <span class="keywordtype">int</span>  init(uint8_t data, uint8_t clk, uint8_t strobe,
 <a name="l00164"></a>00164              uint8_t Rs, uint8_t Rw, uint8_t En,
 <a name="l00165"></a>00165              uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
-<a name="l00166"></a>00166    
+<a name="l00166"></a>00166
 <a name="l00175"></a>00175    <span class="keywordtype">void</span> write4bits(uint8_t value, uint8_t mode);
-<a name="l00176"></a>00176    
+<a name="l00176"></a>00176
 <a name="l00183"></a>00183    <span class="keywordtype">void</span> loadSR(uint8_t value);
-<a name="l00184"></a>00184    
-<a name="l00185"></a>00185    
+<a name="l00184"></a>00184
+<a name="l00185"></a>00185
 <a name="l00186"></a>00186    <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a>      _strobe;           <span class="comment">// shift register strobe pin</span>
 <a name="l00187"></a>00187    <a class="code" href="_fast_i_o_8h.html#ae44ea3af54ef26db03f1ae2ea62f9c1f">fio_register</a> _strobe_reg;       <span class="comment">// SR strobe pin MCU register</span>
 <a name="l00188"></a>00188    <a class="code" href="_fast_i_o_8h.html#a0a595a88b29bcfd1540b6fac75787937">fio_bit</a>      _data;             <span class="comment">// shift register data pin</span>
@@ -173,9 +173,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00195"></a>00195    uint8_t      _data_pins[4];     <span class="comment">// LCD data lines</span>
 <a name="l00196"></a>00196    uint8_t      _backlightPinMask; <span class="comment">// Backlight IO pin mask</span>
 <a name="l00197"></a>00197    uint8_t      _backlightStsMask; <span class="comment">// Backlight status mask</span>
-<a name="l00198"></a>00198    
+<a name="l00198"></a>00198
 <a name="l00199"></a>00199 };
-<a name="l00200"></a>00200 
+<a name="l00200"></a>00200
 <a name="l00201"></a>00201 <span class="preprocessor">#endif</span>
 <a name="l00202"></a>00202 <span class="preprocessor"></span>
 </pre></div></div>
@@ -189,7 +189,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>

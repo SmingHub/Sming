@@ -1,4 +1,4 @@
-# Sming 
+# Sming
 ## BMP180 Example
 
 Example code for I2C BMP180 sensor board

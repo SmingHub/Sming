@@ -40,14 +40,14 @@ while ( @ARGV ) {
 
 foreach $sub (keys %subst)
 {
-  if ( $subst{$sub} eq "" ) 
+  if ( $subst{$sub} eq "" )
   {
     print STDERR "No substitute given for tag file `$sub'\n";
     &usage();
   }
   elsif ( ! $quiet && $sub ne "_doc" && $sub ne "_cgi" )
   {
-    print "Substituting $subst{$sub} for each occurrence of tag file $sub\n"; 
+    print "Substituting $subst{$sub} for each occurrence of tag file $sub\n";
   }
 }
 
@@ -96,7 +96,7 @@ foreach $f (@files)
         print G "$_";
       }
     }
-  } 
+  }
   else {
     print STDERR "Warning file $f does not exist\n";
   }

@@ -7,12 +7,12 @@
  */
 
 /**
- * Example for Getting Started with nRF24L01+ radios. 
+ * Example for Getting Started with nRF24L01+ radios.
  *
- * This is an example of how to use the RF24 class.  Write this sketch to two 
- * different nodes.  Put one of the nodes into 'transmit' mode by connecting 
- * with the serial monitor and sending a 'T'.  The ping node sends the current 
- * time to the pong node, which responds by sending the value back.  The ping 
+ * This is an example of how to use the RF24 class.  Write this sketch to two
+ * different nodes.  Put one of the nodes into 'transmit' mode by connecting
+ * with the serial monitor and sending a 'T'.  The ping node sends the current
+ * time to the pong node, which responds by sending the value back.  The ping
  * node can then see how long the whole cycle took.
  */
 
@@ -25,7 +25,7 @@
 // Hardware configuration
 //
 
-// Set up nRF24L01 radio on SPI bus plus pins 9 & 10 
+// Set up nRF24L01 radio on SPI bus plus pins 9 & 10
 
 RF24 radio(9,10);
 
@@ -40,7 +40,7 @@ const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
 // Role management
 //
 // Set up role.  This sketch uses the same software for all the nodes
-// in this system.  Doing so greatly simplifies testing.  
+// in this system.  Doing so greatly simplifies testing.
 //
 
 // The various roles supported by this sketch
@@ -125,7 +125,7 @@ void loop(void)
     unsigned long time = millis();
     printf("Now sending %lu...",time);
     bool ok = radio.write( &time, sizeof(unsigned long) );
-    
+
     if (ok)
       printf("ok...");
     else
@@ -216,7 +216,7 @@ void loop(void)
     else if ( c == 'R' && role == role_ping_out )
     {
       printf("*** CHANGING TO RECEIVE ROLE -- PRESS 'T' TO SWITCH BACK\n\r");
-      
+
       // Become the primary receiver (pong back)
       role = role_pong_back;
       radio.openWritingPipe(pipes[1]);

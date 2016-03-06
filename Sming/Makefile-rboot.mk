@@ -52,13 +52,13 @@ SPI_SIZE ?= 512K
 
 ## SMING_HOME sets the path where Sming framework is located.
 ## Windows:
-# SMING_HOME = c:/tools/sming/Sming 
+# SMING_HOME = c:/tools/sming/Sming
 
 # MacOS / Linux
 # SMING_HOME = /opt/esp-open-sdk
 
 ## COM port parameter is reqruied to flash firmware correctly.
-## Windows: 
+## Windows:
 # COM_PORT = COM3
 
 # MacOS / Linux:
@@ -67,7 +67,7 @@ SPI_SIZE ?= 512K
 ifeq ($(OS),Windows_NT)
   # Windows detected
   UNAME := Windows
-  
+
   # Default SMING_HOME. Can be overriden.
   SMING_HOME ?= c:\tools\Sming\Sming
 
@@ -77,7 +77,7 @@ ifeq ($(OS),Windows_NT)
   # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
   SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
   ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-  include $(SMING_HOME)/Makefile-windows.mk  
+  include $(SMING_HOME)/Makefile-windows.mk
 else
   UNAME := $(shell uname -s)
   ifeq ($(UNAME),Darwin)
@@ -90,7 +90,7 @@ else
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /opt/esp-open-sdk
 
-      include $(SMING_HOME)/Makefile-macos.mk      
+      include $(SMING_HOME)/Makefile-macos.mk
   endif
   ifeq ($(UNAME),Linux)
       # Linux Detected
@@ -101,7 +101,7 @@ else
 
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /opt/esp-open-sdk
-      include $(SMING_HOME)/Makefile-linux.mk     
+      include $(SMING_HOME)/Makefile-linux.mk
   endif
   ifeq ($(UNAME),FreeBSD)
       # Freebsd Detected
@@ -112,7 +112,7 @@ else
 
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /usr/local/esp8266/esp-open-sdk
-      include $(SMING_HOME)/Makefile-bsd.mk     
+      include $(SMING_HOME)/Makefile-bsd.mk
   endif
 endif
 
@@ -296,9 +296,9 @@ vpath %.cpp $(SRC_DIR)
 define compile-objects
 $1/%.o: %.c
 	$(vecho) "CC $$<"
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@	
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@
 $1/%.o: %.cpp
-	$(vecho) "C+ $$<" 
+	$(vecho) "C+ $$<"
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -c $$< -o $$@
 endef
 
@@ -343,7 +343,7 @@ $(BUILD_DIR):
 $(FW_BASE):
 	$(Q) mkdir -p $@
 
-spiff_clean: 
+spiff_clean:
 	$(vecho) "Cleaning $(SPIFF_BIN_OUT)"
 	$(Q) rm -rf $(SPIFF_BIN_OUT)
 

@@ -57,7 +57,7 @@ void drawFrame()
 }
 
 void redBtn()
-{ 
+{
   tft.fillRect(REDBUTTON_X, REDBUTTON_Y, REDBUTTON_W, REDBUTTON_H, ILI9341_RED);
   tft.fillRect(GREENBUTTON_X, GREENBUTTON_Y, GREENBUTTON_W, GREENBUTTON_H, ILI9341_BLUE);
   drawFrame();
@@ -87,18 +87,18 @@ void setup(void)
 
   tft.fillScreen(ILI9341_BLUE);
   // origin = left,top landscape (USB left upper)
-  tft.setRotation(1); 
+  tft.setRotation(1);
   redBtn();
 }
 
 void loop()
 {
-   // Retrieve a point  
+   // Retrieve a point
   TSPoint p = ts.getPoint();
 
   // See if there's any  touch data for us
   if (p.z > MINPRESSURE && p.z < MAXPRESSURE)
-  {   
+  {
     // Scale using the calibration #'s
     // and rotate coordinate system
     p.x = map(p.x, TS_MINY, TS_MAXY, 0, tft.height());
@@ -110,7 +110,7 @@ void loop()
     {
       if((x > REDBUTTON_X) && (x < (REDBUTTON_X + REDBUTTON_W))) {
         if ((y > REDBUTTON_Y) && (y <= (REDBUTTON_Y + REDBUTTON_H))) {
-          Serial.println("Red btn hit"); 
+          Serial.println("Red btn hit");
           redBtn();
         }
       }
@@ -119,14 +119,14 @@ void loop()
     {
       if((x > GREENBUTTON_X) && (x < (GREENBUTTON_X + GREENBUTTON_W))) {
         if ((y > GREENBUTTON_Y) && (y <= (GREENBUTTON_Y + GREENBUTTON_H))) {
-          Serial.println("Green btn hit"); 
+          Serial.println("Green btn hit");
           greenBtn();
         }
       }
     }
 
     Serial.println(RecordOn);
-  }  
+  }
 }
 
 

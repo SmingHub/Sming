@@ -1,4 +1,4 @@
-#include <Wire.h> 
+#include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
 
@@ -20,7 +20,7 @@ const uint8_t charBitmap[][8] = {
    { 0x0, 0x0, 0x6, 0x9, 0x9, 0x6, 0, 0x0 },
    { 0x0, 0x0, 0x0, 0x6, 0x9, 0x9, 0x6, 0x0 },
    { 0x0, 0x0, 0x0, 0xc, 0x12, 0x12, 0xc, 0x0 }
-   
+
 };
 
 void setup()
@@ -30,8 +30,8 @@ void setup()
   // Switch on the backlight
   pinMode ( BACKLIGHT_PIN, OUTPUT );
   digitalWrite ( BACKLIGHT_PIN, HIGH );
-  
-  lcd.begin(16,2);               // initialize the lcd 
+
+  lcd.begin(16,2);               // initialize the lcd
 
    for ( int i = 0; i < charBitmapSize; i++ )
    {
@@ -39,7 +39,7 @@ void setup()
    }
 
   lcd.home ();                   // go home
-  lcd.print("Hello, ARDUINO ");  
+  lcd.print("Hello, ARDUINO ");
   lcd.setCursor ( 0, 1 );        // go to the next line
   lcd.print (" FORUM - fm   ");
   delay ( 1000 );

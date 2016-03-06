@@ -224,7 +224,7 @@ uint8 StationClass::getChannel()
 	debugf("Channel: %d CH", wifi_get_channel());
 	return wifi_get_channel();
 }
- 
+
 
 
 String StationClass::getPassword()

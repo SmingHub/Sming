@@ -7,7 +7,7 @@
 // This software is furnished "as is", without technical support, and with no
 // warranty, express or implied, as to its usefulness for any purpose.
 // ---------------------------------------------------------------------------
-// fio_shiftOut1 functions are based on Shif1 protocol developed by Roman Black 
+// fio_shiftOut1 functions are based on Shif1 protocol developed by Roman Black
 // (http://www.romanblack.com/shift1.htm)
 //
 // Thread Safe: No
@@ -15,8 +15,8 @@
 //
 // @file FastIO.h
 // This file implements basic fast IO routines.
-// 
-// @brief 
+//
+// @brief
 //
 // @version API 1.0.0
 //
@@ -168,7 +168,7 @@ int fio_digitalRead ( fio_register pinRegister, fio_bit pinBit );
  @param clockBit[in] Bit of data pin - Pin if fast digital write is disabled
  @param bitOrder[in] bit order
  */
-void fio_shiftOut( fio_register dataRegister, fio_bit dataBit, fio_register clockRegister, 
+void fio_shiftOut( fio_register dataRegister, fio_bit dataBit, fio_register clockRegister,
                   fio_bit clockBit, uint8_t value, uint8_t bitOrder );
 
 /*!

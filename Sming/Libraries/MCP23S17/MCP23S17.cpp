@@ -71,7 +71,7 @@ void MCP::byteWrite(uint8_t reg, uint8_t value)
 	::digitalWrite(_cs, HIGH);
 }
 
-// GENERIC WORD WRITE - will write a word to a register pair, LSB to first register, MSB to next higher value register 
+// GENERIC WORD WRITE - will write a word to a register pair, LSB to first register, MSB to next higher value register
 
 void MCP::wordWrite(uint8_t reg, unsigned int word)
 {  // Accept the start register and word

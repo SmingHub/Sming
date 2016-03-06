@@ -13,7 +13,7 @@
 #define	GREEN   0x07E0
 #define CYAN    0x07FF
 #define MAGENTA 0xF81F
-#define YELLOW  0xFFE0  
+#define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 
 TFT_ILI9163C tft = TFT_ILI9163C(__CS, __DC, __RST);
@@ -34,13 +34,13 @@ unsigned long testText() {
   tft.fillScreen();
   unsigned long start = micros();
   tft.setCursor(0, 0);
-  tft.setTextColor(WHITE);  
+  tft.setTextColor(WHITE);
   tft.setTextSize(1);
   tft.println("Hello World!");
-  tft.setTextColor(YELLOW); 
+  tft.setTextColor(YELLOW);
   tft.setTextSize(2);
   tft.println(1234.56);
-  tft.setTextColor(RED);    
+  tft.setTextColor(RED);
   tft.setTextSize(3);
   tft.println(0xDEAD, HEX);
   tft.println();

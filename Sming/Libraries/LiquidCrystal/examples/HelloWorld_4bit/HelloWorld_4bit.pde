@@ -53,17 +53,17 @@ void setup()
   //lcd.setBacklightPin ( BACKLIGHT_PIN, POSITIVE );
   //lcd.setBacklight ( HIGH );
   lcd.backlight();
-    
-  lcd.begin(16,2);               // initialize the lcd 
+
+  lcd.begin(16,2);               // initialize the lcd
 
   lcd.createChar (0, smiley);    // load character to the LCD
   lcd.createChar (1, armsUp);    // load character to the LCD
   lcd.createChar (2, frownie);   // load character to the LCD
 
   lcd.home ();                   // go home
-  lcd.print("Hello, ARDUINO ");  
+  lcd.print("Hello, ARDUINO ");
   lcd.setCursor ( 0, 1 );        // go to the next line
-  lcd.print (" FORUM - fm   ");      
+  lcd.print (" FORUM - fm   ");
 }
 
 void loop()

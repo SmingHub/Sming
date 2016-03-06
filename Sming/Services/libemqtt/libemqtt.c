@@ -44,9 +44,9 @@
 
 uint8_t mqtt_num_rem_len_bytes(const uint8_t* buf) {
 	uint8_t num_bytes = 1;
-	
+
 	//printf("mqtt_num_rem_len_bytes\n");
-	
+
 	if ((buf[1] & 0x80) == 0x80) {
 		num_bytes++;
 		if ((buf[2] & 0x80) == 0x80) {
@@ -63,9 +63,9 @@ uint16_t mqtt_parse_rem_len(const uint8_t* buf) {
 	uint16_t multiplier = 1;
 	uint16_t value = 0;
 	uint8_t digit;
-	
+
 	//printf("mqtt_parse_rem_len\n");
-	
+
 	buf++;	// skip "flags" byte in fixed header
 
 	do {
@@ -82,9 +82,9 @@ uint16_t mqtt_parse_msg_id(const uint8_t* buf) {
 	uint8_t type = MQTTParseMessageType(buf);
 	uint8_t qos = MQTTParseMessageQos(buf);
 	uint16_t id = 0;
-	
+
 	//printf("mqtt_parse_msg_id\n");
-	
+
 	if(type >= MQTT_MSG_PUBLISH && type <= MQTT_MSG_UNSUBACK) {
 		if(type == MQTT_MSG_PUBLISH) {
 			if(qos != 0) {
@@ -111,19 +111,19 @@ uint16_t mqtt_parse_msg_id(const uint8_t* buf) {
 uint16_t mqtt_parse_pub_topic(const uint8_t* buf, uint8_t* topic) {
 	const uint8_t* ptr;
 	uint16_t topic_len = mqtt_parse_pub_topic_ptr(buf, &ptr);
-	
+
 	//printf("mqtt_parse_pub_topic\n");
-	
+
 	if(topic_len != 0 && ptr != NULL) {
 		memcpy(topic, ptr, topic_len);
 	}
-	
+
 	return topic_len;
 }
 
 uint16_t mqtt_parse_pub_topic_ptr(const uint8_t* buf, const uint8_t **topic_ptr) {
 	uint16_t len = 0;
-	
+
 	//printf("mqtt_parse_pub_topic_ptr\n");
 
 	if(MQTTParseMessageType(buf) == MQTT_MSG_PUBLISH) {
@@ -141,23 +141,23 @@ uint16_t mqtt_parse_pub_topic_ptr(const uint8_t* buf, const uint8_t **topic_ptr)
 
 uint16_t mqtt_parse_publish_msg(const uint8_t* buf, uint8_t* msg) {
 	const uint8_t* ptr;
-	
+
 	//printf("mqtt_parse_publish_msg\n");
-	
+
 	uint16_t msg_len = mqtt_parse_pub_msg_ptr(buf, &ptr);
-	
+
 	if(msg_len != 0 && ptr != NULL) {
 		memcpy(msg, ptr, msg_len);
 	}
-	
+
 	return msg_len;
 }
 
 uint16_t mqtt_parse_pub_msg_ptr(const uint8_t* buf, const uint8_t **msg_ptr) {
 	uint16_t len = 0;
-	
+
 	//printf("mqtt_parse_pub_msg_ptr\n");
-	
+
 	if(MQTTParseMessageType(buf) == MQTT_MSG_PUBLISH) {
 		// message starts at
 		// fixed header length + Topic (UTF encoded) + msg id (if QoS>0)
@@ -171,7 +171,7 @@ uint16_t mqtt_parse_pub_msg_ptr(const uint8_t* buf, const uint8_t **msg_ptr) {
 		}
 
 		*msg_ptr = (buf + offset);
-				
+
 		// offset is now pointing to start of message
 		// length of the message is remaining length - variable header
 		// variable header is offset - fixed header
@@ -278,7 +278,7 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
         fixedHeaderSize++;          // add an additional byte for Remaining Length
     }
     uint8_t fixed_header[fixedHeaderSize];
-    
+
     // Message Type
     fixed_header[0] = MQTT_MSG_CONNECT;
 
@@ -417,7 +417,7 @@ int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const
 		fixedHeaderSize++;          // add an additional byte for Remaining Length
 	}
 	uint8_t fixed_header[fixedHeaderSize];
-    
+
    // Message Type, DUP flag, QoS level, Retain
    fixed_header[0] = MQTT_MSG_PUBLISH | qos_flag;
 	if(retain) {

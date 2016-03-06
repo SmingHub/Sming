@@ -38,43 +38,43 @@ void setup() {
 
   Mirf.spi = &MirfHardwareSpi85;
   Mirf.init();
-  
+
   /*
    * Configure reciving address.
    */
-   
+
   Mirf.setRADDR((byte *)"clie1");
-  
+
   /*
    * Set the payload length to sizeof(unsigned long) the
    * return type of millis().
    *
    * NB: payload on client and server must be the same.
    */
-   
+
   Mirf.payload = sizeof(unsigned long);
-  
+
   /*
    * Write channel and payload config then power up reciver.
    */
-   
+
   /*
    * To change channel:
-   * 
+   *
    * Mirf.channel = 10;
    *
    * NB: Make sure channel is legal in your area.
    */
-   
+
   Mirf.config();
 }
 
 void loop() {
   static unsigned long counter = 0;
   unsigned long time = millis();
-  
+
   Mirf.setTADDR((byte *)"serv1");
-  
+
   Mirf.send((byte *)&counter);
 
   while (Mirf.isSending()) {
@@ -99,7 +99,7 @@ void loop() {
   counter = recv + 1;
 
   delay(500);
-} 
-  
-  
-  
+}
+
+
+
