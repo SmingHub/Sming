@@ -71,10 +71,15 @@ private:
 class FileStream : public IDataSourceStream
 {
 public:
+	FileStream();
 	FileStream(String fileName);
 	virtual ~FileStream();
 
+	virtual bool attach(String fileName, FileOpenFlags openFlags);
 	virtual StreamType getStreamType() { return eSST_File; }
+
+	virtual size_t write(uint8_t charToWrite);
+	virtual size_t write(const uint8_t *buffer, size_t size);
 
 	virtual uint16_t readMemoryBlock(char* data, int bufSize);
 	virtual bool seek(int len);
