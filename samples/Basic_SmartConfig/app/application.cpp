@@ -31,7 +31,7 @@ void smartConfigCallback(sc_status status, void *pdata) {
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(COM_SPEED_SERIAL); // 115200 by default, change it in Makefile-user.mk
 	Serial.systemDebugOutput(true); // Debug output to serial
 
 	WifiAccessPoint.enable(false);
