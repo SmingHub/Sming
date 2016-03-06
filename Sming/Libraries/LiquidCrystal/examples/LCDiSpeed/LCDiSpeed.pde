@@ -31,8 +31,8 @@ static char dummyvar; // dummy declaration for STUPID IDE!!!!
  *
  * - Frame/Sec (FPS)
  *		This is the number of times the full display can be updated
- *		in one second. 
- *     
+ *		in one second.
+ *
  * - Frame Time (Ftime)
  *		This is the amount of time it takes to update the full LCD display.
  *
@@ -79,7 +79,7 @@ static char dummyvar; // dummy declaration for STUPID IDE!!!!
  * Options
  */
 
-#define FPS_iter 1 	// number of iterations to repeat each "frame" within the test 
+#define FPS_iter 1 	// number of iterations to repeat each "frame" within the test
 					// (current frame test is 10 full display frames, 1 for each digits 0-9)
 					// FPS_iter like 100 will allow the frames to be seen
 					// Note: the only reason other than visual to make this larger than 1
@@ -108,7 +108,7 @@ LiquidCrystal lcd( 8,  9,  4,  5,  6,  7); // old style constructor w/o backligh
 #endif
 
 #elif defined(LCDIF_I2C)
-#include <Wire.h> 
+#include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
 LiquidCrystal_I2C lcd(0x38);  // Set the LCD I2C address
@@ -147,7 +147,7 @@ LiquidCrystal_SR lcd (2, 3,  4);
 
 void setup()
 {
-	// set up the LCD's number of columns and rows: 
+	// set up the LCD's number of columns and rows:
 	lcd.begin(LCD_COLS, LCD_ROWS);
 
 #ifdef BACKLIGHT_ON

@@ -145,7 +145,7 @@ void loop(void)
     unsigned long time = millis();
     printf("Now sending %lu...",time);
     bool ok = radio.write( &time, sizeof(unsigned long) );
-    
+
     if (ok)
       printf("ok...");
     else

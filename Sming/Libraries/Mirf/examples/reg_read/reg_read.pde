@@ -25,7 +25,7 @@ void setup() {
   Mirf.setRADDR((byte *)"clie1");
   Mirf.payload = sizeof(unsigned long);
   Mirf.config();
-  
+
   // Read and print RF_SETUP
   byte rf_setup = 0;
   Mirf.readRegister( RF_SETUP, &rf_setup, sizeof(rf_setup) );

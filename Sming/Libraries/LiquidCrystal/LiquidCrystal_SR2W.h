@@ -3,14 +3,14 @@
 // Copyright 2012 - Under creative commons license 3.0:
 //        Attribution-ShareAlike CC BY-SA
 //
-// This software is furnished "as is", without technical support, and with no 
+// This software is furnished "as is", without technical support, and with no
 // warranty, express or implied, as to its usefulness for any purpose.
 //
 // @file LiquidCrystal_SR2W.h
-// Connects a hd44780 LCD using 2 pins from the Arduino, via an 8-bit 
+// Connects a hd44780 LCD using 2 pins from the Arduino, via an 8-bit
 // ShiftRegister (SR2W from now on).
-// 
-// @brief 
+//
+// @brief
 // This is the 2 wire shift register interface class for the LCD library
 //
 // The functionality provided by this class and its base class is a superset of
@@ -42,7 +42,7 @@
 // Bit  #5   - connects to LCD data inputs D6
 // Bit  #6   - connects to LCD data inputs D7
 // Bit  #7   - enables the LCD enable-puls (via the diode-resistor AND "gate")
-// 
+//
 // Wiring for a 74LS164
 // ---------------------
 //                          1k/4.7k
@@ -58,10 +58,10 @@
 // (LCD RS)------------5-|Q2     Q4|-10--(LCD D5)
 // (LCD D4)------------6-|Q3    /MR|--9--(VCC)
 //                   +-7-|GND    CP|--8--(clock pin)
-//                   |   +---------+ 
+//                   |   +---------+
 //                   |      0.1uf
 //                 (gnd)-----||----(vcc)
-// 
+//
 // Wiring for a 74HC595
 // --------------------
 // NOTE: the 74HC595 is a latching shift register. In order to get it to operate
@@ -71,7 +71,7 @@
 // For example, while the backlight is hooked to Q0 it is still using bit 1 of
 // of the shift register because the outputs are 1 clock behind the real internal shift
 // register.
-// 
+//
 //                         74HC595    (VCC)
 //                       +----u----+    |  +-----------------------(BL circuit)
 // (LCD RS)------------1-|Q1    VCC|-16-+  |  +--------------------(data pin)
@@ -87,7 +87,7 @@
 //              |    |      0.1uf                               |
 //              |  (gnd)-----||----(vcc)                        |
 //              +-----------------------------------------------+
-// 
+//
 //
 // Backlight Control circuit
 // -------------------------
@@ -109,9 +109,9 @@
 //                          (0.1uf)   =           S
 //                                    |           |
 //                                  (gnd)        (gnd)
-// 
-// 
-// 
+//
+//
+//
 //
 // History
 // 2012.03.16  bperrybap - creation/adaption from SR header to create SR2W header.
@@ -139,59 +139,59 @@ class LiquidCrystal_SR2W : public LCD
 {
 public:
    /*!
-    @method     
+    @method
     @abstract   LCD 2 wire SHIFT REGISTER constructor.
     @discussion Defines the pin assignments that connect to the shift register.
-    The constructor does not initialize the LCD. Assuming 1 line 8 pixel high 
+    The constructor does not initialize the LCD. Assuming 1 line 8 pixel high
     font.
-    
+
     @param srdata[in]   Arduino pin for shift register data line.
     @param srclock[in]  Arduino pin for shift register clock line.
     @param blpol[in]    optional backlight polarity (default = POSITIVE)
     */
    LiquidCrystal_SR2W (uint8_t srdata, uint8_t srclock, t_backlighPol blpol = POSITIVE);
-   
+
    /*!
     @function
     @abstract   Send a particular value to the LCD.
     @discussion Sends a particular value to the LCD for writing to the LCD or
     as an LCD command using the shift register.
-    
+
     Users should never call this method.
-    
+
     @param      value[in] Value to send to the LCD.
     @param      mode[in]  DATA=8bit data, COMMAND=8bit cmd, FOUR_BITS=4bit cmd
     the LCD.
     */
    virtual void send(uint8_t value, uint8_t mode);
-   
-   
+
+
    /*!
     @function
     @abstract   Switch-on/off the LCD backlight.
     @discussion Switch-on/off the LCD backlight.
     The setBacklightPin has to be called before setting the backlight for
     this method to work. @see setBacklightPin.
-    
+
     @param      mode[in] backlight mode (0 off, non-zero on)
     */
    void setBacklight ( uint8_t mode );
-   
+
 private:
-   
+
    /*!
-    @method     
+    @method
     @abstract   Initializes the LCD pin allocation
     @discussion Initializes the LCD pin allocation and configuration.
     */
    void init ( uint8_t srdata, uint8_t srclock, t_backlighPol blpol, uint8_t lines, uint8_t font );
-   
+
    /*!
     * @method
     * @abstract takes care of shifting and the enable pulse
     */
    void loadSR (uint8_t val);
-   
+
    fio_register _srDataRegister; // Serial Data pin
    fio_bit _srDataMask;
    fio_register _srClockRegister; // Clock Pin

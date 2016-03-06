@@ -67,7 +67,7 @@ void HMC5883L::initialize() {
 
     // write CONFIG_B register
     setGain(HMC5883L_GAIN_1090);
-    
+
     // write MODE register
     setMode(HMC5883L_MODE_SINGLE);
 }

@@ -101,21 +101,21 @@ bool Stream::findUntil(char *target, size_t targetLen, char *terminator, size_t 
   size_t index = 0;  // maximum target string length is 64k bytes!
   size_t termIndex = 0;
   int c;
-  
+
   if( *target == 0)
   return true;   // return true if target is a null string
   while( (c = timedRead()) > 0){
-    
+
     if(c != target[index])
     index = 0; // reset index if any char does not match
-    
+
     if( c == target[index]){
       //////Serial.print("found "); Serial.write(c); Serial.print("index now"); Serial.println(index+1);
       if(++index >= targetLen){ // return true if all chars in the target match
         return true;
       }
     }
-    
+
     if(termLen > 0 && c == terminator[termIndex]){
       if(++termIndex >= termLen)
       return false;       // return false if terminate string found before target string
@@ -142,12 +142,12 @@ long Stream::parseInt(char skipChar)
   boolean isNegative = false;
   long value = 0;
   int c;
-  
+
   c = peekNextDigit();
   // ignore non numeric leading characters
   if(c < 0)
   return 0; // zero returned if timeout
-  
+
   do{
     if(c == skipChar)
     ; // ignore this charactor
@@ -159,7 +159,7 @@ long Stream::parseInt(char skipChar)
     c = timedPeek();
   }
   while( (c >= '0' && c <= '9') || c == skipChar );
-  
+
   if(isNegative)
   value = -value;
   return value;
@@ -180,12 +180,12 @@ float Stream::parseFloat(char skipChar){
   long value = 0;
   char c;
   float fraction = 1.0;
-  
+
   c = peekNextDigit();
   // ignore non numeric leading characters
   if(c < 0)
   return 0; // zero returned if timeout
-  
+
   do{
     if(c == skipChar)
     ; // ignore
@@ -202,7 +202,7 @@ float Stream::parseFloat(char skipChar){
     c = timedPeek();
   }
   while( (c >= '0' && c <= '9')  || c == '.' || c == skipChar );
-  
+
   if(isNegative)
   value = -value;
   if(isFraction)

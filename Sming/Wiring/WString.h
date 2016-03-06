@@ -107,7 +107,7 @@ class String
     unsigned char concat(unsigned long num);
     unsigned char concat(float num);
     unsigned char concat(double num);
-  
+
     // if there's not enough memory for the concatenated value, the string
     // will be left unchanged (but this isn't signalled in any way)
     String & operator += (const String &rhs)
@@ -216,7 +216,7 @@ class String
       getBytes((unsigned char *)buf, bufsize, index);
     }
     const char * c_str() const { return buffer; }
-  
+
     // search
     int IRAM_ATTR indexOf(char ch) const;
     int indexOf(char ch, unsigned int fromIndex) const;
@@ -241,7 +241,7 @@ class String
     // parsing/conversion
     long toInt(void) const;
     float toFloat(void) const;
-  
+
     friend int splitString(String &what, int delim, Vector<long> &splits);
     friend int splitString(String &what, int delim, Vector<int> &splits);
     friend int splitString(String &what, int delim, Vector<String> &splits);

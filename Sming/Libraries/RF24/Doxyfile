@@ -25,7 +25,7 @@ DOXYFILE_ENCODING      = UTF-8
 # The PROJECT_NAME tag is a single word (or a sequence of words surrounded
 # by quotes) that should identify the project.
 
-PROJECT_NAME           = RF24 
+PROJECT_NAME           = RF24
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number.
 # This could be handy for archiving the generated documentation or
@@ -486,7 +486,7 @@ SHOW_DIRECTORIES       = NO
 # This will remove the Files entry from the Quick Index and from the
 # Folder Tree View (if specified). The default is YES.
 
-SHOW_FILES             = YES 
+SHOW_FILES             = YES
 
 # Set the SHOW_NAMESPACES tag to NO to disable the generation of the
 # Namespaces page.
@@ -574,7 +574,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = . 
+INPUT                  = .
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -735,7 +735,7 @@ USE_HTAGS              = NO
 # will generate a verbatim copy of the header file for each class for
 # which an include is specified. Set to NO to disable this.
 
-VERBATIM_HEADERS       = YES 
+VERBATIM_HEADERS       = YES
 
 #---------------------------------------------------------------------------
 # configuration options related to the alphabetical class index

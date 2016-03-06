@@ -1,4 +1,4 @@
-/*************************************************** 
+/***************************************************
  This is a library for the MCP23017 i2c port expander
 
  These displays use I2C to communicate, 2 pins are required to

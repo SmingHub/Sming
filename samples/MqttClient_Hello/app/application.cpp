@@ -31,13 +31,13 @@ MqttClient mqtt(MQTT_HOST, MQTT_PORT, onMessageReceived);
 
 // Check for MQTT Disconnection
 void checkMQTTDisconnect(TcpClient& client, bool flag){
-	
+
 	// Called whenever MQTT connection is failed.
 	if (flag == true)
 		Serial.println("MQTT Broker Disconnected!!");
 	else
 		Serial.println("MQTT Broker Unreachable!!");
-	
+
 	// Restart connection attempt after few seconds
 	procTimer.initializeMs(2 * 1000, startMqttClient).start(); // every 2 seconds
 }

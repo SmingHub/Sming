@@ -3,7 +3,7 @@
 // Copyright 2011 - Under creative commons license:
 //        Attribution-NonCommercial-ShareAlike CC BY-NC-SA
 //
-// This software is furnished "as is", without technical support, and with no 
+// This software is furnished "as is", without technical support, and with no
 // warranty, express or implied, as to its usefulness for any purpose.
 //
 // Thread Safe: No
@@ -11,7 +11,7 @@
 //
 // @file i2CLCDextraIO.pde
 // Temperature logging to demonstrate the I2CLCDextraIO library.
-// 
+//
 // @brief This application is a demostration file for the I2CLCDextraIO library
 // that reads a temperature from the internal ATMEGA328p temperature sensor
 // and displays it on the LCD. The application also demonstrates some of the
@@ -87,7 +87,7 @@ static double tempFilter;
 
 
 /*!
-    @const      charBitmap 
+    @const      charBitmap
     @abstract   Define Character bitmap for the bargraph.
     @discussion Defines a character bitmap to represent a bargraph on a text
     display. The bitmap goes from a blank character to full black.
@@ -108,11 +108,11 @@ const uint8_t charBitmap[][8] = {
     @abstract   Return available RAM memory
     @discussion This routine returns the ammount of RAM memory available after
                 initialising the C runtime.
-    @param      
+    @param
     @result     Free RAM available.
 */
 
-static int freeMemory() 
+static int freeMemory()
 {
   int free_memory;
 
@@ -129,25 +129,25 @@ static int freeMemory()
     @abstract   Returns AVR328p internal temperature
     @discussion Configures the ADC MUX for the temperature ADC channel and
                 waits for conversion and returns the value of the ADC module
-    @result     The internal temperature reading - in degrees C 
+    @result     The internal temperature reading - in degrees C
 */
 
 static int readTemperature()
 {
-   ADMUX = 0xC8;                          // activate interal temperature sensor, 
+   ADMUX = 0xC8;                          // activate interal temperature sensor,
                                           // using 1.1V ref. voltage
    ADCSRA |= _BV(ADSC);                   // start the conversion
-   while (bit_is_set(ADCSRA, ADSC));      // ADSC is cleared when the conversion 
+   while (bit_is_set(ADCSRA, ADSC));      // ADSC is cleared when the conversion
                                           // finishes
-                                          
+
    // combine bytes & correct for temperature offset (approximate)
-   return ( (ADCL | (ADCH << 8)) - TEMP_CAL_OFFSET);  
+   return ( (ADCL | (ADCH << 8)) - TEMP_CAL_OFFSET);
 }
 
 /*!
     @function
     @abstract   Braws a bargraph onto the display representing the value passed.
-    @discussion Draws a bargraph on the specified row using barLength characters. 
+    @discussion Draws a bargraph on the specified row using barLength characters.
     @param      value[in] Value to represent in the bargraph
     @param      row[in] Row of the LCD where to display the bargraph. Range (0, 1)
                 for this display.
@@ -157,7 +157,7 @@ static int readTemperature()
 
     @result     None
 */
-static void drawBars ( int value, uint8_t row, uint8_t barLength, char start, 
+static void drawBars ( int value, uint8_t row, uint8_t barLength, char start,
                        char end )
 {
    int numBars;
@@ -169,20 +169,20 @@ static void drawBars ( int value, uint8_t row, uint8_t barLength, char start,
    // Calculate the size of the bar
    value = map ( value, -30, 50, 0, ( barLength ) * CHAR_WIDTH );
    numBars = value / CHAR_WIDTH;
-   
+
    // Limit the size of the bargraph to barLength
    if ( numBars > barLength )
    {
      numBars = barLength;
    }
    myLCD->setCursor ( 1, row );
-   
+
    // Draw the bars
    while ( numBars-- )
    {
       myLCD->print ( char( 5 ) );
    }
-   
+
    // Draw the fractions
    numBars = value % CHAR_WIDTH;
    myLCD->print ( char(numBars) );
@@ -193,12 +193,12 @@ static void drawBars ( int value, uint8_t row, uint8_t barLength, char start,
 
 void setup ()
 {
-   int i; 
+   int i;
    int charBitmapSize = (sizeof(charBitmap ) / sizeof (charBitmap[0]));
-   
+
    Serial.begin ( 57600 );
    analogReference ( INTERNAL );
-   
+
 #ifdef _LCD_4BIT_
   pinMode(CONTRAST_PIN, OUTPUT);
   lcd.backlight();
@@ -210,7 +210,7 @@ void setup ()
 #endif
 
    myLCD->begin ( 16, 2 );
-  
+
    // Load custom character set into CGRAM
    for ( i = 0; i < charBitmapSize; i++ )
    {
@@ -229,7 +229,7 @@ void setup ()
 void loop ()
 {
   int temp;
-  
+
   temp = readTemperature();
   tempFilter = ( FILTER_ALP * temp) + (( 1.0 - FILTER_ALP ) * tempFilter);
 
@@ -239,8 +239,8 @@ void loop ()
   myLCD->print ( tempFilter, 1 );
   myLCD->setCursor ( 12, 0 );
   myLCD->print ( "\x07" );
-  myLCD->print ("C");  
+  myLCD->print ("C");
   drawBars ( tempFilter, 1, 14, '-', '+' );
-  
+
   delay (200);
 }

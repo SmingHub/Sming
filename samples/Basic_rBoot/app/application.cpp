@@ -15,7 +15,7 @@
 rBootHttpUpdate* otaUpdater = 0;
 
 void OtaUpdate_CallBack(bool result) {
-	
+
 	Serial.println("In callback...");
 	if(result == true) {
 		// success
@@ -33,16 +33,16 @@ void OtaUpdate_CallBack(bool result) {
 }
 
 void OtaUpdate() {
-	
+
 	uint8 slot;
 	rboot_config bootconf;
-	
+
 	Serial.println("Updating...");
-	
+
 	// need a clean object, otherwise if run before and failed will not run again
 	if (otaUpdater) delete otaUpdater;
 	otaUpdater = new rBootHttpUpdate();
-	
+
 	// select rom slot to flash
 	bootconf = rboot_get_config();
 	slot = bootconf.current_rom;
@@ -59,7 +59,7 @@ void OtaUpdate() {
 		otaUpdater->addItem(bootconf.roms[slot], ROM_1_URL);
 	}
 #endif
-	
+
 #ifndef DISABLE_SPIFFS
 	// use user supplied values (defaults for 4mb flash in makefile)
 	if (slot == 0) {
@@ -98,7 +98,7 @@ void ShowInfo() {
 }
 
 void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCharsCount) {
-	
+
 
 	if (arrivedChar == '\n') {
 		char str[availableCharsCount];
@@ -108,7 +108,7 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 				str[i] = '\0';
 			}
 		}
-		
+
 		if (!strcmp(str, "connect")) {
 			// connect to wifi
 			WifiStation.config(WIFI_SSID, WIFI_PWD);
@@ -159,10 +159,10 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 }
 
 void init() {
-	
+
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Debug output to serial
-	
+
 	// mount spiffs
 	int slot = rboot_get_current_rom();
 #ifndef DISABLE_SPIFFS
@@ -187,10 +187,10 @@ void init() {
 	debugf("spiffs disabled");
 #endif
 	WifiAccessPoint.enable(false);
-	
+
 	Serial.printf("\r\nCurrently running rom %d.\r\n", slot);
 	Serial.println("Type 'help' and press enter for instructions.");
 	Serial.println();
-	
+
 	Serial.setCallback(serialCallBack);
 }

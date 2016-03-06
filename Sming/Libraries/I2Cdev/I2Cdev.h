@@ -90,7 +90,7 @@ THE SOFTWARE.
 class I2Cdev {
     public:
         I2Cdev();
-        
+
         static int8_t readBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t *data, uint16_t timeout=I2Cdev::readTimeout);
         static int8_t readBitW(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint16_t *data, uint16_t timeout=I2Cdev::readTimeout);
         static int8_t readBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t *data, uint16_t timeout=I2Cdev::readTimeout);
@@ -119,7 +119,7 @@ class I2Cdev {
     // Copyright(C) 2012
     // Francesco Ferrara
     //////////////////////
-    
+
     /* Master */
     #define TW_START                0x08
     #define TW_REP_START            0x10
@@ -162,24 +162,24 @@ class I2Cdev {
     // Originally offered to the i2cdevlib project at http://arduino.cc/forum/index.php/topic,68210.30.html
 
     #define NBWIRE_BUFFER_LENGTH 32
-    
+
     class TwoWire {
         private:
             static uint8_t rxBuffer[];
             static uint8_t rxBufferIndex;
             static uint8_t rxBufferLength;
-        
+
             static uint8_t txAddress;
             static uint8_t txBuffer[];
             static uint8_t txBufferIndex;
             static uint8_t txBufferLength;
-        
+
             // static uint8_t transmitting;
             static void (*user_onRequest)(void);
             static void (*user_onReceive)(int);
             static void onRequestService(void);
             static void onReceiveService(uint8_t*, int);
-    
+
         public:
             TwoWire();
             void begin();
@@ -201,25 +201,25 @@ class I2Cdev {
             void onReceive(void (*)(int));
             void onRequest(void (*)(void));
     };
-    
+
     #define TWI_READY   0
     #define TWI_MRX     1
     #define TWI_MTX     2
     #define TWI_SRX     3
     #define TWI_STX     4
-    
+
     #define TW_WRITE    0
     #define TW_READ     1
-    
+
     #define TW_MT_SLA_NACK      0x20
     #define TW_MT_DATA_NACK     0x30
-    
+
     #define CPU_FREQ            16000000L
     #define TWI_FREQ            100000L
     #define TWI_BUFFER_LENGTH   32
-    
+
     /* TWI Status is in TWSR, in the top 5 bits: TWS7 - TWS3 */
-    
+
     #define TW_STATUS_MASK              (_BV(TWS7)|_BV(TWS6)|_BV(TWS5)|_BV(TWS4)|_BV(TWS3))
     #define TW_STATUS                   (TWSR & TW_STATUS_MASK)
     #define TW_START                    0x08
@@ -250,18 +250,18 @@ class I2Cdev {
     #define TW_SR_STOP                  0xA0
     #define TW_NO_INFO                  0xF8
     #define TW_BUS_ERROR                0x00
-    
+
     //#define _MMIO_BYTE(mem_addr) (*(volatile uint8_t *)(mem_addr))
     //#define _SFR_BYTE(sfr) _MMIO_BYTE(_SFR_ADDR(sfr))
-    
+
     #ifndef sbi // set bit
         #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
     #endif // sbi
-    
+
     #ifndef cbi // clear bit
         #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
     #endif // cbi
-    
+
     extern TwoWire Wire;
 
 #endif // I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_NBWIRE

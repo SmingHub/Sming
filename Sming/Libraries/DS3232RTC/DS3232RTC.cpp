@@ -33,7 +33,7 @@
  * CC BY-SA 4.0                                                         *
  * "Arduino DS3232RTC Library" by Jack Christensen is licensed under    *
  * CC BY-SA 4.0, http://creativecommons.org/licenses/by-sa/4.0/         *
- *----------------------------------------------------------------------*/ 
+ *----------------------------------------------------------------------*/
 
 #include <DS3232RTC.h>
 
@@ -64,7 +64,7 @@
 #define i2cWrite Wire.send
 #endif
 
-/*============================================================================*/	
+/*============================================================================*/
 /* functions to convert to and from system time */
 /* These are for interfacing with time serivces and are not normally needed in a sketch */
 
@@ -72,7 +72,7 @@
 #define LEAP_YEAR(Y)     ( ((1970+Y)>0) && !((1970+Y)%4) && ( ((1970+Y)%100) || !((1970+Y)%400) ) )
 
 static  const uint8_t monthDays[]={31,28,31,30,31,30,31,31,30,31,30,31}; // API starts months from 1, this array starts from 0
- 
+
 void breakTime(time_t timeInput, tmElements_t &tm){
 // break the given time_t into time components
 // this is a more compact version of the C library localtime function
@@ -90,18 +90,18 @@ void breakTime(time_t timeInput, tmElements_t &tm){
   time /= 60; // now it is hours
   tm.Hour = time % 24;
   time /= 24; // now it is days
-  tm.Wday = ((time + 4) % 7) + 1;  // Sunday is day 1 
-  
-  year = 0;  
+  tm.Wday = ((time + 4) % 7) + 1;  // Sunday is day 1
+
+  year = 0;
   days = 0;
   while((unsigned)(days += (LEAP_YEAR(year) ? 366 : 365)) <= time) {
     year++;
   }
-  tm.Year = year; // year is offset from 1970 
-  
+  tm.Year = year; // year is offset from 1970
+
   days -= LEAP_YEAR(year) ? 366 : 365;
   time  -= days; // now it is days in this year, starting at 0
-  
+
   days=0;
   month=0;
   monthLength=0;
@@ -115,22 +115,22 @@ void breakTime(time_t timeInput, tmElements_t &tm){
     } else {
       monthLength = monthDays[month];
     }
-    
+
     if (time >= monthLength) {
       time -= monthLength;
     } else {
         break;
     }
   }
-  tm.Month = month + 1;  // jan is month 1  
+  tm.Month = month + 1;  // jan is month 1
   tm.Day = time + 1;     // day of month
 }
 
-time_t makeTime(tmElements_t &tm){   
-// assemble time elements into time_t 
+time_t makeTime(tmElements_t &tm){
+// assemble time elements into time_t
 // note year argument is offset from 1970 (see macros in time.h to convert to other formats)
 // previous version used full four digit year (or digits since 2000),i.e. 2009 was 2009 or 9
-  
+
   int i;
   uint32_t seconds;
 
@@ -141,10 +141,10 @@ time_t makeTime(tmElements_t &tm){
       seconds +=  SECS_PER_DAY;   // add extra days for leap years
     }
   }
-  
+
   // add days for this year, months start from 1
   for (i = 1; i < tm.Month; i++) {
-    if ( (i == 2) && LEAP_YEAR(tm.Year)) { 
+    if ( (i == 2) && LEAP_YEAR(tm.Year)) {
       seconds += SECS_PER_DAY * 29;
     } else {
       seconds += SECS_PER_DAY * monthDays[i-1];  //monthDay array starts from 0
@@ -154,9 +154,9 @@ time_t makeTime(tmElements_t &tm){
   seconds+= tm.Hour * SECS_PER_HOUR;
   seconds+= tm.Minute * SECS_PER_MIN;
   seconds+= tm.Second;
-  return (time_t)seconds; 
+  return (time_t)seconds;
 }
-/*=====================================================*/	
+/*=====================================================*/
 /* Low level system time functions  */
 
 /*----------------------------------------------------------------------*
@@ -166,7 +166,7 @@ DS3232RTC::DS3232RTC()
 {
     i2cBegin();
 }
-  
+
 /*----------------------------------------------------------------------*
  * Reads the current time from the RTC and returns it as a time_t       *
  * value. Returns a zero value if an I2C error occurred (e.g. RTC       *
@@ -175,7 +175,7 @@ DS3232RTC::DS3232RTC()
 time_t DS3232RTC::get()
 {
     tmElements_t tm;
-    
+
     if ( read(tm) ) return 0;
     return( makeTime(tm) );
 }
@@ -204,7 +204,7 @@ byte DS3232RTC::read(tmElements_t &tm)
     if ( byte e = i2cEndTransmission() ) return e;
     //request 7 bytes (secs, min, hr, dow, date, mth, yr)
     i2cRequestFrom(RTC_ADDR, tmNbrFields);
-    tm.Second = bcd2dec(i2cRead() & ~_BV(DS1307_CH));   
+    tm.Second = bcd2dec(i2cRead() & ~_BV(DS1307_CH));
     tm.Minute = bcd2dec(i2cRead());
     tm.Hour = bcd2dec(i2cRead() & ~_BV(HR1224));    //assumes 24hr clock
     tm.Wday = i2cRead();
@@ -229,7 +229,7 @@ byte DS3232RTC::write(tmElements_t &tm)
     i2cWrite(tm.Wday);
     i2cWrite(dec2bcd(tm.Day));
     i2cWrite(dec2bcd(tm.Month));
-    i2cWrite(dec2bcd(tmYearToY2k(tm.Year))); 
+    i2cWrite(dec2bcd(tmYearToY2k(tm.Year)));
     byte ret = i2cEndTransmission();
     uint8_t s = readRTC(RTC_STATUS);        //read the status register
     writeRTC( RTC_STATUS, s & ~_BV(OSF) );  //clear the Oscillator Stop Flag
@@ -285,7 +285,7 @@ byte DS3232RTC::readRTC(byte addr, byte *values, byte nBytes)
 byte DS3232RTC::readRTC(byte addr)
 {
     byte b;
-    
+
     readRTC(addr, &b, 1);
     return b;
 }
@@ -301,7 +301,7 @@ byte DS3232RTC::readRTC(byte addr)
 void DS3232RTC::setAlarm(ALARM_TYPES_t alarmType, byte seconds, byte minutes, byte hours, byte daydate)
 {
     uint8_t addr;
-    
+
     seconds = dec2bcd(seconds);
     minutes = dec2bcd(minutes);
     hours = dec2bcd(hours);
@@ -311,7 +311,7 @@ void DS3232RTC::setAlarm(ALARM_TYPES_t alarmType, byte seconds, byte minutes, by
     if (alarmType & 0x04) hours |= _BV(A1M3);
     if (alarmType & 0x10) hours |= _BV(DYDT);
     if (alarmType & 0x08) daydate |= _BV(A1M4);
-    
+
     if ( !(alarmType & 0x80) ) {    //alarm 1
         addr = ALM1_SECONDS;
         writeRTC(addr++, seconds);
@@ -344,14 +344,14 @@ void DS3232RTC::setAlarm(ALARM_TYPES_t alarmType, byte minutes, byte hours, byte
 void DS3232RTC::alarmInterrupt(byte alarmNumber, bool interruptEnabled)
 {
     uint8_t controlReg, mask;
-    
+
     controlReg = readRTC(RTC_CONTROL);
     mask = _BV(A1IE) << (alarmNumber - 1);
     if (interruptEnabled)
         controlReg |= mask;
     else
         controlReg &= ~mask;
-    writeRTC(RTC_CONTROL, controlReg); 
+    writeRTC(RTC_CONTROL, controlReg);
 }
 
 /*----------------------------------------------------------------------*
@@ -361,7 +361,7 @@ void DS3232RTC::alarmInterrupt(byte alarmNumber, bool interruptEnabled)
 bool DS3232RTC::alarm(byte alarmNumber)
 {
     uint8_t statusReg, mask;
-    
+
     statusReg = readRTC(RTC_STATUS);
     mask = _BV(A1F) << (alarmNumber - 1);
     if (statusReg & mask) {
@@ -417,7 +417,7 @@ int DS3232RTC::temperature(void)
         int i;
         byte b[2];
     } rtcTemp;
-    
+
     rtcTemp.b[0] = readRTC(TEMP_LSB);
     rtcTemp.b[1] = readRTC(TEMP_MSB);
     return rtcTemp.i >> 6;

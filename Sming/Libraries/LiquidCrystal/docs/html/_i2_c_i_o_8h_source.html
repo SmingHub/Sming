@@ -40,8 +40,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -86,43 +86,43 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00023"></a>00023 <span class="comment">//</span>
 <a name="l00024"></a>00024 <span class="comment">// @author F. Malpartida - fmalpartida@gmail.com</span>
 <a name="l00025"></a>00025 <span class="comment">// ---------------------------------------------------------------------------</span>
-<a name="l00026"></a>00026 
+<a name="l00026"></a>00026
 <a name="l00027"></a>00027 <span class="preprocessor">#ifndef _I2CIO_H_</span>
 <a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#define _I2CIO_H_</span>
 <a name="l00029"></a>00029 <span class="preprocessor"></span>
 <a name="l00030"></a>00030 <span class="preprocessor">#include &lt;inttypes.h&gt;</span>
-<a name="l00031"></a>00031 
+<a name="l00031"></a>00031
 <a name="l00032"></a><a class="code" href="_i2_c_i_o_8h.html#a218dbde2f6fda8c5825e25da10864c71">00032</a> <span class="preprocessor">#define _I2CIO_VERSION &quot;1.0.0&quot;</span>
 <a name="l00033"></a>00033 <span class="preprocessor"></span>
-<a name="l00041"></a><a class="code" href="class_i2_c_i_o.html">00041</a> <span class="keyword">class </span><a class="code" href="class_i2_c_i_o.html">I2CIO</a>  
+<a name="l00041"></a><a class="code" href="class_i2_c_i_o.html">00041</a> <span class="keyword">class </span><a class="code" href="class_i2_c_i_o.html">I2CIO</a>
 <a name="l00042"></a>00042 {
 <a name="l00043"></a>00043 <span class="keyword">public</span>:
 <a name="l00049"></a>00049    <a class="code" href="class_i2_c_i_o.html#a32eb7832075ad6011d67874405a0d0a6">I2CIO</a> ( );
-<a name="l00050"></a>00050    
+<a name="l00050"></a>00050
 <a name="l00062"></a>00062    <span class="keywordtype">int</span> <a class="code" href="class_i2_c_i_o.html#a6f814653d903dc2ff6e8420eeb7954ae">begin</a> ( uint8_t i2cAddr );
-<a name="l00063"></a>00063    
+<a name="l00063"></a>00063
 <a name="l00073"></a>00073    <span class="keywordtype">void</span> <a class="code" href="class_i2_c_i_o.html#a53b94274eb6bb68564cf5243323db887">pinMode</a> ( uint8_t pin, uint8_t dir );
-<a name="l00074"></a>00074    
+<a name="l00074"></a>00074
 <a name="l00083"></a>00083    <span class="keywordtype">void</span> <a class="code" href="class_i2_c_i_o.html#a0341888753bc54c4384f5593a870fb34">portMode</a> ( uint8_t dir );
-<a name="l00084"></a>00084    
+<a name="l00084"></a>00084
 <a name="l00094"></a>00094    uint8_t <a class="code" href="class_i2_c_i_o.html#a7a3db7bfc15ede0ae9e8c8bd44290ef7">read</a> ( <span class="keywordtype">void</span> );
-<a name="l00095"></a>00095    
+<a name="l00095"></a>00095
 <a name="l00108"></a>00108    uint8_t <a class="code" href="class_i2_c_i_o.html#ac26221011a8b49bcea9ef62712ea88a7">digitalRead</a> ( uint8_t pin );
-<a name="l00109"></a>00109    
+<a name="l00109"></a>00109
 <a name="l00123"></a>00123    <span class="keywordtype">int</span> <a class="code" href="class_i2_c_i_o.html#ae2063569c927d0008e2593d14504fdcd">write</a> ( uint8_t value );
-<a name="l00124"></a>00124    
+<a name="l00124"></a>00124
 <a name="l00136"></a>00136    <span class="keywordtype">int</span> <a class="code" href="class_i2_c_i_o.html#a473206162522b847546777d16a7c6dcd">digitalWrite</a> ( uint8_t pin, uint8_t level );
-<a name="l00137"></a>00137    
-<a name="l00138"></a>00138    
-<a name="l00139"></a>00139    
+<a name="l00137"></a>00137
+<a name="l00138"></a>00138
+<a name="l00139"></a>00139
 <a name="l00140"></a>00140 <span class="keyword">private</span>:
 <a name="l00141"></a>00141    uint8_t _shadow;      <span class="comment">// Shadow output</span>
 <a name="l00142"></a>00142    uint8_t _dirMask;     <span class="comment">// Direction mask</span>
 <a name="l00143"></a>00143    uint8_t _i2cAddr;     <span class="comment">// I2C address</span>
 <a name="l00144"></a>00144    <span class="keywordtype">bool</span>    _initialised; <span class="comment">// Initialised object</span>
-<a name="l00145"></a>00145    
+<a name="l00145"></a>00145
 <a name="l00146"></a>00146 };
-<a name="l00147"></a>00147 
+<a name="l00147"></a>00147
 <a name="l00148"></a>00148 <span class="preprocessor">#endif</span>
 </pre></div></div>
 </div>
@@ -135,7 +135,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>

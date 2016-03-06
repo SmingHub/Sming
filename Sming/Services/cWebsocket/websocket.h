@@ -73,7 +73,7 @@ enum wsFrameType { // errors starting from 0xF0
     WS_OPENING_FRAME = 0xF3,
     WS_CLOSING_FRAME = 0x08
 };
-    
+
 enum wsState {
     WS_STATE_OPENING,
     WS_STATE_NORMAL,

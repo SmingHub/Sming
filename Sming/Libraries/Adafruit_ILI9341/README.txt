@@ -2,7 +2,7 @@ This is a library for the Adafruit ILI9341 display products
 
 This library works with the Adafruit 2.8" Touch Shield V2 (SPI)
   ----> http://www.adafruit.com/products/1651
- 
+
 Check out the links above for our tutorials and wiring diagrams.
 These displays use SPI to communicate, 4 or 5 pins are required
 to interface (RST is optional).

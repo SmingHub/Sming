@@ -1,6 +1,6 @@
 # Arduino DS3232RTC Library v1.0 #
 https://github.com/JChristensen/DS3232RTC
-ReadMe file  
+ReadMe file
 Jack Christensen Mar 2013
 
 ![CC BY-SA](http://mirrors.creativecommons.org/presskit/buttons/80x15/png/by-sa.png)
@@ -17,7 +17,7 @@ This library is ***not*** a drop-in replacement for [PJRC's newer version of the
 "Arduino DS3232RTC Library" by Jack Christensen is licensed under CC BY-SA 4.0.
 
 ## Installation ##
-To use the **DS3232RTC** library:  
+To use the **DS3232RTC** library:
 - Go to https://github.com/JChristensen/DS3232RTC, click the **Download ZIP** button and save the ZIP file to a convenient location on your PC.
 - Uncompress the downloaded file.  This will result in a folder containing all the files for the library, that has a name that includes the branch name, usually **DS3232RTC-master**.
 - Rename the folder to just **DS3232RTC**.
@@ -31,7 +31,7 @@ The following example sketches are included with the **DS3232RTC** library:
 
 ## Usage notes ##
 
-When using the **DS3232RTC** library, the user is responsible for ensuring that reads and writes do not exceed the device's address space (0x00-0x12 for DS3231, 0x00-0xFF for DS3232); no bounds checking is done by the library.            
+When using the **DS3232RTC** library, the user is responsible for ensuring that reads and writes do not exceed the device's address space (0x00-0x12 for DS3231, 0x00-0xFF for DS3232); no bounds checking is done by the library.
 
 Similar to the **DS1307RTC** library, the **DS3232RTC** library instantiates an RTC object; the user does not need to do this.
 
@@ -158,8 +158,8 @@ Write one or more bytes to RTC memory.
 `RTC.writeRTC(addr, values, nbytes);`
 #####Parameters
 **addr:** First SRAM address to write *(byte)*. The valid address range is 0x00-0x12 for DS3231, 0x00-0xFF for DS3232. The general-purpose SRAM for the DS3232 begins at address 0x14. Address is not checked for validity by the library.
-**values:** An array of values to write _(*byte)_  
-**nBytes:** Number of bytes to write *(byte)*. Must be between 1 and 31 (Wire library limitation) but is not checked by the library. 
+**values:** An array of values to write _(*byte)_
+**nBytes:** Number of bytes to write *(byte)*. Must be between 1 and 31 (Wire library limitation) but is not checked by the library.
 #####Returns
 I2C status *(byte)*. Returns zero if successful.
 #####Example
@@ -176,7 +176,7 @@ Write a single byte to RTC memory.
 `RTC.writeRTC(addr, value);`
 #####Parameters
 **addr:** SRAM address to write *(byte)*. The valid address range is 0x00-0x12 for DS3231, 0x00-0xFF for DS3232. The general-purpose SRAM for the DS3232 begins at address 0x14. Address is not checked for validity by the library.
-**value:** Value to write _(byte)_  
+**value:** Value to write _(byte)_
 #####Returns
 I2C status *(byte)*. Returns zero if successful.
 #####Example
@@ -191,8 +191,8 @@ Read one or more bytes from RTC RAM.
 `RTC.readRTC(addr, values, nbytes);`
 #####Parameters
 **addr:** First SRAM address to read *(byte)*. The valid address range is 0x00-0x12 for DS3231, 0x00-0xFF for DS3232. The general-purpose SRAM for the DS3232 begins at address 0x14. Address is not checked for validity by the library.
-**values:** An array to receive the values read _(*byte)_  
-**nBytes:** Number of bytes to read *(byte)*. Must be between 1 and 32 (Wire library limitation) but is not checked by the library. 
+**values:** An array to receive the values read _(*byte)_
+**nBytes:** Number of bytes to read *(byte)*. Must be between 1 and 32 (Wire library limitation) but is not checked by the library.
 #####Returns
 I2C status *(byte)*. Returns zero if successful.
 #####Example
@@ -227,11 +227,11 @@ Set an alarm time. Sets the alarm registers only.  To cause the INT pin to be as
 #####Syntax
 `RTC.setAlarm(alarmType, seconds, minutes, hours, dayOrDate);`
 #####Parameters
-**alarmType:** A value from the ALARM_TYPES_t enumeration, above. *(ALARM_TYPES_t)*  
-**seconds:** The seconds value to set the alarm to. *(byte)*  
-**minutes:** The minutes value to set the alarm to. *(byte)*  
-**hours:** The hours value to set the alarm to. *(byte)*  
-**dayOrDate:** The day of the week or the date of the month. For day of the week, use a value from the Time library timeDayOfWeek_t enumeration, i.e. dowSunday, dowMonday, dowTuesday, dowWednesday, dowThursday, dowFriday, dowSaturday. *(byte)*  
+**alarmType:** A value from the ALARM_TYPES_t enumeration, above. *(ALARM_TYPES_t)*
+**seconds:** The seconds value to set the alarm to. *(byte)*
+**minutes:** The minutes value to set the alarm to. *(byte)*
+**hours:** The hours value to set the alarm to. *(byte)*
+**dayOrDate:** The day of the week or the date of the month. For day of the week, use a value from the Time library timeDayOfWeek_t enumeration, i.e. dowSunday, dowMonday, dowTuesday, dowWednesday, dowThursday, dowFriday, dowSaturday. *(byte)*
 #####Returns
 None.
 #####Example
@@ -247,10 +247,10 @@ Set an alarm time. Sets the alarm registers only.  To cause the INT pin to be as
 #####Syntax
 `RTC.setAlarm(alarmType, minutes, hours, dayOrDate);`
 #####Parameters
-**alarmType:** A value from the ALARM_TYPES_t enumeration, above. *(ALARM_TYPES_t)*  
-**minutes:** The minutes value to set the alarm to. *(byte)*  
-**hours:** The hours value to set the alarm to. *(byte)*  
-**dayOrDate:** The day of the week or the date of the month. For day of the week, use a value from the Time library timeDayOfWeek_t enumeration, i.e. dowSunday, dowMonday, dowTuesday, dowWednesday, dowThursday, dowFriday, dowSaturday. *(byte)*  
+**alarmType:** A value from the ALARM_TYPES_t enumeration, above. *(ALARM_TYPES_t)*
+**minutes:** The minutes value to set the alarm to. *(byte)*
+**hours:** The hours value to set the alarm to. *(byte)*
+**dayOrDate:** The day of the week or the date of the month. For day of the week, use a value from the Time library timeDayOfWeek_t enumeration, i.e. dowSunday, dowMonday, dowTuesday, dowWednesday, dowThursday, dowFriday, dowSaturday. *(byte)*
 #####Returns
 None.
 #####Example
@@ -262,12 +262,12 @@ RTC.setAlarm(ALM1_MATCH_DATE, 34, 12, 4);
 ###alarmInterrupt(byte alarmNumber, boolean alarmEnabled)
 #####Description
 Enable or disable an alarm "interrupt". Note that this "interrupt" causes the RTC's INT pin to be asserted. To use this signal as an actual interrupt to a microcontroller, it will need to be connected properly and programmed in the application firmware.
-on the RTC.   
+on the RTC.
 #####Syntax
 `RTC.alarmInterrupt(alarmNumber, enable);`
 #####Parameters
-**alarmNumber:** The number of the alarm to enable or disable, ALARM_1 or ALARM_2 *(byte)*  
-**alarmEnabled:** true or false *(boolean)*  
+**alarmNumber:** The number of the alarm to enable or disable, ALARM_1 or ALARM_2 *(byte)*
+**alarmEnabled:** true or false *(boolean)*
 #####Returns
 None.
 #####Example
@@ -282,7 +282,7 @@ Tests whether an alarm has been triggered. If the alarm was triggered, returns t
 #####Syntax
 `RTC.alarm(alarmNumber);`
 #####Parameters
-**alarmNumber:** The number of the alarm to test, ALARM_1 or ALARM_2 *(byte)*  
+**alarmNumber:** The number of the alarm to test, ALARM_1 or ALARM_2 *(byte)*
 #####Returns
 Description *(type)*
 #####Example
@@ -318,7 +318,7 @@ Enables or disables the square wave output.
 #####Syntax
 `RTC.squareWave(freq);`
 #####Parameters
-**freq:** a value from the SQWAVE_FREQS_t enumeration above. *(SQWAVE_FREQS_t)*  
+**freq:** a value from the SQWAVE_FREQS_t enumeration above. *(SQWAVE_FREQS_t)*
 #####Returns
 None.
 #####Example

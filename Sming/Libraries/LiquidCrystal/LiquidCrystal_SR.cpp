@@ -3,17 +3,17 @@
 // Copyright 2011 - Under creative commons license 3.0:
 //        Attribution-ShareAlike CC BY-SA
 //
-// This software is furnished "as is", without technical support, and with no 
+// This software is furnished "as is", without technical support, and with no
 // warranty, express or implied, as to its usefulness for any purpose.
 //
 // Thread Safe: No
 // Extendable: Yes
 //
 // @file LiquidCrystal_SR.h
-//  Connects an LCD using 2 or 3 pins from the Arduino, via an 8-bit 
+//  Connects an LCD using 2 or 3 pins from the Arduino, via an 8-bit
 // ShiftRegister (SR from now on).
-// 
-// @brief 
+//
+// @brief
 // This is a port of the ShiftRegLCD library from raron and ported to the
 // LCD library.
 //
@@ -55,7 +55,7 @@
 //             can now eliminate enable pin in constructor for two wire mode.
 // 2012.01.16  Florian Fida - faster digitalWrite/shiftOut
 // 2011.10.29  fmalpartida - adaption of the library to the LCD class hierarchy.
-// 2011.07.02  Fixed a minor flaw in setCursor function. No functional change, 
+// 2011.07.02  Fixed a minor flaw in setCursor function. No functional change,
 //             just a bit more memory efficient.
 //             Thanks to CapnBry (from google code and github) who noticed it.
 //             URL to his version of shiftregLCD:
@@ -66,7 +66,7 @@
 //             more streamlined interface
 // 2009.07.27  Thanks to an excellent suggestion from mircho at the Arduino
 //             playgrond forum, the number of wires now required is only two!
-// 2009.07.25  raron - Fixed comments. I really messed up the comments before 
+// 2009.07.25  raron - Fixed comments. I really messed up the comments before
 //             posting this, so I had to fix it.
 //             Renamed a function, but no improvements or functional changes.
 // 2009.07.23  Incorporated some proper initialization routines
@@ -95,8 +95,8 @@
 // CONSTRUCTORS
 // ---------------------------------------------------------------------------
 // Assuming 1 line 8 pixel high font
-LiquidCrystal_SR::LiquidCrystal_SR (uint8_t srdata, uint8_t srclock, 
-                                    uint8_t enable ) 
+LiquidCrystal_SR::LiquidCrystal_SR (uint8_t srdata, uint8_t srclock,
+                                    uint8_t enable )
 {
 	init ( srdata, srclock, enable, 1, 0 );
 }
@@ -107,17 +107,17 @@ LiquidCrystal_SR::LiquidCrystal_SR (uint8_t srdata, uint8_t srclock,
 
 //
 // init
-void LiquidCrystal_SR::init(uint8_t srdata, uint8_t srclock, uint8_t enable, 
+void LiquidCrystal_SR::init(uint8_t srdata, uint8_t srclock, uint8_t enable,
                             uint8_t lines, uint8_t font)
 {
    // Initialise private variables
    _two_wire = 0;
-   
+
    _srDataRegister = fio_pinToOutputRegister(srdata);
    _srDataBit = fio_pinToBit(srdata);
    _srClockRegister = fio_pinToOutputRegister(srclock);
    _srClockBit = fio_pinToBit(srclock);
-   
+
    if ((enable == TWO_WIRE) || (enable == srdata))
    {
       _two_wire = 1;
@@ -129,10 +129,10 @@ void LiquidCrystal_SR::init(uint8_t srdata, uint8_t srclock, uint8_t enable,
       _srEnableRegister = fio_pinToOutputRegister(enable);
       _srEnableBit = fio_pinToBit(enable);
    }
-   
+
    // Configure control pins as outputs
    // ------------------------------------------------------------------------
-   
+
    _displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
 }
 
@@ -146,7 +146,7 @@ void LiquidCrystal_SR::shiftIt(uint8_t val)
       fio_shiftOut(_srDataRegister, _srDataBit, _srClockRegister, _srClockBit);
    }
    fio_shiftOut(_srDataRegister, _srDataBit, _srClockRegister, _srClockBit, val, MSBFIRST);
-   
+
    // LCD ENABLE PULSE
    //
    // While this library is written with a shift register without an output
@@ -157,7 +157,7 @@ void LiquidCrystal_SR::shiftIt(uint8_t val)
    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
    {
       fio_digitalWrite_HIGH(_srEnableRegister, _srEnableBit);
-      waitUsec (1);         // enable pulse must be >450ns               
+      waitUsec (1);         // enable pulse must be >450ns
       fio_digitalWrite_SWITCHTO(_srEnableRegister, _srEnableBit, LOW);
    } // end critical section
 }
@@ -175,7 +175,7 @@ void LiquidCrystal_SR::send(uint8_t value, uint8_t mode)
    // and format it for shiftregister output wiring to the LCD
    // We are only interested in my COMMAND or DATA for myMode
    uint8_t myMode = ( mode == DATA ) ? SR_RS_BIT : 0; // RS bit; LOW: command.  HIGH: character.
-   
+
    if ( mode != FOUR_BITS )
    {
       shiftIt(myMode | SR_EN_BIT | ((value >> 1) & 0x78)); // upper nibble
@@ -204,6 +204,6 @@ void LiquidCrystal_SR::setBacklightPin ( uint8_t pin, t_backlighPol pol )
 
 //
 // setBacklight
-void LiquidCrystal_SR::setBacklight ( uint8_t mode ) 
+void LiquidCrystal_SR::setBacklight ( uint8_t mode )
 { }
 

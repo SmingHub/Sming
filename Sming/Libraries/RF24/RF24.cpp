@@ -103,9 +103,9 @@ uint8_t RF24::write_payload(const void* buf, uint8_t len)
 
   uint8_t data_len = min(len,payload_size);
   uint8_t blank_len = dynamic_payloads_enabled ? 0 : payload_size - data_len;
-  
+
   //printf("[Writing %u bytes %u blanks]",data_len,blank_len);
-  
+
   csn(LOW);
   status = SPI.transfer( W_TX_PAYLOAD );
   while ( data_len-- )
@@ -126,9 +126,9 @@ uint8_t RF24::read_payload(void* buf, uint8_t len)
 
   uint8_t data_len = min(len,payload_size);
   uint8_t blank_len = dynamic_payloads_enabled ? 0 : payload_size - data_len;
-  
+
   //printf("[Reading %u bytes %u blanks]",data_len,blank_len);
-  
+
   csn(LOW);
   status = SPI.transfer( R_RX_PAYLOAD );
   while ( data_len-- )
@@ -239,7 +239,7 @@ void RF24::print_address_register(const char* name, uint8_t reg, uint8_t qty)
 /****************************************************************************/
 
 RF24::RF24(uint8_t _cepin, uint8_t _cspin):
-  ce_pin(_cepin), csn_pin(_cspin), wide_band(true), p_variant(false), 
+  ce_pin(_cepin), csn_pin(_cspin), wide_band(true), p_variant(false),
   payload_size(32), ack_payload_available(false), dynamic_payloads_enabled(false),
   pipe0_reading_address(0)
 {
@@ -299,7 +299,7 @@ static const char rf24_pa_dbm_e_str_0[] PROGMEM = "PA_MIN";
 static const char rf24_pa_dbm_e_str_1[] PROGMEM = "PA_LOW";
 static const char rf24_pa_dbm_e_str_2[] PROGMEM = "LA_MED";
 static const char rf24_pa_dbm_e_str_3[] PROGMEM = "PA_HIGH";
-static const char * const rf24_pa_dbm_e_str_P[] PROGMEM = { 
+static const char * const rf24_pa_dbm_e_str_P[] PROGMEM = {
   rf24_pa_dbm_e_str_0,
   rf24_pa_dbm_e_str_1,
   rf24_pa_dbm_e_str_2,
@@ -378,14 +378,14 @@ void RF24::begin(void)
   {
     p_variant = true ;
   }
-  
+
   // Then set the data rate to the slowest (and most reliable) speed supported by all
   // hardware.
   setDataRate( RF24_1MBPS ) ;
 
   // Initialize CRC and request 2-byte (16bit) CRC
   setCRCLength( RF24_CRC_16 ) ;
-  
+
   // Disable dynamic payloads, to match dynamic_payloads_enabled setting
   write_register(DYNPD,0);
 
@@ -490,7 +490,7 @@ bool RF24::write( const void* buf, uint8_t len )
   // * There is an ack packet waiting (RX_DR)
   bool tx_ok, tx_fail;
   whatHappened(tx_ok,tx_fail,ack_payload_available);
-  
+
   //printf("%u%u%u\r\n",tx_ok,tx_fail,ack_payload_available);
 
   result = tx_ok;
@@ -917,7 +917,7 @@ rf24_datarate_e RF24::getDataRate( void )
 {
   rf24_datarate_e result ;
   uint8_t dr = read_register(RF_SETUP) & (_BV(RF_DR_LOW) | _BV(RF_DR_HIGH));
-  
+
   // switch uses RAM (evil!)
   // Order matters in our case below
   if ( dr == _BV(RF_DR_LOW) )
@@ -943,11 +943,11 @@ rf24_datarate_e RF24::getDataRate( void )
 void RF24::setCRCLength(rf24_crclength_e length)
 {
   uint8_t config = read_register(CONFIG) & ~( _BV(CRCO) | _BV(EN_CRC)) ;
-  
+
   // switch uses RAM (evil!)
   if ( length == RF24_CRC_DISABLED )
   {
-    // Do nothing, we turned it off above. 
+    // Do nothing, we turned it off above.
   }
   else if ( length == RF24_CRC_8 )
   {

@@ -12,7 +12,7 @@
  * CSN -> 7
  *
  * Note: To see best case latency comment out all Serial.println
- * statements not displaying the result and load 
+ * statements not displaying the result and load
  * 'ping_server_interupt' on the server.
  */
 
@@ -26,9 +26,9 @@ void setup(){
   /*
    * Setup pins / SPI.
    */
-   
+
   /* To change CE / CSN Pins:
-   * 
+   *
    * Mirf.csnPin = 9;
    * Mirf.cePin = 7;
    */
@@ -38,46 +38,46 @@ void setup(){
   */
   Mirf.spi = &MirfHardwareSpi;
   Mirf.init();
-  
+
   /*
    * Configure reciving address.
    */
-   
+
   Mirf.setRADDR((byte *)"clie1");
-  
+
   /*
    * Set the payload length to sizeof(unsigned long) the
    * return type of millis().
    *
    * NB: payload on client and server must be the same.
    */
-   
+
   Mirf.payload = sizeof(unsigned long);
-  
+
   /*
    * Write channel and payload config then power up reciver.
    */
-   
+
   /*
    * To change channel:
-   * 
+   *
    * Mirf.channel = 10;
    *
    * NB: Make sure channel is legal in your area.
    */
-   
+
   Mirf.config();
-  
-  Serial.println("Beginning ... "); 
+
+  Serial.println("Beginning ... ");
 }
 
 void loop(){
   unsigned long time = millis();
-  
+
   Mirf.setTADDR((byte *)"serv1");
-  
+
   Mirf.send((byte *)&time);
-  
+
   while(Mirf.isSending()){
   }
   Serial.println("Finished sending");
@@ -89,14 +89,14 @@ void loop(){
       return;
     }
   }
-  
+
   Mirf.getData((byte *) &time);
-  
+
   Serial.print("Ping: ");
   Serial.println((millis() - time));
-  
+
   delay(1000);
-} 
-  
-  
-  
+}
+
+
+

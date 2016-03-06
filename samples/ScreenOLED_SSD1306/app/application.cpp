@@ -76,14 +76,14 @@ void Demo1()
 	display.fillCircle(display.width()/2, display.height()/2, 10, WHITE);
 	display.display();
 	DemoTimer.stop();
-	DemoTimer.initializeMs(2000, Demo2).start();	
+	DemoTimer.initializeMs(2000, Demo2).start();
 }
 
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
-	
+
 	// Wifi could be used eg. for display info from internet
 	// could be also dissabled if no needed
 
@@ -101,4 +101,4 @@ void init()
 	// display.begin(SSD1306_SWITCHCAPVCC);
 	display.display();
 	DemoTimer.initializeMs(2000, Demo1).start();
-}	
+}

@@ -6,11 +6,11 @@ Exception Handling
 If there is an exception in your code usually ESP prints a message like the following one:
 
 ```
-Fatal exception (0): 
+Fatal exception (0):
 epc1=0x4020997c, epc2=0x00000000, epc3=0x00000000, excvaddr=0x00000000, depc=0x00000000
 ```
 
-That information can help you discover the function call that caused the exception. 
+That information can help you discover the function call that caused the exception.
 Using the value of epc1 and executing a command like the one below:
 
 ```bash
@@ -27,16 +27,16 @@ root cause may take quite some time.
 
 GDB Debugging
 -------------
-Debugging is a powerful technique giving better understanding of the code and 
+Debugging is a powerful technique giving better understanding of the code and
 the things that went wrong.
 
 There is already existing GDBStub that tries to make it easier to use software
-debugger. And this project is an example of what you need to do in order to 
+debugger. And this project is an example of what you need to do in order to
 integrate it.
 
 Here are the commands that you need to execute:
 
-1. Fetch the [GDBStub](https://github.com/espressif/esp-gdbstub) by 
+1. Fetch the [GDBStub](https://github.com/espressif/esp-gdbstub) by
 executing the following commands ( usually needs to be done only once).
 
 ```bash
@@ -61,25 +61,25 @@ variable:
 ENABLE_GDB=1
 ```
 
-If you are looking for an example then take a look at the Makefile-user.mk file 
+If you are looking for an example then take a look at the Makefile-user.mk file
 that is in the same directory as this README.md file.
 
 4. Now compile your project and flash it to the board.
 ```bash
-make 
+make
 make flash
 ```
 
-5. Run gdb immediately after resetting the board or after it has run into an exception. 
-The easiest way to do it is to use the provided script: 
+5. Run gdb immediately after resetting the board or after it has run into an exception.
+The easiest way to do it is to use the provided script:
 ```bash
-xtensa-lx106-elf-gdb -x <path-to-sming-code->/Basic_Debug/gdbcmds -b 115200 
+xtensa-lx106-elf-gdb -x <path-to-sming-code->/Basic_Debug/gdbcmds -b 115200
 ```
 
 115200 stands for the baud rate your program is using. Change it accordingly.
 You may also need to change the gdbcmds script to fit the configuration of your hardware and build environment.
 
-6. Software breakpoints ('br') only work on code that is in RAM. During development you can use the GDB_IRAM_ATTR attribute in your function declarations. 
+6. Software breakpoints ('br') only work on code that is in RAM. During development you can use the GDB_IRAM_ATTR attribute in your function declarations.
 Code in flash can only have a hardware breakpoint ('hbr').
 
 Read the [Notes](https://github.com/espressif/esp-gdbstub#notes) for more information.

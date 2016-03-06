@@ -30,7 +30,7 @@ static s32_t api_spiffs_erase(u32_t addr, u32_t size)
     if( !flashmem_erase_sector( sect_first ++ ) )
       return SPIFFS_ERR_INTERNAL;
   return SPIFFS_OK;
-} 
+}
 
 /*******************
 The W25Q32BV array is organized into 16,384 programmable pages of 256-bytes each. Up to 256 bytes can be programmed at a time.
@@ -109,7 +109,7 @@ static void spiffs_mount_internal(spiffs_config *cfg)
   cfg->hal_read_f = api_spiffs_read;
   cfg->hal_write_f = api_spiffs_write;
   cfg->hal_erase_f = api_spiffs_erase;
-  
+
   uint32_t dat;
   bool writeFirst = false;
   flashmem_read(&dat, cfg->phys_addr, 4);
@@ -202,7 +202,7 @@ void test_spiffs()
   char buf[12] = {0};
 
   // Surely, I've mounted spiffs before entering here
-  
+
   spiffs_file fd;
   spiffs_stat st = {0};
   SPIFFS_stat(&_filesystemStorageHandle, "my_file.txt", &st);

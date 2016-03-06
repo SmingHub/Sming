@@ -9,7 +9,7 @@ cat > ArduinoJson.h <<END
 // WARNING:
 // --------
 // This file is a workaround for old version of the Arduino IDE.
-// If you are using Arduino IDE 1.0.6 or above, then you installed the wrong 
+// If you are using Arduino IDE 1.0.6 or above, then you installed the wrong
 // package of ArduinoJson.
 // In that case, just delete the current installation and install the package.
 

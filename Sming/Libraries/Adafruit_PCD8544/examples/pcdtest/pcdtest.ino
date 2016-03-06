@@ -126,7 +126,7 @@ void setup()   {
   testdrawtriangle();
   delay(2000);
   display.clearDisplay();
-   
+
   testfilltriangle();
   delay(2000);
   display.clearDisplay();
@@ -172,9 +172,9 @@ void setup()   {
 
   // invert the display
   display.invertDisplay(true);
-  delay(1000); 
+  delay(1000);
   display.invertDisplay(false);
-  delay(1000); 
+  delay(1000);
 
   // draw a bitmap icon and 'animate' movement
   testdrawbitmap(logo16_glcd_bmp, LOGO16_GLCD_WIDTH, LOGO16_GLCD_HEIGHT);
@@ -182,20 +182,20 @@ void setup()   {
 
 
 void loop() {
-  
+
 }
 
 
 void testdrawbitmap(const uint8_t *bitmap, uint8_t w, uint8_t h) {
   uint8_t icons[NUMFLAKES][3];
   randomSeed(666);     // whatever seed
- 
+
   // initialize
   for (uint8_t f=0; f< NUMFLAKES; f++) {
     icons[f][XPOS] = random(display.width());
     icons[f][YPOS] = 0;
     icons[f][DELTAY] = random(5) + 1;
-    
+
     Serial.print("x: ");
     Serial.print(icons[f][XPOS], DEC);
     Serial.print(" y: ");
@@ -211,7 +211,7 @@ void testdrawbitmap(const uint8_t *bitmap, uint8_t w, uint8_t h) {
     }
     display.display();
     delay(200);
-    
+
     // then erase it + move it
     for (uint8_t f=0; f< NUMFLAKES; f++) {
       display.drawBitmap(icons[f][XPOS], icons[f][YPOS],  logo16_glcd_bmp, w, h, WHITE);
@@ -238,7 +238,7 @@ void testdrawchar(void) {
     display.write(i);
     //if ((i > 0) && (i % 14 == 0))
       //display.println();
-  }    
+  }
   display.display();
 }
 
@@ -296,7 +296,7 @@ void testfillroundrect(void) {
     display.display();
   }
 }
-   
+
 void testdrawrect(void) {
   for (int16_t i=0; i<display.height()/2; i+=2) {
     display.drawRect(i, i, display.width()-2*i, display.height()-2*i, BLACK);
@@ -304,7 +304,7 @@ void testdrawrect(void) {
   }
 }
 
-void testdrawline() {  
+void testdrawline() {
   for (int16_t i=0; i<display.width(); i+=4) {
     display.drawLine(0, 0, i, display.height()-1, BLACK);
     display.display();
@@ -314,7 +314,7 @@ void testdrawline() {
     display.display();
   }
   delay(250);
-  
+
   display.clearDisplay();
   for (int16_t i=0; i<display.width(); i+=4) {
     display.drawLine(0, display.height()-1, i, 0, BLACK);
@@ -325,7 +325,7 @@ void testdrawline() {
     display.display();
   }
   delay(250);
-  
+
   display.clearDisplay();
   for (int16_t i=display.width()-1; i>=0; i-=4) {
     display.drawLine(display.width()-1, display.height()-1, i, 0, BLACK);
@@ -343,7 +343,7 @@ void testdrawline() {
     display.display();
   }
   for (int16_t i=0; i<display.width(); i+=4) {
-    display.drawLine(display.width()-1, 0, i, display.height()-1, BLACK); 
+    display.drawLine(display.width()-1, 0, i, display.height()-1, BLACK);
     display.display();
   }
   delay(250);

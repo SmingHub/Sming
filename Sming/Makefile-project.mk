@@ -48,13 +48,13 @@ ESPTOOL2_SDK_ARGS	?= -quiet -lib
 
 ## SMING_HOME sets the path where Sming framework is located.
 ## Windows:
-# SMING_HOME = c:/tools/sming/Sming 
+# SMING_HOME = c:/tools/sming/Sming
 
 # MacOS / Linux
 # SMING_HOME = /opt/esp-open-sdk
 
 ## COM port parameter is reqruied to flash firmware correctly.
-## Windows: 
+## Windows:
 # COM_PORT = COM3
 
 # MacOS / Linux:
@@ -63,7 +63,7 @@ ESPTOOL2_SDK_ARGS	?= -quiet -lib
 ifeq ($(OS),Windows_NT)
   # Windows detected
   UNAME := Windows
-  
+
   # Default SMING_HOME. Can be overriden.
   SMING_HOME ?= c:\tools\Sming\Sming
 
@@ -73,7 +73,7 @@ ifeq ($(OS),Windows_NT)
   # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
   SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
   ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-  include $(SMING_HOME)/Makefile-windows.mk  
+  include $(SMING_HOME)/Makefile-windows.mk
 else
   UNAME := $(shell uname -s)
   ifeq ($(UNAME),Darwin)
@@ -86,7 +86,7 @@ else
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /opt/esp-open-sdk
 
-      include $(SMING_HOME)/Makefile-macos.mk      
+      include $(SMING_HOME)/Makefile-macos.mk
   endif
   ifeq ($(UNAME),Linux)
       # Linux Detected
@@ -97,7 +97,7 @@ else
 
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /opt/esp-open-sdk
-      include $(SMING_HOME)/Makefile-linux.mk     
+      include $(SMING_HOME)/Makefile-linux.mk
   endif
   ifeq ($(UNAME),FreeBSD)
       # Freebsd Detected
@@ -108,7 +108,7 @@ else
 
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /usr/local/esp8266/esp-open-sdk
-      include $(SMING_HOME)/Makefile-bsd.mk     
+      include $(SMING_HOME)/Makefile-bsd.mk
   endif
 endif
 
@@ -261,9 +261,9 @@ vpath %.cpp $(SRC_DIR)
 define compile-objects
 $1/%.o: %.c
 	$(vecho) "CC $$<"
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@	
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@
 $1/%.o: %.cpp
-	$(vecho) "C+ $$<" 
+	$(vecho) "C+ $$<"
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -c $$< -o $$@
 endef
 
@@ -274,19 +274,19 @@ all: checkdirs $(TARGET_OUT) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2)
 spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 
 $(TARGET_OUT): $(APP_AR)
-	$(vecho) "LD $@"	
+	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 
-	$(vecho) ""	
-	$(vecho) "#Memory / Section info:"	
+	$(vecho) ""
+	$(vecho) "#Memory / Section info:"
 	$(vecho) "------------------------------------------------------------------------------"
 #Check for existing old meminfo file and move it to /out/firmware as the infofile from previous build
 	$(Q) if [ -f "$(FW_MEMINFO_SAVED)" ]; then \
 	  mv $(FW_MEMINFO_SAVED) $(FW_MEMINFO_OLD); \
 	fi
-	
+
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
-	
+
 	$(Q) if [ -f "$(FW_MEMINFO_NEW)" -a -f "$(FW_MEMINFO_OLD)" ]; then \
 	  awk -F "|" 'FILENAME == "$(FW_MEMINFO_OLD)" { arr[$$1]=$$5 } FILENAME == "$(FW_MEMINFO_NEW)" { if (arr[$$1] != $$5){printf "%s%s%+d%s", substr($$0, 1, length($$0) - 1)," (",$$5 - arr[$$1],")\n" } else {print $$0} }' $(FW_MEMINFO_OLD) $(FW_MEMINFO_NEW); \
 	elif [ -f "$(FW_MEMINFO_NEW)" ]; then \
@@ -313,7 +313,7 @@ $(BUILD_DIR):
 $(FW_BASE):
 	$(Q) mkdir -p $@
 
-spiff_clean: 
+spiff_clean:
 	$(vecho) "Cleaning $(SPIFF_BIN_OUT)"
 	$(Q) rm -rf $(SPIFF_BIN_OUT)
 

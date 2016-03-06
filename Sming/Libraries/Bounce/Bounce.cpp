@@ -46,7 +46,7 @@ int Bounce::update()
     }
 
      // We need to rebounce, so simulate a state change
-     
+
 	if ( rebounce_millis && (millis() - previous_millis >= rebounce_millis) ) {
         previous_millis = millis();
 		 rebounce(0);
@@ -71,7 +71,7 @@ int Bounce::read()
 
 // Protected: debounces the pin
 int Bounce::debounce() {
-	
+
 	uint8_t newState = digitalRead(pin);
 	if (state != newState ) {
   		if (millis() - previous_millis >= interval_millis) {
@@ -80,13 +80,13 @@ int Bounce::debounce() {
   			return 1;
 	}
   }
-  
+
   return 0;
-	
+
 }
 
 // The risingEdge method is true for one scan after the de-bounced input goes from off-to-on.
 bool  Bounce::risingEdge() { return stateChanged && state; }
-// The fallingEdge  method it true for one scan after the de-bounced input goes from on-to-off. 
+// The fallingEdge  method it true for one scan after the de-bounced input goes from on-to-off.
 bool  Bounce::fallingEdge() { return stateChanged && !state; }
 

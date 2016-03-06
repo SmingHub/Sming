@@ -528,7 +528,7 @@ uint8_t OneWire::crc8(const uint8_t *addr, uint8_t len)
 uint8_t OneWire::crc8(const uint8_t *addr, uint8_t len)
 {
 	uint8_t crc = 0;
-	
+
 	while (len--) {
 		uint8_t inbyte = *addr++;
 		for (uint8_t i = 8; i; i--) {

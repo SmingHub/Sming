@@ -17,7 +17,7 @@ void setup()
   // Set the sensitivity you want to use
   // 2 = 2g, 4 = 4g, 8 = 8g
   mySensor.initSensitivity(2);
-  // Calibrate the Offset, that values corespond in 
+  // Calibrate the Offset, that values corespond in
   // flat position to: xVal = -30, yVal = -20, zVal = +20
   // !!!Activate this after having the first values read out!!!
   //mySensor.calibrateOffset(0.23, -43.2, 12.43);

@@ -43,7 +43,7 @@ void TFT_ILI9163C::writedata(uint8_t c){
 	*csport &= ~cspinmask;
 	spiwrite(c);
 	*csport |= cspinmask;
-} 
+}
 
 void TFT_ILI9163C::writedata16(uint16_t d){
 	*rsport |=  rspinmask;
@@ -51,7 +51,7 @@ void TFT_ILI9163C::writedata16(uint16_t d){
 	spiwrite(d >> 8);
 	spiwrite(d);
 	*csport |= cspinmask;
-} 
+}
 
 void TFT_ILI9163C::setBitrate(uint32_t n){
 	if (n >= 8000000) {
@@ -83,7 +83,7 @@ void TFT_ILI9163C::writedata(uint8_t c){
 	csport->PIO_CODR  |=  cspinmask;//LO
 	spiwrite(c);
 	csport->PIO_SODR  |=  cspinmask;//HI
-} 
+}
 
 void TFT_ILI9163C::writedata16(uint16_t d){
 	rsport->PIO_SODR |=  rspinmask;//HI
@@ -103,10 +103,10 @@ void TFT_ILI9163C::setBitrate(uint32_t n){
 	SPI.setClockDivider(divider);
 }
 #elif defined(__MK20DX128__) || defined(__MK20DX256__)
-//Teensy 3.0 & 3.1  
+//Teensy 3.0 & 3.1
 
 void TFT_ILI9163C::writecommand(uint8_t c){
-	
+
 	#if defined(__DMASPI)
 	SPI0.PUSHR = c | (pcs_command << 16) | SPI_PUSHR_CTAS(0);
 	while (((SPI0.SR) & (15 << 12)) > (3 << 12)) ; // wait if FIFO full
@@ -232,7 +232,7 @@ void TFT_ILI9163C::begin(void) {
 	rspinmask = digitalPinToBitMask(_rs);
     SPI.begin();
     SPI.setClockDivider(21); // 4 MHz
-    //Due defaults to 4mHz (clock divider setting of 21), but we'll set it anyway 
+    //Due defaults to 4mHz (clock divider setting of 21), but we'll set it anyway
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE0);
 	// toggle RST low to reset; CS low so it'll listen to us
@@ -331,17 +331,17 @@ void TFT_ILI9163C::chipInit() {
 	delay(500);
 	writecommand(CMD_SLPOUT);//exit sleep
 	delay(5);
-	writecommand(CMD_PIXFMT);//Set Color Format 16bit   
+	writecommand(CMD_PIXFMT);//Set Color Format 16bit
 	writedata(0x05);
 	delay(5);
 	writecommand(CMD_GAMMASET);//default gamma curve 3
 	writedata(0x04);//0x04
 	delay(1);
-	writecommand(CMD_GAMRSEL);//Enable Gamma adj    
-	writedata(0x01); 
+	writecommand(CMD_GAMRSEL);//Enable Gamma adj
+	writedata(0x01);
 	delay(1);
 	writecommand(CMD_NORML);
-	
+
 	writecommand(CMD_DFUNCTR);
 	writedata(0b11111111);//
 	writedata(0b00000110);//
@@ -420,39 +420,39 @@ void TFT_ILI9163C::chipInit() {
 	writedata(0x08);//0x0C//0x08
 	writedata(0x02);//0x14//0x08
 	delay(1);
-	writecommand(CMD_DINVCTR);//display inversion 
+	writecommand(CMD_DINVCTR);//display inversion
 	writedata(0x07);
     delay(1);
-	writecommand(CMD_PWCTR1);//Set VRH1[4:0] & VC[2:0] for VCI1 & GVDD   
+	writecommand(CMD_PWCTR1);//Set VRH1[4:0] & VC[2:0] for VCI1 & GVDD
 	writedata(0x0A);//4.30 - 0x0A
 	writedata(0x02);//0x05
 	delay(1);
-	writecommand(CMD_PWCTR2);//Set BT[2:0] for AVDD & VCL & VGH & VGL   
+	writecommand(CMD_PWCTR2);//Set BT[2:0] for AVDD & VCL & VGH & VGL
 	writedata(0x02);
 	delay(1);
-	writecommand(CMD_VCOMCTR1);//Set VMH[6:0] & VML[6:0] for VOMH & VCOML   
+	writecommand(CMD_VCOMCTR1);//Set VMH[6:0] & VML[6:0] for VOMH & VCOML
 	writedata(0x50);//0x50
 	writedata(99);//0x5b
 	delay(1);
 	writecommand(CMD_VCOMOFFS);
 	writedata(0);//0x40
 	delay(1);
-  
-	writecommand(CMD_CLMADRS);//Set Column Address  
-	writedata(0x00); 
-	writedata(0X00); 
-	writedata(0X00); 
-	writedata(_GRAMWIDTH); 
-  
-	writecommand(CMD_PGEADRS);//Set Page Address  
-	writedata(0x00); 
-	writedata(0X00); 
-	writedata(0X00); 
-	writedata(_GRAMHEIGH); 
+
+	writecommand(CMD_CLMADRS);//Set Column Address
+	writedata(0x00);
+	writedata(0X00);
+	writedata(0X00);
+	writedata(_GRAMWIDTH);
+
+	writecommand(CMD_PGEADRS);//Set Page Address
+	writedata(0x00);
+	writedata(0X00);
+	writedata(0X00);
+	writedata(_GRAMHEIGH);
 
 	colorSpace(_colorspaceData);
 	setRotation(0);
-	writecommand(CMD_DISPON);//display ON 
+	writecommand(CMD_DISPON);//display ON
 	delay(1);
 	writecommand(CMD_RAMWR);//Memory Write
 
@@ -543,7 +543,7 @@ void TFT_ILI9163C::fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t
 	if (((x + w) - 1) >= _width)  w = _width  - x;
 	if (((y + h) - 1) >= _height) h = _height - y;
 	setAddrWindow(x,y,(x+w)-1,(y+h)-1);
-	
+
 	for (y = h;y > 0;y--) {
 		for (x = w;x > 0;x--) {
 			writedata16(color);

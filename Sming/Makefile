@@ -17,13 +17,13 @@
 
 ## SMING_HOME sets the path where Sming framework is located.
 ## Windows:
-# SMING_HOME = c:/tools/sming/Sming 
+# SMING_HOME = c:/tools/sming/Sming
 
 # MacOS / Linux
 # SMING_HOME = /opt/esp-open-sdk
 
 ## COM port parameter is reqruied to flash firmware correctly.
-## Windows: 
+## Windows:
 # COM_PORT = COM3
 
 # MacOS / Linux:
@@ -36,7 +36,7 @@ COM_SPEED = 115200
 ifeq ($(OS),Windows_NT)
   # Windows detected
   UNAME := Windows
-  
+
   # Default SMING_HOME. Can be overriden.
   SMING_HOME ?= c:\tools\Sming\Sming
 
@@ -46,7 +46,7 @@ ifeq ($(OS),Windows_NT)
   # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
   SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
   ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-  include Makefile-windows.mk  
+  include Makefile-windows.mk
 else
   UNAME := $(shell uname -s)
   ifeq ($(UNAME),Darwin)
@@ -59,7 +59,7 @@ else
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /opt/esp-open-sdk
 
-      include Makefile-macos.mk      
+      include Makefile-macos.mk
   endif
   ifeq ($(UNAME),Linux)
       # Linux Detected
@@ -70,7 +70,7 @@ else
 
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /opt/esp-open-sdk
-      include Makefile-linux.mk     
+      include Makefile-linux.mk
   endif
   ifeq ($(UNAME),FreeBSD)
       # Freebsd Detected
@@ -150,7 +150,7 @@ SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
 AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.s))
 ifeq ($(ENABLE_GDB), 1)
-	AS_SRC += $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S)) 
+	AS_SRC += $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 endif
 C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
@@ -194,11 +194,11 @@ define compile-objects
 $1/%.o: %.s
 	$(vecho) "AS $$<"
 	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-ifeq ($(ENABLE_GDB), 1)	
+ifeq ($(ENABLE_GDB), 1)
 $1/%.o: %.S
 	$(vecho) "AS $$<"
 	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-endif	
+endif
 $1/%.o: %.c
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
@@ -211,8 +211,8 @@ endef
 
 all: checkdirs $(APP_AR)
 
-ifeq ($(ENABLE_GDB), 1)	
-gdbstub/Makefile: 
+ifeq ($(ENABLE_GDB), 1)
+gdbstub/Makefile:
 	$(Q) echo "No espgdbstub submodule found. Using git to fetch it..."
 	$(Q) git submodule init
 	$(Q) git submodule update
@@ -229,10 +229,10 @@ $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 	$(vecho) "Installing libsming"
-	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
+	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a
 	$(vecho) "Done"
 
-ifeq ($(ENABLE_GDB), 1)	
+ifeq ($(ENABLE_GDB), 1)
 checkdirs: gdbstub/Makefile $(BUILD_DIR) $(FW_BASE)
 else
 checkdirs: $(BUILD_DIR) $(FW_BASE)

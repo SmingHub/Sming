@@ -45,9 +45,9 @@ int base64decode(const char in[4], char out[3])
 	v[2]=base64dec_tab[(unsigned)in[2]];
 	v[3]=base64dec_tab[(unsigned)in[3]];
 
-	out[0]=(v[0]<<2)|(v[1]>>4); 
-	out[1]=(v[1]<<4)|(v[2]>>2); 
-	out[2]=(v[2]<<6)|(v[3]); 
+	out[0]=(v[0]<<2)|(v[1]>>4);
+	out[1]=(v[1]<<4)|(v[2]>>2);
+	out[2]=(v[2]<<6)|(v[3]);
 	return (v[0]|v[1]|v[2]|v[3])!=255 ? in[3]=='=' ? in[2]=='=' ? 1 : 2 : 3 : 0;
 }
 

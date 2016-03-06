@@ -74,7 +74,7 @@ $(RBOOT_FW_BASE):
 $(RBOOT_BUILD_BASE)/rboot-stage2a.o: rboot-stage2a.c rboot-private.h rboot.h
 	@echo "CC $<"
 	@$(CC) $(CFLAGS) $(RBOOT_EXTRA_INCDIR) -c $< -o $@
-	
+
 $(RBOOT_BUILD_BASE)/rboot-stage2a.elf: $(RBOOT_BUILD_BASE)/rboot-stage2a.o
 	@echo "LD $@"
 	@$(LD) -Trboot-stage2a.ld $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group -o $@

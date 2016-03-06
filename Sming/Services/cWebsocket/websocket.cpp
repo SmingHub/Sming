@@ -29,9 +29,9 @@ void wsMakeFrame(const uint8_t *data, size_t dataLength,
 {
     assert(outFrame && *outLength);
     assert(frameType < 0x10);
-	
+
     outFrame[0] = 0x80 | frameType;
-    
+
     if (dataLength <= 125) {
         outFrame[1] = dataLength;
         *outLength = 2;
@@ -42,7 +42,7 @@ void wsMakeFrame(const uint8_t *data, size_t dataLength,
         *outLength = 4;
     } else {
         assert(dataLength <= 0xFFFF);
-        
+
         /* implementation for 64bit systems
         outFrame[1] = 127;
         dataLength = htonll(dataLength);
@@ -80,7 +80,7 @@ static size_t getPayloadLength(const uint8_t *inputFrame, size_t inputLength,
     } else if (payloadLength == 0x7F) {
         *frameType = WS_ERROR_FRAME;
         return 0;
-        
+
         /* // implementation for 64bit systems
         uint64_t payloadLength64b = 0;
         *payloadFieldExtraBytes = 8;
@@ -103,7 +103,7 @@ wsFrameType wsParseInputFrame(uint8_t *inputFrame, size_t inputLength,
 
     if (inputLength < 2)
         return WS_INCOMPLETE_FRAME;
-	
+
     if ((inputFrame[0] & 0x70) != 0x0) // checks extensions off
         return WS_ERROR_FRAME;
     if ((inputFrame[0] & 0x80) != 0x80) // we haven't continuation frames support
@@ -132,7 +132,7 @@ wsFrameType wsParseInputFrame(uint8_t *inputFrame, size_t inputLength,
 
             *dataPtr = &inputFrame[2 + payloadFieldExtraBytes + 4];
             *dataLength = payloadLength;
-		
+
             size_t i;
             for (i = 0; i < *dataLength; i++) {
                 (*dataPtr)[i] = (*dataPtr)[i] ^ maskingKey[i%4];

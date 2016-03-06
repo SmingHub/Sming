@@ -33,9 +33,9 @@ void onPrintSystemTime() {
 
 void onNtpReceive(NtpClient& client, time_t timestamp) {
 	SystemClock.setTime(timestamp);
-	
+
 	DSRTC.set(timestamp);
-	
+
 	Serial.print("Time synchronized: ");
 	Serial.println(SystemClock.getSystemTimeString());
 }
@@ -65,7 +65,7 @@ void init()
 
 	// Run our method when station was connected to AP (or not connected)
 	WifiStation.waitConnection(connectOk, 30, connectFail); // We recommend 20+ seconds at start
-	
+
 	// Station - WiFi client
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here

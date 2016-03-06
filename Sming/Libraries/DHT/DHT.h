@@ -311,7 +311,7 @@ public:
 private:
 	bool read();
 	void updateInternalCache();
-	
+
 	uint8_t m_kSensorPin, m_kSensorType;
 	uint8_t m_data[6];
 	unsigned long m_lastreadtime;

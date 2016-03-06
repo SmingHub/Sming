@@ -2,7 +2,7 @@
 // Copyright 2011 - Under creative commons license 3.0:
 //        Attribution-ShareAlike CC BY-SA
 //
-// This software is furnished "as is", without technical support, and with no 
+// This software is furnished "as is", without technical support, and with no
 // warranty, express or implied, as to its usefulness for any purpose.
 //
 // Thread Safe: No
@@ -10,8 +10,8 @@
 //
 // @file performanceLCD.h
 // This sketch implements a simple benchmark for the New LiquidCrystal library.
-// 
-// @brief 
+//
+// @brief
 // This sketch provides a simple benchmark for the New LiquidCrystal library. It
 // enables to test the varios classes provided by the library giving a performance
 // reference.
@@ -21,7 +21,7 @@
 // @version API 1.0.0
 //
 // @author F. Malpartida - fmalpartida@gmail.com
-//         Contribution by flo - Florian@Fida.biz - for benchmarking SR 
+//         Contribution by flo - Florian@Fida.biz - for benchmarking SR
 // ---------------------------------------------------------------------------
 #include <Wire.h>
 
@@ -123,7 +123,7 @@ const int    CONTRAST      = 0;
 #endif
 
 /*!
- @const      charBitmap 
+ @const      charBitmap
  @abstract   Define Character bitmap for the bargraph.
  @discussion Defines a character bitmap to represent a bargraph on a text
  display. The bitmap goes from a blank character to full black.
@@ -148,7 +148,7 @@ typedef long (*t_benchmarkOp)( uint8_t );
  @abstract   Structure to store results of the execution time of the benchmark.
  @field      benchmark: function pointer of the benchmark to be executed.
  */
-typedef struct 
+typedef struct
 {
    t_benchmarkOp   benchmark; /**< Function pointer associated to the benchmark */
    long            benchTime; /**< execution time for benchmark 1 in useconds */
@@ -185,7 +185,7 @@ extern long benchmark2 ( uint8_t );
 extern long benchmark3 ( uint8_t );
 extern long benchmark4 ( uint8_t );
 
-//! @brief benchmark structure that will be initialised and 
+//! @brief benchmark structure that will be initialised and
 static t_benchMarks myBenchMarks[NUM_BENCHMARKS] =
 {
    { benchmark1, 0, (LCD_ROWS * LCD_COLUMNS) + 2 },
@@ -201,19 +201,19 @@ static t_benchMarks myBenchMarks[NUM_BENCHMARKS] =
  @abstract   Return available RAM memory
  @discussion This routine returns the ammount of RAM memory available after
  initialising the C runtime.
- @param      
+ @param
  @return     Free RAM available, -1 for non AVR microcontrollers
  */
-static int freeMemory ( void ) 
+static int freeMemory ( void )
 {
 #ifdef __AVR__
    int free_memory;
-   
+
    if((int)__brkval == 0)
    free_memory = ((int)&free_memory) - ((int)&__bss_end);
    else
    free_memory = ((int)&free_memory) - ((int)__brkval);
-   
+
    return free_memory;
 #else
    return -1;
@@ -223,13 +223,13 @@ static int freeMemory ( void )
 
 /*!
  @function   LCDSetup
- @abstract   Initialise LCD associated pins and initialise the LCD object 
+ @abstract   Initialise LCD associated pins and initialise the LCD object
  with its geometry.
  @discussion Initialise the LCD object and make it ready for operation by
  setting up the LCD geometry, i.e. LCD character size. Initialise
  and configure all associated control pins such as backlight and
  contras pin if necessary.
- 
+
  @param[in]  charBitmapSize: contrasts pin associated to the contrast (should be an
  analog pin). 0 if contrast pin is not required.
  @param[in]  backlight: backlight pin associated to the LCD backlight.
@@ -250,7 +250,7 @@ static void LCDSetup ( uint8_t contrasPin, uint8_t backlight, uint8_t cols, uint
      pinMode(backlight, OUTPUT);
      digitalWrite(backlight, HIGH);
    }
-   
+
    lcd.begin ( cols, rows );
    lcd.clear ( );
 }
@@ -261,7 +261,7 @@ static void LCDSetup ( uint8_t contrasPin, uint8_t backlight, uint8_t cols, uint
  @abstract   Loads onto the LCD the character set for the benchmark.
  @discussion Loads onto the LCD the character set that will be used throughout
  the benchmark.
- 
+
  @param[in]  charBitmapSize: number of characters to load to the LCD.
  */
 static void LCDLoadCharacters ( int numChars )
@@ -284,7 +284,7 @@ static void LCDLoadCharacters ( int numChars )
              memory. For every line it writes, it positions the cursor.
              The number of writen LCD accesses is: LCD_ROW * LCD_COLUMS + 2.
              It returns the cumulative time used by all the iterations.
- 
+
  @param[in]  iterations: number of iterations the benchmark is executed before
              returning the time taken by all iterations.
  @return     The time take to execute iterations number of benchmarks.
@@ -293,12 +293,12 @@ long benchmark1 ( uint8_t iterations )
 {
    unsigned long time, totalTime = 0;
    int i, j;
-   
+
    while ( iterations > 0 )
    {
       // Clear the LCD
       lcd.clear ( );
-   
+
       time = micros ();
       for ( i = 0; i < LCD_ROWS; i++ )
       {
@@ -320,11 +320,11 @@ long benchmark1 ( uint8_t iterations )
  @abstract   writes to the LCD a full set of characters loaded on the LCD
              memory one line pixel at the time
  @discussion Writes to all the positions of the LCD a fixed pattern from
-             memory each patern take 6 write operations to the LCD. For every  
+             memory each patern take 6 write operations to the LCD. For every
              character it writes it sets the cursor possition.
              The number of writen LCD accesses is: LCD_ROW * LCD_COLUMS * 6.
              It returns the cumulative time used by all the iterations.
- 
+
  @param[in]  iterations: number of iterations the benchmark is executed before
              returning the time taken by all iterations.
  @return     The time take to execute iterations number of benchmarks.
@@ -333,14 +333,14 @@ long benchmark2 ( uint8_t iterations )
 {
    unsigned long time, totalTime = 0;
    int i, j, k;
-   
+
    while ( iterations > 0 )
    {
       // Clear the LCD
       lcd.clear ( );
-   
+
       time = micros ();
-      
+
       for ( i = 0; i < LCD_ROWS; i++ )
       {
          for ( j = 0; j < LCD_COLUMNS; j++ )
@@ -365,7 +365,7 @@ long benchmark2 ( uint8_t iterations )
              RAM. For every line it writes, it positions the cursor.
              The number of writen LCD accesses is: LCD_ROW * LCD_COLUMS + 2.
              It returns the cumulative time used by all the iterations.
- 
+
  @param[in]  iterations: number of iterations the benchmark is executed before
              returning the time taken by all iterations.
  @return     The time take to execute iterations number of benchmarks.
@@ -374,12 +374,12 @@ long benchmark3 ( uint8_t iterations )
 {
    unsigned long time, totalTime = 0;
    int i;
-   
+
    while ( iterations > 0 )
    {
       // Clear the LCD
       lcd.clear ( );
-   
+
       time = micros ();
       for ( i = 0; i < LCD_ROWS; i++ )
       {
@@ -400,7 +400,7 @@ long benchmark3 ( uint8_t iterations )
              flash. For every line it writes, it positions the cursor.
              The number of writen LCD accesses is: LCD_ROW * LCD_COLUMS + 2.
              It returns the cumulative time used by all the iterations.
- 
+
  @param[in]  iterations: number of iterations the benchmark is executed before
              returning the time taken by all iterations.
  @return     The time take to execute iterations number of benchmarks.
@@ -409,12 +409,12 @@ long benchmark4 ( uint8_t iterations )
 {
    unsigned long time, totalTime = 0;
    int i;
-   
+
    while ( iterations > 0 )
    {
       // Clear the LCD
       lcd.clear ( );
-   
+
       time = micros ();
       for ( i = 0; i < LCD_ROWS; i++ )
       {
@@ -437,7 +437,7 @@ void setup ()
    Serial.print ( F("Free mem: ") );
    Serial.println ( freeMemory () );
 #endif
-   
+
    // Initialise the LCD
    LCDSetup ( CONTRAST_PIN, BACKLIGHT_PIN, LCD_COLUMNS, LCD_ROWS );
    LCDLoadCharacters ( (sizeof(charBitmap ) / sizeof (charBitmap[0])) );
@@ -452,19 +452,19 @@ void loop ()
 
    lcd.setCursor ( 0, 0 );
    lcd.clear ( );
-   
+
    // Run benchmark
    for ( i = 0; i < NUM_BENCHMARKS; i++ )
    {
-      myBenchMarks[i].benchTime = 
+      myBenchMarks[i].benchTime =
          (myBenchMarks[i].benchmark (ITERATIONS))/ITERATIONS;
          Serial.println (i);
    }
-   
+
    float fAllWrites=0.0;
-   
+
    for ( i = 0; i < NUM_BENCHMARKS; i++ )
-   {   
+   {
       Serial.print ( F("benchmark") );
       Serial.print ( i );
       Serial.print ( F(": ") );

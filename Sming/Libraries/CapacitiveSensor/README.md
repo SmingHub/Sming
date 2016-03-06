@@ -1,6 +1,6 @@
 #CapacitiveSensor Library#
 
-CapacitiveSensor lets you create sensors that can detect touch or proximity. 
+CapacitiveSensor lets you create sensors that can detect touch or proximity.
 
 http://www.pjrc.com/teensy/td_libs_CapacitiveSensor.html
 

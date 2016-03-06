@@ -41,9 +41,9 @@ Timer printTimer;
 // Callback example using defined class ntpClientDemo
 ntpClientDemo *demo;
 
-// CallBack example 1 
+// CallBack example 1
 // ntpClientDemo dm1 = ntpClientDemo();
-// or use 
+// or use
 // ntpClientDemo dm1;
 
 void onPrintSystemTime() {
@@ -74,7 +74,7 @@ void connectOk()
 //	ntpClient.setAutoQueryInterval(60);
 //	ntpClient.setAutoQuery(true);
 //  ntpClient.setAutoUpdateSystemClock(true);
-	// Request to update time now. 
+	// Request to update time now.
 	// Otherwise the set interval will pass before time
 	// is updated.
 //	ntpClient.requestTime();
@@ -112,7 +112,7 @@ void init()
 	SystemClock.setTimeZone(2);
 
 	printTimer.initializeMs(1000, onPrintSystemTime).start();
-	
+
 	// Run our method when station was connected to AP (or not connected)
 	WifiStation.waitConnection(connectOk, 30, connectFail); // We recommend 20+ seconds at start
 }
