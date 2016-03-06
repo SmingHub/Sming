@@ -71,7 +71,7 @@ void testPrintf()
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(COM_SPEED_SERIAL); // 115200 by default, change it in Makefile-user.mk
 
 	procTimer.initializeMs(2000, sayHello).start();
 
