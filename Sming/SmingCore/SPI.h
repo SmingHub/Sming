@@ -20,7 +20,7 @@
 #define SPI_DEBUG  1
 
 // for compatibility when porting from Arduino
-#define SPI_HAS_TRANSACTION  0
+//#define SPI_HAS_TRANSACTION  0
 
 #define SPI_CONTINUE	1
 
@@ -33,6 +33,8 @@
 // Byte Order definitions
 #define SPI_BYTE_ORDER_HIGH_TO_LOW 1
 #define SPI_BYTE_ORDER_LOW_TO_HIGH 0
+
+#define spi_busy(spi_no) READ_PERI_REG(SPI_CMD(spi_no))&SPI_USR
 
 
 class SPIClass: public SPIBase {
@@ -52,7 +54,6 @@ public:
 	 */
 	virtual void begin();
 
-	void begin(uint16_t predivider, uint8_t divider);
 
 	/*
 	 * end(): Disables the SPI bus (leaving pin modes unchanged).
@@ -82,6 +83,11 @@ public:
 //	{
 //		return (unsigned char) transfer32((uint32) val, 1);
 //	};
+
+//	virtual unsigned char transfer(unsigned char  data)  {
+//	spi_transaction(0, 0, 0, 0, 8,    (uint32) data, 0, 0);
+//	}
+
 	virtual unsigned short transfer16(unsigned short val) {
 		return (unsigned short) transfer32((uint32) val, 2);
 	};
@@ -92,8 +98,16 @@ public:
 
 private:
 
+	uint32 spi_transaction(uint8 cmd_bits, uint16 cmd_data, uint32 addr_bits, uint32 addr_data, uint32 dout_bits, uint32 dout_data,
+					uint32 din_bits, uint32 dummy_bits);
+
+
 	// methods
 	void setClock(uint8 prediv, uint8 cntdiv);
+	void spi_mode(uint8 spi_cpha,uint8 spi_cpol);
+	void spi_byte_order(uint8 tx_byte_order, uint8 rx_byte_order);
+
+
 	uint32_t getFrequency(int freq, uint8 &pre, uint8 clk);
 	void setFrequency(uint32_t freq);
 

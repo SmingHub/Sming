@@ -37,7 +37,7 @@ public:
 	// overload operator to check wheter the settings are equal
 	bool operator==(const SPISettings &other) const;
 
-//	void print(String s);
+	void print(const char *s);
 
 	friend class SPIClass;
 

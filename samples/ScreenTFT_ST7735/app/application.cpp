@@ -20,8 +20,8 @@
 #define	TFT_DC   	0
 #define TFT_CS   	2
 
-Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
-//Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+//Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
 Timer DemoScreenTimer;
 float p = 3.1415926;
@@ -334,11 +334,11 @@ void init()
 	// Use this initializer (uncomment) if you're using a 1.44" TFT
 	tft.initR(INITR_144GREENTAB);   // initialize a ST7735S chip, black tab
 
-	tft.fillScreen(ST7735_BLACK);
+	tft.fillScreen(ST7735_RED);
 	startTime = millis() - startTime;
 
 	debugf("Initialized in %d ms\n", startTime);
 
-	DemoScreenTimer.initializeMs(500, screen1).start(FALSE);
+//	DemoScreenTimer.initializeMs(500, screen1).start(FALSE);
 
 }

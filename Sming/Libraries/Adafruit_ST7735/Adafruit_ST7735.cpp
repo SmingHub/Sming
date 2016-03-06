@@ -337,6 +337,7 @@ void Adafruit_ST7735::commonInit(const uint8_t *cmdList) {
     SPI.setDataMode(SPI_MODE0);
 #elif defined (__ESP8266_EX__)
     SPI.begin();
+
 #endif
   } else {
     pinMode(_sclk, OUTPUT);

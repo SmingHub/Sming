@@ -26,7 +26,8 @@
 SPIClass SPI;
 
 SPIClass::SPIClass() {
-	_SPISettings = SPISettings(4000000, MSBFIRST, SPI_MODE1);;
+//	_SPISettings = SPISettings(4000000, MSBFIRST, SPI_MODE1);
+	_SPISettings = this->SPIDefaultSettings;
 }
 
 SPIClass::~SPIClass() {
@@ -48,7 +49,7 @@ void SPIClass::begin() {
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, 2); //GPIO14 is HSPI CLK pin (Clock)
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, 2); //GPIO15 is HSPI CS pin (Chip Select / Slave Select)
 
-	prepare(_SPISettings);
+	prepare(this->SPIDefaultSettings);
 }
 
 
@@ -151,54 +152,35 @@ void SPIClass::transfer(uint8 * buffer, size_t numberBytes) {
 void SPIClass::prepare(SPISettings mySettings) {
 
 	// TODO: use settings instead of defaults
-//#ifdef SPI_DEBUG
-//	debugf("SPIhw::prepare(SPISettings mySettings)");
-//	_SPISettings.print("_SPISettings");
-//	mySettings.print("mySettings");
-//#endif
+#ifdef SPI_DEBUG
+	debugf("SPIhw::prepare(SPISettings mySettings)");
+	_SPISettings.print("_SPISettings");
+	mySettings.print("mySettings");
+#endif
 
 	// check if we need to change settings
-	if (_SPISettings == mySettings)
+	if (_init & _SPISettings == mySettings)
 		return;
 
 	//  setup clock
 	setFrequency(mySettings._speed);
 
-	//  Setup Byte Order
-	uint8 byte_order = SPI_BYTE_ORDER_LOW_TO_HIGH;
-	if(byte_order){
-		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
-	} else {
-		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
-	}
+	//  Setup Byte Order  tx / rx
+	spi_byte_order(SPI_BYTE_ORDER_HIGH_TO_LOW, SPI_BYTE_ORDER_HIGH_TO_LOW);
 
 	// setup mode
 	//				spi_cpha - (0) Data is valid on clock leading edge
 	//				           (1) Data is valid on clock trailing edge
 	//				spi_cpol - (0) Clock is low when inactive
 	//				           (1) Clock is high when inactive
-	uint8 spi_cpha = 0;
-	uint8 spi_cpol = 0;
 
-	if(spi_cpha) {
-		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
-	} else {
-		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
-	}
-
-	if (spi_cpol) {
-		SET_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
-	} else {
-		CLEAR_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
-	}
-
-	SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CS_SETUP|SPI_CS_HOLD);
-	CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_FLASH_MODE);
+//	spi_mode(1,0);
 
 #ifdef SPI_DEBUG
 	debugf("SPIhw::prepare(SPISettings mySettings) -> updated settings");
 #endif
 	_SPISettings = mySettings;
+	_init = true;
 };
 
 // send out a single byte of data
@@ -209,6 +191,7 @@ unsigned char SPIClass::transfer(unsigned char data){
 //#ifdef SPI_DEBUG
 //	debugf("SPIhw::transfer(unsigned long %X)", data);
 //#endif
+	uint32 d = (uint32) data;
 
 	// wait for SPI bus to be ready
 	while(READ_PERI_REG(SPI_CMD(SPI_NO))&SPI_USR);
@@ -218,30 +201,44 @@ unsigned char SPIClass::transfer(unsigned char data){
 
 	// enable MOSI function in SPI module
 	SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MOSI);
+
 	// Setup Bitlengths
 //	WRITE_PERI_REG(SPI_USER1(SPI_NO), ((8-1)&SPI_USR_MOSI_BITLEN)<<SPI_USR_MOSI_BITLEN_S );
 
 	// copy data to W0
-	WRITE_PERI_REG(SPI_W0(SPI_NO), data);
+	if(READ_PERI_REG(SPI_USER(SPI_NO))&SPI_WR_BYTE_ORDER) {
+		WRITE_PERI_REG(SPI_W0(SPI_NO), d<<(32-8));
+	} else {
+			WRITE_PERI_REG(SPI_W0(SPI_NO), d);
+	}
 
-//	// enable MISO function in SPI module
+
+////	// enable MISO function in SPI module
 	SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MISO);
-
-//	// Setup Bitlengths MISO
-	WRITE_PERI_REG(SPI_USER1(SPI_NO), ((8-1)&SPI_USR_MOSI_BITLEN)<<SPI_USR_MOSI_BITLEN_S ); //|
+//
+////	// Setup Bitlengths MISO
+//	WRITE_PERI_REG(SPI_USER1(SPI_NO), ((8-1)&SPI_USR_MOSI_BITLEN)<<SPI_USR_MOSI_BITLEN_S |
 //									  ((8-1)&SPI_USR_MISO_BITLEN)<<SPI_USR_MISO_BITLEN_S );  //Number of bits to receive
+	WRITE_PERI_REG(SPI_USER1(SPI_NO),
+				( (8-1 & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S ) |
+				( (8-1 & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S ) );
 
 	// Begin SPI Transaction
 	SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);
 
-	// wait for SPI bus to be ready
+
 	while(READ_PERI_REG(SPI_CMD(SPI_NO))&SPI_USR);
+	// 2Mhz (10/4) 0.6 us overlap
+	//delayMicroseconds(1);
+
+
+	// wait for SPI bus to be ready
 
 	data = READ_PERI_REG(SPI_W0(SPI_NO)); //Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
 
 //  wait for data transmitted before disabling Client Selector
 //  Delay = 4 MHz * num bit / convert to micro - HW-Processing Time(factor of num bit)
-//	delayMicroseconds(2);
+//	delayMicroseconds(4);
 
 	return data;
 };
@@ -290,8 +287,11 @@ uint32 SPIClass::transfer32(uint32 val, uint8 bytes) {
 		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MISO);
 
 		// Setup Bitlengths MOSI, MISO
-		WRITE_PERI_REG(SPI_USER1(SPI_NO),((numBits-1)&SPI_USR_MOSI_BITLEN)<<SPI_USR_MOSI_BITLEN_S |   //Number of bits to Send
-										 ((numBits-1)&SPI_USR_MISO_BITLEN)<<SPI_USR_MISO_BITLEN_S );  //Number of bits to receive
+//		WRITE_PERI_REG(SPI_USER1(SPI_NO),((numBits-1)&SPI_USR_MOSI_BITLEN)<<SPI_USR_MOSI_BITLEN_S |   //Number of bits to Send
+//										 ((numBits-1)&SPI_USR_MISO_BITLEN)<<SPI_USR_MISO_BITLEN_S );  //Number of bits to receive
+		WRITE_PERI_REG(SPI_USER1(SPI_NO),
+					( (numBits-1 & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S ) |
+					( (numBits-1 & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S ) );
 
 		// Begin SPI Transaction
 		SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);
@@ -313,6 +313,10 @@ uint32 SPIClass::transfer32(uint32 val, uint8 bytes) {
 
 void SPIClass::setClock(uint8 prediv, uint8 cntdiv) {
 
+#ifdef SPI_DEBUG
+	debugf("SPIClass::setClock(prediv %d, cntdiv %d)", prediv, cntdiv);
+#endif
+
 	if((prediv==0)|(cntdiv==0)){
 		// go full speed = SYSTEMCLOCK
 		WRITE_PERI_REG(SPI_CLOCK(SPI_NO), SPI_CLK_EQU_SYSCLK);
@@ -324,6 +328,76 @@ void SPIClass::setClock(uint8 prediv, uint8 cntdiv) {
 					((0&SPI_CLKCNT_L)<<SPI_CLKCNT_L_S));
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Function Name: spi_mode
+//   Description: Configures SPI mode parameters for clock edge and clock polarity.
+//    Parameters: spi_no - SPI (0) or HSPI (1)
+//				  spi_cpha - (0) Data is valid on clock leading edge
+//				             (1) Data is valid on clock trailing edge
+//				  spi_cpol - (0) Clock is low when inactive
+//				             (1) Clock is high when inactive
+//
+////////////////////////////////////////////////////////////////////////////////
+
+void SPIClass::spi_mode(uint8 spi_cpha,uint8 spi_cpol){
+
+#ifdef SPI_DEBUG
+	debugf("SPIClass::spi_mode(spi_cpha %d,spi_cpol %d)", spi_cpha, spi_cpol);
+#endif
+
+
+	if(spi_cpha) {
+		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
+	} else {
+		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
+	}
+
+	if (spi_cpol) {
+		SET_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
+	} else {
+		CLEAR_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Function Name: spi_tx_byte_order
+//   Description: Setup the byte order for shifting data out of buffer
+//    Parameters: byte_order - SPI_BYTE_ORDER_HIGH_TO_LOW (1)
+//							   Data is sent out starting with Bit31 and down to Bit0
+//
+//							   SPI_BYTE_ORDER_LOW_TO_HIGH (0)
+//							   Data is sent out starting with the lowest BYTE, from
+//							   MSB to LSB, followed by the second lowest BYTE, from
+//							   MSB to LSB, followed by the second highest BYTE, from
+//							   MSB to LSB, followed by the highest BYTE, from MSB to LSB
+//							   0xABCDEFGH would be sent as 0xGHEFCDAB
+//
+//
+////////////////////////////////////////////////////////////////////////////////
+
+void SPIClass::spi_byte_order(uint8 tx_byte_order, uint8 rx_byte_order) {
+
+#ifdef SPI_DEBUG
+	debugf("SPIClass::spi_byte_order(tx_byte_order %d,rx_byte_order %d)", tx_byte_order, rx_byte_order);
+#endif
+
+	if(tx_byte_order){
+		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
+	} else {
+		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
+	}
+	if(rx_byte_order){
+		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_RD_BYTE_ORDER);
+	} else {
+		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_RD_BYTE_ORDER);
+	}
+
+
+}
+
 
 int CPU_MAX = 8000000UL;
 
@@ -362,6 +436,14 @@ uint32_t SPIClass::getFrequency(int freq, uint8 &pre, uint8 clk) {
 
 void SPIClass::setFrequency(uint32_t freq) {
 
+#ifdef SPI_DEBUG
+	uint8 pre = 10; uint8 cdiv = 4;
+	debugf("SPIClass::setFrequency(uint32_t freq) testing override pre %d cdiv  %d", pre, cdiv);
+	setClock(pre, cdiv); return;
+#endif
+
+
+
 	// dont run code if there are no changes
 	if (freq == _SPISettings._speed) return;
 
@@ -398,6 +480,109 @@ void SPIClass::setFrequency(uint32_t freq) {
 	}
 
 }
+
+uint32 SPIClass::spi_transaction(uint8 cmd_bits, uint16 cmd_data, uint32 addr_bits, uint32 addr_data, uint32 dout_bits, uint32 dout_data,
+				uint32 din_bits, uint32 dummy_bits){
+
+
+#ifdef SPI_DEBUG
+//	debugf("SPIClass::spi_transaction(dout_data %X)",  dout_data);
+#endif
+
+	uint8 spi_no = 1;
+
+	//code for custom Chip Select as GPIO PIN here
+
+	while(spi_busy(spi_no)); //wait for SPI to be ready
+
+//########## Enable SPI Functions ##########//
+	//disable MOSI, MISO, ADDR, COMMAND, DUMMY in case previously set.
+	CLEAR_PERI_REG_MASK(SPI_USER(spi_no), SPI_USR_MOSI|SPI_USR_MISO|SPI_USR_COMMAND|SPI_USR_ADDR|SPI_USR_DUMMY);
+
+	//enable functions based on number of bits. 0 bits = disabled.
+	//This is rather inefficient but allows for a very generic function.
+	//CMD ADDR and MOSI are set below to save on an extra if statement.
+//	if(cmd_bits) {SET_PERI_REG_MASK(SPI_USER(spi_no), SPI_USR_COMMAND);}
+//	if(addr_bits) {SET_PERI_REG_MASK(SPI_USER(spi_no), SPI_USR_ADDR);}
+	if(din_bits) {SET_PERI_REG_MASK(SPI_USER(spi_no), SPI_USR_MISO);}
+	if(dummy_bits) {SET_PERI_REG_MASK(SPI_USER(spi_no), SPI_USR_DUMMY);}
+//########## END SECTION ##########//
+
+//########## Setup Bitlengths ##########//
+	WRITE_PERI_REG(SPI_USER1(spi_no), ((addr_bits-1)&SPI_USR_ADDR_BITLEN)<<SPI_USR_ADDR_BITLEN_S | //Number of bits in Address
+									  ((dout_bits-1)&SPI_USR_MOSI_BITLEN)<<SPI_USR_MOSI_BITLEN_S | //Number of bits to Send
+									  ((din_bits-1)&SPI_USR_MISO_BITLEN)<<SPI_USR_MISO_BITLEN_S |  //Number of bits to receive
+									  ((dummy_bits-1)&SPI_USR_DUMMY_CYCLELEN)<<SPI_USR_DUMMY_CYCLELEN_S); //Number of Dummy bits to insert
+//########## END SECTION ##########//
+
+//########## Setup Command Data ##########//
+	if(cmd_bits) {
+		SET_PERI_REG_MASK(SPI_USER(spi_no), SPI_USR_COMMAND); //enable COMMAND function in SPI module
+		uint16 command = cmd_data << (16-cmd_bits); //align command data to high bits
+		command = ((command>>8)&0xff) | ((command<<8)&0xff00); //swap byte order
+		WRITE_PERI_REG(SPI_USER2(spi_no), ((((cmd_bits-1)&SPI_USR_COMMAND_BITLEN)<<SPI_USR_COMMAND_BITLEN_S) | command&SPI_USR_COMMAND_VALUE));
+	}
+//########## END SECTION ##########//
+
+//########## Setup Address Data ##########//
+	if(addr_bits){
+		SET_PERI_REG_MASK(SPI_USER(spi_no), SPI_USR_ADDR); //enable ADDRess function in SPI module
+		WRITE_PERI_REG(SPI_ADDR(spi_no), addr_data<<(32-addr_bits)); //align address data to high bits
+	}
+
+
+//########## END SECTION ##########//
+
+//########## Setup DOUT data ##########//
+	if(dout_bits) {
+		SET_PERI_REG_MASK(SPI_USER(spi_no), SPI_USR_MOSI); //enable MOSI function in SPI module
+	//copy data to W0
+	if(READ_PERI_REG(SPI_USER(spi_no))&SPI_WR_BYTE_ORDER) {
+		WRITE_PERI_REG(SPI_W0(spi_no), dout_data<<(32-dout_bits));
+	} else {
+
+		uint8 dout_extra_bits = dout_bits%8;
+
+		if(dout_extra_bits){
+			//if your data isn't a byte multiple (8/16/24/32 bits)and you don't have SPI_WR_BYTE_ORDER set, you need this to move the non-8bit remainder to the MSBs
+			//not sure if there's even a use case for this, but it's here if you need it...
+			//for example, 0xDA4 12 bits without SPI_WR_BYTE_ORDER would usually be output as if it were 0x0DA4,
+			//of which 0xA4, and then 0x0 would be shifted out (first 8 bits of low byte, then 4 MSB bits of high byte - ie reverse byte order).
+			//The code below shifts it out as 0xA4 followed by 0xD as you might require.
+			WRITE_PERI_REG(SPI_W0(spi_no), ((0xFFFFFFFF<<(dout_bits - dout_extra_bits)&dout_data)<<(8-dout_extra_bits) | (0xFFFFFFFF>>(32-(dout_bits - dout_extra_bits)))&dout_data));
+		} else {
+			WRITE_PERI_REG(SPI_W0(spi_no), dout_data);
+		}
+	}
+	}
+//########## END SECTION ##########//
+
+//########## Begin SPI Transaction ##########//
+	SET_PERI_REG_MASK(SPI_CMD(spi_no), SPI_USR);
+//########## END SECTION ##########//
+
+	// 2Mhz (10/4) 0.6 us overlap
+	delayMicroseconds(4);
+
+
+//########## Return DIN data ##########//
+	if(din_bits) {
+		while(spi_busy(spi_no));	//wait for SPI transaction to complete
+
+		if(READ_PERI_REG(SPI_USER(spi_no))&SPI_RD_BYTE_ORDER) {
+			return READ_PERI_REG(SPI_W0(spi_no)) >> (32-din_bits); //Assuming data in is written to MSB. TBC
+		} else {
+			return READ_PERI_REG(SPI_W0(spi_no)); //Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
+		}
+
+		return 0; //something went wrong
+	}
+//########## END SECTION ##########//
+
+	//Transaction completed
+	return 1; //success
+}
+
 
 
 

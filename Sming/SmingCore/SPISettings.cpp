@@ -61,9 +61,9 @@ bool SPISettings::operator==(const SPISettings &other) const {
 
 }
 
-//void SPISettings::print(String s) {
-//		debugf("->  %s -> SPISettings::print(int %i, uint8 %d, uint8 %d)", s.c_str(), _speed, _byteOrder, _dataMode);
-//}
+void SPISettings::print(const char *s) {
+		debugf("->  %s -> SPISettings::print(int %i, uint8 %d, uint8 %d)", s, _speed, _byteOrder, _dataMode);
+}
 
 
 
