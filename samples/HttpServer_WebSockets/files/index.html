@@ -48,7 +48,7 @@
 
   function doSend(message)
   {
-    writeToScreen("SENT: " + message); 
+    writeToScreen("SENT: " + message);
     websocket.send(message);
   }
 
@@ -59,7 +59,7 @@
     pre.innerHTML = message;
     output.appendChild(pre);
   }
-  
+
   function doDisconnect()
   {
 	var disconnect = document.getElementById("disconnect");

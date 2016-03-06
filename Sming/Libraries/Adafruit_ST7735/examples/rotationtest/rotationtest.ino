@@ -100,7 +100,7 @@ void rotateText() {
     tft.print(1234.567);
     while (!Serial.available());
     Serial.read();  Serial.read();  Serial.read();
-  
+
     tft.setRotation(tft.getRotation()+1);
   }
 }
@@ -125,10 +125,10 @@ void rotateDrawcircle(void) {
     Serial.println(tft.getRotation(), DEC);
 
     tft.drawCircle(10, 30, 10, ST7735_YELLOW);
- 
+
     while (!Serial.available());
     Serial.read();  Serial.read();  Serial.read();
-  
+
     tft.setRotation(tft.getRotation()+1);
   }
 }
@@ -139,7 +139,7 @@ void rotateFillrect(void) {
     Serial.println(tft.getRotation(), DEC);
 
     tft.fillRect(10, 20, 10, 20, ST7735_GREEN);
- 
+
     while (!Serial.available());
     Serial.read();  Serial.read();  Serial.read();
 
@@ -153,7 +153,7 @@ void rotateDrawrect(void) {
     Serial.println(tft.getRotation(), DEC);
 
     tft.drawRect(10, 20, 10, 20, ST7735_GREEN);
- 
+
     while (!Serial.available());
     Serial.read();  Serial.read();  Serial.read();
 

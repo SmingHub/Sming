@@ -1,13 +1,13 @@
 #include "MirfSpiDriver.h"
 
 #ifndef __MIRF_HARDWARE_SPI_DRIVER
-#define __MIRF_HARDWARE_SPI_DRIVER 
+#define __MIRF_HARDWARE_SPI_DRIVER
 
 #include <SPI.h>
 
 class MirfHardwareSpiDriver : public MirfSpiDriver {
 
-	public: 
+	public:
 		uint8_t transfer(uint8_t data) {
 			return SPI.transfer(data);
 		}

@@ -5,7 +5,7 @@ Design Goals: This library is designed to be...
 * Maximally compliant with the intended operation of the chip
 * Easy for beginners to use
 * Consumed with a public interface that's similiar to other Arduino standard libraries
-* Built against the standard SPI library. 
+* Built against the standard SPI library.
 
 Please refer to:
 

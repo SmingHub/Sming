@@ -1,18 +1,18 @@
 /*
 	ILI9163C - A fast SPI driver for TFT that use Ilitek ILI9163C.
-	
+
 	Features:
 	- Very FAST!, expecially with Teensy 3.x where uses DMA SPI.
 	- It uses just 4 or 5 wires.
 	- Compatible at command level with Adafruit display series so it's easy to adapt existing code.
-	- It uses the standard Adafruit_GFX Library (you need to install). 
-	
+	- It uses the standard Adafruit_GFX Library (you need to install).
+
 	Background:
 	I got one of those displays from a chinese ebay seller but unfortunatly I cannot get
-	any working library so I decided to hack it. ILI9163C looks pretty similar to other 
+	any working library so I decided to hack it. ILI9163C looks pretty similar to other
 	display driver but it uses it's own commands so it's tricky to work with it unlsess you
 	carefully fight with his gigantic and not so clever datasheet.
-	My display it's a 1.44"", 128x128 that suppose to substitute Nokia 5110 LCD and here's the 
+	My display it's a 1.44"", 128x128 that suppose to substitute Nokia 5110 LCD and here's the
 	first confusion! Many sellers claim that it's compatible with Nokia 5110 (that use a philips
 	controller) but the only similarity it's the pin names since that this one it's color and
 	have totally different controller that's not compatible.
@@ -23,14 +23,14 @@
 	got some weeks ago and need some small changes in library to get working.
 	If you look at TFT_ILI9163C.h file you can add your modifications and let me know so I
 	can include for future versions.
-	
+
 	Code Optimizations:
 	The purpose of this library it's SPEED. I have tried to use hardware optimized calls
 	where was possible and results are quite good for most applications, actually nly filled circles
     are still a bit slow. Many SPI call has been optimized by reduce un-needed triggers to RS and CS
 	lines. Of course it can be improved so feel free to add suggestions.
 	-------------------------------------------------------------------------------
-    Copyright (c) 2014, .S.U.M.O.T.O.Y., coded by Max MC Costa.    
+    Copyright (c) 2014, .S.U.M.O.T.O.Y., coded by Max MC Costa.
 
     TFT_ILI9163C Library is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     This file needs the following Libraries:
- 
+
     Adafruit_GFX by Adafruit:
     https://github.com/adafruit/Adafruit-GFX-Library
 	Remember to update GFX library often to have more features with this library!
@@ -58,7 +58,7 @@
 	Special Thanks:
 	Thanks Adafruit for his Adafruit_GFX!
 	Thanks to Paul Stoffregen for his beautiful Teensy3 and DMA SPI.
-	
+
 	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	Version:
 	0.1a1: First release, compile correctly. Altrough not fully working!
@@ -70,7 +70,7 @@
 	0.2b5: Cleaning
 	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	BugList of the current version:
-	
+
 	- Actually no scroll commands (only in release will be included).
 */
 #ifndef _TFT_ILI9163CLIB_H_
@@ -187,7 +187,7 @@ Not tested!
 /*
 	Note 1: The __144_RED_PCB__ display has hardware addressing of 128 x 160
 	but the tft resolution it's 128 x 128 so the dram should be set correctly
-	
+
 	Note 2: This is the offset between image in RAM and TFT. In that case 160 - 128 = 32;
 */
 
@@ -225,7 +225,7 @@ Not tested!
 #define CMD_RGBBLK		0xB5//RGB Interface Blanking Porch setting
 #define CMD_DFUNCTR 	0xB6//Display Fuction set 5
 #define CMD_SDRVDIR 	0xB7//Source Driver Direction Control
-#define CMD_GDRVDIR 	0xB8//Gate Driver Direction Control 
+#define CMD_GDRVDIR 	0xB8//Gate Driver Direction Control
 
 #define CMD_PWCTR1  	0xC0//Power_Control1
 #define CMD_PWCTR2  	0xC1//Power_Control2
@@ -246,7 +246,7 @@ class TFT_ILI9163C : public Adafruit_GFX {
 
 	TFT_ILI9163C(uint8_t cspin,uint8_t dcpin,uint8_t rstpin);
 	TFT_ILI9163C(uint8_t CS, uint8_t DC);//connect rst pin to VDD
-	
+
 	void     	begin(void),
 				setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1),//graphic Addressing
 				setCursor(int16_t x,int16_t y),//char addressing
@@ -260,7 +260,7 @@ class TFT_ILI9163C : public Adafruit_GFX {
 				setRotation(uint8_t r),
 				invertDisplay(boolean i);
   uint16_t 		Color565(uint8_t r, uint8_t g, uint8_t b);
-  void 			setBitrate(uint32_t n);	
+  void 			setBitrate(uint32_t n);
 
  private:
 	uint8_t		_Mactrl_Data;//container for the memory access control data
@@ -285,7 +285,7 @@ class TFT_ILI9163C : public Adafruit_GFX {
 	uint8_t 			_cs,_rs,_sid,_sclk,_rst;
 	uint32_t  			datapinmask, clkpinmask, cspinmask, rspinmask;
 	#endif //  #if defined(__SAM3X8E__)
-  
+
 	#if defined(__MK20DX128__) || defined(__MK20DX256__)
 	uint8_t 			_cs,_rs,_sid,_sclk,_rst;
 	uint8_t 			pcs_data, pcs_command;

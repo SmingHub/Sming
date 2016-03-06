@@ -14,7 +14,7 @@
     <!-- Bootstrap core CSS -->
     <link href="bootstrap.css" rel="stylesheet">
 	<script src="jquery.js"></script>
-	
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -24,7 +24,7 @@
 
 	<script>
 	$( document ).ready(function() {
-	
+
 		(function worker() {
 			$.getJSON('ajax/input', function(data) {
 				$.each( data.gpio, function( key, val ) {
@@ -38,14 +38,14 @@
 				setTimeout(worker, 400);
 			});
 		})();
-		
+
 		$(".switch-freq").click(function() {
 			var freq = $(this).attr('data-value');
 			$.getJSON('ajax/frequency', {value: freq}, function(data) {
 				$("#display-freq").text(data.value);
 			});
 		});
-		
+
 	});
 	</script>
   <body>
@@ -84,9 +84,9 @@
 					<p>Current frequency:</p>
 					<div id="display-freq" class="well well-lg">N/A</div>
         </div>
-		
+
       </div>
-	  
+
       <footer class="footer">
         <p>&copy; Company 2014</p>
       </footer>

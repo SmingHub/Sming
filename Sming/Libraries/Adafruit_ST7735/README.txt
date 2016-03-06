@@ -8,7 +8,7 @@ The 1.44" TFT breakout
 as well as Adafruit raw 1.8" TFT display
   ----> http://www.adafruit.com/products/618
 
- 
+
 Check out the links above for our tutorials and wiring diagrams.
 These displays use SPI to communicate, 4 or 5 pins are required
 to interface (RST is optional).

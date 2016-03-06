@@ -10,7 +10,7 @@ void IRAM_ATTR interruptHandler()
 	// Better set some flag and check it in main code (timers and etc) or read actual pins state and save it to variable
 	// Interrupt processing code should be as short as possible.
 	// flagInterruptOccurred = true;
-	
+
 	say(micros());
 	say( "   Pin changed, now   ");
 	say( digitalRead(INT_PIN));

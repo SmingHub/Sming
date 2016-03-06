@@ -48,20 +48,20 @@ void Timer::start(bool repeating/* = true*/)
 {
 	this->repeating = repeating;
 	stop();
-	if(interval == 0 || (!callback && !delegate_func)) 
+	if(interval == 0 || (!callback && !delegate_func))
 		return;
-	
-	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);	
-	if (interval > 10000) 
+
+	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);
+	if (interval > 10000)
 	{
-		ets_timer_arm_new(&timer, (uint32_t)(interval / 1000), 
+		ets_timer_arm_new(&timer, (uint32_t)(interval / 1000),
 				(long_intvl_cntr_lim > 0 ? true : repeating), 1); // msec
 	}
-	else 
+	else
 	{
 		ets_timer_arm_new(&timer, (uint32_t)interval, repeating, 0); 		  // usec
 	}
-	
+
 	started = true;
 }
 
@@ -115,7 +115,7 @@ void Timer::setIntervalUs(uint64_t microseconds/* = 1000000*/)
 		long_intvl_cntr = 0;
 		long_intvl_cntr_lim = div;
 	}
-	else 
+	else
 	{
 		interval = microseconds;
 		long_intvl_cntr = 0;
@@ -170,11 +170,11 @@ void Timer::processing(void *arg)
 			{
 				return;
 			}
-			else 
+			else
 			{
 				// reset counter since callback will fire.
 				ptimer->long_intvl_cntr = 0;
-				
+
 				// stop timer if it was not a repeating timer.
 				// for long intervals os_timer is set to repeating,
 				// therefore it must be stopped.

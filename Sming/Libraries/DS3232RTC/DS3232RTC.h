@@ -33,15 +33,15 @@
  * CC BY-SA 4.0                                                         *
  * "Arduino DS3232RTC Library" by Jack Christensen is licensed under    *
  * CC BY-SA 4.0, http://creativecommons.org/licenses/by-sa/4.0/         *
- *----------------------------------------------------------------------*/ 
+ *----------------------------------------------------------------------*/
 
 #ifndef DS3232RTC_h
 #define DS3232RTC_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
-#include <Arduino.h> 
+#include <Arduino.h>
 #else
-#include <WProgram.h> 
+#include <WProgram.h>
 #endif
 
 
@@ -50,18 +50,18 @@ typedef enum {
     tmSecond, tmMinute, tmHour, tmWday, tmDay,tmMonth, tmYear, tmNbrFields
 } tmByteFields;
 
-typedef struct  { 
-  uint8_t Second; 
-  uint8_t Minute; 
-  uint8_t Hour; 
+typedef struct  {
+  uint8_t Second;
+  uint8_t Minute;
+  uint8_t Hour;
   uint8_t Wday;   // day of week, sunday is day 1
   uint8_t Day;
-  uint8_t Month; 
-  uint8_t Year;   // offset from 1970; 
+  uint8_t Month;
+  uint8_t Year;   // offset from 1970;
 } 	tmElements_t, TimeElements, *tmElementsPtr_t;
 
-//convenience macros to convert to and from tm years 
-#define  tmYearToCalendar(Y) ((Y) + 1970)  // full four digit year 
+//convenience macros to convert to and from tm years
+#define  tmYearToCalendar(Y) ((Y) + 1970)  // full four digit year
 #define  CalendarYrToTm(Y)   ((Y) - 1970)
 #define  tmYearToY2k(Y)      ((Y) - 30)    // offset is from 2000
 #define  y2kYearToTm(Y)      ((Y) + 30)

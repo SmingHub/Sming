@@ -32,7 +32,7 @@ function post_netcfg(event) {
 
 $( document ).ready(function() {
 	get_config();
-	
+
 	document.getElementById('form_netcfg').addEventListener('submit', post_netcfg);
 	document.getElementById('netcfg_cancel').addEventListener('click', get_config);
 });

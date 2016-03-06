@@ -2,8 +2,8 @@
 // PROGMEM keyword tells the compiler "put this information into flash memory",
 // instead of into RAM, where it would normally go.
 //
-// Using PROGMEM is a two-step procedure. After getting the data into Flash 
-// memory, it requires special methods (functions) to read the data from 
+// Using PROGMEM is a two-step procedure. After getting the data into Flash
+// memory, it requires special methods (functions) to read the data from
 // program memory back into RAM, so we can do something useful with it.
 //
 

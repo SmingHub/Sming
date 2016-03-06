@@ -40,8 +40,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
                onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
           <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onfocus="searchBox.OnSearchFieldFocus(true)"
+               onblur="searchBox.OnSearchFieldFocus(false)"
                onkeyup="searchBox.OnSearchFieldChange(event)"/>
           </span><span class="right">
             <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
@@ -93,50 +93,50 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#define LiquidCrystal_I2C_h</span>
 <a name="l00031"></a>00031 <span class="preprocessor"></span><span class="preprocessor">#include &lt;inttypes.h&gt;</span>
 <a name="l00032"></a>00032 <span class="preprocessor">#include &lt;Print.h&gt;</span>
-<a name="l00033"></a>00033 
+<a name="l00033"></a>00033
 <a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="_i2_c_i_o_8h.html">I2CIO.h</a>&quot;</span>
 <a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="_l_c_d_8h.html">LCD.h</a>&quot;</span>
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 
-<a name="l00038"></a><a class="code" href="class_liquid_crystal___i2_c.html">00038</a> <span class="keyword">class </span><a class="code" href="class_liquid_crystal___i2_c.html">LiquidCrystal_I2C</a> : <span class="keyword">public</span> <a class="code" href="class_l_c_d.html">LCD</a> 
+<a name="l00036"></a>00036
+<a name="l00037"></a>00037
+<a name="l00038"></a><a class="code" href="class_liquid_crystal___i2_c.html">00038</a> <span class="keyword">class </span><a class="code" href="class_liquid_crystal___i2_c.html">LiquidCrystal_I2C</a> : <span class="keyword">public</span> <a class="code" href="class_l_c_d.html">LCD</a>
 <a name="l00039"></a>00039 {
 <a name="l00040"></a>00040 <span class="keyword">public</span>:
-<a name="l00041"></a>00041    
+<a name="l00041"></a>00041
 <a name="l00051"></a>00051    <a class="code" href="class_liquid_crystal___i2_c.html#aac537d195557e0b8afac1a71441a484c">LiquidCrystal_I2C</a> (uint8_t lcd_Addr);
 <a name="l00052"></a>00052    <span class="comment">// Constructor with backlight control</span>
 <a name="l00053"></a>00053    <a class="code" href="class_liquid_crystal___i2_c.html#aac537d195557e0b8afac1a71441a484c">LiquidCrystal_I2C</a> (uint8_t lcd_Addr, uint8_t backlighPin, <a class="code" href="_l_c_d_8h.html#aeeef728bf4726268aa5e99391a1502bc">t_backlighPol</a> pol);
-<a name="l00054"></a>00054    
+<a name="l00054"></a>00054
 <a name="l00067"></a>00067    <a class="code" href="class_liquid_crystal___i2_c.html#aac537d195557e0b8afac1a71441a484c">LiquidCrystal_I2C</a>( uint8_t lcd_Addr, uint8_t En, uint8_t Rw, uint8_t Rs);
 <a name="l00068"></a>00068    <span class="comment">// Constructor with backlight control</span>
 <a name="l00069"></a>00069    <a class="code" href="class_liquid_crystal___i2_c.html#aac537d195557e0b8afac1a71441a484c">LiquidCrystal_I2C</a>(uint8_t lcd_Addr, uint8_t En, uint8_t Rw, uint8_t Rs,
-<a name="l00070"></a>00070                      uint8_t backlighPin, <a class="code" href="_l_c_d_8h.html#aeeef728bf4726268aa5e99391a1502bc">t_backlighPol</a> pol);   
-<a name="l00071"></a>00071    
-<a name="l00088"></a>00088    <a class="code" href="class_liquid_crystal___i2_c.html#aac537d195557e0b8afac1a71441a484c">LiquidCrystal_I2C</a>(uint8_t lcd_Addr, uint8_t En, uint8_t Rw, uint8_t Rs, 
+<a name="l00070"></a>00070                      uint8_t backlighPin, <a class="code" href="_l_c_d_8h.html#aeeef728bf4726268aa5e99391a1502bc">t_backlighPol</a> pol);
+<a name="l00071"></a>00071
+<a name="l00088"></a>00088    <a class="code" href="class_liquid_crystal___i2_c.html#aac537d195557e0b8afac1a71441a484c">LiquidCrystal_I2C</a>(uint8_t lcd_Addr, uint8_t En, uint8_t Rw, uint8_t Rs,
 <a name="l00089"></a>00089                      uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7 );
 <a name="l00090"></a>00090    <span class="comment">// Constructor with backlight control</span>
-<a name="l00091"></a>00091    <a class="code" href="class_liquid_crystal___i2_c.html#aac537d195557e0b8afac1a71441a484c">LiquidCrystal_I2C</a>(uint8_t lcd_Addr, uint8_t En, uint8_t Rw, uint8_t Rs, 
+<a name="l00091"></a>00091    <a class="code" href="class_liquid_crystal___i2_c.html#aac537d195557e0b8afac1a71441a484c">LiquidCrystal_I2C</a>(uint8_t lcd_Addr, uint8_t En, uint8_t Rw, uint8_t Rs,
 <a name="l00092"></a>00092                      uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
 <a name="l00093"></a>00093                      uint8_t backlighPin, <a class="code" href="_l_c_d_8h.html#aeeef728bf4726268aa5e99391a1502bc">t_backlighPol</a> pol);
-<a name="l00110"></a>00110    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_liquid_crystal___i2_c.html#aeee2ada537f0cfbfda8613324b57c4a6">begin</a>(uint8_t cols, uint8_t rows, uint8_t charsize = <a class="code" href="_l_c_d_8h.html#a9ef57e724c1b846dae0f531aff6fb464">LCD_5x8DOTS</a>);   
-<a name="l00111"></a>00111    
+<a name="l00110"></a>00110    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_liquid_crystal___i2_c.html#aeee2ada537f0cfbfda8613324b57c4a6">begin</a>(uint8_t cols, uint8_t rows, uint8_t charsize = <a class="code" href="_l_c_d_8h.html#a9ef57e724c1b846dae0f531aff6fb464">LCD_5x8DOTS</a>);
+<a name="l00111"></a>00111
 <a name="l00124"></a>00124    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_liquid_crystal___i2_c.html#a8bf1fab7efe13e8b17b96c42d1f810b4">send</a>(uint8_t value, uint8_t mode);
-<a name="l00125"></a>00125    
+<a name="l00125"></a>00125
 <a name="l00134"></a>00134    <span class="keywordtype">void</span> <a class="code" href="class_liquid_crystal___i2_c.html#a2eaf86f62d1f169b3763b03fbf88f70b">setBacklightPin</a> ( uint8_t value, <a class="code" href="_l_c_d_8h.html#aeeef728bf4726268aa5e99391a1502bc">t_backlighPol</a> pol );
-<a name="l00135"></a>00135    
+<a name="l00135"></a>00135
 <a name="l00145"></a>00145    <span class="keywordtype">void</span> <a class="code" href="class_liquid_crystal___i2_c.html#af11b8fa0082616e2b6e6e4238589d8a8">setBacklight</a> ( uint8_t value );
-<a name="l00146"></a>00146    
+<a name="l00146"></a>00146
 <a name="l00147"></a>00147 <span class="keyword">private</span>:
-<a name="l00148"></a>00148    
+<a name="l00148"></a>00148
 <a name="l00154"></a>00154    <span class="keywordtype">int</span>  init();
-<a name="l00155"></a>00155    
-<a name="l00171"></a>00171    <span class="keywordtype">void</span> config (uint8_t lcd_Addr, uint8_t En, uint8_t Rw, uint8_t Rs, 
+<a name="l00155"></a>00155
+<a name="l00171"></a>00171    <span class="keywordtype">void</span> config (uint8_t lcd_Addr, uint8_t En, uint8_t Rw, uint8_t Rs,
 <a name="l00172"></a>00172                 uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7 );
-<a name="l00173"></a>00173    
+<a name="l00173"></a>00173
 <a name="l00182"></a>00182    <span class="keywordtype">void</span> write4bits(uint8_t value, uint8_t mode);
-<a name="l00183"></a>00183    
+<a name="l00183"></a>00183
 <a name="l00190"></a>00190    <span class="keywordtype">void</span> pulseEnable(uint8_t);
-<a name="l00191"></a>00191    
-<a name="l00192"></a>00192    
+<a name="l00191"></a>00191
+<a name="l00192"></a>00192
 <a name="l00193"></a>00193    uint8_t _Addr;             <span class="comment">// I2C Address of the IO expander</span>
 <a name="l00194"></a>00194    uint8_t _backlightPinMask; <span class="comment">// Backlight IO pin mask</span>
 <a name="l00195"></a>00195    uint8_t _backlightStsMask; <span class="comment">// Backlight status mask</span>
@@ -145,9 +145,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00198"></a>00198    uint8_t _Rw;               <span class="comment">// LCD expander word for R/W pin</span>
 <a name="l00199"></a>00199    uint8_t _Rs;               <span class="comment">// LCD expander word for Register Select pin</span>
 <a name="l00200"></a>00200    uint8_t _data_pins[4];     <span class="comment">// LCD data lines</span>
-<a name="l00201"></a>00201    
+<a name="l00201"></a>00201
 <a name="l00202"></a>00202 };
-<a name="l00203"></a>00203 
+<a name="l00203"></a>00203
 <a name="l00204"></a>00204 <span class="preprocessor">#endif</span>
 </pre></div></div>
 </div>
@@ -160,7 +160,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
-<iframe src="javascript:void(0)" frameborder="0" 
+<iframe src="javascript:void(0)" frameborder="0"
         name="MSearchResults" id="MSearchResults">
 </iframe>
 </div>

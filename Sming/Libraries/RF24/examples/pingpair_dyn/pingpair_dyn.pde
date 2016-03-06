@@ -7,9 +7,9 @@
  */
 
 /**
- * Example using Dynamic Payloads 
+ * Example using Dynamic Payloads
  *
- * This is an example of how to use payloads of a varying (dynamic) size. 
+ * This is an example of how to use payloads of a varying (dynamic) size.
  */
 
 #include <SPI.h>
@@ -182,7 +182,7 @@ void loop(void)
       // Spew it
       printf("Got response size=%i value=%s\n\r",len,receive_payload);
     }
-    
+
     // Update size for next time.
     next_payload_size += payload_size_increments_by;
     if ( next_payload_size > max_payload_size )

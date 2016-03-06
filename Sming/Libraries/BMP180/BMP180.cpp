@@ -171,13 +171,13 @@ long BMP180::CompensatePressure(long uncompensatedPressure)
     long p;
     if (b7 < 0x80000000)
 	{
-		p = ((b7 * 2) / b4);    
+		p = ((b7 * 2) / b4);
 	}
     else
 	{
         p = ((b7 / b4) * 2);
 	}
-		
+
     x1 = (p >> 8) * (p >> 8);
     x1 = (x1 * 3038) >> 16;
     x2 = (-7357 * p) >> 16;
@@ -247,7 +247,7 @@ void BMP180::Read2(int address, int length, uint8_t buffer[])
   Wire.beginTransmission(BMP180_Address);
   Wire.write(address);
   Wire.endTransmission();
-  
+
   Wire.beginTransmission(BMP180_Address);
   Wire.requestFrom(BMP180_Address, length);
 
@@ -265,6 +265,6 @@ const char* BMP180::GetErrorText(int errorCode)
 {
 	if(ErrorCode_1_Num == 1)
 		return (const char*)ErrorCode_1;
-	
+
 	return (const char*)"Error not defined.";
 }

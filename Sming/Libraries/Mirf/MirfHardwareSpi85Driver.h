@@ -7,7 +7,7 @@
 
 class MirfHardwareSpi85Driver : public MirfSpiDriver {
 
-	public: 
+	public:
 		uint8_t transfer(uint8_t data) {
 			return SPI85.transfer(data);
 		}

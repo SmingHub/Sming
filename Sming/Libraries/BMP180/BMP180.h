@@ -57,15 +57,15 @@ class BMP180
 
 	  int GetUncompensatedTemperature();
 	  float CompensateTemperature(int uncompensatedTemperature);
-	  
+
 	  long GetUncompensatedPressure();
 	  long CompensatePressure(long uncompensatedPressure);
-	  
+
 	  float GetTemperature();
 	  long GetPressure();
 
 	  //float GetAltitude(float currentSeaLevelPressureInPa);
-	  
+
 	  void SoftReset();
 	  uint8_t SetResolution(uint8_t sampleResolution, bool oversample);
 
@@ -85,7 +85,7 @@ class BMP180
 		int16_t LastTemperatureData;
 		int16_t LastTemperatureTime;
 		int16_t AcceptableTemperatureLatencyForPressure;
-		
+
 		int16_t Calibration_AC1;
 		int16_t Calibration_AC2;
 		int16_t Calibration_AC3;

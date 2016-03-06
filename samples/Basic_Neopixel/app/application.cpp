@@ -60,18 +60,18 @@ void TheaterChase() {
    int i,b=0;
    if (ChaseCycle > 0)
    {
-  
+
 	       if (TheaterChaseQ == 0) b=3;
 	       if (TheaterChaseQ == 1) b=0;
 	       if (TheaterChaseQ == 2) b=1;
 	       if (TheaterChaseQ == 3) b=2;
-	       
+
 	   	   for (i=0; i < strip.numPixels(); i=i+4)
              strip.setPixelColor(i+b, 0);        //turn prev every third pixel off
-	   	   
+
 	   	   	for (i=0; i < strip.numPixels(); i=i+4)
                strip.setPixelColor(i+TheaterChaseQ, StripColor);    //turn every third pixel on
-	   	   	
+
 	   	   	strip.show();
 	   	   	TheaterChaseQ++;
 	   	   	if (TheaterChaseQ > 3)
@@ -86,8 +86,8 @@ void TheaterChase() {
 		StripDemoType++;         // next demo type
 		TheaterChaseTimer.stop();   // stop this demo dimer
 		StripDemoTimer.initializeMs(2000, StartDemo).start(true);  // start another demo after 2 seconds
-   }	   
-} 
+   }
+}
 
 
 

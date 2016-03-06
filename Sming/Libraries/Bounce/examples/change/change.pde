@@ -8,7 +8,7 @@ int ledValue = LOW;
 // Build the circuit indicated here: http://arduino.cc/en/Tutorial/Button
 
 
-Bounce bouncer = Bounce( BUTTON, 5 ); 
+Bounce bouncer = Bounce( BUTTON, 5 );
 
 void setup() {
   pinMode(BUTTON,INPUT);

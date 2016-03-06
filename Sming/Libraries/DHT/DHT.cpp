@@ -374,7 +374,7 @@ float DHT::getComfortRatio(ComfortState& destComfortStatus,
 	float kTempFactor = 3; //take into account the slope of the lines
 	float kHumidFactor = 0.1; //take into account the slope of the lines
 	uint8_t tempComfort = 0;
-	
+
 	destComfortStatus = Comfort_OK;
 
 	distance = m_comfort.distanceTooHot(temperature, percentHumidity);
@@ -385,7 +385,7 @@ float DHT::getComfortRatio(ComfortState& destComfortStatus,
 		//decrease the comfot ratio taking the distance into account
 		ratio -= distance * kTempFactor;
 	}
-	
+
 	distance = m_comfort.distanceTooHumid(temperature, percentHumidity);
 	if(distance > 0)
 	{
@@ -393,8 +393,8 @@ float DHT::getComfortRatio(ComfortState& destComfortStatus,
 		tempComfort += (uint8_t)Comfort_TooHumid;
 		//decrease the comfot ratio taking the distance into account
 		ratio -= distance * kHumidFactor;
-	}	
-	
+	}
+
 	distance = m_comfort.distanceTooCold(temperature, percentHumidity);
 	if(distance > 0)
 	{

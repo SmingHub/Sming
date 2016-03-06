@@ -49,8 +49,8 @@ static unsigned char *ucHeap;
 
 typedef struct A_BLOCK_LINK
 {
-	struct A_BLOCK_LINK *pxNextFreeBlock;	//The next free block in the list. 
-	size_t xBlockSize;						//The size of the free block. 
+	struct A_BLOCK_LINK *pxNextFreeBlock;	//The next free block in the list.
+	size_t xBlockSize;						//The size of the free block.
 } xBlockLink;
 
 static const unsigned short heapSTRUCT_SIZE	= ( sizeof( xBlockLink ) + portBYTE_ALIGNMENT - ( sizeof( xBlockLink ) % portBYTE_ALIGNMENT ) );

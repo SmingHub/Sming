@@ -10,7 +10,7 @@
 int ledState = LOW;
 
 // Instantiate a Bounce object with a 5 millisecond debounce time
-Bounce bouncer = Bounce( BUTTON,5 ); 
+Bounce bouncer = Bounce( BUTTON,5 );
 
 void setup() {
   pinMode(BUTTON,INPUT);
@@ -18,13 +18,13 @@ void setup() {
 }
 
 void loop() {
-  
+
  // Update and monitor a change of input
   if ( bouncer.update() ) {
-    
+
     // Get the state of the button
    int value = bouncer.read();
- 
+
    // Toggle the LED if the button is held
    if ( value == HIGH) {
      // Make the button retrigger in 500 milliseconds
@@ -37,12 +37,12 @@ void loop() {
    } else {
      ledState = LOW;
    }
- 
+
     digitalWrite(LED, ledState );
-    
+
   }
- 
- 
- 
+
+
+
 }
 

@@ -1,24 +1,24 @@
 /*
     Copyright (c) 2007 Stefan Engelke <mbox@stefanengelke.de>
 
-    Permission is hereby granted, free of charge, to any person 
-    obtaining a copy of this software and associated documentation 
-    files (the "Software"), to deal in the Software without 
-    restriction, including without limitation the rights to use, copy, 
-    modify, merge, publish, distribute, sublicense, and/or sell copies 
-    of the Software, and to permit persons to whom the Software is 
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation
+    files (the "Software"), to deal in the Software without
+    restriction, including without limitation the rights to use, copy,
+    modify, merge, publish, distribute, sublicense, and/or sell copies
+    of the Software, and to permit persons to whom the Software is
     furnished to do so, subject to the following conditions:
 
-    The above copyright notice and this permission notice shall be 
+    The above copyright notice and this permission notice shall be
     included in all copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
-    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
-    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE.
 
     $Id$
@@ -51,7 +51,7 @@ class Nrf24l {
 		bool txFifoEmpty();
 		void getData(uint8_t * data);
 		uint8_t getStatus();
-		
+
 		void configRegister(uint8_t reg, uint8_t value);
 		void readRegister(uint8_t reg, uint8_t * value, uint8_t len);
 		void writeRegister(uint8_t reg, uint8_t * value, uint8_t len);
@@ -59,7 +59,7 @@ class Nrf24l {
 		void powerUpRx();
 		void powerUpTx();
 		void powerDown();
-		
+
 		void nrfSpiWrite(uint8_t reg, uint8_t *data = 0, boolean readData = false, uint8_t len = 0);
 
 		void csnHi();
@@ -97,7 +97,7 @@ class Nrf24l {
 		/**
 		 * The base config register.
 		 * When required PWR_UP and/or PRIM_RX will be OR'ed with this.
-		 * 
+		 *
 		 * NOTE: Use "_BV(EN_CRC) | _BV(CRCO)" here if you want to
 		 *       connect to a device using the RF24 library.
 		 */

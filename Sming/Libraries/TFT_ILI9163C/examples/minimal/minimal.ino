@@ -9,7 +9,7 @@
 #define	GREEN   0x07E0
 #define CYAN    0x07FF
 #define MAGENTA 0xF81F
-#define YELLOW  0xFFE0  
+#define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 
 TFT_ILI9163C tft = TFT_ILI9163C(10, 9, 14);

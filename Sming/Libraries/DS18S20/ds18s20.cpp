@@ -194,11 +194,11 @@ void DS18S20::DoMeasure()
 	}
 
 	ValidTemperature[numberOfread]=true;
-	
+
     if (raw & 0x8000)   //is minus ?
 	  celsius[numberOfread] = 0 - ((float) ((raw ^ 0xffff) + 1) / 16.0); // 2's comp
 	else
-	  celsius[numberOfread] = (float)raw / 16.0;	
+	  celsius[numberOfread] = (float)raw / 16.0;
 
 	fahrenheit[numberOfread] = celsius[numberOfread] * 1.8 + 32.0;
 
