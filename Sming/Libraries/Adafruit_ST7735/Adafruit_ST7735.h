@@ -134,18 +134,17 @@ class Adafruit_ST7735 : public Adafruit_GFX {
   Adafruit_ST7735(int8_t CS, int8_t RS, int8_t SID, int8_t SCLK, int8_t RST = -1);
   Adafruit_ST7735(int8_t CS, int8_t RS, int8_t RST = -1);
 
-  void     initB(void),                             // for ST7735B displays
-           initR(uint8_t options = INITR_GREENTAB), // for ST7735R
-           setAddrWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1),
-           pushColor(uint16_t color),
-           fillScreen(uint16_t color),
-           drawPixel(int16_t x, int16_t y, uint16_t color),
-           drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color),
-           drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color),
-           fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
-             uint16_t color),
-           setRotation(uint8_t r),
-           invertDisplay(boolean i);
+  void initB(void);                             // for ST7735B displays
+  void initR(uint8_t options = INITR_GREENTAB); // for ST7735R
+  void setAddrWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
+  void pushColor(uint16_t color);
+  void fillScreen(uint16_t color);
+  void drawPixel(int16_t x, int16_t y, uint16_t color);
+  void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
+  void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
+  void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
+  void setRotation(uint8_t r);
+  void invertDisplay(boolean i);
   uint16_t Color565(uint8_t r, uint8_t g, uint8_t b);
 
   /* These are not for current use, 8-bit protocol only!
@@ -159,11 +158,11 @@ class Adafruit_ST7735 : public Adafruit_GFX {
  private:
   uint8_t  tabcolor;
 
-  void     spiwrite(uint8_t),
-           writecommand(uint8_t c),
-           writedata(uint8_t d),
-           commandList(const uint8_t *addr),
-           commonInit(const uint8_t *cmdList);
+  void spiwrite(uint8_t);
+  void writecommand(uint8_t c);
+  void writedata(uint8_t d);
+  void commandList(const uint8_t *addr);
+  void commonInit(const uint8_t *cmdList);
 //uint8_t  spiread(void);
 
   boolean  hwSPI;
