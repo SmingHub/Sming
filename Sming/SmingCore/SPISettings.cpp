@@ -18,7 +18,7 @@ SPISettings::SPISettings() {
 //#ifdef SPI_DEBUG
 //	debugf("SPISettings::SPISettings() default");
 //#endif
-	_speed = 400000;
+	_speed = 1000000;
 	_byteOrder = SPI_BYTE_ORDER_LOW_TO_HIGH;
 	_dataMode = SPI_MODE0;
 }

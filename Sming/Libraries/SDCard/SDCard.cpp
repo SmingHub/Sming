@@ -36,7 +36,7 @@ Descr: Low-level SDCard functions
 #include "diskio.h"		/* Declarations of disk I/O functions */
 
 FATFS *pFatFs = NULL;		/* FatFs work area needed for each volume */
-SPISoft *SDCardSPI = NULL;
+SPIBase *SDCardSPI = NULL;
 uint8 SPI_CS;				/* SPI client selector */
 
 
@@ -344,7 +344,8 @@ DSTATUS disk_initialize (
 
 	if (drv) return RES_NOTRDY;
 
-	SDCardSPI->setDelay(SCK_SLOW_INIT);
+//	SDCardSPI->setDelay(SCK_SLOW_INIT);
+	SDCardSPI->beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
 
 	dly_us(10000);			/* 10ms */
 
@@ -423,7 +424,9 @@ DSTATUS disk_initialize (
 
 	deselect();
 
-	SDCardSPI->setDelay(SCK_NORMAL);
+//	SDCardSPI->setDelay(SCK_NORMAL);
+	SDCardSPI->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
+
 
 	return Stat;
 }

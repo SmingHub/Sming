@@ -17,24 +17,19 @@
 #include "SPISettings.h"
 
 
-#define SPI_DEBUG  1
+//#define SPI_DEBUG  1
 
 // for compatibility when porting from Arduino
-//#define SPI_HAS_TRANSACTION  0
-
-#define SPI_CONTINUE	1
+#define SPI_HAS_TRANSACTION  0
 
 #define	SPI_NO	1
 
-//Define some default SPI clock settings
-#define SPI_CLK_PREDIV 10
-#define SPI_CLK_CNTDIV 2
 
 // Byte Order definitions
 #define SPI_BYTE_ORDER_HIGH_TO_LOW 1
 #define SPI_BYTE_ORDER_LOW_TO_HIGH 0
 
-#define spi_busy(spi_no) READ_PERI_REG(SPI_CMD(spi_no))&SPI_USR
+//#define spi_busy(spi_no) READ_PERI_REG(SPI_CMD(spi_no))&SPI_USR
 
 
 class SPIClass: public SPIBase {
@@ -42,13 +37,7 @@ public:
 	SPIClass();
 	virtual ~SPIClass();
 
-	/*
-	 * Arduino Standard API
-	 */
-	/* Standard API
-	 *
-	 */
-
+	//  Arduino Standard API
 	/*
 	 *  begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
 	 */
@@ -79,43 +68,33 @@ public:
 	 * 		receivedVal16 = SPI.transfer16(val16)
 	 * 		SPI.transfer(buffer, size)
 	 */
-	virtual unsigned char transfer(unsigned char val);
-//	{
-//		return (unsigned char) transfer32((uint32) val, 1);
-//	};
+	virtual unsigned char transfer(unsigned char val) {
+		return transfer32((uint32)val, 8);
+	};
 
-//	virtual unsigned char transfer(unsigned char  data)  {
-//	spi_transaction(0, 0, 0, 0, 8,    (uint32) data, 0, 0);
-//	}
 
 	virtual unsigned short transfer16(unsigned short val) {
-		return (unsigned short) transfer32((uint32) val, 2);
+		return transfer32((uint32)val, 16);
 	};
+
 	virtual void transfer(uint8 * buffer, size_t numberBytes);
 
-	SPISettings SPIDefaultSettings = SPISettings(2000000, MSBFIRST, SPI_MODE0);
+	SPISettings SPIDefaultSettings = SPISettings(8000000, MSBFIRST, SPI_MODE0);
 
 
 private:
 
-	uint32 spi_transaction(uint8 cmd_bits, uint16 cmd_data, uint32 addr_bits, uint32 addr_data, uint32 dout_bits, uint32 dout_data,
-					uint32 din_bits, uint32 dummy_bits);
-
-
-	// methods
-	void setClock(uint8 prediv, uint8 cntdiv);
-	void spi_mode(uint8 spi_cpha,uint8 spi_cpol);
-	void spi_byte_order(uint8 tx_byte_order, uint8 rx_byte_order);
-
-
-	uint32_t getFrequency(int freq, uint8 &pre, uint8 clk);
-	void setFrequency(uint32_t freq);
+	virtual uint32 transfer32(uint32 val, uint8 bits);
 
 	// prepare/configure HSPI with settings
 	void prepare(SPISettings mySettings);
 
+	void spi_byte_order(uint8 byte_order);
+	void spi_mode(uint8 mode);
+	void setClock(uint8 prediv, uint8 cntdiv);
+	uint32_t getFrequency(int freq, int &pre, int clk);
+	void setFrequency(int freq);
 
-	uint32 transfer32(uint32 val, uint8 bytes);
 
 	SPISettings _SPISettings;
 	uint8	_isTX = false;
