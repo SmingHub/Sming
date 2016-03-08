@@ -140,7 +140,6 @@ int wait_ready (void)	/* 1:OK, 0:Timeout */
 		if (d == 0xFF)
 			break;
 		d = 0xFF;		// reset buffer
-//		Serial.print('.');
 		dly_us(100);
 	}
 	return tmr ? 1 : 0;
@@ -174,7 +173,6 @@ int select (void)	/* 1:OK, 0:Timeout */
 {
 	BYTE d = 0xFF;
 
-	SDCardSPI->beginTransaction(SDCardSPI->SPIDefaultSettings);	// TODO: handle delay
 	digitalWrite(SPI_CS, LOW);	/* Set CS# low */
 //	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
 	SDCardSPI->transfer(&d, 1);	/* Dummy clock (force DO enabled) */
@@ -345,11 +343,12 @@ DSTATUS disk_initialize (
 	if (drv) return RES_NOTRDY;
 
 //	SDCardSPI->setDelay(SCK_SLOW_INIT);
-	SDCardSPI->beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+	SDCardSPI->beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0));
 
 	dly_us(10000);			/* 10ms */
 
 //	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+//	debugf("disk_initialize (send 80 0xFF cycles)");
 	for (n = 10; n; n--) {
 		d = 0xFF;
 		SDCardSPI->transfer(&d, 1);	/* Apply 80 dummy clocks and the card gets ready to receive command */
@@ -358,6 +357,7 @@ DSTATUS disk_initialize (
 
 	BYTE retCmd;
 
+//	debugf("disk_initialize (send n send_cmd(CMD0, 0)");
 	n=5;
 	do
 	{
@@ -365,9 +365,11 @@ DSTATUS disk_initialize (
 		n--;
 	}
 	while(n && retCmd != 1);
+//	debugf("disk_initialize (until n = 5 && ret != 1");
 
 	if (retCmd == 1)
 	{
+//		debugf("disk_initialize (Enter Idle state - send_cmd(CMD8, 0x1AA) == 1");
 		/* Enter Idle state */
 		if (send_cmd(CMD8, 0x1AA) == 1) {	/* SDv2? */
 //			SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
@@ -425,7 +427,7 @@ DSTATUS disk_initialize (
 	deselect();
 
 //	SDCardSPI->setDelay(SCK_NORMAL);
-	SDCardSPI->beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
+	SDCardSPI->beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
 
 
 	return Stat;

@@ -30,13 +30,14 @@ SPIClass::SPIClass() {
 }
 
 SPIClass::~SPIClass() {
-	// TODO Auto-generated destructor stub
 }
 
-/*
- * 	Initialize HW SPI with HW SS (PIN 15)
+/* @defgroup SPI hardware implementation
+ * @brief begin()
+ *
+ * Initializes the SPI bus using the default SPISettings
+ *
  */
-
 void SPIClass::begin() {
 
 	WRITE_PERI_REG(PERIPHS_IO_MUX, 0x105); //clear bit9
@@ -49,21 +50,32 @@ void SPIClass::begin() {
 }
 
 
+/* @defgroup SPI hardware implementation
+ * @brief end()
+ *
+ * Method for compatibility with Arduino API. Provides NOP
+ *
+ */
 void SPIClass::end()
 {
 }
 
 
 
-
-/*
- * beginTransaction(): Initializes the SPI bus using the defined SPISettings.
+/* @defgroup SPI hardware implementation
+ * @brief beginTransaction()
+ *
+ * Initializes the SPI bus using the defined SPISettings
+ *
+ * this methode does not initiate a transaction. So it can be used to
+ * setup the SPI after SPI.begin()
+ *
  */
 void SPIClass::beginTransaction(SPISettings mySettings) {
 
-//#ifdef SPI_DEBUG
-//	debugf("SPIhw::beginTransaction(SPISettings mySettings)");
-//#endif
+#ifdef SPI_DEBUG
+	debugf("SPIhw::beginTransaction(SPISettings mySettings)");
+#endif
 	// check if we need to change settings
 	if (this->_SPISettings == mySettings)
 		return;
@@ -72,29 +84,42 @@ void SPIClass::beginTransaction(SPISettings mySettings) {
 	prepare(mySettings);
 }
 
-/*
+/* @defgroup SPI hardware implementation
+ * @brief endTransaction()
+ *
+ * Method for compatibility with Arduino API. Provides NOP
+ *
  * endTransaction(): Stop using the SPI bus. Normally this is called after
  * de-asserting the chip select, to allow other libraries to use the SPI bus.
  */
 void SPIClass::endTransaction() {
-//#ifdef SPI_DEBUG
-//	debugf("SPIhw::endTransaction()");
-//#endif
+#ifdef SPI_DEBUG
+	debugf("SPIhw::endTransaction()");
+#endif
 };
 
 
+/* @defgroup SPI hardware implementation
+ * @brief transfer32()
+ *
+ * private method used by transfer(byte) and transfer16(sort)
+ * to send/recv one uint32_t
+ *
+ * SPI transfer is based on a simultaneous send and receive:
+ * the received data is returned in receivedVal (or receivedVal16).
+ *
+ * 		receivedVal = SPI.transfer(val)			: single byte
+ * 		receivedVal16 = SPI.transfer16(val16)	: single short
+ */
 uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 {
 	uint32_t regvalue = 0;
 
 	while(READ_PERI_REG(SPI_CMD(SPI_NO))&SPI_USR);
 
-//	regvalue |=  SPI_USR_MOSI | SPI_DOUTDIN;
-//	regvalue &= ~(BIT2 | SPI_USR_ADDR | SPI_USR_DUMMY | SPI_USR_MISO | SPI_USR_COMMAND); //clear bit 2 see example IoT_Demo
-//	WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
-
-	CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MOSI|SPI_USR_MISO|SPI_USR_COMMAND|SPI_USR_ADDR|SPI_USR_DUMMY);
-	SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MOSI|SPI_DOUTDIN);
+	regvalue |=  SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
+	regvalue &= ~(BIT2 | SPI_USR_ADDR | SPI_USR_DUMMY | SPI_USR_MISO | SPI_USR_COMMAND); //clear bit 2 see example IoT_Demo
+	WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
 
 	WRITE_PERI_REG(SPI_USER1(SPI_NO),
@@ -103,11 +128,9 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 
 	// copy data to W0
 	if(READ_PERI_REG(SPI_USER(SPI_NO))&SPI_WR_BYTE_ORDER) {
-		debugf("Write Shift");
 		WRITE_PERI_REG(SPI_W0(SPI_NO), data<<(32-bits));
 	} else {
-		debugf("Write std");
-		WRITE_PERI_REG(SPI_W0(SPI_NO), data);
+ 		WRITE_PERI_REG(SPI_W0(SPI_NO), data);
 	}
 
 	SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);   // send
@@ -118,27 +141,23 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 	delayMicroseconds(8);
 
 	if(READ_PERI_REG(SPI_USER(SPI_NO))&SPI_RD_BYTE_ORDER) {
-		debugf("Read Shift");
 		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32-bits); //Assuming data in is written to MSB. TBC
 	} else {
-		debugf("Read STD");
 		return READ_PERI_REG(SPI_W0(SPI_NO)); //Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
 	}
 
 }
 
 
-/*
- * @brief transfer(), transfer16
+/* @defgroup SPI hardware implementation
+ * @brief transfer(uint8 *buffer, size_t numberBytes)
  *
  * SPI transfer is based on a simultaneous send and receive:
- * the received data is returned in receivedVal (or receivedVal16).
- * In case of buffer transfers the received data is stored in the buffer in-place
- * (the old data is replaced with the data received).
+ * The buffered transfers does split up the conversation internaly into 64 byte blocks.
+ * The received data is stored in the buffer passed by reference.
+ * (the data past in is replaced with the data received).
  *
- * 		receivedVal = SPI.transfer(val)			: single byte
- * 		receivedVal16 = SPI.transfer16(val16)	: single short
- * 		SPI.transfer(buffer, size)				: momory buffer of length size
+ * 		SPI.transfer(buffer, size)				: memory buffer of length size
  */
 void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
 
@@ -158,7 +177,7 @@ void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
 		bufLenght = min(numberBytes-bufIndx, BLOCKSIZE);
 
 #ifdef SPI_DEBUG
-//		debugf("Write/Read Block %d total %d bytes", total-blocks, bufLenght);
+		debugf("Write/Read Block %d total %d bytes", total-blocks, bufLenght);
 #endif
 
 		// compute the number of bits to clock
@@ -168,13 +187,9 @@ void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
 
 		while(READ_PERI_REG(SPI_CMD(SPI_NO))&SPI_USR);
 
-//		regvalue |=  SPI_USR_MOSI | SPI_USR_MISO | SPI_CK_I_EDGE;
-//		regvalue &= ~(BIT2 | SPI_USR_ADDR | SPI_USR_DUMMY | SPI_USR_MISO | SPI_USR_COMMAND); //clear bit 2 see example IoT_Demo
-//
-//		WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
-
-		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MOSI|SPI_USR_MISO|SPI_USR_COMMAND|SPI_USR_ADDR|SPI_USR_DUMMY);
-		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MOSI|SPI_DOUTDIN);
+		regvalue |=  SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
+		regvalue &= ~(BIT2 | SPI_USR_ADDR | SPI_USR_DUMMY | SPI_USR_MISO | SPI_USR_COMMAND); //clear bit 2 see example IoT_Demo
+		WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
 
 		// setup bit lenght
@@ -182,17 +197,8 @@ void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
 				( (num_bits-1 & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S ) |
 				( (num_bits-1 & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S ) );
 
-
 		// copy the registers starting from last index position
 		memcpy ((void *)SPI_W0(SPI_NO), &buffer[bufIndx], bufLenght);
-
-		Serial.print(" Write: ");
-		uint8 d;
-		for (int i = 0; i<bufLenght; i++) {
-			d = buffer[bufIndx+i];
-			Serial.printf(" 0x%X ", d);
-		}
-		Serial.println("");
 
 		// Begin SPI Transaction
 		SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);
@@ -206,13 +212,6 @@ void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
 		// copy the registers starting from last index position
 		memcpy (&buffer[bufIndx], (void *)SPI_W0(SPI_NO),  bufLenght);
 
-		Serial.print(" Read: ");
-		for (int i = 0; i<bufLenght; i++) {
-			d = buffer[bufIndx+i];
-			Serial.printf(" 0x%X ", d);
-		}
-		Serial.println("");
-
 		// increment bufIndex
 		bufIndx += bufLenght;
 	}
@@ -220,7 +219,8 @@ void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
 
 
 
-/** @brief  prepare	apply SPI bus settings
+/** @defgroup SPI hardware implementation
+ * @brief  prepare	apply SPI bus settings
  *
  * 		Private method used by beginTransaction and begin (init)
  *
@@ -228,10 +228,10 @@ void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
  */
 void SPIClass::prepare(SPISettings mySettings) {
 
-//#ifdef SPI_DEBUG
-//	debugf("SPIClass::prepare(SPISettings mySettings)");
-//	mySettings.print("mySettings");
-//#endif
+#ifdef SPI_DEBUG
+	debugf("SPIClass::prepare(SPISettings mySettings)");
+	mySettings.print("mySettings");
+#endif
 
 	// check if we need to change settings
 	if (_init & _SPISettings == mySettings)
@@ -249,12 +249,14 @@ void SPIClass::prepare(SPISettings mySettings) {
 #ifdef SPI_DEBUG
 	debugf("SPIhw::prepare(SPISettings mySettings) -> updated settings");
 #endif
+
 	_SPISettings = mySettings;
 	_init = true;
 };
 
 
-/** @brief  spi_mode Configures SPI mode parameters for clock edge and clock polarity.
+/** @defgroup SPI hardware implementation
+ * @brief  spi_mode Configures SPI mode parameters for clock edge and clock polarity.
  *
  *  		Private method used by SPISetings
  *
@@ -289,7 +291,8 @@ void SPIClass::spi_mode(uint8 mode){
 }
 
 
-/** @brief  spi_byte_order Setup the byte order for shifting data out of buffer
+/** @defgroup SPI hardware implementation
+ * @brief  spi_byte_order Setup the byte order for shifting data out of buffer
  *
  *  		Private method used by SPISetings
  *
@@ -316,7 +319,8 @@ void SPIClass::spi_byte_order(uint8 byte_order) {
 
 
 
-/** @brief  setClock  set CPI bus clock
+/** @defgroup SPI hardware implementation
+ * @brief  setClock  set CPI bus clock
  *
  * 		Private method used by setFrequency
  *
@@ -331,7 +335,8 @@ void SPIClass::spi_byte_order(uint8 byte_order) {
 void SPIClass::setClock(uint8 prediv, uint8 cntdiv) {
 
 #ifdef SPI_DEBUG
-	debugf("SPIClass::setClock(prediv %d, cntdiv %d)", prediv, cntdiv);
+	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d",
+			prediv, cntdiv, _SPISettings._speed);
 #endif
 
 	if((prediv==0)|(cntdiv==0)){
@@ -346,7 +351,8 @@ void SPIClass::setClock(uint8 prediv, uint8 cntdiv) {
 	}
 }
 
-/** @brief  gnu lib div implementation
+/** @defgroup SPI hardware implementation
+ * @brief  gnu lib div implementation
  *          TODO: check whether there is a implementation in SMING already
  */
 div_t div (int numer, int denom) {
@@ -362,9 +368,7 @@ div_t div (int numer, int denom) {
   return result;
 }
 
-//#define CPU_MAX  80000000UL
-
-/** @defgroup SPI harware implementation
+/** @defgroup SPI hardware implementation
  * 	@brief  getFrequency computes the closest pre devider for a given clock-devider and frequency
  *
  * 	Private method used by setFrequency
@@ -397,7 +401,7 @@ uint32_t SPIClass::getFrequency(int freq, int &pre, int clk) {
 }
 
 
-/** @defgroup SPI harware implementation
+/** @defgroup SPI hardware implementation
  *  @brief  set the max SPI bus frequency
  *
  *  		Private method used by SPISetings
@@ -417,13 +421,23 @@ void SPIClass::setFrequency(int freq) {
 
 #ifdef SPI_DEBUG
 	debugf("SPIClass::setFrequency(uint32_t %d)", freq);
-	int _CPU_freq = system_get_cpu_freq() * 10000000UL;
 #endif
+
+	int _CPU_freq = system_get_cpu_freq() * 10000000UL;
 
 	// dont run code if there are no changes
 	if (_init & freq == _SPISettings._speed) return;
 
+
+	if (freq == _CPU_freq) {
+		_SPISettings._speed = freq;
+		setClock(0, 0);
+		return;
+	}
+
+	freq = min(freq, _CPU_freq/2);
 	_SPISettings._speed = freq;
+
 
 	int pre2;
 	int f2 = getFrequency(freq, pre2, 2);

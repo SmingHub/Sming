@@ -151,9 +151,9 @@ void init()
 
 //	SDCardSPI = new SPISoft(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, 0);
 	SDCardSPI = new SPIClass();
+	SDCardSPI->beginTransaction(SPISettings(40000000, MSBFIRST, SPI_MODE0));
+
 	SDCard_begin(PIN_CARD_SS);
-
-
 
 	Serial.print("\nSDCard example - !!! see code for HW setup !!! \n\n");
 

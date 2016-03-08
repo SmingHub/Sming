@@ -339,6 +339,6 @@ void init()
 
 	debugf("Initialized in %d ms\n", startTime);
 
-//	DemoScreenTimer.initializeMs(500, screen1).start(FALSE);
+	DemoScreenTimer.initializeMs(500, screen1).start(FALSE);
 
 }

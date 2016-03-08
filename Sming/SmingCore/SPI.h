@@ -25,13 +25,6 @@
 #define	SPI_NO	1
 
 
-// Byte Order definitions
-#define SPI_BYTE_ORDER_HIGH_TO_LOW 1
-#define SPI_BYTE_ORDER_LOW_TO_HIGH 0
-
-//#define spi_busy(spi_no) READ_PERI_REG(SPI_CMD(spi_no))&SPI_USR
-
-
 class SPIClass: public SPIBase {
 public:
 	SPIClass();
@@ -79,7 +72,7 @@ public:
 
 	virtual void transfer(uint8 * buffer, size_t numberBytes);
 
-	SPISettings SPIDefaultSettings = SPISettings(8000000, MSBFIRST, SPI_MODE0);
+	SPISettings SPIDefaultSettings = SPISettings(2000000, MSBFIRST, SPI_MODE0);
 
 
 private:

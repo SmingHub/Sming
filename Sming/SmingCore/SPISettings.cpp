@@ -15,11 +15,11 @@
 
 
 SPISettings::SPISettings() {
-//#ifdef SPI_DEBUG
-//	debugf("SPISettings::SPISettings() default");
-//#endif
+#ifdef SPI_DEBUG
+	debugf("SPISettings::SPISettings() default");
+#endif
 	_speed = 1000000;
-	_byteOrder = SPI_BYTE_ORDER_LOW_TO_HIGH;
+	_byteOrder = MSBFIRST;
 	_dataMode = SPI_MODE0;
 }
 
@@ -30,9 +30,9 @@ SPISettings::SPISettings() {
  */
 SPISettings::SPISettings(int speed, uint8 byteOrder, uint8 dataMode) {
 
-//#ifdef SPI_DEBUG
-//	debugf("SPISettings::SPISettings(int %i, uint8 %d, uint8 %d)", speed, byteOrder, dataMode);
-//#endif
+#ifdef SPI_DEBUG
+	debugf("SPISettings::SPISettings(int %i, uint8 %d, uint8 %d)", speed, byteOrder, dataMode);
+#endif
 
 	_speed = speed;
 	_byteOrder = byteOrder;
@@ -41,29 +41,22 @@ SPISettings::SPISettings(int speed, uint8 byteOrder, uint8 dataMode) {
 
 
 SPISettings::~SPISettings() {
-	// TODO Auto-generated destructor stub
 }
 
 
 bool SPISettings::operator==(const SPISettings &other) const {
 
-
 	int res = _speed == other._speed &
 			_byteOrder == other._byteOrder &
 			_dataMode == other._dataMode;
-
-//#ifdef SPI_DEBUG
-//	debugf("SPISettings::operator==(const SPISettings &other) = %x", res);
-//	debugf("--> speed %i %i order %d %d mode %d %d", _speed, other._speed, _byteOrder, other._byteOrder, _dataMode, other._dataMode );
-//#endif
-
 	return res;
-
 }
 
+#ifdef SPI_DEBUG
 void SPISettings::print(const char *s) {
 		debugf("->  %s -> SPISettings::print(int %i, uint8 %d, uint8 %d)", s, _speed, _byteOrder, _dataMode);
 }
+#endif
 
 
 
