@@ -72,7 +72,7 @@ public:
 
 	virtual void transfer(uint8 * buffer, size_t numberBytes);
 
-	SPISettings SPIDefaultSettings = SPISettings(2000000, MSBFIRST, SPI_MODE0);
+	SPISettings SPIDefaultSettings = SPISettings(8000000, MSBFIRST, SPI_MODE0);
 
 
 private:

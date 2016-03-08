@@ -138,7 +138,7 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 	while (READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR);
 
 	// wait a while before reading the register into the buffer
-	delayMicroseconds(8);
+//	delayMicroseconds(2);
 
 	if(READ_PERI_REG(SPI_USER(SPI_NO))&SPI_RD_BYTE_ORDER) {
 		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32-bits); //Assuming data in is written to MSB. TBC
@@ -207,7 +207,7 @@ void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
 		while(READ_PERI_REG(SPI_CMD(SPI_NO))&SPI_USR);
 
 		// wait a while before reading the register into the buffer
-		delayMicroseconds(8);
+//		delayMicroseconds(8);
 
 		// copy the registers starting from last index position
 		memcpy (&buffer[bufIndx], (void *)SPI_W0(SPI_NO),  bufLenght);
@@ -338,6 +338,8 @@ void SPIClass::setClock(uint8 prediv, uint8 cntdiv) {
 	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d",
 			prediv, cntdiv, _SPISettings._speed);
 #endif
+	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d",
+			prediv, cntdiv, _SPISettings._speed);
 
 	if((prediv==0)|(cntdiv==0)){
 		// go full speed = SYSTEMCLOCK

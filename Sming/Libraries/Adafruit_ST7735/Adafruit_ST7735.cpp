@@ -322,7 +322,7 @@ void Adafruit_ST7735::commonInit(const uint8_t *cmdList) {
   if(hwSPI) { // Using hardware SPI
 #if defined (SPI_HAS_TRANSACTION)
     SPI.begin();
-    mySPISettings = SPISettings(8000000, MSBFIRST, SPI_MODE0);
+    mySPISettings = SPISettings(10000000, MSBFIRST, SPI_MODE0);
 #elif defined (__AVR__)
     SPCRbackup = SPCR;
     SPI.begin();
