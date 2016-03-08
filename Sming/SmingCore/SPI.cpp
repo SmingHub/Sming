@@ -55,6 +55,7 @@ void SPIClass::end()
 
 
 
+
 /*
  * beginTransaction(): Initializes the SPI bus using the defined SPISettings.
  */
@@ -88,10 +89,13 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 
 	while(READ_PERI_REG(SPI_CMD(SPI_NO))&SPI_USR);
 
-	regvalue |=  SPI_USR_MOSI | SPI_USR_MISO | SPI_CK_I_EDGE;
-	regvalue &= ~(BIT2 | SPI_USR_ADDR | SPI_USR_DUMMY | SPI_USR_MISO | SPI_USR_COMMAND); //clear bit 2 see example IoT_Demo
+//	regvalue |=  SPI_USR_MOSI | SPI_DOUTDIN;
+//	regvalue &= ~(BIT2 | SPI_USR_ADDR | SPI_USR_DUMMY | SPI_USR_MISO | SPI_USR_COMMAND); //clear bit 2 see example IoT_Demo
+//	WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
-	WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
+	CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MOSI|SPI_USR_MISO|SPI_USR_COMMAND|SPI_USR_ADDR|SPI_USR_DUMMY);
+	SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MOSI|SPI_DOUTDIN);
+
 
 	WRITE_PERI_REG(SPI_USER1(SPI_NO),
 			( (bits-1 & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S ) |
@@ -99,8 +103,10 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 
 	// copy data to W0
 	if(READ_PERI_REG(SPI_USER(SPI_NO))&SPI_WR_BYTE_ORDER) {
+		debugf("Write Shift");
 		WRITE_PERI_REG(SPI_W0(SPI_NO), data<<(32-bits));
 	} else {
+		debugf("Write std");
 		WRITE_PERI_REG(SPI_W0(SPI_NO), data);
 	}
 
@@ -108,9 +114,14 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 
 	while (READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR);
 
+	// wait a while before reading the register into the buffer
+	delayMicroseconds(8);
+
 	if(READ_PERI_REG(SPI_USER(SPI_NO))&SPI_RD_BYTE_ORDER) {
+		debugf("Read Shift");
 		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32-bits); //Assuming data in is written to MSB. TBC
 	} else {
+		debugf("Read STD");
 		return READ_PERI_REG(SPI_W0(SPI_NO)); //Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
 	}
 
@@ -163,7 +174,8 @@ void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
 //		WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
 		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MOSI|SPI_USR_MISO|SPI_USR_COMMAND|SPI_USR_ADDR|SPI_USR_DUMMY);
-		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MISO|SPI_USR_MISO);
+		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_USR_MOSI|SPI_DOUTDIN);
+
 
 		// setup bit lenght
 		WRITE_PERI_REG(SPI_USER1(SPI_NO),
@@ -260,7 +272,7 @@ void SPIClass::spi_mode(uint8 mode){
 	uint8 spi_cpol = mode & 0x0F;
 
 #ifdef SPI_DEBUG
-	debugf("SPIClass::spi_mode(spi_cpha %d,spi_cpol %d)", spi_cpha, spi_cpol);
+	debugf("SPIClass::spi_mode(mode %x) spi_cpha %X,spi_cpol %X)", mode, spi_cpha, spi_cpol);
 #endif
 
 	if(spi_cpha) {
