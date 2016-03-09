@@ -9,7 +9,7 @@ ArduCamCommand::ArduCamCommand(ArduCAM *CAM) {
 	debugf("ArduCamCommand Instantiating");
 	myCAM = CAM;
 	imgSize = OV2640_320x240;
-	imgType = JPEG;
+	imgType = JPG;
 }
 
 ArduCamCommand::~ArduCamCommand() {
