@@ -338,8 +338,6 @@ void SPIClass::setClock(uint8 prediv, uint8 cntdiv) {
 	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d",
 			prediv, cntdiv, _SPISettings._speed);
 #endif
-	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d",
-			prediv, cntdiv, _SPISettings._speed);
 
 	if((prediv==0)|(cntdiv==0)){
 		// go full speed = SYSTEMCLOCK
