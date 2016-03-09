@@ -17,7 +17,7 @@ uint32_t *spi_fifo;
 
 void hspi_init(void)
 {
-	spi_fifo = (uint32_t*)SPI_FLASH_C0(HSPI);
+	spi_fifo = (uint32_t*)SPI_W0(HSPI);
 
 	WRITE_PERI_REG(PERIPHS_IO_MUX, 0x105); //clear bit9
 
@@ -30,17 +30,17 @@ void hspi_init(void)
 	// SPI clock = CPU clock / 10 / 4
 	// time length HIGHT level = (CPU clock / 10 / 2) ^ -1,
 	// time length LOW level = (CPU clock / 10 / 2) ^ -1
-	WRITE_PERI_REG(SPI_FLASH_CLOCK(HSPI),
+	WRITE_PERI_REG(SPI_CLOCK(HSPI),
 	   (((HSPI_PRESCALER - 1) & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
 	   ((1 & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
 	   ((0 & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) |
 	   ((1 & SPI_CLKCNT_L) << SPI_CLKCNT_L_S));
 
-	WRITE_PERI_REG(SPI_FLASH_CTRL1(HSPI), 0);
+	WRITE_PERI_REG(SPI_CTRL1(HSPI), 0);
 
-	uint32_t regvalue = SPI_FLASH_DOUT;
-    regvalue &= ~(BIT2 | SPI_FLASH_USR_ADDR | SPI_FLASH_USR_DUMMY | SPI_FLASH_USR_DIN | SPI_USR_COMMAND | SPI_DOUTDIN); //clear bit 2 see example IoT_Demo
-	WRITE_PERI_REG(SPI_FLASH_USER(HSPI), regvalue);
+	uint32_t regvalue = SPI_USR_MOSI;
+    regvalue &= ~(BIT2 | SPI_USR_ADDR | SPI_USR_DUMMY | SPI_USR_MISO | SPI_USR_COMMAND | SPI_DOUTDIN); //clear bit 2 see example IoT_Demo
+	WRITE_PERI_REG(SPI_USER(HSPI), regvalue);
 }
 
 void hspi_send_uint16_r(uint16_t data, int32_t repeats)

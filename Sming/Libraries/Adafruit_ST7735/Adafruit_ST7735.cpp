@@ -27,6 +27,7 @@ as well as Adafruit raw 1.8" TFT display
 #include "wiring_private.h"
 #include <SPI.h>
 
+
 inline uint16_t swapcolor(uint16_t x) { 
   return (x << 11) | (x & 0x07E0) | (x >> 11);
 }
@@ -85,6 +86,8 @@ inline void Adafruit_ST7735::spiwrite(uint8_t c) {
 #elif defined (__arm__)
       SPI.setClockDivider(21); //4MHz
       SPI.setDataMode(SPI_MODE0);
+      SPI.transfer(c);
+#elif defined (__ESP8266_EX__)
       SPI.transfer(c);
 #endif
   } else {
@@ -319,7 +322,7 @@ void Adafruit_ST7735::commonInit(const uint8_t *cmdList) {
   if(hwSPI) { // Using hardware SPI
 #if defined (SPI_HAS_TRANSACTION)
     SPI.begin();
-    mySPISettings = SPISettings(8000000, MSBFIRST, SPI_MODE0);
+    mySPISettings = SPISettings(10000000, MSBFIRST, SPI_MODE0);
 #elif defined (__AVR__)
     SPCRbackup = SPCR;
     SPI.begin();
@@ -332,6 +335,9 @@ void Adafruit_ST7735::commonInit(const uint8_t *cmdList) {
     SPI.begin();
     SPI.setClockDivider(21); //4MHz
     SPI.setDataMode(SPI_MODE0);
+#elif defined (__ESP8266_EX__)
+    SPI.begin();
+
 #endif
   } else {
     pinMode(_sclk, OUTPUT);
