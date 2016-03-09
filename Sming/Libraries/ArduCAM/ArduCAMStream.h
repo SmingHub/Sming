@@ -32,7 +32,7 @@ private:
 
 	ArduCAM *myCAM;
 	bool transfer = false;
-//	bool sendHeader = false;
+	bool sendHeader = false;
 	size_t len;
 	int bcount;
 	HexDump hdump;
