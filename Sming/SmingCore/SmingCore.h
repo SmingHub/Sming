@@ -30,6 +30,7 @@
 
 
 #include "Platform/System.h"
+#include "Platform/WifiEvents.h"
 #include "Platform/Station.h"
 #include "Platform/AccessPoint.h"
 #include "Platform/WDT.h"
