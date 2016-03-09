@@ -16,7 +16,7 @@ TFT_ILI9163C tft(2, 0);
 
 void init()
 {
-	Serial.begin(COM_SPEED_SERIAL); // 115200 by default, change it in Makefile-user.mk
+	Serial.begin(SERIAL_BAUDRATE_APP); // 115200 by default, change it in Makefile-user.mk
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
 	Serial.println("Display start");

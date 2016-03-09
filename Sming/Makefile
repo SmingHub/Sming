@@ -22,15 +22,15 @@
 # MacOS / Linux
 # SMING_HOME = /opt/esp-open-sdk
 
-## COM port parameter is reqruied to flash firmware correctly.
+## Serial port parameter is required to flash firmware correctly.
 ## Windows: 
-# COM_PORT = COM3
+# SERIAL_PORT = COM3
 
 # MacOS / Linux:
-# COM_PORT = /dev/tty.usbserial
+# SERIAL_PORT = /dev/tty.usbserial
 
-# Com port speed
-COM_SPEED = 115200
+# Serial port baudrate
+SERIAL_BAUDRATE = 115200
 
 
 ifeq ($(OS),Windows_NT)
@@ -111,7 +111,7 @@ USER_LIBDIR = compiler/lib
 LIBS		= microc microgcc hal phy pp net80211 lwip wpa main
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL)
+CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DSERIAL_BAUDRATE_APP=$(SERIAL_BAUDRATE_APP)
 ifeq ($(ENABLE_GDB), 1)
 	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
 	MODULES		 += gdbstub

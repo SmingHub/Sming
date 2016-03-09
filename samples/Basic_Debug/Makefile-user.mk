@@ -19,13 +19,13 @@ MODULES = app
 # MacOS / Linux
 # SMING_HOME = /opt/sming/Sming
 
-## COM port parameter is reqruied to flash firmware correctly.
+## Serial port parameter is required to flash firmware correctly.
 ## Windows: 
-# COM_PORT = COM3
+# SERIAL_PORT = COM3
 
 # MacOS / Linux:
-# COM_PORT = /dev/tty.usbserial
+# SERIAL_PORT = /dev/tty.usbserial
 
-# Com port speed
-# COM_SPEED	= 115200
+# Serial port baudrate
+# SERIAL_BAUDRATE	= 115200
 ENABLE_GDB=1

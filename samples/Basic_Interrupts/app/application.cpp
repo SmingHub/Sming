@@ -19,7 +19,7 @@ void IRAM_ATTR interruptHandler()
 
 void init()
 {
-	Serial.begin(COM_SPEED_SERIAL); // 115200 by default, change it in Makefile-user.mk
+	Serial.begin(SERIAL_BAUDRATE_APP); // 115200 by default, change it in Makefile-user.mk
 
 	delay(3000);
 	say("======= Bring GPIO");

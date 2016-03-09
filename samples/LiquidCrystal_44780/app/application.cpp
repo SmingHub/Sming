@@ -14,7 +14,7 @@ LiquidCrystal_I2C lcd(I2C_LCD_ADDR, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 void init()
 {
-	Serial.begin(COM_SPEED_SERIAL); // 115200 by default, change it in Makefile-user.mk
+	Serial.begin(SERIAL_BAUDRATE_APP); // 115200 by default, change it in Makefile-user.mk
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
 	Serial.println("Initializing lcd via I2C (IIC/TWI) interface");

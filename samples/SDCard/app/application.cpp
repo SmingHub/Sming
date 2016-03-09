@@ -146,7 +146,7 @@ void init()
 	FRESULT fRes;
 	uint32_t actual;
 
-	Serial.begin(COM_SPEED_SERIAL); // 115200 by default, change it in Makefile-user.mk
+	Serial.begin(SERIAL_BAUDRATE_APP); // 115200 by default, change it in Makefile-user.mk
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
 	SDCardSPI = new SPISoft(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, PIN_CARD_SS);

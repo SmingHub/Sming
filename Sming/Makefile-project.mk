@@ -9,14 +9,14 @@
 ### Defaults ###
 
 ## COM port parameters
-# Default COM port speed (generic)
-COM_SPEED ?= 115200
+# Default serial port speed (generic)
+SERIAL_BAUDRATE ?= 115200
 
-# Default COM port speed (used for flashing)
-COM_SPEED_ESPTOOL ?= $(COM_SPEED)
+# Default serial port speed (used for flashing)
+SERIAL_BAUDRATE_ESPTOOL ?= $(SERIAL_BAUDRATE)
 
-# Default COM port speed (used in code)
-COM_SPEED_SERIAL  ?= $(COM_SPEED)
+# Default serial port speed (used in code)
+SERIAL_BAUDRATE_APP  ?= $(SERIAL_BAUDRATE)
 
 ## Flash parameters
 # SPI_SPEED = 40, 26, 20, 80
@@ -53,12 +53,12 @@ ESPTOOL2_SDK_ARGS	?= -quiet -lib
 # MacOS / Linux
 # SMING_HOME = /opt/esp-open-sdk
 
-## COM port parameter is reqruied to flash firmware correctly.
+## Serial port parameter is required to flash firmware correctly.
 ## Windows: 
-# COM_PORT = COM3
+# SERIAL_PORT = COM3
 
 # MacOS / Linux:
-# COM_PORT = /dev/tty.usbserial
+# SERIAL_PORT = /dev/tty.usbserial
 
 ifeq ($(OS),Windows_NT)
   # Windows detected
@@ -142,7 +142,7 @@ USER_LIBDIR = $(SMING_HOME)/compiler/lib/
 LIBS		= microc microgcc hal phy pp net80211 lwip wpa main sming crypto pwm smartconfig $(EXTRA_LIBS)
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS)
+CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DSERIAL_BAUDRATE_APP=$(SERIAL_BAUDRATE_APP) $(USER_CFLAGS)
 ifeq ($(ENABLE_GDB), 1)
 	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
 	MODULES		 += $(SMING_HOME)/gdbstub
@@ -335,18 +335,18 @@ else
 endif
 
 flash: all
-	$(vecho) "Killing Terminal to free $(COM_PORT)"
+	$(vecho) "Killing Terminal to free $(SERIAL_PORT)"
 	-$(Q) $(KILL_TERM)
 ifeq ($(DISABLE_SPIFFS), 1)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin
+	$(ESPTOOL) -p $(SERIAL_PORT) -b $(SERIAL_BAUDRATE_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin
 else
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
+	$(ESPTOOL) -p $(SERIAL_PORT) -b $(SERIAL_BAUDRATE_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
 endif
 	$(TERMINAL)
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x4B000 $(SMING_HOME)/compiler/data/blankfs.bin
+	$(ESPTOOL) -p $(SERIAL_PORT) -b $(SERIAL_BAUDRATE_ESPTOOL) write_flash $(flashimageoptions) 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x4B000 $(SMING_HOME)/compiler/data/blankfs.bin
 
 rebuild: clean all
 

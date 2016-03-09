@@ -193,7 +193,7 @@ void init()
 {
 	spiffs_mount(); // Mount file system, in order to work with files
 
-	Serial.begin(COM_SPEED_SERIAL); // 115200 by default, change it in Makefile-user.mk
+	Serial.begin(SERIAL_BAUDRATE_APP); // 115200 by default, change it in Makefile-user.mk
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 	AppSettings.load();
 
