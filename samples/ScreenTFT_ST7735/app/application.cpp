@@ -10,17 +10,23 @@
  * VCC      (VCC)         3.3v
  * D0       (CLK)         GPIO14
  * D1       (MOSI)        GPIO13
+ * CS       (CS)          GPI015
  * RES      (RESET)       GPIO16
- * DC       (DC)          GPIO0
- * CS       (CS)          GPIO2
+ * DC       (DC)          GPIO2
  */
-#define TFT_SCLK 	14
+#define TFT_SCLK 	14  // HW SPI pins - dont change
 #define TFT_MOSI 	13
-#define TFT_RST  	16
-#define	TFT_DC   	0
-#define TFT_CS   	2
+#define TFT_MISO	12
 
-Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+#define TFT_CS   	15	// this pins are free to change
+#define TFT_RST  	16
+#define	TFT_DC   	2
+
+// constructor for SW SPI
+//Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+
+// constructor for HW SPI
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
 Timer DemoScreenTimer;
 float p = 3.1415926;
@@ -76,6 +82,11 @@ void tftPrintTest2() {
 }
 
 void testlines(uint16_t color) {
+
+  // testlines takes more than 3000ms on SW SPI
+  // so we need to prevent the watchdog from kicking in
+  WDT.enable(false);
+
   tft.fillScreen(ST7735_BLACK);
   for (int16_t x=0; x < tft.width(); x+=6) {
     tft.drawLine(0, 0, x, tft.height()-1, color);
@@ -92,9 +103,6 @@ void testlines(uint16_t color) {
     tft.drawLine(tft.width()-1, 0, 0, y, color);
   }
 
-  // TODO: drawing from all 4 corners does kick in a watchdog reboot !
-  /*
-
   tft.fillScreen(ST7735_BLACK);
   for (int16_t x=0; x < tft.width(); x+=6) {
     tft.drawLine(0, tft.height()-1, x, 0, color);
@@ -110,7 +118,9 @@ void testlines(uint16_t color) {
   for (int16_t y=0; y < tft.height(); y+=6) {
     tft.drawLine(tft.width()-1, tft.height()-1, 0, y, color);
   }
-  */
+
+  WDT.enable(true);
+
 }
 
 void testfastlines(uint16_t color1, uint16_t color2) {
