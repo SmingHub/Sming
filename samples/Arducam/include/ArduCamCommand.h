@@ -9,21 +9,28 @@
 #include "WString.h"
 #include "../Services/CommandProcessing/CommandProcessingIncludes.h"
 #include "../Services/CommandProcessing/CommandOutput.h"
-#include "CamSettings.h"
+#include <Libraries/ArduCam/ArduCAM.h>
 
 class ArduCamCommand
 {
 public:
-	ArduCamCommand(CamSettings *settings);
+	ArduCamCommand(ArduCAM *CAM);
 	virtual ~ArduCamCommand();
 	void initCommand();
+	const char * getContentType();
 
 private:
 	bool status = true;
-	CamSettings *settings;
+	ArduCAM *myCAM;
+	uint8	imgType;
+	uint8	imgSize;
 	void processSetCommands(String commandLine, CommandOutput* commandOutput);
-	void processOutCommands(String commandLine, CommandOutput* commandOutput);
+
+	void set_format(uint8 type);
 	void showSettings(CommandOutput* commandOutput);
+
+	const char * getImageType();
+	const char * getImageSize();
 };
 
 
