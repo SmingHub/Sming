@@ -106,7 +106,7 @@ uint16_t ArduCAMStream::readMemoryBlock(char* data, int bufSize) {
 
 	// so we have to read single bytes
 	for (int i=0; i< bytesread; i++) {
-		data[i] = SPI.transfer8(0x00);
+		data[i] = SPI.read8();
 	}
 	len = len - bytesread;
 

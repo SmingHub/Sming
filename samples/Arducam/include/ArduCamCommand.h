@@ -14,7 +14,7 @@
 class ArduCamCommand
 {
 public:
-	ArduCamCommand(ArduCAM CAM);
+	ArduCamCommand(ArduCAM *CAM);
 	virtual ~ArduCamCommand();
 	void initCommand();
 	const char * getContentType();

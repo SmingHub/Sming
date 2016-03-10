@@ -211,7 +211,7 @@ void StartServers()
 	server.listen(80);
 	server.addPath("/", onIndex);
 	server.addPath("/capture", onCapture);
-	server.addPath("/stream", onStream);
+//	server.addPath("/stream", onStream);
 	server.addPath("/favicon.ico", onFavicon);
 	server.setDefaultHandler(onIndex);
 
