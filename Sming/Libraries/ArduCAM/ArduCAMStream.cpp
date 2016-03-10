@@ -13,7 +13,19 @@
 #endif
 #define ACAM_HDUMP
 
-ArduCAMStream::ArduCAMStream(ArduCAM myCam) {
+#define BMPIMAGEOFFSET 66
+
+const char bmp_header[BMPIMAGEOFFSET] =
+{
+  0x42, 0x4D, 0x36, 0x58, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x42, 0x00, 0x00, 0x00, 0x28, 0x00,
+  0x00, 0x00, 0x40, 0x01, 0x00, 0x00, 0xF0, 0x00, 0x00, 0x00, 0x01, 0x00, 0x10, 0x00, 0x03, 0x00,
+  0x00, 0x00, 0x00, 0x58, 0x02, 0x00, 0xC4, 0x0E, 0x00, 0x00, 0xC4, 0x0E, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF8, 0x00, 0x00, 0xE0, 0x07, 0x00, 0x00, 0x1F, 0x00,
+  0x00, 0x00
+};
+
+
+ArduCAMStream::ArduCAMStream(ArduCAM *myCam) {
 	ACAM_DEBUG("ArduCAMStream::ArduCAMStream()\n");
 	myCAM = myCam;
 	transfer = false;
@@ -36,9 +48,11 @@ bool ArduCAMStream::dataReady()
 {
 	// wait for available data
 	for (int i=0; i<100; i++) {
-		if (myCAM.get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK)) {
+		if (myCAM->get_bit(ARDUCHIP_TRIG, CAP_DONE_MASK)) {
 
-			len = myCAM.read_fifo_length();
+			len = myCAM->read_fifo_length();
+//			if (myCAM.get_format() == BMP)
+//				len += BMPIMAGEOFFSET;
 			ACAM_DEBUG("ArduCAMStream::dataReady() -> (%d bytes Ready)\n", len);
 #ifdef ACAM_HDUMP
 			hdump.resetAddr();
@@ -67,40 +81,45 @@ uint16_t ArduCAMStream::readMemoryBlock(char* data, int bufSize) {
 
 	if (!transfer) {
 		transfer = true;
-//		HwSPI.startTX();
-//		SPI.beginTransaction(SPI.SPIDefaultSettings);
-		debugf("myCAM.set_fifo_burst()");
-		myCAM.CS_LOW();
-		myCAM.set_fifo_burst();
+
+		myCAM->CS_LOW();
+		myCAM->set_fifo_burst();
 		// clear dummy byte -> send out LO and ignore MISO
-//		HwSPI.send((uint8)0x0);
 		SPI.transfer(0x0);
+
+		// send a BMP header for BMP files
+		if (myCAM->get_format() == BMP) {
+			hdump.print((unsigned char *)bmp_header, BMPIMAGEOFFSET);
+			memcpy(data, (unsigned char *)bmp_header, BMPIMAGEOFFSET);
+			return BMPIMAGEOFFSET;
+		}
+
 	}
 
 	int bytesread = min(len, bufSize);
 
 	ACAM_DEBUG("ArduCAMStream::readMemoryBlock [%d] (%d bytes) remaining (%d bytes)\n", bcount++, bytesread, len);
 
+	// block read does overload the cam
 //	HwSPI.recv((uint8_t *)data, bytesread);
-	SPI.transfer((unsigned char*)data, bytesread);
+//	SPI.transfer((unsigned char*)data, bytesread);
 
+	// so we have to read single bytes
+	for (int i=0; i< bytesread; i++) {
+		data[i] = SPI.read8();
+	}
 	len = len - bytesread;
 
 	if (len == 0) {
 		ACAM_DEBUG("ArduCAMStream::readMemoryBlock -> eof");
 		transfer = false;
-//		HwSPI.endTX();
 		SPI.endTransaction();
+		myCAM->CS_HIGH();
 	}
-
-	myCAM.CS_HIGH();
-
-//	hdump.print((uint8_t *)data, bytesread);
 
 	return bytesread;
 
 }
-
 
 bool ArduCAMStream::seek(int dist) {
 //	ACAM_DEBUG("ArduCAMStream::seek (%d)\n", dist);
@@ -111,4 +130,5 @@ bool ArduCAMStream::seek(int dist) {
 	else
 		return true;
 };
+
 

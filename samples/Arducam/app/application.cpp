@@ -6,8 +6,12 @@
 //#include <Libraries/ArduCAM/ArduCAM.h>
 //#include <Libraries/ArduCAM/ov2640_regs.h>
 
-#include "CamSettings.h"
+//#include "CamSettings.h"
 #include <ArduCamCommand.h>
+
+#include <Libraries/ArduCam/ArduCAM.h>
+#include <Libraries/ArduCAM/ov2640_regs.h>
+
 #include <Libraries/ArduCam/ArduCAMStream.h>
 #include <Services/HexDump/HexDump.h>
 
@@ -38,8 +42,6 @@
 
 #define CAM_CS   	16	// this pins are free to change
 
-
-Timer PreviewTimer, CaptureTimer;
 uint32_t startTime;
 
 TelnetServer telnet;
@@ -49,23 +51,8 @@ HexDump hdump;
 
 
 ArduCAM myCAM(OV2640,CAM_CS);
-CamSettings camSettings;
 
-ArduCamCommand arduCamCommand(&camSettings);
-
-/*
- * change cammera seeting -> used by ArduCammCommand handler
- */
-
-void setupCamera(CamSettings settings) {
-	//Change MCU mode
-	Serial.println("setupCamera -> Change MCU mode");
-	myCAM.write_reg(ARDUCHIP_MODE, 0x00);
-	Serial.printf("   ImageType -> %s\n", settings.getImageType());
-	myCAM.set_format(settings.getImageTypeCode());
-	Serial.printf("   ImageSize -> %s\n", settings.getImageSize());
-    myCAM.OV2640_set_JPEG_size(settings.getImageSizeCode());
-}
+ArduCamCommand arduCamCommand(&myCAM);
 
 /*
  * set the command handler -> ArduCamCommand handler
@@ -73,9 +60,6 @@ void setupCamera(CamSettings settings) {
 void startApplicationCommand()
 {
 	arduCamCommand.initCommand();
-//	commandHandler.registerCommand(CommandDelegate(
-//			"c","Capture Picture with ArduCAM",
-//			"Application",processApplicationCommands));
 }
 
 /*
@@ -108,6 +92,8 @@ void initCam() {
     pinMode(CAM_CS, OUTPUT);
 	digitalWrite(CAM_CS, HIGH);
 	SPI.begin();
+	SPI.beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
+
 
 	//Check if the ArduCAM SPI bus is OK
 	myCAM.write_reg(ARDUCHIP_TEST1, 0x55);
@@ -122,12 +108,13 @@ void initCam() {
 
 	// init CAM
 	Serial.println("Initialize the OV2640 module");
+	myCAM.set_format(JPEG);
 	myCAM.InitCAM();
 }
 
 
 void startCapture(){
-  Serial.printf("startCapture()\n");
+//  Serial.printf("startCapture()\n");
   myCAM.clear_fifo_flag();
   myCAM.start_capture();
 }
@@ -141,8 +128,9 @@ void onIndex(HttpRequest &request, HttpResponse &response)
 
 	Serial.printf("perform onIndex()\n");
 
-	String msg = "ArduCAM Ready for capture !!";
+	String msg = "<html>ArduCAM Ready for <a href=\"./capture\">capture</a></html>";
 
+	response.setContentType("text/html");
 	response.sendString(msg);
 
 	hdump.resetAddr();
@@ -156,23 +144,34 @@ void onIndex(HttpRequest &request, HttpResponse &response)
  */
 void onCapture(HttpRequest &request, HttpResponse &response) {
 
-	Serial.printf("perform onCapture()\n");
+	Serial.printf("perform onCapture()\r\n");
 
 	// TODO: use request parameters to overwrite camera settings
-	setupCamera(camSettings);
+	// setupCamera(camSettings);
+	myCAM.clear_fifo_flag();
+	myCAM.write_reg(ARDUCHIP_FRAMES, 0x00);
 
 	// get the picture
+	startTime = millis();
 	startCapture();
+	Serial.printf("onCapture() startCapture() %d ms\r\n", millis() - startTime);
 
-	ArduCAMStream *stream = new ArduCAMStream(myCAM);
+	ArduCAMStream *stream = new ArduCAMStream(&myCAM);
+
+	const char * contentType = arduCamCommand.getContentType();
 
 	if (stream->dataReady()) {
-		Serial.printf("response set Content Lenght: %d\n", stream->available());
 		response.setHeader("Content Lenght", String(stream->available()));
-		Serial.printf("response sendDataStream\n");
-		response.sendDataStream(stream, camSettings.getContentType());
+		response.sendDataStream(stream, contentType);
 	}
 
+	Serial.printf("onCapture() process Stream %d ms\r\n", millis() - startTime);
+
+
+}
+
+void onFavicon(HttpRequest &request, HttpResponse &response) {
+	response.notFound();
 }
 
 /*
@@ -185,6 +184,7 @@ void StartServers()
 	server.listen(80);
 	server.addPath("/", onIndex);
 	server.addPath("/capture", onCapture);
+	server.addPath("/favicon.ico", onFavicon);
 	server.setDefaultHandler(onIndex);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
@@ -226,6 +226,7 @@ void init()
 	// Run our method when station was connected to AP
 	WifiStation.waitConnection(connectOk);
 
+	// setup the ArduCAM
 	initCam();
 
 	// set command handlers for cam
