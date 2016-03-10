@@ -16,7 +16,7 @@
 
 class ArduCAMStream: public IDataSourceStream {
 public:
-	ArduCAMStream(ArduCAM cam);
+	ArduCAMStream(ArduCAM *cam);
 	virtual ~ArduCAMStream();
 
 	virtual StreamType getStreamType() { return eSST_User; }
@@ -30,8 +30,9 @@ public:
 
 private:
 
-	ArduCAM myCAM;
+	ArduCAM *myCAM;
 	bool transfer = false;
+//	bool sendHeader = false;
 	size_t len;
 	int bcount;
 	HexDump hdump;

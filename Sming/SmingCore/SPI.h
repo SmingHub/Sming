@@ -87,6 +87,20 @@ public:
 		return transfer32((uint32)val, 8);
 	};
 
+	/** @brief read8() read a byte from SPI without setting up registers
+	 * @param	none
+	 * @retval	byte received
+	 *
+	 * 	 used for performance tuning when doing continuous reads
+	 * 	 this method does not reset the registers , so make sure
+	 * 	 that a regular transfer(data) call was performed
+	 *
+	 * 	 Note: this method is not found on the Arduino API
+	 *
+	 * 	 USE WITH CARE !!
+	 *
+	 */
+	uint8 read8();
 
 	/** @brief 	transfer16()
 	 * @param	short to send

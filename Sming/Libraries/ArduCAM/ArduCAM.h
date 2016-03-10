@@ -332,6 +332,7 @@ class ArduCAM
 		void OV2640_set_JPEG_size(uint8_t size);
 		void OV5642_set_JPEG_size(uint8_t size);
 		void set_format(byte fmt);
+		byte get_format();
 		
 		int bus_write(int address, int value);
 		uint8_t bus_read(int address);

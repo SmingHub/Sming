@@ -645,6 +645,12 @@ void ArduCAM::set_format(byte fmt)
 	else
 		m_fmt = JPEG;
 }
+
+byte ArduCAM::get_format()
+{
+	return m_fmt;
+}
+
 			
 void ArduCAM::InitCAM()
 {
