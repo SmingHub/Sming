@@ -3,10 +3,10 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ * APA102 library by HappyCodingRobot@github.com
  ****/
-
+#include <SmingCore.h>
 // APA102 LED class
-
 #include <SPI.h>
 #include <SPISoft.h>
 #include "apa102.h"
@@ -21,83 +21,68 @@
 
 
 
-/* APA102 class for hardware SPI */
+/* APA102 class for hardware & software SPI */
 
-APA102::APA102(uint16_t n) : APA102_Base(n) {
-}
-
-void APA102::begin(void) {
-    SPI.begin(10, 8);       // 1MHz clk @ f_cpu==80MHz
-}
-
-void APA102::begin(uint16_t prediv, uint8_t div) {
-    SPI.begin(prediv,div);
-}
-
-void APA102::end() {
-    SPI.end();
-}
-
-inline void APA102::SPI_transfer(uint8_t * data, uint8_t count) {
-    SPI.transfer(data, count);
-}
-
-
-/* APA102 class for software SPI */
-
-APA102Soft::APA102Soft(uint16_t n, SPISoft & spiRef) : APA102_Base(n), pSPI(spiRef) {
-}
-
-void APA102Soft::begin(void) {
-    pSPI.begin();
-    pSPI.setDelay(200);
-}
-
-void APA102Soft::end() {
-}
-
-inline void APA102Soft::SPI_transfer(uint8_t * data, uint8_t count) {
-    pSPI.send(data, count);
-}
-
-
-/* APA102 base class */
-
-APA102_Base::APA102_Base(uint16_t n) : numLEDs(n), brightness(0), LEDbuffer(NULL) {
+APA102::APA102(uint16_t n) : numLEDs(n), brightness(0), LEDbuffer(NULL), pSPI(SPI) {
     if (LEDbuffer = (uint8_t *) malloc(numLEDs * 4)) {
         clear();
     }
 }
 
-APA102_Base::~APA102_Base() {
+APA102::APA102(uint16_t n, SPIBase & spiRef) : numLEDs(n), brightness(0), LEDbuffer(NULL), pSPI(spiRef) {
+    if (LEDbuffer = (uint8_t *) malloc(numLEDs * 4)) {
+        clear();
+    }
+}
+
+APA102::~APA102() {
     if (LEDbuffer) free(LEDbuffer);
 }
 
 
-void APA102_Base::show(void) {
+void APA102::begin(void) {
+    pSPI.begin();
+}
+
+void APA102::begin(SPISettings & mySettings) {
+    pSPI.begin();
+    SPI_APA_Settings = mySettings;
+}
+
+void APA102::end() {
+    pSPI.end();
+}
+
+
+
+void APA102::show(void) {
     uint32_t *buf = (uint32_t*) LEDbuffer;
     uint32_t elem;
+    pSPI.beginTransaction(SPI_APA_Settings);
     sendStart();
     for (uint16_t i = 0; i < numLEDs; i++) {
         elem = buf[i];
-        SPI_transfer((uint8_t*)&elem, 4);
+        pSPI.transfer((uint8_t*)&elem, 4);
     }
     sendStop();
+    pSPI.endTransaction();
 }
 
-void APA102_Base::show(int16_t SPos) {
+void APA102::show(int16_t SPos) {
     uint32_t *buf = (uint32_t*) LEDbuffer;
     uint32_t elem;
+    pSPI.beginTransaction(SPI_APA_Settings);
     int sp = numLEDs - (SPos % numLEDs);
     sendStart();
     for (int i = 0; i < numLEDs; i++) {
         elem = buf[(i + sp) % numLEDs];
-        SPI_transfer((uint8_t*)&elem, 4);
+        pSPI.transfer((uint8_t*)&elem, 4);
     }
     sendStop();
+    pSPI.endTransaction();
 }
 
-void APA102_Base::clear(void) {
+void APA102::clear(void) {
     for (uint16_t i = 0; i < numLEDs; i++) {
         LEDbuffer[i * 4] = LED_PREAMBLE;
         LEDbuffer[i * 4 + bOfs] = 0;
@@ -106,7 +91,7 @@ void APA102_Base::clear(void) {
     }
 }
 
-void APA102_Base::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
+void APA102::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
     if (n < numLEDs) {
         LEDbuffer[n * 4] = LED_PREAMBLE | brightness;
         LEDbuffer[n * 4 + bOfs] = b;
@@ -115,7 +100,7 @@ void APA102_Base::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
     }
 }
 
-void APA102_Base::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t br) {
+void APA102::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t br) {
     if (n < numLEDs) {
         LEDbuffer[n * 4] = LED_PREAMBLE | (br < 32 ? br : 31);
         LEDbuffer[n * 4 + bOfs] = b;
@@ -124,7 +109,7 @@ void APA102_Base::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t 
     }
 }
 
-void APA102_Base::setPixel(uint16_t n, col_t* p) {
+void APA102::setPixel(uint16_t n, col_t* p) {
     if (n < numLEDs) {
         LEDbuffer[n * 4] = LED_PREAMBLE | brightness;
         LEDbuffer[n * 4 + bOfs] = p->b;
@@ -133,7 +118,7 @@ void APA102_Base::setPixel(uint16_t n, col_t* p) {
     }
 }
 
-void APA102_Base::setAllPixel(uint8_t r, uint8_t g, uint8_t b) {
+void APA102::setAllPixel(uint8_t r, uint8_t g, uint8_t b) {
     for (uint16_t i = 0; i < numLEDs; i++) {
         LEDbuffer[i * 4] = LED_PREAMBLE | brightness;
         LEDbuffer[i * 4 + bOfs] = b;
@@ -142,7 +127,7 @@ void APA102_Base::setAllPixel(uint8_t r, uint8_t g, uint8_t b) {
     }
 }
 
-void APA102_Base::setAllPixel(col_t* p) {
+void APA102::setAllPixel(col_t* p) {
     for (uint16_t i = 0; i < numLEDs; i++) {
         LEDbuffer[i * 4] = LED_PREAMBLE | brightness;
         LEDbuffer[i * 4 + bOfs] = p->b;
@@ -151,32 +136,33 @@ void APA102_Base::setAllPixel(col_t* p) {
     }
 }
 
-void APA102_Base::setBrightness(uint8_t br) {
+void APA102::setBrightness(uint8_t br) {
     brightness = (br < 32 ? br : 31);
 }
 
-uint8_t APA102_Base::getBrightness(void) {
+uint8_t APA102::getBrightness(void) {
     return brightness;
 }
 
 /* direct write functions */
 
-void APA102_Base::sendStart(void) {
+inline void APA102::sendStart(void) {
     uint8_t startFrame[] = {0x00, 0x00, 0x00, 0x00};
-    SPI_transfer(startFrame, sizeof (startFrame));
+    pSPI.transfer(startFrame, sizeof (startFrame));
 }
 
-void APA102_Base::sendStop(void) {
+inline void APA102::sendStop(void) {
     uint8_t stopFrame[] = {0xff, 0xff, 0xff, 0xff};
-    SPI_transfer(stopFrame, sizeof (stopFrame));
+    pSPI.transfer(stopFrame, sizeof (stopFrame));
 }
 
-void APA102_Base::directWrite(uint8_t r, uint8_t g, uint8_t b, uint8_t br) {
+void APA102::directWrite(uint8_t r, uint8_t g, uint8_t b, uint8_t br) {
     uint8_t pix[4];
+    pSPI.beginTransaction(SPI_APA_Settings);
     pix[0] = 0xE0 | (br < 32 ? br : 31);
     pix[bOfs] = b;
     pix[gOfs] = g;
     pix[rOfs] = r;
-    SPI_transfer(pix, sizeof (pix));
+    pSPI.transfer(pix, sizeof (pix));
 }
 

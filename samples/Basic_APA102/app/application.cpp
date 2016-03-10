@@ -16,25 +16,32 @@
 // SPI: if defined use software SPI, else hardware SPI
 //#define _USE_SOFTSPI
 
-#ifdef _USE_SOFTSPI             // set in "user_config.h"
-#include <SPISoft.h>
-#else
-#include <SPI.h>
-#endif
 
+#include <SPI.h>
+#include <SPISoft.h>
 #include <Libraries/APA102/apa102.h>
 
-#define NUM_LED 60              // number of LEDs on strip
+#define NUM_LED     60          // number of LEDs on strip
+
+#define SPI_SCLK    14
+#define SPI_MOSI    13
+#define SPI_MISO    12
+#define SPI_CS      2
+
 
 Timer procTimer;
 
+// in this demo, the same ports for HW and SW SPI are used
 #ifdef _USE_SOFTSPI
-SPISoft sSPI(12,13,14,2);       // mosi=GPIO13, clk=GPIO14
-APA102Soft LED(NUM_LED, sSPI);  // APA102 constructor for software SPI, call with number of LEDs
+SPISoft sSPI(SPI_MISO,SPI_MOSI,SPI_SCLK,200);
+APA102 LED(NUM_LED, sSPI);      // APA102 constructor for software SPI, call with number of LEDs
 #else
 APA102 LED(NUM_LED);            // APA102 constructor, call with number of LEDs
+//APA102 LED(NUM_LED, SPI);
 #endif
 
+SPISettings SPI_1MHZ = SPISettings(1000000, MSBFIRST, SPI_MODE3);
+SPISettings SPI_2MHZ = SPISettings(2000000, MSBFIRST, SPI_MODE3);
 int cnt = 0;
 col_t pixel;
 
@@ -64,16 +71,12 @@ void init() {
     WifiAccessPoint.enable(false);
     WifiStation.enable(false);
     Serial.begin(SERIAL_BAUD_RATE);       // 115200 by default
+
     /* configure SPI */
-#ifdef _USE_SOFTSPI
-    LED.begin();
-#else
-    LED.begin();              // default 1MHz clk
-    //LED.begin(10,2);        // 4MHz clk @ f_cpu==80MHz
-    //LED.begin(10,4);        // 2MHz clk @ f_cpu==80MHz
-    //LED.begin(10,8);        // 1MHz clk @ f_cpu==80MHz
-    //LED.begin(10,16);       // 512kHz clk @ f_cpu==80MHz
-#endif
+    LED.begin();              // default 4MHz clk, CS on PIN_2
+    //LED.begin(SPI_1MHZ);
+    //LED.begin(SPI_2MHZ);
+
     Serial.printf("start\n");
     LED.setBrightness(10);          // brightness [0..31]
     LED.clear();

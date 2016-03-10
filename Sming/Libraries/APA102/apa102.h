@@ -3,10 +3,14 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ * APA102 library by HappyCodingRobot@github.com
  ****/
 
 #ifndef _APA102_H_
 #define _APA102_H_
+
+#include <SPIBase.h>
+#include <SPISettings.h>
 
 typedef struct {
     //uint8_t br;
@@ -16,13 +20,15 @@ typedef struct {
 } col_t;
 
 
-class APA102_Base {
+class APA102 {
 public:
-    APA102_Base(uint16_t n);
-    ~APA102_Base(void);
+    APA102(uint16_t n);
+    APA102(uint16_t n, SPIBase & spiRef);
+    ~APA102(void);
 
-    virtual void begin(void) = 0;
-    virtual void end(void) = 0;
+    void begin(void);
+    void begin(SPISettings & mySettings);
+    void end(void);
     
     /* send data buffer to LEDs, including start & stop sequences */
     void show(void);
@@ -56,37 +62,11 @@ protected:
     uint16_t numLEDs;
     uint8_t *LEDbuffer;
     uint8_t brightness;                 // global brightness 0..31 -> 0..100%
+    
+    SPISettings SPI_APA_Settings = SPISettings(4000000, MSBFIRST, SPI_MODE3);
+    SPIBase & pSPI;
 
 private:
-    virtual void SPI_transfer(uint8_t * data, uint8_t count) = 0;
 };
-
-
-
-class APA102 : public APA102_Base {
-public:
-    APA102(uint16_t n);
-    
-    void begin(void);
-    void begin(uint16_t prediv, uint8_t div);       // unused function
-    void end(void);
-    
-private:
-    void SPI_transfer(uint8_t * data, uint8_t count);
-};
-
-
-class APA102Soft : public APA102_Base {
-public:
-    APA102Soft(uint16_t n, SPISoft & spiRef);
-    
-    void begin(void);
-    void end(void);
-    
-private:
-    SPISoft & pSPI;
-    void SPI_transfer(uint8_t * data, uint8_t count);
-};
-
 
 #endif /* _APA102_H_ */
