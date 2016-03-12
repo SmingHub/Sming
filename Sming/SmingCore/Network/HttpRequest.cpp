@@ -186,7 +186,7 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 		tmpbuf = tmpbuf.substring(start, tmpbuf.length());
 	}
 
-	tmpbuf = extractParsingItemsList(tmpbuf, start, tmpbuf.length(), '&', ' ', requestPostParameters);
+	tmpbuf = extractParsingItemsList(tmpbuf, 0, tmpbuf.length(), '&', ' ', requestPostParameters);
 	postDataProcessed += buf->tot_len - start ;
 
 	if (postDataProcessed == getContentLength())
@@ -203,13 +203,13 @@ String HttpRequest::extractParsingItemsList(String& buf, int startPos, int endPo
 	int delimItem, nextItem, startItem = startPos;
 	do
 	{
-		//debugf("item %i  - delim %i - next %i", startItem, delimItem, nextItem);
 		delimItem = buf.indexOf("=", startItem);
 		nextItem = buf.indexOf(delimChar, startItem);
+		//debugf("item %i  - delim %i - next %i", startItem, delimItem, nextItem);
 		if (nextItem == -1) nextItem = buf.indexOf(endChar, delimItem+1);
 		if (nextItem == -1) nextItem = endPos;
-		if (nextItem > endPos || delimItem == -1) nextItem = endPos; break;
-
+		if (nextItem > endPos || delimItem == -1) nextItem = endPos;
+		if (delimItem == -1) break;
 		String ItemName = buf.substring(startItem, delimItem);
 		String ItemValue = buf.substring(delimItem+1, nextItem);
 		char* nam = uri_unescape(NULL, 0, ItemName.c_str(), -1);
