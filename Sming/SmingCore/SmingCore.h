@@ -26,6 +26,8 @@
 #include "Timer.h"
 #include "Wire.h"
 #include "SPISoft.h"
+#include "SPI.h"
+
 
 #include "Platform/System.h"
 #include "Platform/WifiEvents.h"
