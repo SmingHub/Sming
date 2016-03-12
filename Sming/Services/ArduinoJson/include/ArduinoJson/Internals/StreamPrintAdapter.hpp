@@ -1,14 +1,19 @@
-// Copyright Benoit Blanchon 2014-2015
+// Copyright Benoit Blanchon 2014-2016
 // MIT License
 //
 // Arduino JSON library
 // https://github.com/bblanchon/ArduinoJson
+// If you like this project, please add a star!
 
 #pragma once
 
-#ifdef ARDUINOJSON_ENABLE_STD_STREAM
+#include "../Configuration.hpp"
+
+#if ARDUINOJSON_ENABLE_STD_STREAM
 
 #include "../Arduino/Print.hpp"
+
+#include <ostream>
 
 namespace ArduinoJson {
 namespace Internals {
@@ -31,4 +36,4 @@ class StreamPrintAdapter : public Print {
 }
 }
 
-#endif // ARDUINOJSON_ENABLE_STD_STREAM
+#endif  // ARDUINOJSON_ENABLE_STD_STREAM

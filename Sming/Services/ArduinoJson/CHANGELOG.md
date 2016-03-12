@@ -1,6 +1,49 @@
 ArduinoJson: change log
 =======================
 
+v5.1.1
+------
+
+* Removed `String` duplication when one replaces a value in a `JsonObject` (PR #232 by @ulion)
+
+v5.1.0
+------
+
+* Added support of `long long` (issue #171)
+* Moved all build settings to `ArduinoJson/Configuration.hpp`
+
+**BREAKING CHANGE**:
+If you defined `ARDUINOJSON_ENABLE_STD_STREAM`, you now need to define it to `1`.
+
+v5.0.8
+------
+
+* Made the library compatible with [PlatformIO](http://platformio.org/) (issue #181)
+* Fixed `JsonVariant::is<bool>()` that was incorrectly returning false (issue #214)
+
+v5.0.7
+------
+
+* Made library easier to use from a CMake project: simply `add_subdirectory(ArduinoJson/src)`
+* Changed `String` to be a `typedef` of `std::string` (issues #142 and #161)
+
+**BREAKING CHANGES**:
+- `JsonVariant(true).as<String>()` now returns `"true"` instead of `"1"`
+- `JsonVariant(false).as<String>()` now returns `"false"` instead of `"0"`
+
+v5.0.6
+------
+
+* Added parameter to `DynamicJsonBuffer` constructor to set initial size (issue #152)
+* Fixed warning about library category in Arduino 1.6.6 (issue #147)
+* Examples: Added a loop to wait for serial port to be ready (issue #156)
+
+v5.0.5
+------
+
+* Added overload `JsonObjectSuscript::set(value, decimals)` (issue #143)
+* Use `float` instead of `double` to reduce the size of `JsonVariant` (issue #134)
+
 v5.0.4
 ------
 

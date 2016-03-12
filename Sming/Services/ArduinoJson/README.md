@@ -1,7 +1,7 @@
 Arduino JSON library
 ====================
 
-[![Build status](https://ci.appveyor.com/api/projects/status/m7s53wav1l0abssg/branch/master?svg=true)](https://ci.appveyor.com/project/bblanchon/arduinojson/branch/master) [![Build Status](https://travis-ci.org/bblanchon/ArduinoJson.svg?branch=master)](https://travis-ci.org/bblanchon/ArduinoJson) [![Coverage Status](https://img.shields.io/coveralls/bblanchon/ArduinoJson.svg)](https://coveralls.io/r/bblanchon/ArduinoJson?branch=master) 
+[![Build status](https://ci.appveyor.com/api/projects/status/m7s53wav1l0abssg/branch/master?svg=true)](https://ci.appveyor.com/project/bblanchon/arduinojson/branch/master) [![Build Status](https://travis-ci.org/bblanchon/ArduinoJson.svg?branch=master)](https://travis-ci.org/bblanchon/ArduinoJson) [![Coverage Status](https://img.shields.io/coveralls/bblanchon/ArduinoJson.svg)](https://coveralls.io/r/bblanchon/ArduinoJson?branch=master) [![Star this project](http://githubbadges.com/star.svg?user=bblanchon&repo=ArduinoJson&style=flat&color=fff&background=007ec6)](https://github.com/bblanchon/ArduinoJson)
 
 *An elegant and efficient JSON library for embedded systems.*
 
@@ -24,42 +24,52 @@ Features
 Works on
 --------
 
-* All Arduino boards
+* All Arduino boards (Uno, Due, Mini, Micro, Yun...)
 * ESP8266
 * Teensy
+* Intel Edison
+* PlatformIO
+* Energia
+* RedBearLab boards (BLE Nano...)
 * Computers (Windows, Linux, OSX...)
+
+See [FAQ: Compatibility issues](https://github.com/bblanchon/ArduinoJson/wiki/Compatibility-issues)
 
 Quick start
 -----------
 
 #### Decoding / Parsing
 
-    char json[] = "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
+```c++
+char json[] = "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
 
-    StaticJsonBuffer<200> jsonBuffer;
+StaticJsonBuffer<200> jsonBuffer;
 
-    JsonObject& root = jsonBuffer.parseObject(json);
+JsonObject& root = jsonBuffer.parseObject(json);
 
-    const char* sensor = root["sensor"];
-    long time          = root["time"];
-    double latitude    = root["data"][0];
-    double longitude   = root["data"][1];
+const char* sensor = root["sensor"];
+long time          = root["time"];
+double latitude    = root["data"][0];
+double longitude   = root["data"][1];
+```
 
 #### Encoding / Generating
 
-    StaticJsonBuffer<200> jsonBuffer;
+```c++
+StaticJsonBuffer<200> jsonBuffer;
 
-    JsonObject& root = jsonBuffer.createObject();
-    root["sensor"] = "gps";
-    root["time"] = 1351824120;
+JsonObject& root = jsonBuffer.createObject();
+root["sensor"] = "gps";
+root["time"] = 1351824120;
 
-    JsonArray& data = root.createNestedArray("data");
-    data.add(48.756080, 6);  // 6 is the number of decimals to print
-    data.add(2.302038, 6);   // if not specified, 2 digits are printed
+JsonArray& data = root.createNestedArray("data");
+data.add(48.756080, 6);  // 6 is the number of decimals to print
+data.add(2.302038, 6);   // if not specified, 2 digits are printed
 
-    root.printTo(Serial);
-    // This prints:
-    // {"sensor":"gps","time":1351824120,"data":[48.756080,2.302038]}
+root.printTo(Serial);
+// This prints:
+// {"sensor":"gps","time":1351824120,"data":[48.756080,2.302038]}
+```
 
 
 Documentation
@@ -93,6 +103,19 @@ From GitHub user `zacsketches`:
 [From Reddit user `makerhacks`](https://www.reddit.com/r/arduino/comments/3jj6ep/announcing_arduinojson_50/cusqg7b):
 
 > I am just starting an ESP8266 clock project and now I can output JSON from my server script and interpret it painlessly.
+
+Donators
+--------
+
+Special thanks to the following persons and companies who made generous donations to the library author:
+
+* Robert Murphy
+* Surge Communications
+* Alex Scott
+* Firepick Services LLC
+* A B Doodkorte
+* Scott Smith
+* Johann Stieger
 
 ---
 
