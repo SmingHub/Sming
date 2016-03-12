@@ -11,6 +11,7 @@
 # rBoot options, overwrite them in the projects Makefile-user.mk
 RBOOT_BIG_FLASH  ?= 1
 RBOOT_TWO_ROMS   ?= 0
+RBOOT_RTC_ENABLED ?= 0
 RBOOT_ROM_0      ?= rom0
 RBOOT_ROM_1      ?= rom1
 RBOOT_SPIFFS_0   ?= 0x100000
@@ -275,6 +276,11 @@ ifeq ($(RBOOT_TWO_ROMS),1)
 else
 	# eliminate the second rBoot target
 	RBOOT_ROM_1 := $()
+endif
+
+ifeq ($(RBOOT_RTC_ENABLED),1)
+	# enable the temporary switch to rom feature
+	CFLAGS += -DBOOT_RTC_ENABLED
 endif
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
