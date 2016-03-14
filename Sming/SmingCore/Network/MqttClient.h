@@ -28,8 +28,8 @@ public:
 	MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback = NULL);
 	virtual ~MqttClient();
 
-	void setKeepAlive(int seconds);
-	void setPingRepeatTime(int seconds);
+	void setKeepAlive(int seconds);			//send to broker
+	void setPingRepeatTime(int seconds);            //used by client
 	// Sets Last Will and Testament
 	bool setWill(String topic, String message, int QoS, bool retained = false);
 
