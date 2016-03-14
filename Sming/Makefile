@@ -99,6 +99,12 @@ SPIFF_FILES = files
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
+LIBSMING = libsming
+ifeq ($(ENABLE_SSL),1)
+	LIBSMING= libsmingssl
+endif
+
+
 # name for the target project
 TARGET		= app
 
@@ -154,7 +160,7 @@ ifeq ($(ENABLE_SSL),1)
 	LIBS += axtls
 	MODULES		 += axtls-8266/compat axtls-8266/replacements
 	EXTRA_INCDIR += axtls-8266 axtls-8266/ssl axtls-8266/crypto 
-	AXTLS_FLAGS = -DESP8266 -DLWIP_RAW=1 -DENABLE_SSL=1
+	AXTLS_FLAGS = -DLWIP_RAW=1 -DENABLE_SSL=1
 	ifeq ($(SSL_DEBUG),1) # 
 		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1 -DAXL_DEBUG=1
 	endif 
@@ -257,13 +263,13 @@ spiffy/spiffy:
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
-	$(vecho) "Installing libsming"
+	$(vecho) "Installing $(LIBSMING)"
 ifeq ($(ENABLE_SSL), 1)
 	$(vecho) "+ SSL support is enabled"
 else
 	$(vecho) "(!) SSL support is not enabled. To enable it type: 'make clean; make ENABLE_SSL=1'"
 endif
-	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
+	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/$(LIBSMING).a  
 	$(vecho) "Done"
 
 checkdirs: $(THIRD_PARTY_DATA) $(BUILD_DIR) $(FW_BASE)
@@ -284,8 +290,9 @@ clean:
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
 	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
+ifeq ($(ENABLE_SSL), 1)
 	$(Q) $(MAKE) --no-print-directory -C axtls-8266 clean V=$(V) BIN_DIR=$(SMING_HOME)/$(USER_LIBDIR)
-
+endif	
 
 test: all spiffy samples
 
