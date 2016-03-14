@@ -29,6 +29,7 @@ public:
 	virtual ~MqttClient();
 
 	void setKeepAlive(int seconds);
+	void setPingRepeatTime(int seconds);
 	// Sets Last Will and Testament
 	bool setWill(String topic, String message, int QoS, bool retained = false);
 
@@ -62,7 +63,8 @@ private:
 	uint8_t *current;
 	int posHeader;
 	MqttStringSubscriptionCallback callback;
-	int keepAlive = 20;
+	int keepAlive = 60;
+	int PingRepeatTime = 20;
 	unsigned long lastMessage;
 };
 
