@@ -1,22 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-#ifdef ENABLE_SSL
-/**
- * For MqttClient over SSL you should recompile SmingFramework with ENABLE_SSL=1.
- * The following three commands should be enough:
- *
- * cd Sming/Sming
- * make clean
- * make ENABLE_SSL=1
- *
- * And then compile this application with the same directive (ENABLE_SSL=1)
- *
- */
-#include "ssl/private_key.h"
-#include "ssl/cert.h"
-#endif
-
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here

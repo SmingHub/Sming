@@ -9,8 +9,6 @@
 
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include "ssl/cert.h"
-#include "ssl/private_key.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
