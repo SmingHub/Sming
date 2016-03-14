@@ -255,8 +255,7 @@ void SPIClass::prepare(SPISettings mySettings) {
 };
 
 
-/** @defgroup SPI hardware implementation
- * @brief  spi_mode Configures SPI mode parameters for clock edge and clock polarity.
+/** @brief  spi_mode Configures SPI mode parameters for clock edge and clock polarity.
  *
  *  		Private method used by SPISetings
  *
@@ -291,8 +290,7 @@ void SPIClass::spi_mode(uint8 mode){
 }
 
 
-/** @defgroup SPI hardware implementation
- * @brief  spi_byte_order Setup the byte order for shifting data out of buffer
+/** @brief  spi_byte_order Setup the byte order for shifting data out of buffer
  *
  *  		Private method used by SPISetings
  *
@@ -319,8 +317,7 @@ void SPIClass::spi_byte_order(uint8 byte_order) {
 
 
 
-/** @defgroup SPI hardware implementation
- * @brief  setClock  set CPI bus clock
+/** @brief  setClock  set CPI bus clock
  *
  * 		Private method used by setFrequency
  *
@@ -351,8 +348,7 @@ void SPIClass::setClock(uint8 prediv, uint8 cntdiv) {
 	}
 }
 
-/** @defgroup SPI hardware implementation
- * @brief  gnu lib div implementation
+/** @brief  gnu lib div implementation
  *          TODO: check whether there is a implementation in SMING already
  */
 div_t div (int numer, int denom) {
@@ -368,8 +364,7 @@ div_t div (int numer, int denom) {
   return result;
 }
 
-/** @defgroup SPI hardware implementation
- * 	@brief  getFrequency computes the closest pre devider for a given clock-devider and frequency
+/** @brief  getFrequency computes the closest pre devider for a given clock-devider and frequency
  *
  * 	Private method used by setFrequency
  *
@@ -401,8 +396,7 @@ uint32_t SPIClass::getFrequency(int freq, int &pre, int clk) {
 }
 
 
-/** @defgroup SPI hardware implementation
- *  @brief  set the max SPI bus frequency
+/** @brief  set the max SPI bus frequency
  *
  *  		Private method used by SPISetings
  *

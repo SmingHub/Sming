@@ -1,8 +1,9 @@
-// Copyright Benoit Blanchon 2014-2015
+// Copyright Benoit Blanchon 2014-2016
 // MIT License
 //
 // Arduino JSON library
 // https://github.com/bblanchon/ArduinoJson
+// If you like this project, please add a star!
 
 #include <ArduinoJson.h>
 
@@ -10,7 +11,9 @@ using namespace ArduinoJson::Internals;
 
 void setup() {
   Serial.begin(9600);
-  // delay(1000); <--needed for some boards (like Teensy)
+  while (!Serial) {
+    // wait serial port initialization
+  }
 
   IndentedPrint serial(Serial);
   serial.setTabSize(4);
