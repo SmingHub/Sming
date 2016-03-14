@@ -43,6 +43,14 @@ void MqttClient::setKeepAlive(int seconds)
 	keepAlive = seconds;
 }
 
+void MqttClient::setPingRepeatTime(int seconds)
+{
+	if (PingRepeatTime > keepAlive)
+	   PingRepeatTime = keepAlive;
+	else   
+	   PingRepeatTime = seconds;
+}
+
 bool MqttClient::setWill(String topic, String message, int QoS, bool retained /* = false*/)
 {
 	return mqtt_set_will(&broker, topic.c_str(), message.c_str(), QoS, retained);
@@ -272,7 +280,7 @@ err_t MqttClient::onReceive(pbuf *buf)
 void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	// Send PINGREQ every keepAlive time, if there is no outgoing traffic
-	if (lastMessage && (millis() - lastMessage >= keepAlive*1000))
+	if (lastMessage && (millis() - lastMessage >= PingRepeatTime*1000))
 	{
 		mqtt_ping(&broker);
 	}
