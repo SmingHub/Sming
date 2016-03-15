@@ -125,18 +125,44 @@ void startCapture(){
 
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
-
-	Serial.printf("perform onIndex()\n");
-
-	String msg = "<html>ArduCAM Ready for <a href=\"./capture\">capture</a></html>";
-
-	response.setContentType("text/html");
-	response.sendString(msg);
-
-	hdump.resetAddr();
-	hdump.print((unsigned char*)msg.c_str(), msg.length());
-
+	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
+	auto &vars = tmpl->variables();
+	response.sendTemplate(tmpl); // will be automatically deleted
 }
+
+void onFile(HttpRequest &request, HttpResponse &response)
+{
+	String file = request.getPath();
+	if (file[0] == '/')
+		file = file.substring(1);
+
+	if (file[0] == '.')
+		response.forbidden();
+	else
+	{
+		response.setCache(86400, true); // It's important to use cache for better performance.
+		response.sendFile(file);
+	}
+}
+
+void onCamSetup(HttpRequest &request, HttpResponse &response) {
+
+	String size, type;
+
+	if (request.getRequestMethod() == RequestMethod::POST)
+	{
+		type = request.getPostParameter("type");
+		debugf("set type %s", type);
+		arduCamCommand.set_type(type);
+
+		size = request.getPostParameter("size");
+		debugf("set size %s", size);
+		arduCamCommand.set_size(size);
+	}
+
+	response.sendString("OK");
+}
+
 
 /*
  * http request to capture and send an image from the cammera
@@ -201,6 +227,7 @@ void onFavicon(HttpRequest &request, HttpResponse &response) {
 	response.notFound();
 }
 
+
 /*
  * start http and telnet server
  * telnet can be used to configure cammera settings
@@ -210,10 +237,11 @@ void StartServers()
 {
 	server.listen(80);
 	server.addPath("/", onIndex);
-	server.addPath("/capture", onCapture);
+	server.addPath("/cam/set", onCamSetup);
+	server.addPath("/cam/capture", onCapture);
 //	server.addPath("/stream", onStream);
 	server.addPath("/favicon.ico", onFavicon);
-	server.setDefaultHandler(onIndex);
+	server.setDefaultHandler(onFile);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());
@@ -238,6 +266,7 @@ void connectOk()
 
 void init()
 {
+	spiffs_mount(); // Mount file system, in order to work with files
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial

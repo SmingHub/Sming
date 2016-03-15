@@ -18,6 +18,10 @@ public:
 	virtual ~ArduCamCommand();
 	void initCommand();
 	const char * getContentType();
+	void set_size(String size);
+	void set_type(String type);
+
+
 
 private:
 	bool status = true;
