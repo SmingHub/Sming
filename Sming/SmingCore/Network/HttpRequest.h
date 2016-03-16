@@ -42,7 +42,7 @@ public:
 	String getPostParameter(String parameterName, String defaultValue = "");
 	String getHeader(String headerName, String defaultValue = "");
 	String getCookie(String cookieName, String defaultValue = "");
-	char* getBody();
+	String getBody();
 
 public:
 	HttpParseResult parseHeader(HttpServer *server, pbuf* buf);
@@ -50,7 +50,6 @@ public:
 	String extractParsingItemsList(String& buf, int startPos, int endPos,
 			char delimChar, char endChar,
 			HashMap<String, String>* resultItems);
-	void parseRawData(HttpServer *server, pbuf* buf);
 
 private:
 	String method;

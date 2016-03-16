@@ -186,14 +186,30 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 		tmpbuf = tmpbuf.substring(start, tmpbuf.length());
 	}
 
-	tmpbuf = extractParsingItemsList(tmpbuf, 0, tmpbuf.length(), '&', ' ', requestPostParameters);
+	//parse if it is FormUrlEncoded - otherwise keep in buffer
+	String contType = getContentType();
+	contType.toLowerCase();
+	if (contType.indexOf(ContentType::FormUrlEncoded) != -1)
+	{
+		tmpbuf = extractParsingItemsList(tmpbuf, 0, tmpbuf.length(), '&', ' ', requestPostParameters);
+	}
+
 	postDataProcessed += buf->tot_len - start ;
 
 	if (postDataProcessed == getContentLength())
+	{
 		return eHPR_Successful;
+	}
+	else if (postDataProcessed > getContentLength())
+	{
+		//avoid bufferoverflow if client announces non-correct content-length
+		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
+		return eHPR_Failed;
+	}
 	else
-
+	{
 		return eHPR_Wait;
+	}
 }
 
 String HttpRequest::extractParsingItemsList(String& buf, int startPos, int endPos, char delimChar, char endChar,
@@ -230,21 +246,10 @@ String HttpRequest::extractParsingItemsList(String& buf, int startPos, int endPo
 
 }
 
-void HttpRequest::parseRawData(HttpServer *server, pbuf* buf)
-{
-	bodyBuf = (char *) os_zalloc(sizeof(char) * buf->tot_len);
-	int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
-	if (headerEnd + getContentLength() > NETWORK_MAX_HTTP_PARSING_LEN)
-	{
-		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
-		return;
-	}
-	pbuf_copy_partial(buf, bodyBuf, buf->tot_len, headerEnd + 4);
-}
 
-char* HttpRequest::getBody()
+String HttpRequest::getBody()
 {
-	return bodyBuf;
+	return tmpbuf;
 }
 
 bool HttpRequest::isAjax()
