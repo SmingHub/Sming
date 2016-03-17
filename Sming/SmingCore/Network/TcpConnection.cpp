@@ -25,8 +25,8 @@ TcpConnection::TcpConnection(tcp_pcb* connection, bool autoDestruct) : autoSelfD
 
 TcpConnection::~TcpConnection()
 {
+	autoSelfDestruct = false;
 	close();
-
 	debugf("~TCP connection");
 }
 
