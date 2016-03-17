@@ -247,20 +247,20 @@ class TFT_ILI9163C : public Adafruit_GFX {
 	TFT_ILI9163C(uint8_t cspin,uint8_t dcpin,uint8_t rstpin);
 	TFT_ILI9163C(uint8_t CS, uint8_t DC);//connect rst pin to VDD
 	
-	void     	begin(void),
-				setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1),//graphic Addressing
-				setCursor(int16_t x,int16_t y),//char addressing
-				pushColor(uint16_t color),
-				fillScreen(uint16_t color=0x0000),
-				clearScreen(uint16_t color=0x0000),//same as fillScreen
-				drawPixel(int16_t x, int16_t y, uint16_t color),
-				drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color),
-				drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color),
-				fillRect(int16_t x, int16_t y, int16_t w, int16_t h,uint16_t color),
-				setRotation(uint8_t r),
-				invertDisplay(boolean i);
-  uint16_t 		Color565(uint8_t r, uint8_t g, uint8_t b);
-  void 			setBitrate(uint32_t n);	
+	void begin(void);
+        void setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);//graphic Addressing
+	void setCursor(int16_t x,int16_t y);//char addressing
+	void pushColor(uint16_t color);
+        void fillScreen(uint16_t color=0x0000);
+        void clearScreen(uint16_t color=0x0000);//same as fillScreen
+        void drawPixel(int16_t x, int16_t y, uint16_t color);
+        void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
+	void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
+        void fillRect(int16_t x, int16_t y, int16_t w, int16_t h,uint16_t color);
+	void setRotation(uint8_t r);
+        void invertDisplay(boolean i);
+        uint16_t Color565(uint8_t r, uint8_t g, uint8_t b);
+        void setBitrate(uint32_t n);	
 
  private:
 	uint8_t		_Mactrl_Data;//container for the memory access control data
