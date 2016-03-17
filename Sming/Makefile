@@ -46,6 +46,11 @@ ifeq ($(OS),Windows_NT)
   # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
   SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
   ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
+  
+  # Remove possible double escaping...
+  SMING_HOME := $(subst //,/, $(SMING_HOME))
+  ESP_HOME   := $(subst //,/, $(ESP_HOME))
+
   include Makefile-windows.mk  
 else
   UNAME := $(shell uname -s)
@@ -289,9 +294,10 @@ clean:
 	$(Q) rm -rf $(BUILD_DIR)
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
-	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
 ifeq ($(ENABLE_SSL), 1)
-	$(Q) $(MAKE) --no-print-directory -C axtls-8266 clean V=$(V) BIN_DIR=$(SMING_HOME)/$(USER_LIBDIR)
+	$(Q) $(MAKE) --no-print-directory -C axtls-8266 clean -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)"
+else
+	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
 endif	
 
 test: all spiffy samples
