@@ -33,6 +33,11 @@ extern "C" {
 // roms must be built with esptool2 using -iromchksum option
 //#define BOOT_IROM_CHKSUM
 
+// uncomment to add a boot delay, allows you time to connect
+// a terminal before rBoot starts to run and output messages
+// value is in microseconds
+//#define BOOT_DELAY_MICROS 2000000
+
 // increase if required
 #define MAX_ROMS 4
 
