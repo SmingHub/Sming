@@ -123,6 +123,16 @@ void StationClass::enableDHCP(bool enable)
 		wifi_station_dhcpc_stop();
 }
 
+void StationClass::setHostname(String hostname)
+{
+	wifi_station_set_hostname((char*)hostname.c_str());
+}
+
+String StationClass::getHostname()
+{
+	return (String) wifi_station_get_hostname();
+}
+
 IPAddress StationClass::getIP()
 {
 	struct ip_info info = {0};
