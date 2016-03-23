@@ -5,17 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>TyTherm configuration</title>
+    <title>WebApp configuration</title>
 
     <!-- Bootstrap core -->
     <link href="bootstrap.min.css" rel="stylesheet">
-	<script src="jquery-2.1.4.min.js"></script>
+	<script src="config.js"></script>
 	<style>
 		.main { font-size: 63px; }
 	</style>
 
   </head>
-<script src="config.js"></script>
   <body>
 
     <div class="container">
@@ -26,7 +25,7 @@
             <li role="presentation" class="active"><a href="/config">Configuration</a></li>
           </ul>
         </nav>
-        <h3 class="text-muted">TyTherm</h3>
+        <h3 class="text-muted">WebApp</h3>
       </div>
 	  
 	  <div class="row">
@@ -59,7 +58,24 @@
 			  </div>
 			</div>
 			
-			<!-- TyTherm adjustment config -->
+			<!-- WebApp adjustment config -->
+			<div>
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">WebApp settings</h3>
+					</div>
+					<div class="panel-body">
+						<form id="form_settings" method="POST">
+							<div class="form-group">
+								<label for="loopInterval">Main loop interval, ms</label>
+								<input type="number" required class="form-control" min="100" max="60000" step="1" id="loopInterval" name="loopInterval" class="form-control" value="{loopInterval}">
+							</div>
+							<button type="submit" class="btn btn-success">Save settings</button>
+					  		<button type="button" id="settings_cancel" class="btn btn-link">Cancel</button>
+						</form>
+					</div>
+				</div>
+			</div>
 			
 		</div> <!-- /col -->
 	</div> <!-- /row -->

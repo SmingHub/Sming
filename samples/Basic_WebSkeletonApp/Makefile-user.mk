@@ -26,4 +26,4 @@
 # Com port speed
 # COM_SPEED	= 115200
 
-SPIFF_SIZE     = 196608
+SPIFF_SIZE     = 98304
