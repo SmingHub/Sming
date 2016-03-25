@@ -56,7 +56,7 @@ void WifiEventsClass::staticWifiEventHandler(System_Event_t *evt)
 
 void WifiEventsClass::WifiEventHandler(System_Event_t *evt)
 {
-	debugf("event %x\n", evt->event);
+//	debugf("event %x\n", evt->event);
 
 	switch (evt->event)
 	{
