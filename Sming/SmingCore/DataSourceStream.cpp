@@ -324,7 +324,7 @@ uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 {
 	if (rootNode != JsonObject::invalid() && send)
 	{
-		int len = rootNode.prettyPrintTo(*this);
+		int len = rootNode.printTo(*this);
 		send = false;
 	}
 
