@@ -7,6 +7,18 @@
 	#define WIFI_PWD "PleaseEnterPass"
 #endif
 
+// ... and/or MQTT username and password
+#ifndef MQTT_USERNAME
+	#define MQTT_USERNAME ""
+	#define MQTT_PWD ""
+#endif
+
+// ... and/or MQTT host and port
+#ifndef MQTT_HOST
+	#define MQTT_HOST "test.mosquitto.org"
+	#define MQTT_PORT 1883
+#endif
+
 // Forward declarations
 void startMqttClient();
 void onMessageReceived(String topic, String message);
@@ -14,8 +26,21 @@ void onMessageReceived(String topic, String message);
 Timer procTimer;
 
 // MQTT client
-// For quickly check you can use: http://www.hivemq.com/demos/websocket-client/ (Connection= test.mosquitto.org:8080)
-MqttClient mqtt("test.mosquitto.org", 1883, onMessageReceived);
+// For quick check you can use: http://www.hivemq.com/demos/websocket-client/ (Connection= test.mosquitto.org:8080)
+MqttClient mqtt(MQTT_HOST, MQTT_PORT, onMessageReceived);
+
+// Check for MQTT Disconnection
+void checkMQTTDisconnect(TcpClient& client, bool flag){
+	
+	// Called whenever MQTT connection is failed.
+	if (flag == true)
+		Serial.println("MQTT Broker Disconnected!!");
+	else
+		Serial.println("MQTT Broker Unreachable!!");
+	
+	// Restart connection attempt after few seconds
+	procTimer.initializeMs(2 * 1000, startMqttClient).start(); // every 2 seconds
+}
 
 // Publish our message
 void publishMessage()
@@ -31,17 +56,20 @@ void publishMessage()
 void onMessageReceived(String topic, String message)
 {
 	Serial.print(topic);
-	Serial.print(":\r\n\t"); // Prettify alignment for printing
+	Serial.print(":\r\n\t"); // Pretify alignment for printing
 	Serial.println(message);
 }
 
 // Run MQTT client
 void startMqttClient()
 {
+	procTimer.stop();
 	if(!mqtt.setWill("last/will","The connection from this device is lost:(", 1, true)) {
 		debugf("Unable to set the last will and testament. Most probably there is not enough memory on the device.");
 	}
-	mqtt.connect("esp8266");
+	mqtt.connect("esp8266", MQTT_USERNAME, MQTT_PWD);
+	// Assign a disconnect callback function
+	mqtt.setCompleteDelegate(checkMQTTDisconnect);
 	mqtt.subscribe("main/status/#");
 }
 

@@ -18,6 +18,7 @@ Espressif loader:
   - Wastes no stack space (SDK boot loader uses 144 bytes).
   - Documented config structure to allow easy editing from user code.
   - Can validate .irom0.text section with checksum.
+  - Temporary next-boot rom selection.
 
 Limitations
 -----------
@@ -209,6 +210,19 @@ make sure you are getting your version into the rom.
 Now when rBoot starts your rom, the SDK code linked in it that normally performs
 the memory mapping will delegate part of that task to rBoot code (linked in your
 rom, not in rBoot itself) to choose which part of the flash to map.
+
+Temporary boot option and rBoot<-->app communication
+----------------------------------------------------
+To enable communication between rBoot and your app you should enable the
+BOOT_RTC_ENABLED option in rboot.h. rBoot will then use the RTC data area to
+pass a structure with boot information which can be read by the app. This will
+allow the app to determine the boot mode (normal, temporary or GPIO) and the
+booted rom (even if it is a tempoary boot). Your app can also update this
+structure to communicate with rBoot when the device is next rebooted, e.g. to
+instruct it to temporarily boot a different rom to the one saved in the config.
+See the api documentation and/or the rBoot sample project for more details.
+Note: the message "don't use rtc mem data", commonly seen on startup, comes from
+the sdk and is not related to this rBoot feature.
 
 Integration into other frameworks
 ---------------------------------

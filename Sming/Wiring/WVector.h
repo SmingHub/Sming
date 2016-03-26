@@ -84,7 +84,11 @@ class Vector : public Countable<Element>
      }
      const Vector<Element>& operator=(const Vector<Element>&& other) // move assignment
      {
-         delete[] _data;        // delete this storage
+         if (_data != nullptr)
+         {
+           removeAllElements();
+           delete[] _data;        // delete this storage
+         }
          _data = other._data;  // move
          _size = other._size;
          _capacity = other._capacity;
@@ -102,10 +106,10 @@ class Vector : public Countable<Element>
      void copyFrom(const Vector& rhv);
 
   protected:
-    unsigned int _size;
-    unsigned int _capacity;
+    unsigned int _size = 0;
+    unsigned int _capacity = 0;
     unsigned int _increment;
-    Element** _data;
+    Element** _data = nullptr;
 };
 
 template <class Element>
@@ -127,6 +131,11 @@ Vector<Element>::Vector(const Vector<Element>& rhv)
 template <class Element>
 void Vector<Element>::copyFrom(const Vector<Element>& rhv)
 {
+	if (_data != nullptr)
+	{
+	  removeAllElements();
+	  delete[] _data;
+	}
   _size = rhv._size;
   _capacity = rhv._capacity;
   _data = new Element*[ _capacity ];

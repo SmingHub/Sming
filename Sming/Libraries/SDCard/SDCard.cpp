@@ -36,14 +36,21 @@ Descr: Low-level SDCard functions
 #include "diskio.h"		/* Declarations of disk I/O functions */
 
 FATFS *pFatFs = NULL;		/* FatFs work area needed for each volume */
-SPISoft *SDCardSPI = NULL;
+SPIBase *SDCardSPI = NULL;
+uint8 SPI_CS;				/* SPI client selector */
+
 
 #define SCK_SLOW_INIT 10
 #define SCK_NORMAL 0
 
-void SDCard_begin()
+void SDCard_begin(uint8 PIN_CARD_SS)
 {
 	FIL file;
+
+	SPI_CS = PIN_CARD_SS;
+	pinMode(SPI_CS, OUTPUT);
+	digitalWrite(SPI_CS, HIGH);
+
 
 	if(!SDCardSPI)
 	{
@@ -125,19 +132,16 @@ BYTE CardType;			/* b0:MMC, b1:SDv1, b2:SDv2, b3:Block addressing */
 static
 int wait_ready (void)	/* 1:OK, 0:Timeout */
 {
-	BYTE d;
+	uint8 d = 0xFF;
 	UINT tmr;
 
-	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
-
 	for (tmr = 5000; tmr; tmr--) {	/* Wait for ready in timeout of 500ms */
-		SDCardSPI->recv(&d, 1);
+		SDCardSPI->transfer(&d, 1);
 		if (d == 0xFF)
 			break;
-
+		d = 0xFF;		// reset buffer
 		dly_us(100);
 	}
-
 	return tmr ? 1 : 0;
 }
 
@@ -150,11 +154,12 @@ int wait_ready (void)	/* 1:OK, 0:Timeout */
 static
 void deselect (void)
 {
-	BYTE d;
+	BYTE d = 0xFF;
 
-	SDCardSPI->disable();	/* Set CS# high */
-	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
-	SDCardSPI->recv(&d, 1);	/* Dummy clock (force DO hi-z for multiple slave SPI) */
+	digitalWrite(SPI_CS, HIGH);
+//	SDCardSPI->disable();	/* Set CS# high */
+//	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+	SDCardSPI->transfer(&d, 1);	/* Send 0xFF Dummy clock (force DO hi-z for multiple slave SPI) */
 }
 
 
@@ -166,11 +171,11 @@ void deselect (void)
 static
 int select (void)	/* 1:OK, 0:Timeout */
 {
-	BYTE d;
+	BYTE d = 0xFF;
 
-	SDCardSPI->enable();	/* Set CS# low */
-	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
-	SDCardSPI->recv(&d, 1);	/* Dummy clock (force DO enabled) */
+	digitalWrite(SPI_CS, LOW);	/* Set CS# low */
+//	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+	SDCardSPI->transfer(&d, 1);	/* Dummy clock (force DO enabled) */
 	if (wait_ready()) return 1;	/* Wait for card ready */
 
 	debugf( "SDCard select() failed\n");
@@ -193,16 +198,19 @@ int rcvr_datablock (	/* 1:OK, 0:Failed */
 	BYTE d[2];
 	UINT tmr;
 
-	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+//	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+	memset(buff, 0xFF, btr); /* Send 0xFF */
 	for (tmr = 1000; tmr; tmr--) {	/* Wait for data packet in timeout of 100ms */
-		SDCardSPI->recv(d, 1);
+		d[0] = 0xFF;
+		SDCardSPI->transfer(&d[0], 1);
 		if (d[0] != 0xFF) break;
 		dly_us(100);
 	}
 	if (d[0] != 0xFE) return 0;		/* If not valid data token, return with error */
 
-	SDCardSPI->recv(buff, btr);			/* Receive the data block into buffer */
-	SDCardSPI->recv(d, 2);					/* Discard CRC */
+	SDCardSPI->transfer(buff, btr);		/* Receive the data block into buffer */
+	memset(d, 0xFF, 2); 				/* keep MOSI HIGH */
+	SDCardSPI->transfer(d, 2);			/* Discard CRC */
 
 	return 1;						/* Return with success */
 }
@@ -225,12 +233,16 @@ int xmit_datablock (	/* 1:OK, 0:Failed */
 	if (!wait_ready()) return 0;
 
 	d[0] = token;
-	SDCardSPI->send(d, 1);				/* Xmit a token */
+	SDCardSPI->transfer(d, 1);				/* Xmit a token */
 	if (token != 0xFD) {		/* Is it data token? */
-		SDCardSPI->send(buff, 512);	/* Xmit the 512 byte data block to MMC */
-		SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
-		SDCardSPI->recv(d, 2);			/* Xmit dummy CRC (0xFF,0xFF) */
-		SDCardSPI->recv(d, 1);			/* Receive data response */
+		SDCardSPI->transfer((uint8 *)buff, 512);	/* Xmit the 512 byte data block to MMC */
+
+//		SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+		memset(d, 0xFF, 2);					/* keep MOSI HIGH */
+		SDCardSPI->transfer(d, 2);			/* Xmit dummy CRC (0xFF,0xFF) */
+		memset(d, 0xFF, 2);					/* keep MOSI HIGH */
+		SDCardSPI->transfer(d, 1);			/* Receive data response */
+
 		if ((d[0] & 0x1F) != 0x05)	/* If not accepted, return with error */
 			return 0;
 	}
@@ -275,15 +287,21 @@ BYTE send_cmd (		/* Returns command response (bit7==1:Send failed)*/
 	if (cmd == CMD0) n = 0x95;		/* (valid CRC for CMD0(0)) */
 	if (cmd == CMD8) n = 0x87;		/* (valid CRC for CMD8(0x1AA)) */
 	buf[5] = n;
-	SDCardSPI->send(buf, 6);
-	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+	SDCardSPI->transfer(buf, 6);
+
+//	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+	d = 0xFF;
+	SDCardSPI->transfer(&d, 1);	/* Dummy clock (force DO enabled) */
+
+
+
 	/* Receive command response */
-	if (cmd == CMD12) SDCardSPI->recv(&d, 1);	/* Skip a stuff byte when stop reading */
+	if (cmd == CMD12) SDCardSPI->transfer(&d, 1);	/* Skip a stuff byte when stop reading */
 	n = 10;								/* Wait for a valid response in timeout of 10 attempts */
 	do
-		SDCardSPI->recv(&d, 1);
+		SDCardSPI->transfer(&d, 1);
 	while ((d & 0x80) && --n);
-	//os_printf("SDcard send_cmd %d (%d try)\n", d, n);
+//	debugf("SDcard send_cmd %d (%d try)\n", d, n);
 	return d;			/* Return with the response value */
 }
 
@@ -319,23 +337,27 @@ DSTATUS disk_initialize (
 	BYTE drv		/* Physical drive nmuber (0) */
 )
 {
-	BYTE n, ty, cmd, buf[4];
+	BYTE d, n, ty, cmd, buf[4];
 	UINT tmr;
 
 	if (drv) return RES_NOTRDY;
 
-	SDCardSPI->setDelay(SCK_SLOW_INIT);
+//	SDCardSPI->setDelay(SCK_SLOW_INIT);
+	SDCardSPI->beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0));
 
 	dly_us(10000);			/* 10ms */
 
-	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
-	for (n = 10; n; n--)
-		SDCardSPI->recv(buf, 1);	/* Apply 80 dummy clocks and the card gets ready to receive command */
-
+//	SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+//	debugf("disk_initialize (send 80 0xFF cycles)");
+	for (n = 10; n; n--) {
+		d = 0xFF;
+		SDCardSPI->transfer(&d, 1);	/* Apply 80 dummy clocks and the card gets ready to receive command */
+	}
 	ty = 0;
 
 	BYTE retCmd;
 
+//	debugf("disk_initialize (send n send_cmd(CMD0, 0)");
 	n=5;
 	do
 	{
@@ -343,21 +365,28 @@ DSTATUS disk_initialize (
 		n--;
 	}
 	while(n && retCmd != 1);
+//	debugf("disk_initialize (until n = 5 && ret != 1");
 
 	if (retCmd == 1)
 	{
+//		debugf("disk_initialize (Enter Idle state - send_cmd(CMD8, 0x1AA) == 1");
 		/* Enter Idle state */
 		if (send_cmd(CMD8, 0x1AA) == 1) {	/* SDv2? */
-			SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
-			SDCardSPI->recv(buf, 4);							/* Get trailing return value of R7 resp */
+//			SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+//			SDCardSPI->recv(buf, 4);							/* Get trailing return value of R7 resp */
+			memset(buf, 0xFF, 4);
+			SDCardSPI->transfer(buf, 4);
 			if (buf[2] == 0x01 && buf[3] == 0xAA) {		/* The card can work at vdd range of 2.7-3.6V */
 				for (tmr = 1000; tmr; tmr--) {			/* Wait for leaving idle state (ACMD41 with HCS bit) */
 					if (send_cmd(ACMD41, 1UL << 30) == 0) break;
 					dly_us(1000);
 				}
 				if (tmr && send_cmd(CMD58, 0) == 0) {	/* Check CCS bit in the OCR */
-					SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
-					SDCardSPI->recv(buf, 4);
+//					SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
+//					SDCardSPI->recv(buf, 4);
+//					ty = (buf[0] & 0x40) ? CT_SD2 | CT_BLOCK : CT_SD2;	/* SDv2 */
+					memset(buf, 0xFF, 4);
+					SDCardSPI->transfer(buf, 4);
 					ty = (buf[0] & 0x40) ? CT_SD2 | CT_BLOCK : CT_SD2;	/* SDv2 */
 				}
 			}
@@ -397,7 +426,9 @@ DSTATUS disk_initialize (
 
 	deselect();
 
-	SDCardSPI->setDelay(SCK_NORMAL);
+//	SDCardSPI->setDelay(SCK_NORMAL);
+	SDCardSPI->beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
+
 
 	return Stat;
 }
@@ -521,6 +552,5 @@ DRESULT disk_ioctl (
 
 	return res;
 }
-
 
 

@@ -18,16 +18,18 @@
 extern "C" {
 #endif
 
-/**	@brief	Structure defining flash write status
+/**	@brief  Structure defining flash write status
+ *  @note   The user application should not modify the contents of this
+ *          structure.
  *	@see    rboot_write_flash
 */
 typedef struct {
-	uint32 start_addr; ///<Start address for flash write
-	uint32 start_sector; ///<RAB to describe
+	uint32 start_addr;
+	uint32 start_sector;
 	//uint32 max_sector_count;
-	uint32 last_sector_erased; ///<RAB to describe
-	uint8 extra_count; ///<RAB to describe
-	uint8 extra_bytes[4]; ///<RAB to describe
+	uint32 last_sector_erased;
+	uint8 extra_count;
+	uint8 extra_bytes[4];
 } rboot_write_status;
 
 /**	@brief	Read rBoot configuration from flash
@@ -35,7 +37,7 @@ typedef struct {
  *  @note   Returns rboot_config (defined in rboot.h) allowing you to modify any values
  *          in it, including the ROM layout.
 */
-rboot_config ICACHE_FLASH_ATTR rboot_get_config();
+rboot_config ICACHE_FLASH_ATTR rboot_get_config(void);
 
 /**	@brief	Write rBoot configuration to flash memory
  *	@param	conf pointer to a rboot_config structure containing configuration to save
@@ -47,13 +49,13 @@ rboot_config ICACHE_FLASH_ATTR rboot_get_config();
 */
 bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf);
 
-/**	@brief	Get index of current ROM
- *	@retval uint8 Index of the current ROM
- *  @note   Get the currently selected boot ROM (the currently running ROM, as long as
- *          you haven't changed it since boot).
-
+/** @brief  Get index of current ROM
+ *  @retval uint8 Index of the current ROM
+ *  @note   Get the currently selected boot ROM (this will be the currently
+ *          running ROM, as long as you haven't changed it since boot or rBoot
+ *          booted the rom in temporary boot mode, see rboot_get_last_boot_rom).
 */
-uint8 ICACHE_FLASH_ATTR rboot_get_current_rom();
+uint8 ICACHE_FLASH_ATTR rboot_get_current_rom(void);
 
 /**	@brief	Set the index of current ROM
  *	@param	rom The index of the ROM to use on next boot
@@ -83,6 +85,48 @@ rboot_write_status ICACHE_FLASH_ATTR rboot_write_init(uint32 start_addr);
  *  @note   Call rboot_write_init before calling this function to get the rboot_write_status structure
 */
 bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8 *data, uint16 len);
+
+#ifdef BOOT_RTC_ENABLED
+/** @brief  Get rBoot status/control data from RTC data area
+ *  @param  rtc Pointer to a rboot_rtc_data structure to be populated
+ *  @retval bool True on success, false if no data/invalid checksum (in which
+ *          case do not use the contents of the structure)
+*/
+bool ICACHE_FLASH_ATTR rboot_get_rtc_data(rboot_rtc_data *rtc);
+
+/** @brief  Set rBoot status/control data in RTC data area
+ *  @param  rtc pointer to a rboot_rtc_data structure
+ *  @retval bool True on success
+ *  @note   The checksum will be calculated automatically for you.
+*/
+bool ICACHE_FLASH_ATTR rboot_set_rtc_data(rboot_rtc_data *rtc);
+
+/** @brief  Set temporary rom for next boot
+ *  @param  rom Rom slot number for next boot
+ *  @retval bool True on success
+ *  @note   This call will tell rBoot to temporarily boot the specified rom on
+ *          the next boot. This is does not update the stored rBoot config on
+ *          the flash, so after another reset it will boot back to the original
+ *          rom.
+*/
+bool ICACHE_FLASH_ATTR rboot_set_temp_rom(uint8 rom);
+
+/** @brief  Get the last booted rom slot number
+ *  @param  rom Pointer to rom slot number variable to populate
+ *  @retval bool True on success, false if no data/invalid checksum
+ *  @note   This will find the currently running rom, even if booted as a
+ *          temporary rom.
+*/
+bool ICACHE_FLASH_ATTR rboot_get_last_boot_rom(uint8 *rom);
+
+/** @brief  Get the last boot mode
+ *  @param  mode Pointer to mode variable to populate
+ *  @retval bool True on success, false if no data/invalid checksum
+ *  @note   This will indicate the type of boot: MODE_STANDARD, MODE_GPIO_ROM or
+ *          MODE_TEMP_ROM.
+*/
+bool ICACHE_FLASH_ATTR rboot_get_last_boot_mode(uint8 *mode);
+#endif
 
 #ifdef __cplusplus
 }

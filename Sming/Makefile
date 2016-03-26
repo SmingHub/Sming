@@ -111,7 +111,14 @@ USER_LIBDIR = compiler/lib
 LIBS		= microc microgcc hal phy pp net80211 lwip wpa main
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
+CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106
+ifeq ($(ENABLE_GDB), 1)
+	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
+	MODULES		 += gdbstub
+	EXTRA_INCDIR += gdbstub
+else
+	CFLAGS += -Os -g
+endif
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # linker flags used to generate the main object file
@@ -142,9 +149,15 @@ SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
 AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.s))
+ifeq ($(ENABLE_GDB), 1)
+	AS_SRC += $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S)) 
+endif
 C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 AS_OBJ		:= $(patsubst %.s,$(BUILD_BASE)/%.o,$(AS_SRC))
+ifeq ($(ENABLE_GDB), 1)
+	AS_OBJ		+= $(patsubst %.S,$(BUILD_BASE)/%.o,$(AS_SRC))
+endif
 C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
 CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
 OBJ		:= $(AS_OBJ) $(C_OBJ) $(CXX_OBJ)
@@ -173,11 +186,19 @@ endif
 vpath %.c $(SRC_DIR)
 vpath %.cpp $(SRC_DIR)
 vpath %.s $(SRC_DIR)
+ifeq ($(ENABLE_GDB), 1)
+	vpath %.S $(SRC_DIR)
+endif
 
 define compile-objects
 $1/%.o: %.s
 	$(vecho) "AS $$<"
-	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@	
+	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
+ifeq ($(ENABLE_GDB), 1)	
+$1/%.o: %.S
+	$(vecho) "AS $$<"
+	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
+endif	
 $1/%.o: %.c
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
@@ -189,6 +210,13 @@ endef
 .PHONY: all checkdirs clean spiffy test samples recurse-samples $(SAMPLES_DIRS)
 
 all: checkdirs $(APP_AR)
+
+ifeq ($(ENABLE_GDB), 1)	
+gdbstub/Makefile: 
+	$(Q) echo "No espgdbstub submodule found. Using git to fetch it..."
+	$(Q) git submodule init
+	$(Q) git submodule update
+endif
 
 spiffy: spiffy/spiffy
 
@@ -204,7 +232,11 @@ $(APP_AR): $(OBJ)
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
 	$(vecho) "Done"
 
+ifeq ($(ENABLE_GDB), 1)	
+checkdirs: gdbstub/Makefile $(BUILD_DIR) $(FW_BASE)
+else
 checkdirs: $(BUILD_DIR) $(FW_BASE)
+endif
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@

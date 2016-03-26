@@ -201,6 +201,24 @@ bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 	if (!hasHeader("Content-Type"))
 		setContentType(ContentType::JSON);
 }
+
+bool HttpResponse::sendDataStream( IDataSourceStream * newDataStream , String reqContentType /* = "" */)
+{
+    if (stream != NULL)
+    {
+        SYSTEM_ERROR("Stream already created");
+        delete stream;
+        stream = NULL;
+    }
+    if (reqContentType != "")
+    {
+        setContentType(reqContentType);
+    }
+    stream = newDataStream;
+
+    return true;
+}
+
 ///
 
 void HttpResponse::sendHeader(HttpServerConnection &connection)

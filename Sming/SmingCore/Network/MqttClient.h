@@ -28,12 +28,15 @@ public:
 	MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback = NULL);
 	virtual ~MqttClient();
 
-	void setKeepAlive(int seconds);
+	void setKeepAlive(int seconds);			//send to broker
+	void setPingRepeatTime(int seconds);            //used by client
 	// Sets Last Will and Testament
 	bool setWill(String topic, String message, int QoS, bool retained = false);
 
 	bool connect(String clientName);
 	bool connect(String clientName, String username, String password);
+
+	using TcpClient::setCompleteDelegate;
 
 	__forceinline bool isProcessing()  { return TcpClient::isProcessing(); }
 	__forceinline TcpClientState getConnectionState() { return TcpClient::getConnectionState(); }
@@ -60,8 +63,9 @@ private:
 	uint8_t *current;
 	int posHeader;
 	MqttStringSubscriptionCallback callback;
-	int keepAlive = 20;
-
+	int keepAlive = 60;
+	int PingRepeatTime = 20;
+	unsigned long lastMessage;
 };
 
 #endif /* _SMING_CORE_NETWORK_MqttClient_H_ */

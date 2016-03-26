@@ -1,10 +1,14 @@
-// Copyright Benoit Blanchon 2014-2015
+// Copyright Benoit Blanchon 2014-2016
 // MIT License
 //
 // Arduino JSON library
 // https://github.com/bblanchon/ArduinoJson
+// If you like this project, please add a star!
 
 #pragma once
+
+#include "JsonFloat.hpp"
+#include "JsonInteger.hpp"
 
 namespace ArduinoJson {
 
@@ -13,15 +17,14 @@ class JsonArray;
 class JsonObject;
 
 namespace Internals {
-
 // A union that defines the actual content of a JsonVariant.
 // The enum JsonVariantType determines which member is in use.
 union JsonVariantContent {
-  double asDouble;       // asDouble is also used for float
-  long asLong;           // asLong is also used for bool, char, short and int
-  const char* asString;  // asString can be null
-  JsonArray* asArray;    // asArray cannot be null
-  JsonObject* asObject;  // asObject cannot be null
+  JsonFloat asFloat;      // used for double and float
+  JsonInteger asInteger;  // used for bool, char, short, int and longs
+  const char* asString;   // asString can be null
+  JsonArray* asArray;     // asArray cannot be null
+  JsonObject* asObject;   // asObject cannot be null
 };
 }
 }

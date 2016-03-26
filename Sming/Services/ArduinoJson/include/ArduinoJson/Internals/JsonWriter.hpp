@@ -1,14 +1,17 @@
-// Copyright Benoit Blanchon 2014-2015
+// Copyright Benoit Blanchon 2014-2016
 // MIT License
 //
 // Arduino JSON library
 // https://github.com/bblanchon/ArduinoJson
+// If you like this project, please add a star!
 
 #pragma once
 
 #include "../Arduino/Print.hpp"
 #include "Encoding.hpp"
 #include "ForceInline.hpp"
+#include "JsonFloat.hpp"
+#include "JsonInteger.hpp"
 
 namespace ArduinoJson {
 namespace Internals {
@@ -60,9 +63,9 @@ class JsonWriter {
     }
   }
 
-  void writeLong(long value) { _length += _sink.print(value); }
+  void writeInteger(JsonInteger value) { _length += _sink.print(value); }
 
-  void writeDouble(double value, uint8_t decimals) {
+  void writeFloat(JsonFloat value, uint8_t decimals) {
     _length += _sink.print(value, decimals);
   }
 

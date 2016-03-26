@@ -1,23 +1,16 @@
-// Copyright Benoit Blanchon 2014-2015
+// Copyright Benoit Blanchon 2014-2016
 // MIT License
 //
 // Arduino JSON library
 // https://github.com/bblanchon/ArduinoJson
+// If you like this project, please add a star!
 
 #pragma once
 
 #ifndef ARDUINO
 
 #include <string>
-
-// This class reproduces Arduino's String class
-class String : public std::string {
- public:
-  String(const char *cstr = "") : std::string(cstr) {}
-  String(const String &str) : std::string(str) {}
-  explicit String(long);
-  explicit String(double, unsigned char decimalPlaces = 2);
-};
+typedef std::string String;
 
 #else
 

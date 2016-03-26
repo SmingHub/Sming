@@ -80,14 +80,27 @@ bool MemoryDataStream::isFinished()
 
 ///////////////////////////////////////////////////////////////////////////
 
-FileStream::FileStream(String fileName)
+FileStream::FileStream()
 {
-	handle = fileOpen(fileName.c_str(), eFO_ReadOnly);
+	handle = -1;
+	size = -1;
+	pos = 0;
+}
+
+FileStream::FileStream(String filename)
+{
+	attach(filename, eFO_ReadOnly);
+}
+
+bool FileStream::attach(String fileName, FileOpenFlags openFlags)
+{
+	handle = fileOpen(fileName.c_str(), openFlags);
 	if (handle == -1)
 	{
 		debugf("File wasn't found: %s", fileName.c_str());
 		size = -1;
 		pos = 0;
+		return false;
 	}
 
 	// Get size
@@ -97,7 +110,8 @@ FileStream::FileStream(String fileName)
 	fileSeek(handle, 0, eSO_FileStart);
 	pos = 0;
 
-	debugf("send file: %s (%d bytes)", fileName.c_str(), size);
+	debugf("attached file: %s (%d bytes)", fileName.c_str(), size);
+	return true;
 }
 
 FileStream::~FileStream()
@@ -113,6 +127,20 @@ uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 	int available = fileRead(handle, data, len);
 	fileSeek(handle, pos, eSO_FileStart); // Don't move cursor now (waiting seek)
 	return available;
+}
+
+size_t FileStream::write(uint8_t charToWrite)
+{
+	uint8_t tempbuf[1]  {charToWrite};
+	return write(tempbuf, 1);
+}
+
+size_t FileStream::write(const uint8_t *buffer, size_t size)
+{
+	if (!fileExist()) return 0;
+
+	bool result = fileSeek(handle, 0, eSO_FileEnd);
+	return fileWrite(handle, buffer, size);
 }
 
 bool FileStream::seek(int len)
@@ -223,12 +251,11 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 					memcpy(varname, cur + 1, p - cur - 1); // name without { and }
 					varName = varname;
 					state = eTES_Found;
-					int sz = cur - tpl;
-					varWaitSize = sz;
-					debugf("found var: %s, at %d (%d) - %d, send size %d", varName.c_str(), sz + 1, sz + getPos(), p - tpl, sz);
+					varWaitSize = cur - tpl;
+					debugf("found var: %s, at %d (%d) - %d, send size %d", varName.c_str(), varWaitSize + 1, varWaitSize + getPos(), p - tpl, varWaitSize);
 					skipBlockSize = block;
-					if (sz == 0) state = eTES_StartVar;
-					return sz; // return only plain text from template without our variable
+					if (varWaitSize == 0) state = eTES_StartVar;
+					return varWaitSize; // return only plain text from template without our variable
 				}
 			}
 			cur = (char*)memchr(p, '{', len - (p - tpl)); // continue searching..
@@ -297,7 +324,7 @@ uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 {
 	if (rootNode != JsonObject::invalid() && send)
 	{
-		int len = rootNode.prettyPrintTo(*this);
+		int len = rootNode.printTo(*this);
 		send = false;
 	}
 

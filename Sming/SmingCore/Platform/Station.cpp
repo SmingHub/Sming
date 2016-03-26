@@ -26,11 +26,14 @@ StationClass::~StationClass()
 	connectionTimer = NULL;
 }
 
-void StationClass::enable(bool enabled)
+void StationClass::enable(bool enabled, bool save)
 {
 	uint8 mode = wifi_get_opmode() & ~STATION_MODE;
 	if (enabled) mode |= STATION_MODE;
-	wifi_set_opmode(mode);
+	if (save)
+		wifi_set_opmode(mode);
+	else
+		wifi_set_opmode_current(mode);
 }
 
 bool StationClass::isEnabled()
@@ -80,6 +83,11 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	wifi_station_set_auto_connect(autoConnectOnStartup);
 
 	return true;
+}
+
+void StationClass::connect()
+{
+	wifi_station_connect();
 }
 
 void StationClass::disconnect()
@@ -203,6 +211,21 @@ String StationClass::getSSID()
 	debugf("SSID: %s", (char*)config.ssid);
 	return String((char*)config.ssid);
 }
+
+
+sint8 StationClass::getRssi()
+{
+	debugf("Rssi: %d dBm", wifi_station_get_rssi());
+	return wifi_station_get_rssi();
+}
+
+uint8 StationClass::getChannel()
+{
+	debugf("Channel: %d CH", wifi_get_channel());
+	return wifi_get_channel();
+}
+ 
+
 
 String StationClass::getPassword()
 {

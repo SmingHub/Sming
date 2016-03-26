@@ -20,11 +20,12 @@
  * CS       (CS)          GPIO2
  */
 // For spi oled module
-Adafruit_SSD1306 display(0, 16, 2);
+// Adafruit_SSD1306 display(0, 16, 2);
 
 //* For I2C mode:
-// Default I2C pins 0 and 2. Pin 4 - optional reset
-// Adafruit_SSD1306 display(4);
+// Default I2C pins 0 (SCL) and 2 (SDA). Pin 4 - optional reset
+Adafruit_SSD1306 display(-1); // reset Pin required but later ignored if set to False
+
 
 Timer DemoTimer;
 
@@ -92,7 +93,12 @@ void init()
 	WifiStation.waitConnection(connect_Ok, 20, connect_Fail);
 
 	Serial.println("Display: start");
-	display.begin(SSD1306_SWITCHCAPVCC);
+
+	// by default, we'll generate the high voltage from the 3.3v line internally! (neat!)`
+	// initialize with the I2C addr 0x3D (for the 128x64)
+	// bool:reset set to TRUE or FALSE depending on you display
+	display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS, FALSE);
+	// display.begin(SSD1306_SWITCHCAPVCC);
 	display.display();
 	DemoTimer.initializeMs(2000, Demo1).start();
 }	

@@ -11,6 +11,7 @@
 # rBoot options, overwrite them in the projects Makefile-user.mk
 RBOOT_BIG_FLASH  ?= 1
 RBOOT_TWO_ROMS   ?= 0
+RBOOT_RTC_ENABLED ?= 0
 RBOOT_ROM_0      ?= rom0
 RBOOT_ROM_1      ?= rom1
 RBOOT_SPIFFS_0   ?= 0x100000
@@ -139,7 +140,14 @@ EXTRA_INCDIR ?= include # default to include if not set by user
 EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -g -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 $(USER_CFLAGS)
+CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 $(USER_CFLAGS)
+ifeq ($(ENABLE_GDB), 1)
+	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
+	MODULES		 += $(SMING_HOME)/gdbstub
+	EXTRA_INCDIR += gdbstub
+else
+	CFLAGS += -Os -g
+endif
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # libmain must be modified for rBoot big flash support (just one symbol gets weakened)
@@ -268,6 +276,11 @@ ifeq ($(RBOOT_TWO_ROMS),1)
 else
 	# eliminate the second rBoot target
 	RBOOT_ROM_1 := $()
+endif
+
+ifeq ($(RBOOT_RTC_ENABLED),1)
+	# enable the temporary switch to rom feature
+	CFLAGS += -DBOOT_RTC_ENABLED
 endif
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
