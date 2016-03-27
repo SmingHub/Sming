@@ -139,6 +139,16 @@ public:
 	 */
 	void enableDHCP(bool enable);
 
+	/**	@brief	Set WiFi station DHCP hostname
+	 *	@param	hostname - WiFi station DHCP hostname
+	 */
+	void setHostname(String hostname);
+
+	/**	@brief	Set WiFi station DHCP hostname
+	 *	@retval WiFi station DHCP hostname
+	 */
+	String getHostname();
+
 	/**	@brief	Get WiFi station IP address
 	 *	@retval	IPAddress IP address of WiFi station
 	 */
