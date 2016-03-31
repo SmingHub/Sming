@@ -17,9 +17,10 @@ HttpRequest::HttpRequest()
 	requestGetParameters = NULL;
 	requestPostParameters = NULL;
 	cookies = NULL;
+	headerDataProcessed = 0;
 	postDataProcessed = 0;
-	combinePostFrag = false;
 	bodyBuf = NULL;
+	tmpbuf = "";
 }
 
 HttpRequest::~HttpRequest()
@@ -82,77 +83,94 @@ String HttpRequest::getContentType()
 HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 {
 	int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
-	if (headerEnd == -1) return eHPR_Wait;
-	if (headerEnd > NETWORK_MAX_HTTP_PARSING_LEN)
+	if (headerEnd > NETWORK_MAX_HTTP_PARSING_LEN || headerDataProcessed > NETWORK_MAX_HTTP_PARSING_LEN \
+		|| (headerEnd != -1 && buf->tot_len > NETWORK_MAX_HTTP_PARSING_LEN))
 	{
 		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
 		return eHPR_Failed;
 	}
+	int urlEnd = 0;
+	tmpbuf += NetUtils::pbufStrCopy(buf, 0, buf->tot_len);
+	if (requestHeaders == NULL) {
+		// first time calling header
+		requestHeaders = new HashMap<String, String>();
 
-	int urlStart = NetUtils::pbufFindChar(buf, ' ') + 1;
-	int urlEnd = NetUtils::pbufFindChar(buf, ' ', urlStart);
-	if (urlStart == 0 || urlEnd == -1)
-	{
-		debugf("!BadRequest");
-		return eHPR_Failed;
-	}
-	method = NetUtils::pbufStrCopy(buf, 0, urlStart - 1);
+		int urlStart = tmpbuf.indexOf(" ")+1;
+		urlEnd = tmpbuf.indexOf(" ", urlStart);
+		if (urlStart == 0 || urlEnd == -1)
+		{
+			debugf("!BadRequest");
+			return eHPR_Failed;
+		}
 
-	int urlParamsStart = NetUtils::pbufFindChar(buf, '?', urlStart);
-	if (urlParamsStart != -1 && urlParamsStart < urlEnd)
-	{
-		path = NetUtils::pbufStrCopy(buf, urlStart, urlParamsStart - urlStart);
-		if (requestGetParameters == NULL) requestGetParameters = new HashMap<String, String>();
-		extractParsingItemsList(buf, urlParamsStart + 1, urlEnd, '&', ' ', requestGetParameters);
+		method = tmpbuf.substring(0, urlStart-1);
+		int urlParamsStart = tmpbuf.indexOf("?", urlStart);
+		if (urlParamsStart != -1 && urlParamsStart < urlEnd)
+		{
+			path = tmpbuf.substring(urlStart, urlParamsStart);
+			if (requestGetParameters == NULL) requestGetParameters = new HashMap<String, String>();
+			extractParsingItemsList(tmpbuf, urlParamsStart + 1, urlEnd, '&', ' ', requestGetParameters);
+		}
+		else
+			path = tmpbuf.substring(urlStart, urlEnd);
+		debugf("path=%s", path.c_str());
+		urlEnd = tmpbuf.indexOf("\r\n", urlEnd)+2;
 	}
-	else
-		path = NetUtils::pbufStrCopy(buf, urlStart, urlEnd - urlStart);
-	debugf("path=%s", path.c_str());
 
 	int line, nextLine;
-	line = NetUtils::pbufFindStr(buf, "\r\n", urlEnd)  + 2;
+	line = urlEnd;
 	do
 	{
-		nextLine = NetUtils::pbufFindStr(buf, "\r\n", line);
+
+		nextLine = tmpbuf.indexOf("\r\n", line);
 		if (nextLine - line > 2)
+
 		{
-			int delim = NetUtils::pbufFindStr(buf, ":", line);
+			int delim = tmpbuf.indexOf(":", line);
 			if (delim != -1)
 			{
-				String name = NetUtils::pbufStrCopy(buf, line, delim - line);
+				String name = tmpbuf.substring(line, delim);
 				if (server->isHeaderProcessingEnabled(name))
 				{
+					debugf("Name: %s", name.c_str());
 					if (name == "Cookie")
 					{
 						if (cookies == NULL) cookies = new HashMap<String, String>();
-						extractParsingItemsList(buf, delim + 1, nextLine, ';', '\r', cookies);
+						extractParsingItemsList(tmpbuf, delim + 1, nextLine, ';', '\r', cookies);
 					}
 					else
 					{
-						String value = NetUtils::pbufStrCopy(buf, delim + 1, nextLine - (delim + 1));
+						String value = tmpbuf.substring(delim + 1, nextLine);
 						value.trim();
-						if (requestHeaders == NULL) requestHeaders = new HashMap<String, String>();
 						(*requestHeaders)[name] = value;
 						debugf("%s === %s", name.c_str(), value.c_str());
 					}
+
 				}
 			}
+
 		}
-		line = nextLine + 2;
+		if (nextLine != -1) {
+			line = nextLine + 2;
+		}
+
 	} while(nextLine != -1);
 
 	if (headerEnd != -1)
 	{
+		tmpbuf = "";
 		debugf("parsed");
 		return eHPR_Successful;
 	}
+	headerDataProcessed += buf->tot_len;
+	tmpbuf = tmpbuf.substring(line, buf->tot_len);
 	return eHPR_Wait;
 }
 
 HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 {
 	int start = 0;
-
+	tmpbuf += NetUtils::pbufStrCopy(buf, 0, buf->tot_len);
 	// First enter
 	if (requestPostParameters == NULL)
 	{
@@ -165,61 +183,51 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 		}
 		requestPostParameters = new HashMap<String, String>();
 		start = headerEnd + 4;
-		combinePostFrag = false;
-	}
-	else if (combinePostFrag)
-	{
-		String cur = requestPostParameters->keyAt(requestPostParameters->count() - 1);
-		debugf("Continue POST frag %s", cur.c_str());
-		int delimItem = NetUtils::pbufFindChar(buf, '&', 0);
-		if (delimItem == -1)
-			delimItem = buf->tot_len;
-		else
-			combinePostFrag = false;
-		String itemValue = NetUtils::pbufStrCopy(buf, 0, delimItem);
-		//debugf("Continue POST len %d", itemValue.length());
-		char* buf = uri_unescape(NULL, 0, itemValue.c_str(), -1);
-		itemValue = buf;
-		free(buf);
-		(*requestPostParameters)[cur] += itemValue;
-		start = delimItem + 1;
-		postDataProcessed += start;
+		tmpbuf = tmpbuf.substring(start, tmpbuf.length());
 	}
 
-	bool notFinished = extractParsingItemsList(buf, start, buf->tot_len, '&', ' ', requestPostParameters);
-	if (notFinished)
-		combinePostFrag = true; // continue reading this parameter value
-	//TODO: continue for param name
-	postDataProcessed += buf->tot_len - start;
+	//parse if it is FormUrlEncoded - otherwise keep in buffer
+	String contType = getContentType();
+	contType.toLowerCase();
+	if (contType.indexOf(ContentType::FormUrlEncoded) != -1)
+	{
+		tmpbuf = extractParsingItemsList(tmpbuf, 0, tmpbuf.length(), '&', ' ', requestPostParameters);
+	}
+
+	postDataProcessed += buf->tot_len - start ;
 
 	if (postDataProcessed == getContentLength())
+	{
 		return eHPR_Successful;
+	}
+	else if (postDataProcessed > getContentLength())
+	{
+		//avoid bufferoverflow if client announces non-correct content-length
+		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
+		return eHPR_Failed;
+	}
 	else
+	{
 		return eHPR_Wait;
+	}
 }
 
-bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, char delimChar, char endChar,
+String HttpRequest::extractParsingItemsList(String& buf, int startPos, int endPos, char delimChar, char endChar,
 													HashMap<String, String>* resultItems)
 {
-	bool continued = false;
+
 	int delimItem, nextItem, startItem = startPos;
-	while (startItem < endPos)
+	do
 	{
-		delimItem = NetUtils::pbufFindStr(buf, "=", startItem);
-		if (delimItem == -1 || delimItem > endPos) break;
-		nextItem = NetUtils::pbufFindChar(buf, delimChar, delimItem + 1);
-		if (nextItem == -1)
-			nextItem = NetUtils::pbufFindChar(buf, endChar, delimItem + 1);
-		if (nextItem > endPos) break;
-
-		if (nextItem == -1)
-		{
-			nextItem = endPos;
-			continued = true;
-		}
-
-		String ItemName = NetUtils::pbufStrCopy(buf, startItem, delimItem - startItem);
-		String ItemValue = NetUtils::pbufStrCopy(buf, delimItem + 1, nextItem - delimItem - 1);
+		delimItem = buf.indexOf("=", startItem);
+		nextItem = buf.indexOf(delimChar, startItem);
+		//debugf("item %i  - delim %i - next %i", startItem, delimItem, nextItem);
+		if (nextItem == -1) nextItem = buf.indexOf(endChar, delimItem+1);
+		if (nextItem == -1) nextItem = endPos;
+		if (nextItem > endPos || delimItem == -1) nextItem = endPos;
+		if (delimItem == -1) break;
+		String ItemName = buf.substring(startItem, delimItem);
+		String ItemValue = buf.substring(delimItem+1, nextItem);
 		char* nam = uri_unescape(NULL, 0, ItemName.c_str(), -1);
 		ItemName = nam;
 		free(nam);
@@ -227,28 +235,21 @@ bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, c
 		ItemValue = val;
 		free(val);
 		ItemName.trim();
-		if (!continued) ItemValue.trim();
 		debugf("Item: Name = %s, Size = %d, Value = %s",ItemName.c_str(),ItemValue.length(),ItemValue.substring(0,80).c_str());
 		(*resultItems)[ItemName] = ItemValue;
+		if (nextItem == endPos) break;
 		startItem = nextItem + 1;
-	}
-	return continued;
-}
-void HttpRequest::parseRawData(HttpServer *server, pbuf* buf)
-{
-	bodyBuf = (char *) os_zalloc(sizeof(char) * buf->tot_len);
-	int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
-	if (headerEnd + getContentLength() > NETWORK_MAX_HTTP_PARSING_LEN)
-	{
-		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
-		return;
-	}
-	pbuf_copy_partial(buf, bodyBuf, buf->tot_len, headerEnd + 4);
+
+
+	} while (nextItem != -1);
+	return tmpbuf.substring(startItem, nextItem);
+
 }
 
-char* HttpRequest::getBody()
+
+String HttpRequest::getBody()
 {
-	return bodyBuf;
+	return tmpbuf;
 }
 
 bool HttpRequest::isAjax()
