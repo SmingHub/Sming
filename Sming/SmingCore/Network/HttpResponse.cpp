@@ -64,6 +64,17 @@ int HttpResponse::getStatusCode()
 	return status.substring(0, p).toInt();
 }
 
+void HttpResponse::setStatus(String statusline) {
+	status = statusline;
+}
+
+void HttpResponse::setStatus(int code, String msg /* = "" */)
+{
+	status = String(code) + " " + msg;
+}
+
+
+
 bool HttpResponse::hasBody()
 {
 	return stream != NULL || bodySent;
