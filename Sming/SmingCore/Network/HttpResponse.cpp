@@ -116,6 +116,10 @@ void HttpResponse::sendString(const char* string)
 	if (stream == NULL)
 		stream = new MemoryDataStream();
 
+	if(strlen(string) > 0)
+	{
+		setHeader("Content-Length", String(strlen(string)));
+	}
 	MemoryDataStream *writable = (MemoryDataStream*)stream;
 	writable->write((const uint8_t*)string, strlen(string));
 }
@@ -139,11 +143,13 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 	{
 		debugf("found %s", compressed.c_str());
 		stream = new FileStream(compressed);
+		setHeader("Content-Length", String(fileGetSize(compressed)));
 		setHeader("Content-Encoding", "gzip");
 	}
 	else if (fileExist(fileName))
 	{
 		debugf("found %s", fileName.c_str());
+		setHeader("Content-Length", String(fileGetSize(fileName)));
 		stream = new FileStream(fileName);
 	}
 	else
@@ -196,7 +202,10 @@ bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 		delete stream;
 		stream = NULL;
 	}
-
+	JsonObject& rootObject = newJsonStreamInstance->getRoot();
+	if(rootObject != JsonObject::invalid()) {
+		setHeader("Content-Length", String(rootObject.measureLength()));
+	}
 	stream = newJsonStreamInstance;
 	if (!hasHeader("Content-Type"))
 		setContentType(ContentType::JSON);
