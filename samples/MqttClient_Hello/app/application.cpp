@@ -74,6 +74,13 @@ void startMqttClient()
 	mqtt->connect("esp8266", MQTT_USERNAME, MQTT_PWD, true);
 #ifdef ENABLE_SSL
 	mqtt->addSslOptions(SSL_SERVER_VERIFY_LATER);
+
+	#include <ssl/private_key.h>
+	#include <ssl/cert.h>
+
+	mqtt->setSslClientKeyCert(default_private_key, default_private_key_len,
+							  default_certificate, default_certificate_len, NULL, true);
+
 #endif
 	// Assign a disconnect callback function
 	mqtt->setCompleteDelegate(checkMQTTDisconnect);

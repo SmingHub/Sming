@@ -36,6 +36,9 @@ public:
 	void setDelegate(otaUpdateDelegate reqUpdateDelegate);
 
 	using HttpClient::addSslOptions;
+	using HttpClient::setSslFingerprint;
+	using HttpClient::setSslClientKeyCert;
+	using HttpClient::freeSslClientKeyCert;
 #ifdef ENABLE_SSL
 	using HttpClient::getSsl;
 #endif

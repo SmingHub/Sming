@@ -31,6 +31,11 @@ TcpConnection::~TcpConnection()
 {
 	autoSelfDestruct = false;
 	close();
+
+	if(sslFingerprint) {
+		delete[] sslFingerprint;
+	}
+	freeSslClientKeyCert();
 	debugf("~TCP connection");
 }
 
@@ -389,6 +394,24 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 #endif
 			debugf("SSL: handshake start (%d ms)", millis());
 			con->sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | sslOptions, 1);
+
+			if (con->clientKeyCert.keyLength && con->clientKeyCert.certificateLength) {
+				// if we have client certificate -> try to use it.
+				if (ssl_obj_memory_load(con->sslContext, SSL_OBJ_RSA_KEY,
+						con->clientKeyCert.key, con->clientKeyCert.keyLength,
+						con->clientKeyCert.keyPassword) != SSL_OK) {
+					debugf("SSL: Unable to load client private key");
+				} else if (ssl_obj_memory_load(con->sslContext, SSL_OBJ_X509_CERT,
+						con->clientKeyCert.certificate,
+						con->clientKeyCert.certificateLength, NULL) != SSL_OK) {
+					debugf("SSL: Unable to load client certificate");
+				}
+
+				if(con->freeClientKeyCert) {
+					con->freeSslClientKeyCert();
+				}
+			}
+
 			con->ssl = ssl_client_new(con->sslContext, clientfd, NULL, 0);
 			if(con->hostname.length() > 0 ) { // Needed for the SNI support
 				ssl_set_hostname(con->ssl, con->hostname.c_str());
@@ -490,6 +513,14 @@ err_t TcpConnection::staticOnReceive(void *arg, tcp_pcb *tcp, pbuf *p, err_t err
 				debugf("SSL: Switching back to 80 MHz");
 				System.setCpuFrequency(eCF_80MHz); // Preserve some CPU cycles
 #endif
+				if(con->sslFingerprint && ssl_match_fingerprint(con->ssl, con->sslFingerprint) != SSL_OK) {
+					debugf("SSL: Certificate fingerprint does not match!");
+					con->close();
+					closeTcpConnection(tcp);
+
+					return ERR_ABRT;
+				}
+
 				err_t res = con->onConnected(err);
 				con->checkSelfFree();
 
@@ -598,6 +629,69 @@ void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void 
 
 void TcpConnection::addSslOptions(uint32_t sslOptions) {
 	this->sslOptions |= sslOptions;
+}
+
+boolean TcpConnection::setSslFingerprint(const uint8_t *data, int length /* = 20 */) {
+	if(sslFingerprint) {
+		delete[] sslFingerprint;
+	}
+	sslFingerprint = new uint8_t[length];
+	if(sslFingerprint == NULL) {
+		return false;
+	}
+
+	memcpy(sslFingerprint, data, length);
+	return true;
+}
+
+boolean TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
+							 const uint8_t *certificate, int certificateLength,
+							 const char *keyPassword /* = NULL */, boolean freeAfterHandshake /* = false */) {
+
+
+	clientKeyCert.key = new uint8_t[keyLength];
+	clientKeyCert.certificate = new uint8_t[certificateLength];
+	int passwordLength = 0;
+	if(keyPassword != NULL) {
+		passwordLength = strlen(keyPassword);
+		clientKeyCert.keyPassword = new char[passwordLength+1];
+	}
+
+	if(!(clientKeyCert.key && clientKeyCert.certificate &&
+	    (passwordLength==0 || (passwordLength!=0 && clientKeyCert.keyPassword)))) {
+		return false;
+	}
+
+	memcpy(clientKeyCert.key, key, keyLength);
+	memcpy(clientKeyCert.certificate, certificate, certificateLength);
+	memcpy(clientKeyCert.keyPassword, keyPassword, passwordLength);
+	freeClientKeyCert = freeAfterHandshake;
+
+	clientKeyCert.keyLength = keyLength;
+	clientKeyCert.certificateLength = certificateLength;
+	clientKeyCert.keyLength = keyLength;
+
+	return true;
+}
+
+void TcpConnection::freeSslClientKeyCert() {
+	if(clientKeyCert.key) {
+		delete[] clientKeyCert.key;
+		clientKeyCert.key = NULL;
+	}
+
+	if(clientKeyCert.certificate) {
+		delete[] clientKeyCert.certificate;
+		clientKeyCert.certificate = NULL;
+	}
+
+	if(clientKeyCert.keyPassword) {
+		delete[] clientKeyCert.keyPassword;
+		clientKeyCert.keyPassword = NULL;
+	}
+
+	clientKeyCert.keyLength = 0;
+	clientKeyCert.certificateLength = 0;
 }
 
 #ifdef ENABLE_SSL

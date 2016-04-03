@@ -90,8 +90,16 @@ void onDownload(HttpClient& client, bool success)
 
 void connectOk()
 {
+	const uint8_t googleSha1Fingerprint[] = { 0x0A, 0xCD, 0x80, 0x3A, 0xEE, 0xE4, 0x66, 0xFF, 0x22, 0x13,
+											  0xB2, 0xC2, 0xEF, 0x83, 0xE4, 0x0A, 0x9B, 0x94, 0xB5, 0xF8 };
+
 	debugf("Connected. Got IP: %s", WifiStation.getIP().toString().c_str());
 	downloadClient.addSslOptions(SSL_SERVER_VERIFY_LATER);
+	/*
+	 * The line below shows how to trust only a certificate that matches the SHA1 fingerprint.
+	 * When google changes their certificate the SHA1 fingerprint should not match any longer.
+	 */
+	downloadClient.setSslFingerprint(googleSha1Fingerprint, 20);
 	downloadClient.downloadString("https://www.google.com/", onDownload);
 }
 

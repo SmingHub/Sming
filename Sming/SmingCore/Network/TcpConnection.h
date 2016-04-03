@@ -37,6 +37,14 @@ class String;
 class IDataSourceStream;
 class IPAddress;
 
+typedef struct {
+	uint8_t *key = NULL;
+	int keyLength = 0;
+	char *keyPassword = NULL;
+	uint8_t *certificate = NULL;
+	int certificateLength = 0;
+} SSLKeyCertPair;
+
 class TcpConnection
 {
 public:
@@ -63,6 +71,36 @@ public:
 	uint16_t getRemotePort() { return (tcp == NULL) ? 0 : tcp->remote_port; };
 
 	void addSslOptions(uint32_t sslOptions);
+
+	/**
+	 * @brief Sets the SHA1 certificate finger print.
+	 * 		  The latter will be used after successful handshake to check against the fingerprint of the other side.
+	 * @param const uint8_t *data
+	 * @param int length
+	 * @return boolean  true of success, false or failure
+	 */
+	boolean setSslFingerprint(const uint8_t *data, int length = 20);
+
+	/**
+	 * @brief Sets client private key, certificate and password from memory
+	 * @param const uint8_t *keyData
+	 * @param int keyLength
+	 * @param const uint8_t *certificateData
+	 * @param int certificateLength
+	 * @param const char *keyPassword
+	 * @param boolean freeAfterHandshake
+	 *
+	 * @return boolean  true of success, false or failure
+	 */
+	boolean setSslClientKeyCert(const uint8_t *key, int keyLength,
+							 const uint8_t *certificate, int certificateLength,
+							 const char *keyPassword = NULL, boolean freeAfterHandshake = false);
+
+	/**
+	 * @brief Frees the memory used for the client key and certificate pair
+	 */
+	void freeSslClientKeyCert();
+
 #ifdef ENABLE_SSL
 	SSL* getSsl();
 #endif
@@ -100,9 +138,12 @@ protected:
 	SSLCTX *sslContext = nullptr;
 #endif
 	boolean useSsl = false;
+	uint8_t *sslFingerprint=null;
 	boolean sslConnected = false;
 	uint32_t sslOptions=0;
 	String hostname = "";
+	SSLKeyCertPair clientKeyCert;
+	boolean freeClientKeyCert = false;
 };
 
 #endif /* _SMING_CORE_TCPCONNECTION_H_ */
