@@ -41,6 +41,7 @@ TcpConnection* HttpServer::createClient(tcp_pcb *clientTcp)
 
 void HttpServer::enableHeaderProcessing(String headerName)
 {
+	headerName.toLowerCase();
 	for (int i = 0; i < processingHeaders.count(); i++)
 		if (processingHeaders[i].equals(headerName))
 			return;
