@@ -25,7 +25,7 @@ HttpServer::HttpServer()
 	enableHeaderProcessing("Host");
 	enableHeaderProcessing("Content-Type");
 	enableHeaderProcessing("Content-Length");
-
+	enableHeaderProcessing("Authorization");
 	enableHeaderProcessing("Upgrade");
 }
 
