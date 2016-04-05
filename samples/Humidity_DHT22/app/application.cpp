@@ -47,9 +47,9 @@ void init()
 	if(dht.readTempAndHumidity(th))
 	{
 		Serial.print("\tHumidity: ");
-		Serial.print(h);
+		Serial.print(th.humid);
 		Serial.print("% Temperature: ");
-		Serial.print(t);
+		Serial.print(th.temp);
 		Serial.print(" *C\n");
 	}
 	else
