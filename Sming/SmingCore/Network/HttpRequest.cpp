@@ -53,6 +53,7 @@ String HttpRequest::getPostParameter(String parameterName, String defaultValue /
 
 String HttpRequest::getHeader(String headerName, String defaultValue /* = "" */)
 {
+	headerName.toLowerCase();
 	if (requestHeaders && requestHeaders->contains(headerName))
 		return (*requestHeaders)[headerName];
 
@@ -130,10 +131,11 @@ HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 			if (delim != -1)
 			{
 				String name = tmpbuf.substring(line, delim);
+				name.toLowerCase();
 				if (server->isHeaderProcessingEnabled(name))
 				{
 					debugf("Name: %s", name.c_str());
-					if (name == "Cookie")
+					if (name == "cookie")
 					{
 						if (cookies == NULL) cookies = new HashMap<String, String>();
 						extractParsingItemsList(tmpbuf, delim + 1, nextLine, ';', '\r', cookies);
