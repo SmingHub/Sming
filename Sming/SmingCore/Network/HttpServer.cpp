@@ -48,16 +48,28 @@ void HttpServer::enableHeaderProcessing(String headerName)
 
 	processingHeaders.add(headerName);
 }
-
-void HttpServer::addPath(String path, HttpPathDelegate callback)
-{
+void HttpServer::addPath(String path, HttpPathDelegate callback) {
 	if (path.length() > 1 && path.endsWith("/"))
 		path = path.substring(0, path.length() - 1);
 	if (!path.startsWith("/"))
 		path = "/" + path;
 	debugf("'%s' registered", path.c_str());
+
 	paths[path] = callback;
 }
+
+void HttpServer::addPath(String path, HttpPathDelegate callback, HttpUploadDelegate uploadcallback)
+{
+	addPath(path, callback);
+	if (path.length() > 1 && path.endsWith("/"))
+		path = path.substring(0, path.length() - 1);
+	if (!path.startsWith("/"))
+		path = "/" + path;
+	debugf("'%s' upload handler registered", path.c_str());
+	uploads[path] = uploadcallback;
+}
+
+
 
 void HttpServer::setDefaultHandler(HttpPathDelegate callback)
 {
@@ -90,6 +102,11 @@ bool HttpServer::processRequest(HttpServerConnection &connection, HttpRequest &r
 
 	debugf("ERROR at server 404: '%s' not found", path.c_str());
 	return false;
+}
+
+bool HttpServer::isUploadEnabled(String path)
+{
+	return uploads.contains(path);
 }
 
 bool HttpServer::isHeaderProcessingEnabled(String name)

@@ -77,16 +77,28 @@ namespace RequestMethod
 
 namespace HttpStatusCode
 {
-	static const char* OK = "200 OK";
 	static const char* SwitchingProtocols = "101 Switching Protocols";
+	static const char* OK = "200 OK";
+	static const char* NoContent = "204 No Content";
+
+	// 3xx
 	static const char* Found = "302 Found";
+	static const char* NotModified = "304 Not Modified";
 
+	// 4xx
 	static const char* BadRequest = "400 Bad Request";
-	static const char* NotFound = "404 Not Found";
-	static const char* Forbidden = "403 Forbidden";
 	static const char* Unauthorized = "401 Unauthorized";
+	static const char* Forbidden = "403 Forbidden";
+	static const char* NotFound = "404 Not Found";
+	static const char* MethodNotAllowed = "405 Method Not Allowed";
+	static const char* Conflic = "409 Conflict";
+	static const char* ContentLenghtRequired = "411 Length Required";
+	static const char* RequestEntityTooLarge = "413	Request Entity Too Large";
+	static const char* RequestHeaderTooLarge = "431	Request Header Fields Too Large";
 
+	static const char* InternalServerError = "500 Internal Server Error";
 	static const char* NotImplemented = "501 Not Implemented";
+	static const char* InsufficientStorage = "507 Insufficient Storage";
 };
 
 #endif /* _SMING_CORE_NETWORK_WEBCONSTANTS_H_ */

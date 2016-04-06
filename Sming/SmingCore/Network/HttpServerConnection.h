@@ -20,6 +20,7 @@ enum HttpConnectionState
 {
 	eHCS_Ready,
 	eHCS_ParsePostData,
+	eHCS_ParseMultipartPostData,
 	eHCS_ParsingCompleted,
 	eHCS_Sending,
 	eHCS_WebSocketFrames,

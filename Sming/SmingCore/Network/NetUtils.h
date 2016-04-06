@@ -28,6 +28,12 @@ public:
 	static char* pbufAllocateStrCopy(pbuf *buf, int startPos, int length);
 	static String pbufStrCopy(pbuf *buf, int startPos, int length);
 
+	static int cbufFindChar(char* buf, char wtf, int length, int startPos = 0);
+	static int cbufFindStr(char* buf, const char* wtf, int length, int startPos = 0);
+	static bool cbufStrEqual(char* buf, const char* compared, int length, int startPos);
+	static char* cbufAllocateStrCopy(char* buf, int startPos, int length);
+	static String cbufStrCopy(char* buf, int start, int length);
+
 	static bool FixNetworkRouting();
 
 	// Debug

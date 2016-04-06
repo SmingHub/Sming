@@ -15,13 +15,57 @@
 
 class pbuf;
 class HttpServer;
+class HttpServerConnection;
 class TemplateFileStream;
+
 
 enum HttpParseResult
 {
 	eHPR_Wait = 0,
 	eHPR_Successful,
-	eHPR_Failed
+	eHPR_Failed,
+	eHPR_Failed_Header_Too_Large,
+	eHPR_Failed_Body_Too_Large,
+	eHPR_Failed_Not_Enough_Space
+};
+
+enum MultipartStatus
+{
+	MULTIPART_START = 0,
+	MULTIPART_CONTENT,
+	MULTIPART_END,
+	MULTIPART_ABORT
+};
+
+enum HttpUploadStatus
+{
+	HTTP_UPLOAD_BEGIN = 0,
+	HTTP_UPLOAD_WRITE,
+	HTTP_UPLOAD_WRITE_CUSTOM,
+	HTTP_UPLOAD_FINISHED,
+	HTTP_UPLOAD_SKIP, // don`t save the upload
+	HTTP_UPLOAD_ERROR, // internal error
+	HTTP_UPLOAD_ABORT // the client aborted / interruped the upload
+};
+
+struct HttpUpload {
+	String filename;
+	String name;
+	String type;
+	size_t totalSize;
+	size_t curSize; // size of the current data block
+	char* bufferdata; //pointer to the data
+	file_t file;
+	HttpUploadStatus status;
+};
+
+struct Multipart {
+	char* buf;
+	size_t buflen;
+	String begin_boundary;
+	String end_boundary;
+	MultipartStatus status;
+	HttpUpload* upload;
 };
 
 class HttpRequest
@@ -35,6 +79,7 @@ public:
 	String getContentType();
 	int getContentLength();
 
+	bool hasUpload() { return (uploads != NULL); }
 	bool isAjax();
 	bool isWebSocket();
 
@@ -43,13 +88,17 @@ public:
 	String getHeader(String headerName, String defaultValue = "");
 	String getCookie(String cookieName, String defaultValue = "");
 	String getBody();
+	Vector<HttpUpload*> getUploads() { return *uploads; };
 
 public:
 	HttpParseResult parseHeader(HttpServer *server, pbuf* buf);
 	HttpParseResult parsePostData(HttpServer *server, pbuf* buf);
+	HttpParseResult parseMultipartPostData(HttpServer *server, pbuf* buf);
 	String extractParsingItemsList(String& buf, int startPos, int endPos,
 			char delimChar, char endChar,
 			HashMap<String, String>* resultItems);
+	String extractHeaderValue(String& buf, String delimChar, String endChar, int startPos = 0);
+	void cleanupMultipart(HttpServerConnection& connection);
 
 private:
 	String method;
@@ -59,11 +108,18 @@ private:
 	HashMap<String, String> *requestGetParameters;
 	HashMap<String, String> *requestPostParameters;
 	HashMap<String, String> *cookies;
+	Vector<HttpUpload*>	*uploads;
 	int postDataProcessed;
 	int headerDataProcessed;
-	char *bodyBuf;
+	int postParamSize;
+
+	Multipart* multipart;
 
 	friend class TemplateFileStream;
+
+private:
+	void handleUpload();
+
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTPREQUEST_H_ */
