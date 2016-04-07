@@ -54,11 +54,6 @@ rboot_config ICACHE_FLASH_ATTR rboot_get_config(void) {
 // updates checksum automatically (if enabled)
 bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf) {
 	uint8 *buffer;
-#ifdef BOOT_CONFIG_CHKSUM
-	uint8 chksum;
-	uint8 *ptr;
-#endif
-	
 	buffer = (uint8*)os_malloc(SECTOR_SIZE);
 	if (!buffer) {
 		//os_printf("No ram!\r\n");
@@ -164,11 +159,10 @@ bool ICACHE_FLASH_ATTR rboot_get_rtc_data(rboot_rtc_data *rtc) {
 	if (system_rtc_mem_read(RBOOT_RTC_ADDR, rtc, sizeof(rboot_rtc_data))) {
 		return (rtc->chksum == calc_chksum((uint8*)rtc, (uint8*)&rtc->chksum));
 	}
+	return false;
 }
 
 bool ICACHE_FLASH_ATTR rboot_set_rtc_data(rboot_rtc_data *rtc) {
-	uint8 chksum;
-	uint8 *ptr;
 	// calculate checksum
 	rtc->chksum = calc_chksum((uint8*)rtc, (uint8*)&rtc->chksum);
 	return system_rtc_mem_write(RBOOT_RTC_ADDR, rtc, sizeof(rboot_rtc_data));
