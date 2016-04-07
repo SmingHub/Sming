@@ -27,7 +27,7 @@ typedef struct {
 	uint32 start_addr;
 	uint32 start_sector;
 	//uint32 max_sector_count;
-	uint32 last_sector_erased;
+	int32 last_sector_erased;
 	uint8 extra_count;
 	uint8 extra_bytes[4];
 } rboot_write_status;
