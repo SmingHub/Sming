@@ -45,6 +45,12 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 		HttpParseResult res = request.parseHeader(server, buf);
 		if (res == eHPR_Wait)
 			debugf("HEADER WAIT");
+		else if(res == eHPR_Failed_Header_Too_Large)
+		{
+			debugf("HEADER TOO LARGE");
+			response.setStatus(HttpStatusCode::RequestHeaderTooLarge);
+			sendError();
+		}
 		else if (res == eHPR_Failed)
 		{
 			debugf("HEADER FAILED");
@@ -56,12 +62,25 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 			debugf("Request: %s, %s", request.getRequestMethod().c_str(),
 					(request.getContentLength() > 0 ? (String(request.getContentLength()) + " bytes").c_str() : "nodata"));
 
-			String contType = request.getContentType();
-			contType.toLowerCase();
-			if (request.getContentLength() > 0 && request.getRequestMethod() == RequestMethod::POST)
-				state = eHCS_ParsePostData;
-					else
+			if (request.getContentLength() > 0 && request.getRequestMethod() != RequestMethod::GET && request.getRequestMethod() != RequestMethod::HEAD )
+			{
+				String conType = request.getContentType();
+				conType.toLowerCase();
+				if(conType.indexOf(ContentType::FormMultipart) != -1)
+				{
+					setDisconnectionHandler(HttpServerConnectionDelegate(&HttpRequest::cleanupMultipart, &request));
+					state = eHCS_ParseMultipartPostData;
+				}
+				else
+				{
+					state = eHCS_ParsePostData;
+				}
+			}
+			else
+			{
+
 				state = eHCS_ParsingCompleted;
+			}
 		}
 	}
 	else if (state == eHCS_WebSocketFrames)
@@ -69,11 +88,31 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 		server->processWebSocketFrame(buf, *this);
 	}
 
-	if (state == eHCS_ParsePostData)
+	if (state == eHCS_ParsePostData || state == eHCS_ParseMultipartPostData)
 	{
-		HttpParseResult res = request.parsePostData(server, buf);
+		HttpParseResult res;
+		if(state == eHCS_ParsePostData)
+		{
+			res = request.parsePostData(server, buf);
+		}
+		else
+		{
+			res = request.parseMultipartPostData(server, buf);
+		}
 		if (res == eHPR_Wait)
 			debugf("POST WAIT");
+		else if(res == eHPR_Failed_Body_Too_Large)
+		{
+			debugf("POST body too large");
+			response.setStatus(HttpStatusCode::RequestEntityTooLarge);
+			sendError();
+		}
+		else if(res == eHPR_Failed_Not_Enough_Space)
+		{
+			debugf("POST not enough storage");
+			response.setStatus(HttpStatusCode::InsufficientStorage);
+			sendError();
+		}
 		else if (res == eHPR_Failed)
 		{
 			debugf("POST FAILED");
@@ -154,6 +193,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 void HttpServerConnection::close()
 {
+
 	if (disconnection)
 	{
 		disconnection(*this);
@@ -164,8 +204,10 @@ void HttpServerConnection::close()
 
 void HttpServerConnection::onError(err_t err)
 {
+
 	if (disconnection)
 	{
+
 		disconnection(*this);
 		disconnection = nullptr;
 	}

@@ -30,6 +30,8 @@ public:
 	void authorizationRequired();
 	void redirect(String location = "");
 
+	void setStatus(int code, String msg = "");
+	void setStatus(String statusline);
 	void setContentType(const String type);
 	void setCookie(const String name, const String value);
 	void setHeader(const String name, const String value);

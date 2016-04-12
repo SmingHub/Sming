@@ -69,6 +69,15 @@ bool HttpResponse::hasBody()
 	return stream != NULL || bodySent;
 }
 
+void HttpResponse::setStatus(String statusline) {
+	status = statusline;
+}
+
+void HttpResponse::setStatus(int code, String msg /* = "" */)
+{
+	status = String(code) + " " + msg;
+}
+
 ///
 
 void HttpResponse::setContentType(const String type)

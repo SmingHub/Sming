@@ -112,6 +112,67 @@ String NetUtils::pbufStrCopy(pbuf *buf, int startPos, int length)
 	return res;
 }
 
+int NetUtils::cbufFindChar(char* buf, char wtf, int length, int startPos /* = 0*/) {
+	if(buf == NULL) return -1;
+	if (startPos < 0) startPos = 0;
+	for (int i = startPos; i < length; i++) {
+		if(buf[i] == wtf) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+bool NetUtils::cbufStrEqual(char* buf, const char* compared, int length, int startPos) {
+	int cur = startPos;
+	if (startPos < 0) startPos = 0;
+	if(startPos >= length) return false;
+	for (const char* cmp = compared; *cmp; cmp++)
+	{
+		if (buf[cur] != *cmp)
+			return false;
+		cur++;
+		if (cur >= length) return false;
+	}
+	return true;
+}
+
+int NetUtils::cbufFindStr(char* buf, const char* wtf, int length, int startPos /* = 0*/)
+{
+	int cur = startPos;
+	if (startPos < 0) startPos = 0;
+	if (wtf == NULL || strlen(wtf) == -1) return -1;
+
+	while (true)
+	{
+		cur = cbufFindChar(buf, wtf[0], length, cur);
+		if (cur == -1) return -1;
+
+		if (cbufStrEqual(buf, wtf, length, cur))
+			return cur;
+		cur++;
+	}
+
+	return -1;
+}
+
+String NetUtils::cbufStrCopy(char* buf, int startPos, int length) {
+	char* stringPtr = new char[length + 1];
+	stringPtr[length] = '\0';
+	os_memcpy(stringPtr, &buf[startPos], length);
+	String res = String(stringPtr);
+	delete[] stringPtr;
+	return res;
+}
+
+char* NetUtils::cbufAllocateStrCopy(char* buf, int startPos, int length)
+{
+	char* stringPtr = new char[length + 1];
+	stringPtr[length] = '\0';
+	os_memcpy(stringPtr, &buf[startPos], length);
+	return stringPtr;
+}
+
 bool NetUtils::FixNetworkRouting()
 {
 //	if (ipClientRoutingFixed) return true;

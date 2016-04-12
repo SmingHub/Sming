@@ -19,9 +19,11 @@ class String;
 class HttpServerConnection;
 class HttpRequest;
 class HttpResponse;
+struct HttpUpload;
 
 typedef Vector<WebSocket> WebSocketsList;
 
+typedef Delegate<void(HttpRequest&, HttpUpload&)> HttpUploadDelegate;
 typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathDelegate;
 typedef Delegate<void(WebSocket&)> WebSocketDelegate;
 typedef Delegate<void(WebSocket&, const String&)> WebSocketMessageDelegate;
@@ -36,8 +38,10 @@ public:
 
 	void enableHeaderProcessing(String headerName);
 	bool isHeaderProcessingEnabled(String name);
+	bool isUploadEnabled(String path);
 
 	void addPath(String path, HttpPathDelegate callback);
+	void addPath(String path, HttpPathDelegate callback, HttpUploadDelegate uploadcallback);
 	void setDefaultHandler(HttpPathDelegate callback);
 
 	/// Web Sockets
@@ -63,6 +67,7 @@ private:
 	HttpPathDelegate defaultHandler;
 	Vector<String> processingHeaders;
 	HashMap<String, HttpPathDelegate> paths;
+	HashMap<String, HttpUploadDelegate> uploads;
 	WebSocketsList wsocks;
 
 	bool wsEnabled = false;
@@ -73,6 +78,8 @@ private:
 
 	bool wsCommandEnabled = false;
 	String wsCommandRequestParam;
+
+	friend class HttpRequest;
 };
 
 #endif /* _SMING_CORE_HTTPSERVER_H_ */
