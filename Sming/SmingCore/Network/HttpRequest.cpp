@@ -103,15 +103,24 @@ String HttpRequest::getContentType()
 
 HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 {
-	int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
+	int urlEnd, headerEnd;
+	 headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
 	if (headerEnd > NETWORK_MAX_HTTP_PARSING_LEN || headerDataProcessed > NETWORK_MAX_HTTP_PARSING_LEN \
 		|| (headerEnd != -1 && buf->tot_len > NETWORK_MAX_HTTP_PARSING_LEN))
 	{
 		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
 		return eHPR_Failed_Header_Too_Large;
 	}
-	int urlEnd = 0;
-	tmpbuf += NetUtils::pbufStrCopy(buf, 0, buf->tot_len);
+
+	if(headerEnd == -1)
+	{
+		tmpbuf += NetUtils::pbufStrCopy(buf, 0, buf->tot_len);
+	}
+	else
+	{
+		tmpbuf += NetUtils::pbufStrCopy(buf, 0, headerEnd+4);
+	}
+	urlEnd = 0;
 	if (requestHeaders == NULL) {
 		// first time calling header
 		requestHeaders = new HashMap<String, String>();
@@ -196,7 +205,7 @@ HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 			}
 
 		}
-		if (nextLine != -1) {
+		if (nextLine != -1 ) {
 			line = nextLine + 2;
 		}
 
@@ -263,6 +272,17 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 	}
 }
 
+void printDebug(String s) {
+	int l = s.length();
+	int handled = 0;
+	while(handled < l) {
+		String part = s.substring(handled, handled+100);
+		Serial.printf("%s", part.c_str());
+		handled += 100;
+	}
+	Serial.printf("\r\n");
+}
+
 HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* buf)
 {
 	int start = 0;
@@ -274,8 +294,14 @@ HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* bu
 
 		int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
 		if (headerEnd == -1) return eHPR_Failed;
-
-
+		String hpart = NetUtils::pbufStrCopy(buf, 0, headerEnd);
+		debugf("======= hpart ======");
+		printDebug(hpart);
+		debugf("======= hpart ======");
+		String bpart = NetUtils::pbufStrCopy(buf, headerEnd, buf->tot_len - headerEnd);
+		debugf("======= hpart ======");
+		printDebug(bpart);
+		debugf("======= hpart ======");
 		if(!server->isUploadEnabled(path)) {
 			debugf("Upload not allowed for %s", path.c_str());
 			return eHPR_Failed;
@@ -309,7 +335,7 @@ HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* bu
 	}
 
 	String name, filename, cdisp, ctype;
-	int mpheaderstart = start;
+	int mpheaderstart = 0;
 	int mpheaderend = 0;
 	int curbuflen = 0;
 
@@ -342,7 +368,9 @@ HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* bu
 		debugf("curbuflen %i mpbuf->len %i", curbuflen, multipart->buflen);
 	}
 
-
+	debugf("===== curbuf ======");
+	printDebug(String(curbuf));
+	debugf("===== curbuf ======");
 	while(true)
 	{
 		if (multipart->status == MULTIPART_START)
@@ -350,9 +378,10 @@ HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* bu
 
 			// looking for header in multipart
 			debugf("parsing multipart header");
+			debugf("mpheaderstart %i", mpheaderstart);
 			mpheaderend = NetUtils::cbufFindStr(curbuf, "\r\n\r\n", curbuflen, mpheaderstart);
 
-			//debugf("mpheaderstart %i - mpheaderend %i", mpheaderstart, mpheaderend);
+			debugf("mpheaderstart %i - mpheaderend %i", mpheaderstart, mpheaderend);
 			if (mpheaderend == -1 )
 			{
 
@@ -368,10 +397,10 @@ HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* bu
 				break;
 			}
 			String header = NetUtils::cbufStrCopy(curbuf, mpheaderstart, mpheaderend-mpheaderstart+4);
-			//debugf("===== HEADER ==========");
-			//debugf("%s", header.c_str());
-			//debugf("=======================");
-
+			debugf("===== HEADER ==========");
+			debugf("%s", header.c_str());
+			debugf("=======================");
+			debugf("boundary: %s", multipart->begin_boundary.c_str());
 			int boundary = header.indexOf(multipart->begin_boundary.c_str());
 			if(boundary == -1)
 			{
