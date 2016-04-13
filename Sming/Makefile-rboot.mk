@@ -150,19 +150,27 @@ else
 endif
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
+ENABLE_CUSTOM_HEAP ?= 1
+
+USER_LIBDIR = $(SMING_HOME)/compiler/lib/
+
 # libmain must be modified for rBoot big flash support (just one symbol gets weakened)
+LIBMAIN = main
+LIBMAIN_SRC = $(addprefix $(SDK_LIBDIR)/,libmain.a)
+ifeq ($(ENABLE_CUSTOM_HEAP),1)
+	LIBMAIN = mainmm
+	LIBMAIN_SRC := $(USER_LIBDIR)lib$(LIBMAIN).a
+endif
+
 ifeq ($(RBOOT_BIG_FLASH),1)
 	LIBMAIN = main2
-	LIBMAIN_SRC = $(addprefix $(SDK_LIBDIR)/,libmain.a)
 	LIBMAIN_DST = $(addprefix $(BUILD_BASE)/,libmain2.a)
 	CFLAGS += -DBOOT_BIG_FLASH
 else
-	LIBMAIN = main
 	LIBMAIN_DST = $()
 endif
 # libraries used in this project, mainly provided by the SDK
-USER_LIBDIR = $(SMING_HOME)/compiler/lib/
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming crypto pwm smartconfig $(EXTRA_LIBS)
+LIBS = microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming crypto pwm smartconfig $(EXTRA_LIBS)
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 WIFI_SSID ?= ""

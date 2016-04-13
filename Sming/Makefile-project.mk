@@ -137,9 +137,16 @@ MODULES      ?= app     # default to app if not set by user
 EXTRA_INCDIR ?= include # default to include if not set by user
 EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
 
+ENABLE_CUSTOM_HEAP ?= 1
+
+LIBMAIN = main
+ifeq ($(ENABLE_CUSTOM_HEAP),1)
+	LIBMAIN = mainmm
+endif
+
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa main sming crypto pwm smartconfig $(EXTRA_LIBS)
+LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming crypto pwm smartconfig $(EXTRA_LIBS)
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 $(USER_CFLAGS)
