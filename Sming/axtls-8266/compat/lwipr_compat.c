@@ -115,7 +115,16 @@ int axl_ssl_read(SSL *ssl, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **
 		AXL_DEBUG_PRINT("axl_ssl_read: Read bytes: %d\n", read_bytes);
 		if(read_bytes < SSL_OK) {
 			/* An error has occurred. Give it back for further processing */
-			total_bytes = read_bytes;
+			if(total_bytes == 0) {
+				// Nothing is read so far -> give back the error
+				total_bytes = read_bytes;
+			}
+			else {
+				// We already have read some data -> deliver it back
+				// and silence the error for now..
+				AXL_DEBUG_PRINT("axl_ssl_read: Silently ignoring SSL error %d\n", read_bytes);
+			}
+
 			break;
 		}
 		else if (read_bytes > 0 ){
