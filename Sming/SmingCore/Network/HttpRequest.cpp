@@ -238,7 +238,7 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 		}
 		requestPostParameters = new HashMap<String, String>();
 		start = headerEnd + 4;
-		if(buf->len - start == 0)
+		if(buf->tot_len - start == 0)
 		{
 			tmpbuf = "";
 			return eHPR_Wait; // no more data
@@ -295,6 +295,7 @@ HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* bu
 		int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
 		if (headerEnd == -1) return eHPR_Failed;
 		String hpart = NetUtils::pbufStrCopy(buf, 0, headerEnd);
+		/*
 		debugf("======= hpart ======");
 		printDebug(hpart);
 		debugf("======= hpart ======");
@@ -302,6 +303,7 @@ HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* bu
 		debugf("======= hpart ======");
 		printDebug(bpart);
 		debugf("======= hpart ======");
+		*/
 		if(!server->isUploadEnabled(path)) {
 			debugf("Upload not allowed for %s", path.c_str());
 			return eHPR_Failed;
@@ -330,7 +332,7 @@ HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* bu
 
 		requestPostParameters = new HashMap<String, String>();
 		start = headerEnd + 4;
-		if(buf->len - start == 0) return eHPR_Wait;
+		if(buf->tot_len - start == 0) return eHPR_Wait;
 
 	}
 
@@ -347,7 +349,7 @@ HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* bu
 
 		// no previous buffer - just copy the data over to curbuf
 		debugf("mpbuf->len == 0");
-		curbuflen = buf->len - start;
+		curbuflen = buf->tot_len - start;
 		curbuf = new char[curbuflen];
 		pbuf_copy_partial(buf, curbuf, curbuflen, start);
 
@@ -358,10 +360,10 @@ HttpParseResult HttpRequest::parseMultipartPostData(HttpServer *server, pbuf* bu
 
 		// previous buffer - combine the old buffer and the pbuf data
 		debugf("mpbuf->len >> 0");
-		curbuflen =  buf->len - start + multipart->buflen;
+		curbuflen =  buf->tot_len - start + multipart->buflen;
 		curbuf = new char[curbuflen];
 		os_memcpy(curbuf, multipart->buf, multipart->buflen);
-		pbuf_copy_partial(buf, &curbuf[multipart->buflen], buf->len - start, start);
+		pbuf_copy_partial(buf, &curbuf[multipart->buflen], buf->tot_len - start, start);
 		delete[] multipart->buf;
 		multipart->buf = NULL;
 
