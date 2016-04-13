@@ -121,5 +121,163 @@ void DebugClass::processDebugCommands(String commandLine, CommandOutput* command
 	}
 }
 
+
+//----------------------------------------------------------------------------
+// selective debug logging extension
+//----------------------------------------------------------------------------
+#define DEBUG_CLS_SHIFT                         24 //
+#define DEBUG_LVL_SHIFT                         16 //
+
+//----------------------------------------------------------------------------
+// set class levels for logTxt() and logBin()
+//----------------------------------------------------------------------------
+uint32_t DebugClass::logClsLevels(uint32_t cls, uint32_t clsLevels)
+{
+  cls = cls >> DEBUG_CLS_SHIFT;
+  return (cls < DEBUG_CLS_MAX) ? (m_clsLevels[cls] = clsLevels) : 0; 
+  } // logClsLevels
+
+//----------------------------------------------------------------------------
+// get class levels
+//----------------------------------------------------------------------------
+uint32_t DebugClass::logClsLevels(uint32_t cls) 
+{
+  cls = cls >> DEBUG_CLS_SHIFT;
+  return (cls < DEBUG_CLS_MAX) ? m_clsLevels[cls] : 0; 
+  } // logClsLevels
+
+//----------------------------------------------------------------------------
+// set printMsgId setting for logTxt() and logBin()
+//----------------------------------------------------------------------------
+bool DebugClass::logPrintMsgId(bool printMsgId)
+{
+  return m_printMsgId = printMsgId;
+  } // logPrintMsgId
+
+//----------------------------------------------------------------------------
+// get printMsgId setting
+//----------------------------------------------------------------------------
+bool DebugClass::logPrintMsgId() 
+{
+  return m_printMsgId;
+  } // logPrintMsgId
+
+//----------------------------------------------------------------------------
+// log textual data if level is enabled for class using logClsLevels()
+// msgId = 0xCCLLSSSS where CC   = class, DEBUG_CLS_%
+//                          LL   = level, DEBUG_LVL_%
+//                          SSSS = sequence number
+//----------------------------------------------------------------------------
+void DebugClass::logTxt(uint32_t msgId, const char* fmt, ...)
+{
+
+  do {
+    // exit if level not supported for class
+    if ((msgId             ) >= (DEBUG_CLS_MAX << DEBUG_CLS_SHIFT))
+      break;
+
+    if ((msgId & 0x00FF0000) >= (DEBUG_LVL_MAX << DEBUG_LVL_SHIFT))
+      break;
+
+    if ( !(m_clsLevels[msgId >> DEBUG_CLS_SHIFT] & (0x1 << ((msgId & 0x00FF0000) >> DEBUG_LVL_SHIFT))) )
+      break;
+
+    // print msgid in hex
+    if (m_printMsgId)
+      printf("%08X,", msgId);
+
+    // print textual data
+    va_list args;
+    va_start(args, fmt);
+    printf(fmt, args);
+    va_end(args);
+    println();
+    } while (0);
+
+  } // DebugClass::logTxt
+
+//----------------------------------------------------------------------------
+// log binary data if level is enabled for class using logClsLevels()
+// msgId = 0xCCLLSSSS where CC   = class, DEBUG_CLS_%
+//                          LL   = level, DEBUG_LVL_%
+//                          SSSS = sequence number
+//----------------------------------------------------------------------------
+void DebugClass::logBin(uint32_t msgId, uint32_t indent, const void *pIn, uint32_t cbIn, const char* fmt, ...)
+{
+  char     szOut[DEBUG_INDENT_MAX + (DEBUG_HEX_PER_LINE * 2) + 1 + DEBUG_HEX_PER_LINE + 1];
+  char     *pHex, *pAsc;
+  uint8_t  *pByt = (uint8_t*) pIn;
+  uint32_t dw;
+
+  do {
+    // exit if level not supported for class
+    if ((msgId             ) >= (DEBUG_CLS_MAX << DEBUG_CLS_SHIFT))
+      break;
+
+    if ((msgId & 0x00FF0000) >= (DEBUG_LVL_MAX << DEBUG_LVL_SHIFT))
+      break;
+
+    if ( !(m_clsLevels[msgId >> DEBUG_CLS_SHIFT] & (0x1 << ((msgId & 0x00FF0000) >> DEBUG_LVL_SHIFT))) )
+      break;
+
+    // print msgid in hex
+    if (m_printMsgId)
+      printf("%08X,", msgId);
+
+    // print header line
+    va_list args;
+    va_start(args, fmt);
+    printf(fmt, args);
+    va_end(args);
+    println();
+
+    // print binary data
+    if (indent > DEBUG_INDENT_MAX)
+      indent = DEBUG_INDENT_MAX;
+
+    while (cbIn) {
+      memset(szOut, 0x20, sizeof(szOut));
+      pHex = &szOut[indent];
+      pAsc = pHex + (DEBUG_HEX_PER_LINE * 2) + 1;
+
+      for (dw = (DEBUG_HEX_PER_LINE < cbIn) ? DEBUG_HEX_PER_LINE : cbIn; dw; dw--, cbIn--) {
+        _ByteToAsc(*pByt,   &pAsc);
+        _ByteToHex(*pByt++, &pHex);
+        } // for
+
+      // print msgid in hex
+      if (m_printMsgId)
+        printf("%08X,", msgId);
+
+      // print hex output line
+      *pAsc = '\0';
+      println(szOut);
+      } // while
+    } while (0);
+
+  } // DebugClass::logBin
+
+//----------------------------------------------------------------------------
+// support functions
+//----------------------------------------------------------------------------
+void DebugClass::_NibbleToHex(uint8_t nibIn, char **ppOut) 
+{
+  **ppOut = (nibIn < 0x0A) ? nibIn + '0' : nibIn + '7';
+  (*ppOut)++;
+  } // DebugClass::_NibbleToHex
+
+void DebugClass:: _ByteToHex(uint8_t byIn, char **ppOut) 
+{
+  _NibbleToHex(byIn / 16, ppOut);
+  _NibbleToHex(byIn % 16, ppOut);
+  } // DebugClass::_ByteToHex
+
+void DebugClass:: _ByteToAsc(uint8_t byIn, char **ppOut) 
+{
+  **ppOut = ((byIn < 32) || (byIn > 127)) ? '.' : byIn;
+  (*ppOut)++;
+  } // DebugClass::_ByteToAsc
+
+
 DebugClass Debug;
 

@@ -200,14 +200,23 @@ size_t Print::println(const Printable &p)
 size_t Print::printf(const char *fmt, ...)
 {
 	size_t sz = 0;
-	size_t buffSize = INITIAL_PRINTF_BUFFSIZE;
-	bool retry = false;
-	do {
-		char tempBuff[buffSize];
+
 		va_list va;
 		va_start(va, fmt);
-		sz = m_vsnprintf(tempBuff,buffSize, fmt, va);
+  sz = printf(fmt, va);
 		va_end(va);
+  return sz;
+} // printf
+
+size_t Print::printf(const char *fmt, va_list va)
+{
+	size_t sz = 0;
+	size_t buffSize = INITIAL_PRINTF_BUFFSIZE;
+	bool   retry = false;
+
+	do {
+		char tempBuff[buffSize];
+		sz = m_vsnprintf(tempBuff,buffSize, fmt, va);
 		if (sz > (buffSize -1))
 		{
 			buffSize = sz + 1; // Leave room for terminating null char
@@ -222,7 +231,7 @@ size_t Print::printf(const char *fmt, ...)
 			return sz;
 		}
 	} while (retry);
-}
+} // printf
 
 // private methods
 
