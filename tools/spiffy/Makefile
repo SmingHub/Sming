@@ -4,9 +4,10 @@
 
 HOST_CC ?= gcc
 HOST_LD ?= gcc
+ENABLE_SPIFFS_TREE ?=0
 
 INCDIR := -I$(SMING_HOME)/Services/SpifFS -I$(SMING_HOME)/third-party/spiffs/src
-CFLAGS := -O2 -Wall -Wno-unused-value
+CFLAGS := -O2 -Wall -Wno-unused-value -DENABLE_SPIFFS_TREE=$(ENABLE_SPIFFS_TREE)
 
 ifeq ("$(V)","1")
 Q :=
