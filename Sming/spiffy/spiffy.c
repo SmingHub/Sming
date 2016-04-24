@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <spiffs.h>
 #include <sys/stat.h>
+#include <ftw.h>
 
 #define LOG_PAGE_SIZE       256
 #define SPI_FLASH_SEC_SIZE 4096
@@ -20,6 +21,10 @@ static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE+32)*4];
 
 #define S_DBG
 //#define S_DBG printf
+
+#ifndef USE_FDS
+#define USE_FDS 15
+#endif
 
 static FILE *rom = 0;
 
@@ -147,12 +152,13 @@ int my_spiffs_format() {
 	return res;
 }
 
-int write_to_spiffs(char *fname, u8_t *data, int size) {
+int write_to_spiffs(const char *fname, u8_t *data, int size) {
 
 	int ret = 0;
 	spiffs_file fd = -1;
 
-	fd = SPIFFS_open(&fs, fname, SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
+	char *fnameOnSpiffy = strchr(fname, '/')+1;
+	fd = SPIFFS_open(&fs, fnameOnSpiffy, SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
 	if (fd < 0) {
 		printf("Unable to open spiffs file '%s', error %d.\n", fname, fd);
 	} else {
@@ -170,41 +176,34 @@ int write_to_spiffs(char *fname, u8_t *data, int size) {
 	}
 	return ret;
 }
-
-int add_file(const char* fdir, char* fname) {
+int add_file(const char *path, const struct stat *st,
+                const int typeflag, struct FTW *pathinfo) {
+//int add_file(const char* fdir, char* fname) {
 
 	int ret = 0;
 	int size;
 	u8_t *buff = 0;
 	FILE *fp = 0;
-	char *path = 0;
 
-	path = malloc(1024);
-	if (!path) {
-		printf("Unable to malloc %d bytes.\n", 1024);
+	if (!S_ISREG(st->st_mode)) {
+		S_DBG("Skipping non-file '%s'.\n", path);
 	} else {
-		struct stat st;
-		sprintf(path, "%s/%s", fdir, fname);
-		if (stat(path, &st) || !S_ISREG(st.st_mode)) {
-			S_DBG("Skipping non-file '%s'.\n", fname);
+		fp = fopen(path, "rb");
+		if (!fp) {
+			S_DBG("Unable to open '%s'.\n", path);
 		} else {
-			fp = fopen(path, "rb");
-			if (!fp) {
-				S_DBG("Unable to open '%s'.\n", fname);
+			size = (int)st->st_size;
+			buff = malloc(size);
+			if (!buff) {
+				printf("Unable to malloc %d bytes.\n", size);
 			} else {
-				size = (int)st.st_size;
-				buff = malloc(size);
-				if (!buff) {
-					printf("Unable to malloc %d bytes.\n", size);
+				if (fread(buff, 1, size, fp) != size) {
+					printf("Unable to read file '%s'.\n", path);
 				} else {
-					if (fread(buff, 1, size, fp) != size) {
-						printf("Unable to read file '%s'.\n", fname);
-					} else {
-						S_DBG("%d bytes read from '%s'.\n", size, fname);
-						if (write_to_spiffs(fname, buff, size)) {
-							printf("Added '%s' to spiffs (%d bytes).\n", fname, size);
-							ret = 1;
-						}
+					S_DBG("%d bytes read from '%s'.\n", size, path);
+					if (write_to_spiffs(path, buff, size)) {
+						printf("Added '%s' to spiffs (%d bytes).\n", path, size);
+						ret = 0;
 					}
 				}
 			}
@@ -212,7 +211,6 @@ int add_file(const char* fdir, char* fname) {
 	}
 
 	if (buff) free(buff);
-	if (path) free(path);
 	if (fp) fclose(fp);
 
 	return ret;
@@ -286,19 +284,15 @@ int main(int argc, char **argv) {
 			printf("Failed to mount spiffs, error %d.\n", res);
 			ret = EXIT_FAILURE;
 		} else {
-			DIR *dir;
-			struct dirent *ent;
 			if (!strcmp(folder, "dummy.dir")) {
 				printf("Creating empty filesystem.\n");
-			} else if ((dir = opendir(folder)) != NULL) {
-				printf("Adding files in directory '%s'.\n", folder);
-				while ((ent = readdir(dir)) != NULL) {
-					add_file(folder, ent->d_name);
-				}
-				closedir(dir);
 			} else {
-				printf("Unable to open directory '%s'.\n", folder);
-				ret = EXIT_FAILURE;
+				printf("Adding files in directory '%s'.\n", folder);
+				int result = nftw(folder, add_file, USE_FDS, FTW_PHYS);
+			    if (result > 0) {
+			    	printf("Unable to open directory '%s' result code '%d'.\n", folder, result);
+					ret = EXIT_FAILURE;
+			    }
 			}
 			my_spiffs_unmount();
 		}
