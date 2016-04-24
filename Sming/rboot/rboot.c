@@ -216,8 +216,10 @@ uint32 NOINLINE find_image(void) {
 	rboot_config *romconf = (rboot_config*)buffer;
 	rom_header *header = (rom_header*)buffer;
 
+#if defined BOOT_DELAY_MICROS && BOOT_DELAY_MICROS > 0
 	// delay to slow boot (help see messages when debugging)
-	ets_delay_us(2000000);
+	ets_delay_us(BOOT_DELAY_MICROS);
+#endif
 
 	ets_printf("\r\nrBoot v1.3.0 - richardaburton@gmail.com\r\n");
 

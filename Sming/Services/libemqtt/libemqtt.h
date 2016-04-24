@@ -34,14 +34,7 @@ extern "C" {
 
 #include <stdint.h>
 
-#ifndef MQTT_CONF_USERNAME_LENGTH
-	#define MQTT_CONF_USERNAME_LENGTH 13 // Recommended by MQTT Specification (12 + '\0')
-#endif
-
-#ifndef MQTT_CONF_PASSWORD_LENGTH
-	#define MQTT_CONF_PASSWORD_LENGTH 13 // Recommended by MQTT Specification (12 + '\0')
-#endif
-
+#define MQTT_DEFAULT_CLIENTID "emqtt"
 
 #define MQTT_MSG_CONNECT       1<<4
 #define MQTT_MSG_CONNACK       2<<4
@@ -160,10 +153,10 @@ typedef struct {
 	void* socket_info;
 	int (*send)(void* socket_info, const void* buf, unsigned int count);
 	// Connection info
-	char clientid[50];
+	char* clientid;
 	// Auth fields
-	char username[MQTT_CONF_USERNAME_LENGTH];
-	char password[MQTT_CONF_PASSWORD_LENGTH];
+	char* username;
+	char* password;
 	// Will topic
 	uint8_t will_retain;
 	uint8_t will_qos;
@@ -178,11 +171,18 @@ typedef struct {
 
 /** Initialize the information to connect to the broker.
  * @param broker Data structure that contains the connection information with the broker.
- * @param clientid A string that identifies the client id.
  *
  * @note Only has effect before to call mqtt_connect
  */
-void mqtt_init(mqtt_broker_handle_t* broker, const char* clientid);
+void mqtt_init(mqtt_broker_handle_t* broker);
+
+/** Sets the clientid
+ * @param broker Data structure that contains the connection information with the broker.
+ * @param clientid A string that identifies the client id.
+ *
+ * @note Only has effect before call to mqtt_connect
+ */
+int mqtt_set_clientid(mqtt_broker_handle_t* broker, const char* clientid);
 
 /** Enable the authentication to connect to the broker.
  * @param broker Data structure that contains the connection information with the broker.
@@ -191,7 +191,7 @@ void mqtt_init(mqtt_broker_handle_t* broker, const char* clientid);
  *
  * @note Only has effect before to call mqtt_connect
  */
-void mqtt_init_auth(mqtt_broker_handle_t* broker, const char* username, const char* password);
+int mqtt_init_auth(mqtt_broker_handle_t* broker, const char* username, const char* password);
 
 /*
 * @param broker Data structure that contains the connection information with the broker.

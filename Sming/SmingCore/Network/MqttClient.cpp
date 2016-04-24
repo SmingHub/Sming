@@ -18,7 +18,7 @@ MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscription
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
-	mqtt_init(&broker, NULL);
+	mqtt_init(&broker);
 }
 
 MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback /* = NULL*/)
@@ -30,7 +30,7 @@ MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptio
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
-	mqtt_init(&broker, NULL);
+	mqtt_init(&broker);
 }
 
 MqttClient::~MqttClient()
@@ -41,6 +41,14 @@ MqttClient::~MqttClient()
 void MqttClient::setKeepAlive(int seconds)
 {
 	keepAlive = seconds;
+}
+
+void MqttClient::setPingRepeatTime(int seconds)
+{
+	if (PingRepeatTime > keepAlive)
+	   PingRepeatTime = keepAlive;
+	else   
+	   PingRepeatTime = seconds;
 }
 
 bool MqttClient::setWill(String topic, String message, int QoS, bool retained /* = false*/)
@@ -63,7 +71,7 @@ bool MqttClient::connect(String clientName, String username, String password)
 
 	debugf("MQTT start connection");
 	if (clientName.length() > 0)
-		strncpy(broker.clientid, clientName.c_str(), sizeof(broker.clientid));
+		 mqtt_set_clientid(&broker, clientName.c_str());
 
 	if (username.length() > 0)
 		mqtt_init_auth(&broker, username.c_str(), password.c_str());
@@ -271,8 +279,9 @@ err_t MqttClient::onReceive(pbuf *buf)
 
 void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	// Send PINGREQ every keepAlive time, if there is no outgoing traffic
-	if (lastMessage && (millis() - lastMessage >= keepAlive*1000))
+	// Send PINGREQ every PingRepeatTime time, if there is no outgoing traffic
+	// PingRepeatTime should be <= keepAlive
+	if (lastMessage && (millis() - lastMessage >= PingRepeatTime*1000))
 	{
 		mqtt_ping(&broker);
 	}

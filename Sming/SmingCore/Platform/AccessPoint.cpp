@@ -142,6 +142,30 @@ String AccessPointClass::getMAC()
 	return mac;
 }
 
+String AccessPointClass::getSSID()
+{
+	softap_config config = {0};
+	if (!wifi_softap_get_config(&config))
+	{
+		debugf("Can't read station configuration!");
+		return "";
+	}
+	debugf("SSID: %s", (char*)config.ssid);
+	return String((char*)config.ssid);
+}
+
+String AccessPointClass::getPassword()
+{
+	softap_config config = {0};
+	if (!wifi_softap_get_config(&config))
+	{
+		debugf("Can't read station configuration!");
+		return "";
+	}
+	debugf("Pass: %s", (char*)config.password);
+	return String((char*)config.password);
+}
+
 void AccessPointClass::onSystemReady()
 {
 	if (runConfig != NULL)

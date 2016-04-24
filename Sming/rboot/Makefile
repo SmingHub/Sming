@@ -16,6 +16,12 @@ CC := $(addprefix $(XTENSA_BINDIR)/,xtensa-lx106-elf-gcc)
 LD := $(addprefix $(XTENSA_BINDIR)/,xtensa-lx106-elf-gcc)
 endif
 
+ifeq ($(V),1)
+Q :=
+else
+Q := @
+endif
+
 CFLAGS    = -Os -O3 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
 LDFLAGS   = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
 LD_SCRIPT = eagle.app.v6.ld
@@ -24,6 +30,9 @@ E2_OPTS = -quiet -bin -boot0
 
 ifeq ($(RBOOT_BIG_FLASH),1)
 	CFLAGS += -DBOOT_BIG_FLASH
+endif
+ifneq ($(RBOOT_DELAY_MICROS),)
+	CFLAGS += -DBOOT_DELAY_MICROS=$(RBOOT_DELAY_MICROS)
 endif
 ifeq ($(RBOOT_INTEGRATION),1)
 	CFLAGS += -DRBOOT_INTEGRATION
@@ -73,33 +82,33 @@ $(RBOOT_FW_BASE):
 
 $(RBOOT_BUILD_BASE)/rboot-stage2a.o: rboot-stage2a.c rboot-private.h rboot.h
 	@echo "CC $<"
-	@$(CC) $(CFLAGS) $(RBOOT_EXTRA_INCDIR) -c $< -o $@
-	
+	$(Q) $(CC) $(CFLAGS) $(RBOOT_EXTRA_INCDIR) -c $< -o $@
+
 $(RBOOT_BUILD_BASE)/rboot-stage2a.elf: $(RBOOT_BUILD_BASE)/rboot-stage2a.o
 	@echo "LD $@"
-	@$(LD) -Trboot-stage2a.ld $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group -o $@
+	$(Q) $(LD) -Trboot-stage2a.ld $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group -o $@
 
 $(RBOOT_BUILD_BASE)/rboot-hex2a.h: $(RBOOT_BUILD_BASE)/rboot-stage2a.elf
 	@echo "E2 $@"
-	@$(ESPTOOL2) -quiet -header $< $@ .text
+	$(Q) $(ESPTOOL2) -quiet -header $< $@ .text
 
 $(RBOOT_BUILD_BASE)/rboot.o: rboot.c rboot-private.h rboot.h $(RBOOT_BUILD_BASE)/rboot-hex2a.h
 	@echo "CC $<"
-	@$(CC) $(CFLAGS) -I$(RBOOT_BUILD_BASE) $(RBOOT_EXTRA_INCDIR) -c $< -o $@
+	$(Q) $(CC) $(CFLAGS) -I$(RBOOT_BUILD_BASE) $(RBOOT_EXTRA_INCDIR) -c $< -o $@
 
 $(RBOOT_BUILD_BASE)/%.o: %.c %.h
 	@echo "CC $<"
-	@$(CC) $(CFLAGS) $(RBOOT_EXTRA_INCDIR) -c $< -o $@
+	$(Q) $(CC) $(CFLAGS) $(RBOOT_EXTRA_INCDIR) -c $< -o $@
 
 $(RBOOT_BUILD_BASE)/%.elf: $(RBOOT_BUILD_BASE)/%.o
 	@echo "LD $@"
-	@$(LD) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group -o $@
+	$(Q) $(LD) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group -o $@
 
 $(RBOOT_FW_BASE)/%.bin: $(RBOOT_BUILD_BASE)/%.elf
 	@echo "E2 $@"
-	@$(ESPTOOL2) $(E2_OPTS) $< $@ .text .rodata
+	$(Q) $(ESPTOOL2) $(E2_OPTS) $< $@ .text .rodata
 
 clean:
 	@echo "RM $(RBOOT_BUILD_BASE) $(RBOOT_FW_BASE)"
-	@rm -rf $(RBOOT_BUILD_BASE)
-	@rm -rf $(RBOOT_FW_BASE)
+	$(Q) rm -rf $(RBOOT_BUILD_BASE)
+	$(Q) rm -rf $(RBOOT_FW_BASE)

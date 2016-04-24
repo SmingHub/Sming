@@ -54,11 +54,6 @@ rboot_config ICACHE_FLASH_ATTR rboot_get_config(void) {
 // updates checksum automatically (if enabled)
 bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf) {
 	uint8 *buffer;
-#ifdef BOOT_CONFIG_CHKSUM
-	uint8 chksum;
-	uint8 *ptr;
-#endif
-	
 	buffer = (uint8*)os_malloc(SECTOR_SIZE);
 	if (!buffer) {
 		//os_printf("No ram!\r\n");
@@ -100,9 +95,9 @@ rboot_write_status ICACHE_FLASH_ATTR rboot_write_init(uint32 start_addr) {
 	rboot_write_status status = {0};
 	status.start_addr = start_addr;
 	status.start_sector = start_addr / SECTOR_SIZE;
+	status.last_sector_erased = status.start_sector - 1;
 	//status.max_sector_count = 200;
 	//os_printf("init addr: 0x%08x\r\n", start_addr);
-	
 	return status;
 }
 
@@ -112,6 +107,7 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8 *data
 	
 	bool ret = false;
 	uint8 *buffer;
+	int32 lastsect;
 	
 	if (data == NULL || len == 0) {
 		return true;
@@ -139,16 +135,11 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8 *data
 	// check data will fit
 	//if (status->start_addr + len < (status->start_sector + status->max_sector_count) * SECTOR_SIZE) {
 
-		if (len > SECTOR_SIZE) {
-			// to support larger writes we would need to erase current
-			// (if not already done), next and possibly later sectors too
-		} else {
-			// check if the sector the write finishes in has been erased yet,
-			// this is fine as long as data len < sector size
-			if (status->last_sector_erased != (status->start_addr + len) / SECTOR_SIZE) {
-				status->last_sector_erased = (status->start_addr + len) / SECTOR_SIZE;
-				spi_flash_erase_sector(status->last_sector_erased);
-			}
+		// erase any additional sectors needed by this chunk
+		lastsect = ((status->start_addr + len) - 1) / SECTOR_SIZE;
+		while (lastsect > status->last_sector_erased) {
+			status->last_sector_erased++;
+			spi_flash_erase_sector(status->last_sector_erased);
 		}
 
 		// write current chunk
@@ -168,11 +159,10 @@ bool ICACHE_FLASH_ATTR rboot_get_rtc_data(rboot_rtc_data *rtc) {
 	if (system_rtc_mem_read(RBOOT_RTC_ADDR, rtc, sizeof(rboot_rtc_data))) {
 		return (rtc->chksum == calc_chksum((uint8*)rtc, (uint8*)&rtc->chksum));
 	}
+	return false;
 }
 
 bool ICACHE_FLASH_ATTR rboot_set_rtc_data(rboot_rtc_data *rtc) {
-	uint8 chksum;
-	uint8 *ptr;
 	// calculate checksum
 	rtc->chksum = calc_chksum((uint8*)rtc, (uint8*)&rtc->chksum);
 	return system_rtc_mem_write(RBOOT_RTC_ADDR, rtc, sizeof(rboot_rtc_data));
