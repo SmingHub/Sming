@@ -98,7 +98,7 @@ err_t TcpConnection::onPoll()
 		debugf("TCP connection closed by timeout: %d (from %d)", sleep, timeOut);
 
 		close();
-		return ERR_OK;
+		return ERR_TIMEOUT;
 	}
 
 	if (tcp != NULL && getAvailableWriteSize() > 0) //(tcp->state >= SYN_SENT && tcp->state <= ESTABLISHED))
