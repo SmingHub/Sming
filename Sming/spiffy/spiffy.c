@@ -177,7 +177,7 @@ int write_to_spiffs(const char *fname, u8_t *data, int size) {
 	return ret;
 }
 int add_file(const char *path, const struct stat *st,
-                const int typeflag, struct FTW *pathinfo) {
+                const int typeflag) {
 //int add_file(const char* fdir, char* fname) {
 
 	int ret = 0;
@@ -288,7 +288,7 @@ int main(int argc, char **argv) {
 				printf("Creating empty filesystem.\n");
 			} else {
 				printf("Adding files in directory '%s'.\n", folder);
-				int result = nftw(folder, add_file, USE_FDS, FTW_PHYS);
+				int result = ftw(folder, add_file, 10);
 			    if (result > 0) {
 			    	printf("Unable to open directory '%s' result code '%d'.\n", folder, result);
 					ret = EXIT_FAILURE;
