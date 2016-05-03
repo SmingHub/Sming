@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Temperature_DS1820</name>
+	<name>PortExpander_MCP23S17</name>
 	<comment></comment>
 	<projects>
 		<project>SmingFramework</project>
