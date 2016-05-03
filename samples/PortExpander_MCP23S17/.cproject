@@ -18,35 +18,32 @@
 					<folderInfo id="0.1310406178." name="/" resourcePath="">
 						<toolChain id="org.eclipse.cdt.build.core.prefbase.toolchain.1358293385" name="No ToolChain" resourceTypeBasedDiscovery="false" superClass="org.eclipse.cdt.build.core.prefbase.toolchain">
 							<targetPlatform id="org.eclipse.cdt.build.core.prefbase.toolchain.1358293385.656303665" name=""/>
-							<builder command="gmake" id="org.eclipse.cdt.build.core.settings.default.builder.325771436" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
+							<builder id="org.eclipse.cdt.build.core.settings.default.builder.325771436" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.314518391" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.895120055" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.1476416844" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/Sming/Sming/Wiring"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/esp-open-sdk/sdk/include"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/include"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/Sming/Sming/"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/dsRTC_tester/include"/>
+									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/Wiring&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/sdk/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/xtensa-lx106-elf/xtensa-lx106-elf/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.998765503" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.1059824023" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.1370780424" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/Sming/Sming/Wiring"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/esp-open-sdk/sdk/include"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/include"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/Sming/Sming"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/dsRTC_tester/include"/>
+									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/Wiring&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/sdk/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/xtensa-lx106-elf/xtensa-lx106-elf/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.33743458" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.1313334247" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.416244930" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/Sming/Sming/Wiring"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/esp-open-sdk/sdk/include"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/include"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/Sming/Sming/"/>
-									<listOptionValue builtIn="false" value="/usr/home/shurik/src/esp8266/dsRTC_tester/include"/>
+									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}/Wiring&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/sdk/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ESP_HOME}/xtensa-lx106-elf/xtensa-lx106-elf/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SMING_HOME}&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1553546616" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
