@@ -53,6 +53,8 @@ SPI_SIZE        ?= 4M
 ## these next options only needed when using two rom mode
 #RBOOT_ROM_1     ?= rom1
 #RBOOT_LD_1      ?= rom1.ld
+## needed for temporary rom switching
+#RBOOT_RTC_ENABLED ?= 1
 ## size of the spiffs to create
 SPIFF_SIZE      ?= 65536
 ## option to completely disable spiffs
