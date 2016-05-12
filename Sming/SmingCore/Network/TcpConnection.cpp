@@ -412,11 +412,7 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 				}
 			}
 
-			con->ssl = ssl_client_new(con->sslContext, clientfd, NULL, 0);
-			if(con->hostname.length() > 0 ) { // Needed for the SNI support
-				ssl_set_hostname(con->ssl, con->hostname.c_str());
-			}
-
+			con->ssl = ssl_client_new(con->sslContext, clientfd, NULL, 0, con->hostname.c_str());
 			if(ssl_handshake_status(con->ssl)!=SSL_OK) {
 				debugf("SSL: handshake is in progress...");
 				return SSL_OK;
