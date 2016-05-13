@@ -264,6 +264,7 @@ RBOOT_FW_BASE := $(abspath $(FW_BASE))
 export RBOOT_BIG_FLASH
 export RBOOT_BUILD_BASE
 export RBOOT_FW_BASE
+export RBOOT_RTC_ENABLED
 export SPI_SIZE
 export SPI_MODE
 export SPI_SPEED
