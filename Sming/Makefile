@@ -108,7 +108,21 @@ EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore rboot rboot/
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa main
+
+ENABLE_CUSTOM_HEAP ?= 1
+ifeq ($(ENABLE_CUSTOM_HEAP),1)
+	MODULES		 += custom_heap custom_heap/umm_malloc
+	EXTRA_INCDIR += custom_heap
+	
+	LIBMAIN = mainmm
+	LIBMAIN_SRC = $(addprefix $(SDK_LIBDIR)/,libmain.a)
+	LIBMAIN_DST = $(USER_LIBDIR)/lib$(LIBMAIN).a
+else
+	LIBMAIN = main
+	LIBMAIN_DST = $()
+endif
+
+LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN)
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL)
@@ -209,8 +223,13 @@ endef
 
 .PHONY: all checkdirs clean spiffy test samples recurse-samples $(SAMPLES_DIRS)
 
-all: checkdirs $(APP_AR)
+all: checkdirs $(LIBMAIN_DST) $(APP_AR)
 
+$(LIBMAIN_DST): $(LIBMAIN_SRC)
+	$(vecho) "Preparing for custom heap implementation"
+	$(Q) cp $^ $@ 
+	$(Q) $(AR) -d $@ mem_manager.o
+	
 ifeq ($(ENABLE_GDB), 1)	
 gdbstub/Makefile: 
 	$(Q) echo "No espgdbstub submodule found. Using git to fetch it..."

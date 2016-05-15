@@ -159,6 +159,10 @@ SECTIONS
   {
     _irom0_text_start = ABSOLUTE(.);
     *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text)
+/*
+	*.c.o( EXCLUDE_FILE (umm_malloc.c.o) .literal*, \
+           EXCLUDE_FILE (umm_malloc.c.o) .text*)
+*/
 	out/build/app_app.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
   *libsming.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
     _irom0_text_end = ABSOLUTE(.);
