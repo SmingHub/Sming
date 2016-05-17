@@ -1,3 +1,6 @@
 [submodule "Sming/rboot"]
 	path = Sming/rboot
 	url = https://github.com/raburton/rboot.git
+[submodule "Sming.wiki"]
+	path = Sming.wiki
+	url = https://github.com/ido4pro/Sming.wiki.git
