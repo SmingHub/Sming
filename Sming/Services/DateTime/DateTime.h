@@ -63,6 +63,7 @@ public:
 	String toShortDateString();
 	String toShortTimeString(bool includeSeconds = false);
 	String toFullDateTimeString();
+	String toISO8601();
 
 	void addMilliseconds(long add);
 

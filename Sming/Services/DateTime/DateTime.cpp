@@ -141,6 +141,12 @@ String DateTime::toFullDateTimeString()
 	return toShortDateString() + " " + toShortTimeString(true);
 }
 
+String DateTime::toISO8601() {
+	char buf[21];
+	sprintf(buf, "%02d-%02d-%02dT%02d:%02d:%02dZ",Year,Month+1,Day,Hour,Minute,Second);
+	return String(buf);
+}
+
 void DateTime::addMilliseconds(long add)
 {
 	int ms = Milliseconds;
