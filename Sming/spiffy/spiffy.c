@@ -26,6 +26,10 @@ static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE+32)*4];
 #define USE_FDS 15
 #endif
 
+#ifndef MAX_FILE_PATH_LENGTH
+#define MAX_FILE_PATH_LENGTH 31
+#endif
+
 static FILE *rom = 0;
 
 void hexdump_mem(u8_t *b, u32_t len) {
@@ -158,15 +162,19 @@ int write_to_spiffs(const char *fname, u8_t *data, int size) {
 	spiffs_file fd = -1;
 
 	char *fnameOnSpiffy = strchr(fname, '/')+1;
-	fd = SPIFFS_open(&fs, fnameOnSpiffy, SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
-	if (fd < 0) {
-		printf("Unable to open spiffs file '%s', error %d.\n", fname, fd);
+	if(strlen(fnameOnSpiffy)>MAX_FILE_PATH_LENGTH) {
+		printf("File name '%s' is too long. Limit is %d. Skipping.\n", fnameOnSpiffy, MAX_FILE_PATH_LENGTH);
 	} else {
-		S_DBG("Opened spiffs file '%s'.\n", fname);
-		if (SPIFFS_write(&fs, fd, (u8_t *)data, size) < SPIFFS_OK) {
-			printf("Unable to write to spiffs file '%s', errno %d.\n", fname, SPIFFS_errno(&fs));
+		fd = SPIFFS_open(&fs, fnameOnSpiffy, SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
+		if (fd < 0) {
+			printf("Unable to open spiffs file '%s', error %d.\n", fname, fd);
 		} else {
-			ret = 1;
+			S_DBG("Opened spiffs file '%s'.\n", fname);
+			if (SPIFFS_write(&fs, fd, (u8_t *)data, size) < SPIFFS_OK) {
+				printf("Unable to write to spiffs file '%s', errno %d.\n", fname, SPIFFS_errno(&fs));
+			} else {
+				ret = 1;
+			}
 		}
 	}
 
@@ -176,9 +184,7 @@ int write_to_spiffs(const char *fname, u8_t *data, int size) {
 	}
 	return ret;
 }
-int add_file(const char *path, const struct stat *st,
-                const int typeflag) {
-//int add_file(const char* fdir, char* fname) {
+int add_file(const char *path, const struct stat *st, const int typeflag) {
 
 	int ret = 0;
 	int size;
