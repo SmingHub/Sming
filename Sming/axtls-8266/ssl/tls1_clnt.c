@@ -66,8 +66,8 @@ EXP_FUNC SSL * STDCALL ssl_client_new(SSL_CTX *ssl_ctx, int client_fd, const
         SET_SSL_FLAG(SSL_SESSION_RESUME);   /* just flag for later */
     }
 
-    if(host_name != NULL && strlen(host_name) > 0 || strlen(host_name) < 255 ) {
-    	ssl->host_name = (char *)strdup(host_name);
+    if(host_name != NULL && strlen(host_name) > 0) {
+        ssl->host_name = (char *)strdup(host_name);
     }
 
     SET_SSL_FLAG(SSL_IS_CLIENT);
@@ -123,8 +123,10 @@ int do_clnt_handshake(SSL *ssl, int handshake_type, uint8_t *buf, int hs_len)
 
         case HS_FINISHED:
             ret = process_finished(ssl, buf, hs_len);
-            ssl->can_increase_data_size = true;
             disposable_free(ssl);
+            if (ssl->ssl_ctx->options & SSL_READ_BLOCKING) {
+                ssl->flag |= SSL_READ_BLOCKING;
+            }
             /* note: client renegotiation is not allowed after this */
             break;
 
@@ -192,7 +194,9 @@ static int send_client_hello(SSL *ssl)
     *tm_ptr++ = (uint8_t)(((long)tm & 0x00ff0000) >> 16);
     *tm_ptr++ = (uint8_t)(((long)tm & 0x0000ff00) >> 8);
     *tm_ptr++ = (uint8_t)(((long)tm & 0x000000ff));
-    get_random(SSL_RANDOM_SIZE-4, &buf[10]);
+    if (get_random(SSL_RANDOM_SIZE-4, &buf[10]) < 0)
+        return SSL_NOT_OK;
+
     memcpy(ssl->dc->client_random, &buf[6], SSL_RANDOM_SIZE);
     offset = 6 + SSL_RANDOM_SIZE;
 
@@ -338,7 +342,9 @@ static int send_client_key_xchg(SSL *ssl)
 
     premaster_secret[0] = 0x03; /* encode the version number */
     premaster_secret[1] = SSL_PROTOCOL_MINOR_VERSION; /* must be TLS 1.1 */
-    get_random(SSL_SECRET_SIZE-2, &premaster_secret[2]);
+    if (get_random(SSL_SECRET_SIZE-2, &premaster_secret[2]) < 0)
+        return SSL_NOT_OK;
+
     DISPLAY_RSA(ssl, ssl->x509_ctx->rsa_ctx);
 
     /* rsa_ctx->bi_ctx is not thread-safe */
@@ -384,6 +390,9 @@ static int send_cert_verify(SSL *ssl)
     uint8_t dgst[MD5_SIZE+SHA1_SIZE];
     RSA_CTX *rsa_ctx = ssl->ssl_ctx->rsa_ctx;
     int n = 0, ret;
+
+    if (rsa_ctx == NULL)
+        return SSL_OK;
 
     DISPLAY_RSA(ssl, rsa_ctx);
 
