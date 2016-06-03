@@ -31,7 +31,7 @@ res = tcp_connect(tcp, &addr, port, staticOnConnected);
 
 ```
 
-Now we should add in our `staticOnConnected` funciton code to create new ssl context and ssl object. 
+Now we should add in our `staticOnConnected` function code to create new ssl context and ssl object. 
 In the example below the `sslObj` and `sslContext` are defined as global
 
 ```C
@@ -76,9 +76,9 @@ err_t staticOnConnected(void *arg, struct tcp_pcb *tcp, err_t err)
 Once we are connected we can send and receive information. For the receiving part we can do the following
 
 ```C
-err_t staticOnReceive(void *arg, struct tcp_pcb *tcp, struct pbuf *p, err_t err)
+err_t staticOnReceive(void *arg, struct tcp_pcb *tcp, struct pbuf *pin, err_t err)
 {
-	uint8_t *read_buf = NULL;
+	struct pbuf* pout;
 	int read_bytes = 0;
 
 	printf("Err: %d\n", err);
@@ -88,17 +88,26 @@ err_t staticOnReceive(void *arg, struct tcp_pcb *tcp, struct pbuf *p, err_t err)
 		return -1;
 	}
 
-	read_bytes = axl_ssl_read(sslObj, &read_buf, tcp, p);
+	read_bytes = axl_ssl_read(sslObj, tcp, p, &pout);
 	if(read_bytes > 0) {
-		printf("Got data: %s", read_buf);
-		// @TODO: Do something useful with the read_buf 
+	    // free the SSL pbuf and put the decrypted data in the brand new pout pbuf
+		if(p != NULL) {
+			pbuf_free(p);
+		}
+		
+		printf("Got decrypted data length: %d", read_bytes);
+		
+		// put the decrypted data in a brand new pbuf
+		p = pout;
+	
+		// @TODO: Continue to work with the p buf containing the decrypted data 
 	}
 
 	return ERR_OK;
 }
 ```
 
-In the receiving part you can also add debug code to display more information about the SSL handshake, once it was successul.
+In the receiving part you can also add debug code to display more information about the SSL handshake, once it was successful.
 
 
 ```C
@@ -108,10 +117,9 @@ err_t staticOnReceive(void *arg, struct tcp_pcb *tcp, struct pbuf *p, err_t err)
 	const char *common_name = NULL;
 	
 	// ..
-	read_bytes = axl_ssl_read(sslObj, &read_buf, tcp, p);
+	read_bytes = axl_ssl_read(sslObj, tcp, p, &pout);
 	if(read_bytes > 0) {
-		printf("Got data: %s", read_buf);
-		// @TODO: Do something useful with the read_buf 
+	    // ...
 	}
 	
 	if(!show_info && ssl_handshake_status(sslObj) == SSL_OK) {
@@ -120,7 +128,7 @@ err_t staticOnReceive(void *arg, struct tcp_pcb *tcp, struct pbuf *p, err_t err)
 			printf("Common Name:\t\t\t%s\n", common_name);
 		}
 
-		// These two funcitons below can be found in the axtls examples
+		// These two functions below can be found in the axtls examples
 		display_session_id(sslObj); 
 		display_cipher(sslObj);
 		show_info = 1;
