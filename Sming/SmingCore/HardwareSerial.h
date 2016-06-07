@@ -93,6 +93,8 @@ public:
 	 */
 	size_t write(uint8_t oneChar);
 
+	using Stream::write;
+
 	//void printf(const char *fmt, ...);
 	/** @brief  Configure serial port for system debug output
 	 *  @param  enabled True to enable this port for system debug output
