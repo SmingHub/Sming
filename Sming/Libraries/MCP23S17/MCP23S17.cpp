@@ -107,15 +107,15 @@ void MCP::wordWrite(uint8_t reg, unsigned int word)
 
 void MCP::pinMode(uint8_t pin, uint8_t mode)
 {  // Accept the pin # and I/O mode
-	if (pin < 1 | pin > 16)
-		return; // If the pin value is not valid (1-16) return, do nothing and return
+	if (pin < 0 | pin > 15)
+		return; // If the pin value is not valid (0-15) return, do nothing and return
 	if (mode == INPUT)
 	{      // Determine the mode before changing the bit state in the mode cache
-		_modeCache |= 1 << (pin - 1); // Since input = "HIGH", OR in a 1 in the appropriate place
+		_modeCache |= 1 << pin; // Since input = "HIGH", OR in a 1 in the appropriate place
 	}
 	else
 	{
-		_modeCache &= ~(1 << (pin - 1)); // If not, the mode must be output, so and in a 0 in the appropriate place
+		_modeCache &= ~(1 << pin); // If not, the mode must be output, so and in a 0 in the appropriate place
 	}
 	wordWrite(IODIRA, _modeCache); // Call the generic word writer with start register and the mode cache
 }
@@ -132,15 +132,15 @@ void MCP::pinMode(unsigned int mode)
 
 void MCP::pullupMode(uint8_t pin, uint8_t mode)
 {
-	if (pin < 1 | pin > 16)
+	if (pin < 0 | pin > 15)
 		return;
 	if (mode == ON)
 	{
-		_pullupCache |= 1 << (pin - 1);
+		_pullupCache |= 1 << pin;
 	}
 	else
 	{
-		_pullupCache &= ~(1 << (pin - 1));
+		_pullupCache &= ~(1 << pin);
 	}
 	wordWrite(GPPUA, _pullupCache);
 }
@@ -155,15 +155,15 @@ void MCP::pullupMode(unsigned int mode)
 
 void MCP::inputInvert(uint8_t pin, uint8_t mode)
 {
-	if (pin < 1 | pin > 16)
+	if (pin < 0 | pin > 15)
 		return;
 	if (mode == ON)
 	{
-		_invertCache |= 1 << (pin - 1);
+		_invertCache |= 1 << pin;
 	}
 	else
 	{
-		_invertCache &= ~(1 << (pin - 1));
+		_invertCache &= ~(1 << pin);
 	}
 	wordWrite(IPOLA, _invertCache);
 }
@@ -178,17 +178,15 @@ void MCP::inputInvert(unsigned int mode)
 
 void MCP::digitalWrite(uint8_t pin, uint8_t value)
 {
-	if (pin < 1 | pin > 16)
-		return;
-	if (pin < 1 | pin > 16)
+	if (pin < 0 | pin > 15)
 		return;
 	if (value)
 	{
-		_outputCache |= 1 << (pin - 1);
+		_outputCache |= 1 << pin;
 	}
 	else
 	{
-		_outputCache &= ~(1 << (pin - 1));
+		_outputCache &= ~(1 << pin);
 	}
 	wordWrite(GPIOA, _outputCache);
 }
@@ -242,7 +240,7 @@ uint8_t MCP::byteRead(uint8_t reg)
 
 uint8_t MCP::digitalRead(uint8_t pin)
 {              // Return a single bit value, supply the necessary bit (1-16)
-	if (pin < 1 | pin > 16)
+	if (pin < 0 | pin > 15)
 		return 0x0; // If the pin value is not valid (1-16) return, do nothing and return
-	return digitalRead() & (1 << (pin - 1)) ? HIGH : LOW; // Call the word reading function, extract HIGH/LOW information from the requested pin
+	return digitalRead() & (1 << pin) ? HIGH : LOW; // Call the word reading function, extract HIGH/LOW information from the requested pin
 }
