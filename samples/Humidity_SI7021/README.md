@@ -1,12 +1,12 @@
 # Sming 
-## BMP180 Example
+## SI7021 Example
 
-Example code for I2C BMP180 sensor board
+Example code for I2C SI7021 sensor board
 
 This code uses the following GPIO:
 
-* GPIO0 SCL
-* GPIO2 SDA
+* #define I2C_SCL 5 // SCL
+* #define I2C_SDA 4 // SCA
 
 # Build instructions
 
