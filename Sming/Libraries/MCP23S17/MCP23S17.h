@@ -35,6 +35,10 @@
 #ifndef MCP23S17_h
 #define MCP23S17_h
 
+//Define if you need use SLOW GPIO for CS if CS PIN is ESP3266 PIN 16
+//SLOW GPIO FOR CS!!! TRY TO AVOID IT!
+//#define CS_PIN_16
+
 // REGISTERS ARE DEFINED HERE SO THAT THEY MAY BE USED IN THE MAIN PROGRAM
 
 namespace MCP23S17Registers {
@@ -108,6 +112,7 @@ public:
 private:
 	uint8_t _address; // Address of the MCP23S17 in use
 	uint8_t _cs; // CS pin number for MCP23S17
+	uint32_t _csBitmask; //CS bitmask for FAST GPIO
 	uint8_t _rcmd;
 	uint8_t _wcmd;
 	unsigned int _modeCache; // Caches the mode (input/output) configuration of I/O pins

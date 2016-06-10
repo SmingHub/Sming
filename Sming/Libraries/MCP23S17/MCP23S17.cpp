@@ -42,6 +42,7 @@ using namespace MCP23S17Constants;
 MCP::MCP(uint8_t address, uint8_t cs)
 {
 	_cs = cs;
+	_csBitmask = (1 << _cs);
 	_address = address;
 	_rcmd = (OPCODER | (_address << 1)); //Read command for chip address
 	_wcmd = (OPCODEW | (_address << 1)); //Write command for chip addres
@@ -54,8 +55,11 @@ MCP::MCP(uint8_t address, uint8_t cs)
 void MCP::begin()
 {
 	::pinMode(_cs, OUTPUT);
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, HIGH);
-
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, _csBitmask);
+#endif
 	SPI.begin();                   // Start up the SPI bus� crank'er up Charlie!
 	byteWrite(IOCON, ADDR_ENABLE);
 }
@@ -64,23 +68,39 @@ void MCP::begin()
 
 void MCP::byteWrite(uint8_t reg, uint8_t value)
 {      // Accept the register and byte
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, LOW);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, _csBitmask);
+#endif
 	SPI.transfer(_wcmd); // Send the MCP23S17 opcode, chip address, and write bit
 	SPI.transfer(reg);                     // Send the register we want to write
 	SPI.transfer(value);                                 // Send the byte
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, HIGH);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, _csBitmask);
+#endif
 }
 
 // GENERIC WORD WRITE - will write a word to a register pair, LSB to first register, MSB to next higher value register 
 
 void MCP::wordWrite(uint8_t reg, unsigned int word)
 {  // Accept the start register and word
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, LOW);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, _csBitmask);
+#endif
 	SPI.transfer(_wcmd); // Send the MCP23S17 opcode, chip address, and write bit
 	SPI.transfer(reg);                    // Send the register we want to write
 	SPI.transfer((uint8_t) (word)); // Send the low byte (register address pointer will auto-increment after write)
 	SPI.transfer((uint8_t) (word >> 8)); // Shift the high byte down to the low byte location and send
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, HIGH);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, _csBitmask);
+#endif
 }
 
 // MODE SETTING FUNCTIONS - BY PIN AND BY WORD
@@ -184,23 +204,39 @@ void MCP::digitalWrite(unsigned int value)
 unsigned int MCP::digitalRead(void)
 { // This function will read all 16 bits of I/O, and return them as a word in the format 0x(portB)(portA)
 	unsigned int value = 0; // Initialize a variable to hold the read values to be returned
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, LOW);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, _csBitmask);
+#endif
 	SPI.transfer(_rcmd); // Send the MCP23S17 opcode, chip address, and read bit
 	SPI.transfer(GPIOA);                    // Send the register we want to read
 	value = SPI.transfer(0x00); // Send any byte, the function will return the read value (register address pointer will auto-increment after write)
 	value |= (SPI.transfer(0x00) << 8); // Read in the "high byte" (portB) and shift it up to the high location and merge with the "low byte"
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, HIGH);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, _csBitmask);
+#endif
 	return value; // Return the constructed word, the format is 0x(portB)(portA)
 }
 
 uint8_t MCP::byteRead(uint8_t reg)
 {        // This function will read a single register, and return it
 	uint8_t value = 0; // Initialize a variable to hold the read values to be returned
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, LOW);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, _csBitmask);
+#endif
 	SPI.transfer(_rcmd); // Send the MCP23S17 opcode, chip address, and read bit
 	SPI.transfer(reg);                      // Send the register we want to read
 	value = SPI.transfer(0x00); // Send any byte, the function will return the read value
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, HIGH);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, _csBitmask);
+#endif
 	return value; // Return the constructed word, the format is 0x(register value)
 }
 
