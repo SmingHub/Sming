@@ -60,10 +60,8 @@ extern "C" {
 
 #if defined(ESP8266)
 
-#include <stdarg.h>
 extern int ets_putc(int character);
 extern void ets_printf(const char*, ...);
-extern int ets_vprintf(int (*print_function)(int), const char * format, va_list arg) __attribute__ ((format (printf, 2, 0)));
 extern int ax_port_read(int clientfd, uint8_t *buf, int bytes_needed);
 extern int ax_port_write(int clientfd, uint8_t *buf, uint16_t bytes_needed);
 
@@ -81,10 +79,6 @@ extern void gettimeofday(struct timeval* t,void* timezone);
 #undef printf
 #endif
 #define printf(...)  ets_printf(__VA_ARGS__)
-
-#ifndef vprintf
-#define vprintf(A, ...) ets_vprintf(ets_putc, A, __VA_ARGS__)
-#endif
 
 #define SOCKET_READ(A,B,C)      ax_port_read(A,B,C)
 #define SOCKET_WRITE(A,B,C)     ax_port_write(A,B,C)
