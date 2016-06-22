@@ -16,6 +16,12 @@ CC := $(addprefix $(XTENSA_BINDIR)/,xtensa-lx106-elf-gcc)
 LD := $(addprefix $(XTENSA_BINDIR)/,xtensa-lx106-elf-gcc)
 endif
 
+ifeq ($(V),1)
+Q :=
+else
+Q := @
+endif
+
 CFLAGS    = -Os -O3 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
 LDFLAGS   = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
 LD_SCRIPT = eagle.app.v6.ld
@@ -31,6 +37,26 @@ endif
 ifeq ($(RBOOT_INTEGRATION),1)
 	CFLAGS += -DRBOOT_INTEGRATION
 endif
+ifeq ($(RBOOT_RTC_ENABLED),1)
+	CFLAGS += -DBOOT_RTC_ENABLED
+endif
+ifeq ($(RBOOT_CONFIG_CHKSUM),1)
+	CFLAGS += -DBOOT_CONFIG_CHKSUM
+endif
+ifeq ($(RBOOT_GPIO_ENABLED),1)
+	CFLAGS += -DBOOT_GPIO_ENABLED
+endif
+ifneq ($(RBOOT_GPIO_NUMBER),)
+	CFLAGS += -DBOOT_GPIO_NUM=$(RBOOT_GPIO_NUMBER)
+endif
+ifeq ($(RBOOT_IROM_CHKSUM),1)
+	CFLAGS += -DBOOT_IROM_CHKSUM
+endif
+ifneq ($(RBOOT_EXTRA_INCDIR),)
+	CFLAGS += $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
+endif
+CFLAGS += $(addprefix -I,.)
+
 ifeq ($(SPI_SIZE), 256K)
 	E2_OPTS += -256
 else ifeq ($(SPI_SIZE), 512K)
@@ -53,15 +79,13 @@ else ifeq ($(SPI_MODE), dout)
 endif
 ifeq ($(SPI_SPEED), 20)
 	E2_OPTS += -20
-else ifeq ($(SPI_MODE), 26)
+else ifeq ($(SPI_SPEED), 26)
 	E2_OPTS += -26.7
-else ifeq ($(SPI_MODE), 40)
+else ifeq ($(SPI_SPEED), 40)
 	E2_OPTS += -40
-else ifeq ($(SPI_MODE), 80)
+else ifeq ($(SPI_SPEED), 80)
 	E2_OPTS += -80
 endif
-
-RBOOT_EXTRA_INCDIR := $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
 
 .SECONDARY:
 
@@ -76,33 +100,33 @@ $(RBOOT_FW_BASE):
 
 $(RBOOT_BUILD_BASE)/rboot-stage2a.o: rboot-stage2a.c rboot-private.h rboot.h
 	@echo "CC $<"
-	@$(CC) $(CFLAGS) $(RBOOT_EXTRA_INCDIR) -c $< -o $@
-	
+	$(Q) $(CC) $(CFLAGS) -c $< -o $@
+
 $(RBOOT_BUILD_BASE)/rboot-stage2a.elf: $(RBOOT_BUILD_BASE)/rboot-stage2a.o
 	@echo "LD $@"
-	@$(LD) -Trboot-stage2a.ld $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group -o $@
+	$(Q) $(LD) -Trboot-stage2a.ld $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group -o $@
 
 $(RBOOT_BUILD_BASE)/rboot-hex2a.h: $(RBOOT_BUILD_BASE)/rboot-stage2a.elf
 	@echo "E2 $@"
-	@$(ESPTOOL2) -quiet -header $< $@ .text
+	$(Q) $(ESPTOOL2) -quiet -header $< $@ .text
 
 $(RBOOT_BUILD_BASE)/rboot.o: rboot.c rboot-private.h rboot.h $(RBOOT_BUILD_BASE)/rboot-hex2a.h
 	@echo "CC $<"
-	@$(CC) $(CFLAGS) -I$(RBOOT_BUILD_BASE) $(RBOOT_EXTRA_INCDIR) -c $< -o $@
+	$(Q) $(CC) $(CFLAGS) -I$(RBOOT_BUILD_BASE) -c $< -o $@
 
 $(RBOOT_BUILD_BASE)/%.o: %.c %.h
 	@echo "CC $<"
-	@$(CC) $(CFLAGS) $(RBOOT_EXTRA_INCDIR) -c $< -o $@
+	$(Q) $(CC) $(CFLAGS) -c $< -o $@
 
 $(RBOOT_BUILD_BASE)/%.elf: $(RBOOT_BUILD_BASE)/%.o
 	@echo "LD $@"
-	@$(LD) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group -o $@
+	$(Q) $(LD) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $^ -Wl,--end-group -o $@
 
 $(RBOOT_FW_BASE)/%.bin: $(RBOOT_BUILD_BASE)/%.elf
 	@echo "E2 $@"
-	@$(ESPTOOL2) $(E2_OPTS) $< $@ .text .rodata
+	$(Q) $(ESPTOOL2) $(E2_OPTS) $< $@ .text .rodata
 
 clean:
 	@echo "RM $(RBOOT_BUILD_BASE) $(RBOOT_FW_BASE)"
-	@rm -rf $(RBOOT_BUILD_BASE)
-	@rm -rf $(RBOOT_FW_BASE)
+	$(Q) rm -rf $(RBOOT_BUILD_BASE)
+	$(Q) rm -rf $(RBOOT_FW_BASE)

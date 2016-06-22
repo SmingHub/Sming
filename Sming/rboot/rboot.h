@@ -29,6 +29,11 @@ extern "C" {
 // uncomment to enable GPIO booting
 //#define BOOT_GPIO_ENABLED
 
+// set the GPIO number used by MODE_GPIO_ROM (will
+// default to 16 if not manually set), only applicable
+// when BOOT_GPIO_ENABLED is enabled
+//#define BOOT_GPIO_NUM 16
+
 // uncomment to include .irom0.text section in the checksum
 // roms must be built with esptool2 using -iromchksum option
 //#define BOOT_IROM_CHKSUM
@@ -38,8 +43,13 @@ extern "C" {
 // value is in microseconds
 //#define BOOT_DELAY_MICROS 2000000
 
-// increase if required
-#define MAX_ROMS 4
+// max number of roms in the config (defaults to 4), higher
+// values will use more ram at run time
+//#define MAX_ROMS 4
+
+
+// you should not need to modify anything below this line
+
 
 #define CHKSUM_INIT 0xef
 
@@ -49,14 +59,24 @@ extern "C" {
 #define BOOT_CONFIG_MAGIC 0xe1
 #define BOOT_CONFIG_VERSION 0x01
 
-#define MODE_STANDARD 0x00
-#define MODE_GPIO_ROM 0x01
-#define MODE_TEMP_ROM 0x02
+#define MODE_STANDARD    0x00
+#define MODE_GPIO_ROM    0x01
+#define MODE_TEMP_ROM    0x02
+#define MODE_GPIO_ERASES_SDKCONFIG 0x04
 
 #define RBOOT_RTC_MAGIC 0x2334ae68
 #define RBOOT_RTC_READ 1
 #define RBOOT_RTC_WRITE 0
 #define RBOOT_RTC_ADDR 64
+
+// defaults for unset user options
+#ifndef BOOT_GPIO_NUM
+#define BOOT_GPIO_NUM 16
+#endif
+
+#ifndef MAX_ROMS
+#define MAX_ROMS 4
+#endif
 
 /** @brief  Structure containing rBoot configuration
  *  @note   ROM addresses must be multiples of 0x1000 (flash sector aligned).

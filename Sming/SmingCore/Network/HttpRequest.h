@@ -42,25 +42,25 @@ public:
 	String getPostParameter(String parameterName, String defaultValue = "");
 	String getHeader(String headerName, String defaultValue = "");
 	String getCookie(String cookieName, String defaultValue = "");
-	char* getBody();
+	String getBody();
 
 public:
 	HttpParseResult parseHeader(HttpServer *server, pbuf* buf);
 	HttpParseResult parsePostData(HttpServer *server, pbuf* buf);
-	bool extractParsingItemsList(pbuf* buf, int startPos, int endPos,
+	String extractParsingItemsList(String& buf, int startPos, int endPos,
 			char delimChar, char endChar,
-			HashMap<String, String> *resultItems);
-	void parseRawData(HttpServer *server, pbuf* buf);
+			HashMap<String, String>* resultItems);
 
 private:
 	String method;
 	String path;
+	String tmpbuf;
 	HashMap<String, String> *requestHeaders;
 	HashMap<String, String> *requestGetParameters;
 	HashMap<String, String> *requestPostParameters;
 	HashMap<String, String> *cookies;
 	int postDataProcessed;
-	bool combinePostFrag;
+	int headerDataProcessed;
 	char *bodyBuf;
 
 	friend class TemplateFileStream;

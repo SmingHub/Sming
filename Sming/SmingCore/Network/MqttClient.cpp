@@ -18,7 +18,7 @@ MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscription
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
-	mqtt_init(&broker, NULL);
+	mqtt_init(&broker);
 }
 
 MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback /* = NULL*/)
@@ -30,7 +30,7 @@ MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptio
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
-	mqtt_init(&broker, NULL);
+	mqtt_init(&broker);
 }
 
 MqttClient::~MqttClient()
@@ -71,7 +71,7 @@ bool MqttClient::connect(String clientName, String username, String password)
 
 	debugf("MQTT start connection");
 	if (clientName.length() > 0)
-		strncpy(broker.clientid, clientName.c_str(), sizeof(broker.clientid));
+		 mqtt_set_clientid(&broker, clientName.c_str());
 
 	if (username.length() > 0)
 		mqtt_init_auth(&broker, username.c_str(), password.c_str());

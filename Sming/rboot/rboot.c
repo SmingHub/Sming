@@ -123,6 +123,11 @@ static uint32 check_image(uint32 readpos) {
 }
 
 #ifdef BOOT_GPIO_ENABLED
+
+#if BOOT_GPIO_NUM > 16
+#error "Invalid BOOT_GPIO_NUM value (disable BOOT_GPIO_ENABLED to disable this feature)"
+#endif
+
 // sample gpio code for gpio16
 #define ETS_UNCACHED_ADDR(addr) (addr)
 #define READ_PERI_REG(addr) (*((volatile uint32 *)ETS_UNCACHED_ADDR(addr)))
@@ -143,10 +148,56 @@ static uint32 get_gpio16(void) {
 	WRITE_PERI_REG(RTC_GPIO_CONF, (READ_PERI_REG(RTC_GPIO_CONF) & (uint32)0xfffffffe) | (uint32)0x0);	//mux configuration for out enable
 	WRITE_PERI_REG(RTC_GPIO_ENABLE, READ_PERI_REG(RTC_GPIO_ENABLE) & (uint32)0xfffffffe);	//out disable
 
-	uint32 x = (READ_PERI_REG(RTC_GPIO_IN_DATA) & 1);
-
-	return x;
+	return (READ_PERI_REG(RTC_GPIO_IN_DATA) & 1);
 }
+
+// support for "normal" GPIOs (other than 16)
+#define REG_GPIO_BASE            0x60000300
+#define GPIO_IN_ADDRESS          (REG_GPIO_BASE + 0x18)
+#define GPIO_ENABLE_OUT_ADDRESS  (REG_GPIO_BASE + 0x0c)
+#define REG_IOMUX_BASE           0x60000800
+#define IOMUX_PULLUP_MASK        (1<<7)
+#define IOMUX_FUNC_MASK          0x0130
+const uint8 IOMUX_REG_OFFS[] = {0x34, 0x18, 0x38, 0x14, 0x3c, 0x40, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x04, 0x08, 0x0c, 0x10};
+const uint8 IOMUX_GPIO_FUNC[] = {0x00, 0x30, 0x00, 0x30, 0x00, 0x00, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
+
+static int get_gpio(int gpio_num) {
+	// disable output buffer if set
+	uint32 old_out = READ_PERI_REG(GPIO_ENABLE_OUT_ADDRESS);
+	uint32 new_out = old_out & ~ (1<<gpio_num);
+	WRITE_PERI_REG(GPIO_ENABLE_OUT_ADDRESS, new_out);
+
+	// set GPIO function, enable soft pullup
+	uint32 iomux_reg = REG_IOMUX_BASE + IOMUX_REG_OFFS[gpio_num];
+	uint32 old_iomux = READ_PERI_REG(iomux_reg);
+	uint32 gpio_func = IOMUX_GPIO_FUNC[gpio_num];
+	uint32 new_iomux = (old_iomux & ~IOMUX_FUNC_MASK) | gpio_func | IOMUX_PULLUP_MASK;
+	WRITE_PERI_REG(iomux_reg, new_iomux);
+
+	// allow soft pullup to take effect if line was floating
+	ets_delay_us(10);
+	int result = READ_PERI_REG(GPIO_IN_ADDRESS) & (1<<gpio_num);
+
+	// set iomux & GPIO output mode back to initial values
+	WRITE_PERI_REG(iomux_reg, old_iomux);
+	WRITE_PERI_REG(GPIO_ENABLE_OUT_ADDRESS, old_out);
+	return (result ? 1 : 0);
+}
+
+// return '1' if we should do a gpio boot
+static int perform_gpio_boot(rboot_config *romconf) {
+	if (romconf->mode & MODE_GPIO_ROM == 0) {
+		return FALSE;
+	}
+
+	// pin low == GPIO boot
+	if (BOOT_GPIO_NUM == 16) {
+		return (get_gpio16() == 0);
+	} else {
+		return (get_gpio(BOOT_GPIO_NUM) == 0);
+	}
+}
+
 #endif
 
 #ifdef BOOT_RTC_ENABLED
@@ -207,6 +258,7 @@ uint32 NOINLINE find_image(void) {
 	uint8 buffer[SECTOR_SIZE];
 #ifdef BOOT_GPIO_ENABLED
 	uint8 gpio_boot = FALSE;
+	uint8 sec;
 #endif
 #ifdef BOOT_RTC_ENABLED
 	rboot_rtc_data rtc;
@@ -221,7 +273,7 @@ uint32 NOINLINE find_image(void) {
 	ets_delay_us(BOOT_DELAY_MICROS);
 #endif
 
-	ets_printf("\r\nrBoot v1.3.0 - richardaburton@gmail.com\r\n");
+	ets_printf("\r\nrBoot v1.4.0 - richardaburton@gmail.com\r\n");
 
 	// read rom header
 	SPIRead(0, header, sizeof(rom_header));
@@ -289,7 +341,7 @@ uint32 NOINLINE find_image(void) {
 	ets_printf("rBoot Option: Config chksum\r\n");
 #endif
 #ifdef BOOT_GPIO_ENABLED
-	ets_printf("rBoot Option: GPIO mode\r\n");
+	ets_printf("rBoot Option: GPIO mode (%d)\r\n", BOOT_GPIO_NUM);
 #endif
 #ifdef BOOT_RTC_ENABLED
 	ets_printf("rBoot Option: RTC data\r\n");
@@ -342,14 +394,20 @@ uint32 NOINLINE find_image(void) {
 		}
 	}
 #endif
+
 #ifdef BOOT_GPIO_ENABLED
-	// if gpio mode enabled check status of the gpio
-	if ((romconf->mode & MODE_GPIO_ROM) && (get_gpio16() == 0)) {
+	if (perform_gpio_boot(romconf)) {
 		if (romconf->gpio_rom >= romconf->count) {
 			ets_printf("Invalid GPIO rom selected.\r\n");
 			return 0;
 		}
 		ets_printf("Booting GPIO-selected rom.\r\n");
+		if (romconf->mode & MODE_GPIO_ERASES_SDKCONFIG) {
+			ets_printf("Erasing SDK config sectors before booting.\r\n");
+			for (sec = 1; sec < 5; sec++) {
+				SPIEraseSector((flashsize / SECTOR_SIZE) - sec);
+			}
+		}
 		romToBoot = romconf->gpio_rom;
 		gpio_boot = TRUE;
 		updateConfig = TRUE;

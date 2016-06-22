@@ -142,7 +142,7 @@ USER_LIBDIR = $(SMING_HOME)/compiler/lib/
 LIBS		= microc microgcc hal phy pp net80211 lwip wpa main sming crypto pwm smartconfig $(EXTRA_LIBS)
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 $(USER_CFLAGS)
+CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS)
 ifeq ($(ENABLE_GDB), 1)
 	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
 	MODULES		 += $(SMING_HOME)/gdbstub
@@ -342,6 +342,11 @@ ifeq ($(DISABLE_SPIFFS), 1)
 else
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
 endif
+	$(TERMINAL)
+
+terminal:
+	$(vecho) "Killing Terminal to free $(COM_PORT)"
+	-$(Q) $(KILL_TERM)
 	$(TERMINAL)
 
 flashinit:
