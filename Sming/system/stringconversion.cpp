@@ -12,8 +12,13 @@ char* ltoa(long val, char* buffer, int base)
 
 char* ltoa_w(long val, char* buffer, int base, int width)
 {
-	int i = 34, p = 0;
-	char buf[36] = {0};
+	return ltoa_wp(val, buffer, base, width, ' ');
+}
+
+char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
+{
+	int i = 38, p = 0;
+	char buf[40] = {0};
 	bool ngt = val < 0;
 	if (ngt) val = -val;
 
@@ -29,8 +34,9 @@ char* ltoa_w(long val, char* buffer, int base, int width)
 		width -= strlen(&buf[i+1]);
 		if(width > 0)
 		{
-			memset(buffer, ' ', width);
+			memset(buffer, pad, width);
 		}
+		else width = 0;
 	}
 
 	strcpy(buffer + width, &buf[i+1]);
@@ -50,8 +56,8 @@ char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width)
 }
 char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad)
 {
-	int i = 34, p = 0;
-	char buf[36] = {0};
+	int i = 38, p = 0;
+	char buf[40] = {0};
 
 	for(; val && i ; --i, p++, val /= base)
 		buf[i] = "0123456789abcdef"[val % base];
@@ -64,17 +70,22 @@ char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, ch
 		{
 			memset(buffer, pad, width);
 		}
+		else width = 0;
 	}
 	strcpy(buffer + width, &buf[i+1]);
 
 	return buffer;
 }
 
-// Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
-// modified by ADiea: remove dependencies strcat, floor, round; reorganize+speedup code
 char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer)
 {
-	char temp[24], num[24];
+	return dtostrf_p(floatVar, minStringWidthIncDecimalPoint, numDigitsAfterDecimal, outputBuffer, ' ');
+}
+// Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
+// modified by ADiea: remove dependencies strcat, floor, round; reorganize+speedup code
+extern char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer, char pad)
+{
+	char temp[40], num[40];
 	unsigned long mult = 1, int_part;
 	int16_t i, processedFracLen = numDigitsAfterDecimal;
 
@@ -174,7 +185,7 @@ char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsA
 		i = minStringWidthIncDecimalPoint - strlen(num) + 1;
 		while (--i > 0)
 		{
-			*buf++ = ' ';
+			*buf++ = pad;
 		}
 
 		//Write output buffer
