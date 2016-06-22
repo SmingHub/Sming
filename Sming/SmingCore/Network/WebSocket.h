@@ -38,7 +38,6 @@ protected:
 private:
 	HttpServerConnection* connection;
 	CommandExecutor* commandExecutor = nullptr;
-	void* m_pUserData = nullptr;
 };
 
 #endif /* SMINGCORE_NETWORK_WEBSOCKET_H_ */

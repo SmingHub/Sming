@@ -52,7 +52,6 @@ void WebSocket::send(const char* message, int length, wsFrameType type)
 	connection->write((char*)frameHeader, headSize, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
 	connection->write(message, length, TCP_WRITE_FLAG_COPY);
 	connection->flush();
-	debugf("WS sent %d bytes\n", length + frameHeader);
 }
 
 void WebSocket::sendString(const String& message)

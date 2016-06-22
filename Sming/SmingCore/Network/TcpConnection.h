@@ -77,7 +77,7 @@ protected:
 	void initialize(tcp_pcb* pcb);
 
 private:
-	inline void checkSelfFree() { if (tcp == NULL && autoSelfDestruct) {debugf("tcp delete conn");delete this;} }
+	inline void checkSelfFree() { if (tcp == NULL && autoSelfDestruct) delete this; }
 
 protected:
 	tcp_pcb *tcp;
