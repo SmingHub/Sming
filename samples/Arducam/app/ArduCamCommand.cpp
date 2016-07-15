@@ -1,8 +1,7 @@
 
 #include <ArduCamCommand.h>
-#include <Libraries/ArduCam/ArduCAM.h>
+#include <Libraries/ArduCAM/ArduCAM.h>
 #include <Libraries/ArduCAM/ov2640_regs.h>
-
 
 
 ArduCamCommand::ArduCamCommand(ArduCAM *CAM) {

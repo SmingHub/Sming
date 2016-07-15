@@ -9,10 +9,10 @@
 //#include "CamSettings.h"
 #include <ArduCamCommand.h>
 
-#include <Libraries/ArduCam/ArduCAM.h>
+#include <Libraries/ArduCAM/ArduCAM.h>
 #include <Libraries/ArduCAM/ov2640_regs.h>
 
-#include <Libraries/ArduCam/ArduCAMStream.h>
+#include <Libraries/ArduCAM/ArduCAMStream.h>
 #include <Services/HexDump/HexDump.h>
 
 
