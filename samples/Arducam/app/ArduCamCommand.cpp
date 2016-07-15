@@ -4,6 +4,7 @@
 #include <Libraries/ArduCAM/ov2640_regs.h>
 
 
+
 ArduCamCommand::ArduCamCommand(ArduCAM *CAM) {
 	debugf("ArduCamCommand Instantiating");
 	myCAM = CAM;
