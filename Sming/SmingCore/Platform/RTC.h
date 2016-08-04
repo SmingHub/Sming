@@ -29,10 +29,21 @@ public:
      */
 	RtcClass();
 
+    /** @brief  Get nanoseconds from RTC
+     *  @retval uint64_t Quantity of nanoseconds since last RTC reset or set
+     */
+	uint64_t getRtcNanoseconds();
+
     /** @brief  Get seconds from RTC
      *  @retval uint32_t Quantity of seconds since last RTC reset or set
      */
 	uint32_t getRtcSeconds();
+
+	/** @brief  Set RTC nanoseconds
+	 *  @param  nanoseconds Value to set RTC to
+	 *  @retval bool True on success
+	 */
+	bool setRtcNanoseconds(uint64_t nanoseconds);
 
     /** @brief  Set RTC seconds
      *  @param  seconds Value to set RTC seconds to
