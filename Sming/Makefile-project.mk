@@ -270,6 +270,8 @@ endef
 .PHONY: all checkdirs spiff_update spiff_clean clean
 
 all: checkdirs $(TARGET_OUT) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2)
+	expr 0`cat count.txt` + 1 > count.txt
+
 
 spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 
