@@ -209,7 +209,7 @@ endef
 
 .PHONY: all checkdirs clean spiffy test samples recurse-samples $(SAMPLES_DIRS)
 
-all: checkdirs $(APP_AR)
+all: checkdirs $(APP_AR) spiffy
 
 ifeq ($(ENABLE_GDB), 1)	
 gdbstub/Makefile: 

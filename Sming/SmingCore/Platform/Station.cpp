@@ -57,25 +57,31 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	bool cfgreaded = wifi_station_get_config(&config);
 	if (!cfgreaded) debugf("Can't read station configuration!");
 
-	memset(config.ssid, 0, sizeof(config.ssid));
-	memset(config.password, 0, sizeof(config.password));
-	config.bssid_set = false;
-	strcpy((char*)config.ssid, ssid.c_str());
-	strcpy((char*)config.password, password.c_str());
-
-	noInterrupts();
-	if(!wifi_station_set_config(&config))
+	if (strncmp(ssid.c_str(), (char*)config.ssid, sizeof(config.ssid))!=0
+		|| strncmp(password.c_str(), (char*)config.password, sizeof(config.password))!=0)
 	{
-		interrupts();
-		debugf("Can't set station configuration!");
-		wifi_station_connect();
-		enableDHCP(dhcp);
-		enable(enabled);
-		return false;
-	}
-	debugf("Station configuration was updated to: %s", ssid.c_str());
+		memset(config.ssid, 0, sizeof(config.ssid));
+		memset(config.password, 0, sizeof(config.password));
+		config.bssid_set = false;
+		strcpy((char*)config.ssid, ssid.c_str());
+		strcpy((char*)config.password, password.c_str());
 
-	interrupts();
+		noInterrupts();
+		if(!wifi_station_set_config(&config))
+		{
+			interrupts();
+			debugf("Can't set station configuration!");
+			wifi_station_connect();
+			enableDHCP(dhcp);
+			enable(enabled);
+			return false;
+		}
+		debugf("Station configuration was updated to: %s", ssid.c_str());
+
+		interrupts();
+	}
+	else
+		debugf("Station configuration is: %s", ssid.c_str());
 	wifi_station_connect();
 	enableDHCP(dhcp);
 	enable(enabled);
