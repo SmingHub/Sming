@@ -58,7 +58,7 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	if (!cfgreaded) debugf("Can't read station configuration!");
 
 	if (strncmp(ssid.c_str(), (char*)config.ssid, sizeof(config.ssid))!=0
-		|| strncmp(password.c_str(), (char*)config.password, sizeof(config.password))!=0)
+		|| strncmp(password.c_str(), (char*)config.password, sizeof(config.password))!=0 || config.bssid_set)
 	{
 		memset(config.ssid, 0, sizeof(config.ssid));
 		memset(config.password, 0, sizeof(config.password));
