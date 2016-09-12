@@ -55,12 +55,12 @@ void displayCipher(SSL *ssl)
         	m_printf("AES256-SHA");
             break;
 
-        case SSL_RC4_128_SHA:
-        	m_printf("RC4-SHA");
+        case SSL_AES128_SHA256:
+        	m_printf("SSL_AES128_SHA256");
             break;
 
-        case SSL_RC4_128_MD5:
-        	m_printf("RC4-MD5");
+        case SSL_AES256_SHA256:
+        	m_printf("SSL_AES256_SHA256");
             break;
 
         default:
