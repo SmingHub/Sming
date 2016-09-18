@@ -16,9 +16,6 @@
 #include "../SmingCore/ESP8266EX.h"
 #include "../Wiring/WiringFrameworkDependencies.h"
 
-//#define interrupts()   sei()
-//#define noInterrupts() cli()
-
 /** @brief  Set the mode of a GPIO pin
  *  @param  pin GPIO pin to configure
  *  @param  mode Mode of pin [INPUT | INPUT_PULLUP | OUTPUT]

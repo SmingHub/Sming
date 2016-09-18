@@ -31,6 +31,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include <user_config.h>
+//#include <../../SmingCore/SmingCore.h>
 #include "RCSwitch.h"
 
 /* Format for protocol definitions:
@@ -462,6 +464,7 @@ char* RCSwitch::getCodeWordD(char sGroup, int nDevice, boolean bStatus){
  */
 void RCSwitch::sendTriState(const char* sCodeWord) {
   for (int nRepeat=0; nRepeat<nRepeatTransmit; nRepeat++) {
+	xt_disable_interrupts();
     int i = 0;
     while (sCodeWord[i] != '\0') {
       switch(sCodeWord[i]) {
@@ -477,7 +480,8 @@ void RCSwitch::sendTriState(const char* sCodeWord) {
       }
       i++;
     }
-    this->sendSync();    
+    this->sendSync();
+    xt_enable_interrupts();
   }
 }
 
@@ -487,6 +491,7 @@ void RCSwitch::send(unsigned long code, unsigned int length) {
 
 void RCSwitch::send(const char* sCodeWord) {
   for (int nRepeat=0; nRepeat<nRepeatTransmit; nRepeat++) {
+	xt_disable_interrupts();
     int i = 0;
     while (sCodeWord[i] != '\0') {
       switch(sCodeWord[i]) {
@@ -500,6 +505,7 @@ void RCSwitch::send(const char* sCodeWord) {
       i++;
     }
     this->sendSync();
+    xt_enable_interrupts();
   }
 }
 
