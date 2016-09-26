@@ -149,8 +149,8 @@ class RCSwitch {
     static char* dec2binWcharfill(unsigned long dec, unsigned int length, char fill);
     
     #if not defined( RCSwitchDisableReceiving )
-    static void handleInterrupt();
-    static bool receiveProtocol(const int p, unsigned int changeCount);
+    static IRAM_ATTR void handleInterrupt();
+    static IRAM_ATTR bool receiveProtocol(const int p, unsigned int changeCount);
     int nReceiverInterrupt;
     #endif
     int nTransmitterPin;

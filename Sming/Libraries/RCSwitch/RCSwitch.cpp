@@ -54,7 +54,7 @@
  *
  * These are combined to form Tri-State bits when sending or receiving codes.
  */
-static const RCSwitch::Protocol PROGMEM proto[] = {
+static const RCSwitch::Protocol proto[] = {
     { 350, {  1, 31 }, {  1,  3 }, {  3,  1 } },    // protocol 1
     { 650, {  1, 10 }, {  1,  2 }, {  2,  1 } },    // protocol 2
     { 100, { 30, 71 }, {  4, 11 }, {  9,  6 } },    // protocol 3
@@ -463,8 +463,8 @@ char* RCSwitch::getCodeWordD(char sGroup, int nDevice, boolean bStatus){
  * @param sCodeWord   /^[10FS]*$/  -> see getCodeWord
  */
 void RCSwitch::sendTriState(const char* sCodeWord) {
+  xt_disable_interrupts();
   for (int nRepeat=0; nRepeat<nRepeatTransmit; nRepeat++) {
-	xt_disable_interrupts();
     int i = 0;
     while (sCodeWord[i] != '\0') {
       switch(sCodeWord[i]) {
@@ -481,8 +481,8 @@ void RCSwitch::sendTriState(const char* sCodeWord) {
       i++;
     }
     this->sendSync();
-    xt_enable_interrupts();
   }
+  xt_enable_interrupts();
 }
 
 void RCSwitch::send(unsigned long code, unsigned int length) {
@@ -490,8 +490,8 @@ void RCSwitch::send(unsigned long code, unsigned int length) {
 }
 
 void RCSwitch::send(const char* sCodeWord) {
+  xt_disable_interrupts();
   for (int nRepeat=0; nRepeat<nRepeatTransmit; nRepeat++) {
-	xt_disable_interrupts();
     int i = 0;
     while (sCodeWord[i] != '\0') {
       switch(sCodeWord[i]) {
@@ -505,8 +505,8 @@ void RCSwitch::send(const char* sCodeWord) {
       i++;
     }
     this->sendSync();
-    xt_enable_interrupts();
   }
+  xt_enable_interrupts();
 }
 
 void RCSwitch::transmit(int nHighPulses, int nLowPulses) {
@@ -658,7 +658,7 @@ unsigned int* RCSwitch::getReceivedRawdata() {
 }
 
 /* helper function for the various receiveProtocol methods */
-static inline unsigned int diff(int A, int B) {
+static IRAM_ATTR __forceinline unsigned int diff(int A, int B) {
     return abs(A - B);
 }
 
@@ -668,7 +668,7 @@ static inline unsigned int diff(int A, int B) {
 bool RCSwitch::receiveProtocol(const int p, unsigned int changeCount) {
 
     Protocol pro;
-    memcpy_P(&pro, &proto[p-1], sizeof(Protocol));
+    ets_memcpy(&pro, &proto[p-1], sizeof(Protocol));
 
     unsigned long code = 0;
     const unsigned int delay = RCSwitch::timings[0] / pro.syncFactor.low;
@@ -705,9 +705,9 @@ void RCSwitch::handleInterrupt() {
   static unsigned int changeCount;
   static unsigned long lastTime;
   static unsigned int repeatCount;
-  
 
-  long time = micros();
+
+  long time = system_get_time(); //micros();
   duration = time - lastTime;
  
   if (duration > RCSwitch::nSeparationLimit && diff(duration, RCSwitch::timings[0]) < 200) {
