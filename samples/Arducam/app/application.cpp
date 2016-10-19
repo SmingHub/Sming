@@ -9,10 +9,10 @@
 //#include "CamSettings.h"
 #include <ArduCamCommand.h>
 
-#include <Libraries/ArduCam/ArduCAM.h>
+#include <Libraries/ArduCAM/ArduCAM.h>
 #include <Libraries/ArduCAM/ov2640_regs.h>
 
-#include <Libraries/ArduCam/ArduCAMStream.h>
+#include <Libraries/ArduCAM/ArduCAMStream.h>
 #include <Services/HexDump/HexDump.h>
 
 
@@ -152,11 +152,11 @@ void onCamSetup(HttpRequest &request, HttpResponse &response) {
 	if (request.getRequestMethod() == RequestMethod::POST)
 	{
 		type = request.getPostParameter("type");
-		debugf("set type %s", type);
+		debugf("set type %s", type.c_str());
 		arduCamCommand.set_type(type);
 
 		size = request.getPostParameter("size");
-		debugf("set size %s", size);
+		debugf("set size %s", size.c_str());
 		arduCamCommand.set_size(size);
 	}
 

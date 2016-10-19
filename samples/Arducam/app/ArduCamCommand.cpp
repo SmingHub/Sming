@@ -1,6 +1,6 @@
 
 #include <ArduCamCommand.h>
-#include <Libraries/ArduCam/ArduCAM.h>
+#include <Libraries/ArduCAM/ArduCAM.h>
 #include <Libraries/ArduCAM/ov2640_regs.h>
 
 
@@ -56,7 +56,7 @@ void ArduCamCommand::processSetCommands(String commandLine,
 			} else if (commandToken[2] == "jpg") {
 				set_format(JPEG);
 			} else
-				commandOutput->printf("invalid image format [%s]\r\n", commandToken[2]);
+				commandOutput->printf("invalid image format [%s]\r\n", commandToken[2].c_str());
 		} else {
 			commandOutput->printf("Syntax: set img [bmp|jpeg]\r\n");
 		}
@@ -102,7 +102,7 @@ void ArduCamCommand::processSetCommands(String commandLine,
 				myCAM->OV2640_set_JPEG_size(OV2640_1600x1200);
 				set_format(JPEG);
 			} else {
-				commandOutput->printf("invalid size definition[%s]\r\n", commandToken[2]);
+				commandOutput->printf("invalid size definition[%s]\r\n", commandToken[2].c_str());
 			}
 		} else {
 			commandOutput->printf("Syntax: set size [160|176|320|352|640|800|1024|1280|1600]\r\n");
@@ -149,7 +149,7 @@ void ArduCamCommand::set_size(String size) {
 		myCAM->OV2640_set_JPEG_size(OV2640_1600x1200);
 		set_format(JPEG);
 	} else {
-		debugf("ERROR: invalid size definition[%s]\r\n", size);
+		debugf("ERROR: invalid size definition[%s]\r\n", size.c_str());
 	}
 }
 
