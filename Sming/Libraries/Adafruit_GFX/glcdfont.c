@@ -1,6 +1,8 @@
 #ifndef FONT5X7_H
 #define FONT5X7_H
 
+#ifndef PROGMEM
+
 #if defined(__AVR__)
  #include <avr/io.h>
  #include <avr/pgmspace.h>
@@ -8,6 +10,8 @@
  #include "../../Wiring/WiringFrameworkDependencies.h"
 #else
  #define PROGMEM
+#endif
+
 #endif
  
 // Standard ASCII 5x7 font
