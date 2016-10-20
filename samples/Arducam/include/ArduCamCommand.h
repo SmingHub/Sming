@@ -9,7 +9,7 @@
 #include "WString.h"
 #include "../Services/CommandProcessing/CommandProcessingIncludes.h"
 #include "../Services/CommandProcessing/CommandOutput.h"
-#include <Libraries/ArduCam/ArduCAM.h>
+#include <Libraries/ArduCAM/ArduCAM.h>
 
 class ArduCamCommand
 {
