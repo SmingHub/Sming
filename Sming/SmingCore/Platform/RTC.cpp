@@ -5,23 +5,32 @@ RtcClass::RtcClass() {
 	hardwareReset = (info->reason == REASON_WDT_RST);
 }
 
-uint32_t RtcClass::getRtcSeconds() {
+
+uint64_t RtcClass::getRtcNanoseconds() {
 	RtcData rtcTime;
 	loadTime(rtcTime);
 	updateTime(rtcTime);
 	saveTime(rtcTime);
-	return (rtcTime.time / NS_PER_SECOND);
+	return rtcTime.time;
 }
 
 
+uint32_t RtcClass::getRtcSeconds() {
+	return (getRtcNanoseconds() / NS_PER_SECOND);
+}
 
-bool RtcClass::setRtcSeconds(uint32_t seconds) {
+
+bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds) {
 	RtcData rtcTime;
 	loadTime(rtcTime);
 	updateTime(rtcTime);
-	uint64_t time= ((uint64_t) seconds * NS_PER_SECOND);
-	rtcTime.time = time;
+	rtcTime.time = nanoseconds;
 	return saveTime(rtcTime);
+}
+
+
+bool RtcClass::setRtcSeconds(uint32_t seconds) {
+	return setRtcNanoseconds((uint64_t)seconds * NS_PER_SECOND);
 }
 
 
