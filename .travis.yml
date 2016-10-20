@@ -22,8 +22,14 @@ install:
   - wget https://bintray.com/artifact/download/kireevco/generic/${SDK_FILE_NAME}
   - bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk  
 script:
+  - export CHANGED_FILES=`git diff --diff-filter=AMD HEAD HEAD^ --name-only`
+  - export CHANGED_PROJECTS=`for i in $CHANGED_FILES; do echo "$i" |  grep '^samples/' | cut -d'/' -f2; done | uniq`
   - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
   - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk  
   - export PATH=$PATH:$TRAVIS_BUILD_DIR/opt/esp-alt-sdk/utils/
   - cd $SMING_HOME
   - make test
+  - cd $SMING_HOME/../
+  - export SMING_HAS_CHANGED=`for i in $CHANGED_FILES; do  if [[ $i == Sming/* ]]; then echo 1; break; fi; done`
+  - if [ ! -z "$SMING_HAS_CHANGED" ]; then CHANGED_PROJECTS=`cd $SMING_HOME/../samples; ls -d *`; fi
+  - for i in $CHANGED_PROJECTS; do echo "Compiling $i"; make -C "samples/$i"; if [ $? -ne 0 ]; then exit 1; fi; done
