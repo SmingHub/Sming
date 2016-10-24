@@ -1,0 +1,3 @@
+[submodule "Sming/rboot"]
+	path = Sming/rboot
+	url = https://github.com/raburton/rboot.git
