@@ -1,0 +1,3 @@
+[submodule "Sming.wiki"]
+	path = Sming.wiki
+	url = https://github.com/ido4pro/Sming.wiki.git
