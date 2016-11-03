@@ -284,6 +284,13 @@ third-party/%:
 	$(Q) git submodule update --init $(dir $@)
 	$(Q) touch $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
 	$(Q) patch -p0 < $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
+third-party/.patches/%.patch:
+	$(Q) touch $@
+
+third-party/%: third-party/.patches/%.patch
+	$(Q) echo "Fetching $@ ..."
+	$(Q) git submodule update --init $@
+	$(Q) patch -p0 < $<
 
 recurse-samples: $(SAMPLES_DIRS)
 
