@@ -104,7 +104,20 @@ TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES		= system system/helpers Wiring SmingCore appinit $(filter %/, $(wildcard SmingCore/*/)) $(filter %/, $(wildcard Services/*/)) $(filter %/, $(wildcard Libraries/*/))
-EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore rboot rboot/appcode $(SDK_BASE)/../include
+EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
+
+# Place a file that should exist in a submodule that is fetched separately
+THIRD_PARTY_DATA = third-party/rboot/Makefile
+
+# third-party source mapping starts here 
+# => rBoot
+EXTRA_INCDIR += third-party/rboot third-party/rboot/appcode 
+# => esp-gdbstub
+ifeq ($(ENABLE_GDB), 1)
+	THIRD_PARTY_DATA += third-party/esp-gdbstub/Makefile
+	MODULES		 += third-party/esp-gdbstub
+	EXTRA_INCDIR += third-party/esp-gdbstub
+endif
 
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
@@ -114,8 +127,6 @@ LIBS		= microc microgcc hal phy pp net80211 lwip wpa main
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL)
 ifeq ($(ENABLE_GDB), 1)
 	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
-	MODULES		 += gdbstub
-	EXTRA_INCDIR += gdbstub
 else
 	CFLAGS += -Os -g
 endif
@@ -211,18 +222,6 @@ endef
 
 all: checkdirs $(APP_AR) spiffy
 
-ifeq ($(ENABLE_GDB), 1)	
-gdbstub/Makefile: 
-	$(Q) echo "No espgdbstub submodule found. Using git to fetch it..."
-	$(Q) git submodule init
-	$(Q) git submodule update
-endif
-
-
-rboot/Makefile: 
-	$(Q) echo "No rBoot submodule found. Using git to fetch it..."
-	$(Q) git submodule update --init rboot/
-
 spiffy: spiffy/spiffy
 
 spiffy/spiffy:
@@ -237,11 +236,7 @@ $(APP_AR): $(OBJ)
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
 	$(vecho) "Done"
 
-ifeq ($(ENABLE_GDB), 1)	
-checkdirs: gdbstub/Makefile $(BUILD_DIR) $(FW_BASE) rboot/Makefile
-else
-checkdirs: $(BUILD_DIR) $(FW_BASE) rboot/Makefile
-endif
+checkdirs: $(THIRD_PARTY_DATA) $(BUILD_DIR) $(FW_BASE)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
@@ -283,6 +278,12 @@ api: docs/api/sming/index.html
 docs: wiki api
 
 samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot
+
+third-party/%: 
+	$(Q) echo "Fetching $(dir $@) ..."
+	$(Q) git submodule update --init $(dir $@)
+	$(Q) touch $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
+	$(Q) patch -p0 < $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
 
 recurse-samples: $(SAMPLES_DIRS)
 
