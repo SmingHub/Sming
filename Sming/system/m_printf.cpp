@@ -7,7 +7,6 @@ Descr: embedded very simple version of printf with float support
 */
 
 #include <stdarg.h>
-//#include "../../SmingCore/SmingCore.h"
 #include "osapi.h"
 
 #define MPRINTF_BUF_SIZE 256

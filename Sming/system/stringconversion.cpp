@@ -83,7 +83,7 @@ char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsA
 }
 // Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
 // modified by ADiea: remove dependencies strcat, floor, round; reorganize+speedup code
-extern char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer, char pad)
+char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer, char pad)
 {
 	char temp[40], num[40];
 	unsigned long mult = 1, int_part;
