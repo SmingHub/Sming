@@ -37,6 +37,10 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 - Spiffy  : Source included in Sming repository
 - [ESPtool2] (https://github.com/raburton/esptool2) esptool2 
 
+## Optional features
+- Custom PWM: If Sming is compiled with ENABLE_CUSTOM_PWM=1 then instead of using the Espressif SDK pwm library
+a [custom PWM library](https://github.com/StefanBruens/ESP8266_new_pwm) will be used.
+
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
 ## Examples

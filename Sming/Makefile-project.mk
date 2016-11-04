@@ -248,6 +248,12 @@ INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
+CUSTOM_TARGETS ?=
+
+ifeq ($(ENABLE_CUSTOM_PWM), 1)
+	CUSTOM_TARGETS += $(USER_LIBDIR)/libpwm.a
+endif
+
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
 Q :=
@@ -307,7 +313,12 @@ $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 
-checkdirs: $(BUILD_DIR) $(FW_BASE)
+ifeq ($(ENABLE_CUSTOM_PWM), 1)
+$(USER_LIBDIR)/libpwm.a:
+	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm.a ENABLE_CUSTOM_PWM=1 BUILD_BASE=`pwd`/$(BUILD_BASE)
+endif
+
+checkdirs: $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@

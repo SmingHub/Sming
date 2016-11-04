@@ -37,3 +37,5 @@
 DISABLE_SPIFFS = 1
 # SPIFF_FILES = files
 
+# Comment the line below if you want to Espressif's PWM library. 
+ENABLE_CUSTOM_PWM=1

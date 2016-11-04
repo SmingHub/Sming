@@ -123,6 +123,11 @@ endif
 USER_LIBDIR = compiler/lib
 LIBS		= microc microgcc hal phy pp net80211 lwip wpa main
 
+ifeq ($(ENABLE_CUSTOM_PWM), 1)
+	THIRD_PARTY_DATA += third-party/pwm/pwm.c
+	LIBS += pwm
+endif
+
 # compiler flags using during compilation of source files. Add '-pg' for debugging
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL)
 ifeq ($(ENABLE_GDB), 1)
@@ -222,6 +227,12 @@ endef
 
 all: checkdirs $(APP_AR) spiffy
 
+ifeq ($(ENABLE_CUSTOM_PWM), 1)	
+$(USER_LIBDIR)/libpwm.a: third-party/pwm/pwm.c
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $< -o $(BUILD_BASE)/pwm.o
+	$(Q) $(AR) rcs $@ $(BUILD_BASE)/pwm.o
+endif
+
 spiffy: spiffy/spiffy
 
 spiffy/spiffy:
@@ -277,7 +288,7 @@ api: docs/api/sming/index.html
 
 docs: wiki api
 
-samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot
+samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot  Basic_HwPWM
 
 third-party/%: 
 	$(Q) echo "Fetching $(dir $@) ..."
