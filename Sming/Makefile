@@ -263,6 +263,15 @@ clean:
 
 test: all spiffy samples
 
+docs: 
+	$(Q) cd $(SMING_HOME)/../docs ; doxygen 2>errors.log 1>doxygen.log
+	$(Q) echo "Undocumented compounds: $(shell grep "Compound.*is not documented" $(SMING_HOME)/../docs/error.log | wc -l)" 
+	$(Q) echo "Undocumented members:  $(shell grep "Member.*is not documented" $(SMING_HOME)/../docs/error.log | wc -l) "
+	$(Q) echo "Undocumented parameters: $(shell grep "The following parameters of .* are not documented" $(SMING_HOME)/../docs/error.log | wc -l) "        
+	$(Q) echo "Open in your browser: file://$(SMING_HOME)/../docs/publish/sming-api-/index.html"
+	 
+	
+
 samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot
 
 recurse-samples: $(SAMPLES_DIRS)
