@@ -149,3 +149,13 @@ void onFile(HttpRequest &request, HttpResponse &response)
   response.sendFile(file);
 }
 ```
+
+### Documentation
+A complete documentation can be created by running the command below. This requires `doxygen` to be installed on your system.
+
+```
+cd ${SMING_HOME}
+make docs
+```
+
+The newly generated documentation will be located under Sming/docs/publish
