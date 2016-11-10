@@ -19,7 +19,7 @@
 #include "../../Services/WebHelpers/aw-sha1.h"
 #include "../../Services/WebHelpers/base64.h"
 #include "../../Wiring/WString.h"
-#include "../PWM.h"
+#include "../Digital.h"
 
 enum wsMode
 {
