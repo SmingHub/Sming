@@ -3,4 +3,4 @@
 	url = https://github.com/raburton/rboot.git
 [submodule "Sming.wiki"]
 	path = Sming.wiki
-	url = https://github.com/ido4pro/Sming.wiki.git
+	url = https://github.com/SmingHub/Sming.wiki.git
