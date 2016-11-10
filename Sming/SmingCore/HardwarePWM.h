@@ -12,9 +12,10 @@
  * PWM can be generated on upto 8 pins (ie All pins except pin 16)
  * Created on August 17, 2015, 2:27 PM
  */
-/** @addtogroup pwm
+/** @defgroup   hw_pwm Hardware PWM functions
+ *  @brief      Provides hardware pulse width modulation functions
  *  @{
- */
+*/
 
 #ifndef HARDWAREPWM_H
 #define	HARDWAREPWM_H
@@ -30,7 +31,7 @@ extern "C" {
 }
 #endif
 
-#define PWM_BAD_CHANNEL 0xff ///< Invalide PWM channel
+#define PWM_BAD_CHANNEL 0xff ///< Invalid PWM channel
 
 /// Hardware pulse width modulation
 class HardwarePWM {
