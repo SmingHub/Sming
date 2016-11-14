@@ -4,8 +4,8 @@ FROM phusion/baseimage:0.9.18
 # Install Dependencies
 # ------------------------------------------------------------------------------
 
-RUN apt-get update 
-RUN apt-get install -y make \
+RUN apt-get update && \
+    apt-get install -y make \
 	wget \
 	unrar \ 
 	autoconf \ 
@@ -21,6 +21,7 @@ RUN apt-get install -y make \
 	ncurses-dev \ 
 	libexpat-dev \ 
 	python \
+	python-dev \
 	python-serial \ 
 	sed \
 	git \
