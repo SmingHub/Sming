@@ -1,0 +1,16 @@
+sming-ide:
+
+ build: .
+ 
+ volumes:
+   - ../../Sming/:/opt/sming/
+   
+ ports:
+ - "10080:80"
+ 
+ devices:
+  - "/dev/ttyUSB0:/dev/ttyUSB0"
+
+ 
+ privileged: true
+   

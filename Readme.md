@@ -30,6 +30,8 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 - [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
 - [Linux](https://github.com/SmingHub/Sming/wiki/Linux-Quickstart)
 - [MacOS](https://github.com/SmingHub/Sming/wiki/MacOS-Quickstart)
+- [Docker](https://github.com/SmingHub/Sming/wiki/Docker-Quickstart)
+
 
 ## Additional needed software 
 - Spiffy  : Source included in Sming repository

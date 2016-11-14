@@ -9,6 +9,8 @@ env:
   matrix:
     - SDK_VERSION=1.4.0
     - SDK_VERSION=1.5.0  
+git:
+  submodules: false
 addons:
   apt:
     sources:
