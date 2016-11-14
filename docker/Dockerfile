@@ -109,7 +109,7 @@ RUN useradd -d /home/espbuilder -m espbuilder && \
 	echo "espbuilder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/espbuilder && \
 	chmod 0440 /etc/sudoers.d/espbuilder
 
-RUN cd /opt && git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
+RUN cd /opt && git clone --recursive https://github.com/pfalcon/esp-open-sdk.git && cd /opt/esp-open-sdk && git checkout e8d757b1a70a5cf19df0afe23a769739c6cff343
 RUN chmod 777 -R /opt/esp-open-sdk
 
 USER espbuilder
