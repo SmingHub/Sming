@@ -14,11 +14,11 @@ Descr: embedded very simple version of printf with float support
 extern "C" {
 #endif
 
-extern int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args);
-extern int m_snprintf(char* buf, int length, const char *fmt, ...);
-extern int m_printf(char const*, ...);
-extern int m_vprintf ( const char * format, va_list arg );
-extern void m_putc(char c);
+int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args);
+int m_snprintf(char* buf, int length, const char *fmt, ...);
+int m_printf(char const*, ...);
+int m_vprintf ( const char * format, va_list arg );
+void m_putc(char c);
 
 #ifdef __cplusplus
 }
