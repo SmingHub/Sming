@@ -2,5 +2,5 @@
 	path = Sming/rboot
 	url = https://github.com/raburton/rboot.git
 [submodule "Sming.wiki"]
-	path = Sming.wiki
+	path = docs/wiki
 	url = https://github.com/SmingHub/Sming.wiki.git
