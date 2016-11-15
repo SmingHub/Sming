@@ -69,7 +69,7 @@ RUN rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt
 # Install Cloud9
 # ------------------------------------------------------------------------------
 
-RUN git clone https://github.com/c9/core.git /opt/cloud9
+RUN git clone https://github.com/c9/core.git /opt/cloud9 && cd /opt/cloud9 && git checkout 32fc12bf922288d0c2b518c73aa75e19f14bed8b
 WORKDIR /opt/cloud9
 RUN scripts/install-sdk.sh
 RUN npm install
@@ -145,7 +145,7 @@ RUN wget https://github.com/themadinventor/esptool/archive/master.zip && unzip m
 # Install esptool2
 # ------------------------------------------------------------------------------
 
-RUN cd $ESP_HOME && git clone https://github.com/raburton/esptool2
+RUN cd $ESP_HOME && git clone https://github.com/raburton/esptool2 && cd $ESP_HOME/esptool2 && git checkout ec0e2c72952f4fa8242eedd307c58a479d845abe
 RUN cd $ESP_HOME/esptool2 && make
 
 ENV PATH $ESP_HOME/esptool2:$PATH
