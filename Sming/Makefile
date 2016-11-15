@@ -207,7 +207,7 @@ $1/%.o: %.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean spiffy test samples recurse-samples $(SAMPLES_DIRS)
+.PHONY: all checkdirs clean spiffy test samples recurse-samples $(SAMPLES_DIRS) docs api wiki
 
 all: checkdirs $(APP_AR) spiffy
 
@@ -263,14 +263,24 @@ clean:
 
 test: all spiffy samples
 
-docs: 
-	$(Q) cd $(SMING_HOME)/../docs ; doxygen 2>errors.log 1>doxygen.log
-	$(Q) echo "Undocumented compounds: $(shell grep "Compound.*is not documented" $(SMING_HOME)/../docs/error.log | wc -l)" 
-	$(Q) echo "Undocumented members:  $(shell grep "Member.*is not documented" $(SMING_HOME)/../docs/error.log | wc -l) "
-	$(Q) echo "Undocumented parameters: $(shell grep "The following parameters of .* are not documented" $(SMING_HOME)/../docs/error.log | wc -l) "        
-	$(Q) echo "Open in your browser: file://$(SMING_HOME)/../docs/publish/sming-api-/index.html"
-	 
-	
+docs/wiki/Home.md: 
+	$(Q) echo "No Wiki submodule found. Using git to fetch it..."
+	$(Q) git submodule update --init ../docs/wiki	
+
+docs/api/error.log:
+	$(Q) mkdir -p $(SMING_HOME)/../docs/api
+	$(Q) cd $(SMING_HOME)/../docs; doxygen 2>$(SMING_HOME)/../docs/api/stderr.log 1>$(SMING_HOME)/../docs/api/doxygen.log
+
+docs/api/sming/index.html: docs/api/error.log
+	$(Q) echo "Undocumented compounds: $(shell grep "Compound.*is not documented" $(SMING_HOME)/../docs/api/error.log | wc -l)"
+	$(Q) echo "Undocumented members:  $(shell grep "Member.*is not documented" $(SMING_HOME)/../docs/api/error.log | wc -l) "
+	$(Q) echo "Undocumented parameters: $(shell grep "The following parameters of .* are not documented" $(SMING_HOME)/../docs/api/error.log | wc -l) "
+	$(Q) echo "Open in your browser: file://$(SMING_HOME)/../$@"
+
+wiki: docs/wiki/Home.md 
+api: docs/api/sming/index.html 
+
+docs: wiki api
 
 samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot
 
