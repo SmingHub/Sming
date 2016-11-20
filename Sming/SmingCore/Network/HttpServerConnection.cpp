@@ -115,7 +115,7 @@ void HttpServerConnection::beginSendData()
 	{
 		debugf("Switched to WebSocket Protocol");
 		state = eHCS_WebSocketFrames; // Stay opened
-		setTimeOut(USHRT_MAX);
+//		setTimeOut(USHRT_MAX);
 	}
 	else
 		state = eHCS_Sending;
