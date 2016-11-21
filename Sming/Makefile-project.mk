@@ -60,7 +60,6 @@ ESPTOOL2_SDK_ARGS	?= -quiet -lib
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
-
 ifeq ($(OS),Windows_NT)
   # Windows detected
   UNAME := Windows
@@ -165,15 +164,16 @@ CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 # SSL support using axTLS
 ifeq ($(ENABLE_SSL),1)
 	LIBS += axtls	
-	EXTRA_INCDIR += $(SMING_HOME)/axtls-8266 $(SMING_HOME)/axtls-8266/ssl $(SMING_HOME)/axtls-8266/crypto 
+	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/axtls-8266 $(THIRD_PARTY_DIR)/axtls-8266/ssl $(THIRD_PARTY_DIR)/axtls-8266/crypto 
 	AXTLS_FLAGS = -DLWIP_RAW=1 -DENABLE_SSL=1
 	ifeq ($(SSL_DEBUG),1) # 
 		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1
 	endif
+	
+	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBSMING).a include/ssl/private_key.h
+	CFLAGS += $(AXTLS_FLAGS)  
+	CXXFLAGS += $(AXTLS_FLAGS)	
 endif
-
-CFLAGS += $(AXTLS_FLAGS)  
-CXXFLAGS += $(AXTLS_FLAGS)
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 WIFI_SSID ?= ""
@@ -342,13 +342,12 @@ $(USER_LIBDIR)/lib$(LIBSMING).a:
 include/ssl/private_key.h:
 	$(vecho) "Generating unique certificate and key. This may take some time"
 	$(Q) mkdir -p $(CURRENT_DIR)/include/ssl/
-	$(Q) AXDIR=$(CURRENT_DIR)/include/ssl/  $(SMING_HOME)/axtls-8266/tools/make_certs.sh 
+	$(Q) AXDIR=$(CURRENT_DIR)/include/ssl/  $(THIRD_PARTY_DIR)/axtls-8266/tools/make_certs.sh 
 
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 $(USER_LIBDIR)/libpwm.a:
 	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm.a ENABLE_CUSTOM_PWM=1 BUILD_BASE=`pwd`/$(BUILD_BASE)
 endif
-
 checkdirs: $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
 
 $(BUILD_DIR):
