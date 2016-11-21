@@ -288,20 +288,17 @@ api: docs/api/sming/index.html
 
 docs: wiki api
 
-samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot  Basic_HwPWM
+samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_HwPWM
 
 third-party/%: 
 	$(Q) echo "Fetching $(dir $@) ..."
 	$(Q) git submodule update --init $(dir $@)
 	$(Q) touch $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
 	$(Q) patch -p0 < $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
-third-party/.patches/%.patch:
-	$(Q) touch $@
-
-third-party/%: third-party/.patches/%.patch
-	$(Q) echo "Fetching $@ ..."
-	$(Q) git submodule update --init $@
-	$(Q) patch -p0 < $<
+# if the new submodule brings source code files that need to be compiled inside Sming
+# then we need somehow to be able to "see" these new files. 
+# For now we solve this by "reloading" the makefile after fetching a module.
+	$(Q) $(MAKE) -C $(SMING_HOME)
 
 recurse-samples: $(SAMPLES_DIRS)
 
