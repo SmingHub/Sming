@@ -1,0 +1,16 @@
+{
+  "name": "restproxy",
+  "description": "REST API proxy for sites without CORS",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fcgdam/RestProxy.git"
+  },
+  "dependencies": {
+    "body-parser": ">= 1.14",
+    "cors": ">= 2.7",
+    "express": ">= 4.0",
+    "morgan": "^1.6.1"
+  }
+}
+

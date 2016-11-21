@@ -19,24 +19,24 @@ HttpClient::~HttpClient()
 }
 
 bool HttpClient::downloadString(String url, HttpClientCompletedDelegate onCompleted)
-{
-	if (isProcessing()) return false;
-	URL uri = URL(url);
-
-	return startDownload(uri, eHCM_String, onCompleted);
+{       
+	return startDownload( URL(url), eHCM_String, onCompleted);
 }
 
 bool HttpClient::downloadFile(String url, HttpClientCompletedDelegate onCompleted /* = NULL */)
 {
-	return downloadFile(url, "", onCompleted);
+	return downloadFile( url , "", onCompleted);
 }
 
 bool HttpClient::downloadFile(String url, String saveFileName, HttpClientCompletedDelegate onCompleted /* = NULL */)
 {
-	if (isProcessing()) return false;
-	URL uri = URL(url);
-
-	String file;
+        String file;
+        
+	if (isProcessing()) 
+            return false;
+	
+        URL uri = URL(url);
+        
 	if (saveFileName.length() == 0)
 	{
 		file = uri.Path;
@@ -55,17 +55,27 @@ bool HttpClient::downloadFile(String url, String saveFileName, HttpClientComplet
 
 bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted)
 {
+    bool isPost = body.length();
+    
+    return startDownload( uri, (isPost ? "POST" : "GET"), mode, onCompleted);
+}
+
+bool HttpClient::startDownload(URL uri, String method, HttpClientMode mode, HttpClientCompletedDelegate onCompleted)
+{
+        if (isProcessing())
+            return false;
+        
 	reset();
 	this->mode = mode;
 	this->onCompleted = onCompleted;
 
-	if (uri.Protocol != "http") return false;
+	if (uri.Protocol != "http") 
+            return false;
 	debugf("Download: %s", uri.toString().c_str());
 
 	connect(uri.Host, uri.Port);
-	bool isPost = body.length();
 
-	sendString((isPost ? "POST " : "GET ") + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n");
+	sendString( method + " " + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n");
 	for (int i = 0; i < requestHeaders.count(); i++)
 	{
 		String write = requestHeaders.keyAt(i) + ": " + requestHeaders.valueAt(i) + "\r\n";
@@ -75,6 +85,31 @@ bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompleted
 	sendString(body);
 
 	return true;
+}
+
+bool HttpClient::doGet(String url, HttpClientCompletedDelegate onCompleted)
+{
+    return startDownload( URL(url) , "GET" , eHCM_String, onCompleted);
+}
+
+bool HttpClient::doPost(String url, HttpClientCompletedDelegate onCompleted)
+{    
+    return startDownload( URL(url) , "POST" , eHCM_String, onCompleted);
+}
+
+bool HttpClient::doPut(String url, HttpClientCompletedDelegate onCompleted)
+{
+    return startDownload( URL(url) , "PUT" , eHCM_String, onCompleted);
+}
+
+bool HttpClient::doDelete(String url, HttpClientCompletedDelegate onCompleted)
+{
+    return startDownload( URL(url) , "DELETE" , eHCM_String, onCompleted);
+}
+
+bool HttpClient::doRestVerb(String url, String verb, HttpClientCompletedDelegate onCompleted)
+{
+    return startDownload( URL(url) , verb , eHCM_String, onCompleted);
 }
 
 void HttpClient::setRequestHeader(const String name, const String value)

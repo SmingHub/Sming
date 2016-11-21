@@ -40,6 +40,13 @@ public:
 	// File mode
 	bool downloadFile(String url, HttpClientCompletedDelegate onCompleted = NULL);
 	bool downloadFile(String url, String saveFileName, HttpClientCompletedDelegate onCompleted = NULL);
+        
+        // REST mode
+        bool doGet(  String url, HttpClientCompletedDelegate onCompleted);
+        bool doPost( String url, HttpClientCompletedDelegate onCompleted);
+        bool doPut(  String url, HttpClientCompletedDelegate onCompleted);
+        bool doDelete(String url, HttpClientCompletedDelegate onCompleted);
+        bool doRestVerb(String url, String verb, HttpClientCompletedDelegate onCompleted);
 
 	void setPostBody(const String& _method);
 	String getPostBody();
@@ -62,7 +69,8 @@ public:
 	void reset(); // Reset current status, data and etc.
 
 protected:
-	bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
+        bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
+	bool startDownload(URL uri, String method, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
 	void onFinished(TcpClientState finishState);
 	virtual err_t onReceive(pbuf *buf);
 	virtual void writeRawData(pbuf* buf, int startPos);
