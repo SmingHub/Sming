@@ -7,3 +7,6 @@
 [submodule "Sming/third-party/esp-gdbstub"]
 	path = Sming/third-party/esp-gdbstub
 	url = https://github.com/espressif/esp-gdbstub.git
+[submodule "Sming/pwm"]
+	path = Sming/third-party/pwm
+	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
