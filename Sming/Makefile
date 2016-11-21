@@ -174,10 +174,9 @@ ifeq ($(ENABLE_SSL),1)
 		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1 -DAXL_DEBUG=1
 	endif
 	CUSTOM_TARGETS += $(USER_LIBDIR)/libaxtls.a
+	CFLAGS += $(AXTLS_FLAGS)  
+	CXXFLAGS += $(AXTLS_FLAGS)
 endif
-
-CFLAGS += $(AXTLS_FLAGS)  
-CXXFLAGS += $(AXTLS_FLAGS)
 
 # select which tools to use as compiler, librarian and linker
 AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
