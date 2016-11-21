@@ -23,7 +23,8 @@
 #endif
 
 #ifndef SERVER_IP
-#warning "Make sure to define the server IP in the code"
+	// Make sure to define the server IP in the code"
+	#define SERVER_IP "127.0.0.1"
 #endif
 
 Timer procTimer;
@@ -55,31 +56,31 @@ void displaySessionId(SSL *ssl)
  */
 void displayCipher(SSL *ssl)
 {
-    debugf("CIPHER is ");
+    Serial.printf("CIPHER is ");
     switch (ssl_get_cipher_id(ssl))
     {
         case SSL_AES128_SHA:
-            debugf("AES128-SHA");
+            Serial.printf("AES128-SHA");
             break;
 
         case SSL_AES256_SHA:
-        	debugf("AES256-SHA");
+            Serial.printf("AES256-SHA");
             break;
 
-        case SSL_RC4_128_SHA:
-        	debugf("RC4-SHA");
+        case SSL_AES128_SHA256:
+            Serial.printf("SSL_AES128_SHA256");
             break;
 
-        case SSL_RC4_128_MD5:
-        	debugf("RC4-MD5");
+        case SSL_AES256_SHA256:
+      	    Serial.printf("SSL_AES256_SHA256");
             break;
 
         default:
-        	debugf("Unknown - %d", ssl_get_cipher_id(ssl));
+        	Serial.printf("Unknown - %d", ssl_get_cipher_id(ssl));
             break;
     }
 
-    debugf("\n");
+    Serial.printf("\n");
 }
 
 bool onReceive(TcpClient& tcpClient, char *data, int size) {
