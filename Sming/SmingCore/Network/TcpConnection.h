@@ -136,12 +136,12 @@ protected:
 #ifdef ENABLE_SSL
 	SSL *ssl = nullptr;
 	SSLCTX *sslContext = nullptr;
+	SSL_EXTENSIONS *ssl_ext=NULL;
 #endif
 	boolean useSsl = false;
 	uint8_t *sslFingerprint=null;
 	boolean sslConnected = false;
 	uint32_t sslOptions=0;
-	String hostname = "";
 	SSLKeyCertPair clientKeyCert;
 	boolean freeClientKeyCert = false;
 };

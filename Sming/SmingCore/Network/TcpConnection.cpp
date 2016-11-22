@@ -48,7 +48,16 @@ bool TcpConnection::connect(String server, int port, boolean useSsl /* = false *
 
 	this->useSsl = useSsl;
 	this->sslOptions |= sslOptions;
-	hostname = server;
+
+#ifdef ENABLE_SSL
+	if(ssl_ext == NULL) {
+		ssl_ext = ssl_ext_new();
+		ssl_ext->host_name = (char *)malloc(server.length() + 1);
+		strcpy(ssl_ext->host_name, server.c_str());
+
+		ssl_ext->max_fragment_size = 4*1024; // 4K max size
+	}
+#endif
 
 	debugf("connect to: %s", server.c_str());
 	canSend = false; // Wait for connection
@@ -290,8 +299,6 @@ void TcpConnection::close()
 	tcp_arg(tcp, NULL); // reset pointer to close connection on next callback
 	tcp = NULL;
 
-	hostname = "";
-
 	checkSelfFree();
 }
 
@@ -412,7 +419,7 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 				}
 			}
 
-			con->ssl = ssl_client_new(con->sslContext, clientfd, NULL, 0, con->hostname.c_str());
+			con->ssl = ssl_client_new(con->sslContext, clientfd, NULL, 0, con->ssl_ext);
 			if(ssl_handshake_status(con->ssl)!=SSL_OK) {
 				debugf("SSL: handshake is in progress...");
 				return SSL_OK;
