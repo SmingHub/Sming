@@ -334,7 +334,7 @@ samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_HwPWM Basic_Ssl
 
 third-party/%: 
 	$(Q) echo "Fetching $(dir $@) ..."
-	$(Q) git submodule update --init $(dir $@)
+	$(Q) git submodule update --init --recursive $(dir $@)
 	$(Q) touch $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
 	$(Q) patch -p0 < $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
 # if the new submodule brings source code files that need to be compiled inside Sming

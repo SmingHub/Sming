@@ -1,30 +1,3 @@
-diff -Nuar third-party/axtls-8266/Makefile Sming/axtls-8266/Makefile
---- third-party/axtls-8266/Makefile	2016-11-21 11:11:56.708179012 +0100
-+++ Sming/axtls-8266/Makefile	2016-11-21 11:03:46.952184516 +0100
-@@ -1,3 +1,5 @@
-+-include Makefile.local
-+
- TOOLCHAIN_PREFIX := xtensa-lx106-elf-
- CC := $(TOOLCHAIN_PREFIX)gcc
- AR := $(TOOLCHAIN_PREFIX)ar
-@@ -6,7 +8,9 @@
- 
- 
- XTENSA_LIBS ?= $(shell $(CC) -print-sysroot)
--
-+ifeq ($(XTENSA_LIBS),)
-+	XTENSA_LIBS = $(ESP_HOME)/xtensa-lx106-elf/
-+endif
- 
- OBJ_FILES := \
- 	crypto/aes.o \
-diff -Nuar third-party/axtls-8266/Makefile.local.template Sming/axtls-8266/Makefile.local.template
---- third-party/axtls-8266/Makefile.local.template	1970-01-01 01:00:00.000000000 +0100
-+++ Sming/axtls-8266/Makefile.local.template	2016-11-21 11:02:07.672185632 +0100
-@@ -0,0 +1,3 @@
-+# Set this to SDK path and save as Makefile.local
-+SDK_BASE := $(HOME)/esp8266/sdk
-+
 diff -Nuar third-party/axtls-8266/replacements/libc.c Sming/axtls-8266/replacements/libc.c
 --- third-party/axtls-8266/replacements/libc.c	1970-01-01 01:00:00.000000000 +0100
 +++ Sming/axtls-8266/replacements/libc.c	2016-11-21 11:03:47.152184514 +0100
@@ -146,10 +119,26 @@ diff -Nuar third-party/axtls-8266/replacements/mem.c Sming/axtls-8266/replacemen
 +    if (size >= 1024)
 +        DEBUG_TLS_MEM_PRINT("free %d, left %d\r\n", p[-3], system_get_free_heap_size());
 +}
-diff -Nuar third-party/axtls-8266/ssl/os_port.h Sming/axtls-8266/ssl/os_port.h
---- third-party/axtls-8266/ssl/os_port.h	2016-11-21 11:11:56.712179012 +0100
-+++ Sming/axtls-8266/ssl/os_port.h	2016-11-21 11:03:47.216184514 +0100
-@@ -60,7 +60,14 @@
+diff --git third-party/axtls-8266/Makefile third-party/axtls-8266/Makefile
+index 0cdd8da..b0360a3 100644
+--- third-party/axtls-8266/Makefile
++++ third-party/axtls-8266/Makefile
+@@ -6,7 +6,9 @@ OBJCOPY := $(TOOLCHAIN_PREFIX)objcopy
+ 
+ 
+ XTENSA_LIBS ?= $(shell $(CC) -print-sysroot)
+-
++ifeq ($(XTENSA_LIBS),)
++	XTENSA_LIBS = $(ESP_HOME)/xtensa-lx106-elf/
++endif
+ 
+ OBJ_FILES := \
+ 	crypto/aes.o \
+diff --git third-party/axtls-8266/ssl/os_port.h third-party/axtls-8266/ssl/os_port.h
+index efda6b5..85a1038 100644
+--- third-party/axtls-8266/ssl/os_port.h
++++ third-party/axtls-8266/ssl/os_port.h
+@@ -60,7 +60,14 @@ extern "C" {
  
  #if defined(ESP8266)
  
@@ -164,7 +153,7 @@ diff -Nuar third-party/axtls-8266/ssl/os_port.h Sming/axtls-8266/ssl/os_port.h
  #include <errno.h>
  #define alloca(size) __builtin_alloca(size)
  #define TTY_FLUSH()
-@@ -96,7 +103,8 @@
+@@ -96,7 +103,8 @@ extern "C" {
  #define be64toh(x) __bswap_constant_64(x)
  #endif
  
@@ -174,7 +163,7 @@ diff -Nuar third-party/axtls-8266/ssl/os_port.h Sming/axtls-8266/ssl/os_port.h
  
  #elif defined(WIN32)
  
-@@ -190,6 +198,18 @@
+@@ -190,6 +198,18 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
  #endif  /* Not Win32 */
  
  /* some functions to mutate the way these work */
@@ -193,10 +182,11 @@ diff -Nuar third-party/axtls-8266/ssl/os_port.h Sming/axtls-8266/ssl/os_port.h
  inline uint32_t htonl(uint32_t n){
    return ((n & 0xff) << 24) |
      ((n & 0xff00) << 8) |
-diff -Nuar third-party/axtls-8266/ssl/tls1.c Sming/axtls-8266/ssl/tls1.c
---- third-party/axtls-8266/ssl/tls1.c	2016-11-21 11:11:56.712179012 +0100
-+++ Sming/axtls-8266/ssl/tls1.c	2016-11-21 11:03:47.216184514 +0100
-@@ -1306,6 +1306,9 @@
+diff --git third-party/axtls-8266/ssl/tls1.c third-party/axtls-8266/ssl/tls1.c
+index 0cf2e4c..78576f7 100644
+--- third-party/axtls-8266/ssl/tls1.c
++++ third-party/axtls-8266/ssl/tls1.c
+@@ -1334,6 +1334,9 @@ int basic_read(SSL *ssl, uint8_t **in_data)
      int read_len, is_client = IS_SET_SSL_FLAG(SSL_IS_CLIENT);
      uint8_t *buf = ssl->bm_data;
  
@@ -206,10 +196,11 @@ diff -Nuar third-party/axtls-8266/ssl/tls1.c Sming/axtls-8266/ssl/tls1.c
      if (IS_SET_SSL_FLAG(SSL_SENT_CLOSE_NOTIFY))
          return SSL_CLOSE_NOTIFY;
  
-diff -Nuar third-party/axtls-8266/ssl/tls1.h Sming/axtls-8266/ssl/tls1.h
---- third-party/axtls-8266/ssl/tls1.h	2016-11-21 11:11:56.712179012 +0100
-+++ Sming/axtls-8266/ssl/tls1.h	2016-11-21 11:03:47.216184514 +0100
-@@ -43,7 +43,6 @@
+diff --git third-party/axtls-8266/ssl/tls1.h third-party/axtls-8266/ssl/tls1.h
+index 6565625..c644321 100644
+--- third-party/axtls-8266/ssl/tls1.h
++++ third-party/axtls-8266/ssl/tls1.h
+@@ -43,7 +43,6 @@ extern "C" {
  #include "version.h"
  #include "config.h"
  #include "os_int.h"
@@ -217,17 +208,10 @@ diff -Nuar third-party/axtls-8266/ssl/tls1.h Sming/axtls-8266/ssl/tls1.h
  #include "crypto.h"
  #include "crypto_misc.h"
  
-diff -Nuar third-party/axtls-8266/tools/make_certs.sh Sming/axtls-8266/tools/make_certs.sh
---- third-party/axtls-8266/tools/make_certs.sh	2016-11-21 11:11:56.712179012 +0100
-+++ Sming/axtls-8266/tools/make_certs.sh	2016-11-21 11:02:07.676185632 +0100
-@@ -1,6 +1,6 @@
- #!/bin/sh
- #
--# Copyright (c) 2007-2016, Cameron Rich
-+# Copyright (c) 2007, Cameron Rich
- #
- # All rights reserved.
- #
+diff --git third-party/axtls-8266/tools/make_certs.sh third-party/axtls-8266/tools/make_certs.sh
+index dc577e7..3113355 100644
+--- third-party/axtls-8266/tools/make_certs.sh
++++ third-party/axtls-8266/tools/make_certs.sh
 @@ -29,7 +29,12 @@
  # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  #
@@ -242,7 +226,7 @@ diff -Nuar third-party/axtls-8266/tools/make_certs.sh Sming/axtls-8266/tools/mak
  CWD=`mktemp -d` && cd $dir
  cd $CWD 
  
-@@ -56,7 +61,7 @@
+@@ -56,7 +61,7 @@ prompt                 = no
  
  [ req_distinguished_name ]
   O                      = $PROJECT_NAME
@@ -251,7 +235,7 @@ diff -Nuar third-party/axtls-8266/tools/make_certs.sh Sming/axtls-8266/tools/mak
  EOF
  
  cat > device_cert.conf << EOF  
-@@ -69,16 +74,21 @@
+@@ -69,16 +74,21 @@ prompt                 = no
  EOF
  
  # private key generation
@@ -276,7 +260,7 @@ diff -Nuar third-party/axtls-8266/tools/make_certs.sh Sming/axtls-8266/tools/mak
  openssl rsa -in axTLS.key_2048.pem -out axTLS.key_2048 -outform DER
  openssl rsa -in axTLS.key_4096.pem -out axTLS.key_4096 -outform DER
  openssl rsa -in axTLS.device_key.pem -out axTLS.device_key -outform DER
-@@ -86,8 +96,12 @@
+@@ -86,8 +96,12 @@ openssl rsa -in axTLS.device_key.pem -out axTLS.device_key -outform DER
  # cert requests
  openssl req -out axTLS.ca_x509.req -key axTLS.ca_key.pem -new \
              -config ./ca_cert.conf 
@@ -289,7 +273,7 @@ diff -Nuar third-party/axtls-8266/tools/make_certs.sh Sming/axtls-8266/tools/mak
  openssl req -out axTLS.x509_2048.req -key axTLS.key_2048.pem -new \
              -config ./certs.conf 
  openssl req -out axTLS.x509_4096.req -key axTLS.key_4096.pem -new \
-@@ -101,32 +115,25 @@
+@@ -101,32 +115,25 @@ openssl req -out axTLS.x509_aes256.req -key axTLS.key_aes256.pem \
  
  # generate the actual certs.
  openssl x509 -req -in axTLS.ca_x509.req -out axTLS.ca_x509.pem \
@@ -332,7 +316,7 @@ diff -Nuar third-party/axtls-8266/tools/make_certs.sh Sming/axtls-8266/tools/mak
  openssl x509 -req -in axTLS.x509_aes128.req \
              -out axTLS.x509_aes128.pem \
              -sha1 -CAcreateserial -days 5000 \
-@@ -139,33 +146,35 @@
+@@ -139,33 +146,35 @@ openssl x509 -req -in axTLS.x509_aes256.req \
  # note: must be root to do this
  DATE_NOW=`date`
  if date -s "Jan 1 2025"; then
@@ -375,7 +359,7 @@ diff -Nuar third-party/axtls-8266/tools/make_certs.sh Sming/axtls-8266/tools/mak
  
  # generate pkcs12 files (use RC4-128 for encryption)
  openssl pkcs12 -export -in axTLS.x509_1024.pem -inkey axTLS.key_1024.pem -certfile axTLS.ca_x509.pem -keypbe PBE-SHA1-RC4-128 -certpbe PBE-SHA1-RC4-128 -name "p12_with_CA" -out axTLS.withCA.p12 -password pass:abcd
-@@ -177,6 +186,6 @@
+@@ -177,6 +186,6 @@ cat axTLS.ca_x509.pem >> axTLS.x509_device.pem
  
  # set default key/cert for use in the server
  xxd -i axTLS.x509_1024.cer | sed -e \
@@ -384,474 +368,4 @@ diff -Nuar third-party/axtls-8266/tools/make_certs.sh Sming/axtls-8266/tools/mak
  xxd -i axTLS.key_1024 | sed -e \
 -        "s/axTLS_key_1024/default_private_key/" > $AXDIR/../ssl/private_key.h
 +        "s/axTLS_key_1024/default_private_key/" > $AXDIR/private_key.h
-
-diff --git third-party/axtls-8266/compat/README.md third-party/axtls-8266/compat/README.md
-index fff3383..d3fcb4f 100644
---- third-party/axtls-8266/compat/README.md
-+++ third-party/axtls-8266/compat/README.md
-@@ -1,3 +1,23 @@
-+Introduction
-+============
-+The name "Lwirax" comes from **LW**ip**R**aw and **AX**tls. 
-+[LWIP raw](http://lwip.wikia.com/wiki/Raw/TCP) is the asynchronous mode in which the Light Weight IP (LWIP) stack works in popular
-+microcontrollers like ESP8266. As the name states it is designed to fit in embedded devices with limited resources and provides 
-+the TCP/IP functionality in your application or device. 
-+
-+[axTLS](http://axtls.sourceforge.net/) is a light weight TLS(aka SSL) implementation. 
-+
-+Using axTLS with LWIP raw mode is not straight forward. "Lwirax" tries to ease the burden and provides the "glue" between the two.
-+It is tested and working with [axTLS for ESP8266](https://github.com/igrr/axtls-8266) but should be easy to use in other
-+platforms. Lwirax is proven to work with axTLS version 1.4.9 till 2.0.0+. It might work also for other versions.
-+
-+For a fully working project and integration take a look at [Sming Tasty](https://github.com/slaff/Sming). 
-+Take a look at [TcpConnection.cpp](https://github.com/slaff/Sming/blob/tasty/Sming/SmingCore/Network/TcpConnection.cpp) for a start.
-+The [Basic_Ssl](https://github.com/slaff/Sming/tree/tasty/samples/Basic_Ssl) sample can be used to make a test SSL connection with google servers.
-+
-+Usage
-+=====
-+
- If you are using [LWIP raw tcp mode](http://lwip.wikia.com/wiki/Raw/TCP) and want to add SSL support below are the steps that can help you to achieve this with the help of [axTLS]( http://axtls.sourceforge.net/ ).
- 		
- First you have to include the `lwipr_compat.h` header.
-@@ -31,7 +51,7 @@ res = tcp_connect(tcp, &addr, port, staticOnConnected);
- 
- ```
- 
--Now we should add in our `staticOnConnected` funciton code to create new ssl context and ssl object. 
-+Now we should add in our `staticOnConnected` function code to create new ssl context and ssl object. 
- In the example below the `sslObj` and `sslContext` are defined as global
- 
- ```C
-@@ -76,9 +96,9 @@ err_t staticOnConnected(void *arg, struct tcp_pcb *tcp, err_t err)
- Once we are connected we can send and receive information. For the receiving part we can do the following
- 
- ```C
--err_t staticOnReceive(void *arg, struct tcp_pcb *tcp, struct pbuf *p, err_t err)
-+err_t staticOnReceive(void *arg, struct tcp_pcb *tcp, struct pbuf *pin, err_t err)
- {
--	uint8_t *read_buf = NULL;
-+	struct pbuf* pout;
- 	int read_bytes = 0;
- 
- 	printf("Err: %d\n", err);
-@@ -88,17 +108,26 @@ err_t staticOnReceive(void *arg, struct tcp_pcb *tcp, struct pbuf *p, err_t err)
- 		return -1;
- 	}
- 
--	read_bytes = axl_ssl_read(sslObj, &read_buf, tcp, p);
-+	read_bytes = axl_ssl_read(sslObj, tcp, p, &pout);
- 	if(read_bytes > 0) {
--		printf("Got data: %s", read_buf);
--		// @TODO: Do something useful with the read_buf 
-+	    // free the SSL pbuf and put the decrypted data in the brand new pout pbuf
-+		if(p != NULL) {
-+			pbuf_free(p);
-+		}
-+		
-+		printf("Got decrypted data length: %d", read_bytes);
-+		
-+		// put the decrypted data in a brand new pbuf
-+		p = pout;
-+	
-+		// @TODO: Continue to work with the p buf containing the decrypted data 
- 	}
- 
- 	return ERR_OK;
- }
- ```
- 
--In the receiving part you can also add debug code to display more information about the SSL handshake, once it was successul.
-+In the receiving part you can also add debug code to display more information about the SSL handshake, once it was successful.
- 
- 
- ```C
-@@ -108,10 +137,9 @@ err_t staticOnReceive(void *arg, struct tcp_pcb *tcp, struct pbuf *p, err_t err)
- 	const char *common_name = NULL;
- 	
- 	// ..
--	read_bytes = axl_ssl_read(sslObj, &read_buf, tcp, p);
-+	read_bytes = axl_ssl_read(sslObj, tcp, p, &pout);
- 	if(read_bytes > 0) {
--		printf("Got data: %s", read_buf);
--		// @TODO: Do something useful with the read_buf 
-+	    // ...
- 	}
- 	
- 	if(!show_info && ssl_handshake_status(sslObj) == SSL_OK) {
-@@ -120,7 +148,7 @@ err_t staticOnReceive(void *arg, struct tcp_pcb *tcp, struct pbuf *p, err_t err)
- 			printf("Common Name:\t\t\t%s\n", common_name);
- 		}
- 
--		// These two funcitons below can be found in the axtls examples
-+		// These two functions below can be found in the axtls examples
- 		display_session_id(sslObj); 
- 		display_cipher(sslObj);
- 		show_info = 1;
-@@ -146,4 +174,8 @@ void someSendingfunction() {
- 
- ```
- 
-+Platforms
-+=========
-+If you want to adapt Lwirax for other platforms make sure to add your platform specific changes to the *lwip_platform.h* file.
-+
- Good luck and send your success stories at slaff@attachix.com.
-diff --git third-party/axtls-8266/compat/lwipr_compat.c third-party/axtls-8266/compat/lwipr_compat.c
-index a334454..c6de55b 100644
---- third-party/axtls-8266/compat/lwipr_compat.c
-+++ third-party/axtls-8266/compat/lwipr_compat.c
-@@ -14,9 +14,17 @@ AxlTcpDataArray axlFdArray;
- 
- /**
-  * Function that should be called once we are ready to use the axTLS - LWIP raw compatibility
-+ * @param int capacity -  the desired capacity
-+ * @return int - the actual capacity
-+ * 		   - 0 - not enough memory
-+ * 		   > 0 && capacity != actual capacity - the axl_init was already called and this is the current capacity
-  */
--void axl_init(int capacity) {
--	ax_fd_init(&axlFdArray, capacity);
-+int axl_init(int capacity) {
-+	if(axlFdArray.capacity > 0 && axlFdArray.data != NULL) {
-+		// we are already initialized.
-+		return axlFdArray.capacity;
-+	}
-+	return ax_fd_init(&axlFdArray, capacity);
- }
- 
- /**
-@@ -38,11 +46,11 @@ int axl_free(struct tcp_pcb *tcp) {
- 	}
- 
- 	AxlTcpDataArray *vector = &axlFdArray;
--	AXL_DEBUG("AXL: Freeing %d tcp item", vector->size);
-+	AXL_DEBUG_PRINT("axl_free: Freeing %d tcp item", vector->size);
- 	for (i = 0; i < vector->size; i++) {
- 		if (vector->data[i].tcp == tcp) {
- 			if(vector->data[i].tcp_pbuf != NULL) {
--				pbuf_free(vector->data[i].tcp_pbuf);
-+				// Don't free tcp_pbuf here. It should be freed manually outside of this code.
- 				vector->data[i].tcp_pbuf = NULL;
- 			}
- 			vector->data[i].tcp = NULL;
-@@ -54,61 +62,117 @@ int axl_free(struct tcp_pcb *tcp) {
- 	return occurances;
- }
- 
-+
-+/**
-+ * Frees completely the FD mapping.
-+ */
-+void axl_destroy()
-+{
-+	if(axlFdArray.data != NULL) {
-+		free(axlFdArray.data);
-+	}
-+	axlFdArray.size = 0;
-+	axlFdArray.capacity = 0;
-+}
-+
- /**
-  * Reads data from the SSL over TCP stream. Returns decrypted data.
-  * @param SSL *sslObj
-  * @param uint8_t **in_data - pointer to the decrypted incoming data, or NULL if nothing was read
-  * @param void *arg - possible arguments passed to the tcp raw layer during initialization
-  * @param tcp_pcb *tcp - pointer to the raw tcp object
-- * @param pbuf *p - pointer to the buffer with the TCP packet data
-+ * @param pbuf *pin - pointer to the buffer with the encrypted TCP packet data
-+ * - the freeing of the pbuf should be done separately
-+ * - the confirmation for the received bytes should be done separately
-+ * @param pbuf **pout - pointer to the buffer with the decrypted TCP packet data
-+ * - the freeing of the pbuf should be done separately
-  *
-  * @return int
-  * 			0 - when everything is fine but there are no symbols to process yet
-  * 			< 0 - when there is an error
-  * 			> 0 - the length of the clear text characters that were read
-  */
--int axl_ssl_read(SSL *ssl, uint8_t **in_data, struct tcp_pcb *tcp, struct pbuf *p) {
-+int axl_ssl_read(SSL *ssl, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **pout) {
- 	int read_bytes = 0;
- 	int total_bytes = 0;
- 	int clientfd = -1;
--
-+	uint8_t *read_buffer = NULL;
-+	uint8_t *total_read_buffer = NULL;
- 	AxlTcpData* data = NULL;
- 
- 	if (ssl == NULL) {
-+		AXL_DEBUG_PRINT("axl_ssl_read: SSL is null\n");
- 		return ERR_AXL_INVALID_SSL;
- 	}
- 
-+	if(pin == NULL) {
-+		AXL_DEBUG_PRINT("axl_ssl_read: PBUF is null\n");
-+		return ERR_AXL_INVALID_PBUF;
-+	}
-+
-+	if(pin->tot_len == 0) {
-+		// nothing to read
-+		return 0;
-+	}
-+
- 	clientfd = ax_fd_getfd(&axlFdArray, tcp);
- 	if(clientfd == -1) {
-+		AXL_DEBUG_PRINT("axl_ssl_read: ClientFD not found\n");
- 		return ERR_AXL_INVALID_CLIENTFD;
- 	}
- 
- 	data = ax_fd_get(&axlFdArray, clientfd);
- 	if(data == NULL) {
-+		AXL_DEBUG_PRINT("axl_ssl_read: ClientFD data not found\n");
- 		return ERR_AXL_INVALID_CLIENTFD_DATA;
- 	}
- 
--	if (p != NULL) {
--		data->tcp_pbuf = p;
--		data->pbuf_offset = 0;
--	}
--
--	AXL_DEBUG("READY TO READ SOME DATA\n");
-+	data->tcp_pbuf = pin;
-+	data->pbuf_offset = 0;
- 
--	tcp_recved(tcp, p->tot_len);
- 	do {
--		WATCHDOG_FEED();
--		read_bytes = ssl_read(ssl, in_data);
--		AXL_DEBUG("axl_ssl_read: Read bytes: %d\n", read_bytes);
-+		WATCHDOG_RESET();
-+		read_bytes = ssl_read(ssl, &read_buffer);
-+		AXL_DEBUG_PRINT("axl_ssl_read: Read bytes: %d\n", read_bytes);
- 		if(read_bytes < SSL_OK) {
- 			/* An error has occurred. Give it back for further processing */
--			total_bytes = read_bytes;
-+			if(total_bytes == 0) {
-+				// Nothing is read so far -> give back the error
-+				total_bytes = read_bytes;
-+			}
-+			else {
-+				// We already have read some data -> deliver it back
-+				// and silence the error for now..
-+				AXL_DEBUG_PRINT("axl_ssl_read: Silently ignoring SSL error %d\n", read_bytes);
-+			}
-+
- 			break;
- 		}
-+		else if (read_bytes > 0 ){
-+			if(total_read_buffer == NULL) {
-+				total_read_buffer = (uint8_t *)malloc(read_bytes);
-+			}
-+			else {
-+				AXL_DEBUG_PRINT("axl_ssl_read: Got more than one SSL packet inside one TCP packet\n");
-+				total_read_buffer = (uint8_t *)realloc(total_read_buffer, total_bytes + read_bytes);
-+			}
-+
-+			if(total_read_buffer == NULL) {
-+				AXL_DEBUG_PRINT("axl_ssl_read: Unable to allocate additional %d bytes", read_bytes);
-+				while(1) {}
-+			}
-+
-+			memcpy(total_read_buffer + total_bytes, read_buffer, read_bytes);
-+		}
- 		total_bytes+= read_bytes;
--	} while (p->tot_len - data->pbuf_offset > 0);
-+	} while (pin->tot_len - data->pbuf_offset > 0);
- 
--	pbuf_free(p);
-+	if(total_bytes > 0) {
-+		// put the decrypted data in a brand new pbuf
-+		*pout = pbuf_alloc(PBUF_TRANSPORT, total_bytes, PBUF_RAM);
-+		memcpy((*pout)->payload, total_read_buffer, total_bytes);
-+		free(total_read_buffer);
-+	}
- 
- 	return total_bytes;
- }
-@@ -127,18 +191,20 @@ int ax_port_write(int clientfd, uint8_t *buf, uint16_t bytes_needed) {
- 
- 	data = ax_fd_get(&axlFdArray, clientfd);
- 	if(data == NULL) {
-+		AXL_DEBUG_PRINT("ax_port_write: Invalid ClientFD.\n");
- 		return ERR_AXL_INVALID_CLIENTFD;
- 	}
- 
- 	if (data == NULL || data->tcp == NULL || buf == NULL || bytes_needed == 0) {
--		AXL_DEBUG("Return Zero.\n");
-+		AXL_DEBUG_PRINT("ax_port_write: Return Zero.\n");
- 		return 0;
- 	}
- 
- 	if (tcp_sndbuf(data->tcp) < bytes_needed) {
- 		tcp_len = tcp_sndbuf(data->tcp);
- 		if(tcp_len == 0) {
--			AXL_DEBUG("The send buffer is full! We have problem.\n");
-+			err = tcp_output(data->tcp);
-+			AXL_DEBUG_PRINT("ax_port_write: The send buffer is full! We have problem.\n");
- 			return 0;
- 		}
- 
-@@ -153,19 +219,19 @@ int ax_port_write(int clientfd, uint8_t *buf, uint16_t bytes_needed) {
- 	do {
- 		err = tcp_write(data->tcp, buf, tcp_len, TCP_WRITE_FLAG_COPY);
- 		if(err < SSL_OK) {
--			AXL_DEBUG("Got error: %d\n", err);
-+			AXL_DEBUG_PRINT("ax_port_write: Got error: %d\n", err);
- 		}
- 
- 		if (err == ERR_MEM) {
--			AXL_DEBUG("Not enough memory to write data with length: %d (%d)\n", tcp_len, bytes_needed);
-+			AXL_DEBUG_PRINT("ax_port_write: Not enough memory to write data with length: %d (%d)\n", tcp_len, bytes_needed);
- 			tcp_len /= 2;
- 		}
- 	} while (err == ERR_MEM && tcp_len > 1);
--	AXL_DEBUG("send_raw_packet length %d(%d)\n", tcp_len, bytes_needed);
-+	AXL_DEBUG_PRINT("ax_port_write: send_raw_packet length %d(%d)\n", tcp_len, bytes_needed);
- 	if (err == ERR_OK) {
- 		err = tcp_output(data->tcp);
- 		if(err != ERR_OK) {
--			AXL_DEBUG("tcp_output got err: %d\n", err);
-+			AXL_DEBUG_PRINT("ax_port_write: tcp_output got err: %d\n", err);
- 		}
- 	}
- 
-@@ -187,7 +253,7 @@ int ax_port_read(int clientfd, uint8_t *buf, int bytes_needed) {
- 	}
- 
- 	if(data->tcp_pbuf == NULL || data->tcp_pbuf->tot_len == 0) {
--		AXL_DEBUG("Nothing to read?! May be the connection needs resetting?\n");
-+		AXL_DEBUG_PRINT("ax_port_read: Nothing to read?! May be the connection needs resetting?\n");
- 		return 0;
- 	}
- 
-@@ -203,7 +269,7 @@ int ax_port_read(int clientfd, uint8_t *buf, int bytes_needed) {
- 	}
- 
- 	if(bytes_needed < recv_len) {
--		AXL_DEBUG("Bytes needed: %d, Bytes read: %d\n", bytes_needed, recv_len);
-+		AXL_DEBUG_PRINT("ax_port_read: Bytes needed: %d, Bytes read: %d\n", bytes_needed, recv_len);
- 	}
- 
- 	free(pread_buf);
-@@ -217,16 +283,22 @@ int ax_get_file(const char *filename, uint8_t **buf) {
-     return 0;
- }
- 
--void ax_wdt_feed() {
--}
--
- /*
-  * Utility functions
-+ *
-+ * @param AxlTcpDataArray the tcp data vector
-+ * @param int capacity - the desired capacity.
-+ * @return int - the actual capacity
-  */
--void ax_fd_init(AxlTcpDataArray *vector, int capacity) {
-+int ax_fd_init(AxlTcpDataArray *vector, int capacity) {
- 	vector->size = 0;
- 	vector->capacity = capacity;
- 	vector->data = (AxlTcpData*) malloc(sizeof(AxlTcpData) * vector->capacity);
-+	if(vector->data == NULL) {
-+		return 0;
-+	}
-+
-+	return capacity;
- }
- 
- int ax_fd_append(AxlTcpDataArray *vector, struct tcp_pcb *tcp) {
-@@ -243,8 +315,7 @@ int ax_fd_append(AxlTcpDataArray *vector, struct tcp_pcb *tcp) {
- 
- AxlTcpData* ax_fd_get(AxlTcpDataArray *vector, int index) {
- 	if (index >= vector->size || index < 0) {
--		AXL_DEBUG("Index %d out of bounds for vector of size %d\n", index,
--				vector->size);
-+		AXL_DEBUG_PRINT("ax_fd_get: Index %d out of bounds for vector of size %d\n", index, vector->size);
- 		return NULL;
- 	}
- 	return &(vector->data[index]);
-diff --git third-party/axtls-8266/compat/lwipr_compat.h third-party/axtls-8266/compat/lwipr_compat.h
-index 1a8846f..0916412 100644
---- third-party/axtls-8266/compat/lwipr_compat.h
-+++ third-party/axtls-8266/compat/lwipr_compat.h
-@@ -25,22 +25,16 @@ extern "C" {
- #define ERR_AXL_INVALID_TCP -102
- #define ERR_AXL_INVALID_CLIENTFD -103
- #define ERR_AXL_INVALID_CLIENTFD_DATA -104
-+#define ERR_AXL_INVALID_PBUF -105
- 
- #define SOCKET_READ(A, B, C) 	ax_port_read(A, B, C)
- #define SOCKET_WRITE(A, B, C) 	ax_port_write(A, B, C)
- 
--/*
-- * Define the AXL_DEBUG function to add debug functionality
-- */
--#ifndef AXL_DEBUG
--	#define AXL_DEBUG(...)
--#endif
--
- /**
-  * Define watchdog function to be called during CPU intensive operations.
-  */
--#ifndef WATCHDOG_FEED
--	#define WATCHDOG_FEED()
-+#ifndef WATCHDOG_RESET
-+	#define WATCHDOG_RESET()
- #endif
- 
- typedef struct {
-@@ -60,12 +54,13 @@ typedef struct {
-  * High Level Functions - these are the ones that should be used directly
-  */
- 
--void axl_init(int capacity);
-+int axl_init(int capacity);
- int axl_append(struct tcp_pcb *tcp);
- int axl_free(struct tcp_pcb *tcp);
-+void axl_destroy();
- 
- #define axl_ssl_write(A, B, C) ssl_write(A, B, C)
--int axl_ssl_read(SSL *sslObj, uint8_t **in_data, struct tcp_pcb *tcp, struct pbuf *p);
-+int axl_ssl_read(SSL *sslObj, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **pout);
- 
- /*
-  * Lower Level Socket Functions - used internally from axTLS
-@@ -77,7 +72,7 @@ int ax_port_read(int clientfd, uint8_t *buf, int bytes_needed);
- /*
-  * Lower Level Utility functions
-  */
--void ax_fd_init(AxlTcpDataArray *vector, int capacity);
-+int ax_fd_init(AxlTcpDataArray *vector, int capacity);
- int ax_fd_append(AxlTcpDataArray *vector, struct tcp_pcb *tcp);
- AxlTcpData* ax_fd_get(AxlTcpDataArray *vector, int index);
- int ax_fd_getfd(AxlTcpDataArray *vector, struct tcp_pcb *tcp);
-diff --git third-party/axtls-8266/compat/lwipr_platform.h third-party/axtls-8266/compat/lwipr_platform.h
-index 518e8bf..28a8c28 100644
---- third-party/axtls-8266/compat/lwipr_platform.h
-+++ third-party/axtls-8266/compat/lwipr_platform.h
-@@ -11,16 +11,17 @@
- 
- /* Add here all platform specific things */
- 
--
--// Some calls require the watchdog to be reset
--#ifndef WATCHDOG_FEED
--	#define WATCHDOG_FEED()
--#endif
-+#include <user_config.h>
-+//#define WATCHDOG_RESET() WDT.alive()
- 
- 
--/* SSL_DEBUG is for more information */
--#ifndef SSL_DEBUG
--	#define AXL_DEBUG(...)
-+/*
-+ * Define the AXL_DEBUG_PRINT function to add debug functionality
-+ */
-+#ifndef AXL_DEBUG
-+	#define AXL_DEBUG_PRINT(...)
-+#else
-+	#define AXL_DEBUG_PRINT(...)  debugf(__VA_ARGS__)
- #endif
- 
  
