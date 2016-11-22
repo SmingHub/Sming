@@ -46,7 +46,7 @@ void connectFail()
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE);
+	Serial.begin(COM_SPEED_SERIAL); // 115200 by default, change it in Makefile-user.mk
 	Serial.systemDebugOutput(true); // Allow debug print to serial
 	Serial.println("Sming DSRTC_NTP_SETTER started!");
 //Uncomment proper line, or set right pins by hand

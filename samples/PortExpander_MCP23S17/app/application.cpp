@@ -21,7 +21,7 @@ void init()
 	inputchip.begin();
 	outputchip.begin();
 
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(COM_SPEED_SERIAL); // 115200 by default, change it in Makefile-user.mk
 	WifiStation.enable(false);
 	WifiAccessPoint.enable(false);
 

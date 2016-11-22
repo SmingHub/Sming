@@ -76,7 +76,7 @@ void scanBus()
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(COM_SPEED_SERIAL); // 115200 by default, change it in Makefile-user.mk
 	Serial.systemDebugOutput(false); // Disable debug output
 
 	WDT.enable(false); // First (but not the best) option: fully disable watch dog timer
