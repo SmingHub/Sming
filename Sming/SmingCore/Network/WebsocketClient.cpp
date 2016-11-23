@@ -12,12 +12,6 @@
 
 #include "WebsocketClient.h"
 
-WebsocketClient::WebsocketClient(bool autoDestruct /*= false*/) :
-		TcpClient(autoDestruct)
-{
-
-}
-
 void WebsocketClient::setWebSocketMessageHandler(WebSocketClientMessageDelegate handler)
 {
 	wsMessage = handler;
@@ -41,13 +35,13 @@ void WebsocketClient::setWebSocketConnectedHandler(WebSocketClientConnectedDeleg
 
 bool WebsocketClient::connect(String url)
 {
-	this->uri = URL(url);
-	this->_url = url;
-	TcpClient::connect(uri.Host,uri.Port);
+	_uri = URL(url);
+	_url = url;
+	TcpClient::connect(_uri.Host,_uri.Port);
 	debugf("Connecting to Server");
 	unsigned char keyStart[17];
 	char b64Key[25];
-	Mode = ws_Connecting; // Server Connected / WS Upgrade request sent
+	_mode = wsMode::Connecting; // Server Connected / WS Upgrade request sent
 
 	randomSeed(analogRead(0));
 
@@ -60,13 +54,13 @@ bool WebsocketClient::connect(String url)
 
 	for (int i = 0; i < 24; ++i)
 	{
-		key[i] = b64Key[i];
+		_key[i] = b64Key[i];
 	}
 	String protocol = "chat";
 	sendString("GET ");
-	if (uri.Path != "")
+	if (_uri.Path != "")
 	{
-		sendString(uri.Path);
+		sendString(_uri.Path);
 	}
 	else
 	{
@@ -76,10 +70,10 @@ bool WebsocketClient::connect(String url)
 	sendString("Upgrade: websocket\r\n");
 	sendString("Connection: Upgrade\r\n");
 	sendString("Host: ");
-	sendString(uri.Host);
+	sendString(_uri.Host);
 	sendString("\r\n");
 	sendString("Sec-WebSocket-Key: ");
-	sendString(key);
+	sendString(_key);
 	sendString("\r\n");
 	sendString("Sec-WebSocket-Protocol: ");
 	sendString(protocol);
@@ -92,73 +86,63 @@ bool WebsocketClient::connect(String url)
 
 void WebsocketClient::onError(err_t err)
 {
-
 	if ((err == ERR_ABRT) || (err == ERR_RST))
 	{
 		debugf("TCP Connection Reseted or Aborted", err);
-
 	}
 	else
 	{
 		debugf("Error  %d Occured ", err);
 	}
 	TcpClient::onError(err);
-
 }
 
-bool WebsocketClient::verifyKey(char* buf, int size)
+bool WebsocketClient::_verifyKey(char* buf, int size)
 {
 	String dd = String(buf);
 	uint8_t s = dd.indexOf("Sec-WebSocket-Accept: ");
 	uint8_t t = dd.indexOf("\r\n", s);
 	String serverKey = dd.substring(s + 22, t);
-	//debugf("ServerKey : %s",serverKey.c_str());
-	String hash = key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+	String hash = _key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 	unsigned char data[20];
 	char secure[20 * 4];
 	sha1(data, hash.c_str(), hash.length());
 	base64_encode(20, data, 20 * 4, secure);
-
-	//debugf("clienKey : %s",secure);
 	// if the keys match, good to go
 	return serverKey.equals(String(secure)); //b64Result
 }
 
 void WebsocketClient::onFinished(TcpClientState finishState)
 {
-	Mode = ws_Disconnected;
-	if (finishState == eTCS_Failed)
+	_mode = wsMode::Disconnected;
+	uint8_t failed = (finishState == eTCS_Failed);
+	if (failed)
 	{
-		//  restart();
 		debugf("Tcp Client failure...");
-		if (wsDisconnect)
-		{
-			wsDisconnect(*this, false);
-		}
 	}
 	else
 	{
 		debugf("Websocket Closed Normally.");
-		if (wsDisconnect)
-		{
-			wsDisconnect(*this, true);
-		}
+
+	}
+
+	if (wsDisconnect)
+	{
+		wsDisconnect(*this, !failed);
 	}
 	TcpClient::onFinished(finishState);
 }
 
 void WebsocketClient::sendPing()
 {
-	uint8_t buf[2] =
-	{ 0x89, 0x00 };
+	uint8_t buf[2] = { 0x89, 0x00 };
 	debugf("Sending PING");
 	send((char*) buf, 2, false);
 }
 
 void WebsocketClient::sendPong()
 {
-	uint8_t buf[2] =
-	{ 0x8A, 0x00 };
+	uint8_t buf[2] = { 0x8A, 0x00 };
 	debugf("Sending PONG");
 	send((char*) buf, 2, false);
 }
@@ -166,14 +150,13 @@ void WebsocketClient::sendPong()
 void WebsocketClient::disconnect()
 {
 	debugf("Terminating Websocket connection.");
-	Mode = ws_Disconnected;
+	_mode = wsMode::Disconnected;
 	// Should send 0x87, 0x00 to server to tell it that I'm quitting here.
-	uint8_t buf[2] =
-	{ 0x87, 0x00 };
+	uint8_t buf[2] = { 0x87, 0x00 };
 	send((char*) buf, 2, true);
 }
 
-void WebsocketClient::sendFrame(WSFrameType frameType, uint8_t* msg, uint16_t length)
+void WebsocketClient::_sendFrame(WSFrameType frameType, uint8_t* msg, uint16_t length)
 {
 	WebsocketFrameClass wsFrame;
 	uint8_t result = wsFrame.encodeFrame(frameType, msg, length, true, true, true);
@@ -190,17 +173,17 @@ void WebsocketClient::sendFrame(WSFrameType frameType, uint8_t* msg, uint16_t le
 }
 void WebsocketClient::sendBinary(uint8_t* msg, uint16_t length)
 {
-	sendFrame(WSFrameType::binary, msg, length);
+	_sendFrame(WSFrameType::binary, msg, length);
 }
 
 void WebsocketClient::sendMessage(char* msg, uint16_t length)
 {
-	sendFrame(WSFrameType::text, (uint8_t*) msg, length);
+	_sendFrame(WSFrameType::text, (uint8_t*) msg, length);
 }
 
 void WebsocketClient::sendMessage(String str)
 {
-	sendFrame(WSFrameType::text, (uint8_t*) str.c_str(), str.length() + 1);
+	_sendFrame(WSFrameType::text, (uint8_t*) str.c_str(), str.length() + 1);
 }
 
 err_t WebsocketClient::onReceive(pbuf* buf)
@@ -217,27 +200,27 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 
 		pbuf_copy_partial(buf, data, size, 0);
 
-		switch (Mode)
+		switch (_mode)
 		{
-		case ws_Connecting:
-			if (verifyKey((char*)data, size) == true)
+		case wsMode::Connecting:
+			if (_verifyKey((char*)data, size) == true)
 			{
-				Mode = ws_Connected;
+				_mode = wsMode::Connected;
 				//   debugf("Key Verified. Websocket Handshake completed");
 				sendPing();
 			}
 			else
 			{
-				Mode = ws_Disconnected; // Handshake was not proper.
+				_mode = wsMode::Disconnected; // Handshake was not proper.
 			}
 
 			if (wsConnect)
 			{
-				wsConnect(*this, Mode);
+				wsConnect(*this, _mode);
 			}
 			break;
 
-		case ws_Connected:
+		case wsMode::Connected:
 			WebsocketFrameClass wsFrame;
 			do
 			{
@@ -314,5 +297,5 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 
 wsMode WebsocketClient::getWSMode()
 {
-	return Mode;
+	return _mode;
 }

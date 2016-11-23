@@ -10,12 +10,6 @@
 
 #include <Network/WebsocketFrame.h>
 
-WebsocketFrameClass::WebsocketFrameClass()
-{
-	// TODO Auto-generated constructor stub
-
-}
-
 WebsocketFrameClass::~WebsocketFrameClass()
 {
 	if ((_flags & WSFlags::payloadDeleteMemBit) != 0)
@@ -47,7 +41,7 @@ uint8_t WebsocketFrameClass::encodeFrame(WSFrameType opcode, uint8_t * payload, 
 	length < 126 ? _headerLength = 2 : _headerLength = 4;
 	if (mask)
 	{
-		_headerLength += 4;
+		_headerLength += 4; // if present, mask is 4 bytes in header before payload
 	}
 
 	//try to allocate single buffer for both frame header and frame payload
@@ -93,15 +87,15 @@ uint8_t WebsocketFrameClass::encodeFrame(WSFrameType opcode, uint8_t * payload, 
 	// byte 0
 	if (fin)
 	{
-		*_header |= bit(7);    ///< set Fin
+		*_header |= bit(7);    // set Fin
 	}
-	*_header |= (uint8_t) opcode;        ///< set opcode
+	*_header |= (uint8_t) opcode;        // set opcode
 	_header++;
 
 	// byte 1
 	if (mask)
 	{
-		*_header |= bit(7);    ///< set mask
+		*_header |= bit(7);    // set mask
 	}
 
 	if (length < 126)
@@ -122,7 +116,6 @@ uint8_t WebsocketFrameClass::encodeFrame(WSFrameType opcode, uint8_t * payload, 
 	if (mask && headerToPayload)
 	{
 		//we work on copy of original data so we can mask it without affecting original
-
 		for (uint8_t x = 0; x < sizeof(maskKey); x++)
 		{
 			maskKey[x] = random(0xFF);
@@ -154,11 +147,6 @@ uint8_t WebsocketFrameClass::encodeFrame(WSFrameType opcode, uint8_t * payload, 
 
 uint8_t WebsocketFrameClass::_getFrameSizes(uint8_t* buffer, size_t length)
 {
-//	for (uint8_t x = 0; x < length - _nextReadOffset; x++)
-//	{
-//		debugf("buffer[%d] = 0x%x", x, buffer[x]);
-//	}
-
 	uint16_t payloadLength = buffer[1] & 0b01111111; // length of payload
 	_mask = buffer[1] & 0b10000000; // extracting Mask bit
 
@@ -191,9 +179,7 @@ uint8_t WebsocketFrameClass::_getFrameSizes(uint8_t* buffer, size_t length)
 	}
 
 	_payloadLength = payloadLength;
-
 	_nextReadOffset += _headerLength + _payloadLength; // if given buffer is multiframe buffer store read offset for next frame
-//	debugf("_headerLength: %d, _payloadLength: %d, _nextReadOffset: %d length: %d",_headerLength, _payloadLength, _nextReadOffset,length);
 
 	if (length == _nextReadOffset) // check if given buffer is single frame buffer
 	{
@@ -208,12 +194,10 @@ uint8_t WebsocketFrameClass::decodeFrame(uint8_t * buffer, size_t length)
 	buffer += _nextReadOffset; // if called again for multiframe buffer, rewind buffer first to next frame
 									// no effect for single frame buffer as initial value of _nextReadOffset = 0
 
-	uint8_t op = buffer[0] & 0b00001111; // Extracting Opcode
+	WSFrameType op = (WSFrameType)(buffer[0] & 0b00001111); // Extracting Opcode
 	uint8_t fin = buffer[0] & 0b10000000; // Extracting Fin Bit (Single Frame)
 
-	// debugf("Opcode : 0x%x",op);
-	// debugf("Fin : 0x%x",fin);
-	if (op == 0x00 || op == 0x01 || op == 0x02) //Data frames
+	if (op == WSFrameType::continuation || op == WSFrameType::text || op == WSFrameType::binary) //Data frames
 	{
 		if (fin > 0)
 		{
@@ -231,7 +215,7 @@ uint8_t WebsocketFrameClass::decodeFrame(uint8_t * buffer, size_t length)
 
 			_header = &buffer[0];
 			_payload = &buffer[_headerLength];
-			_frameType = (WSFrameType) op;
+			_frameType = op;
 
 			if (_mask)
 			{
@@ -247,7 +231,7 @@ uint8_t WebsocketFrameClass::decodeFrame(uint8_t * buffer, size_t length)
 					_payload[i] ^= mask[i % 4];
 				}
 			}
-		} //Currently this code does not handle fragmented messenges, since a single message can be 64bit long, only streaming binary data seems likely to need fragmentation.
+		}
 	}
 	return true;
 }

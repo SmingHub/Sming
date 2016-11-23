@@ -19,7 +19,7 @@
 #endif
 
 //Uncomment next line to enable websocket binary transfer test
-//#define WS_BINARY
+#define WS_BINARY
 
 WebsocketClient wsClient;
 Timer msgTimer;
@@ -33,7 +33,7 @@ void wsDisconnected(WebsocketClient& wsClient, bool success);
 void wsMessageSent();
 void wsConnected(WebsocketClient& wsClient,wsMode Mode)
 {
-	if (Mode == ws_Connected)
+	if (Mode == wsMode::Connected)
 	{
 		msgTimer.initializeMs(1 * 1000, wsMessageSent);
 		msgTimer.start();
