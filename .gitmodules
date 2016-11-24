@@ -13,3 +13,7 @@
 	path = Sming/third-party/pwm
 	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
         ignore = dirty
+[submodule "third-party/axtls-8266"]
+	path = Sming/third-party/axtls-8266
+	url = https://github.com/igrr/axtls-8266.git
+        ignore = dirty

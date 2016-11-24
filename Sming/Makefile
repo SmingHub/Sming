@@ -46,6 +46,11 @@ ifeq ($(OS),Windows_NT)
   # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
   SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
   ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
+  
+  # Remove possible double escaping...
+  SMING_HOME := $(subst //,/, $(SMING_HOME))
+  ESP_HOME   := $(subst //,/, $(ESP_HOME))
+
   include Makefile-windows.mk  
 else
   UNAME := $(shell uname -s)
@@ -99,8 +104,17 @@ SPIFF_FILES = files
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
+LIBSMING = libsming
+ifeq ($(ENABLE_SSL),1)
+	LIBSMING= libsmingssl
+endif
+
+
 # name for the target project
 TARGET		= app
+
+
+CUSTOM_TARGETS ?=
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES		= system system/helpers Wiring SmingCore appinit $(filter %/, $(wildcard SmingCore/*/)) $(filter %/, $(wildcard Services/*/)) $(filter %/, $(wildcard Libraries/*/))
@@ -148,6 +162,21 @@ LD_SCRIPT	= $(LD_PATH)eagle.app.v6.cpp.ld
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
 SDK_INCDIR	= include include/json
+
+# SSL support using axTLS
+ifeq ($(ENABLE_SSL),1)
+	THIRD_PARTY_DATA += third-party/axtls-8266/Makefile
+	LIBS += axtls
+	MODULES		 += third-party/axtls-8266/compat third-party/axtls-8266/replacements
+	EXTRA_INCDIR += third-party/axtls-8266 axtls-8266/ssl third-party/axtls-8266/crypto 
+	AXTLS_FLAGS = -DLWIP_RAW=1 -DENABLE_SSL=1
+	ifeq ($(SSL_DEBUG),1) # 
+		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1 -DAXL_DEBUG=1
+	endif
+	CUSTOM_TARGETS += $(USER_LIBDIR)/libaxtls.a
+	CFLAGS += $(AXTLS_FLAGS)  
+	CXXFLAGS += $(AXTLS_FLAGS)
+endif
 
 # select which tools to use as compiler, librarian and linker
 AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
@@ -231,6 +260,11 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 $(USER_LIBDIR)/libpwm.a: third-party/pwm/pwm.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $< -o $(BUILD_BASE)/pwm.o
 	$(Q) $(AR) rcs $@ $(BUILD_BASE)/pwm.o
+endif 
+
+ifeq ($(ENABLE_SSL), 1)
+$(USER_LIBDIR)/libaxtls.a:
+	$(Q) $(MAKE) -C third-party/axtls-8266 -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)"
 endif
 
 spiffy: spiffy/spiffy
@@ -243,11 +277,16 @@ spiffy/spiffy:
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
-	$(vecho) "Installing libsming"
-	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/libsming.a  
+	$(vecho) "Installing $(LIBSMING)"
+ifeq ($(ENABLE_SSL), 1)
+	$(vecho) "+ SSL support is enabled"
+else
+	$(vecho) "(!) SSL support is not enabled. To enable it type: 'make clean; make ENABLE_SSL=1'"
+endif
+	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/$(LIBSMING).a  
 	$(vecho) "Done"
 
-checkdirs: $(THIRD_PARTY_DATA) $(BUILD_DIR) $(FW_BASE)
+checkdirs: $(THIRD_PARTY_DATA) $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
@@ -264,8 +303,11 @@ clean:
 	$(Q) rm -rf $(BUILD_DIR)
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
+ifeq ($(ENABLE_SSL), 1)
+	$(Q) -$(MAKE) --no-print-directory -C third-party/axtls-8266 clean -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)"
+else
 	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
-
+endif	
 
 test: all spiffy samples
 
@@ -288,11 +330,11 @@ api: docs/api/sming/index.html
 
 docs: wiki api
 
-samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_HwPWM
+samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_HwPWM Basic_Ssl
 
 third-party/%: 
 	$(Q) echo "Fetching $(dir $@) ..."
-	$(Q) git submodule update --init $(dir $@)
+	$(Q) git submodule update --init --recursive $(dir $@)
 	$(Q) touch $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
 	$(Q) patch -p0 < $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
 # if the new submodule brings source code files that need to be compiled inside Sming

@@ -39,11 +39,9 @@ extern "C" {
 	#define BOARD_ESP01
 
 	// axTLS stuff
-#ifdef ENABLE_SSL
 	#include <time.h>
 	#include "util/time.h"
-	#include "../axtls-8266/compat/lwipr_compat.h"
-#endif
+	#include "compat/lwipr_compat.h"
 
 #ifdef __cplusplus
 }
