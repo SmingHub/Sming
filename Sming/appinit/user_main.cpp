@@ -2,7 +2,7 @@
 #include "../SmingCore/SmingCore.h"
 
 #ifdef ENABLE_GDB
-	#include "../gdbstub/gdbstub.h"
+	#include "../esp-gdbstub/gdbstub.h"
 #endif
 
 extern void init();
