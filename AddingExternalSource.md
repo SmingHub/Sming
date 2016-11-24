@@ -54,3 +54,15 @@ If the new module brings also source code that needs to be compiled than you can
 `MODULES       += third-party/esp-gdbstub` 
    
 Take a look at the Makefile to see examples of including the submodules only when a switch is enabled (search for ENABLE_GDB).
+
+Generating Patch Files
+======================
+It can happen that an external source code that is coming from another git repository and is present as a submodule needs some changes before it can start working for Sming. Those changes
+must be stored in a separate patch file.
+The recommended way to generate a patch file is to get the source code of the submodule, make changes to the file(s) in the submodule until it is ready for use and finally generate a patch file using the following commands:
+
+```
+cd <Sming-root-folder>/third-party/<module-name>
+git diff --no-ext-diff > <Sming-root-folder>/third-party/.patches/<module-name>.patch
+```
+

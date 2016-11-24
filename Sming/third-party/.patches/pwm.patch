@@ -1,5 +1,5 @@
---- third-party/pwm/pwm.c
-+++ third-party/pwm/pwm.c
+--- a/pwm.c
++++ b/pwm.c
 @@ -42,6 +42,11 @@
  #define PWM_MAX_PERIOD PWM_MAX_TICKS
  #endif
