@@ -32,6 +32,9 @@
 # Com port speed
 COM_SPEED = 115200
 
+# Git command
+GIT ?= git
+
 
 ifeq ($(OS),Windows_NT)
   # Windows detected
@@ -313,7 +316,7 @@ test: all spiffy samples
 
 docs/wiki/Home.md: 
 	$(vecho) "No Wiki submodule found. Using git to fetch it..."
-	$(Q) git submodule update --init ../docs/wiki	
+	$(Q) $(GIT) submodule update --init ../docs/wiki	
 
 docs/api/error.log:
 	$(Q) mkdir -p $(SMING_HOME)/../docs/api
@@ -334,9 +337,9 @@ samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_HwPWM Basic_Ssl
 
 third-party/%: 
 	$(vecho) "Fetching $(dir $@) ..."
-	$(Q) git submodule update --init --recursive $(dir $@)
+	$(Q) $(GIT) submodule update --init --recursive $(dir $@)
 	$(Q) touch $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
-	$(Q) -cd $(dir $@); git apply -v $(patsubst third-party/%/,$(SMING_HOME)/third-party/.patches/%.patch, $(dir $@))
+	$(Q) -cd $(dir $@); $(GIT) apply -v $(patsubst third-party/%/,$(SMING_HOME)/third-party/.patches/%.patch, $(dir $@))
 # if the new submodule brings source code files that need to be compiled inside Sming
 # then we need somehow to be able to "see" these new files. 
 # For now we solve this by "reloading" the makefile after fetching a module.
