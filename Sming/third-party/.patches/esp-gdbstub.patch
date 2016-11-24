@@ -1,5 +1,5 @@
---- third-party/esp-gdbstub/gdbstub.c
-+++ third-party/esp-gdbstub/gdbstub.c
+--- a/gdbstub.c
++++ b/gdbstub.c
 @@ -8,6 +8,7 @@
   *******************************************************************************/
  

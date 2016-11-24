@@ -1,6 +1,6 @@
-diff -Nuar third-party/axtls-8266/replacements/libc.c Sming/axtls-8266/replacements/libc.c
---- third-party/axtls-8266/replacements/libc.c	1970-01-01 01:00:00.000000000 +0100
-+++ Sming/axtls-8266/replacements/libc.c	2016-11-21 11:03:47.152184514 +0100
+diff -Nuar a/replacements/libc.c b/replacements/libc.c
+--- a/replacements/libc.c	1970-01-01 01:00:00.000000000 +0100
++++ b/replacements/libc.c	2016-11-21 11:03:47.152184514 +0100
 @@ -0,0 +1,29 @@
 +/*
 + libc_replacements.c - replaces libc functions with functions
@@ -31,9 +31,9 @@ diff -Nuar third-party/axtls-8266/replacements/libc.c Sming/axtls-8266/replaceme
 +int vprintf(const char * format, va_list arg) {
 +    return ets_vprintf(ets_putc, format, arg);
 +}
-diff -Nuar third-party/axtls-8266/replacements/mem.c Sming/axtls-8266/replacements/mem.c
---- third-party/axtls-8266/replacements/mem.c	1970-01-01 01:00:00.000000000 +0100
-+++ Sming/axtls-8266/replacements/mem.c	2016-11-21 11:02:07.672185632 +0100
+diff -Nuar a/replacements/mem.c b/replacements/mem.c
+--- a/replacements/mem.c	1970-01-01 01:00:00.000000000 +0100
++++ b/replacements/mem.c	2016-11-21 11:02:07.672185632 +0100
 @@ -0,0 +1,84 @@
 +/*
 + * Memory functions for ESP8266 taken from Arduino-Esp project
@@ -119,10 +119,10 @@ diff -Nuar third-party/axtls-8266/replacements/mem.c Sming/axtls-8266/replacemen
 +    if (size >= 1024)
 +        DEBUG_TLS_MEM_PRINT("free %d, left %d\r\n", p[-3], system_get_free_heap_size());
 +}
-diff --git third-party/axtls-8266/Makefile third-party/axtls-8266/Makefile
+diff --git a/Makefile b/Makefile
 index 0cdd8da..b0360a3 100644
---- third-party/axtls-8266/Makefile
-+++ third-party/axtls-8266/Makefile
+--- a/Makefile
++++ b/Makefile
 @@ -6,7 +6,9 @@ OBJCOPY := $(TOOLCHAIN_PREFIX)objcopy
  
  
@@ -134,10 +134,10 @@ index 0cdd8da..b0360a3 100644
  
  OBJ_FILES := \
  	crypto/aes.o \
-diff --git third-party/axtls-8266/ssl/os_port.h third-party/axtls-8266/ssl/os_port.h
+diff --git a/ssl/os_port.h b/ssl/os_port.h
 index efda6b5..85a1038 100644
---- third-party/axtls-8266/ssl/os_port.h
-+++ third-party/axtls-8266/ssl/os_port.h
+--- a/ssl/os_port.h
++++ b/ssl/os_port.h
 @@ -60,7 +60,14 @@ extern "C" {
  
  #if defined(ESP8266)
@@ -182,10 +182,10 @@ index efda6b5..85a1038 100644
  inline uint32_t htonl(uint32_t n){
    return ((n & 0xff) << 24) |
      ((n & 0xff00) << 8) |
-diff --git third-party/axtls-8266/ssl/tls1.c third-party/axtls-8266/ssl/tls1.c
+diff --git a/ssl/tls1.c a/ssl/tls1.c
 index 0cf2e4c..78576f7 100644
---- third-party/axtls-8266/ssl/tls1.c
-+++ third-party/axtls-8266/ssl/tls1.c
+--- a/ssl/tls1.c
++++ b/ssl/tls1.c
 @@ -1334,6 +1334,9 @@ int basic_read(SSL *ssl, uint8_t **in_data)
      int read_len, is_client = IS_SET_SSL_FLAG(SSL_IS_CLIENT);
      uint8_t *buf = ssl->bm_data;
@@ -196,10 +196,10 @@ index 0cf2e4c..78576f7 100644
      if (IS_SET_SSL_FLAG(SSL_SENT_CLOSE_NOTIFY))
          return SSL_CLOSE_NOTIFY;
  
-diff --git third-party/axtls-8266/ssl/tls1.h third-party/axtls-8266/ssl/tls1.h
+diff --git a/ssl/tls1.h b/ssl/tls1.h
 index 6565625..c644321 100644
---- third-party/axtls-8266/ssl/tls1.h
-+++ third-party/axtls-8266/ssl/tls1.h
+--- a/ssl/tls1.h
++++ b/ssl/tls1.h
 @@ -43,7 +43,6 @@ extern "C" {
  #include "version.h"
  #include "config.h"
@@ -208,10 +208,10 @@ index 6565625..c644321 100644
  #include "crypto.h"
  #include "crypto_misc.h"
  
-diff --git third-party/axtls-8266/tools/make_certs.sh third-party/axtls-8266/tools/make_certs.sh
+diff --git a/tools/make_certs.sh b/tools/make_certs.sh
 index dc577e7..3113355 100644
---- third-party/axtls-8266/tools/make_certs.sh
-+++ third-party/axtls-8266/tools/make_certs.sh
+--- a/tools/make_certs.sh
++++ b/tools/make_certs.sh
 @@ -29,7 +29,12 @@
  # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  #

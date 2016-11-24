@@ -32,6 +32,9 @@
 # Com port speed
 COM_SPEED = 115200
 
+# Git command
+GIT ?= git
+
 
 ifeq ($(OS),Windows_NT)
   # Windows detected
@@ -312,18 +315,18 @@ endif
 test: all spiffy samples
 
 docs/wiki/Home.md: 
-	$(Q) echo "No Wiki submodule found. Using git to fetch it..."
-	$(Q) git submodule update --init ../docs/wiki	
+	$(vecho) "No Wiki submodule found. Using git to fetch it..."
+	$(Q) $(GIT) submodule update --init ../docs/wiki	
 
 docs/api/error.log:
 	$(Q) mkdir -p $(SMING_HOME)/../docs/api
 	$(Q) cd $(SMING_HOME)/../docs; doxygen 2>$(SMING_HOME)/../docs/api/stderr.log 1>$(SMING_HOME)/../docs/api/doxygen.log
 
 docs/api/sming/index.html: docs/api/error.log
-	$(Q) echo "Undocumented compounds: $(shell grep "Compound.*is not documented" $(SMING_HOME)/../docs/api/error.log | wc -l)"
-	$(Q) echo "Undocumented members:  $(shell grep "Member.*is not documented" $(SMING_HOME)/../docs/api/error.log | wc -l) "
-	$(Q) echo "Undocumented parameters: $(shell grep "The following parameters of .* are not documented" $(SMING_HOME)/../docs/api/error.log | wc -l) "
-	$(Q) echo "Open in your browser: file://$(SMING_HOME)/../$@"
+	$(vecho) "Undocumented compounds: $(shell grep "Compound.*is not documented" $(SMING_HOME)/../docs/api/error.log | wc -l)"
+	$(vecho) "Undocumented members:  $(shell grep "Member.*is not documented" $(SMING_HOME)/../docs/api/error.log | wc -l) "
+	$(vecho) "Undocumented parameters: $(shell grep "The following parameters of .* are not documented" $(SMING_HOME)/../docs/api/error.log | wc -l) "
+	$(vecho) "Open in your browser: file://$(SMING_HOME)/../$@"
 
 wiki: docs/wiki/Home.md 
 api: docs/api/sming/index.html 
@@ -333,10 +336,10 @@ docs: wiki api
 samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_HwPWM Basic_Ssl
 
 third-party/%: 
-	$(Q) echo "Fetching $(dir $@) ..."
-	$(Q) git submodule update --init --recursive $(dir $@)
+	$(vecho) "Fetching $(dir $@) ..."
+	$(Q) $(GIT) submodule update --init --recursive $(dir $@)
 	$(Q) touch $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
-	$(Q) patch -p0 < $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
+	$(Q) -cd $(dir $@); $(GIT) apply -v $(patsubst third-party/%/,$(SMING_HOME)/third-party/.patches/%.patch, $(dir $@))
 # if the new submodule brings source code files that need to be compiled inside Sming
 # then we need somehow to be able to "see" these new files. 
 # For now we solve this by "reloading" the makefile after fetching a module.
