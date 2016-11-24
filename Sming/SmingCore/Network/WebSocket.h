@@ -30,6 +30,7 @@ public:
 	void sendBinary(const uint8_t* data, int size);
 	void enableCommand();
 	void close();
+	void setTimeOut(uint16_t waitTimeOut) { if(connection) connection->setTimeOut(waitTimeOut); };
 
 protected:
 	bool initialize(HttpRequest &request, HttpResponse &response);

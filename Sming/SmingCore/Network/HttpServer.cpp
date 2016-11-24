@@ -110,6 +110,7 @@ bool HttpServer::initWebSocket(HttpServerConnection& connection, HttpRequest& re
     if (!sock->initialize(request, response))
         return false;
 
+    connection.setTimeOut(USHRT_MAX); //Disable disconnection on connection idle (no rx/tx)
 	connection.setDisconnectionHandler(HttpServerConnectionDelegate(&HttpServer::onCloseWebSocket, this)); // auto remove on close
 	response.sendHeader(connection); // Will push header before user data
 
