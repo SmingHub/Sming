@@ -124,11 +124,15 @@ MODULES		= system system/helpers Wiring SmingCore appinit $(filter %/, $(wildcar
 EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
 
 # Place a file that should exist in a submodule that is fetched separately
+# => rboot 
 THIRD_PARTY_DATA = third-party/rboot/Makefile
-
-# third-party source mapping starts here 
-# => rBoot
 EXTRA_INCDIR += third-party/rboot third-party/rboot/appcode 
+
+# => spiffs
+THIRD_PARTY_DATA += third-party/spiffs/makefile
+MODULES		     += third-party/spiffs/src
+EXTRA_INCDIR     += third-party/spiffs/src
+
 # => esp-gdbstub
 ifeq ($(ENABLE_GDB), 1)
 	THIRD_PARTY_DATA += third-party/esp-gdbstub/Makefile
