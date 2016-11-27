@@ -14,12 +14,12 @@
 #include <SmingCore/Network/WebsocketClient.h>
 
 #ifndef WIFI_SSID
-	#define WIFI_SSID "infjust" // Put you SSID and Password here
-	#define WIFI_PWD "jujust12"
+	#define WIFI_SSID "PutSsidHere" // Put you SSID and Password here
+	#define WIFI_PWD "PutPasswordHere"
 #endif
 
 //Uncomment next line to enable websocket binary transfer test
-#define WS_BINARY
+//#define WS_BINARY
 
 WebsocketClient wsClient;
 Timer msgTimer;
@@ -84,7 +84,7 @@ void wsDisconnected(WebsocketClient& wsClient, bool success)
 
 	}
 	 msgTimer.setCallback(restart);
-	 msgTimer.setIntervalMs(5*1000);
+	 msgTimer.setIntervalMs(60*1000);
 	 msgTimer.startOnce();
 }
 
@@ -93,7 +93,7 @@ void wsMessageSent()
 {
    if(WifiStation.isConnected() == true)
    { // Check if Esp8266 is connected to router
-	   	if (msg_cnt >25)
+	   	if (msg_cnt > 10)
 		{
 			Serial.println("End Websocket client session");
 			wsClient.disconnect(); // clean disconnect.
