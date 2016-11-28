@@ -36,3 +36,5 @@
 ## SPIFFS options
 DISABLE_SPIFFS = 1
 
+# Comment the option below if you do not want to have SSL support.
+ENABLE_SSL=1

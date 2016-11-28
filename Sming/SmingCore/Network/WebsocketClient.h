@@ -103,6 +103,15 @@ public:
 	 /** @brief  Get websocket client mode
 	  *  @retval Returnt websocket client mode
 	  */
+
+	using TcpClient::addSslOptions;
+	using TcpClient::setSslFingerprint;
+	using TcpClient::setSslClientKeyCert;
+	using TcpClient::freeSslClientKeyCert;
+#ifdef ENABLE_SSL
+	using TcpClient::getSsl;
+#endif
+
 protected:
 	virtual void onFinished(TcpClientState finishState);
 	virtual void onError(err_t err);
