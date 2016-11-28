@@ -12,6 +12,7 @@
 
 #define DEFAULT_URL_PROTOCOL "http"
 #define HTTPS_URL_PROTOCOL "https"
+#define WEBSCOKET_SECURE_URL_PROTOCOL "wss"
 
 class URL
 {

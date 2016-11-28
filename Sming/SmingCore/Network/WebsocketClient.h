@@ -71,9 +71,10 @@ public:
 	 /** @brief  Set handler for websocket binary messages
 	  *  @param  handler Delegate callback to be run when binary message received
 	  */
-	bool connect(String url);
+	bool connect(String url, uint32_t sslOptions = 0);
 	 /** @brief  Connects websocket client to server
 	  *  @param  url URL address of websocket server
+	  *  @param  sslOptions Specify the SSL options to be used when calling websocket server over SSL
 	  */
 	void sendPing();
 	 /** @brief  Send websocket ping to server
