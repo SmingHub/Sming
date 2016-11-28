@@ -261,8 +261,8 @@ all: checkdirs $(APP_AR) spiffy
 
 ifeq ($(ENABLE_CUSTOM_PWM), 1)	
 $(USER_LIBDIR)/libpwm.a: third-party/pwm/pwm.c
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $< -o $(BUILD_BASE)/pwm.o
-	$(Q) $(AR) rcs $@ $(BUILD_BASE)/pwm.o
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $< -o $(dir $<)/pwm.o
+	$(Q) $(AR) rcs $@ $(dir $<)/pwm.o
 endif 
 
 ifeq ($(ENABLE_SSL), 1)
@@ -333,7 +333,7 @@ api: docs/api/sming/index.html
 
 docs: wiki api
 
-samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_Ssl
+samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_HwPWM Basic_Ssl
 
 third-party/%: 
 	$(vecho) "Fetching $(dir $@) ..."
