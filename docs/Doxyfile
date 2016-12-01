@@ -125,7 +125,7 @@ ABBREVIATE_BRIEF       =
 # description.
 # The default value is: NO.
 
-ALWAYS_DETAILED_SEC    = NO
+ALWAYS_DETAILED_SEC    = YES
 
 # If the INLINE_INHERITED_MEMB tag is set to YES, doxygen will show all
 # inherited members of a class in the documentation of that class as if those
@@ -761,6 +761,7 @@ WARN_LOGFILE           = api/error.log
 INPUT                  = api.dox sdk.dox \
 			../Sming/SmingCore \
 			../Sming/Services \
+			../Sming/Wiring \
                         ../Sming/rboot \
 			$(ESP_HOME)/sdk/include/gpio.h
 
@@ -2004,7 +2005,7 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             =
+PREDEFINED             = __cplusplus
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The

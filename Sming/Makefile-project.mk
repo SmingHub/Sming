@@ -346,7 +346,7 @@ include/ssl/private_key.h:
 
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 $(USER_LIBDIR)/libpwm.a:
-	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm.a ENABLE_CUSTOM_PWM=1 BUILD_BASE=`pwd`/$(BUILD_BASE)
+	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm.a ENABLE_CUSTOM_PWM=1
 endif
 
 checkdirs: $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
