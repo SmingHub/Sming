@@ -34,7 +34,11 @@
 #endif
 
 #undef assert
+#ifdef SMING_RELEASE
+#define debugf(fmt, ...)
+#else
 #define debugf(fmt, ...) m_printf(fmt"\r\n", ##__VA_ARGS__)
+#endif
 #define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
 #define SYSTEM_ERROR(fmt, ...) m_printf("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
