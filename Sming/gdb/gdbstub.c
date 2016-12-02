@@ -44,6 +44,9 @@ static unsigned int getaregval(int reg) {
 static void print_stack(uint32_t start, uint32_t end) {
   uint32_t pos = 0;
   os_printf("\nStack dump:\n");
+  os_printf("To decode the stack dump call from command line:\n   python $SMING_HOME/tools/decode-stacktrace.py out/build/app.out\n");
+  os_printf("and copy & paste the text enclosed in '===='.\n");
+  os_printf("================================================================\n");
   for (pos = start; pos < end; pos += 0x10) {
     uint32_t* values = (uint32_t*)(pos);
     // rough indicator: stack frames usually have SP saved as the second word
@@ -53,6 +56,9 @@ static void print_stack(uint32_t start, uint32_t end) {
         pos, values[0], values[1], values[2], values[3], (looksLikeStackFrame)?'<':' ');
   }
   os_printf("\n");
+  os_printf("================================================================\n");
+  os_printf("To decode the stack dump call from command line:\n   python $SMING_HOME/tools/decode-stacktrace.py out/build/app.out\n");
+  os_printf("and copy & paste the text enclosed in '===='.\n");
 }
 
 void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
