@@ -134,6 +134,8 @@ ifeq ($(ENABLE_GDB), 1)
 	THIRD_PARTY_DATA += third-party/esp-gdbstub/Makefile
 	MODULES		 += third-party/esp-gdbstub
 	EXTRA_INCDIR += third-party/esp-gdbstub
+else ifneq ($(SMING_RELEASE),1)
+	MODULES += gdb
 endif
 
 # libraries used in this project, mainly provided by the SDK
@@ -147,7 +149,11 @@ endif
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL)
-ifeq ($(ENABLE_GDB), 1)
+ifeq ($(SMING_RELEASE),1)
+	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+	#      for full list of optimization options
+	CFLAGS += -Os -DSMING_RELEASE=1
+else ifeq ($(ENABLE_GDB), 1)
 	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
 else
 	CFLAGS += -Os -g

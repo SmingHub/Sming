@@ -1,8 +1,10 @@
 #include <user_config.h>
 #include "../SmingCore/SmingCore.h"
 
-#ifdef ENABLE_GDB
-	#include "../esp-gdbstub/gdbstub.h"
+#ifndef SMING_RELEASE
+extern "C" {
+  void gdbstub_init();
+}
 #endif
 
 extern void init();
@@ -13,7 +15,11 @@ extern "C" void  __attribute__((weak)) user_init(void)
 	uart_div_modify(UART_ID_0, UART_CLK_FREQ / 115200);
 	cpp_core_initialize();
 	System.initialize();
-#ifdef ENABLE_GDB
+#ifdef SMING_RELEASE
+	// disable all debug output for release builds
+	Serial.systemDebugOutput(false);
+	system_set_os_print(0);
+#else
 	gdbstub_init();
 #endif
 	init(); // User code init
