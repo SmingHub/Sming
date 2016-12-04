@@ -33,11 +33,15 @@ void WebsocketClient::setWebSocketConnectedHandler(WebSocketClientConnectedDeleg
 	wsConnect = handler;
 }
 
-bool WebsocketClient::connect(String url)
+bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 {
 	_uri = URL(url);
 	_url = url;
-	TcpClient::connect(_uri.Host,_uri.Port);
+	bool useSsl = false;
+	if(_uri.Protocol == WEBSCOKET_SECURE_URL_PROTOCOL) {
+		useSsl = true;
+	}
+	TcpClient::connect(_uri.Host,_uri.Port, useSsl, sslOptions);
 	debugf("Connecting to Server");
 	unsigned char keyStart[17];
 	char b64Key[25];

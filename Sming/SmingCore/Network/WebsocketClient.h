@@ -71,9 +71,10 @@ public:
 	 /** @brief  Set handler for websocket binary messages
 	  *  @param  handler Delegate callback to be run when binary message received
 	  */
-	bool connect(String url);
+	bool connect(String url, uint32_t sslOptions = 0);
 	 /** @brief  Connects websocket client to server
 	  *  @param  url URL address of websocket server
+	  *  @param  sslOptions Specify the SSL options to be used when calling websocket server over SSL
 	  */
 	void sendPing();
 	 /** @brief  Send websocket ping to server
@@ -102,6 +103,15 @@ public:
 	 /** @brief  Get websocket client mode
 	  *  @retval Returnt websocket client mode
 	  */
+
+	using TcpClient::addSslOptions;
+	using TcpClient::setSslFingerprint;
+	using TcpClient::setSslClientKeyCert;
+	using TcpClient::freeSslClientKeyCert;
+#ifdef ENABLE_SSL
+	using TcpClient::getSsl;
+#endif
+
 protected:
 	virtual void onFinished(TcpClientState finishState);
 	virtual void onError(err_t err);

@@ -27,7 +27,11 @@ Timer restartTimer;
 
 int msg_cnt = 0;
 
+#ifdef ENABLE_SSL
+String ws_Url =  "wss://echo.websocket.org";
+#else
 String ws_Url =  "ws://echo.websocket.org";
+#endif
 
 void wsDisconnected(WebsocketClient& wsClient, bool success);
 void wsMessageSent();
@@ -42,6 +46,9 @@ void wsConnected(WebsocketClient& wsClient,wsMode Mode)
 	{
 		Serial.println("Connection with server not successful. Reconnecting..");
 		wsClient.connect(ws_Url);
+#ifdef ENABLE_SSL
+		wsClient.addSslOptions(SSL_SERVER_VERIFY_LATER);
+#endif
 	}
 }
 void wsMessageReceived(WebsocketClient& wsClient, String message)
@@ -66,6 +73,9 @@ void restart()
 {
 	msg_cnt = 0;
 	wsClient.connect(ws_Url);
+#ifdef ENABLE_SSL
+	wsClient.addSslOptions(SSL_SERVER_VERIFY_LATER);
+#endif
 
 	msgTimer.setCallback(wsMessageSent);
 	msgTimer.setIntervalMs(1*1000);
@@ -135,6 +145,9 @@ void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway)
     wsClient.setWebSocketDisconnectedHandler(wsDisconnected);
     wsClient.setWebSocketConnectedHandler(wsConnected);
     wsClient.connect(ws_Url);
+#ifdef ENABLE_SSL
+    wsClient.addSslOptions(SSL_SERVER_VERIFY_LATER);
+#endif
 }
 
 void STADisconnect(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
