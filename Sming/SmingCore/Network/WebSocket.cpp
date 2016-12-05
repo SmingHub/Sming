@@ -51,7 +51,6 @@ void WebSocket::send(const char* message, int length, wsFrameType type)
 	wsMakeFrame(nullptr, length, frameHeader, &headSize, type);
 	connection->write((char*)frameHeader, headSize, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
 	connection->write(message, length, TCP_WRITE_FLAG_COPY);
-	connection->flush();
 }
 
 void WebSocket::sendString(const String& message)
