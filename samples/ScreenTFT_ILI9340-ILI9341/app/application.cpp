@@ -2,6 +2,9 @@
 #include <SmingCore/SmingCore.h>
 #include <Libraries/Adafruit_ILI9341/Adafruit_ILI9341.h>
 
+#include "BPMDraw.h"
+
+
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
@@ -38,6 +41,14 @@ int satir=6;
 
 String lists[]={"a","b","c","d","e","f"};
 
+
+void basicBPM() {
+	tft.fillScreen(ILI9341_BLACK); // Clear display
+	tft.setRotation(tft.getRotation() + 1); // Inc rotation 90 degrees
+	for (uint8_t i = 0; i < 4; i++)    // Draw 4 parrots
+		bmpDraw(tft, "sming.bmp", tft.width() / 4 * i, tft.height() / 4 * i);
+}
+
 void basicGui()
 {
 	tft.setTextSize(1);
@@ -64,7 +75,7 @@ void basicGui()
 		}
 		p1=50;
 		r++;
-
+		guiTimer.initializeMs(1000, basicBPM).start(false);
 }
 
 void init()
@@ -97,7 +108,7 @@ void init()
 	tft.println("M.Bozkurt");
 	delay(2000);
 	tft.fillScreen(0);
-	guiTimer.initializeMs(1000, basicGui).start();
+	guiTimer.initializeMs(1000, basicGui).start(false);
 	//runTest();
 
 }

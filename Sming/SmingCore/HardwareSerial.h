@@ -6,7 +6,8 @@
  ****/
 
 /**	@defgroup serial Hardware serial
- *	@brief	Access serial UART 0
+ *	@brief	Hardware serial UARTs
+ *  @{
  */
 
 #ifndef _HARDWARESERIAL_H_
@@ -17,36 +18,40 @@
 #include "../SmingCore/Delegate.h"
 #include "../Services/CommandProcessing/CommandProcessingIncludes.h"
 
-#define UART_ID_0   0
-#define UART_ID_1   1
+#define UART_ID_0   0 ///< ID of UART 0
+#define UART_ID_1   1 ///< ID of UART 1
 
-#define NUMBER_UARTS 2
+#define NUMBER_UARTS 2 ///< Quantity of UARTs available
 
-#define SERIAL_SIGNAL_DELEGATE	0
-#define SERIAL_SIGNAL_COMMAND	1
-#define SERIAL_QUEUE_LEN		10
+#define SERIAL_SIGNAL_DELEGATE	0 ///< ID for serial delegate signals
+#define SERIAL_SIGNAL_COMMAND	1 ///< ID for serial command signals
+#define SERIAL_QUEUE_LEN		10 ///< Size of serial queue
 
+/** @brief  Delegate callback type for serial data reception
+ *  @param  source Reference to serial stream
+ *  @param  arrivedChar Char recieved
+ *  @param  availableCharsCount Quantity of chars available stream in receive buffer
+ */
 // Delegate constructor usage: (&YourClass::method, this)
 typedef Delegate<void(Stream &source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
 
 class CommandExecutor;
 
-
+/// Hardware serial member data
 typedef struct
 {
-	StreamDataReceivedDelegate HWSDelegate;
-	bool useRxBuff;
-	CommandExecutor* commandExecutor = nullptr;
+	StreamDataReceivedDelegate HWSDelegate; ///< Delegate callback handler
+	bool useRxBuff; ///< True to use receiver buffer
+	CommandExecutor* commandExecutor = nullptr; ///< Pointer to command executor (Default: none)
 } HWSerialMemberData;
 
+/// Hardware serial class
 class HardwareSerial : public Stream
 {
 public:
     /** @brief  Create instance of a hardware serial port object
      *  @param  uartPort UART number [0 | 1]
      *  @note   A global instance of UART 0 is already defined as Serial
-     *  @addtogroup serial
-     *  @{
      */
 	HardwareSerial(const int uartPort);
 	~HardwareSerial() {}
@@ -92,6 +97,8 @@ public:
 	 *  @retval size_t Quantity of characters written (always 1)
 	 */
 	size_t write(uint8_t oneChar);
+
+	using Stream::write;
 
 	//void printf(const char *fmt, ...);
 	/** @brief  Configure serial port for system debug output

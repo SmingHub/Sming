@@ -2,9 +2,6 @@
  * Debug.h
  *
  */
-/** @defgroup   debug Debug functions
- *  @brief      Provides debug functions
-*/
 
 #ifndef SMINGCORE_DEBUG_H_
 #define SMINGCORE_DEBUG_H_
@@ -37,17 +34,26 @@ typedef enum
 	eDBGusePrefix = 1 ///< Use debug prefix
 } eDBGPrefix;
 
+/** @defgroup   debug Debug functions
+ *  @brief      Provides debug functions
+ *  @{
+*/
+
+/** @brief  Provides debug output to stream (e.g. Serial) or delegate function handler.
+ *
+ *  Debug output may be prefixed with an elapsed timestamp. Use standard print methods to produce debug output.
+ *  Sming CLI (command handler) may be enabled to provide control of debug output to end user.
+ */
 class DebugClass : public Print
 {
 public:
-    /** @brief  Debug class
-     *  @addtogroup debug
-     *  @{
+    /** @brief  Instantiate a debug object
+     *  @note   Default output is Serial stream
      */
 	DebugClass();
 	virtual ~DebugClass();
 
-    /** @brief  Initialise debug output
+    /** @brief  Enable control of debug output from CLI command handler output
      */
     void initCommand();
 
@@ -64,13 +70,15 @@ public:
      */
 	bool status();
 
-    /** @brief  Set debug handler
+    /** @brief  Configure debug to use delegate handler for its output
      *  @param  reqDelegate Function to handle debug output
+     *  @note   Disables stream output
      */
 	void setDebug(DebugPrintCharDelegate reqDelegate);
 
-    /** @brief  Set debug stream
+    /** @brief  Configures debug to use stream for its output
      *  @param  reqStream Stream for debug output
+     *  @note   Disables delegate handler
      */
 	void setDebug(Stream &reqStream);
 
@@ -88,7 +96,9 @@ private:
 /**	@brief	Global instance of Debug object
  *	@note	Use Debug.<i>function</i> to access Debug functions
  *	@note	Example:
- *  @code   Debug.start();
+ *  @code
+ *  Debug.start();
+ *  Debug.printf("My value is %d", myVal);
 	@endcode
 */
 extern DebugClass Debug;

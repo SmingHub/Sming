@@ -36,6 +36,7 @@ void base64encode(const unsigned char in[3], unsigned char out[4], int count)
 	out[3]=count<3 ? '=' : base64enc_tab[(in[2]&63)];
 }
 
+#ifndef ENABLE_SSL
 int base64decode(const char in[4], char out[3])
 {
 	uint8_t v[4];
@@ -78,6 +79,7 @@ int base64_decode(size_t in_len, const char *in, size_t out_len, unsigned char *
 	}
 	return io;
 }
+#endif
 
 int base64_encode(size_t in_len, const unsigned char *in, size_t out_len, char *out) {
 	unsigned ii, io;

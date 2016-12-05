@@ -86,6 +86,15 @@ public:
      */
 	IPAddress getNetworkBroadcast();
 
+	/**	@brief	Get WiFi access point SSID
+	 *	@retval	String WiFi access point SSID
+	 */
+	String getSSID();
+
+	/**	@brief	Get WiFi access point password
+	 *	@retval	String WiFi access point password
+	 */
+	String getPassword();
     /** @} */
 
 protected:

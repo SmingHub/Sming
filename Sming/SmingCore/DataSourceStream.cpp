@@ -37,6 +37,8 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 	if (buf == NULL)
 	{
 		buf = (char*)malloc(len + 1);
+		if (buf == NULL)
+			return 0;
 		buf[len] = '\0';
 		memcpy(buf, data, len);
 	}
@@ -48,7 +50,15 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 		{
 			capacity = required < 256 ? required + 128 : required + 64;
 			debugf("realloc %d -> %d", size, capacity);
-			buf = (char*)realloc(buf, capacity);
+			char * new_buf;
+			//realloc can fail, store the result in temporary pointer
+			new_buf = (char*)realloc(buf, capacity);
+
+			if (new_buf == NULL)
+			{
+				return 0;
+			}
+			buf = new_buf;
 		}
 		buf[cur + len] = '\0';
 		memcpy(buf + cur, data, len);
@@ -80,14 +90,27 @@ bool MemoryDataStream::isFinished()
 
 ///////////////////////////////////////////////////////////////////////////
 
-FileStream::FileStream(String fileName)
+FileStream::FileStream()
 {
-	handle = fileOpen(fileName.c_str(), eFO_ReadOnly);
+	handle = -1;
+	size = -1;
+	pos = 0;
+}
+
+FileStream::FileStream(String filename)
+{
+	attach(filename, eFO_ReadOnly);
+}
+
+bool FileStream::attach(String fileName, FileOpenFlags openFlags)
+{
+	handle = fileOpen(fileName.c_str(), openFlags);
 	if (handle == -1)
 	{
 		debugf("File wasn't found: %s", fileName.c_str());
 		size = -1;
 		pos = 0;
+		return false;
 	}
 
 	// Get size
@@ -97,7 +120,8 @@ FileStream::FileStream(String fileName)
 	fileSeek(handle, 0, eSO_FileStart);
 	pos = 0;
 
-	debugf("send file: %s (%d bytes)", fileName.c_str(), size);
+	debugf("attached file: %s (%d bytes)", fileName.c_str(), size);
+	return true;
 }
 
 FileStream::~FileStream()
@@ -113,6 +137,20 @@ uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 	int available = fileRead(handle, data, len);
 	fileSeek(handle, pos, eSO_FileStart); // Don't move cursor now (waiting seek)
 	return available;
+}
+
+size_t FileStream::write(uint8_t charToWrite)
+{
+	uint8_t tempbuf[1]  {charToWrite};
+	return write(tempbuf, 1);
+}
+
+size_t FileStream::write(const uint8_t *buffer, size_t size)
+{
+	if (!fileExist()) return 0;
+
+	bool result = fileSeek(handle, 0, eSO_FileEnd);
+	return fileWrite(handle, buffer, size);
 }
 
 bool FileStream::seek(int len)
@@ -296,7 +334,7 @@ uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 {
 	if (rootNode != JsonObject::invalid() && send)
 	{
-		int len = rootNode.prettyPrintTo(*this);
+		int len = rootNode.printTo(*this);
 		send = false;
 	}
 

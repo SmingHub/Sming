@@ -18,7 +18,7 @@ MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscription
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
-	mqtt_init(&broker, NULL);
+	mqtt_init(&broker);
 }
 
 MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback /* = NULL*/)
@@ -30,7 +30,7 @@ MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptio
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
-	mqtt_init(&broker, NULL);
+	mqtt_init(&broker);
 }
 
 MqttClient::~MqttClient()
@@ -56,12 +56,12 @@ bool MqttClient::setWill(String topic, String message, int QoS, bool retained /*
 	return mqtt_set_will(&broker, topic.c_str(), message.c_str(), QoS, retained);
 }
 
-bool MqttClient::connect(String clientName)
+bool MqttClient::connect(String clientName, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
-	return MqttClient::connect(clientName, "", "");
+	return MqttClient::connect(clientName, "", "", useSsl, sslOptions);
 }
 
-bool MqttClient::connect(String clientName, String username, String password)
+bool MqttClient::connect(String clientName, String username, String password, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (getConnectionState() != eTCS_Ready)
 	{
@@ -71,16 +71,16 @@ bool MqttClient::connect(String clientName, String username, String password)
 
 	debugf("MQTT start connection");
 	if (clientName.length() > 0)
-		strncpy(broker.clientid, clientName.c_str(), sizeof(broker.clientid));
+		 mqtt_set_clientid(&broker, clientName.c_str());
 
 	if (username.length() > 0)
 		mqtt_init_auth(&broker, username.c_str(), password.c_str());
 
 	if(server.length() > 0 ) {
-		TcpClient::connect(server, port);
+		TcpClient::connect(server, port, useSsl, sslOptions);
 	}
 	else {
-		TcpClient::connect(serverIp, port);
+		TcpClient::connect(serverIp, port, useSsl, sslOptions);
 	}
 
 	mqtt_set_alive(&broker, keepAlive);

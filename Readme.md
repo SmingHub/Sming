@@ -11,29 +11,38 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 ## Summary
 * Fast & user friendly development
 * Work with GPIO in Arduino style
-* High effective in perfomance and memory usage (this is native firmware!)
+* High effective in performance and memory usage (this is native firmware!)
 * Compatible with standard Arduino libraries - use any popular hardware in few lines of code
 * rBoot OTA firmware updating
 * Built-in file system: [spiffs](https://github.com/pellepl/spiffs)
-* Built-in powerfull network and wireless modules
+* Built-in powerful network and wireless modules
 * Built-in JSON library: [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 * HTTP, AJAX, WebSockets support
 * MQTT protocol based on [libemqtt] (https://github.com/menudoproblema/libemqtt)
 * Networking based on LWIP stack
-* Simple and powerfull hardware API wrappers
-* Based on Espressif NONOS SDK 1.4.0 & 1.5.0
+* Simple and powerful hardware API wrappers
+* SSL support based on [axTLS 2.0+] (https://github.com/igrr/axtls-8266) with [Lwirax] (https://github.com/attachix/lwirax/)
+* Based on Espressif NONOS SDK. Tested with versions 1.4 and 1.5. 
 
 ## Latest Release
-- [Sming V2.1.0](https://github.com/SmingHub/Sming/releases/tag/2.1.0)
+- [Sming V2.1.5](https://github.com/SmingHub/Sming/releases/tag/2.1.5)
 
 ## Getting started
 - [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
 - [Linux](https://github.com/SmingHub/Sming/wiki/Linux-Quickstart)
 - [MacOS](https://github.com/SmingHub/Sming/wiki/MacOS-Quickstart)
+- [Docker](https://github.com/SmingHub/Sming/wiki/Docker-Quickstart)
+
 
 ## Additional needed software 
 - Spiffy  : Source included in Sming repository
 - [ESPtool2] (https://github.com/raburton/esptool2) esptool2 
+
+## Optional features
+- Custom PWM: If Sming is compiled with ENABLE_CUSTOM_PWM=1 then instead of using the Espressif SDK pwm library
+a [custom PWM library](https://github.com/StefanBruens/ESP8266_new_pwm) will be used.
+- SSL: The SSL support is not built-in by default to conserve resources. If you want to enable it then take a look at the [Readme](https://github.com/SmingHub/Sming/blob/develop/samples/Basic_Ssl/README.md) in the Basic_Ssl samples.
+
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
@@ -149,3 +158,13 @@ void onFile(HttpRequest &request, HttpResponse &response)
   response.sendFile(file);
 }
 ```
+
+### Documentation
+A complete documentation can be created by running the command below. This requires `doxygen` to be installed on your system.
+
+```
+cd $SMING_HOME
+make docs
+```
+
+The newly generated documentation will be located under Sming/docs/api

@@ -1,0 +1,14 @@
+--- a/pwm.c
++++ b/pwm.c
+@@ -42,6 +42,11 @@
+ #define PWM_MAX_PERIOD PWM_MAX_TICKS
+ #endif
+ 
++/* ISR related definitions that are missing in some SDKs */
++extern void ets_isr_attach(int intr, void *handler, void *arg);
++extern void ets_isr_mask(unsigned intr);
++extern void ets_isr_unmask(unsigned intr);
++
+ #include <c_types.h>
+ #include <pwm.h>
+ #include <eagle_soc.h>

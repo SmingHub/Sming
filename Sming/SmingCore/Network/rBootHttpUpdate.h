@@ -35,11 +35,20 @@ public:
 	void setCallback(otaUpdateDelegate reqUpdateDelegate);
 	void setDelegate(otaUpdateDelegate reqUpdateDelegate);
 
+	using HttpClient::addSslOptions;
+	using HttpClient::setSslFingerprint;
+	using HttpClient::setSslClientKeyCert;
+	using HttpClient::freeSslClientKeyCert;
+#ifdef ENABLE_SSL
+	using HttpClient::getSsl;
+#endif
+
 protected:
 	void onTimer();
 	virtual void writeRawData(pbuf* buf, int startPos);
 	void applyUpdate();
 	void updateFailed();
+	void onItemDownloadCompleted(HttpClient& client, bool successful);
 
 protected:
 	Vector<rBootHttpUpdateItem> items;

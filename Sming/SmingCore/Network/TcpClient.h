@@ -43,8 +43,8 @@ public:
 	virtual ~TcpClient();
 
 public:
-	virtual bool connect(String server, int port);
-	virtual bool connect(IPAddress addr, uint16_t port);
+	virtual bool connect(String server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(IPAddress addr, uint16_t port, boolean useSsl = false, uint32_t sslOptions = 0);
 	virtual void close();
 
 	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = NULL);

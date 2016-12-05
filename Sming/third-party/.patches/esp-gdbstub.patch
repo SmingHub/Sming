@@ -1,0 +1,11 @@
+--- a/gdbstub.c
++++ b/gdbstub.c
+@@ -8,6 +8,7 @@
+  *******************************************************************************/
+ 
+ #include "gdbstub.h"
++#include <user_config.h>
+ #include "ets_sys.h"
+ #include "eagle_soc.h"
+ #include "c_types.h"
+

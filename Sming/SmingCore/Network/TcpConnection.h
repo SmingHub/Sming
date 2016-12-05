@@ -8,8 +8,13 @@
 #ifndef _SMING_CORE_TCPCONNECTION_H_
 #define _SMING_CORE_TCPCONNECTION_H_
 
+#ifdef ENABLE_SSL
+#include "../../axtls-8266/compat/lwipr_compat.h"
+#endif
+
 #include "../Wiring/WiringFrameworkDependencies.h"
 #include "IPAddress.h"
+
 
 #define NETWORK_DEBUG
 
@@ -32,6 +37,14 @@ class String;
 class IDataSourceStream;
 class IPAddress;
 
+typedef struct {
+	uint8_t *key = NULL;
+	int keyLength = 0;
+	char *keyPassword = NULL;
+	uint8_t *certificate = NULL;
+	int certificateLength = 0;
+} SSLKeyCertPair;
+
 class TcpConnection
 {
 public:
@@ -40,8 +53,8 @@ public:
 	virtual ~TcpConnection();
 
 public:
-	virtual bool connect(String server, int port);
-	virtual bool connect(IPAddress addr, uint16_t port);
+	virtual bool connect(String server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(IPAddress addr, uint16_t port, boolean useSsl = false, uint32_t sslOptions = 0);
 	virtual void close();
 
 	// return -1 on error
@@ -56,6 +69,41 @@ public:
 	void setTimeOut(uint16_t waitTimeOut);
 	IPAddress getRemoteIp()  { return (tcp == NULL) ? INADDR_NONE : IPAddress(tcp->remote_ip);};
 	uint16_t getRemotePort() { return (tcp == NULL) ? 0 : tcp->remote_port; };
+
+	void addSslOptions(uint32_t sslOptions);
+
+	/**
+	 * @brief Sets the SHA1 certificate finger print.
+	 * 		  The latter will be used after successful handshake to check against the fingerprint of the other side.
+	 * @param const uint8_t *data
+	 * @param int length
+	 * @return boolean  true of success, false or failure
+	 */
+	boolean setSslFingerprint(const uint8_t *data, int length = 20);
+
+	/**
+	 * @brief Sets client private key, certificate and password from memory
+	 * @param const uint8_t *keyData
+	 * @param int keyLength
+	 * @param const uint8_t *certificateData
+	 * @param int certificateLength
+	 * @param const char *keyPassword
+	 * @param boolean freeAfterHandshake
+	 *
+	 * @return boolean  true of success, false or failure
+	 */
+	boolean setSslClientKeyCert(const uint8_t *key, int keyLength,
+							 const uint8_t *certificate, int certificateLength,
+							 const char *keyPassword = NULL, boolean freeAfterHandshake = false);
+
+	/**
+	 * @brief Frees the memory used for the client key and certificate pair
+	 */
+	void freeSslClientKeyCert();
+
+#ifdef ENABLE_SSL
+	SSL* getSsl();
+#endif
 
 protected:
 	bool internalTcpConnect(IPAddress addr, uint16_t port);
@@ -85,6 +133,17 @@ protected:
 	uint16_t timeOut;
 	bool canSend;
 	bool autoSelfDestruct;
+#ifdef ENABLE_SSL
+	SSL *ssl = nullptr;
+	SSLCTX *sslContext = nullptr;
+	SSL_EXTENSIONS *ssl_ext=NULL;
+#endif
+	boolean useSsl = false;
+	uint8_t *sslFingerprint=null;
+	boolean sslConnected = false;
+	uint32_t sslOptions=0;
+	SSLKeyCertPair clientKeyCert;
+	boolean freeClientKeyCert = false;
 };
 
 #endif /* _SMING_CORE_TCPCONNECTION_H_ */

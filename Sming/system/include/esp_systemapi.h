@@ -34,7 +34,11 @@
 #endif
 
 #undef assert
+#ifdef SMING_RELEASE
+#define debugf(fmt, ...)
+#else
 #define debugf(fmt, ...) m_printf(fmt"\r\n", ##__VA_ARGS__)
+#endif
 #define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
 #define SYSTEM_ERROR(fmt, ...) m_printf("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
@@ -89,6 +93,9 @@ extern void ets_intr_unlock();
 // CPU Frequency
 extern void ets_update_cpu_frequency(uint32_t frq);
 extern uint32_t ets_get_cpu_frequency();
+
+extern void xt_disable_interrupts();
+extern void xt_enable_interrupts();
 
 typedef signed short file_t;
 

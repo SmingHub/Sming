@@ -1,0 +1,22 @@
+[submodule "Sming/rboot"]
+	path = Sming/third-party/rboot
+	url = https://github.com/raburton/rboot.git
+        ignore = dirty
+[submodule "Sming.wiki"]
+	path = docs/wiki
+	url = https://github.com/SmingHub/Sming.wiki.git
+[submodule "Sming/third-party/esp-gdbstub"]
+	path = Sming/third-party/esp-gdbstub
+	url = https://github.com/espressif/esp-gdbstub.git
+        ignore = dirty
+[submodule "Sming/pwm"]
+	path = Sming/third-party/pwm
+	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
+        ignore = dirty
+[submodule "third-party/axtls-8266"]
+	path = Sming/third-party/axtls-8266
+	url = https://github.com/igrr/axtls-8266.git
+        ignore = dirty
+[submodule "Sming/third-party/spiffs"]
+	path = Sming/third-party/spiffs
+	url = https://github.com/pellepl/spiffs.git

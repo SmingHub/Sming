@@ -58,15 +58,10 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 
 			String contType = request.getContentType();
 			contType.toLowerCase();
-			if (request.getContentLength() > 0 && contType.indexOf(ContentType::FormUrlEncoded) != -1)
+			if (request.getContentLength() > 0 && request.getRequestMethod() == RequestMethod::POST)
 				state = eHCS_ParsePostData;
-			else
-			{
-				request.parseRawData(server, buf);
+					else
 				state = eHCS_ParsingCompleted;
-				TcpConnection::onReceive(buf);
-				return ERR_OK;
-			}
 		}
 	}
 	else if (state == eHCS_WebSocketFrames)
@@ -91,11 +86,7 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 			state = eHCS_ParsingCompleted;
 		}
 	}
-//	else if (state == eHCS_ParsingCompleted && request.getContentLength() > 0)
-//	{
-//		request.parseRawData(server, buf);
-//	}
-	// Fire callbacks
+
 	TcpConnection::onReceive(buf);
 
 	return ERR_OK;
@@ -124,7 +115,6 @@ void HttpServerConnection::beginSendData()
 	{
 		debugf("Switched to WebSocket Protocol");
 		state = eHCS_WebSocketFrames; // Stay opened
-		setTimeOut(USHRT_MAX);
 	}
 	else
 		state = eHCS_Sending;
