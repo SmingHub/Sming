@@ -44,7 +44,7 @@ static unsigned int getaregval(int reg) {
 static void print_stack(uint32_t start, uint32_t end) {
   uint32_t pos = 0;
   os_printf("\nStack dump:\n");
-  os_printf("To decode the stack dump call from command line:\n   python $SMING_HOME/tools/decode-stacktrace.py out/build/app.out\n");
+  os_printf("To decode the stack dump call from command line:\n   python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out\n");
   os_printf("and copy & paste the text enclosed in '===='.\n");
   os_printf("================================================================\n");
   for (pos = start; pos < end; pos += 0x10) {
@@ -57,7 +57,7 @@ static void print_stack(uint32_t start, uint32_t end) {
   }
   os_printf("\n");
   os_printf("================================================================\n");
-  os_printf("To decode the stack dump call from command line:\n   python $SMING_HOME/tools/decode-stacktrace.py out/build/app.out\n");
+  os_printf("To decode the stack dump call from command line:\n   python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out\n");
   os_printf("and copy & paste the text enclosed in '===='.\n");
 }
 
