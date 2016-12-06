@@ -59,6 +59,7 @@ public:
 		for (int i = 0; i < list.count(); i++)
 			writeString("01-01-15  01:00AM               " + String(fileGetSize(list[i])) + " " + list[i] + "\r\n");
 		completed = true;
+		finishTransfer();
 	}
 };
 
@@ -76,18 +77,14 @@ public:
 	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
 		if (completed) return;
-		int p = fileTell(file);
-		if (p == 0)
-			response(250, "Transfer started");
-
-		char buf[256];
-		int len = fileRead(file, buf, 256);
+		char * buf = new char [1024];
+		int len = fileRead(file, buf, 1024);
 		write(buf, len, TCP_WRITE_FLAG_COPY);
-
+		delete buf;
 		if (fileIsEOF(file))
 		{
 			completed = true;
-			response(226, "Transfer completed");
+			finishTransfer();
 		}
 	}
 
@@ -116,14 +113,11 @@ public:
 			response(226, "Transfer completed");
 			return TcpConnection::onReceive(buf);
 		}
-		int p = fileTell(file);
-		if (p == 0)
-			response(250, "Transfer started");
 
 		pbuf *cur = buf;
 		while (cur)
 		{
-			int len = fileWrite(file, cur->payload, cur->len);
+			int len = fileWrite(file, (uint8_t *)cur->payload, cur->len);
 			cur = cur->next;
 		}
 
