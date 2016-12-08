@@ -209,7 +209,7 @@ ifeq ($(DISABLE_SPIFFS), 1)
 endif
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map
+LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m
