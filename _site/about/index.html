@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>About – Sming – Sming - Open Source framework for high efficiency native ESP8266 development</title>
+
+        <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+
+    
+    <meta name="description" content="Sming - Open Source framework for high efficiency native ESP8266 development">
+    <meta property="og:description" content="Sming - Open Source framework for high efficiency native ESP8266 development" />
+    
+    <meta name="author" content="Sming" />
+
+    
+    <meta property="og:title" content="About" />
+    <meta property="twitter:title" content="About" />
+    
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="alternate" type="application/rss+xml" title="Sming - Sming - Open Source framework for high efficiency native ESP8266 development" href="/feed.xml" />
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/barryclark/jekyll-now/master/images/jekyll-logo.png" /></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Sming</a></h1>
+            <p class="site-description">Sming - Open Source framework for high efficiency native ESP8266 development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="page">
+
+  <h1>About</h1>
+
+  <div class="entry">
+    <p>Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native development with C++ language.</p>
+
+<p><a href="https://github.com/SmingHub/Sming/wiki/examples"><img src="https://github.com/SmingHub/Sming/wiki/images/small/combine.png" alt="ESP8266 C++ development framework" /></a></p>
+
+<p><a href="https://gitter.im/SmingHub/Sming?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Gitter (chat)" /></a>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=WAQ8XDHCKU3PL&amp;lc=US&amp;item_name=Sming%20Framework%20development&amp;item_number=sming&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"><img src="http://img.shields.io/paypal/donate.png?color=yellow" alt="Donate" /></a>
+<a href="https://github.com/SmingHub/Sming/releases/latest"><img src="https://img.shields.io/badge/download-~1.7M-orange.svg" alt="Download" /></a>
+<a href="https://travis-ci.org/SmingHub/Sming"><img src="https://travis-ci.org/SmingHub/Sming.svg?branch=develop" alt="Build" /></a></p>
+
+<h2 id="summary">Summary</h2>
+<ul>
+  <li>Fast &amp; user friendly development</li>
+  <li>Work with GPIO in Arduino style</li>
+  <li>High effective in performance and memory usage (this is native firmware!)</li>
+  <li>Compatible with standard Arduino libraries - use any popular hardware in few lines of code</li>
+  <li>rBoot OTA firmware updating</li>
+  <li>Built-in file system: <a href="https://github.com/pellepl/spiffs">spiffs</a></li>
+  <li>Built-in powerful network and wireless modules</li>
+  <li>Built-in JSON library: <a href="https://github.com/bblanchon/ArduinoJson">ArduinoJson</a></li>
+  <li>HTTP, AJAX, WebSockets support</li>
+  <li>MQTT protocol based on [libemqtt] (https://github.com/menudoproblema/libemqtt)</li>
+  <li>Networking based on LWIP stack</li>
+  <li>Simple and powerful hardware API wrappers</li>
+  <li>SSL support based on [axTLS 2.0+] (https://github.com/igrr/axtls-8266) with [Lwirax] (https://github.com/attachix/lwirax/)</li>
+  <li>Based on Espressif NONOS SDK. Tested with versions 1.4 and 1.5.</li>
+</ul>
+
+<h2 id="latest-release">Latest Release</h2>
+<ul>
+  <li><a href="https://github.com/SmingHub/Sming/releases/tag/2.1.5">Sming V2.1.5</a></li>
+</ul>
+
+<h2 id="getting-started">Getting started</h2>
+<ul>
+  <li><a href="https://github.com/SmingHub/Sming/wiki/Windows-Quickstart">Windows</a></li>
+  <li><a href="https://github.com/SmingHub/Sming/wiki/Linux-Quickstart">Linux</a></li>
+  <li><a href="https://github.com/SmingHub/Sming/wiki/MacOS-Quickstart">MacOS</a></li>
+  <li><a href="https://github.com/SmingHub/Sming/wiki/Docker-Quickstart">Docker</a></li>
+</ul>
+
+<h2 id="additional-needed-software">Additional needed software</h2>
+<ul>
+  <li>Spiffy  : Source included in Sming repository</li>
+  <li>[ESPtool2] (https://github.com/raburton/esptool2) esptool2</li>
+</ul>
+
+<h2 id="optional-features">Optional features</h2>
+<ul>
+  <li>Custom PWM: If Sming is compiled with ENABLE_CUSTOM_PWM=1 then instead of using the Espressif SDK pwm library
+a <a href="https://github.com/StefanBruens/ESP8266_new_pwm">custom PWM library</a> will be used.</li>
+  <li>SSL: The SSL support is not built-in by default to conserve resources. If you want to enable it then take a look at the <a href="https://github.com/SmingHub/Sming/blob/develop/samples/Basic_Ssl/README.md">Readme</a> in the Basic_Ssl samples.</li>
+</ul>
+
+<p>You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.</p>
+
+<h2 id="examples">Examples</h2>
+<p>More information at <strong><a href="https://github.com/SmingHub/Sming/wiki/examples">Wiki Examples</a></strong> page.</p>
+
+<h3 id="simple-gpio-inputoutput">Simple GPIO input/output</h3>
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="cp">#define LED_PIN 2 // GPIO2
+</span><span class="p">...</span>
+<span class="n">pinMode</span><span class="p">(</span><span class="n">LED_PIN</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+<span class="n">digitalWrite</span><span class="p">(</span><span class="n">LED_PIN</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<h3 id="connect-to-wifi-and-start-serial-communication">Connect to WiFi and start Serial communication</h3>
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">Serial</span><span class="p">.</span><span class="n">begin</span><span class="p">(</span><span class="mi">9600</span><span class="p">);</span>
+<span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Hello Sming! Let's do smart things."</span><span class="p">);</span>
+
+<span class="n">WifiStation</span><span class="p">.</span><span class="n">enable</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+<span class="n">WifiStation</span><span class="p">.</span><span class="n">config</span><span class="p">(</span><span class="s">"LOCAL-NETWORK"</span><span class="p">,</span> <span class="s">"123456789087"</span><span class="p">);</span> <span class="c1">// Put you SSID and Password here
+</span></code></pre>
+</div>
+
+<h3 id="read-dht22-sensor">Read DHT22 sensor</h3>
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;Libraries/DHT/DHT.h&gt; // This is just popular Arduino library!
+</span>
+<span class="cp">#define WORK_PIN 0 // GPIO0
+</span><span class="n">DHT</span> <span class="n">dht</span><span class="p">(</span><span class="n">WORK_PIN</span><span class="p">,</span> <span class="n">DHT22</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">init</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">dht</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+
+  <span class="kt">float</span> <span class="n">h</span> <span class="o">=</span> <span class="n">dht</span><span class="p">.</span><span class="n">readHumidity</span><span class="p">();</span>
+  <span class="kt">float</span> <span class="n">t</span> <span class="o">=</span> <span class="n">dht</span><span class="p">.</span><span class="n">readTemperature</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="http-client">HTTP client</h3>
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">HttpClient</span> <span class="n">thingSpeak</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="n">thingSpeak</span><span class="p">.</span><span class="n">downloadString</span><span class="p">(</span><span class="s">"http://api.thingspeak.com/update?key=XXXXXXX&amp;field1="</span> <span class="o">+</span> <span class="n">String</span><span class="p">(</span><span class="n">sensorValue</span><span class="p">),</span> <span class="n">onDataSent</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">onDataSent</span><span class="p">(</span><span class="n">HttpClient</span><span class="o">&amp;</span> <span class="n">client</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">successful</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">successful</span><span class="p">)</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Successful!"</span><span class="p">);</span>
+  <span class="k">else</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Failed"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="ota-application-update-based-on-rboot">OTA application update based on rBoot</h3>
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">OtaUpdate</span><span class="p">()</span> <span class="p">{</span>
+	
+	<span class="n">uint8</span> <span class="n">slot</span><span class="p">;</span>
+	<span class="n">rboot_config</span> <span class="n">bootconf</span><span class="p">;</span>
+	
+	<span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Updating..."</span><span class="p">);</span>
+	
+	<span class="c1">// need a clean object, otherwise if run before and failed will not run again
+</span>	<span class="k">if</span> <span class="p">(</span><span class="n">otaUpdater</span><span class="p">)</span> <span class="k">delete</span> <span class="n">otaUpdater</span><span class="p">;</span>
+	<span class="n">otaUpdater</span> <span class="o">=</span> <span class="k">new</span> <span class="n">rBootHttpUpdate</span><span class="p">();</span>
+	
+	<span class="c1">// select rom slot to flash
+</span>	<span class="n">bootconf</span> <span class="o">=</span> <span class="n">rboot_get_config</span><span class="p">();</span>
+	<span class="n">slot</span> <span class="o">=</span> <span class="n">bootconf</span><span class="p">.</span><span class="n">current_rom</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">slot</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">slot</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="k">else</span> <span class="n">slot</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+	<span class="c1">// flash rom to position indicated in the rBoot config rom table
+</span>	<span class="n">otaUpdater</span><span class="o">-&gt;</span><span class="n">addItem</span><span class="p">(</span><span class="n">bootconf</span><span class="p">.</span><span class="n">roms</span><span class="p">[</span><span class="n">slot</span><span class="p">],</span> <span class="n">ROM_0_URL</span><span class="p">);</span>
+
+	<span class="c1">// and/or set a callback (called on failure or success without switching requested)
+</span>	<span class="n">otaUpdater</span><span class="o">-&gt;</span><span class="n">setCallback</span><span class="p">(</span><span class="n">OtaUpdate_CallBack</span><span class="p">);</span>
+
+	<span class="c1">// start update
+</span>	<span class="n">otaUpdater</span><span class="o">-&gt;</span><span class="n">start</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="embedded-http-webserver">Embedded HTTP WebServer</h3>
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">server</span><span class="p">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">80</span><span class="p">);</span>
+<span class="n">server</span><span class="p">.</span><span class="n">addPath</span><span class="p">(</span><span class="s">"/"</span><span class="p">,</span> <span class="n">onIndex</span><span class="p">);</span>
+<span class="n">server</span><span class="p">.</span><span class="n">addPath</span><span class="p">(</span><span class="s">"/hello"</span><span class="p">,</span> <span class="n">onHello</span><span class="p">);</span>
+<span class="n">server</span><span class="p">.</span><span class="n">setDefaultHandler</span><span class="p">(</span><span class="n">onFile</span><span class="p">);</span>
+
+<span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"=== WEB SERVER STARTED ==="</span><span class="p">);</span>
+<span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">WifiStation</span><span class="p">.</span><span class="n">getIP</span><span class="p">());</span>
+
+<span class="p">...</span>
+
+<span class="kt">void</span> <span class="n">onIndex</span><span class="p">(</span><span class="n">HttpRequest</span> <span class="o">&amp;</span><span class="n">request</span><span class="p">,</span> <span class="n">HttpResponse</span> <span class="o">&amp;</span><span class="n">response</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">TemplateFileStream</span> <span class="o">*</span><span class="n">tmpl</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TemplateFileStream</span><span class="p">(</span><span class="s">"index.html"</span><span class="p">);</span>
+  <span class="k">auto</span> <span class="o">&amp;</span><span class="n">vars</span> <span class="o">=</span> <span class="n">tmpl</span><span class="o">-&gt;</span><span class="n">variables</span><span class="p">();</span>
+  <span class="n">vars</span><span class="p">[</span><span class="s">"counter"</span><span class="p">]</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="n">counter</span><span class="p">);</span>
+  <span class="n">vars</span><span class="p">[</span><span class="s">"IP"</span><span class="p">]</span> <span class="o">=</span> <span class="n">WifiStation</span><span class="p">.</span><span class="n">getIP</span><span class="p">().</span><span class="n">toString</span><span class="p">();</span>
+  <span class="n">vars</span><span class="p">[</span><span class="s">"MAC"</span><span class="p">]</span> <span class="o">=</span> <span class="n">WifiStation</span><span class="p">.</span><span class="n">getMAC</span><span class="p">();</span>
+  <span class="n">response</span><span class="p">.</span><span class="n">sendTemplate</span><span class="p">(</span><span class="n">tmpl</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">onFile</span><span class="p">(</span><span class="n">HttpRequest</span> <span class="o">&amp;</span><span class="n">request</span><span class="p">,</span> <span class="n">HttpResponse</span> <span class="o">&amp;</span><span class="n">response</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">String</span> <span class="n">file</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="n">getPath</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'/'</span><span class="p">)</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">file</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    
+  <span class="n">response</span><span class="p">.</span><span class="n">setCache</span><span class="p">(</span><span class="mi">86400</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+  <span class="n">response</span><span class="p">.</span><span class="n">sendFile</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="documentation">Documentation</h3>
+<p>A complete documentation can be created by running the command below. This requires <code class="highlighter-rouge">doxygen</code> to be installed on your system.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>cd $SMING_HOME
+make docs
+</code></pre>
+</div>
+
+<p>The newly generated documentation will be located under Sming/docs/api</p>
+
+
+  </div>
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+
+
+
+<a href="https://github.com/SmingHub/Sming"><i class="svg-icon github"></i></a>
+
+
+
+
+<a href="https://www.twitter.com/jekyllrb"><i class="svg-icon twitter"></i></a>
+
+
+
+        </footer>
+      </div>
+    </div>
+
+    
+
+  </body>
+</html>
