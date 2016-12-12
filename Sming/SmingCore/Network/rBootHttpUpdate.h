@@ -15,8 +15,10 @@
 
 #define NO_ROM_SWITCH 0xff
 
+class rBootHttpUpdate;
+
 //typedef void (*otaCallback)(bool result);
-typedef Delegate<void(bool result)> otaUpdateDelegate;
+typedef Delegate<void(rBootHttpUpdate& client, bool result)> otaUpdateDelegate;
 
 struct rBootHttpUpdateItem {
 	String url;
@@ -34,6 +36,15 @@ public:
 	void switchToRom(uint8 romSlot);
 	void setCallback(otaUpdateDelegate reqUpdateDelegate);
 	void setDelegate(otaUpdateDelegate reqUpdateDelegate);
+
+
+	// Expose request and response header information
+	using HttpClient::setRequestHeader;
+	using HttpClient::hasRequestHeader;
+	using HttpClient::getResponseHeader;
+
+	// Allow reading items
+	rBootHttpUpdateItem getItem(unsigned int index);
 
 #ifdef ENABLE_SSL
 	using HttpClient::addSslOptions;
