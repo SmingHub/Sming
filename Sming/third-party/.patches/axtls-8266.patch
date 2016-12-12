@@ -120,11 +120,11 @@ diff -Nuar a/replacements/mem.c b/replacements/mem.c
 +        DEBUG_TLS_MEM_PRINT("free %d, left %d\r\n", p[-3], system_get_free_heap_size());
 +}
 diff --git a/Makefile b/Makefile
-index 0cdd8da..b0360a3 100644
+index 538f340..b7ba060 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -6,7 +6,9 @@ OBJCOPY := $(TOOLCHAIN_PREFIX)objcopy
- 
+@@ -7,7 +7,9 @@ OBJCOPY := $(TOOLCHAIN_PREFIX)objcopy
+ MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
  
  XTENSA_LIBS ?= $(shell $(CC) -print-sysroot)
 -
@@ -135,7 +135,7 @@ index 0cdd8da..b0360a3 100644
  OBJ_FILES := \
  	crypto/aes.o \
 diff --git a/ssl/os_port.h b/ssl/os_port.h
-index efda6b5..85a1038 100644
+index e672f10..e06f4ff 100644
 --- a/ssl/os_port.h
 +++ b/ssl/os_port.h
 @@ -60,7 +60,14 @@ extern "C" {
@@ -182,7 +182,7 @@ index efda6b5..85a1038 100644
  inline uint32_t htonl(uint32_t n){
    return ((n & 0xff) << 24) |
      ((n & 0xff00) << 8) |
-diff --git a/ssl/tls1.c a/ssl/tls1.c
+diff --git a/ssl/tls1.c b/ssl/tls1.c
 index 0cf2e4c..78576f7 100644
 --- a/ssl/tls1.c
 +++ b/ssl/tls1.c
@@ -368,4 +368,3 @@ index dc577e7..3113355 100644
  xxd -i axTLS.key_1024 | sed -e \
 -        "s/axTLS_key_1024/default_private_key/" > $AXDIR/../ssl/private_key.h
 +        "s/axTLS_key_1024/default_private_key/" > $AXDIR/private_key.h
- 
