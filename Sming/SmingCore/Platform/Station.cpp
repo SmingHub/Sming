@@ -45,7 +45,7 @@ bool StationClass::isEnabled()
 	return wifi_get_opmode() & STATION_MODE;
 }
 
-bool StationClass::config(String ssid, String password, bool autoConnectOnStartup /* = true*/)
+bool StationClass::config(String ssid, String password, bool autoConnectOnStartup /* = true*/, bool save /* = true */)
 {
 	station_config config = {0};
 
@@ -69,7 +69,16 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 		strcpy((char*)config.password, password.c_str());
 
 		noInterrupts();
-		if(!wifi_station_set_config(&config))
+
+		bool success = false;
+		if(save) {
+			success = wifi_station_set_config(&config);
+		}
+		else {
+			success = wifi_station_set_config_current(&config);
+		}
+
+		if(!success)
 		{
 			interrupts();
 			debugf("Can't set station configuration!");
