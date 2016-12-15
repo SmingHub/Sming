@@ -28,7 +28,11 @@ StationClass::~StationClass()
 
 void StationClass::enable(bool enabled, bool save)
 {
-	uint8 mode = wifi_get_opmode() & ~STATION_MODE;
+	uint8 mode;
+	if (save)
+		mode = wifi_get_opmode_default() & ~STATION_MODE;
+	else
+		mode = wifi_get_opmode() & ~STATION_MODE;
 	if (enabled) mode |= STATION_MODE;
 	if (save)
 		wifi_set_opmode(mode);
