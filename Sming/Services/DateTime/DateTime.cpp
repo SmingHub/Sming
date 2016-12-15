@@ -145,7 +145,8 @@ String DateTime::toFullDateTimeString()
 	return toShortDateString() + " " + toShortTimeString(true);
 }
 
-String DateTime::toISO8601() {
+String DateTime::toISO8601() 
+{
 	char* buf = new char[21];
 	sprintf(buf, "%02d-%02d-%02dT%02d:%02d:%02dZ",Year,Month+1,Day,Hour,Minute,Second);
 	auto result = String(buf);
