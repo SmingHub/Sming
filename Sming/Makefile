@@ -288,10 +288,12 @@ $(USER_LIBDIR)/libaxtls.a:
 	$(Q) $(MAKE) -C third-party/axtls-8266 -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)"
 endif
 
+ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 $(USER_LIBDIR)/libmainmm.a: $(addprefix $(SDK_LIBDIR)/,libmain.a)
 	$(vecho) "Enabling custom heap implementation"
 	$(Q) cp $^ $@ 
 	$(Q) $(AR) -d $@ mem_manager.o
+endif
 
 spiffy: spiffy/spiffy
 
