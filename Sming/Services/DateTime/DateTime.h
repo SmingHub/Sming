@@ -139,6 +139,7 @@ public:
      *  @retval String Date and time in format dd.mm.yyyy hh:mm:ss
      */
 	String toFullDateTimeString();
+	String toISO8601();
 
     /** @brief  Add time to date time object
      *  @param  add Quantity of milliseconds to add to object
