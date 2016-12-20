@@ -18,14 +18,20 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * Built-in powerful network and wireless modules
 * Built-in JSON library: [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 * HTTP, AJAX, WebSockets support
-* MQTT protocol based on [libemqtt] (https://github.com/menudoproblema/libemqtt)
+* MQTT protocol based on [libemqtt](https://github.com/menudoproblema/libemqtt)
 * Networking based on LWIP stack
 * Simple and powerful hardware API wrappers
-* SSL support based on [axTLS 2.0+] (https://github.com/igrr/axtls-8266) with [Lwirax] (https://github.com/attachix/lwirax/)
+* Crash handlers for analyzing/handling system restarts due to fatal errors or WDT resets.
+* SSL support based on [axTLS 2.1+](https://github.com/igrr/axtls-8266) with [Lwirax](https://github.com/attachix/lwirax/).
+* Out of the box support for HTTP, MQTT and Websocket client connections over SSL. 
+* Out of the box support for OTA over HTTPS.
+* [SNI](https://tools.ietf.org/html/rfc6066#page-6) and [Maximum Fragment Length](https://tools.ietf.org/html/rfc6066#page-8) SSL support.
+* Optional alternative PWM support based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git)
+* Optional custom heap allocation based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git)
 * Based on Espressif NONOS SDK. Tested with versions 1.4 and 1.5. 
 
 ## Latest Release
-- [Sming V2.1.5](https://github.com/SmingHub/Sming/releases/tag/2.1.5)
+- [Sming V3.0.0](https://github.com/SmingHub/Sming/releases/tag/3.0.0)
 
 ## Getting started
 - [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
@@ -42,6 +48,9 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 - Custom PWM: If Sming is compiled with ENABLE_CUSTOM_PWM=1 then instead of using the Espressif SDK pwm library
 a [custom PWM library](https://github.com/StefanBruens/ESP8266_new_pwm) will be used.
 - SSL: The SSL support is not built-in by default to conserve resources. If you want to enable it then take a look at the [Readme](https://github.com/SmingHub/Sming/blob/develop/samples/Basic_Ssl/README.md) in the Basic_Ssl samples.
+- Custom Heap Allocation: If your application is experiencing heap fragmentation then you can try the Umm Malloc heap allocation. To enable it compile
+Sming with ENABLE_CUSTOM_HEAP=1. In order to use it in your sample/application make sure to compile the sample with ENABLE_CUSTOM_HEAP=1. Avoid enabling
+your custom heap allocation AND -mforce-l32 compiler flag.
 
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
