@@ -20,3 +20,7 @@
 [submodule "Sming/third-party/spiffs"]
 	path = Sming/third-party/spiffs
 	url = https://github.com/pellepl/spiffs.git
+[submodule "Sming/third-party/umm_malloc"]
+	path = Sming/third-party/umm_malloc
+	url = https://github.com/rhempel/umm_malloc.git
+	ignore = dirty

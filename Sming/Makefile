@@ -142,6 +142,14 @@ else ifneq ($(SMING_RELEASE),1)
 	MODULES += gdb
 endif
 
+# => umm_malloc (custom heap allocation)
+ifeq ($(ENABLE_CUSTOM_HEAP), 1)
+	THIRD_PARTY_DATA += third-party/umm_malloc/Makefile
+	MODULES      += custom_heap third-party/umm_malloc/src
+	EXTRA_INCDIR += third-party/umm_malloc/src third-party/umm_malloc/includes/c-helper-macros
+	CUSTOM_TARGETS += $(USER_LIBDIR)/libmainmm.a
+endif
+
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
 LIBS		= microc microgcc hal phy pp net80211 lwip wpa main
@@ -278,6 +286,13 @@ endif
 ifeq ($(ENABLE_SSL), 1)
 $(USER_LIBDIR)/libaxtls.a:
 	$(Q) $(MAKE) -C third-party/axtls-8266 -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)"
+endif
+
+ifeq ($(ENABLE_CUSTOM_HEAP), 1)
+$(USER_LIBDIR)/libmainmm.a: $(addprefix $(SDK_LIBDIR)/,libmain.a)
+	$(vecho) "Enabling custom heap implementation"
+	$(Q) cp $^ $@ 
+	$(Q) $(AR) -d $@ mem_manager.o
 endif
 
 spiffy: spiffy/spiffy
