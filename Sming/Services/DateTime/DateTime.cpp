@@ -120,24 +120,20 @@ time_t DateTime::toUnixTime()
 
 String DateTime::toShortDateString()
 {
-	char* buf = new char[64];
+	char buf[64];
 	sprintf(buf, "%02d.%02d.%d", Day, Month + 1, Year);
-	auto result = String(buf);
-	delete buf;
-	return result;
+	return String(buf);
 }
 
 String DateTime::toShortTimeString(bool includeSeconds /* = false*/)
 {
-	char* buf = new char[64];
+	char buf[64];
 	if (includeSeconds)
 		sprintf(buf, "%02d:%02d:%02d", Hour, Minute, Second);
 	else
 		sprintf(buf, "%02d:%02d", Hour, Minute);
 
-	auto result = String(buf);
-	delete buf;
-	return result;
+	return String(buf);
 }
 
 String DateTime::toFullDateTimeString()
@@ -147,11 +143,9 @@ String DateTime::toFullDateTimeString()
 
 String DateTime::toISO8601() 
 {
-	char* buf = new char[21];
+	char buf[21];
 	sprintf(buf, "%02d-%02d-%02dT%02d:%02d:%02dZ",Year,Month+1,Day,Hour,Minute,Second);
-	auto result = String(buf);
-	delete buf;
-	return result;
+	return String(buf);
 }
 
 void DateTime::addMilliseconds(long add)
