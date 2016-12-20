@@ -150,6 +150,8 @@ MODULES      += $(THIRD_PARTY_DIR)/rboot/appcode
 EXTRA_INCDIR ?= include # default to include if not set by user
 EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
 
+USER_LIBDIR  = $(SMING_HOME)/compiler/lib/
+
 # compiler flags using during compilation of source files
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS)
 ifeq ($(SMING_RELEASE),1)
@@ -167,18 +169,31 @@ else
 endif
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
+ENABLE_CUSTOM_HEAP ?= 0
+ 
+LIBMAIN = main
+ifeq ($(ENABLE_CUSTOM_HEAP),1)
+	LIBMAIN = mainmm
+endif
+
+LIBMAIN = main
+LIBMAIN_SRC = $(addprefix $(SDK_LIBDIR)/,libmain.a)
+
+ifeq ($(ENABLE_CUSTOM_HEAP),1)
+	LIBMAIN = mainmm
+	LIBMAIN_SRC := $(USER_LIBDIR)lib$(LIBMAIN).a
+endif
+
 # libmain must be modified for rBoot big flash support (just one symbol gets weakened)
 ifeq ($(RBOOT_BIG_FLASH),1)
 	LIBMAIN = main2
-	LIBMAIN_SRC = $(addprefix $(SDK_LIBDIR)/,libmain.a)
 	LIBMAIN_DST = $(addprefix $(BUILD_BASE)/,libmain2.a)
 	CFLAGS += -DBOOT_BIG_FLASH
 else
-	LIBMAIN = main
 	LIBMAIN_DST = $()
 endif
 # libraries used in this project, mainly provided by the SDK
-USER_LIBDIR = $(SMING_HOME)/compiler/lib/
+
 LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) $(LIBSMING) crypto pwm smartconfig $(EXTRA_LIBS)
 
 # SSL support using axTLS
