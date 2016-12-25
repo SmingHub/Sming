@@ -1,6 +1,7 @@
 /**	@defgroup rtc Real Time Clock
  *	@brief	Access to the real time clock
  *	@note   Provides ability to set and read the ESP8266 RTC.
+ *  @ingroup datetime
 */
 #ifndef SMINGCORE_RTC_H_
 #define SMINGCORE_RTC_H_
@@ -12,31 +13,46 @@
 #define NS_PER_SECOND 1000000000
 
 /** @brief  Structure to hold RTC data
- *  @ingroup structures
+ *  @addtogroup structures
  */
 typedef struct {
-	uint64_t time; ///< Timestamp
-	uint32_t magic; ///< Magic ID @todo What is RtcData.magic?
-	uint32_t cycles; ///@todo What is RtcData.cycles?
+	uint64_t time; ///< Quantity of nanoseconds since epoch
+	uint32_t magic; ///< Magic ID used to identify that RTC has been initialised
+	uint32_t cycles; ///< Quantity of RTC cycles since last update
 } RtcData;
 
+/** @brief  Real time clock class
+ *  @addtogroup rtc
+ *  @{
+ */
 class RtcClass
 {
 public:
-    /** @brief  Real time clock class
-     *  @addtogroup rtc
-     *  @{
+    /** @brief  Instantiate real time clock object
      */
 	RtcClass();
 
+    /** @brief  Get nanoseconds from RTC
+     *  @retval uint64_t Quantity of nanoseconds since last RTC reset or set
+     */
+	uint64_t getRtcNanoseconds();
+
     /** @brief  Get seconds from RTC
-     *  @retval uint32_t Quantity of seconds since last RTC reset or set
+     *  @retval uint32_t Quantity of seconds since epoch
+     *  @note   Also updates RTC NVRAM
      */
 	uint32_t getRtcSeconds();
 
-    /** @brief  Set RTC seconds
-     *  @param  seconds Value to set RTC seconds to
+	/** @brief  Set RTC nanoseconds
+	 *  @param  nanoseconds Value to set RTC to
+	 *  @retval bool True on success
+	 */
+	bool setRtcNanoseconds(uint64_t nanoseconds);
+
+    /** @brief  Set RTC
+     *  @param  seconds Quantity of seconds since epoch
      *  @retval bool True on success
+     *  @note   Updates RTC NVRAM
      */
 	bool setRtcSeconds(uint32_t seconds);
 
@@ -52,7 +68,7 @@ private:
 /**	@brief	Global instance of real time clock object
  *	@note	Use RTC.<i>function</i> to access real time clock functions
  *	@note	Example:
- *	@code	RTC.setRtcSeconds(0);
+ *	@code	RTC.setRtcSeconds(1454225610); //set time to 07:33:30 2016-31-01
  *	@endcode
  *  @ingroup rtc
  */

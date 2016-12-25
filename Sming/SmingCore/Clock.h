@@ -4,8 +4,9 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
-/** @defgroup   clock Clock functions
+/** @defgroup   timedelay Time and Delay
  *  @brief      Provides time and delay functions
+ *  @ingroup    datetime
  *  @{
 */
 
@@ -14,15 +15,19 @@
 
 #include "../Wiring/WiringFrameworkDependencies.h"
 
-/** @brief  Get the time from clock in milliseconds
+/** @brief  Get the system (up)time in milliseconds
  *  @retval "unsigned long" Quantity of milliseconds elapsed since clock epoch
  *  @note   Clock epoch will reset every 49 days, 17 hours, 2 minutes, 47 seconds, 296 milliseconds
+ *  @note   This function uses ESP8266 _system time_ clock which pauses during sleep. Function is provided for compatibility with Arduino. For date and time functionality, use SystemClock
+ *  @see    SystemClockClass
  */
 unsigned long millis(void);
 
 /** @brief  Get the time from clock in microseconds
  *  @retval "unsigned long" Quantity of microseconds elapsed since clock epoch
  *  @note   Clock epoch will reset every 71 minutes, 47 seconds, 967296 microseconds
+ *  @note   This function uses ESP8266 _system time_ clock which pauses during sleep. Function is provided for compatibility with Arduino. For date and time functionality, use SystemClock
+ *  @see    SystemClockClass
  */
 unsigned long micros(void);
 

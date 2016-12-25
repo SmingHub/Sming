@@ -5,7 +5,7 @@ MEMORY
   dport0_0_seg :                        org = 0x3FF00000, len = 0x10
   dram0_0_seg :                         org = 0x3FFE8000, len = 0x14000
   iram1_0_seg :                         org = 0x40100000, len = 0x8000
-  irom0_0_seg :                         org = 0x40209000, len = 0x78000
+  irom0_0_seg :                         org = 0x40209000, len = (1M - 0x9000)
 }
 
 PHDRS
@@ -161,6 +161,7 @@ SECTIONS
     *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text)
 	out/build/app_app.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
   *libsming.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
+  *libsmingssl.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
     _irom0_text_end = ABSOLUTE(.);
 	_flash_code_end = ABSOLUTE(.);
   } >irom0_0_seg :irom0_0_phdr

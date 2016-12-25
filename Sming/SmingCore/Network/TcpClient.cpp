@@ -53,20 +53,20 @@ TcpClient::~TcpClient()
 	}
 }
 
-bool TcpClient::connect(String server, int port)
+bool TcpClient::connect(String server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (isProcessing()) return false;
 
 	state = eTCS_Connecting;
-	return TcpConnection::connect(server.c_str(), port);
+	return TcpConnection::connect(server.c_str(), port, useSsl, sslOptions);
 }
 
-bool TcpClient::connect(IPAddress addr, uint16_t port)
+bool TcpClient::connect(IPAddress addr, uint16_t port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (isProcessing()) return false;
 
 	state = eTCS_Connecting;
-	return TcpConnection::connect(addr, port);
+	return TcpConnection::connect(addr, port, useSsl, sslOptions);
 }
 
 bool TcpClient::sendString(String data, bool forceCloseAfterSent /* = false*/)
@@ -83,6 +83,7 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent /*
 
 	if (stream->write((const uint8_t*)data, len) != len)
 		return false;
+	debugf("Storing %d bytes in stream", len);
 
 	asyncTotalLen += len;
 	asyncCloseAfterSent = forceCloseAfterSent;
@@ -152,6 +153,11 @@ void TcpClient::close()
 	if (state != eTCS_Successful && state != eTCS_Failed)
 	{
 		state = (asyncTotalSent == asyncTotalLen) ? eTCS_Successful : eTCS_Failed;
+#ifdef ENABLE_SSL
+		if(ssl && sslConnected) {
+			state = (asyncTotalLen==0 || (asyncTotalSent > asyncTotalLen)) ? eTCS_Successful : eTCS_Failed;
+		}
+#endif
 		asyncTotalLen = 0;
 		asyncTotalSent = 0;
 		onFinished(state);

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifndef ARDUINO
+#if !defined(ARDUINO) && !defined(SMING_VERSION)
 
 #include <string>
 typedef std::string String;

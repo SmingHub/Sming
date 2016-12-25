@@ -113,12 +113,11 @@ void SPIClass::endTransaction() {
  */
 uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 {
-	uint32_t regvalue = 0;
+	uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
 
 	while(READ_PERI_REG(SPI_CMD(SPI_NO))&SPI_USR);
 
 	regvalue |=  SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
-	regvalue &= ~(BIT2 | SPI_USR_ADDR | SPI_USR_DUMMY | SPI_USR_MISO | SPI_USR_COMMAND); //clear bit 2 see example IoT_Demo
 	WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
 
@@ -208,12 +207,11 @@ void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
 		// compute the number of bits to clock
 		num_bits = bufLenght * 8;
 
-		uint32_t regvalue = 0;
+		uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
 
 		while(READ_PERI_REG(SPI_CMD(SPI_NO))&SPI_USR);
 
 		regvalue |=  SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
-		regvalue &= ~(BIT2 | SPI_USR_ADDR | SPI_USR_DUMMY | SPI_USR_MISO | SPI_USR_COMMAND); //clear bit 2 see example IoT_Demo
 		WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
 

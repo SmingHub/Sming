@@ -11,6 +11,7 @@
 #include "../SmingCore/ESP8266EX.h"
 
 // BETA state. Will be rewritten with new interface.
+///@todo Is ESP01_Description required? Source says it will be removed with new interface
 
 #ifdef BOARD_ESP01
 

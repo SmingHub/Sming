@@ -13,10 +13,12 @@
 #include "TcpClient.h"
 #include "../Delegate.h"
 #include "../../Wiring/WString.h"
+#include "../../Wiring/WHashMap.h"
 #include "../../Services/libemqtt/libemqtt.h"
 
 //typedef void (*MqttStringSubscriptionCallback)(String topic, String message);
 typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
+typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
 
 class MqttClient;
 class URL;
@@ -33,8 +35,8 @@ public:
 	// Sets Last Will and Testament
 	bool setWill(String topic, String message, int QoS, bool retained = false);
 
-	bool connect(String clientName);
-	bool connect(String clientName, String username, String password);
+	bool connect(String clientName, boolean useSsl = false, uint32_t sslOptions = 0);
+	bool connect(String clientName, String username, String password, boolean useSsl = false, uint32_t sslOptions = 0);
 
 	using TcpClient::setCompleteDelegate;
 
@@ -42,10 +44,18 @@ public:
 	__forceinline TcpClientState getConnectionState() { return TcpClient::getConnectionState(); }
 
 	bool publish(String topic, String message, bool retained = false);
-	bool publishWithQoS(String topic, String message, int QoS, bool retained = false);
+	bool publishWithQoS(String topic, String message, int QoS, bool retained = false, MqttMessageDeliveredCallback onDelivery = NULL);
 
 	bool subscribe(String topic);
 	bool unsubscribe(String topic);
+
+	using TcpClient::addSslOptions;
+	using TcpClient::setSslFingerprint;
+	using TcpClient::setSslClientKeyCert;
+	using TcpClient::freeSslClientKeyCert;
+#ifdef ENABLE_SSL
+	using TcpClient::getSsl;
+#endif
 
 protected:
 	virtual err_t onReceive(pbuf *buf);
@@ -66,6 +76,7 @@ private:
 	int keepAlive = 60;
 	int PingRepeatTime = 20;
 	unsigned long lastMessage;
+	HashMap<uint16_t, MqttMessageDeliveredCallback> onDeliveryQueue;
 };
 
 #endif /* _SMING_CORE_NETWORK_MqttClient_H_ */

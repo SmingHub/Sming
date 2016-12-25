@@ -14,6 +14,7 @@
  */
 /** @defgroup   hw_pwm Hardware PWM functions
  *  @brief      Provides hardware pulse width modulation functions
+ *  @{
 */
 
 #ifndef HARDWAREPWM_H
@@ -30,15 +31,14 @@ extern "C" {
 }
 #endif
 
-#define PWM_BAD_CHANNEL 0xff
+#define PWM_BAD_CHANNEL 0xff ///< Invalid PWM channel
 
+/// Hardware pulse width modulation
 class HardwarePWM {
 public:
     /** @brief  Instantiate hardware PWM object
      *  @param  pins Pointer to array of pins to control
      *  @param  no_of_pins Quantity of elements in array of pins
-     *  @addtogroup hw_pwm
-     *  @{
      */
 	HardwarePWM(uint8 *pins, uint8 no_of_pins);
 	virtual ~HardwarePWM();
@@ -85,7 +85,6 @@ public:
      *  @note   Attempt to set duty of a pin above this value will fail
      */
 	uint32 getMaxDuty();
-	/** @} */
 protected:
 
 private:
@@ -94,4 +93,5 @@ private:
 	uint32 maxduty;
 };
 
+/** @} */
 #endif	/* HARDWAREPWM_H */

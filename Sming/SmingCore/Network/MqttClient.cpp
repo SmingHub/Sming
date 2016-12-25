@@ -56,12 +56,12 @@ bool MqttClient::setWill(String topic, String message, int QoS, bool retained /*
 	return mqtt_set_will(&broker, topic.c_str(), message.c_str(), QoS, retained);
 }
 
-bool MqttClient::connect(String clientName)
+bool MqttClient::connect(String clientName, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
-	return MqttClient::connect(clientName, "", "");
+	return MqttClient::connect(clientName, "", "", useSsl, sslOptions);
 }
 
-bool MqttClient::connect(String clientName, String username, String password)
+bool MqttClient::connect(String clientName, String username, String password, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (getConnectionState() != eTCS_Ready)
 	{
@@ -77,10 +77,10 @@ bool MqttClient::connect(String clientName, String username, String password)
 		mqtt_init_auth(&broker, username.c_str(), password.c_str());
 
 	if(server.length() > 0 ) {
-		TcpClient::connect(server, port);
+		TcpClient::connect(server, port, useSsl, sslOptions);
 	}
 	else {
-		TcpClient::connect(serverIp, port);
+		TcpClient::connect(serverIp, port, useSsl, sslOptions);
 	}
 
 	mqtt_set_alive(&broker, keepAlive);
@@ -98,9 +98,16 @@ bool MqttClient::publish(String topic, String message, bool retained /* = false*
 	return res > 0;
 }
 
-bool MqttClient::publishWithQoS(String topic, String message, int QoS, bool retained /* = false*/)
+bool MqttClient::publishWithQoS(String topic, String message, int QoS, bool retained /* = false*/, MqttMessageDeliveredCallback onDelivery /* = NULL */)
 {
-	int res = mqtt_publish_with_qos(&broker, topic.c_str(), message.c_str(), retained, QoS, NULL);
+	uint16_t msgId = 0;
+	int res = mqtt_publish_with_qos(&broker, topic.c_str(), message.c_str(), retained, QoS, &msgId);
+	if(QoS == 0 && onDelivery) {
+		debugf("The delivery callback is ignored for QoS 0.");
+	}
+	else if(QoS >0 && onDelivery && msgId) {
+		onDeliveryQueue[msgId] = onDelivery;
+	}
 	return res > 0;
 }
 
@@ -261,6 +268,16 @@ err_t MqttClient::onReceive(pbuf *buf)
 						else
 						{
 							debugf("WRONG SIZES: %d: %d", lenTopic, lenMsg);
+						}
+					}
+					else if (type == MQTT_MSG_PUBACK || type == MQTT_MSG_PUBREC) {
+						// message with QoS 1 or 2 was received and this is the confirmation
+						const uint16_t msgId = mqtt_parse_msg_id(buffer);
+						debugf("message with id: %d was delivered", msgId);
+						if(onDeliveryQueue.contains(msgId)) {
+							// there is a callback for this message
+							onDeliveryQueue[msgId](msgId, type);
+							onDeliveryQueue.remove(msgId);
 						}
 					}
 				}

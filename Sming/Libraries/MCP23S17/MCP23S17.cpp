@@ -42,6 +42,7 @@ using namespace MCP23S17Constants;
 MCP::MCP(uint8_t address, uint8_t cs)
 {
 	_cs = cs;
+	_csBitmask = (1 << _cs);
 	_address = address;
 	_rcmd = (OPCODER | (_address << 1)); //Read command for chip address
 	_wcmd = (OPCODEW | (_address << 1)); //Write command for chip addres
@@ -54,8 +55,11 @@ MCP::MCP(uint8_t address, uint8_t cs)
 void MCP::begin()
 {
 	::pinMode(_cs, OUTPUT);
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, HIGH);
-
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, _csBitmask);
+#endif
 	SPI.begin();                   // Start up the SPI bus� crank'er up Charlie!
 	byteWrite(IOCON, ADDR_ENABLE);
 }
@@ -64,38 +68,54 @@ void MCP::begin()
 
 void MCP::byteWrite(uint8_t reg, uint8_t value)
 {      // Accept the register and byte
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, LOW);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, _csBitmask);
+#endif
 	SPI.transfer(_wcmd); // Send the MCP23S17 opcode, chip address, and write bit
 	SPI.transfer(reg);                     // Send the register we want to write
 	SPI.transfer(value);                                 // Send the byte
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, HIGH);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, _csBitmask);
+#endif
 }
 
 // GENERIC WORD WRITE - will write a word to a register pair, LSB to first register, MSB to next higher value register 
 
 void MCP::wordWrite(uint8_t reg, unsigned int word)
 {  // Accept the start register and word
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, LOW);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, _csBitmask);
+#endif
 	SPI.transfer(_wcmd); // Send the MCP23S17 opcode, chip address, and write bit
 	SPI.transfer(reg);                    // Send the register we want to write
 	SPI.transfer((uint8_t) (word)); // Send the low byte (register address pointer will auto-increment after write)
 	SPI.transfer((uint8_t) (word >> 8)); // Shift the high byte down to the low byte location and send
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, HIGH);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, _csBitmask);
+#endif
 }
 
 // MODE SETTING FUNCTIONS - BY PIN AND BY WORD
 
 void MCP::pinMode(uint8_t pin, uint8_t mode)
 {  // Accept the pin # and I/O mode
-	if (pin < 1 | pin > 16)
-		return; // If the pin value is not valid (1-16) return, do nothing and return
+	if (pin < 0 | pin > 15)
+		return; // If the pin value is not valid (0-15) return, do nothing and return
 	if (mode == INPUT)
 	{      // Determine the mode before changing the bit state in the mode cache
-		_modeCache |= 1 << (pin - 1); // Since input = "HIGH", OR in a 1 in the appropriate place
+		_modeCache |= 1 << pin; // Since input = "HIGH", OR in a 1 in the appropriate place
 	}
 	else
 	{
-		_modeCache &= ~(1 << (pin - 1)); // If not, the mode must be output, so and in a 0 in the appropriate place
+		_modeCache &= ~(1 << pin); // If not, the mode must be output, so and in a 0 in the appropriate place
 	}
 	wordWrite(IODIRA, _modeCache); // Call the generic word writer with start register and the mode cache
 }
@@ -112,15 +132,15 @@ void MCP::pinMode(unsigned int mode)
 
 void MCP::pullupMode(uint8_t pin, uint8_t mode)
 {
-	if (pin < 1 | pin > 16)
+	if (pin < 0 | pin > 15)
 		return;
 	if (mode == ON)
 	{
-		_pullupCache |= 1 << (pin - 1);
+		_pullupCache |= 1 << pin;
 	}
 	else
 	{
-		_pullupCache &= ~(1 << (pin - 1));
+		_pullupCache &= ~(1 << pin);
 	}
 	wordWrite(GPPUA, _pullupCache);
 }
@@ -135,15 +155,15 @@ void MCP::pullupMode(unsigned int mode)
 
 void MCP::inputInvert(uint8_t pin, uint8_t mode)
 {
-	if (pin < 1 | pin > 16)
+	if (pin < 0 | pin > 15)
 		return;
 	if (mode == ON)
 	{
-		_invertCache |= 1 << (pin - 1);
+		_invertCache |= 1 << pin;
 	}
 	else
 	{
-		_invertCache &= ~(1 << (pin - 1));
+		_invertCache &= ~(1 << pin);
 	}
 	wordWrite(IPOLA, _invertCache);
 }
@@ -158,17 +178,15 @@ void MCP::inputInvert(unsigned int mode)
 
 void MCP::digitalWrite(uint8_t pin, uint8_t value)
 {
-	if (pin < 1 | pin > 16)
-		return;
-	if (pin < 1 | pin > 16)
+	if (pin < 0 | pin > 15)
 		return;
 	if (value)
 	{
-		_outputCache |= 1 << (pin - 1);
+		_outputCache |= 1 << pin;
 	}
 	else
 	{
-		_outputCache &= ~(1 << (pin - 1));
+		_outputCache &= ~(1 << pin);
 	}
 	wordWrite(GPIOA, _outputCache);
 }
@@ -184,29 +202,45 @@ void MCP::digitalWrite(unsigned int value)
 unsigned int MCP::digitalRead(void)
 { // This function will read all 16 bits of I/O, and return them as a word in the format 0x(portB)(portA)
 	unsigned int value = 0; // Initialize a variable to hold the read values to be returned
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, LOW);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, _csBitmask);
+#endif
 	SPI.transfer(_rcmd); // Send the MCP23S17 opcode, chip address, and read bit
 	SPI.transfer(GPIOA);                    // Send the register we want to read
 	value = SPI.transfer(0x00); // Send any byte, the function will return the read value (register address pointer will auto-increment after write)
 	value |= (SPI.transfer(0x00) << 8); // Read in the "high byte" (portB) and shift it up to the high location and merge with the "low byte"
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, HIGH);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, _csBitmask);
+#endif
 	return value; // Return the constructed word, the format is 0x(portB)(portA)
 }
 
 uint8_t MCP::byteRead(uint8_t reg)
 {        // This function will read a single register, and return it
 	uint8_t value = 0; // Initialize a variable to hold the read values to be returned
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, LOW);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, _csBitmask);
+#endif
 	SPI.transfer(_rcmd); // Send the MCP23S17 opcode, chip address, and read bit
 	SPI.transfer(reg);                      // Send the register we want to read
 	value = SPI.transfer(0x00); // Send any byte, the function will return the read value
+#ifdef CS_PIN_16
 	::digitalWrite(_cs, HIGH);
+#else
+	GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, _csBitmask);
+#endif
 	return value; // Return the constructed word, the format is 0x(register value)
 }
 
 uint8_t MCP::digitalRead(uint8_t pin)
 {              // Return a single bit value, supply the necessary bit (1-16)
-	if (pin < 1 | pin > 16)
+	if (pin < 0 | pin > 15)
 		return 0x0; // If the pin value is not valid (1-16) return, do nothing and return
-	return digitalRead() & (1 << (pin - 1)) ? HIGH : LOW; // Call the word reading function, extract HIGH/LOW information from the requested pin
+	return digitalRead() & (1 << pin) ? HIGH : LOW; // Call the word reading function, extract HIGH/LOW information from the requested pin
 }

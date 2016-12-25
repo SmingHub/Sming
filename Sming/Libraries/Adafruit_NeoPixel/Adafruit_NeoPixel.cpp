@@ -100,8 +100,8 @@ void IRAM_ATTR Adafruit_NeoPixel::show(void) {
   // state, computes 'pin high' and 'pin low' values, and writes these back
   // to the PORT register as needed.
 
-  //noInterrupts(); // Need 100% focus on instruction timing
-  ets_intr_lock();
+  noInterrupts(); // Need 100% focus on instruction timing
+  //ets_intr_lock();
 
   boolean is800KHz=true;
 
@@ -150,8 +150,9 @@ void IRAM_ATTR Adafruit_NeoPixel::show(void) {
      }
    }
    while((_getCycleCount() - startTime) < period); // Wait for last bit
-   ets_intr_unlock();
-   //interrupts();
+   //ets_intr_unlock();
+   interrupts();
+
   endTime = micros(); // Save EOD time for latch on next call
 }
 

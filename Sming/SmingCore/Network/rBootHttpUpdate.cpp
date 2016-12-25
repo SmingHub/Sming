@@ -50,6 +50,12 @@ void rBootHttpUpdate::updateFailed() {
 	if (updateDelegate) updateDelegate(false);
 }
 
+void rBootHttpUpdate::onItemDownloadCompleted(HttpClient& client, bool successful) {
+	if(successful) {
+		rboot_write_end(&rBootWriteStatus);
+	}
+}
+
 void rBootHttpUpdate::onTimer() {
 	
 	if (TcpClient::isProcessing()) return; // Will wait
@@ -80,7 +86,7 @@ void rBootHttpUpdate::onTimer() {
 	rBootHttpUpdateItem &it = items[currentItem];
 	debugf("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
 	rBootWriteStatus = rboot_write_init(items[currentItem].targetOffset);
-	startDownload(URL(it.url), eHCM_UserDefined, NULL);
+	startDownload(URL(it.url), eHCM_UserDefined, HttpClientCompletedDelegate(&rBootHttpUpdate::onItemDownloadCompleted, this));
 }
 
 void rBootHttpUpdate::writeRawData(pbuf* buf, int startPos) {

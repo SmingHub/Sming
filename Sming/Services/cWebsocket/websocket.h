@@ -101,4 +101,6 @@ enum wsState {
     extern wsFrameType wsParseInputFrame(uint8_t *inputFrame, size_t inputLength,
                                        uint8_t **dataPtr, size_t *dataLength);
 
+    extern size_t getPayloadLength(const uint8_t *inputFrame, size_t inputLength,
+                                   uint8_t *payloadFieldExtraBytes, wsFrameType *frameType);
 #endif	/* WEBSOCKET_H */

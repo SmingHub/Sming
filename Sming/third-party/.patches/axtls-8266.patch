@@ -1,0 +1,370 @@
+diff -Nuar a/replacements/libc.c b/replacements/libc.c
+--- a/replacements/libc.c	1970-01-01 01:00:00.000000000 +0100
++++ b/replacements/libc.c	2016-11-21 11:03:47.152184514 +0100
+@@ -0,0 +1,29 @@
++/*
++ libc_replacements.c - replaces libc functions with functions
++ from Espressif SDK
++ Copyright (c) 2015 Ivan Grokhotkov. All rights reserved.
++ This file is part of the esp8266 core for Arduino environment.
++ This library is free software; you can redistribute it and/or
++ modify it under the terms of the GNU Lesser General Public
++ License as published by the Free Software Foundation; either
++ version 2.1 of the License, or (at your option) any later version.
++ This library is distributed in the hope that it will be useful,
++ but WITHOUT ANY WARRANTY; without even the implied warranty of
++ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ Lesser General Public License for more details.
++ You should have received a copy of the GNU Lesser General Public
++ License along with this library; if not, write to the Free Software
++ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
++ Modified 03 April 2015 by Markus Sattler
++ */
++
++#include <stdint.h>
++#include "espinc/c_types_compatible.h"
++#include <stdarg.h>
++
++extern int ets_putc(int);
++extern int ets_vprintf(int (*print_function)(int), const char * format, va_list arg);
++
++int vprintf(const char * format, va_list arg) {
++    return ets_vprintf(ets_putc, format, arg);
++}
+diff -Nuar a/replacements/mem.c b/replacements/mem.c
+--- a/replacements/mem.c	1970-01-01 01:00:00.000000000 +0100
++++ b/replacements/mem.c	2016-11-21 11:02:07.672185632 +0100
+@@ -0,0 +1,84 @@
++/*
++ * Memory functions for ESP8266 taken from Arduino-Esp project
++
++  WiFiClientSecure.cpp - Variant of WiFiClient with TLS support
++  Copyright (c) 2015 Ivan Grokhotkov. All rights reserved.
++  This file is part of the esp8266 core for Arduino environment.
++
++
++  This library is free software; you can redistribute it and/or
++  modify it under the terms of the GNU Lesser General Public
++  License as published by the Free Software Foundation; either
++  version 2.1 of the License, or (at your option) any later version.
++
++  This library is distributed in the hope that it will be useful,
++  but WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++  Lesser General Public License for more details.
++
++  You should have received a copy of the GNU Lesser General Public
++  License along with this library; if not, write to the Free Software
++  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
++
++*/
++
++#include <stdint.h>
++#include "espinc/c_types_compatible.h"
++
++// Those Espressif functions are needed
++extern void *pvPortMalloc(size_t xWantedSize, const char *file, uint32 line);
++extern void *pvPortRealloc(void* ptr, size_t xWantedSize, const char *file, uint32 line);
++extern void vPortFree(void *ptr, const char *file, uint32 line);
++extern void *ets_memset(void *s, int c, size_t n);
++
++#include "mem_manager.h"
++
++#define free os_free
++#define malloc os_malloc
++#define realloc os_realloc
++#define memset ets_memset
++
++#ifdef DEBUG_TLS_MEM
++extern int m_printf(const char *fmt, ...);
++#define DEBUG_TLS_MEM_PRINT(...) m_printf(__VA_ARGS__)
++#else
++#define DEBUG_TLS_MEM_PRINT(...)
++#endif
++
++void* ax_port_malloc(size_t size, const char* file, int line) {
++    void* result = (void *)malloc(size);
++
++    if (result == NULL) {
++        DEBUG_TLS_MEM_PRINT("%s:%d malloc %d failed, left %d\r\n", file, line, size, system_get_free_heap_size());
++
++        while(true){}
++    }
++    if (size >= 1024)
++        DEBUG_TLS_MEM_PRINT("%s:%d malloc %d, left %d\r\n", file, line, size, system_get_free_heap_size());
++    return result;
++}
++
++void* ax_port_calloc(size_t size, size_t count, const char* file, int line) {
++    void* result = (void* )ax_port_malloc(size * count, file, line);
++    memset(result, 0, size * count);
++    return result;
++}
++
++void* ax_port_realloc(void* ptr, size_t size, const char* file, int line) {
++    void* result = (void* )realloc(ptr, size);
++    if (result == NULL) {
++        DEBUG_TLS_MEM_PRINT("%s:%d realloc %d failed, left %d\r\n", file, line, size, system_get_free_heap_size());
++        while(true){}
++    }
++    if (size >= 1024)
++        DEBUG_TLS_MEM_PRINT("%s:%d realloc %d, left %d\r\n", file, line, size, system_get_free_heap_size());
++    return result;
++}
++
++void ax_port_free(void* ptr) {
++    free(ptr);
++    uint32_t *p = (uint32_t*) ptr;
++    size_t size = p[-3];
++    if (size >= 1024)
++        DEBUG_TLS_MEM_PRINT("free %d, left %d\r\n", p[-3], system_get_free_heap_size());
++}
+diff --git a/Makefile b/Makefile
+index 538f340..b7ba060 100644
+--- a/Makefile
++++ b/Makefile
+@@ -7,7 +7,9 @@ OBJCOPY := $(TOOLCHAIN_PREFIX)objcopy
+ MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
+ 
+ XTENSA_LIBS ?= $(shell $(CC) -print-sysroot)
+-
++ifeq ($(XTENSA_LIBS),)
++	XTENSA_LIBS = $(ESP_HOME)/xtensa-lx106-elf/
++endif
+ 
+ OBJ_FILES := \
+ 	crypto/aes.o \
+diff --git a/ssl/os_port.h b/ssl/os_port.h
+index e672f10..e06f4ff 100644
+--- a/ssl/os_port.h
++++ b/ssl/os_port.h
+@@ -60,7 +60,14 @@ extern "C" {
+ 
+ #if defined(ESP8266)
+ 
++extern int ets_putc(int character);
++extern void ets_printf(const char*, ...);
++extern int ax_port_read(int clientfd, uint8_t *buf, int bytes_needed);
++extern int ax_port_write(int clientfd, uint8_t *buf, uint16_t bytes_needed);
++
+ #include "util/time.h"
++extern void gettimeofday(struct timeval* t,void* timezone);
++
+ #include <errno.h>
+ #define alloca(size) __builtin_alloca(size)
+ #define TTY_FLUSH()
+@@ -96,7 +103,8 @@ extern "C" {
+ #define be64toh(x) __bswap_constant_64(x)
+ #endif
+ 
+-void ax_wdt_feed();
++extern void system_soft_wdt_feed(void);
++#define ax_wdt_feed system_soft_wdt_feed
+ 
+ #elif defined(WIN32)
+ 
+@@ -190,6 +198,18 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
+ #endif  /* Not Win32 */
+ 
+ /* some functions to mutate the way these work */
++#define malloc(A)       ax_port_malloc(A, __FILE__, __LINE__)
++#ifndef realloc
++#define realloc(A,B)    ax_port_realloc(A,B, __FILE__, __LINE__)
++#endif
++#define calloc(A,B)     ax_port_calloc(A,B, __FILE__, __LINE__)
++#define free(x)         ax_port_free(x)
++
++EXP_FUNC void * STDCALL ax_port_malloc(size_t s, const char*, int);
++EXP_FUNC void * STDCALL ax_port_realloc(void *y, size_t s, const char*, int);
++EXP_FUNC void * STDCALL ax_port_calloc(size_t n, size_t s, const char*, int);
++EXP_FUNC void * STDCALL ax_port_free(void*);
++
+ inline uint32_t htonl(uint32_t n){
+   return ((n & 0xff) << 24) |
+     ((n & 0xff00) << 8) |
+diff --git a/ssl/tls1.c b/ssl/tls1.c
+index 0cf2e4c..78576f7 100644
+--- a/ssl/tls1.c
++++ b/ssl/tls1.c
+@@ -1334,6 +1334,9 @@ int basic_read(SSL *ssl, uint8_t **in_data)
+     int read_len, is_client = IS_SET_SSL_FLAG(SSL_IS_CLIENT);
+     uint8_t *buf = ssl->bm_data;
+ 
++    if (ssl->can_free_certificates) {
++        certificate_free(ssl);
++    }
+     if (IS_SET_SSL_FLAG(SSL_SENT_CLOSE_NOTIFY))
+         return SSL_CLOSE_NOTIFY;
+ 
+diff --git a/ssl/tls1.h b/ssl/tls1.h
+index 6565625..c644321 100644
+--- a/ssl/tls1.h
++++ b/ssl/tls1.h
+@@ -43,7 +43,6 @@ extern "C" {
+ #include "version.h"
+ #include "config.h"
+ #include "os_int.h"
+-#include "os_port.h"
+ #include "crypto.h"
+ #include "crypto_misc.h"
+ 
+diff --git a/tools/make_certs.sh b/tools/make_certs.sh
+index dc577e7..3113355 100644
+--- a/tools/make_certs.sh
++++ b/tools/make_certs.sh
+@@ -29,7 +29,12 @@
+ # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #
+ 
+-AXDIR=`pwd`/`dirname $0`
++OLDCWD=`pwd`
++
++if [ -z $AXDIR ]; then
++	AXDIR = $OLDCWD/`dirname $0`
++fi
++
+ CWD=`mktemp -d` && cd $dir
+ cd $CWD 
+ 
+@@ -56,7 +61,7 @@ prompt                 = no
+ 
+ [ req_distinguished_name ]
+  O                      = $PROJECT_NAME
+- CN                     = localhost
++ CN                     = 127.0.0.1
+ EOF
+ 
+ cat > device_cert.conf << EOF  
+@@ -69,16 +74,21 @@ prompt                 = no
+ EOF
+ 
+ # private key generation
+-openssl genrsa -out axTLS.ca_key.pem 2048
++openssl genrsa -out axTLS.ca_key.pem 1024
++openssl genrsa -out axTLS.key_512.pem 512
+ openssl genrsa -out axTLS.key_1024.pem 1024
++openssl genrsa -out axTLS.key_1042.pem 1042
+ openssl genrsa -out axTLS.key_2048.pem 2048
+ openssl genrsa -out axTLS.key_4096.pem 4096
+ openssl genrsa -out axTLS.device_key.pem 1024
+-openssl genrsa -aes128 -passout pass:abcd -out axTLS.key_aes128.pem 1024
+-openssl genrsa -aes256 -passout pass:abcd -out axTLS.key_aes256.pem 1024
++openssl genrsa -aes128 -passout pass:abcd -out axTLS.key_aes128.pem 512
++openssl genrsa -aes256 -passout pass:abcd -out axTLS.key_aes256.pem 512
++
+ 
+ # convert private keys into DER format
++openssl rsa -in axTLS.key_512.pem -out axTLS.key_512 -outform DER
+ openssl rsa -in axTLS.key_1024.pem -out axTLS.key_1024 -outform DER
++openssl rsa -in axTLS.key_1042.pem -out axTLS.key_1042 -outform DER
+ openssl rsa -in axTLS.key_2048.pem -out axTLS.key_2048 -outform DER
+ openssl rsa -in axTLS.key_4096.pem -out axTLS.key_4096 -outform DER
+ openssl rsa -in axTLS.device_key.pem -out axTLS.device_key -outform DER
+@@ -86,8 +96,12 @@ openssl rsa -in axTLS.device_key.pem -out axTLS.device_key -outform DER
+ # cert requests
+ openssl req -out axTLS.ca_x509.req -key axTLS.ca_key.pem -new \
+             -config ./ca_cert.conf 
++openssl req -out axTLS.x509_512.req -key axTLS.key_512.pem -new \
++            -config ./certs.conf 
+ openssl req -out axTLS.x509_1024.req -key axTLS.key_1024.pem -new \
+             -config ./certs.conf 
++openssl req -out axTLS.x509_1042.req -key axTLS.key_1042.pem -new \
++            -config ./certs.conf 
+ openssl req -out axTLS.x509_2048.req -key axTLS.key_2048.pem -new \
+             -config ./certs.conf 
+ openssl req -out axTLS.x509_4096.req -key axTLS.key_4096.pem -new \
+@@ -101,32 +115,25 @@ openssl req -out axTLS.x509_aes256.req -key axTLS.key_aes256.pem \
+ 
+ # generate the actual certs.
+ openssl x509 -req -in axTLS.ca_x509.req -out axTLS.ca_x509.pem \
+-            -sha1 -days 5000 -signkey axTLS.ca_key.pem \
+-            -CAkey axTLS.ca_key.pem
+-openssl x509 -req -in axTLS.ca_x509.req -out axTLS.ca_x509_sha256.pem \
+-            -sha256 -days 5000 -signkey axTLS.ca_key.pem \
+-            -CAkey axTLS.ca_key.pem
++            -sha1 -days 5000 -signkey axTLS.ca_key.pem
++openssl x509 -req -in axTLS.x509_512.req -out axTLS.x509_512.pem \
++            -sha1 -CAcreateserial -days 5000 \
++            -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
+ openssl x509 -req -in axTLS.x509_1024.req -out axTLS.x509_1024.pem \
+             -sha1 -CAcreateserial -days 5000 \
+             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
+-openssl x509 -req -in axTLS.x509_1024.req -out axTLS.x509_1024_sha256.pem \
+-            -sha256 -CAcreateserial -days 5000 \
+-            -CA axTLS.ca_x509_sha256.pem -CAkey axTLS.ca_key.pem
+-openssl x509 -req -in axTLS.x509_1024.req -out axTLS.x509_1024_sha384.pem \
+-            -sha384 -CAcreateserial -days 5000 \
+-            -CA axTLS.ca_x509_sha256.pem -CAkey axTLS.ca_key.pem
+-openssl x509 -req -in axTLS.x509_1024.req -out axTLS.x509_1024_sha512.pem \
+-            -sha512 -CAcreateserial -days 5000 \
+-            -CA axTLS.ca_x509_sha256.pem -CAkey axTLS.ca_key.pem
+-openssl x509 -req -in axTLS.x509_2048.req -out axTLS.x509_2048.pem \
++openssl x509 -req -in axTLS.x509_1042.req -out axTLS.x509_1042.pem \
+             -sha1 -CAcreateserial -days 5000 \
+             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
++openssl x509 -req -in axTLS.x509_2048.req -out axTLS.x509_2048.pem \
++            -md5 -CAcreateserial -days 5000 \
++            -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
+ openssl x509 -req -in axTLS.x509_4096.req -out axTLS.x509_4096.pem \
+-            -sha1 -CAcreateserial -days 5000 \
++            -md5 -CAcreateserial -days 5000 \
+             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
+ openssl x509 -req -in axTLS.x509_device.req -out axTLS.x509_device.pem \
+             -sha1 -CAcreateserial -days 5000 \
+-            -CA axTLS.x509_1024.pem -CAkey axTLS.key_1024.pem
++            -CA axTLS.x509_512.pem -CAkey axTLS.key_512.pem
+ openssl x509 -req -in axTLS.x509_aes128.req \
+             -out axTLS.x509_aes128.pem \
+             -sha1 -CAcreateserial -days 5000 \
+@@ -139,33 +146,35 @@ openssl x509 -req -in axTLS.x509_aes256.req \
+ # note: must be root to do this
+ DATE_NOW=`date`
+ if date -s "Jan 1 2025"; then
+-openssl x509 -req -in axTLS.x509_1024.req -out axTLS.x509_bad_before.pem \
++openssl x509 -req -in axTLS.x509_512.req -out axTLS.x509_bad_before.pem \
+             -sha1 -CAcreateserial -days 365 \
+             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
+ date -s "$DATE_NOW"
+ touch axTLS.x509_bad_before.pem
+ fi
+-openssl x509 -req -in axTLS.x509_1024.req -out axTLS.x509_bad_after.pem \
++openssl x509 -req -in axTLS.x509_512.req -out axTLS.x509_bad_after.pem \
+             -sha1 -CAcreateserial -days -365 \
+             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
+ 
+ # some cleanup
+ rm axTLS*.req
+-rm *.srl
++rm axTLS.srl
+ rm *.conf
+ 
+ # need this for the client tests
+ openssl x509 -in axTLS.ca_x509.pem -outform DER -out axTLS.ca_x509.cer 
++openssl x509 -in axTLS.x509_512.pem -outform DER -out axTLS.x509_512.cer
+ openssl x509 -in axTLS.x509_1024.pem -outform DER -out axTLS.x509_1024.cer
++openssl x509 -in axTLS.x509_1042.pem -outform DER -out axTLS.x509_1042.cer
+ openssl x509 -in axTLS.x509_2048.pem -outform DER -out axTLS.x509_2048.cer
+ openssl x509 -in axTLS.x509_4096.pem -outform DER -out axTLS.x509_4096.cer
+ openssl x509 -in axTLS.x509_device.pem -outform DER -out axTLS.x509_device.cer
+ 
+ # generate pkcs8 files (use RC4-128 for encryption)
+-openssl pkcs8 -in axTLS.key_1024.pem -passout pass:abcd -topk8 -v1 PBE-SHA1-RC4-128 -out axTLS.encrypted_pem.p8
+-openssl pkcs8 -in axTLS.key_1024.pem -passout pass:abcd -topk8 -outform DER -v1 PBE-SHA1-RC4-128 -out axTLS.encrypted.p8
+-openssl pkcs8 -in axTLS.key_1024.pem -nocrypt -topk8 -out axTLS.unencrypted_pem.p8
+-openssl pkcs8 -in axTLS.key_1024.pem -nocrypt -topk8 -outform DER -out axTLS.unencrypted.p8
++openssl pkcs8 -in axTLS.key_512.pem -passout pass:abcd -topk8 -v1 PBE-SHA1-RC4-128 -out axTLS.encrypted_pem.p8
++openssl pkcs8 -in axTLS.key_512.pem -passout pass:abcd -topk8 -outform DER -v1 PBE-SHA1-RC4-128 -out axTLS.encrypted.p8
++openssl pkcs8 -in axTLS.key_512.pem -nocrypt -topk8 -out axTLS.unencrypted_pem.p8
++openssl pkcs8 -in axTLS.key_512.pem -nocrypt -topk8 -outform DER -out axTLS.unencrypted.p8
+ 
+ # generate pkcs12 files (use RC4-128 for encryption)
+ openssl pkcs12 -export -in axTLS.x509_1024.pem -inkey axTLS.key_1024.pem -certfile axTLS.ca_x509.pem -keypbe PBE-SHA1-RC4-128 -certpbe PBE-SHA1-RC4-128 -name "p12_with_CA" -out axTLS.withCA.p12 -password pass:abcd
+@@ -177,6 +186,6 @@ cat axTLS.ca_x509.pem >> axTLS.x509_device.pem
+ 
+ # set default key/cert for use in the server
+ xxd -i axTLS.x509_1024.cer | sed -e \
+-        "s/axTLS_x509_1024_cer/default_certificate/" > $AXDIR/../ssl/cert.h
++        "s/axTLS_x509_1024_cer/default_certificate/" > $AXDIR/cert.h
+ xxd -i axTLS.key_1024 | sed -e \
+-        "s/axTLS_key_1024/default_private_key/" > $AXDIR/../ssl/private_key.h
++        "s/axTLS_key_1024/default_private_key/" > $AXDIR/private_key.h

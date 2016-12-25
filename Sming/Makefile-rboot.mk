@@ -121,6 +121,10 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
+STRIP   := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-strip
+
+CURRENT_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+
 SPIFF_FILES ?= files
 
 BUILD_BASE	= out/build
@@ -132,37 +136,79 @@ RBOOT_ROM_1  := $(addprefix $(FW_BASE)/,$(RBOOT_ROM_1).bin)
 # name for the target project
 TARGET		= app
 
+THIRD_PARTY_DIR = $(SMING_HOME)/third-party
+
+LIBSMING = sming
+ifeq ($(ENABLE_SSL),1)
+	LIBSMING = smingssl
+endif
+
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
 MODULES      ?= app     # default to app if not set by user
-MODULES      += $(SMING_HOME)/rboot/appcode
+MODULES      += $(THIRD_PARTY_DIR)/rboot/appcode
 EXTRA_INCDIR ?= include # default to include if not set by user
-EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SDK_BASE)/../include $(SMING_HOME)/rboot $(SMING_HOME)/rboot/appcode
+EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
+
+USER_LIBDIR  = $(SMING_HOME)/compiler/lib/
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS)
-ifeq ($(ENABLE_GDB), 1)
+ifeq ($(SMING_RELEASE),1)
+	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+	#      for full list of optimization options
+	CFLAGS += -Os -DSMING_RELEASE=1
+else ifeq ($(ENABLE_GDB), 1)
 	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
-	MODULES		 += $(SMING_HOME)/gdbstub
-	EXTRA_INCDIR += gdbstub
+	MODULES		 += $(THIRD_PARTY_DIR)/gdbstub
+	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/gdbstub
+	STRIP := @true
 else
 	CFLAGS += -Os -g
+	STRIP := @true
 endif
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
+
+ENABLE_CUSTOM_HEAP ?= 0
+ 
+LIBMAIN = main
+ifeq ($(ENABLE_CUSTOM_HEAP),1)
+	LIBMAIN = mainmm
+endif
+
+LIBMAIN = main
+LIBMAIN_SRC = $(addprefix $(SDK_LIBDIR)/,libmain.a)
+
+ifeq ($(ENABLE_CUSTOM_HEAP),1)
+	LIBMAIN = mainmm
+	LIBMAIN_SRC := $(USER_LIBDIR)lib$(LIBMAIN).a
+endif
 
 # libmain must be modified for rBoot big flash support (just one symbol gets weakened)
 ifeq ($(RBOOT_BIG_FLASH),1)
 	LIBMAIN = main2
-	LIBMAIN_SRC = $(addprefix $(SDK_LIBDIR)/,libmain.a)
 	LIBMAIN_DST = $(addprefix $(BUILD_BASE)/,libmain2.a)
 	CFLAGS += -DBOOT_BIG_FLASH
 else
-	LIBMAIN = main
 	LIBMAIN_DST = $()
 endif
 # libraries used in this project, mainly provided by the SDK
-USER_LIBDIR = $(SMING_HOME)/compiler/lib/
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) sming crypto pwm smartconfig $(EXTRA_LIBS)
+
+LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) $(LIBSMING) crypto pwm smartconfig $(EXTRA_LIBS)
+
+# SSL support using axTLS
+ifeq ($(ENABLE_SSL),1)
+	LIBS += axtls	
+	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/axtls-8266 $(THIRD_PARTY_DIR)/axtls-8266/ssl $(THIRD_PARTY_DIR)/axtls-8266/crypto 
+	AXTLS_FLAGS = -DLWIP_RAW=1 -DENABLE_SSL=1
+	ifeq ($(SSL_DEBUG),1) # 
+		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1
+	endif
+	
+	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBSMING).a include/ssl/private_key.h
+	CFLAGS += $(AXTLS_FLAGS)  
+	CXXFLAGS += $(AXTLS_FLAGS)	
+endif
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 WIFI_SSID ?= ""
@@ -178,7 +224,7 @@ ifeq ($(DISABLE_SPIFFS), 1)
 endif
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map
+LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m
@@ -314,7 +360,7 @@ endef
 all: checkdirs $(LIBMAIN_DST) $(RBOOT_BIN) $(RBOOT_ROM_0) $(RBOOT_ROM_1) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2)
 
 $(RBOOT_BIN):
-	$(MAKE) -C $(SMING_HOME)/rboot
+	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot
 
 $(LIBMAIN_DST): $(LIBMAIN_SRC)
 	@echo "OC $@"
@@ -333,16 +379,29 @@ $(RBOOT_ROM_1): $(TARGET_OUT_1)
 $(TARGET_OUT_0): $(APP_AR)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) $(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
+	$(Q) $(STRIP) $@
+
 
 $(TARGET_OUT_1): $(APP_AR)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) $(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
+	$(Q) $(STRIP) $@
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 
-checkdirs: $(BUILD_DIR) $(FW_BASE)
+$(USER_LIBDIR)/lib$(LIBSMING).a:
+	$(vecho) "Recompiling Sming with SSL support. This may take some time"
+	$(Q) $(MAKE) -C $(SMING_HOME) clean V=$(V) ENABLE_SSL=$(ENABLE_SSL) SMING_HOME=$(SMING_HOME)
+	$(Q) $(MAKE) -C $(SMING_HOME) V=$(V) ENABLE_SSL=$(ENABLE_SSL) SMING_HOME=$(SMING_HOME)
+
+include/ssl/private_key.h:
+	$(vecho) "Generating unique certificate and key. This may take some time"
+	$(Q) mkdir -p $(CURRENT_DIR)/include/ssl/
+	$(Q) AXDIR=$(CURRENT_DIR)/include/ssl/  $(THIRD_PARTY_DIR)/axtls-8266/tools/make_certs.sh 
+
+checkdirs: $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@

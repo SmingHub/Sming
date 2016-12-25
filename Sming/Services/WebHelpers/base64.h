@@ -19,8 +19,10 @@ int base64decode(const char in[4], char out[3]);
 /* encode binary data into base64 digits with MIME style === pads */
 int base64_encode(size_t in_len, const unsigned char *in, size_t out_len, char *out);
 
+#ifndef ENABLE_SSL
 /* decode base64 digits with MIME style === pads into binary data */
 int base64_decode(size_t in_len, const char *in, size_t out_len, unsigned char *out);
+#endif
 
 #ifdef __cplusplus
 }

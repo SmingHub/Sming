@@ -110,6 +110,7 @@ bool HttpServer::initWebSocket(HttpServerConnection& connection, HttpRequest& re
     if (!sock->initialize(request, response))
         return false;
 
+    connection.setTimeOut(USHRT_MAX); //Disable disconnection on connection idle (no rx/tx)
 	connection.setDisconnectionHandler(HttpServerConnectionDelegate(&HttpServer::onCloseWebSocket, this)); // auto remove on close
 	response.sendHeader(connection); // Will push header before user data
 
@@ -127,7 +128,18 @@ void HttpServer::processWebSocketFrame(pbuf *buf, HttpServerConnection& connecti
 {
 	//TODO: process splitted payload
 	uint8_t* data; size_t size;
-	wsFrameType frameType = wsParseInputFrame((uint8_t*)buf->payload, buf->len, &data, &size);
+
+	wsFrameType frameType = (wsFrameType) 0x01;
+	uint8_t payloadFieldExtraBytes = 0;
+	size_t payloadLength = 0;
+	size_t payloadShift = 0;
+	do
+	{
+	payloadLength = getPayloadLength((uint8_t*)buf->payload + payloadShift, buf->len, &payloadFieldExtraBytes, &frameType);
+
+//    debugf("payloadLength: %u, payLoadShift: %u, payloadFieldExtraBytes: %u\n", payloadLength, payloadShift, payloadFieldExtraBytes);
+
+	wsFrameType frameType = wsParseInputFrame((uint8_t*)buf->payload + payloadShift, (payloadLength + 6 + payloadFieldExtraBytes), &data, &size);
 	WebSocket* sock = getWebSocket(connection);
 
 	if (frameType == WS_TEXT_FRAME)
@@ -150,6 +162,10 @@ void HttpServer::processWebSocketFrame(pbuf *buf, HttpServerConnection& connecti
 		debugf("WS error reading frame: %X", frameType);
 	else
 		debugf("WS frame type: %X", frameType);
+
+	payloadShift += payloadLength + 6 + payloadFieldExtraBytes;
+	}
+	while (buf->len > payloadShift);
 }
 
 void HttpServer::setWebSocketConnectionHandler(WebSocketDelegate handler)

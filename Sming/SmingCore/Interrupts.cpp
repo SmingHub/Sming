@@ -103,11 +103,13 @@ GPIO_INT_TYPE ConvertArduinoInterruptMode(uint8_t mode)
 
 void noInterrupts()
 {
-	ETS_INTR_LOCK();
+	//ETS_INTR_LOCK();
+	xt_disable_interrupts(); // http://www.esp8266.com/viewtopic.php?p=16758
 }
 void interrupts()
 {
-	ETS_INTR_UNLOCK();
+	//ETS_INTR_UNLOCK();
+	xt_enable_interrupts();
 }
 
 static void IRAM_ATTR interruptHandler(uint32 intr_mask, void *arg)
