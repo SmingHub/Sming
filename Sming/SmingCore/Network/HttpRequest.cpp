@@ -193,6 +193,41 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 		return eHPR_Wait;
 }
 
+HttpParseResult HttpRequest::parseHeaderData(HttpServer *server, pbuf* buf)
+{
+	int start = 0;
+
+	// First enter
+	if (content == NULL)
+	{
+		int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
+		if (headerEnd == -1) return eHPR_Failed;
+		if (headerEnd + getContentLength() > NETWORK_MAX_HTTP_PARSING_LEN)
+		{
+			debugf("NETWORK_MAX_HTTP_PARSING_LEN");
+			return eHPR_Failed;
+		}
+		start = headerEnd + 4;
+		content = NetUtils::pbufStrCopy(buf, start, buf->tot_len - start);
+		debugf("%s: content len: %d, len: %d", __func__, getContentLength(), buf->tot_len - start);
+	}
+	else
+	{
+		debugf("Continue POST frag");
+		int delimItem = NetUtils::pbufFindChar(buf, '&', 0);
+		if (delimItem == -1)
+			delimItem = buf->tot_len;
+		else
+			combinePostFrag = false;
+		content += NetUtils::pbufStrCopy(buf, 0, buf->tot_len);
+	}
+
+	if (content.length() == getContentLength())
+		return eHPR_Successful;
+	else
+		return eHPR_Wait;
+}
+
 bool HttpRequest::extractParsingItemsList(pbuf* buf, int startPos, int endPos, char delimChar, char endChar,
 													HashMap<String, String>* resultItems)
 {
