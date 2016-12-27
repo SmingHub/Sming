@@ -221,6 +221,7 @@ EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
 SAMPLES_DIRS := $(shell ls -1 ../samples)
+DOXYGEN := $(shell command -v doxygen 2> /dev/null)
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -319,6 +320,9 @@ docs/wiki/Home.md:
 	$(Q) $(GIT) submodule update --init ../docs/wiki	
 
 docs/api/error.log:
+ifndef DOXYGEN
+	$(error doxygen not found - not building API docs)
+endif
 	$(Q) mkdir -p $(SMING_HOME)/../docs/api
 	$(Q) cd $(SMING_HOME)/../docs; doxygen 2>$(SMING_HOME)/../docs/api/stderr.log 1>$(SMING_HOME)/../docs/api/doxygen.log
 
