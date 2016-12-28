@@ -362,7 +362,7 @@ api: docs/api/sming/index.html
 
 docs: wiki api
 
-samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_HwPWM Basic_Ssl
+samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_Ssl
 
 third-party/%: 
 	$(vecho) "Fetching $(dir $@) ..."

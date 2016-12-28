@@ -31,6 +31,8 @@ script:
   - export PATH=$PATH:$TRAVIS_BUILD_DIR/opt/esp-alt-sdk/utils/
   - cd $SMING_HOME
   - make test
+  - cd $SMING_HOME/../samples/Basic_HwPWM
+  - make
   - cd $SMING_HOME/../
   - export SMING_HAS_CHANGED=`for i in $CHANGED_FILES; do  if [[ $i == Sming/* ]]; then echo 1; break; fi; done`
   - if [ ! -z "$SMING_HAS_CHANGED" ]; then CHANGED_PROJECTS=`cd $SMING_HOME/../samples; ls -d *`; fi
