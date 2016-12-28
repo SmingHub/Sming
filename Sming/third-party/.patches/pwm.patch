@@ -1,6 +1,17 @@
+diff --git a/pwm.c b/pwm.c
+index 5e7f218..51bdf35 100644
 --- a/pwm.c
 +++ b/pwm.c
-@@ -42,6 +42,11 @@
+@@ -18,6 +18,8 @@
+ 
+ /* Set the following three defines to your needs */
+ 
++#include <user_config.h>
++
+ #ifndef SDK_PWM_PERIOD_COMPAT_MODE
+   #define SDK_PWM_PERIOD_COMPAT_MODE 0
+ #endif
+@@ -42,6 +44,11 @@
  #define PWM_MAX_PERIOD PWM_MAX_TICKS
  #endif
  
