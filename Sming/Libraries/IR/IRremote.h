@@ -97,6 +97,7 @@ class IRsend
 {
 public:
   IRsend(int sendpin);
+  IRsend();
   void sendWhynter(unsigned long data, int nbits);
   void sendNEC(unsigned long data, int nbits);
   void sendSony(unsigned long data, int nbits);
