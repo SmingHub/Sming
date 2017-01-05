@@ -256,7 +256,6 @@ uint64_t DS18S20::GetSensorID(uint8_t index)
 uint8_t DS18S20::GetSensorsCount()
 {
 		  return numberOf;
-
 }
 
 void DS18S20::RegisterEndCallback(void (*Callback)())
