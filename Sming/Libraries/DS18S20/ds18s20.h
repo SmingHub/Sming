@@ -22,13 +22,16 @@
 #define ALARMSEARCH     0xEC  // Query for alarm
 #define STARTCONVO      0x44  // temperature reading
 
+typedef Delegate<void()> DS18S20CompletedDelegate;
 
 class DS18S20
 {
 public:
 	DS18S20();
-	void Init(uint8_t);			//call for OneWire init
-	void StartMeasure();        //Start measurement result after 1.2 seconds * number of sensors
+	void Init(uint8_t);					//call for OneWire init
+	void StartMeasure();                    		//Start measurement result after 1.2 seconds * number of sensors
+	void RegisterEndCallback(DS18S20CompletedDelegate);   	//Add function called of conversion end - "interrupt" function of end conversion
+	void UnRegisterCallback();             			//Unset conversion end function
 	float GetCelsius(uint8_t);
 	float GetFahrenheit(uint8_t);
 	bool IsValidTemperature(uint8_t);
@@ -54,6 +57,7 @@ private:
 	uint8_t numberOf=0;
 	uint8_t numberOfread=0;
 
+	DS18S20CompletedDelegate readEndCallback = NULL;
 
 	Timer DelaysTimer;
 
