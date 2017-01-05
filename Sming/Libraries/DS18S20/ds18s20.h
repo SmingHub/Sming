@@ -56,6 +56,7 @@ private:
 	uint8_t numberOf=0;
 	uint8_t numberOfread=0;
 
+	void (*ReadEndCallback)() = 0;
 
 	Timer DelaysTimer;
 
