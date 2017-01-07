@@ -32,6 +32,8 @@ public:
 	void close();
 	void setTimeOut(uint16_t waitTimeOut) { if(connection) connection->setTimeOut(waitTimeOut); };
 
+	bool operator==(const WebSocket &other) const { return this->connection == other.connection;};
+
 protected:
 	bool initialize(HttpRequest &request, HttpResponse &response);
 	bool is(HttpServerConnection* conn) { return connection == conn; };
