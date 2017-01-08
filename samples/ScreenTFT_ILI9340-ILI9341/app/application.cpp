@@ -85,6 +85,10 @@ void init()
 	//WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(false);
 	WifiAccessPoint.enable(false);
+	
+	spiffs_mount();
+	Serial.println("FileSystem mounted.");
+
 	//	delay(2000);
 	Serial.println("Display start");
 
