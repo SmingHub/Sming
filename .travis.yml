@@ -39,3 +39,7 @@ script:
   - make clean
   - make ENABLE_GDB=1
   - make Basic_Debug
+  - make clean
+  - make ENABLE_CUSTOM_HEAP=1
+  - make -C $SMING_HOME/../samples/Basic_Blink clean
+  - make Basic_Blink ENABLE_CUSTOM_HEAP=1
