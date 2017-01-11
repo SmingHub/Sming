@@ -47,7 +47,7 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	char b64Key[25];
 	_mode = wsMode::Connecting; // Server Connected / WS Upgrade request sent
 
-	randomSeed(analogRead(0));
+	randomSeed(os_random());
 
 	for (int i = 0; i < 16; ++i)
 	{
@@ -56,10 +56,8 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 
 	base64_encode(16, (const unsigned char*) keyStart, 24, (char*) b64Key);
 
-	for (int i = 0; i < 24; ++i)
-	{
-		_key[i] = b64Key[i];
-	}
+	_key.setString(b64Key, 24);
+
 	String protocol = "chat";
 	sendString("GET ");
 	if (_uri.Path != "")
