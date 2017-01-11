@@ -274,7 +274,7 @@ $1/%.o: %.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean spiffy test samples recurse-samples $(SAMPLES_DIRS) docs api wiki
+.PHONY: all checkdirs clean spiffy test samples-clean samples $(SAMPLES_DIRS) docs api wiki
 
 all: checkdirs $(APP_AR) spiffy
 
@@ -362,8 +362,6 @@ api: docs/api/sming/index.html
 
 docs: wiki api
 
-samples: Basic_Blink HttpServer_Bootstrap Basic_rBoot Basic_HwPWM Basic_Ssl
-
 third-party/%: 
 	$(vecho) "Fetching $(dir $@) ..."
 	$(Q) $(GIT) submodule update --init --recursive $(dir $@)
@@ -374,10 +372,15 @@ third-party/%:
 # For now we solve this by "reloading" the makefile after fetching a module.
 	$(Q) $(MAKE) -C $(SMING_HOME)
 
-recurse-samples: $(SAMPLES_DIRS)
+samples: $(SAMPLES_DIRS)
 
 $(SAMPLES_DIRS):
 	$(Q) $(MAKE) -C $(SMING_HOME)/../samples/$@
+
+samples-clean:
+	$(Q) for dir in $(SAMPLES_DIRS); do \
+          $(MAKE) -C $(SMING_HOME)/../samples/$$dir clean; \
+        done
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
 
