@@ -38,6 +38,7 @@
 #include "Network/DNSServer.h"
 #include "Network/HttpClient.h"
 #include "Network/MqttClient.h"
+#include "Network/MqttClient2.h"
 #include "Network/NtpClient.h"
 #include "Network/HttpServer.h"
 #include "Network/HttpRequest.h"
@@ -55,5 +56,6 @@
 #include "../Services/DateTime/DateTime.h"
 #include "../Services/libemqtt/libemqtt.h"
 #include "../Services/FATFS/ff.h"
+#include "../Services/espmqtt/mqtt.h"
 
 #endif
