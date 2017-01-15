@@ -27,10 +27,10 @@ class DS18S20
 {
 public:
 	DS18S20();
-	void Init(uint8_t);			//call for OneWire init
-	void StartMeasure();                    //Start measurement result after 1.2 seconds * number of sensors
-	void RegisterEndCallback(void (*)());   //Add function called of conversion end - "interrupt" function of end conversion
-	void UnRegisterCallback();              //Unset conversion end function
+	void Init(uint8_t);					//call for OneWire init
+	void StartMeasure();                    		//Start measurement result after 1.2 seconds * number of sensors
+	void RegisterEndCallback(DS18S20CompletedDelegate);   	//Add function called of conversion end - "interrupt" function of end conversion
+	void UnRegisterCallback();             			//Unset conversion end function
 	float GetCelsius(uint8_t);
 	float GetFahrenheit(uint8_t);
 	bool IsValidTemperature(uint8_t);
@@ -56,7 +56,7 @@ private:
 	uint8_t numberOf=0;
 	uint8_t numberOfread=0;
 
-	void (*ReadEndCallback)() = 0;
+	DS18S20CompletedDelegate ReadEndCallback = 0;
 
 	Timer DelaysTimer;
 
