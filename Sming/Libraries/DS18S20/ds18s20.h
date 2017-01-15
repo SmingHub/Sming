@@ -22,6 +22,7 @@
 #define ALARMSEARCH     0xEC  // Query for alarm
 #define STARTCONVO      0x44  // temperature reading
 
+typedef Delegate<void()> DS18S20CompletedDelegate;
 
 class DS18S20
 {
