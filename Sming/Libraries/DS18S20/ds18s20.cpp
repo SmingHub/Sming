@@ -258,7 +258,7 @@ uint8_t DS18S20::GetSensorsCount()
 		  return numberOf;
 }
 
-void DS18S20::RegisterEndCallback(void (*Callback)())
+void DS18S20::RegisterEndCallback(DS18S20CompletedDelegate Callback)
 {
 	ReadEndCallback = Callback;
 }
