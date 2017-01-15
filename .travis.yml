@@ -43,3 +43,6 @@ script:
   - make ENABLE_CUSTOM_HEAP=1
   - make -C $SMING_HOME/../samples/Basic_Blink clean
   - make Basic_Blink ENABLE_CUSTOM_HEAP=1
+  - make clean samples-clean
+  - make ENABLE_CUSTOM_LWIP=1 
+  - make samples ENABLE_CUSTOM_LWIP=1

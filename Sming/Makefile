@@ -150,10 +150,18 @@ ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 	CUSTOM_TARGETS += $(USER_LIBDIR)/libmainmm.a
 endif
 
+# => Open Source LWIP
+LIBLWIP = lwip
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
+	EXTRA_INCDIR += third-party/esp-open-lwip/include
+	CUSTOM_TARGETS += $(USER_LIBDIR)/liblwip_open.a
+	LIBLWIP = lwip_open
+endif
+
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa main
-
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	THIRD_PARTY_DATA += third-party/pwm/pwm.c
 	LIBS += pwm
@@ -295,6 +303,13 @@ $(USER_LIBDIR)/libmainmm.a: $(addprefix $(SDK_LIBDIR)/,libmain.a)
 	$(Q) cp $^ $@ 
 	$(Q) $(AR) -d $@ mem_manager.o
 endif
+
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+$(USER_LIBDIR)/liblwip_open.a: third-party/esp-open-lwip/Makefile.open
+	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open
+	$(Q) cp third-party/esp-open-lwip/liblwip_open.a $@
+endif
+
 
 spiffy: spiffy/spiffy
 
