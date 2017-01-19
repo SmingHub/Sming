@@ -137,9 +137,11 @@ TARGET		= app
 
 THIRD_PARTY_DIR = $(SMING_HOME)/third-party
 
+SMING_FEATURES = none
 LIBSMING = sming
 ifeq ($(ENABLE_SSL),1)
 	LIBSMING = smingssl
+	SMING_FEATURES = SSL
 endif
 
 # which modules (subdirectories) of the project to include in compiling
@@ -185,7 +187,7 @@ ifeq ($(ENABLE_SSL),1)
 		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1
 	endif
 	
-	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBSMING).a include/ssl/private_key.h
+	CUSTOM_TARGETS += include/ssl/private_key.h
 	CFLAGS += $(AXTLS_FLAGS)  
 	CXXFLAGS += $(AXTLS_FLAGS)	
 endif
@@ -313,7 +315,7 @@ endef
 
 .PHONY: all checkdirs spiff_update spiff_clean clean
 
-all: checkdirs $(TARGET_OUT) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2)
+all: $(USER_LIBDIR)/lib$(LIBSMING).a checkdirs $(TARGET_OUT) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2)
 
 spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 
@@ -352,7 +354,7 @@ $(APP_AR): $(OBJ)
 	$(Q) $(AR) cru $@ $^
 	
 $(USER_LIBDIR)/lib$(LIBSMING).a:
-	$(vecho) "Recompiling Sming with SSL support. This may take some time"
+	$(vecho) "(Re)compiling Sming. Enabled features: $(SMING_FEATURES). This may take some time"
 	$(Q) $(MAKE) -C $(SMING_HOME) clean V=$(V) ENABLE_SSL=$(ENABLE_SSL) SMING_HOME=$(SMING_HOME)
 	$(Q) $(MAKE) -C $(SMING_HOME) V=$(V) ENABLE_SSL=$(ENABLE_SSL) SMING_HOME=$(SMING_HOME)
 

@@ -338,7 +338,7 @@ else
 	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
 endif	
 
-test: all spiffy samples
+test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM 
 
 docs/wiki/Home.md: 
 	$(vecho) "No Wiki submodule found. Using git to fetch it..."
