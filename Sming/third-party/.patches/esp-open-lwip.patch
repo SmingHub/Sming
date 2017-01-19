@@ -1,0 +1,69 @@
+diff --git a/include/user_config.h b/include/user_config.h
+index e69de29..1db5073 100644
+--- a/include/user_config.h
++++ b/include/user_config.h
+@@ -0,0 +1,34 @@
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++typedef signed short        sint16_t;
++
++void *ets_bzero(void *block, size_t size);
++bool ets_post(uint32_t prio, ETSSignal sig, ETSParam par);
++void ets_task(ETSTask task, uint32_t prio, ETSEvent * queue, uint8 qlen);
++
++void system_pp_recycle_rx_pkt(void *eb);
++
++#ifndef MEMLEAK_DEBUG
++	extern void *pvPortMalloc( size_t xWantedSize );
++	extern void vPortFree( void *pv );
++	extern void *pvPortZalloc(size_t size);
++#else
++	extern void *pvPortMalloc(size_t xWantedSize, const char *file, uint32 line);
++	extern void *pvPortZalloc(size_t xWantedSize, const char *file, uint32 line);
++	extern void vPortFree(void *ptr, const char *file, uint32 line);
++
++	extern void pvPortFree(void *ptr);
++	extern void *vPortMalloc(size_t xWantedSize);
++#endif /*MEMLEAK_DEBUG*/
++
++
++	extern void *pvPortCalloc(unsigned int n, unsigned int count);
++	extern void *pvPortRealloc(void * p, size_t size);
++	extern size_t xPortGetFreeHeapSize(void);
++//	extern void prvHeapInit(void) ICACHE_FLASH_ATTR ;
++
++#ifdef __cplusplus
++}
++#endif
+diff --git a/Makefile.open b/Makefile.open
+index 1bc584f..493275b 100644
+--- a/Makefile.open
++++ b/Makefile.open
+@@ -36,11 +36,21 @@ lwip/core/ipv4/ip.o \
+ lwip/core/ipv4/ip_frag.o \
+ lwip/netif/etharp.o \
+ \
+-lwip/app/dhcpserver.o \
+-\
+-espconn_dummy.o \
++lwip/app/dhcpserver.o
++
++
++ifneq ($(ENABLE_ESPCONN),1)
++    OBJS += espconn_dummy.o
++else
++    OBJS += lwip/app/espconn.o \
++lwip/app/espconn_tcp.o \
++lwip/app/espconn_udp.o \
++lwip/app/espconn_mdns.o \
++lwip/core/mdns.o
++
++endif
+ 
+-LIB = liblwip_open.a
++LIB = $(USER_LIBDIR)liblwip_open.a
+ 
+ all: $(LIB)
+ 

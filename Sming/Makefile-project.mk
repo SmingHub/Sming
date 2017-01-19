@@ -148,7 +148,12 @@ endif
 # define your custom directories in the project's own Makefile before including this one
 MODULES      ?= app     # default to app if not set by user
 EXTRA_INCDIR ?= include # default to include if not set by user
-EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
+
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+	LWIP_INCDIR = $(SMING_HOME)/third-party/esp-open-lwip	
+endif
+
+EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
 
 ENABLE_CUSTOM_HEAP ?= 0
  
@@ -157,9 +162,14 @@ ifeq ($(ENABLE_CUSTOM_HEAP),1)
 	LIBMAIN = mainmm
 endif
 
+LIBLWIP = lwip
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+	LIBLWIP = lwip_open
+endif
+
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = $(SMING_HOME)/compiler/lib/
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) $(LIBSMING) crypto pwm smartconfig $(EXTRA_LIBS)
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto pwm smartconfig $(EXTRA_LIBS)
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS)
@@ -190,6 +200,11 @@ ifeq ($(ENABLE_SSL),1)
 	CUSTOM_TARGETS += include/ssl/private_key.h
 	CFLAGS += $(AXTLS_FLAGS)  
 	CXXFLAGS += $(AXTLS_FLAGS)	
+endif
+
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+	CUSTOM_TARGETS += $(USER_LIBDIR)/liblwip_open.a
+#	EXTRA_INCDIR += third-party/esp-open-lwip/include
 endif
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
@@ -366,6 +381,11 @@ include/ssl/private_key.h:
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 $(USER_LIBDIR)/libpwm.a:
 	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm.a ENABLE_CUSTOM_PWM=1
+endif
+
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+$(USER_LIBDIR)/liblwip_open.a:
+	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/liblwip_open.a ENABLE_CUSTOM_LWIP=1
 endif
 
 checkdirs: $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
