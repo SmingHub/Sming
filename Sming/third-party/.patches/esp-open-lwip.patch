@@ -37,3 +37,33 @@ index e69de29..1db5073 100644
 +#ifdef __cplusplus
 +}
 +#endif
+diff --git a/Makefile.open b/Makefile.open
+index 1bc584f..493275b 100644
+--- a/Makefile.open
++++ b/Makefile.open
+@@ -36,11 +36,21 @@ lwip/core/ipv4/ip.o \
+ lwip/core/ipv4/ip_frag.o \
+ lwip/netif/etharp.o \
+ \
+-lwip/app/dhcpserver.o \
+-\
+-espconn_dummy.o \
++lwip/app/dhcpserver.o
++
++
++ifneq ($(ENABLE_ESPCONN),1)
++    OBJS += espconn_dummy.o
++else
++    OBJS += lwip/app/espconn.o \
++lwip/app/espconn_tcp.o \
++lwip/app/espconn_udp.o \
++lwip/app/espconn_mdns.o \
++lwip/core/mdns.o
++
++endif
+ 
+-LIB = liblwip_open.a
++LIB = $(USER_LIBDIR)liblwip_open.a
+ 
+ all: $(LIB)
+ 

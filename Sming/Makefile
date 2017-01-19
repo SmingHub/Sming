@@ -152,6 +152,7 @@ endif
 
 # => Open Source LWIP
 LIBLWIP = lwip
+ENABLE_ESPCONN ?= 1
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
 	EXTRA_INCDIR += third-party/esp-open-lwip/include
@@ -306,8 +307,7 @@ endif
 
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 $(USER_LIBDIR)/liblwip_open.a: third-party/esp-open-lwip/Makefile.open
-	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open
-	$(Q) cp third-party/esp-open-lwip/liblwip_open.a $@
+	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) USER_LIBDIR=$(SMING_HOME)/$(USER_LIBDIR)/
 endif
 
 
