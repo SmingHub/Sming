@@ -57,7 +57,7 @@ private:
 	uint8_t numberOf=0;
 	uint8_t numberOfread=0;
 
-	DS18S20CompletedDelegate ReadEndCallback = 0;
+	DS18S20CompletedDelegate readEndCallback = NULL;
 
 	Timer DelaysTimer;
 
