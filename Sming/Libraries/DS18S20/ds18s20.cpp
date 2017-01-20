@@ -152,7 +152,7 @@ void DS18S20::StartReadNext()
 	   InProgress=false;
 	   if(readEndCallback != NULL) //If callback set, execute function
 	   {
-		   ReadEndCallback();
+		   readEndCallback();
 	   }
    }
 }
