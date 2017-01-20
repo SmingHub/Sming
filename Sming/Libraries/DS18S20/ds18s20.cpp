@@ -150,7 +150,7 @@ void DS18S20::StartReadNext()
    {
 	   debugx("  DBG: DS18S20 reading task end");
 	   InProgress=false;
-	   if(ReadEndCallback > 0) //If callback set, execute function
+	   if(readEndCallback != NULL) //If callback set, execute function
 	   {
 		   ReadEndCallback();
 	   }
