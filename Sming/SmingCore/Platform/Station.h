@@ -104,11 +104,11 @@ public:
 
 	/**	@brief	Connect WiFi station to network
 	 */
-	void connect();
+	bool connect();
 
 	/**	@brief	Disconnect WiFi station from network
 	 */
-	void disconnect();
+	bool disconnect();
 
 	/**	@brief	Get WiFi station connectoin status
 	 *	@retval	bool True if connected.
