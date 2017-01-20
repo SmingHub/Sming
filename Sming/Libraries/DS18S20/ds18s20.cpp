@@ -260,11 +260,11 @@ uint8_t DS18S20::GetSensorsCount()
 
 void DS18S20::RegisterEndCallback(DS18S20CompletedDelegate Callback)
 {
-	ReadEndCallback = Callback;
+	readEndCallback = Callback;
 }
 
 void DS18S20::UnRegisterCallback()
 {
-	ReadEndCallback = 0;
+	readEndCallback = NULL;
 }
 
