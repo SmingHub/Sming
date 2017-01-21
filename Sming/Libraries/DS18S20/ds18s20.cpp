@@ -150,6 +150,10 @@ void DS18S20::StartReadNext()
    {
 	   debugx("  DBG: DS18S20 reading task end");
 	   InProgress=false;
+	   if(ReadEndCallback > 0) //If callback set, execute function
+	   {
+		   ReadEndCallback();
+	   }
    }
 }
 
@@ -252,6 +256,15 @@ uint64_t DS18S20::GetSensorID(uint8_t index)
 uint8_t DS18S20::GetSensorsCount()
 {
 		  return numberOf;
+}
 
+void DS18S20::RegisterEndCallback(void (*Callback)())
+{
+	ReadEndCallback = Callback;
+}
+
+void DS18S20::UnRegisterCallback()
+{
+	ReadEndCallback = 0;
 }
 
