@@ -33,8 +33,9 @@ HardwareSerial::HardwareSerial(const int uartPort)
 	system_os_task(delegateTask,USER_TASK_PRIO_0,serialQueue,SERIAL_QUEUE_LEN);
 }
 
-void HardwareSerial::begin(const uint32_t baud/* = 9600*/)
+void HardwareSerial::internalBegin(const uint32_t baud/* = 9600*/, bool disableRx /*=false*/)
 {
+	rxDisabled = disableRx;
 	//TODO: Move to params!
 	UartDev.baut_rate = (UartBautRate)baud;
 	UartDev.parity = NONE_BITS;
@@ -42,7 +43,10 @@ void HardwareSerial::begin(const uint32_t baud/* = 9600*/)
 	UartDev.stop_bits = ONE_STOP_BIT;
 	UartDev.data_bits = EIGHT_BITS;
 
-	ETS_UART_INTR_ATTACH((void*)uart0_rx_intr_handler,  &(UartDev.rcv_buff));
+	if(!rxDisabled)
+	{
+	  ETS_UART_INTR_ATTACH((void*)uart0_rx_intr_handler,  &(UartDev.rcv_buff));
+	}
 	PIN_PULLUP_DIS(PERIPHS_IO_MUX_U0TXD_U);
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_U0TXD);
 
@@ -53,20 +57,26 @@ void HardwareSerial::begin(const uint32_t baud/* = 9600*/)
 				   | (UartDev.stop_bits << UART_STOP_BIT_NUM_S)
 				   | (UartDev.data_bits << UART_BIT_NUM_S));
 
+	if(!rxDisabled)
+	{
+		//clear rx and tx fifo,not ready
+		SET_PERI_REG_MASK(UART_CONF0(uart), UART_RXFIFO_RST | UART_TXFIFO_RST);
+		CLEAR_PERI_REG_MASK(UART_CONF0(uart), UART_RXFIFO_RST | UART_TXFIFO_RST);
 
-	//clear rx and tx fifo,not ready
-	SET_PERI_REG_MASK(UART_CONF0(uart), UART_RXFIFO_RST | UART_TXFIFO_RST);
-	CLEAR_PERI_REG_MASK(UART_CONF0(uart), UART_RXFIFO_RST | UART_TXFIFO_RST);
-
-	//set rx fifo trigger
-	WRITE_PERI_REG(UART_CONF1(uart), (UartDev.rcv_buff.TrigLvl & UART_RXFIFO_FULL_THRHD) << UART_RXFIFO_FULL_THRHD_S);
-
+		//set rx fifo trigger
+		WRITE_PERI_REG(UART_CONF1(uart), (UartDev.rcv_buff.TrigLvl & UART_RXFIFO_FULL_THRHD) << UART_RXFIFO_FULL_THRHD_S);
+	}
+	
 	//clear all interrupt
 	WRITE_PERI_REG(UART_INT_CLR(uart), 0xffff);
-	//enable rx_interrupt
-	SET_PERI_REG_MASK(UART_INT_ENA(uart), UART_RXFIFO_FULL_INT_ENA);
 
-	ETS_UART_INTR_ENABLE();
+	if(!rxDisabled)
+	{	
+		//enable rx_interrupt
+		SET_PERI_REG_MASK(UART_INT_ENA(uart), UART_RXFIFO_FULL_INT_ENA);
+
+		ETS_UART_INTR_ENABLE();
+	}
 	delay(10);
 	Serial.println("\r\n"); // after SPAM :)
 }
@@ -96,7 +106,7 @@ int HardwareSerial::available()
 
 int HardwareSerial::read()
 {
-	if (available() == 0)
+	if (rxDisabled || available() == 0)
 		return -1;
 
 	noInterrupts();
@@ -136,7 +146,7 @@ int HardwareSerial::readMemoryBlock(char* buf, int max_len)
 
 int HardwareSerial::peek()
 {
-	if (available() == 0)
+	if (rxDisabled || available() == 0)
 		return -1;
 
 	noInterrupts();
