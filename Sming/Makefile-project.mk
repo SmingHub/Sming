@@ -165,6 +165,10 @@ endif
 LIBLWIP = lwip
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	LIBLWIP = lwip_open
+	ifeq ($(ENABLE_ESPCONN), 1)
+		LIBLWIP = lwip_full
+	endif
+	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBLWIP).a 
 endif
 
 # libraries used in this project, mainly provided by the SDK
@@ -200,11 +204,6 @@ ifeq ($(ENABLE_SSL),1)
 	CUSTOM_TARGETS += include/ssl/private_key.h
 	CFLAGS += $(AXTLS_FLAGS)  
 	CXXFLAGS += $(AXTLS_FLAGS)	
-endif
-
-ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-	CUSTOM_TARGETS += $(USER_LIBDIR)/liblwip_open.a
-#	EXTRA_INCDIR += third-party/esp-open-lwip/include
 endif
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
@@ -384,8 +383,8 @@ $(USER_LIBDIR)/libpwm.a:
 endif
 
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-$(USER_LIBDIR)/liblwip_open.a:
-	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/liblwip_open.a ENABLE_CUSTOM_LWIP=1
+$(USER_LIBDIR)/liblwip_%.a:
+	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/liblwip_%.a ENABLE_CUSTOM_LWIP=1 ENABLE_ESPCONN=$(ENABLE_ESPCONN)
 endif
 
 checkdirs: $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
