@@ -80,6 +80,8 @@ bool TcpConnection::connect(String server, int port, boolean useSsl /* = false *
 
 bool TcpConnection::connect(IPAddress addr, uint16_t port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
+	if (tcp == NULL)
+		initialize(tcp_new());
 
 	this->useSsl = useSsl;
 	this->sslOptions |= sslOptions;
