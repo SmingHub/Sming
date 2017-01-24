@@ -75,3 +75,13 @@ void WebSocket::close()
 {
 	connection->close();
 }
+
+void WebSocket::setUserData(void* userData)
+{
+	m_pUserData = userData;
+}
+
+void* WebSocket::getUserData()
+{
+	return m_pUserData;
+}

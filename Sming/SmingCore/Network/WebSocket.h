@@ -34,6 +34,9 @@ public:
 
 	bool operator==(const WebSocket &other) const { return this->connection == other.connection;};
 
+	void setUserData(void* userData);
+	void *getUserData();
+
 protected:
 	bool initialize(HttpRequest &request, HttpResponse &response);
 	bool is(HttpServerConnection* conn) { return connection == conn; };
@@ -41,6 +44,7 @@ protected:
 private:
 	HttpServerConnection* connection;
 	CommandExecutor* commandExecutor = nullptr;
+	void* m_pUserData = nullptr;
 };
 
 #endif /* SMINGCORE_NETWORK_WEBSOCKET_H_ */
