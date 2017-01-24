@@ -45,6 +45,39 @@ typedef struct
 	CommandExecutor* commandExecutor = nullptr; ///< Pointer to command executor (Default: none)
 } HWSerialMemberData;
 
+enum SerialConfig {
+    SERIAL_5N1 = UART_5N1,
+    SERIAL_6N1 = UART_6N1,
+    SERIAL_7N1 = UART_7N1,
+    SERIAL_8N1 = UART_8N1,
+    SERIAL_5N2 = UART_5N2,
+    SERIAL_6N2 = UART_6N2,
+    SERIAL_7N2 = UART_7N2,
+    SERIAL_8N2 = UART_8N2,
+    SERIAL_5E1 = UART_5E1,
+    SERIAL_6E1 = UART_6E1,
+    SERIAL_7E1 = UART_7E1,
+    SERIAL_8E1 = UART_8E1,
+    SERIAL_5E2 = UART_5E2,
+    SERIAL_6E2 = UART_6E2,
+    SERIAL_7E2 = UART_7E2,
+    SERIAL_8E2 = UART_8E2,
+    SERIAL_5O1 = UART_5O1,
+    SERIAL_6O1 = UART_6O1,
+    SERIAL_7O1 = UART_7O1,
+    SERIAL_8O1 = UART_8O1,
+    SERIAL_5O2 = UART_5O2,
+    SERIAL_6O2 = UART_6O2,
+    SERIAL_7O2 = UART_7O2,
+    SERIAL_8O2 = UART_8O2,
+};
+
+enum SerialMode {
+    SERIAL_FULL = UART_FULL,
+    SERIAL_RX_ONLY = UART_RX_ONLY,
+    SERIAL_TX_ONLY = UART_TX_ONLY
+};
+
 /// Hardware serial class
 class HardwareSerial : public Stream
 {
@@ -54,12 +87,49 @@ public:
      *  @note   A global instance of UART 0 is already defined as Serial
      */
 	HardwareSerial(const int uartPort);
-	~HardwareSerial() {}
+	~HardwareSerial();
 
     /** @brief  Initialise the serial port
      *  @param  baud BAUD rate of the serial port (Default: 9600)
      */
-	void begin(const uint32_t baud = 9600);
+	void begin(const uint32_t baud = 9600) {
+		begin(baud, SERIAL_8N1, SERIAL_FULL, 1);
+	}
+
+	void begin(const uint32_t baud, SerialConfig config)
+	{
+		begin(baud, config, SERIAL_FULL, 1);
+	}
+
+	void begin(const uint32_t baud, SerialConfig config, SerialMode mode)
+	{
+		begin(baud, config, mode, 1);
+	}
+
+	void begin(const uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin);
+
+	void end();
+
+	size_t setRxBufferSize(size_t size);
+
+	void swap()
+	{
+		swap(1);
+	}
+	void swap(uint8_t tx_pin);    //toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX
+
+	/*
+	 * Toggle between use of GPIO1 and GPIO2 as TX on UART 0.
+	 * Note: UART 1 can't be used if GPIO2 is used with UART 0!
+	 */
+	void setTx(uint8_t tx_pin);
+
+	/*
+	 * UART 0 possible options are (1, 3), (2, 3) or (15, 13)
+	 * UART 1 allows only TX on 2 if UART 0 is not (2, 3)
+	 */
+	void pins(uint8_t tx, uint8_t rx);
+
 
     /** @brief  Get quantity characters available from serial input
      *  @retval int Quantity of characters in receive buffer
@@ -124,22 +194,28 @@ public:
 	 */
 	void resetCallback();
 
-    /** @brief  Interrupt handler for UART0 receive events
-     *  @todo   Should HardwareSerial::uart0_rx_intr_handler be private?
-     */
-	static void IRAM_ATTR uart0_rx_intr_handler(void *para);
+	bool isTxEnabled(void);
+	bool isRxEnabled(void);
+	int baudRate(void);
+
+private:
+	int uartNr;
+	static HWSerialMemberData memberData[NUMBER_UARTS];
+
+	uart_t* uart = nullptr;
+	size_t rxSize;
+
+	os_event_t * serialQueue = nullptr;
+
+	/** @brief  Interrupt handler for UART0 receive events
+	 * @param uart_t* pointer to UART structure
+	 */
+	static void IRAM_ATTR callbackHandler(uart_t *arg);
 
 	/** @brief  Trigger task for input event
 	 *  @param  inputEvent The event to use for trigger
-	 *  @todo   Should HardwareSerial::delgateTask be private?
 	 */
 	static void delegateTask (os_event_t *inputEvent);
-
-private:
-	int uart;
-	static HWSerialMemberData memberData[NUMBER_UARTS];
-
-	os_event_t * serialQueue;
 };
 
 /**	@brief	Global instance of serial port UART0
