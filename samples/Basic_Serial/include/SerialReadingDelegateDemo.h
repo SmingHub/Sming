@@ -7,6 +7,11 @@ void onDataCallback(Stream& stream, char arrivedChar, unsigned short availableCh
 	Serial.printf("Char: %d, Count: %d\n", (uint8_t)arrivedChar, availableCharsCount);
 }
 
+void echoCallback(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
+{
+	stream.write(arrivedChar);
+}
+
 //*** Example of class callback processing
 class SerialReadingDelegateDemo
 {

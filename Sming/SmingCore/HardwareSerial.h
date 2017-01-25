@@ -96,11 +96,26 @@ public:
 		begin(baud, SERIAL_8N1, SERIAL_FULL, 1);
 	}
 
+	/**
+	 * @brief Initialise and set its configuration.
+	 * @param SerialConfig can be 5, 6, 7, 8 data bits, odd (O),
+	 * 					   even (E), and no (N) parity, and 1 or 2 stop bits.
+	 * 		  			   To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
+	 * 		  			   Serial.begin(baudrate, SERIAL_6E2), etc.
+	 */
 	void begin(const uint32_t baud, SerialConfig config)
 	{
 		begin(baud, config, SERIAL_FULL, 1);
 	}
 
+	/**
+	 * @brief Initialise, set its configuration and mode.
+	 * @param SerialConfig can be 5, 6, 7, 8 data bits, odd (O),
+	 * 					   even (E), and no (N) parity, and 1 or 2 stop bits.
+	 * 		  			   To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
+	 * 		  			   Serial.begin(baudrate, SERIAL_6E2), etc.
+	 * @param SerialMode specifies if the UART supports receiving (RX), transmitting (TX) or both (FULL) operations
+	 */
 	void begin(const uint32_t baud, SerialConfig config, SerialMode mode)
 	{
 		begin(baud, config, mode, 1);
@@ -195,8 +210,22 @@ public:
 	 */
 	void resetCallback();
 
+	/**
+	 * @brief  Checks if the current UART can transmit(print) information
+	 * @retval bool true if transmitting is allowed
+	 */
 	bool isTxEnabled(void);
+
+	/**
+	 * @brief  Checks if the current UART can receive information
+	 * @retval bool true if receiving is allowed
+	 */
 	bool isRxEnabled(void);
+
+	/**
+	 * @brief Get the current baud rate
+	 * @retval int baud rate
+	 */
 	int baudRate(void);
 
 private:
@@ -220,10 +249,13 @@ private:
 };
 
 /**	@brief	Global instance of serial port UART0
- *	@note	Use Serial.<i>function</i> to access serial functions
+ *  @note	Use Serial.<i>function</i> to access serial functions
  *	@note	Example:
  *  @code   Serial.begin(115200);
 	@endcode
+	@note   Serial uses UART0, which is mapped to pins GPIO1 (TX) and GPIO3 (RX).
+	@note   Serial may be remapped to GPIO15 (TX) and GPIO13 (RX) by calling Serial.swap() after Serial.begin.
+	@note   Calling swap again maps UART0 back to GPIO1 and GPIO3.
 */
 extern HardwareSerial Serial;
 

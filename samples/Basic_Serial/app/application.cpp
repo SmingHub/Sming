@@ -73,6 +73,20 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
+	/**
+	 * Serial1 uses UART1, TX pin is GPIO2.
+	 * UART1 can not be used to receive data because normally
+	 * it's RX pin is occupied for flash chip connection.
+	 */
+	HardwareSerial Serial1(UART1);
+	Serial1.begin(SERIAL_BAUD_RATE);
+
+	/*
+	 * The line below redirect debug output to UART1
+	 */
+	Serial1.systemDebugOutput(true);
+	Serial1.printf("====Debug Information=====\n");
+
 	procTimer.initializeMs(2000, sayHello).start();
 
 	testPrintf();
@@ -81,6 +95,8 @@ void init()
 	//  * Option 1
 	//	Set Serial Callback to global routine:
 	//	   Serial.setCallback(onDataCallback);
+	// If you want to test local echo set the following callback
+	//	   Serial.setCallback(echoCallback);
 
 	// 	* Option 2
 	//  Instantiate hwsDelegateDemo which includes Serial Delegate class
