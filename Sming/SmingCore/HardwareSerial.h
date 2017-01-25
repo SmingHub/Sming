@@ -235,7 +235,9 @@ private:
 	uart_t* uart = nullptr;
 	size_t rxSize;
 
-	os_event_t * serialQueue = nullptr;
+	static os_event_t *serialQueue;
+
+	static bool init;
 
 	/** @brief  Interrupt handler for UART0 receive events
 	 * @param uart_t* pointer to UART structure

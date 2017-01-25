@@ -15,21 +15,16 @@
 #include "../SmingCore/Interrupts.h"
 
 HWSerialMemberData HardwareSerial::memberData[NUMBER_UARTS];
+os_event_t *HardwareSerial::serialQueue = nullptr;
+bool HardwareSerial::init = false;
 
 HardwareSerial::HardwareSerial(const int uartPort)
 	: uartNr(uartPort), rxSize(256)
 {
-	// Start Serial task
-	serialQueue = (os_event_t *)malloc(sizeof(os_event_t) * SERIAL_QUEUE_LEN);
-	system_os_task(delegateTask,USER_TASK_PRIO_0,serialQueue,SERIAL_QUEUE_LEN);
 }
 
 HardwareSerial::~HardwareSerial()
 {
-	if(serialQueue != nullptr) {
-		free(serialQueue);
-		serialQueue = nullptr;
-	}
 }
 
 void HardwareSerial::begin(const uint32_t baud, SerialConfig config, SerialMode mode, uint8_t  txPin)
@@ -49,8 +44,9 @@ void HardwareSerial::end()
         uart_uninit(uart);
         uart = NULL;
     }
-    else {
+    else if(!init){
     	uart_detach(uartNr);
+    	init = true;
     }
 }
 
@@ -219,6 +215,12 @@ bool HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate, bool us
 
 	memberData[uartNr].HWSDelegate = reqDelegate;
 	memberData[uartNr].useRxBuff = useSerialRxBuffer;
+
+	// Start Serial task
+	if (!serialQueue) {
+		serialQueue = (os_event_t *) malloc(sizeof(os_event_t) * SERIAL_QUEUE_LEN);
+		system_os_task(delegateTask, USER_TASK_PRIO_0, serialQueue, SERIAL_QUEUE_LEN);
+	}
 
 	return true;
 }
