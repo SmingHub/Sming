@@ -47,11 +47,9 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	char b64Key[25];
 	_mode = wsMode::Connecting; // Server Connected / WS Upgrade request sent
 
-	randomSeed(os_random());
-
 	for (int i = 0; i < 16; ++i)
 	{
-		keyStart[i] = (char) random(1, 256);
+		keyStart[i] = 1 + os_random()%255;
 	}
 
 	base64_encode(16, (const unsigned char*) keyStart, 24, (char*) b64Key);
