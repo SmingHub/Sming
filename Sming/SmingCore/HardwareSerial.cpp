@@ -14,11 +14,6 @@
 #include "../SmingCore/Clock.h"
 #include "../SmingCore/Interrupts.h"
 
-//set m_printf callback
-//extern void setMPrintfPrinterCbc(void (*callback)(char));
-
-// StreamDataAvailableDelegate HardwareSerial::HWSDelegates[2];
-
 HWSerialMemberData HardwareSerial::memberData[NUMBER_UARTS];
 
 HardwareSerial::HardwareSerial(const int uartPort)
@@ -182,35 +177,50 @@ void HardwareSerial::callbackHandler(uart_t *uart) {
 		return;
 	}
 
-	uint8_t receivedChar;
+	int receivedChar;
 	while ((receivedChar = uart_read_char(uart)) != -1) {
-		if ((memberData[UART_ID_0].HWSDelegate) || (memberData[UART_ID_0].commandExecutor)) {
+		if (memberData[uart->uart_nr].useRxBuff) {
+			// TODO: add code to buffer the characters ...
+			// The buffering needs rethinking:
+			//  - one possibility is to buffer until character C. example: \n
+			//  - another possibility is to buffer until N characters are available. example: 10
+			//  - or add a bufferCallback that takes care to do whatever buffering logic is desired.
+			//  The buffering logic must be extremely "light" because it will be called on every UART interrupt.
+		}
+
+		if ((memberData[uart->uart_nr].HWSDelegate) || (memberData[uart->uart_nr].commandExecutor)) {
 			uint32 serialQueueParameter;
 			uint16 cc;
 			//    	  cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
 			//      													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
 			cc = (uart->rx_buffer->wpos < uart->rx_buffer->rpos) ?
-					((uart->rx_buffer->wpos + uart->rx_buffer->size)
-							- uart->rx_buffer->rpos) :
+					((uart->rx_buffer->wpos + uart->rx_buffer->size) - uart->rx_buffer->rpos) :
 					(uart->rx_buffer->wpos - uart->rx_buffer->rpos);
 			serialQueueParameter = (cc * 256) + receivedChar; // can be done by bitlogic, avoid casting to ETSParam
+			serialQueueParameter += (uart->uart_nr << 25); // the left most byte contains the uart_nr. Up to 256 uarts are supported
 
-			if (memberData[UART_ID_0].HWSDelegate) {
+			if (memberData[uart->uart_nr].HWSDelegate) {
 				system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_DELEGATE, serialQueueParameter);
 			}
-			if (memberData[UART_ID_0].commandExecutor) {
+			if (memberData[uart->uart_nr].commandExecutor) {
 				system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_COMMAND, serialQueueParameter);
 			}
 		}
 	}
 }
 
-void HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate, bool useSerialRxBuffer /* = true */)
+bool HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate, bool useSerialRxBuffer /* = true */)
 {
+	if (!uart || !uart_rx_enabled(uart)) {
+		return false;
+	}
+
 	uart->callback = callbackHandler;
 
 	memberData[uartNr].HWSDelegate = reqDelegate;
 	memberData[uartNr].useRxBuff = useSerialRxBuffer;
+
+	return true;
 }
 
 void HardwareSerial::resetCallback()
@@ -239,6 +249,8 @@ void HardwareSerial::commandProcessing(bool reqEnable)
 
 void HardwareSerial::delegateTask (os_event_t *inputEvent)
 {
+	int uartNr = inputEvent->par >> 25; // the uart_nr is in the last byte
+	inputEvent->par = inputEvent->par & 0x0FFF; // clear the last bit
 	uint8 rcvChar = inputEvent->par % 256;  // can be done by bitlogic, avoid casting from ETSParam
 	uint16 charCount = inputEvent->par / 256 ;
 
@@ -246,17 +258,15 @@ void HardwareSerial::delegateTask (os_event_t *inputEvent)
 	{
 		case SERIAL_SIGNAL_DELEGATE:
 
-			if (memberData[UART_ID_0].HWSDelegate) //retest for thread safety
-			{
-				memberData[UART_ID_0].HWSDelegate(Serial, rcvChar, charCount );
+			if (memberData[uartNr].HWSDelegate) {
+				memberData[uartNr].HWSDelegate(Serial, rcvChar, charCount );
 			}
 			break;
 
 		case SERIAL_SIGNAL_COMMAND:
 
-			if (memberData[UART_ID_0].commandExecutor)  //retest for thread safety
-			{
-				memberData[UART_ID_0].commandExecutor->executorReceive(rcvChar);
+			if (memberData[uartNr].commandExecutor) {
+				memberData[uartNr].commandExecutor->executorReceive(rcvChar);
 			}
 			break;
 

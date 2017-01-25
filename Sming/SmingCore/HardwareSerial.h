@@ -187,8 +187,9 @@ public:
 	/** @brief  Set handler for received data
 	 *  @param  reqCallback Function to handle received data
 	 *  @param  useSerialRxBuffer True to use the built-in serial receive buffer
+	 *  @retval bool Returns true if the callback was set correctly
 	 */
-	void setCallback(StreamDataReceivedDelegate reqCallback, bool useSerialRxBuffer = true);
+	bool setCallback(StreamDataReceivedDelegate reqCallback, bool useSerialRxBuffer = true);
 
 	/** @brief  Remove handler for received data
 	 */
