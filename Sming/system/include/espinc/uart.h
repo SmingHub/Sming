@@ -77,33 +77,6 @@ extern "C" {
 #define UART_7O2 ( UART_NB_BIT_7 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
 #define UART_8O2 ( UART_NB_BIT_8 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
 
-/*
-#define UART_5N1 0x10
-#define UART_6N1 0x14
-#define UART_7N1 0x18
-#define UART_8N1 0x1c
-#define UART_5N2 0x30
-#define UART_6N2 0x34
-#define UART_7N2 0x38
-#define UART_8N2 0x3c
-#define UART_5E1 0x12
-#define UART_6E1 0x16
-#define UART_7E1 0x1a
-#define UART_8E1 0x1e
-#define UART_5E2 0x32
-#define UART_6E2 0x36
-#define UART_7E2 0x3a
-#define UART_8E2 0x3e
-#define UART_5O1 0x13
-#define UART_6O1 0x17
-#define UART_7O1 0x1b
-#define UART_8O1 0x1f
-#define UART_5O2 0x33
-#define UART_6O2 0x37
-#define UART_7O2 0x3b
-#define UART_8O2 0x3f
-*/
-
 // Options for `mode` argument of uart_init
 #define UART_FULL     0
 #define UART_RX_ONLY  1
