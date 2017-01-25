@@ -51,9 +51,6 @@ void rBootHttpUpdate::updateFailed() {
 }
 
 void rBootHttpUpdate::onItemDownloadCompleted(HttpClient& client, bool successful) {
-	if(successful) {
-		rboot_write_end(&rBootWriteStatus);
-	}
 }
 
 void rBootHttpUpdate::onTimer() {
@@ -61,6 +58,9 @@ void rBootHttpUpdate::onTimer() {
 	if (TcpClient::isProcessing()) return; // Will wait
 	
 	if (TcpClient::getConnectionState() == eTCS_Successful) {
+
+		//  always call writeEnd()
+		if (!writeEnd()) writeError = 1;
 		
 		if (!isSuccessful()) {
 			updateFailed();
@@ -85,16 +85,17 @@ void rBootHttpUpdate::onTimer() {
 	
 	rBootHttpUpdateItem &it = items[currentItem];
 	debugf("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
-	rBootWriteStatus = rboot_write_init(items[currentItem].targetOffset);
+	writeInit();
 	startDownload(URL(it.url), eHCM_UserDefined, HttpClientCompletedDelegate(&rBootHttpUpdate::onItemDownloadCompleted, this));
 }
+
 
 void rBootHttpUpdate::writeRawData(pbuf* buf, int startPos) {
 	pbuf *cur = buf;
 	while (cur != NULL && cur->len > 0 && !writeError) {
 		uint8* ptr = (uint8*) cur->payload + startPos;
 		int len = cur->len - startPos;
-		writeError = !rboot_write_flash(&rBootWriteStatus, ptr, len);
+		writeError = !writeFlash(ptr, len);
 		if (writeError) {
 			debugf("Write Error!");
 		}
@@ -102,6 +103,18 @@ void rBootHttpUpdate::writeRawData(pbuf* buf, int startPos) {
 		cur = cur->next;
 		startPos = 0;
 	}
+}
+
+void rBootHttpUpdate::writeInit() {
+	rBootWriteStatus = rboot_write_init( items[currentItem].targetOffset );
+}
+
+bool rBootHttpUpdate::writeFlash(const u8 *data, u16 size) {
+	return rboot_write_flash(&rBootWriteStatus, (u8 *) data, size );
+}
+
+bool rBootHttpUpdate::writeEnd() {
+	return rboot_write_end(&rBootWriteStatus);
 }
 
 void rBootHttpUpdate::applyUpdate() {

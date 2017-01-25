@@ -50,6 +50,10 @@ protected:
 	void updateFailed();
 	void onItemDownloadCompleted(HttpClient& client, bool successful);
 
+    virtual void writeInit();
+    virtual bool writeFlash(const u8 *data, u16 size);
+    virtual bool writeEnd();
+
 protected:
 	Vector<rBootHttpUpdateItem> items;
 	Timer timer;
