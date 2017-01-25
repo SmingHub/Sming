@@ -510,3 +510,11 @@ int uart_get_debug()
 {
     return s_uart_debug_nr;
 }
+
+void uart_detach(int uart_nr) {
+	ETS_UART_INTR_DISABLE();
+	USC1(uart_nr) = 0;
+	USIC(uart_nr) = 0xffff;
+	USIE(uart_nr) = 0;
+	ETS_UART_INTR_ATTACH(NULL, NULL);
+}

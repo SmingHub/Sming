@@ -54,6 +54,9 @@ void HardwareSerial::end()
         uart_uninit(uart);
         uart = NULL;
     }
+    else {
+    	uart_detach(uartNr);
+    }
 }
 
 size_t HardwareSerial::setRxBufferSize(size_t size){

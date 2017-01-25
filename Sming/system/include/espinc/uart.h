@@ -158,6 +158,7 @@ void uart_flush(uart_t* uart);
 
 void uart_set_debug(int uart_nr);
 int uart_get_debug();
+void uart_detach(int uart_nr);
 
 
 #if defined (__cplusplus)
