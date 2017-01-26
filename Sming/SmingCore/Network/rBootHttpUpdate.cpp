@@ -62,8 +62,8 @@ void rBootHttpUpdate::onTimer() {
 		//  always call writeEnd()
 		if (!writeEnd()) {
 			debugf("final checks failed!");
-            writeError = 1;
-        }    
+			writeError = 1;
+		}    
 		
 		if (!isSuccessful()) {
 			updateFailed();
