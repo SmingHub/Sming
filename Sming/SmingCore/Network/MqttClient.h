@@ -49,11 +49,11 @@ public:
 	bool subscribe(String topic);
 	bool unsubscribe(String topic);
 
+#ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
 	using TcpClient::setSslFingerprint;
 	using TcpClient::setSslClientKeyCert;
 	using TcpClient::freeSslClientKeyCert;
-#ifdef ENABLE_SSL
 	using TcpClient::getSsl;
 #endif
 

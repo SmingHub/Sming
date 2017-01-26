@@ -104,11 +104,11 @@ public:
 	  *  @retval Returnt websocket client mode
 	  */
 
+#ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
 	using TcpClient::setSslFingerprint;
 	using TcpClient::setSslClientKeyCert;
 	using TcpClient::freeSslClientKeyCert;
-#ifdef ENABLE_SSL
 	using TcpClient::getSsl;
 #endif
 
