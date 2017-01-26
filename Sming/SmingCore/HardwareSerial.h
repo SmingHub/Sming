@@ -123,25 +123,49 @@ public:
 
 	void begin(const uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin);
 
+	/*
+	 * @brief De-inits the current UART if it is already used
+	 */
 	void end();
 
+	/*
+	 * @brief Sets receiving buffer size
+	 * @param size_t requested size
+	 * @retval size_t actual size
+	 */
 	size_t setRxBufferSize(size_t size);
 
+	/*
+	 * @brief Toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX
+	 * @note UART0 uses pins GPIO1 (TX) and GPIO3 (RX). It may be swapped to GPIO15 (TX) and GPIO13 (RX) by calling .swap() after .begin. C
+	 * @note Calling swap again maps UART0 back to GPIO1 and GPIO3.
+	 */
 	void swap()
 	{
 		swap(1);
 	}
-	void swap(uint8_t tx_pin);    //toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX
 
 	/*
-	 * Toggle between use of GPIO1 and GPIO2 as TX on UART 0.
-	 * Note: UART 1 can't be used if GPIO2 is used with UART 0!
+	 * @brief Toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX
+	 * @param uint8_t Pin number.
+	 */
+	void swap(uint8_t tx_pin);
+
+	/*
+	 * @brief Toggle between use of GPIO1 and GPIO2 as TX on UART 0.
+	 * @note: UART 1 can't be used if GPIO2 is used with UART 0!
+	 * @note: If UART1 is not used and UART0 is not swapped - TX for UART0 can be mapped to GPIO2 by calling .setTx(2) after
+	 * 		  .begin or directly with .begin(baud, config, mode, 2).
+	 *
 	 */
 	void setTx(uint8_t tx_pin);
 
 	/*
-	 * UART 0 possible options are (1, 3), (2, 3) or (15, 13)
-	 * UART 1 allows only TX on 2 if UART 0 is not (2, 3)
+	 * @brief Sets the transmission and receiving PINS
+	 * @param uint8_t tx Transmission pin number
+	 * @param uint8_t rx Receiving pin number
+	 * @note UART 0 possible options are (1, 3), (2, 3) or (15, 13)
+	 * @note UART 1 allows only TX on 2 if UART 0 is not (2, 3)
 	 */
 	void pins(uint8_t tx, uint8_t rx);
 
@@ -172,8 +196,6 @@ public:
 
 	/** @brief  Clear the serial port receive buffer
  	 *  @note   All received data is removed from the serial port buffer
- 	 *  @warning This function is not implemented!!!
- 	 *  @todo   Implement Serial::flush()
 	 */
 	void flush();
 
@@ -185,7 +207,6 @@ public:
 
 	using Stream::write;
 
-	//void printf(const char *fmt, ...);
 	/** @brief  Configure serial port for system debug output
 	 *  @param  enabled True to enable this port for system debug output
 	 *  @note   If enabled, port will issue system debug messages
@@ -256,7 +277,7 @@ private:
  *  @code   Serial.begin(115200);
 	@endcode
 	@note   Serial uses UART0, which is mapped to pins GPIO1 (TX) and GPIO3 (RX).
-	@note   Serial may be remapped to GPIO15 (TX) and GPIO13 (RX) by calling Serial.swap() after Serial.begin.
+	@note   Serial may be swapped to GPIO15 (TX) and GPIO13 (RX) by calling Serial.swap() after Serial.begin.
 	@note   Calling swap again maps UART0 back to GPIO1 and GPIO3.
 */
 extern HardwareSerial Serial;
