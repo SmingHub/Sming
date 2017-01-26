@@ -73,10 +73,17 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
+	debugf("\n(DEBUG) message printed on UART0\n");
+
 	/**
 	 * Serial1 uses UART1, TX pin is GPIO2.
 	 * UART1 can not be used to receive data because normally
 	 * it's RX pin is occupied for flash chip connection.
+	 *
+	 * If you have a spare serial to USB converter do the following to see the
+	 * messages printed on UART1:
+	 * - connect converter GND to esp8266 GND
+	 * - connect converter RX to esp8266 GPIO2
 	 */
 	HardwareSerial Serial1(UART1);
 	Serial1.begin(SERIAL_BAUD_RATE);
@@ -86,6 +93,8 @@ void init()
 	 */
 	Serial1.systemDebugOutput(true);
 	Serial1.printf("====Debug Information=====\n");
+
+	debugf("(DEBUG) message printed on UART1\n"); // You should see the debug message in UART1 only.
 
 	procTimer.initializeMs(2000, sayHello).start();
 

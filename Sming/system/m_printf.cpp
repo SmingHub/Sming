@@ -13,7 +13,12 @@ Descr: embedded very simple version of printf with float support
 
 #define OVERFLOW_GUARD 24
 
-void (*cbc_printchar)(char ch) = uart_tx_one_char;
+static void defaultPrintChar(uart_t *uart, char c) {
+	return uart_tx_one_char(c);
+}
+
+void (*cbc_printchar)(uart_t *, char) = defaultPrintChar;
+uart_t *cbc_printchar_uart = NULL;
 
 #define SIGN    	(1<<1)	/* Unsigned/signed long */
 
@@ -29,15 +34,16 @@ static int skip_atoi(const char **s)
 	return i;
 }
 
-void setMPrintfPrinterCbc(void (*callback)(char))
+void setMPrintfPrinterCbc(void (*callback)(uart_t *, char), uart_t *uart)
 {
 	cbc_printchar = callback;
+	cbc_printchar_uart = uart;
 }
 
 void m_putc(char c)
 {
 	if (cbc_printchar)
-		cbc_printchar(c);
+		cbc_printchar(cbc_printchar_uart, c);
 }
 
 /**
@@ -77,7 +83,7 @@ int m_vprintf ( const char * format, va_list arg )
 	p = buf;
 	while (p && n < sizeof(buf) && *p)
 	{
-		cbc_printchar(*p);
+		cbc_printchar(cbc_printchar_uart, *p);
 		n++;
 		p++;
 	}
