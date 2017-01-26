@@ -27,12 +27,11 @@ public:
 	static int pbufFindStr(pbuf *buf, const char* wtf, int startPos = 0);
 	static char* pbufAllocateStrCopy(pbuf *buf, int startPos, int length);
 	static String pbufStrCopy(pbuf *buf, int startPos, int length);
-	static char* strstrl(char* source, const char* sequence);
 
 	static bool FixNetworkRouting();
 
 	// Debug
-	static void debugPrintTcpList();
+	void debugPrintTcpList();
 
 private:
 	static bool ipClientRoutingFixed;

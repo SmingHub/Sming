@@ -11,7 +11,6 @@
  */
 
 #include "WebsocketClient.h"
-#include "NetUtils.h"
 
 void WebsocketClient::setWebSocketMessageHandler(WebSocketClientMessageDelegate handler)
 {
@@ -101,35 +100,18 @@ void WebsocketClient::onError(err_t err)
 
 bool WebsocketClient::_verifyKey(char* buf, int size)
 {
-	char* serverKey = NetUtils::strstrl(buf, "sec-websocket-accept: ");
-	if(!serverKey)
-	{
-		debugf("wscli cannot find key");
-		return false;
-	}
-
-	serverKey += sizeof("sec-websocket-accept: ") - 1;
-	char* endKey = strstr(serverKey, "\r\n");
-
-	if(!endKey || endKey - buf > size)
-	{
-		debugf("wscli cannot find key(2) reason:%s", endKey ? "out of bounds":"NULL");
-		return false;
-	}
-	//terminate serverKey
-	*endKey = 0;
-	debugf("wscli search key %s", serverKey);
-
-
+	String keyHeader("Sec-WebSocket-Accept: ");
+	String dd(buf);
+	uint8_t s = dd.indexOfIgnoreCase(keyHeader);
+	uint8_t t = dd.indexOf("\r\n", s);
+	String serverKey = dd.substring(s + keyHeader.length(), t);
 	String hash = _key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 	unsigned char data[20];
 	char secure[20 * 4];
 	sha1(data, hash.c_str(), hash.length());
 	base64_encode(20, data, 20 * 4, secure);
-	//debugf("wscli clienKey : %s",secure);
-
- 	// if the keys match, good to go
- 	return strstr(serverKey, secure) == serverKey;
+	// if the keys match, good to go
+	return serverKey.equals(String(secure)); //b64Result
 }
 
 void WebsocketClient::onFinished(TcpClientState finishState)
