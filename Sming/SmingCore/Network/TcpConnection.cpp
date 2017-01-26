@@ -347,7 +347,7 @@ void TcpConnection::closeTcpConnection(tcp_pcb *tpcb)
 
 void TcpConnection::flush()
 {
-	if (tcp->state == ESTABLISHED)
+	if (tcp && tcp->state == ESTABLISHED)
 	{
 		//debugf("TCP flush()");
 		tcp_output(tcp);

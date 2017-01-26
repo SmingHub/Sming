@@ -180,3 +180,35 @@ void NetUtils::debugPrintTcpList()
 	if(prt_none) debugf("LWIP_DEBUG: none\r\n");
 	return;
 }
+
+//search lowercase
+char* NetUtils::strstrl(char* source, const char* sequence)
+{
+	int matchIndex = 0, maxIndex = strlen(sequence);
+	char curChar, *pos=NULL;
+	if(!source || !sequence || !*sequence) return NULL;
+	while(source && *source)
+	{
+		curChar = *source;
+		if(curChar >= 'A' && curChar <= 'Z' )
+			curChar +=32;
+		if(matchIndex == 0)
+			pos = source;
+		if(curChar == sequence[matchIndex])
+		{
+			if(matchIndex == maxIndex - 1)
+				return pos;
+			else
+			{
+				++matchIndex;
+			}
+		}
+		else
+		{
+			pos = NULL;
+			matchIndex = 0;
+		}
+		++source;
+	}
+	return pos;
+}
