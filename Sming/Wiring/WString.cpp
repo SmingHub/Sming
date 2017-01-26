@@ -548,6 +548,39 @@ int String::indexOf(const String &s2, unsigned int fromIndex) const
   return found - buffer;
 }
 
+int String::indexOfIgnoreCase(const String &s2) const
+{
+	return indexOfIgnoreCase(s2, 0);
+}
+
+int String::indexOfIgnoreCase(const String &s2, unsigned int fromIndex) const
+{
+  if (fromIndex >= len || !buffer || !s2.buffer) return -1;
+
+  int matchIndex = 0, maxIndex = s2.length(), pos = fromIndex;
+
+  while(buffer[pos])
+  {
+	  if (tolower(buffer[pos]) == tolower(s2.buffer[matchIndex]))
+	  {
+		  if(matchIndex == maxIndex - 1) //Whole string was matched
+		  {
+			  return pos - maxIndex + 1;
+		  }
+		  else
+		  {
+			  ++matchIndex;
+		  }
+	  }
+	  else
+	  {
+		  matchIndex = 0;
+	  }
+	  ++pos;
+  }
+  return -1;
+}
+
 int String::lastIndexOf(char theChar) const
 {
   return lastIndexOf(theChar, len - 1);
