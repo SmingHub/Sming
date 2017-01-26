@@ -60,7 +60,10 @@ void rBootHttpUpdate::onTimer() {
 	if (TcpClient::getConnectionState() == eTCS_Successful) {
 
 		//  always call writeEnd()
-		if (!writeEnd()) writeError = 1;
+		if (!writeEnd()) {
+			debugf("final checks failed!");
+            writeError = 1;
+        }    
 		
 		if (!isSuccessful()) {
 			updateFailed();
