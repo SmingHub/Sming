@@ -289,5 +289,10 @@ int HardwareSerial::baudRate(void)
     return uart_get_baudrate(uart);
 }
 
+HardwareSerial::operator bool() const
+{
+    return uart != 0;
+}
+
 
 HardwareSerial Serial(UART_ID_0);

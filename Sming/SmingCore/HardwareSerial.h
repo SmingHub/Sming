@@ -249,6 +249,11 @@ public:
 	 */
 	int baudRate(void);
 
+	/**
+	 * @brief Operator that returns true if the uart structure is set
+	 */
+	operator bool() const;
+
 private:
 	int uartNr;
 	static HWSerialMemberData memberData[NUMBER_UARTS];
