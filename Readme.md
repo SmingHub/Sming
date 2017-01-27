@@ -51,7 +51,7 @@ a [custom PWM library](https://github.com/StefanBruens/ESP8266_new_pwm) will be 
 - Custom Heap Allocation: If your application is experiencing heap fragmentation then you can try the Umm Malloc heap allocation. To enable it compile
 Sming with ENABLE_CUSTOM_HEAP=1. In order to use it in your sample/application make sure to compile the sample with ENABLE_CUSTOM_HEAP=1. Avoid enabling
 your custom heap allocation AND -mforce-l32 compiler flag.
-
+- Custom serial baud rate: By default serial debug interface baud is 115200. You can set COM_SPEED_SERIAL to alter that for ex: COM_SPEED_SERIAL=921600
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
