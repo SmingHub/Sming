@@ -15,15 +15,13 @@
 #ifdef __ets__
 #include <user_config.h>
 #include "../system/flashmem.h"
-#include <stdint.h>
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
 #include <ctype.h>
-typedef   signed           int intptr_t;
-typedef unsigned           int uintptr_t;
+#include <stdint.h>
 typedef signed int s32_t;
 typedef unsigned int u32_t;
 typedef signed short s16_t;
