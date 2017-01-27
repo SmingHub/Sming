@@ -38,9 +38,18 @@ index e69de29..1db5073 100644
 +}
 +#endif
 diff --git a/Makefile.open b/Makefile.open
-index 1bc584f..0c42328 100644
+index 1bc584f..df7b6e8 100644
 --- a/Makefile.open
 +++ b/Makefile.open
+@@ -2,7 +2,7 @@ CC = xtensa-lx106-elf-gcc
+ AR = xtensa-lx106-elf-ar
+ DEFS = -DLWIP_OPEN_SRC -DPBUF_RSV_FOR_WLAN -DEBUF_LWIP -DICACHE_FLASH
+ COPT = -Os
+-CFLAGS = $(DEFS) $(COPT) -Iinclude -Wl,-EL -mlongcalls -mtext-section-literals $(CFLAGS_EXTRA)
++CFLAGS = $(DEFS) $(COPT) -Iinclude -I$(ESP_HOME)/sdk/include/ -Wl,-EL -mlongcalls -mtext-section-literals $(CFLAGS_EXTRA)
+ # Install prefix of esp-open-sdk toolchain
+ PREFIX = ~/toolchain/xtensa-lx106-elf
+ 
 @@ -36,11 +36,24 @@ lwip/core/ipv4/ip.o \
  lwip/core/ipv4/ip_frag.o \
  lwip/netif/etharp.o \

@@ -22,7 +22,6 @@
 #ifndef ESP_UART_H
 #define ESP_UART_H
 
-#include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
 
