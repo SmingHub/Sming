@@ -222,8 +222,6 @@ class String
     int indexOf(char ch, unsigned int fromIndex) const;
     int IRAM_ATTR indexOf(const String &str) const;
     int indexOf(const String &str, unsigned int fromIndex) const;
-    int IRAM_ATTR indexOfIgnoreCase(const String &s2) const;
-    int indexOfIgnoreCase(const String &s2, unsigned int fromIndex) const;
     int lastIndexOf(char ch) const;
     int lastIndexOf(char ch, int fromIndex) const;
     int lastIndexOf(const String &str) const;

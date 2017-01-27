@@ -100,18 +100,39 @@ void WebsocketClient::onError(err_t err)
 
 bool WebsocketClient::_verifyKey(char* buf, int size)
 {
-	String keyHeader("Sec-WebSocket-Accept: ");
-	String dd(buf);
-	uint8_t s = dd.indexOfIgnoreCase(keyHeader);
-	uint8_t t = dd.indexOf("\r\n", s);
-	String serverKey = dd.substring(s + keyHeader.length(), t);
-	String hash = _key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-	unsigned char data[20];
-	char secure[20 * 4];
-	sha1(data, hash.c_str(), hash.length());
-	base64_encode(20, data, 20 * 4, secure);
-	// if the keys match, good to go
-	return serverKey.equals(String(secure)); //b64Result
+	const char* serverHashedKey = strstri(buf, "sec-websocket-accept: ");
+	char* endKey = NULL;
+	unsigned char hashedKey[20];
+	char base64HashedKey[20 * 4];
+	String keyToHash = _key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+
+	if(!serverHashedKey)
+	{
+		debugf("wscli cannot find key");
+		return false;
+	}
+
+	serverHashedKey += sizeof("sec-websocket-accept: ") - 1;
+	endKey = strstr(serverHashedKey, "\r\n");
+
+	if(!endKey || endKey - buf > size)
+	{
+		debugf("wscli cannot find key reason:%s", endKey ? "out of bounds":"NULL");
+		return false;
+	}
+
+	*endKey = 0;
+
+	sha1(hashedKey, keyToHash.c_str(), keyToHash.length());
+	base64_encode(sizeof(hashedKey), hashedKey, sizeof(base64HashedKey), base64HashedKey);
+
+	if(strstr(serverHashedKey, base64HashedKey) != serverHashedKey)
+	{
+		debugf("wscli key mismatch: %s | %s", serverHashedKey, base64HashedKey);
+		return false;
+	}
+
+	return true;
 }
 
 void WebsocketClient::onFinished(TcpClientState finishState)

@@ -19,6 +19,7 @@
 #include <user_config.h>
 
 #include "m_printf.h"
+#include "stringutil.h"
 
 #define __ESP8266_EX__ // System definition ESP8266 SOC
 
