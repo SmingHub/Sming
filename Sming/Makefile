@@ -258,9 +258,11 @@ V ?= $(VERBOSE)
 ifeq ("$(V)","1")
 Q :=
 vecho := @true
+MAKE_QUIET :=
 else
 Q := @
 vecho := @echo
+MAKE_QUIET := --quiet
 endif
 
 vpath %.c $(SRC_DIR)
@@ -299,19 +301,24 @@ endif
 
 ifeq ($(ENABLE_SSL), 1)
 $(USER_LIBDIR)/libaxtls.a:
-	$(Q) $(MAKE) -C third-party/axtls-8266 -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)"
+	$(vecho) "Building SSL..."
+	$(Q) $(MAKE) -C third-party/axtls-8266 -e $(MAKE_QUIET) V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)"
+	$(vecho) "...done"
 endif
 
 ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 $(USER_LIBDIR)/libmainmm.a: $(addprefix $(SDK_LIBDIR)/,libmain.a)
-	$(vecho) "Enabling custom heap implementation"
+	$(vecho) "Building custom heap implementation"
 	$(Q) cp $^ $@ 
 	$(Q) $(AR) -d $@ mem_manager.o
+	$(vecho) "...done"
 endif
 
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 $(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
-	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) USER_LIBDIR=$(SMING_HOME)/$(USER_LIBDIR)/
+	$(vecho) "Building custom LWIP"
+	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open $(MAKE_QUIET) V=$(V) ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" all
+	$(vecho) "...done"
 endif
 
 spiffy: spiffy/spiffy
@@ -334,6 +341,7 @@ endif
 	$(vecho) "Done"
 
 checkdirs: $(THIRD_PARTY_DATA) $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
+	$(vecho) Building Sming...
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
@@ -345,12 +353,20 @@ $(FW_BASE):
 rebuild: clean all
 
 clean:
+	$(vecho) "Cleaning SMING..."
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f $(TARGET_OUT)
 	$(Q) rm -rf $(BUILD_DIR)
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
+
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+	$(vecho) "Cleaning LWIP..."
+	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open clean ENABLE_ESPCONN=$(ENABLE_ESPCONN) USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/"
+endif
+
 ifeq ($(ENABLE_SSL), 1)
+	$(vecho) "Cleaning SSL..."
 	$(Q) -$(MAKE) --no-print-directory -C third-party/axtls-8266 clean -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)"
 else
 	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
