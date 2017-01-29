@@ -24,7 +24,7 @@ struct rBootHttpUpdateItem {
 	int size;
 };
 
-class rBootHttpUpdate: private HttpClient {
+class rBootHttpUpdate: protected HttpClient {
 
 public:
 	rBootHttpUpdate();
@@ -58,9 +58,9 @@ protected:
 	uint8 romSlot;
 	otaUpdateDelegate updateDelegate;
 
-    virtual void writeInit();
-    virtual bool writeFlash(const u8 *data, u16 size);
-    virtual bool writeEnd();
+	virtual void writeInit();
+	virtual bool writeFlash(const u8 *data, u16 size);
+	virtual bool writeEnd();
 };
 
 #endif /* SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_ */
