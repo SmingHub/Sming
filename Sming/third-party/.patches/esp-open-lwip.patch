@@ -90,14 +90,12 @@ index 1bc584f..5db5467 100644
  $(LIB): $(OBJS)
  	$(AR) rcs $@ $^
 diff --git a/include/arch/cc.h b/include/arch/cc.h
-index ff03b30..f755330 100644
+index ff03b30..932c73d 100644
 --- a/include/arch/cc.h
 +++ b/include/arch/cc.h
-@@ -37,9 +37,27 @@
- //#include <string.h>
+@@ -38,8 +38,25 @@
  #include "c_types.h"
  #include "ets_sys.h"
-+
  #include "osapi.h"
 +#include <stdarg.h>
 +
@@ -121,87 +119,12 @@ index ff03b30..f755330 100644
  //#define LWIP_PROVIDE_ERRNO
  
  #if (1)
-diff --git a/lwip/app/dhcpserver.c b/lwip/app/dhcpserver.c
-index ddb5984..b7055c9 100644
---- a/lwip/app/dhcpserver.c
-+++ b/lwip/app/dhcpserver.c
-@@ -13,6 +13,8 @@
+@@ -56,6 +73,7 @@ typedef signed     short   s16_t;
+ typedef unsigned   long    u32_t;
+ typedef signed     long    s32_t;
+ typedef unsigned long   mem_ptr_t;
++typedef signed short        sint16_t;
  
- #include "user_interface.h"
- 
-+extern int wifi_softap_set_station_info(uint8_t * chaddr, struct ip_addr *ip);
-+
- #ifdef MEMLEAK_DEBUG
- static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
- #endif
-diff --git a/lwip/core/dhcp.c b/lwip/core/dhcp.c
-index 342543e..5596cbf 100644
---- a/lwip/core/dhcp.c
-+++ b/lwip/core/dhcp.c
-@@ -84,6 +84,8 @@
- 
- #include <string.h>
- 
-+extern void system_station_got_ip_set(ip_addr_t * ip_addr, ip_addr_t *sn_mask, ip_addr_t *gw_addr);
-+
- #ifdef MEMLEAK_DEBUG
- static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
- #endif
-diff --git a/lwip/core/ipv4/ip_addr.c b/lwip/core/ipv4/ip_addr.c
-index 81db807..06f4d0d 100644
---- a/lwip/core/ipv4/ip_addr.c
-+++ b/lwip/core/ipv4/ip_addr.c
-@@ -40,6 +40,8 @@
- #include "lwip/ip_addr.h"
- #include "lwip/netif.h"
- 
-+extern int isdigit ( int c );
-+
- /* used by IP_ADDR_ANY and IP_ADDR_BROADCAST in ip_addr.h */
- const ip_addr_t ip_addr_any ICACHE_RODATA_ATTR = { IPADDR_ANY };
- const ip_addr_t ip_addr_broadcast ICACHE_RODATA_ATTR = { IPADDR_BROADCAST };
-diff --git a/lwip/core/tcp.c b/lwip/core/tcp.c
-index ee50ceb..929801c 100644
---- a/lwip/core/tcp.c
-+++ b/lwip/core/tcp.c
-@@ -638,13 +638,9 @@ tcp_new_port(void)
-   static u16_t port = TCP_LOCAL_PORT_RANGE_START;
-   
-  again:
--//  if (++port >= TCP_LOCAL_PORT_RANGE_END) {
--//    port = TCP_LOCAL_PORT_RANGE_START;
--//  }
--  port = os_random();
--  port %= TCP_LOCAL_PORT_RANGE_END;
--  if (port < TCP_LOCAL_PORT_RANGE_START)
--	  port += TCP_LOCAL_PORT_RANGE_START;
-+
-+  port = TCP_LOCAL_PORT_RANGE_START + os_random()%(TCP_LOCAL_PORT_RANGE_END - TCP_LOCAL_PORT_RANGE_START);
-+
-   /* Check all PCB lists. */
-   for (i = 0; i < NUM_TCP_PCB_LISTS; i++) {  
-     for(pcb = *tcp_pcb_lists[i]; pcb != NULL; pcb = pcb->next) {
-@@ -1424,9 +1420,13 @@ tcp_pcb_purge(struct tcp_pcb *pcb)
-     }
-     if (pcb->unsent != NULL) {
-       LWIP_DEBUGF(TCP_DEBUG, ("tcp_pcb_purge: not all data sent\n"));
-+      tcp_segs_free(pcb->unsent);
-+      pcb->unsent = NULL;
-     }
-     if (pcb->unacked != NULL) {
-       LWIP_DEBUGF(TCP_DEBUG, ("tcp_pcb_purge: data left on ->unacked\n"));
-+      tcp_segs_free(pcb->unacked);
-+      pcb->unacked = NULL;
-     }
- #if TCP_QUEUE_OOSEQ
-     if (pcb->ooseq != NULL) {
-@@ -1440,9 +1440,6 @@ tcp_pcb_purge(struct tcp_pcb *pcb)
-        queue if it fires */
-     pcb->rtime = -1;
- 
--    tcp_segs_free(pcb->unsent);
--    tcp_segs_free(pcb->unacked);
--    pcb->unacked = pcb->unsent = NULL;
- #if TCP_OVERSIZE
-     pcb->unsent_oversize = 0;
- #endif /* TCP_OVERSIZE */
+ #define S16_F "d"
+ #define U16_F "d"
+
