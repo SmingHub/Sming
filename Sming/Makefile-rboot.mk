@@ -210,7 +210,13 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBLWIP).a
 endif
 
-LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto pwm smartconfig $(EXTRA_LIBS)
+LIBPWM = pwm
+ifeq ($(ENABLE_CUSTOM_PWM), 1)
+	LIBPWM = pwm_open
+	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBPWM).a
+endif
+
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 
 # SSL support using axTLS
 ifeq ($(ENABLE_SSL),1)
@@ -423,8 +429,8 @@ include/ssl/private_key.h:
 	$(Q) AXDIR=$(CURRENT_DIR)/include/ssl/  $(THIRD_PARTY_DIR)/axtls-8266/tools/make_certs.sh 
 	
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
-$(USER_LIBDIR)/libpwm.a:
-	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm.a ENABLE_CUSTOM_PWM=1
+$(USER_LIBDIR)/libpwm_open.a:
+	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm_open.a ENABLE_CUSTOM_PWM=1
 endif
 
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)

@@ -169,7 +169,6 @@ USER_LIBDIR = compiler/lib
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	THIRD_PARTY_DATA += third-party/pwm/pwm.c
-	LIBS += pwm
 endif
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
@@ -292,7 +291,7 @@ endef
 all: checkdirs $(APP_AR) spiffy
 
 ifeq ($(ENABLE_CUSTOM_PWM), 1)	
-$(USER_LIBDIR)/libpwm.a: third-party/pwm/pwm.c
+$(USER_LIBDIR)/libpwm_open.a: third-party/pwm/pwm.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $< -o $(dir $<)/pwm.o
 	$(Q) $(AR) rcs $@ $(dir $<)/pwm.o
 endif 
