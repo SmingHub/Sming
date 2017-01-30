@@ -6,7 +6,7 @@
 #ifndef ThingSpeak_h
 #define ThingSpeak_h
 
-#include "../../SmingCore/Wire.h"
+#include "../../SmingCore/SmingCore.h"
 
 #ifndef TS_MAX_FIELD
 #define TS_MAX_FIELD 8         	//how many fields write up max (max 8)
