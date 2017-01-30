@@ -4,7 +4,6 @@
  *  Author: Gustlik (Ogyb)
  */
 
-#include "Arduino.h"
 #include "ThingSpeak.h"
 
 ThingSpeak::ThingSpeak()
