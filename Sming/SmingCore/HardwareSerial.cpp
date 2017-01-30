@@ -163,13 +163,13 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 			setMPrintfPrinterCbc(uart_write_char, uart);
 		} else {
 			uart_set_debug(UART_NO);
-			setMPrintfPrinterCbc(NULL, NULL);
 		}
 	} else {
-		// disable debug for this interface
+		// don't print debugf() data at all
+		setMPrintfPrinterCbc(NULL, NULL);
+		// and disable system debug messages on this interface
 		if(uart_get_debug() == uartNr) {
 			uart_set_debug(UART_NO);
-			setMPrintfPrinterCbc(NULL, NULL);
 		}
 	}
 }

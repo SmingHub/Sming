@@ -207,7 +207,7 @@ public:
 
 	using Stream::write;
 
-	/** @brief  Configure serial port for system debug output
+	/** @brief  Configure serial port for system debug output and redirect output from debugf
 	 *  @param  enabled True to enable this port for system debug output
 	 *  @note   If enabled, port will issue system debug messages
 	 */
