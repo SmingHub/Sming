@@ -9,25 +9,38 @@
 #define SPIFFS_CONFIG_H_
 
 // ----------- 8< ------------
-// Following includes are for the linux test build of spiffs
-// These may/should/must be removed/altered/replaced in your target
-//#include "params_test.h"
 #ifdef __ets__
-#include <user_config.h>
-#include "../system/flashmem.h"
+	#include <user_config.h>
+	#include "../system/flashmem.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stddef.h>
-#include <ctype.h>
-#include <stdint.h>
-typedef signed int s32_t;
-typedef unsigned int u32_t;
-typedef signed short s16_t;
-typedef unsigned short u16_t;
-typedef signed char s8_t;
-typedef unsigned char u8_t;
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+	#include <stddef.h>
+	#include <ctype.h>
+	#if defined _WIN32 || defined __CYGWIN__
+		#if __WORDSIZE == 64
+			# ifndef __intptr_t_defined
+			typedef long int                intptr_t;
+			#  define __intptr_t_defined
+			# endif
+			typedef unsigned long int       uintptr_t;
+		#else
+			# ifndef __intptr_t_defined
+			typedef int                     intptr_t;
+			#  define __intptr_t_defined
+			# endif
+			typedef unsigned int            uintptr_t;
+		#endif
+	#else
+		#include <stdint.h>
+	#endif
+	typedef signed int s32_t;
+	typedef unsigned int u32_t;
+	typedef signed short s16_t;
+	typedef unsigned short u16_t;
+	typedef signed char s8_t;
+	typedef unsigned char u8_t;
 #endif /* __ets__ */
 // ----------- >8 ------------
 

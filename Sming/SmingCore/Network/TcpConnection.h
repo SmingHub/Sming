@@ -70,6 +70,7 @@ public:
 	IPAddress getRemoteIp()  { return (tcp == NULL) ? INADDR_NONE : IPAddress(tcp->remote_ip);};
 	uint16_t getRemotePort() { return (tcp == NULL) ? 0 : tcp->remote_port; };
 
+#ifdef ENABLE_SSL
 	void addSslOptions(uint32_t sslOptions);
 
 	/**
@@ -101,7 +102,6 @@ public:
 	 */
 	void freeSslClientKeyCert();
 
-#ifdef ENABLE_SSL
 	SSL* getSsl();
 #endif
 
@@ -137,13 +137,13 @@ protected:
 	SSL *ssl = nullptr;
 	SSLCTX *sslContext = nullptr;
 	SSL_EXTENSIONS *ssl_ext=NULL;
-#endif
-	boolean useSsl = false;
 	uint8_t *sslFingerprint=null;
 	boolean sslConnected = false;
 	uint32_t sslOptions=0;
 	SSLKeyCertPair clientKeyCert;
 	boolean freeClientKeyCert = false;
+#endif
+	boolean useSsl = false;
 };
 
 #endif /* _SMING_CORE_TCPCONNECTION_H_ */

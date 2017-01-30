@@ -73,6 +73,45 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
+	debugf("\n(DEBUG) message printed on UART0");
+
+	/*
+	 * Notice: The line below disables the debugf output on all UARTs.
+	 */
+	Serial.systemDebugOutput(false);
+
+	debugf("(DEBUG) don't print me at all");
+
+	/*
+	 * The debugf output is redirected to UART0
+	 * together with the system debug messages.
+	 */
+	Serial.systemDebugOutput(true);
+	delay(200);
+
+	debugf("(DEBUG) print me again on UART0");
+
+	/**
+	 * Serial1 uses UART1, TX pin is GPIO2.
+	 * UART1 can not be used to receive data because normally
+	 * it's RX pin is occupied for flash chip connection.
+	 *
+	 * If you have a spare serial to USB converter do the following to see the
+	 * messages printed on UART1:
+	 * - connect converter GND to esp8266 GND
+	 * - connect converter RX to esp8266 GPIO2
+	 */
+	HardwareSerial Serial1(UART1);
+	Serial1.begin(SERIAL_BAUD_RATE);
+
+	/*
+	 * The line below redirect debug output to UART1
+	 */
+	Serial1.systemDebugOutput(true);
+	Serial1.printf("====Debug Information=====\n");
+
+	debugf("(DEBUG) message printed on UART1"); // You should see the debug message in UART1 only.
+
 	procTimer.initializeMs(2000, sayHello).start();
 
 	testPrintf();
@@ -81,6 +120,8 @@ void init()
 	//  * Option 1
 	//	Set Serial Callback to global routine:
 	//	   Serial.setCallback(onDataCallback);
+	// If you want to test local echo set the following callback
+	//	   Serial.setCallback(echoCallback);
 
 	// 	* Option 2
 	//  Instantiate hwsDelegateDemo which includes Serial Delegate class
