@@ -39,7 +39,7 @@ public:
 	virtual void send(const char* message, int length, wsFrameType type = WS_TEXT_FRAME);
 
 	/** @brief  Send a string to other peer
-	 *  @param message String object holdiong the message to send
+	 *  @param message String object holding the message to send
 	 */
 	void sendString(const String& message);
 
@@ -63,15 +63,15 @@ public:
 	void setTimeOut(uint16_t waitTimeOut) { if(connection) connection->setTimeOut(waitTimeOut); };
 
 	/** @brief  Test if two sockets are the same
-	 *  @param  other The other websocket
+	 *  @param  other The other webSocket
 	 *  @return true if the two webSockets are defining the same connection
 	 */
 	bool operator==(const WebSocket &other) const { return this->connection == other.connection;};
 
-	/** @brief  Store user dtaa pointer for this socket(connection)
-	 *  @param  _userData Pointer to user defined data
+	/** @brief  Store user data pointer for this socket(connection)
+	 *  @param  userData Pointer to user defined data
 	 */
-	void setUserData(void* _userData);
+	void setUserData(void* userData);
 
 	/** @brief  Get user data pointer for this socket(connection)
 	 *  @return  Pointer to user defined data

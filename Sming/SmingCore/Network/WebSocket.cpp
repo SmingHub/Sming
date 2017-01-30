@@ -76,9 +76,9 @@ void WebSocket::close()
 	connection->close();
 }
 
-void WebSocket::setUserData(void* _userData)
+void WebSocket::setUserData(void* userData)
 {
-	userData = _userData;
+	this->userData = userData;
 }
 
 void* WebSocket::getUserData()
