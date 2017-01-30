@@ -73,7 +73,23 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
-	debugf("\n(DEBUG) message printed on UART0\n");
+	debugf("\n(DEBUG) message printed on UART0");
+
+	/*
+	 * Notice: The line below disables the debugf output on all UARTs.
+	 */
+	Serial.systemDebugOutput(false);
+
+	debugf("(DEBUG) don't print me at all");
+
+	/*
+	 * The debugf output is redirected to UART0
+	 * together with the system debug messages.
+	 */
+	Serial.systemDebugOutput(true);
+	delay(200);
+
+	debugf("(DEBUG) print me again on UART0");
 
 	/**
 	 * Serial1 uses UART1, TX pin is GPIO2.
@@ -94,7 +110,7 @@ void init()
 	Serial1.systemDebugOutput(true);
 	Serial1.printf("====Debug Information=====\n");
 
-	debugf("(DEBUG) message printed on UART1\n"); // You should see the debug message in UART1 only.
+	debugf("(DEBUG) message printed on UART1"); // You should see the debug message in UART1 only.
 
 	procTimer.initializeMs(2000, sayHello).start();
 
