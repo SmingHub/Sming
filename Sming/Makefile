@@ -169,7 +169,6 @@ USER_LIBDIR = compiler/lib
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	THIRD_PARTY_DATA += third-party/pwm/pwm.c
-	LIBS += pwm
 endif
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
