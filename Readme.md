@@ -54,7 +54,7 @@ your custom heap allocation AND -mforce-l32 compiler flag.
 - Custom LWIP: If you want to recompile the IP stack and add features like IPv4 forwarding you can do this by compiling Sming with
 ENABLE_CUSTOM_LWIP=1. Remember to add the same option when compiling your application. If the application requires the use of some of the
 espconn_* functions add also the ENABLE_ESPCONN=1 directive. See `Makefile-user.mk` from the [Basic_SmartConfig](https://github.com/SmingHub/Sming/blob/develop/samples/Basic_SmartConfig/Makefile-user.mk#L41) application for examples.
-- Custom serial baud rate: By default serial debug interface baud is 115200. You can set COM_SPEED_SERIAL to alter that for ex: COM_SPEED_SERIAL=921600
+- Custom serial baud rate: The default serial baud rate is 115200. If you want to change it to a higher baud rate you can recompile Sming and your application changing the COM_SPEED_SERIAL directive. For example COM_SPEED_SERIAL=921600
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
 
