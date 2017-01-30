@@ -42,15 +42,18 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 
 ## Additional needed software 
 - Spiffy  : Source included in Sming repository
-- [ESPtool2] (https://github.com/raburton/esptool2) esptool2 
+- [ESPtool2](https://github.com/raburton/esptool2) esptool2 
 
 ## Optional features
-- Custom PWM: If Sming is compiled with ENABLE_CUSTOM_PWM=1 then instead of using the Espressif SDK pwm library
+- Custom PWM: If you want to use the open PWM implementation then compile your application with ENABLE_CUSTOM_PWM=1. There is no need to recompile the Sming library.
 a [custom PWM library](https://github.com/StefanBruens/ESP8266_new_pwm) will be used.
 - SSL: The SSL support is not built-in by default to conserve resources. If you want to enable it then take a look at the [Readme](https://github.com/SmingHub/Sming/blob/develop/samples/Basic_Ssl/README.md) in the Basic_Ssl samples.
 - Custom Heap Allocation: If your application is experiencing heap fragmentation then you can try the Umm Malloc heap allocation. To enable it compile
 Sming with ENABLE_CUSTOM_HEAP=1. In order to use it in your sample/application make sure to compile the sample with ENABLE_CUSTOM_HEAP=1. Avoid enabling
 your custom heap allocation AND -mforce-l32 compiler flag.
+- Custom LWIP: If you want to recompile the IP stack and add features like IPv4 forwarding you can do this by compiling Sming with
+ENABLE_CUSTOM_LWIP=1. Remember to add the same option when compiling your application. If the application requires the use of some of the
+espconn_* functions add also the ENABLE_ESPCONN=1 directive. See `Makefile-user.mk` from the [Basic_SmartConfig](https://github.com/SmingHub/Sming/blob/develop/samples/Basic_SmartConfig/Makefile-user.mk#L41) application for examples.
 
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
