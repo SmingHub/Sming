@@ -68,6 +68,16 @@ public:
 	 */
 	bool operator==(const WebSocket &other) const { return this->connection == other.connection;};
 
+	/** @brief  Store user dtaa pointer for this socket(connection)
+	 *  @param  _userData Pointer to user defined data
+	 */
+	void setUserData(void* _userData);
+
+	/** @brief  Get user data pointer for this socket(connection)
+	 *  @return  Pointer to user defined data
+	 */
+	void *getUserData();
+
 protected:
 	bool initialize(HttpRequest &request, HttpResponse &response);
 	bool is(HttpServerConnection* conn) { return connection == conn; };
@@ -75,6 +85,7 @@ protected:
 private:
 	HttpServerConnection* connection;
 	CommandExecutor* commandExecutor = nullptr;
+	void* userData = nullptr;
 };
 
 #endif /* SMINGCORE_NETWORK_WEBSOCKET_H_ */

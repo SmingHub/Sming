@@ -10,6 +10,74 @@
 HttpServer server;
 int totalActiveSockets = 0;
 
+//Simplified container modelling a user session
+class CUserData
+{
+public:
+	CUserData(const char* uName, const char* uData):userName(uName), userData(uData){}
+	~CUserData()
+	{
+		logOut();
+	}
+
+	void addSession(WebSocket& connection)
+	{
+		activeWebSockets.addElement(&connection);
+		connection.setUserData((void*)this);
+	}
+
+	void removeSession(WebSocket& connection)
+	{
+		for(int i=0; i < activeWebSockets.count(); i++)
+		{
+			if(connection == *(activeWebSockets[i]))
+			{
+				activeWebSockets[i]->setUserData(nullptr);
+				activeWebSockets.remove(i);
+				Serial.println("Removed user session");
+				return;
+			}
+		}
+	}
+
+	void printMessage(WebSocket& connection,const String &msg)
+	{
+		int i=0;
+		for(; i < activeWebSockets.count(); i++)
+		{
+			if(connection == *(activeWebSockets[i]))
+			{
+				break;
+			}
+		}
+
+		if(i < activeWebSockets.count())
+		{
+			Serial.print("Received msg on connection ");
+			Serial.print(i);
+			Serial.print(" :");
+			Serial.print(msg);
+		}
+	}
+
+	void logOut()
+	{
+		for(int i=0; i < activeWebSockets.count(); i++)
+		{
+			activeWebSockets[i]->setUserData(nullptr);
+		}
+
+		activeWebSockets.removeAllElements();
+	}
+private:
+	String userName;
+	String userData;
+	Vector<WebSocket*> activeWebSockets;
+
+};
+
+CUserData userGeorge("George", "I like SMING");
+
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
 	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
@@ -36,7 +104,7 @@ void onFile(HttpRequest &request, HttpResponse &response)
 void wsConnected(WebSocket& socket)
 {
 	totalActiveSockets++;
-
+	userGeorge.addSession(socket);
 	// Notify everybody about new connection
 	WebSocketsList &clients = server.getActiveWebSockets();
 	for (int i = 0; i < clients.count(); i++)
@@ -48,6 +116,13 @@ void wsMessageReceived(WebSocket& socket, const String& message)
 	Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
 	String response = "Echo: " + message;
 	socket.sendString(response);
+
+	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
+    CUserData *user = (CUserData*) socket.getUserData();
+    if(user)
+    {
+    	user->printMessage(socket, message);
+    }
 }
 
 void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
@@ -58,6 +133,13 @@ void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
 void wsDisconnected(WebSocket& socket)
 {
 	totalActiveSockets--;
+
+	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
+    CUserData *user = (CUserData*) socket.getUserData();
+    if(user)
+    {
+    	user->removeSession(socket);
+    }
 
 	// Notify everybody about lost connection
 	WebSocketsList &clients = server.getActiveWebSockets();
