@@ -31,7 +31,10 @@ SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 
 #ESPTOOL2 config to generate rBootLESS images
 IMAGE_MAIN	?= 0x00000.bin
-IMAGE_SDK	?= 0x10000.bin
+IMAGE_SDK	?= 0x10000.bin # The name must match the starting address of the irom0 section 
+						   # in the LD file ($SMING_HOME/compiler/ld/eagle.app.v6.cpp.ld).
+						   # To calculate the value do the following: x = irom0_0_seg.org - 0x40200000
+						   # Example: 0x40210000 - 0x40200000 = 0x10000
 INIT_BIN_ADDR =  0x7c000
 BLANK_BIN_ADDR =  0x4b000
 
@@ -128,7 +131,10 @@ SPIFF_FILES ?= files
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
-SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/$(IMAGE_SDK)) + 0x4000 + $(basename $(IMAGE_SDK))) & (0xFFFFC000) )) )
+# 0x01000    -> add size of one sector
+# IMAGE_SDK  -> starting address of the irom0 section   ----> needs to be identical in the LD file !
+# 0xFFFF000  -> from address to start of sector
+SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/$(IMAGE_SDK)) + 0x1000 + $(basename $(IMAGE_SDK))) & (0xFFFFC000) )) )
 
 #Firmware memory layout info files
 FW_MEMINFO_NEW = $(FW_BASE)/fwMeminfo.new
