@@ -26,6 +26,7 @@ bool YeelightBulb::connect()
 	else
 		connection = new TcpClient(TcpClientDataDelegate(&YeelightBulb::onResponse, this));
 
+	connection->setTimeOut(USHRT_MAX); // Stay connected forever
 	bool result = connection->connect(lamp, port);
 	//if (result) updateState();
 	return result;
@@ -108,11 +109,30 @@ void YeelightBulb::setRGB(byte r, byte g, byte b)
 	sendCommand("set_rgb", params);
 }
 
+void YeelightBulb::setHSV(int hue, int sat)
+{
+	ensureOn();
+	Vector<String> params;
+	params.add(String(hue));
+	params.add(String(sat));
+	sendCommand("set_hsv", params);
+}
+
 void YeelightBulb::ensureOn()
 {
 	connect();
 	if (state <= 0)
 		on();
+}
+
+void YeelightBulb::parsePower(const String& value)
+{
+	if (value == "on")
+		state = true;
+	else if (value == "off")
+		state = false;
+
+	debugf("LED state: %s", value.c_str());
 }
 
 bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
@@ -140,11 +160,21 @@ bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
 				{
 					auto &result = root["result"].asArray();
 					String resp = result[0].asString();
-					if (resp == "on")
-						state = true;
-					else if (resp == "off")
-						state = false;
-					debugf("LED state: %s", resp.c_str());
+					parsePower(resp);
+				}
+			}
+			if (root.containsKey("method") && root.containsKey("params"))
+			{
+				String method = root["method"].asString();
+				debugf("LED method %s received", method.c_str());
+				if (method == "props")
+				{
+					auto &result = root["params"].asObject();
+					for (JsonObject::iterator it=result.begin(); it!=result.end(); ++it)
+					{
+						if (strcmp(it->key, "power") == 0)
+							parsePower(it->value);
+					}
 				}
 			}
 		}

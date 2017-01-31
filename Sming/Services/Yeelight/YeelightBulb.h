@@ -29,10 +29,12 @@ public:
 
 	void setBrightness(int percent);
 	void setRGB(byte r, byte g, byte b);
+	void setHSV(int hue, int sat);
 
 protected:
 	void ensureOn();
 	bool onResponse(TcpClient& client, char *data, int size);
+	void parsePower(const String& resp);
 
 private:
 	IPAddress lamp;
