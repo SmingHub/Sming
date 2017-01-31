@@ -13,4 +13,4 @@ ESPTOOL		 ?= $(SDK_TOOLS)/esptool.exe
 KILL_TERM    ?= taskkill.exe -f -im Terminal.exe || exit 0
 GET_FILESIZE ?= stat --printf="%s"
 TERMINAL     ?= $(SDK_TOOLS)/Terminal.exe $(COM_PORT) $(COM_SPEED_SERIAL) $(COM_OPTS)
-MEMANALYZER  ?= $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe
+MEMANALYZER  ?= $(SDK_TOOLS)/ESP8266/memanalyzer.exe $(OBJDUMP).exe
