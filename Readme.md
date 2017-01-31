@@ -30,6 +30,18 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * Optional custom heap allocation based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git)
 * Based on Espressif NONOS SDK. Tested with versions 1.4 and 1.5. 
 
+## Compatibility
+
+OS/SDK | Linux | Mac OS X | Windows | FreeBSD-current |
+-------|-------|----------|---------|-----------------|
+UDK (1.4, 1.5)    | n/a   | n/a      |   :sunny:      |     n/a         |
+esp-alt-sdk (1.4, 1.5) | :sunny:  | :sunny:  | :sunny:  | :sunny:  | :sunny:  |
+esp-open-sdk (1.4, 1.5) | :sunny:  | n/a | n/a | n/a |
+
+OS = Operating System
+SDK = Software Development Kit
+n/a = The selected SDK is not available on that OS
+
 ## Latest Release
 - [Sming V3.0.1](https://github.com/SmingHub/Sming/releases/tag/3.0.1)
 
