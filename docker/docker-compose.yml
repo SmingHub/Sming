@@ -1,16 +1,10 @@
 sming-ide:
-
- build: .
- 
+ image: sminghub/sming-ide:latest
  volumes:
-   - ../../Sming/:/opt/sming/
-   
+   - $PWD:/opt/workspace # Makes the current dir from the host available to the container for building your own projects.
  ports:
- - "10080:80"
- 
- devices:
-  - "/dev/ttyUSB0:/dev/ttyUSB0"
-
- 
+   - "10080:80" # Be sure that his port is still available on your machine to connect to the web C9 editor.
+# Uncomment to map your serial USB adaptator.
+# devices:
+#   - "/dev/ttyUSB0:/dev/ttyUSB0"
  privileged: true
-   
