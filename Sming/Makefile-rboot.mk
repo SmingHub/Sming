@@ -12,6 +12,19 @@
 RBOOT_BIG_FLASH  ?= 1
 RBOOT_TWO_ROMS   ?= 0
 RBOOT_RTC_ENABLED ?= 0
+RBOOT_GPIO_ENABLED ?= 0
+
+### ROM Addresses ###
+# The parameter below specifies the location of the second rom.
+# This parameter is used only when RBOOT_BIG_FLASH = 1 
+# BOOT_ROM1_ADDR = 0x200000
+
+# The parameter below specifies the location of the GPIO ROM.
+# This parameter is used only when RBOOT_GPIO_ENABLED = 1
+# If you use two SPIFFS make sure that this address is minimum
+# RBOOT_SPIFFS_1 + SPIFF_SIZE 
+# BOOT_ROM2_ADDR = 0x310000
+
 RBOOT_ROM_0      ?= rom0
 RBOOT_ROM_1      ?= rom1
 RBOOT_SPIFFS_0   ?= 0x100000
@@ -338,6 +351,9 @@ export RBOOT_BIG_FLASH
 export RBOOT_BUILD_BASE
 export RBOOT_FW_BASE
 export RBOOT_RTC_ENABLED
+export RBOOT_GPIO_ENABLED
+export RBOOT_ROM1_ADDR
+export RBOOT_ROM2_ADDR
 export SPI_SIZE
 export SPI_MODE
 export SPI_SPEED
@@ -355,6 +371,10 @@ endif
 ifeq ($(RBOOT_RTC_ENABLED),1)
 	# enable the temporary switch to rom feature
 	CFLAGS += -DBOOT_RTC_ENABLED
+endif
+
+ifeq ($(RBOOT_GPIO_ENABLED),1)
+	CFLAGS += -DBOOT_GPIO_ENABLED
 endif
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
@@ -387,7 +407,7 @@ endef
 all: $(USER_LIBDIR)/lib$(LIBSMING).a checkdirs $(LIBMAIN_DST) $(RBOOT_BIN) $(RBOOT_ROM_0) $(RBOOT_ROM_1) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2) 
 
 $(RBOOT_BIN):
-	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot
+	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot RBOOT_GPIO_ENABLED=$(RBOOT_GPIO_ENABLED)
 
 $(LIBMAIN_DST): $(LIBMAIN_SRC)
 	@echo "OC $@"
