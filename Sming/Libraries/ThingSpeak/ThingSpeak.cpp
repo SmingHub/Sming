@@ -25,7 +25,42 @@ void ThingSpeak::setWriteAPIKey(String APIKey)
 	writeAPIKey = APIKey;
 }
 
-int ThingSpeak::setField(uint8_t iField, String value)
+uint8_t ThingSpeak::setField(uint8_t iField, uint8_t value)
+{
+	return setField(iField, String(value));
+}
+
+uint8_t ThingSpeak::setField(uint8_t iField, int value)
+{
+	return setField(iField, String(value));
+}
+
+uint8_t ThingSpeak::setField(uint8_t iField, unsigned int value)
+{
+	return setField(iField, String(value));
+}
+
+uint8_t ThingSpeak::setField(uint8_t iField, long value)
+{
+	return setField(iField, String(value));
+}
+
+uint8_t ThingSpeak::setField(uint8_t iField, unsigned long value)
+{
+	return setField(iField, String(value));
+}
+
+uint8_t ThingSpeak::setField(uint8_t iField, float value)
+{
+	return setField(iField, String(value));
+}
+
+uint8_t ThingSpeak::setField(uint8_t iField, double value)
+{
+	return setField(iField, String(value));
+}
+
+uint8_t ThingSpeak::setField(uint8_t iField, String value)
 {
 	if(iField < 1 || iField > TS_MAX_FIELD) return ERR_FIELD_NUM_RANGE;
 	if(value.length() < MAX_FIELD_LENGTH)
@@ -87,3 +122,4 @@ void ThingSpeak::cleanFields()
 		fieldValue[iField] = "";
 	}
 }
+
