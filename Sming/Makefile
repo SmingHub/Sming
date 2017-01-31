@@ -99,6 +99,16 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
+## COM port parameters
+# Default COM port speed (generic)
+COM_SPEED ?= 115200
+
+# Default COM port speed (used for flashing)
+COM_SPEED_ESPTOOL ?= $(COM_SPEED)
+
+# Default COM port speed (used in code)
+COM_SPEED_SERIAL  ?= $(COM_SPEED)
+
 # Sming Framework Path
 SMF = $(SMING_HOME)
 
