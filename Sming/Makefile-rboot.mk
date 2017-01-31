@@ -35,6 +35,8 @@ RBOOT_LD_1 ?= rom1.ld
 ESPTOOL2 ?= esptool2
 # path to spiffy
 SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
+INIT_BIN_ADDR  = 0x7c000
+BLANK_BIN_ADDR = 0x4b000
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS     ?= .text .data .rodata
 RBOOT_E2_USER_ARGS ?= -quiet -bin -boot2
@@ -298,6 +300,8 @@ else ifeq ($(SPI_SIZE), 2M)
 else ifeq ($(SPI_SIZE), 4M)
 	flashimageoptions += -fs 32m
 	SPIFF_SIZE ?= 524288  #512K
+	INIT_BIN_ADDR  = 0x3fc000
+	BLANK_BIN_ADDR = 0x3fe000
 else
 	flashimageoptions += -fs 4m
 	SPIFF_SIZE ?= 196608  #192K
@@ -505,7 +509,8 @@ terminal:
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x4B000 $(SMING_HOME)/compiler/data/blankfs.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) erase_flash
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin 0x3fe000 $(SDK_BASE)/bin/blank.bin $(SPIFF_START_OFFSET) $(SMING_HOME)/compiler/data/blankfs.bin
 
 rebuild: clean all
 

@@ -32,6 +32,9 @@ SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 #ESPTOOL2 config to generate rBootLESS images
 IMAGE_MAIN	?= 0x00000.bin
 IMAGE_SDK	?= 0x10000.bin
+INIT_BIN_ADDR =  0x7c000
+BLANK_BIN_ADDR =  0x4b000
+
 # esptool2 path
 ESPTOOL2 ?= esptool2
 # esptool2 parameters for rBootLESS images
@@ -125,7 +128,7 @@ SPIFF_FILES ?= files
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
-SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/0x10000.bin) + 0x4000 + 0x10000) & (0xFFFFC000) )) )
+SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/$(IMAGE_SDK)) + 0x4000 + $(basename $(IMAGE_SDK))) & (0xFFFFC000) )) )
 
 #Firmware memory layout info files
 FW_MEMINFO_NEW = $(FW_BASE)/fwMeminfo.new
@@ -259,15 +262,19 @@ ifeq ($(SPI_SIZE), 256K)
 else ifeq ($(SPI_SIZE), 1M)
 	flashimageoptions += -fs 8m
 	SPIFF_SIZE ?= 524288  #512K
+	# TODO: Calculate the end here
 else ifeq ($(SPI_SIZE), 2M)
 	flashimageoptions += -fs 16m
 	SPIFF_SIZE ?= 524288  #512K
+	# TODO: Calculate the end here
 else ifeq ($(SPI_SIZE), 4M)
 	flashimageoptions += -fs 32m
 	SPIFF_SIZE ?= 524288  #512K
+	INIT_BIN_ADDR  = 0x3fc000
+	BLANK_BIN_ADDR = 0x3fe000
 else
 	flashimageoptions += -fs 4m
-	SPIFF_SIZE ?= 0x2c000  #192K
+	SPIFF_SIZE ?= 196608  #192K
 endif
 
 # various paths from the SDK used in this project
@@ -420,9 +427,9 @@ flash: all
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
 	-$(Q) $(KILL_TERM)
 ifeq ($(DISABLE_SPIFFS), 1)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x10000 $(FW_BASE)/0x10000.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(basename $(IMAGE_MAIN)) $(FW_BASE)/$(IMAGE_MAIN) $(basename $(IMAGE_SDK)) $(FW_BASE)/$(IMAGE_SDK)
 else
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x10000 $(FW_BASE)/0x10000.bin $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(basename $(IMAGE_MAIN)) $(FW_BASE)/$(IMAGE_MAIN) $(basename $(IMAGE_SDK)) $(FW_BASE)/$(IMAGE_SDK) $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
 endif
 	$(TERMINAL)
 
@@ -433,7 +440,8 @@ terminal:
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x3fc000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x3fe000 $(SDK_BASE)/bin/blank.bin $(SPIFF_START_OFFSET) $(SMING_HOME)/compiler/data/blankfs.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) erase_flash
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin 0x3fe000 $(SDK_BASE)/bin/blank.bin $(SPIFF_START_OFFSET) $(SMING_HOME)/compiler/data/blankfs.bin
 
 rebuild: clean all
 
