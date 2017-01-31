@@ -12,7 +12,6 @@ extern void init();
 extern "C" void  __attribute__((weak)) user_init(void)
 {
 	system_timer_reinit();
-
 	cpp_core_initialize();
 	System.initialize();
 #ifdef SMING_RELEASE
