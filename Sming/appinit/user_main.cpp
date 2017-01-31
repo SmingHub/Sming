@@ -36,7 +36,7 @@ extern "C" void __attribute__((weak)) user_rf_pre_init(void)
     }
 }
 
-extern "C" uint32 ICACHE_FLASH_ATTR user_rf_cal_sector_set(void)
+extern "C" uint32 ICACHE_FLASH_ATTR  __attribute__((weak)) user_rf_cal_sector_set(void)
 {
     enum flash_size_map size_map = system_get_flash_size_map();
     uint32 rf_cal_sec = 0;
