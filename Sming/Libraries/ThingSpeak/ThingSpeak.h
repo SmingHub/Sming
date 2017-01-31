@@ -7,6 +7,7 @@
 #define ThingSpeak_h
 
 #include "../../SmingCore/SmingCore.h"
+//#include "Arduino.h"
 
 #ifndef TS_MAX_FIELD
 #define TS_MAX_FIELD 8         	//how many fields write up max (max 8)
@@ -15,7 +16,6 @@
 #define MAX_FIELD_LENGTH 64		//TS accept max 255
 
 #define THINGSPEAK_URL "http://api.thingspeak.com/"		// Server URL -> "http://url.com/"
-#define THINGSPEAK_IPADDRESS IPAddress(184,106,153,149)
 #define THINGSPEAK_PORT_NUMBER 80
 
 #define OK_SUCCESS              200     // OK / Success
@@ -36,7 +36,16 @@ public:
 	void Init(uint8_t);			//call for OneWire init
 	virtual ~ThingSpeak();
 	void setWriteAPIKey(String);
-	int setField(uint8_t, String);
+
+	uint8_t setField(uint8_t, uint8_t);
+	uint8_t setField(uint8_t, int);
+	uint8_t setField(uint8_t, unsigned int);
+	uint8_t setField(uint8_t, long);
+	uint8_t setField(uint8_t, unsigned long);
+	uint8_t setField(uint8_t, float);
+	uint8_t setField(uint8_t, double);
+	uint8_t setField(uint8_t, String);
+
 	void cleanFields();
 	int writeFields();
 	int getStstus();
