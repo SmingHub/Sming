@@ -33,7 +33,6 @@ class ThingSpeak
 public:
 	ThingSpeak();
 	ThingSpeak(String);
-	void Init(uint8_t);			//call for OneWire init
 	virtual ~ThingSpeak();
 	void setWriteAPIKey(String);
 
