@@ -44,9 +44,36 @@ git push
 
 - Rebase if needed
 
-If your branch cannot be merged automatically because there are new changes in the __develop__
-branch that conflict with yours make sure to rebase your branch. The following commands can help
-you do this
+If your branch cannot be merged automatically because there are new changes in the official __develop__
+branch that conflict with yours then make sure to rebase your branch. The following steps can help
+you do this.
+
+First step: 
+You will need to add the `upstream` repository. This step should be executed ONLY once.
+
+```
+cd Sming
+git remote add upstream https://github.com/SmingHub/Sming.git 
+git fetch upstream develop
+git checkout develop
+git reset --hard upstream/develop
+```
+
+Second step: 
+If you have already defined `upstream` repository and synchronized your `develop` branch to fetch the updates
+from `upstream` ( the commands above do this) the next step is to get the latest changes from the official `develop` branch.
+
+This can be done using
+
+```
+cd Sming
+git checkout develop
+git pull
+```
+
+Final step:
+Now you are ready to merge the latest changes from official `develop` branch into your branch and place your changes on top. 
+The commands below help you achieve this.
 
 ```
 cd Sming
