@@ -31,10 +31,10 @@ SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 
 #ESPTOOL2 config to generate rBootLESS images
 IMAGE_MAIN	?= 0x00000.bin
-IMAGE_SDK	?= 0x10000.bin # The name must match the starting address of the irom0 section 
+IMAGE_SDK	?= 0x0a000.bin # The name must match the starting address of the irom0 section 
 						   # in the LD file ($SMING_HOME/compiler/ld/eagle.app.v6.cpp.ld).
 						   # To calculate the value do the following: x = irom0_0_seg.org - 0x40200000
-						   # Example: 0x40210000 - 0x40200000 = 0x10000
+						   # Example: 0x4020a000 - 0x40200000 = 0x0a000
 INIT_BIN_ADDR =  0x7c000
 BLANK_BIN_ADDR =  0x4b000
 
