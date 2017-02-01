@@ -50,9 +50,6 @@ void rBootHttpUpdate::updateFailed() {
 	items.clear();
 }
 
-void rBootHttpUpdate::onItemDownloadCompleted(HttpClient& client, bool successful) {
-}
-
 void rBootHttpUpdate::onTimer() {
 	
 	if (TcpClient::isProcessing()) return; // Will wait
@@ -89,7 +86,7 @@ void rBootHttpUpdate::onTimer() {
 	rBootHttpUpdateItem &it = items[currentItem];
 	debugf("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
 	writeInit();
-	startDownload(URL(it.url), eHCM_UserDefined, HttpClientCompletedDelegate(&rBootHttpUpdate::onItemDownloadCompleted, this));
+	startDownload(URL(it.url), eHCM_UserDefined, NULL);
 }
 
 

@@ -59,7 +59,6 @@ protected:
 	virtual void writeRawData(pbuf* buf, int startPos);
 	void applyUpdate();
 	void updateFailed();
-	void onItemDownloadCompleted(HttpClient& client, bool successful);
 
 protected:
 	Vector<rBootHttpUpdateItem> items;
