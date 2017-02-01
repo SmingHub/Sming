@@ -131,10 +131,12 @@ SPIFF_FILES ?= files
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
-# 0x01000    -> add size of one sector
-# IMAGE_SDK  -> starting address of the irom0 section   ----> needs to be identical in the LD file !
-# 0xFFFF000  -> from address to start of sector
-SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/$(IMAGE_SDK)) + 0x1000 + $(basename $(IMAGE_SDK))) & (0xFFFFC000) )) )
+# The line below calculates the next available sector after the IMAGE_SDK ROM.
+# The math is the following: next_available_sector_start = (( address + size ) + one_sector_size) & 0xFFFFF000
+# 0x01000    is the size of one sector
+# IMAGE_SDK  contains starting address of the irom0 section and its size
+# 0xFFFF000  mask that is used to show the start of a sector
+SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/$(IMAGE_SDK)) + 0x1000 + $(basename $(IMAGE_SDK))) & (0xFFFFF000) )) )
 
 #Firmware memory layout info files
 FW_MEMINFO_NEW = $(FW_BASE)/fwMeminfo.new
