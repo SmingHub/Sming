@@ -179,34 +179,32 @@ void HardwareSerial::callbackHandler(uart_t *uart) {
 		return;
 	}
 
-	int receivedChar;
-	while ((receivedChar = uart_read_char(uart)) != -1) {
-		if (memberData[uart->uart_nr].useRxBuff) {
-			// TODO: add code to buffer the characters ...
-			// The buffering needs rethinking:
-			//  - one possibility is to buffer until character C. example: \n
-			//  - another possibility is to buffer until N characters are available. example: 10
-			//  - or add a bufferCallback that takes care to do whatever buffering logic is desired.
-			//  The buffering logic must be extremely "light" because it will be called on every UART interrupt.
+	uint8_t lastPos = uart->rx_buffer->wpos;
+	if(!lastPos) {
+		lastPos = uart->rx_buffer->size;
+	}
+	int receivedChar = uart->rx_buffer->buffer[lastPos-1];
+
+	if (memberData[uart->uart_nr].useRxBuff) {
+		// TODO: add code to buffer the characters ...
+		// The buffering needs rethinking:
+		//  - one possibility is to buffer until character C. example: \n
+		//  - another possibility is to buffer until N characters are available. example: 10
+		//  - or add a bufferCallback that takes care to do whatever buffering logic is desired.
+		//  The buffering logic must be extremely "light" because it will be called on every UART interrupt.
+	}
+
+	if ((memberData[uart->uart_nr].HWSDelegate) || (memberData[uart->uart_nr].commandExecutor)) {
+		uint32 serialQueueParameter;
+		uint16 cc = uart_rx_available(uart);
+		serialQueueParameter = (cc * 256) + receivedChar; // can be done by bitlogic, avoid casting to ETSParam
+		serialQueueParameter += (uart->uart_nr << 25); // the left most byte contains the uart_nr. Up to 256 uarts are supported
+
+		if (memberData[uart->uart_nr].HWSDelegate) {
+			system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_DELEGATE, serialQueueParameter);
 		}
-
-		if ((memberData[uart->uart_nr].HWSDelegate) || (memberData[uart->uart_nr].commandExecutor)) {
-			uint32 serialQueueParameter;
-			uint16 cc;
-			//    	  cc = (pRxBuff->pWritePos < pRxBuff->pReadPos) ? ((pRxBuff->pWritePos + RX_BUFF_SIZE) - pRxBuff->pReadPos)
-			//      													: (pRxBuff->pWritePos - pRxBuff->pReadPos);
-			cc = (uart->rx_buffer->wpos < uart->rx_buffer->rpos) ?
-					((uart->rx_buffer->wpos + uart->rx_buffer->size) - uart->rx_buffer->rpos) :
-					(uart->rx_buffer->wpos - uart->rx_buffer->rpos);
-			serialQueueParameter = (cc * 256) + receivedChar; // can be done by bitlogic, avoid casting to ETSParam
-			serialQueueParameter += (uart->uart_nr << 25); // the left most byte contains the uart_nr. Up to 256 uarts are supported
-
-			if (memberData[uart->uart_nr].HWSDelegate) {
-				system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_DELEGATE, serialQueueParameter);
-			}
-			if (memberData[uart->uart_nr].commandExecutor) {
-				system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_COMMAND, serialQueueParameter);
-			}
+		if (memberData[uart->uart_nr].commandExecutor) {
+			system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_COMMAND, serialQueueParameter);
 		}
 	}
 }
