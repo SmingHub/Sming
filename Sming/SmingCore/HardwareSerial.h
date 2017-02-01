@@ -41,7 +41,6 @@ class CommandExecutor;
 typedef struct
 {
 	StreamDataReceivedDelegate HWSDelegate; ///< Delegate callback handler
-	bool useRxBuff; ///< True to use receiver buffer
 	CommandExecutor* commandExecutor = nullptr; ///< Pointer to command executor (Default: none)
 } HWSerialMemberData;
 
@@ -222,10 +221,9 @@ public:
 
 	/** @brief  Set handler for received data
 	 *  @param  reqCallback Function to handle received data
-	 *  @param  useSerialRxBuffer True to use the built-in serial receive buffer
 	 *  @retval bool Returns true if the callback was set correctly
 	 */
-	bool setCallback(StreamDataReceivedDelegate reqCallback, bool useSerialRxBuffer = true);
+	bool setCallback(StreamDataReceivedDelegate reqCallback);
 
 	/** @brief  Remove handler for received data
 	 */
@@ -280,10 +278,10 @@ private:
  *  @note	Use Serial.<i>function</i> to access serial functions
  *	@note	Example:
  *  @code   Serial.begin(115200);
-	@endcode
-	@note   Serial uses UART0, which is mapped to pins GPIO1 (TX) and GPIO3 (RX).
-	@note   Serial may be swapped to GPIO15 (TX) and GPIO13 (RX) by calling Serial.swap() after Serial.begin.
-	@note   Calling swap again maps UART0 back to GPIO1 and GPIO3.
+ *  @endcode
+ *  @note   Serial uses UART0, which is mapped to pins GPIO1 (TX) and GPIO3 (RX).
+ *  @note   Serial may be swapped to GPIO15 (TX) and GPIO13 (RX) by calling Serial.swap() after Serial.begin.
+ *  @note   Calling swap again maps UART0 back to GPIO1 and GPIO3.
 */
 extern HardwareSerial Serial;
 

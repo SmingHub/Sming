@@ -183,17 +183,7 @@ void HardwareSerial::callbackHandler(uart_t *uart) {
 	if(!lastPos) {
 		lastPos = uart->rx_buffer->size;
 	}
-	int receivedChar = uart->rx_buffer->buffer[lastPos-1];
-
-	if (memberData[uart->uart_nr].useRxBuff) {
-		// TODO: add code to buffer the characters ...
-		// The buffering needs rethinking:
-		//  - one possibility is to buffer until character C. example: \n
-		//  - another possibility is to buffer until N characters are available. example: 10
-		//  - or add a bufferCallback that takes care to do whatever buffering logic is desired.
-		//  The buffering logic must be extremely "light" because it will be called on every UART interrupt.
-	}
-
+	uint8_t receivedChar = uart->rx_buffer->buffer[lastPos-1];
 	if ((memberData[uart->uart_nr].HWSDelegate) || (memberData[uart->uart_nr].commandExecutor)) {
 		uint32 serialQueueParameter;
 		uint16 cc = uart_rx_available(uart);
@@ -209,7 +199,7 @@ void HardwareSerial::callbackHandler(uart_t *uart) {
 	}
 }
 
-bool HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate, bool useSerialRxBuffer /* = true */)
+bool HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate)
 {
 	if (!uart || !uart_rx_enabled(uart)) {
 		return false;
@@ -218,7 +208,6 @@ bool HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate, bool us
 	uart->callback = callbackHandler;
 
 	memberData[uartNr].HWSDelegate = reqDelegate;
-	memberData[uartNr].useRxBuff = useSerialRxBuffer;
 
 	// Start Serial task
 	if (!serialQueue) {
@@ -232,7 +221,6 @@ bool HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate, bool us
 void HardwareSerial::resetCallback()
 {
 	memberData[uartNr].HWSDelegate = nullptr;
-	memberData[uartNr].useRxBuff = true;
 
 	uart->callback = 0;
 }
