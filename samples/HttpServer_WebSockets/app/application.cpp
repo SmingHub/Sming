@@ -1,5 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
+#include "CUserData.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -9,72 +10,6 @@
 
 HttpServer server;
 int totalActiveSockets = 0;
-
-//Simplified container modelling a user session
-class CUserData
-{
-public:
-	CUserData(const char* uName, const char* uData):userName(uName), userData(uData){}
-	~CUserData()
-	{
-		logOut();
-	}
-
-	void addSession(WebSocket& connection)
-	{
-		activeWebSockets.addElement(&connection);
-		connection.setUserData((void*)this);
-	}
-
-	void removeSession(WebSocket& connection)
-	{
-		for(int i=0; i < activeWebSockets.count(); i++)
-		{
-			if(connection == *(activeWebSockets[i]))
-			{
-				activeWebSockets[i]->setUserData(nullptr);
-				activeWebSockets.remove(i);
-				Serial.println("Removed user session");
-				return;
-			}
-		}
-	}
-
-	void printMessage(WebSocket& connection,const String &msg)
-	{
-		int i=0;
-		for(; i < activeWebSockets.count(); i++)
-		{
-			if(connection == *(activeWebSockets[i]))
-			{
-				break;
-			}
-		}
-
-		if(i < activeWebSockets.count())
-		{
-			Serial.print("Received msg on connection ");
-			Serial.print(i);
-			Serial.print(" :");
-			Serial.print(msg);
-		}
-	}
-
-	void logOut()
-	{
-		for(int i=0; i < activeWebSockets.count(); i++)
-		{
-			activeWebSockets[i]->setUserData(nullptr);
-		}
-
-		activeWebSockets.removeAllElements();
-	}
-private:
-	String userName;
-	String userData;
-	Vector<WebSocket*> activeWebSockets;
-
-};
 
 CUserData userGeorge("George", "I like SMING");
 
@@ -104,6 +39,8 @@ void onFile(HttpRequest &request, HttpResponse &response)
 void wsConnected(WebSocket& socket)
 {
 	totalActiveSockets++;
+
+	//Use a global instance and add this new connection. Normally
 	userGeorge.addSession(socket);
 	// Notify everybody about new connection
 	WebSocketsList &clients = server.getActiveWebSockets();
