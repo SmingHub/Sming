@@ -162,6 +162,7 @@ endif
 
 # => Open Source LWIP
 LIBLWIP = lwip
+ENABLE_CUSTOM_LWIP ?= 1
 ENABLE_ESPCONN ?= 0
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
