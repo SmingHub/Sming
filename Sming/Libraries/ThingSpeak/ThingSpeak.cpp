@@ -2,6 +2,7 @@
  *
  *  Created on: 01-01-2017
  *  Author: Gustlik (Ogyb)
+ * \version 0.9
  */
 
 #include "ThingSpeak.h"
@@ -25,52 +26,20 @@ void ThingSpeak::setWriteAPIKey(String APIKey)
 	writeAPIKey = APIKey;
 }
 
-uint8_t ThingSpeak::setField(uint8_t iField, uint8_t value)
-{
-	return setField(iField, String(value));
-}
-
-uint8_t ThingSpeak::setField(uint8_t iField, int value)
-{
-	return setField(iField, String(value));
-}
-
-uint8_t ThingSpeak::setField(uint8_t iField, unsigned int value)
-{
-	return setField(iField, String(value));
-}
-
-uint8_t ThingSpeak::setField(uint8_t iField, long value)
-{
-	return setField(iField, String(value));
-}
-
-uint8_t ThingSpeak::setField(uint8_t iField, unsigned long value)
-{
-	return setField(iField, String(value));
-}
-
-uint8_t ThingSpeak::setField(uint8_t iField, float value)
-{
-	return setField(iField, String(value));
-}
-
-uint8_t ThingSpeak::setField(uint8_t iField, double value)
-{
-	return setField(iField, String(value));
-}
-
-uint8_t ThingSpeak::setField(uint8_t iField, String value)
+//Used only for string value! Else data type use template (see .h file)
+template <> uint8_t ThingSpeak::setField(uint8_t iField, String value)
 {
 	if(iField < 1 || iField > TS_MAX_FIELD) return ERR_FIELD_NUM_RANGE;
 	if(value.length() < MAX_FIELD_LENGTH)
 	{
 		fieldValue[iField -1] = value;
 	}
+	lastId = iField + 1;
 	return OK_SUCCESS;
 }
 
-int ThingSpeak::writeFields()
+
+int ThingSpeak::sendFields()
 {
 	bool noItem = true;
 	String postMessage = THINGSPEAK_URL;
