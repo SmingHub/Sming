@@ -38,6 +38,8 @@ void connectOk()
 
 void init()
 {
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+
 	// Station - WiFi client
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
