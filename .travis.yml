@@ -54,4 +54,4 @@ script:
   - make ENABLE_CUSTOM_HEAP=1
   - make Basic_Blink ENABLE_CUSTOM_HEAP=1
   - make clean samples-clean
-  - if [ "$SDK_VERSION" == "1.5.0" ]; then make ENABLE_CUSTOM_LWIP=1; make samples ENABLE_CUSTOM_LWIP=1; fi 
+  - if [ "$SDK_VERSION" != "1.4.0" ]; then make ENABLE_CUSTOM_LWIP=1; make samples ENABLE_CUSTOM_LWIP=1; fi 
