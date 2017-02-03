@@ -28,10 +28,11 @@ bool YeelightBulb::connect()
 		if (connection->isProcessing())
 			return true;
 
-		connection->close();
+		//connection->close();
+		delete connection;
 	}
-	else
-		connection = new TcpClient(TcpClientDataDelegate(&YeelightBulb::onResponse, this));
+
+	connection = new TcpClient(TcpClientDataDelegate(&YeelightBulb::onResponse, this));
 
 	connection->setTimeOut(USHRT_MAX); // Stay connected forever
 	bool result = connection->connect(lamp, port);
@@ -51,6 +52,8 @@ bool isNumeric(String str)
 
 void YeelightBulb::sendCommand(String method, Vector<String> params)
 {
+	connect();
+
 	DynamicJsonBuffer jsonBuffer;
 	JsonObject& root = jsonBuffer.createObject();
 	root["id"] = requestId++;
@@ -67,13 +70,12 @@ void YeelightBulb::sendCommand(String method, Vector<String> params)
 	root.printTo(request);
 	request += "\r\n";
 	debugf("LED < %s", request.c_str());
-	connection->sendString(request);
+	connection->writeString(request);
 	connection->flush();
 }
 
 void YeelightBulb::on()
 {
-	connect();
 	Vector<String> params;
 	params.add("on");
 	sendCommand("set_power", params);
@@ -82,7 +84,6 @@ void YeelightBulb::on()
 
 void YeelightBulb::off()
 {
-	connect();
 	Vector<String> params;
 	params.add("off");
 	sendCommand("set_power", params);
@@ -99,7 +100,6 @@ void YeelightBulb::setState(bool isOn)
 
 void YeelightBulb::updateState()
 {
-	connect();
 	propsId = requestId;
 	Vector<String> params;
 	params.add("power");
@@ -135,7 +135,6 @@ void YeelightBulb::setHSV(int hue, int sat)
 
 void YeelightBulb::ensureOn()
 {
-	connect();
 	if (state <= 0)
 		on();
 }

@@ -12,7 +12,7 @@
 YeelightBulb bulb(IPAddress("192.168.1.100"));
 
 Timer procTimer;
-bool state = true;
+bool state = false;
 
 void blink()
 {
@@ -31,6 +31,7 @@ void connectOk()
 {
 	debugf("I'm CONNECTED");
 
+	// Connection to Yeelight Bulb will be established on any first action:
 	bulb.updateState(); // Read actual bulb state
 	procTimer.initializeMs(5000, blink).start();
 }
