@@ -14,6 +14,13 @@ YeelightBulb::YeelightBulb(IPAddress addr)
 	lamp = addr;
 }
 
+YeelightBulb::~YeelightBulb()
+{
+	if (connection != nullptr)
+		delete connection;
+	connection = nullptr;
+}
+
 bool YeelightBulb::connect()
 {
 	if (connection != nullptr)
@@ -80,6 +87,14 @@ void YeelightBulb::off()
 	params.add("off");
 	sendCommand("set_power", params);
 	state = false;
+}
+
+void YeelightBulb::setState(bool isOn)
+{
+	if (isOn)
+		on();
+	else
+		off();
 }
 
 void YeelightBulb::updateState()

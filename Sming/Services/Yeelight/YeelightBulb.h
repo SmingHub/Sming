@@ -19,11 +19,13 @@ class YeelightBulb
 {
 public:
 	YeelightBulb(IPAddress addr);
+	~YeelightBulb();
 	bool connect();
 
 	void sendCommand(String method, Vector<String> params);
 	void on();
 	void off();
+	void setState(bool isOn);
 	void updateState();
 	bool currentState() { return state > 0; }
 
