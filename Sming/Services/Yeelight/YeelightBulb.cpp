@@ -79,7 +79,7 @@ void YeelightBulb::on()
 	Vector<String> params;
 	params.add("on");
 	sendCommand("set_power", params);
-	state = true;
+	state = eYBS_On;
 }
 
 void YeelightBulb::off()
@@ -87,7 +87,7 @@ void YeelightBulb::off()
 	Vector<String> params;
 	params.add("off");
 	sendCommand("set_power", params);
-	state = false;
+	state = eYBS_Off;
 }
 
 void YeelightBulb::setState(bool isOn)
@@ -142,9 +142,9 @@ void YeelightBulb::ensureOn()
 void YeelightBulb::parsePower(const String& value)
 {
 	if (value == "on")
-		state = true;
+		state = eYBS_On;
 	else if (value == "off")
-		state = false;
+		state = eYBS_Off;
 
 	debugf("LED state: %s", value.c_str());
 }

@@ -15,19 +15,39 @@ class TcpClient;
 #ifndef SERVICES_YEELIGHTBULB_H_
 #define SERVICES_YEELIGHTBULB_H_
 
+enum YeelightBulbState
+{
+	eYBS_Unknown = -1,
+	eYBS_Off = 0,
+	eYBS_On = 1
+};
+
+/** @brief Yeelight wifi bulb controller class
+ */
 class YeelightBulb
 {
 public:
 	YeelightBulb(IPAddress addr);
 	~YeelightBulb();
+
+	/** @brief Can be skipped. This method will be called automatically from any action method below
+	 */
 	bool connect();
 
+	/** @brief Send any command to the lamp
+	 */
 	void sendCommand(String method, Vector<String> params);
+
 	void on();
 	void off();
 	void setState(bool isOn);
+
+	/** @brief Start async reading of current lamp state
+	 */
 	void updateState();
-	bool currentState() { return state > 0; }
+	/** @brief Get current lamp state (should be called only after updateState)
+	 */
+	YeelightBulbState currentState() { return state; }
 
 	void setBrightness(int percent);
 	void setRGB(byte r, byte g, byte b);
@@ -45,7 +65,7 @@ private:
 	TcpClient* connection = nullptr;
 	long requestId = 0;
 	long propsId;
-	int state = -1;
+	YeelightBulbState state = eYBS_Unknown;
 };
 
 #endif /* SERVICES_YEELIGHTBULB_H_ */
