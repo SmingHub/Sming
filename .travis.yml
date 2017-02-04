@@ -1,14 +1,17 @@
 sudo: false
 language: cpp
-os:
-  - linux
-  - osx
+
 env:
   global:
     - SDK_BUILD=258
-  matrix:
-    - SDK_VERSION=1.4.0
-    - SDK_VERSION=1.5.0  
+    
+matrix:
+    include:
+        - os: linux
+          env: SDK_VERSION=1.5.0
+        - os: linux
+          env: SDK_VERSION=2.0.0
+          
 git:
   submodules: false
 addons:
@@ -18,17 +21,19 @@ addons:
     packages:     
       - bsdtar
 install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-linux-x86_64.tar.gz"; fi
+  - if [ "$SDK_VERSION" != "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
+  - if [ "$SDK_VERSION" != "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-linux-x86_64.tar.gz"; fi
   - mkdir -p $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-  - wget https://bintray.com/artifact/download/kireevco/generic/${SDK_FILE_NAME}
-  - bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk  
+  - if [ "$SDK_VERSION" != "2.0.0" ]; then wget https://bintray.com/artifact/download/kireevco/generic/${SDK_FILE_NAME}; fi
+  - if [ "$SDK_VERSION" != "2.0.0" ]; then bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk; fi
+  - if [ "$SDK_VERSION" == "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget https://github.com/nodemcu/nodemcu-firmware/raw/master/tools/esp-open-sdk.tar.xz; tar -Jxvf esp-open-sdk.tar.xz; ln -s `pwd`/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/. ; fi
+  - if [ "$SDK_VERSION" == "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget http://bbs.espressif.com/download/file.php?id=1690 -O sdk.zip; unzip sdk.zip; ln -s `pwd`/ESP8266_NONOS_SDK/ $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/sdk; fi
 script:
   - export CHANGED_FILES=`git diff --diff-filter=AMD HEAD HEAD^ --name-only`
   - export CHANGED_PROJECTS=`for i in $CHANGED_FILES; do echo "$i" |  grep '^samples/' | cut -d'/' -f2; done | uniq`
   - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
   - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk  
-  - export PATH=$PATH:$TRAVIS_BUILD_DIR/opt/esp-alt-sdk/utils/
+  - export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/:$SMING_HOME/../.travis/tools
   - cd $SMING_HOME
   - make test 
   - cd $SMING_HOME/../
@@ -43,4 +48,4 @@ script:
   - make ENABLE_CUSTOM_HEAP=1
   - make Basic_Blink ENABLE_CUSTOM_HEAP=1
   - make clean samples-clean
-  - if [ "$SDK_VERSION" == "1.5.0" ]; then make ENABLE_CUSTOM_LWIP=1; make samples ENABLE_CUSTOM_LWIP=1; fi 
+  - make ENABLE_CUSTOM_LWIP=1; make samples ENABLE_CUSTOM_LWIP=1

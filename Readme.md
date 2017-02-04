@@ -28,7 +28,7 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * [SNI](https://tools.ietf.org/html/rfc6066#page-6) and [Maximum Fragment Length](https://tools.ietf.org/html/rfc6066#page-8) SSL support.
 * Optional alternative PWM support based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git)
 * Optional custom heap allocation based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git)
-* Based on Espressif NONOS SDK. Tested with versions 1.4 and 1.5. 
+* Based on Espressif NONOS SDK. Tested with versions 1.4, 1.5 and 2.0. 
 
 ## Compatibility
 
@@ -36,7 +36,7 @@ OS/SDK | Linux | Mac OS X | Windows | FreeBSD-current |
 -------|-------|----------|---------|-----------------|
 UDK (1.4, 1.5)    | n/a   | n/a      |   :sunny:      |     n/a         |
 esp-alt-sdk (1.4, 1.5) | :sunny:  | :sunny:  | :sunny:  | :sunny:  | :sunny:  |
-esp-open-sdk (1.4, 1.5) | :sunny:  | n/a | n/a | n/a |
+esp-open-sdk (1.4, 1.5, 2.0) | :sunny:  | :sunny: | n/a | n/a |
 
 OS = Operating System
 SDK = Software Development Kit
