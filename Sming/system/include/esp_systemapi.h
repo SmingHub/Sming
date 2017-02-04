@@ -39,7 +39,7 @@
 #ifdef SMING_RELEASE
 #define debugf(fmt, ...)
 #else
-#define debugf LOG_E
+#define debugf debug_E
 #define debugf_RAM(fmt, ...) m_printf(fmt"\r\n", ##__VA_ARGS__)
 #endif
 #define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
