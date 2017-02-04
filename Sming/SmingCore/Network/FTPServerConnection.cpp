@@ -55,7 +55,7 @@ public:
 	{
 		if (completed) return;
 		Vector<String> list = fileList();
-		debugf_RAM("send file list: %d", list.count());
+		m_printf("send file list: %d", list.count());
 		for (int i = 0; i < list.count(); i++)
 			writeString("01-01-15  01:00AM               " + String(fileGetSize(list[i])) + " " + list[i] + "\r\n");
 		completed = true;

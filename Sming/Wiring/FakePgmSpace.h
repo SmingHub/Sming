@@ -58,7 +58,7 @@ extern "C"
 			int len_P = strlen_P(f_P); \
 			int __result=0;char *__localF = (char *)malloc(len_P + 1); \
 			if(__localF) { strcpy_P(__localF, f_P); __localF[len_P] = '\0'; \
-			__result = m_sprintf(s, __localF, ##__VA_ARGS__); \
+			__result = m_snprintf(s, len_P, __localF, ##__VA_ARGS__); \
 			free(__localF);} \
 			__result; \
 		})
