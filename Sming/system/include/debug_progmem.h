@@ -56,13 +56,13 @@ extern "C" {
 //This will be stored in the irom section(on flash) feeing up the RAM
 //Next special version of printf from FakePgmSpace is called to fetch and print the message
 #if PRINT_FILENAME_AND_LINE
-#define debug_E(fmt, ...) \
+#define debug_e(fmt, ...) \
 	({static const char TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__)[] \
 	__attribute__((aligned(4))) \
 	__attribute__((section(QUOTE(.irom.text)))) = "[" GET_FNAME2(CUST_FILE_BASE) ":%d] " fmt"\r\n"; \
 	printf_P_stack(TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__), __LINE__, ##__VA_ARGS__);})
 #else
-#define debug_E(fmt, ...) \
+#define debug_e(fmt, ...) \
 	({static const char TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__)[] \
 	__attribute__((aligned(4))) \
 	__attribute__((section(".irom.text"))) = fmt"\r\n"; \
@@ -70,27 +70,27 @@ extern "C" {
 #endif
 
 	#if DEBUG_VERBOSE_LEVEL == DBG
-		#define debug_W debug_E
-		#define debug_I debug_E
-		#define debug_D debug_E
+		#define debug_w debug_e
+		#define debug_i debug_e
+		#define debug_d debug_e
 	#elif DEBUG_VERBOSE_LEVEL == INFO
-		#define debug_W debug_E
-		#define debug_I debug_E
-		#define debug_D
+		#define debug_w debug_e
+		#define debug_i debug_e
+		#define debug_d
 	#elif DEBUG_VERBOSE_LEVEL == WARN
-		#define debug_W debug_E
-		#define debug_I
-		#define debug_D
+		#define debug_w debug_e
+		#define debug_i
+		#define debug_d
 	#else
-		#define debug_W
-		#define debug_I
-		#define debug_D
+		#define debug_w
+		#define debug_i
+		#define debug_d
 	#endif
 #else /*DEBUG_BUILD*/
-	#define debug_E
-	#define debug_W
-	#define debug_I
-	#define debug_D
+	#define debug_e
+	#define debug_w
+	#define debug_i
+	#define debug_d
 #endif /*DEBUG_BUILD*/
 
 #ifdef __cplusplus
