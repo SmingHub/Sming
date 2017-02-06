@@ -42,7 +42,7 @@ extern "C" char *strncpy_P(char * dest, size_t max_len, const char * src_P)
 	if(len >= max_len)
 		len = max_len-1;
 	memcpy_P(dest, src_P, len);
-	dest[len + 1] = 0;
+	dest[len] = 0;
 	return dest;
 }
 

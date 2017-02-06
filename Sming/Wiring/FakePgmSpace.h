@@ -73,7 +73,7 @@ extern "C"
 	#define printf_P_stack(f_P, ...) \
 		({ \
 			char __localF[256]; \
-			memset(__localF, 0, sizeof(__localF)); \
+			/*memset(__localF, 0, sizeof(__localF));*/ \
 			m_printf(strncpy_P(__localF, sizeof(__localF), (f_P)), ##__VA_ARGS__); \
 		})
 	#define printf_P printf_P_heap

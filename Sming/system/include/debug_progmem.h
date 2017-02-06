@@ -29,8 +29,8 @@ extern "C" {
 
 //This enables or disables file and number printing for each log line
 //Can be overridden in Makefile
-#ifndef PRINT_FILENAME_AND_LINE
-#define PRINT_FILENAME_AND_LINE 0
+#ifndef DEBUG_PRINT_FILENAME_AND_LINE
+#define DEBUG_PRINT_FILENAME_AND_LINE 0
 #endif
 
 #define ERR 0	
@@ -52,20 +52,27 @@ extern "C" {
 #define GET_FILENAME(x) #x
 #define GET_FNAME2(x) GET_FILENAME(x)
 
+// http://stackoverflow.com/a/35441900
+#define MACROCAT2(x,y,z) x##y##z
+#define MACROCONCAT(x,y,z) MACROCAT2(x,y,z)
+#define MACROQUOT(x) #x
+#define MACROQUOTE(x) MACROQUOT(x)
+
 //A static const char[] is defined having a unique name (log_ prefix, filename and line number)
 //This will be stored in the irom section(on flash) feeing up the RAM
 //Next special version of printf from FakePgmSpace is called to fetch and print the message
-#if PRINT_FILENAME_AND_LINE
+#if DEBUG_PRINT_FILENAME_AND_LINE
 #define debug_e(fmt, ...) \
 	({static const char TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__)[] \
 	__attribute__((aligned(4))) \
-	__attribute__((section(QUOTE(.irom.text)))) = "[" GET_FNAME2(CUST_FILE_BASE) ":%d] " fmt"\r\n"; \
+	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,CUST_FILE_BASE))))) = "[" GET_FNAME2(CUST_FILE_BASE) ":%d] " fmt "\r\n"; \
 	printf_P_stack(TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__), __LINE__, ##__VA_ARGS__);})
 #else
+//#define debug_e m_printf
 #define debug_e(fmt, ...) \
 	({static const char TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__)[] \
 	__attribute__((aligned(4))) \
-	__attribute__((section(".irom.text"))) = fmt"\r\n"; \
+	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,CUST_FILE_BASE))))) = fmt"\r\n"; \
 	printf_P_stack(TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__), ##__VA_ARGS__);})
 #endif
 
