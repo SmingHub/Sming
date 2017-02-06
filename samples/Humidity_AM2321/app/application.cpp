@@ -21,11 +21,6 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable/disable debug output
 
-	// I2C
-	pinMode(12, OUTPUT);
-	digitalWrite(12, 1);
-	delay(600);
-
 	// Default I2C pins (SCL:0 , SDA: 2)
 
 	// You can change pins:
