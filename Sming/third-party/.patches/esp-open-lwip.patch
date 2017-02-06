@@ -128,3 +128,16 @@ index ff03b30..932c73d 100644
  #define S16_F "d"
  #define U16_F "d"
 
+diff --git a/include/lwipopts.h b/include/lwipopts.h
+index eaa8dd6..6a08192 100644
+--- a/include/lwipopts.h
++++ b/include/lwipopts.h
+@@ -953,7 +953,7 @@
+  * an upper limit on the MSS advertised by the remote host.
+  */
+ #ifndef TCP_MSS
+-#define TCP_MSS                         1460
++#define TCP_MSS                        1390 
+ #endif
+ #endif
+ 
