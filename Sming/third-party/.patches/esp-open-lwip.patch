@@ -43,11 +43,14 @@ index e69de29..3a85c8c 100644
 +
 +#endif /*_USER_CONFIG_LWIP_*/
 diff --git a/Makefile.open b/Makefile.open
-index 1bc584f..5db5467 100644
+index 1bc584f..0bfc424 100644
 --- a/Makefile.open
 +++ b/Makefile.open
-@@ -2,7 +2,9 @@ CC = xtensa-lx106-elf-gcc
- AR = xtensa-lx106-elf-ar
+@@ -1,8 +1,10 @@
+-CC = xtensa-lx106-elf-gcc
+-AR = xtensa-lx106-elf-ar
++CC = $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc
++AR = $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-ar
  DEFS = -DLWIP_OPEN_SRC -DPBUF_RSV_FOR_WLAN -DEBUF_LWIP -DICACHE_FLASH
  COPT = -Os
 -CFLAGS = $(DEFS) $(COPT) -Iinclude -Wl,-EL -mlongcalls -mtext-section-literals $(CFLAGS_EXTRA)
