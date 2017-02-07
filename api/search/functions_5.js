@@ -21,6 +21,7 @@ var searchData=
   ['filetell',['fileTell',['../group__filesystem.html#ga53d984fd06caa97a020aec81def74ab8',1,'FileSystem.h']]],
   ['filewrite',['fileWrite',['../group__filesystem.html#gada3c289b5ee0eb2ad42c430a8264beab',1,'FileSystem.h']]],
   ['flush',['flush',['../classHardwareSerial.html#af12cc7f03315df841905003d728d9b87',1,'HardwareSerial']]],
-  ['freesslclientkeycert',['freeSslClientKeyCert',['../classTcpConnection.html#a4390944a2ec429e1072e2822f8eb8eec',1,'TcpConnection']]],
+  ['flush_5frx',['flush_rx',['../classRF24.html#a575c061519e7820e1850ad380c617d95',1,'RF24']]],
+  ['flush_5ftx',['flush_tx',['../classRF24.html#adb7915b1d2661a82137573344f659e81',1,'RF24']]],
   ['functioncaller',['FunctionCaller',['../classFunctionCaller.html#a57489bd2e7cd5a17d454c5d3ab98cecc',1,'FunctionCaller']]]
 ];

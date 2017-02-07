@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['userxbuff',['useRxBuff',['../structHWSerialMemberData.html#ae2c2ac34951c9dc3ba1b66ff44e5c245',1,'HWSerialMemberData']]]
+  ['time',['time',['../group__rtc.html#ga740cfb2f8c4590588cc54fff34874de5',1,'RtcData']]],
+  ['timeouttimer',['timeoutTimer',['../classNtpClient.html#a841f2bbd43ed22f090f767081b48687b',1,'NtpClient']]]
 ];

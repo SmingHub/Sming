@@ -1,8 +1,8 @@
 var group__wifi__sta =
 [
-    [ "config", "group__wifi__sta.html#gab8f2acf6c2dbd5edd0fb227c62feb033", null ],
-    [ "connect", "group__wifi__sta.html#ga24f2e21b64bce6bb7c6961e1941eea10", null ],
-    [ "disconnect", "group__wifi__sta.html#gaba4f8c1fbf98998b0a88466934671987", null ],
+    [ "config", "group__wifi__sta.html#ga41f9a2b887e6a253543b9475505fa0ce", null ],
+    [ "connect", "group__wifi__sta.html#ga9bd27c04eb5b268c71f8c490b408f1f9", null ],
+    [ "disconnect", "group__wifi__sta.html#gae27a3cb89d75093863b498b3f7272d35", null ],
     [ "enable", "group__wifi__sta.html#ga152ef2c3a2d2f98f5d088338d69f76d2", null ],
     [ "enableDHCP", "group__wifi__sta.html#ga828cf12352dce3e6dbddf656f2c55ca3", null ],
     [ "getAuthorizationMethodName", "group__wifi__sta.html#gad7980b91ebb1fd7121f1079d5de0bd62", null ],

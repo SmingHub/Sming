@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -100,6 +101,7 @@ $(document).ready(function(){initNavTree('group__serial.html','');});
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">Hardware serial</div>  </div>
@@ -146,6 +148,69 @@ Typedefs</h2></td></tr>
 uint16_t availableCharsCount)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serial.html#ga6893ae94b30659b565a1c1db2459f590">StreamDataReceivedDelegate</a></td></tr>
 <tr class="memdesc:ga6893ae94b30659b565a1c1db2459f590"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classDelegate.html">Delegate</a> callback type for serial data reception.  <a href="#ga6893ae94b30659b565a1c1db2459f590">More...</a><br/></td></tr>
 <tr class="separator:ga6893ae94b30659b565a1c1db2459f590"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ga8dbf429fe2fa7edcf68440a8b83f64e1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>SerialConfig</b> { <br/>
+&#160;&#160;<b>SERIAL_5N1</b> = UART_5N1, 
+<br/>
+&#160;&#160;<b>SERIAL_6N1</b> = UART_6N1, 
+<br/>
+&#160;&#160;<b>SERIAL_7N1</b> = UART_7N1, 
+<br/>
+&#160;&#160;<b>SERIAL_8N1</b> = UART_8N1, 
+<br/>
+&#160;&#160;<b>SERIAL_5N2</b> = UART_5N2, 
+<br/>
+&#160;&#160;<b>SERIAL_6N2</b> = UART_6N2, 
+<br/>
+&#160;&#160;<b>SERIAL_7N2</b> = UART_7N2, 
+<br/>
+&#160;&#160;<b>SERIAL_8N2</b> = UART_8N2, 
+<br/>
+&#160;&#160;<b>SERIAL_5E1</b> = UART_5E1, 
+<br/>
+&#160;&#160;<b>SERIAL_6E1</b> = UART_6E1, 
+<br/>
+&#160;&#160;<b>SERIAL_7E1</b> = UART_7E1, 
+<br/>
+&#160;&#160;<b>SERIAL_8E1</b> = UART_8E1, 
+<br/>
+&#160;&#160;<b>SERIAL_5E2</b> = UART_5E2, 
+<br/>
+&#160;&#160;<b>SERIAL_6E2</b> = UART_6E2, 
+<br/>
+&#160;&#160;<b>SERIAL_7E2</b> = UART_7E2, 
+<br/>
+&#160;&#160;<b>SERIAL_8E2</b> = UART_8E2, 
+<br/>
+&#160;&#160;<b>SERIAL_5O1</b> = UART_5O1, 
+<br/>
+&#160;&#160;<b>SERIAL_6O1</b> = UART_6O1, 
+<br/>
+&#160;&#160;<b>SERIAL_7O1</b> = UART_7O1, 
+<br/>
+&#160;&#160;<b>SERIAL_8O1</b> = UART_8O1, 
+<br/>
+&#160;&#160;<b>SERIAL_5O2</b> = UART_5O2, 
+<br/>
+&#160;&#160;<b>SERIAL_6O2</b> = UART_6O2, 
+<br/>
+&#160;&#160;<b>SERIAL_7O2</b> = UART_7O2, 
+<br/>
+&#160;&#160;<b>SERIAL_8O2</b> = UART_8O2
+<br/>
+ }</td></tr>
+<tr class="separator:ga8dbf429fe2fa7edcf68440a8b83f64e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab78caf3d1a1fc77e1145393984a03ab1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>SerialMode</b> { <br/>
+&#160;&#160;<b>SERIAL_FULL</b> = UART_FULL, 
+<br/>
+&#160;&#160;<b>SERIAL_RX_ONLY</b> = UART_RX_ONLY, 
+<br/>
+&#160;&#160;<b>SERIAL_TX_ONLY</b> = UART_TX_ONLY
+<br/>
+ }</td></tr>
+<tr class="separator:gab78caf3d1a1fc77e1145393984a03ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -278,7 +343,13 @@ Variables</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>Use Serial.<em>function</em> to access serial functions </dd>
 <dd>
 Example: <div class="fragment"><div class="line"><a class="code" href="group__serial.html#ga7b8c4a195c58f9eb8750e94955c5aa4b">Serial</a>.<a class="code" href="classHardwareSerial.html#ad10f3f07a59e390851b4ed47b8991d39">begin</a>(115200);</div>
-</div><!-- fragment --> </dd></dl>
+</div><!-- fragment --> </dd>
+<dd>
+Serial uses UART0, which is mapped to pins GPIO1 (TX) and GPIO3 (RX). </dd>
+<dd>
+Serial may be swapped to GPIO15 (TX) and GPIO13 (RX) by calling Serial.swap() after Serial.begin. </dd>
+<dd>
+Calling swap again maps UART0 back to GPIO1 and GPIO3. </dd></dl>
 
 </div>
 </div>

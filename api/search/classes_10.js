@@ -1,11 +1,22 @@
 var searchData=
 [
-  ['vector',['Vector',['../classVector.html',1,'']]],
-  ['vector_3c_20channelpwm_20_3e',['Vector&lt; ChannelPWM &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20delegate_20_3e',['Vector&lt; Delegate &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20httpfirmwareupdateitem_20_3e',['Vector&lt; HttpFirmwareUpdateItem &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20isystemreadyhandler_20_2a_20_3e',['Vector&lt; ISystemReadyHandler * &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20rboothttpupdateitem_20_3e',['Vector&lt; rBootHttpUpdateItem &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20string_20_3e',['Vector&lt; String &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20websocket_20_3e',['Vector&lt; WebSocket &gt;',['../classVector.html',1,'']]]
+  ['servo',['Servo',['../classServo.html',1,'']]],
+  ['servochannel',['ServoChannel',['../classServoChannel.html',1,'']]],
+  ['si4432',['Si4432',['../classSi4432.html',1,'']]],
+  ['si7021',['SI7021',['../classSI7021.html',1,'']]],
+  ['si7021_5fenv',['si7021_env',['../structsi7021__env.html',1,'']]],
+  ['si7021_5folt',['si7021_olt',['../structsi7021__olt.html',1,'']]],
+  ['softi2cmaster',['SoftI2cMaster',['../classSoftI2cMaster.html',1,'']]],
+  ['sparkfun_5fapds9960',['SparkFun_APDS9960',['../classSparkFun__APDS9960.html',1,'']]],
+  ['spibase',['SPIBase',['../classSPIBase.html',1,'']]],
+  ['spiclass',['SPIClass',['../classSPIClass.html',1,'']]],
+  ['spisettings',['SPISettings',['../classSPISettings.html',1,'']]],
+  ['spisoft',['SPISoft',['../classSPISoft.html',1,'']]],
+  ['sslkeycertpair',['SSLKeyCertPair',['../structSSLKeyCertPair.html',1,'']]],
+  ['stationclass',['StationClass',['../classStationClass.html',1,'']]],
+  ['stream',['Stream',['../classStream.html',1,'']]],
+  ['string',['String',['../classString.html',1,'']]],
+  ['stringsumhelper',['StringSumHelper',['../classStringSumHelper.html',1,'']]],
+  ['systemclass',['SystemClass',['../classSystemClass.html',1,'']]],
+  ['systemclockclass',['SystemClockClass',['../classSystemClockClass.html',1,'']]]
 ];

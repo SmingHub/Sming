@@ -15,21 +15,29 @@ var NAVTREE =
         [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
-    ] ]
+    ] ],
+    [ "Examples", "examples.html", "examples" ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"annotated.html",
-"classFTPServer.html#a17de58e120dfd64ef4fffa30380ad1e7",
-"classHttpClient.html#a59ef4474eb3d65f8b1f1e21e0f3f3c25",
-"classJsonObjectStream.html#a1e411d07a8ffec5faf7ce485bac0f029",
-"classStream.html#a6a409da87c552909260d8cc428c5ca70",
-"classTcpClient.html#a8de8085154467305bbfae0aba747066f",
-"classURL.html#aad0ad594035598ddb2450b6ec6cd4278",
-"group__constants.html#gga164bddac15e4b96cae4a069590cc1064a1f961b297e34e7f529f15d53d2570cf8",
-"group__wifi__ap.html#ga6d1fa6a66410670adcc397fb210f8fe1"
+"GettingStarted_8pde-example.html",
+"classAdafruit__PCD8544.html#ab9bb0cbc2455f64dce2a5ec36307aa94",
+"classCommandDelegate.html#a1e43873b34a8e47d1122e46146773d8d",
+"classESP01__Description.html#a563919a8fe237a6ad231f9733b3a264a",
+"classHashMap.html#a485fb8ca016d231e33181dc80a0ac796",
+"classIDelegateCaller.html#a4c49d3a30a5224c1910400b9a1cbaf71",
+"classLiquidCrystal__I2C.html#a6d837611f19b3fc7ced014517021a57b",
+"classMCP23017.html#a457ec4f7093240950eea298a6922f4ac",
+"classRCSwitch.html#af6584ffa9cee1527ac3debd972c3f556",
+"classSparkFun__APDS9960.html#aaee720807316599309989019a2268bef",
+"classStringSumHelper.html#aea448757a5dbe286cb522e1b02682d89",
+"classTemplateFileStream.html#af28ccb99de655f1cc18816a4751ed09e",
+"classdecode__results.html#a58646241154c6f0a47083ce67e7327fb",
+"group__filesystem.html#gada3c289b5ee0eb2ad42c430a8264beab",
+"group__wifi__sta.html#gaa83979edcf377f51ad5c6a61395a1c30",
+"structtmElements__t.html#ae1f337c19bc58f7de1dfe21eb3edb525"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

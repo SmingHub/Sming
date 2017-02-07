@@ -28,7 +28,8 @@ var searchData=
   ['filinfo',['FILINFO',['../structFILINFO.html',1,'']]],
   ['filo',['FILO',['../classFILO.html',1,'']]],
   ['flush',['flush',['../classHardwareSerial.html#af12cc7f03315df841905003d728d9b87',1,'HardwareSerial']]],
-  ['freesslclientkeycert',['freeSslClientKeyCert',['../classTcpConnection.html#a4390944a2ec429e1072e2822f8eb8eec',1,'TcpConnection']]],
+  ['flush_5frx',['flush_rx',['../classRF24.html#a575c061519e7820e1850ad380c617d95',1,'RF24']]],
+  ['flush_5ftx',['flush_tx',['../classRF24.html#adb7915b1d2661a82137573344f659e81',1,'RF24']]],
   ['ftpserver',['FTPServer',['../classFTPServer.html',1,'']]],
   ['ftpserverconnection',['FTPServerConnection',['../classFTPServerConnection.html',1,'']]],
   ['functioncaller',['FunctionCaller',['../classFunctionCaller.html',1,'FunctionCaller&lt; MethodDeclaration, ReturnType, ParamsList &gt;'],['../classFunctionCaller.html#a57489bd2e7cd5a17d454c5d3ab98cecc',1,'FunctionCaller::FunctionCaller()']]]

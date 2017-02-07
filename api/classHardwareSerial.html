@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -106,7 +107,6 @@ $(document).ready(function(){initNavTree('classHardwareSerial.html','');});
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classHardwareSerial-members.html">List of all members</a>  </div>
@@ -138,6 +138,33 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad10f3f07a59e390851b4ed47b8991d39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#ad10f3f07a59e390851b4ed47b8991d39">begin</a> (const uint32_t baud=9600)</td></tr>
 <tr class="memdesc:ad10f3f07a59e390851b4ed47b8991d39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise the serial port.  <a href="#ad10f3f07a59e390851b4ed47b8991d39">More...</a><br/></td></tr>
 <tr class="separator:ad10f3f07a59e390851b4ed47b8991d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb54a8e3d51aff875b12c1c7b29da619"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#afb54a8e3d51aff875b12c1c7b29da619">begin</a> (const uint32_t baud, SerialConfig config)</td></tr>
+<tr class="memdesc:afb54a8e3d51aff875b12c1c7b29da619"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise and set its configuration.  <a href="#afb54a8e3d51aff875b12c1c7b29da619">More...</a><br/></td></tr>
+<tr class="separator:afb54a8e3d51aff875b12c1c7b29da619"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dcd190fcf2623fc712a1b274c02e039"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a4dcd190fcf2623fc712a1b274c02e039">begin</a> (const uint32_t baud, SerialConfig config, SerialMode mode)</td></tr>
+<tr class="memdesc:a4dcd190fcf2623fc712a1b274c02e039"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise, set its configuration and mode.  <a href="#a4dcd190fcf2623fc712a1b274c02e039">More...</a><br/></td></tr>
+<tr class="separator:a4dcd190fcf2623fc712a1b274c02e039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a415c014ccecc3800716526a1767bbcac"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a415c014ccecc3800716526a1767bbcac"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> (const uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin)</td></tr>
+<tr class="separator:a415c014ccecc3800716526a1767bbcac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f86c41f580e04bdf30ea00e9014eacd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f86c41f580e04bdf30ea00e9014eacd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> ()</td></tr>
+<tr class="separator:a0f86c41f580e04bdf30ea00e9014eacd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ef13719e8ea19c6a3eb163803b08b84"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4ef13719e8ea19c6a3eb163803b08b84"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>setRxBufferSize</b> (size_t size)</td></tr>
+<tr class="separator:a4ef13719e8ea19c6a3eb163803b08b84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa22dd228add6fd97290d33a494741d6d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa22dd228add6fd97290d33a494741d6d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>swap</b> ()</td></tr>
+<tr class="separator:aa22dd228add6fd97290d33a494741d6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a882af872c2285039539c3cf248977a63"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a882af872c2285039539c3cf248977a63"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>swap</b> (uint8_t tx_pin)</td></tr>
+<tr class="separator:a882af872c2285039539c3cf248977a63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dfbef19b29c6795df1af9c8865dac08"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6dfbef19b29c6795df1af9c8865dac08"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setTx</b> (uint8_t tx_pin)</td></tr>
+<tr class="separator:a6dfbef19b29c6795df1af9c8865dac08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affd65318986f749f7650d0825fff05fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="affd65318986f749f7650d0825fff05fe"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>pins</b> (uint8_t tx, uint8_t rx)</td></tr>
+<tr class="separator:affd65318986f749f7650d0825fff05fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a609a8c9b978ce60334e93afc8625a91e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a609a8c9b978ce60334e93afc8625a91e">available</a> ()</td></tr>
 <tr class="memdesc:a609a8c9b978ce60334e93afc8625a91e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get quantity characters available from serial input.  <a href="#a609a8c9b978ce60334e93afc8625a91e">More...</a><br/></td></tr>
 <tr class="separator:a609a8c9b978ce60334e93afc8625a91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,17 +184,29 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a0115a99310d2c24205fdc13d692ad4be"><td class="mdescLeft">&#160;</td><td class="mdescRight">write a character to serial port  <a href="#a0115a99310d2c24205fdc13d692ad4be">More...</a><br/></td></tr>
 <tr class="separator:a0115a99310d2c24205fdc13d692ad4be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1365b152178ff99287c1e700b593a0e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a1365b152178ff99287c1e700b593a0e0">systemDebugOutput</a> (bool enabled)</td></tr>
-<tr class="memdesc:a1365b152178ff99287c1e700b593a0e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure serial port for system debug output.  <a href="#a1365b152178ff99287c1e700b593a0e0">More...</a><br/></td></tr>
+<tr class="memdesc:a1365b152178ff99287c1e700b593a0e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure serial port for system debug output and redirect output from debugf.  <a href="#a1365b152178ff99287c1e700b593a0e0">More...</a><br/></td></tr>
 <tr class="separator:a1365b152178ff99287c1e700b593a0e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e937f8f8412517c0dd61fe7ec453470"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a3e937f8f8412517c0dd61fe7ec453470">commandProcessing</a> (bool reqEnable)</td></tr>
 <tr class="memdesc:a3e937f8f8412517c0dd61fe7ec453470"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure serial port for command processing.  <a href="#a3e937f8f8412517c0dd61fe7ec453470">More...</a><br/></td></tr>
 <tr class="separator:a3e937f8f8412517c0dd61fe7ec453470"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77f2836a593292e523675b7cc873b6a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a77f2836a593292e523675b7cc873b6a1">setCallback</a> (<a class="el" href="group__serial.html#ga6893ae94b30659b565a1c1db2459f590">StreamDataReceivedDelegate</a> reqCallback, bool useSerialRxBuffer=true)</td></tr>
-<tr class="memdesc:a77f2836a593292e523675b7cc873b6a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set handler for received data.  <a href="#a77f2836a593292e523675b7cc873b6a1">More...</a><br/></td></tr>
-<tr class="separator:a77f2836a593292e523675b7cc873b6a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d882c9ca24a9e64b2d8d4e0a2189c29"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a4d882c9ca24a9e64b2d8d4e0a2189c29">setCallback</a> (<a class="el" href="group__serial.html#ga6893ae94b30659b565a1c1db2459f590">StreamDataReceivedDelegate</a> reqCallback)</td></tr>
+<tr class="memdesc:a4d882c9ca24a9e64b2d8d4e0a2189c29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set handler for received data.  <a href="#a4d882c9ca24a9e64b2d8d4e0a2189c29">More...</a><br/></td></tr>
+<tr class="separator:a4d882c9ca24a9e64b2d8d4e0a2189c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d168413a4cf18ed3056e54f32a79842"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a8d168413a4cf18ed3056e54f32a79842">resetCallback</a> ()</td></tr>
 <tr class="memdesc:a8d168413a4cf18ed3056e54f32a79842"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove handler for received data.  <a href="#a8d168413a4cf18ed3056e54f32a79842">More...</a><br/></td></tr>
 <tr class="separator:a8d168413a4cf18ed3056e54f32a79842"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82d71ffebdc2127c1ff44cd00d803827"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a82d71ffebdc2127c1ff44cd00d803827">isTxEnabled</a> (void)</td></tr>
+<tr class="memdesc:a82d71ffebdc2127c1ff44cd00d803827"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the current UART can transmit(print) information.  <a href="#a82d71ffebdc2127c1ff44cd00d803827">More...</a><br/></td></tr>
+<tr class="separator:a82d71ffebdc2127c1ff44cd00d803827"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ba1e16b50845801487b069e243f8c4d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a8ba1e16b50845801487b069e243f8c4d">isRxEnabled</a> (void)</td></tr>
+<tr class="memdesc:a8ba1e16b50845801487b069e243f8c4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the current UART can receive information.  <a href="#a8ba1e16b50845801487b069e243f8c4d">More...</a><br/></td></tr>
+<tr class="separator:a8ba1e16b50845801487b069e243f8c4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a119ffb3b7cc1e063fbc127b1afe493b6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a119ffb3b7cc1e063fbc127b1afe493b6">baudRate</a> (void)</td></tr>
+<tr class="memdesc:a119ffb3b7cc1e063fbc127b1afe493b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current baud rate.  <a href="#a119ffb3b7cc1e063fbc127b1afe493b6">More...</a><br/></td></tr>
+<tr class="separator:a119ffb3b7cc1e063fbc127b1afe493b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28e743f97000478452f3027a0a215579"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a28e743f97000478452f3027a0a215579">operator bool</a> () const </td></tr>
+<tr class="memdesc:a28e743f97000478452f3027a0a215579"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator that returns true if the uart structure is set.  <a href="#a28e743f97000478452f3027a0a215579">More...</a><br/></td></tr>
+<tr class="separator:a28e743f97000478452f3027a0a215579"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a851dd6dc74d52389de04f99648478db5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a851dd6dc74d52389de04f99648478db5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeout</b> (unsigned long timeout)</td></tr>
 <tr class="separator:a851dd6dc74d52389de04f99648478db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -283,15 +322,6 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>println</b> (unsign
 <tr class="memdesc:a67aa459464b181ee200e9173e53b11ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a formatted c-string to output stream.  <a href="#a67aa459464b181ee200e9173e53b11ff">More...</a><br/></td></tr>
 <tr class="separator:a67aa459464b181ee200e9173e53b11ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ae63165a956e558ad1523079805062b28"><td class="memItemLeft" align="right" valign="top">static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#ae63165a956e558ad1523079805062b28">uart0_rx_intr_handler</a> (void *para)</td></tr>
-<tr class="memdesc:ae63165a956e558ad1523079805062b28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interrupt handler for UART0 receive events.  <a href="#ae63165a956e558ad1523079805062b28">More...</a><br/></td></tr>
-<tr class="separator:ae63165a956e558ad1523079805062b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a278bad80408fd17ead6c13dd8dec6877"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareSerial.html#a278bad80408fd17ead6c13dd8dec6877">delegateTask</a> (os_event_t *inputEvent)</td></tr>
-<tr class="memdesc:a278bad80408fd17ead6c13dd8dec6877"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trigger task for input event.  <a href="#a278bad80408fd17ead6c13dd8dec6877">More...</a><br/></td></tr>
-<tr class="separator:a278bad80408fd17ead6c13dd8dec6877"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a416a0ada5ed3c9d27f1e72c7d73f0aa1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a416a0ada5ed3c9d27f1e72c7d73f0aa1"></a>
@@ -384,9 +414,36 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 
 </div>
 </div>
+<a class="anchor" id="a119ffb3b7cc1e063fbc127b1afe493b6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int HardwareSerial::baudRate </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the current baud rate. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">int</td><td>baud rate </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ad10f3f07a59e390851b4ed47b8991d39"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void HardwareSerial::begin </td>
@@ -396,12 +453,108 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Initialise the serial port. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">baud</td><td>BAUD rate of the serial port (Default: 9600) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="afb54a8e3d51aff875b12c1c7b29da619"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HardwareSerial::begin </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>baud</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SerialConfig&#160;</td>
+          <td class="paramname"><em>config</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initialise and set its configuration. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">SerialConfig</td><td>can be 5, 6, 7, 8 data bits, odd (O), even (E), and no (N) parity, and 1 or 2 stop bits. To set the desired mode, call Serial.begin(baudrate, SERIAL_8N1), Serial.begin(baudrate, SERIAL_6E2), etc. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a4dcd190fcf2623fc712a1b274c02e039"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HardwareSerial::begin </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>baud</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SerialConfig&#160;</td>
+          <td class="paramname"><em>config</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SerialMode&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initialise, set its configuration and mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">SerialConfig</td><td>can be 5, 6, 7, 8 data bits, odd (O), even (E), and no (N) parity, and 1 or 2 stop bits. To set the desired mode, call Serial.begin(baudrate, SERIAL_8N1), Serial.begin(baudrate, SERIAL_6E2), etc. </td></tr>
+    <tr><td class="paramname">SerialMode</td><td>specifies if the UART supports receiving (RX), transmitting (TX) or both (FULL) operations </td></tr>
   </table>
   </dd>
 </dl>
@@ -459,39 +612,6 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 
 </div>
 </div>
-<a class="anchor" id="a278bad80408fd17ead6c13dd8dec6877"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static void HardwareSerial::delegateTask </td>
-          <td>(</td>
-          <td class="paramtype">os_event_t *&#160;</td>
-          <td class="paramname"><em>inputEvent</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Trigger task for input event. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">inputEvent</td><td>The event to use for trigger </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000014">Todo:</a></b></dt><dd>Should HardwareSerial::delgateTask be private? </dd></dl>
-
-</div>
-</div>
 <a class="anchor" id="af12cc7f03315df841905003d728d9b87"></a>
 <div class="memitem">
 <div class="memproto">
@@ -515,8 +635,6 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 
 <p>Clear the serial port receive buffer. </p>
 <dl class="section note"><dt>Note</dt><dd>All received data is removed from the serial port buffer </dd></dl>
-<dl class="section warning"><dt>Warning</dt><dd>This function is not implemented!!! </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000012">Todo:</a></b></dt><dd>Implement Serial::flush() </dd></dl>
 
 <p>Implements <a class="el" href="classStream.html">Stream</a>.</p>
 
@@ -550,6 +668,71 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a8ba1e16b50845801487b069e243f8c4d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool HardwareSerial::isRxEnabled </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if the current UART can receive information. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>true if receiving is allowed </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a82d71ffebdc2127c1ff44cd00d803827"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool HardwareSerial::isTxEnabled </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if the current UART can transmit(print) information. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>true if transmitting is allowed </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a28e743f97000478452f3027a0a215579"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">HardwareSerial::operator bool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Operator that returns true if the uart structure is set. </p>
 
 </div>
 </div>
@@ -1525,26 +1708,16 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 
 </div>
 </div>
-<a class="anchor" id="a77f2836a593292e523675b7cc873b6a1"></a>
+<a class="anchor" id="a4d882c9ca24a9e64b2d8d4e0a2189c29"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void HardwareSerial::setCallback </td>
+          <td class="memname">bool HardwareSerial::setCallback </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group__serial.html#ga6893ae94b30659b565a1c1db2459f590">StreamDataReceivedDelegate</a>&#160;</td>
-          <td class="paramname"><em>reqCallback</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>reqCallback</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>useSerialRxBuffer</em> = <code>true</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1553,7 +1726,12 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">reqCallback</td><td>Function to handle received data </td></tr>
-    <tr><td class="paramname">useSerialRxBuffer</td><td>True to use the built-in serial receive buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>Returns true if the callback was set correctly </td></tr>
   </table>
   </dd>
 </dl>
@@ -1574,7 +1752,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
       </table>
 </div><div class="memdoc">
 
-<p>Configure serial port for system debug output. </p>
+<p>Configure serial port for system debug output and redirect output from debugf. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">enabled</td><td>True to enable this port for system debug output </td></tr>
@@ -1582,33 +1760,6 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>If enabled, port will issue system debug messages </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="ae63165a956e558ad1523079805062b28"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static void IRAM_ATTR HardwareSerial::uart0_rx_intr_handler </td>
-          <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>para</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Interrupt handler for UART0 receive events. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000013">Todo:</a></b></dt><dd>Should <a class="el" href="classHardwareSerial.html#ae63165a956e558ad1523079805062b28" title="Interrupt handler for UART0 receive events. ">HardwareSerial::uart0_rx_intr_handler</a> be private? </dd></dl>
 
 </div>
 </div>

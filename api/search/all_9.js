@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['i2cdev',['I2Cdev',['../classI2Cdev.html',1,'']]],
+  ['i2cio',['I2CIO',['../classI2CIO.html',1,'I2CIO'],['../classI2CIO.html#a32eb7832075ad6011d67874405a0d0a6',1,'I2CIO::I2CIO()']]],
   ['i2cmasterbase',['I2cMasterBase',['../classI2cMasterBase.html',1,'']]],
   ['id',['id',['../classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece',1,'ChannelPWM']]],
   ['idatasourcestream',['IDataSourceStream',['../classIDataSourceStream.html',1,'']]],
@@ -16,15 +18,23 @@ var searchData=
   ['interrupts',['interrupts',['../group__interrupts.html#gab3a4471e1b3085323ec2067aaaccb52c',1,'interrupts():&#160;Interrupts.h'],['../group__interrupts.html',1,'(Global Namespace)']]],
   ['invoke',['invoke',['../classIDelegateCaller.html#aeff22075798c3f85fed2d72b62964178',1,'IDelegateCaller::invoke()'],['../classMethodCaller_3_01ReturnType_07ClassType_1_1_5_08_07ParamsList_8_8_8_08_4.html#afb12bfdaa1c645537c1d09a6c67e1658',1,'MethodCaller&lt; ReturnType(ClassType::*)(ParamsList...)&gt;::invoke()'],['../classFunctionCaller.html#a129be846b2a8a64fb7816a0f2cf8eb94',1,'FunctionCaller::invoke()']]],
   ['ipaddress',['IPAddress',['../classIPAddress.html',1,'']]],
+  ['irparams_5ft',['irparams_t',['../structirparams__t.html',1,'']]],
+  ['irrecv',['IRrecv',['../classIRrecv.html',1,'']]],
+  ['irsend',['IRsend',['../classIRsend.html',1,'']]],
+  ['isackpayloadavailable',['isAckPayloadAvailable',['../classRF24.html#a30c2736fd0df9c8128cef408c8b88e92',1,'RF24']]],
   ['isconnected',['isConnected',['../group__wifi__sta.html#ga9c0028f4b36957c6964adbfc95a4d5e3',1,'StationClass']]],
   ['isconnectionfailed',['isConnectionFailed',['../group__wifi__sta.html#ga68a06f1464ee0c3b7365e6914d269cca',1,'StationClass']]],
   ['isenabled',['isEnabled',['../group__wifi__ap.html#ga305464a28372cfd2bfea6993b19ceb7f',1,'AccessPointClass::isEnabled()'],['../group__wifi__sta.html#ga254b4e9bbd12fa349a0dc872f9129b87',1,'StationClass::isEnabled()']]],
   ['isenableddhcp',['isEnabledDHCP',['../group__wifi__sta.html#gaffe9ad2f57b898551ede57c571c164df',1,'StationClass']]],
-  ['isfinished',['isFinished',['../classIDataSourceStream.html#a143958f311cc98fbfaaec1d4d5cdfe47',1,'IDataSourceStream::isFinished()'],['../classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3',1,'MemoryDataStream::isFinished()'],['../classFileStream.html#af80071bb96db8a7558d1856305186baa',1,'FileStream::isFinished()']]],
+  ['isfinished',['isFinished',['../classIDataSourceStream.html#a143958f311cc98fbfaaec1d4d5cdfe47',1,'IDataSourceStream::isFinished()'],['../classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3',1,'MemoryDataStream::isFinished()'],['../classFileStream.html#af80071bb96db8a7558d1856305186baa',1,'FileStream::isFinished()'],['../classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a',1,'ArduCAMStream::isFinished()']]],
   ['isinputpin',['isInputPin',['../group__gpio.html#ga272ce908b3792d838ecd00054f557b3d',1,'Digital.h']]],
   ['isnull',['isNull',['../classDateTime.html#a942983c6d456157328d2efa10e06b9fb',1,'DateTime']]],
   ['isopen',['isOpen',['../group__wifi__sta.html#ga0b7cfc6543a1057dc87bd83932dd6785',1,'BssInfo']]],
+  ['ispvariant',['isPVariant',['../classRF24.html#a62846750b82682beb7593719eb60ed60',1,'RF24']]],
   ['isready',['isReady',['../group__system.html#ga79a7cb0d48d4f5ae35722cfff45aa454',1,'SystemClass']]],
+  ['isrxenabled',['isRxEnabled',['../classHardwareSerial.html#a8ba1e16b50845801487b069e243f8c4d',1,'HardwareSerial']]],
   ['isstarted',['isStarted',['../classHardware__Timer.html#a1ac800464fed8fa5db56b0dc7e9a8df5',1,'Hardware_Timer::isStarted()'],['../group__timer.html#ga2c03be883cf950d14e058b4205f1526e',1,'Timer::isStarted()']]],
+  ['istxenabled',['isTxEnabled',['../classHardwareSerial.html#a82d71ffebdc2127c1ff44cd00d803827',1,'HardwareSerial']]],
+  ['isvalid',['isValid',['../classRF24.html#a35e5f1533b7753806c42b76e782d917e',1,'RF24']]],
   ['isystemreadyhandler',['ISystemReadyHandler',['../classISystemReadyHandler.html',1,'']]]
 ];

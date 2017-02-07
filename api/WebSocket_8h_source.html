@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: /media/slavey/416431e8-fd46-4982-896d-5025a72dd361/slavey/dev/esp8266.dev.box/dev/Sming/Sming/SmingCore/Network/WebSocket.h Source File</title>
+<title>Sming Framework API: /tmp/Sming/Sming/SmingCore/Network/WebSocket.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -124,39 +125,63 @@ $(document).ready(function(){initNavTree('WebSocket_8h_source.html','');});
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;{</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classHttpServer.html">HttpServer</a>;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="classWebSocket.html">WebSocket</a>(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>* conn);</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    ~<a class="code" href="classWebSocket.html">WebSocket</a>();</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> send(<span class="keyword">const</span> <span class="keywordtype">char</span>* message, <span class="keywordtype">int</span> length, wsFrameType type = WS_TEXT_FRAME);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">void</span> sendString(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; message);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">void</span> sendBinary(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">int</span> size);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">void</span> enableCommand();</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordtype">void</span> close();</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">void</span> setTimeOut(uint16_t waitTimeOut) { <span class="keywordflow">if</span>(connection) connection-&gt;setTimeOut(waitTimeOut); };</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">bool</span> initialize(<a class="code" href="classHttpRequest.html">HttpRequest</a> &amp;request, <a class="code" href="classHttpResponse.html">HttpResponse</a> &amp;response);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">bool</span> is(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>* conn) { <span class="keywordflow">return</span> connection == conn; };</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>* connection;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <a class="code" href="classCommandExecutor.html">CommandExecutor</a>* commandExecutor = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;};</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SMINGCORE_NETWORK_WEBSOCKET_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="classWebSocket.html#a8f4193234c849574562676ea16fb32a2">WebSocket</a>(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>* conn);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classWebSocket.html#a45308ddf8951225b14e4d86bfe7fbce2">~WebSocket</a>();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classWebSocket.html#a607679069435fdd9fdf5f4b6353930b5">send</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* message, <span class="keywordtype">int</span> length, wsFrameType type = WS_TEXT_FRAME);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classWebSocket.html#af62cbc5d5164624ddf1f37895afaf319">sendString</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; message);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classWebSocket.html#aa84af9a1b68a21e0bf8acc0a39ebb59a">sendBinary</a>(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">int</span> size);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classWebSocket.html#a68e8344877d44496311b9523ed662561">enableCommand</a>();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classWebSocket.html#abef10acf60b4d5b87399e6f9c5ad808d">close</a>();</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classWebSocket.html#a0258bace29d6e60bff416fb63310f1a1">   63</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classWebSocket.html#a0258bace29d6e60bff416fb63310f1a1">setTimeOut</a>(uint16_t waitTimeOut) { <span class="keywordflow">if</span>(connection) connection-&gt;setTimeOut(waitTimeOut); };</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classWebSocket.html#aec9fc3598ac8fd8021a6fef6ad0162c7">   69</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classWebSocket.html#aec9fc3598ac8fd8021a6fef6ad0162c7">operator==</a>(<span class="keyword">const</span> <a class="code" href="classWebSocket.html">WebSocket</a> &amp;other)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> this-&gt;connection == other.connection;};</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classWebSocket.html#a8e76861a3d01c26f5bad742428b4cdbe">setUserData</a>(<span class="keywordtype">void</span>* userData);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">void</span> *<a class="code" href="classWebSocket.html#ae20fbfd5924faa8b82e04839b728a6b4">getUserData</a>();</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">bool</span> initialize(<a class="code" href="classHttpRequest.html">HttpRequest</a> &amp;request, <a class="code" href="classHttpResponse.html">HttpResponse</a> &amp;response);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">bool</span> is(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>* conn) { <span class="keywordflow">return</span> connection == conn; };</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>* connection;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <a class="code" href="classCommandExecutor.html">CommandExecutor</a>* commandExecutor = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">void</span>* userData = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;};</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SMINGCORE_NETWORK_WEBSOCKET_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classWebSocket_html_ae20fbfd5924faa8b82e04839b728a6b4"><div class="ttname"><a href="classWebSocket.html#ae20fbfd5924faa8b82e04839b728a6b4">WebSocket::getUserData</a></div><div class="ttdeci">void * getUserData()</div><div class="ttdoc">Get user data pointer for this socket(connection) </div></div>
+<div class="ttc" id="classWebSocket_html_aec9fc3598ac8fd8021a6fef6ad0162c7"><div class="ttname"><a href="classWebSocket.html#aec9fc3598ac8fd8021a6fef6ad0162c7">WebSocket::operator==</a></div><div class="ttdeci">bool operator==(const WebSocket &amp;other) const </div><div class="ttdoc">Test if two sockets are the same. </div><div class="ttdef"><b>Definition:</b> WebSocket.h:69</div></div>
+<div class="ttc" id="classWebSocket_html_a0258bace29d6e60bff416fb63310f1a1"><div class="ttname"><a href="classWebSocket.html#a0258bace29d6e60bff416fb63310f1a1">WebSocket::setTimeOut</a></div><div class="ttdeci">void setTimeOut(uint16_t waitTimeOut)</div><div class="ttdoc">Set TCP connection timeout. </div><div class="ttdef"><b>Definition:</b> WebSocket.h:63</div></div>
 <div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:31</div></div>
+<div class="ttc" id="classWebSocket_html_aa84af9a1b68a21e0bf8acc0a39ebb59a"><div class="ttname"><a href="classWebSocket.html#aa84af9a1b68a21e0bf8acc0a39ebb59a">WebSocket::sendBinary</a></div><div class="ttdeci">void sendBinary(const uint8_t *data, int size)</div><div class="ttdoc">Send binary data to other peer. </div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classWebSocket_html"><div class="ttname"><a href="classWebSocket.html">WebSocket</a></div><div class="ttdef"><b>Definition:</b> WebSocket.h:21</div></div>
 <div class="ttc" id="classCommandExecutor_html"><div class="ttname"><a href="classCommandExecutor.html">CommandExecutor</a></div><div class="ttdef"><b>Definition:</b> CommandExecutor.h:18</div></div>
+<div class="ttc" id="classWebSocket_html_a8f4193234c849574562676ea16fb32a2"><div class="ttname"><a href="classWebSocket.html#a8f4193234c849574562676ea16fb32a2">WebSocket::WebSocket</a></div><div class="ttdeci">WebSocket(HttpServerConnection *conn)</div><div class="ttdoc">Object class constructor. </div></div>
 <div class="ttc" id="classHttpServer_html"><div class="ttname"><a href="classHttpServer.html">HttpServer</a></div><div class="ttdef"><b>Definition:</b> HttpServer.h:30</div></div>
+<div class="ttc" id="classWebSocket_html_a607679069435fdd9fdf5f4b6353930b5"><div class="ttname"><a href="classWebSocket.html#a607679069435fdd9fdf5f4b6353930b5">WebSocket::send</a></div><div class="ttdeci">virtual void send(const char *message, int length, wsFrameType type=WS_TEXT_FRAME)</div><div class="ttdoc">Send data to other peer. </div></div>
+<div class="ttc" id="classWebSocket_html_a68e8344877d44496311b9523ed662561"><div class="ttname"><a href="classWebSocket.html#a68e8344877d44496311b9523ed662561">WebSocket::enableCommand</a></div><div class="ttdeci">void enableCommand()</div><div class="ttdoc">Enable command processing. </div></div>
+<div class="ttc" id="classWebSocket_html_a8e76861a3d01c26f5bad742428b4cdbe"><div class="ttname"><a href="classWebSocket.html#a8e76861a3d01c26f5bad742428b4cdbe">WebSocket::setUserData</a></div><div class="ttdeci">void setUserData(void *userData)</div><div class="ttdoc">Store user data pointer for this socket(connection) </div></div>
 <div class="ttc" id="classHttpRequest_html"><div class="ttname"><a href="classHttpRequest.html">HttpRequest</a></div><div class="ttdef"><b>Definition:</b> HttpRequest.h:27</div></div>
+<div class="ttc" id="classWebSocket_html_af62cbc5d5164624ddf1f37895afaf319"><div class="ttname"><a href="classWebSocket.html#af62cbc5d5164624ddf1f37895afaf319">WebSocket::sendString</a></div><div class="ttdeci">void sendString(const String &amp;message)</div><div class="ttdoc">Send a string to other peer. </div></div>
+<div class="ttc" id="classWebSocket_html_a45308ddf8951225b14e4d86bfe7fbce2"><div class="ttname"><a href="classWebSocket.html#a45308ddf8951225b14e4d86bfe7fbce2">WebSocket::~WebSocket</a></div><div class="ttdeci">virtual ~WebSocket()</div><div class="ttdoc">Virtual object class destructor. </div></div>
+<div class="ttc" id="classWebSocket_html_abef10acf60b4d5b87399e6f9c5ad808d"><div class="ttname"><a href="classWebSocket.html#abef10acf60b4d5b87399e6f9c5ad808d">WebSocket::close</a></div><div class="ttdeci">void close()</div><div class="ttdoc">Close webSocket connection. </div></div>
 <div class="ttc" id="classHttpResponse_html"><div class="ttname"><a href="classHttpResponse.html">HttpResponse</a></div><div class="ttdef"><b>Definition:</b> HttpResponse.h:20</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_9829a6b8d710076232db93a9bf221020.html">Sming</a></li><li class="navelem"><a class="el" href="dir_1aa07eda85630512a6b258c79dac9df9.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_ee120e882b2faebf0cb2f2002055a51d.html">Network</a></li><li class="navelem"><b>WebSocket.h</b></li>
+    <li class="navelem"><a class="el" href="dir_bdf1102e2e4e80305e535780e0e3f4e0.html">Sming</a></li><li class="navelem"><a class="el" href="dir_ca592db811da46f51d8d2a72799a377d.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_5a0083fb00db46c3b57d37d85e12fed2.html">Network</a></li><li class="navelem"><b>WebSocket.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

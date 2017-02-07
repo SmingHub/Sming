@@ -12,6 +12,7 @@ var modules =
     [ "Interrupt functions", "group__interrupts.html", "group__interrupts" ],
     [ "Print stream functions", "group__print.html", "group__print" ],
     [ "Pulse width modulation", "group__pwm.html", "group__pwm" ],
+    [ "RC Servo functions", "group__Servo.html", "group__Servo" ],
     [ "SPI Hardware support", "group__hw__spi.html", "group__hw__spi" ],
     [ "SPI support classes", "group__base__spi.html", "group__base__spi" ],
     [ "Sming constant values", "group__constants.html", "group__constants" ],

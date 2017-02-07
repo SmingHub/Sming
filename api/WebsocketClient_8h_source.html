@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: /media/slavey/416431e8-fd46-4982-896d-5025a72dd361/slavey/dev/esp8266.dev.box/dev/Sming/Sming/SmingCore/Network/WebsocketClient.h Source File</title>
+<title>Sming Framework API: /tmp/Sming/Sming/SmingCore/Network/WebsocketClient.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -152,16 +153,16 @@ $(document).ready(function(){initNavTree('WebsocketClient_8h_source.html','');})
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="group__wsclient.html#gaac4568000fcc6ab38c274a37a707c344">sendMessage</a>(<a class="code" href="classString.html">String</a> str);</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="group__wsclient.html#ga25c8e48c876c8a1739c0faf47f576749">sendBinary</a>(uint8_t* msg, uint16_t length);</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <a class="code" href="group__wsclient.html#gaa831e9ddbce43804605df7cdfbd1719e">wsMode</a> <a class="code" href="group__wsclient.html#ga0d6322cd88c590aea6bdb26586f25705">getWSMode</a>();</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keyword">using</span> TcpClient::addSslOptions;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keyword">using</span> <a class="code" href="classTcpConnection.html#a08eb2f92961d64824443918136038f73">TcpClient::setSslFingerprint</a>;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keyword">using</span> <a class="code" href="classTcpConnection.html#aeddbef726b482d645cbcea37fbfdeb57">TcpClient::setSslClientKeyCert</a>;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keyword">using</span> <a class="code" href="classTcpConnection.html#a4390944a2ec429e1072e2822f8eb8eec">TcpClient::freeSslClientKeyCert</a>;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="preprocessor"></span>    <span class="keyword">using</span> TcpClient::getSsl;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor"></span>    <span class="keyword">using</span> TcpClient::addSslOptions;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keyword">using</span> TcpClient::setSslFingerprint;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keyword">using</span> TcpClient::setSslClientKeyCert;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keyword">using</span> TcpClient::freeSslClientKeyCert;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keyword">using</span> TcpClient::getSsl;</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onFinished(TcpClientState finishState);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__wsclient.html#ga4c30b13ab6bb4f58100e248ea5a393dc">onFinished</a>(TcpClientState finishState);</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onError(err_t err);</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keyword">virtual</span> err_t onReceive(pbuf *buf);</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordtype">bool</span> _verifyKey(<span class="keywordtype">char</span> *buf, <span class="keywordtype">int</span> size);</div>
@@ -180,6 +181,7 @@ $(document).ready(function(){initNavTree('WebsocketClient_8h_source.html','');})
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">/* WEBSOCKETCLIENT_H */</span><span class="preprocessor"></span></div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="preprocessor"></span></div>
 <div class="ttc" id="group__wsclient_html_ga89f148f1d90cff699853473ce0e323ad"><div class="ttname"><a href="group__wsclient.html#ga89f148f1d90cff699853473ce0e323ad">WebsocketClient::sendPing</a></div><div class="ttdeci">void sendPing()</div><div class="ttdoc">Connects websocket client to server. </div></div>
+<div class="ttc" id="group__wsclient_html_ga4c30b13ab6bb4f58100e248ea5a393dc"><div class="ttname"><a href="group__wsclient.html#ga4c30b13ab6bb4f58100e248ea5a393dc">WebsocketClient::onFinished</a></div><div class="ttdeci">virtual void onFinished(TcpClientState finishState)</div><div class="ttdoc">Get websocket client mode. </div></div>
 <div class="ttc" id="group__wsclient_html_ga8c5725d9c4a35a642b4f8c778a77cfe9"><div class="ttname"><a href="group__wsclient.html#ga8c5725d9c4a35a642b4f8c778a77cfe9">WebsocketClient::setWebSocketConnectedHandler</a></div><div class="ttdeci">void setWebSocketConnectedHandler(WebSocketClientConnectedDelegate handler)</div><div class="ttdoc">Set handler for websocket disconnection event. </div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="group__wsclient_html_ga11a66333f7a1052421efffe191de3bc5"><div class="ttname"><a href="group__wsclient.html#ga11a66333f7a1052421efffe191de3bc5">WebsocketClient::disconnect</a></div><div class="ttdeci">void disconnect()</div><div class="ttdoc">Send websocket ping to server. </div></div>
@@ -187,17 +189,14 @@ $(document).ready(function(){initNavTree('WebsocketClient_8h_source.html','');})
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(WebsocketClient &amp;wsClient, const String message)&gt;</a></div></div>
 <div class="ttc" id="group__wsframe_html_gadb296761d95f8b6fc4af7dc5f2c9fe01"><div class="ttname"><a href="group__wsframe.html#gadb296761d95f8b6fc4af7dc5f2c9fe01">WSFrameType</a></div><div class="ttdeci">WSFrameType</div><div class="ttdoc">Websocket frame types enum. </div><div class="ttdef"><b>Definition:</b> WebsocketFrame.h:21</div></div>
 <div class="ttc" id="group__wsclient_html_ga6c07c4770698290c0dde0fb0b108c1d0"><div class="ttname"><a href="group__wsclient.html#ga6c07c4770698290c0dde0fb0b108c1d0">WebSocketClientDisconnectDelegate</a></div><div class="ttdeci">Delegate&lt; void(WebsocketClient &amp;wsClient, bool successful)&gt; WebSocketClientDisconnectDelegate</div><div class="ttdoc">Delegate callback type for received binary message. </div><div class="ttdef"><b>Definition:</b> WebsocketClient.h:44</div></div>
-<div class="ttc" id="classTcpConnection_html_aeddbef726b482d645cbcea37fbfdeb57"><div class="ttname"><a href="classTcpConnection.html#aeddbef726b482d645cbcea37fbfdeb57">TcpConnection::setSslClientKeyCert</a></div><div class="ttdeci">boolean setSslClientKeyCert(const uint8_t *key, int keyLength, const uint8_t *certificate, int certificateLength, const char *keyPassword=NULL, boolean freeAfterHandshake=false)</div><div class="ttdoc">Sets client private key, certificate and password from memory. </div></div>
 <div class="ttc" id="group__wsclient_html_ga0d6322cd88c590aea6bdb26586f25705"><div class="ttname"><a href="group__wsclient.html#ga0d6322cd88c590aea6bdb26586f25705">WebsocketClient::getWSMode</a></div><div class="ttdeci">wsMode getWSMode()</div><div class="ttdoc">Send binary message to websocket server. </div></div>
 <div class="ttc" id="group__wsclient_html_gac2018e9238123b4452ce83cd439040f5"><div class="ttname"><a href="group__wsclient.html#gac2018e9238123b4452ce83cd439040f5">WebSocketClientConnectedDelegate</a></div><div class="ttdeci">Delegate&lt; void(WebsocketClient &amp;wsClient, wsMode Mode)&gt; WebSocketClientConnectedDelegate</div><div class="ttdoc">Delegate callback type for disconnection of websocket client. </div><div class="ttdef"><b>Definition:</b> WebsocketClient.h:47</div></div>
 <div class="ttc" id="group__wsclient_html_gaa831e9ddbce43804605df7cdfbd1719e"><div class="ttname"><a href="group__wsclient.html#gaa831e9ddbce43804605df7cdfbd1719e">wsMode</a></div><div class="ttdeci">wsMode</div><div class="ttdoc">Websocket client modes enum. </div><div class="ttdef"><b>Definition:</b> WebsocketClient.h:33</div></div>
 <div class="ttc" id="group__wsclient_html_ga6a484ffdb8d40724bf7dc71d62634174"><div class="ttname"><a href="group__wsclient.html#ga6a484ffdb8d40724bf7dc71d62634174">WebsocketClient::setWebSocketBinaryHandler</a></div><div class="ttdeci">void setWebSocketBinaryHandler(WebSocketClientBinaryDelegate handler)</div><div class="ttdoc">Set handler for websocket connection event. </div></div>
 <div class="ttc" id="group__wsclient_html_ga25c8e48c876c8a1739c0faf47f576749"><div class="ttname"><a href="group__wsclient.html#ga25c8e48c876c8a1739c0faf47f576749">WebsocketClient::sendBinary</a></div><div class="ttdeci">void sendBinary(uint8_t *msg, uint16_t length)</div><div class="ttdoc">Send text message to websocket server. </div></div>
 <div class="ttc" id="classURL_html"><div class="ttname"><a href="classURL.html">URL</a></div><div class="ttdef"><b>Definition:</b> URL.h:17</div></div>
-<div class="ttc" id="classTcpConnection_html_a08eb2f92961d64824443918136038f73"><div class="ttname"><a href="classTcpConnection.html#a08eb2f92961d64824443918136038f73">TcpConnection::setSslFingerprint</a></div><div class="ttdeci">boolean setSslFingerprint(const uint8_t *data, int length=20)</div><div class="ttdoc">Sets the SHA1 certificate finger print. The latter will be used after successful handshake to check a...</div></div>
 <div class="ttc" id="group__wsclient_html_gaba34668c16ff24437bd6139672549c8b"><div class="ttname"><a href="group__wsclient.html#gaba34668c16ff24437bd6139672549c8b">WebsocketClient::setWebSocketDisconnectedHandler</a></div><div class="ttdeci">void setWebSocketDisconnectedHandler(WebSocketClientDisconnectDelegate handler)</div><div class="ttdoc">Set handler for websocket text messages. </div></div>
 <div class="ttc" id="group__wsclient_html_gaac4568000fcc6ab38c274a37a707c344"><div class="ttname"><a href="group__wsclient.html#gaac4568000fcc6ab38c274a37a707c344">WebsocketClient::sendMessage</a></div><div class="ttdeci">void sendMessage(char *msg, uint16_t length)</div><div class="ttdoc">Disconnects websocket client from server. </div></div>
-<div class="ttc" id="classTcpConnection_html_a4390944a2ec429e1072e2822f8eb8eec"><div class="ttname"><a href="classTcpConnection.html#a4390944a2ec429e1072e2822f8eb8eec">TcpConnection::freeSslClientKeyCert</a></div><div class="ttdeci">void freeSslClientKeyCert()</div><div class="ttdoc">Frees the memory used for the client key and certificate pair. </div></div>
 <div class="ttc" id="group__wsclient_html_ga2ef70da6882141f44da663a46d21156d"><div class="ttname"><a href="group__wsclient.html#ga2ef70da6882141f44da663a46d21156d">WebsocketClient::sendPong</a></div><div class="ttdeci">void sendPong()</div><div class="ttdoc">Send websocket ping to server. </div></div>
 <div class="ttc" id="group__wsclient_html_gaedbf9cc35ea92799c6a069b263444bdf"><div class="ttname"><a href="group__wsclient.html#gaedbf9cc35ea92799c6a069b263444bdf">WebSocketClientBinaryDelegate</a></div><div class="ttdeci">Delegate&lt; void(WebsocketClient &amp;wsClient, uint8_t *data, size_t size)&gt; WebSocketClientBinaryDelegate</div><div class="ttdoc">Delegate callback type for received text message. </div><div class="ttdef"><b>Definition:</b> WebsocketClient.h:41</div></div>
 <div class="ttc" id="group__wsclient_html_gaa6b4f982bda2e0beadba9ea490c34960"><div class="ttname"><a href="group__wsclient.html#gaa6b4f982bda2e0beadba9ea490c34960">WebsocketClient::connect</a></div><div class="ttdeci">bool connect(String url, uint32_t sslOptions=0)</div><div class="ttdoc">Set handler for websocket binary messages. </div></div>
@@ -207,7 +206,7 @@ $(document).ready(function(){initNavTree('WebsocketClient_8h_source.html','');})
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_9829a6b8d710076232db93a9bf221020.html">Sming</a></li><li class="navelem"><a class="el" href="dir_1aa07eda85630512a6b258c79dac9df9.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_ee120e882b2faebf0cb2f2002055a51d.html">Network</a></li><li class="navelem"><b>WebsocketClient.h</b></li>
+    <li class="navelem"><a class="el" href="dir_bdf1102e2e4e80305e535780e0e3f4e0.html">Sming</a></li><li class="navelem"><a class="el" href="dir_ca592db811da46f51d8d2a72799a377d.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_5a0083fb00db46c3b57d37d85e12fed2.html">Network</a></li><li class="navelem"><b>WebsocketClient.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

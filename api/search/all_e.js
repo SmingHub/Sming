@@ -1,16 +1,17 @@
 var searchData=
 [
-  ['parsehttpdate',['parseHttpDate',['../classDateTime.html#aafc5f31a9aab859d6e12553621ed7568',1,'DateTime']]],
-  ['peek',['peek',['../classHardwareSerial.html#a7acdf929737d21dc2ea9000d478d1fbb',1,'HardwareSerial']]],
-  ['pinmode',['pinMode',['../group__gpio.html#gaa4c100976006333cf7838c65e9dde507',1,'Digital.h']]],
-  ['previousmidnight',['previousMidnight',['../group__datetime.html#gae8a46cb159a8169121a33e39a520b5a8',1,'DateTime.h']]],
-  ['print',['Print',['../classPrint.html',1,'Print'],['../classPrint.html#a1e411d07a8ffec5faf7ce485bac0f029',1,'Print::print(char)'],['../classPrint.html#acfe80773011eb17dfb52c2fba517a093',1,'Print::print(const char[])'],['../classPrint.html#a1061204d85492e07fd48764804ae5d09',1,'Print::print(unsigned long, int base=DEC)'],['../classPrint.html#a24f845a3039950a5df6624db2fb052b0',1,'Print::print(long, int base=DEC)'],['../classPrint.html#a6d837611f19b3fc7ced014517021a57b',1,'Print::print(int, int base=DEC)'],['../classPrint.html#a35f884889abc8313681b51ecb5eb41bc',1,'Print::print(double, int digits=2)'],['../classPrint.html#a6a28a24faffa4f43c12fe0a70c81807c',1,'Print::print(const Printable &amp;p)'],['../classPrint.html#a358ed9ea784d1e1014fbdd994cc480d0',1,'Print::print(const String &amp;s)'],['../group__print.html',1,'(Global Namespace)']]],
-  ['printable',['Printable',['../classPrintable.html',1,'']]],
-  ['printf',['printf',['../classPrint.html#a67aa459464b181ee200e9173e53b11ff',1,'Print']]],
-  ['println',['println',['../classPrint.html#a169b128f9e22f0c15883768f580541a2',1,'Print::println(void)'],['../classPrint.html#ad337ce3f7977411b7d34d47a51e5737e',1,'Print::println(const char[])'],['../classPrint.html#a554896a71162f967b5794401239d7a01',1,'Print::println(char)'],['../classPrint.html#a64e7836aa8fc51bc5eef50c9485af874',1,'Print::println(unsigned char, int base=DEC)'],['../classPrint.html#a541903194f82bf25127db2b57baaa296',1,'Print::println(int, int base=DEC)'],['../classPrint.html#a1cf31254a99635695067ef40cc86aa86',1,'Print::println(long, int base=DEC)'],['../classPrint.html#a36c8d1967fb99dd54224163e6adbd58d',1,'Print::println(double, int digits=2)'],['../classPrint.html#a9d2d42d4f2f45b141fd0ab2e7c6e22d9',1,'Print::println(const Printable &amp;p)'],['../classPrint.html#afd6cc6e2c1163f94c60855ad233899bd',1,'Print::println(const String &amp;s)']]],
-  ['pullup',['pullup',['../group__gpio.html#gadc6b96008df9ca3443a4216e83c70a5c',1,'Digital.h']]],
-  ['pulsein',['pulseIn',['../group__gpio.html#gafa1ef6f243c6cf75dacea30bf7186ac7',1,'Digital.h']]],
-  ['pulse_20width_20modulation',['Pulse width modulation',['../group__pwm.html',1,'']]],
-  ['pwm_5fbad_5fchannel',['PWM_BAD_CHANNEL',['../group__hw__pwm.html#gad067371006c3313c39260f5189911c3d',1,'HardwarePWM.h']]],
-  ['pwm_5fdepth',['PWM_DEPTH',['../group__pwm.html#gabd1740ea7992ec3db609babfd6d1e58e',1,'DriverPWM.h']]]
+  ['off',['off',['../classLCD.html#a191639be183be1476c9bfe6d455d23b2',1,'LCD']]],
+  ['on',['on',['../classLCD.html#a718da3a638deb59bd1c7a5222a52d98a',1,'LCD']]],
+  ['onewire',['OneWire',['../classOneWire.html',1,'']]],
+  ['onfinished',['onFinished',['../group__wsclient.html#ga4c30b13ab6bb4f58100e248ea5a393dc',1,'WebsocketClient']]],
+  ['onready',['onReady',['../group__system.html#ga3bd0122a224dfe3add3793b7d7cf23d5',1,'SystemClass::onReady(SystemReadyDelegate readyHandler)'],['../group__system.html#ga71e2a19d176b06ed76394b771a2cb487',1,'SystemClass::onReady(ISystemReadyHandler *readyHandler)']]],
+  ['onreceive',['onReceive',['../classNtpClient.html#acc2092a5f662df125d7dd6600dad5ec3',1,'NtpClient']]],
+  ['onsystemready',['onSystemReady',['../classAccessPointClass.html#a41e9231ad13b06bd441519dc2f1d54ad',1,'AccessPointClass::onSystemReady()'],['../group__wifi__sta.html#gafd682dd60143ab99e884fa1b94e17472',1,'StationClass::onSystemReady()'],['../classISystemReadyHandler.html#ae52e11b1a352b6d66490ac912bf10be4',1,'ISystemReadyHandler::onSystemReady()'],['../group__wdt.html#ga637bb566d92ae400ae31691da5c6b746',1,'WDTClass::onSystemReady()']]],
+  ['openreadingpipe',['openReadingPipe',['../classRF24.html#aa7e8523f86f9f8f20c274e0c89a5fd45',1,'RF24']]],
+  ['openwritingpipe',['openWritingPipe',['../classRF24.html#a50c8e68ee840e1860a31dbdc83afbd77',1,'RF24']]],
+  ['operator_20bool',['operator bool',['../classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html#af757bbda83d6ff9bf7e4b869888cb962',1,'Delegate&lt; ReturnType(ParamsList...)&gt;::operator bool()'],['../classHardwareSerial.html#a28e743f97000478452f3027a0a215579',1,'HardwareSerial::operator bool()']]],
+  ['operator_20time_5ft',['operator time_t',['../classDateTime.html#a71771ccc110639ab07f7d91a81a62287',1,'DateTime']]],
+  ['operator_28_29',['operator()',['../classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html#a8351bff2e68b1a1518fa24c28cb66c2d',1,'Delegate&lt; ReturnType(ParamsList...)&gt;']]],
+  ['operator_3d',['operator=',['../classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html#ab8ff021178b0df1abdf02e4757c45530',1,'Delegate&lt; ReturnType(ParamsList...)&gt;::operator=(const Delegate &amp;that)'],['../classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html#ac908c5ef8d31cd1589bdb3a94f8b5eff',1,'Delegate&lt; ReturnType(ParamsList...)&gt;::operator=(Delegate &amp;&amp;that)']]],
+  ['operator_3d_3d',['operator==',['../classWebSocket.html#aec9fc3598ac8fd8021a6fef6ad0162c7',1,'WebSocket']]]
 ];

@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -190,8 +191,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient::setW
 <tr class="memitem:ga0d6322cd88c590aea6bdb26586f25705"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__wsclient.html#gaa831e9ddbce43804605df7cdfbd1719e">wsMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga0d6322cd88c590aea6bdb26586f25705">WebsocketClient::getWSMode</a> ()</td></tr>
 <tr class="memdesc:ga0d6322cd88c590aea6bdb26586f25705"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send binary message to websocket server.  <a href="#ga0d6322cd88c590aea6bdb26586f25705">More...</a><br/></td></tr>
 <tr class="separator:ga0d6322cd88c590aea6bdb26586f25705"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4c30b13ab6bb4f58100e248ea5a393dc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4c30b13ab6bb4f58100e248ea5a393dc"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient::onFinished</b> (TcpClientState finishState)</td></tr>
+<tr class="memitem:ga4c30b13ab6bb4f58100e248ea5a393dc"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga4c30b13ab6bb4f58100e248ea5a393dc">WebsocketClient::onFinished</a> (TcpClientState finishState)</td></tr>
+<tr class="memdesc:ga4c30b13ab6bb4f58100e248ea5a393dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get websocket client mode.  <a href="#ga4c30b13ab6bb4f58100e248ea5a393dc">More...</a><br/></td></tr>
 <tr class="separator:ga4c30b13ab6bb4f58100e248ea5a393dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac08f5d2ad95417dd8163f109f6fc5c4f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac08f5d2ad95417dd8163f109f6fc5c4f"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient::onError</b> (err_t err)</td></tr>
@@ -347,6 +348,40 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient::_sen
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="ga4c30b13ab6bb4f58100e248ea5a393dc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void WebsocketClient::onFinished </td>
+          <td>(</td>
+          <td class="paramtype">TcpClientState&#160;</td>
+          <td class="paramname"><em>finishState</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get websocket client mode. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">Returnt</td><td>websocket client mode </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="classTcpClient.html">TcpClient</a>.</p>
 
 </div>
 </div>

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: /media/slavey/416431e8-fd46-4982-896d-5025a72dd361/slavey/dev/esp8266.dev.box/dev/Sming/Sming/SmingCore/Network/HttpClient.h Source File</title>
+<title>Sming Framework API: /tmp/Sming/Sming/SmingCore/Network/HttpClient.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -163,12 +164,12 @@ $(document).ready(function(){initNavTree('HttpClient_8h_source.html','');});
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">void</span> reset(); <span class="comment">// Reset current status, data and etc.</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">using</span> TcpClient::addSslOptions;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keyword">using</span> <a class="code" href="classTcpConnection.html#a08eb2f92961d64824443918136038f73">TcpClient::setSslFingerprint</a>;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">using</span> <a class="code" href="classTcpConnection.html#aeddbef726b482d645cbcea37fbfdeb57">TcpClient::setSslClientKeyCert</a>;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keyword">using</span> <a class="code" href="classTcpConnection.html#a4390944a2ec429e1072e2822f8eb8eec">TcpClient::freeSslClientKeyCert</a>;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor"></span>    <span class="keyword">using</span> TcpClient::getSsl;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor"></span>    <span class="keyword">using</span> TcpClient::addSslOptions;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">using</span> TcpClient::setSslFingerprint;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keyword">using</span> TcpClient::setSslClientKeyCert;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keyword">using</span> TcpClient::freeSslClientKeyCert;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keyword">using</span> TcpClient::getSsl;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">protected</span>:</div>
@@ -201,16 +202,13 @@ $(document).ready(function(){initNavTree('HttpClient_8h_source.html','');});
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:35</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(HttpClient &amp;client, bool successful)&gt;</a></div></div>
-<div class="ttc" id="classTcpConnection_html_aeddbef726b482d645cbcea37fbfdeb57"><div class="ttname"><a href="classTcpConnection.html#aeddbef726b482d645cbcea37fbfdeb57">TcpConnection::setSslClientKeyCert</a></div><div class="ttdeci">boolean setSslClientKeyCert(const uint8_t *key, int keyLength, const uint8_t *certificate, int certificateLength, const char *keyPassword=NULL, boolean freeAfterHandshake=false)</div><div class="ttdoc">Sets client private key, certificate and password from memory. </div></div>
 <div class="ttc" id="classURL_html"><div class="ttname"><a href="classURL.html">URL</a></div><div class="ttdef"><b>Definition:</b> URL.h:17</div></div>
-<div class="ttc" id="classTcpConnection_html_a08eb2f92961d64824443918136038f73"><div class="ttname"><a href="classTcpConnection.html#a08eb2f92961d64824443918136038f73">TcpConnection::setSslFingerprint</a></div><div class="ttdeci">boolean setSslFingerprint(const uint8_t *data, int length=20)</div><div class="ttdoc">Sets the SHA1 certificate finger print. The latter will be used after successful handshake to check a...</div></div>
-<div class="ttc" id="classTcpConnection_html_a4390944a2ec429e1072e2822f8eb8eec"><div class="ttname"><a href="classTcpConnection.html#a4390944a2ec429e1072e2822f8eb8eec">TcpConnection::freeSslClientKeyCert</a></div><div class="ttdeci">void freeSslClientKeyCert()</div><div class="ttdoc">Frees the memory used for the client key and certificate pair. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_9829a6b8d710076232db93a9bf221020.html">Sming</a></li><li class="navelem"><a class="el" href="dir_1aa07eda85630512a6b258c79dac9df9.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_ee120e882b2faebf0cb2f2002055a51d.html">Network</a></li><li class="navelem"><b>HttpClient.h</b></li>
+    <li class="navelem"><a class="el" href="dir_bdf1102e2e4e80305e535780e0e3f4e0.html">Sming</a></li><li class="navelem"><a class="el" href="dir_ca592db811da46f51d8d2a72799a377d.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_5a0083fb00db46c3b57d37d85e12fed2.html">Network</a></li><li class="navelem"><b>HttpClient.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

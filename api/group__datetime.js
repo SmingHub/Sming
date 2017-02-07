@@ -14,6 +14,7 @@ var group__datetime =
       [ "setTime", "classDateTime.html#a76cec1408d44dba7b3b9b350e7e93af4", null ],
       [ "setTime", "classDateTime.html#a9d7e7be864d50b4049a14956706af5af", null ],
       [ "toFullDateTimeString", "classDateTime.html#a21f09ede608e518181983b00fa9ed3e9", null ],
+      [ "toISO8601", "classDateTime.html#a4e9a2532b650cc746cdc784ea5438764", null ],
       [ "toShortDateString", "classDateTime.html#a67ae33e61bac3267c8709e986e5c9865", null ],
       [ "toShortTimeString", "classDateTime.html#ae96f4c5682e7df9a3af768e42d6d3b86", null ],
       [ "toUnixTime", "classDateTime.html#a9e19ab63fe8ee41e00ffee8740a1d29c", null ],

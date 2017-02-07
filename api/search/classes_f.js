@@ -1,5 +1,9 @@
 var searchData=
 [
-  ['udpconnection',['UdpConnection',['../classUdpConnection.html',1,'']]],
-  ['url',['URL',['../classURL.html',1,'']]]
+  ['rboothttpupdate',['rBootHttpUpdate',['../classrBootHttpUpdate.html',1,'']]],
+  ['rboothttpupdateitem',['rBootHttpUpdateItem',['../structrBootHttpUpdateItem.html',1,'']]],
+  ['rcswitch',['RCSwitch',['../classRCSwitch.html',1,'']]],
+  ['rf24',['RF24',['../classRF24.html',1,'']]],
+  ['rtcclass',['RtcClass',['../classRtcClass.html',1,'']]],
+  ['rtcdata',['RtcData',['../structRtcData.html',1,'']]]
 ];
