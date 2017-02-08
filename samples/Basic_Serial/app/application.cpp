@@ -86,16 +86,16 @@ void init()
 	 * This will require extra space on flash and can be enabled
 	 * using make parameter PRINT_FILENAME_AND_LINE=1*/
 
-	debug_d("\n(DEBUG) message printed on UART0");
+	debug_d("(DEBUG) message printed on UART0");
 
-	debug_i("\n(INFO) message printed on UART0");
+	debug_i("(INFO) message printed on UART0");
 
-	debug_w("\n(WARNING) message printed on UART0");
+	debug_w("(WARNING) message printed on UART0");
 
-	debug_e("\n(ERROR) message printed on UART0");
+	debug_e("(ERROR) message printed on UART0");
 
 	/*debugf is equivalent to debug_e*/
-	debugf("\n(ERROR) message printed with debugf on UART0");
+	debugf("(ERROR) message printed with debugf on UART0");
 
 	/*
 	 * Notice: The line below disables the debugf output on all UARTs.

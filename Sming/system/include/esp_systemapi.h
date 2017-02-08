@@ -39,14 +39,7 @@
 #ifdef SMING_RELEASE
 #define debugf(fmt, ...)
 #else
-//(!)Important: Normally debugf is defined as debug_e.
-//There are rare cases when expanding debug_e will cause a section type conflict
-// this is most likely because you are using debugf in a virtual member
-// of a class and a member of another class in the same file.
-//
-//If you get a section type conflict, please use m_printf instead of debugf
-// which will store the format string in RAM.
-#define debugf debug_e
+#define debugf debug_i
 #endif
 #define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
 #define SYSTEM_ERROR(fmt, ...) m_printf("ERROR: " fmt "\r\n", ##__VA_ARGS__)
