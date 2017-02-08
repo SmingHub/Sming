@@ -1,5 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
+#include "CUserData.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -9,6 +10,8 @@
 
 HttpServer server;
 int totalActiveSockets = 0;
+
+CUserData userGeorge("George", "I like SMING");
 
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
@@ -37,6 +40,8 @@ void wsConnected(WebSocket& socket)
 {
 	totalActiveSockets++;
 
+	//Use a global instance and add this new connection. Normally
+	userGeorge.addSession(socket);
 	// Notify everybody about new connection
 	WebSocketsList &clients = server.getActiveWebSockets();
 	for (int i = 0; i < clients.count(); i++)
@@ -48,6 +53,13 @@ void wsMessageReceived(WebSocket& socket, const String& message)
 	Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
 	String response = "Echo: " + message;
 	socket.sendString(response);
+
+	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
+    CUserData *user = (CUserData*) socket.getUserData();
+    if(user)
+    {
+    	user->printMessage(socket, message);
+    }
 }
 
 void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
@@ -58,6 +70,13 @@ void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
 void wsDisconnected(WebSocket& socket)
 {
 	totalActiveSockets--;
+
+	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
+    CUserData *user = (CUserData*) socket.getUserData();
+    if(user)
+    {
+    	user->removeSession(socket);
+    }
 
 	// Notify everybody about lost connection
 	WebSocketsList &clients = server.getActiveWebSockets();

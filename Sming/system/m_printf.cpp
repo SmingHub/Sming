@@ -13,11 +13,18 @@ Descr: embedded very simple version of printf with float support
 
 #define OVERFLOW_GUARD 24
 
-void (*cbc_printchar)(char ch) = uart_tx_one_char;
+static void defaultPrintChar(uart_t *uart, char c) {
+	return uart_tx_one_char(c);
+}
+
+void (*cbc_printchar)(uart_t *, char) = defaultPrintChar;
+uart_t *cbc_printchar_uart = NULL;
 
 #define SIGN    	(1<<1)	/* Unsigned/signed long */
 
 #define is_digit(c) ((c) >= '0' && (c) <= '9')
+
+#define MIN(a, b)   ( (a) < (b) ? (a) : (b) )
 
 static int skip_atoi(const char **s)
 {
@@ -27,15 +34,16 @@ static int skip_atoi(const char **s)
 	return i;
 }
 
-void setMPrintfPrinterCbc(void (*callback)(char))
+void setMPrintfPrinterCbc(void (*callback)(uart_t *, char), uart_t *uart)
 {
 	cbc_printchar = callback;
+	cbc_printchar_uart = uart;
 }
 
 void m_putc(char c)
 {
 	if (cbc_printchar)
-		cbc_printchar(c);
+		cbc_printchar(cbc_printchar_uart, c);
 }
 
 /**
@@ -75,7 +83,7 @@ int m_vprintf ( const char * format, va_list arg )
 	p = buf;
 	while (p && n < sizeof(buf) && *p)
 	{
-		cbc_printchar(*p);
+		cbc_printchar(cbc_printchar_uart, *p);
 		n++;
 		p++;
 	}
@@ -148,11 +156,14 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 		width = 0;
 		pad = ' ';
 		base = 10;
+        bool minus = 0;
 
 		do
 		{
+            if ('-' == *fmt) minus = 1, fmt++;
+            
 			//skip width and flags data - not supported
-			while ('+' == *fmt || '-' == *fmt || '#' == *fmt || '*' == *fmt || 'l' == *fmt)
+			while ('+' == *fmt || '#' == *fmt || '*' == *fmt || 'l' == *fmt)
 				fmt++;
 
 			if (is_digit(*fmt)) {
@@ -179,20 +190,22 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 			*str++ = (unsigned char) va_arg(args, int);
 			continue;
 
-		case 's':
+		case 's': {
 			s = va_arg(args, char *);
 
-			if (!s)
-			{
-				s = "<NULL>";
-			}
-			else
-			{
-				while (*s && (maxLen - (uint32_t)(str - buf) > OVERFLOW_GUARD))
-					*str++ = *s++;
-			}
+			if (!s) s = "(null)";
+            size_t len = strlen(s);
+            len     = MIN( len,   precision );
+            len     = MIN( len,   maxLen - size_t(str - buf) - OVERFLOW_GUARD);
+            width   = MIN( width, maxLen - size_t(str - buf) - OVERFLOW_GUARD);
+
+            int padding = width - len;
+            while (!minus && padding-- > 0) *str++ = ' ';
+            while (len--) *str++ = *s++;
+            while (minus && padding-- > 0) *str++ = ' ';
 
 			continue;
+        }    
 
 		case 'p':
 			s = ultoa((unsigned long) va_arg(args, void *), tempNum, 16);

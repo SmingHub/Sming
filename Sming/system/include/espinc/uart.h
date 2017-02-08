@@ -1,96 +1,140 @@
-#ifndef UART_APP_H
-#define UART_APP_H
+/*
+ uart.h - UART HAL
 
-#include "../espinc/uart_register.h"
+ Copyright (c) 2014 Ivan Grokhotkov. All rights reserved.
+ This file is part of the esp8266 core for Arduino environment.
 
-#define RX_BUFF_SIZE    0x100
-#define TX_BUFF_SIZE    100
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-typedef enum {
-    FIVE_BITS = 0x0,
-    SIX_BITS = 0x1,
-    SEVEN_BITS = 0x2,
-    EIGHT_BITS = 0x3
-} UartBitsNum4Char;
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-typedef enum {
-    ONE_STOP_BIT             = 0,
-    ONE_HALF_STOP_BIT        = BIT2,
-    TWO_STOP_BIT             = BIT2
-} UartStopBitsNum;
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-typedef enum {
-    NONE_BITS = 0,
-    ODD_BITS   = 0,
-    EVEN_BITS = BIT4
-} UartParityMode;
+*/
+#ifndef ESP_UART_H
+#define ESP_UART_H
 
-typedef enum {
-    STICK_PARITY_DIS   = 0,
-    STICK_PARITY_EN    = BIT3 | BIT5
-} UartExistParity;
+#include <stdbool.h>
+#include <stddef.h>
 
-typedef enum {
-    BIT_RATE_9600     = 9600,
-    BIT_RATE_19200   = 19200,
-    BIT_RATE_38400   = 38400,
-    BIT_RATE_57600   = 57600,
-    BIT_RATE_74880   = 74880,
-    BIT_RATE_115200 = 115200,
-    BIT_RATE_230400 = 230400,
-    BIT_RATE_460800 = 460800,
-    BIT_RATE_921600 = 921600
-} UartBautRate;
-
-typedef enum {
-    NONE_CTRL,
-    HARDWARE_CTRL,
-    XON_XOFF_CTRL
-} UartFlowCtrl;
-
-typedef enum {
-    EMPTY,
-    UNDER_WRITE,
-    WRITE_OVER
-} RcvMsgBuffState;
-
-typedef struct {
-    uint32     RcvBuffSize;
-    uint8     *pRcvMsgBuff;
-    uint8     *pWritePos;
-    uint8     *pReadPos;
-    uint8      TrigLvl; //JLU: may need to pad
-    RcvMsgBuffState  BuffState;
-} RcvMsgBuff;
-
-typedef struct {
-    uint32   TrxBuffSize;
-    uint8   *pTrxBuff;
-} TrxMsgBuff;
-
-typedef enum {
-    BAUD_RATE_DET,
-    WAIT_SYNC_FRM,
-    SRCH_MSG_HEAD,
-    RCV_MSG_BODY,
-    RCV_ESC_CHAR,
-} RcvMsgState;
-
-typedef struct {
-    UartBautRate 	     baut_rate;
-    UartBitsNum4Char  data_bits;
-    UartExistParity      exist_parity;
-    UartParityMode 	    parity;    // chip size in byte
-    UartStopBitsNum   stop_bits;
-    UartFlowCtrl         flow_ctrl;
-    RcvMsgBuff          rcv_buff;
-    TrxMsgBuff           trx_buff;
-    RcvMsgState        rcv_state;
-    int                      received;
-    int                      buff_uart_no;  //indicate which uart use tx/rx buffer
-} UartDevice;
-
-void uart_init(UartBautRate uart0_br, UartBautRate uart1_br);
-
+#if defined (__cplusplus)
+extern "C" {
 #endif
 
+#define UART0    0
+#define UART1    1
+#define UART_NO -1
+
+// Options for `config` argument of uart_init
+#define UART_NB_BIT_MASK      0B00001100
+#define UART_NB_BIT_5         0B00000000
+#define UART_NB_BIT_6         0B00000100
+#define UART_NB_BIT_7         0B00001000
+#define UART_NB_BIT_8         0B00001100
+
+#define UART_PARITY_MASK      0B00000011
+#define UART_PARITY_NONE      0B00000000
+#define UART_PARITY_EVEN      0B00000010
+#define UART_PARITY_ODD       0B00000011
+
+#define UART_NB_STOP_BIT_MASK 0B00110000
+#define UART_NB_STOP_BIT_0    0B00000000
+#define UART_NB_STOP_BIT_1    0B00010000
+#define UART_NB_STOP_BIT_15   0B00100000
+#define UART_NB_STOP_BIT_2    0B00110000
+
+#define UART_5N1 ( UART_NB_BIT_5 | UART_PARITY_NONE | UART_NB_STOP_BIT_1 )
+#define UART_6N1 ( UART_NB_BIT_6 | UART_PARITY_NONE | UART_NB_STOP_BIT_1 )
+#define UART_7N1 ( UART_NB_BIT_7 | UART_PARITY_NONE | UART_NB_STOP_BIT_1 )
+#define UART_8N1 ( UART_NB_BIT_8 | UART_PARITY_NONE | UART_NB_STOP_BIT_1 )
+#define UART_5N2 ( UART_NB_BIT_5 | UART_PARITY_NONE | UART_NB_STOP_BIT_2 )
+#define UART_6N2 ( UART_NB_BIT_6 | UART_PARITY_NONE | UART_NB_STOP_BIT_2 )
+#define UART_7N2 ( UART_NB_BIT_7 | UART_PARITY_NONE | UART_NB_STOP_BIT_2 )
+#define UART_8N2 ( UART_NB_BIT_8 | UART_PARITY_NONE | UART_NB_STOP_BIT_2 )
+#define UART_5E1 ( UART_NB_BIT_5 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1 )
+#define UART_6E1 ( UART_NB_BIT_6 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1 )
+#define UART_7E1 ( UART_NB_BIT_7 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1 )
+#define UART_8E1 ( UART_NB_BIT_8 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1 )
+#define UART_5E2 ( UART_NB_BIT_5 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2 )
+#define UART_6E2 ( UART_NB_BIT_6 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2 )
+#define UART_7E2 ( UART_NB_BIT_7 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2 )
+#define UART_8E2 ( UART_NB_BIT_8 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2 )
+#define UART_5O1 ( UART_NB_BIT_5 | UART_PARITY_ODD  | UART_NB_STOP_BIT_1 )
+#define UART_6O1 ( UART_NB_BIT_6 | UART_PARITY_ODD  | UART_NB_STOP_BIT_1 )
+#define UART_7O1 ( UART_NB_BIT_7 | UART_PARITY_ODD  | UART_NB_STOP_BIT_1 )
+#define UART_8O1 ( UART_NB_BIT_8 | UART_PARITY_ODD  | UART_NB_STOP_BIT_1 )
+#define UART_5O2 ( UART_NB_BIT_5 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
+#define UART_6O2 ( UART_NB_BIT_6 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
+#define UART_7O2 ( UART_NB_BIT_7 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
+#define UART_8O2 ( UART_NB_BIT_8 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
+
+// Options for `mode` argument of uart_init
+#define UART_FULL     0
+#define UART_RX_ONLY  1
+#define UART_TX_ONLY  2
+
+#define UART_TX_FIFO_SIZE 0x80
+
+struct uart_rx_buffer_ {
+    size_t size;
+    size_t rpos;
+    size_t wpos;
+    uint8_t * buffer;
+};
+
+struct uart_;
+
+struct uart_ {
+    int uart_nr;
+    int baud_rate;
+    bool rx_enabled;
+    bool tx_enabled;
+    uint8_t rx_pin;
+    uint8_t tx_pin;
+    struct uart_rx_buffer_ * rx_buffer;
+    void (*callback)(struct uart_* arg);
+};
+
+typedef struct uart_ uart_t;
+
+uart_t* uart_init(int uart_nr, int baudrate, int config, int mode, int tx_pin, size_t rx_size);
+void uart_uninit(uart_t* uart);
+
+void uart_swap(uart_t* uart, int tx_pin);
+void uart_set_tx(uart_t* uart, int tx_pin);
+void uart_set_pins(uart_t* uart, int tx, int rx);
+bool uart_tx_enabled(uart_t* uart);
+bool uart_rx_enabled(uart_t* uart);
+
+void uart_set_baudrate(uart_t* uart, int baud_rate);
+int uart_get_baudrate(uart_t* uart);
+
+size_t uart_resize_rx_buffer(uart_t* uart, size_t new_size);
+
+void uart_write_char(uart_t* uart, char c);
+void uart_write(uart_t* uart, const char* buf, size_t size);
+int uart_read_char(uart_t* uart);
+int uart_peek_char(uart_t* uart);
+size_t uart_rx_available(uart_t* uart);
+size_t uart_tx_free(uart_t* uart);
+void uart_wait_tx_empty(uart_t* uart);
+void uart_flush(uart_t* uart);
+
+void uart_set_debug(int uart_nr);
+int uart_get_debug();
+void uart_detach(int uart_nr);
+
+
+#if defined (__cplusplus)
+} // extern "C"
+#endif
+
+#endif // ESP_UART_H

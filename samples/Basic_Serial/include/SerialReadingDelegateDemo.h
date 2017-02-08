@@ -4,6 +4,12 @@
 //*** Example of global callback routine
 void onDataCallback(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
 {
+	Serial.printf("Char: %d, Count: %d\n", (uint8_t)arrivedChar, availableCharsCount);
+}
+
+void echoCallback(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
+{
+	stream.write(arrivedChar);
 }
 
 //*** Example of class callback processing

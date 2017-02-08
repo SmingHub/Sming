@@ -99,6 +99,16 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
+## COM port parameters
+# Default COM port speed (generic)
+COM_SPEED ?= 115200
+
+# Default COM port speed (used for flashing)
+COM_SPEED_ESPTOOL ?= $(COM_SPEED)
+
+# Default COM port speed (used in code)
+COM_SPEED_SERIAL  ?= $(COM_SPEED)
+
 # Sming Framework Path
 SMF = $(SMING_HOME)
 
@@ -150,13 +160,26 @@ ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 	CUSTOM_TARGETS += $(USER_LIBDIR)/libmainmm.a
 endif
 
+# => Open Source LWIP
+LIBLWIP = lwip
+ENABLE_CUSTOM_LWIP ?= 1
+ENABLE_ESPCONN ?= 0
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
+	EXTRA_INCDIR += third-party/esp-open-lwip/include
+	ifeq ($(ENABLE_ESPCONN), 1)
+		LIBLWIP = lwip_full
+	else
+		LIBLWIP = lwip_open
+	endif
+	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBLWIP).a
+endif
+
 # libraries used in this project, mainly provided by the SDK
 USER_LIBDIR = compiler/lib
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa main
-
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	THIRD_PARTY_DATA += third-party/pwm/pwm.c
-	LIBS += pwm
 endif
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
@@ -279,7 +302,7 @@ endef
 all: checkdirs $(APP_AR) spiffy
 
 ifeq ($(ENABLE_CUSTOM_PWM), 1)	
-$(USER_LIBDIR)/libpwm.a: third-party/pwm/pwm.c
+$(USER_LIBDIR)/libpwm_open.a: third-party/pwm/pwm.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $< -o $(dir $<)/pwm.o
 	$(Q) $(AR) rcs $@ $(dir $<)/pwm.o
 endif 
@@ -294,6 +317,11 @@ $(USER_LIBDIR)/libmainmm.a: $(addprefix $(SDK_LIBDIR)/,libmain.a)
 	$(vecho) "Enabling custom heap implementation"
 	$(Q) cp $^ $@ 
 	$(Q) $(AR) -d $@ mem_manager.o
+endif
+
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+$(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
+	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" all
 endif
 
 spiffy: spiffy/spiffy
@@ -338,7 +366,7 @@ else
 	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
 endif	
 
-test: all spiffy samples
+test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM 
 
 docs/wiki/Home.md: 
 	$(vecho) "No Wiki submodule found. Using git to fetch it..."

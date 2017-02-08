@@ -1,0 +1,146 @@
+diff --git a/include/user_config.h b/include/user_config.h
+index e69de29..3a85c8c 100644
+--- a/include/user_config.h
++++ b/include/user_config.h
+@@ -0,0 +1,39 @@
++#ifndef _USER_CONFIG_LWIP_
++#define _USER_CONFIG_LWIP_
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++typedef signed short        sint16_t;
++
++void *ets_bzero(void *block, size_t size);
++bool ets_post(uint32_t prio, ETSSignal sig, ETSParam par);
++void ets_task(ETSTask task, uint32_t prio, ETSEvent * queue, uint8 qlen);
++
++void system_pp_recycle_rx_pkt(void *eb);
++
++#ifndef MEMLEAK_DEBUG
++	extern void *pvPortMalloc( size_t xWantedSize );
++	extern void vPortFree( void *pv );
++	extern void *pvPortZalloc(size_t size);
++#else
++	extern void *pvPortMalloc(size_t xWantedSize, const char *file, uint32 line);
++	extern void *pvPortZalloc(size_t xWantedSize, const char *file, uint32 line);
++	extern void vPortFree(void *ptr, const char *file, uint32 line);
++
++	extern void pvPortFree(void *ptr);
++	extern void *vPortMalloc(size_t xWantedSize);
++#endif /*MEMLEAK_DEBUG*/
++
++
++	extern void *pvPortCalloc(unsigned int n, unsigned int count);
++	extern void *pvPortRealloc(void * p, size_t size);
++	extern size_t xPortGetFreeHeapSize(void);
++//	extern void prvHeapInit(void) ICACHE_FLASH_ATTR ;
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /*_USER_CONFIG_LWIP_*/
+diff --git a/Makefile.open b/Makefile.open
+index 1bc584f..0bfc424 100644
+--- a/Makefile.open
++++ b/Makefile.open
+@@ -1,8 +1,10 @@
+-CC = xtensa-lx106-elf-gcc
+-AR = xtensa-lx106-elf-ar
++CC = $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc
++AR = $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-ar
+ DEFS = -DLWIP_OPEN_SRC -DPBUF_RSV_FOR_WLAN -DEBUF_LWIP -DICACHE_FLASH
+ COPT = -Os
+-CFLAGS = $(DEFS) $(COPT) -Iinclude -Wl,-EL -mlongcalls -mtext-section-literals $(CFLAGS_EXTRA)
++
++CFLAGS = $(DEFS) $(COPT) -Iinclude -I$(SDK_BASE)/include -Wl,-EL -mlongcalls -mtext-section-literals $(CFLAGS_EXTRA)
++
+ # Install prefix of esp-open-sdk toolchain
+ PREFIX = ~/toolchain/xtensa-lx106-elf
+ 
+@@ -36,14 +38,26 @@ lwip/core/ipv4/ip.o \
+ lwip/core/ipv4/ip_frag.o \
+ lwip/netif/etharp.o \
+ \
+-lwip/app/dhcpserver.o \
+-\
+-espconn_dummy.o \
++lwip/app/dhcpserver.o
+ 
+-LIB = liblwip_open.a
+ 
+-all: $(LIB)
++ifneq ($(ENABLE_ESPCONN),1)
++    OBJS += espconn_dummy.o
++else
++    OBJS += lwip/app/espconn.o \
++lwip/app/espconn_tcp.o \
++lwip/app/espconn_udp.o \
++lwip/app/espconn_mdns.o \
++lwip/core/mdns.o
+ 
++endif
++
++LIB = $(USER_LIBDIR)liblwip_open.a
++ifeq ($(ENABLE_ESPCONN),1)
++    LIB = $(USER_LIBDIR)liblwip_full.a
++endif
++
++all: $(LIB)
+ 
+ $(LIB): $(OBJS)
+ 	$(AR) rcs $@ $^
+diff --git a/include/arch/cc.h b/include/arch/cc.h
+index ff03b30..932c73d 100644
+--- a/include/arch/cc.h
++++ b/include/arch/cc.h
+@@ -38,8 +38,25 @@
+ #include "c_types.h"
+ #include "ets_sys.h"
+ #include "osapi.h"
++#include <stdarg.h>
++
+ #define EFAULT 14
+ 
++//Extra symbols to avoid implicit declaration warnings
++extern void *ets_memset(void *s, int c, size_t n);
++extern void ets_memcpy(void*, const void*, uint32);
++
++extern size_t ets_strlen(const char *s);
++extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
++extern int ets_sprintf(char *str, const char *format, ...)  __attribute__ ((format (printf, 2, 3)));
++extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
++extern void ets_timer_disarm(ETSTimer *a);
++extern void ets_timer_setfn(ETSTimer *t, ETSTimerFunc *pfunction, void *parg);
++extern uint32 r_rand(void);
++extern int ets_memcmp(const void *s1, const void *s2, size_t n);
++
++struct netif * eagle_lwip_getif(uint8 index);
++
+ //#define LWIP_PROVIDE_ERRNO
+ 
+ #if (1)
+@@ -56,6 +73,7 @@ typedef signed     short   s16_t;
+ typedef unsigned   long    u32_t;
+ typedef signed     long    s32_t;
+ typedef unsigned long   mem_ptr_t;
++typedef signed short        sint16_t;
+ 
+ #define S16_F "d"
+ #define U16_F "d"
+
+diff --git a/include/lwipopts.h b/include/lwipopts.h
+index eaa8dd6..6a08192 100644
+--- a/include/lwipopts.h
++++ b/include/lwipopts.h
+@@ -953,7 +953,7 @@
+  * an upper limit on the MSS advertised by the remote host.
+  */
+ #ifndef TCP_MSS
+-#define TCP_MSS                         1460
++#define TCP_MSS                        1390 
+ #endif
+ #endif
+ 

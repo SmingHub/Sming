@@ -85,7 +85,7 @@ void TcpServer::setTimeOut(uint16_t waitTimeOut)
 bool TcpServer::listen(int port)
 {
 	if (tcp == NULL)
-		tcp = tcp_new();
+		initialize(tcp_new());
 
 	err_t res = tcp_bind(tcp, IP_ADDR_ANY, port);
 	if (res != ERR_OK) return res;
