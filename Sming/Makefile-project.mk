@@ -18,6 +18,12 @@ COM_SPEED_ESPTOOL ?= $(COM_SPEED)
 # Default COM port speed (used in code)
 COM_SPEED_SERIAL  ?= $(COM_SPEED)
 
+#default debug print format is not to show filename and line for every debug line
+DEBUG_PRINT_FILENAME_AND_LINE ?= 0
+
+#Defaut debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
+DEBUG_VERBOSE_LEVEL ?= 2
+
 ## Flash parameters
 # SPI_SPEED = 40, 26, 20, 80
 SPI_SPEED ?= 40
@@ -194,7 +200,7 @@ USER_LIBDIR = $(SMING_HOME)/compiler/lib/
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS)
+CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DCUST_FILE_BASE=$$(subst /,_,$(subst .,_,$$*))
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
@@ -208,6 +214,10 @@ else
 	CFLAGS += -Os -g
 	STRIP := @true
 endif
+
+#Append debug options
+CFLAGS += -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
+
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # SSL support using axTLS

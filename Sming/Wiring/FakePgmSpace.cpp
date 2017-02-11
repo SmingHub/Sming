@@ -17,11 +17,14 @@ extern "C" void *memcpy_P(void *dest, const void *src_P, size_t length) {
 
 extern "C" size_t strlen_P(const char * src_P)
 {
-	const char *src = (const char *)src_P;
-	char val;
+	char val = pgm_read_byte(src_P);
 	int len = 0;
-	for (; val; len++, src++)
-		val = pgm_read_byte(src);
+
+	while(val != 0)
+	{
+		++len; ++src_P;
+		val = pgm_read_byte(src_P);
+	}
 
 	return len;
 }
@@ -30,6 +33,16 @@ extern "C" char *strcpy_P(char * dest, const char * src_P)
 {
 	int len = strlen_P(src_P);
 	memcpy_P(dest, src_P, len);
+	return dest;
+}
+
+extern "C" char *strncpy_P(char * dest, size_t max_len, const char * src_P)
+{
+	int len = strlen_P(src_P);
+	if(len >= max_len)
+		len = max_len-1;
+	memcpy_P(dest, src_P, len);
+	dest[len] = 0;
 	return dest;
 }
 

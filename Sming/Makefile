@@ -109,6 +109,12 @@ COM_SPEED_ESPTOOL ?= $(COM_SPEED)
 # Default COM port speed (used in code)
 COM_SPEED_SERIAL  ?= $(COM_SPEED)
 
+#Default debug print format is not to show filename and line for every debug line
+DEBUG_PRINT_FILENAME_AND_LINE ?= 0
+
+#Defaut debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
+DEBUG_VERBOSE_LEVEL ?= 2
+
 # Sming Framework Path
 SMF = $(SMING_HOME)
 
@@ -183,7 +189,7 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 endif
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL)
+CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DCUST_FILE_BASE=$$(subst /,_,$(subst .,_,$$*))
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
@@ -193,6 +199,10 @@ else ifeq ($(ENABLE_GDB), 1)
 else
 	CFLAGS += -Os -g
 endif
+
+#Append debug options
+CFLAGS += -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
+
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # linker flags used to generate the main object file
