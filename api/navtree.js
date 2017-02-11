@@ -23,21 +23,21 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "GettingStarted_8pde-example.html",
-"classAdafruit__PCD8544.html#ab9bb0cbc2455f64dce2a5ec36307aa94",
-"classCommandDelegate.html#a1e43873b34a8e47d1122e46146773d8d",
-"classESP01__Description.html#a563919a8fe237a6ad231f9733b3a264a",
-"classHashMap.html#a485fb8ca016d231e33181dc80a0ac796",
-"classIDelegateCaller.html#a4c49d3a30a5224c1910400b9a1cbaf71",
-"classLiquidCrystal__I2C.html#a6d837611f19b3fc7ced014517021a57b",
-"classMCP23017.html#a457ec4f7093240950eea298a6922f4ac",
-"classRCSwitch.html#af6584ffa9cee1527ac3debd972c3f556",
-"classSparkFun__APDS9960.html#aaee720807316599309989019a2268bef",
-"classStringSumHelper.html#aea448757a5dbe286cb522e1b02682d89",
-"classTemplateFileStream.html#af28ccb99de655f1cc18816a4751ed09e",
-"classdecode__results.html#a58646241154c6f0a47083ce67e7327fb",
-"group__filesystem.html#gada3c289b5ee0eb2ad42c430a8264beab",
-"group__wifi__sta.html#gaa83979edcf377f51ad5c6a61395a1c30",
-"structtmElements__t.html#ae1f337c19bc58f7de1dfe21eb3edb525"
+"classAdafruit__PCD8544.html#a9f3bbdbe07a0681bb3906f145c873002",
+"classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece",
+"classDisplay.html#afd6cc6e2c1163f94c60855ad233899bd",
+"classHardware__Timer.html#ab33339f28b347e6b111a60b784fc87ce",
+"classIDataSourceStream.html",
+"classLiquidCrystal__I2C.html#a541903194f82bf25127db2b57baaa296",
+"classMCP.html#aaf93b6ced3a1c852c1ddfa430e80900f",
+"classRCSwitch.html#aae604bbee72764d45027b1616ab912d4",
+"classSparkFun__APDS9960.html#a8dcda7b95bc32a88c121fc99f331c1df",
+"classStringSumHelper.html#ad502777b7549182fe9b1a14879acf307",
+"classTemplateFileStream.html#a50ffba4642fb546632073a70853ebe18",
+"classYeelightBulb.html#aacd87bb1f730d37988910ba007fc1de6",
+"group__filesystem.html#ga84764b02ca44203d3926768b4910f9ae",
+"group__wifi__sta.html#ga85c971fbafdcde8f1c77bb581319e2f2",
+"structsi7021__olt.html#a66074ea53181655e26a23d267a30b1aa"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

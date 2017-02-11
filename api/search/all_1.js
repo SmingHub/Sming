@@ -10,6 +10,7 @@ var searchData=
   ['addchannel',['addChannel',['../classServo.html#a1fd844a747951e3f90f711351b9e1167',1,'Servo']]],
   ['addmilliseconds',['addMilliseconds',['../classDateTime.html#a60d049362b1d16cbe9ceae334ecd56d5',1,'DateTime']]],
   ['alive',['alive',['../group__wdt.html#gac142c43f548a7cfe7c0d739c7abee1c8',1,'WDTClass']]],
+  ['am2321',['AM2321',['../classAM2321.html',1,'']]],
   ['analogwrite',['analogWrite',['../classDriverPWM.html#abf80bffdbf8f2fe60bd58d132457cf73',1,'DriverPWM::analogWrite()'],['../classHardwarePWM.html#a7db328897857470679ff875e11bbca3f',1,'HardwarePWM::analogWrite()']]],
   ['apa102',['APA102',['../classAPA102.html',1,'']]],
   ['applyfirmwareupdate',['applyFirmwareUpdate',['../group__system.html#ga7dcef7d03311a356b501b6864a0b39ff',1,'SystemClass']]],

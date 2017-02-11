@@ -7,6 +7,7 @@ var annotated =
     [ "Adafruit_PCD8544", "classAdafruit__PCD8544.html", "classAdafruit__PCD8544" ],
     [ "Adafruit_SSD1306", "classAdafruit__SSD1306.html", "classAdafruit__SSD1306" ],
     [ "Adafruit_ST7735", "classAdafruit__ST7735.html", "classAdafruit__ST7735" ],
+    [ "AM2321", "classAM2321.html", "classAM2321" ],
     [ "APA102", "classAPA102.html", "classAPA102" ],
     [ "ArduCAMStream", "classArduCAMStream.html", "classArduCAMStream" ],
     [ "BH1750FVI", "classBH1750FVI.html", "classBH1750FVI" ],

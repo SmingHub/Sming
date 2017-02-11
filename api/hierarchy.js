@@ -1,6 +1,7 @@
 var hierarchy =
 [
     [ "Adafruit_NeoPixel", "classAdafruit__NeoPixel.html", null ],
+    [ "AM2321", "classAM2321.html", null ],
     [ "APA102", "classAPA102.html", null ],
     [ "BH1750FVI", "classBH1750FVI.html", null ],
     [ "BMP180", "classBMP180.html", null ],
