@@ -116,6 +116,7 @@ SPIFF_FILES = files
 
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
+USER_LIBDIR = compiler/lib
 
 LIBSMING = libsming
 ifeq ($(ENABLE_SSL),1)
@@ -176,7 +177,6 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 endif
 
 # libraries used in this project, mainly provided by the SDK
-USER_LIBDIR = compiler/lib
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	THIRD_PARTY_DATA += third-party/pwm/pwm.c
@@ -262,6 +262,7 @@ EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
 SAMPLES_DIRS := $(shell ls -1 ../samples)
+THIRD_PARTY_DIRS := $(shell ls -1 third-party )
 DOXYGEN := $(shell command -v doxygen 2> /dev/null)
 
 V ?= $(VERBOSE)
@@ -394,7 +395,7 @@ third-party/%:
 	$(vecho) "Fetching $(dir $@) ..."
 	$(Q) $(GIT) submodule update --init --recursive $(dir $@)
 	$(Q) touch $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
-	$(Q) -cd $(dir $@); $(GIT) apply -v $(patsubst third-party/%/,$(SMING_HOME)/third-party/.patches/%.patch, $(dir $@))
+	$(Q) -cd $(dir $@); $(GIT) apply -v $(patsubst third-party/%/,$(SMING_HOME)/third-party/.patches/%.patch, $(dir $@)) --ignore-whitespace --whitespace=nowarn
 # if the new submodule brings source code files that need to be compiled inside Sming
 # then we need somehow to be able to "see" these new files. 
 # For now we solve this by "reloading" the makefile after fetching a module.
@@ -409,6 +410,18 @@ samples-clean:
 	$(Q) for dir in $(SAMPLES_DIRS); do \
           $(MAKE) -C $(SMING_HOME)/../samples/$$dir clean; \
         done
+        
+third-party-clean:
+	$(Q) for dir in $(THIRD_PARTY_DIRS); do \
+          rm -rf third-party/$$dir; \
+        done
+	$(Q) $(GIT) checkout third-party     
+       
+dist-clean: clean samples-clean third-party-clean
+	$(Q) for file in $(shell ls $(USER_LIBDIR)/lib*.a ); do \
+ 	   rm $$file; \
+ 	done
+	$(Q) $(GIT) checkout $(USER_LIBDIR)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
 

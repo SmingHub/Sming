@@ -42,8 +42,8 @@ OS = Operating System
 SDK = Software Development Kit
 n/a = The selected SDK is not available on that OS
 
-## Latest Release
-- [Sming V3.0.1](https://github.com/SmingHub/Sming/releases/tag/3.0.1)
+## Latest Stable Release
+- [Sming V3.1.0](https://github.com/SmingHub/Sming/releases/tag/3.1.0)
 
 ## Getting started
 - [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
