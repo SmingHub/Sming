@@ -21,7 +21,9 @@ typedef uint32_t prog_uint32_t;
 
 #ifdef ICACHE_FLASH
 
+#ifndef PROGMEM
 #define PROGMEM STORE_ATTR ICACHE_RODATA_ATTR
+#endif
 
 #define pgm_read_byte(addr) \
 ({ \
