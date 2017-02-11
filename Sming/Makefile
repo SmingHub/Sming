@@ -413,14 +413,14 @@ samples-clean:
         
 third-party-clean:
 	$(Q) for dir in $(THIRD_PARTY_DIRS); do \
-          $(Q) rm -rf third-party/$$dir; \
+          rm -rf third-party/$$dir; \
         done
 	$(Q) $(GIT) checkout third-party     
        
 dist-clean: clean samples-clean third-party-clean
 	$(Q) for file in $(shell ls $(USER_LIBDIR)/lib*.a ); do \
- 			rm $$file; \
- 		done
+ 	   rm $$file; \
+ 	done
 	$(Q) $(GIT) checkout $(USER_LIBDIR)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
