@@ -184,6 +184,8 @@ ENABLE_CUSTOM_HEAP ?= 0
 LIBMAIN = main
 LIBMAIN_SRC = $(addprefix $(SDK_LIBDIR)/,libmain.a)
 
+USER_LIBDIR = $(SMING_HOME)/compiler/lib/
+
 ifeq ($(ENABLE_CUSTOM_HEAP),1)
 	LIBMAIN = mainmm
 	LIBMAIN_SRC := $(USER_LIBDIR)lib$(LIBMAIN).a
@@ -197,7 +199,6 @@ ifeq ($(RBOOT_BIG_FLASH),1)
 else
 	LIBMAIN_DST = $()
 endif
-# libraries used in this project, mainly provided by the SDK
 
 LIBLWIP = lwip
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
@@ -215,7 +216,6 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 endif
 
 # libraries used in this project, mainly provided by the SDK
-USER_LIBDIR = $(SMING_HOME)/compiler/lib/
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 
 # compiler flags using during compilation of source files
