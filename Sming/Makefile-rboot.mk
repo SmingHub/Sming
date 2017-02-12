@@ -51,6 +51,12 @@ COM_SPEED_ESPTOOL ?= $(COM_SPEED)
 # Default COM port speed (used in code)
 COM_SPEED_SERIAL  ?= $(COM_SPEED)
 
+#default debug print format is not to show filename and line for every debug line
+DEBUG_PRINT_FILENAME_AND_LINE ?= 0
+
+#Defaut debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
+DEBUG_VERBOSE_LEVEL ?= 2
+
 ## Flash parameters
 # SPI_SPEED = 40, 26, 20, 80
 SPI_SPEED ?= 40
@@ -153,8 +159,8 @@ TARGET		= app
 
 THIRD_PARTY_DIR = $(SMING_HOME)/third-party
 
-LIBSMING = sming
 SMING_FEATURES = none
+LIBSMING = sming
 ifeq ($(ENABLE_SSL),1)
 	LIBSMING = smingssl
 	SMING_FEATURES = SSL
@@ -173,31 +179,7 @@ endif
 
 EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
 
-USER_LIBDIR  = $(SMING_HOME)/compiler/lib/
-
-# compiler flags using during compilation of source files
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS)
-ifeq ($(SMING_RELEASE),1)
-	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
-	#      for full list of optimization options
-	CFLAGS += -Os -DSMING_RELEASE=1
-else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
-	MODULES		 += $(THIRD_PARTY_DIR)/gdbstub
-	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/gdbstub
-	STRIP := @true
-else
-	CFLAGS += -Os -g
-	STRIP := @true
-endif
-CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
-
 ENABLE_CUSTOM_HEAP ?= 0
- 
-LIBMAIN = main
-ifeq ($(ENABLE_CUSTOM_HEAP),1)
-	LIBMAIN = mainmm
-endif
 
 LIBMAIN = main
 LIBMAIN_SRC = $(addprefix $(SDK_LIBDIR)/,libmain.a)
@@ -232,7 +214,30 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBPWM).a
 endif
 
+# libraries used in this project, mainly provided by the SDK
+USER_LIBDIR = $(SMING_HOME)/compiler/lib/
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
+
+# compiler flags using during compilation of source files
+CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DCUST_FILE_BASE=$$(subst /,_,$(subst .,_,$$*))
+ifeq ($(SMING_RELEASE),1)
+	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+	#      for full list of optimization options
+	CFLAGS += -Os -DSMING_RELEASE=1
+else ifeq ($(ENABLE_GDB), 1)
+	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
+	MODULES		 += $(THIRD_PARTY_DIR)/gdbstub
+	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/gdbstub
+	STRIP := @true
+else
+	CFLAGS += -Os -g
+	STRIP := @true
+endif
+
+#Append debug options
+CFLAGS += -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
+
+CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # SSL support using axTLS
 ifeq ($(ENABLE_SSL),1)
@@ -247,11 +252,6 @@ ifeq ($(ENABLE_SSL),1)
 	CFLAGS += $(AXTLS_FLAGS)  
 	CXXFLAGS += $(AXTLS_FLAGS)	
 endif
-
-ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-	EXTRA_INCDIR += third-party/esp-open-lwip/include
-endif
-
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 WIFI_SSID ?= ""
