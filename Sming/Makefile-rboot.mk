@@ -29,7 +29,7 @@ RBOOT_ROM_0      ?= rom0
 RBOOT_ROM_1      ?= rom1
 RBOOT_SPIFFS_0   ?= 0x100000
 RBOOT_SPIFFS_1   ?= 0x300000
-RBOOT_LD_0 ?= rom0.ld
+RBOOT_LD_0 ?= $(SMING_HOME)/compiler/ld/rboot.rom0.ld
 RBOOT_LD_1 ?= rom1.ld
 # esptool2 path
 ESPTOOL2 ?= esptool2
