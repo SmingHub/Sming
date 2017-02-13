@@ -176,6 +176,8 @@ EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME
 
 ENABLE_CUSTOM_HEAP ?= 0
  
+USER_LIBDIR = $(SMING_HOME)/compiler/lib/
+ 
 LIBMAIN = main
 ifeq ($(ENABLE_CUSTOM_HEAP),1)
 	LIBMAIN = mainmm
@@ -197,7 +199,6 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 endif
 
 # libraries used in this project, mainly provided by the SDK
-USER_LIBDIR = $(SMING_HOME)/compiler/lib/
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 
 # compiler flags using during compilation of source files
