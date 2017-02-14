@@ -162,7 +162,7 @@ EXTRA_INCDIR ?= include # default to include if not set by user
 
 ENABLE_CUSTOM_LWIP ?= 1
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-	LWIP_INCDIR = $(SMING_HOME)/third-party/esp-open-lwip	
+	LWIP_INCDIR = $(SMING_HOME)/third-party/esp-open-lwip/include	
 endif
 
 EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
