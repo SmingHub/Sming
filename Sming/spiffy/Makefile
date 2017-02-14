@@ -2,8 +2,6 @@
 # Makefile for spiffy
 #
 
-CC := gcc
-LD := gcc
 
 INCDIR := -I../Services/SpifFS -I../third-party/spiffs/src
 CFLAGS := -O2 -Wall -Wno-unused-value
