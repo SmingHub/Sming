@@ -150,6 +150,14 @@ FW_MEMINFO_NEW = $(FW_BASE)/fwMeminfo.new
 FW_MEMINFO_OLD = $(FW_BASE)/fwMeminfo.old
 FW_MEMINFO_SAVED = out/fwMeminfo
 
+MEM_USAGE = \
+  'while (<>) { \
+      $$r += $$1 if /^\.(?:data|rodata|bss)\s+(\d+)/;\
+		  $$f += $$1 if /^\.(?:irom0\.text|text|data|rodata)\s+(\d+)/;\
+	 }\
+	 print "\nMemory usage\n";\
+	 print sprintf("  %-6s %6d bytes\n" x 2 ."\n", "Ram:", $$r, "Flash:", $$f);'
+
 # name for the target project
 TARGET		= app
 
@@ -312,6 +320,7 @@ AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
 LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 OBJCOPY := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objcopy
 OBJDUMP := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objdump
+SIZE    := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-size
 
 SRC_DIR		:= $(MODULES)
 BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
@@ -390,6 +399,7 @@ $(TARGET_OUT): $(APP_AR)
 #	$(Q) $(ESPTOOL2) elf2image $@ $(flashimageoptions) -o $(FW_BASE)/
 	@$(ESPTOOL2) $(ESPTOOL2_MAIN_ARGS) $@ $(FW_BASE)/$(IMAGE_MAIN) $(ESPTOOL2_SECTS)
 	@$(ESPTOOL2) $(ESPTOOL2_SDK_ARGS) $@ $(FW_BASE)/$(IMAGE_SDK)
+	$(SIZE) -A $(TARGET_OUT) | perl -e $(MEM_USAGE)
 	$(vecho) "Generate firmware images successully in folder $(FW_BASE)."
 	$(vecho) "Done"
 
