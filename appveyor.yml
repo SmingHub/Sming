@@ -25,7 +25,7 @@ install:
   - cp esptool2 c:\Espressif\utils\esptool2
 
 build_script:
-  - SET SMING_HOME=c:\projects\%APPVEYOR_PROJECT_NAME%\Sming
+  - SET SMING_HOME=%APPVEYOR_BUILD_FOLDER%\Sming
   - SET ESP_HOME=c:\Espressif
   - SET PATH=%PATH%;%ESP_HOME%/utils
   - cd %SMING_HOME%
