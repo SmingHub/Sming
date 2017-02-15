@@ -22,9 +22,9 @@ COM_SPEED_SERIAL  ?= $(COM_SPEED)
 # SPI_SPEED = 40, 26, 20, 80
 SPI_SPEED ?= 40
 # SPI_MODE: qio, qout, dio, dout
-SPI_MODE ?= dio
+SPI_MODE ?= qio
 # SPI_SIZE: 512K, 256K, 1M, 2M, 4M
-SPI_SIZE ?= 1M
+SPI_SIZE ?= 512K
 
 ### Debug output parameters
 # By default `debugf` does not print file name and line number. If you want this enabled set the directive below to 1
@@ -57,21 +57,21 @@ ESPTOOL2_SDK_ARGS	?= -quiet -lib
 # ESP_HOME = c:/Espressif
 
 ## MacOS / Linux:
-ESP_HOME = /opt/esp-open-sdk
+# ESP_HOME = /opt/esp-open-sdk
 
 ## SMING_HOME sets the path where Sming framework is located.
 ## Windows:
 # SMING_HOME = c:/tools/sming/Sming 
 
 # MacOS / Linux
-SMING_HOME = /home/scrugg/workspace/Sming/Sming
+# SMING_HOME = /opt/esp-open-sdk
 
 ## COM port parameter is reqruied to flash firmware correctly.
 ## Windows: 
 # COM_PORT = COM3
 
 # MacOS / Linux:
-COM_PORT = /dev/ttyUSB0
+# COM_PORT = /dev/tty.usbserial
 
 ifeq ($(OS),Windows_NT)
   # Windows detected

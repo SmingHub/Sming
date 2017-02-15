@@ -42,7 +42,7 @@ The small 4KB sectors allow for greater flexibility in applications that require
 spiffs_config spiffs_get_storage_config()
 {
 	spiffs_config cfg = {0};
-	cfg.phys_addr = ( u32_t )flashmem_get_first_free_block_address()  - INTERNAL_FLASH_START_ADDRESS;
+	cfg.phys_addr = ( u32_t )flashmem_get_first_free_block_address();
 	if (cfg.phys_addr == 0)
 		return cfg;
 	cfg.phys_addr &= 0xFFFFF000;  // get the start address of the sector
