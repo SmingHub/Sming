@@ -91,7 +91,7 @@ RUN sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervis
 # Add supervisord configs
 # ------------------------------------------------------------------------------
 
-ADD conf/* /etc/supervisor/conf.d/
+ADD docker/conf/* /etc/supervisor/conf.d/
 
 # ------------------------------------------------------------------------------
 # Clean up APT when done.
@@ -150,6 +150,11 @@ RUN cd $ESP_HOME/esptool2 && make
 
 ENV PATH $ESP_HOME/esptool2:$PATH
 
+ADD . /opt/sming/
+RUN make -C /opt/sming/Sming all
+RUN rm -rf /opt/sming/.git 
+
+WORKDIR /opt/sming
 
 EXPOSE 80
 
