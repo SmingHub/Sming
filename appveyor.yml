@@ -1,0 +1,46 @@
+os: Windows Server 2012 R2
+init: 
+  - git config --global core.autocrlf input
+    
+environment:
+  PATH: C:\MinGW\msys\1.0\bin;C:\MinGW\bin;C:\Program Files (x86)\Mono-3.2.3\bin;C:\Python27\scripts;%PATH%  
+  SDK_BUILD: 258
+  matrix:
+    - build_platform: "x86"
+      build_compiler: "mingw"
+      build_bindings: 1
+      SDK_VERSION: 2.0.0
+# cache:
+#   - src/  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
+install:
+  - choco sources add -name kireevco -source 'https://www.myget.org/F/kireevco-chocolatey/'
+  - choco install -y esp8266-udk wget curl
+#  - C:\MinGW\bin\mingw-get install 
+  - mkdir c:\Espressif\utils\ESP8266
+  - cp c:\Espressif\utils\memanalyzer.exe c:\Espressif\utils\ESP8266\memanalyzer.exe
+  - cp c:\Espressif\utils\esptool.exe c:\Espressif\utils\ESP8266\esptool.exe
+  - git clone https://github.com/raburton/esptool2
+  - cd esptool2
+  - make
+  - cp esptool2 c:\Espressif\utils\esptool2
+
+build_script:
+  - SET SMING_HOME=c:\projects\%APPVEYOR_PROJECT_NAME%\Sming
+  - SET ESP_HOME=c:\Espressif
+  - SET PATH=%PATH%;%ESP_HOME%/utils
+  - cd %SMING_HOME%
+  - gcc -v
+# Compile spiffy first
+  - git submodule update --init --recursive third-party/spiffs
+  - cd spiffy
+  - make
+# Followed by the library and test sample apps
+  - cd %SMING_HOME%
+  - make
+  - cd %SMING_HOME%\..\samples\Basic_Blink
+  - make V=1 
+  - cd %SMING_HOME%\..\samples\Basic_Ssl
+  - make 
+  - cd %SMING_HOME%\..\samples\Basic_SmartConfig
+  - make
+  

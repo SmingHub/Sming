@@ -388,8 +388,8 @@ $(TARGET_OUT): $(APP_AR)
 	$(vecho) "------------------------------------------------------------------------------"
 	$(vecho) "# Generating image..."
 #	$(Q) $(ESPTOOL2) elf2image $@ $(flashimageoptions) -o $(FW_BASE)/
-	@$(ESPTOOL2) $(ESPTOOL2_MAIN_ARGS) $@ $(FW_BASE)/$(IMAGE_MAIN) $(ESPTOOL2_SECTS)
-	@$(ESPTOOL2) $(ESPTOOL2_SDK_ARGS) $@ $(FW_BASE)/$(IMAGE_SDK)
+	$(Q) $(ESPTOOL2) $(ESPTOOL2_MAIN_ARGS) $@ $(FW_BASE)/$(IMAGE_MAIN) $(ESPTOOL2_SECTS)
+	$(Q) $(ESPTOOL2) $(ESPTOOL2_SDK_ARGS) $@ $(FW_BASE)/$(IMAGE_SDK)
 	$(vecho) "Generate firmware images successully in folder $(FW_BASE)."
 	$(vecho) "Done"
 
