@@ -44,7 +44,7 @@
 
 //Extra symbols to avoid implicit declaration warnings
 extern void *ets_memset(void *s, int c, size_t n);
-extern void ets_memcpy(void*, const void*, uint32);
+extern void *ets_memcpy(void *dest, const void *src, size_t n);
 
 extern size_t ets_strlen(const char *s);
 extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
