@@ -340,7 +340,7 @@ spiffy: spiffy/spiffy
 
 spiffy/spiffy:
 	$(vecho) "Making spiffy utility"
-	$(Q) $(MAKE) --no-print-directory -C spiffy V=$(V)
+	$(Q) $(MAKE) --no-print-directory -C spiffy CC=$(SPIFFY_CC) LD=$(SPIFFY_LD) V=$(V)
 	$(vecho) "Done"
 
 $(APP_AR): $(OBJ)
