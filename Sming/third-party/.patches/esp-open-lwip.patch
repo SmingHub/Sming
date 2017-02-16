@@ -24,10 +24,10 @@ index e69de29..0c5dff9 100644
 +
 +#endif /*_USER_CONFIG_LWIP_*/
 diff --git a/Makefile.open b/Makefile.open
-index 1bc584f..0bfc424 100644
+index 1bc584f..97ee82c 100644
 --- a/Makefile.open
 +++ b/Makefile.open
-@@ -1,8 +1,10 @@
+@@ -1,8 +1,14 @@
 -CC = xtensa-lx106-elf-gcc
 -AR = xtensa-lx106-elf-ar
 +CC = $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc
@@ -37,6 +37,10 @@ index 1bc584f..0bfc424 100644
 -CFLAGS = $(DEFS) $(COPT) -Iinclude -Wl,-EL -mlongcalls -mtext-section-literals $(CFLAGS_EXTRA)
 +
 +CFLAGS = $(DEFS) $(COPT) -Iinclude -I$(SDK_BASE)/include -Wl,-EL -mlongcalls -mtext-section-literals $(CFLAGS_EXTRA)
++
++ifeq ($(ENABLE_IP_FORWARD),1)
++    CFLAGS += -DIP_FORWARD=1 -DENABLE_IP_FORWARD
++endif
 +
  # Install prefix of esp-open-sdk toolchain
  PREFIX = ~/toolchain/xtensa-lx106-elf
@@ -62,9 +66,9 @@ index 1bc584f..0bfc424 100644
 +lwip/app/espconn_mdns.o \
 +lwip/api/err.o \
 +lwip/core/mdns.o
- 
-+endif
 +
++endif
+ 
 +LIB = $(USER_LIBDIR)liblwip_open.a
 +ifeq ($(ENABLE_ESPCONN),1)
 +    LIB = $(USER_LIBDIR)liblwip_full.a
