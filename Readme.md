@@ -34,7 +34,7 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 
 OS/SDK | Linux | Mac OS X | Windows | FreeBSD-current |
 -------|-------|----------|---------|-----------------|
-UDK (v1.5)    | n/a   | n/a      |   [![Build status](https://ci.appveyor.com/api/projects/status/5aj0oi0wyk4uij00/branch/develop?svg=true)](https://ci.appveyor.com/project/slaff/sming-sb483/branch/develop)      |     n/a         |
+UDK (v1.5)    | n/a   | n/a      |   [![Build status](https://ci.appveyor.com/api/projects/status/5aj0oi0wyk4uij00/branch/master?svg=true)](https://ci.appveyor.com/project/slaff/sming-sb483/branch/master)      |     n/a         |
 esp-alt-sdk (v1.4, v1.5) | :sunny:  | :sunny:  | :sunny:  | :sunny:  | :sunny:  |
 esp-open-sdk (v1.4, v1.5, v2.0) | :sunny:  | :sunny: | n/a | n/a |
 
@@ -43,7 +43,7 @@ SDK = Software Development Kit
 n/a = The selected SDK is not available on that OS
 
 ## Latest Stable Release
-- [Sming V3.1.0](https://github.com/SmingHub/Sming/releases/tag/3.1.0)
+- [Sming V3.1.1](https://github.com/SmingHub/Sming/releases/tag/3.1.1)
 
 ## Getting started
 - [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
