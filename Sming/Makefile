@@ -116,6 +116,8 @@ DEBUG_PRINT_FILENAME_AND_LINE ?= 0
 # Defaut debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
 DEBUG_VERBOSE_LEVEL ?= 2
 
+RELOAD_MKFILE = 0
+
 # Sming Framework Path
 SMF = $(SMING_HOME)
 
@@ -338,7 +340,7 @@ endif
 
 spiffy: spiffy/spiffy
 
-spiffy/spiffy:
+spiffy/spiffy: third-party/spiffs/makefile
 	$(vecho) "Making spiffy utility"
 	$(Q) $(MAKE) --no-print-directory -C spiffy V=$(V)
 	$(vecho) "Done"
@@ -355,7 +357,7 @@ endif
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/$(LIBSMING).a  
 	$(vecho) "Done"
 
-checkdirs: $(THIRD_PARTY_DATA) $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
+checkdirs: $(THIRD_PARTY_DATA) reload $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
@@ -410,7 +412,12 @@ third-party/%:
 # if the new submodule brings source code files that need to be compiled inside Sming
 # then we need somehow to be able to "see" these new files. 
 # For now we solve this by "reloading" the makefile after fetching a module.
-	$(Q) $(MAKE) -C $(SMING_HOME)
+    RELOAD_MKFILE=1
+
+reload: 
+	$(Q) if [ $(RELOAD_MKFILE) -eq 1 ]; then \
+        $(MAKE) -C $(SMING_HOME) $(MAKECMDGOALS) RELOAD_MKFILE=0; \
+    fi
 
 samples: $(SAMPLES_DIRS)
 
