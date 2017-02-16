@@ -55,6 +55,12 @@ endif
 ifeq ($(RBOOT_IROM_CHKSUM),1)
 	CFLAGS += -DBOOT_IROM_CHKSUM
 endif
+ifneq ($(RBOOT_ROM1_ADDR),)
+	CFLAGS += -DBOOT_ROM1_ADDR=$(RBOOT_ROM1_ADDR)
+endif
+ifneq ($(RBOOT_ROM2_ADDR),)
+	CFLAGS += -DBOOT_ROM2_ADDR=$(RBOOT_ROM2_ADDR)
+endif
 ifneq ($(RBOOT_EXTRA_INCDIR),)
 	CFLAGS += $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
 endif
