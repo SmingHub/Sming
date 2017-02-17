@@ -54,6 +54,13 @@ public:
 	__forceinline bool isProcessing()  { return state == eTCS_Connected || state == eTCS_Connecting; }
 	__forceinline TcpClientState getConnectionState() { return state; }
 
+	inline void setReceiveCallback( TcpClientDataDelegate on_receive ) {
+		receive = on_receive;
+	}
+	inline void setCompleteCallback( TcpClientCompleteDelegate on_complete ) {
+		completed = on_complete;
+	}
+	
 protected:
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf *buf);
