@@ -73,6 +73,67 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
+	/*There are four debug levels: debug=3, info=2, warn=1, error=0
+	 * You can set the debug level by making with DEBUG_VERBOSE_LEVEL
+	 * set to the desired level (0-3). Ex make rebuild DEBUG_VERBOSE_LEVEL=2 will
+	 * show only info messages and above, will not show debug messages
+	 * (they will be removed from the build at compile time, saving flash space)
+	 *
+	 * Functions debugf, debug_d, debug_i, debug_w, and debug_e store the format string
+	 * in flash so that the RAM is freed for more important information.
+	 *
+	 * Another useful feature is printing the filename and line number of every degub line
+	 * This will require extra space on flash and can be enabled
+	 * using make parameter PRINT_FILENAME_AND_LINE=1*/
+
+	debug_d("(DEBUG) message printed on UART0");
+
+	debug_i("(INFO) message printed on UART0");
+
+	debug_w("(WARNING) message printed on UART0");
+
+	debug_e("(ERROR) message printed on UART0");
+
+	/*debugf is equivalent to debug_e*/
+	debugf("(ERROR) message printed with debugf on UART0");
+
+	/*
+	 * Notice: The line below disables the debugf output on all UARTs.
+	 */
+	Serial.systemDebugOutput(false);
+
+	debugf("(DEBUG) don't print me at all");
+
+	/*
+	 * The debugf output is redirected to UART0
+	 * together with the system debug messages.
+	 */
+	Serial.systemDebugOutput(true);
+	delay(200);
+
+	debugf("(DEBUG) print me again on UART0");
+
+	/**
+	 * Serial1 uses UART1, TX pin is GPIO2.
+	 * UART1 can not be used to receive data because normally
+	 * it's RX pin is occupied for flash chip connection.
+	 *
+	 * If you have a spare serial to USB converter do the following to see the
+	 * messages printed on UART1:
+	 * - connect converter GND to esp8266 GND
+	 * - connect converter RX to esp8266 GPIO2
+	 */
+	HardwareSerial Serial1(UART1);
+	Serial1.begin(SERIAL_BAUD_RATE);
+
+	/*
+	 * The line below redirect debug output to UART1
+	 */
+	Serial1.systemDebugOutput(true);
+	Serial1.printf("====Debug Information=====\n");
+
+	debugf("(DEBUG) message printed on UART1"); // You should see the debug message in UART1 only.
+
 	procTimer.initializeMs(2000, sayHello).start();
 
 	testPrintf();
@@ -81,6 +142,8 @@ void init()
 	//  * Option 1
 	//	Set Serial Callback to global routine:
 	//	   Serial.setCallback(onDataCallback);
+	// If you want to test local echo set the following callback
+	//	   Serial.setCallback(echoCallback);
 
 	// 	* Option 2
 	//  Instantiate hwsDelegateDemo which includes Serial Delegate class

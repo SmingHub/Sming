@@ -763,6 +763,7 @@ INPUT                  = api.dox sdk.dox \
 			../Sming/Services \
 			../Sming/Wiring \
                         ../Sming/rboot \
+                        ../Sming/Libraries \
 			$(ESP_HOME)/sdk/include/gpio.h
 
 # This tag can be used to specify the character encoding of the source files

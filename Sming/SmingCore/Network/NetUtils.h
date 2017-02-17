@@ -31,7 +31,7 @@ public:
 	static bool FixNetworkRouting();
 
 	// Debug
-	void debugPrintTcpList();
+	static void debugPrintTcpList();
 
 private:
 	static bool ipClientRoutingFixed;

@@ -51,6 +51,7 @@ bool nmOnReceive(TcpClient& client, char *buf, int size)
 	// debug msg
 	debugf("nmOnReceive");
 	debugf("%s", buf);
+	return true;
 }
 
 // Создаем объект narodMon класса TcpClient

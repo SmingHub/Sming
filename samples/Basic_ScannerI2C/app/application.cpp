@@ -81,6 +81,8 @@ void init()
 
 	WDT.enable(false); // First (but not the best) option: fully disable watch dog timer
 
+	// Default I2C pins (SCL:0 , SDA: 2)
+
 	// You can change pins:
 	//Wire.pins(12, 14); // SCL, SDA
 

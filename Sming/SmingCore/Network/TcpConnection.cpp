@@ -19,7 +19,7 @@
 
 TcpConnection::TcpConnection(bool autoDestruct) : autoSelfDestruct(autoDestruct), sleep(0), canSend(true), timeOut(70)
 {
-	initialize(tcp_new());
+
 }
 
 TcpConnection::TcpConnection(tcp_pcb* connection, bool autoDestruct) : autoSelfDestruct(autoDestruct), sleep(0), canSend(true), timeOut(70)
@@ -32,10 +32,12 @@ TcpConnection::~TcpConnection()
 	autoSelfDestruct = false;
 	close();
 
+#ifdef ENABLE_SSL
 	if(sslFingerprint) {
 		delete[] sslFingerprint;
 	}
 	freeSslClientKeyCert();
+#endif
 	debugf("~TCP connection");
 }
 
@@ -47,9 +49,9 @@ bool TcpConnection::connect(String server, int port, boolean useSsl /* = false *
 	ip_addr_t addr;
 
 	this->useSsl = useSsl;
+#ifdef ENABLE_SSL
 	this->sslOptions |= sslOptions;
 
-#ifdef ENABLE_SSL
 	if(ssl_ext == NULL) {
 		ssl_ext = ssl_ext_new();
 		ssl_ext->host_name = (char *)malloc(server.length() + 1);
@@ -80,9 +82,13 @@ bool TcpConnection::connect(String server, int port, boolean useSsl /* = false *
 
 bool TcpConnection::connect(IPAddress addr, uint16_t port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
+	if (tcp == NULL)
+		initialize(tcp_new());
 
 	this->useSsl = useSsl;
+#ifdef ENABLE_SSL
 	this->sslOptions |= sslOptions;
+#endif
 
 	return internalTcpConnect(addr, port);
 }
@@ -347,7 +353,7 @@ void TcpConnection::closeTcpConnection(tcp_pcb *tpcb)
 
 void TcpConnection::flush()
 {
-	if (tcp->state == ESTABLISHED)
+	if (tcp && tcp->state == ESTABLISHED)
 	{
 		//debugf("TCP flush()");
 		tcp_output(tcp);
@@ -630,6 +636,7 @@ void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void 
 	delete dlook;
 }
 
+#ifdef ENABLE_SSL
 void TcpConnection::addSslOptions(uint32_t sslOptions) {
 	this->sslOptions |= sslOptions;
 }
@@ -697,7 +704,6 @@ void TcpConnection::freeSslClientKeyCert() {
 	clientKeyCert.certificateLength = 0;
 }
 
-#ifdef ENABLE_SSL
 SSL* TcpConnection::getSsl() {
 	return ssl;
 }

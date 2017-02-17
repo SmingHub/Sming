@@ -45,12 +45,9 @@ void rBootHttpUpdate::setDelegate(otaUpdateDelegate reqUpdateDelegate) {
 
 void rBootHttpUpdate::updateFailed() {
 	timer.stop();
-	items.clear();
 	debugf("\r\nFirmware download failed..");
-	if (updateDelegate) updateDelegate(false);
-}
-
-void rBootHttpUpdate::onItemDownloadCompleted(HttpClient& client, bool successful) {
+	if (updateDelegate) updateDelegate(*this, false);
+	items.clear();
 }
 
 void rBootHttpUpdate::onTimer() {
@@ -89,7 +86,7 @@ void rBootHttpUpdate::onTimer() {
 	rBootHttpUpdateItem &it = items[currentItem];
 	debugf("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
 	writeInit();
-	startDownload(URL(it.url), eHCM_UserDefined, HttpClientCompletedDelegate(&rBootHttpUpdate::onItemDownloadCompleted, this));
+	startDownload(URL(it.url), eHCM_UserDefined, NULL);
 }
 
 
@@ -122,10 +119,10 @@ bool rBootHttpUpdate::writeEnd() {
 
 void rBootHttpUpdate::applyUpdate() {
 	timer.stop();
-	items.clear();
 	if (romSlot == NO_ROM_SWITCH) {
 		debugf("Firmware updated.");
-		if (updateDelegate) updateDelegate(true);
+		if (updateDelegate) updateDelegate(*this, true);
+		items.clear();
 	} else {
 		// set to boot new rom and then reboot
 		debugf("Firmware updated, rebooting to rom %d...\r\n", romSlot);
@@ -133,4 +130,8 @@ void rBootHttpUpdate::applyUpdate() {
 		System.restart();
 	}
 	return;
+}
+
+rBootHttpUpdateItem rBootHttpUpdate::getItem(unsigned int index) {
+	return items.elementAt(index);
 }
