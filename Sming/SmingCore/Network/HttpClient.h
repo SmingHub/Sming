@@ -13,9 +13,10 @@
 #include "../../Wiring/WHashMap.h"
 #include "../../Services/DateTime/DateTime.h"
 #include "../Delegate.h"
-#include "../../Services/WebHelpers/http_parser.h"
 
-#define MAX_HTTP_HEADERS_SIZE  16*1024
+#define HTTP_MAX_HEADER_SIZE  (8*1024)
+
+#include "../../Services/WebHelpers/http_parser.h"
 
 class HttpClient;
 class URL;

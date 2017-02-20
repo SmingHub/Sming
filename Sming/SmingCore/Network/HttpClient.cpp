@@ -334,7 +334,7 @@ err_t HttpClient::onReceive(pbuf *buf)
 
 	/* Basic sanity check */
 	totalHeadersSize += buf->tot_len;
-	if(totalHeadersSize > MAX_HTTP_HEADERS_SIZE) {
+	if(totalHeadersSize > HTTP_MAX_HEADER_SIZE) {
 		return ERR_ABRT;
 	}
 
