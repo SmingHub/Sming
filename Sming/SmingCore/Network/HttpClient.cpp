@@ -251,7 +251,7 @@ int HttpClient::staticOnHeadersComplete(http_parser* parser)
 	return 0;
 }
 
-int GDB_IRAM_ATTR HttpClient::staticOnHeaderField(http_parser *parser, const char *at, size_t length)
+int HttpClient::staticOnHeaderField(http_parser *parser, const char *at, size_t length)
 {
 	HttpClient *client = (HttpClient*)parser->data;
 	if(client == NULL) {
@@ -300,7 +300,7 @@ int HttpClient::staticOnBody(http_parser *parser, const char *at, size_t length)
 	return 0;
 }
 
-err_t GDB_IRAM_ATTR HttpClient::onConnected(err_t err)
+err_t HttpClient::onConnected(err_t err)
 {
 	if (err == ERR_OK)
 	{
@@ -324,7 +324,7 @@ err_t GDB_IRAM_ATTR HttpClient::onConnected(err_t err)
 	return ERR_OK;
 }
 
-err_t GDB_IRAM_ATTR HttpClient::onReceive(pbuf *buf)
+err_t HttpClient::onReceive(pbuf *buf)
 {
 	if (buf == NULL)
 	{
