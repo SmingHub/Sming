@@ -253,8 +253,8 @@ endif
 LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-Map=$(FW_BASE)/firmware.map -Wl,-wrap,system_restart_local 
 
 # linker script used for the above linkier step
-LD_PATH     = $(SMING_HOME)/compiler/ld/
-LD_SCRIPT	= $(LD_PATH)eagle.app.v6.cpp.ld
+LD_PATH     = $(SMING_HOME)/compiler/ld
+LD_SCRIPT	= eagle.app.v6.cpp.ld
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m
@@ -330,7 +330,6 @@ TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
 SPIFF_BIN_OUT ?= spiff_rom
 SPIFF_BIN_OUT := $(FW_BASE)/$(SPIFF_BIN_OUT).bin
-LD_SCRIPT	:= $(addprefix -T,$(LD_SCRIPT))
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
@@ -365,7 +364,7 @@ spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 
 $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
-	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
+	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 
 	$(Q) $(STRIP) $@
 
