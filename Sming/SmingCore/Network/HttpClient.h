@@ -16,7 +16,7 @@
 
 #define HTTP_MAX_HEADER_SIZE  (8*1024)
 
-#include "../../Services/WebHelpers/http_parser.h"
+#include "../http-parser/http_parser.h"
 
 class HttpClient;
 class URL;

@@ -165,6 +165,11 @@ THIRD_PARTY_DATA += third-party/spiffs/makefile
 MODULES		     += third-party/spiffs/src
 EXTRA_INCDIR     += third-party/spiffs/src
 
+# => http-parser
+THIRD_PARTY_DATA += third-party/http-parser/Makefile
+MODULES		     += third-party/http-parser/
+EXTRA_INCDIR     += third-party/http-parser/
+
 # => esp-gdbstub
 ifeq ($(ENABLE_GDB), 1)
 	THIRD_PARTY_DATA += third-party/esp-gdbstub/Makefile
