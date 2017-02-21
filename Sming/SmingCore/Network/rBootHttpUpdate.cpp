@@ -89,20 +89,13 @@ void rBootHttpUpdate::onTimer() {
 	startDownload(URL(it.url), eHCM_UserDefined, NULL);
 }
 
-
-void rBootHttpUpdate::writeRawData(pbuf* buf, int startPos) {
-	pbuf *cur = buf;
-	while (cur != NULL && cur->len > 0 && !writeError) {
-		uint8* ptr = (uint8*) cur->payload + startPos;
-		int len = cur->len - startPos;
-		writeError = !writeFlash(ptr, len);
-		if (writeError) {
-			debugf("Write Error!");
-		}
-		items[currentItem].size += len;
-		cur = cur->next;
-		startPos = 0;
+err_t rBootHttpUpdate::onResponseBody(const char *at, size_t length) {
+	debugf("onResponseBody: %d", length);
+	writeError = !writeFlash((uint8 *)at, length);
+	if (writeError) {
+		return -1;
 	}
+	items[currentItem].size += length;
 }
 
 void rBootHttpUpdate::writeInit() {

@@ -1,7 +1,7 @@
 /*
  * HttpFirmwareUpdate.cpp
  *
- *  Created on: 26 апр. 2015 г.
+ *  Created on: 26 пїЅпїЅпїЅ. 2015 пїЅ.
  *      Author: Anakod
  */
 
@@ -64,7 +64,7 @@ void HttpFirmwareUpdate::onTimer()
 		{
 			debugf("\r\nFirmware download finished!");
 			for (int i = 0; i < items.count(); i++)
-				debugf("\t item: 0x%X 0x%X %d bytes", items[i].targetOffset, items[i].flash - INTERNAL_FLASH_START_ADDRESS, items[i].size);
+				debugf("\t item: 0x%X 0x%X %d bytes", items[i].targetOffset, items[i].flash, items[i].size);
 
 			applyUpdate();
 			return;
@@ -82,33 +82,26 @@ void HttpFirmwareUpdate::onTimer()
 	}
 
 	HttpFirmwareUpdateItem &it = items[currentItem];
-//	uint32_t sect = flashmem_get_sector_of_address(pos);
-//	sect++;
-//	pos = INTERNAL_FLASH_START_ADDRESS + sect * INTERNAL_FLASH_SECTOR_SIZE;
 	it.flash = pos;
 	debugf("Download file:\r\n    (%d) %s -> 0x%X", currentItem, it.url.c_str(), it.targetOffset);
 	startDownload(URL(it.url), eHCM_UserDefined, NULL);
 }
 
-void HttpFirmwareUpdate::writeRawData(pbuf* buf, int startPos)
+err_t HttpFirmwareUpdate::onResponseBody(const char *at, size_t length)
 {
-	pbuf *cur = buf;
-	while (cur != NULL && cur->len > 0 && !writeError)
-	{
-		char* ptr = (char*) cur->payload + startPos;
-		int len = cur->len - startPos;
-		int res = writeFlash(ptr, pos, len);
-		//debugf("Write 0x%X %d %d", pos, len, res);
-		pos += res;
-		writeError |= (res != len);
-		if (writeError)
-			debugf("WriteError %d != %d", res, len);
-		cur = cur->next;
-		startPos = 0;
+	int res = writeFlash(at, pos, length);
+	writeError |= (res != length);
+	if (writeError) {
+		debugf("WriteError %d != %d", res, length);
+		return -1;
 	}
+
+	pos += res;
+
+	return 0;
 }
 
-uint32_t HttpFirmwareUpdate::writeFlash(char* data, uint32_t pos, int size)
+uint32_t HttpFirmwareUpdate::writeFlash(const char* data, uint32_t pos, int size)
 {
 	return flashmem_write(data, pos, size);
 }
@@ -117,6 +110,6 @@ void HttpFirmwareUpdate::applyUpdate()
 {
 	// From begin of first to the end of last sector
 	int size = items[items.count() - 1].targetOffset + items[items.count() - 1].size - items[0].targetOffset;
-	System.applyFirmwareUpdate(items[0].flash - INTERNAL_FLASH_START_ADDRESS, items[0].targetOffset, size);
+	System.applyFirmwareUpdate(items[0].flash, items[0].targetOffset, size);
 	return;
 }

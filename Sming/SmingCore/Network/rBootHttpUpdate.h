@@ -57,7 +57,7 @@ public:
 
 protected:
 	void onTimer();
-	virtual void writeRawData(pbuf* buf, int startPos);
+	virtual err_t onResponseBody(const char *at, size_t length);
 	void applyUpdate();
 	void updateFailed();
 

@@ -140,7 +140,6 @@ void HttpClient::reset()
 	lastWasValue = true;
 	lastData = "";
 	currentField  = "";
-	totalHeadersSize = 0;
 }
 
 HashMap<String, String> &HttpClient::getResponseHeaders()
@@ -214,6 +213,7 @@ err_t HttpClient::onResponseBody(const char *at, size_t length)
 
 			if (writeError)
 				close();
+			break;
 		}
 	}
 
@@ -330,12 +330,6 @@ err_t HttpClient::onReceive(pbuf *buf)
 	{
 		// Disconnected, close it
 		return TcpClient::onReceive(buf);
-	}
-
-	/* Basic sanity check */
-	totalHeadersSize += buf->tot_len;
-	if(totalHeadersSize > HTTP_MAX_HEADER_SIZE) {
-		return ERR_ABRT;
 	}
 
 	char *data = (char *)malloc(buf->tot_len);

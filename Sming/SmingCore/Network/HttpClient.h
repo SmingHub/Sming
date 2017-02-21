@@ -84,14 +84,14 @@ public:
 
 protected:
 	bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
-	void onFinished(TcpClientState finishState);
+	virtual void onFinished(TcpClientState finishState);
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf *buf);
 
 	virtual err_t onResponseBody(const char *at, size_t length);
 
 	/**
-	 * Method that handles protocol upgrade. Implement this metheod in child classes.
+	 * Method that handles protocol upgrade. Implement this method in child classes.
 	 * For example in WebSockets client class.
 	 *
 	 * @param http_parser* parser
@@ -132,7 +132,6 @@ private:
 
 	ResponseBodyDelegate responseBodyDelegate;
 	HeadersCompleteDelegate headersCompleteDelegate;
-	int totalHeadersSize = 0;
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTPCLIENT_H_ */
