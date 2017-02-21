@@ -96,6 +96,8 @@ err_t rBootHttpUpdate::onResponseBody(const char *at, size_t length) {
 		return -1;
 	}
 	items[currentItem].size += length;
+
+	return ERR_OK;
 }
 
 void rBootHttpUpdate::writeInit() {

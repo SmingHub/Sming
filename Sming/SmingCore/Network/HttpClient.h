@@ -88,16 +88,24 @@ protected:
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf *buf);
 
+	/**
+	 * @brief Method that is called when new body data has arrived
+	 *
+	 * @param at Pointer to the data that is received
+	 * @param length of the data
+	 *
+	 * @return err_t Return 0 on success. Non-zero values will be treated as error and abort the connection
+	 */
 	virtual err_t onResponseBody(const char *at, size_t length);
 
 	/**
-	 * Method that handles protocol upgrade. Implement this method in child classes.
+	 * @brief Method that handles protocol upgrade. Implement this method in child classes.
 	 * For example in WebSockets client class.
 	 *
 	 * @param http_parser* parser
 	 * - the parser->data contains pointer to the current object that called the method
 	 *
-	 * @return err_t
+	 * @return err_t Return 0 on success. Non-zero values will be treated as error and abort the connection
 	 */
 	virtual err_t onProtocolUpgrade(http_parser* parser);
 

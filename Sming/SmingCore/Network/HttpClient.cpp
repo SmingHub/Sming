@@ -295,9 +295,7 @@ int HttpClient::staticOnBody(http_parser *parser, const char *at, size_t length)
 		return -1;
 	}
 
-	client->onResponseBody(at, length);
-
-	return 0;
+	return client->onResponseBody(at, length);
 }
 
 err_t HttpClient::onConnected(err_t err)
@@ -307,12 +305,12 @@ err_t HttpClient::onConnected(err_t err)
 		http_parser_init(parser, HTTP_RESPONSE);
 		parser->data = (void*)this;
 
-		// Callbacks: on_message_begin, on_headers_complete, on_message_complete.
+		// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
 		parserSettings.on_message_begin     = staticOnMessageComplete;
 		parserSettings.on_message_complete  = staticOnMessageComplete;
 		parserSettings.on_headers_complete  = staticOnHeadersComplete;
 
-		// on_url, (common) on_header_field, on_header_value, on_body;
+		// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
 		parserSettings.on_header_field      = staticOnHeaderField;
 		parserSettings.on_header_value      = staticOnHeaderValue;
 		parserSettings.on_body              = staticOnBody;
@@ -333,7 +331,7 @@ err_t HttpClient::onReceive(pbuf *buf)
 	}
 
 	char *data = (char *)malloc(buf->tot_len);
-	pbuf_copy_partial(buf, data, buf->tot_len,0 );
+	pbuf_copy_partial(buf, data, buf->tot_len, 0);
 	int parsedBytes = http_parser_execute(parser, &parserSettings, data, buf->tot_len);
 	free(data);
 
