@@ -82,20 +82,20 @@ void init()
 	 * Functions debugf, debug_d, debug_i, debug_w, and debug_e store the format string
 	 * in flash so that the RAM is freed for more important information.
 	 *
-	 * Another useful feature is printing the filename and line number of every degub line
+	 * Another useful feature is printing the filename and line number of every debug line
 	 * This will require extra space on flash and can be enabled
 	 * using make parameter PRINT_FILENAME_AND_LINE=1*/
 
-	debug_d("(DEBUG) message printed on UART0");
+	debug_d("(DEBUG) message printed on UART0\n");
 
-	debug_i("(INFO) message printed on UART0");
+	debug_i("(INFO) message printed on UART0\n");
 
-	debug_w("(WARNING) message printed on UART0");
+	debug_w("(WARNING) message printed on UART0\n");
 
-	debug_e("(ERROR) message printed on UART0");
+	debug_e("(ERROR) message printed on UART0\n");
 
-	/*debugf is equivalent to debug_e*/
-	debugf("(ERROR) message printed with debugf on UART0");
+	/*debugf is equivalent to debug_i*/
+	debugf("(INFO) message printed with debugf on UART0\n");
 
 	/*
 	 * Notice: The line below disables the debugf output on all UARTs.
