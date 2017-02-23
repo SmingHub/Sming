@@ -330,10 +330,19 @@ err_t HttpClient::onReceive(pbuf *buf)
 		return TcpClient::onReceive(buf);
 	}
 
-	char *data = (char *)malloc(buf->tot_len);
-	pbuf_copy_partial(buf, data, buf->tot_len, 0);
-	int parsedBytes = http_parser_execute(parser, &parserSettings, data, buf->tot_len);
-	free(data);
+	pbuf *cur = buf;
+	int parsedBytes = 0;
+	while (cur != NULL && cur->len > 0) {
+		parsedBytes += http_parser_execute(parser, &parserSettings, (char*) cur->payload, cur->len);
+		if(HTTP_PARSER_ERRNO(parser) != HPE_OK) {
+			// we ran into trouble - abort the connection
+			debugf("HTTP parser error: %s", http_errno_name(HTTP_PARSER_ERRNO(parser)));
+			TcpClient::onReceive(NULL);
+			return ERR_ABRT;
+		}
+
+		cur = cur->next;
+	}
 
 	if (parser->upgrade) {
 		return onProtocolUpgrade(parser);
