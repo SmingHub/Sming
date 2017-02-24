@@ -1,8 +1,5 @@
 /*  
-    eagle.app.v6.cpp.include.ld
-
-    This is the file Sming/Sming/compiler/ld/eagle.app.v6.cpp.ld with the 
-    section MEMORY removed to be included in specific rBoot link files
+    common.ld
 */    
 
 PHDRS

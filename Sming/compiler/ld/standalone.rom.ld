@@ -8,4 +8,4 @@ MEMORY
   irom0_0_seg :                         org = 0x4020a000, len = (1M - 0x0a000)
 }
 
-INCLUDE "eagle.app.v6.cpp.include.ld"
+INCLUDE "common.ld"
