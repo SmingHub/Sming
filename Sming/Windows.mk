@@ -3,9 +3,12 @@
 #==============================================================================
 # 	default directories (make compatible format /<drive>/<absolute path>)
 #------------------------------------------------------------------------------
-# 	ESP8266 SDK package home directory
+# 	ESP8266 SDK directories
 ESP_HOME 		?= c:/Espressif
 ESP_HOME 		:= $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
+
+SDK_BASE        := $(ESP_HOME)/ESP8266_SDK
+SDK_TOOLS       := $(ESP_HOME)/utils/ESP8266
 
 #==============================================================================
 # 	default serial settings
@@ -15,7 +18,6 @@ COM_PORT		?= COM3
 #==============================================================================
 # 	tool settings
 #------------------------------------------------------------------------------
-SDK_TOOLS       := $(ESP_HOME)/utils/ESP8266
 ESPTOOL		 	?= $(SDK_TOOLS)/esptool.exe
 GET_FILESIZE 	?= stat --printf="%s"
 MEMANALYZER  	?= $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe

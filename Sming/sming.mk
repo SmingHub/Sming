@@ -48,7 +48,7 @@ EXTRA_INCDIR    ?= include
 SPIFF_FILES     ?= files
 
 #   SDK directories 
-SDK_BASE        := $(ESP_HOME)/ESP8266_SDK
+SDK_BASE	    ?= $(ESP_HOME)/sdk
 SDK_TOOLS	    ?= $(SDK_BASE)/tools
 SDK_ROMS        := $(SDK_BASE)/bin
 SDK_LIBDIR      := $(SDK_BASE)/lib
