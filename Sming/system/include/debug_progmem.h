@@ -59,13 +59,13 @@ extern "C" {
 #define debug_e(fmt, ...) \
 	({static const char log_string[] \
 	__attribute__((aligned(4))) \
-	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,__LINE__))))) = "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt; \
+	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,__LINE__))))) = "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt "\n"; \
 	printf_P_stack(log_string, __LINE__, ##__VA_ARGS__);})
 #else
 #define debug_e(fmt, ...) \
 	({static const char log_string[] \
 	__attribute__((aligned(4))) \
-	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,__LINE__))))) = fmt; \
+	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,__LINE__))))) = fmt "\n"; \
 	printf_P_stack(log_string, ##__VA_ARGS__);})
 #endif
 
