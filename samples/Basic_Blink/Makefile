@@ -1,24 +1,36 @@
-#####################################################################
-#### Please don't change this file. Use Makefile-user.mk instead ####
-#####################################################################
-# Including user Makefile.
-# Should be used to set project-specific parameters
-include ./Makefile-user.mk
+#	Makefile
+#
+#==============================================================================
+#	project settings 
+#	see sming.mk for more settings
+#------------------------------------------------------------------------------
+#	flash size (required)
+SPI_SIZE        = 4M
 
-# Important parameters check.
-# We need to make sure SMING_HOME and ESP_HOME variables are set.
-# You can use Makefile-user.mk in each project or use enviromental variables to set it globally.
- 
+#	your source directories (default: app)
+MODULES         = app 
+
+#	your extra include directies (default: none)
+EXTRA_INCDIR    = 
+
+#	your extra libraries (default: none)
+EXTRA_LIBS      = 
+
+#	reserved flash area for user data (default: 0)
+USER_FLASH_SIZE	= 0
+
+#==============================================================================
+#	now let sming do all the work ...
+#------------------------------------------------------------------------------
+#	make sure that SMING_HOME is set and the path compatible with make 
 ifndef SMING_HOME
-$(error SMING_HOME is not set. Please configure it in Makefile-user.mk)
+	$(error please set SMING_HOME)
 endif
-ifndef ESP_HOME
-$(error ESP_HOME is not set. Please configure it in Makefile-user.mk)
-endif
+SMING_HOME 		:= $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
 
-# Include main Sming Makefile
-ifeq ($(RBOOT_ENABLED), 1)
-include $(SMING_HOME)/Makefile-rboot.mk
-else
-include $(SMING_HOME)/Makefile-project.mk
-endif
+include $(SMING_HOME)/sming.mk
+
+#==============================================================================
+#	add your own targets below
+#	e. g. for special prerequsisites or ota deployment 
+#------------------------------------------------------------------------------
