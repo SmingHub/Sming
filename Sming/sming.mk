@@ -18,7 +18,12 @@ endif
 #==============================================================================
 #   os specific settings
 #------------------------------------------------------------------------------
-include $(SMING_HOME)/$(OS).mk  
+ifeq ($(OS),Windows_NT)
+	include $(SMING_HOME)/Windows.mk  
+else
+	UNAME := $(shell uname -s)
+	include $(SMING_HOME)/$(UNAME).mk  
+endif	
 
 #==============================================================================
 #   default serial settings
