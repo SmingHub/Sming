@@ -180,7 +180,7 @@ void TcpClient::pushAsyncPart()
 		delete stream; // Free memory now!
 		stream = NULL;
 	}
-}
+} 
 
 err_t TcpClient::onSent(uint16_t len)
 {
@@ -199,7 +199,7 @@ err_t TcpClient::onSent(uint16_t len)
 
 	return ERR_OK;
 }
-
+ 
 void TcpClient::onError(err_t err)
 {
 	state = eTCS_Failed;
@@ -219,6 +219,11 @@ void TcpClient::onFinished(TcpClientState finishState)
 
 	if (completed)
 		completed(*this, state == eTCS_Successful);
+}
+
+void TcpClient::setReceiveDelegate(TcpClientDataDelegate receiveCb)
+{
+	receive = receiveCb;
 }
 
 void TcpClient::setCompleteDelegate(TcpClientCompleteDelegate completeCb)
