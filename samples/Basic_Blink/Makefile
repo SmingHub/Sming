@@ -16,6 +16,9 @@ EXTRA_INCDIR    =
 #	your extra libraries (default: none)
 EXTRA_LIBS      = 
 
+#	spiff size (default: 0)
+SPIFF_SIZE		= 0
+
 #	reserved flash area for user data (default: 0)
 USER_FLASH_SIZE	= 0
 
