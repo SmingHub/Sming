@@ -49,7 +49,7 @@ SPIFF_FILES     ?= files
 
 #   SDK directories 
 SDK_BASE        := $(ESP_HOME)/ESP8266_SDK
-SDK_TOOLS       := $(ESP_HOME)/utils/ESP8266
+SDK_TOOLS	    ?= $(SDK_BASE)/tools
 SDK_ROMS        := $(SDK_BASE)/bin
 SDK_LIBDIR      := $(SDK_BASE)/lib
 SDK_INCDIR      := $(SDK_BASE)/include

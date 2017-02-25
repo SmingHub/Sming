@@ -15,6 +15,7 @@ COM_PORT		?= COM3
 #==============================================================================
 # 	tool settings
 #------------------------------------------------------------------------------
+SDK_TOOLS       := $(ESP_HOME)/utils/ESP8266
 ESPTOOL		 	?= $(SDK_TOOLS)/esptool.exe
 GET_FILESIZE 	?= stat --printf="%s"
 MEMANALYZER  	?= $(SDK_TOOLS)/memanalyzer.exe $(OBJDUMP).exe
