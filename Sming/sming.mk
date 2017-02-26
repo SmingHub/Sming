@@ -532,7 +532,7 @@ export SPI_MODE
 export SPI_SPEED
 export ESPTOOL2
 
-$(RBOOT_BIN):
+$(RBOOT_BIN): $(NEEDED_A)
 	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot RBOOT_GPIO_ENABLED=$(RBOOT_GPIO_ENABLED)
 
 #==============================================================================
