@@ -46,12 +46,6 @@ extern "C" {
 
 #if DEBUG_BUILD
 
-#define TOKEN_PASTE(x,y,z) x##y##z
-#define TOKEN_PASTE2(x,y, z) TOKEN_PASTE(x,y,z)
-
-#define GET_FILENAME(x) #x
-#define GET_FNAME2(x) GET_FILENAME(x)
-
 // http://stackoverflow.com/a/35441900
 #define MACROCAT2(x,y,z) x##y##z
 #define MACROCONCAT(x,y,z) MACROCAT2(x,y,z)
@@ -63,17 +57,16 @@ extern "C" {
 //Next special version of printf from FakePgmSpace is called to fetch and print the message
 #if DEBUG_PRINT_FILENAME_AND_LINE
 #define debug_e(fmt, ...) \
-	({static const char TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__)[] \
+	({static const char log_string[] \
 	__attribute__((aligned(4))) \
-	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,CUST_FILE_BASE))))) = "[" GET_FNAME2(CUST_FILE_BASE) ":%d] " fmt "\r\n"; \
-	printf_P_stack(TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__), __LINE__, ##__VA_ARGS__);})
+	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,__LINE__))))) = "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt "\n"; \
+	printf_P_stack(log_string, __LINE__, ##__VA_ARGS__);})
 #else
-//#define debug_e m_printf
 #define debug_e(fmt, ...) \
-	({static const char TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__)[] \
+	({static const char log_string[] \
 	__attribute__((aligned(4))) \
-	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,CUST_FILE_BASE))))) = fmt"\r\n"; \
-	printf_P_stack(TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__), ##__VA_ARGS__);})
+	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,__LINE__))))) = fmt "\n"; \
+	printf_P_stack(log_string, ##__VA_ARGS__);})
 #endif
 
 	#if DEBUG_VERBOSE_LEVEL == DBG

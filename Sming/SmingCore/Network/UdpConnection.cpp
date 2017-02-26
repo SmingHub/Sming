@@ -79,7 +79,7 @@ void UdpConnection::sendString(const char* data)
 	send(data, strlen(data));
 }
 
-void UdpConnection::sendString(const String data)
+void UdpConnection::sendString(const String& data)
 {
 	sendString(data.c_str());
 }
@@ -97,7 +97,7 @@ void UdpConnection::sendStringTo(IPAddress remoteIP, uint16_t remotePort, const 
 	sendTo(remoteIP, remotePort, data, strlen(data));
 }
 
-void UdpConnection::sendStringTo(IPAddress remoteIP, uint16_t remotePort, const String data)
+void UdpConnection::sendStringTo(IPAddress remoteIP, uint16_t remotePort, const String& data)
 {
 	sendStringTo(remoteIP, remotePort, data.c_str());
 }

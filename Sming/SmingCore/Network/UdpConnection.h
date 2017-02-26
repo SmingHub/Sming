@@ -31,11 +31,11 @@ public:
 	// After connect(..)
 	virtual void send(const char* data, int length);
 	void sendString(const char* data);
-	void sendString(const String data);
+	void sendString(const String& data);
 
 	virtual void sendTo(IPAddress remoteIP, uint16_t remotePort, const char* data, int length);
 	void sendStringTo(IPAddress remoteIP, uint16_t remotePort, const char* data);
-	void sendStringTo(IPAddress remoteIP, uint16_t remotePort, const String data);
+	void sendStringTo(IPAddress remoteIP, uint16_t remotePort, const String& data);
 
 protected:
 	virtual void onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort);

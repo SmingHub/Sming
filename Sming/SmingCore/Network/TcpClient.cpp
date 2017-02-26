@@ -221,6 +221,11 @@ void TcpClient::onFinished(TcpClientState finishState)
 		completed(*this, state == eTCS_Successful);
 }
 
+void TcpClient::setReceiveDelegate(TcpClientDataDelegate receiveCb)
+{
+	receive = receiveCb;
+}
+
 void TcpClient::setCompleteDelegate(TcpClientCompleteDelegate completeCb)
 {
 	completed = completeCb;

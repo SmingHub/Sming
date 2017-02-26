@@ -116,6 +116,8 @@ DEBUG_PRINT_FILENAME_AND_LINE ?= 0
 # Defaut debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
 DEBUG_VERBOSE_LEVEL ?= 2
 
+RELOAD_MKFILE = 0
+
 # Sming Framework Path
 SMF = $(SMING_HOME)
 
@@ -202,7 +204,7 @@ else
 endif
 
 #Append debug options
-CFLAGS += -DCUST_FILE_BASE=$$(subst /,_,$(subst .,_,$$*)) -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
+CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
@@ -338,7 +340,7 @@ endif
 
 spiffy: spiffy/spiffy
 
-spiffy/spiffy:
+spiffy/spiffy: third-party/spiffs/makefile
 	$(vecho) "Making spiffy utility"
 	$(Q) $(MAKE) --no-print-directory -C spiffy V=$(V)
 	$(vecho) "Done"
@@ -355,7 +357,7 @@ endif
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/$(LIBSMING).a  
 	$(vecho) "Done"
 
-checkdirs: $(THIRD_PARTY_DATA) $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
+checkdirs: $(THIRD_PARTY_DATA) reload $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
@@ -410,7 +412,12 @@ third-party/%:
 # if the new submodule brings source code files that need to be compiled inside Sming
 # then we need somehow to be able to "see" these new files. 
 # For now we solve this by "reloading" the makefile after fetching a module.
-	$(Q) $(MAKE) -C $(SMING_HOME)
+    RELOAD_MKFILE=1
+
+reload: 
+	$(Q) if [ $(RELOAD_MKFILE) -eq 1 ]; then \
+        $(MAKE) -C $(SMING_HOME) $(MAKECMDGOALS) RELOAD_MKFILE=0; \
+    fi
 
 samples: $(SAMPLES_DIRS)
 

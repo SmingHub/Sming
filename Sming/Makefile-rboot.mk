@@ -29,7 +29,7 @@ RBOOT_ROM_0      ?= rom0
 RBOOT_ROM_1      ?= rom1
 RBOOT_SPIFFS_0   ?= 0x100000
 RBOOT_SPIFFS_1   ?= 0x300000
-RBOOT_LD_0 ?= $(SMING_HOME)/compiler/ld/rboot.rom0.ld
+RBOOT_LD_0 ?= rboot.rom0.ld
 RBOOT_LD_1 ?= rom1.ld
 # esptool2 path
 ESPTOOL2 ?= esptool2
@@ -152,6 +152,11 @@ SPIFF_FILES ?= files
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
+#Firmware memory layout info files
+FW_MEMINFO_NEW = $(FW_BASE)/fwMeminfo.new
+FW_MEMINFO_OLD = $(FW_BASE)/fwMeminfo.old
+FW_MEMINFO_SAVED = out/fwMeminfo
+
 RBOOT_ROM_0  := $(addprefix $(FW_BASE)/,$(RBOOT_ROM_0).bin)
 RBOOT_ROM_1  := $(addprefix $(FW_BASE)/,$(RBOOT_ROM_1).bin)
 
@@ -198,7 +203,7 @@ else
 	STRIP := @true
 endif
 #Append debug options
-CFLAGS  += -DCUST_FILE_BASE=$$(subst /,_,$(subst .,_,$$*)) -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
+CFLAGS  += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 ENABLE_CUSTOM_HEAP ?= 0
@@ -443,13 +448,21 @@ $(RBOOT_ROM_1): $(TARGET_OUT_1)
 
 $(TARGET_OUT_0): $(APP_AR)
 	$(vecho) "LD $@"
-	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) $(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
+	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(SMING_HOME)/compiler/ld $(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
 	$(Q) $(STRIP) $@
+	
+	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
+	
+	$(Q) if [ -f "$(FW_MEMINFO_NEW)" -a -f "$(FW_MEMINFO_OLD)" ]; then \
+	  awk -F "|" 'FILENAME == "$(FW_MEMINFO_OLD)" { arr[$$1]=$$5 } FILENAME == "$(FW_MEMINFO_NEW)" { if (arr[$$1] != $$5){printf "%s%s%+d%s", substr($$0, 1, length($$0) - 1)," (",$$5 - arr[$$1],")\n" } else {print $$0} }' $(FW_MEMINFO_OLD) $(FW_MEMINFO_NEW); \
+	elif [ -f "$(FW_MEMINFO_NEW)" ]; then \
+	  cat $(FW_MEMINFO_NEW); \
+	fi
 
 
 $(TARGET_OUT_1): $(APP_AR)
 	$(vecho) "LD $@"
-	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) $(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
+	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(SMING_HOME)/compiler/ld  $(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
 	$(Q) $(STRIP) $@
 
 $(APP_AR): $(OBJ)
@@ -524,7 +537,7 @@ terminal:
 flashinit:
 	$(vecho) "Flash init data default and blank data."
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) erase_flash
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin $(SPIFF_START_OFFSET) $(SMING_HOME)/compiler/data/blankfs.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin $(RBOOT_SPIFFS_0) $(SMING_HOME)/compiler/data/blankfs.bin
 
 rebuild: clean all
 
