@@ -68,7 +68,6 @@ extern "C" {
 	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,CUST_FILE_BASE))))) = "[" GET_FNAME2(CUST_FILE_BASE) ":%d] " fmt "\r\n"; \
 	printf_P_stack(TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__), __LINE__, ##__VA_ARGS__);})
 #else
-//#define debug_e m_printf
 #define debug_e(fmt, ...) \
 	({static const char TOKEN_PASTE2(log_,CUST_FILE_BASE,__LINE__)[] \
 	__attribute__((aligned(4))) \
