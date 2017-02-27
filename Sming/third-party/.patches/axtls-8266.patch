@@ -81,7 +81,7 @@ diff -Nuar a/replacements/mem.c b/replacements/mem.c
 +
 +void ax_port_free(void* ptr) {
 +    free(ptr);
-+    DEBUG_TLS_MEM_PRINT("free %d, left %d\r\n", p[-3], system_get_free_heap_size());
++    DEBUG_TLS_MEM_PRINT("free %x, left %d\r\n", ptr, system_get_free_heap_size());
 +}
 diff --git a/Makefile b/Makefile
 index 538f340..6fdb4ad 100644
