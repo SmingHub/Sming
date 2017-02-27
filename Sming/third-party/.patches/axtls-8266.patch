@@ -470,16 +470,3 @@ index 4972119..f6f44f8 100644
  {
      if (tp)
      {
-diff --git a/crypto/crypto_misc.c b/crypto/crypto_misc.c
-index f166bb8..0ffe2aa 100644
---- a/crypto/crypto_misc.c
-+++ b/crypto/crypto_misc.c
-@@ -290,7 +290,7 @@ EXP_FUNC void STDCALL print_blob(const char *format,
-     va_list(ap);
- 
-     va_start(ap, size);
--    sprintf(tmp, "%s\n", format);
-+    snprintf(tmp, sizeof(tmp), "SSL: %s\n", format);
-     vprintf(tmp, ap);
-     print_hex_init(size);
-     for (i = 0; i < size; i++)
