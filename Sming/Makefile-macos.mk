@@ -13,4 +13,4 @@ ESPTOOL		 ?= $(ESP_HOME)/esptool/esptool.py
 KILL_TERM    ?= pkill -9 -f "$(COM_PORT) $(COM_SPEED_SERIAL)" || exit 0
 GET_FILESIZE ?= stat -L -f%z
 TERMINAL     ?= python -m serial.tools.miniterm $(COM_PORT) $(COM_SPEED_SERIAL) $(COM_OPTS)
-MEMANALYZER  ?= $(OBJDUMP) -h -j .data -j .rodata -j .bss -j .text -j .irom0.text
+MEMANALYZER  ?= python $(SMING_HOME)/../tools/memanalyzer.py $(OBJDUMP)
