@@ -37,6 +37,8 @@ if not os.path.exists(appOut):
 
 command = "%s -t '%s' " % (sys.argv[1], sys.argv[2]) 
 response = subprocess.check_output(shlex.split(command))
+if isinstance(response, bytes):
+    response = response.decode('utf-8')	
 lines = response.split('\n')
 
 print("{0: >10}|{1: >30}|{2: >12}|{3: >12}|{4: >8}".format("Section", "Description", "Start (hex)", "End (hex)", "Used space"));
@@ -46,7 +48,7 @@ usedRAM = 0;
 usedIRAM = 0;
 
 i = 0
-for (id, descr) in sections.items():
+for (id, descr) in list(sections.items()):
     sectionStartToken = " _%s_start" %  id
     sectionEndToken   = " _%s_end" % id;
     sectionStart = -1;
@@ -72,6 +74,6 @@ for (id, descr) in sections.items():
     print("{0: >10}|{1: >30}|{2:12X}|{3:12X}|{4:8}".format(id, descr, sectionStart, sectionEnd, sectionLength))
     i += 1
         
-print("Total Used RAM : %d" % usedRAM);
-print("Free RAM : %d" % (TOTAL_IRAM - usedRAM));
-print("Free IRam : %d" % usedIRAM);
+print("Total Used RAM : %d" % usedRAM)
+print("Free RAM : %d" % (TOTAL_IRAM - usedRAM))
+print("Free IRam : %d" % usedIRAM)
