@@ -114,7 +114,7 @@ diff -Nuar a/replacements/mem.c b/replacements/mem.c
 +
 +void ax_port_free(void* ptr) {
 +    free(ptr);
-+    DEBUG_TLS_MEM_PRINT("free %d, left %d\r\n", p[-3], system_get_free_heap_size());
++    DEBUG_TLS_MEM_PRINT("free %x, left %d\r\n", ptr, system_get_free_heap_size());
 +}
 diff --git a/Makefile b/Makefile
 index 538f340..6fdb4ad 100644
@@ -503,16 +503,3 @@ index 4972119..f6f44f8 100644
  {
      if (tp)
      {
-diff --git a/crypto/crypto_misc.c b/crypto/crypto_misc.c
-index f166bb8..0ffe2aa 100644
---- a/crypto/crypto_misc.c
-+++ b/crypto/crypto_misc.c
-@@ -290,7 +290,7 @@ EXP_FUNC void STDCALL print_blob(const char *format,
-     va_list(ap);
- 
-     va_start(ap, size);
--    sprintf(tmp, "%s\n", format);
-+    snprintf(tmp, sizeof(tmp), "SSL: %s\n", format);
-     vprintf(tmp, ap);
-     print_hex_init(size);
-     for (i = 0; i < size; i++)

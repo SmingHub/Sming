@@ -41,7 +41,7 @@ index 1bc584f..0bfc424 100644
  # Install prefix of esp-open-sdk toolchain
  PREFIX = ~/toolchain/xtensa-lx106-elf
  
-@@ -36,14 +38,26 @@ lwip/core/ipv4/ip.o \
+@@ -36,14 +38,27 @@ lwip/core/ipv4/ip.o \
  lwip/core/ipv4/ip_frag.o \
  lwip/netif/etharp.o \
  \
@@ -60,6 +60,7 @@ index 1bc584f..0bfc424 100644
 +lwip/app/espconn_tcp.o \
 +lwip/app/espconn_udp.o \
 +lwip/app/espconn_mdns.o \
++lwip/api/err.o \
 +lwip/core/mdns.o
  
 +endif
