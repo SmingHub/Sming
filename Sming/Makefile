@@ -178,7 +178,7 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
 	EXTRA_INCDIR += third-party/esp-open-lwip/include
 	EXTRA_CFLAGS_LWIP = -I../../system/include -I../../Wiring
-	ENABLE_LWIPDEBUG ?= 1
+	ENABLE_LWIPDEBUG ?= 0
 	ifeq ($(ENABLE_LWIPDEBUG), 1)
 		EXTRA_CFLAGS_LWIP += -DLWIP_DEBUG
 	endif
