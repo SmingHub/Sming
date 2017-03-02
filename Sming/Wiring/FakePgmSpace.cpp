@@ -1,4 +1,4 @@
-
+#include "WiringFrameworkDependencies.h"
 #include "FakePgmSpace.h"
 
 #ifdef ICACHE_FLASH

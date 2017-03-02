@@ -41,7 +41,7 @@ index 1bc584f..0bfc424 100644
  # Install prefix of esp-open-sdk toolchain
  PREFIX = ~/toolchain/xtensa-lx106-elf
  
-@@ -36,14 +38,26 @@ lwip/core/ipv4/ip.o \
+@@ -36,14 +38,27 @@ lwip/core/ipv4/ip.o \
  lwip/core/ipv4/ip_frag.o \
  lwip/netif/etharp.o \
  \
@@ -60,6 +60,7 @@ index 1bc584f..0bfc424 100644
 +lwip/app/espconn_tcp.o \
 +lwip/app/espconn_udp.o \
 +lwip/app/espconn_mdns.o \
++lwip/api/err.o \
 +lwip/core/mdns.o
  
 +endif
@@ -74,7 +75,7 @@ index 1bc584f..0bfc424 100644
  $(LIB): $(OBJS)
  	$(AR) rcs $@ $^
 diff --git a/include/arch/cc.h b/include/arch/cc.h
-index ff03b30..10029c1 100644
+index ff03b30..fde6567 100644
 --- a/include/arch/cc.h
 +++ b/include/arch/cc.h
 @@ -38,8 +38,25 @@
@@ -111,9 +112,25 @@ index ff03b30..10029c1 100644
  
  #define S16_F "d"
  #define U16_F "d"
-
+@@ -73,11 +91,12 @@ typedef unsigned long   mem_ptr_t;
+ #define PACK_STRUCT_BEGIN
+ #define PACK_STRUCT_END
+ 
+-//#define LWIP_DEBUG
+-
+ #ifdef LWIP_DEBUG
+-#define LWIP_PLATFORM_DIAG(x) os_printf x
+-#define LWIP_PLATFORM_ASSERT(x) ETS_ASSERT(x)
++#include "debug_progmem.h"
++
++#define LWIP_PLATFORM_DIAG(x) debug_i x
++#define LWIP_PLATFORM_ASSERT(x) m_printf("ASSERT: %s %s %d", (x), __FUNCTION__, __LINE__)
++
+ #else
+ #define LWIP_PLATFORM_DIAG(x)
+ #define LWIP_PLATFORM_ASSERT(x)
 diff --git a/include/lwipopts.h b/include/lwipopts.h
-index eaa8dd6..6a08192 100644
+index eaa8dd6..dbacd90 100644
 --- a/include/lwipopts.h
 +++ b/include/lwipopts.h
 @@ -953,7 +953,7 @@
@@ -125,6 +142,24 @@ index eaa8dd6..6a08192 100644
  #endif
  #endif
  
+@@ -1823,7 +1823,7 @@
+  * debug messages of certain types.
+  */
+ #ifndef LWIP_DBG_TYPES_ON
+-#define LWIP_DBG_TYPES_ON               LWIP_DBG_OFF
++#define LWIP_DBG_TYPES_ON               LWIP_DBG_ON
+ #endif
+ 
+ /**
+@@ -1992,7 +1992,7 @@
+  * TCP_RST_DEBUG: Enable debugging for TCP with the RST message.
+  */
+ #ifndef TCP_RST_DEBUG
+-#define TCP_RST_DEBUG                   LWIP_DBG_OFF
++#define TCP_RST_DEBUG                   (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
+ #endif
+ 
+ /**
 diff --git a/include/lwip/ip_addr.h b/include/lwip/ip_addr.h
 index 1e46ee5..cfc10f8 100644
 --- a/include/lwip/ip_addr.h

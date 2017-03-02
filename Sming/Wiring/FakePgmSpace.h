@@ -1,7 +1,6 @@
 #ifndef __FAKE_PGMSPACE_H_
 #define __FAKE_PGMSPACE_H_
 
-#include "WiringFrameworkDependencies.h"
 #include "m_printf.h"
 
 #define PGM_P  const char *
@@ -22,7 +21,9 @@ typedef uint32_t prog_uint32_t;
 
 #ifdef ICACHE_FLASH
 
-#define PROGMEM STORE_ATTR ICACHE_RODATA_ATTR
+#ifndef PROGMEM
+#define PROGMEM __attribute__((aligned(4))) __attribute__((section(".irom.text")))
+#endif
 
 #define pgm_read_byte(addr) \
 ({ \
