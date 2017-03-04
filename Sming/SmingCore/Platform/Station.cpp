@@ -100,14 +100,14 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	return true;
 }
 
-void StationClass::connect()
+bool StationClass::connect()
 {
-	wifi_station_connect();
+	return wifi_station_connect();
 }
 
-void StationClass::disconnect()
+bool StationClass::disconnect()
 {
-	wifi_station_disconnect();
+	return wifi_station_disconnect();
 }
 
 bool StationClass::isConnected()

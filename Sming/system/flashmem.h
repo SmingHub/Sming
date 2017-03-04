@@ -63,6 +63,11 @@ uint32_t flashmem_get_sector_of_address( uint32_t addr );
 
 extern uint32_t flashmem_write_internal( const void *from, uint32_t toaddr, uint32_t size );
 extern uint32_t flashmem_read_internal( void *to, uint32_t fromaddr, uint32_t size );
+
+/*
+ * @brief Returns the address of the first free block on flash
+ * @retval  uint32_t the actual address on flash
+ */
 extern uint32_t flashmem_get_first_free_block_address();
 
 #ifdef __cplusplus

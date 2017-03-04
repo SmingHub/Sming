@@ -45,15 +45,9 @@ void rBootHttpUpdate::setDelegate(otaUpdateDelegate reqUpdateDelegate) {
 
 void rBootHttpUpdate::updateFailed() {
 	timer.stop();
-	items.clear();
 	debugf("\r\nFirmware download failed..");
-	if (updateDelegate) updateDelegate(false);
-}
-
-void rBootHttpUpdate::onItemDownloadCompleted(HttpClient& client, bool successful) {
-	if(successful) {
-		rboot_write_end(&rBootWriteStatus);
-	}
+	if (updateDelegate) updateDelegate(*this, false);
+	items.clear();
 }
 
 void rBootHttpUpdate::onTimer() {
@@ -61,6 +55,12 @@ void rBootHttpUpdate::onTimer() {
 	if (TcpClient::isProcessing()) return; // Will wait
 	
 	if (TcpClient::getConnectionState() == eTCS_Successful) {
+
+		//  always call writeEnd()
+		if (!writeEnd()) {
+			debugf("final checks failed!");
+			writeError = 1;
+		}    
 		
 		if (!isSuccessful()) {
 			updateFailed();
@@ -85,16 +85,17 @@ void rBootHttpUpdate::onTimer() {
 	
 	rBootHttpUpdateItem &it = items[currentItem];
 	debugf("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
-	rBootWriteStatus = rboot_write_init(items[currentItem].targetOffset);
-	startDownload(URL(it.url), eHCM_UserDefined, HttpClientCompletedDelegate(&rBootHttpUpdate::onItemDownloadCompleted, this));
+	writeInit();
+	startDownload(URL(it.url), eHCM_UserDefined, NULL);
 }
+
 
 void rBootHttpUpdate::writeRawData(pbuf* buf, int startPos) {
 	pbuf *cur = buf;
 	while (cur != NULL && cur->len > 0 && !writeError) {
 		uint8* ptr = (uint8*) cur->payload + startPos;
 		int len = cur->len - startPos;
-		writeError = !rboot_write_flash(&rBootWriteStatus, ptr, len);
+		writeError = !writeFlash(ptr, len);
 		if (writeError) {
 			debugf("Write Error!");
 		}
@@ -104,12 +105,24 @@ void rBootHttpUpdate::writeRawData(pbuf* buf, int startPos) {
 	}
 }
 
+void rBootHttpUpdate::writeInit() {
+	rBootWriteStatus = rboot_write_init( items[currentItem].targetOffset );
+}
+
+bool rBootHttpUpdate::writeFlash(const u8 *data, u16 size) {
+	return rboot_write_flash(&rBootWriteStatus, (u8 *) data, size );
+}
+
+bool rBootHttpUpdate::writeEnd() {
+	return rboot_write_end(&rBootWriteStatus);
+}
+
 void rBootHttpUpdate::applyUpdate() {
 	timer.stop();
-	items.clear();
 	if (romSlot == NO_ROM_SWITCH) {
 		debugf("Firmware updated.");
-		if (updateDelegate) updateDelegate(true);
+		if (updateDelegate) updateDelegate(*this, true);
+		items.clear();
 	} else {
 		// set to boot new rom and then reboot
 		debugf("Firmware updated, rebooting to rom %d...\r\n", romSlot);
@@ -117,4 +130,8 @@ void rBootHttpUpdate::applyUpdate() {
 		System.restart();
 	}
 	return;
+}
+
+rBootHttpUpdateItem rBootHttpUpdate::getItem(unsigned int index) {
+	return items.elementAt(index);
 }

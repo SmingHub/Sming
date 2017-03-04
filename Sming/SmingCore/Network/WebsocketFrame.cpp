@@ -118,7 +118,7 @@ uint8_t WebsocketFrameClass::encodeFrame(WSFrameType opcode, uint8_t * payload, 
 		//we work on copy of original data so we can mask it without affecting original
 		for (uint8_t x = 0; x < sizeof(maskKey); x++)
 		{
-			maskKey[x] = random(0xFF);
+			maskKey[x] = (char) os_random();
 			*_header = maskKey[x];
 			_header++;
 		}

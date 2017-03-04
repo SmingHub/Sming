@@ -26,12 +26,25 @@ SPI_MODE ?= qio
 # SPI_SIZE: 512K, 256K, 1M, 2M, 4M
 SPI_SIZE ?= 512K
 
+### Debug output parameters
+# By default `debugf` does not print file name and line number. If you want this enabled set the directive below to 1
+DEBUG_PRINT_FILENAME_AND_LINE ?= 0
+
+# Defaut debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
+DEBUG_VERBOSE_LEVEL ?= 2
+
 # Path to spiffy
 SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 
 #ESPTOOL2 config to generate rBootLESS images
 IMAGE_MAIN	?= 0x00000.bin
-IMAGE_SDK	?= 0x09000.bin
+IMAGE_SDK	?= 0x0a000.bin # The name must match the starting address of the irom0 section 
+						   # in the LD file ($SMING_HOME/compiler/ld/standalone.rom.ld).
+						   # To calculate the value do the following: x = irom0_0_seg.org - 0x40200000
+						   # Example: 0x4020a000 - 0x40200000 = 0x0a000
+INIT_BIN_ADDR =  0x7c000
+BLANK_BIN_ADDR =  0x4b000
+
 # esptool2 path
 ESPTOOL2 ?= esptool2
 # esptool2 parameters for rBootLESS images
@@ -125,7 +138,12 @@ SPIFF_FILES ?= files
 BUILD_BASE	= out/build
 FW_BASE		= out/firmware
 
-SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/0x09000.bin) + 16384 + 36864) & (0xFFFFC000) )) )
+# The line below calculates the next available sector after the IMAGE_SDK ROM.
+# The math is the following: next_available_sector_start = (( address + size ) + one_sector_size) & 0xFFFFF000
+# 0x01000    is the size of one sector
+# IMAGE_SDK  contains starting address of the irom0 section and its size
+# 0xFFFF000  mask that is used to show the start of a sector
+SPIFF_START_OFFSET = $(shell printf '0x%X\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/$(IMAGE_SDK)) + 0x1000 + $(basename $(IMAGE_SDK))) & (0xFFFFF000) )) )
 
 #Firmware memory layout info files
 FW_MEMINFO_NEW = $(FW_BASE)/fwMeminfo.new
@@ -137,27 +155,51 @@ TARGET		= app
 
 THIRD_PARTY_DIR = $(SMING_HOME)/third-party
 
+SMING_FEATURES = none
 LIBSMING = sming
 ifeq ($(ENABLE_SSL),1)
 	LIBSMING = smingssl
+	SMING_FEATURES = SSL
 endif
 
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
 MODULES      ?= app     # default to app if not set by user
 EXTRA_INCDIR ?= include # default to include if not set by user
-EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
+
+ENABLE_CUSTOM_LWIP ?= 1
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+	LWIP_INCDIR = $(SMING_HOME)/third-party/esp-open-lwip/include	
+endif
+
+EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
 
 ENABLE_CUSTOM_HEAP ?= 0
+ 
+USER_LIBDIR = $(SMING_HOME)/compiler/lib/
  
 LIBMAIN = main
 ifeq ($(ENABLE_CUSTOM_HEAP),1)
 	LIBMAIN = mainmm
 endif
 
+LIBLWIP = lwip
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+	LIBLWIP = lwip_open
+	ifeq ($(ENABLE_ESPCONN), 1)
+		LIBLWIP = lwip_full
+	endif
+	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBLWIP).a 
+endif
+
+LIBPWM = pwm
+ifeq ($(ENABLE_CUSTOM_PWM), 1)
+	LIBPWM = pwm_open
+	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBPWM).a
+endif
+
 # libraries used in this project, mainly provided by the SDK
-USER_LIBDIR = $(SMING_HOME)/compiler/lib/
-LIBS		= microc microgcc hal phy pp net80211 lwip wpa $(LIBMAIN) $(LIBSMING) crypto pwm smartconfig $(EXTRA_LIBS)
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS)
@@ -174,6 +216,10 @@ else
 	CFLAGS += -Os -g
 	STRIP := @true
 endif
+
+#Append debug options
+CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
+
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # SSL support using axTLS
@@ -185,7 +231,7 @@ ifeq ($(ENABLE_SSL),1)
 		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1
 	endif
 	
-	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBSMING).a include/ssl/private_key.h
+	CUSTOM_TARGETS += include/ssl/private_key.h
 	CFLAGS += $(AXTLS_FLAGS)  
 	CXXFLAGS += $(AXTLS_FLAGS)	
 endif
@@ -207,8 +253,8 @@ endif
 LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-Map=$(FW_BASE)/firmware.map -Wl,-wrap,system_restart_local 
 
 # linker script used for the above linkier step
-LD_PATH     = $(SMING_HOME)/compiler/ld/
-LD_SCRIPT	= $(LD_PATH)eagle.app.v6.cpp.ld
+LD_PATH     = $(SMING_HOME)/compiler/ld
+LD_SCRIPT	= standalone.rom.ld
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m
@@ -237,12 +283,18 @@ ifeq ($(SPI_SIZE), 256K)
 else ifeq ($(SPI_SIZE), 1M)
 	flashimageoptions += -fs 8m
 	SPIFF_SIZE ?= 524288  #512K
+	INIT_BIN_ADDR  = 0x0fc000
+	BLANK_BIN_ADDR = 0x0fe000
 else ifeq ($(SPI_SIZE), 2M)
 	flashimageoptions += -fs 16m
 	SPIFF_SIZE ?= 524288  #512K
+	INIT_BIN_ADDR  = 0x1fc000
+	BLANK_BIN_ADDR = 0x1fe000
 else ifeq ($(SPI_SIZE), 4M)
 	flashimageoptions += -fs 32m
 	SPIFF_SIZE ?= 524288  #512K
+	INIT_BIN_ADDR  = 0x3fc000
+	BLANK_BIN_ADDR = 0x3fe000
 else
 	flashimageoptions += -fs 4m
 	SPIFF_SIZE ?= 196608  #192K
@@ -278,17 +330,10 @@ TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
 SPIFF_BIN_OUT ?= spiff_rom
 SPIFF_BIN_OUT := $(FW_BASE)/$(SPIFF_BIN_OUT).bin
-LD_SCRIPT	:= $(addprefix -T,$(LD_SCRIPT))
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
-
-CUSTOM_TARGETS ?=
-
-ifeq ($(ENABLE_CUSTOM_PWM), 1)
-	CUSTOM_TARGETS += $(USER_LIBDIR)/libpwm.a
-endif
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -313,13 +358,13 @@ endef
 
 .PHONY: all checkdirs spiff_update spiff_clean clean
 
-all: checkdirs $(TARGET_OUT) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2)
+all: $(USER_LIBDIR)/lib$(LIBSMING).a checkdirs $(TARGET_OUT) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2)
 
 spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 
 $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
-	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
+	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 
 	$(Q) $(STRIP) $@
 
@@ -342,8 +387,8 @@ $(TARGET_OUT): $(APP_AR)
 	$(vecho) "------------------------------------------------------------------------------"
 	$(vecho) "# Generating image..."
 #	$(Q) $(ESPTOOL2) elf2image $@ $(flashimageoptions) -o $(FW_BASE)/
-	@$(ESPTOOL2) $(ESPTOOL2_MAIN_ARGS) $@ $(FW_BASE)/$(IMAGE_MAIN) $(ESPTOOL2_SECTS)
-	@$(ESPTOOL2) $(ESPTOOL2_SDK_ARGS) $@ $(FW_BASE)/$(IMAGE_SDK)
+	$(Q) $(ESPTOOL2) $(ESPTOOL2_MAIN_ARGS) $@ $(FW_BASE)/$(IMAGE_MAIN) $(ESPTOOL2_SECTS)
+	$(Q) $(ESPTOOL2) $(ESPTOOL2_SDK_ARGS) $@ $(FW_BASE)/$(IMAGE_SDK)
 	$(vecho) "Generate firmware images successully in folder $(FW_BASE)."
 	$(vecho) "Done"
 
@@ -352,7 +397,7 @@ $(APP_AR): $(OBJ)
 	$(Q) $(AR) cru $@ $^
 	
 $(USER_LIBDIR)/lib$(LIBSMING).a:
-	$(vecho) "Recompiling Sming with SSL support. This may take some time"
+	$(vecho) "(Re)compiling Sming. Enabled features: $(SMING_FEATURES). This may take some time"
 	$(Q) $(MAKE) -C $(SMING_HOME) clean V=$(V) ENABLE_SSL=$(ENABLE_SSL) SMING_HOME=$(SMING_HOME)
 	$(Q) $(MAKE) -C $(SMING_HOME) V=$(V) ENABLE_SSL=$(ENABLE_SSL) SMING_HOME=$(SMING_HOME)
 
@@ -362,8 +407,13 @@ include/ssl/private_key.h:
 	$(Q) AXDIR=$(CURRENT_DIR)/include/ssl/  $(THIRD_PARTY_DIR)/axtls-8266/tools/make_certs.sh 
 
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
-$(USER_LIBDIR)/libpwm.a:
-	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm.a ENABLE_CUSTOM_PWM=1
+$(USER_LIBDIR)/libpwm_open.a:
+	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm_open.a ENABLE_CUSTOM_PWM=1
+endif
+
+ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+$(USER_LIBDIR)/liblwip_%.a:
+	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/$(notdir $@) ENABLE_CUSTOM_LWIP=1 ENABLE_ESPCONN=$(ENABLE_ESPCONN)
 endif
 
 checkdirs: $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
@@ -399,9 +449,9 @@ flash: all
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
 	-$(Q) $(KILL_TERM)
 ifeq ($(DISABLE_SPIFFS), 1)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(basename $(IMAGE_MAIN)) $(FW_BASE)/$(IMAGE_MAIN) $(basename $(IMAGE_SDK)) $(FW_BASE)/$(IMAGE_SDK)
 else
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(FW_BASE)/0x00000.bin 0x09000 $(FW_BASE)/0x09000.bin $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(basename $(IMAGE_MAIN)) $(FW_BASE)/$(IMAGE_MAIN) $(basename $(IMAGE_SDK)) $(FW_BASE)/$(IMAGE_SDK) $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
 endif
 	$(TERMINAL)
 
@@ -412,7 +462,8 @@ terminal:
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x7c000 $(SDK_BASE)/bin/esp_init_data_default.bin 0x7e000 $(SDK_BASE)/bin/blank.bin 0x4B000 $(SMING_HOME)/compiler/data/blankfs.bin
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) erase_flash
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin $(SPIFF_START_OFFSET) $(SMING_HOME)/compiler/data/blankfs.bin
 
 rebuild: clean all
 

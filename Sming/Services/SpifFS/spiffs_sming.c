@@ -45,13 +45,8 @@ spiffs_config spiffs_get_storage_config()
 	cfg.phys_addr = ( u32_t )flashmem_get_first_free_block_address();
 	if (cfg.phys_addr == 0)
 		return cfg;
-	cfg.phys_addr += 0x3000;
-	cfg.phys_addr &= 0xFFFFC000;  // align to 4 sector.
-	cfg.phys_size = INTERNAL_FLASH_SIZE - ( ( u32_t )cfg.phys_addr - INTERNAL_FLASH_START_ADDRESS );
-	/*cfg.phys_addr = INTERNAL_FLASH_SIZE - SPIFFS_WORK_SIZE + INTERNAL_FLASH_START_ADDRESS;
-	cfg.phys_addr += 0x3000;
-	cfg.phys_addr &= 0xFFFFC000;  // align to 4 sector.
-	cfg.phys_size = SPIFFS_WORK_SIZE;*/
+	cfg.phys_addr &= 0xFFFFF000;  // get the start address of the sector
+	cfg.phys_size = INTERNAL_FLASH_SIZE - ( ( u32_t )cfg.phys_addr);
 	cfg.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE; // according to datasheet
 	cfg.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2; // Important to make large
 	cfg.log_page_size = LOG_PAGE_SIZE; // as we said
@@ -104,7 +99,7 @@ static void spiffs_mount_internal(spiffs_config *cfg)
 	  return;
   }
 
-  debugf("fs.start: size:%d Kb, offset:0x%X\n", cfg->phys_size / 1024, cfg->phys_addr - INTERNAL_FLASH_START_ADDRESS);
+  debugf("fs.start: size:%d Kb, offset:0x%X\n", cfg->phys_size / 1024, cfg->phys_addr);
 
   cfg->hal_read_f = api_spiffs_read;
   cfg->hal_write_f = api_spiffs_write;

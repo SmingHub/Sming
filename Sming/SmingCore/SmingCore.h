@@ -8,7 +8,7 @@
 #ifndef _NET_WIRING_
 #define _NET_WIRING_
 
-#define SMING_VERSION "3.0.0" // Major Minor Sub
+#define SMING_VERSION "3.1.0" // Major Minor Sub
 
 #include "../Wiring/WiringFrameworkIncludes.h"
 
@@ -55,5 +55,6 @@
 #include "../Services/DateTime/DateTime.h"
 #include "../Services/libemqtt/libemqtt.h"
 #include "../Services/FATFS/ff.h"
+#include "../Services/Yeelight/YeelightBulb.h"
 
 #endif

@@ -34,7 +34,7 @@ diff -Nuar a/replacements/libc.c b/replacements/libc.c
 diff -Nuar a/replacements/mem.c b/replacements/mem.c
 --- a/replacements/mem.c	1970-01-01 01:00:00.000000000 +0100
 +++ b/replacements/mem.c	2016-11-21 11:02:07.672185632 +0100
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,81 @@
 +/*
 + * Memory functions for ESP8266 taken from Arduino-Esp project
 +
@@ -114,13 +114,10 @@ diff -Nuar a/replacements/mem.c b/replacements/mem.c
 +
 +void ax_port_free(void* ptr) {
 +    free(ptr);
-+    uint32_t *p = (uint32_t*) ptr;
-+    size_t size = p[-3];
-+    if (size >= 1024)
-+        DEBUG_TLS_MEM_PRINT("free %d, left %d\r\n", p[-3], system_get_free_heap_size());
++    DEBUG_TLS_MEM_PRINT("free %x, left %d\r\n", ptr, system_get_free_heap_size());
 +}
 diff --git a/Makefile b/Makefile
-index 538f340..b7ba060 100644
+index 538f340..6fdb4ad 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -7,7 +7,9 @@ OBJCOPY := $(TOOLCHAIN_PREFIX)objcopy
@@ -134,16 +131,30 @@ index 538f340..b7ba060 100644
  
  OBJ_FILES := \
  	crypto/aes.o \
+@@ -44,6 +46,7 @@ LDFLAGS  += 	-L$(XTENSA_LIBS)/lib \
+ CFLAGS+=-std=c99 -DESP8266
+ 
+ CFLAGS += -Wall -Os -g -O2 -Wpointer-arith -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mno-text-section-literals  -D__ets__ -DICACHE_FLASH
++CFLAGS += $(CFLAGS_EXTRA)
+ 
+ ifneq ($(MFORCE32),)
+     # Your compiler supports the -mforce-l32 flag which means that 
 diff --git a/ssl/os_port.h b/ssl/os_port.h
-index e672f10..e06f4ff 100644
+index e672f10..88a9ff7 100644
 --- a/ssl/os_port.h
 +++ b/ssl/os_port.h
-@@ -60,7 +60,14 @@ extern "C" {
+@@ -44,6 +44,7 @@ extern "C" {
+ #include "os_int.h"
+ #include "config.h"
+ #include <stdio.h>
++#include "debug_progmem.h"
+ 
+ #ifdef WIN32
+ #define STDCALL                 __stdcall
+@@ -60,18 +61,25 @@ extern "C" {
  
  #if defined(ESP8266)
  
-+extern int ets_putc(int character);
-+extern void ets_printf(const char*, ...);
 +extern int ax_port_read(int clientfd, uint8_t *buf, int bytes_needed);
 +extern int ax_port_write(int clientfd, uint8_t *buf, uint16_t bytes_needed);
 +
@@ -153,7 +164,22 @@ index e672f10..e06f4ff 100644
  #include <errno.h>
  #define alloca(size) __builtin_alloca(size)
  #define TTY_FLUSH()
-@@ -96,7 +103,8 @@ extern "C" {
+ #ifdef putc
+ #undef putc
+ #endif
+-#define putc(x, f)   ets_putc(x)
++#define putc(x, f)   debug_i("%c", (x))
+ #ifdef printf
+ #undef printf
+ #endif
+-#define printf(...)  ets_printf(__VA_ARGS__)
++#define printf  debug_i
++#define snprintf m_snprintf
++#define vprintf m_vprintf
+ 
+ #define SOCKET_READ(A,B,C)      ax_port_read(A,B,C)
+ #define SOCKET_WRITE(A,B,C)     ax_port_write(A,B,C)
+@@ -96,7 +104,8 @@ extern "C" {
  #define be64toh(x) __bswap_constant_64(x)
  #endif
  
@@ -163,7 +189,7 @@ index e672f10..e06f4ff 100644
  
  #elif defined(WIN32)
  
-@@ -190,6 +198,18 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
+@@ -190,6 +199,18 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
  #endif  /* Not Win32 */
  
  /* some functions to mutate the way these work */
@@ -183,7 +209,7 @@ index e672f10..e06f4ff 100644
    return ((n & 0xff) << 24) |
      ((n & 0xff00) << 8) |
 diff --git a/ssl/tls1.c b/ssl/tls1.c
-index 0cf2e4c..78576f7 100644
+index 0cf2e4c..fd14dea 100644
 --- a/ssl/tls1.c
 +++ b/ssl/tls1.c
 @@ -1334,6 +1334,9 @@ int basic_read(SSL *ssl, uint8_t **in_data)
@@ -196,6 +222,24 @@ index 0cf2e4c..78576f7 100644
      if (IS_SET_SSL_FLAG(SSL_SENT_CLOSE_NOTIFY))
          return SSL_CLOSE_NOTIFY;
  
+@@ -2226,8 +2229,15 @@ void DISPLAY_STATE(SSL *ssl, int is_send, uint8_t state, int not_ok)
+     if (!IS_SET_SSL_FLAG(SSL_DISPLAY_STATES))
+         return;
+ 
+-    printf(not_ok ? "Error - invalid State:\t" : "State:\t");
+-    printf(is_send ? "sending " : "receiving ");
++    if(not_ok)
++    	printf("Error - invalid State:\t");
++    else
++    	printf("State:\t");
++
++    if(is_send)
++    	printf("sending ");
++    else
++    	printf("receiving ");
+ 
+     switch (state)
+     {
 diff --git a/ssl/tls1.h b/ssl/tls1.h
 index 6565625..c644321 100644
 --- a/ssl/tls1.h
@@ -368,3 +412,94 @@ index dc577e7..3113355 100644
  xxd -i axTLS.key_1024 | sed -e \
 -        "s/axTLS_key_1024/default_private_key/" > $AXDIR/../ssl/private_key.h
 +        "s/axTLS_key_1024/default_private_key/" > $AXDIR/private_key.h
+diff --git a/replacements/time.c b/replacements/time.c
+index 4972119..f6f44f8 100644
+--- a/replacements/time.c
++++ b/replacements/time.c
+@@ -24,17 +24,19 @@ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_
+ 
+ static int errno_var = 0;
+ 
+-int* __errno(void) {
++#define WEAK_ATTR __attribute__((weak))
++
++int* WEAK_ATTR __errno(void) {
+     // DEBUGV("__errno is called last error: %d (not current)\n", errno_var);
+     return &errno_var;
+ }
+ 
+-unsigned long millis(void)
++unsigned long WEAK_ATTR millis(void)
+ {
+ 	return system_get_time() / 1000UL;
+ }
+ 
+-unsigned long micros(void)
++unsigned long WEAK_ATTR micros(void)
+ {
+ 	return system_get_time();
+ }
+@@ -79,7 +81,7 @@ static void setServer(int id, const char* name_or_ip)
+     }
+ }
+ 
+-void configTime(int timezone, int daylightOffset_sec, const char* server1, const char* server2, const char* server3)
++void WEAK_ATTR configTime(int timezone, int daylightOffset_sec, const char* server1, const char* server2, const char* server3)
+ {
+     sntp_stop();
+ 
+@@ -93,7 +95,7 @@ void configTime(int timezone, int daylightOffset_sec, const char* server1, const
+     sntp_init();
+ }
+ 
+-int clock_gettime(clockid_t unused, struct timespec *tp)
++int WEAK_ATTR clock_gettime(clockid_t unused, struct timespec *tp)
+ {
+     tp->tv_sec  = millis() / 1000;
+     tp->tv_nsec = micros() * 1000;
+@@ -101,14 +103,14 @@ int clock_gettime(clockid_t unused, struct timespec *tp)
+ }
+ 
+ // seconds since 1970
+-time_t mktime(struct tm *t)
++time_t WEAK_ATTR mktime(struct tm *t)
+ {
+     // system_mktime expects month in range 1..12
+     #define START_MONTH 1
+     return DIFF1900TO1970 + system_mktime(t->tm_year, t->tm_mon + START_MONTH, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+ }
+ 
+-time_t time(time_t * t)
++time_t WEAK_ATTR time(time_t * t)
+ {
+     time_t seconds = sntp_get_current_timestamp();
+     if (t)
+@@ -118,24 +120,24 @@ time_t time(time_t * t)
+     return seconds;
+ }
+ 
+-char* asctime(const struct tm *t)
++char* WEAK_ATTR asctime(const struct tm *t)
+ {
+     return sntp_asctime(t);
+ }
+ 
+-struct tm* localtime(const time_t *clock)
++struct tm* WEAK_ATTR localtime(const time_t *clock)
+ {
+     return sntp_localtime(clock);
+ }
+ 
+-char* ctime(const time_t *t)
++char* WEAK_ATTR ctime(const time_t *t)
+ {
+     struct tm* p_tm = localtime(t);
+     char* result = asctime(p_tm);
+     return result;
+ }
+ 
+-int gettimeofday(struct timeval *tp, void *tzp)
++int WEAK_ATTR gettimeofday(struct timeval *tp, void *tzp)
+ {
+     if (tp)
+     {

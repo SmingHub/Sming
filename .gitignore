@@ -3,4 +3,5 @@ language.settings.xml
 .settings
 nbproject
 .*.swp
-Sming.wiki
+Sming/compiler/lib/lib*.a
+docs/api
