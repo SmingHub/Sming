@@ -434,6 +434,7 @@ void StationClass::internalSmartConfig(sc_status status, void *pdata) {
 				char *ssid = (char*)sta_conf->ssid;
 				char *password = (char*)sta_conf->password;
 				config(ssid, password);
+				connect();
 			}
 			break;
 		case SC_STATUS_LINK_OVER:
