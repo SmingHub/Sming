@@ -11,6 +11,6 @@ SDK_TOOLS	 ?= $(SDK_BASE)/tools
 # Other tools mappings
 ESPTOOL		 ?= $(ESP_HOME)/esptool/esptool.py
 KILL_TERM    ?= pkill -9 -f "$(COM_PORT) $(COM_SPEED_SERIAL)" || exit 0
-GET_FILESIZE ?= stat --printf="%s"
+GET_FILESIZE ?= stat -c %s
 TERMINAL     ?= python -m serial.tools.miniterm $(COM_PORT) $(COM_SPEED_SERIAL) $(COM_OPTS)
 MEMANALYZER  ?= python $(SMING_HOME)/../tools/memanalyzer.py $(OBJDUMP)
