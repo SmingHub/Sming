@@ -130,19 +130,64 @@ index ff03b30..fde6567 100644
  #define LWIP_PLATFORM_DIAG(x)
  #define LWIP_PLATFORM_ASSERT(x)
 diff --git a/include/lwipopts.h b/include/lwipopts.h
-index eaa8dd6..dbacd90 100644
+index eaa8dd6..6568657 100644
 --- a/include/lwipopts.h
 +++ b/include/lwipopts.h
-@@ -953,7 +953,7 @@
+@@ -403,7 +403,7 @@
+  * PBUF_POOL_SIZE: the number of buffers in the pbuf pool. 
+  */
+ #ifndef PBUF_POOL_SIZE
+-#define PBUF_POOL_SIZE                  10
++#define PBUF_POOL_SIZE                  8
+ #endif
+ 
+ /*
+@@ -422,7 +422,7 @@
+  * ARP_TABLE_SIZE: Number of active MAC-IP address pairs cached.
+  */
+ #ifndef ARP_TABLE_SIZE
+-#define ARP_TABLE_SIZE                  10
++#define ARP_TABLE_SIZE                  8
+ #endif
+ 
+ /**
+@@ -447,7 +447,7 @@
+  * Also notice that this slows down input processing of every IP packet!
+  */
+ #ifndef ETHARP_TRUST_IP_MAC
+-#define ETHARP_TRUST_IP_MAC             1
++#define ETHARP_TRUST_IP_MAC             0
+ #endif
+ 
+ /**
+@@ -789,7 +789,7 @@
+ #ifndef LWIP_MDNS
+ #define LWIP_MDNS                      1
+ #endif
+-/*
++
+ /*
+    ----------------------------------
+    ---------- DNS options -----------
+@@ -944,7 +944,6 @@
+ #define TCP_QUEUE_OOSEQ                 1
+ #endif
+ 
+-#if 1
+ /**
+  * TCP_MSS: TCP Maximum segment size. (default is 536, a conservative default,
+  * you might want to increase this.)
+@@ -953,8 +952,7 @@
   * an upper limit on the MSS advertised by the remote host.
   */
  #ifndef TCP_MSS
 -#define TCP_MSS                         1460
+-#endif
 +#define TCP_MSS                        1390 
  #endif
- #endif
  
-@@ -1823,7 +1823,7 @@
+ /**
+@@ -1823,7 +1821,7 @@
   * debug messages of certain types.
   */
  #ifndef LWIP_DBG_TYPES_ON
@@ -151,7 +196,7 @@ index eaa8dd6..dbacd90 100644
  #endif
  
  /**
-@@ -1992,7 +1992,7 @@
+@@ -1992,7 +1990,7 @@
   * TCP_RST_DEBUG: Enable debugging for TCP with the RST message.
   */
  #ifndef TCP_RST_DEBUG
