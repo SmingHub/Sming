@@ -227,7 +227,6 @@ DEFINES += SPIFF_SIZE DISABLE_SPIFFS
 SPI_SPEED       ?= 40
 SPI_MODE        ?= qio
 SPI_SIZE_M      := $(call deccalc, $(MEM_SIZE) >> 17)m    
-$(error $(SPI_SIZE_M)) 
 
 ESPTOOL_FLAGS   := -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL)
 ESPTOOL_IMGFLAGS:= -ff $(SPI_SPEED)m -fm $(SPI_MODE) -fs $(SPI_SIZE_M)
