@@ -116,6 +116,9 @@ DEBUG_PRINT_FILENAME_AND_LINE ?= 0
 # Defaut debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
 DEBUG_VERBOSE_LEVEL ?= 2
 
+# Disable CommandExecutor functionality if not used and save some ROM and RAM
+DISABLE_CMD_EXEC ?= 0
+
 RELOAD_MKFILE = 0
 
 # Sming Framework Path
@@ -198,7 +201,7 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 endif
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL)
+CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DDISABLE_CMD_EXEC=$(DISABLE_CMD_EXEC)
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
