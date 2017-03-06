@@ -1,11 +1,22 @@
 #   sming.mk
 #
-#   done:
-#       memanalyzer
-#       improved windows terminal handling
-#       automatic address caclulation and linker script creation
-#       dependency tracking for spiffs sources
-#       dependency tracking for cpp and c sources
+#	to do:
+#		- roms without bootloader
+#		- LTO?
+#
+#	done:
+#		- automatic flash address caclulation
+#		- automatic linker script creation
+#		- dependency tracking for spiffs sources
+#		- dependency tracking for all header files included in cpp and c sources
+#		- memanalyzer added
+#		- automatic patch of esp_init_data_default.bin for system_get_vdd33()
+#		- improved terminal handling for windows
+#		- use Python for address calculations if available instead of Perl 
+#		- use sed for linker file creation instead of Perl 
+#		- removed vpath to avoid source file collisions
+#		- more specific include paths to avoid header file collisions
+#		- EXTRA_SRC added
 #
 #==============================================================================
 #   check user settings
@@ -13,7 +24,6 @@
 ifeq ("$(SPI_SIZE)","")
     $(error SPI_SIZE not set)
 endif	
-
 
 #==============================================================================
 #   os specific settings
@@ -74,6 +84,7 @@ OBJDUMP         := $(XTENSA_TOOLS)/xtensa-lx106-elf-objdump
 STRIP           := $(XTENSA_TOOLS)/xtensa-lx106-elf-strip
 
 PERL            ?= perl
+SED             ?= sed
 XXD             := xxd
 
 ifeq ($(MANUAL_RESET),1)
@@ -119,7 +130,13 @@ endif
 #==============================================================================
 #   do flash address calculations
 #------------------------------------------------------------------------------
-hexcalc          = $(shell $(PERL) -e"printf '0x%06X', $(1)")
+ifeq ("$(PYTHON)","")
+	hexcalc         = $(shell $(PERL) -e"printf '0x%06X', $(1)")
+	deccalc         = $(shell $(PERL) -e"printf '%d', $(1)")
+else
+	hexcalc			= $(shell $(PYTHON) -c"print(format(int($(1)),'\#08x'))")
+	deccalc         = $(shell $(PYTHON) -c"print(int($(1)))")
+endif	
 
 #   convert suffix 'K' and 'M' 
 mem_size        := $(patsubst %M,(% * 1024 * 1024),$(SPI_SIZE))
@@ -209,7 +226,8 @@ DEFINES += SPIFF_SIZE DISABLE_SPIFFS
 #------------------------------------------------------------------------------
 SPI_SPEED       ?= 40
 SPI_MODE        ?= qio
-SPI_SIZE_M      := $(shell $(PERL) -e"printf '%dm', $(MEM_SIZE) >> 17")     
+SPI_SIZE_M      := $(call deccalc, $(MEM_SIZE) >> 17)m    
+$(error $(SPI_SIZE_M)) 
 
 ESPTOOL_FLAGS   := -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL)
 ESPTOOL_IMGFLAGS:= -ff $(SPI_SPEED)m -fm $(SPI_MODE) -fs $(SPI_SIZE_M)
@@ -252,8 +270,8 @@ ifeq ($(ENABLE_GDB), 1)
 	MODULES         += $(THIRD_PARTY_DIR)/gdbstub
 endif
 
-SRC_DIR         := $(MODULES)
-BUILD_DIR       := $(addprefix $(BUILD_BASE)/,$(MODULES))
+SRC_DIR         := $(MODULES) $(patsubst %/,%,$(sort $(dir $(EXTRA_SRC))))
+BUILD_DIR       := $(addprefix $(BUILD_BASE)/,$(SRC_DIR))
 
 EXTRA_INCDIR    += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include 
 EXTRA_INCDIR    += $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore 
@@ -272,6 +290,9 @@ clean:
 	$(Q) rm -rf $(BUILD_BASE) $(FW_BASE) $(CUSTOM_TARGETS)
 
 rebuild: clean all
+
+#	disable build-in rules
+.SUFFIXES:		
 
 #==============================================================================
 #   create required directories
@@ -401,8 +422,11 @@ else
 	STRIP           := @true
 endif
 
+#   extra include directories
+CFLAGS    		+= $(addprefix -I,$(EXTRA_INCDIR)) -I$(SDK_INCDIR)
+
 #   Append debug options
-CFLAGS          += -DCUST_FILE_BASE=$$(subst /,_,$(subst .,_,$$*)) -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
+CFLAGS          += -DCUST_FILE_BASE=$(subst /,_,$(subst .,_,$*)) -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 CXXFLAGS        = $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 #   extra flags
@@ -410,44 +434,35 @@ CFLAGS          += $(foreach d,$(DEFINES),-D$d=$($d))
 
 #	automatic dependency tracking 
 #	s. a. http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
-NEEDED_CC       += $1/%.d
-CFLAGS          += -MT $$@ -MMD -MP -MF $1/temp.d
-POSTCOMPILE     = mv -f $1/temp.d $1/$$*.d
+
+CFLAGS          += -MT $$@ -MMD -MP -MF $2/temp.d
+POSTCOMPILE     = mv -f $2/temp.d $2/$$*.d
 DEP_FILES		= $(addsuffix /%.d, $(BUILD_DIR))
 $(DEP_FILES): ;
 .PRECIOUS: $(DEP_FILES)
 include $(foreach bdir, $(BUILD_DIR), $(wildcard $(bdir)/*.d))
 
-#   include directories
-INCDIR          := $(addprefix -I,$(SRC_DIR))
-MODULE_INCDIR   := $(addsuffix /include,$(INCDIR))
-EXTRA_INCDIR    := $(addprefix -I,$(EXTRA_INCDIR))
-
-#   find and process source files in all our source directories
-define compile-objects
-$1/%.o: %.c $(NEEDED_CC)
-	$(vecho) "CC $$<"
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) -I$(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@   
-	$(POSTCOMPILE)
-$1/%.o: %.cpp $(NEEDED_CC)
+#	define compiler rules for all sources directories
+define compile-source
+$2/%.o: $1/%.cpp $2/%.d $(NEEDED_CC)
 	$(vecho) "C+ $$<" 
-	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) -I$(SDK_INCDIR) $(CXXFLAGS) -c $$< -o $$@
+	$(Q) $(CXX) -I$2 -I$2/include $(CXXFLAGS) -c $$< -o $$@
+	$(POSTCOMPILE)
+
+$2/%.o: $1/%.c $2/%.d $(NEEDED_CC)
+	$(vecho) "CC $$<"
+	$(Q) $(CC) -I$2 -I$2/include $(CFLAGS) -c $$< -o $$@   
 	$(POSTCOMPILE)
 endef
 
-vpath %.c       $(SRC_DIR)
-vpath %.cpp     $(SRC_DIR)
-
-$(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
+$(foreach dir,$(SRC_DIR),$(eval $(call compile-source,$(dir),$(addprefix $(BUILD_BASE)/,$(dir)))))
 	
 #==============================================================================
 #   create an archive from our object files
 #------------------------------------------------------------------------------
-#   build a list of all object files
+#	build list of all source and object files
 SRC             := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c*))
-C_OBJ           := $(patsubst %.c,%.o,$(SRC))
-CXX_OBJ         := $(patsubst %.cpp,%.o,$(C_OBJ))
-OBJ             := $(patsubst %.o,$(BUILD_BASE)/%.o,$(CXX_OBJ))
+OBJ				:= $(addprefix $(BUILD_BASE)/,$(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SRC))))
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
@@ -457,10 +472,10 @@ $(APP_AR): $(OBJ)
 #   create custom linker scripts
 #------------------------------------------------------------------------------
 $(ROM0_LD): $(SMING_HOME)/compiler/ld/rboot.rom0.ld
-	$(PERL) -ple "s{(^\s*irom0_0_seg *: *).*}{\\1org = $(IROM0_ORG0), len = $(IROM0_SIZE)}" $< >$@
+	$(SED) -r "s/(^\s*irom0_0_seg *: *).*/\\1org = $(IROM0_ORG0), len = $(IROM0_SIZE)/" $< >$@
 
 $(ROM1_LD): $(SMING_HOME)/compiler/ld/rboot.rom0.ld
-	$(PERL) -ple "s{(^\s*irom0_0_seg *: *).*}{\\1org = $(IROM0_ORG1), len = $(IROM0_SIZE)}" $< >$@
+	$(SED) -r "s/(^\s*irom0_0_seg *: *).*/\\1org = $(IROM0_ORG1), len = $(IROM0_SIZE)/" $< >$@
 	
 #==============================================================================
 #   link the main object file
