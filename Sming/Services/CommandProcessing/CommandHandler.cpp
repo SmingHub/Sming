@@ -215,5 +215,6 @@ void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* c
 	}
 }
 
-
+#if !DISABLE_CMD_EXEC
 CommandHandler commandHandler;
+#endif

@@ -17,7 +17,9 @@ DebugClass::~DebugClass()
 
 void DebugClass::initCommand()
 {
+#if !DISABLE_CMD_EXEC
 	commandHandler.registerCommand(CommandDelegate("debug","New debug in development","Debug",commandFunctionDelegate(&DebugClass::processDebugCommands,this)));
+#endif
 }
 
 void DebugClass::start()
