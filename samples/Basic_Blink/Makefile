@@ -1,29 +1,10 @@
 #	Makefile
 #
 #==============================================================================
-#	project settings 
-#	see sming.mk for more settings
+#	project settings (see sming.mk)
 #------------------------------------------------------------------------------
 #	flash size (required)
 SPI_SIZE        = 4M
-
-#	your source directories (default: app)
-MODULES         = app 
-
-#	your extra include directies (default: none)
-EXTRA_INCDIR    = 
-
-#	your extra libraries (default: none)
-EXTRA_LIBS      = 
-
-#	spiff size (default: 0)
-SPIFF_SIZE		= 0
-
-#	reserved flash area for user data (default: 0)
-USER_FLASH_SIZE	= 0
-
-#	patch init data for system_get_vdd33 (default: 0)
-GET_VDD33		= 0
 
 #==============================================================================
 #	now let sming do all the work ...

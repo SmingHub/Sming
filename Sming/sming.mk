@@ -1,39 +1,71 @@
 #   sming.mk
 #
-#	to do:
-#		- roms without bootloader
-#		- LTO?
+#   to do:
+#       - LTO?
 #
-#	done:
-#		- automatic flash address caclulation
-#		- automatic linker script creation
-#		- dependency tracking for spiffs sources
-#		- dependency tracking for all header files included in cpp and c sources
-#		- memanalyzer added
-#		- automatic patch of esp_init_data_default.bin for system_get_vdd33()
-#		- improved terminal handling for windows
-#		- use Python for address calculations if available instead of Perl 
-#		- use sed for linker file creation instead of Perl 
-#		- removed vpath to avoid source file collisions
-#		- more specific include paths to avoid header file collisions
-#		- EXTRA_SRC added
+#   done:
+#       - roms with and without bootloader
+#       - automatic flash address caclulation
+#       - automatic linker script creation
+#       - dependency tracking for spiffs sources
+#       - dependency tracking for all header files included in cpp and c sources
+#       - memanalyzer added
+#       - automatic patch of esp_init_data_default.bin for system_get_vdd33()
+#       - improved terminal handling for windows
+#       - removed vpath to avoid source file collisions
+#       - EXTRA_SRC option added
+#       - more specific include paths to avoid header file collisions
+#       - use Python for address calculations if available instead of Perl 
+#       - use sed for linker file creation instead of Perl 
+#
+#   remarks:
+#       - old variable names kept for compatibility, even if some of them seem
+#         a bit inconsistent (e. g. SPIFF_SIZE, SPIFF_FILES)
 #
 #==============================================================================
-#   check user settings
+#   user settings
 #------------------------------------------------------------------------------
+#   your flash memory size (required)
 ifeq ("$(SPI_SIZE)","")
     $(error SPI_SIZE not set)
-endif	
+endif   
+
+#   enable rboot (default: 0)
+RBOOT_ENABLED   ?= 0
+
+#   your source directories (default: app)
+MODULES         ?= app                  
+
+#   your extra include directies (default: none)
+EXTRA_INCDIR    ?= 
+
+#   your extra libraries (default: none)
+EXTRA_LIBS      ?= 
+
+#   your extra source files (default: none)
+EXTRA_SRC       ?= 
+
+#   your spiffs size (default: 0)
+SPIFF_SIZE      ?= 0
+
+#   your source directory for spiffs files (default: files)
+SPIFF_FILES     ?= files
+
+#   your reserved flash area for user data (default: 0)
+USER_FLASH_SIZE ?= 0
+
+#   patch init data for system_get_vdd33 (default: 0)
+GET_VDD33       ?= 0
 
 #==============================================================================
-#   os specific settings
+#   load os specific settings
 #------------------------------------------------------------------------------
 ifeq ($(OS),Windows_NT)
 	include $(SMING_HOME)/Windows.mk  
 else
 	UNAME := $(shell uname -s)
 	include $(SMING_HOME)/$(UNAME).mk  
-endif	
+endif   
 
 #==============================================================================
 #   default serial settings
@@ -52,14 +84,9 @@ DEFINES += COM_SPEED_SERIAL
 BUILD_BASE      = out/build
 FW_BASE         = out/firmware
 
-#   default values unless specified by the user
-MODULES         ?= app                  
-EXTRA_INCDIR    ?= include              
-SPIFF_FILES     ?= files
-
 #   SDK directories 
-SDK_BASE	    ?= $(ESP_HOME)/sdk
-SDK_TOOLS	    ?= $(SDK_BASE)/tools
+SDK_BASE        ?= $(ESP_HOME)/sdk
+SDK_TOOLS       ?= $(SDK_BASE)/tools
 SDK_ROMS        := $(SDK_BASE)/bin
 SDK_LIBDIR      := $(SDK_BASE)/lib
 SDK_INCDIR      := $(SDK_BASE)/include
@@ -94,6 +121,14 @@ endif
 export COMPILE  := gcc
 export PATH     := $(XTENSA_TOOLS):$(PATH)
 
+ifeq ("$(PYTHON)","")
+	hexcalc         = $(shell $(PERL) -e"printf '0x%06X', $(1)")
+	deccalc         = $(shell $(PERL) -e"printf '%d', $(1)")
+else
+	hexcalc         = $(shell $(PYTHON) -c"print(format(int($(1)),'\#08x'))")
+	deccalc         = $(shell $(PYTHON) -c"print(int($(1)))")
+endif   
+
 #==============================================================================
 #   makefile logging
 #------------------------------------------------------------------------------
@@ -105,6 +140,161 @@ else
 	Q       := @
 	vecho   := @echo
 endif
+
+#==============================================================================
+#   do flash address calculations
+#------------------------------------------------------------------------------
+#   convert suffix 'K' and 'M' to get the flash size in bytes
+mem_size        := $(patsubst %M,(% * 1024 * 1024),$(SPI_SIZE))
+mem_size        := $(patsubst %K,(% * 1024),$(mem_size))
+MEM_SIZE        := $(call hexcalc, $(mem_size))
+
+#   system parameter area, rf calibration sector and optional user flash area
+ESP_PARM_ADDR   := $(call hexcalc, $(MEM_SIZE) - 0x2000)
+ESP_INIT_ADDR   := $(call hexcalc, $(MEM_SIZE) - 0x4000)
+RF_CAL_ADDR     := $(call hexcalc, $(ESP_INIT_ADDR) - 0x1000)
+USER_FLASH_ADDR := $(call hexcalc, $(RF_CAL_ADDR) - $(USER_FLASH_SIZE))
+
+DEFINES += RF_CAL_ADDR USER_FLASH_ADDR USER_FLASH_SIZE
+
+#==============================================================================
+#   rboot specific settings
+#------------------------------------------------------------------------------
+ifeq ($(RBOOT_ENABLED), 1)
+	RBOOT_INTEGRATION   := 1
+
+	#	provide some default settings for common memory layouts
+	#   (RBOOT_BIG_FLASH seems to be required even for 1M devices)
+	RBOOT_RTC_ENABLED   ?= 0
+	RBOOT_GPIO_ENABLED  ?= 0
+	RBOOT_BIG_FLASH     ?= 1
+
+	ifeq ($(SPI_SIZE),1M)
+		RBOOT_TWO_ROMS  	?= 1
+	else	
+		RBOOT_TWO_ROMS      ?= 0
+	endif
+
+	#   place upper spiffs below user flash area
+	RBOOT_SPIFFS_1  ?= $(call hexcalc, $(USER_FLASH_ADDR) - $(SPIFF_SIZE))
+
+	#   place lower spiffs (we loose a few sectors to simplify things)
+	RBOOT_SPIFFS_0  ?= $(call hexcalc, $(RBOOT_SPIFFS_1) - $(MEM_SIZE) / 2)
+
+	#   generate linker files (Sming needs 0x2010 instead of 0x2000!)
+	ROM0_ADDR       := 0x002010
+	IROM0_SIZE      ?= $(call hexcalc, 0x100000 - $(ROM0_ADDR))
+	ROM0_LD         ?= $(BUILD_BASE)/rom0.ld
+
+	#   rom files
+	RBOOT_BIN       := $(FW_BASE)/rboot.bin
+	ROM0_BIN        := $(FW_BASE)/rom0.bin
+
+	#	special settings for two-rom mode
+	ifeq ($(RBOOT_TWO_ROMS),1)
+		ROM1_BIN        := $(FW_BASE)/rom1.bin
+		ROM1_LD         ?= $(BUILD_BASE)/rom1.ld
+		
+		#   this is where rboot expects the 2nd rom in two-rom mode
+		ROM1_ADDR       ?= $(call hexcalc, $(ROM0_ADDR) + $(MEM_SIZE) / 2)
+
+		#	this seems to be a save value (found by trial and error)
+		IROM0_SIZE      := $(call hexcalc, $(RBOOT_SPIFFS_0) - 0x8000)
+	endif
+
+	OTA_FILES       += $(ROM0_BIN) $(ROM1_BIN)
+	FLASH_FILES     += $(RBOOT_BIN) $(ROM0_BIN) 
+	FLASH_ROM_FLAGS += 0x000000 $(RBOOT_BIN) 0x002000 $(ROM0_BIN)
+
+	#   find rboot source files
+	MODULES         += $(THIRD_PARTY_DIR)/rboot/appcode
+
+	DEFINES += RBOOT_INTEGRATION  RBOOT_RTC_ENABLED RBOOT_GPIO_ENABLED 
+	DEFINES += RBOOT_TWO_ROMS BOOT_BIG_FLASH RBOOT_SPIFFS_0 RBOOT_SPIFFS_1
+
+#==============================================================================
+#   non-rboot settings ("standalone applications")
+#------------------------------------------------------------------------------
+else
+	#   place spiffs below user flash area
+	RBOOT_SPIFFS_0  ?= $(call hexcalc, $(USER_FLASH_ADDR) - $(SPIFF_SIZE))
+	
+	#	generate linker files
+	ROM0_ADDR       ?= 0x00A000
+	IROM0_SIZE      ?= $(call hexcalc, 0x100000 - $(ROM0_ADDR))
+	ROM0_LD         ?= $(BUILD_BASE)/rom0.ld
+
+	#	rom files
+	IMAGE_MAIN      := $(FW_BASE)/main.bin
+	IMAGE_SDK       := $(FW_BASE)/sdk.bin
+	FLASH_FILES     += $(IMAGE_MAIN) $(IMAGE_SDK) 
+	FLASH_ROM_FLAGS += 0x000000 $(IMAGE_MAIN) $(ROM0_ADDR) $(IMAGE_SDK)
+endif
+
+#==============================================================================
+#   show memory map
+#------------------------------------------------------------------------------
+ifeq ($(V),1)
+    $(info )
+    $(info FLASH MEMORY MAP)
+    $(info )
+    $(info MEM_SIZE        = $(MEM_SIZE))
+    $(info ESP_PARM_ADDR   = $(ESP_PARM_ADDR))
+    $(info ESP_INIT_ADDR   = $(ESP_INIT_ADDR))
+    $(info RF_CAL_ADDR     = $(RF_CAL_ADDR))
+    ifneq ($(USER_FLASH_SIZE),0)
+        $(info USER_FLASH_ADDR = $(USER_FLASH_ADDR) ($(USER_FLASH_SIZE) bytes))
+    endif
+    ifneq ($(SPIFF_SIZE),0)
+        $(info RBOOT_SPIFFS_0  = $(RBOOT_SPIFFS_0) ($(SPIFF_SIZE) bytes))
+    endif
+    $(info ROM0_ADDR       = $(ROM0_ADDR) ($(IROM0_SIZE) bytes))
+    $(info )
+endif
+
+#==============================================================================
+#   spiffs specific settings
+#------------------------------------------------------------------------------
+ifneq ($(SPIFF_SIZE),0)
+	DISABLE_SPIFFS  := 0
+	SPIFF_BIN       := $(FW_BASE)/spiff_rom.bin
+	OTA_FILES       += $(SPIFF_BIN)
+	FLASH_FILES     += $(SPIFF_BIN)
+	FLASH_ROM_FLAGS += $(RBOOT_SPIFFS_0) $(SPIFF_BIN)
+
+#------------------------------------------------------------------------------
+else    
+	DISABLE_SPIFFS  := 1
+
+endif
+
+DEFINES += SPIFF_SIZE DISABLE_SPIFFS  
+
+#==============================================================================
+#   serial flash settings
+#------------------------------------------------------------------------------
+SPI_SPEED       ?= 40
+SPI_MODE        ?= qio
+SPI_SIZE_M      := $(call deccalc, $(MEM_SIZE) >> 17)m    
+
+ESPTOOL_FLAGS   := -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL)
+ESPTOOL_IMGFLAGS:= -ff $(SPI_SPEED)m -fm $(SPI_MODE) -fs $(SPI_SIZE_M)
+
+#==============================================================================
+#   source, build and include directories
+#------------------------------------------------------------------------------
+ifeq ($(ENABLE_GDB), 1)
+	MODULES         += $(THIRD_PARTY_DIR)/gdbstub
+endif
+
+SRC_DIR         := $(MODULES) $(patsubst %/,%,$(sort $(dir $(EXTRA_SRC))))
+BUILD_DIR       := $(addprefix $(BUILD_BASE)/,$(SRC_DIR))
+
+EXTRA_INCDIR    += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include 
+EXTRA_INCDIR    += $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore 
+EXTRA_INCDIR    += $(SMING_HOME)/Services/SpifFS 
+EXTRA_INCDIR    += $(THIRD_PARTY_DIR)/spiffs/src
+EXTRA_INCDIR    += $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode 
 
 #==============================================================================
 #   intermediate files
@@ -119,117 +309,13 @@ TARGET_OUT_1    := $(BUILD_BASE)/$(TARGET)_1.out
 #==============================================================================
 #   wifi settings
 #------------------------------------------------------------------------------
-#   we will use global WiFi settings from Eclipse Environment Variables, if possible
+#   use global wifi settings from eclipse environment variables, if possible
 WIFI_SSID       ?= ""
 WIFI_PWD        ?= ""
 
 ifneq ($(WIFI_SSID), "")
 	DEFINES += WIFI_SSID WIFI_PWD
 endif
-
-#==============================================================================
-#   do flash address calculations
-#------------------------------------------------------------------------------
-ifeq ("$(PYTHON)","")
-	hexcalc         = $(shell $(PERL) -e"printf '0x%06X', $(1)")
-	deccalc         = $(shell $(PERL) -e"printf '%d', $(1)")
-else
-	hexcalc			= $(shell $(PYTHON) -c"print(format(int($(1)),'\#08x'))")
-	deccalc         = $(shell $(PYTHON) -c"print(int($(1)))")
-endif	
-
-#   convert suffix 'K' and 'M' 
-mem_size        := $(patsubst %M,(% * 1024 * 1024),$(SPI_SIZE))
-mem_size        := $(patsubst %K,(% * 1024),$(mem_size))
-MEM_SIZE        := $(call hexcalc, $(mem_size))
-
-#   system parameter area 
-ESP_PARM_ADDR   := $(call hexcalc, $(MEM_SIZE) - 0x2000)
-ESP_INIT_ADDR   := $(call hexcalc, $(MEM_SIZE) - 0x4000)
-
-#   rf calibration sector
-RF_CAL_ADDR     := $(call hexcalc, $(ESP_INIT_ADDR) - 0x1000)
-
-#   user flash area
-USER_FLASH_SIZE ?= 0
-USER_FLASH_ADDR := $(call hexcalc, $(RF_CAL_ADDR) - $(USER_FLASH_SIZE))
-
-#   2nd spiffs start
-SPIFF_SIZE      ?= 0
-RBOOT_SPIFFS_1  ?= $(call hexcalc, $(USER_FLASH_ADDR) - $(SPIFF_SIZE))
-
-#   1st spiffs start
-RBOOT_SPIFFS_0  ?= $(call hexcalc, $(RBOOT_SPIFFS_1) - $(MEM_SIZE) / 2)
-
-#   This value is only used to detect when the firmware is too large, will
-#   otherwise crash on boot with "Rom 0 is bad". A safe value seems to be 
-#   RBOOT_SPIFFS_0 - 0x8000 (found more or less by trial end error).
-IROM0_SIZE      := $(call hexcalc, $(RBOOT_SPIFFS_0) - 0x8000)
-
-#   org is always 0x40202010 for the 1st sming rom
-IROM0_ORG0      := 0x40202010
-
-#   this is where rboot expects the 2nd rom on small devices
-IROM0_ORG1      := $(call hexcalc, $(IROM0_ORG0) + $(MEM_SIZE) / 2)
-
-ifeq ($(V),1)
-    $(info )
-    $(info FLASH MEMORY MAP)
-    $(info )
-    $(info MEM_SIZE        = $(MEM_SIZE))
-    $(info ESP_PARM_ADDR   = $(ESP_PARM_ADDR))
-    $(info ESP_INIT_ADDR   = $(ESP_INIT_ADDR))
-    $(info RF_CAL_ADDR     = $(RF_CAL_ADDR))
-    $(info USER_FLASH_ADDR = $(USER_FLASH_ADDR) ($(USER_FLASH_SIZE) bytes))
-    $(info RBOOT_SPIFFS_1  = $(RBOOT_SPIFFS_1) ($(SPIFF_SIZE) bytes))
-    $(info RBOOT_SPIFFS_0  = $(RBOOT_SPIFFS_0) ($(SPIFF_SIZE) bytes))
-    $(info )
-endif
-
-DEFINES += RF_CAL_ADDR USER_FLASH_ADDR USER_FLASH_SIZE RBOOT_SPIFFS_0 RBOOT_SPIFFS_1
-
-#==============================================================================
-#   rboot settings
-#------------------------------------------------------------------------------
-ifeq ($(SPI_SIZE),1M)
-	#   two rom mode (no hardware mapping, different rom files required)
-	RBOOT_TWO_ROMS  := 1
-else    
-	#   TODO: add support for more flash sizes here
-	RBOOT_TWO_ROMS  := 0
-endif
-
-#   RBOOT_BIG_FLASH seems to be required even for 1M devices?
-RBOOT_BIG_FLASH ?= 1
-
-#   input linker files for 1st and 2nd rom
-ROM0_LD         ?= $(BUILD_BASE)/rom0.ld
-ROM1_LD         ?= $(BUILD_BASE)/rom1.ld
-
-#   special rboot flags 
-RBOOT_RTC_ENABLED   ?= 0
-RBOOT_GPIO_ENABLED  ?= 0
-RBOOT_INTEGRATION	:= 1
-
-DEFINES += RBOOT_TWO_ROMS BOOT_BIG_FLASH RBOOT_RTC_ENABLED RBOOT_GPIO_ENABLED RBOOT_INTEGRATION
-	
-ifeq ($(SPIFF_SIZE),0)
-	DISABLE_SPIFFS = 1
-else    
-	DISABLE_SPIFFS = 0
-endif
-
-DEFINES += SPIFF_SIZE DISABLE_SPIFFS
-
-#==============================================================================
-#   serial flash settings
-#------------------------------------------------------------------------------
-SPI_SPEED       ?= 40
-SPI_MODE        ?= qio
-SPI_SIZE_M      := $(call deccalc, $(MEM_SIZE) >> 17)m    
-
-ESPTOOL_FLAGS   := -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL)
-ESPTOOL_IMGFLAGS:= -ff $(SPI_SPEED)m -fm $(SPI_MODE) -fs $(SPI_SIZE_M)
 
 #==============================================================================
 #   sming debug output
@@ -239,44 +325,6 @@ DEBUG_PRINT_FILENAME_AND_LINE ?= 0
 
 #   debug verbose level (DEBUG=3 INFO=2 WARNING=1 ERROR=0)
 DEBUG_VERBOSE_LEVEL ?= 2
-
-#==============================================================================
-#   rom files
-#------------------------------------------------------------------------------
-#   boot loader rom
-RBOOT_BIN       := $(FW_BASE)/rboot.bin
-
-#   application roms
-ROM0_BIN        := $(FW_BASE)/rom0.bin
-ifeq ($(RBOOT_TWO_ROMS),1)
-	ROM1_BIN        := $(FW_BASE)/rom1.bin
-endif
-
-#   spiffs rom
-ifneq ($(SPIFF_SIZE),0)
-	SPIFF_BIN       := $(FW_BASE)/spiff_rom.bin
-endif
-
-FLASH_FILES     := $(RBOOT_BIN) $(ROM0_BIN) $(SPIFF_BIN)
-OTA_FILES       := $(ROM0_BIN) $(ROM1_BIN) $(SPIFF_BIN)
-
-#==============================================================================
-#   source, build and include directories
-#------------------------------------------------------------------------------
-MODULES         += $(THIRD_PARTY_DIR)/rboot/appcode
-
-ifeq ($(ENABLE_GDB), 1)
-	MODULES         += $(THIRD_PARTY_DIR)/gdbstub
-endif
-
-SRC_DIR         := $(MODULES) $(patsubst %/,%,$(sort $(dir $(EXTRA_SRC))))
-BUILD_DIR       := $(addprefix $(BUILD_BASE)/,$(SRC_DIR))
-
-EXTRA_INCDIR    += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include 
-EXTRA_INCDIR    += $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore 
-EXTRA_INCDIR    += $(SMING_HOME)/Services/SpifFS 
-EXTRA_INCDIR    += $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode 
-EXTRA_INCDIR    += $(THIRD_PARTY_DIR)/spiffs/src
 
 #==============================================================================
 #   clean-up and rebuild  
@@ -290,8 +338,8 @@ clean:
 
 rebuild: clean all
 
-#	disable build-in rules
-.SUFFIXES:		
+#   disable build-in rules
+.SUFFIXES:      
 
 #==============================================================================
 #   create required directories
@@ -422,7 +470,7 @@ else
 endif
 
 #   extra include directories
-CFLAGS    		+= $(addprefix -I,$(EXTRA_INCDIR)) -I$(SDK_INCDIR)
+CFLAGS          += $(addprefix -I,$(EXTRA_INCDIR)) -I$(SDK_INCDIR)
 
 #   Append debug options
 CFLAGS          += -DCUST_FILE_BASE=$(subst /,_,$(subst .,_,$*)) -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
@@ -431,17 +479,17 @@ CXXFLAGS        = $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constru
 #   extra flags
 CFLAGS          += $(foreach d,$(DEFINES),-D$d=$($d))
 
-#	automatic dependency tracking 
-#	s. a. http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
+#   automatic dependency tracking 
+#   s. a. http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
 
 CFLAGS          += -MT $$@ -MMD -MP -MF $2/temp.d
-POSTCOMPILE     = mv -f $2/temp.d $2/$$*.d
-DEP_FILES		= $(addsuffix /%.d, $(BUILD_DIR))
+POSTCOMPILE     = $(Q) mv -f $2/temp.d $2/$$*.d
+DEP_FILES       = $(addsuffix /%.d, $(BUILD_DIR))
 $(DEP_FILES): ;
 .PRECIOUS: $(DEP_FILES)
 include $(foreach bdir, $(BUILD_DIR), $(wildcard $(bdir)/*.d))
 
-#	define compiler rules for all sources directories
+#   define compiler rules for all sources directories
 define compile-source
 $2/%.o: $1/%.cpp $2/%.d $(NEEDED_CC)
 	$(vecho) "C+ $$<" 
@@ -459,9 +507,9 @@ $(foreach dir,$(SRC_DIR),$(eval $(call compile-source,$(dir),$(addprefix $(BUILD
 #==============================================================================
 #   create an archive from our object files
 #------------------------------------------------------------------------------
-#	build list of all source and object files
+#   build list of all source and object files
 SRC             := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c*))
-OBJ				:= $(addprefix $(BUILD_BASE)/,$(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SRC))))
+OBJ             := $(addprefix $(BUILD_BASE)/,$(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SRC))))
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
@@ -470,6 +518,10 @@ $(APP_AR): $(OBJ)
 #==============================================================================
 #   create custom linker scripts
 #------------------------------------------------------------------------------
+IROM0_ORG0      := $(call hexcalc, 0x40200000 + $(ROM0_ADDR)) 
+ROM1_ADDR		?= $(ROM0_ADDR)
+IROM0_ORG1      := $(call hexcalc, 0x40200000 + $(ROM1_ADDR)) 
+
 $(ROM0_LD): $(SMING_HOME)/compiler/ld/rboot.rom0.ld
 	$(SED) -r "s/(^\s*irom0_0_seg *: *).*/\\1org = $(IROM0_ORG0), len = $(IROM0_SIZE)/" $< >$@
 
@@ -482,7 +534,7 @@ $(ROM1_LD): $(SMING_HOME)/compiler/ld/rboot.rom0.ld
 LIBS            += microc microgcc hal phy pp net80211 wpa crypto smartconfig $(EXTRA_LIBS)
 LIBS            := $(addprefix -l,$(LIBS))
 	
-LDFLAGS         := -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
+LDFLAGS         = -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
 LDFLAGS         += $(addprefix -L,$(USER_LIBDIR) $(SDK_LIBDIR) $(BUILD_BASE) $(SMING_HOME)/compiler/ld)
 
 $(TARGET_OUT_0): $(APP_AR) $(ROM0_LD) $(NEEDED_A) 
@@ -499,18 +551,27 @@ $(TARGET_OUT_1): $(APP_AR) $(ROM1_LD) $(NEEDED_A)
 #==============================================================================
 #   create application rom files 
 #------------------------------------------------------------------------------
-#   filenames and options for generating rBoot rom images with esptool2
-RBOOT_E2_SECTS     ?= .text .data .rodata
-RBOOT_E2_USER_ARGS ?= -quiet -bin -boot2
+E2_FLAGS			+= -quiet
+E2_SECTS_MAIN     	+= .text .data .rodata
 
+#	rboot roms
 $(ROM0_BIN): $(TARGET_OUT_0)
 	$(vecho) "ESPTOOL2 $@"
-	@$(ESPTOOL2) $(RBOOT_E2_USER_ARGS) $(TARGET_OUT_0) $@ $(RBOOT_E2_SECTS)
+	$(Q) $(ESPTOOL2) $(E2_FLAGS) -bin -boot2 $(TARGET_OUT_0) $@ $(E2_SECTS_MAIN)
 
 $(ROM1_BIN): $(TARGET_OUT_1)
 	$(vecho) "ESPTOOL2 $@"
-	@$(ESPTOOL2) $(RBOOT_E2_USER_ARGS) $(TARGET_OUT_1) $@ $(RBOOT_E2_SECTS)
+	$(Q) $(ESPTOOL2) $(E2_FLAGS) -bin -boot2 $(TARGET_OUT_1) $@ $(E2_SECTS_MAIN)
 
+#	non-rboot roms
+$(IMAGE_MAIN): $(TARGET_OUT_0)
+	$(vecho) "ESPTOOL2 $@"
+	$(Q) $(ESPTOOL2) $(E2_FLAGS) -bin -boot0 $(TARGET_OUT_0) $@ $(E2_SECTS_MAIN)
+
+$(IMAGE_SDK): $(TARGET_OUT_0)
+	$(vecho) "ESPTOOL2 $@"
+	$(Q) $(ESPTOOL2) $(E2_FLAGS) -lib $(TARGET_OUT_0) $@ 
+	
 #==============================================================================
 #   create spiffs rom
 #------------------------------------------------------------------------------
@@ -556,7 +617,7 @@ $(RBOOT_BIN): $(NEEDED_A)
 
 ESP_INIT_DATA   := $(SDK_ROMS)/esp_init_data_default.bin
 
-#   special init data required for system_get_vdd33()
+#   special init data is required for system_get_vdd33()
 ifeq ($(GET_VDD33),1) 
 	ESP_INIT_ROM := $(BUILD_BASE)/esp_init_data_vdd33.bin
 else
@@ -567,13 +628,13 @@ INIT_ROM_FLAGS   = $(RF_CAL_ADDR)   $(SDK_ROMS)/blank.bin
 INIT_ROM_FLAGS  += $(ESP_INIT_ADDR) $(ESP_INIT_ROM)
 INIT_ROM_FLAGS  += $(ESP_PARM_ADDR) $(SDK_ROMS)/blank.bin
 
-flashinit: kill_term $(ESP_INIT_ROM)
+flashinit: kill_term dirs $(ESP_INIT_ROM)
 	$(info perform full flash erase and load system parameters)
 	$(Q) $(ESPTOOL) $(ESPTOOL_FLAGS) erase_flash
 	$(Q) $(RESET_ESP)
 	$(Q) $(ESPTOOL) $(ESPTOOL_FLAGS) write_flash $(ESPTOOL_IMGFLAGS) $(INIT_ROM_FLAGS)
 
-$(ESP_INIT_ROM): dirs $(ESP_INIT_DATA)
+$(BUILD_BASE)/esp_init_data_vdd33.bin: $(ESP_INIT_DATA)
 	$(info patch default init data for system_get_vdd33)
 	$(Q) cp $< $<.tmp
 	$(Q) echo "6B: FF" | $(XXD) -r - $<.tmp
@@ -583,11 +644,6 @@ $(ESP_INIT_ROM): dirs $(ESP_INIT_DATA)
 #   flash device
 #------------------------------------------------------------------------------
 .PHONY: flash
-
-FLASH_ROM_FLAGS := 0x00000 $(RBOOT_BIN) 0x02000 $(ROM0_BIN)
-ifneq ($(SPIFF_SIZE),0)
-	FLASH_ROM_FLAGS += $(RBOOT_SPIFFS_0) $(SPIFF_BIN)
-endif
 
 flash: kill_term dirs $(CUSTOM_TARGETS) $(FLASH_FILES)
 	$(Q) $(ESPTOOL) $(ESPTOOL_FLAGS) write_flash $(ESPTOOL_IMGFLAGS) $(FLASH_ROM_FLAGS)
