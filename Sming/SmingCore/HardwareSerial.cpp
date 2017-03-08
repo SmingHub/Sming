@@ -185,7 +185,7 @@ void HardwareSerial::callbackHandler(uart_t *uart) {
 	}
 	uint8_t receivedChar = uart->rx_buffer->buffer[lastPos-1];
 	if ((memberData[uart->uart_nr].HWSDelegate)
-#if !DISABLE_CMD_EXEC
+#if ENABLE_CMD_EXECUTOR
 			|| (memberData[uart->uart_nr].commandExecutor)
 #endif
 	   ) {
@@ -197,7 +197,7 @@ void HardwareSerial::callbackHandler(uart_t *uart) {
 		if (memberData[uart->uart_nr].HWSDelegate) {
 			system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_DELEGATE, serialQueueParameter);
 		}
-#if !DISABLE_CMD_EXEC
+#if ENABLE_CMD_EXECUTOR
 		if (memberData[uart->uart_nr].commandExecutor) {
 			system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_COMMAND, serialQueueParameter);
 		}
@@ -233,7 +233,7 @@ void HardwareSerial::resetCallback()
 
 void HardwareSerial::commandProcessing(bool reqEnable)
 {
-#if !DISABLE_CMD_EXEC
+#if ENABLE_CMD_EXECUTOR
 	if (reqEnable)
 	{
 		if (!memberData[uartNr].commandExecutor)
@@ -266,7 +266,7 @@ void HardwareSerial::delegateTask (os_event_t *inputEvent)
 			break;
 
 		case SERIAL_SIGNAL_COMMAND:
-#if !DISABLE_CMD_EXEC
+#if ENABLE_CMD_EXECUTOR
 			if (memberData[uartNr].commandExecutor) {
 				memberData[uartNr].commandExecutor->executorReceive(rcvChar);
 			}

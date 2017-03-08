@@ -34,7 +34,7 @@ void TelnetServer::enableDebug(bool reqStatus)
 
 void TelnetServer::enableCommand(bool reqStatus)
 {
-#if !DISABLE_CMD_EXEC
+#if ENABLE_CMD_EXECUTOR
 	if (reqStatus && curClient && !commandExecutor)
 	{
 		commandExecutor = new  CommandExecutor(curClient);
@@ -66,7 +66,7 @@ void TelnetServer::onClient(TcpClient *client)
 		curClient->sendString("Welcome to Sming / ESP6266 Telnet\r\n");
 		if (telnetCommand)
 		{
-#if !DISABLE_CMD_EXEC
+#if ENABLE_CMD_EXECUTOR
 			commandExecutor = new  CommandExecutor(client);
 #endif
 		}
@@ -82,7 +82,7 @@ void TelnetServer::onClientComplete(TcpClient& client, bool succesfull)
 {
 	if ( &client == curClient)
 	{
-#if !DISABLE_CMD_EXEC
+#if ENABLE_CMD_EXECUTOR
 		delete commandExecutor;
 		commandExecutor = nullptr;
 #endif
@@ -110,7 +110,7 @@ bool TelnetServer::onClientReceive (TcpClient& client, char *data, int size)
 {
 	debugf("TelnetServer onClientReceive : %s, %d bytes \r\n",client.getRemoteIp().toString().c_str(),size );
 	debugf("Data : %s", data);
-#if !DISABLE_CMD_EXEC
+#if ENABLE_CMD_EXECUTOR
 	if (commandExecutor)
 	{
 		commandExecutor->executorReceive(data,size);

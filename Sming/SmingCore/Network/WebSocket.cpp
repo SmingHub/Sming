@@ -17,7 +17,7 @@ WebSocket::WebSocket(HttpServerConnection* conn)
 
 WebSocket::~WebSocket()
 {
-#if !DISABLE_CMD_EXEC
+#if ENABLE_CMD_EXECUTOR
 	if (commandExecutor)
 	{
 		delete commandExecutor;
@@ -67,7 +67,7 @@ void WebSocket::sendBinary(const uint8_t* data, int size)
 
 void WebSocket::enableCommand()
 {
-#if !DISABLE_CMD_EXEC
+#if ENABLE_CMD_EXECUTOR
 	if (!commandExecutor)
 	{
 		commandExecutor = new CommandExecutor(this);
