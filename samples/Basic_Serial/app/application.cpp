@@ -73,7 +73,29 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
-	debugf("\n(DEBUG) message printed on UART0");
+	/*There are four debug levels: debug=3, info=2, warn=1, error=0
+	 * You can set the debug level by making with DEBUG_VERBOSE_LEVEL
+	 * set to the desired level (0-3). Ex make rebuild DEBUG_VERBOSE_LEVEL=2 will
+	 * show only info messages and above, will not show debug messages
+	 * (they will be removed from the build at compile time, saving flash space)
+	 *
+	 * Functions debugf, debug_d, debug_i, debug_w, and debug_e store the format string
+	 * in flash so that the RAM is freed for more important information.
+	 *
+	 * Another useful feature is printing the filename and line number of every debug line
+	 * This will require extra space on flash and can be enabled
+	 * using make parameter PRINT_FILENAME_AND_LINE=1*/
+
+	debug_d("(DEBUG) message printed on UART0");
+
+	debug_i("(INFO) message printed on UART0");
+
+	debug_w("(WARNING) message printed on UART0");
+
+	debug_e("(ERROR) message printed on UART0");
+
+	/*debugf is equivalent to debug_i*/
+	debugf("(INFO) message printed with debugf on UART0");
 
 	/*
 	 * Notice: The line below disables the debugf output on all UARTs.

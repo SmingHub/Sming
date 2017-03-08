@@ -41,7 +41,7 @@ index 1bc584f..0bfc424 100644
  # Install prefix of esp-open-sdk toolchain
  PREFIX = ~/toolchain/xtensa-lx106-elf
  
-@@ -36,14 +38,26 @@ lwip/core/ipv4/ip.o \
+@@ -36,14 +38,27 @@ lwip/core/ipv4/ip.o \
  lwip/core/ipv4/ip_frag.o \
  lwip/netif/etharp.o \
  \
@@ -60,6 +60,7 @@ index 1bc584f..0bfc424 100644
 +lwip/app/espconn_tcp.o \
 +lwip/app/espconn_udp.o \
 +lwip/app/espconn_mdns.o \
++lwip/api/err.o \
 +lwip/core/mdns.o
  
 +endif
@@ -74,7 +75,7 @@ index 1bc584f..0bfc424 100644
  $(LIB): $(OBJS)
  	$(AR) rcs $@ $^
 diff --git a/include/arch/cc.h b/include/arch/cc.h
-index ff03b30..10029c1 100644
+index ff03b30..fde6567 100644
 --- a/include/arch/cc.h
 +++ b/include/arch/cc.h
 @@ -38,8 +38,25 @@
@@ -111,20 +112,99 @@ index ff03b30..10029c1 100644
  
  #define S16_F "d"
  #define U16_F "d"
-
+@@ -73,11 +91,12 @@ typedef unsigned long   mem_ptr_t;
+ #define PACK_STRUCT_BEGIN
+ #define PACK_STRUCT_END
+ 
+-//#define LWIP_DEBUG
+-
+ #ifdef LWIP_DEBUG
+-#define LWIP_PLATFORM_DIAG(x) os_printf x
+-#define LWIP_PLATFORM_ASSERT(x) ETS_ASSERT(x)
++#include "debug_progmem.h"
++
++#define LWIP_PLATFORM_DIAG(x) debug_i x
++#define LWIP_PLATFORM_ASSERT(x) m_printf("ASSERT: %s %s %d", (x), __FUNCTION__, __LINE__)
++
+ #else
+ #define LWIP_PLATFORM_DIAG(x)
+ #define LWIP_PLATFORM_ASSERT(x)
 diff --git a/include/lwipopts.h b/include/lwipopts.h
-index eaa8dd6..6a08192 100644
+index eaa8dd6..6568657 100644
 --- a/include/lwipopts.h
 +++ b/include/lwipopts.h
-@@ -953,7 +953,7 @@
+@@ -403,7 +403,7 @@
+  * PBUF_POOL_SIZE: the number of buffers in the pbuf pool. 
+  */
+ #ifndef PBUF_POOL_SIZE
+-#define PBUF_POOL_SIZE                  10
++#define PBUF_POOL_SIZE                  8
+ #endif
+ 
+ /*
+@@ -422,7 +422,7 @@
+  * ARP_TABLE_SIZE: Number of active MAC-IP address pairs cached.
+  */
+ #ifndef ARP_TABLE_SIZE
+-#define ARP_TABLE_SIZE                  10
++#define ARP_TABLE_SIZE                  8
+ #endif
+ 
+ /**
+@@ -447,7 +447,7 @@
+  * Also notice that this slows down input processing of every IP packet!
+  */
+ #ifndef ETHARP_TRUST_IP_MAC
+-#define ETHARP_TRUST_IP_MAC             1
++#define ETHARP_TRUST_IP_MAC             0
+ #endif
+ 
+ /**
+@@ -789,7 +789,7 @@
+ #ifndef LWIP_MDNS
+ #define LWIP_MDNS                      1
+ #endif
+-/*
++
+ /*
+    ----------------------------------
+    ---------- DNS options -----------
+@@ -944,7 +944,6 @@
+ #define TCP_QUEUE_OOSEQ                 1
+ #endif
+ 
+-#if 1
+ /**
+  * TCP_MSS: TCP Maximum segment size. (default is 536, a conservative default,
+  * you might want to increase this.)
+@@ -953,8 +952,7 @@
   * an upper limit on the MSS advertised by the remote host.
   */
  #ifndef TCP_MSS
 -#define TCP_MSS                         1460
+-#endif
 +#define TCP_MSS                        1390 
  #endif
+ 
+ /**
+@@ -1823,7 +1821,7 @@
+  * debug messages of certain types.
+  */
+ #ifndef LWIP_DBG_TYPES_ON
+-#define LWIP_DBG_TYPES_ON               LWIP_DBG_OFF
++#define LWIP_DBG_TYPES_ON               LWIP_DBG_ON
  #endif
  
+ /**
+@@ -1992,7 +1990,7 @@
+  * TCP_RST_DEBUG: Enable debugging for TCP with the RST message.
+  */
+ #ifndef TCP_RST_DEBUG
+-#define TCP_RST_DEBUG                   LWIP_DBG_OFF
++#define TCP_RST_DEBUG                   (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
+ #endif
+ 
+ /**
 diff --git a/include/lwip/ip_addr.h b/include/lwip/ip_addr.h
 index 1e46ee5..cfc10f8 100644
 --- a/include/lwip/ip_addr.h
@@ -167,4 +247,49 @@ index af6e360..6d8cabd 100644
  #endif
  #else
  #ifndef mem_free
+ diff --git a/lwip/app/dhcpserver.c b/lwip/app/dhcpserver.c
+index ddb5984..fb677c6 100644
+--- a/lwip/app/dhcpserver.c
++++ b/lwip/app/dhcpserver.c
+@@ -133,21 +133,16 @@ static uint8_t* ICACHE_FLASH_ATTR add_offer_options(uint8_t *optptr)
  
+         ipadd.addr = *( (uint32_t *) &server_address);
+ 
+-#ifdef USE_CLASS_B_NET
+-        *optptr++ = DHCP_OPTION_SUBNET_MASK;
+-        *optptr++ = 4;  //length
+-        *optptr++ = 255;
+-        *optptr++ = 240;	
+-        *optptr++ = 0;
+-        *optptr++ = 0;
+-#else
++        struct ip_info if_ip;
++        os_bzero(&if_ip, sizeof(struct ip_info));
++        wifi_get_ip_info(SOFTAP_IF, &if_ip);
++
+         *optptr++ = DHCP_OPTION_SUBNET_MASK;
+-        *optptr++ = 4;  
+-        *optptr++ = 255;
+-        *optptr++ = 255;	
+-        *optptr++ = 255;
+-        *optptr++ = 0;
+-#endif
++        *optptr++ = 4;
++        *optptr++ = ip4_addr1( &if_ip.netmask);
++        *optptr++ = ip4_addr2( &if_ip.netmask);
++        *optptr++ = ip4_addr3( &if_ip.netmask);
++        *optptr++ = ip4_addr4( &if_ip.netmask);
+ 
+         *optptr++ = DHCP_OPTION_LEASE_TIME;
+         *optptr++ = 4;  
+@@ -164,10 +159,6 @@ static uint8_t* ICACHE_FLASH_ATTR add_offer_options(uint8_t *optptr)
+         *optptr++ = ip4_addr4( &ipadd);
+ 
+         if (dhcps_router_enabled(offer)){
+-        	struct ip_info if_ip;
+-			os_bzero(&if_ip, sizeof(struct ip_info));
+-			wifi_get_ip_info(SOFTAP_IF, &if_ip);
+-
+ 			*optptr++ = DHCP_OPTION_ROUTER;
+ 			*optptr++ = 4;
+ 			*optptr++ = ip4_addr1( &if_ip.gw);

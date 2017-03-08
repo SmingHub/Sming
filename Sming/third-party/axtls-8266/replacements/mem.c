@@ -77,8 +77,5 @@ void* ax_port_realloc(void* ptr, size_t size, const char* file, int line) {
 
 void ax_port_free(void* ptr) {
     free(ptr);
-    uint32_t *p = (uint32_t*) ptr;
-    size_t size = p[-3];
-    if (size >= 1024)
-        DEBUG_TLS_MEM_PRINT("free %d, left %d\r\n", p[-3], system_get_free_heap_size());
+    DEBUG_TLS_MEM_PRINT("free %x, left %d\r\n", ptr, system_get_free_heap_size());
 }

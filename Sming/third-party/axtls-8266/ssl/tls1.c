@@ -2229,8 +2229,15 @@ void DISPLAY_STATE(SSL *ssl, int is_send, uint8_t state, int not_ok)
     if (!IS_SET_SSL_FLAG(SSL_DISPLAY_STATES))
         return;
 
-    printf(not_ok ? "Error - invalid State:\t" : "State:\t");
-    printf(is_send ? "sending " : "receiving ");
+    if(not_ok)
+    	printf("Error - invalid State:\t");
+    else
+    	printf("State:\t");
+
+    if(is_send)
+    	printf("sending ");
+    else
+    	printf("receiving ");
 
     switch (state)
     {

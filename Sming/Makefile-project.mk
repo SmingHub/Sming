@@ -26,13 +26,20 @@ SPI_MODE ?= qio
 # SPI_SIZE: 512K, 256K, 1M, 2M, 4M
 SPI_SIZE ?= 512K
 
+### Debug output parameters
+# By default `debugf` does not print file name and line number. If you want this enabled set the directive below to 1
+DEBUG_PRINT_FILENAME_AND_LINE ?= 0
+
+# Defaut debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
+DEBUG_VERBOSE_LEVEL ?= 2
+
 # Path to spiffy
 SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 
 #ESPTOOL2 config to generate rBootLESS images
 IMAGE_MAIN	?= 0x00000.bin
 IMAGE_SDK	?= 0x0a000.bin # The name must match the starting address of the irom0 section 
-						   # in the LD file ($SMING_HOME/compiler/ld/eagle.app.v6.cpp.ld).
+						   # in the LD file ($SMING_HOME/compiler/ld/standalone.rom.ld).
 						   # To calculate the value do the following: x = irom0_0_seg.org - 0x40200000
 						   # Example: 0x4020a000 - 0x40200000 = 0x0a000
 INIT_BIN_ADDR =  0x7c000
@@ -209,6 +216,10 @@ else
 	CFLAGS += -Os -g
 	STRIP := @true
 endif
+
+#Append debug options
+CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
+
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 # SSL support using axTLS
@@ -242,8 +253,8 @@ endif
 LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-Map=$(FW_BASE)/firmware.map -Wl,-wrap,system_restart_local 
 
 # linker script used for the above linkier step
-LD_PATH     = $(SMING_HOME)/compiler/ld/
-LD_SCRIPT	= $(LD_PATH)eagle.app.v6.cpp.ld
+LD_PATH     = $(SMING_HOME)/compiler/ld
+LD_SCRIPT	= standalone.rom.ld
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m
@@ -319,7 +330,6 @@ TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
 SPIFF_BIN_OUT ?= spiff_rom
 SPIFF_BIN_OUT := $(FW_BASE)/$(SPIFF_BIN_OUT).bin
-LD_SCRIPT	:= $(addprefix -T,$(LD_SCRIPT))
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
@@ -354,7 +364,7 @@ spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 
 $(TARGET_OUT): $(APP_AR)
 	$(vecho) "LD $@"	
-	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) $(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
+	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 
 	$(Q) $(STRIP) $@
 

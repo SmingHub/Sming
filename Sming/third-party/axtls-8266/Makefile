@@ -46,6 +46,7 @@ LDFLAGS  += 	-L$(XTENSA_LIBS)/lib \
 CFLAGS+=-std=c99 -DESP8266
 
 CFLAGS += -Wall -Os -g -O2 -Wpointer-arith -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mno-text-section-literals  -D__ets__ -DICACHE_FLASH
+CFLAGS += $(CFLAGS_EXTRA)
 
 ifneq ($(MFORCE32),)
     # Your compiler supports the -mforce-l32 flag which means that 

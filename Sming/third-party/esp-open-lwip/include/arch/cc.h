@@ -91,11 +91,12 @@ typedef signed short        sint16_t;
 #define PACK_STRUCT_BEGIN
 #define PACK_STRUCT_END
 
-//#define LWIP_DEBUG
-
 #ifdef LWIP_DEBUG
-#define LWIP_PLATFORM_DIAG(x) os_printf x
-#define LWIP_PLATFORM_ASSERT(x) ETS_ASSERT(x)
+#include "debug_progmem.h"
+
+#define LWIP_PLATFORM_DIAG(x) debug_i x
+#define LWIP_PLATFORM_ASSERT(x) m_printf("ASSERT: %s %s %d", (x), __FUNCTION__, __LINE__)
+
 #else
 #define LWIP_PLATFORM_DIAG(x)
 #define LWIP_PLATFORM_ASSERT(x)

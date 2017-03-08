@@ -1,12 +1,6 @@
-/* This linker script generated from xt-genldscripts.tpp for LSP . */
-/* Linker Script for ld -N */
-MEMORY
-{
-  dport0_0_seg :                        org = 0x3FF00000, len = 0x10
-  dram0_0_seg :                         org = 0x3FFE8000, len = 0x14000
-  iram1_0_seg :                         org = 0x40100000, len = 0x8000
-  irom0_0_seg :                         org = 0x4020a000, len = (1M - 0x0a000)
-}
+/*  
+    common.ld
+*/    
 
 PHDRS
 {
@@ -91,7 +85,7 @@ SECTIONS
   .rodata : ALIGN(4)
   {
     _rodata_start = ABSOLUTE(.);
-    *(.sdk.version) 
+    *(.sdk.version)
     *(.rodata)
     *(.rodata.*)
     *(.gnu.linkonce.r.*)
@@ -158,10 +152,10 @@ SECTIONS
   .irom0.text : ALIGN(4)
   {
     _irom0_text_start = ABSOLUTE(.);
-    *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text)
-	out/build/app_app.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
-  *libsming.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
-  *libsmingssl.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
+    *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text .irom.debug.*)
+	out/build/app_app.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
+  *libsming.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
+  *libsmingssl.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
     _irom0_text_end = ABSOLUTE(.);
 	_flash_code_end = ABSOLUTE(.);
   } >irom0_0_seg :irom0_0_phdr

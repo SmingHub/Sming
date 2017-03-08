@@ -48,6 +48,7 @@ else
 lwip/app/espconn_tcp.o \
 lwip/app/espconn_udp.o \
 lwip/app/espconn_mdns.o \
+lwip/api/err.o \
 lwip/core/mdns.o
 
 endif

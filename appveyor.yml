@@ -31,7 +31,7 @@ build_script:
   - cd %SMING_HOME%
   - gcc -v
 # Compile spiffy first
-  - git submodule update --init --recursive third-party/spiffs
+  - make third-party/spiffs/makefile
   - cd spiffy
   - make
 # Followed by the library and test sample apps

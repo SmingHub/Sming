@@ -44,6 +44,7 @@ extern "C" {
 #include "os_int.h"
 #include "config.h"
 #include <stdio.h>
+#include "debug_progmem.h"
 
 #ifdef WIN32
 #define STDCALL                 __stdcall
@@ -60,8 +61,6 @@ extern "C" {
 
 #if defined(ESP8266)
 
-extern int ets_putc(int character);
-extern void ets_printf(const char*, ...);
 extern int ax_port_read(int clientfd, uint8_t *buf, int bytes_needed);
 extern int ax_port_write(int clientfd, uint8_t *buf, uint16_t bytes_needed);
 
@@ -74,11 +73,13 @@ extern void gettimeofday(struct timeval* t,void* timezone);
 #ifdef putc
 #undef putc
 #endif
-#define putc(x, f)   ets_putc(x)
+#define putc(x, f)   debug_i("%c", (x))
 #ifdef printf
 #undef printf
 #endif
-#define printf(...)  ets_printf(__VA_ARGS__)
+#define printf  debug_i
+#define snprintf m_snprintf
+#define vprintf m_vprintf
 
 #define SOCKET_READ(A,B,C)      ax_port_read(A,B,C)
 #define SOCKET_WRITE(A,B,C)     ax_port_write(A,B,C)
