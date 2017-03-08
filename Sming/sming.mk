@@ -362,7 +362,7 @@ ifeq ($(ENABLE_SSL),1)
 endif
 
 LIBS        += $(LIBSMING)
-NEEDED_A    += $(USER_LIBDIR)/lib$(LIBSMING).a
+REQUIRED_FOR_LD += $(USER_LIBDIR)/lib$(LIBSMING).a
 
 $(USER_LIBDIR)/lib$(LIBSMING).a:
 	$(vecho) "(Re)compiling Sming. Enabled features: $(SMING_FEATURES). This may take some time"
@@ -383,7 +383,7 @@ endif
 ifeq ($(RBOOT_BIG_FLASH),1)
 	LIBMAIN         := main2
 	LIBMAIN_DST     := $(BUILD_BASE)/libmain2.a
-	NEEDED_A        += $(LIBMAIN_DST)
+	REQUIRED_FOR_LD += $(LIBMAIN_DST)
 endif
 
 LIBS += $(LIBMAIN)
@@ -399,7 +399,7 @@ LIBPWM          := pwm
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	LIBPWM          := pwm_open
 	LIBPWM_DST      := $(USER_LIBDIR)/lib$(LIBPWM).a
-	NEEDED_A        += $(LIBPWM_DST)
+	REQUIRED_FOR_LD += $(LIBPWM_DST)
 endif
 
 LIBS += $(LIBPWM) 
@@ -420,7 +420,7 @@ ifeq ($(ENABLE_SSL),1)
 	
 	CFLAGS          += $(AXTLS_FLAGS)  
 	CXXFLAGS        += $(AXTLS_FLAGS)   
-	NEEDED_CC       += include/ssl/private_key.h
+	REQUIRED_FOR_CC += include/ssl/private_key.h
 endif
 
 CURRENT_DIR     := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
@@ -443,7 +443,7 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	endif
 	LIBLWIP_DST     := $(USER_LIBDIR)/lib$(LIBLWIP).a
 	EXTRA_INCDIR    += $(SMING_HOME)/third-party/esp-open-lwip/include  
-	NEEDED_A        += $(LIBLWIP_DST)
+	REQUIRED_FOR_LD += $(LIBLWIP_DST)
 endif
 
 LIBS += $(LIBLWIP) 
@@ -491,12 +491,12 @@ include $(foreach bdir, $(BUILD_DIR), $(wildcard $(bdir)/*.d))
 
 #   define compiler rules for all sources directories
 define compile-source
-$2/%.o: $1/%.cpp $2/%.d $(NEEDED_CC)
+$2/%.o: $1/%.cpp $2/%.d $(REQUIRED_FOR_CC)
 	$(vecho) "C+ $$<" 
 	$(Q) $(CXX) -I$2 -I$2/include $(CXXFLAGS) -c $$< -o $$@
 	$(POSTCOMPILE)
 
-$2/%.o: $1/%.c $2/%.d $(NEEDED_CC)
+$2/%.o: $1/%.c $2/%.d $(REQUIRED_FOR_CC)
 	$(vecho) "CC $$<"
 	$(Q) $(CC) -I$2 -I$2/include $(CFLAGS) -c $$< -o $$@   
 	$(POSTCOMPILE)
@@ -537,13 +537,13 @@ LIBS            := $(addprefix -l,$(LIBS))
 LDFLAGS         = -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
 LDFLAGS         += $(addprefix -L,$(USER_LIBDIR) $(SDK_LIBDIR) $(BUILD_BASE) $(SMING_HOME)/compiler/ld)
 
-$(TARGET_OUT_0): $(APP_AR) $(ROM0_LD) $(NEEDED_A) 
+$(TARGET_OUT_0): $(REQUIRED_FOR_LD) $(APP_AR) $(ROM0_LD)  
 	$(vecho) "LD $@"
 	$(Q) $(LD) -T$(ROM0_LD) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
 	$(Q) $(MEMANALYZER) $@ 
 	$(Q) $(STRIP) $@
 
-$(TARGET_OUT_1): $(APP_AR) $(ROM1_LD) $(NEEDED_A) 
+$(TARGET_OUT_1): $(REQUIRED_FOR_LD) $(APP_AR) $(ROM1_LD) 
 	$(vecho) "LD $@"
 	$(Q) $(LD) -T$(ROM1_LD) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
 	$(Q) $(STRIP) $@
@@ -607,7 +607,7 @@ export SPI_MODE
 export SPI_SPEED
 export ESPTOOL2
 
-$(RBOOT_BIN): $(NEEDED_A)
+$(RBOOT_BIN): $(REQUIRED_FOR_LD)
 	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot RBOOT_GPIO_ENABLED=$(RBOOT_GPIO_ENABLED)
 
 #==============================================================================
