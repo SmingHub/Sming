@@ -116,10 +116,13 @@ bool HttpServer::initWebSocket(HttpServerConnection& connection, HttpRequest& re
 
     wsocks.addElement(sock);
     if (wsConnect) wsConnect(*sock);
-
     if (wsCommandEnabled &&  (request.getQueryParameter(wsCommandRequestParam) == "true"))
     {
+#if ENABLE_CMD_EXECUTOR
         debugf("WebSocket Commandprocessor started");
+#else
+        debugf("WebSocket Commandprocessor support DISABLED via ENABLE_CMD_EXECUTOR");
+#endif
     	sock->enableCommand();
     }
 }
@@ -148,7 +151,9 @@ void HttpServer::processWebSocketFrame(pbuf *buf, HttpServerConnection& connecti
 		msg.setString((char*)data, size);
 		debugf("WS: %s", msg.c_str());
 		if (sock && wsMessage) wsMessage(*sock, msg);
+#if ENABLE_CMD_EXECUTOR
 		if (sock && sock->commandExecutor) sock->commandExecutor->executorReceive(msg+"\r");
+#endif
 	}
 	else if (frameType == WS_BINARY_FRAME)
 	{
