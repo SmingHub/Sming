@@ -15,8 +15,8 @@
 #       - removed vpath to avoid source file collisions
 #       - EXTRA_SRC option added
 #       - more specific include paths to avoid header file collisions
-#       - use Python for address calculations if available instead of Perl 
-#       - use sed for linker file creation instead of Perl 
+#       - use Python for address calculations if available instead of Perl
+#       - use sed for linker file creation instead of Perl
 #
 #   remarks:
 #       - old variable names kept for compatibility, even if some of them seem
@@ -27,23 +27,23 @@
 #------------------------------------------------------------------------------
 #   your flash memory size (required)
 ifeq ("$(SPI_SIZE)","")
-    $(error SPI_SIZE not set)
-endif   
+    $(error please set SPI_SIZE)
+endif
 
 #   enable rboot (default: 0)
 RBOOT_ENABLED   ?= 0
 
 #   your source directories (default: app)
-MODULES         ?= app                  
+MODULES         ?= app
 
 #   your extra include directies (default: none)
-EXTRA_INCDIR    ?= 
+EXTRA_INCDIR    ?=
 
 #   your extra libraries (default: none)
-EXTRA_LIBS      ?= 
+EXTRA_LIBS      ?=
 
 #   your extra source files (default: none)
-EXTRA_SRC       ?= 
+EXTRA_SRC       ?=
 
 #   your spiffs size (default: 0)
 SPIFF_SIZE      ?= 0
@@ -61,11 +61,11 @@ GET_VDD33       ?= 0
 #   load os specific settings
 #------------------------------------------------------------------------------
 ifeq ($(OS),Windows_NT)
-	include $(SMING_HOME)/Windows.mk  
+	include $(SMING_HOME)/Windows.mk
 else
 	UNAME := $(shell uname -s)
-	include $(SMING_HOME)/$(UNAME).mk  
-endif   
+	include $(SMING_HOME)/$(UNAME).mk
+endif
 
 #==============================================================================
 #   default serial settings
@@ -84,7 +84,7 @@ DEFINES += COM_SPEED_SERIAL
 BUILD_BASE      = out/build
 FW_BASE         = out/firmware
 
-#   SDK directories 
+#   SDK directories
 SDK_BASE        ?= $(ESP_HOME)/sdk
 SDK_TOOLS       ?= $(SDK_BASE)/tools
 SDK_ROMS        := $(SDK_BASE)/bin
@@ -116,7 +116,7 @@ XXD             := xxd
 
 ifeq ($(MANUAL_RESET),1)
 	RESET_ESP       := $(PAUSE5) "*** PLEASE RESET ESP8266 NOW ***"
-endif   
+endif
 
 export COMPILE  := gcc
 export PATH     := $(XTENSA_TOOLS):$(PATH)
@@ -127,7 +127,7 @@ ifeq ("$(PYTHON)","")
 else
 	hexcalc         = $(shell $(PYTHON) -c"print(format(int($(1)),'\#08x'))")
 	deccalc         = $(shell $(PYTHON) -c"print(int($(1)))")
-endif   
+endif
 
 #==============================================================================
 #   makefile logging
@@ -171,7 +171,7 @@ ifeq ($(RBOOT_ENABLED), 1)
 
 	ifeq ($(SPI_SIZE),1M)
 		RBOOT_TWO_ROMS  	?= 1
-	else	
+	else
 		RBOOT_TWO_ROMS      ?= 0
 	endif
 
@@ -194,7 +194,7 @@ ifeq ($(RBOOT_ENABLED), 1)
 	ifeq ($(RBOOT_TWO_ROMS),1)
 		ROM1_BIN        := $(FW_BASE)/rom1.bin
 		ROM1_LD         ?= $(BUILD_BASE)/rom1.ld
-		
+
 		#   this is where rboot expects the 2nd rom in two-rom mode
 		ROM1_ADDR       ?= $(call hexcalc, $(ROM0_ADDR) + $(MEM_SIZE) / 2)
 
@@ -203,13 +203,13 @@ ifeq ($(RBOOT_ENABLED), 1)
 	endif
 
 	OTA_FILES       += $(ROM0_BIN) $(ROM1_BIN)
-	FLASH_FILES     += $(RBOOT_BIN) $(ROM0_BIN) 
+	FLASH_FILES     += $(RBOOT_BIN) $(ROM0_BIN)
 	FLASH_ROM_FLAGS += 0x000000 $(RBOOT_BIN) 0x002000 $(ROM0_BIN)
 
 	#   find rboot source files
 	MODULES         += $(THIRD_PARTY_DIR)/rboot/appcode
 
-	DEFINES += RBOOT_INTEGRATION  RBOOT_RTC_ENABLED RBOOT_GPIO_ENABLED 
+	DEFINES += RBOOT_INTEGRATION  RBOOT_RTC_ENABLED RBOOT_GPIO_ENABLED
 	DEFINES += RBOOT_TWO_ROMS BOOT_BIG_FLASH RBOOT_SPIFFS_0 RBOOT_SPIFFS_1
 
 #==============================================================================
@@ -218,7 +218,7 @@ ifeq ($(RBOOT_ENABLED), 1)
 else
 	#   place spiffs below user flash area
 	RBOOT_SPIFFS_0  ?= $(call hexcalc, $(USER_FLASH_ADDR) - $(SPIFF_SIZE))
-	
+
 	#	generate linker files
 	ROM0_ADDR       ?= 0x00A000
 	IROM0_SIZE      ?= $(call hexcalc, 0x100000 - $(ROM0_ADDR))
@@ -227,7 +227,7 @@ else
 	#	rom files
 	IMAGE_MAIN      := $(FW_BASE)/main.bin
 	IMAGE_SDK       := $(FW_BASE)/sdk.bin
-	FLASH_FILES     += $(IMAGE_MAIN) $(IMAGE_SDK) 
+	FLASH_FILES     += $(IMAGE_MAIN) $(IMAGE_SDK)
 	FLASH_ROM_FLAGS += 0x000000 $(IMAGE_MAIN) $(ROM0_ADDR) $(IMAGE_SDK)
 endif
 
@@ -261,21 +261,18 @@ ifneq ($(SPIFF_SIZE),0)
 	OTA_FILES       += $(SPIFF_BIN)
 	FLASH_FILES     += $(SPIFF_BIN)
 	FLASH_ROM_FLAGS += $(RBOOT_SPIFFS_0) $(SPIFF_BIN)
-
-#------------------------------------------------------------------------------
-else    
+else
 	DISABLE_SPIFFS  := 1
-
 endif
 
-DEFINES += SPIFF_SIZE DISABLE_SPIFFS  
+DEFINES += SPIFF_SIZE DISABLE_SPIFFS
 
 #==============================================================================
 #   serial flash settings
 #------------------------------------------------------------------------------
 SPI_SPEED       ?= 40
 SPI_MODE        ?= qio
-SPI_SIZE_M      := $(call deccalc, $(MEM_SIZE) >> 17)m    
+SPI_SIZE_M      := $(call deccalc, $(MEM_SIZE) >> 17)m
 
 ESPTOOL_FLAGS   := -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL)
 ESPTOOL_IMGFLAGS:= -ff $(SPI_SPEED)m -fm $(SPI_MODE) -fs $(SPI_SIZE_M)
@@ -287,14 +284,14 @@ ifeq ($(ENABLE_GDB), 1)
 	MODULES         += $(THIRD_PARTY_DIR)/gdbstub
 endif
 
-SRC_DIR         := $(MODULES) $(patsubst %/,%,$(sort $(dir $(EXTRA_SRC))))
+SRC_DIR         := $(sort $(MODULES) $(patsubst %/,%,$(dir $(EXTRA_SRC))))
 BUILD_DIR       := $(addprefix $(BUILD_BASE)/,$(SRC_DIR))
 
-EXTRA_INCDIR    += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include 
-EXTRA_INCDIR    += $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore 
-EXTRA_INCDIR    += $(SMING_HOME)/Services/SpifFS 
+EXTRA_INCDIR    += $(SMING_HOME)/include $(SMING_HOME)/ $(SMING_HOME)/system/include
+EXTRA_INCDIR    += $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore
+EXTRA_INCDIR    += $(SMING_HOME)/Services/SpifFS
 EXTRA_INCDIR    += $(THIRD_PARTY_DIR)/spiffs/src
-EXTRA_INCDIR    += $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode 
+EXTRA_INCDIR    += $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode
 
 #==============================================================================
 #   intermediate files
@@ -327,11 +324,11 @@ DEBUG_PRINT_FILENAME_AND_LINE ?= 0
 DEBUG_VERBOSE_LEVEL ?= 2
 
 #==============================================================================
-#   clean-up and rebuild  
+#   clean-up and rebuild
 #------------------------------------------------------------------------------
-.PHONY: all clean rebuild 
+.PHONY: all clean rebuild
 
-all: dirs $(CUSTOM_TARGETS) $(FLASH_FILES) $(OTA_FILES) 
+all: dirs $(CUSTOM_TARGETS) $(FLASH_FILES) $(OTA_FILES)
 
 clean:
 	$(Q) rm -rf $(BUILD_BASE) $(FW_BASE) $(CUSTOM_TARGETS)
@@ -339,7 +336,7 @@ clean:
 rebuild: clean all
 
 #   disable build-in rules
-.SUFFIXES:      
+.SUFFIXES:
 
 #==============================================================================
 #   create required directories
@@ -361,7 +358,7 @@ ifeq ($(ENABLE_SSL),1)
 	SMING_FEATURES  := SSL
 endif
 
-LIBS        += $(LIBSMING)
+LIBS        	+= $(LIBSMING)
 REQUIRED_FOR_LD += $(USER_LIBDIR)/lib$(LIBSMING).a
 
 $(USER_LIBDIR)/lib$(LIBSMING).a:
@@ -402,7 +399,7 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	REQUIRED_FOR_LD += $(LIBPWM_DST)
 endif
 
-LIBS += $(LIBPWM) 
+LIBS += $(LIBPWM)
 
 $(LIBPWM_DST): compiler/lib/libpwm_open.a
 	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm_open.a ENABLE_CUSTOM_PWM=1
@@ -411,15 +408,15 @@ $(LIBPWM_DST): compiler/lib/libpwm_open.a
 #   SSL support using axTLS
 #------------------------------------------------------------------------------
 ifeq ($(ENABLE_SSL),1)
-	LIBS            += axtls    
-	EXTRA_INCDIR    += $(THIRD_PARTY_DIR)/axtls-8266 $(THIRD_PARTY_DIR)/axtls-8266/ssl $(THIRD_PARTY_DIR)/axtls-8266/crypto 
+	LIBS            += axtls
+	EXTRA_INCDIR    += $(THIRD_PARTY_DIR)/axtls-8266 $(THIRD_PARTY_DIR)/axtls-8266/ssl $(THIRD_PARTY_DIR)/axtls-8266/crypto
 	AXTLS_FLAGS     = -DLWIP_RAW=1 -DENABLE_SSL=1
-	ifeq ($(SSL_DEBUG),1)  
+	ifeq ($(SSL_DEBUG),1)
 		AXTLS_FLAGS     += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1
 	endif
-	
-	CFLAGS          += $(AXTLS_FLAGS)  
-	CXXFLAGS        += $(AXTLS_FLAGS)   
+
+	CFLAGS          += $(AXTLS_FLAGS)
+	CXXFLAGS        += $(AXTLS_FLAGS)
 	REQUIRED_FOR_CC += include/ssl/private_key.h
 endif
 
@@ -428,7 +425,7 @@ CURRENT_DIR     := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 include/ssl/private_key.h:
 	$(vecho) "Generating unique certificate and key. This may take some time"
 	$(Q) mkdir -p $(CURRENT_DIR)/include/ssl/
-	$(Q) AXDIR=$(CURRENT_DIR)/include/ssl/  $(THIRD_PARTY_DIR)/axtls-8266/tools/make_certs.sh 
+	$(Q) AXDIR=$(CURRENT_DIR)/include/ssl/  $(THIRD_PARTY_DIR)/axtls-8266/tools/make_certs.sh
 
 #==============================================================================
 #   custom lwip support
@@ -442,11 +439,11 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 		LIBLWIP = lwip_full
 	endif
 	LIBLWIP_DST     := $(USER_LIBDIR)/lib$(LIBLWIP).a
-	EXTRA_INCDIR    += $(SMING_HOME)/third-party/esp-open-lwip/include  
+	EXTRA_INCDIR    += $(SMING_HOME)/third-party/esp-open-lwip/include
 	REQUIRED_FOR_LD += $(LIBLWIP_DST)
 endif
 
-LIBS += $(LIBLWIP) 
+LIBS += $(LIBLWIP)
 
 $(LIBLWIP_DST):
 	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/$(notdir $@) ENABLE_CUSTOM_LWIP=1 ENABLE_ESPCONN=$(ENABLE_ESPCONN)
@@ -472,16 +469,12 @@ endif
 #   extra include directories
 CFLAGS          += $(addprefix -I,$(EXTRA_INCDIR)) -I$(SDK_INCDIR)
 
-#   Append debug options
+#   Append debug options and defines
 CFLAGS          += -DCUST_FILE_BASE=$(subst /,_,$(subst .,_,$*)) -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
-CXXFLAGS        = $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
-
-#   extra flags
 CFLAGS          += $(foreach d,$(DEFINES),-D$d=$($d))
 
-#   automatic dependency tracking 
+#   automatic dependency tracking
 #   s. a. http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
-
 CFLAGS          += -MT $$@ -MMD -MP -MF $2/temp.d
 POSTCOMPILE     = $(Q) mv -f $2/temp.d $2/$$*.d
 DEP_FILES       = $(addsuffix /%.d, $(BUILD_DIR))
@@ -489,27 +482,34 @@ $(DEP_FILES): ;
 .PRECIOUS: $(DEP_FILES)
 include $(foreach bdir, $(BUILD_DIR), $(wildcard $(bdir)/*.d))
 
+CXXFLAGS        = $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
+
 #   define compiler rules for all sources directories
 define compile-source
 $2/%.o: $1/%.cpp $2/%.d $(REQUIRED_FOR_CC)
-	$(vecho) "C+ $$<" 
+	$(vecho) "C+ $$<"
 	$(Q) $(CXX) -I$2 -I$2/include $(CXXFLAGS) -c $$< -o $$@
 	$(POSTCOMPILE)
 
 $2/%.o: $1/%.c $2/%.d $(REQUIRED_FOR_CC)
 	$(vecho) "CC $$<"
-	$(Q) $(CC) -I$2 -I$2/include $(CFLAGS) -c $$< -o $$@   
+	$(Q) $(CC) -I$2 -I$2/include $(CFLAGS) -c $$< -o $$@
+	$(POSTCOMPILE)
+
+$2/%.o: $1/%.S
+	$(vecho) "CC $$<"
+	$(Q) $(CC) -I$2 -I$2/include $(CFLAGS) -c $$< -o $$@
 	$(POSTCOMPILE)
 endef
 
 $(foreach dir,$(SRC_DIR),$(eval $(call compile-source,$(dir),$(addprefix $(BUILD_BASE)/,$(dir)))))
-	
+
 #==============================================================================
 #   create an archive from our object files
 #------------------------------------------------------------------------------
 #   build list of all source and object files
-SRC             := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c*))
-OBJ             := $(addprefix $(BUILD_BASE)/,$(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SRC))))
+SRC             := $(foreach mod,$(MODULES),$(wildcard $(mod)/*.c*) $(wildcard $(mod)/*.S)) $(EXTRA_SRC)
+OBJ             := $(addprefix $(BUILD_BASE)/,$(addsuffix .o,$(basename $(SRC)))) $(EXTRA_OBJ)
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
@@ -518,38 +518,38 @@ $(APP_AR): $(OBJ)
 #==============================================================================
 #   create custom linker scripts
 #------------------------------------------------------------------------------
-IROM0_ORG0      := $(call hexcalc, 0x40200000 + $(ROM0_ADDR)) 
+IROM0_ORG0      := $(call hexcalc, 0x40200000 + $(ROM0_ADDR))
 ROM1_ADDR		?= $(ROM0_ADDR)
-IROM0_ORG1      := $(call hexcalc, 0x40200000 + $(ROM1_ADDR)) 
+IROM0_ORG1      := $(call hexcalc, 0x40200000 + $(ROM1_ADDR))
 
 $(ROM0_LD): $(SMING_HOME)/compiler/ld/rboot.rom0.ld
 	$(SED) -r "s/(^\s*irom0_0_seg *: *).*/\\1org = $(IROM0_ORG0), len = $(IROM0_SIZE)/" $< >$@
 
 $(ROM1_LD): $(SMING_HOME)/compiler/ld/rboot.rom0.ld
 	$(SED) -r "s/(^\s*irom0_0_seg *: *).*/\\1org = $(IROM0_ORG1), len = $(IROM0_SIZE)/" $< >$@
-	
+
 #==============================================================================
 #   link the main object file
 #------------------------------------------------------------------------------
 LIBS            += microc microgcc hal phy pp net80211 wpa crypto smartconfig $(EXTRA_LIBS)
 LIBS            := $(addprefix -l,$(LIBS))
-	
-LDFLAGS         = -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
+
+LDFLAGS         = -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local
 LDFLAGS         += $(addprefix -L,$(USER_LIBDIR) $(SDK_LIBDIR) $(BUILD_BASE) $(SMING_HOME)/compiler/ld)
 
-$(TARGET_OUT_0): $(REQUIRED_FOR_LD) $(APP_AR) $(ROM0_LD)  
+$(TARGET_OUT_0): $(REQUIRED_FOR_LD) $(APP_AR) $(ROM0_LD)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -T$(ROM0_LD) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
-	$(Q) $(MEMANALYZER) $@ 
+	$(Q) $(MEMANALYZER) $@
 	$(Q) $(STRIP) $@
 
-$(TARGET_OUT_1): $(REQUIRED_FOR_LD) $(APP_AR) $(ROM1_LD) 
+$(TARGET_OUT_1): $(REQUIRED_FOR_LD) $(APP_AR) $(ROM1_LD)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -T$(ROM1_LD) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
 	$(Q) $(STRIP) $@
 
 #==============================================================================
-#   create application rom files 
+#   create application rom files
 #------------------------------------------------------------------------------
 E2_FLAGS			+= -quiet
 E2_SECTS_MAIN     	+= .text .data .rodata
@@ -570,8 +570,8 @@ $(IMAGE_MAIN): $(TARGET_OUT_0)
 
 $(IMAGE_SDK): $(TARGET_OUT_0)
 	$(vecho) "ESPTOOL2 $@"
-	$(Q) $(ESPTOOL2) $(E2_FLAGS) -lib $(TARGET_OUT_0) $@ 
-	
+	$(Q) $(ESPTOOL2) $(E2_FLAGS) -lib $(TARGET_OUT_0) $@
+
 #==============================================================================
 #   create spiffs rom
 #------------------------------------------------------------------------------
@@ -586,12 +586,12 @@ $(SPIFF_FILES):
 $(SPIFF_BIN): $(SPIFF_FILES) $(SPIFF_SRCS)
 	$(Q) $(SPIFFY) $(SPIFF_SIZE) $(SPIFF_FILES) $@
 
-spiff_clean: 
+spiff_clean:
 	$(info removing $(SPIFF_BIN) ...)
 	$(Q) rm -rf $(SPIFF_BIN)
-	
+
 spiff_update: spiff_clean $(SPIFF_BIN)
-	
+
 #==============================================================================
 #   create rboot bootloader rom
 #------------------------------------------------------------------------------
@@ -618,13 +618,13 @@ $(RBOOT_BIN): $(REQUIRED_FOR_LD)
 ESP_INIT_DATA   := $(SDK_ROMS)/esp_init_data_default.bin
 
 #   special init data is required for system_get_vdd33()
-ifeq ($(GET_VDD33),1) 
+ifeq ($(GET_VDD33),1)
 	ESP_INIT_ROM := $(BUILD_BASE)/esp_init_data_vdd33.bin
 else
 	ESP_INIT_ROM := $(ESP_INIT_DATA)
 endif
 
-INIT_ROM_FLAGS   = $(RF_CAL_ADDR)   $(SDK_ROMS)/blank.bin 
+INIT_ROM_FLAGS   = $(RF_CAL_ADDR)   $(SDK_ROMS)/blank.bin
 INIT_ROM_FLAGS  += $(ESP_INIT_ADDR) $(ESP_INIT_ROM)
 INIT_ROM_FLAGS  += $(ESP_PARM_ADDR) $(SDK_ROMS)/blank.bin
 
@@ -648,16 +648,15 @@ $(BUILD_BASE)/esp_init_data_vdd33.bin: $(ESP_INIT_DATA)
 flash: kill_term dirs $(CUSTOM_TARGETS) $(FLASH_FILES)
 	$(Q) $(ESPTOOL) $(ESPTOOL_FLAGS) write_flash $(ESPTOOL_IMGFLAGS) $(FLASH_ROM_FLAGS)
 	$(Q) $(TERMINAL)
-	
+
 #==============================================================================
 #   manage terminal window
 #------------------------------------------------------------------------------
 .PHONY: terminal kill_term
 
-terminal: 
+terminal:
 	$(Q) $(TERMINAL)
 
 kill_term:
 	$(info Killing Terminal to free $(COM_PORT))
 	-$(Q) $(KILL_TERM)
-	
