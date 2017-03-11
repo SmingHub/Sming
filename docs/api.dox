@@ -12,6 +12,10 @@
  *  @brief  Structure definitions used by Sming functions
  */
 
+/** @defgroup libraries Libraries
+ *  @brief  Libraries provided by third parties, adapted to work with Sming
+ */
+
 /** @mainpage
  *  @section Overview
 This is the documentation for the API of Sming - a C++ framework for development on the ESP8266 microcontroller platform.
