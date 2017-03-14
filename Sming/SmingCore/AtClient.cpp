@@ -72,7 +72,7 @@ void AtClient::processor(Stream &source, char arrivedChar, uint16_t availableCha
 	next();
 }
 
-void AtClient::send(String text, String altResponse /* ="" */, uint32_t timeoutMs /* = AT_TIMEOUT */, int retries /* = 0 */) {
+void AtClient::send(const String& text, const String& altResponse /* ="" */, uint32_t timeoutMs /* = AT_TIMEOUT */, int retries /* = 0 */) {
 	AtCommand atCommand;
 	atCommand.text = text;
 	atCommand.response2 = altResponse;
@@ -82,7 +82,7 @@ void AtClient::send(String text, String altResponse /* ="" */, uint32_t timeoutM
 	send(atCommand);
 }
 
-void AtClient::send(String text, AtReceiveCallback onReceive, uint32_t timeoutMs /* = AT_TIMEOUT */, int retries /* = 0 */) {
+void AtClient::send(const String& text, AtReceiveCallback onReceive, uint32_t timeoutMs /* = AT_TIMEOUT */, int retries /* = 0 */) {
 	AtCommand atCommand;
 	atCommand.text = text;
 	atCommand.onReceive = onReceive;
@@ -92,7 +92,7 @@ void AtClient::send(String text, AtReceiveCallback onReceive, uint32_t timeoutMs
 	send(atCommand);
 }
 
-void AtClient::send(String text, AtCompleteCallback onComplete, uint32_t timeoutMs /* = AT_TIMEOUT */, int retries /* = 0 */) {
+void AtClient::send(const String& text, AtCompleteCallback onComplete, uint32_t timeoutMs /* = AT_TIMEOUT */, int retries /* = 0 */) {
 	AtCommand atCommand;
 	atCommand.text = text;
 	atCommand.onComplete = onComplete;

@@ -68,7 +68,7 @@ public:
 	 * @param timeoutMs uint32_t Time in milliseconds to wait for response
 	 * @param retries int Retries on error
 	 */
-	void send(String text, String altResponse = "",  uint32_t timeoutMs = AT_TIMEOUT, int retries = 0);
+	void send(const String& text, const String& altResponse = "",  uint32_t timeoutMs = AT_TIMEOUT, int retries = 0);
 
 	/**
 	 * @brief Sends AT command
@@ -77,7 +77,7 @@ public:
 	 * @param timeoutMs uint32_t Time in milliseconds to wait for response
 	 * @param retries int Retries on error
 	 */
-	void send(String text, AtReceiveCallback onReceive, uint32_t timeoutMs = AT_TIMEOUT, int retries = 0);
+	void send(const String& text, AtReceiveCallback onReceive, uint32_t timeoutMs = AT_TIMEOUT, int retries = 0);
 
 	/**
 	 * @brief Sends AT command
@@ -86,7 +86,7 @@ public:
 	 * @param timeoutMs uint32_t Time in milliseconds to wait for response
 	 * @param retries int Retries on error
 	 */
-	void send(String text, AtCompleteCallback onComplete, uint32_t timeoutMs = AT_TIMEOUT, int retries = 0);
+	void send(const String& text, AtCompleteCallback onComplete, uint32_t timeoutMs = AT_TIMEOUT, int retries = 0);
 
 	// Low Level Functions
 
