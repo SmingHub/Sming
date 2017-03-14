@@ -71,11 +71,12 @@ endif
 #==============================================================================
 #   default serial settings
 #------------------------------------------------------------------------------
-#   use the maximum speed supported by your board to get things done faster
-COM_SPEED_ESPTOOL   ?= 921600
+#   change this to the maximum speed supported by your board (e. g. 921600)
+#   to get things done much faster
+COM_SPEED_ESPTOOL   ?= 115200
 
-#   use bootloader default (74880) to see bootloader messages
-COM_SPEED_SERIAL    ?= 74880
+#   change to bootloader default (74880) to see bootloader messages
+COM_SPEED_SERIAL    ?= 115200
 
 DEFINES += COM_SPEED_SERIAL
 
