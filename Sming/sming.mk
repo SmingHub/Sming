@@ -1,22 +1,20 @@
 #   sming.mk
 #
+#   new features:
+# 		- roms with and without bootloader
+# 		- automatic flash address caclulation
+# 		- automatic linker script creation
+# 		- dependency tracking for spiffs sources
+# 		- dependency tracking for all header files included in cpp and c sources
+# 		- memanalyzer added
+# 		- automatic patch of _esp_init_data_default.bin_ for _system_get_vdd33()_
+# 		- improved terminal handling for windows
+# 		- allow duplicate source and header file names (in different directories)
+# 		- EXTRA_SRC and EXTRA_OBJ options added
+# 		- assembler support added
+#
 #   to do:
 #       - LTO?
-#
-#   done:
-#       - roms with and without bootloader
-#       - automatic flash address caclulation
-#       - automatic linker script creation
-#       - dependency tracking for spiffs sources
-#       - dependency tracking for all header files included in cpp and c sources
-#       - memanalyzer added
-#       - automatic patch of esp_init_data_default.bin for system_get_vdd33()
-#       - improved terminal handling for windows
-#       - removed vpath to avoid source file collisions
-#       - EXTRA_SRC option added
-#       - more specific include paths to avoid header file collisions
-#       - use Python for address calculations if available instead of Perl
-#       - use sed for linker file creation instead of Perl
 #
 #   remarks:
 #       - old variable names kept for compatibility, even if some of them seem
@@ -44,6 +42,9 @@ EXTRA_LIBS      ?=
 
 #   your extra source files (default: none)
 EXTRA_SRC       ?=
+
+#   your extra object files (default: none)
+EXTRA_OBJ       ?=
 
 #   your spiffs size (default: 0)
 SPIFF_SIZE      ?= 0
@@ -110,7 +111,7 @@ OBJCOPY         := $(XTENSA_TOOLS)/xtensa-lx106-elf-objcopy
 OBJDUMP         := $(XTENSA_TOOLS)/xtensa-lx106-elf-objdump
 STRIP           := $(XTENSA_TOOLS)/xtensa-lx106-elf-strip
 
-PERL            ?= perl
+PRINTF          ?= printf
 SED             ?= sed
 XXD             := xxd
 
@@ -121,13 +122,8 @@ endif
 export COMPILE  := gcc
 export PATH     := $(XTENSA_TOOLS):$(PATH)
 
-ifeq ("$(PYTHON)","")
-	hexcalc         = $(shell $(PERL) -e"printf '0x%06X', $(1)")
-	deccalc         = $(shell $(PERL) -e"printf '%d', $(1)")
-else
-	hexcalc         = $(shell $(PYTHON) -c"print(format(int($(1)),'\#08x'))")
-	deccalc         = $(shell $(PYTHON) -c"print(int($(1)))")
-endif
+calc            = $(shell echo $$(( $(1) )) )
+hexcalc         = $(shell $(PRINTF) 0x%06X $(call calc, $(1)))
 
 #==============================================================================
 #   makefile logging
@@ -272,7 +268,7 @@ DEFINES += SPIFF_SIZE DISABLE_SPIFFS
 #------------------------------------------------------------------------------
 SPI_SPEED       ?= 40
 SPI_MODE        ?= qio
-SPI_SIZE_M      := $(call deccalc, $(MEM_SIZE) >> 17)m
+SPI_SIZE_M      := $(call calc, $(MEM_SIZE) >> 17)m
 
 ESPTOOL_FLAGS   := -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL)
 ESPTOOL_IMGFLAGS:= -ff $(SPI_SPEED)m -fm $(SPI_MODE) -fs $(SPI_SIZE_M)
