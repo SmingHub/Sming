@@ -1,5 +1,11 @@
 #   sming.mk
 #
+$(info )
+$(info This is an experimental replacement for Makefile-project.mk/Makefile-rboot.mk)
+$(info )
+$(info Use at your own risk ;-])
+$(info )
+#
 #   new features:
 # 		- roms with and without bootloader
 # 		- automatic flash address caclulation
