@@ -49,6 +49,7 @@ public:
 #ifdef ENABLE_SSL
 	using HttpClient::addSslOptions;
 	using HttpClient::setSslFingerprint;
+	using HttpClient::pinCertificate;
 	using HttpClient::setSslClientKeyCert;
 	using HttpClient::freeSslClientKeyCert;
 	using HttpClient::getSsl;

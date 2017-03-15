@@ -33,11 +33,11 @@ TcpConnection::~TcpConnection()
 	close();
 
 #ifdef ENABLE_SSL
-	if(sslFingerprint) {
-		delete[] sslFingerprint;
+	if(sslFingerprint.certSha1) {
+		delete[] sslFingerprint.certSha1;
 	}
-	if(sslPKFingerprint) {
-		delete[] sslPKFingerprint;
+	if(sslFingerprint.pkSha256) {
+		delete[] sslFingerprint.pkSha256;
 	}
 	freeSslClientKeyCert();
 #endif
@@ -525,7 +525,7 @@ err_t TcpConnection::staticOnReceive(void *arg, tcp_pcb *tcp, pbuf *p, err_t err
 				debugf("SSL: Switching back to 80 MHz");
 				System.setCpuFrequency(eCF_80MHz); // Preserve some CPU cycles
 #endif
-				if(con->sslFingerprint && ssl_match_fingerprint(con->ssl, con->sslFingerprint) != SSL_OK) {
+				if(con->sslFingerprint.certSha1 && ssl_match_fingerprint(con->ssl, con->sslFingerprint.certSha1) != SSL_OK) {
 					debugf("SSL: Certificate fingerprint does not match!");
 					con->close();
 					closeTcpConnection(tcp);
@@ -533,7 +533,7 @@ err_t TcpConnection::staticOnReceive(void *arg, tcp_pcb *tcp, pbuf *p, err_t err
 					return ERR_ABRT;
 				}
 
-				if(con->sslPKFingerprint && ssl_match_spki_sha256(con->ssl, con->sslPKFingerprint) != SSL_OK) {
+				if(con->sslFingerprint.pkSha256 && ssl_match_spki_sha256(con->ssl, con->sslFingerprint.pkSha256) != SSL_OK) {
 					debugf("SSL: Certificate PK fingerprint does not match!");
 					con->close();
 					closeTcpConnection(tcp);
@@ -652,29 +652,48 @@ void TcpConnection::addSslOptions(uint32_t sslOptions) {
 	this->sslOptions |= sslOptions;
 }
 
-bool TcpConnection::setSslFingerprint(const uint8_t *data, int length /* = SHA1_SIZE */) {
-	if(sslFingerprint) {
-		delete[] sslFingerprint;
+bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintType type) {
+	int length = 0;
+	uint8_t *localStore;
+
+	switch(type) {
+	case eSFT_CertSha1:
+		localStore = sslFingerprint.certSha1;
+		length = SHA1_SIZE;
+		break;
+	case eSFT_PkSha256:
+		localStore = sslFingerprint.pkSha256;
+		length = SHA256_SIZE;
+		break;
+	default:
+		debugf("Unsupported SSL certificate fingerprint type");
 	}
-	sslFingerprint = new uint8_t[length];
-	if(sslFingerprint == NULL) {
+
+	if(!length) {
 		return false;
 	}
 
-	memcpy(sslFingerprint, data, length);
-	return true;
-}
 
-bool TcpConnection::setPKFingeprint(const uint8_t *data, int length /* = SHA256_SIZE */) {
-	if(sslPKFingerprint) {
-		delete[] sslPKFingerprint;
+	if(localStore) {
+		delete[] localStore;
 	}
-	sslPKFingerprint = new uint8_t[length];
-	if(sslPKFingerprint == NULL) {
+	localStore = new uint8_t[length];
+	if(localStore == NULL) {
 		return false;
 	}
 
-	memcpy(sslPKFingerprint, data, length);
+	memcpy(localStore, fingerprint, length);
+
+	switch(type) {
+		case eSFT_CertSha1:
+			sslFingerprint.certSha1 = localStore;
+			break;
+		case eSFT_PkSha256:
+			sslFingerprint.pkSha256 = localStore;
+			break;
+	}
+
+
 	return true;
 }
 
