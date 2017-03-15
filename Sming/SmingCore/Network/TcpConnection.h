@@ -53,8 +53,8 @@ public:
 	virtual ~TcpConnection();
 
 public:
-	virtual bool connect(String server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
-	virtual bool connect(IPAddress addr, uint16_t port, boolean useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(String server, int port, bool useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(IPAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0);
 	virtual void close();
 
 	// return -1 on error
@@ -78,9 +78,21 @@ public:
 	 * 		  The latter will be used after successful handshake to check against the fingerprint of the other side.
 	 * @param const uint8_t *data
 	 * @param int length
-	 * @return boolean  true of success, false or failure
+	 * @return bool  true of success, false or failure
 	 */
-	boolean setSslFingerprint(const uint8_t *data, int length = 20);
+	bool setSslFingerprint(const uint8_t *data, int length = SHA1_SIZE);
+
+	/**
+	 * @brief   Check if SHA256 hash of Subject Public Key Info matches the one given.
+	 * @note    For HTTP public key pinning (RFC7469), the SHA-256 hash of the
+	 * 		    Subject Public Key Info (which usually only changes when the public key changes)
+	 * 		    is used rather than the SHA-1 hash of the entire certificate
+     * 		    (which will change on each certificate renewal).
+	 * @param const uint8_t *data
+	 * @param int length
+	 * @return bool  true of success, false or failure
+	 */
+	bool setPKFingeprint(const uint8_t *data, int length = SHA256_SIZE);
 
 	/**
 	 * @brief Sets client private key, certificate and password from memory
@@ -89,13 +101,13 @@ public:
 	 * @param const uint8_t *certificateData
 	 * @param int certificateLength
 	 * @param const char *keyPassword
-	 * @param boolean freeAfterHandshake
+	 * @param bool freeAfterHandshake
 	 *
-	 * @return boolean  true of success, false or failure
+	 * @return bool  true of success, false or failure
 	 */
-	boolean setSslClientKeyCert(const uint8_t *key, int keyLength,
+	bool setSslClientKeyCert(const uint8_t *key, int keyLength,
 							 const uint8_t *certificate, int certificateLength,
-							 const char *keyPassword = NULL, boolean freeAfterHandshake = false);
+							 const char *keyPassword = NULL, bool freeAfterHandshake = false);
 
 	/**
 	 * @brief Frees the memory used for the client key and certificate pair
@@ -137,13 +149,14 @@ protected:
 	SSL *ssl = nullptr;
 	SSLCTX *sslContext = nullptr;
 	SSL_EXTENSIONS *ssl_ext=NULL;
-	uint8_t *sslFingerprint=null;
-	boolean sslConnected = false;
+	uint8_t *sslFingerprint=NULL; // << certificate SHA1 fingerprint
+	uint8_t *sslPKFingerprint=NULL; // << public key SHA256 fingerprint
+	bool sslConnected = false;
 	uint32_t sslOptions=0;
 	SSLKeyCertPair clientKeyCert;
-	boolean freeClientKeyCert = false;
+	bool freeClientKeyCert = false;
 #endif
-	boolean useSsl = false;
+	bool useSsl = false;
 };
 
 #endif /* _SMING_CORE_TCPCONNECTION_H_ */

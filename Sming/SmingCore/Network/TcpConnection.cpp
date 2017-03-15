@@ -36,12 +36,15 @@ TcpConnection::~TcpConnection()
 	if(sslFingerprint) {
 		delete[] sslFingerprint;
 	}
+	if(sslPKFingerprint) {
+		delete[] sslPKFingerprint;
+	}
 	freeSslClientKeyCert();
 #endif
 	debugf("~TCP connection");
 }
 
-bool TcpConnection::connect(String server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (tcp == NULL)
 		initialize(tcp_new());
@@ -80,7 +83,7 @@ bool TcpConnection::connect(String server, int port, boolean useSsl /* = false *
 	return internalTcpConnect(addr, port);
 }
 
-bool TcpConnection::connect(IPAddress addr, uint16_t port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (tcp == NULL)
 		initialize(tcp_new());
@@ -530,6 +533,14 @@ err_t TcpConnection::staticOnReceive(void *arg, tcp_pcb *tcp, pbuf *p, err_t err
 					return ERR_ABRT;
 				}
 
+				if(con->sslPKFingerprint && ssl_match_spki_sha256(con->ssl, con->sslPKFingerprint) != SSL_OK) {
+					debugf("SSL: Certificate PK fingerprint does not match!");
+					con->close();
+					closeTcpConnection(tcp);
+
+					return ERR_ABRT;
+				}
+
 				err_t res = con->onConnected(err);
 				con->checkSelfFree();
 
@@ -641,7 +652,7 @@ void TcpConnection::addSslOptions(uint32_t sslOptions) {
 	this->sslOptions |= sslOptions;
 }
 
-boolean TcpConnection::setSslFingerprint(const uint8_t *data, int length /* = 20 */) {
+bool TcpConnection::setSslFingerprint(const uint8_t *data, int length /* = SHA1_SIZE */) {
 	if(sslFingerprint) {
 		delete[] sslFingerprint;
 	}
@@ -654,9 +665,22 @@ boolean TcpConnection::setSslFingerprint(const uint8_t *data, int length /* = 20
 	return true;
 }
 
-boolean TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
+bool TcpConnection::setPKFingeprint(const uint8_t *data, int length /* = SHA256_SIZE */) {
+	if(sslPKFingerprint) {
+		delete[] sslPKFingerprint;
+	}
+	sslPKFingerprint = new uint8_t[length];
+	if(sslPKFingerprint == NULL) {
+		return false;
+	}
+
+	memcpy(sslPKFingerprint, data, length);
+	return true;
+}
+
+bool TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
 							 const uint8_t *certificate, int certificateLength,
-							 const char *keyPassword /* = NULL */, boolean freeAfterHandshake /* = false */) {
+							 const char *keyPassword /* = NULL */, bool freeAfterHandshake /* = false */) {
 
 
 	clientKeyCert.key = new uint8_t[keyLength];
