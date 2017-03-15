@@ -18,7 +18,7 @@
 class rBootHttpUpdate;
 
 //typedef void (*otaCallback)(bool result);
-typedef Delegate<void(rBootHttpUpdate& client, bool result)> otaUpdateDelegate;
+typedef Delegate<void(rBootHttpUpdate& client, bool result)> OtaUpdateDelegate;
 
 struct rBootHttpUpdateItem {
 	String url;
@@ -34,8 +34,8 @@ public:
 	void addItem(int offset, String firmwareFileUrl);
 	void start();
 	void switchToRom(uint8 romSlot);
-	void setCallback(otaUpdateDelegate reqUpdateDelegate);
-	void setDelegate(otaUpdateDelegate reqUpdateDelegate);
+	void setCallback(OtaUpdateDelegate reqUpdateDelegate);
+	void setDelegate(OtaUpdateDelegate reqUpdateDelegate);
 
 
 	// Expose request and response header information
@@ -66,7 +66,7 @@ protected:
 	int currentItem;
 	rboot_write_status rBootWriteStatus;
 	uint8 romSlot;
-	otaUpdateDelegate updateDelegate;
+	OtaUpdateDelegate updateDelegate;
 
 	virtual void writeInit();
 	virtual bool writeFlash(const u8 *data, u16 size);

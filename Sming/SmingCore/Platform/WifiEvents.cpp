@@ -14,37 +14,37 @@ WifiEventsClass::WifiEventsClass()
 	wifi_set_event_handler_cb(staticWifiEventHandler);
 }
 
-void WifiEventsClass::onStationConnect(onStationConnectDelegate delegateFunction)
+void WifiEventsClass::onStationConnect(StationConnectDelegate delegateFunction)
 {
 	onSTAConnect = delegateFunction;
 }
 
-void WifiEventsClass::onStationDisconnect(onStationDisconnectDelegate delegateFunction)
+void WifiEventsClass::onStationDisconnect(StationDisconnectDelegate delegateFunction)
 {
 	onSTADisconnect = delegateFunction;
 }
 
-void WifiEventsClass::onStationAuthModeChange(onStationAuthModeChangeDelegate delegateFunction)
+void WifiEventsClass::onStationAuthModeChange(StationAuthModeChangeDelegate delegateFunction)
 {
 	onSTAAuthModeChange = delegateFunction;
 }
 
-void WifiEventsClass::onStationGotIP(onStationGotIPDelegate delegateFunction)
+void WifiEventsClass::onStationGotIP(StationGotIPDelegate delegateFunction)
 {
 	onSTAGotIP = delegateFunction;
 }
 
-void WifiEventsClass::onAccessPointConnect(onAccessPointConnectDelegate delegateFunction)
+void WifiEventsClass::onAccessPointConnect(AccessPointConnectDelegate delegateFunction)
 {
 	onSOFTAPConnect = delegateFunction;
 }
 
-void WifiEventsClass::onAccessPointDisconnect(onAccessPointDisconnectDelegate delegateFunction)
+void WifiEventsClass::onAccessPointDisconnect(AccessPointDisconnectDelegate delegateFunction)
 {
 	onSOFTAPDisconnect = delegateFunction;
 }
 
-void WifiEventsClass::onAccessPointProbeReqRecved(onAccessPointProbeReqRecvedDelegate delegateFunction)
+void WifiEventsClass::onAccessPointProbeReqRecved(AccessPointProbeReqRecvedDelegate delegateFunction)
 {
 	onSOFTAPProbeReqRecved = delegateFunction;
 }

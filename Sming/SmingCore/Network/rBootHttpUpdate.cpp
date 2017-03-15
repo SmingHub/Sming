@@ -35,11 +35,11 @@ void rBootHttpUpdate::switchToRom(uint8 romSlot) {
 	this->romSlot = romSlot;
 }
 
-void rBootHttpUpdate::setCallback(otaUpdateDelegate reqUpdateDelegate) {
+void rBootHttpUpdate::setCallback(OtaUpdateDelegate reqUpdateDelegate) {
 	setDelegate(reqUpdateDelegate);
 }
 
-void rBootHttpUpdate::setDelegate(otaUpdateDelegate reqUpdateDelegate) {
+void rBootHttpUpdate::setDelegate(OtaUpdateDelegate reqUpdateDelegate) {
 	this->updateDelegate = reqUpdateDelegate;
 }
 
