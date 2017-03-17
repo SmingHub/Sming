@@ -90,16 +90,28 @@ void onDownload(HttpClient& client, bool success)
 
 void connectOk()
 {
-	const uint8_t googleSha1Fingerprint[] = { 0x93, 0x00, 0xA7, 0x77, 0xBF, 0x33, 0x43, 0xDE, 0xB1, 0x26,
-                                              0xB2, 0x47, 0x15, 0x8A, 0xE3, 0x5B, 0x97, 0xCD, 0xB8, 0xB1 };
+	const uint8_t googleSha1Fingerprint[] = { 0x07, 0xf0, 0xb0, 0x8d, 0x41, 0xfb, 0xee, 0x6b, 0x34, 0xfb,
+			                                  0x9a, 0xd0, 0x9a, 0xa7, 0x73, 0xab, 0xcc, 0x8b, 0xb2, 0x64 };
+
+	const uint8_t googlePublicKeyFingerprint[] = {
+			0xe7, 0x06, 0x09, 0xc7, 0xef, 0xb0, 0x69, 0xe8, 0x0a, 0xeb, 0x21, 0x16, 0x4c, 0xd4, 0x2d, 0x86,
+			0x65, 0x09, 0x62, 0x37, 0xeb, 0x75, 0x92, 0xaa, 0x10, 0x03, 0xe7, 0x99, 0x01, 0x9d, 0x9f, 0x0c
+	};
 
 	debugf("Connected. Got IP: %s", WifiStation.getIP().toString().c_str());
 	downloadClient.addSslOptions(SSL_SERVER_VERIFY_LATER);
+
+	/*
+	 * The line below shows how to trust only a certificate in which the public key matches the SHA256 fingerprint.
+	 * When google changes the private key that they use in their certificate the SHA256 fingerprint should not match any longer.
+	 */
+	downloadClient.pinCertificate(googlePublicKeyFingerprint, eSFT_PkSha256);
+
 	/*
 	 * The line below shows how to trust only a certificate that matches the SHA1 fingerprint.
 	 * When google changes their certificate the SHA1 fingerprint should not match any longer.
 	 */
-	downloadClient.setSslFingerprint(googleSha1Fingerprint, 20);
+	downloadClient.pinCertificate(googleSha1Fingerprint, eSFT_CertSha1);
 	downloadClient.downloadString("https://www.google.com/", onDownload);
 }
 
