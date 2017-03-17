@@ -43,7 +43,7 @@ enum SslFingerprintType {
 
 typedef struct {
 	uint8_t* certSha1 = NULL; // << certificate SHA1 fingerprint
-	uint8_t* pkSha256; // << public key SHA256 fingerprint
+	uint8_t* pkSha256 = NULL; // << public key SHA256 fingerprint
 } SSLFingerprints;
 
 typedef struct {
