@@ -68,11 +68,11 @@ GET_VDD33       ?= 0
 #   load os specific settings
 #------------------------------------------------------------------------------
 ifeq ($(OS),Windows_NT)
-	include $(SMING_HOME)/Windows.mk
+	UNAME := Windows
 else
 	UNAME := $(shell uname -s)
-	include $(SMING_HOME)/$(UNAME).mk
 endif
+include $(SMING_HOME)/sming-$(UNAME).mk
 
 #==============================================================================
 #   default serial settings
