@@ -114,12 +114,12 @@ protected:
 	bool writeError = false;
 
 
-	static int staticOnMessageComplete(http_parser* parser);
-	static int staticOnHeadersComplete(http_parser* parser);
+	static int IRAM_ATTR staticOnMessageComplete(http_parser* parser);
+	static int IRAM_ATTR staticOnHeadersComplete(http_parser* parser);
 
-	static int staticOnHeaderField(http_parser *parser, const char *at, size_t length);
-	static int staticOnHeaderValue(http_parser *parser, const char *at, size_t length);
-	static int staticOnBody(http_parser *parser, const char *at, size_t length);
+	static int IRAM_ATTR staticOnHeaderField(http_parser *parser, const char *at, size_t length);
+	static int IRAM_ATTR staticOnHeaderValue(http_parser *parser, const char *at, size_t length);
+	static int IRAM_ATTR staticOnBody(http_parser *parser, const char *at, size_t length);
 
 private:
 	int code;
