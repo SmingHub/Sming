@@ -5,7 +5,6 @@
 */
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include <AppSettings.h>
 #include <MFRC522.h>
 
 /////////////////////////////////////////////////////////////////////////////////////
