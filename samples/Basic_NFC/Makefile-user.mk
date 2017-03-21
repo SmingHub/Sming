@@ -23,7 +23,7 @@
 ## COM port parameter is reqruied to flash firmware correctly.
 ## Windows: 
 # COM_PORT = COM3
-COM_PORT = COM6
+
 ## MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
@@ -36,5 +36,3 @@ COM_PORT = COM6
 ## SPIFFS options
 DISABLE_SPIFFS = 1
 # SPIFF_FILES = files
-ESPTOOL2        ?= C:\Espressif\utils\esptool2.exe
-
