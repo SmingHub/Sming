@@ -126,7 +126,7 @@ void WifiEventsClass::WifiEventHandler(System_Event_t *evt)
 		}
 		break;
 	case EVENT_SOFTAPMODE_PROBEREQRECVED:
-		if (onSOFTAPDisconnect)
+		if (onSOFTAPProbeReqRecved)
 		{
 			onSOFTAPProbeReqRecved(evt->event_info.ap_probereqrecved.rssi, evt->event_info.ap_probereqrecved.mac);
 		}
