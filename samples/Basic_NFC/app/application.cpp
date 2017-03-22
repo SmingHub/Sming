@@ -1,6 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include "MFRC522.h"
+#include <Libraries/MFRC522/MFRC522.h>
 Timer procTimer;
 static Timer nfcScanTimer;
 int helloCounter = 0;
