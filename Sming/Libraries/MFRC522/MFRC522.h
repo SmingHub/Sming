@@ -74,7 +74,8 @@
  */
 #ifndef MFRC522_h
 #define MFRC522_h
-
+#include <user_config.h>
+#include <SmingCore.h>
 #include <SPI.h>
 
 // Firmware data for self-test
