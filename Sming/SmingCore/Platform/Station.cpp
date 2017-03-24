@@ -33,7 +33,10 @@ void StationClass::enable(bool enabled, bool save)
 		mode = wifi_get_opmode_default() & ~STATION_MODE;
 	else
 		mode = wifi_get_opmode() & ~STATION_MODE;
-	if (enabled) mode |= STATION_MODE;
+	if (enabled)
+		mode |= STATION_MODE;
+	else if (connectionTimer)
+		delete connectionTimer;
 	if (save)
 		wifi_set_opmode(mode);
 	else
