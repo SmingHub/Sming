@@ -11,7 +11,6 @@
 
 HttpClient::HttpClient(bool autoDestruct /* = false */) : TcpClient(autoDestruct)
 {
-	parser = (http_parser *)malloc(sizeof(http_parser));
 	reset();
 }
 
@@ -32,7 +31,7 @@ HttpClient::HttpClient(HeadersCompleteDelegate headersCompleteDelegate,
 HttpClient::~HttpClient()
 {
 	if(parser != NULL) {
-		free(parser);
+		delete parser;
 	}
 }
 
@@ -302,18 +301,22 @@ err_t HttpClient::onConnected(err_t err)
 {
 	if (err == ERR_OK)
 	{
-		http_parser_init(parser, HTTP_RESPONSE);
-		parser->data = (void*)this;
+		if(parser == NULL) {
+			parser = new http_parser;
 
-		// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
-		parserSettings.on_message_begin     = staticOnMessageComplete;
-		parserSettings.on_message_complete  = staticOnMessageComplete;
-		parserSettings.on_headers_complete  = staticOnHeadersComplete;
+			http_parser_init(parser, HTTP_RESPONSE);
+			parser->data = (void*)this;
 
-		// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
-		parserSettings.on_header_field      = staticOnHeaderField;
-		parserSettings.on_header_value      = staticOnHeaderValue;
-		parserSettings.on_body              = staticOnBody;
+			// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
+			parserSettings.on_message_begin     = staticOnMessageComplete;
+			parserSettings.on_message_complete  = staticOnMessageComplete;
+			parserSettings.on_headers_complete  = staticOnHeadersComplete;
+
+			// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
+			parserSettings.on_header_field      = staticOnHeaderField;
+			parserSettings.on_header_value      = staticOnHeaderValue;
+			parserSettings.on_body              = staticOnBody;
+		}
 	}
 
 	// Fire ReadyToSend callback
