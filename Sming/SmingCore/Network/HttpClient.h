@@ -113,13 +113,15 @@ protected:
 	bool waitParse = false;
 	bool writeError = false;
 
-
-	static int IRAM_ATTR staticOnMessageComplete(http_parser* parser);
-	static int IRAM_ATTR staticOnHeadersComplete(http_parser* parser);
-
+	static int IRAM_ATTR staticOnMessageBegin(http_parser* parser);
+	static int IRAM_ATTR staticOnStatus(http_parser *parser, const char *at, size_t length);
 	static int IRAM_ATTR staticOnHeaderField(http_parser *parser, const char *at, size_t length);
 	static int IRAM_ATTR staticOnHeaderValue(http_parser *parser, const char *at, size_t length);
+	static int IRAM_ATTR staticOnHeadersComplete(http_parser* parser);
 	static int IRAM_ATTR staticOnBody(http_parser *parser, const char *at, size_t length);
+	static int IRAM_ATTR staticOnChunkHeader(http_parser* parser);
+	static int IRAM_ATTR staticOnChunkComplete(http_parser* parser);
+	static int IRAM_ATTR staticOnMessageComplete(http_parser* parser);
 
 private:
 	int code;

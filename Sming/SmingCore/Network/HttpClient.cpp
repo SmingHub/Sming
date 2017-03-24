@@ -225,10 +225,14 @@ err_t HttpClient::onProtocolUpgrade(http_parser* parser)
 	return ERR_ABRT;
 }
 
-int HttpClient::staticOnMessageComplete(http_parser* parser)
+int HttpClient::staticOnMessageBegin(http_parser* parser)
 {
-	debugf("HttpClient::staticOnMessageComplete: .");
+	debugf("HttpClient::staticOnMessageBegin: .");
 
+	return 0;
+}
+
+int HttpClient::staticOnStatus(http_parser *parser, const char *at, size_t length) {
 	return 0;
 }
 
@@ -297,6 +301,23 @@ int HttpClient::staticOnBody(http_parser *parser, const char *at, size_t length)
 	return client->onResponseBody(at, length);
 }
 
+int HttpClient::staticOnChunkHeader(http_parser* parser) {
+	debugf("On chunk header");
+	return 0;
+}
+
+int HttpClient::staticOnChunkComplete(http_parser* parser) {
+	debugf("On chunk complete");
+	return 0;
+}
+
+int HttpClient::staticOnMessageComplete(http_parser* parser)
+{
+	debugf("HttpClient::staticOnMessageComplete: .");
+
+	return 0;
+}
+
 err_t HttpClient::onConnected(err_t err)
 {
 	if (err == ERR_OK)
@@ -308,11 +329,16 @@ err_t HttpClient::onConnected(err_t err)
 			parser->data = (void*)this;
 
 			// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
-			parserSettings.on_message_begin     = staticOnMessageComplete;
-			parserSettings.on_message_complete  = staticOnMessageComplete;
+			parserSettings.on_message_begin     = staticOnMessageBegin;
 			parserSettings.on_headers_complete  = staticOnHeadersComplete;
+			parserSettings.on_message_complete  = staticOnMessageComplete;
+
+			parserSettings.on_chunk_header   = staticOnChunkHeader;
+			parserSettings.on_chunk_complete = staticOnChunkComplete;
+
 
 			// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
+			parserSettings.on_status            = staticOnStatus;
 			parserSettings.on_header_field      = staticOnHeaderField;
 			parserSettings.on_header_value      = staticOnHeaderValue;
 			parserSettings.on_body              = staticOnBody;
