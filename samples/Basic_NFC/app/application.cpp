@@ -1,6 +1,7 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <Libraries/MFRC522/MFRC522.h>
+
 Timer procTimer;
 static Timer nfcScanTimer;
 int helloCounter = 0;
@@ -71,16 +72,7 @@ void init()
 
 	procTimer.initializeMs(2000, sayHello).start();
 
-	/// Reading callback example:
-	//  * Option 1
-	//	Set Serial Callback to global routine:
-	//	   Serial.setCallback(onDataCallback);
-
-	// 	* Option 2
-	//  Instantiate hwsDelegateDemo which includes Serial Delegate class
-	//delegateDemoClass.begin();
 	//----- NFC
-	//MFRC522 mfrc522(SS_PIN, RST_PIN);
 	MFRC522 mfrc522(SS_PIN, SS_PIN);
 	SPI.begin();
 	mfrc522.PCD_Init();    // Init MFRC522

@@ -3,8 +3,6 @@
 * NOTE: Please also check the comments in MFRC522.h - they provide useful hints and background information.
 * Released into the public domain.
 */
-#include <user_config.h>
-#include <SmingCore.h>
 #include <MFRC522.h>
 
 /////////////////////////////////////////////////////////////////////////////////////
