@@ -84,6 +84,7 @@ public:
 	~StationClass();
 
 	/**	@brief	Enable / disable WiFi station
+	 *	@note	Disabling WiFi station will also disable and clear the handler set with <i>waitConnection</i>.
 	 *	@param	enabled True to enable station. False to disable.
 	 *	@param	save True to save operational mode to flash, False to set current operational mode only
      */
@@ -208,11 +209,13 @@ public:
 	bool startScan(ScanCompletedDelegate scanCompleted);
 
 	/**	@brief	Assign handler for WiFi station connection
+	 *	@note	The handler will be cleared if the WiFi Station is disabled. If you subsequently reenable WiFi Station, another call to <i>waitConnection</i> must be made if you want the handler to be reinstalled.
 	 *	@param	successfulConnected Function to call when WiFi station connects to network
 	 */
 	void waitConnection(ConnectionDelegate successfulConnected);
 
 	/**	@brief	Assign handler for WiFi station connection with timeout
+	 *	@note	The handler will be cleared if the WiFi Station is disabled. If you subsequently reenable WiFi Station, another call to <i>waitConnection</i> must be made if you want the handler to be reinstalled.
 	 *	@param	successfulConnected Function to call when WiFi station connects to network
 	 *	@param	secondsTimeOut Quantity of seconds to wait for connection
 	 *	@param	connectionNotEstablished Function to call if WiFi station fails to connect to network
