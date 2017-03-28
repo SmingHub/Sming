@@ -18,6 +18,7 @@ StationClass::StationClass()
 	onConnectFail = nullptr;
 	connectionTimeOut = 0;
 	connectionTimer = NULL;
+	connectionStarted = 0;
 }
 
 StationClass::~StationClass()
@@ -198,7 +199,7 @@ bool StationClass::setIP(IPAddress address)
 	IPAddress mask = IPAddress(255, 255, 255, 0);
 	IPAddress gateway = IPAddress(address);
 	gateway[3] = 1; // x.x.x.1
-	setIP(address, mask, gateway);
+	return setIP(address, mask, gateway);
 }
 
 bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway)

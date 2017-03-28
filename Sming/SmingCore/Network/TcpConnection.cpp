@@ -179,7 +179,7 @@ void TcpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 int TcpConnection::writeString(const String data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
-	writeString(data.c_str(), apiflags);
+	return writeString(data.c_str(), apiflags);
 }
 
 int TcpConnection::writeString(const char* data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)

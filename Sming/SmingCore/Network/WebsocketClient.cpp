@@ -214,108 +214,106 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 	if (buf == NULL)
 	{
 		// Disconnected, close it
-		TcpClient::onReceive(buf);
+		return TcpClient::onReceive(buf);
 	}
-	else
+
+	uint16_t size = buf->tot_len;
+	uint8_t* data = new uint8_t[size];
+
+	pbuf_copy_partial(buf, data, size, 0);
+
+	switch (_mode)
 	{
-		uint16_t size = buf->tot_len;
-		uint8_t* data = new uint8_t[size];
-
-		pbuf_copy_partial(buf, data, size, 0);
-
-		switch (_mode)
+	case wsMode::Connecting:
+		if (_verifyKey((char*)data, size) == true)
 		{
-		case wsMode::Connecting:
-			if (_verifyKey((char*)data, size) == true)
-			{
-				_mode = wsMode::Connected;
-				//   debugf("Key Verified. Websocket Handshake completed");
-				sendPing();
-			}
-			else
-			{
-				_mode = wsMode::Disconnected; // Handshake was not proper.
-			}
-
-			if (wsConnect)
-			{
-				wsConnect(*this, _mode);
-			}
-			break;
-
-		case wsMode::Connected:
-			WebsocketFrameClass wsFrame;
-			do
-			{
-				if (wsFrame.decodeFrame(data, size))
-				{
-					switch (wsFrame._frameType)
-					{
-					case WSFrameType::text:
-					{
-//						debugf("Got text frame");
-						String msg;
-						msg.setString((char*)wsFrame._payload, wsFrame._payloadLength);
-						if (wsMessage)
-						{
-							wsMessage(*this, msg.c_str());
-						}
-						break;
-					}
-					case WSFrameType::binary:
-					{
-//						debugf("Got binary frame");
-						if (wsBinary)
-						{
-							wsBinary(*this, wsFrame._payload, wsFrame._payloadLength);
-						}
-						break;
-					}
-					case WSFrameType::close:
-					{
-						debugf("Got Disconnect request from server.\n");
-						//RFC requires we return a close op code before closing the connection
-						disconnect();
-						break;
-					}
-					case WSFrameType::ping:
-					{
-						debugf("Got ping ...");
-						sendPong(); //Need to send Pong in response to Ping
-						break;
-					}
-					case WSFrameType::pong:
-					{
-						debugf("Got pong ...");
-						//A pong can contain app data, but shouldnt if we didnt send any...
-						break;
-					}
-					case WSFrameType::error:
-					{
-						debugf("ERROR parsing frame!");
-						break;
-					}
-					case WSFrameType::incomplete:
-					{
-						debugf("INCOMPLETE websocket frame!");
-						break;
-					}
-					default:
-					{
-						debugf("Unknown frameType: %d", wsFrame._frameType);
-						break;
-					}
-					}
-				}
-			}
-			while (wsFrame._nextReadOffset > 0);
-
-			break;
+			_mode = wsMode::Connected;
+			//   debugf("Key Verified. Websocket Handshake completed");
+			sendPing();
+		}
+		else
+		{
+			_mode = wsMode::Disconnected; // Handshake was not proper.
 		}
 
-		delete[] data;
-		TcpClient::onReceive(buf);
+		if (wsConnect)
+		{
+			wsConnect(*this, _mode);
+		}
+		break;
+
+	case wsMode::Connected:
+		WebsocketFrameClass wsFrame;
+		do
+		{
+			if (wsFrame.decodeFrame(data, size))
+			{
+				switch (wsFrame._frameType)
+				{
+				case WSFrameType::text:
+				{
+//						debugf("Got text frame");
+					String msg;
+					msg.setString((char*)wsFrame._payload, wsFrame._payloadLength);
+					if (wsMessage)
+					{
+						wsMessage(*this, msg.c_str());
+					}
+					break;
+				}
+				case WSFrameType::binary:
+				{
+//						debugf("Got binary frame");
+					if (wsBinary)
+					{
+						wsBinary(*this, wsFrame._payload, wsFrame._payloadLength);
+					}
+					break;
+				}
+				case WSFrameType::close:
+				{
+					debugf("Got Disconnect request from server.\n");
+					//RFC requires we return a close op code before closing the connection
+					disconnect();
+					break;
+				}
+				case WSFrameType::ping:
+				{
+					debugf("Got ping ...");
+					sendPong(); //Need to send Pong in response to Ping
+					break;
+				}
+				case WSFrameType::pong:
+				{
+					debugf("Got pong ...");
+					//A pong can contain app data, but shouldnt if we didnt send any...
+					break;
+				}
+				case WSFrameType::error:
+				{
+					debugf("ERROR parsing frame!");
+					break;
+				}
+				case WSFrameType::incomplete:
+				{
+					debugf("INCOMPLETE websocket frame!");
+					break;
+				}
+				default:
+				{
+					debugf("Unknown frameType: %d", wsFrame._frameType);
+					break;
+				}
+				}
+			}
+		}
+		while (wsFrame._nextReadOffset > 0);
+
+		break;
 	}
+
+	delete[] data;
+	return TcpClient::onReceive(buf);
 }
 
 wsMode WebsocketClient::getWSMode()
