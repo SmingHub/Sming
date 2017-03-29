@@ -3,7 +3,7 @@
  * Original Author: https://github.com/hrsavla
  *
  * This HardwarePWM library enables Sming framework user to use ESP SDK PWM API
- * Period of PWM is fixed to 1000ms / Frequency = 1khz
+ * Period of PWM is fixed to 1000us / Frequency = 1khz
  * Duty at 100% = 22222. Duty at 0% = 0
  * You can use function setPeriod() to change frequency/period.
  * Calculate the Duty as per the formulae give in ESP8266 SDK
@@ -11,6 +11,9 @@
  *
  * PWM can be generated on upto 8 pins (ie All pins except pin 16)
  * Created on August 17, 2015, 2:27 PM
+ *
+ * See also ESP8266 Technical Reference, Chapter 12:
+ * http://espressif.com/sites/default/files/documentation/esp8266-technical_reference_en.pdf
  */
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
