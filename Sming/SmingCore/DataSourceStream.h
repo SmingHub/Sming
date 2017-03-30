@@ -228,9 +228,9 @@ private:
 	TemplateVariables templateData;
 	TemplateExpandState state;
 	String varName;
-	int skipBlockSize;
-	int varDataPos;
-	int varWaitSize;
+	int skipBlockSize = 0;
+	int varDataPos = 0;
+	int varWaitSize = 0;
 };
 
 ///JSON object stream class

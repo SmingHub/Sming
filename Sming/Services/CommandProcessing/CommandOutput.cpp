@@ -32,13 +32,17 @@ size_t CommandOutput::write(uint8_t outChar)
 	if (outputTcpClient)
 	{
 		char outBuf[1] = { outChar };
-		outputTcpClient->write(outBuf,1);
+		return outputTcpClient->write(outBuf,1);
 	}
-	else if (outputStream)
+
+
+	if (outputStream)
 	{
-		outputStream->write(outChar);
+		return outputStream->write(outChar);
 	}
-	else if (outputSocket)
+
+
+	if (outputSocket)
 	{
 		if (outChar == '\r')
 		{
@@ -49,6 +53,10 @@ size_t CommandOutput::write(uint8_t outChar)
 		{
 			tempSocket = tempSocket+String(char(outChar));
 		}
+
+		return 1;
 	}
+
+	return 0;
 }
 
