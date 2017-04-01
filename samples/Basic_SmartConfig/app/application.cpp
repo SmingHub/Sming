@@ -20,6 +20,7 @@ void smartConfigCallback(sc_status status, void *pdata) {
 				char *ssid = (char*)sta_conf->ssid;
 				char *password = (char*)sta_conf->password;
 				WifiStation.config(ssid, password);
+				WifiStation.connect();
 			}
 			break;
 		case SC_STATUS_LINK_OVER:
