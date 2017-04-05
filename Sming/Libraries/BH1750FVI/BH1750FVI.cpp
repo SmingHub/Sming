@@ -48,7 +48,7 @@ uint16_t BH1750FVI::getLightIntensity(void)
 {
 	uint16_t Intensity_value;
 	Wire.beginTransmission(address_value);
-	int res = Wire.requestFrom(address_value, 2);
+	int res = Wire.requestFrom(address_value, (uint8_t)2);
 	Intensity_value = Wire.read();
 	Intensity_value <<= 8;
 	Intensity_value |= Wire.read();

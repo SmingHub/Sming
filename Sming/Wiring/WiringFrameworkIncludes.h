@@ -25,7 +25,6 @@
 #include "Stream.h"
 #include "Display.h"
 #include "WHashMap.h"
-#include "I2cMaster.h"
 #include "IPAddress.h"
 
 #endif /* WIRING_WIRINGFRAMEWORKINCLUDES_H_ */
