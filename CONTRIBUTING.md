@@ -78,7 +78,7 @@ The commands below help you achieve this.
 ```
 cd Sming
 git checkout develop
-git pull develop
+git pull
 git checkout feature/<short-explanation>
 git merge develop
 # Fix any merge conflicts if needed. 
