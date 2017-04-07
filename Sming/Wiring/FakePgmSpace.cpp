@@ -31,8 +31,7 @@ extern "C" size_t strlen_P(const char * src_P)
 
 extern "C" char *strcpy_P(char * dest, const char * src_P)
 {
-	int len = strlen_P(src_P);
-	memcpy_P(dest, src_P, len);
+	for (char *p = dest; *p = pgm_read_byte(src_P++); p++) ;
 	return dest;
 }
 
