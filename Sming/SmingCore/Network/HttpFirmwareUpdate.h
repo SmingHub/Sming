@@ -1,7 +1,7 @@
 /*
  * HttpFirmwareUpdate.h
  *
- *  Created on: 26 апр. 2015 г.
+ *  Created on: 26 пїЅпїЅпїЅ. 2015 пїЅ.
  *      Author: Anakod
  */
 
@@ -33,8 +33,8 @@ public:
 
 protected:
 	void onTimer();
-	virtual void writeRawData(pbuf* buf, int startPos);
-	uint32_t writeFlash(char* data, uint32_t pos, int size);
+	virtual err_t onResponseBody(const char *at, size_t length);
+	uint32_t writeFlash(const char* data, uint32_t pos, int size);
 	void applyUpdate();
 	void updateFailed();
 
