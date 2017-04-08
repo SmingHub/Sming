@@ -54,7 +54,7 @@ uint8_t SoftI2cMaster::read(uint8_t last) {
   uint8_t b = 0;
   // make sure pull-up enabled
   digitalWrite(sdaPin_, HIGH);
-  pinMode(sdaPin_, INPUT);
+  pinMode(sdaPin_, INPUT_PULLUP);
   // read byte
   for (uint8_t i = 0; i < 8; i++) {
     // don't change this loop unless you verify the change with a scope
@@ -130,7 +130,7 @@ bool SoftI2cMaster::write(uint8_t data) {
     digitalWrite(sclPin_, LOW);
   }
   // get Ack or Nak
-  pinMode(sdaPin_, INPUT);
+  pinMode(sdaPin_, INPUT_PULLUP);
   // enable pullup
   digitalWrite(sdaPin_, HIGH);
   digitalWrite(sclPin_, HIGH);
