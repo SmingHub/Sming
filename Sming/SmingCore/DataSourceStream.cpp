@@ -310,8 +310,8 @@ void TemplateFileStream::setVarsFromRequest(const HttpRequest& request)
 {
 	if (request.requestGetParameters != NULL)
 		templateData.setMultiple(*request.requestGetParameters);
-	if (request.requestPostParameters != NULL)
-		templateData.setMultiple(*request.requestPostParameters);
+	if (request.requestPostPutParameters != NULL)
+		templateData.setMultiple(*request.requestPostPutParameters);
 }
 
 ///////////////////////////////////////////////////////////////////////////

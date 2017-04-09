@@ -58,8 +58,9 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 
 			String contType = request.getContentType();
 			contType.toLowerCase();
-			if (request.getContentLength() > 0 && request.getRequestMethod() == RequestMethod::POST)
-				state = eHCS_ParsePostData;
+			if (request.getContentLength() > 0 && (request.getRequestMethod() == RequestMethod::POST \
+				|| request.getRequestMethod() == RequestMethod::PUT))
+				state = eHCS_ParsePostPutData;
 					else
 				state = eHCS_ParsingCompleted;
 		}
@@ -69,20 +70,20 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 		server->processWebSocketFrame(buf, *this);
 	}
 
-	if (state == eHCS_ParsePostData)
+	if (state == eHCS_ParsePostPutData)
 	{
-		HttpParseResult res = request.parsePostData(server, buf);
+		HttpParseResult res = request.parsePostPutData(server, buf);
 		if (res == eHPR_Wait)
-			debugf("POST WAIT");
+			debugf("%s WAIT", request.getRequestMethod().c_str());
 		else if (res == eHPR_Failed)
 		{
-			debugf("POST FAILED");
+			debugf("%s FAILED", request.getRequestMethod().c_str());
 			response.badRequest();
 			sendError();
 		}
 		else if (res == eHPR_Successful)
 		{
-			debugf("POST Parsed");
+			debugf("%s Parsed", request.getRequestMethod().c_str());
 			state = eHCS_ParsingCompleted;
 		}
 	}

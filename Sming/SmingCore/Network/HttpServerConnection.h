@@ -19,7 +19,7 @@ class HttpServer;
 enum HttpConnectionState
 {
 	eHCS_Ready,
-	eHCS_ParsePostData,
+	eHCS_ParsePostPutData,
 	eHCS_ParsingCompleted,
 	eHCS_Sending,
 	eHCS_WebSocketFrames,
