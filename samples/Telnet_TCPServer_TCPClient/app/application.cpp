@@ -124,8 +124,6 @@ void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	debugf("I'm NOT CONNECTED!");
-	WifiStation.disconnect();
-	WifiStation.connect();
 }
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)

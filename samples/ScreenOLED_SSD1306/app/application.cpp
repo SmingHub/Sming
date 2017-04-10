@@ -39,8 +39,6 @@ void connect_Ok(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel
 void connect_Fail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	Serial.println("WiFi: I'm NOT CONNECTED!");
-	WifiStation.disconnect();
-	WifiStation.connect();
 }
 
 void got_IP(IPAddress ip, IPAddress netmask, IPAddress gateway)
