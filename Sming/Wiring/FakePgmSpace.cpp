@@ -6,7 +6,7 @@ extern "C" void *memcpy_P(void *dest, const void *src_P, size_t length) {
 	char *dest0 = (char *)dest;
 	const char *src0 = (const char *)src_P;
 
-	if (!((unsigned long)src_P & 3) && !(length & 3))
+	if (!((unsigned long)src_P & 3) && !((unsigned long)dest & 3) && !(length & 3))
 		return memcpy(dest, src_P, length);
 
 	for (; length > 0; length--, src0++, dest0++)
