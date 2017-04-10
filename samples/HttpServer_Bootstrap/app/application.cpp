@@ -119,8 +119,8 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP
-	WifiEvents.onStationConnect(&connectOk);
-	WifiEvents.onStationGotIP(&gotIP);
+	WifiEvents.onStationConnect(connectOk);
+	WifiEvents.onStationGotIP(gotIP);
 
 	//Change CPU freq. to 160MHZ
 	System.setCpuFrequency(eCF_160MHz);

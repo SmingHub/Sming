@@ -94,9 +94,9 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
-	WifiEvents.onStationConnect(&connect_Ok);
-	WifiEvents.onStationDisconnect(&connect_Fail);
-	WifiEvents.onStationGotIP(&got_IP);
+	WifiEvents.onStationConnect(connect_Ok);
+	WifiEvents.onStationDisconnect(connect_Fail);
+	WifiEvents.onStationGotIP(got_IP);
 
 	Serial.println("Display: start");
 

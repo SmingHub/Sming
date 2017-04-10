@@ -285,8 +285,8 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiAccessPoint.enable(false);
 
-	WifiEvents.onStationConnect(&connectOk);
-	WifiEvents.onStationGotIP(&gotIP);
+	WifiEvents.onStationConnect(connectOk);
+	WifiEvents.onStationGotIP(gotIP);
 
 	// setup the ArduCAM
 	initCam();

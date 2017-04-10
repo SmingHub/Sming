@@ -112,6 +112,6 @@ void init()
 
 	printTimer.initializeMs(1000, onPrintSystemTime).start();
 	
-	WifiEvents.onStationDisconnect(&connectFail);
-	WifiEvents.onStationGotIP(&gotIP);
+	WifiEvents.onStationDisconnect(connectFail);
+	WifiEvents.onStationGotIP(gotIP);
 }

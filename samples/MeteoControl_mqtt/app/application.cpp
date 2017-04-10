@@ -30,9 +30,9 @@ void init()
 	//WifiStation.setIP(ESP_IP);
 	WifiAccessPoint.enable(false);
 	WDT.enable(false);	//disable watchdog
-	WifiEvents.onStationConnect(&connectOk);
-	WifiEvents.onStationDisconnect(&connectFail);
-	WifiEvents.onStationGotIP(&gotIP);
+	WifiEvents.onStationConnect(connectOk);
+	WifiEvents.onStationDisconnect(connectFail);
+	WifiEvents.onStationGotIP(gotIP);
 }
 
 // Publish our message

@@ -121,7 +121,7 @@ void init()
 	 * connectFail будет вызвана, если подключиться не получится
 	 * 30 - таймаут подключения (сек)
 	 */
-	WifiEvents.onStationConnect(&connectOk);
-	WifiEvents.onStationDisconnect(&connectFail);
-	WifiEvents.onStationGotIP(&gotIP);
+	WifiEvents.onStationConnect(connectOk);
+	WifiEvents.onStationDisconnect(connectFail);
+	WifiEvents.onStationGotIP(gotIP);
 }

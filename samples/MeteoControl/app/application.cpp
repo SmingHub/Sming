@@ -58,9 +58,9 @@ void init()
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
 
-	WifiEvents.onStationConnect(&connectOk);
-	WifiEvents.onStationDisconnect(&connectFail);
-	WifiEvents.onStationGotIP(&gotIP);
+	WifiEvents.onStationConnect(connectOk);
+	WifiEvents.onStationDisconnect(connectFail);
+	WifiEvents.onStationGotIP(gotIP);
 
 	procTimer.initializeMs(5000, process).start();
 	process();

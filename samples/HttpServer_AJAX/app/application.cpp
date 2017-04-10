@@ -131,6 +131,6 @@ void init()
 	}
 
 	// Run our method when station was connected to AP
-	WifiEvents.onStationConnect(&connectOk);
-	WifiEvents.onStationGotIP(&gotIP);
+	WifiEvents.onStationConnect(connectOk);
+	WifiEvents.onStationGotIP(gotIP);
 }

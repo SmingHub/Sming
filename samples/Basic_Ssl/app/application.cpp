@@ -132,6 +132,6 @@ void init()
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
-	WifiEvents.onStationGotIP(&gotIP);
-	WifiEvents.onStationDisconnect(&connectFail);
+	WifiEvents.onStationGotIP(gotIP);
+	WifiEvents.onStationDisconnect(connectFail);
 }

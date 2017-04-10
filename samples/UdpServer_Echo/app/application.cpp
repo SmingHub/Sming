@@ -46,5 +46,5 @@ void init()
 	Serial.systemDebugOutput(true);
 
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
-	WifiEvents.onStationGotIP(&gotIP);
+	WifiEvents.onStationGotIP(gotIP);
 }

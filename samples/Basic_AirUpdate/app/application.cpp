@@ -44,5 +44,5 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP
-	WifiEvents.onStationConnect(&connectOk);
+	WifiEvents.onStationConnect(connectOk);
 }

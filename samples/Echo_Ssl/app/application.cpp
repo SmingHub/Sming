@@ -139,7 +139,7 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
 	// Run our method when station was connected to AP (or not connected)
-	WifiEvents.onStationConnect(&connectOk);
-	WifiEvents.onStationDisconnect(&connectFail);
-	WifiEvents.onStationGotIP(&gotIP);
+	WifiEvents.onStationConnect(connectOk);
+	WifiEvents.onStationDisconnect(connectFail);
+	WifiEvents.onStationGotIP(gotIP);
 }

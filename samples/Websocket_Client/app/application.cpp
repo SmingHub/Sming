@@ -167,6 +167,6 @@ void init()
     WifiStation.config(WIFI_SSID, WIFI_PWD);
     WifiStation.enable(true);
 
-    WifiEvents.onStationGotIP(&STAGotIP);
-    WifiEvents.onStationDisconnect(&STADisconnect);
+    WifiEvents.onStationGotIP(STAGotIP);
+    WifiEvents.onStationDisconnect(STADisconnect);
 }

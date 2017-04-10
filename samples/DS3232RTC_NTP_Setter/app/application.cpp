@@ -58,8 +58,8 @@ void init()
 	// Station - WiFi client
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 	WifiStation.enable(true);
-	WifiEvents.onStationGotIP(&gotIP);
-	WifiEvents.onStationDisconnect(&connectFail);
+	WifiEvents.onStationGotIP(gotIP);
+	WifiEvents.onStationDisconnect(connectFail);
 
 	// set timezone hourly difference to UTC
 	SystemClock.setTimeZone(2); // GMT+2

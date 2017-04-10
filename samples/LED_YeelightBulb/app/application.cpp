@@ -44,5 +44,5 @@ void init()
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
-	WifiEvents.onStationConnect(&connectOk);
+	WifiEvents.onStationConnect(connectOk);
 }
