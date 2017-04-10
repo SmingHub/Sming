@@ -109,19 +109,24 @@ bool onReceive(TcpClient& tcpClient, char *data, int size) {
 	return tcpClient.send(data, size);
 }
 
-void connectOk()
+void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 {
-	debugf("Connected. Got IP: %s", WifiStation.getIP().toString().c_str());
+	debugf("Connected.");
+}
 
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+{
+	debugf("I'm NOT CONNECTED!");
+	WifiStation.disconnect();
+	WifiStation.connect();
+}
+
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+{
+	debugf("IP: %s", ip.toString().c_str());
 	client = new TcpClient(TcpClientDataDelegate(onReceive));
 	client->addSslOptions(SSL_SERVER_VERIFY_LATER);
 	client->connect(IPAddress(SERVER_IP), 4444, true);
-}
-
-void connectFail()
-{
-	debugf("I'm NOT CONNECTED!");
-	WifiStation.waitConnection(connectOk, 10, connectFail); // Repeat and check again
 }
 
 void init()
@@ -134,5 +139,7 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
 	// Run our method when station was connected to AP (or not connected)
-	WifiStation.waitConnection(connectOk, 30, connectFail); // We recommend 20+ seconds at start
+	WifiEvents.onStationConnect(&connectOk);
+	WifiEvents.onStationDisconnect(&connectFail);
+	WifiEvents.onStationGotIP(&gotIP);
 }

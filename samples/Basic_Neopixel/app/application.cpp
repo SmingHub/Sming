@@ -158,19 +158,23 @@ void StartDemo() {
 
 
 // Will be called when WiFi station was connected to AP
-void connect_Ok()
+void connect_Ok(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 {
-	Serial.print("I'm CONNECTED - ");
-	Serial.println(WifiStation.getIP().toString());
+	Serial.println("I'm CONNECTED");
+}
 
+void got_IP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+{
+	Serial.printf("IP: %s\n", ip.toString().c_str());
 	//You can put here other job like web,tcp etc.
 }
 
 // Will be called when WiFi station timeout was reached
-void connect_Fail()
+void connect_Fail(String SSID, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	Serial.println("I'm NOT CONNECTED!");
-	WifiStation.waitConnection(connect_Ok, 10, connect_Fail); // Repeat and check again
+	WifiStation.disconnect();
+	WifiStation.connect();
 }
 
 void init()
@@ -188,7 +192,9 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
-	WifiStation.waitConnection(connect_Ok, 20, connect_Fail);
+	WifiEvents.onStationConnect(&connect_Ok);
+	WifiEvents.onStationDisconnect(&connect_Fail);
+	WifiEvents.onStationGotIP(&got_IP);
 
 
 

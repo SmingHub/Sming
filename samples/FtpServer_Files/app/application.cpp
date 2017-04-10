@@ -10,11 +10,14 @@
 FTPServer ftp;
 
 // Will be called when WiFi station was connected to AP
-void connectOk()
+void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 {
-	Serial.println("\r\nI'm CONNECTED:");
-	Serial.println(WifiStation.getIP().toString());
+	Serial.println("\r\nI'm CONNECTED");
+}
 
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+{
+	Serial.printf("IP: %s\n", ip.toString().c_str());
 	// Start FTP server
 	ftp.listen(21);
 	ftp.addUser("me", "123"); // FTP account
@@ -22,7 +25,7 @@ void connectOk()
 }
 
 // Will be called when WiFi station timeout was reached
-void connectFail()
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	Serial.println("I'm NOT CONNECTED. Need help!!! :(");
 
@@ -44,5 +47,7 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP (or not connected)
-	WifiStation.waitConnection(connectOk, 20, connectFail); // We recommend 20+ seconds for connection timeout at start
+	WifiEvents.onStationConnect(&connectOk);
+	WifiEvents.onStationDisconnect(&connectFail);
+	WifiEvents.onStationGotIP(&gotIP);
 }

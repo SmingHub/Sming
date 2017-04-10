@@ -116,16 +116,21 @@ void startServers()
 }
 
 // Will be called when WiFi station was connected to AP
-void connectOk()
+void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 {
 	Serial.println("I'm CONNECTED");
-	startServers();
 }
 
-void connectFail()
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	debugf("I'm NOT CONNECTED!");
-	WifiStation.waitConnection(connectOk, 10, connectFail);
+	WifiStation.disconnect();
+	WifiStation.connect();
+}
+
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+{
+	startServers();
 }
 
 void init()
@@ -138,7 +143,9 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP
-	WifiStation.waitConnection(connectOk, 30, connectFail);
+	WifiEvents.onStationConnect(&connectOk);
+	WifiEvents.onStationDisconnect(&connectFail);
+	WifiEvents.onStationGotIP(&gotIP);
 	Debug.setDebug(Serial);
 	Debug.initCommand();
 	Debug.start();

@@ -22,8 +22,8 @@ void init()
 	ActiveConfig = loadConfig();
 
 	// Attach Wifi events handlers
-	WifiEvents.onStationDisconnect(STADisconnect);
-	WifiEvents.onStationGotIP(STAGotIP);
+	WifiEvents.onStationDisconnect(&STADisconnect);
+	WifiEvents.onStationGotIP(&STAGotIP);
 
 	startWebServer();
 

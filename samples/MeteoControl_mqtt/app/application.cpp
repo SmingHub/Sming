@@ -8,8 +8,9 @@
 
 Timer publishTimer;
 
-void connectOk();
-void connectFail();
+void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel);
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason);
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
 
 void init()
 {
@@ -29,8 +30,9 @@ void init()
 	//WifiStation.setIP(ESP_IP);
 	WifiAccessPoint.enable(false);
 	WDT.enable(false);	//disable watchdog
-	WifiStation.waitConnection(connectOk, 20, connectFail); // We recommend 20+ seconds for connection timeout at start
-	
+	WifiEvents.onStationConnect(&connectOk);
+	WifiEvents.onStationDisconnect(&connectFail);
+	WifiEvents.onStationGotIP(&gotIP);
 }
 
 // Publish our message
@@ -59,22 +61,25 @@ void startMqttClient()
 }
 
 // Will be called when WiFi station was connected to AP
-void connectOk()
+void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 {
-	debugf("connected");
-	Serial.print("Connected\n");
-	Serial.println(WifiStation.getIP().toString());
-	startMqttClient();
-	publishMessage();		// run once publishMessage
-	
+	debugf("connected");	
 }
 
 // Will be called when WiFi station timeout was reached
-void connectFail()
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	debugf("connection FAILED");
 	Serial.println("NOT CONNECTED");
 
-	WifiStation.waitConnection(connectOk, 10, connectFail); // Repeat and check again
+	WifiStation.disconnect();
+	WifiStation.connect();
 }
 
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+{
+	Serial.print("Connected\n");
+	Serial.println(ip.toString());
+	startMqttClient();
+	publishMessage();		// run once publishMessage
+}

@@ -25,8 +25,9 @@ bool state = true;
 String StrT, StrRH, StrTime;
 
 void process();
-void connectOk();
-void connectFail();
+void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel);
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason);
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
 
 void init()
 {
@@ -57,7 +58,9 @@ void init()
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
 
-	WifiStation.waitConnection(connectOk, 20, connectFail); // We recommend 20+ seconds for connection timeout at start
+	WifiEvents.onStationConnect(&connectOk);
+	WifiEvents.onStationDisconnect(&connectFail);
+	WifiEvents.onStationGotIP(&gotIP);
 
 	procTimer.initializeMs(5000, process).start();
 	process();
@@ -106,13 +109,17 @@ void process()
 		displayTimer.initializeMs(1000, showValues).start();
 }
 
-void connectOk()
+void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 {
 	debugf("connected");
 	WifiAccessPoint.enable(false);
+}
+
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+{
 	lcd.clear();
 	lcd.print("\7 ");
-	lcd.print(WifiStation.getIP().toString());
+	lcd.print(ip.toString());
 	// Restart main screen output
 	procTimer.restart();
 	displayTimer.stop();
@@ -125,7 +132,7 @@ void connectOk()
 		startWebServer();
 }
 
-void connectFail()
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	debugf("connection FAILED");
 	WifiAccessPoint.config("MeteoConfig", "", AUTH_OPEN);
@@ -142,7 +149,8 @@ void connectFail()
 	lcd.print(WifiAccessPoint.getIP());
 
 	startWebServer();
-	WifiStation.waitConnection(connectOk); // Wait connection
+	WifiStation.disconnect();
+	WifiStation.connect();
 }
 
 ////// WEB Clock //////
