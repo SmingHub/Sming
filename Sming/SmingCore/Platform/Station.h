@@ -219,6 +219,10 @@ public:
 	 *	@param	successfulConnected Function to call when WiFi station connects to network
 	 *	@param	secondsTimeOut Quantity of seconds to wait for connection
 	 *	@param	connectionNotEstablished Function to call if WiFi station fails to connect to network
+	 *
+	 *	@deprecated This method is deprecated and will be removed in the next versions. Use WifiEvents instead.
+	 *				For an example of WifiEvents take a look at the Basic_Wifi sample code.
+	 *
 	 */
 	void waitConnection(ConnectionDelegate successfulConnected, int secondsTimeOut, ConnectionDelegate connectionNotEstablished);
 
