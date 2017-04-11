@@ -158,7 +158,7 @@ String AccessPointClass::getSSID()
 	softap_config config = {0};
 	if (!wifi_softap_get_config(&config))
 	{
-		debugf("Can't read station configuration!");
+		debugf("Can't read AP configuration!");
 		return "";
 	}
 	debugf("SSID: %s", (char*)config.ssid);
@@ -170,7 +170,7 @@ String AccessPointClass::getPassword()
 	softap_config config = {0};
 	if (!wifi_softap_get_config(&config))
 	{
-		debugf("Can't read station configuration!");
+		debugf("Can't read AP configuration!");
 		return "";
 	}
 	debugf("Pass: %s", (char*)config.password);
