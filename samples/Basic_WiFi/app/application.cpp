@@ -28,17 +28,17 @@ void listNetworks(bool succeeded, BssList list)
 }
 
 // Will be called when WiFi station was connected to AP
-void connectOk()
+void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 {
 	debugf("I'm CONNECTED");
-	Serial.println(WifiStation.getIP().toString());
+	Serial.println(ip.toString());
 }
 
-// Will be called when WiFi station timeout was reached
-void connectFail()
+// Will be called when WiFi station was disconnected
+void connectFail(String ssid, uint8_t ssidLength, uint8_t *bssid, uint8_t reason)
 {
-	debugf("I'm NOT CONNECTED!");
-	WifiStation.waitConnection(connectOk, 10, connectFail); // Repeat and check again
+	// The different reason codes can be found in user_interface.h. in your SDK.
+	debugf("Disconnected from %s. Reason: %d", ssid.c_str(), reason);
 }
 
 // Will be called when WiFi hardware and software initialization was finished
@@ -76,6 +76,9 @@ void init()
 	// Print available access points
 	WifiStation.startScan(listNetworks); // In Sming we can start network scan from init method without additional code
 
-	// Run our method when station was connected to AP (or not connected)
-	WifiStation.waitConnection(connectOk, 30, connectFail); // We recommend 20+ seconds at start
+	// Set callback that should be triggered when we have assigned IP
+	WifiEvents.onStationGotIP(connectOk);
+
+	// Set callback that should be triggered if we are disconnected or connection attempt failed
+	WifiEvents.onStationDisconnect(connectFail);
 }
