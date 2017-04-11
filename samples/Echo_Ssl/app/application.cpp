@@ -109,11 +109,6 @@ bool onReceive(TcpClient& tcpClient, char *data, int size) {
 	return tcpClient.send(data, size);
 }
 
-void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
-{
-	debugf("Connected.");
-}
-
 void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	debugf("I'm NOT CONNECTED!");
@@ -137,7 +132,6 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
 	// Run our method when station was connected to AP (or not connected)
-	WifiEvents.onStationConnect(connectOk);
 	WifiEvents.onStationDisconnect(connectFail);
 	WifiEvents.onStationGotIP(gotIP);
 }

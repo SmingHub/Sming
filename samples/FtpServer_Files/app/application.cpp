@@ -9,12 +9,6 @@
 
 FTPServer ftp;
 
-// Will be called when WiFi station was connected to AP
-void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
-{
-	Serial.println("\r\nI'm CONNECTED");
-}
-
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
 	Serial.printf("IP: %s\n", ip.toString().c_str());
@@ -47,7 +41,6 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP (or not connected)
-	WifiEvents.onStationConnect(connectOk);
 	WifiEvents.onStationDisconnect(connectFail);
 	WifiEvents.onStationGotIP(gotIP);
 }

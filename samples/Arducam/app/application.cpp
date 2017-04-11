@@ -256,12 +256,6 @@ void StartServers()
 }
 
 
-// Will be called when WiFi station was connected to AP
-void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
-{
-	Serial.println("I'm CONNECTED");
-}
-
 // Will be called when station is fully operational
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
@@ -285,7 +279,6 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiAccessPoint.enable(false);
 
-	WifiEvents.onStationConnect(connectOk);
 	WifiEvents.onStationGotIP(gotIP);
 
 	// setup the ArduCAM

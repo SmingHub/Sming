@@ -101,12 +101,6 @@ void startFTP()
 	ftp.addUser("me", "123"); // FTP account
 }
 
-// Will be called when WiFi station was connected to AP
-void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
-{
-	Serial.println("I'm CONNECTED");
-}
-
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
 	startFTP();
@@ -131,6 +125,5 @@ void init()
 	}
 
 	// Run our method when station was connected to AP
-	WifiEvents.onStationConnect(connectOk);
 	WifiEvents.onStationGotIP(gotIP);
 }

@@ -115,12 +115,6 @@ void startServers()
 	commandHandler.registerCommand(CommandDelegate("application","This command is defined by the application\r\n","testGroup", applicationCommand));
 }
 
-// Will be called when WiFi station was connected to AP
-void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
-{
-	Serial.println("I'm CONNECTED");
-}
-
 void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	debugf("I'm NOT CONNECTED!");
@@ -141,7 +135,6 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP
-	WifiEvents.onStationConnect(connectOk);
 	WifiEvents.onStationDisconnect(connectFail);
 	WifiEvents.onStationGotIP(gotIP);
 	Debug.setDebug(Serial);

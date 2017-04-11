@@ -29,12 +29,6 @@ Adafruit_SSD1306 display(-1); // reset Pin required but later ignored if set to 
 
 Timer DemoTimer;
 
-// Will be called when WiFi station was connected to AP
-void connect_Ok(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
-{
-	Serial.println("WiFi : I'm CONNECTED");
-}
-
 // Will be called when WiFi station loses connection
 void connect_Fail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
@@ -71,7 +65,7 @@ void Demo2()
 
 void Demo1()
 {
-        Serial.println("Display: circle");
+	Serial.println("Display: circle");
 	// Clear the buffer.
 	display.clearDisplay();
 	// draw a circle, 10 pixel radius
@@ -92,7 +86,6 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
-	WifiEvents.onStationConnect(connect_Ok);
 	WifiEvents.onStationDisconnect(connect_Fail);
 	WifiEvents.onStationGotIP(got_IP);
 

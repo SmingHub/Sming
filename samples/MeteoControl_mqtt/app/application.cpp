@@ -8,7 +8,6 @@
 
 Timer publishTimer;
 
-void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel);
 void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason);
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
 
@@ -30,7 +29,6 @@ void init()
 	//WifiStation.setIP(ESP_IP);
 	WifiAccessPoint.enable(false);
 	WDT.enable(false);	//disable watchdog
-	WifiEvents.onStationConnect(connectOk);
 	WifiEvents.onStationDisconnect(connectFail);
 	WifiEvents.onStationGotIP(gotIP);
 }
@@ -58,12 +56,6 @@ void startMqttClient()
 	mqtt.connect(CLIENT, LOG, PASS);
 	Serial.print("\rConnected to MQTT server\n");
 	mqtt.subscribe(SUB_TOPIC);
-}
-
-// Will be called when WiFi station was connected to AP
-void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
-{
-	debugf("connected");	
 }
 
 // Will be called when WiFi station timeout was reached
