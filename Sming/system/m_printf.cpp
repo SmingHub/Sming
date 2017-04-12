@@ -128,7 +128,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
 
         //  reset attributes to defaults
         bool    minus       = 0;
-        uint8_t base        = 10;
+        uint8_t ubase       = 0;
         int8_t  precision   = -1;
         int8_t  width       = 0;
         char    pad         = ' ';
@@ -177,7 +177,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
 
                 if (!s) s = "(null)";
                 size_t len = strlen(s);
-                if (len > precision) len = precision;
+                len     = MIN( len,   precision );
 
                 int padding = width - len;
                 while (!minus && padding-- > 0) add(' ');
@@ -192,7 +192,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
 
             case 'd':
             case 'i':
-                s = ltoa_wp(va_arg(args, int), tempNum, base, width, pad);
+                s = ltoa_wp(va_arg(args, int), tempNum, 10, width, pad);
                 break;
 
             case 'f':
@@ -200,16 +200,16 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
                 break;
 
             case 'o':
-                base = 8;
-                goto UNSIGNED;
+                ubase = 8;
+                break;
 
             case 'x':
             case 'X':
-                base = 16;
+                ubase = 16;
+                break;
 
             case 'u':
-            UNSIGNED:
-                s = ultoa_wp(va_arg(args, unsigned int), tempNum, base, width, pad);
+                ubase = 10;
                 break;
 
             default:
@@ -218,10 +218,12 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
                 continue;
         }
 
+        //  format unsigned numbers
+        if (ubase) s = ultoa_wp(va_arg(args, unsigned int), tempNum, ubase, width, pad);
+
         //  copy string to target
         while (*s) add(*s++);
     }
     *buf = 0;
     return size;
 }
-
