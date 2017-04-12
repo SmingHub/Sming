@@ -116,7 +116,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
 	};
 
 	while (*fmt) {
-		//	copy verbatim text
+		//	copy verbatim text 
 		if (*fmt != '%')  {
 			add(*fmt++);
 			continue;
@@ -124,29 +124,25 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
 		fmt++;
 
 		const char*	s;							// source for string copy
-		char	tempNum[40];					// buffer for number conversion
-
+		char 	tempNum[40];					// buffer for number conversion
+		
 		//	reset attributes to defaults
 		bool	minus		= 0;
-		uint8_t	base		= 10;
-		int8_t	precision	= -1;
-		int8_t	width		= 0;
-		char	pad			= ' ';
-
-		//	process flags
-	DO_FLAGS:
-		switch (*fmt) {
-			case '-':
-				minus = 1;
-
-			case '+':
-			case ' ':
-			case '#':
-				fmt++;
-				goto DO_FLAGS;
+		uint8_t	base 		= 10;
+		int8_t	precision 	= -1;
+		int8_t	width 		= 0;
+		char	pad 		= ' ';
+		
+		while (char f = *fmt) {
+			if (f == '-')			minus = 1;
+			else if (f == '+')		;			// ignored
+			else if (f == ' ')		;			// ignored
+			else if (f == '#')		;			// ignored
+			else 					break;
+			fmt++;
 		}
 
-		//	process padding
+		//	process padding 
 		if (*fmt == '0') {
 			pad = '0';
 			fmt++;
@@ -157,21 +153,21 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
 			width = skip_atoi(&fmt);
 		}
 
-		//	process precision
+		// 	process precision
 		if( *fmt == '.' ) {
 			fmt++;
 			if ( is_digit(*fmt) ) precision = skip_atoi(&fmt);
 		}
-
-		//	ignore length
+		
+		//	ignore length 
 		while (*fmt == 'l' || *fmt == 'h' || *fmt == 'L') fmt++;
-
-		//	process type
+		
+		//	process type	
 		switch (char f = *fmt++) {
 			case '%':
 				add('%');
 				continue;
-
+			
 			case 'c':
 				add( (unsigned char) va_arg(args, int) );
 				continue;
@@ -185,23 +181,23 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
 
 				int padding = width - len;
 				while (!minus && padding-- > 0) add(' ');
-				while (len--)					add(*s++);
-				while (minus && padding-- > 0)	add(' ');
+				while (len--) 					add(*s++);
+				while (minus && padding-- > 0) 	add(' ');
 				continue;
-			}
+			}    
 
 			case 'p':
 				s = ultoa((unsigned long) va_arg(args, void *), tempNum, 16);
-				goto COPY;
+				break;
 
 			case 'd':
 			case 'i':
 				s = ltoa_wp(va_arg(args, int), tempNum, base, width, pad);
-				goto COPY;
+				break;
 
 			case 'f':
 				s = dtostrf_p(va_arg(args, double), width, precision, tempNum, pad);
-				goto COPY;
+				break;
 
 			case 'o':
 				base = 8;
@@ -210,21 +206,22 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
 			case 'x':
 			case 'X':
 				base = 16;
-				goto UNSIGNED;
 
 			case 'u':
 			UNSIGNED:
 				s = ultoa_wp(va_arg(args, unsigned int), tempNum, base, width, pad);
-
-			COPY:
-				while (*s) add(*s++);
-				break;
+				break;	
 
 			default:
 				add('%');
 				add(f);
+				continue;
 		}
+		
+		//	copy string to target
+		while (*s) add(*s++);
 	}
 	*buf = 0;
 	return size;
 }
+
