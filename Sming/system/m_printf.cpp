@@ -177,7 +177,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
 
                 if (!s) s = "(null)";
                 size_t len = strlen(s);
-                len     = MIN( len,   precision );
+                if (len > precision) len = precision;
 
                 int padding = width - len;
                 while (!minus && padding-- > 0) add(' ');
