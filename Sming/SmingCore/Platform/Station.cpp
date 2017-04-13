@@ -49,12 +49,17 @@ bool StationClass::isEnabled()
 	return wifi_get_opmode() & STATION_MODE;
 }
 
+bool StationClass::config(String ssid, String password, bool autoConnectOnStartup /* = true*/, bool save /* = true */)
+{
+	config(ssid.c_str(), password.c_str(), autoConnectOnStartup, save);
+}
+
 bool StationClass::config(const char * ssid, const char * password, bool autoConnectOnStartup /* = true*/, bool save /* = true */)
 {
 	station_config config = {0};
 
-	if (sizeof(ssid) >= sizeof(config.ssid)) return false;
-	if (sizeof(password) >= sizeof(config.password)) return false;
+	if (strlen(ssid) >= sizeof(config.ssid)) return false;
+	if (strlen(password) >= sizeof(config.password)) return false;
 
 	bool enabled = isEnabled();
 	bool dhcp = isEnabledDHCP();
@@ -142,6 +147,11 @@ void StationClass::enableDHCP(bool enable)
 		wifi_station_dhcpc_stop();
 }
 
+void StationClass::setHostname(String hostname)
+{
+	setHostname(hostname.c_str());
+}
+
 void StationClass::setHostname(char * hostname)
 {
 	wifi_station_set_hostname(hostname);
@@ -156,9 +166,8 @@ char * StationClass::getHostname(char * s, size_t bufSize)
 {
 	char * buf;
 	buf = wifi_station_get_hostname();
-	size_t bufLen = strlen(buf);
 	strncpy(s, buf, bufSize - 1);
-	s[bufLen] = '\0';
+	s[bufSize - 1] = '\0';
 	return s;
 }
 
@@ -216,7 +225,6 @@ IPAddress StationClass::getNetworkGateway()
 	wifi_get_ip_info(STATION_IF, &info);
 	return info.gw;
 }
-
 
 bool StationClass::setIP(IPAddress address)
 {
@@ -276,7 +284,7 @@ char * StationClass::getSSID(char * s, size_t bufSize)
 	{
 		debugf("SSID: %s", (char *)config.ssid);
 		strncpy(s, (char *)config.ssid, bufSize - 1);
-		s[strlen((char *)config.ssid)] = '\0';
+		s[bufSize - 1] = '\0';
 	}
 	return s;
 }
@@ -316,9 +324,9 @@ char * StationClass::getPassword(char * s, size_t bufSize)
 	{
 		debugf("Pass: %s", (char *)config.password);
 		strncpy(s, (char *)config.password, bufSize - 1);
-		s[strlen((char *)config.password)] = '\0';
+		s[bufSize - 1] = '\0';
 	}
-	return s;	
+	return s;
 }
 
 EStationConnectionStatus StationClass::getConnectionStatus()

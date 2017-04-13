@@ -103,6 +103,14 @@ public:
 	 */
 	bool config(const char * ssid, const char * password, bool autoConnectOnStartup = true, bool save = true);
 
+	/**	@brief	Configure WiFi station
+	 *	@param	ssid WiFi SSID
+	 *	@param	password WiFi password
+	 *	@param	autoConnectOnStartup True to auto connect. False for manual. (Default: True)
+	 *	@param  save True to save the SSID and password in Flash. False otherwise. (Default: True)
+	 */
+	bool config(String ssid, String password, bool autoConnectOnStartup = true, bool save = true);
+
 	/**	@brief	Connect WiFi station to network
 	 */
 	bool connect();
@@ -140,6 +148,11 @@ public:
 	 *	@param	enable True to enable WiFi station DHCP
 	 */
 	void enableDHCP(bool enable);
+
+	/**	@brief	Set WiFi station DHCP hostname
+	 *	@param	hostname - WiFi station DHCP hostname
+	 */
+	void setHostname(String hostname);
 
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@param	hostname - WiFi station DHCP hostname
