@@ -180,15 +180,8 @@ IPAddress StationClass::getIP()
 
 String StationClass::getMAC()
 {
-	String mac;
-	uint8 hwaddr[6] = {0};
-	wifi_get_macaddr(STATION_IF, hwaddr);
-	for (int i = 0; i < 6; i++)
-	{
-		if (hwaddr[i] < 0x10) mac += "0";
-		mac += String(hwaddr[i], HEX);
-	}
-	return mac;
+	char macBuf[6 * 2 + 1];
+	return String(getMAC(macBuf, sizeof(macBuf)));
 }
 
 char * StationClass::getMAC(char * s, size_t bufSize)
@@ -263,14 +256,8 @@ bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway
 
 String StationClass::getSSID()
 {
-	station_config config = {0};
-	if (!wifi_station_get_config(&config))
-	{
-		debugf("Can't read station configuration!");
-		return "";
-	}
-	debugf("SSID: %s", (char*)config.ssid);
-	return String((char*)config.ssid);
+	char buf[33];  // IEEE 802.11-2007, part 11, par. 7.3.2.1
+	return String(getSSID(buf, sizeof(buf)));
 }
 
 char * StationClass::getSSID(char * s, size_t bufSize)
@@ -303,14 +290,8 @@ uint8 StationClass::getChannel()
  
 String StationClass::getPassword()
 {
-	station_config config = {0};
-	if (!wifi_station_get_config(&config))
-	{
-		debugf("Can't read station configuration!");
-		return "";
-	}
-	debugf("Pass: %s", (char*)config.password);
-	return String((char*)config.password);
+	char buf[63];  // passphrase is 8-63 ASCII chars (to make 256 bits PSK)
+	return String(getPassword(buf, sizeof(buf))); 
 }
 
 char * StationClass::getPassword(char * s, size_t bufSize)
