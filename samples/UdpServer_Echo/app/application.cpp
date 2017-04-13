@@ -28,7 +28,7 @@ void onReceive(UdpConnection& connection, char *data, int size, IPAddress remote
 	udp.sendStringTo(remoteIP, EchoPort, text);
 }
 
-void onConnected()
+void gotIP(IPAddress ip, IPAddress gateway, IPAddress netmask)
 {
 	udp.listen(EchoPort);
 
@@ -46,5 +46,5 @@ void init()
 	Serial.systemDebugOutput(true);
 
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
-	WifiStation.waitConnection(onConnected);
+	WifiEvents.onStationGotIP(gotIP);
 }

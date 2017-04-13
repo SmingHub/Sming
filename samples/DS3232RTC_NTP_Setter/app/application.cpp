@@ -33,15 +33,14 @@ void onNtpReceive(NtpClient& client, time_t timestamp) {
 	Serial.printf("Time synchronized: %s\n", SystemClock.getSystemTimeString().c_str());
 }
 
-void connectOk()
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
 	ntpClient.requestTime();
 }
 
-void connectFail()
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	debugf("I'm NOT CONNECTED!");
-	WifiStation.waitConnection(connectOk, 10, connectFail); // Repeat and check again
 }
 
 void init()
@@ -52,14 +51,13 @@ void init()
 //Uncomment proper line, or set right pins by hand
 	Wire.pins(0, 2); //Change to your SCL - 0,SDA - 2 GPIO pin number
 //	Wire.pins(5, 4); //Change to your SCL - 5,SDA - 4 GPIO pin number
-        Wire.begin();
+	Wire.begin();
 
-	// Run our method when station was connected to AP (or not connected)
-	WifiStation.waitConnection(connectOk, 30, connectFail); // We recommend 20+ seconds at start
-	
 	// Station - WiFi client
-	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
+	WifiStation.enable(true);
+	WifiEvents.onStationGotIP(gotIP);
+	WifiEvents.onStationDisconnect(connectFail);
 
 	// set timezone hourly difference to UTC
 	SystemClock.setTimeZone(2); // GMT+2

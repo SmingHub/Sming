@@ -70,7 +70,7 @@ void sendData()
 }
 
 // Когда удачно подключились к роутеру
-void connectOk()
+void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 {
 	// debug msg
 	debugf("I'm CONNECTED to WiFi");
@@ -84,19 +84,20 @@ void connectOk()
 		mac = mac.substring(0, i) + "-" + mac.substring(i++);
 
 	debugf("mac: %s", mac.c_str());
+}
 
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+{
+	// Если подключение к роутеру не удалось, выводим сообщение
+	debugf("I'm NOT CONNECTED!");
+}
+
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+{
 	// вызываем по таймеру функцию sendData
 	procTimer.initializeMs(6 * 60 * 1000, sendData).start(); // каждые 6 минут
 	// ну и заодно сразу после запуска вызываем, чтобы не ждать 6 минут первый раз
 	sendData();
-}
-
-void connectFail()
-{
-	// Если подключение к роутеру не удалось, выводим сообщение
-	debugf("I'm NOT CONNECTED!");
-	// И пробуем еще раз
-	WifiStation.waitConnection(connectOk, 10, connectFail);
 }
 
 void init()
@@ -117,5 +118,7 @@ void init()
 	 * connectFail будет вызвана, если подключиться не получится
 	 * 30 - таймаут подключения (сек)
 	 */
-	WifiStation.waitConnection(connectOk, 30, connectFail);
+	WifiEvents.onStationConnect(connectOk);
+	WifiEvents.onStationDisconnect(connectFail);
+	WifiEvents.onStationGotIP(gotIP);
 }

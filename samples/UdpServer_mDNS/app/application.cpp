@@ -89,22 +89,17 @@ void startWebServer()
 	Serial.println("==============================\r\n");
 }
 
-
-// Will be called when WiFi station was connected to AP
-void connectOk()
-{
-	Serial.println("I'm CONNECTED");
-	if (!fileExist("index.html"))
-			fileSetContent("index.html", "<h3>Congrats !! You are Connected to your ESP module with mDNS address test.local</h3>");
-
-
-	startWebServer();
-	startmDNS();  // Start mDNS "Advertise" of your hostname "test.local" for this example
-}
-void connectFail()
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
 	debugf("I'm NOT CONNECTED!");
-	WifiStation.waitConnection(connectOk, 10, connectFail);
+}
+
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+{
+	if (!fileExist("index.html"))
+		fileSetContent("index.html", "<h3>Congrats !! You are Connected to your ESP module with mDNS address test.local</h3>");
+	startWebServer();
+	startmDNS();  // Start mDNS "Advertise" of your hostname "test.local" for this example
 }
 
 void init()
@@ -112,15 +107,10 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
-
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
 
-
-	WifiStation.waitConnection(connectOk, 30, connectFail);
-
-
-	// Run our method when station was connected to AP
-	WifiStation.waitConnection(connectOk);
+	WifiEvents.onStationDisconnect(connectFail);
+	WifiEvents.onStationGotIP(gotIP);
 }

@@ -93,24 +93,21 @@ void startMqttClient()
 	mqtt->subscribe("main/status/#");
 }
 
-// Will be called when WiFi station was connected to AP
-void connectOk()
+// Will be called when WiFi station timeout was reached
+void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
 {
-	Serial.println("I'm CONNECTED");
+	Serial.println("I'm NOT CONNECTED. Need help :(");
 
+	// .. some you code for device configuration ..
+}
+
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+{
 	// Run MQTT client
 	startMqttClient();
 
 	// Start publishing loop
 	procTimer.initializeMs(20 * 1000, publishMessage).start(); // every 20 seconds
-}
-
-// Will be called when WiFi station timeout was reached
-void connectFail()
-{
-	Serial.println("I'm NOT CONNECTED. Need help :(");
-
-	// .. some you code for device configuration ..
 }
 
 void init()
@@ -125,5 +122,6 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP (or not connected)
-	WifiStation.waitConnection(connectOk, 20, connectFail); // We recommend 20+ seconds for connection timeout at start
+	WifiEvents.onStationDisconnect(connectFail);
+	WifiEvents.onStationGotIP(gotIP);
 }

@@ -86,11 +86,8 @@ void downloadContentFiles()
 	}
 }
 
-// Will be called when WiFi station was connected to AP
-void connectOk()
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
-	Serial.println("I'm CONNECTED");
-
 	if (!fileExist("index.html") || !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz"))
 	{
 		// Download server content at first
@@ -116,7 +113,7 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP
-	WifiStation.waitConnection(connectOk);
+	WifiEvents.onStationGotIP(gotIP);
 
 	//Change CPU freq. to 160MHZ
 	System.setCpuFrequency(eCF_160MHz);

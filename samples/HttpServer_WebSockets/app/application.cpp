@@ -102,11 +102,9 @@ void startWebServer()
 	Serial.println("==============================\r\n");
 }
 
-// Will be called when WiFi station was connected to AP
-void connectOk()
+// Will be called when WiFi station becomes fully operational
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
-	Serial.println("I'm CONNECTED");
-
 	startWebServer();
 }
 
@@ -122,5 +120,5 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP
-	WifiStation.waitConnection(connectOk);
+	WifiEvents.onStationGotIP(gotIP);
 }
