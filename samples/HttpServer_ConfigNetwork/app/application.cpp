@@ -100,7 +100,7 @@ void onAjaxNetworkList(HttpRequest &request, HttpResponse &response)
 void makeConnection()
 {
 	WifiStation.enable(true);
-	WifiStation.config(network, password);
+	WifiStation.config(network.c_str(), password.c_str());
 
 	AppSettings.ssid = network;
 	AppSettings.password = password;
@@ -201,7 +201,7 @@ void init()
 
 	if (AppSettings.exist())
 	{
-		WifiStation.config(AppSettings.ssid, AppSettings.password);
+		WifiStation.config(AppSettings.ssid.c_str(), AppSettings.password.c_str());
 		if (!AppSettings.dhcp && !AppSettings.ip.isNull())
 			WifiStation.setIP(AppSettings.ip, AppSettings.netmask, AppSettings.gateway);
 	}

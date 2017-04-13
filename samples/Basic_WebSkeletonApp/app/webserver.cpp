@@ -40,13 +40,13 @@ void onConfiguration(HttpRequest &request, HttpResponse &response)
 				{
 					WifiStation.enable(true);
 					WifiAccessPoint.enable(false);
-					WifiStation.config(ActiveConfig.StaSSID, ActiveConfig.StaPassword);
+					WifiStation.config(ActiveConfig.StaSSID.c_str(), ActiveConfig.StaPassword.c_str());
 				}
 				else if (ActiveConfig.StaEnable)
 				{
 					WifiStation.enable(true, true);
 					WifiAccessPoint.enable(false, true);
-					WifiStation.config(ActiveConfig.StaSSID, ActiveConfig.StaPassword);
+					WifiStation.config(ActiveConfig.StaSSID.c_str(), ActiveConfig.StaPassword.c_str());
 				}
 				else
 				{

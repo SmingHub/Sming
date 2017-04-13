@@ -54,7 +54,7 @@ void init()
 	lcd.createChar(6, icon_cross);
 	lcd.createChar(7, icon_check);
 
-	WifiStation.config(ActiveConfig.NetworkSSID, ActiveConfig.NetworkPassword);
+	WifiStation.config(ActiveConfig.NetworkSSID.c_str(), ActiveConfig.NetworkPassword.c_str());
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
 
