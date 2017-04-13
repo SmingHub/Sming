@@ -290,7 +290,7 @@ uint8 StationClass::getChannel()
  
 String StationClass::getPassword()
 {
-	char buf[63];  // passphrase is 8-63 ASCII chars (to make 256 bits PSK)
+	char buf[64];  // passphrase is 8-63 ASCII chars (to make 256 bits PSK)
 	return String(getPassword(buf, sizeof(buf))); 
 }
 
