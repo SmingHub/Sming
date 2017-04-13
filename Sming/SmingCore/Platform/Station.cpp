@@ -49,12 +49,12 @@ bool StationClass::isEnabled()
 	return wifi_get_opmode() & STATION_MODE;
 }
 
-bool StationClass::config(String ssid, String password, bool autoConnectOnStartup /* = true*/, bool save /* = true */)
+bool StationClass::config(const char * ssid, const char * password, bool autoConnectOnStartup /* = true*/, bool save /* = true */)
 {
 	station_config config = {0};
 
-	if (ssid.length() >= sizeof(config.ssid)) return false;
-	if (password.length() >= sizeof(config.password)) return false;
+	if (sizeof(ssid) >= sizeof(config.ssid)) return false;
+	if (sizeof(password) >= sizeof(config.password)) return false;
 
 	bool enabled = isEnabled();
 	bool dhcp = isEnabledDHCP();
@@ -63,14 +63,14 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	bool cfgreaded = wifi_station_get_config(&config);
 	if (!cfgreaded) debugf("Can't read station configuration!");
 
-	if (strncmp(ssid.c_str(), (char*)config.ssid, sizeof(config.ssid))!=0
-		|| strncmp(password.c_str(), (char*)config.password, sizeof(config.password))!=0 || config.bssid_set)
+	if (strncmp(ssid, (char*)config.ssid, sizeof(config.ssid))!=0
+		|| strncmp(password, (char*)config.password, sizeof(config.password))!=0 || config.bssid_set)
 	{
 		memset(config.ssid, 0, sizeof(config.ssid));
 		memset(config.password, 0, sizeof(config.password));
 		config.bssid_set = false;
-		strcpy((char*)config.ssid, ssid.c_str());
-		strcpy((char*)config.password, password.c_str());
+		strcpy((char*)config.ssid, ssid);
+		strcpy((char*)config.password, password);
 
 		noInterrupts();
 
@@ -90,12 +90,12 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 			if (!enabled) enable(enabled);
 			return false;
 		}
-		debugf("Station configuration was updated to: %s", ssid.c_str());
+		debugf("Station configuration was updated to: %s", ssid);
 
 		interrupts();
 	}
 	else
-		debugf("Station configuration is: %s", ssid.c_str());
+		debugf("Station configuration is: %s", ssid);
 	if (!dhcp) enableDHCP(dhcp);
 	if (!enabled) enable(enabled);
 
@@ -142,14 +142,24 @@ void StationClass::enableDHCP(bool enable)
 		wifi_station_dhcpc_stop();
 }
 
-void StationClass::setHostname(String hostname)
+void StationClass::setHostname(char * hostname)
 {
-	wifi_station_set_hostname((char*)hostname.c_str());
+	wifi_station_set_hostname(hostname);
 }
 
 String StationClass::getHostname()
 {
 	return (String) wifi_station_get_hostname();
+}
+
+char * StationClass::getHostname(char * s, size_t bufSize)
+{
+	char * buf;
+	buf = wifi_station_get_hostname();
+	size_t bufLen = strlen(buf);
+	strncpy(s, buf, bufSize - 1);
+	s[bufLen] = '\0';
+	return s;
 }
 
 IPAddress StationClass::getIP()
@@ -169,6 +179,20 @@ String StationClass::getMAC()
 		if (hwaddr[i] < 0x10) mac += "0";
 		mac += String(hwaddr[i], HEX);
 	}
+	return mac;
+}
+
+char * StationClass::getMAC(char * s, size_t bufSize)
+{
+	uint8 hwaddr[6] = {0};
+	wifi_get_macaddr(STATION_IF, hwaddr);
+	m_snprintf(s, bufSize - 1, "%02x%02x%02x%02x%02x%02x", hwaddr[0], hwaddr[1], hwaddr[2], hwaddr[3], hwaddr[4], hwaddr[5]);
+	return s;
+}
+
+uint8 * StationClass::getMAC(uint8 mac[6])
+{
+	wifi_get_macaddr(STATION_IF, mac);
 	return mac;
 }
 
@@ -241,6 +265,21 @@ String StationClass::getSSID()
 	return String((char*)config.ssid);
 }
 
+char * StationClass::getSSID(char * s, size_t bufSize)
+{
+	station_config config = {0};
+	if (!wifi_station_get_config(&config))
+	{
+		debugf("Can't read station configuration!");
+	}
+	else
+	{
+		debugf("SSID: %s", (char *)config.ssid);
+		strncpy(s, (char *)config.ssid, bufSize - 1);
+		s[strlen((char *)config.ssid)] = '\0';
+	}
+	return s;
+}
 
 sint8 StationClass::getRssi()
 {
@@ -254,8 +293,6 @@ uint8 StationClass::getChannel()
 	return wifi_get_channel();
 }
  
-
-
 String StationClass::getPassword()
 {
 	station_config config = {0};
@@ -266,6 +303,22 @@ String StationClass::getPassword()
 	}
 	debugf("Pass: %s", (char*)config.password);
 	return String((char*)config.password);
+}
+
+char * StationClass::getPassword(char * s, size_t bufSize)
+{
+	station_config config = {0};
+	if (!wifi_station_get_config(&config))
+	{
+		debugf("Can't read station configuration!");
+	}
+	else
+	{
+		debugf("Pass: %s", (char *)config.password);
+		strncpy(s, (char *)config.password, bufSize - 1);
+		s[strlen((char *)config.password)] = '\0';
+	}
+	return s;	
 }
 
 EStationConnectionStatus StationClass::getConnectionStatus()

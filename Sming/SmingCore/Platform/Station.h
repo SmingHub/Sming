@@ -101,7 +101,7 @@ public:
 	 *	@param	autoConnectOnStartup True to auto connect. False for manual. (Default: True)
 	 *	@param  save True to save the SSID and password in Flash. False otherwise. (Default: True)
 	 */
-	bool config(String ssid, String password, bool autoConnectOnStartup = true, bool save = true);
+	bool config(const char * ssid, const char * password, bool autoConnectOnStartup = true, bool save = true);
 
 	/**	@brief	Connect WiFi station to network
 	 */
@@ -144,12 +144,19 @@ public:
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@param	hostname - WiFi station DHCP hostname
 	 */
-	void setHostname(String hostname);
+	void setHostname(char * hostname);
 
-	/**	@brief	Set WiFi station DHCP hostname
-	 *	@retval WiFi station DHCP hostname
+	/**	@brief	Get WiFi station hostname
+	 *	@retval WiFi station hostname as String
 	 */
 	String getHostname();
+
+	/**	@brief	Get WiFi station hostname
+	 *  @param  s buffer to be filled with hostname
+	 *  @param  bufSize buffer size
+	 *	@retval char* pointer to buffer holding hostname
+	 */
+	char * getHostname(char * s, size_t bufSize);
 
 	/**	@brief	Get WiFi station IP address
 	 *	@retval	IPAddress IP address of WiFi station
@@ -160,6 +167,19 @@ public:
 	 *	@retval	String WiFi station MAC address
 	 */
 	String getMAC();
+
+	/**	@brief	Get WiFi station MAC address
+	 *  @param  s buffer to be filled with MAC address
+	 *  @param  bufSize buffer size
+	 *	@retval	char* pointer to buffer holding MAC address
+	 */
+	char * getMAC(char * s, size_t bufSize);
+
+	/**	@brief	Get WiFi station MAC address
+	 *  @param  mac 6 byte array to fill with MAC address bytes
+	 *	@retval	uint8* pointer to array holding MAC address bytes
+	 */
+	uint8 * getMAC(uint8 mac[6]);
 
 	/**	@brief	Get WiFi station network mask
 	 *	@retval	IPAddress WiFi station network mask
@@ -195,10 +215,25 @@ public:
 	 */
 	String getSSID();
 
+	/**	@brief	Get WiFi station SSID
+	 *  @param s buffer to fill with SSID
+	 *  @param bufSize buffer size
+	 *	@retval	char* pointer to buffer holding SSID
+	 */
+	char * getSSID(char * s, size_t bufSize);
+
 	/**	@brief	Get WiFi station password
 	 *	@retval	String WiFi station password
 	 */
 	String getPassword();
+
+	/**	@brief	Get WiFi station password
+	 *  @param s buffer to fill with password
+	 *  @param bufSize buffer size
+	 *	@retval	char* pointer to buffer holding WiFi station password
+	 */
+	char * getPassword(char * s, size_t bufSize);
+
 	sint8 getRssi();
 	uint8 getChannel(); 
 
