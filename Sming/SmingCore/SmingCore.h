@@ -47,7 +47,6 @@
 #include "Network/TcpClient.h"
 #include "Network/TcpConnection.h"
 #include "Network/UdpConnection.h"
-#include "Network/HttpFirmwareUpdate.h"
 #include "Network/rBootHttpUpdate.h"
 #include "Network/URL.h"
 
