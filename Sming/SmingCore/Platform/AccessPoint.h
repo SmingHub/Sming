@@ -55,6 +55,17 @@ public:
      */
 	bool config(String ssid, String password, AUTH_MODE mode, bool hidden = false, int channel = 7, int beaconInterval = 200);
 
+    /** @brief  Configure WiFi AP
+     *  @param  ssid WiFi AP SSID
+     *  @param  password WiFi AP password
+     *  @param  mode WiFi AP mode
+     *  @param  hidden True to hide WiFi AP (Default: Visible)
+     *  @param  channel WiFi AP channel (Default: 7)
+     *  @param  beaconInterval WiFi AP beacon interval in milliseconds (Default: 200ms)
+     *  @retval bool True on success
+     */
+	bool config(const char * ssid, const char * password, AUTH_MODE mode, bool hidden = false, int channel = 7, int beaconInterval = 200);
+
     /** @brief  Get WiFi AP IP address
      *  @retval IPAddress WiFi AP IP address
      */
@@ -70,6 +81,19 @@ public:
      *  @retval String WiFi AP MAC address
      */
 	String getMAC();
+
+    /** @brief  Get WiFi AP MAC address
+		 *	@param	s pointer to char buffer to fill with MAC address string
+		 *	@param	bufSize buffer size
+     *  @retval char * pointer to buffer holding WiFi AP MAC address
+     */
+	char * getMAC(char * s, size_t bufSize);
+
+    /** @brief  Get WiFi AP MAC address
+		 *	@param	mac array of 6 bytes for MAC address parts
+     *  @retval uint8 * pointer to buffer holding MAC address parts
+     */
+	uint8 * getMAC(uint8 mac[6]);
 
     /** @brief  Get WiFi AP network mask
      *  @retval IPAddress WiFi AP network mask
@@ -91,10 +115,24 @@ public:
 	 */
 	String getSSID();
 
+	/**	@brief	Get WiFi access point SSID
+	 *	@param	s char buffer to fill with SSID string
+	 *	@param	bufSize buffer size
+	 *	@retval	char * pointer to buffer holding SSID string
+	 */
+	char * getSSID(char * s, size_t bufSize);
+
 	/**	@brief	Get WiFi access point password
 	 *	@retval	String WiFi access point password
 	 */
 	String getPassword();
+
+	/**	@brief	Get WiFi access point password
+	 *	@param	s char buffer to fill with SSID string
+	 *	@param	bufSize buffer size
+	 *	@retval	char * pointer to buffer holding WiFi access point password
+	 */
+	char * getPassword(char * s, size_t bufSize);
     /** @} */
 
 protected:

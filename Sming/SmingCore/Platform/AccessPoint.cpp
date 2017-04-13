@@ -37,11 +37,19 @@ bool AccessPointClass::isEnabled()
 
 bool AccessPointClass::config(String ssid, String password, AUTH_MODE mode, bool hidden /* = false*/, int channel /* = 7*/, int beaconInterval /* = 200*/)
 {
+	config(ssid.c_str(), password.c_str(), mode, hidden, channel, beaconInterval);
+}
+
+bool AccessPointClass::config(const char * ssid, const char * password, AUTH_MODE mode, bool hidden /* = false*/, int channel /* = 7*/, int beaconInterval /* = 200*/)
+{
 	softap_config config = {0};
 	if (mode == AUTH_WEP) return false; // Not supported!
 
+	char pwd[64];
 	if (mode == AUTH_OPEN)
-		password = "";
+		pwd[0] = '\0';
+	else
+		strncpy(pwd, password, 63);
 
 	bool enabled = isEnabled();
 	enable(true);
@@ -49,15 +57,15 @@ bool AccessPointClass::config(String ssid, String password, AUTH_MODE mode, bool
 	wifi_softap_get_config(&config);
 	if (channel != config.channel || hidden != config.ssid_hidden
 		|| mode != config.authmode|| beaconInterval != config.beacon_interval
-		|| strncmp(ssid.c_str(), (char*)config.ssid, sizeof(config.ssid))!=0 || strncmp(password.c_str(), (char*)config.password, sizeof(config.password))!=0)
+		|| strncmp(ssid, (char*)config.ssid, sizeof(config.ssid))!=0 || strncmp(pwd, (char*)config.password, sizeof(config.password))!=0)
 	{
 		config.channel = channel;
 		config.ssid_hidden = hidden;
 		memset(config.ssid, 0, sizeof(config.ssid));
 		memset(config.password, 0, sizeof(config.password));
-		strcpy((char*)config.ssid, ssid.c_str());
-		strcpy((char*)config.password, password.c_str());
-		config.ssid_len = ssid.length();
+		strcpy((char*)config.ssid, ssid);
+		strcpy((char*)config.password, pwd);
+		config.ssid_len = strlen(ssid);
 		config.authmode = mode;
 		config.max_connection = 4; // max 4
 		config.beacon_interval = beaconInterval;
@@ -142,39 +150,66 @@ bool AccessPointClass::setIP(IPAddress address)
 
 String AccessPointClass::getMAC()
 {
-	String mac;
+	char macBuf[6 * 2 + 1];
+	return String(getMAC(macBuf, sizeof(macBuf)));
+}
+
+char * AccessPointClass::getMAC(char * s, size_t bufSize)
+{
 	uint8 hwaddr[6] = {0};
 	wifi_get_macaddr(SOFTAP_IF, hwaddr);
-	for (int i = 0; i < 6; i++)
-	{
-		if (hwaddr[i] < 0x10) mac += "0";
-		mac += String(hwaddr[i], HEX);
-	}
+	m_snprintf(s, bufSize - 1, "%02x%02x%02x%02x%02x%02x", hwaddr[0], hwaddr[1], hwaddr[2], hwaddr[3], hwaddr[4], hwaddr[5]);
+	return s;	
+}
+
+uint8 * AccessPointClass::getMAC(uint8 mac[6])
+{
+	wifi_get_macaddr(SOFTAP_IF, mac);
 	return mac;
 }
 
 String AccessPointClass::getSSID()
 {
-	softap_config config = {0};
-	if (!wifi_softap_get_config(&config))
-	{
-		debugf("Can't read AP configuration!");
-		return "";
-	}
-	debugf("SSID: %s", (char*)config.ssid);
-	return String((char*)config.ssid);
+	char buf[33];
+	return String(getSSID(buf, sizeof(buf)));
 }
 
-String AccessPointClass::getPassword()
+char * AccessPointClass::getSSID(char * s, size_t bufSize)
 {
 	softap_config config = {0};
 	if (!wifi_softap_get_config(&config))
 	{
 		debugf("Can't read AP configuration!");
-		return "";
 	}
-	debugf("Pass: %s", (char*)config.password);
-	return String((char*)config.password);
+	else
+	{
+		debugf("SSID: %s", (char*)config.ssid);
+		strncpy(s, (char*)config.ssid, bufSize - 1);
+		s[bufSize - 1] = '\0';
+	}
+	return s;
+}
+
+String AccessPointClass::getPassword()
+{
+	char buf[64];
+	return String(getPassword(buf, sizeof(buf))); 
+}
+
+char * AccessPointClass::getPassword(char * s, size_t bufSize)
+{
+	softap_config config = {0};
+	if (!wifi_softap_get_config(&config))
+	{
+		debugf("Can't read AP configuration!");
+	}
+	else
+	{
+		debugf("Pass: %s", (char*)config.password);
+		strncpy(s, (char*)config.password, bufSize - 1);
+		s[bufSize - 1] = '\0';
+	}
+	return s;
 }
 
 void AccessPointClass::onSystemReady()
