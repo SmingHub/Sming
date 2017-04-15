@@ -121,7 +121,7 @@ time_t DateTime::toUnixTime()
 String DateTime::toShortDateString()
 {
 	char buf[64];
-	sprintf(buf, "%02d.%02d.%d", Day, Month + 1, Year);
+	os_sprintf(buf, "%02d.%02d.%d", Day, Month + 1, Year);
 	return String(buf);
 }
 
@@ -129,9 +129,9 @@ String DateTime::toShortTimeString(bool includeSeconds /* = false*/)
 {
 	char buf[64];
 	if (includeSeconds)
-		sprintf(buf, "%02d:%02d:%02d", Hour, Minute, Second);
+		os_sprintf(buf, "%02d:%02d:%02d", Hour, Minute, Second);
 	else
-		sprintf(buf, "%02d:%02d", Hour, Minute);
+		os_sprintf(buf, "%02d:%02d", Hour, Minute);
 
 	return String(buf);
 }
