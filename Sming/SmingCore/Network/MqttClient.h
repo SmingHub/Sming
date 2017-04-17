@@ -27,16 +27,18 @@ class MqttClient: protected TcpClient
 {
 public:
 	MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback = NULL);
+	MqttClient(const char * serverHost, int serverPort, MqttStringSubscriptionCallback callback = NULL);
 	MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback = NULL);
-	virtual ~MqttClient();
 
 	void setKeepAlive(int seconds);			//send to broker
 	void setPingRepeatTime(int seconds);            //used by client
 	// Sets Last Will and Testament
 	bool setWill(String topic, String message, int QoS, bool retained = false);
+	bool setWill(const char * topic, const char * message, int QoS, bool retained = false);
 
 	bool connect(String clientName, boolean useSsl = false, uint32_t sslOptions = 0);
 	bool connect(String clientName, String username, String password, boolean useSsl = false, uint32_t sslOptions = 0);
+	bool connect(const char * clientName, const char * username, const char * password, boolean useSsl = false, uint32_t sslOptions = 0);
 
 	using TcpClient::setCompleteDelegate;
 
@@ -44,10 +46,14 @@ public:
 	__forceinline TcpClientState getConnectionState() { return TcpClient::getConnectionState(); }
 
 	bool publish(String topic, String message, bool retained = false);
+	bool publish(const char * topic, const char * message, bool retained = false);
 	bool publishWithQoS(String topic, String message, int QoS, bool retained = false, MqttMessageDeliveredCallback onDelivery = NULL);
+	bool publishWithQoS(const char * topic, const char * message, int QoS, bool retained = false, MqttMessageDeliveredCallback onDelivery = NULL);
 
 	bool subscribe(String topic);
+	bool subscribe(const char * topic);
 	bool unsubscribe(String topic);
+	bool unsubscribe(const char * topic);
 
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
@@ -65,7 +71,7 @@ protected:
 	static int staticSendPacket(void* userInfo, const void* buf, unsigned int count);
 
 private:
-	String server;
+	char * server;
 	IPAddress serverIp;
 	int port;
 	mqtt_broker_handle_t broker;

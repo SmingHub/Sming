@@ -36,6 +36,27 @@ extern "C" {
 
 #define MQTT_DEFAULT_CLIENTID "emqtt"
 
+#ifndef MQTT_CONF_USERNAME_LENGTH
+	#define MQTT_CONF_USERNAME_LENGTH 13 // Recommended by MQTT Specification (12 + '\0')
+#endif
+
+#ifndef MQTT_CONF_PASSWORD_LENGTH
+	#define MQTT_CONF_PASSWORD_LENGTH 13 // Recommended by MQTT Specification (12 + '\0')
+#endif
+
+#ifndef MQTT_CONF_CLIENTID_LENGTH
+	#define MQTT_CONF_CLIENTID_LENGTH 37 // to fit GUID (36 + '\0')
+#endif
+
+#ifndef MQTT_CONF_WILLTOPIC_LENGTH
+	#define MQTT_CONF_WILLTOPIC_LENGTH 65 // 64 + '\0'
+#endif
+
+#ifndef MQTT_CONF_WILLMESSAGE_LENGTH
+	#define MQTT_CONF_WILLMESSAGE_LENGTH 65 // 64 + '\0'
+#endif
+
+
 #define MQTT_MSG_CONNECT       1<<4
 #define MQTT_MSG_CONNACK       2<<4
 #define MQTT_MSG_PUBLISH       3<<4
@@ -153,15 +174,15 @@ typedef struct {
 	void* socket_info;
 	int (*send)(void* socket_info, const void* buf, unsigned int count);
 	// Connection info
-	char* clientid;
+	char clientid[MQTT_CONF_CLIENTID_LENGTH];
 	// Auth fields
-	char* username;
-	char* password;
+	char username[MQTT_CONF_USERNAME_LENGTH];
+	char password[MQTT_CONF_PASSWORD_LENGTH];
 	// Will topic
 	uint8_t will_retain;
 	uint8_t will_qos;
-	char* will_topic;
-	char* will_message;
+	char will_topic[MQTT_CONF_WILLTOPIC_LENGTH];
+	char will_message[MQTT_CONF_WILLMESSAGE_LENGTH];
 	uint8_t clean_session;
 	// Management fields
 	uint16_t seq;
@@ -171,10 +192,11 @@ typedef struct {
 
 /** Initialize the information to connect to the broker.
  * @param broker Data structure that contains the connection information with the broker.
+ * @param clientid A string that identifies the client id.
  *
  * @note Only has effect before to call mqtt_connect
  */
-void mqtt_init(mqtt_broker_handle_t* broker);
+void mqtt_init(mqtt_broker_handle_t* broker, const char* clientid);
 
 /** Sets the clientid
  * @param broker Data structure that contains the connection information with the broker.
@@ -301,13 +323,6 @@ int mqtt_unsubscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* 
  * @retval -1 On IO error.
  */
 int mqtt_ping(mqtt_broker_handle_t* broker);
-
-/**
- * Frees dynamically allocated resources
- *
- * @param broker Data structure that contains the connection information with the broker.
- */
-void mqtt_free(mqtt_broker_handle_t* broker);
 
 #ifdef __cplusplus
 }
