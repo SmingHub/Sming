@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env python
 ########################################################
 #
 #  Stack Trace Decoder
