@@ -12,7 +12,7 @@ Descr: embedded very simple version of printf with float support
 #define MPRINTF_BUF_SIZE 256
 
 static void defaultPrintChar(uart_t *uart, char c) {
-    return uart_tx_one_char(c);
+	return uart_tx_one_char(c);
 }
 
 void (*cbc_printchar)(uart_t *, char) = defaultPrintChar;
@@ -22,22 +22,22 @@ uart_t *cbc_printchar_uart = NULL;
 
 static int skip_atoi(const char **s)
 {
-    int i = 0;
-    while (is_digit(**s))
-        i = i * 10 + *((*s)++) - '0';
-    return i;
+	int i = 0;
+	while (is_digit(**s))
+		i = i * 10 + *((*s)++) - '0';
+	return i;
 }
 
 void setMPrintfPrinterCbc(void (*callback)(uart_t *, char), uart_t *uart)
 {
-    cbc_printchar = callback;
-    cbc_printchar_uart = uart;
+	cbc_printchar = callback;
+	cbc_printchar_uart = uart;
 }
 
 void m_putc(char c)
 {
-    if (cbc_printchar)
-        cbc_printchar(cbc_printchar_uart, c);
+	if (cbc_printchar)
+		cbc_printchar(cbc_printchar_uart, c);
 }
 
 /**
@@ -51,38 +51,38 @@ void m_putc(char c)
  */
 int m_snprintf(char* buf, int length, const char *fmt, ...)
 {
-    char *p;
-    va_list args;
-    int n = 0;
+	char *p;
+	va_list args;
+	int n = 0;
 
-    va_start(args, fmt);
-    n = m_vsnprintf(buf, length, fmt, args);
-    va_end(args);
+	va_start(args, fmt);
+	n = m_vsnprintf(buf, length, fmt, args);
+	va_end(args);
 
-    return n;
+	return n;
 }
 
 int m_vprintf ( const char * format, va_list arg )
 {
-    if(!cbc_printchar)
-    {
-        return 0;
-    }
+	if(!cbc_printchar)
+	{
+		return 0;
+	}
 
-    char buf[MPRINTF_BUF_SIZE], *p;
+	char buf[MPRINTF_BUF_SIZE], *p;
 
-    int n = 0;
-    m_vsnprintf(buf, sizeof(buf), format, arg);
+	int n = 0;
+	m_vsnprintf(buf, sizeof(buf), format, arg);
 
-    p = buf;
-    while (p && n < sizeof(buf) && *p)
-    {
-        cbc_printchar(cbc_printchar_uart, *p);
-        n++;
-        p++;
-    }
+	p = buf;
+	while (p && n < sizeof(buf) && *p)
+	{
+		cbc_printchar(cbc_printchar_uart, *p);
+		n++;
+		p++;
+	}
 
-    return n;
+	return n;
 }
 
 /**
@@ -94,22 +94,23 @@ int m_vprintf ( const char * format, va_list arg )
  */
 int m_printf(const char* fmt, ...)
 {
-    int n=0;
+	int n=0;
 
-    if(!fmt)
-        return 0;
+	if(!fmt)
+		return 0;
 
-    va_list args;
-    va_start(args, fmt);
+	va_list args;
+	va_start(args, fmt);
 
-    n = m_vprintf(fmt, args);
+	n = m_vprintf(fmt, args);
 
-    va_end(args);
+	va_end(args);
 
-    return n;
+	return n;
 }
 
-int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args) {
+int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
+{
     size_t size = 0;
     auto add = [&](char c) {
         if (++size < maxLen) *buf++ = c;
