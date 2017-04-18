@@ -161,15 +161,11 @@ IPAddress StationClass::getIP()
 
 String StationClass::getMAC()
 {
-	String mac;
 	uint8 hwaddr[6] = {0};
 	wifi_get_macaddr(STATION_IF, hwaddr);
-	for (int i = 0; i < 6; i++)
-	{
-		if (hwaddr[i] < 0x10) mac += "0";
-		mac += String(hwaddr[i], HEX);
-	}
-	return mac;
+	char buf[20];
+	sprintf(buf, "%02x%02x%02x%02x%02x%02x", hwaddr[0], hwaddr[1], hwaddr[2], hwaddr[3], hwaddr[4], hwaddr[5]);
+	return String(buf);
 }
 
 IPAddress StationClass::getNetworkBroadcast()
