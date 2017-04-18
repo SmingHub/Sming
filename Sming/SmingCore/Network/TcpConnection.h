@@ -70,6 +70,7 @@ public:
 
 public:
 	virtual bool connect(String server, int port, bool useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(const char * server, int port, bool useSsl = false, uint32_t sslOptions = 0);
 	virtual bool connect(IPAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0);
 	virtual void close();
 
@@ -148,7 +149,6 @@ public:
 #endif
 
 protected:
-	bool internalTcpConnect(IPAddress addr, uint16_t port);
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf *buf);
 	virtual err_t onSent(uint16_t len);
@@ -168,6 +168,9 @@ protected:
 
 private:
 	inline void checkSelfFree() { if (tcp == NULL && autoSelfDestruct) delete this; }
+
+	bool internalConnectIP(IPAddress addr, uint16_t port);
+	bool internalConnectHost(const char * hostname, uint16_t port, bool useSsl, uint32_t sslOptions);
 
 protected:
 	tcp_pcb *tcp = NULL;
