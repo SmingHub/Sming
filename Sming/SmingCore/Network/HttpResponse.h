@@ -48,6 +48,11 @@ public:
 	void sendString(const char* string);
 	void sendString(String string);
 
+	// Send a binary data stream
+	// bool sendDataStream(MemoryDataStream* newMemoryDataStream);
+	bool sendDataStream(IDataSourceStream * newDataStream , String reqContentType);
+
+
 	// Send file by name
 	bool sendFile(String fileName, bool allowGzipFileCheck = true);
 
