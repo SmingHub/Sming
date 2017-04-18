@@ -1,0 +1,34 @@
+############ BREATHING INTO THE SENSOR ############
+
+ DHT improved lib
+
+wait 1 second for the sensor to boot up
+
+libDHT: Detected DHT-22 compatible sensor.
+
+Read using Adafruit API methods
+        Humidity: 81.20% Temperature: 28.90 *C
+
+Read using new API methods
+        Humidity: 81.20% Temperature: 28.90 *C
+Heatindex: 34.73*C
+Dewpoint: 25.37*C
+Comfort is at 25.16 percent, (Hot And Humid)
+
+
+############ SENSOR NOT INFLUENCED ############
+
+ DHT improved lib
+
+wait 1 second for the sensor to boot up
+
+libDHT: Detected DHT-22 compatible sensor.
+
+Read using Adafruit API methods
+        Humidity: 46.30% Temperature: 28.40 *C
+
+Read using new API methods
+        Humidity: 46.30% Temperature: 28.40 *C
+Heatindex: 28.56*C
+Dewpoint: 15.79*C
+Comfort is at 100.00 percent, (OK)
