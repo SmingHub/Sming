@@ -5,7 +5,8 @@
 #include <SmingCore/SmingCore.h>
 #include <Libraries/SI7021/SI7021.h>
 
-#include "../include/configuration.h"
+#include "configuration.h"
+
 SI7021 hydrometer;
 
 Timer publishSITimer;
@@ -15,39 +16,31 @@ void publishSI()
 	if (mqtt.getConnectionState() != eTCS_Connected)
 		startMqttClient(); // Auto reconnect
 
-	Serial.println("\n*********************************************");
-	Serial.print("\rStart reading SI7021 sensor");
-	if(!hydrometer.begin()) {
+	Serial.print("*********************************************");
+	Serial.println("Start reading SI7021 sensor");
+
+	if (!hydrometer.begin()) {
 		Serial.println("Could not connect to SI7021");
-	}
-	else {
-
+	} else {
 		si7021_env data = hydrometer.getHumidityAndTemperature();
-
-		if (data.error_crc == 1){
-				Serial.print("\tCRC ERROR: ");
-				Serial.println(); // Start a new line.
-			}
-		else{
-
+		if (data.error_crc == 1) {
+				Serial.println("\tCRC ERROR");
+		} else {
 			float SIhum = data.humidityPercent;
 			// Print out the humidity
-			Serial.print("\nHumidity: ");
+			Serial.print("Humidity: ");
 			Serial.print(SIhum);
-			Serial.print("%");
+			Serial.println("%");
 			mqtt.publish(SI_H, String(SIhum));
-
 			float SITemp = data.temperature;
 			// Print out the Temperature
-			Serial.print("\nTemperature: ");
+			Serial.print("Temperature: ");
 			Serial.print(SITemp/100);
-			Serial.print(" *C");
+			Serial.println(" *C");
 			mqtt.publish(SI_T, String(SITemp/100));
-			Serial.println("\nSI sensor read and transmitted to server");
-			Serial.println("\r*********************************************");
-
-			}
-
+			Serial.println("SI sensor read and transmitted to server");
+			Serial.println("*********************************************");
+		}
 	}
 }
 
