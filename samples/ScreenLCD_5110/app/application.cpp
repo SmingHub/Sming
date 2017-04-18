@@ -29,7 +29,7 @@ void displayTest()
 	display.begin();
 	display.setContrast(10);
 	display.display(); // show splashscreen
-	displayTimer.initializeMs(5000, displayTest2).start();
+	displayTimer.initializeMs(2000, displayTest2).start();
 }
 
 void init()
