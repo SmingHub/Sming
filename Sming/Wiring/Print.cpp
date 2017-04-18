@@ -18,6 +18,7 @@
 
 #include "Print.h"
 #include "WiringFrameworkIncludes.h"
+
 /*
 || @description
 || | Virtual method - may be redefined in derived class (polymorphic)
@@ -197,31 +198,63 @@ size_t Print::println(const Printable &p)
   return n;
 }
 
-size_t Print::printf(const char *fmt, ...)
+size_t Print::vprintf(const char *fmt, va_list va) 
 {
-	size_t sz = 0;
-	size_t buffSize = INITIAL_PRINTF_BUFFSIZE;
-	bool retry = false;
-	do {
-		char tempBuff[buffSize];
-		va_list va;
-		va_start(va, fmt);
-		sz = m_vsnprintf(tempBuff,buffSize, fmt, va);
-		va_end(va);
-		if (sz > (buffSize -1))
-		{
-			buffSize = sz + 1; // Leave room for terminating null char
-			retry = true;
-		}
-		else
-		{
-			if (sz > 0)
-			{
-				write(tempBuff,sz);
-			}
+	size_t size = INITIAL_PRINTF_BUFFSIZE - 1;
+	
+	//	need to retry until size is big enough as m_vsnprintf is currently broken
+	//	(returns maxLen instead of required size)
+	while (1) {
+		char buffer[size + 1];
+		auto sz = m_vsnprintf(buffer, sizeof(buffer), fmt, va);
+		if (sz <= size) {
+			write(buffer, sz);
 			return sz;
 		}
-	} while (retry);
+		size = sz;	
+	}
+}
+
+size_t Print::printf(const char *fmt, ...)
+{
+	va_list va;
+	va_start(va, fmt);
+	auto cnt = vprintf(fmt, va);
+	va_end(va);
+	return cnt;
+}
+
+
+size_t Print::write_P(const char* data, size_t size) {
+	auto cnt = size;
+	while (size--) write( pgm_read_byte(data++) );
+	return cnt;
+}
+
+size_t Print::write_P(const char* data) {
+	size_t cnt;
+	while (char c=pgm_read_byte(data++) ) cnt++, write(c);
+	return cnt;
+}
+
+size_t Print::printf_P(const char* fmt, ...) {
+	va_list va;
+	va_start(va, fmt);
+	auto cnt = vprintf_P(fmt, va);
+	va_end(va);
+	return cnt;
+}
+
+size_t Print::vprintf_P(const char* fmt, va_list va) {
+	//	copy format string to stack (should not be too large of course ...)
+	size_t size = strlen_P(fmt);
+	char buffer[size + 1];
+	
+	//	stpcpy_P is currently broken ...
+	for (char *p=buffer; *p = pgm_read_byte(fmt++); p++) ;
+//	_strcpy_P(buffer, fmt);
+
+	return vprintf(buffer, va);
 }
 
 // private methods
