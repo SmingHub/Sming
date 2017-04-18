@@ -14,7 +14,7 @@ URL::URL()
 	Port = 80;
 }
 
-URL::URL(String urlString)
+URL::URL(const String& urlString)
 {
 	int len = urlString.length();
 	if (len == 0)
