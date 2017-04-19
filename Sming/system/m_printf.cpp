@@ -228,3 +228,35 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
     *buf = 0;
     return size;
 }
+
+int m_vsnprintf_P(char *buf, size_t size, const char *fmt_p, va_list va) {
+	char fmt_stack[strlen_P(fmt_p) + 1];
+	strcpy_P(fmt_stack, fmt_p);
+
+	return m_vsnprintf(buf, size, fmt_stack, va);
+}
+
+int m_snprintf_P(char *buf, int length, const char *fmt_p, ...) {
+	va_list args;
+	va_start(args, fmt_p);
+	int n = m_vsnprintf_P(buf, length, fmt_p, args);
+	va_end(args);
+
+	return n;
+}
+
+int m_printf_P(char const *fmt_p, ...) {
+	va_list args;
+	va_start(args, fmt_p);
+	int n = m_vprintf_P(fmt_p, args);
+	va_end(args);
+
+	return n;
+}
+
+int m_vprintf_P(const char *fmt_p, va_list va) {
+	char fmt_stack[strlen_P(fmt_p) + 1];
+	strcpy_P(fmt_stack, fmt_p);
+
+	return m_vprintf(fmt_stack, va);
+}
