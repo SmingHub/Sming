@@ -67,23 +67,21 @@ int m_snprintf(char* buf, int length, const char *fmt, ...)
 
 int m_vprintf(const char *fmt, va_list va)
 {
-    size_t size = INITIAL_BUFFSIZE - 1;
+	size_t size = INITIAL_BUFFSIZE - 1;
 
-    //  need to retry if size is not big enough
-    while (1) {
-        char buffer[size + 1];
-        size_t sz = m_vsnprintf(buffer, sizeof(buffer), fmt, va);
-        if (sz > size) {
-            size = sz;
-            continue;
-        }
+	//	need to retry if size is not big enough
+	while (1) {
+		char buffer[size + 1];
+		auto sz = m_vsnprintf(buffer, sizeof(buffer), fmt, va);
+		if (sz > size) {
+			size = sz;
+			continue;
+		}
 
-        const char *p = buffer;
-        while (char c = *p++) {
-            cbc_printchar(cbc_printchar_uart, c);
-        }
-        return sz;
-    }
+		const char *p = buffer;
+		while (char c = *p++) cbc_printchar(cbc_printchar_uart, c);
+		return sz;
+	}
 }
 
 /**
