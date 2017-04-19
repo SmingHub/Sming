@@ -32,7 +32,7 @@ void onNtpReceive(NtpClient& client, time_t timestamp) {
 	Serial.printf("Time synchronized: %s\n", SystemClock.getSystemTimeString().c_str());
 }
 
-void systemReady()
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gw)
 {
 	ntpClient.requestTime();
 }
@@ -51,7 +51,7 @@ void init()
 	// set timezone hourly difference to UTC
 	SystemClock.setTimeZone(2); // GMT+2
 
-	System.onReady(systemReady);
+	WifiEvents.onStationGotIP(gotIP);
 
 	printTimer.initializeMs(2000, onPrintSystemTime).start();
 }
