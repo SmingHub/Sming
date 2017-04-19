@@ -9,7 +9,7 @@ Descr: embedded very simple version of printf with float support
 #include <stdarg.h>
 #include "osapi.h"
 
-#define INITIAL_BUFFSIZE 128
+#define MPRINTF_BUF_SIZE 256
 
 static void defaultPrintChar(uart_t *uart, char c) {
 	return uart_tx_one_char(c);
@@ -22,13 +22,10 @@ uart_t *cbc_printchar_uart = NULL;
 
 static int skip_atoi(const char **s)
 {
-	int num = 0;
-	while (1) {
-		char c = pgm_read_byte(*s);
-		if ( !is_digit(c) ) return num;
-		num = num * 10 + (c - '0');
-		++*s;
-	}
+	int i = 0;
+	while (is_digit(**s))
+		i = i * 10 + *((*s)++) - '0';
+	return i;
 }
 
 void setMPrintfPrinterCbc(void (*callback)(uart_t *, char), uart_t *uart)
@@ -65,23 +62,27 @@ int m_snprintf(char* buf, int length, const char *fmt, ...)
 	return n;
 }
 
-int m_vprintf(const char *fmt, va_list va)
+int m_vprintf ( const char * format, va_list arg )
 {
-	size_t size = INITIAL_BUFFSIZE - 1;
-
-	//	need to retry if size is not big enough
-	while (1) {
-		char buffer[size + 1];
-		auto sz = m_vsnprintf(buffer, sizeof(buffer), fmt, va);
-		if (sz > size) {
-			size = sz;
-			continue;
-		}
-
-		const char *p = buffer;
-		while (char c = *p++) cbc_printchar(cbc_printchar_uart, c);
-		return sz;
+	if(!cbc_printchar)
+	{
+		return 0;
 	}
+
+	char buf[MPRINTF_BUF_SIZE], *p;
+
+	int n = 0;
+	m_vsnprintf(buf, sizeof(buf), format, arg);
+
+	p = buf;
+	while (p && n < sizeof(buf) && *p)
+	{
+		cbc_printchar(cbc_printchar_uart, *p);
+		n++;
+		p++;
+	}
+
+	return n;
 }
 
 /**
@@ -115,11 +116,10 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
         if (++size < maxLen) *buf++ = c;
     };
 
-    while ( char f = pgm_read_byte(fmt) ) {
+    while (*fmt) {
         //  copy verbatim text
-        if (f != '%')  {
-            add(f);
-			fmt++;
+        if (*fmt != '%')  {
+            add(*fmt++);
             continue;
         }
         fmt++;
@@ -134,7 +134,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
         int8_t  width       = 0;
         char    pad         = ' ';
 
-        while (char f = pgm_read_byte(fmt)) {
+        while (char f = *fmt) {
             if (f == '-')           minus = 1;
             else if (f == '+')      ;           // ignored
             else if (f == ' ')      ;           // ignored
@@ -144,27 +144,27 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
         }
 
         //  process padding
-        if (pgm_read_byte(fmt) == '0') {
+        if (*fmt == '0') {
             pad = '0';
             fmt++;
         }
 
         //  process width ('*' is not supported yet)
-        if ( is_digit(pgm_read_byte(fmt)) ) {
+        if ( is_digit(*fmt) ) {
             width = skip_atoi(&fmt);
         }
 
         //  process precision
-        if( pgm_read_byte(fmt) == '.' ) {
+        if( *fmt == '.' ) {
             fmt++;
-            if ( is_digit(pgm_read_byte(fmt)) ) precision = skip_atoi(&fmt);
+            if ( is_digit(*fmt) ) precision = skip_atoi(&fmt);
         }
 
-        //  ignore length specifier
-        for ( char f = pgm_read_byte(fmt); f=='l' || f=='h' || f=='L'; fmt++) ;
+        //  ignore length
+        while (*fmt == 'l' || *fmt == 'h' || *fmt == 'L') fmt++;
 
         //  process type
-        switch (char f = pgm_read_byte(fmt++)) {
+        switch (char f = *fmt++) {
             case '%':
                 add('%');
                 continue;
@@ -173,17 +173,16 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
                 add( (unsigned char) va_arg(args, int) );
                 continue;
 
-            case 's':
-            case 'S': {
+            case 's': {
                 s = va_arg(args, char *);
 
-                if (!s) s = PSTR("(null)");
-                size_t len = strlen_P(s);
+                if (!s) s = "(null)";
+                size_t len = strlen(s);
                 if (len > precision) len = precision;
 
                 int padding = width - len;
                 while (!minus && padding-- > 0) add(' ');
-                while (len--)                   add(pgm_read_byte(s++));
+                while (len--)                   add(*s++);
                 while (minus && padding-- > 0)  add(' ');
                 continue;
             }
@@ -228,4 +227,36 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
     }
     *buf = 0;
     return size;
+}
+
+int m_vsnprintf_P(char *buf, size_t size, const char *fmt_p, va_list va) {
+	char fmt_stack[strlen_P(fmt_p) + 1];
+	strcpy_P(fmt_stack, fmt_p);
+
+	return m_vsnprintf(buf, size, fmt_stack, va);
+}
+
+int m_snprintf_P(char *buf, int length, const char *fmt_p, ...) {
+	va_list args;
+	va_start(args, fmt_p);
+	int n = m_vsnprintf_P(buf, length, fmt_p, args);
+	va_end(args);
+
+	return n;
+}
+
+int m_printf_P(char const *fmt_p, ...) {
+	va_list args;
+	va_start(args, fmt_p);
+	int n = m_vprintf_P(fmt_p, args);
+	va_end(args);
+
+	return n;
+}
+
+int m_vprintf_P(const char *fmt_p, va_list va) {
+	char fmt_stack[strlen_P(fmt_p) + 1];
+	strcpy_P(fmt_stack, fmt_p);
+
+	return m_vprintf(fmt_stack, va);
 }
