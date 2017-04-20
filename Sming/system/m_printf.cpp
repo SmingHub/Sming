@@ -28,10 +28,13 @@ uart_t *cbc_printchar_uart = NULL;
 
 static int skip_atoi(const char **s)
 {
-	int i = 0;
-	while (is_digit(**s))
-		i = i * 10 + *((*s)++) - '0';
-	return i;
+	int num = 0;
+	while (1) {
+		char c = pgm_read_byte(*s);
+		if ( !is_digit(c) ) return num;
+		num = num * 10 + (c - '0');
+		++*s;
+	}
 }
 
 void setMPrintfPrinterCbc(void (*callback)(uart_t *, char), uart_t *uart)
@@ -117,143 +120,122 @@ int m_printf(const char* fmt, ...)
 
 int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 {
-	int i, base, flags;
-	char *str;
-	const char *s;
-	int8_t precision, width;
-	char pad;
+    size_t size = 0;
+    auto add = [&](char c) {
+        if (++size < maxLen) *buf++ = c;
+    };
 
-	char tempNum[40];
+    while ( char f = pgm_read_byte(fmt) ) {
+        //  copy verbatim text
+        if (f != '%')  {
+            add(f);
+			fmt++;
+            continue;
+        }
+        fmt++;
 
-	for (str = buf; *fmt; fmt++)
-	{
-		if(maxLen - (uint32_t)(str - buf) < OVERFLOW_GUARD)
-		{
-			*str++ = '(';
-			*str++ = '.';
-			*str++ = '.';
-			*str++ = '.';
-			*str++ = ')';
+        const char* s;                          // source for string copy
+        char    tempNum[40];                    // buffer for number conversion
 
-			//mark end of string
-			*str = '\0';
+        //  reset attributes to defaults
+        bool    minus       = 0;
+        uint8_t ubase       = 0;
+        int8_t  precision   = -1;
+        int8_t  width       = 0;
+        char    pad         = ' ';
 
-			//return maximum buffer len, so caller can detect not_enough_space
-			return maxLen;
-		}
+        while (char f = pgm_read_byte(fmt)) {
+            if (f == '-')           minus = 1;
+            else if (f == '+')      ;           // ignored
+            else if (f == ' ')      ;           // ignored
+            else if (f == '#')      ;           // ignored
+            else                    break;
+            fmt++;
+        }
 
-		if (*fmt != '%')
-		{
-			*str++ = *fmt;
-			continue;
-		}
+        //  process padding
+        if (pgm_read_byte(fmt) == '0') {
+            pad = '0';
+            fmt++;
+        }
 
-		flags = 0;
-		fmt++; // This skips first '%'
+        //  process width ('*' is not supported yet)
+        if ( is_digit(pgm_read_byte(fmt)) ) {
+            width = skip_atoi(&fmt);
+        }
 
-		//reset attributes to defaults
-		precision = -1;
-		width = 0;
-		pad = ' ';
-		base = 10;
-        bool minus = 0;
+        //  process precision
+        if( pgm_read_byte(fmt) == '.' ) {
+            fmt++;
+            if ( is_digit(pgm_read_byte(fmt)) ) precision = skip_atoi(&fmt);
+        }
 
-		do
-		{
-            if ('-' == *fmt) minus = 1, fmt++;
-            
-			//skip width and flags data - not supported
-			while ('+' == *fmt || '#' == *fmt || '*' == *fmt || 'l' == *fmt)
-				fmt++;
+        //  ignore length specifier
+        for ( char f = pgm_read_byte(fmt); f=='l' || f=='h' || f=='L'; fmt++) ;
 
-			if (is_digit(*fmt)) {
-				if (*fmt == '0') {
-					pad = '0';
-					fmt++;
-				}
-				width = skip_atoi(&fmt);
-			}
+        //  process type
+        switch (char f = pgm_read_byte(fmt++)) {
+            case '%':
+                add('%');
+                continue;
 
-			if('.' == *fmt)
-			{
-				fmt++;
-				if (is_digit(*fmt))
-					precision = skip_atoi(&fmt);
-			}
-			else
-				break;
-		}while(1);
+            case 'c':
+                add( (unsigned char) va_arg(args, int) );
+                continue;
 
-		switch (*fmt)
-		{
-		case 'c':
-			*str++ = (unsigned char) va_arg(args, int);
-			continue;
+            case 's':
+            case 'S': {
+                s = va_arg(args, char *);
 
-		case 's': {
-			s = va_arg(args, char *);
+                if (!s) s = PSTR("(null)");
+                size_t len = strlen_P(s);
+                if (len > precision) len = precision;
 
-			if (!s) s = "(null)";
-            size_t len = strlen(s);
-            len     = MIN( len,   precision );
-            len     = MIN( len,   maxLen - size_t(str - buf) - OVERFLOW_GUARD);
-            width   = MIN( width, maxLen - size_t(str - buf) - OVERFLOW_GUARD);
+                int padding = width - len;
+                while (!minus && padding-- > 0) add(' ');
+                while (len--)                   add(pgm_read_byte(s++));
+                while (minus && padding-- > 0)  add(' ');
+                continue;
+            }
 
-            int padding = width - len;
-            while (!minus && padding-- > 0) *str++ = ' ';
-            while (len--) *str++ = *s++;
-            while (minus && padding-- > 0) *str++ = ' ';
+            case 'p':
+                s = ultoa((unsigned long) va_arg(args, void *), tempNum, 16);
+                break;
 
-			continue;
-        }    
+            case 'd':
+            case 'i':
+                s = ltoa_wp(va_arg(args, int), tempNum, 10, width, pad);
+                break;
 
-		case 'p':
-			s = ultoa((unsigned long) va_arg(args, void *), tempNum, 16);
-			while (*s && (maxLen - (uint32_t)(str - buf) > OVERFLOW_GUARD))
-				*str++ = *s++;
-			continue;
+            case 'f':
+                s = dtostrf_p(va_arg(args, double), width, precision, tempNum, pad);
+                break;
 
-		case 'o':
-			base = 8;
-			break;
+            case 'o':
+                ubase = 8;
+                break;
 
-		case 'x':
-		case 'X':
-			base = 16;
-			break;
+            case 'x':
+            case 'X':
+                ubase = 16;
+                break;
 
-		case 'd':
-		case 'i':
-			flags |= SIGN;
-		case 'u':
-			break;
+            case 'u':
+                ubase = 10;
+                break;
 
-		case 'f':
+            default:
+                add('%');
+                add(f);
+                continue;
+        }
 
-			s = dtostrf_p(va_arg(args, double), width, precision, tempNum, pad);
-			while (*s && (maxLen - (uint32_t)(str - buf) > OVERFLOW_GUARD))
-				*str++ = *s++;
-			continue;
+        //  format unsigned numbers
+        if (ubase) s = ultoa_wp(va_arg(args, unsigned int), tempNum, ubase, width, pad);
 
-		default:
-			if (*fmt != '%')
-				*str++ = '%';
-			if (*fmt)
-				*str++ = *fmt;
-			else
-				--fmt;
-			continue;
-		}
-
-		if (flags & SIGN)
-			s = ltoa_wp(va_arg(args, int), tempNum, base, width, pad);
-		else
-			s = ultoa_wp(va_arg(args, unsigned int), tempNum, base, width, pad);
-
-		while (*s && (maxLen - (uint32_t)(str - buf) > OVERFLOW_GUARD))
-			*str++ = *s++;
-	}
-
-	*str = '\0';
-	return str - buf;
+        //  copy string to target
+        while (*s) add(*s++);
+    }
+    *buf = 0;
+    return size;
 }
