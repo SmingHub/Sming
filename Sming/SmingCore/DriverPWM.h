@@ -20,7 +20,10 @@
 
 class ChannelPWM;
 
-/// Pulse width modulator driver class
+/**
+ * @brief Pulse width modulator driver class
+ * @deprecated DriverPWM is deprecated and will be removed in the near future. Use HardwarePWM instead.
+ */
 class DriverPWM
 {
 public:
