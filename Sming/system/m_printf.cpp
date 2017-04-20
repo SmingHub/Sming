@@ -11,8 +11,6 @@ Descr: embedded very simple version of printf with float support
 
 #define MPRINTF_BUF_SIZE 256
 
-#define OVERFLOW_GUARD 24
-
 static void defaultPrintChar(uart_t *uart, char c) {
 	return uart_tx_one_char(c);
 }
@@ -20,11 +18,7 @@ static void defaultPrintChar(uart_t *uart, char c) {
 void (*cbc_printchar)(uart_t *, char) = defaultPrintChar;
 uart_t *cbc_printchar_uart = NULL;
 
-#define SIGN    	(1<<1)	/* Unsigned/signed long */
-
 #define is_digit(c) ((c) >= '0' && (c) <= '9')
-
-#define MIN(a, b)   ( (a) < (b) ? (a) : (b) )
 
 static int skip_atoi(const char **s)
 {
@@ -117,143 +111,120 @@ int m_printf(const char* fmt, ...)
 
 int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 {
-	int i, base, flags;
-	char *str;
-	const char *s;
-	int8_t precision, width;
-	char pad;
+    size_t size = 0;
+    auto add = [&](char c) {
+        if (++size < maxLen) *buf++ = c;
+    };
 
-	char tempNum[40];
+    while (*fmt) {
+        //  copy verbatim text
+        if (*fmt != '%')  {
+            add(*fmt++);
+            continue;
+        }
+        fmt++;
 
-	for (str = buf; *fmt; fmt++)
-	{
-		if(maxLen - (uint32_t)(str - buf) < OVERFLOW_GUARD)
-		{
-			*str++ = '(';
-			*str++ = '.';
-			*str++ = '.';
-			*str++ = '.';
-			*str++ = ')';
+        const char* s;                          // source for string copy
+        char    tempNum[40];                    // buffer for number conversion
 
-			//mark end of string
-			*str = '\0';
+        //  reset attributes to defaults
+        bool    minus       = 0;
+        uint8_t ubase       = 0;
+        int8_t  precision   = -1;
+        int8_t  width       = 0;
+        char    pad         = ' ';
 
-			//return maximum buffer len, so caller can detect not_enough_space
-			return maxLen;
-		}
+        while (char f = *fmt) {
+            if (f == '-')           minus = 1;
+            else if (f == '+')      ;           // ignored
+            else if (f == ' ')      ;           // ignored
+            else if (f == '#')      ;           // ignored
+            else                    break;
+            fmt++;
+        }
 
-		if (*fmt != '%')
-		{
-			*str++ = *fmt;
-			continue;
-		}
+        //  process padding
+        if (*fmt == '0') {
+            pad = '0';
+            fmt++;
+        }
 
-		flags = 0;
-		fmt++; // This skips first '%'
+        //  process width ('*' is not supported yet)
+        if ( is_digit(*fmt) ) {
+            width = skip_atoi(&fmt);
+        }
 
-		//reset attributes to defaults
-		precision = -1;
-		width = 0;
-		pad = ' ';
-		base = 10;
-        bool minus = 0;
+        //  process precision
+        if( *fmt == '.' ) {
+            fmt++;
+            if ( is_digit(*fmt) ) precision = skip_atoi(&fmt);
+        }
 
-		do
-		{
-            if ('-' == *fmt) minus = 1, fmt++;
-            
-			//skip width and flags data - not supported
-			while ('+' == *fmt || '#' == *fmt || '*' == *fmt || 'l' == *fmt)
-				fmt++;
+        //  ignore length
+        while (*fmt == 'l' || *fmt == 'h' || *fmt == 'L') fmt++;
 
-			if (is_digit(*fmt)) {
-				if (*fmt == '0') {
-					pad = '0';
-					fmt++;
-				}
-				width = skip_atoi(&fmt);
-			}
+        //  process type
+        switch (char f = *fmt++) {
+            case '%':
+                add('%');
+                continue;
 
-			if('.' == *fmt)
-			{
-				fmt++;
-				if (is_digit(*fmt))
-					precision = skip_atoi(&fmt);
-			}
-			else
-				break;
-		}while(1);
+            case 'c':
+                add( (unsigned char) va_arg(args, int) );
+                continue;
 
-		switch (*fmt)
-		{
-		case 'c':
-			*str++ = (unsigned char) va_arg(args, int);
-			continue;
+            case 's': {
+                s = va_arg(args, char *);
 
-		case 's': {
-			s = va_arg(args, char *);
+                if (!s) s = "(null)";
+                size_t len = strlen(s);
+                if (len > precision) len = precision;
 
-			if (!s) s = "(null)";
-            size_t len = strlen(s);
-            len     = MIN( len,   precision );
-            len     = MIN( len,   maxLen - size_t(str - buf) - OVERFLOW_GUARD);
-            width   = MIN( width, maxLen - size_t(str - buf) - OVERFLOW_GUARD);
+                int padding = width - len;
+                while (!minus && padding-- > 0) add(' ');
+                while (len--)                   add(*s++);
+                while (minus && padding-- > 0)  add(' ');
+                continue;
+            }
 
-            int padding = width - len;
-            while (!minus && padding-- > 0) *str++ = ' ';
-            while (len--) *str++ = *s++;
-            while (minus && padding-- > 0) *str++ = ' ';
+            case 'p':
+                s = ultoa((unsigned long) va_arg(args, void *), tempNum, 16);
+                break;
 
-			continue;
-        }    
+            case 'd':
+            case 'i':
+                s = ltoa_wp(va_arg(args, int), tempNum, 10, width, pad);
+                break;
 
-		case 'p':
-			s = ultoa((unsigned long) va_arg(args, void *), tempNum, 16);
-			while (*s && (maxLen - (uint32_t)(str - buf) > OVERFLOW_GUARD))
-				*str++ = *s++;
-			continue;
+            case 'f':
+                s = dtostrf_p(va_arg(args, double), width, precision, tempNum, pad);
+                break;
 
-		case 'o':
-			base = 8;
-			break;
+            case 'o':
+                ubase = 8;
+                break;
 
-		case 'x':
-		case 'X':
-			base = 16;
-			break;
+            case 'x':
+            case 'X':
+                ubase = 16;
+                break;
 
-		case 'd':
-		case 'i':
-			flags |= SIGN;
-		case 'u':
-			break;
+            case 'u':
+                ubase = 10;
+                break;
 
-		case 'f':
+            default:
+                add('%');
+                add(f);
+                continue;
+        }
 
-			s = dtostrf_p(va_arg(args, double), width, precision, tempNum, pad);
-			while (*s && (maxLen - (uint32_t)(str - buf) > OVERFLOW_GUARD))
-				*str++ = *s++;
-			continue;
+        //  format unsigned numbers
+        if (ubase) s = ultoa_wp(va_arg(args, unsigned int), tempNum, ubase, width, pad);
 
-		default:
-			if (*fmt != '%')
-				*str++ = '%';
-			if (*fmt)
-				*str++ = *fmt;
-			else
-				--fmt;
-			continue;
-		}
-
-		if (flags & SIGN)
-			s = ltoa_wp(va_arg(args, int), tempNum, base, width, pad);
-		else
-			s = ultoa_wp(va_arg(args, unsigned int), tempNum, base, width, pad);
-
-		while (*s && (maxLen - (uint32_t)(str - buf) > OVERFLOW_GUARD))
-			*str++ = *s++;
-	}
-
-	*str = '\0';
-	return str - buf;
+        //  copy string to target
+        while (*s) add(*s++);
+    }
+    *buf = 0;
+    return size;
 }
