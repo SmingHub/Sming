@@ -24,9 +24,9 @@ void init()
 
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
+	WifiEvents.onStationGotIP(gotIP);
 	WifiAccessPoint.enable(false);
 	WDT.enable(false);	//disable watchdog
-	System.onReady(systemReady);
 }
 
 // Publish our message
