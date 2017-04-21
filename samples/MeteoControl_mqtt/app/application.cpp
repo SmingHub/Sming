@@ -8,13 +8,11 @@
 
 Timer publishTimer;
 
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason);
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
 
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(false); // Debug output to serial
 
 	Wire.pins(5, 4); // SCL, SDA
 	Wire.begin();
@@ -26,11 +24,9 @@ void init()
 
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
-	//WifiStation.setIP(ESP_IP);
+	WifiEvents.onStationGotIP(gotIP);
 	WifiAccessPoint.enable(false);
 	WDT.enable(false);	//disable watchdog
-	WifiEvents.onStationDisconnect(connectFail);
-	WifiEvents.onStationGotIP(gotIP);
 }
 
 // Publish our message
@@ -39,7 +35,7 @@ void publishMessage()	// uncomment timer in connectOk() if need publishMessage()
 	if (mqtt.getConnectionState() != eTCS_Connected)
 		startMqttClient(); // Auto reconnect
 
-	Serial.print("\npublish message");
+	Serial.println("publish message");
 	mqtt.publish(VER_TOPIC, "ver.1.2"); // or publishWithQoS
 }
 
@@ -50,24 +46,18 @@ void onMessageReceived(String topic, String message)
 	Serial.print(":\r\n\t"); // Pretify alignment for printing
 	Serial.println(message);
 }
+
 // Run MQTT client
 void startMqttClient()
 {
 	mqtt.connect(CLIENT, LOG, PASS);
-	Serial.print("\rConnected to MQTT server\n");
+	Serial.println("Connected to MQTT server");
 	mqtt.subscribe(SUB_TOPIC);
-}
-
-// Will be called when WiFi station timeout was reached
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
-{
-	debugf("connection FAILED");
-	Serial.println("NOT CONNECTED");
 }
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
-	Serial.print("Connected\n");
+	Serial.print("Connected: ");
 	Serial.println(ip.toString());
 	startMqttClient();
 	publishMessage();		// run once publishMessage

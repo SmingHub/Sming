@@ -5,7 +5,7 @@
 #include <SmingCore/SmingCore.h>
 #include <Libraries/BMP180/BMP180.h>
 
-#include "../include/configuration.h"
+#include "configuration.h"
 
 //    GPIO0 SCL
 //    GPIO2 SDA
@@ -19,34 +19,32 @@ void publishBMP()
 	if (mqtt.getConnectionState() != eTCS_Connected)
 		startMqttClient(); // Auto reconnect
 
-	Serial.println("\n*********************************************");
-	Serial.print("\rStart reading BMP180 sensor");
-	if(!barometer.EnsureConnected()) {
+	Serial.print("*********************************************");
+	Serial.println("Start reading BMP180 sensor");
+	if (!barometer.EnsureConnected()) {
 		Serial.println("Could not connect to BMP180");
-	}
-	else {
+	} else {
 	// Retrive the current pressure in Pascals
 	long currentPressure = barometer.GetPressure();
-	// Давление в мм р.с.
+	// convert pressure to mmHg
 	float BMPPress = currentPressure / 133.322;
 
 	// Print out the Pressure
-	Serial.print("\nPressure: ");
+	Serial.print("Pressure: ");
 	Serial.print(BMPPress);
-	Serial.print(" мм р.с.");
+	Serial.println(" mmHg");
 	mqtt.publish(BMP_P, String(BMPPress));
 
 	// Retrive the current temperature in degrees celcius
 	float BMPTemp = barometer.GetTemperature();
 
 	// Print out the Temperature
-	Serial.print("\nTemperature: ");
+	Serial.print("Temperature: ");
 	Serial.print(BMPTemp);
-//	Serial.write(176);
-	Serial.print(" *C");
+	Serial.println(" *C");
 	mqtt.publish(BMP_T, String(BMPTemp));
-	Serial.println("\nBMP180 sensor read and transmitted to server");
-	Serial.println("\r*********************************************");
+	Serial.println("BMP180 sensor read and transmitted to server");
+	Serial.println("*********************************************");
 	}
 }
 
@@ -56,11 +54,8 @@ void BMPinit()
 	barometer.SoftReset();
 
 	// Now we initialize the sensor and pull the calibration data
-    	barometer.Initialize();
+	barometer.Initialize();
 	barometer.PrintCalibrationData();
-
-	//wait for sensor startup
-//	delay(1000);
 
 	publishBMPTimer.initializeMs(TIMER * 3000, publishBMP).start();	// start publish BMP180 sensor data
 }

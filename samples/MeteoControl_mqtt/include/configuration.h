@@ -5,20 +5,24 @@
 #include <SmingCore/SmingCore.h>
 
 //////////////////////////// Wi-Fi config ///////////////////////////////////////
-#define WIFI_SSID	"Garage12"
-#define WIFI_PWD	"bunkerwifi"
+#ifndef WIFI_SSID
+	#define WIFI_SSID	"Wifi SSID"
+	#define WIFI_PWD	"Wifi password"
+#endif
 
 //////////////////////////// MQTT config ///////////////////////////////////////
-#define SERVER		"192.168.2.138"
+#ifndef MQTT_SERVER
+	#define MQTT_SERVER		"192.168.2.138"
+#endif
+#ifndef MQTT_PORT
+	#define MQTT_PORT			1883
+#endif
 #define CLIENT		"ESP8266_test"
 #define LOG		""
 #define PASS		""
 #define SUB_TOPIC	"testing/#"
 #define CONTR_TOPIC	"testing/CONTROL/GPIO/"
 #define STAT_TOPIC	"testing/status/GPIO/"
-
-//////////////////////////// IPAddress ESP ///////////////////////////////////////
-long ESP_IP = IPAddress(192, 168, 55, 200); // прописываем по желанию
 
 //////////////////////////// Sensors config ///////////////////////////////////////
 #define BMP_T		"testing/status/BMP180/Temperature"
@@ -35,7 +39,7 @@ void startMqttClient();
 void onMessageReceived(String topic, String message);
 
 // MQTT client
-MqttClient mqtt(SERVER, 1883, onMessageReceived);
+MqttClient mqtt(MQTT_SERVER, MQTT_PORT, onMessageReceived);
 
 enum TriggerType
 {
