@@ -8,7 +8,7 @@
 
 Timer publishTimer;
 
-void systemReady();
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
 
 void init()
 {
@@ -55,10 +55,10 @@ void startMqttClient()
 	mqtt.subscribe(SUB_TOPIC);
 }
 
-void systemReady()
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
 	Serial.print("Connected: ");
-	Serial.println(WifiStation.getIP().toString());
+	Serial.println(ip.toString());
 	startMqttClient();
 	publishMessage();		// run once publishMessage
 }
