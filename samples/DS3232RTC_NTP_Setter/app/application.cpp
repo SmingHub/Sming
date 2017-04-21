@@ -47,11 +47,10 @@ void init()
 	// Station - WiFi client
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 	WifiStation.enable(true);
+	WifiEvents.onStationGotIP(gotIP);
 
 	// set timezone hourly difference to UTC
 	SystemClock.setTimeZone(2); // GMT+2
-
-	WifiEvents.onStationGotIP(gotIP);
 
 	printTimer.initializeMs(2000, onPrintSystemTime).start();
 }
