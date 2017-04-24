@@ -179,7 +179,10 @@ void DS18S20::DoMeasure()
 	// because the result is a 16 bit signed integer, it should
 	// be stored to an "int16_t" type, which is always 16 bits
 	// even when compiled on a 32 bit processor.
-	unsigned int raw = (data[1] << 8) | data[0];
+	
+	int16_t raw = data[0] + ((data[1] & 0x07) << 8);
+	if(data[1] >= 8) raw = raw - 0x0800;
+	
 	if (type_s[numberOfread])
 	{
 		raw = raw << 3; // 9 bit resolution default
