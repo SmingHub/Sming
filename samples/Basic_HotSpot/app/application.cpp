@@ -20,18 +20,11 @@ void ready()
 }
 
 // Will be called when WiFi station was connected to AP
-void connectOk()
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
 	debugf("I'm CONNECTED to WIFI Router");
-	Serial.println(WifiStation.getIP().toString());
+	Serial.println(ip.toString());
 	ready();
-}
-
-// Will be called when WiFi station timeout was reached
-void connectFail()
-{
-	debugf("I'm NOT CONNECTED WIFI Router!");
-	WifiStation.waitConnection(connectOk, 10, connectFail); // Repeat and check again
 }
 
 void init()
@@ -43,5 +36,5 @@ void init()
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 	// Run our method when station was connected to AP (or not connected)
-	WifiStation.waitConnection(connectOk, 10, connectFail);
+	WifiEvents.onStationGotIP(gotIP);
 }
