@@ -1,6 +1,15 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
+
+/**
+ * WARNING:
+ *
+ * DriverPWM is deprecated and will be removed in the near future. Use HardwarePWM instead.
+ * For an example with HardwarePWM take a look at samples/Basic_HwPWM
+ *
+ */
+
 #define LED_PIN 12 // GPIO12
 
 DriverPWM ledPWM;
