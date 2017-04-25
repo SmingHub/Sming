@@ -171,7 +171,7 @@ String fileGetContent(const String fileName)
 	buffer[size] = 0;
 	fileRead(file, buffer, size);
 	fileClose(file);
-	String res = buffer;
+	String res(buffer, size);
 	delete[] buffer;
 	return res;
 }
