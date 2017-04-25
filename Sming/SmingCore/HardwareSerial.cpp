@@ -120,7 +120,7 @@ int HardwareSerial::read()
 int HardwareSerial::readMemoryBlock(char* buf, int max_len)
 {
 	if (uart !=0 && uart_rx_enabled(uart)) {
-		int size;
+		int size = 0;
 		char c;
 		for(int i=0;i<max_len; i++) {
 			c = read();
@@ -128,6 +128,7 @@ int HardwareSerial::readMemoryBlock(char* buf, int max_len)
 				break;
 			}
 
+			size++;
 			// @TODO: Check this section...
 			buf[i] = c;
 		}
