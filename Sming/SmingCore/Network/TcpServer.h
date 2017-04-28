@@ -22,8 +22,15 @@ public:
 	virtual ~TcpServer();
 
 public:
-	virtual bool listen(int port);
+	virtual bool listen(int port, bool useSsl = false);
 	void setTimeOut(uint16_t waitTimeOut);
+
+#ifdef ENABLE_SSL
+	/**
+	 * @brief Adds SSL support and specifies the server certificate and private key.
+	 */
+	void setServerKeyCert(SSLKeyCertPair serverKeyCert);
+#endif
 
 protected:
 	// Overload this method in your derived class!
@@ -39,6 +46,13 @@ protected:
 public:
 	static int16_t totalConnections;
 	uint16_t activeClients = 0;
+
+protected:
+	int minHeapSize = 6500;
+
+#ifdef ENABLE_SSL
+	int sslSessionCacheSize = 50;
+#endif
 
 private:
 	uint16_t timeOut;
