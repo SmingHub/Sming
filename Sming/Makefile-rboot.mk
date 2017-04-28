@@ -185,6 +185,7 @@ ENABLE_CUSTOM_LWIP ?= 1
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	LWIP_INCDIR = $(SMING_HOME)/third-party/esp-open-lwip/include	
 endif
+export ENABLE_IP_FORWARD
 
 EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
 
@@ -207,6 +208,11 @@ else
 endif
 #Append debug options
 CFLAGS  += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
+
+ifeq ($(ENABLE_IP_FORWARD),1)
+	CFLAGS += -DENABLE_IP_FORWARD=1
+endif
+
 CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
 ENABLE_CUSTOM_HEAP ?= 0

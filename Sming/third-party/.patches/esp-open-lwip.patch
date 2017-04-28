@@ -297,3 +297,20 @@ index ddb5984..fb677c6 100644
  			*optptr++ = DHCP_OPTION_ROUTER;
  			*optptr++ = 4;
  			*optptr++ = ip4_addr1( &if_ip.gw);
+diff --git a/lwip/core/ipv4/ip.c b/lwip/core/ipv4/ip.c
+index 89d3f11..9bad1c2 100644
+--- a/lwip/core/ipv4/ip.c
++++ b/lwip/core/ipv4/ip.c
+@@ -234,10 +234,12 @@ ip_forward(struct pbuf *p, struct ip_hdr *iphdr, struct netif *inp)
+   }
+   /* Do not forward packets onto the same network interface on which
+    * they arrived. */
++#if IP_FORWARD == 0
+   if (netif == inp) {
+     LWIP_DEBUGF(IP_DEBUG, ("ip_forward: not bouncing packets back on incoming interface.\n"));
+     goto return_noroute;
+   }
++#endif
+ 
+   /* decrement TTL */
+   IPH_TTL_SET(iphdr, IPH_TTL(iphdr) - 1);

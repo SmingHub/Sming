@@ -177,6 +177,7 @@ endif
 LIBLWIP = lwip
 ENABLE_CUSTOM_LWIP ?= 1
 ENABLE_ESPCONN ?= 0
+ENABLE_IP_FORWARD ?= 0
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
 	EXTRA_INCDIR += third-party/esp-open-lwip/include
@@ -215,6 +216,10 @@ endif
 
 #Append debug options
 CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
+
+ifeq ($(ENABLE_IP_FORWARD),1)
+	CFLAGS += -DENABLE_IP_FORWARD=1
+endif
 
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
 
@@ -346,7 +351,7 @@ endif
 
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 $(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
-	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
+	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) ENABLE_IP_FORWARD=$(ENABLE_IP_FORWARD) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
 endif
 
 spiffy: spiffy/spiffy

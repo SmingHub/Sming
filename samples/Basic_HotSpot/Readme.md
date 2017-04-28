@@ -13,15 +13,8 @@ It can be used as simple WIFI range extender or repeater.
 This feature requires LWIP to be compiled with specific settings. Namely ENABLE_CUSTOM_LWIP=1 and ENABLE_IP_FORWARD=1.
 The easiest way to recompile LWIP with the right settings is to run the following commands:
 ```
-cd $SMING_HOME
-rm -rf third-party/esp-open-lwip
-make ENABLE_CUSTOM_LWIP=1 ENABLE_IP_FORWARD=1
-```
-
-once the compilation is ready recompile your project with the following command
-
-```
-cd $SMING_HOME/../samples/Basic_Wifi_Forwarder
+cd $SMING_HOME/../samples/Basic_HotStop
+make -C $SMING_HOME dist-clean
 make ENABLE_CUSTOM_LWIP=1 ENABLE_IP_FORWARD=1
 ```
 

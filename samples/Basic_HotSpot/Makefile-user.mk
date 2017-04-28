@@ -37,3 +37,6 @@
 DISABLE_SPIFFS = 1
 # SPIFF_FILES = files
 
+## Enable IP Forwarding.
+ENABLE_CUSTOM_LWIP = 1
+ENABLE_IP_FORWARD = 1
