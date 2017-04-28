@@ -2,13 +2,6 @@
 #include <SmingCore/SmingCore.h>
 #include <Libraries/Adafruit_SSD1306/Adafruit_SSD1306.h>
 
-
-#ifndef WIFI_SSID
-	#define WIFI_SSID "XXX" 			// Put you SSID and Password here
-	#define WIFI_PWD "XXX"
-#endif
-
-
 /*
  * Hardware SPI mode:
  * GND      (GND)         GND
@@ -19,6 +12,13 @@
  * DC       (DC)          GPIO0
  * CS       (CS)          GPIO2
  */
+
+// to use other kind of display supported by library, eg. SH1106 1.3in:
+/*
+#undef SSD1306_128_64  // this one is default, 0.96in SSD1306
+#define SH1106_128_64  // larger one
+*/
+
 // For spi oled module
 // Adafruit_SSD1306 display(0, 16, 2);
 
@@ -26,25 +26,7 @@
 // Default I2C pins 0 (SCL) and 2 (SDA). Pin 4 - optional reset
 Adafruit_SSD1306 display(-1); // reset Pin required but later ignored if set to False
 
-
 Timer DemoTimer;
-
-// Will be called when WiFi station was connected to AP
-void connect_Ok()
-{
-	Serial.print("WiFi : I'm CONNECTED - ");
-	Serial.println(WifiStation.getIP().toString());
-
-	//You can put here other job like web,tcp, send other info to display etc.
-}
-
-// Will be called when WiFi station timeout was reached
-void connect_Fail()
-{
-	Serial.println("WiFi: I'm NOT CONNECTED!");
-	WifiStation.waitConnection(connect_Ok, 10, connect_Fail); // Repeat and check again
-}
-
 
 void Demo2()
 {
@@ -69,7 +51,7 @@ void Demo2()
 
 void Demo1()
 {
-        Serial.println("Display: circle");
+	Serial.println("Display: circle");
 	// Clear the buffer.
 	display.clearDisplay();
 	// draw a circle, 10 pixel radius
@@ -82,23 +64,12 @@ void Demo1()
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(true); // Allow debug output to serial
-	
-	// Wifi could be used eg. for display info from internet
-	// could be also dissabled if no needed
-
-	WifiStation.config(WIFI_SSID, WIFI_PWD);
-	WifiStation.enable(true);
-	WifiAccessPoint.enable(false);
-	WifiStation.waitConnection(connect_Ok, 20, connect_Fail);
-
 	Serial.println("Display: start");
 
-	// by default, we'll generate the high voltage from the 3.3v line internally! (neat!)`
-	// initialize with the I2C addr 0x3D (for the 128x64)
-	// bool:reset set to TRUE or FALSE depending on you display
-	display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS, FALSE);
-	// display.begin(SSD1306_SWITCHCAPVCC);
+	// by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
+	// initialize with the I2C addr 0x3c (for the 128x64)
+	// bool:reset set to TRUE or FALSE depending on your display
+	display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS, false);
 	display.display();
 	DemoTimer.initializeMs(2000, Demo1).start();
 }	

@@ -84,7 +84,7 @@ void publishMessage()
 }
 
 // Will be called when WiFi station was connected to AP
-void connectOk()
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
 	Serial.println("I'm CONNECTED");
 
@@ -104,5 +104,5 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP (or not connected)
-	WifiStation.waitConnection(connectOk);
+	WifiEvents.onStationGotIP(gotIP);
 }

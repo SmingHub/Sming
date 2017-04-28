@@ -33,15 +33,18 @@ TcpConnection::~TcpConnection()
 	close();
 
 #ifdef ENABLE_SSL
-	if(sslFingerprint) {
-		delete[] sslFingerprint;
+	if(sslFingerprint.certSha1) {
+		delete[] sslFingerprint.certSha1;
+	}
+	if(sslFingerprint.pkSha256) {
+		delete[] sslFingerprint.pkSha256;
 	}
 	freeSslClientKeyCert();
 #endif
 	debugf("~TCP connection");
 }
 
-bool TcpConnection::connect(String server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (tcp == NULL)
 		initialize(tcp_new());
@@ -80,7 +83,7 @@ bool TcpConnection::connect(String server, int port, boolean useSsl /* = false *
 	return internalTcpConnect(addr, port);
 }
 
-bool TcpConnection::connect(IPAddress addr, uint16_t port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (tcp == NULL)
 		initialize(tcp_new());
@@ -176,7 +179,7 @@ void TcpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 int TcpConnection::writeString(const String data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
-	writeString(data.c_str(), apiflags);
+	return writeString(data.c_str(), apiflags);
 }
 
 int TcpConnection::writeString(const char* data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
@@ -522,8 +525,16 @@ err_t TcpConnection::staticOnReceive(void *arg, tcp_pcb *tcp, pbuf *p, err_t err
 				debugf("SSL: Switching back to 80 MHz");
 				System.setCpuFrequency(eCF_80MHz); // Preserve some CPU cycles
 #endif
-				if(con->sslFingerprint && ssl_match_fingerprint(con->ssl, con->sslFingerprint) != SSL_OK) {
+				if(con->sslFingerprint.certSha1 && ssl_match_fingerprint(con->ssl, con->sslFingerprint.certSha1) != SSL_OK) {
 					debugf("SSL: Certificate fingerprint does not match!");
+					con->close();
+					closeTcpConnection(tcp);
+
+					return ERR_ABRT;
+				}
+
+				if(con->sslFingerprint.pkSha256 && ssl_match_spki_sha256(con->ssl, con->sslFingerprint.pkSha256) != SSL_OK) {
+					debugf("SSL: Certificate PK fingerprint does not match!");
 					con->close();
 					closeTcpConnection(tcp);
 
@@ -641,22 +652,54 @@ void TcpConnection::addSslOptions(uint32_t sslOptions) {
 	this->sslOptions |= sslOptions;
 }
 
-boolean TcpConnection::setSslFingerprint(const uint8_t *data, int length /* = 20 */) {
-	if(sslFingerprint) {
-		delete[] sslFingerprint;
+bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintType type) {
+	int length = 0;
+	uint8_t *localStore;
+
+	switch(type) {
+	case eSFT_CertSha1:
+		localStore = sslFingerprint.certSha1;
+		length = SHA1_SIZE;
+		break;
+	case eSFT_PkSha256:
+		localStore = sslFingerprint.pkSha256;
+		length = SHA256_SIZE;
+		break;
+	default:
+		debugf("Unsupported SSL certificate fingerprint type");
 	}
-	sslFingerprint = new uint8_t[length];
-	if(sslFingerprint == NULL) {
+
+	if(!length) {
 		return false;
 	}
 
-	memcpy(sslFingerprint, data, length);
+
+	if(localStore) {
+		delete[] localStore;
+	}
+	localStore = new uint8_t[length];
+	if(localStore == NULL) {
+		return false;
+	}
+
+	memcpy(localStore, fingerprint, length);
+
+	switch(type) {
+		case eSFT_CertSha1:
+			sslFingerprint.certSha1 = localStore;
+			break;
+		case eSFT_PkSha256:
+			sslFingerprint.pkSha256 = localStore;
+			break;
+	}
+
+
 	return true;
 }
 
-boolean TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
+bool TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
 							 const uint8_t *certificate, int certificateLength,
-							 const char *keyPassword /* = NULL */, boolean freeAfterHandshake /* = false */) {
+							 const char *keyPassword /* = NULL */, bool freeAfterHandshake /* = false */) {
 
 
 	clientKeyCert.key = new uint8_t[keyLength];

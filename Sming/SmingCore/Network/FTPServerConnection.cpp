@@ -313,6 +313,8 @@ void FTPServerConnection::onCommand(String cmd, String data)
 err_t FTPServerConnection::onSent(uint16_t len)
 {
 	canTransfer = true;
+
+	return ERR_OK;
 }
 
 String FTPServerConnection::makeFileName(String name, bool shortIt)

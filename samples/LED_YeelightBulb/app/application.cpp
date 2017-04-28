@@ -27,7 +27,7 @@ void blink()
 }
 
 // Will be called when WiFi station was connected to AP
-void connectOk()
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
 	debugf("I'm CONNECTED");
 
@@ -44,5 +44,5 @@ void init()
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
-	WifiStation.waitConnection(connectOk);
+	WifiEvents.onStationGotIP(gotIP);
 }

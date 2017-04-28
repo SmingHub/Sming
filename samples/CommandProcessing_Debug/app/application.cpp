@@ -110,11 +110,8 @@ void startExampleApplicationCommand()
 	commandHandler.registerCommand(CommandDelegate("example","Example Command from Class","Application",processApplicationCommands));
 }
 
-
-// Will be called when WiFi station was connected to AP
-void connectOk()
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
-	Serial.println("I'm CONNECTED");
 	StartServers();
 
 	startExampleApplicationCommand();
@@ -137,5 +134,5 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP
-	WifiStation.waitConnection(connectOk);
+	WifiEvents.onStationGotIP(gotIP);
 }

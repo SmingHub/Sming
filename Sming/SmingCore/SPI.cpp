@@ -292,14 +292,14 @@ void SPIClass::prepare(SPISettings mySettings) {
  */
 void SPIClass::spi_mode(uint8 mode){
 
-	uint8 spi_cpha = mode & 0xF0;
-	uint8 spi_cpol = mode & 0x0F;
+	uint8 spi_cpha = mode & 0x0F;
+	uint8 spi_cpol = mode & 0xF0;
 
 #ifdef SPI_DEBUG
 	debugf("SPIClass::spi_mode(mode %x) spi_cpha %X,spi_cpol %X)", mode, spi_cpha, spi_cpol);
 #endif
 
-	if(spi_cpha) {
+	if(spi_cpha == spi_cpol) {
 		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
 	} else {
 		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
@@ -495,9 +495,3 @@ void SPIClass::setFrequency(int freq) {
 	}
 
 }
-
-
-
-
-
-

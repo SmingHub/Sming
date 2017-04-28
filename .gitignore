@@ -1,7 +1,16 @@
+# generated binaries
 out
+Sming/compiler/lib/lib*.a
+
+# generated documentation
+docs/api
+
+# dev tools, editors, etc.
 language.settings.xml
 .settings
 nbproject
 .*.swp
-Sming/compiler/lib/lib*.a
-docs/api
+.vscode
+GTAGS
+GRTAGS
+GPATH

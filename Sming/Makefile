@@ -196,6 +196,7 @@ endif
 
 # libraries used in this project, mainly provided by the SDK
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
+# WARNING: In the next versions ENABLE_CUSTOM_PWM will be set to 1 by default
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	THIRD_PARTY_DATA += third-party/pwm/pwm.c
 endif

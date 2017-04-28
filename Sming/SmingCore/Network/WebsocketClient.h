@@ -107,6 +107,7 @@ public:
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
 	using TcpClient::setSslFingerprint;
+	using TcpClient::pinCertificate;
 	using TcpClient::setSslClientKeyCert;
 	using TcpClient::freeSslClientKeyCert;
 	using TcpClient::getSsl;

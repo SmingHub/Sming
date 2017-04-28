@@ -64,12 +64,12 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="Basic_AirUpdate.null.1347473968" name="Basic_AirUpdate"/>
+		<project id="{{ProjectName}}.null.1347473968" name="{{ProjectName}}"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Sming">
-			<resource resourceType="PROJECT" workspacePath="/Basic_AirUpdate"/>
+			<resource resourceType="PROJECT" workspacePath="/{{ProjectName}}"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">

@@ -256,10 +256,9 @@ void StartServers()
 }
 
 
-// Will be called when WiFi station was connected to AP
-void connectOk()
+// Will be called when station is fully operational
+void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
-	Serial.println("I'm CONNECTED");
 	StartServers();
 }
 
@@ -280,8 +279,7 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiAccessPoint.enable(false);
 
-	// Run our method when station was connected to AP
-	WifiStation.waitConnection(connectOk);
+	WifiEvents.onStationGotIP(gotIP);
 
 	// setup the ArduCAM
 	initCam();

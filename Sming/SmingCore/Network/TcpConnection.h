@@ -32,10 +32,19 @@ enum TcpConnectionEvent
 	eTCE_Poll
 };
 
-struct pbuf;
-class String;
-class IDataSourceStream;
-class IPAddress;
+#ifdef ENABLE_SSL
+enum SslFingerprintType {
+	eSFT_CertSha1 = 0, // << Fingerprint based on the SHA1 value of the certificate.
+					  //     Every time a certificate is renewed this value will change.
+	eSFT_PkSha256,  // << Fingerprint based on the SHA256 value of the public key subject in the certificate.
+					//    Only when the private key used to generate the certificate is used then that fingerprint
+};
+
+
+typedef struct {
+	uint8_t* certSha1 = NULL; // << certificate SHA1 fingerprint
+	uint8_t* pkSha256 = NULL; // << public key SHA256 fingerprint
+} SSLFingerprints;
 
 typedef struct {
 	uint8_t *key = NULL;
@@ -45,6 +54,13 @@ typedef struct {
 	int certificateLength = 0;
 } SSLKeyCertPair;
 
+#endif
+
+struct pbuf;
+class String;
+class IDataSourceStream;
+class IPAddress;
+
 class TcpConnection
 {
 public:
@@ -53,8 +69,8 @@ public:
 	virtual ~TcpConnection();
 
 public:
-	virtual bool connect(String server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
-	virtual bool connect(IPAddress addr, uint16_t port, boolean useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(String server, int port, bool useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(IPAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0);
 	virtual void close();
 
 	// return -1 on error
@@ -76,11 +92,37 @@ public:
 	/**
 	 * @brief Sets the SHA1 certificate finger print.
 	 * 		  The latter will be used after successful handshake to check against the fingerprint of the other side.
+	 * @deprecated This method will be removed in future releases. Use pinCertificate instead.
 	 * @param const uint8_t *data
 	 * @param int length
-	 * @return boolean  true of success, false or failure
+	 * @return bool  true of success, false or failure
 	 */
-	boolean setSslFingerprint(const uint8_t *data, int length = 20);
+	__forceinline bool setSslFingerprint(const uint8_t *data, int length = SHA1_SIZE) {
+		return pinCertificate(data, eSFT_CertSha1);
+	}
+
+	/**
+	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
+	 * 			Check if SHA256 hash of Subject Public Key Info matches the one given.
+	 * @note    For HTTP public key pinning (RFC7469), the SHA-256 hash of the
+	 * 		    Subject Public Key Info (which usually only changes when the public key changes)
+	 * 		    is used rather than the SHA-1 hash of the entire certificate
+	 * 		    (which will change on each certificate renewal).
+	 * @param const uint8_t *finterprint - the fingeprint data agains which the match should be perfomed
+	 * @param SslFingerprintType type - the fingerprint type
+	 * @note    Type: eSFT_PkSha256
+	 * 			For HTTP public key pinning (RFC7469), the SHA-256 hash of the
+	 * 		    Subject Public Key Info (which usually only changes when the public key changes)
+	 * 		    is used rather than the SHA-1 hash of the entire certificate
+	 * 		    (which will change on each certificate renewal).
+	 * 		    Advantages: The
+	 * 		    Disadvantages: Takes more time (in ms) to verify.
+	 * @note    Type: eSFT_CertSha1
+	 * 			The SHA1 hash of the remote certificate will be calculated and compared with the given one.
+	 * 			Disadvantages: The hash needs to be updated every time the remote server updates its certificate
+	 * @return bool  true of success, false or failure
+	 */
+	bool pinCertificate(const uint8_t *fingerprint, SslFingerprintType type);
 
 	/**
 	 * @brief Sets client private key, certificate and password from memory
@@ -89,13 +131,13 @@ public:
 	 * @param const uint8_t *certificateData
 	 * @param int certificateLength
 	 * @param const char *keyPassword
-	 * @param boolean freeAfterHandshake
+	 * @param bool freeAfterHandshake
 	 *
-	 * @return boolean  true of success, false or failure
+	 * @return bool  true of success, false or failure
 	 */
-	boolean setSslClientKeyCert(const uint8_t *key, int keyLength,
+	bool setSslClientKeyCert(const uint8_t *key, int keyLength,
 							 const uint8_t *certificate, int certificateLength,
-							 const char *keyPassword = NULL, boolean freeAfterHandshake = false);
+							 const char *keyPassword = NULL, bool freeAfterHandshake = false);
 
 	/**
 	 * @brief Frees the memory used for the client key and certificate pair
@@ -137,13 +179,13 @@ protected:
 	SSL *ssl = nullptr;
 	SSLCTX *sslContext = nullptr;
 	SSL_EXTENSIONS *ssl_ext=NULL;
-	uint8_t *sslFingerprint=null;
-	boolean sslConnected = false;
+	SSLFingerprints sslFingerprint;
+	bool sslConnected = false;
 	uint32_t sslOptions=0;
 	SSLKeyCertPair clientKeyCert;
-	boolean freeClientKeyCert = false;
+	bool freeClientKeyCert = false;
 #endif
-	boolean useSsl = false;
+	bool useSsl = false;
 };
 
 #endif /* _SMING_CORE_TCPCONNECTION_H_ */

@@ -18,6 +18,7 @@ StationClass::StationClass()
 	onConnectFail = nullptr;
 	connectionTimeOut = 0;
 	connectionTimer = NULL;
+	connectionStarted = 0;
 }
 
 StationClass::~StationClass()
@@ -33,7 +34,10 @@ void StationClass::enable(bool enabled, bool save)
 		mode = wifi_get_opmode_default() & ~STATION_MODE;
 	else
 		mode = wifi_get_opmode() & ~STATION_MODE;
-	if (enabled) mode |= STATION_MODE;
+	if (enabled)
+		mode |= STATION_MODE;
+	else if (connectionTimer)
+		delete connectionTimer;
 	if (save)
 		wifi_set_opmode(mode);
 	else
@@ -157,15 +161,11 @@ IPAddress StationClass::getIP()
 
 String StationClass::getMAC()
 {
-	String mac;
 	uint8 hwaddr[6] = {0};
 	wifi_get_macaddr(STATION_IF, hwaddr);
-	for (int i = 0; i < 6; i++)
-	{
-		if (hwaddr[i] < 0x10) mac += "0";
-		mac += String(hwaddr[i], HEX);
-	}
-	return mac;
+	char buf[20];
+	sprintf(buf, "%02x%02x%02x%02x%02x%02x", hwaddr[0], hwaddr[1], hwaddr[2], hwaddr[3], hwaddr[4], hwaddr[5]);
+	return String(buf);
 }
 
 IPAddress StationClass::getNetworkBroadcast()
@@ -195,7 +195,7 @@ bool StationClass::setIP(IPAddress address)
 	IPAddress mask = IPAddress(255, 255, 255, 0);
 	IPAddress gateway = IPAddress(address);
 	gateway[3] = 1; // x.x.x.1
-	setIP(address, mask, gateway);
+	return setIP(address, mask, gateway);
 }
 
 bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway)
@@ -214,10 +214,10 @@ bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway
 	ipinfo.netmask = netmask;
 	ipinfo.gw = gateway;
 	if (wifi_set_ip_info(STATION_IF, &ipinfo))
-		debugf("AP IP succesfully updated");
+		debugf("Station IP succesfully updated");
 	else
 	{
-		debugf("AP IP can't be updated");
+		debugf("Station IP can't be updated");
 		enableDHCP(true);
 	}
 	wifi_station_connect();
@@ -434,6 +434,7 @@ void StationClass::internalSmartConfig(sc_status status, void *pdata) {
 				char *ssid = (char*)sta_conf->ssid;
 				char *password = (char*)sta_conf->password;
 				config(ssid, password);
+				connect();
 			}
 			break;
 		case SC_STATUS_LINK_OVER:

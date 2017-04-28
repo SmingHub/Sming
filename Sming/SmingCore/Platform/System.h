@@ -109,17 +109,9 @@ public:
      */
 	void onReady(ISystemReadyHandler* readyHandler);
 
-    /** @brief  Apply a firmware update
-     *  @param  readFlashOffset Address of the firmware to use for update
-     *  @param  targetFlashOffset Address to write firmware to
-     *  @param  firmwareSize Quantity of bytes to write
-     */
-	void applyFirmwareUpdate(uint32_t readFlashOffset, uint32_t targetFlashOffset, int firmwareSize);
-
 private:
 	static void staticReadyHandler();
 	void readyHandler();
-	void IRAM_ATTR internalApplyFirmwareUpdate(uint32_t readFlashOffset, uint32_t targetFlashOffset, int firmwareSize, bool outputDebug);
 
 private:
 	Vector<SystemReadyDelegate> readyHandlers;

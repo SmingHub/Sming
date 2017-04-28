@@ -6,7 +6,7 @@ extern "C" void *memcpy_P(void *dest, const void *src_P, size_t length) {
 	char *dest0 = (char *)dest;
 	const char *src0 = (const char *)src_P;
 
-	if (!((unsigned long)src_P & 3) && !(length & 3))
+	if (!((unsigned long)src_P & 3) && !((unsigned long)dest & 3) && !(length & 3))
 		return memcpy(dest, src_P, length);
 
 	for (; length > 0; length--, src0++, dest0++)
@@ -31,8 +31,7 @@ extern "C" size_t strlen_P(const char * src_P)
 
 extern "C" char *strcpy_P(char * dest, const char * src_P)
 {
-	int len = strlen_P(src_P);
-	memcpy_P(dest, src_P, len);
+	for (char *p = dest; *p = pgm_read_byte(src_P++); p++) ;
 	return dest;
 }
 

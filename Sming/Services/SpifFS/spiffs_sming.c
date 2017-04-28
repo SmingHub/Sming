@@ -89,6 +89,8 @@ bool spiffs_format_internal(spiffs_config *cfg)
   }
   debugf("formated");
   ETS_INTR_UNLOCK();
+
+  return true;
 }
 
 static void spiffs_mount_internal(spiffs_config *cfg)
