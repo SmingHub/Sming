@@ -29,7 +29,7 @@ void onIndex(HttpRequest &request, HttpResponse &response)
 
 void onHello(HttpRequest &request, HttpResponse &response)
 {
-	response.setContentType(ContentType::HTML);
+	response.setContentType(MIME_HTML);
 	// Use direct strings output only for small amount of data (huge memory allocation)
 	response.sendString("Sming. Let's do smart things.");
 }
@@ -66,24 +66,13 @@ HttpClient downloadClient;
 int dowfid = 0;
 void downloadContentFiles()
 {
-	if (downloadClient.isProcessing()) return; // Please, wait.
-
-	if (downloadClient.isSuccessful())
-		dowfid++; // Success. Go to next file!
-	downloadClient.reset(); // Reset current download status
-
-	if (dowfid == 0)
-		downloadClient.downloadFile("http://simple.anakod.ru/templates/index.html");
-	else if (dowfid == 1)
-		downloadClient.downloadFile("http://simple.anakod.ru/templates/bootstrap.css.gz");
-	else if (dowfid == 2)
-		downloadClient.downloadFile("http://simple.anakod.ru/templates/jquery.js.gz");
-	else
-	{
-		// Content download was completed
-		downloadTimer.stop();
-		startWebServer();
-	}
+	downloadClient.downloadFile("http://simple.anakod.ru/templates/index.html");
+	downloadClient.downloadFile("http://simple.anakod.ru/templates/bootstrap.css.gz");
+	downloadClient.downloadFile("http://simple.anakod.ru/templates/jquery.js.gz", (RequestCompletedDelegate)([](HttpConnection& connection, bool success) -> int {
+		if(success) {
+			startWebServer();
+		}
+	}));
 }
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
@@ -91,7 +80,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 	if (!fileExist("index.html") || !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz"))
 	{
 		// Download server content at first
-		downloadTimer.initializeMs(3000, downloadContentFiles).start();
+		downloadContentFiles();
 	}
 	else
 	{

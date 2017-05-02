@@ -18,7 +18,7 @@ void onIndex(HttpRequest &request, HttpResponse &response)
 
 void onIpConfig(HttpRequest &request, HttpResponse &response)
 {
-	if (request.getRequestMethod() == RequestMethod::POST)
+	if (request.method == HTTP_POST)
 	{
 		AppSettings.dhcp = request.getPostParameter("dhcp") == "1";
 		AppSettings.ip = request.getPostParameter("ip");
@@ -94,7 +94,7 @@ void onAjaxNetworkList(HttpRequest &request, HttpResponse &response)
 	}
 
 	response.setAllowCrossDomainOrigin("*");
-	response.sendJsonObject(stream);
+	response.sendDataStream(stream, MIME_JSON);
 }
 
 void makeConnection()
@@ -148,7 +148,7 @@ void onAjaxConnect(HttpRequest &request, HttpResponse &response)
 		json["error"] = WifiStation.getConnectionStatusName();
 
 	response.setAllowCrossDomainOrigin("*");
-	response.sendJsonObject(stream);
+	response.sendDataStream(stream, MIME_JSON);
 }
 
 void startWebServer()

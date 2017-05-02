@@ -71,13 +71,13 @@ void displayCipher(SSL *ssl)
     m_printf("\n");
 }
 
-void onDownload(HttpClient& client, bool success)
+int onDownload(HttpConnection& connection, bool success)
 {
-	debugf("Got response code: %d", client.getResponseCode());
-	debugf("Got content starting with: %s", client.getResponseString().substring(0, 50).c_str());
+	debugf("Got response code: %d", connection.getResponseCode());
+	debugf("Got content starting with: %s", connection.getResponseString().substring(0, 50).c_str());
 	debugf("Success: %d", success);
 
-	SSL* ssl = downloadClient.getSsl();
+	SSL* ssl = connection.getSsl();
 	if (ssl) {
 		const char *common_name = ssl_get_cert_dn(ssl,SSL_X509_CERT_COMMON_NAME);
 		if (common_name) {
@@ -99,20 +99,30 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 	};
 
 	debugf("Connected. Got IP: %s", ip.toString().c_str());
-	downloadClient.addSslOptions(SSL_SERVER_VERIFY_LATER);
 
-	/*
-	 * The line below shows how to trust only a certificate in which the public key matches the SHA256 fingerprint.
-	 * When google changes the private key that they use in their certificate the SHA256 fingerprint should not match any longer.
-	 */
-	downloadClient.pinCertificate(googlePublicKeyFingerprint, eSFT_PkSha256);
+	HttpRequest* request = new HttpRequest(URL("https://www.google.com/"));
+	request->setSslOptions(SSL_SERVER_VERIFY_LATER);
+
+	SSLFingerprints fingerprint;
 
 	/*
 	 * The line below shows how to trust only a certificate that matches the SHA1 fingerprint.
 	 * When google changes their certificate the SHA1 fingerprint should not match any longer.
 	 */
-	downloadClient.pinCertificate(googleSha1Fingerprint, eSFT_CertSha1);
-	downloadClient.downloadString("https://www.google.com/", onDownload);
+	fingerprint.certSha1 = new uint8_t[SHA1_SIZE];
+	memcpy(fingerprint.certSha1, googleSha1Fingerprint, SHA1_SIZE);
+
+	/*
+	* The line below shows how to trust only a certificate in which the public key matches the SHA256 fingerprint.
+	* When google changes the private key that they use in their certificate the SHA256 fingerprint should not match any longer.
+	*/
+	fingerprint.pkSha256 = new uint8_t[SHA256_SIZE];
+	memcpy(fingerprint.pkSha256, googlePublicKeyFingerprint, SHA256_SIZE);
+
+	request->pinCertificate(fingerprint);
+	request->onRequestComplete(onDownload);
+
+	downloadClient.send(request);
 }
 
 void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)

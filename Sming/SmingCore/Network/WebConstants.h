@@ -8,48 +8,63 @@
 #ifndef _SMING_CORE_NETWORK_WEBCONSTANTS_H_
 #define _SMING_CORE_NETWORK_WEBCONSTANTS_H_
 
+#define MIME_TYPE_MAP(XX)                  \
+  /* Type, extension start, Mime type */   \
+							               \
+  /* Texts */				               \
+  XX(HTML, "htm", "text/html")             \
+  XX(TEXT, "txt", "text/plain")            \
+  XX(JS, "js", "text/javascript")          \
+  XX(CSS, "css", "text/css")               \
+  XX(XML, "xml", "text/xml")               \
+  XX(JSON, "json", "application/json")     \
+  	  	  	  	  	  	  	               \
+  /* Images */                             \
+  XX(JPEG, "jpg", "image/jpeg")            \
+  XX(GIF, "git", "image/gif")              \
+  XX(PNG, "png", "image/png")              \
+  XX(SVG, "svg", "image/svg+xml")          \
+  XX(ICO, "ico", "image/x-icon")           \
+                                           \
+  /* Archives */                           \
+  XX(GZIP, "gzip", "application/x-gzip")   \
+  XX(ZIP, "zip", "application/zip")        \
+  	  	  	  	  	  	  	  	           \
+  /* Binary and Form */                    \
+  XX(BINARY, "", "application/octet-stream")   \
+  XX(FORM_URL_ENCODED, "", "application/x-www-form-urlencoded") \
+  XX(FORM_MULTIPART, "", "multipart/form-data") \
+
+enum MimeType
+{
+#define XX(name, extensionStart, mime) MIME_##name,
+	MIME_TYPE_MAP(XX)
+#undef XX
+};
+
 namespace ContentType
 {
-	// Texts
-	static const char* HTML = "text/html";
-	static const char* TEXT = "text/plain";
-	static const char* JS = "text/javascript";
-	static const char* CSS = "text/css";
-	static const char* XML = "text/xml";
-
-	// Images
-	static const char* JPEG = "image/jpeg";
-	static const char* GIF = "image/gif";
-	static const char* PNG = "image/png";
-	static const char* SVG = "image/svg+xml";
-	static const char* ICO = "image/x-icon";
-
-	static const char* GZIP = "application/x-gzip";
-	static const char* ZIP = "application/zip";
-	static const char* JSON = "application/json";
-
-	static const char* Binary = "application/octet-stream";
-	static const char* FormUrlEncoded = "application/x-www-form-urlencoded";
-	static const char* FormMultipart = "multipart/form-data";
-
 	static const char* fromFileExtension(const String extension)
 	{
 		String ext = extension;
 		ext.toLowerCase();
 
-		if (ext.startsWith("htm")) return HTML;
-		if (ext.equals("txt")) return TEXT;
-		if (ext.equals("js")) return JS;
-		if (ext.equals("css")) return CSS;
+		#define XX(name, extensionStart, mime) if(ext.startsWith(extensionStart)) {  return mime; }
+		  MIME_TYPE_MAP(XX)
+		#undef XX
 
-		if (ext.equals("jpg") || ext.equals("jpeg")) return JPEG;
-		if (ext.equals("gif")) return GIF;
-		if (ext.equals("png")) return PNG;
-		if (ext.equals("svg")) return SVG;
-		if (ext.equals("zip")) return ZIP;
+		// Unknown
+		return "<unknown>";
+	}
 
-		// Not found, we can't be sure
-		return NULL;
+	static const char *toString(enum MimeType m)
+	{
+		#define XX(name, extensionStart, mime) if(MIME_##name == m) {  return mime; }
+		  MIME_TYPE_MAP(XX)
+		#undef XX
+
+		// Unknown
+		return "<unknown>";
 	}
 
 	static const char* fromFullFileName(const String fileName)
@@ -64,29 +79,6 @@ namespace ContentType
 
 		return NULL;
 	}
-};
-
-namespace RequestMethod
-{
-	static const char* GET = "GET";
-	static const char* HEAD = "HEAD";
-	static const char* POST = "POST";
-	static const char* PUT = "PUT";
-	static const char* DELETE = "DELETE";
-};
-
-namespace HttpStatusCode
-{
-	static const char* OK = "200 OK";
-	static const char* SwitchingProtocols = "101 Switching Protocols";
-	static const char* Found = "302 Found";
-
-	static const char* BadRequest = "400 Bad Request";
-	static const char* NotFound = "404 Not Found";
-	static const char* Forbidden = "403 Forbidden";
-	static const char* Unauthorized = "401 Unauthorized";
-
-	static const char* NotImplemented = "501 Not Implemented";
 };
 
 #endif /* _SMING_CORE_NETWORK_WEBCONSTANTS_H_ */

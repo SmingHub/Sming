@@ -19,7 +19,7 @@ void onIndex(HttpRequest &request, HttpResponse &response)
 void onConfiguration(HttpRequest &request, HttpResponse &response)
 {
 	MeteoConfig cfg = loadConfig();
-	if (request.getRequestMethod() == RequestMethod::POST)
+	if (request.method == HTTP_POST)
 	{
 		debugf("Update config");
 		// Update config
@@ -42,7 +42,7 @@ void onConfiguration(HttpRequest &request, HttpResponse &response)
 		}
 		saveConfig(cfg);
 		startWebClock(); // Apply time zone settings
-		response.redirect();
+		response.redirect("/");
 	}
 
 	debugf("Send template");
@@ -91,7 +91,7 @@ void onApiSensors(HttpRequest &request, HttpResponse &response)
 	JsonObject& sensors = json.createNestedObject("sensors");
 	sensors["temperature"] = StrT.c_str();
 	sensors["humidity"] = StrRH.c_str();
-	response.sendJsonObject(stream);
+	response.sendDataStream(stream, MIME_JSON);
 }
 
 void onApiOutput(HttpRequest &request, HttpResponse &response)
@@ -106,7 +106,7 @@ void onApiOutput(HttpRequest &request, HttpResponse &response)
 	JsonObject& json = stream->getRoot();
 	json["status"] = val != -1;
 	if (val == -1) json["error"] = "Wrong control parameter value, please use: ?control=0|1";
-	response.sendJsonObject(stream);
+	response.sendDataStream(stream, MIME_JSON);
 }
 
 void startWebServer()
@@ -130,37 +130,19 @@ void startWebServer()
 
 /// FileSystem Initialization ///
 
-Timer downloadTimer;
 HttpClient downloadClient;
 int dowfid = 0;
 void downloadContentFiles()
 {
-	if (!downloadTimer.isStarted())
-	{
-		downloadTimer.initializeMs(3000, downloadContentFiles).start();
-	}
-
-	if (downloadClient.isProcessing()) return; // Please, wait.
 	debugf("DownloadContentFiles");
 
-	if (downloadClient.isSuccessful())
-		dowfid++; // Success. Go to next file!
-	downloadClient.reset(); // Reset current download status
-
-	if (dowfid == 0)
-		downloadClient.downloadFile("http://simple.anakod.ru/templates/MeteoControl/MeteoControl.html", "index.html");
-	else if (dowfid == 1)
-		downloadClient.downloadFile("http://simple.anakod.ru/templates/MeteoControl/MeteoConfig.html", "config.html");
-	else if (dowfid == 2)
-		downloadClient.downloadFile("http://simple.anakod.ru/templates/MeteoControl/MeteoAPI.html", "api.html");
-	else if (dowfid == 3)
-		downloadClient.downloadFile("http://simple.anakod.ru/templates/bootstrap.css.gz");
-	else if (dowfid == 4)
-		downloadClient.downloadFile("http://simple.anakod.ru/templates/jquery.js.gz");
-	else
-	{
-		// Content download was completed
-		downloadTimer.stop();
-		startWebServer();
-	}
+	downloadClient.downloadFile("http://simple.anakod.ru/templates/MeteoControl/MeteoControl.html", "index.html");
+	downloadClient.downloadFile("http://simple.anakod.ru/templates/MeteoControl/MeteoConfig.html", "config.html");
+	downloadClient.downloadFile("http://simple.anakod.ru/templates/MeteoControl/MeteoAPI.html", "api.html");
+	downloadClient.downloadFile("http://simple.anakod.ru/templates/bootstrap.css.gz");
+	downloadClient.downloadFile("http://simple.anakod.ru/templates/jquery.js.gz", (RequestCompletedDelegate)([](HttpConnection& connection, bool success) -> int {
+		if(success) {
+			startWebServer();
+		}
+	}));
 }

@@ -3,94 +3,84 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HttpClient
+ *
+ * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
+ *
  ****/
 
 #ifndef _SMING_CORE_NETWORK_HTTPCLIENT_H_
 #define _SMING_CORE_NETWORK_HTTPCLIENT_H_
 
 #include "TcpClient.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WHashMap.h"
-#include "../../Services/DateTime/DateTime.h"
-#include "../Delegate.h"
+#include "Http/HttpCommon.h"
+#include "Http/HttpRequest.h"
+#include "Http/HttpConnection.h"
 
-class HttpClient;
-class URL;
-
-//typedef void (*HttpClientCompletedCallback)(HttpClient& client, bool successful);
-typedef Delegate<void(HttpClient& client, bool successful)> HttpClientCompletedDelegate;
-
-enum HttpClientMode
-{
-	eHCM_String = 0,
-	eHCM_File,
-	eHCM_UserDefined
-};
-
-class HttpClient: protected TcpClient
+class HttpClient
 {
 public:
-	HttpClient(bool autoDestruct = false);
-	virtual ~HttpClient();
+	/* High-Level Method */
 
-	// Text mode
-	bool downloadString(String url, HttpClientCompletedDelegate onCompleted);
-	String getResponseString(); // Can be used only after calling downloadString!
+	__forceinline bool sendRequest(const String& url, RequestCompletedDelegate requestComplete) {
+		return send(request(url)
+				   ->setMethod(HTTP_GET)
+				   ->onRequestComplete(requestComplete)
+				   );
+	}
 
-	// File mode
-	bool downloadFile(String url, HttpClientCompletedDelegate onCompleted = NULL);
-	bool downloadFile(String url, String saveFileName, HttpClientCompletedDelegate onCompleted = NULL);
 
-	void setPostBody(const String& _method);
-	String getPostBody();
+	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers, RequestCompletedDelegate requestComplete) {
+		return send(request(url)
+				   ->setMethod(HTTP_GET)
+				   ->setHeaders(headers)
+				   ->onRequestComplete(requestComplete)
+				   );
+	}
 
-	void setRequestHeader(const String name, const String value);
-	bool hasRequestHeader(const String name);
-	void setRequestContentType(String _content_type);
+	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers, const String& body, RequestCompletedDelegate requestComplete) {
+			return send(request(url)
+					   ->setMethod(method)
+					   ->setHeaders(headers)
+					   ->setBody(body)
+					   ->onRequestComplete(requestComplete)
+					   );
+	}
 
-	// Resulting HTTP status code
-	__forceinline int getResponseCode() { return code; }
-	__forceinline bool isSuccessful() { return (!writeError) && (code >= 200 && code <= 399); }
+	bool downloadString(const String& url, RequestCompletedDelegate requestComplete);
 
-	__forceinline bool isProcessing()  { return TcpClient::isProcessing(); }
-	__forceinline TcpClientState getConnectionState() { return TcpClient::getConnectionState(); }
+	__forceinline bool downloadFile(const String& url, RequestCompletedDelegate requestComplete = NULL) {
+		return downloadFile(url, "", requestComplete);
+	}
 
-	String getResponseHeader(String headerName, String defaultValue = "");
-	DateTime getLastModifiedDate(); // Last-Modified header
-	DateTime getServerDate(); // Date header
+	bool downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete = NULL);
 
-	void reset(); // Reset current status, data and etc.
+	/* Low Level Methods */
+	bool send(HttpRequest* request);
+	HttpRequest* request(const String& url);
 
 #ifdef ENABLE_SSL
-	using TcpClient::addSslOptions;
-	using TcpClient::setSslFingerprint;
-	using TcpClient::pinCertificate;
-	using TcpClient::setSslClientKeyCert;
-	using TcpClient::freeSslClientKeyCert;
-	using TcpClient::getSsl;
+	static void freeSslSessionPool();
 #endif
 
-protected:
-	bool startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted);
-	void onFinished(TcpClientState finishState);
-	virtual err_t onReceive(pbuf *buf);
-	virtual void writeRawData(pbuf* buf, int startPos);
-	void parseHeaders(pbuf* buf, int headerEnd);
+	/**
+	 * Use this method to clean all request queues and object pools
+	 */
+	static void cleanup();
+
+	virtual ~HttpClient();
 
 protected:
-	bool waitParse = false;
-	bool writeError = false;
+	String getCacheKey(URL url);
 
-private:
-	int code;
-	HttpClientCompletedDelegate onCompleted;
-	HttpClientMode mode;
-	HashMap<String, String> requestHeaders;
-	HashMap<String, String> responseHeaders;
+protected:
+	static HashMap<String, HttpConnection *> httpConnectionPool;
+	static HashMap<String, RequestQueue* > queue;
 
-	String responseStringData;
-	String body = "";
-	file_t saveFile;
+#ifdef ENABLE_SSL
+	static HashMap<String, SSLSessionId* > sslSessionIdPool;
+#endif
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTPCLIENT_H_ */

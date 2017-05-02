@@ -51,7 +51,7 @@ class FIFO : public Countable<T>
       return raw[index]; /* unsafe */
     }
 
-  private:
+  protected:
     volatile int numberOfElements;
     int nextIn;
     int nextOut;

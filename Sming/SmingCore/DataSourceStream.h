@@ -75,6 +75,12 @@ public:
      *  @retval bool True on success.
      */
 	virtual bool isFinished() = 0;
+
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	 */
+	virtual int length() {  return -1; }
 };
 
 /// Memory data stream class
@@ -96,8 +102,16 @@ public:
 
 	/** @brief  Get size of stream
 	 *  @retval int Quantity of chars in stream
+	 *
+	 *  @deprecated Use getLength instead
 	 */
 	int getStreamLength() { return size; }
+
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	*/
+	int length() { return size; }
 
     /** @brief  Write a single char to stream
      *  @param  charToWrite Char to write to the stream
@@ -136,7 +150,7 @@ public:
     /** @brief  Create a file stream
      *  @param  fileName Name of file to open
      */
-        FileStream();
+	FileStream();
 	FileStream(String fileName);
 	virtual ~FileStream();
 
@@ -163,6 +177,12 @@ public:
      *  @retval int Cursor offset
      */
 	inline int getPos() { return pos; }
+
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	 */
+	int length() { return size; }
 
 private:
 	file_t handle;
@@ -252,6 +272,12 @@ public:
 
     //Use base class documentation
 	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	 */
+	int length();
 
 private:
 	DynamicJsonBuffer buffer;

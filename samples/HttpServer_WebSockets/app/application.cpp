@@ -1,5 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
+#include <SmingCore/Network/Http/Websocket/WebsocketResource.h>
 #include "CUserData.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -36,19 +37,19 @@ void onFile(HttpRequest &request, HttpResponse &response)
 	}
 }
 
-void wsConnected(WebSocket& socket)
+void wsConnected(WebSocketConnection& socket)
 {
 	totalActiveSockets++;
 
 	//Use a global instance and add this new connection. Normally
 	userGeorge.addSession(socket);
 	// Notify everybody about new connection
-	WebSocketsList &clients = server.getActiveWebSockets();
-	for (int i = 0; i < clients.count(); i++)
-		clients[i].sendString("New friend arrived! Total: " + String(totalActiveSockets));
+
+	String message = "New friend arrived! Total: " + String(totalActiveSockets);
+	socket.broadcast(message.c_str(), message.length());
 }
 
-void wsMessageReceived(WebSocket& socket, const String& message)
+void wsMessageReceived(WebSocketConnection& socket, const String& message)
 {
 	Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
 	String response = "Echo: " + message;
@@ -62,12 +63,12 @@ void wsMessageReceived(WebSocket& socket, const String& message)
     }
 }
 
-void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
+void wsBinaryReceived(WebSocketConnection& socket, uint8_t* data, size_t size)
 {
 	Serial.printf("Websocket binary data recieved, size: %d\r\n", size);
 }
 
-void wsDisconnected(WebSocket& socket)
+void wsDisconnected(WebSocketConnection& socket)
 {
 	totalActiveSockets--;
 
@@ -79,9 +80,8 @@ void wsDisconnected(WebSocket& socket)
     }
 
 	// Notify everybody about lost connection
-	WebSocketsList &clients = server.getActiveWebSockets();
-	for (int i = 0; i < clients.count(); i++)
-		clients[i].sendString("We lost our friend :( Total: " + String(totalActiveSockets));
+    String message = "We lost our friend :( Total: " + String(totalActiveSockets);
+    socket.broadcast(message.c_str(), message.length());
 }
 
 void startWebServer()
@@ -91,11 +91,13 @@ void startWebServer()
 	server.setDefaultHandler(onFile);
 
 	// Web Sockets configuration
-	server.enableWebSockets(true);
-	server.setWebSocketConnectionHandler(wsConnected);
-	server.setWebSocketMessageHandler(wsMessageReceived);
-	server.setWebSocketBinaryHandler(wsBinaryReceived);
-	server.setWebSocketDisconnectionHandler(wsDisconnected);
+	WebsocketResource* wsResource=new WebsocketResource();
+	wsResource->setConnectionHandler(wsConnected);
+	wsResource->setMessageHandler(wsMessageReceived);
+	wsResource->setBinaryHandler(wsBinaryReceived);
+	wsResource->setDisconnectionHandler(wsDisconnected);
+
+	server.addPath("/ws", wsResource);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());

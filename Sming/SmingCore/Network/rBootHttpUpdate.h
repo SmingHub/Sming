@@ -3,14 +3,15 @@
  *
  *  Created on: 2015/09/03.
  *      Author: Richard A Burton & Anakod
+ *
+ *  Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
  */
 
 #ifndef SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
 #define SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
 
+#include "../OutputStream.h"
 #include "HttpClient.h"
-#include <Timer.h>
-
 #include <rboot-api.h>
 
 #define NO_ROM_SWITCH 0xff
@@ -26,6 +27,20 @@ struct rBootHttpUpdateItem {
 	int size;
 };
 
+class rBootItemOutputStream: public IOutputStream {
+public:
+	void setItem(rBootHttpUpdateItem* item);
+	virtual bool init();
+	virtual size_t write(const uint8_t* data, size_t size);
+	virtual bool close();
+	virtual ~rBootItemOutputStream();
+
+protected:
+	bool initilized = false;
+	rBootHttpUpdateItem* item = NULL;
+	rboot_write_status rBootWriteStatus;
+};
+
 class rBootHttpUpdate: protected HttpClient {
 
 public:
@@ -33,45 +48,40 @@ public:
 	virtual ~rBootHttpUpdate();
 	void addItem(int offset, String firmwareFileUrl);
 	void start();
-	void switchToRom(uint8 romSlot);
+	void switchToRom(uint8_t romSlot);
 	void setCallback(OtaUpdateDelegate reqUpdateDelegate);
 	void setDelegate(OtaUpdateDelegate reqUpdateDelegate);
 
-
-	// Expose request and response header information
-	using HttpClient::setRequestHeader;
-	using HttpClient::hasRequestHeader;
-	using HttpClient::getResponseHeader;
+	/* Sets the base request that can be used to pass
+	 * - default request parameters, like request headers...
+	 * - default SSL options
+	 * - default SSL fingeprints
+	 * - default SSL client certificates
+	 *
+	 * @param HttpRequest *
+	 */
+	void setBaseRequest(HttpRequest *request);
 
 	// Allow reading items
 	rBootHttpUpdateItem getItem(unsigned int index);
 
-#ifdef ENABLE_SSL
-	using HttpClient::addSslOptions;
-	using HttpClient::setSslFingerprint;
-	using HttpClient::pinCertificate;
-	using HttpClient::setSslClientKeyCert;
-	using HttpClient::freeSslClientKeyCert;
-	using HttpClient::getSsl;
-#endif
-
 protected:
-	void onTimer();
-	virtual void writeRawData(pbuf* buf, int startPos);
 	void applyUpdate();
 	void updateFailed();
 
+	virtual rBootItemOutputStream* getStream();
+	virtual int itemComplete(HttpConnection& client, bool success);
+	virtual int updateComplete(HttpConnection& client, bool success);
+
+
 protected:
 	Vector<rBootHttpUpdateItem> items;
-	Timer timer;
 	int currentItem;
 	rboot_write_status rBootWriteStatus;
-	uint8 romSlot;
+	uint8_t romSlot;
 	OtaUpdateDelegate updateDelegate;
 
-	virtual void writeInit();
-	virtual bool writeFlash(const u8 *data, u16 size);
-	virtual bool writeEnd();
+	HttpRequest* baseRequest = NULL;
 };
 
 #endif /* SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_ */

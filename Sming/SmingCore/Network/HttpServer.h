@@ -3,76 +3,74 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HttpServer
+ *
+ * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
+ *
  ****/
 
 #ifndef _SMING_CORE_HTTPSERVER_H_
 #define _SMING_CORE_HTTPSERVER_H_
 
 #include "TcpServer.h"
-#include "WebSocket.h"
-#include "../../Wiring/WHashMap.h"
-#include "../../Wiring/WVector.h"
+#include "../Wiring/WString.h"
+#include "../Wiring/WHashMap.h"
 #include "../Delegate.h"
-#include "../../Services/CommandProcessing/CommandProcessingIncludes.h"
+#include "Http/HttpResponse.h"
+#include "Http/HttpRequest.h"
+#include "Http/HttpResource.h"
+#include "Http/HttpServerConnection.h"
 
-class String;
-class HttpServerConnection;
-class HttpRequest;
-class HttpResponse;
-
-typedef Vector<WebSocket> WebSocketsList;
-
-typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathDelegate;
-typedef Delegate<void(WebSocket&)> WebSocketDelegate;
-typedef Delegate<void(WebSocket&, const String&)> WebSocketMessageDelegate;
-typedef Delegate<void(WebSocket&, uint8_t* data, size_t size)> WebSocketBinaryDelegate;
+typedef struct {
+	int maxActiveConnections = 10; // << the maximum number of concurrent requests..
+	int keepAliveSeconds = 5; // << the default seconds to keep the connection alive before closing it
+	int minHeapSize = -1; // << defines the min heap size that is required to accept connection.
+					      //  -1 - means use server default
+#ifdef ENABLE_SSL
+	int sslSessionCacheSize = 10; // << number of SSL session ids to cache. Setting this to 0 will disable SSL session resumption.
+#endif
+} HttpServerSettings;
 
 class HttpServer: public TcpServer
 {
 	friend class HttpServerConnection;
+
 public:
 	HttpServer();
+	HttpServer(HttpServerSettings settings);
 	virtual ~HttpServer();
 
-	void enableHeaderProcessing(String headerName);
-	bool isHeaderProcessingEnabled(String name);
+	/*
+	 * @brief Allows changing the server configuration
+	 */
+	void configure(HttpServerSettings settings);
 
-	void addPath(String path, HttpPathDelegate callback);
-	void setDefaultHandler(HttpPathDelegate callback);
+	/**
+	 * @param String path URL path.
+	 * @note Path should start with slash. Trailing slashes will be removed.
+	 * @param HttpPathDelegate callback - the callback that will handle this path
+	 */
+	void addPath(String path, const HttpPathDelegate& callback);
+	void addPath(const String& path, const HttpResourceDelegate& onRequestComplete);
+	void addPath(const String& path, HttpResource* resource);
 
-	/// Web Sockets
-	void enableWebSockets(bool enabled);
-	void commandProcessing(bool enabled, String reqReqestParam);
-	__forceinline WebSocketsList& getActiveWebSockets() { return wsocks; }
-	void setWebSocketConnectionHandler(WebSocketDelegate handler);
-	void setWebSocketMessageHandler(WebSocketMessageDelegate handler);
-	void setWebSocketBinaryHandler(WebSocketBinaryDelegate handler);
-	void setWebSocketDisconnectionHandler(WebSocketDelegate handler);
+	void setDefaultHandler(const HttpPathDelegate& callback);
+	void setDefaultResource(HttpResource* resource);
+
 
 protected:
 	virtual TcpConnection* createClient(tcp_pcb *clientTcp);
-	virtual bool initWebSocket(HttpServerConnection &connection, HttpRequest &request, HttpResponse &response);
-	virtual bool processRequest(HttpServerConnection &connection, HttpRequest &request, HttpResponse &response);
-	virtual void processWebSocketFrame(pbuf *buf, HttpServerConnection &connection);
+	virtual void onConnectionClose(TcpClient& connection, bool success);
 
-	WebSocket* getWebSocket(HttpServerConnection &connection);
-	void removeWebSocket(HttpServerConnection &connection);
-	void onCloseWebSocket(HttpServerConnection &connection);
+protected:
+#ifdef ENABLE_SSL
+	int minHeapSize = 16384;
+#endif
 
 private:
-	HttpPathDelegate defaultHandler;
-	Vector<String> processingHeaders;
-	HashMap<String, HttpPathDelegate> paths;
-	WebSocketsList wsocks;
-
-	bool wsEnabled = false;
-	WebSocketDelegate wsConnect;
-	WebSocketMessageDelegate wsMessage;
-	WebSocketBinaryDelegate wsBinary;
-	WebSocketDelegate wsDisconnect;
-
-	bool wsCommandEnabled = false;
-	String wsCommandRequestParam;
+	HttpServerSettings settings;
+	ResourceTree resourceTree;
 };
 
 #endif /* _SMING_CORE_HTTPSERVER_H_ */

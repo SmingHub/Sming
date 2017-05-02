@@ -160,13 +160,13 @@ uint32_t lastClockUpdate = 0;
 DateTime clockValue;
 const int clockUpdateIntervalMs = 10 * 60 * 1000; // Update web clock every 10 minutes
 
-void onClockUpdating(HttpClient& client, bool successful)
+int onClockUpdating(HttpConnection& client, bool successful)
 {
 	if (!successful)
 	{
 		debugf("CLOCK UPDATE FAILED %d (code: %d)", successful, client.getResponseCode());
 		lastClockUpdate = 0;
-		return;
+		return -1;
 	}
 
 	// Extract date header from response
@@ -174,13 +174,15 @@ void onClockUpdating(HttpClient& client, bool successful)
 	if (clockValue.isNull()) clockValue = client.getLastModifiedDate();
 	if (!clockValue.isNull())
 		clockValue.addMilliseconds(ActiveConfig.AddTZ * 1000 * 60 * 60);
+
+	return 0;
 }
 
 void refreshClockTime()
 {
 	uint32_t nowClock = millis();
 	if (nowClock < lastClockUpdate) lastClockUpdate = 0; // Prevent overflow, restart
-	if ((lastClockUpdate == 0 || nowClock - lastClockUpdate > clockUpdateIntervalMs) && !clockWebClient.isProcessing())
+	if ((lastClockUpdate == 0 || nowClock - lastClockUpdate > clockUpdateIntervalMs))
 	{
 		clockWebClient.downloadString("google.com", onClockUpdating);
 		lastClockUpdate = nowClock;
