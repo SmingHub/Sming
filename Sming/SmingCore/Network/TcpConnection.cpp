@@ -13,10 +13,6 @@
 #include "../Wiring/WString.h"
 #include "../Wiring/IPAddress.h"
 
-#ifdef ENABLE_SSL
-#include "../Clock.h"
-#endif
-
 TcpConnection::TcpConnection(bool autoDestruct) : autoSelfDestruct(autoDestruct), sleep(0), canSend(true), timeOut(70)
 {
 
@@ -428,7 +424,21 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 				}
 			}
 
-			con->ssl = ssl_client_new(con->sslContext, clientfd, NULL, 0, con->ssl_ext);
+			debugf("SSL: Session Id Length: %d", (con->sslSessionId != NULL ? con->sslSessionId->length: 0));
+			if(con->sslSessionId != NULL &&  con->sslSessionId->length > 0) {
+				debugf("-----BEGIN SSL SESSION PARAMETERS-----");
+				for (int i = 0; i <  con->sslSessionId->length; i++) {
+					m_printf("%02x", con->sslSessionId->value[i]);
+				}
+
+				debugf("\n-----END SSL SESSION PARAMETERS-----");
+			}
+
+			con->ssl = ssl_client_new(con->sslContext, clientfd,
+									 	 (con->sslSessionId != NULL ? con->sslSessionId->value : NULL),
+										 (con->sslSessionId != NULL ? con->sslSessionId->length: 0),
+										 con->ssl_ext
+									 );
 			if(ssl_handshake_status(con->ssl)!=SSL_OK) {
 				debugf("SSL: handshake is in progress...");
 				return SSL_OK;
@@ -438,6 +448,14 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 			debugf("SSL: Switching back 80 MHz");
 			System.setCpuFrequency(eCF_80MHz);
 #endif
+			if(con->sslSessionId) {
+				if(con->sslSessionId->value == NULL) {
+					con->sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
+				}
+				memcpy((void *)con->sslSessionId->value, (void *)con->ssl->session_id, con->ssl->sess_id_size);
+				con->sslSessionId->length = con->ssl->sess_id_size;
+			}
+
 		}
 	}
 #endif
@@ -525,20 +543,39 @@ err_t TcpConnection::staticOnReceive(void *arg, tcp_pcb *tcp, pbuf *p, err_t err
 				debugf("SSL: Switching back to 80 MHz");
 				System.setCpuFrequency(eCF_80MHz); // Preserve some CPU cycles
 #endif
-				if(con->sslFingerprint.certSha1 && ssl_match_fingerprint(con->ssl, con->sslFingerprint.certSha1) != SSL_OK) {
-					debugf("SSL: Certificate fingerprint does not match!");
+
+				bool hasError = false;
+				do {
+					if(con->sslFingerprint.certSha1 && ssl_match_fingerprint(con->ssl, con->sslFingerprint.certSha1) != SSL_OK) {
+						debugf("SSL: Certificate fingerprint does not match!");
+						hasError = true;
+						break;
+					}
+
+					if(con->sslFingerprint.pkSha256 && ssl_match_spki_sha256(con->ssl, con->sslFingerprint.pkSha256) != SSL_OK) {
+						debugf("SSL: Certificate PK fingerprint does not match!");
+						hasError = true;
+						break;
+					}
+				} while(0);
+
+				if(con->freeFingerprints) {
+					con->freeSslFingerprints();
+				}
+
+				if(hasError) {
 					con->close();
 					closeTcpConnection(tcp);
 
 					return ERR_ABRT;
 				}
 
-				if(con->sslFingerprint.pkSha256 && ssl_match_spki_sha256(con->ssl, con->sslFingerprint.pkSha256) != SSL_OK) {
-					debugf("SSL: Certificate PK fingerprint does not match!");
-					con->close();
-					closeTcpConnection(tcp);
-
-					return ERR_ABRT;
+				if(con->sslSessionId) {
+					if(con->sslSessionId->value == NULL) {
+						con->sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
+					}
+					memcpy((void *)con->sslSessionId->value, (void *)con->ssl->session_id, con->ssl->sess_id_size);
+					con->sslSessionId->length = con->ssl->sess_id_size;
 				}
 
 				err_t res = con->onConnected(err);
@@ -652,7 +689,7 @@ void TcpConnection::addSslOptions(uint32_t sslOptions) {
 	this->sslOptions |= sslOptions;
 }
 
-bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintType type) {
+bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintType type, bool freeAfterHandshake /* = false */) {
 	int length = 0;
 	uint8_t *localStore;
 
@@ -673,6 +710,7 @@ bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintTyp
 		return false;
 	}
 
+	freeFingerprints = freeAfterHandshake;
 
 	if(localStore) {
 		delete[] localStore;
@@ -694,6 +732,12 @@ bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintTyp
 	}
 
 
+	return true;
+}
+
+bool TcpConnection::pinCertificate(SSLFingerprints fingerprints, bool freeAfterHandshake /* = false */) {
+	sslFingerprint = fingerprints;
+	freeFingerprints = freeAfterHandshake;
 	return true;
 }
 
@@ -727,6 +771,13 @@ bool TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
 	return true;
 }
 
+bool TcpConnection::setSslClientKeyCert(SSLKeyCertPair clientKeyCert, bool freeAfterHandshake /* = false */) {
+	this->clientKeyCert = clientKeyCert;
+	freeClientKeyCert = freeAfterHandshake;
+
+	return true;
+}
+
 void TcpConnection::freeSslClientKeyCert() {
 	if(clientKeyCert.key) {
 		delete[] clientKeyCert.key;
@@ -745,6 +796,17 @@ void TcpConnection::freeSslClientKeyCert() {
 
 	clientKeyCert.keyLength = 0;
 	clientKeyCert.certificateLength = 0;
+}
+
+void TcpConnection::freeSslFingerprints() {
+	if(sslFingerprint.certSha1) {
+		delete[] sslFingerprint.certSha1;
+		sslFingerprint.certSha1 = NULL;
+	}
+	if(sslFingerprint.pkSha256) {
+		delete[] sslFingerprint.pkSha256;
+		sslFingerprint.pkSha256 = NULL;
+	}
 }
 
 SSL* TcpConnection::getSsl() {

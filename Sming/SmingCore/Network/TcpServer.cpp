@@ -82,13 +82,54 @@ void TcpServer::setTimeOut(uint16_t waitTimeOut)
 	timeOut = waitTimeOut;
 }
 
-bool TcpServer::listen(int port)
+#ifdef ENABLE_SSL
+void TcpServer::setServerKeyCert(SSLKeyCertPair serverKeyCert) {
+	clientKeyCert = serverKeyCert;
+}
+#endif
+
+bool TcpServer::listen(int port, bool useSsl /*= false */)
 {
 	if (tcp == NULL)
 		initialize(tcp_new());
 
 	err_t res = tcp_bind(tcp, IP_ADDR_ANY, port);
 	if (res != ERR_OK) return res;
+
+#ifdef ENABLE_SSL
+	this->useSsl = useSsl;
+
+	if(useSsl) {
+
+#ifdef SSL_DEBUG
+		sslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
+#endif
+
+		sslContext = ssl_ctx_new(sslOptions, sslSessionCacheSize);
+
+		if (!(clientKeyCert.keyLength && clientKeyCert.certificateLength)) {
+			debugf("SSL: server certificate and key are not provided!");
+			return false;
+		}
+
+		if (ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY,
+								clientKeyCert.key, clientKeyCert.keyLength,
+								clientKeyCert.keyPassword) != SSL_OK) {
+			debugf("SSL: Unable to load server private key");
+			return false;
+		}
+
+		if (ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT,
+			clientKeyCert.certificate,
+			clientKeyCert.certificateLength, NULL) != SSL_OK) {
+			debugf("SSL: Unable to load server certificate");
+			return false;
+		}
+
+		// TODO: test: free the certificate data on server destroy...
+		freeClientKeyCert = true;
+	}
+#endif
 
 	tcp = tcp_listen(tcp);
 	tcp_accept(tcp, staticAccept);
@@ -100,7 +141,7 @@ bool TcpServer::listen(int port)
 err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 {
 	// Anti DDoS :-)
-	if (system_get_free_heap_size() < 6500)
+	if (system_get_free_heap_size() < minHeapSize)
 	{
 		debugf("\r\n\r\nCONNECTION DROPPED\r\n\t(%d)\r\n\r\n", system_get_free_heap_size());
 		return ERR_MEM;
@@ -120,6 +161,21 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 	TcpConnection* client = createClient(clientTcp);
 	if (client == NULL) return ERR_MEM;
 	client->setTimeOut(timeOut);
+
+#ifdef ENABLE_SSL
+	if(useSsl) {
+		int clientfd = axl_append(clientTcp);
+		if(clientfd == -1) {
+			debugf("SSL: Unable to initiate tcp ");
+			return ERR_ABRT;
+		}
+
+		debugf("SSL: handshake start (%d ms)", millis());
+		client->ssl = ssl_server_new(sslContext, clientfd);
+		client->useSsl = true;
+	}
+#endif
+
 	onClient((TcpClient*)client);
 
 	return ERR_OK;
