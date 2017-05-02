@@ -39,14 +39,14 @@ public:
 	bool isWebSocket();
 
 	String getQueryParameter(String parameterName, String defaultValue = "");
-	String getPostParameter(String parameterName, String defaultValue = "");
+	String getPostPutParameter(String parameterName, String defaultValue = "");
 	String getHeader(String headerName, String defaultValue = "");
 	String getCookie(String cookieName, String defaultValue = "");
 	String getBody();
 
 public:
 	HttpParseResult parseHeader(HttpServer *server, pbuf* buf);
-	HttpParseResult parsePostData(HttpServer *server, pbuf* buf);
+	HttpParseResult parsePostPutData(HttpServer *server, pbuf* buf);
 	String extractParsingItemsList(String& buf, int startPos, int endPos,
 			char delimChar, char endChar,
 			HashMap<String, String>* resultItems);
@@ -57,9 +57,9 @@ private:
 	String tmpbuf;
 	HashMap<String, String> *requestHeaders;
 	HashMap<String, String> *requestGetParameters;
-	HashMap<String, String> *requestPostParameters;
+	HashMap<String, String> *requestPostPutParameters;
 	HashMap<String, String> *cookies;
-	int postDataProcessed;
+	int postPutDataProcessed;
 	int headerDataProcessed;
 	char *bodyBuf;
 

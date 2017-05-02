@@ -15,10 +15,10 @@ HttpRequest::HttpRequest()
 {
 	requestHeaders = NULL;
 	requestGetParameters = NULL;
-	requestPostParameters = NULL;
+	requestPostPutParameters = NULL;
 	cookies = NULL;
 	headerDataProcessed = 0;
-	postDataProcessed = 0;
+	postPutDataProcessed = 0;
 	bodyBuf = NULL;
 	tmpbuf = "";
 }
@@ -27,9 +27,9 @@ HttpRequest::~HttpRequest()
 {
 	delete requestHeaders;
 	delete requestGetParameters;
-	delete requestPostParameters;
+	delete requestPostPutParameters;
 	delete cookies;
-	postDataProcessed = 0;
+	postPutDataProcessed = 0;
 	if (bodyBuf != NULL)
 	{
 		os_free(bodyBuf);
@@ -43,10 +43,10 @@ String HttpRequest::getQueryParameter(String parameterName, String defaultValue 
 
 	return defaultValue;
 }
-String HttpRequest::getPostParameter(String parameterName, String defaultValue /* = "" */)
+String HttpRequest::getPostPutParameter(String parameterName, String defaultValue /* = "" */)
 {
-	if (requestPostParameters && requestPostParameters->contains(parameterName))
-			return (*requestPostParameters)[parameterName];
+	if (requestPostPutParameters && requestPostPutParameters->contains(parameterName))
+			return (*requestPostPutParameters)[parameterName];
 
 	return defaultValue;
 }
@@ -169,12 +169,12 @@ HttpParseResult HttpRequest::parseHeader(HttpServer *server, pbuf* buf)
 	return eHPR_Wait;
 }
 
-HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
+HttpParseResult HttpRequest::parsePostPutData(HttpServer *server, pbuf* buf)
 {
 	int start = 0;
 	tmpbuf += NetUtils::pbufStrCopy(buf, 0, buf->tot_len);
 	// First enter
-	if (requestPostParameters == NULL)
+	if (requestPostPutParameters == NULL)
 	{
 		int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
 		if (headerEnd == -1) return eHPR_Failed;
@@ -183,7 +183,7 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 			debugf("NETWORK_MAX_HTTP_PARSING_LEN");
 			return eHPR_Failed;
 		}
-		requestPostParameters = new HashMap<String, String>();
+		requestPostPutParameters = new HashMap<String, String>();
 		start = headerEnd + 4;
 		tmpbuf = tmpbuf.substring(start, tmpbuf.length());
 	}
@@ -193,16 +193,16 @@ HttpParseResult HttpRequest::parsePostData(HttpServer *server, pbuf* buf)
 	contType.toLowerCase();
 	if (contType.indexOf(ContentType::FormUrlEncoded) != -1)
 	{
-		tmpbuf = extractParsingItemsList(tmpbuf, 0, tmpbuf.length(), '&', ' ', requestPostParameters);
+		tmpbuf = extractParsingItemsList(tmpbuf, 0, tmpbuf.length(), '&', ' ', requestPostPutParameters);
 	}
 
-	postDataProcessed += buf->tot_len - start ;
+	postPutDataProcessed += buf->tot_len - start ;
 
-	if (postDataProcessed == getContentLength())
+	if (postPutDataProcessed == getContentLength())
 	{
 		return eHPR_Successful;
 	}
-	else if (postDataProcessed > getContentLength())
+	else if (postPutDataProcessed > getContentLength())
 	{
 		//avoid bufferoverflow if client announces non-correct content-length
 		debugf("NETWORK_MAX_HTTP_PARSING_LEN");
