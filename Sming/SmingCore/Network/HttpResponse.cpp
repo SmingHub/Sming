@@ -44,6 +44,9 @@ void HttpResponse::forbidden()
 void HttpResponse::authorizationRequired()
 {
 	status = HttpStatusCode::Unauthorized;
+	setHeader("WWW-Authenticate","Basic realm=\"Sming\"");
+	setHeader("401 Wrong credentials","Wrong credentials");
+	setHeader("Connection","close");
 }
 void HttpResponse::redirect(String location /* = "" */)
 {
@@ -62,6 +65,16 @@ int HttpResponse::getStatusCode()
 	if (status.length() == 0 || p == -1) return 0;
 
 	return status.substring(0, p).toInt();
+}
+
+void HttpResponse::setStatus(String statusline)
+{
+	status = statusline;
+}
+
+void HttpResponse::setStatus(int code, String msg /* = "" */)
+{
+	status = String(code) + " " + msg;
 }
 
 bool HttpResponse::hasBody()

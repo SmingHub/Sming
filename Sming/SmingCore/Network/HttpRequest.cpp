@@ -10,6 +10,7 @@
 #include "NetUtils.h"
 #include <stdlib.h>
 #include "../../Services/WebHelpers/escape.h"
+#include "../../Services/WebHelpers/base64.h"
 
 HttpRequest::HttpRequest()
 {
@@ -252,6 +253,44 @@ String HttpRequest::extractParsingItemsList(String& buf, int startPos, int endPo
 String HttpRequest::getBody()
 {
 	return tmpbuf;
+}
+
+
+bool HttpRequest::isAuthenticated(String username, String password)
+{
+	String authstring = getHeader("Authorization", "");
+    String method = authstring.substring(0, 6);
+
+    //limit to basic authorization
+    if (method.equalsIgnoreCase("basic "))
+    {
+    	authstring = authstring.substring(6);
+
+    	// limit to max 100 chars for username and password
+		if(authstring.length() < 100)
+		{
+			unsigned char decbuf[authstring.length()]; // buffer for the decoded string
+			int outlen = base64_decode(authstring.length(), authstring.c_str(), authstring.length(), decbuf);
+			decbuf[outlen] = 0;
+			authstring = String((char*)decbuf);
+			int delim = authstring.indexOf(":");
+
+			//check for username and password seperator
+			if( delim != -1)
+			{
+
+				String user = authstring.substring(0, delim);
+				String pass = authstring.substring(delim+1);
+				if(user.equals(username) && pass.equals(password))
+				{
+					//sucessfull authorization
+					return true;
+				}
+			}
+		}
+    }
+    return false;
+
 }
 
 bool HttpRequest::isAjax()
