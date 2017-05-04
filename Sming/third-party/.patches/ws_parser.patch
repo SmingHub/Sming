@@ -1,0 +1,14 @@
+diff --git a/ws_parser.c b/ws_parser.c
+index 88e4810..3da68e1 100644
+--- a/ws_parser.c
++++ b/ws_parser.c
+@@ -244,7 +244,8 @@ ws_parser_execute(ws_parser_t* parser, /* mutates! */ char* buff, size_t len)
+                 }
+ 
+                 if(parser->mask_flag) {
+-                    for(size_t i = 0; i < chunk_length; i++) {
++                    size_t i = 0;
++                    for(i = 0; i < chunk_length; i++) {
+                         buff[i] ^= parser->mask[parser->mask_pos++];
+                     }
+                 }

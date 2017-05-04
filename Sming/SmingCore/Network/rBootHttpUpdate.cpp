@@ -3,12 +3,59 @@
  *
  *  Created on: 2015/09/03.
  *      Author: Richard A Burton & Anakod
+ *
+ *  Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
  */
 
 #include "rBootHttpUpdate.h"
 #include "../Platform/System.h"
 #include "URL.h"
 #include "../Platform/WDT.h"
+
+void rBootItemOutputStream::setItem(rBootHttpUpdateItem* item) {
+	this->item = item;
+}
+
+bool rBootItemOutputStream::init() {
+	if(item == NULL) {
+		debugf("rBootItemOutputStream: Item must be set!");
+		return false;
+	}
+
+	rBootWriteStatus = rboot_write_init( this->item->targetOffset );
+	initilized = true;
+
+	return true;
+}
+
+size_t rBootItemOutputStream::write(const uint8_t* data, size_t size) {
+	if(!initilized && size > 0) {
+		if(!init()) { // unable to initialize
+			return -1;
+		}
+
+		initilized = true;
+	}
+
+	if(!rboot_write_flash(&rBootWriteStatus, (uint8_t *)data, size)) {
+		debugf("rboot_write_flash: Failed. Size: %d", size);
+		return -1;
+	}
+
+	item->size += size;
+
+	debugf("rboot_write_flash: item.size: %d", item->size);
+
+	return size;
+}
+
+bool rBootItemOutputStream::close() {
+	return rboot_write_end(&rBootWriteStatus);
+}
+
+rBootItemOutputStream::~rBootItemOutputStream() {
+	close();
+}
 
 rBootHttpUpdate::rBootHttpUpdate() {
 	currentItem = 0;
@@ -27,11 +74,79 @@ void rBootHttpUpdate::addItem(int offset, String firmwareFileUrl) {
 	items.add(add);
 }
 
-void rBootHttpUpdate::start() {
-	timer.initializeMs(500, TimerDelegate(&rBootHttpUpdate::onTimer, this)).start();
+void rBootHttpUpdate::setBaseRequest(HttpRequest *request) {
+	baseRequest = request;
 }
 
-void rBootHttpUpdate::switchToRom(uint8 romSlot) {
+void rBootHttpUpdate::start() {
+	for(int i=0; i< items.count(); i++) {
+		rBootHttpUpdateItem &it = items[i];
+		debugf("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
+
+		HttpRequest *request;
+		if(baseRequest != NULL) {
+			request = baseRequest->clone();
+			request->setURL(URL(it.url));
+		}
+		else {
+			request = new HttpRequest(URL(it.url));
+		}
+
+		request->setMethod(HTTP_GET);
+
+		rBootItemOutputStream *responseStream = getStream();
+		responseStream->setItem(&it);
+
+		request->setResponseStream(responseStream);
+
+		if(i == items.count() - 1) {
+			request->onRequestComplete(RequestCompletedDelegate(&rBootHttpUpdate::updateComplete, this));
+		}
+		else {
+			request->onRequestComplete(RequestCompletedDelegate(&rBootHttpUpdate::itemComplete, this));
+		}
+
+		if(!send(request)) {
+			debugf("ERROR: Rejected sending new request.");
+			break;
+		}
+	}
+}
+
+rBootItemOutputStream* rBootHttpUpdate::getStream() {
+	return new rBootItemOutputStream();
+}
+
+int rBootHttpUpdate::itemComplete(HttpConnection& client, bool success) {
+	if(!success) {
+		updateFailed();
+		return -1;
+	}
+
+	return 0;
+}
+
+int rBootHttpUpdate::updateComplete(HttpConnection& client, bool success) {
+	debugf("\r\nFirmware download finished!");
+	for (int i = 0; i < items.count(); i++) {
+		debugf(" - item: %d, addr: %X, len: %d bytes", i, items[i].targetOffset, items[i].size);
+	}
+
+	if(!success) {
+		updateFailed();
+		return -1;
+	}
+
+	if(updateDelegate) {
+		updateDelegate(*this, true);
+	}
+
+	applyUpdate();
+
+	return 0;
+}
+
+void rBootHttpUpdate::switchToRom(uint8_t romSlot) {
 	this->romSlot = romSlot;
 }
 
@@ -44,92 +159,24 @@ void rBootHttpUpdate::setDelegate(OtaUpdateDelegate reqUpdateDelegate) {
 }
 
 void rBootHttpUpdate::updateFailed() {
-	timer.stop();
 	debugf("\r\nFirmware download failed..");
-	if (updateDelegate) updateDelegate(*this, false);
+	if (updateDelegate) {
+		updateDelegate(*this, false);
+	}
 	items.clear();
 }
 
-void rBootHttpUpdate::onTimer() {
-	
-	if (TcpClient::isProcessing()) return; // Will wait
-	
-	if (TcpClient::getConnectionState() == eTCS_Successful) {
-
-		//  always call writeEnd()
-		if (!writeEnd()) {
-			debugf("final checks failed!");
-			writeError = 1;
-		}    
-		
-		if (!isSuccessful()) {
-			updateFailed();
-			return;
-		}
-		
-		currentItem++;
-		if (currentItem >= items.count()) {
-			debugf("\r\nFirmware download finished!");
-			for (int i = 0; i < items.count(); i++) {
-				debugf(" - item: %d, addr: %X, len: %d bytes", i, items[i].targetOffset, items[i].size);
-			}
-			
-			applyUpdate();
-			return;
-		}
-		
-	} else if (TcpClient::getConnectionState() == eTCS_Failed) {
-		updateFailed();
-		return;
-	}
-	
-	rBootHttpUpdateItem &it = items[currentItem];
-	debugf("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
-	writeInit();
-	startDownload(URL(it.url), eHCM_UserDefined, NULL);
-}
-
-
-void rBootHttpUpdate::writeRawData(pbuf* buf, int startPos) {
-	pbuf *cur = buf;
-	while (cur != NULL && cur->len > 0 && !writeError) {
-		uint8* ptr = (uint8*) cur->payload + startPos;
-		int len = cur->len - startPos;
-		writeError = !writeFlash(ptr, len);
-		if (writeError) {
-			debugf("Write Error!");
-		}
-		items[currentItem].size += len;
-		cur = cur->next;
-		startPos = 0;
-	}
-}
-
-void rBootHttpUpdate::writeInit() {
-	rBootWriteStatus = rboot_write_init( items[currentItem].targetOffset );
-}
-
-bool rBootHttpUpdate::writeFlash(const u8 *data, u16 size) {
-	return rboot_write_flash(&rBootWriteStatus, (u8 *) data, size );
-}
-
-bool rBootHttpUpdate::writeEnd() {
-	return rboot_write_end(&rBootWriteStatus);
-}
-
 void rBootHttpUpdate::applyUpdate() {
-	timer.stop();
+	items.clear();
 	if (romSlot == NO_ROM_SWITCH) {
 		debugf("Firmware updated.");
-		if (updateDelegate) updateDelegate(*this, true);
-		items.clear();
-	} else {
-		// set to boot new rom and then reboot
-		debugf("Firmware updated, rebooting to rom %d...\r\n", romSlot);
-		rboot_set_current_rom(romSlot);
-		System.restart();
+		return;
 	}
-	return;
+
+	// set to boot new rom and then reboot
+	debugf("Firmware updated, rebooting to rom %d...\r\n", romSlot);
+	rboot_set_current_rom(romSlot);
+	System.restart();
 }
 
 rBootHttpUpdateItem rBootHttpUpdate::getItem(unsigned int index) {

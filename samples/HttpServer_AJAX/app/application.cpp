@@ -62,7 +62,7 @@ void onAjaxInput(HttpRequest &request, HttpResponse &response)
 	for (int i = 0; i < countInputs; i++)
 		gpio[namesInput[i].c_str()] = digitalRead(inputs[i]);
 
-	response.sendJsonObject(stream);
+	response.sendDataStream(stream, MIME_JSON);
 }
 
 void onAjaxFrequency(HttpRequest &request, HttpResponse &response)
@@ -75,7 +75,7 @@ void onAjaxFrequency(HttpRequest &request, HttpResponse &response)
 	json["status"] = (bool)true;
 	json["value"] = (int)System.getCpuFrequency();
 
-	response.sendJsonObject(stream);
+	response.sendDataStream(stream, MIME_JSON);
 }
 
 void startWebServer()

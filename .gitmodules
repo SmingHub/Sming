@@ -29,3 +29,11 @@
 	path = Sming/third-party/esp-open-lwip
 	url = https://github.com/pfalcon/esp-open-lwip.git
 	ignore = dirty
+[submodule "Sming/third-party/http-parser"]
+	path = Sming/third-party/http-parser
+	url = https://github.com/nodejs/http-parser.git
+	ignore = dirty
+[submodule "Sming/third-party/ws_parser"]
+	path = Sming/third-party/ws_parser
+	url = https://github.com/charliesome/ws_parser.git
+	ignore = dirty

@@ -12,21 +12,21 @@
 #include "Stream.h"
 #include "Print.h"
 #include "WiringFrameworkDependencies.h"
-#include "Network/WebSocket.h"
+#include "Network/Http/Websocket/WebSocketConnection.h"
 
 class CommandOutput: public Print
 {
 public:
 	CommandOutput(TcpClient* reqClient);
 	CommandOutput(Stream* reqStream);
-	CommandOutput(WebSocket* reqSocket);
+	CommandOutput(WebSocketConnection* reqSocket);
 	virtual ~CommandOutput();
 
 	size_t write(uint8_t outChar);
 
 	TcpClient* outputTcpClient = nullptr;
 	Stream*    outputStream = nullptr;
-	WebSocket* outputSocket = nullptr;
+	WebSocketConnection* outputSocket = nullptr;
 	String tempSocket = "";
 };
 

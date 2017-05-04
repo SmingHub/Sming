@@ -13,7 +13,7 @@ void onIndex(HttpRequest &request, HttpResponse &response)
 void onConfiguration(HttpRequest &request, HttpResponse &response)
 {
 
-	if (request.getRequestMethod() == RequestMethod::POST)
+	if (request.method == HTTP_POST)
 	{
 		debugf("Update config");
 		// Update config
@@ -74,16 +74,16 @@ void onConfiguration_json(HttpRequest &request, HttpResponse &response)
 	json["StaPassword"] = ActiveConfig.StaPassword;
 	json["StaEnable"] = ActiveConfig.StaEnable;
 
-	response.sendJsonObject(stream);
+	response.sendDataStream(stream, MIME_JSON);
 }
 void onFile(HttpRequest &request, HttpResponse &response)
 {
-	String file = request.getPath();
+	String file = request.uri.Path;
 	if (file[0] == '/')
 		file = file.substring(1);
 
 	if (file[0] == '.')
-		response.forbidden();
+		response.code = HTTP_STATUS_FORBIDDEN;
 	else
 	{
 		response.setCache(86400, true); // It's important to use cache for better performance.
@@ -98,7 +98,7 @@ void onAJAXGetState(HttpRequest &request, HttpResponse &response)
 
 	json["counter"] = counter;
 
-	response.sendJsonObject(stream);
+	response.sendDataStream(stream, MIME_JSON);
 }
 
 
