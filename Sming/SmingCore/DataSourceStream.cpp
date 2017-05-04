@@ -341,8 +341,8 @@ uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 
 int JsonObjectStream::length()
 {
-	if (rootNode != JsonObject::invalid()) {
-		return -1;
+	if (rootNode == JsonObject::invalid()) {
+		return 0;
 	}
 
 	return rootNode.measureLength();
