@@ -33,7 +33,7 @@ public:
 
 	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers, RequestCompletedDelegate requestComplete) {
 		return send(request(url)
-				   ->setMethod(HTTP_GET)
+				   ->setMethod(method)
 				   ->setHeaders(headers)
 				   ->onRequestComplete(requestComplete)
 				   );
