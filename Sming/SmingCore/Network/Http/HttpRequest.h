@@ -133,6 +133,8 @@ public:
 
 	int retries = 0; // how many times the request should be send again...
 
+	void *args = NULL; // Used to store data that should be valid during a single request
+
 protected:
 	RequestHeadersCompletedDelegate headersCompletedDelegate;
 	RequestBodyDelegate requestBodyDelegate;

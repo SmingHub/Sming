@@ -3,6 +3,11 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HttpServerConnection
+ *
+ * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
+ *
  ****/
 
 #ifndef _SMING_CORE_HTTPSERVERCONNECTION_H_
@@ -15,6 +20,7 @@
 
 #include "HttpResource.h"
 #include "HttpRequest.h"
+#include "HttpBodyParser.h"
 
 #ifndef HTTP_SERVER_EXPOSE_NAME
 #define HTTP_SERVER_EXPOSE_NAME 1
@@ -42,12 +48,11 @@ public:
 	virtual ~HttpServerConnection();
 
 	void setResourceTree(ResourceTree* resourceTree);
+	void setBodyParsers(BodyParsers* bodyParsers);
 
 	void send();
 
 	using TcpClient::send;
-
-//	virtual void close();
 
 protected:
 	virtual err_t onReceive(pbuf *buf);
@@ -91,6 +96,9 @@ private:
 	bool lastWasValue = true;
 	String lastData = "";
 	String currentField  = "";
+
+	BodyParsers* bodyParsers;
+	HttpBodyParserDelegate bodyParser;
 };
 
 #endif /* _SMING_CORE_HTTPSERVERCONNECTION_H_ */

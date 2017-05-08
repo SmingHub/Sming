@@ -21,12 +21,14 @@
 #include "Http/HttpRequest.h"
 #include "Http/HttpResource.h"
 #include "Http/HttpServerConnection.h"
+#include "Http/HttpBodyParser.h"
 
 typedef struct {
 	int maxActiveConnections = 10; // << the maximum number of concurrent requests..
 	int keepAliveSeconds = 5; // << the default seconds to keep the connection alive before closing it
 	int minHeapSize = -1; // << defines the min heap size that is required to accept connection.
 					      //  -1 - means use server default
+	bool useDefaultBodyParsers = 1; // << if the default body parsers,  as form-url-encoded, should be used
 #ifdef ENABLE_SSL
 	int sslSessionCacheSize = 10; // << number of SSL session ids to cache. Setting this to 0 will disable SSL session resumption.
 #endif
@@ -45,6 +47,8 @@ public:
 	 * @brief Allows changing the server configuration
 	 */
 	void configure(HttpServerSettings settings);
+
+	void setBodyParser(const String& contentType, HttpBodyParserDelegate parser);
 
 	/**
 	 * @param String path URL path.
@@ -71,6 +75,7 @@ protected:
 private:
 	HttpServerSettings settings;
 	ResourceTree resourceTree;
+	BodyParsers bodyParsers;
 };
 
 #endif /* _SMING_CORE_HTTPSERVER_H_ */
