@@ -1,0 +1,46 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HttpBodyParser
+ *
+ * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
+ *
+ ****/
+
+#ifndef _SMING_CORE_HTTP_BODY_PARSER_H_
+#define _SMING_CORE_HTTP_BODY_PARSER_H_
+
+#include "HttpCommon.h"
+#include "HttpRequest.h"
+
+typedef Delegate<void(HttpRequest&, const char *at, int length)> HttpBodyParserDelegate;
+typedef HashMap <String, HttpBodyParserDelegate> BodyParsers;
+
+typedef struct {
+	char searchChar = '=';
+	String postName = "";
+} FormUrlParserState;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @brief Parses application/x-www-form-urlencoded body data
+ * @param HttpRequest&
+ * @param const *char
+ * @param int length Negative lengths are used to specify special cases
+ * 				-1 - start of incoming data
+ * 				-2 - end of incoming data
+ */
+void formUrlParser(HttpRequest& request, const char *at, int length);
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* _SMING_CORE_HTTP_BODY_PARSER_H_ */

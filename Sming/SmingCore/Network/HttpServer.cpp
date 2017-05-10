@@ -31,6 +31,11 @@ void HttpServer::configure(HttpServerSettings settings) {
 	if(settings.minHeapSize != -1 && settings.minHeapSize > -1) {
 		minHeapSize = settings.minHeapSize;
 	}
+
+	if(settings.useDefaultBodyParsers) {
+		setBodyParser(ContentType::toString(MIME_FORM_URL_ENCODED), formUrlParser);
+	}
+
 	setTimeOut(settings.keepAliveSeconds);
 #ifdef ENABLE_SSL
 	sslSessionCacheSize = settings.sslSessionCacheSize;
@@ -46,10 +51,16 @@ HttpServer::~HttpServer()
 	}
 }
 
+void HttpServer::setBodyParser(const String& contentType, HttpBodyParserDelegate parser)
+{
+	bodyParsers[contentType] = parser;
+}
+
 TcpConnection* HttpServer::createClient(tcp_pcb *clientTcp)
 {
 	HttpServerConnection* con = new HttpServerConnection(clientTcp);
 	con->setResourceTree(&resourceTree);
+	con->setBodyParsers(&bodyParsers);
 	con->setCompleteDelegate(TcpClientCompleteDelegate(&HttpServer::onConnectionClose, this));
 
 	totalConnections++;
