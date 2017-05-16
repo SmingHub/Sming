@@ -182,8 +182,14 @@ int HttpServerConnection::staticOnHeadersComplete(http_parser* parser)
 	}
 
 	if(connection->request.headers.contains("Content-Type")) {
-		if(connection->bodyParsers->contains(connection->request.headers["Content-Type"])) {
-			connection->bodyParser = (*connection->bodyParsers)[connection->request.headers["Content-Type"]];
+		String contentType = connection->request.headers["Content-Type"];
+		int endPos = contentType.indexOf(';');
+		if(endPos != -1) {
+			contentType = contentType.substring(0, endPos);
+		}
+
+		if(connection->bodyParsers->contains(contentType)) {
+			connection->bodyParser = (*connection->bodyParsers)[contentType];
 			connection->bodyParser(connection->request, NULL, -1);
 		}
 	}
