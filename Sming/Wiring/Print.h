@@ -86,6 +86,7 @@ class Print
 
     // printf
     size_t printf(const char *fmt, ...);
+    size_t printf(const char *fmt, va_list va);
 
   private:
     int write_error;
