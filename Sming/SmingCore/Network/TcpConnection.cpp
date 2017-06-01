@@ -42,41 +42,12 @@ TcpConnection::~TcpConnection()
 
 bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
-	if (tcp == NULL)
-		initialize(tcp_new());
+	return internalConnectHost(server.c_str(), port, useSsl, sslOptions);
+}
 
-	ip_addr_t addr;
-
-	this->useSsl = useSsl;
-#ifdef ENABLE_SSL
-	this->sslOptions |= sslOptions;
-
-	if(ssl_ext == NULL) {
-		ssl_ext = ssl_ext_new();
-		ssl_ext->host_name = (char *)malloc(server.length() + 1);
-		strcpy(ssl_ext->host_name, server.c_str());
-
-		ssl_ext->max_fragment_size = 4*1024; // 4K max size
-	}
-#endif
-
-	debugf("connect to: %s", server.c_str());
-	canSend = false; // Wait for connection
-	DnsLookup *look = new DnsLookup { this, port };
-	err_t dnslook = dns_gethostbyname(server.c_str(), &addr, staticDnsResponse, look);
-	if (dnslook != ERR_OK)
-	{
-		if (dnslook == ERR_INPROGRESS)
-			return true;
-		else
-		{
-			delete look;
-			return false;
-		}
-	}
-	delete look;
-
-	return internalTcpConnect(addr, port);
+bool TcpConnection::connect(const char * server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+{
+	return internalConnectHost(server, port, useSsl, sslOptions);
 }
 
 bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
@@ -89,7 +60,7 @@ bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl /* = fals
 	this->sslOptions |= sslOptions;
 #endif
 
-	return internalTcpConnect(addr, port);
+	return internalConnectIP(addr, port);
 }
 
 void TcpConnection::setTimeOut(uint16_t waitTimeOut)
@@ -359,7 +330,45 @@ void TcpConnection::flush()
 	}
 }
 
-bool TcpConnection::internalTcpConnect(IPAddress addr, uint16_t port)
+bool TcpConnection::internalConnectHost(const char * hostname, uint16_t port, bool useSsl, uint32_t sslOptions)
+{
+	if (tcp == NULL)
+		initialize(tcp_new());
+
+	ip_addr_t addr;
+
+	this->useSsl = useSsl;
+#ifdef ENABLE_SSL
+	this->sslOptions |= sslOptions;
+
+	if(ssl_ext == NULL) {
+		ssl_ext = ssl_ext_new();
+		ssl_ext->host_name = (char *)hostname;
+
+		ssl_ext->max_fragment_size = 4*1024; // 4K max size
+	}
+#endif
+
+	debugf("connect to: %s", hostname);
+	canSend = false; // Wait for connection
+	DnsLookup *look = new DnsLookup { this, port };
+	err_t dnslook = dns_gethostbyname(hostname, &addr, staticDnsResponse, look);
+	if (dnslook != ERR_OK)
+	{
+		if (dnslook == ERR_INPROGRESS)
+			return true;
+		else
+		{
+			delete look;
+			return false;
+		}
+	}
+	delete look;
+
+	return internalConnectIP(addr, port);
+}
+
+bool TcpConnection::internalConnectIP(IPAddress addr, uint16_t port)
 {
 	NetUtils::FixNetworkRouting();
 	err_t res = tcp_connect(tcp, addr, port, staticOnConnected);
@@ -668,7 +677,7 @@ void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void 
 		debugf("DNS record found: %s = %d.%d.%d.%d",
 				name, ip[0], ip[1], ip[2], ip[3]);
 
-		dlook->con->internalTcpConnect(ip, dlook->port);
+		dlook->con->internalConnectIP(ip, dlook->port);
 	}
 	else
 	{
