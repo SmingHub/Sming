@@ -401,8 +401,13 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 #endif
 			debugf("SSL: Starting connection...");
 #ifndef SSL_SLOW_CONNECT
-			debugf("SSL: Switching to 160 MHz");
-			System.setCpuFrequency(eCF_160MHz); // For shorter waiting time, more power consumption.
+      CpuFrequency userCpuFreq = System.getCpuFrequency();
+
+      // Switch only if it's lower
+      if (userCpuFreq < eCF_160MHz) {
+			  debugf("SSL: Switching to 160 MHz");
+			  System.setCpuFrequency(eCF_160MHz); // For shorter waiting time, more power consumption.
+      }
 #endif
 			debugf("SSL: handshake start (%d ms)", millis());
 			con->sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | sslOptions, 1);
@@ -445,8 +450,10 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 			}
 
 #ifndef SSL_SLOW_CONNECT
-			debugf("SSL: Switching back 80 MHz");
-			System.setCpuFrequency(eCF_80MHz);
+      if (userCpuFreq != System.getCpuFrequency()) {
+			  debugf("SSL: Switching back to %d MHz", userCpuFreq);
+			  System.setCpuFrequency(userCpuFreq);
+      }
 #endif
 			if(con->sslSessionId) {
 				if(con->sslSessionId->value == NULL) {
