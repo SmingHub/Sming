@@ -274,6 +274,11 @@ ifeq ($(ENABLE_SSL),1)
 	CXXFLAGS += $(AXTLS_FLAGS)
 endif
 
+ifeq ($(ENABLE_WPS), 1)
+   LIBS += wps
+   CFLAGS += -DENABLE_WPS=1
+endif
+
 SRC_DIR		:= $(MODULES)
 BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
 
