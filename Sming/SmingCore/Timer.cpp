@@ -181,13 +181,13 @@ void Timer::processing(void *arg)
 					ptimer->stop();
 			}
 		}
-      ptimer->loop();
+		ptimer->tick();
 	}
 
 }
 
 
-void Timer::loop()
+void Timer::tick()
 {
 	if (callback)
 	{
@@ -197,7 +197,7 @@ void Timer::loop()
 	{
 		delegate_func();
 	}
-   else{
-      stop();
-   }
+	else{
+		stop();
+	}
 }

@@ -134,7 +134,7 @@ protected:
      *  @note   Can be override in class derivations. If overwriten,
      *          no classic other callbacks are working.
      */
-    virtual void loop();
+    virtual void tick();
     /** @} */
 
 private:
