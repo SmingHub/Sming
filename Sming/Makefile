@@ -195,13 +195,27 @@ ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 	CUSTOM_TARGETS += $(USER_LIBDIR)/libmainmm.a
 endif
 
+LWIP_FLAVOUR ?= esp-open-lwip
+#LWIP_FLAVOUR ?= lwip2
+
 # => Open Source LWIP
 LIBLWIP = lwip
 ENABLE_CUSTOM_LWIP ?= 1
 ENABLE_ESPCONN ?= 0
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
-	EXTRA_INCDIR += third-party/esp-open-lwip/include
+	ifeq ($(LWIP_FLAVOUR), lwip2)
+		THIRD_PARTY_DATA += third-party/lwip2/Makefile.sming
+		EXTRA_INCDIR += compiler/include/lwip2
+		LIBLWIP = lwip2
+		LWIP_MAKEFILE = Makefile.sming
+		MORE_CFLAGS += -DLWIP_NO_STDINT_H=1
+	else
+		THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
+		EXTRA_INCDIR += system/esp-lwip
+		EXTRA_INCDIR += third-party/esp-open-lwip/include
+		LIBLWIP = lwip_open
+		LWIP_MAKEFILE = Makefile.open
+	endif
 	EXTRA_CFLAGS_LWIP = -I../../system/include -I../../Wiring
 	ENABLE_LWIPDEBUG ?= 0
 	ifeq ($(ENABLE_LWIPDEBUG), 1)
@@ -210,8 +224,6 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 
 	ifeq ($(ENABLE_ESPCONN), 1)
 		LIBLWIP = lwip_full
-	else
-		LIBLWIP = lwip_open
 	endif
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBLWIP).a
 endif
@@ -228,8 +240,8 @@ endif
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS = -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
-         -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1
+CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
+CFLAGS		+= $(MORE_CFLAGS)
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
@@ -381,8 +393,8 @@ $(USER_LIBDIR)/libmainmm.a: $(addprefix $(SDK_LIBDIR)/,libmain.a)
 endif
 
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-$(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
-	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
+$(USER_LIBDIR)/liblwip%.a: third-party/$(LWIP_FLAVOUR)/$(LWIP_MAKEFILE)
+	$(Q) $(MAKE) -C third-party/$(LWIP_FLAVOUR)/ -f $(LWIP_MAKEFILE) ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
 endif
 
 spiffy: spiffy/spiffy
@@ -427,7 +439,7 @@ else
 	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
 endif	
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-	$(Q) -$(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" clean
+	$(Q) -$(MAKE) -C third-party/$(LWIP_FLAVOUR)/ -f $(LWIP_MAKEFILE) ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" clean
 endif
 
 test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM 
