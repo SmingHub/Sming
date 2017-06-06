@@ -54,7 +54,7 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 	station_config config = {0};
 
 	if (ssid.length() >= sizeof(config.ssid)) return false;
-	if (password.length() >= sizeof(config.password)) return false;
+	if (password.length() > sizeof(config.password)) return false;
 
 	bool enabled = isEnabled();
 	bool dhcp = isEnabledDHCP();
@@ -70,7 +70,10 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 		memset(config.password, 0, sizeof(config.password));
 		config.bssid_set = false;
 		strcpy((char*)config.ssid, ssid.c_str());
-		strcpy((char*)config.password, password.c_str());
+		if (password.length() == 64)
+			memcpy((char*)config.password, password.c_str(), 64);
+		else
+			strcpy((char*)config.password, password.c_str());
 
 		noInterrupts();
 
