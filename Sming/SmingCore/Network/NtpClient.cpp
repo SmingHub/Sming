@@ -52,7 +52,11 @@ void NtpClient::requestTime()
 		return;
 	}
 
+#if LWIP_VERSION_MAJOR == 1
 	struct ip_addr resolvedIp;
+#else
+	ip_addr_t resolvedIp;
+#endif
 	int result = dns_gethostbyname(this->server.c_str(), &resolvedIp,
 			staticDnsResponse, (void*) this);
 
@@ -174,7 +178,11 @@ void NtpClient::onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)
 	}
 }
 
+#if LWIP_VERSION_MAJOR == 1
 void NtpClient::staticDnsResponse(const char *name, struct ip_addr *ip, void *arg)
+#else
+void NtpClient::staticDnsResponse(const char *name, const ip_addr_t *ip, void *arg)
+#endif
 {
 	// DNS has been resolved
 
