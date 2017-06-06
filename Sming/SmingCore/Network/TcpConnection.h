@@ -202,7 +202,11 @@ protected:
 	static err_t staticOnSent(void *arg, tcp_pcb *tcp, uint16_t len);
 	static err_t staticOnPoll(void *arg, tcp_pcb *tcp);
 	static void staticOnError(void *arg, err_t err);
+#if LWIP_VERSION_MAJOR == 1
 	static void staticDnsResponse(const char *name, ip_addr_t *ipaddr, void *arg);
+#else
+	static void staticDnsResponse(const char *name, const ip_addr_t *ipaddr, void *arg);
+#endif
 
 	static void closeTcpConnection(tcp_pcb *tpcb);
 	void initialize(tcp_pcb* pcb);

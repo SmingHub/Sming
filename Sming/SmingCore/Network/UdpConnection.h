@@ -42,7 +42,11 @@ protected:
 
 protected:
 	void initialize(udp_pcb* pcb = NULL);
+#if LWIP_VERSION_MAJOR == 1
 	static void staticOnReceive(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct ip_addr *addr, u16_t port);
+#else
+	static void staticOnReceive(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr, u16_t port);
+#endif
 
 protected:
 	udp_pcb* udp;

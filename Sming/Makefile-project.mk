@@ -172,7 +172,12 @@ EXTRA_INCDIR ?= include # default to include if not set by user
 
 ENABLE_CUSTOM_LWIP ?= 1
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-	LWIP_INCDIR = $(SMING_HOME)/third-party/esp-open-lwip/include	
+	ifeq ($(LWIP_FLAVOUR), lwip2)
+		LWIP_INCDIR = $(SMING_HOME)/compiler/include/lwip2
+		MORE_CFLAGS += -DLWIP_NO_STDINT_H=1
+	else
+		LWIP_INCDIR = $(SMING_HOME)/third-party/esp-open-lwip/include	
+	endif
 endif
 
 EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
@@ -186,9 +191,11 @@ ifeq ($(ENABLE_CUSTOM_HEAP),1)
 	LIBMAIN = mainmm
 endif
 
-LIBLWIP = lwip
+LIBLWIP = lwip_open
+ifeq ($(LWIP_FLAVOUR), lwip2)
+	LIBLWIP = lwip2
+endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-	LIBLWIP = lwip_open
 	ifeq ($(ENABLE_ESPCONN), 1)
 		LIBLWIP = lwip_full
 	endif
@@ -207,6 +214,7 @@ LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING
 
 # compiler flags using during compilation of source files
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
+CFLAGS		+= $(MORE_CFLAGS)
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
