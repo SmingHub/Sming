@@ -8,6 +8,10 @@
 #include "CommandHandler.h"
 #include "CommandDelegate.h"
 
+#ifndef LWIP_HASH_STR
+#define LWIP_HASH_STR ""
+#endif
+
 CommandHandler::CommandHandler()
 {
 	 registeredCommands = new HashMap<String, CommandDelegate>;
@@ -136,13 +140,7 @@ void CommandHandler::procesStatusCommand(String commandLine, CommandOutput* comm
 	commandOutput->printf("ESP SDK version : ");
 	commandOutput->print(system_get_sdk_version());
 	commandOutput->printf("\r\n");
-	commandOutput->printf("lwIP version : %d.%d.%d(%s)\n", LWIP_VERSION_MAJOR, LWIP_VERSION_MINOR, LWIP_VERSION_REVISION,
-#ifdef LWIP_HASH_STR
-		LWIP_HASH_STR
-#else
-		""
-#endif
-	);
+	commandOutput->printf("lwIP version : %d.%d.%d(%s)\n", LWIP_VERSION_MAJOR, LWIP_VERSION_MINOR, LWIP_VERSION_REVISION, LWIP_HASH_STR);
 	commandOutput->printf("Time = ");
 	commandOutput->printf(SystemClock.getSystemTimeString().c_str());
 	commandOutput->printf("\r\n");
