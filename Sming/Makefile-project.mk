@@ -194,11 +194,13 @@ ifeq ($(ENABLE_CUSTOM_HEAP),1)
 	LIBMAIN = mainmm
 endif
 
-LIBLWIP = lwip_open
-ifeq ($(LWIP_FLAVOUR), lwip2)
-	LIBLWIP = lwip2
-endif
+LIBLWIP = lwip
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
+	ifeq ($(LWIP_FLAVOUR), lwip2)
+		LIBLWIP = lwip2
+	else
+		LIBLWIP = lwip_open
+	endif
 	ifeq ($(ENABLE_ESPCONN), 1)
 		LIBLWIP = lwip_full
 	endif
