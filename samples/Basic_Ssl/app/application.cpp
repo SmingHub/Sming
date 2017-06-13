@@ -86,6 +86,8 @@ int onDownload(HttpConnection& connection, bool success)
 		displayCipher(ssl);
 		displaySessionId(ssl);
 	}
+
+	return 0; // return 0 on success in your callbacks
 }
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
