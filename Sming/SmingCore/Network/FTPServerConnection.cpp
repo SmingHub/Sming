@@ -77,10 +77,9 @@ public:
 	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
 		if (completed) return;
-		char * buf = new char [1024];
+		char buf[1024];
 		int len = fileRead(file, buf, 1024);
 		write(buf, len, TCP_WRITE_FLAG_COPY);
-		delete buf;
 		if (fileIsEOF(file))
 		{
 			completed = true;
