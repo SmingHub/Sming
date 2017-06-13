@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include "eagle_soc.h"
 #include "espinc/spi_register.h"
-//#include "espinc/c_types_compatible.h"
 #include "c_types.h"
 // define the static singleton
 SPIClass SPI;
