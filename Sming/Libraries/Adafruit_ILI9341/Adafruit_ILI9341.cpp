@@ -157,7 +157,9 @@ void Adafruit_ILI9341::begin(void) {
 	transmitCmdData(0xE1, data, 15);    	//Set Gamma
 
 	transmitCmd(0x11);    	//Exit Sleep
-	os_delay_us(120000);
+//	os_delay_us(120000);
+	os_delay_us(60000);
+	os_delay_us(60000);
 
 	transmitCmd(0x29);    //Display on
 	transmitCmd(0x2c);
