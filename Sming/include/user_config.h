@@ -17,13 +17,10 @@ extern "C" {
 	#include <limits.h>
 	#include <stdint.h>
 
-	// Override c_types.h include and remove buggy espconn
-//	#define _C_TYPES_H_
+	// Remove buggy espconn
 	#define _NO_ESPCON_
 
-	// Updated, compatible version of c_types.h
-	// Just removed types declared in <stdint.h>
-//	#include <espinc/c_types_compatible.h>
+	// Now ESP SDK provide proper c_types.h by itself
 	#include "c_types.h"
 
 	// System API declarations
