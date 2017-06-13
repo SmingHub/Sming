@@ -89,7 +89,7 @@ int onDownload(HttpConnection& connection, bool success)
 		displaySessionId(ssl);
 	}
 
-	return 1;
+	return 0; // return 0 on success in your callbacks
 }
 
 void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
