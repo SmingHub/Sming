@@ -70,10 +70,12 @@ bool StationClass::config(String ssid, String password, bool autoConnectOnStartu
 		memset(config.password, 0, sizeof(config.password));
 		config.bssid_set = false;
 		strcpy((char*)config.ssid, ssid.c_str());
-		if (password.length() == 64)
+		if (password.length() == 64) {
 			memcpy((char*)config.password, password.c_str(), 64);
-		else
+		}
+		else {
 			strcpy((char*)config.password, password.c_str());
+		}
 
 		noInterrupts();
 
