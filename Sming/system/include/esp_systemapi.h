@@ -3,7 +3,7 @@
 #ifndef __ESP_SYSTEM_API_H__
 #define __ESP_SYSTEM_API_H__
 
-#include <ets_sys.h>
+#include "ets_sys.h"
 #include <osapi.h>
 #include <gpio.h>
 #include <os_type.h>

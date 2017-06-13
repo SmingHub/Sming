@@ -491,16 +491,22 @@ void uart_set_debug(int uart_nr)
     switch(s_uart_debug_nr) {
     case UART0:
         system_set_os_print(1);
+        ets_install_putc1((void *) &uart0_write_char);
         ets_install_putc1(uart0_write_char);
+        ets_install_putc1((void (*)(char)) &uart0_write_char);
         break;
     case UART1:
         system_set_os_print(1);
+        ets_install_putc1((void *) &uart1_write_char);
         ets_install_putc1(uart1_write_char);
+        ets_install_putc1((void (*)(char)) &uart1_write_char);
         break;
     case UART_NO:
     default:
         system_set_os_print(0);
+        ets_install_putc1((void *) &uart_ignore_char);
         ets_install_putc1(uart_ignore_char);
+        ets_install_putc1((void (*)(char)) &uart_ignore_char);
         break;
     }
 }
