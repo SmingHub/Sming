@@ -201,18 +201,18 @@ ENABLE_CUSTOM_LWIP ?= 1
 ENABLE_ESPCONN ?= 0
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
-	EXTRA_INCDIR += system/esp-lwip
 	EXTRA_INCDIR += third-party/esp-open-lwip/include
 	LIBLWIP = lwip_open
-	lwip_extra = 1
+	LWIP_EXTRA_FLAGS = 1
 endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 	THIRD_PARTY_DATA += third-party/lwip2/Makefile.sming
 	EXTRA_INCDIR += third-party/lwip2/include
 	LIBLWIP = lwip2
-	lwip_extra = 1
+	LWIP_EXTRA_FLAGS = 1
 endif
-ifeq ($(lwip_extra),1)
+
+ifeq ($(LWIP_EXTRA_FLAGS),1)
 	EXTRA_CFLAGS_LWIP = -I../../system/include -I../../Wiring
 	ENABLE_LWIPDEBUG ?= 0
 	ifeq ($(ENABLE_LWIPDEBUG), 1)
@@ -237,7 +237,8 @@ endif
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
+CFLAGS = -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+         -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options

@@ -25,6 +25,13 @@
 
 #include "WString.h"
 
+
+#if LWIP_VERSION_MAJOR == 2
+#define LWIP_IP_ADDR_T const ip_addr_t
+#else
+#define LWIP_IP_ADDR_T struct ip_addr_t
+#endif
+
 // A class to make it easier to handle and pass around IP addresses
 
 class IPAddress : public Printable

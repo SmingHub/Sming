@@ -117,11 +117,7 @@ void UdpConnection::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort
 	}
 }
 
-#if LWIP_VERSION_MAJOR == 1
-void UdpConnection::staticOnReceive(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct ip_addr *addr, u16_t port)
-#else
-void UdpConnection::staticOnReceive(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)
-#endif
+void UdpConnection::staticOnReceive(void *arg, struct udp_pcb *pcb, struct pbuf *p, LWIP_IP_ADDR_T *addr, u16_t port)
 {
 	UdpConnection *self = (UdpConnection*)arg;
 	if (self == NULL) return;
