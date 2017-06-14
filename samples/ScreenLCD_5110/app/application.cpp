@@ -9,7 +9,6 @@
 // GPIO4/D2 - LCD reset (RST)
 Adafruit_PCD8544 display = Adafruit_PCD8544(13, 12, 14, 5, 4);
 
-Timer displayTimer;
 
 void displayTest2()
 {
@@ -29,7 +28,7 @@ void displayTest()
 	display.begin();
 	display.setContrast(10);
 	display.display(); // show splashscreen
-	displayTimer.initializeMs(2000, displayTest2).start();
+	delay(2000);
 }
 
 void init()
