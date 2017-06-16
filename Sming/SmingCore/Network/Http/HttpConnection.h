@@ -104,7 +104,7 @@ protected:
 
 	RequestQueue* waitingQueue;
 	RequestQueue executionQueue;
-	http_parser *parser = NULL;
+	http_parser parser;
 	http_parser_settings parserSettings;
 	HttpHeaders responseHeaders;
 
