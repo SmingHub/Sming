@@ -24,6 +24,7 @@ bool HttpClient::send(HttpRequest* request) {
 	if(!queue[cacheKey]->enqueue(request)) {
 		// the queue is full and we cannot add more requests at the time.
 		debugf("The request queue is full at the moment");
+		delete request;
 		return false;
 	}
 
@@ -34,6 +35,8 @@ bool HttpClient::send(HttpRequest* request) {
 
 		debugf("Removing stale connection: State: %d, Active: %d", (int)httpConnectionPool[cacheKey]->getConnectionState(),
 										(httpConnectionPool[cacheKey]->isActive() ? 1: 0));
+		delete httpConnectionPool[cacheKey];
+		httpConnectionPool[cacheKey] = NULL;
 		httpConnectionPool.remove(cacheKey);
 	}
 

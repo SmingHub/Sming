@@ -22,6 +22,26 @@
 
 HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false), mode(eHCM_String) {
 	this->waitingQueue = queue;
+
+	http_parser_init(&parser, HTTP_RESPONSE);
+	parser.data = (void*)this;
+
+	memset(&parserSettings, 0, sizeof(parserSettings));
+
+	// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
+	parserSettings.on_message_begin     = staticOnMessageBegin;
+	parserSettings.on_headers_complete  = staticOnHeadersComplete;
+	parserSettings.on_message_complete  = staticOnMessageComplete;
+
+	parserSettings.on_chunk_header   = staticOnChunkHeader;
+	parserSettings.on_chunk_complete = staticOnChunkComplete;
+
+
+	// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
+	parserSettings.on_status            = staticOnStatus;
+	parserSettings.on_header_field      = staticOnHeaderField;
+	parserSettings.on_header_value      = staticOnHeaderValue;
+	parserSettings.on_body              = staticOnBody;
 }
 
 bool HttpConnection::connect(const String& host, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */) {
@@ -112,7 +132,9 @@ void HttpConnection::reset()
 	}
 
 	code = 0;
-	responseStringData = "";
+	if(responseStringData.length()) {
+		responseStringData = "";
+	}
 	responseHeaders.clear();
 
 	lastWasValue = true;
@@ -324,34 +346,12 @@ int HttpConnection::staticOnChunkComplete(http_parser* parser) {
 
 err_t HttpConnection::onConnected(err_t err) {
 	if (err == ERR_OK) {
-		// create parser ...
-		if(parser == NULL) {
-			parser = new http_parser;
-			http_parser_init(parser, HTTP_RESPONSE);
-			parser->data = (void*)this;
-
-			memset(&parserSettings, 0, sizeof(parserSettings));
-			// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
-			parserSettings.on_message_begin     = staticOnMessageBegin;
-			parserSettings.on_headers_complete  = staticOnHeadersComplete;
-			parserSettings.on_message_complete  = staticOnMessageComplete;
-
-			parserSettings.on_chunk_header   = staticOnChunkHeader;
-			parserSettings.on_chunk_complete = staticOnChunkComplete;
-
-
-			// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
-			parserSettings.on_status            = staticOnStatus;
-			parserSettings.on_header_field      = staticOnHeaderField;
-			parserSettings.on_header_value      = staticOnHeaderValue;
-			parserSettings.on_body              = staticOnBody;
-		}
-
 		debugf("HttpConnection::onConnected: waitingQueue.count: %d", waitingQueue->count());
 
 		do {
 			HttpRequest* request = waitingQueue->peek();
 			if(request == NULL) {
+				debugf("Nothing in the waiting queue");
 				break;
 			}
 
@@ -511,10 +511,10 @@ err_t HttpConnection::onReceive(pbuf *buf) {
 	pbuf *cur = buf;
 	int parsedBytes = 0;
 	while (cur != NULL && cur->len > 0) {
-		parsedBytes += http_parser_execute(parser, &parserSettings, (char*) cur->payload, cur->len);
-		if(HTTP_PARSER_ERRNO(parser) != HPE_OK) {
+		parsedBytes += http_parser_execute(&parser, &parserSettings, (char*) cur->payload, cur->len);
+		if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 			// we ran into trouble - abort the connection
-			debugf("HTTP parser error: %s", http_errno_name(HTTP_PARSER_ERRNO(parser)));
+			debugf("HTTP parser error: %s", http_errno_name(HTTP_PARSER_ERRNO(&parser)));
 			cleanup();
 			TcpConnection::onReceive(NULL);
 			return ERR_ABRT;
@@ -523,8 +523,8 @@ err_t HttpConnection::onReceive(pbuf *buf) {
 		cur = cur->next;
 	}
 
-	if (parser->upgrade) {
-		return onProtocolUpgrade(parser);
+	if (parser.upgrade) {
+		return onProtocolUpgrade(&parser);
 	} else if (parsedBytes != buf->tot_len) {
 		TcpClient::onReceive(NULL);
 
@@ -551,11 +551,6 @@ void HttpConnection::cleanup() {
 	// if there are requests in the executionQueue -> move them back to the waiting queue
 	for(int i=0; i < executionQueue.count(); i++) {
 		waitingQueue->enqueue(executionQueue.dequeue());
-	}
-
-	if(parser != NULL) {
-		delete parser;
-		parser = NULL;
 	}
 }
 
