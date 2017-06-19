@@ -51,13 +51,15 @@ bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, 
 #ifdef ENABLE_SSL
 	this->sslOptions |= sslOptions;
 
-	if(ssl_ext == NULL) {
-		ssl_ext = ssl_ext_new();
-		ssl_ext->host_name = (char *)malloc(server.length() + 1);
-		strcpy(ssl_ext->host_name, server.c_str());
-
-		ssl_ext->max_fragment_size = 4*1024; // 4K max size
+	if(ssl_ext != NULL) {
+		ssl_ext_free(ssl_ext);
 	}
+
+	ssl_ext = ssl_ext_new();
+	ssl_ext->host_name = (char *)malloc(server.length() + 1);
+	strcpy(ssl_ext->host_name, server.c_str());
+
+	ssl_ext->max_fragment_size = 4*1024; // 4K max size
 #endif
 
 	debugf("connect to: %s", server.c_str());
@@ -405,6 +407,11 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 			System.setCpuFrequency(eCF_160MHz); // For shorter waiting time, more power consumption.
 #endif
 			debugf("SSL: handshake start (%d ms)", millis());
+
+			if(con->ssl != NULL) {
+				ssl_free(con->ssl);
+			}
+
 			con->sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | sslOptions, 1);
 
 			if (con->clientKeyCert.keyLength && con->clientKeyCert.certificateLength) {

@@ -166,6 +166,7 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 	if(useSsl) {
 		int clientfd = axl_append(clientTcp);
 		if(clientfd == -1) {
+			delete client;
 			debugf("SSL: Unable to initiate tcp ");
 			return ERR_ABRT;
 		}

@@ -39,7 +39,7 @@ public:
 	bool initialize(HttpRequest &request, HttpResponse &response);
 
 	virtual void send(const char* message, int length, wsFrameType type = WS_TEXT_FRAME);
-	void broadcast(const char* message, int length, wsFrameType type = WS_TEXT_FRAME);
+	static void broadcast(const char* message, int length, wsFrameType type = WS_TEXT_FRAME);
 
 	void sendString(const String& message);
 	void sendBinary(const uint8_t* data, int size);
