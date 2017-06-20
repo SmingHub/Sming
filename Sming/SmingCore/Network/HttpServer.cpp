@@ -17,7 +17,7 @@
 
 HttpServer::HttpServer()
 {
-	settings.keepAliveSeconds = 10;
+	settings.keepAliveSeconds = 0;
 	configure(settings);
 }
 
