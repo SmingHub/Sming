@@ -196,7 +196,8 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 endif
 
 LIBPWM = pwm
-# WARNING: In the next versions ENABLE_CUSTOM_PWM will be set to 1 by default
+
+ENABLE_CUSTOM_PWM ?= 1
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	LIBPWM = pwm_open
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBPWM).a
