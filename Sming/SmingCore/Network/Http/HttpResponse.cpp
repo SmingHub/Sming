@@ -180,3 +180,11 @@ bool HttpResponse::sendDataStream( IDataSourceStream * newDataStream , String re
     return true;
 }
 
+void HttpResponse::reset()
+{
+	headers.clear();
+	if(stream != NULL) {
+		delete stream;
+		stream = NULL;
+	}
+}

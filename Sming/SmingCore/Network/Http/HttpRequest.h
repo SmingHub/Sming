@@ -116,6 +116,8 @@ public:
 	HttpRequest* onBody(RequestBodyDelegate delegateFunction);
 	HttpRequest* onRequestComplete(RequestCompletedDelegate delegateFunction);
 
+	void reset();
+
 #ifndef SMING_RELEASE
 	/**
 	 * @brief Tries to present a readable version of the current request values

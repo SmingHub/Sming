@@ -97,7 +97,7 @@ private:
 	String lastData = "";
 	String currentField  = "";
 
-	BodyParsers* bodyParsers;
+	BodyParsers* bodyParsers = NULL;
 	HttpBodyParserDelegate bodyParser;
 };
 
