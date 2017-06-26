@@ -26,12 +26,14 @@
 
 #define INITIAL_PRINTF_BUFFSIZE 128
 
+#undef printf_P
+
 class String;
 
 class Print
 {
   public:
-	Print() : write_error(0) {}
+    Print() : write_error(0) {}
   
     int getWriteError() { return write_error; }
     void clearWriteError() { setWriteError(0); }
@@ -85,8 +87,15 @@ class Print
     size_t println(const String &s);
 
     // printf
-    size_t printf(const char *fmt, ...);
+    size_t  vprintf(const char *, va_list va);
+    size_t  printf(const char *fmt, ...);
 
+    // progmem
+    size_t  write_P(const char* data, size_t size);
+    size_t  write_P(const char* data);
+    size_t  printf_P(const char* data, ...);
+    size_t  vprintf_P(const char *, va_list va);
+    
   private:
     int write_error;
     size_t printNumber(unsigned long, uint8_t);
