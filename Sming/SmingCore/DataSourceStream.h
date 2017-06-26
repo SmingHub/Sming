@@ -244,6 +244,12 @@ public:
      */
 	inline TemplateVariables& variables() { return templateData; }
 
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	 */
+	int length() { return -1; }
+
 private:
 	TemplateVariables templateData;
 	TemplateExpandState state;

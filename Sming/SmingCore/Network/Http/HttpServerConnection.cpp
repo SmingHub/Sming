@@ -173,6 +173,11 @@ int HttpServerConnection::staticOnHeadersComplete(http_parser* parser)
 	int error = 0;
 	connection->request.setHeaders(connection->requestHeaders);
 
+	connection->lastWasValue = true;
+	connection->lastData = "";
+	connection->currentField  = "";
+	connection->requestHeaders.clear();
+
 	if(connection->resource != NULL && connection->resource->onHeadersComplete) {
 		error = connection->resource->onHeadersComplete(*connection, connection->request, connection->response);
 	}
@@ -404,6 +409,11 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 	if(state == eHCS_Sent && response.headers["Connection"] == "close") {
 		setTimeOut(1); // decrease the timeout to 1 tick
+	}
+
+	if(state == eHCS_Sent) {
+		response.reset();
+		request.reset();
 	}
 
 	TcpClient::onReadyToSendData(sourceEvent);

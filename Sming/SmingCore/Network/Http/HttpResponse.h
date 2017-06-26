@@ -81,6 +81,8 @@ public:
 	// Send Datastream, can be called with Classes derived from
 	bool sendDataStream( IDataSourceStream * newDataStream , String reqContentType = "" );
 
+	void reset();
+
 public:
 	int code;
 	HttpHeaders headers;

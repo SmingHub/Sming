@@ -25,7 +25,7 @@
 
 typedef struct {
 	int maxActiveConnections = 10; // << the maximum number of concurrent requests..
-	int keepAliveSeconds = 5; // << the default seconds to keep the connection alive before closing it
+	int keepAliveSeconds = 0; // << the default seconds to keep the connection alive before closing it
 	int minHeapSize = -1; // << defines the min heap size that is required to accept connection.
 					      //  -1 - means use server default
 	bool useDefaultBodyParsers = 1; // << if the default body parsers,  as form-url-encoded, should be used

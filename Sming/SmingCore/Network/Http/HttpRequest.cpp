@@ -239,6 +239,16 @@ HttpRequest* HttpRequest::onRequestComplete(RequestCompletedDelegate delegateFun
 	return this;
 }
 
+void HttpRequest::reset()
+{
+	headers.clear();
+	postParams.clear();
+	if(queryParams != NULL) {
+		delete queryParams;
+		queryParams = NULL;
+	}
+}
+
 #ifndef SMING_RELEASE
 String HttpRequest::toString() {
 	String content = "";
