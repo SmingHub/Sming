@@ -107,8 +107,10 @@ void MCP::wordWrite(uint8_t reg, unsigned int word)
 
 void MCP::pinMode(uint8_t pin, uint8_t mode)
 {  // Accept the pin # and I/O mode
-	if (pin < 0 | pin > 15)
+	if (pin > 15) {
 		return; // If the pin value is not valid (0-15) return, do nothing and return
+	}
+
 	if (mode == INPUT)
 	{      // Determine the mode before changing the bit state in the mode cache
 		_modeCache |= 1 << pin; // Since input = "HIGH", OR in a 1 in the appropriate place
@@ -132,8 +134,10 @@ void MCP::pinMode(unsigned int mode)
 
 void MCP::pullupMode(uint8_t pin, uint8_t mode)
 {
-	if (pin < 0 | pin > 15)
+	if (pin > 15) {
 		return;
+	}
+
 	if (mode == ON)
 	{
 		_pullupCache |= 1 << pin;
@@ -155,8 +159,10 @@ void MCP::pullupMode(unsigned int mode)
 
 void MCP::inputInvert(uint8_t pin, uint8_t mode)
 {
-	if (pin < 0 | pin > 15)
+	if (pin > 15) {
 		return;
+	}
+
 	if (mode == ON)
 	{
 		_invertCache |= 1 << pin;
@@ -178,8 +184,10 @@ void MCP::inputInvert(unsigned int mode)
 
 void MCP::digitalWrite(uint8_t pin, uint8_t value)
 {
-	if (pin < 0 | pin > 15)
+	if (pin > 15) {
 		return;
+	}
+
 	if (value)
 	{
 		_outputCache |= 1 << pin;
@@ -240,7 +248,9 @@ uint8_t MCP::byteRead(uint8_t reg)
 
 uint8_t MCP::digitalRead(uint8_t pin)
 {              // Return a single bit value, supply the necessary bit (1-16)
-	if (pin < 0 | pin > 15)
+	if (pin > 15) {
 		return 0x0; // If the pin value is not valid (1-16) return, do nothing and return
+	}
+
 	return digitalRead() & (1 << pin) ? HIGH : LOW; // Call the word reading function, extract HIGH/LOW information from the requested pin
 }
