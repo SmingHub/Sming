@@ -57,6 +57,7 @@ bool HttpResponse::sendString(const String& text)
 {
 	MemoryDataStream* memStream = new MemoryDataStream();
 	if (memStream->write((const uint8_t*)text.c_str(), text.length()) != text.length()) {
+		delete memStream;
 		return false;
 	}
 
