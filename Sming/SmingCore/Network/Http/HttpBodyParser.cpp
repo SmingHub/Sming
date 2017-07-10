@@ -41,14 +41,14 @@ void formUrlParser(HttpRequest& request, const char *at, int length)
 			String key = request.postParams.keyAt(i);
 			String value = request.postParams.valueAt(i);
 
-			uri_unescape(buffer, maxLength, key.c_str(), key.length());
+			uri_unescape(buffer, maxLength + 1, key.c_str(), key.length());
 			String newKey = buffer;
 
 			if(newKey != key) {
 				request.postParams.remove(key);
 			}
 
-			uri_unescape(buffer, maxLength, value.c_str(), value.length());
+			uri_unescape(buffer, maxLength + 1, value.c_str(), value.length());
 			request.postParams[newKey] = buffer;
 		}
 		delete[] buffer;
