@@ -114,9 +114,9 @@ public:
 		}
 
 		pbuf *cur = buf;
-		while (cur)
+		while (cur != NULL && cur->len > 0) {
 		{
-			int len = fileWrite(file, (uint8_t *)cur->payload, cur->len);
+			fileWrite(file, (uint8_t *)cur->payload, cur->len);
 			cur = cur->next;
 		}
 
