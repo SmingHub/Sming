@@ -17,6 +17,9 @@
 #include "../../Services/cWebsocket/websocket.h"
 #include "WebConstants.h"
 
+bool HttpServerConnection::parserSettingsInitialized = false;
+http_parser_settings HttpServerConnection::parserSettings;
+
 HttpServerConnection::HttpServerConnection(tcp_pcb *clientTcp)
 	: TcpClient(clientTcp, 0, 0), state(eHCS_Ready)
 {
@@ -24,17 +27,20 @@ HttpServerConnection::HttpServerConnection(tcp_pcb *clientTcp)
 	http_parser_init(&parser, HTTP_REQUEST);
 	parser.data = (void*)this;
 
-	memset(&parserSettings, 0, sizeof(parserSettings));
-	// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
-	parserSettings.on_message_begin     = staticOnMessageBegin;
-	parserSettings.on_headers_complete  = staticOnHeadersComplete;
-	parserSettings.on_message_complete  = staticOnMessageComplete;
+	if(!parserSettingsInitialized) {
+		memset(&parserSettings, 0, sizeof(parserSettings));
+		// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
+		parserSettings.on_message_begin     = staticOnMessageBegin;
+		parserSettings.on_headers_complete  = staticOnHeadersComplete;
+		parserSettings.on_message_complete  = staticOnMessageComplete;
 
-	// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
-	parserSettings.on_url               = staticOnPath;
-	parserSettings.on_header_field      = staticOnHeaderField;
-	parserSettings.on_header_value      = staticOnHeaderValue;
-	parserSettings.on_body              = staticOnBody;
+		// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
+		parserSettings.on_url               = staticOnPath;
+		parserSettings.on_header_field      = staticOnHeaderField;
+		parserSettings.on_header_value      = staticOnHeaderValue;
+		parserSettings.on_body              = staticOnBody;
+		parserSettingsInitialized = true;
+	}
 }
 
 HttpServerConnection::~HttpServerConnection()

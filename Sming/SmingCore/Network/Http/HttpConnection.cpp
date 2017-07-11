@@ -20,28 +20,38 @@
 #include "lwip/tcp_impl.h"
 #endif
 
+bool HttpConnection::parserSettingsInitialized = false;
+http_parser_settings HttpConnection::parserSettings;
+
 HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false), mode(eHCM_String) {
 	this->waitingQueue = queue;
 
 	http_parser_init(&parser, HTTP_RESPONSE);
 	parser.data = (void*)this;
 
-	memset(&parserSettings, 0, sizeof(parserSettings));
+	if(!parserSettingsInitialized) {
+		memset(&parserSettings, 0, sizeof(parserSettings));
 
-	// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
-	parserSettings.on_message_begin     = staticOnMessageBegin;
-	parserSettings.on_headers_complete  = staticOnHeadersComplete;
-	parserSettings.on_message_complete  = staticOnMessageComplete;
+		// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
+		parserSettings.on_message_begin     = staticOnMessageBegin;
+		parserSettings.on_headers_complete  = staticOnHeadersComplete;
+		parserSettings.on_message_complete  = staticOnMessageComplete;
 
-	parserSettings.on_chunk_header   = staticOnChunkHeader;
-	parserSettings.on_chunk_complete = staticOnChunkComplete;
+#ifndef COMPACT_MODE
+		parserSettings.on_chunk_header   = staticOnChunkHeader;
+		parserSettings.on_chunk_complete = staticOnChunkComplete;
+#endif
 
+		// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
+#ifndef COMPACT_MODE
+		parserSettings.on_status            = staticOnStatus;
+#endif
+		parserSettings.on_header_field      = staticOnHeaderField;
+		parserSettings.on_header_value      = staticOnHeaderValue;
+		parserSettings.on_body              = staticOnBody;
 
-	// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
-	parserSettings.on_status            = staticOnStatus;
-	parserSettings.on_header_field      = staticOnHeaderField;
-	parserSettings.on_header_value      = staticOnHeaderValue;
-	parserSettings.on_body              = staticOnBody;
+		parserSettingsInitialized = true;
+	}
 }
 
 bool HttpConnection::connect(const String& host, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */) {
@@ -266,9 +276,11 @@ int HttpConnection::staticOnHeadersComplete(http_parser* parser)
 	return error;
 }
 
+#ifndef COMPACT_MODE
 int HttpConnection::staticOnStatus(http_parser *parser, const char *at, size_t length) {
 	return 0;
 }
+#endif
 
 int HttpConnection::staticOnHeaderField(http_parser *parser, const char *at, size_t length)
 {
@@ -334,6 +346,7 @@ int HttpConnection::staticOnBody(http_parser *parser, const char *at, size_t len
 	return 0;
 }
 
+#ifndef COMPACT_MODE
 int HttpConnection::staticOnChunkHeader(http_parser* parser) {
 	debugf("On chunk header");
 	return 0;
@@ -343,6 +356,7 @@ int HttpConnection::staticOnChunkComplete(http_parser* parser) {
 	debugf("On chunk complete");
 	return 0;
 }
+#endif
 
 err_t HttpConnection::onConnected(err_t err) {
 	if (err == ERR_OK) {

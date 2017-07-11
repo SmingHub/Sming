@@ -78,7 +78,8 @@ private:
 	HttpConnectionState state;
 
 	http_parser parser;
-	http_parser_settings parserSettings;
+	static http_parser_settings parserSettings;
+	static bool parserSettingsInitialized;
 
 	ResourceTree* resourceTree = NULL;
 	HttpResource* resource = NULL;
