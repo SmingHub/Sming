@@ -94,7 +94,7 @@ private:
 class FTPDataStore : public FTPDataStream
 {
 public:
-	FTPDataStore(FTPServerConnection* connection, String fileName) : FTPDataStream(connection)
+	FTPDataStore(FTPServerConnection* connection, const String& fileName) : FTPDataStream(connection)
 	{
 		file = fileOpen(fileName, eFO_WriteOnly | eFO_CreateNewAlways);
 	}
@@ -114,7 +114,7 @@ public:
 		}
 
 		pbuf *cur = buf;
-		while (cur != NULL && cur->len > 0) {
+		while (cur != NULL && cur->len > 0)
 		{
 			fileWrite(file, (uint8_t *)cur->payload, cur->len);
 			cur = cur->next;
