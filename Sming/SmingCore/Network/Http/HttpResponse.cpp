@@ -21,7 +21,7 @@ HttpResponse::~HttpResponse()
 	}
 }
 
-HttpResponse* HttpResponse::setContentType(const String type)
+HttpResponse* HttpResponse::setContentType(const String& type)
 {
 	return setHeader("Content-Type", type);
 }
@@ -31,7 +31,7 @@ HttpResponse* HttpResponse::setContentType(enum MimeType type)
 	return setContentType(ContentType::toString(type));
 }
 
-HttpResponse* HttpResponse::setCookie(const String name, const String value)
+HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
 {
 	return setHeader("Set-Cookie", name + "=" + value);
 }
@@ -42,12 +42,12 @@ HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic /* = false
 	return setHeader("Cache-Control", chache);
 }
 
-HttpResponse* HttpResponse::setAllowCrossDomainOrigin(String controlAllowOrigin)
+HttpResponse* HttpResponse::setAllowCrossDomainOrigin(const String& controlAllowOrigin)
 {
 	return setHeader("Access-Control-Allow-Origin", controlAllowOrigin);
 }
 
-HttpResponse* HttpResponse::setHeader(const String name, const String value)
+HttpResponse* HttpResponse::setHeader(const String& name, const String& value)
 {
 	headers[name] = value;
 	return this;
@@ -73,7 +73,7 @@ bool HttpResponse::sendString(const String& text)
 	return true;
 }
 
-bool HttpResponse::hasHeader(const String name)
+bool HttpResponse::hasHeader(const String& name)
 {
 	return headers.contains(name);
 }
@@ -164,7 +164,7 @@ bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 	return true;
 }
 
-bool HttpResponse::sendDataStream( IDataSourceStream * newDataStream , String reqContentType /* = "" */)
+bool HttpResponse::sendDataStream( IDataSourceStream * newDataStream , const String& reqContentType /* = "" */)
 {
     if (stream != NULL)
     {

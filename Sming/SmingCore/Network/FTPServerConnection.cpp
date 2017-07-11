@@ -66,7 +66,7 @@ public:
 class FTPDataRetrieve : public FTPDataStream
 {
 public:
-	FTPDataRetrieve(FTPServerConnection* connection, String fileName) : FTPDataStream(connection)
+	FTPDataRetrieve(FTPServerConnection* connection, const String& fileName) : FTPDataStream(connection)
 	{
 		file = fileOpen(fileName, eFO_ReadOnly);
 	}

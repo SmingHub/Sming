@@ -53,7 +53,7 @@ public:
      *  @param  beaconInterval WiFi AP beacon interval in milliseconds (Default: 200ms)
      *  @retval bool True on success
      */
-	bool config(String ssid, String password, AUTH_MODE mode, bool hidden = false, int channel = 7, int beaconInterval = 200);
+	bool config(const String& ssid, String password, AUTH_MODE mode, bool hidden = false, int channel = 7, int beaconInterval = 200);
 
     /** @brief  Get WiFi AP IP address
      *  @retval IPAddress WiFi AP IP address

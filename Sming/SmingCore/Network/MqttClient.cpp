@@ -51,17 +51,17 @@ void MqttClient::setPingRepeatTime(int seconds)
 	   PingRepeatTime = seconds;
 }
 
-bool MqttClient::setWill(String topic, String message, int QoS, bool retained /* = false*/)
+bool MqttClient::setWill(const String& topic, const String& message, int QoS, bool retained /* = false*/)
 {
 	return mqtt_set_will(&broker, topic.c_str(), message.c_str(), QoS, retained);
 }
 
-bool MqttClient::connect(String clientName, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool MqttClient::connect(const String& clientName, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	return MqttClient::connect(clientName, "", "", useSsl, sslOptions);
 }
 
-bool MqttClient::connect(String clientName, String username, String password, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool MqttClient::connect(const String& clientName, const String& username, const String& password, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (getConnectionState() != eTCS_Ready)
 	{
@@ -119,7 +119,7 @@ int MqttClient::staticSendPacket(void* userInfo, const void* buf, unsigned int c
 	return sent ? count : 0;
 }
 
-bool MqttClient::subscribe(String topic)
+bool MqttClient::subscribe(const String& topic)
 {
 	uint16_t msgId = 0;
 	debugf("subscription '%s' registered", topic.c_str());
@@ -127,7 +127,7 @@ bool MqttClient::subscribe(String topic)
 	return res > 0;
 }
 
-bool MqttClient::unsubscribe(String topic)
+bool MqttClient::unsubscribe(const String& topic)
 {
 	uint16_t msgId = 0;
 	debugf("unsubscribing from '%s'", topic.c_str());

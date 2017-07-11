@@ -204,7 +204,7 @@ void WebsocketClient::sendMessage(char* msg, uint16_t length)
 	_sendFrame(WSFrameType::text, (uint8_t*) msg, length);
 }
 
-void WebsocketClient::sendMessage(String str)
+void WebsocketClient::sendMessage(const String& str)
 {
 	_sendFrame(WSFrameType::text, (uint8_t*) str.c_str(), str.length() + 1);
 }

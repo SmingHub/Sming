@@ -151,10 +151,10 @@ public:
      *  @param  fileName Name of file to open
      */
 	FileStream();
-	FileStream(String fileName);
+	FileStream(const String& fileName);
 	virtual ~FileStream();
 
-	virtual bool attach(String fileName, FileOpenFlags openFlags);
+	virtual bool attach(const String& fileName, FileOpenFlags openFlags);
     //Use base class documentation
 	virtual StreamType getStreamType() { return eSST_File; }
 
@@ -215,7 +215,7 @@ public:
     /** @brief Create a template file stream
      *  @param  templateFileName Template filename
      */
-	TemplateFileStream(String templateFileName);
+	TemplateFileStream(const String& templateFileName);
 	virtual ~TemplateFileStream();
 
     //Use base class documentation
