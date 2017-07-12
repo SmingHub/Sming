@@ -49,7 +49,7 @@ bool StationClass::isEnabled()
 	return wifi_get_opmode() & STATION_MODE;
 }
 
-bool StationClass::config(String ssid, String password, bool autoConnectOnStartup /* = true*/, bool save /* = true */)
+bool StationClass::config(const String& ssid, const String& password, bool autoConnectOnStartup /* = true*/, bool save /* = true */)
 {
 	station_config config = {0};
 
@@ -142,7 +142,7 @@ void StationClass::enableDHCP(bool enable)
 		wifi_station_dhcpc_stop();
 }
 
-void StationClass::setHostname(String hostname)
+void StationClass::setHostname(const String& hostname)
 {
 	wifi_station_set_hostname((char*)hostname.c_str());
 }

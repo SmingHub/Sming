@@ -68,11 +68,11 @@ class DNSServer : public UdpConnection
     void stop();
 
   private:
-    uint16_t _port;
+    uint16_t _port = 0;
     String _domainName;
     char _resolvedIP[4];
-    char* _buffer;
-    DNSHeader* _dnsHeader;
+    char* _buffer = NULL;
+    DNSHeader* _dnsHeader = NULL;
     uint32_t _ttl;
     DNSReplyCode _errorReplyCode;
 

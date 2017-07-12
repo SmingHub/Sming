@@ -17,8 +17,10 @@ MemoryDataStream::MemoryDataStream()
 
 MemoryDataStream::~MemoryDataStream()
 {
-	free(buf);
-	buf = NULL;
+	if(buf != NULL) {
+		free(buf);
+		buf = NULL;
+	}
 	pos = NULL;
 	size = 0;
 }
@@ -94,12 +96,12 @@ FileStream::FileStream()
 	pos = 0;
 }
 
-FileStream::FileStream(String filename)
+FileStream::FileStream(const String& filename)
 {
 	attach(filename, eFO_ReadOnly);
 }
 
-bool FileStream::attach(String fileName, FileOpenFlags openFlags)
+bool FileStream::attach(const String& fileName, FileOpenFlags openFlags)
 {
 	handle = fileOpen(fileName.c_str(), openFlags);
 	if (handle == -1)
@@ -178,7 +180,7 @@ bool FileStream::fileExist()
 
 ///////////////////////////////////////////////////////////////////////////
 
-TemplateFileStream::TemplateFileStream(String templateFileName)
+TemplateFileStream::TemplateFileStream(const String& templateFileName)
 	: FileStream(templateFileName)
 {
 	state = eTES_Wait;

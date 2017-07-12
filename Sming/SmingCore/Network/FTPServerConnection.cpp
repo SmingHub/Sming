@@ -66,7 +66,7 @@ public:
 class FTPDataRetrieve : public FTPDataStream
 {
 public:
-	FTPDataRetrieve(FTPServerConnection* connection, String fileName) : FTPDataStream(connection)
+	FTPDataRetrieve(FTPServerConnection* connection, const String& fileName) : FTPDataStream(connection)
 	{
 		file = fileOpen(fileName, eFO_ReadOnly);
 	}
@@ -94,7 +94,7 @@ private:
 class FTPDataStore : public FTPDataStream
 {
 public:
-	FTPDataStore(FTPServerConnection* connection, String fileName) : FTPDataStream(connection)
+	FTPDataStore(FTPServerConnection* connection, const String& fileName) : FTPDataStream(connection)
 	{
 		file = fileOpen(fileName, eFO_WriteOnly | eFO_CreateNewAlways);
 	}
@@ -114,9 +114,9 @@ public:
 		}
 
 		pbuf *cur = buf;
-		while (cur)
+		while (cur != NULL && cur->len > 0)
 		{
-			int len = fileWrite(file, (uint8_t *)cur->payload, cur->len);
+			fileWrite(file, (uint8_t *)cur->payload, cur->len);
 			cur = cur->next;
 		}
 

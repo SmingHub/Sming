@@ -23,7 +23,7 @@ public:
 	virtual ~FTPServer();
 
 	void addUser(String login, String pass);
-	bool checkUser(String login, String pass);
+	bool checkUser(String login, const String& pass);
 
 protected:
 	virtual TcpConnection* createClient(tcp_pcb *clientTcp);

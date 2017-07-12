@@ -69,7 +69,7 @@ bool TcpClient::connect(IPAddress addr, uint16_t port, boolean useSsl /* = false
 	return TcpConnection::connect(addr, port, useSsl, sslOptions);
 }
 
-bool TcpClient::sendString(String data, bool forceCloseAfterSent /* = false*/)
+bool TcpClient::sendString(const String& data, bool forceCloseAfterSent /* = false*/)
 {
 	return send(data.c_str(), data.length(), forceCloseAfterSent);
 }

@@ -101,7 +101,7 @@ public:
 	 *	@param	autoConnectOnStartup True to auto connect. False for manual. (Default: True)
 	 *	@param  save True to save the SSID and password in Flash. False otherwise. (Default: True)
 	 */
-	bool config(String ssid, String password, bool autoConnectOnStartup = true, bool save = true);
+	bool config(const String& ssid, const String& password, bool autoConnectOnStartup = true, bool save = true);
 
 	/**	@brief	Connect WiFi station to network
 	 */
@@ -144,7 +144,7 @@ public:
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@param	hostname - WiFi station DHCP hostname
 	 */
-	void setHostname(String hostname);
+	void setHostname(const String& hostname);
 
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@retval WiFi station DHCP hostname

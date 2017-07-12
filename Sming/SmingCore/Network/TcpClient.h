@@ -58,7 +58,7 @@ public:
 	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = NULL);
 
 	bool send(const char* data, uint16_t len, bool forceCloseAfterSent = false);
-	bool sendString(String data, bool forceCloseAfterSent = false);
+	bool sendString(const String& data, bool forceCloseAfterSent = false);
 	__forceinline bool isProcessing()  { return state == eTCS_Connected || state == eTCS_Connecting; }
 	__forceinline TcpClientState getConnectionState() { return state; }
 
