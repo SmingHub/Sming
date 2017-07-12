@@ -158,16 +158,16 @@ void WebsocketClient::onFinished(TcpClientState finishState)
 
 void WebsocketClient::sendPing()
 {
-	uint8_t buf[2] = { 0x89, 0x00 };
+	uint8_t buf[6] = { 0x89, 0x80, 0x00 };
 	debugf("Sending PING");
-	send((char*) buf, 2, false);
+	send((char*) buf, 6, false);
 }
 
 void WebsocketClient::sendPong()
 {
-	uint8_t buf[2] = { 0x8A, 0x00 };
+	uint8_t buf[6] = { 0x8A, 0x80, 0x00 };
 	debugf("Sending PONG");
-	send((char*) buf, 2, false);
+	send((char*) buf, 6, false);
 }
 
 void WebsocketClient::disconnect()
@@ -175,8 +175,8 @@ void WebsocketClient::disconnect()
 	debugf("Terminating Websocket connection.");
 	_mode = wsMode::Disconnected;
 	// Should send 0x87, 0x00 to server to tell it that I'm quitting here.
-	uint8_t buf[2] = { 0x87, 0x00 };
-	send((char*) buf, 2, true);
+	uint8_t buf[6] = { 0x87, 0x00 };
+	send((char*) buf, 6, true);
 }
 
 void WebsocketClient::_sendFrame(WSFrameType frameType, uint8_t* msg, uint16_t length)
