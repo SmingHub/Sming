@@ -185,6 +185,12 @@ uint8_t WebsocketFrameClass::_getFrameSizes(uint8_t* buffer, size_t length)
 	{
 		_nextReadOffset = 0; // single websocket frame in buffer
 	}
+	else if(length < _nextReadOffset)
+	{
+		// Frame is incomplete
+		_frameType = WSFrameType::incomplete;
+		return false;
+	} 
 
 	return true;
 }
@@ -197,7 +203,8 @@ uint8_t WebsocketFrameClass::decodeFrame(uint8_t * buffer, size_t length)
 	WSFrameType op = (WSFrameType)(buffer[0] & 0b00001111); // Extracting Opcode
 	uint8_t fin = buffer[0] & 0b10000000; // Extracting Fin Bit (Single Frame)
 
-	if (op == WSFrameType::continuation || op == WSFrameType::text || op == WSFrameType::binary) //Data frames
+	// At least there must be one byte that op and fin are vaild
+	if (length > 0 && op == WSFrameType::continuation || op == WSFrameType::text || op == WSFrameType::binary) //Data frames
 	{
 		if (fin > 0)
 		{
