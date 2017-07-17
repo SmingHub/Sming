@@ -48,7 +48,7 @@ public:
 	uint16_t activeClients = 0;
 
 protected:
-	int minHeapSize = 6500;
+	int minHeapSize = 3000;
 
 #ifdef ENABLE_SSL
 	int sslSessionCacheSize = 50;

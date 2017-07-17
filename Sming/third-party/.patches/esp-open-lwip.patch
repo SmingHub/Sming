@@ -293,3 +293,16 @@ index ddb5984..fb677c6 100644
  			*optptr++ = DHCP_OPTION_ROUTER;
  			*optptr++ = 4;
  			*optptr++ = ip4_addr1( &if_ip.gw);
+diff --git a/include/lwip/tcp_impl.h b/include/lwip/tcp_impl.h
+index 24ca8bb..0c20b6a 100644
+--- a/include/lwip/tcp_impl.h
++++ b/include/lwip/tcp_impl.h
+@@ -130,7 +130,7 @@ u32_t            tcp_update_rcv_ann_wnd(struct tcp_pcb *pcb)ICACHE_FLASH_ATTR;
+ #define TCP_OOSEQ_TIMEOUT        6U /* x RTO */
+ 
+ #ifndef TCP_MSL
+-#define TCP_MSL 60000UL /* The maximum segment lifetime in milliseconds */
++#define TCP_MSL 2000UL /* The maximum segment lifetime in milliseconds */
+ #endif
+ 
+ /* Keepalive values, compliant with RFC 1122. Don't change this unless you know what you're doing */
