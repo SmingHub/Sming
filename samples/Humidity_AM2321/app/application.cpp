@@ -31,7 +31,7 @@ void init()
 	delay(500);
 
 	// Apply I2C pins
-	Wire.pins(SCL, SDA);
+	Wire.pins(SDA, SCL);
 	Wire.begin();
 
 	am2321.begin(); // REQUIRED. Call it after choosing I2C pins.

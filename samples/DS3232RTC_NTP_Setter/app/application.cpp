@@ -41,7 +41,7 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.println("Sming DSRTC_NTP_SETTER started!");
-	Wire.pins(0, 2); //Change to your SCL - 0,SDA - 2 GPIO pin number
+	Wire.pins(2, 0); //Change to your SDA - 2, SCL - 0 GPIO pin number
 	Wire.begin();
 
 	// Station - WiFi client

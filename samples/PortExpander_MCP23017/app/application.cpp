@@ -18,7 +18,7 @@ void init()
 	Serial.begin(115200);
 
 	// You can select ESP I2C pins here:
-	//Wire.pins(4, 5); // SCL, SDA
+	//Wire.pins(5, 4); // SDA, SCL
 
 	mcp.begin(0); // 0 - for default mcp address, possible values: 0..7
 

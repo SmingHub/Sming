@@ -75,7 +75,7 @@ void initCam() {
 	Serial.printf("ArduCAM init!");
 
 	// initialize I2C
-	Wire.pins(CAM_SCL, CAM_SDA);
+	Wire.pins(CAM_SDA, CAM_SCL);
 	Wire.begin();
 
 	//Check if the camera module type is OV2640

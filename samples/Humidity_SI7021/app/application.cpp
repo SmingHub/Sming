@@ -84,7 +84,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 	Serial.print("Start I2c");
-	Wire.pins(I2C_SCL, I2C_SDA); // SCL, SDA
+	Wire.pins(I2C_SDA, I2C_SCL); // SDA, SCL 
 	Wire.begin();
 	procTimer_ht.initializeMs(10000, si_read_ht).start();
 	procTimer_olt.initializeMs(15000, si_read_olt).start();
