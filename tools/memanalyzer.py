@@ -48,9 +48,9 @@ usedRAM = 0;
 usedIRAM = 0;
 
 i = 0
-for (idx, descr) in list(sections.items()):
-    sectionStartToken = " _%s_start" %  idx
-    sectionEndToken   = " _%s_end" % idx;
+for (name, descr) in list(sections.items()):
+    sectionStartToken = " _%s_start" %  name
+    sectionEndToken   = " _%s_end" % name
     sectionStart = -1;
     sectionEnd = -1;
     for line in lines:
@@ -71,7 +71,7 @@ for (idx, descr) in list(sections.items()):
     if i == 3:
         usedIRAM = TOTAL_DRAM - sectionLength;
 
-    print("{0: >10}|{1: >30}|{2:12X}|{3:12X}|{4:8}".format(id, descr, sectionStart, sectionEnd, sectionLength))
+    print("{0: >10}|{1: >30}|{2:12X}|{3:12X}|{4:8}".format(name, descr, sectionStart, sectionEnd, sectionLength))
     i += 1
 
 print("Total Used RAM : %d" % usedRAM)
