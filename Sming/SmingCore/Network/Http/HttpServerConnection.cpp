@@ -352,7 +352,25 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		return;
 	}
 
+	bool sendContent = (request.method != HTTP_HEAD);
+
 	if(!headersSent) {
+		if(response.stream != NULL && !response.headers.contains("ETag")) {
+			String tag = response.stream->id();
+			if(tag.length() > 0) {
+				response.headers["ETag"] = String('"' + tag + '"');
+			}
+		}
+
+		if(request.headers.contains("If-Match") && response.headers.contains("ETag") &&
+		   request.headers["If-Match"] == response.headers["ETag"]) {
+			if(request.method == HTTP_GET || request.method == HTTP_HEAD) {
+				response.code = HTTP_STATUS_NOT_MODIFIED;
+				response.headers["Content-Length"] = "0";
+				sendContent = false;
+			}
+		}
+
 		String statusLine = "HTTP/1.1 "+String(response.code) +  " " + getStatus((enum http_status)response.code) + "\r\n";
 		writeString(statusLine, TCP_WRITE_FLAG_MORE | TCP_WRITE_FLAG_COPY);
 
@@ -390,7 +408,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	do {
-		if(request.method == HTTP_HEAD) {
+		if(sendContent == false) {
 			if(response.stream != NULL) {
 				delete response.stream;
 				response.stream = NULL;

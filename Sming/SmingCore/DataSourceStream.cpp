@@ -178,6 +178,18 @@ bool FileStream::fileExist()
 	return size != -1;
 }
 
+String FileStream::id()
+{
+	spiffs_stat stat;
+	fileStats(handle, &stat);
+
+#define ETAG_SIZE 16
+	char buf[ETAG_SIZE];
+	m_snprintf(buf, ETAG_SIZE, "%x-%x0-%x", stat.obj_id, stat.size, strlen((char*)stat.name));
+
+	return String(buf);
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
 TemplateFileStream::TemplateFileStream(const String& templateFileName)
