@@ -38,8 +38,8 @@ HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
 
 HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic /* = false */)
 {
-	String chache = String(isPublic ? "public" : "private") +", max-age=" + String(maxAgeSeconds) + ", must-revalidate";
-	return setHeader("Cache-Control", chache);
+	String cache = String(isPublic ? "public" : "private") +", max-age=" + String(maxAgeSeconds) + ", must-revalidate";
+	return setHeader("Cache-Control", cache);
 }
 
 HttpResponse* HttpResponse::setAllowCrossDomainOrigin(const String& controlAllowOrigin)

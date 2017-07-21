@@ -355,6 +355,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	bool sendContent = (request.method != HTTP_HEAD);
 
 	if(!headersSent) {
+#ifndef DISABLE_HTTPSRV_ETAG
 		if(response.stream != NULL && !response.headers.contains("ETag")) {
 			String tag = response.stream->id();
 			if(tag.length() > 0) {
@@ -370,7 +371,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 				sendContent = false;
 			}
 		}
-
+#endif /* DISABLE_HTTPSRV_ETAG */
 		String statusLine = "HTTP/1.1 "+String(response.code) +  " " + getStatus((enum http_status)response.code) + "\r\n";
 		writeString(statusLine, TCP_WRITE_FLAG_MORE | TCP_WRITE_FLAG_COPY);
 
