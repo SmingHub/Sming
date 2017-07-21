@@ -81,6 +81,12 @@ public:
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
 	virtual int length() {  return -1; }
+
+	/**
+	 * @brief Returns unique id of the resource.
+	 * @retval String the unique id of the stream.
+	 */
+	virtual String id() { return String(); }
 };
 
 /// Memory data stream class
@@ -183,6 +189,8 @@ public:
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
 	int length() { return -1; }
+
+	virtual String id();
 
 private:
 	file_t handle;
