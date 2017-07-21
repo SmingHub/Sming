@@ -20,7 +20,7 @@ sections = OrderedDict([
     ("rodata", "ReadOnly Data (RAM)"),
     ("bss", "Uninitialized Data (RAM)"),
     ("text", "Cached Code (IRAM)"),
-    ("irom0_text", "Uncached Code (SPI)") 
+    ("irom0_text", "Uncached Code (SPI)")
 ])
 
 if len(sys.argv) < 2:
@@ -35,10 +35,10 @@ if not os.path.exists(appOut):
     sys.exit(1)
 
 
-command = "%s -t '%s' " % (sys.argv[1], sys.argv[2]) 
+command = "%s -t '%s' " % (sys.argv[1], sys.argv[2])
 response = subprocess.check_output(shlex.split(command))
 if isinstance(response, bytes):
-    response = response.decode('utf-8')	
+    response = response.decode('utf-8')
 lines = response.split('\n')
 
 print("{0: >10}|{1: >30}|{2: >12}|{3: >12}|{4: >8}".format("Section", "Description", "Start (hex)", "End (hex)", "Used space"));
@@ -48,32 +48,32 @@ usedRAM = 0;
 usedIRAM = 0;
 
 i = 0
-for (id, descr) in list(sections.items()):
-    sectionStartToken = " _%s_start" %  id
-    sectionEndToken   = " _%s_end" % id;
+for (name, descr) in list(sections.items()):
+    sectionStartToken = " _%s_start" %  name
+    sectionEndToken   = " _%s_end" % name
     sectionStart = -1;
     sectionEnd = -1;
     for line in lines:
         if sectionStartToken in line:
             data = line.split(' ')
             sectionStart = int(data[0], 16)
-        
-        if sectionEndToken in line: 
+
+        if sectionEndToken in line:
             data = line.split(' ')
             sectionEnd = int(data[0], 16)
-        
+
         if sectionStart != -1 and sectionEnd != -1:
             break
-        
+
     sectionLength = sectionEnd - sectionStart
     if i < 3:
         usedRAM += sectionLength
     if i == 3:
         usedIRAM = TOTAL_DRAM - sectionLength;
 
-    print("{0: >10}|{1: >30}|{2:12X}|{3:12X}|{4:8}".format(id, descr, sectionStart, sectionEnd, sectionLength))
+    print("{0: >10}|{1: >30}|{2:12X}|{3:12X}|{4:8}".format(name, descr, sectionStart, sectionEnd, sectionLength))
     i += 1
-        
+
 print("Total Used RAM : %d" % usedRAM)
 print("Free RAM : %d" % (TOTAL_IRAM - usedRAM))
 print("Free IRam : %d" % usedIRAM)
