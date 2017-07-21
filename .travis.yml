@@ -4,7 +4,7 @@ language: cpp
 env:
   global:
     - SDK_BUILD=258
-  secure: "S3EUTvY0Uegqcnfd25FqEtiZFutpzu1HVayaeBLZ7iZzKyfp+ZKlk8hNx+qDCCMhBbZQZ17ZAMQm0BKuHth1/dOzCgav3dQbr5rbzKcVkcc8C0K0paOMUKr2SAMtFSc5iwjgmCG0BEiyZypfrCUg01d0NuPP82tgIrRMm2HqkQ0="
+    - secure: Db9Cnv+oOmmQMm6aIf3H5VYHaas04uGOtvJMsq7NW05oyDVGCgV5FayjFPVzNHHgv85em1u1CPqX3p7eHWLSKMjARcEpLavXM31HW0RPxvserSpXI7f49EBi6ENgCPre4NGMWpdJgvIhmAfcEMwyLUBqRDmfH4KqqE8V5ZbhvacCbaD2cEOsPDjbkpA66VYp3srTmVUR4cC0ehUdg7odxVOWHaJbA068jJjwz/ggbYMkVljcFkjVHtZAIiZDN1vBGRWGwTjM4TMXwJmw07WumBwhZw6Qm7OShGfBTyg5/6Obqk1QZ///6BQCUD+bGhLlfEleEB48YJXwLD96HXgUwu/wZ7xWStQCWW5GQRPgXaufwZcc1TySJxaDeMhk90cIbUsjXGhmhV+rpM/5PMZTvpTOJbKrz2oY2qqFEZJGEYGoH24LHp4yPpAvQCmqjeLcQj/JiHeL9nKUy+mC3yOPLR/DOTa7t7zN8vuKqm0G0Af3DXXuum2kkzBgHFCNiiLedF2/7BVe/nAbOJLpuQwfVVOqpxIpTzKg05oPmjSsFPp4u03Yso3Kc6ulJQ354mYmnZD34jah5FaWo8YkGCmAGLIaqpcV62LCTSDK58ZMpEU1fy3jANlmktDQlaCUvniUo+c0mqmlstRpzGathb4u1nNHdgB/rjzDx64ug2MmllI=
 
 matrix:
     include:
@@ -19,8 +19,14 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
+    - sourceline: 'ppa:libreoffice/libreoffice-4-2'
     packages:     
       - bsdtar
+      - doxygen
+      - doxygen-doc
+      - doxygen-latex
+      - doxygen-gui
+      - graphviz
 
 install:
   - if [ "$SDK_VERSION" != "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
@@ -53,7 +59,7 @@ script:
 
 deploy:
   provider: script
-  script: .travis/deploy.sh $TRAVIS_TAG
+  script: sh $TRAVIS_BUILD_DIR/.travis/deploy.sh $TRAVIS_TAG
   skip_cleanup: true
   on:
     tags: true
