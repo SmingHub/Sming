@@ -5,6 +5,14 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+
+/** @defgroup tcpserver Servers
+ *  @brief Provides the base for building TCP servers
+ *  @ingroup tcp
+ *
+ *  @{
+ */
+
 #ifndef _SMING_CORE_TCPSERVER_H_
 #define _SMING_CORE_TCPSERVER_H_
 
@@ -61,4 +69,5 @@ private:
 	TcpClientConnectDelegate clientConnectDelegate = NULL;
 };
 
+/** @} */
 #endif /* _SMING_CORE_TCPSERVER_H_ */

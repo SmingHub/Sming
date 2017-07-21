@@ -5,6 +5,12 @@
  *      Author: Herman
  */
 
+/** @defgroup   telnetserver Telnet server
+ *  @brief      Provides Telnet server
+ *  @ingroup    tcpserver
+ *  @{
+ */
+
 #ifndef APP_TELNETSERVER_H_
 #define APP_TELNETSERVER_H_
 
@@ -42,4 +48,5 @@ private:
 	bool telnetCommand = true;
 };
 
+/** @} */
 #endif /* APP_TELNETSERVER_H_ */

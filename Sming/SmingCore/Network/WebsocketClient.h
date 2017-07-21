@@ -10,6 +10,12 @@
  * 
  */
 
+/** @defgroup   wsclient WebSocket client
+ *  @brief      Provides WebSocket client
+ *  @ingroup    tcpclient
+ *  @{
+ */
+
 #ifndef WEBSOCKETCLIENT_H
 #define	WEBSOCKETCLIENT_H
 
@@ -130,5 +136,6 @@ private:
 	String _key;
 };
 
+/** @} */
 #endif	/* WEBSOCKETCLIENT_H */
 

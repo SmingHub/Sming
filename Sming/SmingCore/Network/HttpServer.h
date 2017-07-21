@@ -10,6 +10,12 @@
  *
  ****/
 
+/** @defgroup   httpserver HTTP server
+ *  @brief      Provides powerful HTTP/S + Websocket server
+ *  @ingroup    tcpserver
+ *  @{
+ */
+
 #ifndef _SMING_CORE_HTTPSERVER_H_
 #define _SMING_CORE_HTTPSERVER_H_
 
@@ -78,4 +84,5 @@ private:
 	BodyParsers bodyParsers;
 };
 
+/** @} */
 #endif /* _SMING_CORE_HTTPSERVER_H_ */

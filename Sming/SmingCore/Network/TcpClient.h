@@ -5,6 +5,12 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/** @defgroup   tcpclient Clients
+ *  @brief      Provides base TCP client
+ *  @ingroup    tcp
+ *  @{
+ */
+
 #ifndef _SMING_CORE_TCPCLIENT_H_
 #define _SMING_CORE_TCPCLIENT_H_
 
@@ -83,4 +89,5 @@ private:
 	int16_t asyncTotalLen = 0;
 };
 
+/** @} */
 #endif /* _SMING_CORE_TCPCLIENT_H_ */
