@@ -5,6 +5,12 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/** @defgroup   mqttclient MQTT client
+ *  @brief      Provides MQTT client
+ *  @ingroup    tcpclient
+ *  @{
+ */
+
 #ifndef _SMING_CORE_NETWORK_MqttClient_H_
 #define _SMING_CORE_NETWORK_MqttClient_H_
 
@@ -80,4 +86,5 @@ private:
 	HashMap<uint16_t, MqttMessageDeliveredCallback> onDeliveryQueue;
 };
 
+/** @} */
 #endif /* _SMING_CORE_NETWORK_MqttClient_H_ */

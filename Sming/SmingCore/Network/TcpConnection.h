@@ -5,6 +5,11 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/** @defgroup tcp TCP
+ *  @ingroup networking
+ *  @{
+ */
+
 #ifndef _SMING_CORE_TCPCONNECTION_H_
 #define _SMING_CORE_TCPCONNECTION_H_
 
@@ -231,4 +236,5 @@ protected:
 	bool useSsl = false;
 };
 
+/** @} */
 #endif /* _SMING_CORE_TCPCONNECTION_H_ */
