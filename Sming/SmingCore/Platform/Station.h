@@ -71,6 +71,9 @@ typedef Vector<BssInfo> BssList; ///< List of BSS
 typedef Delegate<void(bool, BssList)> ScanCompletedDelegate; ///< Scan complete handler function
 typedef Delegate<void()> ConnectionDelegate; ///< Connection handler function
 typedef Delegate<void(sc_status status, void *pdata)> SmartConfigDelegate; ///< Smart configuration handler function
+#ifdef ENABLE_WPS
+typedef Delegate<bool(wps_cb_status status)> WPSConfigDelegate;
+#endif
 /** @} */
 
 class StationClass : protected ISystemReadyHandler
@@ -218,6 +221,25 @@ public:
 	 */
 	void smartConfigStop();
 
+#ifdef ENABLE_WPS
+	/**	@brief	Start WiFi station by WPS method
+	 *	@param	callback Function to call on WiFi WPS Events (Default: none)
+	 */
+	bool wpsConfigStart(WPSConfigDelegate callback=NULL);
+
+	/**	@brief	Start WiFi station by WPS method 
+	 *	@param	callback Function to call on WiFi staton smart configuration complete (Default: none)
+	 */
+	bool beginWPSConfig();
+
+	/**	@brief	Stop WiFi station WPS configuration
+	 */
+	void wpsConfigStop();
+
+	void internalWpsConfig(wps_cb_status status);
+	static void staticWpsConfigCallback(wps_cb_status status);
+#endif
+
 protected:
 	virtual void onSystemReady();
 	static void staticScanCompleted(void *arg, STATUS status);
@@ -231,6 +253,9 @@ protected:
 private:
 	ScanCompletedDelegate scanCompletedCallback;
 	SmartConfigDelegate smartConfigCallback = NULL;
+#ifdef ENABLE_WPS
+	WPSConfigDelegate wpsConfigCallback = NULL;
+#endif
 	bool runScan;
 };
 
