@@ -388,6 +388,79 @@ void StationClass::smartConfigStop() {
 	smartConfigCallback = NULL;
 }
 
+#ifdef ENABLE_WPS
+void StationClass::internalWpsConfig(wps_cb_status status)
+{
+	bool processInternal=true;
+	if (wpsConfigCallback){
+		processInternal=wpsConfigCallback(status);
+	}
+	if (processInternal){
+		switch (status) {
+			case WPS_CB_ST_SUCCESS:
+				debugf("wifi_wps_status_cb(): WPS_CB_ST_SUCCESS\n");
+				wpsConfigStop();
+				connect();
+				break;
+			case WPS_CB_ST_FAILED:
+				debugf("wifi_wps_status_cb(): WPS_CB_ST_FAILED\n");
+				wpsConfigStop();
+				connect();	// try to reconnect with old config
+				break;
+			case WPS_CB_ST_TIMEOUT:
+				debugf("wifi_wps_status_cb(): WPS_CB_ST_TIMEOUT\n");
+				wpsConfigStop();
+				connect();	// try to reconnect with old config
+				break;
+			case WPS_CB_ST_WEP:
+				debugf("wifi_wps_status_cb(): WPS_CB_ST_WEP\n");
+				break;
+			default :
+				debugf("wifi_wps_status_cb(): unknown wps_cb_status %d\n",status);
+				wpsConfigStop();
+				connect();   // try to reconnect with old config
+		}
+	}
+}
+
+void StationClass::staticWpsConfigCallback(wps_cb_status status) {
+	WifiStation.internalWpsConfig(status);
+}
+
+bool StationClass::wpsConfigStart(WPSConfigDelegate callback) {
+	debugf("WPS start\n");
+	wpsConfigCallback=callback;
+	wifi_station_disconnect();
+	wifi_set_opmode_current(wifi_get_opmode() | STATION_MODE);
+	debugf("WPS stationmode activated\n");
+	if(!wifi_wps_enable(WPS_TYPE_PBC)) {
+		debugf("StationClass::wpsConfigStart() : wps enable failed\n");
+		return(false);
+	}
+	if(!wifi_set_wps_cb((wps_st_cb_t) &staticWpsConfigCallback)) {
+		debugf("StationClass::wpsConfigStart() : cb failed\n");
+		return(false);
+	}
+
+	if(!wifi_wps_start()) {
+		debugf("StationClass::wpsConfigStart() : wifi_wps_start() failed\n");
+		return(false);
+	}
+	return(true);
+}
+
+bool StationClass::beginWPSConfig() {
+	debugf("StationClass::beginWPSConfig()\n");
+	return(wpsConfigStart());
+}
+
+void StationClass::wpsConfigStop() {
+	if(!wifi_wps_disable()) {
+		debugf("StationClass::wpsConfigStop() : wifi_wps_disable() failed\n");
+	}
+}
+#endif
+
 ////////////
 
 BssInfo::BssInfo(bss_info* info)

@@ -205,6 +205,10 @@ else
 	CFLAGS += -Os -g
 	STRIP := @true
 endif
+ifeq ($(ENABLE_WPS),1)
+   CFLAGS += -DENABLE_WPS=1
+endif
+
 #Append debug options
 CFLAGS  += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
@@ -252,6 +256,9 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 endif
 
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
+ifeq ($(ENABLE_WPS),1)
+   LIBS += wps
+endif
 
 # SSL support using axTLS
 ifeq ($(ENABLE_SSL),1)
