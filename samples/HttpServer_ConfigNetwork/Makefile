@@ -25,6 +25,7 @@ endif
 
 web-pack:
 	$(Q) gulp
+	$(Q) date +'%a, %d %b %Y %H:%M:%S GMT' -u > web/build/.lastModified
 	
 web-upload: web-pack spiff_update
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)

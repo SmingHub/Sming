@@ -9,6 +9,8 @@ BssList networks;
 String network, password;
 Timer connectionTimer;
 
+String lastModified;
+
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
 	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
@@ -53,6 +55,11 @@ void onIpConfig(HttpRequest &request, HttpResponse &response)
 
 void onFile(HttpRequest &request, HttpResponse &response)
 {
+	if (lastModified.length() >0 && request.getHeader("If-Modified-Since").equals(lastModified)) {
+		response.code = HTTP_STATUS_NOT_MODIFIED;
+		return;
+	}
+
 	String file = request.getPath();
 	if (file[0] == '/')
 		file = file.substring(1);
@@ -61,6 +68,10 @@ void onFile(HttpRequest &request, HttpResponse &response)
 		response.forbidden();
 	else
 	{
+		if(lastModified.length() > 0) {
+			response.setHeader("Last-Modified", lastModified);
+		}
+
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
 	}
@@ -192,6 +203,12 @@ void networkScanCompleted(bool succeeded, BssList list)
 void init()
 {
 	spiffs_mount(); // Mount file system, in order to work with files
+
+	if(fileExist(".lastModified")) {
+		// The last modification
+		lastModified = fileGetContent(".lastModified");
+		lastModified.trim();
+	}
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
