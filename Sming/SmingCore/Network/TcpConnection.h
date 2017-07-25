@@ -5,11 +5,17 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/** @defgroup tcp TCP
+ *  @ingroup networking
+ *  @{
+ */
+
 #ifndef _SMING_CORE_TCPCONNECTION_H_
 #define _SMING_CORE_TCPCONNECTION_H_
 
 #ifdef ENABLE_SSL
 #include "../../axtls-8266/compat/lwipr_compat.h"
+#include "../Clock.h"
 #endif
 
 #include "../Wiring/WiringFrameworkDependencies.h"
@@ -40,7 +46,6 @@ enum SslFingerprintType {
 					//    Only when the private key used to generate the certificate is used then that fingerprint
 };
 
-
 typedef struct {
 	uint8_t* certSha1 = NULL; // << certificate SHA1 fingerprint
 	uint8_t* pkSha256 = NULL; // << public key SHA256 fingerprint
@@ -54,15 +59,23 @@ typedef struct {
 	int certificateLength = 0;
 } SSLKeyCertPair;
 
+typedef struct {
+	uint8_t *value = NULL;
+	int length = 0;
+} SSLSessionId;
+
 #endif
 
 struct pbuf;
 class String;
 class IDataSourceStream;
 class IPAddress;
+class TcpServer;
 
 class TcpConnection
 {
+	friend class TcpServer;
+
 public:
 	TcpConnection(bool autoDestruct);
 	TcpConnection(tcp_pcb* connection, bool autoDestruct);
@@ -75,7 +88,7 @@ public:
 
 	// return -1 on error
 	int writeString(const char* data, uint8_t apiflags = TCP_WRITE_FLAG_COPY);
-	int writeString(const String data, uint8_t apiflags = TCP_WRITE_FLAG_COPY);
+	int writeString(const String& data, uint8_t apiflags = TCP_WRITE_FLAG_COPY);
 	// return -1 on error
 	virtual int write(const char* data, int len, uint8_t apiflags = TCP_WRITE_FLAG_COPY); // flags: TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
 	int write(IDataSourceStream* stream);
@@ -92,7 +105,9 @@ public:
 	/**
 	 * @brief Sets the SHA1 certificate finger print.
 	 * 		  The latter will be used after successful handshake to check against the fingerprint of the other side.
+	 *
 	 * @deprecated This method will be removed in future releases. Use pinCertificate instead.
+	 *
 	 * @param const uint8_t *data
 	 * @param int length
 	 * @return bool  true of success, false or failure
@@ -122,10 +137,24 @@ public:
 	 * 			Disadvantages: The hash needs to be updated every time the remote server updates its certificate
 	 * @return bool  true of success, false or failure
 	 */
-	bool pinCertificate(const uint8_t *fingerprint, SslFingerprintType type);
+	bool pinCertificate(const uint8_t *fingerprint, SslFingerprintType type, bool freeAfterHandshake = false);
+
+	/**
+	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
+	 *
+	 * @note  The data inside the fingerprints parameter is passed by reference
+	 *
+	 * @param SSLFingerprints - passes the certificate fingerprints by reference.
+	 *
+	 * @return bool  true of success, false or failure
+	 */
+	bool pinCertificate(SSLFingerprints fingerprints, bool freeAfterHandshake = false);
 
 	/**
 	 * @brief Sets client private key, certificate and password from memory
+	 *
+	 * @note  This method makes copy of the data.
+	 *
 	 * @param const uint8_t *keyData
 	 * @param int keyLength
 	 * @param const uint8_t *certificateData
@@ -140,9 +169,26 @@ public:
 							 const char *keyPassword = NULL, bool freeAfterHandshake = false);
 
 	/**
+	* @brief Sets client private key, certificate and password from memory
+	*
+	* @note  This method passes the certificate key chain by reference
+	*
+	* @param SSLKeyCertPair
+	* @param bool freeAfterHandshake
+	*
+	* @return bool  true of success, false or failure
+	*/
+	bool setSslClientKeyCert(SSLKeyCertPair clientKeyCert, bool freeAfterHandshake = false);
+
+	/**
 	 * @brief Frees the memory used for the client key and certificate pair
 	 */
 	void freeSslClientKeyCert();
+
+	/**
+	 * @brief Frees the memory used for SSL fingerprinting
+	 */
+	void freeSslFingerprints();
 
 	SSL* getSsl();
 #endif
@@ -184,8 +230,11 @@ protected:
 	uint32_t sslOptions=0;
 	SSLKeyCertPair clientKeyCert;
 	bool freeClientKeyCert = false;
+	bool freeFingerprints = false;
+	SSLSessionId* sslSessionId = NULL;
 #endif
 	bool useSsl = false;
 };
 
+/** @} */
 #endif /* _SMING_CORE_TCPCONNECTION_H_ */

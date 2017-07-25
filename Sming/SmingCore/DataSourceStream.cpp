@@ -6,9 +6,6 @@
  ****/
 
 #include "../SmingCore/DataSourceStream.h"
-#include "../SmingCore/Network/TcpConnection.h"
-#include "../SmingCore/Network/HttpRequest.h"
-#include "WiringFrameworkDependencies.h"
 
 MemoryDataStream::MemoryDataStream()
 {
@@ -20,8 +17,10 @@ MemoryDataStream::MemoryDataStream()
 
 MemoryDataStream::~MemoryDataStream()
 {
-	free(buf);
-	buf = NULL;
+	if(buf != NULL) {
+		free(buf);
+		buf = NULL;
+	}
 	pos = NULL;
 	size = 0;
 }
@@ -97,12 +96,12 @@ FileStream::FileStream()
 	pos = 0;
 }
 
-FileStream::FileStream(String filename)
+FileStream::FileStream(const String& filename)
 {
 	attach(filename, eFO_ReadOnly);
 }
 
-bool FileStream::attach(String fileName, FileOpenFlags openFlags)
+bool FileStream::attach(const String& fileName, FileOpenFlags openFlags)
 {
 	handle = fileOpen(fileName.c_str(), openFlags);
 	if (handle == -1)
@@ -179,9 +178,21 @@ bool FileStream::fileExist()
 	return size != -1;
 }
 
+String FileStream::id()
+{
+	spiffs_stat stat;
+	fileStats(handle, &stat);
+
+#define ETAG_SIZE 16
+	char buf[ETAG_SIZE];
+	m_snprintf(buf, ETAG_SIZE, "00f-%x-%x0-%x", stat.obj_id, stat.size, strlen((char*)stat.name));
+
+	return String(buf);
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
-TemplateFileStream::TemplateFileStream(String templateFileName)
+TemplateFileStream::TemplateFileStream(const String& templateFileName)
 	: FileStream(templateFileName)
 {
 	state = eTES_Wait;
@@ -306,13 +317,14 @@ void TemplateFileStream::setVar(String name, String value)
 	templateData[name] = value;
 }
 
-void TemplateFileStream::setVarsFromRequest(const HttpRequest& request)
-{
-	if (request.requestGetParameters != NULL)
-		templateData.setMultiple(*request.requestGetParameters);
-	if (request.requestPostParameters != NULL)
-		templateData.setMultiple(*request.requestPostParameters);
-}
+// TODO: Remove that dependency from here ...
+//void TemplateFileStream::setVarsFromRequest(const HttpRequest& request)
+//{
+//	if (request.requestGetParameters != NULL)
+//		templateData.setMultiple(*request.requestGetParameters);
+//	if (request.requestPostParameters != NULL)
+//		templateData.setMultiple(*request.requestPostParameters);
+//}
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -339,4 +351,13 @@ uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 	}
 
 	return MemoryDataStream::readMemoryBlock(data, bufSize);
+}
+
+int JsonObjectStream::length()
+{
+	if (rootNode == JsonObject::invalid()) {
+		return 0;
+	}
+
+	return rootNode.measureLength();
 }

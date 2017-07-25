@@ -99,6 +99,15 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
+# select which tools to use as compiler, librarian and linker
+AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
+CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
+CXX		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-g++
+AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
+LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
+OBJCOPY := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objcopy
+OBJDUMP := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objdump
+
 ## COM port parameters
 # Default COM port speed (generic)
 COM_SPEED ?= 115200
@@ -143,7 +152,7 @@ TARGET		= app
 CUSTOM_TARGETS ?=
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= system system/helpers Wiring SmingCore appinit $(filter %/, $(wildcard SmingCore/*/)) $(filter %/, $(wildcard Services/*/)) $(filter %/, $(wildcard Libraries/*/))
+MODULES		= system system/helpers Wiring appinit $(shell find SmingCore -type d) $(filter %/, $(wildcard Services/*/)) $(filter %/, $(wildcard Libraries/*/))
 EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
 
 # Place a file that should exist in a submodule that is fetched separately
@@ -155,6 +164,16 @@ EXTRA_INCDIR += third-party/rboot third-party/rboot/appcode
 THIRD_PARTY_DATA += third-party/spiffs/makefile
 MODULES		     += third-party/spiffs/src
 EXTRA_INCDIR     += third-party/spiffs/src
+
+# => http-parser
+THIRD_PARTY_DATA += third-party/http-parser/Makefile
+MODULES		     += third-party/http-parser/
+EXTRA_INCDIR     += third-party/http-parser/
+
+# => webscoket-parser
+THIRD_PARTY_DATA += third-party/ws_parser/Makefile
+MODULES              += third-party/ws_parser/
+EXTRA_INCDIR     += third-party/ws_parser/
 
 # => esp-gdbstub
 ifeq ($(ENABLE_GDB), 1)
@@ -196,10 +215,13 @@ endif
 
 # libraries used in this project, mainly provided by the SDK
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
-# WARNING: In the next versions ENABLE_CUSTOM_PWM will be set to 1 by default
+
+ENABLE_CUSTOM_PWM ?= 1
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	THIRD_PARTY_DATA += third-party/pwm/pwm.c
 endif
+
+MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
 CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
@@ -212,7 +234,14 @@ else ifeq ($(ENABLE_GDB), 1)
 else
 	CFLAGS += -Os -g
 endif
-
+ifneq ($(MFORCE32),)
+    # Your compiler supports the -mforce-l32 flag which means that 
+    # constants can be stored in flash (program) memory instead of SRAM.
+    # See: https://www.arduino.cc/en/Reference/PROGMEM
+    CFLAGS += -DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" -mforce-l32
+else 
+    CFLAGS += -DPROGMEM_L32=""
+endif
 #Append debug options
 CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 
@@ -245,15 +274,6 @@ ifeq ($(ENABLE_SSL),1)
 	CFLAGS += $(AXTLS_FLAGS)  
 	CXXFLAGS += $(AXTLS_FLAGS)
 endif
-
-# select which tools to use as compiler, librarian and linker
-AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
-CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
-CXX		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-g++
-AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
-LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
-OBJCOPY := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objcopy
-OBJDUMP := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objdump
 
 SRC_DIR		:= $(MODULES)
 BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))

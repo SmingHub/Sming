@@ -16,7 +16,7 @@ void onDefault(HttpRequest &request, HttpResponse &response)
 
 void onIndex(HttpRequest &request, HttpResponse &response) {
 	
-	response.setContentType(ContentType::HTML);
+	response.setContentType(MIME_HTML);
 	response.sendString("SMING captive portal");
 }
 

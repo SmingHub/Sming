@@ -8,7 +8,7 @@
 #include "FileSystem.h"
 #include "../Wiring/WString.h"
 
-file_t fileOpen(const String name, FileOpenFlags flags)
+file_t fileOpen(const String& name, FileOpenFlags flags)
 {
   int res;
 
@@ -74,7 +74,7 @@ int fileFlush(file_t file)
   return SPIFFS_fflush(&_filesystemStorageHandle, file);
 }
 
-int fileStats(const String name, spiffs_stat *stat)
+int fileStats(const String& name, spiffs_stat *stat)
 {
 	return SPIFFS_stat(&_filesystemStorageHandle, name.c_str(), stat);
 }
@@ -84,7 +84,7 @@ int fileStats(file_t file, spiffs_stat *stat)
 	return SPIFFS_fstat(&_filesystemStorageHandle, file, stat);
 }
 
-void fileDelete(const String name)
+void fileDelete(const String& name)
 {
 	SPIFFS_remove(&_filesystemStorageHandle, name.c_str());
 }
@@ -94,7 +94,7 @@ void fileDelete(file_t file)
 	SPIFFS_fremove(&_filesystemStorageHandle, file);
 }
 
-bool fileExist(const String name)
+bool fileExist(const String& name)
 {
   spiffs_stat stat = {0};
   if (fileStats(name.c_str(), &stat) < 0) return false;
@@ -112,19 +112,19 @@ void fileClearLastError(file_t fd)
   SPIFFS_clearerr(&_filesystemStorageHandle);
 }
 
-void fileSetContent(const String fileName, const String& content)
+void fileSetContent(const String& fileName, const String& content)
 {
 	fileSetContent(fileName, content.c_str());
 }
 
-void fileSetContent(const String fileName, const char *content)
+void fileSetContent(const String& fileName, const char *content)
 {
 	file_t file = fileOpen(fileName.c_str(), eFO_CreateNewAlways | eFO_WriteOnly);
 	fileWrite(file, content, strlen(content));
 	fileClose(file);
 }
 
-uint32_t fileGetSize(const String fileName)
+uint32_t fileGetSize(const String& fileName)
 {
 	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
 	// Get size
@@ -134,7 +134,7 @@ uint32_t fileGetSize(const String fileName)
 	return size;
 }
 
-void fileRename(const String oldName, const String newName)
+void fileRename(const String& oldName, const String& newName)
 {
 	SPIFFS_rename(&_filesystemStorageHandle, oldName.c_str(), newName.c_str());
 }
@@ -155,7 +155,7 @@ Vector<String> fileList()
 	return result;
 }
 
-String fileGetContent(const String fileName)
+String fileGetContent(const String& fileName)
 {
 	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
 	// Get size
@@ -176,7 +176,7 @@ String fileGetContent(const String fileName)
 	return res;
 }
 
-int fileGetContent(const String fileName, char* buffer, int bufSize)
+int fileGetContent(const String& fileName, char* buffer, int bufSize)
 {
 	if (buffer == NULL || bufSize == 0) return 0;
 	*buffer = 0;

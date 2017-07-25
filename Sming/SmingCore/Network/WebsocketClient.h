@@ -10,6 +10,12 @@
  * 
  */
 
+/** @defgroup   wsclient WebSocket client
+ *  @brief      Provides WebSocket client
+ *  @ingroup    tcpclient
+ *  @{
+ */
+
 #ifndef WEBSOCKETCLIENT_H
 #define	WEBSOCKETCLIENT_H
 
@@ -90,7 +96,7 @@ public:
 	  *  @param  msg Pointer to NULL-terminated string buffer to be send to websocket server
 	  *  @param  length length of the NULL-terminated string buffer
 	  */
-	void sendMessage(String str);
+	void sendMessage(const String& str);
 	 /** @brief  Send text message to websocket server
 	  *  @param  C++ String to be send to websocket server
 	  */
@@ -130,5 +136,6 @@ private:
 	String _key;
 };
 
+/** @} */
 #endif	/* WEBSOCKETCLIENT_H */
 

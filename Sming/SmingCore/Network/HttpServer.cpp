@@ -3,235 +3,103 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HttpServer
+ *
+ * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
+ *
  ****/
 
 #include "HttpServer.h"
 
-#include "HttpRequest.h"
-#include "HttpResponse.h"
-#include "HttpServerConnection.h"
 #include "TcpClient.h"
 #include "../Wiring/WString.h"
-#include "../../Services/cWebsocket/websocket.h"
 
 HttpServer::HttpServer()
 {
-	defaultHandler = NULL;
-	setTimeOut(90);
+	settings.keepAliveSeconds = 0;
+	configure(settings);
+}
 
-	// Default processing headers
-	// Add more in you app!
-	enableHeaderProcessing("Cookie");
-	enableHeaderProcessing("Host");
-	enableHeaderProcessing("Content-Type");
-	enableHeaderProcessing("Content-Length");
+HttpServer::HttpServer(HttpServerSettings settings)
+{
+	configure(settings);
+}
 
-	enableHeaderProcessing("Upgrade");
+void HttpServer::configure(HttpServerSettings settings) {
+	this->settings = settings;
+	if(settings.minHeapSize != -1 && settings.minHeapSize > -1) {
+		minHeapSize = settings.minHeapSize;
+	}
+
+	if(settings.useDefaultBodyParsers) {
+		setBodyParser(ContentType::toString(MIME_FORM_URL_ENCODED), formUrlParser);
+	}
+
+	setTimeOut(settings.keepAliveSeconds);
+#ifdef ENABLE_SSL
+	sslSessionCacheSize = settings.sslSessionCacheSize;
+#endif
 }
 
 HttpServer::~HttpServer()
 {
+	for(int i=0; i< resourceTree.count(); i++) {
+		if(resourceTree.valueAt(i) != NULL) {
+			delete resourceTree.valueAt(i);
+		}
+	}
+}
+
+void HttpServer::setBodyParser(const String& contentType, HttpBodyParserDelegate parser)
+{
+	bodyParsers[contentType] = parser;
 }
 
 TcpConnection* HttpServer::createClient(tcp_pcb *clientTcp)
 {
-	TcpConnection* con = new HttpServerConnection(this, clientTcp);
+	HttpServerConnection* con = new HttpServerConnection(clientTcp);
+	con->setResourceTree(&resourceTree);
+	con->setBodyParsers(&bodyParsers);
+	con->setCompleteDelegate(TcpClientCompleteDelegate(&HttpServer::onConnectionClose, this));
+
+	totalConnections++;
+	debugf("Opening connection. Total connections: %d", totalConnections);
+
 	return con;
 }
 
-void HttpServer::enableHeaderProcessing(String headerName)
+void HttpServer::addPath(String path, const HttpPathDelegate& callback)
 {
-	headerName.toLowerCase();
-	for (int i = 0; i < processingHeaders.count(); i++)
-		if (processingHeaders[i].equals(headerName))
-			return;
-
-	processingHeaders.add(headerName);
-}
-
-void HttpServer::addPath(String path, HttpPathDelegate callback)
-{
-	if (path.length() > 1 && path.endsWith("/"))
+	if (path.length() > 1 && path.endsWith("/")) {
 		path = path.substring(0, path.length() - 1);
-	if (!path.startsWith("/"))
-		path = "/" + path;
+	}
 	debugf("'%s' registered", path.c_str());
-	paths[path] = callback;
+
+	HttpCompatResource* resource = new HttpCompatResource(callback);
+	resourceTree[path] = resource;
 }
 
-void HttpServer::setDefaultHandler(HttpPathDelegate callback)
+void HttpServer::setDefaultHandler(const HttpPathDelegate& callback)
 {
-	defaultHandler = callback;
+	addPath("*", callback);
 }
 
-bool HttpServer::processRequest(HttpServerConnection &connection, HttpRequest &request, HttpResponse &response)
-{
-	if (request.isWebSocket())
-	{
-		bool res = initWebSocket(connection, request, response);
-		if (!res) response.badRequest();
-	}
-	String path = request.getPath();
-	if (path.length() > 1 && path.endsWith("/"))
-		path = path.substring(0, path.length() - 1);
-
-	if (paths.contains(path))
-	{
-		paths[path](request, response);
-		return true;
-	}
-
-	if (defaultHandler)
-	{
-		debugf("Default server handler for: '%s'", path.c_str());
-		defaultHandler(request, response);
-		return true;
-	}
-
-	debugf("ERROR at server 404: '%s' not found", path.c_str());
-	return false;
+void HttpServer::addPath(const String& path, const HttpResourceDelegate& onRequestComplete) {
+	HttpResource* resource = new HttpResource;
+	resource->onRequestComplete = onRequestComplete;
+	resourceTree[path] = resource;
 }
 
-bool HttpServer::isHeaderProcessingEnabled(String name)
-{
-	for (int i = 0; i < processingHeaders.count(); i++)
-		if (processingHeaders[i].equals(name))
-			return true;
-
-	return false;
+void HttpServer::addPath(const String& path, HttpResource* resource) {
+	resourceTree[path] = resource;
 }
 
-bool HttpServer::initWebSocket(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
-{
-	if (!wsEnabled)
-		return false;
-
-    WebSocket *sock = new WebSocket(&connection);
-    if (!sock->initialize(request, response))
-        return false;
-
-    connection.setTimeOut(USHRT_MAX); //Disable disconnection on connection idle (no rx/tx)
-	connection.setDisconnectionHandler(HttpServerConnectionDelegate(&HttpServer::onCloseWebSocket, this)); // auto remove on close
-	response.sendHeader(connection); // Will push header before user data
-
-    wsocks.addElement(sock);
-    if (wsConnect) wsConnect(*sock);
-    if (wsCommandEnabled &&  (request.getQueryParameter(wsCommandRequestParam) == "true"))
-    {
-#if ENABLE_CMD_EXECUTOR
-        debugf("WebSocket Commandprocessor started");
-#else
-        debugf("WebSocket Commandprocessor support DISABLED via ENABLE_CMD_EXECUTOR");
-#endif
-    	sock->enableCommand();
-    }
+void HttpServer::setDefaultResource(HttpResource* resource) {
+	addPath("*", resource);
 }
 
-void HttpServer::processWebSocketFrame(pbuf *buf, HttpServerConnection& connection)
-{
-	//TODO: process splitted payload
-	uint8_t* data; size_t size;
-
-	wsFrameType frameType = (wsFrameType) 0x01;
-	uint8_t payloadFieldExtraBytes = 0;
-	size_t payloadLength = 0;
-	size_t payloadShift = 0;
-	do
-	{
-	payloadLength = getPayloadLength((uint8_t*)buf->payload + payloadShift, buf->len, &payloadFieldExtraBytes, &frameType);
-
-//    debugf("payloadLength: %u, payLoadShift: %u, payloadFieldExtraBytes: %u\n", payloadLength, payloadShift, payloadFieldExtraBytes);
-
-	wsFrameType frameType = wsParseInputFrame((uint8_t*)buf->payload + payloadShift, (payloadLength + 6 + payloadFieldExtraBytes), &data, &size);
-	WebSocket* sock = getWebSocket(connection);
-
-	if (frameType == WS_TEXT_FRAME)
-	{
-		String msg;
-		msg.setString((char*)data, size);
-		debugf("WS: %s", msg.c_str());
-		if (sock && wsMessage) wsMessage(*sock, msg);
-#if ENABLE_CMD_EXECUTOR
-		if (sock && sock->commandExecutor) sock->commandExecutor->executorReceive(msg+"\r");
-#endif
-	}
-	else if (frameType == WS_BINARY_FRAME)
-	{
-		if (sock && wsMessage) wsBinary(*sock, data, size);
-	}
-	else if (frameType == WS_CLOSING_FRAME)
-	{
-		connection.close(); // it will be processed automatically in onCloseWebSocket callback
-	}
-	else if (frameType == WS_INCOMPLETE_FRAME || frameType == WS_ERROR_FRAME)
-		debugf("WS error reading frame: %X", frameType);
-	else
-		debugf("WS frame type: %X", frameType);
-
-	payloadShift += payloadLength + 6 + payloadFieldExtraBytes;
-	}
-	while (buf->len > payloadShift);
-}
-
-void HttpServer::setWebSocketConnectionHandler(WebSocketDelegate handler)
-{
-	wsConnect = handler;
-}
-
-void HttpServer::setWebSocketMessageHandler(WebSocketMessageDelegate handler)
-{
-	wsMessage = handler;
-}
-
-void HttpServer::setWebSocketBinaryHandler(WebSocketBinaryDelegate handler)
-{
-	wsBinary = handler;
-}
-
-void HttpServer::setWebSocketDisconnectionHandler(WebSocketDelegate handler)
-{
-	wsDisconnect = handler;
-}
-
-WebSocket* HttpServer::getWebSocket(HttpServerConnection& connection)
-{
-	for (int i = 0; i < wsocks.count(); i++)
-		if (wsocks[i].is(&connection))
-			return &wsocks[i];
-
-	return nullptr;
-}
-
-void HttpServer::removeWebSocket(HttpServerConnection& connection)
-{
-	debugf("WS remove connection item");
-	for (int i = 0; i < wsocks.count(); i++)
-		if (wsocks[i].is(&connection))
-			wsocks.remove(i--);
-}
-
-void HttpServer::onCloseWebSocket(HttpServerConnection& connection)
-{
-	WebSocket* sock = getWebSocket(connection);
-
-	removeWebSocket(connection);
-
-	debugf("WS Close");
-	if (sock && wsDisconnect) wsDisconnect(*sock);
-}
-
-void HttpServer::enableWebSockets(bool enabled)
-{
-	wsEnabled = enabled;
-	if (wsEnabled)
-	{
-		enableHeaderProcessing("Sec-WebSocket-Key");
-		enableHeaderProcessing("Sec-WebSocket-Version");
-	}
-}
-
-void HttpServer::commandProcessing(bool reqEnabled, String reqRequestParam)
-{
-	wsCommandEnabled = reqEnabled;
-	wsCommandRequestParam = reqRequestParam;
+void HttpServer::onConnectionClose(TcpClient& connection, bool success) {
+	totalConnections--;
+	debugf("Closing connection. Total connections: %d", totalConnections);
 }

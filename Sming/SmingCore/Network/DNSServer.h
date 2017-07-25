@@ -11,6 +11,11 @@
  * Created on March 4, 2016
  */
 
+/** @defgroup   dnsserver DNS server
+ *  @brief      Provides DNS server
+ *  @ingroup    udp
+ *  @{
+ */
 #ifndef DNSServer_h
 #define DNSServer_h
 
@@ -68,11 +73,11 @@ class DNSServer : public UdpConnection
     void stop();
 
   private:
-    uint16_t _port;
+    uint16_t _port = 0;
     String _domainName;
     char _resolvedIP[4];
-    char* _buffer;
-    DNSHeader* _dnsHeader;
+    char* _buffer = NULL;
+    DNSHeader* _dnsHeader = NULL;
     uint32_t _ttl;
     DNSReplyCode _errorReplyCode;
 
@@ -83,4 +88,5 @@ class DNSServer : public UdpConnection
 
 };
 
+/** @} */
 #endif //DNSServer_h

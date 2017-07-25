@@ -1,6 +1,7 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <SmingCore/Network/TelnetServer.h>
+#include <SmingCore/Network/Http/Websocket/WebsocketResource.h>
 #include <SmingCore/Debug.h>
 #include <ExampleCommand.h>
 
@@ -29,12 +30,12 @@ void onIndex(HttpRequest &request, HttpResponse &response)
 
 void onFile(HttpRequest &request, HttpResponse &response)
 {
-	String file = request.getPath();
+	String file = request.uri.Path;
 	if (file[0] == '/')
 		file = file.substring(1);
 
 	if (file[0] == '.')
-		response.forbidden();
+		response.code = HTTP_STATUS_FORBIDDEN;
 	else
 	{
 		response.setCache(86400, true); // It's important to use cache for better performance.
@@ -44,24 +45,24 @@ void onFile(HttpRequest &request, HttpResponse &response)
 
 int msgCount = 0;
 
-void wsConnected(WebSocket& socket)
+void wsConnected(WebSocketConnection& socket)
 {
 	Serial.printf("Socket connected\r\n");
 }
 
-void wsMessageReceived(WebSocket& socket, const String& message)
+void wsMessageReceived(WebSocketConnection& socket, const String& message)
 {
-	Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
+	Serial.printf("WebSocketConnection message received:\r\n%s\r\n", message.c_str());
 	String response = "Echo: " + message;
 	socket.sendString(response);
 }
 
-void wsBinaryReceived(WebSocket& socket, uint8_t* data, size_t size)
+void wsBinaryReceived(WebSocketConnection& socket, uint8_t* data, size_t size)
 {
 	Serial.printf("Websocket binary data recieved, size: %d\r\n", size);
 }
 
-void wsDisconnected(WebSocket& socket)
+void wsDisconnected(WebSocketConnection& socket)
 {
 	Serial.printf("Socket disconnected");
 }
@@ -78,13 +79,14 @@ void StartServers()
 	server.setDefaultHandler(onFile);
 
 	// Web Sockets configuration
-	server.enableWebSockets(true);
-	server.commandProcessing(true,"command");
+	WebsocketResource* wsResource = new WebsocketResource();
+	wsResource->setConnectionHandler(wsConnected);
+	wsResource->setMessageHandler(wsMessageReceived);
+	wsResource->setBinaryHandler(wsBinaryReceived);
+	wsResource->setDisconnectionHandler(wsDisconnected);
 
-	server.setWebSocketConnectionHandler(wsConnected);
-	server.setWebSocketMessageHandler(wsMessageReceived);
-	server.setWebSocketBinaryHandler(wsBinaryReceived);
-	server.setWebSocketDisconnectionHandler(wsDisconnected);
+	server.addPath("/ws", wsResource);
+
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());

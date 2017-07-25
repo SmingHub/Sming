@@ -5,6 +5,12 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/** @defgroup   tcpclient Clients
+ *  @brief      Provides base TCP client
+ *  @ingroup    tcp
+ *  @{
+ */
+
 #ifndef _SMING_CORE_TCPCLIENT_H_
 #define _SMING_CORE_TCPCLIENT_H_
 
@@ -58,7 +64,7 @@ public:
 	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = NULL);
 
 	bool send(const char* data, uint16_t len, bool forceCloseAfterSent = false);
-	bool sendString(String data, bool forceCloseAfterSent = false);
+	bool sendString(const String& data, bool forceCloseAfterSent = false);
 	__forceinline bool isProcessing()  { return state == eTCS_Connected || state == eTCS_Connecting; }
 	__forceinline TcpClientState getConnectionState() { return state; }
 
@@ -83,4 +89,5 @@ private:
 	int16_t asyncTotalLen = 0;
 };
 
+/** @} */
 #endif /* _SMING_CORE_TCPCLIENT_H_ */

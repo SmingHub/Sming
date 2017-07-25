@@ -17,7 +17,7 @@ CommandOutput::CommandOutput(Stream* reqStream)
 {
 }
 
-CommandOutput::CommandOutput(WebSocket* reqSocket)
+CommandOutput::CommandOutput(WebSocketConnection* reqSocket)
 :  outputSocket(reqSocket)
 {
 }

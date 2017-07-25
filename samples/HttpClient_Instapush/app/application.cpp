@@ -39,9 +39,13 @@ public:
 	void notify(String event, InstapushTrackers &trackersInfo)
 	{
 		debugf("preparing request");
-		setRequestContentType("application/json");
-		setRequestHeader("x-instapush-appid", app);
-		setRequestHeader("x-instapush-appsecret", secret);
+
+		HttpRequest *request = new HttpRequest(URL(url));
+
+		HttpHeaders requestHeaders;
+		requestHeaders["Content-Type"] = "application/json";
+		requestHeaders["x-instapush-appid"] =  app;
+		requestHeaders["x-instapush-appsecret"] =  secret;
 
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject& root = jsonBuffer.createObject();
@@ -55,13 +59,17 @@ public:
 
 		String tempString;
 		root.printTo(tempString);
-		setPostBody(tempString);
-		downloadString(url, HttpClientCompletedDelegate(&InstapushApplication::processed, this));
+		request->setBody(tempString);
+		request->onRequestComplete(RequestCompletedDelegate(&InstapushApplication::processed, this));
+
+		send(request);
 	}
 
-	void processed(HttpClient& client, bool successful)
+	int processed(HttpConnection& client, bool successful)
 	{
 		Serial.println(client.getResponseString());
+
+		return 0;
 	}
 
 private:

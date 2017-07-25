@@ -5,6 +5,13 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/** @defgroup   url URL
+ *  @brief      Provides URL handling
+ *  @ingroup    httpserver
+ *  @ingroup    httpclient
+ *  @{
+ */
+
 #ifndef _SMING_CORE_NETWORK_URL_H_
 #define _SMING_CORE_NETWORK_URL_H_
 
@@ -31,4 +38,5 @@ public:
 	String Query;
 };
 
+/** @} */
 #endif /* _SMING_CORE_NETWORK_URL_H_ */

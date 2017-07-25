@@ -5,6 +5,12 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/** @defgroup   mqttclient MQTT client
+ *  @brief      Provides MQTT client
+ *  @ingroup    tcpclient
+ *  @{
+ */
+
 #ifndef _SMING_CORE_NETWORK_MqttClient_H_
 #define _SMING_CORE_NETWORK_MqttClient_H_
 
@@ -33,10 +39,10 @@ public:
 	void setKeepAlive(int seconds);			//send to broker
 	void setPingRepeatTime(int seconds);            //used by client
 	// Sets Last Will and Testament
-	bool setWill(String topic, String message, int QoS, bool retained = false);
+	bool setWill(const String& topic, const String& message, int QoS, bool retained = false);
 
-	bool connect(String clientName, boolean useSsl = false, uint32_t sslOptions = 0);
-	bool connect(String clientName, String username, String password, boolean useSsl = false, uint32_t sslOptions = 0);
+	bool connect(const String& clientName, boolean useSsl = false, uint32_t sslOptions = 0);
+	bool connect(const String& clientName,const String& username, const String& password, boolean useSsl = false, uint32_t sslOptions = 0);
 
 	using TcpClient::setCompleteDelegate;
 
@@ -46,8 +52,8 @@ public:
 	bool publish(String topic, String message, bool retained = false);
 	bool publishWithQoS(String topic, String message, int QoS, bool retained = false, MqttMessageDeliveredCallback onDelivery = NULL);
 
-	bool subscribe(String topic);
-	bool unsubscribe(String topic);
+	bool subscribe(const String& topic);
+	bool unsubscribe(const String& topic);
 
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
@@ -76,8 +82,9 @@ private:
 	MqttStringSubscriptionCallback callback;
 	int keepAlive = 60;
 	int PingRepeatTime = 20;
-	unsigned long lastMessage;
+	unsigned long lastMessage = 0;
 	HashMap<uint16_t, MqttMessageDeliveredCallback> onDeliveryQueue;
 };
 
+/** @} */
 #endif /* _SMING_CORE_NETWORK_MqttClient_H_ */

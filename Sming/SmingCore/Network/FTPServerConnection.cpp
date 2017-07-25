@@ -66,7 +66,7 @@ public:
 class FTPDataRetrieve : public FTPDataStream
 {
 public:
-	FTPDataRetrieve(FTPServerConnection* connection, String fileName) : FTPDataStream(connection)
+	FTPDataRetrieve(FTPServerConnection* connection, const String& fileName) : FTPDataStream(connection)
 	{
 		file = fileOpen(fileName, eFO_ReadOnly);
 	}
@@ -77,10 +77,9 @@ public:
 	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
 		if (completed) return;
-		char * buf = new char [1024];
+		char buf[1024];
 		int len = fileRead(file, buf, 1024);
 		write(buf, len, TCP_WRITE_FLAG_COPY);
-		delete buf;
 		if (fileIsEOF(file))
 		{
 			completed = true;
@@ -95,7 +94,7 @@ private:
 class FTPDataStore : public FTPDataStream
 {
 public:
-	FTPDataStore(FTPServerConnection* connection, String fileName) : FTPDataStream(connection)
+	FTPDataStore(FTPServerConnection* connection, const String& fileName) : FTPDataStream(connection)
 	{
 		file = fileOpen(fileName, eFO_WriteOnly | eFO_CreateNewAlways);
 	}
@@ -115,9 +114,9 @@ public:
 		}
 
 		pbuf *cur = buf;
-		while (cur)
+		while (cur != NULL && cur->len > 0)
 		{
-			int len = fileWrite(file, (uint8_t *)cur->payload, cur->len);
+			fileWrite(file, (uint8_t *)cur->payload, cur->len);
 			cur = cur->next;
 		}
 

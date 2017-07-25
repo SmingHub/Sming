@@ -48,8 +48,7 @@ void Timer::start(bool repeating/* = true*/)
 {
 	this->repeating = repeating;
 	stop();
-	if(interval == 0 || (!callback && !delegate_func)) 
-		return;
+	if (interval == 0) return;
 	
 	ets_timer_setfn(&timer, (os_timer_func_t *)processing, this);	
 	if (interval > 10000) 
@@ -182,15 +181,23 @@ void Timer::processing(void *arg)
 					ptimer->stop();
 			}
 		}
-
-		if (ptimer->callback)
-		{
-			ptimer->callback();
-		}
-		else if (ptimer->delegate_func)
-		{
-			ptimer->delegate_func();
-		}
+		ptimer->tick();
 	}
 
+}
+
+
+void Timer::tick()
+{
+	if (callback)
+	{
+		callback();
+	}
+	else if (delegate_func)
+	{
+		delegate_func();
+	}
+	else{
+		stop();
+	}
 }

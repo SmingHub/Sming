@@ -69,7 +69,7 @@ bool TcpClient::connect(IPAddress addr, uint16_t port, boolean useSsl /* = false
 	return TcpConnection::connect(addr, port, useSsl, sslOptions);
 }
 
-bool TcpClient::sendString(String data, bool forceCloseAfterSent /* = false*/)
+bool TcpClient::sendString(const String& data, bool forceCloseAfterSent /* = false*/)
 {
 	return send(data.c_str(), data.length(), forceCloseAfterSent);
 }
@@ -81,8 +81,11 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent /*
 	if (stream == NULL)
 		stream = new MemoryDataStream();
 
-	if (stream->write((const uint8_t*)data, len) != len)
+	if (stream->write((const uint8_t*)data, len) != len) {
+		debug_e("ERROR: Unable to store %d bytes in output stream", len);
 		return false;
+	}
+
 	debugf("Storing %d bytes in stream", len);
 
 	asyncTotalLen += len;
@@ -113,28 +116,27 @@ err_t TcpClient::onReceive(pbuf *buf)
 	if (buf == NULL)
 	{
 		// Disconnected, close it
-		TcpConnection::onReceive(buf);
+		return TcpConnection::onReceive(buf);
 	}
-	else
-	{
-		if (receive)
-		{
-			char* data = new char[buf->tot_len + 1];
-			pbuf_copy_partial(buf, data, buf->tot_len, 0);
-			data[buf->tot_len] = '\0';
 
-			if (!receive(*this, data, buf->tot_len))
-			{
-				delete[] data;
-				return ERR_MEM;
+	if (receive)
+	{
+		pbuf *cur = buf;
+		while (cur != NULL && cur->len > 0) {
+			bool success = !receive(*this, (char*)cur->payload, cur->len);
+			if(!success) {
+				debugf("TcpClient::onReceive: Aborted from receive callback");
+
+				TcpConnection::onReceive(NULL);
+				return ERR_ABRT; // abort the connection
 			}
 
-			delete[] data;
+			cur = cur->next;
 		}
-
-		// Fire ReadyToSend callback
-		TcpConnection::onReceive(buf);
 	}
+
+	// Fire ReadyToSend callback
+	TcpConnection::onReceive(buf);
 
 	return ERR_OK;
 }

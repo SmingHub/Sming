@@ -14,17 +14,10 @@ StationClass::StationClass()
 {
 	System.onReady(this);
 	runScan = false;
-	onConnectOk = nullptr;
-	onConnectFail = nullptr;
-	connectionTimeOut = 0;
-	connectionTimer = NULL;
-	connectionStarted = 0;
 }
 
 StationClass::~StationClass()
 {
-	delete connectionTimer;
-	connectionTimer = NULL;
 }
 
 void StationClass::enable(bool enabled, bool save)
@@ -36,8 +29,6 @@ void StationClass::enable(bool enabled, bool save)
 		mode = wifi_get_opmode() & ~STATION_MODE;
 	if (enabled)
 		mode |= STATION_MODE;
-	else if (connectionTimer)
-		delete connectionTimer;
 	if (save)
 		wifi_set_opmode(mode);
 	else
@@ -49,7 +40,7 @@ bool StationClass::isEnabled()
 	return wifi_get_opmode() & STATION_MODE;
 }
 
-bool StationClass::config(String ssid, String password, bool autoConnectOnStartup /* = true*/, bool save /* = true */)
+bool StationClass::config(const String& ssid, const String& password, bool autoConnectOnStartup /* = true*/, bool save /* = true */)
 {
 	station_config config = {0};
 
@@ -142,7 +133,7 @@ void StationClass::enableDHCP(bool enable)
 		wifi_station_dhcpc_stop();
 }
 
-void StationClass::setHostname(String hostname)
+void StationClass::setHostname(const String& hostname)
 {
 	wifi_station_set_hostname((char*)hostname.c_str());
 }
@@ -288,27 +279,6 @@ bool StationClass::startScan(ScanCompletedDelegate scanCompleted)
 	return res;
 }
 
-void StationClass::waitConnection(ConnectionDelegate successfulConnected)
-{
-	waitConnection(successfulConnected, -1, NULL);
-}
-
-void StationClass::waitConnection(ConnectionDelegate successfulConnected, int secondsTimeOut, ConnectionDelegate connectionNotEstablished)
-{
-	if (onConnectOk || onConnectFail )
-	{
-		SYSTEM_ERROR("WRONG CALL waitConnection method..");
-		return;
-	}
-
-	onConnectOk = successfulConnected;
-	connectionTimeOut = secondsTimeOut;
-	onConnectFail = connectionNotEstablished;
-	connectionTimer = new Timer();
-	connectionTimer->initializeMs(50, staticCheckConnection).start();
-	connectionStarted = millis();
-}
-
 ////////////
 
 void StationClass::staticScanCompleted(void *arg, STATUS status)
@@ -345,43 +315,6 @@ void StationClass::onSystemReady()
 		wifi_station_scan(NULL, staticScanCompleted);
 		runScan = false;
 	}
-}
-
-void StationClass::internalCheckConnection()
-{
-	uint32 duration = millis() - connectionStarted;
-	if (isConnected())
-	{
-		ConnectionDelegate callOk = nullptr;
-		if (onConnectOk) {
-			callOk = onConnectOk;
-		}
-
-		onConnectOk = nullptr;
-		onConnectFail = nullptr;
-		delete connectionTimer;
-		connectionTimeOut = 0;
-
-		if (callOk) {
-			callOk();
-		}
-	}
-	else if (connectionTimeOut > 0 && duration > (uint32)connectionTimeOut * 1000)
-	{
-		ConnectionDelegate call = onConnectFail;
-		onConnectOk = nullptr;
-		onConnectFail = nullptr;
-		delete connectionTimer;
-		connectionTimeOut = 0;
-
-		if (call)
-			call();
-	}
-}
-
-void StationClass::staticCheckConnection()
-{
-	WifiStation.internalCheckConnection();
 }
 
 const char* StationClass::getConnectionStatusName()

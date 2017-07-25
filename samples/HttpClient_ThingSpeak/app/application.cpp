@@ -11,7 +11,7 @@ Timer procTimer;
 int sensorValue = 0;
 HttpClient thingSpeak;
 
-void onDataSent(HttpClient& client, bool successful)
+int onDataSent(HttpConnection& client, bool successful)
 {
 	if (successful)
 		Serial.println("Success sent");
@@ -27,12 +27,12 @@ void onDataSent(HttpClient& client, bool successful)
 		if (intVal == 0)
 			Serial.println("Sensor value wasn't accepted. May be we need to wait a little?");
 	}
+
+	return 0;
 }
 
 void sendData()
 {
-	if (thingSpeak.isProcessing()) return; // We need to wait while request processing was completed
-
 	// Read our sensor value :)
 	sensorValue++;
 

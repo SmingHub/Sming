@@ -15,7 +15,9 @@ CommandHandler::CommandHandler()
 
 CommandHandler::~CommandHandler()
 {
-	// TODO Auto-generated destructor stub
+	if(registeredCommands != NULL) {
+		delete registeredCommands;
+	}
 }
 
 void CommandHandler::registerSystemCommands()

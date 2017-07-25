@@ -75,6 +75,18 @@ public:
      *  @retval bool True on success.
      */
 	virtual bool isFinished() = 0;
+
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	 */
+	virtual int length() {  return -1; }
+
+	/**
+	 * @brief Returns unique id of the resource.
+	 * @retval String the unique id of the stream.
+	 */
+	virtual String id() { return String(); }
 };
 
 /// Memory data stream class
@@ -96,8 +108,16 @@ public:
 
 	/** @brief  Get size of stream
 	 *  @retval int Quantity of chars in stream
+	 *
+	 *  @deprecated Use getLength instead
 	 */
 	int getStreamLength() { return size; }
+
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	*/
+	int length() { return size; }
 
     /** @brief  Write a single char to stream
      *  @param  charToWrite Char to write to the stream
@@ -136,11 +156,11 @@ public:
     /** @brief  Create a file stream
      *  @param  fileName Name of file to open
      */
-        FileStream();
-	FileStream(String fileName);
+	FileStream();
+	FileStream(const String& fileName);
 	virtual ~FileStream();
 
-	virtual bool attach(String fileName, FileOpenFlags openFlags);
+	virtual bool attach(const String& fileName, FileOpenFlags openFlags);
     //Use base class documentation
 	virtual StreamType getStreamType() { return eSST_File; }
 
@@ -163,6 +183,14 @@ public:
      *  @retval int Cursor offset
      */
 	inline int getPos() { return pos; }
+
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	 */
+	int length() { return -1; }
+
+	virtual String id();
 
 private:
 	file_t handle;
@@ -195,7 +223,7 @@ public:
     /** @brief Create a template file stream
      *  @param  templateFileName Template filename
      */
-	TemplateFileStream(String templateFileName);
+	TemplateFileStream(const String& templateFileName);
 	virtual ~TemplateFileStream();
 
     //Use base class documentation
@@ -223,6 +251,12 @@ public:
      *  @retval TemplateVariables Reference to the template variables
      */
 	inline TemplateVariables& variables() { return templateData; }
+
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	 */
+	int length() { return -1; }
 
 private:
 	TemplateVariables templateData;
@@ -252,6 +286,12 @@ public:
 
     //Use base class documentation
 	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	 */
+	int length();
 
 private:
 	DynamicJsonBuffer buffer;

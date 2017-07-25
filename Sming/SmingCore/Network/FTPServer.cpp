@@ -34,7 +34,7 @@ void FTPServer::addUser(String login, String pass)
 	users[login] = pass;
 }
 
-bool FTPServer::checkUser(String login, String pass)
+bool FTPServer::checkUser(String login, const String& pass)
 {
 	debugf("checkUser: %s %s", login.c_str(), pass.c_str());
 	if (!users.contains(login))

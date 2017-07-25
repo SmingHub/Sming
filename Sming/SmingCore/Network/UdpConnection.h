@@ -5,6 +5,12 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/** @defgroup   udp UDP
+ *  @brief      Provides base for UDP clients or services
+ *  @ingroup    networking
+ *  @{
+ */
+
 #ifndef SMINGCORE_NETWORK_UDPCONNECTION_H_
 #define SMINGCORE_NETWORK_UDPCONNECTION_H_
 
@@ -49,4 +55,5 @@ protected:
 	UdpConnectionDataDelegate onDataCallback;
 };
 
+/** @} */
 #endif /* SMINGCORE_NETWORK_UDPCONNECTION_H_ */

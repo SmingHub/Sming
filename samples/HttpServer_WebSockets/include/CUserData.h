@@ -10,14 +10,14 @@ class CUserData
 public:
 	CUserData(const char* uName, const char* uData);
 	~CUserData();
-	void addSession(WebSocket& connection);
-	void removeSession(WebSocket& connection);
-	void printMessage(WebSocket& connection,const String &msg);
+	void addSession(WebSocketConnection& connection);
+	void removeSession(WebSocketConnection& connection);
+	void printMessage(WebSocketConnection& connection,const String &msg);
 	void logOut();
 private:
 	String userName;
 	String userData;
-	Vector<WebSocket*> activeWebSockets;
+	Vector<WebSocketConnection*> activeWebSockets;
 };
 
 #endif /*C_USER_DATA_H_SAMPLE*/

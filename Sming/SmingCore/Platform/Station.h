@@ -101,7 +101,7 @@ public:
 	 *	@param	autoConnectOnStartup True to auto connect. False for manual. (Default: True)
 	 *	@param  save True to save the SSID and password in Flash. False otherwise. (Default: True)
 	 */
-	bool config(String ssid, String password, bool autoConnectOnStartup = true, bool save = true);
+	bool config(const String& ssid, const String& password, bool autoConnectOnStartup = true, bool save = true);
 
 	/**	@brief	Connect WiFi station to network
 	 */
@@ -144,7 +144,7 @@ public:
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@param	hostname - WiFi station DHCP hostname
 	 */
-	void setHostname(String hostname);
+	void setHostname(const String& hostname);
 
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@retval WiFi station DHCP hostname
@@ -208,24 +208,6 @@ public:
 	 */
 	bool startScan(ScanCompletedDelegate scanCompleted);
 
-	/**	@brief	Assign handler for WiFi station connection
-	 *	@note	The handler will be cleared if the WiFi Station is disabled. If you subsequently reenable WiFi Station, another call to <i>waitConnection</i> must be made if you want the handler to be reinstalled.
-	 *	@param	successfulConnected Function to call when WiFi station connects to network
-	 */
-	void waitConnection(ConnectionDelegate successfulConnected);
-
-	/**	@brief	Assign handler for WiFi station connection with timeout
-	 *	@note	The handler will be cleared if the WiFi Station is disabled. If you subsequently reenable WiFi Station, another call to <i>waitConnection</i> must be made if you want the handler to be reinstalled.
-	 *	@param	successfulConnected Function to call when WiFi station connects to network
-	 *	@param	secondsTimeOut Quantity of seconds to wait for connection
-	 *	@param	connectionNotEstablished Function to call if WiFi station fails to connect to network
-	 *
-	 *	@deprecated This method is deprecated and will be removed in the next versions. Use WifiEvents instead.
-	 *				For an example of WifiEvents take a look at the Basic_Wifi sample code.
-	 *
-	 */
-	void waitConnection(ConnectionDelegate successfulConnected, int secondsTimeOut, ConnectionDelegate connectionNotEstablished);
-
 	/**	@brief	Start WiFi station smart configuration
 	 *	@param	sctype Smart configuration type
 	 *	@param	callback Function to call on WiFi staton smart configuration complete (Default: none)
@@ -250,12 +232,6 @@ private:
 	ScanCompletedDelegate scanCompletedCallback;
 	SmartConfigDelegate smartConfigCallback = NULL;
 	bool runScan;
-
-	ConnectionDelegate onConnectOk;
-	ConnectionDelegate onConnectFail;
-	int connectionTimeOut;
-	uint32 connectionStarted;
-	Timer* connectionTimer;
 };
 
 class BssInfo

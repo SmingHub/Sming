@@ -73,9 +73,9 @@ bool DNSServer::requestIncludesOnlyOneQuestion()
 
 void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 {
-
-
-    if (_buffer != NULL) free(_buffer);
+    if (_buffer != NULL) {
+    	free(_buffer);
+    }
     _buffer = (char*)malloc(buf->tot_len * sizeof(char));
     if (_buffer == NULL) return;
     pbuf_copy_partial(buf, _buffer, buf->tot_len, 0);
@@ -91,7 +91,6 @@ void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 			int idx = buf->tot_len;
 			_dnsHeader->QR = DNS_QR_RESPONSE;
 			_dnsHeader->ANCount = _dnsHeader->QDCount;
-			_dnsHeader->QDCount = _dnsHeader->QDCount;
 			memcpy(response, _buffer, idx);
 			//Set a pointer to the domain name in the question section
 			response[idx] = 0xC0;

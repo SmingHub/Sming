@@ -3,37 +3,77 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HttpClient
+ *
+ * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
+ *
  ****/
 
 #include "HttpClient.h"
 
-#include "../SmingCore.h"
+/* Low Level Methods */
+bool HttpClient::send(HttpRequest* request) {
+	String cacheKey = getCacheKey(request->uri);
+	bool useSsl = (request->uri.Protocol == HTTPS_URL_PROTOCOL);
 
-HttpClient::HttpClient(bool autoDestruct /* = false */) : TcpClient(autoDestruct)
-{
-	reset();
+	if(!queue.contains(cacheKey)) {
+		queue[cacheKey] = new RequestQueue;
+	}
+
+	if(!queue[cacheKey]->enqueue(request)) {
+		// the queue is full and we cannot add more requests at the time.
+		debugf("The request queue is full at the moment");
+		delete request;
+		return false;
+	}
+
+	if(httpConnectionPool.contains(cacheKey) &&
+	   httpConnectionPool[cacheKey]->getConnectionState() > eTCS_Connecting &&
+	   !httpConnectionPool[cacheKey]->isActive()
+	) {
+
+		debugf("Removing stale connection: State: %d, Active: %d", (int)httpConnectionPool[cacheKey]->getConnectionState(),
+										(httpConnectionPool[cacheKey]->isActive() ? 1: 0));
+		delete httpConnectionPool[cacheKey];
+		httpConnectionPool[cacheKey] = NULL;
+		httpConnectionPool.remove(cacheKey);
+	}
+
+	if(!httpConnectionPool.contains(cacheKey)) {
+		debugf("Creating new httpConnection");
+		httpConnectionPool[cacheKey] = new HttpConnection(queue[cacheKey]);
+	}
+
+#ifdef ENABLE_SSL
+	// Based on the URL decide if we should reuse the SSL and TCP pool
+	if(useSsl) {
+		if (!sslSessionIdPool.contains(cacheKey)) {
+			sslSessionIdPool[cacheKey] = (SSLSessionId *)malloc(sizeof(SSLSessionId));
+			sslSessionIdPool[cacheKey]->value = NULL;
+			sslSessionIdPool[cacheKey]->length = 0;
+		}
+		httpConnectionPool[cacheKey]->addSslOptions(request->getSslOptions());
+		httpConnectionPool[cacheKey]->pinCertificate(request->sslFingerprint);
+		httpConnectionPool[cacheKey]->setSslClientKeyCert(request->sslClientKeyCert);
+		httpConnectionPool[cacheKey]->sslSessionId = sslSessionIdPool[cacheKey];
+	}
+#endif
+
+	return httpConnectionPool[cacheKey]->connect(request->uri.Host, request->uri.Port, useSsl);
 }
 
-HttpClient::~HttpClient()
-{
+// Convenience methods
+
+bool HttpClient::downloadString(const String& url, RequestCompletedDelegate requestComplete) {
+	return send(request(url)
+				->setMethod(HTTP_GET)
+				->onRequestComplete(requestComplete)
+				);
 }
 
-bool HttpClient::downloadString(String url, HttpClientCompletedDelegate onCompleted)
+bool HttpClient::downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete /* = NULL */)
 {
-	if (isProcessing()) return false;
-	URL uri = URL(url);
-
-	return startDownload(uri, eHCM_String, onCompleted);
-}
-
-bool HttpClient::downloadFile(String url, HttpClientCompletedDelegate onCompleted /* = NULL */)
-{
-	return downloadFile(url, "", onCompleted);
-}
-
-bool HttpClient::downloadFile(String url, String saveFileName, HttpClientCompletedDelegate onCompleted /* = NULL */)
-{
-	if (isProcessing()) return false;
 	URL uri = URL(url);
 
 	String file;
@@ -47,231 +87,52 @@ bool HttpClient::downloadFile(String url, String saveFileName, HttpClientComplet
 	else
 		file = saveFileName;
 
-	saveFile = fileOpen(file.c_str(), eFO_CreateNewAlways | eFO_WriteOnly);
-	debugf("Download file: %s %d", file.c_str(), saveFile);
+	FileOutputStream* fileStream = new FileOutputStream(file);
 
-	return startDownload(uri, eHCM_File, onCompleted);
+	return send(request(url)
+				   ->setResponseStream(fileStream)
+				   ->setMethod(HTTP_GET)
+				   ->onRequestComplete(requestComplete)
+			  );
 }
 
-bool HttpClient::startDownload(URL uri, HttpClientMode mode, HttpClientCompletedDelegate onCompleted)
-{
-	reset();
-	this->mode = mode;
-	this->onCompleted = onCompleted;
+// end convenience methods
 
-	debugf("Download: %s", uri.toString().c_str());
-
-	if(uri.Protocol == HTTPS_URL_PROTOCOL) {
-		connect(uri.Host, uri.Port, true);
-	}
-	else {
-		connect(uri.Host, uri.Port);
-	}
-
-	bool isPost = body.length();
-
-	sendString((isPost ? "POST " : "GET ") + uri.getPathWithQuery() + " HTTP/1.0\r\nHost: " + uri.Host + "\r\n");
-	for (int i = 0; i < requestHeaders.count(); i++)
-	{
-		String write = requestHeaders.keyAt(i) + ": " + requestHeaders.valueAt(i) + "\r\n";
-		sendString(write.c_str());
-	}
-	sendString("\r\n");
-	sendString(body);
-
-	return true;
+HttpRequest* HttpClient::request(const String& url) {
+	return new HttpRequest(URL(url));
 }
 
-void HttpClient::setRequestHeader(const String name, const String value)
-{
-	requestHeaders[name] = value;
-}
+HashMap<String, HttpConnection *> HttpClient::httpConnectionPool;
+HashMap<String, RequestQueue* > HttpClient::queue;
 
-bool HttpClient::hasRequestHeader(const String name)
-{
-	return requestHeaders.contains(name);
-}
+#ifdef ENABLE_SSL
+HashMap<String, SSLSessionId* > HttpClient::sslSessionIdPool;
 
-void HttpClient::setRequestContentType(String contentType)
-{
-    setRequestHeader("Content-Type", contentType);
-}
-
-void HttpClient::setPostBody(const String& _body)
-{
-    if (!hasRequestHeader("Content-Type"))
-    	setRequestContentType(ContentType::FormUrlEncoded);
-    body = _body;
-    setRequestHeader("Content-Length", String(body.length()));
-}
-
-
-String HttpClient::getPostBody()
-{
-    return body;
-}
-
-void HttpClient::reset()
-{
-	code = 0;
-	responseStringData = "";
-	waitParse = true;
-	writeError = false;
-	responseHeaders.clear();
-}
-
-String HttpClient::getResponseHeader(String headerName, String defaultValue /* = "" */)
-{
-	if (responseHeaders.contains(headerName))
-		return responseHeaders[headerName];
-
-	return defaultValue;
-}
-
-DateTime HttpClient::getLastModifiedDate()
-{
-	DateTime res;
-	String strLM = getResponseHeader("Last-Modified");
-	if (res.parseHttpDate(strLM))
-		return res;
-	else
-		return DateTime();
-}
-
-DateTime HttpClient::getServerDate()
-{
-	DateTime res;
-	String strSD = getResponseHeader("Date");
-	if (res.parseHttpDate(strSD))
-		return res;
-	else
-		return DateTime();
-}
-
-void HttpClient::onFinished(TcpClientState finishState)
-{
-	if (finishState == eTCS_Failed) code = 0;
-
-	if (mode == eHCM_File)
-	{
-		debugf("Download file len written: %d, res^ %d", fileTell(saveFile), isSuccessful());
-		if (!isSuccessful())
-			fileDelete(saveFile);
-		fileClose(saveFile);
-	}
-
-	if (onCompleted)
-		onCompleted(*this, isSuccessful());
-
-	TcpClient::onFinished(finishState);
-}
-
-void HttpClient::parseHeaders(pbuf* buf, int headerEnd)
-{
-	int line, nextLine;
-	line = NetUtils::pbufFindStr(buf, "\r\n", 0) + 2;
-	do
-	{
-		nextLine = NetUtils::pbufFindStr(buf, "\r\n", line);
-		if (nextLine - line > 2)
-		{
-			int delim = NetUtils::pbufFindStr(buf, ":", line);
-			if (delim != -1)
-			{
-				String name = NetUtils::pbufStrCopy(buf, line, delim - line);
-				//if (server->isHeaderProcessingEnabled(name))
-				{
-					String value = NetUtils::pbufStrCopy(buf, delim + 1,
-							nextLine - (delim + 1));
-					value.trim();
-					responseHeaders[name] = value;
-					debugf("%s === %s", name.c_str(), value.c_str());
-				}
-			}
+void HttpClient::freeSslSessionPool() {
+	for(int i=0; i< sslSessionIdPool.count(); i ++) {
+		String key = sslSessionIdPool.keyAt(i);
+		if(sslSessionIdPool[key]->value != NULL) {
+			free(sslSessionIdPool[key]->value);
 		}
-		line = nextLine + 2;
-	} while (nextLine != -1 && nextLine < headerEnd);
+		free(sslSessionIdPool[key]->value);
+	}
+	sslSessionIdPool.clear();
+}
+#endif
+
+void HttpClient::cleanup() {
+#ifdef ENABLE_SSL
+	freeSslSessionPool();
+#endif
+	httpConnectionPool.clear();
+	queue.clear();
 }
 
-void HttpClient::writeRawData(pbuf* buf, int startPos)
-{
-	switch (mode)
-	{
-		case eHCM_String:
-		{
-			responseStringData += NetUtils::pbufStrCopy(buf, startPos,
-					buf->tot_len - startPos);
-			break;
-		}
-		case eHCM_File:
-		{
-			pbuf *cur = buf;
-			while (cur != NULL && cur->len > 0 && !writeError)
-			{
-				char* ptr = (char*) cur->payload + startPos;
-				int len = cur->len - startPos;
-				int res = fileWrite(saveFile, ptr, len);
-				writeError |= (res < 0);
-				cur = cur->next;
-				startPos = 0;
-			}
 
-			if (writeError)
-				close();
-		}
-	}
+HttpClient::~HttpClient() {
+
 }
 
-err_t HttpClient::onReceive(pbuf *buf)
-{
-	if (buf == NULL)
-	{
-		// Disconnected, close it
-		TcpClient::onReceive(buf);
-	}
-	else
-	{
-		int startPos = 0;
-		if (waitParse)
-		{
-			String http = NetUtils::pbufStrCopy(buf, 0, 4);
-			http.toUpperCase();
-			if (http == "HTTP" && code == 0)
-			{
-				int codeStart = NetUtils::pbufFindChar(buf, ' ', 4);
-				int codeEnd = NetUtils::pbufFindChar(buf, ' ', codeStart + 1);
-				if (codeStart != -1 && codeEnd != -1 && codeEnd - codeStart < 5)
-				{
-					String strCode = NetUtils::pbufStrCopy(buf, codeStart, codeEnd);
-					code = strCode.toInt();
-				}
-				else
-					code = 0;
-			}
-			int headerEnd = NetUtils::pbufFindStr(buf, "\r\n\r\n");
-			if (headerEnd != -1)
-			{
-				debugf("Header pos: %d", headerEnd);
-				startPos = headerEnd + 4;
-				waitParse = false;
-				if (headerEnd < NETWORK_MAX_HTTP_PARSING_LEN)
-					parseHeaders(buf, headerEnd);
-			}
-		}
-
-		if (!waitParse) writeRawData(buf, startPos);
-
-		// Fire ReadyToSend callback
-		TcpClient::onReceive(buf);
-	}
-
-	return ERR_OK;
-}
-
-String HttpClient::getResponseString()
-{
-	if (mode == eHCM_String)
-		return responseStringData;
-	else
-		return "";
+String HttpClient::getCacheKey(URL url) {
+	return String(url.Host) + ":" + String(url.Port);
 }
