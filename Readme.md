@@ -43,7 +43,7 @@ SDK = Software Development Kit
 n/a = The selected SDK is not available on that OS
 
 ## Latest Stable Release
-- [Sming V3.2.0](https://github.com/SmingHub/Sming/releases/tag/3.2.0)
+- [Sming V3.3.0](https://github.com/SmingHub/Sming/releases/tag/3.3.0)
 
 ## Getting started
 - [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
@@ -64,7 +64,7 @@ n/a = The selected SDK is not available on that OS
 - Custom PWM: (default: ON) If you don't want to use the [open PWM implementation](https://github.com/StefanBruens/ESP8266_new_pwm) then compile your application with `ENABLE_CUSTOM_PWM=0`. There is no need to recompile the Sming library.
 - Custom serial baud rate: (default: OFF) The default serial baud rate is 115200. If you want to change it to a higher baud rate you can recompile Sming and your application changing the `COM_SPEED_SERIAL` directive. For example `COM_SPEED_SERIAL=921600`.
 - Custom heap allocation: (default: OFF) If your application is experiencing heap fragmentation then you can try the [umm_malloc](https://github.com/rhempel/umm_malloc) heap allocation. To enable it compile Sming with `ENABLE_CUSTOM_HEAP=1`. In order to use it in your sample/application make sure to compile the sample with `ENABLE_CUSTOM_HEAP=1`. **Do not enable custom heap allocation and -mforce-l32 compiler flag together**.
-- Debug information log level and format: There are four debug levels: debug=3, info=2, warn=1, error=0. Using `DEBUG_VERBOSE_LEVEL` you can set the desired level (0-3). For example `DEBUG_VERBOSE_LEVEL=2` will show only info messages and above. Another make directive is `DEBUG_PRINT_FILENAME_AND_LINE=1` which enables printing the filename and line number of every debug line. This will require extra space on flash. Note: you can compile the Sming library with a set of debug directives and your project with another settings, this way you can control debugging sepparately for sming and your application code.
+- Debug information log level and format: There are four debug levels: debug=3, info=2, warn=1, error=0. Using `DEBUG_VERBOSE_LEVEL` you can set the desired level (0-3). For example `DEBUG_VERBOSE_LEVEL=2` will show only info messages and above. Another make directive is `DEBUG_PRINT_FILENAME_AND_LINE=1` which enables printing the filename and line number of every debug line. This will require extra space on flash. Note: you can compile the Sming library with a set of debug directives and your project with another settings, this way you can control debugging separately for Sming and your application code.
 - Debug information for custom LWIP: If you use custom LWIP (see above) some debug information will be printed for critical errors and situations. You can enable debug information printing altogether using `ENABLE_LWIPDEBUG=1`. To increase debugging for certain areas you can modify debug options in `third-party/esp-open-lwip/include/lwipopts.h`.
 - CommandExecutor feature: (default: ON) This feature enables execution of certain commands by registering token handlers for text received via serial, websocket or telnet connection. If this feature is not used additional RAM/Flash can be obtained by setting `ENABLE_CMD_EXECUTOR=0`. This will save ~1KB RAM and ~3KB of flash memory.
 
@@ -74,6 +74,7 @@ n/a = The selected SDK is not available on that OS
 See the getting started page for your respective operating system.
 
 You can find more information about compilation and flashing process by reading esp8266.com forum discussion thread.
+Official ESP8266 documentation can be found in the [Espressif website](https://espressif.com/en/support/download/documents?keys=&field_type_tid%5B%5D=14).
 
 ## Examples
 More information at **[Wiki Examples](https://github.com/SmingHub/Sming/wiki/examples)** page.
