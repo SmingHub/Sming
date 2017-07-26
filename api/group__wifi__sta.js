@@ -1,6 +1,6 @@
 var group__wifi__sta =
 [
-    [ "config", "group__wifi__sta.html#ga41f9a2b887e6a253543b9475505fa0ce", null ],
+    [ "config", "group__wifi__sta.html#ga62109f9c21fcb2cc7660ff7da044993f", null ],
     [ "connect", "group__wifi__sta.html#ga9bd27c04eb5b268c71f8c490b408f1f9", null ],
     [ "disconnect", "group__wifi__sta.html#gae27a3cb89d75093863b498b3f7272d35", null ],
     [ "enable", "group__wifi__sta.html#ga152ef2c3a2d2f98f5d088338d69f76d2", null ],
@@ -23,14 +23,12 @@ var group__wifi__sta =
     [ "isEnabledDHCP", "group__wifi__sta.html#gaffe9ad2f57b898551ede57c571c164df", null ],
     [ "isOpen", "group__wifi__sta.html#ga0b7cfc6543a1057dc87bd83932dd6785", null ],
     [ "onSystemReady", "group__wifi__sta.html#gafd682dd60143ab99e884fa1b94e17472", null ],
-    [ "setHostname", "group__wifi__sta.html#ga66ec99b03ef2fb7a6b16e79ff21e45b1", null ],
+    [ "setHostname", "group__wifi__sta.html#ga9dd47a7bb06b76c41b08f88f3b8c95fd", null ],
     [ "setIP", "group__wifi__sta.html#ga1a00baaffe6a6fe057c83a8074963963", null ],
     [ "setIP", "group__wifi__sta.html#gad7419d830a45e093079ddad59e7b8577", null ],
     [ "smartConfigStart", "group__wifi__sta.html#ga3768507a586c10afc6102cf6e2e99df7", null ],
     [ "smartConfigStop", "group__wifi__sta.html#ga2752e7f3abdfff19c00b04330e99950e", null ],
     [ "startScan", "group__wifi__sta.html#ga7fb5950d72a7180a527f45e0b629c69d", null ],
-    [ "waitConnection", "group__wifi__sta.html#ga3e4913d7fb41a09a395946606129d10d", null ],
-    [ "waitConnection", "group__wifi__sta.html#gaf6b35db1894cf395c323f37d14530380", null ],
     [ "authorization", "group__wifi__sta.html#ga3faeffb410dab0b2f36bf18cc7ee2281", null ],
     [ "bssid", "group__wifi__sta.html#ga25ce327fde51018db950ddbba28683d1", null ],
     [ "channel", "group__wifi__sta.html#gaf3c6eddcdc98ec22a49f2a914305cf62", null ],

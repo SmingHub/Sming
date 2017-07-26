@@ -106,6 +106,8 @@ $(document).ready(function(){initNavTree('todo.html','');});
 <dd>Add GPIO_INT_TYPE documentation - is this in SDK?  </dd>
 <dt><a class="anchor" id="_todo000007"></a>Member <a class="el" href="classDriverPWM.html#abf80bffdbf8f2fe60bd58d132457cf73">DriverPWM::analogWrite</a>  (uint8_t pin, int duty)</dt>
 <dd>Describe how <em>duty</em> affects output  </dd>
+<dt><a class="anchor" id="_todo000017"></a>Member <a class="el" href="classDS18S20.html#a39fc95ecd1ade74e405b41770f8181c9">DS18S20::IsValidTemperature</a>  (uint8_t)</dt>
+<dd>Initial code review suggests this is set once but never rechecked so may not be accurate  </dd>
 <dt><a class="anchor" id="_todo000001"></a>Class <a class="el" href="classESP01__Description.html">ESP01_Description</a>  </dt>
 <dd>Is <a class="el" href="classESP01__Description.html">ESP01_Description</a> required? Source says it will be removed with new interface  </dd>
 <dt><a class="anchor" id="_todo000009"></a>Member <a class="el" href="group__filesystem.html#ga84764b02ca44203d3926768b4910f9ae">fileClearLastError</a>  (file_t fd)</dt>
@@ -118,9 +120,9 @@ $(document).ready(function(){initNavTree('todo.html','');});
   </dd>
 </dl>
 </dd>
-<dt><a class="anchor" id="_todo000010"></a>Member <a class="el" href="group__filesystem.html#gab153a929b1413a902d6b23cd33e7a67f">fileStats</a>  (const <a class="el" href="classString.html">String</a> name, spiffs_stat *stat)</dt>
-<dd>Document the return value of fileStats  </dd>
 <dt><a class="anchor" id="_todo000011"></a>Member <a class="el" href="group__filesystem.html#ga4be48807b1d30de8e3fe477e108d1020">fileStats</a>  (file_t file, spiffs_stat *stat)</dt>
+<dd>Document the return value of fileStats  </dd>
+<dt><a class="anchor" id="_todo000010"></a>Member <a class="el" href="group__filesystem.html#ga34cae79f44dc13411fc6b8cc2982e9e9">fileStats</a>  (const <a class="el" href="classString.html">String</a> &amp;name, spiffs_stat *stat)</dt>
 <dd>Document the return value of fileStats  </dd>
 <dt><a class="anchor" id="_todo000012"></a>Member <a class="el" href="classHardware__Timer.html#a3eb3d1cdbc4bf203a9ff9d1661d19de2">Hardware_Timer::stop</a>  ()</dt>
 <dd>Why always return false from Hardware_timer::stop()?  </dd>
@@ -132,9 +134,9 @@ $(document).ready(function(){initNavTree('todo.html','');});
 <dd>Provide more informative brief description of <a class="el" href="classIDelegateCaller.html" title="IDelegateCaller class. ">IDelegateCaller</a>  </dd>
 <dt><a class="anchor" id="_todo000006"></a>Member <a class="el" href="group__gpio.html#gaa4c100976006333cf7838c65e9dde507">pinMode</a>  (uint16_t pin, uint8_t mode)</dt>
 <dd>ESP8266 supports pull-down on GPIO 0-15  </dd>
-<dt><a class="anchor" id="_todo000017"></a>Member <a class="el" href="classRF24.html#aa7e8523f86f9f8f20c274e0c89a5fd45">RF24::openReadingPipe</a>  (uint8_t number, uint64_t address)</dt>
+<dt><a class="anchor" id="_todo000018"></a>Member <a class="el" href="classRF24.html#aa7e8523f86f9f8f20c274e0c89a5fd45">RF24::openReadingPipe</a>  (uint8_t number, uint64_t address)</dt>
 <dd>Enforce the restriction that pipes 1-5 must share the top 32 bits </dd>
-<dt><a class="anchor" id="_todo000018"></a>Member <a class="el" href="classRF24.html#a343e5d23477181011dea030fafb1954f">RF24::setPayloadSize</a>  (uint8_t size)</dt>
+<dt><a class="anchor" id="_todo000019"></a>Member <a class="el" href="classRF24.html#a343e5d23477181011dea030fafb1954f">RF24::setPayloadSize</a>  (uint8_t size)</dt>
 <dd>Implement variable-sized payloads feature </dd>
 <dt><a class="anchor" id="_todo000016"></a>Member <a class="el" href="classSystemClockClass.html#a265d0c1bab2d138479633de532ff5d5d">SystemClockClass::setTimeZone</a>  (double localTimezoneOffset)</dt>
 <dd>Why does this need to be set to 2 for UK during winter? <dl class="section note"><dt>Note</dt><dd>Supports whole hour and fraction of hour offsets from -12 hours to +12 hours  </dd></dl>

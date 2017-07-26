@@ -110,6 +110,7 @@ $(document).ready(function(){initNavTree('classrBootHttpUpdate.html','');});
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pro-static-attribs">Static Protected Attributes</a> &#124;
 <a href="classrBootHttpUpdate-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">rBootHttpUpdate Class Reference</div>  </div>
@@ -121,9 +122,7 @@ Inheritance diagram for rBootHttpUpdate:</div>
  <div class="center">
   <img src="classrBootHttpUpdate.png" usemap="#rBootHttpUpdate_map" alt=""/>
   <map id="rBootHttpUpdate_map" name="rBootHttpUpdate_map">
-<area href="classHttpClient.html" alt="HttpClient" shape="rect" coords="0,112,103,136"/>
-<area href="classTcpClient.html" alt="TcpClient" shape="rect" coords="0,56,103,80"/>
-<area href="classTcpConnection.html" alt="TcpConnection" shape="rect" coords="0,0,103,24"/>
+<area href="classHttpClient.html" alt="HttpClient" shape="rect" coords="0,0,103,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -135,244 +134,129 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addItem</b> (int offs
 <tr class="memitem:ad79e773acd350ee84d103750bbf5ee58"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad79e773acd350ee84d103750bbf5ee58"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> ()</td></tr>
 <tr class="separator:ad79e773acd350ee84d103750bbf5ee58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78efa5f13e3b0a3ce4f5564ba1de5460"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a78efa5f13e3b0a3ce4f5564ba1de5460"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>switchToRom</b> (uint8 romSlot)</td></tr>
-<tr class="separator:a78efa5f13e3b0a3ce4f5564ba1de5460"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae30433d3fafedac1e5861453191412f2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae30433d3fafedac1e5861453191412f2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setCallback</b> (<a class="el" href="classDelegate.html">otaUpdateDelegate</a> reqUpdateDelegate)</td></tr>
-<tr class="separator:ae30433d3fafedac1e5861453191412f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ba41be881b96857f6169b5df87467ff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ba41be881b96857f6169b5df87467ff"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setDelegate</b> (<a class="el" href="classDelegate.html">otaUpdateDelegate</a> reqUpdateDelegate)</td></tr>
-<tr class="separator:a2ba41be881b96857f6169b5df87467ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a125f2b860cbc41af51f39b24034cd8d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a125f2b860cbc41af51f39b24034cd8d1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>switchToRom</b> (uint8_t romSlot)</td></tr>
+<tr class="separator:a125f2b860cbc41af51f39b24034cd8d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad590dc9e59f89413f3e34019ea1fb11a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad590dc9e59f89413f3e34019ea1fb11a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setCallback</b> (<a class="el" href="classDelegate.html">OtaUpdateDelegate</a> reqUpdateDelegate)</td></tr>
+<tr class="separator:ad590dc9e59f89413f3e34019ea1fb11a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21f06293fa724f2a2d3feb80a4e9b3e9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a21f06293fa724f2a2d3feb80a4e9b3e9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setDelegate</b> (<a class="el" href="classDelegate.html">OtaUpdateDelegate</a> reqUpdateDelegate)</td></tr>
+<tr class="separator:a21f06293fa724f2a2d3feb80a4e9b3e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aada767a3b009abc915c6f5b0500ec840"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aada767a3b009abc915c6f5b0500ec840"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setBaseRequest</b> (<a class="el" href="classHttpRequest.html">HttpRequest</a> *request)</td></tr>
+<tr class="separator:aada767a3b009abc915c6f5b0500ec840"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec85be29c7ac638980c985a22e55d018"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aec85be29c7ac638980c985a22e55d018"></a>
 <a class="el" href="structrBootHttpUpdateItem.html">rBootHttpUpdateItem</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getItem</b> (unsigned int index)</td></tr>
 <tr class="separator:aec85be29c7ac638980c985a22e55d018"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a9b94d7dc07b218d772399683fe531c59"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9b94d7dc07b218d772399683fe531c59"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>onTimer</b> ()</td></tr>
-<tr class="separator:a9b94d7dc07b218d772399683fe531c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3f9f601429e2c4d24d798c71345f0f6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3f9f601429e2c4d24d798c71345f0f6"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>writeRawData</b> (pbuf *buf, int startPos)</td></tr>
-<tr class="separator:aa3f9f601429e2c4d24d798c71345f0f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f05a655717b2c0b054377dbbf74386e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f05a655717b2c0b054377dbbf74386e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>applyUpdate</b> ()</td></tr>
 <tr class="separator:a7f05a655717b2c0b054377dbbf74386e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afed2375abd194a0fe3aa50c44fb47ce1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afed2375abd194a0fe3aa50c44fb47ce1"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateFailed</b> ()</td></tr>
 <tr class="separator:afed2375abd194a0fe3aa50c44fb47ce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57e19c06dbe13f5d571446bdfee3c771"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57e19c06dbe13f5d571446bdfee3c771"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>writeInit</b> ()</td></tr>
-<tr class="separator:a57e19c06dbe13f5d571446bdfee3c771"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afec6e174a558e2939247dd3bdf455ba5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afec6e174a558e2939247dd3bdf455ba5"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>writeFlash</b> (const u8 *data, u16 size)</td></tr>
-<tr class="separator:afec6e174a558e2939247dd3bdf455ba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abfd13b9fada521b925d0f1c0ffac773c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abfd13b9fada521b925d0f1c0ffac773c"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>writeEnd</b> ()</td></tr>
-<tr class="separator:abfd13b9fada521b925d0f1c0ffac773c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25c493ed54241d527221b49ad2780b42"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a25c493ed54241d527221b49ad2780b42"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadString</b> (<a class="el" href="classString.html">String</a> url, <a class="el" href="classDelegate.html">HttpClientCompletedDelegate</a> onCompleted)</td></tr>
-<tr class="separator:a25c493ed54241d527221b49ad2780b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2ea502457a5b753ee5cbe9a65ee9d2c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad2ea502457a5b753ee5cbe9a65ee9d2c"></a>
-<a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getResponseString</b> ()</td></tr>
-<tr class="separator:ad2ea502457a5b753ee5cbe9a65ee9d2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab43f1c62c70a55193693ff369a852bea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab43f1c62c70a55193693ff369a852bea"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadFile</b> (<a class="el" href="classString.html">String</a> url, <a class="el" href="classDelegate.html">HttpClientCompletedDelegate</a> onCompleted=NULL)</td></tr>
-<tr class="separator:ab43f1c62c70a55193693ff369a852bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb0a6b096a2380d398b19b1adb5e0826"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb0a6b096a2380d398b19b1adb5e0826"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadFile</b> (<a class="el" href="classString.html">String</a> url, <a class="el" href="classString.html">String</a> saveFileName, <a class="el" href="classDelegate.html">HttpClientCompletedDelegate</a> onCompleted=NULL)</td></tr>
-<tr class="separator:afb0a6b096a2380d398b19b1adb5e0826"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0428cf7450b7e371ec80ed3b1caf9ec2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0428cf7450b7e371ec80ed3b1caf9ec2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setPostBody</b> (const <a class="el" href="classString.html">String</a> &amp;_method)</td></tr>
-<tr class="separator:a0428cf7450b7e371ec80ed3b1caf9ec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79395f514b78c5f0366571ed613a3151"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a79395f514b78c5f0366571ed613a3151"></a>
-<a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getPostBody</b> ()</td></tr>
-<tr class="separator:a79395f514b78c5f0366571ed613a3151"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c25050541373fdca16edd0113a6fa51"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4c25050541373fdca16edd0113a6fa51"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setRequestHeader</b> (const <a class="el" href="classString.html">String</a> name, const <a class="el" href="classString.html">String</a> value)</td></tr>
-<tr class="separator:a4c25050541373fdca16edd0113a6fa51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f1f6a12f0989865c7b8c73a4b98fcfa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f1f6a12f0989865c7b8c73a4b98fcfa"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasRequestHeader</b> (const <a class="el" href="classString.html">String</a> name)</td></tr>
-<tr class="separator:a5f1f6a12f0989865c7b8c73a4b98fcfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8be0f8e4f901482771ebcc5b56ba8a1f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8be0f8e4f901482771ebcc5b56ba8a1f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setRequestContentType</b> (<a class="el" href="classString.html">String</a> _content_type)</td></tr>
-<tr class="separator:a8be0f8e4f901482771ebcc5b56ba8a1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d1156825f7a569f7b7e0d698218558b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d1156825f7a569f7b7e0d698218558b"></a>
-__forceinline int&#160;</td><td class="memItemRight" valign="bottom"><b>getResponseCode</b> ()</td></tr>
-<tr class="separator:a3d1156825f7a569f7b7e0d698218558b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06a7fec48b726f4351606267d4afceb9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a06a7fec48b726f4351606267d4afceb9"></a>
-__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSuccessful</b> ()</td></tr>
-<tr class="separator:a06a7fec48b726f4351606267d4afceb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56fdb130ddfb0a6e6c17d6110d644345"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56fdb130ddfb0a6e6c17d6110d644345"></a>
-__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>isProcessing</b> ()</td></tr>
-<tr class="separator:a56fdb130ddfb0a6e6c17d6110d644345"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1bad687d0312622ee608001f4c5508d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae1bad687d0312622ee608001f4c5508d"></a>
-__forceinline TcpClientState&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectionState</b> ()</td></tr>
-<tr class="separator:ae1bad687d0312622ee608001f4c5508d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb02f4ea408d30405d0f7786810f4db0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acb02f4ea408d30405d0f7786810f4db0"></a>
-<a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getResponseHeader</b> (<a class="el" href="classString.html">String</a> headerName, <a class="el" href="classString.html">String</a> defaultValue=&quot;&quot;)</td></tr>
-<tr class="separator:acb02f4ea408d30405d0f7786810f4db0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a486812ccc76aa2f9d5bae27b2e46f4dc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a486812ccc76aa2f9d5bae27b2e46f4dc"></a>
-<a class="el" href="classDateTime.html">DateTime</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getLastModifiedDate</b> ()</td></tr>
-<tr class="separator:a486812ccc76aa2f9d5bae27b2e46f4dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af56610a0d5b1e5f36b56ffab0f3d0134"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af56610a0d5b1e5f36b56ffab0f3d0134"></a>
-<a class="el" href="classDateTime.html">DateTime</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getServerDate</b> ()</td></tr>
-<tr class="separator:af56610a0d5b1e5f36b56ffab0f3d0134"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add736676d2310312697766b3fa1cc54d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add736676d2310312697766b3fa1cc54d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
-<tr class="separator:add736676d2310312697766b3fa1cc54d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af977ecadb6b74b39edf24953cf743893"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af977ecadb6b74b39edf24953cf743893"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>startDownload</b> (<a class="el" href="classURL.html">URL</a> uri, HttpClientMode mode, <a class="el" href="classDelegate.html">HttpClientCompletedDelegate</a> onCompleted)</td></tr>
-<tr class="separator:af977ecadb6b74b39edf24953cf743893"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01b19eb339cb8a903a3c244aec115f06"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a01b19eb339cb8a903a3c244aec115f06"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>onFinished</b> (TcpClientState finishState)</td></tr>
-<tr class="separator:a01b19eb339cb8a903a3c244aec115f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d86efbe2eb9c3946bcfdeb6e10c2992"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d86efbe2eb9c3946bcfdeb6e10c2992"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onReceive</b> (pbuf *buf)</td></tr>
-<tr class="separator:a6d86efbe2eb9c3946bcfdeb6e10c2992"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a561c94d8a5ca8e662a20912747ae07da"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a561c94d8a5ca8e662a20912747ae07da"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>parseHeaders</b> (pbuf *buf, int headerEnd)</td></tr>
-<tr class="separator:a561c94d8a5ca8e662a20912747ae07da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b3b36c4859145c5686126d4051e33b7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6b3b36c4859145c5686126d4051e33b7"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a6b3b36c4859145c5686126d4051e33b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d0685ac523f6e6ac2d5a6993172feb3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d0685ac523f6e6ac2d5a6993172feb3"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a1d0685ac523f6e6ac2d5a6993172feb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39dfc6c0d46863836e15b56d8077ef0c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39dfc6c0d46863836e15b56d8077ef0c"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>close</b> ()</td></tr>
-<tr class="separator:a39dfc6c0d46863836e15b56d8077ef0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf18cea760e8efbf3a204b4e6d4055c3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf18cea760e8efbf3a204b4e6d4055c3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setCompleteDelegate</b> (<a class="el" href="classDelegate.html">TcpClientCompleteDelegate</a> completeCb=NULL)</td></tr>
-<tr class="separator:abf18cea760e8efbf3a204b4e6d4055c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7caad1d87a32cc1b1092396c14dab6aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7caad1d87a32cc1b1092396c14dab6aa"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> (const char *data, uint16_t len, bool forceCloseAfterSent=false)</td></tr>
-<tr class="separator:a7caad1d87a32cc1b1092396c14dab6aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08a4c755e8dab2b3761a56ac8386e41b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a08a4c755e8dab2b3761a56ac8386e41b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendString</b> (<a class="el" href="classString.html">String</a> data, bool forceCloseAfterSent=false)</td></tr>
-<tr class="separator:a08a4c755e8dab2b3761a56ac8386e41b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae74805076dbab04337d9380f747f3a79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae74805076dbab04337d9380f747f3a79"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onConnected</b> (err_t err)</td></tr>
-<tr class="separator:ae74805076dbab04337d9380f747f3a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77d3f60c92cf69adac748389b8bfe1cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a77d3f60c92cf69adac748389b8bfe1cb"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onSent</b> (uint16_t len)</td></tr>
-<tr class="separator:a77d3f60c92cf69adac748389b8bfe1cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a250c3c5bcefeed7f40b7b18d72fa765e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a250c3c5bcefeed7f40b7b18d72fa765e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onError</b> (err_t err)</td></tr>
-<tr class="separator:a250c3c5bcefeed7f40b7b18d72fa765e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82a0ad9fb11e19e3487c5e191a577f32"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a82a0ad9fb11e19e3487c5e191a577f32"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onReadyToSendData</b> (TcpConnectionEvent sourceEvent)</td></tr>
-<tr class="separator:a82a0ad9fb11e19e3487c5e191a577f32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a162be33aa3e851eb92ccd361f64c6706"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a162be33aa3e851eb92ccd361f64c6706"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pushAsyncPart</b> ()</td></tr>
-<tr class="separator:a162be33aa3e851eb92ccd361f64c6706"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d6b422ffcb3718c74477d9140288edb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d6b422ffcb3718c74477d9140288edb"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const char *data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
-<tr class="separator:a3d6b422ffcb3718c74477d9140288edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5165ea409d9d30a227f2aa76a0669948"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5165ea409d9d30a227f2aa76a0669948"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const <a class="el" href="classString.html">String</a> data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
-<tr class="separator:a5165ea409d9d30a227f2aa76a0669948"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17fbdcd21e00e24eae8d42096ceeb5db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17fbdcd21e00e24eae8d42096ceeb5db"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (const char *data, int len, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
-<tr class="separator:a17fbdcd21e00e24eae8d42096ceeb5db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59ef4474eb3d65f8b1f1e21e0f3f3c25"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a59ef4474eb3d65f8b1f1e21e0f3f3c25"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (<a class="el" href="classIDataSourceStream.html">IDataSourceStream</a> *stream)</td></tr>
-<tr class="separator:a59ef4474eb3d65f8b1f1e21e0f3f3c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8d1467ac2d76882be7ec74f0aa0e1bf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab8d1467ac2d76882be7ec74f0aa0e1bf"></a>
-__forceinline uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>getAvailableWriteSize</b> ()</td></tr>
-<tr class="separator:ab8d1467ac2d76882be7ec74f0aa0e1bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaaa45b0c9a0b26df7f8ca79697785114"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaaa45b0c9a0b26df7f8ca79697785114"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> ()</td></tr>
-<tr class="separator:aaaa45b0c9a0b26df7f8ca79697785114"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d01ef17727966d8d63e6f35a2a0fd14"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d01ef17727966d8d63e6f35a2a0fd14"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeOut</b> (uint16_t waitTimeOut)</td></tr>
-<tr class="separator:a3d01ef17727966d8d63e6f35a2a0fd14"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a333a64364cd35ef53615bd52b9918825"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a333a64364cd35ef53615bd52b9918825"></a>
-<a class="el" href="classIPAddress.html">IPAddress</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getRemoteIp</b> ()</td></tr>
-<tr class="separator:a333a64364cd35ef53615bd52b9918825"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6fedbbb90a1147bde5b143fd8fdde6f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad6fedbbb90a1147bde5b143fd8fdde6f"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>getRemotePort</b> ()</td></tr>
-<tr class="separator:ad6fedbbb90a1147bde5b143fd8fdde6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefb1448919e50cac01a467a11268a2d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aefb1448919e50cac01a467a11268a2d2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>internalTcpConnect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port)</td></tr>
-<tr class="separator:aefb1448919e50cac01a467a11268a2d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a469f2846ad04ed71f5cb211bdc31d864"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a469f2846ad04ed71f5cb211bdc31d864"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onPoll</b> ()</td></tr>
-<tr class="separator:a469f2846ad04ed71f5cb211bdc31d864"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adebe96bd5f3f5d2bc83f69fb7c7828c5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adebe96bd5f3f5d2bc83f69fb7c7828c5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (tcp_pcb *pcb)</td></tr>
-<tr class="separator:adebe96bd5f3f5d2bc83f69fb7c7828c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a700fdbbdf3786bd7f43e4d931e4dcf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4a700fdbbdf3786bd7f43e4d931e4dcf"></a>
+virtual <a class="el" href="classrBootItemOutputStream.html">rBootItemOutputStream</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getStream</b> ()</td></tr>
+<tr class="separator:a4a700fdbbdf3786bd7f43e4d931e4dcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adec4b965cbfae3880ed5ae7901f9af11"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adec4b965cbfae3880ed5ae7901f9af11"></a>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>itemComplete</b> (<a class="el" href="classHttpConnection.html">HttpConnection</a> &amp;client, bool success)</td></tr>
+<tr class="separator:adec4b965cbfae3880ed5ae7901f9af11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07ac61a7c0d72ccf4dc847308915182e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a07ac61a7c0d72ccf4dc847308915182e"></a>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>updateComplete</b> (<a class="el" href="classHttpConnection.html">HttpConnection</a> &amp;client, bool success)</td></tr>
+<tr class="separator:a07ac61a7c0d72ccf4dc847308915182e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8b3c9bb07ccfb0f32ca5ac832deb122"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab8b3c9bb07ccfb0f32ca5ac832deb122"></a>
+__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendRequest</b> (const <a class="el" href="classString.html">String</a> &amp;url, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
+<tr class="separator:ab8b3c9bb07ccfb0f32ca5ac832deb122"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9c3e3e41cb875fe708bc89f65f8ae9e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9c3e3e41cb875fe708bc89f65f8ae9e"></a>
+__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendRequest</b> (const HttpMethod method, const <a class="el" href="classString.html">String</a> &amp;url, const <a class="el" href="classHashMap.html">HttpHeaders</a> &amp;headers, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
+<tr class="separator:af9c3e3e41cb875fe708bc89f65f8ae9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d2f9ebe85ec76e26742196e2468d8bb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d2f9ebe85ec76e26742196e2468d8bb"></a>
+__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendRequest</b> (const HttpMethod method, const <a class="el" href="classString.html">String</a> &amp;url, const <a class="el" href="classHashMap.html">HttpHeaders</a> &amp;headers, const <a class="el" href="classString.html">String</a> &amp;body, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
+<tr class="separator:a7d2f9ebe85ec76e26742196e2468d8bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae61cd486d915debe0d626b21a688cfdf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae61cd486d915debe0d626b21a688cfdf"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadString</b> (const <a class="el" href="classString.html">String</a> &amp;url, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
+<tr class="separator:ae61cd486d915debe0d626b21a688cfdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab493c6e04af8893d59d68342c313acb5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab493c6e04af8893d59d68342c313acb5"></a>
+__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadFile</b> (const <a class="el" href="classString.html">String</a> &amp;url, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete=NULL)</td></tr>
+<tr class="separator:ab493c6e04af8893d59d68342c313acb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5031ad272928359e25e388e71802be29"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5031ad272928359e25e388e71802be29"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadFile</b> (const <a class="el" href="classString.html">String</a> &amp;url, const <a class="el" href="classString.html">String</a> &amp;saveFileName, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete=NULL)</td></tr>
+<tr class="separator:a5031ad272928359e25e388e71802be29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e087dbb3ef19ed0369ca4c42508e599"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4e087dbb3ef19ed0369ca4c42508e599"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> (<a class="el" href="classHttpRequest.html">HttpRequest</a> *request)</td></tr>
+<tr class="separator:a4e087dbb3ef19ed0369ca4c42508e599"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f0c508356d4a63c70babdc1cd1a26fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f0c508356d4a63c70babdc1cd1a26fe"></a>
+<a class="el" href="classHttpRequest.html">HttpRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>request</b> (const <a class="el" href="classString.html">String</a> &amp;url)</td></tr>
+<tr class="separator:a5f0c508356d4a63c70babdc1cd1a26fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab117465bfceeb392301b6d75bc8502de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab117465bfceeb392301b6d75bc8502de"></a>
+<a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getCacheKey</b> (<a class="el" href="classURL.html">URL</a> url)</td></tr>
+<tr class="separator:ab117465bfceeb392301b6d75bc8502de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:a62aaab47c81466e17dd2ca52f5c12368"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a62aaab47c81466e17dd2ca52f5c12368"></a>
-static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnConnected</b> (void *arg, tcp_pcb *tcp, err_t err)</td></tr>
-<tr class="separator:a62aaab47c81466e17dd2ca52f5c12368"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a274e71d387083fe5c68bdf688e76fd15"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a274e71d387083fe5c68bdf688e76fd15"></a>
-static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnReceive</b> (void *arg, tcp_pcb *tcp, pbuf *p, err_t err)</td></tr>
-<tr class="separator:a274e71d387083fe5c68bdf688e76fd15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae76239045458520deb256725a610f714"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae76239045458520deb256725a610f714"></a>
-static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnSent</b> (void *arg, tcp_pcb *tcp, uint16_t len)</td></tr>
-<tr class="separator:ae76239045458520deb256725a610f714"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4353e5e345fbe0fbbbeb8b496d77ffa2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4353e5e345fbe0fbbbeb8b496d77ffa2"></a>
-static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnPoll</b> (void *arg, tcp_pcb *tcp)</td></tr>
-<tr class="separator:a4353e5e345fbe0fbbbeb8b496d77ffa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa55d00095851b50d2ffab03e22d2cbd5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa55d00095851b50d2ffab03e22d2cbd5"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnError</b> (void *arg, err_t err)</td></tr>
-<tr class="separator:aa55d00095851b50d2ffab03e22d2cbd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd2ac862b46f25e7a5cbf2d5858f210a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afd2ac862b46f25e7a5cbf2d5858f210a"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticDnsResponse</b> (const char *name, ip_addr_t *ipaddr, void *arg)</td></tr>
-<tr class="separator:afd2ac862b46f25e7a5cbf2d5858f210a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba93412d2aabe551151e9146bbca35f0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba93412d2aabe551151e9146bbca35f0"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>closeTcpConnection</b> (tcp_pcb *tpcb)</td></tr>
-<tr class="separator:aba93412d2aabe551151e9146bbca35f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad413282f74db55b841791acff7f1ce3f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">cleanup</a> ()</td></tr>
+<tr class="separator:ad413282f74db55b841791acff7f1ce3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a1c6e51cdfea484094f9705b3b15c2393"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c6e51cdfea484094f9705b3b15c2393"></a>
 <a class="el" href="classVector.html">Vector</a>&lt; <a class="el" href="structrBootHttpUpdateItem.html">rBootHttpUpdateItem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>items</b></td></tr>
 <tr class="separator:a1c6e51cdfea484094f9705b3b15c2393"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a665be26739efa6e5b7d33ec7f51148e6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a665be26739efa6e5b7d33ec7f51148e6"></a>
-<a class="el" href="classTimer.html">Timer</a>&#160;</td><td class="memItemRight" valign="bottom"><b>timer</b></td></tr>
-<tr class="separator:a665be26739efa6e5b7d33ec7f51148e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb853da4a67ab06ffb4f46b32e36742d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abb853da4a67ab06ffb4f46b32e36742d"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>currentItem</b></td></tr>
 <tr class="separator:abb853da4a67ab06ffb4f46b32e36742d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7680c712ed9a276b889869679f254d8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa7680c712ed9a276b889869679f254d8"></a>
 rboot_write_status&#160;</td><td class="memItemRight" valign="bottom"><b>rBootWriteStatus</b></td></tr>
 <tr class="separator:aa7680c712ed9a276b889869679f254d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abba37ea7bb0dded602c15873a54ac22a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abba37ea7bb0dded602c15873a54ac22a"></a>
-uint8&#160;</td><td class="memItemRight" valign="bottom"><b>romSlot</b></td></tr>
-<tr class="separator:abba37ea7bb0dded602c15873a54ac22a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f5ebd638c51099dd7ca63e309dc4e15"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f5ebd638c51099dd7ca63e309dc4e15"></a>
-<a class="el" href="classDelegate.html">otaUpdateDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>updateDelegate</b></td></tr>
-<tr class="separator:a5f5ebd638c51099dd7ca63e309dc4e15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95b753e9c9b75aedf4f8635c7400be77"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95b753e9c9b75aedf4f8635c7400be77"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>waitParse</b> = false</td></tr>
-<tr class="separator:a95b753e9c9b75aedf4f8635c7400be77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7274432e4a75417628d8bb236f3da2e5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7274432e4a75417628d8bb236f3da2e5"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>writeError</b> = false</td></tr>
-<tr class="separator:a7274432e4a75417628d8bb236f3da2e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a601e019508b0071d0825908eaee0f58c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a601e019508b0071d0825908eaee0f58c"></a>
-tcp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>tcp</b> = NULL</td></tr>
-<tr class="separator:a601e019508b0071d0825908eaee0f58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a482c5afdb16d0a93c46a8b83da649254"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a482c5afdb16d0a93c46a8b83da649254"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>sleep</b></td></tr>
-<tr class="separator:a482c5afdb16d0a93c46a8b83da649254"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d11a5464ae92193779dafc650597fa2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d11a5464ae92193779dafc650597fa2"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>timeOut</b></td></tr>
-<tr class="separator:a3d11a5464ae92193779dafc650597fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a730b80fbbafb4ac92eda9b320ccf7bbf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a730b80fbbafb4ac92eda9b320ccf7bbf"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>canSend</b></td></tr>
-<tr class="separator:a730b80fbbafb4ac92eda9b320ccf7bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56f9a3c4c74d221c29e07107384db1c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56f9a3c4c74d221c29e07107384db1c1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>autoSelfDestruct</b></td></tr>
-<tr class="separator:a56f9a3c4c74d221c29e07107384db1c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d65a3756759420a594066466d7090cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4d65a3756759420a594066466d7090cd"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</td></tr>
-<tr class="separator:a4d65a3756759420a594066466d7090cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab628caf99d2ac29a2659d40668ac1036"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab628caf99d2ac29a2659d40668ac1036"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>romSlot</b></td></tr>
+<tr class="separator:ab628caf99d2ac29a2659d40668ac1036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6117db7232d2c5a02a8f9a1e2867934"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab6117db7232d2c5a02a8f9a1e2867934"></a>
+<a class="el" href="classDelegate.html">OtaUpdateDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>updateDelegate</b></td></tr>
+<tr class="separator:ab6117db7232d2c5a02a8f9a1e2867934"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42b34fa990f6c6b62e71185ce1473473"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a42b34fa990f6c6b62e71185ce1473473"></a>
+<a class="el" href="classHttpRequest.html">HttpRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>baseRequest</b> = NULL</td></tr>
+<tr class="separator:a42b34fa990f6c6b62e71185ce1473473"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-attribs"></a>
+Static Protected Attributes</h2></td></tr>
+<tr class="memitem:ab2532f3e5033b56e828acaaa6cfbd5c6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab2532f3e5033b56e828acaaa6cfbd5c6"></a>
+static <a class="el" href="classHashMap.html">HashMap</a>&lt; <a class="el" href="classString.html">String</a>, <br class="typebreak"/>
+<a class="el" href="classHttpConnection.html">HttpConnection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>httpConnectionPool</b></td></tr>
+<tr class="separator:ab2532f3e5033b56e828acaaa6cfbd5c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89f6931850ad6268a9791753bc3d5226"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89f6931850ad6268a9791753bc3d5226"></a>
+static <a class="el" href="classHashMap.html">HashMap</a>&lt; <a class="el" href="classString.html">String</a>, <br class="typebreak"/>
+<a class="el" href="classSimpleConcurrentQueue.html">RequestQueue</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>queue</b></td></tr>
+<tr class="separator:a89f6931850ad6268a9791753bc3d5226"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ad413282f74db55b841791acff7f1ce3f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void HttpClient::cleanup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Use this method to clean all request queues and object pools </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

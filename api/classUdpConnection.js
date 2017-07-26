@@ -10,9 +10,9 @@ var classUdpConnection =
     [ "onReceive", "classUdpConnection.html#a8b4f9309523b17306dd7f980f0cfc581", null ],
     [ "send", "classUdpConnection.html#a854fddf47968cf17341db084d7d3fec1", null ],
     [ "sendString", "classUdpConnection.html#a22aaae5ee7a77001d5041826a47ab112", null ],
-    [ "sendString", "classUdpConnection.html#af64a02edc8dd013a75c88965c2899bff", null ],
+    [ "sendString", "classUdpConnection.html#ab755d3b28611c5835ff887c4de25d70a", null ],
     [ "sendStringTo", "classUdpConnection.html#af6eaf8ee55a8dde7d77f0e3225692004", null ],
-    [ "sendStringTo", "classUdpConnection.html#a11d710290fea6107fa7b0bcc0f9a2832", null ],
+    [ "sendStringTo", "classUdpConnection.html#a35476749157e6c215d9925ecaafcdd77", null ],
     [ "sendTo", "classUdpConnection.html#a29a5600b42521146355ccef46ac5612a", null ],
     [ "onDataCallback", "classUdpConnection.html#a003c1be27daddb5474fc2d920936f277", null ],
     [ "udp", "classUdpConnection.html#aacbf877beadcb472cf52a29670ba514e", null ]

@@ -1,6 +1,7 @@
 var classPrint =
 [
     [ "Print", "classPrint.html#a1b9fe938883bb7b4bce8fba012dab112", null ],
+    [ "~Print", "classPrint.html#abc6ea5fd3d477d9465a57421ccd00ba4", null ],
     [ "clearWriteError", "classPrint.html#aec9ecf84cc6d9087a650def3cefc459e", null ],
     [ "getWriteError", "classPrint.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
     [ "print", "classPrint.html#a1e411d07a8ffec5faf7ce485bac0f029", null ],

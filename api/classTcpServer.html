@@ -114,7 +114,7 @@ $(document).ready(function(){initNavTree('classTcpServer.html','');});
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classTcpServer-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">TcpServer Class Reference</div>  </div>
+<div class="title">TcpServer Class Reference<div class="ingroups"><a class="el" href="group__tcpserver.html">Servers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="dynheader">
@@ -141,27 +141,27 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aecb0c47839bf36272300a3985b243a72"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aecb0c47839bf36272300a3985b243a72"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TcpServer</b> (<a class="el" href="classDelegate.html">TcpClientDataDelegate</a> clientReceiveDataHandler)</td></tr>
 <tr class="separator:aecb0c47839bf36272300a3985b243a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a778c01d1663d0951f3f16cb727e02cbf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a778c01d1663d0951f3f16cb727e02cbf"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>listen</b> (int port)</td></tr>
-<tr class="separator:a778c01d1663d0951f3f16cb727e02cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a894ccda2b8a150838264c1c5bfa551d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a894ccda2b8a150838264c1c5bfa551d5"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>listen</b> (int port, bool useSsl=false)</td></tr>
+<tr class="separator:a894ccda2b8a150838264c1c5bfa551d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e3bbe276368784e689155d2a7f4de52"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e3bbe276368784e689155d2a7f4de52"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeOut</b> (uint16_t waitTimeOut)</td></tr>
 <tr class="separator:a0e3bbe276368784e689155d2a7f4de52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ed70bd4582c06b0a8ddd28b28c77b53"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ed70bd4582c06b0a8ddd28b28c77b53"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a0ed70bd4582c06b0a8ddd28b28c77b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a125e3825f9dc6a76200f4963b2602439"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a125e3825f9dc6a76200f4963b2602439"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a125e3825f9dc6a76200f4963b2602439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76541f4efb80f01242580fa729a0fb86"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a76541f4efb80f01242580fa729a0fb86"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="separator:a76541f4efb80f01242580fa729a0fb86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c91997d5656394ae74d5dbf105d6006"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c91997d5656394ae74d5dbf105d6006"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="separator:a9c91997d5656394ae74d5dbf105d6006"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab10f02f82a514714b7585e0dd00a8d7b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab10f02f82a514714b7585e0dd00a8d7b"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>close</b> ()</td></tr>
 <tr class="separator:ab10f02f82a514714b7585e0dd00a8d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d6b422ffcb3718c74477d9140288edb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d6b422ffcb3718c74477d9140288edb"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const char *data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
 <tr class="separator:a3d6b422ffcb3718c74477d9140288edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5165ea409d9d30a227f2aa76a0669948"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5165ea409d9d30a227f2aa76a0669948"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const <a class="el" href="classString.html">String</a> data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
-<tr class="separator:a5165ea409d9d30a227f2aa76a0669948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8dc1b8d48884068d157555908a13604"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8dc1b8d48884068d157555908a13604"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const <a class="el" href="classString.html">String</a> &amp;data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
+<tr class="separator:aa8dc1b8d48884068d157555908a13604"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17fbdcd21e00e24eae8d42096ceeb5db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17fbdcd21e00e24eae8d42096ceeb5db"></a>
 virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (const char *data, int len, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
 <tr class="separator:a17fbdcd21e00e24eae8d42096ceeb5db"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -264,6 +264,9 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>closeTcpConnec
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
+<tr class="memitem:af8f1c7f88fa7d5f9104d38d09a78a1ab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af8f1c7f88fa7d5f9104d38d09a78a1ab"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>minHeapSize</b> = 3000</td></tr>
+<tr class="separator:af8f1c7f88fa7d5f9104d38d09a78a1ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a601e019508b0071d0825908eaee0f58c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a601e019508b0071d0825908eaee0f58c"></a>
 tcp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>tcp</b> = NULL</td></tr>
 <tr class="separator:a601e019508b0071d0825908eaee0f58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -276,9 +279,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>canSend</b></td></tr>
 <tr class="memitem:a56f9a3c4c74d221c29e07107384db1c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56f9a3c4c74d221c29e07107384db1c1"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>autoSelfDestruct</b></td></tr>
 <tr class="separator:a56f9a3c4c74d221c29e07107384db1c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d65a3756759420a594066466d7090cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4d65a3756759420a594066466d7090cd"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</td></tr>
-<tr class="separator:a4d65a3756759420a594066466d7090cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f713f30d71b5015ae1ee0cf98607298"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f713f30d71b5015ae1ee0cf98607298"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</td></tr>
+<tr class="separator:a1f713f30d71b5015ae1ee0cf98607298"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

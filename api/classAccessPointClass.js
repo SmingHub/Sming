@@ -2,7 +2,7 @@ var classAccessPointClass =
 [
     [ "AccessPointClass", "group__wifi__ap.html#ga73d0e600949f15af8694d021a971a699", null ],
     [ "~AccessPointClass", "group__wifi__ap.html#ga1aa3d07752569b2456626dcee2808e09", null ],
-    [ "config", "group__wifi__ap.html#ga68aaa05943f9895d3cd5d4074e6354d4", null ],
+    [ "config", "group__wifi__ap.html#gad3f270bb0f97acc545893ddd1251ab51", null ],
     [ "enable", "group__wifi__ap.html#ga8cc3d2af5cd03b9aabb6589652493af6", null ],
     [ "getIP", "group__wifi__ap.html#ga86061e944d41587d5b5355c45cc3b95f", null ],
     [ "getMAC", "group__wifi__ap.html#ga9a6e9d50aa7c0b2349acf7bf986d237e", null ],

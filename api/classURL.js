@@ -1,7 +1,7 @@
 var classURL =
 [
     [ "URL", "classURL.html#ad6ecb93e145465c5b20f2e90f2f1163a", null ],
-    [ "URL", "classURL.html#a2c99de3fe6f5c883b5dd960b29f065b6", null ],
+    [ "URL", "classURL.html#a5c684af4802cc439cf200f1b7830801d", null ],
     [ "getPathWithQuery", "classURL.html#ad411b6e8175960498d8d60575b27ad3e", null ],
     [ "toString", "classURL.html#aad0ad594035598ddb2450b6ec6cd4278", null ],
     [ "Host", "classURL.html#a4a48d77473885ef578f9ddadc3fef725", null ],

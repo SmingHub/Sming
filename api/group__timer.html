@@ -153,6 +153,12 @@ $(document).ready(function(){initNavTree('group__timer.html','');});
 <tr class="memitem:ga0563e334d6e907c677ba033490355ed2"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga0563e334d6e907c677ba033490355ed2">Timer::setCallback</a> (<a class="el" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a> delegateFunction)</td></tr>
 <tr class="memdesc:ga0563e334d6e907c677ba033490355ed2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set timer trigger function.  <a href="#ga0563e334d6e907c677ba033490355ed2">More...</a><br/></td></tr>
 <tr class="separator:ga0563e334d6e907c677ba033490355ed2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga31894e97b61051028fe3f30e4185cb5c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga31894e97b61051028fe3f30e4185cb5c"></a>
+static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Timer::processing</b> (void *arg)</td></tr>
+<tr class="separator:ga31894e97b61051028fe3f30e4185cb5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5d959aed5bb365e698165458440c84c1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga5d959aed5bb365e698165458440c84c1">Timer::tick</a> ()</td></tr>
+<tr class="memdesc:ga5d959aed5bb365e698165458440c84c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">virtual timer loop() method  <a href="#ga5d959aed5bb365e698165458440c84c1">More...</a><br/></td></tr>
+<tr class="separator:ga5d959aed5bb365e698165458440c84c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Provides timer functions. </p>
@@ -551,6 +557,32 @@ $(document).ready(function(){initNavTree('group__timer.html','');});
 
 <p>Stop timer. </p>
 <dl class="section note"><dt>Note</dt><dd>Stops a running timer. Has no effect on stopped timer. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga5d959aed5bb365e698165458440c84c1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Timer::tick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>virtual timer loop() method </p>
+<dl class="section note"><dt>Note</dt><dd>Can be override in class derivations. If overwriten, no classic other callbacks are working. </dd></dl>
 
 </div>
 </div>

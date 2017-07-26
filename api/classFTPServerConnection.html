@@ -143,21 +143,21 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onReadyToSend
 <tr class="memitem:a5d5d227c7a274938e303fee4df39c53c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d5d227c7a274938e303fee4df39c53c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>dataTransferFinished</b> (<a class="el" href="classTcpConnection.html">TcpConnection</a> *connection)</td></tr>
 <tr class="separator:a5d5d227c7a274938e303fee4df39c53c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ed70bd4582c06b0a8ddd28b28c77b53"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ed70bd4582c06b0a8ddd28b28c77b53"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a0ed70bd4582c06b0a8ddd28b28c77b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a125e3825f9dc6a76200f4963b2602439"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a125e3825f9dc6a76200f4963b2602439"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a125e3825f9dc6a76200f4963b2602439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76541f4efb80f01242580fa729a0fb86"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a76541f4efb80f01242580fa729a0fb86"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="separator:a76541f4efb80f01242580fa729a0fb86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c91997d5656394ae74d5dbf105d6006"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c91997d5656394ae74d5dbf105d6006"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="separator:a9c91997d5656394ae74d5dbf105d6006"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab10f02f82a514714b7585e0dd00a8d7b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab10f02f82a514714b7585e0dd00a8d7b"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>close</b> ()</td></tr>
 <tr class="separator:ab10f02f82a514714b7585e0dd00a8d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d6b422ffcb3718c74477d9140288edb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d6b422ffcb3718c74477d9140288edb"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const char *data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
 <tr class="separator:a3d6b422ffcb3718c74477d9140288edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5165ea409d9d30a227f2aa76a0669948"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5165ea409d9d30a227f2aa76a0669948"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const <a class="el" href="classString.html">String</a> data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
-<tr class="separator:a5165ea409d9d30a227f2aa76a0669948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8dc1b8d48884068d157555908a13604"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8dc1b8d48884068d157555908a13604"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const <a class="el" href="classString.html">String</a> &amp;data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
+<tr class="separator:aa8dc1b8d48884068d157555908a13604"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17fbdcd21e00e24eae8d42096ceeb5db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17fbdcd21e00e24eae8d42096ceeb5db"></a>
 virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (const char *data, int len, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
 <tr class="separator:a17fbdcd21e00e24eae8d42096ceeb5db"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -260,9 +260,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>canSend</b></td></tr>
 <tr class="memitem:a56f9a3c4c74d221c29e07107384db1c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56f9a3c4c74d221c29e07107384db1c1"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>autoSelfDestruct</b></td></tr>
 <tr class="separator:a56f9a3c4c74d221c29e07107384db1c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d65a3756759420a594066466d7090cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4d65a3756759420a594066466d7090cd"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</td></tr>
-<tr class="separator:a4d65a3756759420a594066466d7090cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f713f30d71b5015ae1ee0cf98607298"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f713f30d71b5015ae1ee0cf98607298"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</td></tr>
+<tr class="separator:a1f713f30d71b5015ae1ee0cf98607298"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>

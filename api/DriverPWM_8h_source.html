@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: /tmp/Sming/Sming/SmingCore/DriverPWM.h Source File</title>
+<title>Sming Framework API: DriverPWM.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -118,61 +118,61 @@ $(document).ready(function(){initNavTree('DriverPWM_8h_source.html','');});
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">class </span><a class="code" href="classChannelPWM.html">ChannelPWM</a>;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classDriverPWM.html">   24</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDriverPWM.html">DriverPWM</a></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <a class="code" href="classDriverPWM.html#acffe6831e34675b688eca8b016c815cd">DriverPWM</a>();</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDriverPWM.html#a4c2173c8d360f3581ebc81f6a3a0bdb1">initialize</a>();</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDriverPWM.html#abf80bffdbf8f2fe60bd58d132457cf73">analogWrite</a>(uint8_t pin, <span class="keywordtype">int</span> duty);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDriverPWM.html#a202cd541c9f1b791129e63f01c9a1c2b">noAnalogWrite</a>(uint8_t pin);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> IRAM_ATTR processingStatic(<span class="keywordtype">void</span> *arg);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    os_timer_t main;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="classVector.html">Vector&lt;ChannelPWM&gt;</a> channels;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    uint32_t period;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">bool</span> initialized;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;};</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classChannelPWM.html">   60</a></span>&#160;<span class="keyword">class </span><a class="code" href="classChannelPWM.html">ChannelPWM</a></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;{</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <a class="code" href="classChannelPWM.html#ae1a470d6a73ca1a4a67528ffeb05b564">ChannelPWM</a>();</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classChannelPWM.html#ae1a470d6a73ca1a4a67528ffeb05b564">ChannelPWM</a>(<span class="keywordtype">int</span> DriverPWMPin);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classChannelPWM.html#a9db74b3292965d910aaeb2b0ecf59d61">initialize</a>();</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">void</span> IRAM_ATTR <a class="code" href="classChannelPWM.html#a2d9b9cb9b2817d34207f0f2da836a277">high</a>();</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classChannelPWM.html#ac32b4f5a3eb4a4fbd2d462df309553b0">config</a>(<span class="keywordtype">int</span> duty, uint32_t basePeriod);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece">   90</a></span>&#160;    __inline <span class="keywordtype">int</span> <a class="code" href="classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece">id</a>() { <span class="keywordflow">return</span> pin; }</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classChannelPWM.html#a2aa0afa2262e9f97da1361313c6bbd85">close</a>();</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> IRAM_ATTR processingStatic(<span class="keywordtype">void</span> *arg);</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classDriverPWM.html">   27</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDriverPWM.html">DriverPWM</a></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;{</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="classDriverPWM.html#acffe6831e34675b688eca8b016c815cd">DriverPWM</a>();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDriverPWM.html#a4c2173c8d360f3581ebc81f6a3a0bdb1">initialize</a>();</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDriverPWM.html#abf80bffdbf8f2fe60bd58d132457cf73">analogWrite</a>(uint8_t pin, <span class="keywordtype">int</span> duty);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDriverPWM.html#a202cd541c9f1b791129e63f01c9a1c2b">noAnalogWrite</a>(uint8_t pin);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> IRAM_ATTR processingStatic(<span class="keywordtype">void</span> *arg);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    os_timer_t main;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <a class="code" href="classVector.html">Vector&lt;ChannelPWM&gt;</a> channels;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    uint32_t period;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordtype">bool</span> initialized;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;};</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classChannelPWM.html">   63</a></span>&#160;<span class="keyword">class </span><a class="code" href="classChannelPWM.html">ChannelPWM</a></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;{</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <a class="code" href="classChannelPWM.html#ae1a470d6a73ca1a4a67528ffeb05b564">ChannelPWM</a>();</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="classChannelPWM.html#ae1a470d6a73ca1a4a67528ffeb05b564">ChannelPWM</a>(<span class="keywordtype">int</span> DriverPWMPin);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classChannelPWM.html#a9db74b3292965d910aaeb2b0ecf59d61">initialize</a>();</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">void</span> IRAM_ATTR <a class="code" href="classChannelPWM.html#a2d9b9cb9b2817d34207f0f2da836a277">high</a>();</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classChannelPWM.html#ac32b4f5a3eb4a4fbd2d462df309553b0">config</a>(<span class="keywordtype">int</span> duty, uint32_t basePeriod);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno"><a class="line" href="classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece">   93</a></span>&#160;    __inline <span class="keywordtype">int</span> <a class="code" href="classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece">id</a>() { <span class="keywordflow">return</span> pin; }</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classChannelPWM.html#a2aa0afa2262e9f97da1361313c6bbd85">close</a>();</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    os_timer_t item;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordtype">int</span> pin;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    uint32_t time;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;};</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="comment">// OOP style</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="comment"></span><span class="keyword">extern</span> <a class="code" href="classDriverPWM.html">DriverPWM</a> <a class="code" href="group__pwm.html#ga5c80a02abdff633793ebe8c4cb242367">EspPWM</a>;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_PWM_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> IRAM_ATTR processingStatic(<span class="keywordtype">void</span> *arg);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    os_timer_t item;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordtype">int</span> pin;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    uint32_t time;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;};</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="comment">// OOP style</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment"></span><span class="keyword">extern</span> <a class="code" href="classDriverPWM.html">DriverPWM</a> <a class="code" href="group__pwm.html#ga5c80a02abdff633793ebe8c4cb242367">EspPWM</a>;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_PWM_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classVector_html"><div class="ttname"><a href="classVector.html">Vector&lt; ChannelPWM &gt;</a></div></div>
-<div class="ttc" id="classChannelPWM_html"><div class="ttname"><a href="classChannelPWM.html">ChannelPWM</a></div><div class="ttdoc">Pulse width modulator channel class. </div><div class="ttdef"><b>Definition:</b> DriverPWM.h:60</div></div>
-<div class="ttc" id="classDriverPWM_html"><div class="ttname"><a href="classDriverPWM.html">DriverPWM</a></div><div class="ttdoc">Pulse width modulator driver class. </div><div class="ttdef"><b>Definition:</b> DriverPWM.h:24</div></div>
-<div class="ttc" id="classChannelPWM_html_a24a1819242da35acaaefbbfdff8c2ece"><div class="ttname"><a href="classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece">ChannelPWM::id</a></div><div class="ttdeci">__inline int id()</div><div class="ttdoc">Get the GPIO used by this PWM channel. </div><div class="ttdef"><b>Definition:</b> DriverPWM.h:90</div></div>
+<div class="ttc" id="classChannelPWM_html"><div class="ttname"><a href="classChannelPWM.html">ChannelPWM</a></div><div class="ttdoc">Pulse width modulator channel class. </div><div class="ttdef"><b>Definition:</b> DriverPWM.h:63</div></div>
+<div class="ttc" id="classDriverPWM_html"><div class="ttname"><a href="classDriverPWM.html">DriverPWM</a></div><div class="ttdoc">Pulse width modulator driver class. </div><div class="ttdef"><b>Definition:</b> DriverPWM.h:27</div></div>
+<div class="ttc" id="classChannelPWM_html_a24a1819242da35acaaefbbfdff8c2ece"><div class="ttname"><a href="classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece">ChannelPWM::id</a></div><div class="ttdeci">__inline int id()</div><div class="ttdoc">Get the GPIO used by this PWM channel. </div><div class="ttdef"><b>Definition:</b> DriverPWM.h:93</div></div>
 <div class="ttc" id="classDriverPWM_html_abf80bffdbf8f2fe60bd58d132457cf73"><div class="ttname"><a href="classDriverPWM.html#abf80bffdbf8f2fe60bd58d132457cf73">DriverPWM::analogWrite</a></div><div class="ttdeci">void analogWrite(uint8_t pin, int duty)</div><div class="ttdoc">Set PWM output. </div></div>
 <div class="ttc" id="group__pwm_html_ga5c80a02abdff633793ebe8c4cb242367"><div class="ttname"><a href="group__pwm.html#ga5c80a02abdff633793ebe8c4cb242367">EspPWM</a></div><div class="ttdeci">DriverPWM EspPWM</div><div class="ttdoc">Global instance of PWM driver object. </div></div>
 <div class="ttc" id="classChannelPWM_html_a9db74b3292965d910aaeb2b0ecf59d61"><div class="ttname"><a href="classChannelPWM.html#a9db74b3292965d910aaeb2b0ecf59d61">ChannelPWM::initialize</a></div><div class="ttdeci">void initialize()</div><div class="ttdoc">Initialise PWM channel. </div></div>
@@ -188,7 +188,7 @@ $(document).ready(function(){initNavTree('DriverPWM_8h_source.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_bdf1102e2e4e80305e535780e0e3f4e0.html">Sming</a></li><li class="navelem"><a class="el" href="dir_ca592db811da46f51d8d2a72799a377d.html">SmingCore</a></li><li class="navelem"><b>DriverPWM.h</b></li>
+    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_0ccf49f26d9ba51414c65cf131e66b5b.html">SmingCore</a></li><li class="navelem"><b>DriverPWM.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

@@ -1,8 +1,9 @@
 var searchData=
 [
   ['i2cio',['I2CIO',['../classI2CIO.html#a32eb7832075ad6011d67874405a0d0a6',1,'I2CIO']]],
-  ['id',['id',['../classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece',1,'ChannelPWM']]],
+  ['id',['id',['../classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0',1,'IDataSourceStream::id()'],['../classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf',1,'FileStream::id()'],['../classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece',1,'ChannelPWM::id()']]],
   ['increase',['increase',['../classIDelegateCaller.html#a3af9e79f473f57e8202c4973d5f37366',1,'IDelegateCaller']]],
+  ['init',['Init',['../classDS18S20.html#a7d593216797a90aa03081c12a32032dd',1,'DS18S20']]],
   ['initcommand',['initCommand',['../classDebugClass.html#a4b92612c788c442bf6f33439c7a8150a',1,'DebugClass']]],
   ['initialize',['initialize',['../classDriverPWM.html#a4c2173c8d360f3581ebc81f6a3a0bdb1',1,'DriverPWM::initialize()'],['../classChannelPWM.html#a9db74b3292965d910aaeb2b0ecf59d61',1,'ChannelPWM::initialize()'],['../group__system.html#ga6f76530665629e2a2d0246fb63af9696',1,'SystemClass::initialize()']]],
   ['initializems',['initializeMs',['../classHardware__Timer.html#a34a5f9c9e0b760e1db6bb4e17b395cbd',1,'Hardware_Timer::initializeMs()'],['../group__timer.html#gaa116e26295abe7ba0f713bb680a76a59',1,'Timer::initializeMs(uint32_t milliseconds, InterruptCallback callback=NULL)'],['../group__timer.html#gacff85d16f46217ace62486a1325a1515',1,'Timer::initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction=NULL)']]],
@@ -25,5 +26,6 @@ var searchData=
   ['isrxenabled',['isRxEnabled',['../classHardwareSerial.html#a8ba1e16b50845801487b069e243f8c4d',1,'HardwareSerial']]],
   ['isstarted',['isStarted',['../classHardware__Timer.html#a1ac800464fed8fa5db56b0dc7e9a8df5',1,'Hardware_Timer::isStarted()'],['../group__timer.html#ga2c03be883cf950d14e058b4205f1526e',1,'Timer::isStarted()']]],
   ['istxenabled',['isTxEnabled',['../classHardwareSerial.html#a82d71ffebdc2127c1ff44cd00d803827',1,'HardwareSerial']]],
-  ['isvalid',['isValid',['../classRF24.html#a35e5f1533b7753806c42b76e782d917e',1,'RF24']]]
+  ['isvalid',['isValid',['../classRF24.html#a35e5f1533b7753806c42b76e782d917e',1,'RF24']]],
+  ['isvalidtemperature',['IsValidTemperature',['../classDS18S20.html#a39fc95ecd1ade74e405b41770f8181c9',1,'DS18S20']]]
 ];

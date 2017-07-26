@@ -1,5 +1,6 @@
 var modules =
 [
+    [ "AtCommand serial", "group__serial.html", "group__serial" ],
     [ "Command Handler", "group__commandhandler.html", "group__commandhandler" ],
     [ "Date and time functions", "group__datetime.html", "group__datetime" ],
     [ "Debug functions", "group__debug.html", "group__debug" ],
@@ -7,9 +8,10 @@ var modules =
     [ "File system", "group__filesystem.html", "group__filesystem" ],
     [ "GPIO functions", "group__gpio.html", "group__gpio" ],
     [ "Hardware PWM functions", "group__hw__pwm.html", "group__hw__pwm" ],
-    [ "Hardware serial", "group__serial.html", "group__serial" ],
     [ "Hardware timer", "group__hwtimer.html", "group__hwtimer" ],
     [ "Interrupt functions", "group__interrupts.html", "group__interrupts" ],
+    [ "Libraries", "group__libraries.html", "group__libraries" ],
+    [ "Networking", "group__networking.html", "group__networking" ],
     [ "Print stream functions", "group__print.html", "group__print" ],
     [ "Pulse width modulation", "group__pwm.html", "group__pwm" ],
     [ "RC Servo functions", "group__Servo.html", "group__Servo" ],
@@ -22,7 +24,6 @@ var modules =
     [ "System", "group__system.html", "group__system" ],
     [ "Timer functions", "group__timer.html", "group__timer" ],
     [ "Watchdog Timer", "group__wdt.html", "group__wdt" ],
-    [ "Websocket Client", "group__wsclient.html", "group__wsclient" ],
     [ "Websocket Frame", "group__wsframe.html", "group__wsframe" ],
     [ "WiFi Access Point", "group__wifi__ap.html", "group__wifi__ap" ],
     [ "WiFi Station Interface", "group__wifi__sta.html", "group__wifi__sta" ]

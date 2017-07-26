@@ -108,6 +108,7 @@ $(document).ready(function(){initNavTree('classFIFO.html','');});
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classFIFO-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">FIFO&lt; T, rawSize &gt; Class Template Reference</div>  </div>
@@ -119,7 +120,9 @@ Inheritance diagram for FIFO&lt; T, rawSize &gt;:</div>
  <div class="center">
   <img src="classFIFO.png" usemap="#FIFO&lt; T, rawSize &gt;_map" alt=""/>
   <map id="FIFO&lt; T, rawSize &gt;_map" name="FIFO&lt; T, rawSize &gt;_map">
-<area href="classCountable.html" alt="Countable&lt; T &gt;" shape="rect" coords="0,0,126,24"/>
+<area href="classCountable.html" alt="Countable&lt; T &gt;" shape="rect" coords="123,0,359,24"/>
+<area href="classSimpleConcurrentQueue.html" alt="SimpleConcurrentQueue&lt; T, rawSize &gt;" shape="rect" coords="0,112,236,136"/>
+<area href="classSimpleQueue.html" alt="SimpleQueue&lt; T, rawSize &gt;" shape="rect" coords="246,112,482,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -155,6 +158,21 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a538df52632ac71e5007802fe5a7435ae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a538df52632ac71e5007802fe5a7435ae"></a>
 const int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b></td></tr>
 <tr class="separator:a538df52632ac71e5007802fe5a7435ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a73a5208874fb7d3866bf40b91a71904b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73a5208874fb7d3866bf40b91a71904b"></a>
+volatile int&#160;</td><td class="memItemRight" valign="bottom"><b>numberOfElements</b></td></tr>
+<tr class="separator:a73a5208874fb7d3866bf40b91a71904b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2499214d4a731365c61c4bc4d3e01842"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2499214d4a731365c61c4bc4d3e01842"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>nextIn</b></td></tr>
+<tr class="separator:a2499214d4a731365c61c4bc4d3e01842"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0e88f28e562b7ac341c0a72aec2f5fb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab0e88f28e562b7ac341c0a72aec2f5fb"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>nextOut</b></td></tr>
+<tr class="separator:ab0e88f28e562b7ac341c0a72aec2f5fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a338645075906db645ced68c71494f43b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a338645075906db645ced68c71494f43b"></a>
+T&#160;</td><td class="memItemRight" valign="bottom"><b>raw</b> [rawSize]</td></tr>
+<tr class="separator:a338645075906db645ced68c71494f43b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

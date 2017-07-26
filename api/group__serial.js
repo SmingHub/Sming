@@ -1,5 +1,41 @@
 var group__serial =
 [
+    [ "AtCommand", "structAtCommand.html", [
+      [ "breakOnError", "structAtCommand.html#a39b5769388ec157afd6c96472f701df1", null ],
+      [ "onComplete", "structAtCommand.html#acb2844cfe5cb554bac6b82cda85b1bcb", null ],
+      [ "onReceive", "structAtCommand.html#ac64093c387307cbc29085def34b2a4b7", null ],
+      [ "response2", "structAtCommand.html#a71f45c0246ae24ce4d58aad2acdfe665", null ],
+      [ "retries", "structAtCommand.html#ad3eecef7febf24d5356505d1423185f9", null ],
+      [ "text", "structAtCommand.html#a192571c3017ae2f0a26ef6807bcc66bc", null ],
+      [ "timeout", "structAtCommand.html#ae76e67564501d5b0c38c0b51db2dbe2a", null ]
+    ] ],
+    [ "SimpleQueue", "classSimpleQueue.html", [
+      [ "at", "classSimpleQueue.html#a34441ee721d3accbb7169dc04aadaa5f", null ],
+      [ "count", "classSimpleQueue.html#a822ba9631279ff47cd843a5273a101f8", null ],
+      [ "dequeue", "classSimpleQueue.html#a8cbc6e8fe109581b7dad5bc0b69f5326", null ],
+      [ "enqueue", "classSimpleQueue.html#aae0f318e05930819896ad50075a2e3b7", null ],
+      [ "flush", "classSimpleQueue.html#ae6bf4ed61af9e534f29ed450f5207702", null ],
+      [ "peek", "classSimpleQueue.html#aea09087d6916d1da1ad26c572deeb250", null ],
+      [ "nextIn", "classSimpleQueue.html#a2499214d4a731365c61c4bc4d3e01842", null ],
+      [ "nextOut", "classSimpleQueue.html#ab0e88f28e562b7ac341c0a72aec2f5fb", null ],
+      [ "numberOfElements", "classSimpleQueue.html#a73a5208874fb7d3866bf40b91a71904b", null ],
+      [ "raw", "classSimpleQueue.html#a338645075906db645ced68c71494f43b", null ],
+      [ "size", "classSimpleQueue.html#a538df52632ac71e5007802fe5a7435ae", null ]
+    ] ],
+    [ "AtClient", "classAtClient.html", [
+      [ "AtClient", "classAtClient.html#ac8059a3c81e34e5783bc03470b3862f4", null ],
+      [ "~AtClient", "classAtClient.html#a6f49150d66e8a2beaed669d14920df34", null ],
+      [ "getState", "classAtClient.html#a2b6d5714f36092c30ec5adeb079a900d", null ],
+      [ "next", "classAtClient.html#aa3eaa43a1c0dc75dd94ef79bf08ef3ec", null ],
+      [ "processor", "classAtClient.html#a06b2966c45d90e658c42ea5da19bbf68", null ],
+      [ "resend", "classAtClient.html#a7618787a599fba2b38416885410b1310", null ],
+      [ "send", "classAtClient.html#a9809c3794bd6fea09e7d6666099b5311", null ],
+      [ "send", "classAtClient.html#a7306e8d447823a53bf6b2c72cb375324", null ],
+      [ "send", "classAtClient.html#aa1491e0614c607dc8ca0d333f114e367", null ],
+      [ "send", "classAtClient.html#a4fd2be7a7bc6b0706bced930c6e5944c", null ],
+      [ "sendDirect", "classAtClient.html#af42496719073b392ce4475781b2d460b", null ],
+      [ "currentCommand", "classAtClient.html#a241ad9cb02d62f14408923313afc30e4", null ]
+    ] ],
     [ "HWSerialMemberData", "structHWSerialMemberData.html", [
       [ "commandExecutor", "structHWSerialMemberData.html#af04f04ad615fad8b9b84e73bb3629c5d", null ],
       [ "HWSDelegate", "structHWSerialMemberData.html#ae6893cfff0872267cfb2d840a197dee7", null ]

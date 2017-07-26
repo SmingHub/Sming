@@ -5,6 +5,7 @@ var NAVTREE =
     [ "Description", "index.html#Description", null ],
     [ "Licenses", "index.html#Licenses", null ],
     [ "Todo List", "todo.html", null ],
+    [ "Deprecated List", "deprecated.html", null ],
     [ "Modules", "modules.html", "modules" ],
     [ "Classes", null, [
       [ "Class List", "annotated.html", "annotated" ],
@@ -24,20 +25,21 @@ var NAVTREEINDEX =
 [
 "GettingStarted_8pde-example.html",
 "classAdafruit__PCD8544.html#a9f3bbdbe07a0681bb3906f145c873002",
-"classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece",
-"classDisplay.html#afd6cc6e2c1163f94c60855ad233899bd",
-"classHardware__Timer.html#ab33339f28b347e6b111a60b784fc87ce",
-"classIDataSourceStream.html",
-"classLiquidCrystal__I2C.html#a541903194f82bf25127db2b57baaa296",
-"classMCP.html#aaf93b6ced3a1c852c1ddfa430e80900f",
-"classRCSwitch.html#aae604bbee72764d45027b1616ab912d4",
-"classSparkFun__APDS9960.html#a8dcda7b95bc32a88c121fc99f331c1df",
-"classStringSumHelper.html#ad502777b7549182fe9b1a14879acf307",
-"classTemplateFileStream.html#a50ffba4642fb546632073a70853ebe18",
-"classYeelightBulb.html#aacd87bb1f730d37988910ba007fc1de6",
-"group__filesystem.html#ga84764b02ca44203d3926768b4910f9ae",
-"group__wifi__sta.html#ga85c971fbafdcde8f1c77bb581319e2f2",
-"structsi7021__olt.html#a66074ea53181655e26a23d267a30b1aa"
+"classBounce.html#a62412d814d36102ab3d285e801d5d29a",
+"classDisplay.html#a35f884889abc8313681b51ecb5eb41bc",
+"classHardwareSerial.html#aa22dd228add6fd97290d33a494741d6d",
+"classHttpServer.html#a730b80fbbafb4ac92eda9b320ccf7bbf",
+"classLiquidCrystal.html#a1061204d85492e07fd48764804ae5d09",
+"classLiquidCrystal__SR2W.html#aec8ffaa1e69c7a6e13ac0cfbc29151d9",
+"classMFRC522.html#ae3b374c61bf50256289349fdb78fe181a95e26d5ece97ae43c34d08797205a356",
+"classPrint.html#a1357853a68faa9b94e5d9cfcc6c97b6d",
+"classSi4432.html#aca771331672c27e2dacf331437839af3",
+"classStringSumHelper.html#a03e9f72da2e33137ec87bbf0957a73eb",
+"classTcpServer.html#a27adf7429e7a2318b0bf195a02162df4",
+"classVector.html#a7a7db99cf205d29a607b4ab87946da19",
+"group__DS18S20.html#gae9df0d20a76bb9d5c87fe132ad3b6a2c",
+"group__telnetserver.html",
+"structDNSHeader.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

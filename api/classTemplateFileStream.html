@@ -130,9 +130,9 @@ Inheritance diagram for TemplateFileStream:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3071f6f547c41d51b70e9050f4b8a2d5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTemplateFileStream.html#a3071f6f547c41d51b70e9050f4b8a2d5">TemplateFileStream</a> (<a class="el" href="classString.html">String</a> templateFileName)</td></tr>
-<tr class="memdesc:a3071f6f547c41d51b70e9050f4b8a2d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a template file stream.  <a href="#a3071f6f547c41d51b70e9050f4b8a2d5">More...</a><br/></td></tr>
-<tr class="separator:a3071f6f547c41d51b70e9050f4b8a2d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a589ba48fb906f616665f9a51c60dbbd2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTemplateFileStream.html#a589ba48fb906f616665f9a51c60dbbd2">TemplateFileStream</a> (const <a class="el" href="classString.html">String</a> &amp;templateFileName)</td></tr>
+<tr class="memdesc:a589ba48fb906f616665f9a51c60dbbd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a template file stream.  <a href="#a589ba48fb906f616665f9a51c60dbbd2">More...</a><br/></td></tr>
+<tr class="separator:a589ba48fb906f616665f9a51c60dbbd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66a4a81c74f285f1c459243da0f00cc6"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTemplateFileStream.html#a66a4a81c74f285f1c459243da0f00cc6">getStreamType</a> ()</td></tr>
 <tr class="memdesc:a66a4a81c74f285f1c459243da0f00cc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the stream type.  <a href="#a66a4a81c74f285f1c459243da0f00cc6">More...</a><br/></td></tr>
 <tr class="separator:a66a4a81c74f285f1c459243da0f00cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,9 +151,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0994a359ad2bfc4ea8c209ba3db3b683"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTemplateVariables.html">TemplateVariables</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTemplateFileStream.html#a0994a359ad2bfc4ea8c209ba3db3b683">variables</a> ()</td></tr>
 <tr class="memdesc:a0994a359ad2bfc4ea8c209ba3db3b683"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the template variables.  <a href="#a0994a359ad2bfc4ea8c209ba3db3b683">More...</a><br/></td></tr>
 <tr class="separator:a0994a359ad2bfc4ea8c209ba3db3b683"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50ffba4642fb546632073a70853ebe18"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a50ffba4642fb546632073a70853ebe18"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>attach</b> (<a class="el" href="classString.html">String</a> <a class="el" href="classFileStream.html#acf13ae992e4b99b244633dc8d592311b">fileName</a>, <a class="el" href="group__filesystem.html#ga849e6736902cd46f7e79ff6f98eb2d28">FileOpenFlags</a> openFlags)</td></tr>
-<tr class="separator:a50ffba4642fb546632073a70853ebe18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a706ba018848f426ab8535a670f88f38d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTemplateFileStream.html#a706ba018848f426ab8535a670f88f38d">length</a> ()</td></tr>
+<tr class="memdesc:a706ba018848f426ab8535a670f88f38d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total length of the stream.  <a href="#a706ba018848f426ab8535a670f88f38d">More...</a><br/></td></tr>
+<tr class="separator:a706ba018848f426ab8535a670f88f38d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86e3f1ebeb80ed1d8d22697f09f81d12"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a86e3f1ebeb80ed1d8d22697f09f81d12"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>attach</b> (const <a class="el" href="classString.html">String</a> &amp;<a class="el" href="classFileStream.html#acf13ae992e4b99b244633dc8d592311b">fileName</a>, <a class="el" href="group__filesystem.html#ga849e6736902cd46f7e79ff6f98eb2d28">FileOpenFlags</a> openFlags)</td></tr>
+<tr class="separator:a86e3f1ebeb80ed1d8d22697f09f81d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abaa8856ca62d41de0e9d0c08b89a9f51"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abaa8856ca62d41de0e9d0c08b89a9f51"></a>
 virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (uint8_t charToWrite)</td></tr>
 <tr class="separator:abaa8856ca62d41de0e9d0c08b89a9f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,18 +175,21 @@ virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (
 <tr class="memitem:aca0218676383112bf4c034d98461f682"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileStream.html#aca0218676383112bf4c034d98461f682">getPos</a> ()</td></tr>
 <tr class="memdesc:aca0218676383112bf4c034d98461f682"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the offset of cursor from beginning of data.  <a href="#aca0218676383112bf4c034d98461f682">More...</a><br/></td></tr>
 <tr class="separator:aca0218676383112bf4c034d98461f682"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a2f10fd7bc8ee797edfbe9a5d432acf"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf">id</a> ()</td></tr>
+<tr class="memdesc:a0a2f10fd7bc8ee797edfbe9a5d432acf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique id of the resource.  <a href="#a0a2f10fd7bc8ee797edfbe9a5d432acf">More...</a><br/></td></tr>
+<tr class="separator:a0a2f10fd7bc8ee797edfbe9a5d432acf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Template file stream class. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a3071f6f547c41d51b70e9050f4b8a2d5"></a>
+<a class="anchor" id="a589ba48fb906f616665f9a51c60dbbd2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">TemplateFileStream::TemplateFileStream </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classString.html">String</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
           <td class="paramname"><em>templateFileName</em></td><td>)</td>
           <td></td>
         </tr>
@@ -316,6 +322,39 @@ virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (
 
 </div>
 </div>
+<a class="anchor" id="a0a2f10fd7bc8ee797edfbe9a5d432acf"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classString.html">String</a> FileStream::id </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns unique id of the resource. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname"><a class="el" href="classString.html">String</a></td><td>the unique id of the stream. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0">IDataSourceStream</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="af80071bb96db8a7558d1856305186baa"></a>
 <div class="memitem">
 <div class="memproto">
@@ -346,6 +385,39 @@ virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (
 </dl>
 
 <p>Implements <a class="el" href="classIDataSourceStream.html#a143958f311cc98fbfaaec1d4d5cdfe47">IDataSourceStream</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a706ba018848f426ab8535a670f88f38d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int TemplateFileStream::length </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the total length of the stream. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">int</td><td>-1 is returned when the size cannot be determined </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="classFileStream.html#a61bbea59e0648360fa17e3b964ad34f6">FileStream</a>.</p>
 
 </div>
 </div>

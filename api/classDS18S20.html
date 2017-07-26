@@ -109,43 +109,297 @@ $(document).ready(function(){initNavTree('classDS18S20.html','');});
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classDS18S20-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">DS18S20 Class Reference</div>  </div>
+<div class="title">DS18S20 Class Reference<div class="ingroups"><a class="el" href="group__DS18S20.html">DS18S20 Temperature Sensor</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>This class implements access to the DS18x20 range of temperature sensors.  
+ <a href="classDS18S20.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ds18s20_8h_source.html">ds18s20.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7d593216797a90aa03081c12a32032dd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d593216797a90aa03081c12a32032dd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> (uint8_t)</td></tr>
+<tr class="memitem:a60b2df0f1da19b0cbd2eec00d62c0ee6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a60b2df0f1da19b0cbd2eec00d62c0ee6">DS18S20</a> ()</td></tr>
+<tr class="memdesc:a60b2df0f1da19b0cbd2eec00d62c0ee6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate a <a class="el" href="classDS18S20.html" title="This class implements access to the DS18x20 range of temperature sensors. ">DS18S20</a> object.  <a href="#a60b2df0f1da19b0cbd2eec00d62c0ee6">More...</a><br/></td></tr>
+<tr class="separator:a60b2df0f1da19b0cbd2eec00d62c0ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d593216797a90aa03081c12a32032dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a7d593216797a90aa03081c12a32032dd">Init</a> (uint8_t)</td></tr>
+<tr class="memdesc:a7d593216797a90aa03081c12a32032dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiate communication on 1-wire bus.  <a href="#a7d593216797a90aa03081c12a32032dd">More...</a><br/></td></tr>
 <tr class="separator:a7d593216797a90aa03081c12a32032dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c5453101892cd6035a79862695a5b27"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7c5453101892cd6035a79862695a5b27"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>StartMeasure</b> ()</td></tr>
+<tr class="memitem:a7c5453101892cd6035a79862695a5b27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a7c5453101892cd6035a79862695a5b27">StartMeasure</a> ()</td></tr>
+<tr class="memdesc:a7c5453101892cd6035a79862695a5b27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start measurement of all connected sensors.  <a href="#a7c5453101892cd6035a79862695a5b27">More...</a><br/></td></tr>
 <tr class="separator:a7c5453101892cd6035a79862695a5b27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b92e7a0f54027bb1ab08f10fbea58bc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6b92e7a0f54027bb1ab08f10fbea58bc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RegisterEndCallback</b> (<a class="el" href="classDelegate.html">DS18S20CompletedDelegate</a>)</td></tr>
+<tr class="memitem:a6b92e7a0f54027bb1ab08f10fbea58bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a6b92e7a0f54027bb1ab08f10fbea58bc">RegisterEndCallback</a> (<a class="el" href="group__DS18S20.html#gae9df0d20a76bb9d5c87fe132ad3b6a2c">DS18S20CompletedDelegate</a>)</td></tr>
+<tr class="memdesc:a6b92e7a0f54027bb1ab08f10fbea58bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the callback function that is run when measurement is complete.  <a href="#a6b92e7a0f54027bb1ab08f10fbea58bc">More...</a><br/></td></tr>
 <tr class="separator:a6b92e7a0f54027bb1ab08f10fbea58bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad35aa149f13c9f6a862d1d906d05aada"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad35aa149f13c9f6a862d1d906d05aada"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>UnRegisterCallback</b> ()</td></tr>
+<tr class="memitem:ad35aa149f13c9f6a862d1d906d05aada"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#ad35aa149f13c9f6a862d1d906d05aada">UnRegisterCallback</a> ()</td></tr>
+<tr class="memdesc:ad35aa149f13c9f6a862d1d906d05aada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregister the callback function to avoid activity after measurement is complete.  <a href="#ad35aa149f13c9f6a862d1d906d05aada">More...</a><br/></td></tr>
 <tr class="separator:ad35aa149f13c9f6a862d1d906d05aada"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e0bc85e80e4c72504e8b2cd65204d64"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5e0bc85e80e4c72504e8b2cd65204d64"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>GetCelsius</b> (uint8_t)</td></tr>
+<tr class="memitem:a5e0bc85e80e4c72504e8b2cd65204d64"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a5e0bc85e80e4c72504e8b2cd65204d64">GetCelsius</a> (uint8_t)</td></tr>
+<tr class="memdesc:a5e0bc85e80e4c72504e8b2cd65204d64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the value of the last measurment from a sensor.  <a href="#a5e0bc85e80e4c72504e8b2cd65204d64">More...</a><br/></td></tr>
 <tr class="separator:a5e0bc85e80e4c72504e8b2cd65204d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a108feae8150ceb501798fc26e1d920ae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a108feae8150ceb501798fc26e1d920ae"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>GetFahrenheit</b> (uint8_t)</td></tr>
+<tr class="memitem:a108feae8150ceb501798fc26e1d920ae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a108feae8150ceb501798fc26e1d920ae">GetFahrenheit</a> (uint8_t)</td></tr>
+<tr class="memdesc:a108feae8150ceb501798fc26e1d920ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the value of the last measurment from a sensor.  <a href="#a108feae8150ceb501798fc26e1d920ae">More...</a><br/></td></tr>
 <tr class="separator:a108feae8150ceb501798fc26e1d920ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39fc95ecd1ade74e405b41770f8181c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39fc95ecd1ade74e405b41770f8181c9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsValidTemperature</b> (uint8_t)</td></tr>
+<tr class="memitem:a39fc95ecd1ade74e405b41770f8181c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a39fc95ecd1ade74e405b41770f8181c9">IsValidTemperature</a> (uint8_t)</td></tr>
+<tr class="memdesc:a39fc95ecd1ade74e405b41770f8181c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the last measurement for a sensor is valid.  <a href="#a39fc95ecd1ade74e405b41770f8181c9">More...</a><br/></td></tr>
 <tr class="separator:a39fc95ecd1ade74e405b41770f8181c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afef7001011642f7630cd4e4da458be7c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afef7001011642f7630cd4e4da458be7c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>MeasureStatus</b> ()</td></tr>
+<tr class="memitem:afef7001011642f7630cd4e4da458be7c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#afef7001011642f7630cd4e4da458be7c">MeasureStatus</a> ()</td></tr>
+<tr class="memdesc:afef7001011642f7630cd4e4da458be7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if measurement is in progress.  <a href="#afef7001011642f7630cd4e4da458be7c">More...</a><br/></td></tr>
 <tr class="separator:afef7001011642f7630cd4e4da458be7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18c9de82f9d3ee06f5b380fc05b8af25"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a18c9de82f9d3ee06f5b380fc05b8af25"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>GetSensorID</b> (uint8_t)</td></tr>
+<tr class="memitem:a18c9de82f9d3ee06f5b380fc05b8af25"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a18c9de82f9d3ee06f5b380fc05b8af25">GetSensorID</a> (uint8_t)</td></tr>
+<tr class="memdesc:a18c9de82f9d3ee06f5b380fc05b8af25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID (1-wire address) of a sensor.  <a href="#a18c9de82f9d3ee06f5b380fc05b8af25">More...</a><br/></td></tr>
 <tr class="separator:a18c9de82f9d3ee06f5b380fc05b8af25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76a8dee02f4ad3fc51921243746ec315"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a76a8dee02f4ad3fc51921243746ec315"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>GetSensorsCount</b> ()</td></tr>
+<tr class="memitem:a76a8dee02f4ad3fc51921243746ec315"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a76a8dee02f4ad3fc51921243746ec315">GetSensorsCount</a> ()</td></tr>
+<tr class="memdesc:a76a8dee02f4ad3fc51921243746ec315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the quantity of sensors detected during last measurement.  <a href="#a76a8dee02f4ad3fc51921243746ec315">More...</a><br/></td></tr>
 <tr class="separator:a76a8dee02f4ad3fc51921243746ec315"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This class implements access to the DS18x20 range of temperature sensors. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a60b2df0f1da19b0cbd2eec00d62c0ee6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DS18S20::DS18S20 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instantiate a <a class="el" href="classDS18S20.html" title="This class implements access to the DS18x20 range of temperature sensors. ">DS18S20</a> object. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a5e0bc85e80e4c72504e8b2cd65204d64"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float DS18S20::GetCelsius </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the value of the last measurment from a sensor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Index</td><td>of sensor to retrieve value from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Temperature value in degrees Celsius or zero for invalid sensor index </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Call <a class="el" href="classDS18S20.html#a39fc95ecd1ade74e405b41770f8181c9" title="Check if the last measurement for a sensor is valid. ">IsValidTemperature()</a> to check value is valid before calling this function </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a108feae8150ceb501798fc26e1d920ae"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float DS18S20::GetFahrenheit </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the value of the last measurment from a sensor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Index</td><td>of sensor to retrieve value from </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Temperature value in degrees Fahrenheit or zero for invalid sensor index </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Call <a class="el" href="classDS18S20.html#a39fc95ecd1ade74e405b41770f8181c9" title="Check if the last measurement for a sensor is valid. ">IsValidTemperature()</a> to check value is valid before calling this function </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a18c9de82f9d3ee06f5b380fc05b8af25"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t DS18S20::GetSensorID </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the ID (1-wire address) of a sensor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Index</td><td>of sensor </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ID of sensor </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a76a8dee02f4ad3fc51921243746ec315"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t DS18S20::GetSensorsCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the quantity of sensors detected during last measurement. </p>
+<dl class="section return"><dt>Returns</dt><dd>Quantity of detected sensors </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Maximum quantity of sensors is defined in library header file by MAX_SENSORS </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a7d593216797a90aa03081c12a32032dd"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DS18S20::Init </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initiate communication on 1-wire bus. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">GPIO</td><td>pin acting as 1-wire bus </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a39fc95ecd1ade74e405b41770f8181c9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool DS18S20::IsValidTemperature </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if the last measurement for a sensor is valid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Index</td><td>of sensor to check </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if last measured temperature is valid, false for invalid value or invalid sensor index </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Call this function before reading value to ensure the value is valid </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000017">Todo:</a></b></dt><dd>Initial code review suggests this is set once but never rechecked so may not be accurate </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="afef7001011642f7630cd4e4da458be7c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool DS18S20::MeasureStatus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if measurement is in progress. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if measurement is in progress </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a6b92e7a0f54027bb1ab08f10fbea58bc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DS18S20::RegisterEndCallback </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__DS18S20.html#gae9df0d20a76bb9d5c87fe132ad3b6a2c">DS18S20CompletedDelegate</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register the callback function that is run when measurement is complete. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Name</td><td>of the callback function </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Callback function must be a DS18S20CommpleteDelegate type </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a7c5453101892cd6035a79862695a5b27"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DS18S20::StartMeasure </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start measurement of all connected sensors. </p>
+<dl class="section note"><dt>Note</dt><dd>Scans for all connected sensors, measures value from each then calls the registered callback function </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ad35aa149f13c9f6a862d1d906d05aada"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DS18S20::UnRegisterCallback </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unregister the callback function to avoid activity after measurement is complete. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

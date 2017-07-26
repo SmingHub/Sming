@@ -2,7 +2,7 @@ var classCommandOutput =
 [
     [ "CommandOutput", "classCommandOutput.html#ae22e3cfcbe512b0cc28717a572dac836", null ],
     [ "CommandOutput", "classCommandOutput.html#aaa030b493ed098258fcba494281c20d6", null ],
-    [ "CommandOutput", "classCommandOutput.html#a61482f237cdd851abb114be079b39a41", null ],
+    [ "CommandOutput", "classCommandOutput.html#a862447c9d17774c992c174c032a975fb", null ],
     [ "~CommandOutput", "classCommandOutput.html#a3846eb7177c9525fcdd69fcda373ddab", null ],
     [ "clearWriteError", "classCommandOutput.html#aec9ecf84cc6d9087a650def3cefc459e", null ],
     [ "getWriteError", "classCommandOutput.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
@@ -33,7 +33,7 @@ var classCommandOutput =
     [ "write", "classCommandOutput.html#a5b40e0e9cab1f2fe5bb0cb22ffe5adda", null ],
     [ "write", "classCommandOutput.html#ad98d820df11e2697be1e4b1ea30b4a23", null ],
     [ "write", "classCommandOutput.html#abfdd93a61c4b95a3ba41680188505e73", null ],
-    [ "outputSocket", "classCommandOutput.html#aaa457d76a26371ed3d0e34bfcbaf08d7", null ],
+    [ "outputSocket", "classCommandOutput.html#acdf9ed788e2a53b292b2b219d0d55f4c", null ],
     [ "outputStream", "classCommandOutput.html#a5b0fad2d85b9bbe5b27698aef8cf68da", null ],
     [ "outputTcpClient", "classCommandOutput.html#a786f57389e391c76984ef25747ece976", null ],
     [ "tempSocket", "classCommandOutput.html#a90d73e435befbfc6a9faa7c1a86eb3b4", null ]

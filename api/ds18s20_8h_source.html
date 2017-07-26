@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: /tmp/Sming/Sming/Libraries/DS18S20/ds18s20.h Source File</title>
+<title>Sming Framework API: ds18s20.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -111,77 +111,98 @@ $(document).ready(function(){initNavTree('ds18s20_8h_source.html','');});
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef READFROMDS_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define READFROMDS_H_</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;../../SmingCore/Wire.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#define MAX_SENSORS 4         //how many sensors reads up max</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">// OneWire commands</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#define COPYSCRATCH     0x48  // Copy EEPROM</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define READSCRATCH     0xBE  // Read EEPROM</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define WRITESCRATCH    0x4E  // Write EEPROM</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define RECALLSCRATCH   0xB8  // Reload last</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define READPOWERSUPPLY 0xB4  // parasite power</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define ALARMSEARCH     0xEC  // Query for alarm</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define STARTCONVO      0x44  // temperature reading</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void()&gt;</a> <a class="code" href="classDelegate.html">DS18S20CompletedDelegate</a>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classDS18S20.html">   27</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDS18S20.html">DS18S20</a></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;{</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="classDS18S20.html">DS18S20</a>();</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">void</span> Init(uint8_t);                 <span class="comment">//call for OneWire init</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordtype">void</span> StartMeasure();                            <span class="comment">//Start measurement result after 1.2 seconds * number of sensors</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">void</span> RegisterEndCallback(<a class="code" href="classDelegate.html">DS18S20CompletedDelegate</a>);     <span class="comment">//Add function called of conversion end - &quot;interrupt&quot; function of end conversion</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">void</span> UnRegisterCallback();                      <span class="comment">//Unset conversion end function</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">float</span> GetCelsius(uint8_t);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">float</span> GetFahrenheit(uint8_t);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">bool</span> IsValidTemperature(uint8_t);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">bool</span> MeasureStatus();</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    uint64_t GetSensorID(uint8_t);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    uint8_t GetSensorsCount();              <span class="comment">//how many the sensors detected</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classDS18S20.html">DS18S20</a>();</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordtype">void</span> DoMeasure();</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">void</span> DoSearch();</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">void</span> StartReadNext();</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    uint8_t FindAlladdresses();</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">bool</span> InProgress = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">bool</span> ValidTemperature[MAX_SENSORS];</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    uint8_t addr[8];</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    uint8_t type_s[MAX_SENSORS];</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    uint8_t data[12];</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    uint64_t addresses[MAX_SENSORS];</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    uint8_t numberOf=0;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    uint8_t numberOfread=0;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="classDelegate.html">DS18S20CompletedDelegate</a> readEndCallback;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;../../SmingCore/Wire.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="group__DS18S20.html#gaa3d1fc2927eec213e6b5f9e854c392d2">   20</a></span>&#160;<span class="preprocessor">#define MAX_SENSORS 4         </span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor"></span><span class="comment">// OneWire commands</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#define COPYSCRATCH     0x48  // Copy EEPROM</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define READSCRATCH     0xBE  // Read EEPROM</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define WRITESCRATCH    0x4E  // Write EEPROM</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define RECALLSCRATCH   0xB8  // Reload last</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define READPOWERSUPPLY 0xB4  // parasite power</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define ALARMSEARCH     0xEC  // Query for alarm</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define STARTCONVO      0x44  // temperature reading</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="group__DS18S20.html#gae9df0d20a76bb9d5c87fe132ad3b6a2c">   35</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void()&gt;</a> <a class="code" href="group__DS18S20.html#gae9df0d20a76bb9d5c87fe132ad3b6a2c">DS18S20CompletedDelegate</a>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classDS18S20.html">   39</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDS18S20.html">DS18S20</a></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;{</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="classDS18S20.html#a60b2df0f1da19b0cbd2eec00d62c0ee6">DS18S20</a>();</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDS18S20.html#a7d593216797a90aa03081c12a32032dd">Init</a>(uint8_t);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDS18S20.html#a7c5453101892cd6035a79862695a5b27">StartMeasure</a>();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDS18S20.html#a6b92e7a0f54027bb1ab08f10fbea58bc">RegisterEndCallback</a>(<a class="code" href="classDelegate.html">DS18S20CompletedDelegate</a>);</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="classTimer.html">Timer</a> DelaysTimer;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">float</span> celsius[MAX_SENSORS], fahrenheit[MAX_SENSORS];</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;};</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* READFROMDS_H_ */</span><span class="preprocessor"></span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDS18S20.html#ad35aa149f13c9f6a862d1d906d05aada">UnRegisterCallback</a>();                      <span class="comment">//Unset conversion end function</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordtype">float</span> <a class="code" href="classDS18S20.html#a5e0bc85e80e4c72504e8b2cd65204d64">GetCelsius</a>(uint8_t);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">float</span> <a class="code" href="classDS18S20.html#a108feae8150ceb501798fc26e1d920ae">GetFahrenheit</a>(uint8_t);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classDS18S20.html#a39fc95ecd1ade74e405b41770f8181c9">IsValidTemperature</a>(uint8_t);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classDS18S20.html#afef7001011642f7630cd4e4da458be7c">MeasureStatus</a>();</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    uint64_t <a class="code" href="classDS18S20.html#a18c9de82f9d3ee06f5b380fc05b8af25">GetSensorID</a>(uint8_t);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    uint8_t <a class="code" href="classDS18S20.html#a76a8dee02f4ad3fc51921243746ec315">GetSensorsCount</a>();              <span class="comment">//how many the sensors detected</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classDS18S20.html">DS18S20</a>();</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordtype">void</span> DoMeasure();</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordtype">void</span> DoSearch();</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordtype">void</span> StartReadNext();</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    uint8_t FindAlladdresses();</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keywordtype">bool</span> InProgress = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keywordtype">bool</span> ValidTemperature[<a class="code" href="group__DS18S20.html#gaa3d1fc2927eec213e6b5f9e854c392d2">MAX_SENSORS</a>];</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    uint8_t addr[8];</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    uint8_t type_s[<a class="code" href="group__DS18S20.html#gaa3d1fc2927eec213e6b5f9e854c392d2">MAX_SENSORS</a>];</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    uint8_t data[12];</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    uint64_t addresses[<a class="code" href="group__DS18S20.html#gaa3d1fc2927eec213e6b5f9e854c392d2">MAX_SENSORS</a>];</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    uint8_t numberOf=0;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    uint8_t numberOfread=0;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <a class="code" href="classDelegate.html">DS18S20CompletedDelegate</a> readEndCallback;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <a class="code" href="classTimer.html">Timer</a> DelaysTimer;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keywordtype">float</span> celsius[<a class="code" href="group__DS18S20.html#gaa3d1fc2927eec213e6b5f9e854c392d2">MAX_SENSORS</a>], fahrenheit[<a class="code" href="group__DS18S20.html#gaa3d1fc2927eec213e6b5f9e854c392d2">MAX_SENSORS</a>];</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;};</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* READFROMDS_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor"></span></div>
+<div class="ttc" id="classDS18S20_html_afef7001011642f7630cd4e4da458be7c"><div class="ttname"><a href="classDS18S20.html#afef7001011642f7630cd4e4da458be7c">DS18S20::MeasureStatus</a></div><div class="ttdeci">bool MeasureStatus()</div><div class="ttdoc">Check if measurement is in progress. </div></div>
+<div class="ttc" id="classDS18S20_html_a76a8dee02f4ad3fc51921243746ec315"><div class="ttname"><a href="classDS18S20.html#a76a8dee02f4ad3fc51921243746ec315">DS18S20::GetSensorsCount</a></div><div class="ttdeci">uint8_t GetSensorsCount()</div><div class="ttdoc">Get the quantity of sensors detected during last measurement. </div></div>
+<div class="ttc" id="classDS18S20_html_a39fc95ecd1ade74e405b41770f8181c9"><div class="ttname"><a href="classDS18S20.html#a39fc95ecd1ade74e405b41770f8181c9">DS18S20::IsValidTemperature</a></div><div class="ttdeci">bool IsValidTemperature(uint8_t)</div><div class="ttdoc">Check if the last measurement for a sensor is valid. </div></div>
+<div class="ttc" id="classDS18S20_html_a60b2df0f1da19b0cbd2eec00d62c0ee6"><div class="ttname"><a href="classDS18S20.html#a60b2df0f1da19b0cbd2eec00d62c0ee6">DS18S20::DS18S20</a></div><div class="ttdeci">DS18S20()</div><div class="ttdoc">Instantiate a DS18S20 object. </div></div>
+<div class="ttc" id="classDS18S20_html_a18c9de82f9d3ee06f5b380fc05b8af25"><div class="ttname"><a href="classDS18S20.html#a18c9de82f9d3ee06f5b380fc05b8af25">DS18S20::GetSensorID</a></div><div class="ttdeci">uint64_t GetSensorID(uint8_t)</div><div class="ttdoc">Get the ID (1-wire address) of a sensor. </div></div>
+<div class="ttc" id="classDS18S20_html_a7d593216797a90aa03081c12a32032dd"><div class="ttname"><a href="classDS18S20.html#a7d593216797a90aa03081c12a32032dd">DS18S20::Init</a></div><div class="ttdeci">void Init(uint8_t)</div><div class="ttdoc">Initiate communication on 1-wire bus. </div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void()&gt;</a></div></div>
-<div class="ttc" id="classDS18S20_html"><div class="ttname"><a href="classDS18S20.html">DS18S20</a></div><div class="ttdef"><b>Definition:</b> ds18s20.h:27</div></div>
+<div class="ttc" id="classDS18S20_html_a7c5453101892cd6035a79862695a5b27"><div class="ttname"><a href="classDS18S20.html#a7c5453101892cd6035a79862695a5b27">DS18S20::StartMeasure</a></div><div class="ttdeci">void StartMeasure()</div><div class="ttdoc">Start measurement of all connected sensors. </div></div>
+<div class="ttc" id="classDS18S20_html_a6b92e7a0f54027bb1ab08f10fbea58bc"><div class="ttname"><a href="classDS18S20.html#a6b92e7a0f54027bb1ab08f10fbea58bc">DS18S20::RegisterEndCallback</a></div><div class="ttdeci">void RegisterEndCallback(DS18S20CompletedDelegate)</div><div class="ttdoc">Register the callback function that is run when measurement is complete. </div></div>
+<div class="ttc" id="group__DS18S20_html_gae9df0d20a76bb9d5c87fe132ad3b6a2c"><div class="ttname"><a href="group__DS18S20.html#gae9df0d20a76bb9d5c87fe132ad3b6a2c">DS18S20CompletedDelegate</a></div><div class="ttdeci">Delegate&lt; void()&gt; DS18S20CompletedDelegate</div><div class="ttdoc">Definition of callback function called on completion of measurement of all DS18S20 sensors...</div><div class="ttdef"><b>Definition:</b> ds18s20.h:35</div></div>
+<div class="ttc" id="classDS18S20_html_a5e0bc85e80e4c72504e8b2cd65204d64"><div class="ttname"><a href="classDS18S20.html#a5e0bc85e80e4c72504e8b2cd65204d64">DS18S20::GetCelsius</a></div><div class="ttdeci">float GetCelsius(uint8_t)</div><div class="ttdoc">Get the value of the last measurment from a sensor. </div></div>
+<div class="ttc" id="classDS18S20_html_a108feae8150ceb501798fc26e1d920ae"><div class="ttname"><a href="classDS18S20.html#a108feae8150ceb501798fc26e1d920ae">DS18S20::GetFahrenheit</a></div><div class="ttdeci">float GetFahrenheit(uint8_t)</div><div class="ttdoc">Get the value of the last measurment from a sensor. </div></div>
+<div class="ttc" id="classDS18S20_html"><div class="ttname"><a href="classDS18S20.html">DS18S20</a></div><div class="ttdoc">This class implements access to the DS18x20 range of temperature sensors. </div><div class="ttdef"><b>Definition:</b> ds18s20.h:39</div></div>
 <div class="ttc" id="classTimer_html"><div class="ttname"><a href="classTimer.html">Timer</a></div><div class="ttdef"><b>Definition:</b> Timer.h:29</div></div>
+<div class="ttc" id="group__DS18S20_html_gaa3d1fc2927eec213e6b5f9e854c392d2"><div class="ttname"><a href="group__DS18S20.html#gaa3d1fc2927eec213e6b5f9e854c392d2">MAX_SENSORS</a></div><div class="ttdeci">#define MAX_SENSORS</div><div class="ttdoc">Maximum quantity of sensors to read. </div><div class="ttdef"><b>Definition:</b> ds18s20.h:20</div></div>
+<div class="ttc" id="classDS18S20_html_ad35aa149f13c9f6a862d1d906d05aada"><div class="ttname"><a href="classDS18S20.html#ad35aa149f13c9f6a862d1d906d05aada">DS18S20::UnRegisterCallback</a></div><div class="ttdeci">void UnRegisterCallback()</div><div class="ttdoc">Unregister the callback function to avoid activity after measurement is complete. ...</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_bdf1102e2e4e80305e535780e0e3f4e0.html">Sming</a></li><li class="navelem"><a class="el" href="dir_743236b78eb9e54dc856ae8cea94d72d.html">Libraries</a></li><li class="navelem"><a class="el" href="dir_a6de849befc2e4019e3d5ca8b4832802.html">DS18S20</a></li><li class="navelem"><b>ds18s20.h</b></li>
+    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_7a2ee98cb5f9a0c1f2bf7e4b2525fb29.html">Libraries</a></li><li class="navelem"><a class="el" href="dir_d9bb13a772b734a628d27b079b85fb06.html">DS18S20</a></li><li class="navelem"><b>ds18s20.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

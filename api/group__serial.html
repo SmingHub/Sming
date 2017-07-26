@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: Hardware serial</title>
+<title>Sming Framework API: AtCommand serial</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -104,15 +104,22 @@ $(document).ready(function(){initNavTree('group__serial.html','');});
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
-<div class="title">Hardware serial</div>  </div>
+<div class="title">AtCommand serial</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Hardware serial UARTs.  
+<p>Asynchronous AT command client.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structAtCommand.html">AtCommand</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimpleQueue.html">SimpleQueue&lt; T, rawSize &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAtClient.html">AtClient</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class that facilitates the communication with an AT device.  <a href="classAtClient.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHWSerialMemberData.html">HWSerialMemberData</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hardware serial member data.  <a href="structHWSerialMemberData.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -122,6 +129,12 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:gacd135b7419d4540e0339529f50176381"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gacd135b7419d4540e0339529f50176381"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>AT_REPLY_OK</b>&#160;&#160;&#160;&quot;OK&quot;</td></tr>
+<tr class="separator:gacd135b7419d4540e0339529f50176381"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafc510d4b202d3b6ac8cf0a6267f69aa0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafc510d4b202d3b6ac8cf0a6267f69aa0"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>AT_TIMEOUT</b>&#160;&#160;&#160;2000</td></tr>
+<tr class="separator:gafc510d4b202d3b6ac8cf0a6267f69aa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8e6f5f702e060af6b6f62b89620786ea"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serial.html#ga8e6f5f702e060af6b6f62b89620786ea">UART_ID_0</a>&#160;&#160;&#160;0</td></tr>
 <tr class="memdesc:ga8e6f5f702e060af6b6f62b89620786ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">ID of UART 0.  <a href="#ga8e6f5f702e060af6b6f62b89620786ea">More...</a><br/></td></tr>
 <tr class="separator:ga8e6f5f702e060af6b6f62b89620786ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,6 +156,14 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:gae0aaf569488459bb797c299d0900a1e5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae0aaf569488459bb797c299d0900a1e5"></a>
+typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; bool(<a class="el" href="classAtClient.html">AtClient</a> <br class="typebreak"/>
+&amp;atClient, <a class="el" href="classStream.html">Stream</a> &amp;source)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>AtReceiveCallback</b></td></tr>
+<tr class="separator:gae0aaf569488459bb797c299d0900a1e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8d40142842310406b462014a0115653e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8d40142842310406b462014a0115653e"></a>
+typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; bool(<a class="el" href="classAtClient.html">AtClient</a> <br class="typebreak"/>
+&amp;atClient, <a class="el" href="classString.html">String</a> &amp;reply)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>AtCompleteCallback</b></td></tr>
+<tr class="separator:ga8d40142842310406b462014a0115653e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6893ae94b30659b565a1c1db2459f590"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void(<a class="el" href="classStream.html">Stream</a> <br class="typebreak"/>
 &amp;source, char arrivedChar, <br class="typebreak"/>
 uint16_t availableCharsCount)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serial.html#ga6893ae94b30659b565a1c1db2459f590">StreamDataReceivedDelegate</a></td></tr>
@@ -151,6 +172,15 @@ uint16_t availableCharsCount)&gt;&#160;</td><td class="memItemRight" valign="bot
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
+<tr class="memitem:gaed8aec6b35c0e5654ad9332b52d047ac"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>AtState</b> { <br/>
+&#160;&#160;<b>eAtOK</b> = 0, 
+<br/>
+&#160;&#160;<b>eAtRunning</b>, 
+<br/>
+&#160;&#160;<b>eAtError</b>
+<br/>
+ }</td></tr>
+<tr class="separator:gaed8aec6b35c0e5654ad9332b52d047ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8dbf429fe2fa7edcf68440a8b83f64e1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>SerialConfig</b> { <br/>
 &#160;&#160;<b>SERIAL_5N1</b> = UART_5N1, 
 <br/>
@@ -219,7 +249,8 @@ Variables</h2></td></tr>
 <tr class="separator:ga7b8c4a195c58f9eb8750e94955c5aa4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Hardware serial UARTs. </p>
+<p>Asynchronous AT command client. </p>
+<p>Hardware serial UARTs.</p>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="gae453609d057b191ba45e6f85da178a1e"></a>
 <div class="memitem">

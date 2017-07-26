@@ -1,6 +1,5 @@
 var group__system =
 [
-    [ "applyFirmwareUpdate", "group__system.html#ga7dcef7d03311a356b501b6864a0b39ff", null ],
     [ "deepSleep", "group__system.html#ga15eb21125083b655bb83f7dbd47f0987", null ],
     [ "getCpuFrequency", "group__system.html#ga4ee160d3a5da1913480bfee8c42df41a", null ],
     [ "initialize", "group__system.html#ga6f76530665629e2a2d0246fb63af9696", null ],

@@ -2,13 +2,13 @@ var searchData=
 [
   ['i2cdev',['I2Cdev',['../classI2Cdev.html',1,'']]],
   ['i2cio',['I2CIO',['../classI2CIO.html',1,'I2CIO'],['../classI2CIO.html#a32eb7832075ad6011d67874405a0d0a6',1,'I2CIO::I2CIO()']]],
-  ['i2cmasterbase',['I2cMasterBase',['../classI2cMasterBase.html',1,'']]],
-  ['id',['id',['../classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece',1,'ChannelPWM']]],
+  ['id',['id',['../classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0',1,'IDataSourceStream::id()'],['../classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf',1,'FileStream::id()'],['../classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece',1,'ChannelPWM::id()']]],
   ['idatasourcestream',['IDataSourceStream',['../classIDataSourceStream.html',1,'']]],
   ['idelegatecaller',['IDelegateCaller',['../classIDelegateCaller.html',1,'']]],
   ['idelegatecaller_3c_20returntype_2c_20paramslist_2e_2e_2e_3e',['IDelegateCaller&lt; ReturnType, ParamsList...&gt;',['../classIDelegateCaller.html',1,'']]],
   ['incomplete',['incomplete',['../group__wsframe.html#ggadb296761d95f8b6fc4af7dc5f2c9fe01a5ed4e9858ad8d239145ef285b6210a00',1,'WebsocketFrame.h']]],
   ['increase',['increase',['../classIDelegateCaller.html#a3af9e79f473f57e8202c4973d5f37366',1,'IDelegateCaller']]],
+  ['init',['Init',['../classDS18S20.html#a7d593216797a90aa03081c12a32032dd',1,'DS18S20']]],
   ['initcommand',['initCommand',['../classDebugClass.html#a4b92612c788c442bf6f33439c7a8150a',1,'DebugClass']]],
   ['initialize',['initialize',['../classDriverPWM.html#a4c2173c8d360f3581ebc81f6a3a0bdb1',1,'DriverPWM::initialize()'],['../classChannelPWM.html#a9db74b3292965d910aaeb2b0ecf59d61',1,'ChannelPWM::initialize()'],['../group__system.html#ga6f76530665629e2a2d0246fb63af9696',1,'SystemClass::initialize()']]],
   ['initializems',['initializeMs',['../classHardware__Timer.html#a34a5f9c9e0b760e1db6bb4e17b395cbd',1,'Hardware_Timer::initializeMs()'],['../group__timer.html#gaa116e26295abe7ba0f713bb680a76a59',1,'Timer::initializeMs(uint32_t milliseconds, InterruptCallback callback=NULL)'],['../group__timer.html#gacff85d16f46217ace62486a1325a1515',1,'Timer::initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction=NULL)']]],
@@ -17,6 +17,7 @@ var searchData=
   ['interruptmode',['interruptMode',['../group__interrupts.html#ga18c0c2d6008ab2035dc3364aa04fddc1',1,'interruptMode(uint8_t pin, uint8_t mode):&#160;Interrupts.h'],['../group__interrupts.html#gafd21c7f04d01f8289c336d3b28702852',1,'interruptMode(uint8_t pin, GPIO_INT_TYPE type):&#160;Interrupts.h']]],
   ['interrupts',['interrupts',['../group__interrupts.html#gab3a4471e1b3085323ec2067aaaccb52c',1,'interrupts():&#160;Interrupts.h'],['../group__interrupts.html',1,'(Global Namespace)']]],
   ['invoke',['invoke',['../classIDelegateCaller.html#aeff22075798c3f85fed2d72b62964178',1,'IDelegateCaller::invoke()'],['../classMethodCaller_3_01ReturnType_07ClassType_1_1_5_08_07ParamsList_8_8_8_08_4.html#afb12bfdaa1c645537c1d09a6c67e1658',1,'MethodCaller&lt; ReturnType(ClassType::*)(ParamsList...)&gt;::invoke()'],['../classFunctionCaller.html#a129be846b2a8a64fb7816a0f2cf8eb94',1,'FunctionCaller::invoke()']]],
+  ['ioutputstream',['IOutputStream',['../classIOutputStream.html',1,'']]],
   ['ipaddress',['IPAddress',['../classIPAddress.html',1,'']]],
   ['irparams_5ft',['irparams_t',['../structirparams__t.html',1,'']]],
   ['irrecv',['IRrecv',['../classIRrecv.html',1,'']]],
@@ -36,5 +37,6 @@ var searchData=
   ['isstarted',['isStarted',['../classHardware__Timer.html#a1ac800464fed8fa5db56b0dc7e9a8df5',1,'Hardware_Timer::isStarted()'],['../group__timer.html#ga2c03be883cf950d14e058b4205f1526e',1,'Timer::isStarted()']]],
   ['istxenabled',['isTxEnabled',['../classHardwareSerial.html#a82d71ffebdc2127c1ff44cd00d803827',1,'HardwareSerial']]],
   ['isvalid',['isValid',['../classRF24.html#a35e5f1533b7753806c42b76e782d917e',1,'RF24']]],
+  ['isvalidtemperature',['IsValidTemperature',['../classDS18S20.html#a39fc95ecd1ade74e405b41770f8181c9',1,'DS18S20']]],
   ['isystemreadyhandler',['ISystemReadyHandler',['../classISystemReadyHandler.html',1,'']]]
 ];

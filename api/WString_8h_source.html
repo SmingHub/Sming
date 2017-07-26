@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: /tmp/Sming/Sming/Wiring/WString.h Source File</title>
+<title>Sming Framework API: WString.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -318,85 +318,89 @@ $(document).ready(function(){initNavTree('WString_8h_source.html','');});
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="keyword">    </span>{</div>
 <div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;      getBytes((<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *)buf, bufsize, index);</div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    }</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> * c_str()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> buffer; }</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  </div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="comment">// search</span></div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="keywordtype">int</span> IRAM_ATTR indexOf(<span class="keywordtype">char</span> ch) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keywordtype">int</span> indexOf(<span class="keywordtype">char</span> ch, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> fromIndex) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    <span class="keywordtype">int</span> IRAM_ATTR indexOf(<span class="keyword">const</span> String &amp;str) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <span class="keywordtype">int</span> indexOf(<span class="keyword">const</span> String &amp;str, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> fromIndex) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    <span class="keywordtype">int</span> lastIndexOf(<span class="keywordtype">char</span> ch) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <span class="keywordtype">int</span> lastIndexOf(<span class="keywordtype">char</span> ch, <span class="keywordtype">int</span> fromIndex) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    <span class="keywordtype">int</span> lastIndexOf(<span class="keyword">const</span> String &amp;str) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    <span class="keywordtype">int</span> lastIndexOf(<span class="keyword">const</span> String &amp;str, <span class="keywordtype">int</span> fromIndex) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    String substring(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> beginIndex)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> substring(beginIndex, len); };</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    String substring(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> beginIndex, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> endIndex) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="comment">// modification</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <span class="keywordtype">void</span> replace(<span class="keywordtype">char</span> find, <span class="keywordtype">char</span> replace);</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keywordtype">void</span> replace(<span class="keyword">const</span> String&amp; find, <span class="keyword">const</span> String&amp; replace);</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    <span class="keywordtype">void</span> <span class="keyword">remove</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index);</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    <span class="keywordtype">void</span> <span class="keyword">remove</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> count);</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    <span class="keywordtype">void</span> toLowerCase(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    <span class="keywordtype">void</span> toUpperCase(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    <span class="keywordtype">void</span> trim(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="comment">// parsing/conversion</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keywordtype">long</span> toInt(<span class="keywordtype">void</span>) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordtype">float</span> toFloat(<span class="keywordtype">void</span>) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  </div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">int</span> splitString(String &amp;what, <span class="keywordtype">int</span> delim, <a class="code" href="classVector.html">Vector&lt;long&gt;</a> &amp;splits);</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">int</span> splitString(String &amp;what, <span class="keywordtype">int</span> delim, <a class="code" href="classVector.html">Vector&lt;int&gt;</a> &amp;splits);</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">int</span> splitString(String &amp;what, <span class="keywordtype">int</span> delim, <a class="code" href="classVector.html">Vector&lt;String&gt;</a> &amp;splits);</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <span class="comment">//void printTo(Print &amp;p) const;</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="keywordtype">char</span> *buffer;           <span class="comment">// the actual char array</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    uint16_t capacity;  <span class="comment">// the array length minus one (for the &#39;\0&#39;)</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    uint16_t len;       <span class="comment">// the String length (not counting the &#39;\0&#39;)</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="comment">//unsigned char flags;    // unused, for future features</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keywordtype">void</span> IRAM_ATTR init(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="keywordtype">void</span> IRAM_ATTR invalidate(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> IRAM_ATTR changeBuffer(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxStrLen);</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> IRAM_ATTR concat(<span class="keyword">const</span> <span class="keywordtype">char</span> *cstr, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> length);</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="comment">// copy and move</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    String &amp; copy(<span class="keyword">const</span> <span class="keywordtype">char</span> *cstr, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> length);</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="preprocessor">#ifdef __GXX_EXPERIMENTAL_CXX0X__</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="preprocessor"></span>    <span class="keywordtype">void</span> move(String &amp;rhs);</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="preprocessor"></span>};</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;</div>
-<div class="line"><a name="l00270"></a><span class="lineno"><a class="line" href="classStringSumHelper.html">  270</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStringSumHelper.html">StringSumHelper</a> : <span class="keyword">public</span> <a class="code" href="classString.html">String</a></div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;{</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a> &amp;s) : <a class="code" href="classString.html">String</a>(s) {}</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *p) : <a class="code" href="classString.html">String</a>(p) {}</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">char</span> c) : <a class="code" href="classString.html">String</a>(c) {}</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">int</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">long</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">float</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">double</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;};</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="preprocessor">#endif  // __cplusplus</span></div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;<span class="preprocessor"></span><span class="comment">// WSTRING_H</span></div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span>* c_str()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> buffer; }</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    <span class="keywordtype">char</span>* begin() { <span class="keywordflow">return</span> buffer; }</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="keywordtype">char</span>* end() { <span class="keywordflow">return</span> buffer + length(); }</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span>* begin()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> c_str(); }</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span>* end()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> c_str() + length(); }</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  </div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <span class="comment">// search</span></div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    <span class="keywordtype">int</span> IRAM_ATTR indexOf(<span class="keywordtype">char</span> ch) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <span class="keywordtype">int</span> indexOf(<span class="keywordtype">char</span> ch, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> fromIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    <span class="keywordtype">int</span> IRAM_ATTR indexOf(<span class="keyword">const</span> String &amp;str) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    <span class="keywordtype">int</span> indexOf(<span class="keyword">const</span> String &amp;str, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> fromIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="keywordtype">int</span> lastIndexOf(<span class="keywordtype">char</span> ch) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="keywordtype">int</span> lastIndexOf(<span class="keywordtype">char</span> ch, <span class="keywordtype">int</span> fromIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keywordtype">int</span> lastIndexOf(<span class="keyword">const</span> String &amp;str) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="keywordtype">int</span> lastIndexOf(<span class="keyword">const</span> String &amp;str, <span class="keywordtype">int</span> fromIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    String substring(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> beginIndex)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> substring(beginIndex, len); };</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    String substring(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> beginIndex, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> endIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    <span class="comment">// modification</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    <span class="keywordtype">void</span> replace(<span class="keywordtype">char</span> find, <span class="keywordtype">char</span> replace);</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    <span class="keywordtype">void</span> replace(<span class="keyword">const</span> String&amp; find, <span class="keyword">const</span> String&amp; replace);</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    <span class="keywordtype">void</span> <span class="keyword">remove</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index);</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    <span class="keywordtype">void</span> <span class="keyword">remove</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> count);</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="keywordtype">void</span> toLowerCase(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keywordtype">void</span> toUpperCase(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordtype">void</span> trim(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="comment">// parsing/conversion</span></div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <span class="keywordtype">long</span> toInt(<span class="keywordtype">void</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    <span class="keywordtype">float</span> toFloat(<span class="keywordtype">void</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  </div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">int</span> splitString(String &amp;what, <span class="keywordtype">int</span> delim, <a class="code" href="classVector.html">Vector&lt;long&gt;</a> &amp;splits);</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">int</span> splitString(String &amp;what, <span class="keywordtype">int</span> delim, <a class="code" href="classVector.html">Vector&lt;int&gt;</a> &amp;splits);</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    <span class="keyword">friend</span> <span class="keywordtype">int</span> splitString(String &amp;what, <span class="keywordtype">int</span> delim, <a class="code" href="classVector.html">Vector&lt;String&gt;</a> &amp;splits);</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="comment">//void printTo(Print &amp;p) const;</span></div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;  <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    <span class="keywordtype">char</span> *buffer;           <span class="comment">// the actual char array</span></div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    uint16_t capacity;  <span class="comment">// the array length minus one (for the &#39;\0&#39;)</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    uint16_t len;       <span class="comment">// the String length (not counting the &#39;\0&#39;)</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="comment">//unsigned char flags;    // unused, for future features</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="keywordtype">void</span> IRAM_ATTR init(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="keywordtype">void</span> IRAM_ATTR invalidate(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> IRAM_ATTR changeBuffer(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxStrLen);</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> IRAM_ATTR concat(<span class="keyword">const</span> <span class="keywordtype">char</span> *cstr, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> length);</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="comment">// copy and move</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    String &amp; copy(<span class="keyword">const</span> <span class="keywordtype">char</span> *cstr, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> length);</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="preprocessor">#ifdef __GXX_EXPERIMENTAL_CXX0X__</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="preprocessor"></span>    <span class="keywordtype">void</span> move(String &amp;rhs);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="preprocessor"></span>};</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
+<div class="line"><a name="l00274"></a><span class="lineno"><a class="line" href="classStringSumHelper.html">  274</a></span>&#160;<span class="keyword">class </span><a class="code" href="classStringSumHelper.html">StringSumHelper</a> : <span class="keyword">public</span> <a class="code" href="classString.html">String</a></div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;{</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a> &amp;s) : <a class="code" href="classString.html">String</a>(s) {}</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *p) : <a class="code" href="classString.html">String</a>(p) {}</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">char</span> c) : <a class="code" href="classString.html">String</a>(c) {}</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">int</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">long</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">float</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    <a class="code" href="classStringSumHelper.html">StringSumHelper</a>(<span class="keywordtype">double</span> num) : <a class="code" href="classString.html">String</a>(num) {}</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;};</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="preprocessor">#endif  // __cplusplus</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="preprocessor"></span><span class="comment">// WSTRING_H</span></div>
 <div class="ttc" id="classVector_html"><div class="ttname"><a href="classVector.html">Vector</a></div><div class="ttdef"><b>Definition:</b> WVector.h:26</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
-<div class="ttc" id="classStringSumHelper_html"><div class="ttname"><a href="classStringSumHelper.html">StringSumHelper</a></div><div class="ttdef"><b>Definition:</b> WString.h:270</div></div>
+<div class="ttc" id="classStringSumHelper_html"><div class="ttname"><a href="classStringSumHelper.html">StringSumHelper</a></div><div class="ttdef"><b>Definition:</b> WString.h:274</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_bdf1102e2e4e80305e535780e0e3f4e0.html">Sming</a></li><li class="navelem"><a class="el" href="dir_e9acc44fc9c90960f73620c25f7b4fcc.html">Wiring</a></li><li class="navelem"><b>WString.h</b></li>
+    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_86c84ead84c23727f1659b39ef6ad926.html">Wiring</a></li><li class="navelem"><b>WString.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

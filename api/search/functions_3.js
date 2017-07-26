@@ -16,5 +16,6 @@ var searchData=
   ['disablecrc',['disableCRC',['../classRF24.html#a5eacd9ecfbc19864801d714c292cf8be',1,'RF24']]],
   ['disconnect',['disconnect',['../group__wsclient.html#ga11a66333f7a1052421efffe191de3bc5',1,'WebsocketClient::disconnect()'],['../group__wifi__sta.html#gae27a3cb89d75093863b498b3f7272d35',1,'StationClass::disconnect()']]],
   ['display',['display',['../classLCD.html#a5b07cf05e8e5e7c53654f5ca0cf58b89',1,'LCD']]],
-  ['driverpwm',['DriverPWM',['../classDriverPWM.html#acffe6831e34675b688eca8b016c815cd',1,'DriverPWM']]]
+  ['driverpwm',['DriverPWM',['../classDriverPWM.html#acffe6831e34675b688eca8b016c815cd',1,'DriverPWM']]],
+  ['ds18s20',['DS18S20',['../classDS18S20.html#a60b2df0f1da19b0cbd2eec00d62c0ee6',1,'DS18S20']]]
 ];

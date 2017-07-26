@@ -9,5 +9,9 @@ var classFIFO =
     [ "operator[]", "classFIFO.html#af640bb36ab136ea226538e333e97c878", null ],
     [ "operator[]", "classFIFO.html#a8704685595a6d464c66ccce3a3b94a6b", null ],
     [ "peek", "classFIFO.html#aea09087d6916d1da1ad26c572deeb250", null ],
+    [ "nextIn", "classFIFO.html#a2499214d4a731365c61c4bc4d3e01842", null ],
+    [ "nextOut", "classFIFO.html#ab0e88f28e562b7ac341c0a72aec2f5fb", null ],
+    [ "numberOfElements", "classFIFO.html#a73a5208874fb7d3866bf40b91a71904b", null ],
+    [ "raw", "classFIFO.html#a338645075906db645ced68c71494f43b", null ],
     [ "size", "classFIFO.html#a538df52632ac71e5007802fe5a7435ae", null ]
 ];

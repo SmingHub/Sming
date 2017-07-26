@@ -107,10 +107,10 @@ $(document).ready(function(){initNavTree('classHttpServerConnection.html','');})
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
-<a href="#friends">Friends</a> &#124;
 <a href="classHttpServerConnection-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">HttpServerConnection Class Reference</div>  </div>
@@ -122,33 +122,64 @@ Inheritance diagram for HttpServerConnection:</div>
  <div class="center">
   <img src="classHttpServerConnection.png" usemap="#HttpServerConnection_map" alt=""/>
   <map id="HttpServerConnection_map" name="HttpServerConnection_map">
+<area href="classTcpClient.html" alt="TcpClient" shape="rect" coords="0,56,137,80"/>
 <area href="classTcpConnection.html" alt="TcpConnection" shape="rect" coords="0,0,137,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a932d7972bfb9cc55785bca493a64fc81"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a932d7972bfb9cc55785bca493a64fc81"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>HttpServerConnection</b> (<a class="el" href="classHttpServer.html">HttpServer</a> *parentServer, tcp_pcb *clientTcp)</td></tr>
-<tr class="separator:a932d7972bfb9cc55785bca493a64fc81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b7f95ac4ecba048873586eae49a5bcc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b7f95ac4ecba048873586eae49a5bcc"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>close</b> ()</td></tr>
-<tr class="separator:a4b7f95ac4ecba048873586eae49a5bcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3be82c5ce9ee7d57fec5ee7e08bf3627"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3be82c5ce9ee7d57fec5ee7e08bf3627"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setDisconnectionHandler</b> (<a class="el" href="classDelegate.html">HttpServerConnectionDelegate</a> handler)</td></tr>
-<tr class="separator:a3be82c5ce9ee7d57fec5ee7e08bf3627"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ed70bd4582c06b0a8ddd28b28c77b53"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ed70bd4582c06b0a8ddd28b28c77b53"></a>
+<tr class="memitem:a6a57382d3d5294fa3088fb17fae59da5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a57382d3d5294fa3088fb17fae59da5"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>HttpServerConnection</b> (tcp_pcb *clientTcp)</td></tr>
+<tr class="separator:a6a57382d3d5294fa3088fb17fae59da5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56b324c3c5ecc1f13f6d8d4acda806b0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56b324c3c5ecc1f13f6d8d4acda806b0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setResourceTree</b> (<a class="el" href="classHashMap.html">ResourceTree</a> *resourceTree)</td></tr>
+<tr class="separator:a56b324c3c5ecc1f13f6d8d4acda806b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54ea06e91a753aa899ca3251aa1273ce"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a54ea06e91a753aa899ca3251aa1273ce"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setBodyParsers</b> (<a class="el" href="classHashMap.html">BodyParsers</a> *bodyParsers)</td></tr>
+<tr class="separator:a54ea06e91a753aa899ca3251aa1273ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf60c5bf8d6d29d72facc3df64c4843e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf60c5bf8d6d29d72facc3df64c4843e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> ()</td></tr>
+<tr class="separator:abf60c5bf8d6d29d72facc3df64c4843e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b3b36c4859145c5686126d4051e33b7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6b3b36c4859145c5686126d4051e33b7"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a0ed70bd4582c06b0a8ddd28b28c77b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a125e3825f9dc6a76200f4963b2602439"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a125e3825f9dc6a76200f4963b2602439"></a>
+<tr class="separator:a6b3b36c4859145c5686126d4051e33b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d0685ac523f6e6ac2d5a6993172feb3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d0685ac523f6e6ac2d5a6993172feb3"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a125e3825f9dc6a76200f4963b2602439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a1d0685ac523f6e6ac2d5a6993172feb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76541f4efb80f01242580fa729a0fb86"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a76541f4efb80f01242580fa729a0fb86"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="separator:a76541f4efb80f01242580fa729a0fb86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c91997d5656394ae74d5dbf105d6006"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c91997d5656394ae74d5dbf105d6006"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="separator:a9c91997d5656394ae74d5dbf105d6006"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39dfc6c0d46863836e15b56d8077ef0c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39dfc6c0d46863836e15b56d8077ef0c"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>close</b> ()</td></tr>
+<tr class="separator:a39dfc6c0d46863836e15b56d8077ef0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9a6e4aeee94b7712bf2add4c286a3a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTcpClient.html#ab9a6e4aeee94b7712bf2add4c286a3a0">setReceiveDelegate</a> (<a class="el" href="classDelegate.html">TcpClientDataDelegate</a> receiveCb=NULL)</td></tr>
+<tr class="memdesc:ab9a6e4aeee94b7712bf2add4c286a3a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set or clear the callback for received data.  <a href="#ab9a6e4aeee94b7712bf2add4c286a3a0">More...</a><br/></td></tr>
+<tr class="separator:ab9a6e4aeee94b7712bf2add4c286a3a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf18cea760e8efbf3a204b4e6d4055c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTcpClient.html#abf18cea760e8efbf3a204b4e6d4055c3">setCompleteDelegate</a> (<a class="el" href="classDelegate.html">TcpClientCompleteDelegate</a> completeCb=NULL)</td></tr>
+<tr class="memdesc:abf18cea760e8efbf3a204b4e6d4055c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set or clear the callback for connection close.  <a href="#abf18cea760e8efbf3a204b4e6d4055c3">More...</a><br/></td></tr>
+<tr class="separator:abf18cea760e8efbf3a204b4e6d4055c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7caad1d87a32cc1b1092396c14dab6aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7caad1d87a32cc1b1092396c14dab6aa"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> (const char *data, uint16_t len, bool forceCloseAfterSent=false)</td></tr>
+<tr class="separator:a7caad1d87a32cc1b1092396c14dab6aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dd63ab71d144b13b50a1f3b794df6b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8dd63ab71d144b13b50a1f3b794df6b3"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendString</b> (const <a class="el" href="classString.html">String</a> &amp;data, bool forceCloseAfterSent=false)</td></tr>
+<tr class="separator:a8dd63ab71d144b13b50a1f3b794df6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af97510bea711663fbe4803829561c968"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af97510bea711663fbe4803829561c968"></a>
+__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>isProcessing</b> ()</td></tr>
+<tr class="separator:af97510bea711663fbe4803829561c968"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab43f1c197e419d8797afeb3dec22f3c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab43f1c197e419d8797afeb3dec22f3c1"></a>
+__forceinline TcpClientState&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectionState</b> ()</td></tr>
+<tr class="separator:ab43f1c197e419d8797afeb3dec22f3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d6b422ffcb3718c74477d9140288edb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d6b422ffcb3718c74477d9140288edb"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const char *data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
 <tr class="separator:a3d6b422ffcb3718c74477d9140288edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5165ea409d9d30a227f2aa76a0669948"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5165ea409d9d30a227f2aa76a0669948"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const <a class="el" href="classString.html">String</a> data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
-<tr class="separator:a5165ea409d9d30a227f2aa76a0669948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8dc1b8d48884068d157555908a13604"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8dc1b8d48884068d157555908a13604"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const <a class="el" href="classString.html">String</a> &amp;data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
+<tr class="separator:aa8dc1b8d48884068d157555908a13604"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17fbdcd21e00e24eae8d42096ceeb5db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17fbdcd21e00e24eae8d42096ceeb5db"></a>
 virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (const char *data, int len, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
 <tr class="separator:a17fbdcd21e00e24eae8d42096ceeb5db"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,6 +202,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeOut</b> (uint1
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>getRemotePort</b> ()</td></tr>
 <tr class="separator:ad6fedbbb90a1147bde5b143fd8fdde6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a5aa024177ca189a39dd2351782ad5266"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5aa024177ca189a39dd2351782ad5266"></a>
+void *&#160;</td><td class="memItemRight" valign="bottom"><b>userData</b> = NULL</td></tr>
+<tr class="separator:a5aa024177ca189a39dd2351782ad5266"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a59a1bce1423b44f29e3f26f16d7d5680"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a59a1bce1423b44f29e3f26f16d7d5680"></a>
@@ -179,24 +216,30 @@ virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onReceive</b
 <tr class="memitem:a4b1dd0807b3a4a0bb4a4fffb1cc8359a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b1dd0807b3a4a0bb4a4fffb1cc8359a"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onReadyToSendData</b> (TcpConnectionEvent sourceEvent)</td></tr>
 <tr class="separator:a4b1dd0807b3a4a0bb4a4fffb1cc8359a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8386976302a3c9ff72325dbe0d216f85"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8386976302a3c9ff72325dbe0d216f85"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>beginSendData</b> ()</td></tr>
-<tr class="separator:a8386976302a3c9ff72325dbe0d216f85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa79c9b8bd2e2e4583d1a491d7a2f4bb6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa79c9b8bd2e2e4583d1a491d7a2f4bb6"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>sendError</b> (const char *message=NULL)</td></tr>
-<tr class="separator:aa79c9b8bd2e2e4583d1a491d7a2f4bb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51fcf86a833892741cd6dd23cd884bf7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a51fcf86a833892741cd6dd23cd884bf7"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>sendError</b> (const char *message=NULL, enum http_status code=HTTP_STATUS_BAD_REQUEST)</td></tr>
+<tr class="separator:a51fcf86a833892741cd6dd23cd884bf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa730424c25fe43e804e47d1c36ba0ab4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa730424c25fe43e804e47d1c36ba0ab4"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onError</b> (err_t err)</td></tr>
 <tr class="separator:aa730424c25fe43e804e47d1c36ba0ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebc8b6237e24ff9e68ecbc84744ea950"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aebc8b6237e24ff9e68ecbc84744ea950"></a>
+const char *&#160;</td><td class="memItemRight" valign="bottom"><b>getStatus</b> (enum http_status s)</td></tr>
+<tr class="separator:aebc8b6237e24ff9e68ecbc84744ea950"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae74805076dbab04337d9380f747f3a79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae74805076dbab04337d9380f747f3a79"></a>
+virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onConnected</b> (err_t err)</td></tr>
+<tr class="separator:ae74805076dbab04337d9380f747f3a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77d3f60c92cf69adac748389b8bfe1cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a77d3f60c92cf69adac748389b8bfe1cb"></a>
+virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onSent</b> (uint16_t len)</td></tr>
+<tr class="separator:a77d3f60c92cf69adac748389b8bfe1cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15313b195b32d51e2b4db5701d0ecbab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a15313b195b32d51e2b4db5701d0ecbab"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onFinished</b> (TcpClientState finishState)</td></tr>
+<tr class="separator:a15313b195b32d51e2b4db5701d0ecbab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a162be33aa3e851eb92ccd361f64c6706"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a162be33aa3e851eb92ccd361f64c6706"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>pushAsyncPart</b> ()</td></tr>
+<tr class="separator:a162be33aa3e851eb92ccd361f64c6706"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefb1448919e50cac01a467a11268a2d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aefb1448919e50cac01a467a11268a2d2"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>internalTcpConnect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port)</td></tr>
 <tr class="separator:aefb1448919e50cac01a467a11268a2d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af934f528ccdc5baa5b44ba8d2ba4dedc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af934f528ccdc5baa5b44ba8d2ba4dedc"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onConnected</b> (err_t err)</td></tr>
-<tr class="separator:af934f528ccdc5baa5b44ba8d2ba4dedc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a085742db437e442ce8a6bdaaedcdf61d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a085742db437e442ce8a6bdaaedcdf61d"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onSent</b> (uint16_t len)</td></tr>
-<tr class="separator:a085742db437e442ce8a6bdaaedcdf61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a469f2846ad04ed71f5cb211bdc31d864"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a469f2846ad04ed71f5cb211bdc31d864"></a>
 virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onPoll</b> ()</td></tr>
 <tr class="separator:a469f2846ad04ed71f5cb211bdc31d864"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -245,19 +288,75 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>canSend</b></td></tr>
 <tr class="memitem:a56f9a3c4c74d221c29e07107384db1c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56f9a3c4c74d221c29e07107384db1c1"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>autoSelfDestruct</b></td></tr>
 <tr class="separator:a56f9a3c4c74d221c29e07107384db1c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d65a3756759420a594066466d7090cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4d65a3756759420a594066466d7090cd"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</td></tr>
-<tr class="separator:a4d65a3756759420a594066466d7090cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a48233feea8fcb70b62dd61a3bb860c9d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a48233feea8fcb70b62dd61a3bb860c9d"></a>
-class&#160;</td><td class="memItemRight" valign="bottom"><b>HttpResponse</b></td></tr>
-<tr class="separator:a48233feea8fcb70b62dd61a3bb860c9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3158ef04d4a1177eb6a5e64d87a6801c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3158ef04d4a1177eb6a5e64d87a6801c"></a>
-class&#160;</td><td class="memItemRight" valign="bottom"><b>HttpRequest</b></td></tr>
-<tr class="separator:a3158ef04d4a1177eb6a5e64d87a6801c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f713f30d71b5015ae1ee0cf98607298"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f713f30d71b5015ae1ee0cf98607298"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</td></tr>
+<tr class="separator:a1f713f30d71b5015ae1ee0cf98607298"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="abf18cea760e8efbf3a204b4e6d4055c3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TcpClient::setCompleteDelegate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">TcpClientCompleteDelegate</a>&#160;</td>
+          <td class="paramname"><em>completeCb</em> = <code>NULL</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set or clear the callback for connection close. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">completeCb</td><td>callback delegate or NULL </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ab9a6e4aeee94b7712bf2add4c286a3a0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TcpClient::setReceiveDelegate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">TcpClientDataDelegate</a>&#160;</td>
+          <td class="paramname"><em>receiveCb</em> = <code>NULL</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set or clear the callback for received data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">receiveCb</td><td>callback delegate or NULL </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

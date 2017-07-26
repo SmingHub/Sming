@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['time_20and_20delay',['Time and Delay',['../group__timedelay.html',1,'']]],
-  ['timer_20functions',['Timer functions',['../group__timer.html',1,'']]]
+  ['print_20stream_20functions',['Print stream functions',['../group__print.html',1,'']]],
+  ['pulse_20width_20modulation',['Pulse width modulation',['../group__pwm.html',1,'']]]
 ];

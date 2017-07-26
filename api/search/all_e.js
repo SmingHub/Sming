@@ -12,6 +12,5 @@ var searchData=
   ['operator_20bool',['operator bool',['../classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html#af757bbda83d6ff9bf7e4b869888cb962',1,'Delegate&lt; ReturnType(ParamsList...)&gt;::operator bool()'],['../classHardwareSerial.html#a28e743f97000478452f3027a0a215579',1,'HardwareSerial::operator bool()']]],
   ['operator_20time_5ft',['operator time_t',['../classDateTime.html#a71771ccc110639ab07f7d91a81a62287',1,'DateTime']]],
   ['operator_28_29',['operator()',['../classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html#a8351bff2e68b1a1518fa24c28cb66c2d',1,'Delegate&lt; ReturnType(ParamsList...)&gt;']]],
-  ['operator_3d',['operator=',['../classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html#ab8ff021178b0df1abdf02e4757c45530',1,'Delegate&lt; ReturnType(ParamsList...)&gt;::operator=(const Delegate &amp;that)'],['../classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html#ac908c5ef8d31cd1589bdb3a94f8b5eff',1,'Delegate&lt; ReturnType(ParamsList...)&gt;::operator=(Delegate &amp;&amp;that)']]],
-  ['operator_3d_3d',['operator==',['../classWebSocket.html#aec9fc3598ac8fd8021a6fef6ad0162c7',1,'WebSocket']]]
+  ['operator_3d',['operator=',['../classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html#ab8ff021178b0df1abdf02e4757c45530',1,'Delegate&lt; ReturnType(ParamsList...)&gt;::operator=(const Delegate &amp;that)'],['../classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html#ac908c5ef8d31cd1589bdb3a94f8b5eff',1,'Delegate&lt; ReturnType(ParamsList...)&gt;::operator=(Delegate &amp;&amp;that)']]]
 ];

@@ -144,6 +144,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad18f48ef837ad6418d15086ac326f184"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMemoryDataStream.html#ad18f48ef837ad6418d15086ac326f184">getStreamLength</a> ()</td></tr>
 <tr class="memdesc:ad18f48ef837ad6418d15086ac326f184"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get size of stream.  <a href="#ad18f48ef837ad6418d15086ac326f184">More...</a><br/></td></tr>
 <tr class="separator:ad18f48ef837ad6418d15086ac326f184"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6a95640e736c87614a9a7be05546ddc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMemoryDataStream.html#af6a95640e736c87614a9a7be05546ddc">length</a> ()</td></tr>
+<tr class="memdesc:af6a95640e736c87614a9a7be05546ddc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total length of the stream.  <a href="#af6a95640e736c87614a9a7be05546ddc">More...</a><br/></td></tr>
+<tr class="separator:af6a95640e736c87614a9a7be05546ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abcdae6e51c95b60fd496fb8f3c57995c"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMemoryDataStream.html#abcdae6e51c95b60fd496fb8f3c57995c">write</a> (uint8_t charToWrite)</td></tr>
 <tr class="memdesc:abcdae6e51c95b60fd496fb8f3c57995c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a single char to stream.  <a href="#abcdae6e51c95b60fd496fb8f3c57995c">More...</a><br/></td></tr>
 <tr class="separator:abcdae6e51c95b60fd496fb8f3c57995c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -237,6 +240,9 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>println</b> (unsign
 <tr class="memitem:a67aa459464b181ee200e9173e53b11ff"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a67aa459464b181ee200e9173e53b11ff">printf</a> (const char *fmt,...)</td></tr>
 <tr class="memdesc:a67aa459464b181ee200e9173e53b11ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a formatted c-string to output stream.  <a href="#a67aa459464b181ee200e9173e53b11ff">More...</a><br/></td></tr>
 <tr class="separator:a67aa459464b181ee200e9173e53b11ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe31f244917749cf8b343c0249a312c0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0">id</a> ()</td></tr>
+<tr class="memdesc:abe31f244917749cf8b343c0249a312c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique id of the resource.  <a href="#abe31f244917749cf8b343c0249a312c0">More...</a><br/></td></tr>
+<tr class="separator:abe31f244917749cf8b343c0249a312c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -314,10 +320,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 <p>Get size of stream. </p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">int</td><td>Quantity of chars in stream </td></tr>
+    <tr><td class="paramname">int</td><td>Quantity of chars in stream</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Use getLength instead </dd></dl>
 
 </div>
 </div>
@@ -419,6 +426,39 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 
 </div>
 </div>
+<a class="anchor" id="abe31f244917749cf8b343c0249a312c0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classString.html">String</a> IDataSourceStream::id </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns unique id of the resource. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname"><a class="el" href="classString.html">String</a></td><td>the unique id of the stream. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented in <a class="el" href="classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf">FileStream</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ad8ceecf3ba21b472e7c864474d18f7f3"></a>
 <div class="memitem">
 <div class="memproto">
@@ -449,6 +489,41 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 </dl>
 
 <p>Implements <a class="el" href="classIDataSourceStream.html#a143958f311cc98fbfaaec1d4d5cdfe47">IDataSourceStream</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af6a95640e736c87614a9a7be05546ddc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int MemoryDataStream::length </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the total length of the stream. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">int</td><td>-1 is returned when the size cannot be determined </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="classIDataSourceStream.html#ae13014db9d7b133c58eaf27a8f1d24f5">IDataSourceStream</a>.</p>
+
+<p>Reimplemented in <a class="el" href="classJsonObjectStream.html#a5129ca6b7e91865489aa2e98ba2d314f">JsonObjectStream</a>.</p>
 
 </div>
 </div>

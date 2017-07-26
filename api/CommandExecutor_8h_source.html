@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: /tmp/Sming/Sming/Services/CommandProcessing/CommandExecutor.h Source File</title>
+<title>Sming Framework API: CommandExecutor.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -123,7 +123,7 @@ $(document).ready(function(){initNavTree('CommandExecutor_8h_source.html','');})
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <a class="code" href="classCommandExecutor.html">CommandExecutor</a>(<a class="code" href="classTcpClient.html">TcpClient</a>* cmdClient);</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="classCommandExecutor.html">CommandExecutor</a>(<a class="code" href="classStream.html">Stream</a>* reqStream);</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="classCommandExecutor.html">CommandExecutor</a>(<a class="code" href="classWebSocket.html">WebSocket</a>* reqSocket);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="classCommandExecutor.html">CommandExecutor</a>(<a class="code" href="classWebSocketConnection.html">WebSocketConnection</a>* reqSocket);</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    ~<a class="code" href="classCommandExecutor.html">CommandExecutor</a>();</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordtype">int</span> executorReceive(<span class="keywordtype">char</span> *recvData, <span class="keywordtype">int</span> recvSize);</div>
@@ -142,17 +142,17 @@ $(document).ready(function(){initNavTree('CommandExecutor_8h_source.html','');})
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
-<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:35</div></div>
-<div class="ttc" id="classWebSocket_html"><div class="ttname"><a href="classWebSocket.html">WebSocket</a></div><div class="ttdef"><b>Definition:</b> WebSocket.h:21</div></div>
+<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:41</div></div>
 <div class="ttc" id="classCommandExecutor_html"><div class="ttname"><a href="classCommandExecutor.html">CommandExecutor</a></div><div class="ttdef"><b>Definition:</b> CommandExecutor.h:18</div></div>
 <div class="ttc" id="classCommandOutput_html"><div class="ttname"><a href="classCommandOutput.html">CommandOutput</a></div><div class="ttdef"><b>Definition:</b> CommandOutput.h:17</div></div>
+<div class="ttc" id="classWebSocketConnection_html"><div class="ttname"><a href="classWebSocketConnection.html">WebSocketConnection</a></div><div class="ttdef"><b>Definition:</b> WebSocketConnection.h:33</div></div>
 <div class="ttc" id="classStream_html"><div class="ttname"><a href="classStream.html">Stream</a></div><div class="ttdef"><b>Definition:</b> Stream.h:30</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_bdf1102e2e4e80305e535780e0e3f4e0.html">Sming</a></li><li class="navelem"><a class="el" href="dir_d2b30f96c308555a9c5c69c70af64b2c.html">Services</a></li><li class="navelem"><a class="el" href="dir_e72aaef9ef6f69eabd464d23e50d50bf.html">CommandProcessing</a></li><li class="navelem"><b>CommandExecutor.h</b></li>
+    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_07d1f75d6d9649a658a1ba551a20340e.html">Services</a></li><li class="navelem"><a class="el" href="dir_3d3760c11912666441d76352ae34fe86.html">CommandProcessing</a></li><li class="navelem"><b>CommandExecutor.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

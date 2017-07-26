@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: Websocket Client</title>
+<title>Sming Framework API: WebSocket client</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -103,11 +103,11 @@ $(document).ready(function(){initNavTree('group__wsclient.html','');});
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Websocket Client</div>  </div>
+<div class="title">WebSocket client<div class="ingroups"><a class="el" href="group__tcpclient.html">Clients</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Client to make persistent connection to websocket server.  
+<p>Provides WebSocket client.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -182,9 +182,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient::setW
 <tr class="memitem:gaac4568000fcc6ab38c274a37a707c344"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#gaac4568000fcc6ab38c274a37a707c344">WebsocketClient::sendMessage</a> (char *msg, uint16_t length)</td></tr>
 <tr class="memdesc:gaac4568000fcc6ab38c274a37a707c344"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disconnects websocket client from server.  <a href="#gaac4568000fcc6ab38c274a37a707c344">More...</a><br/></td></tr>
 <tr class="separator:gaac4568000fcc6ab38c274a37a707c344"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad210df06f5f2252ef23b5a05c6f25fc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#gad210df06f5f2252ef23b5a05c6f25fc7">WebsocketClient::sendMessage</a> (<a class="el" href="classString.html">String</a> str)</td></tr>
-<tr class="memdesc:gad210df06f5f2252ef23b5a05c6f25fc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send text message to websocket server.  <a href="#gad210df06f5f2252ef23b5a05c6f25fc7">More...</a><br/></td></tr>
-<tr class="separator:gad210df06f5f2252ef23b5a05c6f25fc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf781c983aa47d4e5fe8a5595d551de56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#gaf781c983aa47d4e5fe8a5595d551de56">WebsocketClient::sendMessage</a> (const <a class="el" href="classString.html">String</a> &amp;str)</td></tr>
+<tr class="memdesc:gaf781c983aa47d4e5fe8a5595d551de56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send text message to websocket server.  <a href="#gaf781c983aa47d4e5fe8a5595d551de56">More...</a><br/></td></tr>
+<tr class="separator:gaf781c983aa47d4e5fe8a5595d551de56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga25c8e48c876c8a1739c0faf47f576749"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga25c8e48c876c8a1739c0faf47f576749">WebsocketClient::sendBinary</a> (uint8_t *msg, uint16_t length)</td></tr>
 <tr class="memdesc:ga25c8e48c876c8a1739c0faf47f576749"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send text message to websocket server.  <a href="#ga25c8e48c876c8a1739c0faf47f576749">More...</a><br/></td></tr>
 <tr class="separator:ga25c8e48c876c8a1739c0faf47f576749"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -208,7 +208,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient::_sen
 <tr class="separator:ga0a14b13879c97bc22b52bd28aaa0a099"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Client to make persistent connection to websocket server. </p>
+<p>Provides WebSocket client. </p>
+<p>Client to make persistent connection to websocket server.</p>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a class="anchor" id="gaedbf9cc35ea92799c6a069b263444bdf"></a>
 <div class="memitem">
@@ -447,14 +448,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient::_sen
 
 </div>
 </div>
-<a class="anchor" id="gad210df06f5f2252ef23b5a05c6f25fc7"></a>
+<a class="anchor" id="gaf781c983aa47d4e5fe8a5595d551de56"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void WebsocketClient::sendMessage </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classString.html">String</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
           <td class="paramname"><em>str</em></td><td>)</td>
           <td></td>
         </tr>

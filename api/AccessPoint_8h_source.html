@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: /tmp/Sming/Sming/SmingCore/Platform/AccessPoint.h Source File</title>
+<title>Sming Framework API: AccessPoint.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -127,7 +127,7 @@ $(document).ready(function(){initNavTree('AccessPoint_8h_source.html','');});
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="group__wifi__ap.html#ga305464a28372cfd2bfea6993b19ceb7f">isEnabled</a>();</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="group__wifi__ap.html#ga68aaa05943f9895d3cd5d4074e6354d4">config</a>(<a class="code" href="classString.html">String</a> ssid, <a class="code" href="classString.html">String</a> password, AUTH_MODE mode, <span class="keywordtype">bool</span> hidden = <span class="keyword">false</span>, <span class="keywordtype">int</span> channel = 7, <span class="keywordtype">int</span> beaconInterval = 200);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="group__wifi__ap.html#gad3f270bb0f97acc545893ddd1251ab51">config</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; ssid, <a class="code" href="classString.html">String</a> password, AUTH_MODE mode, <span class="keywordtype">bool</span> hidden = <span class="keyword">false</span>, <span class="keywordtype">int</span> channel = 7, <span class="keywordtype">int</span> beaconInterval = 200);</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a> <a class="code" href="group__wifi__ap.html#ga86061e944d41587d5b5355c45cc3b95f">getIP</a>();</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
@@ -162,11 +162,11 @@ $(document).ready(function(){initNavTree('AccessPoint_8h_source.html','');});
 <div class="ttc" id="group__wifi__ap_html_ga8cc3d2af5cd03b9aabb6589652493af6"><div class="ttname"><a href="group__wifi__ap.html#ga8cc3d2af5cd03b9aabb6589652493af6">AccessPointClass::enable</a></div><div class="ttdeci">void enable(bool enabled, bool save=false)</div><div class="ttdoc">Enable or disable WiFi AP. </div></div>
 <div class="ttc" id="classAccessPointClass_html"><div class="ttname"><a href="classAccessPointClass.html">AccessPointClass</a></div><div class="ttdef"><b>Definition:</b> AccessPoint.h:26</div></div>
 <div class="ttc" id="group__wifi__ap_html_ga86061e944d41587d5b5355c45cc3b95f"><div class="ttname"><a href="group__wifi__ap.html#ga86061e944d41587d5b5355c45cc3b95f">AccessPointClass::getIP</a></div><div class="ttdeci">IPAddress getIP()</div><div class="ttdoc">Get WiFi AP IP address. </div></div>
+<div class="ttc" id="group__wifi__ap_html_gad3f270bb0f97acc545893ddd1251ab51"><div class="ttname"><a href="group__wifi__ap.html#gad3f270bb0f97acc545893ddd1251ab51">AccessPointClass::config</a></div><div class="ttdeci">bool config(const String &amp;ssid, String password, AUTH_MODE mode, bool hidden=false, int channel=7, int beaconInterval=200)</div><div class="ttdoc">Configure WiFi AP. </div></div>
 <div class="ttc" id="group__wifi__ap_html_gaaedb96e14eb665db7dfcc93b7a379aac"><div class="ttname"><a href="group__wifi__ap.html#gaaedb96e14eb665db7dfcc93b7a379aac">WifiAccessPoint</a></div><div class="ttdeci">AccessPointClass WifiAccessPoint</div><div class="ttdoc">Global instance of WiFi access point object. </div></div>
 <div class="ttc" id="group__wifi__ap_html_ga5fcd3f84c68fcaada0a548055c45b3cb"><div class="ttname"><a href="group__wifi__ap.html#ga5fcd3f84c68fcaada0a548055c45b3cb">AccessPointClass::setIP</a></div><div class="ttdeci">bool setIP(IPAddress address)</div><div class="ttdoc">Set WiFi AP IP addres. </div></div>
 <div class="ttc" id="group__wifi__ap_html_ga3fd2e4dacdf68e6f7a0203865d49dec9"><div class="ttname"><a href="group__wifi__ap.html#ga3fd2e4dacdf68e6f7a0203865d49dec9">AccessPointClass::getSSID</a></div><div class="ttdeci">String getSSID()</div><div class="ttdoc">Get WiFi access point SSID. </div></div>
 <div class="ttc" id="group__wifi__ap_html_ga6d1fa6a66410670adcc397fb210f8fe1"><div class="ttname"><a href="group__wifi__ap.html#ga6d1fa6a66410670adcc397fb210f8fe1">AccessPointClass::getPassword</a></div><div class="ttdeci">String getPassword()</div><div class="ttdoc">Get WiFi access point password. </div></div>
-<div class="ttc" id="group__wifi__ap_html_ga68aaa05943f9895d3cd5d4074e6354d4"><div class="ttname"><a href="group__wifi__ap.html#ga68aaa05943f9895d3cd5d4074e6354d4">AccessPointClass::config</a></div><div class="ttdeci">bool config(String ssid, String password, AUTH_MODE mode, bool hidden=false, int channel=7, int beaconInterval=200)</div><div class="ttdoc">Configure WiFi AP. </div></div>
 <div class="ttc" id="group__wifi__ap_html_ga9a6e9d50aa7c0b2349acf7bf986d237e"><div class="ttname"><a href="group__wifi__ap.html#ga9a6e9d50aa7c0b2349acf7bf986d237e">AccessPointClass::getMAC</a></div><div class="ttdeci">String getMAC()</div><div class="ttdoc">Get WiFi AP MAC address. </div></div>
 <div class="ttc" id="classIPAddress_html"><div class="ttname"><a href="classIPAddress.html">IPAddress</a></div><div class="ttdef"><b>Definition:</b> IPAddress.h:30</div></div>
 <div class="ttc" id="classISystemReadyHandler_html"><div class="ttname"><a href="classISystemReadyHandler.html">ISystemReadyHandler</a></div><div class="ttdef"><b>Definition:</b> System.h:25</div></div>
@@ -176,7 +176,7 @@ $(document).ready(function(){initNavTree('AccessPoint_8h_source.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_bdf1102e2e4e80305e535780e0e3f4e0.html">Sming</a></li><li class="navelem"><a class="el" href="dir_ca592db811da46f51d8d2a72799a377d.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_3729e8b81bf394673d405b0968e54e92.html">Platform</a></li><li class="navelem"><b>AccessPoint.h</b></li>
+    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_0ccf49f26d9ba51414c65cf131e66b5b.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_77be952e5d5f196d91e229ec3b0cac61.html">Platform</a></li><li class="navelem"><b>AccessPoint.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

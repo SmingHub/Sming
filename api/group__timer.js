@@ -15,5 +15,6 @@ var group__timer =
     [ "start", "group__timer.html#gad32c8ca7c0ab22d2ed2337e43a0e925d", null ],
     [ "startOnce", "group__timer.html#ga79112b78bb1930a3350858c15221ac97", null ],
     [ "stop", "group__timer.html#ga6dbdb112577bdd9db5019d3bf81bbc1c", null ],
+    [ "tick", "group__timer.html#ga5d959aed5bb365e698165458440c84c1", null ],
     [ "Timer", "group__timer.html#ga5f16e8da27d2a5a5242dead46de05d97", null ]
 ];

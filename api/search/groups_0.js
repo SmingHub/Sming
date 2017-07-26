@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['command_20handler',['Command Handler',['../group__commandhandler.html',1,'']]]
+  ['atcommand_20serial',['AtCommand serial',['../group__serial.html',1,'']]]
 ];

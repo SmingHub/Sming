@@ -5,6 +5,8 @@ var searchData=
   ['memorydatastream',['MemoryDataStream',['../classMemoryDataStream.html',1,'']]],
   ['methodcaller',['MethodCaller',['../classMethodCaller.html',1,'']]],
   ['methodcaller_3c_20returntype_28classtype_3a_3a_2a_29_28paramslist_2e_2e_2e_29_3e',['MethodCaller&lt; ReturnType(ClassType::*)(ParamsList...)&gt;',['../classMethodCaller_3_01ReturnType_07ClassType_1_1_5_08_07ParamsList_8_8_8_08_4.html',1,'']]],
+  ['mfrc522',['MFRC522',['../classMFRC522.html',1,'']]],
+  ['mifare_5fkey',['MIFARE_Key',['../structMFRC522_1_1MIFARE__Key.html',1,'MFRC522']]],
   ['mirfhardwarespi85driver',['MirfHardwareSpi85Driver',['../classMirfHardwareSpi85Driver.html',1,'']]],
   ['mirfhardwarespidriver',['MirfHardwareSpiDriver',['../classMirfHardwareSpiDriver.html',1,'']]],
   ['mirfspidriver',['MirfSpiDriver',['../classMirfSpiDriver.html',1,'']]],
