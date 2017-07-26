@@ -94,7 +94,7 @@ public:
 	 *
 	 * @return bool  true of success, false or failure
 	 */
- 	HttpRequest* pinCertificate(SSLFingerprints fingerprints);
+ 	HttpRequest* pinCertificate(const SSLFingerprints& fingerprints);
 
  	/**
 	 * @brief Sets client private key, certificate and password from memory
@@ -103,7 +103,7 @@ public:
 	 *
 	 * @return HttpRequest pointer
 	 */
- 	HttpRequest* setSslClientKeyCert(SSLKeyCertPair clientKeyCert);
+ 	HttpRequest* setSslClientKeyCert(const SSLKeyCertPair& clientKeyCert);
 #endif
 
 	HttpRequest* setBody(const String& body);
