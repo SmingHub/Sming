@@ -431,7 +431,7 @@ bool StationClass::wpsConfigStart(WPSConfigDelegate callback) {
 	debugf("WPS start\n");
 	wpsConfigCallback=callback;
 	wifi_station_disconnect();
-   wifi_set_opmode_current(wifi_get_opmode() | STATION_MODE);
+	wifi_set_opmode_current(wifi_get_opmode() | STATION_MODE);
 	debugf("WPS stationmode activated\n");
 	if(!wifi_wps_enable(WPS_TYPE_PBC)) {
 		debugf("StationClass::wpsConfigStart() : wps enable failed\n");
@@ -450,7 +450,7 @@ bool StationClass::wpsConfigStart(WPSConfigDelegate callback) {
 }
 
 bool StationClass::beginWPSConfig() {
-		debugf("StationClass::beginWPSConfig()\n");
+	debugf("StationClass::beginWPSConfig()\n");
 	return(wpsConfigStart());
 }
 
