@@ -185,12 +185,12 @@ uint32_t HttpRequest::getSslOptions() {
  	return sslOptions;
 }
 
-HttpRequest* HttpRequest::pinCertificate(SSLFingerprints fingerprints) {
+HttpRequest* HttpRequest::pinCertificate(const SSLFingerprints& fingerprints) {
 	sslFingerprint = fingerprints;
 	return this;
 }
 
-HttpRequest* HttpRequest::setSslClientKeyCert(SSLKeyCertPair clientKeyCert) {
+HttpRequest* HttpRequest::setSslClientKeyCert(const SSLKeyCertPair& clientKeyCert) {
 	this->sslClientKeyCert = clientKeyCert;
 	return this;
 }
