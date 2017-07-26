@@ -152,7 +152,9 @@ TARGET		= app
 CUSTOM_TARGETS ?=
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= system system/helpers Wiring appinit $(shell find SmingCore -type d) $(filter %/, $(wildcard Services/*/)) $(filter %/, $(wildcard Libraries/*/))
+MODULES     = system system/helpers Wiring appinit \
+              $(sort $(dir $(wildcard SmingCore/*/ SmingCore/*/*/ SmingCore/*/*/*/))) \
+              $(filter %/, $(wildcard Services/*/)) $(filter %/, $(wildcard Libraries/*/))
 EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
 
 # Place a file that should exist in a submodule that is fetched separately
