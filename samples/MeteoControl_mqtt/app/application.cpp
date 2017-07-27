@@ -14,7 +14,7 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
-	Wire.pins(5, 4); // SCL, SDA
+	Wire.pins(4, 5); // SDA, SCL 
 	Wire.begin();
 
 // initialization config
