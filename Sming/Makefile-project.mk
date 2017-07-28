@@ -41,10 +41,10 @@ SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
 
 #ESPTOOL2 config to generate rBootLESS images
 IMAGE_MAIN	?= 0x00000.bin
-IMAGE_SDK	?= 0x0a000.bin # The name must match the starting address of the irom0 section 
-						   # in the LD file ($SMING_HOME/compiler/ld/standalone.rom.ld).
-						   # To calculate the value do the following: x = irom0_0_seg.org - 0x40200000
-						   # Example: 0x4020a000 - 0x40200000 = 0x0a000
+IMAGE_SDK_OFFSET = $(shell printf '0x%x\n' $$(( ($$($(GET_FILESIZE) $(FW_BASE)/$(IMAGE_MAIN)) + 0x1000 + $(basename $(IMAGE_MAIN))) & (0xFFFFF000) )) )
+IMAGE_SDK	?= $(IMAGE_SDK_OFFSET).bin
+IROM0_ORG0       = $(shell printf '0x%x\n' $$(( 0x40200000 + $(IMAGE_SDK_OFFSET))) )
+
 INIT_BIN_ADDR =  0x7c000
 BLANK_BIN_ADDR =  0x4b000
 
@@ -54,6 +54,9 @@ ESPTOOL2 ?= esptool2
 ESPTOOL2_SECTS		?= .text .data .rodata
 ESPTOOL2_MAIN_ARGS	?= -quiet -bin -boot0
 ESPTOOL2_SDK_ARGS	?= -quiet -lib
+
+# SED path
+SED     ?= sed
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 ## Windows:
@@ -259,6 +262,8 @@ LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-Map=$
 
 # linker script used for the above linkier step
 LD_PATH     = $(SMING_HOME)/compiler/ld
+PROJECT_LD_PATH=ld
+
 LD_SCRIPT	= standalone.rom.ld
 
 ifeq ($(SPI_SPEED), 26)
@@ -367,9 +372,28 @@ all: $(USER_LIBDIR)/lib$(LIBSMING).a checkdirs $(TARGET_OUT) $(SPIFF_BIN_OUT) $(
 
 spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 
-$(TARGET_OUT): $(APP_AR)
-	$(vecho) "LD $@"	
-	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
+$(PROJECT_LD_PATH)/$(LD_SCRIPT):
+	$(Q) mkdir -p $(PROJECT_LD_PATH)
+	$(Q) cp $(LD_PATH)/$(LD_SCRIPT) $@ 
+	
+$(FW_BASE)/$(IMAGE_MAIN): $(APP_AR)
+# Pass 1: Generate rom0 to be able to check its size
+	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $(TARGET_OUT).tmp
+	
+	$(Q) $(STRIP) $(TARGET_OUT).tmp
+
+	$(Q) $(ESPTOOL2) $(ESPTOOL2_MAIN_ARGS) $(TARGET_OUT).tmp $@ $(ESPTOOL2_SECTS)
+	
+	$(Q) rm $(TARGET_OUT).tmp
+
+$(TARGET_OUT): $(FW_BASE)/$(IMAGE_MAIN) $(PROJECT_LD_PATH)/$(LD_SCRIPT)
+	$(vecho) "LD $@"
+	
+# Readjust linker
+	$(Q) $(SED) -r "s/(^\s*irom0_0_seg *: *).*/\\1org = $(IROM0_ORG0), len = \(1M - $(IMAGE_SDK_OFFSET)\)/" $(LD_PATH)/$(LD_SCRIPT) > $(PROJECT_LD_PATH)/$(LD_SCRIPT)
+	
+# Pass 2: Generate roms with correct offsets
+	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(PROJECT_LD_PATH) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 
 	$(Q) $(STRIP) $@
 
@@ -454,9 +478,9 @@ flash: all
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
 	-$(Q) $(KILL_TERM)
 ifeq ($(DISABLE_SPIFFS), 1)
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(basename $(IMAGE_MAIN)) $(FW_BASE)/$(IMAGE_MAIN) $(basename $(IMAGE_SDK)) $(FW_BASE)/$(IMAGE_SDK)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(basename $(IMAGE_MAIN)) $(FW_BASE)/$(IMAGE_MAIN) $(IMAGE_SDK_OFFSET) $(FW_BASE)/$(IMAGE_SDK)
 else
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(basename $(IMAGE_MAIN)) $(FW_BASE)/$(IMAGE_MAIN) $(basename $(IMAGE_SDK)) $(FW_BASE)/$(IMAGE_SDK) $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(basename $(IMAGE_MAIN)) $(FW_BASE)/$(IMAGE_MAIN) $(IMAGE_SDK_OFFSET) $(FW_BASE)/$(IMAGE_SDK) $(SPIFF_START_OFFSET) $(SPIFF_BIN_OUT)
 endif
 	$(TERMINAL)
 
