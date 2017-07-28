@@ -10,12 +10,28 @@ environment:
       build_compiler: "mingw"
       build_bindings: 1
       SDK_VERSION: 2.0.0
+    - build_platform: "x86"
+      build_compiler: "mingw"
+      build_bindings: 1
+      SDK_VERSION: 1.5.0
+
 # cache:
 #   - src/  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
 install:
   - choco sources add -name sming -source 'https://www.myget.org/F/sming/'
-  - choco install -y esp8266-udk wget curl
-#  - C:\MinGW\bin\mingw-get install
+  - ps: if($env:SDK_VERSION -eq '1.5.0') {
+            choco install esp8266-udk --source https://www.myget.org/F/kireevco-chocolatey/;
+            mkdir c:\Espressif\utils\ESP8266;
+            cp c:\Espressif\utils\memanalyzer.exe c:\Espressif\utils\ESP8266\memanalyzer.exe;
+            cp c:\Espressif\utils\esptool.exe c:\Espressif\utils\ESP8266\esptool.exe;
+        }
+        else {
+            choco install esp8266-udk
+        }
+  
+  
+  
+# Install esptool2
   - git clone https://github.com/raburton/esptool2
   - cd esptool2
   - make
