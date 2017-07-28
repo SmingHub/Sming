@@ -13,12 +13,9 @@ environment:
 # cache:
 #   - src/  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
 install:
-  - choco sources add -name kireevco -source 'https://www.myget.org/F/kireevco-chocolatey/'
+  - choco sources add -name sming -source 'https://www.myget.org/F/sming/'
   - choco install -y esp8266-udk wget curl
-#  - C:\MinGW\bin\mingw-get install 
-  - mkdir c:\Espressif\utils\ESP8266
-  - cp c:\Espressif\utils\memanalyzer.exe c:\Espressif\utils\ESP8266\memanalyzer.exe
-  - cp c:\Espressif\utils\esptool.exe c:\Espressif\utils\ESP8266\esptool.exe
+#  - C:\MinGW\bin\mingw-get install
   - git clone https://github.com/raburton/esptool2
   - cd esptool2
   - make
