@@ -148,8 +148,9 @@ endif
 # name for the target project
 TARGET		= app
 
-
 CUSTOM_TARGETS ?=
+
+ARDUINO_LIBRARIES = $(shell git submodule status Libraries | cut -c2- | cut -f2 -d ' ' | sed -r 's/Libraries\/(.*?)/Libraries\/\1\/library.properties/g' )
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES     = system system/helpers Wiring appinit \
@@ -391,7 +392,7 @@ endif
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/$(LIBSMING).a  
 	$(vecho) "Done"
 
-checkdirs: $(THIRD_PARTY_DATA) reload $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
+checkdirs: $(ARDUINO_LIBRARIES) $(THIRD_PARTY_DATA) reload $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
@@ -451,6 +452,16 @@ third-party/%:
 # For now we solve this by "reloading" the makefile after fetching a module.
     RELOAD_MKFILE=1
 
+Libraries/%: 
+	$(vecho) "Fetching Arduino Library $(dir $@) ..."
+	$(Q) $(GIT) submodule update --init --recursive $(dir $@)
+	$(Q) touch $(patsubst Libraries/%/,Libraries/.patches/%.patch, $(dir $@))
+	$(Q) -cd $(dir $@); $(GIT) apply -v $(patsubst Libraries/%/,$(SMING_HOME)/Libraries/.patches/%.patch, $(dir $@)) --ignore-whitespace --whitespace=nowarn
+# if the new submodule brings source code files that need to be compiled inside Sming
+# then we need somehow to be able to "see" these new files. 
+# For now we solve this by "reloading" the makefile after fetching a module.
+    RELOAD_MKFILE=1
+
 reload: 
 	$(Q) if [ $(RELOAD_MKFILE) -eq 1 ]; then \
         $(MAKE) -C $(SMING_HOME) $(MAKECMDGOALS) RELOAD_MKFILE=0; \
@@ -471,8 +482,12 @@ third-party-clean:
           rm -rf third-party/$$dir; \
         done
 	$(Q) $(GIT) checkout third-party     
+	
+libraries-clean:
+	$(Q) rm -rf Libraries
+	$(Q) $(GIT) checkout Libraries 
        
-dist-clean: clean samples-clean third-party-clean
+dist-clean: clean samples-clean third-party-clean libraries-clean
 	$(Q) for file in $(shell ls $(USER_LIBDIR)/lib*.a ); do \
  	   rm $$file; \
  	done

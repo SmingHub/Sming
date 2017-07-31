@@ -10,6 +10,8 @@
 #ifndef WIRING_PINS_ARDUINO_H_
 #define WIRING_PINS_ARDUINO_H_
 
+#include "espinc/peri.h"
+
 extern const unsigned int A0; // Single ESP8266EX analog input pin (TOUT) 10 bit, 0..1v
 
 #define NOT_A_PIN 0
@@ -24,19 +26,12 @@ extern const unsigned int A0; // Single ESP8266EX analog input pin (TOUT) 10 bit
 
 // We use maximum compatibility to standard Arduino logic.
 
-// Conversion disabled for now
-#define digitalPinToTimer(P) ( NOT_ON_TIMER )
-
-#define digitalPinToPort(P) ( P < 0 ? NOT_A_PIN : ( (int)P < 8 ? PA : ( (int)P < 16 ? PB : ( (int)P == 16 ? PC : NOT_A_PIN ) ) ) )
-#define digitalPinToBitMask(P) ( (int)P < 8 ? _BV((int)P) : ( P < 16 ? _BV( (int)P-8 ) : 1) )
-
-#define STD_GPIO_OUT (PERIPHS_GPIO_BASEADDR + GPIO_OUT_ADDRESS)
-#define STD_GPIO_IN (PERIPHS_GPIO_BASEADDR + GPIO_IN_ADDRESS)
-#define STD_GPIO_ENABLE (PERIPHS_GPIO_BASEADDR + GPIO_ENABLE_ADDRESS)
-
-#define portOutputRegister(P) ( ((GPIO_REG_TYPE*)(P != PC ? STD_GPIO_OUT : RTC_GPIO_OUT)) + ( ( ((int)P) == PB ) ? 1 : 0) )
-#define portInputRegister(P)  ( ((GPIO_REG_TYPE*)(P != PC ? STD_GPIO_IN : RTC_GPIO_IN_DATA)) + ( ( ((int)P) == PB ) ? 1 : 0) )
-#define portModeRegister(P)	  ( ((GPIO_REG_TYPE*)(P != PC ? STD_GPIO_ENABLE : RTC_GPIO_ENABLE)) + ( ( ((int)P) == PB ) ? 1 : 0) ) // Stored bits: 0=In, 1=Out
+#define digitalPinToPort(pin)       (0)
+#define digitalPinToBitMask(pin)    (1UL << (pin))
+#define digitalPinToTimer(pin)      (NOT_ON_TIMER)
+#define portOutputRegister(port)    ((volatile uint32_t*) &GPO)
+#define portInputRegister(port)     ((volatile uint32_t*) &GPI)
+#define portModeRegister(port)      ((volatile uint32_t*) &GPE)
 
 
 #endif /* WIRING_PINS_ARDUINO_H_ */
