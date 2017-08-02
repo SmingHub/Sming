@@ -112,6 +112,7 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 			// connect to wifi
 			WifiStation.config(WIFI_SSID, WIFI_PWD);
 			WifiStation.enable(true);
+			WifiStation.connect();
 		} else if (!strcmp(str, "ip")) {
 			Serial.printf("ip: %s mac: %s\r\n", WifiStation.getIP().toString().c_str(), WifiStation.getMAC().c_str());
 		} else if (!strcmp(str, "ota")) {
