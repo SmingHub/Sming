@@ -6,6 +6,7 @@
 #include "../include/user_config.h"
 #include "../Wiring/WiringFrameworkDependencies.h"
 #include "../SmingCore/SmingCore.h"
+#include "../SmingCore/ArduinoCompat.h"
 
 
 #endif /* INCLUDE_ARDUINO_H_ */
