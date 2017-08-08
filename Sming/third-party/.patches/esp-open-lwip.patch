@@ -306,3 +306,16 @@ index 24ca8bb..0c20b6a 100644
  #endif
  
  /* Keepalive values, compliant with RFC 1122. Don't change this unless you know what you're doing */
+diff --git a/include/lwip/igmp.h b/include/lwip/igmp.h
+index c90adcd..f0c9dea 100644
+--- a/include/lwip/igmp.h
++++ b/include/lwip/igmp.h
+@@ -96,7 +96,7 @@ void   igmp_input(struct pbuf *p, struct netif *inp, ip_addr_t *dest)ICACHE_FLAS
+ err_t  igmp_joingroup(ip_addr_t *ifaddr, ip_addr_t *groupaddr)ICACHE_FLASH_ATTR;
+ err_t  igmp_leavegroup(ip_addr_t *ifaddr, ip_addr_t *groupaddr)ICACHE_FLASH_ATTR;
+ void   igmp_tmr(void)ICACHE_FLASH_ATTR;
+-#define LWIP_RAND()  r_rand()
++#define LWIP_RAND()  os_random()
+ #ifdef __cplusplus
+ }
+ #endif
