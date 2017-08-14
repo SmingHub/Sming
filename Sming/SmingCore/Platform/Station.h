@@ -228,7 +228,6 @@ public:
 	bool wpsConfigStart(WPSConfigDelegate callback=NULL);
 
 	/**	@brief	Start WiFi station by WPS method 
-	 *	@param	callback Function to call on WiFi staton smart configuration complete (Default: none)
 	 */
 	bool beginWPSConfig();
 
