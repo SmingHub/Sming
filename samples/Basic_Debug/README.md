@@ -19,7 +19,7 @@ r15: 0x3fff1138=1073680696
 
 Stack dump:
 To decode the stack dump call from command line:
-   python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out
+   python2 $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out
 and copy & paste the text enclosed in '===='.
 ================================================================
 3ffff640:  40100e96 00000033 00000018 000000f0  
