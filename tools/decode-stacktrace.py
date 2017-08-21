@@ -47,6 +47,6 @@ if __name__ == "__main__":
             line = "\r\n".join(addresses)+"\r\n"
 #             line = line.ljust(125," ")
 
-            pipe.stdin.write(line)
+            pipe.stdin.write(line.encode('ascii'))
             pipe.stdin.flush()
             
