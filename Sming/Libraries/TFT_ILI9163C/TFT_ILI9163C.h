@@ -295,9 +295,9 @@ class TFT_ILI9163C : public Adafruit_GFX {
 
 	#if defined(__ESP8266_EX__)
 	void				spiwrite(uint8_t);
-	volatile uint8_t 	*csport, *rsport;
+	volatile GPIO_REG_TYPE 	*csport, *rsport;
 	uint8_t 			_cs,_rs,_sid,_sclk,_rst;
-	uint8_t  			cspinmask, rspinmask;
+	GPIO_REG_TYPE		cspinmask, rspinmask;
 	#endif //  #ifdef __ESP8266_EX__
 };
 #endif

@@ -169,7 +169,7 @@ class Adafruit_ST7735 : public Adafruit_GFX {
   boolean  hwSPI;
 
 #if defined(__AVR__) || defined(CORE_TEENSY) || defined (__ESP8266_EX__)
-  volatile uint8_t *dataport, *clkport, *csport, *rsport;
+  GPIO_REG_TYPE *dataport, *clkport, *csport, *rsport;
   uint8_t  _cs, _rs, _rst, _sid, _sclk,
            datapinmask, clkpinmask, cspinmask, rspinmask,
            colstart, rowstart; // some displays need this changed
