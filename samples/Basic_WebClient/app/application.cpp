@@ -139,6 +139,28 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 			->onRequestComplete(onDownload)
 	);
 
+#if 0
+	/*
+	 * The code below demonstrates how to upload a file to a remote server
+	 * in a secure way.
+	 *
+	 * This code is not complete. In order to make it work your should assure that SpifFS is flashed on the device,
+	 * mounted and has a file called "data.txt"
+	 *
+	 */
+	FileStream* fileStream = new FileStream("data.txt");
+
+	HttpHeaders fileHeaders;
+	fileHeaders["Content-Type"]  = "application/octet-stream";
+
+	downloadClient.send(
+			downloadClient.request("https://www.attachix.com/uploads/")
+			->setMethod(HTTP_PUT)
+			->setHeaders(fileHeaders)
+			->setBody(fileStream)
+	);
+
+#endif
 
 	downloadClient.send(
 			downloadClient.request("https://www.attachix.com/business/")

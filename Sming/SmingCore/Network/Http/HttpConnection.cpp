@@ -402,8 +402,13 @@ void HttpConnection::send(HttpRequest* request) {
 	if(request->rawDataLength) {
 		request->headers["Content-Length"] = String(request->rawDataLength);
 	}
-	else if (request->stream != NULL && request->stream->length() > -1) {
-		request->headers["Content-Length"] = String(request->stream->length());
+	else if (request->stream != NULL) {
+		if(request->stream->length() > -1) {
+			request->headers["Content-Length"] = String(request->stream->length());
+		}
+		else {
+			request->headers.remove("Content-Length");
+		}
 	}
 
 	// TODO: represent the post params as stream ...
@@ -474,6 +479,9 @@ bool HttpConnection::send(IDataSourceStream* inputStream, bool forceCloseAfterSe
 		int len = 256;
 		char data[len];
 		len = inputStream->readMemoryBlock(data, len);
+		if(len < 1) {
+			break;
+		}
 
 		// send the data in chunks...
 		sendString(String(len)+ "\r\n");
