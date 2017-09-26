@@ -209,7 +209,7 @@ HttpRequest* HttpRequest::setBody(const String& body) {
 	if(written < body.length()) {
 		debugf("HttpRequest::setBody: Unable to store the complete body");
 	}
-	stream = (IDataSourceStream*)memory;
+	stream = (ReadWriteStream*)memory;
 	return this;
 }
 
@@ -219,7 +219,7 @@ HttpRequest* HttpRequest::setBody(uint8_t *rawData, size_t length) {
 	return this;
 }
 
-HttpRequest* HttpRequest::setBody(IDataSourceStream *stream) {
+HttpRequest* HttpRequest::setBody(ReadWriteStream *stream) {
 	this->stream = stream;
 	return this;
 }

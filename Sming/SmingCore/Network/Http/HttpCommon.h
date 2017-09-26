@@ -65,4 +65,12 @@ typedef HashMap<String, String> HttpParams;
 typedef HashMap<String, String> HttpHeaders;
 typedef enum http_method HttpMethod;
 
+enum HttpConnectionState
+{
+	eHCS_Ready,
+	eHCS_Sending,
+	eHCS_Sent
+};
+
+
 #endif /* _SMING_CORE_HTTP_COMMON_H_ */

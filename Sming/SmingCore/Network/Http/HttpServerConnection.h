@@ -34,13 +34,6 @@ class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
 
-enum HttpConnectionState
-{
-	eHCS_Ready,
-	eHCS_Sending,
-	eHCS_Sent
-};
-
 class HttpServerConnection: public TcpClient
 {
 public:
