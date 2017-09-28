@@ -2,8 +2,7 @@
 #include "HttpResponse.h"
 #include "HttpRequest.h"
 #include "../TcpClient.h"
-#include "../../DataSourceStream.h"
-
+#include "../../CircularBuffer.h"
 
 class HttpChunkedStream: public ReadWriteStream
 {
@@ -44,5 +43,5 @@ public:
 
 private:
 	ReadWriteStream *stream = NULL;
-	MemoryDataStream *tempStream = NULL;
+	CircularBuffer *tempStream = NULL;
 };

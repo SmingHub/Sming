@@ -25,14 +25,14 @@ size_t HttpChunkedStream::write(const uint8_t *buffer, size_t size)
 
 uint16_t HttpChunkedStream::readMemoryBlock(char* data, int bufSize)
 {
-	int readSize = 0;
+	const int readSize = NETWORK_SEND_BUFFER_SIZE;
 
 	if(stream == NULL || stream->isFinished()) {
 		return 0;
 	}
 
 	if(tempStream == NULL) {
-		tempStream = new MemoryDataStream();
+		tempStream = new CircularBuffer(readSize + 10);
 	}
 
 	if(!tempStream->isFinished()) {
@@ -40,7 +40,7 @@ uint16_t HttpChunkedStream::readMemoryBlock(char* data, int bufSize)
 	}
 
 	// pump new data into the stream
-	int len = NETWORK_SEND_BUFFER_SIZE;
+	int len = readSize;
 	char buffer[len];
 	len = stream->readMemoryBlock(buffer, len);
 	stream->seek(max(len, 0));
@@ -53,7 +53,7 @@ uint16_t HttpChunkedStream::readMemoryBlock(char* data, int bufSize)
 	tempStream->write((uint8_t*)buffer, len);
 	content = "\n\r";
 	tempStream->write((uint8_t*)content.c_str(), content.length());
-	if (len < NETWORK_SEND_BUFFER_SIZE) {
+	if (len < readSize) {
 		content = "0\r\n\r\n";
 		tempStream->write((uint8_t*)content.c_str(), content.length());
 	}
