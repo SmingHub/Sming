@@ -17,7 +17,7 @@
 #include "DataSourceStream.h"
 
 /**
- * @brief      Circular stream classes
+ * @brief      Circular stream class
  * @ingroup    stream
  *
  *  @{

@@ -1,8 +1,28 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * @author Slavey Karadzhov <slaff@attachix.com>
+ *
+ ****/
+
+#ifndef _SMING_CORE_HTTP_CHUNKEDSTREAM_H_
+#define _SMING_CORE_HTTP_CHUNKEDSTREAM_H_
+
 #include "HttpCommon.h"
 #include "HttpResponse.h"
 #include "HttpRequest.h"
 #include "../TcpClient.h"
 #include "../../CircularBuffer.h"
+
+/**
+ * @brief      HTTP chunked stream class
+ * @ingroup    stream http
+ *
+ *  @{
+*/
 
 class HttpChunkedStream: public ReadWriteStream
 {
@@ -45,3 +65,6 @@ private:
 	ReadWriteStream *stream = NULL;
 	CircularBuffer *tempStream = NULL;
 };
+
+/** @} */
+#endif /* _SMING_CORE_HTTP_CHUNKEDSTREAM_H_ */
