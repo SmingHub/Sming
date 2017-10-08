@@ -67,8 +67,11 @@ typedef enum http_method HttpMethod;
 
 enum HttpConnectionState
 {
-	eHCS_Ready,
-	eHCS_Sending,
+	eHCS_Ready = 0,
+	eHCS_StartSending,
+	eHCS_SendingHeaders,
+	eHCS_StartBody,
+	eHCS_SendingBody,
 	eHCS_Sent
 };
 

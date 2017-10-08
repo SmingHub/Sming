@@ -74,19 +74,19 @@ public:
 	// @end deprecated
 
 	// Send Datastream, can be called with Classes derived from
-	bool sendDataStream( IDataSourceStream * newDataStream , enum MimeType type) {
+	bool sendDataStream( ReadWriteStream * newDataStream , enum MimeType type) {
 		return sendDataStream(newDataStream, ContentType::toString(type));
 	}
 
 	// Send Datastream, can be called with Classes derived from
-	bool sendDataStream( IDataSourceStream * newDataStream , const String& reqContentType = "" );
+	bool sendDataStream( ReadWriteStream * newDataStream , const String& reqContentType = "" );
 
 	void reset();
 
 public:
 	int code;
 	HttpHeaders headers;
-	IDataSourceStream* stream = NULL;
+	ReadWriteStream* stream = NULL;
 };
 
 #endif /* _SMING_CORE_HTTP_RESPONSE_H_ */

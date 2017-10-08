@@ -30,13 +30,6 @@ enum HttpClientMode
 	eHCM_UserDefined // << Deprecated! If you supply onBody callback then the incoming body will be processed from the callback directly
 };
 
-enum HttpSendingConnectionState
-{
-	eHSCS_SendingHeaders = 0,
-	eHSCS_StartBody,
-	eHSCS_SendingBody
-};
-
 class HttpConnection : protected TcpClient {
 	friend class HttpClient;
 
@@ -119,8 +112,6 @@ protected:
 	static http_parser_settings parserSettings;
 	static bool parserSettingsInitialized;
 	HttpHeaders responseHeaders;
-
-	HttpSendingConnectionState sendingState = eHSCS_SendingHeaders;
 
 	int code = 0;
 	bool lastWasValue = true;

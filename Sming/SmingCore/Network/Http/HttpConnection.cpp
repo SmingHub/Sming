@@ -403,21 +403,20 @@ void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent) {
 
 			waitingQueue->dequeue();
 
-			state = eHCS_Sending;
 			outgoingRequest = request;
-			sendingState = eHSCS_SendingHeaders;
+			state = eHCS_SendingHeaders;
 			sendRequestHeaders(request);
 
 			break;
 		}
 
-		if(state == eHCS_Sending) {
-			if(sendingState == eHSCS_SendingHeaders) {
+		if(state >= eHCS_StartSending && state < eHCS_Sent) {
+			if(state == eHCS_SendingHeaders) {
 				if(stream != NULL && !stream->isFinished()) {
 						break;
 				}
 
-				sendingState = eHSCS_StartBody;
+				state = eHCS_StartBody;
 			}
 
 			if(sendRequestBody(outgoingRequest)) {
@@ -471,8 +470,8 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request) {
 }
 
 bool HttpConnection::sendRequestBody(HttpRequest* request) {
-	if(sendingState == eHSCS_StartBody) {
-		sendingState = eHSCS_SendingBody;
+	if(state == eHCS_StartBody) {
+		state = eHCS_SendingBody;
 		// if there is input raw data -> send it
 		if(request->rawDataLength > 0) {
 			TcpClient::send((const char*)request->rawData, (uint16_t)request->rawDataLength);
@@ -542,7 +541,7 @@ HttpResponse* HttpConnection::getResponse() {
 
 		MemoryDataStream* memory = new MemoryDataStream();
 		memory->write((uint8_t *)responseStringData.c_str(), responseStringData.length());
-		response->stream = (IDataSourceStream* )memory;
+		response->stream = memory;
 	}
 	return response;
 }

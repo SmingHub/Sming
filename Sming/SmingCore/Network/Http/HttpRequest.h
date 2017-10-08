@@ -35,7 +35,7 @@ class HttpRequest {
 
 public:
 
-	HttpRequest(URL uri);
+	HttpRequest(const URL& uri);
 	HttpRequest(const HttpRequest& value);
 	__forceinline HttpRequest* clone() const { return new HttpRequest(*this); }
 	HttpRequest& operator = (const HttpRequest& rhs);

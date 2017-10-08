@@ -12,7 +12,7 @@
 
 #include "HttpRequest.h"
 
-HttpRequest::HttpRequest(URL uri) {
+HttpRequest::HttpRequest(const URL& uri) {
 	this->uri = uri;
 }
 
