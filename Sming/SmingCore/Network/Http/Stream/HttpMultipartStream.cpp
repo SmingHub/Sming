@@ -10,9 +10,9 @@
 
 #include "HttpMultipartStream.h"
 
-HttpMultipartStream::HttpMultipartStream(HttpPartProducerDelegate delegate)
+HttpMultipartStream::HttpMultipartStream(HttpPartProducerDelegate delegate): producer(delegate)
 {
-	this->producer = delegate;
+
 }
 
 

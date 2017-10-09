@@ -209,7 +209,7 @@ HttpRequest* HttpRequest::setBody(const String& body) {
 	if(written < body.length()) {
 		debugf("HttpRequest::setBody: Unable to store the complete body");
 	}
-	stream = (ReadWriteStream*)memory;
+	stream = memory;
 	return this;
 }
 
