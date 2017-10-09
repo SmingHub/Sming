@@ -15,10 +15,8 @@
 
 HttpResponse::~HttpResponse()
 {
-	if(stream != NULL) {
-		delete stream;
-		stream = NULL;
-	}
+	delete stream;
+	stream = NULL;
 }
 
 HttpResponse* HttpResponse::setContentType(const String& type)
@@ -162,7 +160,7 @@ bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 	return true;
 }
 
-bool HttpResponse::sendDataStream( IDataSourceStream * newDataStream , const String& reqContentType /* = "" */)
+bool HttpResponse::sendDataStream( ReadWriteStream * newDataStream , const String& reqContentType /* = "" */)
 {
     if (stream != NULL)
     {

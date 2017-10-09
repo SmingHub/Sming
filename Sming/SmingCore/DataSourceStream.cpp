@@ -17,10 +17,8 @@ MemoryDataStream::MemoryDataStream()
 
 MemoryDataStream::~MemoryDataStream()
 {
-	if(buf != NULL) {
-		free(buf);
-		buf = NULL;
-	}
+	free(buf);
+	buf = NULL;
 	pos = NULL;
 	size = 0;
 }

@@ -89,8 +89,26 @@ public:
 	virtual String id() { return String(); }
 };
 
+class ReadWriteStream : public IDataSourceStream
+{
+public:
+	virtual ~ReadWriteStream() {}
+
+	virtual size_t write(uint8_t charToWrite) = 0;
+
+    /** @brief  Write chars to stream
+     *  @param  buffer Pointer to buffer to write to the stream
+     *  @param  size Quantity of chars to writen
+     *  @retval size_t Quantity of chars written to stream
+     */
+	virtual size_t write(const uint8_t *buffer, size_t size) = 0;
+
+    //Use base class documentation
+	virtual uint16_t readMemoryBlock(char* data, int bufSize) = 0;
+};
+
 /// Memory data stream class
-class MemoryDataStream : public Print, public IDataSourceStream
+class MemoryDataStream : public Print, public ReadWriteStream
 {
 public:
     /** @brief Memory data stream base class
@@ -109,7 +127,7 @@ public:
 	/** @brief  Get size of stream
 	 *  @retval int Quantity of chars in stream
 	 *
-	 *  @deprecated Use getLength instead
+	 *  @deprecated Use length() instead
 	 */
 	int getStreamLength() { return size; }
 
@@ -149,7 +167,7 @@ private:
 };
 
 /// File stream class
-class FileStream : public IDataSourceStream
+class FileStream : public ReadWriteStream
 {
 public:
 	
@@ -188,7 +206,7 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	int length() { return -1; }
+	int length() { return size; }
 
 	virtual String id();
 

@@ -77,13 +77,10 @@ public:
 protected:
 	void reset();
 
-	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf *buf);
 	virtual err_t onProtocolUpgrade(http_parser* parser);
-
+	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 	virtual void onError(err_t err);
-
-	bool send(IDataSourceStream* inputStream, bool forceCloseAfterSent = false);
 
 	void cleanup();
 
@@ -102,6 +99,9 @@ private:
 #endif
 	static int IRAM_ATTR staticOnMessageComplete(http_parser* parser);
 
+	void sendRequestHeaders(HttpRequest* request);
+	bool sendRequestBody(HttpRequest* request);
+
 protected:
 	HttpClientMode mode;
 	String responseStringData;
@@ -117,7 +117,11 @@ protected:
 	bool lastWasValue = true;
 	String lastData = "";
 	String currentField  = "";
-	HttpRequest* currentRequest = NULL;
+	HttpRequest* incomingRequest = NULL;
+	HttpRequest* outgoingRequest = NULL;
+
+private:
+	HttpConnectionState state = eHCS_Ready;
 };
 
 #endif /* _SMING_CORE_HTTP_CONNECTION_H_ */

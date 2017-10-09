@@ -34,13 +34,6 @@ class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
 
-enum HttpConnectionState
-{
-	eHCS_Ready,
-	eHCS_Sending,
-	eHCS_Sent
-};
-
 class HttpServerConnection: public TcpClient
 {
 public:
@@ -71,6 +64,9 @@ private:
 	static int IRAM_ATTR staticOnBody(http_parser *parser, const char *at, size_t length);
 	static int IRAM_ATTR staticOnMessageComplete(http_parser* parser);
 
+	void sendResponseHeaders(HttpResponse* response);
+	bool sendResponseBody(HttpResponse* response);
+
 public:
 	void* userData = NULL; // << use to pass user data between requests
 
@@ -86,8 +82,6 @@ private:
 
 	HttpRequest request = HttpRequest(URL());
 	HttpResponse response;
-
-	bool headersSent = false;
 
 	HttpResourceDelegate headersCompleteDelegate = 0;
 	HttpResourceDelegate requestCompletedDelegate = 0;

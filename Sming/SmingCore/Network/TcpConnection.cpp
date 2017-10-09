@@ -193,6 +193,13 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WR
 
 #ifdef ENABLE_SSL
    if(ssl) {
+		u16_t expected = ssl_calculate_write_length(ssl, len);
+		u16_t available = tcp ? tcp_sndbuf(tcp) : 0;
+//		debugf("SSL: Expected: %d, Available: %d", expected, available);
+		if (expected < 0 || available < expected) {
+			return -1; // No memory
+		}
+
 		int written = axl_ssl_write(ssl, (const uint8_t *)data, len);
 		// debugf("SSL: Write len: %d, Written: %d", len, written);
 		if(written < ERR_OK) {
@@ -267,7 +274,7 @@ int TcpConnection::write(IDataSourceStream* stream)
 				int written = write(buffer, available, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
 				total += written;
 				stream->seek(max(written, 0));
-				debugf("Written: %d, Available: %d, isFinished: %d, PushCount: %d", written, available, (stream->isFinished()?1:0), pushCount);
+				debugf("Written: %d, Available: %d, isFinished: %d, PushCount: %d [TcpBuf: %d]", written, available, (stream->isFinished()?1:0), pushCount, tcp_sndbuf(tcp));
 				repeat = written == available && !stream->isFinished() && pushCount < 25;
 			}
 			else
