@@ -11,11 +11,10 @@
 #ifndef _SMING_CORE_HTTP_CHUNKEDSTREAM_H_
 #define _SMING_CORE_HTTP_CHUNKEDSTREAM_H_
 
-#include "HttpCommon.h"
-#include "HttpResponse.h"
-#include "HttpRequest.h"
-#include "../TcpClient.h"
-#include "../../CircularBuffer.h"
+#include "../HttpCommon.h"
+#include "../HttpResponse.h"
+#include "../HttpRequest.h"
+#include "../../../CircularBuffer.h"
 
 /**
  * @brief      HTTP chunked stream class

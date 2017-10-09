@@ -206,7 +206,7 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	int length() { return -1; }
+	int length() { return size; }
 
 	virtual String id();
 
