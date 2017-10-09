@@ -36,7 +36,7 @@
  * RES      (RESET)       GPIO16
  * DC       (DC)          GPIO2
  */
-#define CAM_SCLK 	14  // HW SPI pins - dont change
+#define CAM_SCLK 	14  // HW SPI pins - don't change
 #define CAM_MOSI 	13
 #define CAM_MISO	12
 
@@ -65,7 +65,7 @@ void startApplicationCommand()
 /*
  * initCam()
  *
- * Initalize I2C, SPI Bus and check if the cammera is there
+ * Initialize I2C, SPI Bus and check if the camera is there
  * Initialize the camera for JPEG 320x240
  *
  */
@@ -165,7 +165,7 @@ void onCamSetup(HttpRequest &request, HttpResponse &response) {
 
 
 /*
- * http request to capture and send an image from the cammera
+ * http request to capture and send an image from the camera
  * uses actual setting set by ArdCammCommand Handler
  */
 void onCapture(HttpRequest &request, HttpResponse &response) {
@@ -187,7 +187,7 @@ void onCapture(HttpRequest &request, HttpResponse &response) {
 	const char * contentType = arduCamCommand.getContentType();
 
 	if (stream->dataReady()) {
-		response.setHeader("Content Lenght", String(stream->available()));
+		response.setHeader("Content-Length", String(stream->available()));
 		response.sendDataStream(stream, contentType);
 	}
 
@@ -230,8 +230,8 @@ void onFavicon(HttpRequest &request, HttpResponse &response) {
 
 /*
  * start http and telnet server
- * telnet can be used to configure cammera settings
- * unsing ArdCammCommand handler
+ * telnet can be used to configure camera settings
+ * using ArdCammCommand handler
  */
 void StartServers()
 {
