@@ -88,6 +88,12 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent /*
 
 	debugf("Storing %d bytes in stream", len);
 
+	// If stream buffer is empty we can already push data instead of waiting for
+	// next onReadyToSend event
+	if(asyncTotalLen == asyncTotalSent) {
+		pushAsyncPart();
+	}
+
 	asyncTotalLen += len;
 	asyncCloseAfterSent = forceCloseAfterSent;
 
