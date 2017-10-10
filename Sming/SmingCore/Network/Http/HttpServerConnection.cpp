@@ -199,8 +199,26 @@ int HttpServerConnection::staticOnHeadersComplete(http_parser* parser)
 			contentType = contentType.substring(0, endPos);
 		}
 
-		if(connection->bodyParsers->contains(contentType)) {
-			connection->bodyParser = (*connection->bodyParsers)[contentType];
+		String majorType = contentType.substring(0, contentType.indexOf('/'));
+		majorType += "/*";
+
+		// Content-Type for exact type: application/json
+		// Wildcard type for application: application/*
+		// Wildcard type for the rest*
+
+		Vector<String> types;
+		types.add(contentType);
+		types.add(majorType);
+		types.add("*");
+
+		for(int i=0; i< types.count(); i++) {
+			if(connection->bodyParsers->contains(types.at(i))) {
+				connection->bodyParser = (*connection->bodyParsers)[types.at(i)];
+				break;
+			}
+		}
+
+		if(connection->bodyParser) {
 			connection->bodyParser(connection->request, NULL, -1);
 		}
 	}

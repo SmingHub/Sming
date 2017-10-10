@@ -38,6 +38,17 @@ extern "C" {
  */
 void formUrlParser(HttpRequest& request, const char *at, int length);
 
+/**
+ * @brief Stores the complete body into memory.
+ *        The content later can be retrieved by calling request.getBody()
+ * @param HttpRequest&
+ * @param const *char
+ * @param int length Negative lengths are used to specify special cases
+ * 				-1 - start of incoming data
+ * 				-2 - end of incoming data
+ */
+void bodyToStringParser(HttpRequest& request, const char *at, int length);
+
 #ifdef __cplusplus
 }
 #endif
