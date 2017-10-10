@@ -503,3 +503,46 @@ index 4972119..f6f44f8 100644
  {
      if (tp)
      {
+diff --git a/crypto/rsa.c b/crypto/rsa.c
+index ab74b4d..5651a69 100644
+--- a/crypto/rsa.c
++++ b/crypto/rsa.c
+@@ -73,6 +73,7 @@ void RSA_priv_key_new(RSA_CTX **ctx,
+     bi_set_mod(bi_ctx, rsa_ctx->p, BIGINT_P_OFFSET);
+     bi_set_mod(bi_ctx, rsa_ctx->q, BIGINT_Q_OFFSET);
+ #endif
++    bi_clear_cache(bi_ctx);
+ }
+ 
+ void RSA_pub_key_new(RSA_CTX **ctx, 
+@@ -94,6 +95,7 @@ void RSA_pub_key_new(RSA_CTX **ctx,
+     bi_set_mod(bi_ctx, rsa_ctx->m, BIGINT_M_OFFSET);
+     rsa_ctx->e = bi_import(bi_ctx, pub_exp, pub_len);
+     bi_permanent(rsa_ctx->e);
++    bi_clear_cache(bi_ctx);
+ }
+ 
+ /**
+diff --git a/ssl/x509.c b/ssl/x509.c
+index 35bd728..f76fa5e 100644
+--- a/ssl/x509.c
++++ b/ssl/x509.c
+@@ -247,6 +247,9 @@ int x509_new(const uint8_t *cert, int *len, X509_CTX **ctx)
+     if (asn1_skip_obj(cert, &offset, ASN1_SEQUENCE) || 
+             asn1_signature(cert, &offset, x509_ctx))
+         goto end_cert;
++
++    /* Saves a few bytes of memory */
++    bi_clear_cache(bi_ctx);
+ #endif
+     ret = X509_OK;
+ end_cert:
+@@ -485,6 +488,8 @@ int x509_verify(const CA_CERT_CTX *ca_cert_ctx, const X509_CTX *cert)
+         ret = X509_VFY_ERROR_BAD_SIGNATURE;
+     }
+ 
++    bi_clear_cache(ctx);
++
+     if (ret)
+         goto end_verify;
+ 
