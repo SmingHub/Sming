@@ -50,9 +50,10 @@ HttpRequest& HttpRequest::operator = (const HttpRequest& rhs) {
 }
 
 HttpRequest::~HttpRequest() {
-	if(queryParams != NULL) {
-		delete queryParams;
-	}
+	delete queryParams;
+	delete stream;
+	queryParams = NULL;
+	stream = NULL;
 }
 
 HttpRequest* HttpRequest::setURL(URL uri) {
@@ -156,6 +157,7 @@ String HttpRequest::getBody()
 		char buf[1024];
 		for(int i=0; i< stream->length(); i += 1024) {
 			int available = memory->readMemoryBlock(buf, 1024);
+			memory->seek(max(available, 0));
 			ret += String(buf, available);
 			if(available < 1024) {
 				break;
