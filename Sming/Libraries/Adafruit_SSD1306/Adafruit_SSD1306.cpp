@@ -517,14 +517,18 @@ void Adafruit_SSD1306::display(void) {
   if (sid != -1)
   {
     // SPI
+	//digitalWrite(cs, HIGH);
     *csport |= cspinmask;
+	//digitalWrite(dc, HIGH);
     *dcport |= dcpinmask;
+	//digitalWrite(cs, LOW);
     *csport &= ~cspinmask;
 
     for (uint16_t i=0; i<(SSD1306_LCDWIDTH*SSD1306_LCDHEIGHT/8); i++) {
       fastSPIwrite(buffer[i]);
       //ssd1306_data(buffer[i]);
     }
+    //digitalWrite(cs, HIGH);
     *csport |= cspinmask;
   }
   else
