@@ -85,19 +85,19 @@ protected:
 	void cleanup();
 
 private:
-	static int IRAM_ATTR staticOnMessageBegin(http_parser* parser);
+	static int staticOnMessageBegin(http_parser* parser);
 #ifndef COMPACT_MODE
-	static int IRAM_ATTR staticOnStatus(http_parser *parser, const char *at, size_t length);
+	static int staticOnStatus(http_parser *parser, const char *at, size_t length);
 #endif
-	static int IRAM_ATTR staticOnHeadersComplete(http_parser* parser);
-	static int IRAM_ATTR staticOnHeaderField(http_parser *parser, const char *at, size_t length);
-	static int IRAM_ATTR staticOnHeaderValue(http_parser *parser, const char *at, size_t length);
-	static int IRAM_ATTR staticOnBody(http_parser *parser, const char *at, size_t length);
+	static int staticOnHeadersComplete(http_parser* parser);
+	static int staticOnHeaderField(http_parser *parser, const char *at, size_t length);
+	static int staticOnHeaderValue(http_parser *parser, const char *at, size_t length);
+	static int staticOnBody(http_parser *parser, const char *at, size_t length);
 #ifndef COMPACT_MODE
-	static int IRAM_ATTR staticOnChunkHeader(http_parser* parser);
-	static int IRAM_ATTR staticOnChunkComplete(http_parser* parser);
+	static int staticOnChunkHeader(http_parser* parser);
+	static int staticOnChunkComplete(http_parser* parser);
 #endif
-	static int IRAM_ATTR staticOnMessageComplete(http_parser* parser);
+	static int staticOnMessageComplete(http_parser* parser);
 
 	void sendRequestHeaders(HttpRequest* request);
 	bool sendRequestBody(HttpRequest* request);
