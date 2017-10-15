@@ -189,7 +189,10 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 	LWIP_INCDIR = $(SMING_HOME)/third-party/lwip2/include
 endif
 
-EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include $(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include $(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
+EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include \
+				$(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/Libraries/Adafruit_GFX \
+				$(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include \
+				$(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
 
 USER_LIBDIR  = $(SMING_HOME)/compiler/lib/
 

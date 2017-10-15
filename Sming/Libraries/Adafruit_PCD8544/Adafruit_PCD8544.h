@@ -32,8 +32,8 @@ All text above, and the splash screen must be included in any redistribution
  typedef volatile RwReg PortReg;
  typedef uint32_t PortMask;
 #else
-  typedef volatile uint8_t PortReg;
-  typedef uint8_t PortMask;
+  typedef volatile GPIO_REG_TYPE PortReg;
+  typedef GPIO_REG_TYPE PortMask;
 #endif
 
 #define BLACK 1

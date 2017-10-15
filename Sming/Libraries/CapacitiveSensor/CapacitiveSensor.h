@@ -24,7 +24,7 @@
 
 #define PIN_TO_BASEREG(pin)             (portOutputRegister(digitalPinToPort(pin)))
 #define PIN_TO_BITMASK(pin)             (digitalPinToBitMask(pin))
-#define IO_REG_TYPE uint8_t
+#define IO_REG_TYPE GPIO_REG_TYPE
 #define IO_REG_ASM
 #define DIRECT_READ(base, mask)         (((*((base)+GPIO_IN_ADDRESS)) & (mask)) ? 1 : 0)
 #define DIRECT_MODE_INPUT(base, mask)   ((*((base)+GPIO_ENABLE_ADDRESS)) &= ~(mask))
