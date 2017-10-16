@@ -24,7 +24,8 @@
 bool HttpConnection::parserSettingsInitialized = false;
 http_parser_settings HttpConnection::parserSettings;
 
-HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false), mode(eHCM_String) {
+HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false), mode(eHCM_String)
+{
 	this->waitingQueue = queue;
 
 	http_parser_init(&parser, HTTP_RESPONSE);
@@ -55,7 +56,8 @@ HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false), mode(eHCM
 	}
 }
 
-bool HttpConnection::connect(const String& host, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */) {
+bool HttpConnection::connect(const String& host, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+{
 
 	debugf("HttpConnection::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != NULL? tcp->state : -1), (int)(getConnectionState() != eTCS_Ready), (int)isActive());
 
@@ -76,7 +78,8 @@ bool HttpConnection::connect(const String& host, int port, bool useSsl /* = fals
 	return TcpClient::connect(host, port, useSsl, sslOptions);
 }
 
-bool HttpConnection::isActive() {
+bool HttpConnection::isActive()
+{
 	if(tcp == NULL) {
 		return false;
 	}
@@ -278,7 +281,8 @@ int HttpConnection::staticOnHeadersComplete(http_parser* parser)
 }
 
 #ifndef COMPACT_MODE
-int HttpConnection::staticOnStatus(http_parser *parser, const char *at, size_t length) {
+int HttpConnection::staticOnStatus(http_parser *parser, const char *at, size_t length)
+{
 	return 0;
 }
 #endif
@@ -348,22 +352,21 @@ int HttpConnection::staticOnBody(http_parser *parser, const char *at, size_t len
 }
 
 #ifndef COMPACT_MODE
-int HttpConnection::staticOnChunkHeader(http_parser* parser) {
+int HttpConnection::staticOnChunkHeader(http_parser* parser)
+{
 	debugf("On chunk header");
 	return 0;
 }
 
-int HttpConnection::staticOnChunkComplete(http_parser* parser) {
+int HttpConnection::staticOnChunkComplete(http_parser* parser)
+{
 	debugf("On chunk complete");
 	return 0;
 }
 #endif
 
-void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent) {
-
-	if(!(sourceEvent == eTCE_Connected || sourceEvent == eTCE_Sent)) {
-		return;
-	}
+void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
+{
 
 	debugf("HttpConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue->count());
 
@@ -434,7 +437,8 @@ void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent) {
 	TcpClient::onReadyToSendData(sourceEvent);
 }
 
-void HttpConnection::sendRequestHeaders(HttpRequest* request) {
+void HttpConnection::sendRequestHeaders(HttpRequest* request)
+{
 	sendString(http_method_str(request->method) + String(" ") + request->uri.getPathWithQuery() + " HTTP/1.1\r\nHost: " + request->uri.Host + "\r\n");
 
 	// TODO: represent the post params as stream ...
@@ -469,7 +473,8 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request) {
 	sendString("\r\n");
 }
 
-bool HttpConnection::sendRequestBody(HttpRequest* request) {
+bool HttpConnection::sendRequestBody(HttpRequest* request)
+{
 	if(state == eHCS_StartBody) {
 		state = eHCS_SendingBody;
 		// if there is input raw data -> send it
@@ -520,11 +525,13 @@ bool HttpConnection::sendRequestBody(HttpRequest* request) {
 	return true;
 }
 
-HttpRequest* HttpConnection::getRequest() {
+HttpRequest* HttpConnection::getRequest()
+{
 	return incomingRequest;
 }
 
-HttpResponse* HttpConnection::getResponse() {
+HttpResponse* HttpConnection::getResponse()
+{
 	HttpResponse* response = new HttpResponse();
 	response->code = code;
 	response->headers = responseHeaders;
@@ -548,7 +555,8 @@ HttpResponse* HttpConnection::getResponse() {
 
 // end of public methods for HttpConnection
 
-err_t HttpConnection::onReceive(pbuf *buf) {
+err_t HttpConnection::onReceive(pbuf *buf)
+{
 	if (buf == NULL)
 	{
 		// Disconnected, close it
@@ -584,12 +592,14 @@ err_t HttpConnection::onReceive(pbuf *buf) {
 	return ERR_OK;
 }
 
-void HttpConnection::onError(err_t err) {
+void HttpConnection::onError(err_t err)
+{
 	cleanup();
 	TcpClient::onError(err);
 }
 
-void HttpConnection::cleanup() {
+void HttpConnection::cleanup()
+{
 	// TODO: clean the current request
 	reset();
 
@@ -601,7 +611,8 @@ void HttpConnection::cleanup() {
 	}
 }
 
-HttpConnection::~HttpConnection() {
+HttpConnection::~HttpConnection()
+{
 	cleanup();
 }
 
