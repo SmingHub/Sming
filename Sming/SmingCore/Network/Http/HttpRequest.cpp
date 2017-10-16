@@ -56,7 +56,7 @@ HttpRequest::~HttpRequest() {
 	stream = NULL;
 }
 
-HttpRequest* HttpRequest::setURL(URL uri) {
+HttpRequest* HttpRequest::setURL(const URL& uri) {
 	this->uri = uri;
 	return this;
 }

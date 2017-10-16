@@ -41,7 +41,7 @@ public:
 	HttpRequest& operator = (const HttpRequest& rhs);
 	~HttpRequest();
 
-	HttpRequest* setURL(URL uri);
+	HttpRequest* setURL(const URL& uri);
 
 	HttpRequest* setMethod(const HttpMethod method);
 
