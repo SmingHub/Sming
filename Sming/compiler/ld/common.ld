@@ -152,6 +152,26 @@ SECTIONS
   .irom0.text : ALIGN(4)
   {
     _irom0_text_start = ABSOLUTE(.);
+    
+    *libsmartconfig.a:(.literal .text .literal.* .text.*)
+    *libstdc++.a:(.literal .text .literal.* .text.*)
+    *liblwip_gcc.a:(.literal .text .literal.* .text.*)
+    *liblwip_src.a:(.literal .text .literal.* .text.*)
+    *libaxtls.a:(.literal .text .literal.* .text.*)
+    *libat.a:(.literal.* .text.*)
+    *libcrypto.a:(.literal.* .text.*)
+    *libespnow.a:(.literal.* .text.*)
+    *libjson.a:(.literal.* .text.*)
+    *liblwip.a:(.literal.* .text.*)
+    *libmesh.a:(.literal.* .text.*)
+    *libnet80211.a:(.literal.* .text.*)
+    *libsmartconfig.a:(.literal.* .text.*)
+    *libssl.a:(.literal.* .text.*)
+    *libupgrade.a:(.literal.* .text.*)
+    *libwpa.a:(.literal.* .text.*)
+    *libwpa2.a:(.literal.* .text.*)
+    *libwps.a:(.literal.* .text.*)
+    
     *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text .irom.debug.*)
 	out/build/app_app.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
   *libsming.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
