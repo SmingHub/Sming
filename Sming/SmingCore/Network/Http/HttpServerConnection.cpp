@@ -46,6 +46,9 @@ HttpServerConnection::HttpServerConnection(tcp_pcb *clientTcp)
 
 HttpServerConnection::~HttpServerConnection()
 {
+	if(this->resource) {
+		this->resource->shutdown(*this);
+	}
 }
 
 void HttpServerConnection::setResourceTree(ResourceTree* resourceTree)

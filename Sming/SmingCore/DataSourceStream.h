@@ -98,7 +98,7 @@ public:
 
     /** @brief  Write chars to stream
      *  @param  buffer Pointer to buffer to write to the stream
-     *  @param  size Quantity of chars to writen
+     *  @param  size Quantity of chars to write
      *  @retval size_t Quantity of chars written to stream
      */
 	virtual size_t write(const uint8_t *buffer, size_t size) = 0;
@@ -145,7 +145,7 @@ public:
 
     /** @brief  Write chars to stream
      *  @param  buffer Pointer to buffer to write to the stream
-     *  @param  size Quantity of chars to writen
+     *  @param  size Quantity of chars to write
      *  @retval size_t Quantity of chars written to stream
      */
 	virtual size_t write(const uint8_t *buffer, size_t size);
@@ -256,7 +256,7 @@ public:
     /** @brief  Set value of a variable in the template file
      *  @param  name Name of variable
      *  @param  value Value to assign to the variable
-     *  @note   Sets and existing varible or adds a new variable if variable does not already exist
+     *  @note   Sets and existing variable or adds a new variable if variable does not already exist
      */
 	void setVar(String name, String value);
 
@@ -315,6 +315,38 @@ private:
 	DynamicJsonBuffer buffer;
 	JsonObject &rootNode;
 	bool send;
+};
+
+class EndlessMemoryStream: public ReadWriteStream
+{
+public:
+	virtual ~EndlessMemoryStream();
+
+	//Use base class documentation
+	virtual StreamType getStreamType();
+
+	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+
+	//Use base class documentation
+	virtual bool seek(int len);
+
+	/** @brief  Write a single char to stream
+	 *  @param  charToWrite Char to write to the stream
+	 *  @retval size_t Quantity of chars written to stream (always 1)
+	 */
+	virtual size_t write(uint8_t charToWrite);
+
+	/** @brief  Write chars to stream
+	 *  @param  buffer Pointer to buffer to write to the stream
+	 *  @param  size Quantity of chars to write
+	 *  @retval size_t Quantity of chars written to stream
+	 */
+	virtual size_t write(const uint8_t *buffer, size_t size);
+
+	virtual bool isFinished();
+
+private:
+	MemoryDataStream* stream = NULL;
 };
 
 /** @} */

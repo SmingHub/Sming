@@ -133,6 +133,9 @@ uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 	int len = min(bufSize, size - pos);
 	int available = fileRead(handle, data, len);
 	fileSeek(handle, pos, eSO_FileStart); // Don't move cursor now (waiting seek)
+	if(available < 0) {
+		available = 0;
+	}
 	return available;
 }
 
@@ -358,4 +361,63 @@ int JsonObjectStream::length()
 	}
 
 	return rootNode.measureLength();
+}
+
+EndlessMemoryStream::~EndlessMemoryStream()
+{
+	delete stream;
+	stream = NULL;
+}
+
+StreamType EndlessMemoryStream::getStreamType()
+{
+	return eSST_Memory;
+}
+
+uint16_t EndlessMemoryStream::readMemoryBlock(char* data, int bufSize)
+{
+	if(stream == NULL) {
+		return 0;
+	}
+
+	return stream->readMemoryBlock(data, bufSize);
+}
+
+//Use base class documentation
+bool EndlessMemoryStream::seek(int len)
+{
+	if(stream == NULL) {
+		return false;
+	}
+
+	int res = stream->seek(len);
+	if(stream->isFinished()) {
+		delete stream;
+		stream = NULL;
+	}
+
+	return res;
+}
+
+size_t EndlessMemoryStream::write(uint8_t charToWrite)
+{
+	if(stream == NULL) {
+		stream = new MemoryDataStream();
+	}
+
+	return stream->write(charToWrite);
+}
+
+size_t EndlessMemoryStream::write(const uint8_t *buffer, size_t size)
+{
+	if(stream == NULL) {
+		stream = new MemoryDataStream();
+	}
+
+	return stream->write(buffer, size);
+}
+
+bool EndlessMemoryStream::isFinished()
+{
+	return false;
 }

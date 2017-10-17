@@ -17,7 +17,7 @@ extern "C" {
 
 class WebSocketConnection;
 
-typedef Vector<WebSocketConnection> WebSocketsList;
+typedef Vector<WebSocketConnection*> WebSocketsList;
 
 typedef Delegate<void(WebSocketConnection&)> WebSocketDelegate;
 typedef Delegate<void(WebSocketConnection&, const String&)> WebSocketMessageDelegate;
@@ -89,9 +89,9 @@ private:
 	ws_parser_t parser;
 	ws_parser_callbacks_t parserSettings;
 
-// @deprecated
 	static WebSocketsList websocketList;
-// @end deprecated
+
+	EndlessMemoryStream* stream = NULL;
 };
 
 #endif /* SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_ */
