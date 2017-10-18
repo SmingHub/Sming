@@ -32,11 +32,17 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 	}
 
 	connection.setTimeOut(USHRT_MAX); //Disable disconnection on connection idle (no rx/tx)
-	connection.userData = (void *)socket;
 
 // TODO: Re-Enable Command Executor...
 
 	return 0;
+}
+
+void  WebsocketResource::shutdown(HttpServerConnection& connection)
+{
+	WebSocketConnection* socket = (WebSocketConnection *)connection.userData;
+	delete socket;
+	connection.userData = NULL;
 }
 
 int WebsocketResource::processData(HttpServerConnection& connection, HttpRequest& request, char *at, int size)
