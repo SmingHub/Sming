@@ -368,10 +368,6 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 
 void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	if(sourceEvent == eTCE_Poll) {
-		return;
-	}
-
 	if(state == eHCS_Sent) {
 		state = eHCS_Ready;
 	}
