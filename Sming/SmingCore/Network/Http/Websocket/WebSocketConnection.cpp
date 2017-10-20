@@ -19,6 +19,7 @@ WebSocketConnection::WebSocketConnection(HttpServerConnection* conn)
 WebSocketConnection::~WebSocketConnection()
 {
 	state = eWSCS_Closed;
+	stream = NULL;
 	close();
 }
 
@@ -199,10 +200,11 @@ void WebSocketConnection::close()
 	websocketList.removeElement(this);
 	if(state != eWSCS_Closed) {
 		state = eWSCS_Closed;
+		send((const char* )NULL, 0, WS_CLOSING_FRAME);
+		stream = NULL;
 		if(wsDisconnect) {
 			wsDisconnect(*this);
 		}
-		send((const char* )NULL, 0, WS_CLOSING_FRAME);
 	}
 
 	connection->setTimeOut(1);
