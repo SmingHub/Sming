@@ -18,7 +18,9 @@ WebSocketConnection::WebSocketConnection(HttpServerConnection* conn)
 
 WebSocketConnection::~WebSocketConnection()
 {
-	websocketList.removeElement(this);
+	state = eWSCS_Closed;
+	stream = NULL;
+	close();
 }
 
 bool WebSocketConnection::initialize(HttpRequest& request, HttpResponse& response)
@@ -58,7 +60,10 @@ bool WebSocketConnection::initialize(HttpRequest& request, HttpResponse& respons
 	ws_parser_init(&parser, &parserSettings);
 	parser.user_data = (void*)this;
 
-	websocketList.addElement(this);
+	if(!websocketList.contains(this)) {
+		websocketList.addElement(this);
+	}
+
 	if(wsConnect) {
 		wsConnect(*this);
 	}
@@ -123,9 +128,6 @@ int WebSocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t ty
 	connection->controlFrameType = type;
 
 	if (type == WS_FRAME_CLOSE) {
-		if(connection->wsDisconnect) {
-			connection->wsDisconnect(*connection);
-		}
 		connection->close();
 	}
 
@@ -196,9 +198,13 @@ WebSocketsList& WebSocketConnection::getActiveWebSockets()
 void WebSocketConnection::close()
 {
 	websocketList.removeElement(this);
-	state = eWSCS_Closed;
-	if(wsDisconnect) {
-		wsDisconnect(*this);
+	if(state != eWSCS_Closed) {
+		state = eWSCS_Closed;
+		send((const char* )NULL, 0, WS_CLOSING_FRAME);
+		stream = NULL;
+		if(wsDisconnect) {
+			wsDisconnect(*this);
+		}
 	}
 
 	connection->setTimeOut(1);
