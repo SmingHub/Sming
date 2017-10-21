@@ -37,3 +37,11 @@
 	path = Sming/third-party/ws_parser
 	url = https://github.com/charliesome/ws_parser.git
 	ignore = dirty
+[submodule "Sming/Libraries/Adafruit_ST7735"]
+	path = Sming/Libraries/Adafruit_ST7735
+	url = https://github.com/adafruit/Adafruit-ST7735-Library.git
+	ignore = dirty
+[submodule "Sming/Libraries/Adafruit_SSD1306"]
+	path = Sming/Libraries/Adafruit_SSD1306
+	url = https://github.com/adafruit/Adafruit_SSD1306.git
+	ignore = dirty

@@ -95,3 +95,24 @@ void formUrlParser(HttpRequest& request, const char *at, int length)
 		data = data.substring(pos + 1);
 	}
 }
+
+void bodyToStringParser(HttpRequest& request, const char *at, int length)
+{
+	String* data = static_cast<String *>(request.args);
+
+	if(length == -1) {
+		delete data;
+		data = new String();
+		request.args = (void *)data;
+		return;
+	}
+
+	if(length == -2) {
+		request.setBody(*data);
+		delete data;
+		request.args = NULL;
+		return;
+	}
+
+	*data += String(at, length);
+}

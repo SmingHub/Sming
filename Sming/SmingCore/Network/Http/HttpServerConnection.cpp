@@ -16,6 +16,10 @@
 #include "TcpServer.h"
 #include "../../Services/cWebsocket/websocket.h"
 #include "WebConstants.h"
+#include "HttpChunkedStream.h"
+
+bool HttpServerConnection::parserSettingsInitialized = false;
+http_parser_settings HttpServerConnection::parserSettings;
 
 HttpServerConnection::HttpServerConnection(tcp_pcb *clientTcp)
 	: TcpClient(clientTcp, 0, 0), state(eHCS_Ready)
@@ -24,21 +28,27 @@ HttpServerConnection::HttpServerConnection(tcp_pcb *clientTcp)
 	http_parser_init(&parser, HTTP_REQUEST);
 	parser.data = (void*)this;
 
-	memset(&parserSettings, 0, sizeof(parserSettings));
-	// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
-	parserSettings.on_message_begin     = staticOnMessageBegin;
-	parserSettings.on_headers_complete  = staticOnHeadersComplete;
-	parserSettings.on_message_complete  = staticOnMessageComplete;
+	if(!parserSettingsInitialized) {
+		memset(&parserSettings, 0, sizeof(parserSettings));
+		// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
+		parserSettings.on_message_begin     = staticOnMessageBegin;
+		parserSettings.on_headers_complete  = staticOnHeadersComplete;
+		parserSettings.on_message_complete  = staticOnMessageComplete;
 
-	// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
-	parserSettings.on_url               = staticOnPath;
-	parserSettings.on_header_field      = staticOnHeaderField;
-	parserSettings.on_header_value      = staticOnHeaderValue;
-	parserSettings.on_body              = staticOnBody;
+		// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
+		parserSettings.on_url               = staticOnPath;
+		parserSettings.on_header_field      = staticOnHeaderField;
+		parserSettings.on_header_value      = staticOnHeaderValue;
+		parserSettings.on_body              = staticOnBody;
+		parserSettingsInitialized = true;
+	}
 }
 
 HttpServerConnection::~HttpServerConnection()
 {
+	if(this->resource) {
+		this->resource->shutdown(*this);
+	}
 }
 
 void HttpServerConnection::setResourceTree(ResourceTree* resourceTree)
@@ -67,7 +77,6 @@ int HttpServerConnection::staticOnMessageBegin(http_parser* parser)
 		connection->response.stream = NULL;
 	}
 
-	connection->headersSent = false;
 	connection->state = eHCS_Ready;
 
 	// ... and Request
@@ -193,8 +202,26 @@ int HttpServerConnection::staticOnHeadersComplete(http_parser* parser)
 			contentType = contentType.substring(0, endPos);
 		}
 
-		if(connection->bodyParsers->contains(contentType)) {
-			connection->bodyParser = (*connection->bodyParsers)[contentType];
+		String majorType = contentType.substring(0, contentType.indexOf('/'));
+		majorType += "/*";
+
+		// Content-Type for exact type: application/json
+		// Wildcard type for application: application/*
+		// Wildcard type for the rest*
+
+		Vector<String> types;
+		types.add(contentType);
+		types.add(majorType);
+		types.add("*");
+
+		for(int i=0; i< types.count(); i++) {
+			if(connection->bodyParsers->contains(types.at(i))) {
+				connection->bodyParser = (*connection->bodyParsers)[types.at(i)];
+				break;
+			}
+		}
+
+		if(connection->bodyParser) {
 			connection->bodyParser(connection->request, NULL, -1);
 		}
 	}
@@ -341,70 +368,38 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 
 void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	if(state != eHCS_Sending) {
-		TcpClient::onReadyToSendData(sourceEvent);
-		return;
-	}
-
-	if(!headersSent) {
-		String statusLine = "HTTP/1.1 "+String(response.code) +  " " + getStatus((enum http_status)response.code) + "\r\n";
-		writeString(statusLine, TCP_WRITE_FLAG_MORE | TCP_WRITE_FLAG_COPY);
-
-		if(response.stream != NULL && response.stream->length() != -1) {
-			response.headers["Content-Length"] = String(response.stream->length());
-		}
-		if(!response.headers.contains("Content-Length") && response.stream == NULL) {
-			response.headers["Content-Length"] = "0";
-		}
-
-		if(!response.headers.contains("Connection")) {
-			if(request.headers.contains("Connection") && request.headers["Connection"] == "close") {
-				// the other side requests closing of the tcp connection...
-				response.headers["Connection"] = "close";
-			}
-			else {
-				response.headers["Connection"] = "keep-alive"; // Keep-Alive to reuse the connection
-			}
-		}
-
-#if HTTP_SERVER_EXPOSE_NAME == 1
-		response.headers["Server"] = "HttpServer/Sming";
-#endif
-
-#if HTTP_SERVER_EXPOSE_DATE == 1
-		response.headers["Date"] = SystemClock.getSystemTimeString();
-#endif
-		for (int i = 0; i < response.headers.count(); i++)
-		{
-			String write = response.headers.keyAt(i) + ": " + response.headers.valueAt(i) + "\r\n";
-			writeString(write.c_str(), TCP_WRITE_FLAG_MORE | TCP_WRITE_FLAG_COPY);
-		}
-		writeString("\r\n", TCP_WRITE_FLAG_MORE | TCP_WRITE_FLAG_COPY);
-		headersSent = true;
+	if(state == eHCS_Sent) {
+		state = eHCS_Ready;
 	}
 
 	do {
-		if(request.method == HTTP_HEAD) {
-			if(response.stream != NULL) {
-				delete response.stream;
-				response.stream = NULL;
+
+		if(!(state >= eHCS_StartSending && state < eHCS_Sent)) {
+			break;
+		}
+
+		if(state == eHCS_StartSending) {
+			sendResponseHeaders(&response);
+			state = eHCS_SendingHeaders;
+			break;
+		}
+
+		if(state == eHCS_SendingHeaders) {
+			if(stream != NULL && !stream->isFinished()) {
+				break;
 			}
-			state = eHCS_Sent;
-			break;
+
+			state = eHCS_StartBody;
 		}
 
-		if(response.stream == NULL) {
+		if(sendResponseBody(&response)) {
+			delete stream;
+			stream = NULL;
 			state = eHCS_Sent;
-			break;
 		}
 
-		write(response.stream);
-		if (response.stream->isFinished()) {
-			debugf("Body stream completed");
-			delete response.stream; // Free memory now!
-			response.stream = NULL;
-			state = eHCS_Sent;
-		}
+		break;
+
 	} while(false);
 
 	if(state == eHCS_Sent && response.headers["Connection"] == "close") {
@@ -417,6 +412,101 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	TcpClient::onReadyToSendData(sourceEvent);
+}
+
+void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
+{
+#ifndef DISABLE_HTTPSRV_ETAG
+	if(response->stream != NULL && !response->headers.contains("ETag")) {
+		String tag = response->stream->id();
+		if(tag.length() > 0) {
+			response->headers["ETag"] = String('"' + tag + '"');
+		}
+	}
+
+	if(request.headers.contains("If-Match") && response->headers.contains("ETag") &&
+	   request.headers["If-Match"] == response->headers["ETag"]) {
+		if(request.method == HTTP_GET || request.method == HTTP_HEAD) {
+			response->code = HTTP_STATUS_NOT_MODIFIED;
+			response->headers["Content-Length"] = "0";
+			delete response->stream;
+			response->stream = NULL;
+		}
+	}
+#endif /* DISABLE_HTTPSRV_ETAG */
+	String statusLine = "HTTP/1.1 "+String(response->code) +  " " + getStatus((enum http_status)response->code) + "\r\n";
+	sendString(statusLine.c_str());
+	if(response->stream != NULL && response->stream->length() != -1) {
+		response->headers["Content-Length"] = String(response->stream->length());
+	}
+	if(!response->headers.contains("Content-Length") && response->stream == NULL) {
+		response->headers["Content-Length"] = "0";
+	}
+
+	if(!response->headers.contains("Connection")) {
+		if(request.headers.contains("Connection") && request.headers["Connection"] == "close") {
+			// the other side requests closing of the tcp connection...
+			response->headers["Connection"] = "close";
+		}
+		else {
+			response->headers["Connection"] = "keep-alive"; // Keep-Alive to reuse the connection
+		}
+	}
+
+#if HTTP_SERVER_EXPOSE_NAME == 1
+	response->headers["Server"] = "HttpServer/Sming";
+#endif
+
+#if HTTP_SERVER_EXPOSE_DATE == 1
+	response->headers["Date"] = SystemClock.getSystemTimeString();
+#endif
+	for (int i = 0; i < response->headers.count(); i++)
+	{
+		String write = response->headers.keyAt(i) + ": " + response->headers.valueAt(i) + "\r\n";
+		sendString(write.c_str());
+	}
+	sendString("\r\n");
+}
+
+bool HttpServerConnection::sendResponseBody(HttpResponse *response)
+{
+	if (state == eHCS_StartBody) {
+		state = eHCS_SendingBody;
+		if(request.method == HTTP_HEAD) {
+			if(response->stream != NULL) {
+				delete response->stream;
+				response->stream = NULL;
+			}
+			return true;
+		}
+
+		if(response->stream == NULL) {
+			return true;
+		}
+
+		delete stream;
+		if(response->headers["Transfer-Encoding"] == "chunked") {
+			stream = new HttpChunkedStream(response->stream);
+		}
+		else {
+			stream = response->stream; // avoid intermediate buffers
+		}
+		response->stream = NULL;
+
+		return false;
+	}
+
+	if(stream == NULL) {
+		// we are done for now
+		return true;
+	}
+
+	if(response->stream == NULL && !stream->isFinished()) {
+		return false;
+	}
+
+	return true;
+
 }
 
 void HttpServerConnection::onError(err_t err) {
@@ -435,7 +525,8 @@ const char * HttpServerConnection::getStatus(enum http_status code)
 
 void HttpServerConnection::send()
 {
-	state = eHCS_Sending;
+	state = eHCS_StartSending;
+	onReadyToSendData(eTCE_Received);
 }
 
 void HttpServerConnection::sendError(const char* message /* = NULL*/, enum http_status code /* = HTTP_STATUS_BAD_REQUEST */)

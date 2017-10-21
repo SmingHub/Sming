@@ -11,6 +11,11 @@
  * Created on March 4, 2016
  */
 
+/** @defgroup   dnsserver DNS server
+ *  @brief      Provides DNS server
+ *  @ingroup    udp
+ *  @{
+ */
 #ifndef DNSServer_h
 #define DNSServer_h
 
@@ -83,4 +88,5 @@ class DNSServer : public UdpConnection
 
 };
 
+/** @} */
 #endif //DNSServer_h

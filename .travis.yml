@@ -4,7 +4,8 @@ language: cpp
 env:
   global:
     - SDK_BUILD=258
-    
+    - secure: Db9Cnv+oOmmQMm6aIf3H5VYHaas04uGOtvJMsq7NW05oyDVGCgV5FayjFPVzNHHgv85em1u1CPqX3p7eHWLSKMjARcEpLavXM31HW0RPxvserSpXI7f49EBi6ENgCPre4NGMWpdJgvIhmAfcEMwyLUBqRDmfH4KqqE8V5ZbhvacCbaD2cEOsPDjbkpA66VYp3srTmVUR4cC0ehUdg7odxVOWHaJbA068jJjwz/ggbYMkVljcFkjVHtZAIiZDN1vBGRWGwTjM4TMXwJmw07WumBwhZw6Qm7OShGfBTyg5/6Obqk1QZ///6BQCUD+bGhLlfEleEB48YJXwLD96HXgUwu/wZ7xWStQCWW5GQRPgXaufwZcc1TySJxaDeMhk90cIbUsjXGhmhV+rpM/5PMZTvpTOJbKrz2oY2qqFEZJGEYGoH24LHp4yPpAvQCmqjeLcQj/JiHeL9nKUy+mC3yOPLR/DOTa7t7zN8vuKqm0G0Af3DXXuum2kkzBgHFCNiiLedF2/7BVe/nAbOJLpuQwfVVOqpxIpTzKg05oPmjSsFPp4u03Yso3Kc6ulJQ354mYmnZD34jah5FaWo8YkGCmAGLIaqpcV62LCTSDK58ZMpEU1fy3jANlmktDQlaCUvniUo+c0mqmlstRpzGathb4u1nNHdgB/rjzDx64ug2MmllI=
+
 matrix:
     include:
         - os: linux
@@ -18,8 +19,15 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
+    - sourceline: 'ppa:libreoffice/libreoffice-4-2'
     packages:     
       - bsdtar
+      - doxygen
+      - doxygen-doc
+      - doxygen-latex
+      - doxygen-gui
+      - graphviz
+
 install:
   - if [ "$SDK_VERSION" != "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
   - if [ "$SDK_VERSION" != "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-linux-x86_64.tar.gz"; fi
@@ -27,7 +35,8 @@ install:
   - if [ "$SDK_VERSION" != "2.0.0" ]; then wget https://bintray.com/artifact/download/kireevco/generic/${SDK_FILE_NAME}; fi
   - if [ "$SDK_VERSION" != "2.0.0" ]; then bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk; fi
   - if [ "$SDK_VERSION" == "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget https://github.com/nodemcu/nodemcu-firmware/raw/master/tools/esp-open-sdk.tar.xz; tar -Jxvf esp-open-sdk.tar.xz; ln -s `pwd`/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/. ; fi
-  - if [ "$SDK_VERSION" == "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget http://bbs.espressif.com/download/file.php?id=1690 -O sdk.zip; unzip sdk.zip; ln -s `pwd`/ESP8266_NONOS_SDK/ $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/sdk; fi
+  - if [ "$SDK_VERSION" == "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget http://bbs.espressif.com/download/file.php?id=1690 -O sdk.zip; unzip sdk.zip; ln -s `pwd`/ESP8266_NONOS_SDK/ $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/sdk; export  DEPLOY='true'; fi
+
 script:
   - export CHANGED_FILES=`git diff --diff-filter=AMD HEAD HEAD^ --name-only`
   - export CHANGED_PROJECTS=`for i in $CHANGED_FILES; do echo "$i" |  grep '^samples/' | cut -d'/' -f2; done | uniq`
@@ -47,5 +56,18 @@ script:
   - make clean samples-clean
   - make ENABLE_CUSTOM_HEAP=1
   - make Basic_Blink ENABLE_CUSTOM_HEAP=1
-  - make clean samples-clean
-  - make ENABLE_CUSTOM_LWIP=1; make samples ENABLE_CUSTOM_LWIP=1
+
+deploy:
+  provider: script
+  script: sh $TRAVIS_BUILD_DIR/.travis/deploy.sh $TRAVIS_TAG
+  skip_cleanup: true
+  on:
+    tags: true
+    condition: $DEPLOY == true
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/c1a5e8bc97d3794a0417
+    on_success: always # options: [always|never|change] default: always
+    on_failure: always # options: [always|never|change] default: always

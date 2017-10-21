@@ -1,6 +1,7 @@
 /** @defgroup   ntp Network Time Protocol client
  *  @brief      Provides NTP client
  *  @ingroup    datetime
+ *  @ingroup    udp
  *  @{
  */
 #ifndef APP_NTPCLIENT_H_

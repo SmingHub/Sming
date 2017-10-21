@@ -20,6 +20,8 @@ public:
 	int checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
 	int processData(HttpServerConnection& connection, HttpRequest& request, char *at, int size);
 
+	virtual void shutdown(HttpServerConnection& connection);
+
 	void setConnectionHandler(WebSocketDelegate handler);
 	void setMessageHandler(WebSocketMessageDelegate handler);
 	void setBinaryHandler(WebSocketBinaryDelegate handler);

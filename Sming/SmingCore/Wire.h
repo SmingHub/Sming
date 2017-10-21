@@ -48,8 +48,8 @@ class TwoWire : public Stream
     static void onReceiveService(uint8_t*, int);
   public:
     TwoWire();
-    void begin(int scl, int sda);
-    void pins(int scl, int sda);
+    void begin(int sda, int scl);
+    void pins(int sda, int scl);
     void begin();
     void begin(uint8_t);
     void begin(int);

@@ -29,7 +29,7 @@ void init()
 	Serial.println("Starting...");
 
 	// You can change pins:
-	//Wire.pins(12, 14); // SCL, SDA
+	//Wire.pins(14, 12); // SDA, SCL 
 	Wire.begin();
 
 	// Select the Working Mode

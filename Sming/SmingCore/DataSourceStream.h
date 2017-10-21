@@ -81,10 +81,34 @@ public:
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
 	virtual int length() {  return -1; }
+
+	/**
+	 * @brief Returns unique id of the resource.
+	 * @retval String the unique id of the stream.
+	 */
+	virtual String id() { return String(); }
+};
+
+class ReadWriteStream : public IDataSourceStream
+{
+public:
+	virtual ~ReadWriteStream() {}
+
+	virtual size_t write(uint8_t charToWrite) = 0;
+
+    /** @brief  Write chars to stream
+     *  @param  buffer Pointer to buffer to write to the stream
+     *  @param  size Quantity of chars to write
+     *  @retval size_t Quantity of chars written to stream
+     */
+	virtual size_t write(const uint8_t *buffer, size_t size) = 0;
+
+    //Use base class documentation
+	virtual uint16_t readMemoryBlock(char* data, int bufSize) = 0;
 };
 
 /// Memory data stream class
-class MemoryDataStream : public Print, public IDataSourceStream
+class MemoryDataStream : public Print, public ReadWriteStream
 {
 public:
     /** @brief Memory data stream base class
@@ -103,7 +127,7 @@ public:
 	/** @brief  Get size of stream
 	 *  @retval int Quantity of chars in stream
 	 *
-	 *  @deprecated Use getLength instead
+	 *  @deprecated Use length() instead
 	 */
 	int getStreamLength() { return size; }
 
@@ -121,7 +145,7 @@ public:
 
     /** @brief  Write chars to stream
      *  @param  buffer Pointer to buffer to write to the stream
-     *  @param  size Quantity of chars to writen
+     *  @param  size Quantity of chars to write
      *  @retval size_t Quantity of chars written to stream
      */
 	virtual size_t write(const uint8_t *buffer, size_t size);
@@ -143,7 +167,7 @@ private:
 };
 
 /// File stream class
-class FileStream : public IDataSourceStream
+class FileStream : public ReadWriteStream
 {
 public:
 	
@@ -183,6 +207,8 @@ public:
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
 	int length() { return size; }
+
+	virtual String id();
 
 private:
 	file_t handle;
@@ -230,7 +256,7 @@ public:
     /** @brief  Set value of a variable in the template file
      *  @param  name Name of variable
      *  @param  value Value to assign to the variable
-     *  @note   Sets and existing varible or adds a new variable if variable does not already exist
+     *  @note   Sets and existing variable or adds a new variable if variable does not already exist
      */
 	void setVar(String name, String value);
 
@@ -289,6 +315,38 @@ private:
 	DynamicJsonBuffer buffer;
 	JsonObject &rootNode;
 	bool send;
+};
+
+class EndlessMemoryStream: public ReadWriteStream
+{
+public:
+	virtual ~EndlessMemoryStream();
+
+	//Use base class documentation
+	virtual StreamType getStreamType();
+
+	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+
+	//Use base class documentation
+	virtual bool seek(int len);
+
+	/** @brief  Write a single char to stream
+	 *  @param  charToWrite Char to write to the stream
+	 *  @retval size_t Quantity of chars written to stream (always 1)
+	 */
+	virtual size_t write(uint8_t charToWrite);
+
+	/** @brief  Write chars to stream
+	 *  @param  buffer Pointer to buffer to write to the stream
+	 *  @param  size Quantity of chars to write
+	 *  @retval size_t Quantity of chars written to stream
+	 */
+	virtual size_t write(const uint8_t *buffer, size_t size);
+
+	virtual bool isFinished();
+
+private:
+	MemoryDataStream* stream = NULL;
 };
 
 /** @} */

@@ -33,7 +33,7 @@ MODULES = app
 # SPI_MODE = dio
 
 ## SPIFFS options
-DISABLE_SPIFFS = 1
+# DISABLE_SPIFFS = 1
 # SPIFF_FILES = files
 
 # We need rBoot in order to be able to run bigger Flash roms.

@@ -10,6 +10,12 @@
  *
  ****/
 
+/** @defgroup   httpclient HTTP client
+ *  @brief      Provides HTTP/S client
+ *  @ingroup    tcpclient
+ *  @{
+ */
+
 #ifndef _SMING_CORE_NETWORK_HTTPCLIENT_H_
 #define _SMING_CORE_NETWORK_HTTPCLIENT_H_
 
@@ -93,4 +99,5 @@ protected:
 #endif
 };
 
+/** @} */
 #endif /* _SMING_CORE_NETWORK_HTTPCLIENT_H_ */

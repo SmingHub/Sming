@@ -81,10 +81,10 @@ void init()
 
 	WDT.enable(false); // First (but not the best) option: fully disable watch dog timer
 
-	// Default I2C pins (SCL:0 , SDA: 2)
+	// Default I2C pins (SDA: 2, SCL:0)
 
 	// You can change pins:
-	//Wire.pins(12, 14); // SCL, SDA
+	//Wire.pins(14, 12); // SDA, SCL 
 
 	Wire.begin();
 	procTimer.initializeMs(3000, scanBus).start();

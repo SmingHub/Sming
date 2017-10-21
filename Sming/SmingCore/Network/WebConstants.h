@@ -5,6 +5,13 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/** @defgroup   httpconsts HTTP constants to be used with HTTP client or HTTP server
+ *  @brief      Provides HTTP constants
+ *  @ingroup    httpserver
+ *  @ingroup    httpclient
+ *  @{
+ */
+
 #ifndef _SMING_CORE_NETWORK_WEBCONSTANTS_H_
 #define _SMING_CORE_NETWORK_WEBCONSTANTS_H_
 
@@ -81,4 +88,5 @@ namespace ContentType
 	}
 };
 
+/** @} */
 #endif /* _SMING_CORE_NETWORK_WEBCONSTANTS_H_ */

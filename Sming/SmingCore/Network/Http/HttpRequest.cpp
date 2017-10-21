@@ -12,7 +12,7 @@
 
 #include "HttpRequest.h"
 
-HttpRequest::HttpRequest(URL uri) {
+HttpRequest::HttpRequest(const URL& uri) {
 	this->uri = uri;
 }
 
@@ -50,12 +50,13 @@ HttpRequest& HttpRequest::operator = (const HttpRequest& rhs) {
 }
 
 HttpRequest::~HttpRequest() {
-	if(queryParams != NULL) {
-		delete queryParams;
-	}
+	delete queryParams;
+	delete stream;
+	queryParams = NULL;
+	stream = NULL;
 }
 
-HttpRequest* HttpRequest::setURL(URL uri) {
+HttpRequest* HttpRequest::setURL(const URL& uri) {
 	this->uri = uri;
 	return this;
 }
@@ -156,6 +157,7 @@ String HttpRequest::getBody()
 		char buf[1024];
 		for(int i=0; i< stream->length(); i += 1024) {
 			int available = memory->readMemoryBlock(buf, 1024);
+			memory->seek(max(available, 0));
 			ret += String(buf, available);
 			if(available < 1024) {
 				break;
@@ -185,12 +187,12 @@ uint32_t HttpRequest::getSslOptions() {
  	return sslOptions;
 }
 
-HttpRequest* HttpRequest::pinCertificate(SSLFingerprints fingerprints) {
+HttpRequest* HttpRequest::pinCertificate(const SSLFingerprints& fingerprints) {
 	sslFingerprint = fingerprints;
 	return this;
 }
 
-HttpRequest* HttpRequest::setSslClientKeyCert(SSLKeyCertPair clientKeyCert) {
+HttpRequest* HttpRequest::setSslClientKeyCert(const SSLKeyCertPair& clientKeyCert) {
 	this->sslClientKeyCert = clientKeyCert;
 	return this;
 }
@@ -209,7 +211,7 @@ HttpRequest* HttpRequest::setBody(const String& body) {
 	if(written < body.length()) {
 		debugf("HttpRequest::setBody: Unable to store the complete body");
 	}
-	stream = (IDataSourceStream*)memory;
+	stream = memory;
 	return this;
 }
 
@@ -219,7 +221,7 @@ HttpRequest* HttpRequest::setBody(uint8_t *rawData, size_t length) {
 	return this;
 }
 
-HttpRequest* HttpRequest::setBody(IDataSourceStream *stream) {
+HttpRequest* HttpRequest::setBody(ReadWriteStream *stream) {
 	this->stream = stream;
 	return this;
 }

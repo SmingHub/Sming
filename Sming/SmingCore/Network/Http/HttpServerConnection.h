@@ -34,13 +34,6 @@ class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
 
-enum HttpConnectionState
-{
-	eHCS_Ready,
-	eHCS_Sending,
-	eHCS_Sent
-};
-
 class HttpServerConnection: public TcpClient
 {
 public:
@@ -63,13 +56,16 @@ protected:
 	const char * getStatus(enum http_status s);
 
 private:
-	static int IRAM_ATTR staticOnMessageBegin(http_parser* parser);
-	static int IRAM_ATTR staticOnPath(http_parser *parser, const char *at, size_t length);
-	static int IRAM_ATTR staticOnHeadersComplete(http_parser* parser);
-	static int IRAM_ATTR staticOnHeaderField(http_parser *parser, const char *at, size_t length);
-	static int IRAM_ATTR staticOnHeaderValue(http_parser *parser, const char *at, size_t length);
-	static int IRAM_ATTR staticOnBody(http_parser *parser, const char *at, size_t length);
-	static int IRAM_ATTR staticOnMessageComplete(http_parser* parser);
+	static int staticOnMessageBegin(http_parser* parser);
+	static int staticOnPath(http_parser *parser, const char *at, size_t length);
+	static int staticOnHeadersComplete(http_parser* parser);
+	static int staticOnHeaderField(http_parser *parser, const char *at, size_t length);
+	static int staticOnHeaderValue(http_parser *parser, const char *at, size_t length);
+	static int staticOnBody(http_parser *parser, const char *at, size_t length);
+	static int staticOnMessageComplete(http_parser* parser);
+
+	void sendResponseHeaders(HttpResponse* response);
+	bool sendResponseBody(HttpResponse* response);
 
 public:
 	void* userData = NULL; // << use to pass user data between requests
@@ -78,15 +74,14 @@ private:
 	HttpConnectionState state;
 
 	http_parser parser;
-	http_parser_settings parserSettings;
+	static http_parser_settings parserSettings;
+	static bool parserSettingsInitialized;
 
 	ResourceTree* resourceTree = NULL;
 	HttpResource* resource = NULL;
 
 	HttpRequest request = HttpRequest(URL());
 	HttpResponse response;
-
-	bool headersSent = false;
 
 	HttpResourceDelegate headersCompleteDelegate = 0;
 	HttpResourceDelegate requestCompletedDelegate = 0;
