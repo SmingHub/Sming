@@ -142,7 +142,7 @@ static void spiffs_mount_internal(spiffs_config *cfg)
   //debugf("%X", dat);
 }
 
-void spiffs_mount()
+void spiffs_mount_default()
 {
   spiffs_config cfg = spiffs_get_storage_config();
   spiffs_mount_internal(&cfg);
@@ -165,7 +165,7 @@ void spiffs_unmount()
 }
 
 // FS formatting function
-bool spiffs_format()
+bool spiffs_format_default()
 {
   spiffs_unmount();
   spiffs_config cfg = spiffs_get_storage_config();
