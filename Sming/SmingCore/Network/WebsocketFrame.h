@@ -54,29 +54,34 @@ class WebsocketFrameClass
 public:
 	WebsocketFrameClass() {};
 	virtual ~WebsocketFrameClass();
-	uint8_t encodeFrame(WSFrameType frameType, uint8_t * payload, size_t length, uint8_t mask, uint8_t fin,  uint8_t headerToPayload = true);
-    /** @brief  Encode given buffer to valid websocket frame
-     *  @param  frameType Websocket frame type text or binary
-     *  @param  payload Pointer to buffer to be encoded as websocket frame
-     *  @param	length Length of buffer to be encoded as websocket frame
-     *  @param	mask If true websocket frame will be masked (required for client->server communication)
-     *  @param	fin If true produce ordinary websocket frame, not continuation. Currently MUST be true.
-     *  @param	headerToPayload If true try to create single buffer message with header and payload, otherwise produce separate header and payload buffers
-     *  @retval Return true on success, false on error
-     *
-     *  @details if successfully executed, check whether _header is not nullptr and either use _header and _payload or just _payload as websocket frame
-     *
-     */
 
+	/** @brief  Encode given buffer to valid websocket frame
+	 *  @param  frameType Websocket frame type text or binary
+	 *  @param  payload Pointer to buffer to be encoded as websocket frame
+	 *  @param	length Length of buffer to be encoded as websocket frame
+	 *  @param	mask If true websocket frame will be masked (required for client->server communication)
+	 *  @param	fin If true produce ordinary websocket frame, not continuation. Currently MUST be true.
+	 *  @param	headerToPayload If true try to create single buffer message with header and payload, otherwise produce separate header and payload buffers
+	 *  @retval Return true on success, false on error
+	 *
+	 *  @details if successfully executed, check whether _header is not nullptr and either use _header and _payload or just _payload as websocket frame
+	 *
+	 */
+	uint8_t encodeFrame(WSFrameType frameType, uint8_t * payload, size_t length, uint8_t mask, uint8_t fin,  uint8_t headerToPayload = true);
+
+	/** @brief  Decode given buffer containing websocket frame to payload
+	 *  @param  buffer Pointer to buffer to be decoded as websocket frame
+	 *  @param	length Length of buffer to be decoded as websocket frame
+	 *  @retval Return true on success, false on error
+	 *
+	 *  @details if successfully executed, check _frameType to decide what to do with payload pointed by _payload
+	 *
+	 */
 	uint8_t decodeFrame(uint8_t * buffer, size_t length);
-    /** @brief  Decode given buffer containing websocket frame to payload
-     *  @param  buffer Pointer to buffer to be decoded as websocket frame
-     *  @param	length Length of buffer to be decoded as websocket frame
-     *  @retval Return true on success, false on error
-     *
-     *  @details if successfully executed, check _frameType to decide what to do with payload pointed by _payload
-     *
-     */
+
+
+	static int mask(const String& payload, uint32_t key, char *data);
+
 protected:
 	uint8_t* _payload = nullptr; // pointer to payload; in encode - will point to proper websocket frame payload, in decode - will point to websocket frame's decoded data
 	size_t _payloadLength = 0;
