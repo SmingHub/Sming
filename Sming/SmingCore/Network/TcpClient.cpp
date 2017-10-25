@@ -46,11 +46,8 @@ TcpClient::TcpClient(TcpClientDataDelegate onReceive)
 
 TcpClient::~TcpClient()
 {
-	if (stream != NULL)
-	{
-		delete[] stream;
-		stream = NULL;
-	}
+	delete stream;
+	stream = NULL;
 }
 
 bool TcpClient::connect(String server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
@@ -178,7 +175,7 @@ void TcpClient::pushAsyncPart()
 	if (stream->isFinished())
 	{
 		flush();
-		debugf("TcpClient request completed");
+		debugf("TcpClient stream finished");
 		delete stream; // Free memory now!
 		stream = NULL;
 	}
