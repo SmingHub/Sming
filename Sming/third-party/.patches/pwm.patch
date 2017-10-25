@@ -1,5 +1,5 @@
 diff --git a/pwm.c b/pwm.c
-index 5e7f218..da4c3f1 100644
+index 5e7f218..0386a06 100644
 --- a/pwm.c
 +++ b/pwm.c
 @@ -16,6 +16,8 @@
@@ -11,3 +11,12 @@ index 5e7f218..da4c3f1 100644
  /* Set the following three defines to your needs */
  
  #ifndef SDK_PWM_PERIOD_COMPAT_MODE
+@@ -109,7 +111,7 @@ struct timer_regs {
+ };
+ static struct timer_regs* timer = (void*)(0x60000600);
+ 
+-static void pwm_intr_handler(void)
++static void pwm_intr_handler(void* param)
+ {
+ 	if ((pwm_state.current_set[pwm_state.current_phase].off_mask == 0) &&
+ 	    (pwm_state.current_set[pwm_state.current_phase].on_mask == 0)) {
