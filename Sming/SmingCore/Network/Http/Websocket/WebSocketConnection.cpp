@@ -125,7 +125,9 @@ int WebSocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t ty
 		return -1;
 	}
 
-	connection->controlFrameType = type;
+	connection->controlFrame.type = type;
+	connection->controlFrame.payload = NULL;
+	connection->controlFrame.payloadLegth = 0;
 
 	if (type == WS_FRAME_CLOSE) {
 		connection->close();
@@ -136,6 +138,14 @@ int WebSocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t ty
 
 int WebSocketConnection::staticOnControlPayload(void* userData, const char *data, size_t length)
 {
+	WebSocketConnection *connection = (WebSocketConnection *)userData;
+	if (connection == NULL) {
+		return -1;
+	}
+
+	connection->controlFrame.payload = (char *)data;
+	connection->controlFrame.payloadLegth = length;
+
 	return WS_OK;
 }
 
@@ -146,9 +156,10 @@ int WebSocketConnection::staticOnControlEnd(void* userData)
 		return -1;
 	}
 
-	if(connection->controlFrameType == WS_FRAME_PING) {
-		// TODO: add control frame payload processing...
-		connection->send((const char* )NULL, 0, WS_PONG_FRAME);
+	if(connection->controlFrame.type == WS_FRAME_PING) {
+		connection->send((const char* )connection->controlFrame.payload,
+					     connection->controlFrame.payloadLegth,
+						 WS_PONG_FRAME);
 	}
 
 	return WS_OK;
