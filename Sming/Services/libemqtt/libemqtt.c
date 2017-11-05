@@ -225,7 +225,7 @@ int mqtt_init_auth(mqtt_broker_handle_t* broker, const char* username, const cha
 	}
 
 	if(password && password[0] != '\0') {
-		free(broker->username);
+		free(broker->password);
 		broker->password = (char *)malloc(strlen(password)+1);
 		if (broker->password == NULL) {
 			return -1;
