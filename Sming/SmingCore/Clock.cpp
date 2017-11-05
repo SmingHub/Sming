@@ -26,10 +26,10 @@ void delay(uint32_t time)
 	int remainder = time % MAX_SAFE_DELAY;
 	for(int i=0, max = quotient + 1; i < max ; i++) {
 		if(i == quotient) {
-			os_delay_us((uint16_t)(remainder * 1000));
+			os_delay_us(remainder * 1000);
 		}
 		else {
-			os_delay_us((uint16_t)(MAX_SAFE_DELAY * 1000));
+			os_delay_us(MAX_SAFE_DELAY * 1000);
 		}
 
 		system_soft_wdt_feed ();
