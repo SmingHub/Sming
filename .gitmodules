@@ -56,4 +56,8 @@
 [submodule "Sming/third-party/lwip2"]
 	path = Sming/third-party/lwip2
 	url = https://github.com/d-a-v/esp82xx-nonos-linklayer.git
+        ignore = dirty
+[submodule "Sming/third-party/ESP8266_NONOS_SDK"]
+	path = Sming/third-party/ESP8266_NONOS_SDK
+	url = https://github.com/espressif/ESP8266_NONOS_SDK.git
 	ignore = dirty

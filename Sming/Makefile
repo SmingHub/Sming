@@ -173,10 +173,15 @@ THIRD_PARTY_DATA += third-party/http-parser/Makefile
 MODULES		     += third-party/http-parser/
 EXTRA_INCDIR     += third-party/http-parser/
 
-# => webscoket-parser
+# => websocket-parser
 THIRD_PARTY_DATA += third-party/ws_parser/Makefile
 MODULES              += third-party/ws_parser/
 EXTRA_INCDIR     += third-party/ws_parser/
+
+# => SDK
+ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
+	THIRD_PARTY_DATA += third-party/ESP8266_NONOS_SDK/Makefile
+endif
 
 # => esp-gdbstub
 ifeq ($(ENABLE_GDB), 1)
