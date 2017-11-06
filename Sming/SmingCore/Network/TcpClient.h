@@ -18,7 +18,7 @@
 #include "../Delegate.h"
 
 class TcpClient;
-class MemoryDataStream;
+class ReadWriteStream;
 class IPAddress;
 
 //typedef void (*TcpClientEventDelegate)(TcpClient& client, TcpConnectionEvent sourceEvent);
@@ -78,12 +78,15 @@ protected:
 
 	void pushAsyncPart();
 
+protected:
+	ReadWriteStream* stream = nullptr;
+
 private:
 	TcpClientState state;
 	TcpClientCompleteDelegate completed = nullptr;
 	TcpClientDataDelegate receive = nullptr;
 	TcpClientEventDelegate ready = nullptr;
-	MemoryDataStream* stream = nullptr;
+
 	bool asyncCloseAfterSent = false;
 	int16_t asyncTotalSent = 0;
 	int16_t asyncTotalLen = 0;

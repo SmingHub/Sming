@@ -78,6 +78,9 @@ bool ArduCAMStream::isFinished() {
 
 
 uint16_t ArduCAMStream::readMemoryBlock(char* data, int bufSize) {
+	if(!dataReady()) {
+		return 0;
+	}
 
 	if (!transfer) {
 		transfer = true;

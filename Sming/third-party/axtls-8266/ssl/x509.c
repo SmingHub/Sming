@@ -247,6 +247,9 @@ int x509_new(const uint8_t *cert, int *len, X509_CTX **ctx)
     if (asn1_skip_obj(cert, &offset, ASN1_SEQUENCE) || 
             asn1_signature(cert, &offset, x509_ctx))
         goto end_cert;
+
+    /* Saves a few bytes of memory */
+    bi_clear_cache(bi_ctx);
 #endif
     ret = X509_OK;
 end_cert:
@@ -484,6 +487,8 @@ int x509_verify(const CA_CERT_CTX *ca_cert_ctx, const X509_CTX *cert)
     {
         ret = X509_VFY_ERROR_BAD_SIGNATURE;
     }
+
+    bi_clear_cache(ctx);
 
     if (ret)
         goto end_verify;

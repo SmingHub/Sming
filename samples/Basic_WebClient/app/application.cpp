@@ -19,7 +19,7 @@
 #endif
 
 Timer procTimer;
-HttpClient downloadClient;
+HttpClient httpClient;
 
 /* Debug SSL functions */
 void displaySessionId(SSL *ssl)
@@ -114,8 +114,8 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 	HttpHeaders requestHeaders;
 	requestHeaders["User-Agent"] = "WebClient/Sming";
 
-	downloadClient.send(
-			downloadClient.request("https://www.attachix.com/assets/css/local.css")
+	httpClient.send(
+			httpClient.request("https://www.attachix.com/assets/css/local.css")
 			->setHeaders(requestHeaders)
 			->setSslOptions(SSL_SERVER_VERIFY_LATER)
 			/*
@@ -132,21 +132,39 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 	);
 
 
-	downloadClient.send(
-			downloadClient.request("https://www.attachix.com/services/")
+	httpClient.send(
+			httpClient.request("https://www.attachix.com/services/")
 			->setMethod(HTTP_HEAD)
 			->setHeaders(requestHeaders)
 			->onRequestComplete(onDownload)
 	);
 
+#ifndef DISABLE_SPIFFS
+	/*
+	 * The code below demonstrates how to upload a file efficiently
+	 * to a remote server in a secure way.
+	 *
+	 */
+	FileStream* fileStream = new FileStream("data.txt");
 
-	downloadClient.send(
-			downloadClient.request("https://www.attachix.com/business/")
+	HttpHeaders fileHeaders;
+	fileHeaders["Content-Type"]  = "application/octet-stream";
+
+	httpClient.send(
+			httpClient.request("https://www.attachix.com/uploads/")
+			->setMethod(HTTP_PUT)
+			->setHeaders(fileHeaders)
+			->setBody(fileStream)
+	);
+#endif
+
+	httpClient.send(
+			httpClient.request("https://www.attachix.com/business/")
 			->setMethod(HTTP_HEAD)
 			->onRequestComplete(onDownload)
 	);
 
-	downloadClient.sendRequest(HTTP_HEAD, "https://www.attachix.com/intl/en/policies/privacy/", requestHeaders, onDownload);
+	httpClient.sendRequest(HTTP_HEAD, "https://www.attachix.com/intl/en/policies/privacy/", requestHeaders, onDownload);
 
 	// The code above should make ONE tcp connection, ONE SSL handshake and then all requests should be pipelined to the
 	// remote server taking care to speed the fetching of a page as fast as possible.
@@ -173,6 +191,11 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
 	Serial.println("Ready for SSL tests");
+
+#ifndef DISABLE_SPIFFS
+	debugf("trying to mount spiffs at 0x%08x, length %d", RBOOT_SPIFFS_0, SPIFF_SIZE);
+	spiffs_mount_manual(RBOOT_SPIFFS_0, SPIFF_SIZE);
+#endif
 
 	// Setup the WIFI connection
 	WifiStation.enable(true);

@@ -15,10 +15,8 @@
 
 HttpResponse::~HttpResponse()
 {
-	if(stream != NULL) {
-		delete stream;
-		stream = NULL;
-	}
+	delete stream;
+	stream = NULL;
 }
 
 HttpResponse* HttpResponse::setContentType(const String& type)
@@ -55,22 +53,20 @@ HttpResponse* HttpResponse::setHeader(const String& name, const String& value)
 
 bool HttpResponse::sendString(const String& text)
 {
-	MemoryDataStream* memStream = new MemoryDataStream();
-	if (memStream->write((const uint8_t*)text.c_str(), text.length()) != text.length()) {
-		delete memStream;
-		return false;
-	}
-
-	if (stream != NULL)
-	{
+	if (stream != NULL && stream->getStreamType() != eSST_Memory) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
 		stream = NULL;
 	}
 
-	stream = memStream;
+	if(stream == NULL) {
+		stream = new MemoryDataStream();
+	}
 
-	return true;
+	MemoryDataStream *writable = static_cast<MemoryDataStream *>(stream);
+	bool success = (writable->write((const uint8_t*)text.c_str(), text.length()) == text.length());
+
+	return success;
 }
 
 bool HttpResponse::hasHeader(const String& name)
@@ -164,7 +160,7 @@ bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 	return true;
 }
 
-bool HttpResponse::sendDataStream( IDataSourceStream * newDataStream , const String& reqContentType /* = "" */)
+bool HttpResponse::sendDataStream( ReadWriteStream * newDataStream , const String& reqContentType /* = "" */)
 {
     if (stream != NULL)
     {

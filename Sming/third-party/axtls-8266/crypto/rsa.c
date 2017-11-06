@@ -73,6 +73,7 @@ void RSA_priv_key_new(RSA_CTX **ctx,
     bi_set_mod(bi_ctx, rsa_ctx->p, BIGINT_P_OFFSET);
     bi_set_mod(bi_ctx, rsa_ctx->q, BIGINT_Q_OFFSET);
 #endif
+    bi_clear_cache(bi_ctx);
 }
 
 void RSA_pub_key_new(RSA_CTX **ctx, 
@@ -94,6 +95,7 @@ void RSA_pub_key_new(RSA_CTX **ctx,
     bi_set_mod(bi_ctx, rsa_ctx->m, BIGINT_M_OFFSET);
     rsa_ctx->e = bi_import(bi_ctx, pub_exp, pub_len);
     bi_permanent(rsa_ctx->e);
+    bi_clear_cache(bi_ctx);
 }
 
 /**

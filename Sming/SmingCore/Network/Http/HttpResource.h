@@ -30,6 +30,10 @@ typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathDelegate; // << depr
 class HttpResource {
 public:
 	virtual ~HttpResource() {}
+	/**
+	 * @brief Takes care to cleanup the connection
+	 */
+	virtual void shutdown(HttpServerConnection& connection) {}
 
 public:
 	HttpServerConnectionBodyDelegate onBody = 0; // << called when the resource wants to process the raw body data

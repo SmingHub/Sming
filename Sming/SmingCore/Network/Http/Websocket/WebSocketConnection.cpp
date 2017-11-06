@@ -18,7 +18,9 @@ WebSocketConnection::WebSocketConnection(HttpServerConnection* conn)
 
 WebSocketConnection::~WebSocketConnection()
 {
-	websocketList.removeElement(*this);
+	state = eWSCS_Closed;
+	stream = NULL;
+	close();
 }
 
 bool WebSocketConnection::initialize(HttpRequest& request, HttpResponse& response)
@@ -41,9 +43,11 @@ bool WebSocketConnection::initialize(HttpRequest& request, HttpResponse& respons
 	response.setHeader("Upgrade", "websocket");
 	response.setHeader("Sec-WebSocket-Accept", secure);
 
-	connection->userData = (void *)this;
+	delete stream;
+	stream = new EndlessMemoryStream();
+	response.sendDataStream(stream);
 
-	websocketList.addElement(*this);
+	connection->userData = (void *)this;
 
 	memset(&parserSettings, 0, sizeof(parserSettings));
 	parserSettings.on_data_begin = staticOnDataBegin;
@@ -55,6 +59,10 @@ bool WebSocketConnection::initialize(HttpRequest& request, HttpResponse& respons
 
 	ws_parser_init(&parser, &parserSettings);
 	parser.user_data = (void*)this;
+
+	if(!websocketList.contains(this)) {
+		websocketList.addElement(this);
+	}
 
 	if(wsConnect) {
 		wsConnect(*this);
@@ -120,9 +128,6 @@ int WebSocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t ty
 	connection->controlFrameType = type;
 
 	if (type == WS_FRAME_CLOSE) {
-		if(connection->wsDisconnect) {
-			connection->wsDisconnect(*connection);
-		}
 		connection->close();
 	}
 
@@ -152,19 +157,21 @@ int WebSocketConnection::staticOnControlEnd(void* userData)
 
 void WebSocketConnection::send(const char* message, int length, wsFrameType type /* = WS_TEXT_FRAME*/)
 {
+	if(stream == NULL) {
+		return;
+	}
+
 	uint8_t frameHeader[16] = {0};
 	size_t headSize = sizeof(frameHeader);
 	wsMakeFrame(nullptr, length, frameHeader, &headSize, type);
-	connection->send((const char* )frameHeader, (uint16_t )headSize);
-	if(length > 0) {
-		connection->send((const char* )message, (uint16_t )length);
-	}
+	stream->write((uint8_t *)frameHeader, (uint16_t )headSize);
+	stream->write((uint8_t *)message, (uint16_t )length);
 }
 
 void WebSocketConnection::broadcast(const char* message, int length, wsFrameType type /* = WS_TEXT_FRAME*/)
 {
 	for (int i = 0; i < websocketList.count(); i++) {
-		websocketList[i].send(message, length, type);
+		websocketList[i]->send(message, length, type);
 	}
 }
 
@@ -190,11 +197,14 @@ WebSocketsList& WebSocketConnection::getActiveWebSockets()
 
 void WebSocketConnection::close()
 {
-	websocketList.removeElement((const WebSocketConnection)*this);
-	state = eWSCS_Closed;
-
-	if(wsDisconnect) {
-		wsDisconnect(*this);
+	websocketList.removeElement(this);
+	if(state != eWSCS_Closed) {
+		state = eWSCS_Closed;
+		send((const char* )NULL, 0, WS_CLOSING_FRAME);
+		stream = NULL;
+		if(wsDisconnect) {
+			wsDisconnect(*this);
+		}
 	}
 
 	connection->setTimeOut(1);
@@ -209,7 +219,6 @@ void* WebSocketConnection::getUserData()
 {
 	return userData;
 }
-
 
 void WebSocketConnection::setConnectionHandler(WebSocketDelegate handler)
 {

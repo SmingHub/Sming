@@ -35,13 +35,13 @@ class HttpRequest {
 
 public:
 
-	HttpRequest(URL uri);
+	HttpRequest(const URL& uri);
 	HttpRequest(const HttpRequest& value);
 	__forceinline HttpRequest* clone() const { return new HttpRequest(*this); }
 	HttpRequest& operator = (const HttpRequest& rhs);
 	~HttpRequest();
 
-	HttpRequest* setURL(URL uri);
+	HttpRequest* setURL(const URL& uri);
 
 	HttpRequest* setMethod(const HttpMethod method);
 
@@ -107,7 +107,7 @@ public:
 #endif
 
 	HttpRequest* setBody(const String& body);
-	HttpRequest* setBody(IDataSourceStream *stream);
+	HttpRequest* setBody(ReadWriteStream *stream);
 	HttpRequest* setBody(uint8_t *rawData, size_t length);
 
 	HttpRequest* setResponseStream(IOutputStream *stream);
@@ -144,7 +144,7 @@ protected:
 
 	uint8_t *rawData = NULL;
 	size_t rawDataLength = 0;
-	IDataSourceStream *stream = NULL;
+	ReadWriteStream *stream = NULL;
 
 	IOutputStream *responseStream = NULL;
 

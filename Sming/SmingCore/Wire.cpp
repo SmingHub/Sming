@@ -54,20 +54,20 @@ TwoWire::TwoWire(){}
 
 // Public Methods //////////////////////////////////////////////////////////////
 
-void TwoWire::begin(int scl, int sda){
+void TwoWire::begin(int sda, int scl){
   default_sda_pin = sda;
   default_scl_pin = scl;
   twi_init(sda, scl);
   flush();
 }
 
-void TwoWire::pins(int scl, int sda){
+void TwoWire::pins(int sda, int scl){
   default_sda_pin = sda;
   default_scl_pin = scl;
 }
 
 void TwoWire::begin(void){
-  begin(default_scl_pin, default_sda_pin);
+  begin(default_sda_pin, default_scl_pin);
 }
 
 void TwoWire::begin(uint8_t address){

@@ -14,6 +14,7 @@
 
 #include <Libraries/ArduCAM/ArduCAMStream.h>
 #include <Services/HexDump/HexDump.h>
+#include <SmingCore/Network/Http/Stream/HttpMultipartStream.h>
 
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -36,7 +37,7 @@
  * RES      (RESET)       GPIO16
  * DC       (DC)          GPIO2
  */
-#define CAM_SCLK 	14  // HW SPI pins - dont change
+#define CAM_SCLK 	14  // HW SPI pins - don't change
 #define CAM_MOSI 	13
 #define CAM_MISO	12
 
@@ -65,7 +66,7 @@ void startApplicationCommand()
 /*
  * initCam()
  *
- * Initalize I2C, SPI Bus and check if the cammera is there
+ * Initialize I2C, SPI Bus and check if the camera is there
  * Initialize the camera for JPEG 320x240
  *
  */
@@ -75,7 +76,7 @@ void initCam() {
 	Serial.printf("ArduCAM init!");
 
 	// initialize I2C
-	Wire.pins(CAM_SCL, CAM_SDA);
+	Wire.pins(CAM_SDA, CAM_SCL);
 	Wire.begin();
 
 	//Check if the camera module type is OV2640
@@ -165,7 +166,7 @@ void onCamSetup(HttpRequest &request, HttpResponse &response) {
 
 
 /*
- * http request to capture and send an image from the cammera
+ * http request to capture and send an image from the camera
  * uses actual setting set by ArdCammCommand Handler
  */
 void onCapture(HttpRequest &request, HttpResponse &response) {
@@ -187,11 +188,25 @@ void onCapture(HttpRequest &request, HttpResponse &response) {
 	const char * contentType = arduCamCommand.getContentType();
 
 	if (stream->dataReady()) {
-		response.setHeader("Content Lenght", String(stream->available()));
+		response.setHeader("Content-Length", String(stream->available()));
 		response.sendDataStream(stream, contentType);
 	}
 
 	Serial.printf("onCapture() process Stream %d ms\r\n", millis() - startTime);
+}
+
+HttpPartResult snapshotProducer()
+{
+	HttpPartResult result;
+
+	startCapture();
+	ArduCAMStream *camStream = new ArduCAMStream(&myCAM);
+	result.stream = camStream;
+
+	result.headers = new HttpHeaders();
+	(*result.headers)["Content-Type"] = "image/jpeg";
+
+	return result;
 }
 
 void onStream(HttpRequest &request, HttpResponse &response) {
@@ -203,24 +218,8 @@ void onStream(HttpRequest &request, HttpResponse &response) {
 	myCAM.clear_fifo_flag();
 	myCAM.write_reg(ARDUCHIP_FRAMES, 0x00);
 
-	// get the picture
-	startTime = millis();
-	startCapture();
-	Serial.printf("onCapture() startCapture() %d ms\r\n", millis() - startTime);
-
-	response.setContentType("Content-Type: multipart/x-mixed-replace; boundary=frame\r\n\r\n");
-	response.sendString("HTTP/1.1 200 OK\r\n");
-
-
-	while (1) {
-		startCapture();
-		ArduCAMStream *stream = new ArduCAMStream(&myCAM);
-
-		if (stream->dataReady()) {
-			response.sendString("--frame\r\n");
-			response.sendDataStream(stream, "Content-Type: image/jpeg\r\n\r\n");
-		}
-	}
+	HttpMultipartStream* stream = new HttpMultipartStream(snapshotProducer);
+	response.sendDataStream(stream, String("multipart/x-mixed-replace; boundary=") + stream->getBoundary());
 }
 
 void onFavicon(HttpRequest &request, HttpResponse &response) {
@@ -230,8 +229,8 @@ void onFavicon(HttpRequest &request, HttpResponse &response) {
 
 /*
  * start http and telnet server
- * telnet can be used to configure cammera settings
- * unsing ArdCammCommand handler
+ * telnet can be used to configure camera settings
+ * using ArdCammCommand handler
  */
 void StartServers()
 {
@@ -239,7 +238,7 @@ void StartServers()
 	server.addPath("/", onIndex);
 	server.addPath("/cam/set", onCamSetup);
 	server.addPath("/cam/capture", onCapture);
-//	server.addPath("/stream", onStream);
+	server.addPath("/stream", onStream);
 	server.addPath("/favicon.ico", onFavicon);
 	server.setDefaultHandler(onFile);
 

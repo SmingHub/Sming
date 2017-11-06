@@ -148,8 +148,9 @@ endif
 # name for the target project
 TARGET		= app
 
-
 CUSTOM_TARGETS ?=
+
+ARDUINO_LIBRARIES = $(shell git submodule status Libraries | cut -c2- | cut -f2 -d ' ' | sed -r 's/Libraries\/(.*?)/Libraries\/\1\/library.properties/g' )
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES     = system system/helpers Wiring appinit \
@@ -221,12 +222,14 @@ LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
 ENABLE_CUSTOM_PWM ?= 1
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	THIRD_PARTY_DATA += third-party/pwm/pwm.c
+	CFLAGS += -DSDK_PWM_PERIOD_COMPAT_MODE=1
 endif
 
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
+CFLAGS = -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+         -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
@@ -275,6 +278,11 @@ ifeq ($(ENABLE_SSL),1)
 	EXTRA_CFLAGS_AXTLS = -I../../system/include -I../../Wiring
 	CFLAGS += $(AXTLS_FLAGS)  
 	CXXFLAGS += $(AXTLS_FLAGS)
+endif
+
+ifeq ($(ENABLE_WPS), 1)
+   LIBS += wps
+   CFLAGS += -DENABLE_WPS=1
 endif
 
 SRC_DIR		:= $(MODULES)
@@ -336,12 +344,18 @@ $1/%.o: %.S
 	$(vecho) "AS $$<"
 	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
 endif	
-$1/%.o: %.c
+$1/%.o: %.c $1/%.c.d
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-$1/%.o: %.cpp
+$1/%.o: %.cpp $1/%.cpp.d
 	$(vecho) "C+ $$<"
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS)  -c $$< -o $$@
+$1/%.c.d: %.c
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -MM -MT $1/$$*.o $$< -o $$@
+$1/%.cpp.d: %.cpp
+	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -MM -MT $1/$$*.o $$< -o $$@
+ 
+.PRECIOUS: $1/%.c.d $1/%.cpp.d
 endef
 
 .PHONY: all checkdirs clean spiffy test samples-clean samples $(SAMPLES_DIRS) docs api wiki
@@ -390,7 +404,7 @@ endif
 	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/$(LIBSMING).a  
 	$(vecho) "Done"
 
-checkdirs: $(THIRD_PARTY_DATA) reload $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
+checkdirs: $(ARDUINO_LIBRARIES) $(THIRD_PARTY_DATA) reload $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
@@ -450,6 +464,16 @@ third-party/%:
 # For now we solve this by "reloading" the makefile after fetching a module.
     RELOAD_MKFILE=1
 
+Libraries/%: 
+	$(vecho) "Fetching Arduino Library $(dir $@) ..."
+	$(Q) $(GIT) submodule update --init --recursive $(dir $@)
+	$(Q) touch $(patsubst Libraries/%/,Libraries/.patches/%.patch, $(dir $@))
+	$(Q) -cd $(dir $@); $(GIT) apply -v $(patsubst Libraries/%/,$(SMING_HOME)/Libraries/.patches/%.patch, $(dir $@)) --ignore-whitespace --whitespace=nowarn
+# if the new submodule brings source code files that need to be compiled inside Sming
+# then we need somehow to be able to "see" these new files. 
+# For now we solve this by "reloading" the makefile after fetching a module.
+    RELOAD_MKFILE=1
+
 reload: 
 	$(Q) if [ $(RELOAD_MKFILE) -eq 1 ]; then \
         $(MAKE) -C $(SMING_HOME) $(MAKECMDGOALS) RELOAD_MKFILE=0; \
@@ -470,12 +494,18 @@ third-party-clean:
           rm -rf third-party/$$dir; \
         done
 	$(Q) $(GIT) checkout third-party     
+	
+libraries-clean:
+	$(Q) rm -rf Libraries
+	$(Q) $(GIT) checkout Libraries 
        
-dist-clean: clean samples-clean third-party-clean
+dist-clean: clean samples-clean third-party-clean libraries-clean
 	$(Q) for file in $(shell ls $(USER_LIBDIR)/lib*.a ); do \
  	   rm $$file; \
  	done
 	$(Q) $(GIT) checkout $(USER_LIBDIR)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
+$(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.c.d)))
+$(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.cpp.d)))
 
