@@ -9,7 +9,7 @@ Descr: embedded very simple version of printf with float support
 #include <stdarg.h>
 #include "osapi.h"
 
-#define INITIAL_BUFFSIZE 128
+#define MPRINTF_BUF_SIZE 256
 
 static void defaultPrintChar(uart_t *uart, char c) {
 	return uart_tx_one_char(c);
@@ -62,25 +62,27 @@ int m_snprintf(char* buf, int length, const char *fmt, ...)
 	return n;
 }
 
-int m_vprintf(const char *fmt, va_list va)
+int m_vprintf ( const char * format, va_list arg )
 {
-    size_t size = INITIAL_BUFFSIZE - 1;
+	if(!cbc_printchar)
+	{
+		return 0;
+	}
 
-    //  need to retry if size is not big enough
-    while (1) {
-        char buffer[size + 1];
-        size_t sz = m_vsnprintf(buffer, sizeof(buffer), fmt, va);
-        if (sz > size) {
-            size = sz;
-            continue;
-        }
+	char buf[MPRINTF_BUF_SIZE], *p;
 
-        const char *p = buffer;
-        while (char c = *p++) {
-            cbc_printchar(cbc_printchar_uart, c);
-        }
-        return sz;
-    }
+	int n = 0;
+	m_vsnprintf(buf, sizeof(buf), format, arg);
+
+	p = buf;
+	while (p && n < sizeof(buf) && *p)
+	{
+		cbc_printchar(cbc_printchar_uart, *p);
+		n++;
+		p++;
+	}
+
+	return n;
 }
 
 /**
