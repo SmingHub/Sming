@@ -56,7 +56,7 @@ TcpClient::~TcpClient()
 bool TcpClient::connect(String server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (isProcessing()) return false;
-
+	debugf("TcpClient start connecting : move to TcpConnection");
 	state = eTCS_Connecting;
 	return TcpConnection::connect(server.c_str(), port, useSsl, sslOptions);
 }

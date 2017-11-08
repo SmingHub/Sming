@@ -48,16 +48,19 @@ TcpConnection::~TcpConnection()
 
 bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
+	debugf("Tcpconnection : connecting %d",system_get_free_heap_size());
 	if (tcp == NULL)
 		initialize(tcp_new());
-
+	debugf("New TCP %d",system_get_free_heap_size());
 	ip_addr_t addr;
 
 	this->useSsl = useSsl;
+
 #ifdef ENABLE_SSL
 	this->sslOptions |= sslOptions;
 
 	if(ssl_ext != NULL) {
+		debugf("SSL not null");
 		ssl_ext_free(ssl_ext);
 	}
 
@@ -66,7 +69,9 @@ bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, 
 	strcpy(ssl_ext->host_name, server.c_str());
 
 	ssl_ext->max_fragment_size = 4*1024; // 4K max size
+	debugf("New SSL %d",system_get_free_heap_size());
 #endif
+	
 
 	debugf("connect to: %s", server.c_str());
 	canSend = false; // Wait for connection
@@ -324,6 +329,7 @@ void TcpConnection::close()
 
 void TcpConnection::initialize(tcp_pcb* pcb)
 {
+	debugf("New TCP %d",system_get_free_heap_size());
 	tcp = pcb;
 	sleep = 0;
 	canSend = true;
@@ -340,11 +346,13 @@ void TcpConnection::initialize(tcp_pcb* pcb)
 
 	#ifdef NETWORK_DEBUG
 	debugf("+TCP connection");
+	debugf("New TCP %d",system_get_free_heap_size());
 	#endif
 }
 
 void TcpConnection::closeTcpConnection(tcp_pcb *tpcb)
 {
+
 	if (tpcb == NULL) return;
 
 	debugf("-TCP connection");
