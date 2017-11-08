@@ -15,20 +15,19 @@
 #include "TcpClient.h"
 #include "../Wiring/WString.h"
 
-HttpServer::HttpServer()
+HttpServer::HttpServer(): active(true)
 {
-	active = true;
 	settings.keepAliveSeconds = 0;
 	configure(settings);
 }
 
-HttpServer::HttpServer(HttpServerSettings settings)
+HttpServer::HttpServer(HttpServerSettings settings): active(true)
 {
-	active = true;
 	configure(settings);
 }
 
-void HttpServer::configure(HttpServerSettings settings) {
+void HttpServer::configure(HttpServerSettings settings)
+{
 	this->settings = settings;
 	if(settings.minHeapSize != -1 && settings.minHeapSize > -1) {
 		minHeapSize = settings.minHeapSize;
@@ -61,12 +60,18 @@ void HttpServer::setBodyParser(const String& contentType, HttpBodyParserDelegate
 
 TcpConnection* HttpServer::createClient(tcp_pcb *clientTcp)
 {
+	if(!active) {
+		debugf("Refusing new connections. The server is shutting down");
+		return NULL;
+	}
+
 	HttpServerConnection* con = new HttpServerConnection(clientTcp);
 	con->setResourceTree(&resourceTree);
 	con->setBodyParsers(&bodyParsers);
 	con->setCompleteDelegate(TcpClientCompleteDelegate(&HttpServer::onConnectionClose, this));
 
-	totalConnections++;
+	connections.add(con);
+	totalConnections = connections.count();
 	debugf("Opening connection. Total connections: %d", totalConnections);
 
 	return con;
@@ -88,36 +93,42 @@ void HttpServer::setDefaultHandler(const HttpPathDelegate& callback)
 	addPath("*", callback);
 }
 
-void HttpServer::addPath(const String& path, const HttpResourceDelegate& onRequestComplete) {
+void HttpServer::addPath(const String& path, const HttpResourceDelegate& onRequestComplete)
+{
 	HttpResource* resource = new HttpResource;
 	resource->onRequestComplete = onRequestComplete;
 	resourceTree[path] = resource;
 }
 
-void HttpServer::addPath(const String& path, HttpResource* resource) {
+void HttpServer::addPath(const String& path, HttpResource* resource)
+{
 	resourceTree[path] = resource;
 }
 
-void HttpServer::setDefaultResource(HttpResource* resource) {
+void HttpServer::setDefaultResource(HttpResource* resource)
+{
 	addPath("*", resource);
 }
 
-void HttpServer::close() {
+void HttpServer::shutdown()
+{
 	active = false;
-	if(totalConnections==0){
-		debugf("Closing server");
-		delete this;
-	}
-	else{
-		debugf("Wait end connection before closing server");
+	for(int i; i < connections.count(); i++) {
+		HttpServerConnection* connection = connections[i];
+		if(connection == NULL) {
+			continue;
+		}
+
+		connection->close();
 	}
 }
 
-
-void HttpServer::onConnectionClose(TcpClient& connection, bool success) {
-	totalConnections--;
-	if(totalConnections==0 && !active){
-		debugf("Closing server");
+void HttpServer::onConnectionClose(TcpClient& connection, bool success)
+{
+	connections.removeElement((HttpServerConnection*)&connection);
+	totalConnections = connections.count();
+	if(totalConnections == 0 && !active){
+		debugf("Shutting down the Http Server");
 		delete this;
 	}
 	debugf("Closing connection. Total connections: %d", totalConnections);

@@ -77,8 +77,7 @@ public:
 	void setDefaultHandler(const HttpPathDelegate& callback);
 	void setDefaultResource(HttpResource* resource);
 
-	void close();
-
+	void shutdown();
 
 protected:
 	virtual TcpConnection* createClient(tcp_pcb *clientTcp);
@@ -94,6 +93,8 @@ private:
 	ResourceTree resourceTree;
 	BodyParsers bodyParsers;
 	bool active = true;
+
+	Vector<HttpServerConnection*> connections;
 };
 
 /** @} */
