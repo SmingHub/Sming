@@ -36,6 +36,12 @@ TcpConnection::~TcpConnection()
 		delete[] sslFingerprint.pkSha256;
 	}
 	freeSslClientKeyCert();
+	if(ssl_ext != NULL) {
+		debugf("SSL not null");
+		ssl_ext_free(ssl_ext);
+	}
+
+
 #endif
 	debugf("~TCP connection");
 }
