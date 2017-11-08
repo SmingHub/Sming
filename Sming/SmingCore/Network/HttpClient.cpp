@@ -115,17 +115,47 @@ void HttpClient::freeSslSessionPool() {
 			free(sslSessionIdPool[key]->value);
 		}
 		free(sslSessionIdPool[key]->value);
+		free(sslSessionIdPool[key]);
 	}
 	sslSessionIdPool.clear();
 }
 #endif
 
+
+void HttpClient::freeRequestQueue() {
+	for(int i=0; i< queue.count(); i ++) {
+		debugf("~RquestQueue");
+		String key = queue.keyAt(i);
+		RequestQueue* rq = queue[key];
+		HttpRequest* req_to_del = rq->dequeue();
+		while(req_to_del != NULL){
+			debugf("~Request");
+			delete req_to_del;
+			req_to_del = rq->dequeue();
+		}
+		queue[key]->flush();
+		delete queue[key]; // Delete the FIFO list of request (does it delete request too ?)
+	}
+	queue.clear();
+}
+
+
+void HttpClient::freeHttpConnectionPool() {
+	for(int i=0; i< httpConnectionPool.count(); i ++) {
+		String key = httpConnectionPool.keyAt(i);
+		delete httpConnectionPool[key];
+		httpConnectionPool[key] = NULL;
+		httpConnectionPool.remove(key);
+	}
+	httpConnectionPool.clear();
+}
+
 void HttpClient::cleanup() {
 #ifdef ENABLE_SSL
 	freeSslSessionPool();
 #endif
-	httpConnectionPool.clear();
-	queue.clear();
+	freeHttpConnectionPool();
+	freeRequestQueue();
 }
 
 
