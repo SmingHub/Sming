@@ -17,12 +17,14 @@
 
 HttpServer::HttpServer()
 {
+	active = true;
 	settings.keepAliveSeconds = 0;
 	configure(settings);
 }
 
 HttpServer::HttpServer(HttpServerSettings settings)
 {
+	active = true;
 	configure(settings);
 }
 
@@ -44,6 +46,7 @@ void HttpServer::configure(HttpServerSettings settings) {
 
 HttpServer::~HttpServer()
 {
+	active = true;
 	for(int i=0; i< resourceTree.count(); i++) {
 		if(resourceTree.valueAt(i) != NULL) {
 			delete resourceTree.valueAt(i);
@@ -99,7 +102,23 @@ void HttpServer::setDefaultResource(HttpResource* resource) {
 	addPath("*", resource);
 }
 
+void HttpServer::close() {
+	active = false;
+	if(totalConnections==0){
+		debugf("Closing server");
+		delete this;
+	}
+	else{
+		debugf("Wait end connection before closing server");
+	}
+}
+
+
 void HttpServer::onConnectionClose(TcpClient& connection, bool success) {
 	totalConnections--;
+	if(totalConnections==0 && !active){
+		debugf("Closing server");
+		delete this;
+	}
 	debugf("Closing connection. Total connections: %d", totalConnections);
 }
