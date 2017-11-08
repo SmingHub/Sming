@@ -46,11 +46,8 @@ TcpClient::TcpClient(TcpClientDataDelegate onReceive)
 
 TcpClient::~TcpClient()
 {
-	if (stream != NULL)
-	{
-		delete[] stream;
-		stream = NULL;
-	}
+	delete stream;
+	stream = NULL;
 }
 
 bool TcpClient::connect(String server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)

@@ -13,7 +13,8 @@
 #include "HttpClient.h"
 
 /* Low Level Methods */
-bool HttpClient::send(HttpRequest* request) {
+bool HttpClient::send(HttpRequest* request)
+{
 	String cacheKey = getCacheKey(request->uri);
 	bool useSsl = (request->uri.Protocol == HTTPS_URL_PROTOCOL);
 
@@ -65,7 +66,8 @@ bool HttpClient::send(HttpRequest* request) {
 
 // Convenience methods
 
-bool HttpClient::downloadString(const String& url, RequestCompletedDelegate requestComplete) {
+bool HttpClient::downloadString(const String& url, RequestCompletedDelegate requestComplete)
+{
 	return send(request(url)
 				->setMethod(HTTP_GET)
 				->onRequestComplete(requestComplete)
@@ -98,7 +100,8 @@ bool HttpClient::downloadFile(const String& url, const String& saveFileName, Req
 
 // end convenience methods
 
-HttpRequest* HttpClient::request(const String& url) {
+HttpRequest* HttpClient::request(const String& url)
+{
 	return new HttpRequest(URL(url));
 }
 
@@ -108,7 +111,8 @@ HashMap<String, RequestQueue* > HttpClient::queue;
 #ifdef ENABLE_SSL
 HashMap<String, SSLSessionId* > HttpClient::sslSessionIdPool;
 
-void HttpClient::freeSslSessionPool() {
+void HttpClient::freeSslSessionPool()
+{
 	for(int i=0; i< sslSessionIdPool.count(); i ++) {
 		String key = sslSessionIdPool.keyAt(i);
 		if(sslSessionIdPool[key]->value != NULL) {
@@ -121,26 +125,24 @@ void HttpClient::freeSslSessionPool() {
 }
 #endif
 
-
-void HttpClient::freeRequestQueue() {
+void HttpClient::freeRequestQueue()
+{
 	for(int i=0; i< queue.count(); i ++) {
-		debugf("~RquestQueue");
 		String key = queue.keyAt(i);
-		RequestQueue* rq = queue[key];
-		HttpRequest* req_to_del = rq->dequeue();
-		while(req_to_del != NULL){
-			debugf("~Request");
-			delete req_to_del;
-			req_to_del = rq->dequeue();
+		RequestQueue* requestQueue = queue[key];
+		HttpRequest* request = requestQueue->dequeue();
+		while(request != NULL){
+			delete request;
+			request = requestQueue->dequeue();
 		}
 		queue[key]->flush();
-		delete queue[key]; // Delete the FIFO list of request (does it delete request too ?)
+		delete queue[key];
 	}
 	queue.clear();
 }
 
-
-void HttpClient::freeHttpConnectionPool() {
+void HttpClient::freeHttpConnectionPool()
+{
 	for(int i=0; i< httpConnectionPool.count(); i ++) {
 		String key = httpConnectionPool.keyAt(i);
 		delete httpConnectionPool[key];
@@ -150,7 +152,8 @@ void HttpClient::freeHttpConnectionPool() {
 	httpConnectionPool.clear();
 }
 
-void HttpClient::cleanup() {
+void HttpClient::cleanup()
+{
 #ifdef ENABLE_SSL
 	freeSslSessionPool();
 #endif
@@ -158,11 +161,12 @@ void HttpClient::cleanup() {
 	freeRequestQueue();
 }
 
-
-HttpClient::~HttpClient() {
+HttpClient::~HttpClient()
+{
 
 }
 
-String HttpClient::getCacheKey(URL url) {
+String HttpClient::getCacheKey(URL url)
+{
 	return String(url.Host) + ":" + String(url.Port);
 }
