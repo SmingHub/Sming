@@ -17,7 +17,9 @@ bool HttpClient::send(HttpRequest* request) {
 	String cacheKey = getCacheKey(request->uri);
 	bool useSsl = (request->uri.Protocol == HTTPS_URL_PROTOCOL);
 
+	
 	if(!queue.contains(cacheKey)) {
+		debugf("New queue");
 		queue[cacheKey] = new RequestQueue;
 	}
 
@@ -27,6 +29,7 @@ bool HttpClient::send(HttpRequest* request) {
 		delete request;
 		return false;
 	}
+	debugf("Add to queue at %d",queue[cacheKey]->count());
 
 	if(httpConnectionPool.contains(cacheKey) &&
 	   httpConnectionPool[cacheKey]->getConnectionState() > eTCS_Connecting &&
@@ -43,20 +46,25 @@ bool HttpClient::send(HttpRequest* request) {
 	if(!httpConnectionPool.contains(cacheKey)) {
 		debugf("Creating new httpConnection");
 		httpConnectionPool[cacheKey] = new HttpConnection(queue[cacheKey]);
+		debugf("heap = %d",system_get_free_heap_size());
 	}
 
 #ifdef ENABLE_SSL
 	// Based on the URL decide if we should reuse the SSL and TCP pool
 	if(useSsl) {
+		debugf("SSL construction %d", system_get_free_heap_size());
 		if (!sslSessionIdPool.contains(cacheKey)) {
+			debugf("Create new SSLPool %d | %d", system_get_free_heap_size(), sizeof(SSLSessionId));
 			sslSessionIdPool[cacheKey] = (SSLSessionId *)malloc(sizeof(SSLSessionId));
 			sslSessionIdPool[cacheKey]->value = NULL;
 			sslSessionIdPool[cacheKey]->length = 0;
 		}
+		debugf("Created new SSLPool %d", system_get_free_heap_size());
 		httpConnectionPool[cacheKey]->addSslOptions(request->getSslOptions());
 		httpConnectionPool[cacheKey]->pinCertificate(request->sslFingerprint);
 		httpConnectionPool[cacheKey]->setSslClientKeyCert(request->sslClientKeyCert);
 		httpConnectionPool[cacheKey]->sslSessionId = sslSessionIdPool[cacheKey];
+		debugf("Added SSLPool %d", system_get_free_heap_size());
 	}
 #endif
 
@@ -115,17 +123,47 @@ void HttpClient::freeSslSessionPool() {
 			free(sslSessionIdPool[key]->value);
 		}
 		free(sslSessionIdPool[key]->value);
+		free(sslSessionIdPool[key]);
 	}
 	sslSessionIdPool.clear();
 }
 #endif
 
+
+void HttpClient::freeRequestQueue() {
+	for(int i=0; i< queue.count(); i ++) {
+		debugf("~RquestQueue");
+		String key = queue.keyAt(i);
+		RequestQueue* rq = queue[key];
+		HttpRequest* req_to_del = rq->dequeue();
+		while(req_to_del != NULL){
+			debugf("~Request");
+			delete req_to_del;
+			req_to_del = rq->dequeue();
+		}
+		queue[key]->flush();
+		delete queue[key]; // Delete the FIFO list of request (does it delete request too ?)
+	}
+	queue.clear();
+}
+
+
+void HttpClient::freeHttpConnectionPool() {
+	for(int i=0; i< httpConnectionPool.count(); i ++) {
+		String key = httpConnectionPool.keyAt(i);
+		delete httpConnectionPool[key];
+		httpConnectionPool[key] = NULL;
+		httpConnectionPool.remove(key);
+	}
+	httpConnectionPool.clear();
+}
+
 void HttpClient::cleanup() {
 #ifdef ENABLE_SSL
 	freeSslSessionPool();
 #endif
-	httpConnectionPool.clear();
-	queue.clear();
+	freeHttpConnectionPool();
+	freeRequestQueue();
 }
 
 
