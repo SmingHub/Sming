@@ -113,7 +113,7 @@ void HttpServer::setDefaultResource(HttpResource* resource)
 void HttpServer::shutdown()
 {
 	active = false;
-	for(int i; i < connections.count(); i++) {
+	for(int i=0; i < connections.count(); i++) {
 		HttpServerConnection* connection = connections[i];
 		if(connection == NULL) {
 			continue;

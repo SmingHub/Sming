@@ -309,7 +309,9 @@ void TcpConnection::close()
 	axl_free(tcp);
 #endif
 
-	tcp_poll(tcp, staticOnPoll, 1);
+	if(tcp->state == LISTEN) {
+		tcp_poll(tcp, staticOnPoll, 1);
+	}
 	tcp_arg(tcp, NULL); // reset pointer to close connection on next callback
 	tcp = NULL;
 
