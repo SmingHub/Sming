@@ -33,8 +33,6 @@
 class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
-typedef Delegate<void()> HttpServerConnectionDestroyedDelegate;
-
 
 class HttpServerConnection: public TcpClient
 {
@@ -48,13 +46,6 @@ public:
 	void send();
 
 	using TcpClient::send;
-
-	/**
-	 * Sets a callback to be called when the object instance is destroyed
-	 *
-	 * @param HttpServerConnectionDestroyedDelegate destroyedDelegate - callback
-	 */
-	void setDestroyedDelegate(HttpServerConnectionDestroyedDelegate destroyedDelegate);
 
 protected:
 	virtual err_t onReceive(pbuf *buf);
@@ -103,8 +94,6 @@ private:
 
 	BodyParsers* bodyParsers = NULL;
 	HttpBodyParserDelegate bodyParser;
-
-	HttpServerConnectionDestroyedDelegate destroyedDelegate = 0;
 };
 
 #endif /* _SMING_CORE_HTTPSERVERCONNECTION_H_ */

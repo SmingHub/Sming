@@ -33,6 +33,8 @@ public:
 	virtual bool listen(int port, bool useSsl = false);
 	void setTimeOut(uint16_t waitTimeOut);
 
+	void shutdown();
+
 #ifdef ENABLE_SSL
 	/**
 	 * @brief Adds SSL support and specifies the server certificate and private key.
@@ -46,8 +48,9 @@ protected:
 
 	virtual err_t onAccept(tcp_pcb *clientTcp, err_t err);
 	virtual void onClient(TcpClient *client);
-	virtual void onClientComplete(TcpClient& client, bool succesfull);
 	virtual bool onClientReceive (TcpClient& client, char *data, int size);
+	virtual void onClientComplete(TcpClient& client, bool succesfull);
+	virtual void onClientDestroy(TcpConnection& connection);
 
 	static err_t staticAccept(void *arg, tcp_pcb *new_tcp, err_t err);
 
@@ -61,6 +64,9 @@ protected:
 #ifdef ENABLE_SSL
 	int sslSessionCacheSize = 50;
 #endif
+
+	bool active = true;
+	Vector<TcpConnection*> connections;
 
 private:
 	uint16_t timeOut;

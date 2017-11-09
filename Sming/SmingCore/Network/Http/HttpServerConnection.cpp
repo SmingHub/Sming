@@ -49,10 +49,6 @@ HttpServerConnection::~HttpServerConnection()
 	if(this->resource) {
 		this->resource->shutdown(*this);
 	}
-
-	if(destroyedDelegate) {
-		destroyedDelegate();
-	}
 }
 
 void HttpServerConnection::setResourceTree(ResourceTree* resourceTree)
@@ -546,9 +542,4 @@ void HttpServerConnection::sendError(const char* message /* = NULL*/, enum http_
 	response.sendString(html);
 
 	send();
-}
-
-void HttpServerConnection::setDestroyedDelegate(HttpServerConnectionDestroyedDelegate destroyedDelegate)
-{
-	this->destroyedDelegate = destroyedDelegate;
 }
