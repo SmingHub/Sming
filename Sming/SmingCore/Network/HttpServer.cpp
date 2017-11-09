@@ -69,6 +69,7 @@ TcpConnection* HttpServer::createClient(tcp_pcb *clientTcp)
 	con->setResourceTree(&resourceTree);
 	con->setBodyParsers(&bodyParsers);
 	con->setCompleteDelegate(TcpClientCompleteDelegate(&HttpServer::onConnectionClose, this));
+	con->setDestroyedDelegate(HttpServerConnectionDestroyedDelegate(&HttpServer::onClientDestroy, this));
 
 	connections.add(con);
 	totalConnections = connections.count();
@@ -113,6 +114,15 @@ void HttpServer::setDefaultResource(HttpResource* resource)
 void HttpServer::shutdown()
 {
 	active = false;
+
+	if(tcp) {
+		tcp_arg(tcp, NULL);
+		tcp_accept(tcp, NULL);
+		tcp_close(tcp);
+
+		tcp = NULL;
+	}
+
 	for(int i=0; i < connections.count(); i++) {
 		HttpServerConnection* connection = connections[i];
 		if(connection == NULL) {
@@ -123,13 +133,24 @@ void HttpServer::shutdown()
 	}
 }
 
+void HttpServer::onClientDestroy()
+{
+	if(active) {
+		return;
+	}
+
+	if(connections.count() == 0) {
+		debugf("Http Server will be destroyed.");
+		delete this;
+	}
+}
+
 void HttpServer::onConnectionClose(TcpClient& connection, bool success)
 {
 	connections.removeElement((HttpServerConnection*)&connection);
 	totalConnections = connections.count();
 	if(totalConnections == 0 && !active){
-		debugf("Shutting down the Http Server");
-		delete this;
+		debugf("Shutting down the Http Server ...");
 	}
 	debugf("Closing connection. Total connections: %d", totalConnections);
 }

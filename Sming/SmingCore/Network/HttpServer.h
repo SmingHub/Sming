@@ -82,6 +82,7 @@ public:
 protected:
 	virtual TcpConnection* createClient(tcp_pcb *clientTcp);
 	virtual void onConnectionClose(TcpClient& connection, bool success);
+	virtual void onClientDestroy();
 
 protected:
 #ifdef ENABLE_SSL
