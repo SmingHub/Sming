@@ -129,7 +129,7 @@ void HttpServer::shutdown()
 			continue;
 		}
 
-		connection->close();
+		connection->setTimeOut(1);
 	}
 }
 

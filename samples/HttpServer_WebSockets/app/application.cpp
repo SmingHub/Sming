@@ -52,6 +52,14 @@ void wsConnected(WebSocketConnection& socket)
 void wsMessageReceived(WebSocketConnection& socket, const String& message)
 {
 	Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
+
+	if(message == "shutdown") {
+		String message = "The server is shutting down...";
+		socket.broadcast(message.c_str(), message.length());
+		server.shutdown();
+		return;
+	}
+
 	String response = "Echo: " + message;
 	socket.sendString(response);
 
