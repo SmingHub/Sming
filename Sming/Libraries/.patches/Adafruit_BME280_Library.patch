@@ -1,0 +1,37 @@
+diff --git a/Adafruit_BME280.cpp b/Adafruit_BME280.cpp
+index 6ed7dcf..cc8a41f 100644
+--- a/Adafruit_BME280.cpp
++++ b/Adafruit_BME280.cpp
+@@ -14,9 +14,8 @@
+   Written by Limor Fried & Kevin Townsend for Adafruit Industries.
+   BSD license, all text above must be included in any redistribution
+  ***************************************************************************/
+-#include "Arduino.h"
+-#include <Wire.h>
+-#include <SPI.h>
++#include "../../SmingCore/Wire.h"
++#include "../../SmingCore/SPI.h"
+ #include "Adafruit_BME280.h"
+ 
+ /***************************************************************************
+diff --git a/Adafruit_BME280.h b/Adafruit_BME280.h
+index 61aeeed..b9c3e7f 100644
+--- a/Adafruit_BME280.h
++++ b/Adafruit_BME280.h
+@@ -23,13 +23,13 @@
+  #include "WProgram.h"
+ #endif
+ 
+-#include <Adafruit_Sensor.h>
+-#include <Wire.h>
++#include "Adafruit_Sensor.h"
++#include <../../SmingCore/Wire.h>
+ 
+ /*=========================================================================
+     I2C ADDRESS/BITS
+     -----------------------------------------------------------------------*/
+-    #define BME280_ADDRESS                (0x77)
++    #define BME280_ADDRESS                (0x76)
+ /*=========================================================================*/
+ 
+ /*=========================================================================
