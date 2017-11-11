@@ -38,6 +38,10 @@ TcpConnection::~TcpConnection()
 	freeSslClientKeyCert();
 #endif
 	debugf("~TCP connection");
+
+	if(destroyedDelegate) {
+		destroyedDelegate(*this);
+	}
 }
 
 bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
@@ -698,12 +702,19 @@ void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void 
 	delete dlook;
 }
 
+void TcpConnection::setDestroyedDelegate(TcpConnectionDestroyedDelegate destroyedDelegate)
+{
+	this->destroyedDelegate = destroyedDelegate;
+}
+
 #ifdef ENABLE_SSL
-void TcpConnection::addSslOptions(uint32_t sslOptions) {
+void TcpConnection::addSslOptions(uint32_t sslOptions)
+{
 	this->sslOptions |= sslOptions;
 }
 
-bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintType type, bool freeAfterHandshake /* = false */) {
+bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintType type, bool freeAfterHandshake /* = false */)
+{
 	int length = 0;
 	uint8_t *localStore;
 
@@ -749,7 +760,8 @@ bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintTyp
 	return true;
 }
 
-bool TcpConnection::pinCertificate(SSLFingerprints fingerprints, bool freeAfterHandshake /* = false */) {
+bool TcpConnection::pinCertificate(SSLFingerprints fingerprints, bool freeAfterHandshake /* = false */)
+{
 	sslFingerprint = fingerprints;
 	freeFingerprints = freeAfterHandshake;
 	return true;
@@ -757,7 +769,8 @@ bool TcpConnection::pinCertificate(SSLFingerprints fingerprints, bool freeAfterH
 
 bool TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
 							 const uint8_t *certificate, int certificateLength,
-							 const char *keyPassword /* = NULL */, bool freeAfterHandshake /* = false */) {
+							 const char *keyPassword /* = NULL */, bool freeAfterHandshake /* = false */)
+{
 
 
 	clientKeyCert.key = new uint8_t[keyLength];
@@ -785,14 +798,16 @@ bool TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
 	return true;
 }
 
-bool TcpConnection::setSslClientKeyCert(SSLKeyCertPair clientKeyCert, bool freeAfterHandshake /* = false */) {
+bool TcpConnection::setSslClientKeyCert(SSLKeyCertPair clientKeyCert, bool freeAfterHandshake /* = false */)
+{
 	this->clientKeyCert = clientKeyCert;
 	freeClientKeyCert = freeAfterHandshake;
 
 	return true;
 }
 
-void TcpConnection::freeSslClientKeyCert() {
+void TcpConnection::freeSslClientKeyCert()
+{
 	if(clientKeyCert.key) {
 		delete[] clientKeyCert.key;
 		clientKeyCert.key = NULL;
@@ -812,7 +827,8 @@ void TcpConnection::freeSslClientKeyCert() {
 	clientKeyCert.certificateLength = 0;
 }
 
-void TcpConnection::freeSslFingerprints() {
+void TcpConnection::freeSslFingerprints()
+{
 	if(sslFingerprint.certSha1) {
 		delete[] sslFingerprint.certSha1;
 		sslFingerprint.certSha1 = NULL;

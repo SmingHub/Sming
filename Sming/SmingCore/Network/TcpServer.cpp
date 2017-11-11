@@ -63,6 +63,11 @@ TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
 		debugf("TCP Server createClient not NULL");
 	}
 
+	if(!active) {
+		debugf("Refusing new connections. The server is shutting down");
+		return NULL;
+	}
+
 	TcpConnection* con = new TcpClient(clientTcp,
 									   TcpClientDataDelegate(&TcpServer::onClientReceive,this),
 									   TcpClientCompleteDelegate(&TcpServer::onClientComplete,this));
@@ -83,7 +88,8 @@ void TcpServer::setTimeOut(uint16_t waitTimeOut)
 }
 
 #ifdef ENABLE_SSL
-void TcpServer::setServerKeyCert(SSLKeyCertPair serverKeyCert) {
+void TcpServer::setServerKeyCert(SSLKeyCertPair serverKeyCert)
+{
 	clientKeyCert = serverKeyCert;
 }
 #endif
@@ -148,7 +154,7 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 	}
 
 	#ifdef NETWORK_DEBUG
-	debugf("onAccept state: %d K=%d", err, totalConnections);
+	debugf("onAccept state: %d K=%d", err, connections.count());
 	list_mem();
 	#endif
 
@@ -176,6 +182,11 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 		client->useSsl = true;
 	}
 #endif
+
+	client->setDestroyedDelegate(TcpConnectionDestroyedDelegate(&TcpServer::onClientDestroy, this));
+
+	connections.add(client);
+	debugf("Opening connection. Total connections: %d", connections.count());
 
 	onClient((TcpClient*)client);
 
@@ -230,4 +241,44 @@ err_t TcpServer::staticAccept(void *arg, tcp_pcb *new_tcp, err_t err)
 
 	err_t res = con->onAccept(new_tcp, err);
 	return res;
+}
+
+
+void TcpServer::shutdown()
+{
+	active = false;
+
+	debugf("Shutting down the server ...");
+
+	if(tcp) {
+		tcp_arg(tcp, NULL);
+		tcp_accept(tcp, NULL);
+		tcp_close(tcp);
+
+		tcp = NULL;
+	}
+
+	for(int i=0; i < connections.count(); i++) {
+		TcpConnection* connection = connections[i];
+		if(connection == NULL) {
+			continue;
+		}
+
+		connection->setTimeOut(1);
+	}
+}
+
+void TcpServer::onClientDestroy(TcpConnection& connection)
+{
+	connections.removeElement((TcpConnection*)&connection);
+	debugf("Destroying connection. Total connections: %d", connections.count());
+
+	if(active) {
+		return;
+	}
+
+	if(connections.count() == 0) {
+		debugf("Server is destroyed.");
+		delete this;
+	}
 }
