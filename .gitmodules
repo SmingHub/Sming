@@ -48,3 +48,7 @@
 [submodule "Sming/Libraries/Adafruit_BME280_Library"]
 	path = Sming/Libraries/Adafruit_BME280_Library
 	url = https://github.com/adafruit/Adafruit_BME280_Library.git
+	ignore = dirty
+[submodule "Sming/Libraries/Adafruit_Sensor"]
+	path = Sming/Libraries/Adafruit_Sensor
+	url = https://github.com/adafruit/Adafruit_Sensor
