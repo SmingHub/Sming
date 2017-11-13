@@ -50,6 +50,7 @@ TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler)
 
 TcpServer::~TcpServer()
 {
+	debugf("Server is destroyed.");
 }
 
 TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
@@ -258,6 +259,11 @@ void TcpServer::shutdown()
 		tcp = NULL;
 	}
 
+	if(!connections.count()) {
+		delete this;
+		return;
+	}
+
 	for(int i=0; i < connections.count(); i++) {
 		TcpConnection* connection = connections[i];
 		if(connection == NULL) {
@@ -278,7 +284,6 @@ void TcpServer::onClientDestroy(TcpConnection& connection)
 	}
 
 	if(connections.count() == 0) {
-		debugf("Server is destroyed.");
 		delete this;
 	}
 }
