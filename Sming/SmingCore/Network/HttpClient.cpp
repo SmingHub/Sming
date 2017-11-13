@@ -115,11 +115,10 @@ void HttpClient::freeSslSessionPool()
 {
 	for(int i=0; i< sslSessionIdPool.count(); i ++) {
 		String key = sslSessionIdPool.keyAt(i);
-		if(sslSessionIdPool[key]->value != NULL) {
-			free(sslSessionIdPool[key]->value);
-		}
 		free(sslSessionIdPool[key]->value);
+		sslSessionIdPool[key]->value = NULL;
 		free(sslSessionIdPool[key]);
+		sslSessionIdPool[key] = NULL;
 	}
 	sslSessionIdPool.clear();
 }
@@ -163,7 +162,7 @@ void HttpClient::cleanup()
 
 HttpClient::~HttpClient()
 {
-
+	cleanup();
 }
 
 String HttpClient::getCacheKey(URL url)
