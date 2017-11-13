@@ -234,7 +234,7 @@ protected:
 #ifdef ENABLE_SSL
 	SSL *ssl = nullptr;
 	SSLCTX *sslContext = nullptr;
-	SSL_EXTENSIONS *ssl_ext=NULL;
+	SSL_EXTENSIONS *sslExtension=NULL;
 	SSLFingerprints sslFingerprint;
 	bool sslConnected = false;
 	uint32_t sslOptions=0;

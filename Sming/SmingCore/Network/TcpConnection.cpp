@@ -55,15 +55,15 @@ bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, 
 #ifdef ENABLE_SSL
 	this->sslOptions |= sslOptions;
 
-	if(ssl_ext != NULL) {
-		ssl_ext_free(ssl_ext);
+	if(sslExtension != NULL) {
+		ssl_ext_free(sslExtension);
 	}
 
-	ssl_ext = ssl_ext_new();
-	ssl_ext->host_name = (char *)malloc(server.length() + 1);
-	strcpy(ssl_ext->host_name, server.c_str());
+	sslExtension = ssl_ext_new();
+	sslExtension->host_name = (char *)malloc(server.length() + 1);
+	strcpy(sslExtension->host_name, server.c_str());
 
-	ssl_ext->max_fragment_size = 4*1024; // 4K max size
+	sslExtension->max_fragment_size = 4*1024; // 4K max size
 #endif
 
 	debugf("connect to: %s", server.c_str());
@@ -164,11 +164,11 @@ void TcpConnection::onError(err_t err)
 {
 #ifdef ENABLE_SSL
 	if(ssl) {
-//		ssl_ctx_free(sslContext);
-		ssl_free(ssl);
-		sslContext=nullptr;
-		ssl=nullptr;
 		sslConnected = false;
+		ssl_free(ssl); // ssl_free frees internally also the SSL context and the SSL extension data
+		sslContext=nullptr;
+		sslExtension = NULL;
+		ssl=nullptr;
 	}
 #endif
 	debugf("TCP connection error: %d", err);
@@ -455,7 +455,7 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 			con->ssl = ssl_client_new(con->sslContext, clientfd,
 									 	 (con->sslSessionId != NULL ? con->sslSessionId->value : NULL),
 										 (con->sslSessionId != NULL ? con->sslSessionId->length: 0),
-										 con->ssl_ext
+										 con->sslExtension
 									 );
 			if(ssl_handshake_status(con->ssl)!=SSL_OK) {
 				debugf("SSL: handshake is in progress...");
