@@ -91,16 +91,17 @@ public:
 	 /** @brief  Send websocket ping to server
 	  *
 	  *  @param String payload - maximum 255 bytes
-	  *  @param uint32_t mask If the value is 0 it means we don't use mask to send the ping data
 	  *
 	  *  @retval bool true if the data can be send, false otherwise
 	  */
-	bool sendPing(const String& payload = "", uint32_t mask = 0);
+	bool sendPing(const String& payload = "");
 
 	 /** @brief  Send websocket ping to server
+	  *  @param  String& payload  - maximum 255 bytes
+	  *
 	  *  @retval bool true if the data can be send, false otherwise
 	  */
-	bool sendPong(const String& payload = "", uint32_t mask = 0);
+	bool sendPong(const String& payload = "");
 
 	/** @brief  Disconnects websocket client from server
 	  */
@@ -117,7 +118,7 @@ public:
 	  */
 	void sendMessage(const String& str);
 
-	/** @brief  Send binary message to websocket server
+	/**  @brief  Send binary message to websocket server
 	  *  @param  msg Pointer to binary-data buffer to be send to websocket server
 	  *  @param  length length of the binary-data buffer
 	  */
@@ -125,9 +126,9 @@ public:
 
 	/** @brief  Send control frame to websocket server
 	  *  @param  payload C++ String to be send to websocket server
-	  *  @param  mask
+	  *
 	  */
-	bool sendControlFrame(WSFrameType frameType, const String& payload = "", uint32_t mask = 0);
+	bool sendControlFrame(WSFrameType frameType, const String& payload = "");
 
 	/** @brief  Get websocket client mode
 	  *  @retval Returnt websocket client mode

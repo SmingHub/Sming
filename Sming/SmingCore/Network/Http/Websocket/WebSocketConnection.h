@@ -34,7 +34,7 @@ typedef struct {
 	ws_frame_type_t type;
 	char* payload;
 	size_t payloadLegth;
-} FrameInfo;
+} WsFrameInfo;
 
 class WebSocketConnection
 {
@@ -90,7 +90,7 @@ private:
 	HttpServerConnection* connection = nullptr;
 
 	ws_frame_type_t frameType = WS_FRAME_TEXT;
-	FrameInfo controlFrame;
+	WsFrameInfo controlFrame;
 
 	ws_parser_t parser;
 	ws_parser_callbacks_t parserSettings;
