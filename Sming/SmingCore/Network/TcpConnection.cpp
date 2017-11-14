@@ -418,8 +418,8 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 #endif
 			debugf("SSL: handshake start (%d ms)", millis());
 
-			if(con->ssl != NULL) {
-				ssl_free(con->ssl);
+			if(con->sslContext != NULL) {
+			    ssl_ctx_free(con->sslContext);
 			}
 
 			con->sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | sslOptions, 1);
