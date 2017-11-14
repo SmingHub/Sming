@@ -1,4 +1,4 @@
-[submodule "Sming/rboot"]
+[submodule "Sming/third-party/rboot"]
 	path = Sming/third-party/rboot
 	url = https://github.com/raburton/rboot.git
         ignore = dirty
@@ -10,11 +10,11 @@
 	path = Sming/third-party/esp-gdbstub
 	url = https://github.com/espressif/esp-gdbstub.git
         ignore = dirty
-[submodule "Sming/pwm"]
+[submodule "Sming/third-party/pwm"]
 	path = Sming/third-party/pwm
 	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
         ignore = dirty
-[submodule "third-party/axtls-8266"]
+[submodule "Sming/third-party/axtls-8266"]
 	path = Sming/third-party/axtls-8266
 	url = https://github.com/igrr/axtls-8266.git
         ignore = dirty
@@ -44,4 +44,12 @@
 [submodule "Sming/Libraries/Adafruit_SSD1306"]
 	path = Sming/Libraries/Adafruit_SSD1306
 	url = https://github.com/adafruit/Adafruit_SSD1306.git
+	ignore = dirty
+[submodule "Sming/Libraries/Adafruit_BME280_Library"]
+	path = Sming/Libraries/Adafruit_BME280_Library
+	url = https://github.com/adafruit/Adafruit_BME280_Library.git
+	ignore = dirty
+[submodule "Sming/Libraries/Adafruit_Sensor"]
+	path = Sming/Libraries/Adafruit_Sensor
+	url = https://github.com/adafruit/Adafruit_Sensor
 	ignore = dirty
