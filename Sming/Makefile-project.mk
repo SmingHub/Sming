@@ -177,6 +177,9 @@ ENABLE_CUSTOM_LWIP ?= 1
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	LWIP_INCDIR = $(SMING_HOME)/third-party/esp-open-lwip/include	
 endif
+ifeq ($(ENABLE_CUSTOM_LWIP), 2)
+	LWIP_INCDIR = $(SMING_HOME)/third-party/lwip2/include
+endif
 
 EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include \
 				$(SMING_HOME)/Wiring $(SMING_HOME)/Libraries $(SMING_HOME)/Libraries/Adafruit_GFX \
@@ -199,6 +202,10 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 		LIBLWIP = lwip_full
 	endif
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBLWIP).a 
+endif
+ifeq ($(ENABLE_CUSTOM_LWIP), 2)
+	LIBLWIP = lwip2
+	CUSTOM_TARGETS += $(USER_LIBDIR)/liblwip2.a 
 endif
 
 LIBPWM = pwm
@@ -460,6 +467,10 @@ endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 $(USER_LIBDIR)/liblwip_%.a:
 	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/$(notdir $@) ENABLE_CUSTOM_LWIP=1 ENABLE_ESPCONN=$(ENABLE_ESPCONN)
+endif
+ifeq ($(ENABLE_CUSTOM_LWIP), 2)
+$(USER_LIBDIR)/liblwip%.a:
+	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/$(notdir $@) ENABLE_CUSTOM_LWIP=2 ENABLE_ESPCONN=$(ENABLE_ESPCONN)
 endif
 
 checkdirs: $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)

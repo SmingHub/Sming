@@ -675,7 +675,11 @@ void TcpConnection::staticOnError(void *arg, err_t err)
 	//debugf("<staticOnError");
 }
 
+#if LWIP_VERSION_MAJOR == 1
 void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void *arg)
+#else
+void TcpConnection::staticDnsResponse(const char *name, const ip_addr_t *ipaddr, void *arg)
+#endif
 {
 	DnsLookup* dlook = (DnsLookup*)arg;
 	if (dlook == NULL) return;

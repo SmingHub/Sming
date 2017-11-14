@@ -45,3 +45,7 @@
 	path = Sming/Libraries/Adafruit_SSD1306
 	url = https://github.com/adafruit/Adafruit_SSD1306.git
 	ignore = dirty
+[submodule "Sming/third-party/lwip2"]
+	path = Sming/third-party/lwip2
+	url = https://github.com/d-a-v/esp82xx-nonos-linklayer.git
+  ignore = dirty
