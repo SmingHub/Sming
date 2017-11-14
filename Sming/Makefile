@@ -199,6 +199,9 @@ endif
 LIBLWIP = lwip
 ENABLE_CUSTOM_LWIP ?= 1
 ENABLE_ESPCONN ?= 0
+ifeq ($(ENABLE_CUSTOM_LWIP), 0) 
+	EXTRA_INCDIR += system/esp-lwip
+endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
 	EXTRA_INCDIR += third-party/esp-open-lwip/include

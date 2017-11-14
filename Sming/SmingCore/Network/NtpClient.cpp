@@ -52,7 +52,7 @@ void NtpClient::requestTime()
 		return;
 	}
 
-	LWIP_IP_ADDR_T resolvedIp;
+	ip_addr_t resolvedIp;
 	int result = dns_gethostbyname(this->server.c_str(), &resolvedIp,
 			staticDnsResponse, (void*) this);
 

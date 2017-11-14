@@ -15,6 +15,7 @@
 
 #include "../Wiring/WiringFrameworkDependencies.h"
 
+extern "C" {
 /** @brief  Get the system (up)time in milliseconds
  *  @retval "unsigned long" Quantity of milliseconds elapsed since clock epoch
  *  @note   Clock epoch will reset every 49 days, 17 hours, 2 minutes, 47 seconds, 296 milliseconds
@@ -45,6 +46,8 @@ void delay(uint32_t time);
  *  @param  time Duration of delay in microseconds
  */
 void delayMicroseconds(uint32_t time);
+
+}
 
 /** @} */
 #endif
