@@ -165,7 +165,7 @@ void TcpConnection::onError(err_t err)
 #ifdef ENABLE_SSL
 	if(ssl) {
 		sslConnected = false;
-		ssl_free(ssl); // ssl_free frees internally also the SSL context and the SSL extension data
+		ssl_ctx_free(sslContext);
 		sslContext=nullptr;
 		sslExtension = NULL;
 		ssl=nullptr;
@@ -297,8 +297,7 @@ void TcpConnection::close()
 #ifdef ENABLE_SSL
 	if (ssl != nullptr) {
 		debugf("SSL: closing ...");
-//		ssl_ctx_free(sslContext);
-		ssl_free(ssl);
+		ssl_ctx_free(sslContext);
 		sslContext=nullptr;
 		ssl=nullptr;
 		sslConnected = false;
@@ -419,8 +418,8 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 #endif
 			debugf("SSL: handshake start (%d ms)", millis());
 
-			if(con->ssl != NULL) {
-				ssl_free(con->ssl);
+			if(con->sslContext != NULL) {
+			    ssl_ctx_free(con->sslContext);
 			}
 
 			con->sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | sslOptions, 1);
