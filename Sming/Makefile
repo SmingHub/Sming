@@ -210,7 +210,7 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 	THIRD_PARTY_DATA += third-party/lwip2/Makefile.sming
-	EXTRA_INCDIR += third-party/lwip2/include
+	EXTRA_INCDIR += third-party/lwip2/glue-esp/include-esp third-party/lwip2/include
 	LIBLWIP = lwip2
 	LWIP_EXTRA_FLAGS = 1
 endif

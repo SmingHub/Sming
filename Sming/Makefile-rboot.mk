@@ -186,7 +186,7 @@ LWIP_INCDIR = $(SMING_HOME)/system/esp-lwip/lwip/include
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	LWIP_INCDIR = $(SMING_HOME)/third-party/esp-open-lwip/include	
 else ifeq ($(ENABLE_CUSTOM_LWIP), 2)
-	LWIP_INCDIR = $(SMING_HOME)/third-party/lwip2/include
+	LWIP_INCDIR = $(SMING_HOME)/third-party/lwip2/glue-esp/include-esp  $(SMING_HOME)/third-party/lwip2/include
 endif
 
 EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include \
