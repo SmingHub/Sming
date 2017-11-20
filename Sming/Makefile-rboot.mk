@@ -182,10 +182,10 @@ MODULES      += $(THIRD_PARTY_DIR)/rboot/appcode
 EXTRA_INCDIR ?= include # default to include if not set by user
 
 ENABLE_CUSTOM_LWIP ?= 1
+LWIP_INCDIR = $(SMING_HOME)/system/esp-lwip/lwip/include
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	LWIP_INCDIR = $(SMING_HOME)/third-party/esp-open-lwip/include	
-endif
-ifeq ($(ENABLE_CUSTOM_LWIP), 2)
+else ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 	LWIP_INCDIR = $(SMING_HOME)/third-party/lwip2/include
 endif
 
@@ -253,6 +253,9 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBLWIP).a
 endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 2)
+	ifeq ($(ENABLE_ESPCONN), 1)
+$(error LWIP2 does not support espconn_* functions. Make sure to set ENABLE_CUSTOM_LWIP to 0 or 1.)
+	endif
 	LIBLWIP = lwip2
 	CUSTOM_TARGETS += $(USER_LIBDIR)/liblwip2.a
 endif
@@ -517,14 +520,10 @@ $(USER_LIBDIR)/libpwm_open.a:
 	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm_open.a ENABLE_CUSTOM_PWM=1
 endif
 
-ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-$(USER_LIBDIR)/liblwip_%.a:
-	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/$(notdir $@) ENABLE_CUSTOM_LWIP=1 ENABLE_ESPCONN=$(ENABLE_ESPCONN)
-endif
-ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 $(USER_LIBDIR)/liblwip%.a:
-	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/$(notdir $@) ENABLE_CUSTOM_LWIP=2 ENABLE_ESPCONN=$(ENABLE_ESPCONN)
-endif
+	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/$(notdir $@) \
+				ENABLE_CUSTOM_LWIP=$(ENABLE_CUSTOM_LWIP) \
+				ENABLE_ESPCONN=$(ENABLE_ESPCONN)
 
 checkdirs: $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
 

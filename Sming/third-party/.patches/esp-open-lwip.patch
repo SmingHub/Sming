@@ -75,7 +75,7 @@ index 1bc584f..0bfc424 100644
  $(LIB): $(OBJS)
  	$(AR) rcs $@ $^
 diff --git a/include/arch/cc.h b/include/arch/cc.h
-index ff03b30..fde6567 100644
+index ff03b30..6664d59 100644
 --- a/include/arch/cc.h
 +++ b/include/arch/cc.h
 @@ -38,8 +38,25 @@
@@ -93,7 +93,7 @@ index ff03b30..fde6567 100644
 +extern size_t ets_strlen(const char *s);
 +extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
 +extern int ets_sprintf(char *str, const char *format, ...)  __attribute__ ((format (printf, 2, 3)));
-+extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
++//extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
 +extern void ets_timer_disarm(ETSTimer *a);
 +extern void ets_timer_setfn(ETSTimer *t, ETSTimerFunc *pfunction, void *parg);
 +extern uint32 r_rand(void);
