@@ -15,14 +15,17 @@
 
 #include "../Wiring/WiringFrameworkDependencies.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
+
 /** @brief  Get the system (up)time in milliseconds
  *  @retval "unsigned long" Quantity of milliseconds elapsed since clock epoch
  *  @note   Clock epoch will reset every 49 days, 17 hours, 2 minutes, 47 seconds, 296 milliseconds
  *  @note   This function uses ESP8266 _system time_ clock which pauses during sleep. Function is provided for compatibility with Arduino. For date and time functionality, use SystemClock
  *  @see    SystemClockClass
  */
-unsigned long millis(void);
+unsigned long millis(void)  __attribute__((weak));
 
 /** @brief  Get the time from clock in microseconds
  *  @retval "unsigned long" Quantity of microseconds elapsed since clock epoch
@@ -30,7 +33,7 @@ unsigned long millis(void);
  *  @note   This function uses ESP8266 _system time_ clock which pauses during sleep. Function is provided for compatibility with Arduino. For date and time functionality, use SystemClock
  *  @see    SystemClockClass
  */
-unsigned long micros(void);
+unsigned long micros(void)  __attribute__((weak));
 
 /** @brief  Pause execution
  *  @param  time Duration of delay in milliseconds
@@ -47,7 +50,9 @@ void delay(uint32_t time);
  */
 void delayMicroseconds(uint32_t time);
 
+#ifdef __cplusplus
 }
+#endif
 
 /** @} */
 #endif
