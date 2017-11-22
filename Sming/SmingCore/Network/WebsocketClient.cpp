@@ -156,18 +156,16 @@ void WebsocketClient::onFinished(TcpClientState finishState)
 	TcpClient::onFinished(finishState);
 }
 
-void WebsocketClient::sendPing()
+bool WebsocketClient::sendPing(const String& payload /* = "" */)
 {
-	uint8_t buf[2] = { 0x89, 0x00 };
 	debugf("Sending PING");
-	send((char*) buf, 2, false);
+	return sendControlFrame(WSFrameType::ping, payload);
 }
 
-void WebsocketClient::sendPong()
+bool WebsocketClient::sendPong(const String& payload /* = "" */)
 {
-	uint8_t buf[2] = { 0x8A, 0x00 };
 	debugf("Sending PONG");
-	send((char*) buf, 2, false);
+	return sendControlFrame(WSFrameType::pong, payload);
 }
 
 void WebsocketClient::disconnect()
@@ -207,6 +205,43 @@ void WebsocketClient::sendMessage(char* msg, uint16_t length)
 void WebsocketClient::sendMessage(const String& str)
 {
 	_sendFrame(WSFrameType::text, (uint8_t*) str.c_str(), str.length() + 1);
+}
+
+bool WebsocketClient::sendControlFrame(WSFrameType frameType, const String& payload /* = "" */)
+{
+	if(payload.length() > 127) {
+		debugf("Maximum length of payload is 127 bytes");
+		return false;
+	}
+
+	uint32_t mask  = 0;
+	int size = 2 + payload.length() + 4 * mask;
+	uint8_t* buf = new uint8_t[size];
+
+	// if we have payload, generate random mask for it
+	if(payload.length()) {
+		mask = ESP8266_DREG(0x20E44); // See: http://esp8266-re.foogod.com/wiki/Random_Number_Generator
+	}
+
+	int pos = 0;
+	buf[pos++] = (uint8_t)frameType;
+	buf[pos++] = 0x00;
+	buf[pos] |= bit(7);
+
+	if(payload.length()) {
+		buf[pos] += payload.length();
+	}
+
+	buf[++pos] = (mask >> 24) & 0xFF;
+	buf[++pos] = (mask >> 16) & 0xFF;
+	buf[++pos] = (mask >> 8) & 0xFF;
+	buf[++pos] = (mask >> 0) & 0xFF;
+
+	WebsocketFrameClass::mask(payload, mask, (char *)(buf+pos+1));
+
+	send((char*) buf, size, false);
+
+	return true;
 }
 
 err_t WebsocketClient::onReceive(pbuf* buf)
@@ -280,7 +315,7 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 				case WSFrameType::ping:
 				{
 					debugf("Got ping ...");
-					sendPong(); //Need to send Pong in response to Ping
+					sendPong(String((char*)wsFrame._payload, wsFrame._payloadLength)); //Need to send Pong in response to Ping
 					break;
 				}
 				case WSFrameType::pong:

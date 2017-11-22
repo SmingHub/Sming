@@ -61,54 +61,79 @@ class WebsocketClient: protected TcpClient
 public:
 	WebsocketClient(bool autoDestruct = false) :TcpClient(autoDestruct) {};
 	virtual ~WebsocketClient() {};
+
+	/** @brief  Set handler for websocket text messages
+	 *  @param  handler Delegate callback to be run when text message received
+	 */
 	void setWebSocketMessageHandler(WebSocketClientMessageDelegate handler);
-    /** @brief  Set handler for websocket text messages
-     *  @param  handler Delegate callback to be run when text message received
-     */
-	void setWebSocketDisconnectedHandler(WebSocketClientDisconnectDelegate handler);
+
 	/** @brief  Set handler for websocket disconnection event
 	 *  @param  handler Delegate callback to be run when websocket disconnects
 	 */
-	void setWebSocketConnectedHandler(WebSocketClientConnectedDelegate handler);
+	void setWebSocketDisconnectedHandler(WebSocketClientDisconnectDelegate handler);
+
 	/** @brief  Set handler for websocket connection event
 	 *  @param  handler Delegate callback to be run when websocket connects
 	 */
-	void setWebSocketBinaryHandler(WebSocketClientBinaryDelegate handler);
+	void setWebSocketConnectedHandler(WebSocketClientConnectedDelegate handler);
+
 	 /** @brief  Set handler for websocket binary messages
 	  *  @param  handler Delegate callback to be run when binary message received
 	  */
-	bool connect(String url, uint32_t sslOptions = 0);
-	 /** @brief  Connects websocket client to server
+	void setWebSocketBinaryHandler(WebSocketClientBinaryDelegate handler);
+
+	/** @brief  Connects websocket client to server
 	  *  @param  url URL address of websocket server
 	  *  @param  sslOptions Specify the SSL options to be used when calling websocket server over SSL
 	  */
-	void sendPing();
+	bool connect(String url, uint32_t sslOptions = 0);
+
 	 /** @brief  Send websocket ping to server
+	  *
+	  *  @param String payload - maximum 255 bytes
+	  *
+	  *  @retval bool true if the data can be send, false otherwise
 	  */
-	void sendPong();
+	bool sendPing(const String& payload = "");
+
 	 /** @brief  Send websocket ping to server
+	  *  @param  String& payload  - maximum 255 bytes
+	  *
+	  *  @retval bool true if the data can be send, false otherwise
+	  */
+	bool sendPong(const String& payload = "");
+
+	/** @brief  Disconnects websocket client from server
 	  */
 	void disconnect();
-	 /** @brief  Disconnects websocket client from server
-	  */
-	void sendMessage(char* msg, uint16_t length);
-	 /** @brief  Send text message to websocket server
+
+	/** @brief  Send text message to websocket server
 	  *  @param  msg Pointer to NULL-terminated string buffer to be send to websocket server
 	  *  @param  length length of the NULL-terminated string buffer
 	  */
-	void sendMessage(const String& str);
-	 /** @brief  Send text message to websocket server
+	void sendMessage(char* msg, uint16_t length);
+
+	/** @brief  Send text message to websocket server
 	  *  @param  C++ String to be send to websocket server
 	  */
-	void sendBinary(uint8_t* msg, uint16_t length);
-	 /** @brief  Send binary message to websocket server
+	void sendMessage(const String& str);
+
+	/**  @brief  Send binary message to websocket server
 	  *  @param  msg Pointer to binary-data buffer to be send to websocket server
 	  *  @param  length length of the binary-data buffer
 	  */
-	wsMode getWSMode();
-	 /** @brief  Get websocket client mode
+	void sendBinary(uint8_t* msg, uint16_t length);
+
+	/** @brief  Send control frame to websocket server
+	  *  @param  payload C++ String to be send to websocket server
+	  *
+	  */
+	bool sendControlFrame(WSFrameType frameType, const String& payload = "");
+
+	/** @brief  Get websocket client mode
 	  *  @retval Returnt websocket client mode
 	  */
+	wsMode getWSMode();
 
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
