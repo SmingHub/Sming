@@ -290,5 +290,28 @@ HardwareSerial::operator bool() const
     return uart != 0;
 }
 
+size_t HardwareSerial::indexOf(char c)
+{
+	int offset = uart->rx_buffer->rpos;
+	int pos = 0;
+	while(pos < available()) {
+		if(uart->rx_buffer->buffer[offset + pos] == c) {
+			return pos;
+		}
+
+		pos++;
+
+		if(pos + offset == uart->rx_buffer->wpos) {
+			break;
+		}
+
+		if(pos + offset == uart->rx_buffer->size) {
+			offset = -pos;
+		}
+	}
+
+	return -1;
+}
+
 
 HardwareSerial Serial(UART_ID_0);
