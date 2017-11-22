@@ -48,7 +48,7 @@ protected:
 
 protected:
 	void initialize(udp_pcb* pcb = NULL);
-	static void staticOnReceive(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct ip_addr *addr, u16_t port);
+	static void staticOnReceive(void *arg, struct udp_pcb *pcb, struct pbuf *p, LWIP_IP_ADDR_T *addr, u16_t port);
 
 protected:
 	udp_pcb* udp;

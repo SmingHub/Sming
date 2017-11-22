@@ -44,6 +44,13 @@ IPAddress::IPAddress(ip_addr address)
     memcpy(_address, &address.addr, sizeof(_address));
 }
 
+#if LWIP_VERSION_MAJOR == 2
+IPAddress::IPAddress(ip_addr_t address)
+{
+    memcpy(_address, &address.addr, sizeof(_address));
+}
+#endif
+
 IPAddress::IPAddress(const uint8_t *address)
 {
     memcpy(_address, address, sizeof(_address));

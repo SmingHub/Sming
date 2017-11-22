@@ -674,7 +674,7 @@ void TcpConnection::staticOnError(void *arg, err_t err)
 	//debugf("<staticOnError");
 }
 
-void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void *arg)
+void TcpConnection::staticDnsResponse(const char *name, LWIP_IP_ADDR_T *ipaddr, void *arg)
 {
 	DnsLookup* dlook = (DnsLookup*)arg;
 	if (dlook == NULL) return;

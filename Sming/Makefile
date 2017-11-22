@@ -199,9 +199,23 @@ endif
 LIBLWIP = lwip
 ENABLE_CUSTOM_LWIP ?= 1
 ENABLE_ESPCONN ?= 0
+ifeq ($(ENABLE_CUSTOM_LWIP), 0) 
+	EXTRA_INCDIR += system/esp-lwip
+endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
 	EXTRA_INCDIR += third-party/esp-open-lwip/include
+	LIBLWIP = lwip_open
+	LWIP_EXTRA_FLAGS = 1
+endif
+ifeq ($(ENABLE_CUSTOM_LWIP), 2)
+	THIRD_PARTY_DATA += third-party/lwip2/Makefile.sming
+	EXTRA_INCDIR += third-party/lwip2/glue-esp/include-esp third-party/lwip2/include
+	LIBLWIP = lwip2
+	LWIP_EXTRA_FLAGS = 1
+endif
+
+ifeq ($(LWIP_EXTRA_FLAGS),1)
 	EXTRA_CFLAGS_LWIP = -I../../system/include -I../../Wiring
 	ENABLE_LWIPDEBUG ?= 0
 	ifeq ($(ENABLE_LWIPDEBUG), 1)
@@ -210,8 +224,6 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 
 	ifeq ($(ENABLE_ESPCONN), 1)
 		LIBLWIP = lwip_full
-	else
-		LIBLWIP = lwip_open
 	endif
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBLWIP).a
 endif
@@ -384,6 +396,10 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 $(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
 	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
 endif
+ifeq ($(ENABLE_CUSTOM_LWIP), 2)
+$(USER_LIBDIR)/liblwip%.a: third-party/lwip2/Makefile.sming
+	$(Q) $(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
+endif
 
 spiffy: spiffy/spiffy
 
@@ -428,6 +444,9 @@ else
 endif	
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	$(Q) -$(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" clean
+endif
+ifeq ($(ENABLE_CUSTOM_LWIP), 2)
+	$(Q) -$(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" clean
 endif
 
 test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM 

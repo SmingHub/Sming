@@ -217,7 +217,7 @@ protected:
 	static err_t staticOnSent(void *arg, tcp_pcb *tcp, uint16_t len);
 	static err_t staticOnPoll(void *arg, tcp_pcb *tcp);
 	static void staticOnError(void *arg, err_t err);
-	static void staticDnsResponse(const char *name, ip_addr_t *ipaddr, void *arg);
+	static void staticDnsResponse(const char *name, LWIP_IP_ADDR_T *ipaddr, void *arg);
 
 	static void closeTcpConnection(tcp_pcb *tpcb);
 	void initialize(tcp_pcb* pcb);
