@@ -157,6 +157,7 @@ SECTIONS
     *libstdc++.a:(.literal .text .literal.* .text.*)
     *liblwip_open.a:(.literal .text .literal.* .text.*)
     *liblwip_full.a:(.literal .text .literal.* .text.*)
+    *liblwip2.a:(.literal .text .literal.* .text.*)
     *libaxtls.a:(.literal .text .literal.* .text.*)
     *libat.a:(.literal.* .text.*)
     *libcrypto.a:(.literal.* .text.*)
@@ -180,7 +181,7 @@ SECTIONS
 	out/build/app_app.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
   *libsming.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
   *libsmingssl.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
-  *liblwip2.a:(.literal .text .literal.* .text.*)
+  
     _irom0_text_end = ABSOLUTE(.);
 	_flash_code_end = ABSOLUTE(.);
   } >irom0_0_seg :irom0_0_phdr

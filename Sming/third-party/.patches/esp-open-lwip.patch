@@ -1,8 +1,8 @@
 diff --git a/include/user_config.h b/include/user_config.h
-index e69de29..235ceff 100644
+index e69de29..d608ddf 100644
 --- a/include/user_config.h
 +++ b/include/user_config.h
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,21 @@
 +#ifndef _USER_CONFIG_LWIP_
 +#define _USER_CONFIG_LWIP_
 +
@@ -10,6 +10,7 @@ index e69de29..235ceff 100644
 +extern "C" {
 +#endif
 +
++#include "c_types.h"
 +typedef signed short        sint16_t;
 +
 +void ets_bzero(void *block, size_t size);
@@ -75,13 +76,14 @@ index 1bc584f..e4af916 100644
  $(LIB): $(OBJS)
  	$(AR) rcs $@ $^
 diff --git a/include/arch/cc.h b/include/arch/cc.h
-index ff03b30..0da8ed3 100644
+index ff03b30..348ee12 100644
 --- a/include/arch/cc.h
 +++ b/include/arch/cc.h
-@@ -38,8 +38,25 @@
+@@ -38,8 +38,26 @@
  #include "c_types.h"
  #include "ets_sys.h"
  #include "osapi.h"
++#include "mem.h"
 +#include <stdarg.h>
 +
  #define EFAULT 14
@@ -104,7 +106,7 @@ index ff03b30..0da8ed3 100644
  //#define LWIP_PROVIDE_ERRNO
  
  #if (1)
-@@ -56,6 +73,7 @@ typedef signed     short   s16_t;
+@@ -56,6 +74,7 @@ typedef signed     short   s16_t;
  typedef unsigned   long    u32_t;
  typedef signed     long    s32_t;
  typedef unsigned long   mem_ptr_t;
@@ -112,7 +114,7 @@ index ff03b30..0da8ed3 100644
  
  #define S16_F "d"
  #define U16_F "d"
-@@ -73,11 +91,12 @@ typedef unsigned long   mem_ptr_t;
+@@ -73,11 +92,12 @@ typedef unsigned long   mem_ptr_t;
  #define PACK_STRUCT_BEGIN
  #define PACK_STRUCT_END
  
