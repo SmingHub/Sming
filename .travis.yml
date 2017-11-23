@@ -12,6 +12,8 @@ matrix:
           env: SDK_VERSION=1.5.0
         - os: linux
           env: SDK_VERSION=2.0.0
+        - os: linux
+          env: SDK_VERSION=2.1.0
           
 git:
   submodules: false
@@ -29,12 +31,12 @@ addons:
       - graphviz
 
 install:
-  - if [ "$SDK_VERSION" != "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
-  - if [ "$SDK_VERSION" != "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-linux-x86_64.tar.gz"; fi
+  - if [ "$SDK_VERSION" == "1.5.0" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
+  - if [ "$SDK_VERSION" == "1.5.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-linux-x86_64.tar.gz"; fi
   - mkdir -p $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-  - if [ "$SDK_VERSION" != "2.0.0" ]; then wget https://bintray.com/artifact/download/kireevco/generic/${SDK_FILE_NAME}; fi
-  - if [ "$SDK_VERSION" != "2.0.0" ]; then bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk; fi
-  - if [ "$SDK_VERSION" == "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget https://github.com/nodemcu/nodemcu-firmware/raw/master/tools/esp-open-sdk.tar.xz; tar -Jxvf esp-open-sdk.tar.xz; ln -s `pwd`/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/. ; fi
+  - if [ "$SDK_VERSION" == "1.5.0" ]; then wget https://bintray.com/artifact/download/kireevco/generic/${SDK_FILE_NAME}; fi
+  - if [ "$SDK_VERSION" == "1.5.0" ]; then bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk; fi
+  - if [[ "$SDK_VERSION" != "1.5.0" && "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://github.com/nodemcu/nodemcu-firmware/raw/master/tools/esp-open-sdk.tar.xz; tar -Jxvf esp-open-sdk.tar.xz; ln -s `pwd`/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/. ; fi
   - if [ "$SDK_VERSION" == "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget http://bbs.espressif.com/download/file.php?id=1690 -O sdk.zip; unzip sdk.zip; ln -s `pwd`/ESP8266_NONOS_SDK/ $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/sdk; export  DEPLOY='true'; fi
 
 script:
@@ -42,6 +44,7 @@ script:
   - export CHANGED_PROJECTS=`for i in $CHANGED_FILES; do echo "$i" |  grep '^samples/' | cut -d'/' -f2; done | uniq`
   - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
   - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk  
+  - if [ "$SDK_VERSION" == "2.1.0" ]; then export SDK_BASE=$SMING_HOME/third-party/ESP8266_NONOS_SDK; fi
   - export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/:$SMING_HOME/../.travis/tools
   - cd $SMING_HOME
   - make test 

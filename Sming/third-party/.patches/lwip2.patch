@@ -23,3 +23,54 @@ index 63cd72d..5f100eb 100644
  #ifdef LWIP_BUILD
  
  // define LWIP_BUILD only when building LWIP
+diff --git a/Makefile.sming b/Makefile.sming
+index 842f4fe..7550a72 100644
+--- a/Makefile.sming
++++ b/Makefile.sming
+@@ -4,12 +4,13 @@
+ USER_LIBDIR ?= tweaked-
+ LWIP_LIB_RELEASE=$(USER_LIBDIR)liblwip2.a
+ LWIP_INCLUDES_RELEASE=include
++SDK_BASE ?= $(ESP_HOME)/sdk
+ 
+ all: install
+ 
+ %:
+ 	@make -f makefiles/Makefile.build-lwip2 \
+-			SDK=$(ESP_HOME)/sdk \
++			SDK=$(SDK_BASE) \
+ 			LWIP_LIB=liblwip2.a \
+ 			LWIP_LIB_RELEASE=$(LWIP_LIB_RELEASE) \
+ 			LWIP_INCLUDES_RELEASE=$(LWIP_INCLUDES_RELEASE) \
+diff --git a/glue/esp-missing.h b/glue/esp-missing.h
+index 0e42073..4cb5d6c 100644
+--- a/glue/esp-missing.h
++++ b/glue/esp-missing.h
+@@ -9,9 +9,9 @@
+ 
+ uint32_t r_rand (void);
+ 
+-void* pvPortZalloc (size_t, const char*, int);
+-void* pvPortMalloc (size_t xWantedSize, const char* file, int line) __attribute__((malloc, alloc_size(1)));
+-void vPortFree (void *ptr, const char* file, int line);
++void* pvPortZalloc (size_t, const char*, unsigned line);
++void* pvPortMalloc (size_t xWantedSize, const char* file, unsigned line) __attribute__((malloc, alloc_size(1)));
++void vPortFree (void *ptr, const char* file, unsigned line);
+ 
+ struct netif* eagle_lwip_getif (int netif_index);
+ 
+@@ -27,10 +27,10 @@ int ets_memcmp (const void*, const void*, size_t n);
+ void *ets_memset (void *s, int c, size_t n);
+ void *ets_memcpy (void *dest, const void *src, size_t n);
+ 
+-typedef void ETSTimerFunc(void *timer_arg);
+-void ets_timer_disarm (ETSTimer *a);
+-void ets_timer_arm_new (ETSTimer *a, int b, int c, int isMstimer);
+-void ets_timer_setfn (ETSTimer *t, ETSTimerFunc *fn, void *parg);
++//typedef void ETSTimerFunc(void *timer_arg);
++//void ets_timer_disarm (ETSTimer *a);
++//void ets_timer_arm_new (ETSTimer *a, int b, int c, int isMstimer);
++//void ets_timer_setfn (ETSTimer *t, ETSTimerFunc *fn, void *parg);
+ 
+ struct ip_addr;
+ void wifi_softap_set_station_info (uint8_t* mac, struct ip_addr*);

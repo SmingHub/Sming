@@ -1,8 +1,8 @@
 diff --git a/include/user_config.h b/include/user_config.h
-index e69de29..0c5dff9 100644
+index e69de29..d608ddf 100644
 --- a/include/user_config.h
 +++ b/include/user_config.h
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,21 @@
 +#ifndef _USER_CONFIG_LWIP_
 +#define _USER_CONFIG_LWIP_
 +
@@ -10,9 +10,10 @@ index e69de29..0c5dff9 100644
 +extern "C" {
 +#endif
 +
++#include "c_types.h"
 +typedef signed short        sint16_t;
 +
-+void *ets_bzero(void *block, size_t size);
++void ets_bzero(void *block, size_t size);
 +bool ets_post(uint32_t prio, ETSSignal sig, ETSParam par);
 +void ets_task(ETSTask task, uint32_t prio, ETSEvent * queue, uint8 qlen);
 +
@@ -24,7 +25,7 @@ index e69de29..0c5dff9 100644
 +
 +#endif /*_USER_CONFIG_LWIP_*/
 diff --git a/Makefile.open b/Makefile.open
-index 1bc584f..0bfc424 100644
+index 1bc584f..e4af916 100644
 --- a/Makefile.open
 +++ b/Makefile.open
 @@ -1,8 +1,10 @@
@@ -75,13 +76,14 @@ index 1bc584f..0bfc424 100644
  $(LIB): $(OBJS)
  	$(AR) rcs $@ $^
 diff --git a/include/arch/cc.h b/include/arch/cc.h
-index ff03b30..6664d59 100644
+index ff03b30..348ee12 100644
 --- a/include/arch/cc.h
 +++ b/include/arch/cc.h
-@@ -38,8 +38,25 @@
+@@ -38,8 +38,26 @@
  #include "c_types.h"
  #include "ets_sys.h"
  #include "osapi.h"
++#include "mem.h"
 +#include <stdarg.h>
 +
  #define EFAULT 14
@@ -90,7 +92,7 @@ index ff03b30..6664d59 100644
 +extern void *ets_memset(void *s, int c, size_t n);
 +extern void *ets_memcpy(void *dest, const void *src, size_t n);
 +
-+extern size_t ets_strlen(const char *s);
++extern int ets_strlen(const char *s);
 +extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
 +extern int ets_sprintf(char *str, const char *format, ...)  __attribute__ ((format (printf, 2, 3)));
 +//extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
@@ -104,7 +106,7 @@ index ff03b30..6664d59 100644
  //#define LWIP_PROVIDE_ERRNO
  
  #if (1)
-@@ -56,6 +73,7 @@ typedef signed     short   s16_t;
+@@ -56,6 +74,7 @@ typedef signed     short   s16_t;
  typedef unsigned   long    u32_t;
  typedef signed     long    s32_t;
  typedef unsigned long   mem_ptr_t;
@@ -112,7 +114,7 @@ index ff03b30..6664d59 100644
  
  #define S16_F "d"
  #define U16_F "d"
-@@ -73,11 +91,12 @@ typedef unsigned long   mem_ptr_t;
+@@ -73,11 +92,12 @@ typedef unsigned long   mem_ptr_t;
  #define PACK_STRUCT_BEGIN
  #define PACK_STRUCT_END
  
@@ -247,7 +249,7 @@ index af6e360..6d8cabd 100644
  #endif
  #else
  #ifndef mem_free
- diff --git a/lwip/app/dhcpserver.c b/lwip/app/dhcpserver.c
+diff --git a/lwip/app/dhcpserver.c b/lwip/app/dhcpserver.c
 index ddb5984..fb677c6 100644
 --- a/lwip/app/dhcpserver.c
 +++ b/lwip/app/dhcpserver.c

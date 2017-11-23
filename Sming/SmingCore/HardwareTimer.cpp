@@ -48,12 +48,12 @@ static void IRAM_ATTR hw_timer_isr_cb(void *arg)
 
 Hardware_Timer::Hardware_Timer()
 {
-    ETS_FRC_TIMER1_INTR_ATTACH((void*)hw_timer_isr_cb, (void *)this);
+    ETS_FRC_TIMER1_INTR_ATTACH((ets_isr_t)hw_timer_isr_cb, (void *)this);
 }
 
 Hardware_Timer::~Hardware_Timer()
 {
-    ETS_FRC_TIMER1_INTR_ATTACH((void*)hw_timer_isr_cb, null);
+    ETS_FRC_TIMER1_INTR_ATTACH((ets_isr_t)hw_timer_isr_cb, null);
 	stop();
 }
 

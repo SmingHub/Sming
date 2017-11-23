@@ -1,5 +1,5 @@
 diff --git a/gdbstub.c b/gdbstub.c
-index 5fc6633..03f6d49 100644
+index 5fc6633..fe655b8 100644
 --- a/gdbstub.c
 +++ b/gdbstub.c
 @@ -8,6 +8,7 @@
@@ -42,3 +42,12 @@ index 5fc6633..03f6d49 100644
  		while(gdbReadCommand()!=ST_CONT);
  		ets_wdt_enable();
  		//Copy any changed registers back to the frame the Xtensa HAL uses.
+@@ -714,7 +719,7 @@ static void ATTR_GDBFN uart_hdlr(void *arg, void *frame) {
+ }
+ 
+ static void ATTR_GDBINIT install_uart_hdlr() {
+-	ets_isr_attach(ETS_UART_INUM, uart_hdlr, NULL);
++	ets_isr_attach(ETS_UART_INUM, (ets_isr_t)uart_hdlr, NULL);
+ 	SET_PERI_REG_MASK(UART_INT_ENA(0), UART_RXFIFO_FULL_INT_ENA|UART_RXFIFO_TOUT_INT_ENA);
+ 	ets_isr_unmask((1<<ETS_UART_INUM)); //enable uart interrupt
+ }
