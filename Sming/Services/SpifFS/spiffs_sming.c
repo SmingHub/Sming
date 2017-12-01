@@ -1,7 +1,5 @@
 #include "spiffs_sming.h"
 
-#define LOG_PAGE_SIZE       256
-
 spiffs _filesystemStorageHandle;
 
 static u8_t spiffs_work_buf[LOG_PAGE_SIZE*2];
@@ -39,7 +37,7 @@ the entire chip (chip erase). The W25Q32BV has 1,024 erasable sectors and 64 era
 The small 4KB sectors allow for greater flexibility in applications that require data and parameter storage.
 ********************/
 
-spiffs_config spiffs_get_storage_config()
+spiffs_config __attribute__((weak)) spiffs_get_storage_config()
 {
 	spiffs_config cfg = {0};
 	cfg.phys_addr = ( u32_t )flashmem_get_first_free_block_address();
@@ -184,40 +182,4 @@ bool spiffs_format_manual(u32_t phys_addr, u32_t phys_size)
   spiffs_format_internal(&cfg);
   spiffs_mount_manual(phys_addr, phys_size);
   return true;
-}
-
-//int spiffs_check( void )
-//{
-  // ets_wdt_disable();
-  // int res = (int)SPIFFS_check(&_filesystemStorageHandle);
-  // ets_wdt_enable();
-  // return res;
-//}
-
-void test_spiffs()
-{
-  char buf[12] = {0};
-
-  // Surely, I've mounted spiffs before entering here
-  
-  spiffs_file fd;
-  spiffs_stat st = {0};
-  SPIFFS_stat(&_filesystemStorageHandle, "my_file.txt", &st);
-  if (st.size <= 0)
-  {
-	  fd = SPIFFS_open(&_filesystemStorageHandle, "my_file.txt", SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
-	  if (SPIFFS_write(&_filesystemStorageHandle, fd, (u8_t *)"Hello world", 11) < 0)
-		  debugf("errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
-	  SPIFFS_close(&_filesystemStorageHandle, fd);
-	  debugf("file created");
-  }
-  else
-	  debugf("file %s exist :)", st.name);
-
-
-  fd = SPIFFS_open(&_filesystemStorageHandle, "my_file.txt", SPIFFS_RDWR, 0);
-  if (SPIFFS_read(&_filesystemStorageHandle, fd, (u8_t *)buf, 11) < 0) debugf("errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
-  SPIFFS_close(&_filesystemStorageHandle, fd);
-
-  debugf("--> %s <--\n", buf);
 }
