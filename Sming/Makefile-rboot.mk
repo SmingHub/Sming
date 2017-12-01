@@ -179,6 +179,7 @@ endif
 # define your custom directories in the project's own Makefile before including this one
 MODULES      ?= app     # default to app if not set by user
 MODULES      += $(THIRD_PARTY_DIR)/rboot/appcode
+MODULES      += $(SMING_HOME)/appspecific/rboot
 EXTRA_INCDIR ?= include # default to include if not set by user
 
 ENABLE_CUSTOM_LWIP ?= 1
@@ -313,7 +314,7 @@ ifeq ($(DISABLE_SPIFFS), 1)
 endif
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
+LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m
