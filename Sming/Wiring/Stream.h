@@ -76,6 +76,15 @@ class Stream : public Print
     // Wiring String functions to be added here
     String readString();
     String readStringUntil(char terminator);
+
+    /*
+    * @brief Returns the location of the searched character
+    * @param char c - character to search for
+    * @retval size_t -1 if not found 0 or positive number otherwise
+    */
+    virtual size_t indexOf(char c) {
+    	return -1;
+    }
   
   protected:
     long parseInt(char skipChar); // as above but the given skipChar is ignored
