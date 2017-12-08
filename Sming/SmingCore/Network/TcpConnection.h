@@ -20,6 +20,7 @@
 
 #include "../Wiring/WiringFrameworkDependencies.h"
 #include "IPAddress.h"
+#include "../Delegate.h"
 
 
 #define NETWORK_DEBUG
@@ -71,6 +72,9 @@ class String;
 class IDataSourceStream;
 class IPAddress;
 class TcpServer;
+class TcpConnection;
+
+typedef Delegate<void(TcpConnection&)> TcpConnectionDestroyedDelegate;
 
 class TcpConnection
 {
@@ -98,6 +102,12 @@ public:
 	void setTimeOut(uint16_t waitTimeOut);
 	IPAddress getRemoteIp()  { return (tcp == NULL) ? INADDR_NONE : IPAddress(tcp->remote_ip);};
 	uint16_t getRemotePort() { return (tcp == NULL) ? 0 : tcp->remote_port; };
+
+	/**
+	 * @brief Sets a callback to be called when the object instance is destroyed
+	 * @param TcpServerConnectionDestroyedDelegate destroyedDelegate - callback
+	 */
+	void setDestroyedDelegate(TcpConnectionDestroyedDelegate destroyedDelegate);
 
 #ifdef ENABLE_SSL
 	void addSslOptions(uint32_t sslOptions);
@@ -207,7 +217,7 @@ protected:
 	static err_t staticOnSent(void *arg, tcp_pcb *tcp, uint16_t len);
 	static err_t staticOnPoll(void *arg, tcp_pcb *tcp);
 	static void staticOnError(void *arg, err_t err);
-	static void staticDnsResponse(const char *name, ip_addr_t *ipaddr, void *arg);
+	static void staticDnsResponse(const char *name, LWIP_IP_ADDR_T *ipaddr, void *arg);
 
 	static void closeTcpConnection(tcp_pcb *tpcb);
 	void initialize(tcp_pcb* pcb);
@@ -224,7 +234,7 @@ protected:
 #ifdef ENABLE_SSL
 	SSL *ssl = nullptr;
 	SSLCTX *sslContext = nullptr;
-	SSL_EXTENSIONS *ssl_ext=NULL;
+	SSL_EXTENSIONS *sslExtension=NULL;
 	SSLFingerprints sslFingerprint;
 	bool sslConnected = false;
 	uint32_t sslOptions=0;
@@ -234,6 +244,9 @@ protected:
 	SSLSessionId* sslSessionId = NULL;
 #endif
 	bool useSsl = false;
+
+private:
+	TcpConnectionDestroyedDelegate destroyedDelegate = 0;
 };
 
 /** @} */

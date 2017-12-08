@@ -77,10 +77,8 @@ public:
 	void setDefaultHandler(const HttpPathDelegate& callback);
 	void setDefaultResource(HttpResource* resource);
 
-
 protected:
 	virtual TcpConnection* createClient(tcp_pcb *clientTcp);
-	virtual void onConnectionClose(TcpClient& connection, bool success);
 
 protected:
 #ifdef ENABLE_SSL

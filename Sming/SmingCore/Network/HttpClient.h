@@ -79,6 +79,8 @@ public:
 #ifdef ENABLE_SSL
 	static void freeSslSessionPool();
 #endif
+	static void freeHttpConnectionPool();
+	static void freeRequestQueue();
 
 	/**
 	 * Use this method to clean all request queues and object pools

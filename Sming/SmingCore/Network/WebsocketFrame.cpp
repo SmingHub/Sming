@@ -242,3 +242,20 @@ uint8_t WebsocketFrameClass::decodeFrame(uint8_t * buffer, size_t length)
 	}
 	return true;
 }
+
+int WebsocketFrameClass::mask(const String& payload, uint32_t key, char *data)
+{
+	uint8_t pool[4] = {0};
+	int pos = 0;
+	pool[pos++] = (key >> 24) & 0xFF;
+	pool[pos++] = (key >> 16) & 0xFF;
+	pool[pos++] = (key >> 8) & 0xFF;
+	pool[pos++] = (key >> 0) & 0xFF;
+
+	int i;
+	for (i = 0; i < payload.length(); i++) {
+	    data[i] = (payload[i] ^ pool[i % 4]);
+	}
+
+	return i;
+}

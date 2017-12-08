@@ -13,7 +13,8 @@
 #include "HttpClient.h"
 
 /* Low Level Methods */
-bool HttpClient::send(HttpRequest* request) {
+bool HttpClient::send(HttpRequest* request)
+{
 	String cacheKey = getCacheKey(request->uri);
 	bool useSsl = (request->uri.Protocol == HTTPS_URL_PROTOCOL);
 
@@ -65,7 +66,8 @@ bool HttpClient::send(HttpRequest* request) {
 
 // Convenience methods
 
-bool HttpClient::downloadString(const String& url, RequestCompletedDelegate requestComplete) {
+bool HttpClient::downloadString(const String& url, RequestCompletedDelegate requestComplete)
+{
 	return send(request(url)
 				->setMethod(HTTP_GET)
 				->onRequestComplete(requestComplete)
@@ -98,7 +100,8 @@ bool HttpClient::downloadFile(const String& url, const String& saveFileName, Req
 
 // end convenience methods
 
-HttpRequest* HttpClient::request(const String& url) {
+HttpRequest* HttpClient::request(const String& url)
+{
 	return new HttpRequest(URL(url));
 }
 
@@ -108,31 +111,64 @@ HashMap<String, RequestQueue* > HttpClient::queue;
 #ifdef ENABLE_SSL
 HashMap<String, SSLSessionId* > HttpClient::sslSessionIdPool;
 
-void HttpClient::freeSslSessionPool() {
+void HttpClient::freeSslSessionPool()
+{
 	for(int i=0; i< sslSessionIdPool.count(); i ++) {
 		String key = sslSessionIdPool.keyAt(i);
-		if(sslSessionIdPool[key]->value != NULL) {
-			free(sslSessionIdPool[key]->value);
-		}
 		free(sslSessionIdPool[key]->value);
+		sslSessionIdPool[key]->value = NULL;
+		free(sslSessionIdPool[key]);
+		sslSessionIdPool[key] = NULL;
 	}
 	sslSessionIdPool.clear();
 }
 #endif
 
-void HttpClient::cleanup() {
-#ifdef ENABLE_SSL
-	freeSslSessionPool();
-#endif
-	httpConnectionPool.clear();
+void HttpClient::freeRequestQueue()
+{
+	for(int i=0; i< queue.count(); i ++) {
+		String key = queue.keyAt(i);
+		RequestQueue* requestQueue = queue[key];
+		HttpRequest* request = requestQueue->dequeue();
+		while(request != NULL){
+			delete request;
+			request = requestQueue->dequeue();
+		}
+		queue[key]->flush();
+		delete queue[key];
+	}
 	queue.clear();
 }
 
-
-HttpClient::~HttpClient() {
-
+void HttpClient::freeHttpConnectionPool()
+{
+	for(int i=0; i< httpConnectionPool.count(); i ++) {
+		String key = httpConnectionPool.keyAt(i);
+		delete httpConnectionPool[key];
+		httpConnectionPool[key] = NULL;
+		httpConnectionPool.remove(key);
+	}
+	httpConnectionPool.clear();
 }
 
-String HttpClient::getCacheKey(URL url) {
+void HttpClient::cleanup()
+{
+#ifdef ENABLE_SSL
+	freeSslSessionPool();
+#endif
+	freeHttpConnectionPool();
+	freeRequestQueue();
+}
+
+HttpClient::~HttpClient()
+{
+	// DON'T call cleanup.
+	// If you want to free all resources from HttpClients the correct sequence will be to
+	// 1. Delete all instances of HttpClient
+	// 2. Call the static method HttpClient::cleanup();
+}
+
+String HttpClient::getCacheKey(URL url)
+{
 	return String(url.Host) + ":" + String(url.Port);
 }

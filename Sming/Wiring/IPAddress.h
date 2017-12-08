@@ -25,6 +25,14 @@
 
 #include "WString.h"
 
+
+#if LWIP_VERSION_MAJOR == 2
+#define LWIP_IP_ADDR_T const ip_addr_t
+#else
+typedef struct ip_addr ip_addr_t;
+#define LWIP_IP_ADDR_T ip_addr_t
+#endif
+
 // A class to make it easier to handle and pass around IP addresses
 
 class IPAddress : public Printable
@@ -47,6 +55,9 @@ public:
     IPAddress(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet);
     IPAddress(uint32_t address);
     IPAddress(ip_addr address);
+#if LWIP_VERSION_MAJOR == 2
+    IPAddress(ip_addr_t address);
+#endif
     IPAddress(const uint8_t *address);
     IPAddress(const String address);
 
@@ -55,6 +66,9 @@ public:
     operator uint32_t() { return *((uint32_t*)_address); };
     operator ip_addr() { ip_addr ret; ret.addr = *((uint32_t*)_address); return ret; };
     operator ip_addr*() { return (ip_addr*)_address; };
+#if LWIP_VERSION_MAJOR == 2
+    operator ip_addr_t*() { return (ip_addr_t*)_address; };
+#endif
     bool operator==(const IPAddress& addr) { return (*((uint32_t*)_address)) == (*((uint32_t*)addr._address)); };
     bool operator==(const uint8_t* addr);
 

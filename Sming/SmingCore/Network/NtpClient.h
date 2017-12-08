@@ -106,7 +106,7 @@ protected:
      *  @param  arg Pointer to the NTP client object that made the DNS request
      *  @note   This function is called when a DNS query is serviced
      */
-	static void staticDnsResponse(const char *name, struct ip_addr *ip, void *arg);
+	static void staticDnsResponse(const char *name, LWIP_IP_ADDR_T *ip, void *arg);
 };
 
 /** @} */

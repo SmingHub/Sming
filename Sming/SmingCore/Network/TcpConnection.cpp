@@ -38,6 +38,10 @@ TcpConnection::~TcpConnection()
 	freeSslClientKeyCert();
 #endif
 	debugf("~TCP connection");
+
+	if(destroyedDelegate) {
+		destroyedDelegate(*this);
+	}
 }
 
 bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
@@ -51,15 +55,15 @@ bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, 
 #ifdef ENABLE_SSL
 	this->sslOptions |= sslOptions;
 
-	if(ssl_ext != NULL) {
-		ssl_ext_free(ssl_ext);
+	if(sslExtension != NULL) {
+		ssl_ext_free(sslExtension);
 	}
 
-	ssl_ext = ssl_ext_new();
-	ssl_ext->host_name = (char *)malloc(server.length() + 1);
-	strcpy(ssl_ext->host_name, server.c_str());
+	sslExtension = ssl_ext_new();
+	sslExtension->host_name = (char *)malloc(server.length() + 1);
+	strcpy(sslExtension->host_name, server.c_str());
 
-	ssl_ext->max_fragment_size = 4*1024; // 4K max size
+	sslExtension->max_fragment_size = 4*1024; // 4K max size
 #endif
 
 	debugf("connect to: %s", server.c_str());
@@ -160,11 +164,11 @@ void TcpConnection::onError(err_t err)
 {
 #ifdef ENABLE_SSL
 	if(ssl) {
-//		ssl_ctx_free(sslContext);
-		ssl_free(ssl);
-		sslContext=nullptr;
-		ssl=nullptr;
 		sslConnected = false;
+		ssl_ctx_free(sslContext);
+		sslContext=nullptr;
+		sslExtension = NULL;
+		ssl=nullptr;
 	}
 #endif
 	debugf("TCP connection error: %d", err);
@@ -293,8 +297,7 @@ void TcpConnection::close()
 #ifdef ENABLE_SSL
 	if (ssl != nullptr) {
 		debugf("SSL: closing ...");
-//		ssl_ctx_free(sslContext);
-		ssl_free(ssl);
+		ssl_ctx_free(sslContext);
 		sslContext=nullptr;
 		ssl=nullptr;
 		sslConnected = false;
@@ -415,8 +418,8 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 #endif
 			debugf("SSL: handshake start (%d ms)", millis());
 
-			if(con->ssl != NULL) {
-				ssl_free(con->ssl);
+			if(con->sslContext != NULL) {
+			    ssl_ctx_free(con->sslContext);
 			}
 
 			con->sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | sslOptions, 1);
@@ -451,7 +454,7 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 			con->ssl = ssl_client_new(con->sslContext, clientfd,
 									 	 (con->sslSessionId != NULL ? con->sslSessionId->value : NULL),
 										 (con->sslSessionId != NULL ? con->sslSessionId->length: 0),
-										 con->ssl_ext
+										 con->sslExtension
 									 );
 			if(ssl_handshake_status(con->ssl)!=SSL_OK) {
 				debugf("SSL: handshake is in progress...");
@@ -671,7 +674,7 @@ void TcpConnection::staticOnError(void *arg, err_t err)
 	//debugf("<staticOnError");
 }
 
-void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void *arg)
+void TcpConnection::staticDnsResponse(const char *name, LWIP_IP_ADDR_T *ipaddr, void *arg)
 {
 	DnsLookup* dlook = (DnsLookup*)arg;
 	if (dlook == NULL) return;
@@ -698,12 +701,19 @@ void TcpConnection::staticDnsResponse(const char *name, ip_addr_t *ipaddr, void 
 	delete dlook;
 }
 
+void TcpConnection::setDestroyedDelegate(TcpConnectionDestroyedDelegate destroyedDelegate)
+{
+	this->destroyedDelegate = destroyedDelegate;
+}
+
 #ifdef ENABLE_SSL
-void TcpConnection::addSslOptions(uint32_t sslOptions) {
+void TcpConnection::addSslOptions(uint32_t sslOptions)
+{
 	this->sslOptions |= sslOptions;
 }
 
-bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintType type, bool freeAfterHandshake /* = false */) {
+bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintType type, bool freeAfterHandshake /* = false */)
+{
 	int length = 0;
 	uint8_t *localStore;
 
@@ -749,7 +759,8 @@ bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintTyp
 	return true;
 }
 
-bool TcpConnection::pinCertificate(SSLFingerprints fingerprints, bool freeAfterHandshake /* = false */) {
+bool TcpConnection::pinCertificate(SSLFingerprints fingerprints, bool freeAfterHandshake /* = false */)
+{
 	sslFingerprint = fingerprints;
 	freeFingerprints = freeAfterHandshake;
 	return true;
@@ -757,7 +768,8 @@ bool TcpConnection::pinCertificate(SSLFingerprints fingerprints, bool freeAfterH
 
 bool TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
 							 const uint8_t *certificate, int certificateLength,
-							 const char *keyPassword /* = NULL */, bool freeAfterHandshake /* = false */) {
+							 const char *keyPassword /* = NULL */, bool freeAfterHandshake /* = false */)
+{
 
 
 	clientKeyCert.key = new uint8_t[keyLength];
@@ -785,14 +797,16 @@ bool TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
 	return true;
 }
 
-bool TcpConnection::setSslClientKeyCert(SSLKeyCertPair clientKeyCert, bool freeAfterHandshake /* = false */) {
+bool TcpConnection::setSslClientKeyCert(SSLKeyCertPair clientKeyCert, bool freeAfterHandshake /* = false */)
+{
 	this->clientKeyCert = clientKeyCert;
 	freeClientKeyCert = freeAfterHandshake;
 
 	return true;
 }
 
-void TcpConnection::freeSslClientKeyCert() {
+void TcpConnection::freeSslClientKeyCert()
+{
 	if(clientKeyCert.key) {
 		delete[] clientKeyCert.key;
 		clientKeyCert.key = NULL;
@@ -812,7 +826,8 @@ void TcpConnection::freeSslClientKeyCert() {
 	clientKeyCert.certificateLength = 0;
 }
 
-void TcpConnection::freeSslFingerprints() {
+void TcpConnection::freeSslFingerprints()
+{
 	if(sslFingerprint.certSha1) {
 		delete[] sslFingerprint.certSha1;
 		sslFingerprint.certSha1 = NULL;

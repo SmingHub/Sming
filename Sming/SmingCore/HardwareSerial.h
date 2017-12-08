@@ -252,6 +252,13 @@ public:
 	 */
 	operator bool() const;
 
+	/*
+	 * @brief Returns the location of the searched character
+	 * @param char c - character to search for
+	 * @retval size_t -1 if not found 0 or positive number otherwise
+	 */
+	size_t indexOf(char c);
+
 private:
 	int uartNr;
 	static HWSerialMemberData memberData[NUMBER_UARTS];

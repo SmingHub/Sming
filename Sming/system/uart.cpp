@@ -139,8 +139,7 @@ void uart_start_isr(uart_t* uart)
     USC1(uart->uart_nr) = (127 << UCFFT) | (0x02 << UCTOT) | (1 <<UCTOE );
     USIC(uart->uart_nr) = 0xffff;
     USIE(uart->uart_nr) = (1 << UIFF) | (1 << UIFR) | (1 << UITO);
-//    ETS_UART_INTR_ATTACH(uart_isr,  (void *)uart);
-    ETS_UART_INTR_ATTACH((void *)uart_isr,  (void *)uart);
+    ETS_UART_INTR_ATTACH(uart_isr,  (void *)uart);
     ETS_UART_INTR_ENABLE();
 }
 
@@ -492,16 +491,16 @@ void uart_set_debug(int uart_nr)
     switch(s_uart_debug_nr) {
     case UART0:
         system_set_os_print(1);
-        ets_install_putc1((void *) &uart0_write_char);
+        ets_install_putc1(uart0_write_char);
         break;
     case UART1:
         system_set_os_print(1);
-        ets_install_putc1((void *) &uart1_write_char);
+        ets_install_putc1(uart1_write_char);
         break;
     case UART_NO:
     default:
         system_set_os_print(0);
-        ets_install_putc1((void *) &uart_ignore_char);
+        ets_install_putc1(uart_ignore_char);
         break;
     }
 }

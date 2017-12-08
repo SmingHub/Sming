@@ -30,6 +30,12 @@ enum WsConnectionState
 	eWSCS_Closed
 };
 
+typedef struct {
+	ws_frame_type_t type;
+	char* payload;
+	size_t payloadLegth;
+} WsFrameInfo;
+
 class WebSocketConnection
 {
 public:
@@ -84,7 +90,7 @@ private:
 	HttpServerConnection* connection = nullptr;
 
 	ws_frame_type_t frameType = WS_FRAME_TEXT;
-	ws_frame_type_t controlFrameType = WS_FRAME_PING;
+	WsFrameInfo controlFrame;
 
 	ws_parser_t parser;
 	ws_parser_callbacks_t parserSettings;

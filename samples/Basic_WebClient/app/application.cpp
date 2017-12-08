@@ -194,7 +194,7 @@ void init()
 
 #ifndef DISABLE_SPIFFS
 	debugf("trying to mount spiffs at 0x%08x, length %d", RBOOT_SPIFFS_0, SPIFF_SIZE);
-	spiffs_mount_manual(RBOOT_SPIFFS_0, SPIFF_SIZE);
+	spiffs_mount();
 #endif
 
 	// Setup the WIFI connection

@@ -47,7 +47,7 @@ void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
 
 	if (!_gpioInterruptsInitialied)
 	{
-		ETS_GPIO_INTR_ATTACH((void*)interruptHandler, NULL); // Register interrupt handler
+		ETS_GPIO_INTR_ATTACH((ets_isr_t)interruptHandler, NULL); // Register interrupt handler
 		_gpioInterruptsInitialied = true;
 	}
 
