@@ -55,6 +55,9 @@ var hierarchy =
     [ "Countable< ServoChannel * >", "classCountable.html", [
       [ "Vector< ServoChannel * >", "classVector.html", null ]
     ] ],
+    [ "Countable< TcpConnection * >", "classCountable.html", [
+      [ "Vector< TcpConnection * >", "classVector.html", null ]
+    ] ],
     [ "DateTime", "classDateTime.html", null ],
     [ "DebugOuputOptions", "structDebugOuputOptions.html", null ],
     [ "decode_results", "classdecode__results.html", null ],
@@ -62,6 +65,7 @@ var hierarchy =
     [ "Delegate< bool(AtClient &atClient, Stream &source)>", "classDelegate.html", null ],
     [ "Delegate< bool(AtClient &atClient, String &reply)>", "classDelegate.html", null ],
     [ "Delegate< bool(TcpClient &client, char *data, int size)>", "classDelegate.html", null ],
+    [ "Delegate< HttpPartResult()>", "classDelegate.html", null ],
     [ "Delegate< int(HttpConnection &client, bool successful)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpConnection &client, const char *at, size_t length)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpConnection &client, HttpHeaders &headers)>", "classDelegate.html", null ],
@@ -86,6 +90,7 @@ var hierarchy =
     [ "Delegate< void(TcpClient &client, bool successful)>", "classDelegate.html", null ],
     [ "Delegate< void(TcpClient &client, TcpConnectionEvent sourceEvent)>", "classDelegate.html", null ],
     [ "Delegate< void(TcpClient *client)>", "classDelegate.html", null ],
+    [ "Delegate< void(TcpConnection &)>", "classDelegate.html", null ],
     [ "Delegate< void(UdpConnection &connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort)>", "classDelegate.html", null ],
     [ "Delegate< void(uint8_t, uint8_t)>", "classDelegate.html", null ],
     [ "Delegate< void(uint8_t[6], uint8_t)>", "classDelegate.html", null ],
@@ -114,9 +119,7 @@ var hierarchy =
     [ "HardwarePWM", "classHardwarePWM.html", null ],
     [ "HashMap< K, V >", "classHashMap.html", null ],
     [ "HashMap< String, CommandDelegate >", "classHashMap.html", null ],
-    [ "HashMap< String, HttpBodyParserDelegate >", "classHashMap.html", null ],
     [ "HashMap< String, HttpConnection * >", "classHashMap.html", null ],
-    [ "HashMap< String, HttpResource * >", "classHashMap.html", null ],
     [ "HashMap< String, SimpleConcurrentQueue * >", "classHashMap.html", null ],
     [ "HashMap< String, String >", "classHashMap.html", [
       [ "TemplateVariables", "classTemplateVariables.html", null ]
@@ -128,6 +131,7 @@ var hierarchy =
     [ "HttpClient", "classHttpClient.html", [
       [ "rBootHttpUpdate", "classrBootHttpUpdate.html", null ]
     ] ],
+    [ "HttpPartResult", "structHttpPartResult.html", null ],
     [ "HttpRequest", "classHttpRequest.html", null ],
     [ "HttpResource", "classHttpResource.html", [
       [ "HttpCompatResource", "classHttpCompatResource.html", null ],
@@ -141,12 +145,18 @@ var hierarchy =
     [ "I2Cdev", "classI2Cdev.html", null ],
     [ "I2CIO", "classI2CIO.html", null ],
     [ "IDataSourceStream", "classIDataSourceStream.html", [
-      [ "ArduCAMStream", "classArduCAMStream.html", null ],
-      [ "FileStream", "classFileStream.html", [
-        [ "TemplateFileStream", "classTemplateFileStream.html", null ]
-      ] ],
-      [ "MemoryDataStream", "classMemoryDataStream.html", [
-        [ "JsonObjectStream", "classJsonObjectStream.html", null ]
+      [ "ReadWriteStream", "classReadWriteStream.html", [
+        [ "ArduCAMStream", "classArduCAMStream.html", null ],
+        [ "CircularBuffer", "classCircularBuffer.html", null ],
+        [ "EndlessMemoryStream", "classEndlessMemoryStream.html", null ],
+        [ "FileStream", "classFileStream.html", [
+          [ "TemplateFileStream", "classTemplateFileStream.html", null ]
+        ] ],
+        [ "HttpChunkedStream", "classHttpChunkedStream.html", null ],
+        [ "HttpMultipartStream", "classHttpMultipartStream.html", null ],
+        [ "MemoryDataStream", "classMemoryDataStream.html", [
+          [ "JsonObjectStream", "classJsonObjectStream.html", null ]
+        ] ]
       ] ]
     ] ],
     [ "IDelegateCaller< ReturnType, ParamsList >", "classIDelegateCaller.html", null ],
@@ -184,8 +194,6 @@ var hierarchy =
       [ "Adafruit_GFX", "classAdafruit__GFX.html", [
         [ "Adafruit_ILI9341", "classAdafruit__ILI9341.html", null ],
         [ "Adafruit_PCD8544", "classAdafruit__PCD8544.html", null ],
-        [ "Adafruit_SSD1306", "classAdafruit__SSD1306.html", null ],
-        [ "Adafruit_ST7735", "classAdafruit__ST7735.html", null ],
         [ "TFT_ILI9163C", "classTFT__ILI9163C.html", null ]
       ] ],
       [ "CommandOutput", "classCommandOutput.html", null ],
@@ -240,7 +248,6 @@ var hierarchy =
       ] ],
       [ "TcpServer", "classTcpServer.html", [
         [ "FTPServer", "classFTPServer.html", null ],
-        [ "HttpServer", "classHttpServer.html", null ],
         [ "TelnetServer", "classTelnetServer.html", null ]
       ] ]
     ] ],
@@ -257,5 +264,6 @@ var hierarchy =
     [ "WebSocketConnection", "classWebSocketConnection.html", null ],
     [ "WebsocketFrameClass", "classWebsocketFrameClass.html", null ],
     [ "WifiEventsClass", "classWifiEventsClass.html", null ],
+    [ "WsFrameInfo", "structWsFrameInfo.html", null ],
     [ "YeelightBulb", "classYeelightBulb.html", null ]
 ];

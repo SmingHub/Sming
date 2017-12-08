@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['hidden',['hidden',['../group__wifi__sta.html#ga14275630c0d4734771122aed1327bb2a',1,'BssInfo']]],
-  ['hour',['Hour',['../classDateTime.html#ab306c0dd7931822b39ae58be72cebae0',1,'DateTime']]],
-  ['hwsdelegate',['HWSDelegate',['../structHWSerialMemberData.html#ae6893cfff0872267cfb2d840a197dee7',1,'HWSerialMemberData']]]
+  ['magic',['magic',['../group__rtc.html#gaf1d6f643e40e285e2bee5e8007c93d84',1,'RtcData']]],
+  ['milliseconds',['Milliseconds',['../classDateTime.html#a52885b8a894ba0dddabc80bddad467fd',1,'DateTime']]],
+  ['minute',['Minute',['../classDateTime.html#a2281ee834b6d9be9fa4c7bc4046394c3',1,'DateTime']]],
+  ['month',['Month',['../classDateTime.html#ac2948899151acbee8819a19ad35fd511',1,'DateTime']]]
 ];

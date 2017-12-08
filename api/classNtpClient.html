@@ -198,12 +198,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (udp_p
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:a85a32b41fc3ae99abc192bbbf2b290d6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNtpClient.html#a85a32b41fc3ae99abc192bbbf2b290d6">staticDnsResponse</a> (const char *name, struct ip_addr *ip, void *arg)</td></tr>
-<tr class="memdesc:a85a32b41fc3ae99abc192bbbf2b290d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle DNS response.  <a href="#a85a32b41fc3ae99abc192bbbf2b290d6">More...</a><br/></td></tr>
-<tr class="separator:a85a32b41fc3ae99abc192bbbf2b290d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a004650ad66ef9b982134dea65009af72"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a004650ad66ef9b982134dea65009af72"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnReceive</b> (void *arg, struct udp_pcb *pcb, struct pbuf *p, struct ip_addr *addr, u16_t port)</td></tr>
-<tr class="separator:a004650ad66ef9b982134dea65009af72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeda2992cc0cde6eafcbfaa104e21ecd9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNtpClient.html#aeda2992cc0cde6eafcbfaa104e21ecd9">staticDnsResponse</a> (const char *name, LWIP_IP_ADDR_T *ip, void *arg)</td></tr>
+<tr class="memdesc:aeda2992cc0cde6eafcbfaa104e21ecd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle DNS response.  <a href="#aeda2992cc0cde6eafcbfaa104e21ecd9">More...</a><br/></td></tr>
+<tr class="separator:aeda2992cc0cde6eafcbfaa104e21ecd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1277c170ecb1fd2fb56ea0b23dacdb0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad1277c170ecb1fd2fb56ea0b23dacdb0"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnReceive</b> (void *arg, struct udp_pcb *pcb, struct pbuf *p, LWIP_IP_ADDR_T *addr, u16_t port)</td></tr>
+<tr class="separator:ad1277c170ecb1fd2fb56ea0b23dacdb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -517,7 +517,7 @@ udp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>udp</b></td></tr
 
 </div>
 </div>
-<a class="anchor" id="a85a32b41fc3ae99abc192bbbf2b290d6"></a>
+<a class="anchor" id="aeda2992cc0cde6eafcbfaa104e21ecd9"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -533,7 +533,7 @@ udp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>udp</b></td></tr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">struct ip_addr *&#160;</td>
+          <td class="paramtype">LWIP_IP_ADDR_T *&#160;</td>
           <td class="paramname"><em>ip</em>, </td>
         </tr>
         <tr>

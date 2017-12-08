@@ -269,25 +269,32 @@ $(document).ready(function(){initNavTree('HardwareSerial_8h_source.html','');});
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="keyword">operator</span> bool() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordtype">int</span> uartNr;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    <span class="keyword">static</span> <a class="code" href="structHWSerialMemberData.html">HWSerialMemberData</a> memberData[<a class="code" href="group__serial.html#gae453609d057b191ba45e6f85da178a1e">NUMBER_UARTS</a>];</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    uart_t* uart = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordtype">size_t</span> rxSize;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    <span class="comment">/*</span></div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="comment">     * @brief Returns the location of the searched character</span></div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="comment">     * @param char c - character to search for</span></div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;<span class="comment">     * @retval size_t -1 if not found 0 or positive number otherwise</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordtype">size_t</span> indexOf(<span class="keywordtype">char</span> c);</div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="keyword">static</span> os_event_t *serialQueue;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">bool</span> init;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="keywordtype">int</span> uartNr;</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keyword">static</span> <a class="code" href="structHWSerialMemberData.html">HWSerialMemberData</a> memberData[<a class="code" href="group__serial.html#gae453609d057b191ba45e6f85da178a1e">NUMBER_UARTS</a>];</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> IRAM_ATTR callbackHandler(uart_t *arg);</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    uart_t* uart = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="keywordtype">size_t</span> rxSize;</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    <span class="keyword">static</span> os_event_t *serialQueue;</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> delegateTask (os_event_t *inputEvent);</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;};</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="keyword">extern</span> <a class="code" href="classHardwareSerial.html">HardwareSerial</a> <a class="code" href="group__serial.html#ga7b8c4a195c58f9eb8750e94955c5aa4b">Serial</a>;</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _HARDWARESERIAL_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">bool</span> init;</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> IRAM_ATTR callbackHandler(uart_t *arg);</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> delegateTask (os_event_t *inputEvent);</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;};</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="keyword">extern</span> <a class="code" href="classHardwareSerial.html">HardwareSerial</a> <a class="code" href="group__serial.html#ga7b8c4a195c58f9eb8750e94955c5aa4b">Serial</a>;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _HARDWARESERIAL_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classHardwareSerial_html_afb54a8e3d51aff875b12c1c7b29da619"><div class="ttname"><a href="classHardwareSerial.html#afb54a8e3d51aff875b12c1c7b29da619">HardwareSerial::begin</a></div><div class="ttdeci">void begin(const uint32_t baud, SerialConfig config)</div><div class="ttdoc">Initialise and set its configuration. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:105</div></div>
 <div class="ttc" id="classHardwareSerial_html_a609a8c9b978ce60334e93afc8625a91e"><div class="ttname"><a href="classHardwareSerial.html#a609a8c9b978ce60334e93afc8625a91e">HardwareSerial::available</a></div><div class="ttdeci">int available()</div><div class="ttdoc">Get quantity characters available from serial input. </div></div>
 <div class="ttc" id="structHWSerialMemberData_html_ae6893cfff0872267cfb2d840a197dee7"><div class="ttname"><a href="structHWSerialMemberData.html#ae6893cfff0872267cfb2d840a197dee7">HWSerialMemberData::HWSDelegate</a></div><div class="ttdeci">StreamDataReceivedDelegate HWSDelegate</div><div class="ttdoc">Delegate callback handler. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:43</div></div>
@@ -320,7 +327,7 @@ $(document).ready(function(){initNavTree('HardwareSerial_8h_source.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_0ccf49f26d9ba51414c65cf131e66b5b.html">SmingCore</a></li><li class="navelem"><b>HardwareSerial.h</b></li>
+    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_2ed575006c7d0647b9e44f569fa9afde.html">SmingCore</a></li><li class="navelem"><b>HardwareSerial.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

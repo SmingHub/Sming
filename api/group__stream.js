@@ -1,5 +1,19 @@
 var group__stream =
 [
+    [ "CircularBuffer", "classCircularBuffer.html", [
+      [ "CircularBuffer", "classCircularBuffer.html#a8849e18b35e8d144a59906268812f204", null ],
+      [ "~CircularBuffer", "classCircularBuffer.html#aa2909d1710810831b6e2645fa12fed28", null ],
+      [ "flush", "classCircularBuffer.html#ab1fe7ca55bfe74961552c73dfee9b370", null ],
+      [ "getStreamType", "classCircularBuffer.html#a73e4276f890b8d25d90f33f641801ef5", null ],
+      [ "id", "classCircularBuffer.html#a471f021e32d3a8bd7b82a670bd242155", null ],
+      [ "isFinished", "classCircularBuffer.html#abfe236e3b5f1e553c901ea0db38a0458", null ],
+      [ "length", "classCircularBuffer.html#a0c9d58619534ededfc22bbeab0a702c8", null ],
+      [ "readMemoryBlock", "classCircularBuffer.html#ae4fc79d38392b70088ddba368a1a0815", null ],
+      [ "room", "classCircularBuffer.html#a0050763b5e6b0d3b6a0417044bd93af3", null ],
+      [ "seek", "classCircularBuffer.html#a0117fb9e4cf234dec76217312534c904", null ],
+      [ "write", "classCircularBuffer.html#ac9f7a35cd7612d9067b9ff300127d1a7", null ],
+      [ "write", "classCircularBuffer.html#acaf8617303395b3a066bf80ff151fa37", null ]
+    ] ],
     [ "TemplateVariables", "classTemplateVariables.html", [
       [ "comparator", "classTemplateVariables.html#ac8760d0b9e0613a18ca1feb786a75e59", null ],
       [ "allocate", "classTemplateVariables.html#a8a1a7a52d83d17407a3fdca25d99df5f", null ],
@@ -29,6 +43,17 @@ var group__stream =
       [ "length", "classIDataSourceStream.html#ae13014db9d7b133c58eaf27a8f1d24f5", null ],
       [ "readMemoryBlock", "classIDataSourceStream.html#af57326b89bc192a3e95916411681d011", null ],
       [ "seek", "classIDataSourceStream.html#a3a2c1c9c686a6c99041316dc0531c255", null ]
+    ] ],
+    [ "ReadWriteStream", "classReadWriteStream.html", [
+      [ "~ReadWriteStream", "classReadWriteStream.html#a581a67c033890a8fa6d602ef5a9c2bac", null ],
+      [ "getStreamType", "classReadWriteStream.html#a589085e0eea011acdc401b79831826e0", null ],
+      [ "id", "classReadWriteStream.html#abe31f244917749cf8b343c0249a312c0", null ],
+      [ "isFinished", "classReadWriteStream.html#a143958f311cc98fbfaaec1d4d5cdfe47", null ],
+      [ "length", "classReadWriteStream.html#ae13014db9d7b133c58eaf27a8f1d24f5", null ],
+      [ "readMemoryBlock", "classReadWriteStream.html#a488b605e720069e802f5d38635e4b2e0", null ],
+      [ "seek", "classReadWriteStream.html#a3a2c1c9c686a6c99041316dc0531c255", null ],
+      [ "write", "classReadWriteStream.html#a3ebf31faca185807abbbcfdb5b0f8d4a", null ],
+      [ "write", "classReadWriteStream.html#a2d59383b573eea799e162744972a7aee", null ]
     ] ],
     [ "MemoryDataStream", "classMemoryDataStream.html", [
       [ "MemoryDataStream", "classMemoryDataStream.html#a3340a2168df4ce663876e4e130cc569e", null ],
@@ -148,5 +173,32 @@ var group__stream =
       [ "write", "classJsonObjectStream.html#abfdd93a61c4b95a3ba41680188505e73", null ],
       [ "write", "classJsonObjectStream.html#abcdae6e51c95b60fd496fb8f3c57995c", null ],
       [ "write", "classJsonObjectStream.html#acb59a4836b2336e263051096b0b40f57", null ]
+    ] ],
+    [ "EndlessMemoryStream", "classEndlessMemoryStream.html", [
+      [ "~EndlessMemoryStream", "classEndlessMemoryStream.html#ad27faa668ea582b409ff865c4fea3f0e", null ],
+      [ "getStreamType", "classEndlessMemoryStream.html#a72937420a55ff2ab1e1dd4fb4170602a", null ],
+      [ "id", "classEndlessMemoryStream.html#abe31f244917749cf8b343c0249a312c0", null ],
+      [ "isFinished", "classEndlessMemoryStream.html#af091a934dce4aea1a88072a44ee8dbad", null ],
+      [ "length", "classEndlessMemoryStream.html#ae13014db9d7b133c58eaf27a8f1d24f5", null ],
+      [ "readMemoryBlock", "classEndlessMemoryStream.html#a2cd20326b72df9f4b6c6386dccfdd02c", null ],
+      [ "seek", "classEndlessMemoryStream.html#af768c1377668ea48626db6e95584c736", null ],
+      [ "write", "classEndlessMemoryStream.html#aa7f40a313fc54fc9aa253685d870ba5d", null ],
+      [ "write", "classEndlessMemoryStream.html#a35bae04dc9296526134337ffea071f75", null ]
+    ] ],
+    [ "HttpChunkedStream", "classHttpChunkedStream.html", [
+      [ "HttpChunkedStream", "classHttpChunkedStream.html#a4f77c2cad7c64c3b8cf428eff68adab7", null ],
+      [ "~HttpChunkedStream", "classHttpChunkedStream.html#afb3b1bd33b57ecba2fc686ba0fd2c3d6", null ],
+      [ "getStreamType", "classHttpChunkedStream.html#a4572062c760d505a4ea591da3bc99c93", null ],
+      [ "id", "classHttpChunkedStream.html#abe31f244917749cf8b343c0249a312c0", null ],
+      [ "isFinished", "classHttpChunkedStream.html#a45ef463ad55e7681a5aff7ac36addc4d", null ],
+      [ "length", "classHttpChunkedStream.html#a2b182c8919352afc16be9d15d136dfbf", null ],
+      [ "readMemoryBlock", "classHttpChunkedStream.html#ade6d81bf4852630ca95d64cf411783eb", null ],
+      [ "seek", "classHttpChunkedStream.html#a44c4d584c747524ba4598359810653e4", null ],
+      [ "write", "classHttpChunkedStream.html#aeece05ff02ede16097cb491e0f06895a", null ],
+      [ "write", "classHttpChunkedStream.html#afaed7978d7acfea6f9d0145e5ce82934", null ]
+    ] ],
+    [ "HttpPartResult", "structHttpPartResult.html", [
+      [ "headers", "structHttpPartResult.html#a3ba23e9464c7aa64d82bcac2db41a312", null ],
+      [ "stream", "structHttpPartResult.html#a26c1781ddf1d54c1aa6dc54afb3d3f8f", null ]
     ] ]
 ];

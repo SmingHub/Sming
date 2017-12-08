@@ -118,6 +118,7 @@ Inheritance diagram for ArduCAMStream:</div>
  <div class="center">
   <img src="classArduCAMStream.png" usemap="#ArduCAMStream_map" alt=""/>
   <map id="ArduCAMStream_map" name="ArduCAMStream_map">
+<area href="classReadWriteStream.html" alt="ReadWriteStream" shape="rect" coords="0,56,121,80"/>
 <area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="0,0,121,24"/>
 </map>
  </div></div>
@@ -139,6 +140,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a018355d634ecc3c886708add67c2b93a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a">isFinished</a> ()</td></tr>
 <tr class="memdesc:a018355d634ecc3c886708add67c2b93a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if stream is finished.  <a href="#a018355d634ecc3c886708add67c2b93a">More...</a><br/></td></tr>
 <tr class="separator:a018355d634ecc3c886708add67c2b93a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46e38c3bc81f469493613a96719c5ffc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a46e38c3bc81f469493613a96719c5ffc"></a>
+virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (uint8_t charToWrite)</td></tr>
+<tr class="separator:a46e38c3bc81f469493613a96719c5ffc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae07d3e1ea4008c0c5e447821bab25f6e"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArduCAMStream.html#ae07d3e1ea4008c0c5e447821bab25f6e">write</a> (const uint8_t *buffer, size_t size)</td></tr>
+<tr class="memdesc:ae07d3e1ea4008c0c5e447821bab25f6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write chars to stream.  <a href="#ae07d3e1ea4008c0c5e447821bab25f6e">More...</a><br/></td></tr>
+<tr class="separator:ae07d3e1ea4008c0c5e447821bab25f6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a301739a7b456ef86e0747d17e7427646"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a301739a7b456ef86e0747d17e7427646"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>dataReady</b> ()</td></tr>
 <tr class="separator:a301739a7b456ef86e0747d17e7427646"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,7 +188,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>available</b> ()</t
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
 
 <p>Implements <a class="el" href="classIDataSourceStream.html#a589085e0eea011acdc401b79831826e0">IDataSourceStream</a>.</p>
 
@@ -216,7 +223,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>available</b> ()</t
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf">FileStream</a>.</p>
+<p>Reimplemented in <a class="el" href="classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf">FileStream</a>, and <a class="el" href="classCircularBuffer.html#a471f021e32d3a8bd7b82a670bd242155">CircularBuffer</a>.</p>
 
 </div>
 </div>
@@ -282,7 +289,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>available</b> ()</t
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classJsonObjectStream.html#a5129ca6b7e91865489aa2e98ba2d314f">JsonObjectStream</a>, <a class="el" href="classTemplateFileStream.html#a706ba018848f426ab8535a670f88f38d">TemplateFileStream</a>, <a class="el" href="classFileStream.html#a61bbea59e0648360fa17e3b964ad34f6">FileStream</a>, and <a class="el" href="classMemoryDataStream.html#af6a95640e736c87614a9a7be05546ddc">MemoryDataStream</a>.</p>
+<p>Reimplemented in <a class="el" href="classJsonObjectStream.html#a5129ca6b7e91865489aa2e98ba2d314f">JsonObjectStream</a>, <a class="el" href="classTemplateFileStream.html#a706ba018848f426ab8535a670f88f38d">TemplateFileStream</a>, <a class="el" href="classFileStream.html#a61bbea59e0648360fa17e3b964ad34f6">FileStream</a>, <a class="el" href="classMemoryDataStream.html#af6a95640e736c87614a9a7be05546ddc">MemoryDataStream</a>, <a class="el" href="classCircularBuffer.html#a0c9d58619534ededfc22bbeab0a702c8">CircularBuffer</a>, <a class="el" href="classHttpMultipartStream.html#ac5d9bb140c4ec6fe2b17afecd4d5a195">HttpMultipartStream</a>, and <a class="el" href="classHttpChunkedStream.html#a2b182c8919352afc16be9d15d136dfbf">HttpChunkedStream</a>.</p>
 
 </div>
 </div>
@@ -332,9 +339,9 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>available</b> ()</t
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
 
-<p>Implements <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011">IDataSourceStream</a>.</p>
+<p>Implements <a class="el" href="classReadWriteStream.html#a488b605e720069e802f5d38635e4b2e0">ReadWriteStream</a>.</p>
 
 </div>
 </div>
@@ -375,6 +382,57 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>available</b> ()</t
 </dl>
 
 <p>Implements <a class="el" href="classIDataSourceStream.html#a3a2c1c9c686a6c99041316dc0531c255">IDataSourceStream</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae07d3e1ea4008c0c5e447821bab25f6e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t ArduCAMStream::write </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Write chars to stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>Pointer to buffer to write to the stream </td></tr>
+    <tr><td class="paramname">size</td><td>Quantity of chars to writen </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of chars written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classReadWriteStream.html#a2d59383b573eea799e162744972a7aee">ReadWriteStream</a>.</p>
 
 </div>
 </div>

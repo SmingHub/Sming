@@ -58,6 +58,7 @@ var group__serial =
       [ "findUntil", "classHardwareSerial.html#a3a9497de614792103ab8cb4759e01a69", null ],
       [ "flush", "classHardwareSerial.html#af12cc7f03315df841905003d728d9b87", null ],
       [ "getWriteError", "classHardwareSerial.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
+      [ "indexOf", "classHardwareSerial.html#a6301abcd01763f238c967e7f92892faf", null ],
       [ "isRxEnabled", "classHardwareSerial.html#a8ba1e16b50845801487b069e243f8c4d", null ],
       [ "isTxEnabled", "classHardwareSerial.html#a82d71ffebdc2127c1ff44cd00d803827", null ],
       [ "operator bool", "classHardwareSerial.html#a28e743f97000478452f3027a0a215579", null ],

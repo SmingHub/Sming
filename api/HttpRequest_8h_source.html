@@ -138,13 +138,13 @@ $(document).ready(function(){initNavTree('HttpRequest_8h_source.html','');});
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>(<a class="code" href="classURL.html">URL</a> uri);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>(<span class="keyword">const</span> <a class="code" href="classURL.html">URL</a>&amp; uri);</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>(<span class="keyword">const</span> <a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; value);</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    __forceinline <a class="code" href="classHttpRequest.html">HttpRequest</a>* clone()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="classHttpRequest.html">HttpRequest</a>(*<span class="keyword">this</span>); }</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; operator = (<span class="keyword">const</span> <a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; rhs);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    ~<a class="code" href="classHttpRequest.html">HttpRequest</a>();</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* setURL(<a class="code" href="classURL.html">URL</a> uri);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* setURL(<span class="keyword">const</span> <a class="code" href="classURL.html">URL</a>&amp; uri);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* setMethod(<span class="keyword">const</span> HttpMethod method);</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
@@ -185,7 +185,7 @@ $(document).ready(function(){initNavTree('HttpRequest_8h_source.html','');});
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* setBody(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; body);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* setBody(<a class="code" href="classIDataSourceStream.html">IDataSourceStream</a> *stream);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* setBody(<a class="code" href="classReadWriteStream.html">ReadWriteStream</a> *stream);</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* setBody(uint8_t *rawData, <span class="keywordtype">size_t</span> length);</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* setResponseStream(<a class="code" href="classIOutputStream.html">IOutputStream</a> *stream);</div>
@@ -219,7 +219,7 @@ $(document).ready(function(){initNavTree('HttpRequest_8h_source.html','');});
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    uint8_t *rawData = NULL;</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <span class="keywordtype">size_t</span> rawDataLength = 0;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <a class="code" href="classIDataSourceStream.html">IDataSourceStream</a> *stream = NULL;</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a> *stream = NULL;</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <a class="code" href="classIOutputStream.html">IOutputStream</a> *responseStream = NULL;</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
@@ -244,7 +244,7 @@ $(document).ready(function(){initNavTree('HttpRequest_8h_source.html','');});
 <div class="ttc" id="classHttpRequest_html_ac5653ef5c07aa61c345fd2e6aa418dbf"><div class="ttname"><a href="classHttpRequest.html#ac5653ef5c07aa61c345fd2e6aa418dbf">HttpRequest::toString</a></div><div class="ttdeci">String toString()</div><div class="ttdoc">Tries to present a readable version of the current request values. </div></div>
 <div class="ttc" id="classIDataSourceStream_html"><div class="ttname"><a href="classIDataSourceStream.html">IDataSourceStream</a></div><div class="ttdoc">Base class for data source stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:49</div></div>
 <div class="ttc" id="classIOutputStream_html"><div class="ttname"><a href="classIOutputStream.html">IOutputStream</a></div><div class="ttdef"><b>Definition:</b> OutputStream.h:17</div></div>
-<div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:44</div></div>
+<div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:37</div></div>
 <div class="ttc" id="classHttpClient_html"><div class="ttname"><a href="classHttpClient.html">HttpClient</a></div><div class="ttdef"><b>Definition:</b> HttpClient.h:27</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; int(HttpConnection &amp;client, HttpHeaders &amp;headers)&gt;</a></div></div>
@@ -252,12 +252,13 @@ $(document).ready(function(){initNavTree('HttpRequest_8h_source.html','');});
 <div class="ttc" id="classURL_html"><div class="ttname"><a href="classURL.html">URL</a></div><div class="ttdef"><b>Definition:</b> URL.h:24</div></div>
 <div class="ttc" id="classHttpRequest_html"><div class="ttname"><a href="classHttpRequest.html">HttpRequest</a></div><div class="ttdef"><b>Definition:</b> HttpRequest.h:31</div></div>
 <div class="ttc" id="classHttpConnection_html"><div class="ttname"><a href="classHttpConnection.html">HttpConnection</a></div><div class="ttdef"><b>Definition:</b> HttpConnection.h:33</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:92</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_0ccf49f26d9ba51414c65cf131e66b5b.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_af052e6e9c29140ebbebc556438276df.html">Network</a></li><li class="navelem"><a class="el" href="dir_f49b3bb7446b8d648a5cff0f1d247780.html">Http</a></li><li class="navelem"><b>HttpRequest.h</b></li>
+    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_2ed575006c7d0647b9e44f569fa9afde.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_17729ed7f3af1a7565eb1ef720d466c9.html">Network</a></li><li class="navelem"><a class="el" href="dir_40e77b1d51adef0a7c2ff503a16b6d23.html">Http</a></li><li class="navelem"><b>HttpRequest.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

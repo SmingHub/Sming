@@ -34,6 +34,7 @@ var group__tcpclient =
       [ "send", "classTcpClient.html#a7caad1d87a32cc1b1092396c14dab6aa", null ],
       [ "sendString", "classTcpClient.html#a8dd63ab71d144b13b50a1f3b794df6b3", null ],
       [ "setCompleteDelegate", "classTcpClient.html#abf18cea760e8efbf3a204b4e6d4055c3", null ],
+      [ "setDestroyedDelegate", "classTcpClient.html#a39d7fe38dceaf464a09f6a1cab7463b4", null ],
       [ "setReceiveDelegate", "classTcpClient.html#ab9a6e4aeee94b7712bf2add4c286a3a0", null ],
       [ "setTimeOut", "classTcpClient.html#a3d01ef17727966d8d63e6f35a2a0fd14", null ],
       [ "write", "classTcpClient.html#a17fbdcd21e00e24eae8d42096ceeb5db", null ],
@@ -43,6 +44,7 @@ var group__tcpclient =
       [ "autoSelfDestruct", "classTcpClient.html#a56f9a3c4c74d221c29e07107384db1c1", null ],
       [ "canSend", "classTcpClient.html#a730b80fbbafb4ac92eda9b320ccf7bbf", null ],
       [ "sleep", "classTcpClient.html#a482c5afdb16d0a93c46a8b83da649254", null ],
+      [ "stream", "classTcpClient.html#a5a25e67658787edc2de4fb45b09785b6", null ],
       [ "tcp", "classTcpClient.html#a601e019508b0071d0825908eaee0f58c", null ],
       [ "timeOut", "classTcpClient.html#a3d11a5464ae92193779dafc650597fa2", null ],
       [ "useSsl", "classTcpClient.html#a1f713f30d71b5015ae1ee0cf98607298", null ]

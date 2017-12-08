@@ -124,8 +124,9 @@ Inheritance diagram for JsonObjectStream:</div>
  <div class="center">
   <img src="classJsonObjectStream.png" usemap="#JsonObjectStream_map" alt=""/>
   <map id="JsonObjectStream_map" name="JsonObjectStream_map">
-<area href="classMemoryDataStream.html" title="Memory data stream class. " alt="MemoryDataStream" shape="rect" coords="66,56,189,80"/>
-<area href="classPrint.html" title="Provides formatted output to stream. " alt="Print" shape="rect" coords="0,0,123,24"/>
+<area href="classMemoryDataStream.html" title="Memory data stream class. " alt="MemoryDataStream" shape="rect" coords="66,112,189,136"/>
+<area href="classPrint.html" title="Provides formatted output to stream. " alt="Print" shape="rect" coords="0,56,123,80"/>
+<area href="classReadWriteStream.html" alt="ReadWriteStream" shape="rect" coords="133,56,256,80"/>
 <area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="133,0,256,24"/>
 </map>
  </div></div>
@@ -350,7 +351,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
   </table>
   </dd>
 </dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Use getLength instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Use <a class="el" href="classMemoryDataStream.html#af6a95640e736c87614a9a7be05546ddc" title="Return the total length of the stream. ">length()</a> instead </dd></dl>
 
 </div>
 </div>
@@ -413,7 +414,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
 
 <p>Reimplemented from <a class="el" href="classMemoryDataStream.html#a29d74d448be139ab37649b7170490807">MemoryDataStream</a>.</p>
 
@@ -479,7 +480,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf">FileStream</a>.</p>
+<p>Reimplemented in <a class="el" href="classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf">FileStream</a>, and <a class="el" href="classCircularBuffer.html#a471f021e32d3a8bd7b82a670bd242155">CircularBuffer</a>.</p>
 
 </div>
 </div>
@@ -1441,7 +1442,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
 
 <p>Reimplemented from <a class="el" href="classMemoryDataStream.html#a9f8d375068f30fa0f56bd7b338f6e7aa">MemoryDataStream</a>.</p>
 
@@ -1610,7 +1611,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classPrint.html#a29ff950e3418d9d9ea6ca84a612fe6a8">Print</a>.</p>
+<p>Implements <a class="el" href="classReadWriteStream.html">ReadWriteStream</a>.</p>
 
 </div>
 </div>
@@ -1650,7 +1651,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">buffer</td><td>Pointer to buffer to write to the stream </td></tr>
-    <tr><td class="paramname">size</td><td>Quantity of chars to writen </td></tr>
+    <tr><td class="paramname">size</td><td>Quantity of chars to write </td></tr>
   </table>
   </dd>
 </dl>
@@ -1661,7 +1662,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classPrint.html#ad98d820df11e2697be1e4b1ea30b4a23">Print</a>.</p>
+<p>Implements <a class="el" href="classReadWriteStream.html#a2d59383b573eea799e162744972a7aee">ReadWriteStream</a>.</p>
 
 </div>
 </div>

@@ -9,5 +9,7 @@ var classArduCAMStream =
     [ "isFinished", "classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a", null ],
     [ "length", "classArduCAMStream.html#ae13014db9d7b133c58eaf27a8f1d24f5", null ],
     [ "readMemoryBlock", "classArduCAMStream.html#a77a1101bf887eb69fb094b006f89affe", null ],
-    [ "seek", "classArduCAMStream.html#ad8d52a89a9f1c99b650112d367ec2e5e", null ]
+    [ "seek", "classArduCAMStream.html#ad8d52a89a9f1c99b650112d367ec2e5e", null ],
+    [ "write", "classArduCAMStream.html#a46e38c3bc81f469493613a96719c5ffc", null ],
+    [ "write", "classArduCAMStream.html#ae07d3e1ea4008c0c5e447821bab25f6e", null ]
 ];

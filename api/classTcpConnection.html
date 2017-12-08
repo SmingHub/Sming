@@ -124,14 +124,13 @@ Inheritance diagram for TcpConnection:</div>
   <map id="TcpConnection_map" name="TcpConnection_map">
 <area href="classFTPServerConnection.html" alt="FTPServerConnection" shape="rect" coords="0,56,138,80"/>
 <area href="classTcpClient.html" alt="TcpClient" shape="rect" coords="222,56,360,80"/>
-<area href="classTcpServer.html" alt="TcpServer" shape="rect" coords="740,56,878,80"/>
+<area href="classTcpServer.html" alt="TcpServer" shape="rect" coords="666,56,804,80"/>
 <area href="classHttpConnection.html" alt="HttpConnection" shape="rect" coords="0,112,138,136"/>
 <area href="classHttpServerConnection.html" alt="HttpServerConnection" shape="rect" coords="148,112,286,136"/>
 <area href="classMqttClient.html" alt="MqttClient" shape="rect" coords="296,112,434,136"/>
 <area href="classWebsocketClient.html" title="Delegate callback type for connection of websocket client. " alt="WebsocketClient" shape="rect" coords="444,112,582,136"/>
 <area href="classFTPServer.html" alt="FTPServer" shape="rect" coords="592,112,730,136"/>
-<area href="classHttpServer.html" alt="HttpServer" shape="rect" coords="740,112,878,136"/>
-<area href="classTelnetServer.html" alt="TelnetServer" shape="rect" coords="888,112,1026,136"/>
+<area href="classTelnetServer.html" alt="TelnetServer" shape="rect" coords="740,112,878,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -179,6 +178,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeOut</b> (uint1
 <tr class="memitem:ad6fedbbb90a1147bde5b143fd8fdde6f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad6fedbbb90a1147bde5b143fd8fdde6f"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>getRemotePort</b> ()</td></tr>
 <tr class="separator:ad6fedbbb90a1147bde5b143fd8fdde6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39d7fe38dceaf464a09f6a1cab7463b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTcpConnection.html#a39d7fe38dceaf464a09f6a1cab7463b4">setDestroyedDelegate</a> (<a class="el" href="classDelegate.html">TcpConnectionDestroyedDelegate</a> destroyedDelegate)</td></tr>
+<tr class="memdesc:a39d7fe38dceaf464a09f6a1cab7463b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a callback to be called when the object instance is destroyed.  <a href="#a39d7fe38dceaf464a09f6a1cab7463b4">More...</a><br/></td></tr>
+<tr class="separator:a39d7fe38dceaf464a09f6a1cab7463b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -224,9 +226,9 @@ static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnPoll<
 <tr class="memitem:aa55d00095851b50d2ffab03e22d2cbd5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa55d00095851b50d2ffab03e22d2cbd5"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnError</b> (void *arg, err_t err)</td></tr>
 <tr class="separator:aa55d00095851b50d2ffab03e22d2cbd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd2ac862b46f25e7a5cbf2d5858f210a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afd2ac862b46f25e7a5cbf2d5858f210a"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticDnsResponse</b> (const char *name, ip_addr_t *ipaddr, void *arg)</td></tr>
-<tr class="separator:afd2ac862b46f25e7a5cbf2d5858f210a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f9773471a0ff64628830b9e8f1e824c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f9773471a0ff64628830b9e8f1e824c"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticDnsResponse</b> (const char *name, LWIP_IP_ADDR_T *ipaddr, void *arg)</td></tr>
+<tr class="separator:a1f9773471a0ff64628830b9e8f1e824c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba93412d2aabe551151e9146bbca35f0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba93412d2aabe551151e9146bbca35f0"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>closeTcpConnection</b> (tcp_pcb *tpcb)</td></tr>
 <tr class="separator:aba93412d2aabe551151e9146bbca35f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -258,6 +260,31 @@ Friends</h2></td></tr>
 class&#160;</td><td class="memItemRight" valign="bottom"><b>TcpServer</b></td></tr>
 <tr class="separator:a3ecf3132e8c4bf890c07853cfab7619c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a39d7fe38dceaf464a09f6a1cab7463b4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TcpConnection::setDestroyedDelegate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">TcpConnectionDestroyedDelegate</a>&#160;</td>
+          <td class="paramname"><em>destroyedDelegate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a callback to be called when the object instance is destroyed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">TcpServerConnectionDestroyedDelegate</td><td>destroyedDelegate - callback </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['magic',['magic',['../group__rtc.html#gaf1d6f643e40e285e2bee5e8007c93d84',1,'RtcData']]],
-  ['milliseconds',['Milliseconds',['../classDateTime.html#a52885b8a894ba0dddabc80bddad467fd',1,'DateTime']]],
-  ['minute',['Minute',['../classDateTime.html#a2281ee834b6d9be9fa4c7bc4046394c3',1,'DateTime']]],
-  ['month',['Month',['../classDateTime.html#ac2948899151acbee8819a19ad35fd511',1,'DateTime']]]
+  ['payload',['payload',['../classNrf24l.html#a9d3639ab2bc390cf388bba3652685e24',1,'Nrf24l']]],
+  ['ptx',['PTX',['../classNrf24l.html#a58c788a2ef33a73cc0a3bd716c12e49e',1,'Nrf24l']]]
 ];

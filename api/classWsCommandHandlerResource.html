@@ -135,6 +135,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>onMessage</b> (<a cla
 <tr class="memitem:a90df74bb67d552eb3aec6928eb8d62a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a90df74bb67d552eb3aec6928eb8d62a1"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>processData</b> (<a class="el" href="classHttpServerConnection.html">HttpServerConnection</a> &amp;connection, <a class="el" href="classHttpRequest.html">HttpRequest</a> &amp;request, char *at, int size)</td></tr>
 <tr class="separator:a90df74bb67d552eb3aec6928eb8d62a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2723fe8e4a275c4f0a7806d527a977f9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketResource.html#a2723fe8e4a275c4f0a7806d527a977f9">shutdown</a> (<a class="el" href="classHttpServerConnection.html">HttpServerConnection</a> &amp;connection)</td></tr>
+<tr class="memdesc:a2723fe8e4a275c4f0a7806d527a977f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes care to cleanup the connection.  <a href="#a2723fe8e4a275c4f0a7806d527a977f9">More...</a><br/></td></tr>
+<tr class="separator:a2723fe8e4a275c4f0a7806d527a977f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d815b0a0d75ccbdb5e288d5cdc11390"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0d815b0a0d75ccbdb5e288d5cdc11390"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setConnectionHandler</b> (<a class="el" href="classDelegate.html">WebSocketDelegate</a> handler)</td></tr>
 <tr class="separator:a0d815b0a0d75ccbdb5e288d5cdc11390"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -175,6 +178,35 @@ Protected Attributes</h2></td></tr>
 <a class="el" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onUpgrade</b> = 0</td></tr>
 <tr class="separator:ab6f291b31205ebbe8509e47700c4c49e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a2723fe8e4a275c4f0a7806d527a977f9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void WebsocketResource::shutdown </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classHttpServerConnection.html">HttpServerConnection</a> &amp;&#160;</td>
+          <td class="paramname"><em>connection</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Takes care to cleanup the connection. </p>
+
+<p>Reimplemented from <a class="el" href="classHttpResource.html#ab5ea247e3818feb1e364fffa1958f36d">HttpResource</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

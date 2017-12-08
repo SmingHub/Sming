@@ -25,6 +25,7 @@ var classFTPServerConnection =
     [ "onReceive", "classFTPServerConnection.html#adadf07607c7340dcad46ed254cb5c0b1", null ],
     [ "onSent", "classFTPServerConnection.html#a5b09cd364bc3ef06e54afe6f9968d15b", null ],
     [ "response", "classFTPServerConnection.html#ab840288d33d83ed0ee6d76d58756c9e8", null ],
+    [ "setDestroyedDelegate", "classFTPServerConnection.html#a39d7fe38dceaf464a09f6a1cab7463b4", null ],
     [ "setTimeOut", "classFTPServerConnection.html#a3d01ef17727966d8d63e6f35a2a0fd14", null ],
     [ "write", "classFTPServerConnection.html#a17fbdcd21e00e24eae8d42096ceeb5db", null ],
     [ "write", "classFTPServerConnection.html#a59ef4474eb3d65f8b1f1e21e0f3f3c25", null ],

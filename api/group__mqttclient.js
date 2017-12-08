@@ -33,6 +33,7 @@ var group__mqttclient =
       [ "send", "classMqttClient.html#a7caad1d87a32cc1b1092396c14dab6aa", null ],
       [ "sendString", "classMqttClient.html#a8dd63ab71d144b13b50a1f3b794df6b3", null ],
       [ "setCompleteDelegate", "classMqttClient.html#abf18cea760e8efbf3a204b4e6d4055c3", null ],
+      [ "setDestroyedDelegate", "classMqttClient.html#a39d7fe38dceaf464a09f6a1cab7463b4", null ],
       [ "setKeepAlive", "classMqttClient.html#abf4a81cdeeaeaa10ce6ade5471919688", null ],
       [ "setPingRepeatTime", "classMqttClient.html#a40c240c945c2d9b8f6221d59120c30e7", null ],
       [ "setReceiveDelegate", "classMqttClient.html#ab9a6e4aeee94b7712bf2add4c286a3a0", null ],
@@ -47,6 +48,7 @@ var group__mqttclient =
       [ "autoSelfDestruct", "classMqttClient.html#a56f9a3c4c74d221c29e07107384db1c1", null ],
       [ "canSend", "classMqttClient.html#a730b80fbbafb4ac92eda9b320ccf7bbf", null ],
       [ "sleep", "classMqttClient.html#a482c5afdb16d0a93c46a8b83da649254", null ],
+      [ "stream", "classMqttClient.html#a5a25e67658787edc2de4fb45b09785b6", null ],
       [ "tcp", "classMqttClient.html#a601e019508b0071d0825908eaee0f58c", null ],
       [ "timeOut", "classMqttClient.html#a3d11a5464ae92193779dafc650597fa2", null ],
       [ "useSsl", "classMqttClient.html#a1f713f30d71b5015ae1ee0cf98607298", null ]

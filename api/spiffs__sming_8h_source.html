@@ -110,27 +110,28 @@ $(document).ready(function(){initNavTree('spiffs__sming_8h_source.html','');});
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;spiffs.h&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keywordtype">void</span> spiffs_mount();</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keywordtype">void</span> spiffs_mount_manual(u32_t phys_addr, u32_t phys_size);</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keywordtype">void</span> spiffs_unmount();</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">bool</span> spiffs_format();</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordtype">bool</span> spiffs_format_internal(spiffs_config *cfg);</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keywordtype">bool</span> spiffs_format_manual(u32_t phys_addr, u32_t phys_size);</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;spiffs_config spiffs_get_storage_config();</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">extern</span> <span class="keywordtype">void</span> test_spiffs();</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">extern</span> spiffs _filesystemStorageHandle;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#if defined(__cplusplus)</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor"></span>}</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif </span><span class="comment">/* SPIFFS_SMING_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define LOG_PAGE_SIZE       256</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keywordtype">void</span> spiffs_mount();</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">void</span> spiffs_mount_manual(u32_t phys_addr, u32_t phys_size);</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordtype">void</span> spiffs_unmount();</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keywordtype">bool</span> spiffs_format();</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keywordtype">bool</span> spiffs_format_internal(spiffs_config *cfg);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keywordtype">bool</span> spiffs_format_manual(u32_t phys_addr, u32_t phys_size);</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;spiffs_config spiffs_get_storage_config();</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">extern</span> spiffs _filesystemStorageHandle;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#if defined(__cplusplus)</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span>}</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif </span><span class="comment">/* SPIFFS_SMING_H_ */</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_07d1f75d6d9649a658a1ba551a20340e.html">Services</a></li><li class="navelem"><a class="el" href="dir_811bd8f2fe30dda7d79a1cec98ede646.html">SpifFS</a></li><li class="navelem"><b>spiffs_sming.h</b></li>
+    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_a7bc8ec3b335e45d7125f329b00fc529.html">Services</a></li><li class="navelem"><a class="el" href="dir_75add0ef46193c758d4aa4df2d016263.html">SpifFS</a></li><li class="navelem"><b>spiffs_sming.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

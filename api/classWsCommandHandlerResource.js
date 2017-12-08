@@ -8,6 +8,7 @@ var classWsCommandHandlerResource =
     [ "setConnectionHandler", "classWsCommandHandlerResource.html#a0d815b0a0d75ccbdb5e288d5cdc11390", null ],
     [ "setDisconnectionHandler", "classWsCommandHandlerResource.html#a307cc6429171f9789111275b0450fd3d", null ],
     [ "setMessageHandler", "classWsCommandHandlerResource.html#a75bc14d4e36635aa3f253cad31c8bf5f", null ],
+    [ "shutdown", "classWsCommandHandlerResource.html#a2723fe8e4a275c4f0a7806d527a977f9", null ],
     [ "onBody", "classWsCommandHandlerResource.html#aead3473f0031a6ef2db2d29966860b2d", null ],
     [ "onHeadersComplete", "classWsCommandHandlerResource.html#a58a1e320c9c0badb6264ec9235fff890", null ],
     [ "onRequestComplete", "classWsCommandHandlerResource.html#a66669e3aa65ed8df2a44a20713c7634e", null ],

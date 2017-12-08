@@ -9,6 +9,7 @@ var classStream =
     [ "findUntil", "classStream.html#a3a9497de614792103ab8cb4759e01a69", null ],
     [ "flush", "classStream.html#aa3ef2c34f152a0b2ea8de9139b9461da", null ],
     [ "getWriteError", "classStream.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
+    [ "indexOf", "classStream.html#a0f934a5188da7f6a1c437c26755a2a42", null ],
     [ "parseFloat", "classStream.html#a5e5a0cc11eb586d89dcb7fa8e53a87e8", null ],
     [ "parseFloat", "classStream.html#a14a98cdbb166008f25dd044d836b1864", null ],
     [ "parseInt", "classStream.html#a497ffcbcb4d5bb889a8fde487bcc1b98", null ],

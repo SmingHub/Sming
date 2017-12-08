@@ -112,27 +112,35 @@ $(document).ready(function(){initNavTree('Clock_8h_source.html','');});
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;../Wiring/WiringFrameworkDependencies.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code" href="group__timedelay.html#ga1871228c14c912ca1479cf826ddcb07f">millis</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code" href="group__timedelay.html#ga705e7f8e2a34e0e2447e933ebf56b4d4">micros</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a>(uint32_t time);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="group__timedelay.html#gaee3b01ad10a56312277616f3830e8711">   42</a></span>&#160;<span class="preprocessor">#define delayMilliseconds(ms) delay(ms)</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__timedelay.html#ga225b2f8bdf6e95a242f03fa4ba0e7b59">delayMicroseconds</a>(uint32_t time);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="group__timedelay_html_ga705e7f8e2a34e0e2447e933ebf56b4d4"><div class="ttname"><a href="group__timedelay.html#ga705e7f8e2a34e0e2447e933ebf56b4d4">micros</a></div><div class="ttdeci">unsigned long micros(void)</div><div class="ttdoc">Get the time from clock in microseconds. </div></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code" href="group__timedelay.html#gad830491fbafb87ec7f7de280a58b52bf">millis</a>(<span class="keywordtype">void</span>)  __attribute__((weak));</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code" href="group__timedelay.html#gafedd2cfd96377da1c9520ab53bf8dda5">micros</a>(<span class="keywordtype">void</span>)  __attribute__((weak));</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a>(uint32_t time);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="group__timedelay.html#gaee3b01ad10a56312277616f3830e8711">   46</a></span>&#160;<span class="preprocessor">#define delayMilliseconds(ms) delay(ms)</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__timedelay.html#ga225b2f8bdf6e95a242f03fa4ba0e7b59">delayMicroseconds</a>(uint32_t time);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor"></span>}</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="group__timedelay_html_gafedd2cfd96377da1c9520ab53bf8dda5"><div class="ttname"><a href="group__timedelay.html#gafedd2cfd96377da1c9520ab53bf8dda5">micros</a></div><div class="ttdeci">unsigned long micros(void) __attribute__((weak))</div><div class="ttdoc">Get the time from clock in microseconds. </div></div>
+<div class="ttc" id="group__timedelay_html_gad830491fbafb87ec7f7de280a58b52bf"><div class="ttname"><a href="group__timedelay.html#gad830491fbafb87ec7f7de280a58b52bf">millis</a></div><div class="ttdeci">unsigned long millis(void) __attribute__((weak))</div><div class="ttdoc">Get the system (up)time in milliseconds. </div></div>
 <div class="ttc" id="group__timedelay_html_ga225b2f8bdf6e95a242f03fa4ba0e7b59"><div class="ttname"><a href="group__timedelay.html#ga225b2f8bdf6e95a242f03fa4ba0e7b59">delayMicroseconds</a></div><div class="ttdeci">void delayMicroseconds(uint32_t time)</div><div class="ttdoc">Pause execution. </div></div>
 <div class="ttc" id="group__timedelay_html_ga21f4a3f60c06d2ea8a17bccc1b3ed0cc"><div class="ttname"><a href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a></div><div class="ttdeci">void delay(uint32_t time)</div><div class="ttdoc">Pause execution. </div></div>
-<div class="ttc" id="group__timedelay_html_ga1871228c14c912ca1479cf826ddcb07f"><div class="ttname"><a href="group__timedelay.html#ga1871228c14c912ca1479cf826ddcb07f">millis</a></div><div class="ttdeci">unsigned long millis(void)</div><div class="ttdoc">Get the system (up)time in milliseconds. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_0ccf49f26d9ba51414c65cf131e66b5b.html">SmingCore</a></li><li class="navelem"><b>Clock.h</b></li>
+    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_2ed575006c7d0647b9e44f569fa9afde.html">SmingCore</a></li><li class="navelem"><b>Clock.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

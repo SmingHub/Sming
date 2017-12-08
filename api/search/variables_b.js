@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['time',['time',['../group__rtc.html#ga740cfb2f8c4590588cc54fff34874de5',1,'RtcData']]],
-  ['timeouttimer',['timeoutTimer',['../classNtpClient.html#a841f2bbd43ed22f090f767081b48687b',1,'NtpClient']]]
+  ['wifiaccesspoint',['WifiAccessPoint',['../group__wifi__ap.html#gaaedb96e14eb665db7dfcc93b7a379aac',1,'AccessPoint.h']]]
 ];

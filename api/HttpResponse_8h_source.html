@@ -166,40 +166,40 @@ $(document).ready(function(){initNavTree('HttpResponse_8h_source.html','');});
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="comment">// @end deprecated</span></div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="comment">// Send Datastream, can be called with Classes derived from</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">bool</span> sendDataStream( <a class="code" href="classIDataSourceStream.html">IDataSourceStream</a> * newDataStream , <span class="keyword">enum</span> MimeType type) {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">bool</span> sendDataStream( <a class="code" href="classReadWriteStream.html">ReadWriteStream</a> * newDataStream , <span class="keyword">enum</span> MimeType type) {</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keywordflow">return</span> sendDataStream(newDataStream, ContentType::toString(type));</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    }</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="comment">// Send Datastream, can be called with Classes derived from</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">bool</span> sendDataStream( <a class="code" href="classIDataSourceStream.html">IDataSourceStream</a> * newDataStream , <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; reqContentType = <span class="stringliteral">&quot;&quot;</span> );</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">bool</span> sendDataStream( <a class="code" href="classReadWriteStream.html">ReadWriteStream</a> * newDataStream , <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; reqContentType = <span class="stringliteral">&quot;&quot;</span> );</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordtype">void</span> reset();</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordtype">int</span> code;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <a class="code" href="classHashMap.html">HttpHeaders</a> headers;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <a class="code" href="classIDataSourceStream.html">IDataSourceStream</a>* stream = NULL;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream = NULL;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;};</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_RESPONSE_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classHttpResponse_html_a679e8e926c1c0a7c234074aeee2f1a9b"><div class="ttname"><a href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">HttpResponse::notFound</a></div><div class="ttdeci">__forceinline void notFound()</div><div class="ttdef"><b>Definition:</b> HttpResponse.h:48</div></div>
-<div class="ttc" id="classTemplateFileStream_html"><div class="ttname"><a href="classTemplateFileStream.html">TemplateFileStream</a></div><div class="ttdoc">Template file stream class. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:220</div></div>
+<div class="ttc" id="classTemplateFileStream_html"><div class="ttname"><a href="classTemplateFileStream.html">TemplateFileStream</a></div><div class="ttdoc">Template file stream class. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:238</div></div>
 <div class="ttc" id="classHashMap_html"><div class="ttname"><a href="classHashMap.html">HashMap&lt; String, String &gt;</a></div></div>
-<div class="ttc" id="classIDataSourceStream_html"><div class="ttname"><a href="classIDataSourceStream.html">IDataSourceStream</a></div><div class="ttdoc">Base class for data source stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:49</div></div>
 <div class="ttc" id="classHttpResponse_html_ad1e2104f51af6c4be01d59bb798503ad"><div class="ttname"><a href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">HttpResponse::forbidden</a></div><div class="ttdeci">__forceinline void forbidden()</div><div class="ttdef"><b>Definition:</b> HttpResponse.h:41</div></div>
-<div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:44</div></div>
+<div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:37</div></div>
 <div class="ttc" id="classHttpClient_html"><div class="ttname"><a href="classHttpClient.html">HttpClient</a></div><div class="ttdef"><b>Definition:</b> HttpClient.h:27</div></div>
-<div class="ttc" id="classJsonObjectStream_html"><div class="ttname"><a href="classJsonObjectStream.html">JsonObjectStream</a></div><div class="ttdoc">JSON object stream class. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:271</div></div>
+<div class="ttc" id="classJsonObjectStream_html"><div class="ttname"><a href="classJsonObjectStream.html">JsonObjectStream</a></div><div class="ttdoc">JSON object stream class. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:289</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classHttpResponse_html_a4ad42c6da411ab80d938f1f07e77171d"><div class="ttname"><a href="classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d">HttpResponse::sendJsonObject</a></div><div class="ttdeci">bool sendJsonObject(JsonObjectStream *newJsonStreamInstance)</div><div class="ttdoc">Build and send JSON string. </div></div>
 <div class="ttc" id="classHttpConnection_html"><div class="ttname"><a href="classHttpConnection.html">HttpConnection</a></div><div class="ttdef"><b>Definition:</b> HttpConnection.h:33</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:92</div></div>
 <div class="ttc" id="classHttpResponse_html"><div class="ttname"><a href="classHttpResponse.html">HttpResponse</a></div><div class="ttdef"><b>Definition:</b> HttpResponse.h:22</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_0ccf49f26d9ba51414c65cf131e66b5b.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_af052e6e9c29140ebbebc556438276df.html">Network</a></li><li class="navelem"><a class="el" href="dir_f49b3bb7446b8d648a5cff0f1d247780.html">Http</a></li><li class="navelem"><b>HttpResponse.h</b></li>
+    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_2ed575006c7d0647b9e44f569fa9afde.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_17729ed7f3af1a7565eb1ef720d466c9.html">Network</a></li><li class="navelem"><a class="el" href="dir_40e77b1d51adef0a7c2ff503a16b6d23.html">Http</a></li><li class="navelem"><b>HttpResponse.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

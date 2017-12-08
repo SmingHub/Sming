@@ -18,6 +18,7 @@ var classTcpConnection =
     [ "onReadyToSendData", "classTcpConnection.html#a957861216cd5e7949b67886b419fe8f9", null ],
     [ "onReceive", "classTcpConnection.html#a59b5bfb839f27007b86ff4defd4d5a0b", null ],
     [ "onSent", "classTcpConnection.html#a085742db437e442ce8a6bdaaedcdf61d", null ],
+    [ "setDestroyedDelegate", "classTcpConnection.html#a39d7fe38dceaf464a09f6a1cab7463b4", null ],
     [ "setTimeOut", "classTcpConnection.html#a3d01ef17727966d8d63e6f35a2a0fd14", null ],
     [ "write", "classTcpConnection.html#a17fbdcd21e00e24eae8d42096ceeb5db", null ],
     [ "write", "classTcpConnection.html#a59ef4474eb3d65f8b1f1e21e0f3f3c25", null ],

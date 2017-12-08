@@ -6,8 +6,8 @@ var classHttpResponse =
     [ "notFound", "classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b", null ],
     [ "redirect", "classHttpResponse.html#a853e7135761d83fc6a739aa311f3f7cb", null ],
     [ "reset", "classHttpResponse.html#ae4240b69834ca6ada5c6d232f4add097", null ],
-    [ "sendDataStream", "classHttpResponse.html#a0488368a53d97ae631770272cd3a2113", null ],
-    [ "sendDataStream", "classHttpResponse.html#af31454aad62a442da34608a199cb45c9", null ],
+    [ "sendDataStream", "classHttpResponse.html#a997c192e4ebb23f661cee40971afbaa8", null ],
+    [ "sendDataStream", "classHttpResponse.html#afc8e5249b7a70f2d2f5127133badb350", null ],
     [ "sendFile", "classHttpResponse.html#a5ac8fc1d595d26d0e43b7429ac640743", null ],
     [ "sendJsonObject", "classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d", null ],
     [ "sendString", "classHttpResponse.html#acfee8e8c831ddf46d81bbf11dcb306c2", null ],
@@ -23,5 +23,5 @@ var classHttpResponse =
     [ "HttpServerConnection", "classHttpResponse.html#a41b6c35c476b2cc137d3d6976b89c6b7", null ],
     [ "code", "classHttpResponse.html#a2881ebab07a9dfcf265e1b4a1249f912", null ],
     [ "headers", "classHttpResponse.html#aaa7789df7444515e0a0698f8536dc381", null ],
-    [ "stream", "classHttpResponse.html#a83b296871a8bfaf24f966451b98e3630", null ]
+    [ "stream", "classHttpResponse.html#ae50738e23d5f638b531bf43407b34a99", null ]
 ];

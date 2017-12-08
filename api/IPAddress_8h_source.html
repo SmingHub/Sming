@@ -128,68 +128,82 @@ $(document).ready(function(){initNavTree('IPAddress_8h_source.html','');});
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;WString.h&quot;</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">// A class to make it easier to handle and pass around IP addresses</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classIPAddress.html">   30</a></span>&#160;<span class="keyword">class </span><a class="code" href="classIPAddress.html">IPAddress</a> : <span class="keyword">public</span> <a class="code" href="classPrintable.html">Printable</a></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    uint8_t _address[4];  <span class="comment">// IPv4 address</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="comment">// Access the raw byte array containing the address.  Because this returns a pointer</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="comment">// to the internal structure rather than a copy of the address this function should only</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="comment">// be used when you know that the usage of the returned uint8_t* will be transient and not</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="comment">// stored.</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    uint8_t* raw_address()</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordflow">return</span> _address;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">void</span> fromString(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; address);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="comment">// Constructors</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>();</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(uint32_t address);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(ip_addr address);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(<span class="keyword">const</span> uint8_t *address);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a> address);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="comment">// Overloaded cast operator to allow IPAddress objects to be used where a pointer</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="comment">// to a four-byte uint8_t array is expected</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keyword">operator</span> uint32_t() { <span class="keywordflow">return</span> *((uint32_t*)_address); };</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keyword">operator</span> ip_addr() { ip_addr ret; ret.addr = *((uint32_t*)_address); <span class="keywordflow">return</span> ret; };</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keyword">operator</span> ip_addr*() { <span class="keywordflow">return</span> (ip_addr*)_address; };</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code" href="classIPAddress.html">IPAddress</a>&amp; addr) { <span class="keywordflow">return</span> (*((uint32_t*)_address)) == (*((uint32_t*)addr._address)); };</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> uint8_t* addr);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordtype">bool</span> isNull() { <span class="keywordflow">return</span> *((uint32_t*)_address) == 0; }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="classString.html">String</a> toString();</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#if LWIP_VERSION_MAJOR == 2</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define LWIP_IP_ADDR_T const ip_addr_t</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor"></span><span class="keyword">typedef</span> <span class="keyword">struct </span>ip_addr ip_addr_t;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#define LWIP_IP_ADDR_T ip_addr_t</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">// A class to make it easier to handle and pass around IP addresses</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classIPAddress.html">   38</a></span>&#160;<span class="keyword">class </span><a class="code" href="classIPAddress.html">IPAddress</a> : <span class="keyword">public</span> <a class="code" href="classPrintable.html">Printable</a></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    uint8_t _address[4];  <span class="comment">// IPv4 address</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="comment">// Access the raw byte array containing the address.  Because this returns a pointer</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="comment">// to the internal structure rather than a copy of the address this function should only</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="comment">// be used when you know that the usage of the returned uint8_t* will be transient and not</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="comment">// stored.</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    uint8_t* raw_address()</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keywordflow">return</span> _address;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">void</span> fromString(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; address);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="comment">// Constructors</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(uint32_t address);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(ip_addr address);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#if LWIP_VERSION_MAJOR == 2</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor"></span>    <a class="code" href="classIPAddress.html">IPAddress</a>(ip_addr_t address);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor"></span>    <a class="code" href="classIPAddress.html">IPAddress</a>(<span class="keyword">const</span> uint8_t *address);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a> address);</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="comment">// Overloaded index operator to allow getting and setting individual octets of the address</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    uint8_t operator[](<span class="keywordtype">int</span> index)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _address[index]; };</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    uint8_t&amp; operator[](<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> _address[index]; };</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="comment">// Overloaded copy operators to allow initialisation of IPAddress objects from other types</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>&amp; operator=(<span class="keyword">const</span> uint8_t *address);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>&amp; operator=(uint32_t address);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="classString.html">String</a> address);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> printTo(<a class="code" href="classPrint.html">Print</a>&amp; p) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;};</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keyword">const</span> <a class="code" href="classIPAddress.html">IPAddress</a> INADDR_NONE(0,0,0,0);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="comment">// Overloaded cast operator to allow IPAddress objects to be used where a pointer</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// to a four-byte uint8_t array is expected</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">operator</span> uint32_t() { <span class="keywordflow">return</span> *((uint32_t*)_address); };</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keyword">operator</span> ip_addr() { ip_addr ret; ret.addr = *((uint32_t*)_address); <span class="keywordflow">return</span> ret; };</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keyword">operator</span> ip_addr*() { <span class="keywordflow">return</span> (ip_addr*)_address; };</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#if LWIP_VERSION_MAJOR == 2</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor"></span>    <span class="keyword">operator</span> ip_addr_t*() { <span class="keywordflow">return</span> (ip_addr_t*)_address; };</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor"></span>    <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code" href="classIPAddress.html">IPAddress</a>&amp; addr) { <span class="keywordflow">return</span> (*((uint32_t*)_address)) == (*((uint32_t*)addr._address)); };</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> uint8_t* addr);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">bool</span> isNull() { <span class="keywordflow">return</span> *((uint32_t*)_address) == 0; }</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <a class="code" href="classString.html">String</a> toString();</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="comment">// Overloaded index operator to allow getting and setting individual octets of the address</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    uint8_t operator[](<span class="keywordtype">int</span> index)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _address[index]; };</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    uint8_t&amp; operator[](<span class="keywordtype">int</span> index) { <span class="keywordflow">return</span> _address[index]; };</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="comment">// Overloaded copy operators to allow initialisation of IPAddress objects from other types</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>&amp; operator=(<span class="keyword">const</span> uint8_t *address);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>&amp; operator=(uint32_t address);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="classString.html">String</a> address);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> printTo(<a class="code" href="classPrint.html">Print</a>&amp; p) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword">const</span> <a class="code" href="classIPAddress.html">IPAddress</a> INADDR_NONE(0,0,0,0);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classPrint_html"><div class="ttname"><a href="classPrint.html">Print</a></div><div class="ttdoc">Provides formatted output to stream. </div><div class="ttdef"><b>Definition:</b> Print.h:31</div></div>
 <div class="ttc" id="classPrintable_html"><div class="ttname"><a href="classPrintable.html">Printable</a></div><div class="ttdef"><b>Definition:</b> Printable.h:40</div></div>
-<div class="ttc" id="classIPAddress_html"><div class="ttname"><a href="classIPAddress.html">IPAddress</a></div><div class="ttdef"><b>Definition:</b> IPAddress.h:30</div></div>
+<div class="ttc" id="classIPAddress_html"><div class="ttname"><a href="classIPAddress.html">IPAddress</a></div><div class="ttdef"><b>Definition:</b> IPAddress.h:38</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_8e55f095b1390b4c8e39cf2fc5bed523.html">Sming</a></li><li class="navelem"><a class="el" href="dir_86c84ead84c23727f1659b39ef6ad926.html">Wiring</a></li><li class="navelem"><b>IPAddress.h</b></li>
+    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_73afeb00da9632bf96a32a6314a2e287.html">Wiring</a></li><li class="navelem"><b>IPAddress.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

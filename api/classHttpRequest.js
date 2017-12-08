@@ -1,6 +1,6 @@
 var classHttpRequest =
 [
-    [ "HttpRequest", "classHttpRequest.html#a62cca46800338abe666cca6b45e8b478", null ],
+    [ "HttpRequest", "classHttpRequest.html#a45a98b73d1a6770e8ad47baf3132beab", null ],
     [ "HttpRequest", "classHttpRequest.html#ad8970484a7ab669a90b9af80693e3962", null ],
     [ "~HttpRequest", "classHttpRequest.html#adfc7ae561e6ba03d21890ee1855df72b", null ],
     [ "clone", "classHttpRequest.html#ae1f4d5b85df3566fa52891cc3d6481eb", null ],
@@ -17,7 +17,7 @@ var classHttpRequest =
     [ "reset", "classHttpRequest.html#a4925576ef697cbf8ada8b89db0f810f6", null ],
     [ "setAuth", "classHttpRequest.html#ae32a6beb416151fe3dd804e71bf8a20f", null ],
     [ "setBody", "classHttpRequest.html#af467470014d9c598b1f20000f1771d33", null ],
-    [ "setBody", "classHttpRequest.html#adbfed2077b33056eda26a158bc2727b4", null ],
+    [ "setBody", "classHttpRequest.html#a659d0b4db2d9a66d80d1301ab8d97003", null ],
     [ "setBody", "classHttpRequest.html#af7f4f645c9694022e0a69d23d29fdee2", null ],
     [ "setHeader", "classHttpRequest.html#a95d40095c6fbfd8451de5105c27c903b", null ],
     [ "setHeaders", "classHttpRequest.html#a4e9866cba540b83af3c418dae48b244e", null ],
@@ -25,7 +25,7 @@ var classHttpRequest =
     [ "setPostParameter", "classHttpRequest.html#afbfd551647e3bc066dfc2995e2efe97d", null ],
     [ "setPostParameters", "classHttpRequest.html#aa0070188501551d1a063e2316a376379", null ],
     [ "setResponseStream", "classHttpRequest.html#a5452a027fa7337c6b98cd7815ac219c9", null ],
-    [ "setURL", "classHttpRequest.html#a79d01b4332d1d6317e98aa5bfb7950a2", null ],
+    [ "setURL", "classHttpRequest.html#a8f796bf654c01bd3b7db5f3e6b2f4923", null ],
     [ "toString", "classHttpRequest.html#ac5653ef5c07aa61c345fd2e6aa418dbf", null ],
     [ "HttpClient", "classHttpRequest.html#af9fb1dee08b92179888741433b8357c4", null ],
     [ "HttpConnection", "classHttpRequest.html#a779addf179653b956bb95e772043f871", null ],
@@ -42,6 +42,6 @@ var classHttpRequest =
     [ "requestCompletedDelegate", "classHttpRequest.html#ad2b9dc56ee147d1e0e2dd44c2b4aa464", null ],
     [ "responseStream", "classHttpRequest.html#ae2a43e0c142006a2bfb9d3ff6c8bfcf6", null ],
     [ "retries", "classHttpRequest.html#a4626eac9670256f92c1b5b37a65f022e", null ],
-    [ "stream", "classHttpRequest.html#a7127747e906e1082dbd0357f43ee1bbd", null ],
+    [ "stream", "classHttpRequest.html#af117e72869f33d30b45563b5d62284bb", null ],
     [ "uri", "classHttpRequest.html#ae56c0a9b3019b489cd106afafcc6d9ec", null ]
 ];

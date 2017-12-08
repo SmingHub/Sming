@@ -123,8 +123,9 @@ Inheritance diagram for FileStream:</div>
  <div class="center">
   <img src="classFileStream.png" usemap="#FileStream_map" alt=""/>
   <map id="FileStream_map" name="FileStream_map">
+<area href="classReadWriteStream.html" alt="ReadWriteStream" shape="rect" coords="0,56,122,80"/>
 <area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="0,0,122,24"/>
-<area href="classTemplateFileStream.html" title="Template file stream class. " alt="TemplateFileStream" shape="rect" coords="0,112,122,136"/>
+<area href="classTemplateFileStream.html" title="Template file stream class. " alt="TemplateFileStream" shape="rect" coords="0,168,122,192"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -145,8 +146,8 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>attach</b> (c
 <tr class="memitem:abaa8856ca62d41de0e9d0c08b89a9f51"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abaa8856ca62d41de0e9d0c08b89a9f51"></a>
 virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (uint8_t charToWrite)</td></tr>
 <tr class="separator:abaa8856ca62d41de0e9d0c08b89a9f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bef6b847ea522190e66f92972b89680"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3bef6b847ea522190e66f92972b89680"></a>
-virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (const uint8_t *buffer, size_t size)</td></tr>
+<tr class="memitem:a3bef6b847ea522190e66f92972b89680"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileStream.html#a3bef6b847ea522190e66f92972b89680">write</a> (const uint8_t *buffer, size_t size)</td></tr>
+<tr class="memdesc:a3bef6b847ea522190e66f92972b89680"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write chars to stream.  <a href="#a3bef6b847ea522190e66f92972b89680">More...</a><br/></td></tr>
 <tr class="separator:a3bef6b847ea522190e66f92972b89680"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ccd3623cd9e46efe7e53715576cb5de"><td class="memItemLeft" align="right" valign="top">virtual uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileStream.html#a7ccd3623cd9e46efe7e53715576cb5de">readMemoryBlock</a> (char *data, int bufSize)</td></tr>
 <tr class="memdesc:a7ccd3623cd9e46efe7e53715576cb5de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a block of memory.  <a href="#a7ccd3623cd9e46efe7e53715576cb5de">More...</a><br/></td></tr>
@@ -293,7 +294,7 @@ virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
 
 <p>Implements <a class="el" href="classIDataSourceStream.html#a589085e0eea011acdc401b79831826e0">IDataSourceStream</a>.</p>
 
@@ -448,9 +449,9 @@ virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
 
-<p>Implements <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011">IDataSourceStream</a>.</p>
+<p>Implements <a class="el" href="classReadWriteStream.html#a488b605e720069e802f5d38635e4b2e0">ReadWriteStream</a>.</p>
 
 <p>Reimplemented in <a class="el" href="classTemplateFileStream.html#af28ccb99de655f1cc18816a4751ed09e">TemplateFileStream</a>.</p>
 
@@ -495,6 +496,57 @@ virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (
 <p>Implements <a class="el" href="classIDataSourceStream.html#a3a2c1c9c686a6c99041316dc0531c255">IDataSourceStream</a>.</p>
 
 <p>Reimplemented in <a class="el" href="classTemplateFileStream.html#a0403af47113193c4ab88075c8ccf47c1">TemplateFileStream</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3bef6b847ea522190e66f92972b89680"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t FileStream::write </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Write chars to stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>Pointer to buffer to write to the stream </td></tr>
+    <tr><td class="paramname">size</td><td>Quantity of chars to write </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of chars written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classReadWriteStream.html#a2d59383b573eea799e162744972a7aee">ReadWriteStream</a>.</p>
 
 </div>
 </div>

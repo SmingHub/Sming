@@ -101,7 +101,7 @@ $(document).ready(function(){initNavTree('starping_8pde-example.html','');});
 <div class="title">starping.pde</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p>This sketch is a more complex example of using the <a class="el" href="classRF24.html">RF24</a> library for Arduino. Deploy this on up to six nodes. Set one as the 'pong receiver' by tying the role_pin low, and the others will be 'ping transmit' units. The ping units unit will send out the value of <a class="el" href="group__timedelay.html#ga1871228c14c912ca1479cf826ddcb07f" title="Get the system (up)time in milliseconds. ">millis()</a> once a second. The pong unit will respond back with a copy of the value. Each ping unit can get that response back, and determine how long the whole cycle took.</p>
+<p>This sketch is a more complex example of using the <a class="el" href="classRF24.html">RF24</a> library for Arduino. Deploy this on up to six nodes. Set one as the 'pong receiver' by tying the role_pin low, and the others will be 'ping transmit' units. The ping units unit will send out the value of <a class="el" href="group__timedelay.html#gad830491fbafb87ec7f7de280a58b52bf" title="Get the system (up)time in milliseconds. ">millis()</a> once a second. The pong unit will respond back with a copy of the value. Each ping unit can get that response back, and determine how long the whole cycle took.</p>
 <p>This example requires a bit more complexity to determine which unit is which. The pong receiver is identified by having its role_pin tied to ground. The ping senders are further differentiated by a byte in eeprom.</p>
 <div class="fragment"></div><!-- fragment --> </div><!-- contents -->
 </div><!-- doc-content -->

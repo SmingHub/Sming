@@ -1,7 +1,7 @@
 var searchData=
 [
   ['i2cio',['I2CIO',['../classI2CIO.html#a32eb7832075ad6011d67874405a0d0a6',1,'I2CIO']]],
-  ['id',['id',['../classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0',1,'IDataSourceStream::id()'],['../classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf',1,'FileStream::id()'],['../classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece',1,'ChannelPWM::id()']]],
+  ['id',['id',['../classCircularBuffer.html#a471f021e32d3a8bd7b82a670bd242155',1,'CircularBuffer::id()'],['../classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0',1,'IDataSourceStream::id()'],['../classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf',1,'FileStream::id()'],['../classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece',1,'ChannelPWM::id()']]],
   ['increase',['increase',['../classIDelegateCaller.html#a3af9e79f473f57e8202c4973d5f37366',1,'IDelegateCaller']]],
   ['init',['Init',['../classDS18S20.html#a7d593216797a90aa03081c12a32032dd',1,'DS18S20']]],
   ['initcommand',['initCommand',['../classDebugClass.html#a4b92612c788c442bf6f33439c7a8150a',1,'DebugClass']]],
@@ -17,7 +17,7 @@ var searchData=
   ['isconnectionfailed',['isConnectionFailed',['../group__wifi__sta.html#ga68a06f1464ee0c3b7365e6914d269cca',1,'StationClass']]],
   ['isenabled',['isEnabled',['../group__wifi__ap.html#ga305464a28372cfd2bfea6993b19ceb7f',1,'AccessPointClass::isEnabled()'],['../group__wifi__sta.html#ga254b4e9bbd12fa349a0dc872f9129b87',1,'StationClass::isEnabled()']]],
   ['isenableddhcp',['isEnabledDHCP',['../group__wifi__sta.html#gaffe9ad2f57b898551ede57c571c164df',1,'StationClass']]],
-  ['isfinished',['isFinished',['../classIDataSourceStream.html#a143958f311cc98fbfaaec1d4d5cdfe47',1,'IDataSourceStream::isFinished()'],['../classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3',1,'MemoryDataStream::isFinished()'],['../classFileStream.html#af80071bb96db8a7558d1856305186baa',1,'FileStream::isFinished()'],['../classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a',1,'ArduCAMStream::isFinished()']]],
+  ['isfinished',['isFinished',['../classCircularBuffer.html#abfe236e3b5f1e553c901ea0db38a0458',1,'CircularBuffer::isFinished()'],['../classIDataSourceStream.html#a143958f311cc98fbfaaec1d4d5cdfe47',1,'IDataSourceStream::isFinished()'],['../classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3',1,'MemoryDataStream::isFinished()'],['../classFileStream.html#af80071bb96db8a7558d1856305186baa',1,'FileStream::isFinished()'],['../classEndlessMemoryStream.html#af091a934dce4aea1a88072a44ee8dbad',1,'EndlessMemoryStream::isFinished()'],['../classHttpChunkedStream.html#a45ef463ad55e7681a5aff7ac36addc4d',1,'HttpChunkedStream::isFinished()'],['../classHttpMultipartStream.html#a005a1062e225aa37b7d48c472d8d7da8',1,'HttpMultipartStream::isFinished()'],['../classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a',1,'ArduCAMStream::isFinished()']]],
   ['isinputpin',['isInputPin',['../group__gpio.html#ga272ce908b3792d838ecd00054f557b3d',1,'Digital.h']]],
   ['isnull',['isNull',['../classDateTime.html#a942983c6d456157328d2efa10e06b9fb',1,'DateTime']]],
   ['isopen',['isOpen',['../group__wifi__sta.html#ga0b7cfc6543a1057dc87bd83932dd6785',1,'BssInfo']]],

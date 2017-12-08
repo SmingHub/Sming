@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['authorization',['authorization',['../group__wifi__sta.html#ga3faeffb410dab0b2f36bf18cc7ee2281',1,'BssInfo']]],
-  ['autoupdatesystemclock',['autoUpdateSystemClock',['../classNtpClient.html#a3788a373550ccc201532d658c6326cd1',1,'NtpClient']]],
-  ['autoupdatetimer',['autoUpdateTimer',['../classNtpClient.html#a4b68b70348203e1d13705de352bc5394',1,'NtpClient']]]
+  ['baseconfig',['baseConfig',['../classNrf24l.html#a1c3a1caf36f4aa16bbc0307ea8dd9aea',1,'Nrf24l']]],
+  ['bssid',['bssid',['../group__wifi__sta.html#ga25ce327fde51018db950ddbba28683d1',1,'BssInfo']]]
 ];

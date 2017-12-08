@@ -107,6 +107,7 @@ $(document).ready(function(){initNavTree('classWebsocketFrameClass.html','');});
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
@@ -123,12 +124,18 @@ $(document).ready(function(){initNavTree('classWebsocketFrameClass.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2af2cb4f18594acd52c4fd81c8c9b3d6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2af2cb4f18594acd52c4fd81c8c9b3d6"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>encodeFrame</b> (<a class="el" href="group__wsframe.html#gadb296761d95f8b6fc4af7dc5f2c9fe01">WSFrameType</a> frameType, uint8_t *payload, size_t length, uint8_t mask, uint8_t fin, uint8_t headerToPayload=true)</td></tr>
+<tr class="memitem:a2af2cb4f18594acd52c4fd81c8c9b3d6"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketFrameClass.html#a2af2cb4f18594acd52c4fd81c8c9b3d6">encodeFrame</a> (<a class="el" href="group__wsframe.html#gadb296761d95f8b6fc4af7dc5f2c9fe01">WSFrameType</a> frameType, uint8_t *payload, size_t length, uint8_t mask, uint8_t fin, uint8_t headerToPayload=true)</td></tr>
+<tr class="memdesc:a2af2cb4f18594acd52c4fd81c8c9b3d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode given buffer to valid websocket frame.  <a href="#a2af2cb4f18594acd52c4fd81c8c9b3d6">More...</a><br/></td></tr>
 <tr class="separator:a2af2cb4f18594acd52c4fd81c8c9b3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bb2738b15da65d96293a6b27a0b680e"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketFrameClass.html#a2bb2738b15da65d96293a6b27a0b680e">decodeFrame</a> (uint8_t *buffer, size_t length)</td></tr>
-<tr class="memdesc:a2bb2738b15da65d96293a6b27a0b680e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode given buffer to valid websocket frame.  <a href="#a2bb2738b15da65d96293a6b27a0b680e">More...</a><br/></td></tr>
+<tr class="memdesc:a2bb2738b15da65d96293a6b27a0b680e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode given buffer containing websocket frame to payload.  <a href="#a2bb2738b15da65d96293a6b27a0b680e">More...</a><br/></td></tr>
 <tr class="separator:a2bb2738b15da65d96293a6b27a0b680e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a0c579d6e39a3da8ebf084ed34affffbc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0c579d6e39a3da8ebf084ed34affffbc"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>mask</b> (const <a class="el" href="classString.html">String</a> &amp;payload, uint32_t key, char *data)</td></tr>
+<tr class="separator:a0c579d6e39a3da8ebf084ed34affffbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -138,8 +145,8 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>_getFrameSizes</b>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a28afd5ed3fde2f138753d6aa1b27094d"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketFrameClass.html#a28afd5ed3fde2f138753d6aa1b27094d">_payload</a> = nullptr</td></tr>
-<tr class="memdesc:a28afd5ed3fde2f138753d6aa1b27094d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode given buffer containing websocket frame to payload.  <a href="#a28afd5ed3fde2f138753d6aa1b27094d">More...</a><br/></td></tr>
+<tr class="memitem:a28afd5ed3fde2f138753d6aa1b27094d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a28afd5ed3fde2f138753d6aa1b27094d"></a>
+uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>_payload</b> = nullptr</td></tr>
 <tr class="separator:a28afd5ed3fde2f138753d6aa1b27094d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad57a31be7727b6e169b1968c22f77862"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad57a31be7727b6e169b1968c22f77862"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>_payloadLength</b> = 0</td></tr>
@@ -196,6 +203,72 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient</b><
       </table>
 </div><div class="memdoc">
 
+<p>Decode given buffer containing websocket frame to payload. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>Pointer to buffer to be decoded as websocket frame </td></tr>
+    <tr><td class="paramname">length</td><td>Length of buffer to be decoded as websocket frame </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">Return</td><td>true on success, false on error</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>if successfully executed, check _frameType to decide what to do with payload pointed by _payload </p>
+
+</div>
+</div>
+<a class="anchor" id="a2af2cb4f18594acd52c4fd81c8c9b3d6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t WebsocketFrameClass::encodeFrame </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__wsframe.html#gadb296761d95f8b6fc4af7dc5f2c9fe01">WSFrameType</a>&#160;</td>
+          <td class="paramname"><em>frameType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>payload</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>fin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>headerToPayload</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 <p>Encode given buffer to valid websocket frame. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -215,43 +288,6 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient</b><
   </dd>
 </dl>
 <p>if successfully executed, check whether _header is not nullptr and either use _header and _payload or just _payload as websocket frame </p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a28afd5ed3fde2f138753d6aa1b27094d"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint8_t* WebsocketFrameClass::_payload = nullptr</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Decode given buffer containing websocket frame to payload. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">buffer</td><td>Pointer to buffer to be decoded as websocket frame </td></tr>
-    <tr><td class="paramname">length</td><td>Length of buffer to be decoded as websocket frame </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">Return</td><td>true on success, false on error</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>if successfully executed, check _frameType to decide what to do with payload pointed by _payload </p>
 
 </div>
 </div>

@@ -172,21 +172,18 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a528662e9eb34f645903f8c65852643f8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a528662e9eb34f645903f8c65852643f8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
 <tr class="separator:a528662e9eb34f645903f8c65852643f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07c260315face110e7dda50664cde709"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a07c260315face110e7dda50664cde709"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onConnected</b> (err_t err)</td></tr>
-<tr class="separator:a07c260315face110e7dda50664cde709"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeca51530651de4d2504308245ffe24e5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeca51530651de4d2504308245ffe24e5"></a>
 virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onReceive</b> (pbuf *buf)</td></tr>
 <tr class="separator:aeca51530651de4d2504308245ffe24e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15053719bf21adfe9e7d3eb1bb463ebc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a15053719bf21adfe9e7d3eb1bb463ebc"></a>
 virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onProtocolUpgrade</b> (http_parser *parser)</td></tr>
 <tr class="separator:a15053719bf21adfe9e7d3eb1bb463ebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa01f94b2e376e0bae201b6241c6bcb8c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa01f94b2e376e0bae201b6241c6bcb8c"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onReadyToSendData</b> (TcpConnectionEvent sourceEvent)</td></tr>
+<tr class="separator:aa01f94b2e376e0bae201b6241c6bcb8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa93b0fb0371a32c6d04284fa77158dfa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa93b0fb0371a32c6d04284fa77158dfa"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onError</b> (err_t err)</td></tr>
 <tr class="separator:aa93b0fb0371a32c6d04284fa77158dfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc0668ed1a5ad5b7987f26073a1e62fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abc0668ed1a5ad5b7987f26073a1e62fd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> (<a class="el" href="classIDataSourceStream.html">IDataSourceStream</a> *inputStream, bool forceCloseAfterSent=false)</td></tr>
-<tr class="separator:abc0668ed1a5ad5b7987f26073a1e62fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92b6594d2746ebaa8791fd559a419a30"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a92b6594d2746ebaa8791fd559a419a30"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>cleanup</b> ()</td></tr>
 <tr class="separator:a92b6594d2746ebaa8791fd559a419a30"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -223,12 +220,12 @@ __forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>isProce
 <tr class="memitem:ab43f1c197e419d8797afeb3dec22f3c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab43f1c197e419d8797afeb3dec22f3c1"></a>
 __forceinline TcpClientState&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectionState</b> ()</td></tr>
 <tr class="separator:ab43f1c197e419d8797afeb3dec22f3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae74805076dbab04337d9380f747f3a79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae74805076dbab04337d9380f747f3a79"></a>
+virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onConnected</b> (err_t err)</td></tr>
+<tr class="separator:ae74805076dbab04337d9380f747f3a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77d3f60c92cf69adac748389b8bfe1cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a77d3f60c92cf69adac748389b8bfe1cb"></a>
 virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onSent</b> (uint16_t len)</td></tr>
 <tr class="separator:a77d3f60c92cf69adac748389b8bfe1cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82a0ad9fb11e19e3487c5e191a577f32"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a82a0ad9fb11e19e3487c5e191a577f32"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onReadyToSendData</b> (TcpConnectionEvent sourceEvent)</td></tr>
-<tr class="separator:a82a0ad9fb11e19e3487c5e191a577f32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15313b195b32d51e2b4db5701d0ecbab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a15313b195b32d51e2b4db5701d0ecbab"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onFinished</b> (TcpClientState finishState)</td></tr>
 <tr class="separator:a15313b195b32d51e2b4db5701d0ecbab"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -262,6 +259,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeOut</b> (uint1
 <tr class="memitem:ad6fedbbb90a1147bde5b143fd8fdde6f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad6fedbbb90a1147bde5b143fd8fdde6f"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>getRemotePort</b> ()</td></tr>
 <tr class="separator:ad6fedbbb90a1147bde5b143fd8fdde6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39d7fe38dceaf464a09f6a1cab7463b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTcpConnection.html#a39d7fe38dceaf464a09f6a1cab7463b4">setDestroyedDelegate</a> (<a class="el" href="classDelegate.html">TcpConnectionDestroyedDelegate</a> destroyedDelegate)</td></tr>
+<tr class="memdesc:a39d7fe38dceaf464a09f6a1cab7463b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a callback to be called when the object instance is destroyed.  <a href="#a39d7fe38dceaf464a09f6a1cab7463b4">More...</a><br/></td></tr>
+<tr class="separator:a39d7fe38dceaf464a09f6a1cab7463b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefb1448919e50cac01a467a11268a2d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aefb1448919e50cac01a467a11268a2d2"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>internalTcpConnect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port)</td></tr>
 <tr class="separator:aefb1448919e50cac01a467a11268a2d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -289,9 +289,9 @@ static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnPoll<
 <tr class="memitem:aa55d00095851b50d2ffab03e22d2cbd5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa55d00095851b50d2ffab03e22d2cbd5"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnError</b> (void *arg, err_t err)</td></tr>
 <tr class="separator:aa55d00095851b50d2ffab03e22d2cbd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd2ac862b46f25e7a5cbf2d5858f210a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afd2ac862b46f25e7a5cbf2d5858f210a"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticDnsResponse</b> (const char *name, ip_addr_t *ipaddr, void *arg)</td></tr>
-<tr class="separator:afd2ac862b46f25e7a5cbf2d5858f210a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f9773471a0ff64628830b9e8f1e824c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f9773471a0ff64628830b9e8f1e824c"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticDnsResponse</b> (const char *name, LWIP_IP_ADDR_T *ipaddr, void *arg)</td></tr>
+<tr class="separator:a1f9773471a0ff64628830b9e8f1e824c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba93412d2aabe551151e9146bbca35f0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba93412d2aabe551151e9146bbca35f0"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>closeTcpConnection</b> (tcp_pcb *tpcb)</td></tr>
 <tr class="separator:aba93412d2aabe551151e9146bbca35f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -328,9 +328,15 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lastWasValue</b> = tr
 <tr class="memitem:a38d8afd166de5197872ea5a9659760ff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a38d8afd166de5197872ea5a9659760ff"></a>
 <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>currentField</b> = &quot;&quot;</td></tr>
 <tr class="separator:a38d8afd166de5197872ea5a9659760ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab83220de02178a5be86cacb82028deb6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab83220de02178a5be86cacb82028deb6"></a>
-<a class="el" href="classHttpRequest.html">HttpRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>currentRequest</b> = NULL</td></tr>
-<tr class="separator:ab83220de02178a5be86cacb82028deb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f0f2686259561c2cd2e53bfdf45e3ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2f0f2686259561c2cd2e53bfdf45e3ea"></a>
+<a class="el" href="classHttpRequest.html">HttpRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>incomingRequest</b> = NULL</td></tr>
+<tr class="separator:a2f0f2686259561c2cd2e53bfdf45e3ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad143f49306f70780116b749cb1dcc200"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad143f49306f70780116b749cb1dcc200"></a>
+<a class="el" href="classHttpRequest.html">HttpRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>outgoingRequest</b> = NULL</td></tr>
+<tr class="separator:ad143f49306f70780116b749cb1dcc200"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a25e67658787edc2de4fb45b09785b6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5a25e67658787edc2de4fb45b09785b6"></a>
+<a class="el" href="classReadWriteStream.html">ReadWriteStream</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>stream</b> = nullptr</td></tr>
+<tr class="separator:a5a25e67658787edc2de4fb45b09785b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a601e019508b0071d0825908eaee0f58c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a601e019508b0071d0825908eaee0f58c"></a>
 tcp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>tcp</b> = NULL</td></tr>
 <tr class="separator:a601e019508b0071d0825908eaee0f58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -428,6 +434,38 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>HttpClient</b></td><
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">completeCb</td><td>callback delegate or NULL </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a39d7fe38dceaf464a09f6a1cab7463b4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TcpConnection::setDestroyedDelegate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">TcpConnectionDestroyedDelegate</a>&#160;</td>
+          <td class="paramname"><em>destroyedDelegate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets a callback to be called when the object instance is destroyed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">TcpServerConnectionDestroyedDelegate</td><td>destroyedDelegate - callback </td></tr>
   </table>
   </dd>
 </dl>

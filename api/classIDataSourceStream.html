@@ -123,11 +123,16 @@ Inheritance diagram for IDataSourceStream:</div>
  <div class="center">
   <img src="classIDataSourceStream.png" usemap="#IDataSourceStream_map" alt=""/>
   <map id="IDataSourceStream_map" name="IDataSourceStream_map">
-<area href="classArduCAMStream.html" alt="ArduCAMStream" shape="rect" coords="0,56,123,80"/>
-<area href="classFileStream.html" title="File stream class. " alt="FileStream" shape="rect" coords="133,56,256,80"/>
-<area href="classMemoryDataStream.html" title="Memory data stream class. " alt="MemoryDataStream" shape="rect" coords="266,56,389,80"/>
-<area href="classTemplateFileStream.html" title="Template file stream class. " alt="TemplateFileStream" shape="rect" coords="133,112,256,136"/>
-<area href="classJsonObjectStream.html" title="JSON object stream class. " alt="JsonObjectStream" shape="rect" coords="266,112,389,136"/>
+<area href="classReadWriteStream.html" alt="ReadWriteStream" shape="rect" coords="453,56,594,80"/>
+<area href="classArduCAMStream.html" alt="ArduCAMStream" shape="rect" coords="0,112,141,136"/>
+<area href="classCircularBuffer.html" title="Circular stream class. " alt="CircularBuffer" shape="rect" coords="151,112,292,136"/>
+<area href="classEndlessMemoryStream.html" alt="EndlessMemoryStream" shape="rect" coords="302,112,443,136"/>
+<area href="classFileStream.html" title="File stream class. " alt="FileStream" shape="rect" coords="453,112,594,136"/>
+<area href="classHttpChunkedStream.html" title="HTTP chunked stream class. " alt="HttpChunkedStream" shape="rect" coords="604,112,745,136"/>
+<area href="classHttpMultipartStream.html" alt="HttpMultipartStream" shape="rect" coords="755,112,896,136"/>
+<area href="classMemoryDataStream.html" title="Memory data stream class. " alt="MemoryDataStream" shape="rect" coords="906,112,1047,136"/>
+<area href="classTemplateFileStream.html" title="Template file stream class. " alt="TemplateFileStream" shape="rect" coords="453,168,594,192"/>
+<area href="classJsonObjectStream.html" title="JSON object stream class. " alt="JsonObjectStream" shape="rect" coords="906,168,1047,192"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -183,9 +188,9 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
 
-<p>Implemented in <a class="el" href="classJsonObjectStream.html#abe3d3dc8206bb99ff332c25cf0cc0dfd">JsonObjectStream</a>, <a class="el" href="classTemplateFileStream.html#a66a4a81c74f285f1c459243da0f00cc6">TemplateFileStream</a>, <a class="el" href="classFileStream.html#adfb9c8efcb62d6f2cc91ca4efbad718d">FileStream</a>, <a class="el" href="classMemoryDataStream.html#a29d74d448be139ab37649b7170490807">MemoryDataStream</a>, and <a class="el" href="classArduCAMStream.html#ab006d2e62a0e0165c12a3282e99174d1">ArduCAMStream</a>.</p>
+<p>Implemented in <a class="el" href="classEndlessMemoryStream.html#a72937420a55ff2ab1e1dd4fb4170602a">EndlessMemoryStream</a>, <a class="el" href="classJsonObjectStream.html#abe3d3dc8206bb99ff332c25cf0cc0dfd">JsonObjectStream</a>, <a class="el" href="classTemplateFileStream.html#a66a4a81c74f285f1c459243da0f00cc6">TemplateFileStream</a>, <a class="el" href="classFileStream.html#adfb9c8efcb62d6f2cc91ca4efbad718d">FileStream</a>, <a class="el" href="classMemoryDataStream.html#a29d74d448be139ab37649b7170490807">MemoryDataStream</a>, <a class="el" href="classHttpMultipartStream.html#a5d0f854d752ff43d3c632296ec8fb27f">HttpMultipartStream</a>, <a class="el" href="classCircularBuffer.html#a73e4276f890b8d25d90f33f641801ef5">CircularBuffer</a>, <a class="el" href="classHttpChunkedStream.html#a4572062c760d505a4ea591da3bc99c93">HttpChunkedStream</a>, and <a class="el" href="classArduCAMStream.html#ab006d2e62a0e0165c12a3282e99174d1">ArduCAMStream</a>.</p>
 
 </div>
 </div>
@@ -218,7 +223,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf">FileStream</a>.</p>
+<p>Reimplemented in <a class="el" href="classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf">FileStream</a>, and <a class="el" href="classCircularBuffer.html#a471f021e32d3a8bd7b82a670bd242155">CircularBuffer</a>.</p>
 
 </div>
 </div>
@@ -251,7 +256,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classFileStream.html#af80071bb96db8a7558d1856305186baa">FileStream</a>, <a class="el" href="classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3">MemoryDataStream</a>, and <a class="el" href="classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a">ArduCAMStream</a>.</p>
+<p>Implemented in <a class="el" href="classEndlessMemoryStream.html#af091a934dce4aea1a88072a44ee8dbad">EndlessMemoryStream</a>, <a class="el" href="classFileStream.html#af80071bb96db8a7558d1856305186baa">FileStream</a>, <a class="el" href="classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3">MemoryDataStream</a>, <a class="el" href="classHttpMultipartStream.html#a005a1062e225aa37b7d48c472d8d7da8">HttpMultipartStream</a>, <a class="el" href="classHttpChunkedStream.html#a45ef463ad55e7681a5aff7ac36addc4d">HttpChunkedStream</a>, <a class="el" href="classCircularBuffer.html#abfe236e3b5f1e553c901ea0db38a0458">CircularBuffer</a>, and <a class="el" href="classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a">ArduCAMStream</a>.</p>
 
 </div>
 </div>
@@ -284,7 +289,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classJsonObjectStream.html#a5129ca6b7e91865489aa2e98ba2d314f">JsonObjectStream</a>, <a class="el" href="classTemplateFileStream.html#a706ba018848f426ab8535a670f88f38d">TemplateFileStream</a>, <a class="el" href="classFileStream.html#a61bbea59e0648360fa17e3b964ad34f6">FileStream</a>, and <a class="el" href="classMemoryDataStream.html#af6a95640e736c87614a9a7be05546ddc">MemoryDataStream</a>.</p>
+<p>Reimplemented in <a class="el" href="classJsonObjectStream.html#a5129ca6b7e91865489aa2e98ba2d314f">JsonObjectStream</a>, <a class="el" href="classTemplateFileStream.html#a706ba018848f426ab8535a670f88f38d">TemplateFileStream</a>, <a class="el" href="classFileStream.html#a61bbea59e0648360fa17e3b964ad34f6">FileStream</a>, <a class="el" href="classMemoryDataStream.html#af6a95640e736c87614a9a7be05546ddc">MemoryDataStream</a>, <a class="el" href="classCircularBuffer.html#a0c9d58619534ededfc22bbeab0a702c8">CircularBuffer</a>, <a class="el" href="classHttpMultipartStream.html#ac5d9bb140c4ec6fe2b17afecd4d5a195">HttpMultipartStream</a>, and <a class="el" href="classHttpChunkedStream.html#a2b182c8919352afc16be9d15d136dfbf">HttpChunkedStream</a>.</p>
 
 </div>
 </div>
@@ -334,9 +339,9 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
 
-<p>Implemented in <a class="el" href="classJsonObjectStream.html#a41dc9e938e16b20d861b70c4a5152f42">JsonObjectStream</a>, <a class="el" href="classTemplateFileStream.html#af28ccb99de655f1cc18816a4751ed09e">TemplateFileStream</a>, <a class="el" href="classFileStream.html#a7ccd3623cd9e46efe7e53715576cb5de">FileStream</a>, <a class="el" href="classMemoryDataStream.html#a9f8d375068f30fa0f56bd7b338f6e7aa">MemoryDataStream</a>, and <a class="el" href="classArduCAMStream.html#a77a1101bf887eb69fb094b006f89affe">ArduCAMStream</a>.</p>
+<p>Implemented in <a class="el" href="classEndlessMemoryStream.html#a2cd20326b72df9f4b6c6386dccfdd02c">EndlessMemoryStream</a>, <a class="el" href="classJsonObjectStream.html#a41dc9e938e16b20d861b70c4a5152f42">JsonObjectStream</a>, <a class="el" href="classTemplateFileStream.html#af28ccb99de655f1cc18816a4751ed09e">TemplateFileStream</a>, <a class="el" href="classFileStream.html#a7ccd3623cd9e46efe7e53715576cb5de">FileStream</a>, <a class="el" href="classMemoryDataStream.html#a9f8d375068f30fa0f56bd7b338f6e7aa">MemoryDataStream</a>, <a class="el" href="classReadWriteStream.html#a488b605e720069e802f5d38635e4b2e0">ReadWriteStream</a>, <a class="el" href="classHttpMultipartStream.html#a3a1ec48c37de1ffd1cde469c3ade2631">HttpMultipartStream</a>, <a class="el" href="classHttpChunkedStream.html#ade6d81bf4852630ca95d64cf411783eb">HttpChunkedStream</a>, <a class="el" href="classCircularBuffer.html#ae4fc79d38392b70088ddba368a1a0815">CircularBuffer</a>, and <a class="el" href="classArduCAMStream.html#a77a1101bf887eb69fb094b006f89affe">ArduCAMStream</a>.</p>
 
 </div>
 </div>
@@ -376,7 +381,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classTemplateFileStream.html#a0403af47113193c4ab88075c8ccf47c1">TemplateFileStream</a>, <a class="el" href="classFileStream.html#ac26d7d2af3efa6481fd87a20acd14b42">FileStream</a>, <a class="el" href="classMemoryDataStream.html#a0897a2b2380dc5dd066805db859f8436">MemoryDataStream</a>, and <a class="el" href="classArduCAMStream.html#ad8d52a89a9f1c99b650112d367ec2e5e">ArduCAMStream</a>.</p>
+<p>Implemented in <a class="el" href="classEndlessMemoryStream.html#af768c1377668ea48626db6e95584c736">EndlessMemoryStream</a>, <a class="el" href="classTemplateFileStream.html#a0403af47113193c4ab88075c8ccf47c1">TemplateFileStream</a>, <a class="el" href="classFileStream.html#ac26d7d2af3efa6481fd87a20acd14b42">FileStream</a>, <a class="el" href="classMemoryDataStream.html#a0897a2b2380dc5dd066805db859f8436">MemoryDataStream</a>, <a class="el" href="classHttpMultipartStream.html#afb1eed388a20095d498987d066f09389">HttpMultipartStream</a>, <a class="el" href="classHttpChunkedStream.html#a44c4d584c747524ba4598359810653e4">HttpChunkedStream</a>, <a class="el" href="classCircularBuffer.html#a0117fb9e4cf234dec76217312534c904">CircularBuffer</a>, and <a class="el" href="classArduCAMStream.html#ad8d52a89a9f1c99b650112d367ec2e5e">ArduCAMStream</a>.</p>
 
 </div>
 </div>
