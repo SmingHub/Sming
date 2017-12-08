@@ -719,7 +719,7 @@ static void ATTR_GDBFN uart_hdlr(void *arg, void *frame) {
 }
 
 static void ATTR_GDBINIT install_uart_hdlr() {
-	ets_isr_attach(ETS_UART_INUM, uart_hdlr, NULL);
+	ets_isr_attach(ETS_UART_INUM, (ets_isr_t)uart_hdlr, NULL);
 	SET_PERI_REG_MASK(UART_INT_ENA(0), UART_RXFIFO_FULL_INT_ENA|UART_RXFIFO_TOUT_INT_ENA);
 	ets_isr_unmask((1<<ETS_UART_INUM)); //enable uart interrupt
 }

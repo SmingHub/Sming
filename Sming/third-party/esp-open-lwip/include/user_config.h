@@ -5,9 +5,10 @@
 extern "C" {
 #endif
 
+#include "c_types.h"
 typedef signed short        sint16_t;
 
-void *ets_bzero(void *block, size_t size);
+void ets_bzero(void *block, size_t size);
 bool ets_post(uint32_t prio, ETSSignal sig, ETSParam par);
 void ets_task(ETSTask task, uint32_t prio, ETSEvent * queue, uint8 qlen);
 

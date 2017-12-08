@@ -38,6 +38,7 @@
 #include "c_types.h"
 #include "ets_sys.h"
 #include "osapi.h"
+#include "mem.h"
 #include <stdarg.h>
 
 #define EFAULT 14
@@ -46,10 +47,10 @@
 extern void *ets_memset(void *s, int c, size_t n);
 extern void *ets_memcpy(void *dest, const void *src, size_t n);
 
-extern size_t ets_strlen(const char *s);
+extern int ets_strlen(const char *s);
 extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
 extern int ets_sprintf(char *str, const char *format, ...)  __attribute__ ((format (printf, 2, 3)));
-extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
+//extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
 extern void ets_timer_disarm(ETSTimer *a);
 extern void ets_timer_setfn(ETSTimer *t, ETSTimerFunc *pfunction, void *parg);
 extern uint32 r_rand(void);

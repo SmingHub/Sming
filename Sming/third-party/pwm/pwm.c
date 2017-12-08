@@ -16,9 +16,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Set the following three defines to your needs */
+#include <user_config.h> 
 
-#include <user_config.h>
+/* Set the following three defines to your needs */
 
 #ifndef SDK_PWM_PERIOD_COMPAT_MODE
   #define SDK_PWM_PERIOD_COMPAT_MODE 0
@@ -43,11 +43,6 @@
 #define PWM_MAX_DUTY PWM_MAX_TICKS
 #define PWM_MAX_PERIOD PWM_MAX_TICKS
 #endif
-
-/* ISR related definitions that are missing in some SDKs */
-extern void ets_isr_attach(int intr, void *handler, void *arg);
-extern void ets_isr_mask(unsigned intr);
-extern void ets_isr_unmask(unsigned intr);
 
 #include <c_types.h>
 #include <pwm.h>
@@ -116,7 +111,7 @@ struct timer_regs {
 };
 static struct timer_regs* timer = (void*)(0x60000600);
 
-static void pwm_intr_handler(void)
+static void pwm_intr_handler(void* param)
 {
 	if ((pwm_state.current_set[pwm_state.current_phase].off_mask == 0) &&
 	    (pwm_state.current_set[pwm_state.current_phase].on_mask == 0)) {

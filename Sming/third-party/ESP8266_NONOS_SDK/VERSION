@@ -1,0 +1,23 @@
+gwen:
+    at          :   9422289
+    crypto      :   ce90efd
+    espnow      :   ce90efd
+    json        :   ce90efd
+    main        :   9422289
+    mesh        :   b19a6f7
+    net80211    :   deb1901
+    pp          :   deb1901
+    smartconfig :   b19a6f7
+    ssl         :   b19a6f7
+    upgrade     :   b19a6f7
+    wpa         :   deb1901
+    wpa2        :   b19a6f7
+    wps         :   b19a6f7
+
+phy:
+    phy         :   1136
+
+gitlab:
+    driver      :   68fc7b06
+    lwip        :   110cb9d7
+    mbedtls     :   8e8090b6
