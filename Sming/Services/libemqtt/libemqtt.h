@@ -245,7 +245,7 @@ int mqtt_disconnect(mqtt_broker_handle_t* broker);
  * @retval  0 On connection error.
  * @retval -1 On IO error.
  */
-int mqtt_publish(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint8_t retain);
+int mqtt_publish(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint16_t mlength, uint8_t retain);
 
 /** Publish a message on a topic.
  * @param broker Data structure that contains the connection information with the broker.
@@ -259,7 +259,7 @@ int mqtt_publish(mqtt_broker_handle_t* broker, const char* topic, const char* ms
  * @retval  0 On connection error.
  * @retval -1 On IO error.
  */
-int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint8_t retain, uint8_t qos, uint16_t* message_id);
+int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint16_t mlength, uint8_t retain, uint8_t qos, uint16_t* message_id);
 
 /** Send a PUBREL message. It's used for PUBLISH message with 2 QoS level.
  * @param broker Data structure that contains the connection information with the broker.
