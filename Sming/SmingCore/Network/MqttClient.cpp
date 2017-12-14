@@ -94,7 +94,7 @@ bool MqttClient::connect(const String& clientName, const String& username, const
 
 bool MqttClient::publish(String topic, String message, bool retained /* = false*/)
 {
-	int res = mqtt_publish(&broker, topic.c_str(), message.c_str(), retained);
+	int res = mqtt_publish(&broker, topic.c_str(), message.c_str(), message.length(), retained);
 	return res > 0;
 }
 
