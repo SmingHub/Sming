@@ -421,7 +421,7 @@ $(TARGET_OUT): $(FW_BASE)/$(IMAGE_MAIN) $(PROJECT_LD_PATH)/$(LD_SCRIPT)
 	$(vecho) "LD $@"
 	
 # Readjust linker
-	$(Q) $(SED) -r "s/(^\s*irom0_0_seg *: *).*/\\1org = $(IROM0_ORG0), len = \(1M - $(IMAGE_SDK_OFFSET)\)/" $(LD_PATH)/$(LD_SCRIPT) > $(PROJECT_LD_PATH)/$(LD_SCRIPT)
+	$(Q) $(SED) -E "s/(^\s*irom0_0_seg *: *).*/\\1org = $(IROM0_ORG0), len = \(1M - $(IMAGE_SDK_OFFSET)\)/" $(LD_PATH)/$(LD_SCRIPT) > $(PROJECT_LD_PATH)/$(LD_SCRIPT)
 	
 # Pass 2: Generate roms with correct offsets
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(PROJECT_LD_PATH) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
