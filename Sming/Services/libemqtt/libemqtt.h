@@ -239,18 +239,20 @@ int mqtt_disconnect(mqtt_broker_handle_t* broker);
  * @param broker Data structure that contains the connection information with the broker.
  * @param topic The topic name.
  * @param msg The message.
+ * @param msglen The length of the message.
  * @param retain Enable or disable the Retain flag (values: 0 or 1).
  *
  * @retval  1 On success.
  * @retval  0 On connection error.
  * @retval -1 On IO error.
  */
-int mqtt_publish(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint16_t mlength, uint8_t retain);
+int mqtt_publish(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint16_t msglen, uint8_t retain);
 
 /** Publish a message on a topic.
  * @param broker Data structure that contains the connection information with the broker.
  * @param topic The topic name.
  * @param msg The message.
+ * @param msglen The length of the message.
  * @param retain Enable or disable the Retain flag (values: 0 or 1).
  * @param qos Quality of Service (values: 0, 1 or 2)
  * @param message_id Variable that will store the Message ID, if the pointer is not NULL.
@@ -259,7 +261,7 @@ int mqtt_publish(mqtt_broker_handle_t* broker, const char* topic, const char* ms
  * @retval  0 On connection error.
  * @retval -1 On IO error.
  */
-int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint16_t mlength, uint8_t retain, uint8_t qos, uint16_t* message_id);
+int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const char* msg, uint16_t msglen, uint8_t retain, uint8_t qos, uint16_t* message_id);
 
 /** Send a PUBREL message. It's used for PUBLISH message with 2 QoS level.
  * @param broker Data structure that contains the connection information with the broker.
