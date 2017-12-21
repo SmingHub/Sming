@@ -94,14 +94,14 @@ bool MqttClient::connect(const String& clientName, const String& username, const
 
 bool MqttClient::publish(String topic, String message, bool retained /* = false*/)
 {
-	int res = mqtt_publish(&broker, topic.c_str(), message.c_str(), retained);
+	int res = mqtt_publish(&broker, topic.c_str(), message.c_str(), message.length(), retained);
 	return res > 0;
 }
 
 bool MqttClient::publishWithQoS(String topic, String message, int QoS, bool retained /* = false*/, MqttMessageDeliveredCallback onDelivery /* = NULL */)
 {
 	uint16_t msgId = 0;
-	int res = mqtt_publish_with_qos(&broker, topic.c_str(), message.c_str(), retained, QoS, &msgId);
+	int res = mqtt_publish_with_qos(&broker, topic.c_str(), message.c_str(), message.length(), retained, QoS, &msgId);
 	if(QoS == 0 && onDelivery) {
 		debugf("The delivery callback is ignored for QoS 0.");
 	}
