@@ -496,9 +496,9 @@ endif
 define compile-objects
 ${BUILD_BASE}/$1/%.o: $1/%.c ${BUILD_BASE}/$1/%.c.d
 	$(vecho) "CC $$<"
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@	
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@
 ${BUILD_BASE}/$1/%.o: $1/%.cpp ${BUILD_BASE}/$1/%.cpp.d
-	$(vecho) "C+ $$<" 
+	$(vecho) "C+ $$<"
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -c $$< -o $$@
 ${BUILD_BASE}/$1/%.c.d: $1/%.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -MM -MT $1/$$*.o $$< -o $$@
@@ -533,9 +533,9 @@ $(TARGET_OUT_0): $(APP_AR)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(SMING_HOME)/compiler/ld $(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
 	$(Q) $(STRIP) $@
-	
+
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
-	
+
 	$(Q) if [ -f "$(FW_MEMINFO_NEW)" -a -f "$(FW_MEMINFO_OLD)" ]; then \
 	  awk -F "|" 'FILENAME == "$(FW_MEMINFO_OLD)" { arr[$$1]=$$5 } FILENAME == "$(FW_MEMINFO_NEW)" { if (arr[$$1] != $$5){printf "%s%s%+d%s", substr($$0, 1, length($$0) - 1)," (",$$5 - arr[$$1],")\n" } else {print $$0} }' $(FW_MEMINFO_OLD) $(FW_MEMINFO_NEW); \
 	elif [ -f "$(FW_MEMINFO_NEW)" ]; then \

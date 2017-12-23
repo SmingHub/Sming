@@ -485,8 +485,8 @@ $(TARGET_OUT): $(FW_BASE)/$(IMAGE_MAIN) $(PROJECT_LD_PATH)/$(LD_SCRIPT)
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
-        $(Q) test ! -f $@ || rm $@
-        $(Q) $(AR) rcsP $@ $^
+	$(Q) test ! -f $@ || rm $@
+	$(Q) $(AR) rcsP $@ $^
 
 $(USER_LIBDIR)/lib$(LIBSMING).a:
 	$(vecho) "(Re)compiling Sming. Enabled features: $(SMING_FEATURES). This may take some time"
