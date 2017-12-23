@@ -458,7 +458,7 @@ $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
         $(Q) test ! -f $@ || rm $@
         $(Q) $(AR) rcsP $@ $^
-	
+
 $(USER_LIBDIR)/lib$(LIBSMING).a:
 	$(vecho) "(Re)compiling Sming. Enabled features: $(SMING_FEATURES). This may take some time"
 	$(Q) $(MAKE) -C $(SMING_HOME) clean V=$(V) ENABLE_SSL=$(ENABLE_SSL) SMING_HOME=$(SMING_HOME)
