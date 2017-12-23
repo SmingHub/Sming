@@ -563,7 +563,7 @@ include/ssl/private_key.h:
 	$(vecho) "Generating unique certificate and key. This may take some time"
 	$(Q) mkdir -p $(CURRENT_DIR)/include/ssl/
 	$(Q) AXDIR=$(CURRENT_DIR)/include/ssl/  $(THIRD_PARTY_DIR)/axtls-8266/tools/make_certs.sh 
-	
+
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 $(USER_LIBDIR)/libpwm_open.a:
 	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm_open.a ENABLE_CUSTOM_PWM=1
