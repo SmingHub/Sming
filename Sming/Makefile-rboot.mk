@@ -90,10 +90,19 @@ ENABLE_CMD_EXECUTOR ?= 1
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
+#Detect if Cygwin and / or Windows
 ifeq ($(OS),Windows_NT)
   # Windows detected
+ifneq (a,$(shell echo "a"))
   UNAME := Windows
-  
+else
+  UNAME := Cygwin
+endif
+endif
+
+ifeq ($(UNAME),Windows)
+  # Windows detected
+    
   # Default SMING_HOME. Can be overriden.
   SMING_HOME ?= c:\tools\Sming\Sming
 
@@ -103,6 +112,11 @@ ifeq ($(OS),Windows_NT)
   # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
   SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
   ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
+
+  # Remove possible double escaping...
+  SMING_HOME := $(subst //,/, $(SMING_HOME))
+  ESP_HOME   := $(subst //,/, $(ESP_HOME))
+
   include $(SMING_HOME)/Makefile-windows.mk  
 else
   UNAME := $(shell uname -s)
@@ -117,6 +131,10 @@ else
       ESP_HOME ?= /opt/esp-open-sdk
 
       include $(SMING_HOME)/Makefile-macos.mk      
+  endif
+  ifneq ($(filter CYGWIN%,$(UNAME)),)
+      # Cygwin Detected
+      UNAME := Linux
   endif
   ifeq ($(UNAME),Linux)
       # Linux Detected

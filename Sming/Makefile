@@ -35,10 +35,18 @@ COM_SPEED = 115200
 # Git command
 GIT ?= git
 
-
+#Detect if Cygwin and / or Windows
 ifeq ($(OS),Windows_NT)
   # Windows detected
+ifneq (a,$(shell echo "a"))
   UNAME := Windows
+else
+  UNAME := Cygwin
+endif
+endif
+
+ifeq ($(UNAME),Windows)
+  # Windows detected
   
   # Default SMING_HOME. Can be overriden.
   SMING_HOME ?= c:\tools\Sming\Sming
@@ -68,6 +76,10 @@ else
       ESP_HOME ?= /opt/esp-open-sdk
 
       include Makefile-macos.mk      
+  endif
+  ifneq ($(filter CYGWIN%,$(UNAME)),)
+      # Cygwin Detected
+      UNAME := Linux
   endif
   ifeq ($(UNAME),Linux)
       # Linux Detected
