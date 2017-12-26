@@ -38,7 +38,7 @@ GIT ?= git
 #Detect if Cygwin and / or Windows
 ifeq ($(OS),Windows_NT)
   # Windows detected
-ifneq (a,$(shell echo "a"))
+ifeq (,$(wildcard /usr/bin/cygwin1.dll))
   UNAME := Windows
 else
   UNAME := Cygwin

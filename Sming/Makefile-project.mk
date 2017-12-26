@@ -82,7 +82,7 @@ SED     ?= sed
 #Detect if Cygwin and / or Windows
 ifeq ($(OS),Windows_NT)
   # Windows detected
-ifneq (a,$(shell echo "a"))
+ifeq (,$(wildcard /usr/bin/cygwin1.dll))
   UNAME := Windows
 else
   UNAME := Cygwin
@@ -103,8 +103,8 @@ ifeq ($(UNAME),Windows)
   ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
 
   # Remove possible double escaping...
-  SMING_HOME := $(subst //,/, $(SMING_HOME))
-  ESP_HOME   := $(subst //,/, $(ESP_HOME))
+  SMING_HOME := $(subst //,/,$(SMING_HOME))
+  ESP_HOME   := $(subst //,/,$(ESP_HOME))
 
   include $(SMING_HOME)/Makefile-windows.mk  
 else
