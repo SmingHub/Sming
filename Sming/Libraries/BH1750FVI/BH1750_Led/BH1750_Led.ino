@@ -72,3 +72,4 @@ void loop() {
   digitalWrite(LedPin,SensorValue);
   // ready to another reading . 
 }
+
