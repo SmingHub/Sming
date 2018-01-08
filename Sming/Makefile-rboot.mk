@@ -90,22 +90,48 @@ ENABLE_CMD_EXECUTOR ?= 1
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
+# Detect OS and build environment
+UNAME := $(shell uname -s)
+
 ifeq ($(OS),Windows_NT)
-  # Windows detected
+  # Convert Windows paths to POSIX paths
+  SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
+  SMING_HOME := $(subst //,/,$(SMING_HOME))
+  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
+  ESP_HOME   := $(subst //,/,$(ESP_HOME))
+endif
+
+ifneq ($(filter MINGW32_NT%,$(UNAME)),)
   UNAME := Windows
-  
+else ifneq ($(filter CYGWIN%,$(UNAME)),)
+  # Cygwin Detected
+  UNAME := Linux
+else ifneq ($(filter CYGWIN%WOW,$(UNAME)),)
+  #Cygwin32
+  UNAME := Linux
+else ifneq ($(filter MSYS%WOW,$(UNAME)),)
+  #Msys32
+  UNAME := Linux
+else ifeq ($(UNAME), Linux)
+  #Linux
+else ifeq ($(UNAME), Darwin)
+  #OS X
+else ifeq ($(UNAME), Freebsd)
+  #BSD
+endif
+
+# OS specific configuration
+ifeq ($(UNAME),Windows)
+  # Windows detected
+
   # Default SMING_HOME. Can be overriden.
   SMING_HOME ?= c:\tools\Sming\Sming
 
   # Default ESP_HOME. Can be overriden.
   ESP_HOME ?= c:\Espressif
 
-  # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
-  SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
-  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-  include $(SMING_HOME)/Makefile-windows.mk  
+  include $(SMING_HOME)/Makefile-windows.mk
 else
-  UNAME := $(shell uname -s)
   ifeq ($(UNAME),Darwin)
       # MacOS Detected
       UNAME := MacOS
@@ -117,6 +143,10 @@ else
       ESP_HOME ?= /opt/esp-open-sdk
 
       include $(SMING_HOME)/Makefile-macos.mk      
+  endif
+  ifneq ($(filter CYGWIN%,$(UNAME)),)
+      # Cygwin Detected
+      UNAME := Linux
   endif
   ifeq ($(UNAME),Linux)
       # Linux Detected
