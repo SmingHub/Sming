@@ -85,7 +85,7 @@ bool spiffs_format_internal(spiffs_config *cfg)
 		return false;
 	}
   }
-  debugf("formated");
+  debugf("formatted");
   ETS_INTR_UNLOCK();
 
   return true;
