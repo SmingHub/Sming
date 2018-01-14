@@ -64,10 +64,10 @@ bool spiffs_format_internal(spiffs_config *cfg)
   sect_first = cfg->phys_addr;
   sect_first = flashmem_get_sector_of_address(sect_first);
   sect_last = cfg->phys_addr + cfg->phys_size;
-  sect_last = flashmem_get_sector_of_address(sect_last);
+  sect_last = flashmem_get_sector_of_address(sect_last) - 1;
   debugf("sect_first: %x, sect_last: %x\n", sect_first, sect_last);
   ETS_INTR_LOCK();
-  int total = sect_last - sect_first;
+  int total = sect_last+1 - sect_first;
   int cur = 0;
   int last = -1;
   while( sect_first <= sect_last )
