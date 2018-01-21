@@ -45,6 +45,10 @@
 	path = Sming/Libraries/Adafruit_SSD1306
 	url = https://github.com/adafruit/Adafruit_SSD1306.git
 	ignore = dirty
+[submodule "Sming/Libraries/IR"]
+	path = Sming/Libraries/IR
+	url = https://github.com/markszabo/IRremoteESP8266.git
+	ignore = dirty
 [submodule "Sming/Libraries/Adafruit_BME280_Library"]
 	path = Sming/Libraries/Adafruit_BME280_Library
 	url = https://github.com/adafruit/Adafruit_BME280_Library.git
@@ -52,6 +56,10 @@
 [submodule "Sming/Libraries/Adafruit_Sensor"]
 	path = Sming/Libraries/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor
+	ignore = dirty
+[submodule "Sming/Libraries/RingBufCPP"]
+	path = Sming/Libraries/RingBufCPP
+	url = https://github.com/wizard97/Embedded_RingBuf_CPP.git
 	ignore = dirty
 [submodule "Sming/third-party/lwip2"]
 	path = Sming/third-party/lwip2
