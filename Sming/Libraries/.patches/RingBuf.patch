@@ -1,0 +1,22 @@
+diff --git a/RingBufCPP.h b/RingBufCPP.h
+index 3b5f092..8df2c0d 100644
+--- a/RingBufCPP.h
++++ b/RingBufCPP.h
+@@ -28,7 +28,7 @@ bool add(const Type &obj)
+     bool ret = false;
+     RB_ATOMIC_START
+     {
+-        if (!isFull()) {
++        if (_numElements < MaxElements) {
+             _buf[_head] = obj;
+             _head = (_head + 1)%MaxElements;
+             _numElements++;
+@@ -53,7 +53,7 @@ bool pull(Type *dest)
+ 
+     RB_ATOMIC_START
+     {
+-        if (!isEmpty()) {
++        if(_numElements) {
+             tail = getTail();
+             *dest = _buf[tail];
+             _numElements--;
