@@ -4,37 +4,40 @@
 
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include <Libraries/IR/IRremote.h>
-#include <Libraries/IR/IRremoteInt.h>
+#include <Libraries/IR/src/IRrecv.h>
+#include <Libraries/IR/src/IRsend.h>
+#include <Libraries/IR/src/IRutils.h>
 
-#define IR_PIN 12 // GPIO12
+#define IR_RECV_PIN 12 // GPIO15
+#define IR_SEND_PIN 5  // GPIO5
 
 Timer irTimer;
-decode_results dresults;
-IRrecv irrecv(IR_PIN);
-IRsend irsend(IR_PIN);
+IRrecv irrecv(IR_RECV_PIN);
+IRsend irsend(IR_SEND_PIN);
 
 void receiveIR()
 {
-	if(irrecv.decode(&dresults)==DECODED){
-		irTimer.stop();
-		unsigned int * sendbuff = new unsigned int[dresults.rawlen-1];
-		for(int i=0; i<dresults.rawlen-1; i++){
-			sendbuff[i]=dresults.rawbuf[i+1]*50;
-		}
-		irsend.sendNEC(dresults.value, dresults.bits);
-		Serial.println("Sent IR Code");
-		irrecv.enableIRIn();
-		irTimer.start();
-	}
+        irTimer.stop();
+        decode_results dresults;
+        dresults.decode_type = UNUSED;
+        if(irrecv.decode(&dresults))
+        {
+                Serial.println(resultToHumanReadableBasic(&dresults));           // Output the results as source code
+                Serial.println(resultToTimingInfo(&dresults));
+        }
+        if( dresults.decode_type > UNUSED )
+        {
+                Serial.println("Send IR Code");
+                irsend.send(dresults.decode_type, dresults.value, dresults.bits);
+        }
+        irTimer.start();
 }
 
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.println("Setting up...");
-	irrecv.blink13(1);
+	Serial.println("Setting up...");	
 	irrecv.enableIRIn(); // Start the receiver
-	irTimer.initializeMs(1000, receiveIR).start();
+        irTimer.initializeMs(30, receiveIR).start();
 	Serial.println("Ready...");
 }
