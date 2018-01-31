@@ -6,19 +6,45 @@
 
 #pragma once
 
-class smtpClient
+class SmtpClient : public TcpClient
 {
 public:
-	smtpClient();
-	void createClient(const String&  smtp_server, int smtp_port=25);
-	byte sendEmail(const String& emailFrom, const String& emailTo, const String& subject, const String& body);
+	SmtpClient(bool autoDestroy=false);
 	
-	void close();	// Not sure about this function - its use causes grief
-
-	// For diagnostic purposes, allow to print info just once.
-	boolean		showMeta = true;
+	void	setCredentials(
+		const String&	smtp_server,
+		const String&	pUser,
+		const String&	pPassword,
+		int				smtp_port = 25);
+	
+	void	sendEmail(
+		const String&	emailFrom,
+		const String&	emailTo,
+		const String&	subject,
+		const String&	body);
+	
+	//void	close();	// Not sure about this function - its use causes grief
+	
+protected:
+	virtual err_t onConnected(err_t err);
+	virtual err_t onReceive(pbuf *buf);
+	virtual err_t onSent(uint16_t len);
+	virtual void onError(err_t err);
+	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	virtual void onFinished(TcpClientState finishState);
 private:
-	TcpClient *	client = nullptr;
+	String		msg[20];
+
+	String		smtpServer;
+	int			smtpPort;
+	String		smtpUser;
+	String		smtpPassword;
+
+	String		emailFrom;
+	String		emailTo;
+	String		subject;
+	String		body;
+
 };
 
 
