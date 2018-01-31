@@ -1,8 +1,8 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include "SmingCore/Network/SmtpClient.h"
-#include "LedBlinker.h"
 #include <SmingCore/Network/SmtpClient.h>
+#include "LedBlinker.h"
 
 
 /*

@@ -13,16 +13,6 @@ void onClientComplete(TcpClient& connection, bool success)
 	debugf("onClientComplete, %s", success? "true":"false");
 }
 
-
-bool SmtpClientReceive(TcpClient& tcpClient, char * data, int size) {
-	debugf("SmtpClientReceive: Got data [%s] with size: %d", data, size);
-	debugf("Free heap: %d", system_get_free_heap_size());
-	if (size < 1) {
-		return true;
-	}
-	return true;
-}
-
 void SmtpClient::setCredentials(
 	const String&	smtp_server,
 	const String&	pUser,
@@ -130,10 +120,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	{
 		for (auto& s : msg)
 		{
-			//debugf("Sending: %s", s.c_str());
-			bool forceCloseAfterSent = false;
-			sendString(s, forceCloseAfterSent);
-			//s = "";
+			sendString(s, false /*forceCloseAfterSent*/);
 		}
 	}
 	TcpClient::onReadyToSendData(sourceEvent);
@@ -150,7 +137,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 //   4      8
 //   5      8
 //   6      8
-int lengthBase64(int len)
+static int lengthBase64(int len)
 {
 	int missing = 0;
 	size_t ret = len;
@@ -162,21 +149,6 @@ int lengthBase64(int len)
 	ret += missing;
 	// Expand the return string size to a multiple of 4
 	ret = 4 * ret / 3;
-	return ret;
-}
-
-
-
-// Not used
-String XXmakeBase64(const String& s)
-{
-	String ret;
-	const int len = 64;
-	//debugf("makeBase64 %s %d %d", s.c_str(), s.length(), len);
-	char b64[len+1];
-	memset(b64, 0, len + 1);
-	base64_encode(s.length(), (const unsigned char *)s.c_str(), len, b64);
-	ret = b64;
 	return ret;
 }
 
@@ -195,9 +167,9 @@ String makeBase64(const String& s)
 SmtpClient::SmtpClient(bool autoDestroy)
 	:TcpClient(autoDestroy),
 	smtpUser(),
-	smtpPassword()
+	smtpPassword(),
+	smtpPort(25)
 {
-	//setReceiveDelegate(SmtpClientReceive);
 	setCompleteDelegate(onClientComplete);
 }
 
