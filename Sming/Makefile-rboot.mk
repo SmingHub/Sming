@@ -32,9 +32,9 @@ RBOOT_SPIFFS_1   ?= 0x300000
 RBOOT_LD_0 ?= rboot.rom0.ld
 RBOOT_LD_1 ?= rom1.ld
 # esptool2 path
-ESPTOOL2 ?= esptool2
+ESPTOOL2 ?= $(SMING_HOME)/../tools/esptool2/esptool2
 # path to spiffy
-SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
+SPIFFY ?= $(SMING_HOME)/../tools/spiffy/spiffy
 INIT_BIN_ADDR  = 0x7c000
 BLANK_BIN_ADDR = 0x4b000
 # filenames and options for generating rBoot rom images with esptool2

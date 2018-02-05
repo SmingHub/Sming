@@ -37,7 +37,7 @@ DEBUG_PRINT_FILENAME_AND_LINE ?= 0
 DEBUG_VERBOSE_LEVEL ?= 2
 
 # Path to spiffy
-SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
+SPIFFY ?= $(SMING_HOME)/../tools/spiffy/spiffy
 
 #ESPTOOL2 config to generate rBootLESS images
 IMAGE_MAIN	?= 0x00000.bin
