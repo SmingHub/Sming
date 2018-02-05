@@ -533,7 +533,7 @@ libraries-clean:
 	$(Q) rm -rf Libraries
 	$(Q) $(GIT) checkout Libraries 
 
-tools: $(TOOLS_DIRS)
+tools: third-party/spiffs/makefile $(TOOLS_DIRS)
 
 $(TOOLS_DIRS):
 	$(Q) if [ -d $(SMING_HOME)/../tools/$@ ]; then \
