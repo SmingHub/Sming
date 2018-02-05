@@ -353,6 +353,7 @@ EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
 SAMPLES_DIRS := $(shell ls -1 ../samples)
+TOOLS_DIRS   := $(shell ls -1 ../tools)
 THIRD_PARTY_DIRS := $(shell ls -1 third-party )
 DOXYGEN := $(shell command -v doxygen 2> /dev/null)
 
@@ -395,9 +396,9 @@ $1/%.cpp.d: %.cpp
 .PRECIOUS: $1/%.c.d $1/%.cpp.d
 endef
 
-.PHONY: all checkdirs clean spiffy test samples-clean samples $(SAMPLES_DIRS) docs api wiki
+.PHONY: all checkdirs clean tools $(TOOLS_DIRS) test samples-clean samples $(SAMPLES_DIRS) docs api wiki
 
-all: checkdirs $(APP_AR) spiffy
+all: checkdirs $(APP_AR) tools
 
 ifeq ($(ENABLE_CUSTOM_PWM), 1)	
 $(USER_LIBDIR)/libpwm_open.a: third-party/pwm/pwm.c
@@ -426,13 +427,6 @@ $(USER_LIBDIR)/liblwip%.a: third-party/lwip2/Makefile.sming
 	$(Q) $(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
 endif
 
-spiffy: spiffy/spiffy
-
-spiffy/spiffy: third-party/spiffs/makefile
-	$(vecho) "Making spiffy utility"
-	$(Q) $(MAKE) --no-print-directory -C spiffy V=$(V)
-	$(vecho) "Done"
-
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
@@ -454,8 +448,6 @@ $(FW_BASE):
 	$(Q) mkdir -p $@
 	$(Q) mkdir -p $@/upgrade
 
-rebuild: clean all
-
 clean:
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f $(TARGET_OUT)
@@ -464,8 +456,6 @@ clean:
 	$(Q) rm -rf $(FW_BASE)
 ifeq ($(ENABLE_SSL), 1)
 	$(Q) -$(MAKE) --no-print-directory -C third-party/axtls-8266 clean -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)" CFLAGS_EXTRA="$(EXTRA_CFLAGS_AXTLS)"
-else
-	$(Q) $(MAKE) --no-print-directory -C spiffy clean V=$(V)
 endif	
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	$(Q) -$(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" clean
@@ -542,8 +532,23 @@ third-party-clean:
 libraries-clean:
 	$(Q) rm -rf Libraries
 	$(Q) $(GIT) checkout Libraries 
+
+tools: $(TOOLS_DIRS)
+
+$(TOOLS_DIRS):
+	$(Q) if [ -d $(SMING_HOME)/../tools/$@ ]; then \
+			echo "Making $@"; \
+			if [ ! -e $(SMING_HOME)/../tools/$@/Makefile ]; then $(GIT) submodule update --init --recursive $(SMING_HOME)/../tools/$@/; fi; \
+			$(MAKE) --no-print-directory -C $(SMING_HOME)/../tools/$@ V=$(V); \
+		 fi
+
+tools-clean:
+	$(Q) for dir in $(TOOLS_DIRS); do \
+		  if [ ! -d $(SMING_HOME)/../tools/$$dir ]; then continue; fi; \
+          $(MAKE) --no-print-directory -C $(SMING_HOME)/../tools/$$dir clean V=$(V); \
+        done
        
-dist-clean: clean samples-clean third-party-clean libraries-clean
+dist-clean: clean samples-clean third-party-clean libraries-clean tools-clean
 	$(Q) for file in $(shell ls $(USER_LIBDIR)/lib*.a ); do \
  	   rm $$file; \
  	done
