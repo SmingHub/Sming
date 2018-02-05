@@ -538,7 +538,7 @@ tools: $(TOOLS_DIRS)
 $(TOOLS_DIRS):
 	$(Q) if [ -d $(SMING_HOME)/../tools/$@ ]; then \
 			echo "Making $@"; \
-			if [ ! -e $(SMING_HOME)/../tools/$@/Makefile ]; then $(GIT) submodule update --init --recursive $(SMING_HOME)/../tools/$@/; fi; \
+			if [ ! -e $(SMING_HOME)/../tools/$@/Makefile ]; then (cd $(dir $(SMING_HOME)); $(GIT) submodule update --init --recursive tools/$@/;); fi; \
 			$(MAKE) --no-print-directory -C $(SMING_HOME)/../tools/$@ V=$(V); \
 		 fi
 
