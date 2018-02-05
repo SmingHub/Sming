@@ -49,7 +49,7 @@ INIT_BIN_ADDR =  0x7c000
 BLANK_BIN_ADDR =  0x4b000
 
 # esptool2 path
-ESPTOOL2 ?= esptool2
+ESPTOOL2 ?= $(SMING_HOME)/../tools/esptool2/esptool2
 # esptool2 parameters for rBootLESS images
 ESPTOOL2_SECTS		?= .text .data .rodata
 ESPTOOL2_MAIN_ARGS	?= -quiet -bin -boot0
