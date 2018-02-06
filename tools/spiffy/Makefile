@@ -5,7 +5,7 @@
 HOST_CC ?= gcc
 HOST_LD ?= gcc
 
-INCDIR := -I../Services/SpifFS -I../third-party/spiffs/src
+INCDIR := -I$(SMING_HOME)/Services/SpifFS -I$(SMING_HOME)/third-party/spiffs/src
 CFLAGS := -O2 -Wall -Wno-unused-value
 
 ifeq ("$(V)","1")
@@ -18,11 +18,11 @@ endif
 
 all: spiffy
 
-%.o: ../Services/SpifFS/%.c
+%.o: $(SMING_HOME)/Services/SpifFS/%.c
 	$(vecho) "CC $<"
 	$(Q) $(HOST_CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 	
-%.o: ../third-party/spiffs/src/%.c
+%.o: $(SMING_HOME)/third-party/spiffs/src/%.c
 	$(vecho) "CC $<"
 	$(Q) $(HOST_CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 

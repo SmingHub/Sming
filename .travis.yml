@@ -40,6 +40,9 @@ install:
   - if [ "$SDK_VERSION" == "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget https://www.espressif.com/sites/default/files/sdks/esp8266_nonos_sdk_v2.0.0_16_08_10.zip -O sdk.zip; unzip sdk.zip; ln -s `pwd`/ESP8266_NONOS_SDK/ $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/sdk; export  DEPLOY='true'; fi
 
 script:
+  - env
+  - unset SPIFFY
+  - unset ESPTOOL2
   - export CHANGED_FILES=`git diff --diff-filter=AMD HEAD HEAD^ --name-only`
   - export CHANGED_PROJECTS=`for i in $CHANGED_FILES; do echo "$i" |  grep '^samples/' | cut -d'/' -f2; done | uniq`
   - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
