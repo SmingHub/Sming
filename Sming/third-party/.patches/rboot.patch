@@ -45,3 +45,16 @@ index 6e10a2f..7ac60a8 100644
  #ifdef BOOT_GPIO_ENABLED
  	romconf->mode = MODE_GPIO_ROM;
  #endif
+diff --git a/rboot.h b/rboot.h
+index 93ae317..bd3ad6d 100644
+--- a/rboot.h
++++ b/rboot.h
+@@ -34,7 +34,7 @@ extern "C" {
+ // uncomment to enable GPIO rom skip mode, trigger
+ // GPIO at boot time to skip to next rom
+ // cannot be used at same time as BOOT_GPIO_ENABLED
+-#define BOOT_GPIO_SKIP_ENABLED
++//#define BOOT_GPIO_SKIP_ENABLED
+ 
+ // set the GPIO pin used by GPIO modes above (will default
+ // to 16 if not manually set), only applicable when

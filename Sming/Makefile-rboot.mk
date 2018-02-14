@@ -13,6 +13,12 @@ RBOOT_BIG_FLASH  ?= 1
 RBOOT_TWO_ROMS   ?= 0
 RBOOT_RTC_ENABLED ?= 0
 RBOOT_GPIO_ENABLED ?= 0
+# RBOOT_GPIO_SKIP_ENABLED and RBOOT_GPIO_ENABLED cannot be used at the same time.
+RBOOT_GPIO_SKIP_ENABLED ?= 0
+
+ifeq ($(RBOOT_GPIO_ENABLED)$(RBOOT_GPIO_SKIP_ENABLED),11)
+	$(error "Cannot enable RBOOT_GPIO_ENABLED and RBOOT_GPIO_SKIP_ENABLED at the same time)
+endif
 
 ### ROM Addresses ###
 # The parameter below specifies the location of the second rom.
@@ -438,6 +444,7 @@ export RBOOT_BUILD_BASE
 export RBOOT_FW_BASE
 export RBOOT_RTC_ENABLED
 export RBOOT_GPIO_ENABLED
+export RBOOT_GPIO_SKIP_ENABLED
 export RBOOT_ROM1_ADDR
 export RBOOT_ROM2_ADDR
 export SPI_SIZE
@@ -461,6 +468,10 @@ endif
 
 ifeq ($(RBOOT_GPIO_ENABLED),1)
 	CFLAGS += -DBOOT_GPIO_ENABLED
+endif
+
+ifeq ($(RBOOT_GPIO_SKIP_ENABLED),1)
+	CFLAGS += -DBOOT_GPIO_SKIP_ENABLED
 endif
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
