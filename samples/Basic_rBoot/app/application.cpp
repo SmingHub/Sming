@@ -95,6 +95,15 @@ void ShowInfo() {
     Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
     Serial.printf("SPI Flash ID: %x\r\n", spi_flash_get_id());
     //Serial.printf("SPI Flash Size: %d\r\n", (1 << ((spi_flash_get_id() >> 16) & 0xff)));
+
+    rboot_config conf;
+    conf = rboot_get_config();
+
+    debugf("Count: %d", conf.count);
+    debugf("ROM 0: %d", conf.roms[0]);
+    debugf("ROM 1: %d", conf.roms[1]);
+    debugf("ROM 2: %d", conf.roms[2]);
+    debugf("GPIO ROM: %d", conf.gpio_rom);
 }
 
 void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCharsCount) {
