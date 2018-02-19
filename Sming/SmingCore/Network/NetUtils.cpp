@@ -33,7 +33,7 @@ int NetUtils::pbufFindChar(pbuf *buf, char wtf, int startPos /* = 0*/)
 			char* sbuf = (char*)buf->payload;
 			if (sbuf[i] == wtf)
 			{
-				//debugf("%d %d", ofs, i);
+				//debug_d("%d %d", ofs, i);
 				return ofs + i;
 			}
 		}
@@ -126,7 +126,7 @@ bool NetUtils::FixNetworkRouting()
 //	{
 //		if (netif->ip_addr.addr == info.ip.addr)
 //		{
-//			debugf("Fixed default network interface: %d.%d.%d.%d", IP2STR(&info.ip));
+//			debug_d("Fixed default network interface: %d.%d.%d.%d", IP2STR(&info.ip));
 //			netif_default = netif;
 //			ipClientRoutingFixed = true;
 //			return true;

@@ -59,21 +59,21 @@ HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false), mode(eHCM
 bool HttpConnection::connect(const String& host, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 
-	debugf("HttpConnection::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != NULL? tcp->state : -1), (int)(getConnectionState() != eTCS_Ready), (int)isActive());
+	debug_d("HttpConnection::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != NULL? tcp->state : -1), (int)(getConnectionState() != eTCS_Ready), (int)isActive());
 
 	if(isProcessing()) {
 		return true;
 	}
 
 	if(getConnectionState() != eTCS_Ready && isActive()) {
-		debugf("HttpConnection::reusing TCP connection ");
+		debug_d("HttpConnection::reusing TCP connection ");
 
 		// we might have still alive connection
 		onConnected(ERR_OK);
 		return true;
 	}
 
-	debugf("HttpConnection::connecting ...");
+	debug_d("HttpConnection::connecting ...");
 
 	return TcpClient::connect(host, port, useSsl, sslOptions);
 }
@@ -159,7 +159,7 @@ void HttpConnection::reset()
 
 err_t HttpConnection::onProtocolUpgrade(http_parser* parser)
 {
-	debugf("onProtocolUpgrade: Protocol upgrade is not supported");
+	debug_w("onProtocolUpgrade: Protocol upgrade is not supported");
 	return ERR_ABRT;
 }
 
@@ -200,7 +200,7 @@ int HttpConnection::staticOnMessageComplete(http_parser* parser)
 		return -2; // no current request...
 	}
 
-	debugf("staticOnMessageComplete: Execution queue: %d, %s",
+	debug_d("staticOnMessageComplete: Execution queue: %d, %s",
 								connection->executionQueue.count(),
 								connection->incomingRequest->uri.toString().c_str()
 								);
@@ -245,7 +245,7 @@ int HttpConnection::staticOnHeadersComplete(http_parser* parser)
 		return -1;
 	}
 
-	debugf("The headers are complete");
+	debug_d("The headers are complete");
 
 	/* Callbacks should return non-zero to indicate an error. The parser will
 	 * then halt execution.
@@ -354,13 +354,13 @@ int HttpConnection::staticOnBody(http_parser *parser, const char *at, size_t len
 #ifndef COMPACT_MODE
 int HttpConnection::staticOnChunkHeader(http_parser* parser)
 {
-	debugf("On chunk header");
+	debug_d("On chunk header");
 	return 0;
 }
 
 int HttpConnection::staticOnChunkComplete(http_parser* parser)
 {
-	debugf("On chunk complete");
+	debug_d("On chunk complete");
 	return 0;
 }
 #endif
@@ -368,7 +368,7 @@ int HttpConnection::staticOnChunkComplete(http_parser* parser)
 void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 
-	debugf("HttpConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue->count());
+	debug_d("HttpConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue->count());
 
 	do {
 		if(state == eHCS_Sent) {
@@ -378,7 +378,7 @@ void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		if(state == eHCS_Ready) {
 			HttpRequest* request = waitingQueue->peek();
 			if(request == NULL) {
-				debugf("Nothing in the waiting queue");
+				debug_d("Nothing in the waiting queue");
 				outgoingRequest = NULL;
 				break;
 			}
@@ -400,7 +400,7 @@ void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 			} // executionQueue.count()
 
 			if(!executionQueue.enqueue(request)) {
-				debugf("The working queue is full at the moment");
+				debug_e("The working queue is full at the moment");
 				break;
 			}
 
@@ -569,7 +569,7 @@ err_t HttpConnection::onReceive(pbuf *buf)
 		parsedBytes += http_parser_execute(&parser, &parserSettings, (char*) cur->payload, cur->len);
 		if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 			// we ran into trouble - abort the connection
-			debugf("HTTP parser error: %s", http_errno_name(HTTP_PARSER_ERRNO(&parser)));
+			debug_e("HTTP parser error: %s", http_errno_name(HTTP_PARSER_ERRNO(&parser)));
 			cleanup();
 			TcpConnection::onReceive(NULL);
 			return ERR_ABRT;

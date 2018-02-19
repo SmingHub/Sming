@@ -42,7 +42,7 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 		useSsl = true;
 	}
 	TcpClient::connect(_uri.Host,_uri.Port, useSsl, sslOptions);
-	debugf("Connecting to Server");
+	debug_d("Connecting to Server");
 	unsigned char keyStart[17];
 	char b64Key[25];
 	memset(b64Key, 0, sizeof(b64Key));
@@ -89,11 +89,11 @@ void WebsocketClient::onError(err_t err)
 {
 	if ((err == ERR_ABRT) || (err == ERR_RST))
 	{
-		debugf("TCP Connection Reseted or Aborted", err);
+		debug_d("TCP Connection Reseted or Aborted", err);
 	}
 	else
 	{
-		debugf("Error  %d Occured ", err);
+		debug_e("Error  %d Occurred ", err);
 	}
 	TcpClient::onError(err);
 }
@@ -108,7 +108,7 @@ bool WebsocketClient::_verifyKey(char* buf, int size)
 
 	if(!serverHashedKey)
 	{
-		debugf("wscli cannot find key");
+		debug_e("wscli cannot find key");
 		return false;
 	}
 
@@ -117,7 +117,7 @@ bool WebsocketClient::_verifyKey(char* buf, int size)
 
 	if(!endKey || endKey - buf > size)
 	{
-		debugf("wscli cannot find key reason:%s", endKey ? "out of bounds":"NULL");
+		debug_e("wscli cannot find key reason:%s", endKey ? "out of bounds":"NULL");
 		return false;
 	}
 
@@ -128,7 +128,7 @@ bool WebsocketClient::_verifyKey(char* buf, int size)
 
 	if(strstr(serverHashedKey, base64HashedKey) != serverHashedKey)
 	{
-		debugf("wscli key mismatch: %s | %s", serverHashedKey, base64HashedKey);
+		debug_e("wscli key mismatch: %s | %s", serverHashedKey, base64HashedKey);
 		return false;
 	}
 
@@ -141,11 +141,11 @@ void WebsocketClient::onFinished(TcpClientState finishState)
 	uint8_t failed = (finishState == eTCS_Failed);
 	if (failed)
 	{
-		debugf("Tcp Client failure...");
+		debug_e("Tcp Client failure...");
 	}
 	else
 	{
-		debugf("Websocket Closed Normally.");
+		debug_d("Websocket Closed Normally.");
 
 	}
 
@@ -158,19 +158,19 @@ void WebsocketClient::onFinished(TcpClientState finishState)
 
 bool WebsocketClient::sendPing(const String& payload /* = "" */)
 {
-	debugf("Sending PING");
+	debug_d("Sending PING");
 	return sendControlFrame(WSFrameType::ping, payload);
 }
 
 bool WebsocketClient::sendPong(const String& payload /* = "" */)
 {
-	debugf("Sending PONG");
+	debug_d("Sending PONG");
 	return sendControlFrame(WSFrameType::pong, payload);
 }
 
 void WebsocketClient::disconnect()
 {
-	debugf("Terminating Websocket connection.");
+	debug_d("Terminating Websocket connection.");
 	_mode = wsMode::Disconnected;
 	// Should send 0x87, 0x00 to server to tell it that I'm quitting here.
 	uint8_t buf[2] = { 0x87, 0x00 };
@@ -210,7 +210,7 @@ void WebsocketClient::sendMessage(const String& str)
 bool WebsocketClient::sendControlFrame(WSFrameType frameType, const String& payload /* = "" */)
 {
 	if(payload.length() > 127) {
-		debugf("Maximum length of payload is 127 bytes");
+		debug_w("Maximum length of payload is 127 bytes");
 		return false;
 	}
 
@@ -263,7 +263,7 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 		if (_verifyKey((char*)data, size) == true)
 		{
 			_mode = wsMode::Connected;
-			//   debugf("Key Verified. Websocket Handshake completed");
+			//   debug_d("Key Verified. Websocket Handshake completed");
 			sendPing();
 		}
 		else
@@ -287,7 +287,7 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 				{
 				case WSFrameType::text:
 				{
-//						debugf("Got text frame");
+//						debug_d("Got text frame");
 					String msg;
 					msg.setString((char*)wsFrame._payload, wsFrame._payloadLength);
 					if (wsMessage)
@@ -298,7 +298,7 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 				}
 				case WSFrameType::binary:
 				{
-//						debugf("Got binary frame");
+//						debug_d("Got binary frame");
 					if (wsBinary)
 					{
 						wsBinary(*this, wsFrame._payload, wsFrame._payloadLength);
@@ -307,36 +307,36 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 				}
 				case WSFrameType::close:
 				{
-					debugf("Got Disconnect request from server.\n");
+					debug_d("Got Disconnect request from server.\n");
 					//RFC requires we return a close op code before closing the connection
 					disconnect();
 					break;
 				}
 				case WSFrameType::ping:
 				{
-					debugf("Got ping ...");
+					debug_d("Got ping ...");
 					sendPong(String((char*)wsFrame._payload, wsFrame._payloadLength)); //Need to send Pong in response to Ping
 					break;
 				}
 				case WSFrameType::pong:
 				{
-					debugf("Got pong ...");
+					debug_d("Got pong ...");
 					//A pong can contain app data, but shouldnt if we didnt send any...
 					break;
 				}
 				case WSFrameType::error:
 				{
-					debugf("ERROR parsing frame!");
+					debug_e("ERROR parsing frame!");
 					break;
 				}
 				case WSFrameType::incomplete:
 				{
-					debugf("INCOMPLETE websocket frame!");
+					debug_w("INCOMPLETE websocket frame!");
 					break;
 				}
 				default:
 				{
-					debugf("Unknown frameType: %d", wsFrame._frameType);
+					debug_w("Unknown frameType: %d", wsFrame._frameType);
 					break;
 				}
 				}

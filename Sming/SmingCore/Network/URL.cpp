@@ -59,7 +59,7 @@ URL::URL(const String& urlString)
 		hostEnd = portStart;
 
 	Host = urlString.substring(hostStart, hostEnd);
-	//debugf("%d %d %s", hostStart, hostEnd, Host.c_str());
+	//debug_d("%d %d %s", hostStart, hostEnd, Host.c_str());
 
 	// port
 	if (hasPort)  // we have a port

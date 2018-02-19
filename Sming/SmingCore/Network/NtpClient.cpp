@@ -69,10 +69,10 @@ void NtpClient::requestTime()
 		break;
 	case ERR_INPROGRESS:
 		// currently finding ip, internalRequestTime() will be called when its found.
-		//debugf("DNS IP lookup in progress.");
+		//debug_d("DNS IP lookup in progress.");
 		break;
 	default:
-		debugf("DNS lookup error occurred.");
+		debug_d("DNS lookup error occurred.");
 		break;
 	}
 }

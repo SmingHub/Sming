@@ -50,22 +50,22 @@ TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler)
 
 TcpServer::~TcpServer()
 {
-	debugf("Server is destroyed.");
+	debug_d("Server is destroyed.");
 }
 
 TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
 {
 	if (clientTcp == NULL)
 	{
-		debugf("TCP Server createClient NULL\r\n");
+		debug_d("TCP Server createClient NULL\r\n");
 	}
 	else
 	{
-		debugf("TCP Server createClient not NULL");
+		debug_d("TCP Server createClient not NULL");
 	}
 
 	if(!active) {
-		debugf("Refusing new connections. The server is shutting down");
+		debug_w("Refusing new connections. The server is shutting down");
 		return NULL;
 	}
 
@@ -79,12 +79,12 @@ TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
 //Timer stateTimer;
 void list_mem()
 {
-	debugf("Free heap size=%d, K=%d", system_get_free_heap_size(), TcpServer::totalConnections);
+	debug_d("Free heap size=%d, K=%d", system_get_free_heap_size(), TcpServer::totalConnections);
 }
 
 void TcpServer::setTimeOut(uint16_t waitTimeOut)
 {
-	debugf("Server timeout updating: %d -> %d", timeOut, waitTimeOut);
+	debug_d("Server timeout updating: %d -> %d", timeOut, waitTimeOut);
 	timeOut = waitTimeOut;
 }
 
@@ -115,21 +115,21 @@ bool TcpServer::listen(int port, bool useSsl /*= false */)
 		sslContext = ssl_ctx_new(sslOptions, sslSessionCacheSize);
 
 		if (!(clientKeyCert.keyLength && clientKeyCert.certificateLength)) {
-			debugf("SSL: server certificate and key are not provided!");
+			debug_e("SSL: server certificate and key are not provided!");
 			return false;
 		}
 
 		if (ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY,
 								clientKeyCert.key, clientKeyCert.keyLength,
 								clientKeyCert.keyPassword) != SSL_OK) {
-			debugf("SSL: Unable to load server private key");
+			debug_e("SSL: Unable to load server private key");
 			return false;
 		}
 
 		if (ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT,
 			clientKeyCert.certificate,
 			clientKeyCert.certificateLength, NULL) != SSL_OK) {
-			debugf("SSL: Unable to load server certificate");
+			debug_e("SSL: Unable to load server certificate");
 			return false;
 		}
 
@@ -150,12 +150,12 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 	// Anti DDoS :-)
 	if (system_get_free_heap_size() < minHeapSize)
 	{
-		debugf("\r\n\r\nCONNECTION DROPPED\r\n\t(%d)\r\n\r\n", system_get_free_heap_size());
+		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(%d)\r\n\r\n", system_get_free_heap_size());
 		return ERR_MEM;
 	}
 
 	#ifdef NETWORK_DEBUG
-	debugf("onAccept state: %d K=%d", err, connections.count());
+	debug_d("onAccept state: %d K=%d", err, connections.count());
 	list_mem();
 	#endif
 
@@ -174,11 +174,11 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 		int clientfd = axl_append(clientTcp);
 		if(clientfd == -1) {
 			delete client;
-			debugf("SSL: Unable to initiate tcp ");
+			debug_e("SSL: Unable to initiate tcp ");
 			return ERR_ABRT;
 		}
 
-		debugf("SSL: handshake start (%d ms)", millis());
+		debug_d("SSL: handshake start (%d ms)", millis());
 		client->ssl = ssl_server_new(sslContext, clientfd);
 		client->useSsl = true;
 	}
@@ -187,7 +187,7 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 	client->setDestroyedDelegate(TcpConnectionDestroyedDelegate(&TcpServer::onClientDestroy, this));
 
 	connections.add(client);
-	debugf("Opening connection. Total connections: %d", connections.count());
+	debug_d("Opening connection. Total connections: %d", connections.count());
 
 	onClient((TcpClient*)client);
 
@@ -197,7 +197,7 @@ err_t TcpServer::onAccept(tcp_pcb *clientTcp, err_t err)
 void TcpServer::onClient(TcpClient *client)
 {
 	activeClients++;
-	debugf("TcpServer onClient: %s\r\n", client->getRemoteIp().toString().c_str());
+	debug_d("TcpServer onClient: %s\r\n", client->getRemoteIp().toString().c_str());
 	if (clientConnectDelegate)
 	{
 		clientConnectDelegate(client);
@@ -207,7 +207,7 @@ void TcpServer::onClient(TcpClient *client)
 void TcpServer::onClientComplete(TcpClient& client, bool succesfull)
 {
 	activeClients--;
-	debugf("TcpSever onComplete: %s\r\n", client.getRemoteIp().toString().c_str());
+	debug_d("TcpSever onComplete: %s\r\n", client.getRemoteIp().toString().c_str());
 	if (clientCompleteDelegate)
 	{
 		clientCompleteDelegate(client,succesfull);
@@ -216,8 +216,8 @@ void TcpServer::onClientComplete(TcpClient& client, bool succesfull)
 
 bool TcpServer::onClientReceive (TcpClient& client, char *data, int size)
 {
-	debugf("TcpSever onReceive: %s, %d bytes\r\n", client.getRemoteIp().toString().c_str(), size);
-	debugf("Data: %s", data);
+	debug_d("TcpSever onReceive: %s, %d bytes\r\n", client.getRemoteIp().toString().c_str(), size);
+	debug_d("Data: %s", data);
 	if (clientReceiveDelegate)
 	{
 		return clientReceiveDelegate(client, data, size);
@@ -232,7 +232,7 @@ err_t TcpServer::staticAccept(void *arg, tcp_pcb *new_tcp, err_t err)
 
 	if (con == NULL)
 	{
-		debugf("NO CONNECTION ON TCP");
+		debug_e("NO CONNECTION ON TCP");
 		//closeTcpConnection(new_tcp);
 		tcp_abort(new_tcp);
 		return ERR_ABRT;
@@ -249,7 +249,7 @@ void TcpServer::shutdown()
 {
 	active = false;
 
-	debugf("Shutting down the server ...");
+	debug_d("Shutting down the server ...");
 
 	if(tcp) {
 		tcp_arg(tcp, NULL);
@@ -277,7 +277,7 @@ void TcpServer::shutdown()
 void TcpServer::onClientDestroy(TcpConnection& connection)
 {
 	connections.removeElement((TcpConnection*)&connection);
-	debugf("Destroying connection. Total connections: %d", connections.count());
+	debug_d("Destroying connection. Total connections: %d", connections.count());
 
 	if(active) {
 		return;

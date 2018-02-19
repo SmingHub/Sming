@@ -49,13 +49,13 @@ void TelnetServer::enableCommand(bool reqStatus)
 }
 void TelnetServer::onClient(TcpClient *client)
 {
-	debugf("TelnetServer onClient %s", client->getRemoteIp().toString().c_str() );
+	debug_d("TelnetServer onClient %s", client->getRemoteIp().toString().c_str() );
 
 	TcpServer::onClient(client);
 
 	if (curClient)
 	{
-		debugf("TCP Client already connected");
+		debug_d("TCP Client already connected");
 		client->sendString("Telnet Client already connected\r\n");
 		client->close();
 	}
@@ -87,14 +87,14 @@ void TelnetServer::onClientComplete(TcpClient& client, bool succesfull)
 		commandExecutor = nullptr;
 #endif
 		curClient = nullptr;
-		debugf("TelnetServer onClientComplete %s", client.getRemoteIp().toString().c_str() );
+		debug_d("TelnetServer onClientComplete %s", client.getRemoteIp().toString().c_str() );
 	}
 	else
 	{
-		debugf("Telnet server unconnected client close");
+		debug_d("Telnet server unconnected client close");
 	}
 
-	debugf("TelnetServer onClientComplete %s", client.getRemoteIp().toString().c_str() );
+	debug_d("TelnetServer onClientComplete %s", client.getRemoteIp().toString().c_str() );
 	TcpServer::onClientComplete(client, succesfull);
 	Debug.setDebug(Serial);
 }
@@ -108,8 +108,8 @@ void TelnetServer::wrchar(char c)
 
 bool TelnetServer::onClientReceive (TcpClient& client, char *data, int size)
 {
-	debugf("TelnetServer onClientReceive : %s, %d bytes \r\n",client.getRemoteIp().toString().c_str(),size );
-	debugf("Data : %s", data);
+	debug_d("TelnetServer onClientReceive : %s, %d bytes \r\n",client.getRemoteIp().toString().c_str(),size );
+	debug_d("Data : %s", data);
 #if ENABLE_CMD_EXECUTOR
 	if (commandExecutor)
 	{
