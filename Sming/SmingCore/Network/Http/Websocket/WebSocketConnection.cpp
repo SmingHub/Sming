@@ -75,7 +75,7 @@ int WebSocketConnection::processFrame(HttpServerConnection& connection, HttpRequ
 {
 	int rc = ws_parser_execute(&parser, (char *)at, size);
 	if (rc != WS_OK) {
-		debugf("WebSocketResource error: %d %s\n", rc, ws_parser_error(rc));
+		debug_e("WebSocketResource error: %d %s\n", rc, ws_parser_error(rc));
 		return -1;
 	}
 
@@ -90,7 +90,7 @@ int WebSocketConnection::staticOnDataBegin(void* userData, ws_frame_type_t type)
 
 	connection->frameType = type;
 
-	debugf("data_begin: %s\n",
+	debug_d("data_begin: %s\n",
 			type == WS_FRAME_TEXT ? "text" :
 			type == WS_FRAME_BINARY ? "binary" :
 			"?");

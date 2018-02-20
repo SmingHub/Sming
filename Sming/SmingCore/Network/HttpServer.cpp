@@ -71,7 +71,7 @@ void HttpServer::addPath(String path, const HttpPathDelegate& callback)
 	if (path.length() > 1 && path.endsWith("/")) {
 		path = path.substring(0, path.length() - 1);
 	}
-	debugf("'%s' registered", path.c_str());
+	debug_i("'%s' registered", path.c_str());
 
 	HttpCompatResource* resource = new HttpCompatResource(callback);
 	resourceTree[path] = resource;

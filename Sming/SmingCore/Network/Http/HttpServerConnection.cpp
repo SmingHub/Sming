@@ -107,7 +107,7 @@ int HttpServerConnection::staticOnPath(http_parser *parser, const char *at, size
 	connection->request.setURL(path);
 
 	if(connection->resourceTree == NULL) {
-		debugf("WARNING: HttpServerConnection: The resource tree is not set!");
+		debug_e("ERROR: HttpServerConnection: The resource tree is not set!");
 
 		return -1;
 	}
@@ -163,7 +163,7 @@ int HttpServerConnection::staticOnHeadersComplete(http_parser* parser)
 		return -1;
 	}
 
-	debugf("The headers are complete");
+	debug_d("The headers are complete");
 
 	/* Callbacks should return non-zero to indicate an error. The parser will
 	 * then halt execution.
@@ -305,7 +305,7 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 		while (cur != NULL && cur->len > 0) {
 			int err = resource->onUpgrade(*this, request, (char*)cur->payload, cur->len);
 			if(err) {
-				debugf("The upgraded connection returned error: %d", err);
+				debug_e("The upgraded connection returned error: %d", err);
 				TcpConnection::onReceive(NULL);
 				return ERR_ABRT; // abort the connection
 			}
@@ -323,7 +323,7 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 		parsedBytes += http_parser_execute(&parser, &parserSettings, (char*) cur->payload, cur->len);
 		if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 			// we ran into trouble - abort the connection
-			debugf("HTTP parser error: %s", http_errno_name(HTTP_PARSER_ERRNO(&parser)));
+			debug_e("HTTP parser error: %s", http_errno_name(HTTP_PARSER_ERRNO(&parser)));
 			sendError();
 
 			if(HTTP_PARSER_ERRNO(&parser) >= HPE_INVALID_EOF_STATE) {
@@ -350,7 +350,7 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 			while (cur != NULL && cur->len > 0) {
 				int err = resource->onUpgrade(*this, request, (char*)cur->payload, cur->len);
 				if(err) {
-					debugf("The upgraded connection returned error: %d", err);
+					debug_e("The upgraded connection returned error: %d", err);
 					TcpConnection::onReceive(NULL);
 					return ERR_ABRT; // abort the connection
 				}
@@ -531,7 +531,7 @@ void HttpServerConnection::send()
 
 void HttpServerConnection::sendError(const char* message /* = NULL*/, enum http_status code /* = HTTP_STATUS_BAD_REQUEST */)
 {
-	debugf("SEND ERROR PAGE");
+	debug_d("SEND ERROR PAGE");
 	response.code = code;
 	response.setContentType(MIME_HTML);
 

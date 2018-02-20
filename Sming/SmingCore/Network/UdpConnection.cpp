@@ -45,7 +45,7 @@ bool UdpConnection::listen(int port)
 	else if (udp == NULL)
 		initialize();
 
-	debugf("UDP listen port %d", port);
+	debug_d("UDP listen port %d", port);
 	err_t res = udp_bind(udp, IP_ADDR_ANY, port);
 	return res == ERR_OK;
 }
@@ -58,10 +58,10 @@ bool UdpConnection::connect(IPAddress ip, uint16_t port)
 	if (udp->local_port == 0)
 	{
 		udp_bind(udp, IP_ADDR_ANY, 0);
-		debugf("UDP LocalPort: %d", udp->local_port);
+		debug_d("UDP LocalPort: %d", udp->local_port);
 	}
 
-	debugf("UDP connect to %s:%d", ip.toString().c_str(), port);
+	debug_d("UDP connect to %s:%d", ip.toString().c_str(), port);
 	err_t res = udp_connect(udp, ip, port);
 	return res == ERR_OK;
 }
@@ -104,7 +104,7 @@ void UdpConnection::sendStringTo(IPAddress remoteIP, uint16_t remotePort, const 
 
 void UdpConnection::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 {
-	debugf("UDP received: %d bytes", buf->tot_len);
+	debug_d("UDP received: %d bytes", buf->tot_len);
 	if (onDataCallback)
 	{
 		char* data = new char[buf->tot_len + 1];

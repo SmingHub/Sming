@@ -18,7 +18,7 @@ void rBootItemOutputStream::setItem(rBootHttpUpdateItem* item) {
 
 bool rBootItemOutputStream::init() {
 	if(item == NULL) {
-		debugf("rBootItemOutputStream: Item must be set!");
+		debug_e("rBootItemOutputStream: Item must be set!");
 		return false;
 	}
 
@@ -38,13 +38,13 @@ size_t rBootItemOutputStream::write(const uint8_t* data, size_t size) {
 	}
 
 	if(!rboot_write_flash(&rBootWriteStatus, (uint8_t *)data, size)) {
-		debugf("rboot_write_flash: Failed. Size: %d", size);
+		debug_e("rboot_write_flash: Failed. Size: %d", size);
 		return -1;
 	}
 
 	item->size += size;
 
-	debugf("rboot_write_flash: item.size: %d", item->size);
+	debug_d("rboot_write_flash: item.size: %d", item->size);
 
 	return size;
 }
@@ -81,7 +81,7 @@ void rBootHttpUpdate::setBaseRequest(HttpRequest *request) {
 void rBootHttpUpdate::start() {
 	for(int i=0; i< items.count(); i++) {
 		rBootHttpUpdateItem &it = items[i];
-		debugf("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
+		debug_d("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
 
 		HttpRequest *request;
 		if(baseRequest != NULL) {
@@ -107,7 +107,7 @@ void rBootHttpUpdate::start() {
 		}
 
 		if(!send(request)) {
-			debugf("ERROR: Rejected sending new request.");
+			debug_e("ERROR: Rejected sending new request.");
 			break;
 		}
 	}
@@ -127,9 +127,9 @@ int rBootHttpUpdate::itemComplete(HttpConnection& client, bool success) {
 }
 
 int rBootHttpUpdate::updateComplete(HttpConnection& client, bool success) {
-	debugf("\r\nFirmware download finished!");
+	debug_d("\r\nFirmware download finished!");
 	for (int i = 0; i < items.count(); i++) {
-		debugf(" - item: %d, addr: %X, len: %d bytes", i, items[i].targetOffset, items[i].size);
+		debug_d(" - item: %d, addr: %X, len: %d bytes", i, items[i].targetOffset, items[i].size);
 	}
 
 	if(!success) {
@@ -159,7 +159,7 @@ void rBootHttpUpdate::setDelegate(OtaUpdateDelegate reqUpdateDelegate) {
 }
 
 void rBootHttpUpdate::updateFailed() {
-	debugf("\r\nFirmware download failed..");
+	debug_e("\r\nFirmware download failed..");
 	if (updateDelegate) {
 		updateDelegate(*this, false);
 	}
@@ -169,12 +169,12 @@ void rBootHttpUpdate::updateFailed() {
 void rBootHttpUpdate::applyUpdate() {
 	items.clear();
 	if (romSlot == NO_ROM_SWITCH) {
-		debugf("Firmware updated.");
+		debug_d("Firmware updated.");
 		return;
 	}
 
 	// set to boot new rom and then reboot
-	debugf("Firmware updated, rebooting to rom %d...\r\n", romSlot);
+	debug_d("Firmware updated, rebooting to rom %d...\r\n", romSlot);
 	rboot_set_current_rom(romSlot);
 	System.restart();
 }

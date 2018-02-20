@@ -46,7 +46,7 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 		if (required > capacity)
 		{
 			capacity = required < 256 ? required + 128 : required + 64;
-			debugf("realloc %d -> %d", size, capacity);
+			debug_d("realloc %d -> %d", size, capacity);
 			char * new_buf;
 			//realloc can fail, store the result in temporary pointer
 			new_buf = (char*)realloc(buf, capacity);
@@ -104,7 +104,7 @@ bool FileStream::attach(const String& fileName, FileOpenFlags openFlags)
 	handle = fileOpen(fileName.c_str(), openFlags);
 	if (handle == -1)
 	{
-		debugf("File wasn't found: %s", fileName.c_str());
+		debug_w("File wasn't found: %s", fileName.c_str());
 		size = -1;
 		pos = 0;
 		return false;
@@ -117,7 +117,7 @@ bool FileStream::attach(const String& fileName, FileOpenFlags openFlags)
 	fileSeek(handle, 0, eSO_FileStart);
 	pos = 0;
 
-	debugf("attached file: %s (%d bytes)", fileName.c_str(), size);
+	debug_d("attached file: %s (%d bytes)", fileName.c_str(), size);
 	return true;
 }
 
@@ -205,7 +205,7 @@ TemplateFileStream::~TemplateFileStream()
 
 uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 {
-	debugf("READ Template (%d)", state);
+	debug_d("READ Template (%d)", state);
 	int available;
 
 	if (state == eTES_StartVar)
@@ -213,7 +213,7 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 		if (templateData.contains(varName))
 		{
 			// Return variable value
-			debugf("StartVar %s", varName.c_str());
+			debug_d("StartVar %s", varName.c_str());
 			available = templateData[varName].length();
 			memcpy(data, (char*)templateData[varName].c_str(), available);
 			seek(skipBlockSize);
@@ -223,7 +223,7 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 		}
 		else
 		{
-			debugf("var %s not found", varName.c_str());
+			debug_d("var %s not found", varName.c_str());
 			state = eTES_Wait;
 			int len = FileStream::readMemoryBlock(data, bufSize);
 			return min(len, skipBlockSize);
@@ -234,14 +234,14 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 		String *val = &templateData[varName];
 		if (varDataPos < val->length())
 		{
-			debugf("continue TRANSFER variable value (not completed)");
+			debug_d("continue TRANSFER variable value (not completed)");
 			available = val->length() - varDataPos;
 			memcpy(data, ((char*)val->c_str()) + varDataPos, available);
 			return available;
 		}
 		else
 		{
-			debugf("continue to plaint text");
+			debug_d("continue to plaint text");
 			state = eTES_Wait;
 		}
 	}
@@ -274,7 +274,7 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 					varName = varname;
 					state = eTES_Found;
 					varWaitSize = cur - tpl;
-					debugf("found var: %s, at %d (%d) - %d, send size %d", varName.c_str(), varWaitSize + 1, varWaitSize + getPos(), p - tpl, varWaitSize);
+					debug_d("found var: %s, at %d (%d) - %d, send size %d", varName.c_str(), varWaitSize + 1, varWaitSize + getPos(), p - tpl, varWaitSize);
 					skipBlockSize = block;
 					if (varWaitSize == 0) state = eTES_StartVar;
 					return varWaitSize; // return only plain text from template without our variable
@@ -284,23 +284,23 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 		}
 		if (lastFound != NULL && (lastFound - tpl) > (len - TEMPLATE_MAX_VAR_NAME_LEN))
 		{
-			debugf("trim end to %d from %d", lastFound - tpl, len);
+			debug_d("trim end to %d from %d", lastFound - tpl, len);
 			len = lastFound - tpl; // It can be a incomplete variable name. Don't split it!
 		}
 	}
 
-	debugf("plain template text pos: %d, len: %d", getPos(), len);
+	debug_d("plain template text pos: %d, len: %d", getPos(), len);
 	return len;
 }
 
 bool TemplateFileStream::seek(int len)
 {
 	if (len < 0) return false;
-	//debugf("SEEK: %d, (%d)", len, state);
+	//debug_d("SEEK: %d, (%d)", len, state);
 
 	if (state == eTES_Found)
 	{
-		//debugf("SEEK before Var: %d, (%d)", len, varWaitSize);
+		//debug_d("SEEK before Var: %d, (%d)", len, varWaitSize);
 		varWaitSize -= len;
 		if (varWaitSize == 0) state = eTES_StartVar;
 	}

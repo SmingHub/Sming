@@ -55,7 +55,7 @@ public:
 	{
 		if (completed) return;
 		Vector<String> list = fileList();
-		debugf("send file list: %d", list.count());
+		debug_d("send file list: %d", list.count());
 		for (int i = 0; i < list.count(); i++)
 			writeString("01-01-15  01:00AM               " + String(fileGetSize(list[i])) + " " + list[i] + "\r\n");
 		completed = true;
@@ -160,7 +160,7 @@ err_t FTPServerConnection::onReceive(pbuf *buf)
 		}
 		else
 			cmd = NetUtils::pbufStrCopy(buf, prev, p - prev);
-		debugf("%s: '%s'", cmd.c_str(), data.c_str());
+		debug_d("%s: '%s'", cmd.c_str(), data.c_str());
 		onCommand(cmd, data);
 		prev = p + 1;
 	};
@@ -184,7 +184,7 @@ void FTPServerConnection::cmdPort(const String& data)
 	int p1 = ps1.toInt();
 	int p2 = ps2.toInt();
 	port = (p1 << 8) | p2;
-	debugf("connection to: %s, %d", ip.toString().c_str(), port);
+	debug_d("connection to: %s, %d", ip.toString().c_str(), port);
 	response(200);
 }
 
@@ -306,7 +306,7 @@ void FTPServerConnection::onCommand(String cmd, String data)
 		return;
 	}
 
-	debugf("!!!CASE NOT IMPLEMENTED?!!!");
+	debug_e("!!!CASE NOT IMPLEMENTED?!!!");
 }
 
 err_t FTPServerConnection::onSent(uint16_t len)
@@ -381,7 +381,7 @@ void FTPServerConnection::response(int code, String text /* = "" */)
 		response += " " + text;
 	response += "\r\n";
 
-	debugf("> %s", response.c_str());
+	debug_d("> %s", response.c_str());
 	writeString(response.c_str(), TCP_WRITE_FLAG_COPY); // Dynamic memory, should copy
 	canTransfer = false;
 	flush();

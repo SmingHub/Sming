@@ -62,7 +62,7 @@ void formUrlParser(HttpRequest& request, const char *at, int length)
 	}
 
 	if(state == NULL) {
-		debugf("Invalid request argument");
+		debug_e("Invalid request argument");
 		return;
 	}
 
