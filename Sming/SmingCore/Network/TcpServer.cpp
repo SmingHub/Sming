@@ -50,7 +50,7 @@ TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler)
 
 TcpServer::~TcpServer()
 {
-	debug_d("Server is destroyed.");
+	debug_i("Server is destroyed.");
 }
 
 TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
@@ -70,8 +70,8 @@ TcpConnection* TcpServer::createClient(tcp_pcb *clientTcp)
 	}
 
 	TcpConnection* con = new TcpClient(clientTcp,
-									   TcpClientDataDelegate(&TcpServer::onClientReceive,this),
-									   TcpClientCompleteDelegate(&TcpServer::onClientComplete,this));
+                                       TcpClientDataDelegate(&TcpServer::onClientReceive,this),
+                                       TcpClientCompleteDelegate(&TcpServer::onClientComplete,this));
 
 	return con;
 }
@@ -249,7 +249,7 @@ void TcpServer::shutdown()
 {
 	active = false;
 
-	debug_d("Shutting down the server ...");
+	debug_i("Shutting down the server ...");
 
 	if(tcp) {
 		tcp_arg(tcp, NULL);

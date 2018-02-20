@@ -89,7 +89,7 @@ void WebsocketClient::onError(err_t err)
 {
 	if ((err == ERR_ABRT) || (err == ERR_RST))
 	{
-		debug_d("TCP Connection Reseted or Aborted", err);
+		debug_e("TCP Connection Reseted or Aborted", err);
 	}
 	else
 	{
