@@ -38,11 +38,6 @@ extern "C" {
 	// Beta boards
 	#define BOARD_ESP01
 
-	// axTLS stuff
-	#include <time.h>
-	#include "util/time.h"
-	#include "compat/lwipr_compat.h"
-
 #ifdef __cplusplus
 }
 #endif
