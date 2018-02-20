@@ -4,7 +4,7 @@
 #include "m_printf.h"
 
 #define PGM_P  const char *
-#define PSTR(str) (str)
+
 #define PRIPSTR "%s"
 
 typedef void prog_void;
@@ -24,6 +24,8 @@ typedef uint32_t prog_uint32_t;
 #ifndef PROGMEM
 #define PROGMEM __attribute__((aligned(4))) __attribute__((section(".irom.text")))
 #endif
+
+#define PSTR(s) (__extension__({static const char __c[] PROGMEM = (s); &__c[0];}))
 
 #define pgm_read_byte(addr) \
 ({ \
@@ -82,9 +84,11 @@ extern "C"
 }
 #endif
 
-#else
+#else /* ICACHE_FLASH */
 
 #define PROGMEM
+
+#define PSTR(str) (str)
 
 #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
 #define pgm_read_word(addr) (*(const unsigned short *)(addr))
@@ -99,7 +103,7 @@ extern "C"
 #define sprintf_P(s, f, ...) m_sprintf((s), (f), ##__VA_ARGS__)
 #define printf_P(f, ...) m_printf((f), ##__VA_ARGS__)
 
-#endif
+#endif /* ICACHE_FLASH */
 
 #define pgm_read_byte_near(addr) pgm_read_byte(addr)
 #define pgm_read_word_near(addr) pgm_read_word(addr)
@@ -110,4 +114,4 @@ extern "C"
 #define pgm_read_dword_far(addr) pgm_read_dword(addr)
 #define pgm_read_float_far(addr) pgm_read_float(addr)
 
-#endif
+#endif /* __FAKE_PGMSPACE_H_ */

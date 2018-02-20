@@ -60,10 +60,8 @@ bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, 
 	}
 
 	sslExtension = ssl_ext_new();
-	sslExtension->host_name = (char *)malloc(server.length() + 1);
-	strcpy(sslExtension->host_name, server.c_str());
-
-	sslExtension->max_fragment_size = 4*1024; // 4K max size
+	ssl_ext_set_host_name(sslExtension, server.c_str()) ;
+	ssl_ext_set_max_fragment_size(sslExtension, 4); // 4K max size
 #endif
 
 	debug_d("connect to: %s", server.c_str());
