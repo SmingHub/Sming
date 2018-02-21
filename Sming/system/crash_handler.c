@@ -26,7 +26,7 @@
 
 extern void __real_system_restart_local();
 
-extern void ets_printf(const char*, ...);
+extern int ets_printf(const char*, ...);
 
 void uart_write_char_d(char c);
 static void uart0_write_char_d(char c);
@@ -96,7 +96,7 @@ void __wrap_system_restart_local() {
 
 
 static void print_stack(uint32_t start, uint32_t end) {
-	uint32_t pos = 0;
+    uint32_t pos = 0;
 
     ets_printf("\n================================================================\n");
     for (pos = start; pos < end; pos += 0x10) {

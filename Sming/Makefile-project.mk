@@ -256,7 +256,8 @@ ifeq ($(ENABLE_WPS),1)
 endif
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
+CFLAGS  = -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+          -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DSMING_INCLUDED=1
 # => SDK
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	CFLAGS += -DSDK_INTERNAL
@@ -418,10 +419,8 @@ $1/%.o: %.cpp $1/%.cpp.d
 	$(vecho) "C+ $$<" 
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -c $$< -o $$@
 $1/%.c.d: %.c
-	$(vecho) "DEP $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -MM -MT $1/$$*.o $$< -o $$@
 $1/%.cpp.d: %.cpp
-	$(vecho) "DEP $$<"
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -MM -MT $1/$$*.o $$< -o $$@
 
 .PRECIOUS: $1/%.c.d $1/%.cpp.d
