@@ -17,9 +17,6 @@
 
 #define TEMPLATE_MAX_VAR_NAME_LEN	16
 
-// TODO: Remove that dependency from here ...
-//class HttpRequest;
-
 /** @brief  Data stream type
  *  @ingroup constants
  *  @{
@@ -272,12 +269,10 @@ public:
      */
 	void setVar(String name, String value);
 
-    /** @brief  Set the value of variables from the content of a HTTP request
-     *  @param  request HTTP request
-     *  @deprecated
+    /** @brief  Set multiple variables in the template file
+     *  @param  vars Template Variables
      */
-	// TODO: Remove that dependency from here ...
-//	void setVarsFromRequest(const HttpRequest& request);
+    void setVars(const TemplateVariables& vars);
 
     /** @brief  Get the template variables
      *  @retval TemplateVariables Reference to the template variables
