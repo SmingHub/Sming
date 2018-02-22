@@ -57,8 +57,8 @@ uint16_t HttpMultipartStream::readMemoryBlock(char* data, int bufSize)
 		if(result.headers != NULL) {
 
 			if(!result.headers->contains("Content-Length") ) {
-				if(result.stream != NULL && result.stream->length() > -1) {
-					(*result.headers)["Content-Length"] = result.stream->length();
+				if(result.stream != NULL && result.stream->available() > -1) {
+					(*result.headers)["Content-Length"] = result.stream->available();
 				}
 			}
 

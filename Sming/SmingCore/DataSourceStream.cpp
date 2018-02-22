@@ -7,6 +7,25 @@
 
 #include "../SmingCore/DataSourceStream.h"
 
+int IDataSourceStream::read()
+{
+	int res = peek();
+	if(res != -1) {
+		seek(1);
+	}
+
+	return -1;
+}
+
+int IDataSourceStream::peek() {
+	char c;
+	if (readMemoryBlock(&c, 1) == 1) {
+		return (int)c;
+	}
+
+	return -1;
+}
+
 MemoryDataStream::MemoryDataStream()
 {
 	buf = NULL;
@@ -354,7 +373,7 @@ uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 	return MemoryDataStream::readMemoryBlock(data, bufSize);
 }
 
-int JsonObjectStream::length()
+int JsonObjectStream::available()
 {
 	if (rootNode == JsonObject::invalid()) {
 		return 0;

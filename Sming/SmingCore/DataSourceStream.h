@@ -13,10 +13,12 @@
 #include "../Services/ArduinoJson/include/ArduinoJson.h"
 #include "../Wiring/WString.h"
 #include "../Wiring/WHashMap.h"
+#include "../Wiring/Stream.h"
 
 #define TEMPLATE_MAX_VAR_NAME_LEN	16
 
-class HttpRequest;
+// TODO: Remove that dependency from here ...
+//class HttpRequest;
 
 /** @brief  Data stream type
  *  @ingroup constants
@@ -46,7 +48,7 @@ class TemplateVariables : public HashMap<String, String>
 };
 
 ///Base class for data source stream
-class IDataSourceStream
+class IDataSourceStream : public Stream
 {
 public:
 	virtual ~IDataSourceStream() {}
@@ -65,6 +67,18 @@ public:
      */
 	virtual uint16_t readMemoryBlock(char* data, int bufSize) = 0;
 
+	/**
+	 * @brief Read one character and moves the stream pointer
+	 * @retval The character that was read or -1 if none is available
+	 */
+	virtual int read();
+
+	/**
+	 * @brief Read a character without advancing the stream pointer
+	 * @retval The character that was read or -1 if none is available
+	 */
+	virtual int peek();
+
 	/** @brief  Move read cursor
 	 *  @param  len Position within stream to move cursor to
 	 *  @retval bool True on success.
@@ -80,7 +94,12 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	virtual int length() {  return -1; }
+	virtual int available() {  return -1; }
+
+	/*
+	 * @brief Flushes the stream
+	 */
+	virtual void flush() { }
 
 	/**
 	 * @brief Returns unique id of the resource.
@@ -108,7 +127,7 @@ public:
 };
 
 /// Memory data stream class
-class MemoryDataStream : public Print, public ReadWriteStream
+class MemoryDataStream : public ReadWriteStream
 {
 public:
     /** @brief Memory data stream base class
@@ -124,18 +143,11 @@ public:
 	 */
 	const char* getStreamPointer() { return pos; }
 
-	/** @brief  Get size of stream
-	 *  @retval int Quantity of chars in stream
-	 *
-	 *  @deprecated Use length() instead
-	 */
-	int getStreamLength() { return size; }
-
 	/**
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	int length() { return size; }
+	int available() { return size; }
 
     /** @brief  Write a single char to stream
      *  @param  charToWrite Char to write to the stream
@@ -206,7 +218,7 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	int length() { return size; }
+	int available() { return size; }
 
 	virtual String id();
 
@@ -262,8 +274,10 @@ public:
 
     /** @brief  Set the value of variables from the content of a HTTP request
      *  @param  request HTTP request
+     *  @deprecated
      */
-	void setVarsFromRequest(const HttpRequest& request);
+	// TODO: Remove that dependency from here ...
+//	void setVarsFromRequest(const HttpRequest& request);
 
     /** @brief  Get the template variables
      *  @retval TemplateVariables Reference to the template variables
@@ -274,7 +288,7 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	int length() { return -1; }
+	int available() { return -1; }
 
 private:
 	TemplateVariables templateData;
@@ -309,7 +323,7 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	int length();
+	int available();
 
 private:
 	DynamicJsonBuffer buffer;
