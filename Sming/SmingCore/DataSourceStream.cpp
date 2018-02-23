@@ -12,6 +12,7 @@ int IDataSourceStream::read()
 	int res = peek();
 	if(res != -1) {
 		seek(1);
+		return res;
 	}
 
 	return -1;
@@ -40,6 +41,11 @@ MemoryDataStream::~MemoryDataStream()
 	buf = NULL;
 	pos = NULL;
 	size = 0;
+}
+
+int MemoryDataStream::available()
+{
+	return size - (pos - buf);
 }
 
 size_t MemoryDataStream::write(uint8_t charToWrite)
