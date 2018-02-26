@@ -12,10 +12,9 @@ int IDataSourceStream::read()
 	int res = peek();
 	if(res != -1) {
 		seek(1);
-		return res;
 	}
 
-	return -1;
+	return res;
 }
 
 int IDataSourceStream::peek() {

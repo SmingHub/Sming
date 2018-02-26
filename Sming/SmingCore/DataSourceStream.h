@@ -93,6 +93,15 @@ public:
 	 */
 	virtual int available() {  return -1; }
 
+	/**
+	 * @brief Return the total length of the stream
+	 * @retval int -1 is returned when the size cannot be determined
+	 *
+	 * @deprecated This method is deprecated and will be removed in the coming versions.
+	 * 			   Please, use available() instead.
+	 */
+	int length() {  return available(); }
+
 	/*
 	 * @brief Flushes the stream
 	 */
