@@ -40,7 +40,7 @@ public:
 	}
 
 	bool dataReady();
-	size_t available();
+	int available();
 
 private:
 

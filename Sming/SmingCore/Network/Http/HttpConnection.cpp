@@ -449,8 +449,8 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 		request->headers["Content-Length"] = String(request->rawDataLength);
 	}
 	else if (request->stream != NULL) {
-		if(request->stream->length() > -1) {
-			request->headers["Content-Length"] = String(request->stream->length());
+		if(request->stream->available() > -1) {
+			request->headers["Content-Length"] = String(request->stream->available());
 		}
 		else {
 			request->headers.remove("Content-Length");

@@ -436,8 +436,8 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 #endif /* DISABLE_HTTPSRV_ETAG */
 	String statusLine = "HTTP/1.1 "+String(response->code) +  " " + getStatus((enum http_status)response->code) + "\r\n";
 	sendString(statusLine.c_str());
-	if(response->stream != NULL && response->stream->length() != -1) {
-		response->headers["Content-Length"] = String(response->stream->length());
+	if(response->stream != NULL && response->stream->available() != -1) {
+		response->headers["Content-Length"] = String(response->stream->available());
 	}
 	if(!response->headers.contains("Content-Length") && response->stream == NULL) {
 		response->headers["Content-Length"] = "0";

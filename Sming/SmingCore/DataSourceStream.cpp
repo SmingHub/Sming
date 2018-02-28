@@ -7,6 +7,25 @@
 
 #include "../SmingCore/DataSourceStream.h"
 
+int IDataSourceStream::read()
+{
+	int res = peek();
+	if(res != -1) {
+		seek(1);
+	}
+
+	return res;
+}
+
+int IDataSourceStream::peek() {
+	char c;
+	if (readMemoryBlock(&c, 1) == 1) {
+		return (int)c;
+	}
+
+	return -1;
+}
+
 MemoryDataStream::MemoryDataStream()
 {
 	buf = NULL;
@@ -21,6 +40,11 @@ MemoryDataStream::~MemoryDataStream()
 	buf = NULL;
 	pos = NULL;
 	size = 0;
+}
+
+int MemoryDataStream::available()
+{
+	return size - (pos - buf);
 }
 
 size_t MemoryDataStream::write(uint8_t charToWrite)
@@ -318,16 +342,10 @@ void TemplateFileStream::setVar(String name, String value)
 	templateData[name] = value;
 }
 
-// TODO: Remove that dependency from here ...
-//void TemplateFileStream::setVarsFromRequest(const HttpRequest& request)
-//{
-//	if (request.requestGetParameters != NULL)
-//		templateData.setMultiple(*request.requestGetParameters);
-//	if (request.requestPostParameters != NULL)
-//		templateData.setMultiple(*request.requestPostParameters);
-//}
-
-///////////////////////////////////////////////////////////////////////////
+void TemplateFileStream::setVars(const TemplateVariables& vars)
+{
+	templateData.setMultiple(vars);
+}
 
 JsonObjectStream::JsonObjectStream()
 	: rootNode(buffer.createObject()), send(true)
@@ -354,7 +372,7 @@ uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 	return MemoryDataStream::readMemoryBlock(data, bufSize);
 }
 
-int JsonObjectStream::length()
+int JsonObjectStream::available()
 {
 	if (rootNode == JsonObject::invalid()) {
 		return 0;
