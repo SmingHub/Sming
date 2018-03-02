@@ -3,7 +3,6 @@
 
   Features:
   - Support for DHT11 and DHT22/AM2302/RHT03
-  - Auto detect sensor model
   - Very low memory footprint
   - Very small code
 
@@ -102,15 +101,13 @@ public:
 	{
 		temperature = values.temperature = 0;
 		humidity    = values.humidity = 0;
-		model = AUTO_DETECT;
+		model = DHT22;
 		error = ERROR_NONE;
 		lastReadTime = 0;
-		
 		pin = 0;
 	}
 
   typedef enum {
-    AUTO_DETECT,
     DHT11,
     DHT22,
     AM2302,  // Packaged DHT22
@@ -125,7 +122,7 @@ public:
   }
   DHT_ERROR_t;
 
-  void setup(uint8_t pin, DHT_MODEL_t model=AUTO_DETECT);
+  void setup(uint8_t pin, DHT_MODEL_t model);
   void resetTimer();
 
   float getTemperature();
