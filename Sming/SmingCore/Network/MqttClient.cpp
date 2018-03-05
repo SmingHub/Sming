@@ -66,10 +66,10 @@ bool MqttClient::connect(const String& clientName, const String& username, const
 	if (getConnectionState() != eTCS_Ready)
 	{
 		close();
-		debugf("MQTT closed previous connection");
+		debug_d("MQTT closed previous connection");
 	}
 
-	debugf("MQTT start connection");
+	debug_d("MQTT start connection");
 	if (clientName.length() > 0)
 		 mqtt_set_clientid(&broker, clientName.c_str());
 
@@ -94,16 +94,16 @@ bool MqttClient::connect(const String& clientName, const String& username, const
 
 bool MqttClient::publish(String topic, String message, bool retained /* = false*/)
 {
-	int res = mqtt_publish(&broker, topic.c_str(), message.c_str(), retained);
+	int res = mqtt_publish(&broker, topic.c_str(), message.c_str(), message.length(), retained);
 	return res > 0;
 }
 
 bool MqttClient::publishWithQoS(String topic, String message, int QoS, bool retained /* = false*/, MqttMessageDeliveredCallback onDelivery /* = NULL */)
 {
 	uint16_t msgId = 0;
-	int res = mqtt_publish_with_qos(&broker, topic.c_str(), message.c_str(), retained, QoS, &msgId);
+	int res = mqtt_publish_with_qos(&broker, topic.c_str(), message.c_str(), message.length(), retained, QoS, &msgId);
 	if(QoS == 0 && onDelivery) {
-		debugf("The delivery callback is ignored for QoS 0.");
+		debug_d("The delivery callback is ignored for QoS 0.");
 	}
 	else if(QoS >0 && onDelivery && msgId) {
 		onDeliveryQueue[msgId] = onDelivery;
@@ -122,7 +122,7 @@ int MqttClient::staticSendPacket(void* userInfo, const void* buf, unsigned int c
 bool MqttClient::subscribe(const String& topic)
 {
 	uint16_t msgId = 0;
-	debugf("subscription '%s' registered", topic.c_str());
+	debug_d("subscription '%s' registered", topic.c_str());
 	int res = mqtt_subscribe(&broker, topic.c_str(), &msgId);
 	return res > 0;
 }
@@ -130,7 +130,7 @@ bool MqttClient::subscribe(const String& topic)
 bool MqttClient::unsubscribe(const String& topic)
 {
 	uint16_t msgId = 0;
-	debugf("unsubscribing from '%s'", topic.c_str());
+	debug_d("unsubscribing from '%s'", topic.c_str());
 	int res = mqtt_unsubscribe(&broker, topic.c_str(), &msgId);
 	return res > 0;
 }
@@ -167,7 +167,7 @@ void MqttClient::debugPrintResponseType(int type, int len)
 	default:
 		tp = "b" + String(type, 2);
 	}
-	debugf("> MQTT status: %s (len: %d)", tp.c_str(), len);
+	debug_d("> MQTT status: %s (len: %d)", tp.c_str(), len);
 }
 
 err_t MqttClient::onReceive(pbuf *buf)
@@ -182,7 +182,7 @@ err_t MqttClient::onReceive(pbuf *buf)
 		if (buf->len < 1)
 		{
 			// Bad packet?
-			debugf("> MQTT WRONG PACKET? (len: %d)", buf->len);
+			debug_e("> MQTT WRONG PACKET? (len: %d)", buf->len);
 			close();
 			return ERR_OK;
 		}
@@ -197,14 +197,14 @@ err_t MqttClient::onReceive(pbuf *buf)
 				int pos = received;
 				if (posHeader == 0)
 				{
-					//debugf("start posHeader");
+					//debug_d("start posHeader");
 					pbuf_copy_partial(buf, &buffer[posHeader], 1, pos);
 					pos++;
 					posHeader = 1;
 				}
 				while (posHeader > 0 && pos < buf->tot_len)
 				{
-					//debugf("add posHeader");
+					//debug_d("add posHeader");
 					pbuf_copy_partial(buf, &buffer[posHeader], 1, pos);
 					if ((buffer[posHeader] & 128) == 0)
 						posHeader = 0; // Remaining Length ended
@@ -215,7 +215,7 @@ err_t MqttClient::onReceive(pbuf *buf)
 
 				if (posHeader == 0)
 				{
-					//debugf("start len calc");
+					//debug_d("start len calc");
 					// Remaining Length field processed
 					uint16_t rem_len = mqtt_parse_rem_len(buffer);
 					uint8_t rem_len_bytes = mqtt_num_rem_len_bytes(buffer);
@@ -258,7 +258,7 @@ err_t MqttClient::onReceive(pbuf *buf)
 						// Additional check for wrong packet/parsing error
 						if (lenTopic + lenMsg < MQTT_MAX_BUFFER_SIZE)
 						{
-							debugf("%d: %d\n", lenTopic, lenMsg);
+							debug_d("%d: %d\n", lenTopic, lenMsg);
 							String topic, msg;
 							topic.setString((char*)ptrTopic, lenTopic);
 							msg.setString((char*)ptrMsg, lenMsg);
@@ -267,13 +267,13 @@ err_t MqttClient::onReceive(pbuf *buf)
 						}
 						else
 						{
-							debugf("WRONG SIZES: %d: %d", lenTopic, lenMsg);
+							debug_e("WRONG SIZES: %d: %d", lenTopic, lenMsg);
 						}
 					}
 					else if (type == MQTT_MSG_PUBACK || type == MQTT_MSG_PUBREC) {
 						// message with QoS 1 or 2 was received and this is the confirmation
 						const uint16_t msgId = mqtt_parse_msg_id(buffer);
-						debugf("message with id: %d was delivered", msgId);
+						debug_d("message with id: %d was delivered", msgId);
 						if(onDeliveryQueue.contains(msgId)) {
 							// there is a callback for this message
 							onDeliveryQueue[msgId](msgId, type);
@@ -283,7 +283,7 @@ err_t MqttClient::onReceive(pbuf *buf)
 				}
 			}
 			else
-				debugf("SKIP: %d (%d)", available, waitingSize + available); // To large!
+				debug_d("SKIP: %d (%d)", available, waitingSize + available); // Too large!
 			received += available;
 		}
 

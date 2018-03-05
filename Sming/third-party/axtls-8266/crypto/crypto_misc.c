@@ -61,8 +61,6 @@ static HCRYPTPROV gCryptProv;
 static uint8_t entropy_pool[ENTROPY_POOL_SIZE];
 #endif
 
-const char * const unsupported_str = "Error: Feature not supported\n";
-
 #ifndef CONFIG_SSL_SKELETON_MODE
 /**
  * Retrieve a file and put it into memory
@@ -334,7 +332,7 @@ EXP_FUNC int STDCALL base64_decode(const char *in, int len,
     g = 3;
     for (x = y = z = t = 0; x < len; x++)
     {
-        if ((c = map[in[x]&0x7F]) == 0xff)
+        if ((c = ax_array_read_u8(map, in[x]&0x7F)) == 0xff)
             continue;
 
         if (c == 254)   /* this is the end... */

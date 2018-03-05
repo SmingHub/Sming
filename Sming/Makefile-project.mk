@@ -37,7 +37,7 @@ DEBUG_PRINT_FILENAME_AND_LINE ?= 0
 DEBUG_VERBOSE_LEVEL ?= 2
 
 # Path to spiffy
-SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
+SPIFFY ?= $(SMING_HOME)/../tools/spiffy/spiffy
 
 #ESPTOOL2 config to generate rBootLESS images
 IMAGE_MAIN	?= 0x00000.bin
@@ -49,7 +49,7 @@ INIT_BIN_ADDR =  0x7c000
 BLANK_BIN_ADDR =  0x4b000
 
 # esptool2 path
-ESPTOOL2 ?= esptool2
+ESPTOOL2 ?= $(SMING_HOME)/../tools/esptool2/esptool2
 # esptool2 parameters for rBootLESS images
 ESPTOOL2_SECTS		?= .text .data .rodata
 ESPTOOL2_MAIN_ARGS	?= -quiet -bin -boot0
@@ -79,22 +79,48 @@ SED     ?= sed
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
+# Detect OS and build environment
+UNAME := $(shell uname -s)
+
 ifeq ($(OS),Windows_NT)
-  # Windows detected
+  # Convert Windows paths to POSIX paths
+  SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
+  SMING_HOME := $(subst //,/,$(SMING_HOME))
+  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
+  ESP_HOME   := $(subst //,/,$(ESP_HOME))
+endif
+
+ifneq ($(filter MINGW32_NT%,$(UNAME)),)
   UNAME := Windows
-  
+else ifneq ($(filter CYGWIN%,$(UNAME)),)
+  # Cygwin Detected
+  UNAME := Linux
+else ifneq ($(filter CYGWIN%WOW,$(UNAME)),)
+  #Cygwin32
+  UNAME := Linux
+else ifneq ($(filter MSYS%WOW,$(UNAME)),)
+  #Msys32
+  UNAME := Linux
+else ifeq ($(UNAME), Linux)
+  #Linux
+else ifeq ($(UNAME), Darwin)
+  #OS X
+else ifeq ($(UNAME), Freebsd)
+  #BSD
+endif
+
+# OS specific configuration
+ifeq ($(UNAME),Windows)
+  # Windows detected
+    
   # Default SMING_HOME. Can be overriden.
   SMING_HOME ?= c:\tools\Sming\Sming
 
   # Default ESP_HOME. Can be overriden.
   ESP_HOME ?= c:\Espressif
 
-  # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
-  SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
-  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-  include $(SMING_HOME)/Makefile-windows.mk  
+  include $(SMING_HOME)/Makefile-windows.mk
 else
-  UNAME := $(shell uname -s)
   ifeq ($(UNAME),Darwin)
       # MacOS Detected
       UNAME := MacOS
@@ -106,6 +132,10 @@ else
       ESP_HOME ?= /opt/esp-open-sdk
 
       include $(SMING_HOME)/Makefile-macos.mk      
+  endif
+  ifneq ($(filter CYGWIN%,$(UNAME)),)
+      # Cygwin Detected
+      UNAME := Linux
   endif
   ifeq ($(UNAME),Linux)
       # Linux Detected
@@ -226,7 +256,8 @@ ifeq ($(ENABLE_WPS),1)
 endif
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
+CFLAGS  = -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+          -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DSMING_INCLUDED=1
 # => SDK
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	CFLAGS += -DSDK_INTERNAL
@@ -281,7 +312,7 @@ ifeq ($(DISABLE_SPIFFS), 1)
 endif
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-Map=$(FW_BASE)/firmware.map -Wl,-wrap,system_restart_local 
+LDFLAGS		= -nostdlib -u call_user_start -u custom_crash_callback -Wl,-static -Wl,--gc-sections -Wl,-Map=$(FW_BASE)/firmware.map -Wl,-wrap,system_restart_local 
 
 # linker script used for the above linkier step
 LD_PATH     = $(SMING_HOME)/compiler/ld
@@ -352,10 +383,14 @@ BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
 SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
-SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c*))
-C_OBJ		:= $(patsubst %.c,%.o,$(SRC))
-CXX_OBJ		:= $(patsubst %.cpp,%.o,$(C_OBJ))
-OBJ		:= $(patsubst %.o,$(BUILD_BASE)/%.o,$(CXX_OBJ))
+C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
+CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
+
+C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
+CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
+AS_OBJ		:= $(patsubst %.s,$(BUILD_BASE)/%.o,$(AS_SRC))
+
+OBJ		:= $(AS_OBJ) $(C_OBJ) $(CXX_OBJ)
 
 LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
@@ -377,24 +412,20 @@ Q := @
 vecho := @echo
 endif
 
-vpath %.c $(SRC_DIR)
-vpath %.cpp $(SRC_DIR)
 
 define compile-objects
-$1/%.o: %.c $1/%.c.d
+${BUILD_BASE}/$1/%.o: $1/%.c ${BUILD_BASE}/$1/%.c.d
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@	
-$1/%.o: %.cpp $1/%.cpp.d
+${BUILD_BASE}/$1/%.o: $1/%.cpp ${BUILD_BASE}/$1/%.cpp.d
 	$(vecho) "C+ $$<" 
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -c $$< -o $$@
-$1/%.c.d: %.c
-	$(vecho) "DEP $$<"
+${BUILD_BASE}/$1/%.c.d: $1/%.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -MM -MT $1/$$*.o $$< -o $$@
-$1/%.cpp.d: %.cpp
-	$(vecho) "DEP $$<"
+${BUILD_BASE}/$1/%.cpp.d: $1/%.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -MM -MT $1/$$*.o $$< -o $$@
 
-.PRECIOUS: $1/%.c.d $1/%.cpp.d
+.PRECIOUS: ${BUILD_BASE}/$1/%.c.d ${BUILD_BASE}/$1/%.cpp.d
 endef
 
 .PHONY: all checkdirs spiff_update spiff_clean clean
@@ -454,8 +485,9 @@ $(TARGET_OUT): $(FW_BASE)/$(IMAGE_MAIN) $(PROJECT_LD_PATH)/$(LD_SCRIPT)
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
-	$(Q) $(AR) cru $@ $^
-	
+	$(Q) test ! -f $@ || rm $@
+	$(Q) $(AR) rcsP $@ $^
+
 $(USER_LIBDIR)/lib$(LIBSMING).a:
 	$(vecho) "(Re)compiling Sming. Enabled features: $(SMING_FEATURES). This may take some time"
 	$(Q) $(MAKE) -C $(SMING_HOME) clean V=$(V) ENABLE_SSL=$(ENABLE_SSL) SMING_HOME=$(SMING_HOME)
@@ -539,6 +571,6 @@ clean:
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
 
-$(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
+$(foreach mod,$(MODULES),$(eval $(call compile-objects,$(mod))))
 $(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.c.d)))
 $(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.cpp.d)))

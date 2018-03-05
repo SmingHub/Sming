@@ -83,7 +83,7 @@ EXP_FUNC int STDCALL ssl_obj_load(SSL_CTX *ssl_ctx, int obj_type,
         ret = ssl_obj_PEM_load(ssl_ctx, obj_type, ssl_obj, password);
 #else
 #ifdef CONFIG_SSL_FULL_MODE
-        printf("%s", unsupported_str);
+        printf(unsupported_str);
 #endif
         ret = SSL_ERROR_NOT_SUPPORTED;
 #endif
@@ -96,7 +96,7 @@ error:
     return ret;
 #else
 #ifdef CONFIG_SSL_FULL_MODE
-    printf("%s", unsupported_str);
+    printf(unsupported_str);
 #endif
     return SSL_ERROR_NOT_SUPPORTED;
 #endif /* CONFIG_SSL_SKELETON_MODE */
@@ -155,7 +155,7 @@ static int do_obj(SSL_CTX *ssl_ctx, int obj_type,
 #endif
         default:
 #ifdef CONFIG_SSL_FULL_MODE
-            printf("%s", unsupported_str);
+            printf(unsupported_str);
 #endif
             ret = SSL_ERROR_NOT_SUPPORTED;
             break;

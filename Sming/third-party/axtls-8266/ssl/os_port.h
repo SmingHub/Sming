@@ -44,7 +44,6 @@ extern "C" {
 #include "os_int.h"
 #include "config.h"
 #include <stdio.h>
-#include "debug_progmem.h"
 
 #ifdef WIN32
 #define STDCALL                 __stdcall
@@ -54,6 +53,8 @@ extern "C" {
 #define EXP_FUNC
 #endif
 
+#ifndef SMING_INCLUDED
+
 #if defined(_WIN32_WCE)
 #undef WIN32
 #define WIN32
@@ -61,25 +62,14 @@ extern "C" {
 
 #if defined(ESP8266)
 
-extern int ax_port_read(int clientfd, uint8_t *buf, int bytes_needed);
-extern int ax_port_write(int clientfd, uint8_t *buf, uint16_t bytes_needed);
-
 #include "util/time.h"
-extern void gettimeofday(struct timeval* t,void* timezone);
-
 #include <errno.h>
 #define alloca(size) __builtin_alloca(size)
 #define TTY_FLUSH()
 #ifdef putc
 #undef putc
 #endif
-#define putc(x, f)   debug_i("%c", (x))
-#ifdef printf
-#undef printf
-#endif
-#define printf  debug_i
-#define snprintf m_snprintf
-#define vprintf m_vprintf
+#define putc(x, f)   ets_putc(x)
 
 #define SOCKET_READ(A,B,C)      ax_port_read(A,B,C)
 #define SOCKET_WRITE(A,B,C)     ax_port_write(A,B,C)
@@ -106,6 +96,68 @@ extern void gettimeofday(struct timeval* t,void* timezone);
 
 extern void system_soft_wdt_feed(void);
 #define ax_wdt_feed system_soft_wdt_feed
+
+#ifndef PROGMEM
+#define PROGMEM __attribute__((aligned(4))) __attribute__((section(".irom.text")))
+#endif
+
+#ifndef WITH_PGM_READ_HELPER
+#define ax_array_read_u8(x, y) x[y]
+#else
+
+static inline uint8_t pgm_read_byte(const void* addr) {
+  register uint32_t res;
+  __asm__("extui    %0, %1, 0, 2\n"     /* Extract offset within word (in bytes) */
+      "sub      %1, %1, %0\n"       /* Subtract offset from addr, yielding an aligned address */
+      "l32i.n   %1, %1, 0x0\n"      /* Load word from aligned address */
+      "slli     %0, %0, 3\n"        /* Multiply offset by 8, yielding an offset in bits */
+      "ssr      %0\n"               /* Prepare to shift by offset (in bits) */
+      "srl      %0, %1\n"           /* Shift right; now the requested byte is the first one */
+      :"=r"(res), "=r"(addr)
+      :"1"(addr)
+      :);
+  return (uint8_t) res;     /* This masks the lower byte from the returned word */
+}
+
+#define ax_array_read_u8(x, y) pgm_read_byte((x)+(y))
+#endif //WITH_PGM_READ_HELPER
+
+#ifdef printf
+#undef printf
+#endif
+//#define printf(...)  ets_printf(__VA_ARGS__)
+#define PSTR(s) (__extension__({static const char __c[] PROGMEM = (s); &__c[0];}))
+#define PGM_VOID_P const void *
+static inline void* memcpy_P(void* dest, PGM_VOID_P src, size_t count) {
+    const uint8_t* read = (const uint8_t*)(src);
+    uint8_t* write = (uint8_t*)(dest);
+
+    while (count)
+    {
+        *write++ = pgm_read_byte(read++);
+        count--;
+    }
+
+    return dest;
+}
+static inline int strlen_P(const char *str) {
+    int cnt = 0;
+    while (pgm_read_byte(str++)) cnt++;
+    return cnt;
+}
+#define printf(fmt, ...) do { static const char fstr[] PROGMEM = fmt; char rstr[sizeof(fmt)]; memcpy_P(rstr, fstr, sizeof(rstr)); ets_printf(rstr, ##__VA_ARGS__); } while (0)
+#define strcpy_P(dst, src) do { static const char fstr[] PROGMEM = src; memcpy_P(dst, fstr, sizeof(src)); } while (0)
+
+// Copied from ets_sys.h to avoid compile warnings
+extern int ets_printf(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
+extern int ets_putc(int);
+
+// The network interface in WiFiClientSecure
+extern int ax_port_read(int fd, uint8_t* buffer, int count);
+extern int ax_port_write(int fd, uint8_t* buffer, uint16_t count);
+
+// TODO: Why is this not being imported from <string.h>?
+extern char *strdup(const char *orig);
 
 #elif defined(WIN32)
 
@@ -199,18 +251,7 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
 #endif  /* Not Win32 */
 
 /* some functions to mutate the way these work */
-#define malloc(A)       ax_port_malloc(A, __FILE__, __LINE__)
-#ifndef realloc
-#define realloc(A,B)    ax_port_realloc(A,B, __FILE__, __LINE__)
-#endif
-#define calloc(A,B)     ax_port_calloc(A,B, __FILE__, __LINE__)
-#define free(x)         ax_port_free(x)
-
-EXP_FUNC void * STDCALL ax_port_malloc(size_t s, const char*, int);
-EXP_FUNC void * STDCALL ax_port_realloc(void *y, size_t s, const char*, int);
-EXP_FUNC void * STDCALL ax_port_calloc(size_t n, size_t s, const char*, int);
-EXP_FUNC void * STDCALL ax_port_free(void*);
-
+#ifndef ntohl
 inline uint32_t htonl(uint32_t n){
   return ((n & 0xff) << 24) |
     ((n & 0xff00) << 8) |
@@ -219,6 +260,7 @@ inline uint32_t htonl(uint32_t n){
 }
 
 #define ntohl htonl
+#endif
 
 EXP_FUNC int STDCALL ax_open(const char *pathname, int flags); 
 
@@ -254,6 +296,8 @@ void exit_now(const char *format, ...);
 #ifndef PROGMEM
 #define PROGMEM
 #endif
+
+#endif /* SMING_INCLUDED */
 
 #ifdef __cplusplus
 }

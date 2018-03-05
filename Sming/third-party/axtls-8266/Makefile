@@ -4,12 +4,12 @@ AR := $(TOOLCHAIN_PREFIX)ar
 LD := $(TOOLCHAIN_PREFIX)gcc
 OBJCOPY := $(TOOLCHAIN_PREFIX)objcopy
 
-MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
-
 XTENSA_LIBS ?= $(shell $(CC) -print-sysroot)
 ifeq ($(XTENSA_LIBS),)
-	XTENSA_LIBS = $(ESP_HOME)/xtensa-lx106-elf/
+   XTENSA_LIBS = $(ESP_HOME)/xtensa-lx106-elf/
 endif
+
+TOOLCHAIN_DIR=$(shell cd $(XTENSA_LIBS)/../../; pwd)
 
 OBJ_FILES := \
 	crypto/aes.o \
@@ -45,14 +45,30 @@ LDFLAGS  += 	-L$(XTENSA_LIBS)/lib \
 
 CFLAGS+=-std=c99 -DESP8266
 
-CFLAGS += -Wall -Os -g -O2 -Wpointer-arith -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mno-text-section-literals  -D__ets__ -DICACHE_FLASH
+CFLAGS += -Wall -Os -g -O2 -Wpointer-arith -Wl,-EL -nostdlib -mlongcalls -mno-text-section-literals  -D__ets__ -DICACHE_FLASH
+
+CFLAGS += -ffunction-sections -fdata-sections
+
+CFLAGS += -fdebug-prefix-map=$(PWD)= -fdebug-prefix-map=$(TOOLCHAIN_DIR)=xtensa-lx106-elf -gno-record-gcc-switches
+
 CFLAGS += $(CFLAGS_EXTRA)
 
-ifneq ($(MFORCE32),)
-    # Your compiler supports the -mforce-l32 flag which means that 
-    # constants can be stored in flash (program) memory instead of SRAM.
-    # See: https://www.arduino.cc/en/Reference/PROGMEM
-    CFLAGS += -DPROGMEM="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" -mforce-l32
+WITH_PGM_READ_HELPER ?= 1
+
+ifeq ($(WITH_PGM_READ_HELPER), 0)
+   MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
+   ifneq ($(MFORCE32),)
+        # If the compiler supports the -mforce-l32 flag, the compiler will generate correct code for loading
+       # 16- and 8-bit constants from program memory. So in the code we can directly access the arrays
+       # placed into program memory.
+       CFLAGS +=  -mforce-l32
+    else
+       WITH_PGM_READ_HELPER=1
+   endif
+endif
+
+ifeq ($(WITH_PGM_READ_HELPER), 1)
+   CFLAGS += -DWITH_PGM_READ_HELPER
 endif
 
 BIN_DIR := bin
@@ -63,12 +79,6 @@ all: $(AXTLS_AR)
 $(AXTLS_AR): | $(BIN_DIR)
 
 $(AXTLS_AR): $(OBJ_FILES)
-	for file in $(OBJ_FILES); do \
-		$(OBJCOPY) \
-		--rename-section .text=.irom0.text \
-		--rename-section .literal=.irom0.literal \
-		$$file; \
-	done
 	$(AR) cru $@ $^
 
 $(BIN_DIR):

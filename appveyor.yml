@@ -31,22 +31,14 @@ install:
   
   
   
-# Install esptool2
-  - git clone https://github.com/raburton/esptool2
-  - cd esptool2
-  - make
-  - cp esptool2 c:\Espressif\utils\esptool2
-
 build_script:
   - SET SMING_HOME=%APPVEYOR_BUILD_FOLDER%\Sming
   - SET ESP_HOME=c:\Espressif
   - SET PATH=%PATH%;%ESP_HOME%/utils
   - cd %SMING_HOME%
   - gcc -v
-# Compile spiffy first
-  - make third-party/spiffs/makefile
-  - cd spiffy
-  - make
+# Compile the tools first
+  - make tools V=1
 # Followed by the library and test sample apps
   - cd %SMING_HOME%
   - make

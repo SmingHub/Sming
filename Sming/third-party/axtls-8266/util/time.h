@@ -1,11 +1,8 @@
 #ifndef TIME_H
 #define TIME_H
 
-struct timeval
-{
-  time_t tv_sec;
-  long   tv_usec;
-};
+#include <time.h>
+#include <sys/time.h>
 
 
 #endif //TIME_H

@@ -38,7 +38,7 @@ ArduCAMStream::~ArduCAMStream() {
 }
 
 
-size_t ArduCAMStream::available() {
+int ArduCAMStream::available() {
 //	int len = myCAM.read_fifo_length();
 //	ACAM_DEBUG("Stream available (%d bytes)\n", len);
 	return len;

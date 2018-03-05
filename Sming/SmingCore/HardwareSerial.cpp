@@ -253,7 +253,7 @@ void HardwareSerial::commandProcessing(bool reqEnable)
 void HardwareSerial::delegateTask (os_event_t *inputEvent)
 {
 	int uartNr = inputEvent->par >> 25; // the uart_nr is in the last byte
-	inputEvent->par = inputEvent->par & 0x0FFF; // clear the last bit
+	inputEvent->par = inputEvent->par & 0x00FFFFFF; // clear the last byte
 	uint8 rcvChar = inputEvent->par % 256;  // can be done by bitlogic, avoid casting from ETSParam
 	uint16 charCount = inputEvent->par / 256 ;
 

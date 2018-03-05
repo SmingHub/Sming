@@ -36,7 +36,7 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	int length() { return stream->length(); }
+	int length() { return stream->available(); }
 
 	/** @brief  Write a single char to stream
 	 *  @param  charToWrite Char to write to the stream

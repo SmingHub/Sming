@@ -90,13 +90,13 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 	String compressed = fileName + ".gz";
 	if (allowGzipFileCheck && fileExist(compressed))
 	{
-		debugf("found %s", compressed.c_str());
+		debug_d("found %s", compressed.c_str());
 		stream = new FileStream(compressed);
 		headers["Content-Encoding"] = "gzip";
 	}
 	else if (fileExist(fileName))
 	{
-		debugf("found %s", fileName.c_str());
+		debug_d("found %s", fileName.c_str());
 		stream = new FileStream(fileName);
 	}
 	else

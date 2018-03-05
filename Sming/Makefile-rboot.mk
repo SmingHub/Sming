@@ -13,6 +13,12 @@ RBOOT_BIG_FLASH  ?= 1
 RBOOT_TWO_ROMS   ?= 0
 RBOOT_RTC_ENABLED ?= 0
 RBOOT_GPIO_ENABLED ?= 0
+# RBOOT_GPIO_SKIP_ENABLED and RBOOT_GPIO_ENABLED cannot be used at the same time.
+RBOOT_GPIO_SKIP_ENABLED ?= 0
+
+ifeq ($(RBOOT_GPIO_ENABLED)$(RBOOT_GPIO_SKIP_ENABLED),11)
+	$(error "Cannot enable RBOOT_GPIO_ENABLED and RBOOT_GPIO_SKIP_ENABLED at the same time)
+endif
 
 ### ROM Addresses ###
 # The parameter below specifies the location of the second rom.
@@ -32,9 +38,9 @@ RBOOT_SPIFFS_1   ?= 0x300000
 RBOOT_LD_0 ?= rboot.rom0.ld
 RBOOT_LD_1 ?= rom1.ld
 # esptool2 path
-ESPTOOL2 ?= esptool2
+ESPTOOL2 ?= $(SMING_HOME)/../tools/esptool2/esptool2
 # path to spiffy
-SPIFFY ?= $(SMING_HOME)/spiffy/spiffy
+SPIFFY ?= $(SMING_HOME)/../tools/spiffy/spiffy
 INIT_BIN_ADDR  = 0x7c000
 BLANK_BIN_ADDR = 0x4b000
 # filenames and options for generating rBoot rom images with esptool2
@@ -90,22 +96,48 @@ ENABLE_CMD_EXECUTOR ?= 1
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
+# Detect OS and build environment
+UNAME := $(shell uname -s)
+
 ifeq ($(OS),Windows_NT)
-  # Windows detected
+  # Convert Windows paths to POSIX paths
+  SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
+  SMING_HOME := $(subst //,/,$(SMING_HOME))
+  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
+  ESP_HOME   := $(subst //,/,$(ESP_HOME))
+endif
+
+ifneq ($(filter MINGW32_NT%,$(UNAME)),)
   UNAME := Windows
-  
+else ifneq ($(filter CYGWIN%,$(UNAME)),)
+  # Cygwin Detected
+  UNAME := Linux
+else ifneq ($(filter CYGWIN%WOW,$(UNAME)),)
+  #Cygwin32
+  UNAME := Linux
+else ifneq ($(filter MSYS%WOW,$(UNAME)),)
+  #Msys32
+  UNAME := Linux
+else ifeq ($(UNAME), Linux)
+  #Linux
+else ifeq ($(UNAME), Darwin)
+  #OS X
+else ifeq ($(UNAME), Freebsd)
+  #BSD
+endif
+
+# OS specific configuration
+ifeq ($(UNAME),Windows)
+  # Windows detected
+
   # Default SMING_HOME. Can be overriden.
   SMING_HOME ?= c:\tools\Sming\Sming
 
   # Default ESP_HOME. Can be overriden.
   ESP_HOME ?= c:\Espressif
 
-  # Making proper path adjustments - replace back slashes, remove colon and add forward slash.
-  SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
-  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-  include $(SMING_HOME)/Makefile-windows.mk  
+  include $(SMING_HOME)/Makefile-windows.mk
 else
-  UNAME := $(shell uname -s)
   ifeq ($(UNAME),Darwin)
       # MacOS Detected
       UNAME := MacOS
@@ -117,6 +149,10 @@ else
       ESP_HOME ?= /opt/esp-open-sdk
 
       include $(SMING_HOME)/Makefile-macos.mk      
+  endif
+  ifneq ($(filter CYGWIN%,$(UNAME)),)
+      # Cygwin Detected
+      UNAME := Linux
   endif
   ifeq ($(UNAME),Linux)
       # Linux Detected
@@ -198,7 +234,8 @@ EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME
 USER_LIBDIR  = $(SMING_HOME)/compiler/lib/
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
+CFLAGS   = -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+           -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DSMING_INCLUDED=1 
 # => SDK
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	CFLAGS += -DSDK_INTERNAL
@@ -314,7 +351,7 @@ ifeq ($(DISABLE_SPIFFS), 1)
 endif
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
+LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -u custom_crash_callback -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m
@@ -381,10 +418,14 @@ BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
 SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
-SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c*))
-C_OBJ		:= $(patsubst %.c,%.o,$(SRC))
-CXX_OBJ		:= $(patsubst %.cpp,%.o,$(C_OBJ))
-OBJ		:= $(patsubst %.o,$(BUILD_BASE)/%.o,$(CXX_OBJ))
+C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
+CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
+
+C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
+CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
+AS_OBJ		:= $(patsubst %.s,$(BUILD_BASE)/%.o,$(AS_SRC))
+
+OBJ		:= $(AS_OBJ) $(C_OBJ) $(CXX_OBJ)
 
 LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
@@ -408,6 +449,7 @@ export RBOOT_BUILD_BASE
 export RBOOT_FW_BASE
 export RBOOT_RTC_ENABLED
 export RBOOT_GPIO_ENABLED
+export RBOOT_GPIO_SKIP_ENABLED
 export RBOOT_ROM1_ADDR
 export RBOOT_ROM2_ADDR
 export SPI_SIZE
@@ -433,6 +475,10 @@ ifeq ($(RBOOT_GPIO_ENABLED),1)
 	CFLAGS += -DBOOT_GPIO_ENABLED
 endif
 
+ifeq ($(RBOOT_GPIO_SKIP_ENABLED),1)
+	CFLAGS += -DBOOT_GPIO_SKIP_ENABLED
+endif
+
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
@@ -446,24 +492,20 @@ Q := @
 vecho := @echo
 endif
 
-vpath %.c $(SRC_DIR)
-vpath %.cpp $(SRC_DIR)
 
 define compile-objects
-$1/%.o: %.c $1/%.c.d
+${BUILD_BASE}/$1/%.o: $1/%.c ${BUILD_BASE}/$1/%.c.d
 	$(vecho) "CC $$<"
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@	
-$1/%.o: %.cpp $1/%.cpp.d
-	$(vecho) "C+ $$<" 
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@
+${BUILD_BASE}/$1/%.o: $1/%.cpp ${BUILD_BASE}/$1/%.cpp.d
+	$(vecho) "C+ $$<"
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -c $$< -o $$@
-$1/%.c.d: %.c
-	$(vecho) "DEP $$<"
+${BUILD_BASE}/$1/%.c.d: $1/%.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -MM -MT $1/$$*.o $$< -o $$@
-$1/%.cpp.d: %.cpp
-	$(vecho) "DEP $$<"
+${BUILD_BASE}/$1/%.cpp.d: $1/%.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -MM -MT $1/$$*.o $$< -o $$@
 
-.PRECIOUS: $1/%.c.d $1/%.cpp.d
+.PRECIOUS: ${BUILD_BASE}/$1/%.c.d ${BUILD_BASE}/$1/%.cpp.d
 endef
 
 .PHONY: all checkdirs spiff_update spiff_clean clean
@@ -491,9 +533,9 @@ $(TARGET_OUT_0): $(APP_AR)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(SMING_HOME)/compiler/ld $(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
 	$(Q) $(STRIP) $@
-	
+
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
-	
+
 	$(Q) if [ -f "$(FW_MEMINFO_NEW)" -a -f "$(FW_MEMINFO_OLD)" ]; then \
 	  awk -F "|" 'FILENAME == "$(FW_MEMINFO_OLD)" { arr[$$1]=$$5 } FILENAME == "$(FW_MEMINFO_NEW)" { if (arr[$$1] != $$5){printf "%s%s%+d%s", substr($$0, 1, length($$0) - 1)," (",$$5 - arr[$$1],")\n" } else {print $$0} }' $(FW_MEMINFO_OLD) $(FW_MEMINFO_NEW); \
 	elif [ -f "$(FW_MEMINFO_NEW)" ]; then \
@@ -506,9 +548,11 @@ $(TARGET_OUT_1): $(APP_AR)
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(SMING_HOME)/compiler/ld  $(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
 	$(Q) $(STRIP) $@
 
+# recreate it from 0, since you get into problems with same filenames
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
-	$(Q) $(AR) cru $@ $^
+	$(Q) test ! -f $@ || rm $@
+	$(Q) $(AR) rcsP $@ $^
 
 $(USER_LIBDIR)/lib$(LIBSMING).a:
 	$(vecho) "(Re)compiling Sming. Enabled features: $(SMING_FEATURES). This may take some time"
@@ -519,7 +563,7 @@ include/ssl/private_key.h:
 	$(vecho) "Generating unique certificate and key. This may take some time"
 	$(Q) mkdir -p $(CURRENT_DIR)/include/ssl/
 	$(Q) AXDIR=$(CURRENT_DIR)/include/ssl/  $(THIRD_PARTY_DIR)/axtls-8266/tools/make_certs.sh 
-	
+
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 $(USER_LIBDIR)/libpwm_open.a:
 	$(Q) $(MAKE) -C $(SMING_HOME) compiler/lib/libpwm_open.a ENABLE_CUSTOM_PWM=1
@@ -587,6 +631,6 @@ clean:
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
 
-$(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
+$(foreach mod,$(MODULES),$(eval $(call compile-objects,$(mod))))
 $(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.c.d)))
 $(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.cpp.d)))

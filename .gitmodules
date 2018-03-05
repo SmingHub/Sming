@@ -61,3 +61,7 @@
 	path = Sming/third-party/ESP8266_NONOS_SDK
 	url = https://github.com/espressif/ESP8266_NONOS_SDK.git
 	ignore = dirty
+[submodule "tools/esptool2"]
+	path = tools/esptool2
+	url = https://github.com/raburton/esptool2.git
+	ignore = dirty

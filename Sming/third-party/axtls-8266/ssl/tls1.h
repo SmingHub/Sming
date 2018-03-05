@@ -43,6 +43,7 @@ extern "C" {
 #include "version.h"
 #include "config.h"
 #include "os_int.h"
+#include "os_port.h"
 #include "crypto.h"
 #include "crypto_misc.h"
 
@@ -131,7 +132,7 @@ typedef struct
     uint8_t padding_size;
     uint8_t digest_size;
     uint8_t key_block_size;
-    hmac_func hmac;
+    hmac_func_v hmac_v;
     crypt_func encrypt;
     crypt_func decrypt;
 } cipher_info_t;
@@ -172,9 +173,13 @@ typedef struct
     uint8_t key_block_generated;
 } DISPOSABLE_CTX;
 
-typedef struct {
+typedef struct 
+{
     char *host_name; /* Needed for the SNI support */
-    uint16_t max_fragment_size; /* Needed for the Max Fragment Size Extension. Allowed values: 2^9, 2^10 .. 2^14 */
+    /* Needed for the Max Fragment Size Extension. 
+       Allowed values: 0,1,2,3..6 corresponding to off,512,1024,2048..16384 bytes
+    */
+    uint8_t max_fragment_size;
 } SSL_EXTENSIONS;
 
 struct _SSL

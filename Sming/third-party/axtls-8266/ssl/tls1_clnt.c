@@ -195,9 +195,8 @@ static int send_client_hello(SSL *ssl)
     time_t tm = time(NULL);
     uint8_t *tm_ptr = &buf[6]; /* time will go here */
     int i, offset, ext_offset;
-    uint16_t ext_len; /* extensions total length */
+    int ext_len = 0;
 
-    ext_len = 0;
 
     buf[0] = HS_CLIENT_HELLO;
     buf[1] = 0;
@@ -257,39 +256,41 @@ static int send_client_hello(SSL *ssl)
         ext_len += sizeof(g_sig_alg);
     }
 
-    if (ssl->extensions != NULL) {
+    if (ssl->extensions != NULL) 
+    {
         /* send the host name if specified */
-        if (ssl->extensions->host_name != NULL) {
-	    unsigned int host_len = strlen(ssl->extensions->host_name);
-
-	    buf[offset++] = 0;
-	    buf[offset++] = SSL_EXT_SERVER_NAME; /* server_name(0) (65535) */
-	    buf[offset++] = 0;
-	    buf[offset++] = host_len + 5; /* server_name length */
-	    buf[offset++] = 0;
-	    buf[offset++] = host_len + 3; /* server_list length */
-	    buf[offset++] = 0; /* host_name(0) (255) */
-	    buf[offset++] = 0;
-	    buf[offset++] = host_len; /* host_name length */
-	    strncpy((char*) &buf[offset], ssl->extensions->host_name, host_len);
-	    offset += host_len;
-	    ext_len += host_len + 9;
+        if (ssl->extensions->host_name != NULL) 
+        {
+            size_t host_len = strlen(ssl->extensions->host_name);
+            buf[offset++] = 0;
+            buf[offset++] = SSL_EXT_SERVER_NAME; /* server_name(0) (65535) */
+            buf[offset++] = 0;
+            buf[offset++] = host_len + 5; /* server_name length */
+            buf[offset++] = 0;
+            buf[offset++] = host_len + 3; /* server_list length */
+            buf[offset++] = 0; /* host_name(0) (255) */
+            buf[offset++] = 0;
+            buf[offset++] = host_len; /* host_name length */
+            strncpy((char*) &buf[offset], ssl->extensions->host_name, host_len);
+            offset += host_len;
+            ext_len += host_len + 9;
         }
 
-        if (ssl->extensions->max_fragment_size) {
-	    buf[offset++] = 0;
-	    buf[offset++] = SSL_EXT_MAX_FRAGMENT_SIZE;
+        if (ssl->extensions->max_fragment_size) 
+        {
+            buf[offset++] = 0;
+            buf[offset++] = SSL_EXT_MAX_FRAGMENT_SIZE;
 
-	    buf[offset++] = 0; // size of data
-	    buf[offset++] = 2;
+            buf[offset++] = 0; // size of data
+            buf[offset++] = 1;
 
-	    buf[offset++] = (uint8_t)((ssl->extensions->max_fragment_size >> 8) & 0xff);
-	    buf[offset++] = (uint8_t)(ssl->extensions->max_fragment_size & 0xff);
-	    ext_len += 6;
+            buf[offset++] = ssl->extensions->max_fragment_size;
+            ext_len += 5;
         }
     }
 
-    if(ext_len > 0) {
+    if (ext_len > 0) 
+    {
     	// update the extensions length value
     	buf[ext_offset] = (uint8_t) ((ext_len >> 8) & 0xff);
     	buf[ext_offset + 1] = (uint8_t) (ext_len & 0xff);
@@ -308,7 +309,8 @@ static int process_server_hello(SSL *ssl)
     int pkt_size = ssl->bm_index;
     int num_sessions = ssl->ssl_ctx->num_sessions;
     uint8_t sess_id_size;
-    int offset, ret = SSL_OK;
+    int offset, ext_offset, ret = SSL_OK;
+    uint16_t total_ext_len, ext_type, ext_len;
 
     /* check that we are talking to a TLSv1 server */
     uint8_t version = (buf[4] << 4) + buf[5];
@@ -362,10 +364,37 @@ static int process_server_hello(SSL *ssl)
     offset += 2; // ignore compression
     PARANOIA_CHECK(pkt_size, offset);
 
+    // process extensions
+    if (offset < pkt_size) {
+        ext_offset = offset;
+        total_ext_len = buf[offset] << 8;
+        total_ext_len += buf[++offset];
+        if (total_ext_len) {
+            // process extension TLVs
+            while (offset < ext_offset + total_ext_len) {
+                ext_type = buf[++offset] << 8;
+                ext_type += buf[++offset];
+                ext_len = buf[++offset] << 8;
+                ext_len += buf[++offset];
+
+                if (ext_type == SSL_EXT_MAX_FRAGMENT_SIZE && ssl->extensions->max_fragment_size != 0) {
+                    int ext_val = buf[offset + 1];
+                    if (ssl->extensions->max_fragment_size != ext_val) {
+                        ret = SSL_ALERT_ILLEGAL_PARAMETER;
+                        goto error;
+                    }
+
+                    ssl->max_plain_length = 1 << (8 + ext_val); // 2 ^ (8 + ext_val)
+                }
+
+                offset += ext_len;
+            }
+        }
+    }
+
     ssl->dc->bm_proc_index = offset;
     PARANOIA_CHECK(pkt_size, offset);
 
-    // no extensions
 error:
     return ret;
 }

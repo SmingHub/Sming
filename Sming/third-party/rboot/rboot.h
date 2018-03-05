@@ -34,7 +34,7 @@ extern "C" {
 // uncomment to enable GPIO rom skip mode, trigger
 // GPIO at boot time to skip to next rom
 // cannot be used at same time as BOOT_GPIO_ENABLED
-#define BOOT_GPIO_SKIP_ENABLED
+//#define BOOT_GPIO_SKIP_ENABLED
 
 // set the GPIO pin used by GPIO modes above (will default
 // to 16 if not manually set), only applicable when

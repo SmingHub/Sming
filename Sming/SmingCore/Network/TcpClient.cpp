@@ -83,7 +83,7 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent /*
 		return false;
 	}
 
-	debugf("Storing %d bytes in stream", len);
+	debug_d("Storing %d bytes in stream", len);
 
 	asyncTotalLen += len;
 	asyncCloseAfterSent = forceCloseAfterSent;
@@ -122,7 +122,7 @@ err_t TcpClient::onReceive(pbuf *buf)
 		while (cur != NULL && cur->len > 0) {
 			bool success = !receive(*this, (char*)cur->payload, cur->len);
 			if(!success) {
-				debugf("TcpClient::onReceive: Aborted from receive callback");
+				debug_d("TcpClient::onReceive: Aborted from receive callback");
 
 				TcpConnection::onReceive(NULL);
 				return ERR_ABRT; // abort the connection
@@ -175,7 +175,7 @@ void TcpClient::pushAsyncPart()
 	if (stream->isFinished())
 	{
 		flush();
-		debugf("TcpClient stream finished");
+		debug_d("TcpClient stream finished");
 		delete stream; // Free memory now!
 		stream = NULL;
 	}

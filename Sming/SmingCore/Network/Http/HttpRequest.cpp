@@ -131,7 +131,7 @@ String HttpRequest::getQueryParameter(const String& parameterName, const String&
 			Vector<String> pair;
 			int count = splitString(parts[i], '=' , pair);
 			if(count != 2) {
-				debugf("getQueryParameter: Missing = in query string: %s", parts[i].c_str());
+				debug_w("getQueryParameter: Missing = in query string: %s", parts[i].c_str());
 				continue;
 			}
 			(*queryParams)[pair.at(0)] = pair.at(1); // TODO: name and value URI decoding...
@@ -152,10 +152,10 @@ String HttpRequest::getBody()
 	}
 
 	String ret;
-	if(stream->length() != -1 && stream->getStreamType() == eSST_Memory) {
+	if(stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
 		MemoryDataStream *memory = (MemoryDataStream *)stream;
 		char buf[1024];
-		for(int i=0; i< stream->length(); i += 1024) {
+		for(int i=0; i< stream->available(); i += 1024) {
 			int available = memory->readMemoryBlock(buf, 1024);
 			memory->seek(max(available, 0));
 			ret += String(buf, available);
@@ -201,7 +201,7 @@ HttpRequest* HttpRequest::setSslClientKeyCert(const SSLKeyCertPair& clientKeyCer
 
 HttpRequest* HttpRequest::setBody(const String& body) {
 	if(stream != NULL) {
-		debugf("HttpRequest::setBody: Discarding already set stream!");
+		debug_e("HttpRequest::setBody: Discarding already set stream!");
 		delete stream;
 		stream = NULL;
 	}
@@ -209,7 +209,7 @@ HttpRequest* HttpRequest::setBody(const String& body) {
 	MemoryDataStream *memory = new MemoryDataStream();
 	int written = memory->write((uint8_t *)body.c_str(), body.length());
 	if(written < body.length()) {
-		debugf("HttpRequest::setBody: Unable to store the complete body");
+		debug_e("HttpRequest::setBody: Unable to store the complete body");
 	}
 	stream = memory;
 	return this;

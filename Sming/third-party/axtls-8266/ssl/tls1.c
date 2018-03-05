@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2016, Cameron Rich
+ * Copyright (c) 2007-2017, Cameron Rich
  * 
  * All rights reserved.
  * 
@@ -85,7 +85,7 @@ static const cipher_info_t cipher_info[NUM_PROTOCOLS] =
         16,                             /* block padding size */
         SHA1_SIZE,                      /* digest size */
         2*(SHA1_SIZE+16+16),            /* key block size */
-        hmac_sha1,                      /* hmac algorithm */
+        hmac_sha1_v,                    /* hmac algorithm */
         (crypt_func)AES_cbc_encrypt,    /* encrypt */
         (crypt_func)AES_cbc_decrypt     /* decrypt */
     },
@@ -96,7 +96,7 @@ static const cipher_info_t cipher_info[NUM_PROTOCOLS] =
         16,                             /* block padding size */
         SHA1_SIZE,                      /* digest size */
         2*(SHA1_SIZE+32+16),            /* key block size */
-        hmac_sha1,                      /* hmac algorithm */
+        hmac_sha1_v,                    /* hmac algorithm */
         (crypt_func)AES_cbc_encrypt,    /* encrypt */
         (crypt_func)AES_cbc_decrypt     /* decrypt */
     },       
@@ -107,7 +107,7 @@ static const cipher_info_t cipher_info[NUM_PROTOCOLS] =
         16,                             /* block padding size */
         SHA256_SIZE,                    /* digest size */
         2*(SHA256_SIZE+32+16),          /* key block size */
-        hmac_sha256,                    /* hmac algorithm */
+        hmac_sha256_v,                  /* hmac algorithm */
         (crypt_func)AES_cbc_encrypt,    /* encrypt */
         (crypt_func)AES_cbc_decrypt     /* decrypt */
     },       
@@ -118,7 +118,7 @@ static const cipher_info_t cipher_info[NUM_PROTOCOLS] =
         16,                             /* block padding size */
         SHA256_SIZE,                    /* digest size */
         2*(SHA256_SIZE+32+16),          /* key block size */
-        hmac_sha256,                    /* hmac algorithm */
+        hmac_sha256_v,                  /* hmac algorithm */
         (crypt_func)AES_cbc_encrypt,    /* encrypt */
         (crypt_func)AES_cbc_decrypt     /* decrypt */
     }
@@ -140,32 +140,45 @@ void DISPLAY_BYTES(SSL *ssl, const char *format,
 #endif
 
 /**
- * Allocates new SSL extensions structure and returns pointer to it
+ * Allocate new SSL extensions structure and return pointer to it
  *
  */
 EXP_FUNC SSL_EXTENSIONS * STDCALL ssl_ext_new()
 {
-    SSL_EXTENSIONS *ssl_ext = (SSL_EXTENSIONS *)malloc(sizeof(SSL_EXTENSIONS));
-    ssl_ext->max_fragment_size = 0;
-    ssl_ext->host_name = NULL;
-
-    return ssl_ext;
+    return (SSL_EXTENSIONS *)calloc(1, sizeof(SSL_EXTENSIONS));
 }
 
 /**
- * Allocates new SSL extensions structure and returns pointer to it
+ * Free SSL extensions structure
  *
  */
 EXP_FUNC void STDCALL ssl_ext_free(SSL_EXTENSIONS *ssl_ext)
 {
-    if(ssl_ext == NULL ) {
+    if (ssl_ext == NULL ) 
+    {
         return;
     }
 
-    if(ssl_ext->host_name != NULL) {
-        free(ssl_ext->host_name);
-    }
+    free(ssl_ext->host_name); // strdup()'d in ssl_ext_set_host_name()
+
     free(ssl_ext);
+}
+
+EXP_FUNC void STDCALL ssl_ext_set_host_name(SSL_EXTENSIONS * ext, const char* host_name)
+{
+    free(ext->host_name);
+    ext->host_name = NULL;
+    if (host_name) {
+        ext->host_name = strdup(host_name);
+    }
+}
+
+/**
+ * Set the maximum fragment size for the fragment size negotiation extension
+ */
+EXP_FUNC void STDCALL ssl_ext_set_max_fragment_size(SSL_EXTENSIONS * ext, uint8_t fragment_size)
+{
+    ext->max_fragment_size = fragment_size;
 }
 
 /**
@@ -511,6 +524,15 @@ EXP_FUNC const char * STDCALL ssl_get_cert_dn(const SSL *ssl, int component)
         case SSL_X509_CERT_ORGANIZATIONAL_NAME:       
             return ssl->x509_ctx->cert_dn[X509_ORGANIZATIONAL_UNIT];
 
+        case SSL_X509_CERT_LOCATION:       
+            return ssl->x509_ctx->cert_dn[X509_LOCATION];
+
+        case SSL_X509_CERT_COUNTRY:       
+            return ssl->x509_ctx->cert_dn[X509_COUNTRY];
+
+        case SSL_X509_CERT_STATE:       
+            return ssl->x509_ctx->cert_dn[X509_STATE];
+
         case SSL_X509_CA_CERT_COMMON_NAME:
             return ssl->x509_ctx->ca_cert_dn[X509_COMMON_NAME];
 
@@ -519,6 +541,15 @@ EXP_FUNC const char * STDCALL ssl_get_cert_dn(const SSL *ssl, int component)
 
         case SSL_X509_CA_CERT_ORGANIZATIONAL_NAME:       
             return ssl->x509_ctx->ca_cert_dn[X509_ORGANIZATIONAL_UNIT];
+
+        case SSL_X509_CA_CERT_LOCATION:       
+            return ssl->x509_ctx->ca_cert_dn[X509_LOCATION];
+
+        case SSL_X509_CA_CERT_COUNTRY:       
+            return ssl->x509_ctx->ca_cert_dn[X509_COUNTRY];
+
+        case SSL_X509_CA_CERT_STATE:       
+            return ssl->x509_ctx->ca_cert_dn[X509_STATE];
 
         default:
             return NULL;
@@ -717,20 +748,23 @@ static void increment_write_sequence(SSL *ssl)
 static void add_hmac_digest(SSL *ssl, int mode, uint8_t *hmac_header,
         const uint8_t *buf, int buf_len, uint8_t *hmac_buf)
 {
-    int hmac_len = buf_len + 8 + SSL_RECORD_SIZE;
-    uint8_t *t_buf = (uint8_t *)malloc(buf_len+100);
+    const uint8_t* bufs[] = {
+        (mode == SSL_SERVER_WRITE || mode == SSL_CLIENT_WRITE) ? 
+            ssl->write_sequence : ssl->read_sequence,
+        hmac_header,
+        buf
+    };
 
-    memcpy(t_buf, (mode == SSL_SERVER_WRITE || mode == SSL_CLIENT_WRITE) ? 
-                    ssl->write_sequence : ssl->read_sequence, 8);
-    memcpy(&t_buf[8], hmac_header, SSL_RECORD_SIZE);
-    memcpy(&t_buf[8+SSL_RECORD_SIZE], buf, buf_len);
+    int lengths[] = {
+        8,
+        SSL_RECORD_SIZE,
+        buf_len
+    };
 
-    ssl->cipher_info->hmac(t_buf, hmac_len, 
+    ssl->cipher_info->hmac_v(bufs, lengths, 3,
             (mode == SSL_SERVER_WRITE || mode == SSL_CLIENT_READ) ? 
                 ssl->server_mac : ssl->client_mac, 
             ssl->cipher_info->digest_size, hmac_buf);
-
-    free(t_buf);
 
 #if 0
     print_blob("record", hmac_header, SSL_RECORD_SIZE);
@@ -920,8 +954,8 @@ static void prf(SSL *ssl, const uint8_t *sec, int sec_len,
     {
         int len, i;
         const uint8_t *S1, *S2;
-        uint8_t xbuf[256]; /* needs to be > the amount of key data */
-        uint8_t ybuf[256]; /* needs to be > the amount of key data */
+        uint8_t xbuf[2*(SHA256_SIZE+32+16) + MD5_SIZE]; /* max keyblock */
+        uint8_t ybuf[2*(SHA256_SIZE+32+16) + SHA1_SIZE]; /* max keyblock */
 
         len = sec_len/2;
         S1 = sec;
@@ -944,7 +978,7 @@ void generate_master_secret(SSL *ssl, const uint8_t *premaster_secret)
 {
     uint8_t buf[77]; 
 //print_blob("premaster secret", premaster_secret, 48);
-    strcpy((char *)buf, "master secret");
+    strcpy_P((char*)buf, "master secret");
     memcpy(&buf[13], ssl->dc->client_random, SSL_RANDOM_SIZE);
     memcpy(&buf[45], ssl->dc->server_random, SSL_RANDOM_SIZE);
     prf(ssl, premaster_secret, SSL_SECRET_SIZE, buf, 77, ssl->dc->master_secret,
@@ -964,7 +998,7 @@ static void generate_key_block(SSL *ssl,
         uint8_t *master_secret, uint8_t *key_block, int key_block_size)
 {
     uint8_t buf[77];
-    strcpy((char *)buf, "key expansion");
+    strcpy_P((char *)buf, "key expansion");
     memcpy(&buf[13], server_random, SSL_RANDOM_SIZE);
     memcpy(&buf[45], client_random, SSL_RANDOM_SIZE);
     prf(ssl, master_secret, SSL_SECRET_SIZE, buf, 77, 
@@ -1091,7 +1125,7 @@ static int send_raw_packet(SSL *ssl, uint8_t protocol)
     rec_buf[3] = ssl->bm_index >> 8;
     rec_buf[4] = ssl->bm_index & 0xff;
 
-    DISPLAY_BYTES(ssl, "sending %d bytes", ssl->bm_all_data, 
+    DISPLAY_BYTES(ssl, PSTR("sending %d bytes"), ssl->bm_all_data, 
                              pkt_size, pkt_size);
 
     while (sent < pkt_size)
@@ -1200,7 +1234,7 @@ int send_packet(SSL *ssl, uint8_t protocol, const uint8_t *in, int length)
             msg_length += pad_bytes;
         }
 
-        DISPLAY_BYTES(ssl, "unencrypted write", ssl->bm_data, msg_length);
+        DISPLAY_BYTES(ssl, PSTR("unencrypted write"), ssl->bm_data, msg_length);
         increment_write_sequence(ssl);
 
         /* add the explicit IV for TLS1.1 */
@@ -1335,8 +1369,9 @@ int basic_read(SSL *ssl, uint8_t **in_data)
     uint8_t *buf = ssl->bm_data;
 
     if (ssl->can_free_certificates) {
-        certificate_free(ssl);
+    	certificate_free(ssl);
     }
+
     if (IS_SET_SSL_FLAG(SSL_SENT_CLOSE_NOTIFY))
         return SSL_CLOSE_NOTIFY;
 
@@ -1361,7 +1396,7 @@ int basic_read(SSL *ssl, uint8_t **in_data)
         goto error;
     }
 
-    DISPLAY_BYTES(ssl, "received %d bytes", 
+    DISPLAY_BYTES(ssl, PSTR("received %d bytes"), 
             &ssl->bm_data[ssl->bm_read_index], read_len, read_len);
 
     ssl->got_bytes += read_len;
@@ -1377,7 +1412,7 @@ int basic_read(SSL *ssl, uint8_t **in_data)
     if (IS_SET_SSL_FLAG(SSL_NEED_RECORD))
     {
         /* check for sslv2 "client hello" */
-        if (buf[0] & 0x80 && buf[2] == 1)
+        if ((buf[0] & 0x80) && buf[2] == 1)
         {
 #ifdef CONFIG_SSL_FULL_MODE
             printf("Error: no SSLv23 handshaking allowed\n");
@@ -1438,7 +1473,7 @@ int basic_read(SSL *ssl, uint8_t **in_data)
             goto error;
         }
 
-        DISPLAY_BYTES(ssl, "decrypted", buf, read_len);
+        DISPLAY_BYTES(ssl, PSTR("decrypted"), buf, read_len);
         increment_read_sequence(ssl);
     }
 
@@ -2064,13 +2099,22 @@ error:
 EXP_FUNC int STDCALL ssl_verify_cert(const SSL *ssl)
 {
     int ret;
+    int pathLenConstraint = 0;
+
     SSL_CTX_LOCK(ssl->ssl_ctx->mutex);
-    ret = x509_verify(ssl->ssl_ctx->ca_cert_ctx, ssl->x509_ctx);
+    ret = x509_verify(ssl->ssl_ctx->ca_cert_ctx, ssl->x509_ctx,
+            &pathLenConstraint);
     SSL_CTX_UNLOCK(ssl->ssl_ctx->mutex);
 
     if (ret)        /* modify into an SSL error type */
     {
         ret = SSL_X509_ERROR(ret);
+
+#if defined (CONFIG_SSL_FULL_MODE)
+        if (ssl->ssl_ctx->options & SSL_DISPLAY_CERTS) {
+            x509_print(ssl->x509_ctx, ssl->ssl_ctx->ca_cert_ctx);
+        }
+#endif
     }
 
     return ret;
@@ -2093,6 +2137,8 @@ int process_certificate(SSL *ssl, X509_CTX **x509_ctx)
     int num_certs = 0;
     int i = 0;
     offset += 2;
+
+    ax_wdt_feed();
 
     PARANOIA_CHECK(pkt_size, total_cert_len + offset);
 
@@ -2124,13 +2170,17 @@ int process_certificate(SSL *ssl, X509_CTX **x509_ctx)
         offset++;       /* skip empty char */
         cert_size = (buf[offset]<<8) + buf[offset+1];
         offset += 2;
-        
+        ax_wdt_feed();
         if (x509_new(&buf[offset], NULL, certs+num_certs))
         {
             ret = SSL_ERROR_BAD_CERTIFICATE;
             goto error;
         }
 
+#if defined (CONFIG_SSL_FULL_MODE)
+        if (ssl->ssl_ctx->options & SSL_DISPLAY_CERTS)
+            x509_print(certs[num_certs], NULL);
+#endif
         num_certs++;
         offset += cert_size;
     }
@@ -2150,6 +2200,7 @@ int process_certificate(SSL *ssl, X509_CTX **x509_ctx)
         {
             if (certs[i] == chain) 
                 continue;
+
             if (cert_used[i]) 
                 continue; // don't allow loops
 
@@ -2243,70 +2294,60 @@ EXP_FUNC int STDCALL ssl_match_spki_sha256(const SSL *ssl, const uint8_t* hash)
  */
 void DISPLAY_STATE(SSL *ssl, int is_send, uint8_t state, int not_ok)
 {
-    const char *str;
-
     if (!IS_SET_SSL_FLAG(SSL_DISPLAY_STATES))
         return;
 
-    if(not_ok)
-    	printf("Error - invalid State:\t");
-    else
-    	printf("State:\t");
-
-    if(is_send)
-    	printf("sending ");
-    else
-    	printf("receiving ");
+    if (not_ok) printf("Error - invalid State:\t");
+    else printf("State:\t");
+    if (is_send) printf("sending ");
+    else printf("receiving ");
 
     switch (state)
     {
         case HS_HELLO_REQUEST:
-            str = "Hello Request (0)";
+            printf("Hello Request (0)\n");
             break;
 
         case HS_CLIENT_HELLO:
-            str = "Client Hello (1)";
+            printf("Client Hello (1)\n");
             break;
 
         case HS_SERVER_HELLO:
-            str = "Server Hello (2)";
+            printf("Server Hello (2)\n");
             break;
 
         case HS_CERTIFICATE:
-            str = "Certificate (11)";
+            printf("Certificate (11)\n");
             break;
 
         case HS_SERVER_KEY_XCHG:
-            str = "Certificate Request (12)";
+            printf("Certificate Request (12)\n");
             break;
 
         case HS_CERT_REQ:
-            str = "Certificate Request (13)";
+            printf("Certificate Request (13)\n");
             break;
 
         case HS_SERVER_HELLO_DONE:
-            str = "Server Hello Done (14)";
+            printf("Server Hello Done (14)\n");
             break;
 
         case HS_CERT_VERIFY:
-            str = "Certificate Verify (15)";
+            printf("Certificate Verify (15)\n");
             break;
 
         case HS_CLIENT_KEY_XCHG:
-            str = "Client Key Exchange (16)";
+            printf("Client Key Exchange (16)\n");
             break;
 
         case HS_FINISHED:
-            str = "Finished (16)";
+            printf("Finished (16)\n");
             break;
 
         default:
-            str = "Error (Unknown)";
-            
+            printf("Error (Unknown)\n");
             break;
     }
-
-    printf("%s\n", str);
 }
 
 /**
@@ -2333,7 +2374,12 @@ void DISPLAY_BYTES(SSL *ssl, const char *format,
         return;
 
     va_start(ap, size);
-    print_blob(format, data, size, va_arg(ap, char *));
+    char fmt_ram[64];
+    int len = strlen_P(format) + 1;
+    if (len > sizeof(fmt_ram)) len = sizeof(fmt_ram);
+    memcpy_P(fmt_ram, format, len);
+    fmt_ram[sizeof(fmt_ram)-1] = 0;
+    print_blob(fmt_ram, data, size, va_arg(ap, char *));
     va_end(ap);
     TTY_FLUSH();
 }
@@ -2351,7 +2397,8 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code)
     /* X509 error? */
     if (error_code < SSL_X509_OFFSET)
     {
-        printf("%s\n", x509_display_error(error_code - SSL_X509_OFFSET));
+        char buff[64];
+        printf("%s\n", x509_display_error(error_code - SSL_X509_OFFSET, buff));
         return;
     }
 
@@ -2439,10 +2486,6 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code)
 /**
  * Debugging routine to display alerts.
  */
-
-/**
- * Debugging routine to display alerts.
- */
 void DISPLAY_ALERT(SSL *ssl, int alert)
 {
     if (!IS_SET_SSL_FLAG(SSL_DISPLAY_STATES))
@@ -2464,7 +2507,7 @@ void DISPLAY_ALERT(SSL *ssl, int alert)
             printf("bad record mac");
             break;
 
-        case SSL_ERROR_RECORD_OVERFLOW:
+        case SSL_ALERT_RECORD_OVERFLOW:
             printf("record overlow");
             break;
 
@@ -2544,7 +2587,7 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code) {}
 EXP_FUNC SSL * STDCALL ssl_client_new(SSL_CTX *ssl_ctx, int client_fd, const
         uint8_t *session_id, uint8_t sess_id_size)
 {
-    printf("%s", unsupported_str);
+    printf(unsupported_str);
     return NULL;
 }
 #endif
@@ -2552,20 +2595,20 @@ EXP_FUNC SSL * STDCALL ssl_client_new(SSL_CTX *ssl_ctx, int client_fd, const
 #if !defined(CONFIG_SSL_CERT_VERIFICATION)
 EXP_FUNC int STDCALL ssl_verify_cert(const SSL *ssl)
 {
-    printf("%s", unsupported_str);
+    printf(unsupported_str);
     return -1;
 }
 
 
 EXP_FUNC const char * STDCALL ssl_get_cert_dn(const SSL *ssl, int component)
 {
-    printf("%s", unsupported_str);
+    printf(unsupported_str);
     return NULL;
 }
 
 EXP_FUNC const char * STDCALL ssl_get_cert_subject_alt_dnsname(const SSL *ssl, int index)
 {
-    printf("%s", unsupported_str);
+    printf(unsupported_str);
     return NULL;
 }
 
