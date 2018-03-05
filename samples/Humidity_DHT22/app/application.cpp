@@ -1,6 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include <Libraries/DHT/DHTesp.h>
+#include <Libraries/DHTesp/DHTesp.h>
 
 //#define WORK_PIN 14 // GPIO14
 #define WORK_PIN 2	
@@ -17,7 +17,6 @@ void init()
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
 	dht.setup(WORK_PIN, DHTesp::DHT22);
-	//dht.setup(WORK_PIN);
 	readTemperatureProcTimer.initializeMs(5 * 1000, onTimer_readTemperatures).start();   // every so often.
 		
 	Serial.println("\nDHT improved lib");
