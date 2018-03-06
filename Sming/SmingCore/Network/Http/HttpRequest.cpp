@@ -52,8 +52,10 @@ HttpRequest& HttpRequest::operator = (const HttpRequest& rhs) {
 HttpRequest::~HttpRequest() {
 	delete queryParams;
 	delete stream;
+	delete responseStream;
 	queryParams = NULL;
 	stream = NULL;
+	responseStream = NULL;
 }
 
 HttpRequest* HttpRequest::setURL(const URL& uri) {
