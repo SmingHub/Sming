@@ -157,7 +157,7 @@ String HttpRequest::getBody()
 	if(stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
 		MemoryDataStream *memory = (MemoryDataStream *)stream;
 		char buf[1024];
-		for(int i=0; i< stream->available(); i += 1024) {
+		while(stream->available() > 0) {
 			int available = memory->readMemoryBlock(buf, 1024);
 			memory->seek(max(available, 0));
 			ret += String(buf, available);
