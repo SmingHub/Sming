@@ -99,7 +99,7 @@ uint16_t ArduCAMStream::readMemoryBlock(char* data, int bufSize) {
 
 	}
 
-	int bytesread = min(len, bufSize);
+	int bytesread = min(len, (unsigned int)bufSize);
 
 	ACAM_DEBUG("ArduCAMStream::readMemoryBlock [%d] (%d bytes) remaining (%d bytes)\n", bcount++, bytesread, len);
 
