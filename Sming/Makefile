@@ -182,10 +182,6 @@ EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/
 THIRD_PARTY_DATA = third-party/rboot/Makefile
 EXTRA_INCDIR += third-party/rboot third-party/rboot/appcode 
 
-# => IRremote8266
-MODULES += Libraries/IR/src
-EXTRA_INCDIR += Libraries/IR/src
-
 # => spiffs
 THIRD_PARTY_DATA += third-party/spiffs/makefile
 MODULES		     += third-party/spiffs/src
