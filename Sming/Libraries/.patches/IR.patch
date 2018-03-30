@@ -1,21 +1,12 @@
 diff --git a/src/IRrecv.cpp b/src/IRrecv.cpp
-index 38e2c77..497b624 100644
+index 295d450..3a10b4b 100644
 --- a/src/IRrecv.cpp
 +++ b/src/IRrecv.cpp
-@@ -14,6 +14,7 @@ extern "C" {
- #endif
- #include <algorithm>
- #include "IRremoteESP8266.h"
-+#include "Print.h"
- 
- #ifdef UNIT_TEST
- #undef ICACHE_RAM_ATTR
-@@ -23,62 +24,8 @@ extern "C" {
+@@ -23,62 +23,7 @@ extern "C" {
  // on ESP8266
  // Updated by markszabo (https://github.com/markszabo/IRremoteESP8266) for
  // sending IR code on ESP8266
-+// Updated by Volker Vogelhuber to handle multiple IR commands while decoding not finished
- 
+-
 -// Globals
 -#ifndef UNIT_TEST
 -static ETSTimer timer;
@@ -71,19 +62,17 @@ index 38e2c77..497b624 100644
 -  os_timer_arm(&timer, irparams.timeout, ONCE);
 -}
 -#endif  // UNIT_TEST
++// Updated by Volker Vogelhuber to handle multiple IR commands while decoding not finished
  
  // Start of IRrecv class -------------------
  
-@@ -88,39 +35,15 @@ static void ICACHE_RAM_ATTR gpio_intr() {
- //   bufsize: Nr. of entries to have in the capture buffer. (Default: RAWBUF)
- //   timeout: Nr. of milli-Seconds of no signal before we stop capturing data.
- //            (Default: TIMEOUT_MS)
--//   save_buffer:  Use a second (save) buffer to decode from. (Def: false)
+@@ -91,36 +36,13 @@ static void ICACHE_RAM_ATTR gpio_intr() {
+ //   save_buffer:  Use a second (save) buffer to decode from. (Def: false)
  // Returns:
  //   An IRrecv class object.
 -IRrecv::IRrecv(uint16_t recvpin, uint16_t bufsize, uint8_t timeout,
 -               bool save_buffer) {
-+IRrecv::IRrecv(uint16_t recvpin, uint16_t bufsize, uint8_t timeout ) {
++IRrecv::IRrecv(uint16_t recvpin, uint16_t bufsize, uint8_t timeout) {
 +  lastInterrupt = 0;
 +  m_rawLen = 0;
    irparams.recvpin = recvpin;
@@ -117,7 +106,7 @@ index 38e2c77..497b624 100644
  #if DECODE_HASH
    unknown_threshold = UNKNOWN_THRESHOLD;
  #endif  // DECODE_HASH
-@@ -128,77 +51,19 @@ IRrecv::IRrecv(uint16_t recvpin, uint16_t bufsize, uint8_t timeout,
+@@ -128,79 +50,24 @@ IRrecv::IRrecv(uint16_t recvpin, uint16_t bufsize, uint8_t timeout,
  
  // Class destructor
  IRrecv::~IRrecv(void) {
@@ -135,26 +124,26 @@ index 38e2c77..497b624 100644
 -  // initialize state machine variables
 -  resume();
 -
--#ifndef UNIT_TEST
+ #ifndef UNIT_TEST
 -  // Initialize timer
 -  os_timer_disarm(&timer);
 -  os_timer_setfn(&timer, reinterpret_cast<os_timer_func_t *>(read_timeout),
 -                 NULL);
 -
-   // Attach Interrupt
+-  // Attach Interrupt
 -  attachInterrupt(irparams.recvpin, gpio_intr, CHANGE);
--#endif
++  // initialize state machine variables
 +  attachInterrupt(irparams.recvpin, IRDelegate(&IRrecv::handleInterrupt, this), CHANGE);
-+  //attachInterrupt(irparams.recvpin, handleInterrupt, CHANGE );
+ #endif
  }
  
  void IRrecv::disableIRIn() {
--#ifndef UNIT_TEST
+ #ifndef UNIT_TEST
 -  os_timer_disarm(&timer);
    detachInterrupt(irparams.recvpin);
--#endif
--}
--
+ #endif
+ }
+ 
 -void IRrecv::resume() {
 -  irparams.rcvstate = STATE_IDLE;
 -  irparams.rawlen = 0;
@@ -196,11 +185,17 @@ index 38e2c77..497b624 100644
 -// i.e. It's size.
 -uint16_t IRrecv::getBufSize() {
 -  return irparams.bufsize;
- }
- 
+-}
+-
  #if DECODE_HASH
-@@ -220,45 +85,33 @@ void IRrecv::setUnknownThreshold(uint16_t length) {
- //          the interrupt's memory/state. NULL means don't save it.
+ // Set the minimum length we will consider for reporting UNKNOWN message types.
+ void IRrecv::setUnknownThreshold(uint16_t length) {
+@@ -216,49 +83,35 @@ void IRrecv::setUnknownThreshold(uint16_t length) {
+ //
+ // Args:
+ //   results:  A pointer to where the decoded IR message will be stored.
+-//   save:  A pointer to an irparams_t instance in which to save
+-//          the interrupt's memory/state. NULL means don't save it.
  // Returns:
  //   A boolean indicating if an IR message is ready or not.
 -bool IRrecv::decode(decode_results *results, irparams_t *save) {
@@ -269,7 +264,7 @@ index 38e2c77..497b624 100644
  
    // Reset any previously partially processed results.
    results->decode_type = UNKNOWN;
-@@ -449,8 +302,6 @@ bool IRrecv::decode(decode_results *results, irparams_t *save) {
+@@ -463,8 +316,6 @@ bool IRrecv::decode(decode_results *results, irparams_t *save) {
    }
  #endif  // DECODE_HASH
    // Throw away and start over
@@ -278,7 +273,7 @@ index 38e2c77..497b624 100644
    return false;
  }
  
-@@ -587,6 +438,26 @@ bool IRrecv::matchSpace(uint32_t measured, uint32_t desired,
+@@ -601,6 +452,24 @@ bool IRrecv::matchSpace(uint32_t measured, uint32_t desired,
    return match(measured, desired - excess, tolerance);
  }
  
@@ -300,13 +295,11 @@ index 38e2c77..497b624 100644
 +  else
 +    irparams.rawBuf.add( (uint16_t) (diff / RAWTICK));
 +}
-+
-+
  /* -----------------------------------------------------------------------
   * hashdecode - decode an arbitrary IR code.
   * Instead of decoding using a standard encoding scheme
 diff --git a/src/IRrecv.h b/src/IRrecv.h
-index 18bee3d..515a9f1 100644
+index a5f2166..f603438 100644
 --- a/src/IRrecv.h
 +++ b/src/IRrecv.h
 @@ -12,6 +12,8 @@
@@ -318,11 +311,10 @@ index 18bee3d..515a9f1 100644
  #include "IRremoteESP8266.h"
  
  // Constants
-@@ -61,16 +63,9 @@
- // Types
+@@ -54,15 +56,8 @@
  // information for the interrupt handler
  typedef struct {
--  uint8_t recvpin;              // pin for IR data from detector
+   uint8_t recvpin;              // pin for IR data from detector
 -  uint8_t rcvstate;             // state machine
 -  uint16_t timer;               // state timer, counts 50uS ticks.
 -  uint16_t bufsize;             // max. nr. of entries in the capture buffer.
@@ -332,13 +324,12 @@ index 18bee3d..515a9f1 100644
 -  uint16_t rawlen;              // counter of entries in rawbuf.
 -  uint8_t overflow;             // Buffer overflow indicator.
 -  uint8_t timeout;              // Nr. of milliSeconds before we give up.
-+   uint8_t recvpin;              // pin for IR data from detector
-+   RingBufCPP <uint16_t,RAWBUF> rawBuf; // raw data
-+   uint32_t timeout;              // Nr. of milliSeconds before we give up.
++  RingBufCPP <uint16_t,RAWBUF> rawBuf; // raw data
++  uint32_t timeout;              // Nr. of milliSeconds before we give up.
  } irparams_t;
  
  // results from a data match
-@@ -100,7 +95,7 @@ class decode_results {
+@@ -92,7 +87,7 @@ class decode_results {
  #endif
    };
    uint16_t bits;  // Number of bits in decoded value
@@ -347,7 +338,7 @@ index 18bee3d..515a9f1 100644
    uint16_t rawlen;  // Number of records in rawbuf.
    bool overflow;
    bool repeat;  // Is the result a repeat code?
-@@ -110,14 +105,11 @@ class decode_results {
+@@ -102,10 +97,9 @@ class decode_results {
  class IRrecv {
   public:
    explicit IRrecv(uint16_t recvpin, uint16_t bufsize = RAWBUF,
@@ -359,12 +350,8 @@ index 18bee3d..515a9f1 100644
 +  bool decode(decode_results *results);
    void enableIRIn();
    void disableIRIn();
--  void resume();
--  uint16_t getBufSize();
- #if DECODE_HASH
-   void setUnknownThreshold(uint16_t length);
- #endif
-@@ -131,12 +123,16 @@ class IRrecv {
+   void resume();
+@@ -123,12 +117,16 @@ class IRrecv {
  
   private:
  #endif
@@ -384,7 +371,7 @@ index 18bee3d..515a9f1 100644
    static uint32_t ticksLow(uint32_t usecs, uint8_t tolerance = TOLERANCE,
                             uint16_t delta = 0);
 diff --git a/src/IRremoteESP8266.h b/src/IRremoteESP8266.h
-index 4449ca6..6f69275 100644
+index a684dee..a4dd78f 100644
 --- a/src/IRremoteESP8266.h
 +++ b/src/IRremoteESP8266.h
 @@ -54,7 +54,7 @@
@@ -397,7 +384,7 @@ index 4449ca6..6f69275 100644
  #define SEND_RAW             true
  
 diff --git a/src/IRsend.h b/src/IRsend.h
-index ad53938..b8a9be8 100644
+index 20995a5..1aaaca5 100644
 --- a/src/IRsend.h
 +++ b/src/IRsend.h
 @@ -12,7 +12,7 @@
@@ -409,41 +396,16 @@ index ad53938..b8a9be8 100644
  #define VIRTUAL virtual
  #else
  #define VIRTUAL
-diff --git a/src/ir_JVC.cpp b/src/ir_JVC.cpp
-index 0efc51b..135614b 100644
---- a/src/ir_JVC.cpp
-+++ b/src/ir_JVC.cpp
-@@ -6,7 +6,8 @@
- #include "IRsend.h"
- #include "IRtimer.h"
- #include "IRutils.h"
--
-+#undef min
-+#undef max
- //                             JJJJJ  V   V   CCCC
- //                               J    V   V  C
- //                               J     V V   C
-@@ -69,7 +70,9 @@ void IRsend::sendJVC(uint64_t data, uint16_t nbits, uint16_t repeat) {
-                 data, nbits, 38, true, 0,  // Repeats are handles elsewhere.
-                 33);
-     // Wait till the end of the repeat time window before we send another code.
--    space(std::max(JVC_RPT_LENGTH - JVC_MIN_GAP - usecs.elapsed(), 0U));
-+    // cast to integer, as the usecs.elapsed may be bigger than JVC_RPT_LENGTH - JVC_MIN_GAP
-+    // which would result in a very long space otherwise
-+    space(std::max(int(JVC_RPT_LENGTH - JVC_MIN_GAP - usecs.elapsed()), 0));
-     usecs.reset();
-   }
- }
 diff --git a/src/ir_Mitsubishi.cpp b/src/ir_Mitsubishi.cpp
-index 363eec6..584b394 100644
+index 273a2db..8685856 100644
 --- a/src/ir_Mitsubishi.cpp
 +++ b/src/ir_Mitsubishi.cpp
-@@ -7,6 +7,8 @@
+@@ -6,6 +6,8 @@
+ #include "IRrecv.h"
  #include "IRsend.h"
- #include "IRtimer.h"
  #include "IRutils.h"
-+#undef max
 +#undef min
++#undef max
  
  //    MMMMM  IIIII TTTTT   SSSS  U   U  BBBB   IIIII   SSSS  H   H  IIIII
  //    M M M    I     T    S      U   U  B   B    I    S      H   H    I
@@ -473,17 +435,3 @@ index 3d8d244..f743f3b 100644
  
  //                RRRRRR   CCCCC          MM    MM MM    MM
  //                RR   RR CC    C         MMM  MMM MMM  MMM
-diff --git a/src/ir_Whynter.cpp b/src/ir_Whynter.cpp
-index 17489f4..06d98dd 100644
---- a/src/ir_Whynter.cpp
-+++ b/src/ir_Whynter.cpp
-@@ -6,7 +6,8 @@
- #include "IRsend.h"
- #include "IRtimer.h"
- #include "IRutils.h"
--
-+#undef min
-+#undef max
- //               W   W  H   H  Y   Y N   N TTTTT EEEEE  RRRRR
- //               W   W  H   H   Y Y  NN  N   T   E      R   R
- //               W W W  HHHHH    Y   N N N   T   EEE    RRRR
