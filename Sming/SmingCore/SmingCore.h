@@ -13,6 +13,7 @@
 #include <functional>
 
 #define min(A, B) std::min(A, B)
+#define max(A, B) std::max(A, B)
 
 #include "../Wiring/WiringFrameworkIncludes.h"
 
