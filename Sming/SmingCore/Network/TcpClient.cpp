@@ -50,12 +50,17 @@ TcpClient::~TcpClient()
 	stream = NULL;
 }
 
-bool TcpClient::connect(String server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool TcpClient::connect(const char * server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (isProcessing()) return false;
 
 	state = eTCS_Connecting;
-	return TcpConnection::connect(server.c_str(), port, useSsl, sslOptions);
+	return TcpConnection::connect(server, port, useSsl, sslOptions);
+}
+
+bool TcpClient::connect(String server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+{
+	return TcpClient::connect(server.c_str(), port, useSsl, sslOptions);
 }
 
 bool TcpClient::connect(IPAddress addr, uint16_t port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)

@@ -50,6 +50,7 @@ public:
 
 public:
 	virtual bool connect(String server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(const char * server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
 	virtual bool connect(IPAddress addr, uint16_t port, boolean useSsl = false, uint32_t sslOptions = 0);
 	virtual void close();
 
