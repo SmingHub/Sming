@@ -1,9 +1,9 @@
 diff --git a/bench.c b/bench.c
 deleted file mode 100644
-index 5b452fa..0000000
+index 678f555..0000000
 --- a/bench.c
 +++ /dev/null
-@@ -1,111 +0,0 @@
+@@ -1,128 +0,0 @@
 -/* Copyright Fedor Indutny. All rights reserved.
 - *
 - * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,9 +26,13 @@ index 5b452fa..0000000
 - */
 -#include "http_parser.h"
 -#include <assert.h>
+-#include <stdint.h>
 -#include <stdio.h>
 -#include <string.h>
 -#include <sys/time.h>
+-
+-/* 8 gb */
+-static const int64_t kBytes = 8LL << 30;
 -
 -static const char data[] =
 -    "POST /joyent/http-parser HTTP/1.1\r\n"
@@ -44,7 +48,7 @@ index 5b452fa..0000000
 -    "Referer: https://github.com/joyent/http-parser\r\n"
 -    "Connection: keep-alive\r\n"
 -    "Transfer-Encoding: chunked\r\n"
--    "Cache-Control: max-age=0\r\n\r\nb\r\nhello world\r\n0\r\n\r\n";
+-    "Cache-Control: max-age=0\r\n\r\nb\r\nhello world\r\n0\r\n";
 -static const size_t data_len = sizeof(data) - 1;
 -
 -static int on_info(http_parser* p) {
@@ -73,13 +77,13 @@ index 5b452fa..0000000
 -  int err;
 -  struct timeval start;
 -  struct timeval end;
--  float rps;
 -
 -  if (!silent) {
 -    err = gettimeofday(&start, NULL);
 -    assert(err == 0);
 -  }
 -
+-  fprintf(stderr, "req_len=%d\n", (int) data_len);
 -  for (i = 0; i < iter_count; i++) {
 -    size_t parsed;
 -    http_parser_init(&parser, HTTP_REQUEST);
@@ -89,17 +93,27 @@ index 5b452fa..0000000
 -  }
 -
 -  if (!silent) {
+-    double elapsed;
+-    double bw;
+-    double total;
+-
 -    err = gettimeofday(&end, NULL);
 -    assert(err == 0);
 -
 -    fprintf(stdout, "Benchmark result:\n");
 -
--    rps = (float) (end.tv_sec - start.tv_sec) +
--          (end.tv_usec - start.tv_usec) * 1e-6f;
--    fprintf(stdout, "Took %f seconds to run\n", rps);
+-    elapsed = (double) (end.tv_sec - start.tv_sec) +
+-              (end.tv_usec - start.tv_usec) * 1e-6f;
 -
--    rps = (float) iter_count / rps;
--    fprintf(stdout, "%f req/sec\n", rps);
+-    total = (double) iter_count * data_len;
+-    bw = (double) total / elapsed;
+-
+-    fprintf(stdout, "%.2f mb | %.2f mb/s | %.2f req/sec | %.2f s\n",
+-        (double) total / (1024 * 1024),
+-        bw / (1024 * 1024),
+-        (double) iter_count / elapsed,
+-        elapsed);
+-
 -    fflush(stdout);
 -  }
 -
@@ -107,45 +121,47 @@ index 5b452fa..0000000
 -}
 -
 -int main(int argc, char** argv) {
+-  int64_t iterations;
+-
+-  iterations = kBytes / (int64_t) data_len;
 -  if (argc == 2 && strcmp(argv[1], "infinite") == 0) {
 -    for (;;)
--      bench(5000000, 1);
+-      bench(iterations, 1);
 -    return 0;
 -  } else {
--    return bench(5000000, 0);
+-    return bench(iterations, 0);
 -  }
 -}
 diff --git a/http_parser.c b/http_parser.c
-index 895bf0c..050d0b7 100644
+index 5b5657b..e7a2b3d 100644
 --- a/http_parser.c
 +++ b/http_parser.c
-@@ -22,13 +22,23 @@
+@@ -19,12 +19,22 @@
   * IN THE SOFTWARE.
   */
  #include "http_parser.h"
 -#include <assert.h>
 -#include <stddef.h>
 +#ifdef __ets__
-+	#include <user_config.h>
++    #include <user_config.h>
 +#endif
  #include <ctype.h>
- #include <stdlib.h>
  #include <string.h>
  #include <limits.h>
  
 +#ifdef __ets__
-+	#include <stdarg.h>
-+	#include "m_printf.h"
-+	#undef assert
-+	#define assert(condition) if (!(condition)) m_printf("ASSERT: %s %d", __FUNCTION__, __LINE__)
++    #include <stdarg.h>
++    #include "m_printf.h"
++    #undef assert
++    #define assert(condition) if (!(condition)) m_printf("ASSERT: %s %d", __FUNCTION__, __LINE__)
 +#else
-+	#include <assert.h>
++    #include <assert.h>
 +#endif
 +
  #ifndef ULLONG_MAX
  # define ULLONG_MAX ((uint64_t) -1) /* 2^64-1 */
  #endif
-@@ -186,7 +196,7 @@ static const char *method_strings[] =
+@@ -182,7 +192,7 @@ static const char *method_strings[] =
   *                    | "/" | "[" | "]" | "?" | "="
   *                    | "{" | "}" | SP | HT
   */
@@ -154,7 +170,7 @@ index 895bf0c..050d0b7 100644
  /*   0 nul    1 soh    2 stx    3 etx    4 eot    5 enq    6 ack    7 bel  */
          0,       0,       0,       0,       0,       0,       0,       0,
  /*   8 bs     9 ht    10 nl    11 vt    12 np    13 cr    14 so    15 si   */
-@@ -221,7 +231,7 @@ static const char tokens[256] = {
+@@ -217,7 +227,7 @@ static const char tokens[256] = {
         'x',     'y',     'z',      0,      '|',      0,      '~',       0 };
  
  
@@ -163,7 +179,7 @@ index 895bf0c..050d0b7 100644
    {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
    ,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
    ,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
-@@ -240,7 +250,7 @@ static const int8_t unhex[256] =
+@@ -236,7 +246,7 @@ static const int8_t unhex[256] =
  #endif
  
  
@@ -174,10 +190,10 @@ index 895bf0c..050d0b7 100644
  /*   8 bs     9 ht    10 nl    11 vt    12 np    13 cr    14 so    15 si   */
 diff --git a/test.c b/test.c
 deleted file mode 100644
-index f5744aa..0000000
+index bc4e664..0000000
 --- a/test.c
 +++ /dev/null
-@@ -1,4226 +0,0 @@
+@@ -1,4456 +0,0 @@
 -/* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
 - *
 - * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -258,6 +274,7 @@ index f5744aa..0000000
 -  int message_begin_cb_called;
 -  int headers_complete_cb_called;
 -  int message_complete_cb_called;
+-  int status_cb_called;
 -  int message_complete_on_eof;
 -  int body_is_final;
 -};
@@ -1311,7 +1328,7 @@ index f5744aa..0000000
 -  }
 -
 -#define UNLINK_REQUEST 41
--, {.name = "link request"
+-, {.name = "unlink request"
 -  ,.type= HTTP_REQUEST
 -  ,.raw= "UNLINK /images/my_dog.jpg HTTP/1.1\r\n"
 -         "Host: example.com\r\n"
@@ -1330,6 +1347,26 @@ index f5744aa..0000000
 -  ,.headers= { { "Host", "example.com" }
 -	     , { "Link", "<http://example.com/profiles/sally>; rel=\"tag\"" }
 -             }
+-  ,.body= ""
+-  }
+-
+-#define SOURCE_REQUEST 42
+-, {.name = "source request"
+-  ,.type= HTTP_REQUEST
+-  ,.raw= "SOURCE /music/sweet/music HTTP/1.1\r\n"
+-         "Host: example.com\r\n"
+-         "\r\n"
+-  ,.should_keep_alive= TRUE
+-  ,.message_complete_on_eof= FALSE
+-  ,.http_major= 1
+-  ,.http_minor= 1
+-  ,.method= HTTP_SOURCE
+-  ,.request_path= "/music/sweet/music"
+-  ,.request_url= "/music/sweet/music"
+-  ,.query_string= ""
+-  ,.fragment= ""
+-  ,.num_headers= 1
+-  ,.headers= { { "Host", "example.com" } }
 -  ,.body= ""
 -  }
 -
@@ -1951,6 +1988,167 @@ index f5744aa..0000000
 -  ,.chunk_lengths= { 2 }
 -  }
 -
+-#define HTTP_101_RESPONSE_WITH_UPGRADE_HEADER 22
+-, {.name= "HTTP 101 response with Upgrade header"
+-  ,.type= HTTP_RESPONSE
+-  ,.raw= "HTTP/1.1 101 Switching Protocols\r\n"
+-         "Connection: upgrade\r\n"
+-         "Upgrade: h2c\r\n"
+-         "\r\n"
+-         "proto"
+-  ,.should_keep_alive= TRUE
+-  ,.message_complete_on_eof= FALSE
+-  ,.http_major= 1
+-  ,.http_minor= 1
+-  ,.status_code= 101
+-  ,.response_status= "Switching Protocols"
+-  ,.upgrade= "proto"
+-  ,.num_headers= 2
+-  ,.headers=
+-    { { "Connection", "upgrade" }
+-    , { "Upgrade", "h2c" }
+-    }
+-  }
+-
+-#define HTTP_101_RESPONSE_WITH_UPGRADE_HEADER_AND_CONTENT_LENGTH 23
+-, {.name= "HTTP 101 response with Upgrade and Content-Length header"
+-  ,.type= HTTP_RESPONSE
+-  ,.raw= "HTTP/1.1 101 Switching Protocols\r\n"
+-         "Connection: upgrade\r\n"
+-         "Upgrade: h2c\r\n"
+-         "Content-Length: 4\r\n"
+-         "\r\n"
+-         "body"
+-         "proto"
+-  ,.should_keep_alive= TRUE
+-  ,.message_complete_on_eof= FALSE
+-  ,.http_major= 1
+-  ,.http_minor= 1
+-  ,.status_code= 101
+-  ,.response_status= "Switching Protocols"
+-  ,.body= "body"
+-  ,.upgrade= "proto"
+-  ,.num_headers= 3
+-  ,.headers=
+-    { { "Connection", "upgrade" }
+-    , { "Upgrade", "h2c" }
+-    , { "Content-Length", "4" }
+-    }
+-  }
+-
+-#define HTTP_101_RESPONSE_WITH_UPGRADE_HEADER_AND_TRANSFER_ENCODING 24
+-, {.name= "HTTP 101 response with Upgrade and Transfer-Encoding header"
+-  ,.type= HTTP_RESPONSE
+-  ,.raw= "HTTP/1.1 101 Switching Protocols\r\n"
+-         "Connection: upgrade\r\n"
+-         "Upgrade: h2c\r\n"
+-         "Transfer-Encoding: chunked\r\n"
+-         "\r\n"
+-         "2\r\n"
+-         "bo\r\n"
+-         "2\r\n"
+-         "dy\r\n"
+-         "0\r\n"
+-         "\r\n"
+-         "proto"
+-  ,.should_keep_alive= TRUE
+-  ,.message_complete_on_eof= FALSE
+-  ,.http_major= 1
+-  ,.http_minor= 1
+-  ,.status_code= 101
+-  ,.response_status= "Switching Protocols"
+-  ,.body= "body"
+-  ,.upgrade= "proto"
+-  ,.num_headers= 3
+-  ,.headers=
+-    { { "Connection", "upgrade" }
+-    , { "Upgrade", "h2c" }
+-    , { "Transfer-Encoding", "chunked" }
+-    }
+-  ,.num_chunks_complete= 3
+-  ,.chunk_lengths= { 2, 2 }
+-  }
+-
+-#define HTTP_200_RESPONSE_WITH_UPGRADE_HEADER 25
+-, {.name= "HTTP 200 response with Upgrade header"
+-  ,.type= HTTP_RESPONSE
+-  ,.raw= "HTTP/1.1 200 OK\r\n"
+-         "Connection: upgrade\r\n"
+-         "Upgrade: h2c\r\n"
+-         "\r\n"
+-         "body"
+-  ,.should_keep_alive= FALSE
+-  ,.message_complete_on_eof= TRUE
+-  ,.http_major= 1
+-  ,.http_minor= 1
+-  ,.status_code= 200
+-  ,.response_status= "OK"
+-  ,.body= "body"
+-  ,.upgrade= NULL
+-  ,.num_headers= 2
+-  ,.headers=
+-    { { "Connection", "upgrade" }
+-    , { "Upgrade", "h2c" }
+-    }
+-  }
+-
+-#define HTTP_200_RESPONSE_WITH_UPGRADE_HEADER_AND_CONTENT_LENGTH 26
+-, {.name= "HTTP 200 response with Upgrade and Content-Length header"
+-  ,.type= HTTP_RESPONSE
+-  ,.raw= "HTTP/1.1 200 OK\r\n"
+-         "Connection: upgrade\r\n"
+-         "Upgrade: h2c\r\n"
+-         "Content-Length: 4\r\n"
+-         "\r\n"
+-         "body"
+-  ,.should_keep_alive= TRUE
+-  ,.message_complete_on_eof= FALSE
+-  ,.http_major= 1
+-  ,.http_minor= 1
+-  ,.status_code= 200
+-  ,.response_status= "OK"
+-  ,.num_headers= 3
+-  ,.body= "body"
+-  ,.upgrade= NULL
+-  ,.headers=
+-    { { "Connection", "upgrade" }
+-    , { "Upgrade", "h2c" }
+-    , { "Content-Length", "4" }
+-    }
+-  }
+-
+-#define HTTP_200_RESPONSE_WITH_UPGRADE_HEADER_AND_TRANSFER_ENCODING 27
+-, {.name= "HTTP 200 response with Upgrade and Transfer-Encoding header"
+-  ,.type= HTTP_RESPONSE
+-  ,.raw= "HTTP/1.1 200 OK\r\n"
+-         "Connection: upgrade\r\n"
+-         "Upgrade: h2c\r\n"
+-         "Transfer-Encoding: chunked\r\n"
+-         "\r\n"
+-         "2\r\n"
+-         "bo\r\n"
+-         "2\r\n"
+-         "dy\r\n"
+-         "0\r\n"
+-         "\r\n"
+-  ,.should_keep_alive= TRUE
+-  ,.message_complete_on_eof= FALSE
+-  ,.http_major= 1
+-  ,.http_minor= 1
+-  ,.status_code= 200
+-  ,.response_status= "OK"
+-  ,.num_headers= 3
+-  ,.body= "body"
+-  ,.upgrade= NULL
+-  ,.headers=
+-    { { "Connection", "upgrade" }
+-    , { "Upgrade", "h2c" }
+-    , { "Transfer-Encoding", "chunked" }
+-    }
+-  ,.num_chunks_complete= 3
+-  ,.chunk_lengths= { 2, 2 }
+-  }
+-
 -, {.name= NULL } /* sentinel */
 -};
 -
@@ -2161,6 +2359,9 @@ index f5744aa..0000000
 -response_status_cb (http_parser *p, const char *buf, size_t len)
 -{
 -  assert(p == parser);
+-
+-  messages[num_messages].status_cb_called = TRUE;
+-
 -  strlncat(messages[num_messages].response_status,
 -           sizeof(messages[num_messages].response_status),
 -           buf,
@@ -2585,6 +2786,7 @@ index f5744aa..0000000
 -  } else {
 -    MESSAGE_CHECK_NUM_EQ(expected, m, status_code);
 -    MESSAGE_CHECK_STR_EQ(expected, m, response_status);
+-    assert(m->status_cb_called);
 -  }
 -
 -  if (!connect) {
@@ -2656,7 +2858,9 @@ index f5744aa..0000000
 -    if (!r) return 0;
 -  }
 -
--  MESSAGE_CHECK_STR_EQ(expected, m, upgrade);
+-  if (!connect) {
+-    MESSAGE_CHECK_STR_EQ(expected, m, upgrade);
+-  }
 -
 -  return 1;
 -}
@@ -3493,9 +3697,11 @@ index f5744aa..0000000
 -}
 -
 -void
--test_simple (const char *buf, enum http_errno err_expected)
+-test_simple_type (const char *buf,
+-                  enum http_errno err_expected,
+-                  enum http_parser_type type)
 -{
--  parser_init(HTTP_REQUEST);
+-  parser_init(type);
 -
 -  enum http_errno err;
 -
@@ -3517,6 +3723,12 @@ index f5744aa..0000000
 -        http_errno_name(err_expected), http_errno_name(err), buf);
 -    abort();
 -  }
+-}
+-
+-void
+-test_simple (const char *buf, enum http_errno err_expected)
+-{
+-  test_simple_type(buf, err_expected, HTTP_REQUEST);
 -}
 -
 -void
@@ -3666,6 +3878,30 @@ index f5744aa..0000000
 -  fprintf(stderr,
 -          "\n*** Error expected but none in header whitespace test ***\n");
 -  abort();
+-}
+-
+-void
+-test_no_overflow_parse_url (void)
+-{
+-  int rv;
+-  struct http_parser_url u;
+-
+-  http_parser_url_init(&u);
+-  rv = http_parser_parse_url("http://example.com:8001", 22, 0, &u);
+-
+-  if (rv != 0) {
+-    fprintf(stderr,
+-            "\n*** test_no_overflow_parse_url invalid return value=%d\n",
+-            rv);
+-    abort();
+-  }
+-
+-  if (u.port != 800) {
+-    fprintf(stderr,
+-            "\n*** test_no_overflow_parse_url invalid port number=%d\n",
+-            u.port);
+-    abort();
+-  }
 -}
 -
 -void
@@ -4103,6 +4339,7 @@ index f5744aa..0000000
 -  test_header_nread_value();
 -
 -  //// OVERFLOW CONDITIONS
+-  test_no_overflow_parse_url();
 -
 -  test_header_overflow_error(HTTP_REQUEST);
 -  test_no_overflow_long_body(HTTP_REQUEST, 1000);
@@ -4128,6 +4365,12 @@ index f5744aa..0000000
 -  test_invalid_header_field_content_error(HTTP_RESPONSE);
 -
 -  //// RESPONSES
+-
+-  test_simple_type("HTP/1.1 200 OK\r\n\r\n", HPE_INVALID_VERSION, HTTP_RESPONSE);
+-  test_simple_type("HTTP/01.1 200 OK\r\n\r\n", HPE_INVALID_VERSION, HTTP_RESPONSE);
+-  test_simple_type("HTTP/11.1 200 OK\r\n\r\n", HPE_INVALID_VERSION, HTTP_RESPONSE);
+-  test_simple_type("HTTP/1.01 200 OK\r\n\r\n", HPE_INVALID_VERSION, HTTP_RESPONSE);
+-  test_simple_type("HTTP/1.1\t200 OK\r\n\r\n", HPE_INVALID_VERSION, HTTP_RESPONSE);
 -
 -  for (i = 0; i < response_count; i++) {
 -    test_message(&responses[i]);
@@ -4206,6 +4449,9 @@ index f5744aa..0000000
 -  /// REQUESTS
 -
 -  test_simple("GET / HTP/1.1\r\n\r\n", HPE_INVALID_VERSION);
+-  test_simple("GET / HTTP/01.1\r\n\r\n", HPE_INVALID_VERSION);
+-  test_simple("GET / HTTP/11.1\r\n\r\n", HPE_INVALID_VERSION);
+-  test_simple("GET / HTTP/1.01\r\n\r\n", HPE_INVALID_VERSION);
 -
 -  // Extended characters - see nodejs/test/parallel/test-http-headers-obstext.js
 -  test_simple("GET / HTTP/1.1\r\n"
