@@ -225,6 +225,7 @@ int HttpConnection::staticOnMessageComplete(http_parser* parser)
 	if(connection->incomingRequest->responseStream != NULL) {
 		connection->incomingRequest->responseStream->close();
 		delete connection->incomingRequest->responseStream;
+		connection->incomingRequest->responseStream = NULL;
 	}
 
 	delete connection->incomingRequest;

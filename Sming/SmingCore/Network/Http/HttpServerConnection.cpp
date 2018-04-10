@@ -90,7 +90,8 @@ int HttpServerConnection::staticOnMessageBegin(http_parser* parser)
 	return 0;
 }
 
-int HttpServerConnection::staticOnPath(http_parser *parser, const char *at, size_t length) {
+int HttpServerConnection::staticOnPath(http_parser *parser, const char *at, size_t length)
+{
 	HttpServerConnection *connection = (HttpServerConnection*)parser->data;
 	if(connection == NULL) {
 		// something went wrong
@@ -150,6 +151,7 @@ int HttpServerConnection::staticOnMessageComplete(http_parser* parser)
 	if(connection->request.responseStream != NULL) {
 		connection->request.responseStream->close();
 		delete connection->request.responseStream;
+		connection->request.responseStream = NULL;
 	}
 
 	return hasError;
@@ -175,7 +177,7 @@ int HttpServerConnection::staticOnHeadersComplete(http_parser* parser)
 	 * chunked' headers that indicate the presence of a body.
 	 *
 	 * Returning `2` from on_headers_complete will tell parser that it should not
-	 * expect neither a body nor any futher responses on this connection. This is
+	 * expect neither a body nor any further responses on this connection. This is
 	 * useful for handling responses to a CONNECT request which may not contain
 	 * `Upgrade` or `Connection: upgrade` headers.
 	 */
@@ -509,7 +511,8 @@ bool HttpServerConnection::sendResponseBody(HttpResponse *response)
 
 }
 
-void HttpServerConnection::onError(err_t err) {
+void HttpServerConnection::onError(err_t err)
+{
 	TcpClient::onError(err);
 }
 
