@@ -10,6 +10,11 @@
 
 #define SMING_VERSION "3.5.1" // Major Minor Sub
 
+#include <functional>
+
+#define min(A, B) std::min(A, B)
+#define max(A, B) std::max(A, B)
+
 #include "../Wiring/WiringFrameworkIncludes.h"
 
 #include "Delegate.h"
