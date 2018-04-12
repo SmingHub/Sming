@@ -44,6 +44,20 @@ Timer& Timer::initializeUs(uint32_t microseconds, TimerDelegate delegateFunction
 	return *this;
 }
 
+Timer& Timer::initializeMs(uint32_t milliseconds, TimerDelegateStdFunction delegateFunction)
+{
+	setCallback(delegateFunction);
+	setIntervalMs(milliseconds);
+	return *this;
+}
+
+Timer& Timer::initializeUs(uint32_t microseconds, TimerDelegateStdFunction delegateFunction)
+{
+	setCallback(delegateFunction);
+	setIntervalUs(microseconds);
+	return *this;
+}
+
 void Timer::start(bool repeating/* = true*/)
 {
 	this->repeating = repeating;
@@ -135,6 +149,7 @@ void Timer::setCallback(InterruptCallback interrupt/* = NULL*/)
 	ETS_INTR_LOCK();
 	callback = interrupt;
 	delegate_func = nullptr;
+	delegate_stdfunc = nullptr;
 	ETS_INTR_UNLOCK();
 
 	if (!interrupt)
@@ -146,6 +161,19 @@ void Timer::setCallback(TimerDelegate delegateFunction)
 	ETS_INTR_LOCK();
 	callback = nullptr;
 	delegate_func = delegateFunction;
+	delegate_stdfunc = nullptr;
+	ETS_INTR_UNLOCK();
+
+	if (!delegateFunction)
+		stop();
+}
+
+void Timer::setCallback(const TimerDelegateStdFunction& delegateFunction)
+{
+	ETS_INTR_LOCK();
+	callback = nullptr;
+	delegate_func = nullptr;
+	delegate_stdfunc = delegateFunction;
 	ETS_INTR_UNLOCK();
 
 	if (!delegateFunction)
@@ -196,6 +224,10 @@ void Timer::tick()
 	else if (delegate_func)
 	{
 		delegate_func();
+	}
+	else if (delegate_stdfunc)
+	{
+		delegate_stdfunc();
 	}
 	else{
 		stop();
