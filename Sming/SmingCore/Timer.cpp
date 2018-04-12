@@ -168,7 +168,7 @@ void Timer::setCallback(TimerDelegate delegateFunction)
 		stop();
 }
 
-void Timer::setCallback(TimerDelegateStdFunction delegateFunction)
+void Timer::setCallback(const TimerDelegateStdFunction& delegateFunction)
 {
 	ETS_INTR_LOCK();
 	callback = nullptr;

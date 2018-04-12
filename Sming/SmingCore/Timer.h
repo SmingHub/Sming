@@ -145,7 +145,7 @@ public:
 	*  @param  delegateFunction Function to be called on timer trigger
 	*  @note   Delegate callback method
 	*/
-	void IRAM_ATTR setCallback(TimerDelegateStdFunction delegateFunction);
+	void IRAM_ATTR setCallback(const TimerDelegateStdFunction& delegateFunction);
 
 
 protected:
