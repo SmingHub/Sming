@@ -16,7 +16,9 @@ public :
 	};
 	bool setTimer(int reqInterval) {
 		if (reqInterval <= 0) 
+		{
 			return false;
+		}
 		ledInterval = reqInterval;
 		return true;
 	}
@@ -107,7 +109,6 @@ private :
 
 LedBlinker myLed1 = LedBlinker(LEDPIN_1);
 LedBlinker myLed2 = LedBlinker(LEDPIN_2);
-
 LedBlinker myLed3 = LedBlinker(0);
 LedBlinker myLed4 = LedBlinker(0);
 LedBlinker myLed5 = LedBlinker(0);
@@ -119,8 +120,7 @@ void init()
 	
 	myLed2.setTimer(500);
 	myLed2.blinkOldDelegate(true);
-
-
+	
 	myLed3.setTimer(1000);
 	myLed3.callPlainOldOrdinaryFunction(true);
 
@@ -129,5 +129,4 @@ void init()
 
 	myLed5.setTimer(1000);
 	myLed5.callLamda(true);
-
 }

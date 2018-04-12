@@ -60,15 +60,15 @@ public:
      *  @param  milliseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
-	 *  @Deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
-	 */
+     *  @deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
+     */
 	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = NULL); // Init in Milliseconds.
 
     /** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
-	 *  @Deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
+     *  @deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
      */
 	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = NULL); // Init in Microseconds.
 
@@ -163,7 +163,7 @@ private:
     uint64_t interval = 0;
     InterruptCallback callback = nullptr;
     TimerDelegate delegate_func = nullptr;
-	TimerDelegateStdFunction delegate_stdfunc = nullptr;
+    TimerDelegateStdFunction delegate_stdfunc = nullptr;
     bool repeating = false;
     bool started = false;
 
