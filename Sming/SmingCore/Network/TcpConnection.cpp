@@ -5,6 +5,7 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+#include <algorithm>
 #include "TcpConnection.h"
 
 #include "../../SmingCore/DataSourceStream.h"
@@ -265,7 +266,7 @@ int TcpConnection::write(IDataSourceStream* stream)
 		do
 		{
 			pushCount++;
-			int read = min(NETWORK_SEND_BUFFER_SIZE, getAvailableWriteSize());
+			int read = std::min((uint16_t)NETWORK_SEND_BUFFER_SIZE, getAvailableWriteSize());
 			if (read > 0)
 				available = stream->readMemoryBlock(buffer, read);
 			else
@@ -275,7 +276,7 @@ int TcpConnection::write(IDataSourceStream* stream)
 			{
 				int written = write(buffer, available, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
 				total += written;
-				stream->seek(max(written, 0));
+				stream->seek(std::max(written, 0));
 				debug_d("Written: %d, Available: %d, isFinished: %d, PushCount: %d [TcpBuf: %d]", written, available, (stream->isFinished()?1:0), pushCount, tcp_sndbuf(tcp));
 				repeat = written == available && !stream->isFinished() && pushCount < 25;
 			}

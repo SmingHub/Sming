@@ -239,7 +239,7 @@ err_t MqttClient::onReceive(pbuf *buf)
 					continue;
 			}
 
-			int available = min(waitingSize, buf->tot_len - received);
+			int available = std::min(waitingSize, buf->tot_len - received);
 			waitingSize -= available;
 			if (current != NULL)
 			{

@@ -5,7 +5,7 @@
  modify it under the terms of the GNU General Public License
  version 2 as published by the Free Software Foundation.
  */
-
+#include "Arduino.h"
 #include "nRF24L01.h"
 #include "RF24_config.h"
 #include "RF24.h"

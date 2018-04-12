@@ -10,6 +10,7 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+#include <algorithm>
 #include "HttpRequest.h"
 
 HttpRequest::HttpRequest(const URL& uri) {
@@ -159,7 +160,7 @@ String HttpRequest::getBody()
 		char buf[1024];
 		while(stream->available() > 0) {
 			int available = memory->readMemoryBlock(buf, 1024);
-			memory->seek(max(available, 0));
+			memory->seek(std::max(available, 0));
 			ret += String(buf, available);
 			if(available < 1024) {
 				break;
