@@ -1,0 +1,141 @@
+diff --git a/RF24.cpp b/RF24.cpp
+index 9471583..3f24db0 100644
+--- a/RF24.cpp
++++ b/RF24.cpp
+@@ -18,7 +18,7 @@ void RF24::csn(int mode)
+   // If we assume 2Mbs data rate and 16Mhz clock, a
+   // divider of 4 is the minimum we want.
+   // CLK:BUS 8Mhz:2Mhz, 16Mhz:4Mhz, or 20Mhz:5Mhz
+-#ifdef ARDUINO
++#if defined(ARDUINO) && !defined(__ESP8266_EX__)
+   SPI.setBitOrder(MSBFIRST);
+   SPI.setDataMode(SPI_MODE0);
+   SPI.setClockDivider(SPI_CLOCK_DIV4);
+@@ -379,7 +379,7 @@ void RF24::begin(void)
+ 
+   // Reset current status
+   // Notice reset and flush is the last thing we do
+-  write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
++  write_register(REG_STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
+ 
+   // Set up default configuration.  Callers can always change it later.
+   // This channel should be universally safe and not bleed over into adjacent
+@@ -396,7 +396,7 @@ void RF24::begin(void)
+ void RF24::startListening(void)
+ {
+   write_register(CONFIG, read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX));
+-  write_register(STATUS, _BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
++  write_register(REG_STATUS, _BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
+ 
+   // Restore the pipe0 adddress, if exists
+   if (pipe0_reading_address)
+@@ -562,12 +562,12 @@ bool RF24::available(uint8_t* pipe_num)
+     // ??? Should this REALLY be cleared now?  Or wait until we
+     // actually READ the payload?
+ 
+-    write_register(STATUS,_BV(RX_DR) );
++    write_register(REG_STATUS,_BV(RX_DR) );
+ 
+     // Handle ack payload receipt
+     if ( status & _BV(TX_DS) )
+     {
+-      write_register(STATUS,_BV(TX_DS));
++      write_register(REG_STATUS,_BV(TX_DS));
+     }
+   }
+ 
+@@ -591,7 +591,7 @@ void RF24::whatHappened(bool& tx_ok,bool& tx_fail,bool& rx_ready)
+ {
+   // Read the status & reset the status in one easy call
+   // Or is that such a good idea?
+-  uint8_t status = write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
++  uint8_t status = write_register(REG_STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
+ 
+   // Report to the user what happened
+   tx_ok = status & _BV(TX_DS);
+diff --git a/RF24.h b/RF24.h
+index 18914f0..3d9ff70 100644
+--- a/RF24.h
++++ b/RF24.h
+@@ -15,7 +15,7 @@
+ #ifndef __RF24_H__
+ #define __RF24_H__
+ 
+-#include <RF24_config.h>
++#include "RF24_config.h"
+ 
+ /**
+  * Power Amplifier level.
+diff --git a/RF24_config.h b/RF24_config.h
+index fc7397f..ba2288a 100644
+--- a/RF24_config.h
++++ b/RF24_config.h
+@@ -38,7 +38,7 @@ extern HardwareSPI SPI;
+ 
+ // Avoid spurious warnings
+ #if 1
+-#if ! defined( NATIVE ) && defined( ARDUINO )
++#if ! defined( NATIVE ) && defined( ARDUINO ) && !defined(__ESP8266_EX__)
+ #undef PROGMEM
+ #define PROGMEM __attribute__(( section(".progmem.data") ))
+ #undef PSTR
+@@ -47,10 +47,10 @@ extern HardwareSPI SPI;
+ #endif
+ 
+ // Progmem is Arduino-specific
+-#ifdef ARDUINO
++#if defined(ARDUINO) && !defined(__ESP8266_EX__)
+ #include <avr/pgmspace.h>
+ #define PRIPSTR "%S"
+-#else
++#elif !defined(__ESP8266_EX__)
+ typedef char const char;
+ typedef uint16_t prog_uint16_t;
+ #define PSTR(x) (x)
+diff --git a/nRF24L01.h b/nRF24L01.h
+index 2012ce6..317929c 100644
+--- a/nRF24L01.h
++++ b/nRF24L01.h
+@@ -30,7 +30,7 @@
+ #define SETUP_RETR  0x04
+ #define RF_CH       0x05
+ #define RF_SETUP    0x06
+-#define STATUS      0x07
++#define REG_STATUS      0x07
+ #define OBSERVE_TX  0x08
+ #define CD          0x09
+ #define RX_ADDR_P0  0x0A
+diff --git a/tests/pingpair_blocking/runtest.py b/tests/pingpair_blocking/runtest.py
+index 0772f95..76b41ad 100755
+--- a/tests/pingpair_blocking/runtest.py
++++ b/tests/pingpair_blocking/runtest.py
+@@ -3,7 +3,7 @@
+ import sys,serial
+ 
+ def read_until(token):
+-	while 1: 
++	while 1:
+ 		line = ser.readline(None)
+ 		sys.stdout.write(line)
+ 
+diff --git a/tests/pingpair_test/runtest.py b/tests/pingpair_test/runtest.py
+index 45fb65c..03ab9a8 100755
+--- a/tests/pingpair_test/runtest.py
++++ b/tests/pingpair_test/runtest.py
+@@ -3,7 +3,7 @@
+ import sys,serial
+ 
+ def read_until(token):
+-	while 1: 
++	while 1:
+ 		line = ser.readline(None,"\r")
+ 		sys.stdout.write(line)
+ 
+diff --git a/library.properties b/library.properties
+new file mode 100644
+index 0000000..9db2c7c
+--- /dev/null
++++ b/library.properties
+@@ -0,0 +1,2 @@
++category=Radio
++url=https://github.com/maniacbug/RF24

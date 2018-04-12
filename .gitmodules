@@ -85,3 +85,7 @@
 	path = Sming/Libraries/DFRobotDFPlayerMini
 	url = https://github.com/DFRobot/DFRobotDFPlayerMini.git
 	ignore = dirty
+[submodule "Sming/Libraries/RF24"]
+	path = Sming/Libraries/RF24
+	url = https://github.com/maniacbug/RF24.git
+	ignore = dirty
