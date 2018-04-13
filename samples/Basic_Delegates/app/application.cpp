@@ -1,7 +1,6 @@
 #include <user_config.h>
 #include <SmingCore.h>
 
-
 void plainOldOrdinaryFunction()
 {
 	debugf("plainOldOrdinaryFunction");
@@ -15,8 +14,7 @@ public :
 		pinMode(ledPin, OUTPUT);
 	};
 	bool setTimer(int reqInterval) {
-		if (reqInterval <= 0) 
-		{
+		if (reqInterval <= 0) {
 			return false;
 		}
 		ledInterval = reqInterval;
@@ -56,9 +54,9 @@ public :
 				()  // No parameters to the callback
 				{
 					debugf("lamda Callback ");
-					if (foo > 123)
+					if (foo > 123) {
 						debugf("foo is 123");
-			
+					}
 				})
 				.start();
 		}
