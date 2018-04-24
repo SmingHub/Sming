@@ -6,6 +6,7 @@
  ****/
 
 #include "../SmingCore/DataSourceStream.h"
+#include <algorithm>
 
 int IDataSourceStream::read()
 {
@@ -91,7 +92,7 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 
 uint16_t MemoryDataStream::readMemoryBlock(char* data, int bufSize)
 {
-	int available = min(size - (pos - buf), bufSize);
+	int available = std::min(size - (pos - buf), bufSize);
 	memcpy(data, pos, available);
 	return available;
 }
@@ -154,7 +155,7 @@ FileStream::~FileStream()
 
 uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 {
-	int len = min(bufSize, size - pos);
+	int len = std::min(bufSize, size - pos);
 	int available = fileRead(handle, data, len);
 	fileSeek(handle, pos, eSO_FileStart); // Don't move cursor now (waiting seek)
 	if(available < 0) {
@@ -250,7 +251,7 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 			debug_d("var %s not found", varName.c_str());
 			state = eTES_Wait;
 			int len = FileStream::readMemoryBlock(data, bufSize);
-			return min(len, skipBlockSize);
+			return std::min(len, skipBlockSize);
 		}
 	}
 	else if (state == eTES_SendingVar)
