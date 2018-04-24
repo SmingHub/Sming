@@ -1,5 +1,7 @@
 #include "HttpChunkedStream.h"
 
+#include <algorithm>
+
 HttpChunkedStream::HttpChunkedStream(ReadWriteStream *stream)
 {
 	this->stream = stream;
@@ -43,7 +45,7 @@ uint16_t HttpChunkedStream::readMemoryBlock(char* data, int bufSize)
 	int len = readSize;
 	char buffer[len];
 	len = stream->readMemoryBlock(buffer, len);
-	stream->seek(max(len, 0));
+	stream->seek(std::max(len, 0));
 	if(len < 1) {
 		return 0;
 	}

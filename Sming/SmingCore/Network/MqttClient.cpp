@@ -47,7 +47,7 @@ void MqttClient::setPingRepeatTime(int seconds)
 {
 	if (PingRepeatTime > keepAlive)
 	   PingRepeatTime = keepAlive;
-	else   
+	else
 	   PingRepeatTime = seconds;
 }
 
@@ -239,7 +239,7 @@ err_t MqttClient::onReceive(pbuf *buf)
 					continue;
 			}
 
-			int available = min(waitingSize, buf->tot_len - received);
+			int available = std::min(waitingSize, buf->tot_len - received);
 			waitingSize -= available;
 			if (current != NULL)
 			{
