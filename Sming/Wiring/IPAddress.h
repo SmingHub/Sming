@@ -66,6 +66,8 @@ public:
     operator uint32_t() { return *((uint32_t*)_address); };
     operator ip_addr() { ip_addr ret; ret.addr = *((uint32_t*)_address); return ret; };
     operator ip_addr*() { return (ip_addr*)_address; };
+
+    operator char*() { return (char *)toString().c_str(); }
 #if LWIP_VERSION_MAJOR == 2
     operator ip_addr_t*() { return (ip_addr_t*)_address; };
 #endif

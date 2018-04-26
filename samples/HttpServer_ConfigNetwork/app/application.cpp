@@ -18,10 +18,16 @@ void onIndex(HttpRequest &request, HttpResponse &response)
 	response.sendTemplate(tmpl); // will be automatically deleted
 }
 
-void onIpConfig(HttpRequest &request, HttpResponse &response)
+int onIpConfig(HttpServerConnection& connection, HttpRequest &request, HttpResponse &response)
 {
 	if (request.method == HTTP_POST)
 	{
+		debugf("Request coming from IP: %s", (char *)connection.getRemoteIp());
+		// If desired you can also limit the access based on remote IP. Example below:
+//		if(!(IPAddress("192.168.4.23") == connection.getRemoteIp())) {
+//			return 1; // error
+//		}
+
 		AppSettings.dhcp = request.getPostParameter("dhcp") == "1";
 		AppSettings.ip = request.getPostParameter("ip");
 		AppSettings.netmask = request.getPostParameter("netmask");
@@ -51,6 +57,8 @@ void onIpConfig(HttpRequest &request, HttpResponse &response)
 	}
 
 	response.sendTemplate(tmpl); // will be automatically deleted
+
+	return 0;
 }
 
 void onFile(HttpRequest &request, HttpResponse &response)
