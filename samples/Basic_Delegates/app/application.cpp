@@ -6,88 +6,82 @@ void plainOldOrdinaryFunction()
 	debugf("plainOldOrdinaryFunction");
 }
 
-class LedBlinker
+
+void functionWithMoreComlicatedSignature(int a, String b)
+{
+	debugf("functionWithMoreComlicatedSignature %d %s", a, b.c_str());
+}
+
+
+class Task
 {
 
 public :
-	LedBlinker(int reqPin) : ledPin(reqPin) {
-		pinMode(ledPin, OUTPUT);
-	};
+	Task() {};
 	bool setTimer(int reqInterval) {
 		if (reqInterval <= 0) {
 			return false;
 		}
-		ledInterval = reqInterval;
+		taskInterval = reqInterval;
 		return true;
 	}
 
 	// This example show the way delegates have been used in Sming in the past.
-	void blinkOldDelegate(bool reqRun) {
-		if (reqRun) {
-			ledTimer.initializeMs(ledInterval, TimerDelegate(&LedBlinker::ledBlink, this)).start();
-		}
-		else {
-			ledTimer.stop();
-		}
+	void blinkOldDelegate() {
+		taskTimer.initializeMs(taskInterval, TimerDelegate(&Task::doOldDelegate, this)).start();
 	}
 
 	// This example shows how to use a plain old ordinary function as a callback
-	void callPlainOldOrdinaryFunction(bool reqRun) {
-		if (reqRun) {
-			ledTimer.initializeMs(ledInterval, TimerDelegateStdFunction(plainOldOrdinaryFunction)).start();
-			// or just
-			// ledTimer.initializeMs(ledInterval, plainOldOrdinaryFunction).start();
-		}
-		else {
-			ledTimer.stop();
-		}
+	void callPlainOldOrdinaryFunction() {
+		taskTimer.initializeMs(taskInterval, TimerDelegateStdFunction(plainOldOrdinaryFunction)).start();
+		// or just
+		// taskTimer.initializeMs(taskInterval, plainOldOrdinaryFunction).start();
 	}
 
+
+	// This example shows how to use std::bind to make us of a function that has more parameters than our signature has
+	void showHowToUseBind() {
+		auto b = std::bind(functionWithMoreComlicatedSignature, 2, "parameters");
+		taskTimer.initializeMs(taskInterval, b).start();
+	}
 
 	// Sming now allows the use of std::function
 	// This example shows how to use a lamda expression as a callback
-	void callLamda(bool reqRun) {
-		if (reqRun) {
-			int foo = 123;
-			ledTimer.initializeMs(ledInterval, 
-				[&]	// capture everything by reference - so foo will be available inside the lamda
-				()  // No parameters to the callback
+	void callLamda() {
+		int foo = 123;
+		taskTimer.initializeMs(taskInterval, 
+			[foo]		// capture just foo by value (Note it would be bad to pass by reference as foo would be out of scope when the lamda function runs later)
+			()			// No parameters to the callback
+			-> void		// Returns nothing
+			{
+				if (foo == 123) {
+					debugf("lamda Callback foo is 123");
+				}
+				else
 				{
-					debugf("lamda Callback ");
-					if (foo > 123) {
-						debugf("foo is 123");
-					}
-				})
-				.start();
-		}
-		else {
-			ledTimer.stop();
-		}
+					debugf("lamda Callback foo is not 123, crikey!");
+				}
+			})
+			.start();
 	}
 
-
+	
 
 	// This example shows how to use a member function as a callback
-	void callMemberFunction(bool reqRun) {
-		if (reqRun) {
+	void callMemberFunction() {
 
-			// A non-static member function must be called with an object. 
-			// That is, it always implicitly passes "this" pointer as its argument.
-			// But because our callback specifies that we don't take any arguments (<void(void)>), 
-			// you must use std::bind to bind the first (and the only) argument.
+		// A non-static member function must be called with an object. 
+		// That is, it always implicitly passes "this" pointer as its argument.
+		// But because our callback specifies that we don't take any arguments (<void(void)>), 
+		// you must use std::bind to bind the first (and the only) argument.
 
-			TimerDelegateStdFunction b = std::bind(&LedBlinker::callbackMemberFunction, this);
-			ledTimer.initializeMs(ledInterval, b).start();
-		}
-		else {
-			ledTimer.stop();
-		}
+		TimerDelegateStdFunction b = std::bind(&Task::callbackMemberFunction, this);
+		taskTimer.initializeMs(taskInterval, b).start();
 	}
 
-	void ledBlink()
-	{
-		ledState = !ledState;
-		digitalWrite(ledPin, ledState);
+	void doOldDelegate()
+	{		
+		debugf("doOldDelegate");
 	}
 	void callbackMemberFunction()
 	{
@@ -96,35 +90,36 @@ public :
 	
 
 private :
-	int ledPin = 2;
-	Timer ledTimer;
-	int ledInterval = 1000;
-	bool ledState = true;
+	Timer taskTimer;
+	int taskInterval = 1000;
+
 };
 
-#define LEDPIN_1  2 // GPIO2
-#define LEDPIN_2  4 // GPIO4
-
-LedBlinker myLed1 = LedBlinker(LEDPIN_1);
-LedBlinker myLed2 = LedBlinker(LEDPIN_2);
-LedBlinker myLed3 = LedBlinker(0);
-LedBlinker myLed4 = LedBlinker(0);
-LedBlinker myLed5 = LedBlinker(0);
+Task task1;
+Task task2;
+Task task3;
+Task task4;
+Task task5;
 
 void init()
 {
-	myLed1.setTimer(1000);
-	myLed1.blinkOldDelegate(true);
-	
-	myLed2.setTimer(500);
-	myLed2.blinkOldDelegate(true);
-	
-	myLed3.setTimer(1000);
-	myLed3.callPlainOldOrdinaryFunction(true);
+	WifiStation.enable(false);
+	WifiAccessPoint.enable(false);
+	Serial.begin(115200);
 
-	myLed4.setTimer(1000);
-	myLed4.callMemberFunction(true);
+	task1.setTimer(1500);
+	task1.blinkOldDelegate();
+	
+	task2.setTimer(1600);
+	task2.callPlainOldOrdinaryFunction();
 
-	myLed5.setTimer(1000);
-	myLed5.callLamda(true);
+	task3.setTimer(1900);
+	task3.showHowToUseBind();
+	
+	task4.setTimer(1700);
+	task4.callMemberFunction();
+
+	task5.setTimer(1800);
+	task5.callLamda();
+
 }
