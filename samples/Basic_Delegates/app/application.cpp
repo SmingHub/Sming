@@ -16,7 +16,7 @@ void functionWithMoreComlicatedSignature(int a, String b)
 class Task
 {
 
-public :
+public:
 	Task() {};
 	bool setTimer(int reqInterval) {
 		if (reqInterval <= 0) {
@@ -49,23 +49,23 @@ public :
 	// This example shows how to use a lamda expression as a callback
 	void callLamda() {
 		int foo = 123;
-		taskTimer.initializeMs(taskInterval, 
+		taskTimer.initializeMs(taskInterval,
 			[foo]		// capture just foo by value (Note it would be bad to pass by reference as foo would be out of scope when the lamda function runs later)
-			()			// No parameters to the callback
+		()			// No parameters to the callback
 			-> void		// Returns nothing
+		{
+			if (foo == 123) {
+				debugf("lamda Callback foo is 123");
+			}
+			else
 			{
-				if (foo == 123) {
-					debugf("lamda Callback foo is 123");
-				}
-				else
-				{
-					debugf("lamda Callback foo is not 123, crikey!");
-				}
-			})
+				debugf("lamda Callback foo is not 123, crikey!");
+			}
+		})
 			.start();
 	}
 
-	
+
 
 	// This example shows how to use a member function as a callback
 	void callMemberFunction() {
@@ -80,16 +80,16 @@ public :
 	}
 
 	void doOldDelegate()
-	{		
+	{
 		debugf("doOldDelegate");
 	}
 	void callbackMemberFunction()
 	{
 		debugf("callMemberFunction");
 	}
-	
 
-private :
+
+private:
 	Timer taskTimer;
 	int taskInterval = 1000;
 
@@ -109,13 +109,13 @@ void init()
 
 	task1.setTimer(1500);
 	task1.blinkOldDelegate();
-	
+
 	task2.setTimer(1600);
 	task2.callPlainOldOrdinaryFunction();
 
 	task3.setTimer(1900);
 	task3.showHowToUseBind();
-	
+
 	task4.setTimer(1700);
 	task4.callMemberFunction();
 
