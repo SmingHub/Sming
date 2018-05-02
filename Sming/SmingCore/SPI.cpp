@@ -197,7 +197,7 @@ void SPIClass::transfer(uint8 *buffer, size_t numberBytes) {
 	while  (blocks--) {
 
 		// get full BLOCKSIZE or number of remaining bytes
-		bufLenght = min(numberBytes-bufIndx, BLOCKSIZE);
+		bufLenght = std::min(numberBytes-bufIndx, (unsigned int)BLOCKSIZE);
 
 #ifdef SPI_DEBUG
 		debugf("Write/Read Block %d total %d bytes", total-blocks, bufLenght);
@@ -453,7 +453,7 @@ void SPIClass::setFrequency(int freq) {
 		return;
 	}
 
-	freq = min(freq, _CPU_freq/2);
+	freq = std::min(freq, _CPU_freq/2);
 	_SPISettings._speed = freq;
 
 

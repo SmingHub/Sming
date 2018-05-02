@@ -10,6 +10,8 @@
 
 #define SMING_VERSION "3.5.1" // Major Minor Sub
 
+#include <functional>
+
 #include "../Wiring/WiringFrameworkIncludes.h"
 
 #include "Delegate.h"

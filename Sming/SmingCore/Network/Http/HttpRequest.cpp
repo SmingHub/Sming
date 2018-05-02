@@ -12,6 +12,8 @@
 
 #include "HttpRequest.h"
 
+#include <algorithm>
+
 HttpRequest::HttpRequest(const URL& uri) {
 	this->uri = uri;
 }
@@ -52,8 +54,10 @@ HttpRequest& HttpRequest::operator = (const HttpRequest& rhs) {
 HttpRequest::~HttpRequest() {
 	delete queryParams;
 	delete stream;
+	delete responseStream;
 	queryParams = NULL;
 	stream = NULL;
+	responseStream = NULL;
 }
 
 HttpRequest* HttpRequest::setURL(const URL& uri) {
@@ -155,9 +159,9 @@ String HttpRequest::getBody()
 	if(stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
 		MemoryDataStream *memory = (MemoryDataStream *)stream;
 		char buf[1024];
-		for(int i=0; i< stream->available(); i += 1024) {
+		while(stream->available() > 0) {
 			int available = memory->readMemoryBlock(buf, 1024);
-			memory->seek(max(available, 0));
+			memory->seek(std::max(available, 0));
 			ret += String(buf, available);
 			if(available < 1024) {
 				break;
