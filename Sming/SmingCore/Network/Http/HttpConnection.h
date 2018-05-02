@@ -55,6 +55,9 @@ public:
 	 */
 	HttpResponse* getResponse();
 
+	using TcpConnection::getRemoteIp;
+	using TcpConnection::getRemotePort;
+
 	using TcpClient::close;
 
 #ifdef ENABLE_SSL

@@ -47,6 +47,9 @@ public:
 
 	using TcpClient::send;
 
+	using TcpConnection::getRemoteIp;
+	using TcpConnection::getRemotePort;
+
 protected:
 	virtual err_t onReceive(pbuf *buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
