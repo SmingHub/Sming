@@ -34,5 +34,15 @@ void yield();
 }
 #endif
 
+#define abs(x)                         ((x)>0?(x):-(x))
+#ifndef min
+#define min(a,b)                       ((a)<(b)?(a):(b))
+#endif
+#ifndef max
+#define max(a,b)                       ((a)>(b)?(a):(b))
+#endif
+#define round(x)                       ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
+
+
 
 #endif /* SMINGCORE_ARDUINOCOMPAT_H_ */

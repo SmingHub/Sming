@@ -5,6 +5,7 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+#include <algorithm>
 #include "TcpConnection.h"
 
 #include "../../SmingCore/DataSourceStream.h"
