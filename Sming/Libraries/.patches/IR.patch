@@ -1,0 +1,437 @@
+diff --git a/src/IRrecv.cpp b/src/IRrecv.cpp
+index 295d450..3a10b4b 100644
+--- a/src/IRrecv.cpp
++++ b/src/IRrecv.cpp
+@@ -23,62 +23,7 @@ extern "C" {
+ // on ESP8266
+ // Updated by markszabo (https://github.com/markszabo/IRremoteESP8266) for
+ // sending IR code on ESP8266
+-
+-// Globals
+-#ifndef UNIT_TEST
+-static ETSTimer timer;
+-#endif
+-volatile irparams_t irparams;
+-irparams_t *irparams_save;  // A copy of the interrupt state while decoding.
+-
+-#ifndef UNIT_TEST
+-static void ICACHE_RAM_ATTR read_timeout(void *arg __attribute__((unused))) {
+-  os_intr_lock();
+-  if (irparams.rawlen)
+-    irparams.rcvstate = STATE_STOP;
+-  os_intr_unlock();
+-}
+-
+-static void ICACHE_RAM_ATTR gpio_intr() {
+-  uint32_t now = system_get_time();
+-  uint32_t gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
+-  static uint32_t start = 0;
+-
+-  os_timer_disarm(&timer);
+-  GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
+-
+-  // Grab a local copy of rawlen to reduce instructions used in IRAM.
+-  // This is an ugly premature optimisation code-wise, but we do everything we
+-  // can to save IRAM.
+-  // It seems referencing the value via the structure uses more instructions.
+-  // Less instructions means faster and less IRAM used.
+-  // N.B. It saves about 13 bytes of IRAM.
+-  uint16_t rawlen = irparams.rawlen;
+-
+-  if (rawlen >= irparams.bufsize) {
+-    irparams.overflow = true;
+-    irparams.rcvstate = STATE_STOP;
+-  }
+-
+-  if (irparams.rcvstate == STATE_STOP)
+-    return;
+-
+-  if (irparams.rcvstate == STATE_IDLE) {
+-    irparams.rcvstate = STATE_MARK;
+-    irparams.rawbuf[rawlen] = 1;
+-  } else {
+-    if (now < start)
+-      irparams.rawbuf[rawlen] = (UINT32_MAX - start + now) / RAWTICK;
+-    else
+-      irparams.rawbuf[rawlen] = (now - start) / RAWTICK;
+-  }
+-  irparams.rawlen++;
+-
+-  start = now;
+-  #define ONCE 0
+-  os_timer_arm(&timer, irparams.timeout, ONCE);
+-}
+-#endif  // UNIT_TEST
++// Updated by Volker Vogelhuber to handle multiple IR commands while decoding not finished
+ 
+ // Start of IRrecv class -------------------
+ 
+@@ -91,36 +36,13 @@ static void ICACHE_RAM_ATTR gpio_intr() {
+ //   save_buffer:  Use a second (save) buffer to decode from. (Def: false)
+ // Returns:
+ //   An IRrecv class object.
+-IRrecv::IRrecv(uint16_t recvpin, uint16_t bufsize, uint8_t timeout,
+-               bool save_buffer) {
++IRrecv::IRrecv(uint16_t recvpin, uint16_t bufsize, uint8_t timeout) {
++  lastInterrupt = 0;
++  m_rawLen = 0;
+   irparams.recvpin = recvpin;
+-  irparams.bufsize = bufsize;
+   // Ensure we are going to be able to store all possible values in the
+   // capture buffer.
+   irparams.timeout = std::min(timeout, (uint8_t) MAX_TIMEOUT_MS);
+-  irparams.rawbuf = new uint16_t[bufsize];
+-  if (irparams.rawbuf == NULL) {
+-    DPRINTLN("Could not allocate memory for the primary IR buffer.\n"
+-             "Try a smaller size for CAPTURE_BUFFER_SIZE.\nRebooting!");
+-#ifndef UNIT_TEST
+-    ESP.restart();  // Mem alloc failure. Reboot.
+-#endif
+-  }
+-  // If we have been asked to use a save buffer (for decoding), then create one.
+-  if (save_buffer) {
+-    irparams_save = new irparams_t;
+-    irparams_save->rawbuf = new uint16_t[bufsize];
+-    // Check we allocated the memory successfully.
+-    if (irparams_save->rawbuf == NULL) {
+-      DPRINTLN("Could not allocate memory for the second IR buffer.\n"
+-               "Try a smaller size for CAPTURE_BUFFER_SIZE.\nRebooting!");
+-#ifndef UNIT_TEST
+-      ESP.restart();  // Mem alloc failure. Reboot.
+-#endif
+-    }
+-  } else {
+-    irparams_save = NULL;
+-  }
+ #if DECODE_HASH
+   unknown_threshold = UNKNOWN_THRESHOLD;
+ #endif  // DECODE_HASH
+@@ -128,79 +50,24 @@ IRrecv::IRrecv(uint16_t recvpin, uint16_t bufsize, uint8_t timeout,
+ 
+ // Class destructor
+ IRrecv::~IRrecv(void) {
+-  delete [] irparams.rawbuf;
+-  if (irparams_save != NULL) {
+-    delete [] irparams_save->rawbuf;
+-    delete irparams_save;
+-  }
+ }
+ 
++typedef Delegate<void()> IRDelegate;
++
+ // initialization
+ void IRrecv::enableIRIn() {
+-  // initialize state machine variables
+-  resume();
+-
+ #ifndef UNIT_TEST
+-  // Initialize timer
+-  os_timer_disarm(&timer);
+-  os_timer_setfn(&timer, reinterpret_cast<os_timer_func_t *>(read_timeout),
+-                 NULL);
+-
+-  // Attach Interrupt
+-  attachInterrupt(irparams.recvpin, gpio_intr, CHANGE);
++  // initialize state machine variables
++  attachInterrupt(irparams.recvpin, IRDelegate(&IRrecv::handleInterrupt, this), CHANGE);
+ #endif
+ }
+ 
+ void IRrecv::disableIRIn() {
+ #ifndef UNIT_TEST
+-  os_timer_disarm(&timer);
+   detachInterrupt(irparams.recvpin);
+ #endif
+ }
+ 
+-void IRrecv::resume() {
+-  irparams.rcvstate = STATE_IDLE;
+-  irparams.rawlen = 0;
+-  irparams.overflow = false;
+-}
+-
+-// Make a copy of the interrupt state & buffer data.
+-// Needed because irparams is marked as volatile, thus memcpy() isn't allowed.
+-// Only call this when you know the interrupt handlers won't modify anything.
+-// i.e. In STATE_STOP.
+-//
+-// Args:
+-//   src: Pointer to an irparams_t structure to copy from.
+-//   dst: Pointer to an irparams_t structure to copy to.
+-void IRrecv::copyIrParams(volatile irparams_t *src, irparams_t *dst) {
+-  // Typecast src and dst addresses to (char *)
+-  char *csrc = (char *) src;  // NOLINT(readability/casting)
+-  char *cdst = (char *) dst;  // NOLINT(readability/casting)
+-
+-  // Save the pointer to the destination's rawbuf so we don't lose it as
+-  // the for-loop/copy after this will overwrite it with src's rawbuf pointer.
+-  // This isn't immediately obvious due to typecasting/different variable names.
+-  uint16_t *dst_rawbuf_ptr;
+-  dst_rawbuf_ptr = dst->rawbuf;
+-
+-  // Copy contents of src[] to dst[]
+-  for (uint16_t i = 0; i < sizeof(irparams_t); i++)
+-    cdst[i] = csrc[i];
+-
+-  // Restore the buffer pointer
+-  dst->rawbuf = dst_rawbuf_ptr;
+-
+-  // Copy the rawbuf
+-  for (uint16_t i = 0; i < dst->bufsize; i++)
+-    dst->rawbuf[i] = src->rawbuf[i];
+-}
+-
+-// Obtain the maximum number of entries possible in the capture buffer.
+-// i.e. It's size.
+-uint16_t IRrecv::getBufSize() {
+-  return irparams.bufsize;
+-}
+-
+ #if DECODE_HASH
+ // Set the minimum length we will consider for reporting UNKNOWN message types.
+ void IRrecv::setUnknownThreshold(uint16_t length) {
+@@ -216,49 +83,35 @@ void IRrecv::setUnknownThreshold(uint16_t length) {
+ //
+ // Args:
+ //   results:  A pointer to where the decoded IR message will be stored.
+-//   save:  A pointer to an irparams_t instance in which to save
+-//          the interrupt's memory/state. NULL means don't save it.
+ // Returns:
+ //   A boolean indicating if an IR message is ready or not.
+-bool IRrecv::decode(decode_results *results, irparams_t *save) {
+-  // Proceed only if an IR message been received.
+-#ifndef UNIT_TEST
+-  if (irparams.rcvstate != STATE_STOP)
+-    return false;
+-#endif
+-
+-  // Clear the entry we are currently pointing to when we got the timeout.
+-  // i.e. Stopped collecting IR data.
+-  // It's junk as we never wrote an entry to it and can only confuse decoding.
+-  // This is done here rather than logically the best place in read_timeout()
+-  // as it saves a few bytes of ICACHE_RAM as that routine is bound to an
+-  // interrupt. decode() is not stored in ICACHE_RAM.
+-  // Another better option would be to zero the entire irparams.rawbuf[] on
+-  // resume() but that is a much more expensive operation compare to this.
+-  irparams.rawbuf[irparams.rawlen] = 0;
++bool IRrecv::decode(decode_results *results) {
++  uint32_t now = system_get_time();
+ 
+-  bool resumed = false;  // Flag indicating if we have resumed.
++  int irqRawlen = irparams.rawBuf.numElements();
++  uint32_t diff = now < lastInterrupt ? (UINT32_MAX - lastInterrupt + now) : (now - lastInterrupt);
++  // Only stop sequence if there is at least some data recorded
++  if( (irqRawlen > HEADER+FOOTER || m_rawLen > HEADER+FOOTER) && diff > MS_TO_USEC(irparams.timeout) )
++    irparams.rawBuf.add(0);
++
++  for( int i = 0; i < irqRawlen && m_rawLen < RAWBUF; ++i )
++  {
++    irparams.rawBuf.pull(&m_decodeBuf[m_rawLen]);
++    // Stop on first timeout
++    if( m_decodeBuf[m_rawLen++] == 0 )
++      break;
++  }
+ 
+-  // If we were requested to use a save buffer previously, do so.
+-  if (save == NULL)
+-    save = irparams_save;
++  if( m_rawLen == RAWBUF )
++    m_decodeBuf[m_rawLen-1] = 0;
++  if( m_rawLen == 0 || m_decodeBuf[m_rawLen - 1 ] != 0 )
++    return false;
+ 
+-  if (save == NULL) {
+-    // We haven't been asked to copy it so use the existing memory.
+-#ifndef UNIT_TEST
+-    results->rawbuf = irparams.rawbuf;
+-    results->rawlen = irparams.rawlen;
+-    results->overflow = irparams.overflow;
+-#endif
+-  } else {
+-    copyIrParams(&irparams, save);  // Duplicate the interrupt's memory.
+-    resume();  // It's now safe to rearm. The IR message won't be overridden.
+-    resumed = true;
+-    // Point the results at the saved copy.
+-    results->rawbuf = save->rawbuf;
+-    results->rawlen = save->rawlen;
+-    results->overflow = save->overflow;
+-  }
++  results->rawbuf = m_decodeBuf;
++  // Store index for this decode
++  results->rawlen = m_rawLen;
++  // Reset index for next decode
++  m_rawLen = 0;
+ 
+   // Reset any previously partially processed results.
+   results->decode_type = UNKNOWN;
+@@ -463,8 +316,6 @@ bool IRrecv::decode(decode_results *results, irparams_t *save) {
+   }
+ #endif  // DECODE_HASH
+   // Throw away and start over
+-  if (!resumed)  // Check if we have already resumed.
+-    resume();
+   return false;
+ }
+ 
+@@ -601,6 +452,24 @@ bool IRrecv::matchSpace(uint32_t measured, uint32_t desired,
+   return match(measured, desired - excess, tolerance);
+ }
+ 
++void IRrecv::handleInterrupt()
++{
++  uint32_t now = system_get_time();
++  uint32_t gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
++  GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
++
++  uint32_t diff = now < lastInterrupt ? (UINT32_MAX - lastInterrupt + now) : (now - lastInterrupt);
++  lastInterrupt = now;
++  if( diff > MS_TO_USEC(irparams.timeout) )
++  {
++    // end of sequence
++    irparams.rawBuf.add( 0 );
++    // new sequence:
++    irparams.rawBuf.add( 1 );
++  }
++  else
++    irparams.rawBuf.add( (uint16_t) (diff / RAWTICK));
++}
+ /* -----------------------------------------------------------------------
+  * hashdecode - decode an arbitrary IR code.
+  * Instead of decoding using a standard encoding scheme
+diff --git a/src/IRrecv.h b/src/IRrecv.h
+index a5f2166..f603438 100644
+--- a/src/IRrecv.h
++++ b/src/IRrecv.h
+@@ -12,6 +12,8 @@
+ #include <stddef.h>
+ #define __STDC_LIMIT_MACROS
+ #include <stdint.h>
++#define ARDUINO_ARCH_ESP8266
++#include <RingBufCPP/RingBufCPP.h>
+ #include "IRremoteESP8266.h"
+ 
+ // Constants
+@@ -54,15 +56,8 @@
+ // information for the interrupt handler
+ typedef struct {
+   uint8_t recvpin;              // pin for IR data from detector
+-  uint8_t rcvstate;             // state machine
+-  uint16_t timer;               // state timer, counts 50uS ticks.
+-  uint16_t bufsize;             // max. nr. of entries in the capture buffer.
+-  uint16_t *rawbuf;             // raw data
+-  // uint16_t is used for rawlen as it saves 3 bytes of iram in the interrupt
+-  // handler. Don't ask why, I don't know. It just does.
+-  uint16_t rawlen;              // counter of entries in rawbuf.
+-  uint8_t overflow;             // Buffer overflow indicator.
+-  uint8_t timeout;              // Nr. of milliSeconds before we give up.
++  RingBufCPP <uint16_t,RAWBUF> rawBuf; // raw data
++  uint32_t timeout;              // Nr. of milliSeconds before we give up.
+ } irparams_t;
+ 
+ // results from a data match
+@@ -92,7 +87,7 @@ class decode_results {
+ #endif
+   };
+   uint16_t bits;  // Number of bits in decoded value
+-  volatile uint16_t *rawbuf;  // Raw intervals in .5 us ticks
++  uint16_t *rawbuf;  // Raw intervals in .5 us ticks
+   uint16_t rawlen;  // Number of records in rawbuf.
+   bool overflow;
+   bool repeat;  // Is the result a repeat code?
+@@ -102,10 +97,9 @@ class decode_results {
+ class IRrecv {
+  public:
+   explicit IRrecv(uint16_t recvpin, uint16_t bufsize = RAWBUF,
+-                  uint8_t timeout = TIMEOUT_MS,
+-                  bool save_buffer = false);  // Constructor
++                  uint8_t timeout = TIMEOUT_MS);  // Constructor
+   ~IRrecv();  // Destructor
+-  bool decode(decode_results *results, irparams_t *save = NULL);
++  bool decode(decode_results *results);
+   void enableIRIn();
+   void disableIRIn();
+   void resume();
+@@ -123,12 +117,16 @@ class IRrecv {
+ 
+  private:
+ #endif
+-  irparams_t *irparams_save;
++  uint16_t   m_rawLen;
++  uint16_t   m_decodeBuf[RAWBUF];
+ #if DECODE_HASH
+   uint16_t unknown_threshold;
+ #endif
++  volatile uint32_t   lastInterrupt;
++  irparams_t irparams;
++
++  void handleInterrupt();
+   // These are called by decode
+-  void copyIrParams(volatile irparams_t *src, irparams_t *dst);
+   int16_t compare(uint16_t oldval, uint16_t newval);
+   static uint32_t ticksLow(uint32_t usecs, uint8_t tolerance = TOLERANCE,
+                            uint16_t delta = 0);
+diff --git a/src/IRremoteESP8266.h b/src/IRremoteESP8266.h
+index a684dee..a4dd78f 100644
+--- a/src/IRremoteESP8266.h
++++ b/src/IRremoteESP8266.h
+@@ -54,7 +54,7 @@
+ // Disable (set to false) all the protocols you do not need/want!
+ // The Air Conditioner protocols are the most expensive memory-wise.
+ //
+-#define DECODE_HASH          true  // Semi-unique code for unknown messages
++#define DECODE_HASH          false  // Semi-unique code for unknown messages
+ 
+ #define SEND_RAW             true
+ 
+diff --git a/src/IRsend.h b/src/IRsend.h
+index 20995a5..1aaaca5 100644
+--- a/src/IRsend.h
++++ b/src/IRsend.h
+@@ -12,7 +12,7 @@
+ // Updated by markszabo (https://github.com/markszabo/IRremoteESP8266) for
+ // sending IR code on ESP8266
+ 
+-#if TEST || UNIT_TEST
++#if defined(TEST) || defined(UNIT_TEST)
+ #define VIRTUAL virtual
+ #else
+ #define VIRTUAL
+diff --git a/src/ir_Mitsubishi.cpp b/src/ir_Mitsubishi.cpp
+index 273a2db..8685856 100644
+--- a/src/ir_Mitsubishi.cpp
++++ b/src/ir_Mitsubishi.cpp
+@@ -6,6 +6,8 @@
+ #include "IRrecv.h"
+ #include "IRsend.h"
+ #include "IRutils.h"
++#undef min
++#undef max
+ 
+ //    MMMMM  IIIII TTTTT   SSSS  U   U  BBBB   IIIII   SSSS  H   H  IIIII
+ //    M M M    I     T    S      U   U  B   B    I    S      H   H    I
+diff --git a/src/ir_RC5_RC6.cpp b/src/ir_RC5_RC6.cpp
+index 8fcd097..2930c76 100644
+--- a/src/ir_RC5_RC6.cpp
++++ b/src/ir_RC5_RC6.cpp
+@@ -6,6 +6,8 @@
+ #include "IRsend.h"
+ #include "IRtimer.h"
+ #include "IRutils.h"
++#undef min
++#undef max
+ 
+ // RRRRRR   CCCCC          555555  XX    XX   RRRRRR   CCCCC            666
+ // RR   RR CC    C         55       XX  XX    RR   RR CC    C          66
+diff --git a/src/ir_RCMM.cpp b/src/ir_RCMM.cpp
+index 3d8d244..f743f3b 100644
+--- a/src/ir_RCMM.cpp
++++ b/src/ir_RCMM.cpp
+@@ -5,6 +5,8 @@
+ #include "IRsend.h"
+ #include "IRtimer.h"
+ #include "IRutils.h"
++#undef min
++#undef max
+ 
+ //                RRRRRR   CCCCC          MM    MM MM    MM
+ //                RR   RR CC    C         MMM  MMM MMM  MMM
