@@ -299,10 +299,16 @@ index 295d450..3a10b4b 100644
   * hashdecode - decode an arbitrary IR code.
   * Instead of decoding using a standard encoding scheme
 diff --git a/src/IRrecv.h b/src/IRrecv.h
-index a5f2166..f603438 100644
+index a5f2166..e254a61 100644
 --- a/src/IRrecv.h
 +++ b/src/IRrecv.h
-@@ -12,6 +12,8 @@
+@@ -8,10 +8,14 @@
+ 
+ #ifndef UNIT_TEST
+ #include <Arduino.h>
++#undef min
++#undef max
+ #endif
  #include <stddef.h>
  #define __STDC_LIMIT_MACROS
  #include <stdint.h>
@@ -311,7 +317,7 @@ index a5f2166..f603438 100644
  #include "IRremoteESP8266.h"
  
  // Constants
-@@ -54,15 +56,8 @@
+@@ -54,15 +58,8 @@
  // information for the interrupt handler
  typedef struct {
    uint8_t recvpin;              // pin for IR data from detector
@@ -329,7 +335,7 @@ index a5f2166..f603438 100644
  } irparams_t;
  
  // results from a data match
-@@ -92,7 +87,7 @@ class decode_results {
+@@ -92,7 +89,7 @@ class decode_results {
  #endif
    };
    uint16_t bits;  // Number of bits in decoded value
@@ -338,7 +344,7 @@ index a5f2166..f603438 100644
    uint16_t rawlen;  // Number of records in rawbuf.
    bool overflow;
    bool repeat;  // Is the result a repeat code?
-@@ -102,10 +97,9 @@ class decode_results {
+@@ -102,10 +99,9 @@ class decode_results {
  class IRrecv {
   public:
    explicit IRrecv(uint16_t recvpin, uint16_t bufsize = RAWBUF,
@@ -351,7 +357,7 @@ index a5f2166..f603438 100644
    void enableIRIn();
    void disableIRIn();
    void resume();
-@@ -123,12 +117,16 @@ class IRrecv {
+@@ -123,12 +119,16 @@ class IRrecv {
  
   private:
  #endif
@@ -383,6 +389,19 @@ index a684dee..a4dd78f 100644
  
  #define SEND_RAW             true
  
+diff --git a/src/IRsend.cpp b/src/IRsend.cpp
+index ba7f804..1491039 100644
+--- a/src/IRsend.cpp
++++ b/src/IRsend.cpp
+@@ -5,6 +5,8 @@
+ #include "IRsend.h"
+ #ifndef UNIT_TEST
+ #include <Arduino.h>
++#undef min
++#undef max
+ #else
+ #define __STDC_LIMIT_MACROS
+ #include <stdint.h>
 diff --git a/src/IRsend.h b/src/IRsend.h
 index 20995a5..1aaaca5 100644
 --- a/src/IRsend.h
@@ -396,6 +415,58 @@ index 20995a5..1aaaca5 100644
  #define VIRTUAL virtual
  #else
  #define VIRTUAL
+diff --git a/src/ir_Fujitsu.h b/src/ir_Fujitsu.h
+index ed6317d..b8a1dee 100644
+--- a/src/ir_Fujitsu.h
++++ b/src/ir_Fujitsu.h
+@@ -6,6 +6,8 @@
+ #include <stdint.h>
+ #ifdef ARDUINO
+ #include <Arduino.h>
++#undef min
++#undef max
+ #else
+ #include <string>
+ #endif
+diff --git a/src/ir_Gree.h b/src/ir_Gree.h
+index e44c97b..011261d 100644
+--- a/src/ir_Gree.h
++++ b/src/ir_Gree.h
+@@ -9,6 +9,8 @@
+ #include <stdint.h>
+ #ifndef UNIT_TEST
+ #include <Arduino.h>
++#undef min
++#undef max
+ #else
+ #include <string>
+ #endif
+diff --git a/src/ir_Kelvinator.h b/src/ir_Kelvinator.h
+index 6343b5a..db3c33e 100644
+--- a/src/ir_Kelvinator.h
++++ b/src/ir_Kelvinator.h
+@@ -9,6 +9,8 @@
+ #include <stdint.h>
+ #ifndef UNIT_TEST
+ #include <Arduino.h>
++#undef min
++#undef max
+ #else
+ #include <string>
+ #endif
+diff --git a/src/ir_Midea.h b/src/ir_Midea.h
+index 692cdf0..9fb0612 100644
+--- a/src/ir_Midea.h
++++ b/src/ir_Midea.h
+@@ -6,6 +6,8 @@
+ #include <stdint.h>
+ #ifdef ARDUINO
+ #include <Arduino.h>
++#undef min
++#undef max
+ #else
+ #include <string>
+ #endif
 diff --git a/src/ir_Mitsubishi.cpp b/src/ir_Mitsubishi.cpp
 index 273a2db..8685856 100644
 --- a/src/ir_Mitsubishi.cpp
@@ -435,3 +506,16 @@ index 3d8d244..f743f3b 100644
  
  //                RRRRRR   CCCCC          MM    MM MM    MM
  //                RR   RR CC    C         MMM  MMM MMM  MMM
+diff --git a/src/ir_Toshiba.h b/src/ir_Toshiba.h
+index a0c0df0..71d6e04 100644
+--- a/src/ir_Toshiba.h
++++ b/src/ir_Toshiba.h
+@@ -6,6 +6,8 @@
+ #include <stdint.h>
+ #ifdef ARDUINO
+ #include <Arduino.h>
++#undef min
++#undef max
+ #else
+ #include <string>
+ #endif
