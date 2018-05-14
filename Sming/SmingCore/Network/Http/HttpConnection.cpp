@@ -11,8 +11,7 @@
  ****/
 
 #include "HttpConnection.h"
-#include "HttpChunkedStream.h"
-
+#include "../../Data/Stream/ChunkedStream.h"
 #include "../../Services/WebHelpers/escape.h"
 
 #ifdef __linux__
@@ -95,7 +94,7 @@ bool HttpConnection::isActive()
 }
 
 // @deprecated
-HashMap<String, String> &HttpConnection::getResponseHeaders()
+HttpHeaders &HttpConnection::getResponseHeaders()
 {
 	return responseHeaders;
 }
@@ -505,7 +504,7 @@ bool HttpConnection::sendRequestBody(HttpRequest* request)
 
 		delete stream;
 		if(request->headers["Transfer-Encoding"] == "chunked") {
-			stream = new HttpChunkedStream(request->stream);
+			stream = new ChunkedStream(request->stream);
 		}
 		else {
 			stream = request->stream; // avoid intermediate buffers

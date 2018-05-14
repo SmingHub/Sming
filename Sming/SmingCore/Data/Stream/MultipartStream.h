@@ -8,17 +8,16 @@
  *
  ****/
 
-#ifndef _SMING_CORE_HTTP_MPARTSTREAM_H_
-#define _SMING_CORE_HTTP_MPARTSTREAM_H_
+#ifndef _SMING_CORE_DATA_MPARTSTREAM_H_
+#define _SMING_CORE_DATA_MPARTSTREAM_H_
 
-#include "../HttpCommon.h"
-#include "../HttpResponse.h"
-#include "../HttpRequest.h"
-#include "../../../Delegate.h"
+#include "../../DataSourceStream.h"
+#include "Delegate.h"
+#include "../Structures.h"
 
 /**
- * @brief      HTTP multipart stream class
- * @ingroup    stream http
+ * @brief      Multipart stream class
+ * @ingroup    stream data
  *
  *  @{
 */
@@ -30,11 +29,11 @@ typedef struct {
 
 typedef Delegate <HttpPartResult()> HttpPartProducerDelegate;
 
-class HttpMultipartStream: public ReadWriteStream
+class MultipartStream: public ReadWriteStream
 {
 public:
-	HttpMultipartStream(HttpPartProducerDelegate delegate);
-	virtual ~HttpMultipartStream();
+	MultipartStream(HttpPartProducerDelegate delegate);
+	virtual ~MultipartStream();
 
 	//Use base class documentation
 	virtual StreamType getStreamType() {
@@ -84,7 +83,9 @@ private:
 	ReadWriteStream *nextStream = NULL;
 
 	char boundary[16] = {0};
+
+	bool finished = false;
 };
 
 /** @} */
-#endif /* _SMING_CORE_HTTP_MPARTSTREAM_H_ */
+#endif /* _SMING_CORE_DATA_MPARTSTREAM_H_ */

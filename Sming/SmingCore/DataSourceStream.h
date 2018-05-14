@@ -188,7 +188,7 @@ private:
 class FileStream : public ReadWriteStream
 {
 public:
-	
+
     /** @brief  Create a file stream
      *  @param  fileName Name of file to open
      */
