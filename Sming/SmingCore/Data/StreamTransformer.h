@@ -39,7 +39,7 @@ typedef std::function<int(uint8_t* in, size_t inLength, uint8_t* out, size_t out
 class StreamTransformer: public ReadWriteStream
 {
 public:
-	StreamTransformer(ReadWriteStream *stream, StreamTransformerCallback callback, size_t resultSize = 256, size_t blockSize = 64);
+	StreamTransformer(ReadWriteStream *stream, const StreamTransformerCallback& callback, size_t resultSize = 256, size_t blockSize = 64);
 	virtual ~StreamTransformer();
 
 	//Use base class documentation

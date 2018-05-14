@@ -12,11 +12,11 @@
 
 #define NETWORK_SEND_BUFFER_SIZE 1024
 
-StreamTransformer::StreamTransformer(ReadWriteStream *stream, StreamTransformerCallback callback,
-									 size_t resultSize /* = 256 */, size_t blockSize /* = 64 */)
+StreamTransformer::StreamTransformer(ReadWriteStream *stream, const StreamTransformerCallback& callback,
+									 size_t resultSize /* = 256 */, size_t blockSize /* = 64 */
+									 ): transformCallback(callback)
 {
-	this->sourceStream = stream;
-	this->transformCallback = transformCallback;
+	sourceStream = stream;
 	this->resultSize = resultSize;
 	result = new uint8_t[this->resultSize];
 	this->blockSize = blockSize;
