@@ -32,6 +32,8 @@ public:
 
 public:
 	String Protocol;
+	String User;
+	String Password;
 	String Host;
 	int Port;
 	String Path;
