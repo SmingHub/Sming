@@ -52,6 +52,14 @@ public:
 	HttpRequest* setPostParameters(const HttpParams& params);
 	HttpRequest* setPostParameter(const String& name, const String& value);
 
+	/**
+	 * @brief Sets a file to be sent
+	 * @param const String& name the name of the element in the form
+	 * @param FileStream* stream - pointer to the file stream
+	 *
+	 * @return HttpRequest*
+	 */
+	HttpRequest* setFile(const String& name, FileStream* stream);
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	// Authentication adapters set here
@@ -142,8 +150,6 @@ protected:
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
 
-	uint8_t *rawData = NULL;
-	size_t rawDataLength = 0;
 	ReadWriteStream *stream = NULL;
 
 	IOutputStream *responseStream = NULL;
@@ -159,6 +165,8 @@ protected:
 #endif
 
 private:
+	HashMap<String, FileStream*> files;
+
 	HttpParams* queryParams = NULL; // << deprecated
 };
 
