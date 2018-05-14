@@ -11,8 +11,8 @@
 #ifndef _SMING_CORE_DATA_UESTREAM_H_
 #define _SMING_CORE_DATA_UESTREAM_H_
 
-#include "../../DataSourceStream.h"
 #include "../../Wiring/WHashMap.h"
+#include "DataSourceStream.h"
 
 /**
  * @brief      UrlEncoded Stream

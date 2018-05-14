@@ -19,12 +19,11 @@
 
 #include "../../Wiring/WString.h"
 #include "../../Wiring/WVector.h"
-#include "../DataSourceStream.h"
 #include "../Network/WebConstants.h"
 
-// TODO: Move the simpleConcurrentQueue to a better place
-#include "../Network/Http/HttpCommon.h"
-#include "Data/Stream/MultipartStream.h"
+#include "Structures.h"
+#include "Stream/MultipartStream.h"
+#include "Stream/DataSourceStream.h"
 
 class SmtpClient;
 

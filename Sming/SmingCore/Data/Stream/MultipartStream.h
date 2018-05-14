@@ -11,7 +11,7 @@
 #ifndef _SMING_CORE_DATA_MPARTSTREAM_H_
 #define _SMING_CORE_DATA_MPARTSTREAM_H_
 
-#include "../../DataSourceStream.h"
+#include "DataSourceStream.h"
 #include "Delegate.h"
 #include "../Structures.h"
 

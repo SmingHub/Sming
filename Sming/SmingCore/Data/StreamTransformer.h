@@ -11,7 +11,7 @@
 #ifndef _SMING_CORE_DATA_STREAMTRANSFORMER_H_
 #define _SMING_CORE_DATA_STREAMTRANSFORMER_H_
 
-#include "../../../CircularBuffer.h"
+#include "CircularBuffer.h"
 
 #undef max
 #undef min

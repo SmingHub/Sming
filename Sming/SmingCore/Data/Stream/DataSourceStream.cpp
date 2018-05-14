@@ -5,7 +5,8 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "../SmingCore/DataSourceStream.h"
+#include "Data/Stream/DataSourceStream.h"
+
 #include <algorithm>
 
 int IDataSourceStream::read()

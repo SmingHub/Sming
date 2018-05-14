@@ -11,8 +11,8 @@
 #define _SMING_CORE_OUTPUTSTREAM_H_
 
 #include <user_config.h>
-#include "../../Wiring/WString.h"
-#include "../SmingCore/FileSystem.h"
+#include "../../../Wiring/WString.h"
+#include "../../FileSystem.h"
 
 class IOutputStream
 {
@@ -26,7 +26,7 @@ public:
 class FileOutputStream: public IOutputStream
 {
 public:
-	FileOutputStream(String filename, FileOpenFlags flags = eFO_CreateNewAlways | eFO_WriteOnly);
+	FileOutputStream(const String& filename, FileOpenFlags flags = eFO_CreateNewAlways | eFO_WriteOnly);
 
 	virtual size_t write(const uint8_t* data, size_t size);
 

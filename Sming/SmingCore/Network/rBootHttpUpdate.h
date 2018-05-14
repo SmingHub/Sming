@@ -10,7 +10,7 @@
 #ifndef SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
 #define SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
 
-#include "../OutputStream.h"
+#include "Data/Stream/OutputStream.h"
 #include "HttpClient.h"
 #include <rboot-api.h>
 
