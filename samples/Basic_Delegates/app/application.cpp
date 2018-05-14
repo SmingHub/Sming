@@ -27,7 +27,7 @@ public:
 	}
 
 	// This example show the way delegates have been used in Sming in the past.
-	void blinkOldDelegate() {
+	void callOldDelegate() {
 		taskTimer.initializeMs(taskInterval, TimerDelegate(&Task::doOldDelegate, this)).start();
 	}
 
@@ -103,12 +103,10 @@ Task task5;
 
 void init()
 {
-	WifiStation.enable(false);
-	WifiAccessPoint.enable(false);
 	Serial.begin(115200);
 
 	task1.setTimer(1500);
-	task1.blinkOldDelegate();
+	task1.callOldDelegate();
 
 	task2.setTimer(1600);
 	task2.callPlainOldOrdinaryFunction();
