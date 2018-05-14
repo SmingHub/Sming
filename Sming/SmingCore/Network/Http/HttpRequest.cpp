@@ -37,7 +37,7 @@ HttpRequest::HttpRequest(const HttpRequest& value) {
 #ifdef ENABLE_SSL
 	sslOptions = value.sslOptions;
 	sslFingerprint = value.sslFingerprint;
-	sslClientKeyCert = value.sslClientKeyCert;
+	sslKeyCertPair = value.sslKeyCertPair;
 #endif
 }
 
@@ -196,8 +196,8 @@ HttpRequest* HttpRequest::pinCertificate(const SSLFingerprints& fingerprints) {
 	return this;
 }
 
-HttpRequest* HttpRequest::setSslClientKeyCert(const SSLKeyCertPair& clientKeyCert) {
-	this->sslClientKeyCert = clientKeyCert;
+HttpRequest* HttpRequest::setSslKeyCert(const SSLKeyCertPair& keyCertPair) {
+	this->sslKeyCertPair = keyCertPair;
 	return this;
 }
 
@@ -262,8 +262,8 @@ String HttpRequest::toString() {
 	content += "> SSL options: " + String(sslOptions) + "\n";
 	content += "> SSL Cert Fingerprint Length: " + String((sslFingerprint.certSha1 == NULL)? 0: SHA1_SIZE) + "\n";
 	content += "> SSL PK Fingerprint Length: " + String((sslFingerprint.pkSha256 == NULL)? 0: SHA256_SIZE) + "\n";
-	content += "> SSL ClientCert Length: " + String(sslClientKeyCert.certificateLength) + "\n";
-	content += "> SSL ClientCert PK Length: " + String(sslClientKeyCert.keyLength) + "\n";
+	content += "> SSL ClientCert Length: " + String(sslKeyCertPair.certificateLength) + "\n";
+	content += "> SSL ClientCert PK Length: " + String(sslKeyCertPair.keyLength) + "\n";
 	content += "\n";
 #endif
 

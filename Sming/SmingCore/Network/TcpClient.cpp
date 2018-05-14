@@ -220,6 +220,65 @@ void TcpClient::onFinished(TcpClientState finishState)
 		completed(*this, state == eTCS_Successful);
 }
 
+#ifdef ENABLE_SSL
+err_t TcpClient::onSslConnected(SSL *ssl)
+{
+	bool hasSuccess = (sslValidators.count() == 0);
+	for(int i=0; i< sslValidators.count(); i++) {
+		if(sslValidators[i](ssl, sslValidatorsData[i])) {
+			hasSuccess = true;
+			break;
+		}
+	}
+
+	return hasSuccess ? ERR_OK: ERR_ABRT;
+}
+
+void TcpClient::addSslValidator(SslValidatorCallback callback, void* data /* = NULL */)
+{
+	sslValidators.addElement(callback);
+	sslValidatorsData.addElement(data);
+}
+
+bool TcpClient::pinCertificate(const uint8_t *fingerprint, SslFingerprintType type)
+{
+	SslValidatorCallback callback = nullptr;
+	switch(type) {
+	case eSFT_CertSha1:
+		callback = sslValidateCertificateSha1;
+		break;
+	case eSFT_PkSha256:
+		callback = sslValidatePublicKeySha256;
+		break;
+	default:
+		debug_d("Unsupported SSL certificate fingerprint type");
+	}
+
+	if(!callback) {
+		delete[] fingerprint;
+		return false;
+	}
+
+	addSslValidator(callback, (void *)fingerprint);
+
+	return true;
+}
+
+bool TcpClient::pinCertificate(SSLFingerprints fingerprints)
+{
+	bool success = false;
+	if(fingerprints.certSha1 != NULL) {
+		success = pinCertificate(fingerprints.certSha1, eSFT_CertSha1);
+	}
+
+	if(fingerprints.pkSha256 != NULL) {
+		success = pinCertificate(fingerprints.pkSha256, eSFT_PkSha256);
+	}
+
+	return success;
+}
+#endif
+
 void TcpClient::setReceiveDelegate(TcpClientDataDelegate receiveCb)
 {
 	receive = receiveCb;
