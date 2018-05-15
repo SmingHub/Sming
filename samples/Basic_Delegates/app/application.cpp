@@ -6,19 +6,17 @@ void plainOldOrdinaryFunction()
 	debugf("plainOldOrdinaryFunction");
 }
 
-
 void functionWithMoreComlicatedSignature(int a, String b)
 {
 	debugf("functionWithMoreComlicatedSignature %d %s", a, b.c_str());
 }
 
-
 class Task
 {
-
 public:
 	Task() {};
-	bool setTimer(int reqInterval) {
+	bool setTimer(int reqInterval) 
+	{
 		if (reqInterval <= 0) {
 			return false;
 		}
@@ -27,49 +25,50 @@ public:
 	}
 
 	// This example show the way delegates have been used in Sming in the past.
-	void callOldDelegate() {
+	void callOldDelegate() 
+	{
 		taskTimer.initializeMs(taskInterval, TimerDelegate(&Task::doOldDelegate, this)).start();
 	}
 
 	// This example shows how to use a plain old ordinary function as a callback
-	void callPlainOldOrdinaryFunction() {
+	void callPlainOldOrdinaryFunction() 
+	{
 		taskTimer.initializeMs(taskInterval, TimerDelegateStdFunction(plainOldOrdinaryFunction)).start();
 		// or just
 		// taskTimer.initializeMs(taskInterval, plainOldOrdinaryFunction).start();
 	}
-
-
+	
 	// This example shows how to use std::bind to make us of a function that has more parameters than our signature has
-	void showHowToUseBind() {
+	void showHowToUseBind() 
+	{
 		auto b = std::bind(functionWithMoreComlicatedSignature, 2, "parameters");
 		taskTimer.initializeMs(taskInterval, b).start();
 	}
 
 	// Sming now allows the use of std::function
 	// This example shows how to use a lamda expression as a callback
-	void callLamda() {
+	void callLamda() 
+	{
 		int foo = 123;
 		taskTimer.initializeMs(taskInterval,
 			[foo]		// capture just foo by value (Note it would be bad to pass by reference as foo would be out of scope when the lamda function runs later)
-		()			// No parameters to the callback
+			()			// No parameters to the callback
 			-> void		// Returns nothing
-		{
-			if (foo == 123) {
-				debugf("lamda Callback foo is 123");
-			}
-			else
 			{
-				debugf("lamda Callback foo is not 123, crikey!");
+				if (foo == 123) {
+					debugf("lamda Callback foo is 123");
+				}
+				else
+				{
+					debugf("lamda Callback foo is not 123, crikey!");
+				}
 			}
-		})
-			.start();
+			).start();
 	}
-
-
-
+	
 	// This example shows how to use a member function as a callback
-	void callMemberFunction() {
-
+	void callMemberFunction() 
+	{
 		// A non-static member function must be called with an object. 
 		// That is, it always implicitly passes "this" pointer as its argument.
 		// But because our callback specifies that we don't take any arguments (<void(void)>), 
@@ -87,12 +86,10 @@ public:
 	{
 		debugf("callMemberFunction");
 	}
-
-
+	
 private:
 	Timer taskTimer;
 	int taskInterval = 1000;
-
 };
 
 Task task1;
@@ -119,5 +116,4 @@ void init()
 
 	task5.setTimer(1800);
 	task5.callLamda();
-
 }
