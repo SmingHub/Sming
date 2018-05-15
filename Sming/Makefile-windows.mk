@@ -1,6 +1,3 @@
-# ESP8266 sdk package home directory
-ESP_HOME ?= c:/Espressif
-
 # Default COM port
 COM_PORT	 ?= COM3
 

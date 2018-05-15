@@ -97,85 +97,62 @@ ENABLE_CMD_EXECUTOR ?= 1
 # COM_PORT = /dev/tty.usbserial
 
 # Detect OS and build environment
-UNAME := $(shell uname -s)
-
 ifeq ($(OS),Windows_NT)
-  # Convert Windows paths to POSIX paths
-  SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
-  SMING_HOME := $(subst //,/,$(SMING_HOME))
-  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-  ESP_HOME   := $(subst //,/,$(ESP_HOME))
-endif
-
-ifneq ($(filter MINGW32_NT%,$(UNAME)),)
-  UNAME := Windows
-else ifneq ($(filter CYGWIN%,$(UNAME)),)
-  # Cygwin Detected
-  UNAME := Linux
-else ifneq ($(filter CYGWIN%WOW,$(UNAME)),)
-  #Cygwin32
-  UNAME := Linux
-else ifneq ($(filter MSYS%WOW,$(UNAME)),)
-  #Msys32
-  UNAME := Linux
-else ifeq ($(UNAME), Linux)
-  #Linux
-else ifeq ($(UNAME), Darwin)
-  #OS X
-else ifeq ($(UNAME), Freebsd)
-  #BSD
+	UNAME := Windows
+else
+	UNAME := $(shell uname -s)
 endif
 
 # OS specific configuration
 ifeq ($(UNAME),Windows)
-  # Windows detected
+	# Windows detected
 
-  # Default SMING_HOME. Can be overriden.
-  SMING_HOME ?= c:\tools\Sming\Sming
+	# Default SMING_HOME. Can be overriden.
+	SMING_HOME ?= c:/tools/sming/Sming
 
-  # Default ESP_HOME. Can be overriden.
-  ESP_HOME ?= c:\Espressif
+	# Default ESP_HOME. Can be overriden.
+	ESP_HOME ?= c:/Espressif
 
-  include $(SMING_HOME)/Makefile-windows.mk
-else
-  ifeq ($(UNAME),Darwin)
-      # MacOS Detected
-      UNAME := MacOS
+	# Convert Windows paths to POSIX paths
+	SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
+	SMING_HOME := $(subst //,/,$(SMING_HOME))
+	ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
+	ESP_HOME   := $(subst //,/,$(ESP_HOME))
 
-      # Default SMING_HOME. Can be overriden.
-      SMING_HOME ?= /opt/sming/Sming
+	include $(SMING_HOME)/Makefile-windows.mk
+else ifeq ($(UNAME),Darwin)
+	# MacOS Detected
+	UNAME := MacOS
 
-      # Default ESP_HOME. Can be overriden.
-      ESP_HOME ?= /opt/esp-open-sdk
+	# Default SMING_HOME. Can be overriden.
+	SMING_HOME ?= /opt/sming/Sming
 
-      include $(SMING_HOME)/Makefile-macos.mk      
-  endif
-  ifneq ($(filter CYGWIN%,$(UNAME)),)
-      # Cygwin Detected
-      UNAME := Linux
-  endif
-  ifeq ($(UNAME),Linux)
-      # Linux Detected
-      UNAME := Linux
+	# Default ESP_HOME. Can be overriden.
+	ESP_HOME ?= /opt/esp-open-sdk
 
-      # Default SMING_HOME. Can be overriden.
-      SMING_HOME ?= /opt/sming/Sming
+	include Makefile-macos.mk      
+else ifeq ($(UNAME),Linux)
+	# Linux Detected
+	UNAME := Linux
 
-      # Default ESP_HOME. Can be overriden.
-      ESP_HOME ?= /opt/esp-open-sdk
-      include $(SMING_HOME)/Makefile-linux.mk     
-  endif
-  ifeq ($(UNAME),FreeBSD)
-      # Freebsd Detected
-      UNAME := FreeBSD
+	# Default SMING_HOME. Can be overriden.
+	SMING_HOME ?= /opt/sming/Sming
 
-      # Default SMING_HOME. Can be overriden.
-      SMING_HOME ?= /usr/local/esp8266/Sming/Sming
+	# Default ESP_HOME. Can be overriden.
+	ESP_HOME ?= /opt/esp-open-sdk
 
-      # Default ESP_HOME. Can be overriden.
-      ESP_HOME ?= /usr/local/esp8266/esp-open-sdk
-      include $(SMING_HOME)/Makefile-bsd.mk     
-  endif
+	include Makefile-linux.mk
+else ifeq ($(UNAME),FreeBSD)
+	# Freebsd Detected
+	UNAME := FreeBSD
+
+	# Default SMING_HOME. Can be overriden.
+	SMING_HOME ?= /usr/local/esp8266/Sming/Sming
+
+	# Default ESP_HOME. Can be overriden.
+	ESP_HOME ?= /usr/local/esp8266/esp-open-sdk
+	
+	include Makefile-bsd.mk
 endif
 
 export COMPILE := gcc
