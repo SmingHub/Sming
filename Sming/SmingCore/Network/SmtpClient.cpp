@@ -18,8 +18,8 @@
 
 #include "SmtpClient.h"
 #include "../../Services/WebHelpers/base64.h"
-#include "../Data/Stream/QuotedPrintableOutputStream.h"
-#include "../Data/Stream/Base64OutputStream.h"
+#include "Data/Stream/QuotedPrintableOutputStream.h"
+#include "Data/Stream/Base64OutputStream.h"
 
 #if !defined(ENABLE_SSL) || ENABLE_SSL == 0
 // if our SSL is not used then we try to use the one coming from the SDK

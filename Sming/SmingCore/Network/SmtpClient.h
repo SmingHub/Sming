@@ -26,11 +26,11 @@
 #pragma once
 
 #include "TcpClient.h"
-#include "../Data/MailMessage.h"
+#include "Data/MailMessage.h"
 #include "URL.h"
 #include "../../Wiring/WString.h"
 #include "../../Wiring/WVector.h"
-#include "../Data/Stream/DataSourceStream.h"
+#include "Data/Stream/DataSourceStream.h"
 #include "WebConstants.h"
 #include "../Data/Structures.h"
 
