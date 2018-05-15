@@ -144,6 +144,8 @@ void onDataSent(HttpClient& client, bool successful)
 }
 ```
 
+For more examples take a look at the [HttpClient](samples/HttpClient/app/application.cpp), [HttpClient_Instapush](samples/HttpClient_Instapush/app/application.cpp) and [HttpClient_ThingSpeak](samples/HttpClient_ThingSpeak/app/application.cpp) samples. 
+
 ### OTA application update based on rBoot
 ```c++
 void OtaUpdate() {
