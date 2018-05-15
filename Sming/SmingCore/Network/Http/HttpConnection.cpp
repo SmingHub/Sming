@@ -199,6 +199,7 @@ HttpPartResult HttpConnection::multipartProducer()
 		HttpHeaders* headers = new HttpHeaders();
 		(*headers)["Content-Disposition"] = "form-data; name=\""+name+"\"; filename=\""+file->fileName()+"\"";
 		(*headers)["Content-Type"] = ContentType::fromFullFileName(file->fileName());
+		result.headers = headers;
 
 		outgoingRequest->files.remove(name);
 		return result;
@@ -214,6 +215,7 @@ HttpPartResult HttpConnection::multipartProducer()
 
 		HttpHeaders* headers = new HttpHeaders();
 		(*headers)["Content-Disposition"] = "form-data; name=\""+name+"\"";
+		result.headers = headers;
 
 		outgoingRequest->postParams.remove(name);
 		return result;
