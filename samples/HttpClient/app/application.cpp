@@ -72,11 +72,12 @@ void displayCipher(SSL *ssl)
 
 int onDownload(HttpConnection& connection, bool success)
 {
+	debugf("\n=========[ URL: %s ]============", connection.getRequest()->uri.toString().c_str());
 	debugf("RemoteIP: %s", (char *)connection.getRemoteIp());
 	debugf("Got response code: %d", connection.getResponseCode());
 	debugf("Success: %d", success);
 	if(connection.getRequest()->method != HTTP_HEAD) {
-		debugf("Got content starting with: %s", connection.getResponseString().substring(0, 50).c_str());
+		debugf("Got content starting with: %s", connection.getResponseString().substring(0, 1000).c_str());
 	}
 	SSL* ssl = connection.getSsl();
 	if (ssl) {
@@ -155,22 +156,21 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 	httpClient.send(getRequest);
 
 // [ POST request: the example below shows how to set a POST request with form data and files. ]
-	FileStream* fileStream = new FileStream("data.txt");
+	FileStream* fileStream = new FileStream("5K.txt");
 
-	HttpRequest* postRequest = new HttpRequest(URL("https://httpbin.org/post/"));
+	HttpRequest* postRequest = new HttpRequest(URL("https://httpbin.org/post"));
 	// For this request we will use a slightly improved syntax
 	postRequest->setMethod(HTTP_POST) 					// << we set the method to POST
 			   ->setHeaders(headers)					// << we add extra headers
 			   ->setPostParameter("text","Test upload") // << we set one form element called "text"
-			   ->setFile("upload1", fileStream)			// << we set one file upload that should upload the data.txt
+			   ->setFile("file1", fileStream)			// << we set one file upload that should upload the data.txt
 			   	   	   	   	   	   	   	   	   	   	    // ... under the form element name "upload1"
 			   ->onRequestComplete(onDownload);
 
 	httpClient.send(postRequest); // << don't forget to `send` the request
 
-
 // [PUT request with raw data: We will send the data.txt content without any additional content encoding ]
-	FileStream* fileStream1 = new FileStream("data.txt");  // << we need to create new FileStream pointer.
+	FileStream* fileStream1 = new FileStream("5K.txt");  // << we need to create new FileStream pointer.
 														   // ... reusing the previous one can lead to
 														   // ... undefined results
 
