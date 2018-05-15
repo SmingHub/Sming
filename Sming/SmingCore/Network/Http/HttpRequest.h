@@ -18,7 +18,7 @@
 #include "HttpRequestAuth.h"
 #endif
 #include "../TcpConnection.h"
-#include "../../Data/Stream/OutputStream.h"
+#include "Data/Stream/OutputStream.h"
 
 class HttpClient;
 class HttpServerConnection;
@@ -103,7 +103,7 @@ public:
 	 *
 	 * @return HttpRequest pointer
 	 */
- 	HttpRequest* setSslClientKeyCert(const SSLKeyCertPair& clientKeyCert);
+ 	HttpRequest* setSslKeyCert(const SSLKeyCertPair& keyCertPair);
 #endif
 
 	HttpRequest* setBody(const String& body);
@@ -155,7 +155,7 @@ protected:
 #ifdef ENABLE_SSL
 	uint32_t sslOptions = 0;
 	SSLFingerprints sslFingerprint;
-	SSLKeyCertPair sslClientKeyCert;
+	SSLKeyCertPair  sslKeyCertPair;
 #endif
 
 private:
