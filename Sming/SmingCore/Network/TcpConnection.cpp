@@ -684,7 +684,10 @@ bool TcpConnection::setSslKeyCert(const uint8_t *key, int keyLength,
 							 const uint8_t *certificate, int certificateLength,
 							 const char *keyPassword /* = NULL */, bool freeAfterHandshake /* = false */)
 {
-
+	delete[] sslKeyCert.key;
+	delete[] sslKeyCert.certificate;
+	delete[] sslKeyCert.keyPassword;
+	sslKeyCert.keyPassword = NULL;
 
 	sslKeyCert.key = new uint8_t[keyLength];
 	sslKeyCert.certificate = new uint8_t[certificateLength];
@@ -695,13 +698,15 @@ bool TcpConnection::setSslKeyCert(const uint8_t *key, int keyLength,
 	}
 
 	if(!(sslKeyCert.key && sslKeyCert.certificate &&
-	    (passwordLength==0 || (passwordLength!=0 && sslKeyCert.keyPassword)))) {
+		(passwordLength==0 || sslKeyCert.keyPassword))) {
 		return false;
 	}
 
 	memcpy(sslKeyCert.key, key, keyLength);
 	memcpy(sslKeyCert.certificate, certificate, certificateLength);
-	memcpy(sslKeyCert.keyPassword, keyPassword, passwordLength);
+	if(keyPassword != NULL) {
+		memcpy(sslKeyCert.keyPassword, keyPassword, passwordLength);
+	}
 	freeKeyCert = freeAfterHandshake;
 
 	sslKeyCert.keyLength = keyLength;
