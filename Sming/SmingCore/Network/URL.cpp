@@ -49,6 +49,16 @@ URL::URL(const String& urlString)
 
 	// host
 	int hostStart = protocolEnd;
+	int atStart = urlString.indexOf('@', protocolEnd);
+	if(atStart > -1) {
+		String credentials = urlString.substring(protocolEnd, atStart);
+		Vector<String> parts;
+		splitString(credentials, ':' , parts);
+		User = parts[0];
+		Password = parts[1];
+		hostStart = atStart + 1;
+	}
+
 	int pathStart = urlString.indexOf('/', hostStart);  // get pathStart
 
 	int portStart = urlString.indexOf(':', hostStart);  // check for port
@@ -70,7 +80,7 @@ URL::URL(const String& urlString)
 	else if(Protocol == HTTPS_URL_PROTOCOL || Protocol == WEBSCOKET_SECURE_URL_PROTOCOL) {
 		Port = 443;
 	}
-	else {
+	else if (Protocol == DEFAULT_URL_PROTOCOL){
 		Port = 80;
 	}
 

@@ -11,6 +11,7 @@
  ****/
 
 #include "HttpClient.h"
+#include "../Data/Stream/OutputStream.h"
 
 /* Low Level Methods */
 bool HttpClient::send(HttpRequest* request)

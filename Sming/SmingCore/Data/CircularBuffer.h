@@ -11,10 +11,10 @@
  *
  ****/
 
-#ifndef _SMING_CORE_CIRCULARBUFFER_H_
-#define _SMING_CORE_CIRCULARBUFFER_H_
+#ifndef _SMING_CORE_DATA_CIRCULARBUFFER_H_
+#define _SMING_CORE_DATA_CIRCULARBUFFER_H_
 
-#include "DataSourceStream.h"
+#include "Stream/DataSourceStream.h"
 
 /**
  * @brief      Circular stream class
@@ -60,7 +60,7 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	virtual int length();
+	virtual int available();
 
 	/**
 	 * @brief Returns unique id of the resource.
@@ -98,4 +98,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_CIRCULARBUFFER_H_ */
+#endif /* _SMING_CORE_DATA_CIRCULARBUFFER_H_ */

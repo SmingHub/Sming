@@ -7,7 +7,7 @@
 
 #include "TcpClient.h"
 #include "../Wiring/IPAddress.h"
-#include "../../SmingCore/DataSourceStream.h"
+#include "../Data/Stream/DataSourceStream.h"
 #include "../../Wiring/WString.h"
 
 TcpClient::TcpClient(tcp_pcb *clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted)

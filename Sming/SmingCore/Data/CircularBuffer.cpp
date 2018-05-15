@@ -30,7 +30,7 @@ StreamType CircularBuffer::getStreamType()
 
 uint16_t CircularBuffer::readMemoryBlock(char* data, int bufSize)
 {
-	size_t bytesAvailable = length();
+	size_t bytesAvailable = available();
 	size_t sizeToRead = (bufSize < bytesAvailable) ? bufSize : bytesAvailable;
 	size_t sizeRead = sizeToRead;
 	char * start = readPos;
@@ -47,7 +47,7 @@ uint16_t CircularBuffer::readMemoryBlock(char* data, int bufSize)
 
 bool CircularBuffer::seek(int len)
 {
-	if(len > length()) {
+	if(len > available()) {
 		flush();
 		return false;
 	}
@@ -67,10 +67,10 @@ bool CircularBuffer::seek(int len)
 
 bool CircularBuffer::isFinished()
 {
-	return (length() < 1);
+	return (available() < 1);
 }
 
-int CircularBuffer::length()
+int CircularBuffer::available()
 {
 	if(writePos >= readPos) {
 		return writePos - readPos;

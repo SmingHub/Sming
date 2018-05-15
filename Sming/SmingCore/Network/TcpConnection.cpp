@@ -7,7 +7,7 @@
 
 #include "TcpConnection.h"
 
-#include "../../SmingCore/DataSourceStream.h"
+#include "../Data/Stream/DataSourceStream.h"
 #include "../../SmingCore/Platform/WDT.h"
 #include "NetUtils.h"
 #include "../Wiring/WString.h"

@@ -5,8 +5,8 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#ifndef _SMING_CORE_DATASTREAM_H_
-#define _SMING_CORE_DATASTREAM_H_
+#ifndef _SMING_CORE_DATA_DATASTREAM_H_
+#define _SMING_CORE_DATA_DATASTREAM_H_
 
 #include <user_config.h>
 #include "../SmingCore/FileSystem.h"
@@ -188,7 +188,7 @@ private:
 class FileStream : public ReadWriteStream
 {
 public:
-	
+
     /** @brief  Create a file stream
      *  @param  fileName Name of file to open
      */
@@ -368,4 +368,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATASTREAM_H_ */
+#endif /* _SMING_CORE_DATA_DATASTREAM_H_ */

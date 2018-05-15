@@ -18,7 +18,7 @@
 #include "HttpRequestAuth.h"
 #endif
 #include "../TcpConnection.h"
-#include "../../OutputStream.h"
+#include "../../Data/Stream/OutputStream.h"
 
 class HttpClient;
 class HttpServerConnection;

@@ -16,7 +16,7 @@
 #include "TcpServer.h"
 #include "../../Services/cWebsocket/websocket.h"
 #include "WebConstants.h"
-#include "HttpChunkedStream.h"
+#include "../../Data/Stream/ChunkedStream.h"
 
 bool HttpServerConnection::parserSettingsInitialized = false;
 http_parser_settings HttpServerConnection::parserSettings;
@@ -488,7 +488,7 @@ bool HttpServerConnection::sendResponseBody(HttpResponse *response)
 
 		delete stream;
 		if(response->headers["Transfer-Encoding"] == "chunked") {
-			stream = new HttpChunkedStream(response->stream);
+			stream = new ChunkedStream(response->stream);
 		}
 		else {
 			stream = response->stream; // avoid intermediate buffers
