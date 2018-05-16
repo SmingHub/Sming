@@ -92,12 +92,12 @@ void Timer::restart()
 	start();
 }
 
-bool Timer::isStarted()
+bool Timer::isStarted() const
 {
 	return started;
 }
 
-uint64_t Timer::getIntervalUs()
+uint64_t Timer::getIntervalUs() const
 {
 	if(long_intvl_cntr_lim > 0) {
 		return interval * long_intvl_cntr_lim;
@@ -106,7 +106,7 @@ uint64_t Timer::getIntervalUs()
 	return interval;
 }
 
-uint32_t Timer::getIntervalMs()
+uint32_t Timer::getIntervalMs() const
 {
 	return (uint32_t)getIntervalUs() / 1000;
 }

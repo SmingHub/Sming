@@ -108,17 +108,17 @@ public:
     /** @brief  Check if timer is started
      *  @retval bool True if timer is running
      */
-	bool isStarted();
+	bool isStarted() const;
 
     /** @brief  Get timer interval
      *  @retval uint64_t Timer interval in microseconds
      */
-	uint64_t getIntervalUs();
+	uint64_t getIntervalUs() const;
 
     /** @brief  Get timer interval
      *  @retval uint32_t Timer interval in milliseconds
      */
-	uint32_t getIntervalMs();
+	uint32_t getIntervalMs() const;
 
     /** @brief  Set timer interval
      *  @param  microseconds Interval in microseconds. (Default: 1ms)
