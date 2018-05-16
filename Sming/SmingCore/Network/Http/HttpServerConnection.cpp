@@ -14,7 +14,6 @@
 
 #include "HttpServer.h"
 #include "TcpServer.h"
-#include "../../Services/cWebsocket/websocket.h"
 #include "WebConstants.h"
 #include "../../Data/Stream/ChunkedStream.h"
 
@@ -370,48 +369,45 @@ err_t HttpServerConnection::onReceive(pbuf *buf)
 
 void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	if(state == eHCS_Sent) {
-		state = eHCS_Ready;
+	switch(state) {
+	case eHCS_StartSending: {
+		sendResponseHeaders(&response);
+		state = eHCS_SendingHeaders;
 	}
 
-	do {
-
-		if(!(state >= eHCS_StartSending && state < eHCS_Sent)) {
+	case eHCS_SendingHeaders: {
+		if (stream != NULL && !stream->isFinished()) {
 			break;
 		}
 
-		if(state == eHCS_StartSending) {
-			sendResponseHeaders(&response);
-			state = eHCS_SendingHeaders;
+		state = eHCS_StartBody;
+	}
+
+	case eHCS_StartBody:
+	case eHCS_SendingBody: {
+		if(!sendResponseBody(&response)) {
 			break;
 		}
 
-		if(state == eHCS_SendingHeaders) {
-			if(stream != NULL && !stream->isFinished()) {
-				break;
-			}
-
-			state = eHCS_StartBody;
-		}
-
-		if(sendResponseBody(&response)) {
-			delete stream;
-			stream = NULL;
-			state = eHCS_Sent;
-		}
-
-		break;
-
-	} while(false);
-
-	if(state == eHCS_Sent && response.headers["Connection"] == "close") {
-		setTimeOut(1); // decrease the timeout to 1 tick
+		delete stream;
+		stream = NULL;
+		state = eHCS_Sent;
 	}
 
-	if(state == eHCS_Sent) {
+	case eHCS_Sent: {
+		if(response.headers["Connection"] == "close") {
+			setTimeOut(1); // decrease the timeout to 1 tick
+		}
+
 		response.reset();
 		request.reset();
+
+		state = eHCS_Ready;
+
+		break;
 	}
+
+	} /* switch(state) */
 
 	TcpClient::onReadyToSendData(sourceEvent);
 }

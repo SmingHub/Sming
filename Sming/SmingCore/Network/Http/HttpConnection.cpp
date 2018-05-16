@@ -404,72 +404,65 @@ int HttpConnection::staticOnChunkComplete(http_parser* parser)
 
 void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-
 	debug_d("HttpConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue->count());
 
-	do {
-		if(state == eHCS_Sent) {
-			state = eHCS_Ready;
-		}
-
-		if(state == eHCS_Ready) {
-			HttpRequest* request = waitingQueue->peek();
-			if(request == NULL) {
-				debug_d("Nothing in the waiting queue");
-				outgoingRequest = NULL;
-				break;
-			}
-
-			// if the executionQueue is not empty then we have to check if we can pipeline that request
-			if(executionQueue.count()) {
-				if(!(request->method == HTTP_GET || request->method == HTTP_HEAD)) {
-					// if the current request cannot be pipelined -> break;
-					break;
-				}
-
-				// if we have previous request
-				if(outgoingRequest != NULL) {
-					if(!(outgoingRequest->method == HTTP_GET || outgoingRequest->method == HTTP_HEAD)) {
-						// the outgoing request does not allow pipelining
-						break;
-					}
-				}
-			} // executionQueue.count()
-
-			if(!executionQueue.enqueue(request)) {
-				debug_e("The working queue is full at the moment");
-				break;
-			}
-
-			waitingQueue->dequeue();
-
-			outgoingRequest = request;
-			state = eHCS_SendingHeaders;
-			sendRequestHeaders(request);
-
+REENTER:
+	switch(state) {
+	case eHCS_Ready: {
+		HttpRequest* request = waitingQueue->peek();
+		if(request == NULL) {
+			debug_d("Nothing in the waiting queue");
+			outgoingRequest = NULL;
 			break;
 		}
 
-		if(state >= eHCS_StartSending && state < eHCS_Sent) {
-			if(state == eHCS_SendingHeaders) {
-				if(stream != NULL && !stream->isFinished()) {
-						break;
+		// if the executionQueue is not empty then we have to check if we can pipeline that request
+		if(executionQueue.count()) {
+			if(!(request->method == HTTP_GET || request->method == HTTP_HEAD)) {
+				// if the current request cannot be pipelined -> break;
+				break;
+			}
+
+			// if we have previous request
+			if(outgoingRequest != NULL) {
+				if(!(outgoingRequest->method == HTTP_GET || outgoingRequest->method == HTTP_HEAD)) {
+					// the outgoing request does not allow pipelining
+					break;
 				}
-
-				state = eHCS_StartBody;
 			}
+		} // executionQueue.count()
 
-			if(sendRequestBody(outgoingRequest)) {
-				state = eHCS_Sent;
-				delete stream;
-				stream = NULL;
-				continue;
-			}
+		if(!executionQueue.enqueue(request)) {
+			debug_e("The working queue is full at the moment");
+			break;
 		}
 
-		break;
+		waitingQueue->dequeue();
 
-	} while(true);
+		outgoingRequest = request;
+		sendRequestHeaders(request);
+
+		state = eHCS_SendingHeaders;
+	}
+
+	case eHCS_SendingHeaders: {
+		if(stream != NULL && !stream->isFinished()) {
+			break;
+		}
+
+		state = eHCS_StartBody;
+	}
+
+	case eHCS_StartBody:
+	case eHCS_SendingBody: {
+		if(sendRequestBody(outgoingRequest)) {
+			state = eHCS_Ready;
+			delete stream;
+			stream = NULL;
+			goto REENTER;
+		}
+	}
+	} // switch(state)
 
 	TcpClient::onReadyToSendData(sourceEvent);
 }
