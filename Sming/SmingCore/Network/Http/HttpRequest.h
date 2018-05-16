@@ -52,6 +52,14 @@ public:
 	HttpRequest* setPostParameters(const HttpParams& params);
 	HttpRequest* setPostParameter(const String& name, const String& value);
 
+	/**
+	 * @brief Sets a file to be sent
+	 * @param const String& name the name of the element in the form
+	 * @param FileStream* stream - pointer to the file stream
+	 *
+	 * @return HttpRequest*
+	 */
+	HttpRequest* setFile(const String& name, FileStream* stream);
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	// Authentication adapters set here
@@ -83,6 +91,32 @@ public:
 	 */
 	IDataSourceStream* getBodyStream();
 
+	HttpRequest* setBody(const String& body);
+	HttpRequest* setBody(ReadWriteStream *stream);
+	HttpRequest* setBody(uint8_t *rawData, size_t length);
+
+	/**
+	 * @brief Instead of storing the response body we can set a stream that will take care to store it
+	 * @param IOutputStream *stream
+	 *
+	 * @retval HttpRequest*
+	 */
+	HttpRequest* setResponseStream(IOutputStream *stream);
+
+	/**
+	 * @brief Get access to the currently set response stream.
+	 */
+	IOutputStream* getResponseStream()
+	{
+		return responseStream;
+	}
+
+	HttpRequest* onHeadersComplete(RequestHeadersCompletedDelegate delegateFunction);
+	HttpRequest* onBody(RequestBodyDelegate delegateFunction);
+	HttpRequest* onRequestComplete(RequestCompletedDelegate delegateFunction);
+
+	void reset();
+
 #ifdef ENABLE_SSL
  	HttpRequest* setSslOptions(uint32_t sslOptions);
  	uint32_t getSslOptions();
@@ -105,18 +139,6 @@ public:
 	 */
  	HttpRequest* setSslKeyCert(const SSLKeyCertPair& keyCertPair);
 #endif
-
-	HttpRequest* setBody(const String& body);
-	HttpRequest* setBody(ReadWriteStream *stream);
-	HttpRequest* setBody(uint8_t *rawData, size_t length);
-
-	HttpRequest* setResponseStream(IOutputStream *stream);
-
-	HttpRequest* onHeadersComplete(RequestHeadersCompletedDelegate delegateFunction);
-	HttpRequest* onBody(RequestBodyDelegate delegateFunction);
-	HttpRequest* onRequestComplete(RequestCompletedDelegate delegateFunction);
-
-	void reset();
 
 #ifndef SMING_RELEASE
 	/**
@@ -142,8 +164,6 @@ protected:
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
 
-	uint8_t *rawData = NULL;
-	size_t rawDataLength = 0;
 	ReadWriteStream *stream = NULL;
 
 	IOutputStream *responseStream = NULL;
@@ -159,6 +179,8 @@ protected:
 #endif
 
 private:
+	HashMap<String, FileStream*> files;
+
 	HttpParams* queryParams = NULL; // << deprecated
 };
 
