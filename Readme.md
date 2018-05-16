@@ -19,16 +19,17 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * Built-in JSON library: [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 * HTTP, AJAX, WebSockets support
 * MQTT protocol based on [libemqtt](https://github.com/menudoproblema/libemqtt)
+* Powerful SmtpClient with support for STARTTLS, PIPELINE, PLAIN and CRAM-MD5 authentication, sending attachments and more.
 * Networking based on LWIP stack
 * Simple and powerful hardware API wrappers
 * Crash handlers for analyzing/handling system restarts due to fatal errors or WDT resets.
 * SSL support based on [axTLS 2.1+](https://github.com/igrr/axtls-8266) with [Lwirax](https://github.com/attachix/lwirax/).
-* Out of the box support for HTTP, MQTT and Websocket client connections over SSL. 
+* Out of the box support for HTTP, MQTT and Websocket client connections over SSL.
 * Out of the box support for OTA over HTTPS.
 * [SNI](https://tools.ietf.org/html/rfc6066#page-6) and [Maximum Fragment Length](https://tools.ietf.org/html/rfc6066#page-8) SSL support.
 * PWM support based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git)
 * Optional custom heap allocation based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git)
-* Based on Espressif NONOS SDK. Tested with versions 1.4, 1.5 and 2.0. 
+* Based on Espressif NONOS SDK. Tested with versions 1.4, 1.5 and 2.0.
 
 ## Compatibility
 
@@ -53,7 +54,7 @@ n/a = The selected SDK is not available on that OS
 
 
 ## Additional needed software
-- [ESPtool2](https://github.com/raburton/esptool2) esptool2 
+- [ESPtool2](https://github.com/raburton/esptool2) esptool2
 
 ## Optional features
 
@@ -144,21 +145,21 @@ void onDataSent(HttpClient& client, bool successful)
 }
 ```
 
-For more examples take a look at the [HttpClient](samples/HttpClient/app/application.cpp), [HttpClient_Instapush](samples/HttpClient_Instapush/app/application.cpp) and [HttpClient_ThingSpeak](samples/HttpClient_ThingSpeak/app/application.cpp) samples. 
+For more examples take a look at the [HttpClient](samples/HttpClient/app/application.cpp), [HttpClient_Instapush](samples/HttpClient_Instapush/app/application.cpp) and [HttpClient_ThingSpeak](samples/HttpClient_ThingSpeak/app/application.cpp) samples.
 
 ### OTA application update based on rBoot
 ```c++
 void OtaUpdate() {
-	
+
 	uint8 slot;
 	rboot_config bootconf;
-	
+
 	Serial.println("Updating...");
-	
+
 	// need a clean object, otherwise if run before and failed will not run again
 	if (otaUpdater) delete otaUpdater;
 	otaUpdater = new rBootHttpUpdate();
-	
+
 	// select rom slot to flash
 	bootconf = rboot_get_config();
 	slot = bootconf.current_rom;
@@ -202,11 +203,48 @@ void onFile(HttpRequest &request, HttpResponse &response)
   String file = request.getPath();
   if (file[0] == '/')
     file = file.substring(1);
-    
+
   response.setCache(86400, true);
   response.sendFile(file);
 }
 ```
+
+### SmtpClient for sending emails
+```c++
+SmtpClient emailClient;
+
+emailClient.connect(URL("smtp://user:password@domain.com:25"));
+
+MailMessage* mail = new MailMessage();
+mail->from = "developers@sming";
+mail->to = "iot-developers@world";
+mail->subject = "Greetings from Sming";
+mail->setBody("Hello");
+
+FileStream* file= new FileStream("image.png");
+mail->addAttachment(file);
+
+emailClient.onMessageSent(onMailSent);
+emailClient.send(mail);
+
+...
+
+int onMailSent(SmtpClient& client, int code, char* status)
+{
+    MailMessage* mail = client.getCurrentMessage();
+
+    ...
+
+    if(!client.countPending()) {
+        client.quit();
+    }
+
+    return 0;
+}
+
+```
+
+See the [SmtpCient sample](samples/SmtpClient/app/application.cpp) for details.
 
 ### Documentation
 A complete documentation can be created by running the command below. This requires `doxygen` to be installed on your system.
