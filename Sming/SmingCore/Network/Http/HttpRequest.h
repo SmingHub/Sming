@@ -18,13 +18,13 @@
 #include "HttpRequestAuth.h"
 #endif
 #include "../TcpConnection.h"
-#include "Data/Stream/OutputStream.h"
+#include "Data/Stream/DataSourceStream.h"
 
 class HttpClient;
 class HttpServerConnection;
 class HttpConnection;
 
-typedef Delegate<int(HttpConnection& client, HttpHeaders& headers)> RequestHeadersCompletedDelegate;
+typedef Delegate<int(HttpConnection& client, HttpResponse& response)> RequestHeadersCompletedDelegate;
 typedef Delegate<int(HttpConnection& client, const char *at, size_t length)> RequestBodyDelegate;
 typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedDelegate;
 
@@ -87,26 +87,26 @@ public:
 
 	/**
 	 * @brief Returns pointer to the current body stream
-	 * @retval IDataSourceStream*
+	 * @retval ReadWriteStream*
 	 */
-	IDataSourceStream* getBodyStream();
+	ReadWriteStream* getBodyStream();
 
 	HttpRequest* setBody(const String& body);
 	HttpRequest* setBody(ReadWriteStream *stream);
 	HttpRequest* setBody(uint8_t *rawData, size_t length);
 
 	/**
-	 * @brief Instead of storing the response body we can set a stream that will take care to store it
-	 * @param IOutputStream *stream
+	 * @brief Instead of storing the response body we can set a stream that will take care to process it
+	 * @param ReadWriteStream *stream
 	 *
 	 * @retval HttpRequest*
 	 */
-	HttpRequest* setResponseStream(IOutputStream *stream);
+	HttpRequest* setResponseStream(ReadWriteStream *stream);
 
 	/**
 	 * @brief Get access to the currently set response stream.
 	 */
-	IOutputStream* getResponseStream()
+	ReadWriteStream* getResponseStream()
 	{
 		return responseStream;
 	}
@@ -152,7 +152,6 @@ public:
 	URL uri;
 	HttpMethod method = HTTP_GET;
 	HttpHeaders headers;
-
 	HttpParams postParams;
 
 	int retries = 0; // how many times the request should be send again...
@@ -165,8 +164,7 @@ protected:
 	RequestCompletedDelegate requestCompletedDelegate;
 
 	ReadWriteStream *stream = NULL;
-
-	IOutputStream *responseStream = NULL;
+	ReadWriteStream *responseStream = NULL;
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	AuthAdapter *auth = NULL;

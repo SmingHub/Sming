@@ -23,7 +23,7 @@
 bool HttpConnection::parserSettingsInitialized = false;
 http_parser_settings HttpConnection::parserSettings;
 
-HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false), mode(eHCM_String)
+HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false)
 {
 	this->waitingQueue = queue;
 
@@ -77,6 +77,11 @@ bool HttpConnection::connect(const String& host, int port, bool useSsl /* = fals
 	return TcpClient::connect(host, port, useSsl, sslOptions);
 }
 
+bool HttpConnection::send(HttpRequest* request)
+{
+	return waitingQueue->enqueue(request);
+}
+
 bool HttpConnection::isActive()
 {
 	if(tcp == NULL) {
@@ -96,13 +101,13 @@ bool HttpConnection::isActive()
 // @deprecated
 HttpHeaders &HttpConnection::getResponseHeaders()
 {
-	return responseHeaders;
+	return response.headers;
 }
 
 String HttpConnection::getResponseHeader(String headerName, String defaultValue /* = "" */)
 {
-	if (responseHeaders.contains(headerName))
-		return responseHeaders[headerName];
+	if (response.headers.contains(headerName))
+		return response.headers[headerName];
 
 	return defaultValue;
 }
@@ -129,10 +134,7 @@ DateTime HttpConnection::getServerDate()
 
 String HttpConnection::getResponseString()
 {
-	if (mode == eHCM_String)
-		return responseStringData;
-	else
-		return "";
+	return response.getBody();
 }
 
 // @enddeprecated
@@ -144,17 +146,12 @@ void HttpConnection::reset()
 		incomingRequest = NULL;
 	}
 
-	code = 0;
-	if(responseStringData.length()) {
-		responseStringData = "";
-	}
-	responseHeaders.clear();
+	response.reset();
 
 	lastWasValue = true;
 	lastData = "";
 	currentField  = "";
 }
-
 
 err_t HttpConnection::onProtocolUpgrade(http_parser* parser)
 {
@@ -175,13 +172,6 @@ int HttpConnection::staticOnMessageBegin(http_parser* parser)
 	connection->incomingRequest = connection->executionQueue.dequeue();
 	if(connection->incomingRequest == NULL) {
 		return 1; // there are no requests in the queue
-	}
-
-	if(connection->incomingRequest->responseStream != NULL) {
-		connection->mode = eHCM_Stream;
-	}
-	else {
-		connection->mode = eHCM_String;
 	}
 
 	return 0;
@@ -245,23 +235,13 @@ int HttpConnection::staticOnMessageComplete(http_parser* parser)
 	int hasError = 0;
 	if(connection->incomingRequest->requestCompletedDelegate) {
 		bool success = (HTTP_PARSER_ERRNO(parser) == HPE_OK) &&  // false when the parsing has failed
-					   (connection->code >= 200 && connection->code <= 399);  // false when the HTTP status code is not ok
+					   (connection->response.code >= 200 && connection->response.code <= 399);  // false when the HTTP status code is not ok
 		hasError = connection->incomingRequest->requestCompletedDelegate(*connection, success);
-	}
-
-	if(connection->incomingRequest->auth != NULL) {
-		connection->incomingRequest->auth->setResponse(connection->getResponse());
 	}
 
 	if(connection->incomingRequest->retries > 0) {
 		connection->incomingRequest->retries--;
 		return (connection->executionQueue.enqueue(connection->incomingRequest)? 0: -1);
-	}
-
-	if(connection->incomingRequest->responseStream != NULL) {
-		connection->incomingRequest->responseStream->close();
-		delete connection->incomingRequest->responseStream;
-		connection->incomingRequest->responseStream = NULL;
 	}
 
 	delete connection->incomingRequest;
@@ -294,24 +274,40 @@ int HttpConnection::staticOnHeadersComplete(http_parser* parser)
 	 * chunked' headers that indicate the presence of a body.
 	 *
 	 * Returning `2` from on_headers_complete will tell parser that it should not
-	 * expect neither a body nor any futher responses on this connection. This is
+	 * expect neither a body nor any further responses on this connection. This is
 	 * useful for handling responses to a CONNECT request which may not contain
 	 * `Upgrade` or `Connection: upgrade` headers.
 	 */
 
-	connection->code = parser->status_code;
 	if(connection->incomingRequest == NULL) {
 		// nothing to process right now...
 		return 1;
 	}
 
+	connection->response.code = parser->status_code;
+
+	if(connection->incomingRequest->auth != NULL) {
+		connection->incomingRequest->auth->setResponse(connection->getResponse());
+	}
+
 	int error = 0;
 	if(connection->incomingRequest->headersCompletedDelegate) {
-		error = connection->incomingRequest->headersCompletedDelegate(*connection, connection->responseHeaders);
+		error = connection->incomingRequest->headersCompletedDelegate(*connection, connection->response);
 	}
 
 	if(!error && connection->incomingRequest->method == HTTP_HEAD) {
 		error = 1;
+	}
+
+	if(!error) {
+		// set the response stream
+		if(connection->incomingRequest->responseStream != NULL) {
+			connection->response.stream = connection->incomingRequest->responseStream;
+			connection->incomingRequest->responseStream = NULL; // the response object will release that stream
+		}
+		else {
+			connection->response.stream = new LimitedMemoryStream(NETWORK_SEND_BUFFER_SIZE);
+		}
 	}
 
 	return error;
@@ -352,10 +348,10 @@ int HttpConnection::staticOnHeaderValue(http_parser *parser, const char *at, siz
 
 	if(!connection->lastWasValue) {
 		connection->currentField = connection->lastData;
-		connection->responseHeaders[connection->currentField] = "";
+		connection->response.headers[connection->currentField] = "";
 		connection->lastWasValue = true;
 	}
-	connection->responseHeaders[connection->currentField] += String(at, length);
+	connection->response.headers[connection->currentField] += String(at, length);
 
 	return 0;
 }
@@ -372,15 +368,12 @@ int HttpConnection::staticOnBody(http_parser *parser, const char *at, size_t len
 		return connection->incomingRequest->requestBodyDelegate(*connection, at, length);
 	}
 
-	if (connection->mode == eHCM_String) {
-		connection->responseStringData += String(at, length);
-		return 0;
-	}
-
-	if(connection->incomingRequest->responseStream != NULL) {
-		int res = connection->incomingRequest->responseStream->write((const uint8_t *)at, length);
+	if(connection->response.stream != NULL) {
+		int res = connection->response.stream->write((const uint8_t *)at, length);
 		if (res != length) {
-			connection->incomingRequest->responseStream->close();
+            		// unable to write the requested bytes - stop here...
+			delete connection->response.stream;
+			connection->response.stream = NULL;
 			return 1;
 		}
 	}
@@ -561,25 +554,7 @@ HttpRequest* HttpConnection::getRequest()
 
 HttpResponse* HttpConnection::getResponse()
 {
-	HttpResponse* response = new HttpResponse();
-	response->code = code;
-	response->headers = responseHeaders;
-// TODO: fix this...
-//	if(currentRequest) {
-//		response->stream = currentRequest->outputStream;
-//	}
-
-	if(responseStringData.length()) {
-		if(response->stream != NULL) {
-			delete response->stream;
-			response->stream = NULL;
-		}
-
-		MemoryDataStream* memory = new MemoryDataStream();
-		memory->write((uint8_t *)responseStringData.c_str(), responseStringData.length());
-		response->stream = memory;
-	}
-	return response;
+	return &response;
 }
 
 // end of public methods for HttpConnection
@@ -629,10 +604,7 @@ void HttpConnection::onError(err_t err)
 
 void HttpConnection::cleanup()
 {
-	// TODO: clean the current request
 	reset();
-
-	// TODO: clean the current response
 
 	// if there are requests in the executionQueue -> move them back to the waiting queue
 	for(int i=0; i < executionQueue.count(); i++) {

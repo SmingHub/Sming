@@ -140,6 +140,11 @@ bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
 		if (mime != NULL)
 			setContentType(mime);
 	}
+
+	if(!hasHeader("Transfer-Encoding") && stream->available() == -1) {
+		setHeader("Transfer-Encoding", "chunked");
+	}
+
 	return true;
 }
 
@@ -177,11 +182,32 @@ bool HttpResponse::sendDataStream( ReadWriteStream * newDataStream , const Strin
     return true;
 }
 
+String HttpResponse::getBody()
+{
+	if(stream == NULL) {
+		return "";
+	}
+
+	String ret;
+	if(stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
+		MemoryDataStream *memory = (MemoryDataStream *)stream;
+		char buf[1024];
+		while(stream->available() > 0) {
+			int available = memory->readMemoryBlock(buf, 1024);
+			memory->seek(available);
+			ret += String(buf, available);
+			if(available < 1024) {
+				break;
+			}
+		}
+	}
+	return ret;
+}
+
 void HttpResponse::reset()
 {
+	code = 0;
 	headers.clear();
-	if(stream != NULL) {
-		delete stream;
-		stream = NULL;
-	}
+	delete stream;
+	stream = NULL;
 }

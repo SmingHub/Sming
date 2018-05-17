@@ -49,19 +49,7 @@ HttpRequest& HttpRequest::operator = (const HttpRequest& rhs)
 
 HttpRequest::~HttpRequest()
 {
-	delete queryParams;
-	delete stream;
-	delete responseStream;
-	queryParams = NULL;
-	stream = NULL;
-	responseStream = NULL;
-
-	for(int i=0; i < files.count(); i++) {
-		String key = files.keyAt(i);
-		delete files[key];
-		files[key] = NULL;
-	}
-	files.clear();
+	reset();
 }
 
 HttpRequest* HttpRequest::setURL(const URL& uri)
@@ -126,7 +114,7 @@ HttpRequest* HttpRequest::setAuth(AuthAdapter *adapter)
 String HttpRequest::getHeader(const String& name)
 {
 	if(!headers.contains(name)) {
-		return String("");
+		return "";
 	}
 
 	return headers[name];
@@ -135,7 +123,7 @@ String HttpRequest::getHeader(const String& name)
 String HttpRequest::getPostParameter(const String& name)
 {
 	if(!postParams.contains(name)) {
-		return String("");
+		return "";
 	}
 
 	return postParams[name];
@@ -192,12 +180,12 @@ String HttpRequest::getBody()
 	return ret;
 }
 
-IDataSourceStream* HttpRequest::getBodyStream()
+ReadWriteStream* HttpRequest::getBodyStream()
 {
 	return stream;
 }
 
-HttpRequest* HttpRequest::setResponseStream(IOutputStream *stream)
+HttpRequest* HttpRequest::setResponseStream(ReadWriteStream *stream)
 {
 	if(responseStream != NULL) {
 		debug_e("HttpRequest::setResponseStream: Discarding already set stream!");
@@ -283,12 +271,20 @@ HttpRequest* HttpRequest::onRequestComplete(RequestCompletedDelegate delegateFun
 
 void HttpRequest::reset()
 {
-	headers.clear();
+	delete queryParams;
+	delete stream;
+	delete responseStream;
+	queryParams = NULL;
+	stream = NULL;
+	responseStream = NULL;
+
 	postParams.clear();
-	if(queryParams != NULL) {
-		delete queryParams;
-		queryParams = NULL;
+	for(int i=0; i < files.count(); i++) {
+		String key = files.keyAt(i);
+		delete files[key];
+		files[key] = NULL;
 	}
+	files.clear();
 }
 
 #ifndef SMING_RELEASE

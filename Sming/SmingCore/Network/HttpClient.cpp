@@ -11,7 +11,7 @@
  ****/
 
 #include "HttpClient.h"
-#include "../Data/Stream/OutputStream.h"
+#include "../Data/Stream/DataSourceStream.h"
 
 /* Low Level Methods */
 bool HttpClient::send(HttpRequest* request)
@@ -90,7 +90,8 @@ bool HttpClient::downloadFile(const String& url, const String& saveFileName, Req
 	else
 		file = saveFileName;
 
-	FileOutputStream* fileStream = new FileOutputStream(file);
+	FileStream* fileStream = new FileStream();
+	fileStream->attach(file, eFO_CreateNewAlways | eFO_WriteOnly);
 
 	return send(request(url)
 				   ->setResponseStream(fileStream)

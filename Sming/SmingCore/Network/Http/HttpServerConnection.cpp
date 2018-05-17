@@ -148,7 +148,6 @@ int HttpServerConnection::staticOnMessageComplete(http_parser* parser)
 	connection->send();
 
 	if(connection->request.responseStream != NULL) {
-		connection->request.responseStream->close();
 		delete connection->request.responseStream;
 		connection->request.responseStream = NULL;
 	}
