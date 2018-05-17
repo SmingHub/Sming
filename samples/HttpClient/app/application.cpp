@@ -160,24 +160,34 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 
 	HttpRequest* postRequest = new HttpRequest(URL("https://httpbin.org/post"));
 	// For this request we will use a slightly improved syntax
-	postRequest->setMethod(HTTP_POST) 					// << we set the method to POST
-			   ->setHeaders(headers)					// << we add extra headers
-			   ->setPostParameter("text","Test upload") // << we set one form element called "text"
-			   ->setFile("file1", fileStream)			// << we set one file upload that should upload the data.txt
-			   	   	   	   	   	   	   	   	   	   	    // ... under the form element name "upload1"
+	postRequest->setMethod(HTTP_POST) 			       // << we set the method to POST
+			   ->setHeaders(headers)		       // << we add extra headers
+			   ->setPostParameter("text","Test upload")    // << we set one form element called "text"
+			   ->setFile("file1", fileStream)	       // << we set one file upload that should upload the data.txt
+			   	   	   	   	   	       // ... under the form element name "file1"
 			   ->onRequestComplete(onDownload);
 
 	httpClient.send(postRequest); // << don't forget to `send` the request
 
 // [PUT request with raw data: We will send the data.txt content without any additional content encoding ]
-	FileStream* fileStream1 = new FileStream("5K.txt");  // << we need to create new FileStream pointer.
-														   // ... reusing the previous one can lead to
-														   // ... undefined results
+	FileStream* fileStream1 = new FileStream("20K.txt");
 
 	HttpRequest* putRequest = new HttpRequest(URL("https://httpbin.org/put"));
 	putRequest->setMethod(HTTP_PUT)
 			  ->setBody(fileStream1)            // << we set the complete HTTP body
 			  ->onRequestComplete(onDownload);
+
+// Remark: Response body handling.
+	// The remote server will "echo" the data meaning that the body will be bigger than 20K.
+	// By default the http client will store in memory up to 1024 bytes.
+	// If you want to store in memory larger body you can do something like this
+//	putRequest->setResponseStream(new LimitedMemoryStream(4096)); // << stores max 4K in memory
+
+	// Or if you want to directly save the response body to a file then the following can be done
+//	FileStream* responseBodyFile = new FileStream();
+//	responseBodyFile->attach("file.name", eFO_CreateNewAlways | eFO_WriteOnly);
+//	putRequest->setResponseStream(responseBodyFile); // << the complete body will be stored on your file system
+	// see the implementation of `bool HttpClient::downloadFile(const String& url, const String& saveFileName, ...` for details.
 
 	httpClient.send(putRequest);
 }
