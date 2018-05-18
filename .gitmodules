@@ -73,3 +73,7 @@
 	path = Sming/Libraries/IR
 	url = https://github.com/markszabo/IRremoteESP8266.git
 	ignore = dirty
+[submodule "Sming/Libraries/DHTesp"]
+	path = Sming/Libraries/DHTesp
+	url = https://github.com/beegee-tokyo/DHTesp.git
+	ignore = dirty

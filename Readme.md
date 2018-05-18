@@ -116,19 +116,21 @@ WifiStation.config("LOCAL-NETWORK", "123456789087"); // Put you SSID and Passwor
 
 ### Read DHT22 sensor
 ```c++
-#include <Libraries/DHT/DHT.h> // This is just popular Arduino library!
+#include <Libraries/DHTesp/DHTesp.h> // This is just a popular Arduino library!
 
-#define WORK_PIN 0 // GPIO0
-DHT dht(WORK_PIN, DHT22);
+#define DHT_PIN 0 // GPIO0
+DHTesp dht;
 
 void init()
 {
-  dht.begin();
+  dht.setup(DHT_PIN, DHTesp::DHT22);
 
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
+  float h = dht.getHumidity();
+  float t = dht.getTemperature();
 }
 ```
+
+Take a look at the code of the [Humidity_DHT22](samples/Humidity_DHT22/app/application.cpp) sample.
 
 ### HTTP client
 ```c++
