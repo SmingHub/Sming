@@ -23,14 +23,6 @@
 
 typedef SimpleConcurrentQueue<HttpRequest*, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
-enum HttpClientMode
-{
-	eHCM_String = 0,
-	eHCM_File, // << Deprecated! Use eHCM_Stream stream instead
-	eHCM_Stream,
-	eHCM_UserDefined // << Deprecated! If you supply onBody callback then the incoming body will be processed from the callback directly
-};
-
 class HttpConnection : protected TcpClient {
 	friend class HttpClient;
 
@@ -40,7 +32,7 @@ public:
 
 	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0);
 
-	void send(HttpRequest* request);
+	bool send(HttpRequest* request);
 
 	bool isActive();
 
@@ -66,15 +58,37 @@ public:
 #endif
 
 	// Backported for compatibility reasons
-	// @deprecated
-	__forceinline int getResponseCode() { return code; }
+// @deprecated
+	/**
+	 * @deprecated Use `getResponse().code` instead
+	 */
+	__forceinline int getResponseCode() { return response.code; }
+
+	/**
+	 * @deprecated Use `getResponse().headers[headerName]` instead
+	 */
 	String getResponseHeader(String headerName, String defaultValue = "");
+
+	/**
+	* @deprecated Use `getResponse().headers` instead
+	*/
 	HttpHeaders &getResponseHeaders();
+
+	/**
+	* @deprecated Use `getResponse().headers["Last-Modified"]` instead
+	*/
 	DateTime getLastModifiedDate(); // Last-Modified header
+
+	/**
+	 * @deprecated Use `getResponse().headers["Date"]` instead
+	 */
 	DateTime getServerDate(); // Date header
 
+	/**
+	 * @deprecated Use `getResponse().stream` instead
+	 */
 	String getResponseString();
-	// @enddeprecated
+// @enddeprecated
 
 protected:
 	void reset();
@@ -105,22 +119,18 @@ private:
 	bool sendRequestBody(HttpRequest* request);
 
 protected:
-	HttpClientMode mode;
-	String responseStringData;
-
 	RequestQueue* waitingQueue;
 	RequestQueue executionQueue;
 	http_parser parser;
 	static http_parser_settings parserSettings;
 	static bool parserSettingsInitialized;
-	HttpHeaders responseHeaders;
 
-	int code = 0;
 	bool lastWasValue = true;
 	String lastData = "";
 	String currentField  = "";
 	HttpRequest* incomingRequest = NULL;
 	HttpRequest* outgoingRequest = NULL;
+	HttpResponse response;
 
 private:
 	HttpConnectionState state = eHCS_Ready;

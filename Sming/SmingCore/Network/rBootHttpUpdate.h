@@ -10,7 +10,7 @@
 #ifndef SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
 #define SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
 
-#include "Data/Stream/OutputStream.h"
+#include "Data/Stream/DataSourceStream.h"
 #include "HttpClient.h"
 #include <rboot-api.h>
 
@@ -27,11 +27,36 @@ struct rBootHttpUpdateItem {
 	int size;
 };
 
-class rBootItemOutputStream: public IOutputStream {
+class rBootItemOutputStream: public ReadWriteStream {
 public:
 	void setItem(rBootHttpUpdateItem* item);
 	virtual bool init();
 	virtual size_t write(const uint8_t* data, size_t size);
+	virtual size_t write(uint8_t charToWrite)
+	{
+		return write(&charToWrite, 1);
+	}
+
+	virtual StreamType getStreamType()
+	{
+		return eSST_File;
+	}
+
+	virtual uint16_t readMemoryBlock(char* data, int bufSize)
+	{
+		return 0;
+	}
+
+	virtual bool seek(int len)
+	{
+		return false;
+	}
+
+	virtual bool isFinished()
+	{
+		return true;
+	}
+
 	virtual bool close();
 	virtual ~rBootItemOutputStream();
 

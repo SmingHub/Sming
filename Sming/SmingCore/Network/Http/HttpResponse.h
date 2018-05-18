@@ -14,7 +14,6 @@
 #define _SMING_CORE_HTTP_RESPONSE_H_
 
 #include "HttpCommon.h"
-#include "Data/Stream/OutputStream.h"
 #include "Data/Stream/DataSourceStream.h"
 
 class JsonObjectStream; // << TODO: deprecated and should be removed in the next version
@@ -80,6 +79,8 @@ public:
 
 	// Send Datastream, can be called with Classes derived from
 	bool sendDataStream( ReadWriteStream * newDataStream , const String& reqContentType = "" );
+
+	String getBody();
 
 	void reset();
 
