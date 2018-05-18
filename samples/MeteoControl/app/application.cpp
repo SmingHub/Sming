@@ -1,7 +1,7 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <Libraries/LiquidCrystal/LiquidCrystal_I2C.h>
-#include <Libraries/DHT/DHT.h>
+#include <Libraries/DHTesp/DHTesp.h>
 
 ///////////////////////////////////////////////////////////////////
 // Set your SSID & Pass for initial configuration
@@ -11,7 +11,7 @@
 #include "special_chars.h"
 #include "webserver.h"
 
-DHT dht(DHT_PIN, DHT11);
+DHTesp dht;
 
 // For more information visit useful wiki page: http://arduino-info.wikispaces.com/LCD-Blue-I2C
 // Standard I2C bus pins: GPIO0 -> SCL, GPIO2 -> SDA
@@ -42,7 +42,7 @@ void init()
 	pinMode(CONTROL_PIN, OUTPUT);
 
 	// DHT sensor start
-	dht.begin();
+	dht.setup(DHT_PIN, DHTesp::DHT11);
 
 	lcd.begin(16, 2);
 	lcd.backlight();
@@ -93,8 +93,8 @@ void showValues()
 
 void process()
 {
-	float t = dht.readTemperature() + ActiveConfig.AddT;
-	float h = dht.readHumidity() + ActiveConfig.AddRH;
+	float t = dht.getTemperature() + ActiveConfig.AddT;
+	float h = dht.getHumidity() + ActiveConfig.AddRH;
 
 	if (ActiveConfig.Trigger == eTT_Temperature)
 		state = t < ActiveConfig.RangeMin || t > ActiveConfig.RangeMax;
