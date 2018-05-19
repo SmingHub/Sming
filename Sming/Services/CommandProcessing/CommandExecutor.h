@@ -20,7 +20,7 @@ class CommandExecutor
 public:
 	CommandExecutor(TcpClient* cmdClient);
 	CommandExecutor(Stream* reqStream);
-	CommandExecutor(WebSocketConnection* reqSocket);
+	CommandExecutor(WebsocketConnection* reqSocket);
 	~CommandExecutor();
 
 	int executorReceive(char *recvData, int recvSize);

@@ -20,14 +20,13 @@ WebsocketResource::~WebsocketResource()
 {
 }
 
-int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
-{
-	WebSocketConnection* socket = new WebSocketConnection(&connection);
+int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) {
+	WebsocketConnection* socket = new WebsocketConnection();
 	socket->setBinaryHandler(wsBinary);
 	socket->setMessageHandler(wsMessage);
 	socket->setConnectionHandler(wsConnect);
 	socket->setDisconnectionHandler(wsDisconnect);
-	if(!socket->initialize(request, response)) {
+	if (!socket->initialize(connection, request, response)) {
 		debug_w("Not a valid WebsocketRequest?");
 		delete socket;
 		return -1;
@@ -42,14 +41,15 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 
 void WebsocketResource::shutdown(HttpServerConnection& connection)
 {
-	WebSocketConnection* socket = (WebSocketConnection*)connection.userData;
+	WebsocketConnection* socket = (WebsocketConnection *)connection.userData;
 	delete socket;
 	connection.userData = NULL;
+	connection.setTimeOut(1);
 }
 
 int WebsocketResource::processData(HttpServerConnection& connection, HttpRequest& request, char* at, int size)
 {
-	WebSocketConnection* socket = (WebSocketConnection*)connection.userData;
+	WebsocketConnection *socket = (WebsocketConnection *)connection.userData;
 	if(socket == NULL) {
 		return -1;
 	}
@@ -57,22 +57,18 @@ int WebsocketResource::processData(HttpServerConnection& connection, HttpRequest
 	return socket->processFrame(connection, request, at, size);
 }
 
-void WebsocketResource::setConnectionHandler(WebSocketDelegate handler)
-{
+void WebsocketResource::setConnectionHandler(WebsocketDelegate handler) {
 	wsConnect = handler;
 }
 
-void WebsocketResource::setMessageHandler(WebSocketMessageDelegate handler)
-{
+void WebsocketResource::setMessageHandler(WebsocketMessageDelegate handler) {
 	wsMessage = handler;
 }
 
-void WebsocketResource::setBinaryHandler(WebSocketBinaryDelegate handler)
-{
+void WebsocketResource::setBinaryHandler(WebsocketBinaryDelegate handler) {
 	wsBinary = handler;
 }
 
-void WebsocketResource::setDisconnectionHandler(WebSocketDelegate handler)
-{
+void WebsocketResource::setDisconnectionHandler(WebsocketDelegate handler) {
 	wsDisconnect = handler;
 }

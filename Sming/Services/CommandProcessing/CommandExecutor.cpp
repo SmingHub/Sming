@@ -31,7 +31,7 @@ CommandExecutor::CommandExecutor(Stream* reqStream) : CommandExecutor()
 	}
 }
 
-CommandExecutor::CommandExecutor(WebSocketConnection* reqSocket)
+CommandExecutor::CommandExecutor(WebsocketConnection* reqSocket)
 {
 	commandOutput = new CommandOutput(reqSocket);
 	if (commandHandler.getVerboseMode() != SILENT)

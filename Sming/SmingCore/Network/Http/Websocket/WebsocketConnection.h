@@ -10,18 +10,23 @@
 
 #include "../../TcpServer.h"
 #include "../HttpServerConnection.h"
-#include "../../Services/cWebsocket/websocket.h"
 extern "C" {
 #include "../ws_parser/ws_parser.h"
 }
 
-class WebSocketConnection;
+enum wsState {
+    WS_STATE_OPENING,
+    WS_STATE_NORMAL,
+    WS_STATE_CLOSING
+};
 
-typedef Vector<WebSocketConnection*> WebSocketsList;
+class WebsocketConnection;
 
-typedef Delegate<void(WebSocketConnection&)> WebSocketDelegate;
-typedef Delegate<void(WebSocketConnection&, const String&)> WebSocketMessageDelegate;
-typedef Delegate<void(WebSocketConnection&, uint8_t* data, size_t size)> WebSocketBinaryDelegate;
+typedef Vector<WebsocketConnection*> WebSocketsList;
+
+typedef Delegate<void(WebsocketConnection&)> WebsocketDelegate;
+typedef Delegate<void(WebsocketConnection&, const String&)> WebsocketMessageDelegate;
+typedef Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)> WebsocketBinaryDelegate;
 
 enum WsConnectionState { eWSCS_Ready, eWSCS_Open, eWSCS_Closed };
 
@@ -31,16 +36,21 @@ typedef struct {
 	size_t payloadLegth;
 } WsFrameInfo;
 
-class WebSocketConnection
+class WebsocketConnection
 {
 public:
-	WebSocketConnection(HttpServerConnection* conn);
-	virtual ~WebSocketConnection();
+	static const char *secret;
 
-	bool initialize(HttpRequest& request, HttpResponse& response);
+public:
+	virtual ~WebsocketConnection();
 
-	virtual void send(const char* message, int length, wsFrameType type = WS_TEXT_FRAME);
-	static void broadcast(const char* message, int length, wsFrameType type = WS_TEXT_FRAME);
+	/**
+	 * @brief Initializes server connection
+	 */
+	bool initialize(HttpServerConnection& connection, HttpRequest &request, HttpResponse &response);
+
+	virtual void send(const char* message, int length, ws_frame_type_t type = WS_FRAME_TEXT);
+	static void broadcast(const char* message, int length, ws_frame_type_t type = WS_FRAME_TEXT);
 
 	void sendString(const String& message);
 	void sendBinary(const uint8_t* data, int size);
@@ -49,25 +59,20 @@ public:
 	void setUserData(void* userData);
 	void* getUserData();
 
-	// @deprecated
-	bool operator==(const WebSocketConnection& rhs) const;
+// @deprecated
+	bool operator==(const WebsocketConnection &rhs) const;
 
 	WebSocketsList& getActiveWebSockets();
 	// @end deprecated
 
-	void setConnectionHandler(WebSocketDelegate handler);
-	void setMessageHandler(WebSocketMessageDelegate handler);
-	void setBinaryHandler(WebSocketBinaryDelegate handler);
-	void setDisconnectionHandler(WebSocketDelegate handler);
+	void setConnectionHandler(WebsocketDelegate handler);
+	void setMessageHandler(WebsocketMessageDelegate handler);
+	void setBinaryHandler(WebsocketBinaryDelegate handler);
+	void setDisconnectionHandler(WebsocketDelegate handler);
 
 	int processFrame(HttpServerConnection& connection, HttpRequest& request, char* at, int size);
 
 protected:
-	bool is(HttpServerConnection* conn)
-	{
-		return connection == conn;
-	};
-
 	static int staticOnDataBegin(void* userData, ws_frame_type_t type);
 	static int staticOnDataPayload(void* userData, const char* at, size_t length);
 	static int staticOnDataEnd(void* userData);
@@ -75,17 +80,22 @@ protected:
 	static int staticOnControlPayload(void* userData, const char*, size_t length);
 	static int staticOnControlEnd(void* userData);
 
+	int encodeFrame(ws_frame_type_t type,
+					const char *inData, size_t inLength,
+					char *outData, size_t outLength,
+					bool useMask=true, bool isFin=true);
+
 protected:
-	WebSocketDelegate wsConnect = 0;
-	WebSocketMessageDelegate wsMessage = 0;
-	WebSocketBinaryDelegate wsBinary = 0;
-	WebSocketDelegate wsDisconnect = 0;
+	WebsocketDelegate wsConnect = 0;
+	WebsocketMessageDelegate wsMessage = 0;
+	WebsocketBinaryDelegate wsBinary = 0;
+	WebsocketDelegate wsDisconnect = 0;
+
+	EndlessMemoryStream* stream = NULL;
+	void *userData = nullptr;
 
 private:
 	WsConnectionState state = eWSCS_Ready;
-
-	void* userData = nullptr;
-	HttpServerConnection* connection = nullptr;
 
 	ws_frame_type_t frameType = WS_FRAME_TEXT;
 	WsFrameInfo controlFrame;
@@ -95,7 +105,9 @@ private:
 
 	static WebSocketsList websocketList;
 
-	EndlessMemoryStream* stream = NULL;
+	bool isClientConnection = true;
+
+	HttpServerConnection* serverConnection = nullptr;
 };
 
 #endif /* SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_ */

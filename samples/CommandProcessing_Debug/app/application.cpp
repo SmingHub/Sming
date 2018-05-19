@@ -43,24 +43,24 @@ void onFile(HttpRequest& request, HttpResponse& response)
 
 int msgCount = 0;
 
-void wsConnected(WebSocketConnection& socket)
+void wsConnected(WebsocketConnection& socket)
 {
 	Serial.printf("Socket connected\r\n");
 }
 
-void wsMessageReceived(WebSocketConnection& socket, const String& message)
+void wsMessageReceived(WebsocketConnection& socket, const String& message)
 {
-	Serial.printf("WebSocketConnection message received:\r\n%s\r\n", message.c_str());
+	Serial.printf("WebsocketConnection message received:\r\n%s\r\n", message.c_str());
 	String response = "Echo: " + message;
 	socket.sendString(response);
 }
 
-void wsBinaryReceived(WebSocketConnection& socket, uint8_t* data, size_t size)
+void wsBinaryReceived(WebsocketConnection& socket, uint8_t* data, size_t size)
 {
 	Serial.printf("Websocket binary data recieved, size: %d\r\n", size);
 }
 
-void wsDisconnected(WebSocketConnection& socket)
+void wsDisconnected(WebsocketConnection& socket)
 {
 	Serial.printf("Socket disconnected");
 }
