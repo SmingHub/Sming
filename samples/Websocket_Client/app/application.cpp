@@ -25,36 +25,33 @@ WebsocketClient wsClient;
 Timer msgTimer;
 Timer restartTimer;
 
+#define RESTART_PERIOD 20
+
 int msg_cnt = 0;
 
 #ifdef ENABLE_SSL
 String ws_Url = "wss://echo.websocket.org";
 #else
 String ws_Url = "ws://echo.websocket.org";
-#endif
+#endif /* ENABLE_SSL */
 
-void wsDisconnected(WebsocketClient& wsClient, bool success);
+void wsDisconnected(WebsocketConnection& wsConnection, bool success);
 void wsMessageSent();
-void wsConnected(WebsocketClient& wsClient, wsMode Mode)
+
+void wsConnected(WebsocketConnection& wsConnection)
 {
-	if(Mode == wsMode::Connected) {
-		msgTimer.initializeMs(1 * 1000, wsMessageSent);
-		msgTimer.start();
-	} else {
-		Serial.println("Connection with server not successful. Reconnecting..");
-		wsClient.connect(ws_Url);
-#ifdef ENABLE_SSL
-		wsClient.addSslOptions(SSL_SERVER_VERIFY_LATER);
-#endif
-	}
+	Serial.printf("Start sending messages every second...");
+	msgTimer.initializeMs(1 * 1000, wsMessageSent);
+	msgTimer.start();
 }
-void wsMessageReceived(WebsocketClient& wsClient, String message)
+
+void wsMessageReceived(WebsocketConnection& wsConnection, const String& message)
 {
 	Serial.printf("WebSocket message received: %s\n", message.c_str());
 	Serial.printf("Free Heap: %d\n", system_get_free_heap_size());
 }
 
-void wsBinReceived(WebsocketClient& wsClient, uint8_t* data, size_t size)
+void wsBinReceived(WebsocketConnection& wsConnection, uint8_t* data, size_t size)
 {
 	Serial.printf("WebSocket BINARY received\n");
 	for(uint8_t i = 0; i < size; i++) {
@@ -69,7 +66,7 @@ void restart()
 	msg_cnt = 0;
 	wsClient.connect(ws_Url);
 #ifdef ENABLE_SSL
-	wsClient.addSslOptions(SSL_SERVER_VERIFY_LATER);
+	wsClient.getHttpConnection()->addSslOptions(SSL_SERVER_VERIFY_LATER);
 #endif
 
 	msgTimer.setCallback(wsMessageSent);
@@ -77,42 +74,43 @@ void restart()
 	msgTimer.start();
 }
 
-void wsDisconnected(WebsocketClient& wsClient, bool success)
+void wsDisconnected(WebsocketConnection& wsConnection)
 {
-	if(success == true) {
-		Serial.println("Websocket Client Disconnected Normally. End of program ..");
-	} else {
-		Serial.println("Websocket Client Disconnected. Reconnecting ..");
-	}
+	Serial.printf("Restarting websocket client after %d seconds\n", RESTART_PERIOD);
 	msgTimer.setCallback(restart);
-	msgTimer.setIntervalMs(60 * 1000);
+	msgTimer.setIntervalMs(RESTART_PERIOD * 1000);
 	msgTimer.startOnce();
 }
 
 void wsMessageSent()
 {
-	if(WifiStation.isConnected() == true) { // Check if Esp8266 is connected to router
-		if(msg_cnt > 10) {
-			Serial.println("End Websocket client session");
-			wsClient.disconnect(); // clean disconnect.
-			msgTimer.stop();
-		} else {
-#ifndef WS_BINARY
-			String message = "Hello " + String(msg_cnt++);
-			Serial.printf("Sending websocket message: %s\n", message.c_str());
-			wsClient.sendMessage(message);
-#else
-			uint8_t buf[] = {0xF0, 0x00, 0xF0};
-			buf[1] = msg_cnt++;
-			Serial.printf("Sending websocket binary buffer\n");
-			for(uint8_t i = 0; i < 3; i++) {
-				Serial.printf("wsBin[%u] = 0x%02X\n", i, buf[i]);
-			}
-
-			wsClient.sendBinary(&buf[0], 3);
-#endif
-		}
+	if(!WifiStation.isConnected()) {
+		// Check if Esp8266 is connected to router
+		return;
 	}
+
+	if(msg_cnt > 10) {
+		Serial.println("End Websocket client session");
+		wsClient.disconnect(); // clean disconnect.
+		msgTimer.stop();
+
+		return;
+	}
+
+#ifndef WS_BINARY
+	String message = "Hello " + String(msg_cnt++);
+	Serial.printf("Sending websocket message: %s\n", message.c_str());
+	wsClient.sendString(message);
+#else
+	uint8_t buf[] = {0xF0, 0x00, 0xF0};
+	buf[1] = msg_cnt++;
+	Serial.printf("Sending websocket binary buffer\n");
+	for(uint8_t i = 0; i < 3; i++) {
+		Serial.printf("wsBin[%u] = 0x%02X\n", i, buf[i]);
+	}
+
+	wsClient.sendBinary(buf, 3);
+#endif
 }
 
 void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway)
@@ -122,13 +120,13 @@ void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway)
 
 	Serial.printf("Connecting to Websocket Server %s\n", ws_Url.c_str());
 
-	wsClient.setWebSocketMessageHandler(wsMessageReceived);
-	wsClient.setWebSocketBinaryHandler(wsBinReceived);
-	wsClient.setWebSocketDisconnectedHandler(wsDisconnected);
-	wsClient.setWebSocketConnectedHandler(wsConnected);
+	wsClient.setMessageHandler(wsMessageReceived);
+	wsClient.setBinaryHandler(wsBinReceived);
+	wsClient.setDisconnectionHandler(wsDisconnected);
+	wsClient.setConnectionHandler(wsConnected);
 	wsClient.connect(ws_Url);
 #ifdef ENABLE_SSL
-	wsClient.addSslOptions(SSL_SERVER_VERIFY_LATER);
+	wsClient.getHttpConnection()->addSslOptions(SSL_SERVER_VERIFY_LATER);
 #endif
 }
 
