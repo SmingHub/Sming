@@ -215,8 +215,7 @@ EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME
 				$(SMING_HOME)/Wiring $(SMING_HOME)/Libraries \
 				$(SMING_HOME)/Libraries/Adafruit_GFX $(SMING_HOME)/Libraries/Adafruit_Sensor \
 				$(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include \
-				$(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src \
-				$(THIRD_PARTY_DIR)/ITEADLIB_Arduino_Nextion
+				$(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
 
 ENABLE_CUSTOM_HEAP ?= 0
  
@@ -279,10 +278,6 @@ else
 endif
 ifeq ($(ENABLE_WPS),1)
 	CFLAGS += -DENABLE_WPS=1
-endif
-
-ifeq ($(ENABLE_NEXTION),1)
-	MODULES          += $(THIRD_PARTY_DIR)/ITEADLIB_Arduino_Nextion
 endif
 
 #Append debug options

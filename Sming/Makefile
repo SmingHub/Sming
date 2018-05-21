@@ -197,11 +197,6 @@ THIRD_PARTY_DATA += third-party/ws_parser/Makefile
 MODULES              += third-party/ws_parser/
 EXTRA_INCDIR     += third-party/ws_parser/
 
-# => nextion display
-THIRD_PARTY_DATA += third-party/ITEADLIB_Arduino_Nextion/NexObject.cpp
-MODULES              += third-party/ITEADLIB_Arduino_Nextion/
-EXTRA_INCDIR     += third-party/ITEADLIB_Arduino_Nextion/
-
 # => SDK
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	THIRD_PARTY_DATA += third-party/ESP8266_NONOS_SDK/Makefile
