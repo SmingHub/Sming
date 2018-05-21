@@ -78,5 +78,5 @@
 	url = https://github.com/beegee-tokyo/DHTesp.git
 	ignore = dirty
 [submodule "Sming/third-party/ITEADLIB_Arduino_Nextion"]
-	path = Sming/third-party/ITEADLIB_Arduino_Nextion
+	path = Sming/Libraries/ITEADLIB_Arduino_Nextion
 	url = https://github.com/itead/ITEADLIB_Arduino_Nextion.git
