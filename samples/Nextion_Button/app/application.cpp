@@ -1,7 +1,7 @@
 using namespace std;
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include <Nextion.h>
+#include <Libraries/ITEADLIB_Arduino_Nextion/Nextion.h>
 
 #include <string>
 #include <string.h>
