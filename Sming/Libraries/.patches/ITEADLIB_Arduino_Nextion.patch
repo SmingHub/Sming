@@ -416,3 +416,11 @@ index 7129128..00000000
 - */
 -
 -#endif /* #ifndef __NEXDOWNLOAD_H__ */
+diff --git a/library.properties b/library.properties
+new file mode 100644
+index 00000000..5f3b717
+--- /dev/null
++++ b/library.properties
+@@ -0,0 +1,2 @@
++name=ITEAD Arduino_Nextion Library
++
