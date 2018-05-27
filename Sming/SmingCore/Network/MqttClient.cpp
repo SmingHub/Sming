@@ -74,22 +74,14 @@ bool MqttClient::setWill(const String& topic, const String& message, int QoS, bo
 
 bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslOptions)
 {
-	//			  Protocol + "://" + Host + (Port != 0 ? ":" + String(Port) : "") + getPathWithQuery(); }
-	//				Protocl is	mqtts
-	//				Host is		user:password@server
-	//				Port is		port
-
-	//							
-	// eg						"mttqs://frank:frankspassword@server:1883", "unique-client-name");
+	// eg						"mttqs://frank:frankspassword@frankserver:1883", "unique-client-name");
 	// String Protocol			mqtts
 	// String User;				frank
 	// String Password;			frankspassword
-	// String Host;				server
+	// String Host;				frankserver
 	// int Port;				8883  ( usually 1883 for non-ssl )
 	// String Path;				empty
 	// String Query;			empty
-
-	//TODO check if already connected?
 
 	this->server = url.Host;
 	this->port = url.Port;
@@ -137,7 +129,7 @@ bool MqttClient::privateConnect(const String& clientName, const String& username
 		mqtt_init_auth(&broker, username.c_str(), password.c_str());
 	}
 
-	if(server.length() > 0 ) 
+	if (server.length() > 0 ) 
 	{
 		TcpClient::connect(server, port, useSsl, sslOptions);
 	}
@@ -176,11 +168,11 @@ bool MqttClient::publishWithQoS(String topic, String message, int QoS, bool reta
 	}
 	uint16_t msgId = 0;
 	int res = mqtt_publish_with_qos(&broker, topic.c_str(), message.c_str(), message.length(), retained, QoS, &msgId);
-	if(QoS == 0 && onDelivery) 
+	if (QoS == 0 && onDelivery) 
 	{
 		debug_d("The delivery callback is ignored for QoS 0.");
 	}
-	else if(QoS >0 && onDelivery && msgId) 
+	else if (QoS >0 && onDelivery && msgId) 
 	{
 		onDeliveryQueue[msgId] = onDelivery;
 	}
@@ -325,7 +317,7 @@ err_t MqttClient::onReceive(pbuf *buf)
 				if (waitingSize == 0)
 				{
 					// Full packet received
-					if(type == MQTT_MSG_PUBLISH)
+					if (type == MQTT_MSG_PUBLISH)
 					{
 						const uint8_t *ptrTopic, *ptrMsg;
 						uint16_t lenTopic, lenMsg;
@@ -351,7 +343,7 @@ err_t MqttClient::onReceive(pbuf *buf)
 						// message with QoS 1 or 2 was received and this is the confirmation
 						const uint16_t msgId = mqtt_parse_msg_id(buffer);
 						debug_d("message with id: %d was delivered", msgId);
-						if(onDeliveryQueue.contains(msgId)) {
+						if (onDeliveryQueue.contains(msgId)) {
 							// there is a callback for this message
 							onDeliveryQueue[msgId](msgId, type);
 							onDeliveryQueue.remove(msgId);
