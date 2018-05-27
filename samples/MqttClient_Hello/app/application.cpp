@@ -81,9 +81,9 @@ void startMqttClient()
 	mqtt.setCallback(onMessageReceived);
 	URL url;
 	url.Protocol = "mqtt";
-	if (ENABLE_SSL) {
+#ifdef ENABLE_SSL
 		url.Protocol += "s";
-	}
+#endif
 	url.User = MQTT_USERNAME;
 	url.Password = MQTT_PWD;
 	url.Host = MQTT_HOST;
@@ -103,10 +103,6 @@ void startMqttClient()
 		default_certificate, default_certificate_len,
 		NULL, 
 		/*freeAfterHandshake*/ false);
-
-
-	//mqtt.setSslClientKeyCert(default_private_key, default_private_key_len,
-	//						  default_certificate, default_certificate_len, NULL, true);
 
 #endif
 	// Assign a disconnect callback function
