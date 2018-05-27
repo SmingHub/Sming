@@ -10,9 +10,10 @@
 #include "../SmingCore.h"
 
 MqttClient::MqttClient()
-	: TcpClient((bool)false)
+	: TcpClient((bool)false),
+	server()
 {
-	server = "";
+	memset(buffer, 0, MQTT_MAX_BUFFER_SIZE + 1);
 	port = 0;
 	waitingSize = 0;
 	posHeader = 0;
