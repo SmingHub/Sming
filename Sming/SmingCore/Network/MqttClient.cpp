@@ -9,6 +9,18 @@
 
 #include "../SmingCore.h"
 
+MqttClient::MqttClient()
+	: TcpClient((bool)false)
+{
+	server = "";
+	port = 0;
+	waitingSize = 0;
+	posHeader = 0;
+	current = NULL;
+	mqtt_init(&broker);
+}
+
+
 MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback /* = NULL*/)
 	: TcpClient((bool)false)
 {
@@ -37,6 +49,10 @@ MqttClient::~MqttClient()
 {
 	mqtt_free(&broker);
 }
+void MqttClient::setCallback(MqttStringSubscriptionCallback callback)
+{
+	this->callback = callback;
+}
 
 void MqttClient::setKeepAlive(int seconds)
 {
@@ -46,9 +62,9 @@ void MqttClient::setKeepAlive(int seconds)
 void MqttClient::setPingRepeatTime(int seconds)
 {
 	if (PingRepeatTime > keepAlive)
-	   PingRepeatTime = keepAlive;
+		PingRepeatTime = keepAlive;
 	else
-	   PingRepeatTime = seconds;
+		PingRepeatTime = seconds;
 }
 
 bool MqttClient::setWill(const String& topic, const String& message, int QoS, bool retained /* = false*/)
@@ -56,12 +72,53 @@ bool MqttClient::setWill(const String& topic, const String& message, int QoS, bo
 	return mqtt_set_will(&broker, topic.c_str(), message.c_str(), QoS, retained);
 }
 
+bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslOptions)
+{
+	//			  Protocol + "://" + Host + (Port != 0 ? ":" + String(Port) : "") + getPathWithQuery(); }
+	//				Protocl is	mqtts
+	//				Host is		user:password@server
+	//				Port is		port
+
+	//							
+	// eg						"mttqs://frank:frankspassword@server:1883", "unique-client-name");
+	// String Protocol			mqtts
+	// String User;				frank
+	// String Password;			frankspassword
+	// String Host;				server
+	// int Port;				8883  ( usually 1883 for non-ssl )
+	// String Path;				empty
+	// String Query;			empty
+
+	//TODO check if already connected?
+
+	this->server = url.Host;
+	this->port = url.Port;
+	this->callback = callback;
+	waitingSize = 0;
+	posHeader = 0;
+	current = NULL;
+	mqtt_init(&broker);
+
+	bool useSsl = (url.Protocol == "mqtts");
+	return privateConnect(
+		clientName,
+		url.User, 
+		url.Password, 
+		useSsl, 
+		sslOptions);
+}
+
+
 bool MqttClient::connect(const String& clientName, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	return MqttClient::connect(clientName, "", "", useSsl, sslOptions);
 }
 
 bool MqttClient::connect(const String& clientName, const String& username, const String& password, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+{
+	return privateConnect(clientName, username, password, useSsl, sslOptions);
+}
+bool MqttClient::privateConnect(const String& clientName, const String& username, const String& password, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (getConnectionState() != eTCS_Ready)
 	{
@@ -71,15 +128,21 @@ bool MqttClient::connect(const String& clientName, const String& username, const
 
 	debug_d("MQTT start connection");
 	if (clientName.length() > 0)
-		 mqtt_set_clientid(&broker, clientName.c_str());
+	{
+		mqtt_set_clientid(&broker, clientName.c_str());
+	}
 
 	if (username.length() > 0)
+	{
 		mqtt_init_auth(&broker, username.c_str(), password.c_str());
+	}
 
-	if(server.length() > 0 ) {
+	if(server.length() > 0 ) 
+	{
 		TcpClient::connect(server, port, useSsl, sslOptions);
 	}
-	else {
+	else 
+	{
 		TcpClient::connect(serverIp, port, useSsl, sslOptions);
 	}
 
@@ -94,18 +157,31 @@ bool MqttClient::connect(const String& clientName, const String& username, const
 
 bool MqttClient::publish(String topic, String message, bool retained /* = false*/)
 {
+	if (getConnectionState() != eTCS_Ready)
+	{
+		close();
+		debug_d("MQTT closed previous connection");
+	}
+
 	int res = mqtt_publish(&broker, topic.c_str(), message.c_str(), message.length(), retained);
 	return res > 0;
 }
 
 bool MqttClient::publishWithQoS(String topic, String message, int QoS, bool retained /* = false*/, MqttMessageDeliveredCallback onDelivery /* = NULL */)
 {
+	if (getConnectionState() != eTCS_Ready)
+	{
+		close();
+		debug_d("MQTT closed previous connection");
+	}
 	uint16_t msgId = 0;
 	int res = mqtt_publish_with_qos(&broker, topic.c_str(), message.c_str(), message.length(), retained, QoS, &msgId);
-	if(QoS == 0 && onDelivery) {
+	if(QoS == 0 && onDelivery) 
+	{
 		debug_d("The delivery callback is ignored for QoS 0.");
 	}
-	else if(QoS >0 && onDelivery && msgId) {
+	else if(QoS >0 && onDelivery && msgId) 
+	{
 		onDeliveryQueue[msgId] = onDelivery;
 	}
 	return res > 0;
@@ -270,7 +346,8 @@ err_t MqttClient::onReceive(pbuf *buf)
 							debug_e("WRONG SIZES: %d: %d", lenTopic, lenMsg);
 						}
 					}
-					else if (type == MQTT_MSG_PUBACK || type == MQTT_MSG_PUBREC) {
+					else if (type == MQTT_MSG_PUBACK || type == MQTT_MSG_PUBREC) 
+					{
 						// message with QoS 1 or 2 was received and this is the confirmation
 						const uint16_t msgId = mqtt_parse_msg_id(buffer);
 						debug_d("message with id: %d was delivered", msgId);
@@ -283,7 +360,9 @@ err_t MqttClient::onReceive(pbuf *buf)
 				}
 			}
 			else
+			{
 				debug_d("SKIP: %d (%d)", available, waitingSize + available); // Too large!
+			}
 			received += available;
 		}
 
