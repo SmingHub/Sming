@@ -1,95 +1,109 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
-#include <Libraries/DHT/DHT.h>
+#include <Libraries/DHTesp/DHTesp.h>
 
-#define WORK_PIN 14 // GPIO14
+//#define WORK_PIN 14 // GPIO14
+#define WORK_PIN 2	
 
-DHT dht(WORK_PIN);
+DHTesp dht;
 
-void displayComfort();
+Timer readTemperatureProcTimer;
+void onTimer_readTemperatures();
 
 void init()
 {
+
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
-	Serial.println("\t\t DHT improved lib");
-	Serial.println("wait 1 second for the sensor to boot up");
-
-	//disable watchdog
-	WDT.enable(false);
-	//wait for sensor startup
-	delay(1000);
-
-	dht.begin();
-
-	/*first reading method (Adafruit compatible) */
-	Serial.print("Read using Adafruit API methods\n");
-	float h = dht.readHumidity();
-	float t = dht.readTemperature();
-
-	// check if returns are valid, if they are NaN (not a number) then something went wrong!
-	if (isnan(t) || isnan(h))
-	{
-		Serial.println("Failed to read from DHT");
-	} else {
-		Serial.print("\tHumidity: ");
-		Serial.print(h);
-		Serial.print("% Temperature: ");
-		Serial.print(t);
-		Serial.print(" *C\n");
-	}
-
-
-	/* improved reading method */
-	Serial.print("\nRead using new API methods\n");
-	TempAndHumidity th;
-	if(dht.readTempAndHumidity(th))
-	{
-		Serial.print("\tHumidity: ");
-		Serial.print(th.humid);
-		Serial.print("% Temperature: ");
-		Serial.print(th.temp);
-		Serial.print(" *C\n");
-	}
-	else
-	{
-		Serial.print("Failed to read from DHT: ");
-		Serial.print(dht.getLastError());
-	}
-
-	/* other goodies */
-
-	/*
-	 * Heatindex is the percieved temperature taking humidity into account
-	 * More: https://en.wikipedia.org/wiki/Heat_index
-	 * */
-	Serial.print("Heatindex: ");
-	Serial.print(dht.getHeatIndex());
-	Serial.print("*C\n");
-
-	/*
-	 * Dewpoint is the temperature where condensation starts.
-	 * Water vapors will start condensing on an object having this temperature or below.
-	 * More: https://en.wikipedia.org/wiki/Dew_point
-	 * */
-	Serial.printf("Dewpoint: ");
-	Serial.print(dht.getDewPoint(DEW_ACCURATE_FAST));
-	Serial.print("*C\n");
-
-	/*
-	 * Determine thermal comfort according to http://epb.apogee.net/res/refcomf.asp
-	 * */
-	displayComfort();
-
+	dht.setup(WORK_PIN, DHTesp::DHT22);
+	readTemperatureProcTimer.initializeMs(5 * 1000, onTimer_readTemperatures).start();   // every so often.
+		
+	Serial.println("\nDHT improved lib");
+	Serial.print("TickCount=");Serial.print((int)(RTC.getRtcNanoseconds() / 1000000));
+	Serial.println("Need to wait 1 second for the sensor to boot up");
 }
 
-void displayComfort()
+void onTimer_readTemperatures()
 {
+	//* try different reading methods (Adafruit compatible) vs improved */
+	static bool toggle = false;
+	toggle = !toggle;
+	float humidity = 0;
+	float temperature = 0;
+	Serial.print("TickCount=");Serial.print((int)(RTC.getRtcNanoseconds() / 1000000));
+	if (toggle)
+	{
+		Serial.print("Read using Adafruit API methods\n");
+		humidity = dht.getHumidity();
+		temperature = dht.getTemperature();
+
+		// check if returns are valid, if they are NaN (not a number) then something went wrong!
+		if (dht.getStatus() == DHTesp::ERROR_NONE)
+		{
+			Serial.print("\tHumidity: ");
+			Serial.print(humidity);
+			Serial.print("% Temperature: ");
+			Serial.print(temperature);
+			Serial.print(" *C\n");
+		}
+		else 
+		{
+			Serial.print("Failed to read from DHT: ");
+			Serial.println((int)dht.getStatus());
+		}
+	} 
+	else
+	{
+		//* improved reading method 
+		Serial.print("\nRead using new API methods\n");
+		TempAndHumidity th;
+		th = dht.getTempAndHumidity();
+		humidity = th.humidity;
+		temperature = th.temperature;
+
+		if (dht.getStatus() == DHTesp::ERROR_NONE)
+		{
+			Serial.print("\tHumidity: ");
+			Serial.print(th.humidity);
+			Serial.print("% Temperature: ");
+			Serial.print(th.temperature);
+			Serial.print(" *C\n");
+		}
+		else
+		{
+			Serial.print("Failed to read from DHT: ");
+			Serial.print(dht.getStatus());
+		}
+	}
+
+
+
+	//  Other goodies:
+	//
+	//  Heatindex is the percieved temperature taking humidity into account
+	//  More: https://en.wikipedia.org/wiki/Heat_index
+	//  
+	Serial.print("Heatindex: ");
+	Serial.print(dht.computeHeatIndex(temperature, humidity));
+	Serial.print("*C\n");
+
+	//
+	//  Dewpoint is the temperature where condensation starts.
+	//  Water vapors will start condensing on an object having this temperature or below.
+	//  More: https://en.wikipedia.org/wiki/Dew_point
+	// 
+	Serial.printf("Dewpoint: ");
+	Serial.print(dht.computeDewPoint(temperature, humidity));
+	Serial.print("*C\n");
+
+	//
+	// Determine thermal comfort according to http://epb.apogee.net/res/refcomf.asp
+	// 
 	ComfortState cf;
 
 	Serial.print("Comfort is at ");
-	Serial.print(dht.getComfortRatio(cf));
+	Serial.print(dht.getComfortRatio(cf, temperature, humidity));
 	Serial.print(" percent, (");
 
 	switch(cf)

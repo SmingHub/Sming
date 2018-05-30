@@ -8,7 +8,11 @@
 #include "NetUtils.h"
 
 #include "../Wiring/WString.h"
+#ifdef __linux__
+#include "lwip/priv/tcp_priv.h"
+#else
 #include "lwip/tcp_impl.h"
+#endif
 
 bool NetUtils::ipClientRoutingFixed = false;
 

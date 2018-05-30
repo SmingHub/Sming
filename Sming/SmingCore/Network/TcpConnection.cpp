@@ -7,7 +7,7 @@
 
 #include "TcpConnection.h"
 
-#include "../../SmingCore/DataSourceStream.h"
+#include "../Data/Stream/DataSourceStream.h"
 #include "../../SmingCore/Platform/WDT.h"
 #include "NetUtils.h"
 #include "../Wiring/WString.h"
@@ -31,13 +31,7 @@ TcpConnection::~TcpConnection()
 	close();
 
 #ifdef ENABLE_SSL
-	if(sslFingerprint.certSha1) {
-		delete[] sslFingerprint.certSha1;
-	}
-	if(sslFingerprint.pkSha256) {
-		delete[] sslFingerprint.pkSha256;
-	}
-	freeSslClientKeyCert();
+	freeSslKeyCert();
 #endif
 	debug_d("~TCP connection");
 
@@ -46,7 +40,7 @@ TcpConnection::~TcpConnection()
 	}
 }
 
-bool TcpConnection::connect(String server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool TcpConnection::connect(const String& server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (tcp == NULL)
 		initialize(tcp_new());
@@ -163,13 +157,7 @@ err_t TcpConnection::onConnected(err_t err)
 void TcpConnection::onError(err_t err)
 {
 #ifdef ENABLE_SSL
-	if(ssl) {
-		sslConnected = false;
-		ssl_ctx_free(sslContext);
-		sslContext=nullptr;
-		sslExtension = NULL;
-		ssl=nullptr;
-	}
+	closeSsl();
 #endif
 	debug_d("TCP connection error: %d", err);
 }
@@ -178,6 +166,13 @@ void TcpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	if (sourceEvent != eTCE_Poll) debug_d("onReadyToSendData: %d", sourceEvent);
 }
+
+#ifdef ENABLE_SSL
+err_t TcpConnection::onSslConnected(SSL *ssl)
+{
+	return ERR_OK;
+}
+#endif
 
 int TcpConnection::writeString(const String& data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
@@ -295,14 +290,7 @@ int TcpConnection::write(IDataSourceStream* stream)
 void TcpConnection::close()
 {
 #ifdef ENABLE_SSL
-	if (ssl != nullptr) {
-		debug_d("SSL: closing ...");
-		ssl_ctx_free(sslContext);
-		sslContext=nullptr;
-		ssl=nullptr;
-		sslConnected = false;
-		debug_d("done\n");
-	}
+	closeSsl();
 #endif
 
 	if (tcp == NULL) return;
@@ -424,20 +412,20 @@ err_t TcpConnection::staticOnConnected(void *arg, tcp_pcb *tcp, err_t err)
 
 			con->sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | sslOptions, 1);
 
-			if (con->clientKeyCert.keyLength && con->clientKeyCert.certificateLength) {
+			if (con->sslKeyCert.keyLength && con->sslKeyCert.certificateLength) {
 				// if we have client certificate -> try to use it.
 				if (ssl_obj_memory_load(con->sslContext, SSL_OBJ_RSA_KEY,
-						con->clientKeyCert.key, con->clientKeyCert.keyLength,
-						con->clientKeyCert.keyPassword) != SSL_OK) {
+						con->sslKeyCert.key, con->sslKeyCert.keyLength,
+						con->sslKeyCert.keyPassword) != SSL_OK) {
 					debug_d("SSL: Unable to load client private key");
 				} else if (ssl_obj_memory_load(con->sslContext, SSL_OBJ_X509_CERT,
-						con->clientKeyCert.certificate,
-						con->clientKeyCert.certificateLength, NULL) != SSL_OK) {
+						con->sslKeyCert.certificate,
+						con->sslKeyCert.certificateLength, NULL) != SSL_OK) {
 					debug_d("SSL: Unable to load client certificate");
 				}
 
-				if(con->freeClientKeyCert) {
-					con->freeSslClientKeyCert();
+				if(con->freeKeyCert) {
+					con->freeSslKeyCert();
 				}
 			}
 
@@ -560,27 +548,7 @@ err_t TcpConnection::staticOnReceive(void *arg, tcp_pcb *tcp, pbuf *p, err_t err
 				debug_d("SSL: Switching back to 80 MHz");
 				System.setCpuFrequency(eCF_80MHz); // Preserve some CPU cycles
 #endif
-
-				bool hasError = false;
-				do {
-					if(con->sslFingerprint.certSha1 && ssl_match_fingerprint(con->ssl, con->sslFingerprint.certSha1) != SSL_OK) {
-						debug_d("SSL: Certificate fingerprint does not match!");
-						hasError = true;
-						break;
-					}
-
-					if(con->sslFingerprint.pkSha256 && ssl_match_spki_sha256(con->ssl, con->sslFingerprint.pkSha256) != SSL_OK) {
-						debug_d("SSL: Certificate PK fingerprint does not match!");
-						hasError = true;
-						break;
-					}
-				} while(0);
-
-				if(con->freeFingerprints) {
-					con->freeSslFingerprints();
-				}
-
-				if(hasError) {
+				if(con->onSslConnected(con->ssl) != ERR_OK) {
 					con->close();
 					closeTcpConnection(tcp);
 
@@ -712,133 +680,87 @@ void TcpConnection::addSslOptions(uint32_t sslOptions)
 	this->sslOptions |= sslOptions;
 }
 
-bool TcpConnection::pinCertificate(const uint8_t *fingerprint, SslFingerprintType type, bool freeAfterHandshake /* = false */)
-{
-	int length = 0;
-	uint8_t *localStore;
-
-	switch(type) {
-	case eSFT_CertSha1:
-		localStore = sslFingerprint.certSha1;
-		length = SHA1_SIZE;
-		break;
-	case eSFT_PkSha256:
-		localStore = sslFingerprint.pkSha256;
-		length = SHA256_SIZE;
-		break;
-	default:
-		debug_d("Unsupported SSL certificate fingerprint type");
-	}
-
-	if(!length) {
-		return false;
-	}
-
-	freeFingerprints = freeAfterHandshake;
-
-	if(localStore) {
-		delete[] localStore;
-	}
-	localStore = new uint8_t[length];
-	if(localStore == NULL) {
-		return false;
-	}
-
-	memcpy(localStore, fingerprint, length);
-
-	switch(type) {
-		case eSFT_CertSha1:
-			sslFingerprint.certSha1 = localStore;
-			break;
-		case eSFT_PkSha256:
-			sslFingerprint.pkSha256 = localStore;
-			break;
-	}
-
-
-	return true;
-}
-
-bool TcpConnection::pinCertificate(SSLFingerprints fingerprints, bool freeAfterHandshake /* = false */)
-{
-	sslFingerprint = fingerprints;
-	freeFingerprints = freeAfterHandshake;
-	return true;
-}
-
-bool TcpConnection::setSslClientKeyCert(const uint8_t *key, int keyLength,
+bool TcpConnection::setSslKeyCert(const uint8_t *key, int keyLength,
 							 const uint8_t *certificate, int certificateLength,
 							 const char *keyPassword /* = NULL */, bool freeAfterHandshake /* = false */)
 {
+	delete[] sslKeyCert.key;
+	delete[] sslKeyCert.certificate;
+	delete[] sslKeyCert.keyPassword;
+	sslKeyCert.keyPassword = NULL;
 
-
-	clientKeyCert.key = new uint8_t[keyLength];
-	clientKeyCert.certificate = new uint8_t[certificateLength];
+	sslKeyCert.key = new uint8_t[keyLength];
+	sslKeyCert.certificate = new uint8_t[certificateLength];
 	int passwordLength = 0;
 	if(keyPassword != NULL) {
 		passwordLength = strlen(keyPassword);
-		clientKeyCert.keyPassword = new char[passwordLength+1];
+		sslKeyCert.keyPassword = new char[passwordLength+1];
 	}
 
-	if(!(clientKeyCert.key && clientKeyCert.certificate &&
-	    (passwordLength==0 || (passwordLength!=0 && clientKeyCert.keyPassword)))) {
+	if(!(sslKeyCert.key && sslKeyCert.certificate &&
+		(passwordLength==0 || sslKeyCert.keyPassword))) {
 		return false;
 	}
 
-	memcpy(clientKeyCert.key, key, keyLength);
-	memcpy(clientKeyCert.certificate, certificate, certificateLength);
-	memcpy(clientKeyCert.keyPassword, keyPassword, passwordLength);
-	freeClientKeyCert = freeAfterHandshake;
+	memcpy(sslKeyCert.key, key, keyLength);
+	memcpy(sslKeyCert.certificate, certificate, certificateLength);
+	if(keyPassword != NULL) {
+		memcpy(sslKeyCert.keyPassword, keyPassword, passwordLength);
+	}
+	freeKeyCert = freeAfterHandshake;
 
-	clientKeyCert.keyLength = keyLength;
-	clientKeyCert.certificateLength = certificateLength;
-	clientKeyCert.keyLength = keyLength;
+	sslKeyCert.keyLength = keyLength;
+	sslKeyCert.certificateLength = certificateLength;
+	sslKeyCert.keyLength = keyLength;
 
 	return true;
 }
 
-bool TcpConnection::setSslClientKeyCert(SSLKeyCertPair clientKeyCert, bool freeAfterHandshake /* = false */)
+bool TcpConnection::setSslKeyCert(const SSLKeyCertPair& keyCertPair, bool freeAfterHandshake /* = false */)
 {
-	this->clientKeyCert = clientKeyCert;
-	freeClientKeyCert = freeAfterHandshake;
+	this->sslKeyCert = keyCertPair;
+	freeKeyCert = freeAfterHandshake;
 
 	return true;
 }
 
-void TcpConnection::freeSslClientKeyCert()
+void TcpConnection::freeSslKeyCert()
 {
-	if(clientKeyCert.key) {
-		delete[] clientKeyCert.key;
-		clientKeyCert.key = NULL;
+	if(sslKeyCert.key) {
+		delete[] sslKeyCert.key;
+		sslKeyCert.key = NULL;
 	}
 
-	if(clientKeyCert.certificate) {
-		delete[] clientKeyCert.certificate;
-		clientKeyCert.certificate = NULL;
+	if(sslKeyCert.certificate) {
+		delete[] sslKeyCert.certificate;
+		sslKeyCert.certificate = NULL;
 	}
 
-	if(clientKeyCert.keyPassword) {
-		delete[] clientKeyCert.keyPassword;
-		clientKeyCert.keyPassword = NULL;
+	if(sslKeyCert.keyPassword) {
+		delete[] sslKeyCert.keyPassword;
+		sslKeyCert.keyPassword = NULL;
 	}
 
-	clientKeyCert.keyLength = 0;
-	clientKeyCert.certificateLength = 0;
+	sslKeyCert.keyLength = 0;
+	sslKeyCert.certificateLength = 0;
 }
 
-void TcpConnection::freeSslFingerprints()
+SSL* TcpConnection::getSsl()
 {
-	if(sslFingerprint.certSha1) {
-		delete[] sslFingerprint.certSha1;
-		sslFingerprint.certSha1 = NULL;
-	}
-	if(sslFingerprint.pkSha256) {
-		delete[] sslFingerprint.pkSha256;
-		sslFingerprint.pkSha256 = NULL;
-	}
-}
-
-SSL* TcpConnection::getSsl() {
 	return ssl;
+}
+
+void TcpConnection::closeSsl()
+{
+	if (ssl == nullptr) {
+		return;
+	}
+
+	debug_d("SSL: closing ...");
+	ssl_ctx_free(sslContext);
+	sslContext   = nullptr;
+	sslExtension = nullptr;
+	ssl          = nullptr;
+	sslConnected = false;
 }
 #endif

@@ -65,3 +65,19 @@
 	path = tools/esptool2
 	url = https://github.com/raburton/esptool2.git
 	ignore = dirty
+[submodule "Sming/Libraries/RingBufCPP"]
+	path = Sming/Libraries/RingBufCPP
+	url = https://github.com/wizard97/Embedded_RingBuf_CPP.git
+	ignore = dirty
+[submodule "Sming/Libraries/IR"]
+	path = Sming/Libraries/IR
+	url = https://github.com/markszabo/IRremoteESP8266.git
+	ignore = dirty
+[submodule "Sming/Libraries/DHTesp"]
+	path = Sming/Libraries/DHTesp
+	url = https://github.com/beegee-tokyo/DHTesp.git
+	ignore = dirty
+[submodule "Sming/third-party/ITEADLIB_Arduino_Nextion"]
+	path = Sming/Libraries/ITEADLIB_Arduino_Nextion
+    url = https://github.com/itead/ITEADLIB_Arduino_Nextion.git
+    ignore = dirty
