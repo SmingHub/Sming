@@ -7,21 +7,16 @@
 	#define WIFI_PWD "PleaseEnterPass"
 #endif
 
-// ... and/or MQTT username and password
-#ifndef MQTT_USERNAME
-	#define MQTT_USERNAME ""
-	#define MQTT_PWD ""
-#endif
+// For testing purposes, try a few different URL formats
+#define MQTT_URL1	"mttq://attachix.com:1883"
+#define MQTT_URL2	"mttqs://attachix.com:8883"						// (Need ENABLE_SSL)
+#define MQTT_URL3	"mttq://frank:fiddle@192.168.100.107:1883"
 
-// ... and/or MQTT host and port
-#ifndef MQTT_HOST
-	#define MQTT_HOST "attachix.com"
-	#ifndef ENABLE_SSL
-		#define MQTT_PORT 1883
-	#else
-		#define MQTT_PORT 8883
-	#endif
-#endif
+#define MQTT_URL	MQTT_URL1
+#define USE_NEWSTYLECONNECT	
+
+
+const URL url(MQTT_URL);
 
 // Forward declarations
 void startMqttClient();
@@ -31,17 +26,22 @@ Timer procTimer;
 
 // MQTT client
 // For quick check you can use: http://www.hivemq.com/demos/websocket-client/ (Connection= test.mosquitto.org:8080)
+#ifdef USE_NEWSTYLECONNECT
 MqttClient mqtt;
+#else
+MqttClient mqtt(url.Host, url.Port, onMessageReceived);
+#endif
 
 // Check for MQTT Disconnection
 void checkMQTTDisconnect(TcpClient& client, bool flag){
 	
 	// Called whenever MQTT connection is failed.
-	if (flag == true)
+	if (flag == true) {
 		Serial.println("MQTT Broker Disconnected!!");
-	else
+	}
+	else {
 		Serial.println("MQTT Broker Unreachable!!");
-	
+	}
 	// Restart connection attempt after few seconds
 	procTimer.initializeMs(2 * 1000, startMqttClient).start(); // every 2 seconds
 }
@@ -53,10 +53,12 @@ void onMessageDelivered(uint16_t msgId, int type) {
 // Publish our message
 void publishMessage()
 {
-	if (mqtt.getConnectionState() != eTCS_Connected)
+	if (mqtt.getConnectionState() != eTCS_Connected) {
 		startMqttClient(); // Auto reconnect
-
-	Serial.println("Let's publish message now!");
+	}
+	
+	Serial.print("Let's publish message now. Memory free=");
+	Serial.println(system_get_free_heap_size());
 	mqtt.publish("main/frameworks/sming", "Hello friends, from Internet of things :)"); 
 
 	mqtt.publishWithQoS("important/frameworks/sming", "Request Return Delivery", 1, false, onMessageDelivered); // or publishWithQoS
@@ -78,21 +80,27 @@ void startMqttClient()
 		debugf("Unable to set the last will and testament. Most probably there is not enough memory on the device.");
 	}
 	
-	mqtt.setCallback(onMessageReceived);
-	URL url;
-	url.Protocol = "mqtt";
-#ifdef ENABLE_SSL
-		url.Protocol += "s";
-#endif
-	url.User = MQTT_USERNAME;
-	url.Password = MQTT_PWD;
-	url.Host = MQTT_HOST;
-	url.Port = MQTT_PORT;
-	String dsn = url.toString();
 
+	URL url(MQTT_URL);
+	debugf("Connecting to %s", MQTT_URL);
+
+#ifdef USE_NEWSTYLECONNECT
+	Serial.printf("Connecting to \t%s\n", url.toString().c_str());
 	mqtt.connect(url, "esp8266");
+	mqtt.setCallback(onMessageReceived);
+#else
+	// This code here just for testing the older style deprecated connect function
+	bool useSsl = (url.Protocol == "mqtts");
+	Serial.printf("Connecting to Host=%s Port=%d User=%s Password=%s\n", url.Host.c_str(), url.Port, url.User.c_str(), url.Password.c_str());
+	if (url.User) {
+		mqtt.connect("esp8266", url.User, url.Password, useSsl);
+	}
+	else {
+		mqtt.connect("esp8266", useSsl);
+	}
+#endif
 
-	//mqtt.connect("esp8266", MQTT_USERNAME, MQTT_PWD, true);
+		
 #ifdef ENABLE_SSL
 	mqtt.addSslOptions(SSL_SERVER_VERIFY_LATER);
 
@@ -140,3 +148,4 @@ void init()
 	WifiEvents.onStationDisconnect(connectFail);
 	WifiEvents.onStationGotIP(gotIP);
 }
+

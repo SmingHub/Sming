@@ -21,6 +21,7 @@
 #include "../../Wiring/WString.h"
 #include "../../Wiring/WHashMap.h"
 #include "../../Services/libemqtt/libemqtt.h"
+#include "../Network/URL.h"
 
 //typedef void (*MqttStringSubscriptionCallback)(String topic, String message);
 typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
@@ -32,7 +33,7 @@ class URL;
 class MqttClient: protected TcpClient
 {
 public:
-	MqttClient();
+	MqttClient(bool autoDestruct = false);
 
 	/** @brief  Construct an MQTT client 
 	*  @deprecated Use instead the empty contructor
@@ -95,18 +96,16 @@ protected:
 private:
 	bool privateConnect(const String& clientName, const String& username, const String& password, boolean useSsl = false, uint32_t sslOptions = 0);
 
-	String			server;
-	IPAddress		serverIp;
-	int				port;
+	URL				url;
 	mqtt_broker_handle_t broker;
-	int waitingSize;
-	uint8_t buffer[MQTT_MAX_BUFFER_SIZE + 1];
-	uint8_t *current;
-	int posHeader;
+	int				waitingSize;
+	uint8_t			buffer[MQTT_MAX_BUFFER_SIZE + 1];
+	uint8_t *		current;
+	int				posHeader;
 	MqttStringSubscriptionCallback callback;
-	int keepAlive = 60;
-	int PingRepeatTime = 20;
-	unsigned long lastMessage = 0;
+	int				keepAlive = 60;
+	int				PingRepeatTime = 20;
+	unsigned long	lastMessage = 0;
 	HashMap<uint16_t, MqttMessageDeliveredCallback> onDeliveryQueue;
 };
 

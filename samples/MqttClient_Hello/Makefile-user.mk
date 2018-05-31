@@ -29,6 +29,7 @@
 
 ## Com port speed
 # COM_SPEED	= 115200
+# COM_SPEED_ESPTOOL = 921600
 
 ## Configure flash parameters (for ESP12-E and other new boards):
 # SPI_MODE = dio
@@ -38,16 +39,8 @@ DISABLE_SPIFFS = 1
 # SPIFF_FILES = files
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 
-ifdef MQTT_USERNAME
-	USER_CFLAGS += -DMQTT_USERNAME=\"$(MQTT_USERNAME)\" -DMQTT_PWD=\"$(MQTT_PWD)\"
-endif
-
-ifdef MQTT_HOST
-	USER_CFLAGS += -DMQTT_HOST=\"$(MQTT_HOST)\"
-endif
-
-ifdef MQTT_PORT
-	USER_CFLAGS += -DMQTT_PORT=$(MQTT_PORT)
+ifdef MQTT_URL
+	USER_CFLAGS += -DMQTT_URL=\"$(MQTT_URL)\" 
 endif
 
 # We need rBoot in order to be able to run bigger Flash roms.
