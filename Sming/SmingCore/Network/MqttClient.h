@@ -45,7 +45,9 @@ public:
 	MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback = NULL);
 	virtual ~MqttClient();
 
-	void setCallback(MqttStringSubscriptionCallback callback = NULL);
+	/** @brief  Provide a funcion to be called when a message is received from the broker
+	*/
+	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = NULL);
 	
 	void setKeepAlive(int seconds);			//send to broker
 	void setPingRepeatTime(int seconds);            //used by client
