@@ -53,7 +53,7 @@ void onConnected(IPAddress ip, IPAddress mask, IPAddress gateway)
 
 	String dsn = "smtp" ;
 	if(SMTP_USE_SSL) {
-		dsn + "s";
+		dsn += "s";
 	}
 
 	dsn += String("://") + SMTP_USERNAME + ":" + SMTP_PASSWORD+"@" + SMTP_HOST + ":" + SMTP_PORT;
