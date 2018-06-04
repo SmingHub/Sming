@@ -26,7 +26,7 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 	socket->setMessageHandler(wsMessage);
 	socket->setConnectionHandler(wsConnect);
 	socket->setDisconnectionHandler(wsDisconnect);
-	if (!socket->initialize(connection, request, response)) {
+	if (!socket->bind(connection, request, response)) {
 		debug_w("Not a valid WebsocketRequest?");
 		delete socket;
 		return -1;

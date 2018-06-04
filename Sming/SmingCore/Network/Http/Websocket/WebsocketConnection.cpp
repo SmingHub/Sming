@@ -20,7 +20,7 @@ WebsocketConnection::~WebsocketConnection()
 	close();
 }
 
-bool WebsocketConnection::initialize(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+bool WebsocketConnection::bind(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	String version = request.getHeader("Sec-WebSocket-Version");
 	version.trim();

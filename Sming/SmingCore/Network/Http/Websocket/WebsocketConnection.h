@@ -45,9 +45,9 @@ public:
 	virtual ~WebsocketConnection();
 
 	/**
-	 * @brief Initializes server connection
+	 * @brief Binds websocket connection to an http server connection
 	 */
-	bool initialize(HttpServerConnection& connection, HttpRequest &request, HttpResponse &response);
+	bool bind(HttpServerConnection& connection, HttpRequest &request, HttpResponse &response);
 
 	virtual void send(const char* message, int length, ws_frame_type_t type = WS_FRAME_TEXT);
 	static void broadcast(const char* message, int length, ws_frame_type_t type = WS_FRAME_TEXT);
