@@ -13,7 +13,7 @@
 #define MQTT_URL3	"mttq://frank:fiddle@192.168.100.107:1883"
 
 #define MQTT_URL	MQTT_URL1
-#define USE_NEWSTYLECONNECT	
+
 
 
 const URL url(MQTT_URL);
@@ -26,11 +26,8 @@ Timer procTimer;
 
 // MQTT client
 // For quick check you can use: http://www.hivemq.com/demos/websocket-client/ (Connection= test.mosquitto.org:8080)
-#ifdef USE_NEWSTYLECONNECT
+
 MqttClient mqtt;
-#else
-MqttClient mqtt(url.Host, url.Port, onMessageReceived);
-#endif
 
 // Check for MQTT Disconnection
 void checkMQTTDisconnect(TcpClient& client, bool flag){
@@ -79,27 +76,13 @@ void startMqttClient()
 	if(!mqtt.setWill("last/will","The connection from this device is lost:(", 1, true)) {
 		debugf("Unable to set the last will and testament. Most probably there is not enough memory on the device.");
 	}
-	
 
 	URL url(MQTT_URL);
 	debugf("Connecting to %s", MQTT_URL);
 
-#ifdef USE_NEWSTYLECONNECT
 	Serial.printf("Connecting to \t%s\n", url.toString().c_str());
 	mqtt.connect(url, "esp8266");
 	mqtt.setCallback(onMessageReceived);
-#else
-	// This code here just for testing the older style deprecated connect function
-	bool useSsl = (url.Protocol == "mqtts");
-	Serial.printf("Connecting to Host=%s Port=%d User=%s Password=%s\n", url.Host.c_str(), url.Port, url.User.c_str(), url.Password.c_str());
-	if (url.User) {
-		mqtt.connect("esp8266", url.User, url.Password, useSsl);
-	}
-	else {
-		mqtt.connect("esp8266", useSsl);
-	}
-#endif
-
 		
 #ifdef ENABLE_SSL
 	mqtt.addSslOptions(SSL_SERVER_VERIFY_LATER);
