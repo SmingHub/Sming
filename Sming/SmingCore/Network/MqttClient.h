@@ -106,7 +106,7 @@ private:
 	int				posHeader;
 	MqttStringSubscriptionCallback callback;
 	int				keepAlive = 60;
-	int				PingRepeatTime = 20;
+	int				pingRepeatTime = 20;
 	unsigned long	lastMessage = 0;
 	HashMap<uint16_t, MqttMessageDeliveredCallback> onDeliveryQueue;
 };

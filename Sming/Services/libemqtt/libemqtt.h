@@ -94,10 +94,10 @@ extern "C" {
  */
 uint8_t mqtt_num_rem_len_bytes(const uint8_t* buf);
 
-/** Parse packet buffer for remaning length value.
+/** Parse packet buffer for remaining length value.
  *
  * Given a packet, return remaining length value (in fixed header).
- * 
+ *
  * @param buf Pointer to the packet.
  *
  * @retval remaining length
