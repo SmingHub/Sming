@@ -6,6 +6,8 @@
  ****/
 
 #include "MqttClient.h"
+#include "../Clock.h"
+#include <algorithm>
 
 MqttClient::MqttClient(bool autoDestruct/* = false*/)
 	: TcpClient(autoDestruct)
@@ -88,11 +90,13 @@ bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslO
 		sslOptions);
 }
 
+// Deprecated . . .
 bool MqttClient::connect(const String& clientName, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	return MqttClient::connect(clientName, "", "", useSsl, sslOptions);
 }
 
+// Deprecated . . .
 bool MqttClient::connect(const String& clientName, const String& username, const String& password, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	return privateConnect(clientName, username, password, useSsl, sslOptions);
