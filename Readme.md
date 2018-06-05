@@ -9,24 +9,21 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 [![Build](https://travis-ci.org/SmingHub/Sming.svg?branch=develop)](https://travis-ci.org/SmingHub/Sming)
 
 ## Summary
+* High effective in performance and memory usage (this is native firmware!)
+* Simple and powerful hardware API wrappers
 * Fast & user friendly development
 * Work with GPIO in Arduino style
-* High effective in performance and memory usage (this is native firmware!)
 * Compatible with standard Arduino libraries - use any popular hardware in few lines of code
-* rBoot OTA firmware updating
+* Integrated boot loader [rBoot](https://github.com/raburton/rboot) with support for 1MB ROMs, OTA firmware updating and ROM switching
 * Built-in file system: [spiffs](https://github.com/pellepl/spiffs)
-* Built-in powerful network and wireless modules
-* Built-in JSON library: [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
-* HTTP, AJAX, WebSockets support
-* MQTT protocol based on [libemqtt](https://github.com/menudoproblema/libemqtt)
-* Powerful SmtpClient with support for STARTTLS, PIPELINE, PLAIN and CRAM-MD5 authentication, sending attachments and more.
-* Networking based on LWIP stack
-* Simple and powerful hardware API wrappers
+* Built-in powerful wireless modules
+* Powerful asynchronous(async) network stack
+    * Async TCP and UDP stach based on [LWIP](http://savannah.nongnu.org/projects/lwip/)
+    * With clients supporting: HTTP, MQTT, WebSockets and SMTP
+    * And servers for: DNS, FTP, HTTP(+ WebSockets), Telnet
+    * With SSL support for all network clients and servers based on [axTLS 2.1+](https://github.com/igrr/axtls-8266) with [Lwirax](https://github.com/attachix/lwirax/).
+    * Out of the box support for OTA over HTTPS.
 * Crash handlers for analyzing/handling system restarts due to fatal errors or WDT resets.
-* SSL support based on [axTLS 2.1+](https://github.com/igrr/axtls-8266) with [Lwirax](https://github.com/attachix/lwirax/).
-* Out of the box support for HTTP, MQTT and Websocket client connections over SSL.
-* Out of the box support for OTA over HTTPS.
-* [SNI](https://tools.ietf.org/html/rfc6066#page-6) and [Maximum Fragment Length](https://tools.ietf.org/html/rfc6066#page-8) SSL support.
 * PWM support based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git)
 * Optional custom heap allocation based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git)
 * Based on Espressif NONOS SDK. Tested with versions 1.4, 1.5 and 2.0.
@@ -36,7 +33,6 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 OS/SDK | Linux | Mac OS X | Windows | FreeBSD-current |
 -------|-------|----------|---------|-----------------|
 UDK (v1.5)    | n/a   | n/a      |   [![Build status](https://ci.appveyor.com/api/projects/status/5aj0oi0wyk4uij00/branch/develop?svg=true)](https://ci.appveyor.com/project/slaff/sming-sb483/branch/develop)      |     n/a         |
-esp-alt-sdk (v1.4, v1.5) | :sunny:  | :sunny:  | :sunny:  | :sunny:  | :sunny:  |
 esp-open-sdk (v1.4, v1.5, v2.0) | :sunny:  | :sunny: | n/a | n/a |
 
 OS = Operating System
@@ -51,10 +47,6 @@ n/a = The selected SDK is not available on that OS
 - [Linux](https://github.com/SmingHub/Sming/wiki/Linux-Quickstart)
 - [MacOS](https://github.com/SmingHub/Sming/wiki/MacOS-Quickstart)
 - [Docker](https://github.com/SmingHub/Sming/wiki/Docker-Quickstart)
-
-
-## Additional needed software
-- [ESPtool2](https://github.com/raburton/esptool2) esptool2
 
 ## Optional features
 
@@ -95,6 +87,22 @@ You can find more information about compilation and flashing process by reading 
 Official ESP8266 documentation can be found in the [Espressif website](https://espressif.com/en/support/download/documents?keys=&field_type_tid%5B%5D=14).
 
 ## Examples
+
+Once you are ready with the "Getting started" guide you can get the latest source code.
+
+```
+git clone https://github.com/SmingHub/Sming.git
+```
+
+And check some of the examples.
+
+```
+cd Sming/samples
+cd Basic_Blink
+make # -- compiles the application
+make flash # -- tries to upload the application to your ESP8266 device.
+```
+
 More information at **[Wiki Examples](https://github.com/SmingHub/Sming/wiki/examples)** page.
 
 ### Simple GPIO input/output
@@ -104,6 +112,8 @@ More information at **[Wiki Examples](https://github.com/SmingHub/Sming/wiki/exa
 pinMode(LED_PIN, OUTPUT);
 digitalWrite(LED_PIN, HIGH);
 ```
+
+For a complete example take a look at the [Basic_Blink](samples/Basic_Blink/app/application.cpp) sample.
 
 ### Connect to WiFi and start Serial communication
 ```c++
@@ -140,10 +150,12 @@ thingSpeak.downloadString("http://api.thingspeak.com/update?key=XXXXXXX&field1="
 
 void onDataSent(HttpClient& client, bool successful)
 {
-  if (successful)
+  if (successful) {
     Serial.println("Successful!");
-  else
+  }
+  else {
     Serial.println("Failed");
+  }
 }
 ```
 
@@ -151,32 +163,42 @@ For more examples take a look at the [HttpClient](samples/HttpClient/app/applica
 
 ### OTA application update based on rBoot
 ```c++
-void OtaUpdate() {
+void OtaUpdate()
+{
+  uint8 slot;
+  rboot_config bootconf;
 
-	uint8 slot;
-	rboot_config bootconf;
+  Serial.println("Updating...");
 
-	Serial.println("Updating...");
+  // need a clean object, otherwise if run before and failed will not run again
+  if (otaUpdater) {
+    delete otaUpdater;
+  }
 
-	// need a clean object, otherwise if run before and failed will not run again
-	if (otaUpdater) delete otaUpdater;
-	otaUpdater = new rBootHttpUpdate();
+  otaUpdater = new rBootHttpUpdate();
 
-	// select rom slot to flash
-	bootconf = rboot_get_config();
-	slot = bootconf.current_rom;
-	if (slot == 0) slot = 1; else slot = 0;
+  // select rom slot to flash
+  bootconf = rboot_get_config();
+  slot = bootconf.current_rom;
+  if (slot == 0) {
+    slot = 1;
+  }
+  else {
+    slot = 0;
+  }
 
-	// flash rom to position indicated in the rBoot config rom table
-	otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
+  // flash rom to position indicated in the rBoot config rom table
+  otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
 
-	// and/or set a callback (called on failure or success without switching requested)
-	otaUpdater->setCallback(OtaUpdate_CallBack);
+  // and/or set a callback (called on failure or success without switching requested)
+  otaUpdater->setCallback(OtaUpdate_CallBack);
 
-	// start update
-	otaUpdater->start();
+  // start update
+  otaUpdater->start();
 }
 ```
+
+For a complete example take a look at the [Basic_rBoot](samples/Basic_rBoot/app/application.cpp) sample.
 
 ### Embedded HTTP WebServer
 ```c++
@@ -211,7 +233,9 @@ void onFile(HttpRequest &request, HttpResponse &response)
 }
 ```
 
-### SmtpClient for sending emails
+For more examples take a look at the [HttpServer_ConfigNetwork](samples/HttpServer_ConfigNetwork/app/application.cpp), [HttpServer_Bootstrap](samples/HttpServer_Bootstrap/app/application.cpp), [HttpServer_WebSockets](samples/HttpServer_WebSockets/app/application.cpp) and [HttpServer_AJAX](samples/HttpServer_AJAX/app/application.cpp) samples.
+
+### Sending emails
 ```c++
 SmtpClient emailClient;
 
@@ -246,14 +270,17 @@ int onMailSent(SmtpClient& client, int code, char* status)
 
 ```
 
-See the [SmtpCient sample](samples/SmtpClient/app/application.cpp) for details.
+See the [SmtpClient sample](samples/SmtpClient/app/application.cpp) for details.
 
 ### Documentation
-A complete documentation can be created by running the command below. This requires `doxygen` to be installed on your system.
+We provide [generated documentation](https://sminghub.github.io/Sming/api/) online.
+
+If you want you can also generate a complete documentation locally by running the commands below. This requires `doxygen` to be installed on your system.
 
 ```
 cd $SMING_HOME
 make docs
 ```
 
-The newly generated documentation will be located under Sming/docs/api
+The newly generated documentation will be located under Sming/docs/api.
+
