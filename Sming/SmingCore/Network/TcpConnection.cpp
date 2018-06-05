@@ -718,6 +718,7 @@ bool TcpConnection::setSslKeyCert(const uint8_t *key, int keyLength,
 
 bool TcpConnection::setSslKeyCert(const SSLKeyCertPair& keyCertPair, bool freeAfterHandshake /* = false */)
 {
+	freeSslKeyCert();
 	this->sslKeyCert = keyCertPair;
 	freeKeyCert = freeAfterHandshake;
 

@@ -7,10 +7,8 @@
 
 #include "MqttClient.h"
 
-#include "../SmingCore.h"
-
 MqttClient::MqttClient(bool autoDestruct/* = false*/)
-	: TcpClient(autoDestruct)	
+	: TcpClient(autoDestruct)
 {
 	memset(buffer, 0, MQTT_MAX_BUFFER_SIZE + 1);
 	waitingSize = 0;
@@ -18,7 +16,6 @@ MqttClient::MqttClient(bool autoDestruct/* = false*/)
 	current = NULL;
 	mqtt_init(&broker);
 }
-
 
 // Deprecated . . .
 MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback /* = NULL*/)
@@ -62,11 +59,11 @@ void MqttClient::setKeepAlive(int seconds)
 
 void MqttClient::setPingRepeatTime(int seconds)
 {
-	if (PingRepeatTime > keepAlive)	{
-		PingRepeatTime = keepAlive;
+	if (pingRepeatTime > keepAlive)	{
+		pingRepeatTime = keepAlive;
 	}
 	else {
-		PingRepeatTime = seconds;
+		pingRepeatTime = seconds;
 	}
 }
 
@@ -81,16 +78,15 @@ bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslO
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
-	
+
 	bool useSsl = (url.Protocol == "mqtts");
 	return privateConnect(
 		clientName,
-		url.User, 
-		url.Password, 
-		useSsl, 
+		url.User,
+		url.Password,
+		useSsl,
 		sslOptions);
 }
-
 
 bool MqttClient::connect(const String& clientName, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
@@ -101,6 +97,7 @@ bool MqttClient::connect(const String& clientName, const String& username, const
 {
 	return privateConnect(clientName, username, password, useSsl, sslOptions);
 }
+
 bool MqttClient::privateConnect(const String& clientName, const String& username, const String& password, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if (getConnectionState() != eTCS_Ready)	{
@@ -118,7 +115,7 @@ bool MqttClient::privateConnect(const String& clientName, const String& username
 	}
 
 	TcpClient::connect(url.Host, url.Port, useSsl, sslOptions);
-	
+
 	mqtt_set_alive(&broker, keepAlive);
 	broker.socket_info = (void*)this;
 	broker.send = staticSendPacket;
@@ -210,117 +207,115 @@ err_t MqttClient::onReceive(pbuf *buf)
 {
 	if (buf == NULL) {
 		// Disconnected, close it
-		TcpClient::onReceive(buf);
+		return TcpClient::onReceive(buf);
 	}
-	else
+
+	if (buf->len < 1) {
+		// Bad packet?
+		debug_e("> MQTT WRONG PACKET? (len: %d)", buf->len);
+		close();
+		return ERR_OK;
+	}
+
+	int received = 0;
+	while (received < buf->tot_len)
 	{
-		if (buf->len < 1) {
-			// Bad packet?
-			debug_e("> MQTT WRONG PACKET? (len: %d)", buf->len);
-			close();
-			return ERR_OK;
-		}
-
-		int received = 0;
-		while (received < buf->tot_len)
-		{
-			int type = 0;
-			if (waitingSize == 0) {
-				// It's begining of new packet
-				int pos = received;
-				if (posHeader == 0) {
-					//debug_d("start posHeader");
-					pbuf_copy_partial(buf, &buffer[posHeader], 1, pos);
-					pos++;
-					posHeader = 1;
+		int type = 0;
+		if (waitingSize == 0) {
+			// It's the beginning of a new packet
+			int pos = received;
+			if (posHeader == 0) {
+				//debug_d("start posHeader");
+				pbuf_copy_partial(buf, &buffer[posHeader], 1, pos);
+				pos++;
+				posHeader = 1;
+			}
+			while (posHeader > 0 && pos < buf->tot_len)
+			{
+				//debug_d("add posHeader");
+				pbuf_copy_partial(buf, &buffer[posHeader], 1, pos);
+				if ((buffer[posHeader] & 128) == 0) {
+					posHeader = 0; // Remaining Length ended
 				}
-				while (posHeader > 0 && pos < buf->tot_len)
-				{
-					//debug_d("add posHeader");
-					pbuf_copy_partial(buf, &buffer[posHeader], 1, pos);
-					if ((buffer[posHeader] & 128) == 0) {
-						posHeader = 0; // Remaining Length ended
-					}
-					else {
-						posHeader++;
-					}
-					pos++;
+				else {
+					posHeader++;
 				}
+				pos++;
+			}
 
-				if (posHeader == 0) {
-					//debug_d("start len calc");
-					// Remaining Length field processed
-					uint16_t rem_len = mqtt_parse_rem_len(buffer);
-					uint8_t rem_len_bytes = mqtt_num_rem_len_bytes(buffer);
+			if (posHeader == 0) {
+				//debug_d("start len calc");
+				// Remaining Length field processed
+				uint16_t rem_len = mqtt_parse_rem_len(buffer);
+				uint8_t rem_len_bytes = mqtt_num_rem_len_bytes(buffer);
 
-					// total packet length = remaining length + byte 1 of fixed header + remaning length part of fixed header
-					waitingSize = rem_len + rem_len_bytes + 1;
+				// total packet length = remaining length + byte 1 of fixed header + remaning length part of fixed header
+				waitingSize = rem_len + rem_len_bytes + 1;
 
-					type = MQTTParseMessageType(buffer);
-					debugPrintResponseType(type, waitingSize);
+				type = MQTTParseMessageType(buffer);
+				debugPrintResponseType(type, waitingSize);
 
-					// Prevent overflow
-					if (waitingSize < MQTT_MAX_BUFFER_SIZE) {
-						current = buffer;
-						buffer[waitingSize] = 0;
-					}
-					else
-						current = NULL;
+				// Prevent overflow
+				if (waitingSize < MQTT_MAX_BUFFER_SIZE) {
+					current = buffer;
+					buffer[waitingSize] = 0;
 				}
 				else
-					continue;
+					current = NULL;
 			}
+			else
+				continue;
+		}
 
-			int available = std::min(waitingSize, buf->tot_len - received);
-			waitingSize -= available;
-			if (current != NULL) {
-				pbuf_copy_partial(buf, current, available, received);
-				current += available;
+		int available = std::min(waitingSize, buf->tot_len - received);
+		waitingSize -= available;
+		if (current != NULL) {
+			pbuf_copy_partial(buf, current, available, received);
+			current += available;
 
-				if (waitingSize == 0) {
-					// Full packet received
-					if (type == MQTT_MSG_PUBLISH) {
-						const uint8_t *ptrTopic, *ptrMsg;
-						uint16_t lenTopic, lenMsg;
-						lenTopic = mqtt_parse_pub_topic_ptr(buffer, &ptrTopic);
-						lenMsg = mqtt_parse_pub_msg_ptr(buffer, &ptrMsg);
-						// Additional check for wrong packet/parsing error
-						if (lenTopic + lenMsg < MQTT_MAX_BUFFER_SIZE) {
-							debug_d("%d: %d\n", lenTopic, lenMsg);
-							String topic, msg;
-							topic.setString((char*)ptrTopic, lenTopic);
-							msg.setString((char*)ptrMsg, lenMsg);
-							if (callback) {
-								callback(topic, msg);
-							}
-						}
-						else
-						{
-							debug_e("WRONG SIZES: %d: %d", lenTopic, lenMsg);
+			if (waitingSize == 0) {
+				// Full packet received
+				if (type == MQTT_MSG_PUBLISH) {
+					const uint8_t *ptrTopic, *ptrMsg;
+					uint16_t lenTopic, lenMsg;
+					lenTopic = mqtt_parse_pub_topic_ptr(buffer, &ptrTopic);
+					lenMsg = mqtt_parse_pub_msg_ptr(buffer, &ptrMsg);
+					// Additional check for wrong packet/parsing error
+					if (lenTopic + lenMsg < MQTT_MAX_BUFFER_SIZE) {
+						debug_d("%d: %d\n", lenTopic, lenMsg);
+						String topic, msg;
+						topic.setString((char*)ptrTopic, lenTopic);
+						msg.setString((char*)ptrMsg, lenMsg);
+						if (callback) {
+							callback(topic, msg);
 						}
 					}
-					else if (type == MQTT_MSG_PUBACK || type == MQTT_MSG_PUBREC) {
-						// message with QoS 1 or 2 was received and this is the confirmation
-						const uint16_t msgId = mqtt_parse_msg_id(buffer);
-						debug_d("message with id: %d was delivered", msgId);
-						if (onDeliveryQueue.contains(msgId)) {
-							// there is a callback for this message
-							onDeliveryQueue[msgId](msgId, type);
-							onDeliveryQueue.remove(msgId);
-						}
+					else
+					{
+						debug_e("WRONG SIZES: %d: %d", lenTopic, lenMsg);
+					}
+				}
+				else if (type == MQTT_MSG_PUBACK || type == MQTT_MSG_PUBREC) {
+					// message with QoS 1 or 2 was received and this is the confirmation
+					const uint16_t msgId = mqtt_parse_msg_id(buffer);
+					debug_d("message with id: %d was delivered", msgId);
+					if (onDeliveryQueue.contains(msgId)) {
+						// there is a callback for this message
+						onDeliveryQueue[msgId](msgId, type);
+						onDeliveryQueue.remove(msgId);
 					}
 				}
 			}
-			else
-			{
-				debug_d("SKIP: %d (%d)", available, waitingSize + available); // Too large!
-			}
-			received += available;
 		}
-
-		// Fire ReadyToSend callback
-		TcpClient::onReceive(buf);
+		else
+		{
+			debug_d("SKIP: %d (%d)", available, waitingSize + available); // Too large!
+		}
+		received += available;
 	}
+
+	// Fire ReadyToSend callback
+	TcpClient::onReceive(buf);
 
 	return ERR_OK;
 }
@@ -329,7 +324,7 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	// Send PINGREQ every PingRepeatTime time, if there is no outgoing traffic
 	// PingRepeatTime should be <= keepAlive
-	if (lastMessage && (millis() - lastMessage >= PingRepeatTime*1000)) {
+	if (lastMessage && (millis() - lastMessage >= pingRepeatTime*1000)) {
 		mqtt_ping(&broker);
 	}
 	TcpClient::onReadyToSendData(sourceEvent);
