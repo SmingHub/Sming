@@ -84,7 +84,7 @@ int WebsocketConnection::processFrame(HttpServerConnection& connection, HttpRequ
 }
 
 int WebsocketConnection::staticOnDataBegin(void* userData, ws_frame_type_t type) {
-	WebsocketConnection *connection = (WebsocketConnection *)userData;
+	WebsocketConnection *connection = static_cast<WebsocketConnection *>(userData);
 	if (connection == NULL) {
 		return -1;
 	}
@@ -100,7 +100,7 @@ int WebsocketConnection::staticOnDataBegin(void* userData, ws_frame_type_t type)
 }
 
 int WebsocketConnection::staticOnDataPayload(void* userData, const char *at, size_t length) {
-	WebsocketConnection *connection = (WebsocketConnection *)userData;
+	WebsocketConnection *connection = static_cast<WebsocketConnection *>(userData);
 	if (connection == NULL) {
 		return -1;
 	}
@@ -121,7 +121,7 @@ int WebsocketConnection::staticOnDataEnd(void* userData)
 
 int WebsocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t type)
 {
-	WebsocketConnection *connection = (WebsocketConnection *)userData;
+	WebsocketConnection *connection = static_cast<WebsocketConnection *>(userData);
 	if (connection == NULL) {
 		return -1;
 	}
@@ -139,7 +139,7 @@ int WebsocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t ty
 
 int WebsocketConnection::staticOnControlPayload(void* userData, const char *data, size_t length)
 {
-	WebsocketConnection *connection = (WebsocketConnection *)userData;
+	WebsocketConnection *connection = static_cast<WebsocketConnection *>(userData);
 	if (connection == NULL) {
 		return -1;
 	}

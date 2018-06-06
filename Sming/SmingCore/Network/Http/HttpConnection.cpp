@@ -141,10 +141,10 @@ String HttpConnection::getResponseString()
 
 void HttpConnection::reset()
 {
-	if(incomingRequest != NULL) {
-		delete incomingRequest;
-		incomingRequest = NULL;
-	}
+	delete incomingRequest;
+	delete outgoingRequest;
+	incomingRequest = NULL;
+	outgoingRequest = NULL;
 
 	response.reset();
 

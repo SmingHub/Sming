@@ -147,7 +147,6 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 	}
 
 	pbuf *cur = buf;
-	int parsedBytes = 0;
 	while (cur != nullptr && cur->len > 0) {
 		int err = ws_parser_execute(&parser, (char*) cur->payload, cur->len);
 		if(err) {
