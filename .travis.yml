@@ -59,6 +59,7 @@ script:
   fi
 - export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/:$SMING_HOME/../.travis/tools
 - cd $SMING_HOME
+- if [ "$SDK_VERSION" == "2.0.0" ]; then ../.travis/tools/clang/format-pr.sh; fi
 - make test
 - cd $SMING_HOME/../
 - export SMING_HAS_CHANGED=`for i in $CHANGED_FILES; do  if [[ $i == Sming/* ]]; then
