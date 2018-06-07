@@ -46,6 +46,16 @@ void formUrlParser(HttpRequest& request, const char *at, int length)
 
 			if(newKey != key) {
 				request.postParams.remove(key);
+				/* we know that postParams is HashMap and
+				 * remove() shifts keys and values by one down, so
+				 * 1) don't change i-index - let it point to the next shifted item
+				 * 2) then as newKey will be added to the end of the Map, decrease max to
+				 * avoid processing the newKey-item added to the end 
+				 * or the invalid item in the place of the one shifted from the end 
+				 * (if it occurs that the 'newKey' = other existing key)
+				 */
+				i--;
+				max--;
 			}
 
 			uri_unescape(buffer, maxLength + 1, value.c_str(), value.length());
