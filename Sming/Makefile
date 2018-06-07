@@ -554,6 +554,18 @@ dist-clean: clean samples-clean third-party-clean libraries-clean tools-clean
  	done
 	$(Q) $(GIT) checkout $(USER_LIBDIR)
 
+
+# Files that should follow our coding standards
+CS_FILES=$(shell find SmingCore/ -name '*.cpp') $(shell find SmingCore/ -name '*.c') \
+         $(shell find ../samples -name '*.cpp') $(shell find samples/ -name '*.c') \
+
+cs:
+	$(Q) for FILE in $(CS_FILES); do \
+		clang-tidy fix -fix-errors -checks="readability-braces-around-statements" $$FILE -- $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS); \
+		clang-format -i -style=file $$FILE; \
+	done
+
+
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
 $(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.c.d)))
 $(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.cpp.d)))
