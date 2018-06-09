@@ -1,16 +1,16 @@
 ---
 Language:        Cpp
 BasedOnStyle:  LLVM
-# AccessModifierOffset: -2
+AccessModifierOffset: -4
 # AlignAfterOpenBracket: Align
 # AlignConsecutiveAssignments: false
 # AlignConsecutiveDeclarations: false
 AlignEscapedNewlinesLeft: false
 AlignOperands:   true
-# AlignTrailingComments: true
+AlignTrailingComments: true
 # AllowAllParametersOfDeclarationOnNextLine: true
-# AllowShortBlocksOnASingleLine: false
-# AllowShortCaseLabelsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
@@ -23,15 +23,16 @@ BinPackParameters: true
 BraceWrapping:
     AfterClass:      false
     AfterControlStatement: false
-#   AfterEnum:       false
+    AfterEnum:       false
     AfterFunction:   true
 #   AfterNamespace:  false
-#   AfterObjCDeclaration: false
-#   AfterStruct:     false
+    AfterObjCDeclaration: false
+    AfterStruct:     true
 #   AfterUnion:      false
 #   BeforeCatch:     false
     BeforeElse:      true
     IndentBraces:    false
+#   AfterExternBlock: true # available in v7
 # BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Linux
 # BreakBeforeTernaryOperators: true
@@ -55,8 +56,8 @@ Cpp11BracedListStyle: true
 #     Priority:        1
 IndentCaseLabels: false
 IndentWidth:     4
-# IndentWrappedFunctionNames: false
-# KeepEmptyLinesAtTheStartOfBlocks: true
+IndentWrappedFunctionNames: false
+KeepEmptyLinesAtTheStartOfBlocks: false
 # MacroBlockBegin: ''
 # MacroBlockEnd:   ''
 MaxEmptyLinesToKeep: 1
@@ -77,7 +78,8 @@ SpaceAfterCStyleCast: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: Never
 SpaceInEmptyParentheses: false
-# SpacesBeforeTrailingComments: 1
+SpacesBeforeTrailingComments: 1
+# SpaceBeforeInheritanceColon: false # available in v7
 SpacesInAngles:  false
 SpacesInContainerLiterals: false
 SpacesInCStyleCastParentheses: false
@@ -85,6 +87,14 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 Standard:        Cpp11
 TabWidth:        4
-UseTab:          Never
+UseTab:          Always
+# RawStringFormats:  # available in v7
+#  - Language: Cpp
+#      Delimiters:
+#        - 'cc'
+#        - 'cpp'
+#      BasedOnStyle: llvm
+#      CanonicalDelimiter: 'cc'
+# SpaceBeforeRangeBasedForLoopColon: false # available in v7
 ...
 

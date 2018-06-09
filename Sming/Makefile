@@ -556,8 +556,8 @@ dist-clean: clean samples-clean third-party-clean libraries-clean tools-clean
 
 
 # Files that should follow our coding standards
-CS_FILES=$(shell find SmingCore/ -name '*.cpp') $(shell find SmingCore/ -name '*.c') \
-         $(shell find ../samples -name '*.cpp') $(shell find samples/ -name '*.c') \
+CS_FILES=$(shell find SmingCore/ -name '*.cpp' -o  -name '*.h' -o -name '*.c') \
+         $(shell find ../samples -name '*.cpp' -o  -name '*.h' -o -name '*.c')
 
 cs:
 	$(Q) for FILE in $(CS_FILES); do \
