@@ -1,0 +1,42 @@
+<map id="NexTouch.h" name="NexTouch.h">
+<area shape="rect" id="node2" href="$_nex_button_8h.html" title="The definition of class NexButton. " alt="" coords="69,155,163,181"/>
+<area shape="rect" id="node4" href="$_nextion_8h.html" title="The header file including all other header files provided by this library. " alt="" coords="1150,229,1229,256"/>
+<area shape="rect" id="node5" href="$_nex_hardware_8h.html" title="The definition of base API for using Nextion. " alt="" coords="1275,80,1389,107"/>
+<area shape="rect" id="node6" href="$_nex_checkbox_8h.html" title="The definition of class NexCheckbox. " alt="" coords="187,155,303,181"/>
+<area shape="rect" id="node8" href="$_nex_crop_8h.html" title="The definition of class NexCrop. " alt="" coords="328,155,413,181"/>
+<area shape="rect" id="node10" href="$_nex_dual_state_button_8h.html" title="The definition of class NexDSButton. " alt="" coords="438,155,591,181"/>
+<area shape="rect" id="node12" href="$_nex_gauge_8h.html" title="The definition of class NexGauge. " alt="" coords="615,155,710,181"/>
+<area shape="rect" id="node15" href="$_nex_hotspot_8h.html" title="The definition of class NexHotspot. " alt="" coords="734,155,837,181"/>
+<area shape="rect" id="node17" href="$_nex_number_8h.html" title="The definition of class NexNumber. " alt="" coords="861,155,963,181"/>
+<area shape="rect" id="node19" href="$_nex_page_8h.html" title="The definition of class NexPage. " alt="" coords="987,155,1074,181"/>
+<area shape="rect" id="node21" href="$_nex_picture_8h.html" title="The definition of class NexPicture. " alt="" coords="1475,155,1573,181"/>
+<area shape="rect" id="node23" href="$_nex_progress_bar_8h.html" title="The definition of class NexProgressBar. " alt="" coords="1598,155,1727,181"/>
+<area shape="rect" id="node25" href="$_nex_radio_8h.html" title="The definition of class NexRadio. " alt="" coords="1752,155,1843,181"/>
+<area shape="rect" id="node27" href="$_nex_scrolltext_8h.html" title="The definition of class NexScrolltext. " alt="" coords="1867,155,1979,181"/>
+<area shape="rect" id="node29" href="$_nex_slider_8h.html" title="The definition of class NexSlider. " alt="" coords="2003,155,2093,181"/>
+<area shape="rect" id="node31" href="$_nex_text_8h.html" title="The definition of class NexText. " alt="" coords="2117,155,2200,181"/>
+<area shape="rect" id="node33" href="$_nex_timer_8h.html" title="The definition of class NexTimer. " alt="" coords="2224,155,2315,181"/>
+<area shape="rect" id="node35" href="$_nex_waveform_8h.html" title="The definition of class NexWaveform. " alt="" coords="2339,155,2456,181"/>
+<area shape="rect" id="node37" href="$_nex_variable_8h_source.html" title="NexVariable.h" alt="" coords="2480,155,2584,181"/>
+<area shape="rect" id="node41" href="$_nex_touch_8cpp.html" title="The implementation of class NexTouch. " alt="" coords="1869,80,1976,107"/>
+<area shape="rect" id="node3" href="$_nex_button_8cpp.html" title="The implementation of class NexButton. " alt="" coords="5,229,115,256"/>
+<area shape="rect" id="node14" href="$_nex_hardware_8cpp.html" title="The implementation of base API for using Nextion. " alt="" coords="1201,155,1327,181"/>
+<area shape="rect" id="node39" href="$_nex_upload_8h.html" title="The definition of class NexUpload. " alt="" coords="1352,155,1451,181"/>
+<area shape="rect" id="node7" href="$_nex_checkbox_8cpp.html" title="The implementation of class NexCheckbox. " alt="" coords="139,229,269,256"/>
+<area shape="rect" id="node9" href="$_nex_crop_8cpp.html" title="The implementation of class NexCrop. " alt="" coords="293,229,392,256"/>
+<area shape="rect" id="node11" href="$_nex_dual_state_button_8cpp.html" title="The implementation of class NexDSButton. " alt="" coords="417,229,583,256"/>
+<area shape="rect" id="node13" href="$_nex_gauge_8cpp.html" title="The implementation of class NexGauge. " alt="" coords="608,229,717,256"/>
+<area shape="rect" id="node16" href="$_nex_hotspot_8cpp.html" title="The implementation of class NexHotspot. " alt="" coords="741,229,859,256"/>
+<area shape="rect" id="node18" href="$_nex_number_8cpp.html" title="The implementation of class NexNumber. " alt="" coords="883,229,1000,256"/>
+<area shape="rect" id="node20" href="$_nex_page_8cpp.html" title="The implementation of class NexPage. " alt="" coords="1024,229,1125,256"/>
+<area shape="rect" id="node22" href="$_nex_picture_8cpp.html" title="The implementation of class NexPicture. " alt="" coords="1421,229,1533,256"/>
+<area shape="rect" id="node24" href="$_nex_progress_bar_8cpp.html" title="The implementation of class NexProgressBar. " alt="" coords="1557,229,1699,256"/>
+<area shape="rect" id="node26" href="$_nex_radio_8cpp.html" title="The implementation of class NexRadio. " alt="" coords="1723,229,1829,256"/>
+<area shape="rect" id="node28" href="$_nex_scrolltext_8cpp.html" title="The implementation of class NexScrolltext. " alt="" coords="1853,229,1979,256"/>
+<area shape="rect" id="node30" href="$_nex_slider_8cpp.html" title="The implementation of class NexSlider. " alt="" coords="2004,229,2108,256"/>
+<area shape="rect" id="node32" href="$_nex_text_8cpp.html" title="The implementation of class NexText. " alt="" coords="2133,229,2230,256"/>
+<area shape="rect" id="node34" href="$_nex_timer_8cpp.html" title="The implementation of class NexTimer. " alt="" coords="2255,229,2359,256"/>
+<area shape="rect" id="node36" href="$_nex_waveform_8cpp.html" title="The implementation of class NexWaveform. " alt="" coords="2383,229,2513,256"/>
+<area shape="rect" id="node38" href="$_nex_variable_8cpp.html" title="The implementation of class NexText. " alt="" coords="2537,229,2655,256"/>
+<area shape="rect" id="node40" href="$_nex_upload_8cpp.html" title="The implementation of download tft file for nextion. " alt="" coords="1285,229,1397,256"/>
+</map>

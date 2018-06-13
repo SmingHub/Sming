@@ -1,0 +1,121 @@
+\section*{Nextion}
+
+
+
+
+
+\section*{Introduction}
+
+Nextion Arduino library provides an easy-\/to-\/use way to manipulate Nextion serial displays. Users can use the libarry freely, either in commerical projects or open-\/source prjects, without any additional condiitons.
+
+For more information about the Nextion display project, please visit \href{http://wiki.iteadstudio.com/Nextion_HMI_Solution}{\tt the wiki。} The wiki provdies all the necessary technical documnets, quick start guide, tutorials, demos, as well as some useful resources.
+
+To get your Nextion display, please visit \href{http://imall.itead.cc/display/nextion.html}{\tt i\+Mall.}
+
+To discuss the project? Request new features? Report a B\+U\+G? please visit the \href{http://support.iteadstudio.com/discussions/1000058038}{\tt Forums}
+
+\section*{Download Source Code}
+
+Latest version is unstable and a mass of change may be applied in a short time without any notification for users. Commonly, it is for developers of this library.
+
+{\bfseries Release version is recommanded for you, unless you are one of developers of this library.}
+
+{\bfseries Release notes} is at \href{https://github.com/itead/ITEADLIB_Arduino_Nextion/blob/master/release_notes.md}{\tt https\+://github.\+com/itead/\+I\+T\+E\+A\+D\+L\+I\+B\+\_\+\+Arduino\+\_\+\+Nextion/blob/master/release\+\_\+notes.\+md}.
+
+\subsection*{Latest(unstable)}
+
+Latest source code(master branch) can be downloaded\+: \href{https://github.com/itead/ITEADLIB_Arduino_Nextion/archive/master.zip}{\tt https\+://github.\+com/itead/\+I\+T\+E\+A\+D\+L\+I\+B\+\_\+\+Arduino\+\_\+\+Nextion/archive/master.\+zip}.
+
+You can also clone it via git\+: \begin{DoxyVerb}git clone https://github.com/itead/ITEADLIB_Arduino_Nextion
+\end{DoxyVerb}
+
+
+\subsection*{Releases(stable)}
+
+
+\begin{DoxyItemize}
+\item \href{https://github.com/itead/ITEADLIB_Arduino_Nextion/archive/v0.7.0.zip}{\tt https\+://github.\+com/itead/\+I\+T\+E\+A\+D\+L\+I\+B\+\_\+\+Arduino\+\_\+\+Nextion/archive/v0.\+7.\+0.\+zip}
+\item \href{https://github.com/itead/ITEADLIB_Arduino_Nextion/archive/v0.7.0.tar.gz}{\tt https\+://github.\+com/itead/\+I\+T\+E\+A\+D\+L\+I\+B\+\_\+\+Arduino\+\_\+\+Nextion/archive/v0.\+7.\+0.\+tar.\+gz}
+\end{DoxyItemize}
+
+All releases can be available from\+: \href{https://github.com/itead/ITEADLIB_Arduino_Nextion/releases}{\tt https\+://github.\+com/itead/\+I\+T\+E\+A\+D\+L\+I\+B\+\_\+\+Arduino\+\_\+\+Nextion/releases}.
+
+\section*{Documentation}
+
+\href{http://docs.iteadstudio.com/ITEADLIB_Arduino_Nextion/index.html}{\tt Latest Online Documentation} contains Configuration, Get Started, Reference of A\+P\+I and Examples, etc.
+
+Offline Documentation's entry {\ttfamily doc/\+Documentation/index.\+html} shiped with source code can be open in your browser such as Chrome, Firefox or any one you like.
+
+\section*{Suppported Mainboards}
+
+{\bfseries All boards, which has one or more hardware serial, can be supported.}
+
+For example\+:
+
+
+\begin{DoxyItemize}
+\item Iteaduino M\+E\+G\+A2560
+\item Iteaduino U\+N\+O
+\item Arduino M\+E\+G\+A2560
+\item Arduino U\+N\+O
+\end{DoxyItemize}
+
+\section*{Configuration}
+
+In configuration file \hyperlink{_nex_config_8h}{Nex\+Config.\+h}, you can find two macros below\+:
+
+
+\begin{DoxyItemize}
+\item db\+Serial\+: Debug Serial (baudrate\+:9600), needed by beginners for debug your nextion applications or sketches. If your complete your work, it will be a wise choice to disable Debug Serial.
+\item nex\+Serial\+: Nextion Serial, the bridge of Nextion and your mainboard.
+\end{DoxyItemize}
+
+{\bfseries Note\+:} the default configuration is for M\+E\+G\+A2560.
+
+\subsection*{Redirect db\+Serial and nex\+Serial}
+
+If you want to change the default serial to debug or communicate with Nextion , you need to modify the line in configuration file\+: \begin{DoxyVerb}#define dbSerial Serial    ---> #define dbSerial Serialxxx
+#define nexSerial Serial2  ---> #define nexSeria Serialxxx
+\end{DoxyVerb}
+
+
+\subsection*{Disable Debug Serial}
+
+If you want to disable the debug information,you need to modify the line in configuration file\+: \begin{DoxyVerb}#define DEBUG_SERIAL_ENABLE ---> //#define DEBUG_SERIAL_ENABLE
+\end{DoxyVerb}
+
+
+\section*{U\+N\+O-\/like Mainboards}
+
+If your board has only one hardware serial, such as U\+N\+O, you should disable db\+Serial and redirect nex\+Serial to Serial(Refer to section\+:{\ttfamily Serial configuration}).
+
+\section*{Useful Links}
+
+\href{http://blog.iteadstudio.com/nextion-tutorial-based-on-nextion-arduino-library/}{\tt http\+://blog.\+iteadstudio.\+com/nextion-\/tutorial-\/based-\/on-\/nextion-\/arduino-\/library/}
+
+\section*{License}
+
+
+
+
+
+\begin{DoxyVerb}DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
+    Version 2, December 2004 
+
+Copyright (C) 2014 ITEAD Studio
+
+Everyone is permitted to copy and distribute verbatim or modified 
+copies of this license document, and changing it is allowed as long 
+as the name is changed. 
+
+    DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
+
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 
+
+0. You just DO WHAT THE FUCK YOU WANT TO.
+\end{DoxyVerb}
+
+
+
+
+ 

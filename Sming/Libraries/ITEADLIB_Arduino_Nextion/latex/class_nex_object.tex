@@ -1,0 +1,81 @@
+\hypertarget{class_nex_object}{\section{Nex\+Object Class Reference}
+\label{class_nex_object}\index{Nex\+Object@{Nex\+Object}}
+}
+
+
+{\ttfamily \#include $<$Nex\+Object.\+h$>$}
+
+Inheritance diagram for Nex\+Object\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=12.000000cm]{class_nex_object}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_nex_object_ab15aadb9c91d9690786d8d25d12d94e1}{Nex\+Object} (uint8\+\_\+t pid, uint8\+\_\+t cid, const char $\ast$name)
+\item 
+void \hyperlink{class_nex_object_abeff0c61474e8b3ce6bac76771820b64}{print\+Obj\+Info} (void)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_nex_object_a67621e5d7bcfb50c1a1bbc4ad1020352}{uint8\+\_\+t {\bfseries get\+Obj\+Pid} (void)}\label{class_nex_object_a67621e5d7bcfb50c1a1bbc4ad1020352}
+
+\item 
+\hypertarget{class_nex_object_a8139b294806c1684fc95b635a33b1b15}{uint8\+\_\+t {\bfseries get\+Obj\+Cid} (void)}\label{class_nex_object_a8139b294806c1684fc95b635a33b1b15}
+
+\item 
+\hypertarget{class_nex_object_aea0246c02cd5e54d0dbd714ace1ff2b1}{const char $\ast$ {\bfseries get\+Obj\+Name} (void)}\label{class_nex_object_aea0246c02cd5e54d0dbd714ace1ff2b1}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Root class of all Nextion components.
+
+Provides the essential attributes of a Nextion component and the methods accessing them. At least, Page I\+D(pid), Component I\+D(pid) and an unique name are needed for creating a component in Nexiton library. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_nex_object_ab15aadb9c91d9690786d8d25d12d94e1}{\index{Nex\+Object@{Nex\+Object}!Nex\+Object@{Nex\+Object}}
+\index{Nex\+Object@{Nex\+Object}!Nex\+Object@{Nex\+Object}}
+\subsubsection[{Nex\+Object}]{\setlength{\rightskip}{0pt plus 5cm}Nex\+Object\+::\+Nex\+Object (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{pid, }
+\item[{uint8\+\_\+t}]{cid, }
+\item[{const char $\ast$}]{name}
+\end{DoxyParamCaption}
+)}}\label{class_nex_object_ab15aadb9c91d9690786d8d25d12d94e1}
+Constructor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pid} & -\/ page id. \\
+\hline
+{\em cid} & -\/ component id. \\
+\hline
+{\em name} & -\/ pointer to an unique name in range of all components. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_nex_object_abeff0c61474e8b3ce6bac76771820b64}{\index{Nex\+Object@{Nex\+Object}!print\+Obj\+Info@{print\+Obj\+Info}}
+\index{print\+Obj\+Info@{print\+Obj\+Info}!Nex\+Object@{Nex\+Object}}
+\subsubsection[{print\+Obj\+Info}]{\setlength{\rightskip}{0pt plus 5cm}void Nex\+Object\+::print\+Obj\+Info (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{class_nex_object_abeff0c61474e8b3ce6bac76771820b64}
+Print current object'address, page id, component id and name.
+
+\begin{DoxyWarning}{Warning}
+this method does nothing, unless debug message enabled. 
+\end{DoxyWarning}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{_nex_object_8h}{Nex\+Object.\+h}\item 
+\hyperlink{_nex_object_8cpp}{Nex\+Object.\+cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,12 @@
+<map id="Nextion.h" name="Nextion.h">
+<area shape="rect" id="node2" href="$_comp_button_8ino_source.html" title="examples/CompButton\l/CompButton.ino" alt="" coords="5,80,160,121"/>
+<area shape="rect" id="node3" href="$_comp_crop_8ino_source.html" title="examples/CompCrop/CompCrop.ino" alt="" coords="184,87,413,114"/>
+<area shape="rect" id="node4" href="$_comp_gauge_8ino_source.html" title="examples/CompGauge\l/CompGauge.ino" alt="" coords="437,80,592,121"/>
+<area shape="rect" id="node5" href="$_comp_hotspot_8ino_source.html" title="examples/CompHotspot\l/CompHotspot.ino" alt="" coords="617,80,778,121"/>
+<area shape="rect" id="node6" href="$_comp_page_8ino_source.html" title="examples/CompPage/CompPage.ino" alt="" coords="803,87,1037,114"/>
+<area shape="rect" id="node7" href="$_comp_picture_8ino_source.html" title="examples/CompPicture\l/CompPicture.ino" alt="" coords="1061,80,1219,121"/>
+<area shape="rect" id="node8" href="$_comp_progress_bar_8ino_source.html" title="examples/CompProgressBar\l/CompProgressBar.ino" alt="" coords="1243,80,1431,121"/>
+<area shape="rect" id="node9" href="$_comp_slider_8ino_source.html" title="examples/CompSlider\l/CompSlider.ino" alt="" coords="1456,80,1605,121"/>
+<area shape="rect" id="node10" href="$_comp_text_8ino_source.html" title="examples/CompText/CompText.ino" alt="" coords="1630,87,1855,114"/>
+<area shape="rect" id="node11" href="$_comp_waveform_8ino_source.html" title="examples/CompWaveform\l/CompWaveform.ino" alt="" coords="1880,80,2053,121"/>
+</map>

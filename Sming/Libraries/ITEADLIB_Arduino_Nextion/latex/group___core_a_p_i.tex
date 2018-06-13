@@ -1,0 +1,69 @@
+\hypertarget{group___core_a_p_i}{\section{Core A\+P\+I}
+\label{group___core_a_p_i}\index{Core A\+P\+I@{Core A\+P\+I}}
+}
+
+
+Some essential things.  
+
+
+\subsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group___touch_event}{Touch Event}
+\begin{DoxyCompactList}\small\item\em How to attach(or detach) callback function called when touch event occurs. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_nex_object}{Nex\+Object}
+\item 
+class \hyperlink{class_nex_upload}{Nex\+Upload}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{group___core_a_p_i_gab09ddba6b72334d30ae091a7b038d790}{nex\+Init} (void)
+\item 
+void \hyperlink{group___core_a_p_i_ga91c549e696b0ca035cf18901e6a50d5a}{nex\+Loop} (\hyperlink{class_nex_touch}{Nex\+Touch} $\ast$nex\+\_\+listen\+\_\+list\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Some essential things. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{group___core_a_p_i_gab09ddba6b72334d30ae091a7b038d790}{\index{Core A\+P\+I@{Core A\+P\+I}!nex\+Init@{nex\+Init}}
+\index{nex\+Init@{nex\+Init}!Core A\+P\+I@{Core A\+P\+I}}
+\subsubsection[{nex\+Init}]{\setlength{\rightskip}{0pt plus 5cm}bool nex\+Init (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{group___core_a_p_i_gab09ddba6b72334d30ae091a7b038d790}
+Init Nextion.
+
+\begin{DoxyReturn}{Returns}
+true if success, false for failure. 
+\end{DoxyReturn}
+\hypertarget{group___core_a_p_i_ga91c549e696b0ca035cf18901e6a50d5a}{\index{Core A\+P\+I@{Core A\+P\+I}!nex\+Loop@{nex\+Loop}}
+\index{nex\+Loop@{nex\+Loop}!Core A\+P\+I@{Core A\+P\+I}}
+\subsubsection[{nex\+Loop}]{\setlength{\rightskip}{0pt plus 5cm}void nex\+Loop (
+\begin{DoxyParamCaption}
+\item[{{\bf Nex\+Touch} $\ast$}]{nex\+\_\+listen\+\_\+list\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{group___core_a_p_i_ga91c549e696b0ca035cf18901e6a50d5a}
+Listen touch event and calling callbacks attached before.
+
+Supports push and pop at present.
+
+
+\begin{DoxyParams}{Parameters}
+{\em nex\+\_\+listen\+\_\+list} & -\/ index to Nextion Components list. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+none.
+\end{DoxyReturn}
+\begin{DoxyWarning}{Warning}
+This function must be called repeatedly to response touch events from Nextion touch panel. Actually, you should place it in your loop function. 
+\end{DoxyWarning}

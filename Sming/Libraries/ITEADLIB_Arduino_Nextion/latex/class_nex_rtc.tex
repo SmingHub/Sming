@@ -1,0 +1,125 @@
+\hypertarget{class_nex_rtc}{\section{Nex\+Rtc Class Reference}
+\label{class_nex_rtc}\index{Nex\+Rtc@{Nex\+Rtc}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_nex_rtc_acd9e74c0098ef55877b5ae070572dae4}{bool {\bfseries write\+\_\+rtc\+\_\+time} (char $\ast$time)}\label{class_nex_rtc_acd9e74c0098ef55877b5ae070572dae4}
+
+\item 
+bool \hyperlink{class_nex_rtc_a9c55a15fa0a2b1511162facdc47f78b2}{write\+\_\+rtc\+\_\+time} (char $\ast$time\+\_\+type, uint32\+\_\+t number)
+\item 
+bool \hyperlink{class_nex_rtc_ab11da59341b52b0f686cb85a058d0962}{write\+\_\+rtc\+\_\+time} (uint32\+\_\+t $\ast$time)
+\item 
+uint32\+\_\+t \hyperlink{class_nex_rtc_a17230cd9342a905778fa4ee2e8609f02}{read\+\_\+rtc\+\_\+time} (char $\ast$time, uint32\+\_\+t len)
+\item 
+uint32\+\_\+t \hyperlink{class_nex_rtc_aa1afa1d516db55dfbbf650cbe5180eab}{read\+\_\+rtc\+\_\+time} (char $\ast$time\+\_\+type, uint32\+\_\+t $\ast$number)
+\item 
+uint32\+\_\+t \hyperlink{class_nex_rtc_ac71de2cd6f7598f05a5115642714d490}{read\+\_\+rtc\+\_\+time} (uint32\+\_\+t $\ast$time, uint32\+\_\+t len)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_nex_rtc_a17230cd9342a905778fa4ee2e8609f02}{\index{Nex\+Rtc@{Nex\+Rtc}!read\+\_\+rtc\+\_\+time@{read\+\_\+rtc\+\_\+time}}
+\index{read\+\_\+rtc\+\_\+time@{read\+\_\+rtc\+\_\+time}!Nex\+Rtc@{Nex\+Rtc}}
+\subsubsection[{read\+\_\+rtc\+\_\+time}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Nex\+Rtc\+::read\+\_\+rtc\+\_\+time (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{time, }
+\item[{uint32\+\_\+t}]{len}
+\end{DoxyParamCaption}
+)}}\label{class_nex_rtc_a17230cd9342a905778fa4ee2e8609f02}
+read rtc time
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & -\/ Access data array \\
+\hline
+{\em time} & -\/ len of array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+\hypertarget{class_nex_rtc_aa1afa1d516db55dfbbf650cbe5180eab}{\index{Nex\+Rtc@{Nex\+Rtc}!read\+\_\+rtc\+\_\+time@{read\+\_\+rtc\+\_\+time}}
+\index{read\+\_\+rtc\+\_\+time@{read\+\_\+rtc\+\_\+time}!Nex\+Rtc@{Nex\+Rtc}}
+\subsubsection[{read\+\_\+rtc\+\_\+time}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Nex\+Rtc\+::read\+\_\+rtc\+\_\+time (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{time\+\_\+type, }
+\item[{uint32\+\_\+t $\ast$}]{number}
+\end{DoxyParamCaption}
+)}}\label{class_nex_rtc_aa1afa1d516db55dfbbf650cbe5180eab}
+read rtc times
+
+
+\begin{DoxyParams}{Parameters}
+{\em time\+\_\+type} & -\/ To type in time \\
+\hline
+{\em number} & -\/ the time value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+\hypertarget{class_nex_rtc_ac71de2cd6f7598f05a5115642714d490}{\index{Nex\+Rtc@{Nex\+Rtc}!read\+\_\+rtc\+\_\+time@{read\+\_\+rtc\+\_\+time}}
+\index{read\+\_\+rtc\+\_\+time@{read\+\_\+rtc\+\_\+time}!Nex\+Rtc@{Nex\+Rtc}}
+\subsubsection[{read\+\_\+rtc\+\_\+time}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Nex\+Rtc\+::read\+\_\+rtc\+\_\+time (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t $\ast$}]{time, }
+\item[{uint32\+\_\+t}]{len}
+\end{DoxyParamCaption}
+)}}\label{class_nex_rtc_ac71de2cd6f7598f05a5115642714d490}
+read rtc time
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & -\/ Access data array \\
+\hline
+{\em time} & -\/ len of array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+\hypertarget{class_nex_rtc_a9c55a15fa0a2b1511162facdc47f78b2}{\index{Nex\+Rtc@{Nex\+Rtc}!write\+\_\+rtc\+\_\+time@{write\+\_\+rtc\+\_\+time}}
+\index{write\+\_\+rtc\+\_\+time@{write\+\_\+rtc\+\_\+time}!Nex\+Rtc@{Nex\+Rtc}}
+\subsubsection[{write\+\_\+rtc\+\_\+time}]{\setlength{\rightskip}{0pt plus 5cm}bool Nex\+Rtc\+::write\+\_\+rtc\+\_\+time (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{time\+\_\+type, }
+\item[{uint32\+\_\+t}]{number}
+\end{DoxyParamCaption}
+)}}\label{class_nex_rtc_a9c55a15fa0a2b1511162facdc47f78b2}
+write rtc times
+
+
+\begin{DoxyParams}{Parameters}
+{\em time\+\_\+type} & -\/ To type in time (example\+:write\+\_\+rtc\+\_\+time(\char`\"{}year\char`\"{},2016)) \\
+\hline
+{\em number} & -\/ the time value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+\hypertarget{class_nex_rtc_ab11da59341b52b0f686cb85a058d0962}{\index{Nex\+Rtc@{Nex\+Rtc}!write\+\_\+rtc\+\_\+time@{write\+\_\+rtc\+\_\+time}}
+\index{write\+\_\+rtc\+\_\+time@{write\+\_\+rtc\+\_\+time}!Nex\+Rtc@{Nex\+Rtc}}
+\subsubsection[{write\+\_\+rtc\+\_\+time}]{\setlength{\rightskip}{0pt plus 5cm}bool Nex\+Rtc\+::write\+\_\+rtc\+\_\+time (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t $\ast$}]{time}
+\end{DoxyParamCaption}
+)}}\label{class_nex_rtc_ab11da59341b52b0f686cb85a058d0962}
+write rtc times
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & -\/ Time to write to the array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Nex\+Rtc.\+h\item 
+\hyperlink{_nex_rtc_8cpp}{Nex\+Rtc.\+cpp}\end{DoxyCompactItemize}

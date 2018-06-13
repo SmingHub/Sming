@@ -1,0 +1,17 @@
+<map id="NexTouch" name="NexTouch">
+<area shape="rect" id="node3" href="$class_nex_button.html" title="NexButton component. " alt="" coords="279,5,363,32"/>
+<area shape="rect" id="node4" href="$class_nex_checkbox.html" title="NexButton component. " alt="" coords="268,56,373,83"/>
+<area shape="rect" id="node5" href="$class_nex_crop.html" title="NexCrop component. " alt="" coords="283,107,358,133"/>
+<area shape="rect" id="node6" href="$class_nex_d_s_button.html" title="NexDSButton component. " alt="" coords="269,157,372,184"/>
+<area shape="rect" id="node7" href="$class_nex_hotspot.html" title="NexHotspot component. " alt="" coords="275,208,367,235"/>
+<area shape="rect" id="node8" href="$class_nex_number.html" title="NexNumber component. " alt="" coords="275,259,367,285"/>
+<area shape="rect" id="node9" href="$class_nex_page.html" title="A special component , which can contain other components such as NexButton, NexText and NexWaveform..." alt="" coords="283,309,359,336"/>
+<area shape="rect" id="node10" href="$class_nex_picture.html" title="NexPicture component. " alt="" coords="277,360,364,387"/>
+<area shape="rect" id="node11" href="$class_nex_radio.html" title="NexRadio component. " alt="" coords="281,411,361,437"/>
+<area shape="rect" id="node12" href="$class_nex_scrolltext.html" title="NexText component. " alt="" coords="270,461,371,488"/>
+<area shape="rect" id="node13" href="$class_nex_slider.html" title="NexSlider component. " alt="" coords="281,512,360,539"/>
+<area shape="rect" id="node14" href="$class_nex_text.html" title="NexText component. " alt="" coords="285,563,357,589"/>
+<area shape="rect" id="node15" href="$class_nex_timer.html" title="NexTimer component. " alt="" coords="281,613,360,640"/>
+<area shape="rect" id="node16" href="$class_nex_variable.html" title="NexButton component. " alt="" coords="274,664,367,691"/>
+<area shape="rect" id="node2" href="$class_nex_object.html" title="Root class of all Nextion components. " alt="" coords="5,335,89,361"/>
+</map>
