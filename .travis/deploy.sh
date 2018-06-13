@@ -26,4 +26,4 @@ cp -r $SMING_HOME/../docs/api/sming/ $DOCS_DIR
 git add -A $DOCS_DIR 
 git commit -m "Updated the API docs to version $TAG." || 1
 
-git push https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
+git push https://${SMING_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages

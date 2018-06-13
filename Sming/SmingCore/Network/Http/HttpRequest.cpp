@@ -12,16 +12,14 @@
 
 #include "HttpRequest.h"
 
-#include <algorithm>
-
-HttpRequest::HttpRequest(const URL& uri) {
-	this->uri = uri;
+HttpRequest::HttpRequest(const URL& uri): uri(uri)
+{
 }
 
-HttpRequest::HttpRequest(const HttpRequest& value) {
+HttpRequest::HttpRequest(const HttpRequest& value): uri(value.uri)
+{
 	*this = value;
 	method = value.method;
-	uri = value.uri;
 	if(value.headers.count()) {
 		setHeaders(value.headers);
 	}
@@ -29,19 +27,17 @@ HttpRequest::HttpRequest(const HttpRequest& value) {
 	requestBodyDelegate = value.requestBodyDelegate;
 	requestCompletedDelegate = value.requestCompletedDelegate;
 
-	rawData = value.rawData;
-	rawDataLength = value.rawDataLength;
-
-	// Notice: We do not copy streams.
+	debug_w("Warning: HttpRequest streams are not copied..");
 
 #ifdef ENABLE_SSL
 	sslOptions = value.sslOptions;
 	sslFingerprint = value.sslFingerprint;
-	sslClientKeyCert = value.sslClientKeyCert;
+	sslKeyCertPair = value.sslKeyCertPair;
 #endif
 }
 
-HttpRequest& HttpRequest::operator = (const HttpRequest& rhs) {
+HttpRequest& HttpRequest::operator = (const HttpRequest& rhs)
+{
 	if (this == &rhs) return *this;
 
 	// TODO: FIX this...
@@ -51,16 +47,13 @@ HttpRequest& HttpRequest::operator = (const HttpRequest& rhs) {
 	return *this;
 }
 
-HttpRequest::~HttpRequest() {
-	delete queryParams;
-	delete stream;
-	delete responseStream;
-	queryParams = NULL;
-	stream = NULL;
-	responseStream = NULL;
+HttpRequest::~HttpRequest()
+{
+	reset();
 }
 
-HttpRequest* HttpRequest::setURL(const URL& uri) {
+HttpRequest* HttpRequest::setURL(const URL& uri)
+{
 	this->uri = uri;
 	return this;
 }
@@ -71,15 +64,17 @@ HttpRequest* HttpRequest::setMethod(const HttpMethod method)
 	return this;
 }
 
-HttpRequest* HttpRequest::setHeaders(const HttpHeaders& headers) {
+HttpRequest* HttpRequest::setHeaders(const HttpHeaders& headers)
+{
 	for(int i=0; i < headers.count(); i++) {
 		this->headers[headers.keyAt(i)] = headers.valueAt(i);
 	}
 	return this;
 }
 
-HttpRequest* HttpRequest::setHeader(const String& name, const String& value) {
-	this->headers[name] = value; // TODO: add here name and/or value escaping.
+HttpRequest* HttpRequest::setHeader(const String& name, const String& value)
+{
+	this->headers[name] = value;
 	return this;
 }
 
@@ -96,25 +91,39 @@ HttpRequest* HttpRequest::setPostParameter(const String& name, const String& val
 	return this;
 }
 
+HttpRequest* HttpRequest::setFile(const String& formElementName, FileStream* stream)
+{
+	if(stream == null) {
+		return this;
+	}
+
+	files[formElementName] = stream;
+
+	return this;
+}
+
 #ifdef ENABLE_HTTP_REQUEST_AUTH
-HttpRequest* HttpRequest::setAuth(AuthAdapter *adapter) {
+HttpRequest* HttpRequest::setAuth(AuthAdapter *adapter)
+{
 	adapter->setRequest(this);
 	auth = adapter;
 	return this;
 }
 #endif
 
-String HttpRequest::getHeader(const String& name) {
+String HttpRequest::getHeader(const String& name)
+{
 	if(!headers.contains(name)) {
-		return String("");
+		return "";
 	}
 
 	return headers[name];
 }
 
-String HttpRequest::getPostParameter(const String& name) {
+String HttpRequest::getPostParameter(const String& name)
+{
 	if(!postParams.contains(name)) {
-		return String("");
+		return "";
 	}
 
 	return postParams[name];
@@ -161,7 +170,7 @@ String HttpRequest::getBody()
 		char buf[1024];
 		while(stream->available() > 0) {
 			int available = memory->readMemoryBlock(buf, 1024);
-			memory->seek(std::max(available, 0));
+			memory->seek(available);
 			ret += String(buf, available);
 			if(available < 1024) {
 				break;
@@ -171,99 +180,123 @@ String HttpRequest::getBody()
 	return ret;
 }
 
-IDataSourceStream* HttpRequest::getBodyStream()
+ReadWriteStream* HttpRequest::getBodyStream()
 {
 	return stream;
 }
 
-HttpRequest* HttpRequest::setResponseStream(IOutputStream *stream) {
+HttpRequest* HttpRequest::setResponseStream(ReadWriteStream *stream)
+{
+	if(responseStream != NULL) {
+		debug_e("HttpRequest::setResponseStream: Discarding already set stream!");
+		delete responseStream;
+		responseStream = NULL;
+	}
+
 	responseStream = stream;
 	return this;
 }
 
 #ifdef ENABLE_SSL
-HttpRequest* HttpRequest::setSslOptions(uint32_t sslOptions) {
+HttpRequest* HttpRequest::setSslOptions(uint32_t sslOptions)
+{
 	this->sslOptions = sslOptions;
  	return this;
 }
 
-uint32_t HttpRequest::getSslOptions() {
+uint32_t HttpRequest::getSslOptions()
+{
  	return sslOptions;
 }
 
-HttpRequest* HttpRequest::pinCertificate(const SSLFingerprints& fingerprints) {
+HttpRequest* HttpRequest::pinCertificate(const SSLFingerprints& fingerprints)
+{
 	sslFingerprint = fingerprints;
 	return this;
 }
 
-HttpRequest* HttpRequest::setSslClientKeyCert(const SSLKeyCertPair& clientKeyCert) {
-	this->sslClientKeyCert = clientKeyCert;
+HttpRequest* HttpRequest::setSslKeyCert(const SSLKeyCertPair& keyCertPair)
+{
+	this->sslKeyCertPair = keyCertPair;
 	return this;
 }
 
 #endif
 
-HttpRequest* HttpRequest::setBody(const String& body) {
-	if(stream != NULL) {
-		debug_e("HttpRequest::setBody: Discarding already set stream!");
-		delete stream;
-		stream = NULL;
-	}
+HttpRequest* HttpRequest::setBody(const String& body)
+{
+	return setBody((uint8_t* )body.c_str(), body.length());
+}
 
+HttpRequest* HttpRequest::setBody(uint8_t *rawData, size_t length)
+{
 	MemoryDataStream *memory = new MemoryDataStream();
-	int written = memory->write((uint8_t *)body.c_str(), body.length());
-	if(written < body.length()) {
+	int written = memory->write(rawData, length);
+	if(written < length) {
 		debug_e("HttpRequest::setBody: Unable to store the complete body");
 	}
-	stream = memory;
-	return this;
+
+	return setBody(memory);
 }
 
-HttpRequest* HttpRequest::setBody(uint8_t *rawData, size_t length) {
-	this->rawData = rawData;
-	this->rawDataLength = length;
-	return this;
-}
+HttpRequest* HttpRequest::setBody(ReadWriteStream *stream)
+{
+	if(this->stream != NULL) {
+		debug_e("HttpRequest::setBody: Discarding already set stream!");
+		delete this->stream;
+		this->stream = NULL;
+	}
 
-HttpRequest* HttpRequest::setBody(ReadWriteStream *stream) {
 	this->stream = stream;
 	return this;
 }
 
-HttpRequest* HttpRequest::onBody(RequestBodyDelegate delegateFunction) {
+HttpRequest* HttpRequest::onBody(RequestBodyDelegate delegateFunction)
+{
 	requestBodyDelegate = delegateFunction;
 	return this;
 }
 
-HttpRequest* HttpRequest::onHeadersComplete(RequestHeadersCompletedDelegate delegateFunction) {
+HttpRequest* HttpRequest::onHeadersComplete(RequestHeadersCompletedDelegate delegateFunction)
+{
 	this->headersCompletedDelegate = delegateFunction;
 	return this;
 }
 
-HttpRequest* HttpRequest::onRequestComplete(RequestCompletedDelegate delegateFunction) {
+HttpRequest* HttpRequest::onRequestComplete(RequestCompletedDelegate delegateFunction)
+{
 	this->requestCompletedDelegate = delegateFunction;
 	return this;
 }
 
 void HttpRequest::reset()
 {
-	headers.clear();
+	delete queryParams;
+	delete stream;
+	delete responseStream;
+	queryParams = NULL;
+	stream = NULL;
+	responseStream = NULL;
+
 	postParams.clear();
-	if(queryParams != NULL) {
-		delete queryParams;
-		queryParams = NULL;
+	for(int i=0; i < files.count(); i++) {
+		String key = files.keyAt(i);
+		delete files[key];
+		files[key] = NULL;
 	}
+	files.clear();
 }
 
 #ifndef SMING_RELEASE
-String HttpRequest::toString() {
+String HttpRequest::toString()
+{
 	String content = "";
 #ifdef ENABLE_SSL
 	content += "> SSL options: " + String(sslOptions) + "\n";
 	content += "> SSL Cert Fingerprint Length: " + String((sslFingerprint.certSha1 == NULL)? 0: SHA1_SIZE) + "\n";
 	content += "> SSL PK Fingerprint Length: " + String((sslFingerprint.pkSha256 == NULL)? 0: SHA256_SIZE) + "\n";
-	content += "> SSL ClientCert Length: " + String(sslClientKeyCert.certificateLength) + "\n";
-	content += "> SSL ClientCert PK Length: " + String(sslClientKeyCert.keyLength) + "\n";
+	content += "> SSL ClientCert Length: " + String(sslKeyCertPair.certificateLength) + "\n";
+	content += "> SSL ClientCert PK Length: " + String(sslKeyCertPair.keyLength) + "\n";
 	content += "\n";
 #endif
 
@@ -273,8 +306,8 @@ String HttpRequest::toString() {
 		content += headers.keyAt(i) + ": " + headers.valueAt(i) + "\n";
 	}
 
-	if(rawDataLength) {
-		content += "Content-Length: " + String(rawDataLength);
+	if(stream!= NULL && stream->available() > -1) {
+		content += "Content-Length: " + String(stream->available());
 	}
 
 	return content;

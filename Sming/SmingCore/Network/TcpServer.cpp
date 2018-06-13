@@ -20,30 +20,22 @@ TcpServer::TcpServer() : TcpConnection(false)
 }
 
 TcpServer::TcpServer(TcpClientConnectDelegate onClientHandler, TcpClientDataDelegate clientReceiveDataHandler, TcpClientCompleteDelegate clientCompleteHandler)
-: TcpConnection(false)
+: TcpConnection(false), clientConnectDelegate(onClientHandler), clientReceiveDelegate(clientReceiveDataHandler), clientCompleteDelegate(clientCompleteHandler)
 {
-	clientConnectDelegate = onClientHandler;
-	clientReceiveDelegate = clientReceiveDataHandler;
-	clientCompleteDelegate = clientCompleteHandler;
 	timeOut = 40;
 	TcpConnection::setTimeOut(USHRT_MAX);
-
 }
 
-
 TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler, TcpClientCompleteDelegate clientCompleteHandler)
-: TcpConnection(false)
+: TcpConnection(false), clientReceiveDelegate(clientReceiveDataHandler), clientCompleteDelegate(clientCompleteHandler)
 {
-	clientReceiveDelegate = clientReceiveDataHandler;
-	clientCompleteDelegate = clientCompleteHandler;
 	timeOut = 40;
 	TcpConnection::setTimeOut(USHRT_MAX);
 }
 
 TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler)
-: TcpConnection(false)
+: TcpConnection(false), clientReceiveDelegate(clientReceiveDataHandler)
 {
-	clientReceiveDelegate = clientReceiveDataHandler;
 	timeOut = 40;
 	TcpConnection::setTimeOut(USHRT_MAX);
 }
@@ -88,13 +80,6 @@ void TcpServer::setTimeOut(uint16_t waitTimeOut)
 	timeOut = waitTimeOut;
 }
 
-#ifdef ENABLE_SSL
-void TcpServer::setServerKeyCert(SSLKeyCertPair serverKeyCert)
-{
-	clientKeyCert = serverKeyCert;
-}
-#endif
-
 bool TcpServer::listen(int port, bool useSsl /*= false */)
 {
 	if (tcp == NULL)
@@ -114,27 +99,27 @@ bool TcpServer::listen(int port, bool useSsl /*= false */)
 
 		sslContext = ssl_ctx_new(sslOptions, sslSessionCacheSize);
 
-		if (!(clientKeyCert.keyLength && clientKeyCert.certificateLength)) {
+		if (!(sslKeyCert.keyLength && sslKeyCert.certificateLength)) {
 			debug_e("SSL: server certificate and key are not provided!");
 			return false;
 		}
 
 		if (ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY,
-								clientKeyCert.key, clientKeyCert.keyLength,
-								clientKeyCert.keyPassword) != SSL_OK) {
+								sslKeyCert.key, sslKeyCert.keyLength,
+								sslKeyCert.keyPassword) != SSL_OK) {
 			debug_e("SSL: Unable to load server private key");
 			return false;
 		}
 
 		if (ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT,
-			clientKeyCert.certificate,
-			clientKeyCert.certificateLength, NULL) != SSL_OK) {
+			sslKeyCert.certificate,
+			sslKeyCert.certificateLength, NULL) != SSL_OK) {
 			debug_e("SSL: Unable to load server certificate");
 			return false;
 		}
 
 		// TODO: test: free the certificate data on server destroy...
-		freeClientKeyCert = true;
+		freeKeyCert = true;
 	}
 #endif
 

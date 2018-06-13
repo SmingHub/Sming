@@ -11,9 +11,8 @@
  ****/
 
 #include "HttpConnection.h"
-#include "HttpChunkedStream.h"
-
-#include "../../Services/WebHelpers/escape.h"
+#include "../../Data/Stream/ChunkedStream.h"
+#include "../../Data/Stream/UrlencodedOutputStream.h"
 
 #ifdef __linux__
 #include "lwip/priv/tcp_priv.h"
@@ -24,7 +23,7 @@
 bool HttpConnection::parserSettingsInitialized = false;
 http_parser_settings HttpConnection::parserSettings;
 
-HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false), mode(eHCM_String)
+HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false)
 {
 	this->waitingQueue = queue;
 
@@ -78,6 +77,11 @@ bool HttpConnection::connect(const String& host, int port, bool useSsl /* = fals
 	return TcpClient::connect(host, port, useSsl, sslOptions);
 }
 
+bool HttpConnection::send(HttpRequest* request)
+{
+	return waitingQueue->enqueue(request);
+}
+
 bool HttpConnection::isActive()
 {
 	if(tcp == NULL) {
@@ -95,15 +99,15 @@ bool HttpConnection::isActive()
 }
 
 // @deprecated
-HashMap<String, String> &HttpConnection::getResponseHeaders()
+HttpHeaders &HttpConnection::getResponseHeaders()
 {
-	return responseHeaders;
+	return response.headers;
 }
 
 String HttpConnection::getResponseHeader(String headerName, String defaultValue /* = "" */)
 {
-	if (responseHeaders.contains(headerName))
-		return responseHeaders[headerName];
+	if (response.headers.contains(headerName))
+		return response.headers[headerName];
 
 	return defaultValue;
 }
@@ -130,10 +134,7 @@ DateTime HttpConnection::getServerDate()
 
 String HttpConnection::getResponseString()
 {
-	if (mode == eHCM_String)
-		return responseStringData;
-	else
-		return "";
+	return response.getBody();
 }
 
 // @enddeprecated
@@ -145,17 +146,12 @@ void HttpConnection::reset()
 		incomingRequest = NULL;
 	}
 
-	code = 0;
-	if(responseStringData.length()) {
-		responseStringData = "";
-	}
-	responseHeaders.clear();
+	response.reset();
 
 	lastWasValue = true;
 	lastData = "";
 	currentField  = "";
 }
-
 
 err_t HttpConnection::onProtocolUpgrade(http_parser* parser)
 {
@@ -178,14 +174,44 @@ int HttpConnection::staticOnMessageBegin(http_parser* parser)
 		return 1; // there are no requests in the queue
 	}
 
-	if(connection->incomingRequest->responseStream != NULL) {
-		connection->mode = eHCM_Stream;
-	}
-	else {
-		connection->mode = eHCM_String;
+	return 0;
+}
+
+HttpPartResult HttpConnection::multipartProducer()
+{
+	HttpPartResult result;
+
+	if(outgoingRequest->files.count()) {
+		String name = outgoingRequest->files.keyAt(0);
+		FileStream *file = outgoingRequest->files[name];
+		result.stream = file;
+
+		HttpHeaders* headers = new HttpHeaders();
+		(*headers)["Content-Disposition"] = "form-data; name=\""+name+"\"; filename=\""+file->fileName()+"\"";
+		(*headers)["Content-Type"] = ContentType::fromFullFileName(file->fileName());
+		result.headers = headers;
+
+		outgoingRequest->files.remove(name);
+		return result;
 	}
 
-	return 0;
+	if(outgoingRequest->postParams.count()) {
+		String name = outgoingRequest->postParams.keyAt(0);
+		String value = outgoingRequest->postParams[name];
+
+		MemoryDataStream* mStream = new MemoryDataStream();
+		mStream->write((uint8_t* )value.c_str(), value.length());
+		result.stream = mStream;
+
+		HttpHeaders* headers = new HttpHeaders();
+		(*headers)["Content-Disposition"] = "form-data; name=\""+name+"\"";
+		result.headers = headers;
+
+		outgoingRequest->postParams.remove(name);
+		return result;
+	}
+
+	return result;
 }
 
 int HttpConnection::staticOnMessageComplete(http_parser* parser)
@@ -209,23 +235,13 @@ int HttpConnection::staticOnMessageComplete(http_parser* parser)
 	int hasError = 0;
 	if(connection->incomingRequest->requestCompletedDelegate) {
 		bool success = (HTTP_PARSER_ERRNO(parser) == HPE_OK) &&  // false when the parsing has failed
-					   (connection->code >= 200 && connection->code <= 399);  // false when the HTTP status code is not ok
+					   (connection->response.code >= 200 && connection->response.code <= 399);  // false when the HTTP status code is not ok
 		hasError = connection->incomingRequest->requestCompletedDelegate(*connection, success);
-	}
-
-	if(connection->incomingRequest->auth != NULL) {
-		connection->incomingRequest->auth->setResponse(connection->getResponse());
 	}
 
 	if(connection->incomingRequest->retries > 0) {
 		connection->incomingRequest->retries--;
 		return (connection->executionQueue.enqueue(connection->incomingRequest)? 0: -1);
-	}
-
-	if(connection->incomingRequest->responseStream != NULL) {
-		connection->incomingRequest->responseStream->close();
-		delete connection->incomingRequest->responseStream;
-		connection->incomingRequest->responseStream = NULL;
 	}
 
 	delete connection->incomingRequest;
@@ -258,24 +274,40 @@ int HttpConnection::staticOnHeadersComplete(http_parser* parser)
 	 * chunked' headers that indicate the presence of a body.
 	 *
 	 * Returning `2` from on_headers_complete will tell parser that it should not
-	 * expect neither a body nor any futher responses on this connection. This is
+	 * expect neither a body nor any further responses on this connection. This is
 	 * useful for handling responses to a CONNECT request which may not contain
 	 * `Upgrade` or `Connection: upgrade` headers.
 	 */
 
-	connection->code = parser->status_code;
 	if(connection->incomingRequest == NULL) {
 		// nothing to process right now...
 		return 1;
 	}
 
+	connection->response.code = parser->status_code;
+
+	if(connection->incomingRequest->auth != NULL) {
+		connection->incomingRequest->auth->setResponse(connection->getResponse());
+	}
+
 	int error = 0;
 	if(connection->incomingRequest->headersCompletedDelegate) {
-		error = connection->incomingRequest->headersCompletedDelegate(*connection, connection->responseHeaders);
+		error = connection->incomingRequest->headersCompletedDelegate(*connection, connection->response);
 	}
 
 	if(!error && connection->incomingRequest->method == HTTP_HEAD) {
 		error = 1;
+	}
+
+	if(!error) {
+		// set the response stream
+		if(connection->incomingRequest->responseStream != NULL) {
+			connection->response.stream = connection->incomingRequest->responseStream;
+			connection->incomingRequest->responseStream = NULL; // the response object will release that stream
+		}
+		else {
+			connection->response.stream = new LimitedMemoryStream(NETWORK_SEND_BUFFER_SIZE);
+		}
 	}
 
 	return error;
@@ -316,10 +348,10 @@ int HttpConnection::staticOnHeaderValue(http_parser *parser, const char *at, siz
 
 	if(!connection->lastWasValue) {
 		connection->currentField = connection->lastData;
-		connection->responseHeaders[connection->currentField] = "";
+		connection->response.headers[connection->currentField] = "";
 		connection->lastWasValue = true;
 	}
-	connection->responseHeaders[connection->currentField] += String(at, length);
+	connection->response.headers[connection->currentField] += String(at, length);
 
 	return 0;
 }
@@ -336,15 +368,12 @@ int HttpConnection::staticOnBody(http_parser *parser, const char *at, size_t len
 		return connection->incomingRequest->requestBodyDelegate(*connection, at, length);
 	}
 
-	if (connection->mode == eHCM_String) {
-		connection->responseStringData += String(at, length);
-		return 0;
-	}
-
-	if(connection->incomingRequest->responseStream != NULL) {
-		int res = connection->incomingRequest->responseStream->write((const uint8_t *)at, length);
+	if(connection->response.stream != NULL) {
+		int res = connection->response.stream->write((const uint8_t *)at, length);
 		if (res != length) {
-			connection->incomingRequest->responseStream->close();
+            		// unable to write the requested bytes - stop here...
+			delete connection->response.stream;
+			connection->response.stream = NULL;
 			return 1;
 		}
 	}
@@ -368,88 +397,103 @@ int HttpConnection::staticOnChunkComplete(http_parser* parser)
 
 void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-
 	debug_d("HttpConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue->count());
 
-	do {
-		if(state == eHCS_Sent) {
-			state = eHCS_Ready;
-		}
-
-		if(state == eHCS_Ready) {
-			HttpRequest* request = waitingQueue->peek();
-			if(request == NULL) {
-				debug_d("Nothing in the waiting queue");
-				outgoingRequest = NULL;
-				break;
-			}
-
-			// if the executionQueue is not empty then we have to check if we can pipeline that request
-			if(executionQueue.count()) {
-				if(!(request->method == HTTP_GET || request->method == HTTP_HEAD)) {
-					// if the current request cannot be pipelined -> break;
-					break;
-				}
-
-				// if we have previous request
-				if(outgoingRequest != NULL) {
-					if(!(outgoingRequest->method == HTTP_GET || outgoingRequest->method == HTTP_HEAD)) {
-						// the outgoing request does not allow pipelining
-						break;
-					}
-				}
-			} // executionQueue.count()
-
-			if(!executionQueue.enqueue(request)) {
-				debug_e("The working queue is full at the moment");
-				break;
-			}
-
-			waitingQueue->dequeue();
-
-			outgoingRequest = request;
-			state = eHCS_SendingHeaders;
-			sendRequestHeaders(request);
-
+REENTER:
+	switch(state) {
+	case eHCS_Ready: {
+		HttpRequest* request = waitingQueue->peek();
+		if(request == NULL) {
+			debug_d("Nothing in the waiting queue");
+			outgoingRequest = NULL;
 			break;
 		}
 
-		if(state >= eHCS_StartSending && state < eHCS_Sent) {
-			if(state == eHCS_SendingHeaders) {
-				if(stream != NULL && !stream->isFinished()) {
-						break;
+		// if the executionQueue is not empty then we have to check if we can pipeline that request
+		if(executionQueue.count()) {
+			if(!(request->method == HTTP_GET || request->method == HTTP_HEAD)) {
+				// if the current request cannot be pipelined -> break;
+				break;
+			}
+
+			// if we have previous request
+			if(outgoingRequest != NULL) {
+				if(!(outgoingRequest->method == HTTP_GET || outgoingRequest->method == HTTP_HEAD)) {
+					// the outgoing request does not allow pipelining
+					break;
 				}
-
-				state = eHCS_StartBody;
 			}
+		} // executionQueue.count()
 
-			if(sendRequestBody(outgoingRequest)) {
-				state = eHCS_Sent;
-				delete stream;
-				stream = NULL;
-				continue;
-			}
+		if(!executionQueue.enqueue(request)) {
+			debug_e("The working queue is full at the moment");
+			break;
 		}
 
-		break;
+		waitingQueue->dequeue();
 
-	} while(true);
+		outgoingRequest = request;
+		sendRequestHeaders(request);
+
+		state = eHCS_SendingHeaders;
+	}
+
+	case eHCS_SendingHeaders: {
+		if(stream != NULL && !stream->isFinished()) {
+			break;
+		}
+
+		state = eHCS_StartBody;
+	}
+
+	case eHCS_StartBody:
+	case eHCS_SendingBody: {
+		if(sendRequestBody(outgoingRequest)) {
+			state = eHCS_Ready;
+			delete stream;
+			stream = NULL;
+			goto REENTER;
+		}
+	}
+	} // switch(state)
 
 	TcpClient::onReadyToSendData(sourceEvent);
 }
 
 void HttpConnection::sendRequestHeaders(HttpRequest* request)
 {
-	sendString(http_method_str(request->method) + String(" ") + request->uri.getPathWithQuery() + " HTTP/1.1\r\nHost: " + request->uri.Host + "\r\n");
+	sendString(http_method_str(request->method) + String(" ") + request->uri.getPathWithQuery() + " HTTP/1.1\r\n");
 
-	// TODO: represent the post params as stream ...
-
-	// Adjust the content-length
-	request->headers["Content-Length"] = "0";
-	if(request->rawDataLength) {
-		request->headers["Content-Length"] = String(request->rawDataLength);
+	if(!request->headers.contains("Host")) {
+		request->headers["Host"] = request->uri.Host;
 	}
-	else if (request->stream != NULL) {
+
+	request->headers["Content-Length"] = "0";
+	if (request->files.count()) {
+		MultipartStream* mStream = new MultipartStream(
+				HttpPartProducerDelegate(&HttpConnection::multipartProducer,
+						this));
+		request->headers["Content-Type"] = ContentType::toString(
+				MIME_FORM_MULTIPART) + String("; boundary=")
+				+ mStream->getBoundary();
+		if (request->stream) {
+			debug_e("HttpConnection: existing stream is discarded due to POST params");
+			delete request->stream;
+		}
+		request->stream = mStream;
+	} else if (request->postParams.count()) {
+		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(
+				request->postParams);
+		request->headers["Content-Type"] = ContentType::toString(
+				MIME_FORM_URL_ENCODED);
+		if (request->stream) {
+			debug_e("HttpConnection: existing stream is discarded due to POST params");
+			delete request->stream;
+		}
+		request->stream = uStream;
+	} /* if (request->postParams.count()) */
+
+	if(request->stream != NULL) {
 		if(request->stream->available() > -1) {
 			request->headers["Content-Length"] = String(request->stream->available());
 		}
@@ -462,12 +506,9 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 		request->headers["Transfer-Encoding"] = "chunked";
 	}
 
-	if(request->postParams.count() && !request->headers.contains("Content-Type")) {
-		request->headers["Content-Type"] = ContentType::toString(MIME_FORM_URL_ENCODED);
-	}
-
 	for (int i = 0; i < request->headers.count(); i++)
 	{
+		// TODO: add here name and/or value escaping.
 		String write = request->headers.keyAt(i) + ": " + request->headers.valueAt(i) + "\r\n";
 		sendString(write.c_str());
 	}
@@ -478,26 +519,6 @@ bool HttpConnection::sendRequestBody(HttpRequest* request)
 {
 	if(state == eHCS_StartBody) {
 		state = eHCS_SendingBody;
-		// if there is input raw data -> send it
-		if(request->rawDataLength > 0) {
-			TcpClient::send((const char*)request->rawData, (uint16_t)request->rawDataLength);
-			request->rawDataLength = 0;
-
-			return false;
-		}
-
-#if 0
-		// Post Params should be also stream...
-		if (request->postParams.count())  {
-			for(int i = 0; i < request->postParams.count(); i++) {
-				// TODO: prevent memory fragmentation ...
-				char *dest = uri_escape(NULL, 0, request->postParams.valueAt(i).c_str(), request->postParams.valueAt(i).length());
-				String write = request->postParams.keyAt(i) + "=" + String(dest) + "&";
-				sendString(write.c_str());
-				free(dest);
-			}
-		}
-#endif
 
 		if(request->stream == NULL) {
 			return true;
@@ -505,7 +526,7 @@ bool HttpConnection::sendRequestBody(HttpRequest* request)
 
 		delete stream;
 		if(request->headers["Transfer-Encoding"] == "chunked") {
-			stream = new HttpChunkedStream(request->stream);
+			stream = new ChunkedStream(request->stream);
 		}
 		else {
 			stream = request->stream; // avoid intermediate buffers
@@ -533,25 +554,7 @@ HttpRequest* HttpConnection::getRequest()
 
 HttpResponse* HttpConnection::getResponse()
 {
-	HttpResponse* response = new HttpResponse();
-	response->code = code;
-	response->headers = responseHeaders;
-// TODO: fix this...
-//	if(currentRequest) {
-//		response->stream = currentRequest->outputStream;
-//	}
-
-	if(responseStringData.length()) {
-		if(response->stream != NULL) {
-			delete response->stream;
-			response->stream = NULL;
-		}
-
-		MemoryDataStream* memory = new MemoryDataStream();
-		memory->write((uint8_t *)responseStringData.c_str(), responseStringData.length());
-		response->stream = memory;
-	}
-	return response;
+	return &response;
 }
 
 // end of public methods for HttpConnection
@@ -601,10 +604,7 @@ void HttpConnection::onError(err_t err)
 
 void HttpConnection::cleanup()
 {
-	// TODO: clean the current request
 	reset();
-
-	// TODO: clean the current response
 
 	// if there are requests in the executionQueue -> move them back to the waiting queue
 	for(int i=0; i < executionQueue.count(); i++) {

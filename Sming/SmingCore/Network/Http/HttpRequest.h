@@ -18,13 +18,13 @@
 #include "HttpRequestAuth.h"
 #endif
 #include "../TcpConnection.h"
-#include "../../OutputStream.h"
+#include "Data/Stream/DataSourceStream.h"
 
 class HttpClient;
 class HttpServerConnection;
 class HttpConnection;
 
-typedef Delegate<int(HttpConnection& client, HttpHeaders& headers)> RequestHeadersCompletedDelegate;
+typedef Delegate<int(HttpConnection& client, HttpResponse& response)> RequestHeadersCompletedDelegate;
 typedef Delegate<int(HttpConnection& client, const char *at, size_t length)> RequestBodyDelegate;
 typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedDelegate;
 
@@ -52,6 +52,14 @@ public:
 	HttpRequest* setPostParameters(const HttpParams& params);
 	HttpRequest* setPostParameter(const String& name, const String& value);
 
+	/**
+	 * @brief Sets a file to be sent
+	 * @param const String& name the name of the element in the form
+	 * @param FileStream* stream - pointer to the file stream
+	 *
+	 * @return HttpRequest*
+	 */
+	HttpRequest* setFile(const String& name, FileStream* stream);
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	// Authentication adapters set here
@@ -79,9 +87,35 @@ public:
 
 	/**
 	 * @brief Returns pointer to the current body stream
-	 * @retval IDataSourceStream*
+	 * @retval ReadWriteStream*
 	 */
-	IDataSourceStream* getBodyStream();
+	ReadWriteStream* getBodyStream();
+
+	HttpRequest* setBody(const String& body);
+	HttpRequest* setBody(ReadWriteStream *stream);
+	HttpRequest* setBody(uint8_t *rawData, size_t length);
+
+	/**
+	 * @brief Instead of storing the response body we can set a stream that will take care to process it
+	 * @param ReadWriteStream *stream
+	 *
+	 * @retval HttpRequest*
+	 */
+	HttpRequest* setResponseStream(ReadWriteStream *stream);
+
+	/**
+	 * @brief Get access to the currently set response stream.
+	 */
+	ReadWriteStream* getResponseStream()
+	{
+		return responseStream;
+	}
+
+	HttpRequest* onHeadersComplete(RequestHeadersCompletedDelegate delegateFunction);
+	HttpRequest* onBody(RequestBodyDelegate delegateFunction);
+	HttpRequest* onRequestComplete(RequestCompletedDelegate delegateFunction);
+
+	void reset();
 
 #ifdef ENABLE_SSL
  	HttpRequest* setSslOptions(uint32_t sslOptions);
@@ -103,20 +137,8 @@ public:
 	 *
 	 * @return HttpRequest pointer
 	 */
- 	HttpRequest* setSslClientKeyCert(const SSLKeyCertPair& clientKeyCert);
+ 	HttpRequest* setSslKeyCert(const SSLKeyCertPair& keyCertPair);
 #endif
-
-	HttpRequest* setBody(const String& body);
-	HttpRequest* setBody(ReadWriteStream *stream);
-	HttpRequest* setBody(uint8_t *rawData, size_t length);
-
-	HttpRequest* setResponseStream(IOutputStream *stream);
-
-	HttpRequest* onHeadersComplete(RequestHeadersCompletedDelegate delegateFunction);
-	HttpRequest* onBody(RequestBodyDelegate delegateFunction);
-	HttpRequest* onRequestComplete(RequestCompletedDelegate delegateFunction);
-
-	void reset();
 
 #ifndef SMING_RELEASE
 	/**
@@ -130,7 +152,6 @@ public:
 	URL uri;
 	HttpMethod method = HTTP_GET;
 	HttpHeaders headers;
-
 	HttpParams postParams;
 
 	int retries = 0; // how many times the request should be send again...
@@ -142,11 +163,8 @@ protected:
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
 
-	uint8_t *rawData = NULL;
-	size_t rawDataLength = 0;
 	ReadWriteStream *stream = NULL;
-
-	IOutputStream *responseStream = NULL;
+	ReadWriteStream *responseStream = NULL;
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	AuthAdapter *auth = NULL;
@@ -155,10 +173,12 @@ protected:
 #ifdef ENABLE_SSL
 	uint32_t sslOptions = 0;
 	SSLFingerprints sslFingerprint;
-	SSLKeyCertPair sslClientKeyCert;
+	SSLKeyCertPair  sslKeyCertPair;
 #endif
 
 private:
+	HashMap<String, FileStream*> files;
+
 	HttpParams* queryParams = NULL; // << deprecated
 };
 

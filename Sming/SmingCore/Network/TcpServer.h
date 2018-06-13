@@ -38,8 +38,17 @@ public:
 #ifdef ENABLE_SSL
 	/**
 	 * @brief Adds SSL support and specifies the server certificate and private key.
+	 * @deprecated: Use setSslKeyCert instead
 	 */
-	void setServerKeyCert(SSLKeyCertPair serverKeyCert);
+	void setServerKeyCert(SSLKeyCertPair serverKeyCert)
+	{
+		setSslKeyCert(serverKeyCert);
+	}
+
+	/**
+	 * @brief Adds SSL support and specifies the server certificate and private key.
+	 */
+	using TcpConnection::setSslKeyCert;
 #endif
 
 protected:

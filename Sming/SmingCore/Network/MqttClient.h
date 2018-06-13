@@ -21,6 +21,7 @@
 #include "../../Wiring/WString.h"
 #include "../../Wiring/WHashMap.h"
 #include "../../Services/libemqtt/libemqtt.h"
+#include "../Network/URL.h"
 
 //typedef void (*MqttStringSubscriptionCallback)(String topic, String message);
 typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
@@ -32,16 +33,40 @@ class URL;
 class MqttClient: protected TcpClient
 {
 public:
+	MqttClient(bool autoDestruct = false);
+
+	/** @brief  Construct an MQTT client 
+	*  @deprecated Use instead the empty contructor
+	*/
 	MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback = NULL);
+	/** @brief  Construct an MQTT client
+	*  @deprecated Use instead the empty contructor
+	*/
 	MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback = NULL);
 	virtual ~MqttClient();
 
+	/** @brief  Provide a funcion to be called when a message is received from the broker
+	*/
+	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = NULL);
+	
 	void setKeepAlive(int seconds);			//send to broker
 	void setPingRepeatTime(int seconds);            //used by client
 	// Sets Last Will and Testament
 	bool setWill(const String& topic, const String& message, int QoS, bool retained = false);
 
+	/** @brief  Connect to a MQTT server
+	*  @param  url, in the form "mttqs://user:password@server:port"
+	*  @param  client name
+	*/
+	bool connect(const URL& url, const String& uniqueClientName, uint32_t sslOptions = 0);
+
+	/** @brief  connect
+	*  @deprecated Use connect(const String& url, const String& uniqueClientName) instead
+	*/
 	bool connect(const String& clientName, boolean useSsl = false, uint32_t sslOptions = 0);
+	/** @brief  connect
+	*  @deprecated Use connect(const String& url, const String& uniqueClientName) instead
+	*/
 	bool connect(const String& clientName,const String& username, const String& password, boolean useSsl = false, uint32_t sslOptions = 0);
 
 	using TcpClient::setCompleteDelegate;
@@ -57,10 +82,10 @@ public:
 
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
-	using TcpClient::setSslFingerprint;
+	using TcpClient::addSslValidator;
 	using TcpClient::pinCertificate;
-	using TcpClient::setSslClientKeyCert;
-	using TcpClient::freeSslClientKeyCert;
+	using TcpClient::setSslKeyCert;
+	using TcpClient::freeSslKeyCert;
 	using TcpClient::getSsl;
 #endif
 
@@ -71,18 +96,18 @@ protected:
 	static int staticSendPacket(void* userInfo, const void* buf, unsigned int count);
 
 private:
-	String server;
-	IPAddress serverIp;
-	int port;
+	bool privateConnect(const String& clientName, const String& username, const String& password, boolean useSsl = false, uint32_t sslOptions = 0);
+
+	URL				url;
 	mqtt_broker_handle_t broker;
-	int waitingSize;
-	uint8_t buffer[MQTT_MAX_BUFFER_SIZE + 1];
-	uint8_t *current;
-	int posHeader;
+	int				waitingSize;
+	uint8_t			buffer[MQTT_MAX_BUFFER_SIZE + 1];
+	uint8_t *		current;
+	int				posHeader;
 	MqttStringSubscriptionCallback callback;
-	int keepAlive = 60;
-	int PingRepeatTime = 20;
-	unsigned long lastMessage = 0;
+	int				keepAlive = 60;
+	int				pingRepeatTime = 20;
+	unsigned long	lastMessage = 0;
 	HashMap<uint16_t, MqttMessageDeliveredCallback> onDeliveryQueue;
 };
 
