@@ -1,8 +1,13 @@
 var searchData=
 [
   ['magic',['magic',['../group__rtc.html#gaf1d6f643e40e285e2bee5e8007c93d84',1,'RtcData']]],
+  ['magiquest',['magiquest',['../unionmagiquest.html',1,'']]],
+  ['magnetic',['magnetic',['../structsensors__event__t.html#aa634d41a024e1cacdceecf85ec326698',1,'sensors_event_t']]],
+  ['mailmessage',['MailMessage',['../classMailMessage.html',1,'']]],
+  ['match_5fresult_5ft',['match_result_t',['../structmatch__result__t.html',1,'']]],
   ['max_5fhw_5ftimer_5finterval_5fus',['MAX_HW_TIMER_INTERVAL_US',['../group__hwtimer.html#ga27d82f0e0a134a2cba339abb7a552e9e',1,'HardwareTimer.h']]],
   ['max_5fsensors',['MAX_SENSORS',['../group__DS18S20.html#gaa3d1fc2927eec213e6b5f9e854c392d2',1,'ds18s20.h']]],
+  ['max_5fvalue',['max_value',['../structsensor__t.html#a1a17359f1080eb169a452656f7dec1ee',1,'sensor_t']]],
   ['mcp',['MCP',['../classMCP.html',1,'']]],
   ['mcp23017',['MCP23017',['../classMCP23017.html',1,'']]],
   ['measurestatus',['MeasureStatus',['../classDS18S20.html#afef7001011642f7630cd4e4da458be7c',1,'DS18S20']]],
@@ -14,7 +19,9 @@ var searchData=
   ['mifare_5fkey',['MIFARE_Key',['../structMFRC522_1_1MIFARE__Key.html',1,'MFRC522']]],
   ['millis',['millis',['../group__timedelay.html#gad830491fbafb87ec7f7de280a58b52bf',1,'Clock.h']]],
   ['milliseconds',['Milliseconds',['../classDateTime.html#a52885b8a894ba0dddabc80bddad467fd',1,'DateTime']]],
+  ['min_5fdelay',['min_delay',['../structsensor__t.html#a1cd271377ff25ec9ca54886f876c87ec',1,'sensor_t']]],
   ['min_5fhw_5ftimer_5finterval_5fus',['MIN_HW_TIMER_INTERVAL_US',['../group__hwtimer.html#ga953781ad7a98d0d11849d8793839dbe2',1,'HardwareTimer.h']]],
+  ['min_5fvalue',['min_value',['../structsensor__t.html#a4556ed82a0389a7f6af25a6fd0ee1431',1,'sensor_t']]],
   ['minute',['Minute',['../classDateTime.html#a2281ee834b6d9be9fa4c7bc4046394c3',1,'DateTime']]],
   ['mirfhardwarespi85driver',['MirfHardwareSpi85Driver',['../classMirfHardwareSpi85Driver.html',1,'']]],
   ['mirfhardwarespidriver',['MirfHardwareSpiDriver',['../classMirfHardwareSpiDriver.html',1,'']]],
@@ -24,5 +31,6 @@ var searchData=
   ['movecursorleft',['moveCursorLeft',['../classLCD.html#aad2abc99d1aca5403873579d9d72c2d4',1,'LCD']]],
   ['movecursorright',['moveCursorRight',['../classLCD.html#a09eec0c712e54b066f5894635c1fe75c',1,'LCD']]],
   ['mqtt_5fbroker_5fhandle_5ft',['mqtt_broker_handle_t',['../structmqtt__broker__handle__t.html',1,'']]],
-  ['mqttclient',['MqttClient',['../classMqttClient.html',1,'MqttClient'],['../group__mqttclient.html',1,'(Global Namespace)']]]
+  ['mqttclient',['MqttClient',['../classMqttClient.html',1,'MqttClient'],['../classMqttClient.html#ae81fd0caf267d95579f2b17689a94b9d',1,'MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback=NULL)'],['../classMqttClient.html#a96ab456e6b4d872eddf26e7e454dd2de',1,'MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback=NULL)'],['../group__mqttclient.html',1,'(Global Namespace)']]],
+  ['multipartstream',['MultipartStream',['../classMultipartStream.html',1,'']]]
 ];

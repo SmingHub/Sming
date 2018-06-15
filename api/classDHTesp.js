@@ -1,0 +1,45 @@
+var classDHTesp =
+[
+    [ "DHT_ERROR_t", "classDHTesp.html#aab41936659d3fd561620760d39298aab", [
+      [ "ERROR_NONE", "classDHTesp.html#aab41936659d3fd561620760d39298aabae3d7f913c04c330f2c89a294d284c453", null ],
+      [ "ERROR_TIMEOUT", "classDHTesp.html#aab41936659d3fd561620760d39298aaba2e07b8432499d76861af427074fff86c", null ],
+      [ "ERROR_CHECKSUM", "classDHTesp.html#aab41936659d3fd561620760d39298aaba90992dc0c0b63a7e54c6bdb2b97b6561", null ]
+    ] ],
+    [ "DHT_MODEL_t", "classDHTesp.html#a109be729eca885bac2626d1a1ab5bb40", [
+      [ "AUTO_DETECT", "classDHTesp.html#a109be729eca885bac2626d1a1ab5bb40a76570b499903a3e176d935272013c6e4", null ],
+      [ "DHT11", "classDHTesp.html#a109be729eca885bac2626d1a1ab5bb40ad5235d89c42478a54c781dbefa68f980", null ],
+      [ "DHT22", "classDHTesp.html#a109be729eca885bac2626d1a1ab5bb40a47dc5b9675f21d3124f15723cea0530d", null ],
+      [ "AM2302", "classDHTesp.html#a109be729eca885bac2626d1a1ab5bb40ade8b30cff12dfd492037548ed0c5d91e", null ],
+      [ "RHT03", "classDHTesp.html#a109be729eca885bac2626d1a1ab5bb40aeeb405ede0ec494069106e369ec98fa4", null ]
+    ] ],
+    [ "computeDewPoint", "classDHTesp.html#ae78846752074ddd04898d8f93725be7b", null ],
+    [ "computeHeatIndex", "classDHTesp.html#a2c428ec96966d60aaed890f6cb013aa3", null ],
+    [ "computePerception", "classDHTesp.html#aab0a5103ee181667094e8264d3c65cc4", null ],
+    [ "getComfortProfile", "classDHTesp.html#a1ab4a584e89fbdcd77d4b722487147e5", null ],
+    [ "getComfortRatio", "classDHTesp.html#a7083fc6603fb3a69590446dc00df3848", null ],
+    [ "getHumidity", "classDHTesp.html#ae7b37fb1ccc06089c188cd182ff7acde", null ],
+    [ "getLowerBoundHumidity", "classDHTesp.html#a3d965325dee21f587121485fd0a8bcb2", null ],
+    [ "getLowerBoundTemperature", "classDHTesp.html#a5ed6832b3624e6340443da5b4afb1c56", null ],
+    [ "getMinimumSamplingPeriod", "classDHTesp.html#ae39c63b862e2f494dc88091d504ba4ac", null ],
+    [ "getModel", "classDHTesp.html#a73e97943aeca8ed686f6e05fe1851142", null ],
+    [ "getNumberOfDecimalsHumidity", "classDHTesp.html#a397c53c60256666839197da8977d5013", null ],
+    [ "getNumberOfDecimalsTemperature", "classDHTesp.html#aaa0c63ceb94f845beeaf2bad69712877", null ],
+    [ "getStatus", "classDHTesp.html#aead0c772b18f7d0cd385ca82d93d8f04", null ],
+    [ "getStatusString", "classDHTesp.html#af064c08d924be13970ceb6686666a7b6", null ],
+    [ "getTempAndHumidity", "classDHTesp.html#a3f7df92095d7f1fb106c29487a63e150", null ],
+    [ "getTemperature", "classDHTesp.html#a436857fb0aefe2f68c3b1ecc8c4fe4ee", null ],
+    [ "getUpperBoundHumidity", "classDHTesp.html#a4896381ca4cf711b63f93723936284ff", null ],
+    [ "getUpperBoundTemperature", "classDHTesp.html#a50c26fba470faef3fc4a710253885e0a", null ],
+    [ "isTooCold", "classDHTesp.html#aaa6df885ae935127379a0cc20ee89e48", null ],
+    [ "isTooDry", "classDHTesp.html#a77217788e9a70b6f5fd5df82518e4950", null ],
+    [ "isTooHot", "classDHTesp.html#a11b6ae28e373d3518029c1697a87c9d8", null ],
+    [ "isTooHumid", "classDHTesp.html#afaecf5eac705b198fa74038f35bf45e0", null ],
+    [ "readSensor", "classDHTesp.html#ab28978d2b246937461b4013456e3c107", null ],
+    [ "resetTimer", "classDHTesp.html#a29e83b0ed4fe37288c8492d10c506a78", null ],
+    [ "setComfortProfile", "classDHTesp.html#a76b176fcdeb3468ca20ef80bc1ecfc5b", null ],
+    [ "setup", "classDHTesp.html#ad42320307c600740cac784ae5dc4fa49", null ],
+    [ "humidity", "classDHTesp.html#ae7c080a27325f560d48337e14aff2e74", null ],
+    [ "pin", "classDHTesp.html#a3d96d96871489c3f7d8a62c4f2d5c862", null ],
+    [ "temperature", "classDHTesp.html#af5c1ddd0c7907e1414ffb922c63b3d1c", null ],
+    [ "values", "classDHTesp.html#a1b1c02e7c2d348f591ebcb7553f9ea63", null ]
+];

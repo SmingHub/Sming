@@ -5,7 +5,7 @@ var classFTPServer =
     [ "addUser", "classFTPServer.html#adddb840204f296775d059075c440d9f9", null ],
     [ "checkUser", "classFTPServer.html#a049c182bbc978fb1fb68b50073791e33", null ],
     [ "close", "classFTPServer.html#ab10f02f82a514714b7585e0dd00a8d7b", null ],
-    [ "connect", "classFTPServer.html#a76541f4efb80f01242580fa729a0fb86", null ],
+    [ "connect", "classFTPServer.html#ae5d59b160b1c0decdf21ea34858f5729", null ],
     [ "connect", "classFTPServer.html#a9c91997d5656394ae74d5dbf105d6006", null ],
     [ "createClient", "classFTPServer.html#ac98211a0c263950f623710f85d599936", null ],
     [ "flush", "classFTPServer.html#aaaa45b0c9a0b26df7f8ca79697785114", null ],

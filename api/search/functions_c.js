@@ -1,5 +1,26 @@
 var searchData=
 [
+  ['nexbutton',['NexButton',['../classNexButton.html#a57d346614059bac40aff955a0dc9d76a',1,'NexButton']]],
+  ['nexcheckbox',['NexCheckbox',['../classNexCheckbox.html#a8aa4ea60796bdce0de0de3dd675ef56a',1,'NexCheckbox']]],
+  ['nexcrop',['NexCrop',['../classNexCrop.html#a1a3a195d3da05cb832f91a2ef43f27d3',1,'NexCrop']]],
+  ['nexdsbutton',['NexDSButton',['../classNexDSButton.html#a226edd2467f2fdf54848f5235b808e2b',1,'NexDSButton']]],
+  ['nexgauge',['NexGauge',['../classNexGauge.html#ac79040067d42f7f1ba16cc4a1dfd8b9b',1,'NexGauge']]],
+  ['nexhotspot',['NexHotspot',['../classNexHotspot.html#ad2408e74f5445941897702c4c78fddbf',1,'NexHotspot']]],
+  ['nexinit',['nexInit',['../group__CoreAPI.html#gab09ddba6b72334d30ae091a7b038d790',1,'NexHardware.h']]],
+  ['nexloop',['nexLoop',['../group__CoreAPI.html#ga91c549e696b0ca035cf18901e6a50d5a',1,'NexHardware.h']]],
+  ['nexnumber',['NexNumber',['../classNexNumber.html#a59c2ed35b787f498e7fbc54eff71d00b',1,'NexNumber']]],
+  ['nexobject',['NexObject',['../classNexObject.html#ab15aadb9c91d9690786d8d25d12d94e1',1,'NexObject']]],
+  ['nexpage',['NexPage',['../classNexPage.html#a8608a0400bd8e27466ca4bbc05b5c2a0',1,'NexPage']]],
+  ['nexpicture',['NexPicture',['../classNexPicture.html#aa6096defacd933e8bff5283c83200459',1,'NexPicture']]],
+  ['nexprogressbar',['NexProgressBar',['../classNexProgressBar.html#a61f76f0c855c7839630dbc930e3401d8',1,'NexProgressBar']]],
+  ['nexradio',['NexRadio',['../classNexRadio.html#a52264cd95aaa3ba7b4b07bdf64bb7a65',1,'NexRadio']]],
+  ['nexscrolltext',['NexScrolltext',['../classNexScrolltext.html#a212aa1505ed7c0bfdb47de3e6e2045fb',1,'NexScrolltext']]],
+  ['nexslider',['NexSlider',['../classNexSlider.html#a00c5678209c936e9a57c14b6e2384774',1,'NexSlider']]],
+  ['nextext',['NexText',['../classNexText.html#a38b4dd752d39bfda4ef7642b43ded91a',1,'NexText']]],
+  ['nextimer',['NexTimer',['../classNexTimer.html#a5cb6cdcf0d7e46723364d486d4dcd650',1,'NexTimer']]],
+  ['nextouch',['NexTouch',['../classNexTouch.html#a9e028e45e0d2d2cc39c8bf8d03dbb887',1,'NexTouch']]],
+  ['nexvariable',['NexVariable',['../classNexVariable.html#a7d36d19e14c991872fb1547f3ced09b2',1,'NexVariable']]],
+  ['nexwaveform',['NexWaveform',['../classNexWaveform.html#a4f18ca5050823e874d526141c8595514',1,'NexWaveform']]],
   ['noanalogwrite',['noAnalogWrite',['../classDriverPWM.html#a202cd541c9f1b791129e63f01c9a1c2b',1,'DriverPWM']]],
   ['noautoscroll',['noAutoscroll',['../classLCD.html#a96035dde40efbf73390e00b5beb00231',1,'LCD']]],
   ['nobacklight',['noBacklight',['../classLCD.html#a2a331b4e142734411b2f1cfaffe7a488',1,'LCD']]],
@@ -10,5 +31,6 @@ var searchData=
   ['nopullup',['noPullup',['../group__gpio.html#gae82a89bb9594589526f936248949ca6a',1,'Digital.h']]],
   ['notfound',['notFound',['../classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b',1,'HttpResponse']]],
   ['now',['now',['../classSystemClockClass.html#a999aecdc02edcd5ebfd7ca772f2c246a',1,'SystemClockClass']]],
-  ['ntpclient',['NtpClient',['../classNtpClient.html#a9b09163e448b31fed13dde7f4c710fd7',1,'NtpClient::NtpClient()'],['../classNtpClient.html#a62f824bfe7d1aa2f85551bbd3230da0c',1,'NtpClient::NtpClient(NtpTimeResultDelegate onTimeReceivedCb)'],['../classNtpClient.html#a5377045b29102ed0ca185d8a644f6945',1,'NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb=nullptr)']]]
+  ['ntpclient',['NtpClient',['../classNtpClient.html#a9b09163e448b31fed13dde7f4c710fd7',1,'NtpClient::NtpClient()'],['../classNtpClient.html#a62f824bfe7d1aa2f85551bbd3230da0c',1,'NtpClient::NtpClient(NtpTimeResultDelegate onTimeReceivedCb)'],['../classNtpClient.html#a5377045b29102ed0ca185d8a644f6945',1,'NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb=nullptr)']]],
+  ['numelements',['numElements',['../classRingBufCPP.html#abf97ef722ddba22ceccea2e0a7f7edb7',1,'RingBufCPP']]]
 ];

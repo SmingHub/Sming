@@ -7,6 +7,7 @@ var classIPAddress =
     [ "IPAddress", "classIPAddress.html#ab747742c0a428a369f6ab73b7d28c306", null ],
     [ "IPAddress", "classIPAddress.html#afb9b73e257da0169b7ffcb5d8122a9f7", null ],
     [ "isNull", "classIPAddress.html#a25dd61caa38bb38961f982406fddceea", null ],
+    [ "operator char *", "classIPAddress.html#a0add7d5bc230fb4178c26612b90f05ff", null ],
     [ "operator ip_addr", "classIPAddress.html#a5e05f9ca93074e4413225a70bda15174", null ],
     [ "operator ip_addr *", "classIPAddress.html#a99483365155bf097dd937594b372cf04", null ],
     [ "operator uint32_t", "classIPAddress.html#a90aebdb7f5f655fe3a5e3d8aa3bc3ac8", null ],

@@ -121,9 +121,9 @@ $(document).ready(function(){initNavTree('HttpCommon_8h_source.html','');});
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;../../Wiring/WString.h&quot;</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;../../Wiring/WHashMap.h&quot;</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;../../Delegate.h&quot;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;../../Wiring/FILO.h&quot;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;../WebConstants.h&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;../URL.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;../WebConstants.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;../URL.h&quot;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;../../Data/Structures.h&quot;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#ifndef HTTP_MAX_HEADER_SIZE</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define HTTP_MAX_HEADER_SIZE  (8*1024)</span></div>
@@ -136,56 +136,26 @@ $(document).ready(function(){initNavTree('HttpCommon_8h_source.html','');});
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &quot;../http-parser/http_parser.h&quot;</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keywordtype">int</span> rawSize&gt;</div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classSimpleConcurrentQueue.html">   40</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSimpleConcurrentQueue.html">SimpleConcurrentQueue</a>: <span class="keyword">public</span> <a class="code" href="classFIFO.html">FIFO</a>&lt;T, rawSize&gt; {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">virtual</span> <span class="keyword">const</span> T&amp; operator[](<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>)<span class="keyword"> const </span>{ }</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">virtual</span> T&amp; operator[](<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>) { }</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    T peek()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      <span class="keywordflow">if</span>(!<a class="code" href="classFIFO.html">FIFO&lt;T, rawSize&gt;::numberOfElements</a>) {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;          <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="classFIFO.html">FIFO&lt;T, rawSize&gt;::peek</a>();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    T dequeue()</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      <span class="keywordflow">if</span>(!<a class="code" href="classFIFO.html">FIFO&lt;T, rawSize&gt;::numberOfElements</a>) {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="classFIFO.html">FIFO&lt;T, rawSize&gt;::dequeue</a>();</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;};</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classHashMap.html">HashMap&lt;String, String&gt;</a> <a class="code" href="classHashMap.html">HttpParams</a>;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classHashMap.html">HashMap&lt;String, String&gt;</a> <a class="code" href="classHashMap.html">HttpHeaders</a>;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> http_method HttpMethod;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">enum</span> HttpConnectionState</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;{</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    eHCS_Ready = 0,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    eHCS_StartSending,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    eHCS_SendingHeaders,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    eHCS_StartBody,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    eHCS_SendingBody,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    eHCS_Sent</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_COMMON_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classHashMap_html"><div class="ttname"><a href="classHashMap.html">HashMap&lt; String, String &gt;</a></div></div>
-<div class="ttc" id="classSimpleConcurrentQueue_html"><div class="ttname"><a href="classSimpleConcurrentQueue.html">SimpleConcurrentQueue</a></div><div class="ttdef"><b>Definition:</b> HttpCommon.h:40</div></div>
-<div class="ttc" id="classFIFO_html"><div class="ttname"><a href="classFIFO.html">FIFO</a></div><div class="ttdef"><b>Definition:</b> FIFO.h:26</div></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> http_method HttpMethod;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">enum</span> HttpConnectionState</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    eHCS_Ready = 0,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    eHCS_StartSending,</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    eHCS_SendingHeaders,</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    eHCS_StartBody,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    eHCS_SendingBody,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    eHCS_Sent</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;};</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_COMMON_H_ */</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_2ed575006c7d0647b9e44f569fa9afde.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_17729ed7f3af1a7565eb1ef720d466c9.html">Network</a></li><li class="navelem"><a class="el" href="dir_40e77b1d51adef0a7c2ff503a16b6d23.html">Http</a></li><li class="navelem"><b>HttpCommon.h</b></li>
+    <li class="navelem"><a class="el" href="dir_b4c9897f718d9414148b24a4e5afb621.html">Sming</a></li><li class="navelem"><a class="el" href="dir_e684d698d8909caa82858f24d2993ae0.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_1080abda974dde0433d7a42c06142e84.html">Network</a></li><li class="navelem"><a class="el" href="dir_b63972468144936b896b0ff86b591c30.html">Http</a></li><li class="navelem"><b>HttpCommon.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

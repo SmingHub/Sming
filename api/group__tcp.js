@@ -7,7 +7,7 @@ var group__tcp =
       [ "TcpConnection", "classTcpConnection.html#a936b499d010ead10fdcf73aa4b50ad00", null ],
       [ "~TcpConnection", "classTcpConnection.html#a56efd5e26e0447b273e9d07dd899ad7b", null ],
       [ "close", "classTcpConnection.html#ab10f02f82a514714b7585e0dd00a8d7b", null ],
-      [ "connect", "classTcpConnection.html#a76541f4efb80f01242580fa729a0fb86", null ],
+      [ "connect", "classTcpConnection.html#ae5d59b160b1c0decdf21ea34858f5729", null ],
       [ "connect", "classTcpConnection.html#a9c91997d5656394ae74d5dbf105d6006", null ],
       [ "flush", "classTcpConnection.html#aaaa45b0c9a0b26df7f8ca79697785114", null ],
       [ "getAvailableWriteSize", "classTcpConnection.html#ab8d1467ac2d76882be7ec74f0aa0e1bf", null ],

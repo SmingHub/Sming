@@ -217,54 +217,58 @@ $(document).ready(function(){initNavTree('WConstants_8h_source.html','');});
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#define sq(x)                          ((x)*(x))</span></div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor"></span><span class="comment">//#define abs(x)                         ((x)&gt;0?(x):-(x))</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="preprocessor">#define min(a,b)                       ((a)&lt;(b)?(a):(b))</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define max(a,b)                       ((a)&gt;(b)?(a):(b))</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor"></span><span class="comment">//#define round(x)                       ((x)&gt;=0?(long)((x)+0.5):(long)((x)-0.5))</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="preprocessor">#define radians(deg)                   ((deg)*DEG_TO_RAD)</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define degrees(rad)                   ((rad)*RAD_TO_DEG)</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define constrain(amt,low,high)        ((amt)&lt;(low)?(low):((amt)&gt;(high)?(high):(amt)))</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="preprocessor">#define bit(x)                         (1UL&lt;&lt;(x))</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define setBits(x, y)                  ((x)|=(y))</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define clearBits(x, y)                ((x)&amp;=(~(y)))</span></div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="preprocessor"></span><span class="comment">//#define setBit(x, y)                   setBits((x), (bit((y))))</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="comment">//#define clearBit(x, y)                 clearBits((x), (bit((y))))</span></div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="preprocessor">#define bitsSet(x,y)                   (((x) &amp; (y)) == (y))</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define bitsClear(x,y)                 (((x) &amp; (y)) == 0)</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="preprocessor">#define bitRead(value, bit)            (((value) &gt;&gt; (bit)) &amp; 0x01)</span></div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define bitSet(value, bit)             ((value) |= (1UL &lt;&lt; (bit)))</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define bitClear(value, bit)           ((value) &amp;= ~(1UL &lt;&lt; (bit)))</span></div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="preprocessor">#define lowByte(x)                     ((uint8_t) ((x) &amp; 0x00ff))</span></div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define highByte(x)                    ((uint8_t) ((x)&gt;&gt;8))</span></div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="preprocessor">#define clockCyclesPerMicrosecond()    (F_CPU / 1000000L)</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define clockCyclesToMicroseconds(a)   ((a) / clockCyclesPerMicrosecond())</span></div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define microsecondsToClockCycles(a)   ((a) * clockCyclesPerMicrosecond())</span></div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="comment">/*************************************************************</span></div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="comment"> * Typedefs</span></div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="comment"> *************************************************************/</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="comment">//#ifndef min</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="comment">//#define min(a,b)                       ((a)&lt;(b)?(a):(b))</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="comment">//#endif</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="comment">//#ifndef max</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="comment">//#define max(a,b)                       ((a)&gt;(b)?(a):(b))</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment">//#endif</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment">//#define round(x)                       ((x)&gt;=0?(long)((x)+0.5):(long)((x)-0.5))</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="preprocessor">#define radians(deg)                   ((deg)*DEG_TO_RAD)</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define degrees(rad)                   ((rad)*RAD_TO_DEG)</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define constrain(amt,low,high)        ((amt)&lt;(low)?(low):((amt)&gt;(high)?(high):(amt)))</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="preprocessor">#define bit(x)                         (1UL&lt;&lt;(x))</span></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define setBits(x, y)                  ((x)|=(y))</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define clearBits(x, y)                ((x)&amp;=(~(y)))</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="preprocessor"></span><span class="comment">//#define setBit(x, y)                   setBits((x), (bit((y))))</span></div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="comment">//#define clearBit(x, y)                 clearBits((x), (bit((y))))</span></div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor">#define bitsSet(x,y)                   (((x) &amp; (y)) == (y))</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define bitsClear(x,y)                 (((x) &amp; (y)) == 0)</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="preprocessor">#define bitRead(value, bit)            (((value) &gt;&gt; (bit)) &amp; 0x01)</span></div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define bitSet(value, bit)             ((value) |= (1UL &lt;&lt; (bit)))</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define bitClear(value, bit)           ((value) &amp;= ~(1UL &lt;&lt; (bit)))</span></div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="preprocessor">#define lowByte(x)                     ((uint8_t) ((x) &amp; 0x00ff))</span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define highByte(x)                    ((uint8_t) ((x)&gt;&gt;8))</span></div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="preprocessor">#define clockCyclesPerMicrosecond()    (F_CPU / 1000000L)</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define clockCyclesToMicroseconds(a)   ((a) / clockCyclesPerMicrosecond())</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define microsecondsToClockCycles(a)   ((a) * clockCyclesPerMicrosecond())</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> word;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="keyword">typedef</span> uint8_t byte;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="keyword">typedef</span> uint8_t boolean;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="keyword">typedef</span> void (*voidFuncPtr)(void);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="preprocessor"></span><span class="comment">// WCONSTANTS_H</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="comment">/*************************************************************</span></div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="comment"> * Typedefs</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="comment"> *************************************************************/</span></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> word;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="keyword">typedef</span> uint8_t byte;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="keyword">typedef</span> uint8_t boolean;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="keyword">typedef</span> void (*voidFuncPtr)(void);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="preprocessor"></span><span class="comment">// WCONSTANTS_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_73afeb00da9632bf96a32a6314a2e287.html">Wiring</a></li><li class="navelem"><b>WConstants.h</b></li>
+    <li class="navelem"><a class="el" href="dir_b4c9897f718d9414148b24a4e5afb621.html">Sming</a></li><li class="navelem"><a class="el" href="dir_e87616088ccdf74e31587f14492808e2.html">Wiring</a></li><li class="navelem"><b>WConstants.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

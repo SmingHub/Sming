@@ -1,11 +1,12 @@
 var searchData=
 [
-  ['wdtclass',['WDTClass',['../classWDTClass.html',1,'']]],
-  ['websocketclient',['WebsocketClient',['../classWebsocketClient.html',1,'']]],
-  ['websocketconnection',['WebSocketConnection',['../classWebSocketConnection.html',1,'']]],
-  ['websocketframeclass',['WebsocketFrameClass',['../classWebsocketFrameClass.html',1,'']]],
-  ['websocketresource',['WebsocketResource',['../classWebsocketResource.html',1,'']]],
-  ['wifieventsclass',['WifiEventsClass',['../classWifiEventsClass.html',1,'']]],
-  ['wscommandhandlerresource',['WsCommandHandlerResource',['../classWsCommandHandlerResource.html',1,'']]],
-  ['wsframeinfo',['WsFrameInfo',['../structWsFrameInfo.html',1,'']]]
+  ['vector',['Vector',['../classVector.html',1,'']]],
+  ['vector_3c_20channelpwm_20_3e',['Vector&lt; ChannelPWM &gt;',['../classVector.html',1,'']]],
+  ['vector_3c_20delegate_20_3e',['Vector&lt; Delegate &gt;',['../classVector.html',1,'']]],
+  ['vector_3c_20httppartresult_20_3e',['Vector&lt; HttpPartResult &gt;',['../classVector.html',1,'']]],
+  ['vector_3c_20isystemreadyhandler_20_2a_20_3e',['Vector&lt; ISystemReadyHandler * &gt;',['../classVector.html',1,'']]],
+  ['vector_3c_20rboothttpupdateitem_20_3e',['Vector&lt; rBootHttpUpdateItem &gt;',['../classVector.html',1,'']]],
+  ['vector_3c_20servochannel_20_2a_20_3e',['Vector&lt; ServoChannel * &gt;',['../classVector.html',1,'']]],
+  ['vector_3c_20string_20_3e',['Vector&lt; String &gt;',['../classVector.html',1,'']]],
+  ['vector_3c_20tcpconnection_20_2a_20_3e',['Vector&lt; TcpConnection * &gt;',['../classVector.html',1,'']]]
 ];

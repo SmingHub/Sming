@@ -127,7 +127,7 @@ $(document).ready(function(){initNavTree('ArduCAMStream_8h_source.html','');});
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classArduCAMStream.html#ad8d52a89a9f1c99b650112d367ec2e5e">seek</a>(<span class="keywordtype">int</span> len);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a">isFinished</a>();</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> write(uint8_t charToWrite)</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classArduCAMStream.html#a46e38c3bc81f469493613a96719c5ffc">   27</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classArduCAMStream.html#a46e38c3bc81f469493613a96719c5ffc">write</a>(uint8_t charToWrite)</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    }</div>
@@ -138,7 +138,7 @@ $(document).ready(function(){initNavTree('ArduCAMStream_8h_source.html','');});
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    }</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">bool</span> dataReady();</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">size_t</span> available();</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classArduCAMStream.html#a8ea8284127bf1f5b9d50f51e74f3538e">available</a>();</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
@@ -151,22 +151,24 @@ $(document).ready(function(){initNavTree('ArduCAMStream_8h_source.html','');});
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;};</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SAMPLES_ARDUCAM_APP_ARDUCAMSTREAM_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classArduCAMStream_html_a46e38c3bc81f469493613a96719c5ffc"><div class="ttname"><a href="classArduCAMStream.html#a46e38c3bc81f469493613a96719c5ffc">ArduCAMStream::write</a></div><div class="ttdeci">virtual size_t write(uint8_t charToWrite)</div><div class="ttdoc">Writes a single character to output stream. </div><div class="ttdef"><b>Definition:</b> ArduCAMStream.h:27</div></div>
 <div class="ttc" id="classArduCAMStream_html"><div class="ttname"><a href="classArduCAMStream.html">ArduCAMStream</a></div><div class="ttdef"><b>Definition:</b> ArduCAMStream.h:16</div></div>
 <div class="ttc" id="classArduCAMStream_html_ab006d2e62a0e0165c12a3282e99174d1"><div class="ttname"><a href="classArduCAMStream.html#ab006d2e62a0e0165c12a3282e99174d1">ArduCAMStream::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType()</div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> ArduCAMStream.h:21</div></div>
 <div class="ttc" id="classArduCAMStream_html_a018355d634ecc3c886708add67c2b93a"><div class="ttname"><a href="classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a">ArduCAMStream::isFinished</a></div><div class="ttdeci">virtual bool isFinished()</div><div class="ttdoc">Check if stream is finished. </div></div>
+<div class="ttc" id="classArduCAMStream_html_a8ea8284127bf1f5b9d50f51e74f3538e"><div class="ttname"><a href="classArduCAMStream.html#a8ea8284127bf1f5b9d50f51e74f3538e">ArduCAMStream::available</a></div><div class="ttdeci">int available()</div><div class="ttdoc">Return the total length of the stream. </div></div>
 <div class="ttc" id="classArduCAMStream_html_ae07d3e1ea4008c0c5e447821bab25f6e"><div class="ttname"><a href="classArduCAMStream.html#ae07d3e1ea4008c0c5e447821bab25f6e">ArduCAMStream::write</a></div><div class="ttdeci">virtual size_t write(const uint8_t *buffer, size_t size)</div><div class="ttdoc">Write chars to stream. </div><div class="ttdef"><b>Definition:</b> ArduCAMStream.h:37</div></div>
 <div class="ttc" id="classArduCAMStream_html_ad8d52a89a9f1c99b650112d367ec2e5e"><div class="ttname"><a href="classArduCAMStream.html#ad8d52a89a9f1c99b650112d367ec2e5e">ArduCAMStream::seek</a></div><div class="ttdeci">virtual bool seek(int len)</div><div class="ttdoc">Move read cursor. </div></div>
-<div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:25</div></div>
+<div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:24</div></div>
 <div class="ttc" id="classArduCAMStream_html_a77a1101bf887eb69fb094b006f89affe"><div class="ttname"><a href="classArduCAMStream.html#a77a1101bf887eb69fb094b006f89affe">ArduCAMStream::readMemoryBlock</a></div><div class="ttdeci">virtual uint16_t readMemoryBlock(char *data, int bufSize)</div><div class="ttdoc">Read a block of memory. </div></div>
-<div class="ttc" id="group__constants_html_gga8a65141d9ea4bf9d2e2377ed6b888a1dac75241af05b527c65b9a6487c89d82e4"><div class="ttname"><a href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1dac75241af05b527c65b9a6487c89d82e4">eSST_User</a></div><div class="ttdoc">User defined data stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:31</div></div>
-<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:92</div></div>
+<div class="ttc" id="group__constants_html_gga8a65141d9ea4bf9d2e2377ed6b888a1dac75241af05b527c65b9a6487c89d82e4"><div class="ttname"><a href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1dac75241af05b527c65b9a6487c89d82e4">eSST_User</a></div><div class="ttdoc">User defined data stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:30</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:117</div></div>
 <div class="ttc" id="classHexDump_html"><div class="ttname"><a href="classHexDump.html">HexDump</a></div><div class="ttdef"><b>Definition:</b> HexDump.h:13</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_9d3bcd674006e3d0e58da84fe6b8dbbe.html">Libraries</a></li><li class="navelem"><a class="el" href="dir_b7019127cd1faa6ac03bda1d6d16c17f.html">ArduCAM</a></li><li class="navelem"><b>ArduCAMStream.h</b></li>
+    <li class="navelem"><a class="el" href="dir_b4c9897f718d9414148b24a4e5afb621.html">Sming</a></li><li class="navelem"><a class="el" href="dir_7bfed837e2ad3dbe12b29bb612f9c4d5.html">Libraries</a></li><li class="navelem"><a class="el" href="dir_4a7a0305eb9e55bcfa9c0c88ec87cdde.html">ArduCAM</a></li><li class="navelem"><b>ArduCAMStream.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

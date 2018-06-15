@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['websocketclientbinarydelegate',['WebSocketClientBinaryDelegate',['../group__wsclient.html#gaedbf9cc35ea92799c6a069b263444bdf',1,'WebsocketClient.h']]],
-  ['websocketclientconnecteddelegate',['WebSocketClientConnectedDelegate',['../group__wsclient.html#gac2018e9238123b4452ce83cd439040f5',1,'WebsocketClient.h']]],
-  ['websocketclientdisconnectdelegate',['WebSocketClientDisconnectDelegate',['../group__wsclient.html#ga6c07c4770698290c0dde0fb0b108c1d0',1,'WebsocketClient.h']]]
+  ['scancompleteddelegate',['ScanCompletedDelegate',['../group__event__handlers.html#ga6b26b28cc9b14cb10053f36a447f7998',1,'Station.h']]],
+  ['smartconfigdelegate',['SmartConfigDelegate',['../group__event__handlers.html#ga897364cd197ffee2e4c44926632c228b',1,'Station.h']]],
+  ['streamdatareceiveddelegate',['StreamDataReceivedDelegate',['../group__serial.html#ga6893ae94b30659b565a1c1db2459f590',1,'HardwareSerial.h']]],
+  ['streamtransformercallback',['StreamTransformerCallback',['../group__stream.html#ga777c938832d85fbeeec5046387f66cf5',1,'StreamTransformer.h']]],
+  ['systemreadydelegate',['SystemReadyDelegate',['../group__event__handlers.html#ga5b7000bf1a715e844c8c8610c8182aa2',1,'System.h']]]
 ];

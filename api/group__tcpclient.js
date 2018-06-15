@@ -2,6 +2,7 @@ var group__tcpclient =
 [
     [ "HTTP client", "group__httpclient.html", "group__httpclient" ],
     [ "MQTT client", "group__mqttclient.html", "group__mqttclient" ],
+    [ "SMTP client", "group__smtpclient.html", "group__smtpclient" ],
     [ "WebSocket client", "group__wsclient.html", "group__wsclient" ],
     [ "TcpClient", "classTcpClient.html", [
       [ "TcpClient", "classTcpClient.html#a4d2ba17936e3447c4e19984c1452f58c", null ],
@@ -13,7 +14,7 @@ var group__tcpclient =
       [ "close", "classTcpClient.html#a39dfc6c0d46863836e15b56d8077ef0c", null ],
       [ "connect", "classTcpClient.html#a6b3b36c4859145c5686126d4051e33b7", null ],
       [ "connect", "classTcpClient.html#a1d0685ac523f6e6ac2d5a6993172feb3", null ],
-      [ "connect", "classTcpClient.html#a76541f4efb80f01242580fa729a0fb86", null ],
+      [ "connect", "classTcpClient.html#ae5d59b160b1c0decdf21ea34858f5729", null ],
       [ "connect", "classTcpClient.html#a9c91997d5656394ae74d5dbf105d6006", null ],
       [ "flush", "classTcpClient.html#aaaa45b0c9a0b26df7f8ca79697785114", null ],
       [ "getAvailableWriteSize", "classTcpClient.html#ab8d1467ac2d76882be7ec74f0aa0e1bf", null ],

@@ -8,7 +8,7 @@ var classWebsocketClient =
     [ "connect", "classWebsocketClient.html#a6b3b36c4859145c5686126d4051e33b7", null ],
     [ "connect", "classWebsocketClient.html#a1d0685ac523f6e6ac2d5a6993172feb3", null ],
     [ "connect", "group__wsclient.html#gaa6b4f982bda2e0beadba9ea490c34960", null ],
-    [ "connect", "classWebsocketClient.html#a76541f4efb80f01242580fa729a0fb86", null ],
+    [ "connect", "classWebsocketClient.html#ae5d59b160b1c0decdf21ea34858f5729", null ],
     [ "connect", "classWebsocketClient.html#a9c91997d5656394ae74d5dbf105d6006", null ],
     [ "disconnect", "group__wsclient.html#ga11a66333f7a1052421efffe191de3bc5", null ],
     [ "flush", "classWebsocketClient.html#aaaa45b0c9a0b26df7f8ca79697785114", null ],

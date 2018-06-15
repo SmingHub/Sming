@@ -107,6 +107,8 @@ $(document).ready(function(){initNavTree('classEndlessMemoryStream.html','');});
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classEndlessMemoryStream-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">EndlessMemoryStream Class Reference<div class="ingroups"><a class="el" href="group__stream.html">Stream functions</a></div></div>  </div>
@@ -118,8 +120,10 @@ Inheritance diagram for EndlessMemoryStream:</div>
  <div class="center">
   <img src="classEndlessMemoryStream.png" usemap="#EndlessMemoryStream_map" alt=""/>
   <map id="EndlessMemoryStream_map" name="EndlessMemoryStream_map">
-<area href="classReadWriteStream.html" alt="ReadWriteStream" shape="rect" coords="0,56,141,80"/>
-<area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="0,0,141,24"/>
+<area href="classReadWriteStream.html" alt="ReadWriteStream" shape="rect" coords="0,168,141,192"/>
+<area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="0,112,141,136"/>
+<area href="classStream.html" alt="Stream" shape="rect" coords="0,56,141,80"/>
+<area href="classPrint.html" title="Provides formatted output to stream. " alt="Print" shape="rect" coords="0,0,141,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -143,14 +147,231 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af091a934dce4aea1a88072a44ee8dbad"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEndlessMemoryStream.html#af091a934dce4aea1a88072a44ee8dbad">isFinished</a> ()</td></tr>
 <tr class="memdesc:af091a934dce4aea1a88072a44ee8dbad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if stream is finished.  <a href="#af091a934dce4aea1a88072a44ee8dbad">More...</a><br/></td></tr>
 <tr class="separator:af091a934dce4aea1a88072a44ee8dbad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae13014db9d7b133c58eaf27a8f1d24f5"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#ae13014db9d7b133c58eaf27a8f1d24f5">length</a> ()</td></tr>
-<tr class="memdesc:ae13014db9d7b133c58eaf27a8f1d24f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total length of the stream.  <a href="#ae13014db9d7b133c58eaf27a8f1d24f5">More...</a><br/></td></tr>
-<tr class="separator:ae13014db9d7b133c58eaf27a8f1d24f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b40e0e9cab1f2fe5bb0cb22ffe5adda"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a5b40e0e9cab1f2fe5bb0cb22ffe5adda">write</a> (const char *str)</td></tr>
+<tr class="memdesc:a5b40e0e9cab1f2fe5bb0cb22ffe5adda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a c-string to output stream.  <a href="#a5b40e0e9cab1f2fe5bb0cb22ffe5adda">More...</a><br/></td></tr>
+<tr class="separator:a5b40e0e9cab1f2fe5bb0cb22ffe5adda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfdd93a61c4b95a3ba41680188505e73"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#abfdd93a61c4b95a3ba41680188505e73">write</a> (const char *buffer, size_t size)</td></tr>
+<tr class="memdesc:abfdd93a61c4b95a3ba41680188505e73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes characters from a buffer to output stream.  <a href="#abfdd93a61c4b95a3ba41680188505e73">More...</a><br/></td></tr>
+<tr class="separator:abfdd93a61c4b95a3ba41680188505e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace0b653e42b9d8487cf829fedbb734f6"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#ace0b653e42b9d8487cf829fedbb734f6">read</a> ()</td></tr>
+<tr class="memdesc:ace0b653e42b9d8487cf829fedbb734f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read one character and moves the stream pointer.  <a href="#ace0b653e42b9d8487cf829fedbb734f6">More...</a><br/></td></tr>
+<tr class="separator:ace0b653e42b9d8487cf829fedbb734f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf3a3d1a1e1b0412daed308228888ae5"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#aaf3a3d1a1e1b0412daed308228888ae5">peek</a> ()</td></tr>
+<tr class="memdesc:aaf3a3d1a1e1b0412daed308228888ae5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a character without advancing the stream pointer.  <a href="#aaf3a3d1a1e1b0412daed308228888ae5">More...</a><br/></td></tr>
+<tr class="separator:aaf3a3d1a1e1b0412daed308228888ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa8b8889df84efdb3c030e6d11d0bb4e"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#aaa8b8889df84efdb3c030e6d11d0bb4e">available</a> ()</td></tr>
+<tr class="memdesc:aaa8b8889df84efdb3c030e6d11d0bb4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total length of the stream.  <a href="#aaa8b8889df84efdb3c030e6d11d0bb4e">More...</a><br/></td></tr>
+<tr class="separator:aaa8b8889df84efdb3c030e6d11d0bb4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05ec329ab5b1237777872156d631f68c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a> ()</td></tr>
+<tr class="memdesc:a05ec329ab5b1237777872156d631f68c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total length of the stream.  <a href="#a05ec329ab5b1237777872156d631f68c">More...</a><br/></td></tr>
+<tr class="separator:a05ec329ab5b1237777872156d631f68c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a313fb97e4af1e15ed581674a1ce76d3e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a313fb97e4af1e15ed581674a1ce76d3e"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> ()</td></tr>
+<tr class="separator:a313fb97e4af1e15ed581674a1ce76d3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe31f244917749cf8b343c0249a312c0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0">id</a> ()</td></tr>
 <tr class="memdesc:abe31f244917749cf8b343c0249a312c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique id of the resource.  <a href="#abe31f244917749cf8b343c0249a312c0">More...</a><br/></td></tr>
 <tr class="separator:abe31f244917749cf8b343c0249a312c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a851dd6dc74d52389de04f99648478db5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a851dd6dc74d52389de04f99648478db5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeout</b> (unsigned long timeout)</td></tr>
+<tr class="separator:a851dd6dc74d52389de04f99648478db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bab30ccd324efd461dee46a2339f673"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4bab30ccd324efd461dee46a2339f673"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>find</b> (char *target)</td></tr>
+<tr class="separator:a4bab30ccd324efd461dee46a2339f673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad851401f2318cdb1de05707e021b81d9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad851401f2318cdb1de05707e021b81d9"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>find</b> (char *target, size_t <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a>)</td></tr>
+<tr class="separator:ad851401f2318cdb1de05707e021b81d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1f5f6600832396fb38a897baf4de35b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad1f5f6600832396fb38a897baf4de35b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>findUntil</b> (char *target, char *terminator)</td></tr>
+<tr class="separator:ad1f5f6600832396fb38a897baf4de35b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a9497de614792103ab8cb4759e01a69"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a9497de614792103ab8cb4759e01a69"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>findUntil</b> (char *target, size_t targetLen, char *terminate, size_t termLen)</td></tr>
+<tr class="separator:a3a9497de614792103ab8cb4759e01a69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a497ffcbcb4d5bb889a8fde487bcc1b98"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a497ffcbcb4d5bb889a8fde487bcc1b98"></a>
+long&#160;</td><td class="memItemRight" valign="bottom"><b>parseInt</b> ()</td></tr>
+<tr class="separator:a497ffcbcb4d5bb889a8fde487bcc1b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e5a0cc11eb586d89dcb7fa8e53a87e8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5e5a0cc11eb586d89dcb7fa8e53a87e8"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>parseFloat</b> ()</td></tr>
+<tr class="separator:a5e5a0cc11eb586d89dcb7fa8e53a87e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45fd1336a323ea83b16e8507055f44ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a45fd1336a323ea83b16e8507055f44ea"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>readBytes</b> (char *buffer, size_t <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a>)</td></tr>
+<tr class="separator:a45fd1336a323ea83b16e8507055f44ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84672a4fb2620466958d3118d4fea00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af84672a4fb2620466958d3118d4fea00"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>readBytesUntil</b> (char terminator, char *buffer, size_t <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a>)</td></tr>
+<tr class="separator:af84672a4fb2620466958d3118d4fea00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c60bdda2b65d78e5a1362d51b856c5a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c60bdda2b65d78e5a1362d51b856c5a"></a>
+<a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>readString</b> ()</td></tr>
+<tr class="separator:a1c60bdda2b65d78e5a1362d51b856c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a409da87c552909260d8cc428c5ca70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a409da87c552909260d8cc428c5ca70"></a>
+<a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>readStringUntil</b> (char terminator)</td></tr>
+<tr class="separator:a6a409da87c552909260d8cc428c5ca70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f934a5188da7f6a1c437c26755a2a42"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f934a5188da7f6a1c437c26755a2a42"></a>
+virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (char c)</td></tr>
+<tr class="separator:a0f934a5188da7f6a1c437c26755a2a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88a4a829fb5d589efb43955ad0cbddcc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a88a4a829fb5d589efb43955ad0cbddcc">getWriteError</a> ()</td></tr>
+<tr class="memdesc:a88a4a829fb5d589efb43955ad0cbddcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets last error.  <a href="#a88a4a829fb5d589efb43955ad0cbddcc">More...</a><br/></td></tr>
+<tr class="separator:a88a4a829fb5d589efb43955ad0cbddcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec9ecf84cc6d9087a650def3cefc459e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#aec9ecf84cc6d9087a650def3cefc459e">clearWriteError</a> ()</td></tr>
+<tr class="memdesc:aec9ecf84cc6d9087a650def3cefc459e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the last write error.  <a href="#aec9ecf84cc6d9087a650def3cefc459e">More...</a><br/></td></tr>
+<tr class="separator:aec9ecf84cc6d9087a650def3cefc459e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e411d07a8ffec5faf7ce485bac0f029"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a1e411d07a8ffec5faf7ce485bac0f029">print</a> (char)</td></tr>
+<tr class="memdesc:a1e411d07a8ffec5faf7ce485bac0f029"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a single character to output stream.  <a href="#a1e411d07a8ffec5faf7ce485bac0f029">More...</a><br/></td></tr>
+<tr class="separator:a1e411d07a8ffec5faf7ce485bac0f029"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfe80773011eb17dfb52c2fba517a093"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#acfe80773011eb17dfb52c2fba517a093">print</a> (const char[])</td></tr>
+<tr class="memdesc:acfe80773011eb17dfb52c2fba517a093"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a c-string to output stream.  <a href="#acfe80773011eb17dfb52c2fba517a093">More...</a><br/></td></tr>
+<tr class="separator:acfe80773011eb17dfb52c2fba517a093"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1061204d85492e07fd48764804ae5d09"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a1061204d85492e07fd48764804ae5d09">print</a> (unsigned long, int base=DEC)</td></tr>
+<tr class="memdesc:a1061204d85492e07fd48764804ae5d09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a number to output stream.  <a href="#a1061204d85492e07fd48764804ae5d09">More...</a><br/></td></tr>
+<tr class="separator:a1061204d85492e07fd48764804ae5d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24f845a3039950a5df6624db2fb052b0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a24f845a3039950a5df6624db2fb052b0">print</a> (long, int base=DEC)</td></tr>
+<tr class="memdesc:a24f845a3039950a5df6624db2fb052b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a number to output stream.  <a href="#a24f845a3039950a5df6624db2fb052b0">More...</a><br/></td></tr>
+<tr class="separator:a24f845a3039950a5df6624db2fb052b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a065482405ca5f3f97292499a3a96e9de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a065482405ca5f3f97292499a3a96e9de"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>print</b> (unsigned int, int base=DEC)</td></tr>
+<tr class="separator:a065482405ca5f3f97292499a3a96e9de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3292e5fb568b4fc1955989567b84a91c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3292e5fb568b4fc1955989567b84a91c"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>print</b> (unsigned char, int base=DEC)</td></tr>
+<tr class="separator:a3292e5fb568b4fc1955989567b84a91c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d837611f19b3fc7ced014517021a57b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a6d837611f19b3fc7ced014517021a57b">print</a> (int, int base=DEC)</td></tr>
+<tr class="memdesc:a6d837611f19b3fc7ced014517021a57b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a number to output stream.  <a href="#a6d837611f19b3fc7ced014517021a57b">More...</a><br/></td></tr>
+<tr class="separator:a6d837611f19b3fc7ced014517021a57b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35f884889abc8313681b51ecb5eb41bc"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a35f884889abc8313681b51ecb5eb41bc">print</a> (double, int digits=2)</td></tr>
+<tr class="memdesc:a35f884889abc8313681b51ecb5eb41bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints number to output stream.  <a href="#a35f884889abc8313681b51ecb5eb41bc">More...</a><br/></td></tr>
+<tr class="separator:a35f884889abc8313681b51ecb5eb41bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a28a24faffa4f43c12fe0a70c81807c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a6a28a24faffa4f43c12fe0a70c81807c">print</a> (const <a class="el" href="classPrintable.html">Printable</a> &amp;p)</td></tr>
+<tr class="memdesc:a6a28a24faffa4f43c12fe0a70c81807c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classPrintable.html">Printable</a> object to output stream.  <a href="#a6a28a24faffa4f43c12fe0a70c81807c">More...</a><br/></td></tr>
+<tr class="separator:a6a28a24faffa4f43c12fe0a70c81807c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a358ed9ea784d1e1014fbdd994cc480d0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a358ed9ea784d1e1014fbdd994cc480d0">print</a> (const <a class="el" href="classString.html">String</a> &amp;s)</td></tr>
+<tr class="memdesc:a358ed9ea784d1e1014fbdd994cc480d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classString.html">String</a> to output stream.  <a href="#a358ed9ea784d1e1014fbdd994cc480d0">More...</a><br/></td></tr>
+<tr class="separator:a358ed9ea784d1e1014fbdd994cc480d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a169b128f9e22f0c15883768f580541a2"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a169b128f9e22f0c15883768f580541a2">println</a> (void)</td></tr>
+<tr class="memdesc:a169b128f9e22f0c15883768f580541a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a newline to output stream.  <a href="#a169b128f9e22f0c15883768f580541a2">More...</a><br/></td></tr>
+<tr class="separator:a169b128f9e22f0c15883768f580541a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad337ce3f7977411b7d34d47a51e5737e"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#ad337ce3f7977411b7d34d47a51e5737e">println</a> (const char[])</td></tr>
+<tr class="memdesc:ad337ce3f7977411b7d34d47a51e5737e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a c-string to output stream, appending newline.  <a href="#ad337ce3f7977411b7d34d47a51e5737e">More...</a><br/></td></tr>
+<tr class="separator:ad337ce3f7977411b7d34d47a51e5737e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a554896a71162f967b5794401239d7a01"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a554896a71162f967b5794401239d7a01">println</a> (char)</td></tr>
+<tr class="memdesc:a554896a71162f967b5794401239d7a01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a single character to output stream, appending newline.  <a href="#a554896a71162f967b5794401239d7a01">More...</a><br/></td></tr>
+<tr class="separator:a554896a71162f967b5794401239d7a01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64e7836aa8fc51bc5eef50c9485af874"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a64e7836aa8fc51bc5eef50c9485af874">println</a> (unsigned char, int base=DEC)</td></tr>
+<tr class="memdesc:a64e7836aa8fc51bc5eef50c9485af874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a number to output stream, appending newline.  <a href="#a64e7836aa8fc51bc5eef50c9485af874">More...</a><br/></td></tr>
+<tr class="separator:a64e7836aa8fc51bc5eef50c9485af874"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1357853a68faa9b94e5d9cfcc6c97b6d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1357853a68faa9b94e5d9cfcc6c97b6d"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>println</b> (unsigned int, int base=DEC)</td></tr>
+<tr class="separator:a1357853a68faa9b94e5d9cfcc6c97b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07b590fdd11b8c789b7eec528fb93ba6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a07b590fdd11b8c789b7eec528fb93ba6"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>println</b> (unsigned long, int base=DEC)</td></tr>
+<tr class="separator:a07b590fdd11b8c789b7eec528fb93ba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a541903194f82bf25127db2b57baaa296"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a541903194f82bf25127db2b57baaa296">println</a> (int, int base=DEC)</td></tr>
+<tr class="memdesc:a541903194f82bf25127db2b57baaa296"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a number to output stream, appending newline.  <a href="#a541903194f82bf25127db2b57baaa296">More...</a><br/></td></tr>
+<tr class="separator:a541903194f82bf25127db2b57baaa296"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cf31254a99635695067ef40cc86aa86"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a1cf31254a99635695067ef40cc86aa86">println</a> (long, int base=DEC)</td></tr>
+<tr class="memdesc:a1cf31254a99635695067ef40cc86aa86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a number to output stream, appending newline.  <a href="#a1cf31254a99635695067ef40cc86aa86">More...</a><br/></td></tr>
+<tr class="separator:a1cf31254a99635695067ef40cc86aa86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36c8d1967fb99dd54224163e6adbd58d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a36c8d1967fb99dd54224163e6adbd58d">println</a> (double, int digits=2)</td></tr>
+<tr class="memdesc:a36c8d1967fb99dd54224163e6adbd58d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a number to output stream, appending newline.  <a href="#a36c8d1967fb99dd54224163e6adbd58d">More...</a><br/></td></tr>
+<tr class="separator:a36c8d1967fb99dd54224163e6adbd58d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d2d42d4f2f45b141fd0ab2e7c6e22d9"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a9d2d42d4f2f45b141fd0ab2e7c6e22d9">println</a> (const <a class="el" href="classPrintable.html">Printable</a> &amp;p)</td></tr>
+<tr class="memdesc:a9d2d42d4f2f45b141fd0ab2e7c6e22d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classPrintable.html">Printable</a> object to output stream, appending newline.  <a href="#a9d2d42d4f2f45b141fd0ab2e7c6e22d9">More...</a><br/></td></tr>
+<tr class="separator:a9d2d42d4f2f45b141fd0ab2e7c6e22d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd6cc6e2c1163f94c60855ad233899bd"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#afd6cc6e2c1163f94c60855ad233899bd">println</a> (const <a class="el" href="classString.html">String</a> &amp;s)</td></tr>
+<tr class="memdesc:afd6cc6e2c1163f94c60855ad233899bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classString.html">String</a> to output stream, appending newline.  <a href="#afd6cc6e2c1163f94c60855ad233899bd">More...</a><br/></td></tr>
+<tr class="separator:afd6cc6e2c1163f94c60855ad233899bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67aa459464b181ee200e9173e53b11ff"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a67aa459464b181ee200e9173e53b11ff">printf</a> (const char *fmt,...)</td></tr>
+<tr class="memdesc:a67aa459464b181ee200e9173e53b11ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a formatted c-string to output stream.  <a href="#a67aa459464b181ee200e9173e53b11ff">More...</a><br/></td></tr>
+<tr class="separator:a67aa459464b181ee200e9173e53b11ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a416a0ada5ed3c9d27f1e72c7d73f0aa1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a416a0ada5ed3c9d27f1e72c7d73f0aa1"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>timedRead</b> ()</td></tr>
+<tr class="separator:a416a0ada5ed3c9d27f1e72c7d73f0aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae326bf60a3c5276836526710871046fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae326bf60a3c5276836526710871046fe"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>timedPeek</b> ()</td></tr>
+<tr class="separator:ae326bf60a3c5276836526710871046fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab31c533ddc422c8d8df07986e5920534"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab31c533ddc422c8d8df07986e5920534"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>peekNextDigit</b> ()</td></tr>
+<tr class="separator:ab31c533ddc422c8d8df07986e5920534"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4578615defade6c4ce7daeb6578bb62d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4578615defade6c4ce7daeb6578bb62d"></a>
+long&#160;</td><td class="memItemRight" valign="bottom"><b>parseInt</b> (char skipChar)</td></tr>
+<tr class="separator:a4578615defade6c4ce7daeb6578bb62d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14a98cdbb166008f25dd044d836b1864"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14a98cdbb166008f25dd044d836b1864"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>parseFloat</b> (char skipChar)</td></tr>
+<tr class="separator:a14a98cdbb166008f25dd044d836b1864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46656410e23c0ec14d7a01b38b3b6f00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a46656410e23c0ec14d7a01b38b3b6f00"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (int err=1)</td></tr>
+<tr class="separator:a46656410e23c0ec14d7a01b38b3b6f00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:aae48f1a926d2e82a452f2c75af0c6a29"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae48f1a926d2e82a452f2c75af0c6a29"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_timeout</b></td></tr>
+<tr class="separator:aae48f1a926d2e82a452f2c75af0c6a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf61d2006d28d18f2e028285a323fe5a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf61d2006d28d18f2e028285a323fe5a"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis</b></td></tr>
+<tr class="separator:abf61d2006d28d18f2e028285a323fe5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="aaa8b8889df84efdb3c030e6d11d0bb4e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int IDataSourceStream::available </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the total length of the stream. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">int</td><td>-1 is returned when the size cannot be determined </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classStream.html">Stream</a>.</p>
+
+<p>Reimplemented in <a class="el" href="classLimitedMemoryStream.html#a2abdbc09b63bb771585a090e647424a0">LimitedMemoryStream</a>, <a class="el" href="classJsonObjectStream.html#ae78b14c9b4177413eaffcc756f9ebe9c">JsonObjectStream</a>, <a class="el" href="classTemplateFileStream.html#a0cea70516ae9c3e3c3df769b4d1eacb0">TemplateFileStream</a>, <a class="el" href="classFileStream.html#af5a784379c124a61a9a5c3fe5ffe4ae1">FileStream</a>, <a class="el" href="classMemoryDataStream.html#a2ad4270fa5b17ff81dac2f68295dd190">MemoryDataStream</a>, <a class="el" href="classCircularBuffer.html#a58936d4f6a3d4e7b761b103b41d2d52b">CircularBuffer</a>, <a class="el" href="classStreamTransformer.html#a52dd2349122e3ba6afc4ffbe69382aef">StreamTransformer</a>, <a class="el" href="classUrlencodedOutputStream.html#af72058d287b50a590e469fbb7068ad58">UrlencodedOutputStream</a>, and <a class="el" href="classArduCAMStream.html#a8ea8284127bf1f5b9d50f51e74f3538e">ArduCAMStream</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aec9ecf84cc6d9087a650def3cefc459e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Print::clearWriteError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears the last write error. </p>
+
+</div>
+</div>
 <a class="anchor" id="a72937420a55ff2ab1e1dd4fb4170602a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -182,6 +403,37 @@ Public Member Functions</h2></td></tr>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
 
 <p>Implements <a class="el" href="classIDataSourceStream.html#a589085e0eea011acdc401b79831826e0">IDataSourceStream</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a88a4a829fb5d589efb43955ad0cbddcc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Print::getWriteError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets last error. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">int</td><td>Error number of last write error </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -251,7 +503,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ae13014db9d7b133c58eaf27a8f1d24f5"></a>
+<a class="anchor" id="a05ec329ab5b1237777872156d631f68c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -259,7 +511,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual int IDataSourceStream::length </td>
+          <td class="memname">int IDataSourceStream::length </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -267,7 +519,7 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -275,12 +527,923 @@ Public Member Functions</h2></td></tr>
 <p>Return the total length of the stream. </p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">int</td><td>-1 is returned when the size cannot be determined </td></tr>
+    <tr><td class="paramname">int</td><td>-1 is returned when the size cannot be determined</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>This method is deprecated and will be removed in the coming versions. Please, use <a class="el" href="classIDataSourceStream.html#aaa8b8889df84efdb3c030e6d11d0bb4e" title="Return the total length of the stream. ">available()</a> instead. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aaf3a3d1a1e1b0412daed308228888ae5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int IDataSourceStream::peek </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read a character without advancing the stream pointer. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">The</td><td>character that was read or -1 if none is available </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classJsonObjectStream.html#a5129ca6b7e91865489aa2e98ba2d314f">JsonObjectStream</a>, <a class="el" href="classTemplateFileStream.html#a706ba018848f426ab8535a670f88f38d">TemplateFileStream</a>, <a class="el" href="classFileStream.html#a61bbea59e0648360fa17e3b964ad34f6">FileStream</a>, <a class="el" href="classMemoryDataStream.html#af6a95640e736c87614a9a7be05546ddc">MemoryDataStream</a>, <a class="el" href="classCircularBuffer.html#a0c9d58619534ededfc22bbeab0a702c8">CircularBuffer</a>, <a class="el" href="classHttpMultipartStream.html#ac5d9bb140c4ec6fe2b17afecd4d5a195">HttpMultipartStream</a>, and <a class="el" href="classHttpChunkedStream.html#a2b182c8919352afc16be9d15d136dfbf">HttpChunkedStream</a>.</p>
+<p>Implements <a class="el" href="classStream.html">Stream</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1e411d07a8ffec5faf7ce485bac0f029"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::print </td>
+          <td>(</td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a single character to output stream. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="acfe80773011eb17dfb52c2fba517a093"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::print </td>
+          <td>(</td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname">[]</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a c-string to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">char[]</td><td>c-string to print </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to output stream</td></tr>
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a1061204d85492e07fd48764804ae5d09"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::print </td>
+          <td>(</td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>char</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base</em> = <code>DEC</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a number to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unsigned long</td><td>Number to print </td></tr>
+    <tr><td class="paramname">base</td><td>The base for output (Default: Decimal (base 10)) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unsigned int</td><td>Number to print </td></tr>
+    <tr><td class="paramname">base</td><td>The base for output (Default: Decimal (base 10)) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unsigned char</td><td>Number to print </td></tr>
+    <tr><td class="paramname">base</td><td>The base for output (Default: Decimal (base 10)) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a24f845a3039950a5df6624db2fb052b0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::print </td>
+          <td>(</td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base</em> = <code>DEC</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a number to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">long</td><td>Number to print </td></tr>
+    <tr><td class="paramname">base</td><td>The base for output (Default: Decimal (base 10)) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a6d837611f19b3fc7ced014517021a57b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::print </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base</em> = <code>DEC</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a number to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">int</td><td>Number to print </td></tr>
+    <tr><td class="paramname">base</td><td>The base for output (Default: Decimal (base 10)) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a35f884889abc8313681b51ecb5eb41bc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::print </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>digits</em> = <code>2</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints number to output stream. </p>
+<p>Prints a number to output stream.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">double</td><td>Number to print </td></tr>
+    <tr><td class="paramname">int</td><td>Decimal places to show </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to output stream</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">double</td><td>Number to print </td></tr>
+    <tr><td class="paramname">digits</td><td>The decimal places to print (Default: 2, e.g. 21.35) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a6a28a24faffa4f43c12fe0a70c81807c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::print </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classPrintable.html">Printable</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a <a class="el" href="classPrintable.html">Printable</a> object to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>Object to print </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a358ed9ea784d1e1014fbdd994cc480d0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::print </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a <a class="el" href="classString.html">String</a> to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td><a class="el" href="classString.html">String</a> to print </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a67aa459464b181ee200e9173e53b11ff"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::printf </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>fmt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a formatted c-string to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fmt</td><td>Pointer to formated c-string to print </td></tr>
+    <tr><td class="paramname">...</td><td>Parameters for placeholders within formated string </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Use standard printf placeholders, e.g. d for integer, s for c-string, etc. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a169b128f9e22f0c15883768f580541a2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::println </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a newline to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Prints</td><td>newline to output stream </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to output stream</td></tr>
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ad337ce3f7977411b7d34d47a51e5737e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::println </td>
+          <td>(</td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname">[]</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a c-string to output stream, appending newline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">char[]</td><td>c-string to print </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a554896a71162f967b5794401239d7a01"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::println </td>
+          <td>(</td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a single character to output stream, appending newline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">char</td><td>Character to print </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a64e7836aa8fc51bc5eef50c9485af874"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::println </td>
+          <td>(</td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>long</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base</em> = <code>DEC</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a number to output stream, appending newline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unsigned char</td><td>Number to print </td></tr>
+    <tr><td class="paramname">base</td><td>The base for output (Default: Decimal (base 10)) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unsigned int</td><td>Number to print </td></tr>
+    <tr><td class="paramname">base</td><td>The base for output (Default: Decimal (base 10)) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unsigned long</td><td>Number to print </td></tr>
+    <tr><td class="paramname">base</td><td>The base for output (Default: Decimal (base 10)) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a541903194f82bf25127db2b57baaa296"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::println </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base</em> = <code>DEC</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a number to output stream, appending newline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">int</td><td>Number to print </td></tr>
+    <tr><td class="paramname">base</td><td>The base for output (Default: Decimal (base 10)) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a1cf31254a99635695067ef40cc86aa86"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::println </td>
+          <td>(</td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>base</em> = <code>DEC</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a number to output stream, appending newline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">long</td><td>Number to print </td></tr>
+    <tr><td class="paramname">base</td><td>The base for output (Default: Decimal (base 10)) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a36c8d1967fb99dd54224163e6adbd58d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::println </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>digits</em> = <code>2</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a number to output stream, appending newline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">double</td><td>Number to print </td></tr>
+    <tr><td class="paramname">digits</td><td>The decimal places to print (Default: 2, e.g. 21.35) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a9d2d42d4f2f45b141fd0ab2e7c6e22d9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::println </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classPrintable.html">Printable</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a <a class="el" href="classPrintable.html">Printable</a> object to output stream, appending newline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>Object to print </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="afd6cc6e2c1163f94c60855ad233899bd"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::println </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prints a <a class="el" href="classString.html">String</a> to output stream, appending newline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td><a class="el" href="classString.html">String</a> to print </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ace0b653e42b9d8487cf829fedbb734f6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int IDataSourceStream::read </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read one character and moves the stream pointer. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">The</td><td>character that was read or -1 if none is available </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classStream.html">Stream</a>.</p>
 
 </div>
 </div>
@@ -376,6 +1539,93 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a5b40e0e9cab1f2fe5bb0cb22ffe5adda"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::write </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes a c-string to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>Pointer to c-string </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="abfdd93a61c4b95a3ba41680188505e73"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Print::write </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes characters from a buffer to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>Pointer to character buffer </td></tr>
+    <tr><td class="paramname">size</td><td>Quantity of characters to write </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="aa7f40a313fc54fc9aa253685d870ba5d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -412,7 +1662,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classReadWriteStream.html">ReadWriteStream</a>.</p>
+<p>Implements <a class="el" href="classReadWriteStream.html#a3ebf31faca185807abbbcfdb5b0f8d4a">ReadWriteStream</a>.</p>
 
 </div>
 </div>

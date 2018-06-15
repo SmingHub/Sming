@@ -2,8 +2,10 @@ var searchData=
 [
   ['off',['off',['../classLCD.html#a191639be183be1476c9bfe6d455d23b2',1,'LCD']]],
   ['on',['on',['../classLCD.html#a718da3a638deb59bd1c7a5222a52d98a',1,'LCD']]],
+  ['onmessagesent',['onMessageSent',['../group__smtpclient.html#ga9e6b97628e4931605598d519aacadd04',1,'SmtpClient']]],
   ['onready',['onReady',['../group__system.html#ga3bd0122a224dfe3add3793b7d7cf23d5',1,'SystemClass::onReady(SystemReadyDelegate readyHandler)'],['../group__system.html#ga71e2a19d176b06ed76394b771a2cb487',1,'SystemClass::onReady(ISystemReadyHandler *readyHandler)']]],
   ['onreceive',['onReceive',['../classNtpClient.html#acc2092a5f662df125d7dd6600dad5ec3',1,'NtpClient']]],
+  ['onservererror',['onServerError',['../group__smtpclient.html#ga848b25d7b7a295e1c7e08974cfc7c105',1,'SmtpClient']]],
   ['onsystemready',['onSystemReady',['../classAccessPointClass.html#a41e9231ad13b06bd441519dc2f1d54ad',1,'AccessPointClass::onSystemReady()'],['../group__wifi__sta.html#gafd682dd60143ab99e884fa1b94e17472',1,'StationClass::onSystemReady()'],['../classISystemReadyHandler.html#ae52e11b1a352b6d66490ac912bf10be4',1,'ISystemReadyHandler::onSystemReady()'],['../group__wdt.html#ga637bb566d92ae400ae31691da5c6b746',1,'WDTClass::onSystemReady()']]],
   ['openreadingpipe',['openReadingPipe',['../classRF24.html#aa7e8523f86f9f8f20c274e0c89a5fd45',1,'RF24']]],
   ['openwritingpipe',['openWritingPipe',['../classRF24.html#a50c8e68ee840e1860a31dbdc83afbd77',1,'RF24']]],

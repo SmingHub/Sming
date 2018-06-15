@@ -1,0 +1,26 @@
+var classNexSlider =
+[
+    [ "NexSlider", "classNexSlider.html#a00c5678209c936e9a57c14b6e2384774", null ],
+    [ "attachPop", "classNexSlider.html#a4da1c4fcdfadb7eabfb9ccaba9ecad11", null ],
+    [ "attachPush", "classNexSlider.html#a685a753aae5eb9fb9866a7807a310132", null ],
+    [ "detachPop", "classNexSlider.html#af656640c1078a553287a68bf792dd291", null ],
+    [ "detachPush", "classNexSlider.html#a2bc36096119534344c2bcd8021b93289", null ],
+    [ "Get_background_color_bco", "classNexSlider.html#a1cf49184702852c0623a695f4b62b1ed", null ],
+    [ "Get_cursor_height_hig", "classNexSlider.html#a680c31b1aa2dc48a1193c9d8fb3cd487", null ],
+    [ "Get_font_color_pco", "classNexSlider.html#aa6361627b3c66ee7a569b5cfec4ce562", null ],
+    [ "Get_pointer_thickness_wid", "classNexSlider.html#a6adbc43b663e3542a92641c406db23ad", null ],
+    [ "getMaxval", "classNexSlider.html#abf1b50605feb0ac2b381d1148795f0d9", null ],
+    [ "getMinval", "classNexSlider.html#ab98752f15d56dc04de102c0c2180ea11", null ],
+    [ "getObjCid", "classNexSlider.html#a8139b294806c1684fc95b635a33b1b15", null ],
+    [ "getObjName", "classNexSlider.html#a54267849ca7215af700a906e5e6362fd", null ],
+    [ "getObjPid", "classNexSlider.html#a67621e5d7bcfb50c1a1bbc4ad1020352", null ],
+    [ "getValue", "classNexSlider.html#a384d5488b421efd6affbfd32f45bb107", null ],
+    [ "printObjInfo", "classNexSlider.html#abeff0c61474e8b3ce6bac76771820b64", null ],
+    [ "Set_background_color_bco", "classNexSlider.html#ac22c66fecb8cf03d554c3c86e6e798d5", null ],
+    [ "Set_cursor_height_hig", "classNexSlider.html#a603cf3685c6d843261d8552030af9f22", null ],
+    [ "Set_font_color_pco", "classNexSlider.html#acc766d430c7a663846e4da6e1bacf76c", null ],
+    [ "Set_pointer_thickness_wid", "classNexSlider.html#a6b91c1f7fddf7ea1b62c406453110ead", null ],
+    [ "setMaxval", "classNexSlider.html#a5a1c65a9f2e21a624b78d5817d695503", null ],
+    [ "setMinval", "classNexSlider.html#ad38503fd3a6bfe3eaaa57764ac90f244", null ],
+    [ "setValue", "classNexSlider.html#a3f325bda4db913e302e94a4b25de7b5f", null ]
+];

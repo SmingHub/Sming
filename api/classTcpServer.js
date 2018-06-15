@@ -6,7 +6,7 @@ var classTcpServer =
     [ "TcpServer", "classTcpServer.html#aecb0c47839bf36272300a3985b243a72", null ],
     [ "~TcpServer", "classTcpServer.html#ad1d37e10072aa3a80bafc6bf2f52c896", null ],
     [ "close", "classTcpServer.html#ab10f02f82a514714b7585e0dd00a8d7b", null ],
-    [ "connect", "classTcpServer.html#a76541f4efb80f01242580fa729a0fb86", null ],
+    [ "connect", "classTcpServer.html#ae5d59b160b1c0decdf21ea34858f5729", null ],
     [ "connect", "classTcpServer.html#a9c91997d5656394ae74d5dbf105d6006", null ],
     [ "createClient", "classTcpServer.html#ad282a58a7f973e224d243500ba497351", null ],
     [ "flush", "classTcpServer.html#aaaa45b0c9a0b26df7f8ca79697785114", null ],

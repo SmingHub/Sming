@@ -108,6 +108,7 @@ $(document).ready(function(){initNavTree('classMemoryDataStream.html','');});
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classMemoryDataStream-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">MemoryDataStream Class Reference<div class="ingroups"><a class="el" href="group__stream.html">Stream functions</a></div></div>  </div>
@@ -124,10 +125,11 @@ Inheritance diagram for MemoryDataStream:</div>
  <div class="center">
   <img src="classMemoryDataStream.png" usemap="#MemoryDataStream_map" alt=""/>
   <map id="MemoryDataStream_map" name="MemoryDataStream_map">
-<area href="classPrint.html" title="Provides formatted output to stream. " alt="Print" shape="rect" coords="0,56,123,80"/>
-<area href="classReadWriteStream.html" alt="ReadWriteStream" shape="rect" coords="133,56,256,80"/>
-<area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="133,0,256,24"/>
-<area href="classJsonObjectStream.html" title="JSON object stream class. " alt="JsonObjectStream" shape="rect" coords="66,168,189,192"/>
+<area href="classReadWriteStream.html" alt="ReadWriteStream" shape="rect" coords="0,168,123,192"/>
+<area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="0,112,123,136"/>
+<area href="classStream.html" alt="Stream" shape="rect" coords="0,56,123,80"/>
+<area href="classPrint.html" title="Provides formatted output to stream. " alt="Print" shape="rect" coords="0,0,123,24"/>
+<area href="classJsonObjectStream.html" title="JSON object stream class. " alt="JsonObjectStream" shape="rect" coords="0,280,123,304"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -142,12 +144,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7247e4a9cc863f396ded4175aa1f37d6"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMemoryDataStream.html#a7247e4a9cc863f396ded4175aa1f37d6">getStreamPointer</a> ()</td></tr>
 <tr class="memdesc:a7247e4a9cc863f396ded4175aa1f37d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the current position.  <a href="#a7247e4a9cc863f396ded4175aa1f37d6">More...</a><br/></td></tr>
 <tr class="separator:a7247e4a9cc863f396ded4175aa1f37d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad18f48ef837ad6418d15086ac326f184"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMemoryDataStream.html#ad18f48ef837ad6418d15086ac326f184">getStreamLength</a> ()</td></tr>
-<tr class="memdesc:ad18f48ef837ad6418d15086ac326f184"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get size of stream.  <a href="#ad18f48ef837ad6418d15086ac326f184">More...</a><br/></td></tr>
-<tr class="separator:ad18f48ef837ad6418d15086ac326f184"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6a95640e736c87614a9a7be05546ddc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMemoryDataStream.html#af6a95640e736c87614a9a7be05546ddc">length</a> ()</td></tr>
-<tr class="memdesc:af6a95640e736c87614a9a7be05546ddc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total length of the stream.  <a href="#af6a95640e736c87614a9a7be05546ddc">More...</a><br/></td></tr>
-<tr class="separator:af6a95640e736c87614a9a7be05546ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ad4270fa5b17ff81dac2f68295dd190"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMemoryDataStream.html#a2ad4270fa5b17ff81dac2f68295dd190">available</a> ()</td></tr>
+<tr class="memdesc:a2ad4270fa5b17ff81dac2f68295dd190"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total length of the stream.  <a href="#a2ad4270fa5b17ff81dac2f68295dd190">More...</a><br/></td></tr>
+<tr class="separator:a2ad4270fa5b17ff81dac2f68295dd190"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abcdae6e51c95b60fd496fb8f3c57995c"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMemoryDataStream.html#abcdae6e51c95b60fd496fb8f3c57995c">write</a> (uint8_t charToWrite)</td></tr>
 <tr class="memdesc:abcdae6e51c95b60fd496fb8f3c57995c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a single char to stream.  <a href="#abcdae6e51c95b60fd496fb8f3c57995c">More...</a><br/></td></tr>
 <tr class="separator:abcdae6e51c95b60fd496fb8f3c57995c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -163,18 +162,69 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad8ceecf3ba21b472e7c864474d18f7f3"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3">isFinished</a> ()</td></tr>
 <tr class="memdesc:ad8ceecf3ba21b472e7c864474d18f7f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if stream is finished.  <a href="#ad8ceecf3ba21b472e7c864474d18f7f3">More...</a><br/></td></tr>
 <tr class="separator:ad8ceecf3ba21b472e7c864474d18f7f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88a4a829fb5d589efb43955ad0cbddcc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a88a4a829fb5d589efb43955ad0cbddcc">getWriteError</a> ()</td></tr>
-<tr class="memdesc:a88a4a829fb5d589efb43955ad0cbddcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets last error.  <a href="#a88a4a829fb5d589efb43955ad0cbddcc">More...</a><br/></td></tr>
-<tr class="separator:a88a4a829fb5d589efb43955ad0cbddcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec9ecf84cc6d9087a650def3cefc459e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#aec9ecf84cc6d9087a650def3cefc459e">clearWriteError</a> ()</td></tr>
-<tr class="memdesc:aec9ecf84cc6d9087a650def3cefc459e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the last write error.  <a href="#aec9ecf84cc6d9087a650def3cefc459e">More...</a><br/></td></tr>
-<tr class="separator:aec9ecf84cc6d9087a650def3cefc459e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b40e0e9cab1f2fe5bb0cb22ffe5adda"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a5b40e0e9cab1f2fe5bb0cb22ffe5adda">write</a> (const char *str)</td></tr>
 <tr class="memdesc:a5b40e0e9cab1f2fe5bb0cb22ffe5adda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a c-string to output stream.  <a href="#a5b40e0e9cab1f2fe5bb0cb22ffe5adda">More...</a><br/></td></tr>
 <tr class="separator:a5b40e0e9cab1f2fe5bb0cb22ffe5adda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfdd93a61c4b95a3ba41680188505e73"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#abfdd93a61c4b95a3ba41680188505e73">write</a> (const char *buffer, size_t size)</td></tr>
 <tr class="memdesc:abfdd93a61c4b95a3ba41680188505e73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes characters from a buffer to output stream.  <a href="#abfdd93a61c4b95a3ba41680188505e73">More...</a><br/></td></tr>
 <tr class="separator:abfdd93a61c4b95a3ba41680188505e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace0b653e42b9d8487cf829fedbb734f6"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#ace0b653e42b9d8487cf829fedbb734f6">read</a> ()</td></tr>
+<tr class="memdesc:ace0b653e42b9d8487cf829fedbb734f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read one character and moves the stream pointer.  <a href="#ace0b653e42b9d8487cf829fedbb734f6">More...</a><br/></td></tr>
+<tr class="separator:ace0b653e42b9d8487cf829fedbb734f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf3a3d1a1e1b0412daed308228888ae5"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#aaf3a3d1a1e1b0412daed308228888ae5">peek</a> ()</td></tr>
+<tr class="memdesc:aaf3a3d1a1e1b0412daed308228888ae5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a character without advancing the stream pointer.  <a href="#aaf3a3d1a1e1b0412daed308228888ae5">More...</a><br/></td></tr>
+<tr class="separator:aaf3a3d1a1e1b0412daed308228888ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05ec329ab5b1237777872156d631f68c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a> ()</td></tr>
+<tr class="memdesc:a05ec329ab5b1237777872156d631f68c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total length of the stream.  <a href="#a05ec329ab5b1237777872156d631f68c">More...</a><br/></td></tr>
+<tr class="separator:a05ec329ab5b1237777872156d631f68c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a313fb97e4af1e15ed581674a1ce76d3e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a313fb97e4af1e15ed581674a1ce76d3e"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> ()</td></tr>
+<tr class="separator:a313fb97e4af1e15ed581674a1ce76d3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe31f244917749cf8b343c0249a312c0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0">id</a> ()</td></tr>
+<tr class="memdesc:abe31f244917749cf8b343c0249a312c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique id of the resource.  <a href="#abe31f244917749cf8b343c0249a312c0">More...</a><br/></td></tr>
+<tr class="separator:abe31f244917749cf8b343c0249a312c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a851dd6dc74d52389de04f99648478db5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a851dd6dc74d52389de04f99648478db5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeout</b> (unsigned long timeout)</td></tr>
+<tr class="separator:a851dd6dc74d52389de04f99648478db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bab30ccd324efd461dee46a2339f673"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4bab30ccd324efd461dee46a2339f673"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>find</b> (char *target)</td></tr>
+<tr class="separator:a4bab30ccd324efd461dee46a2339f673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad851401f2318cdb1de05707e021b81d9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad851401f2318cdb1de05707e021b81d9"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>find</b> (char *target, size_t <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a>)</td></tr>
+<tr class="separator:ad851401f2318cdb1de05707e021b81d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1f5f6600832396fb38a897baf4de35b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad1f5f6600832396fb38a897baf4de35b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>findUntil</b> (char *target, char *terminator)</td></tr>
+<tr class="separator:ad1f5f6600832396fb38a897baf4de35b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a9497de614792103ab8cb4759e01a69"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a9497de614792103ab8cb4759e01a69"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>findUntil</b> (char *target, size_t targetLen, char *terminate, size_t termLen)</td></tr>
+<tr class="separator:a3a9497de614792103ab8cb4759e01a69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a497ffcbcb4d5bb889a8fde487bcc1b98"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a497ffcbcb4d5bb889a8fde487bcc1b98"></a>
+long&#160;</td><td class="memItemRight" valign="bottom"><b>parseInt</b> ()</td></tr>
+<tr class="separator:a497ffcbcb4d5bb889a8fde487bcc1b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e5a0cc11eb586d89dcb7fa8e53a87e8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5e5a0cc11eb586d89dcb7fa8e53a87e8"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>parseFloat</b> ()</td></tr>
+<tr class="separator:a5e5a0cc11eb586d89dcb7fa8e53a87e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45fd1336a323ea83b16e8507055f44ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a45fd1336a323ea83b16e8507055f44ea"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>readBytes</b> (char *buffer, size_t <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a>)</td></tr>
+<tr class="separator:a45fd1336a323ea83b16e8507055f44ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84672a4fb2620466958d3118d4fea00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af84672a4fb2620466958d3118d4fea00"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>readBytesUntil</b> (char terminator, char *buffer, size_t <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a>)</td></tr>
+<tr class="separator:af84672a4fb2620466958d3118d4fea00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c60bdda2b65d78e5a1362d51b856c5a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c60bdda2b65d78e5a1362d51b856c5a"></a>
+<a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>readString</b> ()</td></tr>
+<tr class="separator:a1c60bdda2b65d78e5a1362d51b856c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a409da87c552909260d8cc428c5ca70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a409da87c552909260d8cc428c5ca70"></a>
+<a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>readStringUntil</b> (char terminator)</td></tr>
+<tr class="separator:a6a409da87c552909260d8cc428c5ca70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f934a5188da7f6a1c437c26755a2a42"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f934a5188da7f6a1c437c26755a2a42"></a>
+virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (char c)</td></tr>
+<tr class="separator:a0f934a5188da7f6a1c437c26755a2a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88a4a829fb5d589efb43955ad0cbddcc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a88a4a829fb5d589efb43955ad0cbddcc">getWriteError</a> ()</td></tr>
+<tr class="memdesc:a88a4a829fb5d589efb43955ad0cbddcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets last error.  <a href="#a88a4a829fb5d589efb43955ad0cbddcc">More...</a><br/></td></tr>
+<tr class="separator:a88a4a829fb5d589efb43955ad0cbddcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec9ecf84cc6d9087a650def3cefc459e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#aec9ecf84cc6d9087a650def3cefc459e">clearWriteError</a> ()</td></tr>
+<tr class="memdesc:aec9ecf84cc6d9087a650def3cefc459e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the last write error.  <a href="#aec9ecf84cc6d9087a650def3cefc459e">More...</a><br/></td></tr>
+<tr class="separator:aec9ecf84cc6d9087a650def3cefc459e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e411d07a8ffec5faf7ce485bac0f029"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a1e411d07a8ffec5faf7ce485bac0f029">print</a> (char)</td></tr>
 <tr class="memdesc:a1e411d07a8ffec5faf7ce485bac0f029"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a single character to output stream.  <a href="#a1e411d07a8ffec5faf7ce485bac0f029">More...</a><br/></td></tr>
 <tr class="separator:a1e411d07a8ffec5faf7ce485bac0f029"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -241,15 +291,36 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>println</b> (unsign
 <tr class="memitem:a67aa459464b181ee200e9173e53b11ff"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a67aa459464b181ee200e9173e53b11ff">printf</a> (const char *fmt,...)</td></tr>
 <tr class="memdesc:a67aa459464b181ee200e9173e53b11ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a formatted c-string to output stream.  <a href="#a67aa459464b181ee200e9173e53b11ff">More...</a><br/></td></tr>
 <tr class="separator:a67aa459464b181ee200e9173e53b11ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe31f244917749cf8b343c0249a312c0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0">id</a> ()</td></tr>
-<tr class="memdesc:abe31f244917749cf8b343c0249a312c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique id of the resource.  <a href="#abe31f244917749cf8b343c0249a312c0">More...</a><br/></td></tr>
-<tr class="separator:abe31f244917749cf8b343c0249a312c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
+<tr class="memitem:a416a0ada5ed3c9d27f1e72c7d73f0aa1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a416a0ada5ed3c9d27f1e72c7d73f0aa1"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>timedRead</b> ()</td></tr>
+<tr class="separator:a416a0ada5ed3c9d27f1e72c7d73f0aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae326bf60a3c5276836526710871046fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae326bf60a3c5276836526710871046fe"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>timedPeek</b> ()</td></tr>
+<tr class="separator:ae326bf60a3c5276836526710871046fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab31c533ddc422c8d8df07986e5920534"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab31c533ddc422c8d8df07986e5920534"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>peekNextDigit</b> ()</td></tr>
+<tr class="separator:ab31c533ddc422c8d8df07986e5920534"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4578615defade6c4ce7daeb6578bb62d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4578615defade6c4ce7daeb6578bb62d"></a>
+long&#160;</td><td class="memItemRight" valign="bottom"><b>parseInt</b> (char skipChar)</td></tr>
+<tr class="separator:a4578615defade6c4ce7daeb6578bb62d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14a98cdbb166008f25dd044d836b1864"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14a98cdbb166008f25dd044d836b1864"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>parseFloat</b> (char skipChar)</td></tr>
+<tr class="separator:a14a98cdbb166008f25dd044d836b1864"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46656410e23c0ec14d7a01b38b3b6f00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a46656410e23c0ec14d7a01b38b3b6f00"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (int err=1)</td></tr>
 <tr class="separator:a46656410e23c0ec14d7a01b38b3b6f00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:aae48f1a926d2e82a452f2c75af0c6a29"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae48f1a926d2e82a452f2c75af0c6a29"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_timeout</b></td></tr>
+<tr class="separator:aae48f1a926d2e82a452f2c75af0c6a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf61d2006d28d18f2e028285a323fe5a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf61d2006d28d18f2e028285a323fe5a"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis</b></td></tr>
+<tr class="separator:abf61d2006d28d18f2e028285a323fe5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Memory data stream class. </p>
@@ -272,6 +343,41 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a2ad4270fa5b17ff81dac2f68295dd190"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int MemoryDataStream::available </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the total length of the stream. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">int</td><td>-1 is returned when the size cannot be determined </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="classIDataSourceStream.html#aaa8b8889df84efdb3c030e6d11d0bb4e">IDataSourceStream</a>.</p>
+
+<p>Reimplemented in <a class="el" href="classJsonObjectStream.html#ae78b14c9b4177413eaffcc756f9ebe9c">JsonObjectStream</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="aec9ecf84cc6d9087a650def3cefc459e"></a>
 <div class="memitem">
 <div class="memproto">
@@ -294,38 +400,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 </div><div class="memdoc">
 
 <p>Clears the last write error. </p>
-
-</div>
-</div>
-<a class="anchor" id="ad18f48ef837ad6418d15086ac326f184"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int MemoryDataStream::getStreamLength </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get size of stream. </p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">int</td><td>Quantity of chars in stream</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Use <a class="el" href="classMemoryDataStream.html#af6a95640e736c87614a9a7be05546ddc" title="Return the total length of the stream. ">length()</a> instead </dd></dl>
 
 </div>
 </div>
@@ -493,7 +567,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 
 </div>
 </div>
-<a class="anchor" id="af6a95640e736c87614a9a7be05546ddc"></a>
+<a class="anchor" id="a05ec329ab5b1237777872156d631f68c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -501,7 +575,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int MemoryDataStream::length </td>
+          <td class="memname">int IDataSourceStream::length </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -509,7 +583,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -517,14 +591,44 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 <p>Return the total length of the stream. </p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">int</td><td>-1 is returned when the size cannot be determined </td></tr>
+    <tr><td class="paramname">int</td><td>-1 is returned when the size cannot be determined</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>This method is deprecated and will be removed in the coming versions. Please, use <a class="el" href="classIDataSourceStream.html#aaa8b8889df84efdb3c030e6d11d0bb4e" title="Return the total length of the stream. ">available()</a> instead. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aaf3a3d1a1e1b0412daed308228888ae5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int IDataSourceStream::peek </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read a character without advancing the stream pointer. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">The</td><td>character that was read or -1 if none is available </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classIDataSourceStream.html#ae13014db9d7b133c58eaf27a8f1d24f5">IDataSourceStream</a>.</p>
-
-<p>Reimplemented in <a class="el" href="classJsonObjectStream.html#a5129ca6b7e91865489aa2e98ba2d314f">JsonObjectStream</a>.</p>
+<p>Implements <a class="el" href="classStream.html">Stream</a>.</p>
 
 </div>
 </div>
@@ -1374,6 +1478,39 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 
 </div>
 </div>
+<a class="anchor" id="ace0b653e42b9d8487cf829fedbb734f6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int IDataSourceStream::read </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read one character and moves the stream pointer. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">The</td><td>character that was read or -1 if none is available </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classStream.html">Stream</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a9f8d375068f30fa0f56bd7b338f6e7aa"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1591,7 +1728,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classReadWriteStream.html">ReadWriteStream</a>.</p>
+<p>Implements <a class="el" href="classReadWriteStream.html#a3ebf31faca185807abbbcfdb5b0f8d4a">ReadWriteStream</a>.</p>
 
 </div>
 </div>

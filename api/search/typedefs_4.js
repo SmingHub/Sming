@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['timerdelegate',['TimerDelegate',['../group__hwtimer.html#ga93d562e52fc07827ebbe376132026297',1,'HardwareTimer.h']]]
+  ['nextoucheventcb',['NexTouchEventCb',['../group__TouchEvent.html#ga162dea47b078e8878d10d6981a9dd0c6',1,'NexTouch.h']]]
 ];

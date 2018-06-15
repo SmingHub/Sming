@@ -184,7 +184,7 @@ $(document).ready(function(){initNavTree('TcpConnection_8h_source.html','');});
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classTcpConnection.html">TcpConnection</a>();</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> connect(<a class="code" href="classString.html">String</a> server, <span class="keywordtype">int</span> port, <span class="keywordtype">bool</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> connect(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; server, <span class="keywordtype">int</span> port, <span class="keywordtype">bool</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> connect(<a class="code" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, <span class="keywordtype">bool</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> close();</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
@@ -206,75 +206,91 @@ $(document).ready(function(){initNavTree('TcpConnection_8h_source.html','');});
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="preprocessor"></span>    <span class="keywordtype">void</span> addSslOptions(uint32_t sslOptions);</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    __forceinline <span class="keywordtype">bool</span> setSslFingerprint(<span class="keyword">const</span> uint8_t *data, <span class="keywordtype">int</span> length = SHA1_SIZE) {</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        <span class="keywordflow">return</span> pinCertificate(data, eSFT_CertSha1);</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    }</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    <span class="keywordtype">bool</span> pinCertificate(<span class="keyword">const</span> uint8_t *fingerprint, SslFingerprintType type, <span class="keywordtype">bool</span> freeAfterHandshake = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    <span class="keywordtype">bool</span> pinCertificate(SSLFingerprints fingerprints, <span class="keywordtype">bool</span> freeAfterHandshake = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keywordtype">bool</span> setSslClientKeyCert(<span class="keyword">const</span> uint8_t *key, <span class="keywordtype">int</span> keyLength,</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;                             <span class="keyword">const</span> uint8_t *certificate, <span class="keywordtype">int</span> certificateLength,</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;                             <span class="keyword">const</span> <span class="keywordtype">char</span> *keyPassword = NULL, <span class="keywordtype">bool</span> freeAfterHandshake = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="keywordtype">bool</span> setSslClientKeyCert(SSLKeyCertPair clientKeyCert, <span class="keywordtype">bool</span> freeAfterHandshake = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="keywordtype">void</span> freeSslClientKeyCert();</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <span class="keywordtype">void</span> freeSslFingerprints();</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    SSL* getSsl();</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    <span class="keywordtype">bool</span> internalTcpConnect(<a class="code" href="classIPAddress.html">IPAddress</a> addr, uint16_t port);</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    <span class="keyword">virtual</span> err_t onConnected(err_t err);</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <span class="keyword">virtual</span> err_t onReceive(pbuf *buf);</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <span class="keyword">virtual</span> err_t onSent(uint16_t len);</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <span class="keyword">virtual</span> err_t onPoll();</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onError(err_t err);</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReadyToSendData(TcpConnectionEvent sourceEvent);</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    <span class="keyword">static</span> err_t staticOnConnected(<span class="keywordtype">void</span> *arg, tcp_pcb *tcp, err_t err);</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <span class="keyword">static</span> err_t staticOnReceive(<span class="keywordtype">void</span> *arg, tcp_pcb *tcp, pbuf *p, err_t err);</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <span class="keyword">static</span> err_t staticOnSent(<span class="keywordtype">void</span> *arg, tcp_pcb *tcp, uint16_t len);</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keyword">static</span> err_t staticOnPoll(<span class="keywordtype">void</span> *arg, tcp_pcb *tcp);</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> staticOnError(<span class="keywordtype">void</span> *arg, err_t err);</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> staticDnsResponse(<span class="keyword">const</span> <span class="keywordtype">char</span> *name, LWIP_IP_ADDR_T *ipaddr, <span class="keywordtype">void</span> *arg);</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> closeTcpConnection(tcp_pcb *tpcb);</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    <span class="keywordtype">void</span> initialize(tcp_pcb* pcb);</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> checkSelfFree() { <span class="keywordflow">if</span> (tcp == NULL &amp;&amp; autoSelfDestruct) <span class="keyword">delete</span> <span class="keyword">this</span>; }</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    tcp_pcb *tcp = NULL;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    uint16_t sleep;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    uint16_t timeOut;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="keywordtype">bool</span> canSend;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <span class="keywordtype">bool</span> autoSelfDestruct;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="preprocessor"></span>    SSL *ssl = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    SSLCTX *sslContext = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    SSL_EXTENSIONS *sslExtension=NULL;</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    SSLFingerprints sslFingerprint;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    <span class="keywordtype">bool</span> sslConnected = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    uint32_t sslOptions=0;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    SSLKeyCertPair clientKeyCert;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keywordtype">bool</span> freeClientKeyCert = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordtype">bool</span> freeFingerprints = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    SSLSessionId* sslSessionId = NULL;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="preprocessor"></span>    <span class="keywordtype">bool</span> useSsl = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <a class="code" href="classDelegate.html">TcpConnectionDestroyedDelegate</a> destroyedDelegate = 0;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;};</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_TCPCONNECTION_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classIDataSourceStream_html"><div class="ttname"><a href="classIDataSourceStream.html">IDataSourceStream</a></div><div class="ttdoc">Base class for data source stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:49</div></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="comment">// start deprecated</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="comment"></span>    <span class="keywordtype">bool</span> setSslClientKeyCert(<span class="keyword">const</span> uint8_t *key, <span class="keywordtype">int</span> keyLength,</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;                             <span class="keyword">const</span> uint8_t *certificate, <span class="keywordtype">int</span> certificateLength,</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                             <span class="keyword">const</span> <span class="keywordtype">char</span> *keyPassword = NULL, <span class="keywordtype">bool</span> freeAfterHandshake = <span class="keyword">false</span>)</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    {</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        <span class="keywordflow">return</span> setSslKeyCert(key, keyLength, certificate, certificateLength,</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;                             keyPassword, freeAfterHandshake);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    }</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    <span class="keywordtype">bool</span> setSslClientKeyCert(<span class="keyword">const</span> SSLKeyCertPair&amp; clientKeyCert, <span class="keywordtype">bool</span> freeAfterHandshake = <span class="keyword">false</span>)</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    {</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        <span class="keywordflow">return</span> setSslKeyCert(clientKeyCert, freeAfterHandshake);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    }</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    <span class="keywordtype">void</span> freeSslClientKeyCert()</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    {</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        freeSslKeyCert();</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    }</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="comment">// end deprecated</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    <span class="keywordtype">bool</span> setSslKeyCert(<span class="keyword">const</span> uint8_t *key, <span class="keywordtype">int</span> keyLength,</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;                             <span class="keyword">const</span> uint8_t *certificate, <span class="keywordtype">int</span> certificateLength,</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                             <span class="keyword">const</span> <span class="keywordtype">char</span> *keyPassword = NULL, <span class="keywordtype">bool</span> freeAfterHandshake = <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <span class="keywordtype">bool</span> setSslKeyCert(<span class="keyword">const</span> SSLKeyCertPair&amp; keyCert, <span class="keywordtype">bool</span> freeAfterHandshake = <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <span class="keywordtype">void</span> freeSslKeyCert();</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    SSL* getSsl();</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    <span class="keywordtype">bool</span> internalTcpConnect(<a class="code" href="classIPAddress.html">IPAddress</a> addr, uint16_t port);</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <span class="keyword">virtual</span> err_t onConnected(err_t err);</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <span class="keyword">virtual</span> err_t onReceive(pbuf *buf);</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keyword">virtual</span> err_t onSent(uint16_t len);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    <span class="keyword">virtual</span> err_t onPoll();</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onError(err_t err);</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReadyToSendData(TcpConnectionEvent sourceEvent);</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="preprocessor"></span>    <span class="keyword">virtual</span> err_t onSslConnected(SSL *ssl);</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <span class="keyword">static</span> err_t staticOnConnected(<span class="keywordtype">void</span> *arg, tcp_pcb *tcp, err_t err);</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    <span class="keyword">static</span> err_t staticOnReceive(<span class="keywordtype">void</span> *arg, tcp_pcb *tcp, pbuf *p, err_t err);</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    <span class="keyword">static</span> err_t staticOnSent(<span class="keywordtype">void</span> *arg, tcp_pcb *tcp, uint16_t len);</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="keyword">static</span> err_t staticOnPoll(<span class="keywordtype">void</span> *arg, tcp_pcb *tcp);</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> staticOnError(<span class="keywordtype">void</span> *arg, err_t err);</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> staticDnsResponse(<span class="keyword">const</span> <span class="keywordtype">char</span> *name, LWIP_IP_ADDR_T *ipaddr, <span class="keywordtype">void</span> *arg);</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> closeTcpConnection(tcp_pcb *tpcb);</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keywordtype">void</span> initialize(tcp_pcb* pcb);</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> checkSelfFree() { <span class="keywordflow">if</span> (tcp == NULL &amp;&amp; autoSelfDestruct) <span class="keyword">delete</span> <span class="keyword">this</span>; }</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    tcp_pcb *tcp = NULL;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    uint16_t sleep;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    uint16_t timeOut;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordtype">bool</span> canSend;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    <span class="keywordtype">bool</span> autoSelfDestruct;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="preprocessor"></span>    SSL *ssl = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    SSLCTX *sslContext = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    SSL_EXTENSIONS *sslExtension=<span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <span class="keywordtype">bool</span> sslConnected = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    uint32_t sslOptions=0;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    SSLKeyCertPair sslKeyCert;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <span class="keywordtype">bool</span> freeKeyCert = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    SSLSessionId* sslSessionId = NULL;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="preprocessor"></span>    <span class="keywordtype">bool</span> useSsl = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <a class="code" href="classDelegate.html">TcpConnectionDestroyedDelegate</a> destroyedDelegate = 0;</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="preprocessor"></span>    <span class="keywordtype">void</span> closeSsl();</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="preprocessor"></span>};</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_TCPCONNECTION_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classIDataSourceStream_html"><div class="ttname"><a href="classIDataSourceStream.html">IDataSourceStream</a></div><div class="ttdoc">Base class for data source stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:48</div></div>
 <div class="ttc" id="classTcpConnection_html"><div class="ttname"><a href="classTcpConnection.html">TcpConnection</a></div><div class="ttdef"><b>Definition:</b> TcpConnection.h:79</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(TcpConnection &amp;)&gt;</a></div></div>
@@ -286,7 +302,7 @@ $(document).ready(function(){initNavTree('TcpConnection_8h_source.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_2ed575006c7d0647b9e44f569fa9afde.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_17729ed7f3af1a7565eb1ef720d466c9.html">Network</a></li><li class="navelem"><b>TcpConnection.h</b></li>
+    <li class="navelem"><a class="el" href="dir_b4c9897f718d9414148b24a4e5afb621.html">Sming</a></li><li class="navelem"><a class="el" href="dir_e684d698d8909caa82858f24d2993ae0.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_1080abda974dde0433d7a42c06142e84.html">Network</a></li><li class="navelem"><b>TcpConnection.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

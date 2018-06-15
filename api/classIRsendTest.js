@@ -1,0 +1,26 @@
+var classIRsendTest =
+[
+    [ "IRsendTest", "classIRsendTest.html#a7de52c2aced959e883f587c3d5fd1e06", null ],
+    [ "addGap", "classIRsendTest.html#a5d66a2fe499153629d15582cf9227627", null ],
+    [ "begin", "classIRsendTest.html#a386f026bf739b0718efde4cffa6ce129", null ],
+    [ "calibrate", "classIRsendTest.html#a52fc673e2b4d8d5b7a4bf21d9dff7508", null ],
+    [ "dumpRawResult", "classIRsendTest.html#a041b8ea2ced4ac48b528783eaaf520c3", null ],
+    [ "enableIROut", "classIRsendTest.html#aed0028055cae5862e14d00e87ee6f6bf", null ],
+    [ "makeDecodeResult", "classIRsendTest.html#a44d79549ec9282a0dfe25805aca9d589", null ],
+    [ "mark", "classIRsendTest.html#a6966b674f47cae5ab52e74b8916a60a2", null ],
+    [ "outputStr", "classIRsendTest.html#a0b950a2f252dfa7bc6240c3b50295a73", null ],
+    [ "reset", "classIRsendTest.html#ada21c645c36b080945f1e1a81a232b36", null ],
+    [ "send", "classIRsendTest.html#ada3686c468d1c50f20e53d27ee3ec0b2", null ],
+    [ "sendData", "classIRsendTest.html#a4f8cd77dab7ce6c406029fe87674858f", null ],
+    [ "sendGeneric", "classIRsendTest.html#a5215fd797dfd490816f31bb99b38c273", null ],
+    [ "sendGeneric", "classIRsendTest.html#aaace48306af9c020c18848db1a05e641", null ],
+    [ "sendGeneric", "classIRsendTest.html#a4f5ad649827692b4b42d15b45c7f684b", null ],
+    [ "sendRaw", "classIRsendTest.html#af71c3682b670308aea1404e4858c56e6", null ],
+    [ "space", "classIRsendTest.html#a45e33443a38d0fa87c6eb15528327df6", null ],
+    [ "capture", "classIRsendTest.html#a419b1a9824cc0912e194c326d37c905f", null ],
+    [ "last", "classIRsendTest.html#ac6d75e34e6209d2e8ce6ca136b497ee5", null ],
+    [ "output", "classIRsendTest.html#a255c78b9dbf04cf36f0cb53f0571de10", null ],
+    [ "outputOff", "classIRsendTest.html#a5e80df8b2ee534dbd6ddc30a852a2791", null ],
+    [ "outputOn", "classIRsendTest.html#a4acfc45b339e724e2dbdff24762dfa7d", null ],
+    [ "rawbuf", "classIRsendTest.html#a31723f8cc72247dae2dc07961a002c7a", null ]
+];

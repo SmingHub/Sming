@@ -128,12 +128,18 @@ Inheritance diagram for MqttClient:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae81fd0caf267d95579f2b17689a94b9d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae81fd0caf267d95579f2b17689a94b9d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MqttClient</b> (<a class="el" href="classString.html">String</a> serverHost, int serverPort, <a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a> callback=NULL)</td></tr>
+<tr class="memitem:aca826499db4be9e37d7fff152920c2c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aca826499db4be9e37d7fff152920c2c7"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MqttClient</b> (bool autoDestruct=false)</td></tr>
+<tr class="separator:aca826499db4be9e37d7fff152920c2c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae81fd0caf267d95579f2b17689a94b9d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#ae81fd0caf267d95579f2b17689a94b9d">MqttClient</a> (<a class="el" href="classString.html">String</a> serverHost, int serverPort, <a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a> callback=NULL)</td></tr>
+<tr class="memdesc:ae81fd0caf267d95579f2b17689a94b9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an MQTT client.  <a href="#ae81fd0caf267d95579f2b17689a94b9d">More...</a><br/></td></tr>
 <tr class="separator:ae81fd0caf267d95579f2b17689a94b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96ab456e6b4d872eddf26e7e454dd2de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a96ab456e6b4d872eddf26e7e454dd2de"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MqttClient</b> (<a class="el" href="classIPAddress.html">IPAddress</a> serverIp, int serverPort, <a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a> callback=NULL)</td></tr>
+<tr class="memitem:a96ab456e6b4d872eddf26e7e454dd2de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a96ab456e6b4d872eddf26e7e454dd2de">MqttClient</a> (<a class="el" href="classIPAddress.html">IPAddress</a> serverIp, int serverPort, <a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a> callback=NULL)</td></tr>
+<tr class="memdesc:a96ab456e6b4d872eddf26e7e454dd2de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an MQTT client.  <a href="#a96ab456e6b4d872eddf26e7e454dd2de">More...</a><br/></td></tr>
 <tr class="separator:a96ab456e6b4d872eddf26e7e454dd2de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08119a1be647d78053ded9956c8a4c06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a08119a1be647d78053ded9956c8a4c06">setCallback</a> (<a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a> subscriptionCallback=NULL)</td></tr>
+<tr class="memdesc:a08119a1be647d78053ded9956c8a4c06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provide a funcion to be called when a message is received from the broker.  <a href="#a08119a1be647d78053ded9956c8a4c06">More...</a><br/></td></tr>
+<tr class="separator:a08119a1be647d78053ded9956c8a4c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf4a81cdeeaeaa10ce6ade5471919688"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf4a81cdeeaeaa10ce6ade5471919688"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setKeepAlive</b> (int seconds)</td></tr>
 <tr class="separator:abf4a81cdeeaeaa10ce6ade5471919688"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,11 +149,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setPingRepeatTime</b>
 <tr class="memitem:aaa0e59ce9d22a30b6079ca597ab03881"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaa0e59ce9d22a30b6079ca597ab03881"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>setWill</b> (const <a class="el" href="classString.html">String</a> &amp;topic, const <a class="el" href="classString.html">String</a> &amp;message, int QoS, bool retained=false)</td></tr>
 <tr class="separator:aaa0e59ce9d22a30b6079ca597ab03881"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cd10cecb2ca557b7d77e2e6a4d50116"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3cd10cecb2ca557b7d77e2e6a4d50116"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (const <a class="el" href="classString.html">String</a> &amp;clientName, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="memitem:a894bac3f513eec987e979ecf2b050797"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a894bac3f513eec987e979ecf2b050797">connect</a> (const <a class="el" href="classURL.html">URL</a> &amp;url, const <a class="el" href="classString.html">String</a> &amp;uniqueClientName, uint32_t sslOptions=0)</td></tr>
+<tr class="memdesc:a894bac3f513eec987e979ecf2b050797"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect to a MQTT server.  <a href="#a894bac3f513eec987e979ecf2b050797">More...</a><br/></td></tr>
+<tr class="separator:a894bac3f513eec987e979ecf2b050797"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cd10cecb2ca557b7d77e2e6a4d50116"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a3cd10cecb2ca557b7d77e2e6a4d50116">connect</a> (const <a class="el" href="classString.html">String</a> &amp;clientName, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="memdesc:a3cd10cecb2ca557b7d77e2e6a4d50116"><td class="mdescLeft">&#160;</td><td class="mdescRight">connect  <a href="#a3cd10cecb2ca557b7d77e2e6a4d50116">More...</a><br/></td></tr>
 <tr class="separator:a3cd10cecb2ca557b7d77e2e6a4d50116"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6ee6d98c3810d5f3ef6b8f593bbd4c5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa6ee6d98c3810d5f3ef6b8f593bbd4c5"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (const <a class="el" href="classString.html">String</a> &amp;clientName, const <a class="el" href="classString.html">String</a> &amp;username, const <a class="el" href="classString.html">String</a> &amp;password, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="memitem:aa6ee6d98c3810d5f3ef6b8f593bbd4c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#aa6ee6d98c3810d5f3ef6b8f593bbd4c5">connect</a> (const <a class="el" href="classString.html">String</a> &amp;clientName, const <a class="el" href="classString.html">String</a> &amp;username, const <a class="el" href="classString.html">String</a> &amp;password, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="memdesc:aa6ee6d98c3810d5f3ef6b8f593bbd4c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">connect  <a href="#aa6ee6d98c3810d5f3ef6b8f593bbd4c5">More...</a><br/></td></tr>
 <tr class="separator:aa6ee6d98c3810d5f3ef6b8f593bbd4c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae79eaa6ffbd4b60073660f19372bb231"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae79eaa6ffbd4b60073660f19372bb231"></a>
 __forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>isProcessing</b> ()</td></tr>
@@ -185,9 +194,9 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (
 <tr class="memitem:a1d0685ac523f6e6ac2d5a6993172feb3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d0685ac523f6e6ac2d5a6993172feb3"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
 <tr class="separator:a1d0685ac523f6e6ac2d5a6993172feb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76541f4efb80f01242580fa729a0fb86"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a76541f4efb80f01242580fa729a0fb86"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a76541f4efb80f01242580fa729a0fb86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5d59b160b1c0decdf21ea34858f5729"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae5d59b160b1c0decdf21ea34858f5729"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (const <a class="el" href="classString.html">String</a> &amp;server, int port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="separator:ae5d59b160b1c0decdf21ea34858f5729"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c91997d5656394ae74d5dbf105d6006"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c91997d5656394ae74d5dbf105d6006"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
 <tr class="separator:a9c91997d5656394ae74d5dbf105d6006"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -312,7 +321,219 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>autoSelfDestruct</b><
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</td></tr>
 <tr class="separator:a1f713f30d71b5015ae1ee0cf98607298"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="ae81fd0caf267d95579f2b17689a94b9d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MqttClient::MqttClient </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classString.html">String</a>&#160;</td>
+          <td class="paramname"><em>serverHost</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>serverPort</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a>&#160;</td>
+          <td class="paramname"><em>callback</em> = <code>NULL</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct an MQTT client. </p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000012">Deprecated:</a></b></dt><dd>Use instead the empty contructor </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a96ab456e6b4d872eddf26e7e454dd2de"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MqttClient::MqttClient </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classIPAddress.html">IPAddress</a>&#160;</td>
+          <td class="paramname"><em>serverIp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>serverPort</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a>&#160;</td>
+          <td class="paramname"><em>callback</em> = <code>NULL</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct an MQTT client. </p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000013">Deprecated:</a></b></dt><dd>Use instead the empty contructor </dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a894bac3f513eec987e979ecf2b050797"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MqttClient::connect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classURL.html">URL</a> &amp;&#160;</td>
+          <td class="paramname"><em>url</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>uniqueClientName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>sslOptions</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Connect to a MQTT server. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">url,in</td><td>the form "mttqs://user:password@server:port" </td></tr>
+    <tr><td class="paramname">client</td><td>name </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a3cd10cecb2ca557b7d77e2e6a4d50116"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MqttClient::connect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>clientName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">boolean&#160;</td>
+          <td class="paramname"><em>useSsl</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>sslOptions</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>connect </p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000014">Deprecated:</a></b></dt><dd>Use connect(const String&amp; url, const String&amp; uniqueClientName) instead </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aa6ee6d98c3810d5f3ef6b8f593bbd4c5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MqttClient::connect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>clientName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>username</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>password</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">boolean&#160;</td>
+          <td class="paramname"><em>useSsl</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>sslOptions</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>connect </p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000015">Deprecated:</a></b></dt><dd>Use connect(const String&amp; url, const String&amp; uniqueClientName) instead </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a08119a1be647d78053ded9956c8a4c06"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MqttClient::setCallback </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a>&#160;</td>
+          <td class="paramname"><em>subscriptionCallback</em> = <code>NULL</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Provide a funcion to be called when a message is received from the broker. </p>
+
+</div>
+</div>
 <a class="anchor" id="abf18cea760e8efbf3a204b4e6d4055c3"></a>
 <div class="memitem">
 <div class="memproto">

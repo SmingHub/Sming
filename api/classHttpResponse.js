@@ -2,6 +2,7 @@ var classHttpResponse =
 [
     [ "~HttpResponse", "classHttpResponse.html#a7dc8102dcf63b07b9bf3c3dfed468857", null ],
     [ "forbidden", "classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad", null ],
+    [ "getBody", "classHttpResponse.html#ad000404b64f388ec64c42b4a641e29b5", null ],
     [ "hasHeader", "classHttpResponse.html#ad1c9a755c9e7c174f42dd72c5609dbf6", null ],
     [ "notFound", "classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b", null ],
     [ "redirect", "classHttpResponse.html#a853e7135761d83fc6a739aa311f3f7cb", null ],

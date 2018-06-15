@@ -107,6 +107,7 @@ $(document).ready(function(){initNavTree('classIRrecv.html','');});
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classIRrecv-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">IRrecv Class Reference</div>  </div>
@@ -115,15 +116,12 @@ $(document).ready(function(){initNavTree('classIRrecv.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7f8c58a1fd314b6138936bb0a25e472b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f8c58a1fd314b6138936bb0a25e472b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>IRrecv</b> (int recvpin)</td></tr>
-<tr class="separator:a7f8c58a1fd314b6138936bb0a25e472b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70b490dc948700cce0d25b3b54e82a4b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a70b490dc948700cce0d25b3b54e82a4b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>blink13</b> (int blinkflag)</td></tr>
-<tr class="separator:a70b490dc948700cce0d25b3b54e82a4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a665230797a37c65181635dcf478deff9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a665230797a37c65181635dcf478deff9"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>decode</b> (<a class="el" href="classdecode__results.html">decode_results</a> *results)</td></tr>
-<tr class="separator:a665230797a37c65181635dcf478deff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cdaf294c1da0574ca8a12d25d3184f1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7cdaf294c1da0574ca8a12d25d3184f1"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>IRrecv</b> (uint16_t recvpin, uint16_t bufsize=RAWBUF, uint8_t timeout=TIMEOUT_MS)</td></tr>
+<tr class="separator:a7cdaf294c1da0574ca8a12d25d3184f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9dc2f156bd751ecd4ad50dc6b96ee4d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa9dc2f156bd751ecd4ad50dc6b96ee4d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>decode</b> (<a class="el" href="classdecode__results.html">decode_results</a> *results)</td></tr>
+<tr class="separator:aa9dc2f156bd751ecd4ad50dc6b96ee4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69d3e9314aea4a37b43b74a0b4f3f976"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a69d3e9314aea4a37b43b74a0b4f3f976"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>enableIRIn</b> ()</td></tr>
 <tr class="separator:a69d3e9314aea4a37b43b74a0b4f3f976"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,6 +131,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>disableIRIn</b> ()</t
 <tr class="memitem:af40f1e16b1cc911e47ac3f0a9b3b1ec5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af40f1e16b1cc911e47ac3f0a9b3b1ec5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>resume</b> ()</td></tr>
 <tr class="separator:af40f1e16b1cc911e47ac3f0a9b3b1ec5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c45fc307f5722d6ea8510402fe2eb93"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5c45fc307f5722d6ea8510402fe2eb93"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>getBufSize</b> ()</td></tr>
+<tr class="separator:a5c45fc307f5722d6ea8510402fe2eb93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a5436bc8399719f579cf5c1da9030089d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5436bc8399719f579cf5c1da9030089d"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>match</b> (uint32_t measured, uint32_t desired, uint8_t tolerance=TOLERANCE, uint16_t delta=0)</td></tr>
+<tr class="separator:a5436bc8399719f579cf5c1da9030089d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a372f964578b27e402280256c33c206e9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a372f964578b27e402280256c33c206e9"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>matchMark</b> (uint32_t measured, uint32_t desired, uint8_t tolerance=TOLERANCE, int16_t excess=MARK_EXCESS)</td></tr>
+<tr class="separator:a372f964578b27e402280256c33c206e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c2d56acb20257e8d6513c35c7efe871"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6c2d56acb20257e8d6513c35c7efe871"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>matchSpace</b> (uint32_t measured, uint32_t desired, uint8_t tolerance=TOLERANCE, int16_t excess=MARK_EXCESS)</td></tr>
+<tr class="separator:a6c2d56acb20257e8d6513c35c7efe871"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

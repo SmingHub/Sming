@@ -120,9 +120,21 @@ Inheritance diagram for Stream:</div>
  <div class="center">
   <img src="classStream.png" usemap="#Stream_map" alt=""/>
   <map id="Stream_map" name="Stream_map">
-<area href="classPrint.html" title="Provides formatted output to stream. " alt="Print" shape="rect" coords="55,0,156,24"/>
-<area href="classHardwareSerial.html" title="Hardware serial class. " alt="HardwareSerial" shape="rect" coords="0,112,101,136"/>
-<area href="classTwoWire.html" alt="TwoWire" shape="rect" coords="111,112,212,136"/>
+<area href="classPrint.html" title="Provides formatted output to stream. " alt="Print" shape="rect" coords="163,0,316,24"/>
+<area href="classHardwareSerial.html" title="Hardware serial class. " alt="HardwareSerial" shape="rect" coords="0,112,153,136"/>
+<area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="163,112,316,136"/>
+<area href="classTwoWire.html" alt="TwoWire" shape="rect" coords="326,112,479,136"/>
+<area href="classReadWriteStream.html" alt="ReadWriteStream" shape="rect" coords="163,168,316,192"/>
+<area href="classArduCAMStream.html" alt="ArduCAMStream" shape="rect" coords="326,224,479,248"/>
+<area href="classCircularBuffer.html" title="Circular stream class. " alt="CircularBuffer" shape="rect" coords="326,280,479,304"/>
+<area href="classEndlessMemoryStream.html" alt="EndlessMemoryStream" shape="rect" coords="326,336,479,360"/>
+<area href="classFileStream.html" title="File stream class. " alt="FileStream" shape="rect" coords="326,392,479,416"/>
+<area href="classLimitedMemoryStream.html" title="Memory stream that stores limited number of bytes Once the limit is reached the stream will discard i..." alt="LimitedMemoryStream" shape="rect" coords="326,448,479,472"/>
+<area href="classMemoryDataStream.html" title="Memory data stream class. " alt="MemoryDataStream" shape="rect" coords="326,504,479,528"/>
+<area href="classMultipartStream.html" alt="MultipartStream" shape="rect" coords="326,560,479,584"/>
+<area href="classrBootItemOutputStream.html" alt="rBootItemOutputStream" shape="rect" coords="326,616,479,640"/>
+<area href="classStreamTransformer.html" alt="StreamTransformer" shape="rect" coords="326,672,479,696"/>
+<area href="classUrlencodedOutputStream.html" alt="UrlencodedOutputStream" shape="rect" coords="326,728,479,752"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -1230,7 +1242,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classLCD.html#af58e57399b25b559099978e607d9087b">LCD</a>, <a class="el" href="classHardwareSerial.html#a0115a99310d2c24205fdc13d692ad4be">HardwareSerial</a>, <a class="el" href="classMemoryDataStream.html#abcdae6e51c95b60fd496fb8f3c57995c">MemoryDataStream</a>, <a class="el" href="classTwoWire.html#a6850a6e981a687cc57791670121664cb">TwoWire</a>, <a class="el" href="classAdafruit__GFX.html#a172c824b5616681a0ca901379089025d">Adafruit_GFX</a>, and <a class="el" href="classCommandOutput.html#aace3c4069c9032087dbf379f094abc10">CommandOutput</a>.</p>
+<p>Implemented in <a class="el" href="classLCD.html#af58e57399b25b559099978e607d9087b">LCD</a>, <a class="el" href="classLimitedMemoryStream.html#a16d0ea5ad691b684a0ad2703bf563018">LimitedMemoryStream</a>, <a class="el" href="classEndlessMemoryStream.html#aa7f40a313fc54fc9aa253685d870ba5d">EndlessMemoryStream</a>, <a class="el" href="classHardwareSerial.html#a0115a99310d2c24205fdc13d692ad4be">HardwareSerial</a>, <a class="el" href="classFileStream.html#abaa8856ca62d41de0e9d0c08b89a9f51">FileStream</a>, <a class="el" href="classMemoryDataStream.html#abcdae6e51c95b60fd496fb8f3c57995c">MemoryDataStream</a>, <a class="el" href="classReadWriteStream.html#a3ebf31faca185807abbbcfdb5b0f8d4a">ReadWriteStream</a>, <a class="el" href="classCircularBuffer.html#ac9f7a35cd7612d9067b9ff300127d1a7">CircularBuffer</a>, <a class="el" href="classTwoWire.html#a6850a6e981a687cc57791670121664cb">TwoWire</a>, <a class="el" href="classAdafruit__GFX.html#a172c824b5616681a0ca901379089025d">Adafruit_GFX</a>, <a class="el" href="classStreamTransformer.html#a807e5cc23e68fada24a482a6c8507f84">StreamTransformer</a>, <a class="el" href="classMultipartStream.html#ab51d51c9ef574dd99e123f702f88fc4e">MultipartStream</a>, <a class="el" href="classUrlencodedOutputStream.html#a6506dbe2faf21a850f4796a9452fc0c0">UrlencodedOutputStream</a>, <a class="el" href="classrBootItemOutputStream.html#acb6f95a389464f3c6ebe262745e317e3">rBootItemOutputStream</a>, <a class="el" href="classArduCAMStream.html#a46e38c3bc81f469493613a96719c5ffc">ArduCAMStream</a>, and <a class="el" href="classCommandOutput.html#aace3c4069c9032087dbf379f094abc10">CommandOutput</a>.</p>
 
 </div>
 </div>
@@ -1319,7 +1331,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classMemoryDataStream.html#acb59a4836b2336e263051096b0b40f57">MemoryDataStream</a>, and <a class="el" href="classTwoWire.html#aae4d6ff65d9d4953e40ebeeccd908615">TwoWire</a>.</p>
+<p>Reimplemented in <a class="el" href="classLimitedMemoryStream.html#a0109f9abcd3c6bde9e822d7568413437">LimitedMemoryStream</a>, <a class="el" href="classEndlessMemoryStream.html#a35bae04dc9296526134337ffea071f75">EndlessMemoryStream</a>, <a class="el" href="classFileStream.html#a3bef6b847ea522190e66f92972b89680">FileStream</a>, <a class="el" href="classMemoryDataStream.html#acb59a4836b2336e263051096b0b40f57">MemoryDataStream</a>, <a class="el" href="classReadWriteStream.html#a2d59383b573eea799e162744972a7aee">ReadWriteStream</a>, <a class="el" href="classCircularBuffer.html#acaf8617303395b3a066bf80ff151fa37">CircularBuffer</a>, <a class="el" href="classTwoWire.html#aae4d6ff65d9d4953e40ebeeccd908615">TwoWire</a>, <a class="el" href="classStreamTransformer.html#a1549697adbf789f7c3ff1d6a5c867105">StreamTransformer</a>, <a class="el" href="classMultipartStream.html#a4693eb94b4d0d796211375b7f711609c">MultipartStream</a>, <a class="el" href="classUrlencodedOutputStream.html#a283ab1e09eedc65d2fa7062a66fa503a">UrlencodedOutputStream</a>, <a class="el" href="classArduCAMStream.html#ae07d3e1ea4008c0c5e447821bab25f6e">ArduCAMStream</a>, and <a class="el" href="classrBootItemOutputStream.html#ae2222af5322e4c2344112d904ac2593d">rBootItemOutputStream</a>.</p>
 
 </div>
 </div>

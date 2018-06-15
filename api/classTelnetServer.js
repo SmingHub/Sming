@@ -3,7 +3,7 @@ var classTelnetServer =
     [ "TelnetServer", "classTelnetServer.html#a57f9e7c9e155632ed49e0b49c946d588", null ],
     [ "~TelnetServer", "classTelnetServer.html#a59d7c6802822f07b1a6c42ae05417abd", null ],
     [ "close", "classTelnetServer.html#ab10f02f82a514714b7585e0dd00a8d7b", null ],
-    [ "connect", "classTelnetServer.html#a76541f4efb80f01242580fa729a0fb86", null ],
+    [ "connect", "classTelnetServer.html#ae5d59b160b1c0decdf21ea34858f5729", null ],
     [ "connect", "classTelnetServer.html#a9c91997d5656394ae74d5dbf105d6006", null ],
     [ "createClient", "classTelnetServer.html#ad282a58a7f973e224d243500ba497351", null ],
     [ "enableCommand", "classTelnetServer.html#adb0cab7110bbab8caf4ab6c49deaf8b0", null ],

@@ -1,0 +1,25 @@
+var classIRFujitsuAC =
+[
+    [ "IRFujitsuAC", "classIRFujitsuAC.html#a4cc2c9ba591ab130a7ca1bea7f134fa5", null ],
+    [ "begin", "classIRFujitsuAC.html#a35a491ca8249508858397a84268e69ff", null ],
+    [ "getCmd", "classIRFujitsuAC.html#a2251a996b7a49a392e423f54b4c8ff66", null ],
+    [ "getFanSpeed", "classIRFujitsuAC.html#af6eb95646074d5d9c8f4492640e4c33a", null ],
+    [ "getMode", "classIRFujitsuAC.html#ae1f317ede20f9d86c2e31d6a6db6b3e9", null ],
+    [ "getPower", "classIRFujitsuAC.html#a12ebe2e312a78c91a3a7689bda1d51bd", null ],
+    [ "getRaw", "classIRFujitsuAC.html#a2293caa0e927ddcc7302b5a1443b0838", null ],
+    [ "getStateLength", "classIRFujitsuAC.html#ae6a42e63ae27c179d90421a4ca902154", null ],
+    [ "getSwing", "classIRFujitsuAC.html#a9bd965b4f8477eb30919d633accbfca4", null ],
+    [ "getTemp", "classIRFujitsuAC.html#a6d737ef5068284b102efa3bfd7a5658b", null ],
+    [ "off", "classIRFujitsuAC.html#af6c663fef63a2e478339141ddcb4cd30", null ],
+    [ "setCmd", "classIRFujitsuAC.html#af59af4d64537731a35f96bb25411f27d", null ],
+    [ "setFanSpeed", "classIRFujitsuAC.html#aec891d4ba6b332ebf254b697d224e377", null ],
+    [ "setMode", "classIRFujitsuAC.html#a8ef9e56f89c2dc6cebf38257897cc673", null ],
+    [ "setModel", "classIRFujitsuAC.html#a9fb6be98a53b1654d45e0fe1aa4e34d8", null ],
+    [ "setRaw", "classIRFujitsuAC.html#a9b89d756948affa7029eeeed51916cbb", null ],
+    [ "setSwing", "classIRFujitsuAC.html#af62cbff0fd15a380a1827a503e62d384", null ],
+    [ "setTemp", "classIRFujitsuAC.html#a073913f52d1163b7e2762f143907d318", null ],
+    [ "stateReset", "classIRFujitsuAC.html#a463084b47669d792ceebc446d24bb813", null ],
+    [ "stepHoriz", "classIRFujitsuAC.html#a7efd5241b9e0d40b391f2920425768e2", null ],
+    [ "stepVert", "classIRFujitsuAC.html#a17851968eb3aa98ee22df954955da1ec", null ],
+    [ "toString", "classIRFujitsuAC.html#ac2a48a2483d94061a2d65e57acf1d399", null ]
+];

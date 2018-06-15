@@ -1,5 +1,5 @@
 var structTempAndHumidity =
 [
-    [ "humid", "structTempAndHumidity.html#aa177dcbd56d214cfdd4ca76594d5638a", null ],
-    [ "temp", "structTempAndHumidity.html#ad829a9e50fe1b0fca0796a5c62aeb264", null ]
+    [ "humidity", "structTempAndHumidity.html#a141eded7fadd2b289bfe79ed5d33bbb9", null ],
+    [ "temperature", "structTempAndHumidity.html#ac27fafbb148f2dc24552c32b2c03cfe9", null ]
 ];

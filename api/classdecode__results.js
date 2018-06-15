@@ -1,10 +1,12 @@
 var classdecode__results =
 [
-    [ "bits", "classdecode__results.html#ab083e0543bb3995339eda4609ad5743f", null ],
-    [ "decode_type", "classdecode__results.html#a1ceb37f89b7cd58c838122d4b7cd37c2", null ],
-    [ "panasonicAddress", "classdecode__results.html#a6f8f451468ba9e3cc8647799eb9ec23d", null ],
-    [ "rawbuf", "classdecode__results.html#a78d3244122456d52a493ef0c116fc7bb", null ],
-    [ "rawlen", "classdecode__results.html#a434962fbdf5929ec4fa8f28fa443a4b5", null ],
-    [ "sharpAddress", "classdecode__results.html#a58646241154c6f0a47083ce67e7327fb", null ],
-    [ "value", "classdecode__results.html#aba6924fbb6aae401a54f63b4032700d5", null ]
+    [ "address", "classdecode__results.html#a2858c3a5e28eccca95d44aaa87b70e9e", null ],
+    [ "bits", "classdecode__results.html#aa5ba2fd53bdb36bdc120d8eabd9f36d7", null ],
+    [ "command", "classdecode__results.html#a9b750d09f713b0693472f815fd0fd402", null ],
+    [ "decode_type", "classdecode__results.html#a9c0e9f161b9c90dc10b7561d4c0b50fa", null ],
+    [ "overflow", "classdecode__results.html#a821bc53c006bab3283c6b8592f0c43d3", null ],
+    [ "rawbuf", "classdecode__results.html#a88b2a9fa8a5e843247c6dcdfe372ddf5", null ],
+    [ "rawlen", "classdecode__results.html#a913e19fc5032fa1f97cf8afe0fa450ec", null ],
+    [ "repeat", "classdecode__results.html#a09da48786fe3966cd5621840fd771bfa", null ],
+    [ "value", "classdecode__results.html#a033502b7a6b4b0412e5a2062e33c5f47", null ]
 ];

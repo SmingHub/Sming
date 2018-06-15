@@ -1,13 +1,14 @@
 var searchData=
 [
-  ['variables',['variables',['../classTemplateFileStream.html#a0994a359ad2bfc4ea8c209ba3db3b683',1,'TemplateFileStream']]],
-  ['vector',['Vector',['../classVector.html',1,'']]],
-  ['vector_3c_20channelpwm_20_3e',['Vector&lt; ChannelPWM &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20delegate_20_3e',['Vector&lt; Delegate &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20isystemreadyhandler_20_2a_20_3e',['Vector&lt; ISystemReadyHandler * &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20rboothttpupdateitem_20_3e',['Vector&lt; rBootHttpUpdateItem &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20servochannel_20_2a_20_3e',['Vector&lt; ServoChannel * &gt;',['../classVector.html',1,'']]],
-  ['vector_3c_20tcpconnection_20_2a_20_3e',['Vector&lt; TcpConnection * &gt;',['../classVector.html',1,'']]],
-  ['verbose',['VERBOSE',['../group__commandhandler.html#ggae04e6ec3563272f35f9d8d7a412f04baace3e26676763569084c86b8c3b67d601',1,'CommandHandler.h']]],
-  ['verbosemode',['VerboseMode',['../group__commandhandler.html#gae04e6ec3563272f35f9d8d7a412f04ba',1,'CommandHandler.h']]]
+  ['uart_5fid_5f0',['UART_ID_0',['../group__serial.html#ga8e6f5f702e060af6b6f62b89620786ea',1,'HardwareSerial.h']]],
+  ['uart_5fid_5f1',['UART_ID_1',['../group__serial.html#ga4414160658a1080ac3d9371dfbcc044a',1,'HardwareSerial.h']]],
+  ['udp',['UDP',['../group__udp.html',1,'']]],
+  ['udpconnection',['UdpConnection',['../classUdpConnection.html',1,'']]],
+  ['uid',['Uid',['../structMFRC522_1_1Uid.html',1,'MFRC522']]],
+  ['ultrasonic',['Ultrasonic',['../classUltrasonic.html',1,'']]],
+  ['unregistercallback',['UnRegisterCallback',['../classDS18S20.html#ad35aa149f13c9f6a862d1d906d05aada',1,'DS18S20']]],
+  ['unregistercommand',['unregisterCommand',['../classCommandHandler.html#a632a383e3bbff4cfbf895e6b7e1226ab',1,'CommandHandler']]],
+  ['updatestate',['updateState',['../classYeelightBulb.html#a1a24e4efdaca56f89315d16281e26fd6',1,'YeelightBulb']]],
+  ['url',['URL',['../classURL.html',1,'URL'],['../group__url.html',1,'(Global Namespace)']]],
+  ['urlencodedoutputstream',['UrlencodedOutputStream',['../classUrlencodedOutputStream.html',1,'UrlencodedOutputStream'],['../classUrlencodedOutputStream.html#aa755fbe04c1310d7033a8ec236fbc0ec',1,'UrlencodedOutputStream::UrlencodedOutputStream()']]]
 ];

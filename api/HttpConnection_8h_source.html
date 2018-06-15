@@ -120,124 +120,128 @@ $(document).ready(function(){initNavTree('HttpConnection_8h_source.html','');});
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;HttpResponse.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;HttpRequest.h&quot;</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;../TcpClient.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;../../DataSourceStream.h&quot;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;../../Services/DateTime/DateTime.h&quot;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classSimpleConcurrentQueue.html">SimpleConcurrentQueue&lt;HttpRequest*, HTTP_REQUEST_POOL_SIZE&gt;</a> <a class="code" href="classSimpleConcurrentQueue.html">RequestQueue</a>;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">enum</span> HttpClientMode</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;{</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    eHCM_String = 0,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    eHCM_File, <span class="comment">// &lt;&lt; Deprecated! Use eHCM_Stream stream instead</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    eHCM_Stream,</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    eHCM_UserDefined <span class="comment">// &lt;&lt; Deprecated! If you supply onBody callback then the incoming body will be processed from the callback directly</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;};</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;Data/Stream/DataSourceStream.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;Data/Stream/MultipartStream.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;../../Services/DateTime/DateTime.h&quot;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classSimpleConcurrentQueue.html">SimpleConcurrentQueue&lt;HttpRequest*, HTTP_REQUEST_POOL_SIZE&gt;</a> <a class="code" href="classSimpleConcurrentQueue.html">RequestQueue</a>;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classHttpConnection.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHttpConnection.html">HttpConnection</a> : <span class="keyword">protected</span> <a class="code" href="classTcpClient.html">TcpClient</a> {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classHttpClient.html">HttpClient</a>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="classHttpConnection.html">HttpConnection</a>(<a class="code" href="classSimpleConcurrentQueue.html">RequestQueue</a>* queue);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    ~<a class="code" href="classHttpConnection.html">HttpConnection</a>();</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classHttpConnection.html">   33</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHttpConnection.html">HttpConnection</a> : <span class="keyword">protected</span> <a class="code" href="classTcpClient.html">TcpClient</a> {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classHttpClient.html">HttpClient</a>;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <a class="code" href="classHttpConnection.html">HttpConnection</a>(<a class="code" href="classSimpleConcurrentQueue.html">RequestQueue</a>* queue);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    ~<a class="code" href="classHttpConnection.html">HttpConnection</a>();</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">bool</span> connect(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; host, <span class="keywordtype">int</span> port, <span class="keywordtype">bool</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">void</span> send(<a class="code" href="classHttpRequest.html">HttpRequest</a>* request);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">bool</span> isActive();</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* <a class="code" href="classHttpConnection.html#aa1b5bcc58de64dfefcc8325f4061f9b7">getRequest</a>();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* <a class="code" href="classHttpConnection.html#ad30756e3d9d788e1b1dbea4e4aa5edf4">getResponse</a>();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keyword">using</span> TcpClient::close;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor"></span>    <span class="keyword">using</span> TcpClient::getSsl;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="comment">// Backported for compatibility reasons</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// @deprecated</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    __forceinline <span class="keywordtype">int</span> getResponseCode() { <span class="keywordflow">return</span> code; }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <a class="code" href="classString.html">String</a> getResponseHeader(<a class="code" href="classString.html">String</a> headerName, <a class="code" href="classString.html">String</a> defaultValue = <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <a class="code" href="classHashMap.html">HttpHeaders</a> &amp;getResponseHeaders();</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <a class="code" href="classDateTime.html">DateTime</a> getLastModifiedDate(); <span class="comment">// Last-Modified header</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classDateTime.html">DateTime</a> getServerDate(); <span class="comment">// Date header</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">bool</span> connect(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; host, <span class="keywordtype">int</span> port, <span class="keywordtype">bool</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">bool</span> send(<a class="code" href="classHttpRequest.html">HttpRequest</a>* request);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">bool</span> isActive();</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* <a class="code" href="classHttpConnection.html#aa1b5bcc58de64dfefcc8325f4061f9b7">getRequest</a>();</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* <a class="code" href="classHttpConnection.html#ad30756e3d9d788e1b1dbea4e4aa5edf4">getResponse</a>();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">using</span> TcpConnection::getRemoteIp;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">using</span> TcpConnection::getRemotePort;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">using</span> TcpClient::close;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor"></span>    <span class="keyword">using</span> TcpClient::getSsl;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="comment">// Backported for compatibility reasons</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">// @deprecated</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classHttpConnection.html#a8096f420efc2a724109be9b9f804b210">   65</a></span>&#160;<span class="comment"></span>    __forceinline <span class="keywordtype">int</span> <a class="code" href="classHttpConnection.html#a8096f420efc2a724109be9b9f804b210">getResponseCode</a>() { <span class="keywordflow">return</span> response.code; }</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classString.html">String</a> <a class="code" href="classHttpConnection.html#a2a4b5f458b2e324b626a913902f01a0a">getResponseHeader</a>(<a class="code" href="classString.html">String</a> headerName, <a class="code" href="classString.html">String</a> defaultValue = <span class="stringliteral">&quot;&quot;</span>);</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <a class="code" href="classString.html">String</a> getResponseString();</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="comment">// @enddeprecated</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <a class="code" href="classHttpHeaders.html">HttpHeaders</a> &amp;<a class="code" href="classHttpConnection.html#aa1d5c9b4c59591f5c97d2f08df65a868">getResponseHeaders</a>();</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">void</span> reset();</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">virtual</span> err_t onReceive(pbuf *buf);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keyword">virtual</span> err_t onProtocolUpgrade(http_parser* parser);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReadyToSendData(TcpConnectionEvent sourceEvent);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onError(err_t err);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">cleanup</a>();</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <a class="code" href="classDateTime.html">DateTime</a> <a class="code" href="classHttpConnection.html#ae38daf9c615d8374c4605367e8c779d9">getLastModifiedDate</a>(); <span class="comment">// Last-Modified header</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <a class="code" href="classDateTime.html">DateTime</a> <a class="code" href="classHttpConnection.html#ac5a7f0ec9c6273ca3519a8b5d078034f">getServerDate</a>(); <span class="comment">// Date header</span></div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnMessageBegin(http_parser* parser);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">#ifndef COMPACT_MODE</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnStatus(http_parser *parser, <span class="keyword">const</span> <span class="keywordtype">char</span> *at, <span class="keywordtype">size_t</span> length);</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnHeadersComplete(http_parser* parser);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnHeaderField(http_parser *parser, <span class="keyword">const</span> <span class="keywordtype">char</span> *at, <span class="keywordtype">size_t</span> length);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnHeaderValue(http_parser *parser, <span class="keyword">const</span> <span class="keywordtype">char</span> *at, <span class="keywordtype">size_t</span> length);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnBody(http_parser *parser, <span class="keyword">const</span> <span class="keywordtype">char</span> *at, <span class="keywordtype">size_t</span> length);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#ifndef COMPACT_MODE</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnChunkHeader(http_parser* parser);</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnChunkComplete(http_parser* parser);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnMessageComplete(http_parser* parser);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordtype">void</span> sendRequestHeaders(<a class="code" href="classHttpRequest.html">HttpRequest</a>* request);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordtype">bool</span> sendRequestBody(<a class="code" href="classHttpRequest.html">HttpRequest</a>* request);</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    HttpClientMode mode;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <a class="code" href="classString.html">String</a> responseStringData;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <a class="code" href="classSimpleConcurrentQueue.html">RequestQueue</a>* waitingQueue;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <a class="code" href="classSimpleConcurrentQueue.html">RequestQueue</a> executionQueue;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    http_parser parser;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keyword">static</span> http_parser_settings parserSettings;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">bool</span> parserSettingsInitialized;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <a class="code" href="classHashMap.html">HttpHeaders</a> responseHeaders;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keywordtype">int</span> code = 0;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordtype">bool</span> lastWasValue = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <a class="code" href="classString.html">String</a> lastData = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <a class="code" href="classString.html">String</a> currentField  = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* incomingRequest = NULL;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* outgoingRequest = NULL;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    HttpConnectionState state = eHCS_Ready;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;};</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_CONNECTION_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <a class="code" href="classString.html">String</a> <a class="code" href="classHttpConnection.html#a917b52602302f4b7f913c8da574556bf">getResponseString</a>();</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">// @enddeprecated</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">void</span> reset();</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keyword">virtual</span> err_t onReceive(pbuf *buf);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keyword">virtual</span> err_t onProtocolUpgrade(http_parser* parser);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReadyToSendData(TcpConnectionEvent sourceEvent);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onError(err_t err);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">cleanup</a>();</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnMessageBegin(http_parser* parser);</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="preprocessor">#ifndef COMPACT_MODE</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnStatus(http_parser *parser, <span class="keyword">const</span> <span class="keywordtype">char</span> *at, <span class="keywordtype">size_t</span> length);</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnHeadersComplete(http_parser* parser);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnHeaderField(http_parser *parser, <span class="keyword">const</span> <span class="keywordtype">char</span> *at, <span class="keywordtype">size_t</span> length);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnHeaderValue(http_parser *parser, <span class="keyword">const</span> <span class="keywordtype">char</span> *at, <span class="keywordtype">size_t</span> length);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnBody(http_parser *parser, <span class="keyword">const</span> <span class="keywordtype">char</span> *at, <span class="keywordtype">size_t</span> length);</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="preprocessor">#ifndef COMPACT_MODE</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnChunkHeader(http_parser* parser);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnChunkComplete(http_parser* parser);</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <span class="keywordtype">int</span> staticOnMessageComplete(http_parser* parser);</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keywordtype">void</span> sendRequestHeaders(<a class="code" href="classHttpRequest.html">HttpRequest</a>* request);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordtype">bool</span> sendRequestBody(<a class="code" href="classHttpRequest.html">HttpRequest</a>* request);</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <a class="code" href="classSimpleConcurrentQueue.html">RequestQueue</a>* waitingQueue;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <a class="code" href="classSimpleConcurrentQueue.html">RequestQueue</a> executionQueue;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    http_parser parser;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="keyword">static</span> http_parser_settings parserSettings;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">bool</span> parserSettingsInitialized;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    <span class="keywordtype">bool</span> lastWasValue = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <a class="code" href="classString.html">String</a> lastData = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <a class="code" href="classString.html">String</a> currentField  = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* incomingRequest = NULL;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* outgoingRequest = NULL;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a> response;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    HttpConnectionState state = eHCS_Ready;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <a class="code" href="structHttpPartResult.html">HttpPartResult</a> multipartProducer();</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;};</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_CONNECTION_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classHttpClient_html_ad413282f74db55b841791acff7f1ce3f"><div class="ttname"><a href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">HttpClient::cleanup</a></div><div class="ttdeci">static void cleanup()</div></div>
 <div class="ttc" id="classDateTime_html"><div class="ttname"><a href="classDateTime.html">DateTime</a></div><div class="ttdoc">Date and time class. </div><div class="ttdef"><b>Definition:</b> DateTime.h:77</div></div>
-<div class="ttc" id="classHashMap_html"><div class="ttname"><a href="classHashMap.html">HashMap&lt; String, String &gt;</a></div></div>
+<div class="ttc" id="classHttpConnection_html_a8096f420efc2a724109be9b9f804b210"><div class="ttname"><a href="classHttpConnection.html#a8096f420efc2a724109be9b9f804b210">HttpConnection::getResponseCode</a></div><div class="ttdeci">__forceinline int getResponseCode()</div><div class="ttdef"><b>Definition:</b> HttpConnection.h:65</div></div>
+<div class="ttc" id="classHttpConnection_html_ae38daf9c615d8374c4605367e8c779d9"><div class="ttname"><a href="classHttpConnection.html#ae38daf9c615d8374c4605367e8c779d9">HttpConnection::getLastModifiedDate</a></div><div class="ttdeci">DateTime getLastModifiedDate()</div></div>
 <div class="ttc" id="classHttpClient_html"><div class="ttname"><a href="classHttpClient.html">HttpClient</a></div><div class="ttdef"><b>Definition:</b> HttpClient.h:27</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
-<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:41</div></div>
+<div class="ttc" id="classHttpHeaders_html"><div class="ttname"><a href="classHttpHeaders.html">HttpHeaders</a></div><div class="ttdef"><b>Definition:</b> Structures.h:54</div></div>
+<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:45</div></div>
 <div class="ttc" id="classSimpleConcurrentQueue_html"><div class="ttname"><a href="classSimpleConcurrentQueue.html">SimpleConcurrentQueue&lt; HttpRequest *, HTTP_REQUEST_POOL_SIZE &gt;</a></div></div>
 <div class="ttc" id="classHttpConnection_html_aa1b5bcc58de64dfefcc8325f4061f9b7"><div class="ttname"><a href="classHttpConnection.html#aa1b5bcc58de64dfefcc8325f4061f9b7">HttpConnection::getRequest</a></div><div class="ttdeci">HttpRequest * getRequest()</div><div class="ttdoc">Returns pointer to the current request. </div></div>
+<div class="ttc" id="classHttpConnection_html_aa1d5c9b4c59591f5c97d2f08df65a868"><div class="ttname"><a href="classHttpConnection.html#aa1d5c9b4c59591f5c97d2f08df65a868">HttpConnection::getResponseHeaders</a></div><div class="ttdeci">HttpHeaders &amp; getResponseHeaders()</div></div>
+<div class="ttc" id="classHttpConnection_html_ac5a7f0ec9c6273ca3519a8b5d078034f"><div class="ttname"><a href="classHttpConnection.html#ac5a7f0ec9c6273ca3519a8b5d078034f">HttpConnection::getServerDate</a></div><div class="ttdeci">DateTime getServerDate()</div></div>
 <div class="ttc" id="classHttpRequest_html"><div class="ttname"><a href="classHttpRequest.html">HttpRequest</a></div><div class="ttdef"><b>Definition:</b> HttpRequest.h:31</div></div>
-<div class="ttc" id="classHttpConnection_html"><div class="ttname"><a href="classHttpConnection.html">HttpConnection</a></div><div class="ttdef"><b>Definition:</b> HttpConnection.h:33</div></div>
+<div class="ttc" id="classHttpConnection_html"><div class="ttname"><a href="classHttpConnection.html">HttpConnection</a></div><div class="ttdef"><b>Definition:</b> HttpConnection.h:26</div></div>
+<div class="ttc" id="classHttpConnection_html_a917b52602302f4b7f913c8da574556bf"><div class="ttname"><a href="classHttpConnection.html#a917b52602302f4b7f913c8da574556bf">HttpConnection::getResponseString</a></div><div class="ttdeci">String getResponseString()</div></div>
+<div class="ttc" id="classHttpConnection_html_a2a4b5f458b2e324b626a913902f01a0a"><div class="ttname"><a href="classHttpConnection.html#a2a4b5f458b2e324b626a913902f01a0a">HttpConnection::getResponseHeader</a></div><div class="ttdeci">String getResponseHeader(String headerName, String defaultValue=&quot;&quot;)</div></div>
 <div class="ttc" id="classHttpConnection_html_ad30756e3d9d788e1b1dbea4e4aa5edf4"><div class="ttname"><a href="classHttpConnection.html#ad30756e3d9d788e1b1dbea4e4aa5edf4">HttpConnection::getResponse</a></div><div class="ttdeci">HttpResponse * getResponse()</div><div class="ttdoc">Returns pointer to the current response. </div></div>
-<div class="ttc" id="classHttpResponse_html"><div class="ttname"><a href="classHttpResponse.html">HttpResponse</a></div><div class="ttdef"><b>Definition:</b> HttpResponse.h:22</div></div>
+<div class="ttc" id="structHttpPartResult_html"><div class="ttname"><a href="structHttpPartResult.html">HttpPartResult</a></div><div class="ttdoc">Multipart stream class. </div><div class="ttdef"><b>Definition:</b> MultipartStream.h:25</div></div>
+<div class="ttc" id="classHttpResponse_html"><div class="ttname"><a href="classHttpResponse.html">HttpResponse</a></div><div class="ttdef"><b>Definition:</b> HttpResponse.h:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d838c3d3d40d11b6e6273a8e7350ef64.html">Sming</a></li><li class="navelem"><a class="el" href="dir_2ed575006c7d0647b9e44f569fa9afde.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_17729ed7f3af1a7565eb1ef720d466c9.html">Network</a></li><li class="navelem"><a class="el" href="dir_40e77b1d51adef0a7c2ff503a16b6d23.html">Http</a></li><li class="navelem"><b>HttpConnection.h</b></li>
+    <li class="navelem"><a class="el" href="dir_b4c9897f718d9414148b24a4e5afb621.html">Sming</a></li><li class="navelem"><a class="el" href="dir_e684d698d8909caa82858f24d2993ae0.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_1080abda974dde0433d7a42c06142e84.html">Network</a></li><li class="navelem"><a class="el" href="dir_b63972468144936b896b0ff86b591c30.html">Http</a></li><li class="navelem"><b>HttpConnection.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['time',['time',['../group__rtc.html#ga740cfb2f8c4590588cc54fff34874de5',1,'RtcData']]],
-  ['timeouttimer',['timeoutTimer',['../classNtpClient.html#a841f2bbd43ed22f090f767081b48687b',1,'NtpClient']]]
+  ['orientation',['orientation',['../structsensors__event__t.html#acbe3c50a256fa9423bc9e3a6e0da7ebf',1,'sensors_event_t']]]
 ];

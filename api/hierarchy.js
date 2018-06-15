@@ -1,6 +1,8 @@
 var hierarchy =
 [
+    [ "Adafruit_BME280", "classAdafruit__BME280.html", null ],
     [ "Adafruit_NeoPixel", "classAdafruit__NeoPixel.html", null ],
+    [ "Adafruit_Sensor", "classAdafruit__Sensor.html", null ],
     [ "AM2321", "classAM2321.html", null ],
     [ "APA102", "classAPA102.html", null ],
     [ "AtClient", "classAtClient.html", null ],
@@ -9,7 +11,9 @@ var hierarchy =
       [ "HttpBasicAuth", "classHttpBasicAuth.html", null ],
       [ "HttpDigestAuth", "classHttpDigestAuth.html", null ]
     ] ],
+    [ "base64_encodestate", "structbase64__encodestate.html", null ],
     [ "BH1750FVI", "classBH1750FVI.html", null ],
+    [ "bme280_calib_data", "structbme280__calib__data.html", null ],
     [ "BMP180", "classBMP180.html", null ],
     [ "Bounce", "classBounce.html", null ],
     [ "BssInfo", "classBssInfo.html", null ],
@@ -41,6 +45,9 @@ var hierarchy =
     [ "Countable< Element >", "classCountable.html", [
       [ "Vector< Element >", "classVector.html", null ]
     ] ],
+    [ "Countable< HttpPartResult >", "classCountable.html", [
+      [ "Vector< HttpPartResult >", "classVector.html", null ]
+    ] ],
     [ "Countable< HttpRequest * >", "classCountable.html", [
       [ "FIFO< HttpRequest *, rawSize >", "classFIFO.html", [
         [ "SimpleConcurrentQueue< HttpRequest *, HTTP_REQUEST_POOL_SIZE >", "classSimpleConcurrentQueue.html", null ]
@@ -49,11 +56,19 @@ var hierarchy =
     [ "Countable< ISystemReadyHandler * >", "classCountable.html", [
       [ "Vector< ISystemReadyHandler * >", "classVector.html", null ]
     ] ],
+    [ "Countable< MailMessage * >", "classCountable.html", [
+      [ "FIFO< MailMessage *, rawSize >", "classFIFO.html", [
+        [ "SimpleConcurrentQueue< MailMessage *, SMTP_QUEUE_SIZE >", "classSimpleConcurrentQueue.html", null ]
+      ] ]
+    ] ],
     [ "Countable< rBootHttpUpdateItem >", "classCountable.html", [
       [ "Vector< rBootHttpUpdateItem >", "classVector.html", null ]
     ] ],
     [ "Countable< ServoChannel * >", "classCountable.html", [
       [ "Vector< ServoChannel * >", "classVector.html", null ]
+    ] ],
+    [ "Countable< String >", "classCountable.html", [
+      [ "Vector< String >", "classVector.html", null ]
     ] ],
     [ "Countable< TcpConnection * >", "classCountable.html", [
       [ "Vector< TcpConnection * >", "classVector.html", null ]
@@ -68,7 +83,7 @@ var hierarchy =
     [ "Delegate< HttpPartResult()>", "classDelegate.html", null ],
     [ "Delegate< int(HttpConnection &client, bool successful)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpConnection &client, const char *at, size_t length)>", "classDelegate.html", null ],
-    [ "Delegate< int(HttpConnection &client, HttpHeaders &headers)>", "classDelegate.html", null ],
+    [ "Delegate< int(HttpConnection &client, HttpResponse &response)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpServerConnection &, HttpRequest &, HttpResponse &)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpServerConnection &connection, HttpRequest &, char *at, int length)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpServerConnection &connection, HttpRequest &, const char *at, int length)>", "classDelegate.html", null ],
@@ -101,7 +116,7 @@ var hierarchy =
     [ "Delegate< void(WebSocketConnection &)>", "classDelegate.html", null ],
     [ "Delegate< void(WebSocketConnection &, const String &)>", "classDelegate.html", null ],
     [ "Delegate< void(WebSocketConnection &, uint8_t *data, size_t size)>", "classDelegate.html", null ],
-    [ "DHT", "classDHT.html", null ],
+    [ "DHTesp", "classDHTesp.html", null ],
     [ "DIR", "structDIR.html", null ],
     [ "DNSHeader", "structDNSHeader.html", null ],
     [ "DnsLookup", "structDnsLookup.html", null ],
@@ -119,9 +134,11 @@ var hierarchy =
     [ "HardwarePWM", "classHardwarePWM.html", null ],
     [ "HashMap< K, V >", "classHashMap.html", null ],
     [ "HashMap< String, CommandDelegate >", "classHashMap.html", null ],
+    [ "HashMap< String, FileStream * >", "classHashMap.html", null ],
     [ "HashMap< String, HttpConnection * >", "classHashMap.html", null ],
     [ "HashMap< String, SimpleConcurrentQueue * >", "classHashMap.html", null ],
     [ "HashMap< String, String >", "classHashMap.html", [
+      [ "HttpHeaders", "classHttpHeaders.html", null ],
       [ "TemplateVariables", "classTemplateVariables.html", null ]
     ] ],
     [ "HashMap< uint16_t, Delegate >", "classHashMap.html", null ],
@@ -144,38 +161,35 @@ var hierarchy =
     [ "HWSerialMemberData", "structHWSerialMemberData.html", null ],
     [ "I2Cdev", "classI2Cdev.html", null ],
     [ "I2CIO", "classI2CIO.html", null ],
-    [ "IDataSourceStream", "classIDataSourceStream.html", [
-      [ "ReadWriteStream", "classReadWriteStream.html", [
-        [ "ArduCAMStream", "classArduCAMStream.html", null ],
-        [ "CircularBuffer", "classCircularBuffer.html", null ],
-        [ "EndlessMemoryStream", "classEndlessMemoryStream.html", null ],
-        [ "FileStream", "classFileStream.html", [
-          [ "TemplateFileStream", "classTemplateFileStream.html", null ]
-        ] ],
-        [ "HttpChunkedStream", "classHttpChunkedStream.html", null ],
-        [ "HttpMultipartStream", "classHttpMultipartStream.html", null ],
-        [ "MemoryDataStream", "classMemoryDataStream.html", [
-          [ "JsonObjectStream", "classJsonObjectStream.html", null ]
-        ] ]
-      ] ]
-    ] ],
     [ "IDelegateCaller< ReturnType, ParamsList >", "classIDelegateCaller.html", null ],
     [ "IDelegateCaller< ReturnType, ParamsList...>", "classIDelegateCaller.html", [
       [ "FunctionCaller< MethodDeclaration, ReturnType, ParamsList >", "classFunctionCaller.html", null ],
       [ "MethodCaller< ReturnType(ClassType::*)(ParamsList...)>", "classMethodCaller_3_01ReturnType_07ClassType_1_1_5_08_07ParamsList_8_8_8_08_4.html", null ]
     ] ],
-    [ "IOutputStream", "classIOutputStream.html", [
-      [ "FileOutputStream", "classFileOutputStream.html", null ],
-      [ "rBootItemOutputStream", "classrBootItemOutputStream.html", null ]
-    ] ],
+    [ "IRArgoAC", "classIRArgoAC.html", null ],
+    [ "IRDaikinESP", "classIRDaikinESP.html", null ],
+    [ "IRFujitsuAC", "classIRFujitsuAC.html", null ],
+    [ "IRGreeAC", "classIRGreeAC.html", null ],
+    [ "IRHaierAC", "classIRHaierAC.html", null ],
+    [ "IRKelvinatorAC", "classIRKelvinatorAC.html", null ],
+    [ "IRMideaAC", "classIRMideaAC.html", null ],
+    [ "IRMitsubishiAC", "classIRMitsubishiAC.html", null ],
     [ "irparams_t", "structirparams__t.html", null ],
     [ "IRrecv", "classIRrecv.html", null ],
-    [ "IRsend", "classIRsend.html", null ],
+    [ "IRsend", "classIRsend.html", [
+      [ "IRsendTest", "classIRsendTest.html", null ]
+    ] ],
+    [ "IRtimer", "classIRtimer.html", null ],
+    [ "IRToshibaAC", "classIRToshibaAC.html", null ],
+    [ "IRTrotecESP", "classIRTrotecESP.html", null ],
     [ "ISystemReadyHandler", "classISystemReadyHandler.html", [
       [ "AccessPointClass", "classAccessPointClass.html", null ],
       [ "StationClass", "classStationClass.html", null ],
       [ "WDTClass", "classWDTClass.html", null ]
     ] ],
+    [ "magiquest", "unionmagiquest.html", null ],
+    [ "MailMessage", "classMailMessage.html", null ],
+    [ "match_result_t", "structmatch__result__t.html", null ],
     [ "MCP", "classMCP.html", null ],
     [ "MCP23017", "classMCP23017.html", null ],
     [ "MethodCaller< class >", "classMethodCaller.html", null ],
@@ -188,12 +202,37 @@ var hierarchy =
     [ "MMA_7455", "classMMA__7455.html", null ],
     [ "mqtt_broker_handle_t", "structmqtt__broker__handle__t.html", null ],
     [ "NetUtils", "classNetUtils.html", null ],
+    [ "NexGpio", "classNexGpio.html", null ],
+    [ "NexObject", "classNexObject.html", [
+      [ "NexGauge", "classNexGauge.html", null ],
+      [ "NexProgressBar", "classNexProgressBar.html", null ],
+      [ "NexTouch", "classNexTouch.html", [
+        [ "NexButton", "classNexButton.html", null ],
+        [ "NexCheckbox", "classNexCheckbox.html", null ],
+        [ "NexCrop", "classNexCrop.html", null ],
+        [ "NexDSButton", "classNexDSButton.html", null ],
+        [ "NexHotspot", "classNexHotspot.html", null ],
+        [ "NexNumber", "classNexNumber.html", null ],
+        [ "NexPage", "classNexPage.html", null ],
+        [ "NexPicture", "classNexPicture.html", null ],
+        [ "NexRadio", "classNexRadio.html", null ],
+        [ "NexScrolltext", "classNexScrolltext.html", null ],
+        [ "NexSlider", "classNexSlider.html", null ],
+        [ "NexText", "classNexText.html", null ],
+        [ "NexTimer", "classNexTimer.html", null ],
+        [ "NexVariable", "classNexVariable.html", null ]
+      ] ],
+      [ "NexWaveform", "classNexWaveform.html", null ]
+    ] ],
+    [ "NexRtc", "classNexRtc.html", null ],
     [ "Nrf24l", "classNrf24l.html", null ],
     [ "OneWire", "classOneWire.html", null ],
     [ "Print", "classPrint.html", [
       [ "Adafruit_GFX", "classAdafruit__GFX.html", [
         [ "Adafruit_ILI9341", "classAdafruit__ILI9341.html", null ],
         [ "Adafruit_PCD8544", "classAdafruit__PCD8544.html", null ],
+        [ "Adafruit_SSD1306", "classAdafruit__SSD1306.html", null ],
+        [ "Adafruit_ST7735", "classAdafruit__ST7735.html", null ],
         [ "TFT_ILI9163C", "classTFT__ILI9163C.html", null ]
       ] ],
       [ "CommandOutput", "classCommandOutput.html", null ],
@@ -206,9 +245,30 @@ var hierarchy =
         [ "LiquidCrystal_SR2W", "classLiquidCrystal__SR2W.html", null ],
         [ "LiquidCrystal_SR3W", "classLiquidCrystal__SR3W.html", null ]
       ] ],
-      [ "MemoryDataStream", "classMemoryDataStream.html", null ],
       [ "Stream", "classStream.html", [
         [ "HardwareSerial", "classHardwareSerial.html", null ],
+        [ "IDataSourceStream", "classIDataSourceStream.html", [
+          [ "ReadWriteStream", "classReadWriteStream.html", [
+            [ "ArduCAMStream", "classArduCAMStream.html", null ],
+            [ "CircularBuffer", "classCircularBuffer.html", null ],
+            [ "EndlessMemoryStream", "classEndlessMemoryStream.html", null ],
+            [ "FileStream", "classFileStream.html", [
+              [ "TemplateFileStream", "classTemplateFileStream.html", null ]
+            ] ],
+            [ "LimitedMemoryStream", "classLimitedMemoryStream.html", null ],
+            [ "MemoryDataStream", "classMemoryDataStream.html", [
+              [ "JsonObjectStream", "classJsonObjectStream.html", null ]
+            ] ],
+            [ "MultipartStream", "classMultipartStream.html", null ],
+            [ "rBootItemOutputStream", "classrBootItemOutputStream.html", null ],
+            [ "StreamTransformer", "classStreamTransformer.html", [
+              [ "Base64OutputStream", "classBase64OutputStream.html", null ],
+              [ "ChunkedStream", "classChunkedStream.html", null ],
+              [ "QuotedPrintableOutputStream", "classQuotedPrintableOutputStream.html", null ]
+            ] ],
+            [ "UrlencodedOutputStream", "classUrlencodedOutputStream.html", null ]
+          ] ]
+        ] ],
         [ "TwoWire", "classTwoWire.html", null ]
       ] ]
     ] ],
@@ -219,8 +279,14 @@ var hierarchy =
     [ "rBootHttpUpdateItem", "structrBootHttpUpdateItem.html", null ],
     [ "RCSwitch", "classRCSwitch.html", null ],
     [ "RF24", "classRF24.html", null ],
+    [ "RingBufCPP< Type, MaxElements >", "classRingBufCPP.html", null ],
+    [ "RingBufCPP< uint16_t, RAWBUF >", "classRingBufCPP.html", null ],
     [ "RtcClass", "classRtcClass.html", null ],
     [ "RtcData", "structRtcData.html", null ],
+    [ "sensor_t", "structsensor__t.html", null ],
+    [ "sensors_color_t", "structsensors__color__t.html", null ],
+    [ "sensors_event_t", "structsensors__event__t.html", null ],
+    [ "sensors_vec_t", "structsensors__vec__t.html", null ],
     [ "Servo", "classServo.html", null ],
     [ "ServoChannel", "classServoChannel.html", null ],
     [ "Si4432", "classSi4432.html", null ],
@@ -244,6 +310,7 @@ var hierarchy =
         [ "HttpConnection", "classHttpConnection.html", null ],
         [ "HttpServerConnection", "classHttpServerConnection.html", null ],
         [ "MqttClient", "classMqttClient.html", null ],
+        [ "SmtpClient", "classSmtpClient.html", null ],
         [ "WebsocketClient", "classWebsocketClient.html", null ]
       ] ],
       [ "TcpServer", "classTcpServer.html", [

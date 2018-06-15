@@ -123,14 +123,15 @@ Inheritance diagram for TcpConnection:</div>
   <img src="classTcpConnection.png" usemap="#TcpConnection_map" alt=""/>
   <map id="TcpConnection_map" name="TcpConnection_map">
 <area href="classFTPServerConnection.html" alt="FTPServerConnection" shape="rect" coords="0,56,138,80"/>
-<area href="classTcpClient.html" alt="TcpClient" shape="rect" coords="222,56,360,80"/>
-<area href="classTcpServer.html" alt="TcpServer" shape="rect" coords="666,56,804,80"/>
+<area href="classTcpClient.html" alt="TcpClient" shape="rect" coords="296,56,434,80"/>
+<area href="classTcpServer.html" alt="TcpServer" shape="rect" coords="814,56,952,80"/>
 <area href="classHttpConnection.html" alt="HttpConnection" shape="rect" coords="0,112,138,136"/>
 <area href="classHttpServerConnection.html" alt="HttpServerConnection" shape="rect" coords="148,112,286,136"/>
 <area href="classMqttClient.html" alt="MqttClient" shape="rect" coords="296,112,434,136"/>
-<area href="classWebsocketClient.html" title="Delegate callback type for connection of websocket client. " alt="WebsocketClient" shape="rect" coords="444,112,582,136"/>
-<area href="classFTPServer.html" alt="FTPServer" shape="rect" coords="592,112,730,136"/>
-<area href="classTelnetServer.html" alt="TelnetServer" shape="rect" coords="740,112,878,136"/>
+<area href="classSmtpClient.html" alt="SmtpClient" shape="rect" coords="444,112,582,136"/>
+<area href="classWebsocketClient.html" title="Delegate callback type for connection of websocket client. " alt="WebsocketClient" shape="rect" coords="592,112,730,136"/>
+<area href="classFTPServer.html" alt="FTPServer" shape="rect" coords="740,112,878,136"/>
+<area href="classTelnetServer.html" alt="TelnetServer" shape="rect" coords="888,112,1026,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -142,9 +143,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a936b499d010ead10fdcf73aa4b50ad00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a936b499d010ead10fdcf73aa4b50ad00"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TcpConnection</b> (tcp_pcb *connection, bool autoDestruct)</td></tr>
 <tr class="separator:a936b499d010ead10fdcf73aa4b50ad00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76541f4efb80f01242580fa729a0fb86"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a76541f4efb80f01242580fa729a0fb86"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a76541f4efb80f01242580fa729a0fb86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5d59b160b1c0decdf21ea34858f5729"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae5d59b160b1c0decdf21ea34858f5729"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (const <a class="el" href="classString.html">String</a> &amp;server, int port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
+<tr class="separator:ae5d59b160b1c0decdf21ea34858f5729"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c91997d5656394ae74d5dbf105d6006"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c91997d5656394ae74d5dbf105d6006"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
 <tr class="separator:a9c91997d5656394ae74d5dbf105d6006"><td class="memSeparator" colspan="2">&#160;</td></tr>

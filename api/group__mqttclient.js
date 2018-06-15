@@ -1,15 +1,17 @@
 var group__mqttclient =
 [
     [ "MqttClient", "classMqttClient.html", [
+      [ "MqttClient", "classMqttClient.html#aca826499db4be9e37d7fff152920c2c7", null ],
       [ "MqttClient", "classMqttClient.html#ae81fd0caf267d95579f2b17689a94b9d", null ],
       [ "MqttClient", "classMqttClient.html#a96ab456e6b4d872eddf26e7e454dd2de", null ],
       [ "~MqttClient", "classMqttClient.html#ab21ca1558efc05f2ebc3c8e99861a438", null ],
       [ "close", "classMqttClient.html#a39dfc6c0d46863836e15b56d8077ef0c", null ],
-      [ "connect", "classMqttClient.html#a3cd10cecb2ca557b7d77e2e6a4d50116", null ],
-      [ "connect", "classMqttClient.html#aa6ee6d98c3810d5f3ef6b8f593bbd4c5", null ],
       [ "connect", "classMqttClient.html#a6b3b36c4859145c5686126d4051e33b7", null ],
       [ "connect", "classMqttClient.html#a1d0685ac523f6e6ac2d5a6993172feb3", null ],
-      [ "connect", "classMqttClient.html#a76541f4efb80f01242580fa729a0fb86", null ],
+      [ "connect", "classMqttClient.html#a894bac3f513eec987e979ecf2b050797", null ],
+      [ "connect", "classMqttClient.html#a3cd10cecb2ca557b7d77e2e6a4d50116", null ],
+      [ "connect", "classMqttClient.html#aa6ee6d98c3810d5f3ef6b8f593bbd4c5", null ],
+      [ "connect", "classMqttClient.html#ae5d59b160b1c0decdf21ea34858f5729", null ],
       [ "connect", "classMqttClient.html#a9c91997d5656394ae74d5dbf105d6006", null ],
       [ "debugPrintResponseType", "classMqttClient.html#a6a515cf9e00ae813a7dbfa172a081db6", null ],
       [ "flush", "classMqttClient.html#aaaa45b0c9a0b26df7f8ca79697785114", null ],
@@ -32,6 +34,7 @@ var group__mqttclient =
       [ "pushAsyncPart", "classMqttClient.html#a162be33aa3e851eb92ccd361f64c6706", null ],
       [ "send", "classMqttClient.html#a7caad1d87a32cc1b1092396c14dab6aa", null ],
       [ "sendString", "classMqttClient.html#a8dd63ab71d144b13b50a1f3b794df6b3", null ],
+      [ "setCallback", "classMqttClient.html#a08119a1be647d78053ded9956c8a4c06", null ],
       [ "setCompleteDelegate", "classMqttClient.html#abf18cea760e8efbf3a204b4e6d4055c3", null ],
       [ "setDestroyedDelegate", "classMqttClient.html#a39d7fe38dceaf464a09f6a1cab7463b4", null ],
       [ "setKeepAlive", "classMqttClient.html#abf4a81cdeeaeaa10ce6ade5471919688", null ],

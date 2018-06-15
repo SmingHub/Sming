@@ -1,17 +1,17 @@
 var classIRsend =
 [
-    [ "IRsend", "classIRsend.html#ac41bc5a3d5065dd5b2773e87ee791c85", null ],
-    [ "enableIROut", "classIRsend.html#aeedcc7c6b9fc9bbb1dc93607ecdb2abe", null ],
-    [ "sendDISH", "classIRsend.html#ac8b3fe0ba492391c8f142281165accec", null ],
-    [ "sendJVC", "classIRsend.html#a3482747b75727b889c1bfe65b552c03b", null ],
-    [ "sendNEC", "classIRsend.html#abf9c063bb285ed1b7d84efc96dff3928", null ],
-    [ "sendPanasonic", "classIRsend.html#a32c0bb7a2e710526951b8a1d815a456e", null ],
-    [ "sendRaw", "classIRsend.html#a3f7d5a7f83192c01acce9e370937d16d", null ],
-    [ "sendRC5", "classIRsend.html#a5a0559d6b3f980a02320a6d378ddc1fe", null ],
-    [ "sendRC6", "classIRsend.html#ad185ea4c85356afa218eb7688af014f0", null ],
-    [ "sendSAMSUNG", "classIRsend.html#a7b4ca49d8fceaf6ccfa26df2d1b553d5", null ],
-    [ "sendSharp", "classIRsend.html#a0b0933040532b8c1cbc7cbf17ab7edb5", null ],
-    [ "sendSharpRaw", "classIRsend.html#a50067887a95c401e98362e0c6f721f71", null ],
-    [ "sendSony", "classIRsend.html#a87054d6ff63e82d94c039895d011baba", null ],
-    [ "sendWhynter", "classIRsend.html#a8acfdbfc54f8b76d49acb799f5b40805", null ]
+    [ "IRsend", "classIRsend.html#af034d72ab06f6c76a0c470a5feb8999c", null ],
+    [ "begin", "classIRsend.html#a386f026bf739b0718efde4cffa6ce129", null ],
+    [ "calibrate", "classIRsend.html#a52fc673e2b4d8d5b7a4bf21d9dff7508", null ],
+    [ "enableIROut", "classIRsend.html#aed0028055cae5862e14d00e87ee6f6bf", null ],
+    [ "mark", "classIRsend.html#a819b6cbe4b332eb24dd9b1908ed9c947", null ],
+    [ "send", "classIRsend.html#ada3686c468d1c50f20e53d27ee3ec0b2", null ],
+    [ "sendData", "classIRsend.html#a4f8cd77dab7ce6c406029fe87674858f", null ],
+    [ "sendGeneric", "classIRsend.html#a5215fd797dfd490816f31bb99b38c273", null ],
+    [ "sendGeneric", "classIRsend.html#aaace48306af9c020c18848db1a05e641", null ],
+    [ "sendGeneric", "classIRsend.html#a4f5ad649827692b4b42d15b45c7f684b", null ],
+    [ "sendRaw", "classIRsend.html#af71c3682b670308aea1404e4858c56e6", null ],
+    [ "space", "classIRsend.html#a439a32323068ee18f1e12fa91e1b3c94", null ],
+    [ "outputOff", "classIRsend.html#a5e80df8b2ee534dbd6ddc30a852a2791", null ],
+    [ "outputOn", "classIRsend.html#a4acfc45b339e724e2dbdff24762dfa7d", null ]
 ];
