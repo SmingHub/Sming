@@ -6,12 +6,42 @@ using namespace std;
 #include <string>
 #include <string.h>
 
+#define GPIO_LED 2
+
+Timer timerDFPlayer;
 DFRobotDFPlayerMini player;
+void nextSong()
+{
+    player.next();
+}
+
+
+Timer timerLedBlink;
+bool ledState = true;
+void blink()
+{
+    digitalWrite(GPIO_LED, ledState);
+    ledState = !ledState;
+}
+
 
 void init()
 {
     Serial.begin(9600);
-    player.begin(Serial);
-    player.volume(10);
-    player.play(1);
+    
+    pinMode(GPIO_LED, OUTPUT);
+    timerLedBlink.initializeMs(50, blink).start();
+
+    while(!player.begin(Serial))
+    {
+        delay(500);
+    }
+
+    timerLedBlink.stop();
+    digitalWrite(GPIO_LED, 0);
+
+    player.volume(20);
+
+    timerDFPlayer.initializeMs(3000, nextSong).start();
+
 }
