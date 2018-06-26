@@ -30,7 +30,7 @@ void init()
     Serial.begin(9600);
     
     pinMode(GPIO_LED, OUTPUT);
-    timerLedBlink.initializeMs(50, blink).start();
+    timerLedBlink.initializeMs(100, blink).start();
 
     while(!player.begin(Serial))
     {
@@ -40,8 +40,8 @@ void init()
     timerLedBlink.stop();
     digitalWrite(GPIO_LED, 0);
 
-    player.volume(20);
+    player.volume(15);
 
-    timerDFPlayer.initializeMs(3000, nextSong).start();
+    timerDFPlayer.initializeMs(10000, nextSong).start();
 
 }
