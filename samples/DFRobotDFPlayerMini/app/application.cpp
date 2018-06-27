@@ -1,10 +1,6 @@
-using namespace std;
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <Libraries/DFRobotDFPlayerMini/DFRobotDFPlayerMini.h>
-
-#include <string>
-#include <string.h>
 
 #define GPIO_LED 2
 
@@ -23,7 +19,6 @@ void blink()
     digitalWrite(GPIO_LED, ledState);
     ledState = !ledState;
 }
-
 
 void init()
 {
