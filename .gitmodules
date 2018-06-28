@@ -81,3 +81,7 @@
 	path = Sming/Libraries/ITEADLIB_Arduino_Nextion
     url = https://github.com/itead/ITEADLIB_Arduino_Nextion.git
     ignore = dirty
+[submodule "Sming/Libraries/DFRobotDFPlayerMini"]
+	path = Sming/Libraries/DFRobotDFPlayerMini
+	url = https://github.com/DFRobot/DFRobotDFPlayerMini.git
+	ignore = dirty
