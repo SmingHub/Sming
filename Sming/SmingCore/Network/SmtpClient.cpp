@@ -75,7 +75,7 @@ bool SmtpClient::connect(const URL& url)
 	if(!this->url.Port) {
 		this->url.Port = 25;
 		if(this->url.Protocol == SMTP_OVER_SSL_PROTOCOL) {
-			this->url.Protocol = 465;
+			this->url.Port = 465;
 		}
 	}
 
