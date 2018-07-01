@@ -77,6 +77,10 @@ bool MqttClient::setWill(const String& topic, const String& message, int QoS, bo
 bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslOptions)
 {
 	this->url = url;
+	if (not (url.Protocol == "mqtt" || url.Protocol == "mqtts")) {
+		debug_e("Invalid protocol");
+		return false;
+	}
 	waitingSize = 0;
 	posHeader = 0;
 	current = NULL;
