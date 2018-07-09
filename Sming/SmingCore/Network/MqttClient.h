@@ -55,7 +55,7 @@ public:
 	bool setWill(const String& topic, const String& message, int QoS, bool retained = false);
 
 	/** @brief  Connect to a MQTT server
-	*  @param  url, in the form "mttqs://user:password@server:port"
+	*  @param  url, in the form "mqtt://user:password@server:port" or "mqtts://user:password@server:port"
 	*  @param  client name
 	*/
 	bool connect(const URL& url, const String& uniqueClientName, uint32_t sslOptions = 0);
