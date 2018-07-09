@@ -78,7 +78,7 @@ bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslO
 {
 	this->url = url;
 	if (not (url.Protocol == "mqtt" || url.Protocol == "mqtts")) {
-		debug_e("Invalid protocol");
+		debug_e("Only mqtt and mqtts protocols are allowed");
 		return false;
 	}
 	waitingSize = 0;
