@@ -52,7 +52,7 @@
 #include "Network/rBootHttpUpdate.h"
 #include "Network/URL.h"
 
-#include "../Services/ArduinoJson/include/ArduinoJson.h"
+#include "../Libraries/ArduinoJson/include/ArduinoJson.h"
 #include "../Services/DateTime/DateTime.h"
 #include "../Services/libemqtt/libemqtt.h"
 #include "../Services/FATFS/ff.h"
