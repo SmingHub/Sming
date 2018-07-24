@@ -22,15 +22,12 @@ Timer procTimer;
 //***********************************************************
 void readData()
 {
-	uint8_t a;
-	uint64_t info;
-
 	if(!ReadTemp.MeasureStatus()) // the last measurement completed
 	{
 		if(ReadTemp.GetSensorsCount()) // is minimum 1 sensor detected ?
 			Serial.println("******************************************");
 		Serial.println(" Reding temperature DEMO");
-		for(a = 0; a < ReadTemp.GetSensorsCount(); a++) // prints for all sensors
+		for(uint8_t a = 0; a < ReadTemp.GetSensorsCount(); a++) // prints for all sensors
 		{
 			Serial.print(" T");
 			Serial.print(a + 1);
@@ -46,7 +43,7 @@ void readData()
 
 			Serial.print(" <Sensor id.");
 
-			info = ReadTemp.GetSensorID(a) >> 32;
+			uint64_t info = ReadTemp.GetSensorID(a) >> 32;
 			Serial.print((uint32_t)info, 16);
 			Serial.print((uint32_t)ReadTemp.GetSensorID(a), 16);
 			Serial.println(">");

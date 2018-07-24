@@ -21,7 +21,7 @@ void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRou
 {
 	FIL file;
 	FRESULT fRes;
-	uint32_t t1, t2, td, byteswritten, i, remainingBytes;
+	uint32_t t1, t2, td, byteswritten, i;
 	char* buf = new char[totalBytes];
 
 	if(!buf) {
@@ -40,7 +40,7 @@ void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRou
 	if(fRes == FR_OK) {
 		i = 0;
 		do {
-			remainingBytes = totalBytes - i > bytesPerRound ? bytesPerRound : totalBytes - i;
+			uint32_t remainingBytes = totalBytes - i > bytesPerRound ? bytesPerRound : totalBytes - i;
 			f_write(&file, buf + i, remainingBytes, &byteswritten);
 			if(byteswritten != remainingBytes) {
 				Serial.printf("Only written %d bytes\n", i + byteswritten);
@@ -56,7 +56,7 @@ void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRou
 	//get the time at test end
 	t2 = system_get_time();
 
-	delete buf;
+	delete[] buf;
 
 	Serial.print((i / 1024.0f) * 1000000.0f / (t2 - t1));
 	Serial.print(" kB/s\n");
@@ -111,12 +111,11 @@ FRESULT ls(const char* path /* Start node to be scanned (also used as work area)
 	FRESULT res;
 	FILINFO fno;
 	DIR dir;
-	int i;
 	char* fn; /* This function assumes non-Unicode configuration */
 
 	res = f_opendir(&dir, path); /* Open the directory */
 	if(res == FR_OK) {
-		i = strlen(path);
+		int i = strlen(path);
 		for(;;) {
 			res = f_readdir(&dir, &fno); /* Read a directory item */
 			if(res != FR_OK || fno.fname[0] == 0)
