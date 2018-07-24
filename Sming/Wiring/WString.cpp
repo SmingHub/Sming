@@ -708,7 +708,7 @@ void String::trim(void)
   char *end = buffer + len - 1;
   while (isspace(*end) && end >= begin) end--;
   len = end + 1 - begin;
-  if (begin > buffer) memcpy(buffer, begin, len);
+  if (begin > buffer) memmove(buffer, begin, len);
   buffer[len] = 0;
 }
 
