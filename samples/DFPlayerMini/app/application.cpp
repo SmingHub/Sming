@@ -8,35 +8,32 @@ Timer timerDFPlayer;
 DFRobotDFPlayerMini player;
 void nextSong()
 {
-    player.next();
+	player.next();
 }
-
 
 Timer timerLedBlink;
 bool ledState = true;
 void blink()
 {
-    digitalWrite(GPIO_LED, ledState);
-    ledState = !ledState;
+	digitalWrite(GPIO_LED, ledState);
+	ledState = !ledState;
 }
 
 void init()
 {
-    Serial.begin(9600);
-    
-    pinMode(GPIO_LED, OUTPUT);
-    timerLedBlink.initializeMs(100, blink).start();
+	Serial.begin(9600);
 
-    while(!player.begin(Serial))
-    {
-        delay(500);
-    }
+	pinMode(GPIO_LED, OUTPUT);
+	timerLedBlink.initializeMs(100, blink).start();
 
-    timerLedBlink.stop();
-    digitalWrite(GPIO_LED, 0);
+	while(!player.begin(Serial)) {
+		delay(500);
+	}
 
-    player.volume(15);
+	timerLedBlink.stop();
+	digitalWrite(GPIO_LED, 0);
 
-    timerDFPlayer.initializeMs(10000, nextSong).start();
+	player.volume(15);
 
+	timerDFPlayer.initializeMs(10000, nextSong).start();
 }

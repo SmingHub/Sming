@@ -24,19 +24,20 @@
 
 typedef struct {
 	HttpHeaders* headers = NULL;
-	ReadWriteStream* stream  = NULL;
+	ReadWriteStream* stream = NULL;
 } HttpPartResult;
 
-typedef Delegate <HttpPartResult()> HttpPartProducerDelegate;
+typedef Delegate<HttpPartResult()> HttpPartProducerDelegate;
 
-class MultipartStream: public ReadWriteStream
+class MultipartStream : public ReadWriteStream
 {
 public:
 	MultipartStream(HttpPartProducerDelegate delegate);
 	virtual ~MultipartStream();
 
 	//Use base class documentation
-	virtual StreamType getStreamType() {
+	virtual StreamType getStreamType()
+	{
 		// TODO: fix this...
 		return stream->getStreamType();
 	}
@@ -45,7 +46,10 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	int length() { return -1; }
+	int length()
+	{
+		return -1;
+	}
 
 	/** @brief  Write a single char to stream
 	 *  @param  charToWrite Char to write to the stream
@@ -58,7 +62,7 @@ public:
 	 *  @param  size Quantity of chars to written
 	 *  @retval size_t Quantity of chars written to stream
 	 */
-	virtual size_t write(const uint8_t *buffer, size_t size);
+	virtual size_t write(const uint8_t* buffer, size_t size);
 
 	//Use base class documentation
 	virtual uint16_t readMemoryBlock(char* data, int bufSize);
@@ -79,8 +83,8 @@ public:
 private:
 	HttpPartProducerDelegate producer;
 
-	ReadWriteStream *stream = NULL;
-	ReadWriteStream *nextStream = NULL;
+	ReadWriteStream* stream = NULL;
+	ReadWriteStream* nextStream = NULL;
 
 	char boundary[16] = {0};
 

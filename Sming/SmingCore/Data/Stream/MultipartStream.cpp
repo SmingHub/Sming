@@ -10,9 +10,8 @@
 
 #include "MultipartStream.h"
 
-MultipartStream::MultipartStream(HttpPartProducerDelegate delegate): producer(delegate)
+MultipartStream::MultipartStream(HttpPartProducerDelegate delegate) : producer(delegate)
 {
-
 }
 
 MultipartStream::~MultipartStream()
@@ -29,12 +28,12 @@ size_t MultipartStream::write(uint8_t charToWrite)
 	return 0;
 }
 
-size_t MultipartStream::write(const uint8_t *buffer, size_t size)
+size_t MultipartStream::write(const uint8_t* buffer, size_t size)
 {
 	// TODO: those methods should not be used...
 	return 0;
 }
-	//Use base class documentation
+//Use base class documentation
 uint16_t MultipartStream::readMemoryBlock(char* data, int bufSize)
 {
 	if(stream != NULL && stream->isFinished()) {
@@ -54,31 +53,29 @@ uint16_t MultipartStream::readMemoryBlock(char* data, int bufSize)
 
 		if(result.stream == NULL) { // Sending a result without stream is the way to stop the "production"
 			String line = String("\r\n--") + getBoundary() + String("--\r\n");
-			stream->write((uint8_t *)line.c_str(), line.length());
+			stream->write((uint8_t*)line.c_str(), line.length());
 
 			finished = true;
-		}
-		else {
+		} else {
 			String line = String("\r\n--") + getBoundary() + String("\r\n");
-			stream->write((uint8_t *)line.c_str(), line.length());
+			stream->write((uint8_t*)line.c_str(), line.length());
 			if(result.headers != NULL) {
-
-				if(!result.headers->contains("Content-Length") ) {
+				if(!result.headers->contains("Content-Length")) {
 					if(result.stream != NULL && result.stream->available() > -1) {
 						(*result.headers)["Content-Length"] = result.stream->available();
 					}
 				}
 
-				for (int i = 0; i < result.headers->count(); i++) {
+				for(int i = 0; i < result.headers->count(); i++) {
 					line = result.headers->keyAt(i) + ": " + result.headers->valueAt(i) + "\r\n";
-					stream->write((uint8_t *)line.c_str(), line.length());
+					stream->write((uint8_t*)line.c_str(), line.length());
 				}
 
 				delete result.headers;
 				result.headers = NULL;
 			}
 			line = "\r\n";
-			stream->write((uint8_t *)line.c_str(), line.length());
+			stream->write((uint8_t*)line.c_str(), line.length());
 
 			nextStream = result.stream;
 		}
@@ -100,14 +97,13 @@ bool MultipartStream::isFinished()
 const char* MultipartStream::getBoundary()
 {
 	if(boundary[0] == 0) {
-		static const char pool[] =
-		        "0123456789"
-		        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		        "abcdefghijklmnopqrstuvwxyz";
+		static const char pool[] = "0123456789"
+								   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+								   "abcdefghijklmnopqrstuvwxyz";
 
 		int len = sizeof(boundary);
 		memset(boundary, 0, len);
-		for (int i = 0; i < len - 1; ++i) {
+		for(int i = 0; i < len - 1; ++i) {
 			boundary[i] = pool[os_random() % (sizeof(pool) - 1)];
 		}
 		boundary[len - 1] = 0;

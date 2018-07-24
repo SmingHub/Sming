@@ -16,9 +16,8 @@ struct pbuf;
 class String;
 class TcpConnection;
 
-struct DnsLookup
-{
-	TcpConnection *con;
+struct DnsLookup {
+	TcpConnection* con;
 	int port;
 };
 
@@ -26,11 +25,11 @@ class NetUtils
 {
 public:
 	// Helpers
-	static bool pbufIsStrEqual(pbuf *buf, const char* compared, int startPos);
-	static int pbufFindChar(pbuf *buf, char wtf, int startPos = 0);
-	static int pbufFindStr(pbuf *buf, const char* wtf, int startPos = 0);
-	static char* pbufAllocateStrCopy(pbuf *buf, int startPos, int length);
-	static String pbufStrCopy(pbuf *buf, int startPos, int length);
+	static bool pbufIsStrEqual(pbuf* buf, const char* compared, int startPos);
+	static int pbufFindChar(pbuf* buf, char wtf, int startPos = 0);
+	static int pbufFindStr(pbuf* buf, const char* wtf, int startPos = 0);
+	static char* pbufAllocateStrCopy(pbuf* buf, int startPos, int length);
+	static String pbufStrCopy(pbuf* buf, int startPos, int length);
 
 	static bool FixNetworkRouting();
 

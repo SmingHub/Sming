@@ -8,8 +8,7 @@ MeteoConfig loadConfig()
 {
 	DynamicJsonBuffer jsonBuffer;
 	MeteoConfig cfg;
-	if (fileExist(METEO_CONFIG_FILE))
-	{
+	if(fileExist(METEO_CONFIG_FILE)) {
 		int size = fileGetSize(METEO_CONFIG_FILE);
 		char* jsonString = new char[size + 1];
 		fileGetContent(METEO_CONFIG_FILE, jsonString, size + 1);
@@ -30,9 +29,7 @@ MeteoConfig loadConfig()
 		cfg.RangeMax = trigger["max"];
 
 		delete[] jsonString;
-	}
-	else
-	{
+	} else {
 		cfg.NetworkSSID = WIFI_SSID;
 		cfg.NetworkPassword = WIFI_PWD;
 	}
@@ -67,5 +64,3 @@ void saveConfig(MeteoConfig& cfg)
 	root.prettyPrintTo(buf, sizeof(buf));
 	fileSetContent(METEO_CONFIG_FILE, buf);
 }
-
-

@@ -1,10 +1,10 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-#include "../include/configuration.h"	// application configuration
+#include "../include/configuration.h" // application configuration
 
-#include "../app/bmp180.cpp"		// bmp180 configuration
-#include "../app/si7021.cpp"		// htu21d configuration
+#include "../app/bmp180.cpp" // bmp180 configuration
+#include "../app/si7021.cpp" // htu21d configuration
 
 Timer publishTimer;
 
@@ -14,25 +14,25 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
-	Wire.pins(4, 5); // SDA, SCL 
+	Wire.pins(4, 5); // SDA, SCL
 	Wire.begin();
 
-// initialization config
+	// initialization config
 
-	BMPinit();	// BMP180 sensor initialization
-	SIinit();	// HTU21D sensor initialization
+	BMPinit(); // BMP180 sensor initialization
+	SIinit();  // HTU21D sensor initialization
 
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
 	WifiEvents.onStationGotIP(gotIP);
 	WifiAccessPoint.enable(false);
-	WDT.enable(false);	//disable watchdog
+	WDT.enable(false); //disable watchdog
 }
 
 // Publish our message
-void publishMessage()	// uncomment timer in connectOk() if need publishMessage() loop
+void publishMessage() // uncomment timer in connectOk() if need publishMessage() loop
 {
-	if (mqtt.getConnectionState() != eTCS_Connected)
+	if(mqtt.getConnectionState() != eTCS_Connected)
 		startMqttClient(); // Auto reconnect
 
 	Serial.println("publish message");
@@ -60,5 +60,5 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 	Serial.print("Connected: ");
 	Serial.println(ip.toString());
 	startMqttClient();
-	publishMessage();		// run once publishMessage
+	publishMessage(); // run once publishMessage
 }

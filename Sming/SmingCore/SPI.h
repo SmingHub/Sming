@@ -19,18 +19,17 @@
 #include "SPIBase.h"
 #include "SPISettings.h"
 
-
 //#define SPI_DEBUG  1
 
 // for compatibility when porting from Arduino
-#define SPI_HAS_TRANSACTION  0
+#define SPI_HAS_TRANSACTION 0
 
-#define	SPI_NO	1
+#define SPI_NO 1
 
-
-class SPIClass: public SPIBase {
+class SPIClass : public SPIBase
+{
 public:
-    /** @brief  Instantiate hardware SPI object
+	/** @brief  Instantiate hardware SPI object
      *  @addtogroup hw_spi
      *  @{
      */
@@ -42,7 +41,6 @@ public:
 	 * Initializes the SPI bus using the default SPISettings
 	 */
 	virtual void begin();
-
 
 	/** @brief end()
 	 *
@@ -83,7 +81,8 @@ public:
 	 * 		receivedVal = SPI.transfer(val)			: single byte
 	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
 	 */
-	virtual unsigned char transfer(unsigned char val) {
+	virtual unsigned char transfer(unsigned char val)
+	{
 		return transfer32((uint32)val, 8);
 	};
 
@@ -115,7 +114,8 @@ public:
 	 * 		receivedVal = SPI.transfer(val)			: single byte
 	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
 	 */
-	virtual unsigned short transfer16(unsigned short val) {
+	virtual unsigned short transfer16(unsigned short val)
+	{
 		return transfer32((uint32)val, 16);
 	};
 
@@ -130,8 +130,7 @@ public:
 	 *
 	 * 		SPI.transfer(buffer, size)				: memory buffer of length size
 	 */
-	virtual void transfer(uint8 * buffer, size_t numberBytes);
-
+	virtual void transfer(uint8* buffer, size_t numberBytes);
 
 	/** @brief  Default settings used by the SPI bus
 	 * until reset by beginTransaction(SPISettings)
@@ -140,9 +139,7 @@ public:
 	 */
 	SPISettings SPIDefaultSettings = SPISettings(4000000, MSBFIRST, SPI_MODE0);
 
-
 private:
-
 	/** @brief transfer32()
 	 *
 	 * private method used by transfer(byte) and transfer16(sort)
@@ -177,13 +174,12 @@ private:
 	/** @brief  setClock
 	 * private method used when applying SPISettings
 	 */
-	uint32_t getFrequency(int freq, int &pre, int clk);
+	uint32_t getFrequency(int freq, int& pre, int clk);
 	void setFrequency(int freq);
 
 	SPISettings _SPISettings;
-	uint8	_isTX = false;
-	uint8	_init = false;
-
+	uint8 _isTX = false;
+	uint8 _init = false;
 };
 
 /** @brief  Global instance of SPI class */

@@ -24,15 +24,14 @@ void delay(uint32_t time)
 {
 	int quotient = time / MAX_SAFE_DELAY;
 	int remainder = time % MAX_SAFE_DELAY;
-	for(int i=0, max = quotient + 1; i < max ; i++) {
+	for(int i = 0, max = quotient + 1; i < max; i++) {
 		if(i == quotient) {
 			os_delay_us(remainder * 1000);
-		}
-		else {
+		} else {
 			os_delay_us(MAX_SAFE_DELAY * 1000);
 		}
 
-		system_soft_wdt_feed ();
+		system_soft_wdt_feed();
 	}
 }
 

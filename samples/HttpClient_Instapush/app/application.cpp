@@ -13,14 +13,13 @@
  * 3. Update Application ID and Application Secret below:
  */
 
-#define APP_ID		"55719abba4c48a802c881205"
-#define APP_SECRET	"5300adbe3f906938950fc0cdbc301986"
-
+#define APP_ID "55719abba4c48a802c881205"
+#define APP_SECRET "5300adbe3f906938950fc0cdbc301986"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 class InstapushTrackers : public HashMap<String, String>
@@ -36,25 +35,24 @@ public:
 		secret = appSecret;
 	}
 
-	void notify(String event, InstapushTrackers &trackersInfo)
+	void notify(String event, InstapushTrackers& trackersInfo)
 	{
 		debugf("preparing request");
 
-		HttpRequest *request = new HttpRequest(URL(url));
+		HttpRequest* request = new HttpRequest(URL(url));
 
 		HttpHeaders requestHeaders;
 		requestHeaders["Content-Type"] = "application/json";
-		requestHeaders["x-instapush-appid"] =  app;
-		requestHeaders["x-instapush-appsecret"] =  secret;
+		requestHeaders["x-instapush-appid"] = app;
+		requestHeaders["x-instapush-appsecret"] = secret;
 
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject& root = jsonBuffer.createObject();
 		root["event"] = event;
 		JsonObject& trackers = root.createNestedObject("trackers");
-		for (int i = 0; i < trackersInfo.count(); i++)
-		{
+		for(int i = 0; i < trackersInfo.count(); i++) {
 			debugf("%s: %s", trackersInfo.keyAt(i).c_str(), trackersInfo.valueAt(i).c_str());
-			trackers[trackersInfo.keyAt(i)] =  trackersInfo[trackersInfo.keyAt(i)];
+			trackers[trackersInfo.keyAt(i)] = trackersInfo[trackersInfo.keyAt(i)];
 		}
 
 		String tempString;
@@ -75,7 +73,7 @@ public:
 private:
 	String app;
 	String secret;
-	const char *url = "http://api.instapush.im/v1/post";
+	const char* url = "http://api.instapush.im/v1/post";
 };
 
 Timer procTimer;

@@ -30,13 +30,11 @@ bool HttpClient::send(HttpRequest* request)
 		return false;
 	}
 
-	if(httpConnectionPool.contains(cacheKey) &&
-	   httpConnectionPool[cacheKey]->getConnectionState() > eTCS_Connecting &&
-	   !httpConnectionPool[cacheKey]->isActive()
-	) {
-
-		debug_d("Removing stale connection: State: %d, Active: %d", (int)httpConnectionPool[cacheKey]->getConnectionState(),
-										(httpConnectionPool[cacheKey]->isActive() ? 1: 0));
+	if(httpConnectionPool.contains(cacheKey) && httpConnectionPool[cacheKey]->getConnectionState() > eTCS_Connecting &&
+	   !httpConnectionPool[cacheKey]->isActive()) {
+		debug_d("Removing stale connection: State: %d, Active: %d",
+				(int)httpConnectionPool[cacheKey]->getConnectionState(),
+				(httpConnectionPool[cacheKey]->isActive() ? 1 : 0));
 		delete httpConnectionPool[cacheKey];
 		httpConnectionPool[cacheKey] = NULL;
 		httpConnectionPool.remove(cacheKey);
@@ -50,8 +48,8 @@ bool HttpClient::send(HttpRequest* request)
 #ifdef ENABLE_SSL
 	// Based on the URL decide if we should reuse the SSL and TCP pool
 	if(useSsl) {
-		if (!sslSessionIdPool.contains(cacheKey)) {
-			sslSessionIdPool[cacheKey] = (SSLSessionId *)malloc(sizeof(SSLSessionId));
+		if(!sslSessionIdPool.contains(cacheKey)) {
+			sslSessionIdPool[cacheKey] = (SSLSessionId*)malloc(sizeof(SSLSessionId));
 			sslSessionIdPool[cacheKey]->value = NULL;
 			sslSessionIdPool[cacheKey]->length = 0;
 		}
@@ -69,35 +67,27 @@ bool HttpClient::send(HttpRequest* request)
 
 bool HttpClient::downloadString(const String& url, RequestCompletedDelegate requestComplete)
 {
-	return send(request(url)
-				->setMethod(HTTP_GET)
-				->onRequestComplete(requestComplete)
-				);
+	return send(request(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 }
 
-bool HttpClient::downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete /* = NULL */)
+bool HttpClient::downloadFile(const String& url, const String& saveFileName,
+							  RequestCompletedDelegate requestComplete /* = NULL */)
 {
 	URL uri = URL(url);
 
 	String file;
-	if (saveFileName.length() == 0)
-	{
+	if(saveFileName.length() == 0) {
 		file = uri.Path;
 		int p = file.lastIndexOf('/');
-		if (p != -1)
+		if(p != -1)
 			file = file.substring(p + 1);
-	}
-	else
+	} else
 		file = saveFileName;
 
 	FileStream* fileStream = new FileStream();
 	fileStream->attach(file, eFO_CreateNewAlways | eFO_WriteOnly);
 
-	return send(request(url)
-				   ->setResponseStream(fileStream)
-				   ->setMethod(HTTP_GET)
-				   ->onRequestComplete(requestComplete)
-			  );
+	return send(request(url)->setResponseStream(fileStream)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 }
 
 // end convenience methods
@@ -107,15 +97,15 @@ HttpRequest* HttpClient::request(const String& url)
 	return new HttpRequest(URL(url));
 }
 
-HashMap<String, HttpConnection *> HttpClient::httpConnectionPool;
-HashMap<String, RequestQueue* > HttpClient::queue;
+HashMap<String, HttpConnection*> HttpClient::httpConnectionPool;
+HashMap<String, RequestQueue*> HttpClient::queue;
 
 #ifdef ENABLE_SSL
-HashMap<String, SSLSessionId* > HttpClient::sslSessionIdPool;
+HashMap<String, SSLSessionId*> HttpClient::sslSessionIdPool;
 
 void HttpClient::freeSslSessionPool()
 {
-	for(int i=0; i< sslSessionIdPool.count(); i ++) {
+	for(int i = 0; i < sslSessionIdPool.count(); i++) {
 		String key = sslSessionIdPool.keyAt(i);
 		free(sslSessionIdPool[key]->value);
 		sslSessionIdPool[key]->value = NULL;
@@ -128,11 +118,11 @@ void HttpClient::freeSslSessionPool()
 
 void HttpClient::freeRequestQueue()
 {
-	for(int i=0; i< queue.count(); i ++) {
+	for(int i = 0; i < queue.count(); i++) {
 		String key = queue.keyAt(i);
 		RequestQueue* requestQueue = queue[key];
 		HttpRequest* request = requestQueue->dequeue();
-		while(request != NULL){
+		while(request != NULL) {
 			delete request;
 			request = requestQueue->dequeue();
 		}
@@ -144,7 +134,7 @@ void HttpClient::freeRequestQueue()
 
 void HttpClient::freeHttpConnectionPool()
 {
-	for(int i=0; i< httpConnectionPool.count(); i ++) {
+	for(int i = 0; i < httpConnectionPool.count(); i++) {
 		String key = httpConnectionPool.keyAt(i);
 		delete httpConnectionPool[key];
 		httpConnectionPool[key] = NULL;

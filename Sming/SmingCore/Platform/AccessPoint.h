@@ -26,25 +26,27 @@
 class AccessPointClass : protected ISystemReadyHandler
 {
 public:
-    /** @brief  Access point class
+	/** @brief  Access point class
      *  @addtogroup wifi_ap
      *  @{
      */
 	AccessPointClass();
-	virtual ~AccessPointClass() {}
+	virtual ~AccessPointClass()
+	{
+	}
 
-    /** @brief  Enable or disable WiFi AP
+	/** @brief  Enable or disable WiFi AP
      *  @param  enabled True to enable AP. False to disable.
      *  @param	save True to save operational mode to flash, False to set current operational mode only
      */
 	void enable(bool enabled, bool save = false);
 
-    /** @brief  Get WiFi AP enable status
+	/** @brief  Get WiFi AP enable status
      *  @retval bool True if WiFi AP enabled.
      */
 	bool isEnabled();
 
-    /** @brief  Configure WiFi AP
+	/** @brief  Configure WiFi AP
      *  @param  ssid WiFi AP SSID
      *  @param  password WiFi AP password
      *  @param  mode WiFi AP mode
@@ -53,35 +55,36 @@ public:
      *  @param  beaconInterval WiFi AP beacon interval in milliseconds (Default: 200ms)
      *  @retval bool True on success
      */
-	bool config(const String& ssid, String password, AUTH_MODE mode, bool hidden = false, int channel = 7, int beaconInterval = 200);
+	bool config(const String& ssid, String password, AUTH_MODE mode, bool hidden = false, int channel = 7,
+				int beaconInterval = 200);
 
-    /** @brief  Get WiFi AP IP address
+	/** @brief  Get WiFi AP IP address
      *  @retval IPAddress WiFi AP IP address
      */
 	IPAddress getIP();
 
-    /** @brief  Set WiFi AP IP addres
+	/** @brief  Set WiFi AP IP addres
      *  @param  address New IP address for WiFi AP
      *  @retval bool True on success
      */
 	bool setIP(IPAddress address);
 
-    /** @brief  Get WiFi AP MAC address
+	/** @brief  Get WiFi AP MAC address
      *  @retval String WiFi AP MAC address
      */
 	String getMAC();
 
-    /** @brief  Get WiFi AP network mask
+	/** @brief  Get WiFi AP network mask
      *  @retval IPAddress WiFi AP network mask
      */
 	IPAddress getNetworkMask();
 
-    /** @brief  Get WiFi AP default gateway
+	/** @brief  Get WiFi AP default gateway
      *  @retval IPAddress WiFi AP default gateway
      */
 	IPAddress getNetworkGateway();
 
-    /** @brief  Get WiFi AP broadcast address
+	/** @brief  Get WiFi AP broadcast address
      *  @retval IPAddress WiFi AP broadcast address
      */
 	IPAddress getNetworkBroadcast();
@@ -95,7 +98,7 @@ public:
 	 *	@retval	String WiFi access point password
 	 */
 	String getPassword();
-    /** @} */
+	/** @} */
 
 protected:
 	virtual void onSystemReady();

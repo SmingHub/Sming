@@ -20,7 +20,7 @@
  *  @{
 */
 
-class QuotedPrintableOutputStream: public StreamTransformer
+class QuotedPrintableOutputStream : public StreamTransformer
 {
 public:
 	/**
@@ -29,7 +29,7 @@ public:
 	 * @param size_t resultSize - the size of the intermediate buffer.
 	 * 							- it will be created once per object, reused multiple times and kept until the end of the object
 	 */
-	QuotedPrintableOutputStream(ReadWriteStream *stream, size_t resultSize = 512);
+	QuotedPrintableOutputStream(ReadWriteStream* stream, size_t resultSize = 512);
 };
 
 /** @} */

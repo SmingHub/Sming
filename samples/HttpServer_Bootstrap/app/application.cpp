@@ -3,8 +3,8 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 #define LED_PIN 0 // GPIO number
@@ -12,14 +12,14 @@
 HttpServer server;
 int counter = 0;
 
-void onIndex(HttpRequest &request, HttpResponse &response)
+void onIndex(HttpRequest& request, HttpResponse& response)
 {
 	counter++;
 	bool led = request.getQueryParameter("led") == "on";
 	digitalWrite(LED_PIN, led);
 
-	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
-	auto &vars = tmpl->variables();
+	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
+	auto& vars = tmpl->variables();
 	vars["counter"] = String(counter);
 	//vars["ledstate"] = (*portOutputRegister(digitalPinToPort(LED_PIN)) & digitalPinToBitMask(LED_PIN)) ? "checked" : "";
 	vars["IP"] = WifiStation.getIP().toString();
@@ -27,23 +27,22 @@ void onIndex(HttpRequest &request, HttpResponse &response)
 	response.sendTemplate(tmpl); // this template object will be deleted automatically
 }
 
-void onHello(HttpRequest &request, HttpResponse &response)
+void onHello(HttpRequest& request, HttpResponse& response)
 {
 	response.setContentType(MIME_HTML);
 	// Use direct strings output only for small amount of data (huge memory allocation)
 	response.sendString("Sming. Let's do smart things.");
 }
 
-void onFile(HttpRequest &request, HttpResponse &response)
+void onFile(HttpRequest& request, HttpResponse& response)
 {
 	String file = request.getPath();
-	if (file[0] == '/')
+	if(file[0] == '/')
 		file = file.substring(1);
 
-	if (file[0] == '.')
+	if(file[0] == '.')
 		response.forbidden();
-	else
-	{
+	else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
 	}
@@ -68,22 +67,20 @@ void downloadContentFiles()
 {
 	downloadClient.downloadFile("http://simple.anakod.ru/templates/index.html");
 	downloadClient.downloadFile("http://simple.anakod.ru/templates/bootstrap.css.gz");
-	downloadClient.downloadFile("http://simple.anakod.ru/templates/jquery.js.gz", (RequestCompletedDelegate)([](HttpConnection& connection, bool success) -> int {
-		if(success) {
-			startWebServer();
-		}
-	}));
+	downloadClient.downloadFile("http://simple.anakod.ru/templates/jquery.js.gz",
+								(RequestCompletedDelegate)([](HttpConnection& connection, bool success) -> int {
+									if(success) {
+										startWebServer();
+									}
+								}));
 }
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
-	if (!fileExist("index.html") || !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz"))
-	{
+	if(!fileExist("index.html") || !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz")) {
 		// Download server content at first
 		downloadContentFiles();
-	}
-	else
-	{
+	} else {
 		startWebServer();
 	}
 }

@@ -27,8 +27,17 @@ public:
 	URL();
 	URL(const String& urlString);
 
-	inline String toString() { return Protocol + "://" + Host + (Port != 0 ? ":" + String(Port) : "") + getPathWithQuery(); }
-	inline String getPathWithQuery() { if (Path.length() + Query.length() > 0) return Path + Query; else return "/"; }
+	inline String toString()
+	{
+		return Protocol + "://" + Host + (Port != 0 ? ":" + String(Port) : "") + getPathWithQuery();
+	}
+	inline String getPathWithQuery()
+	{
+		if(Path.length() + Query.length() > 0)
+			return Path + Query;
+		else
+			return "/";
+	}
 
 public:
 	String Protocol;

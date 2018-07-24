@@ -11,11 +11,10 @@ BH1750FVI LightSensor(BH1750FVI_ADDRESS_LOW);
 
 Timer procTimer;
 
-
 void readLight()
 {
 	Serial.println("Reading");
-	uint16_t lux = LightSensor.getLightIntensity();// Get Lux value
+	uint16_t lux = LightSensor.getLightIntensity(); // Get Lux value
 	Serial.print("Light: ");
 	Serial.print(lux);
 	Serial.println(" lux");
@@ -23,10 +22,10 @@ void readLight()
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(SERIAL_BAUD_RATE);  // 115200 by default
 	Serial.systemDebugOutput(false); // Disable debug output to serial
 
-	if (LightSensor.begin() == 0)
+	if(LightSensor.begin() == 0)
 		Serial.println("LightSensor initialized");
 	else
 		Serial.println("LightSensor not available. May be wrong I2C address?");

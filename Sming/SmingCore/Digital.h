@@ -63,13 +63,12 @@ unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout = 10000
 
 inline uint16_t analogRead(uint16_t pin)
 {
-	if (pin == A0)
+	if(pin == A0)
 		return system_adc_read();
 	else
 		return -1; // Not supported
 }
 
-/** @} */
-		
+	/** @} */
 
 #endif

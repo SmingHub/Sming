@@ -34,49 +34,45 @@ Timer procTimer;
 
 void scanBus()
 {
-  byte error, address;
-  int nDevices;
+	byte error, address;
+	int nDevices;
 
-  Serial.println("Scanning...");
+	Serial.println("Scanning...");
 
-  nDevices = 0;
-  for(address = 1; address < 127; address++ )
-  {
-	// The i2c_scanner uses the return value of
-	// the Write.endTransmisstion to see if
-	// a device did acknowledge to the address.
-	Wire.beginTransmission(address);
-	error = Wire.endTransmission();
+	nDevices = 0;
+	for(address = 1; address < 127; address++) {
+		// The i2c_scanner uses the return value of
+		// the Write.endTransmisstion to see if
+		// a device did acknowledge to the address.
+		Wire.beginTransmission(address);
+		error = Wire.endTransmission();
 
-	WDT.alive(); // Second option: notify Watch Dog what you are alive (feed it)
+		WDT.alive(); // Second option: notify Watch Dog what you are alive (feed it)
 
-	if (error == 0)
-	{
-	  Serial.print("I2C device found at address 0x");
-	  if (address<16)
-		Serial.print("0");
-	  Serial.print(address,HEX);
-	  Serial.println("  !");
+		if(error == 0) {
+			Serial.print("I2C device found at address 0x");
+			if(address < 16)
+				Serial.print("0");
+			Serial.print(address, HEX);
+			Serial.println("  !");
 
-	  nDevices++;
+			nDevices++;
+		} else if(error == 4) {
+			Serial.print("Unknow error at address 0x");
+			if(address < 16)
+				Serial.print("0");
+			Serial.println(address, HEX);
+		}
 	}
-	else if (error==4)
-	{
-	  Serial.print("Unknow error at address 0x");
-	  if (address<16)
-		Serial.print("0");
-	  Serial.println(address,HEX);
-	}
-  }
-  if (nDevices == 0)
-	Serial.println("No I2C devices found\n");
-  else
-	Serial.println("done\n");
+	if(nDevices == 0)
+		Serial.println("No I2C devices found\n");
+	else
+		Serial.println("done\n");
 }
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(SERIAL_BAUD_RATE);  // 115200 by default
 	Serial.systemDebugOutput(false); // Disable debug output
 
 	WDT.enable(false); // First (but not the best) option: fully disable watch dog timer
@@ -84,7 +80,7 @@ void init()
 	// Default I2C pins (SDA: 2, SCL:0)
 
 	// You can change pins:
-	//Wire.pins(14, 12); // SDA, SCL 
+	//Wire.pins(14, 12); // SDA, SCL
 
 	Wire.begin();
 	procTimer.initializeMs(3000, scanBus).start();

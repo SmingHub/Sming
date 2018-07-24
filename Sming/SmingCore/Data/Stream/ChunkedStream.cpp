@@ -1,15 +1,13 @@
 #include "ChunkedStream.h"
 
-ChunkedStream::ChunkedStream(ReadWriteStream *stream, size_t resultSize /* = 512 */):
-	StreamTransformer(stream, nullptr, resultSize, resultSize - 12)
+ChunkedStream::ChunkedStream(ReadWriteStream* stream, size_t resultSize /* = 512 */)
+	: StreamTransformer(stream, nullptr, resultSize, resultSize - 12)
 {
-	transformCallback = std::bind(&ChunkedStream::encode, this,
-								  std::placeholders::_1, std::placeholders::_2,
+	transformCallback = std::bind(&ChunkedStream::encode, this, std::placeholders::_1, std::placeholders::_2,
 								  std::placeholders::_3, std::placeholders::_4);
 }
 
-int ChunkedStream::encode(uint8_t* source, size_t sourceLength,
-						  uint8_t* target, size_t targetLength)
+int ChunkedStream::encode(uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
 {
 	if(sourceLength == 0) {
 		const char* end = "0\r\n\r\n";

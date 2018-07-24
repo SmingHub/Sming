@@ -16,7 +16,6 @@
 #include "../SmingCore/Delegate.h"
 #include "../Wiring/WiringFrameworkDependencies.h"
 
-
 // According to documentation maximum value of interval for ms
 // timer after doing system_timer_reinit is 268435ms.
 // If we do some testing we find that higher values works,
@@ -30,7 +29,7 @@ typedef std::function<void()> TimerDelegateStdFunction;
 class Timer
 {
 public:
-    /** @brief  Timer class
+	/** @brief  Timer class
      *  @ingroup timer
      *  @{
      */
@@ -42,99 +41,106 @@ public:
 	// We provide both versions: Delegate and classic c-style callback function for performance reason (for high-frequency timers)
 	// Usually only Delegate needed
 
-    /** @brief  Initialise millisecond timer
+	/** @brief  Initialise millisecond timer
      *  @param  milliseconds Duration of timer in milliseconds
      *  @param  callback Function to call when timer triggers
      *  @note   Classic c-style callback method
      */
 	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, InterruptCallback callback = NULL); // Init in Milliseconds.
 
-    /** @brief  Initialise microsecond timer
+	/** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
      *  @param  callback Function to call when timer triggers
      *  @note   Classic c-style callback method
      */
 	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, InterruptCallback callback = NULL); // Init in Microseconds.
 
-    /** @brief  Initialise millisecond timer
+	/** @brief  Initialise millisecond timer
      *  @param  milliseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
      *  @deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
      */
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = NULL); // Init in Milliseconds.
+	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds,
+								  TimerDelegate delegateFunction = NULL); // Init in Milliseconds.
 
-    /** @brief  Initialise microsecond timer
+	/** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
      *  @deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
      */
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = NULL); // Init in Microseconds.
+	Timer& IRAM_ATTR initializeUs(uint32_t microseconds,
+								  TimerDelegate delegateFunction = NULL); // Init in Microseconds.
 
-    /** @brief  Initialise millisecond timer
+	/** @brief  Initialise millisecond timer
      *  @param  milliseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
      */
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegateStdFunction delegateFunction = nullptr); // Init in Milliseconds.
+	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds,
+								  TimerDelegateStdFunction delegateFunction = nullptr); // Init in Milliseconds.
 
-    /** @brief  Initialise microsecond timer
+	/** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
      */
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegateStdFunction delegateFunction = nullptr); // Init in Microseconds.
-    /** @brief  Start timer running
+	Timer& IRAM_ATTR initializeUs(uint32_t microseconds,
+								  TimerDelegateStdFunction delegateFunction = nullptr); // Init in Microseconds.
+																						/** @brief  Start timer running
      *  @param  repeating Set to true for repeating timer. Set to false for one-shot.
      */
 	void IRAM_ATTR start(bool repeating = true);
 
-    /** @brief  Start one-shot timer running
+	/** @brief  Start one-shot timer running
      *  @note   Will start timer and trigger once after configured duration.
      */
-	void __forceinline IRAM_ATTR startOnce() { start(false); }
+	void __forceinline IRAM_ATTR startOnce()
+	{
+		start(false);
+	}
 
-    /** @brief  Stop timer
+	/** @brief  Stop timer
      *  @note   Stops a running timer. Has no effect on stopped timer.
      */
 	void IRAM_ATTR stop();
 
-    /** @brief  Restarts timer
+	/** @brief  Restarts timer
      *  @note   Restarts the timer from zero, extending duration.
      */
 	void IRAM_ATTR restart();
 
-    /** @brief  Check if timer is started
+	/** @brief  Check if timer is started
      *  @retval bool True if timer is running
      */
 	bool isStarted();
 
-    /** @brief  Get timer interval
+	/** @brief  Get timer interval
      *  @retval uint64_t Timer interval in microseconds
      */
 	uint64_t getIntervalUs();
 
-    /** @brief  Get timer interval
+	/** @brief  Get timer interval
      *  @retval uint32_t Timer interval in milliseconds
      */
 	uint32_t getIntervalMs();
 
-    /** @brief  Set timer interval
+	/** @brief  Set timer interval
      *  @param  microseconds Interval in microseconds. (Default: 1ms)
      */
-    void IRAM_ATTR setIntervalUs(uint64_t microseconds = 1000000);
+	void IRAM_ATTR setIntervalUs(uint64_t microseconds = 1000000);
 
-    /** @brief  Set timer interval
+	/** @brief  Set timer interval
      *  @param  milliseconds Interval in milliseconds. (Default: 1s)
      */
-    void IRAM_ATTR setIntervalMs(uint32_t milliseconds = 1000000);
+	void IRAM_ATTR setIntervalMs(uint32_t milliseconds = 1000000);
 
-    /** @brief  Set timer trigger function
+	/** @brief  Set timer trigger function
      *  @param  interrupt Function to be called on timer trigger
      *  @note   Classic c-type callback method
      */
-    void IRAM_ATTR setCallback(InterruptCallback interrupt = NULL);
+	void IRAM_ATTR setCallback(InterruptCallback interrupt = NULL);
 
 	/** @brief  Set timer trigger function
 	*  @param  delegateFunction Function to be called on timer trigger
@@ -147,32 +153,29 @@ public:
 	*/
 	void IRAM_ATTR setCallback(const TimerDelegateStdFunction& delegateFunction);
 
-
 protected:
-    static void IRAM_ATTR processing(void *arg);
+	static void IRAM_ATTR processing(void* arg);
 
-    /** @brief  virtual timer loop() method
+	/** @brief  virtual timer loop() method
      *  @note   Can be override in class derivations. If overwriten,
      *          no classic other callbacks are working.
      */
-    virtual void tick();
-    /** @} */
+	virtual void tick();
+	/** @} */
 
 private:
-    os_timer_t timer;
-    uint64_t interval = 0;
-    InterruptCallback callback = nullptr;
-    TimerDelegate delegate_func = nullptr;
-    TimerDelegateStdFunction delegate_stdfunc = nullptr;
-    bool repeating = false;
-    bool started = false;
+	os_timer_t timer;
+	uint64_t interval = 0;
+	InterruptCallback callback = nullptr;
+	TimerDelegate delegate_func = nullptr;
+	TimerDelegateStdFunction delegate_stdfunc = nullptr;
+	bool repeating = false;
+	bool started = false;
 
-    // Because of the limitation in Espressif SDK a workaround
-    // was added to allow for longer timer intervals.
-    uint16_t long_intvl_cntr = 0;
-    uint16_t long_intvl_cntr_lim = 0;
-
-
+	// Because of the limitation in Espressif SDK a workaround
+	// was added to allow for longer timer intervals.
+	uint16_t long_intvl_cntr = 0;
+	uint16_t long_intvl_cntr_lim = 0;
 };
 
 #endif /* _SMING_CORE_Timer_H_ */

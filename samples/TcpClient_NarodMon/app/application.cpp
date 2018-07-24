@@ -7,16 +7,15 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 #define NARODM_HOST "narodmon.ru"
 #define NARODM_PORT 8283
 
-
 Timer procTimer; // Таймер для периодического вызова отправки данных
-String mac; // Переменная для хранения mac-адреса
+String mac;		 // Переменная для хранения mac-адреса
 float t1 = -2.5; // Переменная, в которой у нас хранится температура с датчика
 
 void nmOnCompleted(TcpClient& client, bool successful)
@@ -33,8 +32,7 @@ void nmOnReadyToSend(TcpClient& client, TcpConnectionEvent sourceEvent)
 	debugf("sourceEvent: %d", sourceEvent);
 
 	// в момент соединения осуществляем отправку
-	if(sourceEvent == eTCE_Connected)
-	{
+	if(sourceEvent == eTCE_Connected) {
 		/* отправляем данные по датчикам (3 штуки)
 		 * T1 = t1 (температура)
 		 * H1 = 8 (влажность)
@@ -42,11 +40,11 @@ void nmOnReadyToSend(TcpClient& client, TcpConnectionEvent sourceEvent)
 		 *
 		 * после отправки сразу закроем соединение: последний параметр = true
 		 */
-		client.sendString("#"+mac+"\n#T1#"+t1+"\n#H1#8\n#P1#712.15\n##", true);
+		client.sendString("#" + mac + "\n#T1#" + t1 + "\n#H1#8\n#P1#712.15\n##", true);
 	}
 }
 
-bool nmOnReceive(TcpClient& client, char *buf, int size)
+bool nmOnReceive(TcpClient& client, char* buf, int size)
 {
 	// debug msg
 	debugf("nmOnReceive");
@@ -80,7 +78,7 @@ void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 	// в верхний регистр
 	mac.toUpperCase();
 	// преобразуем из XXXXXXXXXXXX в XX-XX-XX-XX-XX-XX
-	for (int i = 2; i < mac.length(); i += 2)
+	for(int i = 2; i < mac.length(); i += 2)
 		mac = mac.substring(0, i) + "-" + mac.substring(i++);
 
 	debugf("mac: %s", mac.c_str());

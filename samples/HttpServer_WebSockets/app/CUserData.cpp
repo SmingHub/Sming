@@ -1,9 +1,8 @@
 #include "CUserData.h"
 
 //Simplified container modelling a user session
-CUserData::CUserData(const char* uName, const char* uData):userName(uName), userData(uData)
+CUserData::CUserData(const char* uName, const char* uData) : userName(uName), userData(uData)
 {
-
 }
 CUserData::~CUserData()
 {
@@ -18,10 +17,8 @@ void CUserData::addSession(WebSocketConnection& connection)
 
 void CUserData::removeSession(WebSocketConnection& connection)
 {
-	for(int i=0; i < activeWebSockets.count(); i++)
-	{
-		if(connection == *(activeWebSockets[i]))
-		{
+	for(int i = 0; i < activeWebSockets.count(); i++) {
+		if(connection == *(activeWebSockets[i])) {
 			activeWebSockets[i]->setUserData(nullptr);
 			activeWebSockets.remove(i);
 			Serial.println("Removed user session");
@@ -30,19 +27,16 @@ void CUserData::removeSession(WebSocketConnection& connection)
 	}
 }
 
-void CUserData::printMessage(WebSocketConnection& connection,const String &msg)
+void CUserData::printMessage(WebSocketConnection& connection, const String& msg)
 {
-	int i=0;
-	for(; i < activeWebSockets.count(); i++)
-	{
-		if(connection == *(activeWebSockets[i]))
-		{
+	int i = 0;
+	for(; i < activeWebSockets.count(); i++) {
+		if(connection == *(activeWebSockets[i])) {
 			break;
 		}
 	}
 
-	if(i < activeWebSockets.count())
-	{
+	if(i < activeWebSockets.count()) {
 		Serial.print("Received msg on connection ");
 		Serial.print(i);
 		Serial.print(" :");
@@ -52,8 +46,7 @@ void CUserData::printMessage(WebSocketConnection& connection,const String &msg)
 
 void CUserData::logOut()
 {
-	for(int i=0; i < activeWebSockets.count(); i++)
-	{
+	for(int i = 0; i < activeWebSockets.count(); i++) {
 		activeWebSockets[i]->setUserData(nullptr);
 	}
 

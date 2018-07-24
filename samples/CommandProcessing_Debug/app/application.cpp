@@ -7,8 +7,8 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 HttpServer server;
@@ -19,25 +19,23 @@ Timer msgTimer;
 
 ExampleCommand exampleCommand;
 
-
-void onIndex(HttpRequest &request, HttpResponse &response)
+void onIndex(HttpRequest& request, HttpResponse& response)
 {
-	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
-	auto &vars = tmpl->variables();
+	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
+	auto& vars = tmpl->variables();
 	//vars["counter"] = String(counter);
 	response.sendTemplate(tmpl); // this template object will be deleted automatically
 }
 
-void onFile(HttpRequest &request, HttpResponse &response)
+void onFile(HttpRequest& request, HttpResponse& response)
 {
 	String file = request.uri.Path;
-	if (file[0] == '/')
+	if(file[0] == '/')
 		file = file.substring(1);
 
-	if (file[0] == '.')
+	if(file[0] == '.')
 		response.code = HTTP_STATUS_FORBIDDEN;
-	else
-	{
+	else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
 	}
@@ -87,7 +85,6 @@ void StartServers()
 
 	server.addPath("/ws", wsResource);
 
-
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());
 	Serial.println("==============================\r\n");
@@ -109,7 +106,8 @@ void StartServers()
 void startExampleApplicationCommand()
 {
 	exampleCommand.initCommand();
-	commandHandler.registerCommand(CommandDelegate("example","Example Command from Class","Application",processApplicationCommands));
+	commandHandler.registerCommand(
+		CommandDelegate("example", "Example Command from Class", "Application", processApplicationCommands));
 }
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)

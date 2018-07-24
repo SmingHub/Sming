@@ -12,9 +12,10 @@
 
 #define NETWORK_SEND_BUFFER_SIZE 1024
 
-StreamTransformer::StreamTransformer(ReadWriteStream *stream, const StreamTransformerCallback& callback,
+StreamTransformer::StreamTransformer(ReadWriteStream* stream, const StreamTransformerCallback& callback,
 									 size_t resultSize /* = 256 */, size_t blockSize /* = 64 */
-									 ): transformCallback(callback)
+									 )
+	: transformCallback(callback)
 {
 	sourceStream = stream;
 	this->resultSize = resultSize;
@@ -37,19 +38,18 @@ size_t StreamTransformer::write(uint8_t charToWrite)
 	return sourceStream->write(charToWrite);
 }
 
-size_t StreamTransformer::write(const uint8_t *buffer, size_t size)
+size_t StreamTransformer::write(const uint8_t* buffer, size_t size)
 {
 	return sourceStream->write(buffer, size);
 }
 
 uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 {
-	if (tempStream == NULL) {
+	if(tempStream == NULL) {
 		tempStream = new CircularBuffer(NETWORK_SEND_BUFFER_SIZE + 10);
 	}
 
-	if (tempStream->isFinished()) {
-
+	if(tempStream->isFinished()) {
 		if(sourceStream->isFinished()) {
 			return 0;
 		}
@@ -74,15 +74,14 @@ uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 				break;
 			}
 
-			if( tempStream->write(result, outLength) != outLength) {
+			if(tempStream->write(result, outLength) != outLength) {
 				debug_e("That should not happen!");
 				restoreState();
 				break;
 			}
 
 			sourceStream->seek(len);
-		}
-		while(--i);
+		} while(--i);
 
 		if(sourceStream->isFinished()) {
 			int outLength = transformCallback(NULL, 0, result, resultSize);

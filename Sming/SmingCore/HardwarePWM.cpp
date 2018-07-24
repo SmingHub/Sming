@@ -21,12 +21,13 @@
 
 #include "HardwarePWM.h"
 
-HardwarePWM::HardwarePWM(uint8 *pins, uint8 no_of_pins) {
+HardwarePWM::HardwarePWM(uint8* pins, uint8 no_of_pins)
+{
 	channel_count = no_of_pins;
-	if (no_of_pins > 0) {
-		uint32 io_info[PWM_CHANNEL_NUM_MAX][3]; // pin information
+	if(no_of_pins > 0) {
+		uint32 io_info[PWM_CHANNEL_NUM_MAX][3];	// pin information
 		uint32 pwm_duty_init[PWM_CHANNEL_NUM_MAX]; // pwm duty
-		for (uint8 i = 0; i < no_of_pins; i++) {
+		for(uint8 i = 0; i < no_of_pins; i++) {
 			io_info[i][0] = EspDigitalPins[pins[i]].mux;
 			io_info[i][1] = EspDigitalPins[pins[i]].gpioFunc;
 			io_info[i][2] = EspDigitalPins[pins[i]].id;
@@ -39,7 +40,8 @@ HardwarePWM::HardwarePWM(uint8 *pins, uint8 no_of_pins) {
 	}
 }
 
-HardwarePWM::~HardwarePWM() {
+HardwarePWM::~HardwarePWM()
+{
 	// There is no function in the SDK to stop PWM output, yet.
 }
 
@@ -47,9 +49,10 @@ HardwarePWM::~HardwarePWM() {
  * Description: This function is used to get channel number for given pin
  * Parameters: pin - Esp8266 pin number
  */
-uint8 HardwarePWM::getChannel(uint8 pin) {
-	for (uint8 i = 0; i < channel_count; i++) {
-		if (channels[i] == pin) {
+uint8 HardwarePWM::getChannel(uint8 pin)
+{
+	for(uint8 i = 0; i < channel_count; i++) {
+		if(channels[i] == pin) {
 			//debugf("getChannel %d is %d", pin, i);
 			return i;
 		}
@@ -64,7 +67,8 @@ uint8 HardwarePWM::getChannel(uint8 pin) {
  *             duty - duty cycle value
  * Default frequency is 1khz but can be varied by various function
  */
-bool HardwarePWM::analogWrite(uint8 pin, uint32 duty) {
+bool HardwarePWM::analogWrite(uint8 pin, uint32 duty)
+{
 	return setDuty(pin, duty);
 }
 
@@ -72,10 +76,13 @@ bool HardwarePWM::analogWrite(uint8 pin, uint32 duty) {
  * Description: This function is used to get the duty cycle number for a given pin
  * Parameters: pin -Esp8266 pin number
  */
-uint32 HardwarePWM::getDuty(uint8 pin) {
+uint32 HardwarePWM::getDuty(uint8 pin)
+{
 	uint8 chan = getChannel(pin);
-	if (chan == PWM_BAD_CHANNEL) return 0;
-	else return pwm_get_duty(chan);
+	if(chan == PWM_BAD_CHANNEL)
+		return 0;
+	else
+		return pwm_get_duty(chan);
 }
 
 /* Function Name: setDuty
@@ -83,11 +90,12 @@ uint32 HardwarePWM::getDuty(uint8 pin) {
  * Parameters: pin - pin number
  *             duty - duty cycle value
  */
-bool HardwarePWM::setDuty(uint8 pin, uint32 duty) {
+bool HardwarePWM::setDuty(uint8 pin, uint32 duty)
+{
 	uint8 chan = getChannel(pin);
-	if (chan == PWM_BAD_CHANNEL) {
+	if(chan == PWM_BAD_CHANNEL) {
 		return false;
-	} else if (duty <= maxduty) {
+	} else if(duty <= maxduty) {
 		pwm_set_duty(duty, chan);
 		pwm_start();
 		return true;
@@ -100,7 +108,8 @@ bool HardwarePWM::setDuty(uint8 pin, uint32 duty) {
 /* Function Name: getMaxDuty
  * Description: This function is used to get the max duty cycle for the currently set period
  */
-uint32 HardwarePWM::getMaxDuty() {
+uint32 HardwarePWM::getMaxDuty()
+{
 	return maxduty;
 }
 
@@ -109,7 +118,8 @@ uint32 HardwarePWM::getMaxDuty() {
  *				Period / frequency will remain same for all pins.
  *
  */
-uint32 HardwarePWM::getPeriod() {
+uint32 HardwarePWM::getPeriod()
+{
 	return pwm_get_period();
 }
 
@@ -117,7 +127,8 @@ uint32 HardwarePWM::getPeriod() {
  * Description: This function is used to set Period of PWM.
  *				Period / frequency will remain same for all pins.
  */
-void HardwarePWM::setPeriod(uint32 period) {
+void HardwarePWM::setPeriod(uint32 period)
+{
 	maxduty = (period * 1000) / 45;
 	pwm_set_period(period);
 	pwm_start();

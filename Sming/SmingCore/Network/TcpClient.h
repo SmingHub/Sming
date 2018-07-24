@@ -31,23 +31,17 @@ class IPAddress;
 
 typedef Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)> TcpClientEventDelegate;
 typedef Delegate<void(TcpClient& client, bool successful)> TcpClientCompleteDelegate;
-typedef Delegate<bool(TcpClient& client, char *data, int size)> TcpClientDataDelegate;
+typedef Delegate<bool(TcpClient& client, char* data, int size)> TcpClientDataDelegate;
 
-enum TcpClientState
-{
-	eTCS_Ready,
-	eTCS_Connecting,
-	eTCS_Connected,
-	eTCS_Successful,
-	eTCS_Failed
-};
+enum TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successful, eTCS_Failed };
 
 class TcpClient : public TcpConnection
 {
 public:
 	TcpClient(bool autoDestruct);
-	TcpClient(tcp_pcb *clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted);
-	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend, TcpClientDataDelegate onReceive = NULL);
+	TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted);
+	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend,
+			  TcpClientDataDelegate onReceive = NULL);
 	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive = NULL);
 	TcpClient(TcpClientDataDelegate onReceive);
 	virtual ~TcpClient();
@@ -69,8 +63,14 @@ public:
 
 	bool send(const char* data, uint16_t len, bool forceCloseAfterSent = false);
 	bool sendString(const String& data, bool forceCloseAfterSent = false);
-	__forceinline bool isProcessing()  { return state == eTCS_Connected || state == eTCS_Connecting; }
-	__forceinline TcpClientState getConnectionState() { return state; }
+	__forceinline bool isProcessing()
+	{
+		return state == eTCS_Connected || state == eTCS_Connecting;
+	}
+	__forceinline TcpClientState getConnectionState()
+	{
+		return state;
+	}
 
 #ifdef ENABLE_SSL
 	/**
@@ -107,7 +107,7 @@ public:
 	 *
 	 * @return bool  true of success, false or failure
 	 */
-	bool pinCertificate(const uint8_t *fingerprint, SslFingerprintType type);
+	bool pinCertificate(const uint8_t* fingerprint, SslFingerprintType type);
 
 	/**
 	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
@@ -123,14 +123,14 @@ public:
 
 protected:
 	virtual err_t onConnected(err_t err);
-	virtual err_t onReceive(pbuf *buf);
+	virtual err_t onReceive(pbuf* buf);
 	virtual err_t onSent(uint16_t len);
 	virtual void onError(err_t err);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 	virtual void onFinished(TcpClientState finishState);
 
 #ifdef ENABLE_SSL
-	virtual err_t onSslConnected(SSL *ssl);
+	virtual err_t onSslConnected(SSL* ssl);
 #endif
 
 	void pushAsyncPart();
@@ -149,7 +149,7 @@ private:
 	int16_t asyncTotalLen = 0;
 #ifdef ENABLE_SSL
 	Vector<SslValidatorCallback> sslValidators;
-	Vector<void *> sslValidatorsData;
+	Vector<void*> sslValidatorsData;
 #endif
 };
 

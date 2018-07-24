@@ -35,8 +35,8 @@ public:
 	void onAccessPointProbeReqRecved(AccessPointProbeReqRecvedDelegate delegateFunction);
 
 private:
-	static void staticWifiEventHandler(System_Event_t *evt);
-	void WifiEventHandler(System_Event_t *evt);
+	static void staticWifiEventHandler(System_Event_t* evt);
+	void WifiEventHandler(System_Event_t* evt);
 
 	StationConnectDelegate onSTAConnect = nullptr;
 	StationDisconnectDelegate onSTADisconnect = nullptr;
@@ -46,7 +46,6 @@ private:
 	AccessPointDisconnectDelegate onSOFTAPDisconnect = nullptr;
 	AccessPointProbeReqRecvedDelegate onSOFTAPProbeReqRecved = nullptr;
 };
-
 
 extern WifiEventsClass WifiEvents;
 #endif /* SMINGCORE_PLATFORM_WIFIEVENTS_H_ */

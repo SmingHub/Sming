@@ -6,8 +6,8 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 // Pin for communication with DHT sensor
@@ -20,15 +20,9 @@
 
 #define METEO_CONFIG_FILE ".meteo.conf" // leading point for security reasons :)
 
-enum TriggerType
-{
-	eTT_None = 0,
-	eTT_Temperature,
-	eTT_Humidity
-};
+enum TriggerType { eTT_None = 0, eTT_Temperature, eTT_Humidity };
 
-struct MeteoConfig
-{
+struct MeteoConfig {
 	MeteoConfig()
 	{
 		AddT = 0;
@@ -42,7 +36,7 @@ struct MeteoConfig
 	String NetworkSSID;
 	String NetworkPassword;
 
-	float AddT; // Temperature adjustment
+	float AddT;  // Temperature adjustment
 	float AddRH; // Humidity adjustment
 	float AddTZ; // TimeZone - local time offset
 

@@ -18,7 +18,8 @@
 
 class JsonObjectStream; // << TODO: deprecated and should be removed in the next version
 
-class HttpResponse {
+class HttpResponse
+{
 	friend class HttpClient;
 	friend class HttpConnection;
 	friend class HttpServerConnection;
@@ -37,14 +38,16 @@ public:
 	/**
 	 * @deprecated Use response.code = HTTP_STATUS_FORBIDDEN instead
 	 */
-	__forceinline void forbidden() {
+	__forceinline void forbidden()
+	{
 		code = HTTP_STATUS_FORBIDDEN;
 	}
 
 	/**
 	 * @deprecated Use response.code = HTTP_STATUS_NOT_FOUND instead
 	 */
-	__forceinline void notFound() {
+	__forceinline void notFound()
+	{
 		code = HTTP_STATUS_NOT_FOUND;
 	}
 
@@ -53,7 +56,8 @@ public:
 	HttpResponse* setCookie(const String& name, const String& value);
 	HttpResponse* setHeader(const String& name, const String& value);
 	HttpResponse* setCache(int maxAgeSeconds = 3600, bool isPublic = false);
-	HttpResponse* setAllowCrossDomainOrigin(const String& controlAllowOrigin); // Access-Control-Allow-Origin for AJAX from a different domain
+	HttpResponse* setAllowCrossDomainOrigin(
+		const String& controlAllowOrigin); // Access-Control-Allow-Origin for AJAX from a different domain
 
 	// Send file by name
 	bool sendFile(String fileName, bool allowGzipFileCheck = true);
@@ -73,12 +77,13 @@ public:
 	// @end deprecated
 
 	// Send Datastream, can be called with Classes derived from
-	bool sendDataStream( ReadWriteStream * newDataStream , enum MimeType type) {
+	bool sendDataStream(ReadWriteStream* newDataStream, enum MimeType type)
+	{
 		return sendDataStream(newDataStream, ContentType::toString(type));
 	}
 
 	// Send Datastream, can be called with Classes derived from
-	bool sendDataStream( ReadWriteStream * newDataStream , const String& reqContentType = "" );
+	bool sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType = "");
 
 	String getBody();
 

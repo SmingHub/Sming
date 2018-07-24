@@ -4,18 +4,18 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 // Make sure to change those to your desired values
-#define MAIL_FROM       "admin@sming.com"
-#define MAIL_TO         "slav@attachix.com"
+#define MAIL_FROM "admin@sming.com"
+#define MAIL_TO "slav@attachix.com"
 #define SMTP_USERNAME
 #define SMTP_PASSWORD
-#define SMTP_HOST  		"attachix.com"
-#define SMTP_PORT  		25
-#define SMTP_USE_SSL 	false
+#define SMTP_HOST "attachix.com"
+#define SMTP_PORT 25
+#define SMTP_USE_SSL false
 
 SmtpClient client;
 
@@ -51,12 +51,12 @@ void onConnected(IPAddress ip, IPAddress mask, IPAddress gateway)
 
 	client.onServerError(onServerError);
 
-	String dsn = "smtp" ;
+	String dsn = "smtp";
 	if(SMTP_USE_SSL) {
 		dsn += "s";
 	}
 
-	dsn += String("://") + SMTP_USERNAME + ":" + SMTP_PASSWORD+"@" + SMTP_HOST + ":" + SMTP_PORT;
+	dsn += String("://") + SMTP_USERNAME + ":" + SMTP_PASSWORD + "@" + SMTP_HOST + ":" + SMTP_PORT;
 	debugf("Connecting to SMTP server using: %s", dsn.c_str());
 
 	client.connect(URL(dsn));
@@ -66,10 +66,10 @@ void onConnected(IPAddress ip, IPAddress mask, IPAddress gateway)
 	mail->to = MAIL_TO;
 	mail->subject = "Greetings from Sming";
 	mail->setBody("Hello.\r\n.\r\n"
-		      	  "This is test email from Sming <https://github.com/SmingHub/Sming>"
-		      	  "It contains attachment, Ümlauts, кирилица + etc");
+				  "This is test email from Sming <https://github.com/SmingHub/Sming>"
+				  "It contains attachment, Ümlauts, кирилица + etc");
 
-	FileStream* file= new FileStream("image.png");
+	FileStream* file = new FileStream("image.png");
 	mail->addAttachment(file);
 
 	client.onMessageSent(onMailSent);

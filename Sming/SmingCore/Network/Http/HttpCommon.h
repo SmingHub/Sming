@@ -23,7 +23,7 @@
 #include "../../Data/Structures.h"
 
 #ifndef HTTP_MAX_HEADER_SIZE
-#define HTTP_MAX_HEADER_SIZE  (8*1024)
+#define HTTP_MAX_HEADER_SIZE (8 * 1024)
 #endif
 
 /* Number of maximum tcp connections to be kept in the pool */
@@ -35,8 +35,7 @@
 
 typedef enum http_method HttpMethod;
 
-enum HttpConnectionState
-{
+enum HttpConnectionState {
 	eHCS_Ready = 0,
 	eHCS_StartSending,
 	eHCS_SendingHeaders,
@@ -44,6 +43,5 @@ enum HttpConnectionState
 	eHCS_SendingBody,
 	eHCS_Sent
 };
-
 
 #endif /* _SMING_CORE_HTTP_COMMON_H_ */

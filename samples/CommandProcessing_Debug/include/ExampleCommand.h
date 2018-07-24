@@ -21,5 +21,4 @@ private:
 	void processExampleCommands(String commandLine, CommandOutput* commandOutput);
 };
 
-
 #endif /* SMINGCORE_DEBUG_H_ */

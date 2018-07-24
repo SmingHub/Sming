@@ -25,40 +25,36 @@ void readData()
 	uint8_t a;
 	uint64_t info;
 
-	if (!ReadTemp.MeasureStatus())  // the last measurement completed
+	if(!ReadTemp.MeasureStatus()) // the last measurement completed
 	{
-      if (ReadTemp.GetSensorsCount())   // is minimum 1 sensor detected ?
-		Serial.println("******************************************");
-	    Serial.println(" Reding temperature DEMO");
-	    for(a=0;a<ReadTemp.GetSensorsCount();a++)   // prints for all sensors
-	    {
-	      Serial.print(" T");
-	      Serial.print(a+1);
-	      Serial.print(" = ");
-	      if (ReadTemp.IsValidTemperature(a))   // temperature read correctly ?
-	        {
-	    	  Serial.print(ReadTemp.GetCelsius(a));
-	    	  Serial.print(" Celsius, (");
-	    	  Serial.print(ReadTemp.GetFahrenheit(a));
-	    	  Serial.println(" Fahrenheit)");
-	        }
-	      else
-	    	  Serial.println("Temperature not valid");
+		if(ReadTemp.GetSensorsCount()) // is minimum 1 sensor detected ?
+			Serial.println("******************************************");
+		Serial.println(" Reding temperature DEMO");
+		for(a = 0; a < ReadTemp.GetSensorsCount(); a++) // prints for all sensors
+		{
+			Serial.print(" T");
+			Serial.print(a + 1);
+			Serial.print(" = ");
+			if(ReadTemp.IsValidTemperature(a)) // temperature read correctly ?
+			{
+				Serial.print(ReadTemp.GetCelsius(a));
+				Serial.print(" Celsius, (");
+				Serial.print(ReadTemp.GetFahrenheit(a));
+				Serial.println(" Fahrenheit)");
+			} else
+				Serial.println("Temperature not valid");
 
-	      Serial.print(" <Sensor id.");
+			Serial.print(" <Sensor id.");
 
-	      info=ReadTemp.GetSensorID(a)>>32;
-	      Serial.print((uint32_t)info,16);
-	      Serial.print((uint32_t)ReadTemp.GetSensorID(a),16);
-	      Serial.println(">");
-	    }
+			info = ReadTemp.GetSensorID(a) >> 32;
+			Serial.print((uint32_t)info, 16);
+			Serial.print((uint32_t)ReadTemp.GetSensorID(a), 16);
+			Serial.println(">");
+		}
 		Serial.println("******************************************");
-		ReadTemp.StartMeasure();  // next measure, result after 1.2 seconds * number of sensors
-	}
-	else
+		ReadTemp.StartMeasure(); // next measure, result after 1.2 seconds * number of sensors
+	} else
 		Serial.println("No valid Measure so far! wait please");
-
-
 }
 
 void init()
@@ -66,10 +62,8 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
-    ReadTemp.Init(4);  			// select PIN It's required for one-wire initialization!
+	ReadTemp.Init(4);		 // select PIN It's required for one-wire initialization!
 	ReadTemp.StartMeasure(); // first measure start,result after 1.2 seconds * number of sensors
 
-	procTimer.initializeMs(10000, readData).start();   // every 10 seconds
+	procTimer.initializeMs(10000, readData).start(); // every 10 seconds
 }
-
-

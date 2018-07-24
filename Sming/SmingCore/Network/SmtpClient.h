@@ -49,11 +49,11 @@
  * SMTP response codes
  */
 #define SMTP_CODE_SERVICE_READY 220
-#define SMTP_CODE_BYE 			221
-#define SMTP_CODE_AUTH_OK 		235
-#define SMTP_CODE_REQUEST_OK    250
+#define SMTP_CODE_BYE 221
+#define SMTP_CODE_AUTH_OK 235
+#define SMTP_CODE_REQUEST_OK 250
 #define SMTP_CODE_AUTH_CHALLENGE 334
-#define SMTP_CODE_START_DATA    354
+#define SMTP_CODE_START_DATA 354
 
 #define SMTP_OPT_PIPELINE bit(0)
 #define SMTP_OPT_STARTTLS bit(1)
@@ -61,8 +61,7 @@
 #define SMTP_OPT_AUTH_LOGIN bit(3)
 #define SMTP_OPT_AUTH_CRAM_MD5 bit(4)
 
-enum SmtpState
-{
+enum SmtpState {
 	eSMTP_Banner = 0,
 	eSMTP_Hello,
 	eSMTP_StartTLS,
@@ -94,7 +93,7 @@ typedef std::function<int(SmtpClient& client, int code, char* status)> SmtpClien
 class SmtpClient : protected TcpClient
 {
 public:
-	SmtpClient(bool autoDestroy=false);
+	SmtpClient(bool autoDestroy = false);
 	virtual ~SmtpClient();
 
 	/**
@@ -116,7 +115,7 @@ public:
 	 *
 	 * @return true when the message was queued successfully, false otherwise
 	 */
-	bool send(const String&	from, const String&	to, const String& subject, const String& body);
+	bool send(const String& from, const String& to, const String& subject, const String& body);
 
 	/**
 	 * @brief Powerful method to queues a single message before it is sent later to the SMTP server
@@ -146,7 +145,10 @@ public:
 	/**
 	 * @brief Returns the current state of the SmtpClient.
 	 */
-	SmtpState getState() { return state; }
+	SmtpState getState()
+	{
+		return state;
+	}
 
 	/**
 	 * @brief Callback that will be called every time a message is sent successfully
@@ -171,14 +173,14 @@ public:
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
 	using TcpClient::addSslValidator;
-	using TcpClient::pinCertificate;
-	using TcpClient::setSslKeyCert;
 	using TcpClient::freeSslKeyCert;
 	using TcpClient::getSsl;
+	using TcpClient::pinCertificate;
+	using TcpClient::setSslKeyCert;
 #endif
 
 protected:
-	virtual err_t onReceive(pbuf *buf);
+	virtual err_t onReceive(pbuf* buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 
 	void sendMailHeaders(MailMessage* mail);
@@ -187,7 +189,7 @@ protected:
 private:
 	URL url;
 	Vector<String> authMethods;
-	SimpleConcurrentQueue<MailMessage*,SMTP_QUEUE_SIZE> mailQ;
+	SimpleConcurrentQueue<MailMessage*, SMTP_QUEUE_SIZE> mailQ;
 	char code[4] = {0};
 	int codeValue = 0;
 	String authChallenge;
@@ -195,7 +197,7 @@ private:
 	bool isLastLine = false;
 	uint8_t codeLength = 0;
 	int options = 0;
-	MailMessage *outgoingMail = nullptr;
+	MailMessage* outgoingMail = nullptr;
 	SmtpState state = eSMTP_Banner;
 
 	SmtpClientCallback errorCallback = nullptr;

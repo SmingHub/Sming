@@ -20,10 +20,10 @@
  *  @{
 */
 
-class ChunkedStream: public StreamTransformer
+class ChunkedStream : public StreamTransformer
 {
 public:
-	ChunkedStream(ReadWriteStream *stream, size_t resultSize = 512);
+	ChunkedStream(ReadWriteStream* stream, size_t resultSize = 512);
 
 	/**
 	 * Encodes a chunk of data

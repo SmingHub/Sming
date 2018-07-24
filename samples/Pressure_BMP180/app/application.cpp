@@ -14,9 +14,9 @@ void init()
 		Serial.println("Could not connect to BMP180.");
 
 	// When we have connected, we reset the device to ensure a clean start.
-   //barometer.SoftReset();
-   // Now we initialize the sensor and pull the calibration data.
-    barometer.Initialize();
+	//barometer.SoftReset();
+	// Now we initialize the sensor and pull the calibration data.
+	barometer.Initialize();
 	barometer.PrintCalibrationData();
 
 	Serial.print("Start reading");

@@ -9,15 +9,14 @@
 // GPIO4/D2 - LCD reset (RST)
 Adafruit_PCD8544 display = Adafruit_PCD8544(13, 12, 14, 5, 4);
 
-
 void displayTest()
 {
 	display.begin();
 	display.setContrast(10);
 	display.display(); // show splashscreen
 	delay(2000);
-	display.clearDisplay();  // no changes will be visible until display() is called
-	display.setRotation(4);  // rotate 90 degrees counter clockwise, can also use values of 2 and 3 to go further.
+	display.clearDisplay(); // no changes will be visible until display() is called
+	display.setRotation(4); // rotate 90 degrees counter clockwise, can also use values of 2 and 3 to go further.
 	display.setTextSize(1);
 	display.setTextColor(BLACK);
 	display.setCursor(0, 0);

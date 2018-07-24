@@ -12,63 +12,59 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 Timer procTimer;
 HttpClient downloadClient;
 
-
 /* Debug SSL functions */
-void displaySessionId(SSL *ssl)
+void displaySessionId(SSL* ssl)
 {
-    int i;
-    const uint8_t *session_id = ssl_get_session_id(ssl);
-    int sess_id_size = ssl_get_session_id_size(ssl);
+	int i;
+	const uint8_t* session_id = ssl_get_session_id(ssl);
+	int sess_id_size = ssl_get_session_id_size(ssl);
 
-    if (sess_id_size > 0)
-    {
-        debugf("-----BEGIN SSL SESSION PARAMETERS-----");
-        for (i = 0; i < sess_id_size; i++)
-        {
-        	m_printf("%02x", session_id[i]);
-        }
+	if(sess_id_size > 0) {
+		debugf("-----BEGIN SSL SESSION PARAMETERS-----");
+		for(i = 0; i < sess_id_size; i++) {
+			m_printf("%02x", session_id[i]);
+		}
 
-        debugf("\n-----END SSL SESSION PARAMETERS-----");
-    }
+		debugf("\n-----END SSL SESSION PARAMETERS-----");
+	}
 }
 
 /**
  * Display what cipher we are using
  */
-void displayCipher(SSL *ssl)
+void displayCipher(SSL* ssl)
 {
 	m_printf("CIPHER is ");
-    switch (ssl_get_cipher_id(ssl))
-    {
-        case SSL_AES128_SHA:
-        	m_printf("AES128-SHA");
-            break;
+	switch(ssl_get_cipher_id(ssl)) {
+	case SSL_AES128_SHA:
+		m_printf("AES128-SHA");
+		break;
 
-        case SSL_AES256_SHA:
-        	m_printf("AES256-SHA");
-            break;
+	case SSL_AES256_SHA:
+		m_printf("AES256-SHA");
+		break;
 
-        case SSL_AES128_SHA256:
-        	m_printf("SSL_AES128_SHA256");
-            break;
+	case SSL_AES128_SHA256:
+		m_printf("SSL_AES128_SHA256");
+		break;
 
-        case SSL_AES256_SHA256:
-        	m_printf("SSL_AES256_SHA256");
-            break;
+	case SSL_AES256_SHA256:
+		m_printf("SSL_AES256_SHA256");
+		break;
 
-        default:
-        	m_printf("Unknown - %d", ssl_get_cipher_id(ssl));
-            break;
-    }
+	default:
+		m_printf("Unknown - %d", ssl_get_cipher_id(ssl));
+		break;
+	}
 
-    m_printf("\n");
+	m_printf("\n");
 }
 
 int onDownload(HttpConnection& connection, bool success)
@@ -78,9 +74,9 @@ int onDownload(HttpConnection& connection, bool success)
 	debugf("Success: %d", success);
 
 	SSL* ssl = connection.getSsl();
-	if (ssl) {
-		const char *common_name = ssl_get_cert_dn(ssl,SSL_X509_CERT_COMMON_NAME);
-		if (common_name) {
+	if(ssl) {
+		const char* common_name = ssl_get_cert_dn(ssl, SSL_X509_CERT_COMMON_NAME);
+		if(common_name) {
 			debugf("Common Name:\t\t\t%s\n", common_name);
 		}
 		displayCipher(ssl);
@@ -92,13 +88,12 @@ int onDownload(HttpConnection& connection, bool success)
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
-	const uint8_t googleSha1Fingerprint[] = { 0x07, 0xf0, 0xb0, 0x8d, 0x41, 0xfb, 0xee, 0x6b, 0x34, 0xfb,
-			                                  0x9a, 0xd0, 0x9a, 0xa7, 0x73, 0xab, 0xcc, 0x8b, 0xb2, 0x64 };
+	const uint8_t googleSha1Fingerprint[] = {0x07, 0xf0, 0xb0, 0x8d, 0x41, 0xfb, 0xee, 0x6b, 0x34, 0xfb,
+											 0x9a, 0xd0, 0x9a, 0xa7, 0x73, 0xab, 0xcc, 0x8b, 0xb2, 0x64};
 
-	const uint8_t googlePublicKeyFingerprint[] = {
-			0xe7, 0x06, 0x09, 0xc7, 0xef, 0xb0, 0x69, 0xe8, 0x0a, 0xeb, 0x21, 0x16, 0x4c, 0xd4, 0x2d, 0x86,
-			0x65, 0x09, 0x62, 0x37, 0xeb, 0x75, 0x92, 0xaa, 0x10, 0x03, 0xe7, 0x99, 0x01, 0x9d, 0x9f, 0x0c
-	};
+	const uint8_t googlePublicKeyFingerprint[] = {0xe7, 0x06, 0x09, 0xc7, 0xef, 0xb0, 0x69, 0xe8, 0x0a, 0xeb, 0x21,
+												  0x16, 0x4c, 0xd4, 0x2d, 0x86, 0x65, 0x09, 0x62, 0x37, 0xeb, 0x75,
+												  0x92, 0xaa, 0x10, 0x03, 0xe7, 0x99, 0x01, 0x9d, 0x9f, 0x0c};
 
 	debugf("Connected. Got IP: %s", ip.toString().c_str());
 
