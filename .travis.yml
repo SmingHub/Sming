@@ -28,7 +28,6 @@ addons:
     - graphviz
     - xmlstarlet
     - clang-format-3.9
-    - clang-tidy-3.9
 install:
 - if [ "$SDK_VERSION" == "1.5.0" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then export
   SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
