@@ -27,30 +27,30 @@ class ChannelPWM;
 class DriverPWM
 {
 public:
-    /** @brief  PWM driver class
+	/** @brief  PWM driver class
      */
 	DriverPWM();
 
-    /** @brief  Initialise PWM driver
+	/** @brief  Initialise PWM driver
      *  @note   Call this function once before using other PWM driver functions
      */
 	void initialize();
 
-    /** @brief  Set PWM output
+	/** @brief  Set PWM output
      *  @param  pin GPIO to set
      *  @param  duty PWM duty
      *  @todo   Describe how <i>duty</i> affects output
      */
 	void analogWrite(uint8_t pin, int duty);
 
-    /** @brief  Disable PWM on GPIO
+	/** @brief  Disable PWM on GPIO
      *  @param  pin GPIO on which to disable PWM
      */
 	void noAnalogWrite(uint8_t pin);
 
-    /** @} */
+	/** @} */
 protected:
-	static void IRAM_ATTR processingStatic(void *arg);
+	static void IRAM_ATTR processingStatic(void* arg);
 
 private:
 	os_timer_t main;
@@ -63,7 +63,7 @@ private:
 class ChannelPWM
 {
 public:
-    /** @brief  PWM channel
+	/** @brief  PWM channel
     */
 	ChannelPWM();
 
@@ -72,7 +72,7 @@ public:
 	 */
 	ChannelPWM(int DriverPWMPin);
 
-    /** @brief  Initialise PWM channel
+	/** @brief  Initialise PWM channel
     */
 	void initialize();
 
@@ -90,7 +90,10 @@ public:
 	/** @brief  Get the GPIO used by this PWM channel
 	 *  @retval int GPIO in use
 	 */
-	__inline int id() { return pin; }
+	__inline int id()
+	{
+		return pin;
+	}
 
 	/** @brief  Close PWM channel
 	 *  @note   Turns PWM off
@@ -98,7 +101,7 @@ public:
 	void close();
 
 protected:
-	static void IRAM_ATTR processingStatic(void *arg);
+	static void IRAM_ATTR processingStatic(void* arg);
 
 private:
 	os_timer_t item;

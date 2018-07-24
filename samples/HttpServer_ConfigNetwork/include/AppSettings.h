@@ -12,8 +12,7 @@
 
 #define APP_SETTINGS_FILE ".settings.conf" // leading point for security reasons :)
 
-struct ApplicationSettingsStorage
-{
+struct ApplicationSettingsStorage {
 	String ssid;
 	String password;
 
@@ -26,8 +25,7 @@ struct ApplicationSettingsStorage
 	void load()
 	{
 		DynamicJsonBuffer jsonBuffer;
-		if (exist())
-		{
+		if(exist()) {
 			int size = fileGetSize(APP_SETTINGS_FILE);
 			char* jsonString = new char[size + 1];
 			fileGetContent(APP_SETTINGS_FILE, jsonString, size + 1);
@@ -70,7 +68,10 @@ struct ApplicationSettingsStorage
 		fileSetContent(APP_SETTINGS_FILE, rootString);
 	}
 
-	bool exist() { return fileExist(APP_SETTINGS_FILE); }
+	bool exist()
+	{
+		return fileExist(APP_SETTINGS_FILE);
+	}
 };
 
 static ApplicationSettingsStorage AppSettings;

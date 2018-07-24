@@ -19,9 +19,10 @@ int IDataSourceStream::read()
 	return res;
 }
 
-int IDataSourceStream::peek() {
+int IDataSourceStream::peek()
+{
 	char c;
-	if (readMemoryBlock(&c, 1) == 1) {
+	if(readMemoryBlock(&c, 1) == 1) {
 		return (int)c;
 	}
 
@@ -57,28 +58,23 @@ size_t MemoryDataStream::write(uint8_t charToWrite)
 size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 {
 	//TODO: add queued buffers without full copy
-	if (buf == NULL)
-	{
+	if(buf == NULL) {
 		buf = (char*)malloc(len + 1);
-		if (buf == NULL)
+		if(buf == NULL)
 			return 0;
 		buf[len] = '\0';
 		memcpy(buf, data, len);
-	}
-	else
-	{
+	} else {
 		int cur = size;
 		int required = cur + len + 1;
-		if (required > capacity)
-		{
+		if(required > capacity) {
 			capacity = required < 256 ? required + 128 : required + 64;
 			debug_d("realloc %d -> %d", size, capacity);
-			char * new_buf;
+			char* new_buf;
 			//realloc can fail, store the result in temporary pointer
 			new_buf = (char*)realloc(buf, capacity);
 
-			if (new_buf == NULL)
-			{
+			if(new_buf == NULL) {
 				return 0;
 			}
 			buf = new_buf;
@@ -100,7 +96,8 @@ uint16_t MemoryDataStream::readMemoryBlock(char* data, int bufSize)
 
 bool MemoryDataStream::seek(int len)
 {
-	if (len < 0) return false;
+	if(len < 0)
+		return false;
 
 	pos += len;
 	return true;
@@ -128,8 +125,7 @@ FileStream::FileStream(const String& filename)
 bool FileStream::attach(const String& fileName, FileOpenFlags openFlags)
 {
 	handle = fileOpen(fileName.c_str(), openFlags);
-	if (handle == -1)
-	{
+	if(handle == -1) {
 		debug_w("File wasn't found: %s", fileName.c_str());
 		size = -1;
 		pos = 0;
@@ -167,13 +163,14 @@ uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 
 size_t FileStream::write(uint8_t charToWrite)
 {
-	uint8_t tempbuf[1]  {charToWrite};
+	uint8_t tempbuf[1]{charToWrite};
 	return write(tempbuf, 1);
 }
 
-size_t FileStream::write(const uint8_t *buffer, size_t size)
+size_t FileStream::write(const uint8_t* buffer, size_t size)
 {
-	if (!fileExist()) return 0;
+	if(!fileExist())
+		return 0;
 
 	bool result = fileSeek(handle, 0, eSO_FileEnd);
 	return fileWrite(handle, buffer, size);
@@ -181,10 +178,12 @@ size_t FileStream::write(const uint8_t *buffer, size_t size)
 
 bool FileStream::seek(int len)
 {
-	if (len < 0) return false;
+	if(len < 0)
+		return false;
 
 	bool result = fileSeek(handle, len, eSO_CurrentPos) >= 0;
-	if (result) pos += len;
+	if(result)
+		pos += len;
 	return result;
 }
 
@@ -219,8 +218,7 @@ String FileStream::id()
 
 ///////////////////////////////////////////////////////////////////////////
 
-TemplateFileStream::TemplateFileStream(const String& templateFileName)
-	: FileStream(templateFileName)
+TemplateFileStream::TemplateFileStream(const String& templateFileName) : FileStream(templateFileName)
 {
 	state = eTES_Wait;
 }
@@ -234,10 +232,8 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 	debug_d("READ Template (%d)", state);
 	int available;
 
-	if (state == eTES_StartVar)
-	{
-		if (templateData.contains(varName))
-		{
+	if(state == eTES_StartVar) {
+		if(templateData.contains(varName)) {
 			// Return variable value
 			debug_d("StartVar %s", varName.c_str());
 			available = templateData[varName].length();
@@ -246,27 +242,20 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 			varDataPos = 0;
 			state = eTES_SendingVar;
 			return available;
-		}
-		else
-		{
+		} else {
 			debug_d("var %s not found", varName.c_str());
 			state = eTES_Wait;
 			int len = FileStream::readMemoryBlock(data, bufSize);
 			return std::min(len, skipBlockSize);
 		}
-	}
-	else if (state == eTES_SendingVar)
-	{
-		String *val = &templateData[varName];
-		if (varDataPos < val->length())
-		{
+	} else if(state == eTES_SendingVar) {
+		String* val = &templateData[varName];
+		if(varDataPos < val->length()) {
 			debug_d("continue TRANSFER variable value (not completed)");
 			available = val->length() - varDataPos;
 			memcpy(data, ((char*)val->c_str()) + varDataPos, available);
 			return available;
-		}
-		else
-		{
+		} else {
 			debug_d("continue to plaint text");
 			state = eTES_Wait;
 		}
@@ -274,42 +263,39 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 
 	int len = FileStream::readMemoryBlock(data, bufSize);
 	char* tpl = data;
-	if (tpl && len > 0)
-	{
+	if(tpl && len > 0) {
 		char* end = tpl + len;
 		char* cur = (char*)memchr(tpl, '{', len);
 		char* lastFound = cur;
-		while (cur != NULL)
-		{
+		while(cur != NULL) {
 			lastFound = cur;
 			char* p = cur + 1;
-			for (; p < end; p++)
-			{
-				if (isspace(*p))
+			for(; p < end; p++) {
+				if(isspace(*p))
 					break; // Not a var name
-				else if (p - cur > TEMPLATE_MAX_VAR_NAME_LEN)
+				else if(p - cur > TEMPLATE_MAX_VAR_NAME_LEN)
 					break; // To long for var name
-				else if (*p == '{')
+				else if(*p == '{')
 					break; // New start..
 
-				if (*p == '}')
-				{
+				if(*p == '}') {
 					int block = p - cur + 1;
 					char varname[TEMPLATE_MAX_VAR_NAME_LEN + 1] = {0};
 					memcpy(varname, cur + 1, p - cur - 1); // name without { and }
 					varName = varname;
 					state = eTES_Found;
 					varWaitSize = cur - tpl;
-					debug_d("found var: %s, at %d (%d) - %d, send size %d", varName.c_str(), varWaitSize + 1, varWaitSize + getPos(), p - tpl, varWaitSize);
+					debug_d("found var: %s, at %d (%d) - %d, send size %d", varName.c_str(), varWaitSize + 1,
+							varWaitSize + getPos(), p - tpl, varWaitSize);
 					skipBlockSize = block;
-					if (varWaitSize == 0) state = eTES_StartVar;
+					if(varWaitSize == 0)
+						state = eTES_StartVar;
 					return varWaitSize; // return only plain text from template without our variable
 				}
 			}
 			cur = (char*)memchr(p, '{', len - (p - tpl)); // continue searching..
 		}
-		if (lastFound != NULL && (lastFound - tpl) > (len - TEMPLATE_MAX_VAR_NAME_LEN))
-		{
+		if(lastFound != NULL && (lastFound - tpl) > (len - TEMPLATE_MAX_VAR_NAME_LEN)) {
 			debug_d("trim end to %d from %d", lastFound - tpl, len);
 			len = lastFound - tpl; // It can be a incomplete variable name. Don't split it!
 		}
@@ -321,17 +307,16 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 
 bool TemplateFileStream::seek(int len)
 {
-	if (len < 0) return false;
+	if(len < 0)
+		return false;
 	//debug_d("SEEK: %d, (%d)", len, state);
 
-	if (state == eTES_Found)
-	{
+	if(state == eTES_Found) {
 		//debug_d("SEEK before Var: %d, (%d)", len, varWaitSize);
 		varWaitSize -= len;
-		if (varWaitSize == 0) state = eTES_StartVar;
-	}
-	else if (state == eTES_SendingVar)
-	{
+		if(varWaitSize == 0)
+			state = eTES_StartVar;
+	} else if(state == eTES_SendingVar) {
 		varDataPos += len;
 		return false; // not the end
 	}
@@ -349,8 +334,7 @@ void TemplateFileStream::setVars(const TemplateVariables& vars)
 	templateData.setMultiple(vars);
 }
 
-JsonObjectStream::JsonObjectStream()
-	: rootNode(buffer.createObject()), send(true)
+JsonObjectStream::JsonObjectStream() : rootNode(buffer.createObject()), send(true)
 {
 }
 
@@ -365,8 +349,7 @@ JsonObject& JsonObjectStream::getRoot()
 
 uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 {
-	if (rootNode != JsonObject::invalid() && send)
-	{
+	if(rootNode != JsonObject::invalid() && send) {
 		int len = rootNode.printTo(*this);
 		send = false;
 	}
@@ -376,7 +359,7 @@ uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 
 int JsonObjectStream::available()
 {
-	if (rootNode == JsonObject::invalid()) {
+	if(rootNode == JsonObject::invalid()) {
 		return 0;
 	}
 
@@ -428,7 +411,7 @@ size_t EndlessMemoryStream::write(uint8_t charToWrite)
 	return stream->write(charToWrite);
 }
 
-size_t EndlessMemoryStream::write(const uint8_t *buffer, size_t size)
+size_t EndlessMemoryStream::write(const uint8_t* buffer, size_t size)
 {
 	if(stream == NULL) {
 		stream = new MemoryDataStream();
@@ -482,9 +465,8 @@ size_t LimitedMemoryStream::write(uint8_t charToWrite)
 	return write(&charToWrite, 1);
 }
 
-size_t LimitedMemoryStream::write(const uint8_t *data, size_t size)
+size_t LimitedMemoryStream::write(const uint8_t* data, size_t size)
 {
-
 	if(writePos + size <= length) {
 		memcpy(buffer + writePos, data, size);
 		writePos += size;

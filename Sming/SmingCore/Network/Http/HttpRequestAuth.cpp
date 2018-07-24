@@ -14,37 +14,43 @@
 #include "HttpRequest.h"
 #include "../../Services/WebHelpers/base64.h"
 
-HttpBasicAuth::HttpBasicAuth(const String& username, const String& password) {
+HttpBasicAuth::HttpBasicAuth(const String& username, const String& password)
+{
 	this->username = username;
 	this->password = password;
 }
 
 // Basic Auth
-void HttpBasicAuth::setRequest(HttpRequest* request) {
-	String clearText = username+":" + password;
+void HttpBasicAuth::setRequest(HttpRequest* request)
+{
+	String clearText = username + ":" + password;
 	int hashLength = clearText.length() * 4;
 	char hash[hashLength];
-	base64_encode(clearText.length(), (const unsigned char *)clearText.c_str(), hashLength, hash);
+	base64_encode(clearText.length(), (const unsigned char*)clearText.c_str(), hashLength, hash);
 
-	request->setHeader("Authorization", "Basic "+ String(hash));
+	request->setHeader("Authorization", "Basic " + String(hash));
 }
 
 // Digest Auth
-HttpDigestAuth::HttpDigestAuth(const String& username, const String& password) {
+HttpDigestAuth::HttpDigestAuth(const String& username, const String& password)
+{
 	this->username = username;
 	this->password = password;
 }
 
-void HttpDigestAuth::setRequest(HttpRequest* request) {
+void HttpDigestAuth::setRequest(HttpRequest* request)
+{
 	this->request = request;
 }
 
-void HttpDigestAuth::setResponse(HttpResponse *response) {
+void HttpDigestAuth::setResponse(HttpResponse* response)
+{
 	if(response->code != HTTP_STATUS_UNAUTHORIZED) {
 		return;
 	}
 
-	if(response->headers.contains("WWW-Authenticate") && response->headers["WWW-Authenticate"].indexOf("Digest")!=-1) {
+	if(response->headers.contains("WWW-Authenticate") &&
+	   response->headers["WWW-Authenticate"].indexOf("Digest") != -1) {
 		String authHeader = response->headers["WWW-Authenticate"];
 		/*
 		 * Example (see: https://tools.ietf.org/html/rfc2069#page-4):
@@ -74,4 +80,3 @@ void HttpDigestAuth::setResponse(HttpResponse *response) {
 		request->retries = 1;
 	}
 }
-

@@ -18,14 +18,14 @@
 #include "../SmingCore/Delegate.h"
 #include "../Services/CommandProcessing/CommandProcessingIncludes.h"
 
-#define UART_ID_0   0 ///< ID of UART 0
-#define UART_ID_1   1 ///< ID of UART 1
+#define UART_ID_0 0 ///< ID of UART 0
+#define UART_ID_1 1 ///< ID of UART 1
 
 #define NUMBER_UARTS 2 ///< Quantity of UARTs available
 
-#define SERIAL_SIGNAL_DELEGATE	0 ///< ID for serial delegate signals
-#define SERIAL_SIGNAL_COMMAND	1 ///< ID for serial command signals
-#define SERIAL_QUEUE_LEN		10 ///< Size of serial queue
+#define SERIAL_SIGNAL_DELEGATE 0 ///< ID for serial delegate signals
+#define SERIAL_SIGNAL_COMMAND 1  ///< ID for serial command signals
+#define SERIAL_QUEUE_LEN 10		 ///< Size of serial queue
 
 /** @brief  Delegate callback type for serial data reception
  *  @param  source Reference to serial stream
@@ -33,65 +33,61 @@
  *  @param  availableCharsCount Quantity of chars available stream in receive buffer
  */
 // Delegate constructor usage: (&YourClass::method, this)
-typedef Delegate<void(Stream &source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
+typedef Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
 
 class CommandExecutor;
 
 /// Hardware serial member data
-typedef struct
-{
-	StreamDataReceivedDelegate HWSDelegate; ///< Delegate callback handler
+typedef struct {
+	StreamDataReceivedDelegate HWSDelegate;		///< Delegate callback handler
 	CommandExecutor* commandExecutor = nullptr; ///< Pointer to command executor (Default: none)
 } HWSerialMemberData;
 
 enum SerialConfig {
-    SERIAL_5N1 = UART_5N1,
-    SERIAL_6N1 = UART_6N1,
-    SERIAL_7N1 = UART_7N1,
-    SERIAL_8N1 = UART_8N1,
-    SERIAL_5N2 = UART_5N2,
-    SERIAL_6N2 = UART_6N2,
-    SERIAL_7N2 = UART_7N2,
-    SERIAL_8N2 = UART_8N2,
-    SERIAL_5E1 = UART_5E1,
-    SERIAL_6E1 = UART_6E1,
-    SERIAL_7E1 = UART_7E1,
-    SERIAL_8E1 = UART_8E1,
-    SERIAL_5E2 = UART_5E2,
-    SERIAL_6E2 = UART_6E2,
-    SERIAL_7E2 = UART_7E2,
-    SERIAL_8E2 = UART_8E2,
-    SERIAL_5O1 = UART_5O1,
-    SERIAL_6O1 = UART_6O1,
-    SERIAL_7O1 = UART_7O1,
-    SERIAL_8O1 = UART_8O1,
-    SERIAL_5O2 = UART_5O2,
-    SERIAL_6O2 = UART_6O2,
-    SERIAL_7O2 = UART_7O2,
-    SERIAL_8O2 = UART_8O2,
+	SERIAL_5N1 = UART_5N1,
+	SERIAL_6N1 = UART_6N1,
+	SERIAL_7N1 = UART_7N1,
+	SERIAL_8N1 = UART_8N1,
+	SERIAL_5N2 = UART_5N2,
+	SERIAL_6N2 = UART_6N2,
+	SERIAL_7N2 = UART_7N2,
+	SERIAL_8N2 = UART_8N2,
+	SERIAL_5E1 = UART_5E1,
+	SERIAL_6E1 = UART_6E1,
+	SERIAL_7E1 = UART_7E1,
+	SERIAL_8E1 = UART_8E1,
+	SERIAL_5E2 = UART_5E2,
+	SERIAL_6E2 = UART_6E2,
+	SERIAL_7E2 = UART_7E2,
+	SERIAL_8E2 = UART_8E2,
+	SERIAL_5O1 = UART_5O1,
+	SERIAL_6O1 = UART_6O1,
+	SERIAL_7O1 = UART_7O1,
+	SERIAL_8O1 = UART_8O1,
+	SERIAL_5O2 = UART_5O2,
+	SERIAL_6O2 = UART_6O2,
+	SERIAL_7O2 = UART_7O2,
+	SERIAL_8O2 = UART_8O2,
 };
 
-enum SerialMode {
-    SERIAL_FULL = UART_FULL,
-    SERIAL_RX_ONLY = UART_RX_ONLY,
-    SERIAL_TX_ONLY = UART_TX_ONLY
-};
+enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL_TX_ONLY = UART_TX_ONLY };
 
 /// Hardware serial class
 class HardwareSerial : public Stream
 {
 public:
-    /** @brief  Create instance of a hardware serial port object
+	/** @brief  Create instance of a hardware serial port object
      *  @param  uartPort UART number [0 | 1]
      *  @note   A global instance of UART 0 is already defined as Serial
      */
 	HardwareSerial(const int uartPort);
 	~HardwareSerial();
 
-    /** @brief  Initialise the serial port
+	/** @brief  Initialise the serial port
      *  @param  baud BAUD rate of the serial port (Default: 9600)
      */
-	void begin(const uint32_t baud = 9600) {
+	void begin(const uint32_t baud = 9600)
+	{
 		begin(baud, SERIAL_8N1, SERIAL_FULL, 1);
 	}
 
@@ -168,13 +164,12 @@ public:
 	 */
 	void pins(uint8_t tx, uint8_t rx);
 
-
-    /** @brief  Get quantity characters available from serial input
+	/** @brief  Get quantity characters available from serial input
      *  @retval int Quantity of characters in receive buffer
      */
 	int available();
 
-    /** @brief  Read a character from serial port
+	/** @brief  Read a character from serial port
      *  @retval int Character read from serial port or -1 if buffer empty
      *  @note   The character is removed from the serial port input buffer
     */
@@ -185,9 +180,9 @@ public:
 	 *  @param  max_len Maximum quantity of characters to read
 	 *  @retval int Quantity of characters read
 	 */
- 	int readMemoryBlock(char* buf, int max_len);
+	int readMemoryBlock(char* buf, int max_len);
 
-    /** @brief  Read a character from serial port without removing from input buffer
+	/** @brief  Read a character from serial port without removing from input buffer
      *  @retval int Character read from serial port or -1 if buffer empty
      *  @note   The character remains in serial port input buffer
      */
@@ -266,19 +261,19 @@ private:
 	uart_t* uart = nullptr;
 	size_t rxSize;
 
-	static os_event_t *serialQueue;
+	static os_event_t* serialQueue;
 
 	static bool init;
 
 	/** @brief  Interrupt handler for UART0 receive events
 	 * @param uart_t* pointer to UART structure
 	 */
-	static void IRAM_ATTR callbackHandler(uart_t *arg);
+	static void IRAM_ATTR callbackHandler(uart_t* arg);
 
 	/** @brief  Trigger task for input event
 	 *  @param  inputEvent The event to use for trigger
 	 */
-	static void delegateTask (os_event_t *inputEvent);
+	static void delegateTask(os_event_t* inputEvent);
 };
 
 /**	@brief	Global instance of serial port UART0

@@ -33,7 +33,7 @@ void init()
 {
 	spiffs_mount(); // Mount file system, in order to work with files
 
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(SERIAL_BAUD_RATE);  // 115200 by default
 	Serial.systemDebugOutput(false); // Debug output to serial
 
 	ActiveConfig = loadConfig();
@@ -68,12 +68,11 @@ void init()
 
 void showValues()
 {
-	lcd.setCursor(0,0);
+	lcd.setCursor(0, 0);
 	// Output time, if it was loaded from remote server
-	if (StrTime.length() > 0)
-	{
+	if(StrTime.length() > 0) {
 		lcd.print(StrTime);
-		lcd.setCursor(0,1);
+		lcd.setCursor(0, 1);
 		lcd.print("  ");
 	}
 	lcd.print("\1 ");
@@ -81,14 +80,13 @@ void showValues()
 	lcd.print(StrT);
 	lcd.print("\3C ");
 
-	if (StrTime.length() == 0)
-	{
+	if(StrTime.length() == 0) {
 		lcd.print("                 "); // Clear line end
-		lcd.setCursor(0,1);
+		lcd.setCursor(0, 1);
 	}
 	lcd.print("\2 ");
 	lcd.print(StrRH);
-	lcd.print("%                 ");  // Clear line end
+	lcd.print("%                 "); // Clear line end
 }
 
 void process()
@@ -96,16 +94,16 @@ void process()
 	float t = dht.getTemperature() + ActiveConfig.AddT;
 	float h = dht.getHumidity() + ActiveConfig.AddRH;
 
-	if (ActiveConfig.Trigger == eTT_Temperature)
+	if(ActiveConfig.Trigger == eTT_Temperature)
 		state = t < ActiveConfig.RangeMin || t > ActiveConfig.RangeMax;
-	else if (ActiveConfig.Trigger == eTT_Humidity)
+	else if(ActiveConfig.Trigger == eTT_Humidity)
 		state = h < ActiveConfig.RangeMin || h > ActiveConfig.RangeMax;
 
 	digitalWrite(CONTROL_PIN, state);
 	StrT = String(t, 0);
 	StrRH = String(h, 0);
 
-	if (!displayTimer.isStarted())
+	if(!displayTimer.isStarted())
 		displayTimer.initializeMs(1000, showValues).start();
 }
 
@@ -126,7 +124,8 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 
 	startWebClock();
 	// At first run we will download web server content
-	if (!fileExist("index.html") || !fileExist("config.html") || !fileExist("api.html") || !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz"))
+	if(!fileExist("index.html") || !fileExist("config.html") || !fileExist("api.html") ||
+	   !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz"))
 		downloadContentFiles();
 	else
 		startWebServer();
@@ -142,9 +141,9 @@ void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason
 	displayTimer.stop();
 	lcd.clear();
 
-	lcd.setCursor(0,0);
+	lcd.setCursor(0, 0);
 	lcd.print("WiFi MeteoConfig");
-	lcd.setCursor(0,1);
+	lcd.setCursor(0, 1);
 	lcd.print("  ");
 	lcd.print(WifiAccessPoint.getIP());
 
@@ -162,8 +161,7 @@ const int clockUpdateIntervalMs = 10 * 60 * 1000; // Update web clock every 10 m
 
 int onClockUpdating(HttpConnection& client, bool successful)
 {
-	if (!successful)
-	{
+	if(!successful) {
 		debugf("CLOCK UPDATE FAILED %d (code: %d)", successful, client.getResponseCode());
 		lastClockUpdate = 0;
 		return -1;
@@ -171,8 +169,9 @@ int onClockUpdating(HttpConnection& client, bool successful)
 
 	// Extract date header from response
 	clockValue = client.getServerDate();
-	if (clockValue.isNull()) clockValue = client.getLastModifiedDate();
-	if (!clockValue.isNull())
+	if(clockValue.isNull())
+		clockValue = client.getLastModifiedDate();
+	if(!clockValue.isNull())
 		clockValue.addMilliseconds(ActiveConfig.AddTZ * 1000 * 60 * 60);
 
 	return 0;
@@ -181,20 +180,18 @@ int onClockUpdating(HttpConnection& client, bool successful)
 void refreshClockTime()
 {
 	uint32_t nowClock = millis();
-	if (nowClock < lastClockUpdate) lastClockUpdate = 0; // Prevent overflow, restart
-	if ((lastClockUpdate == 0 || nowClock - lastClockUpdate > clockUpdateIntervalMs))
-	{
+	if(nowClock < lastClockUpdate)
+		lastClockUpdate = 0; // Prevent overflow, restart
+	if((lastClockUpdate == 0 || nowClock - lastClockUpdate > clockUpdateIntervalMs)) {
 		clockWebClient.downloadString("google.com", onClockUpdating);
 		lastClockUpdate = nowClock;
-	}
-	else if (!clockValue.isNull())
+	} else if(!clockValue.isNull())
 		clockValue.addMilliseconds(clockRefresher.getIntervalMs());
 
-	if (!clockValue.isNull())
-	{
+	if(!clockValue.isNull()) {
 		StrTime = clockValue.toShortDateString() + " " + clockValue.toShortTimeString(false);
 
-		if ((millis() % 2000) > 1000)
+		if((millis() % 2000) > 1000)
 			StrTime.setCharAt(13, ' ');
 		else
 			StrTime.setCharAt(13, ':');

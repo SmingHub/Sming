@@ -23,11 +23,11 @@
 
 #include <functional>
 
-typedef std::function<bool(SSL *ssl, void* data)> SslValidatorCallback;
+typedef std::function<bool(SSL* ssl, void* data)> SslValidatorCallback;
 
-bool sslValidateCertificateSha1(SSL *ssl, void* data);
+bool sslValidateCertificateSha1(SSL* ssl, void* data);
 
-bool sslValidatePublicKeySha256(SSL *ssl, void* data);
+bool sslValidatePublicKeySha256(SSL* ssl, void* data);
 
 #endif /* ENABLE_SSL */
 

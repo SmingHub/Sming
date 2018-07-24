@@ -19,12 +19,13 @@
 //	SPI_MODE2		1					0
 //	SPI_MODE3		1					1
 
-#define	SPI_MODE0		0x00
-#define	SPI_MODE1		0x0F
-#define	SPI_MODE2		0xF0
-#define	SPI_MODE3		0xFF
+#define SPI_MODE0 0x00
+#define SPI_MODE1 0x0F
+#define SPI_MODE2 0xF0
+#define SPI_MODE3 0xFF
 
-class SPISettings {
+class SPISettings
+{
 public:
 	/** @brief SPISettings()
 	 * default Constructor
@@ -60,20 +61,22 @@ public:
 	 */
 	SPISettings(int speed, uint8 byteOrder, uint8 dataMode);
 
-	inline uint8 getDataMode() {return _dataMode;};
+	inline uint8 getDataMode()
+	{
+		return _dataMode;
+	};
 
 	// overload operator to check wheter the settings are equal
-	bool operator==(const SPISettings &other) const;
+	bool operator==(const SPISettings& other) const;
 
-
-	void print(const char *s);
+	void print(const char* s);
 
 	friend class SPIClass;
 
 private:
-	int 	_speed;
-	uint8	_byteOrder;
-	uint8	_dataMode;
+	int _speed;
+	uint8 _byteOrder;
+	uint8 _dataMode;
 };
 
 #endif /* SMINGCORE_SPISETTINGS_H_ */

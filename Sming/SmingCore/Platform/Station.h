@@ -24,39 +24,36 @@
 #include "../../Wiring/IPAddress.h"
 
 extern "C" {
-	#include <smartconfig.h>
+#include <smartconfig.h>
 }
 
 /** @ingroup constants
  *  @{
  */
 /// WiFi station connection states
-enum EStationConnectionStatus
-{
-	eSCS_Idle = 0, ///< WiFi station connection idle
-	eSCS_Connecting, ///< Wifi station connecting
-	eSCS_WrongPassword, ///< WiFi station wrong password
+enum EStationConnectionStatus {
+	eSCS_Idle = 0,			  ///< WiFi station connection idle
+	eSCS_Connecting,		  ///< Wifi station connecting
+	eSCS_WrongPassword,		  ///< WiFi station wrong password
 	eSCS_AccessPointNotFound, ///< WiFi station AP not found
-	eSCS_ConnectionFailed,  ///< WiFi station connectoin failed
-	eSCS_GotIP ///< WiFi station got IP address
+	eSCS_ConnectionFailed,	///< WiFi station connectoin failed
+	eSCS_GotIP				  ///< WiFi station got IP address
 };
 
 /// Smart configuration type
-enum SmartConfigType
-{
-	SCT_EspTouch = SC_TYPE_ESPTOUCH, ///< WiFi station smart configuration ESP touch
-	SCT_AirKiss = SC_TYPE_AIRKISS, ///< WiFi station smart configuration Air Kiss
+enum SmartConfigType {
+	SCT_EspTouch = SC_TYPE_ESPTOUCH,				///< WiFi station smart configuration ESP touch
+	SCT_AirKiss = SC_TYPE_AIRKISS,					///< WiFi station smart configuration Air Kiss
 	SCT_EspTouch_AirKiss = SC_TYPE_ESPTOUCH_AIRKISS ///< WiFi station smart configuration ESP Touch and Air Kiss
 };
 
 /// Smart configuration event
-enum SmartConfigEvent
-{
-	SCE_Wait = SC_STATUS_WAIT, ///< Smart configuration wait state
-	SCE_FindChannel = SC_STATUS_FIND_CHANNEL, ///< Smart configuration find channel state
+enum SmartConfigEvent {
+	SCE_Wait = SC_STATUS_WAIT,				   ///< Smart configuration wait state
+	SCE_FindChannel = SC_STATUS_FIND_CHANNEL,  ///< Smart configuration find channel state
 	SCE_GotSsid = SC_STATUS_GETTING_SSID_PSWD, ///< Smart configuration getting SSID & password state
-	SEC_Link = SC_STATUS_LINK, ///< Smart configuration link established state
-	SEC_LinkOver = SC_STATUS_LINK_OVER ///< Smart configuration link over status
+	SEC_Link = SC_STATUS_LINK,				   ///< Smart configuration link established state
+	SEC_LinkOver = SC_STATUS_LINK_OVER		   ///< Smart configuration link over status
 };
 
 class BssInfo;
@@ -68,9 +65,9 @@ typedef Vector<BssInfo> BssList; ///< List of BSS
 /** @ingroup event_handlers
  *  @{
  */
-typedef Delegate<void(bool, BssList)> ScanCompletedDelegate; ///< Scan complete handler function
-typedef Delegate<void()> ConnectionDelegate; ///< Connection handler function
-typedef Delegate<void(sc_status status, void *pdata)> SmartConfigDelegate; ///< Smart configuration handler function
+typedef Delegate<void(bool, BssList)> ScanCompletedDelegate;			   ///< Scan complete handler function
+typedef Delegate<void()> ConnectionDelegate;							   ///< Connection handler function
+typedef Delegate<void(sc_status status, void* pdata)> SmartConfigDelegate; ///< Smart configuration handler function
 #ifdef ENABLE_WPS
 typedef Delegate<bool(wps_cb_status status)> WPSConfigDelegate;
 #endif
@@ -79,7 +76,7 @@ typedef Delegate<bool(wps_cb_status status)> WPSConfigDelegate;
 class StationClass : protected ISystemReadyHandler
 {
 public:
-    /** @brief  WiFi station class
+	/** @brief  WiFi station class
      *  @addtogroup wifi_sta
      *  @{
      */
@@ -203,7 +200,7 @@ public:
 	 */
 	String getPassword();
 	sint8 getRssi();
-	uint8 getChannel(); 
+	uint8 getChannel();
 
 	/**	@brief	Start WiFi station network scan
 	 *	@param	scanCompleted Function to call when scan completes
@@ -225,7 +222,7 @@ public:
 	/**	@brief	Start WiFi station by WPS method
 	 *	@param	callback Function to call on WiFi WPS Events (Default: none)
 	 */
-	bool wpsConfigStart(WPSConfigDelegate callback=NULL);
+	bool wpsConfigStart(WPSConfigDelegate callback = NULL);
 
 	/**	@brief	Start WiFi station by WPS method 
 	 */
@@ -241,13 +238,13 @@ public:
 
 protected:
 	virtual void onSystemReady();
-	static void staticScanCompleted(void *arg, STATUS status);
+	static void staticScanCompleted(void* arg, STATUS status);
 
 	void internalCheckConnection();
 	static void staticCheckConnection();
 
-	void internalSmartConfig(sc_status status, void *pdata);
-	static void staticSmartConfigCallback(sc_status status, void *pdata);
+	void internalSmartConfig(sc_status status, void* pdata);
+	static void staticSmartConfigCallback(sc_status status, void* pdata);
 
 private:
 	ScanCompletedDelegate scanCompletedCallback;
@@ -279,12 +276,12 @@ public:
 	uint32_t getHashId();
 
 public:
-	String ssid; ///< SSID
-	uint8 bssid[6]; ///< BSS ID
+	String ssid;			 ///< SSID
+	uint8 bssid[6];			 ///< BSS ID
 	AUTH_MODE authorization; ///< Authorisation mode
-	uint8 channel; ///< Channel number
-	sint16 rssi; ///< RSSI level
-	bool hidden; ///< True if AP is hidden
+	uint8 channel;			 ///< Channel number
+	sint16 rssi;			 ///< RSSI level
+	bool hidden;			 ///< True if AP is hidden
 };
 
 /**	@brief	Global instance of WiFi station object

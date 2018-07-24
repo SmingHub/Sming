@@ -3,10 +3,9 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
-
 
 // Enter your bulb IP here:
 YeelightBulb bulb(IPAddress("192.168.1.100"));
@@ -18,8 +17,7 @@ void blink()
 {
 	state = !state;
 
-	if (state)
-	{
+	if(state) {
 		int h = random(0, 360);
 		bulb.setHSV(h, 40); // Set color: [HS]V
 	}

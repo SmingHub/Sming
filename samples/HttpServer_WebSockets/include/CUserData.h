@@ -12,8 +12,9 @@ public:
 	~CUserData();
 	void addSession(WebSocketConnection& connection);
 	void removeSession(WebSocketConnection& connection);
-	void printMessage(WebSocketConnection& connection,const String &msg);
+	void printMessage(WebSocketConnection& connection, const String& msg);
 	void logOut();
+
 private:
 	String userName;
 	String userData;

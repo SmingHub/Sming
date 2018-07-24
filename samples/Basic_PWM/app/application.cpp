@@ -1,7 +1,6 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-
 /**
  * WARNING:
  *
@@ -21,16 +20,15 @@ bool countDown = false;
 
 void doPWM()
 {
-	if(countUp){
+	if(countUp) {
 		i++;
-		if(i == 100){
+		if(i == 100) {
 			countUp = false;
 			countDown = true;
 		}
-	}
-	else{
+	} else {
 		i--;
-		if(i == 0){
+		if(i == 0) {
 			countUp = true;
 			countDown = false;
 		}
@@ -44,4 +42,3 @@ void init()
 	ledPWM.initialize();
 	procTimer.initializeMs(10, doPWM).start();
 }
-

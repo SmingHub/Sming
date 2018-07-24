@@ -22,13 +22,11 @@
 #include "IPAddress.h"
 #include "../Delegate.h"
 
-
 #define NETWORK_DEBUG
 
 #define NETWORK_SEND_BUFFER_SIZE 1024
 
-enum TcpConnectionEvent
-{
+enum TcpConnectionEvent {
 	// Occurs after connection establishment
 	eTCE_Connected = 0,
 	// Occurs on data receive
@@ -42,9 +40,9 @@ enum TcpConnectionEvent
 #ifdef ENABLE_SSL
 enum SslFingerprintType {
 	eSFT_CertSha1 = 0, // << Fingerprint based on the SHA1 value of the certificate.
-					  //     Every time a certificate is renewed this value will change.
-	eSFT_PkSha256,  // << Fingerprint based on the SHA256 value of the public key subject in the certificate.
-					//    Only when the private key used to generate the certificate is used then that fingerprint
+					   //     Every time a certificate is renewed this value will change.
+	eSFT_PkSha256,	 // << Fingerprint based on the SHA256 value of the public key subject in the certificate.
+					   //    Only when the private key used to generate the certificate is used then that fingerprint
 };
 
 typedef struct {
@@ -53,15 +51,15 @@ typedef struct {
 } SSLFingerprints;
 
 typedef struct {
-	uint8_t *key = NULL;
+	uint8_t* key = NULL;
 	int keyLength = 0;
-	char *keyPassword = NULL;
-	uint8_t *certificate = NULL;
+	char* keyPassword = NULL;
+	uint8_t* certificate = NULL;
 	int certificateLength = 0;
 } SSLKeyCertPair;
 
 typedef struct {
-	uint8_t *value = NULL;
+	uint8_t* value = NULL;
 	int length = 0;
 } SSLSessionId;
 
@@ -94,14 +92,24 @@ public:
 	int writeString(const char* data, uint8_t apiflags = TCP_WRITE_FLAG_COPY);
 	int writeString(const String& data, uint8_t apiflags = TCP_WRITE_FLAG_COPY);
 	// return -1 on error
-	virtual int write(const char* data, int len, uint8_t apiflags = TCP_WRITE_FLAG_COPY); // flags: TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
+	virtual int write(const char* data, int len,
+					  uint8_t apiflags = TCP_WRITE_FLAG_COPY); // flags: TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
 	int write(IDataSourceStream* stream);
-	__forceinline uint16_t getAvailableWriteSize() { return (canSend && tcp) ? tcp_sndbuf(tcp) : 0; }
+	__forceinline uint16_t getAvailableWriteSize()
+	{
+		return (canSend && tcp) ? tcp_sndbuf(tcp) : 0;
+	}
 	void flush();
 
 	void setTimeOut(uint16_t waitTimeOut);
-	IPAddress getRemoteIp()  { return (tcp == NULL) ? INADDR_NONE : IPAddress(tcp->remote_ip);};
-	uint16_t getRemotePort() { return (tcp == NULL) ? 0 : tcp->remote_port; };
+	IPAddress getRemoteIp()
+	{
+		return (tcp == NULL) ? INADDR_NONE : IPAddress(tcp->remote_ip);
+	};
+	uint16_t getRemotePort()
+	{
+		return (tcp == NULL) ? 0 : tcp->remote_port;
+	};
 
 	/**
 	 * @brief Sets a callback to be called when the object instance is destroyed
@@ -112,7 +120,7 @@ public:
 #ifdef ENABLE_SSL
 	void addSslOptions(uint32_t sslOptions);
 
-// start deprecated
+	// start deprecated
 	/**
 	 * @brief Sets client private key, certificate and password from memory
 	 * @deprecated: Use setSslKeyCert instead
@@ -128,12 +136,10 @@ public:
 	 *
 	 * @return bool  true of success, false or failure
 	 */
-	bool setSslClientKeyCert(const uint8_t *key, int keyLength,
-							 const uint8_t *certificate, int certificateLength,
-							 const char *keyPassword = NULL, bool freeAfterHandshake = false)
+	bool setSslClientKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
+							 const char* keyPassword = NULL, bool freeAfterHandshake = false)
 	{
-		return setSslKeyCert(key, keyLength, certificate, certificateLength,
-							 keyPassword, freeAfterHandshake);
+		return setSslKeyCert(key, keyLength, certificate, certificateLength, keyPassword, freeAfterHandshake);
 	}
 
 	/**
@@ -161,7 +167,7 @@ public:
 		freeSslKeyCert();
 	}
 
-// end deprecated
+	// end deprecated
 
 	/**
 	 * @brief Sets private key, certificate and password from memory for the SSL connection
@@ -182,9 +188,8 @@ public:
 	 *
 	 * @return bool  true of success, false or failure
 	 */
-	bool setSslKeyCert(const uint8_t *key, int keyLength,
-							 const uint8_t *certificate, int certificateLength,
-							 const char *keyPassword = NULL, bool freeAfterHandshake = false);
+	bool setSslKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
+					   const char* keyPassword = NULL, bool freeAfterHandshake = false);
 
 	/**
 	* @brief Sets private key, certificate and password from memory for the SSL connection
@@ -214,40 +219,44 @@ public:
 protected:
 	bool internalTcpConnect(IPAddress addr, uint16_t port);
 	virtual err_t onConnected(err_t err);
-	virtual err_t onReceive(pbuf *buf);
+	virtual err_t onReceive(pbuf* buf);
 	virtual err_t onSent(uint16_t len);
 	virtual err_t onPoll();
 	virtual void onError(err_t err);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 #ifdef ENABLE_SSL
-	virtual err_t onSslConnected(SSL *ssl);
+	virtual err_t onSslConnected(SSL* ssl);
 #endif
 
-	static err_t staticOnConnected(void *arg, tcp_pcb *tcp, err_t err);
-	static err_t staticOnReceive(void *arg, tcp_pcb *tcp, pbuf *p, err_t err);
-	static err_t staticOnSent(void *arg, tcp_pcb *tcp, uint16_t len);
-	static err_t staticOnPoll(void *arg, tcp_pcb *tcp);
-	static void staticOnError(void *arg, err_t err);
-	static void staticDnsResponse(const char *name, LWIP_IP_ADDR_T *ipaddr, void *arg);
+	static err_t staticOnConnected(void* arg, tcp_pcb* tcp, err_t err);
+	static err_t staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err);
+	static err_t staticOnSent(void* arg, tcp_pcb* tcp, uint16_t len);
+	static err_t staticOnPoll(void* arg, tcp_pcb* tcp);
+	static void staticOnError(void* arg, err_t err);
+	static void staticDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, void* arg);
 
-	static void closeTcpConnection(tcp_pcb *tpcb);
+	static void closeTcpConnection(tcp_pcb* tpcb);
 	void initialize(tcp_pcb* pcb);
 
 private:
-	inline void checkSelfFree() { if (tcp == NULL && autoSelfDestruct) delete this; }
+	inline void checkSelfFree()
+	{
+		if(tcp == NULL && autoSelfDestruct)
+			delete this;
+	}
 
 protected:
-	tcp_pcb *tcp = NULL;
+	tcp_pcb* tcp = NULL;
 	uint16_t sleep;
 	uint16_t timeOut;
 	bool canSend;
 	bool autoSelfDestruct;
 #ifdef ENABLE_SSL
-	SSL *ssl = nullptr;
-	SSLCTX *sslContext = nullptr;
-	SSL_EXTENSIONS *sslExtension=nullptr;
+	SSL* ssl = nullptr;
+	SSLCTX* sslContext = nullptr;
+	SSL_EXTENSIONS* sslExtension = nullptr;
 	bool sslConnected = false;
-	uint32_t sslOptions=0;
+	uint32_t sslOptions = 0;
 	SSLKeyCertPair sslKeyCert;
 	bool freeKeyCert = false;
 	SSLSessionId* sslSessionId = NULL;

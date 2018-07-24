@@ -14,7 +14,7 @@ void readCompass();
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(SERIAL_BAUD_RATE);  // 115200 by default
 	Serial.systemDebugOutput(false); // Disable debug output to serial
 
 	// join I2C bus (I2Cdev library doesn't do this automatically)
@@ -22,7 +22,7 @@ void init()
 
 	mag.initialize();
 
-	if (mag.testConnection())
+	if(mag.testConnection())
 		Serial.println("[Compass] Magnetometer found");
 	else
 		Serial.println("Can't connect to Magnetometer");
@@ -38,14 +38,19 @@ void readCompass()
 
 	// display tab-separated gyro x/y/z values
 	Serial.print("mag:\t");
-	Serial.print(mx); Serial.print("\t");
-	Serial.print(my); Serial.print("\t");
-	Serial.print(mz); Serial.print("\t");
+	Serial.print(mx);
+	Serial.print("\t");
+	Serial.print(my);
+	Serial.print("\t");
+	Serial.print(mz);
+	Serial.print("\t");
 
 	// To calculate heading in degrees. 0 degree indicates North
 	float heading = atan2(my, mx);
-	if(heading < 0) heading += 2*PI;
-	if(heading > 2*PI) heading -= 2*PI;
+	if(heading < 0)
+		heading += 2 * PI;
+	if(heading > 2 * PI)
+		heading -= 2 * PI;
 	Serial.print("heading:\t");
 	Serial.println(heading * RAD_TO_DEG);
 }

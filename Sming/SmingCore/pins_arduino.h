@@ -26,12 +26,11 @@ extern const unsigned int A0; // Single ESP8266EX analog input pin (TOUT) 10 bit
 
 // We use maximum compatibility to standard Arduino logic.
 
-#define digitalPinToPort(pin)       (0)
-#define digitalPinToBitMask(pin)    (1UL << (pin))
-#define digitalPinToTimer(pin)      (NOT_ON_TIMER)
-#define portOutputRegister(port)    ((volatile uint32_t*) &GPO)
-#define portInputRegister(port)     ((volatile uint32_t*) &GPI)
-#define portModeRegister(port)      ((volatile uint32_t*) &GPE)
-
+#define digitalPinToPort(pin) (0)
+#define digitalPinToBitMask(pin) (1UL << (pin))
+#define digitalPinToTimer(pin) (NOT_ON_TIMER)
+#define portOutputRegister(port) ((volatile uint32_t*)&GPO)
+#define portInputRegister(port) ((volatile uint32_t*)&GPI)
+#define portModeRegister(port) ((volatile uint32_t*)&GPE)
 
 #endif /* WIRING_PINS_ARDUINO_H_ */

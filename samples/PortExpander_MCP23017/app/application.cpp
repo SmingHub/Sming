@@ -7,10 +7,12 @@ volatile boolean awakenByInterrupt = false;
 byte mcpPinA = 0;
 byte interruptPin = 15;
 
-void interruptCallback() {
+void interruptCallback()
+{
 	awakenByInterrupt = true;
 	Serial.println("Interrupt Called");
-	while (!(mcp.digitalRead(mcpPinA)));
+	while(!(mcp.digitalRead(mcpPinA)))
+		;
 }
 
 void init()

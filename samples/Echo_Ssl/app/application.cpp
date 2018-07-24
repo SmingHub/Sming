@@ -18,83 +18,81 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 #ifndef SERVER_IP
-	// Make sure to define the server IP in the code"
-	#define SERVER_IP "127.0.0.1"
+// Make sure to define the server IP in the code"
+#define SERVER_IP "127.0.0.1"
 #endif
 
 Timer procTimer;
-TcpClient *client;
+TcpClient* client;
 
 boolean showMeta = true;
 
 /* Debug SSL functions */
-void displaySessionId(SSL *ssl)
+void displaySessionId(SSL* ssl)
 {
-    int i;
-    const uint8_t *session_id = ssl_get_session_id(ssl);
-    int sess_id_size = ssl_get_session_id_size(ssl);
+	int i;
+	const uint8_t* session_id = ssl_get_session_id(ssl);
+	int sess_id_size = ssl_get_session_id_size(ssl);
 
-    if (sess_id_size > 0)
-    {
-        debugf("-----BEGIN SSL SESSION PARAMETERS-----\n");
-        for (i = 0; i < sess_id_size; i++)
-        {
-        	debugf("%02x", session_id[i]);
-        }
+	if(sess_id_size > 0) {
+		debugf("-----BEGIN SSL SESSION PARAMETERS-----\n");
+		for(i = 0; i < sess_id_size; i++) {
+			debugf("%02x", session_id[i]);
+		}
 
-        debugf("\n-----END SSL SESSION PARAMETERS-----\n");
-    }
+		debugf("\n-----END SSL SESSION PARAMETERS-----\n");
+	}
 }
 
 /**
  * Display what cipher we are using
  */
-void displayCipher(SSL *ssl)
+void displayCipher(SSL* ssl)
 {
-    Serial.printf("CIPHER is ");
-    switch (ssl_get_cipher_id(ssl))
-    {
-        case SSL_AES128_SHA:
-            Serial.printf("AES128-SHA");
-            break;
+	Serial.printf("CIPHER is ");
+	switch(ssl_get_cipher_id(ssl)) {
+	case SSL_AES128_SHA:
+		Serial.printf("AES128-SHA");
+		break;
 
-        case SSL_AES256_SHA:
-            Serial.printf("AES256-SHA");
-            break;
+	case SSL_AES256_SHA:
+		Serial.printf("AES256-SHA");
+		break;
 
-        case SSL_AES128_SHA256:
-            Serial.printf("SSL_AES128_SHA256");
-            break;
+	case SSL_AES128_SHA256:
+		Serial.printf("SSL_AES128_SHA256");
+		break;
 
-        case SSL_AES256_SHA256:
-      	    Serial.printf("SSL_AES256_SHA256");
-            break;
+	case SSL_AES256_SHA256:
+		Serial.printf("SSL_AES256_SHA256");
+		break;
 
-        default:
-        	Serial.printf("Unknown - %d", ssl_get_cipher_id(ssl));
-            break;
-    }
+	default:
+		Serial.printf("Unknown - %d", ssl_get_cipher_id(ssl));
+		break;
+	}
 
-    Serial.printf("\n");
+	Serial.printf("\n");
 }
 
-bool onReceive(TcpClient& tcpClient, char *data, int size) {
+bool onReceive(TcpClient& tcpClient, char* data, int size)
+{
 	debugf("Got data with size: %d", size);
 	debugf("Free heap: %d", system_get_free_heap_size());
 	if(size < 1) {
 		return false;
 	}
 
-	if (showMeta) {
+	if(showMeta) {
 		SSL* ssl = tcpClient.getSsl();
-		if (ssl) {
-			const char *common_name = ssl_get_cert_dn(ssl, SSL_X509_CERT_COMMON_NAME);
-			if (common_name) {
+		if(ssl) {
+			const char* common_name = ssl_get_cert_dn(ssl, SSL_X509_CERT_COMMON_NAME);
+			if(common_name) {
 				debugf("Common Name:\t\t\t%s\n", common_name);
 			}
 			displayCipher(ssl);

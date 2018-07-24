@@ -34,10 +34,10 @@ class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
 
-class HttpServerConnection: public TcpClient
+class HttpServerConnection : public TcpClient
 {
 public:
-	HttpServerConnection(tcp_pcb *clientTcp);
+	HttpServerConnection(tcp_pcb* clientTcp);
 	virtual ~HttpServerConnection();
 
 	void setResourceTree(ResourceTree* resourceTree);
@@ -51,20 +51,20 @@ public:
 	using TcpConnection::getRemotePort;
 
 protected:
-	virtual err_t onReceive(pbuf *buf);
+	virtual err_t onReceive(pbuf* buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 	virtual void sendError(const char* message = NULL, enum http_status code = HTTP_STATUS_BAD_REQUEST);
 	virtual void onError(err_t err);
 
-	const char * getStatus(enum http_status s);
+	const char* getStatus(enum http_status s);
 
 private:
 	static int staticOnMessageBegin(http_parser* parser);
-	static int staticOnPath(http_parser *parser, const char *at, size_t length);
+	static int staticOnPath(http_parser* parser, const char* at, size_t length);
 	static int staticOnHeadersComplete(http_parser* parser);
-	static int staticOnHeaderField(http_parser *parser, const char *at, size_t length);
-	static int staticOnHeaderValue(http_parser *parser, const char *at, size_t length);
-	static int staticOnBody(http_parser *parser, const char *at, size_t length);
+	static int staticOnHeaderField(http_parser* parser, const char* at, size_t length);
+	static int staticOnHeaderValue(http_parser* parser, const char* at, size_t length);
+	static int staticOnBody(http_parser* parser, const char* at, size_t length);
 	static int staticOnMessageComplete(http_parser* parser);
 
 	void sendResponseHeaders(HttpResponse* response);
@@ -93,7 +93,7 @@ private:
 	HttpHeaders requestHeaders;
 	bool lastWasValue = true;
 	String lastData = "";
-	String currentField  = "";
+	String currentField = "";
 
 	BodyParsers* bodyParsers = NULL;
 	HttpBodyParserDelegate bodyParser;

@@ -11,11 +11,13 @@
 #define debugf(fmt, ...)
 #endif
 
-AtClient::AtClient(HardwareSerial* stream) : stream(stream) {
+AtClient::AtClient(HardwareSerial* stream) : stream(stream)
+{
 	this->stream->setCallback(StreamDataReceivedDelegate(&AtClient::processor, this));
 }
 
-void AtClient::processor(Stream &source, char arrivedChar, uint16_t availableCharsCount) {
+void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCharsCount)
+{
 	if(!currentCommand.text.length()) {
 		return;
 	}
@@ -40,9 +42,9 @@ void AtClient::processor(Stream &source, char arrivedChar, uint16_t availableCha
 	debugf("Processing: %d ms, %s", millis(), currentCommand.text.substring(0, 20).c_str());
 
 	char response[availableCharsCount];
-	for (int i = 0; i < availableCharsCount; i++) {
+	for(int i = 0; i < availableCharsCount; i++) {
 		response[i] = stream->read();
-		if (response[i] == '\r' || response[i] == '\n') {
+		if(response[i] == '\r' || response[i] == '\n') {
 			response[i] = '\0';
 		}
 	}
@@ -72,7 +74,9 @@ void AtClient::processor(Stream &source, char arrivedChar, uint16_t availableCha
 	next();
 }
 
-void AtClient::send(const String& text, const String& altResponse /* ="" */, uint32_t timeoutMs /* = AT_TIMEOUT */, int retries /* = 0 */) {
+void AtClient::send(const String& text, const String& altResponse /* ="" */, uint32_t timeoutMs /* = AT_TIMEOUT */,
+					int retries /* = 0 */)
+{
 	AtCommand atCommand;
 	atCommand.text = text;
 	atCommand.response2 = altResponse;
@@ -82,7 +86,9 @@ void AtClient::send(const String& text, const String& altResponse /* ="" */, uin
 	send(atCommand);
 }
 
-void AtClient::send(const String& text, AtReceiveCallback onReceive, uint32_t timeoutMs /* = AT_TIMEOUT */, int retries /* = 0 */) {
+void AtClient::send(const String& text, AtReceiveCallback onReceive, uint32_t timeoutMs /* = AT_TIMEOUT */,
+					int retries /* = 0 */)
+{
 	AtCommand atCommand;
 	atCommand.text = text;
 	atCommand.onReceive = onReceive;
@@ -92,7 +98,9 @@ void AtClient::send(const String& text, AtReceiveCallback onReceive, uint32_t ti
 	send(atCommand);
 }
 
-void AtClient::send(const String& text, AtCompleteCallback onComplete, uint32_t timeoutMs /* = AT_TIMEOUT */, int retries /* = 0 */) {
+void AtClient::send(const String& text, AtCompleteCallback onComplete, uint32_t timeoutMs /* = AT_TIMEOUT */,
+					int retries /* = 0 */)
+{
 	AtCommand atCommand;
 	atCommand.text = text;
 	atCommand.onComplete = onComplete;
@@ -104,7 +112,8 @@ void AtClient::send(const String& text, AtCompleteCallback onComplete, uint32_t 
 
 // Low Level  Communication Functions
 
-void AtClient::send(AtCommand command) {
+void AtClient::send(AtCommand command)
+{
 	if(currentCommand.text.length()) {
 		queue.enqueue(command);
 		return;
@@ -113,17 +122,20 @@ void AtClient::send(AtCommand command) {
 	sendDirect(command);
 }
 
-void AtClient::sendDirect(AtCommand command) {
+void AtClient::sendDirect(AtCommand command)
+{
 	state = eAtRunning;
 	commandTimer.stop();
 	currentCommand = command;
 	stream->print(command.text);
-	debugf("Sent: timeout: %d, current %d ms, name: %s", currentCommand.timeout, millis(), command.text.substring(0, 20).c_str());
+	debugf("Sent: timeout: %d, current %d ms, name: %s", currentCommand.timeout, millis(),
+		   command.text.substring(0, 20).c_str());
 	commandTimer.initializeMs(currentCommand.timeout, TimerDelegate(&AtClient::ticker, this)).startOnce();
 }
 
 // Low Level Queue Functions
-void AtClient::resend() {
+void AtClient::resend()
+{
 	state = eAtOK;
 	if(currentCommand.text.length()) {
 		sendDirect(currentCommand);
@@ -133,7 +145,8 @@ void AtClient::resend() {
 	next();
 }
 
-void AtClient::next() {
+void AtClient::next()
+{
 	if(state == eAtError) {
 		debugf("We are at error state! No next");
 		return;
@@ -146,7 +159,8 @@ void AtClient::next() {
 	}
 }
 
-void AtClient::ticker() {
+void AtClient::ticker()
+{
 	debugf("Ticker =================> ");
 	if(!currentCommand.text.length()) {
 		commandTimer.stop();

@@ -12,11 +12,11 @@
 
 #include "HttpRequest.h"
 
-HttpRequest::HttpRequest(const URL& uri): uri(uri)
+HttpRequest::HttpRequest(const URL& uri) : uri(uri)
 {
 }
 
-HttpRequest::HttpRequest(const HttpRequest& value): uri(value.uri)
+HttpRequest::HttpRequest(const HttpRequest& value) : uri(value.uri)
 {
 	*this = value;
 	method = value.method;
@@ -36,13 +36,14 @@ HttpRequest::HttpRequest(const HttpRequest& value): uri(value.uri)
 #endif
 }
 
-HttpRequest& HttpRequest::operator = (const HttpRequest& rhs)
+HttpRequest& HttpRequest::operator=(const HttpRequest& rhs)
 {
-	if (this == &rhs) return *this;
+	if(this == &rhs)
+		return *this;
 
 	// TODO: FIX this...
-//	if (rhs.buffer) copy(rhs.buffer, rhs.len);
-//	else invalidate();
+	//	if (rhs.buffer) copy(rhs.buffer, rhs.len);
+	//	else invalidate();
 
 	return *this;
 }
@@ -66,7 +67,7 @@ HttpRequest* HttpRequest::setMethod(const HttpMethod method)
 
 HttpRequest* HttpRequest::setHeaders(const HttpHeaders& headers)
 {
-	for(int i=0; i < headers.count(); i++) {
+	for(int i = 0; i < headers.count(); i++) {
 		this->headers[headers.keyAt(i)] = headers.valueAt(i);
 	}
 	return this;
@@ -77,7 +78,6 @@ HttpRequest* HttpRequest::setHeader(const String& name, const String& value)
 	this->headers[name] = value;
 	return this;
 }
-
 
 HttpRequest* HttpRequest::setPostParameters(const HttpParams& params)
 {
@@ -103,7 +103,7 @@ HttpRequest* HttpRequest::setFile(const String& formElementName, FileStream* str
 }
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
-HttpRequest* HttpRequest::setAuth(AuthAdapter *adapter)
+HttpRequest* HttpRequest::setAuth(AuthAdapter* adapter)
 {
 	adapter->setRequest(this);
 	auth = adapter;
@@ -139,10 +139,10 @@ String HttpRequest::getQueryParameter(const String& parameterName, const String&
 
 		String query = uri.Query.substring(1);
 		Vector<String> parts;
-		splitString(query, '&' , parts);
-		for(int i=0; i < parts.count(); i++) {
+		splitString(query, '&', parts);
+		for(int i = 0; i < parts.count(); i++) {
 			Vector<String> pair;
-			int count = splitString(parts[i], '=' , pair);
+			int count = splitString(parts[i], '=', pair);
 			if(count != 2) {
 				debug_w("getQueryParameter: Missing = in query string: %s", parts[i].c_str());
 				continue;
@@ -166,7 +166,7 @@ String HttpRequest::getBody()
 
 	String ret;
 	if(stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
-		MemoryDataStream *memory = (MemoryDataStream *)stream;
+		MemoryDataStream* memory = (MemoryDataStream*)stream;
 		char buf[1024];
 		while(stream->available() > 0) {
 			int available = memory->readMemoryBlock(buf, 1024);
@@ -185,7 +185,7 @@ ReadWriteStream* HttpRequest::getBodyStream()
 	return stream;
 }
 
-HttpRequest* HttpRequest::setResponseStream(ReadWriteStream *stream)
+HttpRequest* HttpRequest::setResponseStream(ReadWriteStream* stream)
 {
 	if(responseStream != NULL) {
 		debug_e("HttpRequest::setResponseStream: Discarding already set stream!");
@@ -201,12 +201,12 @@ HttpRequest* HttpRequest::setResponseStream(ReadWriteStream *stream)
 HttpRequest* HttpRequest::setSslOptions(uint32_t sslOptions)
 {
 	this->sslOptions = sslOptions;
- 	return this;
+	return this;
 }
 
 uint32_t HttpRequest::getSslOptions()
 {
- 	return sslOptions;
+	return sslOptions;
 }
 
 HttpRequest* HttpRequest::pinCertificate(const SSLFingerprints& fingerprints)
@@ -225,12 +225,12 @@ HttpRequest* HttpRequest::setSslKeyCert(const SSLKeyCertPair& keyCertPair)
 
 HttpRequest* HttpRequest::setBody(const String& body)
 {
-	return setBody((uint8_t* )body.c_str(), body.length());
+	return setBody((uint8_t*)body.c_str(), body.length());
 }
 
-HttpRequest* HttpRequest::setBody(uint8_t *rawData, size_t length)
+HttpRequest* HttpRequest::setBody(uint8_t* rawData, size_t length)
 {
-	MemoryDataStream *memory = new MemoryDataStream();
+	MemoryDataStream* memory = new MemoryDataStream();
 	int written = memory->write(rawData, length);
 	if(written < length) {
 		debug_e("HttpRequest::setBody: Unable to store the complete body");
@@ -239,7 +239,7 @@ HttpRequest* HttpRequest::setBody(uint8_t *rawData, size_t length)
 	return setBody(memory);
 }
 
-HttpRequest* HttpRequest::setBody(ReadWriteStream *stream)
+HttpRequest* HttpRequest::setBody(ReadWriteStream* stream)
 {
 	if(this->stream != NULL) {
 		debug_e("HttpRequest::setBody: Discarding already set stream!");
@@ -279,7 +279,7 @@ void HttpRequest::reset()
 	responseStream = NULL;
 
 	postParams.clear();
-	for(int i=0; i < files.count(); i++) {
+	for(int i = 0; i < files.count(); i++) {
 		String key = files.keyAt(i);
 		delete files[key];
 		files[key] = NULL;
@@ -293,8 +293,8 @@ String HttpRequest::toString()
 	String content = "";
 #ifdef ENABLE_SSL
 	content += "> SSL options: " + String(sslOptions) + "\n";
-	content += "> SSL Cert Fingerprint Length: " + String((sslFingerprint.certSha1 == NULL)? 0: SHA1_SIZE) + "\n";
-	content += "> SSL PK Fingerprint Length: " + String((sslFingerprint.pkSha256 == NULL)? 0: SHA256_SIZE) + "\n";
+	content += "> SSL Cert Fingerprint Length: " + String((sslFingerprint.certSha1 == NULL) ? 0 : SHA1_SIZE) + "\n";
+	content += "> SSL PK Fingerprint Length: " + String((sslFingerprint.pkSha256 == NULL) ? 0 : SHA256_SIZE) + "\n";
 	content += "> SSL ClientCert Length: " + String(sslKeyCertPair.certificateLength) + "\n";
 	content += "> SSL ClientCert PK Length: " + String(sslKeyCertPair.keyLength) + "\n";
 	content += "\n";
@@ -302,11 +302,11 @@ String HttpRequest::toString()
 
 	content += http_method_str(method) + String(" ") + uri.getPathWithQuery() + " HTTP/1.1\n";
 	content += "Host: " + uri.Host + ":" + uri.Port + "\n";
-	for(int i=0; i< headers.count(); i++) {
+	for(int i = 0; i < headers.count(); i++) {
 		content += headers.keyAt(i) + ": " + headers.valueAt(i) + "\n";
 	}
 
-	if(stream!= NULL && stream->available() > -1) {
+	if(stream != NULL && stream->available() > -1) {
 		content += "Content-Length: " + String(stream->available());
 	}
 

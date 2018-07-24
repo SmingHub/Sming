@@ -3,8 +3,8 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 HttpServer server;
@@ -12,32 +12,31 @@ FTPServer ftp;
 
 int inputs[] = {0, 2}; // Set input GPIO pins here
 Vector<String> namesInput;
-const int countInputs = sizeof(inputs) /  sizeof(inputs[0]);
+const int countInputs = sizeof(inputs) / sizeof(inputs[0]);
 
-void onIndex(HttpRequest &request, HttpResponse &response)
+void onIndex(HttpRequest& request, HttpResponse& response)
 {
-	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
-	auto &vars = tmpl->variables();
+	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
+	auto& vars = tmpl->variables();
 	//vars["counter"] = String(counter);
 	response.sendTemplate(tmpl); // this template object will be deleted automatically
 }
 
-void onFile(HttpRequest &request, HttpResponse &response)
+void onFile(HttpRequest& request, HttpResponse& response)
 {
 	String file = request.getPath();
-	if (file[0] == '/')
+	if(file[0] == '/')
 		file = file.substring(1);
 
-	if (file[0] == '.')
+	if(file[0] == '.')
 		response.forbidden();
-	else
-	{
+	else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
 	}
 }
 
-void onAjaxInput(HttpRequest &request, HttpResponse &response)
+void onAjaxInput(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject& json = stream->getRoot();
@@ -48,24 +47,22 @@ void onAjaxInput(HttpRequest &request, HttpResponse &response)
 
 	json[stringKey] = stringValue;
 
-    for( int i = 0; i < 11; i++)
-    {
-        char buff[3];
-        itoa(i, buff, 10);
-        String desiredString = "sensor_";
-        desiredString += buff;
-        json[desiredString] = desiredString;
-    }
-
+	for(int i = 0; i < 11; i++) {
+		char buff[3];
+		itoa(i, buff, 10);
+		String desiredString = "sensor_";
+		desiredString += buff;
+		json[desiredString] = desiredString;
+	}
 
 	JsonObject& gpio = json.createNestedObject("gpio");
-	for (int i = 0; i < countInputs; i++)
+	for(int i = 0; i < countInputs; i++)
 		gpio[namesInput[i].c_str()] = digitalRead(inputs[i]);
 
 	response.sendDataStream(stream, MIME_JSON);
 }
 
-void onAjaxFrequency(HttpRequest &request, HttpResponse &response)
+void onAjaxFrequency(HttpRequest& request, HttpResponse& response)
 {
 	int freq = request.getQueryParameter("value").toInt();
 	System.setCpuFrequency((CpuFrequency)freq);
@@ -93,8 +90,9 @@ void startWebServer()
 
 void startFTP()
 {
-	if (!fileExist("index.html"))
-		fileSetContent("index.html", "<h3>Please connect to FTP and upload files from folder 'web/build' (details in code)</h3>");
+	if(!fileExist("index.html"))
+		fileSetContent("index.html",
+					   "<h3>Please connect to FTP and upload files from folder 'web/build' (details in code)</h3>");
 
 	// Start FTP server
 	ftp.listen(21);
@@ -118,8 +116,7 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiAccessPoint.enable(false);
 
-	for (int i = 0; i < countInputs; i++)
-	{
+	for(int i = 0; i < countInputs; i++) {
 		namesInput.add(String(inputs[i]));
 		pinMode(inputs[i], INPUT);
 	}

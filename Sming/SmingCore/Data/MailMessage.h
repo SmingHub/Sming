@@ -30,8 +30,8 @@ class SmtpClient;
 class MailMessage
 {
 	friend class SmtpClient;
-public:
 
+public:
 	String to;
 	String from;
 	String subject;
@@ -58,17 +58,17 @@ public:
 	/**
 	 * @brief Adds attachment to the email
 	 */
-	MailMessage&  addAttachment(FileStream* stream);
+	MailMessage& addAttachment(FileStream* stream);
 
 	/**
 	 * @brief Adds attachment to the email
 	 */
-	MailMessage&  addAttachment(ReadWriteStream* stream, MimeType mime, const String& filename = "");
+	MailMessage& addAttachment(ReadWriteStream* stream, MimeType mime, const String& filename = "");
 
 	/**
 	 * @brief Adds attachment to the email
 	 */
-	MailMessage&  addAttachment(ReadWriteStream* stream, const String& mime, const String& filename = "");
+	MailMessage& addAttachment(ReadWriteStream* stream, const String& mime, const String& filename = "");
 
 	/**
 	 * @brief Get the generated data stream

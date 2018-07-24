@@ -5,8 +5,8 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 void onNtpReceive(NtpClient& client, time_t timestamp);
@@ -37,27 +37,27 @@ Timer printTimer;
 // only create pointer and initialize on ConnectOK
 // NtpClient *ntpClient;
 
-
 // Callback example using defined class ntpClientDemo
-ntpClientDemo *demo;
+ntpClientDemo* demo;
 
-// CallBack example 1 
+// CallBack example 1
 // ntpClientDemo dm1 = ntpClientDemo();
-// or use 
+// or use
 // ntpClientDemo dm1;
 
-void onPrintSystemTime() {
+void onPrintSystemTime()
+{
 	Serial.print("Local Time    : ");
 	Serial.println(SystemClock.getSystemTimeString());
 	Serial.print("UTC Time: ");
 	Serial.println(SystemClock.getSystemTimeString(eTZ_UTC));
 }
 
-
 // Called when time has been received by NtpClient (option 1 or 2)
 // Either after manual requestTime() or when
 // and automatic request has been made.
-void onNtpReceive(NtpClient& client, time_t timestamp) {
+void onNtpReceive(NtpClient& client, time_t timestamp)
+{
 	SystemClock.setTime(timestamp);
 
 	Serial.print("Time synchronized: ");
@@ -72,25 +72,24 @@ void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
-// Set specific parameters if started by option 1 or 2
+	// Set specific parameters if started by option 1 or 2
 	// Set client to do automatic time requests every 60 seconds.
 	// NOTE: you should have longer interval in a real world application
 	// no need for query for time every 60 sec, should be at least 10 minutes or so.
-//	ntpClient.setAutoQueryInterval(60);
-//	ntpClient.setAutoQuery(true);
-//  ntpClient.setAutoUpdateSystemClock(true);
-	// Request to update time now. 
+	//	ntpClient.setAutoQueryInterval(60);
+	//	ntpClient.setAutoQuery(true);
+	//  ntpClient.setAutoUpdateSystemClock(true);
+	// Request to update time now.
 	// Otherwise the set interval will pass before time
 	// is updated.
-//	ntpClient.requestTime();
+	//	ntpClient.requestTime();
 
-//  When using option 4 -> create client after connect OK
-//  ntpClient = new NtpClient("my_ntp_server", myrefreshinterval);
+	//  When using option 4 -> create client after connect OK
+	//  ntpClient = new NtpClient("my_ntp_server", myrefreshinterval);
 
-//	When using Delegate Callback Option 2
+	//	When using Delegate Callback Option 2
 	demo = new ntpClientDemo();
 }
-
 
 // Will be called when WiFi hardware and software initialization was finished
 // And system initialization was completed
@@ -109,7 +108,7 @@ void init()
 	SystemClock.setTimeZone(2);
 
 	printTimer.initializeMs(1000, onPrintSystemTime).start();
-	
+
 	WifiEvents.onStationDisconnect(connectFail);
 	WifiEvents.onStationGotIP(gotIP);
 }

@@ -5,8 +5,8 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 HttpServer server;
@@ -14,24 +14,23 @@ int totalActiveSockets = 0;
 
 CUserData userGeorge("George", "I like SMING");
 
-void onIndex(HttpRequest &request, HttpResponse &response)
+void onIndex(HttpRequest& request, HttpResponse& response)
 {
-	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
-	auto &vars = tmpl->variables();
+	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
+	auto& vars = tmpl->variables();
 	//vars["counter"] = String(counter);
 	response.sendTemplate(tmpl); // this template object will be deleted automatically
 }
 
-void onFile(HttpRequest &request, HttpResponse &response)
+void onFile(HttpRequest& request, HttpResponse& response)
 {
 	String file = request.getPath();
-	if (file[0] == '/')
+	if(file[0] == '/')
 		file = file.substring(1);
 
-	if (file[0] == '.')
+	if(file[0] == '.')
 		response.forbidden();
-	else
-	{
+	else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
 	}
@@ -64,11 +63,10 @@ void wsMessageReceived(WebSocketConnection& socket, const String& message)
 	socket.sendString(response);
 
 	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
-    CUserData *user = (CUserData*) socket.getUserData();
-    if(user)
-    {
-    	user->printMessage(socket, message);
-    }
+	CUserData* user = (CUserData*)socket.getUserData();
+	if(user) {
+		user->printMessage(socket, message);
+	}
 }
 
 void wsBinaryReceived(WebSocketConnection& socket, uint8_t* data, size_t size)
@@ -81,15 +79,14 @@ void wsDisconnected(WebSocketConnection& socket)
 	totalActiveSockets--;
 
 	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
-    CUserData *user = (CUserData*) socket.getUserData();
-    if(user)
-    {
-    	user->removeSession(socket);
-    }
+	CUserData* user = (CUserData*)socket.getUserData();
+	if(user) {
+		user->removeSession(socket);
+	}
 
 	// Notify everybody about lost connection
-    String message = "We lost our friend :( Total: " + String(totalActiveSockets);
-    socket.broadcast(message.c_str(), message.length());
+	String message = "We lost our friend :( Total: " + String(totalActiveSockets);
+	socket.broadcast(message.c_str(), message.length());
 }
 
 void startWebServer()
@@ -99,7 +96,7 @@ void startWebServer()
 	server.setDefaultHandler(onFile);
 
 	// Web Sockets configuration
-	WebsocketResource* wsResource=new WebsocketResource();
+	WebsocketResource* wsResource = new WebsocketResource();
 	wsResource->setConnectionHandler(wsConnected);
 	wsResource->setMessageHandler(wsMessageReceived);
 	wsResource->setBinaryHandler(wsBinaryReceived);

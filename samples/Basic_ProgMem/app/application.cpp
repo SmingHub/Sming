@@ -2,8 +2,8 @@
 // PROGMEM keyword tells the compiler "put this information into flash memory",
 // instead of into RAM, where it would normally go.
 //
-// Using PROGMEM is a two-step procedure. After getting the data into Flash 
-// memory, it requires special methods (functions) to read the data from 
+// Using PROGMEM is a two-step procedure. After getting the data into Flash
+// memory, it requires special methods (functions) to read the data from
 // program memory back into RAM, so we can do something useful with it.
 //
 
@@ -25,49 +25,58 @@ const PROGMEM float floats[] = {13, 130, 1300, 13000, 130000, 1300000, 13000000,
 
 void assertEquals8(uint8_t expected, uint8_t actual)
 {
-	if (expected != actual)
-	{
-		Serial.print("assertEquals8: "); Serial.print(expected); Serial.print(" != "); Serial.println(actual);
+	if(expected != actual) {
+		Serial.print("assertEquals8: ");
+		Serial.print(expected);
+		Serial.print(" != ");
+		Serial.println(actual);
 	}
 }
 
 void assertEquals16(uint16_t expected, uint16_t actual)
 {
-	if (expected != actual)
-	{
-		Serial.print("assertEquals16: "); Serial.print(expected); Serial.print(" != "); Serial.println(actual);
+	if(expected != actual) {
+		Serial.print("assertEquals16: ");
+		Serial.print(expected);
+		Serial.print(" != ");
+		Serial.println(actual);
 	}
 }
 
 void assertEquals32(uint32_t expected, uint32_t actual)
 {
-	if (expected != actual)
-	{
-		Serial.print("assertEquals32: "); Serial.print(expected); Serial.print(" != "); Serial.println(actual);
+	if(expected != actual) {
+		Serial.print("assertEquals32: ");
+		Serial.print(expected);
+		Serial.print(" != ");
+		Serial.println(actual);
 	}
 }
 
 void assertEqualsFloat(float expected, float actual)
 {
-	if (expected != actual)
-	{
-		Serial.print("assertEqualsFloat: "); Serial.print(expected); Serial.print(" != "); Serial.println(actual);
+	if(expected != actual) {
+		Serial.print("assertEqualsFloat: ");
+		Serial.print(expected);
+		Serial.print(" != ");
+		Serial.println(actual);
 	}
 }
 
 void assertEqualsString(String expected, String actual)
 {
-	if (expected != actual)
-	{
-		Serial.print("assertEqualsString: "); Serial.print(expected); Serial.print(" != "); Serial.println(actual);
+	if(expected != actual) {
+		Serial.print("assertEqualsString: ");
+		Serial.print(expected);
+		Serial.print(" != ");
+		Serial.println(actual);
 	}
 }
 
 void testPgm()
 {
 	Serial.println("> Read bytes from PROGMEM:");
-	for (uint8_t i = 0, b = 1; i < 8; i++, b++)
-	{
+	for(uint8_t i = 0, b = 1; i < 8; i++, b++) {
 		uint8_t d = pgm_read_byte(bytes + i);
 		assertEquals8(b, d);
 		Serial.print(d);
@@ -75,18 +84,15 @@ void testPgm()
 	}
 	Serial.println("");
 
-	for (uint16_t i = 0, w = 11; i < 8; i++, w += 10)
-	{
+	for(uint16_t i = 0, w = 11; i < 8; i++, w += 10) {
 		assertEquals16(w, pgm_read_word(words + i));
 	}
 
-	for (uint32_t i = 0, dw = 12; i < 8; i++, dw *= 10)
-	{
+	for(uint32_t i = 0, dw = 12; i < 8; i++, dw *= 10) {
 		assertEquals32(dw, pgm_read_dword(dwords + i));
 	}
 
-	for (uint32_t i = 0, f = 13; i < 8; i++, f *= 10)
-	{
+	for(uint32_t i = 0, f = 13; i < 8; i++, f *= 10) {
 		assertEqualsFloat((float)f, pgm_read_float(floats + i));
 	}
 
@@ -111,8 +117,7 @@ void testPgm()
 
 	Serial.println("> Copy bytes from PROGMEM:");
 	memcpy_P(buf, demoPgm, sizeof(demoPgm));
-	for (uint8_t i = 0; i < sizeof(demoPgm); i++)
-	{
+	for(uint8_t i = 0; i < sizeof(demoPgm); i++) {
 		assertEquals8(demoRam[i], buf[i]);
 		Serial.print((unsigned char)buf[i]);
 		Serial.print(" ");

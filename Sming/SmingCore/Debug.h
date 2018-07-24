@@ -19,18 +19,16 @@ typedef Delegate<void(char dbgChar)> DebugPrintCharDelegate; ///<Handler functio
 /** @brief  Structure for debug options
  *  @ingroup structures
  */
-typedef struct
-{
+typedef struct {
 	DebugPrintCharDelegate debugDelegate = nullptr; ///< Function to handle debug output
-	Stream *debugStream = nullptr; ///< Debug output stream
+	Stream* debugStream = nullptr;					///< Debug output stream
 } DebugOuputOptions;
 
 /** @brief  Debug prefix state
  *  @ingroup constants
  */
-typedef enum
-{
-	eDBGnoPrefix  = 0, ///< Do not use debug prefix
+typedef enum {
+	eDBGnoPrefix = 0, ///< Do not use debug prefix
 	eDBGusePrefix = 1 ///< Use debug prefix
 } eDBGPrefix;
 
@@ -47,40 +45,40 @@ typedef enum
 class DebugClass : public Print
 {
 public:
-    /** @brief  Instantiate a debug object
+	/** @brief  Instantiate a debug object
      *  @note   Default output is Serial stream
      */
 	DebugClass();
 	virtual ~DebugClass();
 
-    /** @brief  Enable control of debug output from CLI command handler output
+	/** @brief  Enable control of debug output from CLI command handler output
      */
-    void initCommand();
+	void initCommand();
 
-    /** @brief  Start debug output
+	/** @brief  Start debug output
      */
 	void start();
 
-    /** @brief  Stop debug output
+	/** @brief  Stop debug output
      */
 	void stop();
 
-    /** @brief  Get debug status
+	/** @brief  Get debug status
      *  @retval bool True if debug enabled
      */
 	bool status();
 
-    /** @brief  Configure debug to use delegate handler for its output
+	/** @brief  Configure debug to use delegate handler for its output
      *  @param  reqDelegate Function to handle debug output
      *  @note   Disables stream output
      */
 	void setDebug(DebugPrintCharDelegate reqDelegate);
 
-    /** @brief  Configures debug to use stream for its output
+	/** @brief  Configures debug to use stream for its output
      *  @param  reqStream Stream for debug output
      *  @note   Disables delegate handler
      */
-	void setDebug(Stream &reqStream);
+	void setDebug(Stream& reqStream);
 
 private:
 	bool started = false;
@@ -90,7 +88,7 @@ private:
 	void printPrefix();
 	void processDebugCommands(String commandLine, CommandOutput* commandOutput);
 
-	size_t write(uint8_t);  /* implementation of write for Print Class */
+	size_t write(uint8_t); /* implementation of write for Print Class */
 };
 
 /**	@brief	Global instance of Debug object

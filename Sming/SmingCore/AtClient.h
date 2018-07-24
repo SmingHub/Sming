@@ -25,41 +25,45 @@
 
 class AtClient;
 
-typedef Delegate<bool(AtClient& atClient, Stream& source)> AtReceiveCallback; // << If the callback returns true then this means that we have
-																			  //     finished successfully processing the command
-typedef Delegate<bool(AtClient& atClient, String& reply)> AtCompleteCallback; // << If the callback returns true then this means that we have
-																			  //     finished successfully processing the command
+typedef Delegate<bool(AtClient& atClient, Stream& source)> AtReceiveCallback;
+// ^ If the callback returns true then this means that we have
+//     finished successfully processing the command
+typedef Delegate<bool(AtClient& atClient, String& reply)> AtCompleteCallback;
+// ^ If the callback returns true then this means that we have
+//     finished successfully processing the command
 
 typedef struct {
-	String text; // << the actual AT command
-	String response2; // << alternative successful response
-	int timeout; // << timeout in milliseconds
-	int retries; // << number of retries before giving up
-	bool breakOnError = true; // << stop executing next command if that one has failed
-	AtReceiveCallback onReceive   = 0; // << if set you can process manually all incoming data in a callback
+	String text;					   // << the actual AT command
+	String response2;				   // << alternative successful response
+	int timeout;					   // << timeout in milliseconds
+	int retries;					   // << number of retries before giving up
+	bool breakOnError = true;		   // << stop executing next command if that one has failed
+	AtReceiveCallback onReceive = 0;   // << if set you can process manually all incoming data in a callback
 	AtCompleteCallback onComplete = 0; // if set then you can process the complete response manually
 } AtCommand;
 
-typedef enum {
-	eAtOK = 0,
-	eAtRunning,
-	eAtError
-} AtState;
+typedef enum { eAtOK = 0, eAtRunning, eAtError } AtState;
 
-template<typename T, int rawSize>
-class SimpleQueue: public FIFO<T, rawSize> {
-	virtual const T& operator[](unsigned int) const { }
-	virtual T& operator[](unsigned int) { }
+template <typename T, int rawSize> class SimpleQueue : public FIFO<T, rawSize>
+{
+	virtual const T& operator[](unsigned int) const
+	{
+	}
+	virtual T& operator[](unsigned int)
+	{
+	}
 };
 
 /**
  * @brief Class that facilitates the communication with an AT device.
  */
-class AtClient {
-
+class AtClient
+{
 public:
 	AtClient(HardwareSerial* stream);
-	virtual ~AtClient() {}
+	virtual ~AtClient()
+	{
+	}
 
 	/**
 	 * @brief Sends AT command
@@ -68,7 +72,7 @@ public:
 	 * @param timeoutMs uint32_t Time in milliseconds to wait for response
 	 * @param retries int Retries on error
 	 */
-	void send(const String& text, const String& altResponse = "",  uint32_t timeoutMs = AT_TIMEOUT, int retries = 0);
+	void send(const String& text, const String& altResponse = "", uint32_t timeoutMs = AT_TIMEOUT, int retries = 0);
 
 	/**
 	 * @brief Sends AT command
@@ -108,7 +112,8 @@ public:
 	 * @brief Returns the current state
 	 * @return AtState
 	 */
-	AtState getState() {
+	AtState getState()
+	{
 		return state;
 	}
 
@@ -129,12 +134,12 @@ protected:
 	/**
 	 * @brief Processes response data.
 	*/
-	virtual void processor(Stream &source, char arrivedChar, uint16_t availableCharsCount);
+	virtual void processor(Stream& source, char arrivedChar, uint16_t availableCharsCount);
 
 private:
 	SimpleQueue<AtCommand, 10> queue; // << Queue for the commands to be executed
-	HardwareSerial* stream; // << The main communication stream
-	Timer commandTimer; // timer used for commands with timeout
+	HardwareSerial* stream;			  // << The main communication stream
+	Timer commandTimer;				  // timer used for commands with timeout
 	AtState state = eAtOK;
 
 	/**
