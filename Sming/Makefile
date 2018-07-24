@@ -561,7 +561,6 @@ CS_FILES=$(shell find SmingCore/ -name '*.cpp' -o  -name '*.h' -o -name '*.c') \
 
 cs:
 	$(Q) for FILE in $(CS_FILES); do \
-		if [ $TIDY eq 1 ]; then clang-tidy fix -fix-errors -checks="readability-braces-around-statements" $$FILE -- $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS); fi \
 		clang-format -i -style=file $$FILE; \
 	done
 
