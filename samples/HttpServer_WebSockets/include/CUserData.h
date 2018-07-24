@@ -12,7 +12,7 @@ public:
 	~CUserData();
 	void addSession(WebsocketConnection& connection);
 	void removeSession(WebsocketConnection& connection);
-	void printMessage(WebsocketConnection& connection,const String &msg);
+	void printMessage(WebsocketConnection& connection, const String& msg);
 	void logOut();
 
 private:

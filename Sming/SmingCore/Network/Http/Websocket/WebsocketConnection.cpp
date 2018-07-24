@@ -11,7 +11,7 @@
 #include "../../Services/WebHelpers/base64.h"
 
 WebSocketsList WebsocketConnection::websocketList;
-const char *WebsocketConnection::secret = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+const char* WebsocketConnection::secret = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 WebsocketConnection::~WebsocketConnection()
 {
@@ -24,7 +24,7 @@ bool WebsocketConnection::bind(HttpServerConnection& connection, HttpRequest& re
 {
 	String version = request.getHeader("Sec-WebSocket-Version");
 	version.trim();
-	if (version.toInt() != 13) // 1.3
+	if(version.toInt() != 13) // 1.3
 		return false;
 
 	state = eWSCS_Open;
@@ -44,7 +44,7 @@ bool WebsocketConnection::bind(HttpServerConnection& connection, HttpRequest& re
 	stream = new EndlessMemoryStream();
 	response.sendDataStream(stream);
 
-	connection.userData = (void *)this;
+	connection.userData = (void*)this;
 
 	serverConnection = &connection;
 
@@ -72,10 +72,10 @@ bool WebsocketConnection::bind(HttpServerConnection& connection, HttpRequest& re
 	return true;
 }
 
-int WebsocketConnection::processFrame(HttpServerConnection& connection, HttpRequest& request, char *at, int size)
+int WebsocketConnection::processFrame(HttpServerConnection& connection, HttpRequest& request, char* at, int size)
 {
-	int rc = ws_parser_execute(&parser, (char *)at, size);
-	if (rc != WS_OK) {
+	int rc = ws_parser_execute(&parser, (char*)at, size);
+	if(rc != WS_OK) {
 		debug_e("WebSocketResource error: %d %s\n", rc, ws_parser_error(rc));
 		return -1;
 	}
@@ -83,32 +83,31 @@ int WebsocketConnection::processFrame(HttpServerConnection& connection, HttpRequ
 	return 0;
 }
 
-int WebsocketConnection::staticOnDataBegin(void* userData, ws_frame_type_t type) {
-	WebsocketConnection *connection = static_cast<WebsocketConnection *>(userData);
-	if (connection == NULL) {
+int WebsocketConnection::staticOnDataBegin(void* userData, ws_frame_type_t type)
+{
+	WebsocketConnection* connection = static_cast<WebsocketConnection*>(userData);
+	if(connection == NULL) {
 		return -1;
 	}
 
 	connection->frameType = type;
 
-	debug_d("data_begin: %s\n",
-			type == WS_FRAME_TEXT ? "text" :
-			type == WS_FRAME_BINARY ? "binary" :
-			"?");
+	debug_d("data_begin: %s\n", type == WS_FRAME_TEXT ? "text" : type == WS_FRAME_BINARY ? "binary" : "?");
 
 	return WS_OK;
 }
 
-int WebsocketConnection::staticOnDataPayload(void* userData, const char *at, size_t length) {
-	WebsocketConnection *connection = static_cast<WebsocketConnection *>(userData);
-	if (connection == NULL) {
+int WebsocketConnection::staticOnDataPayload(void* userData, const char* at, size_t length)
+{
+	WebsocketConnection* connection = static_cast<WebsocketConnection*>(userData);
+	if(connection == NULL) {
 		return -1;
 	}
 
-	if (connection->frameType == WS_FRAME_TEXT && connection->wsMessage) {
+	if(connection->frameType == WS_FRAME_TEXT && connection->wsMessage) {
 		connection->wsMessage(*connection, String(at, length));
-	} else if (connection->frameType == WS_FRAME_BINARY && connection->wsBinary) {
-		connection->wsBinary(*connection, (uint8_t *) at, length);
+	} else if(connection->frameType == WS_FRAME_BINARY && connection->wsBinary) {
+		connection->wsBinary(*connection, (uint8_t*)at, length);
 	}
 
 	return WS_OK;
@@ -121,8 +120,8 @@ int WebsocketConnection::staticOnDataEnd(void* userData)
 
 int WebsocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t type)
 {
-	WebsocketConnection *connection = static_cast<WebsocketConnection *>(userData);
-	if (connection == NULL) {
+	WebsocketConnection* connection = static_cast<WebsocketConnection*>(userData);
+	if(connection == NULL) {
 		return -1;
 	}
 
@@ -130,21 +129,21 @@ int WebsocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t ty
 	connection->controlFrame.payload = NULL;
 	connection->controlFrame.payloadLegth = 0;
 
-	if (type == WS_FRAME_CLOSE) {
+	if(type == WS_FRAME_CLOSE) {
 		connection->close();
 	}
 
 	return WS_OK;
 }
 
-int WebsocketConnection::staticOnControlPayload(void* userData, const char *data, size_t length)
+int WebsocketConnection::staticOnControlPayload(void* userData, const char* data, size_t length)
 {
-	WebsocketConnection *connection = static_cast<WebsocketConnection *>(userData);
-	if (connection == NULL) {
+	WebsocketConnection* connection = static_cast<WebsocketConnection*>(userData);
+	if(connection == NULL) {
 		return -1;
 	}
 
-	connection->controlFrame.payload = (char *)data;
+	connection->controlFrame.payload = (char*)data;
 	connection->controlFrame.payloadLegth = length;
 
 	return WS_OK;
@@ -152,14 +151,13 @@ int WebsocketConnection::staticOnControlPayload(void* userData, const char *data
 
 int WebsocketConnection::staticOnControlEnd(void* userData)
 {
-	WebsocketConnection *connection = static_cast<WebsocketConnection *>(userData);
-	if (connection == NULL) {
+	WebsocketConnection* connection = static_cast<WebsocketConnection*>(userData);
+	if(connection == NULL) {
 		return -1;
 	}
 
 	if(connection->controlFrame.type == WS_FRAME_PING) {
-		connection->send((const char* )connection->controlFrame.payload,
-					     connection->controlFrame.payloadLegth,
+		connection->send((const char*)connection->controlFrame.payload, connection->controlFrame.payloadLegth,
 						 WS_FRAME_PONG);
 	}
 
@@ -187,32 +185,30 @@ void WebsocketConnection::send(const char* message, int length, ws_frame_type_t 
 	char buffer[bufferLength];
 	int outLength = encodeFrame(type, message, length, buffer, bufferLength, isClientConnection);
 	if(outLength) {
-		stream->write((uint8_t *)buffer, outLength);
+		stream->write((uint8_t*)buffer, outLength);
 	}
 }
 
 void WebsocketConnection::broadcast(const char* message, int length, ws_frame_type_t type /* = WS_FRAME_TEXT */)
 {
-	for (int i = 0; i < websocketList.count(); i++) {
+	for(int i = 0; i < websocketList.count(); i++) {
 		websocketList[i]->send(message, length, type);
 	}
 }
 
-int WebsocketConnection::encodeFrame(ws_frame_type_t type,
-				const char *inData, size_t inLength,
-				char *outData, size_t outLength,
-				bool useMask /* =true */, bool isFin /*=true */)
+int WebsocketConnection::encodeFrame(ws_frame_type_t type, const char* inData, size_t inLength, char* outData,
+									 size_t outLength, bool useMask /* =true */, bool isFin /*=true */)
 {
-	if (inLength > 0xFFFF) {
+	if(inLength > 0xFFFF) {
 		return 0; // we don't support big payloads yet
 	}
 
 	int headerLength = 2;
-	uint8_t maskKey[4] = { 0x00, 0x00, 0x00, 0x00 };
+	uint8_t maskKey[4] = {0x00, 0x00, 0x00, 0x00};
 	if(inLength > 125) {
 		headerLength = 4;
 	}
-	if (useMask) {
+	if(useMask) {
 		headerLength += 4; // if present, mask is 4 bytes in header before payload
 	}
 
@@ -225,36 +221,34 @@ int WebsocketConnection::encodeFrame(ws_frame_type_t type,
 
 	int i = 0;
 	// byte 0
-	if (isFin) {
-		outData[i] |= bit(7);    // set Fin
+	if(isFin) {
+		outData[i] |= bit(7); // set Fin
 	}
-	outData[i++] |= (uint8_t)type;        // set opcode
+	outData[i++] |= (uint8_t)type; // set opcode
 
 	// byte 1
-	if (useMask) {
-		outData[i] |= bit(7);    // set mask
+	if(useMask) {
+		outData[i] |= bit(7); // set mask
 	}
 
-	if (inLength < 126) {
+	if(inLength < 126) {
 		outData[i++] |= inLength;
-	}
-	else {
+	} else {
 		outData[i++] |= 126;
 		outData[i++] = ((inLength >> 8) & 0xFF);
 		outData[i++] = (inLength & 0xFF);
 	}
 
-	if (useMask) {
-		for (uint8_t x = 0; x < sizeof(maskKey); x++) {
-			maskKey[x] = (char) os_random();
+	if(useMask) {
+		for(uint8_t x = 0; x < sizeof(maskKey); x++) {
+			maskKey[x] = (char)os_random();
 			outData[i++] = maskKey[x];
 		}
 
-		for (size_t x = 0; x < inLength; x++) {
+		for(size_t x = 0; x < inLength; x++) {
 			outData[i++] = (inData[x] ^ maskKey[x % 4]);
 		}
-	}
-	else {
+	} else {
 		memcpy(&outData[i], inData, inLength);
 		i += inLength;
 	}
@@ -262,7 +256,7 @@ int WebsocketConnection::encodeFrame(ws_frame_type_t type,
 	return i;
 }
 
-bool  WebsocketConnection::operator==(const WebsocketConnection &rhs) const
+bool WebsocketConnection::operator==(const WebsocketConnection& rhs) const
 {
 	return (this == &rhs);
 }
@@ -277,7 +271,7 @@ void WebsocketConnection::close()
 	websocketList.removeElement(this);
 	if(state != eWSCS_Closed) {
 		state = eWSCS_Closed;
-		send((const char* )NULL, 0, WS_FRAME_CLOSE);
+		send((const char*)NULL, 0, WS_FRAME_CLOSE);
 		stream = NULL;
 		if(wsDisconnect) {
 			wsDisconnect(*this);

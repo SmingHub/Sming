@@ -27,7 +27,7 @@ void CUserData::removeSession(WebsocketConnection& connection)
 	}
 }
 
-void CUserData::printMessage(WebsocketConnection& connection,const String &msg)
+void CUserData::printMessage(WebsocketConnection& connection, const String& msg)
 {
 	int i = 0;
 	for(; i < activeWebSockets.count(); i++) {

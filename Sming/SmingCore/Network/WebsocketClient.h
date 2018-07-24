@@ -16,7 +16,7 @@
 //TODO: Add stream support for sending big chunks of data via websockets.
 
 #ifndef _SMING_CORE_WEBSOCKETCLIENT_H
-#define	_SMING_CORE_WEBSOCKETCLIENT_H
+#define _SMING_CORE_WEBSOCKETCLIENT_H
 
 #include "Http/HttpConnection.h"
 #include "Http/Websocket/WebsocketConnection.h"
@@ -29,17 +29,16 @@
 
 /** @brief  Websocket Client
  */
-class WebsocketClient: protected WebsocketConnection,
-					   protected HttpConnection
+class WebsocketClient : protected WebsocketConnection, protected HttpConnection
 {
 public:
-	WebsocketClient(bool autoDestruct = false): HttpConnection(new RequestQueue()) {};
-	virtual ~WebsocketClient() {};
+	WebsocketClient(bool autoDestruct = false) : HttpConnection(new RequestQueue()){};
+	virtual ~WebsocketClient(){};
 
-	using WebsocketConnection::setConnectionHandler;
-	using WebsocketConnection::setMessageHandler;
 	using WebsocketConnection::setBinaryHandler;
+	using WebsocketConnection::setConnectionHandler;
 	using WebsocketConnection::setDisconnectionHandler;
+	using WebsocketConnection::setMessageHandler;
 
 	/**  @brief  Connects websocket client to server
 	  *  @param  url URL address of websocket server
@@ -47,9 +46,9 @@ public:
 	  */
 	bool connect(String url, uint32_t sslOptions = 0);
 
+	using WebsocketConnection::send;
 	using WebsocketConnection::sendBinary;
 	using WebsocketConnection::sendString;
-	using WebsocketConnection::send;
 
 	/** @brief  Send websocket ping to server
 	 *
@@ -86,11 +85,11 @@ public:
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
 	using TcpClient::addSslValidator;
-	using TcpClient::pinCertificate;
-	using TcpClient::setSslClientKeyCert;
 	using TcpClient::freeSslClientKeyCert;
 	using TcpClient::getSsl;
 	using TcpClient::pinCertificate;
+	using TcpClient::pinCertificate;
+	using TcpClient::setSslClientKeyCert;
 	using TcpClient::setSslKeyCert;
 #endif
 
@@ -98,7 +97,7 @@ protected:
 	int verifyKey(HttpConnection& connection, HttpResponse& response);
 
 	virtual void onFinished(TcpClientState finishState);
-	virtual err_t onReceive(pbuf *buf);
+	virtual err_t onReceive(pbuf* buf);
 	virtual err_t onProtocolUpgrade(http_parser* parser);
 
 private:
@@ -111,5 +110,4 @@ private:
 };
 
 /** @} */
-#endif	/* _SMING_CORE_WEBSOCKETCLIENT_H */
-
+#endif /* _SMING_CORE_WEBSOCKETCLIENT_H */

@@ -25,7 +25,7 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 		useSsl = true;
 	}
 
-	HttpConnection::connect(uri.Host,uri.Port, useSsl, sslOptions);
+	HttpConnection::connect(uri.Host, uri.Port, useSsl, sslOptions);
 	state = WS_STATE_OPENING;
 
 	// Generate the key
@@ -33,11 +33,11 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	char b64Key[25];
 	memset(b64Key, 0, sizeof(b64Key));
 
-	for (int i = 0; i < 16; ++i) {
-		keyStart[i] = 1 + os_random()%255;
+	for(int i = 0; i < 16; ++i) {
+		keyStart[i] = 1 + os_random() % 255;
 	}
 
-	base64_encode(16, (const unsigned char*) keyStart, 24, (char*) b64Key);
+	base64_encode(16, (const unsigned char*)keyStart, 24, (char*)b64Key);
 	key.setString(b64Key, 24);
 
 	HttpRequest* request = new HttpRequest(uri);
@@ -49,14 +49,14 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	request->onHeadersComplete(RequestHeadersCompletedDelegate(&WebsocketClient::verifyKey, this));
 
 	// TODO: delete the debug code below
-//	request->headers["Host"] = "demos.kaazing.com";
+	//	request->headers["Host"] = "demos.kaazing.com";
 	request->headers["Host"] = "echo.websocket.org";
 
 	if(!HttpConnection::send(request)) {
 		return false;
 	}
 
-	WebsocketConnection::userData = (void *)this;
+	WebsocketConnection::userData = (void*)this;
 
 	delete WebsocketConnection::stream;
 	WebsocketConnection::stream = new EndlessMemoryStream();
@@ -71,7 +71,7 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 		return -2; // we don't have response.
 	}
 
-	const char *serverHashedKey = response.headers["Sec-WebSocket-Accept"].c_str();
+	const char* serverHashedKey = response.headers["Sec-WebSocket-Accept"].c_str();
 	unsigned char hashedKey[20];
 	char base64HashedKey[20 * 4];
 	String keyToHash = key + secret;
@@ -89,12 +89,12 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 	state = WS_STATE_NORMAL;
 
 	memset(&parserSettings, 0, sizeof(ws_parser_callbacks_t));
-	parserSettings.on_data_begin 	  = WebsocketConnection::staticOnDataBegin;
-	parserSettings.on_data_payload    = WebsocketConnection::staticOnDataPayload;
-	parserSettings.on_data_end        = WebsocketConnection::staticOnDataEnd;
-	parserSettings.on_control_begin   = WebsocketConnection::staticOnControlBegin;
+	parserSettings.on_data_begin = WebsocketConnection::staticOnDataBegin;
+	parserSettings.on_data_payload = WebsocketConnection::staticOnDataPayload;
+	parserSettings.on_data_end = WebsocketConnection::staticOnDataEnd;
+	parserSettings.on_control_begin = WebsocketConnection::staticOnControlBegin;
 	parserSettings.on_control_payload = WebsocketConnection::staticOnControlPayload;
-	parserSettings.on_control_end     = WebsocketConnection::staticOnControlEnd;
+	parserSettings.on_control_end = WebsocketConnection::staticOnControlEnd;
 
 	ws_parser_init(&parser, &parserSettings);
 	parser.user_data = (void*)this;
@@ -105,11 +105,11 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 void WebsocketClient::onFinished(TcpClientState finishState)
 {
 	state = WS_STATE_CLOSING;
-	if (finishState == eTCS_Failed) {
+	if(finishState == eTCS_Failed) {
 		debug_e("Tcp Client failure...");
 	}
 
-	if (wsDisconnect) {
+	if(wsDisconnect) {
 		wsDisconnect(*this);
 	}
 
@@ -131,7 +131,7 @@ err_t WebsocketClient::onProtocolUpgrade(http_parser* parser)
 	delete HttpConnection::stream;
 	HttpConnection::stream = WebsocketConnection::stream;
 
-	if (wsConnect) {
+	if(wsConnect) {
 		wsConnect(*this);
 	}
 
@@ -142,13 +142,13 @@ err_t WebsocketClient::onProtocolUpgrade(http_parser* parser)
 
 err_t WebsocketClient::onReceive(pbuf* buf)
 {
-	if (buf == NULL || state == WS_STATE_OPENING) {
+	if(buf == NULL || state == WS_STATE_OPENING) {
 		return HttpConnection::onReceive(buf);
 	}
 
-	pbuf *cur = buf;
-	while (cur != nullptr && cur->len > 0) {
-		int err = ws_parser_execute(&parser, (char*) cur->payload, cur->len);
+	pbuf* cur = buf;
+	while(cur != nullptr && cur->len > 0) {
+		int err = ws_parser_execute(&parser, (char*)cur->payload, cur->len);
 		if(err) {
 			debug_e("WsClient: Got error: %s", ws_parser_error(err));
 			TcpClient::onReceive(nullptr);

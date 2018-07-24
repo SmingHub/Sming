@@ -241,7 +241,7 @@ void screen12()
 	startTime = millis();
 	bmpDraw(tft, "sming.bmp", 0, 0);
 	debugf("screen12: bmpDraw %d ms", millis() - startTime);
-//	DemoScreenTimer.initializeMs(2000, screen13).start(false);
+	//	DemoScreenTimer.initializeMs(2000, screen13).start(false);
 }
 
 void screen11()
@@ -368,5 +368,4 @@ void init()
 	debugf("Initialized in %d ms\n", startTime);
 
 	DemoScreenTimer.initializeMs(500, screen1).start(false);
-
 }

@@ -14,11 +14,7 @@ extern "C" {
 #include "../ws_parser/ws_parser.h"
 }
 
-enum wsState {
-    WS_STATE_OPENING,
-    WS_STATE_NORMAL,
-    WS_STATE_CLOSING
-};
+enum wsState { WS_STATE_OPENING, WS_STATE_NORMAL, WS_STATE_CLOSING };
 
 class WebsocketConnection;
 
@@ -39,7 +35,7 @@ typedef struct {
 class WebsocketConnection
 {
 public:
-	static const char *secret;
+	static const char* secret;
 
 public:
 	virtual ~WebsocketConnection();
@@ -47,7 +43,7 @@ public:
 	/**
 	 * @brief Binds websocket connection to an http server connection
 	 */
-	bool bind(HttpServerConnection& connection, HttpRequest &request, HttpResponse &response);
+	bool bind(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
 
 	virtual void send(const char* message, int length, ws_frame_type_t type = WS_FRAME_TEXT);
 	static void broadcast(const char* message, int length, ws_frame_type_t type = WS_FRAME_TEXT);
@@ -59,8 +55,8 @@ public:
 	void setUserData(void* userData);
 	void* getUserData();
 
-// @deprecated
-	bool operator==(const WebsocketConnection &rhs) const;
+	// @deprecated
+	bool operator==(const WebsocketConnection& rhs) const;
 
 	WebSocketsList& getActiveWebSockets();
 	// @end deprecated
@@ -80,10 +76,8 @@ protected:
 	static int staticOnControlPayload(void* userData, const char*, size_t length);
 	static int staticOnControlEnd(void* userData);
 
-	int encodeFrame(ws_frame_type_t type,
-					const char *inData, size_t inLength,
-					char *outData, size_t outLength,
-					bool useMask=true, bool isFin=true);
+	int encodeFrame(ws_frame_type_t type, const char* inData, size_t inLength, char* outData, size_t outLength,
+					bool useMask = true, bool isFin = true);
 
 protected:
 	WebsocketDelegate wsConnect = 0;
@@ -92,7 +86,7 @@ protected:
 	WebsocketDelegate wsDisconnect = 0;
 
 	EndlessMemoryStream* stream = NULL;
-	void *userData = nullptr;
+	void* userData = nullptr;
 
 private:
 	WsConnectionState state = eWSCS_Ready;

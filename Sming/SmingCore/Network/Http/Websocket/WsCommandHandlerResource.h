@@ -40,7 +40,6 @@ protected:
 		}
 	}
 
-
 	void onMessage(WebsocketConnection& connection, const String& message)
 	{
 		commandExecutor.executorReceive(message + "\r");
