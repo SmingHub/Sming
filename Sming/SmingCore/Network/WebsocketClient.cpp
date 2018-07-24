@@ -48,10 +48,6 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	request->headers["Sec-WebSocket-Version"] = "13";
 	request->onHeadersComplete(RequestHeadersCompletedDelegate(&WebsocketClient::verifyKey, this));
 
-	// TODO: delete the debug code below
-	//	request->headers["Host"] = "demos.kaazing.com";
-	request->headers["Host"] = "echo.websocket.org";
-
 	if(!HttpConnection::send(request)) {
 		return false;
 	}
