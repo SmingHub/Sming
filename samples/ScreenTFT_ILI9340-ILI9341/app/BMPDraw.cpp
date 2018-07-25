@@ -46,7 +46,6 @@ void bmpDraw(Adafruit_ILI9341 tft, String fileName, uint8_t x, uint8_t y)
 
 	int bmpWidth, bmpHeight;			// W+H in pixels
 	uint8_t bmpDepth;					// Bit depth (currently must be 24)
-	uint32_t bmpImageoffset;			// Start of image data in file
 	uint32_t rowSize;					// Not always = bmpWidth; may have padding
 	uint8_t sdbuffer[3 * BUFFPIXEL];	// pixel buffer (R+G+B per pixel)
 	uint8_t buffidx = sizeof(sdbuffer); // Current position in sdbuffer
@@ -75,7 +74,7 @@ void bmpDraw(Adafruit_ILI9341 tft, String fileName, uint8_t x, uint8_t y)
 	if(read16(handle) == 0x4D42) {				   // BMP signature
 		debugf("File size: %d\n", read32(handle)); // get File Size
 		(void)read32(handle);					   // Read & ignore creator bytes
-		bmpImageoffset = read32(handle);		   // Start of image data
+		uint32_t bmpImageoffset = read32(handle);  // Start of image data
 		debugf("Image Offset: %d\n", bmpImageoffset);
 		debugf("Header size: %d\n", read32(handle)); // Read DIB header
 		bmpWidth = read32(handle);
