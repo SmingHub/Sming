@@ -15,7 +15,6 @@
 #include "../Wiring/WiringFrameworkIncludes.h"
 
 #include "Delegate.h"
-#include "Boards.h"
 #include "Clock.h"
 #include "SystemClock.h"
 #include "Digital.h"
