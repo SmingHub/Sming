@@ -22,7 +22,6 @@
 #include "FileSystem.h"
 #include "HardwareSerial.h"
 #include "Interrupts.h"
-#include "DriverPWM.h"
 #include "HardwarePWM.h"
 #include "Timer.h"
 #include "Wire.h"
