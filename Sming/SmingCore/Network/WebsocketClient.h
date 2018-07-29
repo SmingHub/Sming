@@ -85,11 +85,9 @@ public:
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
 	using TcpClient::addSslValidator;
-	using TcpClient::freeSslClientKeyCert;
+	using TcpClient::freeSslKeyCert;
 	using TcpClient::getSsl;
 	using TcpClient::pinCertificate;
-	using TcpClient::pinCertificate;
-	using TcpClient::setSslClientKeyCert;
 	using TcpClient::setSslKeyCert;
 #endif
 
