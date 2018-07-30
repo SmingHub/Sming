@@ -25,6 +25,8 @@ WebsocketClient wsClient;
 Timer msgTimer;
 Timer restartTimer;
 
+#define RESTART_PERIOD 20
+
 int msg_cnt = 0;
 
 #ifdef ENABLE_SSL
@@ -74,8 +76,9 @@ void restart()
 
 void wsDisconnected(WebsocketConnection& wsConnection)
 {
+	Serial.printf("Restarting websocket client after %d seconds\n", RESTART_PERIOD);
 	msgTimer.setCallback(restart);
-	msgTimer.setIntervalMs(60 * 1000);
+	msgTimer.setIntervalMs(RESTART_PERIOD * 1000);
 	msgTimer.startOnce();
 }
 

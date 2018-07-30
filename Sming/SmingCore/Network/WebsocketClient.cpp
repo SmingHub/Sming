@@ -26,8 +26,8 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	}
 
 	// if we are already connected then do not connect again...
-//	if (isProcessing())
-//	        return false;
+	//	if (isProcessing())
+	//	        return false;
 
 	HttpConnection::connect(uri.Host, uri.Port, useSsl, sslOptions);
 	state = WS_STATE_OPENING;
@@ -55,6 +55,10 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	if(!HttpConnection::send(request)) {
 		return false;
 	}
+
+	WebsocketConnection::userData = (void*)this;
+	delete WebsocketConnection::stream;
+	WebsocketConnection::stream = new EndlessMemoryStream();
 
 	return true;
 }
@@ -108,6 +112,10 @@ void WebsocketClient::onFinished(TcpClientState finishState)
 		wsDisconnect(*this);
 	}
 
+	delete WebsocketConnection::stream;
+	WebsocketConnection::stream = NULL;
+	HttpConnection::stream = NULL;
+
 	HttpConnection::onFinished(finishState);
 }
 
@@ -124,11 +132,9 @@ err_t WebsocketClient::onProtocolUpgrade(http_parser* parser)
 	debug_d("WebsocketClient::onProtocolUpgrade: Handshake is ready");
 
 	delete HttpConnection::stream;
-	WebsocketConnection::userData = (void*)this;
-	WebsocketConnection::stream = new EndlessMemoryStream();
 	HttpConnection::stream = WebsocketConnection::stream;
 
-	if (wsConnect) {
+	if(wsConnect) {
 		wsConnect(*this);
 	}
 
