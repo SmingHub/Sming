@@ -81,6 +81,7 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 	if(strcmp(serverHashedKey, base64HashedKey)) {
 		debug_e("wscli key mismatch: %s | %s", serverHashedKey, base64HashedKey);
 		state = WS_STATE_CLOSING;
+		setTimeOut(1);
 		return -3;
 	}
 
@@ -97,6 +98,7 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 
 	ws_parser_init(&parser, &parserSettings);
 	parser.user_data = (void*)this;
+	setTimeOut(USHRT_MAX);
 
 	return 0;
 }
