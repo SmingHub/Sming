@@ -39,8 +39,8 @@ extern "C" {
 	// Network base API
 	#include <espinc/lwip_includes.h>
 
-	// Beta boards
-	#define BOARD_ESP01
+	
+	
 
 #ifdef __cplusplus
 }

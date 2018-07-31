@@ -15,7 +15,6 @@
 #include "../Wiring/WiringFrameworkIncludes.h"
 
 #include "Delegate.h"
-#include "Boards.h"
 #include "Clock.h"
 #include "SystemClock.h"
 #include "Digital.h"
@@ -23,7 +22,6 @@
 #include "FileSystem.h"
 #include "HardwareSerial.h"
 #include "Interrupts.h"
-#include "DriverPWM.h"
 #include "HardwarePWM.h"
 #include "Timer.h"
 #include "Wire.h"
