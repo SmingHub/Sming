@@ -74,6 +74,8 @@ class TcpConnection;
 
 typedef Delegate<void(TcpConnection&)> TcpConnectionDestroyedDelegate;
 
+#define DEFAULT_TCP_TIMEOUT 70
+
 class TcpConnection
 {
 	friend class TcpServer;

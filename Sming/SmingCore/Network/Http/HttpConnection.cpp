@@ -74,6 +74,8 @@ bool HttpConnection::connect(const String& host, int port, bool useSsl /* = fals
 
 	debug_d("HttpConnection::connecting ...");
 
+	setTimeOut(DEFAULT_TCP_TIMEOUT);
+
 	return TcpClient::connect(host, port, useSsl, sslOptions);
 }
 
