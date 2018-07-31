@@ -94,6 +94,7 @@ public:
 protected:
 	int verifyKey(HttpConnection& connection, HttpResponse& response);
 
+	virtual void reset();
 	virtual void onFinished(TcpClientState finishState);
 	virtual err_t onReceive(pbuf* buf);
 	virtual err_t onProtocolUpgrade(http_parser* parser);

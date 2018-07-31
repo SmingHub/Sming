@@ -95,7 +95,7 @@ public:
 	// @enddeprecated
 
 protected:
-	void reset();
+	virtual void reset();
 
 	virtual err_t onReceive(pbuf* buf);
 	virtual err_t onProtocolUpgrade(http_parser* parser);

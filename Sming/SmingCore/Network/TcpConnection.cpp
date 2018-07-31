@@ -15,7 +15,8 @@
 
 #include <algorithm>
 
-TcpConnection::TcpConnection(bool autoDestruct) : autoSelfDestruct(autoDestruct), sleep(0), canSend(true), timeOut(DEFAULT_TCP_TIMEOUT)
+TcpConnection::TcpConnection(bool autoDestruct)
+	: autoSelfDestruct(autoDestruct), sleep(0), canSend(true), timeOut(DEFAULT_TCP_TIMEOUT)
 {
 }
 

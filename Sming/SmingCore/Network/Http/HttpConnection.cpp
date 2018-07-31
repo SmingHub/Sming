@@ -153,6 +153,7 @@ void HttpConnection::reset()
 	lastWasValue = true;
 	lastData = "";
 	currentField = "";
+	state = eHCS_Ready;
 }
 
 err_t HttpConnection::onProtocolUpgrade(http_parser* parser)

@@ -25,9 +25,8 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 		useSsl = true;
 	}
 
-	// if we are already connected then do not connect again...
-	//	if (isProcessing())
-	//	        return false;
+	if(isProcessing())
+		return false;
 
 	HttpConnection::connect(uri.Host, uri.Port, useSsl, sslOptions);
 	state = WS_STATE_OPENING;
@@ -87,7 +86,13 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 
 	response.headers.clear(); // we don't need the headers any longer
 	state = WS_STATE_NORMAL;
+	setTimeOut(USHRT_MAX);
 
+	return 0;
+}
+
+void WebsocketClient::reset()
+{
 	memset(&parserSettings, 0, sizeof(ws_parser_callbacks_t));
 	parserSettings.on_data_begin = WebsocketConnection::staticOnDataBegin;
 	parserSettings.on_data_payload = WebsocketConnection::staticOnDataPayload;
@@ -98,9 +103,10 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 
 	ws_parser_init(&parser, &parserSettings);
 	parser.user_data = (void*)this;
-	setTimeOut(USHRT_MAX);
 
-	return 0;
+	state = WS_STATE_OPENING;
+
+	HttpConnection::reset();
 }
 
 void WebsocketClient::onFinished(TcpClientState finishState)
@@ -127,6 +133,7 @@ void WebsocketClient::disconnect()
 	state = WS_STATE_CLOSING;
 
 	WebsocketConnection::send(null, 0, WS_FRAME_CLOSE);
+	setTimeOut(1);
 }
 
 err_t WebsocketClient::onProtocolUpgrade(http_parser* parser)
