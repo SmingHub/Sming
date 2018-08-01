@@ -17,19 +17,17 @@ void sendRF()
 
 void receiveRF()
 {
-	if (mySwitch.available())
-	{
-		if (mySwitch.getReceivedValue() == 0)
-		{
+	if(mySwitch.available()) {
+		if(mySwitch.getReceivedValue() == 0) {
 			Serial.print("Unknown encoding");
 		} else {
 			Serial.print("Received ");
-			Serial.print( mySwitch.getReceivedValue() );
+			Serial.print(mySwitch.getReceivedValue());
 			Serial.print(" / ");
-			Serial.print( mySwitch.getReceivedBitlength() );
+			Serial.print(mySwitch.getReceivedBitlength());
 			Serial.print("bit ");
 			Serial.print("Protocol: ");
-			Serial.println( mySwitch.getReceivedProtocol() );
+			Serial.println(mySwitch.getReceivedProtocol());
 		}
 
 		mySwitch.resetAvailable();
@@ -41,14 +39,14 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
-    mySwitch.enableTransmit(5); // pin GPIO5 - transmit
-    mySwitch.enableReceive(4); // pin GPIO4  - receive
+	mySwitch.enableTransmit(5); // pin GPIO5 - transmit
+	mySwitch.enableReceive(4);  // pin GPIO4  - receive
 
-    // Optional set pulse length.
-    //mySwitch.setPulseLength(240);
-    // Optional set protocol (default is 1, will work for most outlets)
-    // mySwitch.setProtocol(2);
+	// Optional set pulse length.
+	//mySwitch.setPulseLength(240);
+	// Optional set protocol (default is 1, will work for most outlets)
+	// mySwitch.setProtocol(2);
 
-    sendTimer.initializeMs(1000, sendRF).start();
-    receiveTimer.initializeMs(20, receiveRF).start();
+	sendTimer.initializeMs(1000, sendRF).start();
+	receiveTimer.initializeMs(20, receiveRF).start();
 }

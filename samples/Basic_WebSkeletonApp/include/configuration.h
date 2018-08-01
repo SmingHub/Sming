@@ -6,8 +6,7 @@
 
 const char THERM_CONFIG_FILE[] = ".therm.conf"; // leading point for security reasons :)
 
-struct ThermConfig
-{
+struct ThermConfig {
 	ThermConfig()
 	{
 		StaEnable = 1; //Enable WIFI Client
@@ -17,9 +16,7 @@ struct ThermConfig
 	String StaPassword;
 	uint8_t StaEnable;
 
-// ThermControl settings
-
-
+	// ThermControl settings
 };
 
 ThermConfig loadConfig();

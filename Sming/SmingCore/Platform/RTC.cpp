@@ -1,12 +1,13 @@
 #include "../SmingCore/Platform/RTC.h"
 
-RtcClass::RtcClass() {
+RtcClass::RtcClass()
+{
 	rst_info* info = system_get_rst_info();
 	hardwareReset = (info->reason == REASON_WDT_RST);
 }
 
-
-uint64_t RtcClass::getRtcNanoseconds() {
+uint64_t RtcClass::getRtcNanoseconds()
+{
 	RtcData rtcTime;
 	loadTime(rtcTime);
 	updateTime(rtcTime);
@@ -14,13 +15,13 @@ uint64_t RtcClass::getRtcNanoseconds() {
 	return rtcTime.time;
 }
 
-
-uint32_t RtcClass::getRtcSeconds() {
+uint32_t RtcClass::getRtcSeconds()
+{
 	return (getRtcNanoseconds() / NS_PER_SECOND);
 }
 
-
-bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds) {
+bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
+{
 	RtcData rtcTime;
 	loadTime(rtcTime);
 	updateTime(rtcTime);
@@ -28,14 +29,13 @@ bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds) {
 	return saveTime(rtcTime);
 }
 
-
-bool RtcClass::setRtcSeconds(uint32_t seconds) {
+bool RtcClass::setRtcSeconds(uint32_t seconds)
+{
 	return setRtcNanoseconds((uint64_t)seconds * NS_PER_SECOND);
 }
 
-
-void RtcClass::updateTime(RtcData &data) {
-
+void RtcClass::updateTime(RtcData& data)
+{
 	uint32 rtc_cycles;
 	uint32 cal, cal1, cal2;
 	cal1 = system_rtc_clock_cali_proc();
@@ -47,21 +47,24 @@ void RtcClass::updateTime(RtcData &data) {
 	// hardware reset causes rtc cycles to start at 0 so we need to check and act accordingly
 	uint32_t delta = hardwareReset ? rtc_cycles : rtc_cycles - data.cycles;
 
-	hardwareReset = false; // reset hardware flag so we can deal with the next overflow as a reset needs to be dealt differently
-	data.time += delta *((uint64) ((cal * 1000) >> 12)); // increment number of nano seconds that have elapsed since last update
-	data.cycles = rtc_cycles; // update last number of cycles
+	//  reset hardware flag so we can deal with the next overflow as a reset needs to be dealt differently
+	hardwareReset = false;
+	// increment number of nano seconds that have elapsed since last update
+	data.time += delta * ((uint64)((cal * 1000) >> 12));
+	// update last number of cycles
+	data.cycles = rtc_cycles;
 }
 
-bool RtcClass::saveTime(RtcData &data) {
+bool RtcClass::saveTime(RtcData& data)
+{
 	return system_rtc_mem_write(RTC_DES_ADDR, &data, sizeof(data));
 }
-void RtcClass::loadTime(RtcData &data) {
-
+void RtcClass::loadTime(RtcData& data)
+{
 	system_rtc_mem_read(RTC_DES_ADDR, &data, sizeof(data));
 
 	// Initialise the time struct
-	if (data.magic != RTC_MAGIC)
-	{
+	if(data.magic != RTC_MAGIC) {
 		debugf("rtc time init...");
 		data.magic = RTC_MAGIC;
 		data.time = 0;
@@ -69,6 +72,4 @@ void RtcClass::loadTime(RtcData &data) {
 	}
 }
 
-
 RtcClass RTC = RtcClass();
-

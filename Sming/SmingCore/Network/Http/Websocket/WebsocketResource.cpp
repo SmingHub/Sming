@@ -10,7 +10,8 @@
 
 #include "WebsocketResource.h"
 
-WebsocketResource::WebsocketResource() {
+WebsocketResource::WebsocketResource()
+{
 	onHeadersComplete = HttpResourceDelegate(&WebsocketResource::checkHeaders, this);
 	onUpgrade = HttpServerConnectionUpgradeDelegate(&WebsocketResource::processData, this);
 }
@@ -19,13 +20,14 @@ WebsocketResource::~WebsocketResource()
 {
 }
 
-int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) {
+int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+{
 	WebSocketConnection* socket = new WebSocketConnection(&connection);
 	socket->setBinaryHandler(wsBinary);
 	socket->setMessageHandler(wsMessage);
 	socket->setConnectionHandler(wsConnect);
 	socket->setDisconnectionHandler(wsDisconnect);
-	if (!socket->initialize(request, response)) {
+	if(!socket->initialize(request, response)) {
 		debug_w("Not a valid WebsocketRequest?");
 		delete socket;
 		return -1;
@@ -33,21 +35,21 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 
 	connection.setTimeOut(USHRT_MAX); //Disable disconnection on connection idle (no rx/tx)
 
-// TODO: Re-Enable Command Executor...
+	// TODO: Re-Enable Command Executor...
 
 	return 0;
 }
 
-void  WebsocketResource::shutdown(HttpServerConnection& connection)
+void WebsocketResource::shutdown(HttpServerConnection& connection)
 {
-	WebSocketConnection* socket = (WebSocketConnection *)connection.userData;
+	WebSocketConnection* socket = (WebSocketConnection*)connection.userData;
 	delete socket;
 	connection.userData = NULL;
 }
 
-int WebsocketResource::processData(HttpServerConnection& connection, HttpRequest& request, char *at, int size)
+int WebsocketResource::processData(HttpServerConnection& connection, HttpRequest& request, char* at, int size)
 {
-	WebSocketConnection *socket = (WebSocketConnection *)connection.userData;
+	WebSocketConnection* socket = (WebSocketConnection*)connection.userData;
 	if(socket == NULL) {
 		return -1;
 	}
@@ -55,18 +57,22 @@ int WebsocketResource::processData(HttpServerConnection& connection, HttpRequest
 	return socket->processFrame(connection, request, at, size);
 }
 
-void WebsocketResource::setConnectionHandler(WebSocketDelegate handler) {
+void WebsocketResource::setConnectionHandler(WebSocketDelegate handler)
+{
 	wsConnect = handler;
 }
 
-void WebsocketResource::setMessageHandler(WebSocketMessageDelegate handler) {
+void WebsocketResource::setMessageHandler(WebSocketMessageDelegate handler)
+{
 	wsMessage = handler;
 }
 
-void WebsocketResource::setBinaryHandler(WebSocketBinaryDelegate handler) {
+void WebsocketResource::setBinaryHandler(WebSocketBinaryDelegate handler)
+{
 	wsBinary = handler;
 }
 
-void WebsocketResource::setDisconnectionHandler(WebSocketDelegate handler) {
+void WebsocketResource::setDisconnectionHandler(WebSocketDelegate handler)
+{
 	wsDisconnect = handler;
 }

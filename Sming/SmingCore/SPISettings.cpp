@@ -8,13 +8,13 @@
 #include "SPISettings.h"
 #include "SPI.h"
 
-#define	SPI_MODE0		0x00
-#define	SPI_MODE1		0x0F
-#define	SPI_MODE2		0xF0
-#define	SPI_MODE3		0xFF
+#define SPI_MODE0 0x00
+#define SPI_MODE1 0x0F
+#define SPI_MODE2 0xF0
+#define SPI_MODE3 0xFF
 
-
-SPISettings::SPISettings() {
+SPISettings::SPISettings()
+{
 #ifdef SPI_DEBUG
 	debugf("SPISettings::SPISettings() default");
 #endif
@@ -28,8 +28,8 @@ SPISettings::SPISettings() {
  * 	dataOrder: MSBFIRST or LSBFIRST
  * 	dataMode : SPI_MODE0, SPI_MODE1, SPI_MODE2, or SPI_MODE3
  */
-SPISettings::SPISettings(int speed, uint8 byteOrder, uint8 dataMode) {
-
+SPISettings::SPISettings(int speed, uint8 byteOrder, uint8 dataMode)
+{
 #ifdef SPI_DEBUG
 	debugf("SPISettings::SPISettings(int %i, uint8 %d, uint8 %d)", speed, byteOrder, dataMode);
 #endif
@@ -39,24 +39,19 @@ SPISettings::SPISettings(int speed, uint8 byteOrder, uint8 dataMode) {
 	_dataMode = dataMode;
 }
 
-
-SPISettings::~SPISettings() {
+SPISettings::~SPISettings()
+{
 }
 
-
-bool SPISettings::operator==(const SPISettings &other) const {
-
-	int res = _speed == other._speed &
-			_byteOrder == other._byteOrder &
-			_dataMode == other._dataMode;
+bool SPISettings::operator==(const SPISettings& other) const
+{
+	int res = _speed == other._speed & _byteOrder == other._byteOrder & _dataMode == other._dataMode;
 	return res;
 }
 
 #ifdef SPI_DEBUG
-void SPISettings::print(const char *s) {
-		debugf("->  %s -> SPISettings::print(int %i, uint8 %d, uint8 %d)", s, _speed, _byteOrder, _dataMode);
+void SPISettings::print(const char* s)
+{
+	debugf("->  %s -> SPISettings::print(int %i, uint8 %d, uint8 %d)", s, _speed, _byteOrder, _dataMode);
 }
 #endif
-
-
-

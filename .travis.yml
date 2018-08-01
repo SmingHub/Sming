@@ -26,6 +26,8 @@ addons:
     - doxygen-latex
     - doxygen-gui
     - graphviz
+    - xmlstarlet
+    - clang-format-3.9
 install:
 - if [ "$SDK_VERSION" == "1.5.0" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then export
   SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
@@ -47,27 +49,17 @@ script:
 - env
 - unset SPIFFY
 - unset ESPTOOL2
-- export CHANGED_FILES=`git diff --diff-filter=AMD HEAD HEAD^ --name-only`
-- export CHANGED_PROJECTS=`for i in $CHANGED_FILES; do echo "$i" |  grep '^samples/'
-  | cut -d'/' -f2; done | uniq`
+
 - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
 - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
 - if [ "$SDK_VERSION" == "2.1.0" ]; then export SDK_BASE=$SMING_HOME/third-party/ESP8266_NONOS_SDK;
   fi
 - export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/:$SMING_HOME/../.travis/tools
 - cd $SMING_HOME
-- make test
-- cd $SMING_HOME/../
-- export SMING_HAS_CHANGED=`for i in $CHANGED_FILES; do  if [[ $i == Sming/* ]]; then
-  echo 1; break; fi; done`
-- if [ ! -z "$SMING_HAS_CHANGED" ]; then CHANGED_PROJECTS=`cd $SMING_HOME/../samples;
-  ls -d *`; fi
-- for i in $CHANGED_PROJECTS; do echo "Compiling $i"; make -C "samples/$i"; if [ $?
-  -ne 0 ]; then exit 1; fi; done
+- if [ "$SDK_VERSION" == "2.0.0" ]; then ../.travis/tools/clang/format-pr.sh; fi
 - cd $SMING_HOME
-- make clean samples-clean
-- make ENABLE_GDB=1
-- make Basic_Debug
+- make
+- make samples
 - make clean samples-clean
 - make ENABLE_CUSTOM_HEAP=1
 - make Basic_Blink ENABLE_CUSTOM_HEAP=1

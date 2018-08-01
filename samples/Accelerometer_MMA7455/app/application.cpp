@@ -6,7 +6,6 @@
 MMA_7455 accel;
 Timer procTimer;
 
-
 void readSensor()
 {
 	Serial.println("Reading..");
@@ -29,7 +28,7 @@ void init()
 	Serial.println("Starting...");
 
 	// You can change pins:
-	//Wire.pins(14, 12); // SDA, SCL 
+	//Wire.pins(14, 12); // SDA, SCL
 	Wire.begin();
 
 	// Select the Working Mode

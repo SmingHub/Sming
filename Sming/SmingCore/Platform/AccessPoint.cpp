@@ -19,12 +19,13 @@ AccessPointClass::AccessPointClass()
 void AccessPointClass::enable(bool enabled, bool save)
 {
 	uint8 mode;
-	if (save)
+	if(save)
 		mode = wifi_get_opmode_default() & ~SOFTAP_MODE;
 	else
 		mode = wifi_get_opmode() & ~SOFTAP_MODE;
-	if (enabled) mode |= SOFTAP_MODE;
-	if (save)
+	if(enabled)
+		mode |= SOFTAP_MODE;
+	if(save)
 		wifi_set_opmode(mode);
 	else
 		wifi_set_opmode_current(mode);
@@ -35,22 +36,24 @@ bool AccessPointClass::isEnabled()
 	return wifi_get_opmode() & SOFTAP_MODE;
 }
 
-bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mode, bool hidden /* = false*/, int channel /* = 7*/, int beaconInterval /* = 200*/)
+bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mode, bool hidden /* = false*/,
+							  int channel /* = 7*/, int beaconInterval /* = 200*/)
 {
 	softap_config config = {0};
-	if (mode == AUTH_WEP) return false; // Not supported!
+	if(mode == AUTH_WEP)
+		return false; // Not supported!
 
-	if (mode == AUTH_OPEN)
+	if(mode == AUTH_OPEN)
 		password = "";
 
 	bool enabled = isEnabled();
 	enable(true);
 	wifi_softap_dhcps_stop();
 	wifi_softap_get_config(&config);
-	if (channel != config.channel || hidden != config.ssid_hidden
-		|| mode != config.authmode|| beaconInterval != config.beacon_interval
-		|| strncmp(ssid.c_str(), (char*)config.ssid, sizeof(config.ssid))!=0 || strncmp(password.c_str(), (char*)config.password, sizeof(config.password))!=0)
-	{
+	if(channel != config.channel || hidden != config.ssid_hidden || mode != config.authmode ||
+	   beaconInterval != config.beacon_interval ||
+	   strncmp(ssid.c_str(), (char*)config.ssid, sizeof(config.ssid)) != 0 ||
+	   strncmp(password.c_str(), (char*)config.password, sizeof(config.password)) != 0) {
 		config.channel = channel;
 		config.ssid_hidden = hidden;
 		memset(config.ssid, 0, sizeof(config.ssid));
@@ -61,11 +64,9 @@ bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mod
 		config.authmode = mode;
 		config.max_connection = 4; // max 4
 		config.beacon_interval = beaconInterval;
-		if (System.isReady())
-		{
+		if(System.isReady()) {
 			noInterrupts();
-			if (!wifi_softap_set_config(&config))
-			{
+			if(!wifi_softap_set_config(&config)) {
 				interrupts();
 				wifi_softap_dhcps_start();
 				enable(enabled);
@@ -74,17 +75,14 @@ bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mod
 			}
 			interrupts();
 			debugf("AP configuration was updated");
-		}
-		else
-		{
+		} else {
 			debugf("Set AP configuration in background");
-			if (runConfig != NULL)
+			if(runConfig != NULL)
 				delete runConfig;
 			runConfig = new softap_config();
 			memcpy(runConfig, &config, sizeof(softap_config));
 		}
-	}
-	else
+	} else
 		debugf("AP configuration loaded");
 
 	wifi_softap_dhcps_start();
@@ -123,8 +121,7 @@ IPAddress AccessPointClass::getNetworkGateway()
 
 bool AccessPointClass::setIP(IPAddress address)
 {
-	if (System.isReady())
-	{
+	if(System.isReady()) {
 		debugf("IP can be changed only in init() method");
 		return false;
 	}
@@ -152,8 +149,7 @@ String AccessPointClass::getMAC()
 String AccessPointClass::getSSID()
 {
 	softap_config config = {0};
-	if (!wifi_softap_get_config(&config))
-	{
+	if(!wifi_softap_get_config(&config)) {
 		debugf("Can't read AP configuration!");
 		return "";
 	}
@@ -164,8 +160,7 @@ String AccessPointClass::getSSID()
 String AccessPointClass::getPassword()
 {
 	softap_config config = {0};
-	if (!wifi_softap_get_config(&config))
-	{
+	if(!wifi_softap_get_config(&config)) {
 		debugf("Can't read AP configuration!");
 		return "";
 	}
@@ -175,8 +170,7 @@ String AccessPointClass::getPassword()
 
 void AccessPointClass::onSystemReady()
 {
-	if (runConfig != NULL)
-	{
+	if(runConfig != NULL) {
 		noInterrupts();
 		bool enabled = isEnabled();
 		enable(true);

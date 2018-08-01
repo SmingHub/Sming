@@ -29,34 +29,28 @@ class HttpClient
 public:
 	/* High-Level Method */
 
-	__forceinline bool sendRequest(const String& url, RequestCompletedDelegate requestComplete) {
-		return send(request(url)
-				   ->setMethod(HTTP_GET)
-				   ->onRequestComplete(requestComplete)
-				   );
+	__forceinline bool sendRequest(const String& url, RequestCompletedDelegate requestComplete)
+	{
+		return send(request(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 	}
 
-
-	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers, RequestCompletedDelegate requestComplete) {
-		return send(request(url)
-				   ->setMethod(method)
-				   ->setHeaders(headers)
-				   ->onRequestComplete(requestComplete)
-				   );
+	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers,
+								   RequestCompletedDelegate requestComplete)
+	{
+		return send(request(url)->setMethod(method)->setHeaders(headers)->onRequestComplete(requestComplete));
 	}
 
-	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers, const String& body, RequestCompletedDelegate requestComplete) {
-			return send(request(url)
-					   ->setMethod(method)
-					   ->setHeaders(headers)
-					   ->setBody(body)
-					   ->onRequestComplete(requestComplete)
-					   );
+	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers,
+								   const String& body, RequestCompletedDelegate requestComplete)
+	{
+		return send(
+			request(url)->setMethod(method)->setHeaders(headers)->setBody(body)->onRequestComplete(requestComplete));
 	}
 
 	bool downloadString(const String& url, RequestCompletedDelegate requestComplete);
 
-	__forceinline bool downloadFile(const String& url, RequestCompletedDelegate requestComplete = NULL) {
+	__forceinline bool downloadFile(const String& url, RequestCompletedDelegate requestComplete = NULL)
+	{
 		return downloadFile(url, "", requestComplete);
 	}
 
@@ -93,11 +87,11 @@ protected:
 	String getCacheKey(URL url);
 
 protected:
-	static HashMap<String, HttpConnection *> httpConnectionPool;
-	static HashMap<String, RequestQueue* > queue;
+	static HashMap<String, HttpConnection*> httpConnectionPool;
+	static HashMap<String, RequestQueue*> queue;
 
 #ifdef ENABLE_SSL
-	static HashMap<String, SSLSessionId* > sslSessionIdPool;
+	static HashMap<String, SSLSessionId*> sslSessionIdPool;
 #endif
 };
 

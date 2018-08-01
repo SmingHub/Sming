@@ -17,7 +17,7 @@
  */
 
 #ifndef WEBSOCKETCLIENT_H
-#define	WEBSOCKETCLIENT_H
+#define WEBSOCKETCLIENT_H
 
 #include "../Wiring/WiringFrameworkIncludes.h"
 #include "TcpClient.h"
@@ -36,10 +36,7 @@
 class WebsocketClient;
 /** @brief  Websocket client modes enum
  */
-enum class wsMode : uint8_t
-{
-	Disconnected = 0, Connecting, Connected
-};
+enum class wsMode : uint8_t { Disconnected = 0, Connecting, Connected };
 
 typedef Delegate<void(WebsocketClient& wsClient, const String message)> WebSocketClientMessageDelegate;
 /** @brief  Delegate callback type for received text message
@@ -47,20 +44,20 @@ typedef Delegate<void(WebsocketClient& wsClient, const String message)> WebSocke
 typedef Delegate<void(WebsocketClient& wsClient, uint8_t* data, size_t size)> WebSocketClientBinaryDelegate;
 /** @brief  Delegate callback type for received binary message
  */
-typedef Delegate<void(WebsocketClient& wsClient, bool  successful)> WebSocketClientDisconnectDelegate;
+typedef Delegate<void(WebsocketClient& wsClient, bool successful)> WebSocketClientDisconnectDelegate;
 /** @brief  Delegate callback type for disconnection of websocket client
  */
-typedef Delegate<void(WebsocketClient& wsClient, wsMode  Mode)> WebSocketClientConnectedDelegate;
+typedef Delegate<void(WebsocketClient& wsClient, wsMode Mode)> WebSocketClientConnectedDelegate;
 /** @brief  Delegate callback type for connection of websocket client
  */
 
 /** @brief  Websocket Client
  */
-class WebsocketClient: protected TcpClient
+class WebsocketClient : protected TcpClient
 {
 public:
-	WebsocketClient(bool autoDestruct = false) :TcpClient(autoDestruct) {};
-	virtual ~WebsocketClient() {};
+	WebsocketClient(bool autoDestruct = false) : TcpClient(autoDestruct){};
+	virtual ~WebsocketClient(){};
 
 	/** @brief  Set handler for websocket text messages
 	 *  @param  handler Delegate callback to be run when text message received
@@ -77,7 +74,7 @@ public:
 	 */
 	void setWebSocketConnectedHandler(WebSocketClientConnectedDelegate handler);
 
-	 /** @brief  Set handler for websocket binary messages
+	/** @brief  Set handler for websocket binary messages
 	  *  @param  handler Delegate callback to be run when binary message received
 	  */
 	void setWebSocketBinaryHandler(WebSocketClientBinaryDelegate handler);
@@ -88,7 +85,7 @@ public:
 	  */
 	bool connect(String url, uint32_t sslOptions = 0);
 
-	 /** @brief  Send websocket ping to server
+	/** @brief  Send websocket ping to server
 	  *
 	  *  @param String payload - maximum 255 bytes
 	  *
@@ -96,7 +93,7 @@ public:
 	  */
 	bool sendPing(const String& payload = "");
 
-	 /** @brief  Send websocket ping to server
+	/** @brief  Send websocket ping to server
 	  *  @param  String& payload  - maximum 255 bytes
 	  *
 	  *  @retval bool true if the data can be send, false otherwise
@@ -138,18 +135,19 @@ public:
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
 	using TcpClient::addSslValidator;
-	using TcpClient::pinCertificate;
-	using TcpClient::setSslKeyCert;
 	using TcpClient::freeSslKeyCert;
 	using TcpClient::getSsl;
+	using TcpClient::pinCertificate;
+	using TcpClient::setSslKeyCert;
 #endif
 
 protected:
 	virtual void onFinished(TcpClientState finishState);
 	virtual void onError(err_t err);
-	virtual err_t onReceive(pbuf *buf);
-	bool _verifyKey(char *buf, int size);
+	virtual err_t onReceive(pbuf* buf);
+	bool _verifyKey(char* buf, int size);
 	void _sendFrame(WSFrameType frameType, uint8_t* msg, uint16_t length);
+
 private:
 	URL _uri;
 	String _url;
@@ -162,5 +160,4 @@ private:
 };
 
 /** @} */
-#endif	/* WEBSOCKETCLIENT_H */
-
+#endif /* WEBSOCKETCLIENT_H */

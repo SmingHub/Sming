@@ -90,7 +90,7 @@ GPIO_INT_TYPE ConvertArduinoInterruptMode(uint8_t mode);
  *  @param  intr_mask Interrupt mask
  *  @param  arg pointer to array of arguments
  */
-static void interruptHandler(uint32 intr_mask, void *arg);
+static void interruptHandler(uint32 intr_mask, void* arg);
 
 /** @brief  Disable interrupts
  */
@@ -100,7 +100,7 @@ void noInterrupts();
 */
 void interrupts();
 
-#define digitalPinToInterrupt(pin)  ( (pin) < ESP_MAX_INTERRUPTS ? (pin) : -1 )
+#define digitalPinToInterrupt(pin) ((pin) < ESP_MAX_INTERRUPTS ? (pin) : -1)
 
 #define cli() noInterrupts()
 #define sei() interrupts()

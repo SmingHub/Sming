@@ -13,7 +13,7 @@
 #include "HttpBodyParser.h"
 #include "../WebHelpers/escape.h"
 
-void formUrlParser(HttpRequest& request, const char *at, int length)
+void formUrlParser(HttpRequest& request, const char* at, int length)
 {
 	FormUrlParserState* state = (FormUrlParserState*)request.args;
 
@@ -22,13 +22,13 @@ void formUrlParser(HttpRequest& request, const char *at, int length)
 			delete state;
 		}
 		state = new FormUrlParserState;
-		request.args = (void *)state;
+		request.args = (void*)state;
 		return;
 	}
 
 	if(length == -2) {
 		int maxLength = 0;
-		for(int i=0; i<request.postParams.count(); i++) {
+		for(int i = 0; i < request.postParams.count(); i++) {
 			int kLength = request.postParams.keyAt(i).length();
 			int vLength = request.postParams.valueAt(i).length();
 			if(maxLength < vLength || maxLength < kLength) {
@@ -37,7 +37,7 @@ void formUrlParser(HttpRequest& request, const char *at, int length)
 		}
 
 		char* buffer = new char[maxLength + 1];
-		for(int i=0, max = request.postParams.count(); i< max; i++) {
+		for(int i = 0, max = request.postParams.count(); i < max; i++) {
 			String key = request.postParams.keyAt(i);
 			String value = request.postParams.valueAt(i);
 
@@ -83,8 +83,7 @@ void formUrlParser(HttpRequest& request, const char *at, int length)
 		if(pos == -1) {
 			if(state->searchChar == '=') {
 				state->postName += data;
-			}
-			else {
+			} else {
 				request.postParams[state->postName] += data;
 			}
 
@@ -95,8 +94,7 @@ void formUrlParser(HttpRequest& request, const char *at, int length)
 		if(state->searchChar == '=') {
 			state->postName += buf;
 			state->searchChar = '&';
-		}
-		else {
+		} else {
 			request.postParams[state->postName] += buf;
 			state->searchChar = '=';
 			state->postName = "";
@@ -106,14 +104,14 @@ void formUrlParser(HttpRequest& request, const char *at, int length)
 	}
 }
 
-void bodyToStringParser(HttpRequest& request, const char *at, int length)
+void bodyToStringParser(HttpRequest& request, const char* at, int length)
 {
-	String* data = static_cast<String *>(request.args);
+	String* data = static_cast<String*>(request.args);
 
 	if(length == -1) {
 		delete data;
 		data = new String();
-		request.args = (void *)data;
+		request.args = (void*)data;
 		return;
 	}
 

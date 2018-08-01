@@ -26,8 +26,7 @@
 #define DNS_QR_RESPONSE 1
 #define DNS_OPCODE_QUERY 0
 
-enum class DNSReplyCode
-{
+enum class DNSReplyCode {
 	NoError = 0,
 	FormError = 1,
 	ServerFailure = 2,
@@ -39,53 +38,49 @@ enum class DNSReplyCode
 	NXRRSet = 8
 };
 
-struct DNSHeader
-{
-	uint16_t ID;		// identification number
-	char RD : 1;		// recursion desired
-	char TC : 1;		// truncated message
-	char AA : 1;		// authoritive answer
-	char OPCode : 4;	// message_type
-	char QR : 1;		// query/response flag
-	char RCode : 4;		// response code
-	char Z : 3;			// its z! reserved
-	char RA : 1;		// recursion available
-	uint16_t QDCount;	// number of question entries
-	uint16_t ANCount;	// number of answer entries
-	uint16_t NSCount;	// number of authority entries
-	uint16_t ARCount;	// number of resource entries
+struct DNSHeader {
+	uint16_t ID;	  // identification number
+	char RD : 1;	  // recursion desired
+	char TC : 1;	  // truncated message
+	char AA : 1;	  // authoritive answer
+	char OPCode : 4;  // message_type
+	char QR : 1;	  // query/response flag
+	char RCode : 4;   // response code
+	char Z : 3;		  // its z! reserved
+	char RA : 1;	  // recursion available
+	uint16_t QDCount; // number of question entries
+	uint16_t ANCount; // number of answer entries
+	uint16_t NSCount; // number of authority entries
+	uint16_t ARCount; // number of resource entries
 };
 
 class DNSServer : public UdpConnection
 {
-  public:
-    DNSServer();
+public:
+	DNSServer();
 	virtual ~DNSServer();
-    void setErrorReplyCode(const DNSReplyCode &replyCode);
-    void setTTL(const uint32_t &ttl);
+	void setErrorReplyCode(const DNSReplyCode& replyCode);
+	void setTTL(const uint32_t& ttl);
 
-    // Returns true if successful, false if there are no sockets available
-    bool start(const uint16_t &port,
-              const String &domainName,
-              const IPAddress &resolvedIP);
+	// Returns true if successful, false if there are no sockets available
+	bool start(const uint16_t& port, const String& domainName, const IPAddress& resolvedIP);
 
-    // stops the DNS server
-    void stop();
+	// stops the DNS server
+	void stop();
 
-  private:
-    uint16_t _port = 0;
-    String _domainName;
-    char _resolvedIP[4];
-    char* _buffer = NULL;
-    DNSHeader* _dnsHeader = NULL;
-    uint32_t _ttl;
-    DNSReplyCode _errorReplyCode;
+private:
+	uint16_t _port = 0;
+	String _domainName;
+	char _resolvedIP[4];
+	char* _buffer = NULL;
+	DNSHeader* _dnsHeader = NULL;
+	uint32_t _ttl;
+	DNSReplyCode _errorReplyCode;
 
-    virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
-    void downcaseAndRemoveWwwPrefix(String &domainName);
-    String getDomainNameWithoutWwwPrefix();
-    bool requestIncludesOnlyOneQuestion();
-
+	virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
+	void downcaseAndRemoveWwwPrefix(String& domainName);
+	String getDomainNameWithoutWwwPrefix();
+	bool requestIncludesOnlyOneQuestion();
 };
 
 /** @} */

@@ -22,7 +22,7 @@ FTPServer::~FTPServer()
 {
 }
 
-TcpConnection* FTPServer::createClient(tcp_pcb *clientTcp)
+TcpConnection* FTPServer::createClient(tcp_pcb* clientTcp)
 {
 	TcpConnection* con = new FTPServerConnection(this, clientTcp);
 	return con;
@@ -37,7 +37,7 @@ void FTPServer::addUser(String login, String pass)
 bool FTPServer::checkUser(String login, const String& pass)
 {
 	debug_d("checkUser: %s %s", login.c_str(), pass.c_str());
-	if (!users.contains(login))
+	if(!users.contains(login))
 		return false;
 
 	return users[login] == pass;
@@ -45,8 +45,7 @@ bool FTPServer::checkUser(String login, const String& pass)
 
 bool FTPServer::onCommand(String cmd, String data, FTPServerConnection& connection)
 {
-	if (cmd == "FSFORMAT")
-	{
+	if(cmd == "FSFORMAT") {
 		spiffs_format();
 		connection.response(200, "File system successfully formated");
 		return true;

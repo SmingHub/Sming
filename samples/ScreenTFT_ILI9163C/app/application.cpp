@@ -30,7 +30,7 @@ void init()
 	tft.fillScreen();
 	tft.setTextSize(1);
 	tft.setTextColor(GREEN);
-	tft.setCursor(0,0);
+	tft.setCursor(0, 0);
 	tft.println("Sming Framework");
 	tft.setTextColor(BLACK, WHITE); // 'inverted' text
 	tft.setCursor(104, 7);

@@ -8,11 +8,12 @@ SparkFun_APDS9960 apds = SparkFun_APDS9960();
 // For I2C
 // Default I2C pins 0 and 2. Pin 4 - interrupt pin
 //
-#define APDS9960_INT  4 // Needs to be an interrupt pin
+#define APDS9960_INT 4 // Needs to be an interrupt pin
 
-void IRAM_ATTR handleGesture() {
-	if (apds.isGestureAvailable()) {
-		switch (apds.readGesture()) {
+void IRAM_ATTR handleGesture()
+{
+	if(apds.isGestureAvailable()) {
+		switch(apds.readGesture()) {
 		case DIR_UP:
 			Serial.println("UP");
 			break;
@@ -37,13 +38,15 @@ void IRAM_ATTR handleGesture() {
 	}
 }
 
-void IRAM_ATTR interruptRoutine() {
-		detachInterrupt(APDS9960_INT);
-		handleGesture();
-		attachInterrupt(APDS9960_INT, interruptRoutine, FALLING);
+void IRAM_ATTR interruptRoutine()
+{
+	detachInterrupt(APDS9960_INT);
+	handleGesture();
+	attachInterrupt(APDS9960_INT, interruptRoutine, FALLING);
 }
 
-void init() {
+void init()
+{
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
@@ -57,14 +60,14 @@ void init() {
 	Serial.println("--------------------------------");
 
 	// Initialize APDS-9960 (configure I2C and initial values)
-	if (apds.init()) {
+	if(apds.init()) {
 		Serial.println("APDS-9960 initialization complete");
 	} else {
 		Serial.println("Something went wrong during APDS-9960 init!");
 	}
 
 	// Start running the APDS-9960 gesture sensor engine
-	if (apds.enableGestureSensor(true)) {
+	if(apds.enableGestureSensor(true)) {
 		Serial.println("Gesture sensor is now running");
 	} else {
 		Serial.println("Something went wrong during gesture sensor init!");
@@ -73,7 +76,4 @@ void init() {
 	// Initialize interrupt service routine
 	pinMode(APDS9960_INT, (GPIO_INT_TYPE)GPIO_PIN_INTR_ANYEDGE);
 	attachInterrupt(APDS9960_INT, interruptRoutine, FALLING);
-
-
 }
-

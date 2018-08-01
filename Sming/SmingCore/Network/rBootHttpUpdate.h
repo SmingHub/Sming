@@ -27,7 +27,8 @@ struct rBootHttpUpdateItem {
 	int size;
 };
 
-class rBootItemOutputStream: public ReadWriteStream {
+class rBootItemOutputStream : public ReadWriteStream
+{
 public:
 	void setItem(rBootHttpUpdateItem* item);
 	virtual bool init();
@@ -66,8 +67,8 @@ protected:
 	rboot_write_status rBootWriteStatus;
 };
 
-class rBootHttpUpdate: protected HttpClient {
-
+class rBootHttpUpdate : protected HttpClient
+{
 public:
 	rBootHttpUpdate();
 	virtual ~rBootHttpUpdate();
@@ -85,7 +86,7 @@ public:
 	 *
 	 * @param HttpRequest *
 	 */
-	void setBaseRequest(HttpRequest *request);
+	void setBaseRequest(HttpRequest* request);
 
 	// Allow reading items
 	rBootHttpUpdateItem getItem(unsigned int index);
@@ -97,7 +98,6 @@ protected:
 	virtual rBootItemOutputStream* getStream();
 	virtual int itemComplete(HttpConnection& client, bool success);
 	virtual int updateComplete(HttpConnection& client, bool success);
-
 
 protected:
 	Vector<rBootHttpUpdateItem> items;

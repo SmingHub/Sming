@@ -19,17 +19,15 @@
  */
 static int quotedPrintableTransformer(uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
 {
-	const char hex[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-						 'A', 'B', 'C', 'D', 'E', 'F' };
+	const char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
 	int count = 0;
-	for (int i = 0; i < sourceLength; i++) {
+	for(int i = 0; i < sourceLength; i++) {
 		char byte = source[i];
 
-		if ((byte == ' ') || ((byte >= 33) && (byte <= 126) && (byte != '='))) {
+		if((byte == ' ') || ((byte >= 33) && (byte <= 126) && (byte != '='))) {
 			target[count++] = byte;
-		}
-		else {
+		} else {
 			target[count++] = '=';
 			target[count++] = hex[((byte >> 4) & 0x0F)];
 			target[count++] = hex[(byte & 0x0F)];
@@ -39,8 +37,8 @@ static int quotedPrintableTransformer(uint8_t* source, size_t sourceLength, uint
 	return count;
 }
 
-QuotedPrintableOutputStream::QuotedPrintableOutputStream(ReadWriteStream *stream, size_t resultSize /* = 512 */):
-							  StreamTransformer(stream, nullptr, resultSize, resultSize / 2 )
+QuotedPrintableOutputStream::QuotedPrintableOutputStream(ReadWriteStream* stream, size_t resultSize /* = 512 */)
+	: StreamTransformer(stream, nullptr, resultSize, resultSize / 2)
 
 {
 	transformCallback = quotedPrintableTransformer;

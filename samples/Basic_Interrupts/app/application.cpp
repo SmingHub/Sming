@@ -1,8 +1,8 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-#define INT_PIN 0   // GPIO0
-#define say(a) ( Serial.print(a) )
+#define INT_PIN 0 // GPIO0
+#define say(a) (Serial.print(a))
 
 void IRAM_ATTR interruptHandler()
 {
@@ -10,10 +10,10 @@ void IRAM_ATTR interruptHandler()
 	// Better set some flag and check it in main code (timers and etc) or read actual pins state and save it to variable
 	// Interrupt processing code should be as short as possible.
 	// flagInterruptOccurred = true;
-	
+
 	say(micros());
-	say( "   Pin changed, now   ");
-	say( digitalRead(INT_PIN));
+	say("   Pin changed, now   ");
+	say(digitalRead(INT_PIN));
 	Serial.println();
 }
 
@@ -23,8 +23,8 @@ void init()
 
 	delay(3000);
 	say("======= Bring GPIO");
-	say( INT_PIN);
-	say( " low to trigger interrupt(s) =======");
+	say(INT_PIN);
+	say(" low to trigger interrupt(s) =======");
 	Serial.println();
 
 	attachInterrupt(INT_PIN, interruptHandler, CHANGE);

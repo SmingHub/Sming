@@ -12,7 +12,7 @@
 
 #ifdef ENABLE_SSL
 
-bool sslValidateCertificateSha1(SSL *ssl, void* data)
+bool sslValidateCertificateSha1(SSL* ssl, void* data)
 {
 	uint8_t* hash = (uint8_t*)data;
 	bool success = false;
@@ -24,7 +24,7 @@ bool sslValidateCertificateSha1(SSL *ssl, void* data)
 	return success;
 }
 
-bool sslValidatePublicKeySha256(SSL *ssl, void* data)
+bool sslValidatePublicKeySha256(SSL* ssl, void* data)
 {
 	uint8_t* hash = (uint8_t*)data;
 	bool success = false;

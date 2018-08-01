@@ -2,8 +2,8 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 ThermConfig ActiveConfig;
@@ -12,8 +12,7 @@ ThermConfig loadConfig()
 {
 	StaticJsonBuffer<ConfigJsonBufferSize> jsonBuffer;
 	ThermConfig cfg;
-	if (fileExist(THERM_CONFIG_FILE))
-	{
+	if(fileExist(THERM_CONFIG_FILE)) {
 		int size = fileGetSize(THERM_CONFIG_FILE);
 		char* jsonString = new char[size + 1];
 		fileGetContent(THERM_CONFIG_FILE, jsonString, size + 1);
@@ -25,9 +24,7 @@ ThermConfig loadConfig()
 		cfg.StaEnable = network["StaEnable"];
 
 		delete[] jsonString;
-	}
-	else
-	{
+	} else {
 		//Factory defaults if no config file present
 		cfg.StaSSID = WIFI_SSID;
 		cfg.StaPassword = WIFI_PWD;
@@ -50,5 +47,3 @@ void saveConfig(ThermConfig& cfg)
 	root.prettyPrintTo(buf, sizeof(buf));
 	fileSetContent(THERM_CONFIG_FILE, buf);
 }
-
-

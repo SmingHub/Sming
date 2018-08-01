@@ -20,19 +20,21 @@
 class WDTClass : protected ISystemReadyHandler
 {
 public:
-    /** @brief  Watchdog timer class
+	/** @brief  Watchdog timer class
      *  @addtogroup wdt
      *  @{
      */
 	WDTClass();
-	virtual ~WDTClass() {}
+	virtual ~WDTClass()
+	{
+	}
 
-    /** @brief  Enable or disable watchdog timer
+	/** @brief  Enable or disable watchdog timer
      *  @param  enableWatchDog True to enable. False to disable.
      */
 	void enable(bool enableWatchDog);
 
-    /** @brief  Keep watchdog timer alive
+	/** @brief  Keep watchdog timer alive
      *  @note   Call this function regularly to stop WDT from activating
      *  @todo   Define the WDT period (how long before it triggers)
      */
@@ -52,6 +54,6 @@ private:
  *	@code	WDT.alive();
  *	@endcode
  */
- extern WDTClass WDT;
+extern WDTClass WDT;
 
 #endif /* SMINGCORE_PLATFORM_WDT_H_ */

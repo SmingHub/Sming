@@ -23,7 +23,8 @@
 
 typedef SimpleConcurrentQueue<HttpRequest*, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
-class HttpConnection : protected TcpClient {
+class HttpConnection : protected TcpClient
+{
 	friend class HttpClient;
 
 public:
@@ -58,11 +59,14 @@ public:
 #endif
 
 	// Backported for compatibility reasons
-// @deprecated
+	// @deprecated
 	/**
 	 * @deprecated Use `getResponse().code` instead
 	 */
-	__forceinline int getResponseCode() { return response.code; }
+	__forceinline int getResponseCode()
+	{
+		return response.code;
+	}
 
 	/**
 	 * @deprecated Use `getResponse().headers[headerName]` instead
@@ -72,7 +76,7 @@ public:
 	/**
 	* @deprecated Use `getResponse().headers` instead
 	*/
-	HttpHeaders &getResponseHeaders();
+	HttpHeaders& getResponseHeaders();
 
 	/**
 	* @deprecated Use `getResponse().headers["Last-Modified"]` instead
@@ -88,12 +92,12 @@ public:
 	 * @deprecated Use `getResponse().stream` instead
 	 */
 	String getResponseString();
-// @enddeprecated
+	// @enddeprecated
 
 protected:
 	void reset();
 
-	virtual err_t onReceive(pbuf *buf);
+	virtual err_t onReceive(pbuf* buf);
 	virtual err_t onProtocolUpgrade(http_parser* parser);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 	virtual void onError(err_t err);
@@ -103,12 +107,12 @@ protected:
 private:
 	static int staticOnMessageBegin(http_parser* parser);
 #ifndef COMPACT_MODE
-	static int staticOnStatus(http_parser *parser, const char *at, size_t length);
+	static int staticOnStatus(http_parser* parser, const char* at, size_t length);
 #endif
 	static int staticOnHeadersComplete(http_parser* parser);
-	static int staticOnHeaderField(http_parser *parser, const char *at, size_t length);
-	static int staticOnHeaderValue(http_parser *parser, const char *at, size_t length);
-	static int staticOnBody(http_parser *parser, const char *at, size_t length);
+	static int staticOnHeaderField(http_parser* parser, const char* at, size_t length);
+	static int staticOnHeaderValue(http_parser* parser, const char* at, size_t length);
+	static int staticOnBody(http_parser* parser, const char* at, size_t length);
 #ifndef COMPACT_MODE
 	static int staticOnChunkHeader(http_parser* parser);
 	static int staticOnChunkComplete(http_parser* parser);
@@ -127,7 +131,7 @@ protected:
 
 	bool lastWasValue = true;
 	String lastData = "";
-	String currentField  = "";
+	String currentField = "";
 	HttpRequest* incomingRequest = NULL;
 	HttpRequest* outgoingRequest = NULL;
 	HttpResponse response;

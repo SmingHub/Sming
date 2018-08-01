@@ -33,11 +33,10 @@ public:
 
 		numCallback++;
 
-		if (arrivedChar == '\n') // Lets show data!
+		if(arrivedChar == '\n') // Lets show data!
 		{
 			Serial.println("<New line received>");
-			while (stream.available())
-			{
+			while(stream.available()) {
 				char cur = stream.read();
 				charReceived++;
 				Serial.print(cur);
@@ -51,6 +50,5 @@ private:
 	unsigned numCallback = 0;
 	bool useRxFlag = true;
 };
-
 
 #endif /* INCLUDE_SERIALREADINGDELEGATEDEMO_H_ */

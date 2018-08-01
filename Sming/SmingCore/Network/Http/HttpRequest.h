@@ -25,20 +25,23 @@ class HttpServerConnection;
 class HttpConnection;
 
 typedef Delegate<int(HttpConnection& client, HttpResponse& response)> RequestHeadersCompletedDelegate;
-typedef Delegate<int(HttpConnection& client, const char *at, size_t length)> RequestBodyDelegate;
+typedef Delegate<int(HttpConnection& client, const char* at, size_t length)> RequestBodyDelegate;
 typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedDelegate;
 
-class HttpRequest {
+class HttpRequest
+{
 	friend class HttpClient;
 	friend class HttpConnection;
 	friend class HttpServerConnection;
 
 public:
-
 	HttpRequest(const URL& uri);
 	HttpRequest(const HttpRequest& value);
-	__forceinline HttpRequest* clone() const { return new HttpRequest(*this); }
-	HttpRequest& operator = (const HttpRequest& rhs);
+	__forceinline HttpRequest* clone() const
+	{
+		return new HttpRequest(*this);
+	}
+	HttpRequest& operator=(const HttpRequest& rhs);
 	~HttpRequest();
 
 	HttpRequest* setURL(const URL& uri);
@@ -63,14 +66,15 @@ public:
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	// Authentication adapters set here
-	HttpRequest* setAuth(AuthAdapter *adapter);
+	HttpRequest* setAuth(AuthAdapter* adapter);
 #endif
 
 	String getHeader(const String& name);
 
 	String getPostParameter(const String& name);
 
-	__forceinline String getPath() {
+	__forceinline String getPath()
+	{
 		return uri.Path;
 	}
 
@@ -92,8 +96,8 @@ public:
 	ReadWriteStream* getBodyStream();
 
 	HttpRequest* setBody(const String& body);
-	HttpRequest* setBody(ReadWriteStream *stream);
-	HttpRequest* setBody(uint8_t *rawData, size_t length);
+	HttpRequest* setBody(ReadWriteStream* stream);
+	HttpRequest* setBody(uint8_t* rawData, size_t length);
 
 	/**
 	 * @brief Instead of storing the response body we can set a stream that will take care to process it
@@ -101,7 +105,7 @@ public:
 	 *
 	 * @retval HttpRequest*
 	 */
-	HttpRequest* setResponseStream(ReadWriteStream *stream);
+	HttpRequest* setResponseStream(ReadWriteStream* stream);
 
 	/**
 	 * @brief Get access to the currently set response stream.
@@ -118,26 +122,26 @@ public:
 	void reset();
 
 #ifdef ENABLE_SSL
- 	HttpRequest* setSslOptions(uint32_t sslOptions);
- 	uint32_t getSslOptions();
+	HttpRequest* setSslOptions(uint32_t sslOptions);
+	uint32_t getSslOptions();
 
- 	/**
+	/**
 	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
 	 * 			Check if SHA256 hash of Subject Public Key Info matches the one given.
 	 * @param SSLFingerprints - passes the certificate fingerprints by reference.
 	 *
 	 * @return bool  true of success, false or failure
 	 */
- 	HttpRequest* pinCertificate(const SSLFingerprints& fingerprints);
+	HttpRequest* pinCertificate(const SSLFingerprints& fingerprints);
 
- 	/**
+	/**
 	 * @brief Sets client private key, certificate and password from memory
 	 * @param SSLKeyCertPair
 	 * @param bool freeAfterHandshake
 	 *
 	 * @return HttpRequest pointer
 	 */
- 	HttpRequest* setSslKeyCert(const SSLKeyCertPair& keyCertPair);
+	HttpRequest* setSslKeyCert(const SSLKeyCertPair& keyCertPair);
 #endif
 
 #ifndef SMING_RELEASE
@@ -156,24 +160,24 @@ public:
 
 	int retries = 0; // how many times the request should be send again...
 
-	void *args = NULL; // Used to store data that should be valid during a single request
+	void* args = NULL; // Used to store data that should be valid during a single request
 
 protected:
 	RequestHeadersCompletedDelegate headersCompletedDelegate;
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
 
-	ReadWriteStream *stream = NULL;
-	ReadWriteStream *responseStream = NULL;
+	ReadWriteStream* stream = NULL;
+	ReadWriteStream* responseStream = NULL;
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
-	AuthAdapter *auth = NULL;
+	AuthAdapter* auth = NULL;
 #endif
 
 #ifdef ENABLE_SSL
 	uint32_t sslOptions = 0;
 	SSLFingerprints sslFingerprint;
-	SSLKeyCertPair  sslKeyCertPair;
+	SSLKeyCertPair sslKeyCertPair;
 #endif
 
 private:

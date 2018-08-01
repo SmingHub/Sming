@@ -30,7 +30,7 @@ typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
 class MqttClient;
 class URL;
 
-class MqttClient: protected TcpClient
+class MqttClient : protected TcpClient
 {
 public:
 	MqttClient(bool autoDestruct = false);
@@ -48,14 +48,14 @@ public:
 	/** @brief  Provide a funcion to be called when a message is received from the broker
 	*/
 	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = NULL);
-	
-	void setKeepAlive(int seconds);			//send to broker
-	void setPingRepeatTime(int seconds);            //used by client
+
+	void setKeepAlive(int seconds);		 //send to broker
+	void setPingRepeatTime(int seconds); //used by client
 	// Sets Last Will and Testament
 	bool setWill(const String& topic, const String& message, int QoS, bool retained = false);
 
 	/** @brief  Connect to a MQTT server
-	*  @param  url, in the form "mttqs://user:password@server:port"
+	*  @param  url, in the form "mqtt://user:password@server:port" or "mqtts://user:password@server:port"
 	*  @param  client name
 	*/
 	bool connect(const URL& url, const String& uniqueClientName, uint32_t sslOptions = 0);
@@ -67,15 +67,23 @@ public:
 	/** @brief  connect
 	*  @deprecated Use connect(const String& url, const String& uniqueClientName) instead
 	*/
-	bool connect(const String& clientName,const String& username, const String& password, boolean useSsl = false, uint32_t sslOptions = 0);
+	bool connect(const String& clientName, const String& username, const String& password, boolean useSsl = false,
+				 uint32_t sslOptions = 0);
 
 	using TcpClient::setCompleteDelegate;
 
-	__forceinline bool isProcessing()  { return TcpClient::isProcessing(); }
-	__forceinline TcpClientState getConnectionState() { return TcpClient::getConnectionState(); }
+	__forceinline bool isProcessing()
+	{
+		return TcpClient::isProcessing();
+	}
+	__forceinline TcpClientState getConnectionState()
+	{
+		return TcpClient::getConnectionState();
+	}
 
 	bool publish(String topic, String message, bool retained = false);
-	bool publishWithQoS(String topic, String message, int QoS, bool retained = false, MqttMessageDeliveredCallback onDelivery = NULL);
+	bool publishWithQoS(String topic, String message, int QoS, bool retained = false,
+						MqttMessageDeliveredCallback onDelivery = NULL);
 
 	bool subscribe(const String& topic);
 	bool unsubscribe(const String& topic);
@@ -83,31 +91,32 @@ public:
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
 	using TcpClient::addSslValidator;
-	using TcpClient::pinCertificate;
-	using TcpClient::setSslKeyCert;
 	using TcpClient::freeSslKeyCert;
 	using TcpClient::getSsl;
+	using TcpClient::pinCertificate;
+	using TcpClient::setSslKeyCert;
 #endif
 
 protected:
-	virtual err_t onReceive(pbuf *buf);
+	virtual err_t onReceive(pbuf* buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 	void debugPrintResponseType(int type, int len);
 	static int staticSendPacket(void* userInfo, const void* buf, unsigned int count);
 
 private:
-	bool privateConnect(const String& clientName, const String& username, const String& password, boolean useSsl = false, uint32_t sslOptions = 0);
+	bool privateConnect(const String& clientName, const String& username, const String& password,
+						boolean useSsl = false, uint32_t sslOptions = 0);
 
-	URL				url;
+	URL url;
 	mqtt_broker_handle_t broker;
-	int				waitingSize;
-	uint8_t			buffer[MQTT_MAX_BUFFER_SIZE + 1];
-	uint8_t *		current;
-	int				posHeader;
+	int waitingSize;
+	uint8_t buffer[MQTT_MAX_BUFFER_SIZE + 1];
+	uint8_t* current;
+	int posHeader;
 	MqttStringSubscriptionCallback callback;
-	int				keepAlive = 60;
-	int				pingRepeatTime = 20;
-	unsigned long	lastMessage = 0;
+	int keepAlive = 60;
+	int pingRepeatTime = 20;
+	unsigned long lastMessage = 0;
 	HashMap<uint16_t, MqttMessageDeliveredCallback> onDeliveryQueue;
 };
 

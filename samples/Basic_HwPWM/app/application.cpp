@@ -19,23 +19,24 @@
 #include <SmingCore/SmingCore.h>
 #include <HardwarePWM.h>
 
-uint8_t pins[8] = { 4, 5, 0, 2, 15, 13, 12, 14 }; // List of pins that you want to connect to pwm
+uint8_t pins[8] = {4, 5, 0, 2, 15, 13, 12, 14}; // List of pins that you want to connect to pwm
 HardwarePWM HW_pwm(pins, 8);
 
 Timer procTimer;
 int32 i = 0;
 int32 inc = 100;
 bool countUp = true;
-void doPWM() {
-	if (countUp == true) {
+void doPWM()
+{
+	if(countUp == true) {
 		i += inc;
-		if (i >= 22222) {
+		if(i >= 22222) {
 			i = 22222;
 			countUp = false;
 		}
 	} else {
 		i -= inc;
-		if (i <= 0) {
+		if(i <= 0) {
 			i = 0;
 			countUp = true;
 		}
@@ -43,7 +44,8 @@ void doPWM() {
 	HW_pwm.analogWrite(2, i);
 }
 
-void init() {
+void init()
+{
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 

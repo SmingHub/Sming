@@ -13,12 +13,12 @@
 
 #include "SPIBase.h"
 
-SPIBase::SPIBase() {
+SPIBase::SPIBase()
+{
 	// TODO Auto-generated constructor stub
-
 }
 
-SPIBase::~SPIBase() {
+SPIBase::~SPIBase()
+{
 	// TODO Auto-generated destructor stub
 }
-

@@ -19,28 +19,26 @@
 class String;
 
 /// File open flags
-enum FileOpenFlags
-{
-  eFO_ReadOnly = SPIFFS_RDONLY, ///< Read only file
-  eFO_WriteOnly = SPIFFS_WRONLY, ///< Write only file
-  eFO_ReadWrite = eFO_ReadOnly | eFO_WriteOnly, ///< Read and write file
-  eFO_CreateIfNotExist = SPIFFS_CREAT, ///< Create new file if file does not exist
-  eFO_Append = SPIFFS_APPEND, ///< Append to file
-  eFO_Truncate = SPIFFS_TRUNC, ///< Truncate file
-  eFO_CreateNewAlways = eFO_CreateIfNotExist | eFO_Truncate ///< Create new file even if file exists
+enum FileOpenFlags {
+	eFO_ReadOnly = SPIFFS_RDONLY,							  ///< Read only file
+	eFO_WriteOnly = SPIFFS_WRONLY,							  ///< Write only file
+	eFO_ReadWrite = eFO_ReadOnly | eFO_WriteOnly,			  ///< Read and write file
+	eFO_CreateIfNotExist = SPIFFS_CREAT,					  ///< Create new file if file does not exist
+	eFO_Append = SPIFFS_APPEND,								  ///< Append to file
+	eFO_Truncate = SPIFFS_TRUNC,							  ///< Truncate file
+	eFO_CreateNewAlways = eFO_CreateIfNotExist | eFO_Truncate ///< Create new file even if file exists
 };
 
 static FileOpenFlags operator|(FileOpenFlags lhs, FileOpenFlags rhs)
 {
-    return (FileOpenFlags) ((int)lhs| (int)rhs);
+	return (FileOpenFlags)((int)lhs | (int)rhs);
 }
 
 /// File seek flags
-typedef enum
-{
-	eSO_FileStart = SPIFFS_SEEK_SET, ///< Start of file
+typedef enum {
+	eSO_FileStart = SPIFFS_SEEK_SET,  ///< Start of file
 	eSO_CurrentPos = SPIFFS_SEEK_CUR, ///< Current position in file
-	eSO_FileEnd = SPIFFS_SEEK_END ///< End of file
+	eSO_FileEnd = SPIFFS_SEEK_END	 ///< End of file
 } SeekOriginFlags;
 
 /** @brief  Open file
@@ -118,7 +116,7 @@ void fileClearLastError(file_t fd);
             populates the file with the content of a c-string buffer.
             Remember to terminate your c-string buffer with a null (0).
  */
-void fileSetContent(const String& fileName, const char *content);
+void fileSetContent(const String& fileName, const char* content);
 
 /** @brief  Create or replace file with defined content
  *  @param  fileName Name of file to create or replace
@@ -171,7 +169,7 @@ int fileGetContent(const String& fileName, char* buffer, int bufSize);
  *  @note   Pass a pointer to an instantiated fileStats structure
  *  @todo   Document the return value of fileStats
  */
-int fileStats(const String& name, spiffs_stat *stat);
+int fileStats(const String& name, spiffs_stat* stat);
 
 /** brief   Get file statistics
  *  @param  file File ID
@@ -180,7 +178,7 @@ int fileStats(const String& name, spiffs_stat *stat);
  *  @note   Pass a pointer to an instantiated fileStats structure
  *  @todo   Document the return value of fileStats
  */
-int fileStats(file_t file, spiffs_stat *stat);
+int fileStats(file_t file, spiffs_stat* stat);
 
 /** @brief  Delete file
  *  @param  name Name of file to delete

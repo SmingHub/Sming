@@ -21,9 +21,10 @@
 
 class FTPServerConnection;
 
-class FTPServer: public TcpServer
+class FTPServer : public TcpServer
 {
 	friend class FTPServerConnection;
+
 public:
 	FTPServer();
 	virtual ~FTPServer();
@@ -32,7 +33,7 @@ public:
 	bool checkUser(String login, const String& pass);
 
 protected:
-	virtual TcpConnection* createClient(tcp_pcb *clientTcp);
+	virtual TcpConnection* createClient(tcp_pcb* clientTcp);
 	virtual bool onCommand(String cmd, String data, FTPServerConnection& connection);
 
 private:

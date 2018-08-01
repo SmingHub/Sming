@@ -23,7 +23,7 @@
 bool HttpConnection::parserSettingsInitialized = false;
 http_parser_settings HttpConnection::parserSettings;
 
-HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false)
+HttpConnection::HttpConnection(RequestQueue* queue) : TcpClient(false)
 {
 	this->waitingQueue = queue;
 
@@ -34,22 +34,22 @@ HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false)
 		memset(&parserSettings, 0, sizeof(parserSettings));
 
 		// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
-		parserSettings.on_message_begin     = staticOnMessageBegin;
-		parserSettings.on_headers_complete  = staticOnHeadersComplete;
-		parserSettings.on_message_complete  = staticOnMessageComplete;
+		parserSettings.on_message_begin = staticOnMessageBegin;
+		parserSettings.on_headers_complete = staticOnHeadersComplete;
+		parserSettings.on_message_complete = staticOnMessageComplete;
 
 #ifndef COMPACT_MODE
-		parserSettings.on_chunk_header   = staticOnChunkHeader;
+		parserSettings.on_chunk_header = staticOnChunkHeader;
 		parserSettings.on_chunk_complete = staticOnChunkComplete;
 #endif
 
 		// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
 #ifndef COMPACT_MODE
-		parserSettings.on_status            = staticOnStatus;
+		parserSettings.on_status = staticOnStatus;
 #endif
-		parserSettings.on_header_field      = staticOnHeaderField;
-		parserSettings.on_header_value      = staticOnHeaderValue;
-		parserSettings.on_body              = staticOnBody;
+		parserSettings.on_header_field = staticOnHeaderField;
+		parserSettings.on_header_value = staticOnHeaderValue;
+		parserSettings.on_body = staticOnBody;
 
 		parserSettingsInitialized = true;
 	}
@@ -57,8 +57,8 @@ HttpConnection::HttpConnection(RequestQueue* queue): TcpClient(false)
 
 bool HttpConnection::connect(const String& host, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
-
-	debug_d("HttpConnection::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != NULL? tcp->state : -1), (int)(getConnectionState() != eTCS_Ready), (int)isActive());
+	debug_d("HttpConnection::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != NULL ? tcp->state : -1),
+			(int)(getConnectionState() != eTCS_Ready), (int)isActive());
 
 	if(isProcessing()) {
 		return true;
@@ -88,7 +88,7 @@ bool HttpConnection::isActive()
 		return false;
 	}
 
-	struct tcp_pcb *pcb;
+	struct tcp_pcb* pcb;
 	for(pcb = tcp_active_pcbs; pcb != NULL; pcb = pcb->next) {
 		if(tcp == pcb) {
 			return true;
@@ -99,14 +99,14 @@ bool HttpConnection::isActive()
 }
 
 // @deprecated
-HttpHeaders &HttpConnection::getResponseHeaders()
+HttpHeaders& HttpConnection::getResponseHeaders()
 {
 	return response.headers;
 }
 
 String HttpConnection::getResponseHeader(String headerName, String defaultValue /* = "" */)
 {
-	if (response.headers.contains(headerName))
+	if(response.headers.contains(headerName))
 		return response.headers[headerName];
 
 	return defaultValue;
@@ -116,7 +116,7 @@ DateTime HttpConnection::getLastModifiedDate()
 {
 	DateTime res;
 	String strLM = getResponseHeader("Last-Modified");
-	if (res.parseHttpDate(strLM))
+	if(res.parseHttpDate(strLM))
 		return res;
 	else
 		return DateTime();
@@ -126,7 +126,7 @@ DateTime HttpConnection::getServerDate()
 {
 	DateTime res;
 	String strSD = getResponseHeader("Date");
-	if (res.parseHttpDate(strSD))
+	if(res.parseHttpDate(strSD))
 		return res;
 	else
 		return DateTime();
@@ -150,7 +150,7 @@ void HttpConnection::reset()
 
 	lastWasValue = true;
 	lastData = "";
-	currentField  = "";
+	currentField = "";
 }
 
 err_t HttpConnection::onProtocolUpgrade(http_parser* parser)
@@ -161,7 +161,7 @@ err_t HttpConnection::onProtocolUpgrade(http_parser* parser)
 
 int HttpConnection::staticOnMessageBegin(http_parser* parser)
 {
-	HttpConnection *connection = (HttpConnection*)parser->data;
+	HttpConnection* connection = (HttpConnection*)parser->data;
 	if(connection == NULL) {
 		// something went wrong
 		return -1;
@@ -183,11 +183,11 @@ HttpPartResult HttpConnection::multipartProducer()
 
 	if(outgoingRequest->files.count()) {
 		String name = outgoingRequest->files.keyAt(0);
-		FileStream *file = outgoingRequest->files[name];
+		FileStream* file = outgoingRequest->files[name];
 		result.stream = file;
 
 		HttpHeaders* headers = new HttpHeaders();
-		(*headers)["Content-Disposition"] = "form-data; name=\""+name+"\"; filename=\""+file->fileName()+"\"";
+		(*headers)["Content-Disposition"] = "form-data; name=\"" + name + "\"; filename=\"" + file->fileName() + "\"";
 		(*headers)["Content-Type"] = ContentType::fromFullFileName(file->fileName());
 		result.headers = headers;
 
@@ -200,11 +200,11 @@ HttpPartResult HttpConnection::multipartProducer()
 		String value = outgoingRequest->postParams[name];
 
 		MemoryDataStream* mStream = new MemoryDataStream();
-		mStream->write((uint8_t* )value.c_str(), value.length());
+		mStream->write((uint8_t*)value.c_str(), value.length());
 		result.stream = mStream;
 
 		HttpHeaders* headers = new HttpHeaders();
-		(*headers)["Content-Disposition"] = "form-data; name=\""+name+"\"";
+		(*headers)["Content-Disposition"] = "form-data; name=\"" + name + "\"";
 		result.headers = headers;
 
 		outgoingRequest->postParams.remove(name);
@@ -216,7 +216,7 @@ HttpPartResult HttpConnection::multipartProducer()
 
 int HttpConnection::staticOnMessageComplete(http_parser* parser)
 {
-	HttpConnection *connection = (HttpConnection*)parser->data;
+	HttpConnection* connection = (HttpConnection*)parser->data;
 	if(connection == NULL) {
 		// something went wrong
 		return -1;
@@ -226,22 +226,21 @@ int HttpConnection::staticOnMessageComplete(http_parser* parser)
 		return -2; // no current request...
 	}
 
-	debug_d("staticOnMessageComplete: Execution queue: %d, %s",
-								connection->executionQueue.count(),
-								connection->incomingRequest->uri.toString().c_str()
-								);
+	debug_d("staticOnMessageComplete: Execution queue: %d, %s", connection->executionQueue.count(),
+			connection->incomingRequest->uri.toString().c_str());
 
 	// we are finished with this request
 	int hasError = 0;
 	if(connection->incomingRequest->requestCompletedDelegate) {
-		bool success = (HTTP_PARSER_ERRNO(parser) == HPE_OK) &&  // false when the parsing has failed
-					   (connection->response.code >= 200 && connection->response.code <= 399);  // false when the HTTP status code is not ok
+		bool success = (HTTP_PARSER_ERRNO(parser) == HPE_OK) && // false when the parsing has failed
+					   (connection->response.code >= 200 &&
+						connection->response.code <= 399); // false when the HTTP status code is not ok
 		hasError = connection->incomingRequest->requestCompletedDelegate(*connection, success);
 	}
 
 	if(connection->incomingRequest->retries > 0) {
 		connection->incomingRequest->retries--;
-		return (connection->executionQueue.enqueue(connection->incomingRequest)? 0: -1);
+		return (connection->executionQueue.enqueue(connection->incomingRequest) ? 0 : -1);
 	}
 
 	delete connection->incomingRequest;
@@ -256,7 +255,7 @@ int HttpConnection::staticOnMessageComplete(http_parser* parser)
 
 int HttpConnection::staticOnHeadersComplete(http_parser* parser)
 {
-	HttpConnection *connection = (HttpConnection*)parser->data;
+	HttpConnection* connection = (HttpConnection*)parser->data;
 	if(connection == NULL) {
 		// something went wrong
 		return -1;
@@ -304,8 +303,7 @@ int HttpConnection::staticOnHeadersComplete(http_parser* parser)
 		if(connection->incomingRequest->responseStream != NULL) {
 			connection->response.stream = connection->incomingRequest->responseStream;
 			connection->incomingRequest->responseStream = NULL; // the response object will release that stream
-		}
-		else {
+		} else {
 			connection->response.stream = new LimitedMemoryStream(NETWORK_SEND_BUFFER_SIZE);
 		}
 	}
@@ -314,15 +312,15 @@ int HttpConnection::staticOnHeadersComplete(http_parser* parser)
 }
 
 #ifndef COMPACT_MODE
-int HttpConnection::staticOnStatus(http_parser *parser, const char *at, size_t length)
+int HttpConnection::staticOnStatus(http_parser* parser, const char* at, size_t length)
 {
 	return 0;
 }
 #endif
 
-int HttpConnection::staticOnHeaderField(http_parser *parser, const char *at, size_t length)
+int HttpConnection::staticOnHeaderField(http_parser* parser, const char* at, size_t length)
 {
-	HttpConnection *connection = (HttpConnection*)parser->data;
+	HttpConnection* connection = (HttpConnection*)parser->data;
 	if(connection == NULL) {
 		// something went wrong
 		return -1;
@@ -338,10 +336,10 @@ int HttpConnection::staticOnHeaderField(http_parser *parser, const char *at, siz
 	return 0;
 }
 
-int HttpConnection::staticOnHeaderValue(http_parser *parser, const char *at, size_t length)
+int HttpConnection::staticOnHeaderValue(http_parser* parser, const char* at, size_t length)
 {
-	HttpConnection *connection = (HttpConnection*)parser->data;
-	if (connection == NULL) {
+	HttpConnection* connection = (HttpConnection*)parser->data;
+	if(connection == NULL) {
 		// something went wrong
 		return -1;
 	}
@@ -356,10 +354,10 @@ int HttpConnection::staticOnHeaderValue(http_parser *parser, const char *at, siz
 	return 0;
 }
 
-int HttpConnection::staticOnBody(http_parser *parser, const char *at, size_t length)
+int HttpConnection::staticOnBody(http_parser* parser, const char* at, size_t length)
 {
-	HttpConnection *connection = (HttpConnection*)parser->data;
-	if (connection == NULL) {
+	HttpConnection* connection = (HttpConnection*)parser->data;
+	if(connection == NULL) {
 		// something went wrong
 		return -1;
 	}
@@ -369,9 +367,9 @@ int HttpConnection::staticOnBody(http_parser *parser, const char *at, size_t len
 	}
 
 	if(connection->response.stream != NULL) {
-		int res = connection->response.stream->write((const uint8_t *)at, length);
-		if (res != length) {
-            		// unable to write the requested bytes - stop here...
+		int res = connection->response.stream->write((const uint8_t*)at, length);
+		if(res != length) {
+			// unable to write the requested bytes - stop here...
 			delete connection->response.stream;
 			connection->response.stream = NULL;
 			return 1;
@@ -469,24 +467,20 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 	}
 
 	request->headers["Content-Length"] = "0";
-	if (request->files.count()) {
-		MultipartStream* mStream = new MultipartStream(
-				HttpPartProducerDelegate(&HttpConnection::multipartProducer,
-						this));
-		request->headers["Content-Type"] = ContentType::toString(
-				MIME_FORM_MULTIPART) + String("; boundary=")
-				+ mStream->getBoundary();
-		if (request->stream) {
+	if(request->files.count()) {
+		MultipartStream* mStream =
+			new MultipartStream(HttpPartProducerDelegate(&HttpConnection::multipartProducer, this));
+		request->headers["Content-Type"] =
+			ContentType::toString(MIME_FORM_MULTIPART) + String("; boundary=") + mStream->getBoundary();
+		if(request->stream) {
 			debug_e("HttpConnection: existing stream is discarded due to POST params");
 			delete request->stream;
 		}
 		request->stream = mStream;
-	} else if (request->postParams.count()) {
-		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(
-				request->postParams);
-		request->headers["Content-Type"] = ContentType::toString(
-				MIME_FORM_URL_ENCODED);
-		if (request->stream) {
+	} else if(request->postParams.count()) {
+		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(request->postParams);
+		request->headers["Content-Type"] = ContentType::toString(MIME_FORM_URL_ENCODED);
+		if(request->stream) {
 			debug_e("HttpConnection: existing stream is discarded due to POST params");
 			delete request->stream;
 		}
@@ -496,8 +490,7 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 	if(request->stream != NULL) {
 		if(request->stream->available() > -1) {
 			request->headers["Content-Length"] = String(request->stream->available());
-		}
-		else {
+		} else {
 			request->headers.remove("Content-Length");
 		}
 	}
@@ -506,8 +499,7 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 		request->headers["Transfer-Encoding"] = "chunked";
 	}
 
-	for (int i = 0; i < request->headers.count(); i++)
-	{
+	for(int i = 0; i < request->headers.count(); i++) {
 		// TODO: add here name and/or value escaping.
 		String write = request->headers.keyAt(i) + ": " + request->headers.valueAt(i) + "\r\n";
 		sendString(write.c_str());
@@ -527,8 +519,7 @@ bool HttpConnection::sendRequestBody(HttpRequest* request)
 		delete stream;
 		if(request->headers["Transfer-Encoding"] == "chunked") {
 			stream = new ChunkedStream(request->stream);
-		}
-		else {
+		} else {
 			stream = request->stream; // avoid intermediate buffers
 		}
 		request->stream = NULL;
@@ -559,18 +550,17 @@ HttpResponse* HttpConnection::getResponse()
 
 // end of public methods for HttpConnection
 
-err_t HttpConnection::onReceive(pbuf *buf)
+err_t HttpConnection::onReceive(pbuf* buf)
 {
-	if (buf == NULL)
-	{
+	if(buf == NULL) {
 		// Disconnected, close it
 		return TcpClient::onReceive(buf);
 	}
 
-	pbuf *cur = buf;
+	pbuf* cur = buf;
 	int parsedBytes = 0;
-	while (cur != NULL && cur->len > 0) {
-		parsedBytes += http_parser_execute(&parser, &parserSettings, (char*) cur->payload, cur->len);
+	while(cur != NULL && cur->len > 0) {
+		parsedBytes += http_parser_execute(&parser, &parserSettings, (char*)cur->payload, cur->len);
 		if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 			// we ran into trouble - abort the connection
 			debug_e("HTTP parser error: %s", http_errno_name(HTTP_PARSER_ERRNO(&parser)));
@@ -582,9 +572,9 @@ err_t HttpConnection::onReceive(pbuf *buf)
 		cur = cur->next;
 	}
 
-	if (parser.upgrade) {
+	if(parser.upgrade) {
 		return onProtocolUpgrade(&parser);
-	} else if (parsedBytes != buf->tot_len) {
+	} else if(parsedBytes != buf->tot_len) {
 		TcpClient::onReceive(NULL);
 
 		return ERR_ABRT;
@@ -607,7 +597,7 @@ void HttpConnection::cleanup()
 	reset();
 
 	// if there are requests in the executionQueue -> move them back to the waiting queue
-	for(int i=0; i < executionQueue.count(); i++) {
+	for(int i = 0; i < executionQueue.count(); i++) {
 		waitingQueue->enqueue(executionQueue.dequeue());
 	}
 }
@@ -616,4 +606,3 @@ HttpConnection::~HttpConnection()
 {
 	cleanup();
 }
-

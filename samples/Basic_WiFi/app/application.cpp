@@ -3,26 +3,25 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-	#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
-	#define WIFI_PWD "PleaseEnterPass"
+#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_PWD "PleaseEnterPass"
 #endif
 
 // Will be called when WiFi station network scan was completed
 void listNetworks(bool succeeded, BssList list)
 {
-	if (!succeeded)
-	{
+	if(!succeeded) {
 		Serial.println("Failed to scan networks");
 		return;
 	}
 
-	for (int i = 0; i < list.count(); i++)
-	{
+	for(int i = 0; i < list.count(); i++) {
 		Serial.print("\tWiFi: ");
 		Serial.print(list[i].ssid);
 		Serial.print(", ");
 		Serial.print(list[i].getAuthorizationMethodName());
-		if (list[i].hidden) Serial.print(" (hidden)");
+		if(list[i].hidden)
+			Serial.print(" (hidden)");
 		Serial.println();
 	}
 }
@@ -35,7 +34,7 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 }
 
 // Will be called when WiFi station was disconnected
-void connectFail(String ssid, uint8_t ssidLength, uint8_t *bssid, uint8_t reason)
+void connectFail(String ssid, uint8_t ssidLength, uint8_t* bssid, uint8_t reason)
 {
 	// The different reason codes can be found in user_interface.h. in your SDK.
 	debugf("Disconnected from %s. Reason: %d", ssid.c_str(), reason);
@@ -71,7 +70,6 @@ void init()
 	// Optional: Change IP addresses (and disable DHCP)
 	WifiAccessPoint.setIP(IPAddress(192, 168, 2, 1));
 	WifiStation.setIP(IPAddress(192, 168, 1, 171));
-
 
 	// Print available access points
 	WifiStation.startScan(listNetworks); // In Sming we can start network scan from init method without additional code

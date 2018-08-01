@@ -22,7 +22,7 @@
  *  @{
 */
 
-class Base64OutputStream: public StreamTransformer
+class Base64OutputStream : public StreamTransformer
 {
 public:
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param size_t resultSize - the size of the intermediate buffer.
 	 * 							- it will be created once per object, reused multiple times and kept until the end of the object
 	 */
-	Base64OutputStream(ReadWriteStream *stream, size_t resultSize = 500);
+	Base64OutputStream(ReadWriteStream* stream, size_t resultSize = 500);
 
 	/**
 	 * Encodes a chunk of data into base64. Keeps a state of the progress.

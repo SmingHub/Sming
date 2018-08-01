@@ -10,8 +10,10 @@ extern OneWire ds;
 
 extern unsigned long counter; // Kind of heartbeat counter
 
-const uint8_t ConfigJsonBufferSize = 200; // Application configuration JsonBuffer size ,increase it if you have large config
-const uint16_t ConfigFileBufferSize = 2048; // Application configuration FileBuffer size ,increase it if you have large config
+const uint8_t ConfigJsonBufferSize =
+	200; // Application configuration JsonBuffer size ,increase it if you have large config
+const uint16_t ConfigFileBufferSize =
+	2048; // Application configuration FileBuffer size ,increase it if you have large config
 
 //Webserver
 void startWebServer();

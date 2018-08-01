@@ -1,7 +1,6 @@
 #ifndef INCLUDE_NTPCLIENTDELEGATEDEMO_H_
 #define INCLUDE_NTPCLIENTDELEGATEDEMO_H_
 
-
 class ntpClientDemo
 {
 public:
@@ -17,14 +16,10 @@ public:
 		Serial.print(ntpTime);
 		Serial.print(" Time = ");
 		Serial.println(SystemClock.getSystemTimeString());
-
 	}
 
 private:
-	NtpClient *ntpcp;
+	NtpClient* ntpcp;
 };
-
-
-
 
 #endif /* INCLUDE_NTPCLIENTDELEGATEDEMO_H_ */

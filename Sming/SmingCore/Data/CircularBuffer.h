@@ -24,20 +24,20 @@
 */
 
 ///Base class for data source stream
-class CircularBuffer: public ReadWriteStream
+class CircularBuffer : public ReadWriteStream
 {
 public:
 	CircularBuffer(int size);
 
 	virtual ~CircularBuffer();
 
-    /** @brief  Get the stream type
+	/** @brief  Get the stream type
      *  @retval StreamType The stream type.
      *  @todo   Return value of IDataSourceStream:getStreamType base class function should be of type StreamType, e.g. eSST_User
      */
 	virtual StreamType getStreamType();
 
-    /** @brief  Read a block of memory
+	/** @brief  Read a block of memory
      *  @param  data Pointer to the data to be read
      *  @param  bufSize Quantity of chars to read
      *  @retval uint16_t Quantity of chars read
@@ -51,7 +51,7 @@ public:
 	 */
 	virtual bool seek(int len);
 
-    /** @brief  Check if stream is finished
+	/** @brief  Check if stream is finished
      *  @retval bool True on success.
      */
 	virtual bool isFinished();
@@ -70,25 +70,26 @@ public:
 
 	virtual size_t write(uint8_t charToWrite);
 
-    /** @brief  Write chars to stream
+	/** @brief  Write chars to stream
      *  @param  buffer Pointer to buffer to write to the stream
      *  @param  size Quantity of chars to writen
      *  @retval size_t Quantity of chars written to stream
      */
-	virtual size_t write(const uint8_t *buffer, size_t size);
+	virtual size_t write(const uint8_t* buffer, size_t size);
 
 	size_t room() const;
 
-	inline void flush() {
+	inline void flush()
+	{
 		readPos = buffer;
 		writePos = buffer;
 	}
 
 private:
-	inline char* wrap(char* ptr) const {
-		return (ptr == buffer + size) ? buffer: ptr;
+	inline char* wrap(char* ptr) const
+	{
+		return (ptr == buffer + size) ? buffer : ptr;
 	}
-
 
 private:
 	char* buffer = NULL;

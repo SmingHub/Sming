@@ -5,7 +5,6 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-
 /** @defgroup tcpserver Servers
  *  @brief Provides the base for building TCP servers
  *  @ingroup tcp
@@ -21,10 +20,12 @@
 
 typedef Delegate<void(TcpClient* client)> TcpClientConnectDelegate;
 
-class TcpServer: public TcpConnection {
+class TcpServer : public TcpConnection
+{
 public:
 	TcpServer();
-	TcpServer(TcpClientConnectDelegate onClientHandler, TcpClientDataDelegate clientReceiveDataHandler, TcpClientCompleteDelegate clientCompleteHandler);
+	TcpServer(TcpClientConnectDelegate onClientHandler, TcpClientDataDelegate clientReceiveDataHandler,
+			  TcpClientCompleteDelegate clientCompleteHandler);
 	TcpServer(TcpClientDataDelegate clientReceiveDataHandler, TcpClientCompleteDelegate clientCompleteHandler);
 	TcpServer(TcpClientDataDelegate clientReceiveDataHandler);
 	virtual ~TcpServer();
@@ -53,15 +54,15 @@ public:
 
 protected:
 	// Overload this method in your derived class!
-	virtual TcpConnection* createClient(tcp_pcb *clientTcp);
+	virtual TcpConnection* createClient(tcp_pcb* clientTcp);
 
-	virtual err_t onAccept(tcp_pcb *clientTcp, err_t err);
-	virtual void onClient(TcpClient *client);
-	virtual bool onClientReceive (TcpClient& client, char *data, int size);
+	virtual err_t onAccept(tcp_pcb* clientTcp, err_t err);
+	virtual void onClient(TcpClient* client);
+	virtual bool onClientReceive(TcpClient& client, char* data, int size);
 	virtual void onClientComplete(TcpClient& client, bool succesfull);
 	virtual void onClientDestroy(TcpConnection& connection);
 
-	static err_t staticAccept(void *arg, tcp_pcb *new_tcp, err_t err);
+	static err_t staticAccept(void* arg, tcp_pcb* new_tcp, err_t err);
 
 public:
 	static int16_t totalConnections;

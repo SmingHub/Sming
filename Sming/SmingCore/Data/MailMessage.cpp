@@ -35,8 +35,8 @@ HttpHeaders& MailMessage::getHeaders()
 
 MailMessage& MailMessage::setBody(const String& body, MimeType mime /* = MIME_TEXT */)
 {
-	MemoryDataStream *memory = new MemoryDataStream();
-	int written = memory->write((uint8_t *)body.c_str(), body.length());
+	MemoryDataStream* memory = new MemoryDataStream();
+	int written = memory->write((uint8_t*)body.c_str(), body.length());
 	if(written < body.length()) {
 		debug_e("MailMessage::setBody: Unable to store the complete body");
 	}
@@ -58,7 +58,8 @@ MailMessage& MailMessage::setBody(ReadWriteStream* stream, MimeType mime /* = MI
 	return *this;
 }
 
-MailMessage& MailMessage::addAttachment(FileStream* stream) {
+MailMessage& MailMessage::addAttachment(FileStream* stream)
+{
 	if(stream == NULL) {
 		return *this;
 	}
@@ -82,7 +83,7 @@ MailMessage& MailMessage::addAttachment(ReadWriteStream* stream, const String& m
 	(*attachment.headers)["Content-Type"] = mime;
 	(*attachment.headers)["Content-Disposition"] = "attachment";
 	if(filename.length()) {
-		(*attachment.headers)["Content-Disposition"] += "; filename=\""+ filename +"\"";
+		(*attachment.headers)["Content-Disposition"] += "; filename=\"" + filename + "\"";
 	}
 
 	attachments.addElement(attachment);
