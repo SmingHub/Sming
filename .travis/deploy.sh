@@ -39,5 +39,5 @@ do
      xmlstarlet ed --inplace -N "ns=http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd" -u "/ns:package/ns:metadata/ns:version"  -v "$TAG" $FILE;
 done
 
-git commit -m "Updated chocolatey packages to latest stable $TAG version." || 1
+git commit -a -m "Updated chocolatey packages to latest stable $TAG version." || 1
 git push https://${SMING_TOKEN}@github.com/slaff/chocolatey-packages.git master
