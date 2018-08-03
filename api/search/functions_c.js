@@ -21,7 +21,6 @@ var searchData=
   ['nextouch',['NexTouch',['../classNexTouch.html#a9e028e45e0d2d2cc39c8bf8d03dbb887',1,'NexTouch']]],
   ['nexvariable',['NexVariable',['../classNexVariable.html#a7d36d19e14c991872fb1547f3ced09b2',1,'NexVariable']]],
   ['nexwaveform',['NexWaveform',['../classNexWaveform.html#a4f18ca5050823e874d526141c8595514',1,'NexWaveform']]],
-  ['noanalogwrite',['noAnalogWrite',['../classDriverPWM.html#a202cd541c9f1b791129e63f01c9a1c2b',1,'DriverPWM']]],
   ['noautoscroll',['noAutoscroll',['../classLCD.html#a96035dde40efbf73390e00b5beb00231',1,'LCD']]],
   ['nobacklight',['noBacklight',['../classLCD.html#a2a331b4e142734411b2f1cfaffe7a488',1,'LCD']]],
   ['noblink',['noBlink',['../classLCD.html#a3b755c4b397b5985752be8c30ee1a9b5',1,'LCD']]],

@@ -7,7 +7,7 @@ var searchData=
   ['addvalue',['addValue',['../classNexWaveform.html#a5b04ea7397b784947b845e2a03fc77e4',1,'NexWaveform']]],
   ['alive',['alive',['../group__wdt.html#gac142c43f548a7cfe7c0d739c7abee1c8',1,'WDTClass']]],
   ['analog_5fwrite',['analog_write',['../classNexGpio.html#af21eb91b041d149193bc716202d4a462',1,'NexGpio']]],
-  ['analogwrite',['analogWrite',['../classDriverPWM.html#abf80bffdbf8f2fe60bd58d132457cf73',1,'DriverPWM::analogWrite()'],['../classHardwarePWM.html#a7db328897857470679ff875e11bbca3f',1,'HardwarePWM::analogWrite()']]],
+  ['analogwrite',['analogWrite',['../classHardwarePWM.html#a7db328897857470679ff875e11bbca3f',1,'HardwarePWM']]],
   ['attach',['attach',['../classServoChannel.html#a4b40b22210e4dae762dacfe6d7b4c520',1,'ServoChannel']]],
   ['attachinterrupt',['attachInterrupt',['../group__interrupts.html#ga539a763c7be87553c3a991189de5de37',1,'attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode):&#160;Interrupts.h'],['../group__interrupts.html#ga1cf08b4651efc52463daa75dd6e73413',1,'attachInterrupt(uint8_t pin, Delegate&lt; void()&gt; delegateFunction, uint8_t mode):&#160;Interrupts.h'],['../group__interrupts.html#ga6b0a2d8a3e9298985c3357dbfba6542d',1,'attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode):&#160;Interrupts.h'],['../group__interrupts.html#ga0dfe975650e60d70ad4ac44ccdbf3155',1,'attachInterrupt(uint8_t pin, Delegate&lt; void()&gt; delegateFunction, GPIO_INT_TYPE mode):&#160;Interrupts.h']]],
   ['attachinterrupthandler',['attachInterruptHandler',['../group__interrupts.html#ga159502ea6c799ccae2523194b7c9aef8',1,'Interrupts.h']]],

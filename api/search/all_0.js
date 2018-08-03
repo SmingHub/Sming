@@ -18,7 +18,7 @@ var searchData=
   ['alive',['alive',['../group__wdt.html#gac142c43f548a7cfe7c0d739c7abee1c8',1,'WDTClass']]],
   ['am2321',['AM2321',['../classAM2321.html',1,'']]],
   ['analog_5fwrite',['analog_write',['../classNexGpio.html#af21eb91b041d149193bc716202d4a462',1,'NexGpio']]],
-  ['analogwrite',['analogWrite',['../classDriverPWM.html#abf80bffdbf8f2fe60bd58d132457cf73',1,'DriverPWM::analogWrite()'],['../classHardwarePWM.html#a7db328897857470679ff875e11bbca3f',1,'HardwarePWM::analogWrite()']]],
+  ['analogwrite',['analogWrite',['../classHardwarePWM.html#a7db328897857470679ff875e11bbca3f',1,'HardwarePWM']]],
   ['apa102',['APA102',['../classAPA102.html',1,'']]],
   ['arducamstream',['ArduCAMStream',['../classArduCAMStream.html',1,'']]],
   ['atclient',['AtClient',['../classAtClient.html',1,'']]],

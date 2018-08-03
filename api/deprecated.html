@@ -102,39 +102,37 @@ $(document).ready(function(){initNavTree('deprecated.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt><a class="anchor" id="_deprecated000002"></a>Class <a class="el" href="classDriverPWM.html">DriverPWM</a>  </dt>
-<dd><a class="el" href="classDriverPWM.html" title="Pulse width modulator driver class. ">DriverPWM</a> is deprecated and will be removed in the near future. Use <a class="el" href="classHardwarePWM.html" title="Hardware pulse width modulation. ">HardwarePWM</a> instead.  </dd>
-<dt><a class="anchor" id="_deprecated000006"></a>Member <a class="el" href="classHttpConnection.html#ae38daf9c615d8374c4605367e8c779d9">HttpConnection::getLastModifiedDate</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000005"></a>Member <a class="el" href="classHttpConnection.html#ae38daf9c615d8374c4605367e8c779d9">HttpConnection::getLastModifiedDate</a>  ()</dt>
 <dd>Use <code>getResponse().headers["Last-Modified"]</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000003"></a>Member <a class="el" href="classHttpConnection.html#a8096f420efc2a724109be9b9f804b210">HttpConnection::getResponseCode</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000002"></a>Member <a class="el" href="classHttpConnection.html#a8096f420efc2a724109be9b9f804b210">HttpConnection::getResponseCode</a>  ()</dt>
 <dd>Use <code>getResponse().code</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000004"></a>Member <a class="el" href="classHttpConnection.html#a2a4b5f458b2e324b626a913902f01a0a">HttpConnection::getResponseHeader</a>  (<a class="el" href="classString.html">String</a> headerName, <a class="el" href="classString.html">String</a> defaultValue="")</dt>
+<dt><a class="anchor" id="_deprecated000003"></a>Member <a class="el" href="classHttpConnection.html#a2a4b5f458b2e324b626a913902f01a0a">HttpConnection::getResponseHeader</a>  (<a class="el" href="classString.html">String</a> headerName, <a class="el" href="classString.html">String</a> defaultValue="")</dt>
 <dd>Use <code>getResponse().headers[headerName]</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000005"></a>Member <a class="el" href="classHttpConnection.html#aa1d5c9b4c59591f5c97d2f08df65a868">HttpConnection::getResponseHeaders</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000004"></a>Member <a class="el" href="classHttpConnection.html#aa1d5c9b4c59591f5c97d2f08df65a868">HttpConnection::getResponseHeaders</a>  ()</dt>
 <dd>Use <code>getResponse().headers</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000008"></a>Member <a class="el" href="classHttpConnection.html#a917b52602302f4b7f913c8da574556bf">HttpConnection::getResponseString</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000007"></a>Member <a class="el" href="classHttpConnection.html#a917b52602302f4b7f913c8da574556bf">HttpConnection::getResponseString</a>  ()</dt>
 <dd>Use <code>getResponse().stream</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000007"></a>Member <a class="el" href="classHttpConnection.html#ac5a7f0ec9c6273ca3519a8b5d078034f">HttpConnection::getServerDate</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000006"></a>Member <a class="el" href="classHttpConnection.html#ac5a7f0ec9c6273ca3519a8b5d078034f">HttpConnection::getServerDate</a>  ()</dt>
 <dd>Use <code>getResponse().headers["Date"]</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000009"></a>Member <a class="el" href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">HttpResponse::forbidden</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000008"></a>Member <a class="el" href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">HttpResponse::forbidden</a>  ()</dt>
 <dd>Use response.code = HTTP_STATUS_FORBIDDEN instead  </dd>
-<dt><a class="anchor" id="_deprecated000010"></a>Member <a class="el" href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">HttpResponse::notFound</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000009"></a>Member <a class="el" href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">HttpResponse::notFound</a>  ()</dt>
 <dd>Use response.code = HTTP_STATUS_NOT_FOUND instead  </dd>
-<dt><a class="anchor" id="_deprecated000011"></a>Member <a class="el" href="classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d">HttpResponse::sendJsonObject</a>  (<a class="el" href="classJsonObjectStream.html" title="JSON object stream class. ">JsonObjectStream</a> *newJsonStreamInstance)</dt>
+<dt><a class="anchor" id="_deprecated000010"></a>Member <a class="el" href="classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d">HttpResponse::sendJsonObject</a>  (<a class="el" href="classJsonObjectStream.html" title="JSON object stream class. ">JsonObjectStream</a> *newJsonStreamInstance)</dt>
 <dd>use response.sendDataStream(stream, MIME_JSON) instead  </dd>
 <dt><a class="anchor" id="_deprecated000001"></a>Member <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">IDataSourceStream::length</a>  ()</dt>
 <dd>This method is deprecated and will be removed in the coming versions. Please, use available() instead.  </dd>
-<dt><a class="anchor" id="_deprecated000015"></a>Member <a class="el" href="classMqttClient.html#aa6ee6d98c3810d5f3ef6b8f593bbd4c5">MqttClient::connect</a>  (const <a class="el" href="classString.html">String</a> &amp;clientName, const <a class="el" href="classString.html">String</a> &amp;username, const <a class="el" href="classString.html">String</a> &amp;password, boolean useSsl=false, uint32_t sslOptions=0)</dt>
+<dt><a class="anchor" id="_deprecated000014"></a>Member <a class="el" href="classMqttClient.html#aa6ee6d98c3810d5f3ef6b8f593bbd4c5">MqttClient::connect</a>  (const <a class="el" href="classString.html">String</a> &amp;clientName, const <a class="el" href="classString.html">String</a> &amp;username, const <a class="el" href="classString.html">String</a> &amp;password, boolean useSsl=false, uint32_t sslOptions=0)</dt>
 <dd>Use connect(const String&amp; url, const String&amp; uniqueClientName) instead  </dd>
-<dt><a class="anchor" id="_deprecated000014"></a>Member <a class="el" href="classMqttClient.html#a3cd10cecb2ca557b7d77e2e6a4d50116">MqttClient::connect</a>  (const <a class="el" href="classString.html">String</a> &amp;clientName, boolean useSsl=false, uint32_t sslOptions=0)</dt>
+<dt><a class="anchor" id="_deprecated000013"></a>Member <a class="el" href="classMqttClient.html#a3cd10cecb2ca557b7d77e2e6a4d50116">MqttClient::connect</a>  (const <a class="el" href="classString.html">String</a> &amp;clientName, boolean useSsl=false, uint32_t sslOptions=0)</dt>
 <dd>Use connect(const String&amp; url, const String&amp; uniqueClientName) instead  </dd>
-<dt><a class="anchor" id="_deprecated000013"></a>Member <a class="el" href="classMqttClient.html#a96ab456e6b4d872eddf26e7e454dd2de">MqttClient::MqttClient</a>  (<a class="el" href="classIPAddress.html">IPAddress</a> serverIp, int serverPort, MqttStringSubscriptionCallback callback=NULL)</dt>
+<dt><a class="anchor" id="_deprecated000011"></a>Member <a class="el" href="classMqttClient.html#ae81fd0caf267d95579f2b17689a94b9d">MqttClient::MqttClient</a>  (<a class="el" href="classString.html">String</a> serverHost, int serverPort, MqttStringSubscriptionCallback callback=NULL)</dt>
 <dd>Use instead the empty contructor  </dd>
-<dt><a class="anchor" id="_deprecated000012"></a>Member <a class="el" href="classMqttClient.html#ae81fd0caf267d95579f2b17689a94b9d">MqttClient::MqttClient</a>  (<a class="el" href="classString.html">String</a> serverHost, int serverPort, MqttStringSubscriptionCallback callback=NULL)</dt>
+<dt><a class="anchor" id="_deprecated000012"></a>Member <a class="el" href="classMqttClient.html#a96ab456e6b4d872eddf26e7e454dd2de">MqttClient::MqttClient</a>  (<a class="el" href="classIPAddress.html">IPAddress</a> serverIp, int serverPort, MqttStringSubscriptionCallback callback=NULL)</dt>
 <dd>Use instead the empty contructor  </dd>
-<dt><a class="anchor" id="_deprecated000016"></a>Member <a class="el" href="group__timer.html#gacff85d16f46217ace62486a1325a1515">Timer::initializeMs</a>  (uint32_t milliseconds, TimerDelegate delegateFunction=NULL)</dt>
+<dt><a class="anchor" id="_deprecated000015"></a>Member <a class="el" href="group__timer.html#gacff85d16f46217ace62486a1325a1515">Timer::initializeMs</a>  (uint32_t milliseconds, TimerDelegate delegateFunction=NULL)</dt>
 <dd>Use initializeMs(xx, TimerDelegateStdFunction); instead.  </dd>
-<dt><a class="anchor" id="_deprecated000017"></a>Member <a class="el" href="group__timer.html#gabdf713dd3a808a56a2cdc5029c73f3c1">Timer::initializeUs</a>  (uint32_t microseconds, TimerDelegate delegateFunction=NULL)</dt>
+<dt><a class="anchor" id="_deprecated000016"></a>Member <a class="el" href="group__timer.html#gabdf713dd3a808a56a2cdc5029c73f3c1">Timer::initializeUs</a>  (uint32_t microseconds, TimerDelegate delegateFunction=NULL)</dt>
 <dd>Use initializeMs(xx, TimerDelegateStdFunction); instead. </dd>
 </dl>
 </div></div><!-- contents -->

@@ -18,7 +18,6 @@ var hierarchy =
     [ "Bounce", "classBounce.html", null ],
     [ "BssInfo", "classBssInfo.html", null ],
     [ "CapacitiveSensor", "classCapacitiveSensor.html", null ],
-    [ "ChannelPWM", "classChannelPWM.html", null ],
     [ "col_t", "structcol__t.html", null ],
     [ "ComfortProfile", "structComfortProfile.html", null ],
     [ "CommandDelegate", "classCommandDelegate.html", null ],
@@ -35,9 +34,6 @@ var hierarchy =
       [ "FIFO< AtCommand, rawSize >", "classFIFO.html", [
         [ "SimpleQueue< AtCommand, 10 >", "classSimpleQueue.html", null ]
       ] ]
-    ] ],
-    [ "Countable< ChannelPWM >", "classCountable.html", [
-      [ "Vector< ChannelPWM >", "classVector.html", null ]
     ] ],
     [ "Countable< Delegate >", "classCountable.html", [
       [ "Vector< Delegate >", "classVector.html", null ]
@@ -116,14 +112,13 @@ var hierarchy =
     [ "Delegate< void(WebSocketConnection &)>", "classDelegate.html", null ],
     [ "Delegate< void(WebSocketConnection &, const String &)>", "classDelegate.html", null ],
     [ "Delegate< void(WebSocketConnection &, uint8_t *data, size_t size)>", "classDelegate.html", null ],
+    [ "DFRobotDFPlayerMini", "classDFRobotDFPlayerMini.html", null ],
     [ "DHTesp", "classDHTesp.html", null ],
     [ "DIR", "structDIR.html", null ],
     [ "DNSHeader", "structDNSHeader.html", null ],
     [ "DnsLookup", "structDnsLookup.html", null ],
-    [ "DriverPWM", "classDriverPWM.html", null ],
     [ "DS18S20", "classDS18S20.html", null ],
     [ "DS3232RTC", "classDS3232RTC.html", null ],
-    [ "ESP01_Description", "classESP01__Description.html", null ],
     [ "EspDigitalPin", "structEspDigitalPin.html", null ],
     [ "FATFS", "structFATFS.html", null ],
     [ "FIL", "structFIL.html", null ],

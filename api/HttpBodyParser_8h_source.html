@@ -119,8 +119,8 @@ $(document).ready(function(){initNavTree('HttpBodyParser_8h_source.html','');});
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;HttpCommon.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;HttpRequest.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(HttpRequest&amp;, const char *at, int length)&gt;</a> <a class="code" href="classDelegate.html">HttpBodyParserDelegate</a>;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classHashMap.html">HashMap &lt;String, HttpBodyParserDelegate&gt;</a> <a class="code" href="classHashMap.html">BodyParsers</a>;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(HttpRequest&amp;, const char* at, int length)&gt;</a> <a class="code" href="classDelegate.html">HttpBodyParserDelegate</a>;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classHashMap.html">HashMap&lt;String, HttpBodyParserDelegate&gt;</a> <a class="code" href="classHashMap.html">BodyParsers</a>;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="structFormUrlParserState.html">   22</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keywordtype">char</span> searchChar = <span class="charliteral">&#39;=&#39;</span>;</div>
@@ -131,16 +131,15 @@ $(document).ready(function(){initNavTree('HttpBodyParser_8h_source.html','');});
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keywordtype">void</span> formUrlParser(<a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; request, <span class="keyword">const</span> <span class="keywordtype">char</span> *at, <span class="keywordtype">int</span> length);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keywordtype">void</span> formUrlParser(<a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; request, <span class="keyword">const</span> <span class="keywordtype">char</span>* at, <span class="keywordtype">int</span> length);</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keywordtype">void</span> bodyToStringParser(<a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; request, <span class="keyword">const</span> <span class="keywordtype">char</span> *at, <span class="keywordtype">int</span> length);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keywordtype">void</span> bodyToStringParser(<a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; request, <span class="keyword">const</span> <span class="keywordtype">char</span>* at, <span class="keywordtype">int</span> length);</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor"></span>}</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_BODY_PARSER_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_BODY_PARSER_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classHashMap_html"><div class="ttname"><a href="classHashMap.html">HashMap</a></div><div class="ttdef"><b>Definition:</b> WHashMap.h:24</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(HttpRequest &amp;, const char *at, int length)&gt;</a></div></div>

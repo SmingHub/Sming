@@ -119,7 +119,7 @@ $(document).ready(function(){initNavTree('CircularBuffer_8h_source.html','');});
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;Stream/DataSourceStream.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">class </span><a class="code" href="classCircularBuffer.html">CircularBuffer</a>: <span class="keyword">public</span> <a class="code" href="classReadWriteStream.html">ReadWriteStream</a></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">class </span><a class="code" href="classCircularBuffer.html">CircularBuffer</a> : <span class="keyword">public</span> <a class="code" href="classReadWriteStream.html">ReadWriteStream</a></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;{</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="classCircularBuffer.html">CircularBuffer</a>(<span class="keywordtype">int</span> size);</div>
@@ -140,29 +140,30 @@ $(document).ready(function(){initNavTree('CircularBuffer_8h_source.html','');});
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classCircularBuffer.html#ac9f7a35cd7612d9067b9ff300127d1a7">write</a>(uint8_t charToWrite);</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classCircularBuffer.html#ac9f7a35cd7612d9067b9ff300127d1a7">write</a>(<span class="keyword">const</span> uint8_t *buffer, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classCircularBuffer.html#ac9f7a35cd7612d9067b9ff300127d1a7">write</a>(<span class="keyword">const</span> uint8_t* buffer, <span class="keywordtype">size_t</span> size);</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordtype">size_t</span> room() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> flush() {</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        readPos = buffer;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        writePos = buffer;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    }</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">char</span>* wrap(<span class="keywordtype">char</span>* ptr)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keywordflow">return</span> (ptr == buffer + size) ? buffer: ptr;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    }</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">char</span>* buffer = NULL;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">char</span>* readPos = NULL;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">char</span>* writePos = NULL;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordtype">int</span> size = 0;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;};</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_CIRCULARBUFFER_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> flush()</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    {</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        readPos = buffer;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        writePos = buffer;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    }</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">char</span>* wrap(<span class="keywordtype">char</span>* ptr)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        <span class="keywordflow">return</span> (ptr == buffer + size) ? buffer : ptr;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">char</span>* buffer = NULL;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">char</span>* readPos = NULL;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordtype">char</span>* writePos = NULL;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">int</span> size = 0;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;};</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_CIRCULARBUFFER_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classCircularBuffer_html_a73e4276f890b8d25d90f33f641801ef5"><div class="ttname"><a href="classCircularBuffer.html#a73e4276f890b8d25d90f33f641801ef5">CircularBuffer::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType()</div><div class="ttdoc">Get the stream type. </div></div>
 <div class="ttc" id="classCircularBuffer_html_a58936d4f6a3d4e7b761b103b41d2d52b"><div class="ttname"><a href="classCircularBuffer.html#a58936d4f6a3d4e7b761b103b41d2d52b">CircularBuffer::available</a></div><div class="ttdeci">virtual int available()</div><div class="ttdoc">Return the total length of the stream. </div></div>
@@ -173,7 +174,7 @@ $(document).ready(function(){initNavTree('CircularBuffer_8h_source.html','');});
 <div class="ttc" id="classCircularBuffer_html_a0117fb9e4cf234dec76217312534c904"><div class="ttname"><a href="classCircularBuffer.html#a0117fb9e4cf234dec76217312534c904">CircularBuffer::seek</a></div><div class="ttdeci">virtual bool seek(int len)</div><div class="ttdoc">Move read cursor. </div></div>
 <div class="ttc" id="classCircularBuffer_html_ae4fc79d38392b70088ddba368a1a0815"><div class="ttname"><a href="classCircularBuffer.html#ae4fc79d38392b70088ddba368a1a0815">CircularBuffer::readMemoryBlock</a></div><div class="ttdeci">virtual uint16_t readMemoryBlock(char *data, int bufSize)</div><div class="ttdoc">Read a block of memory. </div></div>
 <div class="ttc" id="classCircularBuffer_html_ac9f7a35cd7612d9067b9ff300127d1a7"><div class="ttname"><a href="classCircularBuffer.html#ac9f7a35cd7612d9067b9ff300127d1a7">CircularBuffer::write</a></div><div class="ttdeci">virtual size_t write(uint8_t charToWrite)</div><div class="ttdoc">Writes a single character to output stream. </div></div>
-<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:117</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:129</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

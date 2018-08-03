@@ -143,11 +143,11 @@ $(document).ready(function(){initNavTree('SmtpClient_8h_source.html','');});
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">#define SMTP_ERROR_LENGTH 40</span></div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="group__smtpclient.html#ga2449485ef376c3d51717ff013fdb94b6">   51</a></span>&#160;<span class="preprocessor">#define SMTP_CODE_SERVICE_READY 220</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_CODE_BYE           221</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_CODE_AUTH_OK       235</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_CODE_REQUEST_OK    250</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_CODE_BYE 221</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_CODE_AUTH_OK 235</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_CODE_REQUEST_OK 250</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_CODE_AUTH_CHALLENGE 334</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_CODE_START_DATA    354</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_CODE_START_DATA 354</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#define SMTP_OPT_PIPELINE bit(0)</span></div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_OPT_STARTTLS bit(1)</span></div>
@@ -155,124 +155,126 @@ $(document).ready(function(){initNavTree('SmtpClient_8h_source.html','');});
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_OPT_AUTH_LOGIN bit(3)</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_OPT_AUTH_CRAM_MD5 bit(4)</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">enum</span> SmtpState</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;{</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    eSMTP_Banner = 0,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    eSMTP_Hello,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    eSMTP_StartTLS,</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    eSMTP_SendAuth,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    eSMTP_SendingAuthLogin,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    eSMTP_RequestingAuthChallenge,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    eSMTP_SendAuthResponse,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    eSMTP_SendingAuth,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    eSMTP_Ready,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    eSMTP_SendMail,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    eSMTP_SendingMail,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    eSMTP_SendRcpt,</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    eSMTP_SendingRcpt,</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    eSMTP_SendData,</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    eSMTP_SendingData,</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    eSMTP_SendHeader,</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    eSMTP_SendingHeaders,</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    eSMTP_StartBody,</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    eSMTP_SendingBody,</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    eSMTP_Sent,</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    eSMTP_Quitting,</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    eSMTP_Disconnect</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword">class </span><a class="code" href="classSmtpClient.html">SmtpClient</a>;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="keyword">typedef</span> std::function&lt;int(SmtpClient&amp; client, int code, char* status)&gt; SmtpClientCallback;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="classSmtpClient.html">   94</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSmtpClient.html">SmtpClient</a> : <span class="keyword">protected</span> <a class="code" href="classTcpClient.html">TcpClient</a></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;{</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="classSmtpClient.html">SmtpClient</a>(<span class="keywordtype">bool</span> autoDestroy=<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classSmtpClient.html">SmtpClient</a>();</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="group__smtpclient.html#gac1c9bf4ddcc56c38e9c4dd5fd9ea8351">connect</a>(<span class="keyword">const</span> <a class="code" href="classURL.html">URL</a>&amp; url);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="group__smtpclient.html#gac03cef5f69bf90446bcd95f0a3ddde72">send</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; from, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; to, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; subject, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; body);</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="group__smtpclient.html#gac03cef5f69bf90446bcd95f0a3ddde72">send</a>(<a class="code" href="classMailMessage.html">MailMessage</a>* message);</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <a class="code" href="classMailMessage.html">MailMessage</a>* <a class="code" href="group__smtpclient.html#gaea921884676ee63fa3180b89e226814a">getCurrentMessage</a>();</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">size_t</span> countPending()</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    {</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        <span class="keywordflow">return</span> mailQ.count();</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    }</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="group__smtpclient.html#ga9555d988fb2d662ead92114f527eb3dc">quit</a>();</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
-<div class="line"><a name="l00149"></a><span class="lineno"><a class="line" href="group__smtpclient.html#gae3825e67f24ca87bee16ccf990e0b358">  149</a></span>&#160;    SmtpState <a class="code" href="group__smtpclient.html#gae3825e67f24ca87bee16ccf990e0b358">getState</a>() { <span class="keywordflow">return</span> state; }</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
-<div class="line"><a name="l00155"></a><span class="lineno"><a class="line" href="group__smtpclient.html#ga9e6b97628e4931605598d519aacadd04">  155</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="group__smtpclient.html#ga9e6b97628e4931605598d519aacadd04">onMessageSent</a>(SmtpClientCallback callback)</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    {</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        messageSentCallback = callback;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    }</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;</div>
-<div class="line"><a name="l00164"></a><span class="lineno"><a class="line" href="group__smtpclient.html#ga848b25d7b7a295e1c7e08974cfc7c105">  164</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="group__smtpclient.html#ga848b25d7b7a295e1c7e08974cfc7c105">onServerError</a>(SmtpClientCallback callback)</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    {</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        errorCallback = callback;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    }</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <span class="keyword">using</span> TcpClient::setTimeOut;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">enum</span> SmtpState {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    eSMTP_Banner = 0,</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    eSMTP_Hello,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    eSMTP_StartTLS,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    eSMTP_SendAuth,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    eSMTP_SendingAuthLogin,</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    eSMTP_RequestingAuthChallenge,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    eSMTP_SendAuthResponse,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    eSMTP_SendingAuth,</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    eSMTP_Ready,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    eSMTP_SendMail,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    eSMTP_SendingMail,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    eSMTP_SendRcpt,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    eSMTP_SendingRcpt,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    eSMTP_SendData,</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    eSMTP_SendingData,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    eSMTP_SendHeader,</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    eSMTP_SendingHeaders,</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    eSMTP_StartBody,</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    eSMTP_SendingBody,</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    eSMTP_Sent,</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    eSMTP_Quitting,</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    eSMTP_Disconnect</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;};</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">class </span><a class="code" href="classSmtpClient.html">SmtpClient</a>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keyword">typedef</span> std::function&lt;int(SmtpClient&amp; client, int code, char* status)&gt; SmtpClientCallback;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno"><a class="line" href="classSmtpClient.html">   93</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSmtpClient.html">SmtpClient</a> : <span class="keyword">protected</span> <a class="code" href="classTcpClient.html">TcpClient</a></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;{</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <a class="code" href="classSmtpClient.html">SmtpClient</a>(<span class="keywordtype">bool</span> autoDestroy = <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classSmtpClient.html">SmtpClient</a>();</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="group__smtpclient.html#gac1c9bf4ddcc56c38e9c4dd5fd9ea8351">connect</a>(<span class="keyword">const</span> <a class="code" href="classURL.html">URL</a>&amp; url);</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="group__smtpclient.html#gac03cef5f69bf90446bcd95f0a3ddde72">send</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; from, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; to, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; subject, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; body);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="group__smtpclient.html#gac03cef5f69bf90446bcd95f0a3ddde72">send</a>(<a class="code" href="classMailMessage.html">MailMessage</a>* message);</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    <a class="code" href="classMailMessage.html">MailMessage</a>* <a class="code" href="group__smtpclient.html#gaea921884676ee63fa3180b89e226814a">getCurrentMessage</a>();</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">size_t</span> countPending()</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    {</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        <span class="keywordflow">return</span> mailQ.count();</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    }</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="group__smtpclient.html#ga9555d988fb2d662ead92114f527eb3dc">quit</a>();</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
+<div class="line"><a name="l00148"></a><span class="lineno"><a class="line" href="group__smtpclient.html#gae3825e67f24ca87bee16ccf990e0b358">  148</a></span>&#160;    SmtpState <a class="code" href="group__smtpclient.html#gae3825e67f24ca87bee16ccf990e0b358">getState</a>()</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    {</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keywordflow">return</span> state;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    }</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;</div>
+<div class="line"><a name="l00157"></a><span class="lineno"><a class="line" href="group__smtpclient.html#ga9e6b97628e4931605598d519aacadd04">  157</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="group__smtpclient.html#ga9e6b97628e4931605598d519aacadd04">onMessageSent</a>(SmtpClientCallback callback)</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    {</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        messageSentCallback = callback;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    }</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
+<div class="line"><a name="l00166"></a><span class="lineno"><a class="line" href="group__smtpclient.html#ga848b25d7b7a295e1c7e08974cfc7c105">  166</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="group__smtpclient.html#ga848b25d7b7a295e1c7e08974cfc7c105">onServerError</a>(SmtpClientCallback callback)</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        errorCallback = callback;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    }</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="preprocessor"></span>    <span class="keyword">using</span> TcpClient::addSslOptions;</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="keyword">using</span> TcpClient::addSslValidator;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="keyword">using</span> TcpClient::pinCertificate;</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="keyword">using</span> TcpClient::setSslKeyCert;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <span class="keyword">using</span> TcpClient::setTimeOut;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="preprocessor"></span>    <span class="keyword">using</span> TcpClient::addSslOptions;</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="keyword">using</span> TcpClient::addSslValidator;</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    <span class="keyword">using</span> TcpClient::freeSslKeyCert;</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keyword">using</span> TcpClient::getSsl;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keyword">virtual</span> err_t onReceive(pbuf *buf);</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReadyToSendData(TcpConnectionEvent sourceEvent);</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="keywordtype">void</span> sendMailHeaders(<a class="code" href="classMailMessage.html">MailMessage</a>* mail);</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    <span class="keywordtype">bool</span> sendMailBody(<a class="code" href="classMailMessage.html">MailMessage</a>* mail);</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <a class="code" href="classURL.html">URL</a> url;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <a class="code" href="classVector.html">Vector&lt;String&gt;</a> authMethods;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <a class="code" href="classSimpleConcurrentQueue.html">SimpleConcurrentQueue&lt;MailMessage*,SMTP_QUEUE_SIZE&gt;</a> mailQ;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="keywordtype">char</span> code[4] = {0};</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="keywordtype">int</span> codeValue = 0;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <a class="code" href="classString.html">String</a> authChallenge;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    <span class="keywordtype">char</span> message[SMTP_ERROR_LENGTH + 1] = {0};</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <span class="keywordtype">bool</span> isLastLine = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    uint8_t codeLength = 0;</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="keywordtype">int</span> options = 0;</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <a class="code" href="classMailMessage.html">MailMessage</a> *outgoingMail = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    SmtpState state = eSMTP_Banner;</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    SmtpClientCallback errorCallback = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    SmtpClientCallback messageSentCallback = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    <span class="keywordtype">int</span> smtpParse(<span class="keywordtype">char</span>* data, <span class="keywordtype">size_t</span> len);</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    <a class="code" href="structHttpPartResult.html">HttpPartResult</a> multipartProducer();</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;};</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    <span class="keyword">using</span> TcpClient::pinCertificate;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    <span class="keyword">using</span> TcpClient::setSslKeyCert;</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    <span class="keyword">virtual</span> err_t onReceive(pbuf* buf);</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReadyToSendData(TcpConnectionEvent sourceEvent);</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    <span class="keywordtype">void</span> sendMailHeaders(<a class="code" href="classMailMessage.html">MailMessage</a>* mail);</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    <span class="keywordtype">bool</span> sendMailBody(<a class="code" href="classMailMessage.html">MailMessage</a>* mail);</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <a class="code" href="classURL.html">URL</a> url;</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <a class="code" href="classVector.html">Vector&lt;String&gt;</a> authMethods;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <a class="code" href="classSimpleConcurrentQueue.html">SimpleConcurrentQueue&lt;MailMessage*, SMTP_QUEUE_SIZE&gt;</a> mailQ;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="keywordtype">char</span> code[4] = {0};</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    <span class="keywordtype">int</span> codeValue = 0;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <a class="code" href="classString.html">String</a> authChallenge;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="keywordtype">char</span> message[SMTP_ERROR_LENGTH + 1] = {0};</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="keywordtype">bool</span> isLastLine = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    uint8_t codeLength = 0;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <span class="keywordtype">int</span> options = 0;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <a class="code" href="classMailMessage.html">MailMessage</a>* outgoingMail = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    SmtpState state = eSMTP_Banner;</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    SmtpClientCallback errorCallback = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    SmtpClientCallback messageSentCallback = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <span class="keywordtype">int</span> smtpParse(<span class="keywordtype">char</span>* data, <span class="keywordtype">size_t</span> len);</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <a class="code" href="structHttpPartResult.html">HttpPartResult</a> multipartProducer();</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;};</div>
 <div class="ttc" id="classVector_html"><div class="ttname"><a href="classVector.html">Vector&lt; String &gt;</a></div></div>
-<div class="ttc" id="group__smtpclient_html_ga848b25d7b7a295e1c7e08974cfc7c105"><div class="ttname"><a href="group__smtpclient.html#ga848b25d7b7a295e1c7e08974cfc7c105">SmtpClient::onServerError</a></div><div class="ttdeci">void onServerError(SmtpClientCallback callback)</div><div class="ttdoc">Callback that will be called every an error occurs. </div><div class="ttdef"><b>Definition:</b> SmtpClient.h:164</div></div>
+<div class="ttc" id="group__smtpclient_html_ga848b25d7b7a295e1c7e08974cfc7c105"><div class="ttname"><a href="group__smtpclient.html#ga848b25d7b7a295e1c7e08974cfc7c105">SmtpClient::onServerError</a></div><div class="ttdeci">void onServerError(SmtpClientCallback callback)</div><div class="ttdoc">Callback that will be called every an error occurs. </div><div class="ttdef"><b>Definition:</b> SmtpClient.h:166</div></div>
 <div class="ttc" id="group__smtpclient_html_ga9555d988fb2d662ead92114f527eb3dc"><div class="ttname"><a href="group__smtpclient.html#ga9555d988fb2d662ead92114f527eb3dc">SmtpClient::quit</a></div><div class="ttdeci">void quit()</div><div class="ttdoc">Sends a quit command to the server and closes the TCP conneciton. </div></div>
 <div class="ttc" id="classMailMessage_html"><div class="ttname"><a href="classMailMessage.html">MailMessage</a></div><div class="ttdef"><b>Definition:</b> MailMessage.h:30</div></div>
-<div class="ttc" id="group__smtpclient_html_gae3825e67f24ca87bee16ccf990e0b358"><div class="ttname"><a href="group__smtpclient.html#gae3825e67f24ca87bee16ccf990e0b358">SmtpClient::getState</a></div><div class="ttdeci">SmtpState getState()</div><div class="ttdoc">Returns the current state of the SmtpClient. </div><div class="ttdef"><b>Definition:</b> SmtpClient.h:149</div></div>
+<div class="ttc" id="group__smtpclient_html_gae3825e67f24ca87bee16ccf990e0b358"><div class="ttname"><a href="group__smtpclient.html#gae3825e67f24ca87bee16ccf990e0b358">SmtpClient::getState</a></div><div class="ttdeci">SmtpState getState()</div><div class="ttdoc">Returns the current state of the SmtpClient. </div><div class="ttdef"><b>Definition:</b> SmtpClient.h:148</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="group__smtpclient_html_gac1c9bf4ddcc56c38e9c4dd5fd9ea8351"><div class="ttname"><a href="group__smtpclient.html#gac1c9bf4ddcc56c38e9c4dd5fd9ea8351">SmtpClient::connect</a></div><div class="ttdeci">bool connect(const URL &amp;url)</div><div class="ttdoc">Connects to remote URL. </div></div>
-<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:45</div></div>
+<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:38</div></div>
 <div class="ttc" id="classSimpleConcurrentQueue_html"><div class="ttname"><a href="classSimpleConcurrentQueue.html">SimpleConcurrentQueue&lt; MailMessage *, SMTP_QUEUE_SIZE &gt;</a></div></div>
 <div class="ttc" id="group__smtpclient_html_gac03cef5f69bf90446bcd95f0a3ddde72"><div class="ttname"><a href="group__smtpclient.html#gac03cef5f69bf90446bcd95f0a3ddde72">SmtpClient::send</a></div><div class="ttdeci">bool send(const String &amp;from, const String &amp;to, const String &amp;subject, const String &amp;body)</div><div class="ttdoc">Queues a single message before it is sent later to the SMTP server. </div></div>
 <div class="ttc" id="classURL_html"><div class="ttname"><a href="classURL.html">URL</a></div><div class="ttdef"><b>Definition:</b> URL.h:24</div></div>
-<div class="ttc" id="classSmtpClient_html"><div class="ttname"><a href="classSmtpClient.html">SmtpClient</a></div><div class="ttdef"><b>Definition:</b> SmtpClient.h:94</div></div>
+<div class="ttc" id="classSmtpClient_html"><div class="ttname"><a href="classSmtpClient.html">SmtpClient</a></div><div class="ttdef"><b>Definition:</b> SmtpClient.h:93</div></div>
 <div class="ttc" id="group__smtpclient_html_gaea921884676ee63fa3180b89e226814a"><div class="ttname"><a href="group__smtpclient.html#gaea921884676ee63fa3180b89e226814a">SmtpClient::getCurrentMessage</a></div><div class="ttdeci">MailMessage * getCurrentMessage()</div><div class="ttdoc">Gets the current message. </div></div>
-<div class="ttc" id="group__smtpclient_html_ga9e6b97628e4931605598d519aacadd04"><div class="ttname"><a href="group__smtpclient.html#ga9e6b97628e4931605598d519aacadd04">SmtpClient::onMessageSent</a></div><div class="ttdeci">void onMessageSent(SmtpClientCallback callback)</div><div class="ttdoc">Callback that will be called every time a message is sent successfully. </div><div class="ttdef"><b>Definition:</b> SmtpClient.h:155</div></div>
+<div class="ttc" id="group__smtpclient_html_ga9e6b97628e4931605598d519aacadd04"><div class="ttname"><a href="group__smtpclient.html#ga9e6b97628e4931605598d519aacadd04">SmtpClient::onMessageSent</a></div><div class="ttdeci">void onMessageSent(SmtpClientCallback callback)</div><div class="ttdoc">Callback that will be called every time a message is sent successfully. </div><div class="ttdef"><b>Definition:</b> SmtpClient.h:157</div></div>
 <div class="ttc" id="structHttpPartResult_html"><div class="ttname"><a href="structHttpPartResult.html">HttpPartResult</a></div><div class="ttdoc">Multipart stream class. </div><div class="ttdef"><b>Definition:</b> MultipartStream.h:25</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

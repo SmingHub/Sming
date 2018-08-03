@@ -130,77 +130,77 @@ $(document).ready(function(){initNavTree('rBootHttpUpdate_8h_source.html','');})
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordtype">int</span> size;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;};</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html">   30</a></span>&#160;<span class="keyword">class </span><a class="code" href="classrBootItemOutputStream.html">rBootItemOutputStream</a>: <span class="keyword">public</span> <a class="code" href="classReadWriteStream.html">ReadWriteStream</a> {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordtype">void</span> setItem(<a class="code" href="structrBootHttpUpdateItem.html">rBootHttpUpdateItem</a>* item);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> init();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classrBootItemOutputStream.html#ae2222af5322e4c2344112d904ac2593d">write</a>(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html#acb6f95a389464f3c6ebe262745e317e3">   35</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classrBootItemOutputStream.html#acb6f95a389464f3c6ebe262745e317e3">write</a>(uint8_t charToWrite)</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classrBootItemOutputStream.html#ae2222af5322e4c2344112d904ac2593d">write</a>(&amp;charToWrite, 1);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    }</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html#ad938796cac2e1aae821f257dc0d02ad5">   40</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> <a class="code" href="classrBootItemOutputStream.html#ad938796cac2e1aae821f257dc0d02ad5">getStreamType</a>()</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da3c8ad301c949acce38bb0daf837baad4">eSST_File</a>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html#a7c972b7734b9bcf59cec1d3d2f8838c1">   45</a></span>&#160;    <span class="keyword">virtual</span> uint16_t <a class="code" href="classrBootItemOutputStream.html#a7c972b7734b9bcf59cec1d3d2f8838c1">readMemoryBlock</a>(<span class="keywordtype">char</span>* data, <span class="keywordtype">int</span> bufSize)</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html#aa0be5fcf6d244d58722de12383ed4e78">   50</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classrBootItemOutputStream.html#aa0be5fcf6d244d58722de12383ed4e78">seek</a>(<span class="keywordtype">int</span> len)</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html#a6b956d62775372b7c0cde4564cf10e43">   55</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classrBootItemOutputStream.html#a6b956d62775372b7c0cde4564cf10e43">isFinished</a>()</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> close();</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classrBootItemOutputStream.html">rBootItemOutputStream</a>();</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">bool</span> initilized = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <a class="code" href="structrBootHttpUpdateItem.html">rBootHttpUpdateItem</a>* item = NULL;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    rboot_write_status rBootWriteStatus;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;};</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classrBootHttpUpdate.html">   69</a></span>&#160;<span class="keyword">class </span><a class="code" href="classrBootHttpUpdate.html">rBootHttpUpdate</a>: <span class="keyword">protected</span> <a class="code" href="classHttpClient.html">HttpClient</a> {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <a class="code" href="classrBootHttpUpdate.html">rBootHttpUpdate</a>();</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classrBootHttpUpdate.html">rBootHttpUpdate</a>();</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">void</span> addItem(<span class="keywordtype">int</span> offset, <a class="code" href="classString.html">String</a> firmwareFileUrl);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">void</span> start();</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordtype">void</span> switchToRom(uint8_t romSlot);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">void</span> setCallback(<a class="code" href="classDelegate.html">OtaUpdateDelegate</a> reqUpdateDelegate);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">void</span> setDelegate(<a class="code" href="classDelegate.html">OtaUpdateDelegate</a> reqUpdateDelegate);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">/* Sets the base request that can be used to pass</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">     * - default request parameters, like request headers...</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">     * - default SSL options</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">     * - default SSL fingeprints</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">     * - default SSL client certificates</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">     *</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">     * @param HttpRequest *</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">void</span> setBaseRequest(<a class="code" href="classHttpRequest.html">HttpRequest</a> *request);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="comment">// Allow reading items</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <a class="code" href="structrBootHttpUpdateItem.html">rBootHttpUpdateItem</a> getItem(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">void</span> applyUpdate();</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">void</span> updateFailed();</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classrBootItemOutputStream.html">rBootItemOutputStream</a>* getStream();</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> itemComplete(<a class="code" href="classHttpConnection.html">HttpConnection</a>&amp; client, <span class="keywordtype">bool</span> success);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> updateComplete(<a class="code" href="classHttpConnection.html">HttpConnection</a>&amp; client, <span class="keywordtype">bool</span> success);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html">   30</a></span>&#160;<span class="keyword">class </span><a class="code" href="classrBootItemOutputStream.html">rBootItemOutputStream</a> : <span class="keyword">public</span> <a class="code" href="classReadWriteStream.html">ReadWriteStream</a></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">void</span> setItem(<a class="code" href="structrBootHttpUpdateItem.html">rBootHttpUpdateItem</a>* item);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> init();</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classrBootItemOutputStream.html#ae2222af5322e4c2344112d904ac2593d">write</a>(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html#acb6f95a389464f3c6ebe262745e317e3">   36</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classrBootItemOutputStream.html#acb6f95a389464f3c6ebe262745e317e3">write</a>(uint8_t charToWrite)</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classrBootItemOutputStream.html#ae2222af5322e4c2344112d904ac2593d">write</a>(&amp;charToWrite, 1);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    }</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html#ad938796cac2e1aae821f257dc0d02ad5">   41</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> <a class="code" href="classrBootItemOutputStream.html#ad938796cac2e1aae821f257dc0d02ad5">getStreamType</a>()</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da3c8ad301c949acce38bb0daf837baad4">eSST_File</a>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html#a7c972b7734b9bcf59cec1d3d2f8838c1">   46</a></span>&#160;    <span class="keyword">virtual</span> uint16_t <a class="code" href="classrBootItemOutputStream.html#a7c972b7734b9bcf59cec1d3d2f8838c1">readMemoryBlock</a>(<span class="keywordtype">char</span>* data, <span class="keywordtype">int</span> bufSize)</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html#aa0be5fcf6d244d58722de12383ed4e78">   51</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classrBootItemOutputStream.html#aa0be5fcf6d244d58722de12383ed4e78">seek</a>(<span class="keywordtype">int</span> len)</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classrBootItemOutputStream.html#a6b956d62775372b7c0cde4564cf10e43">   56</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classrBootItemOutputStream.html#a6b956d62775372b7c0cde4564cf10e43">isFinished</a>()</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> close();</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classrBootItemOutputStream.html">rBootItemOutputStream</a>();</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">bool</span> initilized = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <a class="code" href="structrBootHttpUpdateItem.html">rBootHttpUpdateItem</a>* item = NULL;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    rboot_write_status rBootWriteStatus;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;};</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classrBootHttpUpdate.html">   70</a></span>&#160;<span class="keyword">class </span><a class="code" href="classrBootHttpUpdate.html">rBootHttpUpdate</a> : <span class="keyword">protected</span> <a class="code" href="classHttpClient.html">HttpClient</a></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;{</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="classrBootHttpUpdate.html">rBootHttpUpdate</a>();</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classrBootHttpUpdate.html">rBootHttpUpdate</a>();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">void</span> addItem(<span class="keywordtype">int</span> offset, <a class="code" href="classString.html">String</a> firmwareFileUrl);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordtype">void</span> start();</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">void</span> switchToRom(uint8_t romSlot);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">void</span> setCallback(<a class="code" href="classDelegate.html">OtaUpdateDelegate</a> reqUpdateDelegate);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">void</span> setDelegate(<a class="code" href="classDelegate.html">OtaUpdateDelegate</a> reqUpdateDelegate);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="comment">/* Sets the base request that can be used to pass</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">     * - default request parameters, like request headers...</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">     * - default SSL options</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">     * - default SSL fingeprints</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">     * - default SSL client certificates</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">     *</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">     * @param HttpRequest *</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">void</span> setBaseRequest(<a class="code" href="classHttpRequest.html">HttpRequest</a>* request);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="comment">// Allow reading items</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <a class="code" href="structrBootHttpUpdateItem.html">rBootHttpUpdateItem</a> getItem(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> index);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">void</span> applyUpdate();</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">void</span> updateFailed();</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classrBootItemOutputStream.html">rBootItemOutputStream</a>* getStream();</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> itemComplete(<a class="code" href="classHttpConnection.html">HttpConnection</a>&amp; client, <span class="keywordtype">bool</span> success);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> updateComplete(<a class="code" href="classHttpConnection.html">HttpConnection</a>&amp; client, <span class="keywordtype">bool</span> success);</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keyword">protected</span>:</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <a class="code" href="classVector.html">Vector&lt;rBootHttpUpdateItem&gt;</a> items;</div>
@@ -213,24 +213,24 @@ $(document).ready(function(){initNavTree('rBootHttpUpdate_8h_source.html','');})
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;};</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classrBootItemOutputStream_html_acb6f95a389464f3c6ebe262745e317e3"><div class="ttname"><a href="classrBootItemOutputStream.html#acb6f95a389464f3c6ebe262745e317e3">rBootItemOutputStream::write</a></div><div class="ttdeci">virtual size_t write(uint8_t charToWrite)</div><div class="ttdoc">Writes a single character to output stream. </div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:35</div></div>
+<div class="ttc" id="classrBootItemOutputStream_html_acb6f95a389464f3c6ebe262745e317e3"><div class="ttname"><a href="classrBootItemOutputStream.html#acb6f95a389464f3c6ebe262745e317e3">rBootItemOutputStream::write</a></div><div class="ttdeci">virtual size_t write(uint8_t charToWrite)</div><div class="ttdoc">Writes a single character to output stream. </div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:36</div></div>
 <div class="ttc" id="classVector_html"><div class="ttname"><a href="classVector.html">Vector&lt; rBootHttpUpdateItem &gt;</a></div></div>
-<div class="ttc" id="classrBootItemOutputStream_html_a6b956d62775372b7c0cde4564cf10e43"><div class="ttname"><a href="classrBootItemOutputStream.html#a6b956d62775372b7c0cde4564cf10e43">rBootItemOutputStream::isFinished</a></div><div class="ttdeci">virtual bool isFinished()</div><div class="ttdoc">Check if stream is finished. </div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:55</div></div>
+<div class="ttc" id="classrBootItemOutputStream_html_a6b956d62775372b7c0cde4564cf10e43"><div class="ttname"><a href="classrBootItemOutputStream.html#a6b956d62775372b7c0cde4564cf10e43">rBootItemOutputStream::isFinished</a></div><div class="ttdeci">virtual bool isFinished()</div><div class="ttdoc">Check if stream is finished. </div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:56</div></div>
 <div class="ttc" id="classrBootItemOutputStream_html_ae2222af5322e4c2344112d904ac2593d"><div class="ttname"><a href="classrBootItemOutputStream.html#ae2222af5322e4c2344112d904ac2593d">rBootItemOutputStream::write</a></div><div class="ttdeci">virtual size_t write(const uint8_t *data, size_t size)</div><div class="ttdoc">Write chars to stream. </div></div>
 <div class="ttc" id="classHttpClient_html"><div class="ttname"><a href="classHttpClient.html">HttpClient</a></div><div class="ttdef"><b>Definition:</b> HttpClient.h:27</div></div>
 <div class="ttc" id="structrBootHttpUpdateItem_html"><div class="ttname"><a href="structrBootHttpUpdateItem.html">rBootHttpUpdateItem</a></div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:24</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(rBootHttpUpdate &amp;client, bool result)&gt;</a></div></div>
-<div class="ttc" id="classrBootItemOutputStream_html_aa0be5fcf6d244d58722de12383ed4e78"><div class="ttname"><a href="classrBootItemOutputStream.html#aa0be5fcf6d244d58722de12383ed4e78">rBootItemOutputStream::seek</a></div><div class="ttdeci">virtual bool seek(int len)</div><div class="ttdoc">Move read cursor. </div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:50</div></div>
-<div class="ttc" id="classrBootItemOutputStream_html_ad938796cac2e1aae821f257dc0d02ad5"><div class="ttname"><a href="classrBootItemOutputStream.html#ad938796cac2e1aae821f257dc0d02ad5">rBootItemOutputStream::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType()</div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:40</div></div>
+<div class="ttc" id="classrBootItemOutputStream_html_aa0be5fcf6d244d58722de12383ed4e78"><div class="ttname"><a href="classrBootItemOutputStream.html#aa0be5fcf6d244d58722de12383ed4e78">rBootItemOutputStream::seek</a></div><div class="ttdeci">virtual bool seek(int len)</div><div class="ttdoc">Move read cursor. </div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:51</div></div>
+<div class="ttc" id="classrBootItemOutputStream_html_ad938796cac2e1aae821f257dc0d02ad5"><div class="ttname"><a href="classrBootItemOutputStream.html#ad938796cac2e1aae821f257dc0d02ad5">rBootItemOutputStream::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType()</div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:41</div></div>
 <div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:24</div></div>
-<div class="ttc" id="group__constants_html_gga8a65141d9ea4bf9d2e2377ed6b888a1da3c8ad301c949acce38bb0daf837baad4"><div class="ttname"><a href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da3c8ad301c949acce38bb0daf837baad4">eSST_File</a></div><div class="ttdoc">File data stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:27</div></div>
+<div class="ttc" id="group__constants_html_gga8a65141d9ea4bf9d2e2377ed6b888a1da3c8ad301c949acce38bb0daf837baad4"><div class="ttname"><a href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da3c8ad301c949acce38bb0daf837baad4">eSST_File</a></div><div class="ttdoc">File data stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:26</div></div>
 <div class="ttc" id="classrBootItemOutputStream_html"><div class="ttname"><a href="classrBootItemOutputStream.html">rBootItemOutputStream</a></div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:30</div></div>
 <div class="ttc" id="classHttpRequest_html"><div class="ttname"><a href="classHttpRequest.html">HttpRequest</a></div><div class="ttdef"><b>Definition:</b> HttpRequest.h:31</div></div>
 <div class="ttc" id="classHttpConnection_html"><div class="ttname"><a href="classHttpConnection.html">HttpConnection</a></div><div class="ttdef"><b>Definition:</b> HttpConnection.h:26</div></div>
-<div class="ttc" id="classrBootHttpUpdate_html"><div class="ttname"><a href="classrBootHttpUpdate.html">rBootHttpUpdate</a></div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:69</div></div>
-<div class="ttc" id="classrBootItemOutputStream_html_a7c972b7734b9bcf59cec1d3d2f8838c1"><div class="ttname"><a href="classrBootItemOutputStream.html#a7c972b7734b9bcf59cec1d3d2f8838c1">rBootItemOutputStream::readMemoryBlock</a></div><div class="ttdeci">virtual uint16_t readMemoryBlock(char *data, int bufSize)</div><div class="ttdoc">Read a block of memory. </div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:45</div></div>
-<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:117</div></div>
+<div class="ttc" id="classrBootHttpUpdate_html"><div class="ttname"><a href="classrBootHttpUpdate.html">rBootHttpUpdate</a></div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:70</div></div>
+<div class="ttc" id="classrBootItemOutputStream_html_a7c972b7734b9bcf59cec1d3d2f8838c1"><div class="ttname"><a href="classrBootItemOutputStream.html#a7c972b7734b9bcf59cec1d3d2f8838c1">rBootItemOutputStream::readMemoryBlock</a></div><div class="ttdeci">virtual uint16_t readMemoryBlock(char *data, int bufSize)</div><div class="ttdoc">Read a block of memory. </div><div class="ttdef"><b>Definition:</b> rBootHttpUpdate.h:46</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:129</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

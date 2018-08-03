@@ -102,21 +102,17 @@ $(document).ready(function(){initNavTree('todo.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt><a class="anchor" id="_todo000015"></a>Member <a class="el" href="group__interrupts.html#ga6b0a2d8a3e9298985c3357dbfba6542d">attachInterrupt</a>  (uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode)</dt>
+<dt><a class="anchor" id="_todo000013"></a>Member <a class="el" href="group__interrupts.html#ga6b0a2d8a3e9298985c3357dbfba6542d">attachInterrupt</a>  (uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode)</dt>
 <dd>Add GPIO_INT_TYPE documentation - is this in SDK?  </dd>
-<dt><a class="anchor" id="_todo000002"></a>Member <a class="el" href="classCircularBuffer.html#a73e4276f890b8d25d90f33f641801ef5">CircularBuffer::getStreamType</a>  ()</dt>
+<dt><a class="anchor" id="_todo000001"></a>Member <a class="el" href="classCircularBuffer.html#a73e4276f890b8d25d90f33f641801ef5">CircularBuffer::getStreamType</a>  ()</dt>
 <dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User  </dd>
-<dt><a class="anchor" id="_todo000003"></a>Member <a class="el" href="classCircularBuffer.html#ae4fc79d38392b70088ddba368a1a0815">CircularBuffer::readMemoryBlock</a>  (char *data, int bufSize)</dt>
+<dt><a class="anchor" id="_todo000002"></a>Member <a class="el" href="classCircularBuffer.html#ae4fc79d38392b70088ddba368a1a0815">CircularBuffer::readMemoryBlock</a>  (char *data, int bufSize)</dt>
 <dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param?  </dd>
-<dt><a class="anchor" id="_todo000009"></a>Member <a class="el" href="classDriverPWM.html#abf80bffdbf8f2fe60bd58d132457cf73">DriverPWM::analogWrite</a>  (uint8_t pin, int duty)</dt>
-<dd>Describe how <em>duty</em> affects output  </dd>
-<dt><a class="anchor" id="_todo000019"></a>Member <a class="el" href="classDS18S20.html#a39fc95ecd1ade74e405b41770f8181c9">DS18S20::IsValidTemperature</a>  (uint8_t)</dt>
+<dt><a class="anchor" id="_todo000017"></a>Member <a class="el" href="classDS18S20.html#a39fc95ecd1ade74e405b41770f8181c9">DS18S20::IsValidTemperature</a>  (uint8_t)</dt>
 <dd>Initial code review suggests this is set once but never rechecked so may not be accurate  </dd>
-<dt><a class="anchor" id="_todo000001"></a>Class <a class="el" href="classESP01__Description.html">ESP01_Description</a>  </dt>
-<dd>Is <a class="el" href="classESP01__Description.html">ESP01_Description</a> required? Source says it will be removed with new interface  </dd>
-<dt><a class="anchor" id="_todo000011"></a>Member <a class="el" href="group__filesystem.html#ga84764b02ca44203d3926768b4910f9ae">fileClearLastError</a>  (file_t fd)</dt>
+<dt><a class="anchor" id="_todo000009"></a>Member <a class="el" href="group__filesystem.html#ga84764b02ca44203d3926768b4910f9ae">fileClearLastError</a>  (file_t fd)</dt>
 <dd>Why does fileClearLastError have unused fd parameter?  </dd>
-<dt><a class="anchor" id="_todo000010"></a>Member <a class="el" href="group__filesystem.html#ga7532cc704668e66b0d7c34341ba1d3ab">fileLastError</a>  (file_t fd)</dt>
+<dt><a class="anchor" id="_todo000008"></a>Member <a class="el" href="group__filesystem.html#ga7532cc704668e66b0d7c34341ba1d3ab">fileLastError</a>  (file_t fd)</dt>
 <dd>Why does fileLastError have unused fd parameter? <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">int</td><td>Error code of last file system operation  </td></tr>
@@ -124,30 +120,30 @@ $(document).ready(function(){initNavTree('todo.html','');});
   </dd>
 </dl>
 </dd>
-<dt><a class="anchor" id="_todo000012"></a>Member <a class="el" href="group__filesystem.html#ga34cae79f44dc13411fc6b8cc2982e9e9">fileStats</a>  (const <a class="el" href="classString.html">String</a> &amp;name, spiffs_stat *stat)</dt>
+<dt><a class="anchor" id="_todo000011"></a>Member <a class="el" href="group__filesystem.html#ga4be48807b1d30de8e3fe477e108d1020">fileStats</a>  (file_t file, spiffs_stat *stat)</dt>
 <dd>Document the return value of fileStats  </dd>
-<dt><a class="anchor" id="_todo000013"></a>Member <a class="el" href="group__filesystem.html#ga4be48807b1d30de8e3fe477e108d1020">fileStats</a>  (file_t file, spiffs_stat *stat)</dt>
+<dt><a class="anchor" id="_todo000010"></a>Member <a class="el" href="group__filesystem.html#ga34cae79f44dc13411fc6b8cc2982e9e9">fileStats</a>  (const <a class="el" href="classString.html">String</a> &amp;name, spiffs_stat *stat)</dt>
 <dd>Document the return value of fileStats  </dd>
-<dt><a class="anchor" id="_todo000014"></a>Member <a class="el" href="classHardware__Timer.html#a3eb3d1cdbc4bf203a9ff9d1661d19de2">Hardware_Timer::stop</a>  ()</dt>
+<dt><a class="anchor" id="_todo000012"></a>Member <a class="el" href="classHardware__Timer.html#a3eb3d1cdbc4bf203a9ff9d1661d19de2">Hardware_Timer::stop</a>  ()</dt>
 <dd>Why always return false from Hardware_timer::stop()?  </dd>
-<dt><a class="anchor" id="_todo000004"></a>Member <a class="el" href="classIDataSourceStream.html#a589085e0eea011acdc401b79831826e0">IDataSourceStream::getStreamType</a>  ()=0</dt>
+<dt><a class="anchor" id="_todo000003"></a>Member <a class="el" href="classIDataSourceStream.html#a589085e0eea011acdc401b79831826e0">IDataSourceStream::getStreamType</a>  ()=0</dt>
 <dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User  </dd>
-<dt><a class="anchor" id="_todo000005"></a>Member <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011">IDataSourceStream::readMemoryBlock</a>  (char *data, int bufSize)=0</dt>
+<dt><a class="anchor" id="_todo000004"></a>Member <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011">IDataSourceStream::readMemoryBlock</a>  (char *data, int bufSize)=0</dt>
 <dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param?  </dd>
-<dt><a class="anchor" id="_todo000006"></a>Class <a class="el" href="classIDelegateCaller.html">IDelegateCaller&lt; ReturnType, ParamsList &gt;</a>  </dt>
+<dt><a class="anchor" id="_todo000005"></a>Class <a class="el" href="classIDelegateCaller.html">IDelegateCaller&lt; ReturnType, ParamsList &gt;</a>  </dt>
 <dd>Provide more informative brief description of <a class="el" href="classIDelegateCaller.html" title="IDelegateCaller class. ">IDelegateCaller</a>  </dd>
-<dt><a class="anchor" id="_todo000008"></a>Member <a class="el" href="group__gpio.html#gaa4c100976006333cf7838c65e9dde507">pinMode</a>  (uint16_t pin, uint8_t mode)</dt>
+<dt><a class="anchor" id="_todo000007"></a>Member <a class="el" href="group__gpio.html#gaa4c100976006333cf7838c65e9dde507">pinMode</a>  (uint16_t pin, uint8_t mode)</dt>
 <dd>ESP8266 supports pull-down on GPIO 0-15  </dd>
-<dt><a class="anchor" id="_todo000020"></a>Member <a class="el" href="classRF24.html#aa7e8523f86f9f8f20c274e0c89a5fd45">RF24::openReadingPipe</a>  (uint8_t number, uint64_t address)</dt>
+<dt><a class="anchor" id="_todo000018"></a>Member <a class="el" href="classRF24.html#aa7e8523f86f9f8f20c274e0c89a5fd45">RF24::openReadingPipe</a>  (uint8_t number, uint64_t address)</dt>
 <dd>Enforce the restriction that pipes 1-5 must share the top 32 bits </dd>
-<dt><a class="anchor" id="_todo000021"></a>Member <a class="el" href="classRF24.html#a343e5d23477181011dea030fafb1954f">RF24::setPayloadSize</a>  (uint8_t size)</dt>
+<dt><a class="anchor" id="_todo000019"></a>Member <a class="el" href="classRF24.html#a343e5d23477181011dea030fafb1954f">RF24::setPayloadSize</a>  (uint8_t size)</dt>
 <dd>Implement variable-sized payloads feature </dd>
-<dt><a class="anchor" id="_todo000018"></a>Member <a class="el" href="classSystemClockClass.html#a265d0c1bab2d138479633de532ff5d5d">SystemClockClass::setTimeZone</a>  (double localTimezoneOffset)</dt>
+<dt><a class="anchor" id="_todo000016"></a>Member <a class="el" href="classSystemClockClass.html#a265d0c1bab2d138479633de532ff5d5d">SystemClockClass::setTimeZone</a>  (double localTimezoneOffset)</dt>
 <dd>Why does this need to be set to 2 for UK during winter? <dl class="section note"><dt>Note</dt><dd>Supports whole hour and fraction of hour offsets from -12 hours to +12 hours  </dd></dl>
 </dd>
-<dt><a class="anchor" id="_todo000017"></a>Member <a class="el" href="group__wdt.html#gac142c43f548a7cfe7c0d739c7abee1c8">WDTClass::alive</a>  ()</dt>
+<dt><a class="anchor" id="_todo000015"></a>Member <a class="el" href="group__wdt.html#gac142c43f548a7cfe7c0d739c7abee1c8">WDTClass::alive</a>  ()</dt>
 <dd>Define the WDT period (how long before it triggers)  </dd>
-<dt><a class="anchor" id="_todo000016"></a>Group <a class="el" href="group__wifi__ap.html">wifi_ap</a>  </dt>
+<dt><a class="anchor" id="_todo000014"></a>Group <a class="el" href="group__wifi__ap.html">wifi_ap</a>  </dt>
 <dd>How is wifi access point dhcp controlled? </dd>
 </dl>
 </div></div><!-- contents -->

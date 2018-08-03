@@ -1,11 +1,12 @@
 var searchData=
 [
-  ['r',['r',['../structsensors__color__t.html#acdeed981e7df8c701e09d4b2fdb9a40c',1,'sensors_color_t']]],
-  ['relative_5fhumidity',['relative_humidity',['../structsensors__event__t.html#a577b73698368fb061382ce9f31052417',1,'sensors_event_t']]],
-  ['reserved0',['reserved0',['../structsensors__event__t.html#a8be4dc00344f46abf29e06251bf9fad9',1,'sensors_event_t']]],
-  ['resolution',['resolution',['../structsensor__t.html#a926aba3216afd50e62c0a6cdbcc7433a',1,'sensor_t']]],
-  ['rgba',['rgba',['../structsensors__color__t.html#a0afbff980c17fbacdab1666735f3d3e6',1,'sensors_color_t']]],
-  ['roll',['roll',['../structsensors__vec__t.html#a6d8c6e288de54942e1d2be4f42f96bb2',1,'sensors_vec_t']]],
-  ['rssi',['rssi',['../group__wifi__sta.html#ga8401f34337a25598bd99257b8664b359',1,'BssInfo']]],
-  ['rtc',['RTC',['../group__rtc.html#ga58e005fa37b73a7ba8f8d8d478a03902',1,'RTC.h']]]
+  ['second',['Second',['../classDateTime.html#a05d8e4467eb9841035b31237f3d76a58',1,'DateTime']]],
+  ['sensor_5fid',['sensor_id',['../structsensors__event__t.html#a6b06d35b17afbee79de7f45d9d71ed0b',1,'sensors_event_t::sensor_id()'],['../structsensor__t.html#a224f6201d59873cc1b6e9dd8a1894736',1,'sensor_t::sensor_id()']]],
+  ['serial',['Serial',['../group__serial.html#ga7b8c4a195c58f9eb8750e94955c5aa4b',1,'HardwareSerial.h']]],
+  ['server',['server',['../classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65',1,'NtpClient']]],
+  ['servo',['servo',['../group__Servo.html#ga79efceea669fb85a732c30f47cf7e59c',1,'Servo.h']]],
+  ['spi',['spi',['../classNrf24l.html#a7cb95618faa779543259c2f083dc3d35',1,'Nrf24l']]],
+  ['spidefaultsettings',['SPIDefaultSettings',['../group__hw__spi.html#gaec151e634b063831968d5c1abdad59d4',1,'SPIClass']]],
+  ['ssid',['ssid',['../group__wifi__sta.html#ga60490812f38152aa29babd9d97d4d9cd',1,'BssInfo']]],
+  ['systemclock',['SystemClock',['../group__systemclock.html#ga1f35b2f933fe3c4da6d862011f33236a',1,'SystemClock.h']]]
 ];

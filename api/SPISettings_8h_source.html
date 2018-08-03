@@ -118,37 +118,40 @@ $(document).ready(function(){initNavTree('SPISettings_8h_source.html','');});
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">//  SPI_MODE2       1                   0</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">//  SPI_MODE3       1                   1</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#define SPI_MODE0       0x00</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SPI_MODE1       0x0F</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SPI_MODE2       0xF0</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SPI_MODE3       0xFF</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#define SPI_MODE0 0x00</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SPI_MODE1 0x0F</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SPI_MODE2 0xF0</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SPI_MODE3 0xFF</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classSPISettings.html">   27</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSPISettings.html">SPISettings</a> {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="classSPISettings.html">SPISettings</a>();</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classSPISettings.html">SPISettings</a>();</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <a class="code" href="classSPISettings.html">SPISettings</a>(<span class="keywordtype">int</span> speed, uint8 byteOrder, uint8 dataMode);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keyword">inline</span> uint8 getDataMode() {<span class="keywordflow">return</span> _dataMode;};</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// overload operator to check wheter the settings are equal</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code" href="classSPISettings.html">SPISettings</a> &amp;other) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classSPISettings.html">   27</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSPISettings.html">SPISettings</a></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;{</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <a class="code" href="classSPISettings.html">SPISettings</a>();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classSPISettings.html">SPISettings</a>();</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="classSPISettings.html">SPISettings</a>(<span class="keywordtype">int</span> speed, uint8 byteOrder, uint8 dataMode);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">inline</span> uint8 getDataMode()</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordflow">return</span> _dataMode;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    };</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordtype">void</span> print(<span class="keyword">const</span> <span class="keywordtype">char</span> *s);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classSPIClass.html">SPIClass</a>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">int</span>     _speed;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    uint8   _byteOrder;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    uint8   _dataMode;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;};</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SMINGCORE_SPISETTINGS_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="comment">// overload operator to check wheter the settings are equal</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code" href="classSPISettings.html">SPISettings</a>&amp; other) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordtype">void</span> print(<span class="keyword">const</span> <span class="keywordtype">char</span>* s);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classSPIClass.html">SPIClass</a>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">int</span> _speed;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    uint8 _byteOrder;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    uint8 _dataMode;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;};</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SMINGCORE_SPISETTINGS_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classSPISettings_html"><div class="ttname"><a href="classSPISettings.html">SPISettings</a></div><div class="ttdef"><b>Definition:</b> SPISettings.h:27</div></div>
-<div class="ttc" id="classSPIClass_html"><div class="ttname"><a href="classSPIClass.html">SPIClass</a></div><div class="ttdef"><b>Definition:</b> SPI.h:31</div></div>
+<div class="ttc" id="classSPIClass_html"><div class="ttname"><a href="classSPIClass.html">SPIClass</a></div><div class="ttdef"><b>Definition:</b> SPI.h:29</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

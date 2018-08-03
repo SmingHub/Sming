@@ -27,7 +27,5 @@ var searchData=
   ['pull',['pull',['../classRingBufCPP.html#a637c47f1b19ea092a2b6591ce841830a',1,'RingBufCPP']]],
   ['pullup',['pullup',['../group__gpio.html#gadc6b96008df9ca3443a4216e83c70a5c',1,'Digital.h']]],
   ['pulsein',['pulseIn',['../group__gpio.html#gafa1ef6f243c6cf75dacea30bf7186ac7',1,'Digital.h']]],
-  ['pulse_20width_20modulation',['Pulse width modulation',['../group__pwm.html',1,'']]],
-  ['pwm_5fbad_5fchannel',['PWM_BAD_CHANNEL',['../group__hw__pwm.html#gad067371006c3313c39260f5189911c3d',1,'HardwarePWM.h']]],
-  ['pwm_5fdepth',['PWM_DEPTH',['../group__pwm.html#gabd1740ea7992ec3db609babfd6d1e58e',1,'DriverPWM.h']]]
+  ['pwm_5fbad_5fchannel',['PWM_BAD_CHANNEL',['../group__hw__pwm.html#gad067371006c3313c39260f5189911c3d',1,'HardwarePWM.h']]]
 ];

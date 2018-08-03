@@ -121,11 +121,11 @@ $(document).ready(function(){initNavTree('SslValidator_8h_source.html','');});
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">typedef</span> std::function&lt;bool(SSL *ssl, void* data)&gt; SslValidatorCallback;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">typedef</span> std::function&lt;bool(SSL* ssl, void* data)&gt; SslValidatorCallback;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">bool</span> sslValidateCertificateSha1(SSL *ssl, <span class="keywordtype">void</span>* data);</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">bool</span> sslValidateCertificateSha1(SSL* ssl, <span class="keywordtype">void</span>* data);</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keywordtype">bool</span> sslValidatePublicKeySha256(SSL *ssl, <span class="keywordtype">void</span>* data);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keywordtype">bool</span> sslValidatePublicKeySha256(SSL* ssl, <span class="keywordtype">void</span>* data);</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ENABLE_SSL */</span><span class="preprocessor"></span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor"></span></div>

@@ -2,7 +2,7 @@ var searchData=
 [
   ['i2cdev',['I2Cdev',['../classI2Cdev.html',1,'']]],
   ['i2cio',['I2CIO',['../classI2CIO.html',1,'I2CIO'],['../classI2CIO.html#a32eb7832075ad6011d67874405a0d0a6',1,'I2CIO::I2CIO()']]],
-  ['id',['id',['../classCircularBuffer.html#a471f021e32d3a8bd7b82a670bd242155',1,'CircularBuffer::id()'],['../classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0',1,'IDataSourceStream::id()'],['../classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf',1,'FileStream::id()'],['../classChannelPWM.html#a24a1819242da35acaaefbbfdff8c2ece',1,'ChannelPWM::id()']]],
+  ['id',['id',['../classCircularBuffer.html#a471f021e32d3a8bd7b82a670bd242155',1,'CircularBuffer::id()'],['../classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0',1,'IDataSourceStream::id()'],['../classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf',1,'FileStream::id()']]],
   ['idatasourcestream',['IDataSourceStream',['../classIDataSourceStream.html',1,'']]],
   ['idelegatecaller',['IDelegateCaller',['../classIDelegateCaller.html',1,'']]],
   ['idelegatecaller_3c_20returntype_2c_20paramslist_2e_2e_2e_3e',['IDelegateCaller&lt; ReturnType, ParamsList...&gt;',['../classIDelegateCaller.html',1,'']]],
@@ -10,7 +10,7 @@ var searchData=
   ['increase',['increase',['../classIDelegateCaller.html#a3af9e79f473f57e8202c4973d5f37366',1,'IDelegateCaller']]],
   ['init',['Init',['../classDS18S20.html#a7d593216797a90aa03081c12a32032dd',1,'DS18S20']]],
   ['initcommand',['initCommand',['../classDebugClass.html#a4b92612c788c442bf6f33439c7a8150a',1,'DebugClass']]],
-  ['initialize',['initialize',['../classDriverPWM.html#a4c2173c8d360f3581ebc81f6a3a0bdb1',1,'DriverPWM::initialize()'],['../classChannelPWM.html#a9db74b3292965d910aaeb2b0ecf59d61',1,'ChannelPWM::initialize()'],['../group__system.html#ga6f76530665629e2a2d0246fb63af9696',1,'SystemClass::initialize()']]],
+  ['initialize',['initialize',['../group__system.html#ga6f76530665629e2a2d0246fb63af9696',1,'SystemClass']]],
   ['initializems',['initializeMs',['../classHardware__Timer.html#a34a5f9c9e0b760e1db6bb4e17b395cbd',1,'Hardware_Timer::initializeMs()'],['../group__timer.html#gaa116e26295abe7ba0f713bb680a76a59',1,'Timer::initializeMs(uint32_t milliseconds, InterruptCallback callback=NULL)'],['../group__timer.html#gacff85d16f46217ace62486a1325a1515',1,'Timer::initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction=NULL)'],['../group__timer.html#gae3859a87bbf84f3d4d6db5c1b477e0a4',1,'Timer::initializeMs(uint32_t milliseconds, TimerDelegateStdFunction delegateFunction=nullptr)']]],
   ['initializeus',['initializeUs',['../classHardware__Timer.html#ad29fc43e7d613945185b0d095b6cf964',1,'Hardware_Timer::initializeUs()'],['../group__timer.html#ga169a2de229755b50ffcd4d35963c4ffa',1,'Timer::initializeUs(uint32_t microseconds, InterruptCallback callback=NULL)'],['../group__timer.html#gabdf713dd3a808a56a2cdc5029c73f3c1',1,'Timer::initializeUs(uint32_t microseconds, TimerDelegate delegateFunction=NULL)'],['../group__timer.html#ga906bae595399c5f6b843682480eb2280',1,'Timer::initializeUs(uint32_t microseconds, TimerDelegateStdFunction delegateFunction=nullptr)']]],
   ['internalrequesttime',['internalRequestTime',['../classNtpClient.html#af2df6d79f7f3e9fb6532e9f668e9b5fe',1,'NtpClient']]],

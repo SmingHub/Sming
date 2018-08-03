@@ -426,7 +426,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
 
 <p>Implements <a class="el" href="classIDataSourceStream.html#a589085e0eea011acdc401b79831826e0">IDataSourceStream</a>.</p>
 
@@ -1519,7 +1519,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
 
 <p>Implements <a class="el" href="classReadWriteStream.html#a488b605e720069e802f5d38635e4b2e0">ReadWriteStream</a>.</p>
 
@@ -1603,46 +1603,6 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 
 </div>
 </div>
-<a class="anchor" id="a6506dbe2faf21a850f4796a9452fc0c0"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual size_t UrlencodedOutputStream::write </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>charToWrite</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Write a single char to stream. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">charToWrite</td><td>Char to write to the stream </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">size_t</td><td>Quantity of chars written to stream (always 1) </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Implements <a class="el" href="classReadWriteStream.html#a3ebf31faca185807abbbcfdb5b0f8d4a">ReadWriteStream</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="abfdd93a61c4b95a3ba41680188505e73"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1689,6 +1649,46 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a6506dbe2faf21a850f4796a9452fc0c0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t UrlencodedOutputStream::write </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>charToWrite</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Write a single char to stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">charToWrite</td><td>Char to write to the stream </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of chars written to stream (always 1) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classReadWriteStream.html#a3ebf31faca185807abbbcfdb5b0f8d4a">ReadWriteStream</a>.</p>
 
 </div>
 </div>

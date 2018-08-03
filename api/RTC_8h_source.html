@@ -112,8 +112,8 @@ $(document).ready(function(){initNavTree('RTC_8h_source.html','');});
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NS_PER_SECOND 1000000000</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="structRtcData.html">   18</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="group__rtc.html#ga740cfb2f8c4590588cc54fff34874de5">   19</a></span>&#160;    uint64_t <a class="code" href="group__rtc.html#ga740cfb2f8c4590588cc54fff34874de5">time</a>; </div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="group__rtc.html#gaf1d6f643e40e285e2bee5e8007c93d84">   20</a></span>&#160;    uint32_t <a class="code" href="group__rtc.html#gaf1d6f643e40e285e2bee5e8007c93d84">magic</a>; </div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="group__rtc.html#ga740cfb2f8c4590588cc54fff34874de5">   19</a></span>&#160;    uint64_t <a class="code" href="group__rtc.html#ga740cfb2f8c4590588cc54fff34874de5">time</a>;   </div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="group__rtc.html#gaf1d6f643e40e285e2bee5e8007c93d84">   20</a></span>&#160;    uint32_t <a class="code" href="group__rtc.html#gaf1d6f643e40e285e2bee5e8007c93d84">magic</a>;  </div>
 <div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="group__rtc.html#ga4b6672acc749d2af3602dd503bbdda9e">   21</a></span>&#160;    uint32_t <a class="code" href="group__rtc.html#ga4b6672acc749d2af3602dd503bbdda9e">cycles</a>; </div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;} <a class="code" href="structRtcData.html">RtcData</a>;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
@@ -132,9 +132,9 @@ $(document).ready(function(){initNavTree('RTC_8h_source.html','');});
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">bool</span> hardwareReset;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">bool</span> saveTime(<a class="code" href="structRtcData.html">RtcData</a> &amp;data);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">void</span> updateTime(<a class="code" href="structRtcData.html">RtcData</a> &amp;data);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">void</span> loadTime(<a class="code" href="structRtcData.html">RtcData</a> &amp;data);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">bool</span> saveTime(<a class="code" href="structRtcData.html">RtcData</a>&amp; data);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">void</span> updateTime(<a class="code" href="structRtcData.html">RtcData</a>&amp; data);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">void</span> loadTime(<a class="code" href="structRtcData.html">RtcData</a>&amp; data);</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;};</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">extern</span> <a class="code" href="classRtcClass.html">RtcClass</a> <a class="code" href="group__rtc.html#ga58e005fa37b73a7ba8f8d8d478a03902">RTC</a>;</div>

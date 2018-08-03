@@ -127,7 +127,7 @@ $(document).ready(function(){initNavTree('MqttClient_8h_source.html','');});
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">class </span><a class="code" href="classMqttClient.html">MqttClient</a>;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">class </span><a class="code" href="classURL.html">URL</a>;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classMqttClient.html">   33</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMqttClient.html">MqttClient</a>: <span class="keyword">protected</span> <a class="code" href="classTcpClient.html">TcpClient</a></div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classMqttClient.html">   33</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMqttClient.html">MqttClient</a> : <span class="keyword">protected</span> <a class="code" href="classTcpClient.html">TcpClient</a></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;{</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <a class="code" href="classMqttClient.html">MqttClient</a>(<span class="keywordtype">bool</span> autoDestruct = <span class="keyword">false</span>);</div>
@@ -137,66 +137,75 @@ $(document).ready(function(){initNavTree('MqttClient_8h_source.html','');});
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classMqttClient.html">MqttClient</a>();</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classMqttClient.html#a08119a1be647d78053ded9956c8a4c06">setCallback</a>(<a class="code" href="classDelegate.html">MqttStringSubscriptionCallback</a> subscriptionCallback = NULL);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">void</span> setKeepAlive(<span class="keywordtype">int</span> seconds);         <span class="comment">//send to broker</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">void</span> setPingRepeatTime(<span class="keywordtype">int</span> seconds);            <span class="comment">//used by client</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">void</span> setKeepAlive(<span class="keywordtype">int</span> seconds);      <span class="comment">//send to broker</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">void</span> setPingRepeatTime(<span class="keywordtype">int</span> seconds); <span class="comment">//used by client</span></div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="comment">// Sets Last Will and Testament</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">bool</span> setWill(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; topic, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; message, <span class="keywordtype">int</span> QoS, <span class="keywordtype">bool</span> retained = <span class="keyword">false</span>);</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classMqttClient.html#a894bac3f513eec987e979ecf2b050797">connect</a>(<span class="keyword">const</span> <a class="code" href="classURL.html">URL</a>&amp; url, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; uniqueClientName, uint32_t sslOptions = 0);</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classMqttClient.html#a894bac3f513eec987e979ecf2b050797">connect</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; clientName, <span class="keywordtype">boolean</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classMqttClient.html#a894bac3f513eec987e979ecf2b050797">connect</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; clientName,<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; username, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; password, <span class="keywordtype">boolean</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keyword">using</span> <a class="code" href="classTcpClient.html#abf18cea760e8efbf3a204b4e6d4055c3">TcpClient::setCompleteDelegate</a>;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    __forceinline <span class="keywordtype">bool</span> isProcessing()  { <span class="keywordflow">return</span> TcpClient::isProcessing(); }</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    __forceinline TcpClientState getConnectionState() { <span class="keywordflow">return</span> TcpClient::getConnectionState(); }</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">bool</span> publish(<a class="code" href="classString.html">String</a> topic, <a class="code" href="classString.html">String</a> message, <span class="keywordtype">bool</span> retained = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">bool</span> publishWithQoS(<a class="code" href="classString.html">String</a> topic, <a class="code" href="classString.html">String</a> message, <span class="keywordtype">int</span> QoS, <span class="keywordtype">bool</span> retained = <span class="keyword">false</span>, <a class="code" href="classDelegate.html">MqttMessageDeliveredCallback</a> onDelivery = NULL);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordtype">bool</span> subscribe(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; topic);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordtype">bool</span> unsubscribe(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; topic);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="preprocessor"></span>    <span class="keyword">using</span> TcpClient::addSslOptions;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keyword">using</span> TcpClient::addSslValidator;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keyword">using</span> TcpClient::pinCertificate;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keyword">using</span> TcpClient::setSslKeyCert;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keyword">using</span> TcpClient::freeSslKeyCert;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keyword">using</span> TcpClient::getSsl;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keyword">virtual</span> err_t onReceive(pbuf *buf);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReadyToSendData(TcpConnectionEvent sourceEvent);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">void</span> debugPrintResponseType(<span class="keywordtype">int</span> type, <span class="keywordtype">int</span> len);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticSendPacket(<span class="keywordtype">void</span>* userInfo, <span class="keyword">const</span> <span class="keywordtype">void</span>* buf, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> count);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordtype">bool</span> privateConnect(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; clientName, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; username, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; password, <span class="keywordtype">boolean</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <a class="code" href="classURL.html">URL</a>             url;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <a class="code" href="structmqtt__broker__handle__t.html">mqtt_broker_handle_t</a> broker;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordtype">int</span>             waitingSize;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    uint8_t         buffer[MQTT_MAX_BUFFER_SIZE + 1];</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    uint8_t *       current;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordtype">int</span>             posHeader;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <a class="code" href="classDelegate.html">MqttStringSubscriptionCallback</a> callback;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordtype">int</span>             keepAlive = 60;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordtype">int</span>             pingRepeatTime = 20;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span>   lastMessage = 0;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <a class="code" href="classHashMap.html">HashMap&lt;uint16_t, MqttMessageDeliveredCallback&gt;</a> onDeliveryQueue;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;};</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_NETWORK_MqttClient_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classMqttClient.html#a894bac3f513eec987e979ecf2b050797">connect</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; clientName, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; username, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; password, <span class="keywordtype">boolean</span> useSsl = <span class="keyword">false</span>,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                 uint32_t sslOptions = 0);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keyword">using</span> <a class="code" href="classTcpClient.html#abf18cea760e8efbf3a204b4e6d4055c3">TcpClient::setCompleteDelegate</a>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    __forceinline <span class="keywordtype">bool</span> isProcessing()</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keywordflow">return</span> TcpClient::isProcessing();</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    }</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    __forceinline TcpClientState getConnectionState()</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keywordflow">return</span> TcpClient::getConnectionState();</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordtype">bool</span> publish(<a class="code" href="classString.html">String</a> topic, <a class="code" href="classString.html">String</a> message, <span class="keywordtype">bool</span> retained = <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">bool</span> publishWithQoS(<a class="code" href="classString.html">String</a> topic, <a class="code" href="classString.html">String</a> message, <span class="keywordtype">int</span> QoS, <span class="keywordtype">bool</span> retained = <span class="keyword">false</span>,</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                        <a class="code" href="classDelegate.html">MqttMessageDeliveredCallback</a> onDelivery = NULL);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">bool</span> subscribe(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; topic);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">bool</span> unsubscribe(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; topic);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor"></span>    <span class="keyword">using</span> TcpClient::addSslOptions;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keyword">using</span> TcpClient::addSslValidator;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keyword">using</span> TcpClient::freeSslKeyCert;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keyword">using</span> TcpClient::getSsl;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keyword">using</span> TcpClient::pinCertificate;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keyword">using</span> TcpClient::setSslKeyCert;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">virtual</span> err_t onReceive(pbuf* buf);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReadyToSendData(TcpConnectionEvent sourceEvent);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordtype">void</span> debugPrintResponseType(<span class="keywordtype">int</span> type, <span class="keywordtype">int</span> len);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">int</span> staticSendPacket(<span class="keywordtype">void</span>* userInfo, <span class="keyword">const</span> <span class="keywordtype">void</span>* buf, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> count);</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordtype">bool</span> privateConnect(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; clientName, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; username, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; password,</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                        <span class="keywordtype">boolean</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <a class="code" href="classURL.html">URL</a> url;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <a class="code" href="structmqtt__broker__handle__t.html">mqtt_broker_handle_t</a> broker;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordtype">int</span> waitingSize;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    uint8_t buffer[MQTT_MAX_BUFFER_SIZE + 1];</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    uint8_t* current;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keywordtype">int</span> posHeader;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <a class="code" href="classDelegate.html">MqttStringSubscriptionCallback</a> callback;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordtype">int</span> keepAlive = 60;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keywordtype">int</span> pingRepeatTime = 20;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> lastMessage = 0;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <a class="code" href="classHashMap.html">HashMap&lt;uint16_t, MqttMessageDeliveredCallback&gt;</a> onDeliveryQueue;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;};</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_NETWORK_MqttClient_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classMqttClient_html_a08119a1be647d78053ded9956c8a4c06"><div class="ttname"><a href="classMqttClient.html#a08119a1be647d78053ded9956c8a4c06">MqttClient::setCallback</a></div><div class="ttdeci">void setCallback(MqttStringSubscriptionCallback subscriptionCallback=NULL)</div><div class="ttdoc">Provide a funcion to be called when a message is received from the broker. </div></div>
 <div class="ttc" id="classHashMap_html"><div class="ttname"><a href="classHashMap.html">HashMap</a></div><div class="ttdef"><b>Definition:</b> WHashMap.h:24</div></div>
 <div class="ttc" id="classMqttClient_html"><div class="ttname"><a href="classMqttClient.html">MqttClient</a></div><div class="ttdef"><b>Definition:</b> MqttClient.h:33</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classTcpClient_html_abf18cea760e8efbf3a204b4e6d4055c3"><div class="ttname"><a href="classTcpClient.html#abf18cea760e8efbf3a204b4e6d4055c3">TcpClient::setCompleteDelegate</a></div><div class="ttdeci">void setCompleteDelegate(TcpClientCompleteDelegate completeCb=NULL)</div><div class="ttdoc">Set or clear the callback for connection close. </div></div>
-<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:45</div></div>
+<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:38</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(String topic, String message)&gt;</a></div></div>
 <div class="ttc" id="classMqttClient_html_a894bac3f513eec987e979ecf2b050797"><div class="ttname"><a href="classMqttClient.html#a894bac3f513eec987e979ecf2b050797">MqttClient::connect</a></div><div class="ttdeci">bool connect(const URL &amp;url, const String &amp;uniqueClientName, uint32_t sslOptions=0)</div><div class="ttdoc">Connect to a MQTT server. </div></div>
 <div class="ttc" id="classURL_html"><div class="ttname"><a href="classURL.html">URL</a></div><div class="ttdef"><b>Definition:</b> URL.h:24</div></div>

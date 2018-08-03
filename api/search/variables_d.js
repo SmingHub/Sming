@@ -1,12 +1,8 @@
 var searchData=
 [
-  ['second',['Second',['../classDateTime.html#a05d8e4467eb9841035b31237f3d76a58',1,'DateTime']]],
-  ['sensor_5fid',['sensor_id',['../structsensors__event__t.html#a6b06d35b17afbee79de7f45d9d71ed0b',1,'sensors_event_t::sensor_id()'],['../structsensor__t.html#a224f6201d59873cc1b6e9dd8a1894736',1,'sensor_t::sensor_id()']]],
-  ['serial',['Serial',['../group__serial.html#ga7b8c4a195c58f9eb8750e94955c5aa4b',1,'HardwareSerial.h']]],
-  ['server',['server',['../classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65',1,'NtpClient']]],
-  ['servo',['servo',['../group__Servo.html#ga79efceea669fb85a732c30f47cf7e59c',1,'Servo.h']]],
-  ['spi',['spi',['../classNrf24l.html#a7cb95618faa779543259c2f083dc3d35',1,'Nrf24l']]],
-  ['spidefaultsettings',['SPIDefaultSettings',['../group__hw__spi.html#gaec151e634b063831968d5c1abdad59d4',1,'SPIClass']]],
-  ['ssid',['ssid',['../group__wifi__sta.html#ga60490812f38152aa29babd9d97d4d9cd',1,'BssInfo']]],
-  ['systemclock',['SystemClock',['../group__systemclock.html#ga1f35b2f933fe3c4da6d862011f33236a',1,'SystemClock.h']]]
+  ['temperature',['temperature',['../structsensors__event__t.html#a914f76beb75bd99aa3c13d3a8e56e21c',1,'sensors_event_t']]],
+  ['time',['time',['../group__rtc.html#ga740cfb2f8c4590588cc54fff34874de5',1,'RtcData']]],
+  ['timeouttimer',['timeoutTimer',['../classNtpClient.html#a841f2bbd43ed22f090f767081b48687b',1,'NtpClient']]],
+  ['timestamp',['timestamp',['../structsensors__event__t.html#acd3be1560458b3e3bf52f93f744e8238',1,'sensors_event_t']]],
+  ['type',['type',['../structsensors__event__t.html#a58401dd7f3400d9eb96c71b8fba9f8e8',1,'sensors_event_t::type()'],['../structsensor__t.html#ae1d59df64438923d3bd95f2416c32203',1,'sensor_t::type()']]]
 ];

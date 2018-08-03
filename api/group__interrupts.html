@@ -116,7 +116,7 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>ESP_MAX_INTERRUPTS</b>&#160;&#160;&#160;16</td></tr>
 <tr class="separator:ga7e199b61bc230590b8891205aa2af57c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga591f56441242d074bdaf80d946d7bc11"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga591f56441242d074bdaf80d946d7bc11"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>digitalPinToInterrupt</b>(pin)&#160;&#160;&#160;( (pin) &lt; ESP_MAX_INTERRUPTS ? (pin) : -1 )</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>digitalPinToInterrupt</b>(pin)&#160;&#160;&#160;((pin) &lt; ESP_MAX_INTERRUPTS ? (pin) : -1)</td></tr>
 <tr class="separator:ga591f56441242d074bdaf80d946d7bc11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga68c330e94fe121eba993e5a5973c3162"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga68c330e94fe121eba993e5a5973c3162"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>cli</b>()&#160;&#160;&#160;<a class="el" href="group__interrupts.html#ga10e6193b0f9d7fc1ea6342ca38b1402f">noInterrupts</a>()</td></tr>
@@ -305,7 +305,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>_gpioInterruptsInitia
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Traditional c-type callback function method </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000015">Todo:</a></b></dt><dd>Add GPIO_INT_TYPE documentation - is this in SDK? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000013">Todo:</a></b></dt><dd>Add GPIO_INT_TYPE documentation - is this in SDK? </dd></dl>
 
 </div>
 </div>

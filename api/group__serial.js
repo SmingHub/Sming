@@ -121,6 +121,6 @@ var group__serial =
     [ "SERIAL_SIGNAL_DELEGATE", "group__serial.html#ga6f0b0bff3efa0ed5efcce093c2051ffe", null ],
     [ "UART_ID_0", "group__serial.html#ga8e6f5f702e060af6b6f62b89620786ea", null ],
     [ "UART_ID_1", "group__serial.html#ga4414160658a1080ac3d9371dfbcc044a", null ],
-    [ "StreamDataReceivedDelegate", "group__serial.html#ga6893ae94b30659b565a1c1db2459f590", null ],
+    [ "StreamDataReceivedDelegate", "group__serial.html#ga06acf8677f719da1a20011835fc9b2e1", null ],
     [ "Serial", "group__serial.html#ga7b8c4a195c58f9eb8750e94955c5aa4b", null ]
 ];

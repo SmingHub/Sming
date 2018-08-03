@@ -44,13 +44,13 @@ var searchData=
   ['delegate_3c_20void_28websocketconnection_20_26_29_3e',['Delegate&lt; void(WebSocketConnection &amp;)&gt;',['../classDelegate.html',1,'']]],
   ['delegate_3c_20void_28websocketconnection_20_26_2c_20const_20string_20_26_29_3e',['Delegate&lt; void(WebSocketConnection &amp;, const String &amp;)&gt;',['../classDelegate.html',1,'']]],
   ['delegate_3c_20void_28websocketconnection_20_26_2c_20uint8_5ft_20_2adata_2c_20size_5ft_20size_29_3e',['Delegate&lt; void(WebSocketConnection &amp;, uint8_t *data, size_t size)&gt;',['../classDelegate.html',1,'']]],
+  ['dfrobotdfplayermini',['DFRobotDFPlayerMini',['../classDFRobotDFPlayerMini.html',1,'']]],
   ['dhtesp',['DHTesp',['../classDHTesp.html',1,'']]],
   ['dir',['DIR',['../structDIR.html',1,'']]],
   ['display',['Display',['../classDisplay.html',1,'']]],
   ['dnsheader',['DNSHeader',['../structDNSHeader.html',1,'']]],
   ['dnslookup',['DnsLookup',['../structDnsLookup.html',1,'']]],
   ['dnsserver',['DNSServer',['../classDNSServer.html',1,'']]],
-  ['driverpwm',['DriverPWM',['../classDriverPWM.html',1,'']]],
   ['ds18s20',['DS18S20',['../classDS18S20.html',1,'']]],
   ['ds3232rtc',['DS3232RTC',['../classDS3232RTC.html',1,'']]]
 ];

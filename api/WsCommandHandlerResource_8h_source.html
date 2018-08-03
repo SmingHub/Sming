@@ -116,10 +116,10 @@ $(document).ready(function(){initNavTree('WsCommandHandlerResource_8h_source.htm
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../../Wiring/WString.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../../Services/CommandProcessing/CommandProcessingIncludes.h&quot;</span> <span class="comment">// TODO: ....</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="classWsCommandHandlerResource.html">   16</a></span>&#160;<span class="keyword">class </span><a class="code" href="classWsCommandHandlerResource.html">WsCommandHandlerResource</a>: <span class="keyword">protected</span> <a class="code" href="classWebsocketResource.html">WebsocketResource</a> {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="classWsCommandHandlerResource.html">   16</a></span>&#160;<span class="keyword">class </span><a class="code" href="classWsCommandHandlerResource.html">WsCommandHandlerResource</a> : <span class="keyword">protected</span> <a class="code" href="classWebsocketResource.html">WebsocketResource</a></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="classWsCommandHandlerResource.html">WsCommandHandlerResource</a>(): <a class="code" href="classWebsocketResource.html">WebsocketResource</a>()</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="classWsCommandHandlerResource.html">WsCommandHandlerResource</a>() : <a class="code" href="classWebsocketResource.html">WebsocketResource</a>()</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        wsMessage = <a class="code" href="classDelegate.html">WebSocketMessageDelegate</a>(&amp;WsCommandHandlerResource::onMessage, <span class="keyword">this</span>);</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    }</div>
@@ -128,38 +128,35 @@ $(document).ready(function(){initNavTree('WsCommandHandlerResource_8h_source.htm
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordtype">int</span> checkHeaders(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>&amp; connection, <a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; request, <a class="code" href="classHttpResponse.html">HttpResponse</a>&amp; response)</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        <span class="keywordtype">int</span> err = WebsocketResource::checkHeaders(connection, request, response);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keywordflow">if</span>(err != 0 ) {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keywordflow">if</span>(err != 0) {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            <span class="keywordflow">return</span> err;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        }</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <a class="code" href="classWebSocketConnection.html">WebSocketConnection</a>* socket = (<a class="code" href="classWebSocketConnection.html">WebSocketConnection</a>*)connection.userData;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keywordflow">if</span>(socket != NULL) {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            socket-&gt;setMessageHandler()</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <span class="comment">// create new command handler</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    }</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">void</span> onMessage(<a class="code" href="classWebSocketConnection.html">WebSocketConnection</a>&amp; connection, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; message)</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    {</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        commandExecutor.executorReceive(message + <span class="stringliteral">&quot;\r&quot;</span>);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classCommandExecutor.html">CommandExecutor</a> commandExecutor;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;};</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            socket-&gt;setMessageHandler()</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <span class="comment">// create new command handler</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        }</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">void</span> onMessage(<a class="code" href="classWebSocketConnection.html">WebSocketConnection</a>&amp; connection, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; message)</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        commandExecutor.executorReceive(message + <span class="stringliteral">&quot;\r&quot;</span>);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="classCommandExecutor.html">CommandExecutor</a> commandExecutor;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;};</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:37</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(WebSocketConnection &amp;, const String &amp;)&gt;</a></div></div>
 <div class="ttc" id="classCommandExecutor_html"><div class="ttname"><a href="classCommandExecutor.html">CommandExecutor</a></div><div class="ttdef"><b>Definition:</b> CommandExecutor.h:18</div></div>
 <div class="ttc" id="classWsCommandHandlerResource_html"><div class="ttname"><a href="classWsCommandHandlerResource.html">WsCommandHandlerResource</a></div><div class="ttdef"><b>Definition:</b> WsCommandHandlerResource.h:16</div></div>
 <div class="ttc" id="classHttpRequest_html"><div class="ttname"><a href="classHttpRequest.html">HttpRequest</a></div><div class="ttdef"><b>Definition:</b> HttpRequest.h:31</div></div>
-<div class="ttc" id="classWebSocketConnection_html"><div class="ttname"><a href="classWebSocketConnection.html">WebSocketConnection</a></div><div class="ttdef"><b>Definition:</b> WebSocketConnection.h:39</div></div>
+<div class="ttc" id="classWebSocketConnection_html"><div class="ttname"><a href="classWebSocketConnection.html">WebSocketConnection</a></div><div class="ttdef"><b>Definition:</b> WebSocketConnection.h:34</div></div>
 <div class="ttc" id="classWebsocketResource_html"><div class="ttname"><a href="classWebsocketResource.html">WebsocketResource</a></div><div class="ttdef"><b>Definition:</b> WebsocketResource.h:15</div></div>
 <div class="ttc" id="classHttpResponse_html"><div class="ttname"><a href="classHttpResponse.html">HttpResponse</a></div><div class="ttdef"><b>Definition:</b> HttpResponse.h:21</div></div>
 </div><!-- fragment --></div><!-- contents -->

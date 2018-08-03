@@ -13,7 +13,6 @@ var searchData=
   ['heading',['heading',['../structsensors__vec__t.html#a4fe8caabff59868ff44f1ed8334cbf47',1,'sensors_vec_t']]],
   ['hexdump',['HexDump',['../classHexDump.html',1,'']]],
   ['hidden',['hidden',['../group__wifi__sta.html#ga14275630c0d4734771122aed1327bb2a',1,'BssInfo']]],
-  ['high',['high',['../classChannelPWM.html#a2d9b9cb9b2817d34207f0f2da836a277',1,'ChannelPWM']]],
   ['highlow',['HighLow',['../structRCSwitch_1_1HighLow.html',1,'RCSwitch']]],
   ['hmc5883l',['HMC5883L',['../classHMC5883L.html',1,'']]],
   ['home',['home',['../classLCD.html#aee45ad37f09312f5d9982257e2d37e68',1,'LCD']]],

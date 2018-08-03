@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['name',['name',['../structsensor__t.html#a4383b68d36f9dc4096d83583c3b009bf',1,'sensor_t']]]
+  ['orientation',['orientation',['../structsensors__event__t.html#acbe3c50a256fa9423bc9e3a6e0da7ebf',1,'sensors_event_t']]]
 ];

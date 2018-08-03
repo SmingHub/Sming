@@ -125,45 +125,53 @@ $(document).ready(function(){initNavTree('HttpResource_8h_source.html','');});
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">class </span><a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;int(HttpServerConnection&amp; connection, HttpRequest&amp;, const char *at, int length)&gt;</a> <a class="code" href="classDelegate.html">HttpServerConnectionBodyDelegate</a>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;int(HttpServerConnection&amp; connection, HttpRequest&amp;, char *at, int length)&gt;</a> <a class="code" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;int(HttpServerConnection&amp;, HttpRequest&amp;, HttpResponse&amp;)&gt;</a> <a class="code" href="classDelegate.html">HttpResourceDelegate</a>;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(HttpRequest&amp;, HttpResponse&amp;)&gt;</a> <a class="code" href="classDelegate.html">HttpPathDelegate</a>; <span class="comment">// &lt;&lt; deprecated</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classHttpResource.html">   30</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHttpResource.html">HttpResource</a> {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classHttpResource.html">HttpResource</a>() {}</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classHttpResource.html#ab5ea247e3818feb1e364fffa1958f36d">   36</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classHttpResource.html#ab5ea247e3818feb1e364fffa1958f36d">shutdown</a>(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>&amp; connection) {}</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="classDelegate.html">HttpServerConnectionBodyDelegate</a> onBody = 0; <span class="comment">// &lt;&lt; called when the resource wants to process the raw body data</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="classDelegate.html">HttpResourceDelegate</a> onHeadersComplete = 0; <span class="comment">// &lt;&lt; called when the headers are ready</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <a class="code" href="classDelegate.html">HttpResourceDelegate</a> onRequestComplete = 0; <span class="comment">// &lt;&lt; called when the request is complete OR upgraded</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <a class="code" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a> onUpgrade = 0; <span class="comment">// called when the request is upgraded and raw data is passed to it</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;int(HttpServerConnection&amp; connection, HttpRequest&amp;, const char* at, int length)&gt;</a></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <a class="code" href="classDelegate.html">HttpServerConnectionBodyDelegate</a>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;int(HttpServerConnection&amp; connection, HttpRequest&amp;, char* at, int length)&gt;</a></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;int(HttpServerConnection&amp;, HttpRequest&amp;, HttpResponse&amp;)&gt;</a> <a class="code" href="classDelegate.html">HttpResourceDelegate</a>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(HttpRequest&amp;, HttpResponse&amp;)&gt;</a> <a class="code" href="classDelegate.html">HttpPathDelegate</a>; <span class="comment">// &lt;&lt; deprecated</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classHttpResource.html">   32</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHttpResource.html">HttpResource</a></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;{</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classHttpResource.html">HttpResource</a>()</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    }</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classHttpResource.html#ab5ea247e3818feb1e364fffa1958f36d">   41</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classHttpResource.html#ab5ea247e3818feb1e364fffa1958f36d">shutdown</a>(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>&amp; connection)</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classHttpCompatResource.html">   45</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHttpCompatResource.html">HttpCompatResource</a>: <span class="keyword">public</span> <a class="code" href="classHttpResource.html">HttpResource</a> {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <a class="code" href="classHttpCompatResource.html">HttpCompatResource</a>(<span class="keyword">const</span> <a class="code" href="classDelegate.html">HttpPathDelegate</a>&amp; callback);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">int</span> requestComplete(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>&amp;, <a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; , <a class="code" href="classHttpResponse.html">HttpResponse</a>&amp; );</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <a class="code" href="classDelegate.html">HttpPathDelegate</a> callback;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;};</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classHashMap.html">HashMap&lt;String, HttpResource*&gt;</a> <a class="code" href="classHashMap.html">ResourceTree</a>;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_RESOURCE_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="classDelegate.html">HttpServerConnectionBodyDelegate</a> onBody = 0; <span class="comment">// &lt;&lt; called when the resource wants to process the raw body data</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <a class="code" href="classDelegate.html">HttpResourceDelegate</a> onHeadersComplete = 0;  <span class="comment">// &lt;&lt; called when the headers are ready</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="classDelegate.html">HttpResourceDelegate</a> onRequestComplete = 0;  <span class="comment">// &lt;&lt; called when the request is complete OR upgraded</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a> onUpgrade = 0;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="comment">// ^ called when the request is upgraded and raw data is passed to it</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;};</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classHttpCompatResource.html">   53</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHttpCompatResource.html">HttpCompatResource</a> : <span class="keyword">public</span> <a class="code" href="classHttpResource.html">HttpResource</a></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;{</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="classHttpCompatResource.html">HttpCompatResource</a>(<span class="keyword">const</span> <a class="code" href="classDelegate.html">HttpPathDelegate</a>&amp; callback);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordtype">int</span> requestComplete(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>&amp;, <a class="code" href="classHttpRequest.html">HttpRequest</a>&amp;, <a class="code" href="classHttpResponse.html">HttpResponse</a>&amp;);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="classDelegate.html">HttpPathDelegate</a> callback;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;};</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classHashMap.html">HashMap&lt;String, HttpResource*&gt;</a> <a class="code" href="classHashMap.html">ResourceTree</a>;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_RESOURCE_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classHashMap_html"><div class="ttname"><a href="classHashMap.html">HashMap</a></div><div class="ttdef"><b>Definition:</b> WHashMap.h:24</div></div>
 <div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:37</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; int(HttpServerConnection &amp;connection, HttpRequest &amp;, const char *at, int length)&gt;</a></div></div>
-<div class="ttc" id="classHttpCompatResource_html"><div class="ttname"><a href="classHttpCompatResource.html">HttpCompatResource</a></div><div class="ttdef"><b>Definition:</b> HttpResource.h:45</div></div>
-<div class="ttc" id="classHttpResource_html"><div class="ttname"><a href="classHttpResource.html">HttpResource</a></div><div class="ttdef"><b>Definition:</b> HttpResource.h:30</div></div>
+<div class="ttc" id="classHttpCompatResource_html"><div class="ttname"><a href="classHttpCompatResource.html">HttpCompatResource</a></div><div class="ttdef"><b>Definition:</b> HttpResource.h:53</div></div>
+<div class="ttc" id="classHttpResource_html"><div class="ttname"><a href="classHttpResource.html">HttpResource</a></div><div class="ttdef"><b>Definition:</b> HttpResource.h:32</div></div>
 <div class="ttc" id="classHttpRequest_html"><div class="ttname"><a href="classHttpRequest.html">HttpRequest</a></div><div class="ttdef"><b>Definition:</b> HttpRequest.h:31</div></div>
-<div class="ttc" id="classHttpResource_html_ab5ea247e3818feb1e364fffa1958f36d"><div class="ttname"><a href="classHttpResource.html#ab5ea247e3818feb1e364fffa1958f36d">HttpResource::shutdown</a></div><div class="ttdeci">virtual void shutdown(HttpServerConnection &amp;connection)</div><div class="ttdoc">Takes care to cleanup the connection. </div><div class="ttdef"><b>Definition:</b> HttpResource.h:36</div></div>
+<div class="ttc" id="classHttpResource_html_ab5ea247e3818feb1e364fffa1958f36d"><div class="ttname"><a href="classHttpResource.html#ab5ea247e3818feb1e364fffa1958f36d">HttpResource::shutdown</a></div><div class="ttdeci">virtual void shutdown(HttpServerConnection &amp;connection)</div><div class="ttdoc">Takes care to cleanup the connection. </div><div class="ttdef"><b>Definition:</b> HttpResource.h:41</div></div>
 <div class="ttc" id="classHttpResponse_html"><div class="ttname"><a href="classHttpResponse.html">HttpResponse</a></div><div class="ttdef"><b>Definition:</b> HttpResponse.h:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

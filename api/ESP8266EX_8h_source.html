@@ -113,52 +113,49 @@ $(document).ready(function(){initNavTree('ESP8266EX_8h_source.html','');});
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;../include/user_config.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#define TOTAL_PINS              16</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NUM_DIGITAL_PINS        TOTAL_PINS</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span><span class="comment">//#define TOTAL_ANALOG_PINS       1</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">//#define pinToInterrupt(PIN) \</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">//        ( ((PIN) == 2) ? EXTERNAL_INTERRUPT_0 : \</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">//        ( ((PIN) == 3) ? EXTERNAL_INTERRUPT_1 : -1))</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="structEspDigitalPin.html">   26</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structEspDigitalPin.html">EspDigitalPin</a></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    uint8_t id;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    uint32_t mux;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    uint8_t gpioFunc;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">operator</span> <span class="keyword">const</span> int(){<span class="keywordflow">return</span> id;}</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#define TOTAL_PINS 16</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NUM_DIGITAL_PINS TOTAL_PINS</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span><span class="comment">//#define TOTAL_ANALOG_PINS       1</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">//#define pinToInterrupt(PIN) \</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">//        ( ((PIN) == 2) ? EXTERNAL_INTERRUPT_0 : \</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">//        ( ((PIN) == 3) ? EXTERNAL_INTERRUPT_1 : -1))</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structEspDigitalPin.html">   24</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structEspDigitalPin.html">EspDigitalPin</a> {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    uint8_t id;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    uint32_t mux;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    uint8_t gpioFunc;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">operator</span> <span class="keyword">const</span> int()</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <span class="keywordflow">return</span> id;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    }</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">void</span> mode(uint8_t mode);</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">void</span> write(uint8_t val);</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    uint8_t read();</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;};</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">static</span> <a class="code" href="structEspDigitalPin.html">EspDigitalPin</a> EspDigitalPins[] =</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;{</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    { 0, PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0}, <span class="comment">// FLASH</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    { 1, PERIPHS_IO_MUX_U0TXD_U, FUNC_GPIO1}, <span class="comment">// TXD0</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    { 2, PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2}, <span class="comment">// TXD1</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    { 3, PERIPHS_IO_MUX_U0RXD_U, FUNC_GPIO3}, <span class="comment">// RXD0</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    { 4, PERIPHS_IO_MUX_GPIO4_U, FUNC_GPIO4},</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    { 5, PERIPHS_IO_MUX_GPIO5_U, FUNC_GPIO5},</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    { 6, 0, 0},                               <span class="comment">// SD_CLK_U</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    { 7, 0, 0},                               <span class="comment">// SD_DATA0_U</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    { 8, 0, 0},                               <span class="comment">// SD_DATA1_U</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    { 9, PERIPHS_IO_MUX_SD_DATA2_U, FUNC_GPIO9},</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    {10, PERIPHS_IO_MUX_SD_DATA3_U, FUNC_GPIO10},</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    {11, 0, 0},                               <span class="comment">// SD_CMD_U</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    {12, PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO12}, <span class="comment">// HSPIQ</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    {13, PERIPHS_IO_MUX_MTCK_U, FUNC_GPIO13}, <span class="comment">// HSPID</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    {14, PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14}, <span class="comment">// HSPICLK</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    {15, PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15}, <span class="comment">// HSPICS</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_ESP8266EX_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="structEspDigitalPin_html"><div class="ttname"><a href="structEspDigitalPin.html">EspDigitalPin</a></div><div class="ttdoc">ESP GPIO pin configuration. </div><div class="ttdef"><b>Definition:</b> ESP8266EX.h:26</div></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">static</span> <a class="code" href="structEspDigitalPin.html">EspDigitalPin</a> EspDigitalPins[] = {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    {0, PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0}, <span class="comment">// FLASH</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    {1, PERIPHS_IO_MUX_U0TXD_U, FUNC_GPIO1}, <span class="comment">// TXD0</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    {2, PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2}, <span class="comment">// TXD1</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    {3, PERIPHS_IO_MUX_U0RXD_U, FUNC_GPIO3}, <span class="comment">// RXD0</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    {4, PERIPHS_IO_MUX_GPIO4_U, FUNC_GPIO4},</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    {5, PERIPHS_IO_MUX_GPIO5_U, FUNC_GPIO5},</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    {6, 0, 0}, <span class="comment">// SD_CLK_U</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    {7, 0, 0}, <span class="comment">// SD_DATA0_U</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {8, 0, 0}, <span class="comment">// SD_DATA1_U</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    {9, PERIPHS_IO_MUX_SD_DATA2_U, FUNC_GPIO9},</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    {10, PERIPHS_IO_MUX_SD_DATA3_U, FUNC_GPIO10},</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    {11, 0, 0},                               <span class="comment">// SD_CMD_U</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    {12, PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO12}, <span class="comment">// HSPIQ</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    {13, PERIPHS_IO_MUX_MTCK_U, FUNC_GPIO13}, <span class="comment">// HSPID</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    {14, PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14}, <span class="comment">// HSPICLK</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    {15, PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15}, <span class="comment">// HSPICS</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;};</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_ESP8266EX_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="structEspDigitalPin_html"><div class="ttname"><a href="structEspDigitalPin.html">EspDigitalPin</a></div><div class="ttdoc">ESP GPIO pin configuration. </div><div class="ttdef"><b>Definition:</b> ESP8266EX.h:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

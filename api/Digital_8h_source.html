@@ -129,13 +129,13 @@ $(document).ready(function(){initNavTree('Digital_8h_source.html','');});
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">inline</span> uint16_t analogRead(uint16_t pin)</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;{</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">if</span> (pin == A0)</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">if</span>(pin == A0)</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keywordflow">return</span> system_adc_read();</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">return</span> -1; <span class="comment">// Not supported</span></div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="group__gpio_html_ga2a9cf6ed70dedd654010e03ae0789fc7"><div class="ttname"><a href="group__gpio.html#ga2a9cf6ed70dedd654010e03ae0789fc7">digitalRead</a></div><div class="ttdeci">uint8_t IRAM_ATTR digitalRead(uint16_t pin)</div><div class="ttdoc">Get the value of a digital input. </div></div>
 <div class="ttc" id="group__gpio_html_gadc6b96008df9ca3443a4216e83c70a5c"><div class="ttname"><a href="group__gpio.html#gadc6b96008df9ca3443a4216e83c70a5c">pullup</a></div><div class="ttdeci">void IRAM_ATTR pullup(uint16_t pin)</div><div class="ttdoc">Enable pull-up on digital input. </div></div>
 <div class="ttc" id="group__gpio_html_gafa1ef6f243c6cf75dacea30bf7186ac7"><div class="ttname"><a href="group__gpio.html#gafa1ef6f243c6cf75dacea30bf7186ac7">pulseIn</a></div><div class="ttdeci">unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout=1000000L)</div><div class="ttdoc">Measures duration of pulse on GPIO. </div></div>

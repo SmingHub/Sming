@@ -123,30 +123,30 @@ $(document).ready(function(){initNavTree('System_8h_source.html','');});
 <div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classISystemReadyHandler.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="classISystemReadyHandler.html">ISystemReadyHandler</a></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;{</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classISystemReadyHandler.html">ISystemReadyHandler</a>() {}</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classISystemReadyHandler.html#ae52e11b1a352b6d66490ac912bf10be4">onSystemReady</a>() = 0;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">enum</span> <a class="code" href="group__constants.html#ga1149dd3589720a23866601483758719d">CpuFrequency</a></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;{</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="group__constants.html#gga1149dd3589720a23866601483758719da7f7be5eff8370d6658cb108b0916b88f">   42</a></span>&#160;    <a class="code" href="group__constants.html#gga1149dd3589720a23866601483758719da7f7be5eff8370d6658cb108b0916b88f">eCF_80MHz</a> = 80, </div>
-<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="group__constants.html#gga1149dd3589720a23866601483758719da6d1de489e5ad90d09b4c21795647dd31">   43</a></span>&#160;    <a class="code" href="group__constants.html#gga1149dd3589720a23866601483758719da6d1de489e5ad90d09b4c21795647dd31">eCF_160MHz</a> = 160, </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;};</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="group__constants.html#ga75358bb483f877d85c37f41df036322b">   47</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="group__constants.html#ga75358bb483f877d85c37f41df036322b">DeepSleepOptions</a></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;{</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classISystemReadyHandler.html">ISystemReadyHandler</a>()</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    }</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classISystemReadyHandler.html#ae52e11b1a352b6d66490ac912bf10be4">onSystemReady</a>() = 0;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;};</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">enum</span> <a class="code" href="group__constants.html#ga1149dd3589720a23866601483758719d">CpuFrequency</a> {</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="group__constants.html#gga1149dd3589720a23866601483758719da7f7be5eff8370d6658cb108b0916b88f">   43</a></span>&#160;    <a class="code" href="group__constants.html#gga1149dd3589720a23866601483758719da7f7be5eff8370d6658cb108b0916b88f">eCF_80MHz</a> = 80,   </div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="group__constants.html#gga1149dd3589720a23866601483758719da6d1de489e5ad90d09b4c21795647dd31">   44</a></span>&#160;    <a class="code" href="group__constants.html#gga1149dd3589720a23866601483758719da6d1de489e5ad90d09b4c21795647dd31">eCF_160MHz</a> = 160, </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;};</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="group__constants.html#ga75358bb483f877d85c37f41df036322b">   48</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="group__constants.html#ga75358bb483f877d85c37f41df036322b">DeepSleepOptions</a> {</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    eDSO_RF_CAL_BY_INIT_DATA = 0, </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    eDSO_RF_CAL_ALWAYS = 1, </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    eDSO_RF_CAL_NEVER = 2, </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    eDSO_DISABLE_RF = 4, </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;};</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="group__constants.html#gaa51313be2faacb739a18fdeecefbac75">   56</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="group__constants.html#gaa51313be2faacb739a18fdeecefbac75">SystemState</a></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;{</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    eSS_None, </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    eDSO_RF_CAL_ALWAYS = 1,       </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    eDSO_RF_CAL_NEVER = 2,        </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    eDSO_DISABLE_RF =</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        4, </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;};</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="group__constants.html#gaa51313be2faacb739a18fdeecefbac75">   57</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="group__constants.html#gaa51313be2faacb739a18fdeecefbac75">SystemState</a> {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    eSS_None,        </div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    eSS_Intializing, </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    eSS_Ready </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    eSS_Ready        </div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;};</div>
 <div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classSystemClass.html">   64</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSystemClass.html">SystemClass</a></div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;{</div>
@@ -183,23 +183,23 @@ $(document).ready(function(){initNavTree('System_8h_source.html','');});
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SMINGCORE_PLATFORM_SYSTEM_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="group__system_html_ga820222ab31f457872e7bc645e998024f"><div class="ttname"><a href="group__system.html#ga820222ab31f457872e7bc645e998024f">SystemClass::setCpuFrequency</a></div><div class="ttdeci">void setCpuFrequency(CpuFrequency freq)</div><div class="ttdoc">Set the CPU frequency. </div></div>
-<div class="ttc" id="group__constants_html_gga1149dd3589720a23866601483758719da6d1de489e5ad90d09b4c21795647dd31"><div class="ttname"><a href="group__constants.html#gga1149dd3589720a23866601483758719da6d1de489e5ad90d09b4c21795647dd31">eCF_160MHz</a></div><div class="ttdoc">CPU 160MHz. </div><div class="ttdef"><b>Definition:</b> System.h:43</div></div>
+<div class="ttc" id="group__constants_html_gga1149dd3589720a23866601483758719da6d1de489e5ad90d09b4c21795647dd31"><div class="ttname"><a href="group__constants.html#gga1149dd3589720a23866601483758719da6d1de489e5ad90d09b4c21795647dd31">eCF_160MHz</a></div><div class="ttdoc">CPU 160MHz. </div><div class="ttdef"><b>Definition:</b> System.h:44</div></div>
 <div class="ttc" id="classVector_html"><div class="ttname"><a href="classVector.html">Vector</a></div><div class="ttdef"><b>Definition:</b> WVector.h:26</div></div>
-<div class="ttc" id="group__constants_html_gaa51313be2faacb739a18fdeecefbac75"><div class="ttname"><a href="group__constants.html#gaa51313be2faacb739a18fdeecefbac75">SystemState</a></div><div class="ttdeci">SystemState</div><div class="ttdoc">System state. </div><div class="ttdef"><b>Definition:</b> System.h:56</div></div>
+<div class="ttc" id="group__constants_html_gaa51313be2faacb739a18fdeecefbac75"><div class="ttname"><a href="group__constants.html#gaa51313be2faacb739a18fdeecefbac75">SystemState</a></div><div class="ttdeci">SystemState</div><div class="ttdoc">System state. </div><div class="ttdef"><b>Definition:</b> System.h:57</div></div>
 <div class="ttc" id="classISystemReadyHandler_html_ae52e11b1a352b6d66490ac912bf10be4"><div class="ttname"><a href="classISystemReadyHandler.html#ae52e11b1a352b6d66490ac912bf10be4">ISystemReadyHandler::onSystemReady</a></div><div class="ttdeci">virtual void onSystemReady()=0</div><div class="ttdoc">Handle system ready events. </div></div>
 <div class="ttc" id="group__event__handlers_html_ga5b7000bf1a715e844c8c8610c8182aa2"><div class="ttname"><a href="group__event__handlers.html#ga5b7000bf1a715e844c8c8610c8182aa2">SystemReadyDelegate</a></div><div class="ttdeci">Delegate&lt; void()&gt; SystemReadyDelegate</div><div class="ttdef"><b>Definition:</b> System.h:20</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void()&gt;</a></div></div>
-<div class="ttc" id="group__constants_html_gga1149dd3589720a23866601483758719da7f7be5eff8370d6658cb108b0916b88f"><div class="ttname"><a href="group__constants.html#gga1149dd3589720a23866601483758719da7f7be5eff8370d6658cb108b0916b88f">eCF_80MHz</a></div><div class="ttdoc">CPU 80MHz. </div><div class="ttdef"><b>Definition:</b> System.h:42</div></div>
+<div class="ttc" id="group__constants_html_gga1149dd3589720a23866601483758719da7f7be5eff8370d6658cb108b0916b88f"><div class="ttname"><a href="group__constants.html#gga1149dd3589720a23866601483758719da7f7be5eff8370d6658cb108b0916b88f">eCF_80MHz</a></div><div class="ttdoc">CPU 80MHz. </div><div class="ttdef"><b>Definition:</b> System.h:43</div></div>
 <div class="ttc" id="group__system_html_ga79a7cb0d48d4f5ae35722cfff45aa454"><div class="ttname"><a href="group__system.html#ga79a7cb0d48d4f5ae35722cfff45aa454">SystemClass::isReady</a></div><div class="ttdeci">bool isReady()</div><div class="ttdoc">Check if system ready. </div></div>
-<div class="ttc" id="group__constants_html_ga75358bb483f877d85c37f41df036322b"><div class="ttname"><a href="group__constants.html#ga75358bb483f877d85c37f41df036322b">DeepSleepOptions</a></div><div class="ttdeci">DeepSleepOptions</div><div class="ttdoc">Deep sleep options. </div><div class="ttdef"><b>Definition:</b> System.h:47</div></div>
+<div class="ttc" id="group__constants_html_ga75358bb483f877d85c37f41df036322b"><div class="ttname"><a href="group__constants.html#ga75358bb483f877d85c37f41df036322b">DeepSleepOptions</a></div><div class="ttdeci">DeepSleepOptions</div><div class="ttdoc">Deep sleep options. </div><div class="ttdef"><b>Definition:</b> System.h:48</div></div>
 <div class="ttc" id="group__system_html_ga6f76530665629e2a2d0246fb63af9696"><div class="ttname"><a href="group__system.html#ga6f76530665629e2a2d0246fb63af9696">SystemClass::initialize</a></div><div class="ttdeci">void initialize()</div><div class="ttdoc">System initialisation. </div></div>
 <div class="ttc" id="group__system_html_ga3bd0122a224dfe3add3793b7d7cf23d5"><div class="ttname"><a href="group__system.html#ga3bd0122a224dfe3add3793b7d7cf23d5">SystemClass::onReady</a></div><div class="ttdeci">void onReady(SystemReadyDelegate readyHandler)</div><div class="ttdoc">Set handler for system ready event. </div></div>
 <div class="ttc" id="group__system_html_ga15eb21125083b655bb83f7dbd47f0987"><div class="ttname"><a href="group__system.html#ga15eb21125083b655bb83f7dbd47f0987">SystemClass::deepSleep</a></div><div class="ttdeci">bool deepSleep(uint32 timeMilliseconds, DeepSleepOptions options=eDSO_RF_CAL_BY_INIT_DATA)</div><div class="ttdoc">Enter deep sleep mode. </div></div>
 <div class="ttc" id="classSystemClass_html"><div class="ttname"><a href="classSystemClass.html">SystemClass</a></div><div class="ttdef"><b>Definition:</b> System.h:64</div></div>
 <div class="ttc" id="group__system_html_ga4ee160d3a5da1913480bfee8c42df41a"><div class="ttname"><a href="group__system.html#ga4ee160d3a5da1913480bfee8c42df41a">SystemClass::getCpuFrequency</a></div><div class="ttdeci">CpuFrequency getCpuFrequency()</div><div class="ttdoc">Get the CPU frequency. </div></div>
 <div class="ttc" id="classISystemReadyHandler_html"><div class="ttname"><a href="classISystemReadyHandler.html">ISystemReadyHandler</a></div><div class="ttdef"><b>Definition:</b> System.h:25</div></div>
-<div class="ttc" id="classBssInfo_html"><div class="ttname"><a href="classBssInfo.html">BssInfo</a></div><div class="ttdef"><b>Definition:</b> Station.h:261</div></div>
-<div class="ttc" id="group__constants_html_ga1149dd3589720a23866601483758719d"><div class="ttname"><a href="group__constants.html#ga1149dd3589720a23866601483758719d">CpuFrequency</a></div><div class="ttdeci">CpuFrequency</div><div class="ttdoc">CPU Frequency. </div><div class="ttdef"><b>Definition:</b> System.h:40</div></div>
+<div class="ttc" id="classBssInfo_html"><div class="ttname"><a href="classBssInfo.html">BssInfo</a></div><div class="ttdef"><b>Definition:</b> Station.h:258</div></div>
+<div class="ttc" id="group__constants_html_ga1149dd3589720a23866601483758719d"><div class="ttname"><a href="group__constants.html#ga1149dd3589720a23866601483758719d">CpuFrequency</a></div><div class="ttdeci">CpuFrequency</div><div class="ttdoc">CPU Frequency. </div><div class="ttdef"><b>Definition:</b> System.h:42</div></div>
 <div class="ttc" id="group__system_html_ga5f72899b23c49108b7cba82717e4246d"><div class="ttname"><a href="group__system.html#ga5f72899b23c49108b7cba82717e4246d">SystemClass::restart</a></div><div class="ttdeci">void restart()</div><div class="ttdoc">Restart system. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

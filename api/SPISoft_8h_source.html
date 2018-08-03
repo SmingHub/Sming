@@ -114,72 +114,81 @@ $(document).ready(function(){initNavTree('SPISoft_8h_source.html','');});
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;SPIBase.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;SPISettings.h&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classSPISoft.html">   15</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSPISoft.html">SPISoft</a>: <span class="keyword">public</span> <a class="code" href="classSPIBase.html">SPIBase</a> {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="classSPISoft.html">SPISoft</a>(uint16_t miso, uint16_t mosi, uint16_t sck, uint8_t <a class="code" href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a>) {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        mMISO = miso;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        mMOSI = mosi;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        mCLK = sck;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        m_delay = <a class="code" href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a>;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    }</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classSPISoft.html">SPISoft</a>() {};</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="comment">/*</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">     *  begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSPISoft.html#a7356e612b98a3a42719501bb1696cb8c">begin</a>();   <span class="comment">//setup pins</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="comment">/*</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">     * end(): Disables the SPI bus (leaving pin modes unchanged).</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classSPISoft.html#ac5ac3ce86c91b9ed1a4c352de99dd78d">   36</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSPISoft.html#ac5ac3ce86c91b9ed1a4c352de99dd78d">end</a>() {};</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="comment">/*</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">     * beginTransaction(): Initializes the SPI bus using the defined SPISettings.</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classSPISoft.html#a56e82b3aeeea964ecec26ba0c4c3987b">   41</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSPISoft.html#a56e82b3aeeea964ecec26ba0c4c3987b">beginTransaction</a>(<a class="code" href="classSPISettings.html">SPISettings</a> mySettings) {};</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="comment">/*</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">     * endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classSPISoft.html#a03b0151b2c2eb279978867d29e8321bf">   46</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSPISoft.html#a03b0151b2c2eb279978867d29e8321bf">endTransaction</a>() {};</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="comment">/*</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">     * transfer(), transfer16()</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">     *</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">     * SPI transfer is based on a simultaneous send and receive: the received data is returned in receivedVal (or receivedVal16). In case of buffer transfers the received data is stored in the buffer in-place (the old data is replaced with the data received).</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">     *</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">     *      receivedVal = SPI.transfer(val)</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">     *      receivedVal16 = SPI.transfer16(val16)</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">     *      SPI.transfer(buffer, size)</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">void</span> transfer(uint8 * buffer, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classSPISoft.html#af278fc0c4ff05a66c26006751fde2b65">   58</a></span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="classSPISoft.html#af278fc0c4ff05a66c26006751fde2b65">transfer</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> val) {<a class="code" href="classSPISoft.html#af278fc0c4ff05a66c26006751fde2b65">transfer</a>(&amp;val, 1); <span class="keywordflow">return</span> val;};</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> transfer16(<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> val) {transfer((uint8 *)&amp;val, 2); <span class="keywordflow">return</span> val;};</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classSPISoft.html#a386eeeea1c0ac1791d2dd2507eeee66f">   65</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="classSPISoft.html#a386eeeea1c0ac1791d2dd2507eeee66f">setDelay</a>(uint8_t dly) {m_delay = dly;}</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    uint16_t mMISO, mMOSI, mCLK;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <a class="code" href="classSPISettings.html">SPISettings</a> mSPISettings;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    uint8_t m_delay;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;};</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*_SPI_SOFT_*/</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classSPISoft_html_a03b0151b2c2eb279978867d29e8321bf"><div class="ttname"><a href="classSPISoft.html#a03b0151b2c2eb279978867d29e8321bf">SPISoft::endTransaction</a></div><div class="ttdeci">virtual void endTransaction()</div><div class="ttdoc">endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select...</div><div class="ttdef"><b>Definition:</b> SPISoft.h:46</div></div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classSPISoft.html">   14</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSPISoft.html">SPISoft</a> : <span class="keyword">public</span> <a class="code" href="classSPIBase.html">SPIBase</a></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="classSPISoft.html">SPISoft</a>(uint16_t miso, uint16_t mosi, uint16_t sck, uint8_t <a class="code" href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a>)</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        mMISO = miso;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        mMOSI = mosi;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        mCLK = sck;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        m_delay = <a class="code" href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a>;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    }</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classSPISoft.html">SPISoft</a>(){};</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="comment">/*</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">     *  begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSPISoft.html#a7356e612b98a3a42719501bb1696cb8c">begin</a>(); <span class="comment">//setup pins</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="comment">/*</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">     * end(): Disables the SPI bus (leaving pin modes unchanged).</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="classSPISoft.html#ac5ac3ce86c91b9ed1a4c352de99dd78d">   35</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSPISoft.html#ac5ac3ce86c91b9ed1a4c352de99dd78d">end</a>(){};</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="comment">/*</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">     * beginTransaction(): Initializes the SPI bus using the defined SPISettings.</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classSPISoft.html#a56e82b3aeeea964ecec26ba0c4c3987b">   40</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSPISoft.html#a56e82b3aeeea964ecec26ba0c4c3987b">beginTransaction</a>(<a class="code" href="classSPISettings.html">SPISettings</a> mySettings){};</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="comment">/*</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">     * endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classSPISoft.html#a03b0151b2c2eb279978867d29e8321bf">   45</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classSPISoft.html#a03b0151b2c2eb279978867d29e8321bf">endTransaction</a>(){};</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">/*</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">     * transfer(), transfer16()</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">     *</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">     * SPI transfer is based on a simultaneous send and receive: the received data is returned in receivedVal (or receivedVal16). In case of buffer transfers the received data is stored in the buffer in-place (the old data is replaced with the data received).</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">     *</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">     *      receivedVal = SPI.transfer(val)</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">     *      receivedVal16 = SPI.transfer16(val16)</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">     *      SPI.transfer(buffer, size)</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">void</span> transfer(uint8* buffer, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classSPISoft.html#af278fc0c4ff05a66c26006751fde2b65">   57</a></span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="classSPISoft.html#af278fc0c4ff05a66c26006751fde2b65">transfer</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> val)</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        transfer(&amp;val, 1);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keywordflow">return</span> val;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    };</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> transfer16(<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> val)</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    {</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        transfer((uint8*)&amp;val, 2);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> val;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    };</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="classSPISoft.html#a386eeeea1c0ac1791d2dd2507eeee66f">   71</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="classSPISoft.html#a386eeeea1c0ac1791d2dd2507eeee66f">setDelay</a>(uint8_t dly)</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        m_delay = dly;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    uint16_t mMISO, mMOSI, mCLK;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <a class="code" href="classSPISettings.html">SPISettings</a> mSPISettings;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    uint8_t m_delay;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;};</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/*_SPI_SOFT_*/</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classSPISoft_html_a03b0151b2c2eb279978867d29e8321bf"><div class="ttname"><a href="classSPISoft.html#a03b0151b2c2eb279978867d29e8321bf">SPISoft::endTransaction</a></div><div class="ttdeci">virtual void endTransaction()</div><div class="ttdoc">endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select...</div><div class="ttdef"><b>Definition:</b> SPISoft.h:45</div></div>
 <div class="ttc" id="classSPISettings_html"><div class="ttname"><a href="classSPISettings.html">SPISettings</a></div><div class="ttdef"><b>Definition:</b> SPISettings.h:27</div></div>
-<div class="ttc" id="classSPISoft_html_af278fc0c4ff05a66c26006751fde2b65"><div class="ttname"><a href="classSPISoft.html#af278fc0c4ff05a66c26006751fde2b65">SPISoft::transfer</a></div><div class="ttdeci">unsigned char transfer(unsigned char val)</div><div class="ttdoc">transfer(), transfer16() </div><div class="ttdef"><b>Definition:</b> SPISoft.h:58</div></div>
-<div class="ttc" id="classSPISoft_html_a386eeeea1c0ac1791d2dd2507eeee66f"><div class="ttname"><a href="classSPISoft.html#a386eeeea1c0ac1791d2dd2507eeee66f">SPISoft::setDelay</a></div><div class="ttdeci">void setDelay(uint8_t dly)</div><div class="ttdoc">Set microsecond delay for the SCK signal. Impacts SPI speed. </div><div class="ttdef"><b>Definition:</b> SPISoft.h:65</div></div>
-<div class="ttc" id="classSPISoft_html_a56e82b3aeeea964ecec26ba0c4c3987b"><div class="ttname"><a href="classSPISoft.html#a56e82b3aeeea964ecec26ba0c4c3987b">SPISoft::beginTransaction</a></div><div class="ttdeci">virtual void beginTransaction(SPISettings mySettings)</div><div class="ttdoc">beginTransaction(): Initializes the SPI bus using the defined SPISettings. </div><div class="ttdef"><b>Definition:</b> SPISoft.h:41</div></div>
-<div class="ttc" id="classSPISoft_html"><div class="ttname"><a href="classSPISoft.html">SPISoft</a></div><div class="ttdef"><b>Definition:</b> SPISoft.h:15</div></div>
+<div class="ttc" id="classSPISoft_html_af278fc0c4ff05a66c26006751fde2b65"><div class="ttname"><a href="classSPISoft.html#af278fc0c4ff05a66c26006751fde2b65">SPISoft::transfer</a></div><div class="ttdeci">unsigned char transfer(unsigned char val)</div><div class="ttdoc">transfer(), transfer16() </div><div class="ttdef"><b>Definition:</b> SPISoft.h:57</div></div>
+<div class="ttc" id="classSPISoft_html_a386eeeea1c0ac1791d2dd2507eeee66f"><div class="ttname"><a href="classSPISoft.html#a386eeeea1c0ac1791d2dd2507eeee66f">SPISoft::setDelay</a></div><div class="ttdeci">void setDelay(uint8_t dly)</div><div class="ttdoc">Set microsecond delay for the SCK signal. Impacts SPI speed. </div><div class="ttdef"><b>Definition:</b> SPISoft.h:71</div></div>
+<div class="ttc" id="classSPISoft_html_a56e82b3aeeea964ecec26ba0c4c3987b"><div class="ttname"><a href="classSPISoft.html#a56e82b3aeeea964ecec26ba0c4c3987b">SPISoft::beginTransaction</a></div><div class="ttdeci">virtual void beginTransaction(SPISettings mySettings)</div><div class="ttdoc">beginTransaction(): Initializes the SPI bus using the defined SPISettings. </div><div class="ttdef"><b>Definition:</b> SPISoft.h:40</div></div>
+<div class="ttc" id="classSPISoft_html"><div class="ttname"><a href="classSPISoft.html">SPISoft</a></div><div class="ttdef"><b>Definition:</b> SPISoft.h:14</div></div>
 <div class="ttc" id="classSPISoft_html_a7356e612b98a3a42719501bb1696cb8c"><div class="ttname"><a href="classSPISoft.html#a7356e612b98a3a42719501bb1696cb8c">SPISoft::begin</a></div><div class="ttdeci">virtual void begin()</div><div class="ttdoc">begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low...</div></div>
-<div class="ttc" id="classSPIBase_html"><div class="ttname"><a href="classSPIBase.html">SPIBase</a></div><div class="ttdef"><b>Definition:</b> SPIBase.h:26</div></div>
-<div class="ttc" id="classSPISoft_html_ac5ac3ce86c91b9ed1a4c352de99dd78d"><div class="ttname"><a href="classSPISoft.html#ac5ac3ce86c91b9ed1a4c352de99dd78d">SPISoft::end</a></div><div class="ttdeci">virtual void end()</div><div class="ttdoc">end(): Disables the SPI bus (leaving pin modes unchanged). </div><div class="ttdef"><b>Definition:</b> SPISoft.h:36</div></div>
+<div class="ttc" id="classSPIBase_html"><div class="ttname"><a href="classSPIBase.html">SPIBase</a></div><div class="ttdef"><b>Definition:</b> SPIBase.h:25</div></div>
+<div class="ttc" id="classSPISoft_html_ac5ac3ce86c91b9ed1a4c352de99dd78d"><div class="ttname"><a href="classSPISoft.html#ac5ac3ce86c91b9ed1a4c352de99dd78d">SPISoft::end</a></div><div class="ttdeci">virtual void end()</div><div class="ttdoc">end(): Disables the SPI bus (leaving pin modes unchanged). </div><div class="ttdef"><b>Definition:</b> SPISoft.h:35</div></div>
 <div class="ttc" id="group__timedelay_html_ga21f4a3f60c06d2ea8a17bccc1b3ed0cc"><div class="ttname"><a href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a></div><div class="ttdeci">void delay(uint32_t time)</div><div class="ttdoc">Pause execution. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

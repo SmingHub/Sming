@@ -1,7 +1,6 @@
 var searchData=
 [
   ['capacitivesensor',['CapacitiveSensor',['../classCapacitiveSensor.html',1,'']]],
-  ['channelpwm',['ChannelPWM',['../classChannelPWM.html',1,'']]],
   ['chunkedstream',['ChunkedStream',['../classChunkedStream.html',1,'']]],
   ['circularbuffer',['CircularBuffer',['../classCircularBuffer.html',1,'']]],
   ['col_5ft',['col_t',['../structcol__t.html',1,'']]],
@@ -12,7 +11,6 @@ var searchData=
   ['commandoutput',['CommandOutput',['../classCommandOutput.html',1,'']]],
   ['countable',['Countable',['../classCountable.html',1,'']]],
   ['countable_3c_20atcommand_20_3e',['Countable&lt; AtCommand &gt;',['../classCountable.html',1,'']]],
-  ['countable_3c_20channelpwm_20_3e',['Countable&lt; ChannelPWM &gt;',['../classCountable.html',1,'']]],
   ['countable_3c_20delegate_20_3e',['Countable&lt; Delegate &gt;',['../classCountable.html',1,'']]],
   ['countable_3c_20element_20_3e',['Countable&lt; Element &gt;',['../classCountable.html',1,'']]],
   ['countable_3c_20httppartresult_20_3e',['Countable&lt; HttpPartResult &gt;',['../classCountable.html',1,'']]],

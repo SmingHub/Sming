@@ -126,7 +126,7 @@ $(document).ready(function(){initNavTree('HttpCommon_8h_source.html','');});
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;../../Data/Structures.h&quot;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#ifndef HTTP_MAX_HEADER_SIZE</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define HTTP_MAX_HEADER_SIZE  (8*1024)</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define HTTP_MAX_HEADER_SIZE (8 * 1024)</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">/* Number of maximum tcp connections to be kept in the pool */</span></div>
@@ -138,18 +138,16 @@ $(document).ready(function(){initNavTree('HttpCommon_8h_source.html','');});
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> http_method HttpMethod;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">enum</span> HttpConnectionState</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    eHCS_Ready = 0,</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    eHCS_StartSending,</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    eHCS_SendingHeaders,</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    eHCS_StartBody,</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    eHCS_SendingBody,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    eHCS_Sent</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;};</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_COMMON_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">enum</span> HttpConnectionState {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    eHCS_Ready = 0,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    eHCS_StartSending,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    eHCS_SendingHeaders,</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    eHCS_StartBody,</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    eHCS_SendingBody,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    eHCS_Sent</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;};</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_COMMON_H_ */</span><span class="preprocessor"></span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
