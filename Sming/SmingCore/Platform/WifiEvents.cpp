@@ -1,7 +1,7 @@
 /*
  * WifiEvents.cpp
  *
- *  Created on: 19 февр. 2016 г.
+ *  Created on: 19 ????. 2016 ?.
  *      Author: shurik
  */
 
@@ -58,10 +58,10 @@ void WifiEventsClass::WifiEventHandler(System_Event_t* evt)
 {
 	//	debugf("event %x\n", evt->event);
 
-	switch(evt->event) {
+	switch (evt->event) {
 	case EVENT_STAMODE_CONNECTED:
 		debugf("connect to ssid %s, channel %d\n", evt->event_info.connected.ssid, evt->event_info.connected.channel);
-		if(onSTAConnect) {
+		if (onSTAConnect) {
 			onSTAConnect((const char*)evt->event_info.connected.ssid, evt->event_info.connected.ssid_len,
 						 evt->event_info.connected.bssid, evt->event_info.connected.channel);
 		}
@@ -69,14 +69,14 @@ void WifiEventsClass::WifiEventHandler(System_Event_t* evt)
 	case EVENT_STAMODE_DISCONNECTED:
 		debugf("disconnect from ssid %s, reason %d\n", evt->event_info.disconnected.ssid,
 			   evt->event_info.disconnected.reason);
-		if(onSTADisconnect) {
+		if (onSTADisconnect) {
 			onSTADisconnect((const char*)evt->event_info.disconnected.ssid, evt->event_info.disconnected.ssid_len,
 							evt->event_info.disconnected.bssid, evt->event_info.disconnected.reason);
 		}
 		break;
 	case EVENT_STAMODE_AUTHMODE_CHANGE:
 		debugf("mode: %d -> %d\n", evt->event_info.auth_change.old_mode, evt->event_info.auth_change.new_mode);
-		if(onSTAAuthModeChange) {
+		if (onSTAAuthModeChange) {
 			onSTAAuthModeChange(evt->event_info.auth_change.old_mode, evt->event_info.auth_change.new_mode);
 		}
 		break;
@@ -84,26 +84,26 @@ void WifiEventsClass::WifiEventHandler(System_Event_t* evt)
 		debugf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR, IP2STR(&evt->event_info.got_ip.ip),
 			   IP2STR(&evt->event_info.got_ip.mask), IP2STR(&evt->event_info.got_ip.gw));
 		debugf("\n");
-		if(onSTAGotIP) {
+		if (onSTAGotIP) {
 			onSTAGotIP(evt->event_info.got_ip.ip, evt->event_info.got_ip.mask, evt->event_info.got_ip.gw);
 		}
 		break;
 	case EVENT_SOFTAPMODE_STACONNECTED:
 		debugf("station: " MACSTR "join, AID = %d\n", MAC2STR(evt->event_info.sta_connected.mac),
 			   evt->event_info.sta_connected.aid);
-		if(onSOFTAPConnect) {
+		if (onSOFTAPConnect) {
 			onSOFTAPConnect(evt->event_info.sta_connected.mac, evt->event_info.sta_connected.aid);
 		}
 		break;
 	case EVENT_SOFTAPMODE_STADISCONNECTED:
 		debugf("station: " MACSTR "leave, AID = %d\n", MAC2STR(evt->event_info.sta_disconnected.mac),
 			   evt->event_info.sta_disconnected.aid);
-		if(onSOFTAPDisconnect) {
+		if (onSOFTAPDisconnect) {
 			onSOFTAPDisconnect(evt->event_info.sta_disconnected.mac, evt->event_info.sta_disconnected.aid);
 		}
 		break;
 	case EVENT_SOFTAPMODE_PROBEREQRECVED:
-		if(onSOFTAPProbeReqRecved) {
+		if (onSOFTAPProbeReqRecved) {
 			onSOFTAPProbeReqRecved(evt->event_info.ap_probereqrecved.rssi, evt->event_info.ap_probereqrecved.mac);
 		}
 		break;

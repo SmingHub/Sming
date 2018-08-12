@@ -12,8 +12,7 @@ DebugClass::DebugClass()
 }
 
 DebugClass::~DebugClass()
-{
-}
+{}
 
 void DebugClass::initCommand()
 {
@@ -56,7 +55,7 @@ void DebugClass::setDebug(Stream& reqStream)
 
 void DebugClass::printPrefix()
 {
-	if(useDebugPrefix) {
+	if (useDebugPrefix) {
 		uint32_t curMillis = millis();
 		printf("Dbg %4d.%03d : ", curMillis / 1000, curMillis % 1000);
 	}
@@ -64,19 +63,19 @@ void DebugClass::printPrefix()
 
 size_t DebugClass::write(uint8_t c)
 {
-	if(started) {
-		if(newDebugLine) {
+	if (started) {
+		if (newDebugLine) {
 			newDebugLine = false;
 			printPrefix();
 		}
-		if(c == '\n') {
+		if (c == '\n') {
 			newDebugLine = true;
 		}
-		if(debugOut.debugDelegate) {
+		if (debugOut.debugDelegate) {
 			debugOut.debugDelegate(c);
 			return 1;
 		}
-		if(debugOut.debugStream) {
+		if (debugOut.debugStream) {
 			debugOut.debugStream->write(c);
 			return 1;
 		}
@@ -90,19 +89,22 @@ void DebugClass::processDebugCommands(String commandLine, CommandOutput* command
 	Vector<String> commandToken;
 	int numToken = splitString(commandLine, ' ', commandToken);
 
-	if(numToken == 1) {
+	if (numToken == 1) {
 		commandOutput->printf("Debug Commands available : \r\n");
 		commandOutput->printf("on   : Start Debug output\r\n");
 		commandOutput->printf("off  : Stop Debug output\r\n");
 		commandOutput->printf("serial : Send Debug output to Serial\r\n");
-	} else {
-		if(commandToken[1] == "on") {
+	}
+	else {
+		if (commandToken[1] == "on") {
 			start();
 			commandOutput->printf("Debug started\r\n");
-		} else if(commandToken[1] == "off") {
+		}
+		else if (commandToken[1] == "off") {
 			commandOutput->printf("Debug stopped\r\n");
 			stop();
-		} else if(commandToken[1] == "serial") {
+		}
+		else if (commandToken[1] == "serial") {
 			setDebug(Serial);
 			commandOutput->printf("Debug set to Serial");
 		};

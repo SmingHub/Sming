@@ -39,17 +39,13 @@ enum StreamType {
 /** @brief  Template variable (hash map) class
  *  @see    Wiring HashMap
  */
-class TemplateVariables : public HashMap<String, String>
-{
-};
+class TemplateVariables : public HashMap<String, String> {};
 
 ///Base class for data source stream
-class IDataSourceStream : public Stream
-{
+class IDataSourceStream : public Stream {
 public:
 	virtual ~IDataSourceStream()
-	{
-	}
+	{}
 
 	/** @brief  Get the stream type
      *  @retval StreamType The stream type.
@@ -113,8 +109,7 @@ public:
 	 * @brief Flushes the stream
 	 */
 	virtual void flush()
-	{
-	}
+	{}
 
 	/**
 	 * @brief Returns unique id of the resource.
@@ -126,12 +121,10 @@ public:
 	}
 };
 
-class ReadWriteStream : public IDataSourceStream
-{
+class ReadWriteStream : public IDataSourceStream {
 public:
 	virtual ~ReadWriteStream()
-	{
-	}
+	{}
 
 	virtual size_t write(uint8_t charToWrite) = 0;
 
@@ -147,8 +140,7 @@ public:
 };
 
 /// Memory data stream class
-class MemoryDataStream : public ReadWriteStream
-{
+class MemoryDataStream : public ReadWriteStream {
 public:
 	/** @brief Memory data stream base class
     */
@@ -205,8 +197,7 @@ private:
 };
 
 /// File stream class
-class FileStream : public ReadWriteStream
-{
+class FileStream : public ReadWriteStream {
 public:
 	/** @brief  Create a file stream
      *  @param  fileName Name of file to open
@@ -280,8 +271,7 @@ enum TemplateExpandState {
  */
 
 /// Template file stream class
-class TemplateFileStream : public FileStream
-{
+class TemplateFileStream : public FileStream {
 public:
 	/** @brief Create a template file stream
      *  @param  templateFileName Template filename
@@ -340,8 +330,7 @@ private:
 };
 
 ///JSON object stream class
-class JsonObjectStream : public MemoryDataStream
-{
+class JsonObjectStream : public MemoryDataStream {
 public:
 	/** @brief  Create a JSON object stream
     */
@@ -374,8 +363,7 @@ private:
 	bool send;
 };
 
-class EndlessMemoryStream : public ReadWriteStream
-{
+class EndlessMemoryStream : public ReadWriteStream {
 public:
 	virtual ~EndlessMemoryStream();
 
@@ -410,8 +398,7 @@ private:
  * @brief Memory stream that stores limited number of bytes
  * 		  Once the limit is reached the stream will discard incoming bytes on write
  */
-class LimitedMemoryStream : public ReadWriteStream
-{
+class LimitedMemoryStream : public ReadWriteStream {
 public:
 	LimitedMemoryStream(size_t length);
 	virtual ~LimitedMemoryStream();

@@ -17,8 +17,7 @@
 
 class HttpRequest;
 
-class AuthAdapter
-{
+class AuthAdapter {
 public:
 	virtual void setRequest(HttpRequest* request) = 0;
 
@@ -28,12 +27,10 @@ public:
 	}
 
 	virtual ~AuthAdapter()
-	{
-	}
+	{}
 };
 
-class HttpBasicAuth : public AuthAdapter
-{
+class HttpBasicAuth : public AuthAdapter {
 public:
 	HttpBasicAuth(const String& username, const String& password);
 
@@ -44,8 +41,7 @@ private:
 	String password;
 };
 
-class HttpDigestAuth : public AuthAdapter
-{
+class HttpDigestAuth : public AuthAdapter {
 public:
 	HttpDigestAuth(const String& username, const String& password);
 

@@ -8,5 +8,4 @@
 #include "../SmingCore/SmingCore.h"
 #include "../SmingCore/ArduinoCompat.h"
 
-
 #endif /* INCLUDE_ARDUINO_H_ */

@@ -53,13 +53,13 @@ HttpResponse* HttpResponse::setHeader(const String& name, const String& value)
 
 bool HttpResponse::sendString(const String& text)
 {
-	if(stream != NULL && stream->getStreamType() != eSST_Memory) {
+	if (stream != NULL && stream->getStreamType() != eSST_Memory) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
 		stream = NULL;
 	}
 
-	if(stream == NULL) {
+	if (stream == NULL) {
 		stream = new MemoryDataStream();
 	}
 
@@ -81,28 +81,30 @@ void HttpResponse::redirect(const String& location)
 
 bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)
 {
-	if(stream != NULL) {
+	if (stream != NULL) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
 		stream = NULL;
 	}
 
 	String compressed = fileName + ".gz";
-	if(allowGzipFileCheck && fileExist(compressed)) {
+	if (allowGzipFileCheck && fileExist(compressed)) {
 		debug_d("found %s", compressed.c_str());
 		stream = new FileStream(compressed);
 		headers["Content-Encoding"] = "gzip";
-	} else if(fileExist(fileName)) {
+	}
+	else if (fileExist(fileName)) {
 		debug_d("found %s", fileName.c_str());
 		stream = new FileStream(fileName);
-	} else {
+	}
+	else {
 		code = HTTP_STATUS_NOT_FOUND;
 		return false;
 	}
 
-	if(!hasHeader("Content-Type")) {
+	if (!hasHeader("Content-Type")) {
 		const char* mime = ContentType::fromFullFileName(fileName);
-		if(mime != NULL)
+		if (mime != NULL)
 			setContentType(mime);
 	}
 
@@ -111,27 +113,27 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 
 bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
 {
-	if(stream != NULL) {
+	if (stream != NULL) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
 		stream = NULL;
 	}
 
 	stream = newTemplateInstance;
-	if(!newTemplateInstance->fileExist()) {
+	if (!newTemplateInstance->fileExist()) {
 		code = HTTP_STATUS_NOT_FOUND;
 		delete stream;
 		stream = NULL;
 		return false;
 	}
 
-	if(!hasHeader("Content-Type")) {
+	if (!hasHeader("Content-Type")) {
 		const char* mime = ContentType::fromFullFileName(newTemplateInstance->fileName());
-		if(mime != NULL)
+		if (mime != NULL)
 			setContentType(mime);
 	}
 
-	if(!hasHeader("Transfer-Encoding") && stream->available() == -1) {
+	if (!hasHeader("Transfer-Encoding") && stream->available() == -1) {
 		setHeader("Transfer-Encoding", "chunked");
 	}
 
@@ -140,14 +142,14 @@ bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
 
 bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 {
-	if(stream != NULL) {
+	if (stream != NULL) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
 		stream = NULL;
 	}
 
 	stream = newJsonStreamInstance;
-	if(!hasHeader("Content-Type")) {
+	if (!hasHeader("Content-Type")) {
 		setContentType(MIME_JSON);
 	}
 
@@ -156,12 +158,12 @@ bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 
 bool HttpResponse::sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType /* = "" */)
 {
-	if(stream != NULL) {
+	if (stream != NULL) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
 		stream = NULL;
 	}
-	if(reqContentType != "") {
+	if (reqContentType != "") {
 		setContentType(reqContentType);
 	}
 	stream = newDataStream;
@@ -171,19 +173,19 @@ bool HttpResponse::sendDataStream(ReadWriteStream* newDataStream, const String& 
 
 String HttpResponse::getBody()
 {
-	if(stream == NULL) {
+	if (stream == NULL) {
 		return "";
 	}
 
 	String ret;
-	if(stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
+	if (stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
 		MemoryDataStream* memory = (MemoryDataStream*)stream;
 		char buf[1024];
-		while(stream->available() > 0) {
+		while (stream->available() > 0) {
 			int available = memory->readMemoryBlock(buf, 1024);
 			memory->seek(available);
 			ret += String(buf, available);
-			if(available < 1024) {
+			if (available < 1024) {
 				break;
 			}
 		}

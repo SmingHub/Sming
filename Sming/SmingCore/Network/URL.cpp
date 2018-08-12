@@ -17,27 +17,29 @@ URL::URL()
 URL::URL(const String& urlString)
 {
 	int len = urlString.length();
-	if(len == 0)
+	if (len == 0)
 		return;
 
 	// get query start
 	int queryStart = urlString.indexOf('?');
-	if(queryStart == -1)
+	if (queryStart == -1)
 		queryStart = len;
 
 	// protocol
 	int protocolEnd = urlString.indexOf(':'); //"://");
 
-	if(protocolEnd != -1) {
-		if((len - protocolEnd > 3) && (urlString.substring(protocolEnd, protocolEnd + 3) == "://")) {
+	if (protocolEnd != -1) {
+		if ((len - protocolEnd > 3) && (urlString.substring(protocolEnd, protocolEnd + 3) == "://")) {
 			Protocol = urlString.substring(0, protocolEnd);
 			Protocol.toLowerCase();
 			protocolEnd += 3; //      Skip ://
-		} else {
+		}
+		else {
 			protocolEnd = 0; // no protocol
 			Protocol = DEFAULT_URL_PROTOCOL;
 		}
-	} else {
+	}
+	else {
 		protocolEnd = 0; // no protocol
 		Protocol = DEFAULT_URL_PROTOCOL;
 	}
@@ -45,7 +47,7 @@ URL::URL(const String& urlString)
 	// host
 	int hostStart = protocolEnd;
 	int atStart = urlString.indexOf('@', protocolEnd);
-	if(atStart > -1) {
+	if (atStart > -1) {
 		String credentials = urlString.substring(protocolEnd, atStart);
 		Vector<String> parts;
 		splitString(credentials, ':', parts);
@@ -60,28 +62,30 @@ URL::URL(const String& urlString)
 	int portEnd = (pathStart != -1) ? pathStart : queryStart;
 	bool hasPort = portStart != -1 && portStart < portEnd;
 	int hostEnd = portEnd;
-	if(hasPort)
+	if (hasPort)
 		hostEnd = portStart;
 
 	Host = urlString.substring(hostStart, hostEnd);
 	//debug_d("%d %d %s", hostStart, hostEnd, Host.c_str());
 
 	// port
-	if(hasPort) // we have a port
+	if (hasPort) // we have a port
 	{
 		portStart++;
 		Port = urlString.substring(portStart, portEnd).toInt();
-	} else if(Protocol == HTTPS_URL_PROTOCOL || Protocol == WEBSCOKET_SECURE_URL_PROTOCOL) {
+	}
+	else if (Protocol == HTTPS_URL_PROTOCOL || Protocol == WEBSCOKET_SECURE_URL_PROTOCOL) {
 		Port = 443;
-	} else if(Protocol == DEFAULT_URL_PROTOCOL) {
+	}
+	else if (Protocol == DEFAULT_URL_PROTOCOL) {
 		Port = 80;
 	}
 
 	// path
-	if(pathStart != -1)
+	if (pathStart != -1)
 		Path = urlString.substring(pathStart, queryStart);
 
 	// query
-	if(queryStart != len)
+	if (queryStart != len)
 		Query = urlString.substring(queryStart);
 }

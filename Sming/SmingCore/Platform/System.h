@@ -22,12 +22,10 @@ class BssInfo;
 /// @ingroup event_handlers
 typedef Delegate<void()> SystemReadyDelegate; ///< Handler function for system ready
 
-class ISystemReadyHandler
-{
+class ISystemReadyHandler {
 public:
 	virtual ~ISystemReadyHandler()
-	{
-	}
+	{}
 
 	/** @brief  Handle <i>system ready</i> events
     */
@@ -61,8 +59,7 @@ enum SystemState {
 };
 /** @} */
 
-class SystemClass
-{
+class SystemClass {
 public:
 	/** @brief  System class
      *  @addtogroup system

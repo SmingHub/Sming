@@ -23,13 +23,13 @@
 
 /*==============================================================================*/
 /* Useful Constants */
-#define SECS_PER_MIN  (60UL)
+#define SECS_PER_MIN (60UL)
 #define SECS_PER_HOUR (3600UL)
-#define SECS_PER_DAY  (SECS_PER_HOUR * 24L)
+#define SECS_PER_DAY (SECS_PER_HOUR * 24L)
 #define DAYS_PER_WEEK (7L)
 #define SECS_PER_WEEK (SECS_PER_DAY * DAYS_PER_WEEK)
 #define SECS_PER_YEAR (SECS_PER_WEEK * 52L)
-#define SECS_YR_2000  (946681200UL)
+#define SECS_YR_2000 (946681200UL)
 
 /* Useful Macros for getting elapsed time */
 /** Get just seconds part of given Unix time */
@@ -37,19 +37,19 @@
 /** Get just minutes part of given Unix time */
 #define numberOfMinutes(_time_) ((_time_ / SECS_PER_MIN) % SECS_PER_MIN)
 /** Get just hours part of given Unix time */
-#define numberOfHours(_time_) (( _time_% SECS_PER_DAY) / SECS_PER_HOUR)
+#define numberOfHours(_time_) ((_time_ % SECS_PER_DAY) / SECS_PER_HOUR)
 /** Get day of week from given Unix time */
-#define dayOfWeek(_time_)  (( _time_ / SECS_PER_DAY + 4)  % DAYS_PER_WEEK) // 0 = Sunday
+#define dayOfWeek(_time_) ((_time_ / SECS_PER_DAY + 4) % DAYS_PER_WEEK) // 0 = Sunday
 /** Get elapsed days since 1970-01-01 from given Unix time */
-#define elapsedDays(_time_) ( _time_ / SECS_PER_DAY)  // this is number of days since Jan 1 1970
+#define elapsedDays(_time_) (_time_ / SECS_PER_DAY) // this is number of days since Jan 1 1970
 /** Get quantity of seconds since midnight from given Unix time */
-#define elapsedSecsToday(_time_)  (_time_ % SECS_PER_DAY)   // the number of seconds since last midnight
+#define elapsedSecsToday(_time_) (_time_ % SECS_PER_DAY) // the number of seconds since last midnight
 /** Get Unix time of midnight at start of day from given Unix time */
-#define previousMidnight(_time_) (( _time_ / SECS_PER_DAY) * SECS_PER_DAY)  // time at the start of the given day
+#define previousMidnight(_time_) ((_time_ / SECS_PER_DAY) * SECS_PER_DAY) // time at the start of the given day
 /** Get Unix time of midnight at end of day from given just Unix time */
-#define nextMidnight(_time_) ( previousMidnight(_time_)  + SECS_PER_DAY ) // time at the end of the given day
+#define nextMidnight(_time_) (previousMidnight(_time_) + SECS_PER_DAY) // time at the end of the given day
 /** Get quantity of seconds since midnight at start of previous Sunday from given Unix time */
-#define elapsedSecsThisWeek(_time_)  (elapsedSecsToday(_time_) +  (dayOfWeek(_time_) * SECS_PER_DAY) )
+#define elapsedSecsThisWeek(_time_) (elapsedSecsToday(_time_) + (dayOfWeek(_time_) * SECS_PER_DAY))
 
 // todo add date math macros
 /*============================================================================*/
@@ -57,13 +57,13 @@
 /** @brief  Days of week
 */
 typedef enum {
-	  dtSunday, ///< Sunday
-	  dtMonday, ///< Monday
-	  dtTuesday, ///< Tuesday
-	  dtWednesday, ///< Wednesday
-	  dtThursday, ///< Thursday
-	  dtFriday, ///< Friday
-	  dtSaturday ///< Saturday
+	dtSunday,	///< Sunday
+	dtMonday,	///< Monday
+	dtTuesday,   ///< Tuesday
+	dtWednesday, ///< Wednesday
+	dtThursday,  ///< Thursday
+	dtFriday,	///< Friday
+	dtSaturday   ///< Saturday
 } dtDays_t;
 
 /** @brief  Date and time class
@@ -74,24 +74,26 @@ typedef enum {
  *          To facilitate leap seconds, reference must be made to leap second table. This will not be done within the Sming framework and must be handled by application code if required.
  *  @note   Sming uses 32-bit signed integer for its time_t data type which supports a range of +/-68 years. This means Sming is susceptible to Year 2038 problem.
  */
-class DateTime
-{
+class DateTime {
 public:
-    /** @brief  Instantiate an uninitialised date and time object
+	/** @brief  Instantiate an uninitialised date and time object
      */
 	DateTime();
 
-    /** @brief  Instantiate a date and time object
+	/** @brief  Instantiate a date and time object
      *  @param  time Unix time to assign to object
      */
 	DateTime(time_t time);
 
-    /** @brief  Get current Unix time
+	/** @brief  Get current Unix time
      *  @retval time_t Quantity of seconds since 00:00:00 1970-01-01
     */
-	operator time_t() { return toUnixTime(); }
+	operator time_t()
+	{
+		return toUnixTime();
+	}
 
-    /** @brief  Set time using Unix time
+	/** @brief  Set time using Unix time
      *  @param  time Unix time to set object time to
      */
 	void setTime(time_t time);
@@ -105,7 +107,7 @@ public:
 	 */
 	void setTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year);
 
-    /** @brief  Parse a HTTP full date and set time and date
+	/** @brief  Parse a HTTP full date and set time and date
      *  @param  httpDate HTTP full date in RFC 1123 format, e.g. Sun, 06 Nov 1994 08:49:37 GMT
      *  @retval bool True on success
      *  @note   Also supports obsolete RFC 850 date format, e.g. Sunday, 06-Nov-94 08:49:37 GMT where 2 digit year represents range 1970-2069
@@ -118,13 +120,13 @@ public:
 	 */
 	bool isNull();
 
-    /** @brief  Get Unix time
+	/** @brief  Get Unix time
      *  @retval time_t Unix time, quantity of seconds since 00:00:00 1970-01-01
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
      */
 	time_t toUnixTime();
 
-    /** @brief  Get human readable date
+	/** @brief  Get human readable date
      *  @retval String Date in requested format, e.g. dd.mm.yyyy
      */
 	String toShortDateString();
@@ -135,13 +137,13 @@ public:
 	 */
 	String toShortTimeString(bool includeSeconds = false);
 
-    /** @brief  Get human readable date and time
+	/** @brief  Get human readable date and time
      *  @retval String Date and time in format dd.mm.yyyy hh:mm:ss
      */
 	String toFullDateTimeString();
 	String toISO8601();
 
-    /** @brief  Add time to date time object
+	/** @brief  Add time to date time object
      *  @param  add Quantity of milliseconds to add to object
      */
 	void addMilliseconds(long add);
@@ -162,7 +164,8 @@ public:
 	 *  @note   32-bit Unix time has year 2036 issue.
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
 	 */
-	static void convertFromUnixTime(time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear);
+	static void convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday,
+									int8_t* pwday, int8_t* pmonth, int16_t* pyear);
 
 	/** @brief  Convert from individual time components to Unix time
 	 *  @param  sec Seconds
@@ -179,16 +182,15 @@ public:
 	static time_t convertToUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year);
 
 public:
-	int8_t Hour; ///< Hour (0-23)
-	int8_t Minute; ///< Minute (0-59)
-	int8_t Second; ///< Second (0-59)
+	int8_t Hour;		  ///< Hour (0-23)
+	int8_t Minute;		  ///< Minute (0-59)
+	int8_t Second;		  ///< Second (0-59)
 	int16_t Milliseconds; ///< Milliseconds (0-999)
-	int8_t Day; ///< Day of month (1-31)
-	int8_t DayofWeek; ///< Day of week (0-6 Sunday is day 0)
-	int8_t Month; ///< Month (0-11 Jan is month 0)
-	int16_t Year;  ///< Full Year number
+	int8_t Day;			  ///< Day of month (1-31)
+	int8_t DayofWeek;	 ///< Day of week (0-6 Sunday is day 0)
+	int8_t Month;		  ///< Month (0-11 Jan is month 0)
+	int16_t Year;		  ///< Full Year number
 };
 
 /** @} */
 #endif /* DateTime_h */
-

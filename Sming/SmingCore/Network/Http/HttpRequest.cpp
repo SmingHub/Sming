@@ -13,14 +13,13 @@
 #include "HttpRequest.h"
 
 HttpRequest::HttpRequest(const URL& uri) : uri(uri)
-{
-}
+{}
 
 HttpRequest::HttpRequest(const HttpRequest& value) : uri(value.uri)
 {
 	*this = value;
 	method = value.method;
-	if(value.headers.count()) {
+	if (value.headers.count()) {
 		setHeaders(value.headers);
 	}
 	headersCompletedDelegate = value.headersCompletedDelegate;
@@ -38,7 +37,7 @@ HttpRequest::HttpRequest(const HttpRequest& value) : uri(value.uri)
 
 HttpRequest& HttpRequest::operator=(const HttpRequest& rhs)
 {
-	if(this == &rhs)
+	if (this == &rhs)
 		return *this;
 
 	// TODO: FIX this...
@@ -67,7 +66,7 @@ HttpRequest* HttpRequest::setMethod(const HttpMethod method)
 
 HttpRequest* HttpRequest::setHeaders(const HttpHeaders& headers)
 {
-	for(int i = 0; i < headers.count(); i++) {
+	for (int i = 0; i < headers.count(); i++) {
 		this->headers[headers.keyAt(i)] = headers.valueAt(i);
 	}
 	return this;
@@ -93,7 +92,7 @@ HttpRequest* HttpRequest::setPostParameter(const String& name, const String& val
 
 HttpRequest* HttpRequest::setFile(const String& formElementName, FileStream* stream)
 {
-	if(stream == null) {
+	if (stream == null) {
 		return this;
 	}
 
@@ -113,7 +112,7 @@ HttpRequest* HttpRequest::setAuth(AuthAdapter* adapter)
 
 String HttpRequest::getHeader(const String& name)
 {
-	if(!headers.contains(name)) {
+	if (!headers.contains(name)) {
 		return "";
 	}
 
@@ -122,7 +121,7 @@ String HttpRequest::getHeader(const String& name)
 
 String HttpRequest::getPostParameter(const String& name)
 {
-	if(!postParams.contains(name)) {
+	if (!postParams.contains(name)) {
 		return "";
 	}
 
@@ -131,19 +130,19 @@ String HttpRequest::getPostParameter(const String& name)
 
 String HttpRequest::getQueryParameter(const String& parameterName, const String& defaultValue /* = "" */)
 {
-	if(queryParams == NULL) {
+	if (queryParams == NULL) {
 		queryParams = new HttpParams();
-		if(!uri.Query.length()) {
+		if (!uri.Query.length()) {
 			return defaultValue;
 		}
 
 		String query = uri.Query.substring(1);
 		Vector<String> parts;
 		splitString(query, '&', parts);
-		for(int i = 0; i < parts.count(); i++) {
+		for (int i = 0; i < parts.count(); i++) {
 			Vector<String> pair;
 			int count = splitString(parts[i], '=', pair);
-			if(count != 2) {
+			if (count != 2) {
 				debug_w("getQueryParameter: Missing = in query string: %s", parts[i].c_str());
 				continue;
 			}
@@ -151,7 +150,7 @@ String HttpRequest::getQueryParameter(const String& parameterName, const String&
 		}
 	}
 
-	if(queryParams->contains(parameterName)) {
+	if (queryParams->contains(parameterName)) {
 		return (*queryParams)[parameterName];
 	}
 
@@ -160,19 +159,19 @@ String HttpRequest::getQueryParameter(const String& parameterName, const String&
 
 String HttpRequest::getBody()
 {
-	if(stream == NULL) {
+	if (stream == NULL) {
 		return "";
 	}
 
 	String ret;
-	if(stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
+	if (stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
 		MemoryDataStream* memory = (MemoryDataStream*)stream;
 		char buf[1024];
-		while(stream->available() > 0) {
+		while (stream->available() > 0) {
 			int available = memory->readMemoryBlock(buf, 1024);
 			memory->seek(available);
 			ret += String(buf, available);
-			if(available < 1024) {
+			if (available < 1024) {
 				break;
 			}
 		}
@@ -187,7 +186,7 @@ ReadWriteStream* HttpRequest::getBodyStream()
 
 HttpRequest* HttpRequest::setResponseStream(ReadWriteStream* stream)
 {
-	if(responseStream != NULL) {
+	if (responseStream != NULL) {
 		debug_e("HttpRequest::setResponseStream: Discarding already set stream!");
 		delete responseStream;
 		responseStream = NULL;
@@ -232,7 +231,7 @@ HttpRequest* HttpRequest::setBody(uint8_t* rawData, size_t length)
 {
 	MemoryDataStream* memory = new MemoryDataStream();
 	int written = memory->write(rawData, length);
-	if(written < length) {
+	if (written < length) {
 		debug_e("HttpRequest::setBody: Unable to store the complete body");
 	}
 
@@ -241,7 +240,7 @@ HttpRequest* HttpRequest::setBody(uint8_t* rawData, size_t length)
 
 HttpRequest* HttpRequest::setBody(ReadWriteStream* stream)
 {
-	if(this->stream != NULL) {
+	if (this->stream != NULL) {
 		debug_e("HttpRequest::setBody: Discarding already set stream!");
 		delete this->stream;
 		this->stream = NULL;
@@ -279,7 +278,7 @@ void HttpRequest::reset()
 	responseStream = NULL;
 
 	postParams.clear();
-	for(int i = 0; i < files.count(); i++) {
+	for (int i = 0; i < files.count(); i++) {
 		String key = files.keyAt(i);
 		delete files[key];
 		files[key] = NULL;
@@ -302,11 +301,11 @@ String HttpRequest::toString()
 
 	content += http_method_str(method) + String(" ") + uri.getPathWithQuery() + " HTTP/1.1\n";
 	content += "Host: " + uri.Host + ":" + uri.Port + "\n";
-	for(int i = 0; i < headers.count(); i++) {
+	for (int i = 0; i < headers.count(); i++) {
 		content += headers.keyAt(i) + ": " + headers.valueAt(i) + "\n";
 	}
 
-	if(stream != NULL && stream->available() > -1) {
+	if (stream != NULL && stream->available() > -1) {
 		content += "Content-Length: " + String(stream->available());
 	}
 

@@ -20,8 +20,7 @@
 
 typedef Delegate<void(TcpClient* client)> TcpClientConnectDelegate;
 
-class TcpServer : public TcpConnection
-{
+class TcpServer : public TcpConnection {
 public:
 	TcpServer();
 	TcpServer(TcpClientConnectDelegate onClientHandler, TcpClientDataDelegate clientReceiveDataHandler,

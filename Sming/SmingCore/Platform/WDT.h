@@ -1,7 +1,7 @@
 /*
  * WDT.h
  *
- *  Created on: 06 апр. 2015 г.
+ *  Created on: 06 ???. 2015 ?.
  *      Author: Anakod
  */
 /**	@defgroup wdt Watchdog Timer
@@ -17,8 +17,7 @@
 #include <user_config.h>
 #include "System.h"
 
-class WDTClass : protected ISystemReadyHandler
-{
+class WDTClass : protected ISystemReadyHandler {
 public:
 	/** @brief  Watchdog timer class
      *  @addtogroup wdt
@@ -26,8 +25,7 @@ public:
      */
 	WDTClass();
 	virtual ~WDTClass()
-	{
-	}
+	{}
 
 	/** @brief  Enable or disable watchdog timer
      *  @param  enableWatchDog True to enable. False to disable.

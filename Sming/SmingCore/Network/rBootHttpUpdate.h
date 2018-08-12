@@ -21,14 +21,14 @@ class rBootHttpUpdate;
 //typedef void (*otaCallback)(bool result);
 typedef Delegate<void(rBootHttpUpdate& client, bool result)> OtaUpdateDelegate;
 
-struct rBootHttpUpdateItem {
+struct rBootHttpUpdateItem
+{
 	String url;
 	uint32_t targetOffset;
 	int size;
 };
 
-class rBootItemOutputStream : public ReadWriteStream
-{
+class rBootItemOutputStream : public ReadWriteStream {
 public:
 	void setItem(rBootHttpUpdateItem* item);
 	virtual bool init();
@@ -67,8 +67,7 @@ protected:
 	rboot_write_status rBootWriteStatus;
 };
 
-class rBootHttpUpdate : protected HttpClient
-{
+class rBootHttpUpdate : protected HttpClient {
 public:
 	rBootHttpUpdate();
 	virtual ~rBootHttpUpdate();

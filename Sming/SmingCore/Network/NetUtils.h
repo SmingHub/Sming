@@ -16,13 +16,13 @@ struct pbuf;
 class String;
 class TcpConnection;
 
-struct DnsLookup {
+struct DnsLookup
+{
 	TcpConnection* con;
 	int port;
 };
 
-class NetUtils
-{
+class NetUtils {
 public:
 	// Helpers
 	static bool pbufIsStrEqual(pbuf* buf, const char* compared, int startPos);

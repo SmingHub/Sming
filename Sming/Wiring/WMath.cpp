@@ -21,7 +21,6 @@
 
 #include "WiringFrameworkIncludes.h"
 
-
 unsigned int static seed;
 
 void srandom(unsigned int s)
@@ -31,71 +30,66 @@ void srandom(unsigned int s)
 
 int random()
 {
-  unsigned int next = seed;
-  int result;
+	unsigned int next = seed;
+	int result;
 
-  next *= 1103515245;
-  next += 12345;
-  result = (unsigned int) (next / 65536) % 2048;
+	next *= 1103515245;
+	next += 12345;
+	result = (unsigned int)(next / 65536) % 2048;
 
-  next *= 1103515245;
-  next += 12345;
-  result <<= 10;
-  result ^= (unsigned int) (next / 65536) % 1024;
+	next *= 1103515245;
+	next += 12345;
+	result <<= 10;
+	result ^= (unsigned int)(next / 65536) % 1024;
 
-  next *= 1103515245;
-  next += 12345;
-  result <<= 10;
-  result ^= (unsigned int) (next / 65536) % 1024;
+	next *= 1103515245;
+	next += 12345;
+	result <<= 10;
+	result ^= (unsigned int)(next / 65536) % 1024;
 
-  seed = next;
+	seed = next;
 
-  return result;
+	return result;
 }
 
 void randomSeed(uint16_t seed)
 {
-  if (seed != 0)
-	  srandom(seed);
+	if (seed != 0)
+		srandom(seed);
 }
-
 
 long random(long howbig)
 {
-  if (howbig == 0)
-    return 0;
+	if (howbig == 0)
+		return 0;
 
-  return random() % howbig;
+	return random() % howbig;
 }
-
 
 long random(long howsmall, long howbig)
 {
-  if (howsmall >= howbig)
-    return howsmall;
+	if (howsmall >= howbig)
+		return howsmall;
 
-  long diff = howbig - howsmall;
-  return random(diff) + howsmall;
+	long diff = howbig - howsmall;
+	return random(diff) + howsmall;
 }
 
-
-long map(long x, long in_min, long in_max, long out_min, long out_max) {
-    long divisor = (in_max - in_min) + out_min;
-    if(divisor == 0){
-        return -1; //AVR returns -1, SAM returns 0
-    }
-    return (x - in_min) * (out_max - out_min) / divisor;
+long map(long x, long in_min, long in_max, long out_min, long out_max)
+{
+	long divisor = (in_max - in_min) + out_min;
+	if (divisor == 0) {
+		return -1; //AVR returns -1, SAM returns 0
+	}
+	return (x - in_min) * (out_max - out_min) / divisor;
 }
-
 
 uint16_t makeWord(uint16_t w)
 {
-  return w;
+	return w;
 }
-
 
 uint16_t makeWord(uint8_t highByte, uint8_t lowByte)
 {
-  return (highByte << 8) | lowByte;
+	return (highByte << 8) | lowByte;
 }
-

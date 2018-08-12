@@ -34,8 +34,7 @@ class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
 
-class HttpServerConnection : public TcpClient
-{
+class HttpServerConnection : public TcpClient {
 public:
 	HttpServerConnection(tcp_pcb* clientTcp);
 	virtual ~HttpServerConnection();

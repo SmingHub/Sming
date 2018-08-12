@@ -35,8 +35,7 @@ typedef Delegate<bool(TcpClient& client, char* data, int size)> TcpClientDataDel
 
 enum TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successful, eTCS_Failed };
 
-class TcpClient : public TcpConnection
-{
+class TcpClient : public TcpConnection {
 public:
 	TcpClient(bool autoDestruct);
 	TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted);

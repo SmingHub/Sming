@@ -29,18 +29,15 @@ typedef Delegate<int(HttpServerConnection& connection, HttpRequest&, char* at, i
 typedef Delegate<int(HttpServerConnection&, HttpRequest&, HttpResponse&)> HttpResourceDelegate;
 typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathDelegate; // << deprecated
 
-class HttpResource
-{
+class HttpResource {
 public:
 	virtual ~HttpResource()
-	{
-	}
+	{}
 	/**
 	 * @brief Takes care to cleanup the connection
 	 */
 	virtual void shutdown(HttpServerConnection& connection)
-	{
-	}
+	{}
 
 public:
 	HttpServerConnectionBodyDelegate onBody = 0; // << called when the resource wants to process the raw body data
@@ -50,8 +47,7 @@ public:
 	// ^ called when the request is upgraded and raw data is passed to it
 };
 
-class HttpCompatResource : public HttpResource
-{
+class HttpCompatResource : public HttpResource {
 public:
 	HttpCompatResource(const HttpPathDelegate& callback);
 

@@ -21,8 +21,7 @@
 
 class FTPServerConnection;
 
-class FTPServer : public TcpServer
-{
+class FTPServer : public TcpServer {
 	friend class FTPServerConnection;
 
 public:

@@ -21,7 +21,8 @@
 /** @brief  ESP GPIO pin configuration
  *  @ingroup constants
  */
-struct EspDigitalPin {
+struct EspDigitalPin
+{
 	uint8_t id;
 	uint32_t mux;
 	uint8_t gpioFunc;

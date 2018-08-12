@@ -22,18 +22,18 @@ int NetUtils::pbufFindChar(pbuf* buf, char wtf, int startPos /* = 0*/)
 {
 	int ofs = 0;
 
-	while(buf->len <= startPos) {
+	while (buf->len <= startPos) {
 		ofs += buf->len;
 		startPos -= buf->len;
 		buf = buf->next;
-		if(buf == NULL)
+		if (buf == NULL)
 			return -1;
 	}
 
 	do {
-		for(int i = startPos; i < buf->len; i++) {
+		for (int i = startPos; i < buf->len; i++) {
 			char* sbuf = (char*)buf->payload;
-			if(sbuf[i] == wtf) {
+			if (sbuf[i] == wtf) {
 				//debug_d("%d %d", ofs, i);
 				return ofs + i;
 			}
@@ -41,7 +41,7 @@ int NetUtils::pbufFindChar(pbuf* buf, char wtf, int startPos /* = 0*/)
 		ofs += buf->len;
 		buf = buf->next;
 		startPos = 0;
-	} while(buf != NULL);
+	} while (buf != NULL);
 
 	return -1;
 }
@@ -50,23 +50,23 @@ bool NetUtils::pbufIsStrEqual(pbuf* buf, const char* compared, int startPos)
 {
 	int cur = startPos;
 
-	while(buf->len <= cur) {
+	while (buf->len <= cur) {
 		cur -= buf->len;
 		buf = buf->next;
-		if(buf == NULL)
+		if (buf == NULL)
 			return false;
 	}
 
-	for(const char* cmp = compared; *cmp; cmp++) {
-		if(buf == NULL)
+	for (const char* cmp = compared; *cmp; cmp++) {
+		if (buf == NULL)
 			return false;
 
 		char& target = ((char*)buf->payload)[cur];
-		if(target != *cmp)
+		if (target != *cmp)
 			return false;
 
 		cur++;
-		if(cur >= buf->len) {
+		if (cur >= buf->len) {
 			cur = 0;
 			buf = buf->next;
 		}
@@ -78,17 +78,17 @@ bool NetUtils::pbufIsStrEqual(pbuf* buf, const char* compared, int startPos)
 int NetUtils::pbufFindStr(pbuf* buf, const char* wtf, int startPos /* = 0*/)
 {
 	int cur = startPos;
-	if(startPos < 0)
+	if (startPos < 0)
 		startPos = 0;
-	if(wtf == NULL || strlen(wtf) == -1)
+	if (wtf == NULL || strlen(wtf) == -1)
 		return -1;
 
-	while(true) {
+	while (true) {
 		cur = pbufFindChar(buf, wtf[0], cur);
-		if(cur == -1)
+		if (cur == -1)
 			return -1;
 
-		if(pbufIsStrEqual(buf, wtf, cur))
+		if (pbufIsStrEqual(buf, wtf, cur))
 			return cur;
 		cur++;
 	}
@@ -161,30 +161,30 @@ void NetUtils::debugPrintTcpList()
 	struct tcp_pcb* pcb;
 	debugf("********** Lwip Active PCB states:\r\n");
 	bool prt_none = true;
-	for(pcb = tcp_active_pcbs; pcb != NULL; pcb = pcb->next) {
+	for (pcb = tcp_active_pcbs; pcb != NULL; pcb = pcb->next) {
 		debugf("LWIP_DEBUG: Port %u | %u flg:%02x tmr:%04x %s\r\n", pcb->local_port, pcb->remote_port, pcb->flags,
 			   pcb->tmr, deb_tcp_state_str[pcb->state]);
 		prt_none = false;
 	}
-	if(prt_none)
+	if (prt_none)
 		debugf("LWIP_DEBUG: none\r\n");
 	debugf("********** Lwip Listen PCB states:\r\n");
 	prt_none = true;
-	for(pcb = (struct tcp_pcb*)tcp_listen_pcbs.pcbs; pcb != NULL; pcb = pcb->next) {
+	for (pcb = (struct tcp_pcb*)tcp_listen_pcbs.pcbs; pcb != NULL; pcb = pcb->next) {
 		debugf("LWIP_DEBUG: Port %u | %u flg:%02x tmr:%04x %s\r\n", pcb->local_port, pcb->remote_port, pcb->flags,
 			   pcb->tmr, deb_tcp_state_str[pcb->state]);
 		prt_none = false;
 	}
-	if(prt_none)
+	if (prt_none)
 		debugf("LWIP_DEBUG: none\r\n");
 	debugf("********** Lwip TIME-WAIT PCB states:\r\n");
 	prt_none = true;
-	for(pcb = tcp_tw_pcbs; pcb != NULL; pcb = pcb->next) {
+	for (pcb = tcp_tw_pcbs; pcb != NULL; pcb = pcb->next) {
 		debugf("LWIP_DEBUG: Port %u | %u flg:%02x tmr:%04x %s\r\n", pcb->local_port, pcb->remote_port, pcb->flags,
 			   pcb->tmr, deb_tcp_state_str[pcb->state]);
 		prt_none = false;
 	}
-	if(prt_none)
+	if (prt_none)
 		debugf("LWIP_DEBUG: none\r\n");
 	return;
 }

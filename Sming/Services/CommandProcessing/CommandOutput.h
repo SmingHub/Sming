@@ -14,8 +14,7 @@
 #include "WiringFrameworkDependencies.h"
 #include "Network/Http/Websocket/WebSocketConnection.h"
 
-class CommandOutput: public Print
-{
+class CommandOutput : public Print {
 public:
 	CommandOutput(TcpClient* reqClient);
 	CommandOutput(Stream* reqStream);
@@ -25,7 +24,7 @@ public:
 	size_t write(uint8_t outChar);
 
 	TcpClient* outputTcpClient = nullptr;
-	Stream*    outputStream = nullptr;
+	Stream* outputStream = nullptr;
 	WebSocketConnection* outputSocket = nullptr;
 	String tempSocket = "";
 };

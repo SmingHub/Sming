@@ -90,8 +90,7 @@ class SmtpClient;
 
 typedef std::function<int(SmtpClient& client, int code, char* status)> SmtpClientCallback;
 
-class SmtpClient : protected TcpClient
-{
+class SmtpClient : protected TcpClient {
 public:
 	SmtpClient(bool autoDestroy = false);
 	virtual ~SmtpClient();

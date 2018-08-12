@@ -29,8 +29,7 @@
 
 #define BUFFER_LENGTH 32
 
-class TwoWire : public Stream
-{
+class TwoWire : public Stream {
 private:
 	static uint8_t rxBuffer[];
 	static uint8_t rxBufferIndex;

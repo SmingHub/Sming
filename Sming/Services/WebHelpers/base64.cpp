@@ -30,10 +30,10 @@ static const uint8_t base64dec_tab[256]= {
 
 void base64encode(const unsigned char in[3], unsigned char out[4], int count)
 {
-	out[0]=base64enc_tab[(in[0]>>2)];
-	out[1]=base64enc_tab[((in[0]&3)<<4)|(in[1]>>4)];
-	out[2]=count<2 ? '=' : base64enc_tab[((in[1]&15)<<2)|(in[2]>>6)];
-	out[3]=count<3 ? '=' : base64enc_tab[(in[2]&63)];
+	out[0] = base64enc_tab[(in[0] >> 2)];
+	out[1] = base64enc_tab[((in[0] & 3) << 4) | (in[1] >> 4)];
+	out[2] = count < 2 ? '=' : base64enc_tab[((in[1] & 15) << 2) | (in[2] >> 6)];
+	out[3] = count < 3 ? '=' : base64enc_tab[(in[2] & 63)];
 }
 
 #ifndef ENABLE_SSL
@@ -41,73 +41,84 @@ int base64decode(const char in[4], char out[3])
 {
 	uint8_t v[4];
 
-	v[0]=base64dec_tab[(unsigned)in[0]];
-	v[1]=base64dec_tab[(unsigned)in[1]];
-	v[2]=base64dec_tab[(unsigned)in[2]];
-	v[3]=base64dec_tab[(unsigned)in[3]];
+	v[0] = base64dec_tab[(unsigned)in[0]];
+	v[1] = base64dec_tab[(unsigned)in[1]];
+	v[2] = base64dec_tab[(unsigned)in[2]];
+	v[3] = base64dec_tab[(unsigned)in[3]];
 
-	out[0]=(v[0]<<2)|(v[1]>>4); 
-	out[1]=(v[1]<<4)|(v[2]>>2); 
-	out[2]=(v[2]<<6)|(v[3]); 
-	return (v[0]|v[1]|v[2]|v[3])!=255 ? in[3]=='=' ? in[2]=='=' ? 1 : 2 : 3 : 0;
+	out[0] = (v[0] << 2) | (v[1] >> 4);
+	out[1] = (v[1] << 4) | (v[2] >> 2);
+	out[2] = (v[2] << 6) | (v[3]);
+	return (v[0] | v[1] | v[2] | v[3]) != 255 ? in[3] == '=' ? in[2] == '=' ? 1 : 2 : 3 : 0;
 }
 
 /* decode a base64 string in one shot */
-int base64_decode(size_t in_len, const char *in, size_t out_len, unsigned char *out) {
+int base64_decode(size_t in_len, const char* in, size_t out_len, unsigned char* out)
+{
 	unsigned ii, io;
 	uint_least32_t v;
 	unsigned rem;
 
-	for(io=0,ii=0,v=0,rem=0;ii<in_len;ii++) {
+	for (io = 0, ii = 0, v = 0, rem = 0; ii < in_len; ii++) {
 		unsigned char ch;
-		if(isspace(in[ii])) continue;
-		if(in[ii]=='=') break; /* stop at = */
-		ch=base64dec_tab[(unsigned)in[ii]];
-		if(ch==255) break; /* stop at a parse error */
-		v=(v<<6)|ch;
-		rem+=6;
-		if(rem>=8) {
-			rem-=8;
-			if(io>=out_len) return -1; /* truncation is failure */
-			out[io++]=(v>>rem)&255;
+		if (isspace(in[ii]))
+			continue;
+		if (in[ii] == '=')
+			break; /* stop at = */
+		ch = base64dec_tab[(unsigned)in[ii]];
+		if (ch == 255)
+			break; /* stop at a parse error */
+		v = (v << 6) | ch;
+		rem += 6;
+		if (rem >= 8) {
+			rem -= 8;
+			if (io >= out_len)
+				return -1; /* truncation is failure */
+			out[io++] = (v >> rem) & 255;
 		}
 	}
-	if(rem>=8) {
-		rem-=8;
-		if(io>=out_len) return -1; /* truncation is failure */
-		out[io++]=(v>>rem)&255;
+	if (rem >= 8) {
+		rem -= 8;
+		if (io >= out_len)
+			return -1; /* truncation is failure */
+		out[io++] = (v >> rem) & 255;
 	}
 	return io;
 }
 #endif
 
-int base64_encode(size_t in_len, const unsigned char *in, size_t out_len, char *out) {
+int base64_encode(size_t in_len, const unsigned char* in, size_t out_len, char* out)
+{
 	unsigned ii, io;
 	uint_least32_t v;
 	unsigned rem;
 
-	for(io=0,ii=0,v=0,rem=0;ii<in_len;ii++) {
+	for (io = 0, ii = 0, v = 0, rem = 0; ii < in_len; ii++) {
 		unsigned char ch;
-		ch=in[ii];
-		v=(v<<8)|ch;
-		rem+=8;
-		while(rem>=6) {
-			rem-=6;
-			if(io>=out_len) return -1; /* truncation is failure */
-			out[io++]=base64enc_tab[(v>>rem)&63];
+		ch = in[ii];
+		v = (v << 8) | ch;
+		rem += 8;
+		while (rem >= 6) {
+			rem -= 6;
+			if (io >= out_len)
+				return -1; /* truncation is failure */
+			out[io++] = base64enc_tab[(v >> rem) & 63];
 		}
 	}
-	if(rem) {
-		v<<=(6-rem);
-		if(io>=out_len) return -1; /* truncation is failure */
-		out[io++]=base64enc_tab[v&63];
+	if (rem) {
+		v <<= (6 - rem);
+		if (io >= out_len)
+			return -1; /* truncation is failure */
+		out[io++] = base64enc_tab[v & 63];
 	}
-	while(io&3) {
-		if(io>=out_len) return -1; /* truncation is failure */
-		out[io++]='=';
+	while (io & 3) {
+		if (io >= out_len)
+			return -1; /* truncation is failure */
+		out[io++] = '=';
 	}
-	if(io>=out_len) return -1; /* no room for null terminator */
-	out[io]=0;
+	if (io >= out_len)
+		return -1; /* no room for null terminator */
+	out[io] = 0;
 	return io;
 }
 

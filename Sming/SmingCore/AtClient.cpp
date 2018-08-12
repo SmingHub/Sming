@@ -18,23 +18,23 @@ AtClient::AtClient(HardwareSerial* stream) : stream(stream)
 
 void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCharsCount)
 {
-	if(!currentCommand.text.length()) {
+	if (!currentCommand.text.length()) {
 		return;
 	}
 
-	if(state == eAtError) {
+	if (state == eAtError) {
 		// discard input at error state
 		return;
 	}
 
-	if(currentCommand.onReceive) {
-		if(currentCommand.onReceive(*this, source)) {
+	if (currentCommand.onReceive) {
+		if (currentCommand.onReceive(*this, source)) {
 			next();
 		}
 		return;
 	}
 
-	if(arrivedChar != '\n') {
+	if (arrivedChar != '\n') {
 		return;
 	}
 
@@ -42,9 +42,9 @@ void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCha
 	debugf("Processing: %d ms, %s", millis(), currentCommand.text.substring(0, 20).c_str());
 
 	char response[availableCharsCount];
-	for(int i = 0; i < availableCharsCount; i++) {
+	for (int i = 0; i < availableCharsCount; i++) {
 		response[i] = stream->read();
-		if(response[i] == '\r' || response[i] == '\n') {
+		if (response[i] == '\r' || response[i] == '\n') {
 			response[i] = '\0';
 		}
 	}
@@ -52,21 +52,21 @@ void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCha
 	debugf("Got response: %s", response);
 
 	String reply(response);
-	if(reply.indexOf(AT_REPLY_OK) + reply.indexOf(currentCommand.response2) == -2) {
+	if (reply.indexOf(AT_REPLY_OK) + reply.indexOf(currentCommand.response2) == -2) {
 		// we did not get what we wanted. Check if we should repeat.
-		if(--currentCommand.retries > 0) {
+		if (--currentCommand.retries > 0) {
 			sendDirect(currentCommand);
 			return;
 		}
 
-		if(currentCommand.breakOnError) {
+		if (currentCommand.breakOnError) {
 			state = eAtError;
 			return;
 		}
 	}
 
-	if(currentCommand.onComplete) {
-		if(!currentCommand.onComplete(*this, reply)) {
+	if (currentCommand.onComplete) {
+		if (!currentCommand.onComplete(*this, reply)) {
 			return;
 		}
 	}
@@ -114,7 +114,7 @@ void AtClient::send(const String& text, AtCompleteCallback onComplete, uint32_t 
 
 void AtClient::send(AtCommand command)
 {
-	if(currentCommand.text.length()) {
+	if (currentCommand.text.length()) {
 		queue.enqueue(command);
 		return;
 	}
@@ -137,7 +137,7 @@ void AtClient::sendDirect(AtCommand command)
 void AtClient::resend()
 {
 	state = eAtOK;
-	if(currentCommand.text.length()) {
+	if (currentCommand.text.length()) {
 		sendDirect(currentCommand);
 		return;
 	}
@@ -147,14 +147,14 @@ void AtClient::resend()
 
 void AtClient::next()
 {
-	if(state == eAtError) {
+	if (state == eAtError) {
 		debugf("We are at error state! No next");
 		return;
 	}
 
 	state = eAtOK;
 	currentCommand.text = "";
-	if(queue.count() > 0) {
+	if (queue.count() > 0) {
 		send(queue.dequeue());
 	}
 }
@@ -162,7 +162,7 @@ void AtClient::next()
 void AtClient::ticker()
 {
 	debugf("Ticker =================> ");
-	if(!currentCommand.text.length()) {
+	if (!currentCommand.text.length()) {
 		commandTimer.stop();
 		debugf("Error: Timeout without command?!");
 		return;
@@ -170,7 +170,7 @@ void AtClient::ticker()
 
 	currentCommand.retries--;
 	debugf("Retries: %d", currentCommand.retries);
-	if(currentCommand.retries > 0) {
+	if (currentCommand.retries > 0) {
 		commandTimer.restart();
 		sendDirect(currentCommand);
 		return;

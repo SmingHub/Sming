@@ -26,8 +26,7 @@
 
 #define SPI_NO 1
 
-class SPIClass : public SPIBase
-{
+class SPIClass : public SPIBase {
 public:
 	/** @brief  Instantiate hardware SPI object
      *  @addtogroup hw_spi

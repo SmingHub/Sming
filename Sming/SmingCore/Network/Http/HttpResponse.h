@@ -18,8 +18,7 @@
 
 class JsonObjectStream; // << TODO: deprecated and should be removed in the next version
 
-class HttpResponse
-{
+class HttpResponse {
 	friend class HttpClient;
 	friend class HttpConnection;
 	friend class HttpServerConnection;

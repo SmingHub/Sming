@@ -27,7 +27,7 @@ void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, uint8_t mod
 
 void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode)
 {
-	if(pin >= 16)
+	if (pin >= 16)
 		return; // WTF o_O
 	_gpioInterruptsList[pin] = callback;
 	_delegateFunctionList[pin] = nullptr;
@@ -36,7 +36,7 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode
 
 void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, GPIO_INT_TYPE mode)
 {
-	if(pin >= 16)
+	if (pin >= 16)
 		return; // WTF o_O
 	_gpioInterruptsList[pin] = NULL;
 	_delegateFunctionList[pin] = delegateFunction;
@@ -47,7 +47,7 @@ void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
 {
 	ETS_GPIO_INTR_DISABLE();
 
-	if(!_gpioInterruptsInitialied) {
+	if (!_gpioInterruptsInitialied) {
 		ETS_GPIO_INTR_ATTACH((ets_isr_t)interruptHandler, NULL); // Register interrupt handler
 		_gpioInterruptsInitialied = true;
 	}
@@ -85,7 +85,7 @@ void interruptMode(uint8_t pin, GPIO_INT_TYPE type)
 
 GPIO_INT_TYPE ConvertArduinoInterruptMode(uint8_t mode)
 {
-	switch(mode) {
+	switch (mode) {
 	case LOW: // to trigger the interrupt whenever the pin is low,
 		return GPIO_PIN_INTR_LOLEVEL;
 	case CHANGE:				 // to trigger the interrupt whenever the pin changes value
@@ -120,18 +120,18 @@ static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 	do {
 		gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 		processed = false;
-		for(uint8 i = 0; i < ESP_MAX_INTERRUPTS; i++, gpio_status << 1) {
-			if((gpio_status & BIT(i)) && (_gpioInterruptsList[i] || _delegateFunctionList[i])) {
+		for (uint8 i = 0; i < ESP_MAX_INTERRUPTS; i++, gpio_status << 1) {
+			if ((gpio_status & BIT(i)) && (_gpioInterruptsList[i] || _delegateFunctionList[i])) {
 				//clear interrupt status
 				GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(i));
 
-				if(_gpioInterruptsList[i])
+				if (_gpioInterruptsList[i])
 					_gpioInterruptsList[i]();
-				else if(_delegateFunctionList[i])
+				else if (_delegateFunctionList[i])
 					_delegateFunctionList[i]();
 
 				processed = true;
 			}
 		}
-	} while(processed);
+	} while (processed);
 }

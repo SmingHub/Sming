@@ -22,83 +22,75 @@
 #include "Countable.h"
 #include "WiringFrameworkDependencies.h"
 
-template<typename T, int rawSize>
-class FIFO : public Countable<T>
-{
-  public:
-    const int size;                         // speculative feature, in case it's needed
+template <typename T, int rawSize> class FIFO : public Countable<T> {
+public:
+	const int size; // speculative feature, in case it's needed
 
-    FIFO();
+	FIFO();
 
-    T dequeue();                            // get next element
-    bool enqueue(T element);                // add an element
-    T peek() const;                         // get the next element without releasing it from the FIFO
-    void flush();                           // reset to default state
+	T dequeue();			 // get next element
+	bool enqueue(T element); // add an element
+	T peek() const;			 // get the next element without releasing it from the FIFO
+	void flush();			 // reset to default state
 
-    //how many elements are currently in the FIFO?
-    unsigned int count() const
-    {
-      return numberOfElements;
-    }
+	//how many elements are currently in the FIFO?
+	unsigned int count() const
+	{
+		return numberOfElements;
+	}
 
-    const T &operator[](unsigned int index) const
-    {
-      return raw[index]; /* unsafe */
-    }
+	const T& operator[](unsigned int index) const
+	{
+		return raw[index]; /* unsafe */
+	}
 
-    T &operator[](unsigned int index)
-    {
-      return raw[index]; /* unsafe */
-    }
+	T& operator[](unsigned int index)
+	{
+		return raw[index]; /* unsafe */
+	}
 
-  protected:
-    volatile int numberOfElements;
-    int nextIn;
-    int nextOut;
-    T raw[rawSize];
+protected:
+	volatile int numberOfElements;
+	int nextIn;
+	int nextOut;
+	T raw[rawSize];
 };
 
-template<typename T, int rawSize>
-FIFO<T, rawSize>::FIFO() : size(rawSize)
+template <typename T, int rawSize> FIFO<T, rawSize>::FIFO() : size(rawSize)
 {
-  flush();
+	flush();
 }
 
-template<typename T, int rawSize>
-bool FIFO<T, rawSize>::enqueue(T element)
+template <typename T, int rawSize> bool FIFO<T, rawSize>::enqueue(T element)
 {
-  if (count() >= rawSize)
-  {
-    return false;
-  }
-  numberOfElements++;
-  raw[nextIn] = element;
-  if (++nextIn >= rawSize) // advance to next index, wrap if needed
-    nextIn = 0;
-  return true;
+	if (count() >= rawSize) {
+		return false;
+	}
+	numberOfElements++;
+	raw[nextIn] = element;
+	if (++nextIn >= rawSize) // advance to next index, wrap if needed
+		nextIn = 0;
+	return true;
 }
 
-template<typename T, int rawSize>
-T FIFO<T, rawSize>::dequeue()
+template <typename T, int rawSize> T FIFO<T, rawSize>::dequeue()
 {
-  T item;
-  numberOfElements--;
-  item = raw[nextOut];
-  if (++nextOut >= rawSize) // advance to next index, wrap if needed
-    nextOut = 0;
-  return item;
+	T item;
+	numberOfElements--;
+	item = raw[nextOut];
+	if (++nextOut >= rawSize) // advance to next index, wrap if needed
+		nextOut = 0;
+	return item;
 }
 
-template<typename T, int rawSize>
-T FIFO<T, rawSize>::peek() const
+template <typename T, int rawSize> T FIFO<T, rawSize>::peek() const
 {
-  return raw[nextOut];
+	return raw[nextOut];
 }
 
-template<typename T, int rawSize>
-void FIFO<T, rawSize>::flush()
+template <typename T, int rawSize> void FIFO<T, rawSize>::flush()
 {
-  nextIn = nextOut = numberOfElements = 0;
+	nextIn = nextOut = numberOfElements = 0;
 }
 
 #endif

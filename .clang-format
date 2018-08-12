@@ -33,8 +33,11 @@ BraceWrapping:
     BeforeElse:      true
     IndentBraces:    false
 #   AfterExternBlock: true # available in v7
+    SplitEmptyFunction: false
+    SplitEmptyRecord: false
+    SplitEmptyNamespace: false
 # BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Linux
+BreakBeforeBraces: Custom
 # BreakBeforeTernaryOperators: true
 # BreakConstructorInitializersBeforeComma: false
 ColumnLimit:     120
@@ -76,7 +79,7 @@ ReflowComments:  false
 SortIncludes:    false
 SpaceAfterCStyleCast: false
 SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: Never
+SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 # SpaceBeforeInheritanceColon: false # available in v7

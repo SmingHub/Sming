@@ -23,8 +23,7 @@ YeelightBulb::~YeelightBulb()
 
 bool YeelightBulb::connect()
 {
-	if (connection != nullptr)
-	{
+	if (connection != nullptr) {
 		if (connection->isProcessing())
 			return true;
 
@@ -42,12 +41,11 @@ bool YeelightBulb::connect()
 
 bool isNumeric(String str)
 {
-  for (int i = 0; i < str.length(); i++)
-  {
-	  if (!isDigit(str[i]))
-		  return false;
-  }
-  return true;
+	for (int i = 0; i < str.length(); i++) {
+		if (!isDigit(str[i]))
+			return false;
+	}
+	return true;
 }
 
 void YeelightBulb::sendCommand(String method, Vector<String> params)
@@ -58,9 +56,8 @@ void YeelightBulb::sendCommand(String method, Vector<String> params)
 	JsonObject& root = jsonBuffer.createObject();
 	root["id"] = requestId++;
 	root["method"] = method;
-	auto &arr = root.createNestedArray("params");
-	for (int i = 0; i < params.count(); i++)
-	{
+	auto& arr = root.createNestedArray("params");
+	for (int i = 0; i < params.count(); i++) {
 		if (isNumeric(params[i]))
 			arr.add(params[i].toInt());
 		else
@@ -119,7 +116,7 @@ void YeelightBulb::setRGB(byte r, byte g, byte b)
 {
 	ensureOn();
 	Vector<String> params;
-	long val = (long)r*65536 + (long)g*256 + b;
+	long val = (long)r * 65536 + (long)g * 256 + b;
 	params.add(String(val));
 	sendCommand("set_rgb", params);
 }
@@ -155,8 +152,7 @@ bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
 	debugf("LED > %s", source.c_str());
 
 	int p = 0;
-	while (p < source.length())
-	{
+	while (p < source.length()) {
 		int p2 = source.indexOf("\r\n", p);
 		if (p2 == -1)
 			p2 = source.length();
@@ -165,27 +161,21 @@ bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject& root = jsonBuffer.parseObject(buf);
 		bool parsed = root.success();
-		if (parsed)
-		{
-			if (root.containsKey("id") && root.containsKey("result"))
-			{
+		if (parsed) {
+			if (root.containsKey("id") && root.containsKey("result")) {
 				long id = root["id"];
-				if (id == propsId)
-				{
-					auto &result = root["result"].asArray();
+				if (id == propsId) {
+					auto& result = root["result"].asArray();
 					String resp = result[0].asString();
 					parsePower(resp);
 				}
 			}
-			if (root.containsKey("method") && root.containsKey("params"))
-			{
+			if (root.containsKey("method") && root.containsKey("params")) {
 				String method = root["method"].asString();
 				debugf("LED method %s received", method.c_str());
-				if (method == "props")
-				{
-					auto &result = root["params"].asObject();
-					for (JsonObject::iterator it=result.begin(); it!=result.end(); ++it)
-					{
+				if (method == "props") {
+					auto& result = root["params"].asObject();
+					for (JsonObject::iterator it = result.begin(); it != result.end(); ++it) {
 						if (strcmp(it->key, "power") == 0)
 							parsePower(it->value);
 					}

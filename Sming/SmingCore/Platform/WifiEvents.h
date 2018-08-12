@@ -1,7 +1,7 @@
 /*
  * WifiEvents.h
  *
- *  Created on: 19 февр. 2016 г.
+ *  Created on: 19 ????. 2016 ?.
  *      Author: shurik
  */
 
@@ -21,8 +21,7 @@ typedef Delegate<void(uint8_t[6], uint8_t)> AccessPointConnectDelegate;
 typedef Delegate<void(uint8_t[6], uint8_t)> AccessPointDisconnectDelegate;
 typedef Delegate<void(int16_t, uint8_t[6])> AccessPointProbeReqRecvedDelegate;
 
-class WifiEventsClass
-{
+class WifiEventsClass {
 public:
 	WifiEventsClass();
 

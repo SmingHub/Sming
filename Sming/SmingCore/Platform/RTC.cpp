@@ -64,7 +64,7 @@ void RtcClass::loadTime(RtcData& data)
 	system_rtc_mem_read(RTC_DES_ADDR, &data, sizeof(data));
 
 	// Initialise the time struct
-	if(data.magic != RTC_MAGIC) {
+	if (data.magic != RTC_MAGIC) {
 		debugf("rtc time init...");
 		data.magic = RTC_MAGIC;
 		data.time = 0;

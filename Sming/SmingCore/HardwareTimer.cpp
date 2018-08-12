@@ -37,7 +37,7 @@ typedef enum {
 
 static void IRAM_ATTR hw_timer_isr_cb(void* arg)
 {
-	if(arg == null)
+	if (arg == null)
 		return;
 	Hardware_Timer* ptimer = (Hardware_Timer*)arg;
 	ptimer->call();
@@ -72,12 +72,13 @@ bool Hardware_Timer::start(bool repeating /* = true*/)
 {
 	this->repeating = repeating;
 	stop();
-	if(interval == 0 || !callback)
+	if (interval == 0 || !callback)
 		return started;
 
-	if(this->repeating == 1) {
+	if (this->repeating == 1) {
 		RTC_REG_WRITE(FRC1_CTRL_ADDRESS, FRC1_AUTO_LOAD | DIVDED_BY_16 | FRC1_ENABLE_TIMER | TM_EDGE_INT);
-	} else {
+	}
+	else {
 		RTC_REG_WRITE(FRC1_CTRL_ADDRESS, DIVDED_BY_16 | FRC1_ENABLE_TIMER | TM_EDGE_INT);
 	}
 
@@ -91,7 +92,7 @@ bool Hardware_Timer::start(bool repeating /* = true*/)
 
 bool Hardware_Timer::stop()
 {
-	if(!started)
+	if (!started)
 		return started;
 	TM1_EDGE_INT_DISABLE();
 	ETS_FRC1_INTR_DISABLE();
@@ -123,11 +124,12 @@ uint32_t Hardware_Timer::getIntervalMs()
 
 bool Hardware_Timer::setIntervalUs(uint32_t microseconds /* = 1000000*/)
 {
-	if(microseconds < MAX_HW_TIMER_INTERVAL_US && microseconds > MIN_HW_TIMER_INTERVAL_US) {
+	if (microseconds < MAX_HW_TIMER_INTERVAL_US && microseconds > MIN_HW_TIMER_INTERVAL_US) {
 		interval = microseconds;
-		if(started)
+		if (started)
 			restart();
-	} else {
+	}
+	else {
 		stop();
 	}
 	return started;
@@ -144,6 +146,6 @@ void Hardware_Timer::setCallback(InterruptCallback interrupt)
 	callback = interrupt;
 	ETS_INTR_UNLOCK();
 
-	if(!interrupt)
+	if (!interrupt)
 		stop();
 }

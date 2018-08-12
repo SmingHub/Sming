@@ -29,11 +29,11 @@ HttpServer::HttpServer(HttpServerSettings settings)
 void HttpServer::configure(HttpServerSettings settings)
 {
 	this->settings = settings;
-	if(settings.minHeapSize != -1 && settings.minHeapSize > -1) {
+	if (settings.minHeapSize != -1 && settings.minHeapSize > -1) {
 		minHeapSize = settings.minHeapSize;
 	}
 
-	if(settings.useDefaultBodyParsers) {
+	if (settings.useDefaultBodyParsers) {
 		setBodyParser(ContentType::toString(MIME_FORM_URL_ENCODED), formUrlParser);
 	}
 
@@ -45,8 +45,8 @@ void HttpServer::configure(HttpServerSettings settings)
 
 HttpServer::~HttpServer()
 {
-	for(int i = 0; i < resourceTree.count(); i++) {
-		if(resourceTree.valueAt(i) != NULL) {
+	for (int i = 0; i < resourceTree.count(); i++) {
+		if (resourceTree.valueAt(i) != NULL) {
 			delete resourceTree.valueAt(i);
 		}
 	}
@@ -68,7 +68,7 @@ TcpConnection* HttpServer::createClient(tcp_pcb* clientTcp)
 
 void HttpServer::addPath(String path, const HttpPathDelegate& callback)
 {
-	if(path.length() > 1 && path.endsWith("/")) {
+	if (path.length() > 1 && path.endsWith("/")) {
 		path = path.substring(0, path.length() - 1);
 	}
 	debug_i("'%s' registered", path.c_str());

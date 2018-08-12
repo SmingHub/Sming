@@ -4,13 +4,11 @@
 #include "TcpConnection.h"
 #include "../FileSystem.h"
 
-class FTPDataStream : public TcpConnection
-{
+class FTPDataStream : public TcpConnection {
 public:
 	FTPDataStream(FTPServerConnection* connection)
 		: TcpConnection(true), parent(connection), completed(false), sent(0), written(0)
-	{
-	}
+	{}
 	virtual err_t onConnected(err_t err)
 	{
 		//response(125, "Connected");
@@ -20,7 +18,7 @@ public:
 	virtual err_t onSent(uint16_t len)
 	{
 		sent += len;
-		if(written < sent || !completed)
+		if (written < sent || !completed)
 			return TcpConnection::onSent(len);
 		finishTransfer();
 		return TcpConnection::onSent(len);
@@ -41,15 +39,14 @@ public:
 	}
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent)
 	{
-		if(!parent->isCanTransfer())
+		if (!parent->isCanTransfer())
 			return;
-		if(completed && written == 0)
+		if (completed && written == 0)
 			finishTransfer();
 		transferData(sourceEvent);
 	}
 	virtual void transferData(TcpConnectionEvent sourceEvent)
-	{
-	}
+	{}
 
 protected:
 	FTPServerConnection* parent;
@@ -58,27 +55,24 @@ protected:
 	int sent;
 };
 
-class FTPDataFileList : public FTPDataStream
-{
+class FTPDataFileList : public FTPDataStream {
 public:
 	FTPDataFileList(FTPServerConnection* connection) : FTPDataStream(connection)
-	{
-	}
+	{}
 	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
-		if(completed)
+		if (completed)
 			return;
 		Vector<String> list = fileList();
 		debug_d("send file list: %d", list.count());
-		for(int i = 0; i < list.count(); i++)
+		for (int i = 0; i < list.count(); i++)
 			writeString("01-01-15  01:00AM               " + String(fileGetSize(list[i])) + " " + list[i] + "\r\n");
 		completed = true;
 		finishTransfer();
 	}
 };
 
-class FTPDataRetrieve : public FTPDataStream
-{
+class FTPDataRetrieve : public FTPDataStream {
 public:
 	FTPDataRetrieve(FTPServerConnection* connection, const String& fileName) : FTPDataStream(connection)
 	{
@@ -90,12 +84,12 @@ public:
 	}
 	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
-		if(completed)
+		if (completed)
 			return;
 		char buf[1024];
 		int len = fileRead(file, buf, 1024);
 		write(buf, len, TCP_WRITE_FLAG_COPY);
-		if(fileIsEOF(file)) {
+		if (fileIsEOF(file)) {
 			completed = true;
 			finishTransfer();
 		}
@@ -105,8 +99,7 @@ private:
 	file_t file;
 };
 
-class FTPDataStore : public FTPDataStream
-{
+class FTPDataStore : public FTPDataStream {
 public:
 	FTPDataStore(FTPServerConnection* connection, const String& fileName) : FTPDataStream(connection)
 	{
@@ -118,17 +111,17 @@ public:
 	}
 	virtual err_t onReceive(pbuf* buf)
 	{
-		if(completed)
+		if (completed)
 			return TcpConnection::onReceive(buf);
 
-		if(buf == NULL) {
+		if (buf == NULL) {
 			completed = true;
 			response(226, "Transfer completed");
 			return TcpConnection::onReceive(buf);
 		}
 
 		pbuf* cur = buf;
-		while(cur != NULL && cur->len > 0) {
+		while (cur != NULL && cur->len > 0) {
 			fileWrite(file, (uint8_t*)cur->payload, cur->len);
 			cur = cur->next;
 		}
@@ -151,26 +144,26 @@ FTPServerConnection::FTPServerConnection(FTPServer* parentServer, tcp_pcb* clien
 }
 
 FTPServerConnection::~FTPServerConnection()
-{
-}
+{}
 
 err_t FTPServerConnection::onReceive(pbuf* buf)
 {
-	if(buf == NULL)
+	if (buf == NULL)
 		return ERR_OK;
 	int p = 0, prev = 0;
 
-	while(true) {
+	while (true) {
 		p = NetUtils::pbufFindStr(buf, "\r\n", prev);
-		if(p == -1 || p - prev > MAX_FTP_CMD)
+		if (p == -1 || p - prev > MAX_FTP_CMD)
 			break;
 		int split = NetUtils::pbufFindChar(buf, ' ', prev);
 		String cmd, data;
-		if(split != -1 && split < p) {
+		if (split != -1 && split < p) {
 			cmd = NetUtils::pbufStrCopy(buf, prev, split - prev);
 			split++;
 			data = NetUtils::pbufStrCopy(buf, split, p - split);
-		} else
+		}
+		else
 			cmd = NetUtils::pbufStrCopy(buf, prev, p - prev);
 		debug_d("%s: '%s'", cmd.c_str(), data.c_str());
 		onCommand(cmd, data);
@@ -182,7 +175,7 @@ err_t FTPServerConnection::onReceive(pbuf* buf)
 void FTPServerConnection::cmdPort(const String& data)
 {
 	int last = getSplitterPos(data, ',', 4);
-	if(last == -1) {
+	if (last == -1) {
 		response(550); // Invalid arguments
 					   //return;
 	}
@@ -203,55 +196,63 @@ void FTPServerConnection::onCommand(String cmd, String data)
 {
 	cmd.toUpperCase();
 	// We ready to quit always :)
-	if(cmd == "QUIT") {
+	if (cmd == "QUIT") {
 		response(221);
 		close();
 		return;
 	}
 
 	// Strong security check :)
-	if(state == eFCS_Authorization) {
-		if(cmd == "USER") {
+	if (state == eFCS_Authorization) {
+		if (cmd == "USER") {
 			userName = data;
 			response(331);
-		} else if(cmd == "PASS") {
-			if(server->checkUser(userName, data)) {
+		}
+		else if (cmd == "PASS") {
+			if (server->checkUser(userName, data)) {
 				userName = "";
 				state = eFCS_Active;
 				response(230);
-			} else
+			}
+			else
 				response(430);
-		} else {
+		}
+		else {
 			response(530);
 		}
 		return;
 	}
 
-	if(state == eFCS_Active) {
-		if(cmd == "SYST") {
+	if (state == eFCS_Active) {
+		if (cmd == "SYST") {
 			response(215, "Windows_NT: Sming Framework"); // Why not? It's look like Windows :)
-		} else if(cmd == "PWD") {
+		}
+		else if (cmd == "PWD") {
 			response(257, "\"/\"");
-		} else if(cmd == "PORT") {
+		}
+		else if (cmd == "PORT") {
 			cmdPort(data);
-		} else if(cmd == "CWD") {
-			if(data == "/")
+		}
+		else if (cmd == "CWD") {
+			if (data == "/")
 				response(250);
 			else
 				response(550);
-		} else if(cmd == "TYPE") {
+		}
+		else if (cmd == "TYPE") {
 			response(250);
 		}
 		/*else if (cmd == "SIZE")
 		{
 			response(213, String(fileGetSize(makeFileName(data, false))));
 		}*/
-		else if(cmd == "DELE") {
+		else if (cmd == "DELE") {
 			String name = makeFileName(data, false);
-			if(fileExist(name)) {
+			if (fileExist(name)) {
 				fileDelete(name);
 				response(250);
-			} else
+			}
+			else
 				response(550);
 		}
 		/*else if (cmd == "RNFR") // Bugs!
@@ -269,17 +270,22 @@ void FTPServerConnection::onCommand(String cmd, String data)
 			else
 				response(550);
 		}*/
-		else if(cmd == "RETR") {
+		else if (cmd == "RETR") {
 			createDataConnection(new FTPDataRetrieve(this, makeFileName(data, false)));
-		} else if(cmd == "STOR") {
+		}
+		else if (cmd == "STOR") {
 			createDataConnection(new FTPDataStore(this, makeFileName(data, true)));
-		} else if(cmd == "LIST") {
+		}
+		else if (cmd == "LIST") {
 			createDataConnection(new FTPDataFileList(this));
-		} else if(cmd == "PASV") {
+		}
+		else if (cmd == "PASV") {
 			response(500, "Passive mode not supported");
-		} else if(cmd == "NOOP") {
+		}
+		else if (cmd == "NOOP") {
 			response(200);
-		} else if(!server->onCommand(cmd, data, *this))
+		}
+		else if (!server->onCommand(cmd, data, *this))
 			response(502, "Not supported");
 
 		return;
@@ -297,12 +303,12 @@ err_t FTPServerConnection::onSent(uint16_t len)
 
 String FTPServerConnection::makeFileName(String name, bool shortIt)
 {
-	if(name.startsWith("/"))
+	if (name.startsWith("/"))
 		name = name.substring(1);
 
-	if(shortIt && name.length() > 20) {
+	if (shortIt && name.length() > 20) {
 		String ext = "";
-		if(name.lastIndexOf('.') != -1)
+		if (name.lastIndexOf('.') != -1)
 			ext = name.substring(name.lastIndexOf('.'));
 
 		return name.substring(0, 16) + ext;
@@ -319,7 +325,7 @@ void FTPServerConnection::createDataConnection(TcpConnection* connection)
 
 void FTPServerConnection::dataTransferFinished(TcpConnection* connection)
 {
-	if(connection != dataConnection)
+	if (connection != dataConnection)
 		SYSTEM_ERROR("FTP Wrong state: connection != dataConnection");
 
 	dataConnection = NULL;
@@ -330,9 +336,9 @@ int FTPServerConnection::getSplitterPos(String data, char splitter, uint8_t numb
 {
 	uint8_t k = 0;
 
-	for(int i = 0; i < data.length(); i++) {
-		if(data[i] == splitter) {
-			if(k == number) {
+	for (int i = 0; i < data.length(); i++) {
+		if (data[i] == splitter) {
+			if (k == number) {
 				return i;
 			}
 			k++;
@@ -345,12 +351,13 @@ int FTPServerConnection::getSplitterPos(String data, char splitter, uint8_t numb
 void FTPServerConnection::response(int code, String text /* = "" */)
 {
 	String response = String(code, DEC);
-	if(text.length() == 0) {
-		if(code >= 200 && code <= 399) // Just for simplify
+	if (text.length() == 0) {
+		if (code >= 200 && code <= 399) // Just for simplify
 			response += " OK";
 		else
 			response += " FAIL";
-	} else
+	}
+	else
 		response += " " + text;
 	response += "\r\n";
 
@@ -362,7 +369,7 @@ void FTPServerConnection::response(int code, String text /* = "" */)
 
 void FTPServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	switch(state) {
+	switch (state) {
 	case eFCS_Ready:
 		this->writeString("220 Welcome to Sming FTP\r\n", 0);
 		state = eFCS_Authorization;

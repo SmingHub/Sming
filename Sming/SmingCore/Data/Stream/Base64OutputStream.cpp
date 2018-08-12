@@ -23,10 +23,11 @@ Base64OutputStream::Base64OutputStream(ReadWriteStream* stream, size_t resultSiz
 int Base64OutputStream::encode(uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
 {
 	int count = 0;
-	if(sourceLength == 0) {
+	if (sourceLength == 0) {
 		count = base64_encode_blockend((char*)target, &state);
 		count--; // the last byte is a newline. we don't need it.
-	} else {
+	}
+	else {
 		count = base64_encode_block((const char*)source, sourceLength, (char*)target, &state);
 	}
 

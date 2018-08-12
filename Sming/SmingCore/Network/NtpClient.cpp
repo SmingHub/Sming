@@ -1,13 +1,11 @@
 #include "NtpClient.h"
 
 NtpClient::NtpClient() : NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_QUERY_INTERVAL_SECONDS, nullptr)
-{
-}
+{}
 
 NtpClient::NtpClient(NtpTimeResultDelegate onTimeReceivedCb)
 	: NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_QUERY_INTERVAL_SECONDS, onTimeReceivedCb)
-{
-}
+{}
 
 NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDelegate delegateFunction /* = NULL */)
 {
@@ -19,13 +17,14 @@ NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDele
 
 	this->server = reqServer;
 	this->delegateCompleted = delegateFunction;
-	if(!delegateFunction) {
+	if (!delegateFunction) {
 		autoUpdateSystemClock = true;
 	}
 
-	if(reqIntervalSeconds == 0) {
+	if (reqIntervalSeconds == 0) {
 		setAutoQuery(false);
-	} else {
+	}
+	else {
 		setAutoQueryInterval(reqIntervalSeconds);
 		setAutoQuery(true);
 		requestTime();
@@ -33,12 +32,11 @@ NtpClient::NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDele
 }
 
 NtpClient::~NtpClient()
-{
-}
+{}
 
 void NtpClient::requestTime()
 {
-	if(!WifiStation.isConnected()) {
+	if (!WifiStation.isConnected()) {
 		connectionTimer.initializeMs(1000, TimerDelegate(&NtpClient::requestTime, this)).startOnce();
 		return;
 	}
@@ -46,7 +44,7 @@ void NtpClient::requestTime()
 	ip_addr_t resolvedIp;
 	int result = dns_gethostbyname(this->server.c_str(), &resolvedIp, staticDnsResponse, (void*)this);
 
-	switch(result) {
+	switch (result) {
 	case ERR_OK:
 		// Documentation says this will be the result if the string is already
 		// an ip address in dotted decimal form or if the host is found in dns cache.
@@ -97,7 +95,7 @@ void NtpClient::setNtpServer(String server)
 
 void NtpClient::setAutoQuery(bool autoQuery)
 {
-	if(autoQuery)
+	if (autoQuery)
 		autoUpdateTimer.start();
 	else
 		autoUpdateTimer.stop();
@@ -106,7 +104,7 @@ void NtpClient::setAutoQuery(bool autoQuery)
 void NtpClient::setAutoQueryInterval(int seconds)
 {
 	// minimum 10 seconds interval.
-	if(seconds < 10)
+	if (seconds < 10)
 		autoUpdateTimer.setIntervalMs(10000);
 	else
 		autoUpdateTimer.setIntervalMs(seconds * 1000);
@@ -120,7 +118,7 @@ void NtpClient::setAutoUpdateSystemClock(bool autoUpdateClock)
 void NtpClient::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 {
 	// stop timeout timer since we received a response.
-	if(timeoutTimer.isStarted()) {
+	if (timeoutTimer.isStarted()) {
 		timeoutTimer.stop();
 	}
 
@@ -133,7 +131,7 @@ void NtpClient::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 	uint8_t ver = (versionMode & 0b00111000) >> 3;
 	uint8_t mode = (versionMode & 0x07);
 
-	if(mode == NTP_MODE_SERVER && (ver == NTP_VERSION || ver == (NTP_VERSION - 1))) {
+	if (mode == NTP_MODE_SERVER && (ver == NTP_VERSION || ver == (NTP_VERSION - 1))) {
 		//Most likely a correct NTP packet received.
 
 		uint8_t data[4];
@@ -144,11 +142,11 @@ void NtpClient::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 		// Unix time starts on Jan 1 1970, subtract 70 years:
 		uint32_t epoch = timestamp - 0x83AA7E80;
 
-		if(autoUpdateSystemClock) {
+		if (autoUpdateSystemClock) {
 			SystemClock.setTime(epoch, eTZ_UTC); // update systemclock utc value
 		}
 
-		if(delegateCompleted) {
+		if (delegateCompleted) {
 			this->delegateCompleted(*this, epoch);
 		}
 	}
@@ -160,7 +158,7 @@ void NtpClient::staticDnsResponse(const char* name, LWIP_IP_ADDR_T* ip, void* ar
 
 	NtpClient* self = (NtpClient*)arg;
 
-	if(ip != NULL) {
+	if (ip != NULL) {
 		// We do a new request since the last one was never done.
 		self->internalRequestTime(*ip);
 	}

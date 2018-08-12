@@ -23,8 +23,7 @@
 #include "../../Wiring/WVector.h"
 #include "../../Wiring/IPAddress.h"
 
-class AccessPointClass : protected ISystemReadyHandler
-{
+class AccessPointClass : protected ISystemReadyHandler {
 public:
 	/** @brief  Access point class
      *  @addtogroup wifi_ap
@@ -32,8 +31,7 @@ public:
      */
 	AccessPointClass();
 	virtual ~AccessPointClass()
-	{
-	}
+	{}
 
 	/** @brief  Enable or disable WiFi AP
      *  @param  enabled True to enable AP. False to disable.

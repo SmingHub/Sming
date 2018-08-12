@@ -14,31 +14,26 @@
 
 const char* strstri(const char* pString, const char* pToken)
 {
-	if(!pString || !pToken || !*pToken)
+	if (!pString || !pToken || !*pToken)
 		return NULL;
 	int matchIndex = 0;
 
-	while(*pString)
-	{
-		if(tolower(*pString) == tolower(pToken[matchIndex]))
-		{
+	while (*pString) {
+		if (tolower(*pString) == tolower(pToken[matchIndex])) {
 			//If we reached the end of pToken, return the match
-			if(pToken[matchIndex + 1] == 0)
-			{
+			if (pToken[matchIndex + 1] == 0) {
 				return pString - matchIndex;
 			}
-			else
-			{
+			else {
 				++matchIndex;
 			}
 			++pString;
 		}
-		else
-		{
+		else {
 			//If we were in the middle of a matching process,
 			// recheck current pString character with
 			// the first pToken character else increase pString
-			if(matchIndex)
+			if (matchIndex)
 				matchIndex = 0;
 			else
 				++pString;

@@ -26,8 +26,7 @@
 typedef Delegate<void()> TimerDelegate;
 
 /// Hardware timer class
-class Hardware_Timer
-{
+class Hardware_Timer {
 public:
 	/** @brief  Hardware timer
     */
@@ -112,7 +111,7 @@ public:
      */
 	void __forceinline IRAM_ATTR call()
 	{
-		if(callback) {
+		if (callback) {
 			callback();
 		}
 	}

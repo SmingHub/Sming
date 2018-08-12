@@ -14,8 +14,7 @@
 #include "CircularBuffer.h"
 
 CircularBuffer::CircularBuffer(int size) : buffer(new char[size]), readPos(buffer), writePos(buffer), size(size)
-{
-}
+{}
 
 CircularBuffer::~CircularBuffer()
 {
@@ -33,7 +32,7 @@ uint16_t CircularBuffer::readMemoryBlock(char* data, int bufSize)
 	size_t sizeToRead = (bufSize < bytesAvailable) ? bufSize : bytesAvailable;
 	size_t sizeRead = sizeToRead;
 	char* start = readPos;
-	if(writePos < readPos && sizeToRead > (size_t)((buffer + size) - readPos)) {
+	if (writePos < readPos && sizeToRead > (size_t)((buffer + size) - readPos)) {
 		size_t topSize = (buffer + size) - readPos;
 		memcpy(data, readPos, topSize);
 		start = buffer;
@@ -46,16 +45,18 @@ uint16_t CircularBuffer::readMemoryBlock(char* data, int bufSize)
 
 bool CircularBuffer::seek(int len)
 {
-	if(len > available()) {
+	if (len > available()) {
 		flush();
 		return false;
 	}
 
-	if(readPos < writePos) {
+	if (readPos < writePos) {
 		readPos += len;
-	} else if(readPos + len > buffer + size) {
+	}
+	else if (readPos + len > buffer + size) {
 		readPos = buffer + (len - (buffer + size - readPos));
-	} else {
+	}
+	else {
 		readPos += len;
 	}
 
@@ -69,7 +70,7 @@ bool CircularBuffer::isFinished()
 
 int CircularBuffer::available()
 {
-	if(writePos >= readPos) {
+	if (writePos >= readPos) {
 		return writePos - readPos;
 	}
 	return size - (readPos - writePos);
@@ -77,7 +78,7 @@ int CircularBuffer::available()
 
 size_t CircularBuffer::room() const
 {
-	if(writePos >= readPos) {
+	if (writePos >= readPos) {
 		return size - (writePos - readPos) - 1;
 	}
 	return readPos - writePos - 1;
@@ -91,7 +92,7 @@ String CircularBuffer::id()
 
 size_t CircularBuffer::write(uint8_t charToWrite)
 {
-	if(!room()) {
+	if (!room()) {
 		return 0;
 	}
 
@@ -106,7 +107,7 @@ size_t CircularBuffer::write(const uint8_t* data, size_t bufSize)
 	size_t space = room();
 	size_t sizeToWrite = (bufSize < space) ? bufSize : space;
 	size_t sizeWritten = sizeToWrite;
-	if(writePos >= readPos && sizeToWrite > (size_t)(buffer + size - writePos)) {
+	if (writePos >= readPos && sizeToWrite > (size_t)(buffer + size - writePos)) {
 		size_t topSize = buffer + size - writePos;
 		memcpy(writePos, data, topSize);
 		writePos = buffer;

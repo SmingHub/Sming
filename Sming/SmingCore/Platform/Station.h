@@ -73,8 +73,7 @@ typedef Delegate<bool(wps_cb_status status)> WPSConfigDelegate;
 #endif
 /** @} */
 
-class StationClass : protected ISystemReadyHandler
-{
+class StationClass : protected ISystemReadyHandler {
 public:
 	/** @brief  WiFi station class
      *  @addtogroup wifi_sta
@@ -255,8 +254,7 @@ private:
 	bool runScan;
 };
 
-class BssInfo
-{
+class BssInfo {
 public:
 	BssInfo(bss_info* info);
 

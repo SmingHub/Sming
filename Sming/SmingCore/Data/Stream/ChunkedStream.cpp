@@ -9,7 +9,7 @@ ChunkedStream::ChunkedStream(ReadWriteStream* stream, size_t resultSize /* = 512
 
 int ChunkedStream::encode(uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
 {
-	if(sourceLength == 0) {
+	if (sourceLength == 0) {
 		const char* end = "0\r\n\r\n";
 		memcpy(target, end, strlen(end));
 		return strlen(end);

@@ -16,58 +16,65 @@ uint8_t esp8266_gpioToFn[16] = {0x34, 0x18, 0x38, 0x14, 0x3C, 0x40, 0x1C, 0x20,
 
 void pinMode(uint16_t pin, uint8_t mode)
 {
-	if(pin < 16) {
-		if(mode == SPECIAL) {
+	if (pin < 16) {
+		if (mode == SPECIAL) {
 			GPC(pin) = (GPC(pin) &
 						(0xF << GPCI)); //SOURCE(GPIO) | DRIVER(NORMAL) | INT_TYPE(UNCHANGED) | WAKEUP_ENABLE(DISABLED)
 			GPEC = (1 << pin);			//Disable
 			GPF(pin) = GPFFS(GPFFS_BUS(pin)); //Set mode to BUS (RX0, TX0, TX1, SPI, HSPI or CLK depending in the pin)
-			if(pin == 3)
+			if (pin == 3)
 				GPF(pin) |= (1 << GPFPU); //enable pullup on RX
-		} else if(mode & FUNCTION_0) {
+		}
+		else if (mode & FUNCTION_0) {
 			GPC(pin) = (GPC(pin) &
 						(0xF << GPCI)); //SOURCE(GPIO) | DRIVER(NORMAL) | INT_TYPE(UNCHANGED) | WAKEUP_ENABLE(DISABLED)
 			GPEC = (1 << pin);			//Disable
 			GPF(pin) = GPFFS((mode >> 4) & 0x07);
-			if(pin == 13 && mode == FUNCTION_4)
+			if (pin == 13 && mode == FUNCTION_4)
 				GPF(pin) |= (1 << GPFPU); //enable pullup on RX
-		} else if(mode == OUTPUT || mode == OUTPUT_OPEN_DRAIN) {
+		}
+		else if (mode == OUTPUT || mode == OUTPUT_OPEN_DRAIN) {
 			GPF(pin) = GPFFS(GPFFS_GPIO(pin)); //Set mode to GPIO
 			GPC(pin) = (GPC(pin) &
 						(0xF << GPCI)); //SOURCE(GPIO) | DRIVER(NORMAL) | INT_TYPE(UNCHANGED) | WAKEUP_ENABLE(DISABLED)
-			if(mode == OUTPUT_OPEN_DRAIN)
+			if (mode == OUTPUT_OPEN_DRAIN)
 				GPC(pin) |= (1 << GPCD);
 			GPES = (1 << pin); //Enable
-		} else if(mode == INPUT || mode == INPUT_PULLUP) {
+		}
+		else if (mode == INPUT || mode == INPUT_PULLUP) {
 			GPF(pin) = GPFFS(GPFFS_GPIO(pin)); //Set mode to GPIO
 			GPEC = (1 << pin);				   //Disable
 			GPC(pin) = (GPC(pin) & (0xF << GPCI)) |
 					   (1 << GPCD); //SOURCE(GPIO) | DRIVER(OPEN_DRAIN) | INT_TYPE(UNCHANGED) | WAKEUP_ENABLE(DISABLED)
-			if(mode == INPUT_PULLUP) {
+			if (mode == INPUT_PULLUP) {
 				GPF(pin) |= (1 << GPFPU); // Enable  Pullup
 			}
-		} else if(mode == WAKEUP_PULLUP || mode == WAKEUP_PULLDOWN) {
+		}
+		else if (mode == WAKEUP_PULLUP || mode == WAKEUP_PULLDOWN) {
 			GPF(pin) = GPFFS(GPFFS_GPIO(pin)); //Set mode to GPIO
 			GPEC = (1 << pin);				   //Disable
-			if(mode == WAKEUP_PULLUP) {
+			if (mode == WAKEUP_PULLUP) {
 				GPF(pin) |= (1 << GPFPU); // Enable  Pullup
 				GPC(pin) = (1 << GPCD) | (4 << GPCI) |
 						   (1 << GPCWE); //SOURCE(GPIO) | DRIVER(OPEN_DRAIN) | INT_TYPE(LOW) | WAKEUP_ENABLE(ENABLED)
-			} else {
+			}
+			else {
 				GPF(pin) |= (1 << GPFPD); // Enable  Pulldown
 				GPC(pin) = (1 << GPCD) | (5 << GPCI) |
 						   (1 << GPCWE); //SOURCE(GPIO) | DRIVER(OPEN_DRAIN) | INT_TYPE(HIGH) | WAKEUP_ENABLE(ENABLED)
 			}
 		}
-	} else if(pin == 16) {
+	}
+	else if (pin == 16) {
 		GPF16 = GP16FFS(GPFFS_GPIO(pin)); //Set mode to GPIO
 		GPC16 = 0;
-		if(mode == INPUT || mode == INPUT_PULLDOWN_16) {
-			if(mode == INPUT_PULLDOWN_16) {
+		if (mode == INPUT || mode == INPUT_PULLDOWN_16) {
+			if (mode == INPUT_PULLDOWN_16) {
 				GPF16 |= (1 << GP16FPD); //Enable Pulldown
 			}
 			GP16E &= ~1;
-		} else if(mode == OUTPUT) {
+		}
+		else if (mode == OUTPUT) {
 			GP16E |= 1;
 		}
 	}
@@ -78,9 +85,10 @@ bool isInputPin(uint16_t pin)
 {
 	bool result = false;
 
-	if(pin != 16) {
+	if (pin != 16) {
 		result = ((GPIO_REG_READ(GPIO_ENABLE_ADDRESS) >> pin) & 1);
-	} else {
+	}
+	else {
 		result = (READ_PERI_REG(RTC_GPIO_ENABLE) & 1);
 	}
 	return !result;
@@ -90,13 +98,14 @@ void digitalWrite(uint16_t pin, uint8_t val)
 {
 	//make compatible with Arduino < version 100
 	//enable pullup == setting a pin to input and writing 1 to it
-	if(isInputPin(pin)) {
-		if(val == HIGH)
+	if (isInputPin(pin)) {
+		if (val == HIGH)
 			pullup(pin);
 		else
 			noPullup(pin);
-	} else {
-		if(pin != 16)
+	}
+	else {
+		if (pin != 16)
 			GPIO_REG_WRITE((((val != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), (1 << pin));
 		else
 			WRITE_PERI_REG(RTC_GPIO_OUT, (READ_PERI_REG(RTC_GPIO_OUT) & (uint32)0xfffffffe) | (uint32)(val & 1));
@@ -107,7 +116,7 @@ void digitalWrite(uint16_t pin, uint8_t val)
 
 uint8_t digitalRead(uint16_t pin)
 {
-	if(pin != 16)
+	if (pin != 16)
 		return ((GPIO_REG_READ(GPIO_IN_ADDRESS) >> pin) & 1);
 	else
 		return (uint8)(READ_PERI_REG(RTC_GPIO_IN_DATA) & 1);
@@ -117,14 +126,14 @@ uint8_t digitalRead(uint16_t pin)
 
 void pullup(uint16_t pin)
 {
-	if(pin >= 16)
+	if (pin >= 16)
 		return;
 	PIN_PULLUP_EN((EspDigitalPins[pin].mux));
 }
 
 void noPullup(uint16_t pin)
 {
-	if(pin >= 16)
+	if (pin >= 16)
 		return;
 	PIN_PULLUP_DIS((EspDigitalPins[pin].mux));
 }
@@ -149,18 +158,18 @@ unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 	unsigned long maxloops = microsecondsToClockCycles(timeout) / 16;
 
 	// wait for any previous pulse to end
-	while((*portInputRegister(port) & bit) == stateMask)
-		if(numloops++ == maxloops)
+	while ((*portInputRegister(port) & bit) == stateMask)
+		if (numloops++ == maxloops)
 			return 0;
 
 	// wait for the pulse to start
-	while((*portInputRegister(port) & bit) != stateMask)
-		if(numloops++ == maxloops)
+	while ((*portInputRegister(port) & bit) != stateMask)
+		if (numloops++ == maxloops)
 			return 0;
 
 	// wait for the pulse to stop
-	while((*portInputRegister(port) & bit) == stateMask) {
-		if(numloops++ == maxloops)
+	while ((*portInputRegister(port) & bit) == stateMask) {
+		if (numloops++ == maxloops)
 			return 0;
 		width++;
 	}

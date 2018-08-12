@@ -45,12 +45,14 @@ enum SslFingerprintType {
 					   //    Only when the private key used to generate the certificate is used then that fingerprint
 };
 
-typedef struct {
+typedef struct
+{
 	uint8_t* certSha1 = NULL; // << certificate SHA1 fingerprint
 	uint8_t* pkSha256 = NULL; // << public key SHA256 fingerprint
 } SSLFingerprints;
 
-typedef struct {
+typedef struct
+{
 	uint8_t* key = NULL;
 	int keyLength = 0;
 	char* keyPassword = NULL;
@@ -58,7 +60,8 @@ typedef struct {
 	int certificateLength = 0;
 } SSLKeyCertPair;
 
-typedef struct {
+typedef struct
+{
 	uint8_t* value = NULL;
 	int length = 0;
 } SSLSessionId;
@@ -74,8 +77,7 @@ class TcpConnection;
 
 typedef Delegate<void(TcpConnection&)> TcpConnectionDestroyedDelegate;
 
-class TcpConnection
-{
+class TcpConnection {
 	friend class TcpServer;
 
 public:
@@ -241,7 +243,7 @@ protected:
 private:
 	inline void checkSelfFree()
 	{
-		if(tcp == NULL && autoSelfDestruct)
+		if (tcp == NULL && autoSelfDestruct)
 			delete this;
 	}
 

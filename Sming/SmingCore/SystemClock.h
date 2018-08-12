@@ -34,8 +34,7 @@ class NtpClient;
  *  @addtogroup systemclock
  *  @{
  */
-class SystemClockClass
-{
+class SystemClockClass {
 public:
 	/** @brief  Get the current date and time
      *  @param  timeType Time zone to use (UTC / local)

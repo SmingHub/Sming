@@ -32,7 +32,8 @@ typedef Delegate<bool(AtClient& atClient, String& reply)> AtCompleteCallback;
 // ^ If the callback returns true then this means that we have
 //     finished successfully processing the command
 
-typedef struct {
+typedef struct
+{
 	String text;					   // << the actual AT command
 	String response2;				   // << alternative successful response
 	int timeout;					   // << timeout in milliseconds
@@ -44,26 +45,21 @@ typedef struct {
 
 typedef enum { eAtOK = 0, eAtRunning, eAtError } AtState;
 
-template <typename T, int rawSize> class SimpleQueue : public FIFO<T, rawSize>
-{
+template <typename T, int rawSize> class SimpleQueue : public FIFO<T, rawSize> {
 	virtual const T& operator[](unsigned int) const
-	{
-	}
+	{}
 	virtual T& operator[](unsigned int)
-	{
-	}
+	{}
 };
 
 /**
  * @brief Class that facilitates the communication with an AT device.
  */
-class AtClient
-{
+class AtClient {
 public:
 	AtClient(HardwareSerial* stream);
 	virtual ~AtClient()
-	{
-	}
+	{}
 
 	/**
 	 * @brief Sends AT command

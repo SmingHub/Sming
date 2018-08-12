@@ -26,8 +26,7 @@
 typedef Delegate<void()> TimerDelegate;
 typedef std::function<void()> TimerDelegateStdFunction;
 
-class Timer
-{
+class Timer {
 public:
 	/** @brief  Timer class
      *  @ingroup timer

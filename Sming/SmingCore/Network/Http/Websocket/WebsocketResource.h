@@ -12,8 +12,7 @@
 #include "WebSocketConnection.h"
 #include "../../Wiring/WString.h"
 
-class WebsocketResource : public HttpResource
-{
+class WebsocketResource : public HttpResource {
 public:
 	WebsocketResource();
 	~WebsocketResource();

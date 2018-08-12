@@ -22,8 +22,8 @@
 #include "WString.h"
 #include "WiringFrameworkDependencies.h"
 
-int splitString(String &what, int delim,  Vector<long> &splits);
-int splitString(String &what, int delim,  Vector<int> &splits);
-int splitString(String &what, int delim,  Vector<String> &splits);
+int splitString(String& what, int delim, Vector<long>& splits);
+int splitString(String& what, int delim, Vector<int>& splits);
+int splitString(String& what, int delim, Vector<String>& splits);
 
 #endif

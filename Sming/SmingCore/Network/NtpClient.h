@@ -30,8 +30,7 @@ class NtpClient;
 typedef Delegate<void(NtpClient& client, time_t ntpTime)> NtpTimeResultDelegate;
 
 /** @brief  NTP client class */
-class NtpClient : protected UdpConnection
-{
+class NtpClient : protected UdpConnection {
 public:
 	/** @brief  Instantiates NTP client object
      */

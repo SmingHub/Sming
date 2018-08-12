@@ -45,12 +45,12 @@ void HttpDigestAuth::setRequest(HttpRequest* request)
 
 void HttpDigestAuth::setResponse(HttpResponse* response)
 {
-	if(response->code != HTTP_STATUS_UNAUTHORIZED) {
+	if (response->code != HTTP_STATUS_UNAUTHORIZED) {
 		return;
 	}
 
-	if(response->headers.contains("WWW-Authenticate") &&
-	   response->headers["WWW-Authenticate"].indexOf("Digest") != -1) {
+	if (response->headers.contains("WWW-Authenticate") &&
+		response->headers["WWW-Authenticate"].indexOf("Digest") != -1) {
 		String authHeader = response->headers["WWW-Authenticate"];
 		/*
 		 * Example (see: https://tools.ietf.org/html/rfc2069#page-4):

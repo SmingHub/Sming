@@ -23,8 +23,7 @@
 
 typedef HashMap<String, String> HttpParams;
 
-class UrlencodedOutputStream : public ReadWriteStream
-{
+class UrlencodedOutputStream : public ReadWriteStream {
 public:
 	/**
 	 * @brief Represents key-value pairs as urlencoded string
@@ -33,8 +32,7 @@ public:
 	UrlencodedOutputStream(const HttpParams& params);
 
 	virtual ~UrlencodedOutputStream()
-	{
-	}
+	{}
 
 	//Use base class documentation
 	virtual StreamType getStreamType()

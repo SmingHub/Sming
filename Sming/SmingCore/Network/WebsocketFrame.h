@@ -1,7 +1,7 @@
 /*
  * WebsocketFrame.h
  *
- *  Created on: 13 nov. 2016 г.
+ *  Created on: 13 nov. 2016 ?.
  *  Author: https://github.com/avr39-ripe - Alexander V, Ribchansky
  *
  *  Some parts of code inspired by: https://github.com/Links2004/arduinoWebSockets and
@@ -32,11 +32,10 @@ enum class WSFrameType : uint8_t {
 						 ///< %xB-F are reserved for further control frame
 };
 
-namespace WSFlags
-{
+namespace WSFlags {
 static const uint8_t payloadDeleteMemBit = 1u; //Delete memory reserved for payload in destructor
 static const uint8_t headerDeleteMemBit = 2u;  //Delete memory reserved for header in destructor
-};
+};											   // namespace WSFlags
 
 // Declare classes where WebsocketFrameClass can be used they will have access to _payload and _header members
 class HttpServer;
@@ -45,8 +44,7 @@ class WebsocketClient;
 
 /** @brief Websocket Frame
 */
-class WebsocketFrameClass
-{
+class WebsocketFrameClass {
 	friend class HttpServer;
 	friend class Websocket;
 	friend class WebsocketClient;

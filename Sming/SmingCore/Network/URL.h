@@ -21,8 +21,7 @@
 #define HTTPS_URL_PROTOCOL "https"
 #define WEBSCOKET_SECURE_URL_PROTOCOL "wss"
 
-class URL
-{
+class URL {
 public:
 	URL();
 	URL(const String& urlString);
@@ -33,7 +32,7 @@ public:
 	}
 	inline String getPathWithQuery()
 	{
-		if(Path.length() + Query.length() > 0)
+		if (Path.length() + Query.length() > 0)
 			return Path + Query;
 		else
 			return "/";

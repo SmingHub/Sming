@@ -15,7 +15,8 @@
 /** @brief  Structure to hold RTC data
  *  @addtogroup structures
  */
-typedef struct {
+typedef struct
+{
 	uint64_t time;   ///< Quantity of nanoseconds since epoch
 	uint32_t magic;  ///< Magic ID used to identify that RTC has been initialised
 	uint32_t cycles; ///< Quantity of RTC cycles since last update
@@ -25,8 +26,7 @@ typedef struct {
  *  @addtogroup rtc
  *  @{
  */
-class RtcClass
-{
+class RtcClass {
 public:
 	/** @brief  Instantiate real time clock object
      */

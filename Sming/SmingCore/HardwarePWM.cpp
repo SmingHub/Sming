@@ -24,10 +24,10 @@
 HardwarePWM::HardwarePWM(uint8* pins, uint8 no_of_pins)
 {
 	channel_count = no_of_pins;
-	if(no_of_pins > 0) {
+	if (no_of_pins > 0) {
 		uint32 io_info[PWM_CHANNEL_NUM_MAX][3];	// pin information
 		uint32 pwm_duty_init[PWM_CHANNEL_NUM_MAX]; // pwm duty
-		for(uint8 i = 0; i < no_of_pins; i++) {
+		for (uint8 i = 0; i < no_of_pins; i++) {
 			io_info[i][0] = EspDigitalPins[pins[i]].mux;
 			io_info[i][1] = EspDigitalPins[pins[i]].gpioFunc;
 			io_info[i][2] = EspDigitalPins[pins[i]].id;
@@ -51,8 +51,8 @@ HardwarePWM::~HardwarePWM()
  */
 uint8 HardwarePWM::getChannel(uint8 pin)
 {
-	for(uint8 i = 0; i < channel_count; i++) {
-		if(channels[i] == pin) {
+	for (uint8 i = 0; i < channel_count; i++) {
+		if (channels[i] == pin) {
 			//debugf("getChannel %d is %d", pin, i);
 			return i;
 		}
@@ -79,7 +79,7 @@ bool HardwarePWM::analogWrite(uint8 pin, uint32 duty)
 uint32 HardwarePWM::getDuty(uint8 pin)
 {
 	uint8 chan = getChannel(pin);
-	if(chan == PWM_BAD_CHANNEL)
+	if (chan == PWM_BAD_CHANNEL)
 		return 0;
 	else
 		return pwm_get_duty(chan);
@@ -93,13 +93,15 @@ uint32 HardwarePWM::getDuty(uint8 pin)
 bool HardwarePWM::setDuty(uint8 pin, uint32 duty)
 {
 	uint8 chan = getChannel(pin);
-	if(chan == PWM_BAD_CHANNEL) {
+	if (chan == PWM_BAD_CHANNEL) {
 		return false;
-	} else if(duty <= maxduty) {
+	}
+	else if (duty <= maxduty) {
 		pwm_set_duty(duty, chan);
 		pwm_start();
 		return true;
-	} else {
+	}
+	else {
 		debugf("Duty cycle value too high for current period.");
 		return false;
 	}

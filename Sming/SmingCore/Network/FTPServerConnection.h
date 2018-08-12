@@ -11,8 +11,7 @@ class FTPServer;
 
 enum FTPConnectionState { eFCS_Ready, eFCS_Authorization, eFCS_Active };
 
-class FTPServerConnection : public TcpConnection
-{
+class FTPServerConnection : public TcpConnection {
 	friend class FTPDataStream;
 	friend class FTPServer;
 

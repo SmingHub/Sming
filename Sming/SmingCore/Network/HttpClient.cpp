@@ -19,19 +19,19 @@ bool HttpClient::send(HttpRequest* request)
 	String cacheKey = getCacheKey(request->uri);
 	bool useSsl = (request->uri.Protocol == HTTPS_URL_PROTOCOL);
 
-	if(!queue.contains(cacheKey)) {
+	if (!queue.contains(cacheKey)) {
 		queue[cacheKey] = new RequestQueue;
 	}
 
-	if(!queue[cacheKey]->enqueue(request)) {
+	if (!queue[cacheKey]->enqueue(request)) {
 		// the queue is full and we cannot add more requests at the time.
 		debug_e("The request queue is full at the moment");
 		delete request;
 		return false;
 	}
 
-	if(httpConnectionPool.contains(cacheKey) && httpConnectionPool[cacheKey]->getConnectionState() > eTCS_Connecting &&
-	   !httpConnectionPool[cacheKey]->isActive()) {
+	if (httpConnectionPool.contains(cacheKey) && httpConnectionPool[cacheKey]->getConnectionState() > eTCS_Connecting &&
+		!httpConnectionPool[cacheKey]->isActive()) {
 		debug_d("Removing stale connection: State: %d, Active: %d",
 				(int)httpConnectionPool[cacheKey]->getConnectionState(),
 				(httpConnectionPool[cacheKey]->isActive() ? 1 : 0));
@@ -40,15 +40,15 @@ bool HttpClient::send(HttpRequest* request)
 		httpConnectionPool.remove(cacheKey);
 	}
 
-	if(!httpConnectionPool.contains(cacheKey)) {
+	if (!httpConnectionPool.contains(cacheKey)) {
 		debug_d("Creating new httpConnection");
 		httpConnectionPool[cacheKey] = new HttpConnection(queue[cacheKey]);
 	}
 
 #ifdef ENABLE_SSL
 	// Based on the URL decide if we should reuse the SSL and TCP pool
-	if(useSsl) {
-		if(!sslSessionIdPool.contains(cacheKey)) {
+	if (useSsl) {
+		if (!sslSessionIdPool.contains(cacheKey)) {
 			sslSessionIdPool[cacheKey] = (SSLSessionId*)malloc(sizeof(SSLSessionId));
 			sslSessionIdPool[cacheKey]->value = NULL;
 			sslSessionIdPool[cacheKey]->length = 0;
@@ -76,12 +76,13 @@ bool HttpClient::downloadFile(const String& url, const String& saveFileName,
 	URL uri = URL(url);
 
 	String file;
-	if(saveFileName.length() == 0) {
+	if (saveFileName.length() == 0) {
 		file = uri.Path;
 		int p = file.lastIndexOf('/');
-		if(p != -1)
+		if (p != -1)
 			file = file.substring(p + 1);
-	} else
+	}
+	else
 		file = saveFileName;
 
 	FileStream* fileStream = new FileStream();
@@ -105,7 +106,7 @@ HashMap<String, SSLSessionId*> HttpClient::sslSessionIdPool;
 
 void HttpClient::freeSslSessionPool()
 {
-	for(int i = 0; i < sslSessionIdPool.count(); i++) {
+	for (int i = 0; i < sslSessionIdPool.count(); i++) {
 		String key = sslSessionIdPool.keyAt(i);
 		free(sslSessionIdPool[key]->value);
 		sslSessionIdPool[key]->value = NULL;
@@ -118,11 +119,11 @@ void HttpClient::freeSslSessionPool()
 
 void HttpClient::freeRequestQueue()
 {
-	for(int i = 0; i < queue.count(); i++) {
+	for (int i = 0; i < queue.count(); i++) {
 		String key = queue.keyAt(i);
 		RequestQueue* requestQueue = queue[key];
 		HttpRequest* request = requestQueue->dequeue();
-		while(request != NULL) {
+		while (request != NULL) {
 			delete request;
 			request = requestQueue->dequeue();
 		}
@@ -134,7 +135,7 @@ void HttpClient::freeRequestQueue()
 
 void HttpClient::freeHttpConnectionPool()
 {
-	for(int i = 0; i < httpConnectionPool.count(); i++) {
+	for (int i = 0; i < httpConnectionPool.count(); i++) {
 		String key = httpConnectionPool.keyAt(i);
 		delete httpConnectionPool[key];
 		httpConnectionPool[key] = NULL;

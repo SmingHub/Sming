@@ -16,7 +16,7 @@ bool sslValidateCertificateSha1(SSL* ssl, void* data)
 {
 	uint8_t* hash = (uint8_t*)data;
 	bool success = false;
-	if(hash != NULL) {
+	if (hash != NULL) {
 		success = (ssl_match_fingerprint(ssl, hash) == 0);
 		delete[] hash;
 	}
@@ -28,7 +28,7 @@ bool sslValidatePublicKeySha256(SSL* ssl, void* data)
 {
 	uint8_t* hash = (uint8_t*)data;
 	bool success = false;
-	if(hash != NULL) {
+	if (hash != NULL) {
 		success = (ssl_match_spki_sha256(ssl, hash) == 0);
 		delete[] hash;
 	}

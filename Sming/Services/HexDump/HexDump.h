@@ -15,14 +15,14 @@ public:
 	HexDump();
 	virtual ~HexDump();
 
-	void print(unsigned char *data, int len);
+	void print(unsigned char* data, int len);
 	void resetAddr();
-private:
-	void pritln(char * buf, int len);
-//	int width = 16;
-	int addr = 0;
-//	char *buf = new char(16);
 
+private:
+	void pritln(char* buf, int len);
+	//	int width = 16;
+	int addr = 0;
+	//	char *buf = new char(16);
 };
 
 #endif /* SAMPLES_ARDUCAM_APP_HEXDUMP_H_ */

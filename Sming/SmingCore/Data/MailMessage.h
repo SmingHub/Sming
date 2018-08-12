@@ -27,8 +27,7 @@
 
 class SmtpClient;
 
-class MailMessage
-{
+class MailMessage {
 	friend class SmtpClient;
 
 public:

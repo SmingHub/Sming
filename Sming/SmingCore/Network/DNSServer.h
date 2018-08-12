@@ -38,7 +38,8 @@ enum class DNSReplyCode {
 	NXRRSet = 8
 };
 
-struct DNSHeader {
+struct DNSHeader
+{
 	uint16_t ID;	  // identification number
 	char RD : 1;	  // recursion desired
 	char TC : 1;	  // truncated message
@@ -54,8 +55,7 @@ struct DNSHeader {
 	uint16_t ARCount; // number of resource entries
 };
 
-class DNSServer : public UdpConnection
-{
+class DNSServer : public UdpConnection {
 public:
 	DNSServer();
 	virtual ~DNSServer();

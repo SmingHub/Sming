@@ -14,50 +14,52 @@
 
 CommandHandler::CommandHandler()
 {
-	 registeredCommands = new HashMap<String, CommandDelegate>;
+	registeredCommands = new HashMap<String, CommandDelegate>;
 }
 
 CommandHandler::~CommandHandler()
 {
-	if(registeredCommands != NULL) {
+	if (registeredCommands != NULL) {
 		delete registeredCommands;
 	}
 }
 
 void CommandHandler::registerSystemCommands()
 {
-	registerCommand(CommandDelegate("status", "Displays System Information", "system", commandFunctionDelegate(&CommandHandler::procesStatusCommand,this)));
-	registerCommand(CommandDelegate("echo", "Displays command entered", "system", commandFunctionDelegate(&CommandHandler::procesEchoCommand,this)));
-	registerCommand(CommandDelegate("help", "Displays all available commands", "system", commandFunctionDelegate(&CommandHandler::procesHelpCommand,this)));
-	registerCommand(CommandDelegate("debugon", "Set Serial debug on", "system", commandFunctionDelegate(&CommandHandler::procesDebugOnCommand,this)));
-	registerCommand(CommandDelegate("debugoff", "Set Serial debug off", "system", commandFunctionDelegate(&CommandHandler::procesDebugOffCommand,this)));
-	registerCommand(CommandDelegate("command","Use verbose/silent/prompt as command options","system", commandFunctionDelegate(&CommandHandler::processCommandOptions,this)));
+	registerCommand(CommandDelegate("status", "Displays System Information", "system",
+									commandFunctionDelegate(&CommandHandler::procesStatusCommand, this)));
+	registerCommand(CommandDelegate("echo", "Displays command entered", "system",
+									commandFunctionDelegate(&CommandHandler::procesEchoCommand, this)));
+	registerCommand(CommandDelegate("help", "Displays all available commands", "system",
+									commandFunctionDelegate(&CommandHandler::procesHelpCommand, this)));
+	registerCommand(CommandDelegate("debugon", "Set Serial debug on", "system",
+									commandFunctionDelegate(&CommandHandler::procesDebugOnCommand, this)));
+	registerCommand(CommandDelegate("debugoff", "Set Serial debug off", "system",
+									commandFunctionDelegate(&CommandHandler::procesDebugOffCommand, this)));
+	registerCommand(CommandDelegate("command", "Use verbose/silent/prompt as command options", "system",
+									commandFunctionDelegate(&CommandHandler::processCommandOptions, this)));
 }
 
 CommandDelegate CommandHandler::getCommandDelegate(String commandString)
 {
-	if (registeredCommands->contains(commandString))
-	{
-		debugf("Returning Delegate for %s \r\n",commandString.c_str());
+	if (registeredCommands->contains(commandString)) {
+		debugf("Returning Delegate for %s \r\n", commandString.c_str());
 		return (*registeredCommands)[commandString];
 	}
-	else
-	{
-		debugf("Command %s not recognized, returning NULL\r\n",commandString.c_str());
-		return CommandDelegate("","","",NULL);
+	else {
+		debugf("Command %s not recognized, returning NULL\r\n", commandString.c_str());
+		return CommandDelegate("", "", "", NULL);
 	}
 }
 
 bool CommandHandler::registerCommand(CommandDelegate reqDelegate)
 {
-	if (registeredCommands->contains(reqDelegate.commandName))
-	{
+	if (registeredCommands->contains(reqDelegate.commandName)) {
 		// Command already registered, don't allow  duplicates
 		debugf("Commandhandler duplicate command %s", reqDelegate.commandName.c_str());
 		return false;
 	}
-	else
-	{
+	else {
 		(*registeredCommands)[reqDelegate.commandName] = reqDelegate;
 		debugf("Commandhandlercommand %s registered", reqDelegate.commandName.c_str());
 		return true;
@@ -66,15 +68,13 @@ bool CommandHandler::registerCommand(CommandDelegate reqDelegate)
 
 bool CommandHandler::unregisterCommand(CommandDelegate reqDelegate)
 {
-	if (!registeredCommands->contains(reqDelegate.commandName))
-	{
+	if (!registeredCommands->contains(reqDelegate.commandName)) {
 		// Command not registered, cannot remove
 		return false;
 	}
-	else
-	{
+	else {
 		registeredCommands->remove(reqDelegate.commandName);
-//		(*registeredCommands)[reqDelegate.commandName] = reqDelegate;
+		//		(*registeredCommands)[reqDelegate.commandName] = reqDelegate;
 		return true;
 	}
 }
@@ -122,8 +122,7 @@ void CommandHandler::procesHelpCommand(String commandLine, CommandOutput* comman
 {
 	debugf("HelpCommand entered");
 	commandOutput->printf("Commands available are : \r\n");
-	for (int idx = 0;idx < registeredCommands->count();idx++)
-	{
+	for (int idx = 0; idx < registeredCommands->count(); idx++) {
 		commandOutput->printf(registeredCommands->valueAt(idx).commandName.c_str());
 		commandOutput->printf(" | ");
 		commandOutput->printf(registeredCommands->valueAt(idx).commandGroup.c_str());
@@ -142,7 +141,8 @@ void CommandHandler::procesStatusCommand(String commandLine, CommandOutput* comm
 	commandOutput->printf("ESP SDK version : ");
 	commandOutput->print(system_get_sdk_version());
 	commandOutput->printf("\r\n");
-	commandOutput->printf("lwIP version : %d.%d.%d(%s)\n", LWIP_VERSION_MAJOR, LWIP_VERSION_MINOR, LWIP_VERSION_REVISION, LWIP_HASH_STR);
+	commandOutput->printf("lwIP version : %d.%d.%d(%s)\n", LWIP_VERSION_MAJOR, LWIP_VERSION_MINOR,
+						  LWIP_VERSION_REVISION, LWIP_HASH_STR);
 	commandOutput->printf("Time = ");
 	commandOutput->printf(SystemClock.getSystemTimeString().c_str());
 	commandOutput->printf("\r\n");
@@ -169,52 +169,45 @@ void CommandHandler::procesDebugOffCommand(String commandLine, CommandOutput* co
 	commandOutput->printf("Debug set to : Off\r\n");
 }
 
-void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* commandOutput)
+void CommandHandler::processCommandOptions(String commandLine, CommandOutput* commandOutput)
 {
 	Vector<String> commandToken;
-	int numToken = splitString(commandLine, ' ' , commandToken);
+	int numToken = splitString(commandLine, ' ', commandToken);
 	bool errorCommand = false;
 	bool printUsage = false;
 
-	switch (numToken)
-	{
-		case 2 :
-			if (commandToken[1] == "help")
-			{
-				printUsage = true;
-			}
-			if (commandToken[1] == "verbose")
-			{
-				commandHandler.setVerboseMode(VERBOSE);
-				commandOutput->printf("Verbose mode selected\r\n");
-				break;
-			}
-			if (commandToken[1] == "silent")
-			{
-				commandHandler.setVerboseMode(SILENT);
-				commandOutput->printf("Silent mode selected\r\n");
-				break;
-			}
+	switch (numToken) {
+	case 2:
+		if (commandToken[1] == "help") {
+			printUsage = true;
+		}
+		if (commandToken[1] == "verbose") {
+			commandHandler.setVerboseMode(VERBOSE);
+			commandOutput->printf("Verbose mode selected\r\n");
+			break;
+		}
+		if (commandToken[1] == "silent") {
+			commandHandler.setVerboseMode(SILENT);
+			commandOutput->printf("Silent mode selected\r\n");
+			break;
+		}
+		errorCommand = true;
+		break;
+	case 3:
+		if (commandToken[1] != "prompt") {
 			errorCommand = true;
 			break;
-		case 3 :
-			if (commandToken[1] != "prompt")
-			{
-				errorCommand = true;
-				break;
-			}
-			commandHandler.setCommandPrompt(commandToken[2]);
-			commandOutput->printf("Prompt set to : %s\r\n",commandToken[2].c_str());
-			break;
-		default :
-			errorCommand = true;
+		}
+		commandHandler.setCommandPrompt(commandToken[2]);
+		commandOutput->printf("Prompt set to : %s\r\n", commandToken[2].c_str());
+		break;
+	default:
+		errorCommand = true;
 	}
-	if (errorCommand)
-	{
-		commandOutput->printf("Unknown command : %s\r\n",commandLine.c_str());
+	if (errorCommand) {
+		commandOutput->printf("Unknown command : %s\r\n", commandLine.c_str());
 	}
-	if (printUsage)
-	{
+	if (printUsage) {
 		commandOutput->printf("command usage : \r\n\r\n");
 		commandOutput->printf("command verbose : Set verbose mode\r\n");
 		commandOutput->printf("command silent : Set silent mode\r\n");

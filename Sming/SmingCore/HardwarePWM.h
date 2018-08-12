@@ -34,8 +34,7 @@ extern "C" {
 #define PWM_BAD_CHANNEL 0xff ///< Invalid PWM channel
 
 /// Hardware pulse width modulation
-class HardwarePWM
-{
+class HardwarePWM {
 public:
 	/** @brief  Instantiate hardware PWM object
      *  @param  pins Pointer to array of pins to control

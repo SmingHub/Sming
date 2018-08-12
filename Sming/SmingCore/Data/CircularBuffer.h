@@ -24,8 +24,7 @@
 */
 
 ///Base class for data source stream
-class CircularBuffer : public ReadWriteStream
-{
+class CircularBuffer : public ReadWriteStream {
 public:
 	CircularBuffer(int size);
 

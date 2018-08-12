@@ -29,7 +29,8 @@
 #include "Http/HttpServerConnection.h"
 #include "Http/HttpBodyParser.h"
 
-typedef struct {
+typedef struct
+{
 	int maxActiveConnections = 10;  // << the maximum number of concurrent requests..
 	int keepAliveSeconds = 0;		// << the default seconds to keep the connection alive before closing it
 	int minHeapSize = -1;			// << defines the min heap size that is required to accept connection.
@@ -41,8 +42,7 @@ typedef struct {
 #endif
 } HttpServerSettings;
 
-class HttpServer : public TcpServer
-{
+class HttpServer : public TcpServer {
 	friend class HttpServerConnection;
 
 public:

@@ -53,8 +53,7 @@ typedef Delegate<void(WebsocketClient& wsClient, wsMode Mode)> WebSocketClientCo
 
 /** @brief  Websocket Client
  */
-class WebsocketClient : protected TcpClient
-{
+class WebsocketClient : protected TcpClient {
 public:
 	WebsocketClient(bool autoDestruct = false) : TcpClient(autoDestruct){};
 	virtual ~WebsocketClient(){};

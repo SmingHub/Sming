@@ -7,18 +7,18 @@
 /** @defgroup commandhandler Command Handler
  *  @brief  Provide command line interface
 
-            Command handler provides a common command line interface. CLI is available for the following remote access methods:
-            - Serial
-            - Telnet
-            - Websockets
+ Command handler provides a common command line interface. CLI is available for the following remote access methods:
+ - Serial
+ - Telnet
+ - Websockets
 
-            By default, CLI is disabled. Enable CLI by calling "commandProcessing" on the appropriate access class object, e.g.
+ By default, CLI is disabled. Enable CLI by calling "commandProcessing" on the appropriate access class object, e.g.
 
-                Serial.commandProcessing(true)
+ Serial.commandProcessing(true)
 
-            Commands can be added to and removed from the command handler. Each command will trigger a defined Delegate.
+ Commands can be added to and removed from the command handler. Each command will trigger a defined Delegate.
 
-            A welcome message may be shown when a user connects and end of line character may be defined. An automatic "help" display is available.
+ A welcome message may be shown when a user connects and end of line character may be defined. An automatic "help" display is available.
  * @{
  */
 
@@ -33,18 +33,17 @@
 #include "HardwareSerial.h"
 
 /** @brief  Verbose mode
-*/
+ */
 typedef enum {
-    VERBOSE,    ///< Verbose mode
-    SILENT      ///< Silent mode
-    } VerboseMode;
+	VERBOSE, ///< Verbose mode
+	SILENT   ///< Silent mode
+} VerboseMode;
 
 /** @brief  Command handler class */
-class CommandHandler
-{
+class CommandHandler {
 public:
-    /** @brief  Instantiate a CommandHandler
-    */
+	/** @brief  Instantiate a CommandHandler
+	 */
 	CommandHandler();
 	~CommandHandler();
 
@@ -52,24 +51,24 @@ public:
 	 *  @param  reqDelegate Command delegate to register
 	 *  @retval bool True on success
 	 *  @note   If command already exists, it will not be replaced and function will fail.
-                Call unregisterCommand first if you want to replace a command.
+	 Call unregisterCommand first if you want to replace a command.
 	 */
 	bool registerCommand(CommandDelegate reqDelegate);
 
-    /** @brief  Remove a command from the command handler
-     *  @brief  reqDelegate Delegate to remove from command handler
-     */
+	/** @brief  Remove a command from the command handler
+	 *  @brief  reqDelegate Delegate to remove from command handler
+	 */
 	bool unregisterCommand(CommandDelegate reqDelegate);
 
-    /** @brief  Register default system commands
-     *  @note   Adds the following system commmands to the command handler
-     *          - status
-     *          - echo
-     *          - help
-     *          - debugon
-     *          - debugoff
-     *          - command
-     */
+	/** @brief  Register default system commands
+	 *  @note   Adds the following system commmands to the command handler
+	 *          - status
+	 *          - echo
+	 *          - help
+	 *          - debugon
+	 *          - debugoff
+	 *          - command
+	 */
 	void registerSystemCommands();
 
 	/** @brief  Get the command delegate for a command
@@ -126,16 +125,16 @@ public:
 	 */
 	void setCommandWelcomeMessage(String reqWelcomeMessage);
 
-//	int deleteGroup(String reqGroup);
+	//	int deleteGroup(String reqGroup);
 
-private :
-	HashMap<String, CommandDelegate> *registeredCommands;
+private:
+	HashMap<String, CommandDelegate>* registeredCommands;
 	void procesHelpCommand(String commandLine, CommandOutput* commandOutput);
 	void procesStatusCommand(String commandLine, CommandOutput* commandOutput);
 	void procesEchoCommand(String commandLine, CommandOutput* commandOutput);
 	void procesDebugOnCommand(String commandLine, CommandOutput* commandOutput);
 	void procesDebugOffCommand(String commandLine, CommandOutput* commandOutput);
-	void processCommandOptions(String commandLine  ,CommandOutput* commandOutput);
+	void processCommandOptions(String commandLine, CommandOutput* commandOutput);
 
 	VerboseMode verboseMode = VERBOSE;
 	String currentPrompt = "Sming>";

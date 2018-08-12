@@ -17,8 +17,7 @@ WebsocketResource::WebsocketResource()
 }
 
 WebsocketResource::~WebsocketResource()
-{
-}
+{}
 
 int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
@@ -27,7 +26,7 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 	socket->setMessageHandler(wsMessage);
 	socket->setConnectionHandler(wsConnect);
 	socket->setDisconnectionHandler(wsDisconnect);
-	if(!socket->initialize(request, response)) {
+	if (!socket->initialize(request, response)) {
 		debug_w("Not a valid WebsocketRequest?");
 		delete socket;
 		return -1;
@@ -50,7 +49,7 @@ void WebsocketResource::shutdown(HttpServerConnection& connection)
 int WebsocketResource::processData(HttpServerConnection& connection, HttpRequest& request, char* at, int size)
 {
 	WebSocketConnection* socket = (WebSocketConnection*)connection.userData;
-	if(socket == NULL) {
+	if (socket == NULL) {
 		return -1;
 	}
 

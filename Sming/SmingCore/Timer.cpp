@@ -8,8 +8,7 @@
 #include "../SmingCore/Timer.h"
 
 Timer::Timer()
-{
-}
+{}
 
 Timer::~Timer()
 {
@@ -62,13 +61,14 @@ void Timer::start(bool repeating /* = true*/)
 {
 	this->repeating = repeating;
 	stop();
-	if(interval == 0)
+	if (interval == 0)
 		return;
 
 	ets_timer_setfn(&timer, (os_timer_func_t*)processing, this);
-	if(interval > 10000) {
+	if (interval > 10000) {
 		ets_timer_arm_new(&timer, (uint32_t)(interval / 1000), (long_intvl_cntr_lim > 0 ? true : repeating), 1); // msec
-	} else {
+	}
+	else {
 		ets_timer_arm_new(&timer, (uint32_t)interval, repeating, 0); // usec
 	}
 
@@ -77,7 +77,7 @@ void Timer::start(bool repeating /* = true*/)
 
 void Timer::stop()
 {
-	if(!started)
+	if (!started)
 		return;
 	ets_timer_disarm(&timer);
 	started = false;
@@ -97,7 +97,7 @@ bool Timer::isStarted()
 
 uint64_t Timer::getIntervalUs()
 {
-	if(long_intvl_cntr_lim > 0) {
+	if (long_intvl_cntr_lim > 0) {
 		return interval * long_intvl_cntr_lim;
 	}
 
@@ -111,7 +111,7 @@ uint32_t Timer::getIntervalMs()
 
 void Timer::setIntervalUs(uint64_t microseconds /* = 1000000*/)
 {
-	if(microseconds > MAX_OS_TIMER_INTERVAL_US) {
+	if (microseconds > MAX_OS_TIMER_INTERVAL_US) {
 		// interval to large, calculate a good divider.
 		int div = (microseconds / MAX_OS_TIMER_INTERVAL_US) + 1; // integer division, intended
 
@@ -124,13 +124,14 @@ void Timer::setIntervalUs(uint64_t microseconds /* = 1000000*/)
 		interval = microseconds / div;
 		long_intvl_cntr = 0;
 		long_intvl_cntr_lim = div;
-	} else {
+	}
+	else {
 		interval = microseconds;
 		long_intvl_cntr = 0;
 		long_intvl_cntr_lim = 0;
 	}
 
-	if(started)
+	if (started)
 		restart();
 }
 
@@ -147,7 +148,7 @@ void Timer::setCallback(InterruptCallback interrupt /* = NULL*/)
 	delegate_stdfunc = nullptr;
 	ETS_INTR_UNLOCK();
 
-	if(!interrupt)
+	if (!interrupt)
 		stop();
 }
 
@@ -159,7 +160,7 @@ void Timer::setCallback(TimerDelegate delegateFunction)
 	delegate_stdfunc = nullptr;
 	ETS_INTR_UNLOCK();
 
-	if(!delegateFunction)
+	if (!delegateFunction)
 		stop();
 }
 
@@ -171,30 +172,32 @@ void Timer::setCallback(const TimerDelegateStdFunction& delegateFunction)
 	delegate_stdfunc = delegateFunction;
 	ETS_INTR_UNLOCK();
 
-	if(!delegateFunction)
+	if (!delegateFunction)
 		stop();
 }
 
 void Timer::processing(void* arg)
 {
 	Timer* ptimer = (Timer*)arg;
-	if(ptimer == NULL) {
+	if (ptimer == NULL) {
 		return;
-	} else {
-		if(ptimer->long_intvl_cntr_lim > 0) {
+	}
+	else {
+		if (ptimer->long_intvl_cntr_lim > 0) {
 			// we need to handle a long interval.
 			ptimer->long_intvl_cntr++;
 
-			if(ptimer->long_intvl_cntr < ptimer->long_intvl_cntr_lim) {
+			if (ptimer->long_intvl_cntr < ptimer->long_intvl_cntr_lim) {
 				return;
-			} else {
+			}
+			else {
 				// reset counter since callback will fire.
 				ptimer->long_intvl_cntr = 0;
 
 				// stop timer if it was not a repeating timer.
 				// for long intervals os_timer is set to repeating,
 				// therefore it must be stopped.
-				if(!ptimer->repeating)
+				if (!ptimer->repeating)
 					ptimer->stop();
 			}
 		}
@@ -204,13 +207,16 @@ void Timer::processing(void* arg)
 
 void Timer::tick()
 {
-	if(callback) {
+	if (callback) {
 		callback();
-	} else if(delegate_func) {
+	}
+	else if (delegate_func) {
 		delegate_func();
-	} else if(delegate_stdfunc) {
+	}
+	else if (delegate_stdfunc) {
 		delegate_stdfunc();
-	} else {
+	}
+	else {
 		stop();
 	}
 }

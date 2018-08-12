@@ -25,14 +25,14 @@ typedef Delegate<void(WebSocketConnection&, uint8_t* data, size_t size)> WebSock
 
 enum WsConnectionState { eWSCS_Ready, eWSCS_Open, eWSCS_Closed };
 
-typedef struct {
+typedef struct
+{
 	ws_frame_type_t type;
 	char* payload;
 	size_t payloadLegth;
 } WsFrameInfo;
 
-class WebSocketConnection
-{
+class WebSocketConnection {
 public:
 	WebSocketConnection(HttpServerConnection* conn);
 	virtual ~WebSocketConnection();

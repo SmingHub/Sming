@@ -48,15 +48,14 @@ enum MimeType {
 #undef XX
 };
 
-namespace ContentType
-{
+namespace ContentType {
 static const char* fromFileExtension(const String extension)
 {
 	String ext = extension;
 	ext.toLowerCase();
 
 #define XX(name, extensionStart, mime)                                                                                 \
-	if(ext.startsWith(extensionStart)) {                                                                               \
+	if (ext.startsWith(extensionStart)) {                                                                              \
 		return mime;                                                                                                   \
 	}
 	MIME_TYPE_MAP(XX)
@@ -69,7 +68,7 @@ static const char* fromFileExtension(const String extension)
 static const char* toString(enum MimeType m)
 {
 #define XX(name, extensionStart, mime)                                                                                 \
-	if(MIME_##name == m) {                                                                                             \
+	if (MIME_##name == m) {                                                                                            \
 		return mime;                                                                                                   \
 	}
 	MIME_TYPE_MAP(XX)
@@ -82,7 +81,7 @@ static const char* toString(enum MimeType m)
 static const char* fromFullFileName(const String fileName)
 {
 	int p = fileName.lastIndexOf('.');
-	if(p != -1) {
+	if (p != -1) {
 		String ext = fileName.substring(p + 1);
 		const char* mime = ContentType::fromFileExtension(ext);
 		return mime;
@@ -90,7 +89,7 @@ static const char* fromFullFileName(const String fileName)
 
 	return NULL;
 }
-};
+}; // namespace ContentType
 
 /** @} */
 #endif /* _SMING_CORE_NETWORK_WEBCONSTANTS_H_ */

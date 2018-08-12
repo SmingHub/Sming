@@ -24,8 +24,7 @@
 #include "Http/HttpRequest.h"
 #include "Http/HttpConnection.h"
 
-class HttpClient
-{
+class HttpClient {
 public:
 	/* High-Level Method */
 

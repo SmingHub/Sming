@@ -13,14 +13,14 @@ file_t fileOpen(const String& name, FileOpenFlags flags)
 	int res;
 
 	// Special fix to prevent known spifFS bug: manual delete file
-	if((flags & eFO_CreateNewAlways) == eFO_CreateNewAlways) {
-		if(fileExist(name))
+	if ((flags & eFO_CreateNewAlways) == eFO_CreateNewAlways) {
+		if (fileExist(name))
 			fileDelete(name);
 		flags = (FileOpenFlags)((int)flags & ~eFO_Truncate);
 	}
 
 	res = SPIFFS_open(&_filesystemStorageHandle, name.c_str(), (spiffs_flags)flags, 0);
-	if(res < 0)
+	if (res < 0)
 		debugf("open errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
 
 	return res;
@@ -34,7 +34,7 @@ void fileClose(file_t file)
 size_t fileWrite(file_t file, const void* data, size_t size)
 {
 	int res = SPIFFS_write(&_filesystemStorageHandle, file, (void*)data, size);
-	if(res < 0) {
+	if (res < 0) {
 		debugf("write errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
 		return res;
 	}
@@ -44,7 +44,7 @@ size_t fileWrite(file_t file, const void* data, size_t size)
 size_t fileRead(file_t file, void* data, size_t size)
 {
 	int res = SPIFFS_read(&_filesystemStorageHandle, file, data, size);
-	if(res < 0) {
+	if (res < 0) {
 		debugf("read errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
 		return res;
 	}
@@ -94,7 +94,7 @@ void fileDelete(file_t file)
 bool fileExist(const String& name)
 {
 	spiffs_stat stat = {0};
-	if(fileStats(name.c_str(), &stat) < 0)
+	if (fileStats(name.c_str(), &stat) < 0)
 		return false;
 	return stat.name[0] != '\0';
 }
@@ -143,8 +143,8 @@ Vector<String> fileList()
 	spiffs_dirent info;
 
 	SPIFFS_opendir(&_filesystemStorageHandle, "/", &d);
-	while(true) {
-		if(!SPIFFS_readdir(&d, &info))
+	while (true) {
+		if (!SPIFFS_readdir(&d, &info))
 			break;
 		result.add(String((char*)info.name));
 	}
@@ -158,7 +158,7 @@ String fileGetContent(const String& fileName)
 	// Get size
 	fileSeek(file, 0, eSO_FileEnd);
 	int size = fileTell(file);
-	if(size <= 0) {
+	if (size <= 0) {
 		fileClose(file);
 		return "";
 	}
@@ -174,7 +174,7 @@ String fileGetContent(const String& fileName)
 
 int fileGetContent(const String& fileName, char* buffer, int bufSize)
 {
-	if(buffer == NULL || bufSize == 0)
+	if (buffer == NULL || bufSize == 0)
 		return 0;
 	*buffer = 0;
 
@@ -182,7 +182,7 @@ int fileGetContent(const String& fileName, char* buffer, int bufSize)
 	// Get size
 	fileSeek(file, 0, eSO_FileEnd);
 	int size = fileTell(file);
-	if(size <= 0 || bufSize <= size) {
+	if (size <= 0 || bufSize <= size) {
 		fileClose(file);
 		return 0;
 	}

@@ -22,15 +22,15 @@
  *  @{
 */
 
-typedef struct {
+typedef struct
+{
 	HttpHeaders* headers = NULL;
 	ReadWriteStream* stream = NULL;
 } HttpPartResult;
 
 typedef Delegate<HttpPartResult()> HttpPartProducerDelegate;
 
-class MultipartStream : public ReadWriteStream
-{
+class MultipartStream : public ReadWriteStream {
 public:
 	MultipartStream(HttpPartProducerDelegate delegate);
 	virtual ~MultipartStream();

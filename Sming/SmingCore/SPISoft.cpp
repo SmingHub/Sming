@@ -22,13 +22,13 @@ Descr: Implement software SPI. To improve speed, GPIO16 is not supported(see Dig
 
 static inline void IRAM_ATTR fastDelay(unsigned d)
 {
-	while(d)
+	while (d)
 		--d;
 }
 
 void SPISoft::begin()
 {
-	if(16 == mMISO || 16 == mMOSI || 16 == mCLK) {
+	if (16 == mMISO || 16 == mMOSI || 16 == mCLK) {
 		/*To be able to use fast/simple GPIO read/write GPIO16 is not supported*/
 		debugf("SPISoft: GPIO 16 not supported\n");
 		return;
@@ -77,5 +77,5 @@ void SPISoft::transfer(uint8_t* buffer, uint32_t size)
 		SCK_PULSE
 
 		*buffer++ = r;
-	} while(--size);
+	} while (--size);
 }

@@ -19,13 +19,13 @@ MailMessage& MailMessage::setHeader(const String& name, const String& value)
 
 HttpHeaders& MailMessage::getHeaders()
 {
-	if(!headers.contains("From")) {
+	if (!headers.contains("From")) {
 		headers["From"] = from;
 	}
-	if(!headers.contains("To")) {
+	if (!headers.contains("To")) {
 		headers["To"] = to;
 	}
-	if(!headers.contains("Cc") && cc.length()) {
+	if (!headers.contains("Cc") && cc.length()) {
 		headers["Cc"] = cc;
 	}
 	headers["Subject"] = subject;
@@ -37,7 +37,7 @@ MailMessage& MailMessage::setBody(const String& body, MimeType mime /* = MIME_TE
 {
 	MemoryDataStream* memory = new MemoryDataStream();
 	int written = memory->write((uint8_t*)body.c_str(), body.length());
-	if(written < body.length()) {
+	if (written < body.length()) {
 		debug_e("MailMessage::setBody: Unable to store the complete body");
 	}
 
@@ -46,7 +46,7 @@ MailMessage& MailMessage::setBody(const String& body, MimeType mime /* = MIME_TE
 
 MailMessage& MailMessage::setBody(ReadWriteStream* stream, MimeType mime /* = MIME_TEXT */)
 {
-	if(this->stream != nullptr) {
+	if (this->stream != nullptr) {
 		debug_e("MailMessage::setBody: Discarding already set stream!");
 		delete this->stream;
 		this->stream = nullptr;
@@ -60,7 +60,7 @@ MailMessage& MailMessage::setBody(ReadWriteStream* stream, MimeType mime /* = MI
 
 MailMessage& MailMessage::addAttachment(FileStream* stream)
 {
-	if(stream == NULL) {
+	if (stream == NULL) {
 		return *this;
 	}
 
@@ -82,7 +82,7 @@ MailMessage& MailMessage::addAttachment(ReadWriteStream* stream, const String& m
 	attachment.headers = new HttpHeaders();
 	(*attachment.headers)["Content-Type"] = mime;
 	(*attachment.headers)["Content-Disposition"] = "attachment";
-	if(filename.length()) {
+	if (filename.length()) {
 		(*attachment.headers)["Content-Disposition"] += "; filename=\"" + filename + "\"";
 	}
 

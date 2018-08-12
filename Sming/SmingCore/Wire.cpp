@@ -51,8 +51,7 @@ static int default_scl_pin = 0;
 // Constructors ////////////////////////////////////////////////////////////////
 
 TwoWire::TwoWire()
-{
-}
+{}
 
 // Public Methods //////////////////////////////////////////////////////////////
 
@@ -105,7 +104,7 @@ void TwoWire::setClockStretchLimit(uint32_t limit)
 
 size_t TwoWire::requestFrom(uint8_t address, size_t size, bool sendStop)
 {
-	if(size > BUFFER_LENGTH) {
+	if (size > BUFFER_LENGTH) {
 		size = BUFFER_LENGTH;
 	}
 	size_t read = (twi_readFrom(address, rxBuffer, size, sendStop) == 0) ? size : 0;
@@ -163,15 +162,16 @@ uint8_t TwoWire::endTransmission(void)
 
 size_t TwoWire::write(uint8_t data)
 {
-	if(transmitting) {
-		if(txBufferLength >= BUFFER_LENGTH) {
+	if (transmitting) {
+		if (txBufferLength >= BUFFER_LENGTH) {
 			setWriteError();
 			return 0;
 		}
 		txBuffer[txBufferIndex] = data;
 		++txBufferIndex;
 		txBufferLength = txBufferIndex;
-	} else {
+	}
+	else {
 		// i2c_slave_transmit(&data, 1);
 	}
 	return 1;
@@ -179,12 +179,13 @@ size_t TwoWire::write(uint8_t data)
 
 size_t TwoWire::write(const uint8_t* data, size_t quantity)
 {
-	if(transmitting) {
-		for(size_t i = 0; i < quantity; ++i) {
-			if(!write(data[i]))
+	if (transmitting) {
+		for (size_t i = 0; i < quantity; ++i) {
+			if (!write(data[i]))
 				return i;
 		}
-	} else {
+	}
+	else {
 		// i2c_slave_transmit(data, quantity);
 	}
 	return quantity;
@@ -199,7 +200,7 @@ int TwoWire::available(void)
 int TwoWire::read(void)
 {
 	int value = -1;
-	if(rxBufferIndex < rxBufferLength) {
+	if (rxBufferIndex < rxBufferLength) {
 		value = rxBuffer[rxBufferIndex];
 		++rxBufferIndex;
 	}
@@ -209,7 +210,7 @@ int TwoWire::read(void)
 int TwoWire::peek(void)
 {
 	int value = -1;
-	if(rxBufferIndex < rxBufferLength) {
+	if (rxBufferIndex < rxBufferLength) {
 		value = rxBuffer[rxBufferIndex];
 	}
 	return value;
@@ -271,7 +272,7 @@ void TwoWire::onRequest(void (*function)(void))
 	//user_onRequest = function;
 }
 
-	// Preinstantiate Objects //////////////////////////////////////////////////////
+// Preinstantiate Objects //////////////////////////////////////////////////////
 
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)
 TwoWire Wire;

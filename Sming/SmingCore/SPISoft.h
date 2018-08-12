@@ -11,8 +11,7 @@ Descr: Implement software SPI for HW configs other than hardware SPI pins(GPIO 1
 #include "SPIBase.h"
 #include "SPISettings.h"
 
-class SPISoft : public SPIBase
-{
+class SPISoft : public SPIBase {
 public:
 	SPISoft(uint16_t miso, uint16_t mosi, uint16_t sck, uint8_t delay)
 	{

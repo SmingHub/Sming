@@ -30,8 +30,7 @@ typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
 class MqttClient;
 class URL;
 
-class MqttClient : protected TcpClient
-{
+class MqttClient : protected TcpClient {
 public:
 	MqttClient(bool autoDestruct = false);
 

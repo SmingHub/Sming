@@ -14,6 +14,4 @@
 #include "CommandExecutor.h"
 #include "CommandHandler.h"
 
-
-
 #endif /* SERVICES_COMMANDPROCESSING_COMMANDPROCESSINGINCLUDES_H_ */

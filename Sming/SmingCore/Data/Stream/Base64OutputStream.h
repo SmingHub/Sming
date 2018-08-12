@@ -22,8 +22,7 @@
  *  @{
 */
 
-class Base64OutputStream : public StreamTransformer
-{
+class Base64OutputStream : public StreamTransformer {
 public:
 	/**
 	 * @brief Stream that transforms bytes of data into base64 data stream

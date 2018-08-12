@@ -28,8 +28,7 @@
 
 typedef Delegate<void(TcpClient* client, char* data, int size)> TelnetServerCommandDelegate;
 
-class TelnetServer : public TcpServer
-{
+class TelnetServer : public TcpServer {
 public:
 	TelnetServer();
 	virtual ~TelnetServer();

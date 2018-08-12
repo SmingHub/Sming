@@ -38,7 +38,8 @@ typedef Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsC
 class CommandExecutor;
 
 /// Hardware serial member data
-typedef struct {
+typedef struct
+{
 	StreamDataReceivedDelegate HWSDelegate;		///< Delegate callback handler
 	CommandExecutor* commandExecutor = nullptr; ///< Pointer to command executor (Default: none)
 } HWSerialMemberData;
@@ -73,8 +74,7 @@ enum SerialConfig {
 enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL_TX_ONLY = UART_TX_ONLY };
 
 /// Hardware serial class
-class HardwareSerial : public Stream
-{
+class HardwareSerial : public Stream {
 public:
 	/** @brief  Create instance of a hardware serial port object
      *  @param  uartPort UART number [0 | 1]

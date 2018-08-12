@@ -23,8 +23,7 @@ DNSServer::DNSServer()
 }
 
 DNSServer::~DNSServer()
-{
-}
+{}
 
 bool DNSServer::start(const uint16_t& port, const String& domainName, const IPAddress& resolvedIP)
 {
@@ -70,18 +69,18 @@ bool DNSServer::requestIncludesOnlyOneQuestion()
 
 void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 {
-	if(_buffer != NULL) {
+	if (_buffer != NULL) {
 		free(_buffer);
 	}
 	_buffer = (char*)malloc(buf->tot_len * sizeof(char));
-	if(_buffer == NULL)
+	if (_buffer == NULL)
 		return;
 	pbuf_copy_partial(buf, _buffer, buf->tot_len, 0);
 	debug_d("DNS REQ for %s from %s:%d", getDomainNameWithoutWwwPrefix().c_str(), remoteIP.toString().c_str(),
 			remotePort);
 	_dnsHeader = (DNSHeader*)_buffer;
-	if(_dnsHeader->QR == DNS_QR_QUERY && _dnsHeader->OPCode == DNS_OPCODE_QUERY && requestIncludesOnlyOneQuestion() &&
-	   (_domainName == "*" || getDomainNameWithoutWwwPrefix() == _domainName)) {
+	if (_dnsHeader->QR == DNS_QR_QUERY && _dnsHeader->OPCode == DNS_OPCODE_QUERY && requestIncludesOnlyOneQuestion() &&
+		(_domainName == "*" || getDomainNameWithoutWwwPrefix() == _domainName)) {
 		char response[buf->tot_len + 16];
 		int idx = buf->tot_len;
 		_dnsHeader->QR = DNS_QR_RESPONSE;
@@ -116,7 +115,8 @@ void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 		response[idx + 15] = _resolvedIP[3];
 
 		sendTo(remoteIP, remotePort, response, idx + 16);
-	} else if(_dnsHeader->QR == DNS_QR_QUERY) {
+	}
+	else if (_dnsHeader->QR == DNS_QR_QUERY) {
 		_dnsHeader->QR = DNS_QR_RESPONSE;
 		_dnsHeader->RCode = (char)_errorReplyCode;
 		_dnsHeader->QDCount = 0;
@@ -130,24 +130,25 @@ void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 String DNSServer::getDomainNameWithoutWwwPrefix()
 {
 	String parsedDomainName = "";
-	if(_buffer == NULL)
+	if (_buffer == NULL)
 		return parsedDomainName;
 	char* start = _buffer + 12;
-	if(*start == 0)
+	if (*start == 0)
 		return parsedDomainName;
 
 	int pos = 0;
-	while(true) {
+	while (true) {
 		unsigned char labelLength = *(start + pos);
-		for(int i = 0; i < labelLength; i++) {
+		for (int i = 0; i < labelLength; i++) {
 			pos++;
 			parsedDomainName += (char)*(start + pos);
 		}
 		pos++;
-		if(*(start + pos) == 0) {
+		if (*(start + pos) == 0) {
 			downcaseAndRemoveWwwPrefix(parsedDomainName);
 			return parsedDomainName;
-		} else {
+		}
+		else {
 			parsedDomainName += ".";
 		}
 	}

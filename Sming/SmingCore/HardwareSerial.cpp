@@ -22,12 +22,10 @@ bool HardwareSerial::init = false;
 extern void setMPrintfPrinterCbc(void (*callback)(uart_t*, char), uart_t* uart);
 
 HardwareSerial::HardwareSerial(const int uartPort) : uartNr(uartPort), rxSize(256)
-{
-}
+{}
 
 HardwareSerial::~HardwareSerial()
-{
-}
+{}
 
 void HardwareSerial::begin(const uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin)
 {
@@ -38,14 +36,15 @@ void HardwareSerial::begin(const uint32_t baud, SerialConfig config, SerialMode 
 
 void HardwareSerial::end()
 {
-	if(uart_get_debug() == uartNr) {
+	if (uart_get_debug() == uartNr) {
 		uart_set_debug(UART_NO);
 	}
 
-	if(uart) {
+	if (uart) {
 		uart_uninit(uart);
 		uart = NULL;
-	} else if(!init) {
+	}
+	else if (!init) {
 		uart_detach(uartNr);
 		init = true;
 	}
@@ -53,9 +52,10 @@ void HardwareSerial::end()
 
 size_t HardwareSerial::setRxBufferSize(size_t size)
 {
-	if(uart) {
+	if (uart) {
 		rxSize = uart_resize_rx_buffer(uart, size);
-	} else {
+	}
+	else {
 		rxSize = size;
 	}
 	return rxSize;
@@ -63,7 +63,7 @@ size_t HardwareSerial::setRxBufferSize(size_t size)
 
 void HardwareSerial::swap(uint8_t tx_pin)
 {
-	if(!uart) {
+	if (!uart) {
 		return;
 	}
 	uart_swap(uart, tx_pin);
@@ -71,7 +71,7 @@ void HardwareSerial::swap(uint8_t tx_pin)
 
 void HardwareSerial::setTx(uint8_t tx_pin)
 {
-	if(!uart) {
+	if (!uart) {
 		return;
 	}
 	uart_set_tx(uart, tx_pin);
@@ -79,7 +79,7 @@ void HardwareSerial::setTx(uint8_t tx_pin)
 
 void HardwareSerial::pins(uint8_t tx, uint8_t rx)
 {
-	if(!uart) {
+	if (!uart) {
 		return;
 	}
 	uart_set_pins(uart, tx, rx);
@@ -103,7 +103,7 @@ int HardwareSerial::available()
 
 size_t HardwareSerial::write(uint8_t oneChar)
 {
-	if(!uart || !uart_tx_enabled(uart)) {
+	if (!uart || !uart_tx_enabled(uart)) {
 		return 0;
 	}
 
@@ -118,12 +118,12 @@ int HardwareSerial::read()
 
 int HardwareSerial::readMemoryBlock(char* buf, int max_len)
 {
-	if(uart != 0 && uart_rx_enabled(uart)) {
+	if (uart != 0 && uart_rx_enabled(uart)) {
 		int size = 0;
 		char c;
-		for(int i = 0; i < max_len; i++) {
+		for (int i = 0; i < max_len; i++) {
 			c = read();
-			if(c == -1) {
+			if (c == -1) {
 				break;
 			}
 
@@ -143,7 +143,7 @@ int HardwareSerial::peek()
 
 void HardwareSerial::flush()
 {
-	if(!uart || !uart_tx_enabled(uart)) {
+	if (!uart || !uart_tx_enabled(uart)) {
 		return;
 	}
 
@@ -152,22 +152,24 @@ void HardwareSerial::flush()
 
 void HardwareSerial::systemDebugOutput(bool enabled)
 {
-	if(!uart) {
+	if (!uart) {
 		return;
 	}
 
-	if(enabled) {
-		if(uart_tx_enabled(uart)) {
+	if (enabled) {
+		if (uart_tx_enabled(uart)) {
 			uart_set_debug(uartNr);
 			setMPrintfPrinterCbc(uart_write_char, uart);
-		} else {
+		}
+		else {
 			uart_set_debug(UART_NO);
 		}
-	} else {
+	}
+	else {
 		// don't print debugf() data at all
 		setMPrintfPrinterCbc(NULL, NULL);
 		// and disable system debug messages on this interface
-		if(uart_get_debug() == uartNr) {
+		if (uart_get_debug() == uartNr) {
 			uart_set_debug(UART_NO);
 		}
 	}
@@ -175,18 +177,18 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 
 void HardwareSerial::callbackHandler(uart_t* uart)
 {
-	if(uart == NULL) {
+	if (uart == NULL) {
 		return;
 	}
 
 	uint8_t lastPos = uart->rx_buffer->wpos;
-	if(!lastPos) {
+	if (!lastPos) {
 		lastPos = uart->rx_buffer->size;
 	}
 	uint8_t receivedChar = uart->rx_buffer->buffer[lastPos - 1];
-	if((memberData[uart->uart_nr].HWSDelegate)
+	if ((memberData[uart->uart_nr].HWSDelegate)
 #if ENABLE_CMD_EXECUTOR
-	   || (memberData[uart->uart_nr].commandExecutor)
+		|| (memberData[uart->uart_nr].commandExecutor)
 #endif
 	) {
 		uint32 serialQueueParameter;
@@ -195,11 +197,11 @@ void HardwareSerial::callbackHandler(uart_t* uart)
 		serialQueueParameter +=
 			(uart->uart_nr << 25); // the left most byte contains the uart_nr. Up to 256 uarts are supported
 
-		if(memberData[uart->uart_nr].HWSDelegate) {
+		if (memberData[uart->uart_nr].HWSDelegate) {
 			system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_DELEGATE, serialQueueParameter);
 		}
 #if ENABLE_CMD_EXECUTOR
-		if(memberData[uart->uart_nr].commandExecutor) {
+		if (memberData[uart->uart_nr].commandExecutor) {
 			system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_COMMAND, serialQueueParameter);
 		}
 #endif
@@ -208,7 +210,7 @@ void HardwareSerial::callbackHandler(uart_t* uart)
 
 bool HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate)
 {
-	if(!uart || !uart_rx_enabled(uart)) {
+	if (!uart || !uart_rx_enabled(uart)) {
 		return false;
 	}
 
@@ -217,7 +219,7 @@ bool HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate)
 	memberData[uartNr].HWSDelegate = reqDelegate;
 
 	// Start Serial task
-	if(!serialQueue) {
+	if (!serialQueue) {
 		serialQueue = (os_event_t*)malloc(sizeof(os_event_t) * SERIAL_QUEUE_LEN);
 		system_os_task(delegateTask, USER_TASK_PRIO_0, serialQueue, SERIAL_QUEUE_LEN);
 	}
@@ -235,11 +237,12 @@ void HardwareSerial::resetCallback()
 void HardwareSerial::commandProcessing(bool reqEnable)
 {
 #if ENABLE_CMD_EXECUTOR
-	if(reqEnable) {
-		if(!memberData[uartNr].commandExecutor) {
+	if (reqEnable) {
+		if (!memberData[uartNr].commandExecutor) {
 			memberData[uartNr].commandExecutor = new CommandExecutor(&Serial);
 		}
-	} else {
+	}
+	else {
 		delete memberData[uartNr].commandExecutor;
 		memberData[uartNr].commandExecutor = nullptr;
 	}
@@ -253,17 +256,17 @@ void HardwareSerial::delegateTask(os_event_t* inputEvent)
 	uint8 rcvChar = inputEvent->par % 256;			// can be done by bitlogic, avoid casting from ETSParam
 	uint16 charCount = inputEvent->par / 256;
 
-	switch(inputEvent->sig) {
+	switch (inputEvent->sig) {
 	case SERIAL_SIGNAL_DELEGATE:
 
-		if(memberData[uartNr].HWSDelegate) {
+		if (memberData[uartNr].HWSDelegate) {
 			memberData[uartNr].HWSDelegate(Serial, rcvChar, charCount);
 		}
 		break;
 
 	case SERIAL_SIGNAL_COMMAND:
 #if ENABLE_CMD_EXECUTOR
-		if(memberData[uartNr].commandExecutor) {
+		if (memberData[uartNr].commandExecutor) {
 			memberData[uartNr].commandExecutor->executorReceive(rcvChar);
 		}
 #endif
@@ -289,18 +292,18 @@ size_t HardwareSerial::indexOf(char c)
 {
 	int offset = uart->rx_buffer->rpos;
 	int pos = 0;
-	while(pos < available()) {
-		if(uart->rx_buffer->buffer[offset + pos] == c) {
+	while (pos < available()) {
+		if (uart->rx_buffer->buffer[offset + pos] == c) {
 			return pos;
 		}
 
 		pos++;
 
-		if(pos + offset == uart->rx_buffer->wpos) {
+		if (pos + offset == uart->rx_buffer->wpos) {
 			break;
 		}
 
-		if(pos + offset == uart->rx_buffer->size) {
+		if (pos + offset == uart->rx_buffer->size) {
 			offset = -pos;
 		}
 	}

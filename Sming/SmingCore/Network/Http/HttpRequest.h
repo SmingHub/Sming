@@ -28,8 +28,7 @@ typedef Delegate<int(HttpConnection& client, HttpResponse& response)> RequestHea
 typedef Delegate<int(HttpConnection& client, const char* at, size_t length)> RequestBodyDelegate;
 typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedDelegate;
 
-class HttpRequest
-{
+class HttpRequest {
 	friend class HttpClient;
 	friend class HttpConnection;
 	friend class HttpServerConnection;

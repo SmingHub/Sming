@@ -42,35 +42,34 @@ void ssl_hmac_md5(const uint8_t* msg, int length, const uint8_t* key, int key_le
 	}
 #define ADVANCE_UNTIL_EOL                                                                                              \
 	do {                                                                                                               \
-		if(*(buffer - 1) == '\r' && *buffer == '\n') {                                                                 \
+		if (*(buffer - 1) == '\r' && *buffer == '\n') {                                                                \
 			ADVANCE_AND_BREAK;                                                                                         \
 		}                                                                                                              \
 		ADVANCE;                                                                                                       \
-	} while(len > 0);
+	} while (len > 0);
 
 #define ADVANCE_UNTIL_EOL_OR_BREAK                                                                                     \
 	{                                                                                                                  \
 		ADVANCE_UNTIL_EOL;                                                                                             \
-		if(*(buffer - 1) != '\n') {                                                                                    \
+		if (*(buffer - 1) != '\n') {                                                                                   \
 			break;                                                                                                     \
 		}                                                                                                              \
 	}
 
 #define RETURN_ON_ERROR(SUCCESS_CODE)                                                                                  \
-	if(codeValue != SUCCESS_CODE) {                                                                                    \
+	if (codeValue != SUCCESS_CODE) {                                                                                   \
 		memcpy(message, line, std::min(lineLength, SMTP_ERROR_LENGTH));                                                \
 		message[SMTP_ERROR_LENGTH] = '\0';                                                                             \
 		return 0;                                                                                                      \
 	}
 
 #define WAIT_FOR_STREAM(A)                                                                                             \
-	if(A != nullptr && !A->isFinished()) {                                                                             \
+	if (A != nullptr && !A->isFinished()) {                                                                            \
 		break;                                                                                                         \
 	}
 
 SmtpClient::SmtpClient(bool autoDestroy /* =false */) : TcpClient(autoDestroy), outgoingMail(nullptr)
-{
-}
+{}
 
 SmtpClient::~SmtpClient()
 {
@@ -81,23 +80,23 @@ SmtpClient::~SmtpClient()
 	outgoingMail = nullptr;
 	do {
 		MailMessage* mail = mailQ.dequeue();
-		if(mail == nullptr) {
+		if (mail == nullptr) {
 			break;
 		}
 		delete mail;
-	} while(1);
+	} while (1);
 }
 
 bool SmtpClient::connect(const URL& url)
 {
-	if(getConnectionState() != eTCS_Ready) {
+	if (getConnectionState() != eTCS_Ready) {
 		close();
 	}
 
 	this->url = url;
-	if(!this->url.Port) {
+	if (!this->url.Port) {
 		this->url.Port = 25;
-		if(this->url.Protocol == SMTP_OVER_SSL_PROTOCOL) {
+		if (this->url.Protocol == SMTP_OVER_SSL_PROTOCOL) {
 			this->url.Port = 465;
 		}
 	}
@@ -124,7 +123,7 @@ MailMessage* SmtpClient::getCurrentMessage()
 
 bool SmtpClient::send(MailMessage* mail)
 {
-	if(!mailQ.enqueue(mail)) {
+	if (!mailQ.enqueue(mail)) {
 		// the mail queue is full
 		delete mail;
 		return false;
@@ -142,7 +141,7 @@ void SmtpClient::quit()
 // Protected Methods
 void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	switch(state) {
+	switch (state) {
 	case eSMTP_StartTLS: {
 		sendString("STARTTLS\n\n");
 		state = eSMTP_Banner;
@@ -150,20 +149,21 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eSMTP_SendAuth: {
-		if(authMethods.count()) {
+		if (authMethods.count()) {
 			// TODO: Simplify the code in that block...
 			Vector<String> preferredOrder;
-			if(useSsl) {
+			if (useSsl) {
 				preferredOrder.addElement("PLAIN");
 				preferredOrder.addElement("CRAM-MD5");
-			} else {
+			}
+			else {
 				preferredOrder.addElement("CRAM-MD5");
 				preferredOrder.addElement("PLAIN");
 			}
 
-			for(int i = 0; i < preferredOrder.count(); i++) {
-				if(authMethods.contains(preferredOrder[i])) {
-					if(preferredOrder[i] == "PLAIN") {
+			for (int i = 0; i < preferredOrder.count(); i++) {
+				if (authMethods.contains(preferredOrder[i])) {
+					if (preferredOrder[i] == "PLAIN") {
 						// base64('\0' + username + '\0' + password)
 						int tokenLength = url.User.length() + url.Password.length() + 2;
 						uint8_t token[tokenLength];
@@ -177,7 +177,8 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 						state = eSMTP_SendingAuth;
 						break;
-					} else if(preferredOrder[i] == "CRAM-MD5") {
+					}
+					else if (preferredOrder[i] == "CRAM-MD5") {
 						// otherwise we can try the slow cram-md5 authentication...
 						sendString("AUTH CRAM-MD5\r\n");
 						state = eSMTP_RequestingAuthChallenge;
@@ -187,7 +188,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 			}
 		} /* authMethods.count */
 
-		if(state == eSMTP_SendAuth) {
+		if (state == eSMTP_SendAuth) {
 			state = eSMTP_Ready;
 		}
 
@@ -203,7 +204,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 		char hexdigest[MD5_SIZE * 2 + 1] = {0};
 		char* c = hexdigest;
-		for(int i = 0; i < MD5_SIZE; i++) {
+		for (int i = 0; i < MD5_SIZE; i++) {
 			ets_sprintf(c, "%02x", digest[i]);
 			c += 2;
 		}
@@ -225,7 +226,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		debugf("Queue size: %d", mailQ.count());
 
 		outgoingMail = mailQ.dequeue();
-		if(!outgoingMail) {
+		if (!outgoingMail) {
 			break;
 		}
 
@@ -234,7 +235,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 	case eSMTP_SendMail: {
 		sendString("MAIL FROM:" + outgoingMail->from + "\r\n");
-		if(options & SMTP_OPT_PIPELINE) {
+		if (options & SMTP_OPT_PIPELINE) {
 			sendString("RCPT TO:" + outgoingMail->to + "\r\n");
 			sendString("DATA\r\n");
 		}
@@ -300,10 +301,10 @@ HttpPartResult SmtpClient::multipartProducer()
 {
 	HttpPartResult result;
 
-	if(outgoingMail->attachments.count()) {
+	if (outgoingMail->attachments.count()) {
 		result = outgoingMail->attachments[0];
 
-		if(!result.headers->contains("Content-Transfer-Encoding")) {
+		if (!result.headers->contains("Content-Transfer-Encoding")) {
 			result.stream = new Base64OutputStream(result.stream);
 			(*result.headers)["Content-Transfer-Encoding"] = "base64";
 		}
@@ -318,12 +319,12 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 {
 	mail->getHeaders();
 
-	if(!mail->headers.contains("Content-Transfer-Encoding")) {
+	if (!mail->headers.contains("Content-Transfer-Encoding")) {
 		mail->headers["Content-Transfer-Encoding"] = "quoted-printable";
 		mail->stream = new QuotedPrintableOutputStream(mail->stream);
 	}
 
-	if(mail->attachments.count()) {
+	if (mail->attachments.count()) {
 		MultipartStream* mStream = new MultipartStream(HttpPartProducerDelegate(&SmtpClient::multipartProducer, this));
 		HttpPartResult text;
 		text.headers = new HttpHeaders();
@@ -338,7 +339,7 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 		mail->stream = mStream;
 	}
 
-	for(int i = 0; i < mail->headers.count(); i++) {
+	for (int i = 0; i < mail->headers.count(); i++) {
 		String key = mail->headers.keyAt(i);
 		String value = mail->headers.valueAt(i);
 		sendString(key + ": " + value + "\r\n");
@@ -348,7 +349,7 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 
 bool SmtpClient::sendMailBody(MailMessage* mail)
 {
-	if(mail->stream == nullptr) {
+	if (mail->stream == nullptr) {
 		return true;
 	}
 
@@ -361,21 +362,21 @@ bool SmtpClient::sendMailBody(MailMessage* mail)
 
 err_t SmtpClient::onReceive(pbuf* buf)
 {
-	if(buf == nullptr) {
+	if (buf == nullptr) {
 		return TcpClient::onReceive(buf);
 	}
 
 	pbuf* cur = buf;
 	int parsedBytes = 0;
-	while(cur != nullptr && cur->len > 0) {
+	while (cur != nullptr && cur->len > 0) {
 		parsedBytes += smtpParse((char*)cur->payload, cur->len);
 		cur = cur->next;
 	}
 
-	if(parsedBytes != buf->tot_len) {
+	if (parsedBytes != buf->tot_len) {
 		debug_e("Got error: %s:%s", code, message);
 
-		if(!errorCallback || errorCallback(*this, codeValue, message) != 0) {
+		if (!errorCallback || errorCallback(*this, codeValue, message) != 0) {
 			// abort the connection if we cannot handle it.
 			TcpClient::onReceive(nullptr);
 
@@ -391,16 +392,17 @@ err_t SmtpClient::onReceive(pbuf* buf)
 int SmtpClient::smtpParse(char* buffer, size_t len)
 {
 	char* start = buffer;
-	while(len) {
+	while (len) {
 		char currentByte = *buffer;
 		// parse the code...
-		if(codeLength < 3) {
+		if (codeLength < 3) {
 			code[codeLength++] = currentByte;
 			ADVANCE;
 			continue;
-		} else if(codeLength == 3) {
+		}
+		else if (codeLength == 3) {
 			code[codeLength] = '\0';
-			if(currentByte != ' ' && currentByte != '-') {
+			if (currentByte != ' ' && currentByte != '-') {
 				// the code must be followed by space or minus
 				return 0;
 			}
@@ -417,11 +419,11 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 		codeLength = 0;
 		int lineLength = (buffer - line) - 2;
 
-		switch(state) {
+		switch (state) {
 		case eSMTP_Banner: {
 			RETURN_ON_ERROR(SMTP_CODE_SERVICE_READY);
 
-			if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
+			if (!useSsl && (options & SMTP_OPT_STARTTLS)) {
 				useSsl = true;
 				TcpConnection::staticOnConnected((void*)this, tcp, ERR_OK);
 			}
@@ -435,13 +437,15 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 		case eSMTP_Hello: {
 			RETURN_ON_ERROR(SMTP_CODE_REQUEST_OK);
 
-			if(strncmp(line, "PIPELINING", lineLength) == 0) {
+			if (strncmp(line, "PIPELINING", lineLength) == 0) {
 				// PIPELINING (see: https://tools.ietf.org/html/rfc2920)
 				options |= SMTP_OPT_PIPELINE;
-			} else if(strncmp(line, "STARTTLS", lineLength) == 0) {
+			}
+			else if (strncmp(line, "STARTTLS", lineLength) == 0) {
 				// STARTTLS (see: https://www.ietf.org/rfc/rfc3207.txt)
 				options |= SMTP_OPT_STARTTLS;
-			} else if(strncmp(line, "AUTH ", 5) == 0) {
+			}
+			else if (strncmp(line, "AUTH ", 5) == 0) {
 				// Process authentication methods
 				// Ex: 250-AUTH CRAM-MD5 PLAIN LOGIN
 				// See: https://tools.ietf.org/html/rfc4954
@@ -452,14 +456,15 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 				splitString(text, ' ', authMethods);
 			}
 
-			if(isLastLine) {
+			if (isLastLine) {
 				state = eSMTP_Ready;
 #ifdef ENABLE_SSL
-				if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
+				if (!useSsl && (options & SMTP_OPT_STARTTLS)) {
 					state = eSMTP_StartTLS;
-				} else
+				}
+				else
 #endif
-					if(url.User && authMethods.count()) {
+					if (url.User && authMethods.count()) {
 					state = eSMTP_SendAuth;
 				}
 			}
@@ -522,7 +527,7 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 
 			state = eSMTP_Ready;
 
-			if(messageSentCallback) {
+			if (messageSentCallback) {
 				messageSentCallback(*this, codeValue, message);
 			}
 			delete outgoingMail;

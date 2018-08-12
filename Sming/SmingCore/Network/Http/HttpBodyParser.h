@@ -19,7 +19,8 @@
 typedef Delegate<void(HttpRequest&, const char* at, int length)> HttpBodyParserDelegate;
 typedef HashMap<String, HttpBodyParserDelegate> BodyParsers;
 
-typedef struct {
+typedef struct
+{
 	char searchChar = '=';
 	String postName = "";
 } FormUrlParserState;

@@ -36,8 +36,7 @@
  */
 typedef std::function<int(uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)> StreamTransformerCallback;
 
-class StreamTransformer : public ReadWriteStream
-{
+class StreamTransformer : public ReadWriteStream {
 public:
 	StreamTransformer(ReadWriteStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
 					  size_t blockSize = 64);

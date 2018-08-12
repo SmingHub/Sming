@@ -23,8 +23,7 @@
 
 typedef SimpleConcurrentQueue<HttpRequest*, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
-class HttpConnection : protected TcpClient
-{
+class HttpConnection : protected TcpClient {
 	friend class HttpClient;
 
 public:

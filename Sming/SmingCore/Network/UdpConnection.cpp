@@ -25,7 +25,7 @@ UdpConnection::~UdpConnection()
 
 void UdpConnection::initialize(udp_pcb* pcb /* = NULL*/)
 {
-	if(pcb == NULL)
+	if (pcb == NULL)
 		pcb = udp_new();
 	udp = pcb;
 	udp_recv(udp, staticOnReceive, (void*)this);
@@ -40,9 +40,9 @@ void UdpConnection::close()
 
 bool UdpConnection::listen(int port)
 {
-	if(udp != NULL && udp->local_port != 0)
+	if (udp != NULL && udp->local_port != 0)
 		return false;
-	else if(udp == NULL)
+	else if (udp == NULL)
 		initialize();
 
 	debug_d("UDP listen port %d", port);
@@ -52,10 +52,10 @@ bool UdpConnection::listen(int port)
 
 bool UdpConnection::connect(IPAddress ip, uint16_t port)
 {
-	if(udp == NULL)
+	if (udp == NULL)
 		initialize();
 
-	if(udp->local_port == 0) {
+	if (udp->local_port == 0) {
 		udp_bind(udp, IP_ADDR_ANY, 0);
 		debug_d("UDP LocalPort: %d", udp->local_port);
 	}
@@ -104,7 +104,7 @@ void UdpConnection::sendStringTo(IPAddress remoteIP, uint16_t remotePort, const 
 void UdpConnection::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 {
 	debug_d("UDP received: %d bytes", buf->tot_len);
-	if(onDataCallback) {
+	if (onDataCallback) {
 		char* data = new char[buf->tot_len + 1];
 		pbuf_copy_partial(buf, data, buf->tot_len, 0);
 		data[buf->tot_len] = '\0';
@@ -118,7 +118,7 @@ void UdpConnection::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort
 void UdpConnection::staticOnReceive(void* arg, struct udp_pcb* pcb, struct pbuf* p, LWIP_IP_ADDR_T* addr, u16_t port)
 {
 	UdpConnection* self = (UdpConnection*)arg;
-	if(self == NULL)
+	if (self == NULL)
 		return;
 
 	IPAddress reip = addr != NULL ? IPAddress(*addr) : IPAddress();

@@ -20,8 +20,7 @@
  *  @{
 */
 
-class QuotedPrintableOutputStream : public StreamTransformer
-{
+class QuotedPrintableOutputStream : public StreamTransformer {
 public:
 	/**
 	 * @brief Stream that transforms bytes of data into quoted printable data stream

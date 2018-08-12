@@ -22,8 +22,7 @@
 /* @defgroup SPI base implementation
  * Base class/interface for SPI implementations
  */
-class SPIBase
-{
+class SPIBase {
 public:
 	/** @brief SPIBase()
 	 * default Constructor

@@ -18,8 +18,7 @@
 /** @brief  IDelegateCaller class
  *  @todo   Provide more informative brief description of IDelegateCaller
  */
-template <class ReturnType, typename... ParamsList> class IDelegateCaller
-{
+template <class ReturnType, typename... ParamsList> class IDelegateCaller {
 public:
 	virtual ~IDelegateCaller() = default;
 
@@ -42,7 +41,7 @@ public:
 	__forceinline void decrease()
 	{
 		references--;
-		if(references == 0)
+		if (references == 0)
 			delete this;
 	}
 
@@ -55,8 +54,7 @@ template <class> class MethodCaller; /* undefined */
 /** @brief  Delegate method caller class
 */
 template <class ClassType, class ReturnType, typename... ParamsList>
-class MethodCaller<ReturnType (ClassType::*)(ParamsList...)> : public IDelegateCaller<ReturnType, ParamsList...>
-{
+class MethodCaller<ReturnType (ClassType::*)(ParamsList...)> : public IDelegateCaller<ReturnType, ParamsList...> {
 	/** @brief  Defines the return type for a delegate method
      *  @todo   Better describe delegate MethodCaller ReturnType
      */
@@ -68,8 +66,7 @@ public:
      *  @param  m Declaration of the method
      */
 	MethodCaller(ClassType* c, MethodDeclaration m) : mClass(c), mMethod(m)
-	{
-	}
+	{}
 
 	/** @brief  Invoke the delegate method
      *  @param  args The delegate method parameters
@@ -88,15 +85,13 @@ private:
 /** @brief  Delegate function caller class
 */
 template <class MethodDeclaration, class ReturnType, typename... ParamsList>
-class FunctionCaller : public IDelegateCaller<ReturnType, ParamsList...>
-{
+class FunctionCaller : public IDelegateCaller<ReturnType, ParamsList...> {
 public:
 	/** @brief  Instantiate a delegate function caller object
      *  @param  m Method declaration
      */
 	FunctionCaller(MethodDeclaration m) : mMethod(m)
-	{
-	}
+	{}
 
 	/** @brief  Invoke the delegate function
      *  @param  args The delegate function parameters
@@ -115,8 +110,7 @@ template <class> class Delegate; /* undefined */
 
 /** @brief  Delegate class
 */
-template <class ReturnType, class... ParamsList> class Delegate<ReturnType(ParamsList...)>
-{
+template <class ReturnType, class... ParamsList> class Delegate<ReturnType(ParamsList...)> {
 	/** @brief  Defines the return type of a delegate function declaration
      */
 	typedef ReturnType (*FunctionDeclaration)(ParamsList...);
@@ -138,7 +132,7 @@ public:
 	 */
 	template <class ClassType> __forceinline Delegate(MethodDeclaration<ClassType> m, ClassType* c)
 	{
-		if(m != NULL)
+		if (m != NULL)
 			impl = new MethodCaller<MethodDeclaration<ClassType>>(c, m);
 		else
 			impl = nullptr;
@@ -150,7 +144,7 @@ public:
 	 */
 	__forceinline Delegate(FunctionDeclaration m)
 	{
-		if(m != NULL)
+		if (m != NULL)
 			impl = new FunctionCaller<FunctionDeclaration, ReturnType, ParamsList...>(m);
 		else
 			impl = nullptr;
@@ -158,7 +152,7 @@ public:
 
 	__forceinline ~Delegate()
 	{
-		if(impl != nullptr)
+		if (impl != nullptr)
 			impl->decrease();
 	}
 
@@ -204,8 +198,8 @@ public:
      */
 	Delegate& operator=(Delegate&& that) // move assignment
 	{
-		if(this != &that) {
-			if(impl)
+		if (this != &that) {
+			if (impl)
 				impl->decrease();
 
 			impl = that.impl;
@@ -225,11 +219,11 @@ public:
 protected:
 	void copy(const Delegate& other)
 	{
-		if(impl != other.impl) {
-			if(impl)
+		if (impl != other.impl) {
+			if (impl)
 				impl->decrease();
 			impl = other.impl;
-			if(impl)
+			if (impl)
 				impl->increase();
 		}
 	}

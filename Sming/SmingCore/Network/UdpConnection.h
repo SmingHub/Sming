@@ -24,8 +24,7 @@ class UdpConnection;
 typedef Delegate<void(UdpConnection& connection, char* data, int size, IPAddress remoteIP, uint16_t remotePort)>
 	UdpConnectionDataDelegate;
 
-class UdpConnection
-{
+class UdpConnection {
 public:
 	UdpConnection();
 	UdpConnection(UdpConnectionDataDelegate dataHandler);
