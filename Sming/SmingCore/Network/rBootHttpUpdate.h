@@ -30,20 +30,27 @@ struct rBootHttpUpdateItem
 
 class rBootItemOutputStream : public ReadWriteStream {
 public:
-	void setItem(rBootHttpUpdateItem* item);
-	virtual bool init();
-	virtual size_t write(const uint8_t* data, size_t size);
-	virtual size_t write(uint8_t charToWrite)
+	virtual ~rBootItemOutputStream()
 	{
-		return write(&charToWrite, 1);
+		close();
 	}
 
-	virtual StreamType getStreamType()
+	virtual bool init();
+	virtual bool close();
+
+	void setItem(rBootHttpUpdateItem* item)
+	{
+		_item = item;
+	}
+
+	virtual size_t write(const uint8_t* data, size_t size);
+
+	virtual StreamType getStreamType() const
 	{
 		return eSST_File;
 	}
 
-	virtual uint16_t readMemoryBlock(char* data, int bufSize)
+	virtual size_t readMemoryBlock(char* data, size_t bufSize)
 	{
 		return 0;
 	}
@@ -58,24 +65,36 @@ public:
 		return true;
 	}
 
-	virtual bool close();
-	virtual ~rBootItemOutputStream();
-
 protected:
-	bool initilized = false;
-	rBootHttpUpdateItem* item = NULL;
-	rboot_write_status rBootWriteStatus;
+	bool _initialized = false;
+	rBootHttpUpdateItem* _item = nullptr;
+	rboot_write_status _rBootWriteStatus;
 };
 
 class rBootHttpUpdate : protected HttpClient {
 public:
-	rBootHttpUpdate();
-	virtual ~rBootHttpUpdate();
+	rBootHttpUpdate()
+	{}
+
+	virtual ~rBootHttpUpdate()
+	{}
+
 	void addItem(int offset, String firmwareFileUrl);
 	void start();
-	void switchToRom(uint8_t romSlot);
-	void setCallback(OtaUpdateDelegate reqUpdateDelegate);
-	void setDelegate(OtaUpdateDelegate reqUpdateDelegate);
+	void switchToRom(uint8_t romSlot)
+	{
+		_romSlot = romSlot;
+	}
+
+	void setCallback(OtaUpdateDelegate reqUpdateDelegate)
+	{
+		setDelegate(reqUpdateDelegate);
+	}
+
+	void setDelegate(OtaUpdateDelegate reqUpdateDelegate)
+	{
+		_updateDelegate = reqUpdateDelegate;
+	}
 
 	/* Sets the base request that can be used to pass
 	 * - default request parameters, like request headers...
@@ -85,27 +104,34 @@ public:
 	 *
 	 * @param HttpRequest *
 	 */
-	void setBaseRequest(HttpRequest* request);
+	void setBaseRequest(HttpRequest* request)
+	{
+		_baseRequest = request;
+	}
 
 	// Allow reading items
-	rBootHttpUpdateItem getItem(unsigned int index);
+	rBootHttpUpdateItem getItem(unsigned int index)
+	{
+		return _items.elementAt(index);
+	}
 
 protected:
 	void applyUpdate();
 	void updateFailed();
 
-	virtual rBootItemOutputStream* getStream();
+	/** @brief override this method to create a custom stream object */
+	virtual rBootItemOutputStream* createStream();
+
 	virtual int itemComplete(HttpConnection& client, bool success);
 	virtual int updateComplete(HttpConnection& client, bool success);
 
 protected:
-	Vector<rBootHttpUpdateItem> items;
-	int currentItem;
-	rboot_write_status rBootWriteStatus;
-	uint8_t romSlot;
-	OtaUpdateDelegate updateDelegate;
-
-	HttpRequest* baseRequest = NULL;
+	Vector<rBootHttpUpdateItem> _items;
+	int _currentItem = 0;
+	rboot_write_status _rBootWriteStatus;
+	uint8_t _romSlot = NO_ROM_SWITCH;
+	OtaUpdateDelegate _updateDelegate = nullptr;
+	HttpRequest* _baseRequest = nullptr;
 };
 
 #endif /* SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_ */

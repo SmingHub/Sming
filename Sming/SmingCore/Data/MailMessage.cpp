@@ -9,84 +9,133 @@
  ****/
 
 #include "MailMessage.h"
+#include "Stream/MemoryDataStream.h"
+#include "Stream/QuotedPrintableOutputStream.h"
+#include "Stream/Base64OutputStream.h"
 
-MailMessage& MailMessage::setHeader(const String& name, const String& value)
-{
-	headers[name] = value;
-
-	return *this;
-}
-
-HttpHeaders& MailMessage::getHeaders()
-{
-	if (!headers.contains("From")) {
-		headers["From"] = from;
-	}
-	if (!headers.contains("To")) {
-		headers["To"] = to;
-	}
-	if (!headers.contains("Cc") && cc.length()) {
-		headers["Cc"] = cc;
-	}
-	headers["Subject"] = subject;
-
-	return headers;
-}
 
 MailMessage& MailMessage::setBody(const String& body, MimeType mime /* = MIME_TEXT */)
 {
 	MemoryDataStream* memory = new MemoryDataStream();
-	int written = memory->write((uint8_t*)body.c_str(), body.length());
-	if (written < body.length()) {
+	size_t written = memory->print(body);
+	if (written < body.length())
 		debug_e("MailMessage::setBody: Unable to store the complete body");
-	}
 
 	return setBody(memory, mime);
 }
 
 MailMessage& MailMessage::setBody(ReadWriteStream* stream, MimeType mime /* = MIME_TEXT */)
 {
-	if (this->stream != nullptr) {
+	if (_bodyStream) {
 		debug_e("MailMessage::setBody: Discarding already set stream!");
-		delete this->stream;
-		this->stream = nullptr;
+		delete _bodyStream;
 	}
 
-	this->stream = stream;
-	headers["Content-Type"] = ContentType::toString(mime);
+	_bodyStream = stream;
+	_bodyMime = mime;
 
 	return *this;
 }
 
-MailMessage& MailMessage::addAttachment(FileStream* stream)
+MailMessage& MailMessage::addAttachment(ReadWriteStream* stream)
 {
-	if (stream == NULL) {
+	if (!stream)
 		return *this;
-	}
 
-	String filename = stream->fileName();
-	String mime = ContentType::fromFullFileName(filename);
+	String name = stream->name();
+	String mime = ContentType::fromFileName(name);
 
-	return addAttachment(stream, mime, filename);
+	return addAttachment(stream, mime, name);
 }
 
-MailMessage& MailMessage::addAttachment(ReadWriteStream* stream, MimeType mime, const String& filename /* = "" */)
+MailMessage& MailMessage::addAttachment(ReadWriteStream* stream, MimeType mime, const String& name)
 {
-	return addAttachment(stream, ContentType::toString(mime), filename);
+	return addAttachment(stream, ContentType::toString(mime), name);
 }
 
-MailMessage& MailMessage::addAttachment(ReadWriteStream* stream, const String& mime, const String& filename /* = "" */)
+MailMessage& MailMessage::addAttachment(ReadWriteStream* stream, const String& mime, const String& name)
 {
 	HttpPartResult attachment;
 	attachment.stream = stream;
 	attachment.headers = new HttpHeaders();
-	(*attachment.headers)["Content-Type"] = mime;
-	(*attachment.headers)["Content-Disposition"] = "attachment";
-	if (filename.length()) {
-		(*attachment.headers)["Content-Disposition"] += "; filename=\"" + filename + "\"";
-	}
+	(*attachment.headers)[hhfn_ContentType] = mime;
+	(*attachment.headers)[hhfn_ContentDisposition] = F("attachment");
+	if (name)
+		(*attachment.headers)[hhfn_ContentDisposition] += F("; filename=\"") + name + "\"";
 
-	attachments.addElement(attachment);
+	_attachments.addElement(attachment);
 
 	return *this;
 }
+
+
+
+HttpHeaders& MailMessage::prepareHeaders()
+{
+	headers[hhfn_From] = from;
+	headers[hhfn_To] = to;
+
+	if (cc)
+		headers[hhfn_Cc] = cc;
+
+	headers[hhfn_Subject] = subject;
+	headers[hhfn_ContentType] = ContentType::toString(_bodyMime);
+
+	String contentTransferEncoding = F("quoted-printable");
+
+	String contentType = ContentType::toString(_bodyMime);
+	headers[hhfn_ContentType] = contentType;
+
+	if (_attachments.count()) {
+		MultipartStream* mStream = new MultipartStream(HttpPartProducerDelegate(&MailMessage::multipartProducer, this));
+		HttpPartResult text;
+		text.headers = new HttpHeaders();
+		(*text.headers)[hhfn_ContentType] = contentType;
+		(*text.headers)[hhfn_ContentTransferEncoding] = contentTransferEncoding;
+		text.stream = _bodyStream;
+
+		_attachments.insertElementAt(text, 0);
+
+		contentTransferEncoding = nullptr;
+		headers[hhfn_ContentType] = F("multipart/mixed; boundary=") + mStream->getBoundary();
+		_bodyStream = mStream;
+	}
+
+	if (contentTransferEncoding)
+		headers[hhfn_ContentTransferEncoding] = contentTransferEncoding;
+
+	return headers;
+}
+
+
+HttpPartResult MailMessage::multipartProducer()
+{
+	HttpPartResult result;
+
+	if (_attachments.count()) {
+		result = _attachments[0];
+		_attachments.remove(0);
+
+		if (!result.headers->contains(hhfn_ContentTransferEncoding)) {
+			result.stream = new Base64OutputStream(result.stream);
+			(*result.headers)[hhfn_ContentTransferEncoding] = F("base64");
+		}
+	}
+
+	return result;
+}
+
+
+
+IDataSourceStream* MailMessage::getBodyStream()
+{
+	if (!_bodyStream)
+		return nullptr;
+
+	auto stream = new QuotedPrintableOutputStream(_bodyStream);
+	if (stream)
+		_bodyStream = nullptr;
+
+	return stream;
+}
+

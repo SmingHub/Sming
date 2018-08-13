@@ -7,33 +7,30 @@
 /** @defgroup commandhandler Command Handler
  *  @brief  Provide command line interface
 
- Command handler provides a common command line interface. CLI is available for the following remote access methods:
- - Serial
- - Telnet
- - Websockets
+            Command handler provides a common command line interface. CLI is available for the following remote access methods:
+            - Serial
+            - Telnet
+            - Websockets
 
- By default, CLI is disabled. Enable CLI by calling "commandProcessing" on the appropriate access class object, e.g.
+            By default, CLI is disabled. Enable CLI by calling "commandProcessing" on the appropriate access class object, e.g.
 
- Serial.commandProcessing(true)
+                Serial.commandProcessing(true)
 
- Commands can be added to and removed from the command handler. Each command will trigger a defined Delegate.
+            Commands can be added to and removed from the command handler. Each command will trigger a defined Delegate.
 
- A welcome message may be shown when a user connects and end of line character may be defined. An automatic "help" display is available.
+            A welcome message may be shown when a user connects and end of line character may be defined. An automatic "help" display is available.
  * @{
  */
 
 #ifndef SERVICES_COMMANDPROCESSING_COMMANDHANDLER_H_
 #define SERVICES_COMMANDPROCESSING_COMMANDHANDLER_H_
 
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "WString.h"
+#include "WHashMap.h"
 #include "CommandDelegate.h"
-#include "../Wiring/WHashMap.h"
-#include "SystemClock.h"
-#include <stdio.h>
-#include "HardwareSerial.h"
 
 /** @brief  Verbose mode
- */
+*/
 typedef enum {
 	VERBOSE, ///< Verbose mode
 	SILENT   ///< Silent mode
@@ -43,103 +40,128 @@ typedef enum {
 class CommandHandler {
 public:
 	/** @brief  Instantiate a CommandHandler
-	 */
+    */
 	CommandHandler();
-	~CommandHandler();
+	~CommandHandler()
+	{}
 
 	/** @brief  Add a new command to the command handler
 	 *  @param  reqDelegate Command delegate to register
 	 *  @retval bool True on success
 	 *  @note   If command already exists, it will not be replaced and function will fail.
-	 Call unregisterCommand first if you want to replace a command.
+                Call unregisterCommand first if you want to replace a command.
 	 */
 	bool registerCommand(CommandDelegate reqDelegate);
 
 	/** @brief  Remove a command from the command handler
-	 *  @brief  reqDelegate Delegate to remove from command handler
-	 */
+     *  @brief  reqDelegate Delegate to remove from command handler
+     */
 	bool unregisterCommand(CommandDelegate reqDelegate);
 
 	/** @brief  Register default system commands
-	 *  @note   Adds the following system commmands to the command handler
-	 *          - status
-	 *          - echo
-	 *          - help
-	 *          - debugon
-	 *          - debugoff
-	 *          - command
-	 */
+     *  @note   Adds the following system commmands to the command handler
+     *          - status
+     *          - echo
+     *          - help
+     *          - debugon
+     *          - debugoff
+     *          - command
+     */
 	void registerSystemCommands();
 
 	/** @brief  Get the command delegate for a command
 	 *  @param  commandString Command to query
 	 *  @retval CommandDelegate The command delegate matchin the command
 	 */
-	CommandDelegate getCommandDelegate(String commandString);
+	CommandDelegate getCommandDelegate(const String& commandString);
 
 	/** @brief  Get the verbose mode
 	 *  @retval VerboseMode Verbose mode
 	 */
-	VerboseMode getVerboseMode();
+	VerboseMode getVerboseMode()
+	{
+		return _verboseMode;
+	}
 
 	/** @brief  Set the verbose mode
 	 *  @param  reqVerboseMode Verbose mode to set
 	 */
-	void setVerboseMode(VerboseMode reqVerboseMode);
+	void setVerboseMode(VerboseMode reqVerboseMode)
+	{
+		_verboseMode = reqVerboseMode;
+	}
 
 	/** @brief  Get the command line prompt
 	 *  @retval String The command line prompt
 	 *  @note   This is what is shown on the command line before user input
 	 *          Default is Sming>
 	 */
-	String getCommandPrompt();
+	const String& getCommandPrompt()
+	{
+		return _currentPrompt;
+	}
 
 	/** @brief  Set the command line prompt
 	 *  @param  reqPrompt The command line prompt
 	 *  @note   This is what is shown on the command line before user input
 	 *          Default is Sming>
 	 */
-	void setCommandPrompt(String reqPrompt);
+	void setCommandPrompt(const String& reqPrompt)
+	{
+		_currentPrompt = reqPrompt;
+	}
 
 	/** @brief  Get the end of line character
 	 *  @retval char The EOL character
 	 *  @note   Only supports one EOL, unlike Windows
 	 */
-	char getCommandEOL();
+	char getCommandEOL()
+	{
+		return _currentEOL;
+	}
 
 	/** @brief  Set the end of line character
 	 *  @param  reqEOL The EOL character
 	 *  @note   Only supports one EOL, unlike Windows
 	 */
-	void setCommandEOL(char reqEOL);
+	void setCommandEOL(char reqEOL)
+	{
+		_currentEOL = reqEOL;
+	}
 
 	/** @brief  Get the welcome message
 	 *  @retval String The welcome message that is shown when clients connect
 	 *  @note   Only if verbose mode is enabled
 	 */
-	String getCommandWelcomeMessage();
+	const String& getCommandWelcomeMessage()
+	{
+		return _currentWelcomeMessage;
+	}
 
 	/** @brief  Set the welcome message
 	 *  @param  reqWelcomeMessage The welcome message that is shown when clients connect
 	 *  @note   Only if verbose mode is enabled
 	 */
-	void setCommandWelcomeMessage(String reqWelcomeMessage);
+	void setCommandWelcomeMessage(const String& reqWelcomeMessage)
+	{
+		_currentWelcomeMessage = reqWelcomeMessage;
+	}
 
 	//	int deleteGroup(String reqGroup);
 
 private:
-	HashMap<String, CommandDelegate>* registeredCommands;
-	void procesHelpCommand(String commandLine, CommandOutput* commandOutput);
-	void procesStatusCommand(String commandLine, CommandOutput* commandOutput);
-	void procesEchoCommand(String commandLine, CommandOutput* commandOutput);
-	void procesDebugOnCommand(String commandLine, CommandOutput* commandOutput);
-	void procesDebugOffCommand(String commandLine, CommandOutput* commandOutput);
+	HashMap<String, CommandDelegate> _registeredCommands;
+	void processHelpCommand(String commandLine, CommandOutput* commandOutput);
+	void processStatusCommand(String commandLine, CommandOutput* commandOutput);
+	void processEchoCommand(String commandLine, CommandOutput* commandOutput);
+	void processDebugOnCommand(String commandLine, CommandOutput* commandOutput);
+	void processDebugOffCommand(String commandLine, CommandOutput* commandOutput);
 	void processCommandOptions(String commandLine, CommandOutput* commandOutput);
 
-	VerboseMode verboseMode = VERBOSE;
-	String currentPrompt = "Sming>";
-	char currentEOL = '\r';
-	String currentWelcomeMessage = "Welcome to the Sming CommandProcessing\r\n";
+	VerboseMode _verboseMode = VERBOSE;
+	String _currentPrompt;
+	char _currentEOL = '\r';
+	String _currentWelcomeMessage;
 };
 
 /** @brief  Global instance of CommandHandler */

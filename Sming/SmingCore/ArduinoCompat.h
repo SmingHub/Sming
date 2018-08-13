@@ -14,18 +14,17 @@
 #define SMINGCORE_ARDUINOCOMPAT_H_
 
 #include "SmingCore.h"
+#include <stdio.h>	///< sprintf()
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #define abs(x) ((x) > 0 ? (x) : -(x))
-#ifndef min
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#endif
-#ifndef max
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#endif
+using std::min;
+using std::max;
+using std::isinf;
+using std::isnan;
 #define round(x) ((x) >= 0 ? (long)((x) + 0.5) : (long)((x)-0.5))
 
 void yield();

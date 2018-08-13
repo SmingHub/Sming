@@ -11,146 +11,111 @@
  ****/
 
 #include "HttpClient.h"
-#include "../Data/Stream/DataSourceStream.h"
+#include "Data/Stream/FileStream.h"
+
+
+/* 13/8/2018 (mikee47)
+ *
+ * These two maps redefined with the new ObjectMap class which owns all the
+ * contained objects; simplifies code
+ *
+ */
+
+ObjectMap<HttpConnection> HttpClient::_connectionPool;
+ObjectMap<RequestQueue> HttpClient::_requestQueueMap;
+#ifdef ENABLE_SSL
+ObjectMap<SSLSessionId> HttpClient::_sslSessionIdPool;
+#endif
 
 /* Low Level Methods */
 bool HttpClient::send(HttpRequest* request)
 {
 	String cacheKey = getCacheKey(request->uri);
-	bool useSsl = (request->uri.Protocol == HTTPS_URL_PROTOCOL);
+	bool useSsl = (request->uri.protocol() == HTTPS_URL_PROTOCOL);
 
-	if (!queue.contains(cacheKey)) {
-		queue[cacheKey] = new RequestQueue;
+	auto& queue = _requestQueueMap[cacheKey];
+	if (!queue) {
+		queue = new RequestQueue;
+		if (!queue)
+			return false;
 	}
 
-	if (!queue[cacheKey]->enqueue(request)) {
+	if (!queue->enqueue(request)) {
 		// the queue is full and we cannot add more requests at the time.
 		debug_e("The request queue is full at the moment");
 		delete request;
 		return false;
 	}
 
-	if (httpConnectionPool.contains(cacheKey) && httpConnectionPool[cacheKey]->getConnectionState() > eTCS_Connecting &&
-		!httpConnectionPool[cacheKey]->isActive()) {
-		debug_d("Removing stale connection: State: %d, Active: %d",
-				(int)httpConnectionPool[cacheKey]->getConnectionState(),
-				(httpConnectionPool[cacheKey]->isActive() ? 1 : 0));
-		delete httpConnectionPool[cacheKey];
-		httpConnectionPool[cacheKey] = NULL;
-		httpConnectionPool.remove(cacheKey);
+	auto& conn = _connectionPool[cacheKey];
+	if (conn && conn->getConnectionState() > eTCS_Connecting && !conn->isActive()) {
+		debug_d("Removing stale connection: State: %d", conn->getConnectionState());
+		delete conn;
+		conn = nullptr;
 	}
 
-	if (!httpConnectionPool.contains(cacheKey)) {
+	if (!conn) {
 		debug_d("Creating new httpConnection");
-		httpConnectionPool[cacheKey] = new HttpConnection(queue[cacheKey]);
+		conn = new HttpConnection(queue);
+		if (!conn)
+			return false;
 	}
 
 #ifdef ENABLE_SSL
 	// Based on the URL decide if we should reuse the SSL and TCP pool
 	if (useSsl) {
-		if (!sslSessionIdPool.contains(cacheKey)) {
-			sslSessionIdPool[cacheKey] = (SSLSessionId*)malloc(sizeof(SSLSessionId));
-			sslSessionIdPool[cacheKey]->value = NULL;
-			sslSessionIdPool[cacheKey]->length = 0;
-		}
-		httpConnectionPool[cacheKey]->addSslOptions(request->getSslOptions());
-		httpConnectionPool[cacheKey]->pinCertificate(request->sslFingerprint);
-		httpConnectionPool[cacheKey]->setSslKeyCert(request->sslKeyCertPair);
-		httpConnectionPool[cacheKey]->sslSessionId = sslSessionIdPool[cacheKey];
+		auto& sessionId = _sslSessionIdPool[cacheKey];
+		if (!sessionId)
+			sessionId = new SSLSessionId;
+		conn->addSslOptions(request->getSslOptions());
+		conn->pinCertificate(request->getCertificate());
+		conn->setSslKeyCert(request->getSslKeyCert());
+		conn->setSslSessionId(sessionId);
 	}
 #endif
 
-	return httpConnectionPool[cacheKey]->connect(request->uri.Host, request->uri.Port, useSsl);
+	return conn->connect(request->uri.host(), request->uri.port(), useSsl);
 }
 
 // Convenience methods
 
 bool HttpClient::downloadString(const String& url, RequestCompletedDelegate requestComplete)
 {
-	return send(request(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
+	auto req = createRequest(url);
+	req->setMethod(HTTP_GET);
+	req->onRequestComplete(requestComplete);
+	return send(req);
 }
 
 bool HttpClient::downloadFile(const String& url, const String& saveFileName,
-							  RequestCompletedDelegate requestComplete /* = NULL */)
+							  RequestCompletedDelegate requestComplete /* = nullptr */)
 {
 	URL uri = URL(url);
 
 	String file;
-	if (saveFileName.length() == 0) {
-		file = uri.Path;
-		int p = file.lastIndexOf('/');
-		if (p != -1)
-			file = file.substring(p + 1);
-	}
+	if (saveFileName.length() == 0)
+		file = uri.fileName();
 	else
 		file = saveFileName;
 
-	FileStream* fileStream = new FileStream();
-	fileStream->attach(file, eFO_CreateNewAlways | eFO_WriteOnly);
+	FileStream* fileStream = new FileStream(file, eFO_CreateNewAlways | eFO_WriteOnly);
 
-	return send(request(url)->setResponseStream(fileStream)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
+	auto req = createRequest(url);
+	req->setResponseStream(fileStream);
+	req->setMethod(HTTP_GET);
+	req->onRequestComplete(requestComplete);
+	return send(req);
 }
 
 // end convenience methods
 
-HttpRequest* HttpClient::request(const String& url)
-{
-	return new HttpRequest(URL(url));
-}
-
-HashMap<String, HttpConnection*> HttpClient::httpConnectionPool;
-HashMap<String, RequestQueue*> HttpClient::queue;
-
-#ifdef ENABLE_SSL
-HashMap<String, SSLSessionId*> HttpClient::sslSessionIdPool;
-
-void HttpClient::freeSslSessionPool()
-{
-	for (int i = 0; i < sslSessionIdPool.count(); i++) {
-		String key = sslSessionIdPool.keyAt(i);
-		free(sslSessionIdPool[key]->value);
-		sslSessionIdPool[key]->value = NULL;
-		free(sslSessionIdPool[key]);
-		sslSessionIdPool[key] = NULL;
-	}
-	sslSessionIdPool.clear();
-}
-#endif
-
-void HttpClient::freeRequestQueue()
-{
-	for (int i = 0; i < queue.count(); i++) {
-		String key = queue.keyAt(i);
-		RequestQueue* requestQueue = queue[key];
-		HttpRequest* request = requestQueue->dequeue();
-		while (request != NULL) {
-			delete request;
-			request = requestQueue->dequeue();
-		}
-		queue[key]->flush();
-		delete queue[key];
-	}
-	queue.clear();
-}
-
-void HttpClient::freeHttpConnectionPool()
-{
-	for (int i = 0; i < httpConnectionPool.count(); i++) {
-		String key = httpConnectionPool.keyAt(i);
-		delete httpConnectionPool[key];
-		httpConnectionPool[key] = NULL;
-		httpConnectionPool.remove(key);
-	}
-	httpConnectionPool.clear();
-}
-
 void HttpClient::cleanup()
 {
 #ifdef ENABLE_SSL
-	freeSslSessionPool();
+	_sslSessionIdPool.clear();
 #endif
-	freeHttpConnectionPool();
-	freeRequestQueue();
+	_connectionPool.clear();
+	_requestQueueMap.clear();
 }
 
 HttpClient::~HttpClient()
@@ -161,7 +126,7 @@ HttpClient::~HttpClient()
 	// 2. Call the static method HttpClient::cleanup();
 }
 
-String HttpClient::getCacheKey(URL url)
+String HttpClient::getCacheKey(const URL& url)
 {
-	return String(url.Host) + ":" + String(url.Port);
+	return url.host() + ':' + url.port();
 }

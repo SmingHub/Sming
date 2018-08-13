@@ -20,7 +20,7 @@
 #define DNSServer_h
 
 #include "UdpConnection.h"
-#include "../Wiring/WString.h"
+#include "WString.h"
 
 #define DNS_QR_QUERY 0
 #define DNS_QR_RESPONSE 1
@@ -71,14 +71,15 @@ public:
 private:
 	uint16_t _port = 0;
 	String _domainName;
-	char _resolvedIP[4];
-	char* _buffer = NULL;
-	DNSHeader* _dnsHeader = NULL;
+	ip_addr _resolvedIP;
+	char* _buffer = nullptr;
+	DNSHeader* _dnsHeader = nullptr;
 	uint32_t _ttl;
 	DNSReplyCode _errorReplyCode;
 
+private:
 	virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
-	void downcaseAndRemoveWwwPrefix(String& domainName);
+	static void downcaseAndRemoveWwwPrefix(String& domainName);
 	String getDomainNameWithoutWwwPrefix();
 	bool requestIncludesOnlyOneQuestion();
 };

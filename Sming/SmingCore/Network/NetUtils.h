@@ -25,11 +25,11 @@ struct DnsLookup
 class NetUtils {
 public:
 	// Helpers
-	static bool pbufIsStrEqual(pbuf* buf, const char* compared, int startPos);
-	static int pbufFindChar(pbuf* buf, char wtf, int startPos = 0);
-	static int pbufFindStr(pbuf* buf, const char* wtf, int startPos = 0);
-	static char* pbufAllocateStrCopy(pbuf* buf, int startPos, int length);
-	static String pbufStrCopy(pbuf* buf, int startPos, int length);
+	static bool pbufIsStrEqual(pbuf* buf, const char* compared, unsigned startPos);
+	static int pbufFindChar(pbuf* buf, char wtf, unsigned startPos = 0);
+	static int pbufFindStr(pbuf* buf, const char* wtf, unsigned startPos = 0);
+	static char* pbufAllocateStrCopy(pbuf* buf, unsigned startPos, unsigned length);
+	static String pbufStrCopy(pbuf* buf, unsigned startPos, unsigned length);
 
 	static bool FixNetworkRouting();
 
@@ -37,7 +37,9 @@ public:
 	static void debugPrintTcpList();
 
 private:
-	static bool ipClientRoutingFixed;
+#ifdef FIX_NETWORK_ROUTING
+	static bool _ipClientRoutingFixed;
+#endif
 };
 
 /** @} */

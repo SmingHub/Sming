@@ -5,17 +5,20 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "../Wiring/WiringFrameworkDependencies.h"
-#include "../Wiring/WHashMap.h"
-#include "../Wiring/WVector.h"
-#include "../Wiring/WString.h"
+#include "WString.h"
+#include "WVector.h"
 #include "IPAddress.h"
+
 class TcpClient;
 
 #ifndef SERVICES_YEELIGHTBULB_H_
 #define SERVICES_YEELIGHTBULB_H_
 
-enum YeelightBulbState { eYBS_Unknown = -1, eYBS_Off = 0, eYBS_On = 1 };
+enum YeelightBulbState {
+	eYBS_Unknown = -1,
+	eYBS_Off = 0,
+	eYBS_On = 1
+};
 
 /** @brief Yeelight wifi bulb controller class
  */
@@ -30,7 +33,7 @@ public:
 
 	/** @brief Send any command to the lamp
 	 */
-	void sendCommand(String method, Vector<String> params);
+	void sendCommand(const String& method, const Vector<String>& params);
 
 	void on();
 	void off();
@@ -43,7 +46,7 @@ public:
 	 */
 	YeelightBulbState currentState()
 	{
-		return state;
+		return _state;
 	}
 
 	void setBrightness(int percent);
@@ -52,17 +55,17 @@ public:
 
 protected:
 	void ensureOn();
-	bool onResponse(TcpClient& client, char* data, int size);
+	bool onResponse(TcpClient& client, char *data, int size);
 	void parsePower(const String& resp);
 
 private:
-	IPAddress lamp;
-	uint16_t port = 55443;
+	IPAddress _lamp;
+	uint16_t _port = 55443;
 
-	TcpClient* connection = nullptr;
-	long requestId = 0;
-	long propsId;
-	YeelightBulbState state = eYBS_Unknown;
+	TcpClient* _connection = nullptr;
+	long _requestId = 0;
+	long _propsId = 0;
+	YeelightBulbState _state = eYBS_Unknown;
 };
 
 #endif /* SERVICES_YEELIGHTBULB_H_ */

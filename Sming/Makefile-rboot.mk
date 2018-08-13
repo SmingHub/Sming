@@ -228,15 +228,16 @@ endif
 
 EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME)/system/include \
 				$(SMING_HOME)/Wiring $(SMING_HOME)/Libraries \
-				$(SMING_HOME)/Libraries/Adafruit_GFX $(SMING_HOME)/Libraries/Adafruit_Sensor \
 				$(SMING_HOME)/SmingCore $(SMING_HOME)/Services/SpifFS $(SDK_BASE)/../include \
 				$(THIRD_PARTY_DIR)/rboot $(THIRD_PARTY_DIR)/rboot/appcode $(THIRD_PARTY_DIR)/spiffs/src
 
 USER_LIBDIR  = $(SMING_HOME)/compiler/lib/
 
 # compiler flags using during compilation of source files
-CFLAGS   = -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
-           -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DSMING_INCLUDED=1 
+CFLAGS = -Wall -Wno-comment -Wno-strict-aliasing -Wno-unused-function -Wno-unused-variable \
+         -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+         -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1 
+
 # => SDK
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	CFLAGS += -DSDK_INTERNAL
@@ -350,6 +351,7 @@ endif
 ifeq ($(DISABLE_SPIFFS), 1)
 	CFLAGS += -DDISABLE_SPIFFS=1
 endif
+CFLAGS += -DSPIFFS_OBJ_META_LEN=16
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -u custom_crash_callback -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
@@ -406,6 +408,7 @@ SDK_LDDIR	= ld
 SDK_INCDIR	= include
 
 # select which tools to use as compiler, librarian and linker
+AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CXX		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-g++
 AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
@@ -421,6 +424,7 @@ SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
 C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
+AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.s))
 
 C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
 CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
@@ -495,6 +499,9 @@ endif
 
 
 define compile-objects
+${BUILD_BASE}/$1/%.o: $1/%.s
+	$(vecho) "AS $$<"
+	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@
 ${BUILD_BASE}/$1/%.o: $1/%.c ${BUILD_BASE}/$1/%.c.d
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@
@@ -533,7 +540,7 @@ $(RBOOT_ROM_1): $(TARGET_OUT_1)
 $(TARGET_OUT_0): $(APP_AR)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(SMING_HOME)/compiler/ld $(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
-	$(Q) $(STRIP) $@
+#	$(Q) $(STRIP) $@
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 
@@ -547,7 +554,7 @@ $(TARGET_OUT_0): $(APP_AR)
 $(TARGET_OUT_1): $(APP_AR)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(SMING_HOME)/compiler/ld  $(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
-	$(Q) $(STRIP) $@
+#	$(Q) $(STRIP) $@
 
 # recreate it from 0, since you get into problems with same filenames
 $(APP_AR): $(OBJ)
@@ -628,9 +635,17 @@ flashinit:
 rebuild: clean all
 
 clean:
+#preserve meminfo file from /out/firmware to /out/
+	$(Q) if [ -f "$(FW_MEMINFO_NEW)" ]; then \
+		mv $(FW_MEMINFO_NEW) $(FW_MEMINFO_SAVED); \
+	fi
 #remove build artifacts
+	$(Q) rm -f $(APP_AR)
+	$(Q) rm -f $(TARGET_OUT)
+	$(Q) rm -rf $(BUILD_DIR)
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
+	
 
 $(foreach mod,$(MODULES),$(eval $(call compile-objects,$(mod))))
 $(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.c.d)))

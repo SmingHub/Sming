@@ -1,20 +1,20 @@
 /* $Id: Print.h 1156 2011-06-07 04:01:16Z bhagman $
-||
-|| @author         Hernando Barragan <b@wiring.org.co>
-|| @url            http://wiring.org.co/
-|| @contribution   Nicholas Zambetti
-|| @contribution   Brett Hagman <bhagman@wiring.org.co>
-|| @contribution   Alexander Brevig <abrevig@wiring.org.co>
-||
-|| @description
-|| | Print library.
-|| |
-|| | Wiring Common API
-|| #
-||
-|| @license Please see cores/Common/License.txt.
-||
-*/
+ ||
+ || @author         Hernando Barragan <b@wiring.org.co>
+ || @url            http://wiring.org.co/
+ || @contribution   Nicholas Zambetti
+ || @contribution   Brett Hagman <bhagman@wiring.org.co>
+ || @contribution   Alexander Brevig <abrevig@wiring.org.co>
+ ||
+ || @description
+ || | Print library.
+ || |
+ || | Wiring Common API
+ || #
+ ||
+ || @license Please see cores/Common/License.txt.
+ ||
+ */
 
 #ifndef PRINT_H
 #define PRINT_H
@@ -30,35 +30,33 @@ class String;
 
 class Print {
 public:
-	Print() : write_error(0)
+	Print() : _write_error(0)
 	{}
+
 	virtual ~Print()
 	{}
 
 	int getWriteError()
 	{
-		return write_error;
+		return _write_error;
 	}
+
 	void clearWriteError()
 	{
 		setWriteError(0);
 	}
 
 	// pure virtual - must be implemented by derived class
-	//virtual void write(uint8_t) = 0;
+	virtual size_t write(uint8_t c) = 0;
 
 	// virtual - can be redefined (polymorphic class)
-	//virtual void write(const char *str);
-	//virtual void write(const uint8_t *buffer, size_t size);
+	virtual size_t write(const uint8_t* buffer, size_t size);
 
-	virtual size_t write(uint8_t) = 0;
 	size_t write(const char* str)
 	{
-		if (str == NULL)
-			return 0;
-		return write((const uint8_t*)str, strlen(str));
+		return str ? write((const uint8_t*)str, strlen(str)) : 0;
 	}
-	virtual size_t write(const uint8_t* buffer, size_t size);
+
 	size_t write(const char* buffer, size_t size)
 	{
 		return write((const uint8_t*)buffer, size);
@@ -98,16 +96,16 @@ public:
 	// printf
 	size_t printf(const char* fmt, ...);
 
-private:
-	int write_error;
-	size_t printNumber(unsigned long, uint8_t);
-	size_t printFloat(double, uint8_t);
-
 protected:
 	void setWriteError(int err = 1)
 	{
-		write_error = err;
+		_write_error = err;
 	}
+
+private:
+	int _write_error;
+	size_t printNumber(unsigned long, uint8_t);
+	size_t printFloat(double, uint8_t);
 };
 
 #endif // __cplusplus

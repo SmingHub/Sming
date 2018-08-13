@@ -13,7 +13,7 @@
 
 #include "DataSourceStream.h"
 #include "Delegate.h"
-#include "../Structures.h"
+#include "../HttpHeaders.h"
 
 /**
  * @brief      Multipart stream class
@@ -24,31 +24,29 @@
 
 typedef struct
 {
-	HttpHeaders* headers = NULL;
-	ReadWriteStream* stream = NULL;
+	HttpHeaders* headers = nullptr;
+	IDataSourceStream* stream = nullptr;
 } HttpPartResult;
 
 typedef Delegate<HttpPartResult()> HttpPartProducerDelegate;
 
-class MultipartStream : public ReadWriteStream {
-public:
-	MultipartStream(HttpPartProducerDelegate delegate);
-	virtual ~MultipartStream();
 
-	//Use base class documentation
-	virtual StreamType getStreamType()
+class MultipartStream : public IDataSourceStream {
+public:
+	MultipartStream(HttpPartProducerDelegate delegate) : _producer(delegate)
+	{}
+
+	virtual ~MultipartStream()
 	{
-		// TODO: fix this...
-		return stream->getStreamType();
+		delete _stream;
+		delete _nextStream;
 	}
 
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	*/
-	int length()
+	//Use base class documentation
+	virtual StreamType getStreamType() const
 	{
-		return -1;
+		// TODO: fix this...
+		return _stream ? _stream->getStreamType() : eSST_Unknown;
 	}
 
 	/** @brief  Write a single char to stream
@@ -65,13 +63,19 @@ public:
 	virtual size_t write(const uint8_t* buffer, size_t size);
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	virtual size_t readMemoryBlock(char* data, size_t bufSize);
 
 	//Use base class documentation
-	virtual bool seek(int len);
+	virtual bool seek(int len)
+	{
+		return _stream ? _stream->seek(len) : false;
+	}
 
 	//Use base class documentation
-	virtual bool isFinished();
+	virtual bool isFinished()
+	{
+		return _finished && (!_stream || _stream->isFinished());
+	}
 
 	/**
 	 * @brief Returns the generated boundary
@@ -81,15 +85,16 @@ public:
 	const char* getBoundary();
 
 private:
-	HttpPartProducerDelegate producer;
+	HttpPartProducerDelegate _producer = nullptr;
 
-	ReadWriteStream* stream = NULL;
-	ReadWriteStream* nextStream = NULL;
+	IDataSourceStream* _stream = nullptr;
+	IDataSourceStream* _nextStream = nullptr;
 
-	char boundary[16] = {0};
+	char _boundary[16] = {0};
 
-	bool finished = false;
+	bool _finished = false;
 };
 
 /** @} */
+
 #endif /* _SMING_CORE_DATA_MPARTSTREAM_H_ */

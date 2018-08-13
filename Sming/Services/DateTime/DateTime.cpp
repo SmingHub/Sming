@@ -1,37 +1,21 @@
 /*
-  DateTime.cpp - Arduino Date and Time library
-  Copyright (c) Michael Margolis.  All right reserved.
+ DateTime.cpp - Arduino Date and Time library
+ Copyright (c) Michael Margolis.  All right reserved.
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-*/
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 
 #include "DateTime.h"
-#include <Arduino.h>
 #include <stdlib.h>
-#include <stdio.h>
 
-//extern unsigned long _time;
-
-#define LEAP_YEAR(_year) ((_year % 4) == 0)
-static int8_t monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+#define LEAP_YEAR(_year) ((_year%4)==0)
+static int8_t monthDays[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 //******************************************************************************
 //* DateTime Public Methods
 //******************************************************************************
-
-DateTime::DateTime()
-{
-	Second = 0;
-	Minute = 0;
-	Hour = 0;
-	Day = 0;
-	Month = 0;
-	Year = 0;
-	DayofWeek = 0;
-	Milliseconds = 0;
-}
 
 DateTime::DateTime(time_t time)
 {
@@ -57,8 +41,14 @@ void DateTime::setTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t m
 
 bool DateTime::isNull()
 {
-	return Second == 0 && Minute == 0 && Hour == 0 && Day == 0 && Month == 0 && Year == 0 && DayofWeek == 0 &&
-		   Milliseconds == 0;
+	return Second == 0
+		&& Minute == 0
+		&& Hour == 0
+		&& Day == 0
+		&& Month == 0
+		&& Year == 0
+		&& DayofWeek == 0
+		&& Milliseconds == 0;
 }
 
 bool DateTime::parseHttpDate(String httpDate)
@@ -67,7 +57,7 @@ bool DateTime::parseHttpDate(String httpDate)
 	int first = httpDate.indexOf(',');
 	if (first == -1 || httpDate.length() - first < 20)
 		return false;
-	first++; // Skip ','
+	first++;  // Skip ','
 	if (httpDate[first] == ' ')
 		first++;
 
@@ -76,7 +66,7 @@ bool DateTime::parseHttpDate(String httpDate)
 	if (*ptr == 0)
 		return false;
 	ptr++;
-	char month[4] = {0};
+	char month[4] = { 0 };
 	memcpy(month, ptr, 3);
 	ptr += 4;
 	if (*ptr == 0)
@@ -141,7 +131,7 @@ time_t DateTime::toUnixTime()
 String DateTime::toShortDateString()
 {
 	char buf[64];
-	sprintf(buf, "%02d.%02d.%d", Day, Month + 1, Year);
+	m_snprintf(buf, sizeof(buf), "%02d.%02d.%d", Day, Month + 1, Year);
 	return String(buf);
 }
 
@@ -149,9 +139,9 @@ String DateTime::toShortTimeString(bool includeSeconds /* = false*/)
 {
 	char buf[64];
 	if (includeSeconds)
-		sprintf(buf, "%02d:%02d:%02d", Hour, Minute, Second);
+		m_snprintf(buf, sizeof(buf), "%02d:%02d:%02d", Hour, Minute, Second);
 	else
-		sprintf(buf, "%02d:%02d", Hour, Minute);
+		m_snprintf(buf, sizeof(buf), "%02d:%02d", Hour, Minute);
 
 	return String(buf);
 }
@@ -164,7 +154,7 @@ String DateTime::toFullDateTimeString()
 String DateTime::toISO8601()
 {
 	char buf[21];
-	sprintf(buf, "%02d-%02d-%02dT%02d:%02d:%02dZ", Year, Month + 1, Day, Hour, Minute, Second);
+	m_snprintf(buf, sizeof(buf), "%02d-%02d-%02dT%02d:%02d:%02dZ", Year, Month + 1, Day, Hour, Minute, Second);
 	return String(buf);
 }
 
@@ -179,11 +169,11 @@ void DateTime::addMilliseconds(long add)
 	Milliseconds = ms;
 }
 
-void DateTime::convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday, int8_t* pwday,
-								   int8_t* pmonth, int16_t* pyear)
+void DateTime::convertFromUnixTime(time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday,
+									int8_t *pmonth, int16_t *pyear)
 {
-	// convert the given time_t to time components
-	// this is a more compact version of the C library localtime function
+// convert the given time_t to time components
+// this is a more compact version of the C library localtime function
 
 	time_t long epoch = timep;
 	int8_t year;
@@ -191,29 +181,29 @@ void DateTime::convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int
 	unsigned long days;
 
 	*psec = epoch % 60;
-	epoch /= 60; // now it is minutes
+	epoch /= 60;  // now it is minutes
 	*pmin = epoch % 60;
-	epoch /= 60; // now it is hours
+	epoch /= 60;  // now it is hours
 	*phour = epoch % 24;
-	epoch /= 24; // now it is days
+	epoch /= 24;  // now it is days
 	*pwday = (epoch + 4) % 7;
 
 	year = 70;
 	days = 0;
-	while ((unsigned)(days += (LEAP_YEAR(year) ? 366 : 365)) <= epoch) {
+	while ((unsigned)(days += (LEAP_YEAR(year) ? 366 : 365)) <= (unsigned long)epoch) {
 		year++;
 	}
-	*pyear = year + 1900; // *pyear is returned as years from 1900
+	*pyear = year + 1900;  // *pyear is returned as years from 1900
 
 	days -= LEAP_YEAR(year) ? 366 : 365;
-	epoch -= days; // now it is days in this year, starting at 0
+	epoch -= days;  // now it is days in this year, starting at 0
 	//*pdayofyear=epoch;  // days since jan 1 this year
 
 	days = 0;
 	month = 0;
 	monthLength = 0;
 	for (month = 0; month < 12; month++) {
-		if (month == 1) { // february
+		if (month == 1) {  // february
 			if (LEAP_YEAR(year)) {
 				monthLength = 29;
 			}
@@ -232,14 +222,14 @@ void DateTime::convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int
 			break;
 		}
 	}
-	*pmonth = month;   // jan is month 0
-	*pday = epoch + 1; // day of month
+	*pmonth = month;  // jan is month 0
+	*pday = epoch + 1;  // day of month
 }
 
 time_t DateTime::convertToUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year)
 {
-	// converts time components to time_t
-	// note year argument is full four digit year (or digits since 2000), i.e.1975, (year 8 is 2008)
+// converts time components to time_t 
+// note year argument is full four digit year (or digits since 2000), i.e.1975, (year 8 is 2008)
 
 	int i;
 	time_t seconds;

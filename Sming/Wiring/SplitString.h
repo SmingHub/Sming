@@ -20,7 +20,8 @@
 
 #include "WVector.h"
 #include "WString.h"
-#include "WiringFrameworkDependencies.h"
+
+/* See also String::split() method */
 
 int splitString(String& what, int delim, Vector<long>& splits);
 int splitString(String& what, int delim, Vector<int>& splits);

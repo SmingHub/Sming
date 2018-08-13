@@ -1,10 +1,13 @@
 #include <user_config.h>
 #include <math.h>
 #include <stdlib.h>
-#include "../include/stringconversion.h"
+#include "stringconversion.h"
+#include "stringutil.h"
 
-//Since C does not support default func parameters, keep this function as used by framework
-//and create extended _w funct to handle width
+/*
+ * Since C does not support default func parameters, keep this function as used by framework
+ * and create extended _w funct to handle width
+ */
 char* ltoa(long val, char* buffer, int base)
 {
 	return ltoa_w(val, buffer, base, 0);
@@ -24,7 +27,7 @@ char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 		val = -val;
 
 	for (; val && i; --i, p++, val /= base)
-		buf[i] = "0123456789abcdef"[val % base];
+		buf[i] = hexchar(val % base);
 	if (p == 0)
 		buf[i--] = '0'; // case for zero
 
@@ -33,9 +36,8 @@ char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 
 	if (width != 0) {
 		width -= strlen(&buf[i + 1]);
-		if (width > 0) {
+		if (width > 0)
 			memset(buffer, pad, width);
-		}
 		else
 			width = 0;
 	}
@@ -55,21 +57,22 @@ char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width)
 {
 	return ultoa_wp(val, buffer, base, 0, ' ');
 }
+
 char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad)
 {
 	int i = 38, p = 0;
 	char buf[40] = {0};
 
 	for (; val && i; --i, p++, val /= base)
-		buf[i] = "0123456789abcdef"[val % base];
+		buf[i] = hexchar(val % base);
+
 	if (p == 0)
 		buf[i--] = '0'; // case for zero
 
 	if (width != 0) {
 		width -= strlen(&buf[i + 1]);
-		if (width > 0) {
+		if (width > 0)
 			memset(buffer, pad, width);
-		}
 		else
 			width = 0;
 	}
@@ -82,6 +85,7 @@ char* dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsA
 {
 	return dtostrf_p(floatVar, minStringWidthIncDecimalPoint, numDigitsAfterDecimal, outputBuffer, ' ');
 }
+
 // Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
 // modified by ADiea: remove dependencies strcat, floor, round; reorganize+speedup code
 char* dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char* outputBuffer,
@@ -94,10 +98,8 @@ char* dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 	if (processedFracLen < 0)
 		processedFracLen = 9;
 
-	double remainder;
-
-	if (outputBuffer == NULL)
-		return NULL;
+	if (!outputBuffer)
+		return nullptr;
 
 	char *buf = outputBuffer, *s;
 
@@ -180,9 +182,8 @@ char* dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 
 		// generate width space padding
 		i = minStringWidthIncDecimalPoint - strlen(num) + 1;
-		while (--i > 0) {
+		while (--i > 0)
 			*buf++ = pad;
-		}
 
 		//Write output buffer
 		s = num;

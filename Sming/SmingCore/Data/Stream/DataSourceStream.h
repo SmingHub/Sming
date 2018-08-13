@@ -5,43 +5,44 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#ifndef _SMING_CORE_DATA_DATASTREAM_H_
-#define _SMING_CORE_DATA_DATASTREAM_H_
+/*
+ * 12/8/2018 (mikee47)
+ *
+ * 	All classes except for IDataSourceStream and ReadWriteStream moved to their own modules.
+ * 	This is an abstract base class so callers should not need to see the specific stream
+ * 	implementation.
+ */
+
+#ifndef _SMING_CORE_DATA_DATASOURCESTREAM_H_
+#define _SMING_CORE_DATA_DATASOURCESTREAM_H_
 
 #include <user_config.h>
-#include "../SmingCore/FileSystem.h"
-#include "../Libraries/ArduinoJson/include/ArduinoJson.h"
-#include "../Wiring/WString.h"
-#include "../Wiring/WHashMap.h"
-#include "../Wiring/Stream.h"
-
-#define TEMPLATE_MAX_VAR_NAME_LEN 16
+#include "WString.h"
+#include "Stream.h"
 
 /** @brief  Data stream type
  *  @ingroup constants
  *  @{
  */
 enum StreamType {
-	eSST_Memory,	   ///< Memory data stream
-	eSST_File,		   ///< File data stream
-	eSST_TemplateFile, ///< Template file data stream
-	eSST_JsonObject,   ///< JSON object data stream
-	eSST_User,		   ///< User defined data stream
-	eSST_Unknown	   ///< Unknown data stream type
+	eSST_Invalid,	///< Stream content not valid
+	eSST_Memory,	 ///< Memory data stream
+	eSST_File,		 ///< File data stream
+	eSST_Template,   ///< Template data stream
+	eSST_JsonObject, ///< JSON object data stream
+	eSST_User,		 ///< User defined data stream
+	eSST_Unknown	 ///< Unknown data stream type
 };
 /** @} */
 
-/** @defgroup   stream Stream functions
- *  @brief      Data stream classes
- *  @{
-*/
 
-/** @brief  Template variable (hash map) class
- *  @see    Wiring HashMap
+/**
+  * @brief      Base class for data source stream
+  * @ingroup    stream data
+  *
+  *  @{
  */
-class TemplateVariables : public HashMap<String, String> {};
 
-///Base class for data source stream
 class IDataSourceStream : public Stream {
 public:
 	virtual ~IDataSourceStream()
@@ -51,35 +52,49 @@ public:
      *  @retval StreamType The stream type.
      *  @todo   Return value of IDataSourceStream:getStreamType base class function should be of type StreamType, e.g. eSST_User
      */
-	virtual StreamType getStreamType() = 0;
+	virtual StreamType getStreamType() const = 0;
+
+	virtual bool isValid() const
+	{
+		return getStreamType() != eSST_Invalid;
+	}
 
 	/** @brief  Read a block of memory
      *  @param  data Pointer to the data to be read
      *  @param  bufSize Quantity of chars to read
      *  @retval uint16_t Quantity of chars read
-     *  @todo   Should IDataSourceStream::readMemoryBlock return same data type as its bufSize param?
      */
-	virtual uint16_t readMemoryBlock(char* data, int bufSize) = 0;
+	virtual size_t readMemoryBlock(char* data, size_t bufSize) = 0;
 
 	/**
 	 * @brief Read one character and moves the stream pointer
-	 * @retval The character that was read or -1 if none is available
+	 * @retval int The character that was read or -1 if none is available
 	 */
-	virtual int read();
+	virtual int read()
+	{
+		int res = peek();
+		if (res >= 0)
+			seek(1);
+		return res;
+	}
 
 	/**
 	 * @brief Read a character without advancing the stream pointer
-	 * @retval The character that was read or -1 if none is available
+	 * @retval int The character that was read or -1 if none is available
 	 */
-	virtual int peek();
+	virtual int peek()
+	{
+		char c;
+		return (readMemoryBlock(&c, 1) == 1) ? c : -1;
+	}
 
 	/** @brief  Move read cursor
-	 *  @param  len Position within stream to move cursor to
+	 *  @param  len Relative cursor adjustment
 	 *  @retval bool True on success.
 	 */
 	virtual bool seek(int len) = 0;
 
-	/** @brief  Check if stream is finished
+	/** @brief  Check if all data has been read
      *  @retval bool True on success.
      */
 	virtual bool isFinished() = 0;
@@ -93,16 +108,12 @@ public:
 		return -1;
 	}
 
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 *
-	 * @deprecated This method is deprecated and will be removed in the coming versions.
-	 * 			   Please, use available() instead.
+	/*
+	 * From Stream class
 	 */
-	int length()
+	virtual size_t write(uint8_t charToWrite)
 	{
-		return available();
+		return 0;
 	}
 
 	/*
@@ -115,18 +126,42 @@ public:
 	 * @brief Returns unique id of the resource.
 	 * @retval String the unique id of the stream.
 	 */
-	virtual String id()
+	virtual String id() const
 	{
-		return String();
+		return nullptr;
+	}
+
+	/**
+	 * @brief Returns name of the resource.
+	 * @retval String
+	 * @note Commonly used to obtain name of file
+	 */
+	virtual String name() const
+	{
+		return nullptr;
 	}
 };
+
+/** @} */
+
+
+
+/**
+  * @brief      Base class for read/write stream
+  * @ingroup    stream data
+  *
+  *  @{
+ */
 
 class ReadWriteStream : public IDataSourceStream {
 public:
 	virtual ~ReadWriteStream()
 	{}
 
-	virtual size_t write(uint8_t charToWrite) = 0;
+	virtual size_t write(uint8_t charToWrite)
+	{
+		return write(&charToWrite, 1);
+	}
 
 	/** @brief  Write chars to stream
      *  @param  buffer Pointer to buffer to write to the stream
@@ -136,311 +171,9 @@ public:
 	virtual size_t write(const uint8_t* buffer, size_t size) = 0;
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize) = 0;
-};
-
-/// Memory data stream class
-class MemoryDataStream : public ReadWriteStream {
-public:
-	/** @brief Memory data stream base class
-    */
-	MemoryDataStream();
-	virtual ~MemoryDataStream();
-
-	//Use base class documentation
-	virtual StreamType getStreamType()
-	{
-		return eSST_Memory;
-	}
-
-	/** @brief  Get a pointer to the current position
-	 *  @retval "const char*" Pointer to current cursor position within the data stream
-	 */
-	const char* getStreamPointer()
-	{
-		return pos;
-	}
-
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	*/
-	int available();
-
-	/** @brief  Write a single char to stream
-     *  @param  charToWrite Char to write to the stream
-     *  @retval size_t Quantity of chars written to stream (always 1)
-     */
-	virtual size_t write(uint8_t charToWrite);
-
-	/** @brief  Write chars to stream
-     *  @param  buffer Pointer to buffer to write to the stream
-     *  @param  size Quantity of chars to write
-     *  @retval size_t Quantity of chars written to stream
-     */
-	virtual size_t write(const uint8_t* buffer, size_t size);
-
-	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
-
-	//Use base class documentation
-	virtual bool seek(int len);
-
-	//Use base class documentation
-	virtual bool isFinished();
-
-private:
-	char* buf;
-	char* pos;
-	int size;
-	int capacity;
-};
-
-/// File stream class
-class FileStream : public ReadWriteStream {
-public:
-	/** @brief  Create a file stream
-     *  @param  fileName Name of file to open
-     */
-	FileStream();
-	FileStream(const String& fileName);
-	virtual ~FileStream();
-
-	virtual bool attach(const String& fileName, FileOpenFlags openFlags);
-	//Use base class documentation
-	virtual StreamType getStreamType()
-	{
-		return eSST_File;
-	}
-
-	virtual size_t write(uint8_t charToWrite);
-	virtual size_t write(const uint8_t* buffer, size_t size);
-
-	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
-
-	//Use base class documentation
-	virtual bool seek(int len);
-
-	//Use base class documentation
-	virtual bool isFinished();
-
-	String fileName(); ///< Filename of file stream is attached to
-	bool fileExist();  ///< True if file exists
-
-	/** @brief  Get the offset of cursor from beginning of data
-     *  @retval int Cursor offset
-     */
-	inline int getPos()
-	{
-		return pos;
-	}
-
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 */
-	int available()
-	{
-		return size;
-	}
-
-	virtual String id();
-
-private:
-	file_t handle;
-	int pos;
-	int size;
-};
-/** @} */
-
-/** @brief  Template file stream expand state
- *  @ingroup constants
- *  @{
- */
-enum TemplateExpandState {
-	eTES_Wait,		///< Template expand state wait
-	eTES_Found,		///< Template expand state found
-	eTES_StartVar,  ///< Template expand state start variable
-	eTES_SendingVar ///< Template expand state sending variable
-};
-/** @} */
-
-/** @addtogroup stream
- *  @{
- */
-
-/// Template file stream class
-class TemplateFileStream : public FileStream {
-public:
-	/** @brief Create a template file stream
-     *  @param  templateFileName Template filename
-     */
-	TemplateFileStream(const String& templateFileName);
-	virtual ~TemplateFileStream();
-
-	//Use base class documentation
-	virtual StreamType getStreamType()
-	{
-		return eSST_TemplateFile;
-	}
-
-	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
-
-	//Use base class documentation
-	virtual bool seek(int len);
-
-	/** @brief  Set value of a variable in the template file
-     *  @param  name Name of variable
-     *  @param  value Value to assign to the variable
-     *  @note   Sets and existing variable or adds a new variable if variable does not already exist
-     */
-	void setVar(String name, String value);
-
-	/** @brief  Set multiple variables in the template file
-     *  @param  vars Template Variables
-     */
-	void setVars(const TemplateVariables& vars);
-
-	/** @brief  Get the template variables
-     *  @retval TemplateVariables Reference to the template variables
-     */
-	inline TemplateVariables& variables()
-	{
-		return templateData;
-	}
-
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 */
-	int available()
-	{
-		return -1;
-	}
-
-private:
-	TemplateVariables templateData;
-	TemplateExpandState state;
-	String varName;
-	int skipBlockSize = 0;
-	int varDataPos = 0;
-	int varWaitSize = 0;
-};
-
-///JSON object stream class
-class JsonObjectStream : public MemoryDataStream {
-public:
-	/** @brief  Create a JSON object stream
-    */
-	JsonObjectStream();
-	virtual ~JsonObjectStream();
-
-	//Use base class documentation
-	virtual StreamType getStreamType()
-	{
-		return eSST_JsonObject;
-	}
-
-	/** @brief  Get the JSON root node
-     *  @retval JsonObject Reference to the root node
-     */
-	JsonObject& getRoot();
-
-	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
-
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 */
-	int available();
-
-private:
-	DynamicJsonBuffer buffer;
-	JsonObject& rootNode;
-	bool send;
-};
-
-class EndlessMemoryStream : public ReadWriteStream {
-public:
-	virtual ~EndlessMemoryStream();
-
-	//Use base class documentation
-	virtual StreamType getStreamType();
-
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
-
-	//Use base class documentation
-	virtual bool seek(int len);
-
-	/** @brief  Write a single char to stream
-	 *  @param  charToWrite Char to write to the stream
-	 *  @retval size_t Quantity of chars written to stream (always 1)
-	 */
-	virtual size_t write(uint8_t charToWrite);
-
-	/** @brief  Write chars to stream
-	 *  @param  buffer Pointer to buffer to write to the stream
-	 *  @param  size Quantity of chars to write
-	 *  @retval size_t Quantity of chars written to stream
-	 */
-	virtual size_t write(const uint8_t* buffer, size_t size);
-
-	virtual bool isFinished();
-
-private:
-	MemoryDataStream* stream = NULL;
-};
-
-/**
- * @brief Memory stream that stores limited number of bytes
- * 		  Once the limit is reached the stream will discard incoming bytes on write
- */
-class LimitedMemoryStream : public ReadWriteStream {
-public:
-	LimitedMemoryStream(size_t length);
-	virtual ~LimitedMemoryStream();
-
-	//Use base class documentation
-	virtual StreamType getStreamType();
-
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 */
-	virtual int available()
-	{
-		return writePos - readPos;
-	}
-
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
-
-	//Use base class documentation
-	virtual bool seek(int len);
-
-	/** @brief  Write a single char to stream
-	 *  @param  charToWrite Char to write to the stream
-	 *  @retval size_t Quantity of chars written to stream (always 1)
-	 */
-	virtual size_t write(uint8_t charToWrite);
-
-	/** @brief  Write chars to stream
-	 *  @param  buffer Pointer to buffer to write to the stream
-	 *  @param  size Quantity of chars to write
-	 *  @retval size_t Quantity of chars written to stream
-	 */
-	virtual size_t write(const uint8_t* buffer, size_t size);
-
-	virtual bool isFinished();
-
-private:
-	uint8_t* buffer = NULL;
-	size_t writePos = 0;
-	size_t readPos = 0;
-	size_t length = 0;
+	virtual size_t readMemoryBlock(char* data, size_t bufSize) = 0;
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_DATASTREAM_H_ */
+
+#endif /* _SMING_CORE_DATA_DATASOURCESTREAM_H_ */

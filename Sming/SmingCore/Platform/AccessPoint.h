@@ -17,11 +17,9 @@
 #ifndef SMINGCORE_PLATFORM_ACCESSPOINT_H_
 #define SMINGCORE_PLATFORM_ACCESSPOINT_H_
 
-#include <user_config.h>
 #include "System.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
-#include "../../Wiring/IPAddress.h"
+#include "WString.h"
+#include "IPAddress.h"
 
 class AccessPointClass : protected ISystemReadyHandler {
 public:
@@ -29,7 +27,9 @@ public:
      *  @addtogroup wifi_ap
      *  @{
      */
-	AccessPointClass();
+	AccessPointClass()
+	{}
+
 	virtual ~AccessPointClass()
 	{}
 
@@ -42,7 +42,10 @@ public:
 	/** @brief  Get WiFi AP enable status
      *  @retval bool True if WiFi AP enabled.
      */
-	bool isEnabled();
+	bool isEnabled()
+	{
+		return wifi_get_opmode() & SOFTAP_MODE;
+	}
 
 	/** @brief  Configure WiFi AP
      *  @param  ssid WiFi AP SSID
@@ -102,13 +105,13 @@ protected:
 	virtual void onSystemReady();
 
 private:
-	softap_config* runConfig;
+	softap_config* _runConfig = nullptr;
 };
 
 /**	@brief	Global instance of WiFi access point object
  *	@note	Use WiFiAccessPoint.<i>function</i> to access WiFi access point functions
  *	@note	Example:
- *	@code	if(WiFiAccessPoint.config("ESP_AP", AUTH_OPEN))
+ *	@code	if (WiFiAccessPoint.config("ESP_AP", AUTH_OPEN))
  *              WiFiAccessPoint.enable(true);
  *	@endcode
  *  @ingroup wifi_ap

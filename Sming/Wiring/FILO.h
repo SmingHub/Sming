@@ -1,29 +1,29 @@
 /* $Id: FILO.h 1151 2011-06-06 21:13:05Z bhagman $
-||
-|| @author         Alexander Brevig <abrevig@wiring.org.co>
-|| @url            http://wiring.org.co/
-|| @contribution   Brett Hagman <bhagman@wiring.org.co>
-||
-|| @description
-|| | A simple FILO / stack class, mostly for primitive types but can be used
-|| | with classes if assignment to int is allowed.
-|| | This FILO is not dynamic, so be sure to choose an appropriate size for it.
-|| |
-|| | Wiring Common API
-|| #
-||
-|| @license Please see cores/Common/License.txt.
-||
-*/
+ ||
+ || @author         Alexander Brevig <abrevig@wiring.org.co>
+ || @url            http://wiring.org.co/
+ || @contribution   Brett Hagman <bhagman@wiring.org.co>
+ ||
+ || @description
+ || | A simple FILO / stack class, mostly for primitive types but can be used
+ || | with classes if assignment to int is allowed.
+ || | This FILO is not dynamic, so be sure to choose an appropriate size for it.
+ || |
+ || | Wiring Common API
+ || #
+ ||
+ || @license Please see cores/Common/License.txt.
+ ||
+ */
 
 #ifndef FILO_H
 #define FILO_H
 
 #include "WiringFrameworkIncludes.h"
 
-template <typename T, int rawSize> class FILO : public Countable<T> {
+template <typename T, unsigned int rawSize> class FILO : public Countable<T> {
 public:
-	const int size; // speculative feature, in case it's needed
+	const unsigned int size; // speculative feature, in case it's needed
 
 	FILO();
 
@@ -35,49 +35,49 @@ public:
 	// how many elements are currently in the FILO?
 	unsigned int count() const
 	{
-		return numberOfElements;
+		return _numberOfElements;
 	}
 
 private:
-	volatile int numberOfElements;
-	int nextIn;
-	int nextOut;
-	T raw[rawSize];
+	volatile unsigned int _numberOfElements;
+	unsigned int _nextIn;
+	unsigned int _nextOut;
+	T _raw[rawSize];
 };
 
-template <typename T, int rawSize> FILO<T, rawSize>::FILO() : size(rawSize)
+template <typename T, unsigned int rawSize> FILO<T, rawSize>::FILO() : size(rawSize)
 {
 	flush();
 }
 
-template <typename T, int rawSize> bool FILO<T, rawSize>::push(T element)
+template <typename T, unsigned int rawSize> bool FILO<T, rawSize>::push(T element)
 {
 	if (count() >= rawSize) {
 		return false;
 	}
-	raw[numberOfElements++] = element;
+	_raw[_numberOfElements++] = element;
 	return true;
 }
 
-template <typename T, int rawSize> T FILO<T, rawSize>::pop()
+template <typename T, unsigned int rawSize> T FILO<T, rawSize>::pop()
 {
-	if (numberOfElements > 0) {
-		return raw[--numberOfElements];
+	if (_numberOfElements > 0) {
+		return _raw[--_numberOfElements];
 	}
-	return raw[0];
+	return _raw[0];
 }
 
-template <typename T, int rawSize> T FILO<T, rawSize>::peek() const
+template <typename T, unsigned int rawSize> T FILO<T, rawSize>::peek() const
 {
-	if (numberOfElements > 0) {
-		return raw[numberOfElements - 1];
+	if (_numberOfElements > 0) {
+		return _raw[_numberOfElements - 1];
 	}
-	return raw[0];
+	return _raw[0];
 }
 
-template <typename T, int rawSize> void FILO<T, rawSize>::flush()
+template <typename T, unsigned int rawSize> void FILO<T, rawSize>::flush()
 {
-	nextIn = nextOut = numberOfElements = 0;
+	_nextIn = _nextOut = _numberOfElements = 0;
 }
 
 #endif

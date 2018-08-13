@@ -12,16 +12,10 @@
 #define _SMING_CORE_Timer_H_
 
 #include <functional>
-#include "../SmingCore/Interrupts.h"
-#include "../SmingCore/Delegate.h"
-#include "../Wiring/WiringFrameworkDependencies.h"
+#include "Interrupts.h"
+#include "Delegate.h"
 
-// According to documentation maximum value of interval for ms
-// timer after doing system_timer_reinit is 268435ms.
-// If we do some testing we find that higher values works,
-// the actual limit seems to be about twice as high
-// but we use the documented value anyway to be on the safe side.
-#define MAX_OS_TIMER_INTERVAL_US 268435000
+#include "OSTimer.h"
 
 typedef Delegate<void()> TimerDelegate;
 typedef std::function<void()> TimerDelegateStdFunction;
@@ -32,10 +26,15 @@ public:
      *  @ingroup timer
      *  @{
      */
-	Timer();
-	~Timer();
+	Timer()
+	{}
 
-	// It return value for Method Chaining (return "this" reference)
+	~Timer()
+	{
+		stop();
+	}
+
+	// Methods return object reference for Method Chaining
 	// http://en.wikipedia.org/wiki/Method_chaining
 	// We provide both versions: Delegate and classic c-style callback function for performance reason (for high-frequency timers)
 	// Usually only Delegate needed
@@ -45,14 +44,14 @@ public:
      *  @param  callback Function to call when timer triggers
      *  @note   Classic c-style callback method
      */
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, InterruptCallback callback = NULL); // Init in Milliseconds.
+	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, InterruptCallback callback = nullptr);
 
 	/** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
      *  @param  callback Function to call when timer triggers
      *  @note   Classic c-style callback method
      */
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, InterruptCallback callback = NULL); // Init in Microseconds.
+	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, InterruptCallback callback = nullptr);
 
 	/** @brief  Initialise millisecond timer
      *  @param  milliseconds Duration of timer in milliseconds
@@ -60,8 +59,7 @@ public:
      *  @note   Delegate callback method
      *  @deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
      */
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds,
-								  TimerDelegate delegateFunction = NULL); // Init in Milliseconds.
+	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = nullptr);
 
 	/** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
@@ -69,25 +67,23 @@ public:
      *  @note   Delegate callback method
      *  @deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
      */
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds,
-								  TimerDelegate delegateFunction = NULL); // Init in Microseconds.
+	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = nullptr);
 
 	/** @brief  Initialise millisecond timer
      *  @param  milliseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
      */
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds,
-								  TimerDelegateStdFunction delegateFunction = nullptr); // Init in Milliseconds.
+	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegateStdFunction delegateFunction = nullptr);
 
 	/** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
      */
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds,
-								  TimerDelegateStdFunction delegateFunction = nullptr); // Init in Microseconds.
-																						/** @brief  Start timer running
+	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegateStdFunction delegateFunction = nullptr);
+
+	/** @brief  Start timer running
      *  @param  repeating Set to true for repeating timer. Set to false for one-shot.
      */
 	void IRAM_ATTR start(bool repeating = true);
@@ -108,22 +104,35 @@ public:
 	/** @brief  Restarts timer
      *  @note   Restarts the timer from zero, extending duration.
      */
-	void IRAM_ATTR restart();
+	void IRAM_ATTR restart()
+	{
+		stop();
+		start();
+	}
 
 	/** @brief  Check if timer is started
      *  @retval bool True if timer is running
      */
-	bool isStarted();
+	bool isStarted()
+	{
+		return _started;
+	}
 
 	/** @brief  Get timer interval
      *  @retval uint64_t Timer interval in microseconds
      */
-	uint64_t getIntervalUs();
+	uint64_t getIntervalUs()
+	{
+		return _interval * _longIntervalCounterLimit ?: 1;
+	}
 
 	/** @brief  Get timer interval
      *  @retval uint32_t Timer interval in milliseconds
      */
-	uint32_t getIntervalMs();
+	uint32_t getIntervalMs()
+	{
+		return getIntervalUs() / 1000;
+	}
 
 	/** @brief  Set timer interval
      *  @param  microseconds Interval in microseconds. (Default: 1ms)
@@ -139,7 +148,7 @@ public:
      *  @param  interrupt Function to be called on timer trigger
      *  @note   Classic c-type callback method
      */
-	void IRAM_ATTR setCallback(InterruptCallback interrupt = NULL);
+	void IRAM_ATTR setCallback(InterruptCallback interrupt = nullptr);
 
 	/** @brief  Set timer trigger function
 	*  @param  delegateFunction Function to be called on timer trigger
@@ -153,28 +162,28 @@ public:
 	void IRAM_ATTR setCallback(const TimerDelegateStdFunction& delegateFunction);
 
 protected:
-	static void IRAM_ATTR processing(void* arg);
+	void IRAM_ATTR processing();
 
 	/** @brief  virtual timer loop() method
      *  @note   Can be override in class derivations. If overwriten,
      *          no classic other callbacks are working.
      */
-	virtual void tick();
+	void tick();
 	/** @} */
 
 private:
-	os_timer_t timer;
-	uint64_t interval = 0;
-	InterruptCallback callback = nullptr;
-	TimerDelegate delegate_func = nullptr;
-	TimerDelegateStdFunction delegate_stdfunc = nullptr;
-	bool repeating = false;
-	bool started = false;
+	OSTimer _timer; ///< We use the OSTimer class to access the hardware
+	uint32_t _interval = 0;
+	InterruptCallback _callback = nullptr;
+	TimerDelegate _delegate_func = nullptr;
+	TimerDelegateStdFunction _delegate_stdfunc = nullptr;
+	bool _repeating = false;
+	bool _started = false;
 
 	// Because of the limitation in Espressif SDK a workaround
 	// was added to allow for longer timer intervals.
-	uint16_t long_intvl_cntr = 0;
-	uint16_t long_intvl_cntr_lim = 0;
+	uint16_t _longIntervalCounter = 0;
+	uint16_t _longIntervalCounterLimit = 0;
 };
 
 #endif /* _SMING_CORE_Timer_H_ */

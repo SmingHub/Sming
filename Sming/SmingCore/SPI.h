@@ -176,6 +176,7 @@ private:
 	uint32_t getFrequency(int freq, int& pre, int clk);
 	void setFrequency(int freq);
 
+private:
 	SPISettings _SPISettings;
 	uint8 _isTX = false;
 	uint8 _init = false;

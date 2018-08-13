@@ -22,18 +22,21 @@ public:
 	CommandExecutor(WebSocketConnection* reqSocket);
 	~CommandExecutor();
 
-	int executorReceive(char* recvData, int recvSize);
+	int executorReceive(const char* recvData, int recvSize);
 	int executorReceive(char recvChar);
-	int executorReceive(String recvString);
+	int executorReceive(String recvString)
+	{
+		return executorReceive(recvString.c_str(), recvString.length());
+	}
 	void setCommandPrompt(String reqPrompt);
 	void setCommandEOL(char reqEOL);
 
 private:
 	CommandExecutor();
-	void processCommandLine(String cmdString);
+	void processCommandLine(const String& cmdString);
 	char commandBuf[MAX_COMMANDSIZE + 1];
 	uint16_t commandIndex = 0;
-	CommandOutput* commandOutput;
+	CommandOutput* commandOutput = nullptr;
 };
 
 #endif /* SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_ */

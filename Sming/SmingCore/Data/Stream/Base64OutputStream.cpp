@@ -10,36 +10,23 @@
 
 #include "Base64OutputStream.h"
 
-Base64OutputStream::Base64OutputStream(ReadWriteStream* stream, size_t resultSize /* = 512 */)
+Base64OutputStream::Base64OutputStream(IDataSourceStream* stream, size_t resultSize)
 	: StreamTransformer(stream, nullptr, resultSize, (resultSize / 4))
 
 {
-	base64_init_encodestate(&state);
+	base64_init_encodestate(&_state);
 
-	transformCallback = std::bind(&Base64OutputStream::encode, this, std::placeholders::_1, std::placeholders::_2,
-								  std::placeholders::_3, std::placeholders::_4);
+	_transformCallback = std::bind(&Base64OutputStream::encode, this, std::placeholders::_1, std::placeholders::_2,
+								   std::placeholders::_3, std::placeholders::_4);
 }
 
-int Base64OutputStream::encode(uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
+size_t Base64OutputStream::encode(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
 {
-	int count = 0;
-	if (sourceLength == 0) {
-		count = base64_encode_blockend((char*)target, &state);
-		count--; // the last byte is a newline. we don't need it.
-	}
-	else {
-		count = base64_encode_block((const char*)source, sourceLength, (char*)target, &state);
-	}
+	size_t count = 0;
+	if (sourceLength == 0)
+		count = base64_encode_blockend((char*)target, &_state);
+	else
+		count = base64_encode_block((const char*)source, sourceLength, (char*)target, &_state);
 
 	return count;
-}
-
-void Base64OutputStream::saveState()
-{
-	memcpy(&lastState, &state, sizeof(base64_encodestate));
-}
-
-void Base64OutputStream::restoreState()
-{
-	memcpy(&state, &lastState, sizeof(base64_encodestate));
 }

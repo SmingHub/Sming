@@ -3,9 +3,9 @@
 #ifndef INCLUDE_ARDUINO_H_
 #define INCLUDE_ARDUINO_H_
 
-#include "../include/user_config.h"
-#include "../Wiring/WiringFrameworkDependencies.h"
-#include "../SmingCore/SmingCore.h"
-#include "../SmingCore/ArduinoCompat.h"
+#include "user_config.h"
+#include "WiringFrameworkDependencies.h"
+#include "SmingCore.h"
+#include "ArduinoCompat.h"
 
 #endif /* INCLUDE_ARDUINO_H_ */

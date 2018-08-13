@@ -11,7 +11,7 @@
 #ifndef SERVICES_COMMANDPROCESSING_COMMANDDELEGATE_H_
 #define SERVICES_COMMANDPROCESSING_COMMANDDELEGATE_H_
 
-#include "../Wiring/WString.h"
+#include "WString.h"
 #include "Delegate.h"
 #include "Network/TcpClient.h"
 #include "WiringFrameworkIncludes.h"
@@ -31,22 +31,26 @@ class CommandDelegate {
 	friend class HashMap<String, CommandDelegate>;
 
 public:
+	CommandDelegate()
+	{}
+
 	/** Instantiate a command delegate
-	 *  @param  reqName Command name - the text a user types to invoke the command
-	 *  @param  reqHelp Help message shown by CLI "help" command
-	 *  @param  reqGroup The command group to which this command belongs
-	 *  @param  reqFunction Delegate that should be invoked (triggered) when the command is entered by a user
-	 */
-	CommandDelegate(String reqName, String reqHelp, String reqGroup, commandFunctionDelegate reqFunction);
-	~CommandDelegate();
+     *  @param  reqName Command name - the text a user types to invoke the command
+     *  @param  reqHelp Help message shown by CLI "help" command
+     *  @param  reqGroup The command group to which this command belongs
+     *  @param  reqFunction Delegate that should be invoked (triggered) when the command is entered by a user
+     */
+	CommandDelegate(String reqName, String reqHelp, String reqGroup, commandFunctionDelegate reqFunction)
+		: commandName(reqName), commandHelp(reqHelp), commandGroup(reqGroup), commandFunction(reqFunction)
+	{}
 
-	String commandName;						 ///< Command name
-	String commandHelp;						 ///< Command help
-	String commandGroup;					 ///< Command group
+	~CommandDelegate()
+	{}
+
+	String commandName = nullptr;
+	String commandHelp = nullptr;
+	String commandGroup = nullptr;
 	commandFunctionDelegate commandFunction; ///< Command Delegate (function that is called when command is invoked)
-
-private:
-	CommandDelegate();
 };
 
 /** @} */

@@ -2,9 +2,9 @@
 
 spiffs _filesystemStorageHandle;
 
-static u8_t spiffs_work_buf[LOG_PAGE_SIZE * 2];
+static u8_t spiffs_work_buf[SPIFFS_LOG_PAGE_SIZE * 2];
 static u8_t spiffs_fds[32 * 7]; // sizeof(spiffs_fd) * K
-static u8_t spiffs_cache[(LOG_PAGE_SIZE + 32) * 4];
+static u8_t spiffs_cache[(SPIFFS_LOG_PAGE_SIZE + 32) * 4];
 
 static s32_t api_spiffs_read(u32_t addr, u32_t size, u8_t* dst)
 {
@@ -47,7 +47,7 @@ spiffs_config __attribute__((weak)) spiffs_get_storage_config()
 	cfg.phys_size = INTERNAL_FLASH_SIZE - ((u32_t)cfg.phys_addr);
 	cfg.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE;   // according to datasheet
 	cfg.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2; // Important to make large
-	cfg.log_page_size = LOG_PAGE_SIZE;					 // as we said
+	cfg.log_page_size = SPIFFS_LOG_PAGE_SIZE;					 // as we said
 
 	return cfg;
 }
@@ -87,11 +87,11 @@ bool spiffs_format_internal(spiffs_config* cfg)
 	return true;
 }
 
-static void spiffs_mount_internal(spiffs_config* cfg)
+static bool spiffs_mount_internal(spiffs_config* cfg)
 {
 	if (cfg->phys_addr == 0) {
 		SYSTEM_ERROR("Can't start file system, wrong address");
-		return;
+		return false;
 	}
 
 	debugf("fs.start: size:%d Kb, offset:0x%X\n", cfg->phys_size / 1024, cfg->phys_addr);
@@ -116,8 +116,8 @@ static void spiffs_mount_internal(spiffs_config* cfg)
 	debugf("mount res: %d\n", res);
 
 	if (writeFirst) {
-		file_t fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat",
-								SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
+		spiffs_file fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat",
+									 SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
 		SPIFFS_write(&_filesystemStorageHandle, fd, (u8_t*)"1", 1);
 		SPIFFS_fremove(&_filesystemStorageHandle, fd);
 		SPIFFS_close(&_filesystemStorageHandle, fd);
@@ -126,23 +126,25 @@ static void spiffs_mount_internal(spiffs_config* cfg)
 	//dat=0;
 	//flashmem_read(&dat, cfg.phys_addr, 4);
 	//debugf("%X", dat);
+
+	return res == SPIFFS_OK;
 }
 
-void spiffs_mount()
+bool spiffs_mount()
 {
 	spiffs_config cfg = spiffs_get_storage_config();
-	spiffs_mount_internal(&cfg);
+	return spiffs_mount_internal(&cfg);
 }
 
-void spiffs_mount_manual(u32_t phys_addr, u32_t phys_size)
+bool spiffs_mount_manual(u32_t phys_addr, u32_t phys_size)
 {
 	spiffs_config cfg = {0};
 	cfg.phys_addr = phys_addr;
 	cfg.phys_size = phys_size;
 	cfg.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE;   // according to datasheet
 	cfg.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2; // Important to make large
-	cfg.log_page_size = LOG_PAGE_SIZE;					 // as we said
-	spiffs_mount_internal(&cfg);
+	cfg.log_page_size = SPIFFS_LOG_PAGE_SIZE;					 // as we said
+	return spiffs_mount_internal(&cfg);
 }
 
 void spiffs_unmount()
@@ -167,6 +169,5 @@ bool spiffs_format_manual(u32_t phys_addr, u32_t phys_size)
 	cfg.phys_addr = phys_addr;
 	cfg.phys_size = phys_size;
 	spiffs_format_internal(&cfg);
-	spiffs_mount_manual(phys_addr, phys_size);
-	return true;
+	return spiffs_mount_manual(phys_addr, phys_size);
 }

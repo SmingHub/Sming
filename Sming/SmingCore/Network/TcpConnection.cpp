@@ -7,26 +7,15 @@
 
 #include "TcpConnection.h"
 
-#include "../Data/Stream/DataSourceStream.h"
-#include "../../SmingCore/Platform/WDT.h"
+#include "Data/Stream/DataSourceStream.h"
+#include "WDT.h"
 #include "NetUtils.h"
-#include "../Wiring/WString.h"
-#include "../Wiring/IPAddress.h"
-
-#include <algorithm>
-
-TcpConnection::TcpConnection(bool autoDestruct) : autoSelfDestruct(autoDestruct), sleep(0), canSend(true), timeOut(70)
-{}
-
-TcpConnection::TcpConnection(tcp_pcb* connection, bool autoDestruct)
-	: autoSelfDestruct(autoDestruct), sleep(0), canSend(true), timeOut(70)
-{
-	initialize(connection);
-}
+#include "WString.h"
+#include "IPAddress.h"
 
 TcpConnection::~TcpConnection()
 {
-	autoSelfDestruct = false;
+	_autoSelfDestruct = false;
 	close();
 
 #ifdef ENABLE_SSL
@@ -34,33 +23,32 @@ TcpConnection::~TcpConnection()
 #endif
 	debug_d("~TCP connection");
 
-	if (destroyedDelegate) {
-		destroyedDelegate(*this);
+	if (_destroyedDelegate) {
+		_destroyedDelegate(*this);
 	}
 }
 
 bool TcpConnection::connect(const String& server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
-	if (tcp == NULL)
+	if (!_tcp)
 		initialize(tcp_new());
 
 	ip_addr_t addr;
 
-	this->useSsl = useSsl;
+	_useSsl = useSsl;
 #ifdef ENABLE_SSL
-	this->sslOptions |= sslOptions;
+	_sslOptions |= sslOptions;
 
-	if (sslExtension != NULL) {
-		ssl_ext_free(sslExtension);
-	}
+	if (_sslExtension)
+		ssl_ext_free(_sslExtension);
 
-	sslExtension = ssl_ext_new();
-	ssl_ext_set_host_name(sslExtension, server.c_str());
-	ssl_ext_set_max_fragment_size(sslExtension, 4); // 4K max size
+	_sslExtension = ssl_ext_new();
+	ssl_ext_set_host_name(_sslExtension, server.c_str());
+	ssl_ext_set_max_fragment_size(_sslExtension, 4); // 4K max size
 #endif
 
 	debug_d("connect to: %s", server.c_str());
-	canSend = false; // Wait for connection
+	_canSend = false; // Wait for connection
 	DnsLookup* look = new DnsLookup{this, port};
 	err_t dnslook = dns_gethostbyname(server.c_str(), &addr, staticDnsResponse, look);
 	if (dnslook != ERR_OK) {
@@ -78,32 +66,26 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl /* = fal
 
 bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
-	if (tcp == NULL)
+	if (!_tcp)
 		initialize(tcp_new());
 
-	this->useSsl = useSsl;
+	_useSsl = useSsl;
 #ifdef ENABLE_SSL
-	this->sslOptions |= sslOptions;
+	_sslOptions |= sslOptions;
 #endif
 
 	return internalTcpConnect(addr, port);
 }
 
-void TcpConnection::setTimeOut(uint16_t waitTimeOut)
-{
-	debug_d("timeout updating: %d -> %d", timeOut, waitTimeOut);
-	timeOut = waitTimeOut;
-}
-
 err_t TcpConnection::onReceive(pbuf* buf)
 {
-	if (buf == NULL)
-		debug_d("TCP received: (null)");
-	else
+	if (buf) {
 		debug_d("TCP received: %d bytes", buf->tot_len);
-
-	if (buf != NULL && getAvailableWriteSize() > 0)
-		onReadyToSendData(eTCE_Received);
+		if (getAvailableWriteSize() > 0)
+			onReadyToSendData(eTCE_Received);
+	}
+	else
+		debug_d("TCP received: (null)");
 
 	return ERR_OK;
 }
@@ -113,7 +95,7 @@ err_t TcpConnection::onSent(uint16_t len)
 	debug_d("TCP sent: %d", len);
 
 	//debug_d("%d %d", tcp->state, tcp->flags); // WRONG!
-	if (len >= 0 && tcp != NULL && getAvailableWriteSize() > 0)
+	if (len >= 0 && _tcp && getAvailableWriteSize() > 0)
 		onReadyToSendData(eTCE_Sent);
 
 	return ERR_OK;
@@ -121,14 +103,14 @@ err_t TcpConnection::onSent(uint16_t len)
 
 err_t TcpConnection::onPoll()
 {
-	if (sleep >= timeOut && timeOut != USHRT_MAX) {
-		debug_d("TCP connection closed by timeout: %d (from %d)", sleep, timeOut);
+	if (_sleep >= _timeOut && _timeOut != USHRT_MAX) {
+		debug_d("TCP connection closed by timeout: %d (from %d)", _sleep, _timeOut);
 
 		close();
 		return ERR_TIMEOUT;
 	}
 
-	if (tcp != NULL && getAvailableWriteSize() > 0) //(tcp->state >= SYN_SENT && tcp->state <= ESTABLISHED))
+	if (_tcp && getAvailableWriteSize() > 0) //(tcp->state >= SYN_SENT && tcp->state <= ESTABLISHED))
 		onReadyToSendData(eTCE_Poll);
 
 	return ERR_OK;
@@ -141,7 +123,7 @@ err_t TcpConnection::onConnected(err_t err)
 	else
 		debug_d("TCP connected");
 
-	canSend = true;
+	_canSend = true;
 	if (err == ERR_OK)
 		onReadyToSendData(eTCE_Connected);
 	else
@@ -171,16 +153,6 @@ err_t TcpConnection::onSslConnected(SSL* ssl)
 }
 #endif
 
-int TcpConnection::writeString(const String& data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
-{
-	return writeString(data.c_str(), apiflags);
-}
-
-int TcpConnection::writeString(const char* data, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
-{
-	return write(data, strlen(data), apiflags);
-}
-
 int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
 {
 	WDT.alive();
@@ -188,17 +160,17 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WR
 	err_t err = ERR_OK;
 
 #ifdef ENABLE_SSL
-	if (ssl) {
-		u16_t expected = ssl_calculate_write_length(ssl, len);
-		u16_t available = tcp ? tcp_sndbuf(tcp) : 0;
+	if (_ssl) {
+		u16_t expected = ssl_calculate_write_length(_ssl, len);
+		u16_t available = _tcp ? tcp_sndbuf(_tcp) : 0;
 		//		debug_d("SSL: Expected: %d, Available: %d", expected, available);
 		if (expected < 0 || available < expected) {
 			return -1; // No memory
 		}
 
-		int written = axl_ssl_write(ssl, (const uint8_t*)data, len);
+		int written = axl_ssl_write(_ssl, (const uint8_t*)data, len);
 		// debug_d("SSL: Write len: %d, Written: %d", len, written);
-		if (written < ERR_OK) {
+		if (written < 0) {
 			err = written;
 			debug_d("SSL: Write Error: %d", err);
 		}
@@ -209,29 +181,21 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WR
 		if (available < len) {
 			if (available == 0)
 				return -1; // No memory
-			else
-				len = available;
+			len = available;
 		}
-		err = tcp_write(tcp, data, len, apiflags);
+		err = tcp_write(_tcp, data, len, apiflags);
 
 #ifdef ENABLE_SSL
 	}
 #endif
 
-	if (err == ERR_OK) {
-		//debug_d("TCP connection send: %d (%d)", len, original);
-		return len;
-	}
-	else {
-		//debug_d("TCP connection failed with err %d (\"%s\")", err, lwip_strerr(err));
-		return -1;
-	}
+	return (err == ERR_OK) ? len : -1;
 }
 
 int TcpConnection::write(IDataSourceStream* stream)
 {
 #ifdef ENABLE_SSL
-	if (ssl && !sslConnected) {
+	if (_ssl && !_sslConnected) {
 		// wait until the SSL handshake is done.
 		return 0;
 	}
@@ -240,12 +204,11 @@ int TcpConnection::write(IDataSourceStream* stream)
 	// Send data from DataStream
 	bool repeat;
 	bool space;
-	int available;
 	int total = 0;
 	char buffer[NETWORK_SEND_BUFFER_SIZE];
 
 	do {
-		space = (tcp_sndqueuelen(tcp) < TCP_SND_QUEUELEN);
+		space = (tcp_sndqueuelen(_tcp) < TCP_SND_QUEUELEN);
 		if (!space) {
 			debug_d("WAIT FOR FREE SPACE");
 			flush();
@@ -256,25 +219,26 @@ int TcpConnection::write(IDataSourceStream* stream)
 		int pushCount = 0;
 		do {
 			pushCount++;
-			int read = std::min((uint16_t)NETWORK_SEND_BUFFER_SIZE, getAvailableWriteSize());
+			auto read = std::min((unsigned)NETWORK_SEND_BUFFER_SIZE, (unsigned)getAvailableWriteSize());
+			int available = 0;
 			if (read > 0)
 				available = stream->readMemoryBlock(buffer, read);
-			else
-				available = 0;
 
 			if (available > 0) {
 				int written = write(buffer, available, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
-				total += written;
-				stream->seek(std::max(written, 0));
+				if (written > 0) {
+					total += written;
+					stream->seek(written);
+				}
 				debug_d("Written: %d, Available: %d, isFinished: %d, PushCount: %d [TcpBuf: %d]", written, available,
-						(stream->isFinished() ? 1 : 0), pushCount, tcp_sndbuf(tcp));
+						stream->isFinished(), pushCount, tcp_sndbuf(_tcp));
 				repeat = written == available && !stream->isFinished() && pushCount < 25;
 			}
 			else
 				repeat = false;
 		} while (repeat);
 
-		space = (tcp_sndqueuelen(tcp) < TCP_SND_QUEUELEN); // && tcp_sndbuf(tcp) >= FILE_STREAM_BUFFER_SIZE;
+		space = (tcp_sndqueuelen(_tcp) < TCP_SND_QUEUELEN); // && tcp_sndbuf(tcp) >= FILE_STREAM_BUFFER_SIZE;
 	} while (repeat && space);
 
 	flush();
@@ -287,36 +251,36 @@ void TcpConnection::close()
 	closeSsl();
 #endif
 
-	if (tcp == NULL)
+	if (!_tcp)
 		return;
 	debug_d("TCP connection closing");
 
 #ifdef ENABLE_SSL
-	axl_free(tcp);
+	axl_free(_tcp);
 #endif
 
-	tcp_poll(tcp, staticOnPoll, 1);
-	tcp_arg(tcp, NULL); // reset pointer to close connection on next callback
-	tcp = NULL;
+	tcp_poll(_tcp, staticOnPoll, 1);
+	tcp_arg(_tcp, nullptr); // reset pointer to close connection on next callback
+	_tcp = nullptr;
 
 	checkSelfFree();
 }
 
 void TcpConnection::initialize(tcp_pcb* pcb)
 {
-	tcp = pcb;
-	sleep = 0;
-	canSend = true;
+	_tcp = pcb;
+	_sleep = 0;
+	_canSend = true;
 #ifdef ENABLE_SSL
 	axl_init(10);
 #endif
 
-	tcp_nagle_disable(tcp);
-	tcp_arg(tcp, (void*)this);
-	tcp_sent(tcp, staticOnSent);
-	tcp_recv(tcp, staticOnReceive);
-	tcp_err(tcp, staticOnError);
-	tcp_poll(tcp, staticOnPoll, 4);
+	tcp_nagle_disable(_tcp);
+	tcp_arg(_tcp, (void*)this);
+	tcp_sent(_tcp, staticOnSent);
+	tcp_recv(_tcp, staticOnReceive);
+	tcp_err(_tcp, staticOnError);
+	tcp_poll(_tcp, staticOnPoll, 4);
 
 #ifdef NETWORK_DEBUG
 	debug_d("+TCP connection");
@@ -325,17 +289,17 @@ void TcpConnection::initialize(tcp_pcb* pcb)
 
 void TcpConnection::closeTcpConnection(tcp_pcb* tpcb)
 {
-	if (tpcb == NULL)
+	if (!tpcb)
 		return;
 
 	debug_d("-TCP connection");
 
-	tcp_arg(tpcb, NULL);
-	tcp_sent(tpcb, NULL);
-	tcp_recv(tpcb, NULL);
-	tcp_err(tpcb, NULL);
-	tcp_poll(tpcb, NULL, 0);
-	tcp_accept(tpcb, NULL);
+	tcp_arg(tpcb, nullptr);
+	tcp_sent(tpcb, nullptr);
+	tcp_recv(tpcb, nullptr);
+	tcp_err(tpcb, nullptr);
+	tcp_poll(tpcb, nullptr, 0);
+	tcp_accept(tpcb, nullptr);
 
 	auto err = tcp_close(tpcb);
 	if (err != ERR_OK) {
@@ -347,16 +311,16 @@ void TcpConnection::closeTcpConnection(tcp_pcb* tpcb)
 
 void TcpConnection::flush()
 {
-	if (tcp && tcp->state == ESTABLISHED) {
+	if (_tcp && _tcp->state == ESTABLISHED) {
 		//debug_d("TCP flush()");
-		tcp_output(tcp);
+		tcp_output(_tcp);
 	}
 }
 
 bool TcpConnection::internalTcpConnect(IPAddress addr, uint16_t port)
 {
 	NetUtils::FixNetworkRouting();
-	err_t res = tcp_connect(tcp, addr, port, staticOnConnected);
+	err_t res = tcp_connect(_tcp, addr, port, staticOnConnected);
 	debug_d("TcpConnection::connect result:, %d", res);
 	return res == ERR_OK;
 }
@@ -364,32 +328,36 @@ bool TcpConnection::internalTcpConnect(IPAddress addr, uint16_t port)
 err_t TcpConnection::staticOnConnected(void* arg, tcp_pcb* tcp, err_t err)
 {
 	TcpConnection* con = (TcpConnection*)arg;
-	if (con == NULL) {
+	if (!con) {
 		debug_d("OnConnected ABORT");
 		//closeTcpConnection(tcp);
 		tcp_abort(tcp);
 		return ERR_ABRT;
 	}
-	else
-		debug_d("OnConnected");
+
+	return con->_onConnected(tcp, err);
+}
+
+err_t TcpConnection::_onConnected(tcp_pcb* tcp, err_t err)
+{
+	debug_d("OnConnected");
 
 #ifndef ENABLE_SSL
-	if (con->useSsl) {
+	if (_useSsl)
 		debug_w("WARNING: SSL is not compiled. Make sure to compile Sming with 'make ENABLE_SSL=1' ");
-	}
 #else
-	debug_d("staticOnConnected: useSSL: %d, Error: %d", con->useSsl, err);
+	debug_d("_onConnected: useSSL = %d, Error = %d", _useSsl, err);
 
-	if (con->useSsl && err == ERR_OK) {
+	if (_useSsl && err == ERR_OK) {
 		int clientfd = axl_append(tcp);
-		if (clientfd == -1) {
+		if (clientfd < 0) {
 			debug_d("SSL: Unable to add LWIP tcp -> clientfd mapping");
 			return ERR_OK;
 		}
 		else {
-			uint32_t sslOptions = con->sslOptions;
+			uint32_t sslOptions = _sslOptions;
 #ifdef SSL_DEBUG
-			sslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
+			_sslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
 			debug_d("SSL: Show debug data ...");
 #endif
 			debug_d("SSL: Starting connection...");
@@ -399,42 +367,37 @@ err_t TcpConnection::staticOnConnected(void* arg, tcp_pcb* tcp, err_t err)
 #endif
 			debug_d("SSL: handshake start (%d ms)", millis());
 
-			if (con->sslContext != NULL) {
-				ssl_ctx_free(con->sslContext);
-			}
+			if (_sslContext)
+				ssl_ctx_free(_sslContext);
 
-			con->sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | sslOptions, 1);
+			_sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | sslOptions, 1);
 
-			if (con->sslKeyCert.keyLength && con->sslKeyCert.certificateLength) {
+			if (_sslKeyCert.keyLength && _sslKeyCert.certificateLength) {
 				// if we have client certificate -> try to use it.
-				if (ssl_obj_memory_load(con->sslContext, SSL_OBJ_RSA_KEY, con->sslKeyCert.key,
-										con->sslKeyCert.keyLength, con->sslKeyCert.keyPassword) != SSL_OK) {
+				if (ssl_obj_memory_load(_sslContext, SSL_OBJ_RSA_KEY, _sslKeyCert.key, _sslKeyCert.keyLength,
+										_sslKeyCert.keyPassword) != SSL_OK) {
 					debug_d("SSL: Unable to load client private key");
 				}
-				else if (ssl_obj_memory_load(con->sslContext, SSL_OBJ_X509_CERT, con->sslKeyCert.certificate,
-											 con->sslKeyCert.certificateLength, NULL) != SSL_OK) {
+				else if (ssl_obj_memory_load(_sslContext, SSL_OBJ_X509_CERT, _sslKeyCert.certificate,
+											 _sslKeyCert.certificateLength, nullptr) != SSL_OK) {
 					debug_d("SSL: Unable to load client certificate");
 				}
 
-				if (con->freeKeyCert) {
-					con->freeSslKeyCert();
+				if (_freeKeyCert) {
+					freeSslKeyCert();
 				}
 			}
 
-			debug_d("SSL: Session Id Length: %d", (con->sslSessionId != NULL ? con->sslSessionId->length : 0));
-			if (con->sslSessionId != NULL && con->sslSessionId->length > 0) {
+			debug_d("SSL: Session Id Length: %d", _sslSessionId ? _sslSessionId->length : 0);
+			if (_sslSessionId && _sslSessionId->length > 0) {
 				debug_d("-----BEGIN SSL SESSION PARAMETERS-----");
-				for (int i = 0; i < con->sslSessionId->length; i++) {
-					m_printf("%02x", con->sslSessionId->value[i]);
-				}
-
+				debug_hex(DBG, "Session", _sslSessionId->value, _sslSessionId->length);
 				debug_d("\n-----END SSL SESSION PARAMETERS-----");
 			}
 
-			con->ssl =
-				ssl_client_new(con->sslContext, clientfd, (con->sslSessionId != NULL ? con->sslSessionId->value : NULL),
-							   (con->sslSessionId != NULL ? con->sslSessionId->length : 0), con->sslExtension);
-			if (ssl_handshake_status(con->ssl) != SSL_OK) {
+			_ssl = ssl_client_new(_sslContext, clientfd, _sslSessionId ? _sslSessionId->value : nullptr,
+								  _sslSessionId ? _sslSessionId->length : 0, _sslExtension);
+			if (ssl_handshake_status(_ssl) != SSL_OK) {
 				debug_d("SSL: handshake is in progress...");
 				return SSL_OK;
 			}
@@ -443,31 +406,29 @@ err_t TcpConnection::staticOnConnected(void* arg, tcp_pcb* tcp, err_t err)
 			debug_d("SSL: Switching back 80 MHz");
 			System.setCpuFrequency(eCF_80MHz);
 #endif
-			if (con->sslSessionId) {
-				if (con->sslSessionId->value == NULL) {
-					con->sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
-				}
-				memcpy((void*)con->sslSessionId->value, (void*)con->ssl->session_id, con->ssl->sess_id_size);
-				con->sslSessionId->length = con->ssl->sess_id_size;
+			if (_sslSessionId) {
+				if (!_sslSessionId->value)
+					_sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
+				memcpy((void*)_sslSessionId->value, (void*)_ssl->session_id, _ssl->sess_id_size);
+				_sslSessionId->length = _ssl->sess_id_size;
 			}
 		}
 	}
 #endif
 
-	err_t res = con->onConnected(err);
-	con->checkSelfFree();
-	//debug_d("<staticOnConnected");
+	err_t res = onConnected(err);
+	checkSelfFree();
+	//debug_d("<_onConnected");
 	return res;
 }
 
 err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err)
 {
-	TcpConnection* con = (TcpConnection*)arg;
-	err_t ret_err;
 	//Serial.println("echo_recv!");
 
-	if (con == NULL) {
-		if (p != NULL) {
+	auto con = (TcpConnection*)arg;
+	if (!con) {
+		if (p) {
 			/* Inform TCP that we have taken the data. */
 			tcp_recved(tcp, p->tot_len);
 			pbuf_free(p);
@@ -475,81 +436,81 @@ err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err
 		closeTcpConnection(tcp);
 		return ERR_OK;
 	}
-	else
-		con->sleep = 0;
+
+	return con->_onReceive(tcp, p, err);
+}
+
+err_t TcpConnection::_onReceive(tcp_pcb* tcp, pbuf* p, err_t err)
+{
+	_sleep = 0;
 
 	if (err != ERR_OK /*&& err != ERR_CLSD && err != ERR_RST*/) {
 		debug_d("Received ERROR %d", err);
 		/* exit and free resources, for unknown reason */
-		if (p != NULL) {
+		if (p) {
 			/* Inform TCP that we have taken the data. */
 			tcp_recved(tcp, p->tot_len);
 			pbuf_free(p);
 		}
 		closeTcpConnection(tcp); // ??
-		con->tcp = NULL;
-		con->onError(err);
-		//con->close();
-		return err == ERR_ABRT ? ERR_ABRT : ERR_OK;
+		_tcp = nullptr;
+		onError(err);
+		//close();
+		return (err == ERR_ABRT) ? ERR_ABRT : ERR_OK;
 	}
 
-	//if (tcp != NULL && tcp->state == ESTABLISHED) // If active
+	//if (tcp && tcp->state == ESTABLISHED) // If active
 	/* We have taken the data. */
-	if (p != NULL) {
+	if (p)
 		tcp_recved(tcp, p->tot_len);
-	}
-	else {
-		debug_d("TcpConnection::staticOnReceive: pbuf is NULL");
-	}
+	else
+		debug_d("TcpConnection::staticOnReceive: pbuf is nullptr");
 
 #ifdef ENABLE_SSL
-	if (con->ssl && p != NULL) {
+	if (_ssl && p) {
 		WDT.alive(); /* SSL handshake needs time. In theory we have max 8 seconds before the hardware watchdog resets the device */
 		struct pbuf* pout;
 
-		int read_bytes = axl_ssl_read(con->ssl, tcp, p, &pout);
+		int read_bytes = axl_ssl_read(_ssl, tcp, p, &pout);
 
 		// free the SSL pbuf and put the decrypted data in the brand new pout pbuf
-		if (p != NULL) {
+		if (p)
 			pbuf_free(p);
-		}
 
 		if (read_bytes < SSL_OK) {
 			debug_d("SSL: Got error: %d", read_bytes);
-			if (read_bytes == SSL_CLOSE_NOTIFY) {
+			if (read_bytes == SSL_CLOSE_NOTIFY)
 				return ERR_OK;
-			}
 
-			con->close();
+			close();
 			closeTcpConnection(tcp);
 			return read_bytes;
 		}
 
 		if (read_bytes == 0) {
-			if (!con->sslConnected && ssl_handshake_status(con->ssl) == SSL_OK) {
-				con->sslConnected = true;
+			if (!_sslConnected && ssl_handshake_status(_ssl) == SSL_OK) {
+				_sslConnected = true;
 				debug_d("SSL: Handshake done (%d ms).", millis());
 #ifndef SSL_SLOW_CONNECT
 				debug_d("SSL: Switching back to 80 MHz");
 				System.setCpuFrequency(eCF_80MHz); // Preserve some CPU cycles
 #endif
-				if (con->onSslConnected(con->ssl) != ERR_OK) {
-					con->close();
+				if (onSslConnected(_ssl) != ERR_OK) {
+					close();
 					closeTcpConnection(tcp);
 
 					return ERR_ABRT;
 				}
 
-				if (con->sslSessionId) {
-					if (con->sslSessionId->value == NULL) {
-						con->sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
-					}
-					memcpy((void*)con->sslSessionId->value, (void*)con->ssl->session_id, con->ssl->sess_id_size);
-					con->sslSessionId->length = con->ssl->sess_id_size;
+				if (_sslSessionId) {
+					if (!_sslSessionId->value)
+						_sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
+					memcpy((void*)_sslSessionId->value, (void*)_ssl->session_id, _ssl->sess_id_size);
+					_sslSessionId->length = _ssl->sess_id_size;
 				}
 
-				err_t res = con->onConnected(err);
-				con->checkSelfFree();
+				err_t res = onConnected(err);
+				checkSelfFree();
 
 				return res;
 			}
@@ -566,32 +527,32 @@ err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err
 	}
 #endif
 
-	err_t res = con->onReceive(p);
+	err_t res = onReceive(p);
 
-	if (p != NULL)
+	if (p)
 		pbuf_free(p);
 	else {
-		con->close();
+		close();
 		closeTcpConnection(tcp);
 	}
 
-	con->checkSelfFree();
-	//debug_d("<staticOnReceive");
+	checkSelfFree();
+	//debug_d("<_onReceive");
 	return res;
 }
 
 err_t TcpConnection::staticOnSent(void* arg, tcp_pcb* tcp, uint16_t len)
 {
-	TcpConnection* con = (TcpConnection*)arg;
+	auto con = (TcpConnection*)arg;
+	return con ? con->_onSent(tcp, len) : ERR_OK;
+}
 
-	if (con == NULL)
-		return ERR_OK;
-	else
-		con->sleep = 0;
-
-	err_t res = con->onSent(len);
-	con->checkSelfFree();
-	//debug_d("<staticOnSent");
+err_t TcpConnection::_onSent(tcp_pcb* tcp, uint16_t len)
+{
+	_sleep = 0;
+	err_t res = onSent(len);
+	checkSelfFree();
+	//debug_d("<_onSent");
 	return res;
 }
 
@@ -599,40 +560,50 @@ err_t TcpConnection::staticOnPoll(void* arg, tcp_pcb* tcp)
 {
 	TcpConnection* con = (TcpConnection*)arg;
 
-	if (con == NULL) {
+	if (!con) {
 		closeTcpConnection(tcp);
 		return ERR_OK;
 	}
 
+	return con->_onPoll(tcp);
+}
+
+err_t TcpConnection::_onPoll(tcp_pcb* tcp)
+{
 	//if (tcp->state != ESTABLISHED)
 	//	return ERR_OK;
 
-	con->sleep++;
-	err_t res = con->onPoll();
-	con->checkSelfFree();
+	_sleep++;
+	err_t res = onPoll();
+	checkSelfFree();
 	//debug_d("<staticOnPoll");
 	return res;
 }
 
 void TcpConnection::staticOnError(void* arg, err_t err)
 {
-	TcpConnection* con = (TcpConnection*)arg;
-	if (con == NULL)
-		return;
+	auto con = (TcpConnection*)arg;
+	if (con)
+		con->_onError(err);
+}
 
-	con->tcp = NULL; // IMPORTANT. No available connection after error!
-	con->onError(err);
-	con->checkSelfFree();
+void TcpConnection::_onError(err_t err)
+{
+	// IMPORTANT. No available connection after error!
+	_tcp = nullptr;
+
+	onError(err);
+	checkSelfFree();
 	//debug_d("<staticOnError");
 }
 
 void TcpConnection::staticDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, void* arg)
 {
 	DnsLookup* dlook = (DnsLookup*)arg;
-	if (dlook == NULL)
+	if (!dlook)
 		return;
 
-	if (ipaddr != NULL) {
+	if (ipaddr) {
 		IPAddress ip = *ipaddr;
 		debug_d("DNS record found: %s = %d.%d.%d.%d", name, ip[0], ip[1], ip[2], ip[3]);
 
@@ -643,55 +614,50 @@ void TcpConnection::staticDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, 
 		debug_d("DNS record _not_ found: %s", name);
 #endif
 
-		closeTcpConnection(dlook->con->tcp);
-		dlook->con->tcp = NULL;
+		closeTcpConnection(dlook->con->_tcp);
+		dlook->con->_tcp = nullptr;
 		dlook->con->close();
 	}
 
 	delete dlook;
 }
 
-void TcpConnection::setDestroyedDelegate(TcpConnectionDestroyedDelegate destroyedDelegate)
-{
-	this->destroyedDelegate = destroyedDelegate;
-}
-
 #ifdef ENABLE_SSL
+
 void TcpConnection::addSslOptions(uint32_t sslOptions)
 {
-	this->sslOptions |= sslOptions;
+	_sslOptions |= sslOptions;
 }
 
 bool TcpConnection::setSslKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
-								  const char* keyPassword /* = NULL */, bool freeAfterHandshake /* = false */)
+								  const char* keyPassword /* = nullptr */, bool freeAfterHandshake /* = false */)
 {
-	delete[] sslKeyCert.key;
-	delete[] sslKeyCert.certificate;
-	delete[] sslKeyCert.keyPassword;
-	sslKeyCert.keyPassword = NULL;
+	delete[] _sslKeyCert.key;
+	delete[] _sslKeyCert.certificate;
+	delete[] _sslKeyCert.keyPassword;
+	_sslKeyCert.keyPassword = nullptr;
 
-	sslKeyCert.key = new uint8_t[keyLength];
-	sslKeyCert.certificate = new uint8_t[certificateLength];
+	_sslKeyCert.key = new uint8_t[keyLength];
+	_sslKeyCert.certificate = new uint8_t[certificateLength];
 	int passwordLength = 0;
-	if (keyPassword != NULL) {
+	if (keyPassword) {
 		passwordLength = strlen(keyPassword);
-		sslKeyCert.keyPassword = new char[passwordLength + 1];
+		_sslKeyCert.keyPassword = new char[passwordLength + 1];
 	}
 
-	if (!(sslKeyCert.key && sslKeyCert.certificate && (passwordLength == 0 || sslKeyCert.keyPassword))) {
+	if (!(_sslKeyCert.key && _sslKeyCert.certificate && (passwordLength == 0 || _sslKeyCert.keyPassword))) {
 		return false;
 	}
 
-	memcpy(sslKeyCert.key, key, keyLength);
-	memcpy(sslKeyCert.certificate, certificate, certificateLength);
-	if (keyPassword != NULL) {
-		memcpy(sslKeyCert.keyPassword, keyPassword, passwordLength);
-	}
-	freeKeyCert = freeAfterHandshake;
+	memcpy(_sslKeyCert.key, key, keyLength);
+	memcpy(_sslKeyCert.certificate, certificate, certificateLength);
+	if (keyPassword)
+		memcpy(_sslKeyCert.keyPassword, keyPassword, passwordLength);
+	_freeKeyCert = freeAfterHandshake;
 
-	sslKeyCert.keyLength = keyLength;
-	sslKeyCert.certificateLength = certificateLength;
-	sslKeyCert.keyLength = keyLength;
+	_sslKeyCert.keyLength = keyLength;
+	_sslKeyCert.certificateLength = certificateLength;
+	_sslKeyCert.keyLength = keyLength;
 
 	return true;
 }
@@ -699,49 +665,23 @@ bool TcpConnection::setSslKeyCert(const uint8_t* key, int keyLength, const uint8
 bool TcpConnection::setSslKeyCert(const SSLKeyCertPair& keyCertPair, bool freeAfterHandshake /* = false */)
 {
 	freeSslKeyCert();
-	this->sslKeyCert = keyCertPair;
-	freeKeyCert = freeAfterHandshake;
+	_sslKeyCert = keyCertPair;
+	_freeKeyCert = freeAfterHandshake;
 
 	return true;
 }
 
-void TcpConnection::freeSslKeyCert()
-{
-	if (sslKeyCert.key) {
-		delete[] sslKeyCert.key;
-		sslKeyCert.key = NULL;
-	}
-
-	if (sslKeyCert.certificate) {
-		delete[] sslKeyCert.certificate;
-		sslKeyCert.certificate = NULL;
-	}
-
-	if (sslKeyCert.keyPassword) {
-		delete[] sslKeyCert.keyPassword;
-		sslKeyCert.keyPassword = NULL;
-	}
-
-	sslKeyCert.keyLength = 0;
-	sslKeyCert.certificateLength = 0;
-}
-
-SSL* TcpConnection::getSsl()
-{
-	return ssl;
-}
-
 void TcpConnection::closeSsl()
 {
-	if (ssl == nullptr) {
+	if (!_ssl)
 		return;
-	}
 
 	debug_d("SSL: closing ...");
-	ssl_ctx_free(sslContext);
-	sslContext = nullptr;
-	sslExtension = nullptr;
-	ssl = nullptr;
-	sslConnected = false;
+	ssl_ctx_free(_sslContext);
+	_sslContext = nullptr;
+	_sslExtension = nullptr;
+	_ssl = nullptr;
+	_sslConnected = false;
 }
+
 #endif

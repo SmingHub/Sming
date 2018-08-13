@@ -13,7 +13,7 @@
 #ifndef _NWTime_H_
 #define _NWTime_H_
 
-#include "../Wiring/WiringFrameworkDependencies.h"
+#include "WiringFrameworkDependencies.h"
 
 #ifdef __cplusplus
 extern "C" {

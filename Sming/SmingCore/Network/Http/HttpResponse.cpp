@@ -11,192 +11,194 @@
  ****/
 
 #include "HttpResponse.h"
-#include "../WebConstants.h"
+#include "WebConstants.h"
+#include "Data/CircularBuffer.h"
+#include "Data/Stream/MemoryDataStream.h"
+#include "Data/Stream/ChunkedStream.h"
+#include "Data/Stream/FileStream.h"
 
-HttpResponse::~HttpResponse()
-{
-	delete stream;
-	stream = NULL;
-}
 
-HttpResponse* HttpResponse::setContentType(const String& type)
-{
-	return setHeader("Content-Type", type);
-}
-
-HttpResponse* HttpResponse::setContentType(enum MimeType type)
-{
-	return setContentType(ContentType::toString(type));
-}
-
-HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
-{
-	return setHeader("Set-Cookie", name + "=" + value);
-}
+// When receiving response body using internal buffer this is the size we allocate
+#define DEFAULT_RESPONSE_BUFFER_SIZE 1024
 
 HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic /* = false */)
 {
-	String cache = String(isPublic ? "public" : "private") + ", max-age=" + String(maxAgeSeconds) + ", must-revalidate";
-	return setHeader("Cache-Control", cache);
-}
-
-HttpResponse* HttpResponse::setAllowCrossDomainOrigin(const String& controlAllowOrigin)
-{
-	return setHeader("Access-Control-Allow-Origin", controlAllowOrigin);
-}
-
-HttpResponse* HttpResponse::setHeader(const String& name, const String& value)
-{
-	headers[name] = value;
+	String cache = isPublic ? _F("public") : _F("private");
+	cache += _F(", max-age=");
+	cache += String(maxAgeSeconds);
+	cache += _F(", must-revalidate");
+	headers[hhfn_CacheControl] = cache;
 	return this;
 }
 
-bool HttpResponse::sendString(const String& text)
+void HttpResponse::sendString(const String& text)
 {
-	if (stream != NULL && stream->getStreamType() != eSST_Memory) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = NULL;
-	}
-
-	if (stream == NULL) {
-		stream = new MemoryDataStream();
-	}
-
-	MemoryDataStream* writable = static_cast<MemoryDataStream*>(stream);
-	bool success = (writable->write((const uint8_t*)text.c_str(), text.length()) == text.length());
-
-	return success;
-}
-
-bool HttpResponse::hasHeader(const String& name)
-{
-	return headers.contains(name);
-}
-
-void HttpResponse::redirect(const String& location)
-{
-	headers["Location"] = location;
-}
-
-bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)
-{
-	if (stream != NULL) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = NULL;
-	}
-
-	String compressed = fileName + ".gz";
-	if (allowGzipFileCheck && fileExist(compressed)) {
-		debug_d("found %s", compressed.c_str());
-		stream = new FileStream(compressed);
-		headers["Content-Encoding"] = "gzip";
-	}
-	else if (fileExist(fileName)) {
-		debug_d("found %s", fileName.c_str());
-		stream = new FileStream(fileName);
+	if (_buffer) {
+		_buffer->print(text);
 	}
 	else {
+		_buffer = new MemoryDataStream();
+		_buffer->print(text);
+		if (!sendDataStream(_buffer))
+			_buffer = nullptr;
+	}
+}
+
+bool HttpResponse::sendFile(const spiffs_stat& stat)
+{
+	String name = (const char*)stat.name;
+	if (name.endsWith(F(".gz"))) {
+		headers[hhfn_ContentEncoding] = F("gzip");
+		// Content type is determined by uncompressed file extension
+		name.setLength(name.length() - 3);
+	}
+
+	return sendDataStream(new FileStream(stat), ContentType::fromFileName(name));
+}
+
+bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck /* = true*/)
+{
+	spiffs_stat stat;
+
+	if (allowGzipFileCheck) {
+		String compressed = fileName + _F(".gz");
+		if (fileStats(compressed, &stat) >= 0) {
+			debug_d("found %s", compressed.c_str());
+			return sendFile(stat);
+		}
+	}
+
+	if (fileStats(fileName, &stat) >= 0) {
+		debug_d("found %s", fileName.c_str());
+		return sendFile(stat);
+	}
+
+	code = HTTP_STATUS_NOT_FOUND;
+	return false;
+}
+
+void HttpResponse::setBodyStream(IDataSourceStream* stream)
+{
+	if (_bodyStream) {
+		SYSTEM_ERROR("Stream already created");
+		if (_buffer == _bodyStream)
+			_buffer = nullptr;
+		delete _bodyStream;
+	}
+
+	_bodyStream = stream;
+}
+
+String HttpResponse::getStatusLine()
+{
+	return F("HTTP/1.1 ") + String(code) + " " + httpGetStatusText(code) + "\r\n";
+}
+
+HttpHeaders& HttpResponse::prepareHeaders()
+{
+	if (_bodyStream) {
+		int length = _bodyStream->available();
+		if (length >= 0)
+			headers[hhfn_ContentLength] = String(length);
+	}
+	else if (!headers.contains(hhfn_ContentLength))
+		headers[hhfn_ContentLength] = "0";
+
+#ifndef DISABLE_HTTPSRV_ETAG
+	if (_bodyStream && !headers.contains(hhfn_ETag)) {
+		String tag = _bodyStream->id();
+		if (tag)
+			headers[hhfn_ETag] = String('"' + tag + '"');
+	}
+#endif
+
+	return headers;
+}
+
+IDataSourceStream* HttpResponse::getBodyStream()
+{
+	auto s = _bodyStream;
+	_bodyStream = nullptr;
+
+	if (s && headers[hhfn_TransferEncoding] == F("chunked"))
+		return new ChunkedStream(s);
+	else
+		return s;
+}
+
+void HttpResponse::freeStreams()
+{
+	if (_buffer) {
+		/*
+		 * If assigned, buffer must be referenced by _bodyStream otherwise we have a bug
+		 * somewhere in this class.
+		 */
+		assert(_buffer == _bodyStream);
+		_buffer = nullptr;
+	}
+
+	delete _bodyStream;
+	_bodyStream = nullptr;
+}
+
+bool HttpResponse::sendDataStream(IDataSourceStream* stream, const String& reqContentType)
+{
+	if (!stream->isValid()) {
+		debug_e("HttpResponse::sendDataStream() stream invalid, destroying");
 		code = HTTP_STATUS_NOT_FOUND;
+		delete stream;
 		return false;
 	}
 
-	if (!hasHeader("Content-Type")) {
-		const char* mime = ContentType::fromFullFileName(fileName);
-		if (mime != NULL)
-			setContentType(mime);
-	}
+	setBodyStream(stream);
 
-	return true;
-}
-
-bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
-{
-	if (stream != NULL) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = NULL;
-	}
-
-	stream = newTemplateInstance;
-	if (!newTemplateInstance->fileExist()) {
-		code = HTTP_STATUS_NOT_FOUND;
-		delete stream;
-		stream = NULL;
-		return false;
-	}
-
-	if (!hasHeader("Content-Type")) {
-		const char* mime = ContentType::fromFullFileName(newTemplateInstance->fileName());
-		if (mime != NULL)
-			setContentType(mime);
-	}
-
-	if (!hasHeader("Transfer-Encoding") && stream->available() == -1) {
-		setHeader("Transfer-Encoding", "chunked");
-	}
-
-	return true;
-}
-
-bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
-{
-	if (stream != NULL) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = NULL;
-	}
-
-	stream = newJsonStreamInstance;
-	if (!hasHeader("Content-Type")) {
-		setContentType(MIME_JSON);
-	}
-
-	return true;
-}
-
-bool HttpResponse::sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType /* = "" */)
-{
-	if (stream != NULL) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = NULL;
-	}
-	if (reqContentType != "") {
+	if (reqContentType)
 		setContentType(reqContentType);
-	}
-	stream = newDataStream;
+
+	//!! This messes up websocket response so clearly doesn't apply to all transfers...
+
+	// If body size cannot be determined then we must use 'chunk' transfer encoding
+	if (_bodyStream->available() < 0)
+		headers[hhfn_TransferEncoding] = F("chunked");
 
 	return true;
 }
 
 String HttpResponse::getBody()
 {
-	if (stream == NULL) {
-		return "";
-	}
+	if (!_bodyStream || _bodyStream->getStreamType() != eSST_Memory)
+		return nullptr;
 
-	String ret;
-	if (stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
-		MemoryDataStream* memory = (MemoryDataStream*)stream;
-		char buf[1024];
-		while (stream->available() > 0) {
-			int available = memory->readMemoryBlock(buf, 1024);
-			memory->seek(available);
-			ret += String(buf, available);
-			if (available < 1024) {
-				break;
-			}
-		}
-	}
-	return ret;
+	int len = _bodyStream->available();
+	if (len <= 0)
+		return nullptr;
+
+	String s;
+	if (s.setLength(len))
+		_bodyStream->readMemoryBlock(s.begin(), len);
+	return s;
 }
 
 void HttpResponse::reset()
 {
-	code = 0;
+	code = HTTP_STATUS_OK;
 	headers.clear();
-	delete stream;
-	stream = NULL;
+	freeStreams();
+}
+
+bool HttpResponse::bodyReceived(const char* at, size_t length)
+{
+	if (!_buffer) {
+		_buffer = new CircularBuffer(DEFAULT_RESPONSE_BUFFER_SIZE);
+		setBodyStream(_buffer);
+	}
+
+	unsigned res = _buffer->write((const uint8_t*)at, length);
+	if (res != length) {
+		// unable to write the requested bytes - stop here...
+		freeStreams();
+		return false;
+	}
+
+	return true;
 }

@@ -6,8 +6,6 @@
 #ifndef SMINGCORE_DEBUG_H_
 #define SMINGCORE_DEBUG_H_
 
-#include "HardwareSerial.h"
-#include "Clock.h"
 #include "WString.h"
 #include "../Services/CommandProcessing/CommandProcessingIncludes.h"
 
@@ -81,10 +79,10 @@ public:
 	void setDebug(Stream& reqStream);
 
 private:
-	bool started = false;
-	bool useDebugPrefix = true;
-	bool newDebugLine = true;
-	DebugOuputOptions debugOut;
+	bool _started = false;
+	bool _useDebugPrefix = true;
+	bool _newDebugLine = true;
+	DebugOuputOptions _debugOut;
 	void printPrefix();
 	void processDebugCommands(String commandLine, CommandOutput* commandOutput);
 

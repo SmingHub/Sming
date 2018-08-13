@@ -17,11 +17,11 @@
 #define MQTT_MAX_BUFFER_SIZE 1024
 
 #include "TcpClient.h"
-#include "../Delegate.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WHashMap.h"
-#include "../../Services/libemqtt/libemqtt.h"
-#include "../Network/URL.h"
+#include "Delegate.h"
+#include "WString.h"
+#include "WHashMap.h"
+#include "../Services/libemqtt/libemqtt.h"
+#include "Network/URL.h"
 
 //typedef void (*MqttStringSubscriptionCallback)(String topic, String message);
 typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
@@ -37,16 +37,16 @@ public:
 	/** @brief  Construct an MQTT client 
 	*  @deprecated Use instead the empty contructor
 	*/
-	MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback = NULL);
+	MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback = nullptr);
 	/** @brief  Construct an MQTT client
 	*  @deprecated Use instead the empty contructor
 	*/
-	MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback = NULL);
+	MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback = nullptr);
 	virtual ~MqttClient();
 
 	/** @brief  Provide a funcion to be called when a message is received from the broker
 	*/
-	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = NULL);
+	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = nullptr);
 
 	void setKeepAlive(int seconds);		 //send to broker
 	void setPingRepeatTime(int seconds); //used by client
@@ -70,19 +70,12 @@ public:
 				 uint32_t sslOptions = 0);
 
 	using TcpClient::setCompleteDelegate;
-
-	__forceinline bool isProcessing()
-	{
-		return TcpClient::isProcessing();
-	}
-	__forceinline TcpClientState getConnectionState()
-	{
-		return TcpClient::getConnectionState();
-	}
+	using TcpClient::isProcessing;
+	using TcpClient::getConnectionState;
 
 	bool publish(String topic, String message, bool retained = false);
 	bool publishWithQoS(String topic, String message, int QoS, bool retained = false,
-						MqttMessageDeliveredCallback onDelivery = NULL);
+						MqttMessageDeliveredCallback onDelivery = nullptr);
 
 	bool subscribe(const String& topic);
 	bool unsubscribe(const String& topic);
@@ -99,24 +92,24 @@ public:
 protected:
 	virtual err_t onReceive(pbuf* buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-	void debugPrintResponseType(int type, int len);
-	static int staticSendPacket(void* userInfo, const void* buf, unsigned int count);
+	void debugPrintResponseType(unsigned type, unsigned len);
+	static int staticSendPacket(void* userInfo, const void* buf, unsigned count);
 
 private:
 	bool privateConnect(const String& clientName, const String& username, const String& password,
 						boolean useSsl = false, uint32_t sslOptions = 0);
 
-	URL url;
-	mqtt_broker_handle_t broker;
-	int waitingSize;
-	uint8_t buffer[MQTT_MAX_BUFFER_SIZE + 1];
-	uint8_t* current;
-	int posHeader;
-	MqttStringSubscriptionCallback callback;
-	int keepAlive = 60;
-	int pingRepeatTime = 20;
-	unsigned long lastMessage = 0;
-	HashMap<uint16_t, MqttMessageDeliveredCallback> onDeliveryQueue;
+	URL _url;
+	mqtt_broker_handle_t _broker = { 0 };
+	unsigned _waitingSize = 0;
+	uint8_t _buffer[MQTT_MAX_BUFFER_SIZE + 1] = {0};
+	uint8_t* _current = nullptr;
+	unsigned _posHeader = 0;
+	MqttStringSubscriptionCallback _callback = nullptr;
+	uint32_t _keepAlive = 60;
+	uint32_t _pingRepeatTime = 20;
+	uint32_t _lastMessage = 0;
+	HashMap<uint16_t, MqttMessageDeliveredCallback> _onDeliveryQueue; ///< Maps message IDs to callbacks
 };
 
 /** @} */

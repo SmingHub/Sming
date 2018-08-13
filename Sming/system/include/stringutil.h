@@ -21,6 +21,20 @@ extern "C" {
    */
 const char* strstri(const char* pString, const char* pToken);
 
+int strcasecmp(const char *, const char *);
+
+
+static inline char hexchar(unsigned char c)
+{
+	return (c < 10) ? '0' + c : 'a' + c - 10;
+}
+
+
+#ifndef ARRAY_SIZE
+# define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

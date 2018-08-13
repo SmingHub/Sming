@@ -21,9 +21,9 @@ class AuthAdapter {
 public:
 	virtual void setRequest(HttpRequest* request) = 0;
 
-	__forceinline virtual void setResponse(HttpResponse* response)
+	virtual void setResponse(HttpResponse* response)
 	{
-		return;
+		//
 	}
 
 	virtual ~AuthAdapter()
@@ -32,27 +32,32 @@ public:
 
 class HttpBasicAuth : public AuthAdapter {
 public:
-	HttpBasicAuth(const String& username, const String& password);
+	HttpBasicAuth(const String& username, const String& password) : _username(username), _password(password)
+	{}
 
 	void setRequest(HttpRequest* request);
 
 private:
-	String username;
-	String password;
+	String _username;
+	String _password;
 };
 
 class HttpDigestAuth : public AuthAdapter {
 public:
-	HttpDigestAuth(const String& username, const String& password);
+	HttpDigestAuth(const String& username, const String& password) : _username(username), _password(password)
+	{}
 
-	void setRequest(HttpRequest* request);
+	void setRequest(HttpRequest* request)
+	{
+		_request = request;
+	}
 
 	void setResponse(HttpResponse* response);
 
 private:
-	String username;
-	String password;
-	HttpRequest* request = NULL;
+	String _username;
+	String _password;
+	HttpRequest* _request = nullptr;
 };
 
 #endif /* _SMING_CORE_HTTP_REQUEST_AUTH_H_ */

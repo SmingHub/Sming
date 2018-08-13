@@ -5,16 +5,24 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/*
+ * 14/8/2018 (mikee47)
+ *
+ * 	In config() method if we fail to read the existing config we report it and
+ * 	force the requested configuration change as a write may still succeed.
+ *	We do not queue a system ready handler unless config has been called.
+ *	The function has also been modified to simplify. It may seem less efficient,
+ *	however normal behaviour is to change configuration
+ *	 softap_config_equal() added.
+ */
+
 #include "AccessPoint.h"
-#include "../../SmingCore/SmingCore.h"
+#include "Interrupts.h"
+
+// Limit number of connections to our AP
+#define MAX_AP_CONNECTIONS 4
 
 AccessPointClass WifiAccessPoint;
-
-AccessPointClass::AccessPointClass()
-{
-	System.onReady(this);
-	runConfig = NULL;
-}
 
 void AccessPointClass::enable(bool enabled, bool save)
 {
@@ -31,64 +39,84 @@ void AccessPointClass::enable(bool enabled, bool save)
 		wifi_set_opmode_current(mode);
 }
 
-bool AccessPointClass::isEnabled()
+/** @brief compare two AP configurations
+ * 	@param lhs softap_config
+ * 	@param rhs softap_config
+ * 	@retval bool true if configs are the same
+ * 	@note from ESP8266 Arduino source, changed to use safe string compare
+ */
+static bool softap_config_equal(const softap_config& lhs, const softap_config& rhs)
 {
-	return wifi_get_opmode() & SOFTAP_MODE;
+	if (strncmp(reinterpret_cast<const char*>(lhs.ssid), reinterpret_cast<const char*>(rhs.ssid), sizeof(lhs.ssid)) !=
+		0)
+		return false;
+
+	if (strncmp(reinterpret_cast<const char*>(lhs.password), reinterpret_cast<const char*>(rhs.password),
+				sizeof(lhs.password)) != 0)
+		return false;
+
+	if (lhs.channel != rhs.channel)
+		return false;
+
+	if (lhs.ssid_hidden != rhs.ssid_hidden)
+		return false;
+
+	if (lhs.max_connection != rhs.max_connection)
+		return false;
+
+	if (lhs.beacon_interval != rhs.beacon_interval)
+		return false;
+
+	if (lhs.authmode != rhs.authmode)
+		return false;
+
+	return true;
 }
 
-bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mode, bool hidden /* = false*/,
-							  int channel /* = 7*/, int beaconInterval /* = 200*/)
+bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mode, bool hidden, int channel,
+							  int beaconInterval)
 {
-	softap_config config = {0};
+	// WEP not supported
 	if (mode == AUTH_WEP)
-		return false; // Not supported!
+		return false;
 
 	if (mode == AUTH_OPEN)
-		password = "";
+		password = nullptr;
 
 	bool enabled = isEnabled();
 	enable(true);
 	wifi_softap_dhcps_stop();
-	wifi_softap_get_config(&config);
-	if (channel != config.channel || hidden != config.ssid_hidden || mode != config.authmode ||
-		beaconInterval != config.beacon_interval ||
-		strncmp(ssid.c_str(), (char*)config.ssid, sizeof(config.ssid)) != 0 ||
-		strncmp(password.c_str(), (char*)config.password, sizeof(config.password)) != 0) {
-		config.channel = channel;
-		config.ssid_hidden = hidden;
-		memset(config.ssid, 0, sizeof(config.ssid));
-		memset(config.password, 0, sizeof(config.password));
-		strcpy((char*)config.ssid, ssid.c_str());
-		strcpy((char*)config.password, password.c_str());
-		config.ssid_len = ssid.length();
-		config.authmode = mode;
-		config.max_connection = 4; // max 4
-		config.beacon_interval = beaconInterval;
-		if (System.isReady()) {
-			noInterrupts();
-			if (!wifi_softap_set_config(&config)) {
-				interrupts();
-				wifi_softap_dhcps_start();
-				enable(enabled);
-				debugf("Can't set AP configuration!");
-				return false;
-			}
-			interrupts();
-			debugf("AP configuration was updated");
-		}
-		else {
-			debugf("Set AP configuration in background");
-			if (runConfig != NULL)
-				delete runConfig;
-			runConfig = new softap_config();
-			memcpy(runConfig, &config, sizeof(softap_config));
-		}
-	}
-	else
-		debugf("AP configuration loaded");
+	softap_config config = {0};
+	bool cfgValid = wifi_softap_get_config(&config);
+	if (!cfgValid)
+		debugf("Failed to read soft AP config");
+
+	/*
+	 * We create the new config in anticipation of changing it using the onready handler.
+	 * That is the most probable outcome.
+	 */
+	delete _runConfig;
+	_runConfig = new softap_config();
+	_runConfig->channel = channel;
+	_runConfig->ssid_hidden = hidden;
+	_runConfig->ssid_len = ssid.getBytes(_runConfig->ssid, sizeof(_runConfig->ssid));
+	password.getBytes(_runConfig->password, sizeof(_runConfig->password));
+	_runConfig->authmode = mode;
+	_runConfig->max_connection = MAX_AP_CONNECTIONS;
+	_runConfig->beacon_interval = beaconInterval;
 
 	wifi_softap_dhcps_start();
 	enable(enabled);
+
+	if (cfgValid && softap_config_equal(config, *_runConfig)) {
+		debugf("AP configuration loaded");
+		delete _runConfig;
+		_runConfig = nullptr;
+	}
+	else {
+		// Note that this calls our handler immediately if the system is ready
+		System.onReady(this);
+	}
 
 	return true;
 }
@@ -141,11 +169,11 @@ bool AccessPointClass::setIP(IPAddress address)
 
 String AccessPointClass::getMAC()
 {
-	uint8 hwaddr[6] = {0};
-	wifi_get_macaddr(SOFTAP_IF, hwaddr);
-	char buf[20];
-	sprintf(buf, "%02x%02x%02x%02x%02x%02x", hwaddr[0], hwaddr[1], hwaddr[2], hwaddr[3], hwaddr[4], hwaddr[5]);
-	return String(buf);
+	uint8 hwaddr[6];
+	if (wifi_get_macaddr(SOFTAP_IF, hwaddr))
+		return toHexString(hwaddr, sizeof(hwaddr), ':');
+	else
+		return nullptr;
 }
 
 String AccessPointClass::getSSID()
@@ -153,8 +181,9 @@ String AccessPointClass::getSSID()
 	softap_config config = {0};
 	if (!wifi_softap_get_config(&config)) {
 		debugf("Can't read AP configuration!");
-		return "";
+		return nullptr;
 	}
+
 	debugf("SSID: %s", (char*)config.ssid);
 	return String((char*)config.ssid);
 }
@@ -164,7 +193,7 @@ String AccessPointClass::getPassword()
 	softap_config config = {0};
 	if (!wifi_softap_get_config(&config)) {
 		debugf("Can't read AP configuration!");
-		return "";
+		return nullptr;
 	}
 	debugf("Pass: %s", (char*)config.password);
 	return String((char*)config.password);
@@ -172,21 +201,25 @@ String AccessPointClass::getPassword()
 
 void AccessPointClass::onSystemReady()
 {
-	if (runConfig != NULL) {
-		noInterrupts();
-		bool enabled = isEnabled();
-		enable(true);
-		wifi_softap_dhcps_stop();
+	if (!_runConfig)
+		return;
 
-		if (!wifi_softap_set_config(runConfig))
-			debugf("Can't set AP config on system ready event!");
-		else
-			debugf("AP configuration was updated on system ready event");
-		delete runConfig;
-		runConfig = NULL;
+	noInterrupts();
+	bool enabled = isEnabled();
+	enable(true);
+	wifi_softap_dhcps_stop();
 
-		wifi_softap_dhcps_start();
-		enable(enabled);
-		interrupts();
-	}
+	bool ret = wifi_softap_set_config(_runConfig);
+
+	if (ret)
+		debugf("AP configuration was updated");
+	else
+		debugf("Can't set AP configuration!");
+
+	wifi_softap_dhcps_start();
+	enable(enabled);
+	interrupts();
+
+	delete _runConfig;
+	_runConfig = nullptr;
 }

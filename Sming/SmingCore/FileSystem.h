@@ -14,9 +14,15 @@
 #define _SMING_CORE_FILESYSTEM_H_
 
 #include "../Services/SpifFS/spiffs_sming.h"
-#include "../Wiring/WVector.h"
+#include "WString.h"
+#include "WVector.h"
 
-class String;
+/*
+ * File handle
+ *
+ * References an open file
+ */
+typedef signed short file_t;
 
 /// File open flags
 enum FileOpenFlags {
@@ -41,7 +47,14 @@ typedef enum {
 	eSO_FileEnd = SPIFFS_SEEK_END	 ///< End of file
 } SeekOriginFlags;
 
-/** @brief  Open file
+/** @brief  Open file by stat
+ *  @param  name file stat structure obtained from fileStats
+ *  @param  flags Mode to open file
+ *  @retval file File ID or negative error code
+ */
+file_t fileOpen(const spiffs_stat& stat, FileOpenFlags flags);
+
+/** @brief  Open file by name
  *  @param  name File name
  *  @param  flags Mode to open file
  *  @retval file File ID or negative error code
@@ -182,19 +195,26 @@ int fileStats(file_t file, spiffs_stat* stat);
 
 /** @brief  Delete file
  *  @param  name Name of file to delete
+ *  @retval error code
  */
-void fileDelete(const String& name);
+int fileDelete(const String& name);
 
 /** @brief  Delete file
  *  @param  file ID of file to delete
+ *  @retval error code
  */
-void fileDelete(file_t file);
+int fileDelete(file_t file);
 
 /** @brief  Check if a file exists on file system
  *  @param  name Name of file to check for
  *  @retval bool True if file exists
  */
 bool fileExist(const String& name);
+
+/** @brief Format the active file system
+ *  @retval int error code
+ */
+int fileSystemFormat();
 
 /** @} */
 #endif /* _SMING_CORE_FILESYSTEM_H_ */

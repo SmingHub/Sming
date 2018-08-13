@@ -227,13 +227,13 @@ void TwoWire::flush(void)
 void TwoWire::onReceiveService(uint8_t* inBytes, int numBytes)
 {
 	// don't bother if user hasn't registered a callback
-	// if(!user_onReceive){
+	// if (!user_onReceive){
 	//   return;
 	// }
 	// // don't bother if rx buffer is in use by a master requestFrom() op
 	// // i know this drops data, but it allows for slight stupidity
 	// // meaning, they may not have read all the master requestFrom() data yet
-	// if(rxBufferIndex < rxBufferLength){
+	// if (rxBufferIndex < rxBufferLength){
 	//   return;
 	// }
 	// // copy twi rx buffer into local read buffer
@@ -251,7 +251,7 @@ void TwoWire::onReceiveService(uint8_t* inBytes, int numBytes)
 void TwoWire::onRequestService(void)
 {
 	// // don't bother if user hasn't registered a callback
-	// if(!user_onRequest){
+	// if (!user_onRequest){
 	//   return;
 	// }
 	// // reset tx buffer iterator vars

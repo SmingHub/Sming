@@ -12,15 +12,17 @@
 
 #include "../../Services/HexDump/HexDump.h"
 
-
-class ArduCAMStream: public ReadWriteStream {
+class ArduCAMStream : public ReadWriteStream {
 public:
-	ArduCAMStream(ArduCAM *cam);
+	ArduCAMStream(ArduCAM* cam);
 	virtual ~ArduCAMStream();
 
-	virtual StreamType getStreamType() { return eSST_User; }
+	virtual StreamType getStreamType() const
+	{
+		return eSST_User;
+	}
 
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	virtual size_t readMemoryBlock(char* data, size_t bufSize);
 	virtual bool seek(int len);
 	virtual bool isFinished();
 
@@ -34,7 +36,7 @@ public:
 	*  @param  size Quantity of chars to writen
 	*  @retval size_t Quantity of chars written to stream
 	*/
-	virtual size_t write(const uint8_t *buffer, size_t size)
+	virtual size_t write(const uint8_t* buffer, size_t size)
 	{
 		return 0;
 	}
@@ -43,8 +45,7 @@ public:
 	int available();
 
 private:
-
-	ArduCAM *myCAM;
+	ArduCAM* myCAM;
 	bool transfer = false;
 	bool sendHeader = false;
 	size_t len;

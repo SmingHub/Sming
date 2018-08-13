@@ -10,13 +10,24 @@
  *
  ****/
 
+/*
+ *
+ * 13/8/2018 (mikee47)
+ *
+ * 	Parser callback code revised (using macros) with handlers defined in non-static methods.
+ * 	Simplifies code.
+ *
+ * 	Class constructor passed reference to ResourceTree and BodyParser to ensure they
+ * 	are set. Accessor methods removed.
+ *
+ * 	getStatus method removed, use httpGetStatusText() in HttpCommon.
+ */
+
 #ifndef _SMING_CORE_HTTPSERVERCONNECTION_H_
 #define _SMING_CORE_HTTPSERVERCONNECTION_H_
 
 #include "../TcpClient.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WHashMap.h"
-#include "../../Delegate.h"
+#include "Delegate.h"
 
 #include "HttpResource.h"
 #include "HttpRequest.h"
@@ -36,11 +47,21 @@ typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDel
 
 class HttpServerConnection : public TcpClient {
 public:
-	HttpServerConnection(tcp_pcb* clientTcp);
-	virtual ~HttpServerConnection();
+	HttpServerConnection(tcp_pcb* clientTcp, ResourceTree& resourceTree, BodyParsers& bodyParsers) :
+		TcpClient(clientTcp, nullptr, nullptr),
+		_resourceTree(resourceTree),
+		_bodyParsers(bodyParsers)
+	{
+		// create parser ...
+		http_parser_init(&_parser, HTTP_REQUEST);
+		_parser.data = this;
+	}
 
-	void setResourceTree(ResourceTree* resourceTree);
-	void setBodyParsers(BodyParsers* bodyParsers);
+	virtual ~HttpServerConnection()
+	{
+		if (_resource)
+			_resource->shutdown(*this);
+	}
 
 	void send();
 
@@ -52,50 +73,45 @@ public:
 protected:
 	virtual err_t onReceive(pbuf* buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-	virtual void sendError(const char* message = NULL, enum http_status code = HTTP_STATUS_BAD_REQUEST);
+	virtual void sendError(const String& message = nullptr, enum http_status code = HTTP_STATUS_BAD_REQUEST);
 	virtual void onError(err_t err);
 
-	const char* getStatus(enum http_status s);
-
 private:
-	static int staticOnMessageBegin(http_parser* parser);
-	static int staticOnPath(http_parser* parser, const char* at, size_t length);
-	static int staticOnHeadersComplete(http_parser* parser);
-	static int staticOnHeaderField(http_parser* parser, const char* at, size_t length);
-	static int staticOnHeaderValue(http_parser* parser, const char* at, size_t length);
-	static int staticOnBody(http_parser* parser, const char* at, size_t length);
-	static int staticOnMessageComplete(http_parser* parser);
+	HTTP_PARSER_METHOD_0(HttpServerConnection, on_message_begin)
+	HTTP_PARSER_METHOD_2(HttpServerConnection, on_url)
+	HTTP_PARSER_METHOD_N(HttpServerConnection, on_status)
+	HTTP_PARSER_METHOD_2(HttpServerConnection, on_header_field)
+	HTTP_PARSER_METHOD_2(HttpServerConnection, on_header_value)
+	HTTP_PARSER_METHOD_0(HttpServerConnection, on_headers_complete)
+	HTTP_PARSER_METHOD_2(HttpServerConnection, on_body)
+	HTTP_PARSER_METHOD_0(HttpServerConnection, on_message_complete)
+	HTTP_PARSER_METHOD_N(HttpServerConnection, on_chunk_header)
+	HTTP_PARSER_METHOD_N(HttpServerConnection, on_chunk_complete)
 
-	void sendResponseHeaders(HttpResponse* response);
-	bool sendResponseBody(HttpResponse* response);
+	HttpHeaders& prepareHeaders();
 
 public:
-	void* userData = NULL; // << use to pass user data between requests
+	// << use to pass user data between requests
+	void* userData = nullptr;
 
 private:
-	HttpConnectionState state;
+	HttpConnectionState _state = eHCS_Ready;
 
-	http_parser parser;
-	static http_parser_settings parserSettings;
-	static bool parserSettingsInitialized;
+	http_parser _parser;
 
-	ResourceTree* resourceTree = NULL;
-	HttpResource* resource = NULL;
+	ResourceTree& _resourceTree; ///< Constructor gets reference to resource tree
+	HttpResource* _resource;	 ///< Resource identified for current request
 
-	HttpRequest request = HttpRequest(URL());
-	HttpResponse response;
+	HttpRequest _request;   ///< The current request
+	HttpResponse _response; ///< The current response
 
-	HttpResourceDelegate headersCompleteDelegate = 0;
-	HttpResourceDelegate requestCompletedDelegate = 0;
-	HttpServerConnectionBodyDelegate onBodyDelegate = 0;
+	// Incoming request header processing
+	bool _lastWasValue = true;
+	String _lastData;
+	HttpHeaderFieldName _currentField = hhfn_UNKNOWN;
 
-	HttpHeaders requestHeaders;
-	bool lastWasValue = true;
-	String lastData = "";
-	String currentField = "";
-
-	BodyParsers* bodyParsers = NULL;
-	HttpBodyParserDelegate bodyParser;
+	BodyParsers& _bodyParsers;			///< Constructor gets reference to body parsers to use
+	HttpBodyParserDelegate _bodyParser; ///< Parser to use for current request
 };
 
 #endif /* _SMING_CORE_HTTPSERVERCONNECTION_H_ */

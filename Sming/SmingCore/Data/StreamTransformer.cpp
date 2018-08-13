@@ -10,97 +10,83 @@
 
 #include "StreamTransformer.h"
 
-#define NETWORK_SEND_BUFFER_SIZE 1024
+#define TEMP_BUFFER_SIZE (1024 + 10)
 
-StreamTransformer::StreamTransformer(ReadWriteStream* stream, const StreamTransformerCallback& callback,
-									 size_t resultSize /* = 256 */, size_t blockSize /* = 64 */
-									 )
-	: transformCallback(callback)
+
+StreamTransformer::StreamTransformer(IDataSourceStream* stream, const StreamTransformerCallback& callback,
+										size_t resultSize, size_t blockSize) :
+	_transformCallback(callback),
+	_sourceStream(stream),
+	_resultSize(resultSize),
+	_blockSize(blockSize)
 {
-	sourceStream = stream;
-	this->resultSize = resultSize;
-	result = new uint8_t[this->resultSize];
-	this->blockSize = blockSize;
+	_result = new uint8_t[_resultSize];
 }
+
 
 StreamTransformer::~StreamTransformer()
 {
-	delete[] result;
-	delete tempStream;
-	delete sourceStream;
-	result = NULL;
-	tempStream = NULL;
-	sourceStream = NULL;
+	delete[] _result;
+	delete _tempStream;
+	delete _sourceStream;
 }
 
-size_t StreamTransformer::write(uint8_t charToWrite)
-{
-	return sourceStream->write(charToWrite);
-}
 
-size_t StreamTransformer::write(const uint8_t* buffer, size_t size)
+size_t StreamTransformer::readMemoryBlock(char* data, size_t bufSize)
 {
-	return sourceStream->write(buffer, size);
-}
+	if (!_tempStream)
+		_tempStream = new CircularBuffer(TEMP_BUFFER_SIZE);
 
-uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
-{
-	if (tempStream == NULL) {
-		tempStream = new CircularBuffer(NETWORK_SEND_BUFFER_SIZE + 10);
-	}
+	if (_tempStream->isFinished()) {
 
-	if (tempStream->isFinished()) {
-		if (sourceStream->isFinished()) {
+		if (_sourceStream->isFinished())
 			return 0;
-		}
 
 		// Fill the temp stream with data...
-		int i = bufSize / blockSize + 1;
-		do {
-			int len = blockSize;
-			if (i == 1) {
-				len = bufSize % blockSize;
-			}
+		unsigned i = (bufSize + _blockSize - 1) / _blockSize;
+		while (i--) {
+			size_t len = _blockSize;
+			if (i == 0)
+				len = bufSize % _blockSize;
 
-			len = sourceStream->readMemoryBlock(data, len);
-			if (!len) {
+			len = _sourceStream->readMemoryBlock(data, len);
+			if (len == 0)
 				break;
-			}
 
 			saveState();
-			int outLength = transformCallback((uint8_t*)data, len, result, resultSize);
-			if (outLength > tempStream->room()) {
+			size_t outLength = _transformCallback((uint8_t*)data, len, _result, _resultSize);
+			if (outLength > _tempStream->room()) {
 				restoreState();
 				break;
 			}
 
-			if (tempStream->write(result, outLength) != outLength) {
+			if ( _tempStream->write(_result, outLength) != outLength) {
 				debug_e("That should not happen!");
 				restoreState();
 				break;
 			}
 
-			sourceStream->seek(len);
-		} while (--i);
-
-		if (sourceStream->isFinished()) {
-			int outLength = transformCallback(NULL, 0, result, resultSize);
-			tempStream->write(result, outLength);
+			_sourceStream->seek(len);
 		}
 
-	} /* if(tempStream->isFinished()) */
+		if (_sourceStream->isFinished()) {
+			int outLength = _transformCallback(nullptr, 0, _result, _resultSize);
+			_tempStream->write(_result, outLength);
+		}
 
-	return tempStream->readMemoryBlock(data, bufSize);
+	} /* if (tempStream->isFinished()) */
+
+	return _tempStream->readMemoryBlock(data, bufSize);
 }
 
-//Use base class documentation
+
 bool StreamTransformer::seek(int len)
 {
-	return tempStream->seek(len);
+	return _tempStream->seek(len);
 }
 
-//Use base class documentation
+
 bool StreamTransformer::isFinished()
 {
-	return (sourceStream->isFinished() && tempStream->isFinished());
+	return (_sourceStream->isFinished() && _tempStream->isFinished());
 }

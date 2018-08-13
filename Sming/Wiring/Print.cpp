@@ -1,36 +1,36 @@
 /* $Id: Print.cpp 1156 2011-06-07 04:01:16Z bhagman $
-||
-|| @author         Hernando Barragan <b@wiring.org.co>
-|| @url            http://wiring.org.co/
-|| @contribution   Nicholas Zambetti
-|| @contribution   Brett Hagman <bhagman@wiring.org.co>
-|| @contribution   Alexander Brevig <abrevig@wiring.org.co>
-||
-|| @description
-|| | Print library.
-|| |
-|| | Wiring Common API
-|| #
-||
-|| @license Please see cores/Common/License.txt.
-||
-*/
+ ||
+ || @author         Hernando Barragan <b@wiring.org.co>
+ || @url            http://wiring.org.co/
+ || @contribution   Nicholas Zambetti
+ || @contribution   Brett Hagman <bhagman@wiring.org.co>
+ || @contribution   Alexander Brevig <abrevig@wiring.org.co>
+ ||
+ || @description
+ || | Print library.
+ || |
+ || | Wiring Common API
+ || #
+ ||
+ || @license Please see cores/Common/License.txt.
+ ||
+ */
 
 #include "Print.h"
-#include "WiringFrameworkIncludes.h"
+#include "WString.h"
+
 /*
-|| @description
-|| | Virtual method - may be redefined in derived class (polymorphic)
-|| | write()s a specific length string.
-|| #
-*/
+ || @description
+ || | Virtual method - may be redefined in derived class (polymorphic)
+ || | write()s a specific length string.
+ || #
+ */
 
 size_t Print::write(const uint8_t* buffer, size_t size)
 {
 	size_t n = 0;
-	while (size--) {
+	while (size--)
 		n += write(*buffer++);
-	}
 	return n;
 }
 
@@ -49,30 +49,23 @@ size_t Print::print(const char c[])
 // Base method (unsigned)
 size_t Print::print(unsigned long n, int base)
 {
-	if (base == 0)
-		return write(n);
-	else
-		return printNumber(n, base);
+	return (base == 0) ? write(n) : printNumber(n, base);
 }
 
 // Base method (signed)
 size_t Print::print(long n, int base)
 {
-	if (base == 0) {
+	if (base == 0)
 		return write(n);
+
+	// why must this only be in base 10?
+	if (base == 10 && n < 0) {
+		int t = print('-');
+		n = -n;
+		return printNumber(n, 10) + t;
 	}
-	else if (base == 10) {
-		// why must this only be in base 10?
-		if (n < 0) {
-			int t = print('-');
-			n = -n;
-			return printNumber(n, 10) + t;
-		}
-		return printNumber(n, 10);
-	}
-	else {
-		return printNumber(n, base);
-	}
+
+	return printNumber(n, base);
 }
 
 // Overload (unsigned)
@@ -196,17 +189,18 @@ size_t Print::printf(const char* fmt, ...)
 		va_start(va, fmt);
 		sz = m_vsnprintf(tempBuff, buffSize, fmt, va);
 		va_end(va);
-		if (sz > (buffSize - 1)) {
+		if (sz >= buffSize) {
 			buffSize = sz + 1; // Leave room for terminating null char
 			retry = true;
 		}
 		else {
-			if (sz > 0) {
+			if (sz > 0)
 				write(tempBuff, sz);
-			}
-			return sz;
+			break;
 		}
 	} while (retry);
+
+	return sz;
 }
 
 // private methods
@@ -214,26 +208,26 @@ size_t Print::printf(const char* fmt, ...)
 size_t Print::printNumber(unsigned long n, uint8_t base)
 {
 	/* BH: new version to be implemented
-    uint8_t buf[sizeof(char) * sizeof(int32_t)];
-    uint32_t i = 0;
+	 uint8_t buf[sizeof(char) * sizeof(int32_t)];
+	 uint32_t i = 0;
 
-    if (n == 0)
-    {
-      write('0');
-      return;
-    }
+	 if (n == 0)
+	 {
+	 write('0');
+	 return;
+	 }
 
-    while (n > 0)
-    {
-      buf[i++] = n % base;
-      n /= base;
-    }
+	 while (n > 0)
+	 {
+	 buf[i++] = n % base;
+	 n /= base;
+	 }
 
-    for (; i > 0; i--)
-      write((buf[i - 1] < 10 ?
-            '0' + buf[i - 1] :
-            'A' + buf[i - 1] - 10));
-  */
+	 for (; i > 0; i--)
+	 write((buf[i - 1] < 10 ?
+	 '0' + buf[i - 1] :
+	 'A' + buf[i - 1] - 10));
+	 */
 
 	char buf[8 * sizeof(long) + 1]; // Assumes 8-bit chars plus zero byte.
 	char* str = &buf[sizeof(buf) - 1];
@@ -258,14 +252,16 @@ size_t Print::printFloat(double number, uint8_t digits)
 {
 	size_t n = 0;
 
-	if (isnan(number))
+	if (std::isnan(number))
 		return print("nan");
-	if (isinf(number))
+	if (std::isinf(number))
 		return print("inf");
+
+	// constant determined empirically
 	if (number > 4294967040.0)
-		return print("ovf"); // constant determined empirically
+		return print("ovf");
 	if (number < -4294967040.0)
-		return print("ovf"); // constant determined empirically
+		return print("ovf");
 
 	// Handle negative numbers
 	if (number < 0.0) {
@@ -286,9 +282,8 @@ size_t Print::printFloat(double number, uint8_t digits)
 	n += print(int_part);
 
 	// Print the decimal point, but only if there are digits beyond
-	if (digits > 0) {
+	if (digits > 0)
 		n += print(".");
-	}
 
 	// Extract digits from the remainder one at a time
 	while (digits-- > 0) {

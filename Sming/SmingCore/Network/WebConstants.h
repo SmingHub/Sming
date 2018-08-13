@@ -15,16 +15,19 @@
 #ifndef _SMING_CORE_NETWORK_WEBCONSTANTS_H_
 #define _SMING_CORE_NETWORK_WEBCONSTANTS_H_
 
+#include "WString.h"
+
+// MUST list longer extensions first
 #define MIME_TYPE_MAP(XX)                                                                                              \
 	/* Type, extension start, Mime type */                                                                             \
                                                                                                                        \
 	/* Texts */                                                                                                        \
-	XX(HTML, "htm", "text/html")                                                                                       \
+	XX(HTML, "html", "text/html")                                                                                      \
 	XX(TEXT, "txt", "text/plain")                                                                                      \
+	XX(JSON, "json", "application/json")                                                                               \
 	XX(JS, "js", "text/javascript")                                                                                    \
 	XX(CSS, "css", "text/css")                                                                                         \
 	XX(XML, "xml", "text/xml")                                                                                         \
-	XX(JSON, "json", "application/json")                                                                               \
                                                                                                                        \
 	/* Images */                                                                                                       \
 	XX(JPEG, "jpg", "image/jpeg")                                                                                      \
@@ -49,46 +52,9 @@ enum MimeType {
 };
 
 namespace ContentType {
-static const char* fromFileExtension(const String extension)
-{
-	String ext = extension;
-	ext.toLowerCase();
-
-#define XX(name, extensionStart, mime)                                                                                 \
-	if (ext.startsWith(extensionStart)) {                                                                              \
-		return mime;                                                                                                   \
-	}
-	MIME_TYPE_MAP(XX)
-#undef XX
-
-	// Unknown
-	return "<unknown>";
-}
-
-static const char* toString(enum MimeType m)
-{
-#define XX(name, extensionStart, mime)                                                                                 \
-	if (MIME_##name == m) {                                                                                            \
-		return mime;                                                                                                   \
-	}
-	MIME_TYPE_MAP(XX)
-#undef XX
-
-	// Unknown
-	return "<unknown>";
-}
-
-static const char* fromFullFileName(const String fileName)
-{
-	int p = fileName.lastIndexOf('.');
-	if (p != -1) {
-		String ext = fileName.substring(p + 1);
-		const char* mime = ContentType::fromFileExtension(ext);
-		return mime;
-	}
-
-	return NULL;
-}
+String fromFileExtension(String extension);
+String toString(enum MimeType m);
+String fromFileName(const String& fileName);
 }; // namespace ContentType
 
 /** @} */

@@ -16,18 +16,18 @@
 #include "HttpCommon.h"
 #include "HttpRequest.h"
 
+/** @brief special length values passed to parse functions */
+#define PARSE_DATASTART -1
+#define PARSE_DATAEND -2
+
 typedef Delegate<void(HttpRequest&, const char* at, int length)> HttpBodyParserDelegate;
 typedef HashMap<String, HttpBodyParserDelegate> BodyParsers;
 
 typedef struct
 {
 	char searchChar = '=';
-	String postName = "";
+	String postName;
 } FormUrlParserState;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief Parses application/x-www-form-urlencoded body data
@@ -49,9 +49,5 @@ void formUrlParser(HttpRequest& request, const char* at, int length);
  * 				-2 - end of incoming data
  */
 void bodyToStringParser(HttpRequest& request, const char* at, int length);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _SMING_CORE_HTTP_BODY_PARSER_H_ */

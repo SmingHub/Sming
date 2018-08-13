@@ -11,17 +11,15 @@
 #ifndef _SMING_CORE_DATA_UESTREAM_H_
 #define _SMING_CORE_DATA_UESTREAM_H_
 
-#include "../../Wiring/WHashMap.h"
-#include "DataSourceStream.h"
+#include "MemoryDataStream.h"
+#include "HttpParams.h"
 
 /**
  * @brief      UrlEncoded Stream
  * @ingroup    stream data
  *
  *  @{
-*/
-
-typedef HashMap<String, String> HttpParams;
+ */
 
 class UrlencodedOutputStream : public ReadWriteStream {
 public:
@@ -35,18 +33,18 @@ public:
 	{}
 
 	//Use base class documentation
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
-		return stream.getStreamType();
+		return _stream.getStreamType();
 	}
 
 	/**
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
-	*/
+	 */
 	int available()
 	{
-		return stream.available();
+		return _stream.available();
 	}
 
 	/** @brief  Write a single char to stream
@@ -69,25 +67,25 @@ public:
 	}
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize)
+	virtual size_t readMemoryBlock(char* data, size_t bufSize)
 	{
-		return stream.readMemoryBlock(data, bufSize);
+		return _stream.readMemoryBlock(data, bufSize);
 	}
 
 	//Use base class documentation
 	virtual bool seek(int len)
 	{
-		return stream.seek(len);
+		return _stream.seek(len);
 	}
 
 	//Use base class documentation
 	virtual bool isFinished()
 	{
-		return stream.isFinished();
+		return _stream.isFinished();
 	}
 
 private:
-	MemoryDataStream stream;
+	MemoryDataStream _stream;
 };
 
 /** @} */

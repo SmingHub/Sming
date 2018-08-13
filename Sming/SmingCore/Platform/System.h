@@ -5,6 +5,15 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/*
+ * 14/8/2018 (mikee47
+ *
+ * 	When SystemClass::onReady method called, the callback is only queued if the
+ * 	system is not actually ready; there is otherwise no point in queueing the
+ * 	callback as it would never get invoked. To avoid unpredictable behaviour and
+ * 	simplify application code, the callback is invoked immediately in this situation.
+ */
+
 /**	@defgroup system System
  *	@brief	Access to the ESP8266 system
  *	@note   Provides system control and monitoring of the ESP8266.
@@ -12,10 +21,10 @@
 #ifndef SMINGCORE_PLATFORM_SYSTEM_H_
 #define SMINGCORE_PLATFORM_SYSTEM_H_
 
-#include <user_config.h>
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
-#include "../SmingCore/Delegate.h"
+//#include <user_config.h>
+#include "WString.h"
+#include "WVector.h"
+#include "Delegate.h"
 
 class BssInfo;
 
@@ -65,7 +74,8 @@ public:
      *  @addtogroup system
      *  @{
      */
-	SystemClass();
+	SystemClass()
+	{}
 
 	/** @brief System initialisation
 	 */
@@ -74,11 +84,18 @@ public:
 	/** @brief  Check if system ready
      *  @retval bool True if system initialisation is complete and system is now ready
      */
-	bool isReady();
+	bool isReady()
+	{
+		return _state == eSS_Ready;
+	}
+
 
 	/** @brief  Restart system
      */
-	void restart();
+	void restart()
+	{
+		system_restart();
+	}
 
 	/** @brief  Set the CPU frequency
      *  @param  freq Frequency to set CPU
@@ -88,7 +105,10 @@ public:
 	/** @brief  Get the CPU frequency
      *  @retval CpuFrequency The frequency of the CPU
      */
-	CpuFrequency getCpuFrequency();
+	CpuFrequency getCpuFrequency()
+	{
+		return (CpuFrequency)ets_get_cpu_frequency();
+	}
 
 	/** @brief  Enter deep sleep mode
      *  @param  timeMilliseconds Quantity of milliseconds to remain in deep sleep mode
@@ -98,22 +118,24 @@ public:
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
+     *  @note if system is ready, callback is executed immediately without deferral
      */
 	void onReady(SystemReadyDelegate readyHandler);
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
+     *  @note if system is ready, callback is executed immediately without deferral
      */
 	void onReady(ISystemReadyHandler* readyHandler);
 
+
 private:
-	static void staticReadyHandler();
 	void readyHandler();
 
 private:
-	Vector<SystemReadyDelegate> readyHandlers;
-	Vector<ISystemReadyHandler*> readyInterfaces;
-	SystemState state;
+	Vector<SystemReadyDelegate> _readyHandlers;
+	Vector<ISystemReadyHandler*> _readyInterfaces;
+	SystemState _state = eSS_None;
 };
 
 /**	@brief	Global instance of system object

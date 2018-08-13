@@ -20,9 +20,9 @@
 #define _SMING_CORE_HTTPSERVER_H_
 
 #include "TcpServer.h"
-#include "../Wiring/WString.h"
-#include "../Wiring/WHashMap.h"
-#include "../Delegate.h"
+#include "WString.h"
+#include "WHashMap.h"
+#include "Delegate.h"
 #include "Http/HttpResponse.h"
 #include "Http/HttpRequest.h"
 #include "Http/HttpResource.h"
@@ -43,17 +43,27 @@ typedef struct
 } HttpServerSettings;
 
 class HttpServer : public TcpServer {
-	friend class HttpServerConnection;
+	//	friend class HttpServerConnection;
 
 public:
-	HttpServer();
-	HttpServer(HttpServerSettings settings);
-	virtual ~HttpServer();
+	HttpServer()
+	{
+		HttpServerSettings settings;
+		configure(settings);
+	}
+
+	HttpServer(const HttpServerSettings& settings)
+	{
+		configure(settings);
+	}
+
+	virtual ~HttpServer()
+	{}
 
 	/**
 	 * @brief Allows changing the server configuration
 	 */
-	void configure(HttpServerSettings settings);
+	void configure(const HttpServerSettings& settings);
 
 	/**
 	 * @briefs Allows content-type specific parsing of the body based on content-type.
@@ -83,13 +93,12 @@ protected:
 
 protected:
 #ifdef ENABLE_SSL
-	int minHeapSize = 16384;
+	int _minHeapSize = 16384;
 #endif
 
 private:
-	HttpServerSettings settings;
-	ResourceTree resourceTree;
-	BodyParsers bodyParsers;
+	ResourceTree _resourceTree;
+	BodyParsers _bodyParsers;
 };
 
 /** @} */

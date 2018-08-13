@@ -10,68 +10,44 @@
  *
  ****/
 
+/*
+ * 13/8/2018 (mikee47)
+ *
+ * 	Unescaping of post parameters is trivial using uri_unescape_inplace function.
+ */
+
 #include "HttpBodyParser.h"
-#include "../WebHelpers/escape.h"
+#include "../Services/WebHelpers/escape.h"
 
 void formUrlParser(HttpRequest& request, const char* at, int length)
 {
-	FormUrlParserState* state = (FormUrlParserState*)request.args;
+	auto state = static_cast<FormUrlParserState*>(request.args);
 
-	if (length == -1) {
-		if (state != NULL) {
-			delete state;
-		}
-		state = new FormUrlParserState;
-		request.args = (void*)state;
+	if (length == PARSE_DATASTART) {
+		delete state;
+		request.args = new FormUrlParserState;
 		return;
 	}
 
-	if (length == -2) {
-		int maxLength = 0;
-		for (int i = 0; i < request.postParams.count(); i++) {
-			int kLength = request.postParams.keyAt(i).length();
-			int vLength = request.postParams.valueAt(i).length();
-			if (maxLength < vLength || maxLength < kLength) {
-				maxLength = (kLength < vLength ? vLength : kLength);
-			}
-		}
+	auto& params = request.postParams;
 
-		char* buffer = new char[maxLength + 1];
-		for (int i = 0, max = request.postParams.count(); i < max; i++) {
-			String key = request.postParams.keyAt(i);
-			String value = request.postParams.valueAt(i);
+	if (length == PARSE_DATAEND) {
+		delete state;
+		request.args = nullptr;
 
-			uri_unescape(buffer, maxLength + 1, key.c_str(), key.length());
-			String newKey = buffer;
-
-			if (newKey != key) {
-				request.postParams.remove(key);
-				/* we know that postParams is HashMap and
-				 * remove() shifts keys and values by one down, so
-				 * 1) don't change i-index - let it point to the next shifted item
-				 * 2) then as newKey will be added to the end of the Map, decrease max to
-				 * avoid processing the newKey-item added to the end 
-				 * or the invalid item in the place of the one shifted from the end 
-				 * (if it occurs that the 'newKey' = other existing key)
-				 */
-				i--;
-				max--;
-			}
-
-			uri_unescape(buffer, maxLength + 1, value.c_str(), value.length());
-			request.postParams[newKey] = buffer;
-		}
-		delete[] buffer;
-
-		if (state != NULL) {
-			delete state;
-			request.args = NULL;
+		// Unescape post parameters
+		// @todo this should be done within the HttpParams class
+		for (unsigned i = 0; i < params.count(); i++) {
+			String& s = params.keyAt(i);
+			uri_unescape_inplace(s);
+			s = params.valueAt(i);
+			uri_unescape_inplace(s);
 		}
 
 		return;
 	}
 
-	if (state == NULL) {
+	if (!state) {
 		debug_e("Invalid request argument");
 		return;
 	}
@@ -80,14 +56,11 @@ void formUrlParser(HttpRequest& request, const char* at, int length)
 
 	while (data.length()) {
 		int pos = data.indexOf(state->searchChar);
-		if (pos == -1) {
-			if (state->searchChar == '=') {
+		if (pos < 0) {
+			if (state->searchChar == '=')
 				state->postName += data;
-			}
-			else {
-				request.postParams[state->postName] += data;
-			}
-
+			else
+				params[state->postName] += data;
 			return;
 		}
 
@@ -97,32 +70,36 @@ void formUrlParser(HttpRequest& request, const char* at, int length)
 			state->searchChar = '&';
 		}
 		else {
-			request.postParams[state->postName] += buf;
+			params[state->postName] += buf;
 			state->searchChar = '=';
-			state->postName = "";
+			state->postName = nullptr;
 		}
 
-		data = data.substring(pos + 1);
+		data.remove(0, pos + 1);
 	}
 }
 
 void bodyToStringParser(HttpRequest& request, const char* at, int length)
 {
-	String* data = static_cast<String*>(request.args);
+	auto data = static_cast<String*>(request.args);
 
-	if (length == -1) {
+	if (length == PARSE_DATASTART) {
 		delete data;
-		data = new String();
-		request.args = (void*)data;
+		request.args = new String();
 		return;
 	}
 
-	if (length == -2) {
+	if (!data) {
+		debug_e("Invalid request argument");
+		return;
+	}
+
+	if (length == PARSE_DATAEND) {
 		request.setBody(*data);
 		delete data;
-		request.args = NULL;
+		request.args = nullptr;
 		return;
 	}
 
-	*data += String(at, length);
+	data->concat(at, length);
 }

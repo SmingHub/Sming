@@ -14,15 +14,8 @@
 #ifndef APP_TELNETSERVER_H_
 #define APP_TELNETSERVER_H_
 
-#include <user_config.h>
-#include "../Delegate.h"
-#include "../Debug.h"
-#include "TcpClient.h"
 #include "TcpServer.h"
-#include "SystemClock.h"
-#include "../Services/CommandProcessing/CommandExecutor.h"
-
-#include <stdio.h>
+#include "../Services/CommandProcessing/CommandProcessingIncludes.h"
 
 #define TELNETSERVER_MAX_COMMANDSIZE 64
 
@@ -41,10 +34,12 @@ private:
 	bool onClientReceive(TcpClient& client, char* data, int size);
 	void onClientComplete(TcpClient& client, bool succesfull);
 	void wrchar(char c);
-	TcpClient* curClient = nullptr;
-	CommandExecutor* commandExecutor = nullptr;
-	bool telnetDebug = true;
-	bool telnetCommand = true;
+
+private:
+	TcpClient* _curClient = nullptr;
+	CommandExecutor* _commandExecutor = nullptr;
+	bool _telnetDebug = true;
+	bool _telnetCommand = true;
 };
 
 /** @} */

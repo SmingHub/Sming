@@ -5,6 +5,13 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+/*
+ * 13/8/2018 (mikee47)
+ *
+ * Explanation required as to why all these methods use __forceinline - is this related to
+ * their use by interrupt routines?
+ */
+
 /** @defgroup   delegate Delegate
  *  @brief      Delegates are event handlers
  *              Several handlers may be triggered for each event
@@ -32,7 +39,7 @@ public:
      */
 	__forceinline void increase()
 	{
-		references++;
+		_refCount++;
 	}
 
 	/** @brief  Decrease the quantity of delegate caller references by one
@@ -40,13 +47,13 @@ public:
      */
 	__forceinline void decrease()
 	{
-		references--;
-		if (references == 0)
+		_refCount--;
+		if (_refCount == 0)
 			delete this;
 	}
 
 private:
-	uint32_t references = 1;
+	uint32_t _refCount = 1;
 };
 
 template <class> class MethodCaller; /* undefined */
@@ -65,7 +72,7 @@ public:
      *  @param  c Pointer to the method class type
      *  @param  m Declaration of the method
      */
-	MethodCaller(ClassType* c, MethodDeclaration m) : mClass(c), mMethod(m)
+	MethodCaller(ClassType* c, MethodDeclaration m) : _class(c), _method(m)
 	{}
 
 	/** @brief  Invoke the delegate method
@@ -74,12 +81,12 @@ public:
      */
 	ReturnType invoke(ParamsList... args)
 	{
-		return (mClass->*mMethod)(args...);
+		return (_class->*_method)(args...);
 	}
 
 private:
-	ClassType* mClass;
-	MethodDeclaration mMethod;
+	ClassType* _class;
+	MethodDeclaration _method;
 };
 
 /** @brief  Delegate function caller class
@@ -90,7 +97,7 @@ public:
 	/** @brief  Instantiate a delegate function caller object
      *  @param  m Method declaration
      */
-	FunctionCaller(MethodDeclaration m) : mMethod(m)
+	FunctionCaller(MethodDeclaration m) : _method(m)
 	{}
 
 	/** @brief  Invoke the delegate function
@@ -99,11 +106,11 @@ public:
      */
 	ReturnType invoke(ParamsList... args)
 	{
-		return (mMethod)(args...);
+		return (_method)(args...);
 	}
 
 private:
-	MethodDeclaration mMethod;
+	MethodDeclaration _method;
 };
 
 template <class> class Delegate; /* undefined */
@@ -122,7 +129,7 @@ public:
     */
 	__forceinline Delegate()
 	{
-		impl = nullptr;
+		_impl = nullptr;
 	}
 
 	// Class method
@@ -132,10 +139,7 @@ public:
 	 */
 	template <class ClassType> __forceinline Delegate(MethodDeclaration<ClassType> m, ClassType* c)
 	{
-		if (m != NULL)
-			impl = new MethodCaller<MethodDeclaration<ClassType>>(c, m);
-		else
-			impl = nullptr;
+		_impl = m ? new MethodCaller<MethodDeclaration<ClassType>>(c, m) : nullptr;
 	}
 
 	// Function
@@ -144,16 +148,13 @@ public:
 	 */
 	__forceinline Delegate(FunctionDeclaration m)
 	{
-		if (m != NULL)
-			impl = new FunctionCaller<FunctionDeclaration, ReturnType, ParamsList...>(m);
-		else
-			impl = nullptr;
+		_impl = m ? new FunctionCaller<FunctionDeclaration, ReturnType, ParamsList...>(m) : nullptr;
 	}
 
 	__forceinline ~Delegate()
 	{
-		if (impl != nullptr)
-			impl->decrease();
+		if (_impl)
+			_impl->decrease();
 	}
 
 	/** @brief  Invoke a delegate
@@ -162,7 +163,7 @@ public:
      */
 	__forceinline ReturnType operator()(ParamsList... params) const
 	{
-		return impl->invoke(params...);
+		return _impl->invoke(params...);
 	}
 
 	/** @brief  Move a delegate from another object
@@ -170,8 +171,8 @@ public:
      */
 	__forceinline Delegate(Delegate&& that)
 	{
-		impl = that.impl;
-		that.impl = nullptr;
+		_impl = that._impl;
+		that._impl = nullptr;
 	}
 
 	/** @brief  Copy a delegate from another Delegate object
@@ -199,11 +200,11 @@ public:
 	Delegate& operator=(Delegate&& that) // move assignment
 	{
 		if (this != &that) {
-			if (impl)
-				impl->decrease();
+			if (_impl)
+				_impl->decrease();
 
-			impl = that.impl;
-			that.impl = nullptr;
+			_impl = that._impl;
+			that._impl = nullptr;
 		}
 		return *this;
 	}
@@ -213,23 +214,23 @@ public:
      */
 	__forceinline operator bool() const
 	{
-		return impl != nullptr;
+		return _impl != nullptr;
 	}
 
 protected:
 	void copy(const Delegate& other)
 	{
-		if (impl != other.impl) {
-			if (impl)
-				impl->decrease();
-			impl = other.impl;
-			if (impl)
-				impl->increase();
+		if (_impl != other._impl) {
+			if (_impl)
+				_impl->decrease();
+			_impl = other._impl;
+			if (_impl)
+				_impl->increase();
 		}
 	}
 
 private:
-	IDelegateCaller<ReturnType, ParamsList...>* impl = nullptr;
+	IDelegateCaller<ReturnType, ParamsList...>* _impl = nullptr;
 };
 
 /** @} */

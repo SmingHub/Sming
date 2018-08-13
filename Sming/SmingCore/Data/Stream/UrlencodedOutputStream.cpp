@@ -9,32 +9,21 @@
  ****/
 
 #include "UrlencodedOutputStream.h"
+#include "../Services/WebHelpers/escape.h"
 
-#include "../../../Services/WebHelpers/escape.h"
+/*
+ * TODO: Revise this so stream produces encoded output line-by-line,
+ * rather than all at once.
+ */
 
 UrlencodedOutputStream::UrlencodedOutputStream(const HttpParams& params)
 {
-	int maxLength = 0;
-	for (int i = 0; i < params.count(); i++) {
-		int kLength = params.keyAt(i).length();
-		int vLength = params.valueAt(i).length();
-		if (maxLength < vLength || maxLength < kLength) {
-			maxLength = (kLength < vLength ? vLength : kLength);
-		}
-	}
+	for (unsigned i = 0; i < params.count(); i++) {
+		if (i > 0)
+			_stream.write('&');
 
-	char buffer[maxLength * 4 + 1];
-	for (int i = 0, max = params.count(); i < max; i++) {
-		String key = params.keyAt(i);
-		String value = params.valueAt(i);
-
-		char* temp = uri_escape(buffer, maxLength + 1, value.c_str(), value.length());
-		String write = params.keyAt(i) + "=" + String(temp);
-		if (i + 1 != max) {
-			write += "&";
-		}
-		if (stream.write((uint8_t*)write.c_str(), write.length()) != write.length()) {
-			break;
-		}
+		_stream.print(uri_escape(params.keyAt(i)));
+		_stream.print('=');
+		_stream.print(uri_escape(params.valueAt(i)));
 	}
 }

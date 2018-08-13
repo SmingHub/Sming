@@ -7,39 +7,21 @@
 
 #include "CommandOutput.h"
 
-CommandOutput::CommandOutput(TcpClient* reqClient) : outputTcpClient(reqClient)
-{}
-
-CommandOutput::CommandOutput(Stream* reqStream) : outputStream(reqStream)
-{}
-
-CommandOutput::CommandOutput(WebSocketConnection* reqSocket) : outputSocket(reqSocket)
-{}
-
-CommandOutput::~CommandOutput()
-{
-	debugf("destruct");
-}
-
 size_t CommandOutput::write(uint8_t outChar)
 {
-	if (outputTcpClient) {
-		char outBuf[1] = {outChar};
-		return outputTcpClient->write(outBuf, 1);
-	}
+	if (_outputTcpClient)
+		return _outputTcpClient->write((const char*)&outChar, 1);
 
-	if (outputStream) {
-		return outputStream->write(outChar);
-	}
+	if (_outputStream)
+		return _outputStream->write(outChar);
 
-	if (outputSocket) {
+	if (_outputSocket) {
 		if (outChar == '\r') {
-			outputSocket->sendString(tempSocket);
-			tempSocket = "";
+			_outputSocket->sendString(_tempSocket);
+			_tempSocket.setLength(0);
 		}
-		else {
-			tempSocket = tempSocket + String(char(outChar));
-		}
+		else
+			_tempSocket += char(outChar);
 
 		return 1;
 	}

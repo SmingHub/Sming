@@ -13,9 +13,9 @@
 #ifndef _HARDWARESERIAL_H_
 #define _HARDWARESERIAL_H_
 
-#include "../Wiring/WiringFrameworkDependencies.h"
-#include "../Wiring/Stream.h"
-#include "../SmingCore/Delegate.h"
+#include "WiringFrameworkDependencies.h"
+#include "Stream.h"
+#include "Delegate.h"
 #include "../Services/CommandProcessing/CommandProcessingIncludes.h"
 
 #define UART_ID_0 0 ///< ID of UART 0
@@ -178,9 +178,8 @@ public:
 	/** @brief  Read a block of characters from serial port
 	 *  @param  buf Pointer to buffer to hold received data
 	 *  @param  max_len Maximum quantity of characters to read
-	 *  @retval int Quantity of characters read
 	 */
-	int readMemoryBlock(char* buf, int max_len);
+	size_t readMemoryBlock(char* buf, size_t max_len);
 
 	/** @brief  Read a character from serial port without removing from input buffer
      *  @retval int Character read from serial port or -1 if buffer empty
@@ -252,18 +251,18 @@ public:
 	 * @param char c - character to search for
 	 * @retval size_t -1 if not found 0 or positive number otherwise
 	 */
-	size_t indexOf(char c);
+	int indexOf(char c);
 
 private:
-	int uartNr;
-	static HWSerialMemberData memberData[NUMBER_UARTS];
+	int _uartNr;
+	static HWSerialMemberData _memberData[NUMBER_UARTS];
 
-	uart_t* uart = nullptr;
-	size_t rxSize;
+	uart_t* _uart = nullptr;
+	size_t _rxSize = 0;
 
-	static os_event_t* serialQueue;
+	static os_event_t* _serialQueue;
 
-	static bool init;
+	static bool _init;
 
 	/** @brief  Interrupt handler for UART0 receive events
 	 * @param uart_t* pointer to UART structure

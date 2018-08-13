@@ -1,29 +1,29 @@
 /* $Id: Stream.cpp 1151 2014-08-01 21:13:05Z  $
-||
-|| @author         David A. Mellis
-|| @url            http://wiring.org.co/
-|| @contribution   parsing functions based on TextFinder library by Michael Margolis
-||
-|| @description
-|| | Base class for streams.
-|| |
-|| | Wiring Common API
-|| #
-||
-|| @notes
-|| | Originally discussed here:
-|| |
-|| | http://code.google.com/p/arduino/issues/detail?id=60
-|| #
-||
-|| @license Please see cores/Common/License.txt.
-||
-*/
+ ||
+ || @author         David A. Mellis
+ || @url            http://wiring.org.co/
+ || @contribution   parsing functions based on TextFinder library by Michael Margolis
+ ||
+ || @description
+ || | Base class for streams.
+ || |
+ || | Wiring Common API
+ || #
+ ||
+ || @notes
+ || | Originally discussed here:
+ || |
+ || | http://code.google.com/p/arduino/issues/detail?id=60
+ || #
+ ||
+ || @license Please see cores/Common/License.txt.
+ ||
+ */
 
 #include "WiringFrameworkIncludes.h"
 #include "Stream.h"
 
-#include "../SmingCore/Clock.h"
+#include "Clock.h"
 
 #define PARSE_TIMEOUT 1000 // default number of milli-seconds to wait
 #define NO_SKIP_CHAR 1	 // a magic char not found in a valid ASCII numeric field
@@ -38,20 +38,23 @@ int Stream::timedRead()
 		if (c >= 0)
 			return c;
 	} while (millis() - _startMillis < _timeout);
-	return -1; // -1 indicates timeout
+
+	// Timeout
+	return -1;
 }
 
 // private method to peek stream with timeout
 int Stream::timedPeek()
 {
-	int c;
 	_startMillis = millis();
 	do {
-		c = peek();
+		int c = peek();
 		if (c >= 0)
 			return c;
 	} while (millis() - _startMillis < _timeout);
-	return -1; // -1 indicates timeout
+
+	// Timeout
+	return -1;
 }
 
 // returns peek of the next digit in the stream or -1 if timeout
@@ -67,7 +70,9 @@ int Stream::peekNextDigit()
 			return c;
 		if (c >= '0' && c <= '9')
 			return c;
-		read(); // discard non-numeric
+
+		// discard non-numeric
+		read();
 	}
 }
 
@@ -103,30 +108,30 @@ bool Stream::findUntil(char* target, char* terminator)
 // returns true if target string is found, false if terminated or timed out
 bool Stream::findUntil(char* target, size_t targetLen, char* terminator, size_t termLen)
 {
-	size_t index = 0; // maximum target string length is 64k bytes!
-	size_t termIndex = 0;
-	int c;
-
 	if (*target == 0)
 		return true; // return true if target is a null string
-	while ((c = timedRead()) > 0) {
-		if (c != target[index])
-			index = 0; // reset index if any char does not match
 
+	size_t index = 0;
+	size_t termIndex = 0;
+	int c;
+	while ((c = timedRead()) > 0) {
 		if (c == target[index]) {
-			//////Serial.print("found "); Serial.write(c); Serial.print("index now"); Serial.println(index+1);
-			if (++index >= targetLen) { // return true if all chars in the target match
-				return true;
-			}
+			if (++index >= targetLen)
+				return true; // all characters matched
+		}
+		else {
+			// char does not match, reset to start of target string
+			index = 0;
 		}
 
 		if (termLen > 0 && c == terminator[termIndex]) {
 			if (++termIndex >= termLen)
-				return false; // return false if terminate string found before target string
+				return false; // terminate string found before target string
 		}
 		else
 			termIndex = 0;
 	}
+
 	return false;
 }
 

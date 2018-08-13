@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include "../SmingCore/SmingCore.h"
+#include "SmingCore.h"
 
 #ifndef SMING_RELEASE
 extern "C" {
@@ -20,6 +20,7 @@ extern "C" void  __attribute__((weak)) user_init(void)
 	Serial.systemDebugOutput(false);
 	system_set_os_print(0);
 #else
+	Serial.systemDebugOutput(true);
 	gdbstub_init();
 #endif
 	init(); // User code init

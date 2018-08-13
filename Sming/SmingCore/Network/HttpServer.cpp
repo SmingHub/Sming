@@ -13,68 +13,41 @@
 #include "HttpServer.h"
 
 #include "TcpClient.h"
-#include "../Wiring/WString.h"
+#include "WString.h"
 
-HttpServer::HttpServer()
+void HttpServer::configure(const HttpServerSettings& settings)
 {
-	settings.keepAliveSeconds = 0;
-	configure(settings);
-}
+	if (settings.minHeapSize >= 0)
+		_minHeapSize = settings.minHeapSize;
 
-HttpServer::HttpServer(HttpServerSettings settings)
-{
-	configure(settings);
-}
-
-void HttpServer::configure(HttpServerSettings settings)
-{
-	this->settings = settings;
-	if (settings.minHeapSize != -1 && settings.minHeapSize > -1) {
-		minHeapSize = settings.minHeapSize;
-	}
-
-	if (settings.useDefaultBodyParsers) {
+	if (settings.useDefaultBodyParsers)
 		setBodyParser(ContentType::toString(MIME_FORM_URL_ENCODED), formUrlParser);
-	}
 
 	setTimeOut(settings.keepAliveSeconds);
 #ifdef ENABLE_SSL
-	sslSessionCacheSize = settings.sslSessionCacheSize;
+	_sslSessionCacheSize = settings.sslSessionCacheSize;
 #endif
-}
-
-HttpServer::~HttpServer()
-{
-	for (int i = 0; i < resourceTree.count(); i++) {
-		if (resourceTree.valueAt(i) != NULL) {
-			delete resourceTree.valueAt(i);
-		}
-	}
 }
 
 void HttpServer::setBodyParser(const String& contentType, HttpBodyParserDelegate parser)
 {
-	bodyParsers[contentType] = parser;
+	_bodyParsers[contentType] = parser;
 }
 
 TcpConnection* HttpServer::createClient(tcp_pcb* clientTcp)
 {
-	HttpServerConnection* con = new HttpServerConnection(clientTcp);
-	con->setResourceTree(&resourceTree);
-	con->setBodyParsers(&bodyParsers);
-
-	return con;
+	return new HttpServerConnection(clientTcp, _resourceTree, _bodyParsers);
 }
 
 void HttpServer::addPath(String path, const HttpPathDelegate& callback)
 {
-	if (path.length() > 1 && path.endsWith("/")) {
-		path = path.substring(0, path.length() - 1);
-	}
+	if (path.length() > 1 && path.endsWith("/"))
+		path.remove(path.length() - 1);
 	debug_i("'%s' registered", path.c_str());
 
 	HttpCompatResource* resource = new HttpCompatResource(callback);
-	resourceTree[path] = resource;
+	if (resource)
+		_resourceTree[path] = resource;
 }
 
 void HttpServer::setDefaultHandler(const HttpPathDelegate& callback)
@@ -85,13 +58,15 @@ void HttpServer::setDefaultHandler(const HttpPathDelegate& callback)
 void HttpServer::addPath(const String& path, const HttpResourceDelegate& onRequestComplete)
 {
 	HttpResource* resource = new HttpResource;
-	resource->onRequestComplete = onRequestComplete;
-	resourceTree[path] = resource;
+	if (resource) {
+		resource->onRequestComplete = onRequestComplete;
+		_resourceTree[path] = resource;
+	}
 }
 
 void HttpServer::addPath(const String& path, HttpResource* resource)
 {
-	resourceTree[path] = resource;
+	_resourceTree[path] = resource;
 }
 
 void HttpServer::setDefaultResource(HttpResource* resource)

@@ -8,6 +8,14 @@
 #include "FileSystem.h"
 #include "../Wiring/WString.h"
 
+file_t fileOpen(const spiffs_stat& stat, FileOpenFlags flags)
+{
+	int res = SPIFFS_open_by_page(&_filesystemStorageHandle, stat.pix, flags, 0);
+	if (res < 0)
+		debugf("open errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
+	return res;
+}
+
 file_t fileOpen(const String& name, FileOpenFlags flags)
 {
 	int res;
@@ -81,20 +89,20 @@ int fileStats(file_t file, spiffs_stat* stat)
 	return SPIFFS_fstat(&_filesystemStorageHandle, file, stat);
 }
 
-void fileDelete(const String& name)
+int fileDelete(const String& name)
 {
-	SPIFFS_remove(&_filesystemStorageHandle, name.c_str());
+	return SPIFFS_remove(&_filesystemStorageHandle, name.c_str());
 }
 
-void fileDelete(file_t file)
+int fileDelete(file_t file)
 {
-	SPIFFS_fremove(&_filesystemStorageHandle, file);
+	return SPIFFS_fremove(&_filesystemStorageHandle, file);
 }
 
 bool fileExist(const String& name)
 {
 	spiffs_stat stat = {0};
-	if (fileStats(name.c_str(), &stat) < 0)
+	if (fileStats(name, &stat) < 0)
 		return false;
 	return stat.name[0] != '\0';
 }
@@ -111,19 +119,19 @@ void fileClearLastError(file_t fd)
 
 void fileSetContent(const String& fileName, const String& content)
 {
-	fileSetContent(fileName, content.c_str());
+	fileSetContent(fileName, content);
 }
 
 void fileSetContent(const String& fileName, const char* content)
 {
-	file_t file = fileOpen(fileName.c_str(), eFO_CreateNewAlways | eFO_WriteOnly);
+	file_t file = fileOpen(fileName, eFO_CreateNewAlways | eFO_WriteOnly);
 	fileWrite(file, content, strlen(content));
 	fileClose(file);
 }
 
 uint32_t fileGetSize(const String& fileName)
 {
-	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
+	file_t file = fileOpen(fileName, eFO_ReadOnly);
 	// Get size
 	fileSeek(file, 0, eSO_FileEnd);
 	int size = fileTell(file);
@@ -154,7 +162,7 @@ Vector<String> fileList()
 
 String fileGetContent(const String& fileName)
 {
-	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
+	file_t file = fileOpen(fileName, eFO_ReadOnly);
 	// Get size
 	fileSeek(file, 0, eSO_FileEnd);
 	int size = fileTell(file);
@@ -178,7 +186,7 @@ int fileGetContent(const String& fileName, char* buffer, int bufSize)
 		return 0;
 	*buffer = 0;
 
-	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
+	file_t file = fileOpen(fileName, eFO_ReadOnly);
 	// Get size
 	fileSeek(file, 0, eSO_FileEnd);
 	int size = fileTell(file);
@@ -191,4 +199,10 @@ int fileGetContent(const String& fileName, char* buffer, int bufSize)
 	fileRead(file, buffer, size);
 	fileClose(file);
 	return size;
+}
+
+
+int fileSystemFormat()
+{
+	return SPIFFS_format(&_filesystemStorageHandle);
 }

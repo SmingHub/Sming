@@ -11,7 +11,7 @@
 #ifndef _SMING_CORE_DATA_QPSTREAM_H_
 #define _SMING_CORE_DATA_QPSTREAM_H_
 
-#include "../StreamTransformer.h"
+#include "StreamTransformer.h"
 
 /**
  * @brief      Quoted-Printable Stream
@@ -28,7 +28,7 @@ public:
 	 * @param size_t resultSize - the size of the intermediate buffer.
 	 * 							- it will be created once per object, reused multiple times and kept until the end of the object
 	 */
-	QuotedPrintableOutputStream(ReadWriteStream* stream, size_t resultSize = 512);
+	QuotedPrintableOutputStream(IDataSourceStream* stream, size_t resultSize = 512);
 };
 
 /** @} */

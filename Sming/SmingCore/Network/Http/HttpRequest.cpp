@@ -11,27 +11,26 @@
  ****/
 
 #include "HttpRequest.h"
-
-HttpRequest::HttpRequest(const URL& uri) : uri(uri)
-{}
+#include "Data/Stream/MemoryDataStream.h"
+#include "Data/Stream/ChunkedStream.h"
+#include "Data/Stream/UrlencodedOutputStream.h"
 
 HttpRequest::HttpRequest(const HttpRequest& value) : uri(value.uri)
 {
 	*this = value;
 	method = value.method;
-	if (value.headers.count()) {
-		setHeaders(value.headers);
-	}
-	headersCompletedDelegate = value.headersCompletedDelegate;
-	requestBodyDelegate = value.requestBodyDelegate;
-	requestCompletedDelegate = value.requestCompletedDelegate;
+	headers = value.headers;
+
+	_headersCompletedDelegate = value._headersCompletedDelegate;
+	_requestBodyDelegate = value._requestBodyDelegate;
+	_requestCompletedDelegate = value._requestCompletedDelegate;
 
 	debug_w("Warning: HttpRequest streams are not copied..");
 
 #ifdef ENABLE_SSL
-	sslOptions = value.sslOptions;
-	sslFingerprint = value.sslFingerprint;
-	sslKeyCertPair = value.sslKeyCertPair;
+	_sslOptions = value._sslOptions;
+	_sslFingerprint = value._sslFingerprint;
+	_sslKeyCertPair = value._sslKeyCertPair;
 #endif
 }
 
@@ -40,274 +39,183 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& rhs)
 	if (this == &rhs)
 		return *this;
 
-	// TODO: FIX this...
-	//	if (rhs.buffer) copy(rhs.buffer, rhs.len);
-	//	else invalidate();
+/*
+	@todo: FIX this... How ? method requires a precise explanation first
+
+		if (rhs.buffer) copy(rhs.buffer, rhs.len);
+		else invalidate();
+*/
 
 	return *this;
 }
 
-HttpRequest::~HttpRequest()
-{
-	reset();
-}
-
-HttpRequest* HttpRequest::setURL(const URL& uri)
-{
-	this->uri = uri;
-	return this;
-}
-
-HttpRequest* HttpRequest::setMethod(const HttpMethod method)
-{
-	this->method = method;
-	return this;
-}
-
-HttpRequest* HttpRequest::setHeaders(const HttpHeaders& headers)
-{
-	for (int i = 0; i < headers.count(); i++) {
-		this->headers[headers.keyAt(i)] = headers.valueAt(i);
-	}
-	return this;
-}
-
-HttpRequest* HttpRequest::setHeader(const String& name, const String& value)
-{
-	this->headers[name] = value;
-	return this;
-}
-
-HttpRequest* HttpRequest::setPostParameters(const HttpParams& params)
-{
-	postParams = params;
-	return this;
-}
-
-HttpRequest* HttpRequest::setPostParameter(const String& name, const String& value)
-{
-	postParams[name] = value;
-	return this;
-}
-
-HttpRequest* HttpRequest::setFile(const String& formElementName, FileStream* stream)
-{
-	if (stream == null) {
-		return this;
-	}
-
-	files[formElementName] = stream;
-
-	return this;
-}
-
-#ifdef ENABLE_HTTP_REQUEST_AUTH
-HttpRequest* HttpRequest::setAuth(AuthAdapter* adapter)
-{
-	adapter->setRequest(this);
-	auth = adapter;
-	return this;
-}
-#endif
-
-String HttpRequest::getHeader(const String& name)
-{
-	if (!headers.contains(name)) {
-		return "";
-	}
-
-	return headers[name];
-}
-
-String HttpRequest::getPostParameter(const String& name)
-{
-	if (!postParams.contains(name)) {
-		return "";
-	}
-
-	return postParams[name];
-}
-
-String HttpRequest::getQueryParameter(const String& parameterName, const String& defaultValue /* = "" */)
-{
-	if (queryParams == NULL) {
-		queryParams = new HttpParams();
-		if (!uri.Query.length()) {
-			return defaultValue;
-		}
-
-		String query = uri.Query.substring(1);
-		Vector<String> parts;
-		splitString(query, '&', parts);
-		for (int i = 0; i < parts.count(); i++) {
-			Vector<String> pair;
-			int count = splitString(parts[i], '=', pair);
-			if (count != 2) {
-				debug_w("getQueryParameter: Missing = in query string: %s", parts[i].c_str());
-				continue;
-			}
-			(*queryParams)[pair.at(0)] = pair.at(1); // TODO: name and value URI decoding...
-		}
-	}
-
-	if (queryParams->contains(parameterName)) {
-		return (*queryParams)[parameterName];
-	}
-
-	return defaultValue;
-}
-
 String HttpRequest::getBody()
 {
-	if (stream == NULL) {
-		return "";
-	}
+	if (!_bodyStream || _bodyStream->getStreamType() != eSST_Memory)
+		return nullptr;
 
-	String ret;
-	if (stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
-		MemoryDataStream* memory = (MemoryDataStream*)stream;
-		char buf[1024];
-		while (stream->available() > 0) {
-			int available = memory->readMemoryBlock(buf, 1024);
-			memory->seek(available);
-			ret += String(buf, available);
-			if (available < 1024) {
-				break;
-			}
-		}
-	}
-	return ret;
+	int len = _bodyStream->available();
+	if (len <= 0)
+		return nullptr;
+
+	String s;
+	if (s.setLength(len))
+		_bodyStream->readMemoryBlock(s.begin(), s.length());
+
+	return s;
 }
 
-ReadWriteStream* HttpRequest::getBodyStream()
+String HttpRequest::getRequestLine()
 {
-	return stream;
+	return methodStr() + ' ' + uri.pathWithQuery() + _F(" HTTP/1.1\r\n");
+}
+
+HttpHeaders& HttpRequest::prepareHeaders()
+{
+	if (!headers.contains(hhfn_Host))
+		headers[hhfn_Host] = uri.host();
+
+	headers[hhfn_ContentLength] = "0";
+	if (_files.count()) {
+		auto mStream = new MultipartStream(HttpPartProducerDelegate(&HttpRequest::multipartProducer, this));
+		headers[hhfn_ContentType] =
+			ContentType::toString(MIME_FORM_MULTIPART) + F("; boundary=") + mStream->getBoundary();
+		setBody(mStream);
+	}
+	else if (postParams.count()) {
+		auto uStream = new UrlencodedOutputStream(postParams);
+		headers[hhfn_ContentType] = ContentType::toString(MIME_FORM_URL_ENCODED);
+		setBody(uStream);
+	}
+
+	if (_bodyStream) {
+		int length = _bodyStream->available();
+		if (length >= 0)
+			headers[hhfn_ContentLength] = String(length);
+		else
+			headers.remove(hhfn_ContentLength);
+	}
+
+	if (!headers.contains(hhfn_ContentLength))
+		headers[hhfn_TransferEncoding] = F("chunked");
+
+	return headers;
+}
+
+HttpPartResult HttpRequest::multipartProducer()
+{
+	HttpPartResult result;
+
+	String name;
+	auto file = _files.extract(0, name);
+	if (file) {
+		result.stream = file;
+
+		HttpHeaders* headers = new HttpHeaders();
+		String filename = file->name();
+		(*headers)[hhfn_ContentDisposition] = F("form-data; name=\"") + name + F("\"; filename=\"") + filename + '"';
+		(*headers)[hhfn_ContentType] = ContentType::fromFileName(filename);
+
+		return result;
+	}
+
+	String value = postParams.extract(0, name);
+	if (value) {
+		MemoryDataStream* mStream = new MemoryDataStream();
+		mStream->print(value);
+		result.stream = mStream;
+
+		HttpHeaders* headers = new HttpHeaders();
+		(*headers)[hhfn_ContentDisposition] = F("form-data; name=\"") + name + "\"";
+		result.headers = headers;
+
+		return result;
+	}
+
+	return result;
+}
+
+IDataSourceStream* HttpRequest::getBodyStream()
+{
+	auto s = _bodyStream;
+	_bodyStream = nullptr;
+
+	if (s && headers[hhfn_TransferEncoding] == F("chunked"))
+		return new ChunkedStream(s);
+	else
+		return s;
 }
 
 HttpRequest* HttpRequest::setResponseStream(ReadWriteStream* stream)
 {
-	if (responseStream != NULL) {
+	if (_responseStream) {
 		debug_e("HttpRequest::setResponseStream: Discarding already set stream!");
-		delete responseStream;
-		responseStream = NULL;
+		delete _responseStream;
 	}
 
-	responseStream = stream;
+	_responseStream = stream;
 	return this;
-}
-
-#ifdef ENABLE_SSL
-HttpRequest* HttpRequest::setSslOptions(uint32_t sslOptions)
-{
-	this->sslOptions = sslOptions;
-	return this;
-}
-
-uint32_t HttpRequest::getSslOptions()
-{
-	return sslOptions;
-}
-
-HttpRequest* HttpRequest::pinCertificate(const SSLFingerprints& fingerprints)
-{
-	sslFingerprint = fingerprints;
-	return this;
-}
-
-HttpRequest* HttpRequest::setSslKeyCert(const SSLKeyCertPair& keyCertPair)
-{
-	this->sslKeyCertPair = keyCertPair;
-	return this;
-}
-
-#endif
-
-HttpRequest* HttpRequest::setBody(const String& body)
-{
-	return setBody((uint8_t*)body.c_str(), body.length());
 }
 
 HttpRequest* HttpRequest::setBody(uint8_t* rawData, size_t length)
 {
-	MemoryDataStream* memory = new MemoryDataStream();
-	int written = memory->write(rawData, length);
-	if (written < length) {
+	auto memory = new MemoryDataStream();
+	auto written = memory->write(rawData, length);
+	if (written < length)
 		debug_e("HttpRequest::setBody: Unable to store the complete body");
-	}
 
 	return setBody(memory);
 }
 
-HttpRequest* HttpRequest::setBody(ReadWriteStream* stream)
+HttpRequest* HttpRequest::setBody(IDataSourceStream* stream)
 {
-	if (this->stream != NULL) {
+	if (_bodyStream) {
 		debug_e("HttpRequest::setBody: Discarding already set stream!");
-		delete this->stream;
-		this->stream = NULL;
+		delete _bodyStream;
 	}
 
-	this->stream = stream;
-	return this;
-}
-
-HttpRequest* HttpRequest::onBody(RequestBodyDelegate delegateFunction)
-{
-	requestBodyDelegate = delegateFunction;
-	return this;
-}
-
-HttpRequest* HttpRequest::onHeadersComplete(RequestHeadersCompletedDelegate delegateFunction)
-{
-	this->headersCompletedDelegate = delegateFunction;
-	return this;
-}
-
-HttpRequest* HttpRequest::onRequestComplete(RequestCompletedDelegate delegateFunction)
-{
-	this->requestCompletedDelegate = delegateFunction;
+	_bodyStream = stream;
 	return this;
 }
 
 void HttpRequest::reset()
 {
-	delete queryParams;
-	delete stream;
-	delete responseStream;
-	queryParams = NULL;
-	stream = NULL;
-	responseStream = NULL;
+	delete _bodyStream;
+	_bodyStream = nullptr;
+
+	delete _responseStream;
+	_responseStream = nullptr;
+
+#ifdef ENABLE_SSL
+	freeSSLFingerprints(_sslFingerprint);
+	freeSslKeyCert(_sslKeyCertPair);
+#endif
 
 	postParams.clear();
-	for (int i = 0; i < files.count(); i++) {
-		String key = files.keyAt(i);
-		delete files[key];
-		files[key] = NULL;
-	}
-	files.clear();
+	_files.clear();
 }
 
 #ifndef SMING_RELEASE
 String HttpRequest::toString()
 {
-	String content = "";
+	String content;
 #ifdef ENABLE_SSL
-	content += "> SSL options: " + String(sslOptions) + "\n";
-	content += "> SSL Cert Fingerprint Length: " + String((sslFingerprint.certSha1 == NULL) ? 0 : SHA1_SIZE) + "\n";
-	content += "> SSL PK Fingerprint Length: " + String((sslFingerprint.pkSha256 == NULL) ? 0 : SHA256_SIZE) + "\n";
-	content += "> SSL ClientCert Length: " + String(sslKeyCertPair.certificateLength) + "\n";
-	content += "> SSL ClientCert PK Length: " + String(sslKeyCertPair.keyLength) + "\n";
+	content += "> SSL options: " + String(_sslOptions) + "\n";
+	content += "> SSL Cert Fingerprint Length: " + String(_sslFingerprint.certSha1 ? SHA1_SIZE : 0) + "\n";
+	content += "> SSL PK Fingerprint Length: " + String(_sslFingerprint.pkSha256 ? SHA256_SIZE : 0) + "\n";
+	content += "> SSL ClientCert Length: " + String(_sslKeyCertPair.certificateLength) + "\n";
+	content += "> SSL ClientCert PK Length: " + String(_sslKeyCertPair.keyLength) + "\n";
 	content += "\n";
 #endif
 
-	content += http_method_str(method) + String(" ") + uri.getPathWithQuery() + " HTTP/1.1\n";
-	content += "Host: " + uri.Host + ":" + uri.Port + "\n";
-	for (int i = 0; i < headers.count(); i++) {
-		content += headers.keyAt(i) + ": " + headers.valueAt(i) + "\n";
-	}
+	content += getRequestLine();
+	content += headers.toString(hhfn_Host, uri.hostWithPort());
+	content += "Host: " + uri.host() + ':' + uri.port() + '\n';
+	for (unsigned i = 0; i < headers.count(); i++)
+		content += headers[i];
 
-	if (stream != NULL && stream->available() > -1) {
-		content += "Content-Length: " + String(stream->available());
-	}
+	if (_bodyStream && _bodyStream->available() >= 0)
+		content += HttpHeaders::toString(hhfn_ContentLength) + ": " + String(_bodyStream->available());
 
 	return content;
 }

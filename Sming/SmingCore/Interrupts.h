@@ -12,8 +12,8 @@
 #ifndef _SMING_CORE_INTERRUPTS_H_
 #define _SMING_CORE_INTERRUPTS_H_
 
-#include "../Wiring/WiringFrameworkDependencies.h"
-#include "../SmingCore/Delegate.h"
+#include "WiringFrameworkDependencies.h"
+#include "Delegate.h"
 
 #define ESP_MAX_INTERRUPTS 16
 

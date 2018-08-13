@@ -18,6 +18,6 @@ spiffs_config spiffs_get_storage_config()
   cfg.phys_size = SPIFF_SIZE;
   cfg.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE; // according to datasheet
   cfg.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2; // Important to make large
-  cfg.log_page_size = LOG_PAGE_SIZE; // as we said
+  cfg.log_page_size = SPIFFS_LOG_PAGE_SIZE; // as we said
   return cfg;
 }

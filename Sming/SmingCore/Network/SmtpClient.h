@@ -28,16 +28,13 @@
 #include "TcpClient.h"
 #include "Data/MailMessage.h"
 #include "URL.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
+#include "WString.h"
+#include "WVector.h"
 #include "Data/Stream/DataSourceStream.h"
 #include "WebConstants.h"
-#include "../Data/Structures.h"
+#include "ObjectQueue.h"
 
 #include <functional>
-
-#define SMTP_PROTOCOL "smtp"
-#define SMTP_OVER_SSL_PROTOCOL "smtps"
 
 /* Maximum waiting emails in the mail queue */
 #define SMTP_QUEUE_SIZE 5
@@ -102,7 +99,7 @@ public:
 	 * 					- smtp  - clear text SMTP
 	 * 					- smtps - SMTP over SSL connection
 	 */
-	bool connect(const URL& url);
+	bool connect(const URL& to_url);
 
 	/**
 	 * @brief Queues a single message before it is sent later to the SMTP server
@@ -127,13 +124,13 @@ public:
 	/**
 	 * @brief Gets the current message
 	 *
-	 * @return MailMessage* message - the message, or NULL if none is scheduled
+	 * @return MailMessage* message - the message, or nullptr if none is scheduled
 	 */
 	MailMessage* getCurrentMessage();
 
 	inline size_t countPending()
 	{
-		return mailQ.count();
+		return _mailQ.count();
 	}
 
 	/**
@@ -146,7 +143,7 @@ public:
 	 */
 	SmtpState getState()
 	{
-		return state;
+		return _state;
 	}
 
 	/**
@@ -155,7 +152,7 @@ public:
 	 */
 	inline void onMessageSent(SmtpClientCallback callback)
 	{
-		messageSentCallback = callback;
+		_messageSentCallback = callback;
 	}
 
 	/**
@@ -164,7 +161,7 @@ public:
 	 */
 	inline void onServerError(SmtpClientCallback callback)
 	{
-		errorCallback = callback;
+		_errorCallback = callback;
 	}
 
 	using TcpClient::setTimeOut;
@@ -182,36 +179,29 @@ protected:
 	virtual err_t onReceive(pbuf* buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 
-	void sendMailHeaders(MailMessage* mail);
-	bool sendMailBody(MailMessage* mail);
+	void sendMailHeaders();
+	void sendMailBody();
 
 private:
-	URL url;
-	Vector<String> authMethods;
-	SimpleConcurrentQueue<MailMessage*, SMTP_QUEUE_SIZE> mailQ;
-	char code[4] = {0};
-	int codeValue = 0;
-	String authChallenge;
-	char message[SMTP_ERROR_LENGTH + 1] = {0};
-	bool isLastLine = false;
-	uint8_t codeLength = 0;
-	int options = 0;
-	MailMessage* outgoingMail = nullptr;
-	SmtpState state = eSMTP_Banner;
+	URL _url;
+	Vector<String> _authMethods;
+	ObjectQueue<MailMessage, SMTP_QUEUE_SIZE> _mailQ;
+	char _code[4] = {0};
+	int _codeValue = 0;
+	String _authChallenge;
+	char _message[SMTP_ERROR_LENGTH + 1] = {0};
+	bool _isLastLine = false;
+	uint8_t _codeLength = 0;
+	int _options = 0;
+	MailMessage* _outgoingMail = nullptr;
+	SmtpState _state = eSMTP_Banner;
 
-	SmtpClientCallback errorCallback = nullptr;
-	SmtpClientCallback messageSentCallback = nullptr;
+	SmtpClientCallback _errorCallback = nullptr;
+	SmtpClientCallback _messageSentCallback = nullptr;
 
 private:
 	/**
 	 * @brief Simple and naive SMTP parser with a state machine
 	 */
 	int smtpParse(char* data, size_t len);
-
-private:
-	/**
-	 * @brief Takes care to fetch the correct streams for a message
-	 * @note The magic where all streams and attachments are packed together is happening here
-	 */
-	HttpPartResult multipartProducer();
 };

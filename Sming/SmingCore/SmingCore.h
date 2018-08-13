@@ -8,12 +8,13 @@
 #ifndef _NET_WIRING_
 #define _NET_WIRING_
 
-#define SMING_VERSION "3.6.1" // Major Minor Sub
+#include "version.h"
 
 #include <functional>
 
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "WiringFrameworkIncludes.h"
 
+#include "Debug.h"
 #include "Delegate.h"
 #include "Clock.h"
 #include "SystemClock.h"
@@ -22,12 +23,14 @@
 #include "FileSystem.h"
 #include "HardwareSerial.h"
 #include "Interrupts.h"
+#include "DriverPWM.h"
 #include "HardwarePWM.h"
 #include "Timer.h"
 #include "Wire.h"
 #include "SPISoft.h"
 #include "SPI.h"
 
+#include "Platform/RTC.h"
 #include "Platform/System.h"
 #include "Platform/WifiEvents.h"
 #include "Platform/Station.h"
@@ -49,10 +52,15 @@
 #include "Network/rBootHttpUpdate.h"
 #include "Network/URL.h"
 
-#include "../Libraries/ArduinoJson/include/ArduinoJson.h"
+#include "Data/Stream/JsonObjectStream.h"
+#include "Data/Stream/FileStream.h"
+
 #include "../Services/DateTime/DateTime.h"
 #include "../Services/libemqtt/libemqtt.h"
 #include "../Services/FATFS/ff.h"
+#include "../Services/SpifFS/spiffs_sming.h"
+
+// @todo Why is this a service?
 #include "../Services/Yeelight/YeelightBulb.h"
 
 #endif

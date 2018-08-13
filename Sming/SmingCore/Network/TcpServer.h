@@ -22,14 +22,31 @@ typedef Delegate<void(TcpClient* client)> TcpClientConnectDelegate;
 
 class TcpServer : public TcpConnection {
 public:
-	TcpServer();
-	TcpServer(TcpClientConnectDelegate onClientHandler, TcpClientDataDelegate clientReceiveDataHandler,
-			  TcpClientCompleteDelegate clientCompleteHandler);
-	TcpServer(TcpClientDataDelegate clientReceiveDataHandler, TcpClientCompleteDelegate clientCompleteHandler);
-	TcpServer(TcpClientDataDelegate clientReceiveDataHandler);
-	virtual ~TcpServer();
+	TcpServer() : TcpServer(nullptr, nullptr, nullptr)
+	{}
 
-public:
+	TcpServer(TcpClientDataDelegate clientReceiveDataHandler) : TcpServer(nullptr, clientReceiveDataHandler, nullptr)
+	{}
+
+	TcpServer(TcpClientDataDelegate clientReceiveDataHandler, TcpClientCompleteDelegate clientCompleteHandler) :
+		TcpServer(nullptr, clientReceiveDataHandler, clientCompleteHandler)
+	{}
+
+	TcpServer(TcpClientConnectDelegate onClientHandler, TcpClientDataDelegate clientReceiveDataHandler,
+			  TcpClientCompleteDelegate clientCompleteHandler) :
+		TcpConnection(false),
+		_clientConnectDelegate(onClientHandler),
+		_clientReceiveDelegate(clientReceiveDataHandler),
+		_clientCompleteDelegate(clientCompleteHandler)
+	{
+		TcpConnection::setTimeOut(USHRT_MAX);
+	}
+
+	virtual ~TcpServer()
+	{
+		debug_i("Server is destroyed.");
+	}
+
 	virtual bool listen(int port, bool useSsl = false);
 	void setTimeOut(uint16_t waitTimeOut);
 
@@ -51,6 +68,11 @@ public:
 	using TcpConnection::setSslKeyCert;
 #endif
 
+	const Vector<TcpConnection*>& connections()
+	{
+		return _connections;
+	}
+
 protected:
 	// Overload this method in your derived class!
 	virtual TcpConnection* createClient(tcp_pcb* clientTcp);
@@ -58,30 +80,26 @@ protected:
 	virtual err_t onAccept(tcp_pcb* clientTcp, err_t err);
 	virtual void onClient(TcpClient* client);
 	virtual bool onClientReceive(TcpClient& client, char* data, int size);
-	virtual void onClientComplete(TcpClient& client, bool succesfull);
+	virtual void onClientComplete(TcpClient& client, bool successful);
 	virtual void onClientDestroy(TcpConnection& connection);
 
 	static err_t staticAccept(void* arg, tcp_pcb* new_tcp, err_t err);
 
-public:
-	static int16_t totalConnections;
-	uint16_t activeClients = 0;
-
 protected:
-	int minHeapSize = 3000;
+	size_t _minHeapSize = 3000;
 
 #ifdef ENABLE_SSL
-	int sslSessionCacheSize = 50;
+	int _sslSessionCacheSize = 50;
 #endif
 
-	bool active = true;
-	Vector<TcpConnection*> connections;
+	bool _active = true;
+	Vector<TcpConnection*> _connections;
 
 private:
-	uint16_t timeOut;
-	TcpClientDataDelegate clientReceiveDelegate = NULL;
-	TcpClientCompleteDelegate clientCompleteDelegate = NULL;
-	TcpClientConnectDelegate clientConnectDelegate = NULL;
+	uint16_t _timeOut = 40;
+	TcpClientConnectDelegate _clientConnectDelegate = nullptr;
+	TcpClientDataDelegate _clientReceiveDelegate = nullptr;
+	TcpClientCompleteDelegate _clientCompleteDelegate = nullptr;
 };
 
 /** @} */

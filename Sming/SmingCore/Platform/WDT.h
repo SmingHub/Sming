@@ -14,7 +14,6 @@
 #ifndef SMINGCORE_PLATFORM_WDT_H_
 #define SMINGCORE_PLATFORM_WDT_H_
 
-#include <user_config.h>
 #include "System.h"
 
 class WDTClass : protected ISystemReadyHandler {
@@ -23,7 +22,9 @@ public:
      *  @addtogroup wdt
      *  @{
      */
-	WDTClass();
+	WDTClass()
+	{}
+
 	virtual ~WDTClass()
 	{}
 
@@ -39,11 +40,15 @@ public:
 	void alive();
 
 protected:
-	virtual void onSystemReady();
+	virtual void onSystemReady()
+	{
+		internalApplyEnabled();
+	}
+
 	void internalApplyEnabled();
 
 private:
-	bool enabled;
+	bool _enabled = false;
 };
 
 /**	@brief	Global instance of watchdog timer object
