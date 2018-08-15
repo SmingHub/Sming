@@ -166,7 +166,7 @@ char* strstr_P(char* haystack, const char* needle_P);
 /*
  * Create a local (stack) buffer called _name and load it with flash data.
  * _flash_str is defined locally so the compiler knows its size (length + nul).
- * Size is rounded up to multiple of 4 bytes so we can just do a regular memcpy.
+ * Size is rounded up to multiple of 4 bytes for fast copy.
  */
 #define PSTR_LOAD(_name, _flash_str)                                                                                   \
 	char _name[ALIGNUP(sizeof(_flash_str))];                                                                           \

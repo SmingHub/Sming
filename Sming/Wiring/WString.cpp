@@ -236,7 +236,10 @@ String& String::copy(flash_string_t pstr, unsigned length)
 		invalidate();
 	}
 	else {
-		memcpy_aligned(_buffer, (PGM_P)pstr, length_aligned);
+		/* @todo if we can be sure that the heap allocator word-aligns _buffer then we can use
+		 * memcpy_aligned; we use memcpy_P because it checks for this
+		 */
+		memcpy_P(_buffer, (PGM_P)pstr, length_aligned);
 		_buffer[length] = '\0';
 		_len = length;
 	}

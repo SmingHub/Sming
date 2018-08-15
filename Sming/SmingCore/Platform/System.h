@@ -6,12 +6,14 @@
  ****/
 
 /*
- * 14/8/2018 (mikee47
+ * 14/8/2018 (mikee47)
  *
  * 	When SystemClass::onReady method called, the callback is only queued if the
  * 	system is not actually ready; there is otherwise no point in queueing the
  * 	callback as it would never get invoked. To avoid unpredictable behaviour and
  * 	simplify application code, the callback is invoked immediately in this situation.
+ *
+ * 	Global task queue added to class, initialised at system startup.
  */
 
 /**	@defgroup system System
@@ -21,12 +23,25 @@
 #ifndef SMINGCORE_PLATFORM_SYSTEM_H_
 #define SMINGCORE_PLATFORM_SYSTEM_H_
 
-//#include <user_config.h>
 #include "WString.h"
 #include "WVector.h"
 #include "Delegate.h"
 
-class BssInfo;
+/** @brief default number of tasks in global queue
+ *  @note tasks are usually short-lived and executed very promptly. If necessary this
+ *  value can be overridden in makefile or user_config.h.
+ */
+#ifndef TASK_QUEUE_LENGTH
+#define TASK_QUEUE_LENGTH 10
+#endif
+
+/** @brief Task callback function type
+ * 	@ingroup event_handlers
+ * 	@note Callback code does not need to be in IRAM
+ *  @todo Integrate delegation into callbacks
+ */
+typedef void (*task_callback_t)(os_param_t param);
+
 
 /// @ingroup event_handlers
 typedef Delegate<void()> SystemReadyDelegate; ///< Handler function for system ready
@@ -128,6 +143,16 @@ public:
      */
 	void onReady(ISystemReadyHandler* readyHandler);
 
+	/**
+	 * @brief Queue a deferred callback.
+	 * @param callback The function to be called
+	 * @param param Parameter passed to the callback
+	*/
+	static bool IRAM_ATTR deferCallback(task_callback_t callback, os_param_t param = 0)
+	{
+		return callback ? system_os_post(USER_TASK_PRIO_1, (os_signal_t)callback, param) : false;
+	}
+
 
 private:
 	void readyHandler();
@@ -136,6 +161,7 @@ private:
 	Vector<SystemReadyDelegate> _readyHandlers;
 	Vector<ISystemReadyHandler*> _readyInterfaces;
 	SystemState _state = eSS_None;
+	static os_event_t _taskQueue[];	///< OS task queue
 };
 
 /**	@brief	Global instance of system object

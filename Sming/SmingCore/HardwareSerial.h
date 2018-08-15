@@ -31,17 +31,18 @@
  *  @param  source Reference to serial stream
  *  @param  arrivedChar Char recieved
  *  @param  availableCharsCount Quantity of chars available stream in receive buffer
+ *  @note Delegate constructor usage: (&YourClass::method, this)
  */
-// Delegate constructor usage: (&YourClass::method, this)
-typedef Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
+typedef Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsCount)>
+	StreamDataReceivedDelegate;
 
 class CommandExecutor;
 
 /// Hardware serial member data
 typedef struct
 {
-	StreamDataReceivedDelegate HWSDelegate;		///< Delegate callback handler
-	CommandExecutor* commandExecutor = nullptr; ///< Pointer to command executor (Default: none)
+	StreamDataReceivedDelegate HWSDelegate = nullptr; ///< Delegate callback handler
+	CommandExecutor* commandExecutor = nullptr;		  ///< Pointer to command executor (Default: none)
 } HWSerialMemberData;
 
 enum SerialConfig {
@@ -73,6 +74,10 @@ enum SerialConfig {
 
 enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL_TX_ONLY = UART_TX_ONLY };
 
+#ifndef DEFAULT_RX_BUFFER_SIZE
+#define DEFAULT_RX_BUFFER_SIZE 256
+#endif
+
 /// Hardware serial class
 class HardwareSerial : public Stream {
 public:
@@ -80,8 +85,11 @@ public:
      *  @param  uartPort UART number [0 | 1]
      *  @note   A global instance of UART 0 is already defined as Serial
      */
-	HardwareSerial(const int uartPort);
-	~HardwareSerial();
+	HardwareSerial(int uartPort) : _uartNr(uartPort), _rxSize(DEFAULT_RX_BUFFER_SIZE)
+	{}
+
+	~HardwareSerial()
+	{}
 
 	/** @brief  Initialise the serial port
      *  @param  baud BAUD rate of the serial port (Default: 9600)
@@ -244,7 +252,11 @@ public:
 	/**
 	 * @brief Operator that returns true if the uart structure is set
 	 */
-	operator bool() const;
+	operator bool() const
+	{
+		return _uart != nullptr;
+	}
+
 
 	/*
 	 * @brief Returns the location of the searched character
@@ -260,19 +272,12 @@ private:
 	uart_t* _uart = nullptr;
 	size_t _rxSize = 0;
 
-	static os_event_t* _serialQueue;
-
-	static bool _init;
+	static bool _init; ///< Purpose ?
 
 	/** @brief  Interrupt handler for UART0 receive events
 	 * @param uart_t* pointer to UART structure
 	 */
 	static void IRAM_ATTR callbackHandler(uart_t* arg);
-
-	/** @brief  Trigger task for input event
-	 *  @param  inputEvent The event to use for trigger
-	 */
-	static void delegateTask(os_event_t* inputEvent);
 };
 
 /**	@brief	Global instance of serial port UART0

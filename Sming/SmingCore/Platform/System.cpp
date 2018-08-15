@@ -10,12 +10,28 @@
 
 SystemClass System;
 
+os_event_t SystemClass::_taskQueue[TASK_QUEUE_LENGTH];
+
+/** @brief OS calls this function which invokes user-defined callback
+ *  @note callback function pointer is placed in event->sig, with parameter
+ *  in event->par.
+ */
+static void __taskHandler(os_event_t* event)
+{
+	task_callback_t callback = (task_callback_t)event->sig;
+	if (callback)
+		callback(event->par);
+}
+
 void SystemClass::initialize()
 {
 	if (_state != eSS_None)
 		return;
 
 	_state = eSS_Intializing;
+
+	// Initialise the global task queue
+	system_os_task(__taskHandler, USER_TASK_PRIO_1, _taskQueue, TASK_QUEUE_LENGTH);
 
 	system_init_done_cb([]() { System.readyHandler(); });
 }

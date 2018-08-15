@@ -446,7 +446,7 @@ $(FW_BASE)/$(IMAGE_MAIN): $(APP_AR)
 # Pass 1: Generate rom0 to be able to check its size
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $(TARGET_OUT).tmp
 	
-	$(Q) $(STRIP) $(TARGET_OUT).tmp
+#	$(Q) $(STRIP) $(TARGET_OUT).tmp
 
 	$(Q) $(ESPTOOL2) $(ESPTOOL2_MAIN_ARGS) $(TARGET_OUT).tmp $@ $(ESPTOOL2_SECTS)
 	
@@ -461,7 +461,7 @@ $(TARGET_OUT): $(FW_BASE)/$(IMAGE_MAIN) $(PROJECT_LD_PATH)/$(LD_SCRIPT)
 # Pass 2: Generate roms with correct offsets
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(PROJECT_LD_PATH) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
 
-	$(Q) $(STRIP) $@
+#	$(Q) $(STRIP) $@
 
 	$(vecho) ""	
 	$(vecho) "#Memory / Section info:"	
