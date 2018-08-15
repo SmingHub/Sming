@@ -58,7 +58,7 @@ void DriverPWM::noAnalogWrite(uint8_t pin)
 
 void DriverPWM::processingStatic(void* arg)
 {
-	DriverPWM* self = (DriverPWM*)arg;
+	auto self = reinterpret_cast<DriverPWM*>(arg);
 	for (unsigned i = 0; i < self->_channels.count(); i++)
 		self->_channels[i].high();
 }
@@ -119,6 +119,6 @@ void ChannelPWM::close()
 
 void ChannelPWM::processingStatic(void* arg)
 {
-	ChannelPWM* self = (ChannelPWM*)arg;
+	auto self = reinterpret_cast<ChannelPWM*>(arg);
 	digitalWrite(self->_pin, LOW);
 }

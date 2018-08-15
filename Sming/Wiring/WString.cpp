@@ -878,18 +878,14 @@ String toHexString(const uint8_t* data, unsigned sz, char sep)
 unsigned String::split(char delim, Vector<String>& splits) const
 {
 	splits.removeAllElements();
-	unsigned splitCount = 0;
-	unsigned splitIndex = 0;
 	unsigned startIndex = 0;
 	for (unsigned i = 0; i < _len; i++)
 		if (_buffer[i] == delim) {
 			splits.addElement(substring(startIndex, i));
-			splitIndex++;
 			startIndex = i + 1;
-			splitCount++;
 		}
 
 	splits.addElement(substring(startIndex, _len));
 
-	return splitCount + 1;
+	return splits.count();
 }

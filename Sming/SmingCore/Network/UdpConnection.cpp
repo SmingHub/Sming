@@ -86,7 +86,7 @@ void UdpConnection::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort
 
 void UdpConnection::staticOnReceive(void* arg, struct udp_pcb* pcb, struct pbuf* p, LWIP_IP_ADDR_T* addr, u16_t port)
 {
-	auto conn = (UdpConnection*)arg;
+	auto conn = reinterpret_cast<UdpConnection*>(arg);
 	if (conn) {
 		IPAddress reip = addr ? IPAddress(*addr) : IPAddress();
 		conn->onReceive(p, reip, port);

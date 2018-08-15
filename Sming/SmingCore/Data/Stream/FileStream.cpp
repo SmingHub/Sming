@@ -59,7 +59,7 @@ void FileStream::close()
 
 size_t FileStream::readMemoryBlock(char* data, size_t bufSize)
 {
-	if (bufSize <= 0 || _pos >= _size)
+	if (!data || bufSize == 0 || _pos >= _size)
 		return 0;
 	size_t len = _size - _pos;
 	if (len > (size_t)bufSize)

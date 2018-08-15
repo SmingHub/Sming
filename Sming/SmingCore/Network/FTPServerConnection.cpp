@@ -81,11 +81,6 @@ public:
 	virtual void transferData(TcpConnectionEvent sourceEvent);
 };
 
-/*
- * 13/8/2018 (mikee47)
- *
- * 	Rewritten using new filesystem api: we now have real file timestamps
- */
 void FTPDataFileList::transferData(TcpConnectionEvent sourceEvent)
 {
 	if (_completed)

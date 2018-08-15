@@ -107,8 +107,6 @@ class TcpConnection;
 typedef Delegate<void(TcpConnection&)> TcpConnectionDestroyedDelegate;
 
 class TcpConnection {
-	//	friend class TcpServer;
-
 public:
 	TcpConnection(bool autoDestruct) : _autoSelfDestruct(autoDestruct)
 	{}

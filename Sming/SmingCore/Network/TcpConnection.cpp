@@ -95,7 +95,7 @@ err_t TcpConnection::onSent(uint16_t len)
 	debug_d("TCP sent: %d", len);
 
 	//debug_d("%d %d", tcp->state, tcp->flags); // WRONG!
-	if (len >= 0 && _tcp && getAvailableWriteSize() > 0)
+	if (_tcp && getAvailableWriteSize() > 0)
 		onReadyToSendData(eTCE_Sent);
 
 	return ERR_OK;
@@ -426,7 +426,7 @@ err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err
 {
 	//Serial.println("echo_recv!");
 
-	auto con = (TcpConnection*)arg;
+	auto con = reinterpret_cast<TcpConnection*>(arg);
 	if (!con) {
 		if (p) {
 			/* Inform TCP that we have taken the data. */

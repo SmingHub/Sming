@@ -183,7 +183,7 @@ private:
 	HttpServerConnection& _connection;
 
 	ws_frame_type_t _frameType = WS_FRAME_TEXT;
-	WsFrameInfo _controlFrame;
+	WsFrameInfo _controlFrame = { };
 
 	ws_parser_t _parser;
 

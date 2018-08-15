@@ -19,7 +19,7 @@ index dbd171d..f191575 100644
  };
  
  uint8 wifi_softap_get_station_num(void);
-+bool wifi_softap_set_station_info(const uint8_t[], const ip_addr_t*);
++bool wifi_softap_set_station_info(const uint8_t mac[], const struct ip_addr*);
  struct station_info * wifi_softap_get_station_info(void);
  void wifi_softap_free_station_info(void);
  

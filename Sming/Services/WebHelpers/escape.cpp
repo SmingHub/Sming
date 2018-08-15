@@ -130,7 +130,8 @@ char* uri_escape(char* dest, size_t dest_len, const char* src, int src_len)
 	}
 
 	assert(dest_len >= 1);
-	*dest = 0;
+	if (dest)
+		*dest = 0;
 
 	return ret;
 }

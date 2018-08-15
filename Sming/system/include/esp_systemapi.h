@@ -98,6 +98,9 @@ extern void uart_tx_one_char(char ch);
 extern void ets_intr_lock();
 extern void ets_intr_unlock();
 
+// Missing from SDK 1.5.x
+extern void NmiTimSetFunc(void (*func)(void));
+
 #endif /* SDK_INTERNAL */
 
 // CPU Frequency
