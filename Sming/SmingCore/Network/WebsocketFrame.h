@@ -1,7 +1,7 @@
 /*
  * WebsocketFrame.h
  *
- *  Created on: 13 nov. 2016 г.
+ *  Created on: 13 nov. 2016 ?.
  *  Author: https://github.com/avr39-ripe - Alexander V, Ribchansky
  *
  *  Some parts of code inspired by: https://github.com/Links2004/arduinoWebSockets and
@@ -14,7 +14,7 @@
  */
 #ifndef SMINGCORE_NETWORK_WEBSOCKETFRAME_H_
 #define SMINGCORE_NETWORK_WEBSOCKETFRAME_H_
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "WiringFrameworkIncludes.h"
 
 /** @brief  Websocket frame types enum
  */
@@ -32,11 +32,15 @@ enum class WSFrameType : uint8_t {
 						 ///< %xB-F are reserved for further control frame
 };
 
-namespace WSFlags
+static inline bool wsFrameTypeValid(WSFrameType type)
 {
+	return type < WSFrameType::empty;
+}
+
+namespace WSFlags {
 static const uint8_t payloadDeleteMemBit = 1u; //Delete memory reserved for payload in destructor
 static const uint8_t headerDeleteMemBit = 2u;  //Delete memory reserved for header in destructor
-};
+};											   // namespace WSFlags
 
 // Declare classes where WebsocketFrameClass can be used they will have access to _payload and _header members
 class HttpServer;
@@ -45,12 +49,10 @@ class WebsocketClient;
 
 /** @brief Websocket Frame
 */
-class WebsocketFrameClass
-{
-	friend class HttpServer;
-	friend class Websocket;
-	friend class WebsocketClient;
-
+class WebsocketFrameClass {
+	//	friend class HttpServer;
+	//	friend class Websocket;
+	//	friend class WebsocketClient;
 public:
 	WebsocketFrameClass(){};
 	virtual ~WebsocketFrameClass();
@@ -62,38 +64,79 @@ public:
 	 *  @param	mask If true websocket frame will be masked (required for client->server communication)
 	 *  @param	fin If true produce ordinary websocket frame, not continuation. Currently MUST be true.
 	 *  @param	headerToPayload If true try to create single buffer message with header and payload, otherwise produce separate header and payload buffers
-	 *  @retval Return true on success, false on error
+	 *  @retval bool Return true on success, false on error
 	 *
 	 *  @details if successfully executed, check whether _header is not nullptr and either use _header and _payload or just _payload as websocket frame
 	 *
 	 */
-	uint8_t encodeFrame(WSFrameType frameType, uint8_t* payload, size_t length, uint8_t mask, uint8_t fin,
-						uint8_t headerToPayload = true);
+	bool encodeFrame(WSFrameType frameType, uint8_t* payload, size_t length, uint8_t mask, uint8_t fin,
+					 uint8_t headerToPayload = true);
 
 	/** @brief  Decode given buffer containing websocket frame to payload
 	 *  @param  buffer Pointer to buffer to be decoded as websocket frame
 	 *  @param	length Length of buffer to be decoded as websocket frame
-	 *  @retval Return true on success, false on error
+	 *  @retval bool Return true on success, false on error
 	 *
 	 *  @details if successfully executed, check _frameType to decide what to do with payload pointed by _payload
 	 *
 	 */
-	uint8_t decodeFrame(uint8_t* buffer, size_t length);
+	bool decodeFrame(uint8_t* buffer, size_t length);
 
-	static int mask(const String& payload, uint32_t key, char* data);
+	static void mask(const String& payload, uint32_t key, char* data);
+
+	WSFrameType frameType()
+	{
+		return _frameType;
+	}
+
+	const uint8_t* header()
+	{
+		return _header;
+	}
+
+	size_t headerLength()
+	{
+		return _headerLength;
+	}
+
+	uint8_t* payload()
+	{
+		return _payload;
+	}
+
+	size_t payloadLength()
+	{
+		return _payloadLength;
+	}
+
+	String payloadString()
+	{
+		return String((const char*)_payload, _payloadLength);
+	}
+
+	/** @brief Return true if there's another frame to decode
+	 */
+	bool next()
+	{
+		return _nextReadOffset != 0;
+	}
 
 protected:
 	uint8_t* _payload =
-		nullptr; // pointer to payload; in encode - will point to proper websocket frame payload, in decode - will point to websocket frame's decoded data
+		nullptr; ///< pointer to payload; in encode - will point to proper websocket frame payload, in decode - will point to websocket frame's decoded data
 	size_t _payloadLength = 0;
-	uint8_t* _header = nullptr; // pointer to header; in encode - will point to websocket frame header
+	uint8_t* _header = nullptr; ///< pointer to header; in encode - will point to websocket frame header
 	size_t _headerLength = 0;
 	WSFrameType _frameType = WSFrameType::empty;
 	uint8_t _mask = 0;
-	uint8_t _getFrameSizes(uint8_t* buffer, size_t length); // used to get frame size from websocket buffer
+
+protected:
+	// used to get frame size from websocket buffer
+	bool getFrameSizes(uint8_t* buffer, size_t length);
+
 private:
-	uint8_t _flags = 0;			//Store flags for further freeing memory
-	size_t _nextReadOffset = 0; //Store offset in multiframe tcp buffer for next decodeFrame
+	uint8_t _flags = 0;			// Store flags for further freeing memory
+	size_t _nextReadOffset = 0; // Store offset in multiframe tcp buffer for next decodeFrame
 };
 /** @} */
 #endif /* SMINGCORE_NETWORK_WEBSOCKETFRAME_H_ */

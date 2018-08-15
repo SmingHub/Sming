@@ -17,7 +17,7 @@
  */
 
 #include "SmtpClient.h"
-#include "../../Services/WebHelpers/base64.h"
+#include "../Services/WebHelpers/base64.h"
 #include "Data/Stream/QuotedPrintableOutputStream.h"
 #include "Data/Stream/Base64OutputStream.h"
 
@@ -35,74 +35,54 @@ void ssl_hmac_md5(const uint8_t* msg, int length, const uint8_t* key, int key_le
 		buffer++;                                                                                                      \
 		len--;                                                                                                         \
 	}
-#define ADVANCE_AND_BREAK                                                                                              \
-	{                                                                                                                  \
-		ADVANCE;                                                                                                       \
-		break;                                                                                                         \
-	}
+
 #define ADVANCE_UNTIL_EOL                                                                                              \
 	do {                                                                                                               \
-		if(*(buffer - 1) == '\r' && *buffer == '\n') {                                                                 \
-			ADVANCE_AND_BREAK;                                                                                         \
+		if (*(buffer - 1) == '\r' && *buffer == '\n') {                                                                \
+			ADVANCE;                                                                                                   \
+			break;                                                                                                     \
 		}                                                                                                              \
 		ADVANCE;                                                                                                       \
-	} while(len > 0);
+	} while (len > 0)
 
 #define ADVANCE_UNTIL_EOL_OR_BREAK                                                                                     \
 	{                                                                                                                  \
 		ADVANCE_UNTIL_EOL;                                                                                             \
-		if(*(buffer - 1) != '\n') {                                                                                    \
+		if (buffer[-1] != '\n')                                                                                        \
 			break;                                                                                                     \
-		}                                                                                                              \
 	}
 
 #define RETURN_ON_ERROR(SUCCESS_CODE)                                                                                  \
-	if(codeValue != SUCCESS_CODE) {                                                                                    \
-		memcpy(message, line, std::min(lineLength, SMTP_ERROR_LENGTH));                                                \
-		message[SMTP_ERROR_LENGTH] = '\0';                                                                             \
+	if (_codeValue != SUCCESS_CODE) {                                                                                  \
+		memcpy(_message, line, std::min(lineLength, SMTP_ERROR_LENGTH));                                               \
+		_message[SMTP_ERROR_LENGTH] = '\0';                                                                            \
 		return 0;                                                                                                      \
 	}
 
-#define WAIT_FOR_STREAM(A)                                                                                             \
-	if(A != nullptr && !A->isFinished()) {                                                                             \
-		break;                                                                                                         \
-	}
-
-SmtpClient::SmtpClient(bool autoDestroy /* =false */) : TcpClient(autoDestroy), outgoingMail(nullptr)
-{
-}
+SmtpClient::SmtpClient(bool autoDestroy /* =false */) : TcpClient(autoDestroy)
+{}
 
 SmtpClient::~SmtpClient()
 {
-	// TODO: clear all pointers...
-	delete stream;
-	delete outgoingMail;
-	stream = nullptr;
-	outgoingMail = nullptr;
-	do {
-		MailMessage* mail = mailQ.dequeue();
-		if(mail == nullptr) {
-			break;
-		}
-		delete mail;
-	} while(1);
+	delete _outgoingMail;
+
+	while (_mailQ.count())
+		delete _mailQ.dequeue();
 }
 
-bool SmtpClient::connect(const URL& url)
+bool SmtpClient::connect(const URL& to_url)
 {
-	if(getConnectionState() != eTCS_Ready) {
+	if (getConnectionState() != eTCS_Ready)
 		close();
-	}
 
-	this->url = url;
-	if(!this->url.Port) {
-		this->url.Port = 25;
-		if(this->url.Protocol == SMTP_OVER_SSL_PROTOCOL) {
-			this->url.Port = 465;
-		}
-	}
+	_url = to_url;
 
-	return TcpClient::connect(url.Host, url.Port, (url.Protocol == SMTP_OVER_SSL_PROTOCOL));
+	bool isSSL = _url.protocol() == SMTP_OVER_SSL_PROTOCOL;
+
+	if (_url.port() == 0)
+		_url.setPort(isSSL ? 465 : 25);
+
+	return TcpClient::connect(_url.host(), _url.port(), isSSL);
 }
 
 bool SmtpClient::send(const String& from, const String& to, const String& subject, const String& body)
@@ -119,12 +99,12 @@ bool SmtpClient::send(const String& from, const String& to, const String& subjec
 
 MailMessage* SmtpClient::getCurrentMessage()
 {
-	return outgoingMail;
+	return _outgoingMail;
 }
 
 bool SmtpClient::send(MailMessage* mail)
 {
-	if(!mailQ.enqueue(mail)) {
+	if (!_mailQ.enqueue(mail)) {
 		// the mail queue is full
 		delete mail;
 		return false;
@@ -135,247 +115,169 @@ bool SmtpClient::send(MailMessage* mail)
 
 void SmtpClient::quit()
 {
-	sendString("QUIT\r\n");
-	state = eSMTP_Quitting;
+	sendString(_F("QUIT\r\n"));
+	_state = eSMTP_Quitting;
 }
 
 // Protected Methods
 void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	switch(state) {
-	case eSMTP_StartTLS: {
-		sendString("STARTTLS\n\n");
-		state = eSMTP_Banner;
+	switch (_state) {
+	case eSMTP_StartTLS:
+		sendString(_F("STARTTLS\n\n"));
+		_state = eSMTP_Banner;
 		break;
-	}
 
-	case eSMTP_SendAuth: {
-		if(authMethods.count()) {
+	case eSMTP_SendAuth:
+		if (_authMethods.count()) {
 			// TODO: Simplify the code in that block...
 			Vector<String> preferredOrder;
-			if(useSsl) {
-				preferredOrder.addElement("PLAIN");
-				preferredOrder.addElement("CRAM-MD5");
-			} else {
-				preferredOrder.addElement("CRAM-MD5");
-				preferredOrder.addElement("PLAIN");
+			if (_useSsl) {
+				preferredOrder.addElement(F("PLAIN"));
+				preferredOrder.addElement(F("CRAM-MD5"));
+			}
+			else {
+				preferredOrder.addElement(F("CRAM-MD5"));
+				preferredOrder.addElement(F("PLAIN"));
 			}
 
-			for(int i = 0; i < preferredOrder.count(); i++) {
-				if(authMethods.contains(preferredOrder[i])) {
-					if(preferredOrder[i] == "PLAIN") {
-						// base64('\0' + username + '\0' + password)
-						int tokenLength = url.User.length() + url.Password.length() + 2;
-						uint8_t token[tokenLength];
-						memcpy((token + 1), url.User.c_str(), url.User.length()); // copy user
-						memcpy((token + 2 + url.User.length()), url.Password.c_str(),
-							   url.Password.length()); // copy password
-						int hashLength = tokenLength * 4;
-						char hash[hashLength];
-						base64_encode(tokenLength, token, hashLength, hash);
-						sendString("AUTH PLAIN " + String(hash) + "\r\n");
+			for (unsigned i = 0; i < preferredOrder.count(); i++) {
+				if (!_authMethods.contains(preferredOrder[i]))
+					continue;
 
-						state = eSMTP_SendingAuth;
-						break;
-					} else if(preferredOrder[i] == "CRAM-MD5") {
-						// otherwise we can try the slow cram-md5 authentication...
-						sendString("AUTH CRAM-MD5\r\n");
-						state = eSMTP_RequestingAuthChallenge;
-						break;
-					}
+				if (preferredOrder[i] == _F("PLAIN")) {
+					// base64('\0' + username + '\0' + password)
+					String token = '\0' + _url.user() + '\0' + _url.password();
+					String hash = base64_encode(token);
+					sendString(F("AUTH PLAIN ") + hash + "\r\n");
+					_state = eSMTP_SendingAuth;
+					break;
+				}
+
+				if (preferredOrder[i] == F("CRAM-MD5")) {
+					// otherwise we can try the slow cram-md5 authentication...
+					sendString(F("AUTH CRAM-MD5\r\n"));
+					_state = eSMTP_RequestingAuthChallenge;
+					break;
 				}
 			}
 		} /* authMethods.count */
 
-		if(state == eSMTP_SendAuth) {
-			state = eSMTP_Ready;
-		}
+		if (_state == eSMTP_SendAuth)
+			_state = eSMTP_Ready;
 
 		break;
-	}
 
 	case eSMTP_SendAuthResponse: {
 		// Calculate the CRAM-MD5 response
 		//     base64.b64encode("user " +hmac.new(password, base64.b64decode(challenge), hashlib.md5).hexdigest())
-		uint8_t digest[MD5_SIZE] = {0};
-		hmac_md5((const uint8_t*)authChallenge.c_str(), authChallenge.length(), (const uint8_t*)url.Password.c_str(),
-				 url.Password.length(), digest);
+		uint8_t digest[MD5_SIZE];
+		hmac_md5((const uint8_t*)_authChallenge.c_str(), _authChallenge.length(),
+				 (const uint8_t*)_url.password().c_str(), _url.password().length(), digest);
 
-		char hexdigest[MD5_SIZE * 2 + 1] = {0};
-		char* c = hexdigest;
-		for(int i = 0; i < MD5_SIZE; i++) {
-			ets_sprintf(c, "%02x", digest[i]);
-			c += 2;
-		}
-		*c = '\0';
-
-		String token = url.User + " " + hexdigest;
-		int hashLength = token.length() * 4;
-		char hash[hashLength];
-		base64_encode(token.length(), (const unsigned char*)token.c_str(), hashLength, hash);
-		sendString(String(hash) + "\r\n");
-		state = eSMTP_SendingAuth;
+		String token = _url.user() + " " + toHexString(digest, MD5_SIZE);
+		sendString(base64_encode(token) + "\r\n");
+		_state = eSMTP_SendingAuth;
 
 		break;
 	}
 
-	case eSMTP_Ready: {
-		delete outgoingMail;
-
-		debugf("Queue size: %d", mailQ.count());
-
-		outgoingMail = mailQ.dequeue();
-		if(!outgoingMail) {
+	case eSMTP_Ready:
+		delete _outgoingMail;
+		debugf("Queue size: %d", _mailQ.count());
+		_outgoingMail = _mailQ.dequeue();
+		if (!_outgoingMail)
 			break;
+
+		_state = eSMTP_SendMail;
+		// fall through
+
+	case eSMTP_SendMail:
+		sendString(_F("MAIL FROM:") + _outgoingMail->from + "\r\n");
+		if (_options & SMTP_OPT_PIPELINE) {
+			sendString(_F("RCPT TO:") + _outgoingMail->to + "\r\n");
+			sendString(_F("DATA\r\n"));
 		}
-
-		state = eSMTP_SendMail;
-	}
-
-	case eSMTP_SendMail: {
-		sendString("MAIL FROM:" + outgoingMail->from + "\r\n");
-		if(options & SMTP_OPT_PIPELINE) {
-			sendString("RCPT TO:" + outgoingMail->to + "\r\n");
-			sendString("DATA\r\n");
-		}
-
-		state = eSMTP_SendingMail;
+		_state = eSMTP_SendingMail;
 		break;
-	}
 
-	case eSMTP_SendRcpt: {
-		sendString("RCPT TO:" + outgoingMail->to + "\r\n");
-		state = eSMTP_SendingRcpt;
+	case eSMTP_SendRcpt:
+		sendString(_F("RCPT TO:") + _outgoingMail->to + "\r\n");
+		_state = eSMTP_SendingRcpt;
 		break;
-	}
 
-	case eSMTP_SendData: {
-		sendString("DATA\r\n");
-		state = eSMTP_SendingData;
+	case eSMTP_SendData:
+		sendString(_F("DATA\r\n"));
+		_state = eSMTP_SendingData;
 		break;
-	}
 
 	case eSMTP_SendHeader: {
-		WAIT_FOR_STREAM(stream);
+		if (isSending())
+			break;
 
-		sendMailHeaders(outgoingMail);
+		HttpHeaders& headers = _outgoingMail->prepareHeaders();
+		for (unsigned i = 0; i < headers.count(); i++)
+			writeString(headers[i]);
+		writeString("\r\n");
 
-		state = eSMTP_SendingHeaders;
+		_state = eSMTP_SendingHeaders;
+		// fall through
 	}
 
-	case eSMTP_SendingHeaders: {
-		WAIT_FOR_STREAM(stream);
+	case eSMTP_SendingHeaders:
+		if (isSending())
+			break;
+		_state = eSMTP_StartBody;
+		// fall through
 
-		state = eSMTP_StartBody;
-	}
+	case eSMTP_StartBody:
+		TcpClient::send(_outgoingMail->getBodyStream());
+		_state = eSMTP_SendingBody;
+		// Fall through
 
-	case eSMTP_StartBody: {
-		sendMailBody(outgoingMail);
-		state = eSMTP_SendingBody;
-	}
-
-	case eSMTP_SendingBody: {
-		WAIT_FOR_STREAM(stream);
+	case eSMTP_SendingBody:
+		if (isSending())
+			break;
 
 		// send the final dot
-		state = eSMTP_Sent;
-		delete stream;
-		stream = nullptr;
+		_state = eSMTP_Sent;
 
-		sendString("\r\n.\r\n");
+		sendString(_F("\r\n.\r\n"));
 		break;
-	}
 
-	case eSMTP_Disconnect: {
+	case eSMTP_Disconnect:
 		close();
 		return;
-	}
+
+	case eSMTP_Banner:
+	case eSMTP_Hello:
+	case eSMTP_SendingAuthLogin:
+	case eSMTP_RequestingAuthChallenge:
+	case eSMTP_SendingAuth:
+	case eSMTP_SendingMail:
+	case eSMTP_SendingRcpt:
+	case eSMTP_SendingData:
+	case eSMTP_Sent:
+	case eSMTP_Quitting:;
 
 	} /* switch(state) */
 
 	TcpClient::onReadyToSendData(sourceEvent);
 }
 
-HttpPartResult SmtpClient::multipartProducer()
-{
-	HttpPartResult result;
-
-	if(outgoingMail->attachments.count()) {
-		result = outgoingMail->attachments[0];
-
-		if(!result.headers->contains("Content-Transfer-Encoding")) {
-			result.stream = new Base64OutputStream(result.stream);
-			(*result.headers)["Content-Transfer-Encoding"] = "base64";
-		}
-
-		outgoingMail->attachments.remove(0);
-	}
-
-	return result;
-}
-
-void SmtpClient::sendMailHeaders(MailMessage* mail)
-{
-	mail->getHeaders();
-
-	if(!mail->headers.contains("Content-Transfer-Encoding")) {
-		mail->headers["Content-Transfer-Encoding"] = "quoted-printable";
-		mail->stream = new QuotedPrintableOutputStream(mail->stream);
-	}
-
-	if(mail->attachments.count()) {
-		MultipartStream* mStream = new MultipartStream(HttpPartProducerDelegate(&SmtpClient::multipartProducer, this));
-		HttpPartResult text;
-		text.headers = new HttpHeaders();
-		(*text.headers)["Content-Type"] = mail->headers["Content-Type"];
-		(*text.headers)["Content-Transfer-Encoding"] = mail->headers["Content-Transfer-Encoding"];
-		text.stream = mail->stream;
-
-		mail->attachments.insertElementAt(text, 0);
-
-		mail->headers.remove("Content-Transfer-Encoding");
-		mail->headers["Content-Type"] = String("multipart/mixed; boundary=") + mStream->getBoundary();
-		mail->stream = mStream;
-	}
-
-	for(int i = 0; i < mail->headers.count(); i++) {
-		String key = mail->headers.keyAt(i);
-		String value = mail->headers.valueAt(i);
-		sendString(key + ": " + value + "\r\n");
-	}
-	sendString("\r\n");
-}
-
-bool SmtpClient::sendMailBody(MailMessage* mail)
-{
-	if(mail->stream == nullptr) {
-		return true;
-	}
-
-	delete stream;
-	stream = mail->stream; // avoid intermediate buffers
-	mail->stream = nullptr;
-
-	return false;
-}
-
 err_t SmtpClient::onReceive(pbuf* buf)
 {
-	if(buf == nullptr) {
+	if (!buf)
 		return TcpClient::onReceive(buf);
-	}
 
-	pbuf* cur = buf;
 	int parsedBytes = 0;
-	while(cur != nullptr && cur->len > 0) {
+	for (pbuf* cur = buf; cur && cur->len > 0; cur = cur->next)
 		parsedBytes += smtpParse((char*)cur->payload, cur->len);
-		cur = cur->next;
-	}
 
-	if(parsedBytes != buf->tot_len) {
-		debug_e("Got error: %s:%s", code, message);
+	if (parsedBytes != buf->tot_len) {
+		debug_e("Got error: %s:%s", _code, _message);
 
-		if(!errorCallback || errorCallback(*this, codeValue, message) != 0) {
+		if (!_errorCallback || _errorCallback(*this, _codeValue, _message) != 0) {
 			// abort the connection if we cannot handle it.
 			TcpClient::onReceive(nullptr);
 
@@ -391,43 +293,44 @@ err_t SmtpClient::onReceive(pbuf* buf)
 int SmtpClient::smtpParse(char* buffer, size_t len)
 {
 	char* start = buffer;
-	while(len) {
+	while (len) {
 		char currentByte = *buffer;
 		// parse the code...
-		if(codeLength < 3) {
-			code[codeLength++] = currentByte;
+		if (_codeLength < 3) {
+			_code[_codeLength++] = currentByte;
 			ADVANCE;
 			continue;
-		} else if(codeLength == 3) {
-			code[codeLength] = '\0';
-			if(currentByte != ' ' && currentByte != '-') {
+		}
+		else if (_codeLength == 3) {
+			_code[_codeLength] = '\0';
+			if (currentByte != ' ' && currentByte != '-') {
 				// the code must be followed by space or minus
 				return 0;
 			}
 
 			char* tmp;
-			codeValue = strtol(code, &tmp, 10);
-			isLastLine = (currentByte == ' ');
-			codeLength++;
+			_codeValue = strtol(_code, &tmp, 10);
+			_isLastLine = (currentByte == ' ');
+			_codeLength++;
 			ADVANCE;
 		}
 
 		char* line = buffer;
 		ADVANCE_UNTIL_EOL_OR_BREAK;
-		codeLength = 0;
+		_codeLength = 0;
 		int lineLength = (buffer - line) - 2;
 
-		switch(state) {
+		switch (_state) {
 		case eSMTP_Banner: {
 			RETURN_ON_ERROR(SMTP_CODE_SERVICE_READY);
 
-			if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
-				useSsl = true;
-				TcpConnection::staticOnConnected((void*)this, tcp, ERR_OK);
+			if (!_useSsl && (_options & SMTP_OPT_STARTTLS)) {
+				_useSsl = true;
+				TcpConnection::_onConnected(_tcp, ERR_OK);
 			}
 
-			sendString("EHLO " + url.Host + "\r\n");
-			state = eSMTP_Hello;
+			sendString(F("EHLO ") + _url.host() + "\r\n");
+			_state = eSMTP_Hello;
 
 			break;
 		}
@@ -435,13 +338,15 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 		case eSMTP_Hello: {
 			RETURN_ON_ERROR(SMTP_CODE_REQUEST_OK);
 
-			if(strncmp(line, "PIPELINING", lineLength) == 0) {
+			if (strncmp(line, _F("PIPELINING"), lineLength) == 0) {
 				// PIPELINING (see: https://tools.ietf.org/html/rfc2920)
-				options |= SMTP_OPT_PIPELINE;
-			} else if(strncmp(line, "STARTTLS", lineLength) == 0) {
+				_options |= SMTP_OPT_PIPELINE;
+			}
+			else if (strncmp(line, _F("STARTTLS"), lineLength) == 0) {
 				// STARTTLS (see: https://www.ietf.org/rfc/rfc3207.txt)
-				options |= SMTP_OPT_STARTTLS;
-			} else if(strncmp(line, "AUTH ", 5) == 0) {
+				_options |= SMTP_OPT_STARTTLS;
+			}
+			else if (strncmp(line, _F("AUTH "), 5) == 0) {
 				// Process authentication methods
 				// Ex: 250-AUTH CRAM-MD5 PLAIN LOGIN
 				// See: https://tools.ietf.org/html/rfc4954
@@ -449,18 +354,19 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 				int pos = -1;
 
 				String text(line + 5, lineLength - 5);
-				splitString(text, ' ', authMethods);
+				text.split(' ', _authMethods);
 			}
 
-			if(isLastLine) {
-				state = eSMTP_Ready;
+			if (_isLastLine) {
+				_state = eSMTP_Ready;
 #ifdef ENABLE_SSL
-				if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
-					state = eSMTP_StartTLS;
-				} else
+				if (!_useSsl && (_options & SMTP_OPT_STARTTLS)) {
+					_state = eSMTP_StartTLS;
+				}
+				else
 #endif
-					if(url.User && authMethods.count()) {
-					state = eSMTP_SendAuth;
+					if (_url.user() && _authMethods.count()) {
+					_state = eSMTP_SendAuth;
 				}
 			}
 
@@ -469,18 +375,8 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 
 		case eSMTP_RequestingAuthChallenge: {
 			RETURN_ON_ERROR(SMTP_CODE_AUTH_CHALLENGE);
-			uint8_t out[lineLength];
-			int outlen = lineLength;
-
-// TODO: Unify the base64_[decode|encode]() signature in base64.cpp to match the one in axTLS crypt_misc.h
-#ifdef ENABLE_SSL
-			base64_decode(line, lineLength, out, &outlen);
-#else
-			// size_t in_len, const char *in, size_t out_len, unsigned char *out
-			outlen = base64_decode(lineLength, line, outlen, out);
-#endif
-			authChallenge = String((const char*)out, outlen);
-			state = eSMTP_SendAuthResponse;
+			_authChallenge = base64_decode(line, lineLength);
+			_state = eSMTP_SendAuthResponse;
 
 			break;
 		}
@@ -488,9 +384,9 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 		case eSMTP_SendingAuth: {
 			RETURN_ON_ERROR(SMTP_CODE_AUTH_OK);
 
-			authMethods.clear();
+			_authMethods.clear();
 
-			state = eSMTP_Ready;
+			_state = eSMTP_Ready;
 
 			break;
 		}
@@ -498,7 +394,7 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 		case eSMTP_SendingMail: {
 			RETURN_ON_ERROR(SMTP_CODE_REQUEST_OK);
 
-			state = ((options & SMTP_OPT_PIPELINE) ? eSMTP_SendingRcpt : eSMTP_SendRcpt);
+			_state = ((_options & SMTP_OPT_PIPELINE) ? eSMTP_SendingRcpt : eSMTP_SendRcpt);
 
 			break;
 		}
@@ -506,27 +402,29 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 		case eSMTP_SendingRcpt: {
 			RETURN_ON_ERROR(SMTP_CODE_REQUEST_OK);
 
-			state = ((options & SMTP_OPT_PIPELINE) ? eSMTP_SendingData : eSMTP_SendData);
+			_state = ((_options & SMTP_OPT_PIPELINE) ? eSMTP_SendingData : eSMTP_SendData);
 
 			break;
 		}
+
 		case eSMTP_SendingData: {
 			RETURN_ON_ERROR(SMTP_CODE_START_DATA);
 
-			state = eSMTP_SendHeader;
+			_state = eSMTP_SendHeader;
 
 			break;
 		}
+
 		case eSMTP_Sent: {
 			RETURN_ON_ERROR(SMTP_CODE_REQUEST_OK);
 
-			state = eSMTP_Ready;
+			_state = eSMTP_Ready;
 
-			if(messageSentCallback) {
-				messageSentCallback(*this, codeValue, message);
-			}
-			delete outgoingMail;
-			outgoingMail = nullptr;
+			if (_messageSentCallback)
+				_messageSentCallback(*this, _codeValue, _message);
+
+			delete _outgoingMail;
+			_outgoingMail = nullptr;
 
 			break;
 		}
@@ -534,13 +432,13 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 		case eSMTP_Quitting: {
 			RETURN_ON_ERROR(SMTP_CODE_BYE);
 			close();
-			state = eSMTP_Disconnect;
+			_state = eSMTP_Disconnect;
 
 			break;
 		}
 
 		default:
-			memcpy(message, line, std::min(lineLength, SMTP_ERROR_LENGTH));
+			memcpy(_message, line, std::min(lineLength, SMTP_ERROR_LENGTH));
 
 		} /* switch(state) */
 	}

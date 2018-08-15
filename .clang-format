@@ -33,13 +33,17 @@ BraceWrapping:
     BeforeElse:      true
     IndentBraces:    false
 #   AfterExternBlock: true # available in v7
+    SplitEmptyFunction: false
+    SplitEmptyRecord: false
+    SplitEmptyNamespace: false
 # BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Linux
+BreakBeforeBraces: Custom
 # BreakBeforeTernaryOperators: true
 # BreakConstructorInitializersBeforeComma: false
+BreakConstructorInitializers: AfterColon
 ColumnLimit:     120
 # CommentPragmas:  '^ IWYU pragma:'
-# ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
 # ConstructorInitializerIndentWidth: 4
 # ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
@@ -75,10 +79,13 @@ PointerAlignment: Left
 ReflowComments:  false
 SortIncludes:    false
 SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: true
 SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: Never
+SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
+# SpaceBeforeCpp11BracedList: true # available in v7
+# SpaceBeforeCtorInitializerColon: false  # available in v7
 # SpaceBeforeInheritanceColon: false # available in v7
 SpacesInAngles:  false
 SpacesInContainerLiterals: false

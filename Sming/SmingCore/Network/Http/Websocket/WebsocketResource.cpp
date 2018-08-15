@@ -17,23 +17,22 @@ WebsocketResource::WebsocketResource()
 }
 
 WebsocketResource::~WebsocketResource()
-{
-}
+{}
 
 int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
-	WebSocketConnection* socket = new WebSocketConnection(&connection);
+	WebSocketConnection* socket = createConnection(connection);
 	socket->setBinaryHandler(wsBinary);
 	socket->setMessageHandler(wsMessage);
 	socket->setConnectionHandler(wsConnect);
 	socket->setDisconnectionHandler(wsDisconnect);
-	if(!socket->initialize(request, response)) {
+	if (!socket->initialize(request, response)) {
 		debug_w("Not a valid WebsocketRequest?");
 		delete socket;
 		return -1;
 	}
 
-	connection.setTimeOut(USHRT_MAX); //Disable disconnection on connection idle (no rx/tx)
+	// Note: setTimeOut moved to WebSocketConnection constructor
 
 	// TODO: Re-Enable Command Executor...
 
@@ -44,35 +43,11 @@ void WebsocketResource::shutdown(HttpServerConnection& connection)
 {
 	WebSocketConnection* socket = (WebSocketConnection*)connection.userData;
 	delete socket;
-	connection.userData = NULL;
+	connection.userData = nullptr;
 }
 
 int WebsocketResource::processData(HttpServerConnection& connection, HttpRequest& request, char* at, int size)
 {
 	WebSocketConnection* socket = (WebSocketConnection*)connection.userData;
-	if(socket == NULL) {
-		return -1;
-	}
-
-	return socket->processFrame(connection, request, at, size);
-}
-
-void WebsocketResource::setConnectionHandler(WebSocketDelegate handler)
-{
-	wsConnect = handler;
-}
-
-void WebsocketResource::setMessageHandler(WebSocketMessageDelegate handler)
-{
-	wsMessage = handler;
-}
-
-void WebsocketResource::setBinaryHandler(WebSocketBinaryDelegate handler)
-{
-	wsBinary = handler;
-}
-
-void WebsocketResource::setDisconnectionHandler(WebSocketDelegate handler)
-{
-	wsDisconnect = handler;
+	return socket ? socket->processFrame(connection, request, at, size) : -1;
 }

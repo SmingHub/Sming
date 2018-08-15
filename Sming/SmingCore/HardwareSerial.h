@@ -13,9 +13,9 @@
 #ifndef _HARDWARESERIAL_H_
 #define _HARDWARESERIAL_H_
 
-#include "../Wiring/WiringFrameworkDependencies.h"
-#include "../Wiring/Stream.h"
-#include "../SmingCore/Delegate.h"
+#include "WiringFrameworkDependencies.h"
+#include "Stream.h"
+#include "Delegate.h"
 #include "../Services/CommandProcessing/CommandProcessingIncludes.h"
 
 #define UART_ID_0 0 ///< ID of UART 0
@@ -31,16 +31,18 @@
  *  @param  source Reference to serial stream
  *  @param  arrivedChar Char recieved
  *  @param  availableCharsCount Quantity of chars available stream in receive buffer
+ *  @note Delegate constructor usage: (&YourClass::method, this)
  */
-// Delegate constructor usage: (&YourClass::method, this)
-typedef Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
+typedef Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsCount)>
+	StreamDataReceivedDelegate;
 
 class CommandExecutor;
 
 /// Hardware serial member data
-typedef struct {
-	StreamDataReceivedDelegate HWSDelegate;		///< Delegate callback handler
-	CommandExecutor* commandExecutor = nullptr; ///< Pointer to command executor (Default: none)
+typedef struct
+{
+	StreamDataReceivedDelegate HWSDelegate = nullptr; ///< Delegate callback handler
+	CommandExecutor* commandExecutor = nullptr;		  ///< Pointer to command executor (Default: none)
 } HWSerialMemberData;
 
 enum SerialConfig {
@@ -72,16 +74,22 @@ enum SerialConfig {
 
 enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL_TX_ONLY = UART_TX_ONLY };
 
+#ifndef DEFAULT_RX_BUFFER_SIZE
+#define DEFAULT_RX_BUFFER_SIZE 256
+#endif
+
 /// Hardware serial class
-class HardwareSerial : public Stream
-{
+class HardwareSerial : public Stream {
 public:
 	/** @brief  Create instance of a hardware serial port object
      *  @param  uartPort UART number [0 | 1]
      *  @note   A global instance of UART 0 is already defined as Serial
      */
-	HardwareSerial(const int uartPort);
-	~HardwareSerial();
+	HardwareSerial(int uartPort) : _uartNr(uartPort), _rxSize(DEFAULT_RX_BUFFER_SIZE)
+	{}
+
+	~HardwareSerial()
+	{}
 
 	/** @brief  Initialise the serial port
      *  @param  baud BAUD rate of the serial port (Default: 9600)
@@ -178,9 +186,8 @@ public:
 	/** @brief  Read a block of characters from serial port
 	 *  @param  buf Pointer to buffer to hold received data
 	 *  @param  max_len Maximum quantity of characters to read
-	 *  @retval int Quantity of characters read
 	 */
-	int readMemoryBlock(char* buf, int max_len);
+	size_t readMemoryBlock(char* buf, size_t max_len);
 
 	/** @brief  Read a character from serial port without removing from input buffer
      *  @retval int Character read from serial port or -1 if buffer empty
@@ -245,35 +252,32 @@ public:
 	/**
 	 * @brief Operator that returns true if the uart structure is set
 	 */
-	operator bool() const;
+	operator bool() const
+	{
+		return _uart != nullptr;
+	}
+
 
 	/*
 	 * @brief Returns the location of the searched character
 	 * @param char c - character to search for
 	 * @retval size_t -1 if not found 0 or positive number otherwise
 	 */
-	size_t indexOf(char c);
+	int indexOf(char c);
 
 private:
-	int uartNr;
-	static HWSerialMemberData memberData[NUMBER_UARTS];
+	int _uartNr;
+	static HWSerialMemberData _memberData[NUMBER_UARTS];
 
-	uart_t* uart = nullptr;
-	size_t rxSize;
+	uart_t* _uart = nullptr;
+	size_t _rxSize = 0;
 
-	static os_event_t* serialQueue;
-
-	static bool init;
+	static bool _init; ///< Purpose ?
 
 	/** @brief  Interrupt handler for UART0 receive events
 	 * @param uart_t* pointer to UART structure
 	 */
 	static void IRAM_ATTR callbackHandler(uart_t* arg);
-
-	/** @brief  Trigger task for input event
-	 *  @param  inputEvent The event to use for trigger
-	 */
-	static void delegateTask(os_event_t* inputEvent);
 };
 
 /**	@brief	Global instance of serial port UART0

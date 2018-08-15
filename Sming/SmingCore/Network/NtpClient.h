@@ -8,11 +8,10 @@
 #define APP_NTPCLIENT_H_
 
 #include "UdpConnection.h"
-#include "../Platform/System.h"
-#include "../Timer.h"
-#include "../SystemClock.h"
-#include "../Platform/Station.h"
-#include "../Delegate.h"
+#include "Platform/System.h"
+#include "Timer.h"
+#include "../Services/DateTime/DateTime.h"
+#include "Delegate.h"
 
 #define NTP_PORT 123
 #define NTP_PACKET_SIZE 48
@@ -20,9 +19,9 @@
 #define NTP_MODE_CLIENT 3
 #define NTP_MODE_SERVER 4
 
-#define NTP_DEFAULT_SERVER "pool.ntp.org"
-#define NTP_DEFAULT_QUERY_INTERVAL_SECONDS 600 // 10 minutes
-#define NTP_RESPONSE_TIMEOUT_MS 20000		   // 20 seconds
+#define NTP_DEFAULT_SERVER F("pool.ntp.org")
+#define NTP_DEFAULT_QUERY_INTERVAL_SECONDS (10 * SECS_PER_MIN)
+#define NTP_RESPONSE_TIMEOUT_MS (20 * 1000)
 
 class NtpClient;
 
@@ -30,8 +29,7 @@ class NtpClient;
 typedef Delegate<void(NtpClient& client, time_t ntpTime)> NtpTimeResultDelegate;
 
 /** @brief  NTP client class */
-class NtpClient : protected UdpConnection
-{
+class NtpClient : protected UdpConnection {
 public:
 	/** @brief  Instantiates NTP client object
      */
@@ -47,9 +45,10 @@ public:
      *  @param  reqIntervalSeconds Quantity of seconds between NTP requests
      *  @param  onTimeReceivedCb Callback delegate to be called when NTP time result is received (Default: None)
      */
-	NtpClient(String reqServer, int reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb = nullptr);
+	NtpClient(const String& reqServer, int reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb = nullptr);
 
-	virtual ~NtpClient();
+	virtual ~NtpClient()
+	{}
 
 	/** @brief  Request time from NTP server
      *  @note   Instigates request. Result is handled by NTP result handler function if defined
@@ -59,7 +58,10 @@ public:
 	/** @brief  Set the NTP server
      *  @param  server IP address or hostname of NTP server
      */
-	void setNtpServer(String server);
+	void setNtpServer(const String& server)
+	{
+		_server = server;
+	}
 
 	/** @brief  Enable / disable periodic query
      *  @param  autoQuery True to enable periodic query of NTP server
@@ -90,22 +92,13 @@ protected:
 	void internalRequestTime(IPAddress serverIp);
 
 protected:
-	String server = NTP_DEFAULT_SERVER; ///< IP address or Hostname of NTP server
+	String _server;										///< IP address or Hostname of NTP server
+	NtpTimeResultDelegate _delegateCompleted = nullptr; ///< NTP result handler delegate
+	bool _autoUpdateSystemClock = false;				///< True to update system clock with NTP time
 
-	NtpTimeResultDelegate delegateCompleted = nullptr; ///< NTP result handler delegate
-	bool autoUpdateSystemClock = false;				   ///< True to update system clock with NTP time
-
-	Timer autoUpdateTimer; ///< Periodic query timer
-	Timer timeoutTimer;	///< NTP message timeout timer
-	Timer connectionTimer; ///< Wait for WiFi connection timer
-
-	/** @brief  Handle DNS response
-     *  @param  name Pointer to c-string containing hostname
-     *  @param  ip Ponter to IP address
-     *  @param  arg Pointer to the NTP client object that made the DNS request
-     *  @note   This function is called when a DNS query is serviced
-     */
-	static void staticDnsResponse(const char* name, LWIP_IP_ADDR_T* ip, void* arg);
+	Timer _autoUpdateTimer;   ///< Periodic query timer
+	OSTimer _timeoutTimer;	///< NTP message timeout timer
+	OSTimer _connectionTimer; ///< Wait for WiFi connection timer
 };
 
 /** @} */

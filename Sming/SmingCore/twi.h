@@ -20,7 +20,7 @@
 */
 #ifndef SI2C_h
 #define SI2C_h
-#include "../Wiring/WiringFrameworkDependencies.h"
+#include "WiringFrameworkDependencies.h"
 #include "espinc/peri.h"
 
 #ifdef __cplusplus

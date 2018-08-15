@@ -6,11 +6,8 @@
 #ifndef APP_SYSTEMCLOCK_H_
 #define APP_SYSTEMCLOCK_H_
 
-#include "Clock.h"
-#include "../../Services/DateTime/DateTime.h"
-#include "../../Wiring/WString.h"
-#include "../SmingCore/Network/NtpClient.h"
-#include "../SmingCore/Platform/RTC.h"
+#include "../Services/DateTime/DateTime.h"
+#include "WString.h"
 
 /** @addtogroup constants
  *  @{
@@ -28,27 +25,24 @@ enum SystemClockStatus {
 };
 /** @} */
 
-class NtpClient;
-
 /** @brief  System clock class
  *  @addtogroup systemclock
  *  @{
  */
-class SystemClockClass
-{
+class SystemClockClass {
 public:
 	/** @brief  Get the current date and time
      *  @param  timeType Time zone to use (UTC / local)
      *  @retval DateTime Current date and time
      */
-	DateTime now(TimeZone timeType = eTZ_Local);
+	time_t now(TimeZone timeType = eTZ_Local);
 
 	/** @brief  Set the system clock's time
      *  @param  time Unix time to set clock to (quantity of seconds since 00:00:00 1970-01-01)
      *  @param  timeType Time zone of Unix time, i.e. is time provided as local or UTC?
      *  @note   System time is always stored as local timezone time
      */
-	void setTime(time_t time, TimeZone timeType = eTZ_Local);
+	bool setTime(time_t time, TimeZone timeType = eTZ_Local);
 
 	/** @brief  Get current time as a string
      *  @param  timeType Time zone to present time as, i.e. return local or UTC time
@@ -63,12 +57,20 @@ public:
      *  @todo   Why does this need to be set to 2 for UK during winter?
      *  @note   Supports whole hour and fraction of hour offsets from -12 hours to +12 hours
      */
-	bool setTimeZone(double localTimezoneOffset);
+	bool setTimeZoneOffset(int tzOffsetSecs);
+	bool setTimeZone(float localTimezoneOffset)
+	{
+		return setTimeZoneOffset(localTimezoneOffset * SECS_PER_HOUR);
+	}
+
+	int tzOffsetSecs()
+	{
+		return _tzOffsetSecs;
+	}
 
 private:
-	double timezoneDiff = 0.0;
-	DateTime dateTime;
-	SystemClockStatus status = eSCS_Initial;
+	int _tzOffsetSecs = 0;
+	SystemClockStatus _status = eSCS_Initial;
 };
 
 /**	@brief	Global instance of system clock object

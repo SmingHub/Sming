@@ -8,7 +8,6 @@
 #ifndef SAMPLES_ARDUCAM_APP_HEXDUMP_H_
 #define SAMPLES_ARDUCAM_APP_HEXDUMP_H_
 
-#include "Arduino.h"
 
 class HexDump {
 public:

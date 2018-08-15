@@ -1,5 +1,5 @@
-#include "../include/user_config.h"
-#include "../include/esp_cplusplus.h"
+#include "user_config.h"
+#include "esp_cplusplus.h"
 #include <stdlib.h>
 
 ////////////////////////////////////////////////////////////////////////
@@ -28,13 +28,13 @@ void *operator new[](size_t size)
 
 void operator delete(void * ptr)
 {
-	if (ptr != NULL)
+	if (ptr)
 		free(ptr);
 }
 
 void operator delete[](void * ptr)
 {
-	if (ptr != NULL)
+	if (ptr)
 		free(ptr);
 }
 

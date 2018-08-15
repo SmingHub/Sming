@@ -7,33 +7,38 @@
 
 #include "NetUtils.h"
 
-#include "../Wiring/WString.h"
+#include "WString.h"
 #ifdef __linux__
 #include "lwip/priv/tcp_priv.h"
 #else
 #include "lwip/tcp_impl.h"
 #endif
 
-bool NetUtils::ipClientRoutingFixed = false;
+#ifdef FIX_NETWORK_ROUTING
+bool NetUtils::_ipClientRoutingFixed = false;
+#endif
 
 /// HELPERS ///
 
-int NetUtils::pbufFindChar(pbuf* buf, char wtf, int startPos /* = 0*/)
+int NetUtils::pbufFindChar(pbuf* buf, char wtf, unsigned startPos)
 {
+	if (!buf)
+		return -1;
+
 	int ofs = 0;
 
-	while(buf->len <= startPos) {
+	while (buf->len <= startPos) {
 		ofs += buf->len;
 		startPos -= buf->len;
 		buf = buf->next;
-		if(buf == NULL)
+		if (!buf)
 			return -1;
 	}
 
 	do {
-		for(int i = startPos; i < buf->len; i++) {
+		for (unsigned i = startPos; i < buf->len; i++) {
 			char* sbuf = (char*)buf->payload;
-			if(sbuf[i] == wtf) {
+			if (sbuf[i] == wtf) {
 				//debug_d("%d %d", ofs, i);
 				return ofs + i;
 			}
@@ -41,32 +46,35 @@ int NetUtils::pbufFindChar(pbuf* buf, char wtf, int startPos /* = 0*/)
 		ofs += buf->len;
 		buf = buf->next;
 		startPos = 0;
-	} while(buf != NULL);
+	} while (buf);
 
 	return -1;
 }
 
-bool NetUtils::pbufIsStrEqual(pbuf* buf, const char* compared, int startPos)
+bool NetUtils::pbufIsStrEqual(pbuf* buf, const char* compared, unsigned startPos)
 {
-	int cur = startPos;
+	if (!buf)
+		return false;
 
-	while(buf->len <= cur) {
+	unsigned cur = startPos;
+
+	while (buf->len <= cur) {
 		cur -= buf->len;
 		buf = buf->next;
-		if(buf == NULL)
+		if (!buf)
 			return false;
 	}
 
-	for(const char* cmp = compared; *cmp; cmp++) {
-		if(buf == NULL)
+	for (const char* cmp = compared; *cmp; cmp++) {
+		if (!buf)
 			return false;
 
-		char& target = ((char*)buf->payload)[cur];
-		if(target != *cmp)
+		char& target = static_cast<char*>(buf->payload)[cur];
+		if (target != *cmp)
 			return false;
 
 		cur++;
-		if(cur >= buf->len) {
+		if (cur >= buf->len) {
 			cur = 0;
 			buf = buf->next;
 		}
@@ -75,28 +83,24 @@ bool NetUtils::pbufIsStrEqual(pbuf* buf, const char* compared, int startPos)
 	return true;
 }
 
-int NetUtils::pbufFindStr(pbuf* buf, const char* wtf, int startPos /* = 0*/)
+int NetUtils::pbufFindStr(pbuf* buf, const char* wtf, unsigned startPos)
 {
-	int cur = startPos;
-	if(startPos < 0)
-		startPos = 0;
-	if(wtf == NULL || strlen(wtf) == -1)
+	if (!buf || !wtf)
 		return -1;
 
-	while(true) {
+	int cur = (int)startPos;
+	while (true) {
 		cur = pbufFindChar(buf, wtf[0], cur);
-		if(cur == -1)
-			return -1;
-
-		if(pbufIsStrEqual(buf, wtf, cur))
+		if (cur < 0 || pbufIsStrEqual(buf, wtf, cur))
 			return cur;
+
 		cur++;
 	}
 
 	return -1;
 }
 
-char* NetUtils::pbufAllocateStrCopy(pbuf* buf, int startPos, int length)
+char* NetUtils::pbufAllocateStrCopy(pbuf* buf, unsigned startPos, unsigned length)
 {
 	char* stringPtr = new char[length + 1];
 	stringPtr[length] = '\0';
@@ -104,7 +108,7 @@ char* NetUtils::pbufAllocateStrCopy(pbuf* buf, int startPos, int length)
 	return stringPtr;
 }
 
-String NetUtils::pbufStrCopy(pbuf* buf, int startPos, int length)
+String NetUtils::pbufStrCopy(pbuf* buf, unsigned startPos, unsigned length)
 {
 	char* stringPtr = new char[length + 1];
 	stringPtr[length] = '\0';
@@ -116,75 +120,82 @@ String NetUtils::pbufStrCopy(pbuf* buf, int startPos, int length)
 
 bool NetUtils::FixNetworkRouting()
 {
-	//	if (ipClientRoutingFixed) return true;
-	//	if (wifi_get_opmode() != STATIONAP_MODE) return true;
-	//
-	//	ip_info info;
-	//	wifi_get_ip_info(STATION_IF, &info);
-	//
-	//	if (info.ip.addr == 0) return false;
-	//
-	//	for (netif *netif = netif_list; netif != NULL; netif = netif->next)
-	//	{
-	//		if (netif->ip_addr.addr == info.ip.addr)
-	//		{
-	//			debug_d("Fixed default network interface: %d.%d.%d.%d", IP2STR(&info.ip));
-	//			netif_default = netif;
-	//			ipClientRoutingFixed = true;
-	//			return true;
-	//		}
-	//	}
-	//
-	//	return false;
-	return true; // Should work on standard lwip
+/*
+ * @todo Is this code staying? Is it required for certain versions of LWIP ?
+*/
+#ifdef FIX_NETWORK_ROUTING
+	if (ipClientRoutingFixed)
+		return true;
+	if (wifi_get_opmode() != STATIONAP_MODE)
+		return true;
+
+	ip_info info;
+	wifi_get_ip_info(STATION_IF, &info);
+
+	if (info.ip.addr == 0)
+		return false;
+
+	for (netif* netif = netif_list; netif; netif = netif->next)
+		if (netif->ip_addr.addr == info.ip.addr) {
+			debug_d("Fixed default network interface: %d.%d.%d.%d", IP2STR(&info.ip));
+			netif_default = netif;
+			ipClientRoutingFixed = true;
+			return true;
+		}
+
+	return false;
+#else
+	// Should work on standard lwip
+	return true;
+#endif
 }
 
 /////////////////////////////////
 
 // enum tcp_state, see file /include/lwip/tcp.h
-const char* const deb_tcp_state_str[] = {
-	"CLOSED",	  // 0  CLOSED
-	"LISTEN",	  // 1  LISTEN
-	"SYN_SENT",	// 2  SYN_SENT
-	"SYN_RCVD",	// 3  SYN_RCVD
-	"ESTABLISHED", // 4  ESTABLISHED
-	"FIN_WAIT_1",  // 5  FIN_WAIT_1
-	"FIN_WAIT_2",  // 6  FIN_WAIT_2
-	"CLOSE_WAIT",  // 7  CLOSE_WAIT
-	"CLOSING",	 // 8  CLOSING
-	"LAST_ACK",	// 9  LAST_ACK
-	"TIME_WAIT"	// 10 TIME_WAIT
-};
+static String tcp_state_str(tcp_state state)
+{
+#define XX(_n)                                                                                                         \
+	case _n:                                                                                                           \
+		return F(#_n)
+	switch (state) {
+		XX(CLOSED);
+		XX(LISTEN);
+		XX(SYN_SENT);
+		XX(SYN_RCVD);
+		XX(ESTABLISHED);
+		XX(FIN_WAIT_1);
+		XX(FIN_WAIT_2);
+		XX(CLOSE_WAIT);
+		XX(CLOSING);
+		XX(LAST_ACK);
+		XX(TIME_WAIT);
+	default:
+		return F("<Unknown>");
+	}
+}
+
+static void debugPrintTcp(const struct tcp_pcb* pcb)
+{
+	unsigned active = 0;
+	for (; pcb; pcb = pcb->next) {
+		debugf("LWIP_DEBUG: Port %u | %u flg:%02x tmr:%04x %s\r\n", pcb->local_port, pcb->remote_port, pcb->flags,
+			   pcb->tmr, tcp_state_str(pcb->state).c_str());
+		active++;
+	}
+
+	if (active == 0)
+		debugf("LWIP_DEBUG: none\r\n");
+}
 
 void NetUtils::debugPrintTcpList()
 {
-	struct tcp_pcb* pcb;
 	debugf("********** Lwip Active PCB states:\r\n");
-	bool prt_none = true;
-	for(pcb = tcp_active_pcbs; pcb != NULL; pcb = pcb->next) {
-		debugf("LWIP_DEBUG: Port %u | %u flg:%02x tmr:%04x %s\r\n", pcb->local_port, pcb->remote_port, pcb->flags,
-			   pcb->tmr, deb_tcp_state_str[pcb->state]);
-		prt_none = false;
-	}
-	if(prt_none)
-		debugf("LWIP_DEBUG: none\r\n");
+	debugPrintTcp(tcp_active_pcbs);
+
 	debugf("********** Lwip Listen PCB states:\r\n");
-	prt_none = true;
-	for(pcb = (struct tcp_pcb*)tcp_listen_pcbs.pcbs; pcb != NULL; pcb = pcb->next) {
-		debugf("LWIP_DEBUG: Port %u | %u flg:%02x tmr:%04x %s\r\n", pcb->local_port, pcb->remote_port, pcb->flags,
-			   pcb->tmr, deb_tcp_state_str[pcb->state]);
-		prt_none = false;
-	}
-	if(prt_none)
-		debugf("LWIP_DEBUG: none\r\n");
+	debugPrintTcp(tcp_listen_pcbs.pcbs);
+
 	debugf("********** Lwip TIME-WAIT PCB states:\r\n");
-	prt_none = true;
-	for(pcb = tcp_tw_pcbs; pcb != NULL; pcb = pcb->next) {
-		debugf("LWIP_DEBUG: Port %u | %u flg:%02x tmr:%04x %s\r\n", pcb->local_port, pcb->remote_port, pcb->flags,
-			   pcb->tmr, deb_tcp_state_str[pcb->state]);
-		prt_none = false;
-	}
-	if(prt_none)
-		debugf("LWIP_DEBUG: none\r\n");
-	return;
+	debugPrintTcp(tcp_tw_pcbs);
 }

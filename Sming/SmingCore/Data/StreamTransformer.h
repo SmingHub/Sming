@@ -22,7 +22,7 @@
  * @ingroup    stream data
  *
  *  @{
-*/
+ */
 
 /**
  * @brief Callback specification for the stream transformers
@@ -34,45 +34,55 @@
  *
  * @return int number of output bytes
  */
-typedef std::function<int(uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)> StreamTransformerCallback;
+typedef std::function<size_t(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)> StreamTransformerCallback;
 
-class StreamTransformer : public ReadWriteStream
+
+class StreamTransformer: public IDataSourceStream
 {
 public:
-	StreamTransformer(ReadWriteStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
-					  size_t blockSize = 64);
+	StreamTransformer(IDataSourceStream* stream,
+			const StreamTransformerCallback& callback, size_t resultSize = 256,
+			size_t blockSize = 64);
+
 	virtual ~StreamTransformer();
 
 	//Use base class documentation
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
-		return sourceStream->getStreamType();
+		return _sourceStream->getStreamType();
 	}
 
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	*/
-	int available()
+	virtual String id() const
 	{
-		return -1;
+		return _sourceStream->id();
 	}
+
 
 	/** @brief  Write a single char to stream
 	 *  @param  charToWrite Char to write to the stream
 	 *  @retval size_t Quantity of chars written to stream (always 1)
 	 */
-	virtual size_t write(uint8_t charToWrite);
+	virtual size_t write(uint8_t charToWrite)
+	{
+		return 0;
+//		return _sourceStream->write(charToWrite);
+	}
+
 
 	/** @brief  Write chars to stream
 	 *  @param  buffer Pointer to buffer to write to the stream
 	 *  @param  size Quantity of chars to written
 	 *  @retval size_t Quantity of chars written to stream
 	 */
-	virtual size_t write(const uint8_t* buffer, size_t size);
+	virtual size_t write(const uint8_t *buffer, size_t size)
+	{
+		return 0;
+//		return _sourceStream->write(buffer, size);
+	}
+
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	virtual size_t readMemoryBlock(char* data, size_t bufSize);
 
 	//Use base class documentation
 	virtual bool seek(int len);
@@ -84,22 +94,22 @@ public:
 	 * @brief A method that backs up the current state
 	 *
 	 */
-	virtual void saveState(){};
+	virtual void saveState() { }
 
 	/**
 	 * @brief A method that restores the last backed up state
 	 */
-	virtual void restoreState(){};
+	virtual void restoreState() { }
 
 protected:
-	StreamTransformerCallback transformCallback = nullptr;
+	StreamTransformerCallback _transformCallback = nullptr;
 
 private:
-	ReadWriteStream* sourceStream = NULL;
-	CircularBuffer* tempStream = NULL;
-	uint8_t* result = nullptr;
-	size_t resultSize;
-	size_t blockSize;
+	IDataSourceStream* _sourceStream = nullptr;
+	CircularBuffer* _tempStream = nullptr;
+	uint8_t* _result = nullptr;
+	size_t _resultSize = 0;
+	size_t _blockSize = 0;
 };
 
 /** @} */

@@ -6,48 +6,59 @@
  ****/
 
 #include "System.h"
-#include "../Interrupts.h"
-#include "../../Services/SpifFS/spiffs_sming.h"
+#include "Interrupts.h"
 
 SystemClass System;
 
-SystemClass::SystemClass()
+os_event_t SystemClass::_taskQueue[TASK_QUEUE_LENGTH];
+
+/** @brief OS calls this function which invokes user-defined callback
+ *  @note callback function pointer is placed in event->sig, with parameter
+ *  in event->par.
+ */
+static void __taskHandler(os_event_t* event)
 {
-	state = eSS_None;
+	task_callback_t callback = (task_callback_t)event->sig;
+	if (callback)
+		callback(event->par);
 }
 
 void SystemClass::initialize()
 {
-	if(state != eSS_None)
+	if (_state != eSS_None)
 		return;
-	state = eSS_Intializing;
 
-	system_init_done_cb(staticReadyHandler);
-}
+	_state = eSS_Intializing;
 
-void SystemClass::restart()
-{
-	system_restart();
-}
+	// Initialise the global task queue
+	system_os_task(__taskHandler, USER_TASK_PRIO_1, _taskQueue, TASK_QUEUE_LENGTH);
 
-bool SystemClass::isReady()
-{
-	return state == eSS_Ready;
+	system_init_done_cb([]() { System.readyHandler(); });
 }
 
 void SystemClass::onReady(SystemReadyDelegate readyHandler)
 {
-	readyHandlers.add(readyHandler);
+	if (readyHandler) {
+		if (isReady())
+			readyHandler();
+		else
+			_readyHandlers.add(readyHandler);
+	}
 }
 
 void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 {
-	readyInterfaces.add(readyHandler);
+	if (readyHandler) {
+		if (isReady())
+			readyHandler->onSystemReady();
+		else
+			_readyInterfaces.add(readyHandler);
+	}
 }
 
 void SystemClass::setCpuFrequency(CpuFrequency freq)
 {
-	if(freq == eCF_160MHz)
+	if (freq == eCF_160MHz)
 		REG_SET_BIT(0x3ff00014, BIT(0));
 	else
 		REG_CLR_BIT(0x3ff00014, BIT(0));
@@ -55,32 +66,23 @@ void SystemClass::setCpuFrequency(CpuFrequency freq)
 	ets_update_cpu_frequency(freq);
 }
 
-CpuFrequency SystemClass::getCpuFrequency()
+bool SystemClass::deepSleep(uint32 timeMilliseconds, DeepSleepOptions options)
 {
-	return (CpuFrequency)ets_get_cpu_frequency();
-}
-
-bool SystemClass::deepSleep(uint32 timeMilliseconds, DeepSleepOptions options /* = eDSO_RF_CAL_BY_INIT_DATA */)
-{
-	if(!system_deep_sleep_set_option((uint8)options))
+	if (!system_deep_sleep_set_option((uint8)options))
 		return false;
 	system_deep_sleep(timeMilliseconds * 1000);
 	return true;
 }
 
-void SystemClass::staticReadyHandler()
-{
-	System.readyHandler();
-}
-
 void SystemClass::readyHandler()
 {
-	state = eSS_Ready;
-	for(int i = 0; i < readyHandlers.count(); i++)
-		readyHandlers[i]();
-	for(int i = 0; i < readyInterfaces.count(); i++)
-		readyInterfaces[i]->onSystemReady();
+	_state = eSS_Ready;
+	for (unsigned i = 0; i < _readyHandlers.count(); i++)
+		_readyHandlers[i]();
 
-	readyHandlers.clear();
-	readyInterfaces.clear();
+	for (unsigned i = 0; i < _readyInterfaces.count(); i++)
+		_readyInterfaces[i]->onSystemReady();
+
+	_readyHandlers.clear();
+	_readyInterfaces.clear();
 }

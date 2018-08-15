@@ -11,15 +11,14 @@ Descr: Implement software SPI for HW configs other than hardware SPI pins(GPIO 1
 #include "SPIBase.h"
 #include "SPISettings.h"
 
-class SPISoft : public SPIBase
-{
+class SPISoft : public SPIBase {
 public:
 	SPISoft(uint16_t miso, uint16_t mosi, uint16_t sck, uint8_t delay)
 	{
-		mMISO = miso;
-		mMOSI = mosi;
-		mCLK = sck;
-		m_delay = delay;
+		_MISO = miso;
+		_MOSI = mosi;
+		_CLK = sck;
+		_delay = delay;
 	}
 
 	virtual ~SPISoft(){};
@@ -70,13 +69,15 @@ public:
 	*/
 	inline void setDelay(uint8_t dly)
 	{
-		m_delay = dly;
+		_delay = dly;
 	}
 
 private:
-	uint16_t mMISO, mMOSI, mCLK;
-	SPISettings mSPISettings;
-	uint8_t m_delay;
+	uint16_t _MISO;
+	uint16_t _MOSI;
+	uint16_t _CLK;
+	SPISettings _SPISettings;
+	uint8_t _delay;
 };
 
 #endif /*_SPI_SOFT_*/

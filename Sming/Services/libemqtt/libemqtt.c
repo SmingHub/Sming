@@ -25,8 +25,8 @@
  *
  */
 
+#include "libemqtt.h"
 #include <string.h>
-#include <libemqtt.h>
 #include <stdlib.h>
 
 #define MQTT_DUP_FLAG     1<<3
@@ -85,9 +85,9 @@ uint16_t mqtt_parse_msg_id(const uint8_t* buf) {
 
 	//printf("mqtt_parse_msg_id\n");
 
-	if(type >= MQTT_MSG_PUBLISH && type <= MQTT_MSG_UNSUBACK) {
-		if(type == MQTT_MSG_PUBLISH) {
-			if(qos != 0) {
+	if (type >= MQTT_MSG_PUBLISH && type <= MQTT_MSG_UNSUBACK) {
+		if (type == MQTT_MSG_PUBLISH) {
+			if (qos != 0) {
 				// fixed header length + Topic (UTF encoded)
 				// = 1 for "flags" byte + rlb for length bytes + topic size
 				uint8_t rlb = mqtt_num_rem_len_bytes(buf);
@@ -114,7 +114,7 @@ uint16_t mqtt_parse_pub_topic(const uint8_t* buf, uint8_t* topic) {
 
 	//printf("mqtt_parse_pub_topic\n");
 
-	if(topic_len != 0 && ptr != NULL) {
+	if (topic_len != 0 && ptr != NULL) {
 		memcpy(topic, ptr, topic_len);
 	}
 
@@ -126,7 +126,7 @@ uint16_t mqtt_parse_pub_topic_ptr(const uint8_t* buf, const uint8_t **topic_ptr)
 
 	//printf("mqtt_parse_pub_topic_ptr\n");
 
-	if(MQTTParseMessageType(buf) == MQTT_MSG_PUBLISH) {
+	if (MQTTParseMessageType(buf) == MQTT_MSG_PUBLISH) {
 		// fixed header length = 1 for "flags" byte + rlb for length bytes
 		uint8_t rlb = mqtt_num_rem_len_bytes(buf);
 		len = *(buf+1+rlb)<<8;	// MSB of topic UTF
@@ -146,7 +146,7 @@ uint16_t mqtt_parse_publish_msg(const uint8_t* buf, uint8_t* msg) {
 
 	uint16_t msg_len = mqtt_parse_pub_msg_ptr(buf, &ptr);
 
-	if(msg_len != 0 && ptr != NULL) {
+	if (msg_len != 0 && ptr != NULL) {
 		memcpy(msg, ptr, msg_len);
 	}
 
@@ -158,7 +158,7 @@ uint16_t mqtt_parse_pub_msg_ptr(const uint8_t* buf, const uint8_t **msg_ptr) {
 
 	//printf("mqtt_parse_pub_msg_ptr\n");
 
-	if(MQTTParseMessageType(buf) == MQTT_MSG_PUBLISH) {
+	if (MQTTParseMessageType(buf) == MQTT_MSG_PUBLISH) {
 		// message starts at
 		// fixed header length + Topic (UTF encoded) + msg id (if QoS>0)
 		uint8_t rlb = mqtt_num_rem_len_bytes(buf);
@@ -166,7 +166,7 @@ uint16_t mqtt_parse_pub_msg_ptr(const uint8_t* buf, const uint8_t **msg_ptr) {
 		offset |= *(buf+1+rlb+1);			// topic UTF LSB
 		offset += (1+rlb+2);				// fixed header + topic size
 
-		if(MQTTParseMessageQos(buf)) {
+		if (MQTTParseMessageQos(buf)) {
 			offset += 2;					// add two bytes of msg id
 		}
 
@@ -214,17 +214,17 @@ int mqtt_set_clientid(mqtt_broker_handle_t* broker, const char* clientid) {
 }
 
 int mqtt_init_auth(mqtt_broker_handle_t* broker, const char* username, const char* password) {
-	if(username && username[0] != '\0') {
+	if (username && username[0] != '\0') {
 		free(broker->username);
 		broker->username = (char *)malloc(strlen(username)+1);
-		if(broker->username==NULL) {
+		if (broker->username==NULL) {
 			return -1;
 		}
 
 		strcpy(broker->username, username);
 	}
 
-	if(password && password[0] != '\0') {
+	if (password && password[0] != '\0') {
 		free(broker->password);
 		broker->password = (char *)malloc(strlen(password)+1);
 		if (broker->password == NULL) {
@@ -241,7 +241,7 @@ int mqtt_set_will(mqtt_broker_handle_t* broker, const char* topic, const char* m
 	free(broker->will_message);
 	broker->will_topic   = (char *)malloc(strlen(topic)+1);
 	broker->will_message = (char *)malloc(strlen(message)+1);
-	if(!(broker->will_topic && broker->will_message)) {
+	if (!(broker->will_topic && broker->will_message)) {
 		return 0;
 	}
 	strcpy(broker->will_topic, topic);
@@ -267,15 +267,15 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 	uint16_t payload_len = clientidlen + 2;
 
 	// Preparing the flags
-	if(usernamelen) {
+	if (usernamelen) {
 		payload_len += usernamelen + 2;
 		flags |= MQTT_USERNAME_FLAG;
 	}
-	if(passwordlen) {
+	if (passwordlen) {
 		payload_len += passwordlen + 2;
 		flags |= MQTT_PASSWORD_FLAG;
 	}
-	if(willtopiclen) {
+	if (willtopiclen) {
 		payload_len += willtopiclen + strlen(broker->will_message) + 4;
 		flags |= MQTT_WILL_FLAG;
 		if ( broker->will_retain ){
@@ -285,7 +285,7 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 			flags |= (((unsigned)broker->will_qos & 0x03) << 3);
 		}
 	}
-	if(broker->clean_session) {
+	if (broker->clean_session) {
 		flags |= MQTT_CLEAN_SESSION;
 	}
 
@@ -348,7 +348,7 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 	}
 
 
-	if(usernamelen) {
+	if (usernamelen) {
 		// Username - UTF encoded
 		packet[offset++] = usernamelen>>8;
 		packet[offset++] = usernamelen&0xFF;
@@ -356,7 +356,7 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 		offset += usernamelen;
 	}
 
-	if(passwordlen) {
+	if (passwordlen) {
 		// Password - UTF encoded
 		packet[offset++] = passwordlen>>8;
 		packet[offset++] = passwordlen&0xFF;
@@ -365,7 +365,7 @@ int mqtt_connect(mqtt_broker_handle_t* broker)
 	}
 
 	// Send the packet
-	if(broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
+	if (broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
 		return -1;
 	}
 
@@ -379,7 +379,7 @@ int mqtt_disconnect(mqtt_broker_handle_t* broker) {
 	};
 
 	// Send the packet
-	if(broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
+	if (broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
 		return -1;
 	}
 
@@ -393,7 +393,7 @@ int mqtt_ping(mqtt_broker_handle_t* broker) {
 	};
 
 	// Send the packet
-	if(broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
+	if (broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
 		return -1;
 	}
 
@@ -409,11 +409,11 @@ int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const
 
 	uint8_t qos_flag = MQTT_QOS0_FLAG;
 	uint8_t qos_size = 0; // No QoS included
-	if(qos == 1) {
+	if (qos == 1) {
 		qos_size = 2; // 2 bytes for QoS
 		qos_flag = MQTT_QOS1_FLAG;
 	}
-	else if(qos == 2) {
+	else if (qos == 2) {
 		qos_size = 2; // 2 bytes for QoS
 		qos_flag = MQTT_QOS2_FLAG;
 	}
@@ -424,10 +424,10 @@ int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const
 	var_header[0] = topiclen>>8;
 	var_header[1] = topiclen&0xFF;
 	memcpy(var_header+2, topic, topiclen);
-	if(qos_size) {
+	if (qos_size) {
 		var_header[topiclen+2] = broker->seq>>8;
 		var_header[topiclen+3] = broker->seq&0xFF;
-		if(message_id) { // Returning message id
+		if (message_id) { // Returning message id
 			*message_id = broker->seq;
 		}
 		broker->seq++;
@@ -446,7 +446,7 @@ int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const
 
    // Message Type, DUP flag, QoS level, Retain
    fixed_header[0] = MQTT_MSG_PUBLISH | qos_flag;
-	if(retain) {
+	if (retain) {
 		fixed_header[0] |= MQTT_RETAIN_FLAG;
    }
    // Remaining Length
@@ -467,7 +467,7 @@ int mqtt_publish_with_qos(mqtt_broker_handle_t* broker, const char* topic, const
 	memcpy(packet+sizeof(fixed_header)+sizeof(var_header), msg, msglen);
 
 	// Send the packet
-	if(broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
+	if (broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
 		return -1;
 	}
 
@@ -483,7 +483,7 @@ int mqtt_pubrel(mqtt_broker_handle_t* broker, uint16_t message_id) {
 	};
 
 	// Send the packet
-	if(broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
+	if (broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
 		return -1;
 	}
 
@@ -497,7 +497,7 @@ int mqtt_subscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* me
 	uint8_t var_header[2]; // Message ID
 	var_header[0] = broker->seq>>8;
 	var_header[1] = broker->seq&0xFF;
-	if(message_id) { // Returning message id
+	if (message_id) { // Returning message id
 		*message_id = broker->seq;
 	}
 	broker->seq++;
@@ -522,7 +522,7 @@ int mqtt_subscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* me
 	memcpy(packet+sizeof(fixed_header)+sizeof(var_header), utf_topic, sizeof(utf_topic));
 
 	// Send the packet
-	if(broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
+	if (broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
 		return -1;
 	}
 
@@ -536,7 +536,7 @@ int mqtt_unsubscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* 
 	uint8_t var_header[2]; // Message ID
 	var_header[0] = broker->seq>>8;
 	var_header[1] = broker->seq&0xFF;
-	if(message_id) { // Returning message id
+	if (message_id) { // Returning message id
 		*message_id = broker->seq;
 	}
 	broker->seq++;
@@ -561,7 +561,7 @@ int mqtt_unsubscribe(mqtt_broker_handle_t* broker, const char* topic, uint16_t* 
 	memcpy(packet+sizeof(fixed_header)+sizeof(var_header), utf_topic, sizeof(utf_topic));
 
 	// Send the packet
-	if(broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
+	if (broker->send(broker->socket_info, packet, sizeof(packet)) < sizeof(packet)) {
 		return -1;
 	}
 

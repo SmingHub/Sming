@@ -8,7 +8,7 @@
 #include "Arduino.h"
 
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
 
 #ifndef cbi

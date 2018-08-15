@@ -19,14 +19,13 @@
 #include "../TcpClient.h"
 #include "Data/Stream/DataSourceStream.h"
 #include "Data/Stream/MultipartStream.h"
-#include "../../Services/DateTime/DateTime.h"
+#include "../Services/DateTime/DateTime.h"
+#include "Data/HttpHeaders.h"
+#include "ObjectQueue.h"
 
-typedef SimpleConcurrentQueue<HttpRequest*, HTTP_REQUEST_POOL_SIZE> RequestQueue;
+typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
-class HttpConnection : protected TcpClient
-{
-	friend class HttpClient;
-
+class HttpConnection : public TcpClient {
 public:
 	HttpConnection(RequestQueue* queue);
 	~HttpConnection();
@@ -41,13 +40,19 @@ public:
 	 * @brief Returns pointer to the current request
 	 * @return HttpRequest*
 	 */
-	HttpRequest* getRequest();
+	HttpRequest* getRequest()
+	{
+		return _incomingRequest;
+	}
 
 	/**
 	 * @brief Returns pointer to the current response
 	 * @return HttpResponse*
 	 */
-	HttpResponse* getResponse();
+	HttpResponse* getResponse()
+	{
+		return &_response;
+	}
 
 	using TcpConnection::getRemoteIp;
 	using TcpConnection::getRemotePort;
@@ -63,20 +68,18 @@ public:
 	/**
 	 * @deprecated Use `getResponse().code` instead
 	 */
-	__forceinline int getResponseCode()
+	int getResponseCode()
 	{
-		return response.code;
+		return _response.code;
 	}
-
-	/**
-	 * @deprecated Use `getResponse().headers[headerName]` instead
-	 */
-	String getResponseHeader(String headerName, String defaultValue = "");
 
 	/**
 	* @deprecated Use `getResponse().headers` instead
 	*/
-	HttpHeaders& getResponseHeaders();
+	HttpHeaders& getResponseHeaders()
+	{
+		return _response.headers;
+	}
 
 	/**
 	* @deprecated Use `getResponse().headers["Last-Modified"]` instead
@@ -91,53 +94,62 @@ public:
 	/**
 	 * @deprecated Use `getResponse().stream` instead
 	 */
-	String getResponseString();
+	String getResponseString()
+	{
+		return _response.getBody();
+	}
+
 	// @enddeprecated
 
 protected:
 	void reset();
 
 	virtual err_t onReceive(pbuf* buf);
-	virtual err_t onProtocolUpgrade(http_parser* parser);
+	virtual err_t onProtocolUpgrade();
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 	virtual void onError(err_t err);
 
 	void cleanup();
 
 private:
-	static int staticOnMessageBegin(http_parser* parser);
+	HTTP_PARSER_METHOD_0(HttpConnection, on_message_begin)
 #ifndef COMPACT_MODE
-	static int staticOnStatus(http_parser* parser, const char* at, size_t length);
+	HTTP_PARSER_METHOD_2(HttpConnection, on_status)
 #endif
-	static int staticOnHeadersComplete(http_parser* parser);
-	static int staticOnHeaderField(http_parser* parser, const char* at, size_t length);
-	static int staticOnHeaderValue(http_parser* parser, const char* at, size_t length);
-	static int staticOnBody(http_parser* parser, const char* at, size_t length);
+	HTTP_PARSER_METHOD_2(HttpConnection, on_header_field)
+	HTTP_PARSER_METHOD_2(HttpConnection, on_header_value)
+	HTTP_PARSER_METHOD_0(HttpConnection, on_headers_complete)
+	HTTP_PARSER_METHOD_2(HttpConnection, on_body)
+	HTTP_PARSER_METHOD_0(HttpConnection, on_message_complete)
 #ifndef COMPACT_MODE
-	static int staticOnChunkHeader(http_parser* parser);
-	static int staticOnChunkComplete(http_parser* parser);
+	HTTP_PARSER_METHOD_0(HttpConnection, on_chunk_header)
+	HTTP_PARSER_METHOD_0(HttpConnection, on_chunk_complete)
 #endif
-	static int staticOnMessageComplete(http_parser* parser);
-
-	void sendRequestHeaders(HttpRequest* request);
-	bool sendRequestBody(HttpRequest* request);
 
 protected:
-	RequestQueue* waitingQueue;
-	RequestQueue executionQueue;
-	http_parser parser;
-	static http_parser_settings parserSettings;
-	static bool parserSettingsInitialized;
+	RequestQueue* _waitingQueue = nullptr; ///< Requests waiting to be started - we do not own this queue
+	RequestQueue _executionQueue;		   ///< Requests being executed in a pipeline
 
-	bool lastWasValue = true;
-	String lastData = "";
-	String currentField = "";
-	HttpRequest* incomingRequest = NULL;
-	HttpRequest* outgoingRequest = NULL;
-	HttpResponse response;
+	/* Incoming headers are parsed using a third-party library. The data is
+	 * received in callbacks but can be fragmented. We therefore need to
+	 * store some information to re-assemble the correct data before
+	 * adding to headers.
+	 */
+	http_parser _parser;
+	bool _lastWasValue = true;
+	String _lastData;
+	HttpHeaderFieldName _currentField = hhfn_UNKNOWN;
+
+	//
+	HttpRequest* _incomingRequest = nullptr;
+	//
+	HttpRequest* _outgoingRequest = nullptr;
+	//
+	HttpResponse _response;
 
 private:
-	HttpConnectionState state = eHCS_Ready;
+	//
+	HttpConnectionState _state = eHCS_Ready;
 
 private:
 	HttpPartResult multipartProducer();

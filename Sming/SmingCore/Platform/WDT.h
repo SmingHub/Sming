@@ -1,7 +1,7 @@
 /*
  * WDT.h
  *
- *  Created on: 06 апр. 2015 г.
+ *  Created on: 06 ???. 2015 ?.
  *      Author: Anakod
  */
 /**	@defgroup wdt Watchdog Timer
@@ -14,20 +14,19 @@
 #ifndef SMINGCORE_PLATFORM_WDT_H_
 #define SMINGCORE_PLATFORM_WDT_H_
 
-#include <user_config.h>
 #include "System.h"
 
-class WDTClass : protected ISystemReadyHandler
-{
+class WDTClass : protected ISystemReadyHandler {
 public:
 	/** @brief  Watchdog timer class
      *  @addtogroup wdt
      *  @{
      */
-	WDTClass();
+	WDTClass()
+	{}
+
 	virtual ~WDTClass()
-	{
-	}
+	{}
 
 	/** @brief  Enable or disable watchdog timer
      *  @param  enableWatchDog True to enable. False to disable.
@@ -41,11 +40,15 @@ public:
 	void alive();
 
 protected:
-	virtual void onSystemReady();
+	virtual void onSystemReady()
+	{
+		internalApplyEnabled();
+	}
+
 	void internalApplyEnabled();
 
 private:
-	bool enabled;
+	bool _enabled = false;
 };
 
 /**	@brief	Global instance of watchdog timer object

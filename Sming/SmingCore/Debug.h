@@ -6,8 +6,6 @@
 #ifndef SMINGCORE_DEBUG_H_
 #define SMINGCORE_DEBUG_H_
 
-#include "HardwareSerial.h"
-#include "Clock.h"
 #include "WString.h"
 #include "../Services/CommandProcessing/CommandProcessingIncludes.h"
 
@@ -19,7 +17,8 @@ typedef Delegate<void(char dbgChar)> DebugPrintCharDelegate; ///<Handler functio
 /** @brief  Structure for debug options
  *  @ingroup structures
  */
-typedef struct {
+typedef struct
+{
 	DebugPrintCharDelegate debugDelegate = nullptr; ///< Function to handle debug output
 	Stream* debugStream = nullptr;					///< Debug output stream
 } DebugOuputOptions;
@@ -42,8 +41,7 @@ typedef enum {
  *  Debug output may be prefixed with an elapsed timestamp. Use standard print methods to produce debug output.
  *  Sming CLI (command handler) may be enabled to provide control of debug output to end user.
  */
-class DebugClass : public Print
-{
+class DebugClass : public Print {
 public:
 	/** @brief  Instantiate a debug object
      *  @note   Default output is Serial stream
@@ -81,10 +79,10 @@ public:
 	void setDebug(Stream& reqStream);
 
 private:
-	bool started = false;
-	bool useDebugPrefix = true;
-	bool newDebugLine = true;
-	DebugOuputOptions debugOut;
+	bool _started = false;
+	bool _useDebugPrefix = true;
+	bool _newDebugLine = true;
+	DebugOuputOptions _debugOut;
 	void printPrefix();
 	void processDebugCommands(String commandLine, CommandOutput* commandOutput);
 

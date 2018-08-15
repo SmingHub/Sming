@@ -21,7 +21,7 @@
 #define HARDWAREPWM_H
 
 #include "ESP8266EX.h"
-#include "../Wiring/WiringFrameworkDependencies.h"
+#include "WiringFrameworkDependencies.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,8 +34,7 @@ extern "C" {
 #define PWM_BAD_CHANNEL 0xff ///< Invalid PWM channel
 
 /// Hardware pulse width modulation
-class HardwarePWM
-{
+class HardwarePWM {
 public:
 	/** @brief  Instantiate hardware PWM object
      *  @param  pins Pointer to array of pins to control
@@ -87,10 +86,11 @@ public:
      */
 	uint32 getMaxDuty();
 
+protected:
 private:
-	uint8 channel_count;
-	uint8 channels[PWM_CHANNEL_NUM_MAX];
-	uint32 maxduty;
+	uint8 _channelCount;
+	uint8 _channels[PWM_CHANNEL_NUM_MAX];
+	uint32 _maxduty;
 };
 
 /** @} */

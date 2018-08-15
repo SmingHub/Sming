@@ -16,7 +16,7 @@
 
 #include "SPI.h"
 
-#include <SmingCore.h>
+#include "SmingCore.h"
 #include <stdlib.h>
 #include "eagle_soc.h"
 #include "espinc/spi_register.h"
@@ -26,12 +26,11 @@ SPIClass SPI;
 
 SPIClass::SPIClass()
 {
-	_SPISettings = this->SPIDefaultSettings;
+	_SPISettings = SPIDefaultSettings;
 }
 
 SPIClass::~SPIClass()
-{
-}
+{}
 
 /* @defgroup SPI hardware implementation
  * @brief begin()
@@ -57,8 +56,7 @@ void SPIClass::begin()
  *
  */
 void SPIClass::end()
-{
-}
+{}
 
 /* @defgroup SPI hardware implementation
  * @brief beginTransaction()
@@ -75,7 +73,7 @@ void SPIClass::beginTransaction(SPISettings mySettings)
 	debugf("SPIhw::beginTransaction(SPISettings mySettings)");
 #endif
 	// check if we need to change settings
-	if(this->_SPISettings == mySettings)
+	if (_SPISettings == mySettings)
 		return;
 
 	// prepare SPI settings
@@ -113,33 +111,35 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 {
 	uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
 
-	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
+	while (READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
 		;
 
 	regvalue |= SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
 	WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
-	WRITE_PERI_REG(SPI_USER1(SPI_NO), ((bits - 1 & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
-										  ((bits - 1 & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
+	WRITE_PERI_REG(SPI_USER1(SPI_NO), (((bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
+										  (((bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
 	// copy data to W0
-	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_WR_BYTE_ORDER) {
+	if (READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_WR_BYTE_ORDER) {
 		WRITE_PERI_REG(SPI_W0(SPI_NO), data << (32 - bits));
-	} else {
+	}
+	else {
 		WRITE_PERI_REG(SPI_W0(SPI_NO), data);
 	}
 
 	SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR); // send
 
-	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
+	while (READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
 		;
 
 	// wait a while before reading the register into the buffer
 	//	delayMicroseconds(2);
 
-	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_RD_BYTE_ORDER) {
+	if (READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_RD_BYTE_ORDER) {
 		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32 - bits); //Assuming data in is written to MSB. TBC
-	} else {
+	}
+	else {
 		return READ_PERI_REG(SPI_W0(
 			SPI_NO)); //Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
 	}
@@ -152,19 +152,20 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
  */
 uint8 SPIClass::read8()
 {
-	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
+	while (READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
 		;
 
 	WRITE_PERI_REG(SPI_W0(SPI_NO), 0x00);
 
 	SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR); // send
 
-	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
+	while (READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
 		;
 
-	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_RD_BYTE_ORDER) {
+	if (READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_RD_BYTE_ORDER) {
 		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32 - 8); //Assuming data in is written to MSB. TBC
-	} else {
+	}
+	else {
 		return READ_PERI_REG(SPI_W0(
 			SPI_NO)); //Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
 	}
@@ -192,7 +193,7 @@ void SPIClass::transfer(uint8* buffer, size_t numberBytes)
 	int total = blocks;
 
 	// loop number of blocks
-	while(blocks--) {
+	while (blocks--) {
 		// get full BLOCKSIZE or number of remaining bytes
 		bufLenght = std::min(numberBytes - bufIndx, (unsigned int)BLOCKSIZE);
 
@@ -205,15 +206,15 @@ void SPIClass::transfer(uint8* buffer, size_t numberBytes)
 
 		uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
 
-		while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
+		while (READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
 			;
 
 		regvalue |= SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
 		WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
 		// setup bit lenght
-		WRITE_PERI_REG(SPI_USER1(SPI_NO), ((num_bits - 1 & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
-											  ((num_bits - 1 & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
+		WRITE_PERI_REG(SPI_USER1(SPI_NO), (((num_bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
+											  (((num_bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
 		// copy the registers starting from last index position
 		memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], bufLenght);
@@ -222,7 +223,7 @@ void SPIClass::transfer(uint8* buffer, size_t numberBytes)
 		SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);
 
 		// wait for SPI bus to be ready
-		while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
+		while (READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
 			;
 
 		// wait a while before reading the register into the buffer
@@ -251,14 +252,14 @@ void SPIClass::prepare(SPISettings mySettings)
 #endif
 
 	// check if we need to change settings
-	if(_init & _SPISettings == mySettings)
+	if (_init && _SPISettings == mySettings)
 		return;
 
 	//  setup clock
 	setFrequency(mySettings._speed);
 
 	//	set byte order
-	this->spi_byte_order(mySettings._byteOrder);
+	spi_byte_order(mySettings._byteOrder);
 
 	//	set spi mode
 	spi_mode(mySettings._dataMode);
@@ -292,15 +293,17 @@ void SPIClass::spi_mode(uint8 mode)
 	debugf("SPIClass::spi_mode(mode %x) spi_cpha %X,spi_cpol %X)", mode, spi_cpha, spi_cpol);
 #endif
 
-	if(spi_cpha == spi_cpol) {
+	if (spi_cpha == spi_cpol) {
 		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
-	} else {
+	}
+	else {
 		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
 	}
 
-	if(spi_cpol) {
+	if (spi_cpol) {
 		SET_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
-	} else {
+	}
+	else {
 		CLEAR_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
 	}
 }
@@ -321,10 +324,11 @@ void SPIClass::spi_byte_order(uint8 byte_order)
 	debugf("SPIClass::spi_byte_order(byte_order %d)", byte_order);
 #endif
 
-	if(byte_order) {
+	if (byte_order) {
 		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
 		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_RD_BYTE_ORDER);
-	} else {
+	}
+	else {
 		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
 		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_RD_BYTE_ORDER);
 	}
@@ -349,10 +353,11 @@ void SPIClass::setClock(uint8 prediv, uint8 cntdiv)
 #endif
 	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d", prediv, cntdiv, _SPISettings._speed);
 
-	if((prediv == 0) | (cntdiv == 0)) {
+	if ((prediv == 0) | (cntdiv == 0)) {
 		// go full speed = SYSTEMCLOCK
 		WRITE_PERI_REG(SPI_CLOCK(SPI_NO), SPI_CLK_EQU_SYSCLK);
-	} else {
+	}
+	else {
 		WRITE_PERI_REG(SPI_CLOCK(SPI_NO), (((prediv - 1) & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
 											  (((cntdiv - 1) & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
 											  (((cntdiv >> 1) & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) |
@@ -368,7 +373,7 @@ div_t div(int numer, int denom)
 	div_t result;
 	result.quot = numer / denom;
 	result.rem = numer % denom;
-	if(numer >= 0 && result.rem < 0) {
+	if (numer >= 0 && result.rem < 0) {
 		++result.quot;
 		result.rem -= denom;
 	}
@@ -396,7 +401,7 @@ uint32_t SPIClass::getFrequency(int freq, int& pre, int clk)
 	pre = divresult.quot;
 
 	int f = _CPU_freq / pre / clk;
-	while(f > freq) {
+	while (f > freq) {
 		pre++;
 		f = _CPU_freq / pre / clk;
 	}
@@ -430,10 +435,10 @@ void SPIClass::setFrequency(int freq)
 	int _CPU_freq = system_get_cpu_freq() * 10000000UL;
 
 	// dont run code if there are no changes
-	if(_init & freq == _SPISettings._speed)
+	if (_init && freq == _SPISettings._speed)
 		return;
 
-	if(freq == _CPU_freq) {
+	if (freq == _CPU_freq) {
 		_SPISettings._speed = freq;
 		setClock(0, 0);
 		return;
@@ -444,7 +449,7 @@ void SPIClass::setFrequency(int freq)
 
 	int pre2;
 	int f2 = getFrequency(freq, pre2, 2);
-	if(f2 == freq) {
+	if (f2 == freq) {
 #ifdef SPI_DEBUG
 		debugf("-> Hit!! -> target freq %d -> result %d", freq, _CPU_freq / pre2 / 2);
 #endif
@@ -456,25 +461,25 @@ void SPIClass::setFrequency(int freq)
 	int f3 = getFrequency(freq, pre3, 3);
 	int pre5;
 	int f5 = getFrequency(freq, pre5, 5);
-	if(f3 <= f2 && f2 >= f5) {
+	if (f3 <= f2 && f2 >= f5) {
 #ifdef SPI_DEBUG
 		debugf("-> Using clock divider 2 -> target freq %d -> result %d", freq, _CPU_freq / pre2 / 2);
 #endif
 		setClock(pre2, 2);
 		return;
-	} else {
-		if(f5 <= f3) {
-#ifdef SPI_DEBUG
-			debugf("-> Using clock divider 3 -> target freq %d -> result %d", freq, _CPU_freq / pre3 / 3);
-#endif
-			setClock(pre3, 3);
-			return;
-		} else {
-#ifdef SPI_DEBUG
-			debugf("-> Using clock divider 5 -> target freq %d -> result %d", freq, _CPU_freq / pre5 / 5);
-#endif
-			setClock(pre5, 5);
-			return;
-		}
 	}
+
+	if (f5 <= f3) {
+#ifdef SPI_DEBUG
+		debugf("-> Using clock divider 3 -> target freq %d -> result %d", freq, _CPU_freq / pre3 / 3);
+#endif
+		setClock(pre3, 3);
+		return;
+	}
+
+#ifdef SPI_DEBUG
+	debugf("-> Using clock divider 5 -> target freq %d -> result %d", freq, _CPU_freq / pre5 / 5);
+#endif
+	setClock(pre5, 5);
+	return;
 }

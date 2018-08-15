@@ -2,10 +2,11 @@
 ESP_HOME ?= c:/Espressif
 
 # Default COM port
-COM_PORT	 ?= COM3
+COM_PORT	 ?= COM4
 
 # base directory of the ESP8266 SDK package, absolute
-SDK_BASE	?= $(ESP_HOME)/ESP8266_SDK
+#SDK_BASE	?= $(ESP_HOME)/ESP8266_SDK
+SDK_BASE  ?= $(SMING_HOME)/third-party/ESP8266_NONOS_SDK
 SDK_TOOLS	 ?= $(ESP_HOME)/utils
 
 # Other tools mappings
@@ -13,4 +14,6 @@ ESPTOOL		 ?= $(SDK_TOOLS)/ESP8266/esptool.exe
 KILL_TERM    ?= taskkill.exe -f -im Terminal.exe || exit 0
 GET_FILESIZE ?= stat --printf="%s"
 TERMINAL     ?= $(SDK_TOOLS)/Terminal.exe $(COM_PORT) $(COM_SPEED_SERIAL) $(COM_OPTS)
-MEMANALYZER  ?= python $(SMING_HOME)/../tools/memanalyzer.py $(OBJDUMP).exe
+MEMANALYZER  ?= $(SDK_TOOLS)/ESP8266/memanalyzer $(OBJDUMP).exe
+
+#CFLAGS += -DMEMLEAK_DEBUG=1

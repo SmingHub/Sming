@@ -6,7 +6,7 @@
 #ifndef SMINGCORE_RTC_H_
 #define SMINGCORE_RTC_H_
 
-#include "../Wiring/WiringFrameworkDependencies.h"
+#include "WiringFrameworkDependencies.h"
 
 #define RTC_MAGIC 0x55aaaa55
 #define RTC_DES_ADDR 64
@@ -16,8 +16,8 @@
  *  @addtogroup structures
  */
 typedef struct {
-	uint64_t time;   ///< Quantity of nanoseconds since epoch
-	uint32_t magic;  ///< Magic ID used to identify that RTC has been initialised
+	uint64_t time; ///< Quantity of nanoseconds since epoch
+	uint32_t magic; ///< Magic ID used to identify that RTC has been initialised
 	uint32_t cycles; ///< Quantity of RTC cycles since last update
 } RtcData;
 
@@ -28,20 +28,24 @@ typedef struct {
 class RtcClass
 {
 public:
-	/** @brief  Instantiate real time clock object
+    /** @brief  Instantiate real time clock object
      */
 	RtcClass();
 
-	/** @brief  Get nanoseconds from RTC
+    /** @brief  Get nanoseconds from RTC
      *  @retval uint64_t Quantity of nanoseconds since last RTC reset or set
      */
 	uint64_t getRtcNanoseconds();
 
-	/** @brief  Get seconds from RTC
+    /** @brief  Get seconds from RTC
      *  @retval uint32_t Quantity of seconds since epoch
      *  @note   Also updates RTC NVRAM
      */
-	uint32_t getRtcSeconds();
+	uint32_t getRtcSeconds()
+	{
+		return getRtcNanoseconds() / NS_PER_SECOND;
+	}
+
 
 	/** @brief  Set RTC nanoseconds
 	 *  @param  nanoseconds Value to set RTC to
@@ -49,20 +53,26 @@ public:
 	 */
 	bool setRtcNanoseconds(uint64_t nanoseconds);
 
-	/** @brief  Set RTC
+    /** @brief  Set RTC
      *  @param  seconds Quantity of seconds since epoch
      *  @retval bool True on success
      *  @note   Updates RTC NVRAM
      */
-	bool setRtcSeconds(uint32_t seconds);
+	bool setRtcSeconds(uint32_t seconds)
+	{
+		return setRtcNanoseconds((uint64_t)seconds * NS_PER_SECOND);
+	}
 
-	/** @} */
+
+    /** @} */
 
 private:
-	bool hardwareReset;
-	bool saveTime(RtcData& data);
-	void updateTime(RtcData& data);
-	void loadTime(RtcData& data);
+	bool _hardwareReset;
+
+private:
+	bool saveTime(RtcData &data);
+	void updateTime(RtcData &data);
+	void loadTime(RtcData &data);
 };
 
 /**	@brief	Global instance of real time clock object

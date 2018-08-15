@@ -13,10 +13,10 @@
 #ifndef _SMING_CORE_ATCLIENT_H_
 #define _SMING_CORE_ATCLIENT_H_
 
-#include "../SmingCore/HardwareSerial.h"
-#include "../Wiring/FILO.h"
-#include "../SmingCore/Delegate.h"
-#include "../SmingCore/Timer.h"
+#include "HardwareSerial.h"
+#include "FILO.h"
+#include "Delegate.h"
+#include "Timer.h"
 
 #define AT_REPLY_OK "OK"
 #ifndef AT_TIMEOUT
@@ -32,7 +32,8 @@ typedef Delegate<bool(AtClient& atClient, String& reply)> AtCompleteCallback;
 // ^ If the callback returns true then this means that we have
 //     finished successfully processing the command
 
-typedef struct {
+typedef struct
+{
 	String text;					   // << the actual AT command
 	String response2;				   // << alternative successful response
 	int timeout;					   // << timeout in milliseconds
@@ -44,26 +45,14 @@ typedef struct {
 
 typedef enum { eAtOK = 0, eAtRunning, eAtError } AtState;
 
-template <typename T, int rawSize> class SimpleQueue : public FIFO<T, rawSize>
-{
-	virtual const T& operator[](unsigned int) const
-	{
-	}
-	virtual T& operator[](unsigned int)
-	{
-	}
-};
-
 /**
  * @brief Class that facilitates the communication with an AT device.
  */
-class AtClient
-{
+class AtClient {
 public:
 	AtClient(HardwareSerial* stream);
 	virtual ~AtClient()
-	{
-	}
+	{}
 
 	/**
 	 * @brief Sends AT command
@@ -72,7 +61,8 @@ public:
 	 * @param timeoutMs uint32_t Time in milliseconds to wait for response
 	 * @param retries int Retries on error
 	 */
-	void send(const String& text, const String& altResponse = "", uint32_t timeoutMs = AT_TIMEOUT, int retries = 0);
+	void send(const String& text, const String& altResponse = nullptr, uint32_t timeoutMs = AT_TIMEOUT,
+			  int retries = 0);
 
 	/**
 	 * @brief Sends AT command
@@ -114,7 +104,7 @@ public:
 	 */
 	AtState getState()
 	{
-		return state;
+		return _state;
 	}
 
 	/*
@@ -137,10 +127,10 @@ protected:
 	virtual void processor(Stream& source, char arrivedChar, uint16_t availableCharsCount);
 
 private:
-	SimpleQueue<AtCommand, 10> queue; // << Queue for the commands to be executed
-	HardwareSerial* stream;			  // << The main communication stream
-	Timer commandTimer;				  // timer used for commands with timeout
-	AtState state = eAtOK;
+	FIFO<AtCommand, 10> _queue;		   // << Queue for the commands to be executed
+	HardwareSerial* _stream = nullptr; // << The main communication stream
+	Timer _commandTimer;			   // timer used for commands with timeout
+	AtState _state = eAtOK;
 
 	/**
 	 * @brief Timeout checker method

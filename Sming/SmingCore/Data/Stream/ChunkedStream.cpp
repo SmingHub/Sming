@@ -1,37 +1,39 @@
+
 #include "ChunkedStream.h"
 
-ChunkedStream::ChunkedStream(ReadWriteStream* stream, size_t resultSize /* = 512 */)
-	: StreamTransformer(stream, nullptr, resultSize, resultSize - 12)
+/**
+ * Encodes a chunk of data
+ * @param uint8_t* source - the incoming data
+ * @param size_t sourceLength -length of the incoming data
+ * @param uint8_t* target - the result data. The pointer must point to an already allocated memory
+ * @param int* targetLength - the length of the result data
+ *
+ * @return the length of the encoded target.
+ */
+static size_t chunkEncode(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
 {
-	transformCallback = std::bind(&ChunkedStream::encode, this, std::placeholders::_1, std::placeholders::_2,
-								  std::placeholders::_3, std::placeholders::_4);
-}
+	char head[16];
+	int headLen = m_snprintf(head, sizeof(head), _F("%X\r\n"), sourceLength);
 
-int ChunkedStream::encode(uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
-{
-	if(sourceLength == 0) {
-		const char* end = "0\r\n\r\n";
-		memcpy(target, end, strlen(end));
-		return strlen(end);
+	const char* tail = "\r\n";
+	int tailLen = 2;
+
+	if (headLen + sourceLength + tailLen > targetLength)
+		return 0;
+
+	auto p = target;
+	memcpy(p, head, headLen);
+	p += headLen;
+	if (sourceLength) {
+		memcpy(p, source, sourceLength);
+		p += sourceLength;
 	}
+	memcpy(p, tail, tailLen);
+	p += tailLen;
 
-	int offset = 0;
-	char chunkSize[5] = {0};
-	ets_sprintf(chunkSize, "%X", sourceLength);
-
-	memcpy(target, chunkSize, strlen(chunkSize));
-	offset += strlen(chunkSize);
-
-	// \r\n
-	memcpy(target + offset, "\r\n", 2);
-	offset += 2;
-
-	memcpy(target + offset, source, sourceLength);
-	offset += sourceLength;
-
-	// \r\n
-	memcpy(target + offset, "\r\n", 2);
-	offset += 2;
-
-	return offset;
+	return p - target;
 }
+
+ChunkedStream::ChunkedStream(IDataSourceStream* stream, size_t resultSize)
+	: StreamTransformer(stream, chunkEncode, resultSize, resultSize - 12)
+{}

@@ -11,9 +11,8 @@
 #ifndef _SMING_CORE_DATA_BASE64STREAM_H_
 #define _SMING_CORE_DATA_BASE64STREAM_H_
 
-#include "../StreamTransformer.h"
-
-#include "../../Services/libb64/cencode.h"
+#include "StreamTransformer.h"
+#include "../Services/libb64/cencode.h"
 
 /**
  * @brief      Base64 Stream
@@ -22,8 +21,7 @@
  *  @{
 */
 
-class Base64OutputStream : public StreamTransformer
-{
+class Base64OutputStream : public StreamTransformer {
 public:
 	/**
 	 * @brief Stream that transforms bytes of data into base64 data stream
@@ -31,7 +29,7 @@ public:
 	 * @param size_t resultSize - the size of the intermediate buffer.
 	 * 							- it will be created once per object, reused multiple times and kept until the end of the object
 	 */
-	Base64OutputStream(ReadWriteStream* stream, size_t resultSize = 500);
+	Base64OutputStream(IDataSourceStream* stream, size_t resultSize = 500);
 
 	/**
 	 * Encodes a chunk of data into base64. Keeps a state of the progress.
@@ -42,21 +40,27 @@ public:
 	 *
 	 * @return the length of the encoded target.
 	 */
-	int encode(uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength);
+	size_t encode(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength);
 
 	/**
 	 * @brief A method that backs up the current state
 	 */
-	virtual void saveState();
+	virtual void saveState()
+	{
+		_lastState = _state;
+	}
 
 	/**
 	 * @brief A method that restores the last backed up state
 	 */
-	virtual void restoreState();
+	virtual void restoreState()
+	{
+		_state = _lastState;
+	}
 
 private:
-	base64_encodestate state;
-	base64_encodestate lastState;
+	base64_encodestate _state;
+	base64_encodestate _lastState;
 };
 
 /** @} */

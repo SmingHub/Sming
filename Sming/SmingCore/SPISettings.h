@@ -24,8 +24,7 @@
 #define SPI_MODE2 0xF0
 #define SPI_MODE3 0xFF
 
-class SPISettings
-{
+class SPISettings {
 public:
 	/** @brief SPISettings()
 	 * default Constructor

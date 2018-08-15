@@ -13,107 +13,62 @@
 
 #include "CircularBuffer.h"
 
-CircularBuffer::CircularBuffer(int size) : buffer(new char[size]), readPos(buffer), writePos(buffer), size(size)
+size_t CircularBuffer::readMemoryBlock(char* buffer, size_t bufSize)
 {
-}
-
-CircularBuffer::~CircularBuffer()
-{
-	delete[] buffer;
-}
-
-StreamType CircularBuffer::getStreamType()
-{
-	return StreamType::eSST_Memory;
-}
-
-uint16_t CircularBuffer::readMemoryBlock(char* data, int bufSize)
-{
-	size_t bytesAvailable = available();
-	size_t sizeToRead = (bufSize < bytesAvailable) ? bufSize : bytesAvailable;
+	size_t sizeToRead = std::min(bufSize, (size_t)available());
 	size_t sizeRead = sizeToRead;
-	char* start = readPos;
-	if(writePos < readPos && sizeToRead > (size_t)((buffer + size) - readPos)) {
-		size_t topSize = (buffer + size) - readPos;
-		memcpy(data, readPos, topSize);
-		start = buffer;
-		sizeToRead -= topSize;
-		data += topSize;
+	size_t start = _readPos;
+	if (_writePos < _readPos) {
+		size_t topSize = _size - _readPos;
+		if (sizeToRead > topSize) {
+			memcpy(buffer, _buffer + _readPos, topSize);
+			start = 0;
+			sizeToRead -= topSize;
+			buffer += topSize;
+		}
 	}
-	memcpy(data, start, sizeToRead);
+	memcpy(buffer, _buffer + start, sizeToRead);
+
 	return sizeRead;
 }
 
 bool CircularBuffer::seek(int len)
 {
-	if(len > available()) {
-		flush();
+	if (len < 0 || len > available())
 		return false;
-	}
 
-	if(readPos < writePos) {
-		readPos += len;
-	} else if(readPos + len > buffer + size) {
-		readPos = buffer + (len - (buffer + size - readPos));
-	} else {
-		readPos += len;
-	}
+	_readPos = (_readPos + len) % _size;
 
 	return true;
 }
 
-bool CircularBuffer::isFinished()
-{
-	return (available() < 1);
-}
-
-int CircularBuffer::available()
-{
-	if(writePos >= readPos) {
-		return writePos - readPos;
-	}
-	return size - (readPos - writePos);
-}
-
-size_t CircularBuffer::room() const
-{
-	if(writePos >= readPos) {
-		return size - (writePos - readPos) - 1;
-	}
-	return readPos - writePos - 1;
-}
-
-String CircularBuffer::id()
-{
-	// TODO: check if that is printing the address of the buffer...
-	return String((char*)&buffer);
-}
-
 size_t CircularBuffer::write(uint8_t charToWrite)
 {
-	if(!room()) {
+	if (room() == 0)
 		return 0;
-	}
 
-	*writePos = charToWrite;
-	writePos = wrap(writePos + 1);
+	_buffer[_writePos++] = charToWrite;
+	if (_writePos == _size)
+		_writePos = 0;
 
 	return 1;
 }
 
-size_t CircularBuffer::write(const uint8_t* data, size_t bufSize)
+size_t CircularBuffer::write(const uint8_t* data, size_t size)
 {
-	size_t space = room();
-	size_t sizeToWrite = (bufSize < space) ? bufSize : space;
+	size_t sizeToWrite = std::min(size, room());
 	size_t sizeWritten = sizeToWrite;
-	if(writePos >= readPos && sizeToWrite > (size_t)(buffer + size - writePos)) {
-		size_t topSize = buffer + size - writePos;
-		memcpy(writePos, data, topSize);
-		writePos = buffer;
-		sizeToWrite -= topSize;
-		data += topSize;
+	if (_writePos >= _readPos) {
+		size_t topSize = _size - _writePos;
+		if (sizeToWrite > topSize) {
+			memcpy(_buffer + _writePos, data, topSize);
+			_writePos = 0;
+			sizeToWrite -= topSize;
+			data += topSize;
+		}
 	}
-	memcpy(writePos, data, sizeToWrite);
-	writePos = wrap(writePos + sizeToWrite);
+	memcpy(_buffer + _writePos, data, sizeToWrite);
+	_writePos = (_writePos + sizeToWrite) % _size;
+
 	return sizeWritten;
 }

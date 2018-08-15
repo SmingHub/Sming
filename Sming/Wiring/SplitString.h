@@ -20,10 +20,11 @@
 
 #include "WVector.h"
 #include "WString.h"
-#include "WiringFrameworkDependencies.h"
 
-int splitString(String &what, int delim,  Vector<long> &splits);
-int splitString(String &what, int delim,  Vector<int> &splits);
-int splitString(String &what, int delim,  Vector<String> &splits);
+/* See also String::split() method */
+
+int splitString(String& what, int delim, Vector<long>& splits);
+int splitString(String& what, int delim, Vector<int>& splits);
+int splitString(String& what, int delim, Vector<String>& splits);
 
 #endif

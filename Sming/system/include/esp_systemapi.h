@@ -42,7 +42,7 @@
 #define debugf debug_i
 #endif
 #define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
-#define SYSTEM_ERROR(fmt, ...) m_printf("ERROR: " fmt "\r\n", ##__VA_ARGS__)
+#define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
 #ifndef SDK_INTERNAL
 extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
@@ -98,6 +98,9 @@ extern void uart_tx_one_char(char ch);
 extern void ets_intr_lock();
 extern void ets_intr_unlock();
 
+// Missing from SDK 1.5.x
+extern void NmiTimSetFunc(void (*func)(void));
+
 #endif /* SDK_INTERNAL */
 
 // CPU Frequency
@@ -110,7 +113,5 @@ extern void xt_enable_interrupts();
 extern void uart_tx_one_char(char ch);
 extern void ets_isr_mask(unsigned intr);
 extern void ets_isr_unmask(unsigned intr);
-
-typedef signed short file_t;
 
 #endif

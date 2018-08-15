@@ -12,28 +12,28 @@
 
 #ifdef ENABLE_SSL
 
-bool sslValidateCertificateSha1(SSL* ssl, void* data)
+bool sslValidateCertificateSha1(const SSL* ssl, const void* data)
 {
-	uint8_t* hash = (uint8_t*)data;
-	bool success = false;
-	if(hash != NULL) {
-		success = (ssl_match_fingerprint(ssl, hash) == 0);
-		delete[] hash;
-	}
+	auto hash = (const uint8_t*)data;
+	if (!hash)
+		return false;
 
-	return success;
+	bool match = (ssl_match_fingerprint(ssl, hash) == 0);
+	delete[] hash;
+
+	return match;
 }
 
-bool sslValidatePublicKeySha256(SSL* ssl, void* data)
+bool sslValidatePublicKeySha256(const SSL* ssl, const void* data)
 {
-	uint8_t* hash = (uint8_t*)data;
-	bool success = false;
-	if(hash != NULL) {
-		success = (ssl_match_spki_sha256(ssl, hash) == 0);
-		delete[] hash;
-	}
+	auto hash = (const uint8_t*)data;
+	if (!hash)
+		return false;
 
-	return success;
+	bool match = (ssl_match_spki_sha256(ssl, hash) == 0);
+	delete[] hash;
+
+	return match;
 }
 
 #endif /* ENABLE_SSL */

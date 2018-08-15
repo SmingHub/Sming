@@ -5,8 +5,8 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "../SmingCore/Clock.h"
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "Clock.h"
+#include "WiringFrameworkIncludes.h"
 
 #define MAX_SAFE_DELAY 1000
 
@@ -20,16 +20,20 @@ unsigned long micros(void)
 	return system_get_time();
 }
 
+
+/** @note (mikee47) Never call this function; it is pure evil
+ * Rewrite your code using timers and callbacks, Sming-style.
+ *
+ */
 void delay(uint32_t time)
 {
-	int quotient = time / MAX_SAFE_DELAY;
-	int remainder = time % MAX_SAFE_DELAY;
-	for(int i = 0, max = quotient + 1; i < max; i++) {
-		if(i == quotient) {
+	unsigned quotient = time / MAX_SAFE_DELAY;
+	unsigned remainder = time % MAX_SAFE_DELAY;
+	for (unsigned i = 0; i <= quotient; i++) {
+		if (i == quotient)
 			os_delay_us(remainder * 1000);
-		} else {
+		else
 			os_delay_us(MAX_SAFE_DELAY * 1000);
-		}
 
 		system_soft_wdt_feed();
 	}

@@ -17,29 +17,28 @@
 #ifndef _SMING_CORE_DATA_MESSAGE_H_
 #define _SMING_CORE_DATA_MESSAGE_H_
 
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
-#include "../Network/WebConstants.h"
-
-#include "Structures.h"
+#include "WString.h"
+#include "WVector.h"
+#include "Network/WebConstants.h"
+#include "Data/HttpHeaders.h"
 #include "Stream/MultipartStream.h"
-#include "Stream/DataSourceStream.h"
 
-class SmtpClient;
+class TcpConnection;
 
 class MailMessage
 {
-	friend class SmtpClient;
-
 public:
-	String to;
-	String from;
-	String subject;
-	String cc;
+	String to = nullptr;
+	String from = nullptr;
+	String subject = nullptr;
+	String cc = nullptr;
 
-	MailMessage& setHeader(const String& name, const String& value);
+	HttpHeaders headers;
 
-	HttpHeaders& getHeaders();
+	~MailMessage()
+	{
+		delete _bodyStream;
+	}
 
 	/**
 	 * @brief Sets the body of the email
@@ -58,27 +57,39 @@ public:
 	/**
 	 * @brief Adds attachment to the email
 	 */
-	MailMessage& addAttachment(FileStream* stream);
+	MailMessage&  addAttachment(ReadWriteStream* stream);
 
 	/**
 	 * @brief Adds attachment to the email
 	 */
-	MailMessage& addAttachment(ReadWriteStream* stream, MimeType mime, const String& filename = "");
+	MailMessage&  addAttachment(ReadWriteStream* stream, MimeType mime, const String& filename = nullptr);
 
 	/**
 	 * @brief Adds attachment to the email
 	 */
-	MailMessage& addAttachment(ReadWriteStream* stream, const String& mime, const String& filename = "");
+	MailMessage&  addAttachment(ReadWriteStream* stream, const String& mime, const String& filename = nullptr);
 
 	/**
-	 * @brief Get the generated data stream
+	 * Called by SmtpClient to prepare headers prior to sending
 	 */
-	ReadWriteStream* getData();
+	HttpHeaders& prepareHeaders();
+
+	/*
+	 * Called by SmtpClient to get body stream, to whom ownership is passed
+	 */
+	IDataSourceStream* getBodyStream();
 
 private:
-	ReadWriteStream* stream = nullptr;
-	HttpHeaders headers;
-	Vector<HttpPartResult> attachments;
+	/**
+	 * @brief Takes care to fetch the correct streams for a message
+	 * @note The magic where all streams and attachments are packed together is happening here
+	 */
+	HttpPartResult multipartProducer();
+
+private:
+	IDataSourceStream* _bodyStream = nullptr;
+	MimeType _bodyMime = MIME_TEXT;
+	Vector<HttpPartResult> _attachments;
 };
 
 /** @} */

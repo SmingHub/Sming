@@ -40,12 +40,11 @@ SPISettings::SPISettings(int speed, uint8 byteOrder, uint8 dataMode)
 }
 
 SPISettings::~SPISettings()
-{
-}
+{}
 
 bool SPISettings::operator==(const SPISettings& other) const
 {
-	int res = _speed == other._speed & _byteOrder == other._byteOrder & _dataMode == other._dataMode;
+	int res = _speed == other._speed && _byteOrder == other._byteOrder && _dataMode == other._dataMode;
 	return res;
 }
 

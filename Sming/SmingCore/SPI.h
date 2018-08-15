@@ -26,8 +26,7 @@
 
 #define SPI_NO 1
 
-class SPIClass : public SPIBase
-{
+class SPIClass : public SPIBase {
 public:
 	/** @brief  Instantiate hardware SPI object
      *  @addtogroup hw_spi
@@ -177,6 +176,7 @@ private:
 	uint32_t getFrequency(int freq, int& pre, int clk);
 	void setFrequency(int freq);
 
+private:
 	SPISettings _SPISettings;
 	uint8 _isTX = false;
 	uint8 _init = false;

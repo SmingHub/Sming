@@ -77,7 +77,7 @@ bool ArduCAMStream::isFinished() {
 }
 
 
-uint16_t ArduCAMStream::readMemoryBlock(char* data, int bufSize) {
+size_t ArduCAMStream::readMemoryBlock(char* data, size_t bufSize) {
 	if(!dataReady()) {
 		return 0;
 	}

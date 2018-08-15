@@ -1,10 +1,13 @@
 #include <user_config.h>
 #include <math.h>
 #include <stdlib.h>
-#include "../include/stringconversion.h"
+#include "stringconversion.h"
+#include "stringutil.h"
 
-//Since C does not support default func parameters, keep this function as used by framework
-//and create extended _w funct to handle width
+/*
+ * Since C does not support default func parameters, keep this function as used by framework
+ * and create extended _w funct to handle width
+ */
 char* ltoa(long val, char* buffer, int base)
 {
 	return ltoa_w(val, buffer, base, 0);
@@ -20,26 +23,26 @@ char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 	int i = 38, p = 0;
 	char buf[40] = {0};
 	bool ngt = val < 0;
-	if (ngt) val = -val;
+	if (ngt)
+		val = -val;
 
-	for(; val && i ; --i, p++, val /= base)
-		buf[i] = "0123456789abcdef"[val % base];
-	if (p == 0) buf[i--] = '0'; // case for zero
+	for (; val && i; --i, p++, val /= base)
+		buf[i] = hexchar(val % base);
+	if (p == 0)
+		buf[i--] = '0'; // case for zero
 
 	if (ngt)
 		buf[i--] = '-';
 
-	if(width != 0)
-	{
-		width -= strlen(&buf[i+1]);
-		if(width > 0)
-		{
+	if (width != 0) {
+		width -= strlen(&buf[i + 1]);
+		if (width > 0)
 			memset(buffer, pad, width);
-		}
-		else width = 0;
+		else
+			width = 0;
 	}
 
-	strcpy(buffer + width, &buf[i+1]);
+	strcpy(buffer + width, &buf[i + 1]);
 	return buffer;
 }
 
@@ -54,48 +57,49 @@ char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width)
 {
 	return ultoa_wp(val, buffer, base, 0, ' ');
 }
+
 char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad)
 {
 	int i = 38, p = 0;
 	char buf[40] = {0};
 
-	for(; val && i ; --i, p++, val /= base)
-		buf[i] = "0123456789abcdef"[val % base];
-	if (p == 0) buf[i--] = '0'; // case for zero
+	for (; val && i; --i, p++, val /= base)
+		buf[i] = hexchar(val % base);
 
-	if(width != 0)
-	{
-		width -= strlen(&buf[i+1]);
-		if(width > 0)
-		{
+	if (p == 0)
+		buf[i--] = '0'; // case for zero
+
+	if (width != 0) {
+		width -= strlen(&buf[i + 1]);
+		if (width > 0)
 			memset(buffer, pad, width);
-		}
-		else width = 0;
+		else
+			width = 0;
 	}
-	strcpy(buffer + width, &buf[i+1]);
+	strcpy(buffer + width, &buf[i + 1]);
 
 	return buffer;
 }
 
-char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer)
+char* dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char* outputBuffer)
 {
 	return dtostrf_p(floatVar, minStringWidthIncDecimalPoint, numDigitsAfterDecimal, outputBuffer, ' ');
 }
+
 // Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
 // modified by ADiea: remove dependencies strcat, floor, round; reorganize+speedup code
-char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer, char pad)
+char* dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char* outputBuffer,
+				char pad)
 {
 	char temp[40], num[40];
 	unsigned long mult = 1, int_part;
 	int16_t i, processedFracLen = numDigitsAfterDecimal;
 
-	if(processedFracLen < 0)
+	if (processedFracLen < 0)
 		processedFracLen = 9;
 
-	double remainder;
-
-	if (outputBuffer == NULL)
-		return NULL ;
+	if (!outputBuffer)
+		return nullptr;
 
 	char *buf = outputBuffer, *s;
 
@@ -103,19 +107,17 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 		strcpy(outputBuffer, "NaN");
 	else if (isinf(floatVar))
 		strcpy(outputBuffer, "Inf");
-	else if (floatVar > 4294967040.0)  // constant determined empirically
+	else if (floatVar > 4294967040.0) // constant determined empirically
 		strcpy(outputBuffer, "OVF");
-	else if (floatVar < -4294967040.0)   // constant determined empirically
+	else if (floatVar < -4294967040.0) // constant determined empirically
 		strcpy(outputBuffer, "ovf");
-	else
-	{
+	else {
 		//start building the number
 		//buf will be the end pointer
 		buf = num;
 
-		if (floatVar < 0.0)
-		{
-			*buf++ = '-';  //print "-" sign
+		if (floatVar < 0.0) {
+			*buf++ = '-'; //print "-" sign
 			floatVar = -floatVar;
 		}
 
@@ -130,9 +132,9 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 			mult *= 10;
 
 		//round the number
-		floatVar += 0.5 / (float) mult;
+		floatVar += 0.5 / (float)mult;
 
-		int_part = (unsigned long) floatVar;
+		int_part = (unsigned long)floatVar;
 
 		//print the int part into num
 		s = ltoa(int_part, buf, 10);
@@ -141,12 +143,11 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 		buf += strlen(s); //go to end of string
 
 		//deal with digits after the decimal
-		if (numDigitsAfterDecimal != 0)
-		{
+		if (numDigitsAfterDecimal != 0) {
 			*buf++ = '.'; // print the decimal point
 
 			//print the fraction part into temp
-			s = ltoa( ((floatVar - int_part) * mult), temp, 10);
+			s = ltoa(((floatVar - int_part) * mult), temp, 10);
 
 			i = processedFracLen - strlen(s) + 1;
 
@@ -159,14 +160,12 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 				*buf++ = *s++;
 
 			//trim back on the last fraction zeroes
-			while(*(buf - 1) == '0')
-			{
+			while (*(buf - 1) == '0') {
 				--buf;
 				--processedFracLen;
 			}
 
-			if(numDigitsAfterDecimal > 0)
-			{
+			if (numDigitsAfterDecimal > 0) {
 				i = numDigitsAfterDecimal - processedFracLen;
 
 				// padding fraction zeroes
@@ -184,9 +183,7 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 		// generate width space padding
 		i = minStringWidthIncDecimalPoint - strlen(num) + 1;
 		while (--i > 0)
-		{
 			*buf++ = pad;
-		}
 
 		//Write output buffer
 		s = num;

@@ -12,71 +12,50 @@
 
 #include "HttpRequestAuth.h"
 #include "HttpRequest.h"
-#include "../../Services/WebHelpers/base64.h"
+#include "../Services/WebHelpers/base64.h"
 
-HttpBasicAuth::HttpBasicAuth(const String& username, const String& password)
-{
-	this->username = username;
-	this->password = password;
-}
+/* HttpBasicAuth */
 
-// Basic Auth
 void HttpBasicAuth::setRequest(HttpRequest* request)
 {
-	String clearText = username + ":" + password;
-	int hashLength = clearText.length() * 4;
-	char hash[hashLength];
-	base64_encode(clearText.length(), (const unsigned char*)clearText.c_str(), hashLength, hash);
-
-	request->setHeader("Authorization", "Basic " + String(hash));
+	request->headers[hhfn_Authorization] = F("Basic ") + base64_encode(_username + ":" + _password);
 }
 
-// Digest Auth
-HttpDigestAuth::HttpDigestAuth(const String& username, const String& password)
-{
-	this->username = username;
-	this->password = password;
-}
-
-void HttpDigestAuth::setRequest(HttpRequest* request)
-{
-	this->request = request;
-}
+/* HttpDigestAuth */
 
 void HttpDigestAuth::setResponse(HttpResponse* response)
 {
-	if(response->code != HTTP_STATUS_UNAUTHORIZED) {
+	if (response->code != HTTP_STATUS_UNAUTHORIZED)
 		return;
-	}
 
-	if(response->headers.contains("WWW-Authenticate") &&
-	   response->headers["WWW-Authenticate"].indexOf("Digest") != -1) {
-		String authHeader = response->headers["WWW-Authenticate"];
-		/*
-		 * Example (see: https://tools.ietf.org/html/rfc2069#page-4):
-		 *
-		 * WWW-Authenticate: Digest    realm="testrealm@host.com",
-                            nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093",
-                            opaque="5ccc069c403ebaf9f0171e9517f40e41"
-		 *
-		 */
+	const String& authHeader = response->headers[hhfn_WWWAuthenticate];
+	if (authHeader.indexOf(F("Digest")) < 0)
+		return;
 
-		// TODO: process WWW-Authenticate header
+	/*
+	 * Example (see: https://tools.ietf.org/html/rfc2069#page-4):
+	 *
+	 * WWW-Authenticate: Digest    realm="testrealm@host.com",
+						nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093",
+						opaque="5ccc069c403ebaf9f0171e9517f40e41"
+	 *
+	 */
 
-		String authResponse = "Digest username=\"" + username + "\"";
-		/*
-		 * Example (see: https://tools.ietf.org/html/rfc2069#page-4):
-		 *
-		 * Authorization: Digest       username="Mufasa",
-                            realm="testrealm@host.com",
-                            nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093",
-                            uri="/dir/index.html",
-                            response="e966c932a9242554e42c8ee200cec7f6",
-                            opaque="5ccc069c403ebaf9f0171e9517f40e41"
-		 */
+	// @todo: process WWW-Authenticate header
 
-		// TODO: calculate the response...
-		request->setHeader("Authorization", authResponse);
-		request->retries = 1;
-	}
+	String authResponse = F("Digest username=\"") + _username + "\"";
+	/*
+	 * Example (see: https://tools.ietf.org/html/rfc2069#page-4):
+	 *
+	 * Authorization: Digest       username="Mufasa",
+						realm="testrealm@host.com",
+						nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093",
+						uri="/dir/index.html",
+						response="e966c932a9242554e42c8ee200cec7f6",
+						opaque="5ccc069c403ebaf9f0171e9517f40e41"
+	 */
+
+	// @todo: calculate the response...
+	_request->headers[hhfn_Authorization] = authResponse;
+	_request->retries = 1;
 }

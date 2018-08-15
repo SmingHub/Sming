@@ -17,9 +17,9 @@
 #ifndef _DateTime_h
 #define _DateTime_h
 
-#include <user_config.h>
+#include "WString.h"
 #include <time.h>
-#include "../../Wiring/WString.h"
+
 
 /*==============================================================================*/
 /* Useful Constants */
@@ -79,7 +79,7 @@ class DateTime
 public:
     /** @brief  Instantiate an uninitialised date and time object
      */
-	DateTime();
+	DateTime() { }
 
     /** @brief  Instantiate a date and time object
      *  @param  time Unix time to assign to object
@@ -89,7 +89,10 @@ public:
     /** @brief  Get current Unix time
      *  @retval time_t Quantity of seconds since 00:00:00 1970-01-01
     */
-	operator time_t() { return toUnixTime(); }
+	operator time_t()
+	{
+		return toUnixTime();
+	}
 
     /** @brief  Set time using Unix time
      *  @param  time Unix time to set object time to
@@ -179,15 +182,16 @@ public:
 	static time_t convertToUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year);
 
 public:
-	int8_t Hour; ///< Hour (0-23)
-	int8_t Minute; ///< Minute (0-59)
-	int8_t Second; ///< Second (0-59)
-	int16_t Milliseconds; ///< Milliseconds (0-999)
-	int8_t Day; ///< Day of month (1-31)
-	int8_t DayofWeek; ///< Day of week (0-6 Sunday is day 0)
-	int8_t Month; ///< Month (0-11 Jan is month 0)
-	int16_t Year;  ///< Full Year number
+	int8_t Hour = 0; ///< Hour (0-23)
+	int8_t Minute = 0; ///< Minute (0-59)
+	int8_t Second = 0; ///< Second (0-59)
+	int16_t Milliseconds = 0; ///< Milliseconds (0-999)
+	int8_t Day = 0; ///< Day of month (1-31)
+	int8_t DayofWeek = 0; ///< Day of week (0-6 Sunday is day 0)
+	int8_t Month = 0; ///< Month (0-11 Jan is month 0)
+	int16_t Year = 0;  ///< Full Year number
 };
+
 
 /** @} */
 #endif /* DateTime_h */

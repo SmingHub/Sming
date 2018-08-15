@@ -6,6 +6,7 @@
  */
 
 #include "HexDump.h"
+#include "HardwareSerial.h"
 
 
 HexDump::HexDump() {

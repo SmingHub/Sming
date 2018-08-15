@@ -8,9 +8,9 @@
 #ifndef SMINGCORE_PLATFORM_WIFIEVENTS_H_
 #define SMINGCORE_PLATFORM_WIFIEVENTS_H_
 
-#include "../SmingCore/Delegate.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/IPAddress.h"
+#include "Delegate.h"
+#include "WString.h"
+#include "IPAddress.h"
 
 //Define WifiEvents Delegates types
 typedef Delegate<void(String, uint8_t, uint8_t[6], uint8_t)> StationConnectDelegate;
@@ -26,17 +26,43 @@ class WifiEventsClass
 public:
 	WifiEventsClass();
 
-	void onStationConnect(StationConnectDelegate delegateFunction);
-	void onStationDisconnect(StationDisconnectDelegate delegateFunction);
-	void onStationAuthModeChange(StationAuthModeChangeDelegate delegateFunction);
-	void onStationGotIP(StationGotIPDelegate delegateFunction);
-	void onAccessPointConnect(AccessPointConnectDelegate delegateFunction);
-	void onAccessPointDisconnect(AccessPointDisconnectDelegate delegateFunction);
-	void onAccessPointProbeReqRecved(AccessPointProbeReqRecvedDelegate delegateFunction);
+	void onStationConnect(StationConnectDelegate delegateFunction)
+	{
+		onSTAConnect = delegateFunction;
+	}
+
+	void onStationDisconnect(StationDisconnectDelegate delegateFunction)
+	{
+		onSTADisconnect = delegateFunction;
+	}
+
+	void onStationAuthModeChange(StationAuthModeChangeDelegate delegateFunction)
+	{
+		onSTAAuthModeChange = delegateFunction;
+	}
+
+	void onStationGotIP(StationGotIPDelegate delegateFunction)
+	{
+		onSTAGotIP = delegateFunction;
+	}
+
+	void onAccessPointConnect(AccessPointConnectDelegate delegateFunction)
+	{
+		onSOFTAPConnect = delegateFunction;
+	}
+
+	void onAccessPointDisconnect(AccessPointDisconnectDelegate delegateFunction)
+	{
+		onSOFTAPDisconnect = delegateFunction;
+	}
+
+	void onAccessPointProbeReqRecved(AccessPointProbeReqRecvedDelegate delegateFunction)
+	{
+		onSOFTAPProbeReqRecved = delegateFunction;
+	}
 
 private:
-	static void staticWifiEventHandler(System_Event_t* evt);
-	void WifiEventHandler(System_Event_t* evt);
+	void WifiEventHandler(System_Event_t *evt);
 
 	StationConnectDelegate onSTAConnect = nullptr;
 	StationDisconnectDelegate onSTADisconnect = nullptr;
@@ -46,6 +72,7 @@ private:
 	AccessPointDisconnectDelegate onSOFTAPDisconnect = nullptr;
 	AccessPointProbeReqRecvedDelegate onSOFTAPProbeReqRecved = nullptr;
 };
+
 
 extern WifiEventsClass WifiEvents;
 #endif /* SMINGCORE_PLATFORM_WIFIEVENTS_H_ */

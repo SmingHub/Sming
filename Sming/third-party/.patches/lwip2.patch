@@ -42,8 +42,9 @@ index 842f4fe..7550a72 100644
  			LWIP_LIB=liblwip2.a \
  			LWIP_LIB_RELEASE=$(LWIP_LIB_RELEASE) \
  			LWIP_INCLUDES_RELEASE=$(LWIP_INCLUDES_RELEASE) \
-diff --git a/glue/esp-missing.h b/glue/esp-missing.h
 index 0e42073..4cb5d6c 100644
+diff --git a/glue/esp-missing.h b/glue/esp-missing.h
+index 0e42073..5946637 100644
 --- a/glue/esp-missing.h
 +++ b/glue/esp-missing.h
 @@ -9,9 +9,9 @@
@@ -59,7 +60,7 @@ index 0e42073..4cb5d6c 100644
  
  struct netif* eagle_lwip_getif (int netif_index);
  
-@@ -27,10 +27,10 @@ int ets_memcmp (const void*, const void*, size_t n);
+@@ -27,13 +27,13 @@ int ets_memcmp (const void*, const void*, size_t n);
  void *ets_memset (void *s, int c, size_t n);
  void *ets_memcpy (void *dest, const void *src, size_t n);
  
@@ -73,4 +74,8 @@ index 0e42073..4cb5d6c 100644
 +//void ets_timer_setfn (ETSTimer *t, ETSTimerFunc *fn, void *parg);
  
  struct ip_addr;
- void wifi_softap_set_station_info (uint8_t* mac, struct ip_addr*);
+-void wifi_softap_set_station_info (uint8_t* mac, struct ip_addr*);
++bool wifi_softap_set_station_info (const uint8_t mac[], const struct ip_addr*);
+ 
+ #define os_intr_lock	ets_intr_lock
+ #define os_intr_unlock	ets_intr_unlock

@@ -16,12 +16,11 @@
 #ifndef SMINGCORE_PLATFORM_STATION_H_
 #define SMINGCORE_PLATFORM_STATION_H_
 
-#include <user_config.h>
 #include "System.h"
-#include "../SmingCore/Delegate.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
-#include "../../Wiring/IPAddress.h"
+#include "WString.h"
+#include "Delegate.h"
+#include "WVector.h"
+#include "IPAddress.h"
 
 extern "C" {
 #include <smartconfig.h>
@@ -57,7 +56,6 @@ enum SmartConfigEvent {
 };
 
 class BssInfo;
-class Timer;
 
 typedef Vector<BssInfo> BssList; ///< List of BSS
 /** @} */
@@ -73,15 +71,20 @@ typedef Delegate<bool(wps_cb_status status)> WPSConfigDelegate;
 #endif
 /** @} */
 
-class StationClass : protected ISystemReadyHandler
-{
+class StationClass : protected ISystemReadyHandler {
 public:
 	/** @brief  WiFi station class
      *  @addtogroup wifi_sta
      *  @{
      */
-	StationClass();
-	~StationClass();
+	StationClass()
+	{
+		System.onReady(this);
+		_runScan = false;
+	}
+
+	~StationClass()
+	{}
 
 	/**	@brief	Enable / disable WiFi station
 	 *	@note	Disabling WiFi station will also disable and clear the handler set with <i>waitConnection</i>.
@@ -93,7 +96,10 @@ public:
 	/**	@brief	Get WiFi station enable status
 	 *	@retval	bool True if WiFi station enabled
 	 */
-	bool isEnabled();
+	bool isEnabled()
+	{
+		return wifi_get_opmode() & STATION_MODE;
+	}
 
 	/**	@brief	Configure WiFi station
 	 *	@param	ssid WiFi SSID
@@ -105,11 +111,17 @@ public:
 
 	/**	@brief	Connect WiFi station to network
 	 */
-	bool connect();
+	bool connect()
+	{
+		return wifi_station_connect();
+	}
 
 	/**	@brief	Disconnect WiFi station from network
 	 */
-	bool disconnect();
+	bool disconnect()
+	{
+		return wifi_station_disconnect();
+	}
 
 	/**	@brief	Get WiFi station connectoin status
 	 *	@retval	bool True if connected.
@@ -124,32 +136,50 @@ public:
 	/**	@brief  Get WiFi station connection status
 	 *	@retval	EStationConnectionStatus Connection status structure
 	 */
-	EStationConnectionStatus getConnectionStatus();
+	EStationConnectionStatus getConnectionStatus()
+	{
+		return (EStationConnectionStatus)wifi_station_get_connect_status();
+	}
 
 	/**	@brief	Get WiFi station connection status name
 	 *	@retval	char* Pointer to c string name of connection status
 	 */
-	const char* getConnectionStatusName();
+	String getConnectionStatusName();
 
 	/**	@brief	Get WiFi station DHCP enabled status
 	 *	@retval	bool True if DHCP enabled
 	 */
-	bool isEnabledDHCP();
+	bool isEnabledDHCP()
+	{
+		return wifi_station_dhcpc_status() == DHCP_STARTED;
+	}
 
 	/**	@brief	Enable or disable WiFi station DHCP
 	 *	@param	enable True to enable WiFi station DHCP
 	 */
-	void enableDHCP(bool enable);
+	void enableDHCP(bool enable)
+	{
+		if (enable)
+			wifi_station_dhcpc_start();
+		else
+			wifi_station_dhcpc_stop();
+	}
 
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@param	hostname - WiFi station DHCP hostname
 	 */
-	void setHostname(const String& hostname);
+	void setHostname(const String& hostname)
+	{
+		wifi_station_set_hostname((char*)hostname.c_str());
+	}
 
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@retval WiFi station DHCP hostname
 	 */
-	String getHostname();
+	String getHostname()
+	{
+		return wifi_station_get_hostname();
+	}
 
 	/**	@brief	Get WiFi station IP address
 	 *	@retval	IPAddress IP address of WiFi station
@@ -212,7 +242,7 @@ public:
 	 *	@param	sctype Smart configuration type
 	 *	@param	callback Function to call on WiFi staton smart configuration complete (Default: none)
 	 */
-	void smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback = NULL);
+	void smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback = nullptr);
 
 	/**	@brief	Stop WiFi station smart configuration
 	 */
@@ -222,7 +252,7 @@ public:
 	/**	@brief	Start WiFi station by WPS method
 	 *	@param	callback Function to call on WiFi WPS Events (Default: none)
 	 */
-	bool wpsConfigStart(WPSConfigDelegate callback = NULL);
+	bool wpsConfigStart(WPSConfigDelegate callback = nullptr);
 
 	/**	@brief	Start WiFi station by WPS method 
 	 */
@@ -233,7 +263,13 @@ public:
 	void wpsConfigStop();
 
 	void internalWpsConfig(wps_cb_status status);
-	static void staticWpsConfigCallback(wps_cb_status status);
+
+	static void staticWpsConfigCallback(wps_cb_status status)
+	{
+		WifiStation.internalWpsConfig(status);
+	}
+
+
 #endif
 
 protected:
@@ -248,27 +284,29 @@ protected:
 
 private:
 	ScanCompletedDelegate scanCompletedCallback;
-	SmartConfigDelegate smartConfigCallback = NULL;
+	SmartConfigDelegate smartConfigCallback = nullptr;
 #ifdef ENABLE_WPS
-	WPSConfigDelegate wpsConfigCallback = NULL;
+	WPSConfigDelegate wpsConfigCallback = nullptr;
 #endif
-	bool runScan;
+	bool _runScan;
 };
 
-class BssInfo
-{
+class BssInfo {
 public:
 	BssInfo(bss_info* info);
 
 	/**	@brief	Get BSS open status
 	 *	@retval	bool True if BSS open
 	*/
-	bool isOpen();
+	bool isOpen()
+	{
+		return authorization == AUTH_OPEN;
+	}
 
 	/**	@brief	Get BSS authorisation method name
 	 *	@retval	char* Pointer to c string BSS authoristation method name
 	*/
-	const char* getAuthorizationMethodName();
+	String getAuthorizationMethodName();
 
 	/**	@brief	Get BSS hash ID
 	 *	@retval	uint32_t BSS hash ID
@@ -287,7 +325,7 @@ public:
 /**	@brief	Global instance of WiFi station object
  *	@note	Use WiFiStation.<i>function</i> to access WiFi station functions
  *	@note	Example:
- *  @code   if(WiFiStation.config("My_WiFi", "My_Password"))
+ *  @code   if (WiFiStation.config("My_WiFi", "My_Password"))
                 WiFiStation.enable(true);
 	@endcode
  */

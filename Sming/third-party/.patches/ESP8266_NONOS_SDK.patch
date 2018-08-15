@@ -11,3 +11,15 @@ index 0462a9c..52ad21f 100644
  void ets_install_putc1(void (*p)(char c));
  
  #define os_bzero ets_bzero
+diff --git a/include/user_interface.h b/include/user_interface.h
+index dbd171d..f191575 100644
+--- a/include/user_interface.h
++++ b/include/user_interface.h
+@@ -328,5 +328,6 @@ enum dhcps_offer_option{
+ };
+ 
+ uint8 wifi_softap_get_station_num(void);
++bool wifi_softap_set_station_info(const uint8_t mac[], const struct ip_addr*);
+ struct station_info * wifi_softap_get_station_info(void);
+ void wifi_softap_free_station_info(void);
+ 

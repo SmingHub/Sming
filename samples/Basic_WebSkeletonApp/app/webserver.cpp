@@ -65,9 +65,7 @@ void onConfiguration_json(HttpRequest& request, HttpResponse& response)
 }
 void onFile(HttpRequest& request, HttpResponse& response)
 {
-	String file = request.uri.Path;
-	if(file[0] == '/')
-		file = file.substring(1);
+	String file = request.uri.relativePath();
 
 	if(file[0] == '.')
 		response.code = HTTP_STATUS_FORBIDDEN;
