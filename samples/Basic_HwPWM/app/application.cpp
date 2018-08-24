@@ -24,14 +24,17 @@ HardwarePWM HW_pwm(pins, 8);
 
 Timer procTimer;
 int32 i = 0;
-int32 inc = 100;
 bool countUp = true;
+
+int maxDuty = HW_pwm.getMaxDuty();
+int32 inc = maxDuty / 50;
+
 void doPWM()
 {
 	if(countUp == true) {
 		i += inc;
-		if(i >= 22222) {
-			i = 22222;
+		if(i >= maxDuty) {
+			i = maxDuty;
 			countUp = false;
 		}
 	} else {
@@ -54,14 +57,14 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	// Setting PWM values on 8 different pins
-	HW_pwm.analogWrite(4, 22222);
-	HW_pwm.analogWrite(5, 11111);
-	HW_pwm.analogWrite(0, 22222);
-	HW_pwm.analogWrite(2, 11111);
-	HW_pwm.analogWrite(15, 22222);
-	HW_pwm.analogWrite(13, 11111);
-	HW_pwm.analogWrite(12, 22222);
-	HW_pwm.analogWrite(14, 11111);
+	HW_pwm.analogWrite(4, maxDuty);
+	HW_pwm.analogWrite(5, maxDuty / 2);
+	HW_pwm.analogWrite(0, maxDuty);
+	HW_pwm.analogWrite(2, maxDuty / 2);
+	HW_pwm.analogWrite(15, 0);
+	HW_pwm.analogWrite(13, maxDuty / 3);
+	HW_pwm.analogWrite(12, 2 * maxDuty / 3);
+	HW_pwm.analogWrite(14, maxDuty);
 
 	debugf("PWM output set on all 8 Pins. Kindly check...");
 	debugf("Now Pin 2 will go from 0 to VCC to 0 in cycles.");
