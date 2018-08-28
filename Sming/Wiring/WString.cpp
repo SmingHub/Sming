@@ -186,7 +186,7 @@ String & String::copy(const char *cstr, unsigned int length)
     return *this;
   }
   len = length;
-  strncpy(buffer, cstr, length);
+  memcpy(buffer, cstr, length);
   buffer[length] = 0;
   return *this;
 }
@@ -252,7 +252,7 @@ unsigned char String::concat(const char *cstr, unsigned int length)
   if (!cstr) return 0;
   if (length == 0) return 1;
   if (!reserve(newlen)) return 0;
-  strcpy(buffer + len, cstr);
+  memcpy(buffer + len, cstr, length + 1); // Copy null terminator.
   len = newlen;
   return 1;
 }
@@ -514,7 +514,7 @@ void String::getBytes(unsigned char *buf, unsigned int bufsize, unsigned int ind
   }
   unsigned int n = bufsize - 1;
   if (n > len - index) n = len - index;
-  strncpy((char *)buf, buffer + index, n);
+  memcpy((char *)buf, buffer + index, n);
   buf[n] = 0;
 }
 
