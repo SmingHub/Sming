@@ -21,6 +21,8 @@
 
 #include "HardwarePWM.h"
 
+#define PERIOD_TO_MAX_DUTY(x) (x * 25)
+
 HardwarePWM::HardwarePWM(uint8* pins, uint8 no_of_pins)
 {
 	channel_count = no_of_pins;
@@ -34,9 +36,10 @@ HardwarePWM::HardwarePWM(uint8* pins, uint8 no_of_pins)
 			pwm_duty_init[i] = 0; // Start with zero output
 			channels[i] = pins[i];
 		}
-		pwm_init(1000, pwm_duty_init, no_of_pins, io_info);
+		const int initial_period = 1000;
+		pwm_init(initial_period, pwm_duty_init, no_of_pins, io_info);
 		pwm_start();
-		maxduty = 22222; // for period of 1000
+		maxduty = PERIOD_TO_MAX_DUTY(initial_period); // for period of 1000
 	}
 }
 
@@ -129,7 +132,7 @@ uint32 HardwarePWM::getPeriod()
  */
 void HardwarePWM::setPeriod(uint32 period)
 {
-	maxduty = (period * 1000) / 45;
+	maxduty = PERIOD_TO_MAX_DUTY(period);
 	pwm_set_period(period);
 	pwm_start();
 }
