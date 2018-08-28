@@ -170,6 +170,8 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 						memcpy((token + 1), url.User.c_str(), url.User.length()); // copy user
 						memcpy((token + 2 + url.User.length()), url.Password.c_str(),
 							   url.Password.length()); // copy password
+						token[0] = '\0';
+						token[url.User.length() + 1] = '\0';
 						int hashLength = tokenLength * 4;
 						char hash[hashLength];
 						base64_encode(tokenLength, token, hashLength, hash);
