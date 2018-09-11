@@ -31,17 +31,15 @@ bool WebSocketConnection::initialize(HttpRequest& request, HttpResponse& respons
 		return false;
 
 	state = eWSCS_Open;
-	String hash = request.getHeader("Sec-WebSocket-Key");
-	hash.trim();
-	hash = hash + secret;
-	unsigned char data[SHA1_SIZE];
-	char secure[SHA1_SIZE * 4];
-	sha1(data, hash.c_str(), hash.length());
-	base64_encode(SHA1_SIZE, data, SHA1_SIZE * 4, secure);
+	String token = request.getHeader("Sec-WebSocket-Key");
+	token.trim();
+	token = token + secret;
+	unsigned char hash[SHA1_SIZE];
+	sha1(hash, token.c_str(), token.length());
 	response.code = HTTP_STATUS_SWITCHING_PROTOCOLS;
 	response.setHeader("Connection", "Upgrade");
 	response.setHeader("Upgrade", "websocket");
-	response.setHeader("Sec-WebSocket-Accept", secure);
+	response.setHeader("Sec-WebSocket-Accept", base64_encode(hash, SHA1_SIZE));
 
 	delete stream;
 	stream = new EndlessMemoryStream();

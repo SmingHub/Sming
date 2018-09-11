@@ -25,7 +25,6 @@ int Base64OutputStream::encode(uint8_t* source, size_t sourceLength, uint8_t* ta
 	int count = 0;
 	if(sourceLength == 0) {
 		count = base64_encode_blockend((char*)target, &state);
-		count--; // the last byte is a newline. we don't need it.
 	} else {
 		count = base64_encode_block((const char*)source, sourceLength, (char*)target, &state);
 	}

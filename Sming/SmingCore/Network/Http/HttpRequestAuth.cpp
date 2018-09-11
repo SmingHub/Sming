@@ -23,12 +23,7 @@ HttpBasicAuth::HttpBasicAuth(const String& username, const String& password)
 // Basic Auth
 void HttpBasicAuth::setRequest(HttpRequest* request)
 {
-	String clearText = username + ":" + password;
-	int hashLength = clearText.length() * 4;
-	char hash[hashLength];
-	base64_encode(clearText.length(), (const unsigned char*)clearText.c_str(), hashLength, hash);
-
-	request->setHeader("Authorization", "Basic " + String(hash));
+	request->setHeader("Authorization", "Basic " + base64_encode(username + ":" + password));
 }
 
 // Digest Auth

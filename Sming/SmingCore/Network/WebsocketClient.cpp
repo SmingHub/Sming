@@ -42,18 +42,13 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	}
 	TcpClient::connect(_uri.Host, _uri.Port, useSsl, sslOptions);
 	debug_d("Connecting to Server");
-	unsigned char keyStart[17];
-	char b64Key[25];
-	memset(b64Key, 0, sizeof(b64Key));
+
 	_mode = wsMode::Connecting; // Server Connected / WS Upgrade request sent
 
-	for(int i = 0; i < 16; ++i) {
+	uint8_t keyStart[16];
+	for(unsigned i = 0; i < sizeof(keyStart); ++i)
 		keyStart[i] = 1 + os_random() % 255;
-	}
-
-	base64_encode(16, (const unsigned char*)keyStart, 24, (char*)b64Key);
-
-	_key.setString(b64Key, 24);
+	_key = base64_encode(keyStart, sizeof(keyStart));
 
 	String protocol = "chat";
 	sendString("GET ");
@@ -93,8 +88,6 @@ bool WebsocketClient::_verifyKey(char* buf, int size)
 {
 	const char* serverHashedKey = strstri(buf, "sec-websocket-accept: ");
 	char* endKey = NULL;
-	unsigned char hashedKey[20];
-	char base64HashedKey[20 * 4];
 	String keyToHash = _key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 	if(!serverHashedKey) {
@@ -112,11 +105,11 @@ bool WebsocketClient::_verifyKey(char* buf, int size)
 
 	*endKey = 0;
 
-	sha1(hashedKey, keyToHash.c_str(), keyToHash.length());
-	base64_encode(sizeof(hashedKey), hashedKey, sizeof(base64HashedKey), base64HashedKey);
-
-	if(strstr(serverHashedKey, base64HashedKey) != serverHashedKey) {
-		debug_e("wscli key mismatch: %s | %s", serverHashedKey, base64HashedKey);
+	unsigned char hash[SHA1_SIZE];
+	sha1(hash, keyToHash.c_str(), keyToHash.length());
+	String base64hash = base64_encode(hash, sizeof(hash));
+	if(base64hash != serverHashedKey) {
+		debug_e("wscli key mismatch: %s | %s", serverHashedKey, base64hash.c_str());
 		return false;
 	}
 
