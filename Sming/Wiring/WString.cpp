@@ -64,16 +64,14 @@ String::String(StringSumHelper &&rval)
 String::String(char c)
 {
   init();
-  char buf[2];
-  buf[0] = c;
-  buf[1] = 0;
-  *this = buf;
+  if (setLength(1))
+	  buffer[0] = c;
 }
 
 String::String(unsigned char value, unsigned char base)
 {
   init();
-  char buf[8 + 8 * sizeof(unsigned char)];
+  char buf[8 + 8 * sizeof(value)];
   ultoa(value, buf, base);
   *this = buf;
 }
@@ -81,7 +79,7 @@ String::String(unsigned char value, unsigned char base)
 String::String(int value, unsigned char base)
 {
   init();
-  char buf[2 + 8 * sizeof(int)];
+  char buf[8 + 8 * sizeof(value)];
   itoa(value, buf, base);
   *this = buf;
 }
@@ -89,7 +87,7 @@ String::String(int value, unsigned char base)
 String::String(unsigned int value, unsigned char base)
 {
   init();
-  char buf[8 + 8 * sizeof(unsigned int)];
+  char buf[8 + 8 * sizeof(value)];
   ultoa(value, buf, base);
   *this = buf;
 }
@@ -97,7 +95,7 @@ String::String(unsigned int value, unsigned char base)
 String::String(long value, unsigned char base)
 {
   init();
-  char buf[2 + 8 * sizeof(long)];
+  char buf[8 + 8 * sizeof(value)];
   ltoa(value, buf, base);
   *this = buf;
 }
@@ -105,7 +103,7 @@ String::String(long value, unsigned char base)
 String::String(unsigned long value, unsigned char base)
 {
   init();
-  char buf[1 + 8 * sizeof(unsigned long)];
+  char buf[8 + 8 * sizeof(value)];
   ultoa(value, buf, base);
   *this = buf;
 }
@@ -126,14 +124,14 @@ String::String(double value, unsigned char decimalPlaces)
 
 String::~String()
 {
-	free(buffer);
+	if (buffer) free(buffer);
 }
 
 void String::setString(const char *cstr, int length /* = -1 */)
 {
 	if (cstr)
 	{
-		if (length == -1)
+		if (length < 0)
 			length = strlen(cstr);
 		copy(cstr, length);
 	}
@@ -145,7 +143,7 @@ void String::setString(const char *cstr, int length /* = -1 */)
 
 inline void String::init(void)
 {
-  buffer = NULL;
+  buffer = nullptr;
   capacity = 0;
   len = 0;
   //flags = 0;
@@ -154,7 +152,7 @@ inline void String::init(void)
 void String::invalidate(void)
 {
   if (buffer) free(buffer);
-  buffer = NULL;
+  buffer = nullptr;
   capacity = len = 0;
 }
 
@@ -169,7 +167,7 @@ unsigned char String::reserve(unsigned int size)
   return 0;
 }
 
-bool String::setLength(unsigned size)
+bool String::setLength(unsigned int size)
 {
 	if(!reserve(size))
 		return false;
@@ -218,7 +216,7 @@ void String::move(String &rhs)
   buffer = rhs.buffer;
   capacity = rhs.capacity;
   len = rhs.len;
-  rhs.buffer = NULL;
+  rhs.buffer = nullptr;
   rhs.capacity = 0;
   rhs.len = 0;
 }
@@ -272,6 +270,7 @@ unsigned char String::concat(const char *cstr, unsigned int length)
   if (length == 0) return 1;
   if (!reserve(newlen)) return 0;
   memmove(buffer + len, cstr, length);
+  buffer[newlen] = '\0';
   len = newlen;
   return 1;
 }
@@ -292,35 +291,35 @@ unsigned char String::concat(char c)
 
 unsigned char String::concat(unsigned char num)
 {
-  char buf[1 + 3 * sizeof(unsigned char)];
+  char buf[1 + 3 * sizeof(num)];
   itoa(num, buf, 10);
   return concat(buf, strlen(buf));
 }
 
 unsigned char String::concat(int num)
 {
-  char buf[2 + 3 * sizeof(int)];
+  char buf[8 + 3 * sizeof(num)];
   itoa(num, buf, 10);
   return concat(buf, strlen(buf));
 }
 
 unsigned char String::concat(unsigned int num)
 {
-  char buf[8 + 3 * sizeof(unsigned int)];
+  char buf[8 + 3 * sizeof(num)];
   ultoa(num, buf, 10);
   return concat(buf, strlen(buf));
 }
 
 unsigned char String::concat(long num)
 {
-  char buf[2 + 3 * sizeof(long)];
+  char buf[8 + 3 * sizeof(num)];
   ltoa(num, buf, 10);
   return concat(buf, strlen(buf));
 }
 
 unsigned char String::concat(unsigned long num)
 {
-  char buf[1 + 3 * sizeof(unsigned long)];
+  char buf[8 + 3 * sizeof(num)];
   ultoa(num, buf, 10);
   return concat(buf, strlen(buf));
 }
@@ -435,8 +434,8 @@ unsigned char String::equals(const String &s2) const
 
 unsigned char String::equals(const char *cstr) const
 {
-  if (len == 0) return (cstr == NULL || *cstr == 0);
-  if (cstr == NULL) return buffer[0] == 0;
+  if (len == 0) return (cstr == nullptr || *cstr == 0);
+  if (cstr == nullptr) return buffer[0] == 0;
   return strcmp(buffer, cstr) == 0;
 }
 
@@ -474,22 +473,22 @@ unsigned char String::equalsIgnoreCase(const String &s2) const
   return 1;
 }
 
-unsigned char String::startsWith(const String &s2) const
+unsigned char String::startsWith(const String &prefix) const
 {
-  if (len < s2.len) return 0;
-  return startsWith(s2, 0);
+  if (len < prefix.len) return 0;
+  return startsWith(prefix, 0);
 }
 
-unsigned char String::startsWith(const String &s2, unsigned int offset) const
+unsigned char String::startsWith(const String &prefix, unsigned int offset) const
 {
-  if (offset + s2.len > len || !buffer || !s2.buffer) return 0;
-  return memcmp(&buffer[offset], s2.buffer, s2.len) == 0;
+  if (offset + prefix.len > len || !buffer || !prefix.buffer) return 0;
+  return memcmp(&buffer[offset], prefix.buffer, prefix.len) == 0;
 }
 
-unsigned char String::endsWith(const String &s2) const
+unsigned char String::endsWith(const String &suffix) const
 {
-  if (len < s2.len || !buffer || !s2.buffer) return 0;
-  return memcmp(&buffer[len - s2.len], s2.buffer, s2.len) == 0;
+  if (len < suffix.len || !buffer || !suffix.buffer) return 0;
+  return memcmp(&buffer[len - suffix.len], suffix.buffer, suffix.len) == 0;
 }
 
 /*********************************************/
@@ -533,7 +532,7 @@ void String::getBytes(unsigned char *buf, unsigned int bufsize, unsigned int ind
   }
   unsigned int n = bufsize - 1;
   if (n > len - index) n = len - index;
-  memmove((char *)buf, buffer + index, n);
+  memmove(buf, buffer + index, n);
   buf[n] = 0;
 }
 
@@ -550,7 +549,7 @@ int String::indexOf(char ch, unsigned int fromIndex) const
 {
   if (fromIndex >= len) return -1;
   auto temp = (const char*)memchr(buffer + fromIndex, ch, len - fromIndex);
-  if (temp == NULL) return -1;
+  if (temp == nullptr) return -1;
   return temp - buffer;
 }
 
@@ -563,7 +562,7 @@ int String::indexOf(const String &s2, unsigned int fromIndex) const
 {
   if (fromIndex >= len) return -1;
   auto found = (const char*)memmem(buffer + fromIndex, len - fromIndex, s2.buffer, s2.len);
-  if (found == NULL) return -1;
+  if (found == nullptr) return -1;
   return found - buffer;
 }
 
@@ -579,7 +578,7 @@ int String::lastIndexOf(char ch, int fromIndex) const
   buffer[fromIndex + 1] = '\0';
   char* temp = strrchr(buffer, ch);
   buffer[fromIndex + 1] = tempchar;
-  if (temp == NULL) return -1;
+  if (temp == nullptr) return -1;
   return temp - buffer;
 }
 
@@ -593,9 +592,9 @@ int String::lastIndexOf(const String &s2, int fromIndex) const
   if (s2.len == 0 || len == 0 || s2.len > len || fromIndex < 0) return -1;
   if (fromIndex >= len) fromIndex = len - 1;
   int found = -1;
-  for (const char *p = buffer; p <= buffer + fromIndex; p++)
+  for (char *p = buffer; p <= buffer + fromIndex; p++)
   {
-	p = (const char*)memmem(p, buffer + len - p, s2.buffer, s2.len);
+	p = (char*)memmem(p, buffer + len - p, s2.buffer, s2.len);
     if (!p) break;
     if (p - buffer <= fromIndex) found = p - buffer;
   }
@@ -638,10 +637,11 @@ void String::replace(const String& find, const String& replace)
   if (len == 0 || find.len == 0) return;
   int diff = replace.len - find.len;
   char *readFrom = buffer;
+  const char* end = buffer + len;
   char *foundAt;
   if (diff == 0)
   {
-    while ((foundAt = (char*)memmem(readFrom, buffer + len - readFrom, find.buffer, find.len)) != NULL)
+    while ((foundAt = (char*)memmem(readFrom, end - readFrom, find.buffer, find.len)) != nullptr)
     {
       memcpy(foundAt, replace.buffer, replace.len);
       readFrom = foundAt + replace.len;
@@ -650,7 +650,7 @@ void String::replace(const String& find, const String& replace)
   else if (diff < 0)
   {
     char *writeTo = buffer;
-    while ((foundAt = (char*)memmem(readFrom, buffer + len - readFrom, find.buffer, find.len)) != NULL)
+    while ((foundAt = (char*)memmem(readFrom, end - readFrom, find.buffer, find.len)) != nullptr)
     {
       unsigned int n = foundAt - readFrom;
       memcpy(writeTo, readFrom, n);
@@ -660,12 +660,13 @@ void String::replace(const String& find, const String& replace)
       readFrom = foundAt + find.len;
       len += diff;
     }
-    memcpy(writeTo, readFrom, buffer + len - readFrom);
+    memcpy(writeTo, readFrom, end - readFrom);
+    buffer[len] = '\0';
   }
   else
   {
     unsigned int size = len; // compute size needed for result
-    while ((foundAt = (char*)memmem(readFrom, buffer + len - readFrom, find.buffer, find.len)) != NULL)
+    while ((foundAt = (char*)memmem(readFrom, end - readFrom, find.buffer, find.len)) != nullptr)
     {
       readFrom = foundAt + find.len;
       size += diff;

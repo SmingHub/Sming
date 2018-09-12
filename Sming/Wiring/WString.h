@@ -83,7 +83,7 @@ class String
 	 *  @retval true on success, false on failure
 	 *  @note extra characters are undefined
 	 */
-	bool setLength(unsigned length);
+	bool setLength(unsigned int length);
 
 	inline unsigned int length(void) const
     {
@@ -208,7 +208,7 @@ class String
     unsigned char operator > (const String &rhs) const;
     unsigned char operator <= (const String &rhs) const;
     unsigned char operator >= (const String &rhs) const;
-    unsigned char equalsIgnoreCase(const String &s) const;
+    unsigned char equalsIgnoreCase(const String &s2) const;
     unsigned char startsWith(const String &prefix) const;
     unsigned char startsWith(const String &prefix, unsigned int offset) const;
     unsigned char endsWith(const String &suffix) const;
