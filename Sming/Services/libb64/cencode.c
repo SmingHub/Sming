@@ -3,24 +3,27 @@ cencoder.c - c source to a base64 encoding algorithm implementation
 
 This is part of the libb64 project, and has been placed in the public domain.
 For details, see http://sourceforge.net/projects/libb64
+
+@author mikee47 <mike@sillyhouse.net>
+
+The trailing newline is not added, so any encodings producing less than 72 characters output
+are returned in a single line of text. Anything longer is still wrapped.
 */
 
 #include "cencode.h"
 
-const int CHARS_PER_LINE = 72;
-
-void base64_init_encodestate(base64_encodestate* state_in)
+void base64_init_encodestate(base64_encodestate* state_in, unsigned chars_per_line)
 {
 	state_in->step = step_A;
 	state_in->result = 0;
 	state_in->stepcount = 0;
+	state_in->steps_per_line = chars_per_line / 4;
 }
 
 char base64_encode_value(char value_in)
 {
 	static const char* encoding = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-	if(value_in > 63)
-		return '=';
+	if (value_in > 63) return '=';
 	return encoding[(int)value_in];
 }
 
@@ -34,10 +37,13 @@ unsigned base64_encode_block(const char* plaintext_in, int length_in, char* code
 
 	result = state_in->result;
 
-	switch(state_in->step) {
-		while(1) {
-		case step_A:
-			if(plainchar == plaintextend) {
+	switch (state_in->step)
+	{
+		while (1)
+		{
+	case step_A:
+			if (plainchar == plaintextend)
+			{
 				state_in->result = result;
 				state_in->step = step_A;
 				return codechar - code_out;
@@ -46,8 +52,9 @@ unsigned base64_encode_block(const char* plaintext_in, int length_in, char* code
 			result = (fragment & 0x0fc) >> 2;
 			*codechar++ = base64_encode_value(result);
 			result = (fragment & 0x003) << 4;
-		case step_B:
-			if(plainchar == plaintextend) {
+	case step_B:
+			if (plainchar == plaintextend)
+			{
 				state_in->result = result;
 				state_in->step = step_B;
 				return codechar - code_out;
@@ -56,8 +63,9 @@ unsigned base64_encode_block(const char* plaintext_in, int length_in, char* code
 			result |= (fragment & 0x0f0) >> 4;
 			*codechar++ = base64_encode_value(result);
 			result = (fragment & 0x00f) << 2;
-		case step_C:
-			if(plainchar == plaintextend) {
+	case step_C:
+			if (plainchar == plaintextend)
+			{
 				state_in->result = result;
 				state_in->step = step_C;
 				return codechar - code_out;
@@ -65,11 +73,12 @@ unsigned base64_encode_block(const char* plaintext_in, int length_in, char* code
 			fragment = *plainchar++;
 			result |= (fragment & 0x0c0) >> 6;
 			*codechar++ = base64_encode_value(result);
-			result = (fragment & 0x03f) >> 0;
+			result  = (fragment & 0x03f) >> 0;
 			*codechar++ = base64_encode_value(result);
 
 			++(state_in->stepcount);
-			if(state_in->stepcount == CHARS_PER_LINE / 4) {
+			if (state_in->stepcount == state_in->steps_per_line)
+			{
 				*codechar++ = '\n';
 				state_in->stepcount = 0;
 			}
@@ -83,7 +92,8 @@ unsigned base64_encode_blockend(char* code_out, base64_encodestate* state_in)
 {
 	char* codechar = code_out;
 
-	switch(state_in->step) {
+	switch (state_in->step)
+	{
 	case step_B:
 		*codechar++ = base64_encode_value(state_in->result);
 		*codechar++ = '=';
@@ -99,3 +109,4 @@ unsigned base64_encode_blockend(char* code_out, base64_encodestate* state_in)
 
 	return codechar - code_out;
 }
+

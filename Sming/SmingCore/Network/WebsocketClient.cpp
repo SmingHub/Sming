@@ -46,8 +46,9 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	_mode = wsMode::Connecting; // Server Connected / WS Upgrade request sent
 
 	uint8_t keyStart[16];
-	for(unsigned i = 0; i < sizeof(keyStart); ++i)
+	for(unsigned i = 0; i < sizeof(keyStart); ++i) {
 		keyStart[i] = 1 + os_random() % 255;
+	}
 	_key = base64_encode(keyStart, sizeof(keyStart));
 
 	String protocol = "chat";

@@ -1,8 +1,13 @@
-/*
- * 29/7/2018 (mikee47)
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * 	Rewritten as wrapper around libb64 encode/decode routines.
- */
+ *
+ * @author: 2018 - Mikee47 <mike@sillyhouse.net>
+ *
+ ****/
 
 #include "base64.h"
 
@@ -21,7 +26,7 @@ int base64_encode(size_t in_len, const unsigned char* in, size_t out_len, char* 
 		return -1;
 
 	base64_encodestate state;
-	base64_init_encodestate(&state);
+	base64_init_encodestate(&state, 0); // Don't include any linebreaks
 	int codelength = base64_encode_block((const char*)in, in_len, out, &state);
 	codelength += base64_encode_blockend(out + codelength, &state);
 	return codelength;

@@ -12,18 +12,24 @@ For details, see http://sourceforge.net/projects/libb64
 extern "C" {
 #endif
 
-typedef enum { step_A, step_B, step_C } base64_encodestep;
+typedef enum
+{
+	step_A, step_B, step_C
+} base64_encodestep;
 
-typedef struct {
+typedef struct
+{
 	base64_encodestep step;
 	char result;
 	int stepcount;
+	unsigned steps_per_line; ///< Non-zero to limit encoded line lengths
 } base64_encodestate;
 
 /** @brief Call first to initialise encoder
  *  @param state_in
+ *  @param charsPerLine linebreaks added as required. Specify 0 to disable line breaking.
  */
-void base64_init_encodestate(base64_encodestate* state_in);
+void base64_init_encodestate(base64_encodestate* state_in, unsigned chars_per_line);
 
 /** @brief Call as many times as required to encode text
  *  @param plaintext_in
