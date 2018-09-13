@@ -208,6 +208,7 @@ class String
     unsigned char operator > (const String &rhs) const;
     unsigned char operator <= (const String &rhs) const;
     unsigned char operator >= (const String &rhs) const;
+    unsigned char equalsIgnoreCase(const char* cstr) const;
     unsigned char equalsIgnoreCase(const String &s2) const;
     unsigned char startsWith(const String &prefix) const;
     unsigned char startsWith(const String &prefix, unsigned int offset) const;

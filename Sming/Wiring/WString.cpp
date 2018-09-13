@@ -18,14 +18,6 @@
 
 #include "WiringFrameworkIncludes.h"
 
-/*
- * Want memmem() to replace use of strstr() so we can search on byte strings.
- * This is a GNU extension so not available with -std=c11
- * Alternatively is to build using -std=gnu11
- * Declare prototype instead so we can use it on other platforms
- */
-extern "C" void *memmem (const void *__haystack, size_t __haystacklen, const void *__needle, size_t __needlelen);
-
 /*********************************************/
 /*  Constructors                             */
 /*********************************************/
@@ -459,18 +451,17 @@ unsigned char String::operator>=(const String &rhs) const
   return compareTo(rhs) >= 0;
 }
 
+unsigned char String::equalsIgnoreCase(const char* cstr) const
+{
+  if(buffer == cstr) return 1;
+  return strcasecmp(cstr, buffer) == 0;
+}
+
 unsigned char String::equalsIgnoreCase(const String &s2) const
 {
-  if (this == &s2) return 1;
   if (len != s2.len) return 0;
   if (len == 0) return 1;
-  const char *p1 = buffer;
-  const char *p2 = s2.buffer;
-  while (*p1)
-  {
-    if (tolower(*p1++) != tolower(*p2++)) return 0;
-  }
-  return 1;
+  return equalsIgnoreCase(s2.buffer);
 }
 
 unsigned char String::startsWith(const String &prefix) const
