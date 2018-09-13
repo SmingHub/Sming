@@ -60,5 +60,15 @@ int base64_decode(size_t in_len, const char *in, size_t out_len, unsigned char *
  */
 String base64_decode(const char *in, size_t in_len);
 
+/** @brief encode a block of data into base64, both input and output are String objects
+ *  @param in
+ *  @retval String
+ */
+static inline String base64_decode(const String& in)
+{
+	return base64_decode(in.c_str(), in.length());
+}
+
+
 
 #endif /* BASE64_H */
