@@ -429,7 +429,7 @@ int String::compareTo(const String &s) const
 
 unsigned char String::equals(const String &s2) const
 {
-  return (len == s2.len && compareTo(s2) == 0);
+  return (len == s2.len && memcmp(buffer, s2.buffer, len) == 0);
 }
 
 unsigned char String::equals(const char *cstr) const
@@ -603,6 +603,8 @@ int String::lastIndexOf(const String &s2, int fromIndex) const
 
 String String::substring(unsigned int left, unsigned int right) const
 {
+  if (!buffer) return nullptr;
+
   if (left > right)
   {
     unsigned int temp = right;
@@ -679,10 +681,10 @@ void String::replace(const String& find, const String& replace)
       readFrom = buffer + index + find.len;
       memmove(readFrom + diff, readFrom, len - (readFrom - buffer));
       len += diff;
-      buffer[len] = 0;
       memcpy(buffer + index, replace.buffer, replace.len);
       index--;
     }
+    buffer[len] = '\0';
   }
 }
 
