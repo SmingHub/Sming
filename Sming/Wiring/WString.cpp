@@ -116,7 +116,7 @@ String::String(double value, unsigned char decimalPlaces)
 
 String::~String()
 {
-	if (buffer) free(buffer);
+	free(buffer);
 }
 
 void String::setString(const char *cstr, int length /* = -1 */)
@@ -585,7 +585,7 @@ int String::lastIndexOf(const String &s2, int fromIndex) const
   int found = -1;
   for (char *p = buffer; p <= buffer + fromIndex; p++)
   {
-	p = (char*)memmem(p, buffer + len - p, s2.buffer, s2.len);
+    p = (char*)memmem(p, buffer + len - p, s2.buffer, s2.len);
     if (!p) break;
     if (p - buffer <= fromIndex) found = p - buffer;
   }
