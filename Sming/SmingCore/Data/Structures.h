@@ -14,9 +14,6 @@
 #include "../../Wiring/FILO.h"
 #include "../../Wiring/WString.h"
 #include "../../Wiring/WHashMap.h"
-extern "C" {
-int strcasecmp(const char*, const char*);
-}
 
 /**
  * WARNING: For the moment the name "SimpleConcurrentQueue" is very misleading.

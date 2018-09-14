@@ -77,7 +77,15 @@ class String
     // is left unchanged).  reserve(0), if successful, will validate an
     // invalid string (i.e., "if (s)" will be true afterwards)
     unsigned char reserve(unsigned int size);
-    inline unsigned int length(void) const
+
+	/** @brief set the string length accordingly, expanding if necessary
+	 *  @param length required for string (nul terminator additional)
+	 *  @retval true on success, false on failure
+	 *  @note extra characters are undefined
+	 */
+	bool setLength(unsigned int length);
+
+	inline unsigned int length(void) const
     {
       return len;
     }
@@ -200,7 +208,8 @@ class String
     unsigned char operator > (const String &rhs) const;
     unsigned char operator <= (const String &rhs) const;
     unsigned char operator >= (const String &rhs) const;
-    unsigned char equalsIgnoreCase(const String &s) const;
+    unsigned char equalsIgnoreCase(const char* cstr) const;
+    unsigned char equalsIgnoreCase(const String &s2) const;
     unsigned char startsWith(const String &prefix) const;
     unsigned char startsWith(const String &prefix, unsigned int offset) const;
     unsigned char endsWith(const String &suffix) const;

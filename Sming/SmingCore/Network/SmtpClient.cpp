@@ -17,7 +17,7 @@
  */
 
 #include "SmtpClient.h"
-#include "../../Services/WebHelpers/base64.h"
+#include "../Services/WebHelpers/base64.h"
 #include "Data/Stream/QuotedPrintableOutputStream.h"
 #include "Data/Stream/Base64OutputStream.h"
 
@@ -165,16 +165,9 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 				if(authMethods.contains(preferredOrder[i])) {
 					if(preferredOrder[i] == "PLAIN") {
 						// base64('\0' + username + '\0' + password)
-						int tokenLength = url.User.length() + url.Password.length() + 2;
-						uint8_t token[tokenLength];
-						memcpy((token + 1), url.User.c_str(), url.User.length()); // copy user
-						memcpy((token + 2 + url.User.length()), url.Password.c_str(),
-							   url.Password.length()); // copy password
-						int hashLength = tokenLength * 4;
-						char hash[hashLength];
-						base64_encode(tokenLength, token, hashLength, hash);
-						sendString("AUTH PLAIN " + String(hash) + "\r\n");
-
+						String token = '\0' + url.User + '\0' + url.Password;
+						String hash = base64_encode(token);
+						sendString("AUTH PLAIN " + hash + "\r\n");
 						state = eSMTP_SendingAuth;
 						break;
 					} else if(preferredOrder[i] == "CRAM-MD5") {
@@ -210,10 +203,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		*c = '\0';
 
 		String token = url.User + " " + hexdigest;
-		int hashLength = token.length() * 4;
-		char hash[hashLength];
-		base64_encode(token.length(), (const unsigned char*)token.c_str(), hashLength, hash);
-		sendString(String(hash) + "\r\n");
+		sendString(base64_encode(token) + "\r\n");
 		state = eSMTP_SendingAuth;
 
 		break;
@@ -469,17 +459,7 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 
 		case eSMTP_RequestingAuthChallenge: {
 			RETURN_ON_ERROR(SMTP_CODE_AUTH_CHALLENGE);
-			uint8_t out[lineLength];
-			int outlen = lineLength;
-
-// TODO: Unify the base64_[decode|encode]() signature in base64.cpp to match the one in axTLS crypt_misc.h
-#ifdef ENABLE_SSL
-			base64_decode(line, lineLength, out, &outlen);
-#else
-			// size_t in_len, const char *in, size_t out_len, unsigned char *out
-			outlen = base64_decode(lineLength, line, outlen, out);
-#endif
-			authChallenge = String((const char*)out, outlen);
+			authChallenge = base64_decode(line, lineLength);
 			state = eSMTP_SendAuthResponse;
 
 			break;
