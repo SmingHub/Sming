@@ -75,7 +75,8 @@ bool MqttClient::setWill(const String& topic, const String& message, int QoS, bo
 bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslOptions)
 {
 	this->url = url;
-	if(!(url.Protocol == "mqtt" || url.Protocol == "mqtts")) {
+	bool useSsl = (url.Protocol == _F("mqtts"));
+	if(!(useSsl || url.Protocol == _F("mqtt") )) {
 		debug_e("Only mqtt and mqtts protocols are allowed");
 		return false;
 	}
@@ -83,7 +84,6 @@ bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslO
 	posHeader = 0;
 	current = NULL;
 
-	bool useSsl = (url.Protocol == "mqtts");
 	return privateConnect(clientName, url.User, url.Password, useSsl, sslOptions);
 }
 
@@ -176,31 +176,31 @@ void MqttClient::debugPrintResponseType(int type, int len)
 	String tp;
 	switch(type) {
 	case MQTT_MSG_CONNACK:
-		tp = "MQTT_MSG_CONNACK";
+		tp = F("MQTT_MSG_CONNACK");
 		break;
 	case MQTT_MSG_PUBACK:
-		tp = "MQTT_MSG_PUBACK";
+		tp = F("MQTT_MSG_PUBACK");
 		break;
 	case MQTT_MSG_PUBREC:
-		tp = "MQTT_MSG_PUBREC";
+		tp = F("MQTT_MSG_PUBREC");
 		break;
 	case MQTT_MSG_PUBREL:
-		tp = "MQTT_MSG_PUBREL";
+		tp = F("MQTT_MSG_PUBREL");
 		break;
 	case MQTT_MSG_PUBCOMP:
-		tp = "MQTT_MSG_PUBCOMP";
+		tp = F("MQTT_MSG_PUBCOMP");
 		break;
 	case MQTT_MSG_SUBACK:
-		tp = "MQTT_MSG_SUBACK";
+		tp = F("MQTT_MSG_SUBACK");
 		break;
 	case MQTT_MSG_PINGRESP:
-		tp = "MQTT_MSG_PINGRESP";
+		tp = F("MQTT_MSG_PINGRESP");
 		break;
 	case MQTT_MSG_PUBLISH:
-		tp = "MQTT_MSG_PUBLISH";
+		tp = F("MQTT_MSG_PUBLISH");
 		break;
 	default:
-		tp = "b" + String(type, 2);
+		tp = 'b' + String(type, 2);
 	}
 	debug_d("> MQTT status: %s (len: %d)", tp.c_str(), len);
 }

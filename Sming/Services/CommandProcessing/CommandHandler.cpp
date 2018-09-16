@@ -7,6 +7,7 @@
 
 #include "CommandHandler.h"
 #include "CommandDelegate.h"
+#include "SmingCore.h" // SMING_VERSION
 
 #ifndef LWIP_HASH_STR
 #define LWIP_HASH_STR ""
@@ -15,6 +16,8 @@
 CommandHandler::CommandHandler()
 {
 	 registeredCommands = new HashMap<String, CommandDelegate>;
+	currentPrompt = F("Sming>");
+	currentWelcomeMessage = F("Welcome to the Sming CommandProcessing\r\n");
 }
 
 CommandHandler::~CommandHandler()
@@ -26,12 +29,13 @@ CommandHandler::~CommandHandler()
 
 void CommandHandler::registerSystemCommands()
 {
-	registerCommand(CommandDelegate("status", "Displays System Information", "system", commandFunctionDelegate(&CommandHandler::procesStatusCommand,this)));
-	registerCommand(CommandDelegate("echo", "Displays command entered", "system", commandFunctionDelegate(&CommandHandler::procesEchoCommand,this)));
-	registerCommand(CommandDelegate("help", "Displays all available commands", "system", commandFunctionDelegate(&CommandHandler::procesHelpCommand,this)));
-	registerCommand(CommandDelegate("debugon", "Set Serial debug on", "system", commandFunctionDelegate(&CommandHandler::procesDebugOnCommand,this)));
-	registerCommand(CommandDelegate("debugoff", "Set Serial debug off", "system", commandFunctionDelegate(&CommandHandler::procesDebugOffCommand,this)));
-	registerCommand(CommandDelegate("command","Use verbose/silent/prompt as command options","system", commandFunctionDelegate(&CommandHandler::processCommandOptions,this)));
+	String system = F("system");
+	registerCommand(CommandDelegate(F("status"), F("Displays System Information"), system, commandFunctionDelegate(&CommandHandler::procesStatusCommand,this)));
+	registerCommand(CommandDelegate(F("echo"), F("Displays command entered"), system, commandFunctionDelegate(&CommandHandler::procesEchoCommand,this)));
+	registerCommand(CommandDelegate(F("help"), F("Displays all available commands"), system, commandFunctionDelegate(&CommandHandler::procesHelpCommand,this)));
+	registerCommand(CommandDelegate(F("debugon"), F("Set Serial debug on"), system, commandFunctionDelegate(&CommandHandler::procesDebugOnCommand,this)));
+	registerCommand(CommandDelegate(F("debugoff"), F("Set Serial debug off"), system, commandFunctionDelegate(&CommandHandler::procesDebugOffCommand,this)));
+	registerCommand(CommandDelegate(F("command"), F("Use verbose/silent/prompt as command options"), system, commandFunctionDelegate(&CommandHandler::processCommandOptions, this)));
 }
 
 CommandDelegate CommandHandler::getCommandDelegate(String commandString)
@@ -121,7 +125,7 @@ void CommandHandler::setCommandWelcomeMessage(String reqWelcomeMessage)
 void CommandHandler::procesHelpCommand(String commandLine, CommandOutput* commandOutput)
 {
 	debugf("HelpCommand entered");
-	commandOutput->printf("Commands available are : \r\n");
+	commandOutput->print(_F("Commands available are : \r\n"));
 	for (int idx = 0;idx < registeredCommands->count();idx++)
 	{
 		commandOutput->printf(registeredCommands->valueAt(idx).commandName.c_str());
@@ -137,36 +141,37 @@ void CommandHandler::procesStatusCommand(String commandLine, CommandOutput* comm
 {
 	debugf("StatusCommand entered");
 	char tempBuf[64];
-	commandOutput->printf("System information : ESP8266 Sming Framework\r\n");
-	commandOutput->printf("Sming Framework Version : 1.2.0\r\n");
-	commandOutput->printf("ESP SDK version : ");
+	commandOutput->print(_F("System information : ESP8266 Sming Framework\r\n"));
+	commandOutput->print(_F("Sming Framework Version : " SMING_VERSION "\r\n"));
+	commandOutput->print(_F("ESP SDK version : "));
 	commandOutput->print(system_get_sdk_version());
-	commandOutput->printf("\r\n");
-	commandOutput->printf("lwIP version : %d.%d.%d(%s)\n", LWIP_VERSION_MAJOR, LWIP_VERSION_MINOR, LWIP_VERSION_REVISION, LWIP_HASH_STR);
-	commandOutput->printf("Time = ");
-	commandOutput->printf(SystemClock.getSystemTimeString().c_str());
-	commandOutput->printf("\r\n");
-	commandOutput->printf("System Start Reason : %d\r\n", system_get_rst_info()->reason);
+	commandOutput->print("\r\n");
+	commandOutput->printf(_F("lwIP version : %d.%d.%d(%s)\n"), LWIP_VERSION_MAJOR, LWIP_VERSION_MINOR,
+						  LWIP_VERSION_REVISION, LWIP_HASH_STR);
+	commandOutput->print(_F("Time = "));
+	commandOutput->print(SystemClock.getSystemTimeString());
+	commandOutput->print("\r\n");
+	commandOutput->printf(_F("System Start Reason : %d\r\n"), system_get_rst_info()->reason);
 }
 
 void CommandHandler::procesEchoCommand(String commandLine, CommandOutput* commandOutput)
 {
 	debugf("HelpCommand entered");
-	commandOutput->printf("You entered : '");
-	commandOutput->printf(commandLine.c_str());
-	commandOutput->printf("'\r\n");
+	commandOutput->print(_F("You entered : '"));
+	commandOutput->print(commandLine);
+	commandOutput->print(_F("'\r\n"));
 }
 
 void CommandHandler::procesDebugOnCommand(String commandLine, CommandOutput* commandOutput)
 {
 	Serial.systemDebugOutput(true);
-	commandOutput->printf("Debug set to : On\r\n");
+	commandOutput->print(_F("Debug set to : On\r\n"));
 }
 
 void CommandHandler::procesDebugOffCommand(String commandLine, CommandOutput* commandOutput)
 {
 	Serial.systemDebugOutput(false);
-	commandOutput->printf("Debug set to : Off\r\n");
+	commandOutput->print(_F("Debug set to : Off\r\n"));
 }
 
 void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* commandOutput)
@@ -179,46 +184,50 @@ void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* c
 	switch (numToken)
 	{
 		case 2 :
-			if (commandToken[1] == "help")
+			if (commandToken[1] == _F("help"))
 			{
 				printUsage = true;
 			}
-			if (commandToken[1] == "verbose")
+			if (commandToken[1] == _F("verbose"))
 			{
 				commandHandler.setVerboseMode(VERBOSE);
-				commandOutput->printf("Verbose mode selected\r\n");
+			commandOutput->print(_F("Verbose mode selected\r\n"));
 				break;
 			}
-			if (commandToken[1] == "silent")
+			if (commandToken[1] == _F("silent"))
 			{
 				commandHandler.setVerboseMode(SILENT);
-				commandOutput->printf("Silent mode selected\r\n");
+				commandOutput->print(_F("Silent mode selected\r\n"));
 				break;
 			}
 			errorCommand = true;
 			break;
 		case 3 :
-			if (commandToken[1] != "prompt")
+			if (commandToken[1] != _F("prompt"))
 			{
 				errorCommand = true;
 				break;
 			}
 			commandHandler.setCommandPrompt(commandToken[2]);
-			commandOutput->printf("Prompt set to : %s\r\n",commandToken[2].c_str());
+		commandOutput->print(_F("Prompt set to : "));
+		commandOutput->print(commandToken[2]);
+		commandOutput->print("\r\n");
 			break;
 		default :
 			errorCommand = true;
 	}
 	if (errorCommand)
 	{
-		commandOutput->printf("Unknown command : %s\r\n",commandLine.c_str());
+		commandOutput->print(_F("Unknown command : "));
+		commandOutput->print(commandLine);
+		commandOutput->print("\r\n");
 	}
 	if (printUsage)
 	{
-		commandOutput->printf("command usage : \r\n\r\n");
-		commandOutput->printf("command verbose : Set verbose mode\r\n");
-		commandOutput->printf("command silent : Set silent mode\r\n");
-		commandOutput->printf("command prompt 'new prompt' : Set prompt to use\r\n");
+		commandOutput->print(_F("command usage : \r\n\r\n"));
+		commandOutput->print(_F("command verbose : Set verbose mode\r\n"));
+		commandOutput->print(_F("command silent : Set silent mode\r\n"));
+		commandOutput->print(_F("command prompt 'new prompt' : Set prompt to use\r\n"));
 	}
 }
 

@@ -151,28 +151,30 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 	case eSMTP_SendAuth: {
 		if(authMethods.count()) {
+			auto plain = F("PLAIN");
+			auto cram_md5 = F("CRAM-MD5");
 			// TODO: Simplify the code in that block...
 			Vector<String> preferredOrder;
 			if(useSsl) {
-				preferredOrder.addElement("PLAIN");
-				preferredOrder.addElement("CRAM-MD5");
+				preferredOrder.addElement(plain);
+				preferredOrder.addElement(cram_md5);
 			} else {
-				preferredOrder.addElement("CRAM-MD5");
-				preferredOrder.addElement("PLAIN");
+				preferredOrder.addElement(cram_md5);
+				preferredOrder.addElement(plain);
 			}
 
 			for(int i = 0; i < preferredOrder.count(); i++) {
 				if(authMethods.contains(preferredOrder[i])) {
-					if(preferredOrder[i] == "PLAIN") {
+					if(preferredOrder[i] == plain) {
 						// base64('\0' + username + '\0' + password)
 						String token = '\0' + url.User + '\0' + url.Password;
 						String hash = base64_encode(token);
-						sendString("AUTH PLAIN " + hash + "\r\n");
+						sendString(F("AUTH PLAIN ") + hash + "\r\n");
 						state = eSMTP_SendingAuth;
 						break;
-					} else if(preferredOrder[i] == "CRAM-MD5") {
+					} else if(preferredOrder[i] == cram_md5) {
 						// otherwise we can try the slow cram-md5 authentication...
-						sendString("AUTH CRAM-MD5\r\n");
+						sendString(F("AUTH CRAM-MD5\r\n"));
 						state = eSMTP_RequestingAuthChallenge;
 						break;
 					}
@@ -223,10 +225,10 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eSMTP_SendMail: {
-		sendString("MAIL FROM:" + outgoingMail->from + "\r\n");
+		sendString(F("MAIL FROM:") + outgoingMail->from + "\r\n");
 		if(options & SMTP_OPT_PIPELINE) {
-			sendString("RCPT TO:" + outgoingMail->to + "\r\n");
-			sendString("DATA\r\n");
+			sendString(F("RCPT TO:") + outgoingMail->to + "\r\n");
+			sendString(F("DATA\r\n"));
 		}
 
 		state = eSMTP_SendingMail;
@@ -234,7 +236,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eSMTP_SendRcpt: {
-		sendString("RCPT TO:" + outgoingMail->to + "\r\n");
+		sendString(F("RCPT TO:") + outgoingMail->to + "\r\n");
 		state = eSMTP_SendingRcpt;
 		break;
 	}
@@ -272,7 +274,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		delete stream;
 		stream = nullptr;
 
-		sendString("\r\n.\r\n");
+		sendString(F("\r\n.\r\n"));
 		break;
 	}
 
@@ -295,7 +297,7 @@ HttpPartResult SmtpClient::multipartProducer()
 
 		if(!result.headers->contains("Content-Transfer-Encoding")) {
 			result.stream = new Base64OutputStream(result.stream);
-			(*result.headers)["Content-Transfer-Encoding"] = "base64";
+			(*result.headers)["Content-Transfer-Encoding"] = _F("base64");
 		}
 
 		outgoingMail->attachments.remove(0);
@@ -309,7 +311,7 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 	mail->getHeaders();
 
 	if(!mail->headers.contains("Content-Transfer-Encoding")) {
-		mail->headers["Content-Transfer-Encoding"] = "quoted-printable";
+		mail->headers["Content-Transfer-Encoding"] = _F("quoted-printable");
 		mail->stream = new QuotedPrintableOutputStream(mail->stream);
 	}
 
@@ -324,14 +326,14 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 		mail->attachments.insertElementAt(text, 0);
 
 		mail->headers.remove("Content-Transfer-Encoding");
-		mail->headers["Content-Type"] = String("multipart/mixed; boundary=") + mStream->getBoundary();
+		mail->headers["Content-Type"] = F("multipart/mixed; boundary=") + mStream->getBoundary();
 		mail->stream = mStream;
 	}
 
 	for(int i = 0; i < mail->headers.count(); i++) {
 		String key = mail->headers.keyAt(i);
 		String value = mail->headers.valueAt(i);
-		sendString(key + ": " + value + "\r\n");
+		sendString(key + ':' + ' ' + value + "\r\n");
 	}
 	sendString("\r\n");
 }
@@ -425,13 +427,13 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 		case eSMTP_Hello: {
 			RETURN_ON_ERROR(SMTP_CODE_REQUEST_OK);
 
-			if(strncmp(line, "PIPELINING", lineLength) == 0) {
+			if(strncmp(line, _F("PIPELINING"), lineLength) == 0) {
 				// PIPELINING (see: https://tools.ietf.org/html/rfc2920)
 				options |= SMTP_OPT_PIPELINE;
-			} else if(strncmp(line, "STARTTLS", lineLength) == 0) {
+			} else if(strncmp(line, _F("STARTTLS"), lineLength) == 0) {
 				// STARTTLS (see: https://www.ietf.org/rfc/rfc3207.txt)
 				options |= SMTP_OPT_STARTTLS;
-			} else if(strncmp(line, "AUTH ", 5) == 0) {
+			} else if(strncmp(line, _F("AUTH "), 5) == 0) {
 				// Process authentication methods
 				// Ex: 250-AUTH CRAM-MD5 PLAIN LOGIN
 				// See: https://tools.ietf.org/html/rfc4954
