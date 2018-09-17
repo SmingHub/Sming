@@ -59,7 +59,7 @@ void DebugClass::printPrefix()
 {
 	if(useDebugPrefix) {
 		uint32_t curMillis = millis();
-		printf(_F("Dbg %4d.%03d : "), curMillis / 1000, curMillis % 1000);
+		printf(_F("Dbg %4u.%03u : "), curMillis / 1000, curMillis % 1000);
 	}
 }
 

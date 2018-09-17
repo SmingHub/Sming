@@ -5,6 +5,7 @@
 
 void *memcpy_P(void *dest, const void *src_P, size_t length)
 {
+	// Yes, it seems dest must also be aligned
 	if (IS_ALIGNED(dest) && IS_ALIGNED(src_P) && IS_ALIGNED(length))
 		return memcpy_aligned(dest, src_P, length);
 
@@ -85,6 +86,22 @@ char *strstr_P(char *haystack, const char *needle_P)
 	return 0;
 }
 
+
+int strcasecmp_P(const char* str1, const char* str2_P)
+{
+	for (; tolower(*str1) == tolower(pgm_read_byte(str2_P)); str1++, str2_P++)
+		if (*str1 == '\0')
+			return 0;
+	return tolower(*(unsigned char*)str1) < tolower(pgm_read_byte(str2_P)) ? -1 : 1;
+}
+
+char* strcat_P(char* dest, const char* src_P)
+{
+	dest += strlen(dest);
+	strcpy_P(dest, src_P);
+	return dest;
+}
+
 /*
  * We implement aligned versions of some system functions to be used strictly on
  * data that is word (4-byte) aligned on all parameters.
@@ -107,6 +124,31 @@ void* memcpy_aligned(void* dst, const void* src, unsigned len)
 	while (n--)
 		*pd++ = *ps++;
 	return dst;
+}
+
+/** @brief compare memory aligned to word boundaries
+ *  @param p1
+ *  @param p2
+ *  @param len
+ *  @retval int 0 if all bytes match, 1 if they don't
+ *  @note p1, p2 and len must all be aligned to word (4-byte) boundaries
+ *
+ *  Note that unlike the standard memcmp routine we do not perform
+ *  a relative comparison (i.e. greater/less than).
+ */
+int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len)
+{
+	assert(IS_ALIGNED(ptr1) && IS_ALIGNED(ptr2) && IS_ALIGNED(len));
+
+	auto p1 = (const uint32_t*)ptr1;
+	auto p2 = (const uint32_t*)ptr2;
+	auto n = len / 4;
+	while (n--)
+		if (*p1++ != *p2++)
+			return 1; // Match fail
+
+	// Match
+	return 0;
 }
 
 #endif

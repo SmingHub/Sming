@@ -147,11 +147,13 @@ extern "C"
 #define pgm_read_float(addr) (*(const float *)(addr))
 
 #define memcpy_aligned(dst, src, len) memcpy(dst, src, len)
+#define memcmp_aligned(ptr1, ptr2, len) memcmp(ptr1, ptr2, len)
 #define memcpy_P(dest, src, num) memcpy((dest), (src), (num))
 #define strlen_P(a) strlen((a))
 #define strcpy_P(dest, src) strcpy((dest), (src))
 #define strncpy_P(dest, src, size) strncpy((dest), (src), (size))
 #define strcmp_P(a, b) strcmp((a), (b))
+#define strcasecmp_P(a, b) strcasecmp((a), (b))
 #define strcat_P(dest, src) strcat((dest), (src))
 #define strstr_P(a, b) strstr((a), (b))
 #define sprintf_P(s, f, ...) m_sprintf((s), (f), ##__VA_ARGS__)
