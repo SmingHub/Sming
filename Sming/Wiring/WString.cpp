@@ -452,7 +452,8 @@ bool String::equals(const char *cstr) const
 bool String::equals(const FlashString& fsb) const
 {
 	if (len != fsb.length) return false;
-	return equals(String(fsb));
+	LOAD_FSTR(s, fsb);
+	return memcmp(s, buffer, len) == 0;
 }
 
 bool String::operator<(const String &rhs) const

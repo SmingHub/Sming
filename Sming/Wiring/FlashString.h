@@ -145,22 +145,51 @@ struct FlashString {
 	uint32_t length; // Only needs to be uint16_t but ensures data is aligned
 	char data[];
 
-	/** @brief Efficient comparison with C-string
+	/** @brief Check for equality with a C-string
 	 *  @param str
+	 *  @retval bool true if strings are identical
 	 *  @note loads string into a stack buffer for the comparison, no heap required
 	 */
-	bool operator==(const char* str) const
+	bool isEqual(const char* str) const
 	{
-		return str && strcmp(_FS(*this), str) == 0;
+		if (str == data)
+			return true;
+		if (!str)
+			return false;
+		return strcmp(_FS(*this), str) == 0;
 	}
 
-	/** @brief Efficient comparison with String object
+	/** @brief Check for equality with another FlashString
 	 *  @param str
-	 *  @note loads string into a stack buffer for the comparison, no heap required
+	 *  @retval bool true if strings are identical
 	 */
-	bool operator==(const String& str) const
+	bool isEqual(const FlashString& str) const
+	{
+		if (length != str.length)
+			return false;
+		if (data == str.data)
+			return true;
+		return memcmp_aligned(data, str.data, length) == 0;
+	}
+
+	bool isEqual(const String& str) const
 	{
 		return str.equals(*this);
+	}
+
+	bool operator==(const char* str) const
+	{
+		return isEqual(str);
+	}
+
+	bool operator==(const FlashString& str) const
+	{
+		return isEqual(str);
+	}
+
+	bool operator==(const String& str) const
+	{
+		return isEqual(str);
 	}
 };
 
