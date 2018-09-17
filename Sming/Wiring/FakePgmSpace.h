@@ -204,6 +204,8 @@ extern "C"
  *
  * 	char _name[] = "text";
  */
-#define PSTR_ARRAY(_name, _str) LOAD_PSTR(_name, PSTR(_str))
+#define PSTR_ARRAY(_name, _str)                                                                                        \
+	static DEFINE_PSTR(_##_name, _str);                                                                                       \
+	LOAD_PSTR(_name, _##_name)
 
 #endif /* __FAKE_PGMSPACE_H_ */

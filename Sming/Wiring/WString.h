@@ -93,7 +93,7 @@ class String
     STRING_IRAM_ATTR String(const char *cstr = nullptr);
     STRING_IRAM_ATTR String(const char *cstr, unsigned int length);
     STRING_IRAM_ATTR String(const String &str);
-    String(flash_string_t pstr, int length);
+    explicit String(flash_string_t pstr, int length = -1);
     String(const FlashString& fstr);
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__

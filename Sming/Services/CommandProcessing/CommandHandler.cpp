@@ -15,7 +15,7 @@
 
 CommandHandler::CommandHandler()
 {
-	 registeredCommands = new HashMap<String, CommandDelegate>;
+	registeredCommands = new HashMap<String, CommandDelegate>;
 	currentPrompt = F("Sming>");
 	currentWelcomeMessage = F("Welcome to the Sming CommandProcessing\r\n");
 }
@@ -191,7 +191,7 @@ void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* c
 			if (commandToken[1] == _F("verbose"))
 			{
 				commandHandler.setVerboseMode(VERBOSE);
-			commandOutput->print(_F("Verbose mode selected\r\n"));
+				commandOutput->print(_F("Verbose mode selected\r\n"));
 				break;
 			}
 			if (commandToken[1] == _F("silent"))
@@ -209,9 +209,9 @@ void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* c
 				break;
 			}
 			commandHandler.setCommandPrompt(commandToken[2]);
-		commandOutput->print(_F("Prompt set to : "));
-		commandOutput->print(commandToken[2]);
-		commandOutput->print("\r\n");
+			commandOutput->print(_F("Prompt set to : "));
+			commandOutput->print(commandToken[2]);
+			commandOutput->print("\r\n");
 			break;
 		default :
 			errorCommand = true;

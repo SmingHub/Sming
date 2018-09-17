@@ -151,28 +151,28 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 	case eSMTP_SendAuth: {
 		if(authMethods.count()) {
-			auto plain = F("PLAIN");
-			auto cram_md5 = F("CRAM-MD5");
+			auto methodPlain = F("PLAIN");
+			auto methodCramMd5 = F("CRAM-MD5");
 			// TODO: Simplify the code in that block...
 			Vector<String> preferredOrder;
 			if(useSsl) {
-				preferredOrder.addElement(plain);
-				preferredOrder.addElement(cram_md5);
+				preferredOrder.addElement(methodPlain);
+				preferredOrder.addElement(methodCramMd5);
 			} else {
-				preferredOrder.addElement(cram_md5);
-				preferredOrder.addElement(plain);
+				preferredOrder.addElement(methodCramMd5);
+				preferredOrder.addElement(methodPlain);
 			}
 
 			for(int i = 0; i < preferredOrder.count(); i++) {
 				if(authMethods.contains(preferredOrder[i])) {
-					if(preferredOrder[i] == plain) {
+					if(preferredOrder[i] == methodPlain) {
 						// base64('\0' + username + '\0' + password)
 						String token = '\0' + url.User + '\0' + url.Password;
 						String hash = base64_encode(token);
 						sendString(F("AUTH PLAIN ") + hash + "\r\n");
 						state = eSMTP_SendingAuth;
 						break;
-					} else if(preferredOrder[i] == cram_md5) {
+					} else if(preferredOrder[i] == methodCramMd5) {
 						// otherwise we can try the slow cram-md5 authentication...
 						sendString(F("AUTH CRAM-MD5\r\n"));
 						state = eSMTP_RequestingAuthChallenge;

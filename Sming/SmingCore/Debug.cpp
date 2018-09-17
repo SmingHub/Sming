@@ -18,8 +18,7 @@ DebugClass::~DebugClass()
 void DebugClass::initCommand()
 {
 #if ENABLE_CMD_EXECUTOR
-	auto debug = F("Debug");
-	commandHandler.registerCommand(CommandDelegate(debug, F("New debug in development"), debug,
+	commandHandler.registerCommand(CommandDelegate(F("debug"), F("New debug in development"), F("Debug"),
 												   commandFunctionDelegate(&DebugClass::processDebugCommands, this)));
 #endif
 }
