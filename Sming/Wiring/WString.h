@@ -230,7 +230,7 @@ class String
     int STRING_IRAM_ATTR compareTo(const String &s) const;
     bool STRING_IRAM_ATTR equals(const String &s) const;
     bool STRING_IRAM_ATTR equals(const char *cstr) const;
-    bool equals(const FlashString& fsb) const;
+    bool equals(const FlashString& fstr) const;
 
     bool STRING_IRAM_ATTR operator == (const String &rhs) const
     {
@@ -240,9 +240,9 @@ class String
     {
       return equals(cstr);
     }
-    bool STRING_IRAM_ATTR operator==(const FlashString& fsb) const
+    bool STRING_IRAM_ATTR operator==(const FlashString& fstr) const
     {
-      return equals(fsb);
+      return equals(fstr);
     }
     bool STRING_IRAM_ATTR operator != (const String &rhs) const
     {

@@ -449,11 +449,11 @@ bool String::equals(const char *cstr) const
   return strcmp(buffer, cstr) == 0;
 }
 
-bool String::equals(const FlashString& fsb) const
+bool String::equals(const FlashString& fstr) const
 {
-	if (len != fsb.length()) return false;
-	LOAD_FSTR(s, fsb);
-	return memcmp(s, buffer, len) == 0;
+	if (len != fstr.length()) return false;
+	LOAD_FSTR(buf, fstr);
+	return memcmp(buf, buffer, len) == 0;
 }
 
 bool String::operator<(const String &rhs) const
