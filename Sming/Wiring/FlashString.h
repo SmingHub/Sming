@@ -34,12 +34,13 @@
  *
  *	DEFINE_PSTR(_name, _str) - declares a PSTR stored in flash. The variable (_name) points to flash
  *	memory so must be accessed using the appropriate xxx_P function.
- *	LOAD_PSTR(_name, _flast_str) - loads string into buffer on stack
- *		DEFINE_PSTR(test, "This is a test string\n");
+ *
+ *	LOAD_PSTR(_name, _flash_str) - loads pre-defined PSTR into buffer on stack
+ *		static DEFINE_PSTR(test, "This is a test string\n"); // Local scope requires static allocation
  *		m_printf(LOAD_PSTR(test));
  *
- *	PSTR_ARRAY(_name, _str) - defines a flash string and loads it directly into a stack bufffer.
- *	This might be useful where a string is used several times within a routine.
+ *	PSTR_ARRAY(_name, _str) - creates and loads string into named stack buffer
+ *	Ensures loaded string stays in scope, unlike _F()
  *		String testfunc() {
  *			PSTR_ARRAY(test, "This is the test string");
  *			m_printf(test);
@@ -61,6 +62,8 @@
  *		Strongly typed, so support can be added to other modules for implicit conversions, etc. (e.g. ArduinoJson)
  *		Works with updated String class to provide the simplest string/data management.
  *
+ *		Macros are consistent with the PSTR types, but named 'FSTR'.
+ *
  *  Notes on usage
  *
  *  	Best practice is usually to define constant data at the top of a module. Non-trivial strings are no different.
@@ -73,6 +76,15 @@
 
 #include "WString.h"
 
+/*
+ * Define and use a FlashString inline
+ */
+#define FSTR(_str)                                                                                                     \
+	(__extension__({                                                                                                   \
+		static DEFINE_FSTR(__c, _str);                                                                                 \
+		__c;                                                                                                           \
+	}))
+
 /** @Brief Define a FlashString
  *  @param _name variable to identify the string
  *  @param _str content of the string
@@ -83,10 +95,10 @@
  */
 #define DEFINE_FSTR(_name, _str)                                                                                       \
 	constexpr struct {                                                                                                 \
-		FlashString fsb;                                                                                               \
+		FlashString fstr;                                                                                              \
 		char data[ALIGNUP(sizeof(_str))];                                                                              \
 	} _##_name PROGMEM = {{sizeof(_str) - 1}, _str};                                                                   \
-	const FlashString& _name = _##_name.fsb;
+	const FlashString& _name = _##_name.fstr;
 
 // Declare a global reference to a FlashString instance
 #define DECLARE_FSTR(_name) extern const FlashString& _name;
@@ -95,16 +107,17 @@
  *  @param _name variable to identify the data
  *  @param _arr array data
  *  @note Example: DEFINE_FSARR(test, {1, 2, 3, 4})
+ *  Resulting data is not nul-terminated.
  */
 #define DEFINE_FSARR(_name, _arr)                                                                                      \
 	constexpr struct {                                                                                                 \
-		FlashString fsb;                                                                                               \
+		FlashString fstr;                                                                                              \
 		char data[ALIGNUP(sizeof(_arr))];                                                                              \
 	} _##_name PROGMEM = {{sizeof(_arr)}, _arr};                                                                       \
-	const FlashString& _name = _##_name.fsb;
+	const FlashString& _name = _##_name.fstr;
 
 // Get a pointer to the actual FlashString, used when creating tables
-#define FSTR_PTR(_struct) &_##_struct.fsb
+#define FSTR_PTR(_struct) &_##_struct.fstr
 
 /*
  * Load a FlashString object into a named local (stack) buffer
@@ -115,10 +128,23 @@
  * 	...
  * 	LOAD_FSTR(local, globalTest)
  * 	printf("%s, %u characters, buffer is %u bytes\n", local, globalTest.length, sizeof(local));
+ *
+ * 	@note a nul terminator is added in case string was constructed using DEFINE_FSARR()
  */
-#define LOAD_FSTR(_name, _fsb)                                                                                         \
-	char _name[ALIGNUP((_fsb).length + 1)];                                                                            \
-	memcpy_aligned(_name, (_fsb).data, sizeof(_name));
+#define LOAD_FSTR(_name, _fstr)                                                                                        \
+	char _name[(_fstr).size()] __attribute__((aligned(4)));                                                            \
+	memcpy_aligned(_name, (_fstr).data(), sizeof(_name));                                                              \
+	_name[(_fstr).length()] = '\0';
+
+/*
+ * Define a flash string and load it into a named array buffer on the stack.
+ * This allows sizeof(_name) to work as if the string were defined thus:
+ *
+ * 	char _name[] = "text";
+ */
+#define FSTR_ARRAY(_name, _str)                                                                                        \
+	static DEFINE_FSTR(_##_name, _str);                                                                                       \
+	LOAD_FSTR(_name, _##_name)
 
 /*
  * Load a FlashString object into a local (stack) buffer for immediate (inline) use.
@@ -132,8 +158,8 @@
  */
 #define _FS(_fsb)                                                                                                      \
 	(__extension__({                                                                                                   \
-		char __buf[ALIGNUP((_fsb).length + 1)];                                                                        \
-		memcpy_aligned(__buf, (_fsb).data, sizeof(__buf));                                                             \
+		char __buf[(_fsb).size()] __attribute__((aligned(4)));                                                         \
+		memcpy_aligned(__buf, (_fsb).data(), sizeof(__buf));                                                           \
 		__buf;                                                                                                         \
 	}))
 
@@ -142,8 +168,23 @@
  *  content into RAM. Data is stored word-aligned so it can be read as efficiently as possible.
  */
 struct FlashString {
-	uint32_t length; // Only needs to be uint16_t but ensures data is aligned
-	char data[];
+	uint32_t _length; // Only needs to be uint16_t but ensures data is aligned
+	char _data[];
+
+	uint32_t length() const
+	{
+		return _length;
+	}
+
+	uint32_t size() const
+	{
+		return ALIGNUP(_length + 1);
+	}
+
+	flash_string_t data() const
+	{
+		return FPSTR(_data);
+	}
 
 	/** @brief Check for equality with a C-string
 	 *  @param str
@@ -152,9 +193,9 @@ struct FlashString {
 	 */
 	bool isEqual(const char* str) const
 	{
-		if (str == data)
+		if(str == _data)
 			return true;
-		if (!str)
+		if(!str)
 			return false;
 		return strcmp(_FS(*this), str) == 0;
 	}
@@ -165,11 +206,11 @@ struct FlashString {
 	 */
 	bool isEqual(const FlashString& str) const
 	{
-		if (length != str.length)
+		if(_length != str._length)
 			return false;
-		if (data == str.data)
+		if(_data == str._data)
 			return true;
-		return memcmp_aligned(data, str.data, length) == 0;
+		return memcmp_aligned(_data, str._data, ALIGNUP(_length)) == 0;
 	}
 
 	bool isEqual(const String& str) const

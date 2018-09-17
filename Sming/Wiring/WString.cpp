@@ -47,7 +47,7 @@ String::String(flash_string_t pstr, int length)
 
 String::String(const FlashString& fstr)
 {
-  setString(FPSTR(fstr.data), fstr.length);
+  setString(fstr.data(), fstr.length());
 }
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
@@ -451,7 +451,7 @@ bool String::equals(const char *cstr) const
 
 bool String::equals(const FlashString& fsb) const
 {
-	if (len != fsb.length) return false;
+	if (len != fsb.length()) return false;
 	LOAD_FSTR(s, fsb);
 	return memcmp(s, buffer, len) == 0;
 }
