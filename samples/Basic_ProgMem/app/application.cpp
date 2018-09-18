@@ -11,6 +11,8 @@
 #include <SmingCore/SmingCore.h>
 #include <stdio.h>
 
+#include "TestProgmem.h"
+
 const uint8_t demoRam[] = {1, 2, 3, 4, 5};
 const PROGMEM uint8_t demoPgm[] = {1, 2, 3, 4, 5};
 
@@ -130,6 +132,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 or 9600 by default
 
 	testPgm();
+	testProgmem(Serial);
 
 	Serial.println("> ESP8266EX Memory Layout:");
 	Serial.println("> 0x3FFE8000 ~ 0x3FFFBFFF - User data RAM, 80kb. Available to applications.");

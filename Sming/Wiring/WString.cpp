@@ -446,7 +446,10 @@ bool String::equals(const char *cstr) const
 {
   if (len == 0) return (cstr == nullptr || *cstr == '\0');
   if (cstr == nullptr) return buffer[0] == '\0';
-  return strcmp(buffer, cstr) == 0;
+  // Don't use strcmp as data may contain nuls
+  size_t cstrlen = strlen(cstr);
+  if (len != cstrlen) return false;
+  return memcmp(buffer, cstr, len) == 0;
 }
 
 bool String::equals(const FlashString& fstr) const
