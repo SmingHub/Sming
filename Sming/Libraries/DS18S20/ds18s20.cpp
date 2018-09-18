@@ -9,7 +9,6 @@
 #include "OneWire.h"
 #include "ds18s20.h"
 
-
 #define DEBUG_DS18S20
 
 
@@ -23,11 +22,12 @@
 
 
 #define WORK_PIN 2 			// default DS1820 on GPIO2, can be changed by Init
-OneWire ds(WORK_PIN);
+//OneWire ds(WORK_PIN);
 
 
 DS18S20::DS18S20()
 {
+	ds = new OneWire(WORK_PIN);
 }
 
 DS18S20::~DS18S20()
@@ -36,7 +36,7 @@ DS18S20::~DS18S20()
 
 void DS18S20::Init(uint8_t pinOneWire)
 {
-   ds.begin(pinOneWire);
+   ds->begin(pinOneWire);
    InProgress=false;
 }
 
@@ -47,8 +47,8 @@ void DS18S20::StartMeasure()
 
 		debugx("  DBG: DS1820 reading task start, try to read up to %d sensors",MAX_SENSORS);
 		InProgress=true;
-		ds.begin();
-		ds.reset_search();
+		ds->begin();
+		ds->reset_search();
 		DelaysTimer.initializeMs(150, TimerDelegate(&DS18S20::DoSearch, this)).start(false);
 	}
 
@@ -64,7 +64,7 @@ uint8_t DS18S20::FindAlladdresses()
 
 	while (counter++ < MAX_SENSORS)
 	{
-		if (!ds.search(addr))
+		if (!ds->search(addr))
 		{
 			debugx("  DBG: No more address found");
             break;
@@ -132,7 +132,7 @@ void DS18S20::StartReadNext()
 {
    if (numberOf > numberOfread )
    {
-	ds.reset();
+	ds->reset();
 
 	  uint64_t tmp=addresses[numberOfread];
 	  for (uint8_t a=0;a<8;a++)
@@ -141,8 +141,8 @@ void DS18S20::StartReadNext()
 	    tmp=tmp>>8;
 	  }
 
-	  ds.select(addr);
-	  ds.write(STARTCONVO, 1);        // start conversion, with parasite power on at the end
+	  ds->select(addr);
+	  ds->write(STARTCONVO, 1);        // start conversion, with parasite power on at the end
 
 	  DelaysTimer.initializeMs(900, TimerDelegate(&DS18S20::DoMeasure, this)).start(false);
    }
@@ -157,21 +157,20 @@ void DS18S20::StartReadNext()
    }
 }
 
-
 void DS18S20::DoMeasure()
 {
 
 	uint8_t present,i;
-	present = ds.reset();
-	ds.select(addr);
-	ds.write(READSCRATCH);         // Read Scratchpad
+	present = ds->reset();
+	ds->select(addr);
+	ds->write(READSCRATCH);         // Read Scratchpad
 
 	debugx("  DBG: T%d",numberOfread+1);
 
 	for ( i = 0; i < 9; i++)
 	{
 		// we need 9 bytes
-		data[i] = ds.read();
+		data[i] = ds->read();
 	}
 	debugx("  DBG: Data = %x %x %x %x %x %x %x %x %x %x  CRC=%x",present,data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],OneWire::crc8(data, 8));
 

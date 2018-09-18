@@ -127,6 +127,8 @@ private:
 
 
 	float celsius[MAX_SENSORS], fahrenheit[MAX_SENSORS];
+public:
+	OneWire* ds;
 };
 
 /** @} */
