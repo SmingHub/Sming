@@ -9,45 +9,11 @@
 
 #include "HardwareTimer.h"
 
-/*
- * eagle_soc.h defines TIMER_CLK_FREQ using a divisor of 256, but Sming calls system_timer_reinit() in user_main()
- * which changes it to 4. Fortunately, we can find out which value is in use by querying the timer2_ms_flag.
- *
- * (Found this in LWIP core)
- */
-extern bool timer2_ms_flag;
-
-
-// Get current timer frequency, which is variable
-static __forceinline uint32_t getTimerClockFreq()
-{
-	return timer2_ms_flag ? (APB_CLK_FREQ / 256) : (APB_CLK_FREQ / 16);
-}
-
-
-uint32_t IRAM_ATTR usToTimerTicks(uint32_t us)
-{
-	if (us == 0)
-		return 0;
-
-	// Get current timer frequency, which is variable
-	uint32_t freq = getTimerClockFreq();
-
-	// Larger values may overflow
-	if (us > 0x35A)
-		return (us / 4) * (freq / 250000) + (us % 4) * (freq / 1000000);
-
-	return us * freq / 1000000;
-}
-
-
-uint32_t IRAM_ATTR timerTicksToUs(uint32_t ticks)
-{
-	// Be careful to avoid overflows
-	return 10000 * ticks / (getTimerClockFreq() / 100);
-}
-
-
+#define US_TO_RTC_TIMER_TICKS(t)                                                                                       \
+	((t) ? (((t) > 0x35A)                                                                                              \
+				? (((t) >> 2) * ((APB_CLK_FREQ >> 4) / 250000) + ((t)&0x3) * ((APB_CLK_FREQ >> 4) / 1000000))          \
+				: (((t) * (APB_CLK_FREQ >> 4)) / 1000000))                                                             \
+		 : 0)
 
 #define FRC1_ENABLE_TIMER BIT7
 #define FRC1_AUTO_LOAD BIT6
@@ -119,7 +85,7 @@ bool Hardware_Timer::start(bool repeating /* = true*/)
 	ETS_FRC1_INTR_ENABLE();
 	started = true;
 
-	RTC_REG_WRITE(FRC1_LOAD_ADDRESS, usToTimerTicks(interval));
+	RTC_REG_WRITE(FRC1_LOAD_ADDRESS, US_TO_RTC_TIMER_TICKS(interval));
 	return started;
 }
 

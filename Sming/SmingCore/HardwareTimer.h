@@ -21,17 +21,6 @@
 #define MAX_HW_TIMER_INTERVAL_US 0x7fffff ///< Maximum timer interval in microseconds
 #define MIN_HW_TIMER_INTERVAL_US 0x32	 ///< Minimum hardware interval in microseconds
 
-/** @brief Convert microseconds into timer ticks.
- *  @note Replaces the previous US_TO_RTC_TIMER_TICKS macro to guarantee we use the correct timer prescale value.
- */
-uint32_t IRAM_ATTR usToTimerTicks(uint32_t us);
-
-/** @brief Convert timer ticks into microseconds
- *  @note accounts for current timer prescale setting
- */
-uint32_t IRAM_ATTR timerTicksToUs(uint32_t ticks);
-
-
 /** @brief  Delegate callback type for timer trigger
  */
 typedef Delegate<void()> TimerDelegate;
