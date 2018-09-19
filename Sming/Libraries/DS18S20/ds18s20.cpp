@@ -21,11 +21,11 @@
 
 
 
-#define DS1820_WORK_PIN 2 			// default DS1820 on GPIO2, can be changed by Init
 
 
 
-DS18S20::DS18S20(uint8_t workPin = DS1820_WORK_PIN)
+
+DS18S20::DS18S20(uint8_t workPin /* = DS1820_WORK_PIN */)
 {
 	ds = new OneWire(workPin);
 }
