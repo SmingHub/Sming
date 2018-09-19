@@ -13,5 +13,4 @@
 DECLARE_FSTR(externalFSTR1)
 DECLARE_PSTR(externalPSTR1)
 
-
 #endif /* INCLUDE_FLASHDATA_H_ */

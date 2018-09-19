@@ -196,7 +196,7 @@ extern "C"
  *  @param _str the string data
  *  @note may also be used for byte arrays { 1, 2, 3 } etc.
  */
-#define DEFINE_PSTR(_name, _str) constexpr char _name[] PROGMEM = _str;
+#define DEFINE_PSTR(_name, _str) const char _name[] PROGMEM = _str;
 
 // Declare a global reference to a PSTR instance
 #define DECLARE_PSTR(_name) extern const char _name[] PROGMEM;
