@@ -41,7 +41,7 @@ class DS18S20
 public:
     /** @brief  Instantiate a DS18S20 object
     */
-    DS18S20();
+    DS18S20(uint8_t);
 
     /** @brief  Initiate communication on 1-wire bus
     *   @param  GPIO pin acting as 1-wire bus
@@ -127,8 +127,8 @@ private:
 
 
 	float celsius[MAX_SENSORS], fahrenheit[MAX_SENSORS];
-public:
-	OneWire* ds;
+
+	OneWire* ds = nullptr;
 };
 
 /** @} */
