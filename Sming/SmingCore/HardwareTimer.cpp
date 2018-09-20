@@ -17,37 +17,32 @@
  */
 extern bool timer2_ms_flag;
 
-
 // Get current timer frequency, which is variable
 static __forceinline uint32_t getTimerClockFreq()
 {
 	return timer2_ms_flag ? (APB_CLK_FREQ / 256) : (APB_CLK_FREQ / 16);
 }
 
-
 uint32_t IRAM_ATTR usToTimerTicks(uint32_t us)
 {
-	if (us == 0)
+	if(us == 0)
 		return 0;
 
 	// Get current timer frequency, which is variable
 	uint32_t freq = getTimerClockFreq();
 
 	// Larger values may overflow
-	if (us > 0x35A)
+	if(us > 0x35A)
 		return (us / 4) * (freq / 250000) + (us % 4) * (freq / 1000000);
 
 	return us * freq / 1000000;
 }
-
 
 uint32_t IRAM_ATTR timerTicksToUs(uint32_t ticks)
 {
 	// Be careful to avoid overflows
 	return 10000 * ticks / (getTimerClockFreq() / 100);
 }
-
-
 
 #define FRC1_ENABLE_TIMER BIT7
 #define FRC1_AUTO_LOAD BIT6

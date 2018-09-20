@@ -132,7 +132,6 @@ void testFSTR(Print& out)
 	out.println("< testFSTR() end\n");
 }
 
-
 /*
  * Run a load of iterations for PSTR/FSTR options to illustrate relative performance.
  */
@@ -147,18 +146,18 @@ void testSpeed(Print& out)
 
 	_FPUTS("Baseline test, read string in RAM...");
 	timer.start();
-	for (unsigned i = 0; i < iterations; ++i)
+	for(unsigned i = 0; i < iterations; ++i)
 		tmp += sumBuffer(demoText, sizeof(demoText));
 	baseline = timer.elapsed();
 	out.printf("Elapsed: %u\n", baseline);
 
-#define END() \
-	elapsed = timer.elapsed(); \
+#define END()                                                                                                          \
+	elapsed = timer.elapsed();                                                                                         \
 	out.printf("Elapsed: %u (baseline + %u)\n", elapsed, elapsed - baseline);
 
 	_FPUTS("Load PSTR into stack buffer...");
 	timer.start();
-	for (unsigned i = 0; i < iterations; ++i) {
+	for(unsigned i = 0; i < iterations; ++i) {
 		LOAD_PSTR(buf, demoPSTR1);
 		tmp += sumBuffer(buf, sizeof(buf));
 	}
@@ -166,17 +165,15 @@ void testSpeed(Print& out)
 
 	_FPUTS("Load PSTR into String...");
 	timer.start();
-	for (unsigned i = 0; i < iterations; ++i) {
+	for(unsigned i = 0; i < iterations; ++i) {
 		String s(demoFSTR1.data());
 		tmp += sumBuffer(s.c_str(), s.length() + 1);
 	}
 	END()
 
-
-
 	_FPUTS("Load FlashString into stack buffer...");
 	timer.start();
-	for (unsigned i = 0; i < iterations; ++i) {
+	for(unsigned i = 0; i < iterations; ++i) {
 		LOAD_FSTR(buf, demoFSTR1);
 		tmp += sumBuffer(buf, sizeof(buf));
 	}
@@ -184,7 +181,7 @@ void testSpeed(Print& out)
 
 	_FPUTS("Load FlashString into String...");
 	timer.start();
-	for (unsigned i = 0; i < iterations; ++i) {
+	for(unsigned i = 0; i < iterations; ++i) {
 		String s(demoFSTR1);
 		tmp += sumBuffer(s.c_str(), s.length() + 1);
 	}
