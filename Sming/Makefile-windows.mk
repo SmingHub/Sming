@@ -14,3 +14,4 @@ KILL_TERM    ?= taskkill.exe -f -im Terminal.exe || exit 0
 GET_FILESIZE ?= stat --printf="%s"
 TERMINAL     ?= $(SDK_TOOLS)/Terminal.exe $(COM_PORT) $(COM_SPEED_SERIAL) $(COM_OPTS)
 MEMANALYZER  ?= python $(SMING_HOME)/../tools/memanalyzer.py $(OBJDUMP).exe
+CLANG_FORMAT ?= ""C:\\Program\ Files\\LLVM\\bin\\clang-format.exe""
