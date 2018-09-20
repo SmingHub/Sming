@@ -36,8 +36,8 @@
 
 #include <functional>
 
-#define SMTP_PROTOCOL "smtp"
-#define SMTP_OVER_SSL_PROTOCOL "smtps"
+#define SMTP_PROTOCOL _F("smtp")
+#define SMTP_OVER_SSL_PROTOCOL _F("smtps")
 
 /* Maximum waiting emails in the mail queue */
 #define SMTP_QUEUE_SIZE 5

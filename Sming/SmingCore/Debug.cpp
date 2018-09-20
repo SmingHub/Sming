@@ -18,7 +18,7 @@ DebugClass::~DebugClass()
 void DebugClass::initCommand()
 {
 #if ENABLE_CMD_EXECUTOR
-	commandHandler.registerCommand(CommandDelegate("debug", "New debug in development", "Debug",
+	commandHandler.registerCommand(CommandDelegate(F("debug"), F("New debug in development"), F("Debug"),
 												   commandFunctionDelegate(&DebugClass::processDebugCommands, this)));
 #endif
 }
@@ -26,12 +26,12 @@ void DebugClass::initCommand()
 void DebugClass::start()
 {
 	started = true;
-	println("Debug started");
+	println(_F("Debug started"));
 }
 
 void DebugClass::stop()
 {
-	println("Debug stopped");
+	println(_F("Debug stopped"));
 	started = false;
 }
 
@@ -44,21 +44,21 @@ void DebugClass::setDebug(DebugPrintCharDelegate reqDelegate)
 {
 	debugOut.debugStream = nullptr;
 	debugOut.debugDelegate = reqDelegate;
-	printf("Welcome to DebugDelegate\r\n");
+	print(_F("Welcome to DebugDelegate\r\n"));
 }
 
 void DebugClass::setDebug(Stream& reqStream)
 {
 	debugOut.debugDelegate = nullptr;
 	debugOut.debugStream = &reqStream;
-	printf("Welcome to DebugStream");
+	print(_F("Welcome to DebugStream"));
 }
 
 void DebugClass::printPrefix()
 {
 	if(useDebugPrefix) {
 		uint32_t curMillis = millis();
-		printf("Dbg %4d.%03d : ", curMillis / 1000, curMillis % 1000);
+		printf(_F("Dbg %4u.%03u : "), curMillis / 1000, curMillis % 1000);
 	}
 }
 
@@ -91,20 +91,20 @@ void DebugClass::processDebugCommands(String commandLine, CommandOutput* command
 	int numToken = splitString(commandLine, ' ', commandToken);
 
 	if(numToken == 1) {
-		commandOutput->printf("Debug Commands available : \r\n");
-		commandOutput->printf("on   : Start Debug output\r\n");
-		commandOutput->printf("off  : Stop Debug output\r\n");
-		commandOutput->printf("serial : Send Debug output to Serial\r\n");
+		commandOutput->print(_F("Debug Commands available : \r\n"));
+		commandOutput->print(_F("on   : Start Debug output\r\n"));
+		commandOutput->print(_F("off  : Stop Debug output\r\n"));
+		commandOutput->print(_F("serial : Send Debug output to Serial\r\n"));
 	} else {
 		if(commandToken[1] == "on") {
 			start();
-			commandOutput->printf("Debug started\r\n");
-		} else if(commandToken[1] == "off") {
-			commandOutput->printf("Debug stopped\r\n");
+			commandOutput->print(_F("Debug started\r\n"));
+		} else if(commandToken[1] == _F("off")) {
+			commandOutput->print(_F("Debug stopped\r\n"));
 			stop();
-		} else if(commandToken[1] == "serial") {
+		} else if(commandToken[1] == _F("serial")) {
 			setDebug(Serial);
-			commandOutput->printf("Debug set to Serial");
+			commandOutput->print(_F("Debug set to Serial"));
 		};
 	}
 }

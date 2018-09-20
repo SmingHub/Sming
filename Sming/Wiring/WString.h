@@ -24,6 +24,9 @@
 #include "WiringFrameworkDependencies.h"
 #include "WVector.h"
 
+// @deprecated Should not be using String in interrupt context
+#define STRING_IRAM_ATTR // IRAM_ATTR
+
 #ifndef __GXX_EXPERIMENTAL_CXX0X__
 #define __GXX_EXPERIMENTAL_CXX0X__
 #endif
@@ -38,6 +41,35 @@
 // result objects are assumed to be writable by subsequent concatenations.
 class StringSumHelper;
 
+/* Arduino-style flash strings
+ *
+ * __FlashStringHelper* provides strongly-typed pointer to allow safe implicit
+ * operation using String class methods.
+ */
+class __FlashStringHelper; // Never actually defined
+typedef const __FlashStringHelper* flash_string_t;
+
+// Cast a PGM_P (flash memory) pointer to a flash string pointer
+#define FPSTR(pstr_pointer) reinterpret_cast<flash_string_t>(pstr_pointer)
+
+/*
+ * Use this macro to wrap a string literal and access it using a String object.
+ * The string data is stored in flash and only read into RAM when executed.
+ * For example: Serial.print(F("This is a test string\n"));
+ */
+#define F(string_literal) String(FPSTR(PSTR(string_literal)), sizeof(string_literal) - 1)
+
+// Forward declaration for counted flash string - see FlashString.h
+struct FlashString;
+
+/**
+ * @brief The string class
+ *
+ * Note that a string object's default constructor creates an empty string.
+ * This is not the same as a null string.
+ * A null string evaluates to false
+ * An empty string evaluates to true
+ */
 // The string class
 class String
 {
@@ -45,20 +77,28 @@ class String
     // complications of an operator bool(). for more information, see:
     // http://www.artima.com/cppsource/safebool.html
     typedef void (String::*StringIfHelperType)() const;
-    void IRAM_ATTR StringIfHelper() const {}
+    void STRING_IRAM_ATTR StringIfHelper() const {}
 
   public:
-    // constructors
-    // creates a copy of the initial value.
-    // if the initial value is null or invalid, or if memory allocation
-    // fails, the string will be marked as invalid (i.e. "if (s)" will
-    // be false).
-    IRAM_ATTR String(const char *cstr = "");
-    IRAM_ATTR String(const char *cstr, unsigned int length);
-    IRAM_ATTR String(const String &str);
+    // Use these for const references, e.g. in function return values
+    static const String nullstr; ///< A null string evaluates to false
+    static const String empty; ///< An empty string evaluates to true
+
+    /* constructors
+
+       creates a copy of the initial value.
+       if the initial value is null or invalid, or if memory allocation
+       fails, the string will be marked as invalid (i.e. "if (s)" will be false).
+    */
+    STRING_IRAM_ATTR String(const char *cstr = nullptr);
+    STRING_IRAM_ATTR String(const char *cstr, unsigned int length);
+    STRING_IRAM_ATTR String(const String &str);
+    explicit String(flash_string_t pstr, int length = -1);
+    String(const FlashString& fstr);
+
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    IRAM_ATTR String(String && rval);
-    IRAM_ATTR String(StringSumHelper && rval);
+    STRING_IRAM_ATTR String(String && rval);
+    STRING_IRAM_ATTR String(StringSumHelper && rval);
 #endif
     explicit String(char c);
     explicit String(unsigned char, unsigned char base = 10);
@@ -71,21 +111,22 @@ class String
     ~String(void);
 
     void setString(const char *cstr, int length = -1);
+    void setString(flash_string_t pstr, int length = -1);
 
     // memory management
     // return true on success, false on failure (in which case, the string
     // is left unchanged).  reserve(0), if successful, will validate an
     // invalid string (i.e., "if (s)" will be true afterwards)
-    unsigned char reserve(unsigned int size);
+    bool reserve(unsigned int size);
 
-	/** @brief set the string length accordingly, expanding if necessary
-	 *  @param length required for string (nul terminator additional)
-	 *  @retval true on success, false on failure
-	 *  @note extra characters are undefined
-	 */
-	bool setLength(unsigned int length);
+    /** @brief set the string length accordingly, expanding if necessary
+     *  @param length required for string (nul terminator additional)
+     *  @retval true on success, false on failure
+     *  @note extra characters are undefined
+     */
+    bool setLength(unsigned int length);
 
-	inline unsigned int length(void) const
+    inline unsigned int length(void) const
     {
       return len;
     }
@@ -93,8 +134,8 @@ class String
     // creates a copy of the assigned value.  if the value is null or
     // invalid, or if the memory allocation fails, the string will be
     // marked as invalid ("if (s)" will be false).
-    String & IRAM_ATTR operator = (const String &rhs);
-    String & IRAM_ATTR operator = (const char *cstr);
+    String & STRING_IRAM_ATTR operator = (const String &rhs);
+    String & STRING_IRAM_ATTR operator = (const char *cstr);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     String & operator = (String && rval);
     String & operator = (StringSumHelper && rval);
@@ -105,16 +146,17 @@ class String
     // returns true on success, false on failure (in which case, the string
     // is left unchanged).  if the argument is null or invalid, the
     // concatenation is considered unsucessful.
-    unsigned char concat(const String &str);
-    unsigned char concat(const char *cstr);
-    unsigned char concat(char c);
-    unsigned char concat(unsigned char c);
-    unsigned char concat(int num);
-    unsigned char concat(unsigned int num);
-    unsigned char concat(long num);
-    unsigned char concat(unsigned long num);
-    unsigned char concat(float num);
-    unsigned char concat(double num);
+    bool concat(const String &str);
+    bool concat(const char *cstr);
+    bool STRING_IRAM_ATTR concat(const char *cstr, unsigned int length);
+    bool concat(char c);
+    bool concat(unsigned char c);
+    bool concat(int num);
+    bool concat(unsigned int num);
+    bool concat(long num);
+    bool concat(unsigned long num);
+    bool concat(float num);
+    bool concat(double num);
   
     // if there's not enough memory for the concatenated value, the string
     // will be left unchanged (but this isn't signalled in any way)
@@ -185,41 +227,57 @@ class String
     {
       return buffer ? &String::StringIfHelper : 0;
     }
-    int IRAM_ATTR compareTo(const String &s) const;
-    unsigned char IRAM_ATTR equals(const String &s) const;
-    unsigned char IRAM_ATTR equals(const char *cstr) const;
-    unsigned char IRAM_ATTR operator == (const String &rhs) const
+    int STRING_IRAM_ATTR compareTo(const String &s) const;
+    bool STRING_IRAM_ATTR equals(const String &s) const;
+    bool STRING_IRAM_ATTR equals(const char *cstr) const;
+    bool equals(const FlashString& fstr) const;
+
+    bool STRING_IRAM_ATTR operator == (const String &rhs) const
     {
       return equals(rhs);
     }
-    unsigned char IRAM_ATTR operator == (const char *cstr) const
+    bool STRING_IRAM_ATTR operator == (const char *cstr) const
     {
       return equals(cstr);
     }
-    unsigned char IRAM_ATTR operator != (const String &rhs) const
+    bool STRING_IRAM_ATTR operator==(const FlashString& fstr) const
+    {
+      return equals(fstr);
+    }
+    bool STRING_IRAM_ATTR operator != (const String &rhs) const
     {
       return !equals(rhs);
     }
-    unsigned char IRAM_ATTR operator != (const char *cstr) const
+    bool STRING_IRAM_ATTR operator != (const char *cstr) const
     {
       return !equals(cstr);
     }
-    unsigned char operator < (const String &rhs) const;
-    unsigned char operator > (const String &rhs) const;
-    unsigned char operator <= (const String &rhs) const;
-    unsigned char operator >= (const String &rhs) const;
-    unsigned char equalsIgnoreCase(const char* cstr) const;
-    unsigned char equalsIgnoreCase(const String &s2) const;
-    unsigned char startsWith(const String &prefix) const;
-    unsigned char startsWith(const String &prefix, unsigned int offset) const;
-    unsigned char endsWith(const String &suffix) const;
+    bool operator < (const String &rhs) const;
+    bool operator > (const String &rhs) const;
+    bool operator <= (const String &rhs) const;
+    bool operator >= (const String &rhs) const;
+    bool equalsIgnoreCase(const char* cstr) const;
+    bool equalsIgnoreCase(const String &s2) const;
+    bool startsWith(const String &prefix) const;
+    bool startsWith(const String &prefix, unsigned int offset) const;
+    bool endsWith(const String &suffix) const;
 
     // character acccess
-    char IRAM_ATTR charAt(unsigned int index) const;
-    void IRAM_ATTR setCharAt(unsigned int index, char c);
-    char IRAM_ATTR operator [](unsigned int index) const;
-    char& IRAM_ATTR operator [](unsigned int index);
-    void getBytes(unsigned char *buf, unsigned int bufsize, unsigned int index = 0) const;
+    char STRING_IRAM_ATTR charAt(unsigned int index) const;
+    void STRING_IRAM_ATTR setCharAt(unsigned int index, char c);
+    char STRING_IRAM_ATTR operator [](unsigned int index) const;
+    char& STRING_IRAM_ATTR operator [](unsigned int index);
+
+    /** @brief read contents of string into a buffer
+     *  @param buf buffer to write data
+     *  @param bufsize size of buffer in bytes
+     *  @param index offset to start
+     *  @retval unsigned number of bytes copied, excluding nul terminator
+     *  @note Returned data always nul terminated so buffer size needs to take this
+     *  into account
+     */
+    unsigned int getBytes(unsigned char *buf, unsigned int bufsize, unsigned int index = 0) const;
+
     void toCharArray(char *buf, unsigned int bufsize, unsigned int index = 0) const
     {
       getBytes((unsigned char *)buf, bufsize, index);
@@ -231,14 +289,14 @@ class String
     const char* end() const { return c_str() + length(); }
   
     // search
-    int IRAM_ATTR indexOf(char ch) const;
+    int STRING_IRAM_ATTR indexOf(char ch) const;
     int indexOf(char ch, unsigned int fromIndex) const;
-    int IRAM_ATTR indexOf(const String &str) const;
-    int indexOf(const String &str, unsigned int fromIndex) const;
+    int STRING_IRAM_ATTR indexOf(const String &str) const;
+    int indexOf(const String &s2, unsigned int fromIndex) const;
     int lastIndexOf(char ch) const;
-    int lastIndexOf(char ch, int fromIndex) const;
-    int lastIndexOf(const String &str) const;
-    int lastIndexOf(const String &str, int fromIndex) const;
+    int lastIndexOf(char ch, unsigned int fromIndex) const;
+    int lastIndexOf(const String &s2) const;
+    int lastIndexOf(const String &s2, unsigned int fromIndex) const;
     String substring(unsigned int beginIndex) const { return substring(beginIndex, len); };
     String substring(unsigned int beginIndex, unsigned int endIndex) const;
 
@@ -263,18 +321,18 @@ class String
 
 
   protected:
-    char *buffer;	        // the actual char array
-    uint16_t capacity;  // the array length minus one (for the '\0')
-    uint16_t len;       // the String length (not counting the '\0')
+    char *buffer = nullptr;	        // the actual char array
+    uint16_t capacity = 0;  // the array length minus one (for the '\0')
+    uint16_t len = 0;       // the String length (not counting the '\0')
     //unsigned char flags;    // unused, for future features
+
   protected:
-    void IRAM_ATTR init(void);
-    void IRAM_ATTR invalidate(void);
-    unsigned char IRAM_ATTR changeBuffer(unsigned int maxStrLen);
-    unsigned char IRAM_ATTR concat(const char *cstr, unsigned int length);
+    void STRING_IRAM_ATTR invalidate(void);
+    bool STRING_IRAM_ATTR changeBuffer(unsigned int maxStrLen);
 
     // copy and move
     String & copy(const char *cstr, unsigned int length);
+    String& copy(flash_string_t pstr, unsigned int length);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     void move(String &rhs);
 #endif
@@ -294,6 +352,8 @@ class StringSumHelper : public String
     StringSumHelper(float num) : String(num) {}
     StringSumHelper(double num) : String(num) {}
 };
+
+#include "FlashString.h"
 
 #endif  // __cplusplus
 #endif

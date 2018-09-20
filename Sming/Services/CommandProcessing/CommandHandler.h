@@ -138,9 +138,9 @@ private :
 	void processCommandOptions(String commandLine  ,CommandOutput* commandOutput);
 
 	VerboseMode verboseMode = VERBOSE;
-	String currentPrompt = "Sming>";
+	String currentPrompt;
 	char currentEOL = '\r';
-	String currentWelcomeMessage = "Welcome to the Sming CommandProcessing\r\n";
+	String currentWelcomeMessage;
 };
 
 /** @brief  Global instance of CommandHandler */

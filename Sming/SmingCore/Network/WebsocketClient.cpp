@@ -11,6 +11,7 @@
  */
 
 #include "WebsocketClient.h"
+#include "../Services/cWebsocket/websocket.h"
 
 void WebsocketClient::setWebSocketMessageHandler(WebSocketClientMessageDelegate handler)
 {
@@ -37,7 +38,7 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	_uri = URL(url);
 	_url = url;
 	bool useSsl = false;
-	if(_uri.Protocol == WEBSCOKET_SECURE_URL_PROTOCOL) {
+	if(_uri.Protocol == WEBSOCKET_SECURE_URL_PROTOCOL) {
 		useSsl = true;
 	}
 	TcpClient::connect(_uri.Host, _uri.Port, useSsl, sslOptions);
@@ -89,7 +90,7 @@ bool WebsocketClient::_verifyKey(char* buf, int size)
 {
 	const char* serverHashedKey = strstri(buf, "sec-websocket-accept: ");
 	char* endKey = NULL;
-	String keyToHash = _key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+	String keyToHash = _key + WSSTR_SECRET;
 
 	if(!serverHashedKey) {
 		debug_e("wscli cannot find key");

@@ -71,7 +71,7 @@ URL::URL(const String& urlString)
 	{
 		portStart++;
 		Port = urlString.substring(portStart, portEnd).toInt();
-	} else if(Protocol == HTTPS_URL_PROTOCOL || Protocol == WEBSCOKET_SECURE_URL_PROTOCOL) {
+	} else if(Protocol == HTTPS_URL_PROTOCOL || Protocol == WEBSOCKET_SECURE_URL_PROTOCOL) {
 		Port = 443;
 	} else if(Protocol == DEFAULT_URL_PROTOCOL) {
 		Port = 80;
