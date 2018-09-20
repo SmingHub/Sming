@@ -562,7 +562,7 @@ CS_FILES := $(call rwildcard, SmingCore ../samples, *.cpp *.h *.c)
 
 cs:
 	$(Q) for FILE in $(CS_FILES); do \
-		clang-format -verbose -i -style=file $$FILE; \
+		clang-format -i -style=file $$FILE; \
 	done
 
 
