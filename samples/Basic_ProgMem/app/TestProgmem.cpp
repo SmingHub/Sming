@@ -7,7 +7,7 @@
 #include "TestProgmem.h"
 #include "FlashData.h"
 #include "Print.h"
-#include "ElapseTimer.h"
+#include "Services/Profiling/ElapseTimer.h"
 
 // Note: contains nulls which won't display, but will be stored
 #define DEMO_TEST_TEXT "This is a flash string -\0Second -\0Third -\0Fourth."
