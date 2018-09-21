@@ -554,10 +554,12 @@ dist-clean: clean samples-clean third-party-clean libraries-clean tools-clean
  	done
 	$(Q) $(GIT) checkout $(USER_LIBDIR)
 
+# Recursive wildcard search
+rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
 
 # Files that should follow our coding standards
-CS_FILES=$(shell find SmingCore/ -name '*.cpp' -o  -name '*.h' -o -name '*.c') \
-         $(shell find ../samples -name '*.cpp' -o  -name '*.h' -o -name '*.c')
+CS_DIRS = SmingCore ../samples
+CS_FILES := $(call rwildcard,$(patsubst %,%/*,$(CS_DIRS)),*.cpp *.h *.c)
 
 cs:
 	$(Q) for FILE in $(CS_FILES); do \
