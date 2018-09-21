@@ -31,7 +31,6 @@ uint32_t IRAM_ATTR usToTimerTicks(uint32_t us);
  */
 uint32_t IRAM_ATTR timerTicksToUs(uint32_t ticks);
 
-
 /** @brief  Delegate callback type for timer trigger
  */
 typedef Delegate<void()> TimerDelegate;
