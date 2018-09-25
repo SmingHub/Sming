@@ -69,6 +69,10 @@ extern "C" uint32 ICACHE_FLASH_ATTR  __attribute__((weak)) user_rf_cal_sector_se
     return rf_cal_sec;
 }
 
+extern "C" void __attribute__((weak))  user_pre_init(void)
+{
+}
+
 namespace std {
     void __attribute__((weak)) __throw_bad_function_call()
     {
