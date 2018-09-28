@@ -183,7 +183,7 @@ uint8_t RF24::get_status(void)
 
 void RF24::print_status(uint8_t status)
 {
-  printf_P(("STATUS\t\t = 0x%02x RX_DR=%x TX_DS=%x MAX_RT=%x RX_P_NO=%x TX_FULL=%x\r\n"),
+  printf_P(PSTR("STATUS\t\t = 0x%02x RX_DR=%x TX_DS=%x MAX_RT=%x RX_P_NO=%x TX_FULL=%x\r\n"),
            status,
            (status & _BV(RX_DR))?1:0,
            (status & _BV(TX_DS))?1:0,
@@ -208,8 +208,8 @@ void RF24::print_observe_tx(uint8_t value)
 
 void RF24::print_byte_register(const char* name, uint8_t reg, uint8_t qty)
 {
-  char extra_tab = strlen_P(name) < 8 ? '\t' : 0;
-  printf_P(PSTR(PRIPSTR"\t%c ="),name,extra_tab);
+  char extra_tab = strlen(name) < 8 ? '\t' : 0;
+  printf_P(PSTR("%s\t%c ="),name,extra_tab);
   while (qty--)
     printf_P(PSTR(" 0x%02x"),read_register(reg++));
   printf_P(PSTR("\r\n"));
@@ -219,8 +219,8 @@ void RF24::print_byte_register(const char* name, uint8_t reg, uint8_t qty)
 
 void RF24::print_address_register(const char* name, uint8_t reg, uint8_t qty)
 {
-  char extra_tab = strlen_P(name) < 8 ? '\t' : 0;
-  printf_P(PSTR(PRIPSTR"\t%c ="),name,extra_tab);
+  char extra_tab = strlen(name) < 8 ? '\t' : 0;
+  printf_P(PSTR("%s\t%c ="),name,extra_tab);
 
   while (qty--)
   {
@@ -310,28 +310,28 @@ void RF24::printDetails(void)
 {
   print_status(get_status());
 
-  print_address_register(PSTR("RX_ADDR_P0-1"),RX_ADDR_P0,2);
-  print_byte_register(PSTR("RX_ADDR_P2-5"),RX_ADDR_P2,4);
-  print_address_register(PSTR("TX_ADDR"),TX_ADDR);
+  print_address_register(_F("RX_ADDR_P0-1"),RX_ADDR_P0,2);
+  print_byte_register(_F("RX_ADDR_P2-5"),RX_ADDR_P2,4);
+  print_address_register(_F("TX_ADDR"),TX_ADDR);
 
-  print_byte_register(PSTR("RX_PW_P0-6"),RX_PW_P0,6);
-  print_byte_register(PSTR("EN_AA"),EN_AA);
-  print_byte_register(PSTR("EN_RXADDR"),EN_RXADDR);
-  print_byte_register(PSTR("RF_CH"),RF_CH);
-  print_byte_register(PSTR("RF_SETUP"),RF_SETUP);
-  print_byte_register(PSTR("CONFIG"),CONFIG);
-  print_byte_register(PSTR("DYNPD/FEATURE"),DYNPD,2);
+  print_byte_register(_F("RX_PW_P0-6"),RX_PW_P0,6);
+  print_byte_register(_F("EN_AA"),EN_AA);
+  print_byte_register(_F("EN_RXADDR"),EN_RXADDR);
+  print_byte_register(_F("RF_CH"),RF_CH);
+  print_byte_register(_F("RF_SETUP"),RF_SETUP);
+  print_byte_register(_F("CONFIG"),CONFIG);
+  print_byte_register(_F("DYNPD/FEATURE"),DYNPD,2);
 
 #if defined(__ESP8266_EX__)
   char tmpbuf[128];
   strcpy_P(tmpbuf, (char*)pgm_read_dword(&rf24_datarate_e_str_P[getDataRate()]));
-  printf_P(PSTR("Data Rate\t = %S\r\n"), tmpbuf);
+  printf_P(PSTR("Data Rate\t = %s\r\n"), tmpbuf);
   strcpy_P(tmpbuf, (char*)pgm_read_dword(&rf24_model_e_str_P[isPVariant()]));
-  printf_P(PSTR("Model\t\t = %S\r\n"), tmpbuf);
+  printf_P(PSTR("Model\t\t = %s\r\n"), tmpbuf);
   strcpy_P(tmpbuf, (char*)pgm_read_dword(&rf24_crclength_e_str_P[getCRCLength()]));
-  printf_P(PSTR("CRC Length\t = %S\r\n"), tmpbuf);
+  printf_P(PSTR("CRC Length\t = %s\r\n"), tmpbuf);
   strcpy_P(tmpbuf, (char*)pgm_read_dword(&rf24_pa_dbm_e_str_P[getPALevel()]));
-  printf_P(PSTR("PA Power\t = %S\r\n"), tmpbuf);
+  printf_P(PSTR("PA Power\t = %s\r\n"), tmpbuf);
 #else
   printf_P(PSTR("Data Rate\t = %S\r\n"),pgm_read_word(&rf24_datarate_e_str_P[getDataRate()]));
   printf_P(PSTR("Model\t\t = %S\r\n"),pgm_read_word(&rf24_model_e_str_P[isPVariant()]));

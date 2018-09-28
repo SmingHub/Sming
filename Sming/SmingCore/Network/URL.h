@@ -17,9 +17,9 @@
 
 #include "../../Wiring/WString.h"
 
-#define DEFAULT_URL_PROTOCOL "http"
-#define HTTPS_URL_PROTOCOL "https"
-#define WEBSCOKET_SECURE_URL_PROTOCOL "wss"
+#define DEFAULT_URL_PROTOCOL _F("http")
+#define HTTPS_URL_PROTOCOL _F("https")
+#define WEBSOCKET_SECURE_URL_PROTOCOL _F("wss")
 
 class URL
 {

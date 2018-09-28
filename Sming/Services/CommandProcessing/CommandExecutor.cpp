@@ -18,7 +18,7 @@ CommandExecutor::CommandExecutor(TcpClient* cmdClient) : CommandExecutor()
 	commandOutput = new CommandOutput(cmdClient);
 	if (commandHandler.getVerboseMode() != SILENT)
 	{
-		commandOutput->printf("Welcome to the Tcp Command executor\r\n");
+		commandOutput->print(_F("Welcome to the Tcp Command executor\r\n"));
 	}
 }
 
@@ -27,7 +27,7 @@ CommandExecutor::CommandExecutor(Stream* reqStream) : CommandExecutor()
 	commandOutput = new CommandOutput(reqStream);
 	if (commandHandler.getVerboseMode() != SILENT)
 	{
-		commandOutput->printf("Welcome to the Stream Command executor\r\n");
+		commandOutput->print(_F("Welcome to the Stream Command executor\r\n"));
 	}
 }
 
@@ -36,7 +36,7 @@ CommandExecutor::CommandExecutor(WebSocketConnection* reqSocket)
 	commandOutput = new CommandOutput(reqSocket);
 	if (commandHandler.getVerboseMode() != SILENT)
 	{
-		reqSocket->sendString("Welcome to the Websocket Command Executor");
+		reqSocket->sendString(_F("Welcome to the Websocket Command Executor"));
 	}
 
 }
@@ -81,7 +81,8 @@ int CommandExecutor::executorReceive(char recvChar)
 		commandBuf[commandIndex] = 0;
 		if (commandHandler.getVerboseMode() == VERBOSE)
 		{
-			commandOutput->printf("\r\n%s",commandHandler.getCommandPrompt().c_str());
+			commandOutput->print("\r\n");
+			commandOutput->print(commandHandler.getCommandPrompt());
 		}
 	}
 	else if (recvChar == commandHandler.getCommandEOL())
@@ -122,9 +123,9 @@ void CommandExecutor::processCommandLine(String cmdString)
 
 	if (!cmdDelegate.commandFunction)
 	{
-		commandOutput->printf("Command not found, cmd = '");
-		commandOutput->printf(cmdCommand.c_str());
-		commandOutput->printf("'\r\n");
+		commandOutput->print(_F("Command not found, cmd = '"));
+		commandOutput->print(cmdCommand);
+		commandOutput->print(_F("'\r\n"));
 	}
 	else
 	{

@@ -33,7 +33,7 @@ bool WebSocketConnection::initialize(HttpRequest& request, HttpResponse& respons
 	state = eWSCS_Open;
 	String token = request.getHeader("Sec-WebSocket-Key");
 	token.trim();
-	token = token + secret;
+	token += WSSTR_SECRET;
 	unsigned char hash[SHA1_SIZE];
 	sha1(hash, token.c_str(), token.length());
 	response.code = HTTP_STATUS_SWITCHING_PROTOCOLS;

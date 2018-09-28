@@ -49,18 +49,17 @@
     #define FALSE 0
 #endif
 
-static const char connectionField[] PROGMEM = "Connection: ";
-static const char upgrade[] PROGMEM = "upgrade";
-static const char upgrade2[] PROGMEM = "Upgrade";
-static const char upgradeField[] PROGMEM = "Upgrade: ";
-static const char websocket[] PROGMEM = "websocket";
-static const char hostField[] PROGMEM = "Host: ";
-static const char originField[] PROGMEM = "Origin: ";
-static const char keyField[] PROGMEM = "Sec-WebSocket-Key: ";
-static const char protocolField[] PROGMEM = "Sec-WebSocket-Protocol: ";
-static const char versionField[] PROGMEM = "Sec-WebSocket-Version: ";
-static const char version[] PROGMEM = "13";
-static const char secret[] PROGMEM = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+#define WEBSOCKET_VERSION 		13		// 1.3
+
+#define WSSTR_CONNECTION _F("connection")
+#define WSSTR_UPGRADE _F("upgrade")
+#define WSSTR_WEBSOCKET _F("websocket")
+#define WSSTR_HOST _F("host")
+#define WSSTR_ORIGIN _F("origin")
+#define WSSTR_KEY _F("Sec-WebSocket-Key")
+#define WSSTR_PROTOCOL _F("Sec-WebSocket-Protocol")
+#define WSSTR_VERSION _F("Sec-WebSocket-Version")
+#define WSSTR_SECRET _F("258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
 
 enum wsFrameType { // errors starting from 0xF0
     WS_EMPTY_FRAME = 0xF0,

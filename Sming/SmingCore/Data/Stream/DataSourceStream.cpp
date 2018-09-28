@@ -211,7 +211,7 @@ String FileStream::id()
 
 #define ETAG_SIZE 16
 	char buf[ETAG_SIZE];
-	m_snprintf(buf, ETAG_SIZE, "00f-%x-%x0-%x", stat.obj_id, stat.size, strlen((char*)stat.name));
+	m_snprintf(buf, ETAG_SIZE, _F("00f-%x-%x0-%x"), stat.obj_id, stat.size, strlen((char*)stat.name));
 
 	return String(buf);
 }
