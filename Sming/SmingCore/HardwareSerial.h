@@ -258,7 +258,10 @@ public:
 	 * @brief Returns a pointer to the internal uart object. Use with care.
 	 * @retval pointer to uart_t
 	 */
-	uart_t* getUart() { return uart; }
+	uart_t* getUart()
+	{
+		return uart;
+	}
 
 private:
 	int uartNr;
