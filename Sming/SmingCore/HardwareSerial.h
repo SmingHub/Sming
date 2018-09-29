@@ -254,6 +254,15 @@ public:
 	 */
 	size_t indexOf(char c);
 
+	/*
+	 * @brief Returns a pointer to the internal uart object. Use with care.
+	 * @retval pointer to uart_t
+	 */
+	uart_t* getUart()
+	{
+		return uart;
+	}
+
 private:
 	int uartNr;
 	static HWSerialMemberData memberData[NUMBER_UARTS];
