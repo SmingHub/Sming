@@ -18,7 +18,7 @@
 #define SERVO_PERIOD 20000
 
 
-Hardware_Timer hardwareTimer;
+HardwareTimer hardwareTimer;
 
 uint8 pins[SERVO_CHANNEL_NUM_MAX];
 uint32 timing[SERVO_CHANNEL_NUM_MAX*2+1];

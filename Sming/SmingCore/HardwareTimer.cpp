@@ -68,36 +68,36 @@ static void IRAM_ATTR hw_timer_isr_cb(void* arg)
 {
 	if(arg == null)
 		return;
-	Hardware_Timer* ptimer = (Hardware_Timer*)arg;
+	HardwareTimer* ptimer = (HardwareTimer*)arg;
 	ptimer->call();
 }
 
-Hardware_Timer::Hardware_Timer()
+HardwareTimer::HardwareTimer()
 {
 	ETS_FRC_TIMER1_INTR_ATTACH((ets_isr_t)hw_timer_isr_cb, (void*)this);
 }
 
-Hardware_Timer::~Hardware_Timer()
+HardwareTimer::~HardwareTimer()
 {
 	ETS_FRC_TIMER1_INTR_ATTACH((ets_isr_t)hw_timer_isr_cb, null);
 	stop();
 }
 
-Hardware_Timer& Hardware_Timer::initializeMs(uint32_t milliseconds, InterruptCallback callback)
+HardwareTimer& HardwareTimer::initializeMs(uint32_t milliseconds, InterruptCallback callback)
 {
 	setCallback(callback);
 	setIntervalMs(milliseconds);
 	return *this;
 }
 
-Hardware_Timer& Hardware_Timer::initializeUs(uint32_t microseconds, InterruptCallback callback)
+HardwareTimer& HardwareTimer::initializeUs(uint32_t microseconds, InterruptCallback callback)
 {
 	setCallback(callback);
 	setIntervalUs(microseconds);
 	return *this;
 }
 
-bool Hardware_Timer::start(bool repeating /* = true*/)
+bool HardwareTimer::start(bool repeating /* = true*/)
 {
 	this->repeating = repeating;
 	stop();
@@ -118,7 +118,7 @@ bool Hardware_Timer::start(bool repeating /* = true*/)
 	return started;
 }
 
-bool Hardware_Timer::stop()
+bool HardwareTimer::stop()
 {
 	if(!started)
 		return started;
@@ -128,29 +128,29 @@ bool Hardware_Timer::stop()
 	return started;
 }
 
-bool Hardware_Timer::restart()
+bool HardwareTimer::restart()
 {
 	stop();
 	start(repeating);
 	return started;
 }
 
-bool Hardware_Timer::isStarted()
+bool HardwareTimer::isStarted()
 {
 	return started;
 }
 
-uint32_t Hardware_Timer::getIntervalUs()
+uint32_t HardwareTimer::getIntervalUs()
 {
 	return interval;
 }
 
-uint32_t Hardware_Timer::getIntervalMs()
+uint32_t HardwareTimer::getIntervalMs()
 {
 	return (uint32_t)getIntervalUs() / 1000;
 }
 
-bool Hardware_Timer::setIntervalUs(uint32_t microseconds /* = 1000000*/)
+bool HardwareTimer::setIntervalUs(uint32_t microseconds /* = 1000000*/)
 {
 	if(microseconds < MAX_HW_TIMER_INTERVAL_US && microseconds > MIN_HW_TIMER_INTERVAL_US) {
 		interval = microseconds;
@@ -162,12 +162,12 @@ bool Hardware_Timer::setIntervalUs(uint32_t microseconds /* = 1000000*/)
 	return started;
 }
 
-bool Hardware_Timer::setIntervalMs(uint32_t milliseconds /* = 1000000*/)
+bool HardwareTimer::setIntervalMs(uint32_t milliseconds /* = 1000000*/)
 {
 	return setIntervalUs(((uint32_t)milliseconds) * 1000);
 }
 
-void Hardware_Timer::setCallback(InterruptCallback interrupt)
+void HardwareTimer::setCallback(InterruptCallback interrupt)
 {
 	ETS_INTR_LOCK();
 	callback = interrupt;
