@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-#include "c_types.h"
+#include "stddef.h"
 
 /** Return pointer to occurence of substring in string. Case insensitive.
    * \param[in] pString string to work with
