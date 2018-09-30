@@ -6,19 +6,30 @@ Date: 20.07.2015
 Descr: embedded very simple version of printf with float support
 */
 
-#include <stdarg.h>
-#include "osapi.h"
+#include "m_printf.h"
+#include "c_types.h"
+#include "stringconversion.h"
+#include "stringutil.h"
+#include <algorithm>
 
 #define MPRINTF_BUF_SIZE 256
 
-static void defaultPrintChar(uart_t *uart, char c) {
-	return uart_tx_one_char(c);
-}
+/*
+ * Callback to output characters.
+ * Use m_setPuts to specify.
+ * See HardwareSerial for example.
+ * By default, output is disabled here.
+ * Startup behaviour is defined in user_init() in user_main.cpp.
+ */
+static struct
+{
+	nputs_callback_t callback;
+	void* param;
+} _puts;
 
-void (*cbc_printchar)(uart_t *, char) = defaultPrintChar;
-uart_t *cbc_printchar_uart = NULL;
 
 #define is_digit(c) ((c) >= '0' && (c) <= '9')
+#define is_print(c) ((c) >= ' ' && (c) <= '~')
 
 static int skip_atoi(const char **s)
 {
@@ -28,17 +39,16 @@ static int skip_atoi(const char **s)
 	return i;
 }
 
-void setMPrintfPrinterCbc(void (*callback)(uart_t *, char), uart_t *uart)
+void m_setPuts(nputs_callback_t callback, void* param)
 {
-	cbc_printchar = callback;
-	cbc_printchar_uart = uart;
+	_puts = { callback, param };
 }
 
-void m_putc(char c)
+size_t m_putc(char c)
 {
-	if (cbc_printchar)
-		cbc_printchar(cbc_printchar_uart, c);
+	return _puts.callback ? _puts.callback(_puts.param, &c, 1) : 0;
 }
+
 
 /**
  * @fn int m_snprintf(char* buf, int length, const char *fmt, ...);
@@ -51,12 +61,10 @@ void m_putc(char c)
  */
 int m_snprintf(char* buf, int length, const char *fmt, ...)
 {
-	char *p;
 	va_list args;
-	int n = 0;
 
 	va_start(args, fmt);
-	n = m_vsnprintf(buf, length, fmt, args);
+	int n = m_vsnprintf(buf, length, fmt, args);
 	va_end(args);
 
 	return n;
@@ -64,26 +72,16 @@ int m_snprintf(char* buf, int length, const char *fmt, ...)
 
 int m_vprintf ( const char * format, va_list arg )
 {
-	if(!cbc_printchar)
+	if (!_puts.callback)
 	{
 		return 0;
 	}
 
-	char buf[MPRINTF_BUF_SIZE], *p;
-
-	int n = 0;
-	m_vsnprintf(buf, sizeof(buf), format, arg);
-
-	p = buf;
-	while (p && n < sizeof(buf) && *p)
-	{
-		cbc_printchar(cbc_printchar_uart, *p);
-		n++;
-		p++;
-	}
-
-	return n;
+	char buf[MPRINTF_BUF_SIZE];
+	int len = m_vsnprintf(buf, sizeof(buf), format, arg);
+	return _puts.callback(_puts.param, buf, std::min((size_t)len, sizeof(buf)));
 }
+
 
 /**
  * @fn int m_printf(const char *fmt, ...);
@@ -94,18 +92,13 @@ int m_vprintf ( const char * format, va_list arg )
  */
 int m_printf(const char* fmt, ...)
 {
-	int n=0;
-
-	if(!fmt)
+	if (!_puts.callback || !fmt)
 		return 0;
 
 	va_list args;
 	va_start(args, fmt);
-
-	n = m_vprintf(fmt, args);
-
+	int n = m_vprintf(fmt, args);
 	va_end(args);
-
 	return n;
 }
 
@@ -178,7 +171,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 
                 if (!s) s = "(null)";
                 size_t len = strlen(s);
-                if (len > precision) len = precision;
+                if (precision >= 0 && (int)len > precision) len = precision;
 
                 int padding = width - len;
                 while (!minus && padding-- > 0) add(' ');
@@ -227,4 +220,52 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
     }
     *buf = 0;
     return size;
+}
+
+size_t m_nputs(const char* str, size_t length)
+{
+	return _puts.callback ? _puts.callback(_puts.param, str, length) : 0;
+}
+
+
+void m_printHex(const char* tag, const void* data, size_t len, size_t bytesPerLine)
+{
+	auto buf = static_cast<const unsigned char*>(data);
+
+	auto taglen = strlen(tag);
+	size_t offset = 0;
+	while (offset < len) {
+		if (offset == 0) {
+			m_nputs(tag, taglen);
+			m_putc(':');
+		}
+		else {
+			for (size_t  i = 0; i <= taglen; ++i)
+				m_putc(' ');
+		}
+
+		size_t n = len - offset;
+		if (bytesPerLine && n > bytesPerLine)
+			n = bytesPerLine;
+
+		for (size_t i = 0; i < n; ++i) {
+			m_putc(' ');
+			m_putc(hexchar(buf[offset + i] >> 4));
+			m_putc(hexchar(buf[offset + i] & 0x0f));
+		}
+		m_putc('\n');
+
+		// Output ASCII on line below
+		for (size_t  i = 0; i <= taglen; ++i)
+			m_putc(' ');
+		for (size_t i = 0; i < n; ++i) {
+			m_putc(' ');
+			m_putc(' ');
+			char c = buf[offset + i];
+			m_putc(is_print(c) ? c : ' ');
+		}
+		m_putc('\n');
+
+		offset += n;
+	}
 }
