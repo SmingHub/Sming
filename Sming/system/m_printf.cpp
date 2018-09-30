@@ -7,7 +7,6 @@ Descr: embedded very simple version of printf with float support
 */
 
 #include "m_printf.h"
-#include "c_types.h"
 #include "stringconversion.h"
 #include "stringutil.h"
 #include <algorithm>
