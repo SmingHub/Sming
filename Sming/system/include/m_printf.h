@@ -13,8 +13,10 @@ Descr: embedded very simple version of printf with float support
 #include <string.h>
 
 #ifdef __cplusplus
-extern "C" {
-#endif
+
+extern "C++" {
+
+#include <functional>
 
 /** @brief callback type to output a string of data
  *  @param param
@@ -23,13 +25,17 @@ extern "C" {
  *  @retval number of characters written, which may be less than the requested size
  *  @note data does not need to be nul terminated and may contain any 8-bit values including nul
  */
-typedef size_t (*nputs_callback_t)(void* param, const char* str, size_t length);
+typedef std::function<size_t(const char* str, size_t length)> nputs_callback_t;
 
 /** @brief set the character output routine
  *  @param callback
- *  @param param
  */
-void m_setPuts(nputs_callback_t callback, void* param);
+void m_setPuts(nputs_callback_t callback);
+
+} // extern "C++"
+
+extern "C" {
+#endif
 
 int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args);
 int m_snprintf(char* buf, int length, const char *fmt, ...);

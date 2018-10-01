@@ -1,7 +1,8 @@
 #include <user_config.h>
 #include <math.h>
 #include <stdlib.h>
-#include "../include/stringconversion.h"
+#include "stringconversion.h"
+#include "stringutil.h"
 
 //Since C does not support default func parameters, keep this function as used by framework
 //and create extended _w funct to handle width
@@ -23,7 +24,7 @@ char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 	if (ngt) val = -val;
 
 	for(; val && i ; --i, p++, val /= base)
-		buf[i] = "0123456789abcdef"[val % base];
+		buf[i] = hexchar(val % base);
 	if (p == 0) buf[i--] = '0'; // case for zero
 
 	if (ngt)
@@ -60,7 +61,7 @@ char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, ch
 	char buf[40] = {0};
 
 	for(; val && i ; --i, p++, val /= base)
-		buf[i] = "0123456789abcdef"[val % base];
+		buf[i] = hexchar(val % base);
 	if (p == 0) buf[i--] = '0'; // case for zero
 
 	if(width != 0)
@@ -92,10 +93,8 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 	if(processedFracLen < 0)
 		processedFracLen = 9;
 
-	double remainder;
-
-	if (outputBuffer == NULL)
-		return NULL ;
+	if (outputBuffer == nullptr)
+		return nullptr;
 
 	char *buf = outputBuffer, *s;
 

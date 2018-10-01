@@ -156,13 +156,14 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	if(enabled) {
 		if(uart_tx_enabled(uart)) {
 			uart_set_debug(uartNr);
-			m_setPuts(reinterpret_cast<nputs_callback_t>(uart_write), uart);
+			using namespace std::placeholders;
+			m_setPuts(std::bind(&uart_write, uart, _1, _2));
 		} else {
 			uart_set_debug(UART_NO);
 		}
 	} else {
 		// don't print debugf() data at all
-		m_setPuts(nullptr, nullptr);
+		m_setPuts(nullptr);
 		// and disable system debug messages on this interface
 		if(uart_get_debug() == uartNr) {
 			uart_set_debug(UART_NO);

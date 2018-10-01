@@ -20,11 +20,7 @@ Descr: embedded very simple version of printf with float support
  * By default, output is disabled here.
  * Startup behaviour is defined in user_init() in user_main.cpp.
  */
-static struct
-{
-	nputs_callback_t callback;
-	void* param;
-} _puts;
+static nputs_callback_t _puts_callback;
 
 
 #define is_digit(c) ((c) >= '0' && (c) <= '9')
@@ -38,14 +34,14 @@ static int skip_atoi(const char **s)
 	return i;
 }
 
-void m_setPuts(nputs_callback_t callback, void* param)
+void m_setPuts(nputs_callback_t callback)
 {
-	_puts = { callback, param };
+	_puts_callback = callback;
 }
 
 size_t m_putc(char c)
 {
-	return _puts.callback ? _puts.callback(_puts.param, &c, 1) : 0;
+	return _puts_callback ? _puts_callback(&c, 1) : 0;
 }
 
 
@@ -71,14 +67,14 @@ int m_snprintf(char* buf, int length, const char *fmt, ...)
 
 int m_vprintf ( const char * format, va_list arg )
 {
-	if (!_puts.callback)
+	if (!_puts_callback)
 	{
 		return 0;
 	}
 
 	char buf[MPRINTF_BUF_SIZE];
 	int len = m_vsnprintf(buf, sizeof(buf), format, arg);
-	return _puts.callback(_puts.param, buf, std::min((size_t)len, sizeof(buf)));
+	return _puts_callback(buf, std::min((size_t)len, sizeof(buf)));
 }
 
 
@@ -91,7 +87,7 @@ int m_vprintf ( const char * format, va_list arg )
  */
 int m_printf(const char* fmt, ...)
 {
-	if (!_puts.callback || !fmt)
+	if (!_puts_callback || !fmt)
 		return 0;
 
 	va_list args;
@@ -223,7 +219,7 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 
 size_t m_nputs(const char* str, size_t length)
 {
-	return _puts.callback ? _puts.callback(_puts.param, str, length) : 0;
+	return _puts_callback ? _puts_callback(str, length) : 0;
 }
 
 
