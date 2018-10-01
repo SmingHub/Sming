@@ -98,16 +98,6 @@ int HardwareSerial::available()
 	return result;
 }
 
-size_t HardwareSerial::write(uint8_t oneChar)
-{
-	if(!uart || !uart_tx_enabled(uart)) {
-		return 0;
-	}
-
-	uart_write_char(uart, oneChar);
-	return 1;
-}
-
 int HardwareSerial::read()
 {
 	return uart_read_char(uart);

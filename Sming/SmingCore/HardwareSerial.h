@@ -197,9 +197,20 @@ public:
 	 *  @param  oneChar Character to write to the serial port
 	 *  @retval size_t Quantity of characters written (always 1)
 	 */
-	size_t write(uint8_t oneChar);
+	size_t write(uint8_t oneChar) override
+	{
+		return uart_write_char(uart, oneChar);
+	}
 
-	using Stream::write;
+	/** @brief  write multiple characters to serial port
+	 *  @param buffer data to write
+	 *  @param size number of characters to write
+	 *  @retval size_t Quantity of characters written, may be less than size
+	 */
+	size_t write(const uint8_t* buffer, size_t size) override
+	{
+		return uart_write(uart, buffer, size);
+	}
 
 	/** @brief  Configure serial port for system debug output and redirect output from debugf
 	 *  @param  enabled True to enable this port for system debug output
