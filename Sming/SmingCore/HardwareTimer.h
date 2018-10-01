@@ -36,29 +36,29 @@ uint32_t IRAM_ATTR timerTicksToUs(uint32_t ticks);
 typedef Delegate<void()> TimerDelegate;
 
 /// Hardware timer class
-class Hardware_Timer
+class HardwareTimer
 {
 public:
 	/** @brief  Hardware timer
     */
-	Hardware_Timer();
-	virtual ~Hardware_Timer();
+	HardwareTimer();
+	virtual ~HardwareTimer();
 
 	/** @brief  Initialise hardware timer
      *  @param  microseconds Timer interval in microseconds
      *  @param  callback Callback function to call when timer triggers (Default: none)
-     *  @retval Hardware_Timer& Reference to timer
+     *  @retval HardwareTimer& Reference to timer
      */
-	Hardware_Timer& IRAM_ATTR initializeUs(uint32_t microseconds,
-										   InterruptCallback callback = NULL); // Init in Microseconds.
+	HardwareTimer& IRAM_ATTR initializeUs(uint32_t microseconds,
+										  InterruptCallback callback = NULL); // Init in Microseconds.
 
 	/** @brief  Initialise hardware timer
      *  @param  milliseconds Timer interval in milliseconds
      *  @param  callback Callback function to call when timer triggers (Default: none)
-     *  @retval Hardware_Timer& Reference to timer
+     *  @retval HardwareTimer& Reference to timer
      */
-	Hardware_Timer& IRAM_ATTR initializeMs(uint32_t milliseconds,
-										   InterruptCallback callback = NULL); // Init in Milliseconds.
+	HardwareTimer& IRAM_ATTR initializeMs(uint32_t milliseconds,
+										  InterruptCallback callback = NULL); // Init in Milliseconds.
 
 	/** @brief  Start timer running
      *  @param  repeating True to restart timer when it triggers, false for one-shot (Default: true)
@@ -132,6 +132,13 @@ private:
 	InterruptCallback callback = nullptr;
 	bool repeating = false;
 	bool started = false;
+};
+
+/**
+ * @deprecated Use HardwareTimer class instead
+ */
+class Hardware_Timer : public HardwareTimer
+{
 };
 
 /** @} */
