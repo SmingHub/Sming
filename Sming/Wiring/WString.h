@@ -282,7 +282,7 @@ class String
     {
       getBytes((unsigned char *)buf, bufsize, index);
     }
-    const char* c_str() const { return buffer; }
+    const char* c_str() const { return buffer ?: empty.buffer; }
     char* begin() { return buffer; }
     char* end() { return buffer + length(); }
     const char* begin() const { return c_str(); }
