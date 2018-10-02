@@ -16,6 +16,36 @@
 ||
 */
 
+/*
+ * @author: 2 Oct 2018 - mikee47 <mike@sillyhouse.net>
+ *
+ * The standard String object default constructor creates an empty string, which requires a heap allocation of 1 byte.
+ * I changed this behaviour to default to a null string (invalid) to avoid this (usually) un-necessary allocation.
+ * If the value of the string hasn't actually been assigned yet then an 'invalid' (or null) string is the more logical choice.
+ * Additional changes ensure that the content of such a string are equivalent to an empty string "".
+ *
+ * Background
+ *
+ * The intent of the Wiring authors seems to be that an expression producing a String object will fail and produce
+ * an 'invalid' String (that evaluates to False) if any of the allocations within that expression fail. This could
+ * be due to heap fragmentation, low memory or a String which is just too big.
+ *
+ * By example:
+ *
+ * 	String tmp = String("A") + String("B");
+ *
+ * If a heap allocation fails on either "A" or "B" the the result should be a null string. However, this is not actually
+ * the case. In practice, if "A" fails but "B" does not then the result will be "B", while if "A" succeeds but "B" fails
+ * then the result will be 'invalid'. This would appear to be an oversight in the Wiring library (last updated July 2016).
+ *
+ * I made a decision with these changes that heap allocation errors are a rare enough occurrence that attempting to deal with
+ * them in such a manner causes more problems than it solves.
+ *
+ * These changes have a knock-on effect in that if any of the allocations in an expression fail, then the result, tmp,
+ * will be unpredictable.
+ *
+ */
+
 #ifndef WSTRING_H
 #define WSTRING_H
 
