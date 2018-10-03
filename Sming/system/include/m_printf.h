@@ -62,21 +62,17 @@ static inline size_t m_puts(const char* str)
 }
 
 #ifdef __cplusplus
-#define M_PRINTHEX_BYTESPERLINE = 16
-#else
-#define M_PRINTHEX_BYTESPERLINE
-#endif
 
 /** @brief output a block of data in hex format
- *  @param tag brief name to display with the data block
+ *  @param tag brief name to display with the data block. Specify nullptr if not required.
  *  @param data
  *  @param len
+ *  @param addr Prefix lines with addresses starting at the given value, use -1 if not required.
  *  @param bytesPerLine If non-zero, data will be output in block separated by carriage return
  *  @note intended for debugging
  */
-void m_printHex(const char* tag, const void* data, size_t len, size_t bytesPerLine M_PRINTHEX_BYTESPERLINE);
+void m_printHex(const char* tag, const void* data, size_t len, int addr = -1, size_t bytesPerLine = 16);
 
-#ifdef __cplusplus
 }
 #endif
 

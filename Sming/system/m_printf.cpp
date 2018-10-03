@@ -223,44 +223,55 @@ size_t m_nputs(const char* str, size_t length)
 }
 
 
-void m_printHex(const char* tag, const void* data, size_t len, size_t bytesPerLine)
+void m_printHex(const char* tag, const void* data, size_t len, int addr, size_t bytesPerLine)
 {
 	auto buf = static_cast<const unsigned char*>(data);
 
-	auto taglen = strlen(tag);
+	unsigned taglen = tag ? strlen(tag) : 0;
 	size_t offset = 0;
 	while (offset < len) {
-		if (offset == 0) {
-			m_nputs(tag, taglen);
-			m_putc(':');
+		if (taglen) {
+			if (offset == 0) {
+				m_nputs(tag, taglen);
+				m_putc(':');
+			}
+			else {
+				for (size_t  i = 0; i <= taglen; ++i)
+					m_putc(' ');
+			}
+			m_putc(' ');
 		}
-		else {
-			for (size_t  i = 0; i <= taglen; ++i)
-				m_putc(' ');
-		}
+
+		if (addr >= 0)
+			m_printf("%08X ", addr);
 
 		size_t n = len - offset;
 		if (bytesPerLine && n > bytesPerLine)
 			n = bytesPerLine;
 
 		for (size_t i = 0; i < n; ++i) {
-			m_putc(' ');
 			m_putc(hexchar(buf[offset + i] >> 4));
 			m_putc(hexchar(buf[offset + i] & 0x0f));
+			m_putc(' ');
 		}
-		m_putc('\n');
 
-		// Output ASCII on line below
-		for (size_t  i = 0; i <= taglen; ++i)
+		// Output ASCII
+		unsigned spaces = 1;
+		if (bytesPerLine)
+			spaces += 3 * (bytesPerLine - n);
+		while (spaces--)
 			m_putc(' ');
+
 		for (size_t i = 0; i < n; ++i) {
-			m_putc(' ');
-			m_putc(' ');
 			char c = buf[offset + i];
-			m_putc(is_print(c) ? c : ' ');
+			m_putc(is_print(c) ? c : '.');
 		}
+
 		m_putc('\n');
 
 		offset += n;
+
+		if (addr >= 0)
+			addr += n;
 	}
 }
