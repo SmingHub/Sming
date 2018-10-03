@@ -47,7 +47,7 @@ public:
 	}
 };
 
-static bool headerKeyCompare(String a, String b)
+static bool headerKeyCompare(const String& a, const String& b)
 {
 	return (strcasecmp(a.c_str(), b.c_str()) == 0);
 }
