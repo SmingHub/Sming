@@ -18,9 +18,6 @@ HWSerialMemberData HardwareSerial::memberData[NUMBER_UARTS];
 os_event_t* HardwareSerial::serialQueue = nullptr;
 bool HardwareSerial::init = false;
 
-//set m_printf callback
-extern void setMPrintfPrinterCbc(void (*callback)(uart_t*, char), uart_t* uart);
-
 HardwareSerial::HardwareSerial(const int uartPort) : uartNr(uartPort), rxSize(256)
 {
 }
@@ -101,16 +98,6 @@ int HardwareSerial::available()
 	return result;
 }
 
-size_t HardwareSerial::write(uint8_t oneChar)
-{
-	if(!uart || !uart_tx_enabled(uart)) {
-		return 0;
-	}
-
-	uart_write_char(uart, oneChar);
-	return 1;
-}
-
 int HardwareSerial::read()
 {
 	return uart_read_char(uart);
@@ -159,13 +146,14 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	if(enabled) {
 		if(uart_tx_enabled(uart)) {
 			uart_set_debug(uartNr);
-			setMPrintfPrinterCbc(uart_write_char, uart);
+			using namespace std::placeholders;
+			m_setPuts(std::bind(&uart_write, uart, _1, _2));
 		} else {
 			uart_set_debug(UART_NO);
 		}
 	} else {
 		// don't print debugf() data at all
-		setMPrintfPrinterCbc(NULL, NULL);
+		m_setPuts(nullptr);
 		// and disable system debug messages on this interface
 		if(uart_get_debug() == uartNr) {
 			uart_set_debug(UART_NO);

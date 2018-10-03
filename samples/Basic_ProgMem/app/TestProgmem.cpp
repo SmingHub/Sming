@@ -53,6 +53,7 @@ void testPSTR(Print& out)
 	out.print('"');
 	out.write(buf, sizeof(buf) - 1);
 	out.println('"');
+	m_printHex("hex", buf, sizeof(buf)); // show the actual data
 
 	// PSR defined in another module - we don't know its size! so have to guess,
 	// and of course nuls don't get included
@@ -70,6 +71,7 @@ void testPSTR(Print& out)
 	out.print('"');
 	out.write(psarr, sizeof(psarr) - 1);
 	out.println('"');
+	m_printHex("hex", psarr, sizeof(psarr));
 
 	//
 	out.println("< testPSTR() end\n");

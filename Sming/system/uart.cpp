@@ -156,23 +156,27 @@ void uart_stop_isr(uart_t* uart)
 }
 
 
-void uart_write_char(uart_t* uart, char c)
+size_t uart_write_char(uart_t* uart, char c)
 {
     if(uart == NULL || !uart->tx_enabled) {
-        return;
+        return 0;
     }
     while((USS(uart->uart_nr) >> USTXC) >= 0x7f);
     USF(uart->uart_nr) = c;
+    return 1;
 }
 
-void uart_write(uart_t* uart, const char* buf, size_t size)
+size_t uart_write(uart_t* uart, const void* buf, size_t size)
 {
     if(uart == NULL || !uart->tx_enabled) {
-        return;
+        return 0;
     }
+    size_t written = 0;
+    auto p = static_cast<const char*>(buf);
     while(size--) {
-        uart_write_char(uart, *buf++);
+        written += uart_write_char(uart, *p++);
     }
+    return written;
 }
 
 size_t uart_tx_free(uart_t* uart)
