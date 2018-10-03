@@ -276,8 +276,8 @@ bool String::concat(const String &s)
 bool String::concat(const char *cstr, unsigned int length)
 {
   unsigned int newlen = len + length;
-  if (!cstr) return false;
-  if (length == 0) return true;
+  if (length == 0) return true; // Nothing to add
+  if (!cstr) return false; // Bad argument (length is non-zero)
   if (!reserve(newlen)) return false;
   memmove(buffer + len, cstr, length);
   buffer[newlen] = '\0';
@@ -287,7 +287,7 @@ bool String::concat(const char *cstr, unsigned int length)
 
 bool String::concat(const char *cstr)
 {
-  if (!cstr) return false;
+  if (!cstr) return true; // Consider this an empty string, not a failure
   return concat(cstr, strlen(cstr));
 }
 
