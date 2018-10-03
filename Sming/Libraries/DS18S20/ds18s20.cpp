@@ -123,11 +123,10 @@ void DS18S20::DoSearch(void)
 	{
       debugx("  DBG: %d DS1820 sensors found",numberOf);
 
-      numberOfread=0;
-      StartReadNext();
 	}
 
-
+	numberOfread=0;
+	StartReadNext();
 }
 
 void DS18S20::StartReadNext()
