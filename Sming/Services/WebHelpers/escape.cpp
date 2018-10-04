@@ -30,11 +30,35 @@ static uint8_t unhex(const char code[2])
 
 // These characters are escaped
 static bool must_escape(char c) {
-	return c == '\r' || c == '\n' || c == '+' || c == '~' || c == '!'
-			|| c == '#' || c == '$' || c == '%' || c == '^' || c == '&'
-			|| c == '(' || c == ')' || c == '{' || c == '}' || c == '['
-			|| c == ']' || c == '=' || c == ':' || c == ',' || c == ';'
-			|| c == '?' || c == '\'' || c == '"' || c == '\\';
+	switch (c) {
+		case '\r':
+		case '\n':
+		case '+':
+		case '~':
+		case '!':
+		case '#':
+		case '$':
+		case '%':
+		case '^':
+		case '&':
+		case '(':
+		case ')':
+		case '{':
+		case '}':
+		case '[':
+		case ']':
+		case '=':
+		case ':':
+		case ',':
+		case ';':
+		case '?':
+		case '\'':
+		case '"':
+		case '\\':
+			return true;
+		default:
+			return false;
+	}
 }
 
 unsigned uri_escape_len(const char *s, size_t len) {
@@ -159,21 +183,16 @@ char *uri_unescape(char *dest, size_t dest_len, const char *src, int src_len)
 /* calculates the required length for html_escape */
 unsigned html_escape_len(const char *s, size_t len) {
 	unsigned ret;
-	for(ret=0;len && *s;len--, s++) {
-		char c = *s;
-
-		if(c == '<')
-			ret+=4;  /* &lt; */
-		else if(c == '>')
-			ret+=4;  /* &gt; */
-		else if(c == '&')
-			ret+=5;  /* &amp; */
-		else if(c == '"')
-			ret+=6;  /* &quot; */
-		else if(c == '\'')
-			ret += 6; /* &apos; */
-		else
-			ret++;
+	for(ret=0;len && *s;len--,s++) {
+		switch(*s) {
+			case '<': ret+=4; break; /* &lt; */
+			case '>': ret+=4; break; /* &gt; */
+			case '&': ret+=5; break; /* &amp; */
+			case '"': ret+=6; break; /* &quot; */
+			case '\'': ret+=6; break; /* &apos; */
+			default:
+				ret++;
+		}
 	}
 	return ret;
 }
@@ -182,21 +201,28 @@ unsigned html_escape_len(const char *s, size_t len) {
  * BUG: silently drops entities if there is no room
  */
 void html_escape(char *dest, size_t len, const char *s) {
-	unsigned i=0;
-	for(;i<len && *s;s++) {
-		char c = *s;
-		if (c == '<')
-			i += safe_append(dest+i,len-i, "&lt;");
-		else if (c == '>')
-			i += safe_append(dest+i,len-i, "&gt;");
-		else if (c == '&')
-			i += safe_append(dest+i,len-i, "&amp;");
-		else if (c == '"')
-			i += safe_append(dest+i,len-i, "&quot;");
-		else if (c == '\'')
-			i += safe_append(dest+i,len-i, "&apos;");
-		else
-			dest[i++]=*s;
+	unsigned i;
+
+	for(i=0;i<len && *s;s++) {
+		switch(*s) {
+			case '<':
+				i+=safe_append(dest+i,len-i, "&lt;");
+				break;
+			case '>':
+				i+=safe_append(dest+i,len-i, "&gt;");
+				break;
+			case '&':
+				i+=safe_append(dest+i,len-i, "&amp;");
+				break;
+			case '"':
+				i+=safe_append(dest+i,len-i, "&quot;");
+				break;
+			case '\'':
+				i+=safe_append(dest+i,len-i, "&apos;");
+				break;
+			default:
+				dest[i++]=*s;
+		}
 	}
 	dest[i]='\0';
 }
