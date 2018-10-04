@@ -39,12 +39,21 @@ class HashMap
 
     /*
     || @constructor
+    || | Default constructor
+    || #
+    */
+    HashMap()
+    {
+    }
+
+    /*
+    || @constructor
     || | Initialize this HashMap
     || #
     ||
     || @parameter compare optional function for comparing a key against another (for complex types)
     */
-    HashMap(comparator compare = nullptr) : cb_comparator(compare)
+    HashMap(comparator compare) : cb_comparator(compare)
     {
     }
 
@@ -297,7 +306,7 @@ class HashMap
     V nil;
     uint16_t currentIndex = 0;
     uint16_t size = 0;
-    comparator cb_comparator;
+    comparator cb_comparator = nullptr;
 
   private:
     HashMap(const HashMap<K, V>& that);
