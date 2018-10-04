@@ -44,6 +44,22 @@ static inline signed char hexchar(unsigned char c)
 		return '\0';
 }
 
+static inline signed char unhex(char c)
+{
+	if(c >= '0' && c <= '9')
+		return c - '0';
+	else if(c >= 'a' && c <= 'f')
+		return 10 + c - 'a';
+	else if(c >= 'A' && c <= 'F')
+		return 10 + c - 'A';
+	else
+		return -1;
+}
+
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+#endif
+
 #ifdef __cplusplus
 }
 #endif

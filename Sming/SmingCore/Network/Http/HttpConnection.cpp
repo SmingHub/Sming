@@ -563,7 +563,7 @@ err_t HttpConnection::onReceive(pbuf* buf)
 		parsedBytes += http_parser_execute(&parser, &parserSettings, (char*)cur->payload, cur->len);
 		if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 			// we ran into trouble - abort the connection
-			debug_e("HTTP parser error: %s", http_errno_name(HTTP_PARSER_ERRNO(&parser)));
+			debug_e("HTTP parser error: %s", httpGetErrnoName(HTTP_PARSER_ERRNO(&parser)).c_str());
 			cleanup();
 			TcpConnection::onReceive(NULL);
 			return ERR_ABRT;
