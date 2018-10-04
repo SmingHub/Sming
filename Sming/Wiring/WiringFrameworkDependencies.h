@@ -22,4 +22,13 @@
 #include "FakePgmSpace.h"
 #include "../SmingCore/pins_arduino.h"
 
+// std::min, etc.
+#include <algorithm>
+
+using std::isinf;
+using std::isnan;
+using std::max;
+using std::min;
+
+
 #endif /* WIRING_WIRINGFRAMEWORKDEPENDENCIES_H_ */
