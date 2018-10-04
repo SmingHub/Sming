@@ -117,6 +117,11 @@ class HashMap
     || | An indexer for accessing and assigning a value to a key
     || | If a key is used that exists, it returns the value for that key
     || | If there exists no value for that key, a nil value is returned
+    || |
+    || | Note that if the HashMap object is not const, the non-const version
+    || | of this operator will be called which will create a default value
+    || | for this key. If that behaviour is not desired, then check for the
+    || | existence of the key first, using either contains() or indexOf().
     || #
     ||
     || @parameter key the key to get the value for
