@@ -131,7 +131,7 @@ int HttpServerConnection::staticOnMessageComplete(http_parser* parser)
 	// we are finished with this request
 	int hasError = 0;
 	if(HTTP_PARSER_ERRNO(parser) != HPE_OK) {
-		connection->sendError(http_errno_name(HTTP_PARSER_ERRNO(parser)));
+		connection->sendError(httpGetErrnoName(HTTP_PARSER_ERRNO(parser)));
 		return 0;
 	}
 
@@ -320,7 +320,7 @@ err_t HttpServerConnection::onReceive(pbuf* buf)
 		parsedBytes += http_parser_execute(&parser, &parserSettings, (char*)cur->payload, cur->len);
 		if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 			// we ran into trouble - abort the connection
-			debug_e("HTTP parser error: %s", http_errno_name(HTTP_PARSER_ERRNO(&parser)));
+			debug_e("HTTP parser error: %s", httpGetErrnoName(HTTP_PARSER_ERRNO(&parser)).c_str());
 			sendError();
 
 			if(HTTP_PARSER_ERRNO(&parser) >= HPE_INVALID_EOF_STATE) {
@@ -429,7 +429,7 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 	}
 #endif /* DISABLE_HTTPSRV_ETAG */
 	String statusLine =
-		"HTTP/1.1 " + String(response->code) + " " + getStatus((enum http_status)response->code) + "\r\n";
+		"HTTP/1.1 " + String(response->code) + " " + httpGetStatusText((enum http_status)response->code) + "\r\n";
 	sendString(statusLine.c_str());
 	if(response->stream != NULL && response->stream->available() != -1) {
 		response->headers["Content-Length"] = String(response->stream->available());
@@ -505,34 +505,20 @@ void HttpServerConnection::onError(err_t err)
 	TcpClient::onError(err);
 }
 
-const char* HttpServerConnection::getStatus(enum http_status code)
-{
-	switch(code) {
-#define XX(num, name, string)                                                                                          \
-	case num:                                                                                                          \
-		return #string;
-		HTTP_STATUS_MAP(XX)
-#undef XX
-	default:
-		return "<unknown>";
-	}
-}
-
 void HttpServerConnection::send()
 {
 	state = eHCS_StartSending;
 	onReadyToSendData(eTCE_Received);
 }
 
-void HttpServerConnection::sendError(const char* message /* = NULL*/,
-									 enum http_status code /* = HTTP_STATUS_BAD_REQUEST */)
+void HttpServerConnection::sendError(const String& message, enum http_status code)
 {
 	debug_d("SEND ERROR PAGE");
 	response.code = code;
 	response.setContentType(MIME_HTML);
 
 	String html = "<H2 color='#444'>";
-	html += message ? message : getStatus((enum http_status)response.code);
+	html += message ? message : httpGetStatusText((enum http_status)response.code);
 	html += "</H2>";
 	response.headers["Content-Length"] = html.length();
 	response.sendString(html);

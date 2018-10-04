@@ -53,10 +53,8 @@ public:
 protected:
 	virtual err_t onReceive(pbuf* buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-	virtual void sendError(const char* message = NULL, enum http_status code = HTTP_STATUS_BAD_REQUEST);
+	virtual void sendError(const String& message = nullptr, enum http_status code = HTTP_STATUS_BAD_REQUEST);
 	virtual void onError(err_t err);
-
-	const char* getStatus(enum http_status s);
 
 private:
 	static int staticOnMessageBegin(http_parser* parser);
