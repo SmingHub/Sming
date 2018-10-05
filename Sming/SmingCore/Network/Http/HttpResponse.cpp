@@ -101,8 +101,8 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 	}
 
 	if(!hasHeader("Content-Type")) {
-		const char* mime = ContentType::fromFullFileName(fileName);
-		if(mime != NULL)
+		String mime = ContentType::fromFullFileName(fileName);
+		if(mime)
 			setContentType(mime);
 	}
 
@@ -126,8 +126,8 @@ bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
 	}
 
 	if(!hasHeader("Content-Type")) {
-		const char* mime = ContentType::fromFullFileName(newTemplateInstance->fileName());
-		if(mime != NULL)
+		String mime = ContentType::fromFullFileName(newTemplateInstance->fileName());
+		if(mime)
 			setContentType(mime);
 	}
 
