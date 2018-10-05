@@ -13,7 +13,7 @@
 
 #include "DataSourceStream.h"
 #include "Delegate.h"
-#include "../Structures.h"
+#include "../HttpHeaders.h"
 
 /**
  * @brief      Multipart stream class
@@ -23,8 +23,8 @@
 */
 
 typedef struct {
-	HttpHeaders* headers = NULL;
-	ReadWriteStream* stream = NULL;
+	HttpHeaders* headers = nullptr;
+	ReadWriteStream* stream = nullptr;
 } HttpPartResult;
 
 typedef Delegate<HttpPartResult()> HttpPartProducerDelegate;
@@ -83,8 +83,8 @@ public:
 private:
 	HttpPartProducerDelegate producer;
 
-	ReadWriteStream* stream = NULL;
-	ReadWriteStream* nextStream = NULL;
+	ReadWriteStream* stream = nullptr;
+	ReadWriteStream* nextStream = nullptr;
 
 	char boundary[16] = {0};
 

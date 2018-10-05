@@ -16,12 +16,13 @@
 HttpResponse::~HttpResponse()
 {
 	delete stream;
-	stream = NULL;
+	stream = nullptr;
 }
 
 HttpResponse* HttpResponse::setContentType(const String& type)
 {
-	return setHeader("Content-Type", type);
+	headers[hhfn_ContentType] = type;
+	return this;
 }
 
 HttpResponse* HttpResponse::setContentType(enum MimeType type)
@@ -31,18 +32,22 @@ HttpResponse* HttpResponse::setContentType(enum MimeType type)
 
 HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
 {
-	return setHeader("Set-Cookie", name + "=" + value);
+	headers[hhfn_SetCookie] = name + '=' + value;
+	return this;
 }
 
 HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic /* = false */)
 {
-	String cache = String(isPublic ? "public" : "private") + ", max-age=" + String(maxAgeSeconds) + ", must-revalidate";
-	return setHeader("Cache-Control", cache);
+	String cache = isPublic ? F("public") : F("private");
+	cache += F(", max-age=") + String(maxAgeSeconds) + F(", must-revalidate");
+	headers[hhfn_CacheControl] = cache;
+	return this;
 }
 
 HttpResponse* HttpResponse::setAllowCrossDomainOrigin(const String& controlAllowOrigin)
 {
-	return setHeader("Access-Control-Allow-Origin", controlAllowOrigin);
+	headers[hhfn_AccessControlAllowOrigin] = controlAllowOrigin;
+	return this;
 }
 
 HttpResponse* HttpResponse::setHeader(const String& name, const String& value)
@@ -53,13 +58,13 @@ HttpResponse* HttpResponse::setHeader(const String& name, const String& value)
 
 bool HttpResponse::sendString(const String& text)
 {
-	if(stream != NULL && stream->getStreamType() != eSST_Memory) {
+	if(stream != nullptr && stream->getStreamType() != eSST_Memory) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
-		stream = NULL;
+		stream = nullptr;
 	}
 
-	if(stream == NULL) {
+	if(stream == nullptr) {
 		stream = new MemoryDataStream();
 	}
 
@@ -76,22 +81,22 @@ bool HttpResponse::hasHeader(const String& name)
 
 void HttpResponse::redirect(const String& location)
 {
-	headers["Location"] = location;
+	headers[hhfn_Location] = location;
 }
 
 bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)
 {
-	if(stream != NULL) {
+	if(stream != nullptr) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
-		stream = NULL;
+		stream = nullptr;
 	}
 
 	String compressed = fileName + ".gz";
 	if(allowGzipFileCheck && fileExist(compressed)) {
 		debug_d("found %s", compressed.c_str());
 		stream = new FileStream(compressed);
-		headers["Content-Encoding"] = "gzip";
+		headers[hhfn_ContentEncoding] = _F("gzip");
 	} else if(fileExist(fileName)) {
 		debug_d("found %s", fileName.c_str());
 		stream = new FileStream(fileName);
@@ -100,7 +105,7 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 		return false;
 	}
 
-	if(!hasHeader("Content-Type")) {
+	if(!headers.contains(hhfn_ContentType)) {
 		String mime = ContentType::fromFullFileName(fileName);
 		if(mime)
 			setContentType(mime);
@@ -111,28 +116,28 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 
 bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
 {
-	if(stream != NULL) {
+	if(stream != nullptr) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
-		stream = NULL;
+		stream = nullptr;
 	}
 
 	stream = newTemplateInstance;
 	if(!newTemplateInstance->fileExist()) {
 		code = HTTP_STATUS_NOT_FOUND;
 		delete stream;
-		stream = NULL;
+		stream = nullptr;
 		return false;
 	}
 
-	if(!hasHeader("Content-Type")) {
+	if(!headers.contains(hhfn_ContentType)) {
 		String mime = ContentType::fromFullFileName(newTemplateInstance->fileName());
 		if(mime)
 			setContentType(mime);
 	}
 
-	if(!hasHeader("Transfer-Encoding") && stream->available() == -1) {
-		setHeader("Transfer-Encoding", "chunked");
+	if(!headers.contains(hhfn_TransferEncoding) && stream->available() < 0) {
+		headers[hhfn_TransferEncoding] = _F("chunked");
 	}
 
 	return true;
@@ -140,28 +145,28 @@ bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
 
 bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 {
-	if(stream != NULL) {
+	if(stream != nullptr) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
-		stream = NULL;
+		stream = nullptr;
 	}
 
 	stream = newJsonStreamInstance;
-	if(!hasHeader("Content-Type")) {
+	if(!headers.contains(hhfn_ContentType)) {
 		setContentType(MIME_JSON);
 	}
 
 	return true;
 }
 
-bool HttpResponse::sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType /* = "" */)
+bool HttpResponse::sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType)
 {
-	if(stream != NULL) {
+	if(stream != nullptr) {
 		SYSTEM_ERROR("Stream already created");
 		delete stream;
-		stream = NULL;
+		stream = nullptr;
 	}
-	if(reqContentType != "") {
+	if(reqContentType) {
 		setContentType(reqContentType);
 	}
 	stream = newDataStream;
@@ -171,7 +176,7 @@ bool HttpResponse::sendDataStream(ReadWriteStream* newDataStream, const String& 
 
 String HttpResponse::getBody()
 {
-	if(stream == NULL) {
+	if(stream == nullptr) {
 		return "";
 	}
 
@@ -196,5 +201,5 @@ void HttpResponse::reset()
 	code = 0;
 	headers.clear();
 	delete stream;
-	stream = NULL;
+	stream = nullptr;
 }

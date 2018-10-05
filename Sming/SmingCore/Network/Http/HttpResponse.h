@@ -15,6 +15,7 @@
 
 #include "HttpCommon.h"
 #include "Data/Stream/DataSourceStream.h"
+#include "Data/HttpHeaders.h"
 
 class JsonObjectStream; // << TODO: deprecated and should be removed in the next version
 
@@ -83,7 +84,7 @@ public:
 	}
 
 	// Send Datastream, can be called with Classes derived from
-	bool sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType = "");
+	bool sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType = nullptr);
 
 	String getBody();
 
@@ -92,7 +93,7 @@ public:
 public:
 	int code;
 	HttpHeaders headers;
-	ReadWriteStream* stream = NULL;
+	ReadWriteStream* stream = nullptr;
 };
 
 #endif /* _SMING_CORE_HTTP_RESPONSE_H_ */

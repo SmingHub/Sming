@@ -19,27 +19,27 @@ WebSocketConnection::WebSocketConnection(HttpServerConnection* conn)
 WebSocketConnection::~WebSocketConnection()
 {
 	state = eWSCS_Closed;
-	stream = NULL;
+	stream = nullptr;
 	close();
 }
 
 bool WebSocketConnection::initialize(HttpRequest& request, HttpResponse& response)
 {
-	String version = request.getHeader("Sec-WebSocket-Version");
+	String version = request.headers[hhfn_SecWebSocketVersion];
 	version.trim();
-	if(version.toInt() != 13) // 1.3
+	if(version.toInt() != WEBSOCKET_VERSION)
 		return false;
 
 	state = eWSCS_Open;
-	String token = request.getHeader("Sec-WebSocket-Key");
+	String token = request.headers[hhfn_SecWebSocketKey];
 	token.trim();
 	token += WSSTR_SECRET;
 	unsigned char hash[SHA1_SIZE];
 	sha1(hash, token.c_str(), token.length());
 	response.code = HTTP_STATUS_SWITCHING_PROTOCOLS;
-	response.setHeader("Connection", "Upgrade");
-	response.setHeader("Upgrade", "websocket");
-	response.setHeader("Sec-WebSocket-Accept", base64_encode(hash, SHA1_SIZE));
+	response.headers[hhfn_Connection] = WSSTR_UPGRADE;
+	response.headers[hhfn_Upgrade] = WSSTR_WEBSOCKET;
+	response.headers[hhfn_SecWebSocketAccept] = base64_encode(hash, SHA1_SIZE);
 
 	delete stream;
 	stream = new EndlessMemoryStream();
@@ -83,7 +83,7 @@ int WebSocketConnection::processFrame(HttpServerConnection& connection, HttpRequ
 int WebSocketConnection::staticOnDataBegin(void* userData, ws_frame_type_t type)
 {
 	WebSocketConnection* connection = (WebSocketConnection*)userData;
-	if(connection == NULL) {
+	if(connection == nullptr) {
 		return -1;
 	}
 
@@ -97,7 +97,7 @@ int WebSocketConnection::staticOnDataBegin(void* userData, ws_frame_type_t type)
 int WebSocketConnection::staticOnDataPayload(void* userData, const char* at, size_t length)
 {
 	WebSocketConnection* connection = (WebSocketConnection*)userData;
-	if(connection == NULL) {
+	if(connection == nullptr) {
 		return -1;
 	}
 
@@ -118,12 +118,12 @@ int WebSocketConnection::staticOnDataEnd(void* userData)
 int WebSocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t type)
 {
 	WebSocketConnection* connection = (WebSocketConnection*)userData;
-	if(connection == NULL) {
+	if(connection == nullptr) {
 		return -1;
 	}
 
 	connection->controlFrame.type = type;
-	connection->controlFrame.payload = NULL;
+	connection->controlFrame.payload = nullptr;
 	connection->controlFrame.payloadLegth = 0;
 
 	if(type == WS_FRAME_CLOSE) {
@@ -136,7 +136,7 @@ int WebSocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t ty
 int WebSocketConnection::staticOnControlPayload(void* userData, const char* data, size_t length)
 {
 	WebSocketConnection* connection = (WebSocketConnection*)userData;
-	if(connection == NULL) {
+	if(connection == nullptr) {
 		return -1;
 	}
 
@@ -149,7 +149,7 @@ int WebSocketConnection::staticOnControlPayload(void* userData, const char* data
 int WebSocketConnection::staticOnControlEnd(void* userData)
 {
 	WebSocketConnection* connection = (WebSocketConnection*)userData;
-	if(connection == NULL) {
+	if(connection == nullptr) {
 		return -1;
 	}
 
@@ -163,7 +163,7 @@ int WebSocketConnection::staticOnControlEnd(void* userData)
 
 void WebSocketConnection::send(const char* message, int length, wsFrameType type /* = WS_TEXT_FRAME*/)
 {
-	if(stream == NULL) {
+	if(stream == nullptr) {
 		return;
 	}
 
@@ -206,8 +206,8 @@ void WebSocketConnection::close()
 	websocketList.removeElement(this);
 	if(state != eWSCS_Closed) {
 		state = eWSCS_Closed;
-		send((const char*)NULL, 0, WS_CLOSING_FRAME);
-		stream = NULL;
+		send(nullptr, 0, WS_CLOSING_FRAME);
+		stream = nullptr;
 		if(wsDisconnect) {
 			wsDisconnect(*this);
 		}

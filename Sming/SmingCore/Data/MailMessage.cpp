@@ -19,16 +19,16 @@ MailMessage& MailMessage::setHeader(const String& name, const String& value)
 
 HttpHeaders& MailMessage::getHeaders()
 {
-	if(!headers.contains("From")) {
-		headers["From"] = from;
+	if(!headers.contains(hhfn_From)) {
+		headers[hhfn_From] = from;
 	}
-	if(!headers.contains("To")) {
-		headers["To"] = to;
+	if(!headers.contains(hhfn_To)) {
+		headers[hhfn_To] = to;
 	}
-	if(!headers.contains("Cc") && cc.length()) {
-		headers["Cc"] = cc;
+	if(!headers.contains(hhfn_Cc) && cc.length()) {
+		headers[hhfn_Cc] = cc;
 	}
-	headers["Subject"] = subject;
+	headers[hhfn_Subject] = subject;
 
 	return headers;
 }
@@ -53,14 +53,14 @@ MailMessage& MailMessage::setBody(ReadWriteStream* stream, MimeType mime /* = MI
 	}
 
 	this->stream = stream;
-	headers["Content-Type"] = ContentType::toString(mime);
+	headers[hhfn_ContentType] = ContentType::toString(mime);
 
 	return *this;
 }
 
 MailMessage& MailMessage::addAttachment(FileStream* stream)
 {
-	if(stream == NULL) {
+	if(stream == nullptr) {
 		return *this;
 	}
 
@@ -80,10 +80,10 @@ MailMessage& MailMessage::addAttachment(ReadWriteStream* stream, const String& m
 	HttpPartResult attachment;
 	attachment.stream = stream;
 	attachment.headers = new HttpHeaders();
-	(*attachment.headers)["Content-Type"] = mime;
-	(*attachment.headers)["Content-Disposition"] = "attachment";
+	(*attachment.headers)[hhfn_ContentType] = mime;
+	(*attachment.headers)[hhfn_ContentDisposition] = F("attachment");
 	if(filename.length()) {
-		(*attachment.headers)["Content-Disposition"] += "; filename=\"" + filename + "\"";
+		(*attachment.headers)[hhfn_ContentDisposition] += F("; filename=\"") + filename + '"';
 	}
 
 	attachments.addElement(attachment);

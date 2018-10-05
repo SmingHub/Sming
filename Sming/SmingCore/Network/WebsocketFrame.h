@@ -36,7 +36,7 @@ namespace WSFlags
 {
 static const uint8_t payloadDeleteMemBit = 1u; //Delete memory reserved for payload in destructor
 static const uint8_t headerDeleteMemBit = 2u;  //Delete memory reserved for header in destructor
-};
+};											   // namespace WSFlags
 
 // Declare classes where WebsocketFrameClass can be used they will have access to _payload and _header members
 class HttpServer;

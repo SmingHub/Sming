@@ -20,9 +20,7 @@ HttpRequest::HttpRequest(const HttpRequest& value) : uri(value.uri)
 {
 	*this = value;
 	method = value.method;
-	if(value.headers.count()) {
-		setHeaders(value.headers);
-	}
+	headers = value.headers;
 	headersCompletedDelegate = value.headersCompletedDelegate;
 	requestBodyDelegate = value.requestBodyDelegate;
 	requestCompletedDelegate = value.requestCompletedDelegate;
@@ -67,9 +65,7 @@ HttpRequest* HttpRequest::setMethod(const HttpMethod method)
 
 HttpRequest* HttpRequest::setHeaders(const HttpHeaders& headers)
 {
-	for(int i = 0; i < headers.count(); i++) {
-		this->headers[headers.keyAt(i)] = headers.valueAt(i);
-	}
+	this->headers.setMultiple(headers);
 	return this;
 }
 
@@ -131,7 +127,7 @@ String HttpRequest::getPostParameter(const String& name)
 
 String HttpRequest::getQueryParameter(const String& parameterName, const String& defaultValue /* = "" */)
 {
-	if(queryParams == NULL) {
+	if(queryParams == nullptr) {
 		queryParams = new HttpParams();
 		if(!uri.Query.length()) {
 			return defaultValue;
@@ -140,7 +136,7 @@ String HttpRequest::getQueryParameter(const String& parameterName, const String&
 		String query = uri.Query.substring(1);
 		Vector<String> parts;
 		splitString(query, '&', parts);
-		for(int i = 0; i < parts.count(); i++) {
+		for(unsigned i = 0; i < parts.count(); i++) {
 			Vector<String> pair;
 			int count = splitString(parts[i], '=', pair);
 			if(count != 2) {
@@ -160,7 +156,7 @@ String HttpRequest::getQueryParameter(const String& parameterName, const String&
 
 String HttpRequest::getBody()
 {
-	if(stream == NULL) {
+	if(stream == nullptr) {
 		return "";
 	}
 
@@ -187,10 +183,10 @@ ReadWriteStream* HttpRequest::getBodyStream()
 
 HttpRequest* HttpRequest::setResponseStream(ReadWriteStream* stream)
 {
-	if(responseStream != NULL) {
+	if(responseStream != nullptr) {
 		debug_e("HttpRequest::setResponseStream: Discarding already set stream!");
 		delete responseStream;
-		responseStream = NULL;
+		responseStream = nullptr;
 	}
 
 	responseStream = stream;
@@ -241,10 +237,10 @@ HttpRequest* HttpRequest::setBody(uint8_t* rawData, size_t length)
 
 HttpRequest* HttpRequest::setBody(ReadWriteStream* stream)
 {
-	if(this->stream != NULL) {
+	if(this->stream != nullptr) {
 		debug_e("HttpRequest::setBody: Discarding already set stream!");
 		delete this->stream;
-		this->stream = NULL;
+		this->stream = nullptr;
 	}
 
 	this->stream = stream;
@@ -274,15 +270,15 @@ void HttpRequest::reset()
 	delete queryParams;
 	delete stream;
 	delete responseStream;
-	queryParams = NULL;
-	stream = NULL;
-	responseStream = NULL;
+	queryParams = nullptr;
+	stream = nullptr;
+	responseStream = nullptr;
 
 	postParams.clear();
-	for(int i = 0; i < files.count(); i++) {
+	for(unsigned i = 0; i < files.count(); i++) {
 		String key = files.keyAt(i);
 		delete files[key];
-		files[key] = NULL;
+		files[key] = nullptr;
 	}
 	files.clear();
 }
@@ -292,22 +288,24 @@ String HttpRequest::toString()
 {
 	String content = "";
 #ifdef ENABLE_SSL
-	content += "> SSL options: " + String(sslOptions) + "\n";
-	content += "> SSL Cert Fingerprint Length: " + String((sslFingerprint.certSha1 == NULL) ? 0 : SHA1_SIZE) + "\n";
-	content += "> SSL PK Fingerprint Length: " + String((sslFingerprint.pkSha256 == NULL) ? 0 : SHA256_SIZE) + "\n";
-	content += "> SSL ClientCert Length: " + String(sslKeyCertPair.certificateLength) + "\n";
-	content += "> SSL ClientCert PK Length: " + String(sslKeyCertPair.keyLength) + "\n";
-	content += "\n";
+	content += F("> SSL options: ") + String(sslOptions) + '\n';
+	content +=
+		F("> SSL Cert Fingerprint Length: ") + String((sslFingerprint.certSha1 == nullptr) ? 0 : SHA1_SIZE) + '\n';
+	content +=
+		F("> SSL PK Fingerprint Length: ") + String((sslFingerprint.pkSha256 == nullptr) ? 0 : SHA256_SIZE) + '\n';
+	content += F("> SSL ClientCert Length: ") + String(sslKeyCertPair.certificateLength) + '\n';
+	content += F("> SSL ClientCert PK Length: ") + String(sslKeyCertPair.keyLength) + '\n';
+	content += '\n';
 #endif
 
-	content += http_method_str(method) + String(" ") + uri.getPathWithQuery() + " HTTP/1.1\n";
-	content += "Host: " + uri.Host + ":" + uri.Port + "\n";
-	for(int i = 0; i < headers.count(); i++) {
-		content += headers.keyAt(i) + ": " + headers.valueAt(i) + "\n";
+	content += String(http_method_str(method)) + ' ' + uri.getPathWithQuery() + _F(" HTTP/1.1\n");
+	content += F("Host: ") + uri.Host + ':' + uri.Port + '\n';
+	for(unsigned i = 0; i < headers.count(); i++) {
+		content += headers[i];
 	}
 
-	if(stream != NULL && stream->available() > -1) {
-		content += "Content-Length: " + String(stream->available());
+	if(stream != nullptr && stream->available() >= 0) {
+		content += HttpHeaders::toString(hhfn_ContentLength, String(stream->available()));
 	}
 
 	return content;

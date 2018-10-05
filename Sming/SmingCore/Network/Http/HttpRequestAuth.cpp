@@ -23,7 +23,7 @@ HttpBasicAuth::HttpBasicAuth(const String& username, const String& password)
 // Basic Auth
 void HttpBasicAuth::setRequest(HttpRequest* request)
 {
-	request->setHeader("Authorization", "Basic " + base64_encode(username + ":" + password));
+	request->headers[hhfn_Authorization] = F("Basic ") + base64_encode(username + ':' + password);
 }
 
 // Digest Auth
@@ -44,9 +44,9 @@ void HttpDigestAuth::setResponse(HttpResponse* response)
 		return;
 	}
 
-	if(response->headers.contains("WWW-Authenticate") &&
-	   response->headers["WWW-Authenticate"].indexOf("Digest") != -1) {
-		String authHeader = response->headers["WWW-Authenticate"];
+	if(response->headers.contains(hhfn_WWWAuthenticate) &&
+	   response->headers[hhfn_WWWAuthenticate].indexOf(F("Digest")) >= 0) {
+		String authHeader = response->headers[hhfn_WWWAuthenticate];
 		/*
 		 * Example (see: https://tools.ietf.org/html/rfc2069#page-4):
 		 *
@@ -58,7 +58,7 @@ void HttpDigestAuth::setResponse(HttpResponse* response)
 
 		// TODO: process WWW-Authenticate header
 
-		String authResponse = "Digest username=\"" + username + "\"";
+		String authResponse = F("Digest username=\"") + username + '"';
 		/*
 		 * Example (see: https://tools.ietf.org/html/rfc2069#page-4):
 		 *
@@ -71,7 +71,7 @@ void HttpDigestAuth::setResponse(HttpResponse* response)
 		 */
 
 		// TODO: calculate the response...
-		request->setHeader("Authorization", authResponse);
+		request->headers[hhfn_Authorization] = authResponse;
 		request->retries = 1;
 	}
 }

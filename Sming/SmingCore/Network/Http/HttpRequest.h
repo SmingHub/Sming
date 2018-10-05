@@ -19,6 +19,7 @@
 #endif
 #include "../TcpConnection.h"
 #include "Data/Stream/DataSourceStream.h"
+#include "Data/HttpHeaders.h"
 
 class HttpClient;
 class HttpServerConnection;
@@ -160,18 +161,18 @@ public:
 
 	int retries = 0; // how many times the request should be send again...
 
-	void* args = NULL; // Used to store data that should be valid during a single request
+	void* args = nullptr; // Used to store data that should be valid during a single request
 
 protected:
 	RequestHeadersCompletedDelegate headersCompletedDelegate;
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
 
-	ReadWriteStream* stream = NULL;
-	ReadWriteStream* responseStream = NULL;
+	ReadWriteStream* stream = nullptr;
+	ReadWriteStream* responseStream = nullptr;
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
-	AuthAdapter* auth = NULL;
+	AuthAdapter* auth = nullptr;
 #endif
 
 #ifdef ENABLE_SSL
@@ -183,7 +184,7 @@ protected:
 private:
 	HashMap<String, FileStream*> files;
 
-	HttpParams* queryParams = NULL; // << deprecated
+	HttpParams* queryParams = nullptr; // << deprecated
 };
 
 #endif /* _SMING_CORE_HTTP_REQUEST_H_ */
