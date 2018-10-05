@@ -131,7 +131,7 @@ int HttpServerConnection::staticOnMessageComplete(http_parser* parser)
 	// we are finished with this request
 	int hasError = 0;
 	if(HTTP_PARSER_ERRNO(parser) != HPE_OK) {
-		connection->sendError(httpGetErrnoName(HTTP_PARSER_ERRNO(parser)));
+		connection->sendError(httpGetErrorName(HTTP_PARSER_ERRNO(parser)));
 		return 0;
 	}
 
@@ -320,7 +320,7 @@ err_t HttpServerConnection::onReceive(pbuf* buf)
 		parsedBytes += http_parser_execute(&parser, &parserSettings, (char*)cur->payload, cur->len);
 		if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 			// we ran into trouble - abort the connection
-			debug_e("HTTP parser error: %s", httpGetErrnoName(HTTP_PARSER_ERRNO(&parser)).c_str());
+			debug_e("HTTP parser error: %s", httpGetErrorName(HTTP_PARSER_ERRNO(&parser)).c_str());
 			sendError();
 
 			if(HTTP_PARSER_ERRNO(&parser) >= HPE_INVALID_EOF_STATE) {

@@ -131,15 +131,14 @@ void testFSTR(Print& out)
 	TEST(demoFSTR1 == String(demoFSTR2))
 #undef TEST
 
-
 	// FSTR table
 
 	static DEFINE_FSTR(fstr1, "Test string #1");
 	static DEFINE_FSTR(fstr2, "Test string #2");
 
 	static FSTR_TABLE(table) = {
-			FSTR_PTR(fstr1),
-			FSTR_PTR(fstr2),
+		FSTR_PTR(fstr1),
+		FSTR_PTR(fstr2),
 	};
 
 	// Table entries may be accessed directly as they are word-aligned

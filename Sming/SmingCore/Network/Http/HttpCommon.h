@@ -50,14 +50,14 @@ enum HttpConnectionState {
  * @retval String
  * @note This replaces the one in http_parser module which uses a load of RAM
  */
-String httpGetErrnoName(enum http_errno err);
+String httpGetErrorName(enum http_errno err);
 
 /**
  * @brief Return a descriptive string for the given error
  * @param err
  * @retval String
  */
-String httpGetErrnoDescription(enum http_errno err);
+String httpGetErrorDescription(enum http_errno err);
 
 /**
  * @brief Return a descriptive string for an HTTP status code

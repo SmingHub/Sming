@@ -23,7 +23,7 @@ static FSTR_TABLE(hpeNames) = {
 #undef XX
 };
 
-String httpGetErrnoName(enum http_errno err)
+String httpGetErrorName(enum http_errno err)
 {
 	if(err > HPE_UNKNOWN)
 		return F("HPE_#") + String(err);
@@ -42,7 +42,7 @@ static FSTR_TABLE(hpeDescriptions) = {
 #undef XX
 };
 
-String httpGetErrnoDescription(enum http_errno err)
+String httpGetErrorDescription(enum http_errno err)
 {
 	if(err > HPE_UNKNOWN)
 		return F("HPE_#") + String(err);
