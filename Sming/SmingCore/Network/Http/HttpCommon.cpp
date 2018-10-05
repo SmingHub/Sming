@@ -6,7 +6,7 @@
  *
  * @author: 2018 - Mikee47 <mike@sillyhouse.net>
  *
- * 	httpGetErrnoName() and httpGetStatusText() functions added
+ * 	httpGetErrorName(), httpGetErrorDescription() and httpGetStatusText() functions added
  *
  ****/
 
