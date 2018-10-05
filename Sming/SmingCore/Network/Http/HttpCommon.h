@@ -44,4 +44,36 @@ enum HttpConnectionState {
 	eHCS_Sent
 };
 
+/**
+ * @brief Return a string name of the given error
+ * @param err
+ * @retval String
+ * @note This replaces the one in http_parser module which uses a load of RAM
+ */
+String httpGetErrorName(enum http_errno err);
+
+/**
+ * @brief Return a descriptive string for the given error
+ * @param err
+ * @retval String
+ */
+String httpGetErrorDescription(enum http_errno err);
+
+/**
+ * @brief Return a descriptive string for an HTTP status code
+ * @param code
+ * @retval String
+ */
+String httpGetStatusText(enum http_status code);
+
+/**
+ * @brief Return a descriptive string for an HTTP status code
+ * @param code
+ * @retval String
+ */
+static inline String httpGetStatusText(unsigned code)
+{
+	return httpGetStatusText((enum http_status)code);
+}
+
 #endif /* _SMING_CORE_HTTP_COMMON_H_ */
