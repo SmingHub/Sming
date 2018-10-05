@@ -26,7 +26,7 @@ static FSTR_TABLE(mimeStrings) = {
 MIME_TYPE_MAP(XX)
 #undef XX
 
-static FSTR_TABLE(extStrings) = {
+static FSTR_TABLE(extensionStrings) = {
 #define XX(_name, _ext, _mime) FSTR_PTR(extstr_##_name),
 	MIME_TYPE_MAP(XX)
 #undef XX
@@ -38,8 +38,8 @@ String fromFileExtension(const char* extension)
 	if(strcasecmp(extension, _F("htm")) == 0)
 		return mimestr_HTML;
 
-	for(unsigned i = 0; i < ARRAY_SIZE(extStrings); ++i) {
-		if(*extStrings[i] == extension)
+	for(unsigned i = 0; i < ARRAY_SIZE(extensionStrings); ++i) {
+		if(*extensionStrings[i] == extension)
 			return *mimeStrings[i];
 	}
 
@@ -60,9 +60,9 @@ String fromFullFileName(const char* fileName)
 	if(!fileName)
 		return nullptr;
 
-	const char* pExt = strrchr(fileName, '.');
+	const char* extension = strrchr(fileName, '.');
 
-	return pExt ? fromFileExtension(pExt + 1) : nullptr;
+	return extension ? fromFileExtension(extension + 1) : nullptr;
 }
 
 }; // namespace ContentType
