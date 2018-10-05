@@ -131,6 +131,23 @@ void testFSTR(Print& out)
 	TEST(demoFSTR1 == String(demoFSTR2))
 #undef TEST
 
+
+	// FSTR table
+
+	static DEFINE_FSTR(fstr1, "Test string #1");
+	static DEFINE_FSTR(fstr2, "Test string #2");
+
+	static FSTR_TABLE(table) = {
+			FSTR_PTR(fstr1),
+			FSTR_PTR(fstr2),
+	};
+
+	// Table entries may be accessed directly as they are word-aligned
+	out.println(_F("FSTR tables -"));
+	out.printf(_F(" fstr1 = '%s'\n"), String(*table[0]).c_str());
+	out.printf(_F(" fstr1.length() = %u\n"), table[0]->length());
+	out.printf(_F(" entries = %u\n"), ARRAY_SIZE(table));
+
 	out.println("< testFSTR() end\n");
 }
 
