@@ -305,7 +305,7 @@ String HttpRequest::toString()
 	}
 
 	if(stream != nullptr && stream->available() >= 0) {
-		content += HttpHeaders::toString(HTTP_HEADER_CONTENT_LENGTH, String(stream->available()));
+		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(stream->available()));
 	}
 
 	return content;
