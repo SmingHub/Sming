@@ -18,7 +18,7 @@
 #ifndef _SMING_CORE_NETWORK_HTTP_HEADERS_H_
 #define _SMING_CORE_NETWORK_HTTP_HEADERS_H_
 
-#include "WString.h"
+#include "CStringArray.h"
 #include "WHashMap.h"
 
 /*
@@ -79,7 +79,7 @@ enum HttpHeaderFieldName {
 #define XX(_tag, _str, _comment) HTTP_HEADER_##_tag,
 	HTTP_HEADER_FIELDNAME_MAP(XX)
 #undef XX
-		HTTP_HEADER_MAX
+		HTTP_HEADER_CUSTOM // First custom header tag value
 };
 
 /** @brief Encapsulates a set of HTTP header information
@@ -89,12 +89,10 @@ enum HttpHeaderFieldName {
  *
  *  @todo add name and/or value escaping
  */
-class HttpHeaders : public HashMap<String, String>
+class HttpHeaders : public HashMap<HttpHeaderFieldName, String>
 {
 public:
-	HttpHeaders();
-
-	static String toString(HttpHeaderFieldName name);
+	String toString(HttpHeaderFieldName name) const;
 
 	/** @brief Produce a string for output in the HTTP header, with line ending
 	 *  @param name
@@ -106,7 +104,7 @@ public:
 		return name + ": " + value + "\r\n";
 	}
 
-	static String toString(HttpHeaderFieldName name, const String& value)
+	String toString(HttpHeaderFieldName name, const String& value) const
 	{
 		return toString(toString(name), value);
 	}
@@ -116,20 +114,44 @@ public:
 	 *  @retval HttpHeaderFieldName field name code, HTTP_HEADER_UNKNOWN if not recognised
 	 *  @note comparison is not case-sensitive
 	 */
-	static HttpHeaderFieldName fromString(const String& name);
+	HttpHeaderFieldName fromString(const String& name) const;
 
 	using HashMap::operator[];
 
-	const String& operator[](HttpHeaderFieldName name) const
+	/** @brief Fetch a reference to the header field value by name
+	 *  @param name
+	 *  @retval const String& Reference to value
+	 *  @note if the field doesn't exist a null String reference is returned
+	 */
+	const String& operator[](const String& name) const
 	{
-		return operator[](toString(name));
+		auto field = fromString(name);
+		if(field == HTTP_HEADER_UNKNOWN) {
+			return nil;
+		}
+		return operator[](field);
 	}
 
-	String& operator[](HttpHeaderFieldName name)
+	/** @brief Fetch a reference to the header field value by name
+	 *  @param name
+	 *  @retval String& Reference to value
+	 *  @note if the field doesn't exist it is created with the default null value
+	 */
+	String& operator[](const String& name)
 	{
-		return operator[](toString(name));
+		auto field = fromString(name);
+		if(field == HTTP_HEADER_UNKNOWN) {
+			_customFieldNames.append(name);
+			field = findCustomFieldName(name);
+		}
+		return operator[](field);
 	}
 
+	/** @brief Return the HTTP header line for the value at the given index
+	 *  @param index
+	 *  @retval String
+	 *  @note if the index is invalid,
+	 */
 	String operator[](unsigned index) const
 	{
 		return toString(keyAt(index), valueAt(index));
@@ -137,16 +159,16 @@ public:
 
 	using HashMap::contains;
 
-	bool contains(HttpHeaderFieldName name)
+	bool contains(const String& name)
 	{
-		return contains(toString(name));
+		return contains(fromString(name));
 	}
 
 	using HashMap::remove;
 
-	void remove(HttpHeaderFieldName name)
+	void remove(const String& name)
 	{
-		remove(toString(name));
+		remove(fromString(name));
 	}
 
 	HttpHeaders& operator=(const HttpHeaders& headers)
@@ -155,6 +177,21 @@ public:
 		setMultiple(headers);
 		return *this;
 	}
+
+	void clear()
+	{
+		_customFieldNames.clear();
+		HashMap::clear();
+	}
+
+private:
+	/** @brief Try to match a string against the list of custom field names
+	 *  @param name
+	 *  @retval HttpHeaderFieldName HTTP_HEADER_UNKNOWN if not found
+	 */
+	HttpHeaderFieldName findCustomFieldName(const String& name) const;
+
+	CStringArray _customFieldNames;
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTP_HEADERS_H_ */

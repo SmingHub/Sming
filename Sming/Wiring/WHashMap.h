@@ -85,11 +85,13 @@ class HashMap
     */
     const K& keyAt(unsigned int idx) const
     {
+      assert(idx < count());
       return *keys[idx];
     }
 
     K& keyAt(unsigned int idx)
     {
+      assert(idx < count());
       return *keys[idx];
     }
 
@@ -104,12 +106,14 @@ class HashMap
     */
     const V& valueAt(unsigned int idx) const
     {
-      return *values[idx];
+    	assert(idx < count());
+    	return *values[idx];
     }
 
     V& valueAt(unsigned int idx)
     {
-      return *values[idx];
+        assert(idx < count());
+        return *values[idx];
     }
 
     /*
