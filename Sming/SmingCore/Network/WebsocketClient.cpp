@@ -12,6 +12,7 @@
 
 #include "WebsocketClient.h"
 #include "../Services/cWebsocket/websocket.h"
+#include "Network/Http/HttpHeaders.h"
 
 void WebsocketClient::setWebSocketMessageHandler(WebSocketClientMessageDelegate handler)
 {
@@ -52,26 +53,19 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	}
 	_key = base64_encode(keyStart, sizeof(keyStart));
 
-	String protocol = "chat";
-	sendString("GET ");
+	sendString(F("GET "));
 	if(_uri.Path != "") {
 		sendString(_uri.Path);
 	} else {
 		sendString("/");
 	}
-	sendString(" HTTP/1.1\r\n");
-	sendString("Upgrade: websocket\r\n");
-	sendString("Connection: Upgrade\r\n");
-	sendString("Host: ");
-	sendString(_uri.Host);
-	sendString("\r\n");
-	sendString("Sec-WebSocket-Key: ");
-	sendString(_key);
-	sendString("\r\n");
-	sendString("Sec-WebSocket-Protocol: ");
-	sendString(protocol);
-	sendString("\r\n");
-	sendString("Sec-WebSocket-Version: 13\r\n");
+	sendString(F(" HTTP/1.1\r\n"));
+	sendString(HttpHeaders::toString(HTTP_HEADER_UPGRADE, WSSTR_WEBSOCKET));
+	sendString(HttpHeaders::toString(HTTP_HEADER_CONNECTION, WSSTR_UPGRADE));
+	sendString(HttpHeaders::toString(HTTP_HEADER_HOST, _uri.Host));
+	sendString(HttpHeaders::toString(HTTP_HEADER_SEC_WEBSOCKET_KEY, _key));
+	sendString(HttpHeaders::toString(HTTP_HEADER_SEC_WEBSOCKET_PROTOCOL, F("chat")));
+	sendString(HttpHeaders::toString(HTTP_HEADER_SEC_WEBSOCKET_VERSION, String(WEBSOCKET_VERSION)));
 	sendString("\r\n", false);
 	return true;
 }
@@ -88,25 +82,25 @@ void WebsocketClient::onError(err_t err)
 
 bool WebsocketClient::_verifyKey(char* buf, int size)
 {
-	const char* serverHashedKey = strstri(buf, "sec-websocket-accept: ");
-	char* endKey = NULL;
-	String keyToHash = _key + WSSTR_SECRET;
+	String wsa = HttpHeaders::toString(HTTP_HEADER_SEC_WEBSOCKET_ACCEPT, String::nullstr);
+	const char* serverHashedKey = strstri(buf, wsa.c_str());
 
 	if(!serverHashedKey) {
 		debug_e("wscli cannot find key");
 		return false;
 	}
 
-	serverHashedKey += sizeof("sec-websocket-accept: ") - 1;
-	endKey = strstr(serverHashedKey, "\r\n");
+	serverHashedKey += wsa.length();
+	char* endKey = strstr(serverHashedKey, "\r\n");
 
 	if(!endKey || endKey - buf > size) {
-		debug_e("wscli cannot find key reason:%s", endKey ? "out of bounds" : "NULL");
+		debug_e("wscli cannot find key reason: %s", endKey ? _F("out of bounds") : _F("NULL"));
 		return false;
 	}
 
-	*endKey = 0;
+	*endKey = '\0';
 
+	String keyToHash = _key + WSSTR_SECRET;
 	unsigned char hash[SHA1_SIZE];
 	sha1(hash, keyToHash.c_str(), keyToHash.length());
 	String base64hash = base64_encode(hash, sizeof(hash));
@@ -221,7 +215,7 @@ bool WebsocketClient::sendControlFrame(WSFrameType frameType, const String& payl
 
 err_t WebsocketClient::onReceive(pbuf* buf)
 {
-	if(buf == NULL) {
+	if(buf == nullptr) {
 		// Disconnected, close it
 		return TcpClient::onReceive(buf);
 	}

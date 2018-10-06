@@ -42,15 +42,15 @@ public:
 		HttpRequest* request = new HttpRequest(URL(url));
 
 		HttpHeaders requestHeaders;
-		requestHeaders["Content-Type"] = "application/json";
-		requestHeaders["x-instapush-appid"] = app;
-		requestHeaders["x-instapush-appsecret"] = secret;
+		requestHeaders[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_JSON);
+		requestHeaders[F("x-instapush-appid")] = app;
+		requestHeaders[F("x-instapush-appsecret")] = secret;
 
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject& root = jsonBuffer.createObject();
 		root["event"] = event;
 		JsonObject& trackers = root.createNestedObject("trackers");
-		for(int i = 0; i < trackersInfo.count(); i++) {
+		for(unsigned i = 0; i < trackersInfo.count(); i++) {
 			debugf("%s: %s", trackersInfo.keyAt(i).c_str(), trackersInfo.valueAt(i).c_str());
 			trackers[trackersInfo.keyAt(i)] = trackersInfo[trackersInfo.keyAt(i)];
 		}

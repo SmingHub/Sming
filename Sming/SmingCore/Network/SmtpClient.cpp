@@ -135,7 +135,7 @@ bool SmtpClient::send(MailMessage* mail)
 
 void SmtpClient::quit()
 {
-	sendString("QUIT\r\n");
+	sendString(F("QUIT\r\n"));
 	state = eSMTP_Quitting;
 }
 
@@ -144,7 +144,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
 	case eSMTP_StartTLS: {
-		sendString("STARTTLS\n\n");
+		sendString(F("STARTTLS\n\n"));
 		state = eSMTP_Banner;
 		break;
 	}
@@ -163,7 +163,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 				preferredOrder.addElement(methodPlain);
 			}
 
-			for(int i = 0; i < preferredOrder.count(); i++) {
+			for(unsigned i = 0; i < preferredOrder.count(); i++) {
 				if(authMethods.contains(preferredOrder[i])) {
 					if(preferredOrder[i] == methodPlain) {
 						// base64('\0' + username + '\0' + password)
@@ -204,7 +204,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 		*c = '\0';
 
-		String token = url.User + " " + hexdigest;
+		String token = url.User + ' ' + hexdigest;
 		sendString(base64_encode(token) + "\r\n");
 		state = eSMTP_SendingAuth;
 
@@ -242,7 +242,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eSMTP_SendData: {
-		sendString("DATA\r\n");
+		sendString(F("DATA\r\n"));
 		state = eSMTP_SendingData;
 		break;
 	}
@@ -295,9 +295,9 @@ HttpPartResult SmtpClient::multipartProducer()
 	if(outgoingMail->attachments.count()) {
 		result = outgoingMail->attachments[0];
 
-		if(!result.headers->contains("Content-Transfer-Encoding")) {
+		if(!result.headers->contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
 			result.stream = new Base64OutputStream(result.stream);
-			(*result.headers)["Content-Transfer-Encoding"] = _F("base64");
+			(*result.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("base64");
 		}
 
 		outgoingMail->attachments.remove(0);
@@ -310,8 +310,8 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 {
 	mail->getHeaders();
 
-	if(!mail->headers.contains("Content-Transfer-Encoding")) {
-		mail->headers["Content-Transfer-Encoding"] = _F("quoted-printable");
+	if(!mail->headers.contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
+		mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("quoted-printable");
 		mail->stream = new QuotedPrintableOutputStream(mail->stream);
 	}
 
@@ -319,21 +319,19 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 		MultipartStream* mStream = new MultipartStream(HttpPartProducerDelegate(&SmtpClient::multipartProducer, this));
 		HttpPartResult text;
 		text.headers = new HttpHeaders();
-		(*text.headers)["Content-Type"] = mail->headers["Content-Type"];
-		(*text.headers)["Content-Transfer-Encoding"] = mail->headers["Content-Transfer-Encoding"];
+		(*text.headers)[HTTP_HEADER_CONTENT_TYPE] = mail->headers[HTTP_HEADER_CONTENT_TYPE];
+		(*text.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING];
 		text.stream = mail->stream;
 
 		mail->attachments.insertElementAt(text, 0);
 
-		mail->headers.remove("Content-Transfer-Encoding");
-		mail->headers["Content-Type"] = F("multipart/mixed; boundary=") + mStream->getBoundary();
+		mail->headers.remove(HTTP_HEADER_CONTENT_TRANSFER_ENCODING);
+		mail->headers[HTTP_HEADER_CONTENT_TYPE] = F("multipart/mixed; boundary=") + mStream->getBoundary();
 		mail->stream = mStream;
 	}
 
-	for(int i = 0; i < mail->headers.count(); i++) {
-		String key = mail->headers.keyAt(i);
-		String value = mail->headers.valueAt(i);
-		sendString(key + ':' + ' ' + value + "\r\n");
+	for(unsigned i = 0; i < mail->headers.count(); i++) {
+		sendString(mail->headers[i]);
 	}
 	sendString("\r\n");
 }
@@ -418,7 +416,7 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 				TcpConnection::staticOnConnected((void*)this, tcp, ERR_OK);
 			}
 
-			sendString("EHLO " + url.Host + "\r\n");
+			sendString(F("EHLO ") + url.Host + "\r\n");
 			state = eSMTP_Hello;
 
 			break;

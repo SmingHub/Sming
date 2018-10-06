@@ -21,7 +21,7 @@
 #include "../../Wiring/WVector.h"
 #include "../Network/WebConstants.h"
 
-#include "Structures.h"
+#include "Network/Http/HttpHeaders.h"
 #include "Stream/MultipartStream.h"
 #include "Stream/DataSourceStream.h"
 

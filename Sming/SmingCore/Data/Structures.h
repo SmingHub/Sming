@@ -47,17 +47,6 @@ public:
 	}
 };
 
-static bool headerKeyCompare(const String& a, const String& b)
-{
-	return (strcasecmp(a.c_str(), b.c_str()) == 0);
-}
-
-class HttpHeaders : public HashMap<String, String>
-{
-public:
-	HttpHeaders() : HashMap<String, String>(headerKeyCompare){};
-};
-
 typedef HashMap<String, String> HttpParams;
 
 #endif /* _SMING_CORE_DATA_STRUCTURES_H_ */

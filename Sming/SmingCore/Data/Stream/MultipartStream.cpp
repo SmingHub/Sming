@@ -17,9 +17,9 @@ MultipartStream::MultipartStream(HttpPartProducerDelegate delegate) : producer(d
 MultipartStream::~MultipartStream()
 {
 	delete stream;
-	stream = NULL;
+	stream = nullptr;
 	delete nextStream;
-	nextStream = NULL;
+	nextStream = nullptr;
 }
 
 size_t MultipartStream::write(uint8_t charToWrite)
@@ -36,46 +36,44 @@ size_t MultipartStream::write(const uint8_t* buffer, size_t size)
 //Use base class documentation
 uint16_t MultipartStream::readMemoryBlock(char* data, int bufSize)
 {
-	if(stream != NULL && stream->isFinished()) {
+	if(stream != nullptr && stream->isFinished()) {
 		delete stream;
-		stream = NULL;
+		stream = nullptr;
 	}
 
-	if(stream == NULL && nextStream != NULL) {
+	if(stream == nullptr && nextStream != nullptr) {
 		stream = nextStream;
-		nextStream = NULL;
+		nextStream = nullptr;
 	}
 
-	if(stream == NULL) {
+	if(stream == nullptr) {
 		HttpPartResult result = producer();
 
 		stream = new MemoryDataStream();
 
-		if(result.stream == NULL) { // Sending a result without stream is the way to stop the "production"
-			String line = String("\r\n--") + getBoundary() + String("--\r\n");
-			stream->write((uint8_t*)line.c_str(), line.length());
+		if(result.stream == nullptr) { // Sending a result without stream is the way to stop the "production"
+			String line = F("\r\n--") + getBoundary() + F("--\r\n");
+			stream->print(line);
 
 			finished = true;
 		} else {
-			String line = String("\r\n--") + getBoundary() + String("\r\n");
-			stream->write((uint8_t*)line.c_str(), line.length());
-			if(result.headers != NULL) {
-				if(!result.headers->contains("Content-Length")) {
-					if(result.stream != NULL && result.stream->available() > -1) {
-						(*result.headers)["Content-Length"] = result.stream->available();
+			String line = F("\r\n--") + getBoundary() + "\r\n";
+			stream->print(line);
+			if(result.headers != nullptr) {
+				if(!result.headers->contains(HTTP_HEADER_CONTENT_LENGTH)) {
+					if(result.stream != nullptr && result.stream->available() >= 0) {
+						(*result.headers)[HTTP_HEADER_CONTENT_LENGTH] = result.stream->available();
 					}
 				}
 
-				for(int i = 0; i < result.headers->count(); i++) {
-					line = result.headers->keyAt(i) + ": " + result.headers->valueAt(i) + "\r\n";
-					stream->write((uint8_t*)line.c_str(), line.length());
+				for(unsigned i = 0; i < result.headers->count(); i++) {
+					stream->print((*result.headers)[i]);
 				}
 
 				delete result.headers;
-				result.headers = NULL;
+				result.headers = nullptr;
 			}
-			line = "\r\n";
-			stream->write((uint8_t*)line.c_str(), line.length());
+			stream->print("\r\n");
 
 			nextStream = result.stream;
 		}
@@ -91,15 +89,15 @@ bool MultipartStream::seek(int len)
 
 bool MultipartStream::isFinished()
 {
-	return (finished && (stream == NULL || stream->isFinished()));
+	return (finished && (stream == nullptr || stream->isFinished()));
 }
 
 const char* MultipartStream::getBoundary()
 {
 	if(boundary[0] == 0) {
-		static const char pool[] = "0123456789"
-								   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-								   "abcdefghijklmnopqrstuvwxyz";
+		PSTR_ARRAY(pool, "0123456789"
+						 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+						 "abcdefghijklmnopqrstuvwxyz");
 
 		int len = sizeof(boundary);
 		memset(boundary, 0, len);

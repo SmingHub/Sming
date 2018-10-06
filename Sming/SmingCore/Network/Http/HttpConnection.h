@@ -71,7 +71,7 @@ public:
 	/**
 	 * @deprecated Use `getResponse().headers[headerName]` instead
 	 */
-	String getResponseHeader(String headerName, String defaultValue = "");
+	String getResponseHeader(String headerName, String defaultValue = nullptr);
 
 	/**
 	* @deprecated Use `getResponse().headers` instead
@@ -79,12 +79,12 @@ public:
 	HttpHeaders& getResponseHeaders();
 
 	/**
-	* @deprecated Use `getResponse().headers["Last-Modified"]` instead
+	* @deprecated Use `getResponse().headers[HTTP_HEADER_LAST_MODIFIED]` instead
 	*/
 	DateTime getLastModifiedDate(); // Last-Modified header
 
 	/**
-	 * @deprecated Use `getResponse().headers["Date"]` instead
+	 * @deprecated Use `getResponse().headers[HTTP_HEADER_DATE]` instead
 	 */
 	DateTime getServerDate(); // Date header
 
@@ -132,8 +132,8 @@ protected:
 	bool lastWasValue = true;
 	String lastData = "";
 	String currentField = "";
-	HttpRequest* incomingRequest = NULL;
-	HttpRequest* outgoingRequest = NULL;
+	HttpRequest* incomingRequest = nullptr;
+	HttpRequest* outgoingRequest = nullptr;
 	HttpResponse response;
 
 private:

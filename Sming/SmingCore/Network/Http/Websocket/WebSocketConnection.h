@@ -95,7 +95,7 @@ private:
 
 	static WebSocketsList websocketList;
 
-	EndlessMemoryStream* stream = NULL;
+	EndlessMemoryStream* stream = nullptr;
 };
 
 #endif /* SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_ */
