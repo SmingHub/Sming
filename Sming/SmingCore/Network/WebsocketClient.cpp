@@ -59,15 +59,13 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 	} else {
 		sendString("/");
 	}
-	sendString(" HTTP/1.1\r\n");
-
+	sendString(F(" HTTP/1.1\r\n"));
 	sendString(HttpHeaders::toString(hhfn_Upgrade, WSSTR_WEBSOCKET));
 	sendString(HttpHeaders::toString(hhfn_Connection, WSSTR_UPGRADE));
 	sendString(HttpHeaders::toString(hhfn_Host, _uri.Host));
 	sendString(HttpHeaders::toString(hhfn_SecWebSocketKey, _key));
 	sendString(HttpHeaders::toString(hhfn_SecWebSocketProtocol, F("chat")));
 	sendString(HttpHeaders::toString(hhfn_SecWebSocketVersion, String(WEBSOCKET_VERSION)));
-
 	sendString("\r\n", false);
 	return true;
 }

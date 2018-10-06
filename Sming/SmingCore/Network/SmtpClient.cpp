@@ -135,7 +135,7 @@ bool SmtpClient::send(MailMessage* mail)
 
 void SmtpClient::quit()
 {
-	sendString("QUIT\r\n");
+	sendString(F("QUIT\r\n"));
 	state = eSMTP_Quitting;
 }
 
@@ -144,7 +144,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
 	case eSMTP_StartTLS: {
-		sendString("STARTTLS\n\n");
+		sendString(F("STARTTLS\n\n"));
 		state = eSMTP_Banner;
 		break;
 	}
@@ -163,7 +163,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 				preferredOrder.addElement(methodPlain);
 			}
 
-			for(int i = 0; i < preferredOrder.count(); i++) {
+			for(unsigned i = 0; i < preferredOrder.count(); i++) {
 				if(authMethods.contains(preferredOrder[i])) {
 					if(preferredOrder[i] == methodPlain) {
 						// base64('\0' + username + '\0' + password)
@@ -204,7 +204,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 		*c = '\0';
 
-		String token = url.User + " " + hexdigest;
+		String token = url.User + ' ' + hexdigest;
 		sendString(base64_encode(token) + "\r\n");
 		state = eSMTP_SendingAuth;
 
@@ -242,7 +242,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eSMTP_SendData: {
-		sendString("DATA\r\n");
+		sendString(F("DATA\r\n"));
 		state = eSMTP_SendingData;
 		break;
 	}
