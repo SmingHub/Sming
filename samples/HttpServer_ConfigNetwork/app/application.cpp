@@ -59,7 +59,7 @@ int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpRespo
 
 void onFile(HttpRequest& request, HttpResponse& response)
 {
-	if(lastModified.length() > 0 && request.getHeader("If-Modified-Since").equals(lastModified)) {
+	if(lastModified.length() > 0 && request.headers[HTTP_HEADER_IF_MODIFIED_SINCE].equals(lastModified)) {
 		response.code = HTTP_STATUS_NOT_MODIFIED;
 		return;
 	}
@@ -72,7 +72,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 		response.forbidden();
 	else {
 		if(lastModified.length() > 0) {
-			response.setHeader("Last-Modified", lastModified);
+			response.headers[HTTP_HEADER_LAST_MODIFIED] = lastModified;
 		}
 
 		response.setCache(86400, true); // It's important to use cache for better performance.

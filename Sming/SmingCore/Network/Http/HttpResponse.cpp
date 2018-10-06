@@ -21,7 +21,7 @@ HttpResponse::~HttpResponse()
 
 HttpResponse* HttpResponse::setContentType(const String& type)
 {
-	headers[hhfn_ContentType] = type;
+	headers[HTTP_HEADER_CONTENT_TYPE] = type;
 	return this;
 }
 
@@ -32,7 +32,7 @@ HttpResponse* HttpResponse::setContentType(enum MimeType type)
 
 HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
 {
-	headers[hhfn_SetCookie] = name + '=' + value;
+	headers[HTTP_HEADER_SET_COOKIE] = name + '=' + value;
 	return this;
 }
 
@@ -40,13 +40,13 @@ HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic /* = false
 {
 	String cache = isPublic ? F("public") : F("private");
 	cache += F(", max-age=") + String(maxAgeSeconds) + F(", must-revalidate");
-	headers[hhfn_CacheControl] = cache;
+	headers[HTTP_HEADER_CACHE_CONTROL] = cache;
 	return this;
 }
 
 HttpResponse* HttpResponse::setAllowCrossDomainOrigin(const String& controlAllowOrigin)
 {
-	headers[hhfn_AccessControlAllowOrigin] = controlAllowOrigin;
+	headers[HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN] = controlAllowOrigin;
 	return this;
 }
 
@@ -81,7 +81,7 @@ bool HttpResponse::hasHeader(const String& name)
 
 void HttpResponse::redirect(const String& location)
 {
-	headers[hhfn_Location] = location;
+	headers[HTTP_HEADER_LOCATION] = location;
 }
 
 bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)
@@ -96,7 +96,7 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 	if(allowGzipFileCheck && fileExist(compressed)) {
 		debug_d("found %s", compressed.c_str());
 		stream = new FileStream(compressed);
-		headers[hhfn_ContentEncoding] = _F("gzip");
+		headers[HTTP_HEADER_CONTENT_ENCODING] = _F("gzip");
 	} else if(fileExist(fileName)) {
 		debug_d("found %s", fileName.c_str());
 		stream = new FileStream(fileName);
@@ -105,7 +105,7 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 		return false;
 	}
 
-	if(!headers.contains(hhfn_ContentType)) {
+	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		String mime = ContentType::fromFullFileName(fileName);
 		if(mime)
 			setContentType(mime);
@@ -130,14 +130,14 @@ bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
 		return false;
 	}
 
-	if(!headers.contains(hhfn_ContentType)) {
+	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		String mime = ContentType::fromFullFileName(newTemplateInstance->fileName());
 		if(mime)
 			setContentType(mime);
 	}
 
-	if(!headers.contains(hhfn_TransferEncoding) && stream->available() < 0) {
-		headers[hhfn_TransferEncoding] = _F("chunked");
+	if(!headers.contains(HTTP_HEADER_TRANSFER_ENCODING) && stream->available() < 0) {
+		headers[HTTP_HEADER_TRANSFER_ENCODING] = _F("chunked");
 	}
 
 	return true;
@@ -152,7 +152,7 @@ bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 	}
 
 	stream = newJsonStreamInstance;
-	if(!headers.contains(hhfn_ContentType)) {
+	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		setContentType(MIME_JSON);
 	}
 

@@ -12,7 +12,7 @@
 
 #include "WebsocketClient.h"
 #include "../Services/cWebsocket/websocket.h"
-#include "Data/HttpHeaders.h"
+#include "Network/Http/HttpHeaders.h"
 
 void WebsocketClient::setWebSocketMessageHandler(WebSocketClientMessageDelegate handler)
 {
@@ -60,12 +60,12 @@ bool WebsocketClient::connect(String url, uint32_t sslOptions /* = 0 */)
 		sendString("/");
 	}
 	sendString(F(" HTTP/1.1\r\n"));
-	sendString(HttpHeaders::toString(hhfn_Upgrade, WSSTR_WEBSOCKET));
-	sendString(HttpHeaders::toString(hhfn_Connection, WSSTR_UPGRADE));
-	sendString(HttpHeaders::toString(hhfn_Host, _uri.Host));
-	sendString(HttpHeaders::toString(hhfn_SecWebSocketKey, _key));
-	sendString(HttpHeaders::toString(hhfn_SecWebSocketProtocol, F("chat")));
-	sendString(HttpHeaders::toString(hhfn_SecWebSocketVersion, String(WEBSOCKET_VERSION)));
+	sendString(HttpHeaders::toString(HTTP_HEADER_UPGRADE, WSSTR_WEBSOCKET));
+	sendString(HttpHeaders::toString(HTTP_HEADER_CONNECTION, WSSTR_UPGRADE));
+	sendString(HttpHeaders::toString(HTTP_HEADER_HOST, _uri.Host));
+	sendString(HttpHeaders::toString(HTTP_HEADER_SEC_WEBSOCKET_KEY, _key));
+	sendString(HttpHeaders::toString(HTTP_HEADER_SEC_WEBSOCKET_PROTOCOL, F("chat")));
+	sendString(HttpHeaders::toString(HTTP_HEADER_SEC_WEBSOCKET_VERSION, String(WEBSOCKET_VERSION)));
 	sendString("\r\n", false);
 	return true;
 }
@@ -82,7 +82,7 @@ void WebsocketClient::onError(err_t err)
 
 bool WebsocketClient::_verifyKey(char* buf, int size)
 {
-	String wsa = HttpHeaders::toString(hhfn_SecWebSocketAccept, String::nullstr);
+	String wsa = HttpHeaders::toString(HTTP_HEADER_SEC_WEBSOCKET_ACCEPT, String::nullstr);
 	const char* serverHashedKey = strstri(buf, wsa.c_str());
 
 	if(!serverHashedKey) {

@@ -295,9 +295,9 @@ HttpPartResult SmtpClient::multipartProducer()
 	if(outgoingMail->attachments.count()) {
 		result = outgoingMail->attachments[0];
 
-		if(!result.headers->contains(hhfn_ContentTransferEncoding)) {
+		if(!result.headers->contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
 			result.stream = new Base64OutputStream(result.stream);
-			(*result.headers)[hhfn_ContentTransferEncoding] = _F("base64");
+			(*result.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("base64");
 		}
 
 		outgoingMail->attachments.remove(0);
@@ -310,8 +310,8 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 {
 	mail->getHeaders();
 
-	if(!mail->headers.contains(hhfn_ContentTransferEncoding)) {
-		mail->headers[hhfn_ContentTransferEncoding] = _F("quoted-printable");
+	if(!mail->headers.contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
+		mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("quoted-printable");
 		mail->stream = new QuotedPrintableOutputStream(mail->stream);
 	}
 
@@ -319,14 +319,14 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 		MultipartStream* mStream = new MultipartStream(HttpPartProducerDelegate(&SmtpClient::multipartProducer, this));
 		HttpPartResult text;
 		text.headers = new HttpHeaders();
-		(*text.headers)[hhfn_ContentType] = mail->headers[hhfn_ContentType];
-		(*text.headers)[hhfn_ContentTransferEncoding] = mail->headers[hhfn_ContentTransferEncoding];
+		(*text.headers)[HTTP_HEADER_CONTENT_TYPE] = mail->headers[HTTP_HEADER_CONTENT_TYPE];
+		(*text.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING];
 		text.stream = mail->stream;
 
 		mail->attachments.insertElementAt(text, 0);
 
-		mail->headers.remove(hhfn_ContentTransferEncoding);
-		mail->headers[hhfn_ContentType] = F("multipart/mixed; boundary=") + mStream->getBoundary();
+		mail->headers.remove(HTTP_HEADER_CONTENT_TRANSFER_ENCODING);
+		mail->headers[HTTP_HEADER_CONTENT_TYPE] = F("multipart/mixed; boundary=") + mStream->getBoundary();
 		mail->stream = mStream;
 	}
 

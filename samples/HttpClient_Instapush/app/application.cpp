@@ -42,9 +42,9 @@ public:
 		HttpRequest* request = new HttpRequest(URL(url));
 
 		HttpHeaders requestHeaders;
-		requestHeaders["Content-Type"] = "application/json";
-		requestHeaders["x-instapush-appid"] = app;
-		requestHeaders["x-instapush-appsecret"] = secret;
+		request->Headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_JSON);
+		request->Headers[F("x-instapush-appid")] = app;
+		request->Headers[F("x-instapush-appsecret")] = secret;
 
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject& root = jsonBuffer.createObject();

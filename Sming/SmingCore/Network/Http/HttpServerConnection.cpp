@@ -193,8 +193,8 @@ int HttpServerConnection::staticOnHeadersComplete(http_parser* parser)
 		error = 1;
 	}
 
-	if(connection->request.headers.contains(hhfn_ContentType)) {
-		String contentType = connection->request.headers[hhfn_ContentType];
+	if(connection->request.headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
+		String contentType = connection->request.headers[HTTP_HEADER_CONTENT_TYPE];
 		int endPos = contentType.indexOf(';');
 		if(endPos != -1) {
 			contentType = contentType.substring(0, endPos);
@@ -391,7 +391,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eHCS_Sent: {
-		if(response.headers[hhfn_Connection] == _F("close")) {
+		if(response.headers[HTTP_HEADER_CONNECTION] == _F("close")) {
 			setTimeOut(1); // decrease the timeout to 1 tick
 		}
 
@@ -411,18 +411,18 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 {
 #ifndef DISABLE_HTTPSRV_ETAG
-	if(response->stream != nullptr && !response->headers.contains(hhfn_ETag)) {
+	if(response->stream != nullptr && !response->headers.contains(HTTP_HEADER_ETAG)) {
 		String tag = response->stream->id();
 		if(tag.length() > 0) {
-			response->headers[hhfn_ETag] = String('"' + tag + '"');
+			response->headers[HTTP_HEADER_ETAG] = String('"' + tag + '"');
 		}
 	}
 
-	if(request.headers.contains(hhfn_IfMatch) && response->headers.contains(hhfn_ETag) &&
-	   request.headers[hhfn_IfMatch] == response->headers[hhfn_ETag]) {
+	if(request.headers.contains(HTTP_HEADER_IF_MATCH) && response->headers.contains(HTTP_HEADER_ETAG) &&
+	   request.headers[HTTP_HEADER_IF_MATCH] == response->headers[HTTP_HEADER_ETAG]) {
 		if(request.method == HTTP_GET || request.method == HTTP_HEAD) {
 			response->code = HTTP_STATUS_NOT_MODIFIED;
-			response->headers[hhfn_ContentLength] = "0";
+			response->headers[HTTP_HEADER_CONTENT_LENGTH] = "0";
 			delete response->stream;
 			response->stream = nullptr;
 		}
@@ -432,18 +432,18 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 		F("HTTP/1.1 ") + String(response->code) + ' ' + httpGetStatusText((enum http_status)response->code) + "\r\n";
 	sendString(statusLine);
 	if(response->stream != nullptr && response->stream->available() >= 0) {
-		response->headers[hhfn_ContentLength] = String(response->stream->available());
+		response->headers[HTTP_HEADER_CONTENT_LENGTH] = String(response->stream->available());
 	}
-	if(!response->headers.contains(hhfn_ContentLength) && response->stream == nullptr) {
-		response->headers[hhfn_ContentLength] = "0";
+	if(!response->headers.contains(HTTP_HEADER_CONTENT_LENGTH) && response->stream == nullptr) {
+		response->headers[HTTP_HEADER_CONTENT_LENGTH] = "0";
 	}
 
-	if(!response->headers.contains(hhfn_Connection)) {
-		if(request.headers[hhfn_Connection] == _F("close")) {
+	if(!response->headers.contains(HTTP_HEADER_CONNECTION)) {
+		if(request.headers[HTTP_HEADER_CONNECTION] == _F("close")) {
 			// the other side requests closing of the tcp connection...
-			response->headers[hhfn_Connection] = _F("close");
+			response->headers[HTTP_HEADER_CONNECTION] = _F("close");
 		} else {
-			response->headers[hhfn_Connection] = _F("keep-alive"); // Keep-Alive to reuse the connection
+			response->headers[HTTP_HEADER_CONNECTION] = _F("keep-alive"); // Keep-Alive to reuse the connection
 		}
 	}
 
@@ -452,7 +452,7 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 #endif
 
 #if HTTP_SERVER_EXPOSE_DATE == 1
-	response->headers[hhfn_Date] = SystemClock.getSystemTimeString();
+	response->headers[HTTP_HEADER_DATE] = SystemClock.getSystemTimeString();
 #endif
 	for(unsigned i = 0; i < response->headers.count(); i++) {
 		sendString(response->headers[i]);
@@ -477,7 +477,7 @@ bool HttpServerConnection::sendResponseBody(HttpResponse* response)
 		}
 
 		delete stream;
-		if(response->headers[hhfn_TransferEncoding] == _F("chunked")) {
+		if(response->headers[HTTP_HEADER_TRANSFER_ENCODING] == _F("chunked")) {
 			stream = new ChunkedStream(response->stream);
 		} else {
 			stream = response->stream; // avoid intermediate buffers
@@ -519,7 +519,7 @@ void HttpServerConnection::sendError(const String& message, enum http_status cod
 	String html = F("<H2 color='#444'>");
 	html += message ? message : httpGetStatusText(response.code);
 	html += F("</H2>");
-	response.headers[hhfn_ContentLength] = html.length();
+	response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
 	response.sendString(html);
 
 	send();

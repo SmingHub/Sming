@@ -25,21 +25,21 @@ WebSocketConnection::~WebSocketConnection()
 
 bool WebSocketConnection::initialize(HttpRequest& request, HttpResponse& response)
 {
-	String version = request.headers[hhfn_SecWebSocketVersion];
+	String version = request.headers[HTTP_HEADER_SEC_WEBSOCKET_VERSION];
 	version.trim();
 	if(version.toInt() != WEBSOCKET_VERSION)
 		return false;
 
 	state = eWSCS_Open;
-	String token = request.headers[hhfn_SecWebSocketKey];
+	String token = request.headers[HTTP_HEADER_SEC_WEBSOCKET_KEY];
 	token.trim();
 	token += WSSTR_SECRET;
 	unsigned char hash[SHA1_SIZE];
 	sha1(hash, token.c_str(), token.length());
 	response.code = HTTP_STATUS_SWITCHING_PROTOCOLS;
-	response.headers[hhfn_Connection] = WSSTR_UPGRADE;
-	response.headers[hhfn_Upgrade] = WSSTR_WEBSOCKET;
-	response.headers[hhfn_SecWebSocketAccept] = base64_encode(hash, SHA1_SIZE);
+	response.headers[HTTP_HEADER_CONNECTION] = WSSTR_UPGRADE;
+	response.headers[HTTP_HEADER_UPGRADE] = WSSTR_WEBSOCKET;
+	response.headers[HTTP_HEADER_SEC_WEBSOCKET_ACCEPT] = base64_encode(hash, SHA1_SIZE);
 
 	delete stream;
 	stream = new EndlessMemoryStream();

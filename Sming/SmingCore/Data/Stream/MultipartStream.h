@@ -13,7 +13,7 @@
 
 #include "DataSourceStream.h"
 #include "Delegate.h"
-#include "../HttpHeaders.h"
+#include "Network/Http/HttpHeaders.h"
 
 /**
  * @brief      Multipart stream class

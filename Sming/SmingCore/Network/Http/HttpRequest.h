@@ -19,7 +19,7 @@
 #endif
 #include "../TcpConnection.h"
 #include "Data/Stream/DataSourceStream.h"
-#include "Data/HttpHeaders.h"
+#include "Network/Http/HttpHeaders.h"
 
 class HttpClient;
 class HttpServerConnection;

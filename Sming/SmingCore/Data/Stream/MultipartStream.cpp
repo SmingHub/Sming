@@ -60,9 +60,9 @@ uint16_t MultipartStream::readMemoryBlock(char* data, int bufSize)
 			String line = F("\r\n--") + getBoundary() + "\r\n";
 			stream->print(line);
 			if(result.headers != nullptr) {
-				if(!result.headers->contains(hhfn_ContentLength)) {
+				if(!result.headers->contains(HTTP_HEADER_CONTENT_LENGTH)) {
 					if(result.stream != nullptr && result.stream->available() >= 0) {
-						(*result.headers)[hhfn_ContentLength] = result.stream->available();
+						(*result.headers)[HTTP_HEADER_CONTENT_LENGTH] = result.stream->available();
 					}
 				}
 

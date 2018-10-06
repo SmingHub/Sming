@@ -15,7 +15,7 @@
 
 #include "HttpCommon.h"
 #include "Data/Stream/DataSourceStream.h"
-#include "Data/HttpHeaders.h"
+#include "Network/Http/HttpHeaders.h"
 
 class JsonObjectStream; // << TODO: deprecated and should be removed in the next version
 

@@ -115,7 +115,7 @@ String HttpConnection::getResponseHeader(String headerName, String defaultValue)
 DateTime HttpConnection::getLastModifiedDate()
 {
 	DateTime res;
-	String strLM = response.headers[hhfn_LastModified];
+	String strLM = response.headers[HTTP_HEADER_LAST_MODIFIED];
 	if(res.parseHttpDate(strLM))
 		return res;
 	else
@@ -125,7 +125,7 @@ DateTime HttpConnection::getLastModifiedDate()
 DateTime HttpConnection::getServerDate()
 {
 	DateTime res;
-	String strSD = response.headers[hhfn_Date];
+	String strSD = response.headers[HTTP_HEADER_DATE];
 	if(res.parseHttpDate(strSD))
 		return res;
 	else
@@ -187,9 +187,9 @@ HttpPartResult HttpConnection::multipartProducer()
 		result.stream = file;
 
 		HttpHeaders* headers = new HttpHeaders();
-		(*headers)[hhfn_ContentDisposition] =
+		(*headers)[HTTP_HEADER_CONTENT_DISPOSITION] =
 			F("form-data; name=\"") + name + F("\"; filename=\"") + file->fileName() + '"';
-		(*headers)[hhfn_ContentType] = ContentType::fromFullFileName(file->fileName());
+		(*headers)[HTTP_HEADER_CONTENT_TYPE] = ContentType::fromFullFileName(file->fileName());
 		result.headers = headers;
 
 		outgoingRequest->files.remove(name);
@@ -205,7 +205,7 @@ HttpPartResult HttpConnection::multipartProducer()
 		result.stream = mStream;
 
 		HttpHeaders* headers = new HttpHeaders();
-		(*headers)[hhfn_ContentDisposition] = F("form-data; name=\"") + name + '"';
+		(*headers)[HTTP_HEADER_CONTENT_DISPOSITION] = F("form-data; name=\"") + name + '"';
 		result.headers = headers;
 
 		outgoingRequest->postParams.remove(name);
@@ -463,15 +463,15 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 {
 	sendString(String(http_method_str(request->method)) + ' ' + request->uri.getPathWithQuery() + _F(" HTTP/1.1\r\n"));
 
-	if(!request->headers.contains(hhfn_Host)) {
-		request->headers[hhfn_Host] = request->uri.Host;
+	if(!request->headers.contains(HTTP_HEADER_HOST)) {
+		request->headers[HTTP_HEADER_HOST] = request->uri.Host;
 	}
 
-	request->headers[hhfn_ContentLength] = "0";
+	request->headers[HTTP_HEADER_CONTENT_LENGTH] = "0";
 	if(request->files.count()) {
 		MultipartStream* mStream =
 			new MultipartStream(HttpPartProducerDelegate(&HttpConnection::multipartProducer, this));
-		request->headers[hhfn_ContentType] =
+		request->headers[HTTP_HEADER_CONTENT_TYPE] =
 			ContentType::toString(MIME_FORM_MULTIPART) + _F("; boundary=") + mStream->getBoundary();
 		if(request->stream) {
 			debug_e("HttpConnection: existing stream is discarded due to POST params");
@@ -480,7 +480,7 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 		request->stream = mStream;
 	} else if(request->postParams.count()) {
 		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(request->postParams);
-		request->headers[hhfn_ContentType] = ContentType::toString(MIME_FORM_URL_ENCODED);
+		request->headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_FORM_URL_ENCODED);
 		if(request->stream) {
 			debug_e("HttpConnection: existing stream is discarded due to POST params");
 			delete request->stream;
@@ -490,14 +490,14 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 
 	if(request->stream != nullptr) {
 		if(request->stream->available() > -1) {
-			request->headers[hhfn_ContentLength] = String(request->stream->available());
+			request->headers[HTTP_HEADER_CONTENT_LENGTH] = String(request->stream->available());
 		} else {
-			request->headers.remove(hhfn_ContentLength);
+			request->headers.remove(HTTP_HEADER_CONTENT_LENGTH);
 		}
 	}
 
-	if(!request->headers.contains(hhfn_ContentLength)) {
-		request->headers[hhfn_TransferEncoding] = _F("chunked");
+	if(!request->headers.contains(HTTP_HEADER_CONTENT_LENGTH)) {
+		request->headers[HTTP_HEADER_TRANSFER_ENCODING] = _F("chunked");
 	}
 
 	for(unsigned i = 0; i < request->headers.count(); i++) {
@@ -517,7 +517,7 @@ bool HttpConnection::sendRequestBody(HttpRequest* request)
 		}
 
 		delete stream;
-		if(request->headers[hhfn_TransferEncoding] == _F("chunked")) {
+		if(request->headers[HTTP_HEADER_TRANSFER_ENCODING] == _F("chunked")) {
 			stream = new ChunkedStream(request->stream);
 		} else {
 			stream = request->stream; // avoid intermediate buffers

@@ -79,12 +79,12 @@ public:
 	HttpHeaders& getResponseHeaders();
 
 	/**
-	* @deprecated Use `getResponse().headers[hhfn_LastModified]` instead
+	* @deprecated Use `getResponse().headers[HTTP_HEADER_LAST_MODIFIED]` instead
 	*/
 	DateTime getLastModifiedDate(); // Last-Modified header
 
 	/**
-	 * @deprecated Use `getResponse().headers[hhfn_Date]` instead
+	 * @deprecated Use `getResponse().headers[HTTP_HEADER_DATE]` instead
 	 */
 	DateTime getServerDate(); // Date header
 

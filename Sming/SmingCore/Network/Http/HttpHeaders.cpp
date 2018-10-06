@@ -33,7 +33,7 @@ HttpHeaders::HttpHeaders() : HashMap<String, String>(headerKeyCompare)
 
 String HttpHeaders::toString(HttpHeaderFieldName name)
 {
-	if(name == hhfn_UNKNOWN || name >= hhfn_MAX)
+	if(name == HTTP_HEADER_UNKNOWN || name >= HTTP_HEADER_MAX)
 		return nullptr;
 
 	return *FieldNameStrings[name - 1];
@@ -42,10 +42,10 @@ String HttpHeaders::toString(HttpHeaderFieldName name)
 HttpHeaderFieldName HttpHeaders::fromString(const String& name)
 {
 	// 0 is reserved for UNKNOWN
-	for(unsigned i = 1; i < hhfn_MAX; ++i) {
+	for(unsigned i = 1; i < HTTP_HEADER_MAX; ++i) {
 		if(name.equalsIgnoreCase(*FieldNameStrings[i - 1]))
 			return static_cast<HttpHeaderFieldName>(i);
 	}
 
-	return hhfn_UNKNOWN;
+	return HTTP_HEADER_UNKNOWN;
 }
