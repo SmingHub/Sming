@@ -15,8 +15,8 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_HTTP_HEADERS_H_
-#define _SMING_CORE_DATA_HTTP_HEADERS_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_HEADERS_H_
+#define _SMING_CORE_NETWORK_HTTP_HEADERS_H_
 
 #include "WString.h"
 #include "WHashMap.h"
@@ -157,4 +157,4 @@ public:
 	}
 };
 
-#endif /* _SMING_CORE_DATA_HTTP_HEADERS_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_HEADERS_H_ */
