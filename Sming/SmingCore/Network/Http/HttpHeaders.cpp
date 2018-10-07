@@ -32,6 +32,18 @@ String HttpHeaders::toString(HttpHeaderFieldName name) const
 	return _customFieldNames[name - HTTP_HEADER_CUSTOM];
 }
 
+String HttpHeaders::toString(const String& name, const String& value)
+{
+	String s;
+	s.reserve(name.length() + 2 + value.length() + 2);
+	s.concat(name);
+	s.concat(':');
+	s.concat(' ');
+	s.concat(value);
+	s.concat("\r\n");
+	return s;
+}
+
 HttpHeaderFieldName HttpHeaders::fromString(const String& name) const
 {
 	// 0 is reserved for UNKNOWN

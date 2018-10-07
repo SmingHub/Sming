@@ -99,10 +99,7 @@ public:
 	 *  @param value
 	 *  @retval String
 	 */
-	static String toString(const String& name, const String& value)
-	{
-		return name + ": " + value + "\r\n";
-	}
+	static String toString(const String& name, const String& value);
 
 	String toString(HttpHeaderFieldName name, const String& value) const
 	{
