@@ -19,6 +19,7 @@
 #define _SMING_CORE_NETWORK_HTTP_HEADERS_H_
 
 #include "Data/CStringArray.h"
+#include "WString.h"
 #include "WHashMap.h"
 
 /*
@@ -138,8 +139,8 @@ public:
 	{
 		auto field = fromString(name);
 		if(field == HTTP_HEADER_UNKNOWN) {
-			customFieldNames_.append(name);
-			field = findCustomFieldName(name);
+			field = static_cast<HttpHeaderFieldName>(HTTP_HEADER_CUSTOM + customFieldNames_.count());
+			customFieldNames_.add(name);
 		}
 		return operator[](field);
 	}

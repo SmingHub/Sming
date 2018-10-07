@@ -10,17 +10,31 @@
 
 #include "CStringArray.h"
 
+bool CStringArray::add(const char* str, unsigned length)
+{
+	if(length == 0)
+		length = strlen(str);
+	if(!reserve(len + length + 1))
+		return false;
+	if(len)
+		buffer[len++] = '\0';			   // Separator between strings
+	memcpy(buffer + len, str, length + 1); // Copy final nul terminator
+	len += length;
+	++count_;
+	return true;
+}
+
 int CStringArray::indexOf(const char* str) const
 {
 	if(str == nullptr)
 		return -1;
 
-	int index = 0;
-	for(unsigned offset = 0; offset < length(); ++index) {
-		const char* p = c_str() + offset;
-		if(strcasecmp(str, p) == 0)
+	unsigned index = 0;
+	for(unsigned offset = 0; offset < len; ++index) {
+		const char* s = buffer + offset;
+		if(strcasecmp(str, s) == 0)
 			return index;
-		offset += strlen(p) + 1;
+		offset += strlen(s) + 1;
 	}
 
 	return -1;
@@ -28,11 +42,13 @@ int CStringArray::indexOf(const char* str) const
 
 const char* CStringArray::getValue(unsigned index) const
 {
-	for(unsigned offset = 0; offset < length(); --index) {
-		const char* p = c_str() + offset;
-		if(index == 0)
-			return *p ? p : nullptr;
-		offset += strlen(p) + 1;
+	if(index < count_) {
+		for(unsigned offset = 0; offset < length(); --index) {
+			const char* s = buffer + offset;
+			if(index == 0)
+				return s;
+			offset += strlen(s) + 1;
+		}
 	}
 
 	return nullptr;

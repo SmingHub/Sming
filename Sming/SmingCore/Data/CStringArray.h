@@ -35,17 +35,11 @@ public:
 	 *  @param str
 	 *  @retval bool false on memory allocation error
 	 */
-	bool append(const char* str)
-	{
-		if(length()) {
-			concat('\0');
-		}
-		return concat(str);
-	}
+	bool add(const char* str, unsigned length = 0);
 
-	bool append(const String& str)
+	bool add(const String& str)
 	{
-		return append(str.c_str());
+		return add(str.c_str(), str.length());
 	}
 
 	/** @brief Find the given string and return its index
@@ -86,7 +80,16 @@ public:
 	void clear()
 	{
 		invalidate();
+		count_ = 0;
 	}
+
+	unsigned count() const
+	{
+		return count_;
+	}
+
+private:
+	unsigned count_ = 0;
 };
 
 #endif // _SMING_CORE_DATA_STRING_ARRAY_H_
