@@ -138,7 +138,7 @@ public:
 	{
 		auto field = fromString(name);
 		if(field == HTTP_HEADER_UNKNOWN) {
-			_customFieldNames.append(name);
+			customFieldNames_.append(name);
 			field = findCustomFieldName(name);
 		}
 		return operator[](field);
@@ -177,7 +177,7 @@ public:
 
 	void clear()
 	{
-		_customFieldNames.clear();
+		customFieldNames_.clear();
 		HashMap::clear();
 	}
 
@@ -188,7 +188,7 @@ private:
 	 */
 	HttpHeaderFieldName findCustomFieldName(const String& name) const;
 
-	CStringArray _customFieldNames;
+	CStringArray customFieldNames_;
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTP_HEADERS_H_ */
