@@ -8,8 +8,8 @@
  *
  ****/
 
-#ifndef __STRING_ARRAY_H
-#define __STRING_ARRAY_H
+#ifndef _SMING_CORE_DATA_STRING_ARRAY_H_
+#define _SMING_CORE_DATA_STRING_ARRAY_H_
 
 #include "WString.h"
 
@@ -89,4 +89,4 @@ public:
 	}
 };
 
-#endif // __STRING_ARRAY_H
+#endif // _SMING_CORE_DATA_STRING_ARRAY_H_

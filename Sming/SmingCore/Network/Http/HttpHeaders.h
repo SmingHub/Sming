@@ -18,7 +18,7 @@
 #ifndef _SMING_CORE_NETWORK_HTTP_HEADERS_H_
 #define _SMING_CORE_NETWORK_HTTP_HEADERS_H_
 
-#include "CStringArray.h"
+#include "Data/CStringArray.h"
 #include "WHashMap.h"
 
 /*
