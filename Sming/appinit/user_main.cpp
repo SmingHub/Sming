@@ -69,9 +69,38 @@ extern "C" uint32 ICACHE_FLASH_ATTR  __attribute__((weak)) user_rf_cal_sector_se
     return rf_cal_sec;
 }
 
-extern "C" void __attribute__((weak))  user_pre_init(void)
+#ifdef SDK_INTERNAL
+#include <version.h>
+#endif
+
+#if defined(ESP_SDK_VERSION_MAJOR) and ESP_SDK_VERSION_MAJOR>=3
+
+extern "C" void ICACHE_FLASH_ATTR  __attribute__((weak)) user_pre_init(void)
 {
+	enum flash_size_map size_map = system_get_flash_size_map();
+	const uint32 rf_cal_addr = user_rf_cal_sector_set() * 0x1000;
+	const uint32 phy_data_addr = rf_cal_addr +  0x1000;
+	const uint32 system_param_addr = phy_data_addr + 0x1000;
+
+	// WARNING: Sming supports SDK 3.0 with rBoot enabled apps ONLY!
+#define SYSTEM_PARTITION_RBOOT_CONFIG SYSTEM_PARTITION_CUSTOMER_BEGIN
+
+	static const partition_item_t partitions[] = {
+		{SYSTEM_PARTITION_BOOTLOADER, 0x0, 0x1000},
+		{SYSTEM_PARTITION_RBOOT_CONFIG, 0x1000, 0x1000},
+		{SYSTEM_PARTITION_RF_CAL, rf_cal_addr, 0x1000},
+		{SYSTEM_PARTITION_PHY_DATA, phy_data_addr, 0x1000},
+		{SYSTEM_PARTITION_SYSTEM_PARAMETER, system_param_addr, 0x3000},
+		{SYSTEM_PARTITION_CUSTOMER_BEGIN, 0x2000, 0xfdff0}, // (1M - 0x2010)
+	};
+
+	if(!system_partition_table_regist(partitions, sizeof(partitions) / sizeof(partitions[0]), size_map)) {
+		os_printf("system_partition_table_regist: failed\n");
+		while(1);
+	}
 }
+
+#endif /* defined(ESP_SDK_VERSION_MAJOR) and ESP_SDK_VERSION_MAJOR>=3 */
 
 namespace std {
     void __attribute__((weak)) __throw_bad_function_call()
