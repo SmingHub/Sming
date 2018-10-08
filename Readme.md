@@ -8,6 +8,7 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 [![Sponsors](https://opencollective.com/Sming/sponsors/badge.svg)](#financial-contributions)
 [![Download](https://img.shields.io/badge/download-~1.7M-orange.svg)](https://github.com/SmingHub/Sming/releases/latest)
 [![Build](https://travis-ci.org/SmingHub/Sming.svg?branch=develop)](https://travis-ci.org/SmingHub/Sming)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a450c9b4df08406dba81456261304ace)](https://app.codacy.com/app/slaff2/SmingOfficial?utm_source=github.com&utm_medium=referral&utm_content=SmingHub/Sming&utm_campaign=Badge_Grade_Dashboard)
 
 If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
 
