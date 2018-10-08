@@ -21,31 +21,44 @@ static FSTR_TABLE(FieldNameStrings) = {
 #undef XX
 };
 
-// Field names are not case sensitive
-static bool headerKeyCompare(const String& a, const String& b)
+String HttpHeaders::toString(HttpHeaderFieldName name) const
 {
-	return a.equalsIgnoreCase(b);
-}
-
-HttpHeaders::HttpHeaders() : HashMap<String, String>(headerKeyCompare)
-{
-}
-
-String HttpHeaders::toString(HttpHeaderFieldName name)
-{
-	if(name == HTTP_HEADER_UNKNOWN || name >= HTTP_HEADER_MAX)
+	if(name == HTTP_HEADER_UNKNOWN)
 		return nullptr;
 
-	return *FieldNameStrings[name - 1];
+	if(name < HTTP_HEADER_CUSTOM)
+		return *FieldNameStrings[name - 1];
+
+	return customFieldNames_[name - HTTP_HEADER_CUSTOM];
 }
 
-HttpHeaderFieldName HttpHeaders::fromString(const String& name)
+String HttpHeaders::toString(const String& name, const String& value)
+{
+	String s;
+	s.reserve(name.length() + 2 + value.length() + 2);
+	s.concat(name);
+	s.concat(": ");
+	s.concat(value);
+	s.concat("\r\n");
+	return s;
+}
+
+HttpHeaderFieldName HttpHeaders::fromString(const String& name) const
 {
 	// 0 is reserved for UNKNOWN
-	for(unsigned i = 1; i < HTTP_HEADER_MAX; ++i) {
+	for(unsigned i = 1; i < HTTP_HEADER_CUSTOM; ++i) {
 		if(name.equalsIgnoreCase(*FieldNameStrings[i - 1]))
 			return static_cast<HttpHeaderFieldName>(i);
 	}
+
+	return findCustomFieldName(name);
+}
+
+HttpHeaderFieldName HttpHeaders::findCustomFieldName(const String& name) const
+{
+	auto index = customFieldNames_.indexOf(name);
+	if(index >= 0)
+		return static_cast<HttpHeaderFieldName>(HTTP_HEADER_CUSTOM + index);
 
 	return HTTP_HEADER_UNKNOWN;
 }

@@ -299,13 +299,13 @@ String HttpRequest::toString()
 #endif
 
 	content += String(http_method_str(method)) + ' ' + uri.getPathWithQuery() + _F(" HTTP/1.1\n");
-	content += F("Host: ") + uri.Host + ':' + uri.Port + '\n';
+	content += headers.toString(HTTP_HEADER_HOST, uri.Host + ':' + uri.Port);
 	for(unsigned i = 0; i < headers.count(); i++) {
 		content += headers[i];
 	}
 
 	if(stream != nullptr && stream->available() >= 0) {
-		content += HttpHeaders::toString(HTTP_HEADER_CONTENT_LENGTH, String(stream->available()));
+		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(stream->available()));
 	}
 
 	return content;
