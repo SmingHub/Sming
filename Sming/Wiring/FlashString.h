@@ -121,7 +121,6 @@
  */
 #define FSTR_TABLE(_name) const FlashString* const _name[] PROGMEM
 
-
 /*
  * Load a FlashString object into a named local (stack) buffer
  *
@@ -151,22 +150,23 @@
  *  content into RAM. Data is stored word-aligned so it can be read as efficiently as possible.
  */
 struct FlashString {
-	uint32_t _length; // Only needs to be uint16_t but ensures data is aligned
-	char _data[];
+	// Do NOT access these directly - use member functions
+	uint32_t flashLength; ///< Only needs to be uint16_t but ensures data is aligned
+	char flashData[];
 
 	uint32_t length() const
 	{
-		return _length;
+		return flashLength;
 	}
 
 	uint32_t size() const
 	{
-		return ALIGNUP(_length + 1);
+		return ALIGNUP(flashLength + 1);
 	}
 
 	flash_string_t data() const
 	{
-		return FPSTR(_data);
+		return FPSTR(flashData);
 	}
 
 	/** @brief Check for equality with a C-string
@@ -178,10 +178,10 @@ struct FlashString {
 	{
 		// Unlikely we'd want an empty flash string, but check anyway
 		if(cstr == nullptr)
-			return _length == 0;
+			return flashLength == 0;
 		// Don't use strcmp as our data may contain nuls
 		size_t cstrlen = strlen(cstr);
-		if(cstrlen != _length)
+		if(cstrlen != flashLength)
 			return false;
 		LOAD_FSTR(buf, *this);
 		return memcmp(buf, cstr, cstrlen) == 0;
@@ -193,11 +193,11 @@ struct FlashString {
 	 */
 	bool isEqual(const FlashString& str) const
 	{
-		if(_length != str._length)
+		if(flashLength != str.flashLength)
 			return false;
-		if(_data == str._data)
+		if(flashData == str.flashData)
 			return true;
-		return memcmp_aligned(_data, str._data, ALIGNUP(_length)) == 0;
+		return memcmp_aligned(flashData, str.flashData, ALIGNUP(flashLength)) == 0;
 	}
 
 	bool isEqual(const String& str) const

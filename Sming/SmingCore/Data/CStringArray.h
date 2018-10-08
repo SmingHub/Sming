@@ -80,16 +80,16 @@ public:
 	void clear()
 	{
 		invalidate();
-		count_ = 0;
+		stringCount = 0;
 	}
 
 	unsigned count() const
 	{
-		return count_;
+		return stringCount;
 	}
 
 private:
-	unsigned count_ = 0;
+	unsigned stringCount = 0;
 };
 
 #endif // _SMING_CORE_DATA_STRING_ARRAY_H_
