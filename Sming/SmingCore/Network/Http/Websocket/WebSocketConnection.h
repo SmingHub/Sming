@@ -52,7 +52,7 @@ public:
 	// @deprecated
 	bool operator==(const WebSocketConnection& rhs) const;
 
-	WebSocketsList& getActiveWebSockets();
+	static WebSocketsList& getActiveWebSockets();
 	// @end deprecated
 
 	void setConnectionHandler(WebSocketDelegate handler);
