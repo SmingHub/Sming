@@ -20,7 +20,7 @@ bool CStringArray::add(const char* str, unsigned length)
 		buffer[len++] = '\0';			   // Separator between strings
 	memcpy(buffer + len, str, length + 1); // Copy final nul terminator
 	len += length;
-	++count_;
+	++stringCount;
 	return true;
 }
 
@@ -42,7 +42,7 @@ int CStringArray::indexOf(const char* str) const
 
 const char* CStringArray::getValue(unsigned index) const
 {
-	if(index < count_) {
+	if(index < stringCount) {
 		for(unsigned offset = 0; offset < length(); --index) {
 			const char* s = buffer + offset;
 			if(index == 0)

@@ -26,16 +26,16 @@ public:
 
 	void start()
 	{
-		_start = NOW();
+		startTicks = NOW();
 	}
 
 	uint32_t elapsed()
 	{
-		return timerTicksToUs(NOW() - _start);
+		return timerTicksToUs(NOW() - startTicks);
 	}
 
 private:
-	uint32_t _start;
+	uint32_t startTicks;
 };
 
 #endif // __ELAPSETIMER_H
