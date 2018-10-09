@@ -9,7 +9,7 @@
 #include "ESP8266EX.h"
 #include "Digital.h"
 
-EspDigitalPin EspDigitalPins[] = {
+const EspDigitalPin EspDigitalPins[] = {
 	{0, PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0}, // FLASH
 	{1, PERIPHS_IO_MUX_U0TXD_U, FUNC_GPIO1}, // TXD0
 	{2, PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2}, // TXD1
@@ -28,17 +28,17 @@ EspDigitalPin EspDigitalPins[] = {
 	{15, PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15}, // HSPICS
 };
 
-void EspDigitalPin::mode(uint8_t mode)
+void EspDigitalPin::mode(uint8_t mode) const
 {
 	pinMode(id, mode);
 }
 
-void EspDigitalPin::write(uint8_t val)
+void EspDigitalPin::write(uint8_t val) const
 {
 	digitalWrite(id, val);
 }
 
-uint8_t EspDigitalPin::read()
+uint8_t EspDigitalPin::read() const
 {
 	return digitalRead(id);
 }

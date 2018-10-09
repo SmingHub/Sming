@@ -21,18 +21,18 @@ struct EspDigitalPin {
 	uint32_t mux;
 	uint8_t gpioFunc;
 
-	operator const int()
+	operator const int() const
 	{
 		return id;
 	}
-	void mode(uint8_t mode);
-	void write(uint8_t val);
-	uint8_t read();
+	void mode(uint8_t mode) const;
+	void write(uint8_t val) const;
+	uint8_t read() const;
 };
 
 /** @brief  ESP GPIO pin configuration
  *  @ingroup gpio
  */
-extern EspDigitalPin EspDigitalPins[];
+extern const EspDigitalPin EspDigitalPins[];
 
 #endif /* _SMING_CORE_ESP8266EX_H_ */
