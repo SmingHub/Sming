@@ -198,9 +198,11 @@ MODULES              += third-party/ws_parser/
 EXTRA_INCDIR     += third-party/ws_parser/
 
 # => SDK
+SDK_INTERNAL = 0
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	THIRD_PARTY_DATA += third-party/ESP8266_NONOS_SDK/Makefile
 	CFLAGS += -DSDK_INTERNAL
+	SDK_INTERNAL = 1
 endif
 
 # => esp-gdbstub
@@ -424,7 +426,8 @@ $(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
 endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 $(USER_LIBDIR)/liblwip%.a: third-party/lwip2/Makefile.sming
-	$(Q) $(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
+	$(Q) $(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" SDK_INTERNAL="$(SDK_INTERNAL)" \
+				 USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
 endif
 
 $(APP_AR): $(OBJ)
