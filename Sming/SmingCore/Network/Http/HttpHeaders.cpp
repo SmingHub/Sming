@@ -29,7 +29,7 @@ String HttpHeaders::toString(HttpHeaderFieldName name) const
 	if(name < HTTP_HEADER_CUSTOM)
 		return *FieldNameStrings[name - 1];
 
-	return customFieldNames_[name - HTTP_HEADER_CUSTOM];
+	return customFieldNames[name - HTTP_HEADER_CUSTOM];
 }
 
 String HttpHeaders::toString(const String& name, const String& value)
@@ -56,7 +56,7 @@ HttpHeaderFieldName HttpHeaders::fromString(const String& name) const
 
 HttpHeaderFieldName HttpHeaders::findCustomFieldName(const String& name) const
 {
-	auto index = customFieldNames_.indexOf(name);
+	auto index = customFieldNames.indexOf(name);
 	if(index >= 0)
 		return static_cast<HttpHeaderFieldName>(HTTP_HEADER_CUSTOM + index);
 
