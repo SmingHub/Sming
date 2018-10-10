@@ -20,8 +20,8 @@
  *  @brief      Provides timer functions
 */
 
-#ifndef _SMING_CORE_OSTimer_H_
-#define _SMING_CORE_OSTimer_H_
+#ifndef SMINGCORE_SIMPLETIMER_H_
+#define SMINGCORE_SIMPLETIMER_H_
 
 extern "C" {
 #include "esp_systemapi.h"
@@ -36,18 +36,18 @@ extern "C" {
 */
 #define MAX_OS_TIMER_INTERVAL_US 268435000
 
-class OSTimer
+class SimpleTimer
 {
 public:
 	/** @brief  OSTimer class
      *  @ingroup timer
      *  @{
      */
-	OSTimer()
+	SimpleTimer()
 	{
 	}
 
-	~OSTimer()
+	~SimpleTimer()
 	{
 		stop();
 	}
@@ -60,8 +60,8 @@ public:
 	__forceinline void startMs(uint32_t milliseconds, bool repeating = false)
 	{
 		stop();
-		if(_timer.timer_func)
-			ets_timer_arm_new(&_timer, milliseconds, repeating, true);
+		if(osTimer.timer_func)
+			ets_timer_arm_new(&osTimer, milliseconds, repeating, true);
 	}
 
 	/** @brief  Initialise microsecond timer
@@ -72,8 +72,8 @@ public:
 	__forceinline void startUs(uint32_t microseconds, bool repeating = false)
 	{
 		stop();
-		if(_timer.timer_func)
-			ets_timer_arm_new(&_timer, microseconds, repeating, false);
+		if(osTimer.timer_func)
+			ets_timer_arm_new(&osTimer, microseconds, repeating, false);
 	}
 
 	/** @brief  Stop timer
@@ -81,7 +81,7 @@ public:
      */
 	__forceinline void stop()
 	{
-		ets_timer_disarm(&_timer);
+		ets_timer_disarm(&osTimer);
 	}
 
 	/** @brief  Set timer trigger function
@@ -91,11 +91,11 @@ public:
 	void setCallback(os_timer_func_t callback, void* arg = nullptr)
 	{
 		stop();
-		ets_timer_setfn(&_timer, callback, arg);
+		ets_timer_setfn(&osTimer, callback, arg);
 	}
 
 private:
-	os_timer_t _timer;
+	os_timer_t osTimer;
 };
 
-#endif /* _SMING_CORE_OSTimer_H_ */
+#endif /* SMINGCORE_SIMPLETIMER_H_ */

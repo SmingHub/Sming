@@ -56,7 +56,7 @@ void Timer::start(bool repeating /* = true*/)
 	if(interval == 0)
 		return;
 
-	osTimer.setCallback(
+	simpleTimer.setCallback(
 		[](void* arg) {
 			auto tmr = reinterpret_cast<Timer*>(arg);
 			if(tmr)
@@ -65,9 +65,9 @@ void Timer::start(bool repeating /* = true*/)
 		this);
 
 	if(interval > 10000) {
-		osTimer.startMs(interval / 1000, longIntervalCounterLimit || repeating);
+		simpleTimer.startMs(interval / 1000, longIntervalCounterLimit || repeating);
 	} else {
-		osTimer.startUs(interval, repeating);
+		simpleTimer.startUs(interval, repeating);
 	}
 
 	started = true;
@@ -76,7 +76,7 @@ void Timer::start(bool repeating /* = true*/)
 void Timer::stop()
 {
 	if(started) {
-		osTimer.stop();
+		simpleTimer.stop();
 		started = false;
 		longIntervalCounter = 0;
 	}

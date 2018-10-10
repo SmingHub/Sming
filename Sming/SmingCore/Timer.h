@@ -15,7 +15,7 @@
 #include "Interrupts.h"
 #include "Delegate.h"
 
-#include "OSTimer.h"
+#include "SimpleTimer.h"
 
 typedef Delegate<void()> TimerDelegate;
 typedef std::function<void()> TimerDelegateStdFunction;
@@ -174,7 +174,7 @@ protected:
 	/** @} */
 
 private:
-	OSTimer osTimer; ///< We use the OSTimer class to access the hardware
+	SimpleTimer simpleTimer; ///< We use a SimpleTimer to access the hardware
 	uint32_t interval = 0;
 	InterruptCallback callback = nullptr;
 	TimerDelegate delegateFunc = nullptr;
