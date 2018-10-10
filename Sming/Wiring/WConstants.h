@@ -125,20 +125,6 @@
 #define degrees(rad)                   ((rad)*RAD_TO_DEG)
 #define constrain(amt,low,high)        ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 
-#define bit(x)                         (1UL<<(x))
-#define setBits(x, y)                  ((x)|=(y))
-#define clearBits(x, y)                ((x)&=(~(y)))
-//#define setBit(x, y)                   setBits((x), (bit((y))))
-//#define clearBit(x, y)                 clearBits((x), (bit((y))))
-
-#define bitsSet(x,y)                   (((x) & (y)) == (y))
-#define bitsClear(x,y)                 (((x) & (y)) == 0)
-
-#define bitRead(value, bit)            (((value) >> (bit)) & 0x01)
-#define bitSet(value, bit)             ((value) |= (1UL << (bit)))
-#define bitClear(value, bit)           ((value) &= ~(1UL << (bit)))
-#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
-
 #define lowByte(x)                     ((uint8_t) ((x) & 0x00ff))
 #define highByte(x)                    ((uint8_t) ((x)>>8))
 
