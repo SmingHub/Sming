@@ -28,6 +28,7 @@
 #include "SPISoft.h"
 #include "SPI.h"
 
+#include "Platform/RTC.h"
 #include "Platform/System.h"
 #include "Platform/WifiEvents.h"
 #include "Platform/Station.h"
