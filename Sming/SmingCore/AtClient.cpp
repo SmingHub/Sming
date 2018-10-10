@@ -5,7 +5,8 @@
  *      Author: slavey
  */
 
-#include <AtClient.h>
+#include "AtClient.h"
+#include "Clock.h"
 
 #ifndef debugf
 #define debugf(fmt, ...)
