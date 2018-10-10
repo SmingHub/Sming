@@ -10,8 +10,8 @@
  *  @brief      Provides system clock functions
 */
 
-#ifndef APP_SYSTEMCLOCK_H_
-#define APP_SYSTEMCLOCK_H_
+#ifndef SMINGCORE_SYSTEMCLOCK_H_
+#define SMINGCORE_SYSTEMCLOCK_H_
 
 #include "../Services/DateTime/DateTime.h"
 #include "WString.h"
@@ -65,14 +65,14 @@ public:
      *  @todo   Why does this need to be set to 2 for UK during winter?
      *  @note   Supports whole hour and fraction of hour offsets from -12 hours to +12 hours
      */
-	bool setTimeZoneOffset(int tzOffsetSecs);
+	bool setTimeZoneOffset(int seconds);
 
 	bool setTimeZone(float localTimezoneOffset)
 	{
 		return setTimeZoneOffset(localTimezoneOffset * SECS_PER_HOUR);
 	}
 
-	int tzOffsetSecs()
+	int getTimeZoneOffset()
 	{
 		return timeZoneOffsetSecs;
 	}
@@ -91,4 +91,4 @@ private:
 extern SystemClockClass SystemClock;
 
 /** @} */
-#endif /* APP_SYSTEMCLOCK_H_ */
+#endif /* SMINGCORE_SYSTEMCLOCK_H_ */

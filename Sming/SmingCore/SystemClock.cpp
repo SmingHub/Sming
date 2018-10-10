@@ -43,10 +43,10 @@ String SystemClockClass::getSystemTimeString(TimeZone timeType /* = eTZ_Local */
 	return DateTime(now(timeType)).toFullDateTimeString();
 }
 
-bool SystemClockClass::setTimeZoneOffset(int tzOffsetSecs)
+bool SystemClockClass::setTimeZoneOffset(int seconds)
 {
-	if((unsigned)abs(tzOffsetSecs) < (12 * SECS_PER_HOUR)) {
-		timeZoneOffsetSecs = tzOffsetSecs;
+	if((unsigned)abs(seconds) < (12 * SECS_PER_HOUR)) {
+		timeZoneOffsetSecs = seconds;
 		return true;
 	}
 	return false;
