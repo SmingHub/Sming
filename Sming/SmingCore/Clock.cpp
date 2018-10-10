@@ -5,8 +5,8 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "../SmingCore/Clock.h"
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "Clock.h"
+#include "WiringFrameworkIncludes.h"
 
 #define MAX_SAFE_DELAY 1000
 
@@ -20,11 +20,11 @@ unsigned long micros(void)
 	return system_get_time();
 }
 
-void delay(uint32_t time)
+void delay(uint32_t milliseconds)
 {
-	int quotient = time / MAX_SAFE_DELAY;
-	int remainder = time % MAX_SAFE_DELAY;
-	for(int i = 0, max = quotient + 1; i < max; i++) {
+	unsigned quotient = milliseconds / MAX_SAFE_DELAY;
+	unsigned remainder = milliseconds % MAX_SAFE_DELAY;
+	for(unsigned i = 0; i <= quotient; i++) {
 		if(i == quotient) {
 			os_delay_us(remainder * 1000);
 		} else {
