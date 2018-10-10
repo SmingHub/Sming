@@ -13,34 +13,44 @@
 #ifndef _HARDWARESERIAL_H_
 #define _HARDWARESERIAL_H_
 
-#include "../Wiring/WiringFrameworkDependencies.h"
-#include "../Wiring/Stream.h"
-#include "../SmingCore/Delegate.h"
+#include "WiringFrameworkDependencies.h"
+#include "Stream.h"
+#include "Delegate.h"
+#include "espinc/uart.h"
+
+#if ENABLE_CMD_EXECUTOR
 #include "../Services/CommandProcessing/CommandProcessingIncludes.h"
+#endif
 
 #define UART_ID_0 0 ///< ID of UART 0
 #define UART_ID_1 1 ///< ID of UART 1
 
 #define NUMBER_UARTS 2 ///< Quantity of UARTs available
 
-#define SERIAL_SIGNAL_DELEGATE 0 ///< ID for serial delegate signals
-#define SERIAL_SIGNAL_COMMAND 1  ///< ID for serial command signals
-#define SERIAL_QUEUE_LEN 10		 ///< Size of serial queue
-
 /** @brief  Delegate callback type for serial data reception
  *  @param  source Reference to serial stream
- *  @param  arrivedChar Char recieved
+ *  @param  arrivedChar Char received
  *  @param  availableCharsCount Quantity of chars available stream in receive buffer
+ *  @note Delegate constructor usage: (&YourClass::method, this)
+ *
+ * 	This delegate is invoked when the serial receive buffer is full, or it times out. The
+ * 	arrivedChar indicates the last character received, which might be a '\n' line ending
+ * 	character, for example. If no receive buffer has been allocated, or it's not big enough to
+ * 	contain the full message, then this value will be incorrect as data is stored in the hardware
+ * 	FIFO until read out.
  */
-// Delegate constructor usage: (&YourClass::method, this)
 typedef Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
 
+#if ENABLE_CMD_EXECUTOR
 class CommandExecutor;
+#endif
 
-/// Hardware serial member data
+/// User-supplied callbacks for serial port
 typedef struct {
-	StreamDataReceivedDelegate HWSDelegate;		///< Delegate callback handler
-	CommandExecutor* commandExecutor = nullptr; ///< Pointer to command executor (Default: none)
+	StreamDataReceivedDelegate HWSDelegate = nullptr;
+#if ENABLE_CMD_EXECUTOR
+	CommandExecutor* commandExecutor = nullptr;
+#endif
 } HWSerialMemberData;
 
 enum SerialConfig {
@@ -72,6 +82,10 @@ enum SerialConfig {
 
 enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL_TX_ONLY = UART_TX_ONLY };
 
+#ifndef DEFAULT_RX_BUFFER_SIZE
+#define DEFAULT_RX_BUFFER_SIZE 256
+#endif
+
 /// Hardware serial class
 class HardwareSerial : public Stream
 {
@@ -80,13 +94,13 @@ public:
      *  @param  uartPort UART number [0 | 1]
      *  @note   A global instance of UART 0 is already defined as Serial
      */
-	HardwareSerial(const int uartPort);
+	HardwareSerial(int uartPort);
 	~HardwareSerial();
 
 	/** @brief  Initialise the serial port
      *  @param  baud BAUD rate of the serial port (Default: 9600)
      */
-	void begin(const uint32_t baud = 9600)
+	void begin(uint32_t baud = 9600)
 	{
 		begin(baud, SERIAL_8N1, SERIAL_FULL, 1);
 	}
@@ -98,7 +112,7 @@ public:
 	 * 		  			   To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
 	 * 		  			   Serial.begin(baudrate, SERIAL_6E2), etc.
 	 */
-	void begin(const uint32_t baud, SerialConfig config)
+	void begin(uint32_t baud, SerialConfig config)
 	{
 		begin(baud, config, SERIAL_FULL, 1);
 	}
@@ -111,26 +125,26 @@ public:
 	 * 		  			   Serial.begin(baudrate, SERIAL_6E2), etc.
 	 * @param SerialMode specifies if the UART supports receiving (RX), transmitting (TX) or both (FULL) operations
 	 */
-	void begin(const uint32_t baud, SerialConfig config, SerialMode mode)
+	void begin(uint32_t baud, SerialConfig config, SerialMode mode)
 	{
 		begin(baud, config, mode, 1);
 	}
 
-	void begin(const uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin);
+	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin);
 
-	/*
+	/**
 	 * @brief De-inits the current UART if it is already used
 	 */
 	void end();
 
-	/*
+	/**
 	 * @brief Sets receiving buffer size
 	 * @param size_t requested size
 	 * @retval size_t actual size
 	 */
 	size_t setRxBufferSize(size_t size);
 
-	/*
+	/**
 	 * @brief Toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX
 	 * @note UART0 uses pins GPIO1 (TX) and GPIO3 (RX). It may be swapped to GPIO15 (TX) and GPIO13 (RX) by calling .swap() after .begin. C
 	 * @note Calling swap again maps UART0 back to GPIO1 and GPIO3.
@@ -140,7 +154,7 @@ public:
 		swap(1);
 	}
 
-	/*
+	/**
 	 * @brief Toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX
 	 * @param uint8_t Pin number.
 	 */
@@ -155,7 +169,7 @@ public:
 	 */
 	void setTx(uint8_t tx_pin);
 
-	/*
+	/**
 	 * @brief Sets the transmission and receiving PINS
 	 * @param uint8_t tx Transmission pin number
 	 * @param uint8_t rx Receiving pin number
@@ -267,7 +281,7 @@ public:
 	 */
 	size_t indexOf(char c);
 
-	/*
+	/**
 	 * @brief Returns a pointer to the internal uart object. Use with care.
 	 * @retval pointer to uart_t
 	 */
@@ -277,25 +291,18 @@ public:
 	}
 
 private:
-	int uartNr;
+	int uartNr = -1;
 	static HWSerialMemberData memberData[NUMBER_UARTS];
 
 	uart_t* uart = nullptr;
-	size_t rxSize;
+	size_t rxSize = DEFAULT_RX_BUFFER_SIZE;
 
-	static os_event_t* serialQueue;
-
-	static bool init;
+	static bool init; ///< Purpose ? @todo highly suspect
 
 	/** @brief  Interrupt handler for UART0 receive events
 	 * @param uart_t* pointer to UART structure
 	 */
 	static void IRAM_ATTR callbackHandler(uart_t* arg);
-
-	/** @brief  Trigger task for input event
-	 *  @param  inputEvent The event to use for trigger
-	 */
-	static void delegateTask(os_event_t* inputEvent);
 };
 
 /**	@brief	Global instance of serial port UART0

@@ -6,14 +6,21 @@
  ****/
 
 #include "System.h"
-#include "../Interrupts.h"
-#include "../../Services/SpifFS/spiffs_sming.h"
+#include "Interrupts.h"
 
 SystemClass System;
 
-SystemClass::SystemClass()
+os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
+
+/** @brief OS calls this function which invokes user-defined callback
+ *  @note callback function pointer is placed in event->sig, with parameter
+ *  in event->par.
+ */
+static void __taskHandler(os_event_t* event)
 {
-	state = eSS_None;
+	auto callback = reinterpret_cast<task_callback_t>(event->sig);
+	if(callback)
+		callback(event->par);
 }
 
 void SystemClass::initialize()
@@ -21,6 +28,9 @@ void SystemClass::initialize()
 	if(state != eSS_None)
 		return;
 	state = eSS_Intializing;
+
+	// Initialise the global task queue
+	system_os_task(__taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
 
 	system_init_done_cb(staticReadyHandler);
 }
