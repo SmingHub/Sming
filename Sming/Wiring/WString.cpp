@@ -492,6 +492,13 @@ bool String::equalsIgnoreCase(const String &s2) const
   return equalsIgnoreCase(s2.buffer);
 }
 
+bool String::equalsIgnoreCase(const FlashString& fstr) const
+{
+  if (len != fstr.length()) return false;
+  LOAD_FSTR(buf, fstr);
+  return strcasecmp(buf, buffer) == 0;
+}
+
 bool String::startsWith(const String &prefix) const
 {
   if (len < prefix.len) return false;
