@@ -288,6 +288,7 @@ class String
     bool operator >= (const String &rhs) const;
     bool equalsIgnoreCase(const char* cstr) const;
     bool equalsIgnoreCase(const String &s2) const;
+    bool equalsIgnoreCase(const FlashString& fstr) const;
     bool startsWith(const String &prefix) const;
     bool startsWith(const String &prefix, unsigned int offset) const;
     bool endsWith(const String &suffix) const;
