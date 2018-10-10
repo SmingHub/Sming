@@ -106,7 +106,7 @@ extern "C" {
 #define GPF14  ESP8266_REG(0x80C)
 #define GPF15  ESP8266_REG(0x810)
 
-extern uint8_t esp8266_gpioToFn[16];
+extern const uint8_t esp8266_gpioToFn[16];
 #define GPF(p) ESP8266_REG(0x800 + esp8266_gpioToFn[(p & 0xF)])
 
 //GPIO (0-15) PIN Function Bits
