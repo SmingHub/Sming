@@ -194,7 +194,7 @@ void HardwareSerial::callbackHandler(uart_t* uart)
 							.uartNr = static_cast<uint8_t>(uart_nr)}};
 
 		if(m.HWSDelegate)
-			System.deferCallback(
+			System.queueCallback(
 				[](os_param_t param) {
 					SerialParam ser = {.param = param};
 					auto& m = memberData[ser.uartNr];
@@ -205,7 +205,7 @@ void HardwareSerial::callbackHandler(uart_t* uart)
 
 #if ENABLE_CMD_EXECUTOR
 		if(m.commandExecutor)
-			System.deferCallback(
+			System.queueCallback(
 				[](os_param_t param) {
 					SerialParam ser = {.param = param};
 					auto& m = memberData[ser.uartNr];

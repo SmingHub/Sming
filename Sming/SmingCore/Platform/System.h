@@ -29,7 +29,7 @@
  * 	@note Callback code does not need to be in IRAM
  *  @todo Integrate delegation into callbacks
  */
-typedef void (*task_callback_t)(os_param_t param);
+typedef std::function<void(os_param_t param)> TaskCallback;
 
 /// @ingroup event_handlers
 typedef Delegate<void()> SystemReadyDelegate; ///< Handler function for system ready
@@ -128,10 +128,7 @@ public:
 	 * @param callback The function to be called
 	 * @param param Parameter passed to the callback
 	*/
-	static __forceinline bool IRAM_ATTR deferCallback(task_callback_t callback, os_param_t param = 0)
-	{
-		return callback ? system_os_post(USER_TASK_PRIO_1, (os_signal_t)callback, param) : false;
-	}
+	static bool IRAM_ATTR queueCallback(TaskCallback callback, os_param_t param = 0);
 
 private:
 	static void staticReadyHandler();

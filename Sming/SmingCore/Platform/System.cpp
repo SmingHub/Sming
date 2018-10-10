@@ -16,11 +16,13 @@ os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
  *  @note callback function pointer is placed in event->sig, with parameter
  *  in event->par.
  */
-static void __taskHandler(os_event_t* event)
+static void taskHandler(os_event_t* event)
 {
-	auto callback = reinterpret_cast<task_callback_t>(event->sig);
-	if(callback)
-		callback(event->par);
+	auto callback = reinterpret_cast<TaskCallback*>(event->sig);
+	if(callback) {
+		(*callback)(event->par);
+		delete callback;
+	}
 }
 
 void SystemClass::initialize()
@@ -30,9 +32,18 @@ void SystemClass::initialize()
 	state = eSS_Intializing;
 
 	// Initialise the global task queue
-	system_os_task(__taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
+	system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
 
 	system_init_done_cb(staticReadyHandler);
+}
+
+bool SystemClass::queueCallback(TaskCallback callback, os_param_t param)
+{
+	if(callback == nullptr) {
+		return false;
+	}
+
+	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(new TaskCallback(callback)), param);
 }
 
 void SystemClass::restart()
