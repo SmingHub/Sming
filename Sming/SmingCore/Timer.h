@@ -8,8 +8,8 @@
 /** @defgroup   timer Timer functions
  *  @brief      Provides timer functions
 */
-#ifndef _SMING_CORE_Timer_H_
-#define _SMING_CORE_Timer_H_
+#ifndef _SMING_CORE_TIMER_H_
+#define _SMING_CORE_TIMER_H_
 
 #include <functional>
 #include "Interrupts.h"
@@ -188,4 +188,4 @@ private:
 	uint16_t longIntervalCounterLimit = 0;
 };
 
-#endif /* _SMING_CORE_Timer_H_ */
+#endif /* _SMING_CORE_TIMER_H_ */

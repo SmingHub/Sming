@@ -7,21 +7,21 @@
  *
  * @author: 13 August 2018 - mikee47 <mike@sillyhouse.net>
  *
- * This class wraps the OS timer functions.
+ * This class wraps the OS timer functions, in a class called SimpleTimer.
  *
- * For many timing operations the basic OS Timer capabilities are sufficient.
+ * For many timing operations the basic SimpleTimer capabilities are sufficient.
  * The additional RAM required by the main Timer class soon adds up, so all
- * short timer requirements are handled by an OSTimer. Still require Timer for
+ * short timer requirements are handled by an SimpleTimer. Still require Timer for
  * longer periods and the additional callback flexibility.
  *
 */
 
-/** @defgroup   timer OSTimer functions
- *  @brief      Provides timer functions
+/** @defgroup   timer SimpleTimer functions
+ *  @brief      Provides basic OS timer functions
 */
 
-#ifndef SMINGCORE_SIMPLETIMER_H_
-#define SMINGCORE_SIMPLETIMER_H_
+#ifndef _SMING_CORE_SIMPLETIMER_H_
+#define _SMING_CORE_SIMPLETIMER_H_
 
 extern "C" {
 #include "esp_systemapi.h"
@@ -98,4 +98,4 @@ private:
 	os_timer_t osTimer;
 };
 
-#endif /* SMINGCORE_SIMPLETIMER_H_ */
+#endif /* _SMING_CORE_SIMPLETIMER_H_ */
