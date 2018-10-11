@@ -44,6 +44,11 @@ extern "C" {
 #define DEBUG_VERBOSE_LEVEL INFO
 #endif
 
+// Dummy to omit debug information safely
+#define debug_none(fmt, ...)                                                                                           \
+	do {                                                                                                               \
+	} while(0)
+
 #if DEBUG_BUILD
 
 // http://stackoverflow.com/a/35441900
@@ -52,22 +57,38 @@ extern "C" {
 #define MACROQUOT(x) #x
 #define MACROQUOTE(x) MACROQUOT(x)
 
+#ifdef SMING_INCLUDED
+#define PROGMEM_DEBUG                                                                                                  \
+	__attribute__((aligned(4))) __attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug., __COUNTER__, __LINE__)))))
+#else
+#define PROGMEM_DEBUG
+#endif
+
 //A static const char[] is defined having a unique name (log_ prefix, filename and line number)
 //This will be stored in the irom section(on flash) feeing up the RAM
 //Next special version of printf from FakePgmSpace is called to fetch and print the message
 #if DEBUG_PRINT_FILENAME_AND_LINE
-#define debug_e(fmt, ...) \
-	({static const char log_string[] \
-	__attribute__((aligned(4))) \
-	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,__LINE__))))) = "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt "\n"; \
-	printf_P_stack(log_string, __LINE__, ##__VA_ARGS__);})
+#define debug_e(fmt, ...)                                                                                              \
+	(__extension__({                                                                                                   \
+		static const char log_string[] PROGMEM_DEBUG = "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt "\n";                \
+		printf_P(log_string, __LINE__, ##__VA_ARGS__);                                                                 \
+	}))
 #else
-#define debug_e(fmt, ...) \
-	({static const char log_string[] \
-	__attribute__((aligned(4))) \
-	__attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug.,__COUNTER__,__LINE__))))) = fmt "\n"; \
-	printf_P_stack(log_string, ##__VA_ARGS__);})
+#define debug_e(fmt, ...)                                                                                              \
+	(__extension__({                                                                                                   \
+		static const char log_string[] PROGMEM_DEBUG = "%u " fmt "\n";                                                 \
+		printf_P(log_string, system_get_time(), ##__VA_ARGS__);                                                        \
+	}))
 #endif
+
+/*
+ * Print a block of data but only at or above given debug level
+ */
+#define debug_hex(_level, _tag, _data, _len, ...)                                                                      \
+	{                                                                                                                  \
+		if(DEBUG_VERBOSE_LEVEL >= _level)                                                                              \
+			m_printHex(_F(_tag), _data, _len, ##__VA_ARGS__);                                                          \
+	}
 
 	#if DEBUG_VERBOSE_LEVEL == DBG
 		#define debug_w debug_e
@@ -86,11 +107,18 @@ extern "C" {
 		#define debug_i
 		#define debug_d
 	#endif
+
 #else /*DEBUG_BUILD*/
-	#define debug_e
-	#define debug_w
-	#define debug_i
-	#define debug_d
+
+#define debug_e debug_none
+#define debug_w debug_none
+#define debug_i debug_none
+#define debug_d debug_none
+
+#define debug_hex(_level, _tag, _data, _len, ...)                                                                      \
+	do {                                                                                                               \
+	} while(0)
+
 #endif /*DEBUG_BUILD*/
 
 #ifdef __cplusplus
