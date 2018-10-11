@@ -24,6 +24,33 @@ void IRAM_ATTR interruptHandler()
 	// For this example, we just toggle the state of an output pin.
 	bool state = digitalRead(TOGGLE_PIN);
 	digitalWrite(TOGGLE_PIN, !state);
+
+	// Example of how you can queue a callback from inside a regular interrupt handler
+	const unsigned MAX_TOGGLE_COUNTS = 10;
+	static unsigned toggleCount;
+	++toggleCount;
+	if(toggleCount > MAX_TOGGLE_COUNTS) {
+		/*
+		 * Using a 'lambda function' we can easily include any code to be executed by the callback
+		 * without having to define a function elsewhere.
+		 * You could also pass a function pointer to queueCallback().
+		 */
+		System.queueCallback(
+			[&](uint32_t interruptToggleCount) {
+				say("Toggle count hit ");
+				say(interruptToggleCount);
+				say(", current value is ");
+				say(toggleCount);
+				say("!");
+				newline();
+				say("Max tasks queued: ");
+				say(System.getMaxTaskCount());
+				newline();
+			},
+			toggleCount);
+
+		toggleCount = 0;
+	}
 }
 
 /** @brief Example of an InterruptDelegate function
@@ -35,7 +62,7 @@ void interruptDelegate()
 	// For this example, we write some stuff out of the serial port.
 	say(micros());
 	say("   Pin changed, now   ");
-	say(digitalRead(INT_PIN_A));
+	say(digitalRead(INT_PIN_B));
 	newline();
 
 	// Interrupt delegates work by queueing your callback routine, so let's just show you how many requests got queued

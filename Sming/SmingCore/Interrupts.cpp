@@ -150,35 +150,4 @@ void interrupts()
 	xt_enable_interrupts();
 }
 
-static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
-{
-	boolean processed;
-	uint32 gpio_status;
 
-	do {
-		gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
-		processed = false;
-		for(uint8 i = 0; i < ESP_MAX_INTERRUPTS; i++) {
-			if(!bitRead(gpio_status, i)) {
-				continue;
-			}
-
-			// clear interrupt status
-			GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & _BV(i));
-
-			if(_gpioInterruptsList[i]) {
-				_gpioInterruptsList[i]();
-			} else if(_delegateFunctionList[i]) {
-				System.queueCallback(
-					[](uint32_t interruptNumber) {
-						auto& delegate = _delegateFunctionList[interruptNumber];
-						if(delegate)
-							delegate();
-					},
-					i);
-			}
-
-			processed = true;
-		}
-	} while(processed);
-}
