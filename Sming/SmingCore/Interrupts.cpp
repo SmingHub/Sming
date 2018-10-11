@@ -10,9 +10,9 @@
 #include "WiringFrameworkIncludes.h"
 #include "System.h"
 
-static InterruptCallback _gpioInterruptsList[16] = {0};
-static InterruptDelegate _delegateFunctionList[16];
-static bool _gpioInterruptsInitialied = false;
+static InterruptCallback gpioInterruptsList[16] = {0};
+static InterruptDelegate delegateFunctionList[16];
+static bool gpioInterruptsInitialied = false;
 
 /** @brief  Interrupt handler
  *  @param  intr_mask Interrupt mask
@@ -34,12 +34,12 @@ static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 			// clear interrupt status
 			GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & _BV(i));
 
-			if(_gpioInterruptsList[i]) {
-				_gpioInterruptsList[i]();
-			} else if(_delegateFunctionList[i]) {
+			if(gpioInterruptsList[i]) {
+				gpioInterruptsList[i]();
+			} else if(delegateFunctionList[i]) {
 				System.queueCallback(
 					[](uint32_t interruptNumber) {
-						auto& delegate = _delegateFunctionList[interruptNumber];
+						auto& delegate = delegateFunctionList[interruptNumber];
 						if(delegate)
 							delegate();
 					},
@@ -67,8 +67,8 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode
 {
 	if(pin >= 16)
 		return; // WTF o_O
-	_gpioInterruptsList[pin] = callback;
-	_delegateFunctionList[pin] = nullptr;
+	gpioInterruptsList[pin] = callback;
+	delegateFunctionList[pin] = nullptr;
 	attachInterruptHandler(pin, mode);
 }
 
@@ -76,8 +76,8 @@ void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, GPIO_INT_TY
 {
 	if(pin >= 16)
 		return; // WTF o_O
-	_gpioInterruptsList[pin] = nullptr;
-	_delegateFunctionList[pin] = delegateFunction;
+	gpioInterruptsList[pin] = nullptr;
+	delegateFunctionList[pin] = delegateFunction;
 	attachInterruptHandler(pin, mode);
 }
 
@@ -85,9 +85,9 @@ void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
 {
 	ETS_GPIO_INTR_DISABLE();
 
-	if(!_gpioInterruptsInitialied) {
+	if(!gpioInterruptsInitialied) {
 		ETS_GPIO_INTR_ATTACH((ets_isr_t)interruptHandler, nullptr); // Register interrupt handler
-		_gpioInterruptsInitialied = true;
+		gpioInterruptsInitialied = true;
 	}
 
 	pinMode(pin, INPUT);
@@ -99,8 +99,8 @@ void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
 
 void detachInterrupt(uint8_t pin)
 {
-	_gpioInterruptsList[pin] = nullptr;
-	_delegateFunctionList[pin] = nullptr;
+	gpioInterruptsList[pin] = nullptr;
+	delegateFunctionList[pin] = nullptr;
 	attachInterruptHandler(pin, GPIO_PIN_INTR_DISABLE);
 }
 
@@ -149,5 +149,3 @@ void interrupts()
 	//ETS_INTR_UNLOCK();
 	xt_enable_interrupts();
 }
-
-
