@@ -21,18 +21,18 @@ static bool gpioInterruptsInitialied = false;
 static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 {
 	boolean processed;
-	uint32 gpio_status;
+	uint32 gpioStatus;
 
 	do {
-		gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
+		gpioStatus = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 		processed = false;
 		for(uint8 i = 0; i < ESP_MAX_INTERRUPTS; i++) {
-			if(!bitRead(gpio_status, i)) {
+			if(!bitRead(gpioStatus, i)) {
 				continue;
 			}
 
 			// clear interrupt status
-			GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & _BV(i));
+			GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpioStatus & _BV(i));
 
 			if(gpioInterruptsList[i]) {
 				gpioInterruptsList[i]();
@@ -57,7 +57,7 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode)
 	attachInterrupt(pin, callback, type);
 }
 
-void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, uint8_t mode)
+void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, uint8_t mode)
 {
 	GPIO_INT_TYPE type = ConvertArduinoInterruptMode(mode);
 	attachInterrupt(pin, delegateFunction, type);
@@ -72,7 +72,7 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode
 	attachInterruptHandler(pin, mode);
 }
 
-void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, GPIO_INT_TYPE mode)
+void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_TYPE mode)
 {
 	if(pin >= 16)
 		return; // WTF o_O
