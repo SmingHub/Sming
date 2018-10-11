@@ -10,10 +10,10 @@
  *  @{
 */
 
-#ifndef _NWTime_H_
-#define _NWTime_H_
+#ifndef _SMING_CORE_CLOCK_H_
+#define _SMING_CORE_CLOCK_H_
 
-#include "../Wiring/WiringFrameworkDependencies.h"
+#include "WiringFrameworkDependencies.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,9 +36,10 @@ unsigned long millis(void) __attribute__((weak));
 unsigned long micros(void) __attribute__((weak));
 
 /** @brief  Pause execution
- *  @param  time Duration of delay in milliseconds
+ *  @param  milliseconds Duration of delay
+ *  @note Try to avoid calling this function, instead use a Timer or SimpleTimer
  */
-void delay(uint32_t time);
+void delay(uint32_t milliseconds);
 
 /** @brief  Pause execution
  *  @param  ms Duration of delay in milliseconds
@@ -55,4 +56,4 @@ void delayMicroseconds(uint32_t time);
 #endif
 
 /** @} */
-#endif
+#endif /* _SMING_CORE_CLOCK_H_ */
