@@ -22,15 +22,9 @@ void SystemClass::taskHandler(os_event_t* event)
 {
 	auto callback = reinterpret_cast<TaskCallback>(event->sig);
 	if(callback) {
-		/*
-		 * @todo how to guarantee atomic operation?
-		 *
-		 * I suspect atomics aren't available in the SDK library as linker fails with this:
-		 *
-		 * __atomic_fetch_sub(&taskCount, 1, __ATOMIC_RELAXED);
-		 *
-		 */
+		noInterrupts();
 		--taskCount;
+		interrupts();
 		callback(event->par);
 	}
 }
