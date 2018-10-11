@@ -13,8 +13,8 @@
  *  @brief    Provides hardware SPI support
  */
 
-#ifndef SMINGCORE_SPI_H_
-#define SMINGCORE_SPI_H_
+#ifndef _SMING_CORE_SPI_H_
+#define _SMING_CORE_SPI_H_
 
 #include "SPIBase.h"
 #include "SPISettings.h"
@@ -177,12 +177,12 @@ private:
 	uint32_t getFrequency(int freq, int& pre, int clk);
 	void setFrequency(int freq);
 
-	SPISettings _SPISettings;
-	uint8 _isTX = false;
-	uint8 _init = false;
+	SPISettings spiSettings;
+	bool isTX = false;
+	bool initialised = false;
 };
 
 /** @brief  Global instance of SPI class */
 extern SPIClass SPI;
 
-#endif /* SMINGCORE_SPI_H_ */
+#endif /* _SMING_CORE_SPI_H_ */

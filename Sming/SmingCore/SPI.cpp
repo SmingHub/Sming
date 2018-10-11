@@ -16,17 +16,17 @@
 
 #include "SPI.h"
 
-#include <SmingCore.h>
 #include <stdlib.h>
 #include "eagle_soc.h"
 #include "espinc/spi_register.h"
 #include "c_types.h"
+
 // define the static singleton
 SPIClass SPI;
 
 SPIClass::SPIClass()
 {
-	_SPISettings = this->SPIDefaultSettings;
+	spiSettings = this->SPIDefaultSettings;
 }
 
 SPIClass::~SPIClass()
@@ -75,7 +75,7 @@ void SPIClass::beginTransaction(SPISettings mySettings)
 	debugf("SPIhw::beginTransaction(SPISettings mySettings)");
 #endif
 	// check if we need to change settings
-	if(this->_SPISettings == mySettings)
+	if(this->spiSettings == mySettings)
 		return;
 
 	// prepare SPI settings
@@ -119,8 +119,8 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 	regvalue |= SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
 	WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
-	WRITE_PERI_REG(SPI_USER1(SPI_NO), ((bits - 1 & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
-										  ((bits - 1 & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
+	WRITE_PERI_REG(SPI_USER1(SPI_NO), (((bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
+										  (((bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
 	// copy data to W0
 	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_WR_BYTE_ORDER) {
@@ -212,8 +212,8 @@ void SPIClass::transfer(uint8* buffer, size_t numberBytes)
 		WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
 		// setup bit lenght
-		WRITE_PERI_REG(SPI_USER1(SPI_NO), ((num_bits - 1 & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
-											  ((num_bits - 1 & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
+		WRITE_PERI_REG(SPI_USER1(SPI_NO), (((num_bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
+											  (((num_bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
 		// copy the registers starting from last index position
 		memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], bufLenght);
@@ -251,24 +251,24 @@ void SPIClass::prepare(SPISettings mySettings)
 #endif
 
 	// check if we need to change settings
-	if(_init & _SPISettings == mySettings)
+	if(initialised && spiSettings == mySettings)
 		return;
 
 	//  setup clock
-	setFrequency(mySettings._speed);
+	setFrequency(mySettings.speed);
 
 	//	set byte order
-	this->spi_byte_order(mySettings._byteOrder);
+	this->spi_byte_order(mySettings.byteOrder);
 
 	//	set spi mode
-	spi_mode(mySettings._dataMode);
+	spi_mode(mySettings.dataMode);
 
 #ifdef SPI_DEBUG
 	debugf("SPIhw::prepare(SPISettings mySettings) -> updated settings");
 #endif
 
-	_SPISettings = mySettings;
-	_init = true;
+	spiSettings = mySettings;
+	initialised = true;
 };
 
 /** @brief  spi_mode Configures SPI mode parameters for clock edge and clock polarity.
@@ -345,9 +345,9 @@ void SPIClass::spi_byte_order(uint8 byte_order)
 void SPIClass::setClock(uint8 prediv, uint8 cntdiv)
 {
 #ifdef SPI_DEBUG
-	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d", prediv, cntdiv, _SPISettings._speed);
+	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d", prediv, cntdiv, spiSettings.speed);
 #endif
-	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d", prediv, cntdiv, _SPISettings._speed);
+	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d", prediv, cntdiv, spiSettings.speed);
 
 	if((prediv == 0) | (cntdiv == 0)) {
 		// go full speed = SYSTEMCLOCK
@@ -430,17 +430,17 @@ void SPIClass::setFrequency(int freq)
 	int _CPU_freq = system_get_cpu_freq() * 10000000UL;
 
 	// dont run code if there are no changes
-	if(_init & freq == _SPISettings._speed)
+	if(initialised && freq == spiSettings.speed)
 		return;
 
 	if(freq == _CPU_freq) {
-		_SPISettings._speed = freq;
+		spiSettings.speed = freq;
 		setClock(0, 0);
 		return;
 	}
 
 	freq = std::min(freq, _CPU_freq / 2);
-	_SPISettings._speed = freq;
+	spiSettings.speed = freq;
 
 	int pre2;
 	int f2 = getFrequency(freq, pre2, 2);
