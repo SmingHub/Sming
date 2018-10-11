@@ -127,18 +127,42 @@ public:
 	 * @brief Queue a deferred callback.
 	 * @param callback The function to be called
 	 * @param param Parameter passed to the callback
-	*/
+	 * @retval bool false if callback could not be queued
+	 * @note It is important to check the return value to avoid memory leaks and other issues,
+	 * for example if memory is allocated and relies on the callback to free it again.
+	 */
 	static bool IRAM_ATTR queueCallback(TaskCallback callback, os_param_t param = 0);
+
+	/** @brief Get number of tasks currently on queue
+	 *  @retval unsigned
+	 */
+	static unsigned getTaskCount()
+	{
+		return taskCount;
+	}
+
+	/** @brief Get maximum number of tasks seen on queue at any one time
+	 *  @retval unsigned
+	 *  @note If return value is higher than maximum task queue TASK_QUEUE_LENGTH then
+	 *  the queue has overflowed at some point and tasks have been left un-executed.
+	 */
+	static unsigned getMaxTaskCount()
+	{
+		return maxTaskCount;
+	}
 
 private:
 	static void staticReadyHandler();
+	static void taskHandler(os_event_t* event);
 	void readyHandler();
 
 private:
 	Vector<SystemReadyDelegate> readyHandlers;
 	Vector<ISystemReadyHandler*> readyInterfaces;
 	SystemState state = eSS_None;
-	static os_event_t taskQueue[]; ///< OS task queue
+	static os_event_t taskQueue[];		  ///< OS task queue
+	static volatile uint8_t taskCount;	///< Number of tasks on queue
+	static volatile uint8_t maxTaskCount; ///< Profiling to establish appropriate queue size
 };
 
 /**	@brief	Global instance of system object

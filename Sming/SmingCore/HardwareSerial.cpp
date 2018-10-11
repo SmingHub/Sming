@@ -10,8 +10,10 @@
 #include "HardwareSerial.h"
 #include <cstdarg>
 
-#include "../SmingCore/Clock.h"
-#include "../SmingCore/Interrupts.h"
+#include "System.h"
+#include "Interrupts.h"
+
+#include "m_printf.h"
 
 HWSerialMemberData HardwareSerial::memberData[NUMBER_UARTS];
 bool HardwareSerial::init = false;

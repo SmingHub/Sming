@@ -11,15 +11,26 @@
 SystemClass System;
 
 os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
+volatile uint8_t SystemClass::taskCount;
+volatile uint8_t SystemClass::maxTaskCount;
 
 /** @brief OS calls this function which invokes user-defined callback
  *  @note callback function pointer is placed in event->sig, with parameter
  *  in event->par.
  */
-static void taskHandler(os_event_t* event)
+void SystemClass::taskHandler(os_event_t* event)
 {
 	auto callback = reinterpret_cast<TaskCallback*>(event->sig);
 	if(callback) {
+		/*
+		 * @todo how to guarantee atomic operation?
+		 *
+		 * I suspect atomics aren't available in the SDK library as linker fails with this:
+		 *
+		 * __atomic_fetch_sub(&taskCount, 1, __ATOMIC_RELAXED);
+		 *
+		 */
+		--taskCount;
 		(*callback)(event->par);
 		delete callback;
 	}
@@ -41,6 +52,10 @@ bool SystemClass::queueCallback(TaskCallback callback, os_param_t param)
 {
 	if(callback == nullptr) {
 		return false;
+	}
+
+	if(++taskCount > maxTaskCount) {
+		maxTaskCount = taskCount;
 	}
 
 	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(new TaskCallback(callback)), param);
