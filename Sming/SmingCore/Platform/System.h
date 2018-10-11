@@ -29,7 +29,7 @@
  * 	@note Callback code does not need to be in IRAM
  *  @todo Integrate delegation into callbacks
  */
-typedef std::function<void(os_param_t param)> TaskCallback;
+typedef void (*TaskCallback)(uint32_t param);
 
 /// @ingroup event_handlers
 typedef Delegate<void()> SystemReadyDelegate; ///< Handler function for system ready
@@ -130,8 +130,10 @@ public:
 	 * @retval bool false if callback could not be queued
 	 * @note It is important to check the return value to avoid memory leaks and other issues,
 	 * for example if memory is allocated and relies on the callback to free it again.
+	 * Note also that this method is typically called from interrupt context so must avoid things
+	 * like heap allocation, etc.
 	 */
-	static bool IRAM_ATTR queueCallback(TaskCallback callback, os_param_t param = 0);
+	static bool IRAM_ATTR queueCallback(TaskCallback callback, uint32_t param = 0);
 
 	/** @brief Get number of tasks currently on queue
 	 *  @retval unsigned

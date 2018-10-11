@@ -20,7 +20,7 @@ volatile uint8_t SystemClass::maxTaskCount;
  */
 void SystemClass::taskHandler(os_event_t* event)
 {
-	auto callback = reinterpret_cast<TaskCallback*>(event->sig);
+	auto callback = reinterpret_cast<TaskCallback>(event->sig);
 	if(callback) {
 		/*
 		 * @todo how to guarantee atomic operation?
@@ -31,8 +31,7 @@ void SystemClass::taskHandler(os_event_t* event)
 		 *
 		 */
 		--taskCount;
-		(*callback)(event->par);
-		delete callback;
+		callback(event->par);
 	}
 }
 
@@ -48,7 +47,7 @@ void SystemClass::initialize()
 	system_init_done_cb(staticReadyHandler);
 }
 
-bool SystemClass::queueCallback(TaskCallback callback, os_param_t param)
+bool SystemClass::queueCallback(TaskCallback callback, uint32_t param)
 {
 	if(callback == nullptr) {
 		return false;
@@ -58,7 +57,7 @@ bool SystemClass::queueCallback(TaskCallback callback, os_param_t param)
 		maxTaskCount = taskCount;
 	}
 
-	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(new TaskCallback(callback)), param);
+	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(callback), param);
 }
 
 void SystemClass::restart()
