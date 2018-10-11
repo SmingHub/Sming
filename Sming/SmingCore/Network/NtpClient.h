@@ -28,8 +28,10 @@
 #define NTP_MODE_SERVER 4
 
 #define NTP_DEFAULT_SERVER F("pool.ntp.org")
-#define NTP_DEFAULT_QUERY_INTERVAL_SECONDS (10 * SECS_PER_MIN)
-#define NTP_RESPONSE_TIMEOUT_MS (20 * 1000)
+#define NTP_DEFAULT_AUTOQUERY_SECONDS 30U // (10U * SECS_PER_MIN) ///< Refresh time if autoupdate set
+#define NTP_MIN_AUTOQUERY_SECONDS 10U	 ///< Minimum autoquery interval
+#define NTP_CONNECTION_TIMEOUT_MS 1666U   ///< Time to retry query when network connection unavailable
+#define NTP_RESPONSE_TIMEOUT_MS 20000U	///< Time to wait before retrying NTP query
 
 class NtpClient;
 
@@ -54,7 +56,7 @@ public:
      *  @param  reqIntervalSeconds Quantity of seconds between NTP requests
      *  @param  onTimeReceivedCb Callback delegate to be called when NTP time result is received (Default: None)
      */
-	NtpClient(const String& reqServer, int reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb = nullptr);
+	NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb = nullptr);
 
 	virtual ~NtpClient()
 	{
@@ -76,23 +78,20 @@ public:
 	/** @brief  Enable / disable periodic query
      *  @param  autoQuery True to enable periodic query of NTP server
      */
-	void setAutoQuery(bool autoQuery)
-	{
-		if(autoQuery)
-			autoUpdateTimer.start();
-		else
-			autoUpdateTimer.stop();
-	}
+	void setAutoQuery(bool autoQuery);
 
 	/** @brief  Set query period
      *  @param  seconds Period in seconds between periodic queries
      */
-	void setAutoQueryInterval(int seconds);
+	void setAutoQueryInterval(unsigned seconds);
 
 	/** @brief  Enable / disable update of system clock
      *  @param  autoUpdateClock True to update system clock with NTP result.
      */
-	void setAutoUpdateSystemClock(bool autoUpdateClock);
+	void setAutoUpdateSystemClock(bool autoUpdateClock)
+	{
+		autoUpdateSystemClock = autoUpdateClock;
+	}
 
 protected:
 	/** @brief  Handle UDP message reception
@@ -107,15 +106,30 @@ protected:
      */
 	void internalRequestTime(IPAddress serverIp);
 
+	/** @brief Start the timer running
+	 *  @param time to run in milliseconds
+	 */
+	void startTimer(uint32_t milliseconds)
+	{
+		debug_d("NtpClient::startTimer(%u)", milliseconds);
+		timer.setIntervalMs(milliseconds);
+		timer.startOnce();
+	}
+
+	void stopTimer()
+	{
+		debug_d("NtpClient::stopTimer()");
+		timer.stop();
+	}
+
 protected:
 	String server; ///< IP address or Hostname of NTP server
 
 	NtpTimeResultDelegate delegateCompleted = nullptr; ///< NTP result handler delegate
 	bool autoUpdateSystemClock = false;				   ///< True to update system clock with NTP time
-
-	Timer autoUpdateTimer;		 ///< Periodic query timer
-	SimpleTimer timeoutTimer;	///< NTP message timeout timer
-	SimpleTimer connectionTimer; ///< Wait for WiFi connection timer
+	bool autoQueryEnabled = false;
+	unsigned autoQuerySeconds = NTP_DEFAULT_AUTOQUERY_SECONDS;
+	Timer timer; ///< Deals with timeouts, retries and autoquery updates
 };
 
 /** @} */

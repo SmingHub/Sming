@@ -10,20 +10,21 @@
 #include "Platform/Station.h"
 #include "SystemClock.h"
 
-NtpClient::NtpClient() : NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_QUERY_INTERVAL_SECONDS, nullptr)
+NtpClient::NtpClient() : NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, nullptr)
 {
 }
 
 NtpClient::NtpClient(NtpTimeResultDelegate onTimeReceivedCb)
-	: NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_QUERY_INTERVAL_SECONDS, onTimeReceivedCb)
+	: NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, onTimeReceivedCb)
 {
 }
 
-NtpClient::NtpClient(const String& reqServer, int reqIntervalSeconds, NtpTimeResultDelegate delegateFunction)
+NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate delegateFunction)
 {
-	// init timer but do not start, correct interval set later below.
-	autoUpdateTimer.initializeMs(NTP_DEFAULT_QUERY_INTERVAL_SECONDS * 1000,
-								 TimerDelegate(&NtpClient::requestTime, this));
+	debug_d("NtpClient(\"%s\", %u, 0x%08x", reqServer.c_str(), reqIntervalSeconds, delegateFunction);
+
+	// Setup timer, but don't start it
+	timer.setCallback(TimerDelegate(&NtpClient::requestTime, this));
 
 	this->server = reqServer;
 	this->delegateCompleted = delegateFunction;
@@ -31,9 +32,7 @@ NtpClient::NtpClient(const String& reqServer, int reqIntervalSeconds, NtpTimeRes
 		autoUpdateSystemClock = true;
 	}
 
-	if(reqIntervalSeconds == 0) {
-		setAutoQuery(false);
-	} else {
+	if(reqIntervalSeconds) {
 		setAutoQueryInterval(reqIntervalSeconds);
 		setAutoQuery(true);
 		requestTime();
@@ -42,9 +41,13 @@ NtpClient::NtpClient(const String& reqServer, int reqIntervalSeconds, NtpTimeRes
 
 void NtpClient::requestTime()
 {
+	debug_d("NtpClient::requestTime()");
+
+	// Schedule a retry in anticipation of failure
+	startTimer(NTP_CONNECTION_TIMEOUT_MS);
+
 	if(!WifiStation.isConnected()) {
-		connectionTimer.setCallback([](void* arg) { reinterpret_cast<NtpClient*>(arg)->requestTime(); }, this);
-		connectionTimer.startMs(1000);
+		debugf("NtpClient waiting for connection...");
 		return;
 	}
 
@@ -56,6 +59,8 @@ void NtpClient::requestTime()
 										   reinterpret_cast<NtpClient*>(arg)->internalRequestTime(*ip);
 								   },
 								   this);
+
+	debug_d("dns_gethostbyname() returned %d", result);
 
 	switch(result) {
 	case ERR_OK:
@@ -69,7 +74,7 @@ void NtpClient::requestTime()
 		break;
 	case ERR_INPROGRESS:
 		// currently finding ip, internalRequestTime() will be called when its found.
-		//debug_d("DNS IP lookup in progress.");
+		debug_d("DNS IP lookup in progress...");
 		break;
 	default:
 		debug_d("DNS lookup error occurred.");
@@ -79,13 +84,13 @@ void NtpClient::requestTime()
 
 void NtpClient::internalRequestTime(IPAddress serverIp)
 {
+	debug_d("NtpClient::internalRequestTime()");
+
 	// connect to current active serverIp, on NTP_PORT
 	connect(serverIp, NTP_PORT);
 
-	uint8_t packet[NTP_PACKET_SIZE];
-
 	// Setup the NTP request packet
-	memset(packet, 0, NTP_PACKET_SIZE);
+	char packet[NTP_PACKET_SIZE] = {0};
 
 	// These are the only required values for a SNTP request. See page 14:
 	// https://tools.ietf.org/html/rfc4330
@@ -93,33 +98,37 @@ void NtpClient::internalRequestTime(IPAddress serverIp)
 	packet[0] = (NTP_VERSION << 3 | 0x03); // LI (0 = no warning), Protocol version (4), Client mode (3)
 	packet[1] = 0;						   // Stratum, or type of clock, unspecified.
 
-	// Start timeout timer, if no response is recieved within NTP_RESPONSE_TIMEOUT
-	// a new request will be sent.
-	timeoutTimer.setCallback([](void* arg) { reinterpret_cast<NtpClient*>(arg)->requestTime(); }, this);
-	timeoutTimer.startMs(NTP_RESPONSE_TIMEOUT_MS);
+	// Start timer to retry if no response received
+	timer.setIntervalMs(NTP_RESPONSE_TIMEOUT_MS);
+	timer.startOnce();
 
 	// Send to server, serverAddress & port is set in connect
-	NtpClient::send((char*)packet, NTP_PACKET_SIZE);
+	NtpClient::send(packet, NTP_PACKET_SIZE);
 }
 
-void NtpClient::setAutoQueryInterval(int seconds)
+void NtpClient::setAutoQuery(bool autoQuery)
 {
-	// minimum 10 seconds interval.
-	if(seconds < 10)
-		autoUpdateTimer.setIntervalMs(10000);
-	else
-		autoUpdateTimer.setIntervalMs(seconds * 1000);
+	autoQueryEnabled = autoQuery;
+	if(autoQueryEnabled) {
+		startTimer(autoQuerySeconds * 1000U);
+	} else {
+		stopTimer();
+	}
 }
 
-void NtpClient::setAutoUpdateSystemClock(bool autoUpdateClock)
+void NtpClient::setAutoQueryInterval(unsigned seconds)
 {
-	autoUpdateSystemClock = autoUpdateClock;
+	autoQuerySeconds = max(seconds, NTP_MIN_AUTOQUERY_SECONDS);
+	if(autoQueryEnabled) {
+		setAutoQuery(true);
+	}
 }
 
 void NtpClient::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 {
-	// stop timeout timer since we received a response.
-	timeoutTimer.stop();
+	debug_d("NtpClient::onReceive(%s:%u)", remoteIP.toString().c_str(), remotePort);
+
+	stopTimer();
 
 	// We do some basic check to see if it really is a ntp packet we receive.
 	// NTP version should be set to same as we used to send, NTP_VERSION
@@ -147,5 +156,11 @@ void NtpClient::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 		if(delegateCompleted) {
 			delegateCompleted(*this, epoch);
 		}
+
+		// If auto query is enabled, schedule the next check
+		setAutoQuery(autoQueryEnabled);
+	} else {
+		// Got a dodgy packet so treat it as we would a response failure
+		startTimer(NTP_RESPONSE_TIMEOUT_MS);
 	}
 }
