@@ -22,9 +22,7 @@ void SystemClass::taskHandler(os_event_t* event)
 {
 	auto callback = reinterpret_cast<TaskCallback>(event->sig);
 	if(callback) {
-		noInterrupts();
 		--taskCount;
-		interrupts();
 		callback(event->par);
 	}
 }
