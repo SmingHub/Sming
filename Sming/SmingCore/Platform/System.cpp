@@ -22,7 +22,11 @@ void SystemClass::taskHandler(os_event_t* event)
 {
 	auto callback = reinterpret_cast<TaskCallback>(event->sig);
 	if(callback) {
+		// If we get interrupt during adjustment of the counter, do it again
+		uint8_t oldCount = taskCount;
 		--taskCount;
+		if (taskCount != oldCount - 1)
+			--taskCount;
 		callback(event->par);
 	}
 }
