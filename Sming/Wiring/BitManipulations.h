@@ -10,6 +10,17 @@
 
 #define 	_BV(bit)   (1 << (bit))
 
+#define bit(x) _BV(x)
+#define setBits(x, y) ((x) |= (y))
+#define clearBits(x, y) ((x) &= (~(y)))
+#define bitsSet(x, y) (((x) & (y)) == (y))
+#define bitsClear(x, y) (((x) & (y)) == 0)
+
+#define bitRead(value, bit) (((value) >> (unsigned)(bit)) & 0x01)
+#define bitSet(value, bit) ((value) |= (1UL << (unsigned)(bit)))
+#define bitClear(value, bit) ((value) &= ~(1UL << (unsigned)(bit)))
+#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
+
 #define _SFR_MEM_ADDR(sfr) ((uint32_t) &(sfr)) // 32 Bit!
 #define _SFR_ADDR(sfr) _SFR_MEM_ADDR(sfr)
 
