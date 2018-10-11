@@ -1,9 +1,16 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include "SmingCore.h"
+#include "HardwareTimer.h"
 
 #define LED_PIN 2 // GPIO2
 
-Timer procTimer;
+/*
+ * This example uses the hardware timer for best timing accuracy. There is only one of these on the ESP8266,
+ * so it may not be available if another module requires it.
+ * Most timing applicatons can use a SimpleTimer, which is good for intervals of up to about 268 seconds.
+ * For longer intervals, use a Timer.
+ */
+HardwareTimer procTimer;
 bool state = true;
 
 /*
