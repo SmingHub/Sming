@@ -12,12 +12,24 @@
 #ifndef SMINGCORE_PLATFORM_SYSTEM_H_
 #define SMINGCORE_PLATFORM_SYSTEM_H_
 
-#include <user_config.h>
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
-#include "../SmingCore/Delegate.h"
+#include "WString.h"
+#include "WVector.h"
+#include "Delegate.h"
 
-class BssInfo;
+/** @brief default number of tasks in global queue
+ *  @note tasks are usually short-lived and executed very promptly. If necessary this
+ *  value can be overridden in makefile or user_config.h.
+ */
+#ifndef TASK_QUEUE_LENGTH
+#define TASK_QUEUE_LENGTH 10
+#endif
+
+/** @brief Task callback function type
+ * 	@ingroup event_handlers
+ * 	@note Callback code does not need to be in IRAM
+ *  @todo Integrate delegation into callbacks
+ */
+typedef void (*TaskCallback)(uint32_t param);
 
 /// @ingroup event_handlers
 typedef Delegate<void()> SystemReadyDelegate; ///< Handler function for system ready
@@ -68,7 +80,9 @@ public:
      *  @addtogroup system
      *  @{
      */
-	SystemClass();
+	SystemClass()
+	{
+	}
 
 	/** @brief System initialisation
 	 */
@@ -109,14 +123,48 @@ public:
      */
 	void onReady(ISystemReadyHandler* readyHandler);
 
+	/**
+	 * @brief Queue a deferred callback.
+	 * @param callback The function to be called
+	 * @param param Parameter passed to the callback
+	 * @retval bool false if callback could not be queued
+	 * @note It is important to check the return value to avoid memory leaks and other issues,
+	 * for example if memory is allocated and relies on the callback to free it again.
+	 * Note also that this method is typically called from interrupt context so must avoid things
+	 * like heap allocation, etc.
+	 */
+	static bool IRAM_ATTR queueCallback(TaskCallback callback, uint32_t param = 0);
+
+	/** @brief Get number of tasks currently on queue
+	 *  @retval unsigned
+	 */
+	static unsigned getTaskCount()
+	{
+		return taskCount;
+	}
+
+	/** @brief Get maximum number of tasks seen on queue at any one time
+	 *  @retval unsigned
+	 *  @note If return value is higher than maximum task queue TASK_QUEUE_LENGTH then
+	 *  the queue has overflowed at some point and tasks have been left un-executed.
+	 */
+	static unsigned getMaxTaskCount()
+	{
+		return maxTaskCount;
+	}
+
 private:
 	static void staticReadyHandler();
+	static void taskHandler(os_event_t* event);
 	void readyHandler();
 
 private:
 	Vector<SystemReadyDelegate> readyHandlers;
 	Vector<ISystemReadyHandler*> readyInterfaces;
-	SystemState state;
+	SystemState state = eSS_None;
+	static os_event_t taskQueue[];		  ///< OS task queue
+	static volatile uint8_t taskCount;	///< Number of tasks on queue
+	static volatile uint8_t maxTaskCount; ///< Profiling to establish appropriate queue size
 };
 
 /**	@brief	Global instance of system object

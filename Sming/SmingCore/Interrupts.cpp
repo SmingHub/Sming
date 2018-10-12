@@ -5,13 +5,51 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "../SmingCore/Interrupts.h"
-#include "../SmingCore/Digital.h"
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "Interrupts.h"
+#include "Digital.h"
+#include "WiringFrameworkIncludes.h"
+#include "System.h"
 
-InterruptCallback _gpioInterruptsList[16] = {0};
-Delegate<void()> _delegateFunctionList[16];
-bool _gpioInterruptsInitialied = false;
+static InterruptCallback gpioInterruptsList[16] = {0};
+static InterruptDelegate delegateFunctionList[16];
+static bool gpioInterruptsInitialied = false;
+
+/** @brief  Interrupt handler
+ *  @param  intr_mask Interrupt mask
+ *  @param  arg pointer to array of arguments
+ */
+static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
+{
+	boolean processed;
+	uint32 gpioStatus;
+
+	do {
+		gpioStatus = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
+		processed = false;
+		for(uint8 i = 0; i < ESP_MAX_INTERRUPTS; i++) {
+			if(!bitRead(gpioStatus, i)) {
+				continue;
+			}
+
+			// clear interrupt status
+			GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpioStatus & _BV(i));
+
+			if(gpioInterruptsList[i]) {
+				gpioInterruptsList[i]();
+			} else if(delegateFunctionList[i]) {
+				System.queueCallback(
+					[](uint32_t interruptNumber) {
+						auto& delegate = delegateFunctionList[interruptNumber];
+						if(delegate)
+							delegate();
+					},
+					i);
+			}
+
+			processed = true;
+		}
+	} while(processed);
+}
 
 void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode)
 {
@@ -19,7 +57,7 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode)
 	attachInterrupt(pin, callback, type);
 }
 
-void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, uint8_t mode)
+void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, uint8_t mode)
 {
 	GPIO_INT_TYPE type = ConvertArduinoInterruptMode(mode);
 	attachInterrupt(pin, delegateFunction, type);
@@ -29,17 +67,17 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode
 {
 	if(pin >= 16)
 		return; // WTF o_O
-	_gpioInterruptsList[pin] = callback;
-	_delegateFunctionList[pin] = nullptr;
+	gpioInterruptsList[pin] = callback;
+	delegateFunctionList[pin] = nullptr;
 	attachInterruptHandler(pin, mode);
 }
 
-void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, GPIO_INT_TYPE mode)
+void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_TYPE mode)
 {
 	if(pin >= 16)
 		return; // WTF o_O
-	_gpioInterruptsList[pin] = NULL;
-	_delegateFunctionList[pin] = delegateFunction;
+	gpioInterruptsList[pin] = nullptr;
+	delegateFunctionList[pin] = delegateFunction;
 	attachInterruptHandler(pin, mode);
 }
 
@@ -47,9 +85,9 @@ void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
 {
 	ETS_GPIO_INTR_DISABLE();
 
-	if(!_gpioInterruptsInitialied) {
-		ETS_GPIO_INTR_ATTACH((ets_isr_t)interruptHandler, NULL); // Register interrupt handler
-		_gpioInterruptsInitialied = true;
+	if(!gpioInterruptsInitialied) {
+		ETS_GPIO_INTR_ATTACH((ets_isr_t)interruptHandler, nullptr); // Register interrupt handler
+		gpioInterruptsInitialied = true;
 	}
 
 	pinMode(pin, INPUT);
@@ -61,8 +99,8 @@ void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
 
 void detachInterrupt(uint8_t pin)
 {
-	_gpioInterruptsList[pin] = NULL;
-	_delegateFunctionList[pin] = nullptr;
+	gpioInterruptsList[pin] = nullptr;
+	delegateFunctionList[pin] = nullptr;
 	attachInterruptHandler(pin, GPIO_PIN_INTR_DISABLE);
 }
 
@@ -110,28 +148,4 @@ void interrupts()
 {
 	//ETS_INTR_UNLOCK();
 	xt_enable_interrupts();
-}
-
-static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
-{
-	boolean processed;
-	uint32 gpio_status;
-
-	do {
-		gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
-		processed = false;
-		for(uint8 i = 0; i < ESP_MAX_INTERRUPTS; i++, gpio_status << 1) {
-			if((gpio_status & BIT(i)) && (_gpioInterruptsList[i] || _delegateFunctionList[i])) {
-				//clear interrupt status
-				GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(i));
-
-				if(_gpioInterruptsList[i])
-					_gpioInterruptsList[i]();
-				else if(_delegateFunctionList[i])
-					_delegateFunctionList[i]();
-
-				processed = true;
-			}
-		}
-	} while(processed);
 }

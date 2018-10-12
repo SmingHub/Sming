@@ -10,7 +10,7 @@ SparkFun_APDS9960 apds = SparkFun_APDS9960();
 //
 #define APDS9960_INT 4 // Needs to be an interrupt pin
 
-void IRAM_ATTR handleGesture()
+void handleGesture()
 {
 	if(apds.isGestureAvailable()) {
 		switch(apds.readGesture()) {
@@ -38,11 +38,11 @@ void IRAM_ATTR handleGesture()
 	}
 }
 
-void IRAM_ATTR interruptRoutine()
+void interruptRoutine()
 {
 	detachInterrupt(APDS9960_INT);
 	handleGesture();
-	attachInterrupt(APDS9960_INT, interruptRoutine, FALLING);
+	attachInterrupt(APDS9960_INT, InterruptDelegate(interruptRoutine), FALLING);
 }
 
 void init()
@@ -75,5 +75,5 @@ void init()
 
 	// Initialize interrupt service routine
 	pinMode(APDS9960_INT, (GPIO_INT_TYPE)GPIO_PIN_INTR_ANYEDGE);
-	attachInterrupt(APDS9960_INT, interruptRoutine, FALLING);
+	attachInterrupt(APDS9960_INT, InterruptDelegate(interruptRoutine), FALLING);
 }

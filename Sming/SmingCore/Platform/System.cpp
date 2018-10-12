@@ -6,14 +6,29 @@
  ****/
 
 #include "System.h"
-#include "../Interrupts.h"
-#include "../../Services/SpifFS/spiffs_sming.h"
+#include "Interrupts.h"
 
 SystemClass System;
 
-SystemClass::SystemClass()
+os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
+volatile uint8_t SystemClass::taskCount;
+volatile uint8_t SystemClass::maxTaskCount;
+
+/** @brief OS calls this function which invokes user-defined callback
+ *  @note callback function pointer is placed in event->sig, with parameter
+ *  in event->par.
+ */
+void SystemClass::taskHandler(os_event_t* event)
 {
-	state = eSS_None;
+	auto callback = reinterpret_cast<TaskCallback>(event->sig);
+	if(callback) {
+		// If we get interrupt during adjustment of the counter, do it again
+		uint8_t oldCount = taskCount;
+		--taskCount;
+		if(taskCount != oldCount - 1)
+			--taskCount;
+		callback(event->par);
+	}
 }
 
 void SystemClass::initialize()
@@ -22,7 +37,23 @@ void SystemClass::initialize()
 		return;
 	state = eSS_Intializing;
 
+	// Initialise the global task queue
+	system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
+
 	system_init_done_cb(staticReadyHandler);
+}
+
+bool SystemClass::queueCallback(TaskCallback callback, uint32_t param)
+{
+	if(callback == nullptr) {
+		return false;
+	}
+
+	if(++taskCount > maxTaskCount) {
+		maxTaskCount = taskCount;
+	}
+
+	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(callback), param);
 }
 
 void SystemClass::restart()
