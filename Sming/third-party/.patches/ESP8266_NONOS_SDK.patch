@@ -1,13 +1,24 @@
-diff --git a/include/osapi.h b/include/osapi.h
-index 0462a9c..52ad21f 100644
---- a/include/osapi.h
-+++ b/include/osapi.h
-@@ -30,7 +30,7 @@
- #include "user_config.h"
+diff --git a/include/version.h b/include/version.h
+index 3f18631..82e2e94 100644
+--- a/include/version.h
++++ b/include/version.h
+@@ -1,11 +1,11 @@
+ #ifndef ESP_SDK_VERSION_H
+ #define ESP_SDK_VERSION_H
  
- void ets_bzero(void *s, size_t n);
--void ets_delay_us(uint16_t us);
-+void ets_delay_us(uint32_t us);
- void ets_install_putc1(void (*p)(char c));
+-#define ESP_SDK_VERSION_MAJOR   2
+-#define ESP_SDK_VERSION_MINOR   2
++#define ESP_SDK_VERSION_MAJOR   3
++#define ESP_SDK_VERSION_MINOR   0
+ #define ESP_SDK_VERSION_PATCH   0
  
- #define os_bzero ets_bzero
+-#define ESP_SDK_VERSION_NUMBER 0x020200
+-#define ESP_SDK_VERSION_STRING  "2.2.0"
++#define ESP_SDK_VERSION_NUMBER 0x030000
++#define ESP_SDK_VERSION_STRING  "3.0.0"
+ 
+ #endif
+diff --git a/bin/esp_init_data_default_v08.bin b/bin/esp_init_data_default.bin
+similarity index 100%
+rename from bin/esp_init_data_default_v08.bin
+rename to bin/esp_init_data_default.bin

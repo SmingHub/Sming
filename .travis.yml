@@ -11,7 +11,7 @@ matrix:
   - os: linux
     env: SDK_VERSION=2.0.0
   - os: linux
-    env: SDK_VERSION=2.1.0
+    env: SDK_VERSION=3.0.0
 git:
   submodules: false
 addons:
@@ -52,7 +52,7 @@ script:
 
 - export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
 - export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-- if [ "$SDK_VERSION" == "2.1.0" ]; then export SDK_BASE=$SMING_HOME/third-party/ESP8266_NONOS_SDK;
+- if [ "$SDK_VERSION" == "3.0.0" ]; then export SDK_BASE=$SMING_HOME/third-party/ESP8266_NONOS_SDK;
   fi
 - export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/:$SMING_HOME/../.travis/tools
 - cd $SMING_HOME
