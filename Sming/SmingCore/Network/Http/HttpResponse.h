@@ -14,7 +14,7 @@
 #define _SMING_CORE_HTTP_RESPONSE_H_
 
 #include "HttpCommon.h"
-#include "Data/Stream/DataSourceStream.h"
+#include "Data/Stream/TemplateFileStream.h"
 #include "Network/Http/HttpHeaders.h"
 
 class JsonObjectStream; // << TODO: deprecated and should be removed in the next version

@@ -17,8 +17,6 @@
 #include "HttpResponse.h"
 #include "HttpRequest.h"
 #include "../TcpClient.h"
-#include "Data/Stream/DataSourceStream.h"
-#include "Data/Stream/MultipartStream.h"
 #include "../../Services/DateTime/DateTime.h"
 
 typedef SimpleConcurrentQueue<HttpRequest*, HTTP_REQUEST_POOL_SIZE> RequestQueue;

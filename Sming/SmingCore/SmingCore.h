@@ -50,7 +50,10 @@
 #include "Network/rBootHttpUpdate.h"
 #include "Network/URL.h"
 
-#include "../Libraries/ArduinoJson/include/ArduinoJson.h"
+#include "Data/Stream/JsonObjectStream.h"
+#include "Data/Stream/FileStream.h"
+#include "Data/Stream/TemplateFileStream.h"
+
 #include "../Services/DateTime/DateTime.h"
 #include "../Services/libemqtt/libemqtt.h"
 #include "../Services/FATFS/ff.h"

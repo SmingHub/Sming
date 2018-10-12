@@ -8,10 +8,10 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_MPARTSTREAM_H_
-#define _SMING_CORE_DATA_MPARTSTREAM_H_
+#ifndef _SMING_CORE_DATA_MULTIPART_STREAM_H_
+#define _SMING_CORE_DATA_MULTIPART_STREAM_H_
 
-#include "DataSourceStream.h"
+#include "ReadWriteStream.h"
 #include "Delegate.h"
 #include "Network/Http/HttpHeaders.h"
 
@@ -92,4 +92,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_MPARTSTREAM_H_ */
+#endif /* _SMING_CORE_DATA_MULTIPART_STREAM_H_ */

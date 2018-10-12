@@ -24,6 +24,7 @@
 #include "Network/Http/HttpHeaders.h"
 #include "Stream/MultipartStream.h"
 #include "Stream/DataSourceStream.h"
+#include "Stream/FileStream.h"
 
 class SmtpClient;
 

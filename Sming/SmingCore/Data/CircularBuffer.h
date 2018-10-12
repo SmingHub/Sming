@@ -11,10 +11,10 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_CIRCULARBUFFER_H_
-#define _SMING_CORE_DATA_CIRCULARBUFFER_H_
+#ifndef _SMING_CORE_DATA_CIRCULAR_BUFFER_H_
+#define _SMING_CORE_DATA_CIRCULAR_BUFFER_H_
 
-#include "Stream/DataSourceStream.h"
+#include "Stream/ReadWriteStream.h"
 
 /**
  * @brief      Circular stream class
@@ -99,4 +99,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_CIRCULARBUFFER_H_ */
+#endif /* _SMING_CORE_DATA_CIRCULAR_BUFFER_H_ */
