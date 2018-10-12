@@ -97,15 +97,15 @@ extern "C" {
 	#elif DEBUG_VERBOSE_LEVEL == INFO
 		#define debug_w debug_e
 		#define debug_i debug_e
-		#define debug_d
+		#define debug_d debug_none
 	#elif DEBUG_VERBOSE_LEVEL == WARN
 		#define debug_w debug_e
-		#define debug_i
-		#define debug_d
+		#define debug_i debug_none
+		#define debug_d debug_none
 	#else
-		#define debug_w
-		#define debug_i
-		#define debug_d
+		#define debug_w debug_none
+		#define debug_i debug_none
+		#define debug_d debug_none
 	#endif
 
 #else /*DEBUG_BUILD*/
