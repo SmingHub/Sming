@@ -99,8 +99,7 @@ void NtpClient::internalRequestTime(IPAddress serverIp)
 	packet[1] = 0;						   // Stratum, or type of clock, unspecified.
 
 	// Start timer to retry if no response received
-	timer.setIntervalMs(NTP_RESPONSE_TIMEOUT_MS);
-	timer.startOnce();
+	startTimer(NTP_RESPONSE_TIMEOUT_MS);
 
 	// Send to server, serverAddress & port is set in connect
 	NtpClient::send(packet, NTP_PACKET_SIZE);
