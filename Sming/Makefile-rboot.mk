@@ -198,6 +198,7 @@ FW_MEMINFO_SAVED = out/fwMeminfo
 
 RBOOT_ROM_0  := $(addprefix $(FW_BASE)/,$(RBOOT_ROM_0).bin)
 RBOOT_ROM_1  := $(addprefix $(FW_BASE)/,$(RBOOT_ROM_1).bin)
+RBOOT_SILENT ?= 0
 
 # name for the target project
 TARGET		= app
@@ -514,7 +515,7 @@ endef
 all: $(USER_LIBDIR)/lib$(LIBSMING).a checkdirs $(LIBMAIN_DST) $(RBOOT_BIN) $(RBOOT_ROM_0) $(RBOOT_ROM_1) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2) 
 
 $(RBOOT_BIN):
-	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot RBOOT_GPIO_ENABLED=$(RBOOT_GPIO_ENABLED)
+	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot RBOOT_GPIO_ENABLED=$(RBOOT_GPIO_ENABLED) RBOOT_SILENT=$(RBOOT_SILENT)
 
 $(LIBMAIN_DST): $(LIBMAIN_SRC)
 	@echo "OC $@"
