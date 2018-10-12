@@ -12,6 +12,8 @@
 
 #include "HttpResponse.h"
 #include "../WebConstants.h"
+#include "Data/Stream/MemoryDataStream.h"
+#include "Data/Stream/JsonObjectStream.h"
 
 HttpResponse::~HttpResponse()
 {

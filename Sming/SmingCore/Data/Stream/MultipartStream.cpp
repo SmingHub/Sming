@@ -9,6 +9,7 @@
  ****/
 
 #include "MultipartStream.h"
+#include "MemoryDataStream.h"
 
 MultipartStream::MultipartStream(HttpPartProducerDelegate delegate) : producer(delegate)
 {

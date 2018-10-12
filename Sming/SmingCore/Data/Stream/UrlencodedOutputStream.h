@@ -8,11 +8,11 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_UESTREAM_H_
-#define _SMING_CORE_DATA_UESTREAM_H_
+#ifndef _SMING_CORE_DATA_URL_ENCODDED_OUTPUT_STREAM_H_
+#define _SMING_CORE_DATA_URL_ENCODDED_OUTPUT_STREAM_H_
 
-#include "../../Wiring/WHashMap.h"
-#include "DataSourceStream.h"
+#include "MemoryDataStream.h"
+#include "WHashMap.h"
 
 /**
  * @brief      UrlEncoded Stream
@@ -93,4 +93,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_UESTREAM_H_ */
+#endif /* _SMING_CORE_DATA_URL_ENCODDED_OUTPUT_STREAM_H_ */
