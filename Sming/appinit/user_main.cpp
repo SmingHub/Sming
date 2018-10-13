@@ -1,5 +1,6 @@
 #include <user_config.h>
-#include "../SmingCore/SmingCore.h"
+#include "Platform/System.h"
+#include "HardwareSerial.h"
 
 #ifndef SMING_RELEASE
 extern "C" {
@@ -77,26 +78,38 @@ extern "C" uint32 ICACHE_FLASH_ATTR  __attribute__((weak)) user_rf_cal_sector_se
 
 extern "C" void ICACHE_FLASH_ATTR  __attribute__((weak)) user_pre_init(void)
 {
-	enum flash_size_map size_map = system_get_flash_size_map();
-	const uint32 rf_cal_addr = user_rf_cal_sector_set() * 0x1000;
-	const uint32 phy_data_addr = rf_cal_addr +  0x1000;
-	const uint32 system_param_addr = phy_data_addr + 0x1000;
+	const uint32_t MAX_PROGRAM_SECTORS = 0x100000 / SPI_FLASH_SEC_SIZE; // 1MB addressable
 
 	// WARNING: Sming supports SDK 3.0 with rBoot enabled apps ONLY!
-#define SYSTEM_PARTITION_RBOOT_CONFIG SYSTEM_PARTITION_CUSTOMER_BEGIN
+	const partition_type_t SYSTEM_PARTITION_RBOOT_CONFIG = static_cast<partition_type_t>(SYSTEM_PARTITION_CUSTOMER_BEGIN + 0);
+	const partition_type_t SYSTEM_PARTITION_PROGRAM = static_cast<partition_type_t>(SYSTEM_PARTITION_CUSTOMER_BEGIN + 1);
 
+	// Partitions offsets and sizes must be in sector multiples, so work in sectors
+	#define PARTITION_ITEM(_type, _start, _length) \
+		{_type, (_start) * SPI_FLASH_SEC_SIZE, (_length) * SPI_FLASH_SEC_SIZE}
+
+	// Partitions in position order
+	uint32_t rfCalSector = user_rf_cal_sector_set();
 	static const partition_item_t partitions[] = {
-		{SYSTEM_PARTITION_BOOTLOADER, 0x0, 0x1000},
-		{SYSTEM_PARTITION_RBOOT_CONFIG, 0x1000, 0x1000},
-		{SYSTEM_PARTITION_RF_CAL, rf_cal_addr, 0x1000},
-		{SYSTEM_PARTITION_PHY_DATA, phy_data_addr, 0x1000},
-		{SYSTEM_PARTITION_SYSTEM_PARAMETER, system_param_addr, 0x3000},
-		{SYSTEM_PARTITION_CUSTOMER_BEGIN, 0x2000, 0xfdff0}, // (1M - 0x2010)
+			PARTITION_ITEM(SYSTEM_PARTITION_BOOTLOADER,			0,					1),
+			PARTITION_ITEM(SYSTEM_PARTITION_RBOOT_CONFIG,		1,					1),
+			PARTITION_ITEM(SYSTEM_PARTITION_PROGRAM,			2,					MAX_PROGRAM_SECTORS - 2),
+			PARTITION_ITEM(SYSTEM_PARTITION_RF_CAL,				rfCalSector,		1),
+			PARTITION_ITEM(SYSTEM_PARTITION_PHY_DATA,			rfCalSector + 1,	1),
+			PARTITION_ITEM(SYSTEM_PARTITION_SYSTEM_PARAMETER,	rfCalSector + 2,	3),
 	};
 
-	if(!system_partition_table_regist(partitions, sizeof(partitions) / sizeof(partitions[0]), size_map)) {
-		os_printf("system_partition_table_regist: failed\n");
-		while(1);
+	enum flash_size_map sizeMap = system_get_flash_size_map();
+	if(!system_partition_table_regist(partitions, ARRAY_SIZE(partitions), sizeMap)) {
+		os_printf(_F("system_partition_table_regist: failed\n"));
+		os_printf(_F("size_map = %u\n"), sizeMap);
+		for (unsigned i = 0; i < ARRAY_SIZE(partitions); ++i) {
+			auto& part = partitions[i];
+			os_printf(_F("partition[%u]: %u, 0x%08x, 0x%08x\n"), i, part.type, part.addr, part.size);
+		}
+		while(1) {
+			// Cannot proceed
+		};
 	}
 }
 
