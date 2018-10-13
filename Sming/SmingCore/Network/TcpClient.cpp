@@ -6,9 +6,7 @@
  ****/
 
 #include "TcpClient.h"
-#include "../Wiring/IPAddress.h"
-#include "../Data/Stream/DataSourceStream.h"
-#include "../../Wiring/WString.h"
+#include "Data/Stream/MemoryDataStream.h"
 
 TcpClient::TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted)
 	: TcpConnection(clientTcp, true), state(eTCS_Connected)

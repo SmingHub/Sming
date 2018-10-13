@@ -11,8 +11,11 @@
  ****/
 
 #include "HttpConnection.h"
-#include "../../Data/Stream/ChunkedStream.h"
-#include "../../Data/Stream/UrlencodedOutputStream.h"
+#include "Data/Stream/FileStream.h"
+#include "Data/Stream/MemoryDataStream.h"
+#include "Data/Stream/LimitedMemoryStream.h"
+#include "Data/Stream/ChunkedStream.h"
+#include "Data/Stream/UrlencodedOutputStream.h"
 
 #ifdef __linux__
 #include "lwip/priv/tcp_priv.h"

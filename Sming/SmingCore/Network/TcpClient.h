@@ -15,7 +15,9 @@
 #define _SMING_CORE_TCPCLIENT_H_
 
 #include "TcpConnection.h"
-#include "../Delegate.h"
+#include "Delegate.h"
+#include "Data/Stream/DataSourceStream.h"
+#include "IPAddress.h"
 
 #ifdef ENABLE_SSL
 #include "SslValidator.h"

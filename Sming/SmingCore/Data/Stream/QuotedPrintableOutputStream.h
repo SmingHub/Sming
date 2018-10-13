@@ -8,8 +8,8 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_QPSTREAM_H_
-#define _SMING_CORE_DATA_QPSTREAM_H_
+#ifndef _SMING_CORE_DATA_QUOTED_PRINTABLE_OUTPUT_STREAM_H_
+#define _SMING_CORE_DATA_QUOTED_PRINTABLE_OUTPUT_STREAM_H_
 
 #include "../StreamTransformer.h"
 
@@ -33,4 +33,4 @@ public:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_QPSTREAM_H_ */
+#endif /* _SMING_CORE_DATA_QUOTED_PRINTABLE_OUTPUT_STREAM_H_ */

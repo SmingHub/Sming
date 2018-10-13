@@ -11,6 +11,9 @@
  ****/
 
 #include "HttpRequest.h"
+#include "Data/Stream/MemoryDataStream.h"
+#include "Data/Stream/ChunkedStream.h"
+#include "Data/Stream/UrlencodedOutputStream.h"
 
 HttpRequest::HttpRequest(const URL& uri) : uri(uri)
 {

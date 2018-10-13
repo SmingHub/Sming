@@ -8,9 +8,10 @@
 #ifndef SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_
 #define SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_
 
-#include "../../TcpServer.h"
+#include "Network/TcpServer.h"
 #include "../HttpServerConnection.h"
-#include "../../Services/cWebsocket/websocket.h"
+#include "../Services/cWebsocket/websocket.h"
+#include "Data/Stream/EndlessMemoryStream.h"
 extern "C" {
 #include "../ws_parser/ws_parser.h"
 }
