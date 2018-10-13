@@ -78,7 +78,7 @@ extern "C" uint32 ICACHE_FLASH_ATTR  __attribute__((weak)) user_rf_cal_sector_se
 
 extern "C" void ICACHE_FLASH_ATTR  __attribute__((weak)) user_pre_init(void)
 {
-	const uint32_t MAX_PROGRAM_SECTORS = 1024; // 1MB addressable
+	const uint32_t MAX_PROGRAM_SECTORS = 0x100000 / SPI_FLASH_SEC_SIZE; // 1MB addressable
 
 	// WARNING: Sming supports SDK 3.0 with rBoot enabled apps ONLY!
 	const partition_type_t SYSTEM_PARTITION_RBOOT_CONFIG = static_cast<partition_type_t>(SYSTEM_PARTITION_CUSTOMER_BEGIN + 0);
