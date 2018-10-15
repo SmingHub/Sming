@@ -264,6 +264,8 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	CFLAGS += -DSDK_PWM_PERIOD_COMPAT_MODE=1
 endif
 
+ENABLE_CUSTOM_PHY ?= 0
+
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
@@ -286,6 +288,11 @@ ifneq ($(MFORCE32),)
 else 
     CFLAGS += -DPROGMEM_L32=""
 endif
+
+ifeq ($(ENABLE_CUSTOM_PHY),1)
+	CFLAGS += -DENABLE_CUSTOM_PHY=$(ENABLE_CUSTOM_PHY)
+endif
+
 #Append debug options
 CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 

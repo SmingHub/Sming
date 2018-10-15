@@ -259,6 +259,10 @@ ifeq ($(ENABLE_WPS),1)
    CFLAGS += -DENABLE_WPS=1
 endif
 
+ifeq ($(ENABLE_CUSTOM_PHY),1)
+	CFLAGS += -DENABLE_CUSTOM_PHY=$(ENABLE_CUSTOM_PHY)
+endif
+
 #Append debug options
 CFLAGS  += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
@@ -312,6 +316,8 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBPWM).a
 endif
 
+ENABLE_CUSTOM_PHY ?= 0
+
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBSMING) $(LIBMAIN) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 ifeq ($(ENABLE_WPS),1)
    LIBS += wps
@@ -354,6 +360,9 @@ endif
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -u custom_crash_callback -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
+ifeq ($(ENABLE_CUSTOM_PHY)), 1)
+	LDFLAGS += -Wl,-wrap,register_chipv6_phy -u custom_register_chipv6_phy -u get_adc_mode
+endif
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m

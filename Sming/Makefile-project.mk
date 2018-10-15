@@ -250,6 +250,8 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBPWM).a
 endif
 
+ENABLE_CUSTOM_PHY ?= 0
+
 # libraries used in this project, mainly provided by the SDK
 LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBSMING) $(LIBMAIN) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 ifeq ($(ENABLE_WPS),1)
@@ -278,6 +280,10 @@ else
 endif
 ifeq ($(ENABLE_WPS),1)
 	CFLAGS += -DENABLE_WPS=1
+endif
+
+ifeq ($(ENABLE_CUSTOM_PHY),1)
+	CFLAGS += -DENABLE_CUSTOM_PHY=$(ENABLE_CUSTOM_PHY)
 endif
 
 #Append debug options
@@ -314,6 +320,9 @@ endif
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -u call_user_start -u custom_crash_callback -Wl,-static -Wl,--gc-sections -Wl,-Map=$(FW_BASE)/firmware.map -Wl,-wrap,system_restart_local 
+ifeq ($(ENABLE_CUSTOM_PHY)), 1)
+	LDFLAGS += -Wl,-wrap,register_chipv6_phy -u custom_register_chipv6_phy -u get_adc_mode
+endif
 
 # linker script used for the above linkier step
 LD_PATH     = $(SMING_HOME)/compiler/ld
