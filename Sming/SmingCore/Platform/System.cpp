@@ -10,6 +10,9 @@
 
 SystemClass System;
 
+Vector<SystemReadyDelegate> SystemClass::readyHandlers;
+Vector<ISystemReadyHandler*> SystemClass::readyInterfaces;
+SystemState SystemClass::state = eSS_None;
 os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
 volatile uint8_t SystemClass::taskCount;
 volatile uint8_t SystemClass::maxTaskCount;
@@ -40,7 +43,7 @@ void SystemClass::initialize()
 	// Initialise the global task queue
 	system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
 
-	system_init_done_cb([]() { System.readyHandler(); });
+	system_init_done_cb(readyHandler);
 }
 
 bool SystemClass::queueCallback(TaskCallback callback, uint32_t param)

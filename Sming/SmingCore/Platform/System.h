@@ -96,19 +96,19 @@ public:
 
 	/** @brief System initialisation
 	 */
-	void initialize();
+	static void initialize();
 
 	/** @brief  Check if system ready
      *  @retval bool True if system initialisation is complete and system is now ready
      */
-	bool isReady()
+	static bool isReady()
 	{
 		return state == eSS_Ready;
 	}
 
 	/** @brief  Restart system
      */
-	void restart()
+	static void restart()
 	{
 		system_restart();
 	}
@@ -116,12 +116,12 @@ public:
 	/** @brief  Set the CPU frequency
      *  @param  freq Frequency to set CPU
      */
-	void setCpuFrequency(CpuFrequency freq);
+	static void setCpuFrequency(CpuFrequency freq);
 
 	/** @brief  Get the CPU frequency
      *  @retval CpuFrequency The frequency of the CPU
      */
-	CpuFrequency getCpuFrequency()
+	static CpuFrequency getCpuFrequency()
 	{
 		return static_cast<CpuFrequency>(ets_get_cpu_frequency());
 	}
@@ -130,19 +130,19 @@ public:
      *  @param  timeMilliseconds Quantity of milliseconds to remain in deep sleep mode
      *  @param  options Deep sleep options
      */
-	bool deepSleep(uint32 timeMilliseconds, DeepSleepOptions options = eDSO_RF_CAL_BY_INIT_DATA);
+	static bool deepSleep(uint32 timeMilliseconds, DeepSleepOptions options = eDSO_RF_CAL_BY_INIT_DATA);
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
      *  @note if system is ready, callback is executed immediately without deferral
      */
-	void onReady(SystemReadyDelegate readyHandler);
+	static void onReady(SystemReadyDelegate readyHandler);
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
      *  @note if system is ready, callback is executed immediately without deferral
      */
-	void onReady(ISystemReadyHandler* readyHandler);
+	static void onReady(ISystemReadyHandler* readyHandler);
 
 	/**
 	 * @brief Queue a deferred callback.
@@ -176,12 +176,12 @@ public:
 
 private:
 	static void taskHandler(os_event_t* event);
-	void readyHandler();
+	static void readyHandler();
 
 private:
-	Vector<SystemReadyDelegate> readyHandlers;
-	Vector<ISystemReadyHandler*> readyInterfaces;
-	SystemState state = eSS_None;
+	static Vector<SystemReadyDelegate> readyHandlers;
+	static Vector<ISystemReadyHandler*> readyInterfaces;
+	static SystemState state;
 	static os_event_t taskQueue[];		  ///< OS task queue
 	static volatile uint8_t taskCount;	///< Number of tasks on queue
 	static volatile uint8_t maxTaskCount; ///< Profiling to establish appropriate queue size
