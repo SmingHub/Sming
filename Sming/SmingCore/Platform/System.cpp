@@ -10,9 +10,6 @@
 
 SystemClass System;
 
-Vector<SystemReadyDelegate> SystemClass::readyHandlers;
-Vector<ISystemReadyHandler*> SystemClass::readyInterfaces;
-SystemState SystemClass::state = eSS_None;
 os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
 volatile uint8_t SystemClass::taskCount;
 volatile uint8_t SystemClass::maxTaskCount;
@@ -34,16 +31,10 @@ void SystemClass::taskHandler(os_event_t* event)
 	}
 }
 
-void SystemClass::initialize()
+bool SystemClass::initialize()
 {
-	if(state != eSS_None)
-		return;
-	state = eSS_Intializing;
-
 	// Initialise the global task queue
-	system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
-
-	system_init_done_cb(readyHandler);
+	return system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
 }
 
 bool SystemClass::queueCallback(TaskCallback callback, uint32_t param)
@@ -61,27 +52,27 @@ bool SystemClass::queueCallback(TaskCallback callback, uint32_t param)
 
 void SystemClass::onReady(SystemReadyDelegate readyHandler)
 {
-	if(!readyHandler) {
-		return;
-	}
-
-	if(isReady()) {
-		readyHandler();
-	} else {
-		readyHandlers.add(readyHandler);
+	if(readyHandler) {
+		auto handler = new SystemReadyDelegate(readyHandler);
+		queueCallback(
+			[](uint32_t param) {
+				auto handler = reinterpret_cast<SystemReadyDelegate*>(param);
+				(*handler)();
+				delete handler;
+			},
+			reinterpret_cast<uint32_t>(handler));
 	}
 }
 
 void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 {
-	if(readyHandler == nullptr) {
-		return;
-	}
-
-	if(isReady()) {
-		readyHandler->onSystemReady();
-	} else {
-		readyInterfaces.add(readyHandler);
+	if(readyHandler) {
+		queueCallback(
+			[](uint32_t param) {
+				auto handler = reinterpret_cast<ISystemReadyHandler*>(param);
+				handler->onSystemReady();
+			},
+			reinterpret_cast<uint32_t>(readyHandler));
 	}
 }
 
@@ -99,21 +90,5 @@ bool SystemClass::deepSleep(uint32 timeMilliseconds, DeepSleepOptions options)
 {
 	if(!system_deep_sleep_set_option((uint8)options))
 		return false;
-	system_deep_sleep(timeMilliseconds * 1000);
-	return true;
-}
-
-void SystemClass::readyHandler()
-{
-	state = eSS_Ready;
-	for(unsigned i = 0; i < readyHandlers.count(); i++) {
-		readyHandlers[i]();
-	}
-
-	for(unsigned i = 0; i < readyInterfaces.count(); i++) {
-		readyInterfaces[i]->onSystemReady();
-	}
-
-	readyHandlers.clear();
-	readyInterfaces.clear();
+	return system_deep_sleep(timeMilliseconds * 1000);
 }

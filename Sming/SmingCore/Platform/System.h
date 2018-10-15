@@ -95,15 +95,18 @@ public:
 	}
 
 	/** @brief System initialisation
+	 *  @retval bool true on success
+	 *  @note Called by user_main: applications should not call this function or the task queue
+	 *  will be re-initialised and any currently queued tasks won't be called.
 	 */
-	static void initialize();
+	static bool initialize();
 
 	/** @brief  Check if system ready
      *  @retval bool True if system initialisation is complete and system is now ready
      */
 	static bool isReady()
 	{
-		return state == eSS_Ready;
+		return maxTaskCount != 0;
 	}
 
 	/** @brief  Restart system
@@ -176,12 +179,8 @@ public:
 
 private:
 	static void taskHandler(os_event_t* event);
-	static void readyHandler();
 
 private:
-	static Vector<SystemReadyDelegate> readyHandlers;
-	static Vector<ISystemReadyHandler*> readyInterfaces;
-	static SystemState state;
 	static os_event_t taskQueue[];		  ///< OS task queue
 	static volatile uint8_t taskCount;	///< Number of tasks on queue
 	static volatile uint8_t maxTaskCount; ///< Profiling to establish appropriate queue size
