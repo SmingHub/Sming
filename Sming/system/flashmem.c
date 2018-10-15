@@ -27,7 +27,7 @@ extern char _flash_code_end[];
 
 /** @brief determines if the given value is aligned to a word (4-byte) boundary */
 #undef IS_ALIGNED
-#define IS_ALIGNED(_x) (((uint32_t)(_x)&0x00000003) == 0)
+#define IS_ALIGNED(x) (((uint32_t)(x)&0x00000003) == 0)
 
 // Buffers need to be word aligned for flash access
 #define __aligned __attribute__((aligned(4)))
@@ -38,36 +38,10 @@ static inline uint32_t min(uint32_t a, uint32_t b)
 	return (a < b) ? a : b;
 }
 
-// For release builds, bypass internal flash read routines and go direct to SDK
-#ifdef DEBUG_BUILD
-
-#define FLASHMEM_READ flashmem_read_internal
-#define FLASHMEM_WRITE flashmem_write_internal
-
-#else
-
-static inline uint32_t _flashmem_write_internal(const void* from, uint32_t toaddr, uint32_t size)
-{
-	SpiFlashOpResult r = spi_flash_write(toaddr, (uint32*)from, size);
-	return (SPI_FLASH_RESULT_OK == r) ? size : 0;
-}
-
-static inline uint32_t _flashmem_read_internal(void* to, uint32_t fromaddr, uint32_t size)
-{
-	SpiFlashOpResult r = spi_flash_read(fromaddr, (uint32*)to, size);
-	return (SPI_FLASH_RESULT_OK == r) ? size : 0;
-}
-
-#define FLASHMEM_READ _flashmem_read_internal
-#define FLASHMEM_WRITE _flashmem_write_internal
-
-#endif
-
-
 uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 {
 	if(IS_ALIGNED(from) && IS_ALIGNED(toaddr) && IS_ALIGNED(size))
-		return FLASHMEM_WRITE(from, toaddr, size);
+		return flashmem_write_internal(from, toaddr, size);
 
 	const uint32_t blksize = INTERNAL_FLASH_WRITE_UNIT_SIZE;
 	const uint32_t blkmask = INTERNAL_FLASH_WRITE_UNIT_SIZE - 1;
@@ -83,7 +57,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 		uint32_t addr_aligned = toaddr & ~blkmask; // this is the actual aligned address
 
 		// Read existing unit and overlay with new data
-		if(FLASHMEM_READ(tmpdata, addr_aligned, blksize) != blksize)
+		if(flashmem_read_internal(tmpdata, addr_aligned, blksize) != blksize)
 			return 0;
 		while(remain && rest < blksize)
 		{
@@ -92,7 +66,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 		}
 
 		// Write the unit
-		uint32_t written = FLASHMEM_WRITE(tmpdata, addr_aligned, blksize);
+		uint32_t written = flashmem_write_internal(tmpdata, addr_aligned, blksize);
 		if(written != blksize)
 			return written;
 
@@ -111,7 +85,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 	{
 		unsigned count = min(remain, sizeof(tmpdata));
 		memcpy(tmpdata, pfrom, count);
-		uint32_t written = FLASHMEM_WRITE(tmpdata, toaddr, count);
+		uint32_t written = flashmem_write_internal(tmpdata, toaddr, count);
 		remain -= written;
 		if(written != count)
 			return size - remain;
@@ -122,12 +96,12 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 	// And the final part of a block if needed
 	if(rest)
 	{
-		if(FLASHMEM_READ(tmpdata, toaddr, blksize) != blksize)
+		if(flashmem_read_internal(tmpdata, toaddr, blksize) != blksize)
 			return size - remain;
 		unsigned i;
 		for(i = 0; i < rest; ++i)
 			tmpdata[i] = *pfrom++;
-		uint32_t written = FLASHMEM_WRITE(tmpdata, toaddr, blksize);
+		uint32_t written = flashmem_write_internal(tmpdata, toaddr, blksize);
 		remain -= written;
 		if(written != blksize)
 			return size - remain;
@@ -139,7 +113,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 {
 	if(IS_ALIGNED(to) && IS_ALIGNED(fromaddr) && IS_ALIGNED(size))
-		return FLASHMEM_READ(to, fromaddr, size);
+		return flashmem_read_internal(to, fromaddr, size);
 
 	const uint32_t blksize = INTERNAL_FLASH_READ_UNIT_SIZE;
 	const uint32_t blkmask = INTERNAL_FLASH_READ_UNIT_SIZE - 1;
@@ -153,7 +127,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	{
 		uint32_t rest = fromaddr & blkmask;
 		uint32_t addr_aligned = fromaddr & ~blkmask; // this is the actual aligned address
-		if (FLASHMEM_READ(tmpdata, addr_aligned, blksize) != blksize)
+		if (flashmem_read_internal(tmpdata, addr_aligned, blksize) != blksize)
 			return 0;
 		// memcpy(pto, &tmpdata[rest], std::min(blksize - rest, remain))
 		while(remain && rest < blksize)
@@ -174,7 +148,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	while(remain)
 	{
 		unsigned count = min(remain, sizeof(tmpdata));
-		uint32_t read = FLASHMEM_READ(tmpdata, fromaddr, count);
+		uint32_t read = flashmem_read_internal(tmpdata, fromaddr, count);
 		memcpy(pto, tmpdata, read);
 		remain -= read;
 		if(read != count)
@@ -186,7 +160,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	// And the final part of a block if needed
 	if(rest)
 	{
-		if(FLASHMEM_READ(tmpdata, fromaddr, blksize) != blksize)
+		if(flashmem_read_internal(tmpdata, fromaddr, blksize) != blksize)
 			return size - remain;
 		unsigned i;
 		for(i = 0; i < rest; ++i)
