@@ -29,8 +29,11 @@ extern "C" void  __attribute__((weak)) user_init(void)
 		uart_set_baudrate_reg(i, SERIAL_BAUD_RATE);
 	}
 
-	cpp_core_initialize();
+	/* Note: System is a static class so it's safe to call initialize() before cpp_core_initialize()
+	 * We need to do this so that class constructors can use the task queue or onReady()
+	 */
 	System.initialize();
+	cpp_core_initialize();
 
 #ifdef SMING_RELEASE
 	// disable all debug output for release builds

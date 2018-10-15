@@ -90,5 +90,7 @@ bool SystemClass::deepSleep(uint32 timeMilliseconds, DeepSleepOptions options)
 {
 	if(!system_deep_sleep_set_option((uint8)options))
 		return false;
-	return system_deep_sleep(timeMilliseconds * 1000);
+	// Note: In SDK Version 3+ system_deep_sleep() returns bool but it's void before that
+	system_deep_sleep(timeMilliseconds * 1000);
+	return true;
 }
