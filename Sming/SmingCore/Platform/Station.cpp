@@ -7,6 +7,7 @@
 
 #include "Station.h"
 #include "../../SmingCore/SmingCore.h"
+#include "Data/HexString.h"
 
 StationClass WifiStation;
 
@@ -158,11 +159,11 @@ IPAddress StationClass::getIP()
 
 String StationClass::getMAC()
 {
-	uint8 hwaddr[6] = {0};
-	wifi_get_macaddr(STATION_IF, hwaddr);
-	char buf[20];
-	sprintf(buf, "%02x%02x%02x%02x%02x%02x", hwaddr[0], hwaddr[1], hwaddr[2], hwaddr[3], hwaddr[4], hwaddr[5]);
-	return String(buf);
+	uint8 hwaddr[6];
+	if(wifi_get_macaddr(STATION_IF, hwaddr))
+		return makeHexString(hwaddr, sizeof(hwaddr), ':');
+	else
+		return nullptr;
 }
 
 IPAddress StationClass::getNetworkBroadcast()

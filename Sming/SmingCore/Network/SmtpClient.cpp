@@ -20,6 +20,7 @@
 #include "../Services/WebHelpers/base64.h"
 #include "Data/Stream/QuotedPrintableOutputStream.h"
 #include "Data/Stream/Base64OutputStream.h"
+#include "Data/HexString.h"
 
 #if !defined(ENABLE_SSL) || ENABLE_SSL == 0
 // if our SSL is not used then we try to use the one coming from the SDK
@@ -196,15 +197,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		hmac_md5((const uint8_t*)authChallenge.c_str(), authChallenge.length(), (const uint8_t*)url.Password.c_str(),
 				 url.Password.length(), digest);
 
-		char hexdigest[MD5_SIZE * 2 + 1] = {0};
-		char* c = hexdigest;
-		for(int i = 0; i < MD5_SIZE; i++) {
-			ets_sprintf(c, "%02x", digest[i]);
-			c += 2;
-		}
-		*c = '\0';
-
-		String token = url.User + ' ' + hexdigest;
+		String token = url.User + ' ' + makeHexString(digest, MD5_SIZE);
 		sendString(base64_encode(token) + "\r\n");
 		state = eSMTP_SendingAuth;
 
