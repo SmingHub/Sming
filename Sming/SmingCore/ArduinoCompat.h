@@ -14,6 +14,7 @@
 #define SMINGCORE_ARDUINOCOMPAT_H_
 
 #include "SmingCore.h"
+#include <stdio.h> ///< sprintf()
 
 #ifdef __cplusplus
 extern "C" {

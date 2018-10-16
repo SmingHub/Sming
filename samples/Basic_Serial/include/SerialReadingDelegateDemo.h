@@ -1,54 +1,28 @@
 #ifndef INCLUDE_SERIALREADINGDELEGATEDEMO_H_
 #define INCLUDE_SERIALREADINGDELEGATEDEMO_H_
 
-//*** Example of global callback routine
-void onDataCallback(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
-{
-	Serial.printf("Char: %d, Count: %d\n", (uint8_t)arrivedChar, availableCharsCount);
-}
+#include "SmingCore/SmingCore.h"
 
-void echoCallback(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
-{
-	stream.write(arrivedChar);
-}
+typedef std::function<void(const String& command)> CommandCallbackFunction;
 
 //*** Example of class callback processing
 class SerialReadingDelegateDemo
 {
 public:
-	void begin()
+	void begin(HardwareSerial& serial);
+	void onData(Stream& stream, char arrivedChar, unsigned short availableCharsCount);
+
+	void onCommand(CommandCallbackFunction callback)
 	{
-		Serial.setCallback(StreamDataReceivedDelegate(&SerialReadingDelegateDemo::onData, this));
-		debugf("hwsDelegateDemo instantiated, waiting for data");
-	};
-
-	void onData(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
-	{
-		Serial.print("Class Delegate Demo Time = ");
-		Serial.print(micros());
-		Serial.print(" char = 0x");
-		Serial.print(String(arrivedChar, HEX)); // char hex code
-		Serial.print(" available = ");
-		Serial.println(availableCharsCount);
-
-		numCallback++;
-
-		if(arrivedChar == '\n') // Lets show data!
-		{
-			Serial.println("<New line received>");
-			while(stream.available()) {
-				char cur = stream.read();
-				charReceived++;
-				Serial.print(cur);
-			}
-			Serial.println();
-		}
+		this->callback = callback;
 	}
 
 private:
+	HardwareSerial* serial;
 	unsigned charReceived = 0;
 	unsigned numCallback = 0;
 	bool useRxFlag = true;
+	CommandCallbackFunction callback = nullptr;
 };
 
 #endif /* INCLUDE_SERIALREADINGDELEGATEDEMO_H_ */
