@@ -7,7 +7,7 @@
 
 #include "AccessPoint.h"
 #include "../../SmingCore/SmingCore.h"
-#include "HexString.h"
+#include "Data/HexString.h"
 
 AccessPointClass WifiAccessPoint;
 
