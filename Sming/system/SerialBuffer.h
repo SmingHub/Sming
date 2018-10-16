@@ -1,32 +1,31 @@
-/*
- * SerialBuffer.h
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
  *
- *  Created on: 22 Aug 2018
- *      Author: mikee47
- */
+ * @author 22 Aug 2018 - mikee47 <mike@sillyhouse.net>
+ *
+ ****/
 
-
-#ifndef __SERIALBUFFER_H
-#define __SERIALBUFFER_H
-
-
+#ifndef _SERIAL_BUFFER_H_
+#define _SERIAL_BUFFER_H_
 
 /** @brief FIFO buffer used for both receive and transmit data
  *  @note For receive operations, data is written via ISR and read via task
  *  	  For transmit operations, data is written via task and read via ISR
  *  Only call routines marked with __forceinline or IRAM_ATTR from an interrupt context.
  */
-struct SerialBuffer
-{
+struct SerialBuffer {
 public:
 	~SerialBuffer()
 	{
-		delete _buffer;
+		delete buffer;
 	}
 
-	size_t size()
+	size_t getSize()
 	{
-		return _size;
+		return size;
 	}
 
 	/** @brief get number of bytes stored in the buffer
@@ -34,67 +33,67 @@ public:
 	 */
 	__forceinline size_t available()
 	{
-		int ret = _wpos - _rpos;
+		int ret = writePos - readPos;
 		if(ret < 0)
-			ret += _size;
+			ret += size;
 		return ret;
 	}
 
 	/** @brief get number of bytes of space available in this buffer
 	 *  @retval size_t
 	 */
-	__forceinline size_t free_space()
+	__forceinline size_t getFreeSpace()
 	{
-		int ret = _rpos - _wpos - 1;
+		int ret = readPos - writePos - 1;
 		if(ret < 0)
-			ret += _size;
+			ret += size;
 		return ret;
 	}
 
-	__forceinline bool empty()
+	__forceinline bool isEmpty()
 	{
-		return _wpos == _rpos;
+		return writePos == readPos;
 	}
 
 	/** @brief see if there's anything in the buffer
 	 *  @retval int first available character, or -1 if buffer's empty
 	 */
-	__forceinline int peek_char()
+	__forceinline int peekChar()
 	{
-		if (!_buffer || empty())
+		if(!buffer || isEmpty())
 			return -1;
 
-		return _buffer[_rpos];
+		return buffer[readPos];
 	}
 
 	/*
 	 * Take a peek at the last character written into the buffer
 	 */
-	__forceinline int peek_last_char()
+	__forceinline int peekLastChar()
 	{
-		if (!_buffer || empty())
+		if(!buffer || isEmpty())
 			return -1;
 
-		return _buffer[prev_pos(_wpos)];
+		return buffer[getPrevPos(writePos)];
 	}
 
-	__forceinline int read_char()
+	__forceinline int readChar()
 	{
-		if (!_buffer || empty())
+		if(!buffer || isEmpty())
 			return -1;
 
-		uint8_t c = _buffer[_rpos];
-		_rpos = next_pos(_rpos);
+		uint8_t c = buffer[readPos];
+		readPos = getNextPos(readPos);
 		return c;
 	}
 
-	__forceinline size_t write_char(uint8_t c)
+	__forceinline size_t writeChar(uint8_t c)
 	{
-		size_t nextPos = next_pos(_wpos);
-		if(nextPos == _rpos)
+		size_t nextPos = getNextPos(writePos);
+		if(nextPos == readPos)
 			return 0;
-		_buffer[_wpos] = c;
-		_wpos = nextPos;
+		buffer[writePos] = c;
+		writePos = nextPos;
 		return 1;
 	}
 
@@ -104,18 +103,18 @@ public:
 	 */
 	int find(uint8_t c)
 	{
-		size_t offset = _rpos;
+		size_t offset = readPos;
 		size_t pos = 0;
 		size_t avail = available();
 		while(pos < avail) {
-			if(_buffer[offset + pos] == c)
+			if(buffer[offset + pos] == c)
 				return pos;
 
 			pos++;
-			if(pos + offset == _wpos)
+			if(pos + offset == writePos)
 				break;
 
-			if(pos + offset == _size)
+			if(pos + offset == size)
 				offset = -pos;
 		}
 
@@ -123,53 +122,52 @@ public:
 	}
 
 	// Must be called with interrupts disabled
-	size_t resize(size_t new_size)
+	size_t resize(size_t newSize)
 	{
-		if(_size == new_size)
-			return _size;
+		if(size == newSize)
+			return size;
 
-		uint8_t* new_buf = new uint8_t[new_size];
+		uint8_t* new_buf = new uint8_t[newSize];
 		if(!new_buf)
-			return _size;
+			return size;
 
 		size_t new_wpos = 0;
 		size_t avail = available();
-		while(avail-- && new_wpos < new_size)
-			new_buf[new_wpos++] = read_char();
+		while(avail-- && new_wpos < newSize)
+			new_buf[new_wpos++] = readChar();
 
-		delete[] _buffer;
-		_buffer = new_buf;
-		_size = new_size;
-		_rpos = 0;
-		_wpos = new_wpos;
-		return _size;
+		delete[] buffer;
+		buffer = new_buf;
+		size = newSize;
+		readPos = 0;
+		writePos = new_wpos;
+		return size;
 	}
 
 	void clear()
 	{
-		_rpos = _wpos = 0;
+		readPos = writePos = 0;
 	}
 
 private:
-	__forceinline size_t next_pos(size_t pos)
+	/** @brief Get the offset for the position before the current one */
+	__forceinline size_t getNextPos(size_t pos)
 	{
 		size_t n = pos + 1;
-		return (n == _size) ? 0 : n;
+		return (n == size) ? 0 : n;
 	}
 
-	__forceinline size_t prev_pos(size_t pos)
+	/** @brief Get the offset for the position after the current one */
+	__forceinline size_t getPrevPos(size_t pos)
 	{
-		return (pos != 0 ? pos : _size) - 1;
+		return (pos != 0 ? pos : size) - 1;
 	}
 
 private:
-	size_t _size = 0;
-	size_t _rpos = 0;
-	size_t _wpos = 0;
-	uint8_t* _buffer = nullptr;
+	size_t size = 0;
+	size_t readPos = 0;
+	size_t writePos = 0;
+	uint8_t* buffer = nullptr;
 };
 
-
-#endif //  __SERIALBUFFER_H
-
-
+#endif //  _SERIAL_BUFFER_H_

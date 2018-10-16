@@ -45,26 +45,27 @@
 
 #include "espinc/uart.h"
 #include "espinc/peri.h"
+
 #include "SerialBuffer.h"
 
 static int s_uart_debug_nr = UART0;
 
 // Get number of characters in receive FIFO
-#define UART_RXCOUNT(_nr) ((USS(_nr) >> USRXC) & 0x7f)
+#define UART_RXCOUNT(nr) ((USS(nr) >> USRXC) & 0x7f)
 
 // Get number of characters in transmit FIFO
-#define UART_TXCOUNT(_nr) (USS(_nr) >> USTXC)
+#define UART_TXCOUNT(nr) (USS(nr) >> USTXC)
 
 // Return true if transmit FIFO is full
-#define UART_TXFULL(_nr) (UART_TXCOUNT(_nr) >= 0x7f)
+#define UART_TXFULL(nr) (UART_TXCOUNT(nr) >= 0x7f)
 
 // Keep track of interrupt enable state for each UART
-static uint8_t __isr_mask;
+static uint8_t isrMask;
 // Keep a reference to all created UARTS - required because they share an ISR
-static uart_t* __uart0;
-static uart_t* __uart1;
+static uart_t* isrUart0;
+static uart_t* isrUart1;
 
-#define UART_ISR_ENABLED(_nr) (__isr_mask & _BV(_nr))
+#define UART_ISR_ENABLED(nr) (isrMask & _BV(nr))
 
 /** @brief disable interrupts and return current interrupt state
  *  @retval state non-zero if any UART interrupts were active
@@ -72,14 +73,14 @@ static uart_t* __uart1;
 static uint8_t uart_disable_interrupts()
 {
 	ETS_UART_INTR_DISABLE();
-	return __isr_mask;
+	return isrMask;
 }
 
 /** @brief re-enable interrupts after calling uart_disable_interrupts()
  */
 static void uart_restore_interrupts()
 {
-	if(__isr_mask)
+	if(isrMask)
 		ETS_UART_INTR_ENABLE();
 }
 
@@ -129,7 +130,7 @@ size_t uart_resize_rx_buffer(uart_t* uart, size_t new_size)
 
 size_t uart_rx_buffer_size(uart_t* uart)
 {
-	return uart && uart->rx_buffer ? uart->rx_buffer->size() : 0;
+	return uart && uart->rx_buffer ? uart->rx_buffer->getSize() : 0;
 }
 
 size_t uart_resize_tx_buffer(uart_t* uart, size_t new_size)
@@ -141,12 +142,12 @@ size_t uart_resize_tx_buffer(uart_t* uart, size_t new_size)
 
 size_t uart_tx_buffer_size(uart_t* uart)
 {
-	return uart && uart->tx_buffer ? uart->tx_buffer->size() : 0;
+	return uart && uart->tx_buffer ? uart->tx_buffer->getSize() : 0;
 }
 
 int uart_peek_char(uart_t* uart)
 {
-	return uart && uart->rx_buffer ? uart->rx_buffer->peek_char() : -1;
+	return uart && uart->rx_buffer ? uart->rx_buffer->peekChar() : -1;
 }
 
 int uart_rx_find(uart_t* uart, char c)
@@ -159,7 +160,7 @@ int uart_rx_find(uart_t* uart, char c)
 
 int uart_peek_last_char(uart_t* uart)
 {
-	return uart && uart->rx_buffer ? uart->rx_buffer->peek_last_char() : -1;
+	return uart && uart->rx_buffer ? uart->rx_buffer->peekLastChar() : -1;
 }
 
 size_t uart_read(uart_t* uart, void* buffer, size_t size)
@@ -173,8 +174,8 @@ size_t uart_read(uart_t* uart, void* buffer, size_t size)
 
 	// If RX buffer not in use or it's empty then read directly from hardware FIFO
 	if(uart->rx_buffer)
-		while(read < size && !uart->rx_buffer->empty())
-			buf[read++] = uart->rx_buffer->read_char();
+		while(read < size && !uart->rx_buffer->isEmpty())
+			buf[read++] = uart->rx_buffer->readChar();
 
 	while(read < size && UART_RXCOUNT(uart->uart_nr) != 0)
 		buf[read++] = USF(uart->uart_nr);
@@ -236,9 +237,9 @@ static void IRAM_ATTR _uart_isr(uint8_t uart_nr, uart_t* uart)
 
 		// Read as much data as possible from the RX FIFO into buffer
 		if(uart->rx_buffer) {
-			size_t space = uart->rx_buffer->free_space();
+			size_t space = uart->rx_buffer->getFreeSpace();
 			while(space-- && UART_RXCOUNT(uart_nr) != 0) {
-				uart->rx_buffer->write_char(USF(uart_nr));
+				uart->rx_buffer->writeChar(USF(uart_nr));
 				++read;
 			}
 		}
@@ -260,10 +261,10 @@ static void IRAM_ATTR _uart_isr(uint8_t uart_nr, uart_t* uart)
 
 	if (tx_fifo_empty) {
 		// Dump as much data as we can from buffer into the TX FIFO
-		if(uart->tx_buffer && !uart->tx_buffer->empty()) {
+		if(uart->tx_buffer && !uart->tx_buffer->isEmpty()) {
 			size_t avail = uart->tx_buffer->available();
 			while(avail-- && !UART_TXFULL(uart_nr))
-				USF(uart_nr) = uart->tx_buffer->read_char();
+				USF(uart_nr) = uart->tx_buffer->readChar();
 
 			// We've topped up TX FIFO so defer callback until next time
 			if (UART_TXCOUNT(uart_nr) != 0) {
@@ -290,8 +291,8 @@ static void IRAM_ATTR _uart_isr(uint8_t uart_nr, uart_t* uart)
  */
 static void IRAM_ATTR uart_isr(void* arg)
 {
-	_uart_isr(UART0, __uart0);
-	_uart_isr(UART1, __uart1);
+	_uart_isr(UART0, isrUart0);
+	_uart_isr(UART1, isrUart1);
 }
 
 
@@ -301,9 +302,9 @@ void uart_start_isr(uart_t* uart)
 		return;
 
 	if (uart->uart_nr == UART0)
-		__uart0 = uart;
+		isrUart0 = uart;
 	else if (uart->uart_nr == UART1)
-		__uart1 = uart;
+		isrUart1 = uart;
 	else
 		return;
 
@@ -337,9 +338,9 @@ void uart_start_isr(uart_t* uart)
 	USIC(uart->uart_nr) = 0xffff;
 	USIE(uart->uart_nr) = usie;
 
-	uint8_t oldmask = __isr_mask;
+	uint8_t oldmask = isrMask;
 
-	__isr_mask |= _BV(uart->uart_nr);
+	isrMask |= _BV(uart->uart_nr);
 
 	if(oldmask == 0) {
 		ETS_UART_INTR_DISABLE();
@@ -366,13 +367,13 @@ size_t uart_write(uart_t* uart, const void* buffer, size_t size)
 
 	for (;;) {
 		// If TX buffer not in use or it's empty then write directly to hardware FIFO
-		if(!uart->tx_buffer || uart->tx_buffer->empty())
+		if(!uart->tx_buffer || uart->tx_buffer->isEmpty())
 			while(written < size && !UART_TXFULL(uart->uart_nr))
 				USF(uart->uart_nr) = buf[written++];
 
 		// Write any remaining data into buffer
 		if(uart->tx_buffer) {
-			while(written < size && uart->tx_buffer->write_char(buf[written]))
+			while(written < size && uart->tx_buffer->writeChar(buf[written]))
 				++written;
 		}
 
@@ -395,7 +396,7 @@ size_t uart_tx_free(uart_t* uart)
 
 	size_t space = UART_TX_FIFO_SIZE - UART_TXCOUNT(uart->uart_nr);
 	if(uart->tx_buffer)
-		space += uart->tx_buffer->free_space();
+		space += uart->tx_buffer->getFreeSpace();
 	return space;
 }
 
@@ -405,7 +406,7 @@ void uart_wait_tx_empty(uart_t* uart)
 		return;
 
 	if (uart->tx_buffer)
-		while (!uart->tx_buffer->empty()) {
+		while (!uart->tx_buffer->isEmpty()) {
 			delay(0);
 		}
 
@@ -707,13 +708,13 @@ void uart_set_debug(int uart_nr)
 	if (s_uart_debug_nr == UART0) {
 		system_set_os_print(true);
 		ets_install_putc1([](char c) {
-			uart_write_char(__uart0, c);
+			uart_write_char(isrUart0, c);
 		});
 	}
 	else if (s_uart_debug_nr == UART1) {
 		system_set_os_print(true);
 		ets_install_putc1([](char c) {
-			uart_write_char(__uart1, c);
+			uart_write_char(isrUart1, c);
 		});
 	}
 	else {
@@ -733,21 +734,21 @@ int uart_get_debug()
 void IRAM_ATTR uart_detach(int uart_nr)
 {
 	if (uart_nr == UART0)
-		__uart0 = nullptr;
+		isrUart0 = nullptr;
 	else if (uart_nr == UART1)
-		__uart1 = nullptr;
+		isrUart1 = nullptr;
 	else
 		return;
 
-	uint8_t newmask = __isr_mask & ~_BV(uart_nr);
-	if(newmask == __isr_mask)
+	uint8_t newmask = isrMask & ~_BV(uart_nr);
+	if(newmask == isrMask)
 		return;
 
 	if(newmask == 0) {
 		ETS_UART_INTR_DISABLE();
 		ETS_UART_INTR_ATTACH(nullptr, nullptr);
 	}
-	__isr_mask = newmask;
+	isrMask = newmask;
 
 	USC1(uart_nr) = 0;
 	USIC(uart_nr) = 0xffff;
@@ -759,9 +760,9 @@ uart_t* IRAM_ATTR uart_get_uart(uint8_t uart_nr)
 {
 	switch(uart_nr) {
 	case UART0:
-		return __uart0;
+		return isrUart0;
 	case UART1:
-		return __uart1;
+		return isrUart1;
 	default:
 		return nullptr;
 	}
