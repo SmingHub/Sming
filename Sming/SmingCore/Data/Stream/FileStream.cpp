@@ -71,7 +71,7 @@ size_t FileStream::write(const uint8_t* buffer, size_t size)
 	if(!fileExist())
 		return 0;
 
-	bool result = fileSeek(handle, 0, eSO_FileEnd);
+	fileSeek(handle, 0, eSO_FileEnd);
 	return fileWrite(handle, buffer, size);
 }
 
