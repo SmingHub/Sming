@@ -31,6 +31,9 @@
 class CStringArray : protected String
 {
 public:
+	// Inherit all constructors
+	using String::String;
+
 	/** @brief append a new string to the end of the array
 	 *  @param str
 	 *  @retval bool false on memory allocation error
