@@ -17,9 +17,8 @@
 #ifndef _DateTime_h
 #define _DateTime_h
 
-#include <user_config.h>
 #include <time.h>
-#include "../../Wiring/WString.h"
+#include "WString.h"
 
 /*==============================================================================*/
 /* Useful Constants */
@@ -79,7 +78,9 @@ class DateTime
 public:
     /** @brief  Instantiate an uninitialised date and time object
      */
-	DateTime();
+	DateTime()
+	{
+	}
 
     /** @brief  Instantiate a date and time object
      *  @param  time Unix time to assign to object
@@ -111,7 +112,7 @@ public:
      *  @note   Also supports obsolete RFC 850 date format, e.g. Sunday, 06-Nov-94 08:49:37 GMT where 2 digit year represents range 1970-2069
      *  @note   GMT suffix is optional and is always assumed / ignored
      */
-	bool parseHttpDate(String httpDate);
+	bool parseHttpDate(const String& httpDate);
 
 	/** @brief  Check if time date object is initialised
 	 *  @retval True if object has no value. False if initialised.
@@ -161,6 +162,7 @@ public:
 	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. DateTime::convertFromUnixTime(...);
 	 *  @note   32-bit Unix time has year 2036 issue.
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
+	 *  @note   All of the return values are optional, specify nullptr if not required
 	 */
 	static void convertFromUnixTime(time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear);
 
@@ -179,14 +181,14 @@ public:
 	static time_t convertToUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year);
 
 public:
-	int8_t Hour; ///< Hour (0-23)
-	int8_t Minute; ///< Minute (0-59)
-	int8_t Second; ///< Second (0-59)
-	int16_t Milliseconds; ///< Milliseconds (0-999)
-	int8_t Day; ///< Day of month (1-31)
-	int8_t DayofWeek; ///< Day of week (0-6 Sunday is day 0)
-	int8_t Month; ///< Month (0-11 Jan is month 0)
-	int16_t Year;  ///< Full Year number
+	int8_t Hour = 0; ///< Hour (0-23)
+	int8_t Minute = 0; ///< Minute (0-59)
+	int8_t Second = 0; ///< Second (0-59)
+	int16_t Milliseconds = 0; ///< Milliseconds (0-999)
+	int8_t Day = 0; ///< Day of month (1-31)
+	int8_t DayofWeek = 0; ///< Day of week (0-6 Sunday is day 0)
+	int8_t Month = 0; ///< Month (0-11 Jan is month 0)
+	int16_t Year = 0;  ///< Full Year number
 };
 
 /** @} */

@@ -8,31 +8,30 @@
 */
 
 #include "DateTime.h"
-#include <Arduino.h>
+#include "Data/CStringArray.h"
 #include <stdlib.h>
-#include <stdio.h>
 
-//extern unsigned long _time;
+#define LEAP_YEAR(year) ((year % 4) == 0)
 
-#define LEAP_YEAR(_year) ((_year%4)==0)
-static  int8_t monthDays[]={31,28,31,30,31,30,31,31,30,31,30,31};
+/*
+ * Used to parse HTTP date strings - see parseHttpDate()
+ */
+static DEFINE_FSTR(flashMonthNames, "Jan\0Feb\0Mar\0Apr\0May\0Jun\0Jul\0Aug\0Sep\0Oct\0Nov\0Dec");
 
+/** @brief Get the number of days in a month, taking leap years into account
+ *  @param month 0=jan
+ *  @param year
+ *  @retval uint8_t number of days in the month
+ */
+static uint8_t getMonthDays(uint8_t month, uint8_t year)
+{
+	static const uint8_t monthDays[] PROGMEM = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	return (month == 1 && LEAP_YEAR(year)) ? 29 : pgm_read_byte(&monthDays[month]);
+}
 
 //******************************************************************************
 //* DateTime Public Methods
 //******************************************************************************
-
-DateTime::DateTime()
-{
-	Second = 0;
-	Minute = 0;
-	Hour = 0;
-	Day = 0;
-	Month = 0;
-	Year = 0;
-	DayofWeek = 0;
-	Milliseconds = 0;
-}
 
 DateTime::DateTime(time_t time)
 {
@@ -58,56 +57,61 @@ void DateTime::setTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t m
 
 bool DateTime::isNull()
 {
-	return Second == 0 && Minute == 0 && Hour == 0 && Day == 0 && Month == 0 && Year == 0 && DayofWeek == 0 && Milliseconds == 0;
+	return Second == 0 && Minute == 0 && Hour == 0 && Day == 0 && Month == 0 && Year == 0 && DayofWeek == 0 &&
+		   Milliseconds == 0;
 }
 
-bool DateTime::parseHttpDate(String httpDate)
+bool DateTime::parseHttpDate(const String& httpDate)
 {
-	char* ptr = (char*)httpDate.c_str();
 	int first = httpDate.indexOf(',');
-	if (first == -1 || httpDate.length() - first < 20) return false;
+	if(first < 0 || httpDate.length() - first < 20)
+		return false;
+
 	first++; // Skip ','
-	if (httpDate[first] == ' ') first ++;
+	if(httpDate[first] == ' ')
+		first++;
 
-	ptr += first;
-	Day = (int8_t)strtol(ptr, &ptr, 10);
-	if (*ptr == 0) return false;
+	auto ptr = httpDate.c_str() + first;
+
+	// Parse and return a decimal number and update ptr to the first non-numeric character after it
+	auto parseNumber = [&ptr]() { return strtol(ptr, const_cast<char**>(&ptr), 10); };
+
+	Day = parseNumber();
+	if(*ptr == '\0')
+		return false;
+
+	// Decode the month name
 	ptr++;
-	char month[4] = {0};
-	memcpy(month, ptr, 3);
-	ptr += 4;
-	if (*ptr == 0) return false;
-	String mon = month;
-	mon.toLowerCase();
+	char monthName[] = {ptr[0], ptr[1], ptr[2], '\0'};
+	ptr += 4; // Skip space as well as month
+	if(*ptr == '\0')
+		return false;
 
-	if (mon == "jan") Month = 0;
-	else if (mon == "feb") Month = 1;
-	else if (mon == "mar") Month = 2;
-	else if (mon == "apr") Month = 3;
-	else if (mon == "may") Month = 4;
-	else if (mon == "jun") Month = 5;
-	else if (mon == "jul") Month = 6;
-	else if (mon == "aug") Month = 7;
-	else if (mon == "sep") Month = 8;
-	else if (mon == "oct") Month = 9;
-	else if (mon == "nov") Month = 10;
-	else if (mon == "dec") Month = 11;
-	else return false;
+	// Search is case insensitive
+	Month = CStringArray(flashMonthNames).indexOf(monthName);
+	if(Month < 0)
+		return false; // Invalid month
 
-	Year = (int16_t)strtol(ptr, &ptr, 10);
-	if (*ptr == 0) return false;
-	if (Year < 69)
+	Year = parseNumber();
+	if(*ptr == '\0')
+		return false;
+
+	if(Year < 69)
 		Year += 2000;
-	else if (Year < 100)
+	else if(Year < 100)
 		Year += 1900;
 
-	Hour = (int8_t)strtol(ptr, &ptr, 10);
-	if (*ptr != ':') return false;
+	Hour = parseNumber();
+	if(*ptr != ':')
+		return false;
+
 	ptr++;
-	Minute = (int8_t)strtol(ptr, &ptr, 10);
-	if (*ptr != ':') return false;
+	Minute = parseNumber();
+	if(*ptr != ':')
+		return false;
+
 	ptr++;
-	Second = (int8_t)strtol(ptr, &ptr, 10);
+	Second = parseNumber();
 	Milliseconds = 0;
 
 	return true;
@@ -120,31 +124,31 @@ time_t DateTime::toUnixTime()
 
 String DateTime::toShortDateString()
 {
-	char buf[64];
-	sprintf(buf, "%02d.%02d.%d", Day, Month + 1, Year);
+	char buf[16];
+	m_snprintf(buf, sizeof(buf), _F("%02d.%02d.%d"), Day, Month + 1, Year);
 	return String(buf);
 }
 
 String DateTime::toShortTimeString(bool includeSeconds /* = false*/)
 {
-	char buf[64];
-	if (includeSeconds)
-		sprintf(buf, "%02d:%02d:%02d", Hour, Minute, Second);
+	char buf[16];
+	if(includeSeconds)
+		m_snprintf(buf, sizeof(buf), _F("%02d:%02d:%02d"), Hour, Minute, Second);
 	else
-		sprintf(buf, "%02d:%02d", Hour, Minute);
+		m_snprintf(buf, sizeof(buf), _F("%02d:%02d"), Hour, Minute);
 
 	return String(buf);
 }
 
 String DateTime::toFullDateTimeString()
 {
-	return toShortDateString() + " " + toShortTimeString(true);
+	return toShortDateString() + ' ' + toShortTimeString(true);
 }
 
-String DateTime::toISO8601() 
+String DateTime::toISO8601()
 {
-	char buf[21];
-	sprintf(buf, "%02d-%02d-%02dT%02d:%02d:%02dZ",Year,Month+1,Day,Hour,Minute,Second);
+	char buf[32];
+	m_snprintf(buf, sizeof(buf), _F("%02d-%02d-%02dT%02d:%02d:%02dZ"), Year, Month + 1, Day, Hour, Minute, Second);
 	return String(buf);
 }
 
@@ -159,91 +163,77 @@ void DateTime::addMilliseconds(long add)
 	Milliseconds = ms;
 }
 
-void DateTime::convertFromUnixTime(time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear)
+void DateTime::convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday, int8_t* pwday,
+								   int8_t* pmonth, int16_t* pyear)
 {
-// convert the given time_t to time components
-// this is a more compact version of the C library localtime function
+	// convert the given time_t to time components
+	// this is a more compact version of the C library localtime function
 
-  time_t long epoch=timep;
-  int8_t year;
-  int8_t month, monthLength;
-  unsigned long days;
-  
-  *psec=epoch%60;
-  epoch/=60; // now it is minutes
-  *pmin=epoch%60;
-  epoch/=60; // now it is hours
-  *phour=epoch%24;
-  epoch/=24; // now it is days
-  *pwday=(epoch+4)%7;
-  
-  year=70;  
-  days=0;
-  while((unsigned)(days += (LEAP_YEAR(year) ? 366 : 365)) <= epoch) {
-    year++;
-  }
-  *pyear=year + 1900; // *pyear is returned as years from 1900
-  
-  days -= LEAP_YEAR(year) ? 366 : 365;
-  epoch -= days; // now it is days in this year, starting at 0
-  //*pdayofyear=epoch;  // days since jan 1 this year
-  
-  days=0;
-  month=0;
-  monthLength=0;
-  for (month=0; month<12; month++) {
-    if (month==1) { // february
-      if (LEAP_YEAR(year)) {
-        monthLength=29;
-      } else {
-        monthLength=28;
-      }
-    } else {
-      monthLength = monthDays[month];
-    }
-    
-    if (epoch>=monthLength) {
-      epoch-=monthLength;
-    } else {
-        break;
-    }
-  }
-  *pmonth=month;  // jan is month 0
-  *pday=epoch+1;  // day of month
+	unsigned long epoch = timep;
+	if(psec)
+		*psec = epoch % 60;
+	epoch /= 60; // now it is minutes
+	if(pmin)
+		*pmin = epoch % 60;
+	epoch /= 60; // now it is hours
+	if(phour)
+		*phour = epoch % 24;
+	epoch /= 24; // now it is days
+	if(pwday)
+		*pwday = (epoch + 4) % 7;
+
+	unsigned year = 70;
+	unsigned long days = 0;
+	while((days += (LEAP_YEAR(year) ? 366 : 365)) <= epoch) {
+		year++;
+	}
+	if(pyear)
+		*pyear = year + 1900; // *pyear is returned as years from 1900
+
+	days -= LEAP_YEAR(year) ? 366 : 365;
+	epoch -= days; // now it is days in this year, starting at 0
+	//*pdayofyear=epoch;  // days since jan 1 this year
+
+	int8_t month;
+	for(month = 0; month < 12; month++) {
+		uint8_t monthDays = getMonthDays(month, year);
+		if(epoch >= monthDays) {
+			epoch -= monthDays;
+		} else {
+			break;
+		}
+	}
+
+	if(pmonth)
+		*pmonth = month; // jan is month 0
+	if(pday)
+		*pday = epoch + 1; // day of month
 }
 
-
-time_t DateTime::convertToUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year )
+time_t DateTime::convertToUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year)
 {
-// converts time components to time_t 
-// note year argument is full four digit year (or digits since 2000), i.e.1975, (year 8 is 2008)
-  
-   int i;
-   time_t seconds;
+	// converts time components to time_t
+	// note year argument is full four digit year (or digits since 2000), i.e.1975, (year 8 is 2008)
 
-   if(year < 69) 
-      year+= 2000;
-    // seconds from 1970 till 1 jan 00:00:00 this year
-    seconds= (year-1970)*(60*60*24L*365);
+	if(year < 69)
+		year += 2000;
+	// seconds from 1970 till 1 jan 00:00:00 this year
+	time_t seconds = (year - 1970) * (SECS_PER_DAY * 365);
 
-    // add extra days for leap years
-    for (i=1970; i<year; i++) {
-        if (LEAP_YEAR(i)) {
-            seconds+= 60*60*24L;
-        }
-    }
-    // add days for this year
-    for (i=0; i<month; i++) {
-      if (i==1 && LEAP_YEAR(year)) { 
-        seconds+= 60*60*24L*29;
-      } else {
-        seconds+= 60*60*24L*monthDays[i];
-      }
-    }
+	// add extra days for leap years
+	for(int i = 1970; i < year; i++) {
+		if(LEAP_YEAR(i)) {
+			seconds += SECS_PER_DAY;
+		}
+	}
+	// add days for this year
+	for(int i = 0; i < month; i++) {
+		seconds += SECS_PER_DAY * getMonthDays(i, year);
+	}
 
-    seconds+= (day-1)*3600*24L;
-    seconds+= hour*3600L;
-    seconds+= min*60L;
-    seconds+= sec;
-    return seconds; 
+	seconds += (day - 1) * SECS_PER_DAY;
+	seconds += hour * SECS_PER_HOUR;
+	seconds += min * SECS_PER_MIN;
+	seconds += sec;
+	return seconds;
 }
