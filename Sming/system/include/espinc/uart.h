@@ -209,6 +209,13 @@ __forceinline bool uart_rx_enabled(uart_t* uart)
 	return uart && uart->mode != UART_TX_ONLY;
 }
 
+/** @brief set UART baud rate, given the UART number
+ *  @param uart_nr
+ *  @param baud_rate requested baud rate
+ *  @retval uint32_t actual baudrate used, 0 on failure
+ */
+uint32_t uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate);
+
 /** @brief set UART baud rate
  *  @param uart
  *  @param baud_rate requested baud rate

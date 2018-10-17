@@ -16,8 +16,6 @@
 #include "../Services/CommandProcessing/CommandExecutor.h"
 #endif
 
-bool HardwareSerial::init = false;
-
 HardwareSerial Serial(UART_ID_0);
 
 HardwareSerial::~HardwareSerial()
@@ -51,13 +49,9 @@ void HardwareSerial::end()
 		uart_set_debug(UART_NO);
 	}
 
-	if(uart) {
-		uart_uninit(uart);
-		uart = nullptr;
-	} else if(!init) {
-		uart_detach(uartNr);
-		init = true;
-	}
+	uart_uninit(uart);
+	uart = nullptr;
+	uart_detach(uartNr);
 }
 
 size_t HardwareSerial::setRxBufferSize(size_t size)

@@ -440,16 +440,27 @@ void uart_flush(uart_t* uart)
 	uart_restore_interrupts();
 }
 
-uint32_t uart_set_baudrate(uart_t* uart, uint32_t baud_rate)
+uint32_t uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 {
-	if(!uart || !baud_rate)
+	if(uart_nr < UART0 || uart_nr > UART1 || baud_rate == 0)
 		return 0;
 
 	uint32_t clkdiv = ESP8266_CLOCK / baud_rate;
-	USD(uart->uart_nr) = clkdiv;
+	USD(uart_nr) = clkdiv;
+	// Return the actual baud rate in use
+	baud_rate = clkdiv ? ESP8266_CLOCK / clkdiv : 0;
+	return baud_rate;
+}
+
+uint32_t uart_set_baudrate(uart_t* uart, uint32_t baud_rate)
+{
+	if(!uart)
+		return 0;
+
+	baud_rate = uart_set_baudrate_reg(uart->uart_nr, baud_rate);
 	// Store the actual baud rate in use
-	uart->baud_rate = clkdiv ? ESP8266_CLOCK / clkdiv : 0;
-	return uart->baud_rate;
+	uart->baud_rate = baud_rate;
+	return baud_rate;
 }
 
 uart_t* uart_init_ex(const uart_config& cfg)

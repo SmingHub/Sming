@@ -1,6 +1,14 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ */
+
 #include <user_config.h>
 #include "Platform/System.h"
-#include "HardwareSerial.h"
+#include "espinc/uart.h"
 
 #ifndef SMING_RELEASE
 extern "C" {
@@ -12,14 +20,21 @@ extern void init();
 
 extern "C" void  __attribute__((weak)) user_init(void)
 {
+	// We want high resolution timing - see HardwareTimer class
 	system_timer_reinit();
-	uart_div_modify(UART_ID_0, UART_CLK_FREQ / SERIAL_BAUD_RATE);
+
+	// Initialise both UARTs to a known state
+	uart_detach(UART0);
+	uart_detach(UART1);
+	uart_set_baudrate_reg(UART0, SERIAL_BAUD_RATE);
+	uart_set_baudrate_reg(UART1, SERIAL_BAUD_RATE);
+
 	cpp_core_initialize();
 	System.initialize();
+
 #ifdef SMING_RELEASE
 	// disable all debug output for release builds
-	Serial.systemDebugOutput(false);
-	system_set_os_print(0);
+	uart_set_debug(UART_NO);
 #else
 	gdbstub_init();
 #endif
@@ -29,7 +44,7 @@ extern "C" void  __attribute__((weak)) user_init(void)
 // For compatibility with SDK v1.1
 extern "C" void __attribute__((weak)) user_rf_pre_init(void)
 {
-	uart_div_modify(UART_ID_0, UART_CLK_FREQ / SERIAL_BAUD_RATE);
+	uart_set_baudrate_reg(UART0, SERIAL_BAUD_RATE);
 	// RTC startup fix, author pvvx
     volatile uint32 * ptr_reg_rtc_ram = (volatile uint32 *)0x60001000;
     if((ptr_reg_rtc_ram[24] >> 16) > 4) {

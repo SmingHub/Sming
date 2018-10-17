@@ -418,8 +418,6 @@ private:
 	size_t txSize = DEFAULT_TX_BUFFER_SIZE;
 	size_t rxSize = DEFAULT_RX_BUFFER_SIZE;
 
-	static bool init; ///< Purpose ? @todo highly suspect
-
 	/**
 	 * @brief  Interrupt handler for UART0 receive events
 	 * @param uart_t* pointer to UART object
