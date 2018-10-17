@@ -6,7 +6,6 @@
  ****/
 
 #include "System.h"
-#include "Interrupts.h"
 
 SystemClass System;
 

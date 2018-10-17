@@ -22,8 +22,6 @@
 #ifndef SMINGCORE_PLATFORM_SYSTEM_H_
 #define SMINGCORE_PLATFORM_SYSTEM_H_
 
-#include "WString.h"
-#include "WVector.h"
 #include "Delegate.h"
 
 /** @brief default number of tasks in global queue
