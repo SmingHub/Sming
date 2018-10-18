@@ -22,7 +22,7 @@
  * @ingroup    stream data
  *
  *  @{
-*/
+ */
 
 /**
  * @brief Callback specification for the stream transformers

@@ -9,6 +9,7 @@
  ****/
 
 #include "MailMessage.h"
+#include "Stream/MemoryDataStream.h"
 
 MailMessage& MailMessage::setHeader(const String& name, const String& value)
 {
