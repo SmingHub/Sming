@@ -7,34 +7,12 @@
 
 #include "JsonObjectStream.h"
 
-JsonObjectStream::JsonObjectStream() : rootNode(buffer.createObject()), send(true)
-{
-}
-
-JsonObjectStream::~JsonObjectStream()
-{
-}
-
-JsonObject& JsonObjectStream::getRoot()
-{
-	return rootNode;
-}
-
 uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 {
-	if(rootNode != JsonObject::invalid() && send) {
+	if(send && rootNode.success()) {
 		rootNode.printTo(*this);
 		send = false;
 	}
 
 	return MemoryDataStream::readMemoryBlock(data, bufSize);
-}
-
-int JsonObjectStream::available()
-{
-	if(rootNode == JsonObject::invalid()) {
-		return 0;
-	}
-
-	return rootNode.measureLength();
 }

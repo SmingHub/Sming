@@ -24,7 +24,10 @@ public:
 	{
 	}
 
-	virtual size_t write(uint8_t charToWrite) = 0;
+	virtual size_t write(uint8_t charToWrite)
+	{
+		return write(&charToWrite, 1);
+	}
 
 	/** @brief  Write chars to stream
      *  @param  buffer Pointer to buffer to write to the stream

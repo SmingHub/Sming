@@ -25,21 +25,22 @@
 class EndlessMemoryStream : public ReadWriteStream
 {
 public:
-	virtual ~EndlessMemoryStream();
+	virtual ~EndlessMemoryStream()
+	{
+		delete stream;
+	}
 
-	//Use base class documentation
-	virtual StreamType getStreamType();
+	virtual StreamType getStreamType()
+	{
+		return eSST_Memory;
+	}
 
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	virtual uint16_t readMemoryBlock(char* data, int bufSize)
+	{
+		return stream ? stream->readMemoryBlock(data, bufSize) : 0;
+	}
 
-	//Use base class documentation
 	virtual bool seek(int len);
-
-	/** @brief  Write a single char to stream
-	 *  @param  charToWrite Char to write to the stream
-	 *  @retval size_t Quantity of chars written to stream (always 1)
-	 */
-	virtual size_t write(uint8_t charToWrite);
 
 	/** @brief  Write chars to stream
 	 *  @param  buffer Pointer to buffer to write to the stream
@@ -48,10 +49,16 @@ public:
 	 */
 	virtual size_t write(const uint8_t* buffer, size_t size);
 
-	virtual bool isFinished();
+	/** @todo is this behaviour consistent with DataSourceStream ?
+	 * It might be desirable to return true when _stream is null.
+	 */
+	virtual bool isFinished()
+	{
+		return false;
+	}
 
 private:
-	MemoryDataStream* stream = NULL;
+	MemoryDataStream* stream = nullptr;
 };
 
 /** @} */

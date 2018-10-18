@@ -9,38 +9,12 @@
 
 /* MemoryDataStream */
 
-MemoryDataStream::MemoryDataStream()
-{
-	buf = NULL;
-	pos = NULL;
-	size = 0;
-	capacity = 0;
-}
-
-MemoryDataStream::~MemoryDataStream()
-{
-	free(buf);
-	buf = NULL;
-	pos = NULL;
-	size = 0;
-}
-
-int MemoryDataStream::available()
-{
-	return size - (pos - buf);
-}
-
-size_t MemoryDataStream::write(uint8_t charToWrite)
-{
-	return write(&charToWrite, 1);
-}
-
 size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 {
 	//TODO: add queued buffers without full copy
-	if(buf == NULL) {
+	if(buf == nullptr) {
 		buf = (char*)malloc(len + 1);
-		if(buf == NULL)
+		if(buf == nullptr)
 			return 0;
 		buf[len] = '\0';
 		memcpy(buf, data, len);
@@ -81,9 +55,4 @@ bool MemoryDataStream::seek(int len)
 
 	pos += len;
 	return true;
-}
-
-bool MemoryDataStream::isFinished()
-{
-	return size == (pos - buf);
 }

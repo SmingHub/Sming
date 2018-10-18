@@ -13,20 +13,6 @@
 
 #include "CircularBuffer.h"
 
-CircularBuffer::CircularBuffer(int size) : buffer(new char[size]), readPos(buffer), writePos(buffer), size(size)
-{
-}
-
-CircularBuffer::~CircularBuffer()
-{
-	delete[] buffer;
-}
-
-StreamType CircularBuffer::getStreamType()
-{
-	return StreamType::eSST_Memory;
-}
-
 uint16_t CircularBuffer::readMemoryBlock(char* data, int bufSize)
 {
 	size_t bytesAvailable = available();
@@ -62,11 +48,6 @@ bool CircularBuffer::seek(int len)
 	return true;
 }
 
-bool CircularBuffer::isFinished()
-{
-	return (available() < 1);
-}
-
 int CircularBuffer::available()
 {
 	if(writePos >= readPos) {
@@ -81,12 +62,6 @@ size_t CircularBuffer::room() const
 		return size - (writePos - readPos) - 1;
 	}
 	return readPos - writePos - 1;
-}
-
-String CircularBuffer::id()
-{
-	// TODO: check if that is printing the address of the buffer...
-	return String((char*)&buffer);
 }
 
 size_t CircularBuffer::write(uint8_t charToWrite)

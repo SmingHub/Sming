@@ -57,7 +57,7 @@ public:
 	virtual bool isFinished();
 
 private:
-	uint8_t* buffer = NULL;
+	uint8_t* buffer = nullptr;
 	size_t writePos = 0;
 	size_t readPos = 0;
 	size_t length = 0;

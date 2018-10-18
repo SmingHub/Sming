@@ -7,61 +7,26 @@
 
 #include "EndlessMemoryStream.h"
 
-EndlessMemoryStream::~EndlessMemoryStream()
-{
-	delete stream;
-	stream = NULL;
-}
-
-StreamType EndlessMemoryStream::getStreamType()
-{
-	return eSST_Memory;
-}
-
-uint16_t EndlessMemoryStream::readMemoryBlock(char* data, int bufSize)
-{
-	if(stream == NULL) {
-		return 0;
-	}
-
-	return stream->readMemoryBlock(data, bufSize);
-}
-
-//Use base class documentation
 bool EndlessMemoryStream::seek(int len)
 {
-	if(stream == NULL) {
+	if(stream == nullptr) {
 		return false;
 	}
 
 	int res = stream->seek(len);
 	if(stream->isFinished()) {
 		delete stream;
-		stream = NULL;
+		stream = nullptr;
 	}
 
 	return res;
 }
 
-size_t EndlessMemoryStream::write(uint8_t charToWrite)
-{
-	if(stream == NULL) {
-		stream = new MemoryDataStream();
-	}
-
-	return stream->write(charToWrite);
-}
-
 size_t EndlessMemoryStream::write(const uint8_t* buffer, size_t size)
 {
-	if(stream == NULL) {
+	if(stream == nullptr) {
 		stream = new MemoryDataStream();
 	}
 
 	return stream->write(buffer, size);
-}
-
-bool EndlessMemoryStream::isFinished()
-{
-	return false;
 }
