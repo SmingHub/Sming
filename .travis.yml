@@ -62,7 +62,7 @@ script:
 - make samples
 - make clean samples-clean
 - make ENABLE_CUSTOM_HEAP=1
-- make Basic_Blink ENABLE_CUSTOM_HEAP=1
+- make Basic_Blink ENABLE_CUSTOM_HEAP=1 DEBUG_VERBOSE_LEVEL=3
 - make dist-clean; make HttpServer_ConfigNetwork ENABLE_CUSTOM_LWIP=2
 deploy:
   provider: script

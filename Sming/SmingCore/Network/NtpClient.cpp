@@ -21,7 +21,7 @@ NtpClient::NtpClient(NtpTimeResultDelegate onTimeReceivedCb)
 
 NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate delegateFunction)
 {
-	debug_d("NtpClient(\"%s\", %u, 0x%08x", reqServer.c_str(), reqIntervalSeconds, delegateFunction);
+	debug_d("NtpClient(\"%s\", %u)", reqServer.c_str(), reqIntervalSeconds);
 
 	// Setup timer, but don't start it
 	timer.setCallback(TimerDelegate(&NtpClient::requestTime, this));
