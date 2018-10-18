@@ -21,21 +21,53 @@
 class FileStream : public ReadWriteStream
 {
 public:
+	FileStream()
+	{
+	}
+
 	/** @brief  Create a file stream
      *  @param  fileName Name of file to open
      */
-	FileStream();
-	FileStream(const String& fileName);
-	virtual ~FileStream();
+	FileStream(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly)
+	{
+		open(fileName, openFlags);
+	}
 
-	virtual bool attach(const String& fileName, FileOpenFlags openFlags);
+	virtual ~FileStream()
+	{
+		close();
+	}
+
+	/** @brief Attach this stream object to an open file handle
+	 *  @param file
+	 *  @param size
+	 */
+	void attach(file_t file, size_t size);
+
+	/* @deprecated: use open() method */
+	bool attach(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly)
+	{
+		return open(fileName, openFlags);
+	}
+
+	/** @brief Open a file and attach this stream object to it
+	 *  @param fileName
+	 *  @param openFlags
+	 *  @retval bool true on success, false on error
+	 *  @note call getLastError() to determine cause of failure
+	 */
+	bool open(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly);
+
+	/** @brief Close file
+	 */
+	void close();
+
 	//Use base class documentation
 	virtual StreamType getStreamType() const
 	{
 		return eSST_File;
 	}
 
-	virtual size_t write(uint8_t charToWrite);
 	virtual size_t write(const uint8_t* buffer, size_t size);
 
 	//Use base class documentation
@@ -45,10 +77,24 @@ public:
 	virtual bool seek(int len);
 
 	//Use base class documentation
-	virtual bool isFinished();
+	virtual bool isFinished()
+	{
+		return fileIsEOF(handle);
+	}
 
-	String fileName() const; ///< Filename of file stream is attached to
-	bool fileExist() const;  ///< True if file exists
+	/** @brief Filename of file stream is attached to
+	 *  @retval String invalid if stream isn't open
+	 */
+	String fileName() const;
+
+	/** @brief Determine if file exists
+	 *  @retval bool true if stream contains valid file
+	 */
+	bool fileExist() const
+	{
+		return handle >= 0;
+	}
+
 	virtual String getName() const
 	{
 		return fileName();
@@ -60,30 +106,54 @@ public:
 	}
 
 	/** @brief  Get the offset of cursor from beginning of data
-     *  @retval int Cursor offset
+     *  @retval size_t Cursor offset
      */
-	inline int getPos()
+	size_t getPos() const
 	{
 		return pos;
 	}
 
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
+	/**	@brief Return the total length of the stream
+	 * 	@retval int -1 is returned when the size cannot be determined
 	 */
-	int available()
+	virtual int available()
 	{
-		return size;
+		return size - pos;
 	}
 
 	virtual String id() const;
 
+	/** @brief determine if an error occurred during operation
+	 *  @retval int filesystem error code
+	 */
+	int getLastError()
+	{
+		return lastError;
+	}
+
 private:
-	file_t handle;
-	int pos;
-	int size;
+	/** @brief Check file operation result and note error code
+	 *  @param res result of fileXXX() operation to check
+	 *  @retval bool true if operation was successful, false if error occurred
+	 */
+	bool check(int res)
+	{
+		if(res >= 0) {
+			return true;
+		}
+
+		if(lastError >= 0) {
+			lastError = res;
+		}
+		return false;
+	}
+
+private:
+	file_t handle = -1;
+	size_t pos = 0;
+	size_t size = 0;
+	int lastError = SPIFFS_OK;
 };
-/** @} */
 
 /** @} */
 
