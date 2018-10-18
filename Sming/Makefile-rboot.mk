@@ -360,7 +360,7 @@ endif
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -u custom_crash_callback -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
-ifeq ($(ENABLE_CUSTOM_PHY)), 1)
+ifeq ($(ENABLE_CUSTOM_PHY), 1)
 	LDFLAGS += -Wl,-wrap,register_chipv6_phy -u custom_register_chipv6_phy -u get_adc_mode
 endif
 
