@@ -23,7 +23,7 @@
 #include "WiringFrameworkIncludes.h"
 #include "Stream.h"
 
-#include "../SmingCore/Clock.h"
+#include "Clock.h"
 
 #define PARSE_TIMEOUT 1000  // default number of milli-seconds to wait
 #define NO_SKIP_CHAR  1  // a magic char not found in a valid ASCII numeric field
@@ -32,11 +32,11 @@
 int Stream::timedRead()
 {
   int c;
-  _startMillis = millis();
+  startMillis = millis();
   do {
     c = read();
     if (c >= 0) return c;
-  } while(millis() - _startMillis < _timeout);
+  } while(millis() - startMillis < receiveTimeout);
   return -1;     // -1 indicates timeout
 }
 
@@ -44,11 +44,11 @@ int Stream::timedRead()
 int Stream::timedPeek()
 {
   int c;
-  _startMillis = millis();
+  startMillis = millis();
   do {
     c = peek();
     if (c >= 0) return c;
-  } while(millis() - _startMillis < _timeout);
+  } while(millis() - startMillis < receiveTimeout);
   return -1;     // -1 indicates timeout
 }
 
@@ -71,7 +71,7 @@ int Stream::peekNextDigit()
 
 void Stream::setTimeout(unsigned long timeout)  // sets the maximum number of milliseconds to wait
 {
-  _timeout = timeout;
+  receiveTimeout = timeout;
 }
 
 // find returns true if the target string is found
@@ -84,7 +84,7 @@ bool  Stream::find(char *target)
 // returns true if target string is found, false if timed out
 bool Stream::find(char *target, size_t length)
 {
-  return findUntil(target, length, NULL, 0);
+  return findUntil(target, length, nullptr, 0);
 }
 
 // as find but search ends if the terminator string is found

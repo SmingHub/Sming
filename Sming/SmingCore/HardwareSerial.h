@@ -390,11 +390,11 @@ public:
 	/**
 	 * @brief Returns the location of the searched character
 	 * @param char c - character to search for
-	 * @retval size_t -1 if not found 0 or positive number otherwise
+	 * @retval int -1 if not found 0 or positive number otherwise
 	 */
-	virtual size_t indexOf(char c)
+	virtual int indexOf(char c)
 	{
-		return static_cast<size_t>(uart_rx_find(uart, c));
+		return uart_rx_find(uart, c);
 	}
 
 	/**
