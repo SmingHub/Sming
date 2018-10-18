@@ -70,7 +70,7 @@ static uart_t* isrUart1;
 /** @brief disable interrupts and return current interrupt state
  *  @retval state non-zero if any UART interrupts were active
  */
-static uint8_t uart_disable_interrupts()
+__forceinline static uint8_t uart_disable_interrupts()
 {
 	ETS_UART_INTR_DISABLE();
 	return isrMask;
@@ -78,7 +78,7 @@ static uint8_t uart_disable_interrupts()
 
 /** @brief re-enable interrupts after calling uart_disable_interrupts()
  */
-static void uart_restore_interrupts()
+__forceinline static void uart_restore_interrupts()
 {
 	if(isrMask)
 		ETS_UART_INTR_ENABLE();
@@ -181,7 +181,7 @@ size_t uart_read(uart_t* uart, void* buffer, size_t size)
 		buf[read++] = USF(uart->uart_nr);
 
 	// FIFO full may have been disabled if buffer overflowed, re-enabled it now
-	USIE(uart->uart_nr) |= _BV(UIFF);
+	USIE(uart->uart_nr) |= _BV(UIFF) | _BV(UITO);
 
 	return read;
 }
@@ -251,8 +251,8 @@ static void IRAM_ATTR _uart_isr(uint8_t uart_nr, uart_t* uart)
 		 * If the FIFO is full and we didn't read any of the data then need to mask the interrupt out or it'll recur.
 		 * The interrupt gets re-enabled by a call to uart_read() or uart_flush()
 		 */
-		if (read == 0 && bitRead(usis, UIFF))
-			USIE(uart_nr) &= ~_BV(UIFF);
+		if (read == 0)
+			USIE(uart_nr) &= ~(_BV(UIFF) | _BV(UITO));
 	}
 
 
