@@ -44,7 +44,9 @@ extern "C" {
 
 #define UART0    0
 #define UART1    1
-#define UART_NO -1
+#define UART_NO -1	///< No UART specified
+#define UART_COUNT 2	///< Number of UARTs on the system
+
 
 // Options for `config` argument of uart_init
 #define UART_NB_BIT_MASK      0B00001100
@@ -334,6 +336,12 @@ void IRAM_ATTR uart_stop_isr(uart_t* uart);
  *  @param uart_nr
  */
 void IRAM_ATTR uart_detach(int uart_nr);
+
+/** @brief detach all UART interrupt service routines
+ *  @note call at startup to put all UARTs into a known state
+ */
+void uart_detach_all();
+
 
 #if defined (__cplusplus)
 } // extern "C"

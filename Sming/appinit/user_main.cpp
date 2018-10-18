@@ -23,11 +23,11 @@ extern "C" void  __attribute__((weak)) user_init(void)
 	// We want high resolution timing - see HardwareTimer class
 	system_timer_reinit();
 
-	// Initialise both UARTs to a known state
-	uart_detach(UART0);
-	uart_detach(UART1);
-	uart_set_baudrate_reg(UART0, SERIAL_BAUD_RATE);
-	uart_set_baudrate_reg(UART1, SERIAL_BAUD_RATE);
+	// Initialise UARTs to a known state
+	uart_detach_all();
+	for(unsigned i = 0; i < UART_COUNT; ++i) {
+		uart_set_baudrate_reg(i, SERIAL_BAUD_RATE);
+	}
 
 	cpp_core_initialize();
 	System.initialize();

@@ -62,10 +62,14 @@ static int s_uart_debug_nr = UART0;
 // Keep track of interrupt enable state for each UART
 static uint8_t isrMask;
 // Keep a reference to all created UARTS - required because they share an ISR
-static uart_t* isrUart0;
-static uart_t* isrUart1;
+static uart_t* uartInstances[UART_COUNT];
 
 #define UART_ISR_ENABLED(nr) (isrMask & _BV(nr))
+
+uart_t* IRAM_ATTR uart_get_uart(uint8_t uart_nr)
+{
+	return (uart_nr < UART_COUNT) ? uartInstances[uart_nr] : nullptr;
+}
 
 /** @brief disable interrupts and return current interrupt state
  *  @retval state non-zero if any UART interrupts were active
@@ -205,7 +209,7 @@ size_t uart_rx_available(uart_t* uart)
  * @param uart_nr identifies which UART to check
  * @param uart the allocated uart structure, which may be NULL if port hasn't been setup
  */
-static void IRAM_ATTR _uart_isr(uint8_t uart_nr, uart_t* uart)
+static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 {
 	uint32_t usis = USIS(uart_nr);
 
@@ -291,21 +295,14 @@ static void IRAM_ATTR _uart_isr(uint8_t uart_nr, uart_t* uart)
  */
 static void IRAM_ATTR uart_isr(void* arg)
 {
-	_uart_isr(UART0, isrUart0);
-	_uart_isr(UART1, isrUart1);
+	handle_uart_interrupt(UART0, uartInstances[UART0]);
+	handle_uart_interrupt(UART1, uartInstances[UART1]);
 }
 
 
 void uart_start_isr(uart_t* uart)
 {
-	if (!uart)
-		return;
-
-	if (uart->uart_nr == UART0)
-		isrUart0 = uart;
-	else if (uart->uart_nr == UART1)
-		isrUart1 = uart;
-	else
+	if (!uart || uart->uart_nr >= UART_COUNT)
 		return;
 
 	uint32_t usc1 = 0;
@@ -465,6 +462,10 @@ uint32_t uart_set_baudrate(uart_t* uart, uint32_t baud_rate)
 
 uart_t* uart_init_ex(const uart_config& cfg)
 {
+	// Already initialised?
+	if (uart_get_uart(cfg.uart_nr))
+		return nullptr;
+
 	auto uart = new uart_t;
 	if(!uart)
 		return nullptr;
@@ -545,6 +546,7 @@ uart_t* uart_init_ex(const uart_config& cfg)
 	uart_set_baudrate(uart, cfg.baudrate);
 	USC0(cfg.uart_nr) = cfg.config;
 	uart_flush(uart);
+	uartInstances[cfg.uart_nr] = uart;
 	uart_start_isr(uart);
 
 	return uart;
@@ -556,6 +558,9 @@ void uart_uninit(uart_t* uart)
 		return;
 
 	uart_stop_isr(uart);
+	// If debug output being sent to this UART, disable it
+	if (uart->uart_nr == s_uart_debug_nr)
+		uart_set_debug(UART_NO);
 
 	switch(uart->rx_pin) {
 	case 3:
@@ -712,28 +717,28 @@ void uart_set_pins(uart_t* uart, int tx, int rx)
 	}
 }
 
+
+static void uart_debug_putc(char c)
+{
+	uart_t* uart = uart_get_uart(s_uart_debug_nr);
+	if (uart)
+		uart_write_char(uart, c);
+}
+
 void uart_set_debug(int uart_nr)
 {
-	s_uart_debug_nr = uart_nr;
+	uart_t* uart = uart_get_uart(uart_nr);
 
-	if (s_uart_debug_nr == UART0) {
-		system_set_os_print(true);
-		ets_install_putc1([](char c) {
-			uart_write_char(isrUart0, c);
-		});
-	}
-	else if (s_uart_debug_nr == UART1) {
-		system_set_os_print(true);
-		ets_install_putc1([](char c) {
-			uart_write_char(isrUart1, c);
-		});
+	if (uart == nullptr) {
+		s_uart_debug_nr = UART_NO;
+		system_set_os_print(false);
 	}
 	else {
-		system_set_os_print(false);
-		ets_install_putc1([](char c) {
-			// discard ets_xxx output
-		});
+		s_uart_debug_nr = uart_nr;
+		system_set_os_print(true);
 	}
+
+	ets_install_putc1(uart_debug_putc);
 }
 
 int uart_get_debug()
@@ -741,40 +746,23 @@ int uart_get_debug()
 	return s_uart_debug_nr;
 }
 
-
 void IRAM_ATTR uart_detach(int uart_nr)
 {
-	if (uart_nr == UART0)
-		isrUart0 = nullptr;
-	else if (uart_nr == UART1)
-		isrUart1 = nullptr;
-	else
-		return;
-
-	uint8_t newmask = isrMask & ~_BV(uart_nr);
-	if(newmask == isrMask)
-		return;
-
-	if(newmask == 0) {
-		ETS_UART_INTR_DISABLE();
-		ETS_UART_INTR_ATTACH(nullptr, nullptr);
-	}
-	isrMask = newmask;
-
+	uart_disable_interrupts();
+	isrMask &= ~_BV(uart_nr);
 	USC1(uart_nr) = 0;
 	USIC(uart_nr) = 0xffff;
 	USIE(uart_nr) = 0;
+	uart_restore_interrupts();
 }
 
-
-uart_t* IRAM_ATTR uart_get_uart(uint8_t uart_nr)
+void uart_detach_all()
 {
-	switch(uart_nr) {
-	case UART0:
-		return isrUart0;
-	case UART1:
-		return isrUart1;
-	default:
-		return nullptr;
+	uart_disable_interrupts();
+	for (unsigned uart_nr = 0; uart_nr < UART_COUNT; ++uart_nr) {
+		USC1(uart_nr) = 0;
+		USIC(uart_nr) = 0xffff;
+		USIE(uart_nr) = 0;
 	}
+	isrMask = 0;
 }
