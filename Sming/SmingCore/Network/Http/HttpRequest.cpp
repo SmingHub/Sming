@@ -159,15 +159,15 @@ String HttpRequest::getQueryParameter(const String& parameterName, const String&
 
 String HttpRequest::getBody()
 {
-	if(stream == nullptr) {
+	if(bodyStream == nullptr) {
 		return "";
 	}
 
 	String ret;
-	if(stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
-		MemoryDataStream* memory = (MemoryDataStream*)stream;
+	if(bodyStream->available() != -1 && bodyStream->getStreamType() == eSST_Memory) {
+		MemoryDataStream* memory = (MemoryDataStream*)bodyStream;
 		char buf[1024];
-		while(stream->available() > 0) {
+		while(bodyStream->available() > 0) {
 			int available = memory->readMemoryBlock(buf, 1024);
 			memory->seek(available);
 			ret += String(buf, available);
@@ -181,7 +181,7 @@ String HttpRequest::getBody()
 
 ReadWriteStream* HttpRequest::getBodyStream()
 {
-	return stream;
+	return bodyStream;
 }
 
 HttpRequest* HttpRequest::setResponseStream(ReadWriteStream* stream)
@@ -240,13 +240,13 @@ HttpRequest* HttpRequest::setBody(uint8_t* rawData, size_t length)
 
 HttpRequest* HttpRequest::setBody(ReadWriteStream* stream)
 {
-	if(this->stream != nullptr) {
+	if(this->bodyStream != nullptr) {
 		debug_e("HttpRequest::setBody: Discarding already set stream!");
-		delete this->stream;
-		this->stream = nullptr;
+		delete this->bodyStream;
+		this->bodyStream = nullptr;
 	}
 
-	this->stream = stream;
+	this->bodyStream = stream;
 	return this;
 }
 
@@ -271,10 +271,10 @@ HttpRequest* HttpRequest::onRequestComplete(RequestCompletedDelegate delegateFun
 void HttpRequest::reset()
 {
 	delete queryParams;
-	delete stream;
+	delete bodyStream;
 	delete responseStream;
 	queryParams = nullptr;
-	stream = nullptr;
+	bodyStream = nullptr;
 	responseStream = nullptr;
 
 	postParams.clear();
@@ -307,8 +307,8 @@ String HttpRequest::toString()
 		content += headers[i];
 	}
 
-	if(stream != nullptr && stream->available() >= 0) {
-		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(stream->available()));
+	if(bodyStream != nullptr && bodyStream->available() >= 0) {
+		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(bodyStream->available()));
 	}
 
 	return content;
