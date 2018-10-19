@@ -13,16 +13,10 @@
 
 /*
  * @todo Revise this so stream produces encoded output line-by-line, rather than all at once.
+ * Can use StreamTransformer to do this.
  */
 
 UrlencodedOutputStream::UrlencodedOutputStream(const HttpParams& params)
 {
-	for(unsigned i = 0; i < params.count(); i++) {
-		if(i > 0)
-			stream.write('&');
-
-		stream.print(uri_escape(params.keyAt(i)));
-		stream.print('=');
-		stream.print(uri_escape(params.valueAt(i)));
-	}
+	stream.print(params);
 }

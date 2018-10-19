@@ -47,6 +47,4 @@ public:
 	}
 };
 
-typedef HashMap<String, String> HttpParams;
-
 #endif /* _SMING_CORE_DATA_STRUCTURES_H_ */

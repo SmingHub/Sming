@@ -21,6 +21,7 @@
 #include "Data/Stream/DataSourceStream.h"
 #include "Data/Stream/MultipartStream.h"
 #include "Network/Http/HttpHeaders.h"
+#include "HttpParams.h"
 
 class HttpClient;
 class HttpServerConnection;
