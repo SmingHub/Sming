@@ -101,7 +101,8 @@ char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len)
 	/* escape these values ~!#$%^&(){}[]=:,;?'"\
 	 * make sure there is room in dest for a '\0' */
 	for(;src_len>0 && dest_len>1;src++,src_len--) {
-		if(must_escape(*src)) {
+		char c = *src;
+		if(must_escape(c)) {
 			/* check that there is room for "%XX\0" in dest */
 			if(dest_len<=3) {
 				if(ret_is_allocated)
@@ -113,6 +114,9 @@ char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len)
 			dest[2] = hexchar(*src & 0x0f);
 			dest+=3;
 			dest_len-=3;
+		} else if (c == ' ') {
+			*dest++ = '+';
+			dest_len--;
 		} else {
 			*(dest++)=*src;
 			dest_len--;
@@ -232,23 +236,34 @@ void html_escape(char *dest, size_t len, const char *s) {
 
 String uri_escape(const char *src, int src_len)
 {
-	char* p = uri_escape(nullptr, 0, src, src_len);
-	String s(p);
-	if (p)
-		free(p);
+	String s;
+	if (src && src_len) {
+		unsigned dst_len = uri_escape_len(src, src_len);
+		if (s.setLength(dst_len))
+			uri_escape(s.begin(), s.length() + 1, src, src_len); // +1 for nul terminator
+	}
 	return s;
 }
 
-int uri_unescape_inplace(String& s)
+char* uri_unescape_inplace(char *str)
 {
-	// If string is invalid, ensure result remains invalid
-	if (!s)
-		return 0;
+	if (str) {
+		auto len = strlen(str);
+		uri_unescape(str, len + 1, str, len); // +1 for nul terminator
+	}
+	return str;
+}
 
-	char* p = s.begin();
-	uri_unescape(p, s.length(), p, s.length());
-	s.setLength(strlen(p));
-	return s.length();
+String& uri_unescape_inplace(String& str)
+{
+	if (str) {
+		char* p = str.begin();
+		uri_unescape(p, str.length() + 1, p, str.length());	// +1 for nul terminator
+		auto len = strlen(p);
+		assert(len <= str.length());
+		str.setLength(len);
+	}
+	return str;
 }
 
 

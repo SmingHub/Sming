@@ -12,16 +12,14 @@
 #define _SMING_CORE_DATA_URL_ENCODDED_OUTPUT_STREAM_H_
 
 #include "MemoryDataStream.h"
-#include "WHashMap.h"
+#include "Network/Http/HttpParams.h"
 
 /**
  * @brief      UrlEncoded Stream
  * @ingroup    stream data
  *
  *  @{
-*/
-
-typedef HashMap<String, String> HttpParams;
+ */
 
 class UrlencodedOutputStream : public ReadWriteStream
 {
