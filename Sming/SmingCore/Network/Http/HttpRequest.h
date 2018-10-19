@@ -169,7 +169,7 @@ protected:
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
 
-	ReadWriteStream* stream = nullptr;
+	ReadWriteStream* bodyStream = nullptr;
 	ReadWriteStream* responseStream = nullptr;
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
