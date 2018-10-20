@@ -26,7 +26,7 @@
 #define F_CRYSTAL 40000000
 #endif
 
-static const uint8_t ICACHE_FLASH_ATTR phyInitData[128] =
+static const uint8_t phyInitData[128] =
 {
     [0] = 5,  // Reserved, do not change
     [1] = 8,  // Reserved, do not change
