@@ -18,7 +18,7 @@ public:
 	}
 
 private:
-	HardwareSerial* serial;
+	HardwareSerial* serial = nullptr;
 	unsigned charReceived = 0;
 	unsigned numCallback = 0;
 	bool useRxFlag = true;
