@@ -49,9 +49,6 @@ public:
 	 */
 	virtual size_t write(const uint8_t* buffer, size_t size);
 
-	/** @todo is this behaviour consistent with DataSourceStream ?
-	 * It might be desirable to return true when _stream is null.
-	 */
 	virtual bool isFinished()
 	{
 		return false;
