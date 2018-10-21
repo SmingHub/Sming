@@ -22,14 +22,14 @@
 
 #include <user_config.h>
 
-#ifndef F_CRYSTAL
-#define F_CRYSTAL 40000000
+#ifndef ICACHE_RAM_ATTR
+#define ICACHE_RAM_ATTR __attribute__((section(".iram.text")))
 #endif
 
-static const uint8_t phyInitData[128] =
+static const uint8_t ICACHE_FLASH_ATTR phyInitData[128] =
 {
     [0] = 5,  // Reserved, do not change
-    [1] = 8,  // Reserved, do not change
+    [1] = 0,  // Reserved, do not change
     [2] = 4,  // Reserved, do not change
     [3] = 2,  // Reserved, do not change
     [4] = 5,  // Reserved, do not change
@@ -66,11 +66,11 @@ static const uint8_t phyInitData[128] =
     [32] = 0xf8, // Reserved, do not change
     [33] = 0xf8, // Reserved, do not change
 
-    [34] = 78, // target_power_qdb_0, target power is 78/4=19.5dbm
-    [35] = 74, // target_power_qdb_1, target power is 74/4=18.5dbm
-    [36] = 70, // target_power_qdb_2, target power is 70/4=17.5dbm
-    [37] = 64, // target_power_qdb_3, target power is 64/4=16dbm
-    [38] = 60, // target_power_qdb_4, target power is 60/4=15dbm
+    [34] = 0x52, // target_power_qdb_0, target power is 78/4=19.5dbm
+    [35] = 0x4e, // target_power_qdb_1, target power is 74/4=18.5dbm
+    [36] = 0x4a, // target_power_qdb_2, target power is 70/4=17.5dbm
+    [37] = 0x44, // target_power_qdb_3, target power is 64/4=16dbm
+    [38] = 0x40, // target_power_qdb_4, target power is 60/4=15dbm
     [39] = 56, // target_power_qdb_5, target power is 56/4=14dbm
 
     [40] = 0, // target_power_index_mcs0
@@ -86,11 +86,7 @@ static const uint8_t phyInitData[128] =
     // 0: 40MHz
     // 1: 26MHz
     // 2: 24MHz
-    #if F_CRYSTAL == 40000000
-      [48] = 0,
-    #else
-      [48] = 1,
-    #endif
+    [48] = 1,
 
     // sdio_configure
     // 0: Auto by pin strapping
@@ -229,7 +225,7 @@ static const uint8_t phyInitData[128] =
     // 3: auto measure frequency offset and correct it,  bbpll is 160M, it only can correct + frequency offset.
     // 5: use 113 byte force_freq_offset to correct frequency offset, bbpll is 168M, it can correct + and - frequency offset.
     // 7: use 113 byte force_freq_offset to correct frequency offset, bbpll is 160M , it only can correct + frequency offset.
-    [112] = 0,
+    [112] = 3,
 
     // force_freq_offset
     // signed, unit is 8kHz
@@ -243,21 +239,17 @@ static const uint8_t phyInitData[128] =
     [114] = 1
 };
 
-#ifndef F_CRYSTAL
-#define F_CRYSTAL 40000000
-#endif
-
 extern int __real_register_chipv6_phy(uint8_t* initData);
 
-int __attribute__((weak)) get_adc_mode()
+int ICACHE_RAM_ATTR __attribute__((weak)) get_adc_mode()
 {
 	return 33;
 }
 
-int ICACHE_FLASH_ATTR __attribute__((weak)) custom_register_chipv6_phy(uint8_t* initData)
+int ICACHE_RAM_ATTR __attribute__((weak)) custom_register_chipv6_phy(uint8_t* initData)
 {
 	if (initData != NULL) {
-	  memcpy(initData, phyInitData, sizeof(phyInitData));
+	  memcpy_P(initData, phyInitData, sizeof(phyInitData));
 	  initData[107] = get_adc_mode();
 	}
 	return __real_register_chipv6_phy(initData);
