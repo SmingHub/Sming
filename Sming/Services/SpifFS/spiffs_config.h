@@ -11,7 +11,7 @@
 // ----------- 8< ------------
 #ifdef __ets__
 	#include <user_config.h>
-	#include "../system/flashmem.h"
+	#include "flashmem.h"
 #else
 	#include "spiffy_host.h"
 #endif /* __ets__ */
