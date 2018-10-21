@@ -30,8 +30,8 @@
 class Stream : public Print
 {
   protected:
-    unsigned long _timeout;      // number of milliseconds to wait for the next char before aborting timed read
-    unsigned long _startMillis;  // used for timeout measurement
+    unsigned long receiveTimeout = 1000;      // number of milliseconds to wait for the next char before aborting timed read
+    unsigned long startMillis = 0;  // used for timeout measurement
     int timedRead();    // private method to read stream with timeout
     int timedPeek();    // private method to peek stream with timeout
     int peekNextDigit(); // returns the next numeric digit in the stream or -1 if timeout
@@ -43,7 +43,8 @@ class Stream : public Print
     virtual int read() = 0;
     virtual void flush() = 0;
   
-    Stream() {_timeout=1000; _startMillis=0;}
+    Stream() { }
+
   // parsing methods
   
     void setTimeout(unsigned long timeout);  // sets maximum milliseconds to wait for stream data, default is 1 second
@@ -80,9 +81,9 @@ class Stream : public Print
     /*
     * @brief Returns the location of the searched character
     * @param char c - character to search for
-    * @retval size_t -1 if not found 0 or positive number otherwise
+    * @retval int -1 if not found 0 or positive number otherwise
     */
-    virtual size_t indexOf(char c) {
+    virtual int indexOf(char c) {
     	return -1;
     }
   

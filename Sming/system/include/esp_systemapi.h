@@ -10,8 +10,6 @@
 #include <user_interface.h>
 #include <spi_flash.h>
 #include <espconn.h>
-#include "espinc/uart.h"
-#include "espinc/uart_register.h"
 #include "espinc/spi_register.h"
 
 #include <stdarg.h>

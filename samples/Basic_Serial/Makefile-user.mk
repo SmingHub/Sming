@@ -34,6 +34,15 @@
 # SPI_MODE = dio
 
 ## SPIFFS options
-DISABLE_SPIFFS = 1
-# SPIFF_FILES = files
+# DISABLE_SPIFFS = 1
+SPIFF_FILES = files
+SPIFF_SIZE      ?= 65536
 
+all_plus_files: files files/Readme.md all
+
+files:
+	mkdir files
+
+# Large text file for demo purposes
+files/Readme.md: $(SMING_HOME)/../Readme.md
+	cp $< $@
