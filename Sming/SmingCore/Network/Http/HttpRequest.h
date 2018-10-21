@@ -87,9 +87,9 @@ public:
 		return this;
 	}
 
-	/** @deprecated this replaces existing post parameter set, which is different to
-	 * behaviour of setHeaders which only replaces specified values.
-	 * Better to use appropriate method of postParams for consistency.
+	/**
+	 * @deprecated This method is deprecated and will be removed in the coming versions.
+	 * 			   Please set postParams directly, i.e. request.postParams = params
 	 */
 	HttpRequest* setPostParameters(const HttpParams& params)
 	{
@@ -181,7 +181,7 @@ public:
 	 *
 	 * @retval HttpRequest*
 	 *
-	 * @note The response to this message will be stored in the user-provided stream.
+	 * @note The response to this request will be stored in the user-provided stream.
 	 */
 	HttpRequest* setResponseStream(ReadWriteStream* stream);
 
