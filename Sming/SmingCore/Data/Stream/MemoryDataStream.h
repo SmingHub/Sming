@@ -28,8 +28,14 @@ class MemoryDataStream : public ReadWriteStream
 public:
 	/** @brief Memory data stream base class
     */
-	MemoryDataStream();
-	virtual ~MemoryDataStream();
+	MemoryDataStream()
+	{
+	}
+
+	virtual ~MemoryDataStream()
+	{
+		free(buf);
+	}
 
 	//Use base class documentation
 	virtual StreamType getStreamType()
@@ -40,7 +46,7 @@ public:
 	/** @brief  Get a pointer to the current position
 	 *  @retval "const char*" Pointer to current cursor position within the data stream
 	 */
-	const char* getStreamPointer()
+	const char* getStreamPointer() const
 	{
 		return pos;
 	}
@@ -49,15 +55,14 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	int available();
+	int available()
+	{
+		return size - (pos - buf);
+	}
 
-	/** @brief  Write a single char to stream
-     *  @param  charToWrite Char to write to the stream
-     *  @retval size_t Quantity of chars written to stream (always 1)
-     */
-	virtual size_t write(uint8_t charToWrite);
+	using ReadWriteStream::write;
 
-	/** @brief  Write chars to stream
+	/** @brief  Write chars to end of stream
      *  @param  buffer Pointer to buffer to write to the stream
      *  @param  size Quantity of chars to write
      *  @retval size_t Quantity of chars written to stream
@@ -71,13 +76,16 @@ public:
 	virtual bool seek(int len);
 
 	//Use base class documentation
-	virtual bool isFinished();
+	virtual bool isFinished()
+	{
+		return size == (pos - buf);
+	}
 
 private:
-	char* buf;
-	char* pos;
-	int size;
-	int capacity;
+	char* buf = nullptr;
+	char* pos = nullptr;
+	int size = 0;
+	int capacity = 0;
 };
 
 /** @} */

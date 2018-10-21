@@ -85,6 +85,14 @@ public:
 		return -1;
 	}
 
+	/*
+	 * From Stream class: We don't write using this stream
+	 */
+	virtual size_t write(uint8_t charToWrite)
+	{
+		return 0;
+	}
+
 	/**
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
@@ -110,7 +118,7 @@ public:
 	 */
 	virtual String id()
 	{
-		return String();
+		return nullptr;
 	}
 };
 

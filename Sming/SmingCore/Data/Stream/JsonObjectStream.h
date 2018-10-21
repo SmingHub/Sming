@@ -22,8 +22,13 @@ class JsonObjectStream : public MemoryDataStream
 public:
 	/** @brief  Create a JSON object stream
     */
-	JsonObjectStream();
-	virtual ~JsonObjectStream();
+	JsonObjectStream() : rootNode(buffer.createObject())
+	{
+	}
+
+	virtual ~JsonObjectStream()
+	{
+	}
 
 	//Use base class documentation
 	virtual StreamType getStreamType()
@@ -34,7 +39,10 @@ public:
 	/** @brief  Get the JSON root node
      *  @retval JsonObject Reference to the root node
      */
-	JsonObject& getRoot();
+	JsonObject& getRoot()
+	{
+		return rootNode;
+	}
 
 	//Use base class documentation
 	virtual uint16_t readMemoryBlock(char* data, int bufSize);
@@ -43,12 +51,15 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	int available();
+	int available()
+	{
+		return rootNode.success() ? rootNode.measureLength() : 0;
+	}
 
 private:
 	DynamicJsonBuffer buffer;
 	JsonObject& rootNode;
-	bool send;
+	bool send = true;
 };
 
 /** @} */
