@@ -13,10 +13,12 @@ TcpClient::TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, Tc
 {
 	completed = onCompleted;
 	receive = clientReceive;
+	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
 TcpClient::TcpClient(bool autoDestruct) : TcpConnection(autoDestruct), state(eTCS_Ready)
 {
+	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
 TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend /* = NULL*/,
@@ -26,6 +28,7 @@ TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelega
 	completed = onCompleted;
 	ready = onReadyToSend;
 	receive = onReceive;
+	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
 TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive /* = NULL*/)
@@ -33,11 +36,13 @@ TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegat
 {
 	completed = onCompleted;
 	receive = onReceive;
+	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
 TcpClient::TcpClient(TcpClientDataDelegate onReceive) : TcpConnection(false), state(eTCS_Ready)
 {
 	receive = onReceive;
+	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
 TcpClient::~TcpClient()

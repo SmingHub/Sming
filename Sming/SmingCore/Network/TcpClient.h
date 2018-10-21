@@ -35,6 +35,9 @@ typedef Delegate<bool(TcpClient& client, char* data, int size)> TcpClientDataDel
 
 enum TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successful, eTCS_Failed };
 
+// By default a TCP client connection has 70 seconds timeout
+#define TCP_CLIENT_TIMEOUT 70
+
 class TcpClient : public TcpConnection
 {
 public:
