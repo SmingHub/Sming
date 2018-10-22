@@ -476,24 +476,24 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 			new MultipartStream(HttpPartProducerDelegate(&HttpConnection::multipartProducer, this));
 		request->headers[HTTP_HEADER_CONTENT_TYPE] =
 			ContentType::toString(MIME_FORM_MULTIPART) + _F("; boundary=") + mStream->getBoundary();
-		if(request->stream) {
+		if(request->bodyStream) {
 			debug_e("HttpConnection: existing stream is discarded due to POST params");
-			delete request->stream;
+			delete request->bodyStream;
 		}
-		request->stream = mStream;
+		request->bodyStream = mStream;
 	} else if(request->postParams.count()) {
 		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(request->postParams);
 		request->headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_FORM_URL_ENCODED);
-		if(request->stream) {
+		if(request->bodyStream) {
 			debug_e("HttpConnection: existing stream is discarded due to POST params");
-			delete request->stream;
+			delete request->bodyStream;
 		}
-		request->stream = uStream;
+		request->bodyStream = uStream;
 	} /* if (request->postParams.count()) */
 
-	if(request->stream != nullptr) {
-		if(request->stream->available() > -1) {
-			request->headers[HTTP_HEADER_CONTENT_LENGTH] = String(request->stream->available());
+	if(request->bodyStream != nullptr) {
+		if(request->bodyStream->available() > -1) {
+			request->headers[HTTP_HEADER_CONTENT_LENGTH] = String(request->bodyStream->available());
 		} else {
 			request->headers.remove(HTTP_HEADER_CONTENT_LENGTH);
 		}
@@ -515,17 +515,17 @@ bool HttpConnection::sendRequestBody(HttpRequest* request)
 	if(state == eHCS_StartBody) {
 		state = eHCS_SendingBody;
 
-		if(request->stream == nullptr) {
+		if(request->bodyStream == nullptr) {
 			return true;
 		}
 
 		delete stream;
 		if(request->headers[HTTP_HEADER_TRANSFER_ENCODING] == _F("chunked")) {
-			stream = new ChunkedStream(request->stream);
+			stream = new ChunkedStream(request->bodyStream);
 		} else {
-			stream = request->stream; // avoid intermediate buffers
+			stream = request->bodyStream; // avoid intermediate buffers
 		}
-		request->stream = nullptr;
+		request->bodyStream = nullptr;
 		return false;
 	}
 
@@ -534,7 +534,7 @@ bool HttpConnection::sendRequestBody(HttpRequest* request)
 		return true;
 	}
 
-	if(request->stream == nullptr && !stream->isFinished()) {
+	if(request->bodyStream == nullptr && !stream->isFinished()) {
 		return false;
 	}
 
