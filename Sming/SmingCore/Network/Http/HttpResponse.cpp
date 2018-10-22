@@ -14,6 +14,7 @@
 #include "../WebConstants.h"
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/JsonObjectStream.h"
+#include "Data/Stream/FileStream.h"
 
 HttpResponse::~HttpResponse()
 {
@@ -116,7 +117,7 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 	return true;
 }
 
-bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
+bool HttpResponse::sendTemplate(TemplateStream* newTemplateInstance)
 {
 	if(stream != nullptr) {
 		SYSTEM_ERROR("Stream already created");
@@ -125,7 +126,7 @@ bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
 	}
 
 	stream = newTemplateInstance;
-	if(!newTemplateInstance->fileExist()) {
+	if(!newTemplateInstance->isValid()) {
 		code = HTTP_STATUS_NOT_FOUND;
 		delete stream;
 		stream = nullptr;
@@ -133,7 +134,7 @@ bool HttpResponse::sendTemplate(TemplateFileStream* newTemplateInstance)
 	}
 
 	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
-		String mime = ContentType::fromFullFileName(newTemplateInstance->fileName());
+		String mime = ContentType::fromFullFileName(newTemplateInstance->getName());
 		if(mime)
 			setContentType(mime);
 	}

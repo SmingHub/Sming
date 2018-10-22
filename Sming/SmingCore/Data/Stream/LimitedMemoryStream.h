@@ -25,7 +25,7 @@ public:
 	virtual ~LimitedMemoryStream();
 
 	//Use base class documentation
-	virtual StreamType getStreamType();
+	virtual StreamType getStreamType() const;
 
 	/**
 	 * @brief Return the total length of the stream

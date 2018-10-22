@@ -186,13 +186,13 @@ HttpPartResult HttpConnection::multipartProducer()
 
 	if(outgoingRequest->files.count()) {
 		String name = outgoingRequest->files.keyAt(0);
-		FileStream* file = outgoingRequest->files[name];
+		auto file = outgoingRequest->files[name];
 		result.stream = file;
 
 		HttpHeaders* headers = new HttpHeaders();
 		(*headers)[HTTP_HEADER_CONTENT_DISPOSITION] =
-			F("form-data; name=\"") + name + F("\"; filename=\"") + file->fileName() + '"';
-		(*headers)[HTTP_HEADER_CONTENT_TYPE] = ContentType::fromFullFileName(file->fileName());
+			F("form-data; name=\"") + name + F("\"; filename=\"") + file->getName() + '"';
+		(*headers)[HTTP_HEADER_CONTENT_TYPE] = ContentType::fromFullFileName(file->getName());
 		result.headers = headers;
 
 		outgoingRequest->files.remove(name);

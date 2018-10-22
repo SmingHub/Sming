@@ -36,7 +36,7 @@ public:
 	virtual ~MultipartStream();
 
 	//Use base class documentation
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
 		// TODO: fix this...
 		return stream->getStreamType();

@@ -30,7 +30,7 @@ public:
 
 	virtual bool attach(const String& fileName, FileOpenFlags openFlags);
 	//Use base class documentation
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
 		return eSST_File;
 	}
@@ -47,8 +47,17 @@ public:
 	//Use base class documentation
 	virtual bool isFinished();
 
-	String fileName(); ///< Filename of file stream is attached to
-	bool fileExist();  ///< True if file exists
+	String fileName() const; ///< Filename of file stream is attached to
+	bool fileExist() const;  ///< True if file exists
+	virtual String getName() const
+	{
+		return fileName();
+	}
+
+	virtual bool isValid() const
+	{
+		return fileExist();
+	}
 
 	/** @brief  Get the offset of cursor from beginning of data
      *  @retval int Cursor offset
@@ -67,7 +76,7 @@ public:
 		return size;
 	}
 
-	virtual String id();
+	virtual String id() const;
 
 private:
 	file_t handle;

@@ -65,7 +65,7 @@ MailMessage& MailMessage::addAttachment(FileStream* stream)
 		return *this;
 	}
 
-	String filename = stream->fileName();
+	String filename = stream->getName();
 	String mime = ContentType::fromFullFileName(filename);
 
 	return addAttachment(stream, mime, filename);

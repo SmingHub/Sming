@@ -5,10 +5,10 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#ifndef _SMING_CORE_DATA_TEMPLATE_FILE_STREAM_H_
-#define _SMING_CORE_DATA_TEMPLATE_FILE_STREAM_H_
+#ifndef _SMING_CORE_DATA_TEMPLATE_STREAM_H_
+#define _SMING_CORE_DATA_TEMPLATE_STREAM_H_
 
-#include "FileStream.h"
+#include "ReadWriteStream.h"
 #include "WHashMap.h"
 #include "WString.h"
 
@@ -37,20 +37,27 @@ enum TemplateExpandState {
  *  @{
  */
 
-/// Template file stream class
-class TemplateFileStream : public FileStream
+class TemplateStream : public ReadWriteStream
 {
 public:
-	/** @brief Create a template file stream
-     *  @param  templateFileName Template filename
+	/** @brief Create a template stream
+     *  @param stream source of template data
      */
-	TemplateFileStream(const String& templateFileName);
-	virtual ~TemplateFileStream();
+	TemplateStream(IDataSourceStream* stream) : stream(stream)
+	{
+		// Pre-allocate string to maximum length
+		varName.reserve(TEMPLATE_MAX_VAR_NAME_LEN);
+	}
+
+	virtual ~TemplateStream()
+	{
+		delete stream;
+	}
 
 	//Use base class documentation
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
-		return eSST_TemplateFile;
+		return stream ? eSST_Template : eSST_Invalid;
 	}
 
 	//Use base class documentation
@@ -59,17 +66,28 @@ public:
 	//Use base class documentation
 	virtual bool seek(int len);
 
+	virtual bool isFinished()
+	{
+		return stream ? stream->isFinished() : true;
+	}
+
 	/** @brief  Set value of a variable in the template file
      *  @param  name Name of variable
      *  @param  value Value to assign to the variable
      *  @note   Sets and existing variable or adds a new variable if variable does not already exist
      */
-	void setVar(String name, String value);
+	void setVar(const String& name, const String& value)
+	{
+		templateData[name] = value;
+	}
 
 	/** @brief  Set multiple variables in the template file
      *  @param  vars Template Variables
      */
-	void setVars(const TemplateVariables& vars);
+	void setVars(const TemplateVariables& vars)
+	{
+		templateData.setMultiple(vars);
+	}
 
 	/** @brief  Get the template variables
      *  @retval TemplateVariables Reference to the template variables
@@ -79,23 +97,36 @@ public:
 		return templateData;
 	}
 
+	virtual String getName() const
+	{
+		return stream ? stream->getName() : nullptr;
+	}
+
 	/**
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
+	 *
+	 * We cannot reliably determine available size so use default method which returns -1.
+	 *
+	 * 	int available()
 	 */
-	int available()
+
+	/* @deprecated to be removed once class is migrated to IDataSourceStream base */
+	virtual size_t write(const uint8_t* buffer, size_t size)
 	{
-		return -1;
+		return 0;
 	}
 
 private:
+	IDataSourceStream* stream = nullptr;
 	TemplateVariables templateData;
-	TemplateExpandState state;
+	TemplateExpandState state = eTES_Wait;
 	String varName;
-	int skipBlockSize = 0;
-	int varDataPos = 0;
-	int varWaitSize = 0;
+	size_t skipBlockSize = 0;
+	size_t varDataPos = 0;
+	size_t varWaitSize = 0;
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_TEMPLATE_FILE_STREAM_H_ */
+
+#endif /* _SMING_CORE_DATA_TEMPLATESTREAM_H_ */

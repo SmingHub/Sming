@@ -106,11 +106,11 @@ public:
 	/**
 	 * @brief Sets a file to be sent
 	 * @param const String& formElementName the name of the element in the form
-	 * @param FileStream* stream - pointer to the file stream
+	 * @param ReadWriteStream* stream - pointer to the stream (doesn't have to be a FileStream)
 	 *
 	 * @return HttpRequest*
 	 */
-	HttpRequest* setFile(const String& formElementName, FileStream* stream)
+	HttpRequest* setFile(const String& formElementName, ReadWriteStream* stream)
 	{
 		if(stream) {
 			files[formElementName] = stream;
@@ -290,7 +290,7 @@ protected:
 #endif
 
 private:
-	HashMap<String, FileStream*> files;
+	HashMap<String, ReadWriteStream*> files;
 
 	HttpParams* queryParams = nullptr; // << deprecated
 };

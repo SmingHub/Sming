@@ -5,60 +5,57 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "TemplateFileStream.h"
+#include "TemplateStream.h"
 
-TemplateFileStream::TemplateFileStream(const String& templateFileName) : FileStream(templateFileName)
+uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 {
-	state = eTES_Wait;
-}
+	debug_d("TemplateStream::read(%d), state = %d", bufSize, state);
 
-TemplateFileStream::~TemplateFileStream()
-{
-}
-
-uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
-{
-	debug_d("READ Template (%d)", state);
-	int available;
+	if(!data || bufSize <= 0)
+		return 0;
 
 	if(state == eTES_StartVar) {
-		if(templateData.contains(varName)) {
-			// Return variable value
-			debug_d("StartVar %s", varName.c_str());
-			available = templateData[varName].length();
-			memcpy(data, (char*)templateData[varName].c_str(), available);
-			seek(skipBlockSize);
-			varDataPos = 0;
-			state = eTES_SendingVar;
-			return available;
-		} else {
-			debug_d("var %s not found", varName.c_str());
+		int i = templateData.indexOf(varName);
+		debug_d("StartVar '%s' %sfound", varName.c_str(), i < 0 ? "NOT " : "");
+		if(i < 0) {
 			state = eTES_Wait;
-			int len = FileStream::readMemoryBlock(data, bufSize);
-			return std::min(len, skipBlockSize);
+			return stream->readMemoryBlock(data, std::min(size_t(bufSize), skipBlockSize));
 		}
-	} else if(state == eTES_SendingVar) {
-		String* val = &templateData[varName];
-		if(varDataPos < val->length()) {
+
+		// Return variable value
+		const String& value = templateData.valueAt(i);
+		if(bufSize < value.length()) {
+			debug_e("TemplateStream, buffer too small");
+			return 0;
+		}
+		memcpy(data, value.c_str(), value.length());
+		stream->seek(skipBlockSize);
+		varDataPos = 0;
+		state = eTES_SendingVar;
+		return value.length();
+	}
+
+	if(state == eTES_SendingVar) {
+		const String& val = templateData[varName];
+		if(varDataPos < val.length()) {
 			debug_d("continue TRANSFER variable value (not completed)");
-			available = val->length() - varDataPos;
-			memcpy(data, ((char*)val->c_str()) + varDataPos, available);
+			size_t available = val.length() - varDataPos;
+			memcpy(data, val.c_str() + varDataPos, available);
 			return available;
 		} else {
-			debug_d("continue to plaint text");
+			debug_d("continue to plain text");
 			state = eTES_Wait;
 		}
 	}
 
-	int len = FileStream::readMemoryBlock(data, bufSize);
-	char* tpl = data;
-	if(tpl && len > 0) {
-		char* end = tpl + len;
-		char* cur = (char*)memchr(tpl, '{', len);
-		char* lastFound = cur;
-		while(cur != NULL) {
+	unsigned datalen = stream->readMemoryBlock(data, bufSize);
+	if(datalen != 0) {
+		auto end = data + datalen;
+		auto cur = (const char*)memchr(data, '{', datalen);
+		auto lastFound = cur;
+		while(cur != nullptr) {
 			lastFound = cur;
-			char* p = cur + 1;
+			const char* p = cur + 1;
 			for(; p < end; p++) {
 				if(isspace(*p))
 					break; // Not a var name
@@ -68,40 +65,51 @@ uint16_t TemplateFileStream::readMemoryBlock(char* data, int bufSize)
 					break; // New start..
 
 				if(*p == '}') {
-					int block = p - cur + 1;
-					char varname[TEMPLATE_MAX_VAR_NAME_LEN + 1] = {0};
-					memcpy(varname, cur + 1, p - cur - 1); // name without { and }
-					varName = varname;
-					state = eTES_Found;
-					varWaitSize = cur - tpl;
-					debug_d("found var: %s, at %d (%d) - %d, send size %d", varName.c_str(), varWaitSize + 1,
-							varWaitSize + getPos(), p - tpl, varWaitSize);
-					skipBlockSize = block;
-					if(varWaitSize == 0)
-						state = eTES_StartVar;
-					return varWaitSize; // return only plain text from template without our variable
+					varName.setLength(p - cur - 1);
+					memcpy(varName.begin(), cur + 1, varName.length()); // name without { and }
+					skipBlockSize = p - cur + 1;
+					varWaitSize = cur - data;
+					state = varWaitSize ? eTES_Found : eTES_StartVar;
+					debug_d("found var '%s' at %u - %u, send size %u", varName.c_str(), varWaitSize + 1, p - data,
+							varWaitSize);
+
+					// return only plain text from template without our variable
+					return varWaitSize;
 				}
 			}
-			cur = (char*)memchr(p, '{', len - (p - tpl)); // continue searching..
+
+			// continue searching...
+			cur = (const char*)memchr(p, '{', datalen - (p - data));
 		}
-		if(lastFound != NULL && (lastFound - tpl) > (len - TEMPLATE_MAX_VAR_NAME_LEN)) {
-			debug_d("trim end to %d from %d", lastFound - tpl, len);
-			len = lastFound - tpl; // It can be a incomplete variable name. Don't split it!
+
+		if(lastFound != nullptr) {
+			unsigned newlen = lastFound - data;
+			if(newlen + TEMPLATE_MAX_VAR_NAME_LEN > datalen) {
+				debug_d("trim end to %u from %u", newlen, datalen);
+				// It can be a incomplete variable name - don't split it
+				datalen = newlen;
+			}
 		}
 	}
 
-	debug_d("plain template text pos: %d, len: %d", getPos(), len);
-	return len;
+	debug_d("plain template text pos: %d, len: %d", -1, datalen);
+	return datalen;
 }
 
-bool TemplateFileStream::seek(int len)
+bool TemplateStream::seek(int len)
 {
+	debug_d("TemplateStream::seek(%d), state = %d", len, state);
+
+	// Forward-only seeks
 	if(len < 0)
 		return false;
-	//debug_d("SEEK: %d, (%d)", len, state);
 
 	if(state == eTES_Found) {
 		//debug_d("SEEK before Var: %d, (%d)", len, varWaitSize);
+		if(varWaitSize < (unsigned)len) {
+			debug_e("len > varWaitSize");
+			return false;
+		}
 		varWaitSize -= len;
 		if(varWaitSize == 0)
 			state = eTES_StartVar;
@@ -110,15 +118,5 @@ bool TemplateFileStream::seek(int len)
 		return false; // not the end
 	}
 
-	return FileStream::seek(len);
-}
-
-void TemplateFileStream::setVar(String name, String value)
-{
-	templateData[name] = value;
-}
-
-void TemplateFileStream::setVars(const TemplateVariables& vars)
-{
-	templateData.setMultiple(vars);
+	return stream->seek(len);
 }
