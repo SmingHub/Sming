@@ -30,6 +30,10 @@
 class HttpParams : public HashMap<String, String>, public Printable
 {
 public:
+	virtual ~HttpParams()
+	{
+	}
+
 	// Printable
 	virtual size_t printTo(Print& p) const;
 };
