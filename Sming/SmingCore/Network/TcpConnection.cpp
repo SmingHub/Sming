@@ -15,12 +15,12 @@
 
 #include <algorithm>
 
-TcpConnection::TcpConnection(bool autoDestruct) : autoSelfDestruct(autoDestruct), sleep(0), canSend(true), timeOut(70)
+TcpConnection::TcpConnection(bool autoDestruct) : autoSelfDestruct(autoDestruct), sleep(0), canSend(true)
 {
 }
 
 TcpConnection::TcpConnection(tcp_pcb* connection, bool autoDestruct)
-	: autoSelfDestruct(autoDestruct), sleep(0), canSend(true), timeOut(70)
+	: autoSelfDestruct(autoDestruct), sleep(0), canSend(true)
 {
 	initialize(connection);
 }

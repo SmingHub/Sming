@@ -20,6 +20,9 @@
 
 typedef Delegate<void(TcpClient* client)> TcpClientConnectDelegate;
 
+// By default a TCP server will wait for a new remote client connection to get established for 20 seconds
+#define TCP_SERVER_TIMEOUT 20
+
 class TcpServer : public TcpConnection
 {
 public:
@@ -32,7 +35,7 @@ public:
 
 public:
 	virtual bool listen(int port, bool useSsl = false);
-	void setTimeOut(uint16_t waitTimeOut);
+	void setKeepAlive(uint16_t seconds);
 
 	void shutdown();
 
@@ -79,7 +82,8 @@ protected:
 	Vector<TcpConnection*> connections;
 
 private:
-	uint16_t timeOut;
+	uint16_t keepAlive = 70; // << The time to wait after the connection is established. If there is no data
+							 //  coming or going to the client within that period the client connection will be closed
 	TcpClientDataDelegate clientReceiveDelegate = NULL;
 	TcpClientCompleteDelegate clientCompleteDelegate = NULL;
 	TcpClientConnectDelegate clientConnectDelegate = NULL;

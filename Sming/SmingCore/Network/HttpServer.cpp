@@ -17,7 +17,7 @@
 
 HttpServer::HttpServer()
 {
-	settings.keepAliveSeconds = 0;
+	settings.keepAliveSeconds = 2;
 	configure(settings);
 }
 
@@ -37,7 +37,7 @@ void HttpServer::configure(HttpServerSettings settings)
 		setBodyParser(ContentType::toString(MIME_FORM_URL_ENCODED), formUrlParser);
 	}
 
-	setTimeOut(settings.keepAliveSeconds);
+	setKeepAlive(settings.keepAliveSeconds);
 #ifdef ENABLE_SSL
 	sslSessionCacheSize = settings.sslSessionCacheSize;
 #endif
