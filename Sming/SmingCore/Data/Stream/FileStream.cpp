@@ -91,19 +91,21 @@ bool FileStream::isFinished()
 	return fileIsEOF(handle);
 }
 
-String FileStream::fileName()
+String FileStream::fileName() const
 {
 	spiffs_stat stat;
-	fileStats(handle, &stat);
-	return String((char*)stat.name);
+	if(fileStats(handle, &stat) < 0)
+		return nullptr;
+	else
+		return String((char*)stat.name);
 }
 
-bool FileStream::fileExist()
+bool FileStream::fileExist() const
 {
 	return size != -1;
 }
 
-String FileStream::id()
+String FileStream::id() const
 {
 	spiffs_stat stat;
 	fileStats(handle, &stat);

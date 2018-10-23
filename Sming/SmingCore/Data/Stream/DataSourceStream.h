@@ -17,12 +17,13 @@
  *  @{
  */
 enum StreamType {
-	eSST_Memory,	   ///< Memory data stream
-	eSST_File,		   ///< File data stream
-	eSST_TemplateFile, ///< Template file data stream
-	eSST_JsonObject,   ///< JSON object data stream
-	eSST_User,		   ///< User defined data stream
-	eSST_Unknown	   ///< Unknown data stream type
+	eSST_Invalid,	///< Stream content not valid
+	eSST_Memory,	 ///< Memory data stream
+	eSST_File,		 ///< File data stream
+	eSST_Template,   ///< Template data stream
+	eSST_JsonObject, ///< JSON object data stream
+	eSST_User,		 ///< User defined data stream
+	eSST_Unknown	 ///< Unknown data stream type
 };
 /** @} */
 
@@ -43,7 +44,17 @@ public:
      *  @retval StreamType The stream type.
      *  @todo   Return value of IDataSourceStream:getStreamType base class function should be of type StreamType, e.g. eSST_User
      */
-	virtual StreamType getStreamType() = 0;
+	virtual StreamType getStreamType() const = 0;
+
+	/** @brief Determine if the stream object contains valid data
+	 *  @retval bool true if valid, false if invalid
+	 *  @note Where inherited classes are initialised by constructor this method indicates
+	 *  whether that was successful or not (e.g. FileStream)
+	 */
+	virtual bool isValid() const
+	{
+		return getStreamType() != eSST_Invalid;
+	}
 
 	/** @brief  Read a block of memory
      *  @param  data Pointer to the data to be read
@@ -61,7 +72,7 @@ public:
 
 	/**
 	 * @brief Read a character without advancing the stream pointer
-	 * @retval The character that was read or -1 if none is available
+	 * @retval int The character that was read or -1 if none is available
 	 */
 	virtual int peek();
 
@@ -116,7 +127,17 @@ public:
 	 * @brief Returns unique id of the resource.
 	 * @retval String the unique id of the stream.
 	 */
-	virtual String id()
+	virtual String id() const
+	{
+		return nullptr;
+	}
+
+	/**
+	 * @brief Returns name of the resource.
+	 * @retval String
+	 * @note Commonly used to obtain name of file
+	 */
+	virtual String getName() const
 	{
 		return nullptr;
 	}

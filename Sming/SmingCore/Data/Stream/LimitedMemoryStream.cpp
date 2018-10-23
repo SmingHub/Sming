@@ -18,7 +18,7 @@ LimitedMemoryStream::~LimitedMemoryStream()
 	delete[] buffer;
 }
 
-StreamType LimitedMemoryStream::getStreamType()
+StreamType LimitedMemoryStream::getStreamType() const
 {
 	return eSST_Memory;
 }

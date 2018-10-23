@@ -35,7 +35,7 @@ public:
 	}
 
 	//Use base class documentation
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
 		return stream.getStreamType();
 	}

@@ -38,7 +38,7 @@ public:
 		return write(&charToWrite, 1);
 	}
 
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
 		return eSST_File;
 	}

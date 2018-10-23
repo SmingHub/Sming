@@ -40,7 +40,7 @@ public:
      *  @retval StreamType The stream type.
      *  @todo   Return value of IDataSourceStream:getStreamType base class function should be of type StreamType, e.g. eSST_User
      */
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
 		return StreamType::eSST_Memory;
 	}
@@ -77,7 +77,7 @@ public:
 	 * @brief Returns unique id of the resource.
 	 * @retval String the unique id of the stream.
 	 */
-	virtual String id()
+	virtual String id() const
 	{
 		return String(reinterpret_cast<uint32_t>(&buffer), HEX);
 	}

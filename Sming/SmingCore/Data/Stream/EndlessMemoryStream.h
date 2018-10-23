@@ -30,7 +30,7 @@ public:
 		delete stream;
 	}
 
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
 		return eSST_Memory;
 	}
