@@ -15,12 +15,9 @@
 
 #define ENABLE_HTTP_REQUEST_AUTH 1
 
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WHashMap.h"
-#include "../../Delegate.h"
+#include "WString.h"
 #include "../WebConstants.h"
 #include "../URL.h"
-#include "../../Data/Structures.h"
 
 #ifndef HTTP_MAX_HEADER_SIZE
 #define HTTP_MAX_HEADER_SIZE (8 * 1024)
