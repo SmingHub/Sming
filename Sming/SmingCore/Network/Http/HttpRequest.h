@@ -217,7 +217,7 @@ public:
 #ifdef ENABLE_SSL
 	HttpRequest* setSslOptions(uint32_t sslOptions)
 	{
-		sslOptions = sslOptions;
+		this->sslOptions = sslOptions;
 		return this;
 	}
 
