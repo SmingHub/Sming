@@ -102,14 +102,14 @@ public:
 	/** @brief  Check if system ready
      *  @retval bool True if system initialisation is complete and system is now ready
      */
-	static bool isReady()
+	bool isReady()
 	{
-		return maxTaskCount != 0;
+		return state == eSS_Ready;
 	}
 
 	/** @brief  Restart system
      */
-	static void restart()
+	void restart()
 	{
 		system_restart();
 	}
@@ -117,12 +117,12 @@ public:
 	/** @brief  Set the CPU frequency
      *  @param  freq Frequency to set CPU
      */
-	static void setCpuFrequency(CpuFrequency freq);
+	void setCpuFrequency(CpuFrequency freq);
 
 	/** @brief  Get the CPU frequency
      *  @retval CpuFrequency The frequency of the CPU
      */
-	static CpuFrequency getCpuFrequency()
+	CpuFrequency getCpuFrequency()
 	{
 		return static_cast<CpuFrequency>(ets_get_cpu_frequency());
 	}
@@ -131,19 +131,19 @@ public:
      *  @param  timeMilliseconds Quantity of milliseconds to remain in deep sleep mode
      *  @param  options Deep sleep options
      */
-	static bool deepSleep(uint32 timeMilliseconds, DeepSleepOptions options = eDSO_RF_CAL_BY_INIT_DATA);
+	bool deepSleep(uint32 timeMilliseconds, DeepSleepOptions options = eDSO_RF_CAL_BY_INIT_DATA);
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
      *  @note if system is ready, callback is executed immediately without deferral
      */
-	static void onReady(SystemReadyDelegate readyHandler);
+	void onReady(SystemReadyDelegate readyHandler);
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
      *  @note if system is ready, callback is executed immediately without deferral
      */
-	static void onReady(ISystemReadyHandler* readyHandler);
+	void onReady(ISystemReadyHandler* readyHandler);
 
 	/**
 	 * @brief Queue a deferred callback.
@@ -179,6 +179,7 @@ private:
 	static void taskHandler(os_event_t* event);
 
 private:
+	static SystemState state;
 	static os_event_t taskQueue[];		  ///< OS task queue
 	static volatile uint8_t taskCount;	///< Number of tasks on queue
 	static volatile uint8_t maxTaskCount; ///< Profiling to establish appropriate queue size

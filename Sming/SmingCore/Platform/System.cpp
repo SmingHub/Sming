@@ -9,6 +9,7 @@
 
 SystemClass System;
 
+SystemState SystemClass::state = eSS_None;
 os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
 volatile uint8_t SystemClass::taskCount;
 volatile uint8_t SystemClass::maxTaskCount;
@@ -32,6 +33,11 @@ void SystemClass::taskHandler(os_event_t* event)
 
 bool SystemClass::initialize()
 {
+	if(state != eSS_None)
+		return false;
+
+	state = eSS_Intializing;
+
 	// Initialise the global task queue
 	return system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
 }
@@ -55,6 +61,7 @@ void SystemClass::onReady(SystemReadyDelegate readyHandler)
 		auto handler = new SystemReadyDelegate(readyHandler);
 		queueCallback(
 			[](uint32_t param) {
+				SystemClass::state = eSS_Ready;
 				auto handler = reinterpret_cast<SystemReadyDelegate*>(param);
 				(*handler)();
 				delete handler;
@@ -68,6 +75,7 @@ void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 	if(readyHandler) {
 		queueCallback(
 			[](uint32_t param) {
+				SystemClass::state = eSS_Ready;
 				auto handler = reinterpret_cast<ISystemReadyHandler*>(param);
 				handler->onSystemReady();
 			},
