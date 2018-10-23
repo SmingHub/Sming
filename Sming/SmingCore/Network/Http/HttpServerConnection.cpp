@@ -403,6 +403,8 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		break;
 	}
 
+	default:; // Do nothing
+
 	} /* switch(state) */
 
 	TcpClient::onReadyToSendData(sourceEvent);

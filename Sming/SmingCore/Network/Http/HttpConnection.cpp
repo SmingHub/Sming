@@ -457,7 +457,9 @@ REENTER:
 			goto REENTER;
 		}
 	}
-	} // switch(state)
+
+	default:; // Do nothing
+	}		  // switch(state)
 
 	TcpClient::onReadyToSendData(sourceEvent);
 }

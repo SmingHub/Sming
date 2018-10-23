@@ -71,6 +71,7 @@ int CommandExecutor::executorReceive(String recvString)
 			break;
 		}
 	}
+	return receiveReturn;
 }
 
 int CommandExecutor::executorReceive(char recvChar)

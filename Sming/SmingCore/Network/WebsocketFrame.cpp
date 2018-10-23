@@ -148,9 +148,7 @@ uint8_t WebsocketFrameClass::_getFrameSizes(uint8_t* buffer, size_t length)
 
 	if(payloadLength == 126) {
 		//next 2 bytes are length
-		payloadLength = buffer[2];
-		payloadLength << 8;
-		payloadLength |= buffer[3];
+		payloadLength = (buffer[2] << 8) | buffer[3];
 	}
 
 	_payloadLength = payloadLength;

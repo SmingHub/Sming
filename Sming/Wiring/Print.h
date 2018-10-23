@@ -31,7 +31,7 @@ class String;
 class Print
 {
   public:
-	Print() : write_error(0) {}
+	Print() {}
 	virtual ~Print() {}
   
     int getWriteError() { return write_error; }
@@ -89,7 +89,7 @@ class Print
     size_t printf(const char *fmt, ...);
 
   private:
-    int write_error;
+    int write_error = 0;
     size_t printNumber(unsigned long, uint8_t);
     size_t printFloat(double, uint8_t);
   protected:
