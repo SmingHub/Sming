@@ -21,8 +21,7 @@
 #define IPAddress_h
 
 #include <user_config.h>
-#include <Printable.h>
-
+#include "Printable.h"
 #include "WString.h"
 
 
@@ -38,58 +37,106 @@ typedef struct ip_addr ip_addr_t;
 class IPAddress : public Printable
 {
 private:
-    uint8_t _address[4];  // IPv4 address
-    // Access the raw byte array containing the address.  Because this returns a pointer
-    // to the internal structure rather than a copy of the address this function should only
-    // be used when you know that the usage of the returned uint8_t* will be transient and not
-    // stored.
-	uint8_t* raw_address()
-	{
-		return _address;
-	}
+    ip_addr_t address = {0}; ///< IPv4 address
+
 	void fromString(const String& address);
 
 public:
     // Constructors
-    IPAddress();
-    IPAddress(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet);
-    IPAddress(uint32_t address);
-    IPAddress(ip_addr address);
+    IPAddress()
+	{
+	}
+
+    IPAddress(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet)
+	{
+		IP4_ADDR(&address, first_octet, second_octet, third_octet, fourth_octet);
+	}
+
+    IPAddress(uint32_t address)
+	{
+		this->address.addr = address;
+	}
+
+    IPAddress(ip_addr address)
+	{
+		this->address = address;
+	}
+
 #if LWIP_VERSION_MAJOR == 2
     IPAddress(ip_addr_t address);
+	{
+		this->address = address;
+	}
 #endif
-    IPAddress(const uint8_t *address);
-    IPAddress(const String address);
+
+    IPAddress(const uint8_t *address)
+	{
+		IP4_ADDR(&this->address, address[0], address[1], address[2], address[3]);
+	}
+
+    IPAddress(const String address)
+    {
+    	fromString(address);
+    }
 
     // Overloaded cast operator to allow IPAddress objects to be used where a pointer
     // to a four-byte uint8_t array is expected
-    operator uint32_t() { return *((uint32_t*)_address); };
-    operator ip_addr() { ip_addr ret; ret.addr = *((uint32_t*)_address); return ret; };
-    operator ip_addr*() { return (ip_addr*)_address; };
+    operator uint32_t() const { return address.addr; }
+    operator ip_addr() const { return address; }
+    operator ip_addr*() { return &address; }
 
-    operator char*() { return (char *)toString().c_str(); }
+    operator char*() { return toString().begin(); }
 #if LWIP_VERSION_MAJOR == 2
-    operator ip_addr_t*() { return (ip_addr_t*)_address; };
+    operator ip_addr_t*() { return &address; }
 #endif
-    bool operator==(const IPAddress& addr) { return (*((uint32_t*)_address)) == (*((uint32_t*)addr._address)); };
+
+    bool operator==(const IPAddress& addr) { return address.addr == addr.address.addr; }
     bool operator==(const uint8_t* addr);
 
-    bool isNull() { return *((uint32_t*)_address) == 0; }
-    String toString();
+    bool isNull() const { return address.addr == 0; }
+    String toString() const;
+
+    bool compare(const IPAddress& addr, const IPAddress& mask) const
+    {
+        return ip_addr_netcmp(&address, &addr.address, &mask.address);
+    }
 
     // Overloaded index operator to allow getting and setting individual octets of the address
-    uint8_t operator[](int index) const { return _address[index]; };
-    uint8_t& operator[](int index) { return _address[index]; };
+    uint8_t operator[](int index) const
+    {
+        assert(unsigned(index) < sizeof(address));
+        return (unsigned(index) < sizeof(address)) ? reinterpret_cast<const uint8_t*>(&address)[index] : 0;
+    }
+
+    uint8_t& operator[](int index)
+    {
+        assert(unsigned(index) < sizeof(address));
+        return reinterpret_cast<uint8_t*>(&address)[index];
+    }
 
     // Overloaded copy operators to allow initialisation of IPAddress objects from other types
-    IPAddress& operator=(const uint8_t *address);
-    IPAddress& operator=(uint32_t address);
-    IPAddress& operator=(const String address);
+    IPAddress& operator=(const uint8_t *address)
+    {
+        IP4_ADDR(&this->address, address[0], address[1], address[2], address[3]);
+        return *this;
+    }
+
+    IPAddress& operator=(uint32_t address)
+    {
+        this->address.addr = address;
+        return *this;
+    }
+
+    IPAddress& operator=(const String address)
+    {
+    	fromString(address);
+        return *this;
+    }
 
     virtual size_t printTo(Print& p) const;
 };
 
-const IPAddress INADDR_NONE(0,0,0,0);
-
+// Making this extern saves 100's of bytes; each usage otherwise incurs 4 bytes of BSS
+#define INADDR_NONE IPAddress()
 
 #endif
