@@ -3,7 +3,17 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
- ****/
+ *
+ *
+ * @author: 14/8/2018 - mikee47 <mike@sillyhouse.net>
+ *
+ * 	When SystemClass::onReady method called, the callback is only queued if the
+ * 	system is not actually ready; there is otherwise no point in queueing the
+ * 	callback as it would never get invoked. To avoid unpredictable behaviour and
+ * 	simplify application code, the callback is invoked immediately in this situation.
+ *
+ * 	Global task queue added to class, initialised at system startup.
+ */
 
 /**	@defgroup system System
  *	@brief	Access to the ESP8266 system
@@ -12,8 +22,6 @@
 #ifndef SMINGCORE_PLATFORM_SYSTEM_H_
 #define SMINGCORE_PLATFORM_SYSTEM_H_
 
-#include "WString.h"
-#include "WVector.h"
 #include "Delegate.h"
 
 /** @brief default number of tasks in global queue
@@ -85,17 +93,26 @@ public:
 	}
 
 	/** @brief System initialisation
+	 *  @retval bool true on success
+	 *  @note Called by user_main: applications should not call this function or the task queue
+	 *  will be re-initialised and any currently queued tasks won't be called.
 	 */
-	void initialize();
+	static bool initialize();
 
 	/** @brief  Check if system ready
      *  @retval bool True if system initialisation is complete and system is now ready
      */
-	bool isReady();
+	bool isReady()
+	{
+		return state == eSS_Ready;
+	}
 
 	/** @brief  Restart system
      */
-	void restart();
+	void restart()
+	{
+		system_restart();
+	}
 
 	/** @brief  Set the CPU frequency
      *  @param  freq Frequency to set CPU
@@ -105,7 +122,10 @@ public:
 	/** @brief  Get the CPU frequency
      *  @retval CpuFrequency The frequency of the CPU
      */
-	CpuFrequency getCpuFrequency();
+	CpuFrequency getCpuFrequency()
+	{
+		return static_cast<CpuFrequency>(ets_get_cpu_frequency());
+	}
 
 	/** @brief  Enter deep sleep mode
      *  @param  timeMilliseconds Quantity of milliseconds to remain in deep sleep mode
@@ -115,11 +135,13 @@ public:
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
+     *  @note if system is ready, callback is executed immediately without deferral
      */
 	void onReady(SystemReadyDelegate readyHandler);
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
+     *  @note if system is ready, callback is executed immediately without deferral
      */
 	void onReady(ISystemReadyHandler* readyHandler);
 
@@ -154,14 +176,10 @@ public:
 	}
 
 private:
-	static void staticReadyHandler();
 	static void taskHandler(os_event_t* event);
-	void readyHandler();
 
 private:
-	Vector<SystemReadyDelegate> readyHandlers;
-	Vector<ISystemReadyHandler*> readyInterfaces;
-	SystemState state = eSS_None;
+	static SystemState state;
 	static os_event_t taskQueue[];		  ///< OS task queue
 	static volatile uint8_t taskCount;	///< Number of tasks on queue
 	static volatile uint8_t maxTaskCount; ///< Profiling to establish appropriate queue size
