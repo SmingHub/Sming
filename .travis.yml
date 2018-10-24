@@ -58,12 +58,12 @@ script:
 - cd $SMING_HOME
 - if [ "$SDK_VERSION" == "2.0.0" ]; then ../.travis/tools/clang/format-pr.sh; fi
 - cd $SMING_HOME
-- make
+- make STRICT=1
 - make samples
 - make clean samples-clean
-- make ENABLE_CUSTOM_HEAP=1
+- make ENABLE_CUSTOM_HEAP=1 STRICT=1
 - make Basic_Blink ENABLE_CUSTOM_HEAP=1 DEBUG_VERBOSE_LEVEL=3
-- make dist-clean; make HttpServer_ConfigNetwork ENABLE_CUSTOM_LWIP=2
+- make dist-clean; make HttpServer_ConfigNetwork ENABLE_CUSTOM_LWIP=2 STRICT=1
 deploy:
   provider: script
   script: sh $TRAVIS_BUILD_DIR/.travis/deploy.sh $TRAVIS_TAG
