@@ -1,4 +1,4 @@
-/* $Id: WMemory.cpp 1156 2011-06-07 04:01:16Z bhagman $
+/* $Id: SplitString.h 1156 2011-06-07 04:01:16Z bhagman $
 ||
 || @author         Hernando Barragan <b@wiring.org.co>
 || @url            http://wiring.org.co/
