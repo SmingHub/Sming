@@ -17,9 +17,10 @@
 #include "HttpResponse.h"
 #include "HttpRequest.h"
 #include "../TcpClient.h"
-#include "../../Services/DateTime/DateTime.h"
+#include "../Services/DateTime/DateTime.h"
+#include "Data/ObjectQueue.h"
 
-typedef SimpleConcurrentQueue<HttpRequest*, HTTP_REQUEST_POOL_SIZE> RequestQueue;
+typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
 class HttpConnection : protected TcpClient
 {
@@ -121,8 +122,8 @@ private:
 	bool sendRequestBody(HttpRequest* request);
 
 protected:
-	RequestQueue* waitingQueue;
-	RequestQueue executionQueue;
+	RequestQueue* waitingQueue = nullptr; ///< Requests waiting to be started - we do not own this queue
+	RequestQueue executionQueue;		  ///< Requests being executed in a pipeline
 	http_parser parser;
 	static http_parser_settings parserSettings;
 	static bool parserSettingsInitialized;
