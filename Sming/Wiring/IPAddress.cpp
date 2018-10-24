@@ -20,37 +20,6 @@
 #include "IPAddress.h"
 #include "Print.h"
 
-IPAddress::IPAddress()
-{
-}
-
-IPAddress::IPAddress(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet)
-{
-	IP4_ADDR(&_address, first_octet, second_octet, third_octet, fourth_octet);
-}
-
-IPAddress::IPAddress(uint32_t address)
-{
-	_address.addr = address;
-}
-
-IPAddress::IPAddress(ip_addr address)
-{
-	_address = address;
-}
-
-#if LWIP_VERSION_MAJOR == 2
-IPAddress::IPAddress(ip_addr_t address)
-{
-	_address = address;
-}
-#endif
-
-IPAddress::IPAddress(const uint8_t* address)
-{
-	IP4_ADDR(&_address, address[0], address[1], address[2], address[3]);
-}
-
 void IPAddress::fromString(const String& address)
 {
 	int p = -1;
@@ -67,29 +36,6 @@ void IPAddress::fromString(const String& address)
 
 	String sub = address.substring(p + 1);
 	operator[](3) = sub.toInt();
-}
-
-IPAddress::IPAddress(const String address)
-{
-	fromString(address);
-}
-
-IPAddress& IPAddress::operator=(const uint8_t *address)
-{
-    IP4_ADDR(&_address, address[0], address[1], address[2], address[3]);
-    return *this;
-}
-
-IPAddress& IPAddress::operator=(uint32_t address)
-{
-    _address.addr = address;
-    return *this;
-}
-
-IPAddress& IPAddress::operator=(const String address)
-{
-	fromString(address);
-    return *this;
 }
 
 bool IPAddress::operator==(const uint8_t* addr)
