@@ -328,7 +328,7 @@ class String
     int lastIndexOf(char ch, unsigned int fromIndex) const;
     int lastIndexOf(const String &s2) const;
     int lastIndexOf(const String &s2, unsigned int fromIndex) const;
-    String substring(unsigned int beginIndex) const { return substring(beginIndex, len); };
+    String substring(unsigned int beginIndex) const { return substring(beginIndex, len); }
     String substring(unsigned int beginIndex, unsigned int endIndex) const;
 
     // modification
