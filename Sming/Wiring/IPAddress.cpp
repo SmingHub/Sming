@@ -22,20 +22,13 @@
 
 void IPAddress::fromString(const String& address)
 {
-	int p = -1;
-	for (unsigned i = 0; i < 3; i++) {
-		int prev = p + 1;
-		p = address.indexOf('.', prev);
-		if (p < 0) {
-			debugf("WRONG IP: %s", address.c_str());
-			break;
-		}
-		String sub = address.substring(prev, p);
-		operator[](i) = sub.toInt();
+	this->address.addr = 0;
+	const char* p = address.c_str();
+	for(unsigned i = 0; i < 4; ++i) {
+		operator[](i) = strtol(p, const_cast<char**>(&p), 10);
+		if (*p++ != '.')
+			break;	// Missing '.' or end of input string
 	}
-
-	String sub = address.substring(p + 1);
-	operator[](3) = sub.toInt();
 }
 
 bool IPAddress::operator==(const uint8_t* addr)
