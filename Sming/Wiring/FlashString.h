@@ -49,6 +49,10 @@
  *      	return test;
  *      }
  *
+ *  IMPORT_FSTR(name, file) - binds a file into the firmware image as a FlashString object
+ *  This needs to be used at file scope, example:
+ *  	IMPORT_FSTR(myFlashData, "files/myFlashData.bin")
+ *
  *	Both DEFINE_PSTR and PSTR_ARRAY load a PSTR into a stack buffer, but using sizeof() on that buffer will return
  *	a larger value than the string itself because it's aligned. Calling sizeof() on the original flash data will
  *	get the right value. If it's a regular nul-terminated string then strlen_P() will get the length, although it's
@@ -144,6 +148,21 @@
 #define FSTR_ARRAY(_name, _str)                                                                                        \
 	static DEFINE_FSTR(_##_name, _str);                                                                                \
 	LOAD_FSTR(_name, _##_name)
+
+/** @brief Define a FlashString containing data from an external file
+ *  @note This provides a more efficient way to read constant (read-only) file data.
+ *  The file content is bound into firmware image at link time.
+ *  @note The FlashString object must be referenced or the linker won't emit it.
+ */
+#define IMPORT_FSTR(name, file)                                                                                        \
+	__asm__(".section .irom.text\n"                                                                                    \
+			".global " #name "\n"                                                                                      \
+			".type " #name ", @object\n"                                                                               \
+			".align 4\n" #name ":\n"                                                                                   \
+			".word _" #name "_end - " #name " - 4\n"                                                                   \
+			".incbin \"" file "\"\n"                                                                                   \
+			"_" #name "_end:\n");                                                                                      \
+	extern const __attribute__((aligned(4))) FlashString name;
 
 /** @brief describes a counted string stored in flash memory
  *  @note because the string length is stored there is no need to call strlen_P before reading the

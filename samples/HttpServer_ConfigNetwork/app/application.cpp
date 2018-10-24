@@ -1,6 +1,7 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 #include <AppSettings.h>
+#include "Data/Stream/TemplateFlashMemoryStream.h"
 
 HttpServer server;
 FTPServer ftp;
@@ -10,6 +11,9 @@ String network, password;
 Timer connectionTimer;
 
 String lastModified;
+
+// Instead of using a SPIFFS file, here we demonstrate usage of imported Flash Strings
+IMPORT_FSTR(flashSettings, "web/build/settings.html")
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
@@ -35,7 +39,12 @@ int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpRespo
 		AppSettings.save();
 	}
 
-	TemplateFileStream* tmpl = new TemplateFileStream("settings.html");
+	/*
+	 * We could use a regular SPIFFS file for this, but instead we demonstrate using a Flash String.
+	 *
+	 * 	TemplateFileStream* tmpl = new TemplateFileStream("settings.html");
+	 */
+	auto tmpl = new TemplateFlashMemoryStream(flashSettings);
 	auto& vars = tmpl->variables();
 
 	bool dhcp = WifiStation.isEnabledDHCP();
