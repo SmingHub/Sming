@@ -5,12 +5,6 @@
 || @contribution   Brett Hagman <bhagman@wiring.org.co>
 || @contribution   Alexander Brevig <abrevig@wiring.org.co>
 ||
-|| @description
-|| | Implementation of c++ new/delete operators.
-|| |
-|| | Wiring Common API
-|| #
-||
 || @license Please see cores/Common/License.txt.
 ||
 */
@@ -22,8 +16,24 @@
 #include "WString.h"
 #include "WiringFrameworkDependencies.h"
 
-int splitString(String &what, int delim,  Vector<long> &splits);
-int splitString(String &what, int delim,  Vector<int> &splits);
-int splitString(String &what, int delim,  Vector<String> &splits);
+/** @brief split a delimited string list of integers into an array
+ *  @param what
+ *  @param delim
+ *  @param splits
+ *  @retval number of items returned in splits (same as splits.count())
+ *  @note leading/trailing whitespace is removed from 'what' before parsing
+ *  example: "   1,2,3,4,5" returns [1, 2, 3, 4, 5]
+ */
+int splitString(String &what, char delim,  Vector<int> &splits);
+
+/** @brief split a delimited string list into an array
+ *  @param what
+ *  @param delim
+ *  @param splits
+ *  @retval number of items returned in splits (same as splits.count())
+ *  @note leading/trailing whitespace is removed from 'what' before parsing
+ *  example: "   a,b,c,d,e" returns ["a", "b", "c", "d", "e"]
+ */
+int splitString(String &what, char delim,  Vector<String> &splits);
 
 #endif
