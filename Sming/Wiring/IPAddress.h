@@ -102,15 +102,15 @@ public:
     }
 
     // Overloaded index operator to allow getting and setting individual octets of the address
-    uint8_t operator[](unsigned index) const
+    uint8_t operator[](int index) const
     {
-        assert(index < sizeof(address));
-        return (index < sizeof(address)) ? reinterpret_cast<const uint8_t*>(&address)[index] : 0;
+        assert(unsigned(index) < sizeof(address));
+        return (unsigned(index) < sizeof(address)) ? reinterpret_cast<const uint8_t*>(&address)[index] : 0;
     }
 
-    uint8_t& operator[](unsigned index)
+    uint8_t& operator[](int index)
     {
-        assert(index < sizeof(address));
+        assert(unsigned(index) < sizeof(address));
         return reinterpret_cast<uint8_t*>(&address)[index];
     }
 
