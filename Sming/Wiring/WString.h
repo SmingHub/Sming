@@ -344,9 +344,6 @@ class String
     long toInt(void) const;
     float toFloat(void) const;
   
-    friend int splitString(String &what, int delim, Vector<long> &splits);
-    friend int splitString(String &what, int delim, Vector<int> &splits);
-    friend int splitString(String &what, int delim, Vector<String> &splits);
 
     //void printTo(Print &p) const;
 
@@ -385,6 +382,7 @@ class StringSumHelper : public String
 };
 
 #include "FlashString.h"
+#include "SplitString.h"
 
 #endif  // __cplusplus
 #endif
