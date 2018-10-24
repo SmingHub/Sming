@@ -267,9 +267,12 @@ endif
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS += -Wall -Wno-comment \
+CFLAGS += -Wall -Wundef -Wpointer-arith -Wno-comment \
 			-Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
          	-D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1 
+ifneq ($(STRICT),1)
+CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
+endif
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
@@ -291,6 +294,9 @@ endif
 CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
+ifneq ($(STRICT),1)
+CXXFLAGS += -Wno-reorder
+endif
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-wrap,system_restart_local 
