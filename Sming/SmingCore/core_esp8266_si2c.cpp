@@ -102,7 +102,7 @@ static void twi_delay(unsigned char v)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 	for(i = 0; i < v; i++)
-		unsigned int reg = GPI;
+		(void)GPI; // Suppress compiler warning for this read
 #pragma GCC diagnostic pop
 }
 

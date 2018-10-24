@@ -29,7 +29,7 @@ enum FileOpenFlags {
 	eFO_CreateNewAlways = eFO_CreateIfNotExist | eFO_Truncate ///< Create new file even if file exists
 };
 
-static FileOpenFlags operator|(FileOpenFlags lhs, FileOpenFlags rhs)
+static inline FileOpenFlags operator|(FileOpenFlags lhs, FileOpenFlags rhs)
 {
 	return (FileOpenFlags)((int)lhs | (int)rhs);
 }

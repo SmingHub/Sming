@@ -24,7 +24,7 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 
 		// Return variable value
 		const String& value = templateData.valueAt(i);
-		if(bufSize < value.length()) {
+		if(unsigned(bufSize) < value.length()) {
 			debug_e("TemplateStream, buffer too small");
 			return 0;
 		}

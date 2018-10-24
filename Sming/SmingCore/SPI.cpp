@@ -185,23 +185,25 @@ void SPIClass::transfer(uint8* buffer, size_t numberBytes)
 #define BLOCKSIZE 64 // the max length of the ESP SPI_W0 registers
 
 	uint16 bufIndx = 0;
-	uint8 bufLenght = 0;
+	uint8 bufLength = 0;
 	uint8 num_bits = 0;
 
 	int blocks = ((numberBytes - 1) / BLOCKSIZE) + 1;
+#ifdef SPI_DEBUG
 	int total = blocks;
+#endif
 
 	// loop number of blocks
 	while(blocks--) {
 		// get full BLOCKSIZE or number of remaining bytes
-		bufLenght = std::min(numberBytes - bufIndx, (unsigned int)BLOCKSIZE);
+		bufLength = std::min(numberBytes - bufIndx, (unsigned int)BLOCKSIZE);
 
 #ifdef SPI_DEBUG
-		debugf("Write/Read Block %d total %d bytes", total - blocks, bufLenght);
+		debugf("Write/Read Block %d total %d bytes", total - blocks, bufLength);
 #endif
 
 		// compute the number of bits to clock
-		num_bits = bufLenght * 8;
+		num_bits = bufLength * 8;
 
 		uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
 
@@ -216,7 +218,7 @@ void SPIClass::transfer(uint8* buffer, size_t numberBytes)
 											  (((num_bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
 		// copy the registers starting from last index position
-		memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], bufLenght);
+		memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], bufLength);
 
 		// Begin SPI Transaction
 		SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);
@@ -229,10 +231,10 @@ void SPIClass::transfer(uint8* buffer, size_t numberBytes)
 		//		delayMicroseconds(8);
 
 		// copy the registers starting from last index position
-		memcpy(&buffer[bufIndx], (void*)SPI_W0(SPI_NO), bufLenght);
+		memcpy(&buffer[bufIndx], (void*)SPI_W0(SPI_NO), bufLength);
 
 		// increment bufIndex
-		bufIndx += bufLenght;
+		bufIndx += bufLength;
 	}
 };
 

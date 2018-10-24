@@ -475,10 +475,10 @@ index 52cd0b0..4e59429 100644
  				os_free(pdelete_msg);
 
 diff --git a/lwip/app/espconn_udp.c b/lwip/app/espconn_udp.c
-index 77ef471..7d6705e 100644
+index 77ef471..0e4936a 100644
 --- a/lwip/app/espconn_udp.c
 +++ b/lwip/app/espconn_udp.c
-@@ -19,9 +19,18 @@
+@@ -19,9 +19,12 @@
  #include "lwip/mem.h"
  #include "lwip/tcp_impl.h"
  #include "lwip/udp.h"
@@ -486,13 +486,7 @@ index 77ef471..7d6705e 100644
  
  #include "lwip/app/espconn_udp.h"
  
-+
-+/*
-+ * wifi_get_ip_info()
-+ * wifi_get_opmode()
-+ */
 +#include "user_interface.h"
-+
 +
  #ifdef MEMLEAK_DEBUG
  static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
