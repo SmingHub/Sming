@@ -42,7 +42,7 @@ bool IPAddress::operator==(const uint8_t* addr)
 {
     ip_addr_t a;
     IP4_ADDR(&a, addr[0], addr[1], addr[2], addr[3]);
-    return _address.addr == a.addr;
+    return address.addr == a.addr;
 }
 
 size_t IPAddress::printTo(Print& p) const
@@ -59,8 +59,8 @@ size_t IPAddress::printTo(Print& p) const
 String IPAddress::toString() const
 {
 	String res;
-    res.reserve(sizeof(_address) * 4);
-    for (unsigned i = 0; i < sizeof(_address); i++)
+    res.reserve(sizeof(address) * 4);
+    for (unsigned i = 0; i < sizeof(address); i++)
     {
     	if (i)
     	  res += '.';
