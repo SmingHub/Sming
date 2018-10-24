@@ -21,8 +21,7 @@
 #define IPAddress_h
 
 #include <user_config.h>
-#include <Printable.h>
-
+#include "Printable.h"
 #include "WString.h"
 
 
@@ -38,15 +37,8 @@ typedef struct ip_addr ip_addr_t;
 class IPAddress : public Printable
 {
 private:
-    uint8_t _address[4];  // IPv4 address
-    // Access the raw byte array containing the address.  Because this returns a pointer
-    // to the internal structure rather than a copy of the address this function should only
-    // be used when you know that the usage of the returned uint8_t* will be transient and not
-    // stored.
-	uint8_t* raw_address()
-	{
-		return _address;
-	}
+    ip_addr_t _address = {0}; ///< IPv4 address
+
 	void fromString(const String& address);
 
 public:
@@ -63,23 +55,38 @@ public:
 
     // Overloaded cast operator to allow IPAddress objects to be used where a pointer
     // to a four-byte uint8_t array is expected
-    operator uint32_t() { return *((uint32_t*)_address); };
-    operator ip_addr() { ip_addr ret; ret.addr = *((uint32_t*)_address); return ret; };
-    operator ip_addr*() { return (ip_addr*)_address; };
+    operator uint32_t() const { return _address.addr; }
+    operator ip_addr() const { return _address; }
+    operator ip_addr*() { return &_address; }
 
-    operator char*() { return (char *)toString().c_str(); }
+    operator char*() { return toString().begin(); }
 #if LWIP_VERSION_MAJOR == 2
-    operator ip_addr_t*() { return (ip_addr_t*)_address; };
+    operator ip_addr_t*() { return &_address; }
 #endif
-    bool operator==(const IPAddress& addr) { return (*((uint32_t*)_address)) == (*((uint32_t*)addr._address)); };
+
+    bool operator==(const IPAddress& addr) { return _address.addr == addr._address.addr; }
     bool operator==(const uint8_t* addr);
 
-    bool isNull() { return *((uint32_t*)_address) == 0; }
-    String toString();
+    bool isNull() const { return _address.addr == 0; }
+    String toString() const;
+
+    bool compare(const IPAddress& addr, const IPAddress& mask) const
+    {
+        return ip_addr_netcmp(&_address, &addr._address, &mask._address);
+    }
 
     // Overloaded index operator to allow getting and setting individual octets of the address
-    uint8_t operator[](int index) const { return _address[index]; };
-    uint8_t& operator[](int index) { return _address[index]; };
+    uint8_t operator[](unsigned index) const
+    {
+        assert(index < sizeof(_address));
+        return (index < sizeof(_address)) ? reinterpret_cast<const uint8_t*>(&_address)[index] : 0;
+    }
+
+    uint8_t& operator[](unsigned index)
+    {
+        assert(index < sizeof(_address));
+        return reinterpret_cast<uint8_t*>(&_address)[index];
+    }
 
     // Overloaded copy operators to allow initialisation of IPAddress objects from other types
     IPAddress& operator=(const uint8_t *address);
@@ -89,7 +96,7 @@ public:
     virtual size_t printTo(Print& p) const;
 };
 
-const IPAddress INADDR_NONE(0,0,0,0);
 
+#define INADDR_NONE IPAddress()
 
 #endif

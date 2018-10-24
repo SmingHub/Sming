@@ -17,63 +17,56 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <Arduino.h>
-#include <IPAddress.h>
-#include "WString.h"
+#include "IPAddress.h"
+#include "Print.h"
 
 IPAddress::IPAddress()
 {
-    memset(_address, 0, sizeof(_address));
 }
 
 IPAddress::IPAddress(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet)
 {
-    _address[0] = first_octet;
-    _address[1] = second_octet;
-    _address[2] = third_octet;
-    _address[3] = fourth_octet;
+	IP4_ADDR(&_address, first_octet, second_octet, third_octet, fourth_octet);
 }
 
 IPAddress::IPAddress(uint32_t address)
 {
-    memcpy(_address, &address, sizeof(_address));
+	_address.addr = address;
 }
 
 IPAddress::IPAddress(ip_addr address)
 {
-    memcpy(_address, &address.addr, sizeof(_address));
+	_address = address;
 }
 
 #if LWIP_VERSION_MAJOR == 2
 IPAddress::IPAddress(ip_addr_t address)
 {
-    memcpy(_address, &address.addr, sizeof(_address));
+	_address = address;
 }
 #endif
 
-IPAddress::IPAddress(const uint8_t *address)
+IPAddress::IPAddress(const uint8_t* address)
 {
-    memcpy(_address, address, sizeof(_address));
+	IP4_ADDR(&_address, address[0], address[1], address[2], address[3]);
 }
 
 void IPAddress::fromString(const String& address)
 {
 	int p = -1;
-	for (int i = 0; i < 3; i++)
-	{
+	for (unsigned i = 0; i < 3; i++) {
 		int prev = p + 1;
 		p = address.indexOf('.', prev);
-		if (p == -1)
-		{
+		if (p < 0) {
 			debugf("WRONG IP: %s", address.c_str());
 			break;
 		}
 		String sub = address.substring(prev, p);
-		_address[i] = sub.toInt();
+		operator[](i) = sub.toInt();
 	}
 
 	String sub = address.substring(p + 1);
-	_address[3] = sub.toInt();
+	operator[](3) = sub.toInt();
 }
 
 IPAddress::IPAddress(const String address)
@@ -83,13 +76,13 @@ IPAddress::IPAddress(const String address)
 
 IPAddress& IPAddress::operator=(const uint8_t *address)
 {
-    memcpy(_address, address, sizeof(_address));
+    IP4_ADDR(&_address, address[0], address[1], address[2], address[3]);
     return *this;
 }
 
 IPAddress& IPAddress::operator=(uint32_t address)
 {
-    memcpy(_address, (const uint8_t *)&address, sizeof(_address));
+    _address.addr = address;
     return *this;
 }
 
@@ -101,29 +94,31 @@ IPAddress& IPAddress::operator=(const String address)
 
 bool IPAddress::operator==(const uint8_t* addr)
 {
-    return memcmp(addr, _address, sizeof(_address)) == 0;
+    ip_addr_t a;
+    IP4_ADDR(&a, addr[0], addr[1], addr[2], addr[3]);
+    return _address.addr == a.addr;
 }
 
 size_t IPAddress::printTo(Print& p) const
 {
     size_t n = 0;
-    for (int i =0; i < 3; i++)
-    {
-        n += p.print(_address[i], DEC);
+    for (unsigned i = 0; i < 3; i++) {
+        n += p.print(operator[](i), DEC);
         n += p.print('.');
     }
-    n += p.print(_address[3], DEC);
+    n += p.print(operator[](3), DEC);
     return n;
 }
 
-String IPAddress::toString()
+String IPAddress::toString() const
 {
 	String res;
-    for (int i =0; i < 3; i++)
+    res.reserve(sizeof(_address) * 4);
+    for (unsigned i = 0; i < sizeof(_address); i++)
     {
-    	res.concat(_address[i]);
-    	res.concat('.');
+    	if (i)
+    	  res += '.';
+    	res += operator[](i);
     }
-    res.concat(_address[3]);
     return res;
 }
