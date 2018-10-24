@@ -156,13 +156,13 @@ Vector<Element>::~Vector()
 {
   removeAllElements();
   delete [] _data;
-};
+}
 
 template <class Element>
 unsigned int Vector<Element>::capacity() const
 {
   return _capacity;
-};
+}
 
 template <class Element>
 boolean Vector<Element>::contains(const Element &elem) const
@@ -176,7 +176,7 @@ void Vector<Element>::copyInto(Element* array) const
   if (array != nullptr)
     for (unsigned int i = 0; i < _size; i++)
       array[i] = *_data[i];
-};
+}
 
 
 template <class Element>
@@ -237,7 +237,7 @@ const Element & Vector<Element>::lastElement() const
   }
 
   return *_data[ _size - 1 ];
-};
+}
 
 template <class Element>
 int Vector<Element>::lastIndexOf(const Element &elem) const
@@ -264,7 +264,7 @@ template <class Element>
 unsigned int Vector<Element>::size() const
 {
   return _size;
-};
+}
 
 template <class Element>
 void Vector<Element>::addElement(const Element &obj)
@@ -273,7 +273,7 @@ void Vector<Element>::addElement(const Element &obj)
     ensureCapacity(_capacity + _increment);
   if (_size < _capacity)
     _data[ _size++ ] = new Element(obj);
-};
+}
 
 template <class Element>
 void Vector<Element>::addElement(Element* objp)
@@ -282,7 +282,7 @@ void Vector<Element>::addElement(Element* objp)
     ensureCapacity(_capacity + _increment);
   if (_size < _capacity)
     _data[ _size++ ] = objp;
-};
+}
 
 template <class Element>
 void Vector<Element>::ensureCapacity(unsigned int minCapacity)
@@ -384,7 +384,7 @@ void Vector<Element>::setElementAt(const Element &obj, unsigned int index)
   // check for valid index
   if (index >= _size) return;
   *_data[ index ] = obj;
-};
+}
 
 template <class Element>
 void Vector<Element>::setSize(unsigned int newSize)
@@ -436,7 +436,7 @@ Element & Vector<Element>::operator[](unsigned int index)
 	  abort();
   }
   return *_data[ index ];
-};
+}
 
 template <class Element>
 void Vector<Element>::sort(Comparer compareFunction)

@@ -310,6 +310,17 @@ index ddb5984..fdaedea 100644
  	}
  
  	apnetif->dhcps_pcb = pcb_dhcps;
+--- a/include/lwip/tcp_impl.h
++++ b/include/lwip/tcp_impl.h
+@@ -130,7 +130,7 @@ u32_t            tcp_update_rcv_ann_wnd(struct tcp_pcb *pcb)ICACHE_FLASH_ATTR;
+ #define TCP_OOSEQ_TIMEOUT        6U /* x RTO */
+ 
+ #ifndef TCP_MSL
+-#define TCP_MSL 60000UL /* The maximum segment lifetime in milliseconds */
++#define TCP_MSL 2000UL /* The maximum segment lifetime in milliseconds */
+ #endif
+ 
+ /* Keepalive values, compliant with RFC 1122. Don't change this unless you know what you're doing */
 diff --git a/include/lwip/igmp.h b/include/lwip/igmp.h
 index c90adcd..f0c9dea 100644
 --- a/include/lwip/igmp.h
