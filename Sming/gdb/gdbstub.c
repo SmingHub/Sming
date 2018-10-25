@@ -43,38 +43,37 @@ static unsigned int getaregval(int reg) {
 
 static void print_stack(uint32_t start, uint32_t end) {
   uint32_t pos = 0;
-  os_printf(_F("\nStack dump:\n"));
-  os_printf(_F("To decode the stack dump call from command line:\n   python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out\n"));
-  os_printf(_F("and copy & paste the text enclosed in '===='.\n"));
-  os_printf(_F("================================================================\n"));
+  os_printf("\nStack dump:\n");
+  os_printf("To decode the stack dump call from command line:\n   python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out\n");
+  os_printf("and copy & paste the text enclosed in '===='.\n");
+  os_printf("================================================================\n");
   for (pos = start; pos < end; pos += 0x10) {
     uint32_t* values = (uint32_t*)(pos);
     // rough indicator: stack frames usually have SP saved as the second word
     bool looksLikeStackFrame = (values[2] == pos + 0x10);
 
-    os_printf(_F("%08x:  %08x %08x %08x %08x %c\n"),
+    os_printf("%08x:  %08x %08x %08x %08x %c\n",
         pos, values[0], values[1], values[2], values[3], (looksLikeStackFrame)?'<':' ');
   }
   os_printf("\n");
-  os_printf(_F("================================================================\n"));
-  os_printf(_F("To decode the stack dump call from command line:\n   python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out\n"));
-  os_printf(_F("and copy & paste the text enclosed in '===='.\n"));
+  os_printf("================================================================\n");
+  os_printf("To decode the stack dump call from command line:\n   python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out\n");
+  os_printf("and copy & paste the text enclosed in '===='.\n");
 }
 
 void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
-int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
 
 // Print exception info to console
 static void printReason() {
   int i=0;
   //register uint32_t sp asm("a1");
   struct XTensa_exception_frame_s *reg = &gdbstub_savedRegs;
-  os_printf(_F("\n\n***** Fatal exception %u\n"), reg->reason);
-  os_printf(_F("pc=0x%08x sp=0x%08x excvaddr=0x%08x\n"), reg->pc, reg->a1, reg->excvaddr);
-  os_printf(_F("ps=0x%08x sar=0x%08x vpri=0x%08x\n"), reg->ps, reg->sar, reg->vpri);
+  os_printf("\n\n***** Fatal exception %u\n", reg->reason);
+  os_printf("pc=0x%08x sp=0x%08x excvaddr=0x%08x\n", reg->pc, reg->a1, reg->excvaddr);
+  os_printf("ps=0x%08x sar=0x%08x vpri=0x%08x\n", reg->ps, reg->sar, reg->vpri);
   for (i=0; i<16; i++) {
     unsigned int r = getaregval(i);
-    os_printf(_F("r%02d: 0x%08x=%10d "), i, r, r);
+    os_printf("r%02d: 0x%08x=%10d ", i, r, r);
     if (i%3 == 2) os_printf("\n");
   }
   os_printf("\n");

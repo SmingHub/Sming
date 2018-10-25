@@ -222,16 +222,9 @@ index 1e46ee5..cfc10f8 100644
                        ipaddr != NULL ? ip4_addr2_16(ipaddr) : 0,       \
                        ipaddr != NULL ? ip4_addr3_16(ipaddr) : 0,       \
 diff --git a/lwip/app/dhcpserver.c b/lwip/app/dhcpserver.c
-index ddb5984..fdaedea 100644
+index ddb5984..546a072 100644
 --- a/lwip/app/dhcpserver.c
 +++ b/lwip/app/dhcpserver.c
-@@ -1,5 +1,5 @@
- #include "lwip/inet.h"
--#include "lwip/err.h"
-+#include "lwip/err.h"
- #include "lwip/pbuf.h"
- #include "lwip/udp.h"
- #include "lwip/mem.h"
 @@ -13,6 +13,8 @@
  
  #include "user_interface.h"
@@ -283,33 +276,6 @@ index ddb5984..fdaedea 100644
  			*optptr++ = DHCP_OPTION_ROUTER;
  			*optptr++ = 4;
  			*optptr++ = ip4_addr1( &if_ip.gw);
-@@ -573,7 +566,7 @@ static uint8_t ICACHE_FLASH_ATTR parse_options(uint8_t *optptr, sint16_t len)
- ///////////////////////////////////////////////////////////////////////////////////
- ///////////////////////////////////////////////////////////////////////////////////
- static sint16_t ICACHE_FLASH_ATTR parse_msg(struct dhcps_msg *m, u16_t len)
--{
-+{
- 		if(os_memcmp((char *)m->options,
-               &magic_cookie,
-               sizeof(magic_cookie)) == 0){
-@@ -678,7 +671,7 @@ static sint16_t ICACHE_FLASH_ATTR parse_msg(struct dhcps_msg *m, u16_t len)
- 
- 						POOL_CHECK:
- 						if ((client_address.addr > dhcps_lease.end_ip.addr) || (ip_addr_isany(&client_address))){
--                            os_printf("client_address_plus.addr %x %d\n", client_address_plus.addr, system_get_free_heap_size());
-+                            os_printf(_F("client_address_plus.addr %x %d\n"), client_address_plus.addr, system_get_free_heap_size());
- 						    if(pnode != NULL) {
- 						        node_remove_from_list(&plist,pnode);
- 						        os_free(pnode);
-@@ -890,7 +883,7 @@ void ICACHE_FLASH_ATTR dhcps_start(struct ip_info *info)
- 
- 	pcb_dhcps = udp_new();
- 	if (pcb_dhcps == NULL || info ==NULL) {
--		os_printf("dhcps_start(): could not obtain pcb\n");
-+		os_printf(_F("dhcps_start(): could not obtain pcb\n"));
- 	}
- 
- 	apnetif->dhcps_pcb = pcb_dhcps;
 --- a/include/lwip/tcp_impl.h
 +++ b/include/lwip/tcp_impl.h
 @@ -130,7 +130,7 @@ u32_t            tcp_update_rcv_ann_wnd(struct tcp_pcb *pcb)ICACHE_FLASH_ATTR;
@@ -433,47 +399,6 @@ index 08db68a..b4763ec 100644
  //void           mdns_tmr(void);
  //void           Delay(unsigned long ulSeconds);
  
-diff --git a/lwip/app/espconn_tcp.c b/lwip/app/espconn_tcp.c
-index 52cd0b0..4e59429 100644
---- a/lwip/app/espconn_tcp.c
-+++ b/lwip/app/espconn_tcp.c
-@@ -557,7 +557,7 @@ espconn_recv_hold(struct espconn *pespconn)
-     value = espconn_find_connection(pespconn, &pnode);
- 	if(value != true)
- 	{
--		os_printf("RecvHold, By pespconn,find conn_msg fail\n");
-+		os_printf(_F("RecvHold, By pespconn,find conn_msg fail\n"));
- 		return ESPCONN_ARG;
- 	}
- 
-@@ -582,7 +582,7 @@ espconn_recv_unhold(struct espconn *pespconn)
-     value = espconn_find_connection(pespconn, &pnode);
- 	if(value != true)
- 	{
--		os_printf("RecvHold, By pespconn,find conn_msg fail\n");
-+		os_printf(_F("RecvHold, By pespconn,find conn_msg fail\n"));
- 		return ESPCONN_ARG;
- 	}
- 
-@@ -862,7 +862,7 @@ espconn_client_connect(void *arg, struct tcp_pcb *tpcb, err_t err)
- 			espconn_keepalive_enable(tpcb);
- 
-     } else{
--    	os_printf("err in host connected (%s)\n",lwip_strerr(err));
-+    	os_printf(_F("err in host connected (%s)\n"),lwip_strerr(err));
-     }
-     return err;
- }
-@@ -1354,7 +1354,7 @@ sint8 ICACHE_FLASH_ATTR espconn_tcp_delete(struct espconn *pdeletecon)
- 				/*remove the node from the client's active connection list*/
- 				espconn_list_delete(&pserver_list, pdelete_msg);
- 				pcb = pdelete_msg->preverse;
--				os_printf("espconn_tcp_delete %d, %d\n",pcb->state, pcb->local_port);
-+				os_printf(_F("espconn_tcp_delete %d, %d\n"),pcb->state, pcb->local_port);
- 				espconn_kill_pcb(pcb->local_port);
- 				err = tcp_close(pcb);
- 				os_free(pdelete_msg);
-
 diff --git a/lwip/app/espconn_udp.c b/lwip/app/espconn_udp.c
 index 77ef471..0e4936a 100644
 --- a/lwip/app/espconn_udp.c
@@ -492,7 +417,7 @@ index 77ef471..0e4936a 100644
  static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
  #endif
 diff --git a/lwip/core/dhcp.c b/lwip/core/dhcp.c
-index 342543e..9717574 100644
+index 342543e..92ad15b 100644
 --- a/lwip/core/dhcp.c
 +++ b/lwip/core/dhcp.c
 @@ -137,6 +137,9 @@ u8_t  dhcp_rx_options_given[DHCP_OPTION_IDX_MAX];
@@ -505,15 +430,6 @@ index 342543e..9717574 100644
  
  /* DHCP client state machine functions */
  static err_t dhcp_discover(struct netif *netif);
-@@ -384,7 +387,7 @@ dhcp_fine_tmr()
-       /*add DHCP retries processing by LiuHan*/
-       if (DHCP_MAXRTX != 0) {
-     	  if (netif->dhcp->tries >= DHCP_MAXRTX){
--			  os_printf("DHCP timeout\n");
-+			  os_printf(_F("DHCP timeout\n"));
- 			  if (netif->dhcp_event != NULL)
- 				  netif->dhcp_event();
- 			  break;
 diff --git a/lwip/core/ipv4/ip_addr.c b/lwip/core/ipv4/ip_addr.c
 index 81db807..dd6964e 100644
 --- a/lwip/core/ipv4/ip_addr.c

@@ -119,11 +119,11 @@ extern "C" void ICACHE_FLASH_ATTR  __attribute__((weak)) user_pre_init(void)
 
 	enum flash_size_map sizeMap = system_get_flash_size_map();
 	if(!system_partition_table_regist(partitions, ARRAY_SIZE(partitions), sizeMap)) {
-		os_printf(_F("system_partition_table_regist: failed\n"));
-		os_printf(_F("size_map = %u\n"), sizeMap);
+		os_printf("system_partition_table_regist: failed\n");
+		os_printf("size_map = %u\n", sizeMap);
 		for (unsigned i = 0; i < ARRAY_SIZE(partitions); ++i) {
 			auto& part = partitions[i];
-			os_printf(_F("partition[%u]: %u, 0x%08x, 0x%08x\n"), i, part.type, part.addr, part.size);
+			os_printf("partition[%u]: %u, 0x%08x, 0x%08x\n", i, part.type, part.addr, part.size);
 		}
 		while(1) {
 			// Cannot proceed
