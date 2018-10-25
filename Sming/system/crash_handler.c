@@ -56,11 +56,11 @@ void __wrap_system_restart_local() {
     ets_install_putc1(&uart_write_char_d);
 
     if (rst_info.reason == REASON_EXCEPTION_RST) {
-        ets_printf("\n\n***** Exception Reset (%d):\nepc1=0x%08x epc2=0x%08x epc3=0x%08x excvaddr=0x%08x depc=0x%08x\n",
+        os_printf("\n\n***** Exception Reset (%d):\nepc1=0x%08x epc2=0x%08x epc3=0x%08x excvaddr=0x%08x depc=0x%08x\n",
             rst_info.exccause, rst_info.epc1, rst_info.epc2, rst_info.epc3, rst_info.excvaddr, rst_info.depc);
     }
     else if (rst_info.reason == REASON_SOFT_WDT_RST) {
-        ets_printf("\n\n***** Software Watchdog Reset\n");
+        os_printf("\n\n***** Software Watchdog Reset\n");
     }
 #endif
 
@@ -98,17 +98,19 @@ void __wrap_system_restart_local() {
 static void print_stack(uint32_t start, uint32_t end) {
     uint32_t pos = 0;
 
-    ets_printf("\n================================================================\n");
+    PSTR_ARRAY(separatorLine, "\n================================================================\n");
+
+    os_printf_plus(separatorLine);
     for (pos = start; pos < end; pos += 0x10) {
         uint32_t* values = (uint32_t*)(pos);
 
         // rough indicator: stack frames usually have SP saved as the second word
         bool looksLikeStackFrame = (values[2] == pos + 0x10);
 
-        ets_printf("%08x:  %08x %08x %08x %08x %c\n",
+        os_printf("%08x:  %08x %08x %08x %08x %c\n",
             pos, values[0], values[1], values[2], values[3], (looksLikeStackFrame)?'<':' ');
     }
-    ets_printf("================================================================\n");
+    os_printf_plus(separatorLine);
 }
 
 void uart_write_char_d(char c) {

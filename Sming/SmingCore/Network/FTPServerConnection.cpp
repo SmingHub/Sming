@@ -367,5 +367,7 @@ void FTPServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		this->writeString(_F("220 Welcome to Sming FTP\r\n"), 0);
 		state = eFCS_Authorization;
 		break;
+
+	default:; // Do nothing
 	}
 }

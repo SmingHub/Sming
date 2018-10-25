@@ -76,15 +76,16 @@ index 1bc584f..e4af916 100644
  $(LIB): $(OBJS)
  	$(AR) rcs $@ $^
 diff --git a/include/arch/cc.h b/include/arch/cc.h
-index ff03b30..348ee12 100644
+index ff03b30..5efcf13 100644
 --- a/include/arch/cc.h
 +++ b/include/arch/cc.h
-@@ -38,8 +38,26 @@
+@@ -38,8 +38,27 @@
  #include "c_types.h"
  #include "ets_sys.h"
  #include "osapi.h"
 +#include "mem.h"
 +#include <stdarg.h>
++#include "FakePgmSpace.h"
 +
  #define EFAULT 14
  
@@ -106,7 +107,7 @@ index ff03b30..348ee12 100644
  //#define LWIP_PROVIDE_ERRNO
  
  #if (1)
-@@ -56,6 +74,7 @@ typedef signed     short   s16_t;
+@@ -56,6 +75,7 @@ typedef signed     short   s16_t;
  typedef unsigned   long    u32_t;
  typedef signed     long    s32_t;
  typedef unsigned long   mem_ptr_t;
@@ -114,7 +115,7 @@ index ff03b30..348ee12 100644
  
  #define S16_F "d"
  #define U16_F "d"
-@@ -73,11 +92,12 @@ typedef unsigned long   mem_ptr_t;
+@@ -73,11 +93,12 @@ typedef unsigned long   mem_ptr_t;
  #define PACK_STRUCT_BEGIN
  #define PACK_STRUCT_END
  
@@ -221,10 +222,19 @@ index 1e46ee5..cfc10f8 100644
                        ipaddr != NULL ? ip4_addr2_16(ipaddr) : 0,       \
                        ipaddr != NULL ? ip4_addr3_16(ipaddr) : 0,       \
 diff --git a/lwip/app/dhcpserver.c b/lwip/app/dhcpserver.c
-index ddb5984..fb677c6 100644
+index ddb5984..546a072 100644
 --- a/lwip/app/dhcpserver.c
 +++ b/lwip/app/dhcpserver.c
-@@ -133,21 +133,16 @@ static uint8_t* ICACHE_FLASH_ATTR add_offer_options(uint8_t *optptr)
+@@ -13,6 +13,8 @@
+ 
+ #include "user_interface.h"
+ 
++extern bool wifi_softap_set_station_info(uint8_t*,struct ip_addr*);
++
+ #ifdef MEMLEAK_DEBUG
+ static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
+ #endif
+@@ -133,21 +135,16 @@ static uint8_t* ICACHE_FLASH_ATTR add_offer_options(uint8_t *optptr)
  
          ipadd.addr = *( (uint32_t *) &server_address);
  
@@ -255,7 +265,7 @@ index ddb5984..fb677c6 100644
  
          *optptr++ = DHCP_OPTION_LEASE_TIME;
          *optptr++ = 4;  
-@@ -164,10 +159,6 @@ static uint8_t* ICACHE_FLASH_ATTR add_offer_options(uint8_t *optptr)
+@@ -164,10 +161,6 @@ static uint8_t* ICACHE_FLASH_ATTR add_offer_options(uint8_t *optptr)
          *optptr++ = ip4_addr4( &ipadd);
  
          if (dhcps_router_enabled(offer)){
@@ -266,8 +276,6 @@ index ddb5984..fb677c6 100644
  			*optptr++ = DHCP_OPTION_ROUTER;
  			*optptr++ = 4;
  			*optptr++ = ip4_addr1( &if_ip.gw);
-diff --git a/include/lwip/tcp_impl.h b/include/lwip/tcp_impl.h
-index 24ca8bb..0c20b6a 100644
 --- a/include/lwip/tcp_impl.h
 +++ b/include/lwip/tcp_impl.h
 @@ -130,7 +130,7 @@ u32_t            tcp_update_rcv_ann_wnd(struct tcp_pcb *pcb)ICACHE_FLASH_ATTR;
@@ -343,3 +351,109 @@ index af6e360..71b2178 100644
  #endif
  #ifndef os_realloc
  #define os_realloc(p, s) mem_realloc((p), (s))
+diff --git a/include/lwip/app/espconn.h b/include/lwip/app/espconn.h
+index ae9ed50..46420df 100644
+--- a/include/lwip/app/espconn.h
++++ b/include/lwip/app/espconn.h
+@@ -660,5 +660,11 @@ extern void espconn_mdns_enable(void);
+  *  Returns     : none
+ *******************************************************************************/
+ extern void espconn_dns_setserver(u8_t numdns, ip_addr_t *dnsserver);
++
++// Missing functions
++extern err_t espconn_tcp_write(void *arg);
++extern sint8 espconn_tcp_delete(struct espconn *pdeletecon);
++extern void espconn_pbuf_delete(espconn_buf **phead, espconn_buf* pdelete);
++
+ #endif
+ 
+diff --git a/include/lwip/mdns.h b/include/lwip/mdns.h
+index 08db68a..b4763ec 100644
+--- a/include/lwip/mdns.h
++++ b/include/lwip/mdns.h
+@@ -96,16 +96,17 @@ struct mdns_info {
+ 	char *txt_data[10];
+ };
+ #endif
+-//void 		   mdns_enable(void);
+-//void           mdns_disable(void);
+-//void           mdns_init(struct mdns_info *info);
+-//void           mdns_close(void);
+-//char* 		   mdns_get_hostname(void);
+-//void           mdns_set_hostname(char *name);
+-//void           mdns_set_servername(const char *name);
+-//char*          mdns_get_servername(void);
+-//void           mdns_server_unregister(void);
+-//void           mdns_server_register(void) ;
++
++void 		   mdns_enable(void);
++void           mdns_disable(void);
++void           mdns_init(struct mdns_info *info);
++void           mdns_close(void);
++char* 		   mdns_get_hostname(void);
++void           mdns_set_hostname(char *name);
++void           mdns_set_servername(const char *name);
++char*          mdns_get_servername(void);
++void           mdns_server_unregister(void);
++void           mdns_server_register(void) ;
+ //void           mdns_tmr(void);
+ //void           Delay(unsigned long ulSeconds);
+ 
+diff --git a/lwip/app/espconn_udp.c b/lwip/app/espconn_udp.c
+index 77ef471..0e4936a 100644
+--- a/lwip/app/espconn_udp.c
++++ b/lwip/app/espconn_udp.c
+@@ -19,9 +19,12 @@
+ #include "lwip/mem.h"
+ #include "lwip/tcp_impl.h"
+ #include "lwip/udp.h"
++#include "lwip/igmp.h"
+ 
+ #include "lwip/app/espconn_udp.h"
+ 
++#include "user_interface.h"
++
+ #ifdef MEMLEAK_DEBUG
+ static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
+ #endif
+diff --git a/lwip/core/dhcp.c b/lwip/core/dhcp.c
+index 342543e..92ad15b 100644
+--- a/lwip/core/dhcp.c
++++ b/lwip/core/dhcp.c
+@@ -137,6 +137,9 @@ u8_t  dhcp_rx_options_given[DHCP_OPTION_IDX_MAX];
+ #define dhcp_get_option_value(dhcp, idx)      (dhcp_rx_options_val[idx])
+ #define dhcp_set_option_value(dhcp, idx, val) (dhcp_rx_options_val[idx] = (val))
+ 
++// Missing prototype
++extern void system_station_got_ip_set(ip_addr_t* ip_addr, ip_addr_t* sn_mask, ip_addr_t* gw_addr);
++
+ 
+ /* DHCP client state machine functions */
+ static err_t dhcp_discover(struct netif *netif);
+diff --git a/lwip/core/ipv4/ip_addr.c b/lwip/core/ipv4/ip_addr.c
+index 81db807..dd6964e 100644
+--- a/lwip/core/ipv4/ip_addr.c
++++ b/lwip/core/ipv4/ip_addr.c
+@@ -113,7 +113,7 @@ ip4_addr_netmask_valid(u32_t netmask)
+ #ifndef isprint
+ #define in_range(c, lo, up)  ((u8_t)c >= lo && (u8_t)c <= up)
+ #define isprint(c)           in_range(c, 0x20, 0x7f)
+-//#define isdigit(c)           in_range(c, '0', '9')
++#define isdigit(c)           in_range(c, '0', '9')
+ #define isxdigit(c)          (isdigit(c) || in_range(c, 'a', 'f') || in_range(c, 'A', 'F'))
+ #define islower(c)           in_range(c, 'a', 'z')
+ #define isspace(c)           (c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' || c == '\v')
+diff --git a/lwip/core/tcp.c b/lwip/core/tcp.c
+index ee50ceb..75563e9 100644
+--- a/lwip/core/tcp.c
++++ b/lwip/core/tcp.c
+@@ -55,6 +55,9 @@
+ 
+ #include <string.h>
+ 
++// Missing prototype
++extern uint8_t system_get_data_of_array_8(const uint8_t* array /* ICACHE_RODATA_ATTR */, unsigned offset);
++
+ #ifdef MEMLEAK_DEBUG
+ static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
+ #endif

@@ -19,8 +19,8 @@
 #define WVECTOR_H
 
 #include "Countable.h"
-#include "WiringFrameworkDependencies.h"
 #include <stdlib.h>
+#include <string.h>
 
 template <typename Element>
 class Vector : public Countable<Element>
@@ -119,7 +119,7 @@ Vector<Element>::Vector(unsigned int initialCapacity, unsigned int capacityIncre
   _capacity = initialCapacity;
   _data = new Element*[ _capacity ];
   _increment = capacityIncrement;
-  if (_data == NULL) _capacity = _increment = 0;
+  if (_data == nullptr) _capacity = _increment = 0;
 };
 
 template <class Element>
@@ -140,7 +140,7 @@ void Vector<Element>::copyFrom(const Vector<Element>& rhv)
   _capacity = rhv._capacity;
   _data = new Element*[ _capacity ];
   _increment = rhv._increment;
-  if (_data == NULL)
+  if (_data == nullptr)
   {
     _size = _capacity = _increment = 0;
   }
@@ -167,19 +167,13 @@ unsigned int Vector<Element>::capacity() const
 template <class Element>
 boolean Vector<Element>::contains(const Element &elem) const
 {
-  for (unsigned int i = 0; i < _size; i++)
-  {
-    if (*_data[i] == elem)
-      return true;
-  }
-
-  return false;
+	return indexOf(elem) >= 0;
 };
 
 template <class Element>
 void Vector<Element>::copyInto(Element* array) const
 {
-  if (array != NULL)
+  if (array != nullptr)
     for (unsigned int i = 0; i < _size; i++)
       array[i] = *_data[i];
 };
@@ -295,11 +289,10 @@ void Vector<Element>::ensureCapacity(unsigned int minCapacity)
 {
   if (minCapacity > _capacity)
   {
-    unsigned int i;
     //_capacity = minCapacity;
     Element** temp = new Element*[ minCapacity ];
     // copy all elements
-    if (temp != NULL)
+    if (temp != nullptr)
     {
       _capacity = minCapacity;
       memcpy(temp, _data, sizeof(Element*) * _size);
@@ -338,15 +331,12 @@ void Vector<Element>::insertElementAt(const Element &obj, unsigned int index)
       _size++;
     }
   }
-  //_size++;
 };
 
 template <class Element>
 const void Vector<Element>::remove(unsigned int index)
 {
-  //const Element* retval = &get(index);
   removeElementAt(index);
-  //return (Element)*retval;
 };
 
 template <class Element>
@@ -385,7 +375,6 @@ void Vector<Element>::removeElementAt(unsigned int index)
   for (i = index + 1; i < _size; i++)
     _data[ i - 1 ] = _data[ i ];
 
-  _data[i];
   _size--;
 };
 
@@ -417,7 +406,7 @@ void Vector<Element>::trimToSize()
   if (_size != _capacity)
   {
     Element** temp = new Element*[ _size ];
-    if (temp == NULL) return;
+    if (temp == nullptr) return;
 
     for (unsigned int i = 0; i < _size; i++)
       temp[i] = _data[i];

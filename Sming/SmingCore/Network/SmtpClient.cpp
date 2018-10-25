@@ -188,6 +188,8 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 
 		break;
+
+	default:; // Do nothing
 	}
 
 	case eSMTP_SendAuthResponse: {

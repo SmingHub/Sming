@@ -53,7 +53,7 @@ void SI7021::softReset(void)
 }
 
 int SI7021::getTemperature() {
-    byte tempbytes[2];
+    byte tempbytes[3];
     _command(TEMP_READ, tempbytes);
     long tempraw = (long)tempbytes[0] << 8 | tempbytes[1];
     if (_checkCRC8(tempraw) != tempbytes[2]){
@@ -71,7 +71,7 @@ int SI7021::_getTemperaturePostHumidity() {
 
 
 unsigned int SI7021::getHumidityPercent() {
-    byte humbytes[2];
+    byte humbytes[3];
     _command(RH_READ, humbytes);
     long humraw = (long)humbytes[0] << 8 | humbytes[1];
     if (_checkCRC8(humraw) != humbytes[2]){

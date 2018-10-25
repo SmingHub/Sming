@@ -242,7 +242,7 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 		}
 		break;
 
-	case wsMode::Connected:
+	case wsMode::Connected: {
 		WebsocketFrameClass wsFrame;
 		do {
 			if(wsFrame.decodeFrame(data, size)) {
@@ -297,6 +297,9 @@ err_t WebsocketClient::onReceive(pbuf* buf)
 		} while(wsFrame._nextReadOffset > 0);
 
 		break;
+	}
+
+	default:; // Do nothing
 	}
 
 	delete[] data;
