@@ -103,7 +103,6 @@ void testDisplay()
 
 	// Done!
 	display.setSegments(SEG_DONE);
-
 }
 
 void init()
