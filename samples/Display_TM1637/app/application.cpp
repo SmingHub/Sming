@@ -59,8 +59,9 @@ void testDisplay()
 	}
 
 	// Show decimal number whose length is smaller than 4
-	for(k = 0; k < 4; k++)
+	for(k = 0; k < 4; k++) {
 		data[k] = 0;
+	}
 	display.setSegments(data);
 
 	// Run through all the dots
@@ -83,8 +84,9 @@ void testDisplay()
 	delay(TEST_DELAY);
 
 	// Brightness Test
-	for(k = 0; k < 4; k++)
+	for(k = 0; k < 4; k++) {
 		data[k] = 0xff;
+	}
 	for(k = 0; k < 7; k++) {
 		display.setBrightness(k);
 		display.setSegments(data);
