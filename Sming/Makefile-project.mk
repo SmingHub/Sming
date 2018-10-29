@@ -6,6 +6,12 @@
 #
 #############################################################
 
+$(warning !!!!======================= [ WARNING ] ====================!!!)
+$(warning Non rBoot projects are deprecated and will be removed in the next releases)
+$(warning If you see this warning make sure to modify your application Makefile-user.mk file and add the following line:)
+$(warning RBOOT_ENABLED=1)
+$(warning ========================================================================)
+
 ### Defaults ###
 
 ## COM port parameters
