@@ -17,29 +17,8 @@
 #include "WebConstants.h"
 #include "../../Data/Stream/ChunkedStream.h"
 
-bool HttpServerConnection::parserSettingsInitialized = false;
-http_parser_settings HttpServerConnection::parserSettings;
-
-HttpServerConnection::HttpServerConnection(tcp_pcb* clientTcp) : TcpClient(clientTcp, 0, 0), state(eHCS_Ready)
+HttpServerConnection::HttpServerConnection(tcp_pcb* clientTcp) : HttpConnectionBase(clientTcp, HTTP_REQUEST)
 {
-	// create parser ...
-	http_parser_init(&parser, HTTP_REQUEST);
-	parser.data = (void*)this;
-
-	if(!parserSettingsInitialized) {
-		memset(&parserSettings, 0, sizeof(parserSettings));
-		// Notification callbacks: on_message_begin, on_headers_complete, on_message_complete.
-		parserSettings.on_message_begin = staticOnMessageBegin;
-		parserSettings.on_headers_complete = staticOnHeadersComplete;
-		parserSettings.on_message_complete = staticOnMessageComplete;
-
-		// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
-		parserSettings.on_url = staticOnPath;
-		parserSettings.on_header_field = staticOnHeaderField;
-		parserSettings.on_header_value = staticOnHeaderValue;
-		parserSettings.on_body = staticOnBody;
-		parserSettingsInitialized = true;
-	}
 }
 
 HttpServerConnection::~HttpServerConnection()
@@ -59,108 +38,74 @@ void HttpServerConnection::setBodyParsers(BodyParsers* bodyParsers)
 	this->bodyParsers = bodyParsers;
 }
 
-int HttpServerConnection::staticOnMessageBegin(http_parser* parser)
+int HttpServerConnection::onMessageBegin(http_parser* parser)
 {
-	HttpServerConnection* connection = (HttpServerConnection*)parser->data;
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
-
 	// Reset Response ...
-	connection->response.code = 200;
-	connection->response.headers.clear();
-	if(connection->response.stream != nullptr) {
-		delete connection->response.stream;
-		connection->response.stream = nullptr;
+	response.code = 200;
+	response.headers.clear();
+	if(response.stream != nullptr) {
+		delete response.stream;
+		response.stream = nullptr;
 	}
-
-	connection->state = eHCS_Ready;
 
 	// ... and Request
-	// TODO:
-	connection->request.setMethod((const HttpMethod)parser->method);
+	request.setMethod((const HttpMethod)parser->method);
 
 	// and temp data...
-	connection->requestHeaders.clear();
-	connection->bodyParser = 0;
+	reset();
+	bodyParser = 0;
 
 	return 0;
 }
 
-int HttpServerConnection::staticOnPath(http_parser* parser, const char* at, size_t length)
+int HttpServerConnection::onPath(const URL& uri)
 {
-	HttpServerConnection* connection = (HttpServerConnection*)parser->data;
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
-
-	// TODO: find the most suitable path..
-
-	String path = String(at, length);
-	if(path.length() > 1 && path.endsWith("/")) {
-		path = path.substring(0, path.length() - 1);
-	}
-
-	connection->request.setURL(path);
-
-	if(connection->resourceTree == nullptr) {
+	if(resourceTree == nullptr) {
 		debug_e("ERROR: HttpServerConnection: The resource tree is not set!");
 
 		return -1;
 	}
 
-	if(connection->resourceTree->contains(connection->request.uri.Path)) {
-		connection->resource = (*connection->resourceTree)[connection->request.uri.Path];
-	} else if(connection->resourceTree->contains("*")) {
-		connection->resource = (*connection->resourceTree)["*"];
+	request.setURL(uri);
+
+	if(resourceTree->contains(request.uri.Path)) {
+		resource = (*resourceTree)[request.uri.Path];
+	} else if(resourceTree->contains("*")) {
+		resource = (*resourceTree)["*"];
 	}
 
 	return 0;
 }
 
-int HttpServerConnection::staticOnMessageComplete(http_parser* parser)
+int HttpServerConnection::onMessageComplete(http_parser* parser)
 {
-	HttpServerConnection* connection = (HttpServerConnection*)parser->data;
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
-
 	// we are finished with this request
 	int hasError = 0;
 	if(HTTP_PARSER_ERRNO(parser) != HPE_OK) {
-		connection->sendError(httpGetErrorName(HTTP_PARSER_ERRNO(parser)));
+		sendError(httpGetErrorName(HTTP_PARSER_ERRNO(parser)));
 		return 0;
 	}
 
-	if(connection->bodyParser) {
-		connection->bodyParser(connection->request, nullptr, PARSE_DATAEND);
+	if(bodyParser) {
+		bodyParser(request, nullptr, PARSE_DATAEND);
 	}
 
-	if(connection->resource != nullptr && connection->resource->onRequestComplete) {
-		hasError = connection->resource->onRequestComplete(*connection, connection->request, connection->response);
+	if(resource != nullptr && resource->onRequestComplete) {
+		hasError = resource->onRequestComplete(*this, request, response);
 	}
 
-	connection->send();
+	send();
 
-	if(connection->request.responseStream != nullptr) {
-		delete connection->request.responseStream;
-		connection->request.responseStream = nullptr;
+	if(request.responseStream != nullptr) {
+		delete request.responseStream;
+		request.responseStream = nullptr;
 	}
 
 	return hasError;
 }
 
-int HttpServerConnection::staticOnHeadersComplete(http_parser* parser)
+int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 {
-	HttpServerConnection* connection = (HttpServerConnection*)parser->data;
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
-
 	debug_d("The headers are complete");
 
 	/* Callbacks should return non-zero to indicate an error. The parser will
@@ -178,23 +123,18 @@ int HttpServerConnection::staticOnHeadersComplete(http_parser* parser)
 	 * `Upgrade` or `Connection: upgrade` headers.
 	 */
 	int error = 0;
-	connection->request.setHeaders(connection->requestHeaders);
+	request.setHeaders(headers);
 
-	connection->lastWasValue = true;
-	connection->lastData = "";
-	connection->currentField = "";
-	connection->requestHeaders.clear();
-
-	if(connection->resource != nullptr && connection->resource->onHeadersComplete) {
-		error = connection->resource->onHeadersComplete(*connection, connection->request, connection->response);
+	if(resource != nullptr && resource->onHeadersComplete) {
+		error = resource->onHeadersComplete(*this, request, response);
 	}
 
-	if(!error && connection->request.method == HTTP_HEAD) {
+	if(!error && request.method == HTTP_HEAD) {
 		error = 1;
 	}
 
-	if(connection->request.headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
-		String contentType = connection->request.headers[HTTP_HEADER_CONTENT_TYPE];
+	if(request.headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
+		String contentType = request.headers[HTTP_HEADER_CONTENT_TYPE];
 		int endPos = contentType.indexOf(';');
 		if(endPos != -1) {
 			contentType = contentType.substring(0, endPos);
@@ -213,154 +153,40 @@ int HttpServerConnection::staticOnHeadersComplete(http_parser* parser)
 		types.add("*");
 
 		for(unsigned i = 0; i < types.count(); i++) {
-			if(connection->bodyParsers->contains(types.at(i))) {
-				connection->bodyParser = (*connection->bodyParsers)[types.at(i)];
+			if(bodyParsers->contains(types.at(i))) {
+				bodyParser = (*bodyParsers)[types.at(i)];
 				break;
 			}
 		}
 
-		if(connection->bodyParser) {
-			connection->bodyParser(connection->request, nullptr, -1);
+		if(bodyParser) {
+			bodyParser(request, nullptr, PARSE_DATASTART);
 		}
 	}
 
 	return error;
 }
 
-int HttpServerConnection::staticOnHeaderField(http_parser* parser, const char* at, size_t length)
+bool HttpServerConnection::onProtocolUpgrade(http_parser* parser)
 {
-	HttpServerConnection* connection = (HttpServerConnection*)parser->data;
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
+	if(upgradeCallback) {
+		return upgradeCallback();
 	}
 
-	if(connection->lastWasValue) {
-		// we are starting to process new header
-		connection->lastData = "";
-		connection->lastWasValue = false;
-	}
-	connection->lastData += String(at, length);
-
-	return 0;
+	return true;
 }
 
-int HttpServerConnection::staticOnHeaderValue(http_parser* parser, const char* at, size_t length)
+int HttpServerConnection::onBody(const char* at, size_t length)
 {
-	HttpServerConnection* connection = (HttpServerConnection*)parser->data;
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
+	if(bodyParser) {
+		bodyParser(request, at, length);
 	}
 
-	if(!connection->lastWasValue) {
-		connection->currentField = connection->lastData;
-		connection->requestHeaders[connection->currentField] = nullptr;
-		connection->lastWasValue = true;
+	if(resource != nullptr && resource->onBody) {
+		return resource->onBody(*this, request, at, length);
 	}
-	connection->requestHeaders[connection->currentField] += String(at, length);
 
 	return 0;
-}
-
-int HttpServerConnection::staticOnBody(http_parser* parser, const char* at, size_t length)
-{
-	HttpServerConnection* connection = (HttpServerConnection*)parser->data;
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
-
-	if(connection->bodyParser) {
-		connection->bodyParser(connection->request, at, length);
-	}
-
-	if(connection->resource != nullptr && connection->resource->onBody) {
-		return connection->resource->onBody(*connection, connection->request, at, length);
-	}
-
-	// TODO: ...
-	//	if(connection->response.inputStream != nullptr) {
-	//		int res = connection->response.inputStream->write((const uint8_t *)&at, length);
-	//		if (res != length) {
-	//			connection->response.inputStream->close();
-	//			return 1;
-	//		}
-	//	}
-
-	return 0;
-}
-
-err_t HttpServerConnection::onReceive(pbuf* buf)
-{
-	if(buf == nullptr) {
-		return TcpConnection::onReceive(buf); // close the connection on TCP error.
-	}
-
-	pbuf* cur = buf;
-	if(parser.upgrade && resource != nullptr && resource->onUpgrade) {
-		while(cur != nullptr && cur->len > 0) {
-			int err = resource->onUpgrade(*this, request, (char*)cur->payload, cur->len);
-			if(err) {
-				debug_e("The upgraded connection returned error: %d", err);
-				TcpConnection::onReceive(nullptr);
-				return ERR_ABRT; // abort the connection
-			}
-
-			cur = cur->next;
-		}
-
-		TcpConnection::onReceive(buf);
-
-		return ERR_OK;
-	}
-
-	int parsedBytes = 0;
-	while(cur != nullptr && cur->len > 0) {
-		parsedBytes += http_parser_execute(&parser, &parserSettings, (char*)cur->payload, cur->len);
-		if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
-			// we ran into trouble - abort the connection
-			debug_e("HTTP parser error: %s", httpGetErrorName(HTTP_PARSER_ERRNO(&parser)).c_str());
-			sendError();
-
-			if(HTTP_PARSER_ERRNO(&parser) >= HPE_INVALID_EOF_STATE) {
-				TcpConnection::onReceive(nullptr);
-				return ERR_ABRT; // abort the connection on HTTP parsing error.
-			}
-
-			TcpConnection::onReceive(buf);
-			return ERR_OK;
-		}
-
-		cur = cur->next;
-	}
-
-	if(parsedBytes != buf->tot_len) {
-		if(!parser.upgrade) {
-			// something went wrong
-			TcpConnection::onReceive(nullptr);
-			return ERR_ABRT; // abort the c
-		}
-
-		if(resource != nullptr && resource->onUpgrade) {
-			// we have rest bytes -> process them
-			while(cur != nullptr && cur->len > 0) {
-				int err = resource->onUpgrade(*this, request, (char*)cur->payload, cur->len);
-				if(err) {
-					debug_e("The upgraded connection returned error: %d", err);
-					TcpConnection::onReceive(nullptr);
-					return ERR_ABRT; // abort the connection
-				}
-
-				cur = cur->next;
-			}
-		}
-	}
-
-	// Fire ReadyToSend callback
-	TcpConnection::onReceive(buf);
-
-	return ERR_OK;
 }
 
 void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
@@ -499,11 +325,6 @@ bool HttpServerConnection::sendResponseBody(HttpResponse* response)
 	}
 
 	return true;
-}
-
-void HttpServerConnection::onError(err_t err)
-{
-	TcpClient::onError(err);
 }
 
 void HttpServerConnection::send()

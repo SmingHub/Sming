@@ -10,19 +10,16 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#ifndef _SMING_CORE_HTTP_CONNECTION_H_
-#define _SMING_CORE_HTTP_CONNECTION_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_CONNECTION_H_
+#define _SMING_CORE_NETWORK_HTTP_CONNECTION_H_
 
-#include "HttpCommon.h"
-#include "HttpResponse.h"
-#include "HttpRequest.h"
-#include "../TcpClient.h"
+#include "HttpConnectionBase.h"
 #include "../Services/DateTime/DateTime.h"
 #include "Data/ObjectQueue.h"
 
 typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
-class HttpConnection : protected TcpClient
+class HttpConnection : public HttpConnectionBase
 {
 	friend class HttpClient;
 
@@ -47,9 +44,6 @@ public:
 	 * @return HttpResponse*
 	 */
 	HttpResponse* getResponse();
-
-	using TcpConnection::getRemoteIp;
-	using TcpConnection::getRemotePort;
 
 	using TcpClient::close;
 
@@ -93,53 +87,57 @@ public:
 	String getResponseString();
 	// @enddeprecated
 
+	virtual void reset();
+
 protected:
-	void reset();
+	// HTTP parser methods
 
-	virtual err_t onReceive(pbuf* buf);
-	virtual err_t onProtocolUpgrade(http_parser* parser);
+	/**
+	 * Called when a new incoming data is beginning to come
+	 * @paran http_parser* parser
+	 * @return 0 on success, non-0 on error
+	 */
+	virtual int onMessageBegin(http_parser* parser);
+
+	/**
+	 * Called when all headers are received
+	 * @param HttpHeaders headers - the processed headers
+	 * @return 0 on success, non-0 on error
+	 */
+	virtual int onHeadersComplete(const HttpHeaders& headers);
+
+	/**
+	 * Called when a piece of body data is received
+	 * @param const char* at -  the data
+	 * @paran size_t length
+	 * @return 0 on success, non-0 on error
+	 */
+	virtual int onBody(const char* at, size_t length);
+
+	/**
+	 * Called when the incoming data is complete
+	 * @paran http_parser* parser
+	 * @return 0 on success, non-0 on error
+	 */
+	virtual int onMessageComplete(http_parser* parser);
+
+	// TCP methods
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-	virtual void onError(err_t err);
 
-	void cleanup();
+	virtual void cleanup();
 
 private:
-	static int staticOnMessageBegin(http_parser* parser);
-#ifndef COMPACT_MODE
-	static int staticOnStatus(http_parser* parser, const char* at, size_t length);
-#endif
-	static int staticOnHeadersComplete(http_parser* parser);
-	static int staticOnHeaderField(http_parser* parser, const char* at, size_t length);
-	static int staticOnHeaderValue(http_parser* parser, const char* at, size_t length);
-	static int staticOnBody(http_parser* parser, const char* at, size_t length);
-#ifndef COMPACT_MODE
-	static int staticOnChunkHeader(http_parser* parser);
-	static int staticOnChunkComplete(http_parser* parser);
-#endif
-	static int staticOnMessageComplete(http_parser* parser);
-
 	void sendRequestHeaders(HttpRequest* request);
 	bool sendRequestBody(HttpRequest* request);
+	HttpPartResult multipartProducer();
 
 protected:
 	RequestQueue* waitingQueue = nullptr; ///< Requests waiting to be started - we do not own this queue
 	RequestQueue executionQueue;		  ///< Requests being executed in a pipeline
-	http_parser parser;
-	static http_parser_settings parserSettings;
-	static bool parserSettingsInitialized;
 
-	bool lastWasValue = true;
-	String lastData = "";
-	String currentField = "";
 	HttpRequest* incomingRequest = nullptr;
 	HttpRequest* outgoingRequest = nullptr;
 	HttpResponse response;
-
-private:
-	HttpConnectionState state = eHCS_Ready;
-
-private:
-	HttpPartResult multipartProducer();
 };
 
-#endif /* _SMING_CORE_HTTP_CONNECTION_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_CONNECTION_H_ */

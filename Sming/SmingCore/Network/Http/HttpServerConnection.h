@@ -10,17 +10,14 @@
  *
  ****/
 
-#ifndef _SMING_CORE_HTTPSERVERCONNECTION_H_
-#define _SMING_CORE_HTTPSERVERCONNECTION_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_HTTPSERVERCONNECTION_H_
+#define _SMING_CORE_NETWORK_HTTP_HTTPSERVERCONNECTION_H_
 
-#include "../TcpClient.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WHashMap.h"
-#include "../../Delegate.h"
-
+#include "HttpConnectionBase.h"
 #include "HttpResource.h"
-#include "HttpRequest.h"
 #include "HttpBodyParser.h"
+
+#include <functional>
 
 #ifndef HTTP_SERVER_EXPOSE_NAME
 #define HTTP_SERVER_EXPOSE_NAME 1
@@ -34,7 +31,9 @@ class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
 
-class HttpServerConnection : public TcpClient
+typedef std::function<bool()> HttpServerProtocolUpgradeCallback;
+
+class HttpServerConnection : public HttpConnectionBase
 {
 public:
 	HttpServerConnection(tcp_pcb* clientTcp);
@@ -47,39 +46,65 @@ public:
 
 	using TcpClient::send;
 
-	using TcpConnection::getRemoteIp;
-	using TcpConnection::getRemotePort;
+	void setUpgdareCallback(HttpServerProtocolUpgradeCallback callback)
+	{
+		upgradeCallback = callback;
+	}
 
 protected:
-	virtual err_t onReceive(pbuf* buf);
+	// HTTP parser methods
+	/**
+	 * Called when a new incoming data is beginning to come
+	 * @paran http_parser* parser
+	 * @return 0 on success, non-0 on error
+	 */
+	virtual int onMessageBegin(http_parser* parser);
+
+	/**
+	 * Called when the URL path is known
+	 * @param String path
+	 * @return 0 on success, non-0 on error
+	 */
+	virtual int onPath(const URL& path);
+
+	/**
+	 * Called when all headers are received
+	 * @param HttpHeaders headers - the processed headers
+	 * @return 0 on success, non-0 on error
+	 */
+	virtual int onHeadersComplete(const HttpHeaders& headers);
+
+	/**
+	 * Called when a piece of body data is received
+	 * @param const char* at -  the data
+	 * @paran size_t length
+	 * @return 0 on success, non-0 on error
+	 */
+	virtual int onBody(const char* at, size_t length);
+
+	/**
+	 * Called when the incoming data is complete
+	 * @paran http_parser* parser
+	 * @return 0 on success, non-0 on error
+	 */
+	virtual int onMessageComplete(http_parser* parser);
+
+	virtual bool onProtocolUpgrade(http_parser* parser);
+
+	// TCP methods
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 	virtual void sendError(const String& message = nullptr, enum http_status code = HTTP_STATUS_BAD_REQUEST);
-	virtual void onError(err_t err);
 
 private:
-	static int staticOnMessageBegin(http_parser* parser);
-	static int staticOnPath(http_parser* parser, const char* at, size_t length);
-	static int staticOnHeadersComplete(http_parser* parser);
-	static int staticOnHeaderField(http_parser* parser, const char* at, size_t length);
-	static int staticOnHeaderValue(http_parser* parser, const char* at, size_t length);
-	static int staticOnBody(http_parser* parser, const char* at, size_t length);
-	static int staticOnMessageComplete(http_parser* parser);
-
 	void sendResponseHeaders(HttpResponse* response);
 	bool sendResponseBody(HttpResponse* response);
 
 public:
-	void* userData = NULL; // << use to pass user data between requests
+	void* userData = nullptr; // << use to pass user data between requests
 
 private:
-	HttpConnectionState state;
-
-	http_parser parser;
-	static http_parser_settings parserSettings;
-	static bool parserSettingsInitialized;
-
-	ResourceTree* resourceTree = NULL;
-	HttpResource* resource = NULL;
+	ResourceTree* resourceTree = nullptr;
+	HttpResource* resource = nullptr;
 
 	HttpRequest request = HttpRequest(URL());
 	HttpResponse response;
@@ -87,14 +112,10 @@ private:
 	HttpResourceDelegate headersCompleteDelegate = 0;
 	HttpResourceDelegate requestCompletedDelegate = 0;
 	HttpServerConnectionBodyDelegate onBodyDelegate = 0;
+	HttpServerProtocolUpgradeCallback upgradeCallback = nullptr;
 
-	HttpHeaders requestHeaders;
-	bool lastWasValue = true;
-	String lastData = "";
-	String currentField = "";
-
-	BodyParsers* bodyParsers = NULL;
-	HttpBodyParserDelegate bodyParser;
+	BodyParsers* bodyParsers = nullptr;
+	HttpBodyParserDelegate bodyParser = 0;
 };
 
-#endif /* _SMING_CORE_HTTPSERVERCONNECTION_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_HTTPSERVERCONNECTION_H_ */

@@ -21,12 +21,12 @@ HttpServer::HttpServer()
 	configure(settings);
 }
 
-HttpServer::HttpServer(HttpServerSettings settings)
+HttpServer::HttpServer(const HttpServerSettings& settings)
 {
 	configure(settings);
 }
 
-void HttpServer::configure(HttpServerSettings settings)
+void HttpServer::configure(const HttpServerSettings& settings)
 {
 	this->settings = settings;
 	if(settings.minHeapSize != -1 && settings.minHeapSize > -1) {
