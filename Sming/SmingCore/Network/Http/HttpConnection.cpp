@@ -115,9 +115,7 @@ String HttpConnection::getResponseString()
 void HttpConnection::reset()
 {
 	delete incomingRequest;
-	delete outgoingRequest;
 	incomingRequest = nullptr;
-	outgoingRequest = nullptr;
 
 	response.reset();
 
@@ -257,6 +255,11 @@ int HttpConnection::onHeadersComplete(const HttpHeaders& headers)
 
 int HttpConnection::onBody(const char* at, size_t length)
 {
+	if(incomingRequest == nullptr) {
+		// nothing to process right now...
+		return 1;
+	}
+
 	if(incomingRequest->requestBodyDelegate) {
 		return incomingRequest->requestBodyDelegate(*this, at, length);
 	}
