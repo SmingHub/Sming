@@ -74,7 +74,6 @@ void HttpConnectionBase::resetHeaders()
 void HttpConnectionBase::reset()
 {
 	resetHeaders();
-	state = eHCS_Ready;
 }
 
 void HttpConnectionBase::cleanup()
@@ -231,13 +230,17 @@ int HttpConnectionBase::staticOnMessageComplete(http_parser* parser)
 	return error;
 }
 
+void HttpConnectionBase::onHttpError(http_errno error)
+{
+	debug_e("HTTP parser error: %s", httpGetErrorName(error).c_str());
+}
+
 bool HttpConnectionBase::onTcpReceive(TcpClient& client, char* data, int size)
 {
 	int parsedBytes = http_parser_execute(&parser, &parserSettings, data, size);
 	if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 		// we ran into trouble - abort the connection
-		debug_e("HTTP parser error: %s", httpGetErrorName(HTTP_PARSER_ERRNO(&parser)).c_str());
-		cleanup();
+		onHttpError(HTTP_PARSER_ERRNO(&parser));
 		return false;
 	}
 

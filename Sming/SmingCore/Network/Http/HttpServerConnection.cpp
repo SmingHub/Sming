@@ -189,6 +189,12 @@ int HttpServerConnection::onBody(const char* at, size_t length)
 	return 0;
 }
 
+void HttpServerConnection::onHttpError(http_errno error)
+{
+	sendError(httpGetErrorName(error));
+	HttpConnectionBase::onHttpError(error);
+}
+
 void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
@@ -343,6 +349,7 @@ void HttpServerConnection::sendError(const String& message, enum http_status cod
 	html += message ? message : httpGetStatusText(response.code);
 	html += F("</H2>");
 	response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
+	response.headers[HTTP_HEADER_CONNECTION] = _F("close");
 	response.sendString(html);
 
 	send();

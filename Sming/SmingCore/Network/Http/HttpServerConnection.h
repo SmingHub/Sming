@@ -91,6 +91,8 @@ protected:
 
 	virtual bool onProtocolUpgrade(http_parser* parser);
 
+	virtual void onHttpError(http_errno error);
+
 	// TCP methods
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
 	virtual void sendError(const String& message = nullptr, enum http_status code = HTTP_STATUS_BAD_REQUEST);

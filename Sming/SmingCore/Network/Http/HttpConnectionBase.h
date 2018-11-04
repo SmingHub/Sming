@@ -106,6 +106,8 @@ protected:
 		return true;
 	}
 
+	virtual void onHttpError(http_errno error);
+
 	// TCP methods
 	virtual bool onTcpReceive(TcpClient& client, char* data, int size);
 	virtual void onError(err_t err);
