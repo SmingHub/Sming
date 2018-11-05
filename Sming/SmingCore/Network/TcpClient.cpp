@@ -119,7 +119,7 @@ err_t TcpClient::onReceive(pbuf* buf)
 	if(receive) {
 		pbuf* cur = buf;
 		while(cur != NULL && cur->len > 0) {
-			bool success = !receive(*this, (char*)cur->payload, cur->len);
+			bool success = receive(*this, (char*)cur->payload, cur->len);
 			if(!success) {
 				debug_d("TcpClient::onReceive: Aborted from receive callback");
 

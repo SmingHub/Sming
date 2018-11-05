@@ -51,13 +51,15 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl /* = fal
 #ifdef ENABLE_SSL
 	this->sslOptions |= sslOptions;
 
-	if(sslExtension != NULL) {
-		ssl_ext_free(sslExtension);
-	}
+	if(useSsl) {
+		if(sslExtension != NULL) {
+			ssl_ext_free(sslExtension);
+		}
 
-	sslExtension = ssl_ext_new();
-	ssl_ext_set_host_name(sslExtension, server.c_str());
-	ssl_ext_set_max_fragment_size(sslExtension, 4); // 4K max size
+		sslExtension = ssl_ext_new();
+		ssl_ext_set_host_name(sslExtension, server.c_str());
+		ssl_ext_set_max_fragment_size(sslExtension, 4); // 4K max size
+	}
 #endif
 
 	debug_d("connect to: %s", server.c_str());

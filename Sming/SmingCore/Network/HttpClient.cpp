@@ -118,7 +118,7 @@ void HttpClient::freeSslSessionPool()
 
 void HttpClient::freeRequestQueue()
 {
-	for(int i = 0; i < queue.count(); i++) {
+	for(unsigned i = 0; i < queue.count(); i++) {
 		String key = queue.keyAt(i);
 		RequestQueue* requestQueue = queue[key];
 		HttpRequest* request = requestQueue->dequeue();
@@ -134,7 +134,7 @@ void HttpClient::freeRequestQueue()
 
 void HttpClient::freeHttpConnectionPool()
 {
-	for(int i = 0; i < httpConnectionPool.count(); i++) {
+	for(unsigned i = 0; i < httpConnectionPool.count(); i++) {
 		String key = httpConnectionPool.keyAt(i);
 		delete httpConnectionPool[key];
 		httpConnectionPool[key] = NULL;

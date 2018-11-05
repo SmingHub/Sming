@@ -21,12 +21,12 @@ HttpServer::HttpServer()
 	configure(settings);
 }
 
-HttpServer::HttpServer(HttpServerSettings settings)
+HttpServer::HttpServer(const HttpServerSettings& settings)
 {
 	configure(settings);
 }
 
-void HttpServer::configure(HttpServerSettings settings)
+void HttpServer::configure(const HttpServerSettings& settings)
 {
 	this->settings = settings;
 	if(settings.minHeapSize != -1 && settings.minHeapSize > -1) {
@@ -45,7 +45,7 @@ void HttpServer::configure(HttpServerSettings settings)
 
 HttpServer::~HttpServer()
 {
-	for(int i = 0; i < resourceTree.count(); i++) {
+	for(unsigned i = 0; i < resourceTree.count(); i++) {
 		if(resourceTree.valueAt(i) != NULL) {
 			delete resourceTree.valueAt(i);
 		}
