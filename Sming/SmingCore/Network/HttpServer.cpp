@@ -45,7 +45,7 @@ void HttpServer::configure(const HttpServerSettings& settings)
 
 HttpServer::~HttpServer()
 {
-	for(int i = 0; i < resourceTree.count(); i++) {
+	for(unsigned i = 0; i < resourceTree.count(); i++) {
 		if(resourceTree.valueAt(i) != NULL) {
 			delete resourceTree.valueAt(i);
 		}
