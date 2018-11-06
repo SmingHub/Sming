@@ -45,7 +45,7 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 
 void WebsocketResource::shutdown(HttpServerConnection& connection)
 {
-	WebsocketConnection* socket = (WebsocketConnection*)connection.userData;
+	WebsocketConnection* socket = static_cast<WebsocketConnection*>(connection.userData);
 	delete socket;
 	connection.userData = NULL;
 	connection.setTimeOut(1);
