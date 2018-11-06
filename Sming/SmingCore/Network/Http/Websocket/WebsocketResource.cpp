@@ -24,6 +24,11 @@ WebsocketResource::~WebsocketResource()
 int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	WebsocketConnection* socket = new WebsocketConnection(&connection, false);
+	if(!socket) {
+		debug_e("Unable to create websocket connection");
+		return 1;
+	}
+
 	socket->setBinaryHandler(wsBinary);
 	socket->setMessageHandler(wsMessage);
 	socket->setConnectionHandler(wsConnect);
@@ -35,7 +40,7 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 	}
 
 	connection.setTimeOut(USHRT_MAX); //Disable disconnection on connection idle (no rx/tx)
-
+	connection.userData = (void*)socket;
 	connection.setUpgradeCallback(std::bind(&WebsocketConnection::onConnected, socket));
 
 	// TODO: Re-Enable Command Executor...
