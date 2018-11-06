@@ -36,7 +36,7 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 
 	connection.setTimeOut(USHRT_MAX); //Disable disconnection on connection idle (no rx/tx)
 
-	connection.setUpgdareCallback(std::bind(&WebsocketConnection::onConnected, socket));
+	connection.setUpgradeCallback(std::bind(&WebsocketConnection::onConnected, socket));
 
 	// TODO: Re-Enable Command Executor...
 

@@ -21,6 +21,12 @@
 #include "HttpResponse.h"
 #include "HttpRequest.h"
 
+/** @defgroup   HTTP base connection
+ *  @brief      Provides http base used for client and server connections
+ *  @ingroup    http
+ *  @{
+ */
+
 class HttpConnectionBase : public TcpClient
 {
 public:
@@ -36,6 +42,10 @@ public:
 protected:
 	void resetHeaders();
 
+	/**
+	 * @brief Initializes the http parser for a specific type of HTTP message
+	 * @param http_parser_type
+	 */
 	virtual void init(http_parser_type type);
 
 	// HTTP parser methods
@@ -139,4 +149,5 @@ protected:
 	HttpConnectionState state = eHCS_Ready;
 };
 
+/** @} */
 #endif /* _SMING_CORE_NETWORK_HTTP_HTTPCONNECTIONBASE_H_ */

@@ -15,6 +15,12 @@ extern "C" {
 #include "../ws_parser/ws_parser.h"
 }
 
+/** @defgroup   Websocket connection
+ *  @brief      Provides websocket connection (server and client)
+ *  @ingroup    websocket http
+ *  @{
+ */
+
 #define WEBSOCKET_VERSION 13 // 1.3
 
 #define WSSTR_CONNECTION _F("connection")
@@ -46,24 +52,72 @@ typedef struct {
 class WebsocketConnection
 {
 public:
+	/**
+	 * @brief Constructs a websocket connection on top of http client or server connection
+	 * @param HttpConnectionBase* connection the transport connection
+	 * @param bool isClientConnection true when the passed connection is an http client conneciton
+	 */
 	WebsocketConnection(HttpConnectionBase* connection, bool isClientConnection = true);
 
 	virtual ~WebsocketConnection();
 
 	/**
 	 * @brief Binds websocket connection to an http server connection
+	 * @param HttpRequest& request
+	 * @param HttpResponse& response
+	 * @retval true on success, false otherwise
 	 */
 	bool bind(HttpRequest& request, HttpResponse& response);
 
+	/**
+	 * @brief Sends a websocket message
+	 * @param const char* message
+	 * @param  int length
+	 * @param  ws_frame_type_t type
+	 */
 	virtual void send(const char* message, int length, ws_frame_type_t type = WS_FRAME_TEXT);
+
+	/**
+	 * @brief Broadcasts a message to all active websocket connections
+	 * @param const char* message
+	 * @param  int length
+	 * @param  ws_frame_type_t type
+	 */
 	static void broadcast(const char* message, int length, ws_frame_type_t type = WS_FRAME_TEXT);
 
+	/**
+	 * @brief Sends a string websocket message
+	 * @param const String& message
+	 */
 	void sendString(const String& message);
-	void sendBinary(const uint8_t* data, int size);
+
+	/**
+	 * @brief Sends a binary websocket message
+	 * @param const uint8_t* data
+	 * @param int length
+	 */
+	void sendBinary(const uint8_t* data, int length);
+
+	/**
+	 * @brief Closes a websocket connection (without closing the underlying http connection
+	 */
 	void close();
+
+	/**
+	 * @brief Resets a websocket connection
+	 */
 	void reset();
 
+	/**
+	 * @brief Attaches a user data to a websocket connection
+	 * @param void* userData
+	 */
 	void setUserData(void* userData);
+
+	/**
+	 * @brief Retrieves user data attached
+	 * @retval void*
+	 */
 	void* getUserData();
 
 	// @deprecated
@@ -72,27 +126,64 @@ public:
 	WebsocketList& getActiveWebSockets();
 	// @end deprecated
 
+	/**
+	 * @brief Sets the callback handler to be called after successful websocket connection
+	 * @param WebsocketDelegate handler
+	 */
 	void setConnectionHandler(WebsocketDelegate handler);
+
+	/**
+	 * @brief Sets the callback handler to be called after a websocket message is received
+	 * @param WebsocketMessageDelegate handler
+	 */
 	void setMessageHandler(WebsocketMessageDelegate handler);
+
+	/**
+	 * @brief Sets the callback handler to be called after a binary websocket message is received
+	 * @param WebsocketBinaryDelegate handler
+	 */
 	void setBinaryHandler(WebsocketBinaryDelegate handler);
+
+	/**
+	 * @brief Sets the callback handler to be called before closing a websocket connection
+	 * @param WebsocketDelegate handler
+	 */
 	void setDisconnectionHandler(WebsocketDelegate handler);
 
+	/**
+	 * @brief Should be called after a websocket connection is established to activate
+	 * 		  the websocket parser and allow sending of websocket data
+	 */
 	void activate();
+
+	/**
+	 * @brief Call this method when the websocket connection was (re)activated.
+	 * @retval bool true on success
+	 */
 	bool onConnected();
 
+	/**
+	 * @brief Gets the underlying HTTP connection
+	 * @retval HttpConnectionBase
+	 */
 	HttpConnectionBase* getConnection()
 	{
 		return connection;
 	}
 
+	/**
+	 * @brief Sets the underlying (transport ) HTTP connection
+	 * @param HttpConnectionBase* connection the transport connection
+	 * @param bool isClientConnection true when the passed connection is an http client conneciton
+	 */
 	void setConnection(HttpConnectionBase* connection, bool isClientConnection = true)
 	{
 		this->connection = connection;
 		this->isClientConnection = isClientConnection;
 	}
 
-	/** @brief  Get websocket client mode
-	  *  @retval Return websocket client mode
+	/** @brief  Gets the state of the websocket connection
+	  * @retval WsConnectionState
 	  */
 	WsConnectionState getState()
 	{
@@ -137,4 +228,5 @@ private:
 	bool activated = false;
 };
 
+/** @} */
 #endif /* SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_ */

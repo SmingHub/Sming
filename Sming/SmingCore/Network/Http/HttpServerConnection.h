@@ -19,6 +19,12 @@
 
 #include <functional>
 
+/** @defgroup   HTTP server connection
+ *  @brief      Provides http server connection
+ *  @ingroup    http
+ *  @{
+ */
+
 #ifndef HTTP_SERVER_EXPOSE_NAME
 #define HTTP_SERVER_EXPOSE_NAME 1
 #endif
@@ -46,7 +52,7 @@ public:
 
 	using TcpClient::send;
 
-	void setUpgdareCallback(HttpServerProtocolUpgradeCallback callback)
+	void setUpgradeCallback(HttpServerProtocolUpgradeCallback callback)
 	{
 		upgradeCallback = callback;
 	}
@@ -120,4 +126,5 @@ private:
 	HttpBodyParserDelegate bodyParser = 0;
 };
 
+/** @} */
 #endif /* _SMING_CORE_NETWORK_HTTP_HTTPSERVERCONNECTION_H_ */
