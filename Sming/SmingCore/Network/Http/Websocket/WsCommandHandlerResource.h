@@ -1,15 +1,18 @@
-/*
- * WebResource.h
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
  *
- *  Created on: Apr 3, 2017
- *      Author: slavey
- */
+ * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
+ *
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ ****/
 
 #ifndef _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_
 #define _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_
 
 #include "../HttpResource.h"
-#include "WebSocketConnection.h"
+#include "WebsocketConnection.h"
 #include "../../Wiring/WString.h"
 #include "../../Services/CommandProcessing/CommandProcessingIncludes.h" // TODO: ....
 
@@ -18,7 +21,7 @@ class WsCommandHandlerResource : protected WebsocketResource
 public:
 	WsCommandHandlerResource() : WebsocketResource()
 	{
-		wsMessage = WebSocketMessageDelegate(&WsCommandHandlerResource::onMessage, this);
+		wsMessage = WebsocketMessageDelegate(&WsCommandHandlerResource::onMessage, this);
 	}
 
 protected:
@@ -29,7 +32,7 @@ protected:
 			return err;
 		}
 
-		WebSocketConnection* socket = (WebSocketConnection*)connection.userData;
+		WebsocketConnection* socket = (WebsocketConnection*)connection.userData;
 		if(socket != NULL) {
 			socket->setMessageHandler()
 
@@ -37,7 +40,7 @@ protected:
 		}
 	}
 
-	void onMessage(WebSocketConnection& connection, const String& message)
+	void onMessage(WebsocketConnection& connection, const String& message)
 	{
 		commandExecutor.executorReceive(message + "\r");
 	}

@@ -17,6 +17,12 @@
 #include "../Services/DateTime/DateTime.h"
 #include "Data/ObjectQueue.h"
 
+/** @defgroup   HTTP client connection
+ *  @brief      Provides http client connection
+ *  @ingroup    http
+ *  @{
+ */
+
 typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
 class HttpConnection : public HttpConnectionBase
@@ -140,4 +146,5 @@ protected:
 	HttpResponse response;
 };
 
+/** @} */
 #endif /* _SMING_CORE_NETWORK_HTTP_CONNECTION_H_ */
