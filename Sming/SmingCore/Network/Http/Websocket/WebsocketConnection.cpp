@@ -83,7 +83,7 @@ bool WebsocketConnection::processFrame(TcpClient& client, char* at, int size)
 {
 	int rc = ws_parser_execute(&parser, (char*)at, size);
 	if(rc != WS_OK) {
-		debug_e("WebSocketResource error: %d %s\n", rc, ws_parser_error(rc));
+		debug_e("WebsocketResource error: %d %s\n", rc, ws_parser_error(rc));
 		return false;
 	}
 
@@ -273,7 +273,7 @@ bool WebsocketConnection::operator==(const WebsocketConnection& rhs) const
 	return (this == &rhs);
 }
 
-WebsocketList& WebsocketConnection::getActiveWebSockets()
+WebsocketList& WebsocketConnection::getActiveWebsockets()
 {
 	return websocketList;
 }

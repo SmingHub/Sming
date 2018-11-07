@@ -21,8 +21,8 @@
 #include "Http/HttpConnection.h"
 #include "Http/Websocket/WebsocketConnection.h"
 
-/** @defgroup   wsclient WebSocket client
- *  @brief      Provides WebSocket client
+/** @defgroup   wsclient Websocket client
+ *  @brief      Provides Websocket client
  *  @ingroup    tcpclient
  *  @{
  */
