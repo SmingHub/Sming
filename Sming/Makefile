@@ -197,6 +197,12 @@ THIRD_PARTY_DATA += third-party/ws_parser/Makefile
 MODULES              += third-party/ws_parser/
 EXTRA_INCDIR     += third-party/ws_parser/
 
+# mqtt-codec in here...
+THIRD_PARTY_DATA = third-party/mqtt-codec/Makefile
+EXTRA_INCDIR += third-party/mqtt-codec/src
+CUSTOM_TARGETS += $(USER_LIBDIR)/libmqttc.a
+LIBS += libmqttc.a
+
 # => SDK
 SDK_INTERNAL = 0
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
@@ -436,6 +442,11 @@ $(USER_LIBDIR)/liblwip%.a: third-party/lwip2/Makefile.sming
 	$(Q) $(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" SDK_INTERNAL="$(SDK_INTERNAL)" \
 				 USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
 endif
+
+$(USER_LIBDIR)/libmqttc.a:
+	$(Q) $(MAKE) -C third-party/mqtt-codec ENABLE_SERVER=0 ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
+			CFLAGS="-Iinclude -I$(SDK_BASE)/include -Wl,-EL -mlongcalls -mtext-section-literals" \
+			LIB_FOLDER="$(SMING_HOME)/$(USER_LIBDIR)/" lib
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"

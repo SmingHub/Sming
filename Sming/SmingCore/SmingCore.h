@@ -56,7 +56,6 @@
 #include "Data/Stream/TemplateFileStream.h"
 
 #include "../Services/DateTime/DateTime.h"
-#include "../Services/libemqtt/libemqtt.h"
 #include "../Services/FATFS/ff.h"
 #include "../Services/Yeelight/YeelightBulb.h"
 

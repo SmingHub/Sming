@@ -22,7 +22,6 @@ public:
 	WebsocketResource();
 	~WebsocketResource();
 	int checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
-	int processData(HttpServerConnection& connection, HttpRequest& request, char* at, int size);
 
 	virtual void shutdown(HttpServerConnection& connection);
 
