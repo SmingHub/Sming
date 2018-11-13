@@ -201,7 +201,6 @@ EXTRA_INCDIR     += third-party/ws_parser/
 THIRD_PARTY_DATA = third-party/mqtt-codec/Makefile
 EXTRA_INCDIR += third-party/mqtt-codec/src
 CUSTOM_TARGETS += $(USER_LIBDIR)/libmqttc.a
-LIBS += libmqttc.a
 
 # => SDK
 SDK_INTERNAL = 0
@@ -262,7 +261,7 @@ ifeq ($(LWIP_EXTRA_FLAGS),1)
 endif
 
 # libraries used in this project, mainly provided by the SDK
-LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) mqttc wpa main
 
 ENABLE_CUSTOM_PWM ?= 1
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
