@@ -1,0 +1,14 @@
+diff --git a/src/platform.h b/src/platform.h
+index 3f82718..7759c99 100644
+--- a/src/platform.h
++++ b/src/platform.h
+@@ -42,8 +42,7 @@
+ #endif
+ 
+ #ifndef MQTT_DEBUGF
+-#include <stdio.h>
+-#define MQTT_DEBUGF(...) printf(__VA_ARGS__)
++#define MQTT_DEBUGF(...) do {} while(0);
+ #endif
+ 
+ #ifndef MQTT_MALLOC

@@ -194,13 +194,13 @@ EXTRA_INCDIR     += third-party/http-parser/
 
 # => websocket-parser
 THIRD_PARTY_DATA += third-party/ws_parser/Makefile
-MODULES              += third-party/ws_parser/
+MODULES          += third-party/ws_parser/
 EXTRA_INCDIR     += third-party/ws_parser/
 
 # mqtt-codec in here...
-THIRD_PARTY_DATA = third-party/mqtt-codec/Makefile
-EXTRA_INCDIR += third-party/mqtt-codec/src
-CUSTOM_TARGETS += $(USER_LIBDIR)/libmqttc.a
+THIRD_PARTY_DATA += third-party/mqtt-codec/Makefile
+EXTRA_INCDIR     += third-party/mqtt-codec/src
+CUSTOM_TARGETS   += $(USER_LIBDIR)/libmqttc.a
 
 # => SDK
 SDK_INTERNAL = 0
