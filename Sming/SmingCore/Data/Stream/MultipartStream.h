@@ -34,8 +34,7 @@ class MultipartStream : public MultiStream
 public:
 	MultipartStream(HttpPartProducerDelegate delegate);
 
-	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	virtual ~MultipartStream();
 
 	/**
 	 * @brief Returns the generated boundary

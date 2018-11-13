@@ -20,11 +20,12 @@
 
 typedef ObjectQueue<ReadWriteStream, MAX_STREAM_CHAIN_SIZE> StreamChainQueue;
 
-class StreamChain: public MultiStream
+class StreamChain : public MultiStream
 {
 public:
 	virtual ~StreamChain()
-	{}
+	{
+	}
 
 	bool attachStream(ReadWriteStream* stream)
 	{

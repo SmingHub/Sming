@@ -3,13 +3,10 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * @author Slavey Karadzhov <slaff@attachix.com>
+ *
  ****/
-
-/** @defgroup   mqttclient MQTT client
- *  @brief      Provides MQTT client
- *  @ingroup    tcpclient
- *  @{
- */
 
 #include "MqttPayloadParser.h"
 
@@ -46,4 +43,3 @@ int defaultPayloadParser(MqttPayloadParserState& state, mqtt_message_t* message,
 
 	return 0;
 }
-

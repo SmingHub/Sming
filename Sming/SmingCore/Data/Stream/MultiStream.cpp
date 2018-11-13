@@ -50,8 +50,7 @@ uint16_t MultiStream::readMemoryBlock(char* data, int bufSize)
 			if(!onCompleted()) {
 				return 0;
 			}
-		}
-		else {
+		} else {
 			onNextStream();
 		}
 	}

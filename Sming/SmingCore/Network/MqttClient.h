@@ -7,7 +7,7 @@
 
 /** @defgroup   mqttclient MQTT client
  *  @brief      Provides MQTT client
- *  @ingroup    tcpclient
+ *  @ingroup    tcpclient mqtt
  *  @{
  */
 
@@ -27,10 +27,7 @@
 typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
 typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
 
-enum MqttClientState {
-	eMCS_Ready = 0,
-	eMCS_SendingData
-};
+enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 
 #ifndef MQTT_REQUEST_POOL_SIZE
 #define MQTT_REQUEST_POOL_SIZE 10
@@ -69,7 +66,7 @@ public:
 	 * Sets keep-alive time. That information is sent during connection to the server
 	 * @param uint16_t seconds
 	 */
-	void setKeepAlive(uint16_t seconds);		 //send to broker
+	void setKeepAlive(uint16_t seconds); //send to broker
 
 	/**
 	 * Sets the interval in which to ping the remote server if there was no activity
@@ -168,8 +165,8 @@ public:
 	// deprecated methods below
 	using TcpClient::setCompleteDelegate;
 
-	using TcpClient::isProcessing;
 	using TcpClient::getConnectionState;
+	using TcpClient::isProcessing;
 
 #ifndef MQTT_NO_COMPAT
 	/**
@@ -193,18 +190,16 @@ public:
 	 * 			   then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.
 	 */
 	bool publishWithQoS(const String& topic, const String& message, int QoS, bool retained = false,
-							MqttMessageDeliveredCallback onDelivery = NULL)
+						MqttMessageDeliveredCallback onDelivery = NULL)
 	{
 		if(onDelivery) {
 			if(QoS == 1) {
 				setEventHandler(MQTT_TYPE_PUBACK, onPuback);
 				this->onDelivery = onDelivery;
-			}
-			else if (QoS == 2) {
+			} else if(QoS == 2) {
 				setEventHandler(MQTT_TYPE_PUBREC, onPuback);
 				this->onDelivery = onDelivery;
-			}
-			else {
+			} else {
 				debug_w("No callback is set for QoS == 0");
 			}
 		}
@@ -247,11 +242,9 @@ private:
 
 		if(client.onDelivery) {
 			uint16_t msgId = 0;
-			int type = 0;
 			if(message->common.type == MQTT_TYPE_PUBACK) {
 				msgId = message->puback.message_id;
-			}
-			else if (message->common.type == MQTT_TYPE_PUBREC) {
+			} else if(message->common.type == MQTT_TYPE_PUBREC) {
 				msgId = message->pubrec.message_id;
 			}
 
@@ -279,7 +272,6 @@ private:
 			String content;
 			if(message->publish.content.data) {
 				content.concat((const char*)message->publish.content.data, message->publish.content.length);
-
 			}
 			client.subscriptionCallback(topic, content);
 		}
@@ -324,7 +316,7 @@ private:
 
 #ifndef MQTT_NO_COMPAT
 	// @deprecated
-	MqttMessageDeliveredCallback onDelivery=0;
+	MqttMessageDeliveredCallback onDelivery = 0;
 	// @deprecated
 	MqttStringSubscriptionCallback subscriptionCallback = 0;
 #endif

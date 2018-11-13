@@ -13,31 +13,33 @@
 #include "../Clock.h"
 #include <algorithm>
 
-#define COPY_STRING(TO, FROM) {\
-	TO.length = FROM.length(); \
-	TO.data = (uint8_t *)malloc(FROM.length()); \
-	if(!TO.data) { \
-		debug_e("Not enough memory"); \
-		return false; \
-	} \
-	memcpy(TO.data, FROM.c_str(), FROM.length()); \
-}
+#define COPY_STRING(TO, FROM)                                                                                          \
+	{                                                                                                                  \
+		TO.length = FROM.length();                                                                                     \
+		TO.data = (uint8_t*)malloc(FROM.length());                                                                     \
+		if(!TO.data) {                                                                                                 \
+			debug_e("Not enough memory");                                                                              \
+			return false;                                                                                              \
+		}                                                                                                              \
+		memcpy(TO.data, FROM.c_str(), FROM.length());                                                                  \
+	}
 
 #define MQTT_PUBLISH_STREAM 0
 
 mqtt_serialiser_t MqttClient::serialiser;
 mqtt_parser_callbacks_t MqttClient::callbacks;
 
-MqttClient::MqttClient(bool withDefaultPayloadParser /* = true */, bool autoDestruct /* = false*/) : TcpClient(autoDestruct)
+MqttClient::MqttClient(bool withDefaultPayloadParser /* = true */, bool autoDestruct /* = false*/)
+	: TcpClient(autoDestruct)
 {
 	// TODO:...
-//	if(!bitSet(flags, MQTT_CLIENT_CALLBACKS)) {
-	  callbacks.on_message_begin = staticOnMessageBegin;
-	  callbacks.on_data_begin    = staticOnDataBegin;
-	  callbacks.on_data_payload  = staticOnDataPayload;
-	  callbacks.on_data_end      = staticOnDataEnd;
-	  callbacks.on_message_end   = staticOnMessageEnd;
-//	}
+	//	if(!bitSet(flags, MQTT_CLIENT_CALLBACKS)) {
+	callbacks.on_message_begin = staticOnMessageBegin;
+	callbacks.on_data_begin = staticOnDataBegin;
+	callbacks.on_data_payload = staticOnDataPayload;
+	callbacks.on_data_end = staticOnDataEnd;
+	callbacks.on_message_end = staticOnMessageEnd;
+	//	}
 
 	mqtt_parser_init(&parser, &callbacks);
 	mqtt_serialiser_init(&serialiser);
@@ -69,7 +71,7 @@ MqttClient::~MqttClient()
 	mqtt_message_clear(&connectMessage, 0);
 	if(outgoingMessage) {
 		mqtt_message_clear(outgoingMessage, 1);
-		outgoingMessage =nullptr;
+		outgoingMessage = nullptr;
 	}
 
 	mqtt_message_clear(&incomingMessage, 0);
@@ -105,7 +107,7 @@ int MqttClient::staticOnDataBegin(void* userData, mqtt_message_t* message)
 		return client->payloadParser(client->payloadState, message, nullptr, MQTT_PAYLOAD_PARSER_START);
 	}
 
-  return 0;
+	return 0;
 }
 
 int MqttClient::staticOnDataPayload(void* userData, mqtt_message_t* message, const char* data, size_t length)
@@ -134,28 +136,27 @@ int MqttClient::staticOnDataEnd(void* userData, mqtt_message_t* message)
 	}
 
 	return 0;
-
-  return 0;
 }
 
-int MqttClient::staticOnMessageEnd(void* userData, mqtt_message_t* message) {
-    MqttClient* client = static_cast<MqttClient*>(userData);
-    if(client == nullptr) {
-    	return -1;
-    }
+int MqttClient::staticOnMessageEnd(void* userData, mqtt_message_t* message)
+{
+	MqttClient* client = static_cast<MqttClient*>(userData);
+	if(client == nullptr) {
+		return -1;
+	}
 
 	if(message->common.type == MQTT_TYPE_CONNACK) {
-	  if(message->connack.return_code) {
-		  // failure
-		  clearBits(client->flags, MQTT_CLIENT_CONNECTED);
-		  client->setTimeOut(1); // schedule the connection for closing
+		if(message->connack.return_code) {
+			// failure
+			clearBits(client->flags, MQTT_CLIENT_CONNECTED);
+			client->setTimeOut(1); // schedule the connection for closing
 
-		  return message->connack.return_code;
-	  }
+			return message->connack.return_code;
+		}
 
-	  // success
-	  client->setTimeOut(USHRT_MAX);
-	  setBits(client->flags, MQTT_CLIENT_CONNECTED);
+		// success
+		client->setTimeOut(USHRT_MAX);
+		setBits(client->flags, MQTT_CLIENT_CONNECTED);
 	}
 
 	if(client->eventHandler.contains(message->common.type)) {
@@ -192,7 +193,7 @@ bool MqttClient::setWill(const String& topic, const String& message, uint8_t fla
 	}
 
 	connectMessage.common.retain = static_cast<mqtt_retain_t>((flags >> 0) & 0x01);
-	connectMessage.common.qos    = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
+	connectMessage.common.qos = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
 
 	COPY_STRING(connectMessage.connect.will_topic, topic);
 	COPY_STRING(connectMessage.connect.will_message, message);
@@ -241,8 +242,8 @@ bool MqttClient::publish(const String& topic, const String& content, uint8_t fla
 	message->common.type = MQTT_TYPE_PUBLISH;
 
 	message->common.retain = static_cast<mqtt_retain_t>((flags >> 0) & 0x01);
-	message->common.qos    = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
-	message->common.dup    = static_cast<mqtt_dup_t>((flags >> 3) & 0x01);
+	message->common.qos = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
+	message->common.dup = static_cast<mqtt_dup_t>((flags >> 3) & 0x01);
 
 	COPY_STRING(message->publish.topic_name, topic);
 	COPY_STRING(message->publish.content, content);
@@ -262,8 +263,8 @@ bool MqttClient::publish(const String& topic, ReadWriteStream* stream, uint8_t f
 	message->common.type = MQTT_TYPE_PUBLISH;
 
 	message->common.retain = static_cast<mqtt_retain_t>((flags >> 0) & 0x01);
-	message->common.qos    = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
-	message->common.dup    = static_cast<mqtt_dup_t>((flags >> 3) & 0x01);
+	message->common.qos = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
+	message->common.dup = static_cast<mqtt_dup_t>((flags >> 3) & 0x01);
 
 	COPY_STRING(message->publish.topic_name, topic);
 	message->publish.content.length = MQTT_PUBLISH_STREAM;
@@ -279,7 +280,7 @@ bool MqttClient::subscribe(const String& topic)
 	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
 	mqtt_message_init(message);
 	message->common.type = MQTT_TYPE_SUBSCRIBE;
-	message->subscribe.topics = (mqtt_topicpair_t *)malloc(sizeof(mqtt_topicpair_t));
+	message->subscribe.topics = (mqtt_topicpair_t*)malloc(sizeof(mqtt_topicpair_t));
 	memset(message->subscribe.topics, 0, sizeof(mqtt_topicpair_t));
 
 	COPY_STRING(message->subscribe.topics->name, topic);
@@ -294,7 +295,7 @@ bool MqttClient::unsubscribe(const String& topic)
 	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
 	mqtt_message_init(message);
 	message->common.type = MQTT_TYPE_SUBSCRIBE;
-	message->unsubscribe.topics = (mqtt_topic_t *)malloc(sizeof(mqtt_topic_t));
+	message->unsubscribe.topics = (mqtt_topic_t*)malloc(sizeof(mqtt_topic_t));
 	memset(message->unsubscribe.topics, 0, sizeof(mqtt_topic_t));
 	COPY_STRING(message->unsubscribe.topics->name, topic);
 
@@ -304,7 +305,7 @@ bool MqttClient::unsubscribe(const String& topic)
 void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
-REENTER:
+	REENTER:
 	case eMCS_Ready: {
 		mqtt_message_clear(outgoingMessage, 1);
 		outgoingMessage = requestQueue.dequeue();
@@ -329,7 +330,7 @@ REENTER:
 			}
 		}
 
-		size_t packetLength    = mqtt_serialiser_size(&serialiser, outgoingMessage);
+		size_t packetLength = mqtt_serialiser_size(&serialiser, outgoingMessage);
 		uint8_t packet[packetLength];
 		mqtt_serialiser_write(&serialiser, outgoingMessage, packet, packetLength);
 
@@ -344,8 +345,7 @@ REENTER:
 				streamChain->attachStream(payloadStream);
 			}
 			stream = streamChain;
-		}
-		else {
+		} else {
 			stream = headerStream;
 		}
 

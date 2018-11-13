@@ -15,6 +15,10 @@ MultipartStream::MultipartStream(HttpPartProducerDelegate delegate) : producer(d
 {
 }
 
+MultipartStream::~MultipartStream()
+{
+}
+
 bool MultipartStream::onCompleted()
 {
 	stream = new MemoryDataStream();

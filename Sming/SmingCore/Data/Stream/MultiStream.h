@@ -10,7 +10,7 @@
 
 #include "ReadWriteStream.h"
 
-class MultiStream: public ReadWriteStream
+class MultiStream : public ReadWriteStream
 {
 public:
 	virtual ~MultiStream();
