@@ -295,6 +295,12 @@ ifneq ($(MFORCE32),)
 else 
     CFLAGS += -DPROGMEM_L32=""
 endif
+
+# Flags for compatability with old versions (most of them should disappear with the next major release)
+ifeq ($(MQTT_NO_COMPAT),1)
+	CFLAGS += -DMQTT_NO_COMPAT=1
+endif
+
 #Append debug options
 CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 
