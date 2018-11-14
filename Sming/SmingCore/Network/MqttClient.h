@@ -5,12 +5,6 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-/** @defgroup   mqttclient MQTT client
- *  @brief      Provides MQTT client
- *  @ingroup    tcpclient mqtt
- *  @{
- */
-
 #ifndef _SMING_CORE_NETWORK_MqttClient_H_
 #define _SMING_CORE_NETWORK_MqttClient_H_
 
@@ -23,6 +17,13 @@
 #include "../mqtt-codec/src/message.h"
 #include "../mqtt-codec/src/serialiser.h"
 #include "../mqtt-codec/src/parser.h"
+#include <functional>
+
+/** @defgroup   mqttclient MQTT client
+ *  @brief      Provides MQTT client
+ *  @ingroup    tcpclient
+ *  @{
+ */
 
 typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
 typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
@@ -46,7 +47,7 @@ enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 
 class MqttClient;
 
-typedef Delegate<int(MqttClient& client, mqtt_message_t* message)> MqttDelegate;
+typedef std::function<int(MqttClient& client, mqtt_message_t* message)> MqttDelegate;
 typedef ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE> MqttRequestQueue;
 
 #ifndef MQTT_NO_COMPAT
