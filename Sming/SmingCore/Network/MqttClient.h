@@ -133,15 +133,13 @@ public:
 	}
 
 	/**
-	 * Sets a handler to be called on receiving a message from the server
-	 * for a published message from the client
+	 * Sets a handler to be called after receiving a PUBLISH message from the server
 	 *
 	 * @param MqttDelegate handler
 	 */
 	void setMessageHandler(MqttDelegate handler)
 	{
-		eventHandler[MQTT_TYPE_PUBACK] = handler;
-		eventHandler[MQTT_TYPE_PUBREC] = handler;
+		eventHandler[MQTT_TYPE_PUBLISH] = handler;
 	}
 
 	/**
