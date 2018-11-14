@@ -8,6 +8,9 @@
 
 Timer publishTimer;
 
+String mqttUrl = "mqtt://" + String(LOG) + ":" + String(PASS) + "@" + String(MQTT_SERVER) + ":" + String(MQTT_PORT);
+URL url(mqttUrl);
+
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
 
 void init()
@@ -18,6 +21,7 @@ void init()
 	Wire.begin();
 
 	// initialization config
+	mqtt.setCallback(onMessageReceived);
 
 	BMPinit(); // BMP180 sensor initialization
 	SIinit();  // HTU21D sensor initialization
@@ -50,7 +54,7 @@ void onMessageReceived(String topic, String message)
 // Run MQTT client
 void startMqttClient()
 {
-	mqtt.connect(CLIENT, LOG, PASS);
+	mqtt.connect(url, CLIENT);
 	Serial.println("Connected to MQTT server");
 	mqtt.subscribe(SUB_TOPIC);
 }

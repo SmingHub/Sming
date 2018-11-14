@@ -20,6 +20,7 @@
 #define CLIENT "ESP8266_test"
 #define LOG ""
 #define PASS ""
+
 #define SUB_TOPIC "testing/#"
 #define CONTR_TOPIC "testing/CONTROL/GPIO/"
 #define STAT_TOPIC "testing/status/GPIO/"
@@ -37,8 +38,7 @@ int TIMER = 20; // every N* seconds send to mqtt server
 void startMqttClient();
 void onMessageReceived(String topic, String message);
 
-// MQTT client
-MqttClient mqtt(MQTT_SERVER, MQTT_PORT, onMessageReceived);
+MqttClient mqtt;
 
 enum TriggerType { eTT_None = 0, eTT_Temperature, eTT_Humidity };
 
