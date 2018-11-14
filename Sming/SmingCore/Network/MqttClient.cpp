@@ -48,6 +48,7 @@ MqttClient::MqttClient(bool withDefaultPayloadParser /* = true */, bool autoDest
 
 	parser.data = this;
 	connectMessage.common.type = MQTT_TYPE_CONNECT;
+	connectMessage.connect.protocol_version = 4; // version 3.1.1
 
 	if(withDefaultPayloadParser) {
 		setPayloadParser(defaultPayloadParser);
@@ -192,8 +193,9 @@ bool MqttClient::setWill(const String& topic, const String& message, uint8_t fla
 		return false;
 	}
 
-	connectMessage.common.retain = static_cast<mqtt_retain_t>((flags >> 0) & 0x01);
-	connectMessage.common.qos = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
+	connectMessage.connect.flags.will_retain = (flags >> 0) & 0x01;
+	connectMessage.connect.flags.will_qos = (flags >> 1) & 0x03;
+	connectMessage.connect.flags.will = 1;
 
 	COPY_STRING(connectMessage.connect.will_topic, topic);
 	COPY_STRING(connectMessage.connect.will_message, message);
@@ -217,13 +219,18 @@ bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslO
 
 	debug_d("MQTT start connection");
 
+	String protocolName = "MQTT";
+	COPY_STRING(connectMessage.connect.protocol_name, protocolName);
+
 	connectMessage.connect.keep_alive = keepAlive;
 
 	COPY_STRING(connectMessage.connect.client_id, clientName);
 
 	if(url.User.length() > 0) {
+		connectMessage.connect.flags.username_follows = 1;
 		COPY_STRING(connectMessage.connect.username, url.User);
 		if(url.Password.length() > 0) {
+			connectMessage.connect.flags.password_follows = 1;
 			COPY_STRING(connectMessage.connect.password, url.Password);
 		}
 	}
