@@ -449,7 +449,7 @@ $(USER_LIBDIR)/liblwip%.a: third-party/lwip2/Makefile.sming
 endif
 
 $(USER_LIBDIR)/libmqttc.a:
-	$(Q) $(MAKE) -C third-party/mqtt-codec ENABLE_SERVER=0 ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
+	$(Q) $(MAKE) -C third-party/mqtt-codec MQTT_ENABLE_SERVER=0 MQTT_ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
 			CFLAGS_EXTRA="-Iinclude -I$(SDK_BASE)/include -Wl,-EL -mlongcalls -mtext-section-literals" \
 			LIB_FOLDER="$(SMING_HOME)/$(USER_LIBDIR)/" lib
 

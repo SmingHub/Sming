@@ -1,8 +1,8 @@
 diff --git a/src/platform.h b/src/platform.h
-index 3f82718..7759c99 100644
+index dc8888d..8900b32 100644
 --- a/src/platform.h
 +++ b/src/platform.h
-@@ -42,8 +42,7 @@
+@@ -45,8 +45,7 @@
  #endif
  
  #ifndef MQTT_DEBUGF
