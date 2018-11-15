@@ -271,9 +271,9 @@ endif
 
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 
+CFLAGS_COMMON = -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS += -Wall -Wundef -Wpointer-arith -Wno-comment \
-			-Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+CFLAGS += -Wall -Wundef -Wpointer-arith -Wno-comment $(CFLAGS_COMMON) \
          	-D__ets__ -DICACHE_FLASH -DUSE_OPTIMIZE_PRINTF -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1 
 ifneq ($(STRICT),1)
 CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
@@ -440,7 +440,7 @@ endif
 
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 $(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
-	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
+	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP) $(CFLAGS_COMMON)" all
 endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 $(USER_LIBDIR)/liblwip%.a: third-party/lwip2/Makefile.sming
@@ -450,7 +450,7 @@ endif
 
 $(USER_LIBDIR)/libmqttc.a:
 	$(Q) $(MAKE) -C third-party/mqtt-codec MQTT_ENABLE_SERVER=0 MQTT_ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
-			CFLAGS_EXTRA="-Iinclude -I$(SDK_BASE)/include -Wl,-EL -mlongcalls -mtext-section-literals" \
+			CFLAGS_EXTRA="-Iinclude -I$(SDK_BASE)/include $(CFLAGS_COMMON)" \
 			LIB_FOLDER="$(SMING_HOME)/$(USER_LIBDIR)/" lib
 
 $(APP_AR): $(OBJ)
