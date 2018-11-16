@@ -140,7 +140,7 @@ COM_SPEED_SERIAL  ?= $(COM_SPEED)
 # By default `debugf` does not print file name and line number. If you want this enabled set the directive below to 1
 DEBUG_PRINT_FILENAME_AND_LINE ?= 0
 
-# Defaut debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
+# Default debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
 DEBUG_VERBOSE_LEVEL ?= 2
 
 # Disable CommandExecutor functionality if not used and save some ROM and RAM
@@ -198,9 +198,11 @@ MODULES              += third-party/ws_parser/
 EXTRA_INCDIR     += third-party/ws_parser/
 
 # => SDK
+SDK_INTERNAL = 0
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	THIRD_PARTY_DATA += third-party/ESP8266_NONOS_SDK/Makefile
 	CFLAGS += -DSDK_INTERNAL
+	SDK_INTERNAL = 1
 endif
 
 # => esp-gdbstub
@@ -265,12 +267,16 @@ endif
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS += -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
-         -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1 
+CFLAGS += -Wall -Wundef -Wpointer-arith -Wno-comment \
+			-Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+         	-D__ets__ -DICACHE_FLASH -DUSE_OPTIMIZE_PRINTF -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1 
+ifneq ($(STRICT),1)
+CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
+endif
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
-	CFLAGS += -Os -DSMING_RELEASE=1
+	CFLAGS += -Os -DSMING_RELEASE=1 -DLWIP_NOASSERT
 else ifeq ($(ENABLE_GDB), 1)
 	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
 else
@@ -288,6 +294,9 @@ endif
 CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 
 CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
+ifneq ($(STRICT),1)
+CXXFLAGS += -Wno-reorder
+endif
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-wrap,system_restart_local 
@@ -424,7 +433,8 @@ $(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
 endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 $(USER_LIBDIR)/liblwip%.a: third-party/lwip2/Makefile.sming
-	$(Q) $(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
+	$(Q) $(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" SDK_INTERNAL="$(SDK_INTERNAL)" \
+				 USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
 endif
 
 $(APP_AR): $(OBJ)
@@ -554,10 +564,12 @@ dist-clean: clean samples-clean third-party-clean libraries-clean tools-clean
  	done
 	$(Q) $(GIT) checkout $(USER_LIBDIR)
 
+# Recursive wildcard search
+rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
 
 # Files that should follow our coding standards
-CS_FILES=$(shell find SmingCore/ -name '*.cpp' -o  -name '*.h' -o -name '*.c') \
-         $(shell find ../samples -name '*.cpp' -o  -name '*.h' -o -name '*.c')
+CS_DIRS = SmingCore ../samples
+CS_FILES := $(call rwildcard,$(patsubst %,%/*,$(CS_DIRS)),*.cpp *.h *.c)
 
 cs:
 	$(Q) for FILE in $(CS_FILES); do \

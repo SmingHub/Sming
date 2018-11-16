@@ -6,13 +6,10 @@
 #include <ctype.h>
 #include <math.h>
 
-/* WARNING : none of the code has been tested properly */
-
-static const char tohex[] = "0123456789ABCDEF";
-
+// Append str to dest with checks
 static unsigned safe_append(char *dest, size_t len, const char *str) {
 	unsigned len2;
-	len2=strlen((const char*)str);
+	len2=strlen(str);
 	if(len2>len) {
 		return 0; /* refuse to append */
 	}
@@ -21,60 +18,56 @@ static unsigned safe_append(char *dest, size_t len, const char *str) {
 }
 
 /* return true if 2 characters are valid hexidecimal */
-static int ishex(const char code[2]) {
+static bool ishex(const char code[2]) {
 	return isxdigit(code[0]) && isxdigit(code[1]);
 }
 
 /* verify with ishex() before calling */
-static char unhex(const char code[2]) {
-	unsigned char a = code[0];
-	unsigned char b = code[1];
-	if (isdigit(a))
-		a -= '0';
-	else
-		a = a - 'A' + 10;
-	if (isdigit(b))
-		b -= '0';
-	else
-		b = b - 'A' + 10;
+static uint8_t unhex(const char code[2])
+{
+	return (unhex(code[0]) << 4) | unhex(code[1]);
+}
 
-	return a*16 + b;
+// These characters are escaped
+static bool must_escape(char c) {
+	switch (c) {
+		case '\r':
+		case '\n':
+		case '+':
+		case '~':
+		case '!':
+		case '#':
+		case '$':
+		case '%':
+		case '^':
+		case '&':
+		case '(':
+		case ')':
+		case '{':
+		case '}':
+		case '[':
+		case ']':
+		case '=':
+		case ':':
+		case ',':
+		case ';':
+		case '?':
+		case '\'':
+		case '"':
+		case '\\':
+			return true;
+		default:
+			return false;
+	}
 }
 
 unsigned uri_escape_len(const char *s, size_t len) {
-	/* TODO: implement this */
 	unsigned ret;
 	for(ret=0;len>0;len--,s++) {
-		switch(*s) {
-			case '\r':
-			case '\n':
-			case '+':
-			case '~':
-			case '!':
-			case '#':
-			case '$':
-			case '%':
-			case '^':
-			case '&':
-			case '(':
-			case ')':
-			case '{':
-			case '}':
-			case '[':
-			case ']':
-			case '=':
-			case ':':
-			case ',':
-			case ';':
-			case '?':
-			case '\'':
-			case '"':
-			case '\\':
-				ret+=3;
-				break;
-			default:
-				ret++;
-		}
+		if (must_escape(*s))
+			ret+=3;
+		else
+			ret++;
 	}
 	return ret;
 }
@@ -87,68 +80,46 @@ unsigned uri_escape_len(const char *s, size_t len) {
  *  dest or allocated pointer on success
  *  destination string will always be null terminated
  */
-char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len) {
-	char *ret;
-	int ret_is_allocated;
-	assert(src!=NULL);
+char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len)
+{
+	assert(src != nullptr);
+
 	if(src_len<0) {
 		src_len=strlen(src);
 	}
-	ret_is_allocated=!dest;
+	bool ret_is_allocated=!dest;
 	if(ret_is_allocated) {
 		/* src_len is non-negative because of earlier condition */
 		assert(src_len>=0);
-		dest_len=uri_escape_len(src, (unsigned)src_len)+1;
+		dest_len=uri_escape_len(src, src_len)+1;
 		dest=(char*)malloc(dest_len);
 		if(!dest) {
 			return 0; /* allocation failure */
 		}
 	}
-	ret=dest;
+	char* ret=dest;
 	/* escape these values ~!#$%^&(){}[]=:,;?'"\
 	 * make sure there is room in dest for a '\0' */
 	for(;src_len>0 && dest_len>1;src++,src_len--) {
-		switch(*src) {
-			case '\r':
-			case '\n':
-			case '+':
-			case '~':
-			case '!':
-			case '#':
-			case '$':
-			case '%':
-			case '^':
-			case '&':
-			case '(':
-			case ')':
-			case '{':
-			case '}':
-			case '[':
-			case ']':
-			case '=':
-			case ':':
-			case ',':
-			case ';':
-			case '?':
-			case '\'':
-			case '"':
-			case '\\':
-				/* check that there is room for "%XX\0" in dest */
-				if(dest_len<=3) {
-					if(ret_is_allocated) {
-						free(ret);
-					}
-					return 0;
-				}
-				dest[0]='%';
-				dest[1]=tohex[(((unsigned char)*src)/16)%16];
-				dest[2]=tohex[((unsigned char)*src)%16];
-				dest+=3;
-				dest_len-=3;
-				break;
-			default:
-				*(dest++)=*src;
-				dest_len--;
+		char c = *src;
+		if(must_escape(c)) {
+			/* check that there is room for "%XX\0" in dest */
+			if(dest_len<=3) {
+				if(ret_is_allocated)
+					free(ret);
+				return 0;
+			}
+			dest[0] = '%';
+			dest[1] = hexchar(*src >> 4);
+			dest[2] = hexchar(*src & 0x0f);
+			dest+=3;
+			dest_len-=3;
+		} else if (c == ' ') {
+			*dest++ = '+';
+			dest_len--;
+		} else {
+			*(dest++)=*src;
+			dest_len--;
 		}
 	}
 	/* check for errors - src was not fully consumed */
@@ -159,7 +130,7 @@ char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len) {
 		return 0;
 	}
 	assert(dest_len>=1);
-	*dest=0;
+	*dest='\0';
 
 	return ret;
 }
@@ -173,14 +144,11 @@ char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len) {
  */
 char *uri_unescape(char *dest, size_t dest_len, const char *src, int src_len)
 {
-	assert(src!=NULL);
-	char *ret;
-	int ret_is_allocated;
-	assert(src!=NULL);
+	assert(src!=nullptr);
 	if(src_len<0) {
-		src_len=strlen((const char *)src);
+		src_len=strlen(src);
 	}
-	ret_is_allocated=!dest;
+	bool ret_is_allocated=!dest;
 	if(ret_is_allocated) {
 		dest_len=src_len+1; /* TODO: calculate the exact needed size? */
 		dest=(char*)malloc(dest_len);
@@ -188,7 +156,7 @@ char *uri_unescape(char *dest, size_t dest_len, const char *src, int src_len)
 			return 0; /* allocation failure */
 		}
 	}
-	ret=dest;
+	char* ret=dest;
 	for(;dest_len>1 && src_len>0;dest_len--,dest++) {
 		if(*src=='%' && src_len>=3 && ishex(src+1)) {
 			*dest=(char)unhex(src+1);
@@ -260,5 +228,42 @@ void html_escape(char *dest, size_t len, const char *s) {
 				dest[i++]=*s;
 		}
 	}
-	dest[i]=0;
+	dest[i]='\0';
 }
+
+
+
+
+String uri_escape(const char *src, int src_len)
+{
+	String s;
+	if (src && src_len) {
+		unsigned dst_len = uri_escape_len(src, src_len);
+		if (s.setLength(dst_len))
+			uri_escape(s.begin(), s.length() + 1, src, src_len); // +1 for nul terminator
+	}
+	return s;
+}
+
+char* uri_unescape_inplace(char *str)
+{
+	if (str) {
+		auto len = strlen(str);
+		uri_unescape(str, len + 1, str, len); // +1 for nul terminator
+	}
+	return str;
+}
+
+String& uri_unescape_inplace(String& str)
+{
+	if (str) {
+		char* p = str.begin();
+		uri_unescape(p, str.length() + 1, p, str.length());	// +1 for nul terminator
+		auto len = strlen(p);
+		assert(len <= str.length());
+		str.setLength(len);
+	}
+	return str;
+}
+
+

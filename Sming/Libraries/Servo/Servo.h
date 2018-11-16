@@ -6,7 +6,7 @@
  */
 /** @addtogroup   Servo RC Servo functions
  *  @brief      Provides Library to control rc servos with pwm signals
- *  - uses an internal instance of Hardware_Timer (which use interrupts)
+ *  - uses an internal instance of HardwareTimer (which use interrupts)
  *  @{
 */
 #ifndef LIB_SERVO_H_

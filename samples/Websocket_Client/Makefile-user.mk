@@ -37,7 +37,7 @@
 DISABLE_SPIFFS = 1
 
 # Uncomment the option below if you do not want to have SSL support.
-# ENABLE_SSL=1
+ENABLE_SSL=1
 
 # We need rBoot in order to be able to run bigger Flash roms.
 

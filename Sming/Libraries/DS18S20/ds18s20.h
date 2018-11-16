@@ -29,6 +29,8 @@
 #define ALARMSEARCH     0xEC  // Query for alarm
 #define STARTCONVO      0x44  // temperature reading
 
+#define DS1820_WORK_PIN 2	// default DS1820 on GPIO2, can be changed by Init
+
 /** @brief  Definition of callback function called on completion of measurement of all DS18S20 sensors
     @note   Example: void onMeasurment() { ... };
 */
@@ -41,7 +43,7 @@ class DS18S20
 public:
     /** @brief  Instantiate a DS18S20 object
     */
-    DS18S20();
+    DS18S20(uint8_t workPin = DS1820_WORK_PIN);
 
     /** @brief  Initiate communication on 1-wire bus
     *   @param  GPIO pin acting as 1-wire bus
@@ -127,6 +129,8 @@ private:
 
 
 	float celsius[MAX_SENSORS], fahrenheit[MAX_SENSORS];
+
+	OneWire* ds = nullptr;
 };
 
 /** @} */

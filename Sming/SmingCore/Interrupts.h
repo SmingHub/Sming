@@ -12,20 +12,20 @@
 #ifndef _SMING_CORE_INTERRUPTS_H_
 #define _SMING_CORE_INTERRUPTS_H_
 
-#include "../Wiring/WiringFrameworkDependencies.h"
-#include "../SmingCore/Delegate.h"
+#include "WiringFrameworkDependencies.h"
+#include "Delegate.h"
 
 #define ESP_MAX_INTERRUPTS 16
 
 typedef void (*InterruptCallback)(void);
-extern InterruptCallback _gpioInterruptsList[ESP_MAX_INTERRUPTS];
-extern bool _gpioInterruptsInitialied;
+typedef Delegate<void()> InterruptDelegate;
 
 /** @brief  Attach a function to a GPIO interrupt
  *  @param  pin GPIO to configure
  *  @param  callback Function to call when interrupt occurs on GPIO
  *  @param  mode Arduino type interrupt mode
- *  @note   Traditional c-type callback function method
+ *  @note   Traditional c-type callback function method, MUST use IRAM_ATTR
+ *  Use this type of interrupt handler for timing-sensitive applications.
  */
 void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode);
 
@@ -33,7 +33,9 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode);
  *  @param  pin GPIO to configure
  *  @param  delegateFunction Function to call when interrupt occurs on GPIO
  *  @param  mode Arduino type interrupt mode
- *  @note   Delegate function method
+ *  @note   Delegate function method, can be a regular function, method, etc.
+ *  The delegate function is called via the system task queue so does not need any special consideration.
+ *  Note that this type of interrupt handler is not suitable for timing-sensitive applications.
  */
 void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, uint8_t mode);
 
@@ -85,12 +87,6 @@ void interruptMode(uint8_t pin, GPIO_INT_TYPE type);
  *  @retval GPIO_INT_TYPE Sming interrupt mode type
  */
 GPIO_INT_TYPE ConvertArduinoInterruptMode(uint8_t mode);
-
-/** @brief  Interrupt handler
- *  @param  intr_mask Interrupt mask
- *  @param  arg pointer to array of arguments
- */
-static void interruptHandler(uint32 intr_mask, void* arg);
 
 /** @brief  Disable interrupts
  */

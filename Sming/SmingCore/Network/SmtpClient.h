@@ -28,16 +28,16 @@
 #include "TcpClient.h"
 #include "Data/MailMessage.h"
 #include "URL.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
+#include "WString.h"
+#include "WVector.h"
 #include "Data/Stream/DataSourceStream.h"
 #include "WebConstants.h"
-#include "../Data/Structures.h"
+#include "Data/ObjectQueue.h"
 
 #include <functional>
 
-#define SMTP_PROTOCOL "smtp"
-#define SMTP_OVER_SSL_PROTOCOL "smtps"
+#define SMTP_PROTOCOL _F("smtp")
+#define SMTP_OVER_SSL_PROTOCOL _F("smtps")
 
 /* Maximum waiting emails in the mail queue */
 #define SMTP_QUEUE_SIZE 5
@@ -189,7 +189,7 @@ protected:
 private:
 	URL url;
 	Vector<String> authMethods;
-	SimpleConcurrentQueue<MailMessage*, SMTP_QUEUE_SIZE> mailQ;
+	ObjectQueue<MailMessage, SMTP_QUEUE_SIZE> mailQ;
 	char code[4] = {0};
 	int codeValue = 0;
 	String authChallenge;

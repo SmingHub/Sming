@@ -11,8 +11,9 @@
 
 const unsigned int A0 = 17; // Single ESP8266EX analog input pin (TOUT) 10 bit, 0..1v
 
-uint8_t esp8266_gpioToFn[16] = {0x34, 0x18, 0x38, 0x14, 0x3C, 0x40, 0x1C, 0x20,
-								0x24, 0x28, 0x2C, 0x30, 0x04, 0x08, 0x0C, 0x10};
+// Prototype declared in system/include/espinc/peri.h
+const uint8_t esp8266_gpioToFn[16] = {0x34, 0x18, 0x38, 0x14, 0x3C, 0x40, 0x1C, 0x20,
+									  0x24, 0x28, 0x2C, 0x30, 0x04, 0x08, 0x0C, 0x10};
 
 void pinMode(uint16_t pin, uint8_t mode)
 {
@@ -139,7 +140,7 @@ unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 	// pulse width measuring loop and achieve finer resolution.  calling
 	// digitalRead() instead yields much coarser resolution.
 	uint8_t bit = digitalPinToBitMask(pin);
-	uint8_t port = digitalPinToPort(pin);
+	// uint8_t port = digitalPinToPort(pin); // Does nothing in Sming, comment-out to prevent compiler warning
 	uint8_t stateMask = (state ? bit : 0);
 	unsigned long width = 0; // keep initialization out of time critical area
 

@@ -1,94 +1,62 @@
+/* $Id: SplitString.cpp 1156 2011-06-07 04:01:16Z bhagman $
+||
+|| @author         Hernando Barragan <b@wiring.org.co>
+|| @url            http://wiring.org.co/
+|| @contribution   Brett Hagman <bhagman@wiring.org.co>
+|| @contribution   Alexander Brevig <abrevig@wiring.org.co>
+||
+|| @license Please see cores/Common/License.txt.
+||
+*/
+
 #include "SplitString.h"
 
-int splitString(String &what, int delim,  Vector<long> &splits)
+int splitString(String &what, char delim,  Vector<int> &splits)
 {
   what.trim();
   splits.removeAllElements();
-  const char *chars = what.buffer;
-  int splitCount = 0; //1;
-  for (int i = 0; i < what.length(); i++)
+  const char *chars = what.c_str();
+  unsigned splitCount = 0;
+  for (unsigned i = 0; i < what.length(); i++)
   {
     if (chars[i] == delim) splitCount++;
   }
   if (splitCount == 0)
   {
-    splits.addElement(atol(what.buffer));
-    return 1;
-  }
-
-  int pieceCount = splitCount + 1;
-
-  int splitIndex = 0;
-  int startIndex = 0;
-  for (int i = 0; i < what.length(); i++)
-  {
-    if (chars[i] == delim)
-    {
-      splits.addElement(atol(what.substring(startIndex, i).buffer));
-      splitIndex++;
-      startIndex = i + 1;
-    }
-  }
-  splits.addElement(atol(what.substring(startIndex, what.length()).buffer));
-
-  return pieceCount;
-}
-
-int splitString(String &what, int delim,  Vector<int> &splits)
-{
-  what.trim();
-  splits.removeAllElements();
-  const char *chars = what.buffer;
-  int splitCount = 0; //1;
-  for (int i = 0; i < what.length(); i++)
-  {
-    if (chars[i] == delim) splitCount++;
-  }
-  if (splitCount == 0)
-  {
-    splits.addElement(atoi(what.buffer));
+    splits.addElement(what.toInt());
     return(1);
   }
 
-  int pieceCount = splitCount + 1;
-
-  int splitIndex = 0;
   int startIndex = 0;
-  for (int i = 0; i < what.length(); i++)
+  for (unsigned i = 0; i < what.length(); i++)
   {
-    if (chars[i] == delim)
+    if(what[i] == delim)
     {
-      splits.addElement(atoi(what.substring(startIndex, i).buffer));
-      splitIndex++;
+      splits.addElement(what.substring(startIndex, i).toInt());
       startIndex = i + 1;
     }
   }
-  splits.addElement(atoi(what.substring(startIndex, what.length()).buffer));
+  splits.addElement(what.substring(startIndex).toInt());
 
-  return pieceCount;
+  return splits.count();
 }
 
-int splitString(String &what, int delim,  Vector<String> &splits)
+int splitString(String &what, char delim, Vector<String> &splits)
 {
 	what.trim();
 	splits.removeAllElements();
-	const char *chars = what.buffer;
-	int splitCount = 0;
+	const char *chars = what.c_str();
 
-	int splitIndex = 0;
 	int startIndex = 0;
-	for (int i = 0; i < what.length(); i++)
+	for (unsigned i = 0; i < what.length(); i++)
 	{
 	  if (chars[i] == delim)
 	  {
-	    splits.addElement(what.substring(startIndex, i).buffer);
-	    splitIndex++;
+	    splits.addElement(what.substring(startIndex, i));
 	    startIndex = i + 1;
-	    splitCount++;
 	  }
 	}
-	splits.addElement(what.substring(startIndex, what.length()).buffer);
+	splits.addElement(what.substring(startIndex));
 
-	return (splitCount + 1);
-
+	return splits.count();
 }

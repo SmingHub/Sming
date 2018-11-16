@@ -15,11 +15,17 @@
 #ifndef _SMING_CORE_NETWORK_WEBCONSTANTS_H_
 #define _SMING_CORE_NETWORK_WEBCONSTANTS_H_
 
+#include "WString.h"
+
+/** @brief Basic MIME types and file extensions
+ *  @note Each MIME type can have only one associated file extension. Where other extensions
+ *  @todo Consider using sz-strings for file extension to enable matching to alternative file extensions
+ */
 #define MIME_TYPE_MAP(XX)                                                                                              \
 	/* Type, extension start, Mime type */                                                                             \
                                                                                                                        \
 	/* Texts */                                                                                                        \
-	XX(HTML, "htm", "text/html")                                                                                       \
+	XX(HTML, "html", "text/html")                                                                                      \
 	XX(TEXT, "txt", "text/plain")                                                                                      \
 	XX(JS, "js", "text/javascript")                                                                                    \
 	XX(CSS, "css", "text/css")                                                                                         \
@@ -50,47 +56,43 @@ enum MimeType {
 
 namespace ContentType
 {
-static const char* fromFileExtension(const String extension)
+/** @brief Obtain content type string from file extension
+ *  @param extension excluding '.' separator (e.g. "htm", "json")
+ *  @retval String
+ */
+String fromFileExtension(const char* extension);
+
+/** @brief Obtain content type string from file extension
+ *  @param extension
+ *  @retval String
+ */
+static inline String fromFileExtension(const String& extension)
 {
-	String ext = extension;
-	ext.toLowerCase();
-
-#define XX(name, extensionStart, mime)                                                                                 \
-	if(ext.startsWith(extensionStart)) {                                                                               \
-		return mime;                                                                                                   \
-	}
-	MIME_TYPE_MAP(XX)
-#undef XX
-
-	// Unknown
-	return "<unknown>";
+	return fromFileExtension(extension.c_str());
 }
 
-static const char* toString(enum MimeType m)
-{
-#define XX(name, extensionStart, mime)                                                                                 \
-	if(MIME_##name == m) {                                                                                             \
-		return mime;                                                                                                   \
-	}
-	MIME_TYPE_MAP(XX)
-#undef XX
+/** @brief Get textual representation for a MIME type
+ *  @param m the MIME type
+ *  @retval String
+ */
+String toString(enum MimeType m);
 
-	// Unknown
-	return "<unknown>";
+/** @brief Obtain content type string from file name or path, with extension
+ *  @param fileName
+ *  @retval String
+ */
+String fromFullFileName(const char* fileName);
+
+/** @brief Obtain content type string from file name or path, with extension
+ *  @param fileName
+ *  @retval String
+ */
+static inline String fromFullFileName(const String& fileName)
+{
+	return fromFullFileName(fileName.c_str());
 }
 
-static const char* fromFullFileName(const String fileName)
-{
-	int p = fileName.lastIndexOf('.');
-	if(p != -1) {
-		String ext = fileName.substring(p + 1);
-		const char* mime = ContentType::fromFileExtension(ext);
-		return mime;
-	}
-
-	return NULL;
-}
-};
+}; // namespace ContentType
 
 /** @} */
 #endif /* _SMING_CORE_NETWORK_WEBCONSTANTS_H_ */

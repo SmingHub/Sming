@@ -14,7 +14,10 @@
 #define _SMING_CORE_HTTP_RESPONSE_H_
 
 #include "HttpCommon.h"
-#include "Data/Stream/DataSourceStream.h"
+#include "Data/Stream/TemplateStream.h"
+#include "Data/Stream/ReadWriteStream.h"
+#include "Network/Http/HttpHeaders.h"
+#include "FileSystem.h"
 
 class JsonObjectStream; // << TODO: deprecated and should be removed in the next version
 
@@ -65,7 +68,7 @@ public:
 	// @deprecated
 
 	// Parse and send template file
-	bool sendTemplate(TemplateFileStream* newTemplateInstance);
+	bool sendTemplate(TemplateStream* newTemplateInstance);
 
 	/**
 	 * @brief Build and send JSON string
@@ -83,7 +86,7 @@ public:
 	}
 
 	// Send Datastream, can be called with Classes derived from
-	bool sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType = "");
+	bool sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType = nullptr);
 
 	String getBody();
 
@@ -92,7 +95,7 @@ public:
 public:
 	int code;
 	HttpHeaders headers;
-	ReadWriteStream* stream = NULL;
+	ReadWriteStream* stream = nullptr;
 };
 
 #endif /* _SMING_CORE_HTTP_RESPONSE_H_ */

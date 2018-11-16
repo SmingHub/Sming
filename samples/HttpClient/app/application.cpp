@@ -130,10 +130,11 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 
 	// Headers: if you need to set custom headers then you can do something like ...
 	HttpHeaders headers;
-	headers["User-Agent"] = "HttpClient/Sming";
+	headers[HTTP_HEADER_USER_AGENT] = _F("HttpClient/Sming"); // Prefer use of enumerated type for standard field names
+	headers[F("X-Powered-By")] = _F("Sming");				  // Use text for non-standard field names
 	getRequest->setHeaders(headers);
 	// ... or like
-	getRequest->setHeader("X-Powered-By", "Sming");
+	getRequest->setHeader(F("X-Powered-By"), F("Sming"));
 
 	// SSL validation and fingerprinting
 	setSslFingerprints(getRequest);

@@ -203,7 +203,7 @@ void FTPServerConnection::onCommand(String cmd, String data)
 {
 	cmd.toUpperCase();
 	// We ready to quit always :)
-	if(cmd == "QUIT") {
+	if(cmd == _F("QUIT")) {
 		response(221);
 		close();
 		return;
@@ -211,10 +211,10 @@ void FTPServerConnection::onCommand(String cmd, String data)
 
 	// Strong security check :)
 	if(state == eFCS_Authorization) {
-		if(cmd == "USER") {
+		if(cmd == _F("USER")) {
 			userName = data;
 			response(331);
-		} else if(cmd == "PASS") {
+		} else if(cmd == _F("PASS")) {
 			if(server->checkUser(userName, data)) {
 				userName = "";
 				state = eFCS_Active;
@@ -228,25 +228,25 @@ void FTPServerConnection::onCommand(String cmd, String data)
 	}
 
 	if(state == eFCS_Active) {
-		if(cmd == "SYST") {
-			response(215, "Windows_NT: Sming Framework"); // Why not? It's look like Windows :)
-		} else if(cmd == "PWD") {
-			response(257, "\"/\"");
-		} else if(cmd == "PORT") {
+		if(cmd == _F("SYST")) {
+			response(215, F("Windows_NT: Sming Framework")); // Why not? It's look like Windows :)
+		} else if(cmd == _F("PWD")) {
+			response(257, F("\"/\""));
+		} else if(cmd == _F("PORT")) {
 			cmdPort(data);
-		} else if(cmd == "CWD") {
+		} else if(cmd == _F("CWD")) {
 			if(data == "/")
 				response(250);
 			else
 				response(550);
-		} else if(cmd == "TYPE") {
+		} else if(cmd == _F("TYPE")) {
 			response(250);
 		}
-		/*else if (cmd == "SIZE")
+		/*else if (cmd == _F("SIZE"))
 		{
 			response(213, String(fileGetSize(makeFileName(data, false))));
 		}*/
-		else if(cmd == "DELE") {
+		else if(cmd == _F("DELE")) {
 			String name = makeFileName(data, false);
 			if(fileExist(name)) {
 				fileDelete(name);
@@ -254,12 +254,12 @@ void FTPServerConnection::onCommand(String cmd, String data)
 			} else
 				response(550);
 		}
-		/*else if (cmd == "RNFR") // Bugs!
+		/*else if (cmd == _F("RNFR")) // Bugs!
 		{
 			renameFrom = data;
 			response(350);
 		}
-		else if (cmd == "RNTO")
+		else if (cmd == _F("RNTO"))
 		{
 			if (fileExist(renameFrom))
 			{
@@ -269,18 +269,18 @@ void FTPServerConnection::onCommand(String cmd, String data)
 			else
 				response(550);
 		}*/
-		else if(cmd == "RETR") {
+		else if(cmd == _F("RETR")) {
 			createDataConnection(new FTPDataRetrieve(this, makeFileName(data, false)));
-		} else if(cmd == "STOR") {
+		} else if(cmd == _F("STOR")) {
 			createDataConnection(new FTPDataStore(this, makeFileName(data, true)));
-		} else if(cmd == "LIST") {
+		} else if(cmd == _F("LIST")) {
 			createDataConnection(new FTPDataFileList(this));
-		} else if(cmd == "PASV") {
-			response(500, "Passive mode not supported");
-		} else if(cmd == "NOOP") {
+		} else if(cmd == _F("PASV")) {
+			response(500, F("Passive mode not supported"));
+		} else if(cmd == _F("NOOP")) {
 			response(200);
 		} else if(!server->onCommand(cmd, data, *this))
-			response(502, "Not supported");
+			response(502, F("Not supported"));
 
 		return;
 	}
@@ -314,7 +314,7 @@ void FTPServerConnection::createDataConnection(TcpConnection* connection)
 {
 	dataConnection = connection;
 	dataConnection->connect(ip, port);
-	response(150, "Connecting");
+	response(150, F("Connecting"));
 }
 
 void FTPServerConnection::dataTransferFinished(TcpConnection* connection)
@@ -323,7 +323,7 @@ void FTPServerConnection::dataTransferFinished(TcpConnection* connection)
 		SYSTEM_ERROR("FTP Wrong state: connection != dataConnection");
 
 	dataConnection = NULL;
-	response(226, "Transfer Complete.");
+	response(226, F("Transfer Complete."));
 }
 
 int FTPServerConnection::getSplitterPos(String data, char splitter, uint8_t number)
@@ -347,11 +347,11 @@ void FTPServerConnection::response(int code, String text /* = "" */)
 	String response = String(code, DEC);
 	if(text.length() == 0) {
 		if(code >= 200 && code <= 399) // Just for simplify
-			response += " OK";
+			response += _F(" OK");
 		else
-			response += " FAIL";
+			response += _F(" FAIL");
 	} else
-		response += " " + text;
+		response += ' ' + text;
 	response += "\r\n";
 
 	debug_d("> %s", response.c_str());
@@ -364,8 +364,10 @@ void FTPServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
 	case eFCS_Ready:
-		this->writeString("220 Welcome to Sming FTP\r\n", 0);
+		this->writeString(_F("220 Welcome to Sming FTP\r\n"), 0);
 		state = eFCS_Authorization;
 		break;
+
+	default:; // Do nothing
 	}
 }

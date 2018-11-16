@@ -10,8 +10,6 @@
 #include <user_interface.h>
 #include <spi_flash.h>
 #include <espconn.h>
-#include "espinc/uart.h"
-#include "espinc/uart_register.h"
 #include "espinc/spi_register.h"
 
 #include <stdarg.h>
@@ -41,8 +39,11 @@
 #else
 #define debugf debug_i
 #endif
-#define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
-#define SYSTEM_ERROR(fmt, ...) m_printf("ERROR: " fmt "\r\n", ##__VA_ARGS__)
+#define assert(condition) \
+	do {\
+		if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__); \
+	} while(0)
+#define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
 #ifndef SDK_INTERNAL
 extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
@@ -97,6 +98,9 @@ extern void uart_tx_one_char(char ch);
 
 extern void ets_intr_lock();
 extern void ets_intr_unlock();
+
+// Missing from SDK 1.5.x
+extern void NmiTimSetFunc(void (*func)(void));
 
 #endif /* SDK_INTERNAL */
 

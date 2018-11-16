@@ -7,7 +7,7 @@ public:
 	ntpClientDemo()
 	{
 		ntpcp = new NtpClient("pool.ntp.org", 30, NtpTimeResultDelegate(&ntpClientDemo::ntpResult, this));
-	};
+	}
 
 	void ntpResult(NtpClient& client, time_t ntpTime)
 	{

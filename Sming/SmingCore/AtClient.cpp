@@ -5,7 +5,8 @@
  *      Author: slavey
  */
 
-#include <AtClient.h>
+#include "AtClient.h"
+#include "Clock.h"
 
 #ifndef debugf
 #define debugf(fmt, ...)
@@ -74,8 +75,7 @@ void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCha
 	next();
 }
 
-void AtClient::send(const String& text, const String& altResponse /* ="" */, uint32_t timeoutMs /* = AT_TIMEOUT */,
-					int retries /* = 0 */)
+void AtClient::send(const String& text, const String& altResponse, uint32_t timeoutMs, unsigned retries)
 {
 	AtCommand atCommand;
 	atCommand.text = text;
@@ -86,8 +86,7 @@ void AtClient::send(const String& text, const String& altResponse /* ="" */, uin
 	send(atCommand);
 }
 
-void AtClient::send(const String& text, AtReceiveCallback onReceive, uint32_t timeoutMs /* = AT_TIMEOUT */,
-					int retries /* = 0 */)
+void AtClient::send(const String& text, AtReceiveCallback onReceive, uint32_t timeoutMs, unsigned retries)
 {
 	AtCommand atCommand;
 	atCommand.text = text;
@@ -98,8 +97,7 @@ void AtClient::send(const String& text, AtReceiveCallback onReceive, uint32_t ti
 	send(atCommand);
 }
 
-void AtClient::send(const String& text, AtCompleteCallback onComplete, uint32_t timeoutMs /* = AT_TIMEOUT */,
-					int retries /* = 0 */)
+void AtClient::send(const String& text, AtCompleteCallback onComplete, uint32_t timeoutMs, unsigned retries)
 {
 	AtCommand atCommand;
 	atCommand.text = text;

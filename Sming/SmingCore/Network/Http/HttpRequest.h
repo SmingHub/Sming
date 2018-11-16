@@ -19,6 +19,9 @@
 #endif
 #include "../TcpConnection.h"
 #include "Data/Stream/DataSourceStream.h"
+#include "Data/Stream/MultipartStream.h"
+#include "Network/Http/HttpHeaders.h"
+#include "HttpParams.h"
 
 class HttpClient;
 class HttpServerConnection;
@@ -28,6 +31,9 @@ typedef Delegate<int(HttpConnection& client, HttpResponse& response)> RequestHea
 typedef Delegate<int(HttpConnection& client, const char* at, size_t length)> RequestBodyDelegate;
 typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedDelegate;
 
+/*
+ * Encapsulates an incoming or outgoing request
+ */
 class HttpRequest
 {
 	friend class HttpClient;
@@ -35,50 +41,111 @@ class HttpRequest
 	friend class HttpServerConnection;
 
 public:
-	HttpRequest(const URL& uri);
+	HttpRequest()
+	{
+	}
+
+	HttpRequest(const URL& uri) : uri(uri)
+	{
+	}
+
 	HttpRequest(const HttpRequest& value);
-	__forceinline HttpRequest* clone() const
+
+	HttpRequest* clone() const
 	{
 		return new HttpRequest(*this);
 	}
+
 	HttpRequest& operator=(const HttpRequest& rhs);
-	~HttpRequest();
 
-	HttpRequest* setURL(const URL& uri);
+	~HttpRequest()
+	{
+		reset();
+	}
 
-	HttpRequest* setMethod(const HttpMethod method);
+	HttpRequest* setURL(const URL& uri)
+	{
+		this->uri = uri;
+		return this;
+	}
 
-	HttpRequest* setHeaders(const HttpHeaders& headers);
+	HttpRequest* setMethod(HttpMethod method)
+	{
+		this->method = method;
+		return this;
+	}
 
-	HttpRequest* setHeader(const String& name, const String& value);
+	HttpRequest* setHeaders(const HttpHeaders& headers)
+	{
+		this->headers.setMultiple(headers);
+		return this;
+	}
 
-	HttpRequest* setPostParameters(const HttpParams& params);
-	HttpRequest* setPostParameter(const String& name, const String& value);
+	HttpRequest* setHeader(const String& name, const String& value)
+	{
+		headers[name] = value;
+		return this;
+	}
+
+	/**
+	 * @deprecated This method is deprecated and will be removed in the coming versions.
+	 * 			   Please set postParams directly, i.e. request.postParams = params
+	 */
+	HttpRequest* setPostParameters(const HttpParams& params)
+	{
+		postParams = params;
+		return this;
+	}
+
+	HttpRequest* setPostParameter(const String& name, const String& value)
+	{
+		postParams[name] = value;
+		return this;
+	}
 
 	/**
 	 * @brief Sets a file to be sent
-	 * @param const String& name the name of the element in the form
-	 * @param FileStream* stream - pointer to the file stream
+	 * @param const String& formElementName the name of the element in the form
+	 * @param ReadWriteStream* stream - pointer to the stream (doesn't have to be a FileStream)
 	 *
 	 * @return HttpRequest*
 	 */
-	HttpRequest* setFile(const String& name, FileStream* stream);
+	HttpRequest* setFile(const String& formElementName, ReadWriteStream* stream)
+	{
+		if(stream) {
+			files[formElementName] = stream;
+		}
+		return this;
+	}
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	// Authentication adapters set here
-	HttpRequest* setAuth(AuthAdapter* adapter);
+	HttpRequest* setAuth(AuthAdapter* adapter)
+	{
+		adapter->setRequest(this);
+		auth = adapter;
+		return this;
+	}
 #endif
 
-	String getHeader(const String& name);
+	const String& getHeader(const String& name)
+	{
+		return static_cast<const HttpHeaders&>(headers)[name];
+	}
 
-	String getPostParameter(const String& name);
+	const String& getPostParameter(const String& name)
+	{
+		return static_cast<const HttpParams&>(postParams)[name];
+	}
 
-	__forceinline String getPath()
+	/* @deprecated  use uri methods */
+	String getPath()
 	{
 		return uri.Path;
 	}
 
-	String getQueryParameter(const String& parameterName, const String& defaultValue = "");
+	/* @deprecated  use uri methods */
+	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr);
 
 	/**
 	 * @brief Returns content from the body stream as string.
@@ -86,17 +153,26 @@ public:
 	 *
 	 * @note This method consumes the stream and it will work only with text data.
 	 * 		 If you have binary data in the stream use getBodyStream instead.
+	 *
+	 * @note Allocation of String doubles amount of memory required, so use with care.
 	 */
 	String getBody();
 
 	/**
-	 * @brief Returns pointer to the current body stream
+	 * @brief Return the current body stream and pass ownership to the caller
 	 * @retval ReadWriteStream*
+	 * @note may return null
 	 */
 	ReadWriteStream* getBodyStream();
 
-	HttpRequest* setBody(const String& body);
+	HttpRequest* setBody(const String& body)
+	{
+		setBody((uint8_t*)body.c_str(), body.length());
+		return this;
+	}
+
 	HttpRequest* setBody(ReadWriteStream* stream);
+
 	HttpRequest* setBody(uint8_t* rawData, size_t length);
 
 	/**
@@ -104,6 +180,8 @@ public:
 	 * @param ReadWriteStream *stream
 	 *
 	 * @retval HttpRequest*
+	 *
+	 * @note The response to this request will be stored in the user-provided stream.
 	 */
 	HttpRequest* setResponseStream(ReadWriteStream* stream);
 
@@ -115,15 +193,38 @@ public:
 		return responseStream;
 	}
 
-	HttpRequest* onHeadersComplete(RequestHeadersCompletedDelegate delegateFunction);
-	HttpRequest* onBody(RequestBodyDelegate delegateFunction);
-	HttpRequest* onRequestComplete(RequestCompletedDelegate delegateFunction);
+	HttpRequest* onHeadersComplete(RequestHeadersCompletedDelegate delegateFunction)
+	{
+		headersCompletedDelegate = delegateFunction;
+		return this;
+	}
 
+	HttpRequest* onBody(RequestBodyDelegate delegateFunction)
+	{
+		requestBodyDelegate = delegateFunction;
+		return this;
+	}
+
+	HttpRequest* onRequestComplete(RequestCompletedDelegate delegateFunction)
+	{
+		requestCompletedDelegate = delegateFunction;
+		return this;
+	}
+
+	/** @brief Clear buffers and reset to default state in preparation for another request */
 	void reset();
 
 #ifdef ENABLE_SSL
-	HttpRequest* setSslOptions(uint32_t sslOptions);
-	uint32_t getSslOptions();
+	HttpRequest* setSslOptions(uint32_t sslOptions)
+	{
+		this->sslOptions = sslOptions;
+		return this;
+	}
+
+	uint32_t getSslOptions()
+	{
+		return sslOptions;
+	}
 
 	/**
 	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
@@ -132,7 +233,11 @@ public:
 	 *
 	 * @return bool  true of success, false or failure
 	 */
-	HttpRequest* pinCertificate(const SSLFingerprints& fingerprints);
+	HttpRequest* pinCertificate(const SSLFingerprints& fingerprints)
+	{
+		sslFingerprint = fingerprints;
+		return this;
+	}
 
 	/**
 	 * @brief Sets client private key, certificate and password from memory
@@ -141,7 +246,11 @@ public:
 	 *
 	 * @return HttpRequest pointer
 	 */
-	HttpRequest* setSslKeyCert(const SSLKeyCertPair& keyCertPair);
+	HttpRequest* setSslKeyCert(const SSLKeyCertPair& keyCertPair)
+	{
+		sslKeyCertPair = keyCertPair;
+		return this;
+	}
 #endif
 
 #ifndef SMING_RELEASE
@@ -160,18 +269,18 @@ public:
 
 	int retries = 0; // how many times the request should be send again...
 
-	void* args = NULL; // Used to store data that should be valid during a single request
+	void* args = nullptr; // Used to store data that should be valid during a single request
 
 protected:
 	RequestHeadersCompletedDelegate headersCompletedDelegate;
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
 
-	ReadWriteStream* stream = NULL;
-	ReadWriteStream* responseStream = NULL;
+	ReadWriteStream* bodyStream = nullptr;
+	ReadWriteStream* responseStream = nullptr;
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
-	AuthAdapter* auth = NULL;
+	AuthAdapter* auth = nullptr;
 #endif
 
 #ifdef ENABLE_SSL
@@ -181,9 +290,9 @@ protected:
 #endif
 
 private:
-	HashMap<String, FileStream*> files;
+	HashMap<String, ReadWriteStream*> files;
 
-	HttpParams* queryParams = NULL; // << deprecated
+	HttpParams* queryParams = nullptr; // << deprecated
 };
 
 #endif /* _SMING_CORE_HTTP_REQUEST_H_ */

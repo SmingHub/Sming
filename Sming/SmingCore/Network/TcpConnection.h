@@ -248,7 +248,7 @@ private:
 protected:
 	tcp_pcb* tcp = NULL;
 	uint16_t sleep;
-	uint16_t timeOut;
+	uint16_t timeOut = USHRT_MAX; // << By default a TCP connection does not have a time out
 	bool canSend;
 	bool autoSelfDestruct;
 #ifdef ENABLE_SSL

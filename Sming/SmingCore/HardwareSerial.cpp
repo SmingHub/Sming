@@ -7,33 +7,40 @@
 
 // HardwareSerial based on Espressif Systems code
 
-#include "../SmingCore/HardwareSerial.h"
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "HardwareSerial.h"
 #include <cstdarg>
+#include "System.h"
+#include "m_printf.h"
 
-#include "../SmingCore/Clock.h"
-#include "../SmingCore/Interrupts.h"
+#if ENABLE_CMD_EXECUTOR
+#include "../Services/CommandProcessing/CommandExecutor.h"
+#endif
 
-HWSerialMemberData HardwareSerial::memberData[NUMBER_UARTS];
-os_event_t* HardwareSerial::serialQueue = nullptr;
-bool HardwareSerial::init = false;
-
-//set m_printf callback
-extern void setMPrintfPrinterCbc(void (*callback)(uart_t*, char), uart_t* uart);
-
-HardwareSerial::HardwareSerial(const int uartPort) : uartNr(uartPort), rxSize(256)
-{
-}
+HardwareSerial Serial(UART_ID_0);
 
 HardwareSerial::~HardwareSerial()
 {
+#if ENABLE_CMD_EXECUTOR
+	delete commandExecutor;
+#endif
 }
 
-void HardwareSerial::begin(const uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin)
+void HardwareSerial::begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin)
 {
 	end();
-	uart = uart_init(uartNr, baud, (int)config, (int)mode, txPin, rxSize);
-	resetCallback();
+
+	if(uartNr < 0)
+		return;
+
+	uart_config cfg = {.uart_nr = (uint8_t)uartNr,
+					   .tx_pin = txPin,
+					   .mode = static_cast<uart_mode_t>(mode),
+					   .options = options,
+					   .baudrate = baud,
+					   .config = config,
+					   .rx_size = rxSize,
+					   .tx_size = txSize};
+	uart = uart_init_ex(cfg);
 }
 
 void HardwareSerial::end()
@@ -42,13 +49,9 @@ void HardwareSerial::end()
 		uart_set_debug(UART_NO);
 	}
 
-	if(uart) {
-		uart_uninit(uart);
-		uart = NULL;
-	} else if(!init) {
-		uart_detach(uartNr);
-		init = true;
-	}
+	uart_uninit(uart);
+	uart = nullptr;
+	uart_detach(uartNr);
 }
 
 size_t HardwareSerial::setRxBufferSize(size_t size)
@@ -61,93 +64,14 @@ size_t HardwareSerial::setRxBufferSize(size_t size)
 	return rxSize;
 }
 
-void HardwareSerial::swap(uint8_t tx_pin)
+size_t HardwareSerial::setTxBufferSize(size_t size)
 {
-	if(!uart) {
-		return;
+	if(uart) {
+		txSize = uart_resize_tx_buffer(uart, size);
+	} else {
+		txSize = size;
 	}
-	uart_swap(uart, tx_pin);
-}
-
-void HardwareSerial::setTx(uint8_t tx_pin)
-{
-	if(!uart) {
-		return;
-	}
-	uart_set_tx(uart, tx_pin);
-}
-
-void HardwareSerial::pins(uint8_t tx, uint8_t rx)
-{
-	if(!uart) {
-		return;
-	}
-	uart_set_pins(uart, tx, rx);
-}
-
-bool HardwareSerial::isTxEnabled(void)
-{
-	return uart && uart_tx_enabled(uart);
-}
-
-bool HardwareSerial::isRxEnabled(void)
-{
-	return uart && uart_rx_enabled(uart);
-}
-
-int HardwareSerial::available()
-{
-	int result = static_cast<int>(uart_rx_available(uart));
-	return result;
-}
-
-size_t HardwareSerial::write(uint8_t oneChar)
-{
-	if(!uart || !uart_tx_enabled(uart)) {
-		return 0;
-	}
-
-	uart_write_char(uart, oneChar);
-	return 1;
-}
-
-int HardwareSerial::read()
-{
-	return uart_read_char(uart);
-}
-
-int HardwareSerial::readMemoryBlock(char* buf, int max_len)
-{
-	if(uart != 0 && uart_rx_enabled(uart)) {
-		int size = 0;
-		char c;
-		for(int i = 0; i < max_len; i++) {
-			c = read();
-			if(c == -1) {
-				break;
-			}
-
-			size++;
-			// @TODO: Check this section...
-			buf[i] = c;
-		}
-		return size;
-	}
-	return -1;
-}
-
-int HardwareSerial::peek()
-{
-	return uart_peek_char(uart);
-}
-
-void HardwareSerial::flush()
-{
-	if(!uart || !uart_tx_enabled(uart)) {
-		return;
-	}
-
-	uart_wait_tx_empty(uart);
+	return txSize;
 }
 
 void HardwareSerial::systemDebugOutput(bool enabled)
@@ -159,13 +83,14 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	if(enabled) {
 		if(uart_tx_enabled(uart)) {
 			uart_set_debug(uartNr);
-			setMPrintfPrinterCbc(uart_write_char, uart);
+			using namespace std::placeholders;
+			m_setPuts(std::bind(&uart_write, uart, _1, _2));
 		} else {
 			uart_set_debug(UART_NO);
 		}
 	} else {
 		// don't print debugf() data at all
-		setMPrintfPrinterCbc(NULL, NULL);
+		m_setPuts(nullptr);
 		// and disable system debug messages on this interface
 		if(uart_get_debug() == uartNr) {
 			uart_set_debug(UART_NO);
@@ -173,139 +98,101 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	}
 }
 
-void HardwareSerial::callbackHandler(uart_t* uart)
+void HardwareSerial::callbackHandler(uint32_t status)
 {
-	if(uart == NULL) {
+	// Transmit complete ?
+	if(status & _BV(UIFE)) {
+		if(transmitComplete)
+			System.queueCallback(
+				[](uint32_t param) {
+					auto serial = reinterpret_cast<HardwareSerial*>(param);
+					if(serial->transmitComplete) {
+						serial->transmitComplete(*serial);
+					}
+				},
+				reinterpret_cast<uint32_t>(this));
+	}
+
+	// RX FIFO Full or RX FIFO Timeout ?
+	if((status & (_BV(UIFF) | _BV(UITO))) == 0) {
 		return;
 	}
 
-	uint8_t lastPos = uart->rx_buffer->wpos;
-	if(!lastPos) {
-		lastPos = uart->rx_buffer->size;
-	}
-	uint8_t receivedChar = uart->rx_buffer->buffer[lastPos - 1];
-	if((memberData[uart->uart_nr].HWSDelegate)
 #if ENABLE_CMD_EXECUTOR
-	   || (memberData[uart->uart_nr].commandExecutor)
+	if(HWSDelegate || commandExecutor) {
+#else
+	if(HWSDelegate) {
 #endif
-	) {
-		uint32 serialQueueParameter;
-		uint16 cc = uart_rx_available(uart);
-		serialQueueParameter = (cc * 256) + receivedChar; // can be done by bitlogic, avoid casting to ETSParam
-		serialQueueParameter +=
-			(uart->uart_nr << 25); // the left most byte contains the uart_nr. Up to 256 uarts are supported
 
-		if(memberData[uart->uart_nr].HWSDelegate) {
-			system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_DELEGATE, serialQueueParameter);
-		}
+		// Pack parameters for callback into a single word
+		union __packed SerialParam {
+			struct {
+				uint16_t charCount;
+				uint8_t receivedChar;
+				uint8_t uartNr;
+			};
+			uint32_t param;
+		};
+
+		SerialParam serialParam = {{.charCount = static_cast<uint16_t>(uart_rx_available(uart)),
+									.receivedChar = (uint8_t)uart_peek_last_char(uart),
+									.uartNr = static_cast<uint8_t>(uartNr)}};
+
+		System.queueCallback(
+			[](uint32_t param) {
+				SerialParam serialParam = {.param = param};
+				auto uart = uart_get_uart(serialParam.uartNr);
+				auto serial = reinterpret_cast<HardwareSerial*>(uart_get_callback_param(uart));
+				if(serial->HWSDelegate) {
+					serial->HWSDelegate(*serial, serialParam.receivedChar, serialParam.charCount);
+				}
 #if ENABLE_CMD_EXECUTOR
-		if(memberData[uart->uart_nr].commandExecutor) {
-			system_os_post(USER_TASK_PRIO_0, SERIAL_SIGNAL_COMMAND, serialQueueParameter);
-		}
+				if(serial->commandExecutor) {
+					serial->commandExecutor->executorReceive(serialParam.receivedChar);
+				}
 #endif
+			},
+			serialParam.param);
 	}
 }
 
-bool HardwareSerial::setCallback(StreamDataReceivedDelegate reqDelegate)
+bool HardwareSerial::updateUartCallback()
 {
-	if(!uart || !uart_rx_enabled(uart)) {
+	if(uart == nullptr) {
 		return false;
 	}
 
-	uart->callback = callbackHandler;
-
-	memberData[uartNr].HWSDelegate = reqDelegate;
-
-	// Start Serial task
-	if(!serialQueue) {
-		serialQueue = (os_event_t*)malloc(sizeof(os_event_t) * SERIAL_QUEUE_LEN);
-		system_os_task(delegateTask, USER_TASK_PRIO_0, serialQueue, SERIAL_QUEUE_LEN);
+#if ENABLE_CMD_EXECUTOR
+	if(HWSDelegate || transmitComplete || commandExecutor) {
+#else
+	if(HWSDelegate || transmitComplete) {
+#endif
+		setUartCallback(
+			[](uart_t* uart, uint32_t status) {
+				auto serial = reinterpret_cast<HardwareSerial*>(uart_get_callback_param(uart));
+				if(serial) {
+					serial->callbackHandler(status);
+				}
+			},
+			this);
+		return true;
+	} else {
+		setUartCallback(nullptr, nullptr);
+		return false;
 	}
-
-	return true;
-}
-
-void HardwareSerial::resetCallback()
-{
-	memberData[uartNr].HWSDelegate = nullptr;
-
-	uart->callback = 0;
 }
 
 void HardwareSerial::commandProcessing(bool reqEnable)
 {
 #if ENABLE_CMD_EXECUTOR
 	if(reqEnable) {
-		if(!memberData[uartNr].commandExecutor) {
-			memberData[uartNr].commandExecutor = new CommandExecutor(&Serial);
+		if(!commandExecutor) {
+			commandExecutor = new CommandExecutor(this);
 		}
 	} else {
-		delete memberData[uartNr].commandExecutor;
-		memberData[uartNr].commandExecutor = nullptr;
+		delete commandExecutor;
+		commandExecutor = nullptr;
 	}
+	updateUartCallback();
 #endif
 }
-
-void HardwareSerial::delegateTask(os_event_t* inputEvent)
-{
-	int uartNr = inputEvent->par >> 25;				// the uart_nr is in the last byte
-	inputEvent->par = inputEvent->par & 0x00FFFFFF; // clear the last byte
-	uint8 rcvChar = inputEvent->par % 256;			// can be done by bitlogic, avoid casting from ETSParam
-	uint16 charCount = inputEvent->par / 256;
-
-	switch(inputEvent->sig) {
-	case SERIAL_SIGNAL_DELEGATE:
-
-		if(memberData[uartNr].HWSDelegate) {
-			memberData[uartNr].HWSDelegate(Serial, rcvChar, charCount);
-		}
-		break;
-
-	case SERIAL_SIGNAL_COMMAND:
-#if ENABLE_CMD_EXECUTOR
-		if(memberData[uartNr].commandExecutor) {
-			memberData[uartNr].commandExecutor->executorReceive(rcvChar);
-		}
-#endif
-		break;
-
-	default:
-		break;
-	}
-}
-
-int HardwareSerial::baudRate(void)
-{
-	// Null pointer on _uart is checked by SDK
-	return uart_get_baudrate(uart);
-}
-
-HardwareSerial::operator bool() const
-{
-	return uart != 0;
-}
-
-size_t HardwareSerial::indexOf(char c)
-{
-	int offset = uart->rx_buffer->rpos;
-	int pos = 0;
-	while(pos < available()) {
-		if(uart->rx_buffer->buffer[offset + pos] == c) {
-			return pos;
-		}
-
-		pos++;
-
-		if(pos + offset == uart->rx_buffer->wpos) {
-			break;
-		}
-
-		if(pos + offset == uart->rx_buffer->size) {
-			offset = -pos;
-		}
-	}
-
-	return -1;
-}
-
-HardwareSerial Serial(UART_ID_0);

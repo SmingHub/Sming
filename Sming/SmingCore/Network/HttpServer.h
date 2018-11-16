@@ -47,13 +47,13 @@ class HttpServer : public TcpServer
 
 public:
 	HttpServer();
-	HttpServer(HttpServerSettings settings);
+	HttpServer(const HttpServerSettings& settings);
 	virtual ~HttpServer();
 
 	/**
 	 * @brief Allows changing the server configuration
 	 */
-	void configure(HttpServerSettings settings);
+	void configure(const HttpServerSettings& settings);
 
 	/**
 	 * @briefs Allows content-type specific parsing of the body based on content-type.

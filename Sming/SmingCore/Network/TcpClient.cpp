@@ -6,19 +6,19 @@
  ****/
 
 #include "TcpClient.h"
-#include "../Wiring/IPAddress.h"
-#include "../Data/Stream/DataSourceStream.h"
-#include "../../Wiring/WString.h"
+#include "Data/Stream/MemoryDataStream.h"
 
 TcpClient::TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted)
 	: TcpConnection(clientTcp, true), state(eTCS_Connected)
 {
 	completed = onCompleted;
 	receive = clientReceive;
+	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
 TcpClient::TcpClient(bool autoDestruct) : TcpConnection(autoDestruct), state(eTCS_Ready)
 {
+	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
 TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend /* = NULL*/,
@@ -28,6 +28,7 @@ TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelega
 	completed = onCompleted;
 	ready = onReadyToSend;
 	receive = onReceive;
+	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
 TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive /* = NULL*/)
@@ -35,11 +36,13 @@ TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegat
 {
 	completed = onCompleted;
 	receive = onReceive;
+	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
 TcpClient::TcpClient(TcpClientDataDelegate onReceive) : TcpConnection(false), state(eTCS_Ready)
 {
 	receive = onReceive;
+	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
 TcpClient::~TcpClient()
@@ -116,7 +119,7 @@ err_t TcpClient::onReceive(pbuf* buf)
 	if(receive) {
 		pbuf* cur = buf;
 		while(cur != NULL && cur->len > 0) {
-			bool success = !receive(*this, (char*)cur->payload, cur->len);
+			bool success = receive(*this, (char*)cur->payload, cur->len);
 			if(!success) {
 				debug_d("TcpClient::onReceive: Aborted from receive callback");
 

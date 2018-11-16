@@ -9,11 +9,40 @@
 
 #include "HardwareTimer.h"
 
-#define US_TO_RTC_TIMER_TICKS(t)                                                                                       \
-	((t) ? (((t) > 0x35A)                                                                                              \
-				? (((t) >> 2) * ((APB_CLK_FREQ >> 4) / 250000) + ((t)&0x3) * ((APB_CLK_FREQ >> 4) / 1000000))          \
-				: (((t) * (APB_CLK_FREQ >> 4)) / 1000000))                                                             \
-		 : 0)
+/*
+ * eagle_soc.h defines TIMER_CLK_FREQ using a divisor of 256, but Sming calls system_timer_reinit() in user_main()
+ * which changes it to 4. Fortunately, we can find out which value is in use by querying the timer2_ms_flag.
+ *
+ * (Found this in LWIP core)
+ */
+extern bool timer2_ms_flag;
+
+// Get current timer frequency, which is variable
+static __forceinline uint32_t getTimerClockFreq()
+{
+	return timer2_ms_flag ? (APB_CLK_FREQ / 256) : (APB_CLK_FREQ / 16);
+}
+
+uint32_t IRAM_ATTR usToTimerTicks(uint32_t us)
+{
+	if(us == 0)
+		return 0;
+
+	// Get current timer frequency, which is variable
+	uint32_t freq = getTimerClockFreq();
+
+	// Larger values may overflow
+	if(us > 0x35A)
+		return (us / 4) * (freq / 250000) + (us % 4) * (freq / 1000000);
+
+	return us * freq / 1000000;
+}
+
+uint32_t IRAM_ATTR timerTicksToUs(uint32_t ticks)
+{
+	// Be careful to avoid overflows
+	return 10000 * ticks / (getTimerClockFreq() / 100);
+}
 
 #define FRC1_ENABLE_TIMER BIT7
 #define FRC1_AUTO_LOAD BIT6
@@ -35,93 +64,77 @@ typedef enum {
 	NMI_SOURCE = 1,
 } FRC1_TIMER_SOURCE_TYPE;
 
-static void IRAM_ATTR hw_timer_isr_cb(void* arg)
+// Used by ISR
+static HardwareTimer* isrTimer;
+
+static void IRAM_ATTR hw_timer_isr_cb()
 {
-	if(arg == null)
-		return;
-	Hardware_Timer* ptimer = (Hardware_Timer*)arg;
-	ptimer->call();
+	if(isrTimer) {
+		isrTimer->call();
+	}
 }
 
-Hardware_Timer::Hardware_Timer()
+HardwareTimer::HardwareTimer()
 {
-	ETS_FRC_TIMER1_INTR_ATTACH((ets_isr_t)hw_timer_isr_cb, (void*)this);
+	assert(isrTimer == nullptr);
+	isrTimer = this;
+	ETS_FRC_TIMER1_NMI_INTR_ATTACH(hw_timer_isr_cb);
 }
 
-Hardware_Timer::~Hardware_Timer()
+HardwareTimer::~HardwareTimer()
 {
-	ETS_FRC_TIMER1_INTR_ATTACH((ets_isr_t)hw_timer_isr_cb, null);
 	stop();
+	isrTimer = nullptr;
 }
 
-Hardware_Timer& Hardware_Timer::initializeMs(uint32_t milliseconds, InterruptCallback callback)
+HardwareTimer& HardwareTimer::initializeMs(uint32_t milliseconds, InterruptCallback callback)
 {
 	setCallback(callback);
 	setIntervalMs(milliseconds);
 	return *this;
 }
 
-Hardware_Timer& Hardware_Timer::initializeUs(uint32_t microseconds, InterruptCallback callback)
+HardwareTimer& HardwareTimer::initializeUs(uint32_t microseconds, InterruptCallback callback)
 {
 	setCallback(callback);
 	setIntervalUs(microseconds);
 	return *this;
 }
 
-bool Hardware_Timer::start(bool repeating /* = true*/)
+bool HardwareTimer::start(bool repeating /* = true*/)
 {
 	this->repeating = repeating;
 	stop();
 	if(interval == 0 || !callback)
 		return started;
 
-	if(this->repeating == 1) {
-		RTC_REG_WRITE(FRC1_CTRL_ADDRESS, FRC1_AUTO_LOAD | DIVDED_BY_16 | FRC1_ENABLE_TIMER | TM_EDGE_INT);
-	} else {
-		RTC_REG_WRITE(FRC1_CTRL_ADDRESS, DIVDED_BY_16 | FRC1_ENABLE_TIMER | TM_EDGE_INT);
-	}
+	RTC_REG_WRITE(FRC1_CTRL_ADDRESS, DIVDED_BY_16 | FRC1_ENABLE_TIMER | TM_EDGE_INT | (repeating ? FRC1_AUTO_LOAD : 0));
 
 	TM1_EDGE_INT_ENABLE();
 	ETS_FRC1_INTR_ENABLE();
 	started = true;
 
-	RTC_REG_WRITE(FRC1_LOAD_ADDRESS, US_TO_RTC_TIMER_TICKS(interval));
+	RTC_REG_WRITE(FRC1_LOAD_ADDRESS, usToTimerTicks(interval));
 	return started;
 }
 
-bool Hardware_Timer::stop()
+void HardwareTimer::stop()
 {
-	if(!started)
-		return started;
-	TM1_EDGE_INT_DISABLE();
-	ETS_FRC1_INTR_DISABLE();
-	started = false;
-	return started;
+	if(started) {
+		TM1_EDGE_INT_DISABLE();
+		ETS_FRC1_INTR_DISABLE();
+		started = false;
+	}
 }
 
-bool Hardware_Timer::restart()
+bool HardwareTimer::restart()
 {
 	stop();
 	start(repeating);
 	return started;
 }
 
-bool Hardware_Timer::isStarted()
-{
-	return started;
-}
-
-uint32_t Hardware_Timer::getIntervalUs()
-{
-	return interval;
-}
-
-uint32_t Hardware_Timer::getIntervalMs()
-{
-	return (uint32_t)getIntervalUs() / 1000;
-}
-
-bool Hardware_Timer::setIntervalUs(uint32_t microseconds /* = 1000000*/)
+bool HardwareTimer::setIntervalUs(uint32_t microseconds)
 {
 	if(microseconds < MAX_HW_TIMER_INTERVAL_US && microseconds > MIN_HW_TIMER_INTERVAL_US) {
 		interval = microseconds;
@@ -133,12 +146,7 @@ bool Hardware_Timer::setIntervalUs(uint32_t microseconds /* = 1000000*/)
 	return started;
 }
 
-bool Hardware_Timer::setIntervalMs(uint32_t milliseconds /* = 1000000*/)
-{
-	return setIntervalUs(((uint32_t)milliseconds) * 1000);
-}
-
-void Hardware_Timer::setCallback(InterruptCallback interrupt)
+void HardwareTimer::setCallback(InterruptCallback interrupt)
 {
 	ETS_INTR_LOCK();
 	callback = interrupt;

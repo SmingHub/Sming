@@ -17,9 +17,10 @@
  */
 
 #include "SmtpClient.h"
-#include "../../Services/WebHelpers/base64.h"
+#include "../Services/WebHelpers/base64.h"
 #include "Data/Stream/QuotedPrintableOutputStream.h"
 #include "Data/Stream/Base64OutputStream.h"
+#include "Data/HexString.h"
 
 #if !defined(ENABLE_SSL) || ENABLE_SSL == 0
 // if our SSL is not used then we try to use the one coming from the SDK
@@ -135,7 +136,7 @@ bool SmtpClient::send(MailMessage* mail)
 
 void SmtpClient::quit()
 {
-	sendString("QUIT\r\n");
+	sendString(F("QUIT\r\n"));
 	state = eSMTP_Quitting;
 }
 
@@ -144,42 +145,37 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
 	case eSMTP_StartTLS: {
-		sendString("STARTTLS\n\n");
+		sendString(F("STARTTLS\n\n"));
 		state = eSMTP_Banner;
 		break;
 	}
 
 	case eSMTP_SendAuth: {
 		if(authMethods.count()) {
+			auto methodPlain = F("PLAIN");
+			auto methodCramMd5 = F("CRAM-MD5");
 			// TODO: Simplify the code in that block...
 			Vector<String> preferredOrder;
 			if(useSsl) {
-				preferredOrder.addElement("PLAIN");
-				preferredOrder.addElement("CRAM-MD5");
+				preferredOrder.addElement(methodPlain);
+				preferredOrder.addElement(methodCramMd5);
 			} else {
-				preferredOrder.addElement("CRAM-MD5");
-				preferredOrder.addElement("PLAIN");
+				preferredOrder.addElement(methodCramMd5);
+				preferredOrder.addElement(methodPlain);
 			}
 
-			for(int i = 0; i < preferredOrder.count(); i++) {
+			for(unsigned i = 0; i < preferredOrder.count(); i++) {
 				if(authMethods.contains(preferredOrder[i])) {
-					if(preferredOrder[i] == "PLAIN") {
+					if(preferredOrder[i] == methodPlain) {
 						// base64('\0' + username + '\0' + password)
-						int tokenLength = url.User.length() + url.Password.length() + 2;
-						uint8_t token[tokenLength];
-						memcpy((token + 1), url.User.c_str(), url.User.length()); // copy user
-						memcpy((token + 2 + url.User.length()), url.Password.c_str(),
-							   url.Password.length()); // copy password
-						int hashLength = tokenLength * 4;
-						char hash[hashLength];
-						base64_encode(tokenLength, token, hashLength, hash);
-						sendString("AUTH PLAIN " + String(hash) + "\r\n");
-
+						String token = '\0' + url.User + '\0' + url.Password;
+						String hash = base64_encode(token);
+						sendString(F("AUTH PLAIN ") + hash + "\r\n");
 						state = eSMTP_SendingAuth;
 						break;
-					} else if(preferredOrder[i] == "CRAM-MD5") {
+					} else if(preferredOrder[i] == methodCramMd5) {
 						// otherwise we can try the slow cram-md5 authentication...
-						sendString("AUTH CRAM-MD5\r\n");
+						sendString(F("AUTH CRAM-MD5\r\n"));
 						state = eSMTP_RequestingAuthChallenge;
 						break;
 					}
@@ -192,6 +188,8 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 
 		break;
+
+	default:; // Do nothing
 	}
 
 	case eSMTP_SendAuthResponse: {
@@ -201,19 +199,8 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		hmac_md5((const uint8_t*)authChallenge.c_str(), authChallenge.length(), (const uint8_t*)url.Password.c_str(),
 				 url.Password.length(), digest);
 
-		char hexdigest[MD5_SIZE * 2 + 1] = {0};
-		char* c = hexdigest;
-		for(int i = 0; i < MD5_SIZE; i++) {
-			ets_sprintf(c, "%02x", digest[i]);
-			c += 2;
-		}
-		*c = '\0';
-
-		String token = url.User + " " + hexdigest;
-		int hashLength = token.length() * 4;
-		char hash[hashLength];
-		base64_encode(token.length(), (const unsigned char*)token.c_str(), hashLength, hash);
-		sendString(String(hash) + "\r\n");
+		String token = url.User + ' ' + makeHexString(digest, MD5_SIZE);
+		sendString(base64_encode(token) + "\r\n");
 		state = eSMTP_SendingAuth;
 
 		break;
@@ -233,10 +220,10 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eSMTP_SendMail: {
-		sendString("MAIL FROM:" + outgoingMail->from + "\r\n");
+		sendString(F("MAIL FROM:") + outgoingMail->from + "\r\n");
 		if(options & SMTP_OPT_PIPELINE) {
-			sendString("RCPT TO:" + outgoingMail->to + "\r\n");
-			sendString("DATA\r\n");
+			sendString(F("RCPT TO:") + outgoingMail->to + "\r\n");
+			sendString(F("DATA\r\n"));
 		}
 
 		state = eSMTP_SendingMail;
@@ -244,13 +231,13 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eSMTP_SendRcpt: {
-		sendString("RCPT TO:" + outgoingMail->to + "\r\n");
+		sendString(F("RCPT TO:") + outgoingMail->to + "\r\n");
 		state = eSMTP_SendingRcpt;
 		break;
 	}
 
 	case eSMTP_SendData: {
-		sendString("DATA\r\n");
+		sendString(F("DATA\r\n"));
 		state = eSMTP_SendingData;
 		break;
 	}
@@ -282,7 +269,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		delete stream;
 		stream = nullptr;
 
-		sendString("\r\n.\r\n");
+		sendString(F("\r\n.\r\n"));
 		break;
 	}
 
@@ -303,9 +290,9 @@ HttpPartResult SmtpClient::multipartProducer()
 	if(outgoingMail->attachments.count()) {
 		result = outgoingMail->attachments[0];
 
-		if(!result.headers->contains("Content-Transfer-Encoding")) {
+		if(!result.headers->contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
 			result.stream = new Base64OutputStream(result.stream);
-			(*result.headers)["Content-Transfer-Encoding"] = "base64";
+			(*result.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("base64");
 		}
 
 		outgoingMail->attachments.remove(0);
@@ -318,8 +305,8 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 {
 	mail->getHeaders();
 
-	if(!mail->headers.contains("Content-Transfer-Encoding")) {
-		mail->headers["Content-Transfer-Encoding"] = "quoted-printable";
+	if(!mail->headers.contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
+		mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("quoted-printable");
 		mail->stream = new QuotedPrintableOutputStream(mail->stream);
 	}
 
@@ -327,21 +314,19 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 		MultipartStream* mStream = new MultipartStream(HttpPartProducerDelegate(&SmtpClient::multipartProducer, this));
 		HttpPartResult text;
 		text.headers = new HttpHeaders();
-		(*text.headers)["Content-Type"] = mail->headers["Content-Type"];
-		(*text.headers)["Content-Transfer-Encoding"] = mail->headers["Content-Transfer-Encoding"];
+		(*text.headers)[HTTP_HEADER_CONTENT_TYPE] = mail->headers[HTTP_HEADER_CONTENT_TYPE];
+		(*text.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING];
 		text.stream = mail->stream;
 
 		mail->attachments.insertElementAt(text, 0);
 
-		mail->headers.remove("Content-Transfer-Encoding");
-		mail->headers["Content-Type"] = String("multipart/mixed; boundary=") + mStream->getBoundary();
+		mail->headers.remove(HTTP_HEADER_CONTENT_TRANSFER_ENCODING);
+		mail->headers[HTTP_HEADER_CONTENT_TYPE] = F("multipart/mixed; boundary=") + mStream->getBoundary();
 		mail->stream = mStream;
 	}
 
-	for(int i = 0; i < mail->headers.count(); i++) {
-		String key = mail->headers.keyAt(i);
-		String value = mail->headers.valueAt(i);
-		sendString(key + ": " + value + "\r\n");
+	for(unsigned i = 0; i < mail->headers.count(); i++) {
+		sendString(mail->headers[i]);
 	}
 	sendString("\r\n");
 }
@@ -426,7 +411,7 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 				TcpConnection::staticOnConnected((void*)this, tcp, ERR_OK);
 			}
 
-			sendString("EHLO " + url.Host + "\r\n");
+			sendString(F("EHLO ") + url.Host + "\r\n");
 			state = eSMTP_Hello;
 
 			break;
@@ -435,13 +420,13 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 		case eSMTP_Hello: {
 			RETURN_ON_ERROR(SMTP_CODE_REQUEST_OK);
 
-			if(strncmp(line, "PIPELINING", lineLength) == 0) {
+			if(strncmp(line, _F("PIPELINING"), lineLength) == 0) {
 				// PIPELINING (see: https://tools.ietf.org/html/rfc2920)
 				options |= SMTP_OPT_PIPELINE;
-			} else if(strncmp(line, "STARTTLS", lineLength) == 0) {
+			} else if(strncmp(line, _F("STARTTLS"), lineLength) == 0) {
 				// STARTTLS (see: https://www.ietf.org/rfc/rfc3207.txt)
 				options |= SMTP_OPT_STARTTLS;
-			} else if(strncmp(line, "AUTH ", 5) == 0) {
+			} else if(strncmp(line, _F("AUTH "), 5) == 0) {
 				// Process authentication methods
 				// Ex: 250-AUTH CRAM-MD5 PLAIN LOGIN
 				// See: https://tools.ietf.org/html/rfc4954
@@ -469,17 +454,7 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 
 		case eSMTP_RequestingAuthChallenge: {
 			RETURN_ON_ERROR(SMTP_CODE_AUTH_CHALLENGE);
-			uint8_t out[lineLength];
-			int outlen = lineLength;
-
-// TODO: Unify the base64_[decode|encode]() signature in base64.cpp to match the one in axTLS crypt_misc.h
-#ifdef ENABLE_SSL
-			base64_decode(line, lineLength, out, &outlen);
-#else
-			// size_t in_len, const char *in, size_t out_len, unsigned char *out
-			outlen = base64_decode(lineLength, line, outlen, out);
-#endif
-			authChallenge = String((const char*)out, outlen);
+			authChallenge = base64_decode(line, lineLength);
 			state = eSMTP_SendAuthResponse;
 
 			break;

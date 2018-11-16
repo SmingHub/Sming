@@ -12,43 +12,49 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_HWTIMER_H_
-#define _SMING_CORE_HWTIMER_H_
+#ifndef _SMING_CORE_HARDWARE_TIMER_H_
+#define _SMING_CORE_HARDWARE_TIMER_H_
 
-#include "../SmingCore/Interrupts.h"
-#include "../SmingCore/Delegate.h"
+#include "Interrupts.h"
+#include "Delegate.h"
 
 #define MAX_HW_TIMER_INTERVAL_US 0x7fffff ///< Maximum timer interval in microseconds
 #define MIN_HW_TIMER_INTERVAL_US 0x32	 ///< Minimum hardware interval in microseconds
 
-/** @brief  Delegate callback type for timer trigger
+/** @brief Convert microseconds into timer ticks.
+ *  @note Replaces the previous US_TO_RTC_TIMER_TICKS macro to guarantee we use the correct timer prescale value.
  */
-typedef Delegate<void()> TimerDelegate;
+uint32_t IRAM_ATTR usToTimerTicks(uint32_t us);
+
+/** @brief Convert timer ticks into microseconds
+ *  @note accounts for current timer prescale setting
+ */
+uint32_t IRAM_ATTR timerTicksToUs(uint32_t ticks);
 
 /// Hardware timer class
-class Hardware_Timer
+class HardwareTimer
 {
 public:
 	/** @brief  Hardware timer
     */
-	Hardware_Timer();
-	virtual ~Hardware_Timer();
+	HardwareTimer();
+	virtual ~HardwareTimer();
 
 	/** @brief  Initialise hardware timer
      *  @param  microseconds Timer interval in microseconds
      *  @param  callback Callback function to call when timer triggers (Default: none)
-     *  @retval Hardware_Timer& Reference to timer
+     *  @retval HardwareTimer& Reference to timer
      */
-	Hardware_Timer& IRAM_ATTR initializeUs(uint32_t microseconds,
-										   InterruptCallback callback = NULL); // Init in Microseconds.
+	HardwareTimer& IRAM_ATTR initializeUs(uint32_t microseconds,
+										  InterruptCallback callback = nullptr); // Init in Microseconds.
 
 	/** @brief  Initialise hardware timer
      *  @param  milliseconds Timer interval in milliseconds
      *  @param  callback Callback function to call when timer triggers (Default: none)
-     *  @retval Hardware_Timer& Reference to timer
+     *  @retval HardwareTimer& Reference to timer
      */
-	Hardware_Timer& IRAM_ATTR initializeMs(uint32_t milliseconds,
-										   InterruptCallback callback = NULL); // Init in Milliseconds.
+	HardwareTimer& IRAM_ATTR initializeMs(uint32_t milliseconds,
+										  InterruptCallback callback = nullptr); // Init in Milliseconds.
 
 	/** @brief  Start timer running
      *  @param  repeating True to restart timer when it triggers, false for one-shot (Default: true)
@@ -66,10 +72,8 @@ public:
 	}
 
 	/** @brief  Stops timer
-	 *  @retval bool Always false
-	 *  @todo   Why always return false from Hardware_timer::stop()?
 	 */
-	bool IRAM_ATTR stop();
+	void IRAM_ATTR stop();
 
 	/** @brief  Restart timer
 	 *  @retval bool True if timer started
@@ -80,27 +84,39 @@ public:
 	/** @brief  Check if timer is started
 	 *  @retval bool True if started
 	 */
-	bool isStarted();
+	bool isStarted()
+	{
+		return started;
+	}
 
 	/** @brief  Get timer interval
      *  @retval uint32_t Timer interval in microseconds
      */
-	uint32_t getIntervalUs();
+	uint32_t getIntervalUs()
+	{
+		return interval;
+	}
 
 	/** @brief  Get timer interval
      *  @retval uint32_t Timer interval in milliseconds
      */
-	uint32_t getIntervalMs();
+	uint32_t getIntervalMs()
+	{
+		return getIntervalUs() / 1000;
+	}
 
 	/** @brief  Set timer interval
      *  @param  microseconds Interval time in microseconds (Default: 1ms)
      */
-	bool IRAM_ATTR setIntervalUs(uint32_t microseconds = 1000000);
+	bool IRAM_ATTR setIntervalUs(uint32_t microseconds);
 
 	/** @brief  Set timer interval
-     *  @param  milliseconds Interval time in milliseconds (Default: 1s)
+     *  @param  milliseconds Interval time in milliseconds
      */
-	bool IRAM_ATTR setIntervalMs(uint32_t milliseconds = 1000000);
+	__forceinline bool IRAM_ATTR setIntervalMs(uint32_t milliseconds)
+	{
+		return setIntervalUs(milliseconds * 1000);
+	}
 
 	/** @brief  Set timer trigger callback
      *  @param  callback Function to call when timer triggers
@@ -124,5 +140,12 @@ private:
 	bool started = false;
 };
 
+/**
+ * @deprecated Use HardwareTimer class instead
+ */
+class Hardware_Timer : public HardwareTimer
+{
+};
+
 /** @} */
-#endif /* _SMING_CORE_HWTIMER_H_ */
+#endif /* _SMING_CORE_HARDWARE_TIMER_H_ */

@@ -11,10 +11,10 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_CIRCULARBUFFER_H_
-#define _SMING_CORE_DATA_CIRCULARBUFFER_H_
+#ifndef _SMING_CORE_DATA_CIRCULAR_BUFFER_H_
+#define _SMING_CORE_DATA_CIRCULAR_BUFFER_H_
 
-#include "Stream/DataSourceStream.h"
+#include "Stream/ReadWriteStream.h"
 
 /**
  * @brief      Circular stream class
@@ -27,15 +27,23 @@
 class CircularBuffer : public ReadWriteStream
 {
 public:
-	CircularBuffer(int size);
+	CircularBuffer(int size) : buffer(new char[size]), readPos(buffer), writePos(buffer), size(size)
+	{
+	}
 
-	virtual ~CircularBuffer();
+	virtual ~CircularBuffer()
+	{
+		delete[] buffer;
+	}
 
 	/** @brief  Get the stream type
      *  @retval StreamType The stream type.
      *  @todo   Return value of IDataSourceStream:getStreamType base class function should be of type StreamType, e.g. eSST_User
      */
-	virtual StreamType getStreamType();
+	virtual StreamType getStreamType() const
+	{
+		return StreamType::eSST_Memory;
+	}
 
 	/** @brief  Read a block of memory
      *  @param  data Pointer to the data to be read
@@ -52,9 +60,12 @@ public:
 	virtual bool seek(int len);
 
 	/** @brief  Check if stream is finished
-     *  @retval bool True on success.
-     */
-	virtual bool isFinished();
+	 *  @retval bool true on success.
+	 */
+	virtual bool isFinished()
+	{
+		return available() < 1;
+	}
 
 	/**
 	 * @brief Return the total length of the stream
@@ -66,7 +77,10 @@ public:
 	 * @brief Returns unique id of the resource.
 	 * @retval String the unique id of the stream.
 	 */
-	virtual String id();
+	virtual String id() const
+	{
+		return String(reinterpret_cast<uint32_t>(&buffer), HEX);
+	}
 
 	virtual size_t write(uint8_t charToWrite);
 
@@ -75,8 +89,11 @@ public:
      *  @param  size Quantity of chars to writen
      *  @retval size_t Quantity of chars written to stream
      */
-	virtual size_t write(const uint8_t* buffer, size_t size);
+	virtual size_t write(const uint8_t* data, size_t size);
 
+	/** @brief Get the maximum number of bytes for which write() will succeed
+		@retval size_t
+	*/
 	size_t room() const;
 
 	inline void flush()
@@ -92,11 +109,11 @@ private:
 	}
 
 private:
-	char* buffer = NULL;
-	char* readPos = NULL;
-	char* writePos = NULL;
+	char* buffer = nullptr;
+	char* readPos = nullptr;
+	char* writePos = nullptr;
 	int size = 0;
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_CIRCULARBUFFER_H_ */
+#endif /* _SMING_CORE_DATA_CIRCULAR_BUFFER_H_ */

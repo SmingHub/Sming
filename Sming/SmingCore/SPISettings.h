@@ -8,8 +8,8 @@
  *  @brief    Provides SPI support
  */
 
-#ifndef SMINGCORE_SPISETTINGS_H_
-#define SMINGCORE_SPISETTINGS_H_
+#ifndef _SMING_CORE_SPI_SETTINGS_H_
+#define _SMING_CORE_SPI_SETTINGS_H_
 
 #include "Digital.h"
 
@@ -63,7 +63,7 @@ public:
 
 	inline uint8 getDataMode()
 	{
-		return _dataMode;
+		return dataMode;
 	};
 
 	// overload operator to check wheter the settings are equal
@@ -74,9 +74,9 @@ public:
 	friend class SPIClass;
 
 private:
-	int _speed;
-	uint8 _byteOrder;
-	uint8 _dataMode;
+	int speed = 4000000;
+	uint8_t byteOrder = MSBFIRST;
+	uint8_t dataMode = SPI_MODE0;
 };
 
-#endif /* SMINGCORE_SPISETTINGS_H_ */
+#endif /* _SMING_CORE_SPI_SETTINGS_H_ */

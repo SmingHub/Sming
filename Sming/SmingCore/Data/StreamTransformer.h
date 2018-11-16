@@ -22,7 +22,7 @@
  * @ingroup    stream data
  *
  *  @{
-*/
+ */
 
 /**
  * @brief Callback specification for the stream transformers
@@ -44,7 +44,7 @@ public:
 	virtual ~StreamTransformer();
 
 	//Use base class documentation
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
 		return sourceStream->getStreamType();
 	}

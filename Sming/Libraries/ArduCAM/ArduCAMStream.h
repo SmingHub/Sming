@@ -18,7 +18,7 @@ public:
 	ArduCAMStream(ArduCAM *cam);
 	virtual ~ArduCAMStream();
 
-	virtual StreamType getStreamType() { return eSST_User; }
+	virtual StreamType getStreamType() const { return eSST_User; }
 
 	virtual uint16_t readMemoryBlock(char* data, int bufSize);
 	virtual bool seek(int len);

@@ -15,8 +15,7 @@ int16_t TcpServer::totalConnections = 0;
 
 TcpServer::TcpServer() : TcpConnection(false)
 {
-	timeOut = 40;
-	TcpConnection::setTimeOut(USHRT_MAX);
+	timeOut = TCP_SERVER_TIMEOUT;
 }
 
 TcpServer::TcpServer(TcpClientConnectDelegate onClientHandler, TcpClientDataDelegate clientReceiveDataHandler,
@@ -24,23 +23,20 @@ TcpServer::TcpServer(TcpClientConnectDelegate onClientHandler, TcpClientDataDele
 	: TcpConnection(false), clientConnectDelegate(onClientHandler), clientReceiveDelegate(clientReceiveDataHandler),
 	  clientCompleteDelegate(clientCompleteHandler)
 {
-	timeOut = 40;
-	TcpConnection::setTimeOut(USHRT_MAX);
+	timeOut = TCP_SERVER_TIMEOUT;
 }
 
 TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler, TcpClientCompleteDelegate clientCompleteHandler)
 	: TcpConnection(false), clientReceiveDelegate(clientReceiveDataHandler),
 	  clientCompleteDelegate(clientCompleteHandler)
 {
-	timeOut = 40;
-	TcpConnection::setTimeOut(USHRT_MAX);
+	timeOut = TCP_SERVER_TIMEOUT;
 }
 
 TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler)
 	: TcpConnection(false), clientReceiveDelegate(clientReceiveDataHandler)
 {
-	timeOut = 40;
-	TcpConnection::setTimeOut(USHRT_MAX);
+	timeOut = TCP_SERVER_TIMEOUT;
 }
 
 TcpServer::~TcpServer()
@@ -73,10 +69,10 @@ void list_mem()
 	debug_d("Free heap size=%d, K=%d", system_get_free_heap_size(), TcpServer::totalConnections);
 }
 
-void TcpServer::setTimeOut(uint16_t waitTimeOut)
+void TcpServer::setKeepAlive(uint16_t seconds)
 {
-	debug_d("Server timeout updating: %d -> %d", timeOut, waitTimeOut);
-	timeOut = waitTimeOut;
+	debug_d("Server keep-alive updating: %d -> %d", keepAlive, seconds);
+	keepAlive = seconds;
 }
 
 bool TcpServer::listen(int port, bool useSsl /*= false */)
@@ -148,7 +144,7 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 	TcpConnection* client = createClient(clientTcp);
 	if(client == NULL)
 		return ERR_MEM;
-	client->setTimeOut(timeOut);
+	client->setTimeOut(keepAlive);
 
 #ifdef ENABLE_SSL
 	if(useSsl) {

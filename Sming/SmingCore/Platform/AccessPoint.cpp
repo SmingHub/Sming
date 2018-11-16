@@ -7,6 +7,7 @@
 
 #include "AccessPoint.h"
 #include "../../SmingCore/SmingCore.h"
+#include "Data/HexString.h"
 
 AccessPointClass WifiAccessPoint;
 
@@ -139,11 +140,11 @@ bool AccessPointClass::setIP(IPAddress address)
 
 String AccessPointClass::getMAC()
 {
-	uint8 hwaddr[6] = {0};
-	wifi_get_macaddr(SOFTAP_IF, hwaddr);
-	char buf[20];
-	sprintf(buf, "%02x%02x%02x%02x%02x%02x", hwaddr[0], hwaddr[1], hwaddr[2], hwaddr[3], hwaddr[4], hwaddr[5]);
-	return String(buf);
+	uint8 hwaddr[6];
+	if(wifi_get_macaddr(SOFTAP_IF, hwaddr))
+		return makeHexString(hwaddr, sizeof(hwaddr), ':');
+	else
+		return nullptr;
 }
 
 String AccessPointClass::getSSID()

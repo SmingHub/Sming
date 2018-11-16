@@ -6,43 +6,81 @@
  ****/
 
 #include "System.h"
-#include "../Interrupts.h"
-#include "../../Services/SpifFS/spiffs_sming.h"
 
 SystemClass System;
 
-SystemClass::SystemClass()
+SystemState SystemClass::state = eSS_None;
+os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
+volatile uint8_t SystemClass::taskCount;
+volatile uint8_t SystemClass::maxTaskCount;
+
+/** @brief OS calls this function which invokes user-defined callback
+ *  @note callback function pointer is placed in event->sig, with parameter
+ *  in event->par.
+ */
+void SystemClass::taskHandler(os_event_t* event)
 {
-	state = eSS_None;
+	auto callback = reinterpret_cast<TaskCallback>(event->sig);
+	if(callback) {
+		// If we get interrupt during adjustment of the counter, do it again
+		uint8_t oldCount = taskCount;
+		--taskCount;
+		if(taskCount != oldCount - 1)
+			--taskCount;
+		callback(event->par);
+	}
 }
 
-void SystemClass::initialize()
+bool SystemClass::initialize()
 {
 	if(state != eSS_None)
-		return;
+		return false;
+
 	state = eSS_Intializing;
 
-	system_init_done_cb(staticReadyHandler);
+	// Initialise the global task queue
+	return system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
 }
 
-void SystemClass::restart()
+bool SystemClass::queueCallback(TaskCallback callback, uint32_t param)
 {
-	system_restart();
-}
+	if(callback == nullptr) {
+		return false;
+	}
 
-bool SystemClass::isReady()
-{
-	return state == eSS_Ready;
+	if(++taskCount > maxTaskCount) {
+		maxTaskCount = taskCount;
+	}
+
+	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(callback), param);
 }
 
 void SystemClass::onReady(SystemReadyDelegate readyHandler)
 {
-	readyHandlers.add(readyHandler);
+	if(readyHandler) {
+		auto handler = new SystemReadyDelegate(readyHandler);
+		queueCallback(
+			[](uint32_t param) {
+				SystemClass::state = eSS_Ready;
+				auto handler = reinterpret_cast<SystemReadyDelegate*>(param);
+				(*handler)();
+				delete handler;
+			},
+			reinterpret_cast<uint32_t>(handler));
+	}
 }
 
 void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 {
-	readyInterfaces.add(readyHandler);
+	if(readyHandler) {
+		queueCallback(
+			[](uint32_t param) {
+				SystemClass::state = eSS_Ready;
+				auto handler = reinterpret_cast<ISystemReadyHandler*>(param);
+				handler->onSystemReady();
+			},
+			reinterpret_cast<uint32_t>(readyHandler));
+	}
 }
 
 void SystemClass::setCpuFrequency(CpuFrequency freq)
@@ -55,32 +93,11 @@ void SystemClass::setCpuFrequency(CpuFrequency freq)
 	ets_update_cpu_frequency(freq);
 }
 
-CpuFrequency SystemClass::getCpuFrequency()
-{
-	return (CpuFrequency)ets_get_cpu_frequency();
-}
-
-bool SystemClass::deepSleep(uint32 timeMilliseconds, DeepSleepOptions options /* = eDSO_RF_CAL_BY_INIT_DATA */)
+bool SystemClass::deepSleep(uint32 timeMilliseconds, DeepSleepOptions options)
 {
 	if(!system_deep_sleep_set_option((uint8)options))
 		return false;
+	// Note: In SDK Version 3+ system_deep_sleep() returns bool but it's void before that
 	system_deep_sleep(timeMilliseconds * 1000);
 	return true;
-}
-
-void SystemClass::staticReadyHandler()
-{
-	System.readyHandler();
-}
-
-void SystemClass::readyHandler()
-{
-	state = eSS_Ready;
-	for(int i = 0; i < readyHandlers.count(); i++)
-		readyHandlers[i]();
-	for(int i = 0; i < readyInterfaces.count(); i++)
-		readyInterfaces[i]->onSystemReady();
-
-	readyHandlers.clear();
-	readyInterfaces.clear();
 }

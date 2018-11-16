@@ -5,10 +5,10 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#ifndef _NET_WIRING_
-#define _NET_WIRING_
+#ifndef _SMING_CORE_H_
+#define _SMING_CORE_H_
 
-#define SMING_VERSION "3.6.1" // Major Minor Sub
+#define SMING_VERSION "3.7.0" // Major Minor Sub
 
 #include <functional>
 
@@ -28,6 +28,7 @@
 #include "SPISoft.h"
 #include "SPI.h"
 
+#include "Platform/RTC.h"
 #include "Platform/System.h"
 #include "Platform/WifiEvents.h"
 #include "Platform/Station.h"
@@ -41,6 +42,7 @@
 #include "Network/HttpServer.h"
 #include "Network/Http/HttpRequest.h"
 #include "Network/Http/HttpResponse.h"
+#include "Network/Http/Websocket/WebsocketConnection.h"
 #include "Network/FTPServer.h"
 #include "Network/NetUtils.h"
 #include "Network/TcpClient.h"
@@ -49,10 +51,13 @@
 #include "Network/rBootHttpUpdate.h"
 #include "Network/URL.h"
 
-#include "../Libraries/ArduinoJson/include/ArduinoJson.h"
+#include "Data/Stream/JsonObjectStream.h"
+#include "Data/Stream/FileStream.h"
+#include "Data/Stream/TemplateFileStream.h"
+
 #include "../Services/DateTime/DateTime.h"
 #include "../Services/libemqtt/libemqtt.h"
 #include "../Services/FATFS/ff.h"
 #include "../Services/Yeelight/YeelightBulb.h"
 
-#endif
+#endif /* _SMING_CORE_H_ */

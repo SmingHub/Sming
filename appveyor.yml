@@ -39,7 +39,7 @@ build_script:
   - make tools V=1
 # Followed by the library and test sample apps
   - cd %SMING_HOME%
-  - make
+  - make STRICT=1
   - cd %SMING_HOME%\..\samples\Basic_Blink
   - make V=1 
   - cd %SMING_HOME%\..\samples\Basic_Ssl

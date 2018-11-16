@@ -37,5 +37,5 @@ void init()
 	mcp.pinMode(mcpPinA, INPUT);
 	mcp.pullUp(mcpPinA, HIGH);
 	mcp.setupInterruptPin(mcpPinA, FALLING);
-	attachInterrupt(interruptPin, interruptCallback, FALLING);
+	attachInterrupt(interruptPin, InterruptDelegate(interruptCallback), FALLING);
 }

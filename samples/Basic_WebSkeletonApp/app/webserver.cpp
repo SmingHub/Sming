@@ -98,6 +98,7 @@ void startWebServer()
 	server.addPath("/config.json", onConfiguration_json);
 	server.addPath("/state", onAJAXGetState);
 	server.setDefaultHandler(onFile);
+	server.setBodyParser("application/json", bodyToStringParser);
 	serverStarted = true;
 
 	if(WifiStation.isEnabled())

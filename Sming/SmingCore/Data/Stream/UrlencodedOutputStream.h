@@ -8,20 +8,18 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_UESTREAM_H_
-#define _SMING_CORE_DATA_UESTREAM_H_
+#ifndef _SMING_CORE_DATA_URL_ENCODDED_OUTPUT_STREAM_H_
+#define _SMING_CORE_DATA_URL_ENCODDED_OUTPUT_STREAM_H_
 
-#include "../../Wiring/WHashMap.h"
-#include "DataSourceStream.h"
+#include "MemoryDataStream.h"
+#include "Network/Http/HttpParams.h"
 
 /**
  * @brief      UrlEncoded Stream
  * @ingroup    stream data
  *
  *  @{
-*/
-
-typedef HashMap<String, String> HttpParams;
+ */
 
 class UrlencodedOutputStream : public ReadWriteStream
 {
@@ -37,7 +35,7 @@ public:
 	}
 
 	//Use base class documentation
-	virtual StreamType getStreamType()
+	virtual StreamType getStreamType() const
 	{
 		return stream.getStreamType();
 	}
@@ -45,7 +43,7 @@ public:
 	/**
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
-	*/
+	 */
 	int available()
 	{
 		return stream.available();
@@ -93,4 +91,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_UESTREAM_H_ */
+#endif /* _SMING_CORE_DATA_URL_ENCODDED_OUTPUT_STREAM_H_ */

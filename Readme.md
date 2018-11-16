@@ -8,6 +8,12 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 [![Sponsors](https://opencollective.com/Sming/sponsors/badge.svg)](#financial-contributions)
 [![Download](https://img.shields.io/badge/download-~1.7M-orange.svg)](https://github.com/SmingHub/Sming/releases/latest)
 [![Build](https://travis-ci.org/SmingHub/Sming.svg?branch=develop)](https://travis-ci.org/SmingHub/Sming)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a450c9b4df08406dba81456261304ace)](https://app.codacy.com/app/slaff2/SmingOfficial?utm_source=github.com&utm_medium=referral&utm_content=SmingHub/Sming&utm_campaign=Badge_Grade_Dashboard)
+
+If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
+
+[![GitHub stars](https://img.shields.io/github/stars/SmingHub/Sming.svg?style=social&label=Star)](https://github.com/SmingHub/Sming/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/SmingHub/Sming.svg?style=social&label=Fork)](https://github.com/SmingHub/Sming/network)
 
 ## Summary
 * Highly effective in performance and memory usage (this is native firmware!)
@@ -27,21 +33,23 @@ Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native develo
 * Crash handlers for analyzing/handling system restarts due to fatal errors or WDT resets.
 * PWM support based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git)
 * Optional custom heap allocation based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git)
-* Based on Espressif NONOS SDK. Tested with versions 1.4, 1.5 and 2.0.
+* Based on Espressif NONOS SDK. Tested with versions 1.5 and 2.0. Experimental support for SDK version >= 3.0.0.
 
 ## Compatibility
 
 OS/SDK | Linux | Mac OS X | Windows | FreeBSD-current |
 -------|-------|----------|---------|-----------------|
 UDK (v1.5)    | n/a   | n/a      |   [![Build status](https://ci.appveyor.com/api/projects/status/5aj0oi0wyk4uij00/branch/develop?svg=true)](https://ci.appveyor.com/project/slaff/sming-sb483/branch/develop)      |     n/a         |
-esp-open-sdk (v1.4, v1.5, v2.0) | :sunny:  | :sunny: | n/a | n/a |
+esp-open-sdk (v1.5, v2.0, v3.0 **) | :sunny:  | :sunny: | n/a | :sunny: |
 
-OS = Operating System.
-SDK = Software Development Kit.
-n/a = The selected SDK is not available on that OS.
+- OS = Operating System.
+- SDK = Software Development Kit.
+- n/a = The selected SDK is not available on that OS.
+- ** = experimental support
 
 ## Latest Stable Release
-- [Sming V3.6.1](https://github.com/SmingHub/Sming/releases/tag/3.6.1)
+- [Sming V3.7.0](https://github.com/SmingHub/Sming/releases/tag/3.7.0)
+
 
 ## Getting started
 - [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
@@ -204,7 +212,7 @@ void OtaUpdate()
 
 For a complete example take a look at the [Basic_rBoot](samples/Basic_rBoot/app/application.cpp) sample.
 
-### Embedded HTTP WebServer
+### Embedded HTTP Web Server
 ```c++
 server.listen(80);
 server.addPath("/", onIndex);
@@ -288,7 +296,16 @@ make docs
 
 The newly generated documentation will be located under Sming/docs/api.
 
-## Financial contributions
+
+## Contribute
+
+You can contribute to Sming by
+- Providing Pull Requests with new features, bug fixes, new ideas, etc.
+Make sure to follow our [Coding-Style-Rules](https://github.com/SmingHub/Sming/wiki/Coding-Style-Rules). Read our [Contributing guide](https://github.com/SmingHub/Sming/blob/develop/CONTRIBUTING.md) for details.
+- Testing our latest source code and reporting issues.
+- Supporting us financially to acquire hardware for testing and implementing or out of gratitude
+
+### Financial contributions
 
 We welcome financial contributions in full transparency on our [open collective](https://opencollective.com/Sming) page.
 They help us improve the project and the community around it. If you would like to support us you can [become a backer](https://opencollective.com/Sming#backer) or [a sponsor](https://opencollective.com/Sming#sponsor).
@@ -296,8 +313,7 @@ They help us improve the project and the community around it. If you would like 
 In addition to that anyone who is helping this project can file an expense. If the expense makes sense for the development of the community, it will be "merged" in the ledger of our open collective by the core contributors and the person who filed the expense will be reimbursed.
 
 
-
-### Contributors
+#### Backers and sponsors
 
 Thank you to all the people who have backed Sming
 <a href="https://opencollective.com/Sming#backers" target="_blank"><img src="https://opencollective.com/Sming/backers.svg?width=890"></a>
@@ -305,5 +321,4 @@ Thank you to all the people who have backed Sming
 or sponsored it.
 
 <a href="https://opencollective.com/Sming/sponsor/0/website" target="_blank"><img src="https://opencollective.com/Sming/sponsor/0/avatar.svg"></a>
-
 

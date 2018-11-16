@@ -15,7 +15,7 @@
 #define _SMING_CORE_TCPCLIENT_H_
 
 #include "TcpConnection.h"
-#include "../Delegate.h"
+#include "Delegate.h"
 
 #ifdef ENABLE_SSL
 #include "SslValidator.h"
@@ -34,6 +34,9 @@ typedef Delegate<void(TcpClient& client, bool successful)> TcpClientCompleteDele
 typedef Delegate<bool(TcpClient& client, char* data, int size)> TcpClientDataDelegate;
 
 enum TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successful, eTCS_Failed };
+
+// By default a TCP client connection has 70 seconds timeout
+#define TCP_CLIENT_TIMEOUT 70
 
 class TcpClient : public TcpConnection
 {

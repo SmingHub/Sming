@@ -17,7 +17,8 @@
 */
 
 #include "Print.h"
-#include "WiringFrameworkIncludes.h"
+#include "WString.h"
+
 /*
 || @description
 || | Virtual method - may be redefined in derived class (polymorphic)
@@ -219,9 +220,10 @@ size_t Print::printf(const char *fmt, ...)
 			{
 				write(tempBuff,sz);
 			}
-			return sz;
+			break;
 		}
 	} while (retry);
+	return sz;
 }
 
 // private methods

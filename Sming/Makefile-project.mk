@@ -6,6 +6,12 @@
 #
 #############################################################
 
+$(warning !!!!======================= [ WARNING ] ====================!!!)
+$(warning Non rBoot projects are deprecated and will be removed in the next releases)
+$(warning If you see this warning make sure to modify your application Makefile-user.mk file and add the following line:)
+$(warning RBOOT_ENABLED=1)
+$(warning ========================================================================)
+
 ### Defaults ###
 
 ## COM port parameters
@@ -251,7 +257,7 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 endif
 
 # libraries used in this project, mainly provided by the SDK
-LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBSMING) $(LIBMAIN) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 ifeq ($(ENABLE_WPS),1)
 	LIBS += wps
 endif

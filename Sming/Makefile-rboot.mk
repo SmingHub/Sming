@@ -198,6 +198,7 @@ FW_MEMINFO_SAVED = out/fwMeminfo
 
 RBOOT_ROM_0  := $(addprefix $(FW_BASE)/,$(RBOOT_ROM_0).bin)
 RBOOT_ROM_1  := $(addprefix $(FW_BASE)/,$(RBOOT_ROM_1).bin)
+RBOOT_SILENT ?= 0
 
 # name for the target project
 TARGET		= app
@@ -311,7 +312,7 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBPWM).a
 endif
 
-LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBMAIN) $(LIBSMING) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBSMING) $(LIBMAIN) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 ifeq ($(ENABLE_WPS),1)
    LIBS += wps
 endif
@@ -514,7 +515,7 @@ endef
 all: $(USER_LIBDIR)/lib$(LIBSMING).a checkdirs $(LIBMAIN_DST) $(RBOOT_BIN) $(RBOOT_ROM_0) $(RBOOT_ROM_1) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2) 
 
 $(RBOOT_BIN):
-	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot RBOOT_GPIO_ENABLED=$(RBOOT_GPIO_ENABLED)
+	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot RBOOT_GPIO_ENABLED=$(RBOOT_GPIO_ENABLED) RBOOT_SILENT=$(RBOOT_SILENT)
 
 $(LIBMAIN_DST): $(LIBMAIN_SRC)
 	@echo "OC $@"
@@ -603,15 +604,21 @@ else
 	fi
 endif
 
+flashconfig:
+	$(vecho) "Killing Terminal to free $(COM_PORT)"
+	-$(Q) $(KILL_TERM)
+	$(vecho) "Deleting rBoot config sector"
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x01000 $(SDK_BASE)/bin/blank.bin 
+
 flash: all
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
 	-$(Q) $(KILL_TERM)
 ifeq ($(DISABLE_SPIFFS), 1)
 # flashes rboot and first rom
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN) 0x01000 $(SDK_BASE)/bin/blank.bin 0x02000 $(RBOOT_ROM_0)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN) 0x02000 $(RBOOT_ROM_0)
 else
 # flashes rboot, first rom and spiffs
-	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN) 0x01000 $(SDK_BASE)/bin/blank.bin 0x02000 $(RBOOT_ROM_0) $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN) 0x02000 $(RBOOT_ROM_0) $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
 endif
 	$(TERMINAL)
 

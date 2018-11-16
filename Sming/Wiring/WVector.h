@@ -19,8 +19,8 @@
 #define WVECTOR_H
 
 #include "Countable.h"
-#include "WiringFrameworkDependencies.h"
 #include <stdlib.h>
+#include <string.h>
 
 template <typename Element>
 class Vector : public Countable<Element>
@@ -119,14 +119,14 @@ Vector<Element>::Vector(unsigned int initialCapacity, unsigned int capacityIncre
   _capacity = initialCapacity;
   _data = new Element*[ _capacity ];
   _increment = capacityIncrement;
-  if (_data == NULL) _capacity = _increment = 0;
-};
+  if (_data == nullptr) _capacity = _increment = 0;
+}
 
 template <class Element>
 Vector<Element>::Vector(const Vector<Element>& rhv)
 {
 	copyFrom(rhv);
-};
+}
 
 template <class Element>
 void Vector<Element>::copyFrom(const Vector<Element>& rhv)
@@ -140,7 +140,7 @@ void Vector<Element>::copyFrom(const Vector<Element>& rhv)
   _capacity = rhv._capacity;
   _data = new Element*[ _capacity ];
   _increment = rhv._increment;
-  if (_data == NULL)
+  if (_data == nullptr)
   {
     _size = _capacity = _increment = 0;
   }
@@ -149,40 +149,34 @@ void Vector<Element>::copyFrom(const Vector<Element>& rhv)
   {
     _data[i] = new Element(*(rhv._data[i]));
   }
-};
+}
 
 template <class Element>
 Vector<Element>::~Vector()
 {
   removeAllElements();
   delete [] _data;
-};
+}
 
 template <class Element>
 unsigned int Vector<Element>::capacity() const
 {
   return _capacity;
-};
+}
 
 template <class Element>
 boolean Vector<Element>::contains(const Element &elem) const
 {
-  for (unsigned int i = 0; i < _size; i++)
-  {
-    if (*_data[i] == elem)
-      return true;
-  }
-
-  return false;
-};
+	return indexOf(elem) >= 0;
+}
 
 template <class Element>
 void Vector<Element>::copyInto(Element* array) const
 {
-  if (array != NULL)
+  if (array != nullptr)
     for (unsigned int i = 0; i < _size; i++)
       array[i] = *_data[i];
-};
+}
 
 
 template <class Element>
@@ -197,7 +191,7 @@ const Element & Vector<Element>::elementAt(unsigned int index) const
   }
   // add check for valid index
   return *_data[index];
-};
+}
 
 template <class Element>
 const Element & Vector<Element>::firstElement() const
@@ -211,7 +205,7 @@ const Element & Vector<Element>::firstElement() const
   }
 
   return *_data[ 0 ];
-};
+}
 
 template <class Element>
 int Vector<Element>::indexOf(const Element &elem) const
@@ -223,13 +217,13 @@ int Vector<Element>::indexOf(const Element &elem) const
   }
 
   return -1;
-};
+}
 
 template <class Element>
 boolean Vector<Element>::isEmpty() const
 {
   return _size == 0;
-};
+}
 
 template <class Element>
 const Element & Vector<Element>::lastElement() const
@@ -243,7 +237,7 @@ const Element & Vector<Element>::lastElement() const
   }
 
   return *_data[ _size - 1 ];
-};
+}
 
 template <class Element>
 int Vector<Element>::lastIndexOf(const Element &elem) const
@@ -264,13 +258,13 @@ int Vector<Element>::lastIndexOf(const Element &elem) const
   while (i != 0);
 
   return -1;
-};
+}
 
 template <class Element>
 unsigned int Vector<Element>::size() const
 {
   return _size;
-};
+}
 
 template <class Element>
 void Vector<Element>::addElement(const Element &obj)
@@ -279,7 +273,7 @@ void Vector<Element>::addElement(const Element &obj)
     ensureCapacity(_capacity + _increment);
   if (_size < _capacity)
     _data[ _size++ ] = new Element(obj);
-};
+}
 
 template <class Element>
 void Vector<Element>::addElement(Element* objp)
@@ -288,18 +282,17 @@ void Vector<Element>::addElement(Element* objp)
     ensureCapacity(_capacity + _increment);
   if (_size < _capacity)
     _data[ _size++ ] = objp;
-};
+}
 
 template <class Element>
 void Vector<Element>::ensureCapacity(unsigned int minCapacity)
 {
   if (minCapacity > _capacity)
   {
-    unsigned int i;
     //_capacity = minCapacity;
     Element** temp = new Element*[ minCapacity ];
     // copy all elements
-    if (temp != NULL)
+    if (temp != nullptr)
     {
       _capacity = minCapacity;
       memcpy(temp, _data, sizeof(Element*) * _size);
@@ -307,7 +300,7 @@ void Vector<Element>::ensureCapacity(unsigned int minCapacity)
       _data = temp;
     }
   }
-};
+}
 
 template <class Element>
 void Vector<Element>::insertElementAt(const Element &obj, unsigned int index)
@@ -338,16 +331,13 @@ void Vector<Element>::insertElementAt(const Element &obj, unsigned int index)
       _size++;
     }
   }
-  //_size++;
-};
+}
 
 template <class Element>
 const void Vector<Element>::remove(unsigned int index)
 {
-  //const Element* retval = &get(index);
   removeElementAt(index);
-  //return (Element)*retval;
-};
+}
 
 template <class Element>
 void Vector<Element>::removeAllElements()
@@ -357,7 +347,7 @@ void Vector<Element>::removeAllElements()
     delete _data[i];
 
   _size = 0;
-};
+}
 
 template <class Element>
 boolean Vector<Element>::removeElement(const Element &obj)
@@ -371,7 +361,7 @@ boolean Vector<Element>::removeElement(const Element &obj)
     }
   }
   return false;
-};
+}
 
 template <class Element>
 void Vector<Element>::removeElementAt(unsigned int index)
@@ -385,9 +375,8 @@ void Vector<Element>::removeElementAt(unsigned int index)
   for (i = index + 1; i < _size; i++)
     _data[ i - 1 ] = _data[ i ];
 
-  _data[i];
   _size--;
-};
+}
 
 template <class Element>
 void Vector<Element>::setElementAt(const Element &obj, unsigned int index)
@@ -395,7 +384,7 @@ void Vector<Element>::setElementAt(const Element &obj, unsigned int index)
   // check for valid index
   if (index >= _size) return;
   *_data[ index ] = obj;
-};
+}
 
 template <class Element>
 void Vector<Element>::setSize(unsigned int newSize)
@@ -409,7 +398,7 @@ void Vector<Element>::setSize(unsigned int newSize)
 
     _size = newSize;
   }
-};
+}
 
 template <class Element>
 void Vector<Element>::trimToSize()
@@ -417,7 +406,7 @@ void Vector<Element>::trimToSize()
   if (_size != _capacity)
   {
     Element** temp = new Element*[ _size ];
-    if (temp == NULL) return;
+    if (temp == nullptr) return;
 
     for (unsigned int i = 0; i < _size; i++)
       temp[i] = _data[i];
@@ -427,13 +416,13 @@ void Vector<Element>::trimToSize()
     _data = temp;
     _capacity = _size;
   }
-};
+}
 
 template <class Element>
 const Element & Vector<Element>::operator[](unsigned int index) const
 {
   return elementAt(index);
-};
+}
 
 template <class Element>
 Element & Vector<Element>::operator[](unsigned int index)
@@ -447,7 +436,7 @@ Element & Vector<Element>::operator[](unsigned int index)
 	  abort();
   }
   return *_data[ index ];
-};
+}
 
 template <class Element>
 void Vector<Element>::sort(Comparer compareFunction)
