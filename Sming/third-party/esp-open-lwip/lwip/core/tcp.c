@@ -55,6 +55,9 @@
 
 #include <string.h>
 
+// Missing prototype
+extern uint8_t system_get_data_of_array_8(const uint8_t* array /* ICACHE_RODATA_ATTR */, unsigned offset);
+
 #ifdef MEMLEAK_DEBUG
 static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
 #endif

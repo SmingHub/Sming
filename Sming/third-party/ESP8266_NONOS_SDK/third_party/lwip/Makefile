@@ -30,7 +30,7 @@ endif
 #   for a subtree within the makefile rooted therein
 #
 #DEFINES += 
-CCFLAGS += -ffunction-sections -fdata-sections
+CCFLAGS += -DPBUF_RSV_FOR_WLAN -DEBUF_LWIP
 
 #############################################################
 # Recursion Magic - Don't touch this!!

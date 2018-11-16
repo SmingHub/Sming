@@ -145,6 +145,18 @@ static inline int strlen_P(const char *str) {
     while (pgm_read_byte(str++)) cnt++;
     return cnt;
 }
+static inline int memcmp_P(const void *a1, const void *b1, size_t len) {
+    const uint8_t* a = (const uint8_t*)(a1);
+    uint8_t* b = (uint8_t*)(b1);
+    for (size_t i=0; i<len; i++) {
+        uint8_t d = pgm_read_byte(a) - pgm_read_byte(b);
+        if (d) return d;
+        a++;
+        b++;
+    }
+    return 0;
+}
+
 #define printf(fmt, ...) do { static const char fstr[] PROGMEM = fmt; char rstr[sizeof(fmt)]; memcpy_P(rstr, fstr, sizeof(rstr)); ets_printf(rstr, ##__VA_ARGS__); } while (0)
 #define strcpy_P(dst, src) do { static const char fstr[] PROGMEM = src; memcpy_P(dst, fstr, sizeof(src)); } while (0)
 

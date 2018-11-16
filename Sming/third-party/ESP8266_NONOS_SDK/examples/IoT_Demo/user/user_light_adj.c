@@ -43,8 +43,7 @@ os_timer_t timer_pwm_adj;
 
 static u32 duty_now[PWM_CHANNEL] = {0};
 
-
-
+extern uint32 priv_param_start_sec;
 
 //-----------------------------------Light para storage---------------------------
 #define LIGHT_EVT_QNUM (40) 
@@ -91,8 +90,8 @@ void ICACHE_FLASH_ATTR
 	light_param.pwm_period =  pwm_get_period();
 
 #if SAVE_LIGHT_PARAM
-	spi_flash_erase_sector(PRIV_PARAM_START_SEC + PRIV_PARAM_SAVE);
-	spi_flash_write((PRIV_PARAM_START_SEC + PRIV_PARAM_SAVE) * SPI_FLASH_SEC_SIZE,
+	spi_flash_erase_sector(priv_param_start_sec + PRIV_PARAM_SAVE);
+	spi_flash_write((priv_param_start_sec + PRIV_PARAM_SAVE) * SPI_FLASH_SEC_SIZE,
 	    		(uint32 *)&light_param, sizeof(struct light_saved_param));
 #endif
 

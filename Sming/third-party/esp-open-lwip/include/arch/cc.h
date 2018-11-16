@@ -40,6 +40,7 @@
 #include "osapi.h"
 #include "mem.h"
 #include <stdarg.h>
+#include "FakePgmSpace.h"
 
 #define EFAULT 14
 

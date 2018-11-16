@@ -228,11 +228,11 @@ user_esp_platform_device_action(struct wait_param *pwait_action)
     for (i = 0; i < action_number && pwait_action->action[i][0] != '0'; i++) {
         ESP_DBG("%s\n",pwait_action->action[i]);
 
-        if (os_strcmp(pwait_action->action[i], "on_switch", 9) == 0) {
+        if (os_strncmp(pwait_action->action[i], "on_switch", 9) == 0) {
             user_plug_set_status(0x01);
-        } else if (os_strcmp(pwait_action->action[i], "off_switch", 10) == 0) {
+        } else if (os_strncmp(pwait_action->action[i], "off_switch", 10) == 0) {
             user_plug_set_status(0x00);
-        } else if (os_strcmp(pwait_action->action[i], "on_off_switch", 13) == 0) {
+        } else if (os_strncmp(pwait_action->action[i], "on_off_switch", 13) == 0) {
             if (user_plug_get_status() == 0) {
                 user_plug_set_status(0x01);
             } else {

@@ -31,11 +31,6 @@
 
 #include "pwm.h"
 
-
-/* NOTICE !!! ---this is for 512KB spi flash.*/
-/* You can change to other sector if you use other size spi flash. */
-/* Refer to the documentation about OTA support and flash mapping*/
-#define PRIV_PARAM_START_SEC		0x3C
 #define PRIV_PARAM_SAVE     0
 
 
@@ -77,6 +72,7 @@ struct light_saved_param {
     uint32  pwm_period;
     uint32  pwm_duty[PWM_CHANNEL];
 };
+/* The sector changed by user_rf_cal_sector_set */
 
 void user_light_init(void);
 uint32 user_light_get_duty(uint8 channel);

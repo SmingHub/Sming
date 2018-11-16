@@ -30,7 +30,7 @@
     #include <stdarg.h>
     #include "m_printf.h"
     #undef assert
-    #define assert(condition) if (!(condition)) m_printf("ASSERT: %s %d", __FUNCTION__, __LINE__)
+    #define assert(condition) if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__)
 #else
     #include <assert.h>
 #endif
@@ -192,7 +192,7 @@ static const char *method_strings[] =
  *                    | "/" | "[" | "]" | "?" | "="
  *                    | "{" | "}" | SP | HT
  */
-static const char tokens[256] PROGMEM_L32 = {
+static const char __flash_tokens[256] PROGMEM = {
 /*   0 nul    1 soh    2 stx    3 etx    4 eot    5 enq    6 ack    7 bel  */
         0,       0,       0,       0,       0,       0,       0,       0,
 /*   8 bs     9 ht    10 nl    11 vt    12 np    13 cr    14 so    15 si   */
@@ -226,18 +226,10 @@ static const char tokens[256] PROGMEM_L32 = {
 /* 120  x   121  y   122  z   123  {   124  |   125  }   126  ~   127 del */
        'x',     'y',     'z',      0,      '|',      0,      '~',       0 };
 
-
-static const int8_t unhex[256] PROGMEM_L32 =
-  {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
-  ,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
-  ,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
-  , 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,-1,-1,-1,-1,-1,-1
-  ,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1
-  ,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
-  ,-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1
-  ,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
-  };
-
+static inline char get_token(char c)
+{
+	return (char)pgm_read_byte(&__flash_tokens[(uint8_t)c]);
+}
 
 #if HTTP_PARSER_STRICT
 # define T(v) 0
@@ -427,14 +419,14 @@ enum http_host_state
   (c) == ';' || (c) == ':' || (c) == '&' || (c) == '=' || (c) == '+' || \
   (c) == '$' || (c) == ',')
 
-#define STRICT_TOKEN(c)     (tokens[(unsigned char)c])
+#define STRICT_TOKEN(c)     get_token(c)
 
 #if HTTP_PARSER_STRICT
-#define TOKEN(c)            (tokens[(unsigned char)c])
+#define TOKEN(c)            get_token(c)
 #define IS_URL_CHAR(c)      (BIT_AT(normal_url_char, (unsigned char)c))
 #define IS_HOST_CHAR(c)     (IS_ALPHANUM(c) || (c) == '.' || (c) == '-')
 #else
-#define TOKEN(c)            ((c == ' ') ? ' ' : tokens[(unsigned char)c])
+#define TOKEN(c)            ((c == ' ') ? ' ' : get_token(c)
 #define IS_URL_CHAR(c)                                                         \
   (BIT_AT(normal_url_char, (unsigned char)c) || ((c) & 0x80))
 #define IS_HOST_CHAR(c)                                                        \
@@ -465,16 +457,6 @@ do {                                                                 \
 # define NEW_MESSAGE() start_state
 #endif
 
-
-/* Map errno values to strings for human-readable output */
-#define HTTP_STRERROR_GEN(n, s) { "HPE_" #n, s },
-static struct {
-  const char *name;
-  const char *description;
-} http_strerror_tab[] = {
-  HTTP_ERRNO_MAP(HTTP_STRERROR_GEN)
-};
-#undef HTTP_STRERROR_GEN
 
 int http_message_needs_eof(const http_parser *parser);
 
@@ -1884,7 +1866,7 @@ reexecute:
         assert(parser->nread == 1);
         assert(parser->flags & F_CHUNKED);
 
-        unhex_val = unhex[(unsigned char)ch];
+        unhex_val = unhex(ch);
         if (UNLIKELY(unhex_val == -1)) {
           SET_ERRNO(HPE_INVALID_CHUNK_SIZE);
           goto error;
@@ -1906,7 +1888,7 @@ reexecute:
           break;
         }
 
-        unhex_val = unhex[(unsigned char)ch];
+        unhex_val = unhex(ch);
 
         if (unhex_val == -1) {
           if (ch == ';' || ch == ' ') {
@@ -2104,18 +2086,6 @@ void
 http_parser_settings_init(http_parser_settings *settings)
 {
   memset(settings, 0, sizeof(*settings));
-}
-
-const char *
-http_errno_name(enum http_errno err) {
-  assert(((size_t) err) < ARRAY_SIZE(http_strerror_tab));
-  return http_strerror_tab[err].name;
-}
-
-const char *
-http_errno_description(enum http_errno err) {
-  assert(((size_t) err) < ARRAY_SIZE(http_strerror_tab));
-  return http_strerror_tab[err].description;
 }
 
 static enum http_host_state

@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <user_config.h> 
+#include <user_config.h>
 
 /* Set the following three defines to your needs */
 
@@ -33,10 +33,10 @@
 
 #define PWM_MAX_TICKS 0x7fffff
 #if SDK_PWM_PERIOD_COMPAT_MODE
-#define PWM_PERIOD_TO_TICKS(x) (x * 0.2)
-#define PWM_DUTY_TO_TICKS(x) (x * 5)
-#define PWM_MAX_DUTY (PWM_MAX_TICKS * 0.2)
-#define PWM_MAX_PERIOD (PWM_MAX_TICKS * 5)
+#define PWM_PERIOD_TO_TICKS(x) (x * 5)
+#define PWM_DUTY_TO_TICKS(x) (x * 0.2)
+#define PWM_MAX_DUTY (PWM_MAX_TICKS * 5)
+#define PWM_MAX_PERIOD (PWM_MAX_TICKS * 0.2)
 #else
 #define PWM_PERIOD_TO_TICKS(x) (x)
 #define PWM_DUTY_TO_TICKS(x) (x)

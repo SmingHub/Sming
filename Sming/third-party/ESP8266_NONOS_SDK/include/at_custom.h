@@ -27,6 +27,11 @@
 
 #include "c_types.h"
 
+#define at_port_print_irom_str(str)   do { \
+        static const uint8 irom_str[] ICACHE_RODATA_ATTR = str;  \
+        at_port_print(irom_str);  \
+    } while(0)
+
 typedef struct
 {
   char *at_cmdName;
@@ -169,4 +174,19 @@ bool at_fake_uart_enable(bool enable,at_fake_uart_tx_func_type at_fake_uart_tx_f
   */
 bool at_set_escape_character(uint8 ch);
 
+/**
+  * @brief Enable wpa2 enterprise command
+  * @      include AT+CWJEAP_DEF, AT+CWJEAP_CUR
+  * @param  None
+  * @retval TRUE,if set ok,otherwize FALSE.
+  */
+bool at_cmd_enable_wpa2_enterprise(void);
+
+/**
+  * @brief Enable smartconfig command
+  * @      include AT+CWSTARTSMART, AT+CWSTOPSMART, AT+CWSTARTDISCOVER, AT+CWSTOPDISCOVER
+  * @param  None
+  * @retval TRUE,if set ok,otherwize FALSE.
+  */
+bool at_cmd_enable_smartconfig(void);
 #endif

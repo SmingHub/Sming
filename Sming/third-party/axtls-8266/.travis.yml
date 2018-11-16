@@ -31,10 +31,12 @@ script:
   - export PATH="$HOME/arduino_ide:$PATH"
   - which arduino
   - cd $ESP8266_ARDUINO_DIR
+  # 2.4.2 common.sh errors out if there is no valid build_type set, so ignore error
+  - sed -i 's/exit 1//' tests/common.sh
   - source tests/common.sh
   - arduino --board esp8266com:esp8266:generic --save-prefs
   - arduino --get-pref sketchbook.path
-  - build_sketches $HOME/arduino_ide $ESP8266_ARDUINO_DIR/libraries/ESP8266WiFi/examples/HTTPSRequest
+  - build_sketches $HOME/arduino_ide $ESP8266_ARDUINO_DIR/libraries/ESP8266WiFi/examples/HTTPSRequest "-l $ESP8266_ARDUINO_DIR/libraries" 1 0
   # Feel free to add more test cases (for other environments) here
 
 notifications:

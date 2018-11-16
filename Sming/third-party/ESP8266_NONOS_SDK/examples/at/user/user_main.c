@@ -26,6 +26,47 @@
 #include "at_custom.h"
 #include "user_interface.h"
 
+#if ((SPI_FLASH_SIZE_MAP == 0) || (SPI_FLASH_SIZE_MAP == 1))
+#error "The flash map is not supported"
+#elif (SPI_FLASH_SIZE_MAP == 2)
+#error "The flash map is not supported"
+#elif (SPI_FLASH_SIZE_MAP == 3)
+#error "The flash map is not supported"
+#elif (SPI_FLASH_SIZE_MAP == 4)
+#error "The flash map is not supported"
+#elif (SPI_FLASH_SIZE_MAP == 5)
+#define SYSTEM_PARTITION_OTA_SIZE							0xE0000
+#define SYSTEM_PARTITION_OTA_2_ADDR							0x101000
+#define SYSTEM_PARTITION_RF_CAL_ADDR						0x1fb000
+#define SYSTEM_PARTITION_PHY_DATA_ADDR						0x1fc000
+#define SYSTEM_PARTITION_SYSTEM_PARAMETER_ADDR				0x1fd000
+#define SYSTEM_PARTITION_AT_PARAMETER_ADDR					0xfd000
+#define SYSTEM_PARTITION_SSL_CLIENT_CERT_PRIVKEY_ADDR		0xfc000
+#define SYSTEM_PARTITION_SSL_CLIENT_CA_ADDR					0xfb000
+#define SYSTEM_PARTITION_WPA2_ENTERPRISE_CERT_PRIVKEY_ADDR	0xfa000
+#define SYSTEM_PARTITION_WPA2_ENTERPRISE_CA_ADDR			0xf9000
+#elif (SPI_FLASH_SIZE_MAP == 6)
+#define SYSTEM_PARTITION_OTA_SIZE							0xE0000
+#define SYSTEM_PARTITION_OTA_2_ADDR							0x101000
+#define SYSTEM_PARTITION_RF_CAL_ADDR						0x3fb000
+#define SYSTEM_PARTITION_PHY_DATA_ADDR						0x3fc000
+#define SYSTEM_PARTITION_SYSTEM_PARAMETER_ADDR				0x3fd000
+#define SYSTEM_PARTITION_AT_PARAMETER_ADDR					0xfd000
+#define SYSTEM_PARTITION_SSL_CLIENT_CERT_PRIVKEY_ADDR		0xfc000
+#define SYSTEM_PARTITION_SSL_CLIENT_CA_ADDR					0xfb000
+#define SYSTEM_PARTITION_WPA2_ENTERPRISE_CERT_PRIVKEY_ADDR	0xfa000
+#define SYSTEM_PARTITION_WPA2_ENTERPRISE_CA_ADDR			0xf9000
+#else
+#error "The flash map is not supported"
+#endif
+
+#ifdef CONFIG_ENABLE_IRAM_MEMORY
+uint32 user_iram_memory_is_enabled(void)
+{
+    return CONFIG_ENABLE_IRAM_MEMORY;
+}
+#endif
+
 // test :AT+TEST=1,"abc"<,3>
 void ICACHE_FLASH_ATTR
 at_setupCmdTest(uint8_t id, char *pPara)
@@ -55,9 +96,9 @@ at_setupCmdTest(uint8_t id, char *pPara)
     //get the second parameter
     // string
     at_data_str_copy(buffer, &pPara, 10);
-    at_port_print("the second parameter:");
+    at_port_print_irom_str("the second parameter:");
     at_port_print(buffer);
-    at_port_print("\r\n");
+    at_port_print_irom_str("\r\n");
 
     if (*pPara == ',') {
         pPara++; // skip ','
@@ -81,30 +122,21 @@ at_setupCmdTest(uint8_t id, char *pPara)
 void ICACHE_FLASH_ATTR
 at_testCmdTest(uint8_t id)
 {
-    uint8 buffer[32] = {0};
-
-    os_sprintf(buffer, "%s\r\n", "at_testCmdTest");
-    at_port_print(buffer);
+    at_port_print_irom_str("at_testCmdTest\r\n");
     at_response_ok();
 }
 
 void ICACHE_FLASH_ATTR
 at_queryCmdTest(uint8_t id)
 {
-    uint8 buffer[32] = {0};
-
-    os_sprintf(buffer, "%s\r\n", "at_queryCmdTest");
-    at_port_print(buffer);
+    at_port_print_irom_str("at_queryCmdTest\r\n");
     at_response_ok();
 }
 
 void ICACHE_FLASH_ATTR
 at_exeCmdTest(uint8_t id)
 {
-    uint8 buffer[32] = {0};
-
-    os_sprintf(buffer, "%s\r\n", "at_exeCmdTest");
-    at_port_print(buffer);
+    at_port_print_irom_str("at_exeCmdTest\r\n");
     at_response_ok();
 }
 
@@ -116,72 +148,53 @@ at_funcationType at_custom_cmd[] = {
 #endif
 };
 
-/******************************************************************************
- * FunctionName : user_rf_cal_sector_set
- * Description  : SDK just reversed 4 sectors, used for rf init data and paramters.
- *                We add this function to force users to set rf cal sector, since
- *                we don't know which sector is free in user's application.
- *                sector map for last several sectors : ABBBCDDD
- *                A : rf cal
- *                B : at parameters
- *                C : rf init data
- *                D : sdk parameters
- * Parameters   : none
- * Returns      : rf cal sector
-*******************************************************************************/
-uint32 ICACHE_FLASH_ATTR
-user_rf_cal_sector_set(void)
+static const partition_item_t at_partition_table[] = {
+    { SYSTEM_PARTITION_BOOTLOADER, 						0x0, 												0x1000},
+    { SYSTEM_PARTITION_OTA_1,   						0x1000, 											SYSTEM_PARTITION_OTA_SIZE},
+    { SYSTEM_PARTITION_OTA_2,   						SYSTEM_PARTITION_OTA_2_ADDR, 						SYSTEM_PARTITION_OTA_SIZE},
+    { SYSTEM_PARTITION_RF_CAL,  						SYSTEM_PARTITION_RF_CAL_ADDR, 						0x1000},
+    { SYSTEM_PARTITION_PHY_DATA, 						SYSTEM_PARTITION_PHY_DATA_ADDR, 					0x1000},
+    { SYSTEM_PARTITION_SYSTEM_PARAMETER, 				SYSTEM_PARTITION_SYSTEM_PARAMETER_ADDR, 			0x3000},
+    { SYSTEM_PARTITION_AT_PARAMETER, 					SYSTEM_PARTITION_AT_PARAMETER_ADDR, 				0x3000},
+	{ SYSTEM_PARTITION_SSL_CLIENT_CERT_PRIVKEY, 		SYSTEM_PARTITION_SSL_CLIENT_CERT_PRIVKEY_ADDR, 		0x1000},
+	{ SYSTEM_PARTITION_SSL_CLIENT_CA, 					SYSTEM_PARTITION_SSL_CLIENT_CA_ADDR, 				0x1000},
+#ifdef CONFIG_AT_WPA2_ENTERPRISE_COMMAND_ENABLE
+	{ SYSTEM_PARTITION_WPA2_ENTERPRISE_CERT_PRIVKEY, 	SYSTEM_PARTITION_WPA2_ENTERPRISE_CERT_PRIVKEY_ADDR,	0x1000},
+    { SYSTEM_PARTITION_WPA2_ENTERPRISE_CA, 				SYSTEM_PARTITION_WPA2_ENTERPRISE_CA_ADDR, 			0x1000},
+#endif
+};
+
+void ICACHE_FLASH_ATTR user_pre_init(void)
 {
-    enum flash_size_map size_map = system_get_flash_size_map();
-    uint32 rf_cal_sec = 0;
-
-    switch (size_map) {
-        case FLASH_SIZE_4M_MAP_256_256:
-            rf_cal_sec = 128 - 5;
-            break;
-
-        case FLASH_SIZE_8M_MAP_512_512:
-            rf_cal_sec = 256 - 5;
-            break;
-
-        case FLASH_SIZE_16M_MAP_512_512:
-        case FLASH_SIZE_16M_MAP_1024_1024:
-            rf_cal_sec = 512 - 5;
-            break;
-
-        case FLASH_SIZE_32M_MAP_512_512:
-        case FLASH_SIZE_32M_MAP_1024_1024:
-            rf_cal_sec = 1024 - 5;
-            break;
-
-        case FLASH_SIZE_64M_MAP_1024_1024:
-            rf_cal_sec = 2048 - 5;
-            break;
-        case FLASH_SIZE_128M_MAP_1024_1024:
-            rf_cal_sec = 4096 - 5;
-            break;
-        default:
-            rf_cal_sec = 0;
-            break;
-    }
-
-    return rf_cal_sec;
-}
-
-void ICACHE_FLASH_ATTR
-user_rf_pre_init(void)
-{
+    if(!system_partition_table_regist(at_partition_table, sizeof(at_partition_table)/sizeof(at_partition_table[0]),SPI_FLASH_SIZE_MAP)) {
+		os_printf("system_partition_table_regist fail\r\n");
+		while(1);
+	}
     system_phy_freq_trace_enable(at_get_rf_auto_trace_from_flash());
 }
 
 void ICACHE_FLASH_ATTR
 user_init(void)
 {
-    char buf[64] = {0};
+    char buf[128] = {0};
     at_customLinkMax = 5;
     at_init();
-    os_sprintf(buf,"compile time:%s %s",__DATE__,__TIME__);
+#ifdef ESP_AT_FW_VERSION
+    if ((ESP_AT_FW_VERSION != NULL) && (os_strlen(ESP_AT_FW_VERSION) < 64)) {
+        os_sprintf(buf,"compile time:"__DATE__" "__TIME__"\r\n"ESP_AT_FW_VERSION);
+    } else {
+        os_sprintf(buf,"compile time:"__DATE__" "__TIME__);
+    }
+#else
+    os_sprintf(buf,"compile time:"__DATE__" "__TIME__);
+#endif
     at_set_custom_info(buf);
-    at_port_print("\r\nready\r\n");
+    at_port_print_irom_str("\r\nready\r\n");
     at_cmd_array_regist(&at_custom_cmd[0], sizeof(at_custom_cmd)/sizeof(at_custom_cmd[0]));
+#ifdef CONFIG_AT_SMARTCONFIG_COMMAND_ENABLE
+    at_cmd_enable_smartconfig();
+#endif
+#ifdef CONFIG_AT_WPA2_ENTERPRISE_COMMAND_ENABLE
+    at_cmd_enable_wpa2_enterprise();
+#endif
 }

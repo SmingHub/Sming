@@ -309,86 +309,94 @@ uint32 NOINLINE find_image(void) {
 	ets_delay_us(BOOT_DELAY_MICROS);
 #endif
 
-	ets_printf("\r\nrBoot v1.4.2 - richardaburton@gmail.com\r\n");
+#ifndef BOOT_SILENT
+#define echof(fmt, ...) ets_printf(fmt, ##__VA_ARGS__)
+#else
+#define echof(fmt, ...)
+#endif
+
+	echof("\r\nrBoot v1.4.2 - richardaburton@gmail.com\r\n");
 
 	// read rom header
 	SPIRead(0, header, sizeof(rom_header));
 
 	// print and get flash size
-	ets_printf("Flash Size:   ");
+	echof("Flash Size:   ");
 	flag = header->flags2 >> 4;
 	if (flag == 0) {
-		ets_printf("4 Mbit\r\n");
+		echof("4 Mbit\r\n");
 		flashsize = 0x80000;
 	} else if (flag == 1) {
-		ets_printf("2 Mbit\r\n");
+		echof("2 Mbit\r\n");
 		flashsize = 0x40000;
 	} else if (flag == 2) {
-		ets_printf("8 Mbit\r\n");
+		echof("8 Mbit\r\n");
 		flashsize = 0x100000;
 	} else if (flag == 3) {
-		ets_printf("16 Mbit\r\n");
+		echof("16 Mbit\r\n");
 #ifdef BOOT_BIG_FLASH
 		flashsize = 0x200000;
 #else
 		flashsize = 0x100000; // limit to 8Mbit
 #endif
 	} else if (flag == 4) {
-		ets_printf("32 Mbit\r\n");
+		echof("32 Mbit\r\n");
 #ifdef BOOT_BIG_FLASH
 		flashsize = 0x400000;
 #else
 		flashsize = 0x100000; // limit to 8Mbit
 #endif
 	} else {
-		ets_printf("unknown\r\n");
+		echof("unknown\r\n");
 		// assume at least 4mbit
 		flashsize = 0x80000;
 	}
 
 	// print spi mode
-	ets_printf("Flash Mode:   ");
+	echof("Flash Mode:   ");
 	if (header->flags1 == 0) {
-		ets_printf("QIO\r\n");
+		echof("QIO\r\n");
 	} else if (header->flags1 == 1) {
-		ets_printf("QOUT\r\n");
+		echof("QOUT\r\n");
 	} else if (header->flags1 == 2) {
-		ets_printf("DIO\r\n");
+		echof("DIO\r\n");
 	} else if (header->flags1 == 3) {
-		ets_printf("DOUT\r\n");
+		echof("DOUT\r\n");
 	} else {
-		ets_printf("unknown\r\n");
+		echof("unknown\r\n");
 	}
 
 	// print spi speed
-	ets_printf("Flash Speed:  ");
+	echof("Flash Speed:  ");
 	flag = header->flags2 & 0x0f;
-	if (flag == 0) ets_printf("40 MHz\r\n");
-	else if (flag == 1) ets_printf("26.7 MHz\r\n");
-	else if (flag == 2) ets_printf("20 MHz\r\n");
-	else if (flag == 0x0f) ets_printf("80 MHz\r\n");
-	else ets_printf("unknown\r\n");
+	if (flag == 0) echof("40 MHz\r\n");
+	else if (flag == 1) echof("26.7 MHz\r\n");
+	else if (flag == 2) echof("20 MHz\r\n");
+	else if (flag == 0x0f) echof("80 MHz\r\n");
+	else echof("unknown\r\n");
 
 	// print enabled options
 #ifdef BOOT_BIG_FLASH
-	ets_printf("rBoot Option: Big flash\r\n");
+	echof("rBoot Option: Big flash\r\n");
 #endif
 #ifdef BOOT_CONFIG_CHKSUM
-	ets_printf("rBoot Option: Config chksum\r\n");
+	echof("rBoot Option: Config chksum\r\n");
 #endif
 #ifdef BOOT_GPIO_ENABLED
-	ets_printf("rBoot Option: GPIO rom mode (%d)\r\n", BOOT_GPIO_NUM);
+	echof("rBoot Option: GPIO rom mode (%d)\r\n", BOOT_GPIO_NUM);
 #endif
 #ifdef BOOT_GPIO_SKIP_ENABLED
-	ets_printf("rBoot Option: GPIO skip mode (%d)\r\n", BOOT_GPIO_NUM);
+	echof("rBoot Option: GPIO skip mode (%d)\r\n", BOOT_GPIO_NUM);
 #endif
 #ifdef BOOT_RTC_ENABLED
-	ets_printf("rBoot Option: RTC data\r\n");
+	echof("rBoot Option: RTC data\r\n");
 #endif
 #ifdef BOOT_IROM_CHKSUM
-	ets_printf("rBoot Option: irom chksum\r\n");
+	echof("rBoot Option: irom chksum\r\n");
 #endif
-	ets_printf("\r\n");
+	echof("\r\n");
+
+#undef echof
 
 	// read boot config
 	SPIRead(BOOT_CONFIG_SECTOR * SECTOR_SIZE, buffer, SECTOR_SIZE);

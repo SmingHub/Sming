@@ -9,9 +9,13 @@
 
 uint32_t r_rand (void);
 
+#if !SDK_INTERNAL
+
 void* pvPortZalloc (size_t, const char*, unsigned line);
 void* pvPortMalloc (size_t xWantedSize, const char* file, unsigned line) __attribute__((malloc, alloc_size(1)));
 void vPortFree (void *ptr, const char* file, unsigned line);
+
+#endif
 
 struct netif* eagle_lwip_getif (int netif_index);
 

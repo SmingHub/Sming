@@ -690,7 +690,12 @@ int mbedtls_x509_dn_gets( char *buf, size_t size, const mbedtls_x509_name *dn )
 
         if( name != dn )
         {
-            ret = mbedtls_snprintf( p, n, merge ? " + " : ", " );
+            // ret = mbedtls_snprintf( p, n, merge ? " + " : ", " );
+            if (merge) {
+                ret = mbedtls_snprintf( p, n, " + ");
+            } else {
+                ret = mbedtls_snprintf( p, n, ", ");
+            }
             MBEDTLS_X509_SAFE_SNPRINTF;
         }
 

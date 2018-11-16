@@ -48,8 +48,10 @@ EOF
 	cp ca.key ca/
 
 fi
+	# reduce cert size if possible
+	openssl x509 -in ca.crt -outform DER -out TLS.ca_x509.cer.bak
+	openssl x509 -in TLS.ca_x509.cer.bak -inform DER -out TLS.ca_x509.cer
 
-	openssl x509 -in ca.crt -outform DER -out TLS.ca_x509.cer
 	cp TLS.ca_x509.cer ca/
 	cp make_cacert.py ca/
 	cd ca/
@@ -66,8 +68,13 @@ if [ $TrueCA -eq 1 ];then
 		echo client.crt \&\& client.key are found, generating esp_cert_private_key.bin 
 		mkdir client
 		mkdir include
-		openssl rsa -in client.key -out TLS.key_1024 -outform DER
-		openssl x509 -in client.crt -outform DER -out TLS.x509_1024.cer
+		openssl rsa -in client.key -out TLS.key_1024.bak -outform DER
+		openssl x509 -in client.crt -outform DER -out TLS.x509_1024.cer.bak
+
+		# reduce cert and key size if possible
+		openssl rsa -in TLS.key_1024.bak -out TLS.key_1024 -inform DER
+		openssl x509 -in TLS.x509_1024.cer.bak -inform DER -out TLS.x509_1024.cer
+
 		cp TLS.x509_1024.cer client/
 		cp TLS.key_1024 client/
 		mv client/TLS.x509_1024.cer client/certificate.cer
@@ -93,8 +100,13 @@ if [ $TrueCA -eq 1 ];then
 		echo server.crt \&\& server.key are found, generating esp_cert_private_key.bin
 		mkdir server
 		mkdir include
-		openssl rsa -in server.key -out TLS.key_1024 -outform DER
-		openssl x509 -in server.crt -outform DER -out TLS.x509_1024.cer
+		openssl rsa -in server.key -out TLS.key_1024.bak -outform DER
+		openssl x509 -in server.crt -outform DER -out TLS.x509_1024.cer.bak
+
+		# reduce cert and key size if possible
+		openssl rsa -in TLS.key_1024.bak -out TLS.key_1024 -inform DER
+		openssl x509 -in TLS.x509_1024.cer.bak -inform DER -out TLS.x509_1024.cer
+
 		cp TLS.x509_1024.cer server/
 		cp TLS.key_1024 server/
 		mv server/TLS.x509_1024.cer server/certificate.cer
@@ -147,7 +159,10 @@ EOF
 	openssl genrsa -out server.key 1024
 	openssl genrsa -out client.key 1024
 
-	openssl rsa -in client.key -out TLS.key_1024 -outform DER
+	# reduce cert and key size if possible
+	openssl rsa -in client.key -out TLS.key_1024.bak -outform DER
+	openssl rsa -in TLS.key_1024.bak -out TLS.key_1024 -inform DER
+
 	openssl req -out server.req -key server.key -new -config ./server_cert.conf 
 	openssl req -out client.req -key client.key -new -config ./client_cert.conf 
 
@@ -155,7 +170,10 @@ EOF
 	openssl x509 -req -in client.req -out client.crt -sha1 -CAcreateserial -days 5000 -CA ca.crt -CAkey ca.key
 	cp server.crt server.key server/
 
-	openssl x509 -in client.crt -outform DER -out TLS.x509_1024.cer
+	# reduce cert and key size if possible
+	openssl x509 -in client.crt -outform DER -out TLS.x509_1024.cer.bak
+	openssl x509 -in TLS.x509_1024.cer.bak -inform DER -out TLS.x509_1024.cer
+
 	cp TLS.x509_1024.cer client/
 	cp TLS.key_1024 client/
 	mv client/TLS.x509_1024.cer client/certificate.cer
@@ -189,7 +207,7 @@ rm ca/make_cacert.py ca/esp_ca_cert.bin -rf
 rm *.conf -rf
 rm *.req -rf
 rm *.h -rf
-
+rm *.bak
 rm *.srl -rf
 
 find -name \*.cer | xargs rm -f

@@ -5,6 +5,7 @@ rm *.cer -rf
 rm *.key_1024 -rf
 rm *.req -rf
 rm *.conf -rf
+rm *.bak -rf
 
 rm ca/ -rf
 rm bin/ -rf

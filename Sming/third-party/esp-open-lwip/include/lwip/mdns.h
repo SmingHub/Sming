@@ -96,16 +96,17 @@ struct mdns_info {
 	char *txt_data[10];
 };
 #endif
-//void 		   mdns_enable(void);
-//void           mdns_disable(void);
-//void           mdns_init(struct mdns_info *info);
-//void           mdns_close(void);
-//char* 		   mdns_get_hostname(void);
-//void           mdns_set_hostname(char *name);
-//void           mdns_set_servername(const char *name);
-//char*          mdns_get_servername(void);
-//void           mdns_server_unregister(void);
-//void           mdns_server_register(void) ;
+
+void 		   mdns_enable(void);
+void           mdns_disable(void);
+void           mdns_init(struct mdns_info *info);
+void           mdns_close(void);
+char* 		   mdns_get_hostname(void);
+void           mdns_set_hostname(char *name);
+void           mdns_set_servername(const char *name);
+char*          mdns_get_servername(void);
+void           mdns_server_unregister(void);
+void           mdns_server_register(void) ;
 //void           mdns_tmr(void);
 //void           Delay(unsigned long ulSeconds);
 

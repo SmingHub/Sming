@@ -660,5 +660,11 @@ extern void espconn_mdns_enable(void);
  *  Returns     : none
 *******************************************************************************/
 extern void espconn_dns_setserver(u8_t numdns, ip_addr_t *dnsserver);
+
+// Missing functions
+extern err_t espconn_tcp_write(void *arg);
+extern sint8 espconn_tcp_delete(struct espconn *pdeletecon);
+extern void espconn_pbuf_delete(espconn_buf **phead, espconn_buf* pdelete);
+
 #endif
 

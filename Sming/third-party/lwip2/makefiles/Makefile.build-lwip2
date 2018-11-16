@@ -29,9 +29,9 @@ $(LWIP_LIB_RELEASE): $(LWIP_LIB)
 
 .PHONY: $(LWIP_LIB)
 $(LWIP_LIB):
-	make -f makefiles/Makefile.glue-esp
-	make -f makefiles/Makefile.glue
-	make -C lwip2-src/src -f ../../makefiles/Makefile.lwip2 BUILD=../../$(BUILD) LWIP_LIB=../../$(LWIP_LIB)
+	make -f makefiles/Makefile.glue-esp SDK_INTERNAL=$(SDK_INTERNAL)
+	make -f makefiles/Makefile.glue SDK_INTERNAL=$(SDK_INTERNAL)
+	make -C lwip2-src/src -f ../../makefiles/Makefile.lwip2 BUILD=../../$(BUILD) LWIP_LIB=../../$(LWIP_LIB) SDK_INTERNAL=$(SDK_INTERNAL)
 
 section-show:
 	@for i in $(IRAM); do \

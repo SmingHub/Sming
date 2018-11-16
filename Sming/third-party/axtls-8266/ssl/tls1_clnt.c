@@ -392,8 +392,9 @@ static int process_server_hello(SSL *ssl)
         }
     }
 
-    ssl->dc->bm_proc_index = offset;
-    PARANOIA_CHECK(pkt_size, offset);
+    ssl->dc->bm_proc_index = pkt_size;
+    /* This check not always valid w/padding: */
+    /* PARANOIA_CHECK(pkt_size, offset); */
 
 error:
     return ret;

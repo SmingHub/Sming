@@ -237,6 +237,7 @@ int asn1_get_bit_string_as_int(const uint8_t *buf, int *offset, uint32_t *val)
     }
 
     /* number of bits left unused in the final byte of content */
+    (*offset)++;
     len--;
     *val = 0;
 

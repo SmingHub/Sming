@@ -27,10 +27,6 @@
 
 #include "driver/key.h"
 
-/* NOTICE---this is for 512KB spi flash.
- * you can change to other sector if you use other size spi flash. */
-#define PRIV_PARAM_START_SEC		0x3C
-
 #define PRIV_PARAM_SAVE     0
 
 #define PLUG_KEY_NUM            1

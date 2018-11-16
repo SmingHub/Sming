@@ -105,6 +105,8 @@ LOCAL uint8 iot_version[20] = {0};
 struct rst_info rtc_info;
 void user_esp_platform_check_ip(uint8 reset_flag);
 
+extern uint32 priv_param_start_sec;     //0x3D
+
 /******************************************************************************
  * FunctionName : user_esp_platform_get_token
  * Description  : get the espressif's device token
@@ -137,7 +139,7 @@ user_esp_platform_set_token(uint8_t *token)
     esp_param.activeflag = 0;
     os_memcpy(esp_param.token, token, os_strlen(token));
 
-    system_param_save_with_protect(ESP_PARAM_START_SEC, &esp_param, sizeof(esp_param));
+    system_param_save_with_protect(priv_param_start_sec + 1, &esp_param, sizeof(esp_param));
 }
 
 /******************************************************************************
@@ -151,7 +153,7 @@ user_esp_platform_set_active(uint8 activeflag)
 {
     esp_param.activeflag = activeflag;
 
-    system_param_save_with_protect(ESP_PARAM_START_SEC, &esp_param, sizeof(esp_param));
+    system_param_save_with_protect(priv_param_start_sec + 1, &esp_param, sizeof(esp_param));
 }
 
 void ICACHE_FLASH_ATTR
@@ -872,7 +874,7 @@ user_esp_platform_recv_cb(void *arg, char *pusrdata, unsigned short length)
 
                 device_status = DEVICE_ACTIVE_DONE;
                 esp_param.activeflag = 1;
-                system_param_save_with_protect(ESP_PARAM_START_SEC, &esp_param, sizeof(esp_param));
+                system_param_save_with_protect(priv_param_start_sec + 1, &esp_param, sizeof(esp_param));
                 user_esp_platform_sent(pespconn);
 		  if(LIGHT_DEVICE){
                     system_restart();
@@ -1297,7 +1299,7 @@ user_esp_platform_init(void)
 	IOT_VERSION_MINOR,IOT_VERSION_REVISION,device_type,UPGRADE_FALG);
 	os_printf("IOT VERSION = %s\n",iot_version);
 
-	system_param_load(ESP_PARAM_START_SEC, 0, &esp_param, sizeof(esp_param));
+	system_param_load(priv_param_start_sec + 1, 0, &esp_param, sizeof(esp_param));
 
 	struct rst_info *rtc_info = system_get_rst_info();
 

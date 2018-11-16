@@ -29,12 +29,11 @@
 #include "osapi.h"
 #include "upgrade.h"
 
+#include "at_custom.h"
+
 #ifdef AT_UPGRADE_SUPPORT
 #ifdef AT_CUSTOM_UPGRADE
-
-#define UPGRADE_FRAME  "{\"path\": \"/v1/messages/\", \"method\": \"POST\", \"meta\": {\"Authorization\": \"token %s\"},\
-\"get\":{\"action\":\"%s\"},\"body\":{\"pre_rom_version\":\"%s\",\"rom_version\":\"%s\"}}\n"
-
+        
 #define pheadbuffer "Connection: keep-alive\r\n\
 Cache-Control: no-cache\r\n\
 User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36 \r\n\
@@ -108,7 +107,7 @@ at_upDate_discon_cb(void *arg)
   }
   else
   {
-    at_port_print("+CIPUPDATE:4\r\n");
+    at_port_print_irom_str("+CIPUPDATE:4\r\n");
   }
 }
 
@@ -126,7 +125,7 @@ at_upDate_recv(void *arg, char *pusrdata, unsigned short len)
   uint8_t i = 0;
 
   os_timer_disarm(&at_delay_check);
-  at_port_print("+CIPUPDATE:3\r\n");
+  at_port_print_irom_str("+CIPUPDATE:3\r\n");
 
   upServer = (struct upgrade_server_info *)os_zalloc(sizeof(struct upgrade_server_info));
 
@@ -203,7 +202,7 @@ at_upDate_connect_cb(void *arg)
   uint8_t user_bin[9] = {0};
   char *temp = NULL;
 
-  at_port_print("+CIPUPDATE:2\r\n");
+  at_port_print_irom_str("+CIPUPDATE:2\r\n");
 
 
   espconn_regist_disconcb(pespconn, at_upDate_discon_cb);
@@ -268,7 +267,7 @@ upServer_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
     at_response_error();
     return;
   }
-  at_port_print("+CIPUPDATE:1\r\n");
+  at_port_print_irom_str("+CIPUPDATE:1\r\n");
 
 
   if(host_ip.addr == 0 && ipaddr->addr != 0)
@@ -294,7 +293,7 @@ at_exeCmdCiupdate(uint8_t id)
   pespconn->proto.tcp->remote_port = 80;
 
   host_ip.addr = ipaddr_addr("192.168.10.9");
-  at_port_print("+CIPUPDATE:1\r\n");
+  at_port_print_irom_str("+CIPUPDATE:1\r\n");
   os_memcpy(pespconn->proto.tcp->remote_ip, &host_ip.addr, 4);
   espconn_regist_connectcb(pespconn, at_upDate_connect_cb);
   espconn_regist_reconcb(pespconn, at_upDate_recon_cb);

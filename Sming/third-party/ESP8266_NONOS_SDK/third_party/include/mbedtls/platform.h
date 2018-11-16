@@ -33,6 +33,8 @@
 extern "C" {
 #endif
 
+#include "osapi.h"
+#include "mem.h"
 /**
  * \name SECTION: Module settings
  *
@@ -40,9 +42,9 @@ extern "C" {
  * Either change them in config.h or define them on the compiler command line.
  * \{
  */
-extern int ets_snprintf(char *buf, unsigned int size, const char *format, ...);
-extern void *pvPortCalloc(unsigned int count, unsigned int size);
-extern void vPortFree( void *pv );
+// extern int ets_snprintf(char *buf, unsigned int size, const char *format, ...);
+void *pvPortCalloc(unsigned int count, unsigned int size, const char*, unsigned);
+void vPortFree (void *p, const char *, unsigned);
 #define MBEDTLS_PLATFORM_NO_STD_FUNCTIONS
 #if !defined(MBEDTLS_PLATFORM_NO_STD_FUNCTIONS)
 #include <stdio.h>
@@ -51,7 +53,7 @@ extern void vPortFree( void *pv );
 #if defined(_WIN32)
 #define MBEDTLS_PLATFORM_STD_SNPRINTF   mbedtls_platform_win32_snprintf /**< Default snprintf to use  */
 #else
-#define MBEDTLS_PLATFORM_STD_SNPRINTF   ets_snprintf /**< Default snprintf to use  */
+#define MBEDTLS_PLATFORM_STD_SNPRINTF   os_snprintf /**< Default snprintf to use  */
 #endif
 #endif
 #if !defined(MBEDTLS_PLATFORM_STD_PRINTF)
@@ -61,10 +63,10 @@ extern void vPortFree( void *pv );
 #define MBEDTLS_PLATFORM_STD_FPRINTF fprintf /**< Default fprintf to use */
 #endif
 #if !defined(MBEDTLS_PLATFORM_STD_CALLOC)
-#define MBEDTLS_PLATFORM_STD_CALLOC   pvPortCalloc /**< Default allocator to use */
+#define MBEDTLS_PLATFORM_STD_CALLOC(l, s)   os_calloc(l, s) // pvPortCalloc /**< Default allocator to use */
 #endif
 #if !defined(MBEDTLS_PLATFORM_STD_FREE)
-#define MBEDTLS_PLATFORM_STD_FREE       vPortFree /**< Default free to use */
+#define MBEDTLS_PLATFORM_STD_FREE(s)         os_free(s) // vPortFree /**< Default free to use */
 #endif
 #if !defined(MBEDTLS_PLATFORM_STD_EXIT)
 #define MBEDTLS_PLATFORM_STD_EXIT      exit /**< Default free to use */
@@ -103,8 +105,8 @@ int mbedtls_platform_set_calloc_free( void * (*calloc_func)( size_t, size_t ),
                               void (*free_func)( void * ) );
 #endif /* MBEDTLS_PLATFORM_FREE_MACRO && MBEDTLS_PLATFORM_CALLOC_MACRO */
 #else /* !MBEDTLS_PLATFORM_MEMORY */
-#define mbedtls_free       vPortFree
-#define mbedtls_calloc     pvPortCalloc
+#define mbedtls_free(s)        os_free(s)
+#define mbedtls_calloc(l, s)   os_calloc(l, s) // pvPortCalloc(l, s, "", __LINE__)
 #endif /* MBEDTLS_PLATFORM_MEMORY && !MBEDTLS_PLATFORM_{FREE,CALLOC}_MACRO */
 
 /*
@@ -184,7 +186,7 @@ int mbedtls_platform_set_snprintf( int (*snprintf_func)( char * s, size_t n,
 #if defined(MBEDTLS_PLATFORM_SNPRINTF_MACRO)
 #define mbedtls_snprintf   MBEDTLS_PLATFORM_SNPRINTF_MACRO
 #else
-#define mbedtls_snprintf   ets_snprintf
+#define mbedtls_snprintf   os_snprintf
 #endif /* MBEDTLS_PLATFORM_SNPRINTF_MACRO */
 #endif /* MBEDTLS_PLATFORM_SNPRINTF_ALT */
 

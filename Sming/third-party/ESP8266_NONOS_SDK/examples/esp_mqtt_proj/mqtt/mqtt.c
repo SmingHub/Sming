@@ -818,7 +818,7 @@ MQTT_Connect(MQTT_Client *mqttClient)
     os_timer_setfn(&mqttClient->mqttTimer, (os_timer_func_t *)mqtt_timer, mqttClient);
     os_timer_arm(&mqttClient->mqttTimer, 1000, 1);
 
-    os_printf("your ESP SSL/TLS configuration is %d.[0:NO_TLS\t1:TLS_WITHOUT_AUTHENTICATION\t2ONE_WAY_ANTHENTICATION\t3TWO_WAY_ANTHENTICATION]\n");
+    os_printf("your ESP SSL/TLS configuration is %d.[0:NO_TLS\t1:TLS_WITHOUT_AUTHENTICATION\t2ONE_WAY_ANTHENTICATION\t3TWO_WAY_ANTHENTICATION]\n",DEFAULT_SECURITY);
     if (UTILS_StrToIP(mqttClient->host, &mqttClient->pCon->proto.tcp->remote_ip)) {
         INFO("TCP: Connect to ip  %s:%d\r\n", mqttClient->host, mqttClient->port);
         if (mqttClient->security)

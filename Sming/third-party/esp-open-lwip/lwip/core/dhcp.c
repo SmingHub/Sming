@@ -137,6 +137,9 @@ u8_t  dhcp_rx_options_given[DHCP_OPTION_IDX_MAX];
 #define dhcp_get_option_value(dhcp, idx)      (dhcp_rx_options_val[idx])
 #define dhcp_set_option_value(dhcp, idx, val) (dhcp_rx_options_val[idx] = (val))
 
+// Missing prototype
+extern void system_station_got_ip_set(ip_addr_t* ip_addr, ip_addr_t* sn_mask, ip_addr_t* gw_addr);
+
 
 /* DHCP client state machine functions */
 static err_t dhcp_discover(struct netif *netif);

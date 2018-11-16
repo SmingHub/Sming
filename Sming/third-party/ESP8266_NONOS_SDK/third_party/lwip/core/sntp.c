@@ -772,7 +772,7 @@ sntp_try_next_server(void* arg)
     }
     if (!ip_addr_isany(&sntp_servers[sntp_current_server].addr)
 #if SNTP_SERVER_DNS
-        || (sntp_servers[sntp_current_server].name != NULL)
+        || ((sntp_servers[sntp_current_server].name != NULL) && os_strlen(sntp_servers[sntp_current_server].name))
 #endif
         ) {
       LWIP_DEBUGF(SNTP_DEBUG_STATE, ("sntp_try_next_server: Sending request to server %"U16_F"\n",
@@ -947,7 +947,7 @@ sntp_request(void *arg)
   /* initialize SNTP server address */
 #if SNTP_SERVER_DNS
 
-  if (sntp_servers[sntp_current_server].name) {
+  if (sntp_servers[sntp_current_server].name && os_strlen(sntp_servers[sntp_current_server].name)) {
     /* always resolve the name and rely on dns-internal caching & timeout */
     ip_addr_set_any(&sntp_servers[sntp_current_server].addr);
     err = dns_gethostbyname(sntp_servers[sntp_current_server].name, &sntp_server_address,

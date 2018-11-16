@@ -61,6 +61,10 @@ endif
 ifneq ($(RBOOT_ROM2_ADDR),)
 	CFLAGS += -DBOOT_ROM2_ADDR=$(RBOOT_ROM2_ADDR)
 endif
+ifeq ($(RBOOT_SILENT),1)
+	CFLAGS += -DBOOT_SILENT=$(RBOOT_SILENT)
+endif
+
 ifneq ($(RBOOT_EXTRA_INCDIR),)
 	CFLAGS += $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
 endif

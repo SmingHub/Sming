@@ -5,12 +5,14 @@ USER_LIBDIR ?= tweaked-
 LWIP_LIB_RELEASE=$(USER_LIBDIR)liblwip2.a
 LWIP_INCLUDES_RELEASE=include
 SDK_BASE ?= $(ESP_HOME)/sdk
+SDK_INTERNAL ?= 0
 
 all: install
 
 %:
 	@make -f makefiles/Makefile.build-lwip2 \
 			SDK=$(SDK_BASE) \
+			SDK_INTERNAL=$(SDK_INTERNAL) \
 			LWIP_LIB=liblwip2.a \
 			LWIP_LIB_RELEASE=$(LWIP_LIB_RELEASE) \
 			LWIP_INCLUDES_RELEASE=$(LWIP_INCLUDES_RELEASE) \

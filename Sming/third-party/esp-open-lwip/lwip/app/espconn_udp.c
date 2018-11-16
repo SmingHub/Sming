@@ -19,8 +19,11 @@
 #include "lwip/mem.h"
 #include "lwip/tcp_impl.h"
 #include "lwip/udp.h"
+#include "lwip/igmp.h"
 
 #include "lwip/app/espconn_udp.h"
+
+#include "user_interface.h"
 
 #ifdef MEMLEAK_DEBUG
 static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
