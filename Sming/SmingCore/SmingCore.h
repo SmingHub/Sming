@@ -5,10 +5,10 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#ifndef _NET_WIRING_
-#define _NET_WIRING_
+#ifndef _SMING_CORE_H_
+#define _SMING_CORE_H_
 
-#define SMING_VERSION "3.6.1" // Major Minor Sub
+#define SMING_VERSION "3.7.0" // Major Minor Sub
 
 #include <functional>
 
@@ -60,4 +60,4 @@
 #include "../Services/FATFS/ff.h"
 #include "../Services/Yeelight/YeelightBulb.h"
 
-#endif
+#endif /* _SMING_CORE_H_ */

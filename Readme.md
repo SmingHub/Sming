@@ -33,21 +33,23 @@ If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
 * Crash handlers for analyzing/handling system restarts due to fatal errors or WDT resets.
 * PWM support based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git)
 * Optional custom heap allocation based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git)
-* Based on Espressif NONOS SDK. Tested with versions 1.4, 1.5 and 2.0.
+* Based on Espressif NONOS SDK. Tested with versions 1.5 and 2.0. Experimental support for SDK version >= 3.0.0.
 
 ## Compatibility
 
 OS/SDK | Linux | Mac OS X | Windows | FreeBSD-current |
 -------|-------|----------|---------|-----------------|
 UDK (v1.5)    | n/a   | n/a      |   [![Build status](https://ci.appveyor.com/api/projects/status/5aj0oi0wyk4uij00/branch/develop?svg=true)](https://ci.appveyor.com/project/slaff/sming-sb483/branch/develop)      |     n/a         |
-esp-open-sdk (v1.4, v1.5, v2.0) | :sunny:  | :sunny: | n/a | :sunny: |
+esp-open-sdk (v1.5, v2.0, v3.0 **) | :sunny:  | :sunny: | n/a | :sunny: |
 
-OS = Operating System.
-SDK = Software Development Kit.
-n/a = The selected SDK is not available on that OS.
+- OS = Operating System.
+- SDK = Software Development Kit.
+- n/a = The selected SDK is not available on that OS.
+- ** = experimental support
 
 ## Latest Stable Release
-- [Sming V3.6.1](https://github.com/SmingHub/Sming/releases/tag/3.6.1)
+- [Sming V3.7.0](https://github.com/SmingHub/Sming/releases/tag/3.7.0)
+
 
 ## Getting started
 - [Windows](https://github.com/SmingHub/Sming/wiki/Windows-Quickstart)
