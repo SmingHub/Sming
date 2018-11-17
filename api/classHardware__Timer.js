@@ -1,18 +1,16 @@
 var classHardware__Timer =
 [
-    [ "Hardware_Timer", "classHardware__Timer.html#aa076a6a9cfc04888c3b15a82a85a1091", null ],
-    [ "~Hardware_Timer", "classHardware__Timer.html#a7e28203573dc2ff1db556c9d83a4344a", null ],
-    [ "call", "classHardware__Timer.html#a109ae16d5a6f4a1b8d489db026b5613e", null ],
-    [ "getIntervalMs", "classHardware__Timer.html#aff68a27060359925fd541217a2547430", null ],
-    [ "getIntervalUs", "classHardware__Timer.html#a6ff39045a44f0220bc75b37655a814a2", null ],
-    [ "initializeMs", "classHardware__Timer.html#a34a5f9c9e0b760e1db6bb4e17b395cbd", null ],
-    [ "initializeUs", "classHardware__Timer.html#ad29fc43e7d613945185b0d095b6cf964", null ],
-    [ "isStarted", "classHardware__Timer.html#a1ac800464fed8fa5db56b0dc7e9a8df5", null ],
-    [ "restart", "classHardware__Timer.html#a687a07d4a91b669b62ae96771cbcd0f4", null ],
-    [ "setCallback", "classHardware__Timer.html#a741cc17830eef0602c4e8291d486a5a5", null ],
-    [ "setIntervalMs", "classHardware__Timer.html#a51919e33a1418bb06e2b9b68f18775b8", null ],
-    [ "setIntervalUs", "classHardware__Timer.html#ab33339f28b347e6b111a60b784fc87ce", null ],
-    [ "start", "classHardware__Timer.html#a7d6909e4296ff94ac66d1526e589bcbe", null ],
-    [ "startOnce", "classHardware__Timer.html#a2688e824927817b9ae177c60008c99fa", null ],
-    [ "stop", "classHardware__Timer.html#a3eb3d1cdbc4bf203a9ff9d1661d19de2", null ]
+    [ "call", "classHardware__Timer.html#ac49fea30f1d32ce0287b486fb64f9a45", null ],
+    [ "getIntervalMs", "classHardware__Timer.html#a2b5d79d3f9d92a9931b2bf3130fc3448", null ],
+    [ "getIntervalUs", "classHardware__Timer.html#aba40ce259005bb943173165e87370705", null ],
+    [ "initializeMs", "classHardware__Timer.html#a2141c363427dc3c597c97044102a304c", null ],
+    [ "initializeUs", "classHardware__Timer.html#ae4c6bfa7a74d4438f80569808560fe83", null ],
+    [ "isStarted", "classHardware__Timer.html#a8237996d6fe6fa07c311dc5f3c3709b8", null ],
+    [ "restart", "classHardware__Timer.html#a499029ab7d8f8bc5a7dfed5406093e9e", null ],
+    [ "setCallback", "classHardware__Timer.html#ae31371ae3b63ae2de72824dbdcea14fb", null ],
+    [ "setIntervalMs", "classHardware__Timer.html#a8986fe583b7e5d3528524780fe81ba88", null ],
+    [ "setIntervalUs", "classHardware__Timer.html#a2db18648b79f752f4fe6790a590267ce", null ],
+    [ "start", "classHardware__Timer.html#a7261dd28d90841d3f2a49cac5ec39286", null ],
+    [ "startOnce", "classHardware__Timer.html#a29c09659ed6fc285632ea63b73f9acaf", null ],
+    [ "stop", "classHardware__Timer.html#a34a15d2296c68f4c5c18a76b54de0e4b", null ]
 ];

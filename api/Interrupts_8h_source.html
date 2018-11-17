@@ -111,49 +111,46 @@ $(document).ready(function(){initNavTree('Interrupts_8h_source.html','');});
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_INTERRUPTS_H_</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_INTERRUPTS_H_</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;../Wiring/WiringFrameworkDependencies.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;../SmingCore/Delegate.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;WiringFrameworkDependencies.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;Delegate.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#define ESP_MAX_INTERRUPTS 16</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">typedef</span> void (*InterruptCallback)(void);</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">extern</span> InterruptCallback _gpioInterruptsList[ESP_MAX_INTERRUPTS];</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">extern</span> <span class="keywordtype">bool</span> _gpioInterruptsInitialied;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void()&gt;</a> <a class="code" href="classDelegate.html">InterruptDelegate</a>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga539a763c7be87553c3a991189de5de37">attachInterrupt</a>(uint8_t pin, InterruptCallback callback, uint8_t mode);</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga539a763c7be87553c3a991189de5de37">attachInterrupt</a>(uint8_t pin, <a class="code" href="classDelegate.html">Delegate</a>&lt;<span class="keywordtype">void</span>()&gt; delegateFunction, uint8_t mode);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga539a763c7be87553c3a991189de5de37">attachInterrupt</a>(uint8_t pin, InterruptCallback callback, <a class="code" href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a> mode); <span class="comment">// ESP compatible version</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga539a763c7be87553c3a991189de5de37">attachInterrupt</a>(uint8_t pin, <a class="code" href="classDelegate.html">Delegate</a>&lt;<span class="keywordtype">void</span>()&gt; delegateFunction, <a class="code" href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a> mode); <span class="comment">// ESP compatible version</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga159502ea6c799ccae2523194b7c9aef8">attachInterruptHandler</a>(uint8_t pin, <a class="code" href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a> mode);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga3aae191c1d7e483a2b7e925457650c2e">detachInterrupt</a>(uint8_t pin);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga18c0c2d6008ab2035dc3364aa04fddc1">interruptMode</a>(uint8_t pin, uint8_t mode);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga18c0c2d6008ab2035dc3364aa04fddc1">interruptMode</a>(uint8_t pin, <a class="code" href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a> type);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<a class="code" href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a> <a class="code" href="group__interrupts.html#gab033a0b063ff95128a81644f507f9746">ConvertArduinoInterruptMode</a>(uint8_t mode);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">static</span> <span class="keywordtype">void</span> interruptHandler(uint32 intr_mask, <span class="keywordtype">void</span>* arg);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga539a763c7be87553c3a991189de5de37">attachInterrupt</a>(uint8_t pin, <a class="code" href="classDelegate.html">Delegate</a>&lt;<span class="keywordtype">void</span>()&gt; delegateFunction, uint8_t mode);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga539a763c7be87553c3a991189de5de37">attachInterrupt</a>(uint8_t pin, InterruptCallback callback, <a class="code" href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a> mode); <span class="comment">// ESP compatible version</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga539a763c7be87553c3a991189de5de37">attachInterrupt</a>(uint8_t pin, <a class="code" href="classDelegate.html">Delegate</a>&lt;<span class="keywordtype">void</span>()&gt; delegateFunction, <a class="code" href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a> mode); <span class="comment">// ESP compatible version</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga159502ea6c799ccae2523194b7c9aef8">attachInterruptHandler</a>(uint8_t pin, <a class="code" href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a> mode);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga3aae191c1d7e483a2b7e925457650c2e">detachInterrupt</a>(uint8_t pin);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga18c0c2d6008ab2035dc3364aa04fddc1">interruptMode</a>(uint8_t pin, uint8_t mode);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga18c0c2d6008ab2035dc3364aa04fddc1">interruptMode</a>(uint8_t pin, <a class="code" href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a> type);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<a class="code" href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a> <a class="code" href="group__interrupts.html#gab033a0b063ff95128a81644f507f9746">ConvertArduinoInterruptMode</a>(uint8_t mode);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga10e6193b0f9d7fc1ea6342ca38b1402f">noInterrupts</a>();</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#ga10e6193b0f9d7fc1ea6342ca38b1402f">noInterrupts</a>();</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#gab3a4471e1b3085323ec2067aaaccb52c">interrupts</a>();</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__interrupts.html#gab3a4471e1b3085323ec2067aaaccb52c">interrupts</a>();</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="preprocessor">#define digitalPinToInterrupt(pin) ((pin) &lt; ESP_MAX_INTERRUPTS ? (pin) : -1)</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="preprocessor">#define cli() noInterrupts()</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define sei() interrupts()</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_INTERRUPTS_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="preprocessor">#define digitalPinToInterrupt(pin) ((pin) &lt; ESP_MAX_INTERRUPTS ? (pin) : -1)</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#define cli() noInterrupts()</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define sei() interrupts()</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_INTERRUPTS_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="group__interrupts_html_ga18c0c2d6008ab2035dc3364aa04fddc1"><div class="ttname"><a href="group__interrupts.html#ga18c0c2d6008ab2035dc3364aa04fddc1">interruptMode</a></div><div class="ttdeci">void interruptMode(uint8_t pin, uint8_t mode)</div><div class="ttdoc">Set interrupt mode. </div></div>
 <div class="ttc" id="group__constants_html_ga6f9e27f786736a857f19c93ab7f7ebba"><div class="ttname"><a href="group__constants.html#ga6f9e27f786736a857f19c93ab7f7ebba">GPIO_INT_TYPE</a></div><div class="ttdeci">GPIO_INT_TYPE</div><div class="ttdoc">Defines the GPIO interrupt type. </div><div class="ttdef"><b>Definition:</b> gpio.h:35</div></div>
 <div class="ttc" id="group__interrupts_html_ga3aae191c1d7e483a2b7e925457650c2e"><div class="ttname"><a href="group__interrupts.html#ga3aae191c1d7e483a2b7e925457650c2e">detachInterrupt</a></div><div class="ttdeci">void detachInterrupt(uint8_t pin)</div><div class="ttdoc">Disable interrupts on GPIO pin. </div></div>
-<div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate</a></div><div class="ttdef"><b>Definition:</b> Delegate.h:114</div></div>
+<div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void()&gt;</a></div></div>
 <div class="ttc" id="group__interrupts_html_gab033a0b063ff95128a81644f507f9746"><div class="ttname"><a href="group__interrupts.html#gab033a0b063ff95128a81644f507f9746">ConvertArduinoInterruptMode</a></div><div class="ttdeci">GPIO_INT_TYPE ConvertArduinoInterruptMode(uint8_t mode)</div><div class="ttdoc">Convert Arduino interrupt mode to Sming mode. </div></div>
 <div class="ttc" id="group__interrupts_html_ga539a763c7be87553c3a991189de5de37"><div class="ttname"><a href="group__interrupts.html#ga539a763c7be87553c3a991189de5de37">attachInterrupt</a></div><div class="ttdeci">void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode)</div><div class="ttdoc">Attach a function to a GPIO interrupt. </div></div>
 <div class="ttc" id="group__interrupts_html_ga159502ea6c799ccae2523194b7c9aef8"><div class="ttname"><a href="group__interrupts.html#ga159502ea6c799ccae2523194b7c9aef8">attachInterruptHandler</a></div><div class="ttdeci">void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)</div><div class="ttdoc">Enable interrupts on GPIO pin. </div></div>

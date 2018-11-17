@@ -110,85 +110,104 @@ $(document).ready(function(){initNavTree('HardwareTimer_8h_source.html','');});
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> ****/</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_HWTIMER_H_</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_HWTIMER_H_</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_HARDWARE_TIMER_H_</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_HARDWARE_TIMER_H_</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;../SmingCore/Interrupts.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;../SmingCore/Delegate.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;Interrupts.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;Delegate.h&quot;</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
 <div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="group__hwtimer.html#ga27d82f0e0a134a2cba339abb7a552e9e">   21</a></span>&#160;<span class="preprocessor">#define MAX_HW_TIMER_INTERVAL_US 0x7fffff </span></div>
 <div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="group__hwtimer.html#ga953781ad7a98d0d11849d8793839dbe2">   22</a></span>&#160;<span class="preprocessor">#define MIN_HW_TIMER_INTERVAL_US 0x32    </span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">   26</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void()&gt;</a> <a class="code" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="classHardware__Timer.html">   29</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHardware__Timer.html">Hardware_Timer</a></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;{</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="classHardware__Timer.html#aa076a6a9cfc04888c3b15a82a85a1091">Hardware_Timer</a>();</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classHardware__Timer.html">Hardware_Timer</a>();</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <a class="code" href="classHardware__Timer.html">Hardware_Timer</a>&amp; IRAM_ATTR <a class="code" href="classHardware__Timer.html#ad29fc43e7d613945185b0d095b6cf964">initializeUs</a>(uint32_t microseconds,</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                                           InterruptCallback callback = NULL); <span class="comment">// Init in Microseconds.</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <a class="code" href="classHardware__Timer.html">Hardware_Timer</a>&amp; IRAM_ATTR <a class="code" href="classHardware__Timer.html#a34a5f9c9e0b760e1db6bb4e17b395cbd">initializeMs</a>(uint32_t milliseconds,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                           InterruptCallback callback = NULL); <span class="comment">// Init in Milliseconds.</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">bool</span> IRAM_ATTR <a class="code" href="classHardware__Timer.html#a7d6909e4296ff94ac66d1526e589bcbe">start</a>(<span class="keywordtype">bool</span> repeating = <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;uint32_t IRAM_ATTR <a class="code" href="group__hwtimer.html#gaf6f8c0b69763694547607d21e90fce67">usToTimerTicks</a>(uint32_t us);</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;uint32_t IRAM_ATTR <a class="code" href="group__hwtimer.html#gaa95de5b60e6794131169d0405427c736">timerTicksToUs</a>(uint32_t ticks);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="classHardwareTimer.html">   35</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHardwareTimer.html">HardwareTimer</a></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;{</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="classHardwareTimer.html#a60378b26466588ec71c20492f8963b08">HardwareTimer</a>();</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classHardwareTimer.html">HardwareTimer</a>();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="classHardwareTimer.html">HardwareTimer</a>&amp; IRAM_ATTR <a class="code" href="classHardwareTimer.html#ae4c6bfa7a74d4438f80569808560fe83">initializeUs</a>(uint32_t microseconds,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                          InterruptCallback callback = <span class="keyword">nullptr</span>); <span class="comment">// Init in Microseconds.</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="classHardwareTimer.html">HardwareTimer</a>&amp; IRAM_ATTR <a class="code" href="classHardwareTimer.html#a2141c363427dc3c597c97044102a304c">initializeMs</a>(uint32_t milliseconds,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                          InterruptCallback callback = <span class="keyword">nullptr</span>); <span class="comment">// Init in Milliseconds.</span></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classHardware__Timer.html#a2688e824927817b9ae177c60008c99fa">   63</a></span>&#160;    <span class="keywordtype">bool</span> __forceinline IRAM_ATTR <a class="code" href="classHardware__Timer.html#a2688e824927817b9ae177c60008c99fa">startOnce</a>()</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classHardware__Timer.html#a7d6909e4296ff94ac66d1526e589bcbe">start</a>(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordtype">bool</span> IRAM_ATTR <a class="code" href="classHardware__Timer.html#a3eb3d1cdbc4bf203a9ff9d1661d19de2">stop</a>();</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">bool</span> IRAM_ATTR <a class="code" href="classHardwareTimer.html#a7261dd28d90841d3f2a49cac5ec39286">start</a>(<span class="keywordtype">bool</span> repeating = <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classHardwareTimer.html#a29c09659ed6fc285632ea63b73f9acaf">   69</a></span>&#160;    <span class="keywordtype">bool</span> __forceinline IRAM_ATTR <a class="code" href="classHardwareTimer.html#a29c09659ed6fc285632ea63b73f9acaf">startOnce</a>()</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classHardwareTimer.html#a7261dd28d90841d3f2a49cac5ec39286">start</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    }</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">bool</span> IRAM_ATTR <a class="code" href="classHardware__Timer.html#a687a07d4a91b669b62ae96771cbcd0f4">restart</a>();</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardware__Timer.html#a1ac800464fed8fa5db56b0dc7e9a8df5">isStarted</a>();</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    uint32_t <a class="code" href="classHardware__Timer.html#a6ff39045a44f0220bc75b37655a814a2">getIntervalUs</a>();</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    uint32_t <a class="code" href="classHardware__Timer.html#aff68a27060359925fd541217a2547430">getIntervalMs</a>();</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">bool</span> IRAM_ATTR <a class="code" href="classHardware__Timer.html#ab33339f28b347e6b111a60b784fc87ce">setIntervalUs</a>(uint32_t microseconds = 1000000);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordtype">void</span> IRAM_ATTR <a class="code" href="classHardwareTimer.html#a34a15d2296c68f4c5c18a76b54de0e4b">stop</a>();</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">bool</span> IRAM_ATTR <a class="code" href="classHardwareTimer.html#a499029ab7d8f8bc5a7dfed5406093e9e">restart</a>();</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="classHardwareTimer.html#a8237996d6fe6fa07c311dc5f3c3709b8">   87</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareTimer.html#a8237996d6fe6fa07c311dc5f3c3709b8">isStarted</a>()</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    {</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keywordflow">return</span> started;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    }</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="classHardwareTimer.html#aba40ce259005bb943173165e87370705">   95</a></span>&#160;    uint32_t <a class="code" href="classHardwareTimer.html#aba40ce259005bb943173165e87370705">getIntervalUs</a>()</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keywordflow">return</span> interval;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    }</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordtype">bool</span> IRAM_ATTR <a class="code" href="classHardware__Timer.html#a51919e33a1418bb06e2b9b68f18775b8">setIntervalMs</a>(uint32_t milliseconds = 1000000);</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordtype">void</span> IRAM_ATTR <a class="code" href="classHardware__Timer.html#a741cc17830eef0602c4e8291d486a5a5">setCallback</a>(InterruptCallback callback);</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno"><a class="line" href="classHardware__Timer.html#a109ae16d5a6f4a1b8d489db026b5613e">  113</a></span>&#160;    <span class="keywordtype">void</span> __forceinline IRAM_ATTR <a class="code" href="classHardware__Timer.html#a109ae16d5a6f4a1b8d489db026b5613e">call</a>()</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    {</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <span class="keywordflow">if</span>(callback) {</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;            callback();</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        }</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    }</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    uint32_t interval = 0;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    InterruptCallback callback = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keywordtype">bool</span> repeating = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keywordtype">bool</span> started = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;};</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HWTIMER_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classHardware__Timer_html"><div class="ttname"><a href="classHardware__Timer.html">Hardware_Timer</a></div><div class="ttdoc">Hardware timer class. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:29</div></div>
-<div class="ttc" id="classHardware__Timer_html_a741cc17830eef0602c4e8291d486a5a5"><div class="ttname"><a href="classHardware__Timer.html#a741cc17830eef0602c4e8291d486a5a5">Hardware_Timer::setCallback</a></div><div class="ttdeci">void IRAM_ATTR setCallback(InterruptCallback callback)</div><div class="ttdoc">Set timer trigger callback. </div></div>
-<div class="ttc" id="classHardware__Timer_html_ad29fc43e7d613945185b0d095b6cf964"><div class="ttname"><a href="classHardware__Timer.html#ad29fc43e7d613945185b0d095b6cf964">Hardware_Timer::initializeUs</a></div><div class="ttdeci">Hardware_Timer &amp;IRAM_ATTR initializeUs(uint32_t microseconds, InterruptCallback callback=NULL)</div><div class="ttdoc">Initialise hardware timer. </div></div>
-<div class="ttc" id="classHardware__Timer_html_a109ae16d5a6f4a1b8d489db026b5613e"><div class="ttname"><a href="classHardware__Timer.html#a109ae16d5a6f4a1b8d489db026b5613e">Hardware_Timer::call</a></div><div class="ttdeci">void __forceinline IRAM_ATTR call()</div><div class="ttdoc">Call timer callback. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:113</div></div>
-<div class="ttc" id="classHardware__Timer_html_a1ac800464fed8fa5db56b0dc7e9a8df5"><div class="ttname"><a href="classHardware__Timer.html#a1ac800464fed8fa5db56b0dc7e9a8df5">Hardware_Timer::isStarted</a></div><div class="ttdeci">bool isStarted()</div><div class="ttdoc">Check if timer is started. </div></div>
-<div class="ttc" id="classHardware__Timer_html_aff68a27060359925fd541217a2547430"><div class="ttname"><a href="classHardware__Timer.html#aff68a27060359925fd541217a2547430">Hardware_Timer::getIntervalMs</a></div><div class="ttdeci">uint32_t getIntervalMs()</div><div class="ttdoc">Get timer interval. </div></div>
-<div class="ttc" id="classHardware__Timer_html_a51919e33a1418bb06e2b9b68f18775b8"><div class="ttname"><a href="classHardware__Timer.html#a51919e33a1418bb06e2b9b68f18775b8">Hardware_Timer::setIntervalMs</a></div><div class="ttdeci">bool IRAM_ATTR setIntervalMs(uint32_t milliseconds=1000000)</div><div class="ttdoc">Set timer interval. </div></div>
-<div class="ttc" id="classHardware__Timer_html_a6ff39045a44f0220bc75b37655a814a2"><div class="ttname"><a href="classHardware__Timer.html#a6ff39045a44f0220bc75b37655a814a2">Hardware_Timer::getIntervalUs</a></div><div class="ttdeci">uint32_t getIntervalUs()</div><div class="ttdoc">Get timer interval. </div></div>
-<div class="ttc" id="classHardware__Timer_html_aa076a6a9cfc04888c3b15a82a85a1091"><div class="ttname"><a href="classHardware__Timer.html#aa076a6a9cfc04888c3b15a82a85a1091">Hardware_Timer::Hardware_Timer</a></div><div class="ttdeci">Hardware_Timer()</div><div class="ttdoc">Hardware timer. </div></div>
-<div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void()&gt;</a></div></div>
-<div class="ttc" id="classHardware__Timer_html_ab33339f28b347e6b111a60b784fc87ce"><div class="ttname"><a href="classHardware__Timer.html#ab33339f28b347e6b111a60b784fc87ce">Hardware_Timer::setIntervalUs</a></div><div class="ttdeci">bool IRAM_ATTR setIntervalUs(uint32_t microseconds=1000000)</div><div class="ttdoc">Set timer interval. </div></div>
-<div class="ttc" id="group__hwtimer_html_ga93d562e52fc07827ebbe376132026297"><div class="ttname"><a href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a></div><div class="ttdeci">Delegate&lt; void()&gt; TimerDelegate</div><div class="ttdoc">Delegate callback type for timer trigger. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:26</div></div>
-<div class="ttc" id="classHardware__Timer_html_a3eb3d1cdbc4bf203a9ff9d1661d19de2"><div class="ttname"><a href="classHardware__Timer.html#a3eb3d1cdbc4bf203a9ff9d1661d19de2">Hardware_Timer::stop</a></div><div class="ttdeci">bool IRAM_ATTR stop()</div><div class="ttdoc">Stops timer. </div></div>
-<div class="ttc" id="classHardware__Timer_html_a687a07d4a91b669b62ae96771cbcd0f4"><div class="ttname"><a href="classHardware__Timer.html#a687a07d4a91b669b62ae96771cbcd0f4">Hardware_Timer::restart</a></div><div class="ttdeci">bool IRAM_ATTR restart()</div><div class="ttdoc">Restart timer. </div></div>
-<div class="ttc" id="classHardware__Timer_html_a34a5f9c9e0b760e1db6bb4e17b395cbd"><div class="ttname"><a href="classHardware__Timer.html#a34a5f9c9e0b760e1db6bb4e17b395cbd">Hardware_Timer::initializeMs</a></div><div class="ttdeci">Hardware_Timer &amp;IRAM_ATTR initializeMs(uint32_t milliseconds, InterruptCallback callback=NULL)</div><div class="ttdoc">Initialise hardware timer. </div></div>
-<div class="ttc" id="classHardware__Timer_html_a7d6909e4296ff94ac66d1526e589bcbe"><div class="ttname"><a href="classHardware__Timer.html#a7d6909e4296ff94ac66d1526e589bcbe">Hardware_Timer::start</a></div><div class="ttdeci">bool IRAM_ATTR start(bool repeating=true)</div><div class="ttdoc">Start timer running. </div></div>
-<div class="ttc" id="classHardware__Timer_html_a2688e824927817b9ae177c60008c99fa"><div class="ttname"><a href="classHardware__Timer.html#a2688e824927817b9ae177c60008c99fa">Hardware_Timer::startOnce</a></div><div class="ttdeci">bool __forceinline IRAM_ATTR startOnce()</div><div class="ttdoc">Start one-shot timer. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:63</div></div>
+<div class="line"><a name="l00103"></a><span class="lineno"><a class="line" href="classHardwareTimer.html#a2b5d79d3f9d92a9931b2bf3130fc3448">  103</a></span>&#160;    uint32_t <a class="code" href="classHardwareTimer.html#a2b5d79d3f9d92a9931b2bf3130fc3448">getIntervalMs</a>()</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    {</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classHardwareTimer.html#aba40ce259005bb943173165e87370705">getIntervalUs</a>() / 1000;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    }</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordtype">bool</span> IRAM_ATTR <a class="code" href="classHardwareTimer.html#a2db18648b79f752f4fe6790a590267ce">setIntervalUs</a>(uint32_t microseconds);</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="classHardwareTimer.html#a8986fe583b7e5d3528524780fe81ba88">  116</a></span>&#160;    __forceinline <span class="keywordtype">bool</span> IRAM_ATTR <a class="code" href="classHardwareTimer.html#a8986fe583b7e5d3528524780fe81ba88">setIntervalMs</a>(uint32_t milliseconds)</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    {</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classHardwareTimer.html#a2db18648b79f752f4fe6790a590267ce">setIntervalUs</a>(milliseconds * 1000);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    }</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keywordtype">void</span> IRAM_ATTR <a class="code" href="classHardwareTimer.html#ae31371ae3b63ae2de72824dbdcea14fb">setCallback</a>(InterruptCallback callback);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
+<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="classHardwareTimer.html#ac49fea30f1d32ce0287b486fb64f9a45">  129</a></span>&#160;    <span class="keywordtype">void</span> __forceinline IRAM_ATTR <a class="code" href="classHardwareTimer.html#ac49fea30f1d32ce0287b486fb64f9a45">call</a>()</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    {</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        <span class="keywordflow">if</span>(callback) {</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;            callback();</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        }</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    }</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    uint32_t interval = 0;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    InterruptCallback callback = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <span class="keywordtype">bool</span> repeating = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <span class="keywordtype">bool</span> started = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;};</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
+<div class="line"><a name="l00146"></a><span class="lineno"><a class="line" href="classHardware__Timer.html">  146</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHardware__Timer.html">Hardware_Timer</a> : <span class="keyword">public</span> <a class="code" href="classHardwareTimer.html">HardwareTimer</a></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;{</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;};</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HARDWARE_TIMER_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="group__hwtimer_html_gaf6f8c0b69763694547607d21e90fce67"><div class="ttname"><a href="group__hwtimer.html#gaf6f8c0b69763694547607d21e90fce67">usToTimerTicks</a></div><div class="ttdeci">uint32_t IRAM_ATTR usToTimerTicks(uint32_t us)</div><div class="ttdoc">Convert microseconds into timer ticks. </div></div>
+<div class="ttc" id="classHardware__Timer_html"><div class="ttname"><a href="classHardware__Timer.html">Hardware_Timer</a></div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:146</div></div>
+<div class="ttc" id="classHardwareTimer_html_a8986fe583b7e5d3528524780fe81ba88"><div class="ttname"><a href="classHardwareTimer.html#a8986fe583b7e5d3528524780fe81ba88">HardwareTimer::setIntervalMs</a></div><div class="ttdeci">__forceinline bool IRAM_ATTR setIntervalMs(uint32_t milliseconds)</div><div class="ttdoc">Set timer interval. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:116</div></div>
+<div class="ttc" id="classHardwareTimer_html_a60378b26466588ec71c20492f8963b08"><div class="ttname"><a href="classHardwareTimer.html#a60378b26466588ec71c20492f8963b08">HardwareTimer::HardwareTimer</a></div><div class="ttdeci">HardwareTimer()</div><div class="ttdoc">Hardware timer. </div></div>
+<div class="ttc" id="classHardwareTimer_html_a7261dd28d90841d3f2a49cac5ec39286"><div class="ttname"><a href="classHardwareTimer.html#a7261dd28d90841d3f2a49cac5ec39286">HardwareTimer::start</a></div><div class="ttdeci">bool IRAM_ATTR start(bool repeating=true)</div><div class="ttdoc">Start timer running. </div></div>
+<div class="ttc" id="classHardwareTimer_html_ac49fea30f1d32ce0287b486fb64f9a45"><div class="ttname"><a href="classHardwareTimer.html#ac49fea30f1d32ce0287b486fb64f9a45">HardwareTimer::call</a></div><div class="ttdeci">void __forceinline IRAM_ATTR call()</div><div class="ttdoc">Call timer callback. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:129</div></div>
+<div class="ttc" id="classHardwareTimer_html"><div class="ttname"><a href="classHardwareTimer.html">HardwareTimer</a></div><div class="ttdoc">Hardware timer class. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:35</div></div>
+<div class="ttc" id="classHardwareTimer_html_a2b5d79d3f9d92a9931b2bf3130fc3448"><div class="ttname"><a href="classHardwareTimer.html#a2b5d79d3f9d92a9931b2bf3130fc3448">HardwareTimer::getIntervalMs</a></div><div class="ttdeci">uint32_t getIntervalMs()</div><div class="ttdoc">Get timer interval. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:103</div></div>
+<div class="ttc" id="classHardwareTimer_html_a499029ab7d8f8bc5a7dfed5406093e9e"><div class="ttname"><a href="classHardwareTimer.html#a499029ab7d8f8bc5a7dfed5406093e9e">HardwareTimer::restart</a></div><div class="ttdeci">bool IRAM_ATTR restart()</div><div class="ttdoc">Restart timer. </div></div>
+<div class="ttc" id="classHardwareTimer_html_aba40ce259005bb943173165e87370705"><div class="ttname"><a href="classHardwareTimer.html#aba40ce259005bb943173165e87370705">HardwareTimer::getIntervalUs</a></div><div class="ttdeci">uint32_t getIntervalUs()</div><div class="ttdoc">Get timer interval. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:95</div></div>
+<div class="ttc" id="classHardwareTimer_html_a2141c363427dc3c597c97044102a304c"><div class="ttname"><a href="classHardwareTimer.html#a2141c363427dc3c597c97044102a304c">HardwareTimer::initializeMs</a></div><div class="ttdeci">HardwareTimer &amp;IRAM_ATTR initializeMs(uint32_t milliseconds, InterruptCallback callback=nullptr)</div><div class="ttdoc">Initialise hardware timer. </div></div>
+<div class="ttc" id="classHardwareTimer_html_a34a15d2296c68f4c5c18a76b54de0e4b"><div class="ttname"><a href="classHardwareTimer.html#a34a15d2296c68f4c5c18a76b54de0e4b">HardwareTimer::stop</a></div><div class="ttdeci">void IRAM_ATTR stop()</div><div class="ttdoc">Stops timer. </div></div>
+<div class="ttc" id="classHardwareTimer_html_ae31371ae3b63ae2de72824dbdcea14fb"><div class="ttname"><a href="classHardwareTimer.html#ae31371ae3b63ae2de72824dbdcea14fb">HardwareTimer::setCallback</a></div><div class="ttdeci">void IRAM_ATTR setCallback(InterruptCallback callback)</div><div class="ttdoc">Set timer trigger callback. </div></div>
+<div class="ttc" id="classHardwareTimer_html_a8237996d6fe6fa07c311dc5f3c3709b8"><div class="ttname"><a href="classHardwareTimer.html#a8237996d6fe6fa07c311dc5f3c3709b8">HardwareTimer::isStarted</a></div><div class="ttdeci">bool isStarted()</div><div class="ttdoc">Check if timer is started. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:87</div></div>
+<div class="ttc" id="classHardwareTimer_html_a29c09659ed6fc285632ea63b73f9acaf"><div class="ttname"><a href="classHardwareTimer.html#a29c09659ed6fc285632ea63b73f9acaf">HardwareTimer::startOnce</a></div><div class="ttdeci">bool __forceinline IRAM_ATTR startOnce()</div><div class="ttdoc">Start one-shot timer. </div><div class="ttdef"><b>Definition:</b> HardwareTimer.h:69</div></div>
+<div class="ttc" id="classHardwareTimer_html_ae4c6bfa7a74d4438f80569808560fe83"><div class="ttname"><a href="classHardwareTimer.html#ae4c6bfa7a74d4438f80569808560fe83">HardwareTimer::initializeUs</a></div><div class="ttdeci">HardwareTimer &amp;IRAM_ATTR initializeUs(uint32_t microseconds, InterruptCallback callback=nullptr)</div><div class="ttdoc">Initialise hardware timer. </div></div>
+<div class="ttc" id="group__hwtimer_html_gaa95de5b60e6794131169d0405427c736"><div class="ttname"><a href="group__hwtimer.html#gaa95de5b60e6794131169d0405427c736">timerTicksToUs</a></div><div class="ttdeci">uint32_t IRAM_ATTR timerTicksToUs(uint32_t ticks)</div><div class="ttdoc">Convert timer ticks into microseconds. </div></div>
+<div class="ttc" id="classHardwareTimer_html_a2db18648b79f752f4fe6790a590267ce"><div class="ttname"><a href="classHardwareTimer.html#a2db18648b79f752f4fe6790a590267ce">HardwareTimer::setIntervalUs</a></div><div class="ttdeci">bool IRAM_ATTR setIntervalUs(uint32_t microseconds)</div><div class="ttdoc">Set timer interval. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

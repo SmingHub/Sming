@@ -137,9 +137,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9d7e7be864d50b4049a14956706af5af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a9d7e7be864d50b4049a14956706af5af">setTime</a> (int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year)</td></tr>
 <tr class="memdesc:a9d7e7be864d50b4049a14956706af5af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set time using time and date component values.  <a href="#a9d7e7be864d50b4049a14956706af5af">More...</a><br/></td></tr>
 <tr class="separator:a9d7e7be864d50b4049a14956706af5af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafc5f31a9aab859d6e12553621ed7568"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#aafc5f31a9aab859d6e12553621ed7568">parseHttpDate</a> (<a class="el" href="classString.html">String</a> httpDate)</td></tr>
-<tr class="memdesc:aafc5f31a9aab859d6e12553621ed7568"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a HTTP full date and set time and date.  <a href="#aafc5f31a9aab859d6e12553621ed7568">More...</a><br/></td></tr>
-<tr class="separator:aafc5f31a9aab859d6e12553621ed7568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af429304267b972f51ff430ec66a56861"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#af429304267b972f51ff430ec66a56861">parseHttpDate</a> (const <a class="el" href="classString.html">String</a> &amp;httpDate)</td></tr>
+<tr class="memdesc:af429304267b972f51ff430ec66a56861"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a HTTP full date and set time and date.  <a href="#af429304267b972f51ff430ec66a56861">More...</a><br/></td></tr>
+<tr class="separator:af429304267b972f51ff430ec66a56861"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a942983c6d456157328d2efa10e06b9fb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a942983c6d456157328d2efa10e06b9fb">isNull</a> ()</td></tr>
 <tr class="memdesc:a942983c6d456157328d2efa10e06b9fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if time date object is initialised.  <a href="#a942983c6d456157328d2efa10e06b9fb">More...</a><br/></td></tr>
 <tr class="separator:a942983c6d456157328d2efa10e06b9fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -173,28 +173,28 @@ Static Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ab306c0dd7931822b39ae58be72cebae0"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ab306c0dd7931822b39ae58be72cebae0">Hour</a></td></tr>
+<tr class="memitem:ab306c0dd7931822b39ae58be72cebae0"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ab306c0dd7931822b39ae58be72cebae0">Hour</a> = 0</td></tr>
 <tr class="memdesc:ab306c0dd7931822b39ae58be72cebae0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hour (0-23)  <a href="#ab306c0dd7931822b39ae58be72cebae0">More...</a><br/></td></tr>
 <tr class="separator:ab306c0dd7931822b39ae58be72cebae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2281ee834b6d9be9fa4c7bc4046394c3"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a2281ee834b6d9be9fa4c7bc4046394c3">Minute</a></td></tr>
+<tr class="memitem:a2281ee834b6d9be9fa4c7bc4046394c3"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a2281ee834b6d9be9fa4c7bc4046394c3">Minute</a> = 0</td></tr>
 <tr class="memdesc:a2281ee834b6d9be9fa4c7bc4046394c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minute (0-59)  <a href="#a2281ee834b6d9be9fa4c7bc4046394c3">More...</a><br/></td></tr>
 <tr class="separator:a2281ee834b6d9be9fa4c7bc4046394c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05d8e4467eb9841035b31237f3d76a58"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a05d8e4467eb9841035b31237f3d76a58">Second</a></td></tr>
+<tr class="memitem:a05d8e4467eb9841035b31237f3d76a58"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a05d8e4467eb9841035b31237f3d76a58">Second</a> = 0</td></tr>
 <tr class="memdesc:a05d8e4467eb9841035b31237f3d76a58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Second (0-59)  <a href="#a05d8e4467eb9841035b31237f3d76a58">More...</a><br/></td></tr>
 <tr class="separator:a05d8e4467eb9841035b31237f3d76a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52885b8a894ba0dddabc80bddad467fd"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a52885b8a894ba0dddabc80bddad467fd">Milliseconds</a></td></tr>
+<tr class="memitem:a52885b8a894ba0dddabc80bddad467fd"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a52885b8a894ba0dddabc80bddad467fd">Milliseconds</a> = 0</td></tr>
 <tr class="memdesc:a52885b8a894ba0dddabc80bddad467fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Milliseconds (0-999)  <a href="#a52885b8a894ba0dddabc80bddad467fd">More...</a><br/></td></tr>
 <tr class="separator:a52885b8a894ba0dddabc80bddad467fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f3d535c712aaa1d8b5cc088ea3c10ff"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a8f3d535c712aaa1d8b5cc088ea3c10ff">Day</a></td></tr>
+<tr class="memitem:a8f3d535c712aaa1d8b5cc088ea3c10ff"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a8f3d535c712aaa1d8b5cc088ea3c10ff">Day</a> = 0</td></tr>
 <tr class="memdesc:a8f3d535c712aaa1d8b5cc088ea3c10ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Day of month (1-31)  <a href="#a8f3d535c712aaa1d8b5cc088ea3c10ff">More...</a><br/></td></tr>
 <tr class="separator:a8f3d535c712aaa1d8b5cc088ea3c10ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a3d78a0f8a1cdbf7df9a026ddea4ee4"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a9a3d78a0f8a1cdbf7df9a026ddea4ee4">DayofWeek</a></td></tr>
+<tr class="memitem:a9a3d78a0f8a1cdbf7df9a026ddea4ee4"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a9a3d78a0f8a1cdbf7df9a026ddea4ee4">DayofWeek</a> = 0</td></tr>
 <tr class="memdesc:a9a3d78a0f8a1cdbf7df9a026ddea4ee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Day of week (0-6 Sunday is day 0)  <a href="#a9a3d78a0f8a1cdbf7df9a026ddea4ee4">More...</a><br/></td></tr>
 <tr class="separator:a9a3d78a0f8a1cdbf7df9a026ddea4ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2948899151acbee8819a19ad35fd511"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ac2948899151acbee8819a19ad35fd511">Month</a></td></tr>
+<tr class="memitem:ac2948899151acbee8819a19ad35fd511"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ac2948899151acbee8819a19ad35fd511">Month</a> = 0</td></tr>
 <tr class="memdesc:ac2948899151acbee8819a19ad35fd511"><td class="mdescLeft">&#160;</td><td class="mdescRight">Month (0-11 Jan is month 0)  <a href="#ac2948899151acbee8819a19ad35fd511">More...</a><br/></td></tr>
 <tr class="separator:ac2948899151acbee8819a19ad35fd511"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d2fdc35a2cc020b1b24ff87d5bf2aeb"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a4d2fdc35a2cc020b1b24ff87d5bf2aeb">Year</a></td></tr>
+<tr class="memitem:a4d2fdc35a2cc020b1b24ff87d5bf2aeb"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a4d2fdc35a2cc020b1b24ff87d5bf2aeb">Year</a> = 0</td></tr>
 <tr class="memdesc:a4d2fdc35a2cc020b1b24ff87d5bf2aeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full Year number.  <a href="#a4d2fdc35a2cc020b1b24ff87d5bf2aeb">More...</a><br/></td></tr>
 <tr class="separator:a4d2fdc35a2cc020b1b24ff87d5bf2aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -206,6 +206,9 @@ Public Attributes</h2></td></tr>
 <a class="anchor" id="a3ccfb87f7a2e9683b91964e32d907161"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">DateTime::DateTime </td>
@@ -214,6 +217,11 @@ Public Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Instantiate an uninitialised date and time object. </p>
@@ -359,7 +367,9 @@ This static function may be used without instantiating a <a class="el" href="cla
 <dd>
 32-bit Unix time has year 2036 issue. </dd>
 <dd>
-Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table. </dd></dl>
+Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table. </dd>
+<dd>
+All of the return values are optional, specify nullptr if not required </dd></dl>
 
 </div>
 </div>
@@ -495,14 +505,14 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 
 </div>
 </div>
-<a class="anchor" id="aafc5f31a9aab859d6e12553621ed7568"></a>
+<a class="anchor" id="af429304267b972f51ff430ec66a56861"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">bool DateTime::parseHttpDate </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classString.html">String</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
           <td class="paramname"><em>httpDate</em></td><td>)</td>
           <td></td>
         </tr>
@@ -630,7 +640,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 <p>Get human readable date and time. </p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname"><a class="el" href="classString.html">String</a></td><td>Date and time in format dd.mm.yyyy hh:mm:ss </td></tr>
+    <tr><td class="paramname"><a class="el" href="classString.html" title="The string class. ">String</a></td><td>Date and time in format dd.mm.yyyy hh:mm:ss </td></tr>
   </table>
   </dd>
 </dl>
@@ -653,7 +663,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 <p>Get human readable date. </p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname"><a class="el" href="classString.html">String</a></td><td>Date in requested format, e.g. dd.mm.yyyy </td></tr>
+    <tr><td class="paramname"><a class="el" href="classString.html" title="The string class. ">String</a></td><td>Date in requested format, e.g. dd.mm.yyyy </td></tr>
   </table>
   </dd>
 </dl>
@@ -683,7 +693,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 </dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname"><a class="el" href="classString.html">String</a></td><td>Time in format hh:mm or hh:mm:ss </td></tr>
+    <tr><td class="paramname"><a class="el" href="classString.html" title="The string class. ">String</a></td><td>Time in format hh:mm or hh:mm:ss </td></tr>
   </table>
   </dd>
 </dl>
@@ -720,7 +730,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::Day</td>
+          <td class="memname">int8_t DateTime::Day = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -734,7 +744,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::DayofWeek</td>
+          <td class="memname">int8_t DateTime::DayofWeek = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -748,7 +758,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::Hour</td>
+          <td class="memname">int8_t DateTime::Hour = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -762,7 +772,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int16_t DateTime::Milliseconds</td>
+          <td class="memname">int16_t DateTime::Milliseconds = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -776,7 +786,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::Minute</td>
+          <td class="memname">int8_t DateTime::Minute = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -790,7 +800,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::Month</td>
+          <td class="memname">int8_t DateTime::Month = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -804,7 +814,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::Second</td>
+          <td class="memname">int8_t DateTime::Second = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -818,7 +828,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int16_t DateTime::Year</td>
+          <td class="memname">int16_t DateTime::Year = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">

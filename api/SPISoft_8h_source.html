@@ -117,12 +117,12 @@ $(document).ready(function(){initNavTree('SPISoft_8h_source.html','');});
 <div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classSPISoft.html">   14</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSPISoft.html">SPISoft</a> : <span class="keyword">public</span> <a class="code" href="classSPIBase.html">SPIBase</a></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="classSPISoft.html">SPISoft</a>(uint16_t miso, uint16_t mosi, uint16_t sck, uint8_t <a class="code" href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a>)</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="classSPISoft.html">SPISoft</a>(uint16_t miso, uint16_t mosi, uint16_t sck, uint8_t <a class="code" href="group__timedelay.html#ga0e0319a9c20b0e5926c903239a493a93">delay</a>)</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    {</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        mMISO = miso;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        mMOSI = mosi;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        mCLK = sck;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        m_delay = <a class="code" href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        m_delay = <a class="code" href="group__timedelay.html#ga0e0319a9c20b0e5926c903239a493a93">delay</a>;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    }</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classSPISoft.html">SPISoft</a>(){};</div>
@@ -184,12 +184,12 @@ $(document).ready(function(){initNavTree('SPISoft_8h_source.html','');});
 <div class="ttc" id="classSPISettings_html"><div class="ttname"><a href="classSPISettings.html">SPISettings</a></div><div class="ttdef"><b>Definition:</b> SPISettings.h:27</div></div>
 <div class="ttc" id="classSPISoft_html_af278fc0c4ff05a66c26006751fde2b65"><div class="ttname"><a href="classSPISoft.html#af278fc0c4ff05a66c26006751fde2b65">SPISoft::transfer</a></div><div class="ttdeci">unsigned char transfer(unsigned char val)</div><div class="ttdoc">transfer(), transfer16() </div><div class="ttdef"><b>Definition:</b> SPISoft.h:57</div></div>
 <div class="ttc" id="classSPISoft_html_a386eeeea1c0ac1791d2dd2507eeee66f"><div class="ttname"><a href="classSPISoft.html#a386eeeea1c0ac1791d2dd2507eeee66f">SPISoft::setDelay</a></div><div class="ttdeci">void setDelay(uint8_t dly)</div><div class="ttdoc">Set microsecond delay for the SCK signal. Impacts SPI speed. </div><div class="ttdef"><b>Definition:</b> SPISoft.h:71</div></div>
+<div class="ttc" id="group__timedelay_html_ga0e0319a9c20b0e5926c903239a493a93"><div class="ttname"><a href="group__timedelay.html#ga0e0319a9c20b0e5926c903239a493a93">delay</a></div><div class="ttdeci">void delay(uint32_t milliseconds)</div><div class="ttdoc">Pause execution. </div></div>
 <div class="ttc" id="classSPISoft_html_a56e82b3aeeea964ecec26ba0c4c3987b"><div class="ttname"><a href="classSPISoft.html#a56e82b3aeeea964ecec26ba0c4c3987b">SPISoft::beginTransaction</a></div><div class="ttdeci">virtual void beginTransaction(SPISettings mySettings)</div><div class="ttdoc">beginTransaction(): Initializes the SPI bus using the defined SPISettings. </div><div class="ttdef"><b>Definition:</b> SPISoft.h:40</div></div>
 <div class="ttc" id="classSPISoft_html"><div class="ttname"><a href="classSPISoft.html">SPISoft</a></div><div class="ttdef"><b>Definition:</b> SPISoft.h:14</div></div>
 <div class="ttc" id="classSPISoft_html_a7356e612b98a3a42719501bb1696cb8c"><div class="ttname"><a href="classSPISoft.html#a7356e612b98a3a42719501bb1696cb8c">SPISoft::begin</a></div><div class="ttdeci">virtual void begin()</div><div class="ttdoc">begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low...</div></div>
 <div class="ttc" id="classSPIBase_html"><div class="ttname"><a href="classSPIBase.html">SPIBase</a></div><div class="ttdef"><b>Definition:</b> SPIBase.h:25</div></div>
 <div class="ttc" id="classSPISoft_html_ac5ac3ce86c91b9ed1a4c352de99dd78d"><div class="ttname"><a href="classSPISoft.html#ac5ac3ce86c91b9ed1a4c352de99dd78d">SPISoft::end</a></div><div class="ttdeci">virtual void end()</div><div class="ttdoc">end(): Disables the SPI bus (leaving pin modes unchanged). </div><div class="ttdef"><b>Definition:</b> SPISoft.h:35</div></div>
-<div class="ttc" id="group__timedelay_html_ga21f4a3f60c06d2ea8a17bccc1b3ed0cc"><div class="ttname"><a href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a></div><div class="ttdeci">void delay(uint32_t time)</div><div class="ttdoc">Pause execution. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

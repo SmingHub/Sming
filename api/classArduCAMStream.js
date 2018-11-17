@@ -10,11 +10,13 @@ var classArduCAMStream =
     [ "findUntil", "classArduCAMStream.html#ad1f5f6600832396fb38a897baf4de35b", null ],
     [ "findUntil", "classArduCAMStream.html#a3a9497de614792103ab8cb4759e01a69", null ],
     [ "flush", "classArduCAMStream.html#a313fb97e4af1e15ed581674a1ce76d3e", null ],
-    [ "getStreamType", "classArduCAMStream.html#ab006d2e62a0e0165c12a3282e99174d1", null ],
+    [ "getName", "classArduCAMStream.html#a39d8ea433dda122542c1e1fab75c3835", null ],
+    [ "getStreamType", "classArduCAMStream.html#ada9675549c1558c65bf23bffa8b01fd4", null ],
     [ "getWriteError", "classArduCAMStream.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
-    [ "id", "classArduCAMStream.html#abe31f244917749cf8b343c0249a312c0", null ],
-    [ "indexOf", "classArduCAMStream.html#a0f934a5188da7f6a1c437c26755a2a42", null ],
+    [ "id", "classArduCAMStream.html#ad1ef7841971cac54cfd5535b239535ad", null ],
+    [ "indexOf", "classArduCAMStream.html#aa5a72de358de3023fbc6625762ab854f", null ],
     [ "isFinished", "classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a", null ],
+    [ "isValid", "classArduCAMStream.html#ab449f678d6db826bd6fd4e2b8a3a3967", null ],
     [ "length", "classArduCAMStream.html#a05ec329ab5b1237777872156d631f68c", null ],
     [ "parseFloat", "classArduCAMStream.html#a5e5a0cc11eb586d89dcb7fa8e53a87e8", null ],
     [ "parseFloat", "classArduCAMStream.html#a14a98cdbb166008f25dd044d836b1864", null ],
@@ -59,6 +61,6 @@ var classArduCAMStream =
     [ "write", "classArduCAMStream.html#ae07d3e1ea4008c0c5e447821bab25f6e", null ],
     [ "write", "classArduCAMStream.html#a5b40e0e9cab1f2fe5bb0cb22ffe5adda", null ],
     [ "write", "classArduCAMStream.html#abfdd93a61c4b95a3ba41680188505e73", null ],
-    [ "_startMillis", "classArduCAMStream.html#abf61d2006d28d18f2e028285a323fe5a", null ],
-    [ "_timeout", "classArduCAMStream.html#aae48f1a926d2e82a452f2c75af0c6a29", null ]
+    [ "receiveTimeout", "classArduCAMStream.html#a525e929c31bf030eb050497690fca7ae", null ],
+    [ "startMillis", "classArduCAMStream.html#a4928691eee5c693b0acea38676b8e44f", null ]
 ];

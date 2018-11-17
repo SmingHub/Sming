@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['base64_5fdecodestate',['base64_decodestate',['../structbase64__decodestate.html',1,'']]],
   ['base64_5fencodestate',['base64_encodestate',['../structbase64__encodestate.html',1,'']]],
   ['base64outputstream',['Base64OutputStream',['../classBase64OutputStream.html',1,'']]],
   ['bh1750fvi',['BH1750FVI',['../classBH1750FVI.html',1,'']]],

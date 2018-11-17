@@ -6,5 +6,6 @@ var group__gpio =
     [ "noPullup", "group__gpio.html#gae82a89bb9594589526f936248949ca6a", null ],
     [ "pinMode", "group__gpio.html#gaa4c100976006333cf7838c65e9dde507", null ],
     [ "pullup", "group__gpio.html#gadc6b96008df9ca3443a4216e83c70a5c", null ],
-    [ "pulseIn", "group__gpio.html#gafa1ef6f243c6cf75dacea30bf7186ac7", null ]
+    [ "pulseIn", "group__gpio.html#gafa1ef6f243c6cf75dacea30bf7186ac7", null ],
+    [ "EspDigitalPins", "group__gpio.html#gaf75c217e7b6d970988dc3c314682db4e", null ]
 ];

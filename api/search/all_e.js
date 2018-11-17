@@ -1,10 +1,11 @@
 var searchData=
 [
-  ['parsehttpdate',['parseHttpDate',['../classDateTime.html#aafc5f31a9aab859d6e12553621ed7568',1,'DateTime']]],
+  ['parsehttpdate',['parseHttpDate',['../classDateTime.html#af429304267b972f51ff430ec66a56861',1,'DateTime']]],
   ['payload',['payload',['../classNrf24l.html#a9d3639ab2bc390cf388bba3652685e24',1,'Nrf24l']]],
-  ['peek',['peek',['../classIDataSourceStream.html#aaf3a3d1a1e1b0412daed308228888ae5',1,'IDataSourceStream::peek()'],['../classHardwareSerial.html#a7acdf929737d21dc2ea9000d478d1fbb',1,'HardwareSerial::peek()'],['../classRingBufCPP.html#a8b63c470f35b9b935de5b48b0aff1473',1,'RingBufCPP::peek()']]],
+  ['peek',['peek',['../classIDataSourceStream.html#aaf3a3d1a1e1b0412daed308228888ae5',1,'IDataSourceStream::peek()'],['../classHardwareSerial.html#a34b2f2505bc35794a9dede3aadbde389',1,'HardwareSerial::peek()'],['../classRingBufCPP.html#a8b63c470f35b9b935de5b48b0aff1473',1,'RingBufCPP::peek()']]],
   ['pin_5fmode',['pin_mode',['../classNexGpio.html#adbe08eb11827d75c6b2e9c935d9da19a',1,'NexGpio']]],
   ['pinmode',['pinMode',['../classI2CIO.html#a53b94274eb6bb68564cf5243323db887',1,'I2CIO::pinMode()'],['../group__gpio.html#gaa4c100976006333cf7838c65e9dde507',1,'pinMode():&#160;Digital.h']]],
+  ['pins',['pins',['../classHardwareSerial.html#affd65318986f749f7650d0825fff05fe',1,'HardwareSerial']]],
   ['pitch',['pitch',['../structsensors__vec__t.html#aa298c3cbbd0016698c64d9451fbf3aff',1,'sensors_vec_t']]],
   ['portmode',['portMode',['../classI2CIO.html#a0341888753bc54c4384f5593a870fb34',1,'I2CIO']]],
   ['powerdown',['powerDown',['../classRF24.html#aa0a51923a09ba4f3478aba9be0f8a6a1',1,'RF24']]],

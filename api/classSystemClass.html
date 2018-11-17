@@ -107,6 +107,7 @@ $(document).ready(function(){initNavTree('classSystemClass.html','');});
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classSystemClass-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">SystemClass Class Reference</div>  </div>
@@ -115,9 +116,6 @@ $(document).ready(function(){initNavTree('classSystemClass.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ga6f76530665629e2a2d0246fb63af9696"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga6f76530665629e2a2d0246fb63af9696">initialize</a> ()</td></tr>
-<tr class="memdesc:ga6f76530665629e2a2d0246fb63af9696"><td class="mdescLeft">&#160;</td><td class="mdescRight">System initialisation.  <a href="group__system.html#ga6f76530665629e2a2d0246fb63af9696">More...</a><br/></td></tr>
-<tr class="separator:ga6f76530665629e2a2d0246fb63af9696"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga79a7cb0d48d4f5ae35722cfff45aa454"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga79a7cb0d48d4f5ae35722cfff45aa454">isReady</a> ()</td></tr>
 <tr class="memdesc:ga79a7cb0d48d4f5ae35722cfff45aa454"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if system ready.  <a href="group__system.html#ga79a7cb0d48d4f5ae35722cfff45aa454">More...</a><br/></td></tr>
 <tr class="separator:ga79a7cb0d48d4f5ae35722cfff45aa454"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,6 +137,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ga71e2a19d176b06ed76394b771a2cb487"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga71e2a19d176b06ed76394b771a2cb487">onReady</a> (<a class="el" href="classISystemReadyHandler.html">ISystemReadyHandler</a> *readyHandler)</td></tr>
 <tr class="memdesc:ga71e2a19d176b06ed76394b771a2cb487"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set handler for <em>system ready</em> event.  <a href="group__system.html#ga71e2a19d176b06ed76394b771a2cb487">More...</a><br/></td></tr>
 <tr class="separator:ga71e2a19d176b06ed76394b771a2cb487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:gaf810724c77b92fb584c3620ffdbf1bb7"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#gaf810724c77b92fb584c3620ffdbf1bb7">initialize</a> ()</td></tr>
+<tr class="memdesc:gaf810724c77b92fb584c3620ffdbf1bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">System initialisation.  <a href="group__system.html#gaf810724c77b92fb584c3620ffdbf1bb7">More...</a><br/></td></tr>
+<tr class="separator:gaf810724c77b92fb584c3620ffdbf1bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga452a62223edb4c43c06efcf2f5429de6"><td class="memItemLeft" align="right" valign="top">static bool IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga452a62223edb4c43c06efcf2f5429de6">queueCallback</a> (<a class="el" href="group__event__handlers.html#ga3d0f79b599db34125716778086abf51c">TaskCallback</a> callback, uint32_t param=0)</td></tr>
+<tr class="memdesc:ga452a62223edb4c43c06efcf2f5429de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue a deferred callback.  <a href="group__system.html#ga452a62223edb4c43c06efcf2f5429de6">More...</a><br/></td></tr>
+<tr class="separator:ga452a62223edb4c43c06efcf2f5429de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga020bf6724cda7fdad68ca0501335dc33"><td class="memItemLeft" align="right" valign="top">static unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga020bf6724cda7fdad68ca0501335dc33">getTaskCount</a> ()</td></tr>
+<tr class="memdesc:ga020bf6724cda7fdad68ca0501335dc33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of tasks currently on queue.  <a href="group__system.html#ga020bf6724cda7fdad68ca0501335dc33">More...</a><br/></td></tr>
+<tr class="separator:ga020bf6724cda7fdad68ca0501335dc33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3672acc2246bbe17fc6e113c7135db69"><td class="memItemLeft" align="right" valign="top">static unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga3672acc2246bbe17fc6e113c7135db69">getMaxTaskCount</a> ()</td></tr>
+<tr class="memdesc:ga3672acc2246bbe17fc6e113c7135db69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get maximum number of tasks seen on queue at any one time.  <a href="group__system.html#ga3672acc2246bbe17fc6e113c7135db69">More...</a><br/></td></tr>
+<tr class="separator:ga3672acc2246bbe17fc6e113c7135db69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

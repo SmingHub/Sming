@@ -9,11 +9,13 @@ var classCircularBuffer =
     [ "findUntil", "classCircularBuffer.html#ad1f5f6600832396fb38a897baf4de35b", null ],
     [ "findUntil", "classCircularBuffer.html#a3a9497de614792103ab8cb4759e01a69", null ],
     [ "flush", "classCircularBuffer.html#ab1fe7ca55bfe74961552c73dfee9b370", null ],
-    [ "getStreamType", "classCircularBuffer.html#a73e4276f890b8d25d90f33f641801ef5", null ],
+    [ "getName", "classCircularBuffer.html#a39d8ea433dda122542c1e1fab75c3835", null ],
+    [ "getStreamType", "classCircularBuffer.html#a780b1d60f82bd2e2f113400cd2ce2336", null ],
     [ "getWriteError", "classCircularBuffer.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
-    [ "id", "classCircularBuffer.html#a471f021e32d3a8bd7b82a670bd242155", null ],
-    [ "indexOf", "classCircularBuffer.html#a0f934a5188da7f6a1c437c26755a2a42", null ],
+    [ "id", "classCircularBuffer.html#a7ee97b52d15c68307de71cbf868e1713", null ],
+    [ "indexOf", "classCircularBuffer.html#aa5a72de358de3023fbc6625762ab854f", null ],
     [ "isFinished", "classCircularBuffer.html#abfe236e3b5f1e553c901ea0db38a0458", null ],
+    [ "isValid", "classCircularBuffer.html#ab449f678d6db826bd6fd4e2b8a3a3967", null ],
     [ "length", "classCircularBuffer.html#a05ec329ab5b1237777872156d631f68c", null ],
     [ "parseFloat", "classCircularBuffer.html#a5e5a0cc11eb586d89dcb7fa8e53a87e8", null ],
     [ "parseFloat", "classCircularBuffer.html#a14a98cdbb166008f25dd044d836b1864", null ],
@@ -58,7 +60,7 @@ var classCircularBuffer =
     [ "write", "classCircularBuffer.html#a5b40e0e9cab1f2fe5bb0cb22ffe5adda", null ],
     [ "write", "classCircularBuffer.html#abfdd93a61c4b95a3ba41680188505e73", null ],
     [ "write", "classCircularBuffer.html#ac9f7a35cd7612d9067b9ff300127d1a7", null ],
-    [ "write", "classCircularBuffer.html#acaf8617303395b3a066bf80ff151fa37", null ],
-    [ "_startMillis", "classCircularBuffer.html#abf61d2006d28d18f2e028285a323fe5a", null ],
-    [ "_timeout", "classCircularBuffer.html#aae48f1a926d2e82a452f2c75af0c6a29", null ]
+    [ "write", "classCircularBuffer.html#af15fd63f52403b8a95e97d590adcba4c", null ],
+    [ "receiveTimeout", "classCircularBuffer.html#a525e929c31bf030eb050497690fca7ae", null ],
+    [ "startMillis", "classCircularBuffer.html#a4928691eee5c693b0acea38676b8e44f", null ]
 ];

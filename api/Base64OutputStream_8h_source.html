@@ -111,38 +111,37 @@ $(document).ready(function(){initNavTree('Base64OutputStream_8h_source.html','')
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_BASE64STREAM_H_</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_BASE64STREAM_H_</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_BASE64_OUTPUT_STREAM_H_</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_BASE64_OUTPUT_STREAM_H_</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../StreamTransformer.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;../../Services/libb64/cencode.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classBase64OutputStream.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="classBase64OutputStream.html">Base64OutputStream</a> : <span class="keyword">public</span> <a class="code" href="classStreamTransformer.html">StreamTransformer</a></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;{</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="classBase64OutputStream.html#a5c052a41a5d79ac5356f069b2a8eccec">Base64OutputStream</a>(<a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream, <span class="keywordtype">size_t</span> resultSize = 500);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classBase64OutputStream.html#ad29f4af3d21f9406fc44a39295d3b9cb">encode</a>(uint8_t* source, <span class="keywordtype">size_t</span> sourceLength, uint8_t* target, <span class="keywordtype">size_t</span> targetLength);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classBase64OutputStream.html#a20a6bb5a6ca0e2a090c212e44e17114a">saveState</a>();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classBase64OutputStream.html#ad9235d9c1c0f11cbfbfc10295513de19">restoreState</a>();</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="structbase64__encodestate.html">base64_encodestate</a> state;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="structbase64__encodestate.html">base64_encodestate</a> lastState;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;};</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_BASE64STREAM_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;../Services/libb64/cencode.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classBase64OutputStream.html">   24</a></span>&#160;<span class="keyword">class </span><a class="code" href="classBase64OutputStream.html">Base64OutputStream</a> : <span class="keyword">public</span> <a class="code" href="classStreamTransformer.html">StreamTransformer</a></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="classBase64OutputStream.html#a5c052a41a5d79ac5356f069b2a8eccec">Base64OutputStream</a>(<a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream, <span class="keywordtype">size_t</span> resultSize = 500);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classBase64OutputStream.html#ad29f4af3d21f9406fc44a39295d3b9cb">encode</a>(uint8_t* source, <span class="keywordtype">size_t</span> sourceLength, uint8_t* target, <span class="keywordtype">size_t</span> targetLength);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classBase64OutputStream.html#a20a6bb5a6ca0e2a090c212e44e17114a">saveState</a>();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classBase64OutputStream.html#ad9235d9c1c0f11cbfbfc10295513de19">restoreState</a>();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <a class="code" href="structbase64__encodestate.html">base64_encodestate</a> state;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="structbase64__encodestate.html">base64_encodestate</a> lastState;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_BASE64_OUTPUT_STREAM_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classBase64OutputStream_html_a20a6bb5a6ca0e2a090c212e44e17114a"><div class="ttname"><a href="classBase64OutputStream.html#a20a6bb5a6ca0e2a090c212e44e17114a">Base64OutputStream::saveState</a></div><div class="ttdeci">virtual void saveState()</div><div class="ttdoc">A method that backs up the current state. </div></div>
 <div class="ttc" id="classBase64OutputStream_html_ad29f4af3d21f9406fc44a39295d3b9cb"><div class="ttname"><a href="classBase64OutputStream.html#ad29f4af3d21f9406fc44a39295d3b9cb">Base64OutputStream::encode</a></div><div class="ttdeci">int encode(uint8_t *source, size_t sourceLength, uint8_t *target, size_t targetLength)</div></div>
 <div class="ttc" id="classBase64OutputStream_html_ad9235d9c1c0f11cbfbfc10295513de19"><div class="ttname"><a href="classBase64OutputStream.html#ad9235d9c1c0f11cbfbfc10295513de19">Base64OutputStream::restoreState</a></div><div class="ttdeci">virtual void restoreState()</div><div class="ttdoc">A method that restores the last backed up state. </div></div>
 <div class="ttc" id="classStreamTransformer_html"><div class="ttname"><a href="classStreamTransformer.html">StreamTransformer</a></div><div class="ttdef"><b>Definition:</b> StreamTransformer.h:39</div></div>
-<div class="ttc" id="classBase64OutputStream_html"><div class="ttname"><a href="classBase64OutputStream.html">Base64OutputStream</a></div><div class="ttdoc">Base64 Stream. </div><div class="ttdef"><b>Definition:</b> Base64OutputStream.h:25</div></div>
+<div class="ttc" id="classBase64OutputStream_html"><div class="ttname"><a href="classBase64OutputStream.html">Base64OutputStream</a></div><div class="ttdoc">Base64 Stream. </div><div class="ttdef"><b>Definition:</b> Base64OutputStream.h:24</div></div>
 <div class="ttc" id="classBase64OutputStream_html_a5c052a41a5d79ac5356f069b2a8eccec"><div class="ttname"><a href="classBase64OutputStream.html#a5c052a41a5d79ac5356f069b2a8eccec">Base64OutputStream::Base64OutputStream</a></div><div class="ttdeci">Base64OutputStream(ReadWriteStream *stream, size_t resultSize=500)</div><div class="ttdoc">Stream that transforms bytes of data into base64 data stream. </div></div>
 <div class="ttc" id="structbase64__encodestate_html"><div class="ttname"><a href="structbase64__encodestate.html">base64_encodestate</a></div><div class="ttdef"><b>Definition:</b> cencode.h:20</div></div>
-<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:129</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdoc">Base class for read/write stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:20</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

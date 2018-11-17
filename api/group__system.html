@@ -109,9 +109,9 @@ $(document).ready(function(){initNavTree('group__system.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga6f76530665629e2a2d0246fb63af9696"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga6f76530665629e2a2d0246fb63af9696">SystemClass::initialize</a> ()</td></tr>
-<tr class="memdesc:ga6f76530665629e2a2d0246fb63af9696"><td class="mdescLeft">&#160;</td><td class="mdescRight">System initialisation.  <a href="#ga6f76530665629e2a2d0246fb63af9696">More...</a><br/></td></tr>
-<tr class="separator:ga6f76530665629e2a2d0246fb63af9696"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf810724c77b92fb584c3620ffdbf1bb7"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#gaf810724c77b92fb584c3620ffdbf1bb7">SystemClass::initialize</a> ()</td></tr>
+<tr class="memdesc:gaf810724c77b92fb584c3620ffdbf1bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">System initialisation.  <a href="#gaf810724c77b92fb584c3620ffdbf1bb7">More...</a><br/></td></tr>
+<tr class="separator:gaf810724c77b92fb584c3620ffdbf1bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga79a7cb0d48d4f5ae35722cfff45aa454"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga79a7cb0d48d4f5ae35722cfff45aa454">SystemClass::isReady</a> ()</td></tr>
 <tr class="memdesc:ga79a7cb0d48d4f5ae35722cfff45aa454"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if system ready.  <a href="#ga79a7cb0d48d4f5ae35722cfff45aa454">More...</a><br/></td></tr>
 <tr class="separator:ga79a7cb0d48d4f5ae35722cfff45aa454"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,6 +133,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ga71e2a19d176b06ed76394b771a2cb487"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga71e2a19d176b06ed76394b771a2cb487">SystemClass::onReady</a> (<a class="el" href="classISystemReadyHandler.html">ISystemReadyHandler</a> *readyHandler)</td></tr>
 <tr class="memdesc:ga71e2a19d176b06ed76394b771a2cb487"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set handler for <em>system ready</em> event.  <a href="#ga71e2a19d176b06ed76394b771a2cb487">More...</a><br/></td></tr>
 <tr class="separator:ga71e2a19d176b06ed76394b771a2cb487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga452a62223edb4c43c06efcf2f5429de6"><td class="memItemLeft" align="right" valign="top">static bool IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga452a62223edb4c43c06efcf2f5429de6">SystemClass::queueCallback</a> (<a class="el" href="group__event__handlers.html#ga3d0f79b599db34125716778086abf51c">TaskCallback</a> callback, uint32_t param=0)</td></tr>
+<tr class="memdesc:ga452a62223edb4c43c06efcf2f5429de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue a deferred callback.  <a href="#ga452a62223edb4c43c06efcf2f5429de6">More...</a><br/></td></tr>
+<tr class="separator:ga452a62223edb4c43c06efcf2f5429de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga020bf6724cda7fdad68ca0501335dc33"><td class="memItemLeft" align="right" valign="top">static unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga020bf6724cda7fdad68ca0501335dc33">SystemClass::getTaskCount</a> ()</td></tr>
+<tr class="memdesc:ga020bf6724cda7fdad68ca0501335dc33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of tasks currently on queue.  <a href="#ga020bf6724cda7fdad68ca0501335dc33">More...</a><br/></td></tr>
+<tr class="separator:ga020bf6724cda7fdad68ca0501335dc33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3672acc2246bbe17fc6e113c7135db69"><td class="memItemLeft" align="right" valign="top">static unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga3672acc2246bbe17fc6e113c7135db69">SystemClass::getMaxTaskCount</a> ()</td></tr>
+<tr class="memdesc:ga3672acc2246bbe17fc6e113c7135db69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get maximum number of tasks seen on queue at any one time.  <a href="#ga3672acc2246bbe17fc6e113c7135db69">More...</a><br/></td></tr>
+<tr class="separator:ga3672acc2246bbe17fc6e113c7135db69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Access to the ESP8266 system. </p>
@@ -177,6 +186,9 @@ Functions</h2></td></tr>
 <a class="anchor" id="ga4ee160d3a5da1913480bfee8c42df41a"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="group__constants.html#ga1149dd3589720a23866601483758719d">CpuFrequency</a> SystemClass::getCpuFrequency </td>
@@ -185,6 +197,11 @@ Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Get the CPU frequency. </p>
@@ -197,26 +214,107 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga6f76530665629e2a2d0246fb63af9696"></a>
+<a class="anchor" id="ga3672acc2246bbe17fc6e113c7135db69"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void SystemClass::initialize </td>
+          <td class="memname">static unsigned SystemClass::getMaxTaskCount </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get maximum number of tasks seen on queue at any one time. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">unsigned</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>If return value is higher than maximum task queue TASK_QUEUE_LENGTH then the queue has overflowed at some point and tasks have been left un-executed. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga020bf6724cda7fdad68ca0501335dc33"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static unsigned SystemClass::getTaskCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get number of tasks currently on queue. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">unsigned</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf810724c77b92fb584c3620ffdbf1bb7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool SystemClass::initialize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>System initialisation. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>true on success </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Called by user_main: applications should not call this function or the task queue will be re-initialised and any currently queued tasks won't be called. </dd></dl>
 
 </div>
 </div>
 <a class="anchor" id="ga79a7cb0d48d4f5ae35722cfff45aa454"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool SystemClass::isReady </td>
@@ -225,6 +323,11 @@ Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Check if system ready. </p>
@@ -258,6 +361,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>if system is ready, callback is executed immediately without deferral </dd></dl>
 
 </div>
 </div>
@@ -282,12 +386,66 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>if system is ready, callback is executed immediately without deferral </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga452a62223edb4c43c06efcf2f5429de6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool IRAM_ATTR SystemClass::queueCallback </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__event__handlers.html#ga3d0f79b599db34125716778086abf51c">TaskCallback</a>&#160;</td>
+          <td class="paramname"><em>callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>param</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Queue a deferred callback. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">callback</td><td>The function to be called </td></tr>
+    <tr><td class="paramname">param</td><td>Parameter passed to the callback </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>false if callback could not be queued </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>It is important to check the return value to avoid memory leaks and other issues, for example if memory is allocated and relies on the callback to free it again. Note also that this method is typically called from interrupt context so must avoid things like heap allocation, etc. </dd></dl>
 
 </div>
 </div>
 <a class="anchor" id="ga5f72899b23c49108b7cba82717e4246d"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void SystemClass::restart </td>
@@ -296,6 +454,11 @@ Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Restart system. </p>

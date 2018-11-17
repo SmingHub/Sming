@@ -113,6 +113,9 @@ Typedefs</h2></td></tr>
 dbgChar)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__event__handlers.html#ga3e1da61acf83c2b476a5cd9e4d0c37d8">DebugPrintCharDelegate</a></td></tr>
 <tr class="memdesc:ga3e1da61acf83c2b476a5cd9e4d0c37d8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classDelegate.html">Delegate</a> constructor usage: (&amp;YourClass::method, this)  <a href="#ga3e1da61acf83c2b476a5cd9e4d0c37d8">More...</a><br/></td></tr>
 <tr class="separator:ga3e1da61acf83c2b476a5cd9e4d0c37d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3d0f79b599db34125716778086abf51c"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__event__handlers.html#ga3d0f79b599db34125716778086abf51c">TaskCallback</a> )(uint32_t param)</td></tr>
+<tr class="memdesc:ga3d0f79b599db34125716778086abf51c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Task callback function type.  <a href="#ga3d0f79b599db34125716778086abf51c">More...</a><br/></td></tr>
+<tr class="separator:ga3d0f79b599db34125716778086abf51c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5b7000bf1a715e844c8c8610c8182aa2"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void()&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__event__handlers.html#ga5b7000bf1a715e844c8c8610c8182aa2">SystemReadyDelegate</a></td></tr>
 <tr class="separator:ga5b7000bf1a715e844c8c8610c8182aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6b26b28cc9b14cb10053f36a447f7998"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void(bool, <br class="typebreak"/>
@@ -197,6 +200,22 @@ status, void *pdata)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a c
       </table>
 </div><div class="memdoc">
 <p>Handler function for system ready </p>
+
+</div>
+</div>
+<a class="anchor" id="ga3d0f79b599db34125716778086abf51c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void(* TaskCallback)(uint32_t param)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Task callback function type. </p>
+<dl class="section note"><dt>Note</dt><dd>Callback code does not need to be in IRAM </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000017">Todo:</a></b></dt><dd>Integrate delegation into callbacks </dd></dl>
 
 </div>
 </div>

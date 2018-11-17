@@ -9,11 +9,13 @@ var classUrlencodedOutputStream =
     [ "findUntil", "classUrlencodedOutputStream.html#ad1f5f6600832396fb38a897baf4de35b", null ],
     [ "findUntil", "classUrlencodedOutputStream.html#a3a9497de614792103ab8cb4759e01a69", null ],
     [ "flush", "classUrlencodedOutputStream.html#a313fb97e4af1e15ed581674a1ce76d3e", null ],
-    [ "getStreamType", "classUrlencodedOutputStream.html#a8dcf198362c57942d1b90c526f2cd73d", null ],
+    [ "getName", "classUrlencodedOutputStream.html#a39d8ea433dda122542c1e1fab75c3835", null ],
+    [ "getStreamType", "classUrlencodedOutputStream.html#ad35953c0f6e510309cbc5af6014206d3", null ],
     [ "getWriteError", "classUrlencodedOutputStream.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
-    [ "id", "classUrlencodedOutputStream.html#abe31f244917749cf8b343c0249a312c0", null ],
-    [ "indexOf", "classUrlencodedOutputStream.html#a0f934a5188da7f6a1c437c26755a2a42", null ],
+    [ "id", "classUrlencodedOutputStream.html#ad1ef7841971cac54cfd5535b239535ad", null ],
+    [ "indexOf", "classUrlencodedOutputStream.html#aa5a72de358de3023fbc6625762ab854f", null ],
     [ "isFinished", "classUrlencodedOutputStream.html#a13712c4783df6ba345ae12f8b3a958ab", null ],
+    [ "isValid", "classUrlencodedOutputStream.html#ab449f678d6db826bd6fd4e2b8a3a3967", null ],
     [ "length", "classUrlencodedOutputStream.html#a05ec329ab5b1237777872156d631f68c", null ],
     [ "parseFloat", "classUrlencodedOutputStream.html#a5e5a0cc11eb586d89dcb7fa8e53a87e8", null ],
     [ "parseFloat", "classUrlencodedOutputStream.html#a14a98cdbb166008f25dd044d836b1864", null ],
@@ -58,6 +60,6 @@ var classUrlencodedOutputStream =
     [ "write", "classUrlencodedOutputStream.html#abfdd93a61c4b95a3ba41680188505e73", null ],
     [ "write", "classUrlencodedOutputStream.html#a6506dbe2faf21a850f4796a9452fc0c0", null ],
     [ "write", "classUrlencodedOutputStream.html#a283ab1e09eedc65d2fa7062a66fa503a", null ],
-    [ "_startMillis", "classUrlencodedOutputStream.html#abf61d2006d28d18f2e028285a323fe5a", null ],
-    [ "_timeout", "classUrlencodedOutputStream.html#aae48f1a926d2e82a452f2c75af0c6a29", null ]
+    [ "receiveTimeout", "classUrlencodedOutputStream.html#a525e929c31bf030eb050497690fca7ae", null ],
+    [ "startMillis", "classUrlencodedOutputStream.html#a4928691eee5c693b0acea38676b8e44f", null ]
 ];

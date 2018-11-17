@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: Timer functions</title>
+<title>Sming Framework API: SimpleTimer functions</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -98,28 +98,31 @@ $(document).ready(function(){initNavTree('group__timer.html','');});
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Timer functions</div>  </div>
+<div class="title">SimpleTimer functions</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Provides timer functions.  
+<p>Provides basic OS timer functions.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
+<tr class="memitem:gaf0c18d77bcd3a28f41fb09b3f1358543"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#gaf0c18d77bcd3a28f41fb09b3f1358543">SimpleTimer::SimpleTimer</a> ()</td></tr>
+<tr class="memdesc:gaf0c18d77bcd3a28f41fb09b3f1358543"><td class="mdescLeft">&#160;</td><td class="mdescRight">OSTimer class.  <a href="#gaf0c18d77bcd3a28f41fb09b3f1358543">More...</a><br/></td></tr>
+<tr class="separator:gaf0c18d77bcd3a28f41fb09b3f1358543"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5f16e8da27d2a5a5242dead46de05d97"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga5f16e8da27d2a5a5242dead46de05d97">Timer::Timer</a> ()</td></tr>
 <tr class="memdesc:ga5f16e8da27d2a5a5242dead46de05d97"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classTimer.html">Timer</a> class.  <a href="#ga5f16e8da27d2a5a5242dead46de05d97">More...</a><br/></td></tr>
 <tr class="separator:ga5f16e8da27d2a5a5242dead46de05d97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa116e26295abe7ba0f713bb680a76a59"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTimer.html">Timer</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#gaa116e26295abe7ba0f713bb680a76a59">Timer::initializeMs</a> (uint32_t milliseconds, InterruptCallback callback=NULL)</td></tr>
-<tr class="memdesc:gaa116e26295abe7ba0f713bb680a76a59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise millisecond timer.  <a href="#gaa116e26295abe7ba0f713bb680a76a59">More...</a><br/></td></tr>
-<tr class="separator:gaa116e26295abe7ba0f713bb680a76a59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga169a2de229755b50ffcd4d35963c4ffa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTimer.html">Timer</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga169a2de229755b50ffcd4d35963c4ffa">Timer::initializeUs</a> (uint32_t microseconds, InterruptCallback callback=NULL)</td></tr>
-<tr class="memdesc:ga169a2de229755b50ffcd4d35963c4ffa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise microsecond timer.  <a href="#ga169a2de229755b50ffcd4d35963c4ffa">More...</a><br/></td></tr>
-<tr class="separator:ga169a2de229755b50ffcd4d35963c4ffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacff85d16f46217ace62486a1325a1515"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTimer.html">Timer</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#gacff85d16f46217ace62486a1325a1515">Timer::initializeMs</a> (uint32_t milliseconds, <a class="el" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a> delegateFunction=NULL)</td></tr>
-<tr class="memdesc:gacff85d16f46217ace62486a1325a1515"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise millisecond timer.  <a href="#gacff85d16f46217ace62486a1325a1515">More...</a><br/></td></tr>
-<tr class="separator:gacff85d16f46217ace62486a1325a1515"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabdf713dd3a808a56a2cdc5029c73f3c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTimer.html">Timer</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#gabdf713dd3a808a56a2cdc5029c73f3c1">Timer::initializeUs</a> (uint32_t microseconds, <a class="el" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a> delegateFunction=NULL)</td></tr>
-<tr class="memdesc:gabdf713dd3a808a56a2cdc5029c73f3c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise microsecond timer.  <a href="#gabdf713dd3a808a56a2cdc5029c73f3c1">More...</a><br/></td></tr>
-<tr class="separator:gabdf713dd3a808a56a2cdc5029c73f3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga256d6c43ca3aba68112dfbd96afb2b2a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTimer.html">Timer</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga256d6c43ca3aba68112dfbd96afb2b2a">Timer::initializeMs</a> (uint32_t milliseconds, InterruptCallback callback=nullptr)</td></tr>
+<tr class="memdesc:ga256d6c43ca3aba68112dfbd96afb2b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise millisecond timer.  <a href="#ga256d6c43ca3aba68112dfbd96afb2b2a">More...</a><br/></td></tr>
+<tr class="separator:ga256d6c43ca3aba68112dfbd96afb2b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga40aaeecd9ced619bf7b2f63108f8c06f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTimer.html">Timer</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga40aaeecd9ced619bf7b2f63108f8c06f">Timer::initializeUs</a> (uint32_t microseconds, InterruptCallback callback=nullptr)</td></tr>
+<tr class="memdesc:ga40aaeecd9ced619bf7b2f63108f8c06f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise microsecond timer.  <a href="#ga40aaeecd9ced619bf7b2f63108f8c06f">More...</a><br/></td></tr>
+<tr class="separator:ga40aaeecd9ced619bf7b2f63108f8c06f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga08a7832f90bfcbee7ab526960060abfd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTimer.html">Timer</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga08a7832f90bfcbee7ab526960060abfd">Timer::initializeMs</a> (uint32_t milliseconds, <a class="el" href="classDelegate.html">TimerDelegate</a> delegateFunction=nullptr)</td></tr>
+<tr class="memdesc:ga08a7832f90bfcbee7ab526960060abfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise millisecond timer.  <a href="#ga08a7832f90bfcbee7ab526960060abfd">More...</a><br/></td></tr>
+<tr class="separator:ga08a7832f90bfcbee7ab526960060abfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad75f5acb2413187e064eee4c58bd0dcc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTimer.html">Timer</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#gad75f5acb2413187e064eee4c58bd0dcc">Timer::initializeUs</a> (uint32_t microseconds, <a class="el" href="classDelegate.html">TimerDelegate</a> delegateFunction=nullptr)</td></tr>
+<tr class="memdesc:gad75f5acb2413187e064eee4c58bd0dcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise microsecond timer.  <a href="#gad75f5acb2413187e064eee4c58bd0dcc">More...</a><br/></td></tr>
+<tr class="separator:gad75f5acb2413187e064eee4c58bd0dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae3859a87bbf84f3d4d6db5c1b477e0a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classTimer.html">Timer</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#gae3859a87bbf84f3d4d6db5c1b477e0a4">Timer::initializeMs</a> (uint32_t milliseconds, TimerDelegateStdFunction delegateFunction=nullptr)</td></tr>
 <tr class="memdesc:gae3859a87bbf84f3d4d6db5c1b477e0a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise millisecond timer.  <a href="#gae3859a87bbf84f3d4d6db5c1b477e0a4">More...</a><br/></td></tr>
 <tr class="separator:gae3859a87bbf84f3d4d6db5c1b477e0a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -135,9 +138,9 @@ $(document).ready(function(){initNavTree('group__timer.html','');});
 <tr class="memitem:ga6dbdb112577bdd9db5019d3bf81bbc1c"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga6dbdb112577bdd9db5019d3bf81bbc1c">Timer::stop</a> ()</td></tr>
 <tr class="memdesc:ga6dbdb112577bdd9db5019d3bf81bbc1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop timer.  <a href="#ga6dbdb112577bdd9db5019d3bf81bbc1c">More...</a><br/></td></tr>
 <tr class="separator:ga6dbdb112577bdd9db5019d3bf81bbc1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga085227af4cf9878dc8755ea0aecf347b"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga085227af4cf9878dc8755ea0aecf347b">Timer::restart</a> ()</td></tr>
-<tr class="memdesc:ga085227af4cf9878dc8755ea0aecf347b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restarts timer.  <a href="#ga085227af4cf9878dc8755ea0aecf347b">More...</a><br/></td></tr>
-<tr class="separator:ga085227af4cf9878dc8755ea0aecf347b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab8045cc9d884c0c52462992a74ae7374"><td class="memItemLeft" align="right" valign="top">__forceinline void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#gab8045cc9d884c0c52462992a74ae7374">Timer::restart</a> ()</td></tr>
+<tr class="memdesc:gab8045cc9d884c0c52462992a74ae7374"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restarts timer.  <a href="#gab8045cc9d884c0c52462992a74ae7374">More...</a><br/></td></tr>
+<tr class="separator:gab8045cc9d884c0c52462992a74ae7374"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2c03be883cf950d14e058b4205f1526e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga2c03be883cf950d14e058b4205f1526e">Timer::isStarted</a> ()</td></tr>
 <tr class="memdesc:ga2c03be883cf950d14e058b4205f1526e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if timer is started.  <a href="#ga2c03be883cf950d14e058b4205f1526e">More...</a><br/></td></tr>
 <tr class="separator:ga2c03be883cf950d14e058b4205f1526e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,28 +156,32 @@ $(document).ready(function(){initNavTree('group__timer.html','');});
 <tr class="memitem:ga955fc3fdb8cea3d4dc19a1bae495fb6e"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga955fc3fdb8cea3d4dc19a1bae495fb6e">Timer::setIntervalMs</a> (uint32_t milliseconds=1000000)</td></tr>
 <tr class="memdesc:ga955fc3fdb8cea3d4dc19a1bae495fb6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set timer interval.  <a href="#ga955fc3fdb8cea3d4dc19a1bae495fb6e">More...</a><br/></td></tr>
 <tr class="separator:ga955fc3fdb8cea3d4dc19a1bae495fb6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga64d1f28c958588a7dd9ff6991049d1a9"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga64d1f28c958588a7dd9ff6991049d1a9">Timer::setCallback</a> (InterruptCallback interrupt=NULL)</td></tr>
-<tr class="memdesc:ga64d1f28c958588a7dd9ff6991049d1a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set timer trigger function.  <a href="#ga64d1f28c958588a7dd9ff6991049d1a9">More...</a><br/></td></tr>
-<tr class="separator:ga64d1f28c958588a7dd9ff6991049d1a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0563e334d6e907c677ba033490355ed2"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga0563e334d6e907c677ba033490355ed2">Timer::setCallback</a> (<a class="el" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a> delegateFunction)</td></tr>
+<tr class="memitem:ga6f472e6a037ebfbf113d86c5198cfa83"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga6f472e6a037ebfbf113d86c5198cfa83">Timer::setCallback</a> (InterruptCallback interrupt=nullptr)</td></tr>
+<tr class="memdesc:ga6f472e6a037ebfbf113d86c5198cfa83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set timer trigger function.  <a href="#ga6f472e6a037ebfbf113d86c5198cfa83">More...</a><br/></td></tr>
+<tr class="separator:ga6f472e6a037ebfbf113d86c5198cfa83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0563e334d6e907c677ba033490355ed2"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga0563e334d6e907c677ba033490355ed2">Timer::setCallback</a> (<a class="el" href="classDelegate.html">TimerDelegate</a> delegateFunction)</td></tr>
 <tr class="memdesc:ga0563e334d6e907c677ba033490355ed2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set timer trigger function.  <a href="#ga0563e334d6e907c677ba033490355ed2">More...</a><br/></td></tr>
 <tr class="separator:ga0563e334d6e907c677ba033490355ed2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga44cfd486da5f92b56ac40957633c3e4b"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga44cfd486da5f92b56ac40957633c3e4b">Timer::setCallback</a> (const TimerDelegateStdFunction &amp;delegateFunction)</td></tr>
 <tr class="memdesc:ga44cfd486da5f92b56ac40957633c3e4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set timer trigger function.  <a href="#ga44cfd486da5f92b56ac40957633c3e4b">More...</a><br/></td></tr>
 <tr class="separator:ga44cfd486da5f92b56ac40957633c3e4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga31894e97b61051028fe3f30e4185cb5c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga31894e97b61051028fe3f30e4185cb5c"></a>
-static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Timer::processing</b> (void *arg)</td></tr>
-<tr class="separator:ga31894e97b61051028fe3f30e4185cb5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5d959aed5bb365e698165458440c84c1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga5d959aed5bb365e698165458440c84c1">Timer::tick</a> ()</td></tr>
-<tr class="memdesc:ga5d959aed5bb365e698165458440c84c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">virtual timer loop() method  <a href="#ga5d959aed5bb365e698165458440c84c1">More...</a><br/></td></tr>
-<tr class="separator:ga5d959aed5bb365e698165458440c84c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaca59b5cee0b16950504a8b2f648d63df"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaca59b5cee0b16950504a8b2f648d63df"></a>
+void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Timer::processing</b> ()</td></tr>
+<tr class="separator:gaca59b5cee0b16950504a8b2f648d63df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6f4dc6b9e9f333fa4c60ddf2ff33c801"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__timer.html#ga6f4dc6b9e9f333fa4c60ddf2ff33c801">Timer::tick</a> ()</td></tr>
+<tr class="memdesc:ga6f4dc6b9e9f333fa4c60ddf2ff33c801"><td class="mdescLeft">&#160;</td><td class="mdescRight">virtual timer loop() method  <a href="#ga6f4dc6b9e9f333fa4c60ddf2ff33c801">More...</a><br/></td></tr>
+<tr class="separator:ga6f4dc6b9e9f333fa4c60ddf2ff33c801"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Provides timer functions. </p>
+<p>Provides basic OS timer functions. </p>
+<p>Provides timer functions.</p>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ga1b45020e1a67f3242a9a221c262d5968"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">uint32_t Timer::getIntervalMs </td>
@@ -183,6 +190,11 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Get timer interval. </p>
@@ -198,6 +210,9 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 <a class="anchor" id="gad623df927a77e903c3ad5f0b4c94c94f"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">uint64_t Timer::getIntervalUs </td>
@@ -206,6 +221,11 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Get timer interval. </p>
@@ -218,7 +238,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 
 </div>
 </div>
-<a class="anchor" id="gaa116e26295abe7ba0f713bb680a76a59"></a>
+<a class="anchor" id="ga256d6c43ca3aba68112dfbd96afb2b2a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -232,7 +252,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">InterruptCallback&#160;</td>
-          <td class="paramname"><em>callback</em> = <code>NULL</code>&#160;</td>
+          <td class="paramname"><em>callback</em> = <code>nullptr</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -254,7 +274,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 
 </div>
 </div>
-<a class="anchor" id="gacff85d16f46217ace62486a1325a1515"></a>
+<a class="anchor" id="ga08a7832f90bfcbee7ab526960060abfd"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -267,8 +287,8 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a>&#160;</td>
-          <td class="paramname"><em>delegateFunction</em> = <code>NULL</code>&#160;</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">TimerDelegate</a>&#160;</td>
+          <td class="paramname"><em>delegateFunction</em> = <code>nullptr</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -287,7 +307,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd><a class="el" href="classDelegate.html">Delegate</a> callback method </dd></dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000015">Deprecated:</a></b></dt><dd>Use initializeMs(xx, TimerDelegateStdFunction); instead. </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000018">Deprecated:</a></b></dt><dd>Use initializeMs(xx, TimerDelegateStdFunction); instead. </dd></dl>
 
 </div>
 </div>
@@ -327,7 +347,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 
 </div>
 </div>
-<a class="anchor" id="ga169a2de229755b50ffcd4d35963c4ffa"></a>
+<a class="anchor" id="ga40aaeecd9ced619bf7b2f63108f8c06f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -341,7 +361,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">InterruptCallback&#160;</td>
-          <td class="paramname"><em>callback</em> = <code>NULL</code>&#160;</td>
+          <td class="paramname"><em>callback</em> = <code>nullptr</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -363,7 +383,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 
 </div>
 </div>
-<a class="anchor" id="gabdf713dd3a808a56a2cdc5029c73f3c1"></a>
+<a class="anchor" id="gad75f5acb2413187e064eee4c58bd0dcc"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -376,8 +396,8 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a>&#160;</td>
-          <td class="paramname"><em>delegateFunction</em> = <code>NULL</code>&#160;</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">TimerDelegate</a>&#160;</td>
+          <td class="paramname"><em>delegateFunction</em> = <code>nullptr</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -396,7 +416,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd><a class="el" href="classDelegate.html">Delegate</a> callback method </dd></dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000016">Deprecated:</a></b></dt><dd>Use initializeMs(xx, TimerDelegateStdFunction); instead. </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000019">Deprecated:</a></b></dt><dd>Use initializeMs(xx, TimerDelegateStdFunction); instead. </dd></dl>
 
 </div>
 </div>
@@ -439,6 +459,9 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 <a class="anchor" id="ga2c03be883cf950d14e058b4205f1526e"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool Timer::isStarted </td>
@@ -447,6 +470,11 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Check if timer is started. </p>
@@ -459,17 +487,25 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 
 </div>
 </div>
-<a class="anchor" id="ga085227af4cf9878dc8755ea0aecf347b"></a>
+<a class="anchor" id="gab8045cc9d884c0c52462992a74ae7374"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void IRAM_ATTR Timer::restart </td>
+          <td class="memname">__forceinline void IRAM_ATTR Timer::restart </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Restarts timer. </p>
@@ -477,7 +513,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 
 </div>
 </div>
-<a class="anchor" id="ga64d1f28c958588a7dd9ff6991049d1a9"></a>
+<a class="anchor" id="ga6f472e6a037ebfbf113d86c5198cfa83"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -485,7 +521,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
           <td class="memname">void IRAM_ATTR Timer::setCallback </td>
           <td>(</td>
           <td class="paramtype">InterruptCallback&#160;</td>
-          <td class="paramname"><em>interrupt</em> = <code>NULL</code></td><td>)</td>
+          <td class="paramname"><em>interrupt</em> = <code>nullptr</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -509,7 +545,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
         <tr>
           <td class="memname">void IRAM_ATTR Timer::setCallback </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">TimerDelegate</a>&#160;</td>
           <td class="paramname"><em>delegateFunction</em></td><td>)</td>
           <td></td>
         </tr>
@@ -600,6 +636,31 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 
 </div>
 </div>
+<a class="anchor" id="gaf0c18d77bcd3a28f41fb09b3f1358543"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">SimpleTimer::SimpleTimer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>OSTimer class. </p>
+
+</div>
+</div>
 <a class="anchor" id="gad32c8ca7c0ab22d2ed2337e43a0e925d"></a>
 <div class="memitem">
 <div class="memproto">
@@ -668,7 +729,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 
 </div>
 </div>
-<a class="anchor" id="ga5d959aed5bb365e698165458440c84c1"></a>
+<a class="anchor" id="ga6f4dc6b9e9f333fa4c60ddf2ff33c801"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -676,7 +737,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void Timer::tick </td>
+          <td class="memname">void Timer::tick </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -684,7 +745,7 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -697,6 +758,9 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
 <a class="anchor" id="ga5f16e8da27d2a5a5242dead46de05d97"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">Timer::Timer </td>
@@ -705,6 +769,11 @@ static void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>Time
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p><a class="el" href="classTimer.html">Timer</a> class. </p>

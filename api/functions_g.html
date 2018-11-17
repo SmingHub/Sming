@@ -280,6 +280,9 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 <li>getBoundary()
 : <a class="el" href="classMultipartStream.html#afda2d98bb3275509fde37217b076d34a">MultipartStream</a>
 </li>
+<li>getBytes()
+: <a class="el" href="classString.html#af0a4a16fb82e937afd4c115498b8e9a7">String</a>
+</li>
 <li>GetCelsius()
 : <a class="el" href="classDS18S20.html#a5e0bc85e80e4c72504e8b2cd65204d64">DS18S20</a>
 </li>
@@ -297,6 +300,9 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 </li>
 <li>getCommandWelcomeMessage()
 : <a class="el" href="classCommandHandler.html#a51240ba5270f7bb17fdc36380a6fc46c">CommandHandler</a>
+</li>
+<li>getConnection()
+: <a class="el" href="classWebsocketConnection.html#a050ef3cd606065b1a89765501192c3ce">WebsocketConnection</a>
 </li>
 <li>getConnectionStatus()
 : <a class="el" href="group__wifi__sta.html#gabe754978b682adcae119b4ea0f762f8b">StationClass</a>
@@ -345,16 +351,19 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 : <a class="el" href="group__wifi__sta.html#ga37b05d0ad6482ed27dc881364b42b0df">StationClass</a>
 </li>
 <li>getIntervalMs()
-: <a class="el" href="classHardware__Timer.html#aff68a27060359925fd541217a2547430">Hardware_Timer</a>
+: <a class="el" href="classHardwareTimer.html#a2b5d79d3f9d92a9931b2bf3130fc3448">HardwareTimer</a>
 , <a class="el" href="group__timer.html#ga1b45020e1a67f3242a9a221c262d5968">Timer</a>
 </li>
 <li>getIntervalUs()
-: <a class="el" href="classHardware__Timer.html#a6ff39045a44f0220bc75b37655a814a2">Hardware_Timer</a>
+: <a class="el" href="classHardwareTimer.html#aba40ce259005bb943173165e87370705">HardwareTimer</a>
 , <a class="el" href="group__timer.html#gad623df927a77e903c3ad5f0b4c94c94f">Timer</a>
 </li>
 <li>getIP()
 : <a class="el" href="group__wifi__ap.html#ga86061e944d41587d5b5355c45cc3b95f">AccessPointClass</a>
 , <a class="el" href="group__wifi__sta.html#ga25875fc23dbeb4bc7c9a1a5f7fb76412">StationClass</a>
+</li>
+<li>getLastError()
+: <a class="el" href="classFileStream.html#a419b8031c876e2f6b0f4adc69025e9ae">FileStream</a>
 </li>
 <li>getLastModifiedDate()
 : <a class="el" href="classHttpConnection.html#ae38daf9c615d8374c4605367e8c779d9">HttpConnection</a>
@@ -365,6 +374,9 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 </li>
 <li>getMaxDuty()
 : <a class="el" href="classHardwarePWM.html#a01453da7cd6c96d7d278d6df45e9932a">HardwarePWM</a>
+</li>
+<li>getMaxTaskCount()
+: <a class="el" href="group__system.html#ga3672acc2246bbe17fc6e113c7135db69">SystemClass</a>
 </li>
 <li>getMaxval()
 : <a class="el" href="classNexSlider.html#abf1b50605feb0ac2b381d1148795f0d9">NexSlider</a>
@@ -377,6 +389,11 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 </li>
 <li>getMinValue()
 : <a class="el" href="classServoChannel.html#aa817491eb31ef87df3fd17d71cbdf27d">ServoChannel</a>
+</li>
+<li>getName()
+: <a class="el" href="classFileStream.html#ab8298a82fdbb6b29217c2d887457c027">FileStream</a>
+, <a class="el" href="classIDataSourceStream.html#a39d8ea433dda122542c1e1fab75c3835">IDataSourceStream</a>
+, <a class="el" href="classTemplateStream.html#a67dd2f957a5ba4e6f20e6d8e760b4f45">TemplateStream</a>
 </li>
 <li>getNetworkBroadcast()
 : <a class="el" href="group__wifi__ap.html#ga8400233be6a2fd87f4a5313f3e0e7e9c">AccessPointClass</a>
@@ -411,7 +428,7 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 : <a class="el" href="classServoChannel.html#a1d1d8130a2ea84644d7c336f9fbc97f7">ServoChannel</a>
 </li>
 <li>getPos()
-: <a class="el" href="classFileStream.html#aca0218676383112bf4c034d98461f682">FileStream</a>
+: <a class="el" href="classFileStream.html#a312e41c187b97df2c1bdef40d06f7e9b">FileStream</a>
 </li>
 <li>getRequest()
 : <a class="el" href="classHttpConnection.html#aa1b5bcc58de64dfefcc8325f4061f9b7">HttpConnection</a>
@@ -423,7 +440,7 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 : <a class="el" href="classHttpConnection.html#a8096f420efc2a724109be9b9f804b210">HttpConnection</a>
 </li>
 <li>getResponseHeader()
-: <a class="el" href="classHttpConnection.html#a2a4b5f458b2e324b626a913902f01a0a">HttpConnection</a>
+: <a class="el" href="classHttpConnection.html#a937f2f9106a2530a1fd67f8c41d51285">HttpConnection</a>
 </li>
 <li>getResponseHeaders()
 : <a class="el" href="classHttpConnection.html#aa1d5c9b4c59591f5c97d2f08df65a868">HttpConnection</a>
@@ -459,30 +476,35 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 <li>getState()
 : <a class="el" href="classAtClient.html#a2b6d5714f36092c30ec5adeb079a900d">AtClient</a>
 , <a class="el" href="group__smtpclient.html#gae3825e67f24ca87bee16ccf990e0b358">SmtpClient</a>
+, <a class="el" href="classWebsocketConnection.html#a373b95a1f75e096c2960dcb97a771399">WebsocketConnection</a>
 </li>
 <li>getStreamPointer()
-: <a class="el" href="classMemoryDataStream.html#a7247e4a9cc863f396ded4175aa1f37d6">MemoryDataStream</a>
+: <a class="el" href="classMemoryDataStream.html#a05056c0d16daae14be5557d1933acce4">MemoryDataStream</a>
 </li>
 <li>getStreamType()
-: <a class="el" href="classArduCAMStream.html#ab006d2e62a0e0165c12a3282e99174d1">ArduCAMStream</a>
-, <a class="el" href="classCircularBuffer.html#a73e4276f890b8d25d90f33f641801ef5">CircularBuffer</a>
-, <a class="el" href="classEndlessMemoryStream.html#a72937420a55ff2ab1e1dd4fb4170602a">EndlessMemoryStream</a>
-, <a class="el" href="classFileStream.html#adfb9c8efcb62d6f2cc91ca4efbad718d">FileStream</a>
-, <a class="el" href="classIDataSourceStream.html#a589085e0eea011acdc401b79831826e0">IDataSourceStream</a>
-, <a class="el" href="classJsonObjectStream.html#abe3d3dc8206bb99ff332c25cf0cc0dfd">JsonObjectStream</a>
-, <a class="el" href="classLimitedMemoryStream.html#a63effa1ca2ae0ea1f8995d473c230f61">LimitedMemoryStream</a>
-, <a class="el" href="classMemoryDataStream.html#a29d74d448be139ab37649b7170490807">MemoryDataStream</a>
-, <a class="el" href="classMultipartStream.html#a85c05516d8aa56e40db38a9b5f9f3543">MultipartStream</a>
-, <a class="el" href="classrBootItemOutputStream.html#ad938796cac2e1aae821f257dc0d02ad5">rBootItemOutputStream</a>
-, <a class="el" href="classStreamTransformer.html#afda7608885bde478efd450bb9b9e3d07">StreamTransformer</a>
-, <a class="el" href="classTemplateFileStream.html#a66a4a81c74f285f1c459243da0f00cc6">TemplateFileStream</a>
-, <a class="el" href="classUrlencodedOutputStream.html#a8dcf198362c57942d1b90c526f2cd73d">UrlencodedOutputStream</a>
+: <a class="el" href="classArduCAMStream.html#ada9675549c1558c65bf23bffa8b01fd4">ArduCAMStream</a>
+, <a class="el" href="classCircularBuffer.html#a780b1d60f82bd2e2f113400cd2ce2336">CircularBuffer</a>
+, <a class="el" href="classEndlessMemoryStream.html#a6c923308d6dc7f7669d8a5d90f4ae02b">EndlessMemoryStream</a>
+, <a class="el" href="classFileStream.html#ad093b79da8e862ab03501d1be86b91b4">FileStream</a>
+, <a class="el" href="classFlashMemoryStream.html#a0630edc9515da6086fa789f7a1e9a102">FlashMemoryStream</a>
+, <a class="el" href="classIDataSourceStream.html#a41f3759d77f948af9598c77a5e066a14">IDataSourceStream</a>
+, <a class="el" href="classJsonObjectStream.html#ab6bdf1d0002515621e3535df1cf212d9">JsonObjectStream</a>
+, <a class="el" href="classLimitedMemoryStream.html#a909c9677367dc5754cb429c20e5a4684">LimitedMemoryStream</a>
+, <a class="el" href="classMemoryDataStream.html#a2eae8064dd5cd9c366c4263bdd49a732">MemoryDataStream</a>
+, <a class="el" href="classMultipartStream.html#abc5c897e5e6b0b5014ab6658705c13f1">MultipartStream</a>
+, <a class="el" href="classrBootItemOutputStream.html#abc2995d6ff9a5ad656276d992a99ae91">rBootItemOutputStream</a>
+, <a class="el" href="classStreamTransformer.html#ad5af5a95599000bba12c6eecb2d48368">StreamTransformer</a>
+, <a class="el" href="classTemplateStream.html#af829e9960754a5264e821c3b8fd3fd1f">TemplateStream</a>
+, <a class="el" href="classUrlencodedOutputStream.html#ad35953c0f6e510309cbc5af6014206d3">UrlencodedOutputStream</a>
 </li>
 <li>getSystemTimeString()
 : <a class="el" href="classSystemClockClass.html#aaf7a54ec07cd1838beb6dee8b2709817">SystemClockClass</a>
 </li>
 <li>getTail()
 : <a class="el" href="classRingBufCPP.html#aeb2b04e74e96bbefc56c8acb4ea0e49b">RingBufCPP&lt; Type, MaxElements &gt;</a>
+</li>
+<li>getTaskCount()
+: <a class="el" href="group__system.html#ga020bf6724cda7fdad68ca0501335dc33">SystemClass</a>
 </li>
 <li>getText()
 : <a class="el" href="classNexButton.html#a5ba1f74aa94b41b98172e42583ee13d6">NexButton</a>
@@ -491,8 +513,15 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 , <a class="el" href="classNexText.html#a9cf417b2f25df2872492c55bdc9f5b30">NexText</a>
 , <a class="el" href="classNexVariable.html#ab4d12f14dcff3f6930a2bdf5e1f3d259">NexVariable</a>
 </li>
+<li>getUart()
+: <a class="el" href="classHardwareSerial.html#a56883ae69e22add8048bfc302e8dc807">HardwareSerial</a>
+</li>
+<li>getUserData()
+: <a class="el" href="classWebsocketConnection.html#a34eff7b342ac27c206157053f0270a8e">WebsocketConnection</a>
+</li>
 <li>getValue()
-: <a class="el" href="classNexCheckbox.html#a6832110a49f9bbbb14a54f36db020d44">NexCheckbox</a>
+: <a class="el" href="classCStringArray.html#a8df33b7a5decbf1611227572a928b6fb">CStringArray</a>
+, <a class="el" href="classNexCheckbox.html#a6832110a49f9bbbb14a54f36db020d44">NexCheckbox</a>
 , <a class="el" href="classNexDSButton.html#a63e08f9a79f326c47aa66e1d0f9648c8">NexDSButton</a>
 , <a class="el" href="classNexGauge.html#aeea8933513ebba11584ad97f8c8b5e69">NexGauge</a>
 , <a class="el" href="classNexNumber.html#ad184ed818666ec482efddf840185c7b8">NexNumber</a>
@@ -507,9 +536,6 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 </li>
 <li>getWriteError()
 : <a class="el" href="classPrint.html#a88a4a829fb5d589efb43955ad0cbddcc">Print</a>
-</li>
-<li>getWSMode()
-: <a class="el" href="group__wsclient.html#ga0d6322cd88c590aea6bdb26586f25705">WebsocketClient</a>
 </li>
 <li>gyro
 : <a class="el" href="structsensors__event__t.html#ad108ea8c3a18d02cfc674ba27e94a2c4">sensors_event_t</a>

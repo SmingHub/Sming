@@ -125,16 +125,16 @@ $(document).ready(function(){initNavTree('SmtpClient_8h_source.html','');});
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;TcpClient.h&quot;</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;Data/MailMessage.h&quot;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;URL.h&quot;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;../../Wiring/WString.h&quot;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &quot;../../Wiring/WVector.h&quot;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;WString.h&quot;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &quot;WVector.h&quot;</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &quot;Data/Stream/DataSourceStream.h&quot;</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &quot;WebConstants.h&quot;</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &quot;../Data/Structures.h&quot;</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &quot;Data/ObjectQueue.h&quot;</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#define SMTP_PROTOCOL &quot;smtp&quot;</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_OVER_SSL_PROTOCOL &quot;smtps&quot;</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#define SMTP_PROTOCOL _F(&quot;smtp&quot;)</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMTP_OVER_SSL_PROTOCOL _F(&quot;smtps&quot;)</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">/* Maximum waiting emails in the mail queue */</span></div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#define SMTP_QUEUE_SIZE 5</span></div>
@@ -241,7 +241,7 @@ $(document).ready(function(){initNavTree('SmtpClient_8h_source.html','');});
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <a class="code" href="classURL.html">URL</a> url;</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <a class="code" href="classVector.html">Vector&lt;String&gt;</a> authMethods;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <a class="code" href="classSimpleConcurrentQueue.html">SimpleConcurrentQueue&lt;MailMessage*, SMTP_QUEUE_SIZE&gt;</a> mailQ;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <a class="code" href="classObjectQueue.html">ObjectQueue&lt;MailMessage, SMTP_QUEUE_SIZE&gt;</a> mailQ;</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="keywordtype">char</span> code[4] = {0};</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    <span class="keywordtype">int</span> codeValue = 0;</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <a class="code" href="classString.html">String</a> authChallenge;</div>
@@ -264,18 +264,18 @@ $(document).ready(function(){initNavTree('SmtpClient_8h_source.html','');});
 <div class="ttc" id="classVector_html"><div class="ttname"><a href="classVector.html">Vector&lt; String &gt;</a></div></div>
 <div class="ttc" id="group__smtpclient_html_ga848b25d7b7a295e1c7e08974cfc7c105"><div class="ttname"><a href="group__smtpclient.html#ga848b25d7b7a295e1c7e08974cfc7c105">SmtpClient::onServerError</a></div><div class="ttdeci">void onServerError(SmtpClientCallback callback)</div><div class="ttdoc">Callback that will be called every an error occurs. </div><div class="ttdef"><b>Definition:</b> SmtpClient.h:166</div></div>
 <div class="ttc" id="group__smtpclient_html_ga9555d988fb2d662ead92114f527eb3dc"><div class="ttname"><a href="group__smtpclient.html#ga9555d988fb2d662ead92114f527eb3dc">SmtpClient::quit</a></div><div class="ttdeci">void quit()</div><div class="ttdoc">Sends a quit command to the server and closes the TCP conneciton. </div></div>
-<div class="ttc" id="classMailMessage_html"><div class="ttname"><a href="classMailMessage.html">MailMessage</a></div><div class="ttdef"><b>Definition:</b> MailMessage.h:30</div></div>
+<div class="ttc" id="classMailMessage_html"><div class="ttname"><a href="classMailMessage.html">MailMessage</a></div><div class="ttdef"><b>Definition:</b> MailMessage.h:31</div></div>
 <div class="ttc" id="group__smtpclient_html_gae3825e67f24ca87bee16ccf990e0b358"><div class="ttname"><a href="group__smtpclient.html#gae3825e67f24ca87bee16ccf990e0b358">SmtpClient::getState</a></div><div class="ttdeci">SmtpState getState()</div><div class="ttdoc">Returns the current state of the SmtpClient. </div><div class="ttdef"><b>Definition:</b> SmtpClient.h:148</div></div>
-<div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
+<div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
 <div class="ttc" id="group__smtpclient_html_gac1c9bf4ddcc56c38e9c4dd5fd9ea8351"><div class="ttname"><a href="group__smtpclient.html#gac1c9bf4ddcc56c38e9c4dd5fd9ea8351">SmtpClient::connect</a></div><div class="ttdeci">bool connect(const URL &amp;url)</div><div class="ttdoc">Connects to remote URL. </div></div>
-<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:38</div></div>
-<div class="ttc" id="classSimpleConcurrentQueue_html"><div class="ttname"><a href="classSimpleConcurrentQueue.html">SimpleConcurrentQueue&lt; MailMessage *, SMTP_QUEUE_SIZE &gt;</a></div></div>
+<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:41</div></div>
 <div class="ttc" id="group__smtpclient_html_gac03cef5f69bf90446bcd95f0a3ddde72"><div class="ttname"><a href="group__smtpclient.html#gac03cef5f69bf90446bcd95f0a3ddde72">SmtpClient::send</a></div><div class="ttdeci">bool send(const String &amp;from, const String &amp;to, const String &amp;subject, const String &amp;body)</div><div class="ttdoc">Queues a single message before it is sent later to the SMTP server. </div></div>
 <div class="ttc" id="classURL_html"><div class="ttname"><a href="classURL.html">URL</a></div><div class="ttdef"><b>Definition:</b> URL.h:24</div></div>
 <div class="ttc" id="classSmtpClient_html"><div class="ttname"><a href="classSmtpClient.html">SmtpClient</a></div><div class="ttdef"><b>Definition:</b> SmtpClient.h:93</div></div>
 <div class="ttc" id="group__smtpclient_html_gaea921884676ee63fa3180b89e226814a"><div class="ttname"><a href="group__smtpclient.html#gaea921884676ee63fa3180b89e226814a">SmtpClient::getCurrentMessage</a></div><div class="ttdeci">MailMessage * getCurrentMessage()</div><div class="ttdoc">Gets the current message. </div></div>
 <div class="ttc" id="group__smtpclient_html_ga9e6b97628e4931605598d519aacadd04"><div class="ttname"><a href="group__smtpclient.html#ga9e6b97628e4931605598d519aacadd04">SmtpClient::onMessageSent</a></div><div class="ttdeci">void onMessageSent(SmtpClientCallback callback)</div><div class="ttdoc">Callback that will be called every time a message is sent successfully. </div><div class="ttdef"><b>Definition:</b> SmtpClient.h:157</div></div>
 <div class="ttc" id="structHttpPartResult_html"><div class="ttname"><a href="structHttpPartResult.html">HttpPartResult</a></div><div class="ttdoc">Multipart stream class. </div><div class="ttdef"><b>Definition:</b> MultipartStream.h:25</div></div>
+<div class="ttc" id="classObjectQueue_html"><div class="ttname"><a href="classObjectQueue.html">ObjectQueue&lt; MailMessage, SMTP_QUEUE_SIZE &gt;</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

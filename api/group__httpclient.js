@@ -1,6 +1,6 @@
 var group__httpclient =
 [
-    [ "HTTP constants to be used with HTTP client or HTTP server", "group__httpconsts.html", null ],
+    [ "HTTP constants to be used with HTTP client or HTTP server", "group__httpconsts.html", "group__httpconsts" ],
     [ "URL", "group__url.html", "group__url" ],
     [ "HttpClient", "classHttpClient.html", [
       [ "~HttpClient", "classHttpClient.html#a1a60e16cc6193d3b8d805119eed625ec", null ],

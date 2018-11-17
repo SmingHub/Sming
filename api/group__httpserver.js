@@ -1,6 +1,6 @@
 var group__httpserver =
 [
-    [ "HTTP constants to be used with HTTP client or HTTP server", "group__httpconsts.html", null ],
+    [ "HTTP constants to be used with HTTP client or HTTP server", "group__httpconsts.html", "group__httpconsts" ],
     [ "URL", "group__url.html", "group__url" ],
     [ "HttpServerSettings", "structHttpServerSettings.html", [
       [ "keepAliveSeconds", "group__httpserver.html#gae607dafa7f9a100f3fc464e3a50e923f", null ],

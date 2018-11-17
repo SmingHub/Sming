@@ -17,7 +17,7 @@ var classTwoWire =
     [ "findUntil", "classTwoWire.html#a3a9497de614792103ab8cb4759e01a69", null ],
     [ "flush", "classTwoWire.html#ae293e7890d18eb2d47e80482033d9e77", null ],
     [ "getWriteError", "classTwoWire.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
-    [ "indexOf", "classTwoWire.html#a0f934a5188da7f6a1c437c26755a2a42", null ],
+    [ "indexOf", "classTwoWire.html#aa5a72de358de3023fbc6625762ab854f", null ],
     [ "onReceive", "classTwoWire.html#a860d97eb825c6fdca388f2f0577cc34a", null ],
     [ "onRequest", "classTwoWire.html#a224bf8799dda398fc0db223801852ca5", null ],
     [ "parseFloat", "classTwoWire.html#a5e5a0cc11eb586d89dcb7fa8e53a87e8", null ],
@@ -74,6 +74,6 @@ var classTwoWire =
     [ "write", "classTwoWire.html#a55a9894186458e43852f6fb7c59bb066", null ],
     [ "write", "classTwoWire.html#afdb917746ee37f72e7452b4782e9527b", null ],
     [ "write", "classTwoWire.html#a8ec34b0d2a75e8b2751eb9f4332bd7c3", null ],
-    [ "_startMillis", "classTwoWire.html#abf61d2006d28d18f2e028285a323fe5a", null ],
-    [ "_timeout", "classTwoWire.html#aae48f1a926d2e82a452f2c75af0c6a29", null ]
+    [ "receiveTimeout", "classTwoWire.html#a525e929c31bf030eb050497690fca7ae", null ],
+    [ "startMillis", "classTwoWire.html#a4928691eee5c693b0acea38676b8e44f", null ]
 ];

@@ -183,7 +183,7 @@ $(document).ready(function(){initNavTree('RF24_8h_source.html','');});
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;</div>
 <div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classRF24.html#aa7e8523f86f9f8f20c274e0c89a5fd45">openReadingPipe</a>(uint8_t number, uint64_t address);</div>
 <div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classRF24.html#a4c6d3959c8320e64568395f4ef507aef">setRetries</a>(uint8_t <a class="code" href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a>, uint8_t count);</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classRF24.html#a4c6d3959c8320e64568395f4ef507aef">setRetries</a>(uint8_t <a class="code" href="group__timedelay.html#ga0e0319a9c20b0e5926c903239a493a93">delay</a>, uint8_t count);</div>
 <div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;</div>
 <div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classRF24.html#a5e6e5a5f6c85d2638381cab2c0f3702e">setChannel</a>(uint8_t channel);</div>
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;</div>
@@ -263,6 +263,7 @@ $(document).ready(function(){initNavTree('RF24_8h_source.html','');});
 <div class="ttc" id="classRF24_html_aa0a51923a09ba4f3478aba9be0f8a6a1"><div class="ttname"><a href="classRF24.html#aa0a51923a09ba4f3478aba9be0f8a6a1">RF24::powerDown</a></div><div class="ttdeci">void powerDown(void)</div></div>
 <div class="ttc" id="classRF24_html_a9e8b81bc997b05931ea6f9e241d106e6"><div class="ttname"><a href="classRF24.html#a9e8b81bc997b05931ea6f9e241d106e6">RF24::print_byte_register</a></div><div class="ttdeci">void print_byte_register(const char *name, uint8_t reg, uint8_t qty=1)</div></div>
 <div class="ttc" id="classRF24_html_a4cd4c198a47704db20b6b5cf0731cd58"><div class="ttname"><a href="classRF24.html#a4cd4c198a47704db20b6b5cf0731cd58">RF24::write</a></div><div class="ttdeci">bool write(const void *buf, uint8_t len)</div></div>
+<div class="ttc" id="group__timedelay_html_ga0e0319a9c20b0e5926c903239a493a93"><div class="ttname"><a href="group__timedelay.html#ga0e0319a9c20b0e5926c903239a493a93">delay</a></div><div class="ttdeci">void delay(uint32_t milliseconds)</div><div class="ttdoc">Pause execution. </div></div>
 <div class="ttc" id="classRF24_html_adb7915b1d2661a82137573344f659e81"><div class="ttname"><a href="classRF24.html#adb7915b1d2661a82137573344f659e81">RF24::flush_tx</a></div><div class="ttdeci">uint8_t flush_tx(void)</div></div>
 <div class="ttc" id="classRF24_html_a378bc02d32cc90927ae734b8aa4110e1"><div class="ttname"><a href="classRF24.html#a378bc02d32cc90927ae734b8aa4110e1">RF24::read_payload</a></div><div class="ttdeci">uint8_t read_payload(void *buf, uint8_t len)</div></div>
 <div class="ttc" id="classRF24_html_a5e570dd614d5a9d4a2b479ffcbfb2d16"><div class="ttname"><a href="classRF24.html#a5e570dd614d5a9d4a2b479ffcbfb2d16">RF24::ce</a></div><div class="ttdeci">void ce(int level)</div></div>
@@ -293,7 +294,6 @@ $(document).ready(function(){initNavTree('RF24_8h_source.html','');});
 <div class="ttc" id="classRF24_html_a35e5f1533b7753806c42b76e782d917e"><div class="ttname"><a href="classRF24.html#a35e5f1533b7753806c42b76e782d917e">RF24::isValid</a></div><div class="ttdeci">bool isValid()</div><div class="ttdef"><b>Definition:</b> RF24.h:647</div></div>
 <div class="ttc" id="classRF24_html_a65619238c25036c3de72dc2c1a1c6e52"><div class="ttname"><a href="classRF24.html#a65619238c25036c3de72dc2c1a1c6e52">RF24::writeAckPayload</a></div><div class="ttdeci">void writeAckPayload(uint8_t pipe, const void *buf, uint8_t len)</div></div>
 <div class="ttc" id="classRF24_html_af6aa2abd130178de532e9873e906296c"><div class="ttname"><a href="classRF24.html#af6aa2abd130178de532e9873e906296c">RF24::write_register</a></div><div class="ttdeci">uint8_t write_register(uint8_t reg, const uint8_t *buf, uint8_t len)</div></div>
-<div class="ttc" id="group__timedelay_html_ga21f4a3f60c06d2ea8a17bccc1b3ed0cc"><div class="ttname"><a href="group__timedelay.html#ga21f4a3f60c06d2ea8a17bccc1b3ed0cc">delay</a></div><div class="ttdeci">void delay(uint32_t time)</div><div class="ttdoc">Pause execution. </div></div>
 <div class="ttc" id="classRF24_html_aba4ca91b829afcd94a4c11e0343e3796"><div class="ttname"><a href="classRF24.html#aba4ca91b829afcd94a4c11e0343e3796">RF24::getCRCLength</a></div><div class="ttdeci">rf24_crclength_e getCRCLength(void)</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

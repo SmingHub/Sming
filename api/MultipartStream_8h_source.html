@@ -111,16 +111,16 @@ $(document).ready(function(){initNavTree('MultipartStream_8h_source.html','');})
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_MPARTSTREAM_H_</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_MPARTSTREAM_H_</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_MULTIPART_STREAM_H_</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_MULTIPART_STREAM_H_</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;DataSourceStream.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;ReadWriteStream.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;Delegate.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;../Structures.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;Network/Http/HttpHeaders.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structHttpPartResult.html">   25</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <a class="code" href="classHttpHeaders.html">HttpHeaders</a>* headers = NULL;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream = NULL;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <a class="code" href="classHttpHeaders.html">HttpHeaders</a>* headers = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;} <a class="code" href="structHttpPartResult.html">HttpPartResult</a>;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;HttpPartResult()&gt;</a> <a class="code" href="classDelegate.html">HttpPartProducerDelegate</a>;</div>
@@ -132,10 +132,10 @@ $(document).ready(function(){initNavTree('MultipartStream_8h_source.html','');})
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classMultipartStream.html">MultipartStream</a>();</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="comment">//Use base class documentation</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classMultipartStream.html#a85c05516d8aa56e40db38a9b5f9f3543">   39</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> <a class="code" href="classMultipartStream.html#a85c05516d8aa56e40db38a9b5f9f3543">getStreamType</a>()</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    {</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classMultipartStream.html#abc5c897e5e6b0b5014ab6658705c13f1">   39</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> <a class="code" href="classMultipartStream.html#abc5c897e5e6b0b5014ab6658705c13f1">getStreamType</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">    </span>{</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="comment">// TODO: fix this...</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">return</span> stream-&gt;<a class="code" href="classIDataSourceStream.html#a589085e0eea011acdc401b79831826e0">getStreamType</a>();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">return</span> stream-&gt;<a class="code" href="classIDataSourceStream.html#a41f3759d77f948af9598c77a5e066a14">getStreamType</a>();</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
 <div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classMultipartStream.html#ad8cc82e9d879f26d143c808b6b34bb3d">   49</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classMultipartStream.html#ad8cc82e9d879f26d143c808b6b34bb3d">length</a>()</div>
@@ -161,28 +161,28 @@ $(document).ready(function(){initNavTree('MultipartStream_8h_source.html','');})
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <a class="code" href="classDelegate.html">HttpPartProducerDelegate</a> producer;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream = NULL;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* nextStream = NULL;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* nextStream = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">char</span> boundary[16] = {0};</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordtype">bool</span> finished = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;};</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_MPARTSTREAM_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classMultipartStream_html_a4a245cd98195dbe4286fb66b3bdefbde"><div class="ttname"><a href="classMultipartStream.html#a4a245cd98195dbe4286fb66b3bdefbde">MultipartStream::isFinished</a></div><div class="ttdeci">virtual bool isFinished()</div><div class="ttdoc">Check if stream is finished. </div></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_MULTIPART_STREAM_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classMultipartStream_html_a4a245cd98195dbe4286fb66b3bdefbde"><div class="ttname"><a href="classMultipartStream.html#a4a245cd98195dbe4286fb66b3bdefbde">MultipartStream::isFinished</a></div><div class="ttdeci">virtual bool isFinished()</div><div class="ttdoc">Check if all data has been read. </div></div>
 <div class="ttc" id="classMultipartStream_html_ad8b6e9b3328f54b384c751fc60a52141"><div class="ttname"><a href="classMultipartStream.html#ad8b6e9b3328f54b384c751fc60a52141">MultipartStream::seek</a></div><div class="ttdeci">virtual bool seek(int len)</div><div class="ttdoc">Move read cursor. </div></div>
 <div class="ttc" id="classMultipartStream_html_afda2d98bb3275509fde37217b076d34a"><div class="ttname"><a href="classMultipartStream.html#afda2d98bb3275509fde37217b076d34a">MultipartStream::getBoundary</a></div><div class="ttdeci">const char * getBoundary()</div><div class="ttdoc">Returns the generated boundary. </div></div>
 <div class="ttc" id="classMultipartStream_html_ad8cc82e9d879f26d143c808b6b34bb3d"><div class="ttname"><a href="classMultipartStream.html#ad8cc82e9d879f26d143c808b6b34bb3d">MultipartStream::length</a></div><div class="ttdeci">int length()</div><div class="ttdoc">Return the total length of the stream. </div><div class="ttdef"><b>Definition:</b> MultipartStream.h:49</div></div>
-<div class="ttc" id="classHttpHeaders_html"><div class="ttname"><a href="classHttpHeaders.html">HttpHeaders</a></div><div class="ttdef"><b>Definition:</b> Structures.h:58</div></div>
+<div class="ttc" id="classIDataSourceStream_html_a41f3759d77f948af9598c77a5e066a14"><div class="ttname"><a href="classIDataSourceStream.html#a41f3759d77f948af9598c77a5e066a14">IDataSourceStream::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType() const =0</div><div class="ttdoc">Get the stream type. </div></div>
+<div class="ttc" id="classHttpHeaders_html"><div class="ttname"><a href="classHttpHeaders.html">HttpHeaders</a></div><div class="ttdoc">Encapsulates a set of HTTP header information. </div><div class="ttdef"><b>Definition:</b> HttpHeaders.h:93</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; HttpPartResult()&gt;</a></div></div>
 <div class="ttc" id="classMultipartStream_html"><div class="ttname"><a href="classMultipartStream.html">MultipartStream</a></div><div class="ttdef"><b>Definition:</b> MultipartStream.h:32</div></div>
-<div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:24</div></div>
-<div class="ttc" id="classIDataSourceStream_html_a589085e0eea011acdc401b79831826e0"><div class="ttname"><a href="classIDataSourceStream.html#a589085e0eea011acdc401b79831826e0">IDataSourceStream::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType()=0</div><div class="ttdoc">Get the stream type. </div></div>
-<div class="ttc" id="classMultipartStream_html_a85c05516d8aa56e40db38a9b5f9f3543"><div class="ttname"><a href="classMultipartStream.html#a85c05516d8aa56e40db38a9b5f9f3543">MultipartStream::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType()</div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> MultipartStream.h:39</div></div>
-<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:129</div></div>
+<div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:19</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdoc">Base class for read/write stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:20</div></div>
 <div class="ttc" id="structHttpPartResult_html"><div class="ttname"><a href="structHttpPartResult.html">HttpPartResult</a></div><div class="ttdoc">Multipart stream class. </div><div class="ttdef"><b>Definition:</b> MultipartStream.h:25</div></div>
 <div class="ttc" id="classMultipartStream_html_ab51d51c9ef574dd99e123f702f88fc4e"><div class="ttname"><a href="classMultipartStream.html#ab51d51c9ef574dd99e123f702f88fc4e">MultipartStream::write</a></div><div class="ttdeci">virtual size_t write(uint8_t charToWrite)</div><div class="ttdoc">Write a single char to stream. </div></div>
+<div class="ttc" id="classMultipartStream_html_abc5c897e5e6b0b5014ab6658705c13f1"><div class="ttname"><a href="classMultipartStream.html#abc5c897e5e6b0b5014ab6658705c13f1">MultipartStream::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType() const </div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> MultipartStream.h:39</div></div>
 <div class="ttc" id="classMultipartStream_html_a4e59f6a530a9f7be26200754dea28c3e"><div class="ttname"><a href="classMultipartStream.html#a4e59f6a530a9f7be26200754dea28c3e">MultipartStream::readMemoryBlock</a></div><div class="ttdeci">virtual uint16_t readMemoryBlock(char *data, int bufSize)</div><div class="ttdoc">Read a block of memory. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

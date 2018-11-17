@@ -112,11 +112,11 @@ $(document).ready(function(){initNavTree('classWebsocketClient.html','');});
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classWebsocketClient-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">WebsocketClient Class Reference<div class="ingroups"><a class="el" href="group__wsclient.html">WebSocket client</a></div></div>  </div>
+<div class="title">WebsocketClient Class Reference<div class="ingroups"><a class="el" href="group__wsclient.html">Websocket client</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="classDelegate.html">Delegate</a> callback type for connection of websocket client.  
+<p>Websocket Client.  
  <a href="classWebsocketClient.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="WebsocketClient_8h_source.html">WebsocketClient.h</a>&gt;</code></p>
@@ -126,211 +126,149 @@ Inheritance diagram for WebsocketClient:</div>
  <div class="center">
   <img src="classWebsocketClient.png" usemap="#WebsocketClient_map" alt=""/>
   <map id="WebsocketClient_map" name="WebsocketClient_map">
-<area href="classTcpClient.html" alt="TcpClient" shape="rect" coords="0,56,105,80"/>
-<area href="classTcpConnection.html" alt="TcpConnection" shape="rect" coords="0,0,105,24"/>
+<area href="classWebsocketConnection.html" alt="WebsocketConnection" shape="rect" coords="0,0,137,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ga5675cda4436e41c5ce92b8cd1000a90b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga5675cda4436e41c5ce92b8cd1000a90b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient</b> (bool autoDestruct=false)</td></tr>
-<tr class="separator:ga5675cda4436e41c5ce92b8cd1000a90b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7758dfb5db3ea87a1764663dfb8658d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga7758dfb5db3ea87a1764663dfb8658d3">setWebSocketMessageHandler</a> (<a class="el" href="classDelegate.html">WebSocketClientMessageDelegate</a> handler)</td></tr>
-<tr class="memdesc:ga7758dfb5db3ea87a1764663dfb8658d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set handler for websocket text messages.  <a href="group__wsclient.html#ga7758dfb5db3ea87a1764663dfb8658d3">More...</a><br/></td></tr>
-<tr class="separator:ga7758dfb5db3ea87a1764663dfb8658d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaba34668c16ff24437bd6139672549c8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#gaba34668c16ff24437bd6139672549c8b">setWebSocketDisconnectedHandler</a> (<a class="el" href="group__wsclient.html#ga6c07c4770698290c0dde0fb0b108c1d0">WebSocketClientDisconnectDelegate</a> handler)</td></tr>
-<tr class="memdesc:gaba34668c16ff24437bd6139672549c8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set handler for websocket disconnection event.  <a href="group__wsclient.html#gaba34668c16ff24437bd6139672549c8b">More...</a><br/></td></tr>
-<tr class="separator:gaba34668c16ff24437bd6139672549c8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8c5725d9c4a35a642b4f8c778a77cfe9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga8c5725d9c4a35a642b4f8c778a77cfe9">setWebSocketConnectedHandler</a> (<a class="el" href="group__wsclient.html#gac2018e9238123b4452ce83cd439040f5">WebSocketClientConnectedDelegate</a> handler)</td></tr>
-<tr class="memdesc:ga8c5725d9c4a35a642b4f8c778a77cfe9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set handler for websocket connection event.  <a href="group__wsclient.html#ga8c5725d9c4a35a642b4f8c778a77cfe9">More...</a><br/></td></tr>
-<tr class="separator:ga8c5725d9c4a35a642b4f8c778a77cfe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6a484ffdb8d40724bf7dc71d62634174"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga6a484ffdb8d40724bf7dc71d62634174">setWebSocketBinaryHandler</a> (<a class="el" href="group__wsclient.html#gaedbf9cc35ea92799c6a069b263444bdf">WebSocketClientBinaryDelegate</a> handler)</td></tr>
-<tr class="memdesc:ga6a484ffdb8d40724bf7dc71d62634174"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set handler for websocket binary messages.  <a href="group__wsclient.html#ga6a484ffdb8d40724bf7dc71d62634174">More...</a><br/></td></tr>
-<tr class="separator:ga6a484ffdb8d40724bf7dc71d62634174"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa6b4f982bda2e0beadba9ea490c34960"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#gaa6b4f982bda2e0beadba9ea490c34960">connect</a> (<a class="el" href="classString.html">String</a> url, uint32_t sslOptions=0)</td></tr>
-<tr class="memdesc:gaa6b4f982bda2e0beadba9ea490c34960"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connects websocket client to server.  <a href="group__wsclient.html#gaa6b4f982bda2e0beadba9ea490c34960">More...</a><br/></td></tr>
-<tr class="separator:gaa6b4f982bda2e0beadba9ea490c34960"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5b0e8a0b7c2362697bf037b0be4d0547"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga5b0e8a0b7c2362697bf037b0be4d0547">sendPing</a> (const <a class="el" href="classString.html">String</a> &amp;payload=&quot;&quot;)</td></tr>
-<tr class="memdesc:ga5b0e8a0b7c2362697bf037b0be4d0547"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send websocket ping to server.  <a href="group__wsclient.html#ga5b0e8a0b7c2362697bf037b0be4d0547">More...</a><br/></td></tr>
-<tr class="separator:ga5b0e8a0b7c2362697bf037b0be4d0547"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaece6d0eb4407f7f735bf8be574814ef5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#gaece6d0eb4407f7f735bf8be574814ef5">sendPong</a> (const <a class="el" href="classString.html">String</a> &amp;payload=&quot;&quot;)</td></tr>
-<tr class="memdesc:gaece6d0eb4407f7f735bf8be574814ef5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send websocket ping to server.  <a href="group__wsclient.html#gaece6d0eb4407f7f735bf8be574814ef5">More...</a><br/></td></tr>
-<tr class="separator:gaece6d0eb4407f7f735bf8be574814ef5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga11a66333f7a1052421efffe191de3bc5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga11a66333f7a1052421efffe191de3bc5">disconnect</a> ()</td></tr>
-<tr class="memdesc:ga11a66333f7a1052421efffe191de3bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disconnects websocket client from server.  <a href="group__wsclient.html#ga11a66333f7a1052421efffe191de3bc5">More...</a><br/></td></tr>
-<tr class="separator:ga11a66333f7a1052421efffe191de3bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaac4568000fcc6ab38c274a37a707c344"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#gaac4568000fcc6ab38c274a37a707c344">sendMessage</a> (char *msg, uint16_t length)</td></tr>
-<tr class="memdesc:gaac4568000fcc6ab38c274a37a707c344"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send text message to websocket server.  <a href="group__wsclient.html#gaac4568000fcc6ab38c274a37a707c344">More...</a><br/></td></tr>
-<tr class="separator:gaac4568000fcc6ab38c274a37a707c344"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf781c983aa47d4e5fe8a5595d551de56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#gaf781c983aa47d4e5fe8a5595d551de56">sendMessage</a> (const <a class="el" href="classString.html">String</a> &amp;str)</td></tr>
-<tr class="memdesc:gaf781c983aa47d4e5fe8a5595d551de56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send text message to websocket server.  <a href="group__wsclient.html#gaf781c983aa47d4e5fe8a5595d551de56">More...</a><br/></td></tr>
-<tr class="separator:gaf781c983aa47d4e5fe8a5595d551de56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga25c8e48c876c8a1739c0faf47f576749"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga25c8e48c876c8a1739c0faf47f576749">sendBinary</a> (uint8_t *msg, uint16_t length)</td></tr>
-<tr class="memdesc:ga25c8e48c876c8a1739c0faf47f576749"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send binary message to websocket server.  <a href="group__wsclient.html#ga25c8e48c876c8a1739c0faf47f576749">More...</a><br/></td></tr>
-<tr class="separator:ga25c8e48c876c8a1739c0faf47f576749"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6e25bcde3e15f2f5593522c4148e294e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga6e25bcde3e15f2f5593522c4148e294e">sendControlFrame</a> (<a class="el" href="group__wsframe.html#gadb296761d95f8b6fc4af7dc5f2c9fe01">WSFrameType</a> frameType, const <a class="el" href="classString.html">String</a> &amp;payload=&quot;&quot;)</td></tr>
-<tr class="memdesc:ga6e25bcde3e15f2f5593522c4148e294e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send control frame to websocket server.  <a href="group__wsclient.html#ga6e25bcde3e15f2f5593522c4148e294e">More...</a><br/></td></tr>
-<tr class="separator:ga6e25bcde3e15f2f5593522c4148e294e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0d6322cd88c590aea6bdb26586f25705"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__wsclient.html#gaa831e9ddbce43804605df7cdfbd1719e">wsMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wsclient.html#ga0d6322cd88c590aea6bdb26586f25705">getWSMode</a> ()</td></tr>
-<tr class="memdesc:ga0d6322cd88c590aea6bdb26586f25705"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get websocket client mode.  <a href="group__wsclient.html#ga0d6322cd88c590aea6bdb26586f25705">More...</a><br/></td></tr>
-<tr class="separator:ga0d6322cd88c590aea6bdb26586f25705"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e423cd6ffaf139de55d13b665ac7485"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e423cd6ffaf139de55d13b665ac7485"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>WebsocketClient</b> (<a class="el" href="classHttpConnectionBase.html">HttpConnectionBase</a> *connection)</td></tr>
+<tr class="separator:a6e423cd6ffaf139de55d13b665ac7485"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6629737c58cfde36923267ad43bd0765"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6629737c58cfde36923267ad43bd0765"></a>
+<a class="el" href="classHttpConnection.html">HttpConnection</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getHttpConnection</b> ()</td></tr>
+<tr class="separator:a6629737c58cfde36923267ad43bd0765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af851c6da01b84af394f6e8b296ac95a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketClient.html#af851c6da01b84af394f6e8b296ac95a4">connect</a> (const <a class="el" href="classString.html">String</a> &amp;url, uint32_t sslOptions=0)</td></tr>
+<tr class="memdesc:af851c6da01b84af394f6e8b296ac95a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connects websocket client to server.  <a href="#af851c6da01b84af394f6e8b296ac95a4">More...</a><br/></td></tr>
+<tr class="separator:af851c6da01b84af394f6e8b296ac95a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0516422547336c1170b7d13dba855b0e"><td class="memItemLeft" align="right" valign="top">__forceinline void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketClient.html#a0516422547336c1170b7d13dba855b0e">sendPing</a> (const <a class="el" href="classString.html">String</a> &amp;payload=&quot;&quot;)</td></tr>
+<tr class="memdesc:a0516422547336c1170b7d13dba855b0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send websocket ping to server.  <a href="#a0516422547336c1170b7d13dba855b0e">More...</a><br/></td></tr>
+<tr class="separator:a0516422547336c1170b7d13dba855b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cf67408cc58436b3cc89ebb2bbe7395"><td class="memItemLeft" align="right" valign="top">__forceinline void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketClient.html#a0cf67408cc58436b3cc89ebb2bbe7395">sendPong</a> (const <a class="el" href="classString.html">String</a> &amp;payload=&quot;&quot;)</td></tr>
+<tr class="memdesc:a0cf67408cc58436b3cc89ebb2bbe7395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send websocket ping to server.  <a href="#a0cf67408cc58436b3cc89ebb2bbe7395">More...</a><br/></td></tr>
+<tr class="separator:a0cf67408cc58436b3cc89ebb2bbe7395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11a66333f7a1052421efffe191de3bc5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketClient.html#a11a66333f7a1052421efffe191de3bc5">disconnect</a> ()</td></tr>
+<tr class="memdesc:a11a66333f7a1052421efffe191de3bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disconnects websocket client from server.  <a href="#a11a66333f7a1052421efffe191de3bc5">More...</a><br/></td></tr>
+<tr class="separator:a11a66333f7a1052421efffe191de3bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ga4c30b13ab6bb4f58100e248ea5a393dc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4c30b13ab6bb4f58100e248ea5a393dc"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onFinished</b> (TcpClientState finishState)</td></tr>
-<tr class="separator:ga4c30b13ab6bb4f58100e248ea5a393dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac08f5d2ad95417dd8163f109f6fc5c4f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac08f5d2ad95417dd8163f109f6fc5c4f"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onError</b> (err_t err)</td></tr>
-<tr class="separator:gac08f5d2ad95417dd8163f109f6fc5c4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga56407543bc93a1add63f0d90ba72c02b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga56407543bc93a1add63f0d90ba72c02b"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onReceive</b> (pbuf *buf)</td></tr>
-<tr class="separator:ga56407543bc93a1add63f0d90ba72c02b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacfa6bcc887969df682ed771964ff07e1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gacfa6bcc887969df682ed771964ff07e1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>_verifyKey</b> (char *buf, int size)</td></tr>
-<tr class="separator:gacfa6bcc887969df682ed771964ff07e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0a14b13879c97bc22b52bd28aaa0a099"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0a14b13879c97bc22b52bd28aaa0a099"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>_sendFrame</b> (<a class="el" href="group__wsframe.html#gadb296761d95f8b6fc4af7dc5f2c9fe01">WSFrameType</a> frameType, uint8_t *msg, uint16_t length)</td></tr>
-<tr class="separator:ga0a14b13879c97bc22b52bd28aaa0a099"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b3b36c4859145c5686126d4051e33b7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6b3b36c4859145c5686126d4051e33b7"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a6b3b36c4859145c5686126d4051e33b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d0685ac523f6e6ac2d5a6993172feb3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d0685ac523f6e6ac2d5a6993172feb3"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a1d0685ac523f6e6ac2d5a6993172feb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5d59b160b1c0decdf21ea34858f5729"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae5d59b160b1c0decdf21ea34858f5729"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (const <a class="el" href="classString.html">String</a> &amp;server, int port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:ae5d59b160b1c0decdf21ea34858f5729"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c91997d5656394ae74d5dbf105d6006"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c91997d5656394ae74d5dbf105d6006"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, bool useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="separator:a9c91997d5656394ae74d5dbf105d6006"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39dfc6c0d46863836e15b56d8077ef0c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39dfc6c0d46863836e15b56d8077ef0c"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>close</b> ()</td></tr>
-<tr class="separator:a39dfc6c0d46863836e15b56d8077ef0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9a6e4aeee94b7712bf2add4c286a3a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTcpClient.html#ab9a6e4aeee94b7712bf2add4c286a3a0">setReceiveDelegate</a> (<a class="el" href="classDelegate.html">TcpClientDataDelegate</a> receiveCb=NULL)</td></tr>
-<tr class="memdesc:ab9a6e4aeee94b7712bf2add4c286a3a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set or clear the callback for received data.  <a href="#ab9a6e4aeee94b7712bf2add4c286a3a0">More...</a><br/></td></tr>
-<tr class="separator:ab9a6e4aeee94b7712bf2add4c286a3a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf18cea760e8efbf3a204b4e6d4055c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTcpClient.html#abf18cea760e8efbf3a204b4e6d4055c3">setCompleteDelegate</a> (<a class="el" href="classDelegate.html">TcpClientCompleteDelegate</a> completeCb=NULL)</td></tr>
-<tr class="memdesc:abf18cea760e8efbf3a204b4e6d4055c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set or clear the callback for connection close.  <a href="#abf18cea760e8efbf3a204b4e6d4055c3">More...</a><br/></td></tr>
-<tr class="separator:abf18cea760e8efbf3a204b4e6d4055c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7caad1d87a32cc1b1092396c14dab6aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7caad1d87a32cc1b1092396c14dab6aa"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> (const char *data, uint16_t len, bool forceCloseAfterSent=false)</td></tr>
-<tr class="separator:a7caad1d87a32cc1b1092396c14dab6aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8dd63ab71d144b13b50a1f3b794df6b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8dd63ab71d144b13b50a1f3b794df6b3"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendString</b> (const <a class="el" href="classString.html">String</a> &amp;data, bool forceCloseAfterSent=false)</td></tr>
-<tr class="separator:a8dd63ab71d144b13b50a1f3b794df6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af97510bea711663fbe4803829561c968"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af97510bea711663fbe4803829561c968"></a>
-__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>isProcessing</b> ()</td></tr>
-<tr class="separator:af97510bea711663fbe4803829561c968"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab43f1c197e419d8797afeb3dec22f3c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab43f1c197e419d8797afeb3dec22f3c1"></a>
-__forceinline TcpClientState&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectionState</b> ()</td></tr>
-<tr class="separator:ab43f1c197e419d8797afeb3dec22f3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae74805076dbab04337d9380f747f3a79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae74805076dbab04337d9380f747f3a79"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onConnected</b> (err_t err)</td></tr>
-<tr class="separator:ae74805076dbab04337d9380f747f3a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77d3f60c92cf69adac748389b8bfe1cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a77d3f60c92cf69adac748389b8bfe1cb"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onSent</b> (uint16_t len)</td></tr>
-<tr class="separator:a77d3f60c92cf69adac748389b8bfe1cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82a0ad9fb11e19e3487c5e191a577f32"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a82a0ad9fb11e19e3487c5e191a577f32"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onReadyToSendData</b> (TcpConnectionEvent sourceEvent)</td></tr>
-<tr class="separator:a82a0ad9fb11e19e3487c5e191a577f32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a162be33aa3e851eb92ccd361f64c6706"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a162be33aa3e851eb92ccd361f64c6706"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pushAsyncPart</b> ()</td></tr>
-<tr class="separator:a162be33aa3e851eb92ccd361f64c6706"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d6b422ffcb3718c74477d9140288edb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d6b422ffcb3718c74477d9140288edb"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const char *data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
-<tr class="separator:a3d6b422ffcb3718c74477d9140288edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8dc1b8d48884068d157555908a13604"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8dc1b8d48884068d157555908a13604"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>writeString</b> (const <a class="el" href="classString.html">String</a> &amp;data, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
-<tr class="separator:aa8dc1b8d48884068d157555908a13604"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17fbdcd21e00e24eae8d42096ceeb5db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17fbdcd21e00e24eae8d42096ceeb5db"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (const char *data, int len, uint8_t apiflags=TCP_WRITE_FLAG_COPY)</td></tr>
-<tr class="separator:a17fbdcd21e00e24eae8d42096ceeb5db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59ef4474eb3d65f8b1f1e21e0f3f3c25"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a59ef4474eb3d65f8b1f1e21e0f3f3c25"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (<a class="el" href="classIDataSourceStream.html">IDataSourceStream</a> *stream)</td></tr>
-<tr class="separator:a59ef4474eb3d65f8b1f1e21e0f3f3c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8d1467ac2d76882be7ec74f0aa0e1bf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab8d1467ac2d76882be7ec74f0aa0e1bf"></a>
-__forceinline uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>getAvailableWriteSize</b> ()</td></tr>
-<tr class="separator:ab8d1467ac2d76882be7ec74f0aa0e1bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaaa45b0c9a0b26df7f8ca79697785114"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaaa45b0c9a0b26df7f8ca79697785114"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> ()</td></tr>
-<tr class="separator:aaaa45b0c9a0b26df7f8ca79697785114"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d01ef17727966d8d63e6f35a2a0fd14"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d01ef17727966d8d63e6f35a2a0fd14"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeOut</b> (uint16_t waitTimeOut)</td></tr>
-<tr class="separator:a3d01ef17727966d8d63e6f35a2a0fd14"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a333a64364cd35ef53615bd52b9918825"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a333a64364cd35ef53615bd52b9918825"></a>
-<a class="el" href="classIPAddress.html">IPAddress</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getRemoteIp</b> ()</td></tr>
-<tr class="separator:a333a64364cd35ef53615bd52b9918825"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6fedbbb90a1147bde5b143fd8fdde6f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad6fedbbb90a1147bde5b143fd8fdde6f"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>getRemotePort</b> ()</td></tr>
-<tr class="separator:ad6fedbbb90a1147bde5b143fd8fdde6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39d7fe38dceaf464a09f6a1cab7463b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTcpConnection.html#a39d7fe38dceaf464a09f6a1cab7463b4">setDestroyedDelegate</a> (<a class="el" href="classDelegate.html">TcpConnectionDestroyedDelegate</a> destroyedDelegate)</td></tr>
-<tr class="memdesc:a39d7fe38dceaf464a09f6a1cab7463b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a callback to be called when the object instance is destroyed.  <a href="#a39d7fe38dceaf464a09f6a1cab7463b4">More...</a><br/></td></tr>
-<tr class="separator:a39d7fe38dceaf464a09f6a1cab7463b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefb1448919e50cac01a467a11268a2d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aefb1448919e50cac01a467a11268a2d2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>internalTcpConnect</b> (<a class="el" href="classIPAddress.html">IPAddress</a> addr, uint16_t port)</td></tr>
-<tr class="separator:aefb1448919e50cac01a467a11268a2d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a469f2846ad04ed71f5cb211bdc31d864"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a469f2846ad04ed71f5cb211bdc31d864"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onPoll</b> ()</td></tr>
-<tr class="separator:a469f2846ad04ed71f5cb211bdc31d864"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adebe96bd5f3f5d2bc83f69fb7c7828c5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adebe96bd5f3f5d2bc83f69fb7c7828c5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (tcp_pcb *pcb)</td></tr>
-<tr class="separator:adebe96bd5f3f5d2bc83f69fb7c7828c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6184ca4d54a91c910a4face8862f87dd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6184ca4d54a91c910a4face8862f87dd"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>verifyKey</b> (<a class="el" href="classHttpConnection.html">HttpConnection</a> &amp;connection, <a class="el" href="classHttpResponse.html">HttpResponse</a> &amp;response)</td></tr>
+<tr class="separator:a6184ca4d54a91c910a4face8862f87dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae067ebc51db8d7504d0be6d8077ca654"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#ae067ebc51db8d7504d0be6d8077ca654">bind</a> (<a class="el" href="classHttpRequest.html">HttpRequest</a> &amp;request, <a class="el" href="classHttpResponse.html">HttpResponse</a> &amp;response)</td></tr>
+<tr class="memdesc:ae067ebc51db8d7504d0be6d8077ca654"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds websocket connection to an http server connection.  <a href="#ae067ebc51db8d7504d0be6d8077ca654">More...</a><br/></td></tr>
+<tr class="separator:ae067ebc51db8d7504d0be6d8077ca654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b911333d332d644ca3ac302fcf2d282"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a2b911333d332d644ca3ac302fcf2d282">send</a> (const char *message, int length, ws_frame_type_t type=WS_FRAME_TEXT)</td></tr>
+<tr class="memdesc:a2b911333d332d644ca3ac302fcf2d282"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a websocket message.  <a href="#a2b911333d332d644ca3ac302fcf2d282">More...</a><br/></td></tr>
+<tr class="separator:a2b911333d332d644ca3ac302fcf2d282"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00a74b830a702905455a227c207361cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a00a74b830a702905455a227c207361cb">sendString</a> (const <a class="el" href="classString.html">String</a> &amp;message)</td></tr>
+<tr class="memdesc:a00a74b830a702905455a227c207361cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a string websocket message.  <a href="#a00a74b830a702905455a227c207361cb">More...</a><br/></td></tr>
+<tr class="separator:a00a74b830a702905455a227c207361cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84daf06544d103219a8b66b342813d62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a84daf06544d103219a8b66b342813d62">sendBinary</a> (const uint8_t *data, int length)</td></tr>
+<tr class="memdesc:a84daf06544d103219a8b66b342813d62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a binary websocket message.  <a href="#a84daf06544d103219a8b66b342813d62">More...</a><br/></td></tr>
+<tr class="separator:a84daf06544d103219a8b66b342813d62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c03f260cc7e9d2fb3608e3828b9759f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a4c03f260cc7e9d2fb3608e3828b9759f">close</a> ()</td></tr>
+<tr class="memdesc:a4c03f260cc7e9d2fb3608e3828b9759f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes a websocket connection (without closing the underlying http connection.  <a href="#a4c03f260cc7e9d2fb3608e3828b9759f">More...</a><br/></td></tr>
+<tr class="separator:a4c03f260cc7e9d2fb3608e3828b9759f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49a061725dd8c3610a74c81e545475bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a49a061725dd8c3610a74c81e545475bb">reset</a> ()</td></tr>
+<tr class="memdesc:a49a061725dd8c3610a74c81e545475bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets a websocket connection.  <a href="#a49a061725dd8c3610a74c81e545475bb">More...</a><br/></td></tr>
+<tr class="separator:a49a061725dd8c3610a74c81e545475bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9958594508125db422a570139090b120"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a9958594508125db422a570139090b120">setUserData</a> (void *userData)</td></tr>
+<tr class="memdesc:a9958594508125db422a570139090b120"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attaches a user data to a websocket connection.  <a href="#a9958594508125db422a570139090b120">More...</a><br/></td></tr>
+<tr class="separator:a9958594508125db422a570139090b120"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34eff7b342ac27c206157053f0270a8e"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a34eff7b342ac27c206157053f0270a8e">getUserData</a> ()</td></tr>
+<tr class="memdesc:a34eff7b342ac27c206157053f0270a8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves user data attached.  <a href="#a34eff7b342ac27c206157053f0270a8e">More...</a><br/></td></tr>
+<tr class="separator:a34eff7b342ac27c206157053f0270a8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adee4cefada7dbd8ba75d8328b4038316"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adee4cefada7dbd8ba75d8328b4038316"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classWebsocketConnection.html">WebsocketConnection</a> &amp;rhs) const </td></tr>
+<tr class="separator:adee4cefada7dbd8ba75d8328b4038316"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a530fe4c99979104ed0c7f333bcb398ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a530fe4c99979104ed0c7f333bcb398ea"></a>
+<a class="el" href="classVector.html">WebsocketList</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getActiveWebsockets</b> ()</td></tr>
+<tr class="separator:a530fe4c99979104ed0c7f333bcb398ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb2ac2727ad99e34fa3060b086ccd536"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#aeb2ac2727ad99e34fa3060b086ccd536">setConnectionHandler</a> (<a class="el" href="classDelegate.html">WebsocketDelegate</a> handler)</td></tr>
+<tr class="memdesc:aeb2ac2727ad99e34fa3060b086ccd536"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the callback handler to be called after successful websocket connection.  <a href="#aeb2ac2727ad99e34fa3060b086ccd536">More...</a><br/></td></tr>
+<tr class="separator:aeb2ac2727ad99e34fa3060b086ccd536"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac92a24f91eea1188d17ec57b7918d3ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#ac92a24f91eea1188d17ec57b7918d3ec">setMessageHandler</a> (<a class="el" href="classDelegate.html">WebsocketMessageDelegate</a> handler)</td></tr>
+<tr class="memdesc:ac92a24f91eea1188d17ec57b7918d3ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the callback handler to be called after a websocket message is received.  <a href="#ac92a24f91eea1188d17ec57b7918d3ec">More...</a><br/></td></tr>
+<tr class="separator:ac92a24f91eea1188d17ec57b7918d3ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69ea46956346e7579ae7a955d4f88c76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a69ea46956346e7579ae7a955d4f88c76">setBinaryHandler</a> (<a class="el" href="classDelegate.html">WebsocketBinaryDelegate</a> handler)</td></tr>
+<tr class="memdesc:a69ea46956346e7579ae7a955d4f88c76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the callback handler to be called after a binary websocket message is received.  <a href="#a69ea46956346e7579ae7a955d4f88c76">More...</a><br/></td></tr>
+<tr class="separator:a69ea46956346e7579ae7a955d4f88c76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac08bc601bf5491cfe5767fa39dbe5a59"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#ac08bc601bf5491cfe5767fa39dbe5a59">setDisconnectionHandler</a> (<a class="el" href="classDelegate.html">WebsocketDelegate</a> handler)</td></tr>
+<tr class="memdesc:ac08bc601bf5491cfe5767fa39dbe5a59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the callback handler to be called before closing a websocket connection.  <a href="#ac08bc601bf5491cfe5767fa39dbe5a59">More...</a><br/></td></tr>
+<tr class="separator:ac08bc601bf5491cfe5767fa39dbe5a59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad532970bee5dd3949e56a1fff7be3728"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#ad532970bee5dd3949e56a1fff7be3728">activate</a> ()</td></tr>
+<tr class="memdesc:ad532970bee5dd3949e56a1fff7be3728"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should be called after a websocket connection is established to activate the websocket parser and allow sending of websocket data.  <a href="#ad532970bee5dd3949e56a1fff7be3728">More...</a><br/></td></tr>
+<tr class="separator:ad532970bee5dd3949e56a1fff7be3728"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0307ff18eb1de3020b361351300064f4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a0307ff18eb1de3020b361351300064f4">onConnected</a> ()</td></tr>
+<tr class="memdesc:a0307ff18eb1de3020b361351300064f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call this method when the websocket connection was (re)activated.  <a href="#a0307ff18eb1de3020b361351300064f4">More...</a><br/></td></tr>
+<tr class="separator:a0307ff18eb1de3020b361351300064f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a050ef3cd606065b1a89765501192c3ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classHttpConnectionBase.html">HttpConnectionBase</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a050ef3cd606065b1a89765501192c3ce">getConnection</a> ()</td></tr>
+<tr class="memdesc:a050ef3cd606065b1a89765501192c3ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the underlying HTTP connection.  <a href="#a050ef3cd606065b1a89765501192c3ce">More...</a><br/></td></tr>
+<tr class="separator:a050ef3cd606065b1a89765501192c3ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b3b35e870d1d7ee413b80576825ea4d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a4b3b35e870d1d7ee413b80576825ea4d">setConnection</a> (<a class="el" href="classHttpConnectionBase.html">HttpConnectionBase</a> *connection, bool isClientConnection=true)</td></tr>
+<tr class="memdesc:a4b3b35e870d1d7ee413b80576825ea4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the underlying (transport ) HTTP connection.  <a href="#a4b3b35e870d1d7ee413b80576825ea4d">More...</a><br/></td></tr>
+<tr class="separator:a4b3b35e870d1d7ee413b80576825ea4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a373b95a1f75e096c2960dcb97a771399"><td class="memItemLeft" align="right" valign="top">WsConnectionState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a373b95a1f75e096c2960dcb97a771399">getState</a> ()</td></tr>
+<tr class="memdesc:a373b95a1f75e096c2960dcb97a771399"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the state of the websocket connection.  <a href="#a373b95a1f75e096c2960dcb97a771399">More...</a><br/></td></tr>
+<tr class="separator:a373b95a1f75e096c2960dcb97a771399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a741f9220e54183cacd073c481a352791"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a741f9220e54183cacd073c481a352791"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>processFrame</b> (<a class="el" href="classTcpClient.html">TcpClient</a> &amp;client, char *at, int size)</td></tr>
+<tr class="separator:a741f9220e54183cacd073c481a352791"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3482a9df66a2df793b70c748c2aae452"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3482a9df66a2df793b70c748c2aae452"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>encodeFrame</b> (ws_frame_type_t type, const char *inData, size_t inLength, char *outData, size_t outLength, bool useMask=true, bool isFin=true)</td></tr>
+<tr class="separator:a3482a9df66a2df793b70c748c2aae452"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:a62aaab47c81466e17dd2ca52f5c12368"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a62aaab47c81466e17dd2ca52f5c12368"></a>
-static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnConnected</b> (void *arg, tcp_pcb *tcp, err_t err)</td></tr>
-<tr class="separator:a62aaab47c81466e17dd2ca52f5c12368"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a274e71d387083fe5c68bdf688e76fd15"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a274e71d387083fe5c68bdf688e76fd15"></a>
-static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnReceive</b> (void *arg, tcp_pcb *tcp, pbuf *p, err_t err)</td></tr>
-<tr class="separator:a274e71d387083fe5c68bdf688e76fd15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae76239045458520deb256725a610f714"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae76239045458520deb256725a610f714"></a>
-static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnSent</b> (void *arg, tcp_pcb *tcp, uint16_t len)</td></tr>
-<tr class="separator:ae76239045458520deb256725a610f714"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4353e5e345fbe0fbbbeb8b496d77ffa2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4353e5e345fbe0fbbbeb8b496d77ffa2"></a>
-static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnPoll</b> (void *arg, tcp_pcb *tcp)</td></tr>
-<tr class="separator:a4353e5e345fbe0fbbbeb8b496d77ffa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa55d00095851b50d2ffab03e22d2cbd5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa55d00095851b50d2ffab03e22d2cbd5"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnError</b> (void *arg, err_t err)</td></tr>
-<tr class="separator:aa55d00095851b50d2ffab03e22d2cbd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f9773471a0ff64628830b9e8f1e824c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f9773471a0ff64628830b9e8f1e824c"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>staticDnsResponse</b> (const char *name, LWIP_IP_ADDR_T *ipaddr, void *arg)</td></tr>
-<tr class="separator:a1f9773471a0ff64628830b9e8f1e824c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba93412d2aabe551151e9146bbca35f0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba93412d2aabe551151e9146bbca35f0"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>closeTcpConnection</b> (tcp_pcb *tpcb)</td></tr>
-<tr class="separator:aba93412d2aabe551151e9146bbca35f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45ff151f15a572bbdc87e44ddbae9c7c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketConnection.html#a45ff151f15a572bbdc87e44ddbae9c7c">broadcast</a> (const char *message, int length, ws_frame_type_t type=WS_FRAME_TEXT)</td></tr>
+<tr class="memdesc:a45ff151f15a572bbdc87e44ddbae9c7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Broadcasts a message to all active websocket connections.  <a href="#a45ff151f15a572bbdc87e44ddbae9c7c">More...</a><br/></td></tr>
+<tr class="separator:a45ff151f15a572bbdc87e44ddbae9c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a222f6223f8862f772f97006e1ce2ba7d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a222f6223f8862f772f97006e1ce2ba7d"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnDataBegin</b> (void *userData, ws_frame_type_t type)</td></tr>
+<tr class="separator:a222f6223f8862f772f97006e1ce2ba7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad24f01fbed6c912d11af9d020d7f3aed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad24f01fbed6c912d11af9d020d7f3aed"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnDataPayload</b> (void *userData, const char *at, size_t length)</td></tr>
+<tr class="separator:ad24f01fbed6c912d11af9d020d7f3aed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8415d1ae8362da1acc12c10cce821286"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8415d1ae8362da1acc12c10cce821286"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnDataEnd</b> (void *userData)</td></tr>
+<tr class="separator:a8415d1ae8362da1acc12c10cce821286"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70164a0edfb4d157f30ce45732273801"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a70164a0edfb4d157f30ce45732273801"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnControlBegin</b> (void *userData, ws_frame_type_t type)</td></tr>
+<tr class="separator:a70164a0edfb4d157f30ce45732273801"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7dc046f7f97cf7c03f0427ed4579101"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac7dc046f7f97cf7c03f0427ed4579101"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnControlPayload</b> (void *userData, const char *, size_t length)</td></tr>
+<tr class="separator:ac7dc046f7f97cf7c03f0427ed4579101"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeed02063464176a2abaead6955a33495"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeed02063464176a2abaead6955a33495"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnControlEnd</b> (void *userData)</td></tr>
+<tr class="separator:aeed02063464176a2abaead6955a33495"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a5a25e67658787edc2de4fb45b09785b6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5a25e67658787edc2de4fb45b09785b6"></a>
-<a class="el" href="classReadWriteStream.html">ReadWriteStream</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>stream</b> = nullptr</td></tr>
-<tr class="separator:a5a25e67658787edc2de4fb45b09785b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a601e019508b0071d0825908eaee0f58c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a601e019508b0071d0825908eaee0f58c"></a>
-tcp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>tcp</b> = NULL</td></tr>
-<tr class="separator:a601e019508b0071d0825908eaee0f58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a482c5afdb16d0a93c46a8b83da649254"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a482c5afdb16d0a93c46a8b83da649254"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>sleep</b></td></tr>
-<tr class="separator:a482c5afdb16d0a93c46a8b83da649254"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d11a5464ae92193779dafc650597fa2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d11a5464ae92193779dafc650597fa2"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>timeOut</b></td></tr>
-<tr class="separator:a3d11a5464ae92193779dafc650597fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a730b80fbbafb4ac92eda9b320ccf7bbf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a730b80fbbafb4ac92eda9b320ccf7bbf"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>canSend</b></td></tr>
-<tr class="separator:a730b80fbbafb4ac92eda9b320ccf7bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56f9a3c4c74d221c29e07107384db1c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56f9a3c4c74d221c29e07107384db1c1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>autoSelfDestruct</b></td></tr>
-<tr class="separator:a56f9a3c4c74d221c29e07107384db1c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f713f30d71b5015ae1ee0cf98607298"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f713f30d71b5015ae1ee0cf98607298"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</td></tr>
-<tr class="separator:a1f713f30d71b5015ae1ee0cf98607298"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a8818b6bb25675c5ea7e66f13292e2e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7a8818b6bb25675c5ea7e66f13292e2e"></a>
+<a class="el" href="classDelegate.html">WebsocketDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsConnect</b> = 0</td></tr>
+<tr class="separator:a7a8818b6bb25675c5ea7e66f13292e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6597bfbe4b26dc14ef3fa31c2383e961"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6597bfbe4b26dc14ef3fa31c2383e961"></a>
+<a class="el" href="classDelegate.html">WebsocketMessageDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsMessage</b> = 0</td></tr>
+<tr class="separator:a6597bfbe4b26dc14ef3fa31c2383e961"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52706e111504c4f761f5563093086287"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a52706e111504c4f761f5563093086287"></a>
+<a class="el" href="classDelegate.html">WebsocketBinaryDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsBinary</b> = 0</td></tr>
+<tr class="separator:a52706e111504c4f761f5563093086287"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad905e16c3b826e9ad6ab481aa9b49804"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad905e16c3b826e9ad6ab481aa9b49804"></a>
+<a class="el" href="classDelegate.html">WebsocketDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsDisconnect</b> = 0</td></tr>
+<tr class="separator:ad905e16c3b826e9ad6ab481aa9b49804"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab625d0fee15147459ed0543cdca0e445"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab625d0fee15147459ed0543cdca0e445"></a>
+void *&#160;</td><td class="memItemRight" valign="bottom"><b>userData</b> = nullptr</td></tr>
+<tr class="separator:ab625d0fee15147459ed0543cdca0e445"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a978a4b073ca04dd81293fc3de4d947d0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a978a4b073ca04dd81293fc3de4d947d0"></a>
+WsConnectionState&#160;</td><td class="memItemRight" valign="bottom"><b>state</b> = eWSCS_Ready</td></tr>
+<tr class="separator:a978a4b073ca04dd81293fc3de4d947d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="classDelegate.html">Delegate</a> callback type for connection of websocket client. </p>
-<p>Websocket Client </p>
+<div class="textblock"><p>Websocket Client. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="abf18cea760e8efbf3a204b4e6d4055c3"></a>
+<a class="anchor" id="ad532970bee5dd3949e56a1fff7be3728"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -338,10 +276,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void TcpClient::setCompleteDelegate </td>
+          <td class="memname">void WebsocketConnection::activate </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classDelegate.html">TcpClientCompleteDelegate</a>&#160;</td>
-          <td class="paramname"><em>completeCb</em> = <code>NULL</code></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -352,17 +289,60 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
 </table>
 </div><div class="memdoc">
 
-<p>Set or clear the callback for connection close. </p>
+<p>Should be called after a websocket connection is established to activate the websocket parser and allow sending of websocket data. </p>
+
+</div>
+</div>
+<a class="anchor" id="ae067ebc51db8d7504d0be6d8077ca654"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WebsocketConnection::bind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classHttpRequest.html">HttpRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classHttpResponse.html">HttpResponse</a> &amp;&#160;</td>
+          <td class="paramname"><em>response</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Binds websocket connection to an http server connection. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">completeCb</td><td>callback delegate or NULL </td></tr>
+    <tr><td class="paramname">HttpRequest&amp;</td><td>request </td></tr>
+    <tr><td class="paramname">HttpResponse&amp;</td><td>response </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">true</td><td>on success, false otherwise </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="a39d7fe38dceaf464a09f6a1cab7463b4"></a>
+<a class="anchor" id="a45ff151f15a572bbdc87e44ddbae9c7c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -370,31 +350,49 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void TcpConnection::setDestroyedDelegate </td>
+          <td class="memname">static void WebsocketConnection::broadcast </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classDelegate.html">TcpConnectionDestroyedDelegate</a>&#160;</td>
-          <td class="paramname"><em>destroyedDelegate</em></td><td>)</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ws_frame_type_t&#160;</td>
+          <td class="paramname"><em>type</em> = <code>WS_FRAME_TEXT</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Sets a callback to be called when the object instance is destroyed. </p>
+<p>Broadcasts a message to all active websocket connections. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">TcpServerConnectionDestroyedDelegate</td><td>destroyedDelegate - callback </td></tr>
+    <tr><td class="paramname">const</td><td>char* message </td></tr>
+    <tr><td class="paramname">int</td><td>length </td></tr>
+    <tr><td class="paramname">ws_frame_type_t</td><td>type </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ab9a6e4aeee94b7712bf2add4c286a3a0"></a>
+<a class="anchor" id="a4c03f260cc7e9d2fb3608e3828b9759f"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -402,10 +400,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void TcpClient::setReceiveDelegate </td>
+          <td class="memname">void WebsocketConnection::close </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classDelegate.html">TcpClientDataDelegate</a>&#160;</td>
-          <td class="paramname"><em>receiveCb</em> = <code>NULL</code></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -416,10 +413,618 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
 </table>
 </div><div class="memdoc">
 
-<p>Set or clear the callback for received data. </p>
+<p>Closes a websocket connection (without closing the underlying http connection. </p>
+
+</div>
+</div>
+<a class="anchor" id="af851c6da01b84af394f6e8b296ac95a4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WebsocketClient::connect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>url</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>sslOptions</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Connects websocket client to server. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">receiveCb</td><td>callback delegate or NULL </td></tr>
+    <tr><td class="paramname">url</td><td><a class="el" href="classURL.html">URL</a> address of websocket server </td></tr>
+    <tr><td class="paramname">sslOptions</td><td>Specify the SSL options to be used when calling websocket server over SSL </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a11a66333f7a1052421efffe191de3bc5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WebsocketClient::disconnect </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Disconnects websocket client from server. </p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000017">Deprecated:</a></b></dt><dd>use <a class="el" href="classWebsocketConnection.html#a4c03f260cc7e9d2fb3608e3828b9759f" title="Closes a websocket connection (without closing the underlying http connection. ">close()</a> instead </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a050ef3cd606065b1a89765501192c3ce"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classHttpConnectionBase.html">HttpConnectionBase</a>* WebsocketConnection::getConnection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the underlying HTTP connection. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname"><a class="el" href="classHttpConnectionBase.html">HttpConnectionBase</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a373b95a1f75e096c2960dcb97a771399"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">WsConnectionState WebsocketConnection::getState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the state of the websocket connection. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">WsConnectionState</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a34eff7b342ac27c206157053f0270a8e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* WebsocketConnection::getUserData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves user data attached. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">void*</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a0307ff18eb1de3020b361351300064f4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WebsocketConnection::onConnected </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Call this method when the websocket connection was (re)activated. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>true on success </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a49a061725dd8c3610a74c81e545475bb"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WebsocketConnection::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resets a websocket connection. </p>
+
+</div>
+</div>
+<a class="anchor" id="a2b911333d332d644ca3ac302fcf2d282"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void WebsocketConnection::send </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ws_frame_type_t&#160;</td>
+          <td class="paramname"><em>type</em> = <code>WS_FRAME_TEXT</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sends a websocket message. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">const</td><td>char* message </td></tr>
+    <tr><td class="paramname">int</td><td>length </td></tr>
+    <tr><td class="paramname">ws_frame_type_t</td><td>type </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a84daf06544d103219a8b66b342813d62"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WebsocketConnection::sendBinary </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sends a binary websocket message. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">const</td><td>uint8_t* data </td></tr>
+    <tr><td class="paramname">int</td><td>length </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a0516422547336c1170b7d13dba855b0e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">__forceinline void WebsocketClient::sendPing </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>payload</em> = <code>&quot;&quot;</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Send websocket ping to server. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"><a class="el" href="classString.html" title="The string class. ">String</a></td><td>payload - maximum 255 bytes</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>true if the data can be send, false otherwise </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a0cf67408cc58436b3cc89ebb2bbe7395"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">__forceinline void WebsocketClient::sendPong </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>payload</em> = <code>&quot;&quot;</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Send websocket ping to server. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">String&amp;</td><td>payload - maximum 255 bytes</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>true if the data can be send, false otherwise </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a00a74b830a702905455a227c207361cb"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WebsocketConnection::sendString </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>message</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sends a string websocket message. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">const</td><td><a class="el" href="classString.html" title="The string class. ">String</a>&amp; message </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a69ea46956346e7579ae7a955d4f88c76"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WebsocketConnection::setBinaryHandler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">WebsocketBinaryDelegate</a>&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the callback handler to be called after a binary websocket message is received. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">WebsocketBinaryDelegate</td><td>handler </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a4b3b35e870d1d7ee413b80576825ea4d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WebsocketConnection::setConnection </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classHttpConnectionBase.html">HttpConnectionBase</a> *&#160;</td>
+          <td class="paramname"><em>connection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isClientConnection</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the underlying (transport ) HTTP connection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">HttpConnectionBase*</td><td>connection the transport connection </td></tr>
+    <tr><td class="paramname">bool</td><td>isClientConnection true when the passed connection is an http client conneciton </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aeb2ac2727ad99e34fa3060b086ccd536"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WebsocketConnection::setConnectionHandler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">WebsocketDelegate</a>&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the callback handler to be called after successful websocket connection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">WebsocketDelegate</td><td>handler </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ac08bc601bf5491cfe5767fa39dbe5a59"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WebsocketConnection::setDisconnectionHandler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">WebsocketDelegate</a>&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the callback handler to be called before closing a websocket connection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">WebsocketDelegate</td><td>handler </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ac92a24f91eea1188d17ec57b7918d3ec"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WebsocketConnection::setMessageHandler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">WebsocketMessageDelegate</a>&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the callback handler to be called after a websocket message is received. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">WebsocketMessageDelegate</td><td>handler </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a9958594508125db422a570139090b120"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WebsocketConnection::setUserData </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>userData</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Attaches a user data to a websocket connection. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">void*</td><td>userData </td></tr>
   </table>
   </dd>
 </dl>

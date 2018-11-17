@@ -3,7 +3,7 @@ var group__tcpclient =
     [ "HTTP client", "group__httpclient.html", "group__httpclient" ],
     [ "MQTT client", "group__mqttclient.html", "group__mqttclient" ],
     [ "SMTP client", "group__smtpclient.html", "group__smtpclient" ],
-    [ "WebSocket client", "group__wsclient.html", "group__wsclient" ],
+    [ "Websocket client", "group__wsclient.html", "group__wsclient" ],
     [ "TcpClient", "classTcpClient.html", [
       [ "TcpClient", "classTcpClient.html#a4d2ba17936e3447c4e19984c1452f58c", null ],
       [ "TcpClient", "classTcpClient.html#ac251795133eca3926a986e3d7c72f520", null ],

@@ -117,89 +117,92 @@ $(document).ready(function(){initNavTree('HttpResponse_8h_source.html','');});
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_HTTP_RESPONSE_H_</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;HttpCommon.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;Data/Stream/DataSourceStream.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">class </span><a class="code" href="classJsonObjectStream.html">JsonObjectStream</a>; <span class="comment">// &lt;&lt; TODO: deprecated and should be removed in the next version</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classHttpResponse.html">   21</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHttpResponse.html">HttpResponse</a></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;{</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classHttpClient.html">HttpClient</a>;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classHttpConnection.html">HttpConnection</a>;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    ~<a class="code" href="classHttpResponse.html">HttpResponse</a>();</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;Data/Stream/TemplateStream.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;Data/Stream/ReadWriteStream.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;Network/Http/HttpHeaders.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;FileSystem.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">class </span><a class="code" href="classJsonObjectStream.html">JsonObjectStream</a>; <span class="comment">// &lt;&lt; TODO: deprecated and should be removed in the next version</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classHttpResponse.html">   24</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHttpResponse.html">HttpResponse</a></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classHttpClient.html">HttpClient</a>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classHttpConnection.html">HttpConnection</a>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">bool</span> sendString(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; text);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="comment">// @deprecated method</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">bool</span> hasHeader(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; name);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">void</span> redirect(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; location);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">   41</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">forbidden</a>()</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        code = HTTP_STATUS_FORBIDDEN;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">   49</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">notFound</a>()</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        code = HTTP_STATUS_NOT_FOUND;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setContentType(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; type);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setContentType(<span class="keyword">enum</span> MimeType type);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setCookie(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; name, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; value);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setHeader(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; name, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; value);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setCache(<span class="keywordtype">int</span> maxAgeSeconds = 3600, <span class="keywordtype">bool</span> isPublic = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setAllowCrossDomainOrigin(</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; controlAllowOrigin); <span class="comment">// Access-Control-Allow-Origin for AJAX from a different domain</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="comment">// Send file by name</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">bool</span> sendFile(<a class="code" href="classString.html">String</a> fileName, <span class="keywordtype">bool</span> allowGzipFileCheck = <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    ~<a class="code" href="classHttpResponse.html">HttpResponse</a>();</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">bool</span> sendString(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; text);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="comment">// @deprecated method</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">bool</span> hasHeader(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; name);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordtype">void</span> redirect(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; location);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">   44</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">forbidden</a>()</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        code = HTTP_STATUS_FORBIDDEN;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">   52</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">notFound</a>()</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        code = HTTP_STATUS_NOT_FOUND;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    }</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setContentType(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; type);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setContentType(<span class="keyword">enum</span> MimeType type);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setCookie(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; name, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; value);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setHeader(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; name, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; value);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setCache(<span class="keywordtype">int</span> maxAgeSeconds = 3600, <span class="keywordtype">bool</span> isPublic = <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="classHttpResponse.html">HttpResponse</a>* setAllowCrossDomainOrigin(</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; controlAllowOrigin); <span class="comment">// Access-Control-Allow-Origin for AJAX from a different domain</span></div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// @deprecated</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="comment">// Parse and send template file</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordtype">bool</span> sendTemplate(<a class="code" href="classTemplateFileStream.html">TemplateFileStream</a>* newTemplateInstance);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// Send file by name</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">bool</span> sendFile(<a class="code" href="classString.html">String</a> fileName, <span class="keywordtype">bool</span> allowGzipFileCheck = <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="comment">// @deprecated</span></div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d">sendJsonObject</a>(<a class="code" href="classJsonObjectStream.html">JsonObjectStream</a>* newJsonStreamInstance);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="comment">// @end deprecated</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="comment">// Send Datastream, can be called with Classes derived from</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordtype">bool</span> sendDataStream(<a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* newDataStream, <span class="keyword">enum</span> MimeType type)</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    {</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        <span class="keywordflow">return</span> sendDataStream(newDataStream, ContentType::toString(type));</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    }</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="comment">// Send Datastream, can be called with Classes derived from</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">bool</span> sendDataStream(<a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* newDataStream, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; reqContentType = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="comment">// Parse and send template file</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordtype">bool</span> sendTemplate(<a class="code" href="classTemplateStream.html">TemplateStream</a>* newTemplateInstance);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d">sendJsonObject</a>(<a class="code" href="classJsonObjectStream.html">JsonObjectStream</a>* newJsonStreamInstance);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">// @end deprecated</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="comment">// Send Datastream, can be called with Classes derived from</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">bool</span> sendDataStream(<a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* newDataStream, <span class="keyword">enum</span> MimeType type)</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <span class="keywordflow">return</span> sendDataStream(newDataStream, ContentType::toString(type));</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    }</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <a class="code" href="classString.html">String</a> getBody();</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordtype">void</span> reset();</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordtype">int</span> code;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="classHttpHeaders.html">HttpHeaders</a> headers;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream = NULL;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;};</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_RESPONSE_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classHttpResponse_html_a679e8e926c1c0a7c234074aeee2f1a9b"><div class="ttname"><a href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">HttpResponse::notFound</a></div><div class="ttdeci">__forceinline void notFound()</div><div class="ttdef"><b>Definition:</b> HttpResponse.h:49</div></div>
-<div class="ttc" id="classTemplateFileStream_html"><div class="ttname"><a href="classTemplateFileStream.html">TemplateFileStream</a></div><div class="ttdoc">Template file stream class. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:283</div></div>
-<div class="ttc" id="classHttpResponse_html_ad1e2104f51af6c4be01d59bb798503ad"><div class="ttname"><a href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">HttpResponse::forbidden</a></div><div class="ttdeci">__forceinline void forbidden()</div><div class="ttdef"><b>Definition:</b> HttpResponse.h:41</div></div>
-<div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:37</div></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="comment">// Send Datastream, can be called with Classes derived from</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">bool</span> sendDataStream(<a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* newDataStream, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; reqContentType = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <a class="code" href="classString.html">String</a> getBody();</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordtype">void</span> reset();</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">int</span> code;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="classHttpHeaders.html">HttpHeaders</a> headers;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;};</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTP_RESPONSE_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classHttpResponse_html_a679e8e926c1c0a7c234074aeee2f1a9b"><div class="ttname"><a href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">HttpResponse::notFound</a></div><div class="ttdeci">__forceinline void notFound()</div><div class="ttdef"><b>Definition:</b> HttpResponse.h:52</div></div>
+<div class="ttc" id="classHttpResponse_html_ad1e2104f51af6c4be01d59bb798503ad"><div class="ttname"><a href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">HttpResponse::forbidden</a></div><div class="ttdeci">__forceinline void forbidden()</div><div class="ttdef"><b>Definition:</b> HttpResponse.h:44</div></div>
+<div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:42</div></div>
 <div class="ttc" id="classHttpClient_html"><div class="ttname"><a href="classHttpClient.html">HttpClient</a></div><div class="ttdef"><b>Definition:</b> HttpClient.h:27</div></div>
-<div class="ttc" id="classJsonObjectStream_html"><div class="ttname"><a href="classJsonObjectStream.html">JsonObjectStream</a></div><div class="ttdoc">JSON object stream class. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:343</div></div>
-<div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
-<div class="ttc" id="classHttpHeaders_html"><div class="ttname"><a href="classHttpHeaders.html">HttpHeaders</a></div><div class="ttdef"><b>Definition:</b> Structures.h:58</div></div>
+<div class="ttc" id="classJsonObjectStream_html"><div class="ttname"><a href="classJsonObjectStream.html">JsonObjectStream</a></div><div class="ttdoc">JsonObject stream class. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:20</div></div>
+<div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
+<div class="ttc" id="classHttpHeaders_html"><div class="ttname"><a href="classHttpHeaders.html">HttpHeaders</a></div><div class="ttdoc">Encapsulates a set of HTTP header information. </div><div class="ttdef"><b>Definition:</b> HttpHeaders.h:93</div></div>
 <div class="ttc" id="classHttpResponse_html_a4ad42c6da411ab80d938f1f07e77171d"><div class="ttname"><a href="classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d">HttpResponse::sendJsonObject</a></div><div class="ttdeci">bool sendJsonObject(JsonObjectStream *newJsonStreamInstance)</div><div class="ttdoc">Build and send JSON string. </div></div>
-<div class="ttc" id="classHttpConnection_html"><div class="ttname"><a href="classHttpConnection.html">HttpConnection</a></div><div class="ttdef"><b>Definition:</b> HttpConnection.h:26</div></div>
-<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:129</div></div>
-<div class="ttc" id="classHttpResponse_html"><div class="ttname"><a href="classHttpResponse.html">HttpResponse</a></div><div class="ttdef"><b>Definition:</b> HttpResponse.h:21</div></div>
+<div class="ttc" id="classTemplateStream_html"><div class="ttname"><a href="classTemplateStream.html">TemplateStream</a></div><div class="ttdef"><b>Definition:</b> TemplateStream.h:40</div></div>
+<div class="ttc" id="classHttpConnection_html"><div class="ttname"><a href="classHttpConnection.html">HttpConnection</a></div><div class="ttdef"><b>Definition:</b> HttpConnection.h:28</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdoc">Base class for read/write stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:20</div></div>
+<div class="ttc" id="classHttpResponse_html"><div class="ttname"><a href="classHttpResponse.html">HttpResponse</a></div><div class="ttdef"><b>Definition:</b> HttpResponse.h:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

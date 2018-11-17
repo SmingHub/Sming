@@ -1,6 +1,6 @@
 var classDS18S20 =
 [
-    [ "DS18S20", "classDS18S20.html#a60b2df0f1da19b0cbd2eec00d62c0ee6", null ],
+    [ "DS18S20", "classDS18S20.html#a3e16ef1a935d255807987604f394bc2b", null ],
     [ "~DS18S20", "classDS18S20.html#a7ab46c4e5a7b9546e904bc49a15a729d", null ],
     [ "GetCelsius", "classDS18S20.html#a5e0bc85e80e4c72504e8b2cd65204d64", null ],
     [ "GetFahrenheit", "classDS18S20.html#a108feae8150ceb501798fc26e1d920ae", null ],

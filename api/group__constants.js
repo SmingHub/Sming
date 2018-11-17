@@ -1,10 +1,10 @@
 var group__constants =
 [
     [ "EspDigitalPin", "structEspDigitalPin.html", [
-      [ "mode", "structEspDigitalPin.html#abac51068cde6205783b1cc9ab25ff5dc", null ],
-      [ "operator const int", "structEspDigitalPin.html#a71781517b5a9fda73c20d4b12e7ef001", null ],
-      [ "read", "structEspDigitalPin.html#a46915f0b619f6692a98bac1255f6bbba", null ],
-      [ "write", "structEspDigitalPin.html#a34c567b8e1d4a786e9721f92fa46e8f0", null ],
+      [ "mode", "structEspDigitalPin.html#ad3ef5d4e675cda8d2cec6745c06dabb6", null ],
+      [ "operator const int", "structEspDigitalPin.html#ae8f189c6b0295153dcf6d3f0c7255d0b", null ],
+      [ "read", "structEspDigitalPin.html#a4b09e371181628c1b9cbed7785608b68", null ],
+      [ "write", "structEspDigitalPin.html#aad088fe76866bf79e1a16d4ebd9f0eaf", null ],
       [ "gpioFunc", "structEspDigitalPin.html#a109e7d4c694bfc34924cbb0f4fe3123c", null ],
       [ "id", "structEspDigitalPin.html#a3b394ffa61ba1a684eff0f3e2c505aea", null ],
       [ "mux", "structEspDigitalPin.html#ace65e413174da7e2941dc24035d02bae", null ]
@@ -31,9 +31,10 @@ var group__constants =
     [ "SmartConfigEvent", "group__constants.html#gad55285f33315ec666cea3776e69dcf2d", null ],
     [ "SmartConfigType", "group__constants.html#ga224e59c3716ac7c0640fa9fa7230d57f", null ],
     [ "StreamType", "group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d", [
+      [ "eSST_Invalid", "group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da9e461c0a6cb0397af4ad2353050004ea", null ],
       [ "eSST_Memory", "group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da52e12937a45fc0b53d64f8cd4a2bfafe", null ],
       [ "eSST_File", "group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da3c8ad301c949acce38bb0daf837baad4", null ],
-      [ "eSST_TemplateFile", "group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1dae053275af87cdd0b5b8c2ada654b415f", null ],
+      [ "eSST_Template", "group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da5965a51713b2f7e3551cf3852acd1880", null ],
       [ "eSST_JsonObject", "group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da73b520c06eece1658b28181a804ff5b4", null ],
       [ "eSST_User", "group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1dac75241af05b527c65b9a6487c89d82e4", null ],
       [ "eSST_Unknown", "group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da9bc885c0c8b6b89691a39d0ba980ecfc", null ]

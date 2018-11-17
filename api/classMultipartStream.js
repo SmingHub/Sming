@@ -10,11 +10,13 @@ var classMultipartStream =
     [ "findUntil", "classMultipartStream.html#a3a9497de614792103ab8cb4759e01a69", null ],
     [ "flush", "classMultipartStream.html#a313fb97e4af1e15ed581674a1ce76d3e", null ],
     [ "getBoundary", "classMultipartStream.html#afda2d98bb3275509fde37217b076d34a", null ],
-    [ "getStreamType", "classMultipartStream.html#a85c05516d8aa56e40db38a9b5f9f3543", null ],
+    [ "getName", "classMultipartStream.html#a39d8ea433dda122542c1e1fab75c3835", null ],
+    [ "getStreamType", "classMultipartStream.html#abc5c897e5e6b0b5014ab6658705c13f1", null ],
     [ "getWriteError", "classMultipartStream.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
-    [ "id", "classMultipartStream.html#abe31f244917749cf8b343c0249a312c0", null ],
-    [ "indexOf", "classMultipartStream.html#a0f934a5188da7f6a1c437c26755a2a42", null ],
+    [ "id", "classMultipartStream.html#ad1ef7841971cac54cfd5535b239535ad", null ],
+    [ "indexOf", "classMultipartStream.html#aa5a72de358de3023fbc6625762ab854f", null ],
     [ "isFinished", "classMultipartStream.html#a4a245cd98195dbe4286fb66b3bdefbde", null ],
+    [ "isValid", "classMultipartStream.html#ab449f678d6db826bd6fd4e2b8a3a3967", null ],
     [ "length", "classMultipartStream.html#ad8cc82e9d879f26d143c808b6b34bb3d", null ],
     [ "parseFloat", "classMultipartStream.html#a5e5a0cc11eb586d89dcb7fa8e53a87e8", null ],
     [ "parseFloat", "classMultipartStream.html#a14a98cdbb166008f25dd044d836b1864", null ],
@@ -59,6 +61,6 @@ var classMultipartStream =
     [ "write", "classMultipartStream.html#abfdd93a61c4b95a3ba41680188505e73", null ],
     [ "write", "classMultipartStream.html#ab51d51c9ef574dd99e123f702f88fc4e", null ],
     [ "write", "classMultipartStream.html#a4693eb94b4d0d796211375b7f711609c", null ],
-    [ "_startMillis", "classMultipartStream.html#abf61d2006d28d18f2e028285a323fe5a", null ],
-    [ "_timeout", "classMultipartStream.html#aae48f1a926d2e82a452f2c75af0c6a29", null ]
+    [ "receiveTimeout", "classMultipartStream.html#a525e929c31bf030eb050497690fca7ae", null ],
+    [ "startMillis", "classMultipartStream.html#a4928691eee5c693b0acea38676b8e44f", null ]
 ];

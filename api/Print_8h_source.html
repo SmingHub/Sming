@@ -134,7 +134,7 @@ $(document).ready(function(){initNavTree('Print_8h_source.html','');});
 <div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classPrint.html">   31</a></span>&#160;<span class="keyword">class </span><a class="code" href="classPrint.html">Print</a></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="classPrint.html">Print</a>() : write_error(0) {}</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="classPrint.html">Print</a>() {}</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classPrint.html">Print</a>() {}</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  </div>
 <div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classPrint.html#a88a4a829fb5d589efb43955ad0cbddcc">   37</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classPrint.html#a88a4a829fb5d589efb43955ad0cbddcc">getWriteError</a>() { <span class="keywordflow">return</span> write_error; }</div>
@@ -192,7 +192,7 @@ $(document).ready(function(){initNavTree('Print_8h_source.html','');});
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classPrint.html#a67aa459464b181ee200e9173e53b11ff">printf</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *fmt, ...);</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordtype">int</span> write_error;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordtype">int</span> write_error = 0;</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordtype">size_t</span> printNumber(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span>, uint8_t);</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">size_t</span> printFloat(<span class="keywordtype">double</span>, uint8_t);</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keyword">protected</span>:</div>
@@ -206,7 +206,7 @@ $(document).ready(function(){initNavTree('Print_8h_source.html','');});
 <div class="ttc" id="classPrint_html_a169b128f9e22f0c15883768f580541a2"><div class="ttname"><a href="classPrint.html#a169b128f9e22f0c15883768f580541a2">Print::println</a></div><div class="ttdeci">size_t println(void)</div><div class="ttdoc">Prints a newline to output stream. </div></div>
 <div class="ttc" id="classPrint_html_a67aa459464b181ee200e9173e53b11ff"><div class="ttname"><a href="classPrint.html#a67aa459464b181ee200e9173e53b11ff">Print::printf</a></div><div class="ttdeci">size_t printf(const char *fmt,...)</div><div class="ttdoc">Prints a formatted c-string to output stream. </div></div>
 <div class="ttc" id="classPrint_html_a1e411d07a8ffec5faf7ce485bac0f029"><div class="ttname"><a href="classPrint.html#a1e411d07a8ffec5faf7ce485bac0f029">Print::print</a></div><div class="ttdeci">size_t print(char)</div><div class="ttdoc">Prints a single character to output stream. </div></div>
-<div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
+<div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
 <div class="ttc" id="classPrint_html_a5b40e0e9cab1f2fe5bb0cb22ffe5adda"><div class="ttname"><a href="classPrint.html#a5b40e0e9cab1f2fe5bb0cb22ffe5adda">Print::write</a></div><div class="ttdeci">size_t write(const char *str)</div><div class="ttdoc">Writes a c-string to output stream. </div><div class="ttdef"><b>Definition:</b> Print.h:48</div></div>
 <div class="ttc" id="classPrint_html"><div class="ttname"><a href="classPrint.html">Print</a></div><div class="ttdoc">Provides formatted output to stream. </div><div class="ttdef"><b>Definition:</b> Print.h:31</div></div>
 <div class="ttc" id="classPrint_html_abfdd93a61c4b95a3ba41680188505e73"><div class="ttname"><a href="classPrint.html#abfdd93a61c4b95a3ba41680188505e73">Print::write</a></div><div class="ttdeci">size_t write(const char *buffer, size_t size)</div><div class="ttdoc">Writes characters from a buffer to output stream. </div><div class="ttdef"><b>Definition:</b> Print.h:53</div></div>

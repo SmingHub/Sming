@@ -9,7 +9,7 @@ var classStream =
     [ "findUntil", "classStream.html#a3a9497de614792103ab8cb4759e01a69", null ],
     [ "flush", "classStream.html#aa3ef2c34f152a0b2ea8de9139b9461da", null ],
     [ "getWriteError", "classStream.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
-    [ "indexOf", "classStream.html#a0f934a5188da7f6a1c437c26755a2a42", null ],
+    [ "indexOf", "classStream.html#aa5a72de358de3023fbc6625762ab854f", null ],
     [ "parseFloat", "classStream.html#a5e5a0cc11eb586d89dcb7fa8e53a87e8", null ],
     [ "parseFloat", "classStream.html#a14a98cdbb166008f25dd044d836b1864", null ],
     [ "parseInt", "classStream.html#a497ffcbcb4d5bb889a8fde487bcc1b98", null ],
@@ -51,6 +51,6 @@ var classStream =
     [ "write", "classStream.html#a5b40e0e9cab1f2fe5bb0cb22ffe5adda", null ],
     [ "write", "classStream.html#ad98d820df11e2697be1e4b1ea30b4a23", null ],
     [ "write", "classStream.html#abfdd93a61c4b95a3ba41680188505e73", null ],
-    [ "_startMillis", "classStream.html#abf61d2006d28d18f2e028285a323fe5a", null ],
-    [ "_timeout", "classStream.html#aae48f1a926d2e82a452f2c75af0c6a29", null ]
+    [ "receiveTimeout", "classStream.html#a525e929c31bf030eb050497690fca7ae", null ],
+    [ "startMillis", "classStream.html#a4928691eee5c693b0acea38676b8e44f", null ]
 ];

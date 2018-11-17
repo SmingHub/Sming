@@ -120,9 +120,9 @@ $(document).ready(function(){initNavTree('classDS18S20.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a60b2df0f1da19b0cbd2eec00d62c0ee6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a60b2df0f1da19b0cbd2eec00d62c0ee6">DS18S20</a> ()</td></tr>
-<tr class="memdesc:a60b2df0f1da19b0cbd2eec00d62c0ee6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate a <a class="el" href="classDS18S20.html" title="This class implements access to the DS18x20 range of temperature sensors. ">DS18S20</a> object.  <a href="#a60b2df0f1da19b0cbd2eec00d62c0ee6">More...</a><br/></td></tr>
-<tr class="separator:a60b2df0f1da19b0cbd2eec00d62c0ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e16ef1a935d255807987604f394bc2b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a3e16ef1a935d255807987604f394bc2b">DS18S20</a> (uint8_t workPin=DS1820_WORK_PIN)</td></tr>
+<tr class="memdesc:a3e16ef1a935d255807987604f394bc2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate a <a class="el" href="classDS18S20.html" title="This class implements access to the DS18x20 range of temperature sensors. ">DS18S20</a> object.  <a href="#a3e16ef1a935d255807987604f394bc2b">More...</a><br/></td></tr>
+<tr class="separator:a3e16ef1a935d255807987604f394bc2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d593216797a90aa03081c12a32032dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDS18S20.html#a7d593216797a90aa03081c12a32032dd">Init</a> (uint8_t)</td></tr>
 <tr class="memdesc:a7d593216797a90aa03081c12a32032dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiate communication on 1-wire bus.  <a href="#a7d593216797a90aa03081c12a32032dd">More...</a><br/></td></tr>
 <tr class="separator:a7d593216797a90aa03081c12a32032dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,14 +157,15 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class implements access to the DS18x20 range of temperature sensors. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a60b2df0f1da19b0cbd2eec00d62c0ee6"></a>
+<a class="anchor" id="a3e16ef1a935d255807987604f394bc2b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">DS18S20::DS18S20 </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>workPin</em> = <code>DS1820_WORK_PIN</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -318,7 +319,7 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if last measured temperature is valid, false for invalid value or invalid sensor index </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Call this function before reading value to ensure the value is valid </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000017">Todo:</a></b></dt><dd>Initial code review suggests this is set once but never rechecked so may not be accurate </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000020">Todo:</a></b></dt><dd>Initial code review suggests this is set once but never rechecked so may not be accurate </dd></dl>
 
 </div>
 </div>

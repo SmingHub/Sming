@@ -107,6 +107,7 @@ $(document).ready(function(){initNavTree('classString.html','');});
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
@@ -115,33 +116,45 @@ $(document).ready(function(){initNavTree('classString.html','');});
 <div class="title">String Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>The string class.  
+ <a href="classString.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="WString_8h_source.html">WString.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for String:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="classString.png" usemap="#String_map" alt=""/>
   <map id="String_map" name="String_map">
-<area href="classStringSumHelper.html" alt="StringSumHelper" shape="rect" coords="0,56,107,80"/>
+<area href="classCStringArray.html" title="Class to manage a double null-terminated list of strings, such as &quot;one\0two\0three&quot;. " alt="CStringArray" shape="rect" coords="0,56,107,80"/>
+<area href="classStringSumHelper.html" alt="StringSumHelper" shape="rect" coords="117,56,224,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5b8f3458cb0856a1023ed38cb1f0a00d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5b8f3458cb0856a1023ed38cb1f0a00d"></a>
-IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (const char *cstr=&quot;&quot;)</td></tr>
-<tr class="separator:a5b8f3458cb0856a1023ed38cb1f0a00d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fb28c3846c394c076308d90d7a21d0a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2fb28c3846c394c076308d90d7a21d0a"></a>
-IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (const char *cstr, unsigned int length)</td></tr>
-<tr class="separator:a2fb28c3846c394c076308d90d7a21d0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b2298d13eb35ec76c92bc1f9b6e9b50"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b2298d13eb35ec76c92bc1f9b6e9b50"></a>
-IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (const <a class="el" href="classString.html">String</a> &amp;str)</td></tr>
-<tr class="separator:a4b2298d13eb35ec76c92bc1f9b6e9b50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c00916599f06d3e28a498a535117ea3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7c00916599f06d3e28a498a535117ea3"></a>
-IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (<a class="el" href="classString.html">String</a> &amp;&amp;rval)</td></tr>
-<tr class="separator:a7c00916599f06d3e28a498a535117ea3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d929a4d5bfe80f040264db178d342c6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d929a4d5bfe80f040264db178d342c6"></a>
-IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (<a class="el" href="classStringSumHelper.html">StringSumHelper</a> &amp;&amp;rval)</td></tr>
-<tr class="separator:a5d929a4d5bfe80f040264db178d342c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b2a78625a8881d8150f446f9e32f303"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b2a78625a8881d8150f446f9e32f303"></a>
+STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (const char *cstr=nullptr)</td></tr>
+<tr class="separator:a8b2a78625a8881d8150f446f9e32f303"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41bb9a248227a059622b352d855c84c4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a41bb9a248227a059622b352d855c84c4"></a>
+STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (const char *cstr, unsigned int length)</td></tr>
+<tr class="separator:a41bb9a248227a059622b352d855c84c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ab1dfa6bfa9c7a453835c1b507d1b3a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6ab1dfa6bfa9c7a453835c1b507d1b3a"></a>
+STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (const <a class="el" href="classString.html">String</a> &amp;str)</td></tr>
+<tr class="separator:a6ab1dfa6bfa9c7a453835c1b507d1b3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84c2fa99852663db51e63b39d01ceba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af84c2fa99852663db51e63b39d01ceba"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (flash_string_t pstr, int length=-1)</td></tr>
+<tr class="separator:af84c2fa99852663db51e63b39d01ceba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1086ad2c4d0713d916b67ead0ffaed6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af1086ad2c4d0713d916b67ead0ffaed6"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (const <a class="el" href="structFlashString.html">FlashString</a> &amp;fstr)</td></tr>
+<tr class="separator:af1086ad2c4d0713d916b67ead0ffaed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ae436c0e81189db1fa06848df730596"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ae436c0e81189db1fa06848df730596"></a>
+STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (<a class="el" href="classString.html">String</a> &amp;&amp;rval)</td></tr>
+<tr class="separator:a0ae436c0e81189db1fa06848df730596"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ada86125c7fde3746644d5fd743c7bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ada86125c7fde3746644d5fd743c7bd"></a>
+STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (<a class="el" href="classStringSumHelper.html">StringSumHelper</a> &amp;&amp;rval)</td></tr>
+<tr class="separator:a2ada86125c7fde3746644d5fd743c7bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fdfe981d2c5e0075c1669dd94553082"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1fdfe981d2c5e0075c1669dd94553082"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (char c)</td></tr>
 <tr class="separator:a1fdfe981d2c5e0075c1669dd94553082"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -169,54 +182,63 @@ IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>String</b> (<a c
 <tr class="memitem:a2d38e9dda0be9bd55c57e4d12201d3d4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2d38e9dda0be9bd55c57e4d12201d3d4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setString</b> (const char *cstr, int length=-1)</td></tr>
 <tr class="separator:a2d38e9dda0be9bd55c57e4d12201d3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a138edcc762cb87649d81757d1e4ab419"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a138edcc762cb87649d81757d1e4ab419"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>reserve</b> (unsigned int size)</td></tr>
-<tr class="separator:a138edcc762cb87649d81757d1e4ab419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb734b8c8cb2988de4ba5b7f5ad94b99"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb734b8c8cb2988de4ba5b7f5ad94b99"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setString</b> (flash_string_t pstr, int length=-1)</td></tr>
+<tr class="separator:afb734b8c8cb2988de4ba5b7f5ad94b99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4669cc8cd5ff06359d294c19eba8b729"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4669cc8cd5ff06359d294c19eba8b729"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>reserve</b> (unsigned int size)</td></tr>
+<tr class="separator:a4669cc8cd5ff06359d294c19eba8b729"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47497811b505f952505d2dd2c2063640"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classString.html#a47497811b505f952505d2dd2c2063640">setLength</a> (unsigned int length)</td></tr>
+<tr class="memdesc:a47497811b505f952505d2dd2c2063640"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the string length accordingly, expanding if necessary  <a href="#a47497811b505f952505d2dd2c2063640">More...</a><br/></td></tr>
+<tr class="separator:a47497811b505f952505d2dd2c2063640"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0604513dfe0a1225294a27974f36de0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa0604513dfe0a1225294a27974f36de0"></a>
 unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>length</b> (void) const </td></tr>
 <tr class="separator:aa0604513dfe0a1225294a27974f36de0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a655d1db3213ae684b7e841c8c0f52c79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a655d1db3213ae684b7e841c8c0f52c79"></a>
-<a class="el" href="classString.html">String</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classString.html">String</a> &amp;rhs)</td></tr>
-<tr class="separator:a655d1db3213ae684b7e841c8c0f52c79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af3c15c9ad43a225af731e58b75245dc9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af3c15c9ad43a225af731e58b75245dc9"></a>
-<a class="el" href="classString.html">String</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const char *cstr)</td></tr>
-<tr class="separator:af3c15c9ad43a225af731e58b75245dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b85d06c9befe5965b40a5900f45e8f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b85d06c9befe5965b40a5900f45e8f5"></a>
+<a class="el" href="classString.html">String</a> &amp;STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classString.html">String</a> &amp;rhs)</td></tr>
+<tr class="separator:a4b85d06c9befe5965b40a5900f45e8f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25050d4942b6eed0375122e7d71e5a3d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a25050d4942b6eed0375122e7d71e5a3d"></a>
+<a class="el" href="classString.html">String</a> &amp;STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const char *cstr)</td></tr>
+<tr class="separator:a25050d4942b6eed0375122e7d71e5a3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40559777c9eb8750a729934b5f97caee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a40559777c9eb8750a729934b5f97caee"></a>
 <a class="el" href="classString.html">String</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classString.html">String</a> &amp;&amp;rval)</td></tr>
 <tr class="separator:a40559777c9eb8750a729934b5f97caee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e70b10e147e6490b35dc9db2b92408b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5e70b10e147e6490b35dc9db2b92408b"></a>
 <a class="el" href="classString.html">String</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classStringSumHelper.html">StringSumHelper</a> &amp;&amp;rval)</td></tr>
 <tr class="separator:a5e70b10e147e6490b35dc9db2b92408b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63f64f8a3da37d4570ce7b2ceec5bd2b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a63f64f8a3da37d4570ce7b2ceec5bd2b"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (const <a class="el" href="classString.html">String</a> &amp;str)</td></tr>
-<tr class="separator:a63f64f8a3da37d4570ce7b2ceec5bd2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5477edc378d55f57bb6572217e562c7a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5477edc378d55f57bb6572217e562c7a"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (const char *cstr)</td></tr>
-<tr class="separator:a5477edc378d55f57bb6572217e562c7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f3e286a1a7b65a154e3e3dd19d4b707"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f3e286a1a7b65a154e3e3dd19d4b707"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (char c)</td></tr>
-<tr class="separator:a5f3e286a1a7b65a154e3e3dd19d4b707"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c02b2de34a3245d16c5430951789f7d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c02b2de34a3245d16c5430951789f7d"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (unsigned char c)</td></tr>
-<tr class="separator:a1c02b2de34a3245d16c5430951789f7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d437a7312b591848b5457705fee5549"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d437a7312b591848b5457705fee5549"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (int num)</td></tr>
-<tr class="separator:a6d437a7312b591848b5457705fee5549"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9c20f944d8a4687808017388047d155"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9c20f944d8a4687808017388047d155"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (unsigned int num)</td></tr>
-<tr class="separator:af9c20f944d8a4687808017388047d155"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92a456f8679a19d2221ec43841238ead"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a92a456f8679a19d2221ec43841238ead"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (long num)</td></tr>
-<tr class="separator:a92a456f8679a19d2221ec43841238ead"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad502777b7549182fe9b1a14879acf307"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad502777b7549182fe9b1a14879acf307"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (unsigned long num)</td></tr>
-<tr class="separator:ad502777b7549182fe9b1a14879acf307"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6029b556adb9a23d82d1f276ce4f8ee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6029b556adb9a23d82d1f276ce4f8ee"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (float num)</td></tr>
-<tr class="separator:af6029b556adb9a23d82d1f276ce4f8ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1e52143c6057122a71db07ed1c7fb0e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab1e52143c6057122a71db07ed1c7fb0e"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (double num)</td></tr>
-<tr class="separator:ab1e52143c6057122a71db07ed1c7fb0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a291367ed7121cad1e670d3ed74b811d8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a291367ed7121cad1e670d3ed74b811d8"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (const <a class="el" href="classString.html">String</a> &amp;str)</td></tr>
+<tr class="separator:a291367ed7121cad1e670d3ed74b811d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae92a8b91eebd7e131f5517c7dda514b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae92a8b91eebd7e131f5517c7dda514b1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (const char *cstr)</td></tr>
+<tr class="separator:ae92a8b91eebd7e131f5517c7dda514b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad28e31dec35878a498bf189878b84e77"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad28e31dec35878a498bf189878b84e77"></a>
+bool STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (const char *cstr, unsigned int length)</td></tr>
+<tr class="separator:ad28e31dec35878a498bf189878b84e77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc7ad66b748dfa59926ff27c14d25962"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adc7ad66b748dfa59926ff27c14d25962"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (char c)</td></tr>
+<tr class="separator:adc7ad66b748dfa59926ff27c14d25962"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2c270eb592c439f0724d2e64d6eaf30"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2c270eb592c439f0724d2e64d6eaf30"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (unsigned char c)</td></tr>
+<tr class="separator:ae2c270eb592c439f0724d2e64d6eaf30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60668ebf179fa9dec791f9ffe324c75d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a60668ebf179fa9dec791f9ffe324c75d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (int num)</td></tr>
+<tr class="separator:a60668ebf179fa9dec791f9ffe324c75d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30d4ac7e37eccd1aa011fd5ad5df916c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30d4ac7e37eccd1aa011fd5ad5df916c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (unsigned int num)</td></tr>
+<tr class="separator:a30d4ac7e37eccd1aa011fd5ad5df916c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac096cff9db5b9c373043b3650f082544"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac096cff9db5b9c373043b3650f082544"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (long num)</td></tr>
+<tr class="separator:ac096cff9db5b9c373043b3650f082544"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2ef1aa3c4b716a6e5838389c9911293"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2ef1aa3c4b716a6e5838389c9911293"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (unsigned long num)</td></tr>
+<tr class="separator:ac2ef1aa3c4b716a6e5838389c9911293"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e70c7b1c38ea1429df5113579954d32"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7e70c7b1c38ea1429df5113579954d32"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (float num)</td></tr>
+<tr class="separator:a7e70c7b1c38ea1429df5113579954d32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3114a3f90e044f121410eb8dee8900ba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3114a3f90e044f121410eb8dee8900ba"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (double num)</td></tr>
+<tr class="separator:a3114a3f90e044f121410eb8dee8900ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a3f29c49cc46fb598fc41767a83dabc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5a3f29c49cc46fb598fc41767a83dabc"></a>
 <a class="el" href="classString.html">String</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator+=</b> (const <a class="el" href="classString.html">String</a> &amp;rhs)</td></tr>
 <tr class="separator:a5a3f29c49cc46fb598fc41767a83dabc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -250,66 +272,78 @@ unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (
 <tr class="memitem:ad926a477a7b8fb783538127b96036511"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad926a477a7b8fb783538127b96036511"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>operator StringIfHelperType</b> () const </td></tr>
 <tr class="separator:ad926a477a7b8fb783538127b96036511"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03e9f72da2e33137ec87bbf0957a73eb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a03e9f72da2e33137ec87bbf0957a73eb"></a>
-int IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>compareTo</b> (const <a class="el" href="classString.html">String</a> &amp;s) const </td></tr>
-<tr class="separator:a03e9f72da2e33137ec87bbf0957a73eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22e7481f82819469f14797cc39e37cff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a22e7481f82819469f14797cc39e37cff"></a>
-unsigned char IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>equals</b> (const <a class="el" href="classString.html">String</a> &amp;s) const </td></tr>
-<tr class="separator:a22e7481f82819469f14797cc39e37cff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3e1390a3ba7d1585843115e7861b7b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab3e1390a3ba7d1585843115e7861b7b1"></a>
-unsigned char IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>equals</b> (const char *cstr) const </td></tr>
-<tr class="separator:ab3e1390a3ba7d1585843115e7861b7b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6a15f9c860200d8c7176fc242cb49dd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6a15f9c860200d8c7176fc242cb49dd"></a>
-unsigned char IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
-<tr class="separator:af6a15f9c860200d8c7176fc242cb49dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e10282c4c10b5a378b7ed3c53c3166e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e10282c4c10b5a378b7ed3c53c3166e"></a>
-unsigned char IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const char *cstr) const </td></tr>
-<tr class="separator:a6e10282c4c10b5a378b7ed3c53c3166e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10902e16824004c36a62a58cc1411ad6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a10902e16824004c36a62a58cc1411ad6"></a>
-unsigned char IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
-<tr class="separator:a10902e16824004c36a62a58cc1411ad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27e768506d00dfcd8f07c3fbfbd385c6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27e768506d00dfcd8f07c3fbfbd385c6"></a>
-unsigned char IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const char *cstr) const </td></tr>
-<tr class="separator:a27e768506d00dfcd8f07c3fbfbd385c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a2549390f242668de6544e4c463bbcd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a2549390f242668de6544e4c463bbcd"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
-<tr class="separator:a6a2549390f242668de6544e4c463bbcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a274ed1f856c1251a940bcde564152c7c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a274ed1f856c1251a940bcde564152c7c"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
-<tr class="separator:a274ed1f856c1251a940bcde564152c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f9fe44783b6adea2a24956d0180fb3c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f9fe44783b6adea2a24956d0180fb3c"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;=</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
-<tr class="separator:a5f9fe44783b6adea2a24956d0180fb3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac91f7d5429304d29b0a32441c8d6a1fa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac91f7d5429304d29b0a32441c8d6a1fa"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;=</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
-<tr class="separator:ac91f7d5429304d29b0a32441c8d6a1fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2650d33a6795375680f750dda4f2a27"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad2650d33a6795375680f750dda4f2a27"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>equalsIgnoreCase</b> (const <a class="el" href="classString.html">String</a> &amp;s) const </td></tr>
-<tr class="separator:ad2650d33a6795375680f750dda4f2a27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37181677f9b1a8c4750f6c7289fa33c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a37181677f9b1a8c4750f6c7289fa33c8"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>startsWith</b> (const <a class="el" href="classString.html">String</a> &amp;prefix) const </td></tr>
-<tr class="separator:a37181677f9b1a8c4750f6c7289fa33c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a025b544360e7b1f9b63a4e448d1caec2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a025b544360e7b1f9b63a4e448d1caec2"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>startsWith</b> (const <a class="el" href="classString.html">String</a> &amp;prefix, unsigned int offset) const </td></tr>
-<tr class="separator:a025b544360e7b1f9b63a4e448d1caec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0efdeb8b124981c9a76b27dbfd6760be"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0efdeb8b124981c9a76b27dbfd6760be"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>endsWith</b> (const <a class="el" href="classString.html">String</a> &amp;suffix) const </td></tr>
-<tr class="separator:a0efdeb8b124981c9a76b27dbfd6760be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9926d3f98b4b8f0a366a0a4151b282b0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9926d3f98b4b8f0a366a0a4151b282b0"></a>
-char IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>charAt</b> (unsigned int index) const </td></tr>
-<tr class="separator:a9926d3f98b4b8f0a366a0a4151b282b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fea9d62ac219ecf88d6fa2d08da9980"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5fea9d62ac219ecf88d6fa2d08da9980"></a>
-void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>setCharAt</b> (unsigned int index, char c)</td></tr>
-<tr class="separator:a5fea9d62ac219ecf88d6fa2d08da9980"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45fb7520467197903fdcad44a1da43f9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a45fb7520467197903fdcad44a1da43f9"></a>
-char IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (unsigned int index) const </td></tr>
-<tr class="separator:a45fb7520467197903fdcad44a1da43f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed213a021deec9916ee3275b2431fae7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed213a021deec9916ee3275b2431fae7"></a>
-char &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (unsigned int index)</td></tr>
-<tr class="separator:aed213a021deec9916ee3275b2431fae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa727d2854bd6fdf5e731f65de6aed313"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa727d2854bd6fdf5e731f65de6aed313"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>getBytes</b> (unsigned char *buf, unsigned int bufsize, unsigned int index=0) const </td></tr>
-<tr class="separator:aa727d2854bd6fdf5e731f65de6aed313"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed245c8f9b8c5aead9fe695df5967e57"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed245c8f9b8c5aead9fe695df5967e57"></a>
+int STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>compareTo</b> (const <a class="el" href="classString.html">String</a> &amp;s) const </td></tr>
+<tr class="separator:aed245c8f9b8c5aead9fe695df5967e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc62e49b19ad36cc9ff062a05c45c4be"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adc62e49b19ad36cc9ff062a05c45c4be"></a>
+bool STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>equals</b> (const <a class="el" href="classString.html">String</a> &amp;s) const </td></tr>
+<tr class="separator:adc62e49b19ad36cc9ff062a05c45c4be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23e7adedf07f78c8a61a0d099061f869"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23e7adedf07f78c8a61a0d099061f869"></a>
+bool STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>equals</b> (const char *cstr) const </td></tr>
+<tr class="separator:a23e7adedf07f78c8a61a0d099061f869"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab16b1d488bc04e5d4b88bdff9ef7723a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab16b1d488bc04e5d4b88bdff9ef7723a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>equals</b> (const <a class="el" href="structFlashString.html">FlashString</a> &amp;fstr) const </td></tr>
+<tr class="separator:ab16b1d488bc04e5d4b88bdff9ef7723a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66694ebaa12611c87474d4b1978750a7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66694ebaa12611c87474d4b1978750a7"></a>
+bool STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
+<tr class="separator:a66694ebaa12611c87474d4b1978750a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad10eb053d122d2c306a9b30f852aab0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aad10eb053d122d2c306a9b30f852aab0"></a>
+bool STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const char *cstr) const </td></tr>
+<tr class="separator:aad10eb053d122d2c306a9b30f852aab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5664588e5430d2e71b73f5ca10a1083"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab5664588e5430d2e71b73f5ca10a1083"></a>
+bool STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="structFlashString.html">FlashString</a> &amp;fstr) const </td></tr>
+<tr class="separator:ab5664588e5430d2e71b73f5ca10a1083"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add22ca0892b6d6fc4e9f422645dda77a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add22ca0892b6d6fc4e9f422645dda77a"></a>
+bool STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
+<tr class="separator:add22ca0892b6d6fc4e9f422645dda77a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fc7d1d2138db6ead25207540d5b515c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4fc7d1d2138db6ead25207540d5b515c"></a>
+bool STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const char *cstr) const </td></tr>
+<tr class="separator:a4fc7d1d2138db6ead25207540d5b515c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad17973b1a6ca7be84afdbb32ac3ed4e3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad17973b1a6ca7be84afdbb32ac3ed4e3"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
+<tr class="separator:ad17973b1a6ca7be84afdbb32ac3ed4e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa66546556e369315a6b31f5ea92078a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa66546556e369315a6b31f5ea92078a8"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
+<tr class="separator:aa66546556e369315a6b31f5ea92078a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a362daf435217c58c435f846283f5b2bf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a362daf435217c58c435f846283f5b2bf"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;=</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
+<tr class="separator:a362daf435217c58c435f846283f5b2bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a901d11d07e374ad7ccda63562cf95d6d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a901d11d07e374ad7ccda63562cf95d6d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;=</b> (const <a class="el" href="classString.html">String</a> &amp;rhs) const </td></tr>
+<tr class="separator:a901d11d07e374ad7ccda63562cf95d6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2bac2cbb86d7a449308360647bdc62a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af2bac2cbb86d7a449308360647bdc62a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>equalsIgnoreCase</b> (const char *cstr) const </td></tr>
+<tr class="separator:af2bac2cbb86d7a449308360647bdc62a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfc214d81e729ff24649ddec96936814"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acfc214d81e729ff24649ddec96936814"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>equalsIgnoreCase</b> (const <a class="el" href="classString.html">String</a> &amp;s2) const </td></tr>
+<tr class="separator:acfc214d81e729ff24649ddec96936814"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7beac85ba5f63fa6ff11e0d456152995"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7beac85ba5f63fa6ff11e0d456152995"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>equalsIgnoreCase</b> (const <a class="el" href="structFlashString.html">FlashString</a> &amp;fstr) const </td></tr>
+<tr class="separator:a7beac85ba5f63fa6ff11e0d456152995"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bc4ca5e062e43f0923755694baa1975"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9bc4ca5e062e43f0923755694baa1975"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>startsWith</b> (const <a class="el" href="classString.html">String</a> &amp;prefix) const </td></tr>
+<tr class="separator:a9bc4ca5e062e43f0923755694baa1975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba53f99b472c0ce2dd58ff45e4c34c03"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba53f99b472c0ce2dd58ff45e4c34c03"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>startsWith</b> (const <a class="el" href="classString.html">String</a> &amp;prefix, unsigned int offset) const </td></tr>
+<tr class="separator:aba53f99b472c0ce2dd58ff45e4c34c03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9950fc14f38e8bf0aa6b54f09992dc3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad9950fc14f38e8bf0aa6b54f09992dc3"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>endsWith</b> (const <a class="el" href="classString.html">String</a> &amp;suffix) const </td></tr>
+<tr class="separator:ad9950fc14f38e8bf0aa6b54f09992dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa56068dce4cdbd9532071e47b64109d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa56068dce4cdbd9532071e47b64109d5"></a>
+char STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>charAt</b> (unsigned int index) const </td></tr>
+<tr class="separator:aa56068dce4cdbd9532071e47b64109d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a686e87402f71e5abd9412a1b17cedaba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a686e87402f71e5abd9412a1b17cedaba"></a>
+void STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>setCharAt</b> (unsigned int index, char c)</td></tr>
+<tr class="separator:a686e87402f71e5abd9412a1b17cedaba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa08ecfc328f9de2230db72096c30e11"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afa08ecfc328f9de2230db72096c30e11"></a>
+char STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (unsigned int index) const </td></tr>
+<tr class="separator:afa08ecfc328f9de2230db72096c30e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a280090d922298fd046f07737bec67598"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a280090d922298fd046f07737bec67598"></a>
+char &amp;STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (unsigned int index)</td></tr>
+<tr class="separator:a280090d922298fd046f07737bec67598"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0a4a16fb82e937afd4c115498b8e9a7"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classString.html#af0a4a16fb82e937afd4c115498b8e9a7">getBytes</a> (unsigned char *buf, unsigned int bufsize, unsigned int index=0) const </td></tr>
+<tr class="memdesc:af0a4a16fb82e937afd4c115498b8e9a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">read contents of string into a buffer  <a href="#af0a4a16fb82e937afd4c115498b8e9a7">More...</a><br/></td></tr>
+<tr class="separator:af0a4a16fb82e937afd4c115498b8e9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae61cd7f2e41e77a52d87952de5360e50"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae61cd7f2e41e77a52d87952de5360e50"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>toCharArray</b> (char *buf, unsigned int bufsize, unsigned int index=0) const </td></tr>
 <tr class="separator:ae61cd7f2e41e77a52d87952de5360e50"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -328,30 +362,30 @@ const char *&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () 
 <tr class="memitem:af247dd61807ef31550598792dae5abbc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af247dd61807ef31550598792dae5abbc"></a>
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const </td></tr>
 <tr class="separator:af247dd61807ef31550598792dae5abbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86994524752373de05208f552159d4ad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a86994524752373de05208f552159d4ad"></a>
-int IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (char ch) const </td></tr>
-<tr class="separator:a86994524752373de05208f552159d4ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac728652ef58fdfbbea2178d233d6368f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac728652ef58fdfbbea2178d233d6368f"></a>
+int STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (char ch) const </td></tr>
+<tr class="separator:ac728652ef58fdfbbea2178d233d6368f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cce8cd1ed439561aa25df6c546045d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3cce8cd1ed439561aa25df6c546045d5"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (char ch, unsigned int fromIndex) const </td></tr>
 <tr class="separator:a3cce8cd1ed439561aa25df6c546045d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a583246d285448b45858c0dadef514922"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a583246d285448b45858c0dadef514922"></a>
-int IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (const <a class="el" href="classString.html">String</a> &amp;str) const </td></tr>
-<tr class="separator:a583246d285448b45858c0dadef514922"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97998ed753b0445123cc17449adb6e9a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a97998ed753b0445123cc17449adb6e9a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (const <a class="el" href="classString.html">String</a> &amp;str, unsigned int fromIndex) const </td></tr>
-<tr class="separator:a97998ed753b0445123cc17449adb6e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83721aa308e2e52c249cb37fd2f41a2b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a83721aa308e2e52c249cb37fd2f41a2b"></a>
+int STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (const <a class="el" href="classString.html">String</a> &amp;str) const </td></tr>
+<tr class="separator:a83721aa308e2e52c249cb37fd2f41a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a743dfad26ed0e7558fc11b30845fe49a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a743dfad26ed0e7558fc11b30845fe49a"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (const <a class="el" href="classString.html">String</a> &amp;s2, unsigned int fromIndex) const </td></tr>
+<tr class="separator:a743dfad26ed0e7558fc11b30845fe49a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3dbedf8dc518d947c91f484b6d78a6f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae3dbedf8dc518d947c91f484b6d78a6f"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>lastIndexOf</b> (char ch) const </td></tr>
 <tr class="separator:ae3dbedf8dc518d947c91f484b6d78a6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af582625efeedced06657f2d29b0dd40d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af582625efeedced06657f2d29b0dd40d"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>lastIndexOf</b> (char ch, int fromIndex) const </td></tr>
-<tr class="separator:af582625efeedced06657f2d29b0dd40d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fc027b0c1160e9e9e9460f68021f0bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1fc027b0c1160e9e9e9460f68021f0bd"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>lastIndexOf</b> (const <a class="el" href="classString.html">String</a> &amp;str) const </td></tr>
-<tr class="separator:a1fc027b0c1160e9e9e9460f68021f0bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2322ddab5d284f0f431719a573bd23b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab2322ddab5d284f0f431719a573bd23b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>lastIndexOf</b> (const <a class="el" href="classString.html">String</a> &amp;str, int fromIndex) const </td></tr>
-<tr class="separator:ab2322ddab5d284f0f431719a573bd23b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d7b15343faa3c6048ff621e925fa156"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2d7b15343faa3c6048ff621e925fa156"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>lastIndexOf</b> (char ch, unsigned int fromIndex) const </td></tr>
+<tr class="separator:a2d7b15343faa3c6048ff621e925fa156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc99be5dfad61971b4e33d033136b9f8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc99be5dfad61971b4e33d033136b9f8"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>lastIndexOf</b> (const <a class="el" href="classString.html">String</a> &amp;s2) const </td></tr>
+<tr class="separator:afc99be5dfad61971b4e33d033136b9f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b40ffe38afc2d8d8dc7f68701c1a1a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b40ffe38afc2d8d8dc7f68701c1a1a8"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>lastIndexOf</b> (const <a class="el" href="classString.html">String</a> &amp;s2, unsigned int fromIndex) const </td></tr>
+<tr class="separator:a7b40ffe38afc2d8d8dc7f68701c1a1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad27c108b34b07c6785e194c2d968bb1c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad27c108b34b07c6785e194c2d968bb1c"></a>
 <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>substring</b> (unsigned int beginIndex) const </td></tr>
 <tr class="separator:ad27c108b34b07c6785e194c2d968bb1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -386,23 +420,29 @@ long&#160;</td><td class="memItemRight" valign="bottom"><b>toInt</b> (void) cons
 float&#160;</td><td class="memItemRight" valign="bottom"><b>toFloat</b> (void) const </td></tr>
 <tr class="separator:afde6c2f60d7dbb2ec8b727c67d28c761"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a542a89a4b03d510c234c6b571ba322ae"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classString.html#a542a89a4b03d510c234c6b571ba322ae">nullstr</a></td></tr>
+<tr class="memdesc:a542a89a4b03d510c234c6b571ba322ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">A null string evaluates to false.  <a href="#a542a89a4b03d510c234c6b571ba322ae">More...</a><br/></td></tr>
+<tr class="separator:a542a89a4b03d510c234c6b571ba322ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd02116a5571fcc8bc1e6fdabe132a85"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classString.html#afd02116a5571fcc8bc1e6fdabe132a85">empty</a></td></tr>
+<tr class="memdesc:afd02116a5571fcc8bc1e6fdabe132a85"><td class="mdescLeft">&#160;</td><td class="mdescRight">An empty string evaluates to true.  <a href="#afd02116a5571fcc8bc1e6fdabe132a85">More...</a><br/></td></tr>
+<tr class="separator:afd02116a5571fcc8bc1e6fdabe132a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a9cf26fa86a9408de3a12d0d48dc0672f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9cf26fa86a9408de3a12d0d48dc0672f"></a>
-void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (void)</td></tr>
-<tr class="separator:a9cf26fa86a9408de3a12d0d48dc0672f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa66a18f12083684126f8115a5e116765"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa66a18f12083684126f8115a5e116765"></a>
-void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>invalidate</b> (void)</td></tr>
-<tr class="separator:aa66a18f12083684126f8115a5e116765"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeef986e133001b6ce8a6479d272bf38d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeef986e133001b6ce8a6479d272bf38d"></a>
-unsigned char IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>changeBuffer</b> (unsigned int maxStrLen)</td></tr>
-<tr class="separator:aeef986e133001b6ce8a6479d272bf38d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4dafb02db751ac6c84a33eb064ad902e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4dafb02db751ac6c84a33eb064ad902e"></a>
-unsigned char IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>concat</b> (const char *cstr, unsigned int length)</td></tr>
-<tr class="separator:a4dafb02db751ac6c84a33eb064ad902e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a429b9894a81d378e80bafc310707d0b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a429b9894a81d378e80bafc310707d0b5"></a>
+void STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>invalidate</b> (void)</td></tr>
+<tr class="separator:a429b9894a81d378e80bafc310707d0b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60c3777ed40268735dc9f74e40e6c4e8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a60c3777ed40268735dc9f74e40e6c4e8"></a>
+bool STRING_IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><b>changeBuffer</b> (unsigned int maxStrLen)</td></tr>
+<tr class="separator:a60c3777ed40268735dc9f74e40e6c4e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ef9e2f459577668c16326054d8220c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ef9e2f459577668c16326054d8220c8"></a>
 <a class="el" href="classString.html">String</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>copy</b> (const char *cstr, unsigned int length)</td></tr>
 <tr class="separator:a0ef9e2f459577668c16326054d8220c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af45df34da032f61eb4dad7b017eea9ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af45df34da032f61eb4dad7b017eea9ec"></a>
+<a class="el" href="classString.html">String</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>copy</b> (flash_string_t pstr, unsigned int length)</td></tr>
+<tr class="separator:af45df34da032f61eb4dad7b017eea9ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a430f5728b06c59663a024846105a8716"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a430f5728b06c59663a024846105a8716"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>move</b> (<a class="el" href="classString.html">String</a> &amp;rhs)</td></tr>
 <tr class="separator:a430f5728b06c59663a024846105a8716"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -410,13 +450,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>move</b> (<a class="e
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a7892a52a08b6671add931f85a19c1d46"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7892a52a08b6671add931f85a19c1d46"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><b>buffer</b></td></tr>
+char *&#160;</td><td class="memItemRight" valign="bottom"><b>buffer</b> = nullptr</td></tr>
 <tr class="separator:a7892a52a08b6671add931f85a19c1d46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ef08d09cb9336d7000ba41563fdd97f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8ef08d09cb9336d7000ba41563fdd97f"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>capacity</b></td></tr>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>capacity</b> = 0</td></tr>
 <tr class="separator:a8ef08d09cb9336d7000ba41563fdd97f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f92677bb5c9022417c9bfdd9aea9e3e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f92677bb5c9022417c9bfdd9aea9e3e"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>len</b></td></tr>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>len</b> = 0</td></tr>
 <tr class="separator:a1f92677bb5c9022417c9bfdd9aea9e3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
@@ -451,16 +491,136 @@ Friends</h2></td></tr>
 <tr class="memitem:ad7f8cc6402796f520aa6ddc33953f7fc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad7f8cc6402796f520aa6ddc33953f7fc"></a>
 <a class="el" href="classStringSumHelper.html">StringSumHelper</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator+</b> (const <a class="el" href="classStringSumHelper.html">StringSumHelper</a> &amp;lhs, double num)</td></tr>
 <tr class="separator:ad7f8cc6402796f520aa6ddc33953f7fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a598ac51dcaeb1268c1534eb591e2f298"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a598ac51dcaeb1268c1534eb591e2f298"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>splitString</b> (<a class="el" href="classString.html">String</a> &amp;what, int delim, <a class="el" href="classVector.html">Vector</a>&lt; long &gt; &amp;splits)</td></tr>
-<tr class="separator:a598ac51dcaeb1268c1534eb591e2f298"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f2bd93563934772470d99db0ae56934"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4f2bd93563934772470d99db0ae56934"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>splitString</b> (<a class="el" href="classString.html">String</a> &amp;what, int delim, <a class="el" href="classVector.html">Vector</a>&lt; int &gt; &amp;splits)</td></tr>
-<tr class="separator:a4f2bd93563934772470d99db0ae56934"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f6e405f581cac0f7c589c5da8de741c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f6e405f581cac0f7c589c5da8de741c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>splitString</b> (<a class="el" href="classString.html">String</a> &amp;what, int delim, <a class="el" href="classVector.html">Vector</a>&lt; <a class="el" href="classString.html">String</a> &gt; &amp;splits)</td></tr>
-<tr class="separator:a7f6e405f581cac0f7c589c5da8de741c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The string class. </p>
+<p>Note that a string object's default constructor creates an empty string. This is not the same as a null string. A null string evaluates to false An empty string evaluates to true </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="af0a4a16fb82e937afd4c115498b8e9a7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int String::getBytes </td>
+          <td>(</td>
+          <td class="paramtype">unsigned char *&#160;</td>
+          <td class="paramname"><em>buf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>bufsize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>index</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>read contents of string into a buffer </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buf</td><td>buffer to write data </td></tr>
+    <tr><td class="paramname">bufsize</td><td>size of buffer in bytes </td></tr>
+    <tr><td class="paramname">index</td><td>offset to start </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">unsigned</td><td>number of bytes copied, excluding nul terminator </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Returned data always nul terminated so buffer size needs to take this into account </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a47497811b505f952505d2dd2c2063640"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool String::setLength </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>length</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>set the string length accordingly, expanding if necessary </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">length</td><td>required for string (nul terminator additional) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">true</td><td>on success, false on failure </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>extra characters are undefined </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="afd02116a5571fcc8bc1e6fdabe132a85"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classString.html">String</a> String::empty</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>An empty string evaluates to true. </p>
+
+</div>
+</div>
+<a class="anchor" id="a542a89a4b03d510c234c6b571ba322ae"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classString.html">String</a> String::nullstr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>A null string evaluates to false. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

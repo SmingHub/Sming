@@ -139,9 +139,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enableCommand</b> (bo
 <tr class="memitem:a894ccda2b8a150838264c1c5bfa551d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a894ccda2b8a150838264c1c5bfa551d5"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>listen</b> (int port, bool useSsl=false)</td></tr>
 <tr class="separator:a894ccda2b8a150838264c1c5bfa551d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e3bbe276368784e689155d2a7f4de52"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e3bbe276368784e689155d2a7f4de52"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeOut</b> (uint16_t waitTimeOut)</td></tr>
-<tr class="separator:a0e3bbe276368784e689155d2a7f4de52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fbfb7bd175fb0c93093c59b05452a5a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8fbfb7bd175fb0c93093c59b05452a5a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setKeepAlive</b> (uint16_t seconds)</td></tr>
+<tr class="separator:a8fbfb7bd175fb0c93093c59b05452a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a918898ee7b13d776a2f7ea8968168669"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a918898ee7b13d776a2f7ea8968168669"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>shutdown</b> ()</td></tr>
 <tr class="separator:a918898ee7b13d776a2f7ea8968168669"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,6 +172,9 @@ __forceinline uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>get
 <tr class="memitem:aaaa45b0c9a0b26df7f8ca79697785114"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaaa45b0c9a0b26df7f8ca79697785114"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> ()</td></tr>
 <tr class="separator:aaaa45b0c9a0b26df7f8ca79697785114"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d01ef17727966d8d63e6f35a2a0fd14"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d01ef17727966d8d63e6f35a2a0fd14"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeOut</b> (uint16_t waitTimeOut)</td></tr>
+<tr class="separator:a3d01ef17727966d8d63e6f35a2a0fd14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a333a64364cd35ef53615bd52b9918825"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a333a64364cd35ef53615bd52b9918825"></a>
 <a class="el" href="classIPAddress.html">IPAddress</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getRemoteIp</b> ()</td></tr>
 <tr class="separator:a333a64364cd35ef53615bd52b9918825"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -274,6 +277,9 @@ tcp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>tcp</b> = NULL</
 <tr class="memitem:a482c5afdb16d0a93c46a8b83da649254"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a482c5afdb16d0a93c46a8b83da649254"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>sleep</b></td></tr>
 <tr class="separator:a482c5afdb16d0a93c46a8b83da649254"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d11a5464ae92193779dafc650597fa2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d11a5464ae92193779dafc650597fa2"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>timeOut</b> = USHRT_MAX</td></tr>
+<tr class="separator:a3d11a5464ae92193779dafc650597fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a730b80fbbafb4ac92eda9b320ccf7bbf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a730b80fbbafb4ac92eda9b320ccf7bbf"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>canSend</b></td></tr>
 <tr class="separator:a730b80fbbafb4ac92eda9b320ccf7bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -98,7 +98,8 @@ $(document).ready(function(){initNavTree('group__gpio.html','');});
 
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">GPIO functions</div>  </div>
 </div><!--header-->
@@ -133,6 +134,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga891ae327589414aa84207b059411da5e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga891ae327589414aa84207b059411da5e"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>analogRead</b> (uint16_t pin)</td></tr>
 <tr class="separator:ga891ae327589414aa84207b059411da5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:gaf75c217e7b6d970988dc3c314682db4e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structEspDigitalPin.html">EspDigitalPin</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__gpio.html#gaf75c217e7b6d970988dc3c314682db4e">EspDigitalPins</a> []</td></tr>
+<tr class="memdesc:gaf75c217e7b6d970988dc3c314682db4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">ESP GPIO pin configuration.  <a href="#gaf75c217e7b6d970988dc3c314682db4e">More...</a><br/></td></tr>
+<tr class="separator:gaf75c217e7b6d970988dc3c314682db4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Provides general purpose input and output (GPIO) functions. </p>
@@ -365,6 +372,21 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>analogRead</b> (u
 <dl class="section note"><dt>Note</dt><dd>Works on pulses from 2-3 microseconds to 3 minutes in length. </dd>
 <dd>
 Must be called at least a few dozen microseconds before the start of the pulse. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a class="anchor" id="gaf75c217e7b6d970988dc3c314682db4e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structEspDigitalPin.html">EspDigitalPin</a> EspDigitalPins[]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>ESP GPIO pin configuration. </p>
 
 </div>
 </div>

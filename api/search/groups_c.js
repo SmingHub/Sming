@@ -9,5 +9,6 @@ var searchData=
   ['sming_20structures',['Sming structures',['../group__structures.html',1,'']]],
   ['system',['System',['../group__system.html',1,'']]],
   ['system_20clock_20functions',['System clock functions',['../group__systemclock.html',1,'']]],
-  ['servers',['Servers',['../group__tcpserver.html',1,'']]]
+  ['servers',['Servers',['../group__tcpserver.html',1,'']]],
+  ['simpletimer_20functions',['SimpleTimer functions',['../group__timer.html',1,'']]]
 ];

@@ -20,14 +20,15 @@ var modules =
     [ "RC Servo functions", "group__Servo.html", "group__Servo" ],
     [ "SPI Hardware support", "group__hw__spi.html", "group__hw__spi" ],
     [ "SPI support classes", "group__base__spi.html", "group__base__spi" ],
+    [ "SimpleTimer functions", "group__timer.html", "group__timer" ],
     [ "Sming constant values", "group__constants.html", "group__constants" ],
     [ "Sming event handlers", "group__event__handlers.html", "group__event__handlers" ],
     [ "Sming structures", "group__structures.html", "group__structures" ],
     [ "Stream functions", "group__stream.html", "group__stream" ],
     [ "System", "group__system.html", "group__system" ],
-    [ "Timer functions", "group__timer.html", "group__timer" ],
     [ "Watchdog Timer", "group__wdt.html", "group__wdt" ],
-    [ "Websocket Frame", "group__wsframe.html", "group__wsframe" ],
     [ "WiFi Access Point", "group__wifi__ap.html", "group__wifi__ap" ],
-    [ "WiFi Station Interface", "group__wifi__sta.html", "group__wifi__sta" ]
+    [ "WiFi Station Interface", "group__wifi__sta.html", "group__wifi__sta" ],
+    [ "client connection", "group__HTTP.html", "group__HTTP" ],
+    [ "connection", "group__Websocket.html", "group__Websocket" ]
 ];

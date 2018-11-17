@@ -108,6 +108,7 @@ $(document).ready(function(){initNavTree('classWebsocketResource.html','');});
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classWebsocketResource-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -136,18 +137,18 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>processData</b> (<a cl
 <tr class="memitem:a2723fe8e4a275c4f0a7806d527a977f9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketResource.html#a2723fe8e4a275c4f0a7806d527a977f9">shutdown</a> (<a class="el" href="classHttpServerConnection.html">HttpServerConnection</a> &amp;connection)</td></tr>
 <tr class="memdesc:a2723fe8e4a275c4f0a7806d527a977f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes care to cleanup the connection.  <a href="#a2723fe8e4a275c4f0a7806d527a977f9">More...</a><br/></td></tr>
 <tr class="separator:a2723fe8e4a275c4f0a7806d527a977f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d815b0a0d75ccbdb5e288d5cdc11390"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0d815b0a0d75ccbdb5e288d5cdc11390"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setConnectionHandler</b> (<a class="el" href="classDelegate.html">WebSocketDelegate</a> handler)</td></tr>
-<tr class="separator:a0d815b0a0d75ccbdb5e288d5cdc11390"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75bc14d4e36635aa3f253cad31c8bf5f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a75bc14d4e36635aa3f253cad31c8bf5f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setMessageHandler</b> (<a class="el" href="classDelegate.html">WebSocketMessageDelegate</a> handler)</td></tr>
-<tr class="separator:a75bc14d4e36635aa3f253cad31c8bf5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3dc17b3e04b812b42b089d8954ba816"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae3dc17b3e04b812b42b089d8954ba816"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setBinaryHandler</b> (<a class="el" href="classDelegate.html">WebSocketBinaryDelegate</a> handler)</td></tr>
-<tr class="separator:ae3dc17b3e04b812b42b089d8954ba816"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a307cc6429171f9789111275b0450fd3d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a307cc6429171f9789111275b0450fd3d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setDisconnectionHandler</b> (<a class="el" href="classDelegate.html">WebSocketDelegate</a> handler)</td></tr>
-<tr class="separator:a307cc6429171f9789111275b0450fd3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c84e6cb43aa524ca62e2e4ec91da804"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c84e6cb43aa524ca62e2e4ec91da804"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setConnectionHandler</b> (<a class="el" href="classDelegate.html">WebsocketDelegate</a> handler)</td></tr>
+<tr class="separator:a1c84e6cb43aa524ca62e2e4ec91da804"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a710505e501747c7ea06b7d3bdbd5586f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a710505e501747c7ea06b7d3bdbd5586f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setMessageHandler</b> (<a class="el" href="classDelegate.html">WebsocketMessageDelegate</a> handler)</td></tr>
+<tr class="separator:a710505e501747c7ea06b7d3bdbd5586f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0875e6768fc0f74fd21e88822693346"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af0875e6768fc0f74fd21e88822693346"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setBinaryHandler</b> (<a class="el" href="classDelegate.html">WebsocketBinaryDelegate</a> handler)</td></tr>
+<tr class="separator:af0875e6768fc0f74fd21e88822693346"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f1ca831155b1458920670fd1272c245"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9f1ca831155b1458920670fd1272c245"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setDisconnectionHandler</b> (<a class="el" href="classDelegate.html">WebsocketDelegate</a> handler)</td></tr>
+<tr class="separator:a9f1ca831155b1458920670fd1272c245"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -164,20 +165,26 @@ Public Attributes</h2></td></tr>
 <a class="el" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onUpgrade</b> = 0</td></tr>
 <tr class="separator:ab6f291b31205ebbe8509e47700c4c49e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a1dd792067c820be168269c083d2cf498"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1dd792067c820be168269c083d2cf498"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>onConnect</b> ()</td></tr>
+<tr class="separator:a1dd792067c820be168269c083d2cf498"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:adccf12fd644ce10eb2944f3294b315bf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adccf12fd644ce10eb2944f3294b315bf"></a>
-<a class="el" href="classDelegate.html">WebSocketDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsConnect</b> = 0</td></tr>
-<tr class="separator:adccf12fd644ce10eb2944f3294b315bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d2e819cd72050cab0214993bd83d4e4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d2e819cd72050cab0214993bd83d4e4"></a>
-<a class="el" href="classDelegate.html">WebSocketMessageDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsMessage</b> = 0</td></tr>
-<tr class="separator:a7d2e819cd72050cab0214993bd83d4e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b6028a198434b0071581699dae143de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b6028a198434b0071581699dae143de"></a>
-<a class="el" href="classDelegate.html">WebSocketBinaryDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsBinary</b> = 0</td></tr>
-<tr class="separator:a8b6028a198434b0071581699dae143de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e07d400c78b6f6f42bd6676bedbef21"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4e07d400c78b6f6f42bd6676bedbef21"></a>
-<a class="el" href="classDelegate.html">WebSocketDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsDisconnect</b> = 0</td></tr>
-<tr class="separator:a4e07d400c78b6f6f42bd6676bedbef21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae64b2192f0b5ee47e80a5047c7865d8c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae64b2192f0b5ee47e80a5047c7865d8c"></a>
+<a class="el" href="classDelegate.html">WebsocketDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsConnect</b> = 0</td></tr>
+<tr class="separator:ae64b2192f0b5ee47e80a5047c7865d8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad69117da2fbe4c7b7650b54d37e26091"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad69117da2fbe4c7b7650b54d37e26091"></a>
+<a class="el" href="classDelegate.html">WebsocketMessageDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsMessage</b> = 0</td></tr>
+<tr class="separator:ad69117da2fbe4c7b7650b54d37e26091"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04fca3da6a87b259d1aef59415bf9eb9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a04fca3da6a87b259d1aef59415bf9eb9"></a>
+<a class="el" href="classDelegate.html">WebsocketBinaryDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsBinary</b> = 0</td></tr>
+<tr class="separator:a04fca3da6a87b259d1aef59415bf9eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1cf0339c3ec4b9bc88bcabb0265ddaa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1cf0339c3ec4b9bc88bcabb0265ddaa"></a>
+<a class="el" href="classDelegate.html">WebsocketDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsDisconnect</b> = 0</td></tr>
+<tr class="separator:ac1cf0339c3ec4b9bc88bcabb0265ddaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a2723fe8e4a275c4f0a7806d527a977f9"></a>

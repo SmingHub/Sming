@@ -123,15 +123,15 @@ Inheritance diagram for TcpConnection:</div>
   <img src="classTcpConnection.png" usemap="#TcpConnection_map" alt=""/>
   <map id="TcpConnection_map" name="TcpConnection_map">
 <area href="classFTPServerConnection.html" alt="FTPServerConnection" shape="rect" coords="0,56,138,80"/>
-<area href="classTcpClient.html" alt="TcpClient" shape="rect" coords="296,56,434,80"/>
-<area href="classTcpServer.html" alt="TcpServer" shape="rect" coords="814,56,952,80"/>
-<area href="classHttpConnection.html" alt="HttpConnection" shape="rect" coords="0,112,138,136"/>
-<area href="classHttpServerConnection.html" alt="HttpServerConnection" shape="rect" coords="148,112,286,136"/>
-<area href="classMqttClient.html" alt="MqttClient" shape="rect" coords="296,112,434,136"/>
-<area href="classSmtpClient.html" alt="SmtpClient" shape="rect" coords="444,112,582,136"/>
-<area href="classWebsocketClient.html" title="Delegate callback type for connection of websocket client. " alt="WebsocketClient" shape="rect" coords="592,112,730,136"/>
-<area href="classFTPServer.html" alt="FTPServer" shape="rect" coords="740,112,878,136"/>
-<area href="classTelnetServer.html" alt="TelnetServer" shape="rect" coords="888,112,1026,136"/>
+<area href="classTcpClient.html" alt="TcpClient" shape="rect" coords="222,56,360,80"/>
+<area href="classTcpServer.html" alt="TcpServer" shape="rect" coords="592,56,730,80"/>
+<area href="classHttpConnectionBase.html" alt="HttpConnectionBase" shape="rect" coords="74,112,212,136"/>
+<area href="classMqttClient.html" alt="MqttClient" shape="rect" coords="222,112,360,136"/>
+<area href="classSmtpClient.html" alt="SmtpClient" shape="rect" coords="370,112,508,136"/>
+<area href="classFTPServer.html" alt="FTPServer" shape="rect" coords="518,112,656,136"/>
+<area href="classTelnetServer.html" alt="TelnetServer" shape="rect" coords="666,112,804,136"/>
+<area href="classHttpConnection.html" alt="HttpConnection" shape="rect" coords="0,168,138,192"/>
+<area href="classHttpServerConnection.html" alt="HttpServerConnection" shape="rect" coords="148,168,286,192"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -243,7 +243,7 @@ tcp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>tcp</b> = NULL</
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>sleep</b></td></tr>
 <tr class="separator:a482c5afdb16d0a93c46a8b83da649254"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d11a5464ae92193779dafc650597fa2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d11a5464ae92193779dafc650597fa2"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>timeOut</b></td></tr>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>timeOut</b> = USHRT_MAX</td></tr>
 <tr class="separator:a3d11a5464ae92193779dafc650597fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a730b80fbbafb4ac92eda9b320ccf7bbf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a730b80fbbafb4ac92eda9b320ccf7bbf"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>canSend</b></td></tr>

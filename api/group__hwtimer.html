@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('group__hwtimer.html','');});
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Hardware timer</div>  </div>
 </div><!--header-->
@@ -111,8 +111,10 @@ $(document).ready(function(){initNavTree('group__hwtimer.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html">HardwareTimer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hardware timer class.  <a href="classHardwareTimer.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardware__Timer.html">Hardware_Timer</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hardware timer class.  <a href="classHardware__Timer.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -124,11 +126,14 @@ Macros</h2></td></tr>
 <tr class="memdesc:ga953781ad7a98d0d11849d8793839dbe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum hardware interval in microseconds.  <a href="#ga953781ad7a98d0d11849d8793839dbe2">More...</a><br/></td></tr>
 <tr class="separator:ga953781ad7a98d0d11849d8793839dbe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:ga93d562e52fc07827ebbe376132026297"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void()&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a></td></tr>
-<tr class="memdesc:ga93d562e52fc07827ebbe376132026297"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classDelegate.html">Delegate</a> callback type for timer trigger.  <a href="#ga93d562e52fc07827ebbe376132026297">More...</a><br/></td></tr>
-<tr class="separator:ga93d562e52fc07827ebbe376132026297"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:gaf6f8c0b69763694547607d21e90fce67"><td class="memItemLeft" align="right" valign="top">uint32_t IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hwtimer.html#gaf6f8c0b69763694547607d21e90fce67">usToTimerTicks</a> (uint32_t us)</td></tr>
+<tr class="memdesc:gaf6f8c0b69763694547607d21e90fce67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert microseconds into timer ticks.  <a href="#gaf6f8c0b69763694547607d21e90fce67">More...</a><br/></td></tr>
+<tr class="separator:gaf6f8c0b69763694547607d21e90fce67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa95de5b60e6794131169d0405427c736"><td class="memItemLeft" align="right" valign="top">uint32_t IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__hwtimer.html#gaa95de5b60e6794131169d0405427c736">timerTicksToUs</a> (uint32_t ticks)</td></tr>
+<tr class="memdesc:gaa95de5b60e6794131169d0405427c736"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert timer ticks into microseconds.  <a href="#gaa95de5b60e6794131169d0405427c736">More...</a><br/></td></tr>
+<tr class="separator:gaa95de5b60e6794131169d0405427c736"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Access Hardware timer. </p>
@@ -161,18 +166,42 @@ Typedefs</h2></td></tr>
 
 </div>
 </div>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="ga93d562e52fc07827ebbe376132026297"></a>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="gaa95de5b60e6794131169d0405427c736"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt;void()&gt; <a class="el" href="group__hwtimer.html#ga93d562e52fc07827ebbe376132026297">TimerDelegate</a></td>
+          <td class="memname">uint32_t IRAM_ATTR timerTicksToUs </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>ticks</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="classDelegate.html">Delegate</a> callback type for timer trigger. </p>
+<p>Convert timer ticks into microseconds. </p>
+<dl class="section note"><dt>Note</dt><dd>accounts for current timer prescale setting </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf6f8c0b69763694547607d21e90fce67"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t IRAM_ATTR usToTimerTicks </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>us</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert microseconds into timer ticks. </p>
+<dl class="section note"><dt>Note</dt><dd>Replaces the previous US_TO_RTC_TIMER_TICKS macro to guarantee we use the correct timer prescale value. </dd></dl>
 
 </div>
 </div>

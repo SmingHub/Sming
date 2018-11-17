@@ -151,18 +151,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>redirect</b> (const <
 <tr class="memitem:a5ac8fc1d595d26d0e43b7429ac640743"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ac8fc1d595d26d0e43b7429ac640743"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendFile</b> (<a class="el" href="classString.html">String</a> fileName, bool allowGzipFileCheck=true)</td></tr>
 <tr class="separator:a5ac8fc1d595d26d0e43b7429ac640743"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e389f1caa47c5d77a9d0dd14ea15905"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8e389f1caa47c5d77a9d0dd14ea15905"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendTemplate</b> (<a class="el" href="classTemplateFileStream.html">TemplateFileStream</a> *newTemplateInstance)</td></tr>
-<tr class="separator:a8e389f1caa47c5d77a9d0dd14ea15905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87167e9bdffcc038969d0ea3fdf2df09"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a87167e9bdffcc038969d0ea3fdf2df09"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendTemplate</b> (<a class="el" href="classTemplateStream.html">TemplateStream</a> *newTemplateInstance)</td></tr>
+<tr class="separator:a87167e9bdffcc038969d0ea3fdf2df09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ad42c6da411ab80d938f1f07e77171d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d">sendJsonObject</a> (<a class="el" href="classJsonObjectStream.html">JsonObjectStream</a> *newJsonStreamInstance)</td></tr>
 <tr class="memdesc:a4ad42c6da411ab80d938f1f07e77171d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build and send JSON string.  <a href="#a4ad42c6da411ab80d938f1f07e77171d">More...</a><br/></td></tr>
 <tr class="separator:a4ad42c6da411ab80d938f1f07e77171d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a997c192e4ebb23f661cee40971afbaa8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a997c192e4ebb23f661cee40971afbaa8"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendDataStream</b> (<a class="el" href="classReadWriteStream.html">ReadWriteStream</a> *newDataStream, enum MimeType type)</td></tr>
 <tr class="separator:a997c192e4ebb23f661cee40971afbaa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc8e5249b7a70f2d2f5127133badb350"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc8e5249b7a70f2d2f5127133badb350"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendDataStream</b> (<a class="el" href="classReadWriteStream.html">ReadWriteStream</a> *newDataStream, const <a class="el" href="classString.html">String</a> &amp;reqContentType=&quot;&quot;)</td></tr>
-<tr class="separator:afc8e5249b7a70f2d2f5127133badb350"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c36384fdcd75ca1f4b86df94363b113"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4c36384fdcd75ca1f4b86df94363b113"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendDataStream</b> (<a class="el" href="classReadWriteStream.html">ReadWriteStream</a> *newDataStream, const <a class="el" href="classString.html">String</a> &amp;reqContentType=nullptr)</td></tr>
+<tr class="separator:a4c36384fdcd75ca1f4b86df94363b113"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad000404b64f388ec64c42b4a641e29b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad000404b64f388ec64c42b4a641e29b5"></a>
 <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getBody</b> ()</td></tr>
 <tr class="separator:ad000404b64f388ec64c42b4a641e29b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,7 +179,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>code</b></td></tr>
 <a class="el" href="classHttpHeaders.html">HttpHeaders</a>&#160;</td><td class="memItemRight" valign="bottom"><b>headers</b></td></tr>
 <tr class="separator:aaa7789df7444515e0a0698f8536dc381"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae50738e23d5f638b531bf43407b34a99"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae50738e23d5f638b531bf43407b34a99"></a>
-<a class="el" href="classReadWriteStream.html">ReadWriteStream</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>stream</b> = NULL</td></tr>
+<a class="el" href="classReadWriteStream.html">ReadWriteStream</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>stream</b> = nullptr</td></tr>
 <tr class="separator:ae50738e23d5f638b531bf43407b34a99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
@@ -215,7 +215,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>HttpServerConnection
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000008">Deprecated:</a></b></dt><dd>Use response.code = HTTP_STATUS_FORBIDDEN instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000010">Deprecated:</a></b></dt><dd>Use response.code = HTTP_STATUS_FORBIDDEN instead </dd></dl>
 
 </div>
 </div>
@@ -239,7 +239,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>HttpServerConnection
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000009">Deprecated:</a></b></dt><dd>Use response.code = HTTP_STATUS_NOT_FOUND instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000011">Deprecated:</a></b></dt><dd>Use response.code = HTTP_STATUS_NOT_FOUND instead </dd></dl>
 
 </div>
 </div>
@@ -258,7 +258,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>HttpServerConnection
 </div><div class="memdoc">
 
 <p>Build and send JSON string. </p>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000010">Deprecated:</a></b></dt><dd>use response.sendDataStream(stream, MIME_JSON) instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000012">Deprecated:</a></b></dt><dd>use response.sendDataStream(stream, MIME_JSON) instead </dd></dl>
 
 </div>
 </div>

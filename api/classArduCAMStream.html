@@ -120,7 +120,7 @@ Inheritance diagram for ArduCAMStream:</div>
  <div class="center">
   <img src="classArduCAMStream.png" usemap="#ArduCAMStream_map" alt=""/>
   <map id="ArduCAMStream_map" name="ArduCAMStream_map">
-<area href="classReadWriteStream.html" alt="ReadWriteStream" shape="rect" coords="0,168,121,192"/>
+<area href="classReadWriteStream.html" title="Base class for read/write stream. " alt="ReadWriteStream" shape="rect" coords="0,168,121,192"/>
 <area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="0,112,121,136"/>
 <area href="classStream.html" alt="Stream" shape="rect" coords="0,56,121,80"/>
 <area href="classPrint.html" title="Provides formatted output to stream. " alt="Print" shape="rect" coords="0,0,121,24"/>
@@ -132,9 +132,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae4ad3b430749b306230952e04e3a3848"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae4ad3b430749b306230952e04e3a3848"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ArduCAMStream</b> (ArduCAM *cam)</td></tr>
 <tr class="separator:ae4ad3b430749b306230952e04e3a3848"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab006d2e62a0e0165c12a3282e99174d1"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArduCAMStream.html#ab006d2e62a0e0165c12a3282e99174d1">getStreamType</a> ()</td></tr>
-<tr class="memdesc:ab006d2e62a0e0165c12a3282e99174d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the stream type.  <a href="#ab006d2e62a0e0165c12a3282e99174d1">More...</a><br/></td></tr>
-<tr class="separator:ab006d2e62a0e0165c12a3282e99174d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada9675549c1558c65bf23bffa8b01fd4"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArduCAMStream.html#ada9675549c1558c65bf23bffa8b01fd4">getStreamType</a> () const </td></tr>
+<tr class="memdesc:ada9675549c1558c65bf23bffa8b01fd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the stream type.  <a href="#ada9675549c1558c65bf23bffa8b01fd4">More...</a><br/></td></tr>
+<tr class="separator:ada9675549c1558c65bf23bffa8b01fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77a1101bf887eb69fb094b006f89affe"><td class="memItemLeft" align="right" valign="top">virtual uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArduCAMStream.html#a77a1101bf887eb69fb094b006f89affe">readMemoryBlock</a> (char *data, int bufSize)</td></tr>
 <tr class="memdesc:a77a1101bf887eb69fb094b006f89affe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a block of memory.  <a href="#a77a1101bf887eb69fb094b006f89affe">More...</a><br/></td></tr>
 <tr class="separator:a77a1101bf887eb69fb094b006f89affe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -142,7 +142,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ad8d52a89a9f1c99b650112d367ec2e5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move read cursor.  <a href="#ad8d52a89a9f1c99b650112d367ec2e5e">More...</a><br/></td></tr>
 <tr class="separator:ad8d52a89a9f1c99b650112d367ec2e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a018355d634ecc3c886708add67c2b93a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a">isFinished</a> ()</td></tr>
-<tr class="memdesc:a018355d634ecc3c886708add67c2b93a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if stream is finished.  <a href="#a018355d634ecc3c886708add67c2b93a">More...</a><br/></td></tr>
+<tr class="memdesc:a018355d634ecc3c886708add67c2b93a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if all data has been read.  <a href="#a018355d634ecc3c886708add67c2b93a">More...</a><br/></td></tr>
 <tr class="separator:a018355d634ecc3c886708add67c2b93a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46e38c3bc81f469493613a96719c5ffc"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classArduCAMStream.html#a46e38c3bc81f469493613a96719c5ffc">write</a> (uint8_t charToWrite)</td></tr>
 <tr class="memdesc:a46e38c3bc81f469493613a96719c5ffc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a single character to output stream.  <a href="#a46e38c3bc81f469493613a96719c5ffc">More...</a><br/></td></tr>
@@ -162,6 +162,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>dataReady</b> ()</td>
 <tr class="memitem:abfdd93a61c4b95a3ba41680188505e73"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#abfdd93a61c4b95a3ba41680188505e73">write</a> (const char *buffer, size_t size)</td></tr>
 <tr class="memdesc:abfdd93a61c4b95a3ba41680188505e73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes characters from a buffer to output stream.  <a href="#abfdd93a61c4b95a3ba41680188505e73">More...</a><br/></td></tr>
 <tr class="separator:abfdd93a61c4b95a3ba41680188505e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab449f678d6db826bd6fd4e2b8a3a3967"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#ab449f678d6db826bd6fd4e2b8a3a3967">isValid</a> () const </td></tr>
+<tr class="memdesc:ab449f678d6db826bd6fd4e2b8a3a3967"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the stream object contains valid data.  <a href="#ab449f678d6db826bd6fd4e2b8a3a3967">More...</a><br/></td></tr>
+<tr class="separator:ab449f678d6db826bd6fd4e2b8a3a3967"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace0b653e42b9d8487cf829fedbb734f6"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#ace0b653e42b9d8487cf829fedbb734f6">read</a> ()</td></tr>
 <tr class="memdesc:ace0b653e42b9d8487cf829fedbb734f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read one character and moves the stream pointer.  <a href="#ace0b653e42b9d8487cf829fedbb734f6">More...</a><br/></td></tr>
 <tr class="separator:ace0b653e42b9d8487cf829fedbb734f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,9 +177,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>dataReady</b> ()</td>
 <tr class="memitem:a313fb97e4af1e15ed581674a1ce76d3e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a313fb97e4af1e15ed581674a1ce76d3e"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> ()</td></tr>
 <tr class="separator:a313fb97e4af1e15ed581674a1ce76d3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe31f244917749cf8b343c0249a312c0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#abe31f244917749cf8b343c0249a312c0">id</a> ()</td></tr>
-<tr class="memdesc:abe31f244917749cf8b343c0249a312c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique id of the resource.  <a href="#abe31f244917749cf8b343c0249a312c0">More...</a><br/></td></tr>
-<tr class="separator:abe31f244917749cf8b343c0249a312c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1ef7841971cac54cfd5535b239535ad"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#ad1ef7841971cac54cfd5535b239535ad">id</a> () const </td></tr>
+<tr class="memdesc:ad1ef7841971cac54cfd5535b239535ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique id of the resource.  <a href="#ad1ef7841971cac54cfd5535b239535ad">More...</a><br/></td></tr>
+<tr class="separator:ad1ef7841971cac54cfd5535b239535ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39d8ea433dda122542c1e1fab75c3835"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#a39d8ea433dda122542c1e1fab75c3835">getName</a> () const </td></tr>
+<tr class="memdesc:a39d8ea433dda122542c1e1fab75c3835"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns name of the resource.  <a href="#a39d8ea433dda122542c1e1fab75c3835">More...</a><br/></td></tr>
+<tr class="separator:a39d8ea433dda122542c1e1fab75c3835"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a851dd6dc74d52389de04f99648478db5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a851dd6dc74d52389de04f99648478db5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeout</b> (unsigned long timeout)</td></tr>
 <tr class="separator:a851dd6dc74d52389de04f99648478db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -210,9 +216,9 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>readBytesUntil</b> 
 <tr class="memitem:a6a409da87c552909260d8cc428c5ca70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a409da87c552909260d8cc428c5ca70"></a>
 <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>readStringUntil</b> (char terminator)</td></tr>
 <tr class="separator:a6a409da87c552909260d8cc428c5ca70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f934a5188da7f6a1c437c26755a2a42"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f934a5188da7f6a1c437c26755a2a42"></a>
-virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (char c)</td></tr>
-<tr class="separator:a0f934a5188da7f6a1c437c26755a2a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5a72de358de3023fbc6625762ab854f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa5a72de358de3023fbc6625762ab854f"></a>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>indexOf</b> (char c)</td></tr>
+<tr class="separator:aa5a72de358de3023fbc6625762ab854f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88a4a829fb5d589efb43955ad0cbddcc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a88a4a829fb5d589efb43955ad0cbddcc">getWriteError</a> ()</td></tr>
 <tr class="memdesc:a88a4a829fb5d589efb43955ad0cbddcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets last error.  <a href="#a88a4a829fb5d589efb43955ad0cbddcc">More...</a><br/></td></tr>
 <tr class="separator:a88a4a829fb5d589efb43955ad0cbddcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -247,7 +253,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>print</b> (unsigned
 <tr class="memdesc:a6a28a24faffa4f43c12fe0a70c81807c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classPrintable.html">Printable</a> object to output stream.  <a href="#a6a28a24faffa4f43c12fe0a70c81807c">More...</a><br/></td></tr>
 <tr class="separator:a6a28a24faffa4f43c12fe0a70c81807c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a358ed9ea784d1e1014fbdd994cc480d0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a358ed9ea784d1e1014fbdd994cc480d0">print</a> (const <a class="el" href="classString.html">String</a> &amp;s)</td></tr>
-<tr class="memdesc:a358ed9ea784d1e1014fbdd994cc480d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classString.html">String</a> to output stream.  <a href="#a358ed9ea784d1e1014fbdd994cc480d0">More...</a><br/></td></tr>
+<tr class="memdesc:a358ed9ea784d1e1014fbdd994cc480d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classString.html" title="The string class. ">String</a> to output stream.  <a href="#a358ed9ea784d1e1014fbdd994cc480d0">More...</a><br/></td></tr>
 <tr class="separator:a358ed9ea784d1e1014fbdd994cc480d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a169b128f9e22f0c15883768f580541a2"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a169b128f9e22f0c15883768f580541a2">println</a> (void)</td></tr>
 <tr class="memdesc:a169b128f9e22f0c15883768f580541a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a newline to output stream.  <a href="#a169b128f9e22f0c15883768f580541a2">More...</a><br/></td></tr>
@@ -280,7 +286,7 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>println</b> (unsign
 <tr class="memdesc:a9d2d42d4f2f45b141fd0ab2e7c6e22d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classPrintable.html">Printable</a> object to output stream, appending newline.  <a href="#a9d2d42d4f2f45b141fd0ab2e7c6e22d9">More...</a><br/></td></tr>
 <tr class="separator:a9d2d42d4f2f45b141fd0ab2e7c6e22d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd6cc6e2c1163f94c60855ad233899bd"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#afd6cc6e2c1163f94c60855ad233899bd">println</a> (const <a class="el" href="classString.html">String</a> &amp;s)</td></tr>
-<tr class="memdesc:afd6cc6e2c1163f94c60855ad233899bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classString.html">String</a> to output stream, appending newline.  <a href="#afd6cc6e2c1163f94c60855ad233899bd">More...</a><br/></td></tr>
+<tr class="memdesc:afd6cc6e2c1163f94c60855ad233899bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a <a class="el" href="classString.html" title="The string class. ">String</a> to output stream, appending newline.  <a href="#afd6cc6e2c1163f94c60855ad233899bd">More...</a><br/></td></tr>
 <tr class="separator:afd6cc6e2c1163f94c60855ad233899bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67aa459464b181ee200e9173e53b11ff"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a67aa459464b181ee200e9173e53b11ff">printf</a> (const char *fmt,...)</td></tr>
 <tr class="memdesc:a67aa459464b181ee200e9173e53b11ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a formatted c-string to output stream.  <a href="#a67aa459464b181ee200e9173e53b11ff">More...</a><br/></td></tr>
@@ -309,12 +315,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:aae48f1a926d2e82a452f2c75af0c6a29"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae48f1a926d2e82a452f2c75af0c6a29"></a>
-unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_timeout</b></td></tr>
-<tr class="separator:aae48f1a926d2e82a452f2c75af0c6a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf61d2006d28d18f2e028285a323fe5a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf61d2006d28d18f2e028285a323fe5a"></a>
-unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis</b></td></tr>
-<tr class="separator:abf61d2006d28d18f2e028285a323fe5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a525e929c31bf030eb050497690fca7ae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a525e929c31bf030eb050497690fca7ae"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>receiveTimeout</b> = 1000</td></tr>
+<tr class="separator:a525e929c31bf030eb050497690fca7ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4928691eee5c693b0acea38676b8e44f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4928691eee5c693b0acea38676b8e44f"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis</b> = 0</td></tr>
+<tr class="separator:a4928691eee5c693b0acea38676b8e44f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a8ea8284127bf1f5b9d50f51e74f3538e"></a>
@@ -376,7 +382,41 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 
 </div>
 </div>
-<a class="anchor" id="ab006d2e62a0e0165c12a3282e99174d1"></a>
+<a class="anchor" id="a39d8ea433dda122542c1e1fab75c3835"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classString.html">String</a> IDataSourceStream::getName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns name of the resource. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname"><a class="el" href="classString.html" title="The string class. ">String</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Commonly used to obtain name of file </dd></dl>
+
+<p>Reimplemented in <a class="el" href="classTemplateStream.html#a67dd2f957a5ba4e6f20e6d8e760b4f45">TemplateStream</a>, and <a class="el" href="classFileStream.html#ab8298a82fdbb6b29217c2d887457c027">FileStream</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ada9675549c1558c65bf23bffa8b01fd4"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -387,7 +427,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
           <td class="memname">virtual <a class="el" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> ArduCAMStream::getStreamType </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -406,7 +446,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 </dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
 
-<p>Implements <a class="el" href="classIDataSourceStream.html#a589085e0eea011acdc401b79831826e0">IDataSourceStream</a>.</p>
+<p>Implements <a class="el" href="classIDataSourceStream.html#a41f3759d77f948af9598c77a5e066a14">IDataSourceStream</a>.</p>
 
 </div>
 </div>
@@ -441,7 +481,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 
 </div>
 </div>
-<a class="anchor" id="abe31f244917749cf8b343c0249a312c0"></a>
+<a class="anchor" id="ad1ef7841971cac54cfd5535b239535ad"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -452,7 +492,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
           <td class="memname">virtual <a class="el" href="classString.html">String</a> IDataSourceStream::id </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -465,12 +505,12 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 <p>Returns unique id of the resource. </p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname"><a class="el" href="classString.html">String</a></td><td>the unique id of the stream. </td></tr>
+    <tr><td class="paramname"><a class="el" href="classString.html" title="The string class. ">String</a></td><td>the unique id of the stream. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classFileStream.html#a0a2f10fd7bc8ee797edfbe9a5d432acf">FileStream</a>, and <a class="el" href="classCircularBuffer.html#a471f021e32d3a8bd7b82a670bd242155">CircularBuffer</a>.</p>
+<p>Reimplemented in <a class="el" href="classFileStream.html#a26478176b05aa37ddb310a648d0917dc">FileStream</a>, and <a class="el" href="classCircularBuffer.html#a7ee97b52d15c68307de71cbf868e1713">CircularBuffer</a>.</p>
 
 </div>
 </div>
@@ -495,7 +535,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 </table>
 </div><div class="memdoc">
 
-<p>Check if stream is finished. </p>
+<p>Check if all data has been read. </p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">bool</td><td>True on success. </td></tr>
@@ -504,6 +544,40 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 </dl>
 
 <p>Implements <a class="el" href="classIDataSourceStream.html#a143958f311cc98fbfaaec1d4d5cdfe47">IDataSourceStream</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab449f678d6db826bd6fd4e2b8a3a3967"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool IDataSourceStream::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Determine if the stream object contains valid data. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>true if valid, false if invalid </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Where inherited classes are initialised by constructor this method indicates whether that was successful or not (e.g. <a class="el" href="classFileStream.html" title="File stream class. ">FileStream</a>) </dd></dl>
+
+<p>Reimplemented in <a class="el" href="classFileStream.html#aea28e2d5e4134ca539f729ca48e96af3">FileStream</a>.</p>
 
 </div>
 </div>
@@ -563,7 +637,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 <p>Read a character without advancing the stream pointer. </p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">The</td><td>character that was read or -1 if none is available </td></tr>
+    <tr><td class="paramname">int</td><td>The character that was read or -1 if none is available </td></tr>
   </table>
   </dd>
 </dl>
@@ -939,10 +1013,10 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 </table>
 </div><div class="memdoc">
 
-<p>Prints a <a class="el" href="classString.html">String</a> to output stream. </p>
+<p>Prints a <a class="el" href="classString.html" title="The string class. ">String</a> to output stream. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">s</td><td><a class="el" href="classString.html">String</a> to print </td></tr>
+    <tr><td class="paramname">s</td><td><a class="el" href="classString.html" title="The string class. ">String</a> to print </td></tr>
   </table>
   </dd>
 </dl>
@@ -1402,10 +1476,10 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 </table>
 </div><div class="memdoc">
 
-<p>Prints a <a class="el" href="classString.html">String</a> to output stream, appending newline. </p>
+<p>Prints a <a class="el" href="classString.html" title="The string class. ">String</a> to output stream, appending newline. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">s</td><td><a class="el" href="classString.html">String</a> to print </td></tr>
+    <tr><td class="paramname">s</td><td><a class="el" href="classString.html" title="The string class. ">String</a> to print </td></tr>
   </table>
   </dd>
 </dl>
@@ -1528,7 +1602,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
 <p>Move read cursor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">len</td><td>Position within stream to move cursor to </td></tr>
+    <tr><td class="paramname">len</td><td>Relative cursor adjustment </td></tr>
   </table>
   </dd>
 </dl>
@@ -1579,7 +1653,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>_startMillis
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classReadWriteStream.html#a3ebf31faca185807abbbcfdb5b0f8d4a">ReadWriteStream</a>.</p>
+<p>Reimplemented from <a class="el" href="classReadWriteStream.html#aa629a6eb839d5095bc06ace8e91e9eb9">ReadWriteStream</a>.</p>
 
 </div>
 </div>

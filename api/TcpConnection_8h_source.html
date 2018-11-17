@@ -275,7 +275,7 @@ $(document).ready(function(){initNavTree('TcpConnection_8h_source.html','');});
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="keyword">protected</span>:</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    tcp_pcb* tcp = NULL;</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    uint16_t sleep;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    uint16_t timeOut;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    uint16_t timeOut = USHRT_MAX; <span class="comment">// &lt;&lt; By default a TCP connection does not have a time out</span></div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <span class="keywordtype">bool</span> canSend;</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="keywordtype">bool</span> autoSelfDestruct;</div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
@@ -299,13 +299,13 @@ $(document).ready(function(){initNavTree('TcpConnection_8h_source.html','');});
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="preprocessor"></span>};</div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_TCPCONNECTION_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classIDataSourceStream_html"><div class="ttname"><a href="classIDataSourceStream.html">IDataSourceStream</a></div><div class="ttdoc">Base class for data source stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:47</div></div>
+<div class="ttc" id="classIDataSourceStream_html"><div class="ttname"><a href="classIDataSourceStream.html">IDataSourceStream</a></div><div class="ttdoc">Base class for data source stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:36</div></div>
 <div class="ttc" id="classTcpConnection_html"><div class="ttname"><a href="classTcpConnection.html">TcpConnection</a></div><div class="ttdef"><b>Definition:</b> TcpConnection.h:77</div></div>
-<div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdef"><b>Definition:</b> WString.h:42</div></div>
+<div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(TcpConnection &amp;)&gt;</a></div></div>
-<div class="ttc" id="classTcpServer_html"><div class="ttname"><a href="classTcpServer.html">TcpServer</a></div><div class="ttdef"><b>Definition:</b> TcpServer.h:23</div></div>
+<div class="ttc" id="classTcpServer_html"><div class="ttname"><a href="classTcpServer.html">TcpServer</a></div><div class="ttdef"><b>Definition:</b> TcpServer.h:26</div></div>
 <div class="ttc" id="classTcpConnection_html_a39d7fe38dceaf464a09f6a1cab7463b4"><div class="ttname"><a href="classTcpConnection.html#a39d7fe38dceaf464a09f6a1cab7463b4">TcpConnection::setDestroyedDelegate</a></div><div class="ttdeci">void setDestroyedDelegate(TcpConnectionDestroyedDelegate destroyedDelegate)</div><div class="ttdoc">Sets a callback to be called when the object instance is destroyed. </div></div>
-<div class="ttc" id="classIPAddress_html"><div class="ttname"><a href="classIPAddress.html">IPAddress</a></div><div class="ttdef"><b>Definition:</b> IPAddress.h:38</div></div>
+<div class="ttc" id="classIPAddress_html"><div class="ttname"><a href="classIPAddress.html">IPAddress</a></div><div class="ttdef"><b>Definition:</b> IPAddress.h:37</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

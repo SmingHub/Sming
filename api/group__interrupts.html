@@ -100,8 +100,7 @@ $(document).ready(function(){initNavTree('group__interrupts.html','');});
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Interrupt functions</div>  </div>
 </div><!--header-->
@@ -130,6 +129,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ga6d6176cb6d7aababf76dc1de4f704a00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6d6176cb6d7aababf76dc1de4f704a00"></a>
 typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><b>InterruptCallback</b> )(void)</td></tr>
 <tr class="separator:ga6d6176cb6d7aababf76dc1de4f704a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf66ace66246ee1daf6202ef64c63620e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf66ace66246ee1daf6202ef64c63620e"></a>
+typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void()&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>InterruptDelegate</b></td></tr>
+<tr class="separator:gaf66ace66246ee1daf6202ef64c63620e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -166,15 +168,6 @@ Functions</h2></td></tr>
 <tr class="memitem:gab3a4471e1b3085323ec2067aaaccb52c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__interrupts.html#gab3a4471e1b3085323ec2067aaaccb52c">interrupts</a> ()</td></tr>
 <tr class="memdesc:gab3a4471e1b3085323ec2067aaaccb52c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable interrupts.  <a href="#gab3a4471e1b3085323ec2067aaaccb52c">More...</a><br/></td></tr>
 <tr class="separator:gab3a4471e1b3085323ec2067aaaccb52c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:gac8faac0395cc1cda4f6786a242b2ac7e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac8faac0395cc1cda4f6786a242b2ac7e"></a>
-InterruptCallback&#160;</td><td class="memItemRight" valign="bottom"><b>_gpioInterruptsList</b> [ESP_MAX_INTERRUPTS]</td></tr>
-<tr class="separator:gac8faac0395cc1cda4f6786a242b2ac7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0fd7c873785764d236bbb2d0d6395d14"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0fd7c873785764d236bbb2d0d6395d14"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>_gpioInterruptsInitialied</b></td></tr>
-<tr class="separator:ga0fd7c873785764d236bbb2d0d6395d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Provides interrupt functions. </p>
@@ -218,7 +211,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>_gpioInterruptsInitia
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>Traditional c-type callback function method </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Traditional c-type callback function method, MUST use IRAM_ATTR Use this type of interrupt handler for timing-sensitive applications. </dd></dl>
 
 </div>
 </div>
@@ -261,7 +254,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>_gpioInterruptsInitia
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd><a class="el" href="classDelegate.html">Delegate</a> function method </dd></dl>
+<dl class="section note"><dt>Note</dt><dd><a class="el" href="classDelegate.html">Delegate</a> function method, can be a regular function, method, etc. The delegate function is called via the system task queue so does not need any special consideration. Note that this type of interrupt handler is not suitable for timing-sensitive applications. </dd></dl>
 
 </div>
 </div>
@@ -305,7 +298,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>_gpioInterruptsInitia
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Traditional c-type callback function method </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000013">Todo:</a></b></dt><dd>Add GPIO_INT_TYPE documentation - is this in SDK? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000012">Todo:</a></b></dt><dd>Add GPIO_INT_TYPE documentation - is this in SDK? </dd></dl>
 
 </div>
 </div>

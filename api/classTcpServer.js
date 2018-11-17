@@ -28,7 +28,8 @@ var classTcpServer =
     [ "onReceive", "classTcpServer.html#a59b5bfb839f27007b86ff4defd4d5a0b", null ],
     [ "onSent", "classTcpServer.html#a085742db437e442ce8a6bdaaedcdf61d", null ],
     [ "setDestroyedDelegate", "classTcpServer.html#a39d7fe38dceaf464a09f6a1cab7463b4", null ],
-    [ "setTimeOut", "classTcpServer.html#a0e3bbe276368784e689155d2a7f4de52", null ],
+    [ "setKeepAlive", "classTcpServer.html#a8fbfb7bd175fb0c93093c59b05452a5a", null ],
+    [ "setTimeOut", "classTcpServer.html#a3d01ef17727966d8d63e6f35a2a0fd14", null ],
     [ "shutdown", "classTcpServer.html#a918898ee7b13d776a2f7ea8968168669", null ],
     [ "write", "classTcpServer.html#a17fbdcd21e00e24eae8d42096ceeb5db", null ],
     [ "write", "classTcpServer.html#a59ef4474eb3d65f8b1f1e21e0f3f3c25", null ],
@@ -42,5 +43,6 @@ var classTcpServer =
     [ "minHeapSize", "classTcpServer.html#af8f1c7f88fa7d5f9104d38d09a78a1ab", null ],
     [ "sleep", "classTcpServer.html#a482c5afdb16d0a93c46a8b83da649254", null ],
     [ "tcp", "classTcpServer.html#a601e019508b0071d0825908eaee0f58c", null ],
+    [ "timeOut", "classTcpServer.html#a3d11a5464ae92193779dafc650597fa2", null ],
     [ "useSsl", "classTcpServer.html#a1f713f30d71b5015ae1ee0cf98607298", null ]
 ];

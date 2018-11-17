@@ -10,7 +10,7 @@ var group__datetime =
       [ "addMilliseconds", "classDateTime.html#a60d049362b1d16cbe9ceae334ecd56d5", null ],
       [ "isNull", "classDateTime.html#a942983c6d456157328d2efa10e06b9fb", null ],
       [ "operator time_t", "classDateTime.html#a71771ccc110639ab07f7d91a81a62287", null ],
-      [ "parseHttpDate", "classDateTime.html#aafc5f31a9aab859d6e12553621ed7568", null ],
+      [ "parseHttpDate", "classDateTime.html#af429304267b972f51ff430ec66a56861", null ],
       [ "setTime", "classDateTime.html#a76cec1408d44dba7b3b9b350e7e93af4", null ],
       [ "setTime", "classDateTime.html#a9d7e7be864d50b4049a14956706af5af", null ],
       [ "toFullDateTimeString", "classDateTime.html#a21f09ede608e518181983b00fa9ed3e9", null ],
