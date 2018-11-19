@@ -73,7 +73,7 @@ This feature is still **experimental** which means that we do not recommend it i
 - **Debug information for custom LWIP**: If you use custom LWIP (see above) some debug information will be printed for critical errors and situations. You can enable all debug information printing using `ENABLE_LWIPDEBUG=1`. To increase debugging for certain areas you can modify debug options in `third-party/esp-open-lwip/include/lwipopts.h`.
 - **Interactive debugging on the device**: (default: OFF) In order to be able to debug live directly on the ESP8266 microcontroller you should re-compile the Sming library and your application with `ENABLE_GDB=1` directive. See [Basic_Debug](https://github.com/SmingHub/Sming/tree/develop/samples/Basic_Debug) sample for more details.
 - **CommandExecutor feature**: (default: ON) This feature enables execution of certain commands by registering token handlers for text received via serial, websocket or telnet connection. If this feature is not used additional RAM/Flash can be obtained by setting `ENABLE_CMD_EXECUTOR=0`. This will save ~1KB RAM and ~3KB of flash memory.
-- **SDK 2.1.0+**: (default: OFF) In order to use SDK 2.1 you should set one environment variable before (re)compiling Sming AND applications based on it.  The variable is SDK_BASE and it should point to `$SMING_HOME/third-party/ESP8266_NONOS_SDK`.
+- **SDK 3.0+**: (default: OFF) In order to use SDK 3.0.0 or newer you should set one environment variable before (re)compiling Sming AND applications based on it.  The variable is SDK_BASE and it should point to `$SMING_HOME/third-party/ESP8266_NONOS_SDK`.
 
 For Windows you need to do:
 ```
