@@ -604,11 +604,24 @@ else
 	fi
 endif
 
+flashboot: $(USER_LIBDIR)/lib$(LIBSMING).a $(RBOOT_BIN)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN)
+	
 flashconfig:
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
 	-$(Q) $(KILL_TERM)
 	$(vecho) "Deleting rBoot config sector"
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x01000 $(SDK_BASE)/bin/blank.bin 
+
+flashapp: all
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x02000 $(RBOOT_ROM_0)
+
+flashfs: $(USER_LIBDIR)/lib$(LIBSMING).a $(SPIFF_BIN_OUT)
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(vecho) "SPIFFS are not enabled!"
+else
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
+endif
 
 flash: all
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
