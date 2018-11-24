@@ -257,7 +257,7 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 endif
 
 # libraries used in this project, mainly provided by the SDK
-LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBSMING) $(LIBMAIN) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) mqttc wpa $(LIBSMING) $(LIBMAIN) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 ifeq ($(ENABLE_WPS),1)
 	LIBS += wps
 endif
@@ -284,6 +284,11 @@ else
 endif
 ifeq ($(ENABLE_WPS),1)
 	CFLAGS += -DENABLE_WPS=1
+endif
+
+# Flags for compatability with old versions (most of them should disappear with the next major release)
+ifdef MQTT_NO_COMPAT
+	CFLAGS += -DMQTT_NO_COMPAT=1
 endif
 
 #Append debug options

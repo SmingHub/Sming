@@ -194,8 +194,13 @@ EXTRA_INCDIR     += third-party/http-parser/
 
 # => websocket-parser
 THIRD_PARTY_DATA += third-party/ws_parser/Makefile
-MODULES              += third-party/ws_parser/
+MODULES          += third-party/ws_parser/
 EXTRA_INCDIR     += third-party/ws_parser/
+
+# mqtt-codec in here...
+THIRD_PARTY_DATA += third-party/mqtt-codec/Makefile
+EXTRA_INCDIR     += third-party/mqtt-codec/src
+CUSTOM_TARGETS   += $(USER_LIBDIR)/libmqttc.a
 
 # => SDK
 SDK_INTERNAL = 0
@@ -256,7 +261,7 @@ ifeq ($(LWIP_EXTRA_FLAGS),1)
 endif
 
 # libraries used in this project, mainly provided by the SDK
-LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) mqttc wpa main
 
 ENABLE_CUSTOM_PWM ?= 1
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
@@ -266,9 +271,9 @@ endif
 
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 
+CFLAGS_COMMON = -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS += -Wall -Wundef -Wpointer-arith -Wno-comment \
-			-Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+CFLAGS += -Wall -Wundef -Wpointer-arith -Wno-comment $(CFLAGS_COMMON) \
          	-D__ets__ -DICACHE_FLASH -DUSE_OPTIMIZE_PRINTF -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1 
 ifneq ($(STRICT),1)
 CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
@@ -290,6 +295,12 @@ ifneq ($(MFORCE32),)
 else 
     CFLAGS += -DPROGMEM_L32=""
 endif
+
+# Flags for compatability with old versions (most of them should disappear with the next major release)
+ifeq ($(MQTT_NO_COMPAT),1)
+	CFLAGS += -DMQTT_NO_COMPAT=1
+endif
+
 #Append debug options
 CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 
@@ -429,13 +440,18 @@ endif
 
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 $(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
-	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
+	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP) $(CFLAGS_COMMON)" all
 endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 $(USER_LIBDIR)/liblwip%.a: third-party/lwip2/Makefile.sming
 	$(Q) $(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" SDK_INTERNAL="$(SDK_INTERNAL)" \
 				 USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
 endif
+
+$(USER_LIBDIR)/libmqttc.a:
+	$(Q) $(MAKE) -C third-party/mqtt-codec MQTT_ENABLE_SERVER=0 MQTT_ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
+			CFLAGS_EXTRA="-Iinclude -I$(SDK_BASE)/include $(CFLAGS_COMMON)" \
+			LIB_FOLDER="$(SMING_HOME)/$(USER_LIBDIR)/" lib
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
