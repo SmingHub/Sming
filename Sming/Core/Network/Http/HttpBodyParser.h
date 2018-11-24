@@ -46,3 +46,7 @@ void formUrlParser(HttpRequest& request, const char* at, int length);
  * @note The content later can be retrieved by calling request.getBody()
  */
 void bodyToStringParser(HttpRequest& request, const char* at, int length);
+
+#ifdef ENABLE_HTTP_SERVER_MULTIPART
+void formMultipartParser(HttpRequest& request, const char *at, int length);
+#endif

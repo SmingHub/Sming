@@ -72,6 +72,14 @@ ifdef LOCALE
 	GLOBAL_CFLAGS		+= -DLOCALE=$(LOCALE)
 endif
 
+# => Multipart Parser
+COMPONENT_VARS 			+= ENABLE_HTTP_SERVER_MULTIPART
+ifeq ($(ENABLE_HTTP_SERVER_MULTIPART),1)
+	SMING_FEATURES		+= HTTP_SERVER_MULTIPART
+	GLOBAL_CFLAGS		+= -DENABLE_HTTP_SERVER_MULTIPART=1
+	COMPONENT_DEPENDS += multipart-parser
+endif
+
 ### Debug output parameters
 
 # By default `debugf` does not print file name and line number. If you want this enabled set the directive below to 1

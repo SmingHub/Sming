@@ -121,3 +121,196 @@ void bodyToStringParser(HttpRequest& request, const char* at, int length)
 
 	data->concat(at, length);
 }
+
+#ifdef ENABLE_HTTP_SERVER_MULTIPART
+#include "multipart-parser/multipart_parser.h"
+
+class MultipartParser
+{
+
+  public:
+    MultipartParser(HttpRequest* request);
+    ~MultipartParser();
+
+    void execute(const char* at, size_t length);
+
+    static int readHeaderName(multipart_parser_t* p, const char* at,
+                              size_t length);
+    static int readHeaderValue(multipart_parser_t* p, const char* at,
+                               size_t length);
+    static int partBegin(multipart_parser_t* p);
+    static int partData(multipart_parser_t* p, const char* at, size_t length);
+    static int partEnd(multipart_parser_t* p);
+    static int bodyEnd(multipart_parser_t* p);
+
+  private:
+    multipart_parser_settings_t settings;
+
+    HttpParams params;
+    bool useValue = false;
+
+    HttpRequest* request;
+
+    multipart_parser_t* parser;
+    String name; // current parameter name
+};
+
+MultipartParser::MultipartParser(HttpRequest* request)
+{
+    memset(&settings, 0, sizeof(settings));
+    settings.on_header_field = readHeaderName;
+    settings.on_header_value = readHeaderValue;
+    settings.on_part_data_begin = partBegin;
+    settings.on_part_data = partData;
+    settings.on_part_data_end = partEnd;
+    settings.on_body_end = bodyEnd;
+
+    if (request->headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
+        // Content-Type: multipart/form-data; boundary=------------------------a48863c0572edce6
+        int startPost = request->headers[HTTP_HEADER_CONTENT_TYPE].indexOf("boundary=");
+        if (startPost == -1) {
+            return;
+        }
+
+        startPost += 9;
+        String boundary =
+            "--" + request->headers[HTTP_HEADER_CONTENT_TYPE].substring(startPost);
+        parser = multipart_parser_init(boundary.c_str(), &settings);
+    }
+
+    this->request = request;
+    parser->data = this;
+}
+
+MultipartParser::~MultipartParser()
+{
+    if (parser != NULL) {
+        multipart_parser_free(parser);
+    }
+}
+
+void MultipartParser::execute(const char* at, size_t length)
+{
+    multipart_parser_execute(parser, at, length);
+}
+
+int MultipartParser::partBegin(multipart_parser_t* p)
+{
+    MultipartParser* parser = (MultipartParser*)p->data;
+    if (parser == NULL) {
+        return -1;
+    }
+
+    parser->useValue = false;
+    return 0;
+}
+
+int MultipartParser::readHeaderName(multipart_parser_t* p, const char* at,
+                                    size_t length)
+{
+    MultipartParser* parser = (MultipartParser*)p->data;
+    if (parser == NULL) {
+        return -1;
+    }
+
+    if (memcmp(at, "Content-Disposition", length) == 0) {
+        parser->useValue = true;
+    }
+
+    return 0;
+}
+
+int MultipartParser::readHeaderValue(multipart_parser_t* p, const char* at,
+                                     size_t length)
+{
+    MultipartParser* parser = (MultipartParser*)p->data;
+    if (parser == NULL) {
+        return -1;
+    }
+
+    if (parser->useValue) {
+        // Content-Disposition: form-data; name="image"; filename=".gitignore"
+        // Content-Disposition: form-data; name="data"
+        String value = String(at, length);
+        int startPos = value.indexOf("name=");
+        if (startPos == -1) {
+            return -1; // Invalid header content
+        }
+        startPos += 6; // name="
+        int endPos = value.indexOf(';', startPos);
+        if (endPos == -1) {
+            parser->name = value.substring(startPos, value.length() - 1);
+        } else {
+            parser->name = value.substring(startPos, endPos - 1);
+        }
+    }
+
+    return 0;
+}
+
+int MultipartParser::partData(multipart_parser_t* p, const char* at,
+                              size_t length)
+{
+    MultipartParser* parser = (MultipartParser*)p->data;
+    if (parser == NULL) {
+        return -1;
+    }
+
+    parser->params[parser->name] += String(at, length);
+    return 0;
+}
+
+int MultipartParser::partEnd(multipart_parser_t* p)
+{
+    MultipartParser* parser = (MultipartParser*)p->data;
+    if (parser == NULL) {
+        return -1;
+    }
+
+    parser->request->postParams[parser->name] = parser->params[parser->name];
+
+    return 0;
+}
+
+int MultipartParser::bodyEnd(multipart_parser_t* p)
+{
+    MultipartParser* parser = (MultipartParser*)p->data;
+    if (parser == NULL) {
+        return -1;
+    }
+
+    for (unsigned i = 0; i < parser->params.count(); i++) {
+        String name = parser->params.keyAt(i);
+        String value = parser->params.valueAt(i);
+        parser->request->postParams[name] = value;
+    }
+
+    return 0;
+}
+
+void formMultipartParser(HttpRequest& request, const char* at, int length)
+{
+    MultipartParser* parser = (MultipartParser*)request.args;
+
+    if (length == -1) {
+        if (parser != NULL) {
+            delete parser;
+        }
+
+        parser = new MultipartParser(&request);
+        request.args = parser;
+
+        return;
+    }
+
+    if (length == -2) {
+        if (parser != NULL) {
+            delete parser;
+        }
+        return;
+    }
+
+    parser->execute(at, length);
+}
+#endif /* ENABLE_HTTP_SERVER_MULTIPART */
+
