@@ -8,6 +8,8 @@
 
 ### Defaults ###
 
+SERVER_OTA_PORT ?= 9999
+
 # rBoot options, overwrite them in the projects Makefile-user.mk
 RBOOT_BIG_FLASH  ?= 1
 RBOOT_TWO_ROMS   ?= 0
@@ -639,6 +641,10 @@ else
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN) 0x02000 $(RBOOT_ROM_0) $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
 endif
 	$(TERMINAL)
+	
+otaserver: all
+	$(vecho) "Starting OTA server for TESTING"
+	$(Q) cd $(FW_BASE) && python -m SimpleHTTPServer $(SERVER_OTA_PORT)
 
 terminal:
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
