@@ -8,6 +8,8 @@
 
 ### Defaults ###
 
+SERVER_OTA_PORT ?= 9999
+
 # rBoot options, overwrite them in the projects Makefile-user.mk
 RBOOT_BIG_FLASH  ?= 1
 RBOOT_TWO_ROMS   ?= 0
@@ -642,7 +644,7 @@ endif
 	
 otaserver: all
 	$(vecho) "Starting OTA server for TESTING"
-	$(Q) cd $(FW_BASE) && python -m SimpleHTTPServer 8080
+	$(Q) cd $(FW_BASE) && python -m SimpleHTTPServer $(SERVER_OTA_PORT)
 
 terminal:
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
