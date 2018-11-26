@@ -374,3 +374,9 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 	TcpClient::onReadyToSendData(sourceEvent);
 }
+
+void MqttClient::onFinished(TcpClientState finishState)
+{
+	clearBits(flags, MQTT_CLIENT_CONNECTED);
+	TcpClient::onFinished(finishState);
+}
