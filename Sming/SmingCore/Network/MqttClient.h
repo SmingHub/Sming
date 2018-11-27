@@ -219,6 +219,7 @@ public:
 
 protected:
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	virtual void onFinished(TcpClientState finishState);
 
 private:
 	// TCP methods
