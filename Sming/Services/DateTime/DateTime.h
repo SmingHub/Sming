@@ -126,7 +126,7 @@ public:
 	time_t toUnixTime();
 
     /** @brief  Get human readable date
-     *  @retval String Date in requested format, e.g. dd.mm.yyyy
+     *  @retval String Date in requested format, e.g. DD.MM.YYYY
      */
 	String toShortDateString();
 
@@ -137,10 +137,19 @@ public:
 	String toShortTimeString(bool includeSeconds = false);
 
     /** @brief  Get human readable date and time
-     *  @retval String Date and time in format dd.mm.yyyy hh:mm:ss
+     *  @retval String Date and time in format DD.MM.YYYY hh:mm:ss
      */
 	String toFullDateTimeString();
+
+   /** @brief  Get human readable date and time
+     *  @retval String Date and time in format YYYY-MM-DDThh:mm:ssZ
+     */
 	String toISO8601();
+
+   /** @brief  Get human readable date and time
+     *  @retval String Date and time in format DDD, DD MMM YYYY hh:mm:ss GMT
+     */
+	String toHTTPDate();
 
     /** @brief  Add time to date time object
      *  @param  add Quantity of milliseconds to add to object
