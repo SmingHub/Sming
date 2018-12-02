@@ -42,10 +42,8 @@ int CStringArray::indexOf(const char* str) const
 
 const char* CStringArray::getValue(unsigned index) const
 {
-	if(index < count())
-    {
-		for(unsigned offset = 0; offset < length(); --index)
-		{
+	if(index < count()) {
+		for(unsigned offset = 0; offset < length(); --index) {
 			const char* s = buffer + offset;
 			if(index == 0)
 				return s;
@@ -58,14 +56,12 @@ const char* CStringArray::getValue(unsigned index) const
 
 unsigned CStringArray::count() const
 {
-    if(stringCount == 0 && length() > 0)
-    {
-        //If array is created by assignment (e.g. CStringsArray csa = "Hello\0World";) then stringCount is not set so set it here
-        for(unsigned offset = 0; offset < length() + 1; offset++)
-        {
-            if(buffer[offset] == '\0')
-                ++stringCount;
-        }
-    }
-    return stringCount;
+	if(stringCount == 0 && length() > 0) {
+		//If array is created by assignment (e.g. CStringsArray csa = "Hello\0World";) then stringCount is not set so set it here
+		for(unsigned offset = 0; offset < length() + 1; offset++) {
+			if(buffer[offset] == '\0')
+				++stringCount;
+		}
+	}
+	return stringCount;
 }
