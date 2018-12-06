@@ -34,7 +34,6 @@ public:
 	// Inherit all constructors
 	using String::String;
 
-
 	/** @brief Append a new string to the end of the array
 	 *  @param str
 	 *  @param length Length of new string in array (default is length of str)
