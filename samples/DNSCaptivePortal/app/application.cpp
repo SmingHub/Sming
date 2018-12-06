@@ -4,13 +4,7 @@
 DNSServer dnsServer;
 HttpServer server;
 
-const byte DNS_PORT = 53;
-IPAddress apIP(192, 168, 4, 1);
-
-void onDefault(HttpRequest& request, HttpResponse& response)
-{
-	response.redirect("http://" + apIP.toString());
-}
+#define DNS_PORT 53
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
@@ -28,7 +22,7 @@ void startWebServer()
 void startServers()
 {
 	// set DNS server to catch all requests and reply with own ip
-	dnsServer.start(DNS_PORT, "*", apIP);
+	dnsServer.start(DNS_PORT, "*", WifiAccessPoint.getIP());
 	startWebServer();
 }
 
