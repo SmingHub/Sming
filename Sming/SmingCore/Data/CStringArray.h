@@ -69,34 +69,34 @@ public:
 	}
 
 	/** @brief  Check if array contains a string
-	*   @param  str String to search for
-	*   @retval bool True if string exists in array
-	*   @note   Search is not case-sensitive
-	*/
+	 *  @param  str String to search for
+	 *  @retval bool True if string exists in array
+	 *  @note   Search is not case-sensitive
+	 */
 	bool contains(const char* str) const
 	{
 		return indexOf(str) >= 0;
 	}
 
 	/** @brief  Check if array contains a string
-	*   @param  str String to search for
-	*   @retval bool True if string exists in array
-	*   @note   Search is not case-sensitive
-	*/
+	 *  @param  str String to search for
+	 *  @retval bool True if string exists in array
+	 *  @note   Search is not case-sensitive
+	 */
 	bool contains(const String& str) const
 	{
 		return indexOf(str) >= 0;
 	}
 
 	/** @brief Get string at the given position
-	 * 	@param index 0-based index of string to obtain
-	 * 	@retval const char* nullptr if index is not valid
+	 *  @param index 0-based index of string to obtain
+	 *  @retval const char* nullptr if index is not valid
 	 */
 	const char* getValue(unsigned index) const;
 
 	/** @brief Get string at the given position
-	 * 	@param index 0-based index of string to obtain
-	 * 	@retval const char* nullptr if index is not valid
+	 *  @param index 0-based index of string to obtain
+	 *  @retval const char* nullptr if index is not valid
 	 */
 	const char* operator[](unsigned index) const
 	{
