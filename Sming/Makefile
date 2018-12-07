@@ -159,9 +159,12 @@ USER_LIBDIR = compiler/lib
 
 LIBSMING = libsming
 ifeq ($(ENABLE_SSL),1)
-	LIBSMING= libsmingssl
+	LIBSMING := $(LIBSMING)ssl
 endif
 
+ifeq ($(ENABLE_GDB),1)
+	LIBSMING := $(LIBSMING)d
+endif
 
 # name for the target project
 TARGET		= app

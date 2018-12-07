@@ -210,8 +210,12 @@ THIRD_PARTY_DIR = $(SMING_HOME)/third-party
 LIBSMING = sming
 SMING_FEATURES = none
 ifeq ($(ENABLE_SSL),1)
-	LIBSMING = smingssl
+	LIBSMING := $(LIBSMING)ssl
 	SMING_FEATURES = SSL
+endif
+
+ifeq ($(ENABLE_GDB),1)
+	LIBSMING := $(LIBSMING)d
 endif
 
 # which modules (subdirectories) of the project to include in compiling
