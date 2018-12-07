@@ -58,7 +58,7 @@ unsigned CStringArray::count() const
 {
 	if(stringCount == 0 && length() > 0) {
 		//If array is created by assignment (e.g. CStringsArray csa = "Hello\0World";) then stringCount is not set so set it here
-		for(unsigned offset = 0; offset < length() + 1; offset++) {
+		for(unsigned offset = 0; offset <= length(); offset++) {
 			if(buffer[offset] == '\0')
 				++stringCount;
 		}
