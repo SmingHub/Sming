@@ -4,7 +4,7 @@
 
   This library is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include "DateTime.h"
@@ -17,6 +17,7 @@
  * Used to parse HTTP date strings - see parseHttpDate()
  */
 static DEFINE_FSTR(flashMonthNames, "Jan\0Feb\0Mar\0Apr\0May\0Jun\0Jul\0Aug\0Sep\0Oct\0Nov\0Dec");
+static DEFINE_FSTR(flashDayNames, "Sun\0Mon\0Tue\0Wed\0Thu\0Fri\0Sat");
 
 /** @brief Get the number of days in a month, taking leap years into account
  *  @param month 0=jan
@@ -148,7 +149,14 @@ String DateTime::toFullDateTimeString()
 String DateTime::toISO8601()
 {
 	char buf[32];
-	m_snprintf(buf, sizeof(buf), _F("%02d-%02d-%02dT%02d:%02d:%02dZ"), Year, Month + 1, Day, Hour, Minute, Second);
+	m_snprintf(buf, sizeof(buf), _F("%04d-%02d-%02dT%02d:%02d:%02dZ"), Year, Month + 1, Day, Hour, Minute, Second);
+	return String(buf);
+}
+
+String DateTime::toHTTPDate()
+{
+	char buf[30];
+	m_snprintf(buf, sizeof(buf), _F("%s, %02d %s %04d %02d:%02d:%02d GMT"), CStringArray(flashDayNames)[DayofWeek], Day, CStringArray(flashMonthNames)[Month], Year, Hour, Minute, Second);
 	return String(buf);
 }
 
