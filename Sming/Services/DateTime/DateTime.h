@@ -76,20 +76,20 @@ typedef enum {
 class DateTime
 {
 public:
-    /** @brief  Instantiate an uninitialised date and time object
-     */
+	/** @brief  Instantiate an uninitialised date and time object
+	 */
 	DateTime()
 	{
 	}
 
-    /** @brief  Instantiate a date and time object
-     *  @param  time Unix time to assign to object
-     */
+	/** @brief  Instantiate a date and time object
+	 *  @param  time Unix time to assign to object
+	 */
 	DateTime(time_t time);
 
-    /** @brief  Get current Unix time
-     *  @retval time_t Quantity of seconds since 00:00:00 1970-01-01
-    */
+	/** @brief  Get current Unix time
+	 *  @retval time_t Quantity of seconds since 00:00:00 1970-01-01
+	 */
 	operator time_t() { return toUnixTime(); }
 
     /** @brief  Set time using Unix time
@@ -106,12 +106,12 @@ public:
 	 */
 	void setTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year);
 
-    /** @brief  Parse a HTTP full date and set time and date
-     *  @param  httpDate HTTP full date in RFC 1123 format, e.g. Sun, 06 Nov 1994 08:49:37 GMT
-     *  @retval bool True on success
-     *  @note   Also supports obsolete RFC 850 date format, e.g. Sunday, 06-Nov-94 08:49:37 GMT where 2 digit year represents range 1970-2069
-     *  @note   GMT suffix is optional and is always assumed / ignored
-     */
+	/** @brief  Parse a HTTP full date and set time and date
+	 *  @param  httpDate HTTP full date in RFC 1123 format, e.g. Sun, 06 Nov 1994 08:49:37 GMT
+	 *  @retval bool True on success
+	 *  @note   Also supports obsolete RFC 850 date format, e.g. Sunday, 06-Nov-94 08:49:37 GMT where 2 digit year represents range 1970-2069
+	 *  @note   GMT suffix is optional and is always assumed / ignored
+	 */
 	bool parseHttpDate(const String& httpDate);
 
 	/** @brief  Check if time date object is initialised
@@ -120,14 +120,14 @@ public:
 	bool isNull();
 
     /** @brief  Get Unix time
-     *  @retval time_t Unix time, quantity of seconds since 00:00:00 1970-01-01
+	 *  @retval time_t Unix time, quantity of seconds since 00:00:00 1970-01-01
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
-     */
+	 */
 	time_t toUnixTime();
 
-    /** @brief  Get human readable date
-     *  @retval String Date in requested format, e.g. DD.MM.YYYY
-     */
+	/** @brief  Get human readable date
+	 *  @retval String Date in requested format, e.g. DD.MM.YYYY
+	 */
 	String toShortDateString();
 
 	/** @brief  Get human readable time
@@ -136,24 +136,24 @@ public:
 	 */
 	String toShortTimeString(bool includeSeconds = false);
 
-    /** @brief  Get human readable date and time
-     *  @retval String Date and time in format DD.MM.YYYY hh:mm:ss
-     */
+	/** @brief  Get human readable date and time
+	 *  @retval String Date and time in format DD.MM.YYYY hh:mm:ss
+	 */
 	String toFullDateTimeString();
 
-   /** @brief  Get human readable date and time
-     *  @retval String Date and time in format YYYY-MM-DDThh:mm:ssZ
-     */
+	/** @brief  Get human readable date and time
+	 *  @retval String Date and time in format YYYY-MM-DDThh:mm:ssZ
+	 */
 	String toISO8601();
 
-   /** @brief  Get human readable date and time
-     *  @retval String Date and time in format DDD, DD MMM YYYY hh:mm:ss GMT
-     */
+	/** @brief  Get human readable date and time
+	 *  @retval String Date and time in format DDD, DD MMM YYYY hh:mm:ss GMT
+	 */
 	String toHTTPDate();
 
-    /** @brief  Add time to date time object
-     *  @param  add Quantity of milliseconds to add to object
-     */
+	/** @brief  Add time to date time object
+	 *  @param  add Quantity of milliseconds to add to object
+	 */
 	void addMilliseconds(long add);
 
 	// functions to convert to and from time components (hrs, secs, days, years etc) to time_t
