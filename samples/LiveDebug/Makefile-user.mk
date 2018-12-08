@@ -26,6 +26,8 @@ MODULES = app
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
+DISABLE_SPIFFS = 1
+
 # Com port speed
 # COM_SPEED	= 115200
 ENABLE_GDB=1
