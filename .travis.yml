@@ -38,7 +38,7 @@ install:
   fi
 - if [ "$SDK_VERSION" == "1.5.0" ]; then bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk;
   fi
-- if [[ "$SDK_VERSION" != "1.5.0" && "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://github.com/nodemcu/nodemcu-firmware/raw/master/tools/esp-open-sdk.tar.xz;
+- if [[ "$SDK_VERSION" != "1.5.0" && "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://github.com/nodemcu/nodemcu-firmware/raw/2d958750b56fc60297f564b4ec303e47928b5927/tools/esp-open-sdk.tar.xz;
   tar -Jxvf esp-open-sdk.tar.xz; ln -s `pwd`/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/.
   ; fi
 - if [ "$SDK_VERSION" == "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget

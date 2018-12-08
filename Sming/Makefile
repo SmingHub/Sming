@@ -283,7 +283,7 @@ ifeq ($(SMING_RELEASE),1)
 	#      for full list of optimization options
 	CFLAGS += -Os -DSMING_RELEASE=1 -DLWIP_NOASSERT
 else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
+	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0
 else
 	CFLAGS += -Os -g
 endif
