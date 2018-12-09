@@ -141,7 +141,7 @@ uint8_t SPIClass::read8()
  * SPI transfer is based on a simultaneous send and receive:
  * The buffered transfers does split up the conversation internaly into 64 byte blocks.
  * The received data is stored in the buffer passed by reference.
- * (the data past in is replaced with the data received).
+ * (the data passed in is replaced with the data received).
  *
  * 		SPI.transfer(buffer, size)				: memory buffer of length size
  */
@@ -176,7 +176,7 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 		regvalue |= SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
 		WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
-		// setup bit lenght
+		// setup bit length
 		WRITE_PERI_REG(SPI_USER1(SPI_NO), (((num_bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
 											  (((num_bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
@@ -319,7 +319,6 @@ void SPIClass::setClock(uint8_t prediv, uint8_t cntdiv)
 #ifdef SPI_DEBUG
 	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d", prediv, cntdiv, spiSettings.speed);
 #endif
-	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d", prediv, cntdiv, spiSettings.speed);
 
 	if((prediv == 0) | (cntdiv == 0)) {
 		// go full speed = SYSTEMCLOCK
@@ -399,7 +398,7 @@ void SPIClass::setFrequency(int freq)
 	debugf("SPIClass::setFrequency(uint32_t %d)", freq);
 #endif
 
-	int _CPU_freq = system_get_cpu_freq() * 10000000UL;
+	int _CPU_freq = system_get_cpu_freq() * 1000000UL;
 
 	// dont run code if there are no changes
 	if(initialised && freq == spiSettings.speed)

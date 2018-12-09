@@ -131,7 +131,7 @@ public:
 	 * SPI transfer is based on a simultaneous send and receive:
 	 * The buffered transfers does split up the conversation internaly into 64 byte blocks.
 	 * The received data is stored in the buffer passed by reference.
-	 * (the data past in is replaced with the data received).
+	 * (the data passed in is replaced with the data received).
 	 *
 	 * 		SPI.transfer(buffer, size)				: memory buffer of length size
 	 */
