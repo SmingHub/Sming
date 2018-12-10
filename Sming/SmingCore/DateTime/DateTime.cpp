@@ -64,18 +64,23 @@ bool DateTime::isNull()
 
 bool DateTime::fromHttpDate(const String& httpDate)
 {
-	int first = httpDate.indexOf(',');
-	if(first < 0 || httpDate.length() - first < 20)
+	if(httpDate.length() < 29)
 		return false;
 
-	first++; // Skip ','
-	if(httpDate[first] == ' ')
-		first++;
-
-	auto ptr = httpDate.c_str() + first;
+	auto ptr = httpDate.c_str();
 
 	// Parse and return a decimal number and update ptr to the first non-numeric character after it
 	auto parseNumber = [&ptr]() { return strtol(ptr, const_cast<char**>(&ptr), 10); };
+
+	char dayName[] = {ptr[0], ptr[1], ptr[2], '\0'};
+	for(DayofWeek = 0; DayofWeek < 7; ++DayofWeek)
+	{
+		if(strncmp(CStringArray(flashDayNames)[DayofWeek], dayName, 3) == 0)
+			break;
+	}
+	if(DayofWeek > 6)
+		return false; // Invalid day of week
+	ptr += 5;
 
 	Day = parseNumber();
 	if(*ptr == '\0')
@@ -85,12 +90,14 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	ptr++;
 	char monthName[] = {ptr[0], ptr[1], ptr[2], '\0'};
 	ptr += 4; // Skip space as well as month
-	if(*ptr == '\0')
-		return false;
 
 	// Search is case insensitive
-	Month = CStringArray(flashMonthNames).indexOf(monthName); //!@todo This is broken by long month names
-	if(Month < 0)
+	for(Month = 0; Month < 12; ++Month)
+	{
+		if(strncmp(CStringArray(flashMonthNames)[Month], monthName, 3) == 0)
+			break;
+	}
+	if(Month > 11)
 		return false; // Invalid month
 
 	Year = parseNumber();
@@ -125,39 +132,30 @@ time_t DateTime::toUnixTime()
 
 String DateTime::toShortDateString()
 {
-	char buf[16];
-	m_snprintf(buf, sizeof(buf), _F("%02d.%02d.%d"), Day, Month + 1, Year);
-	return String(buf);
+	return format(_F("%d.%m.%Y"));
 }
 
 String DateTime::toShortTimeString(bool includeSeconds /* = false*/)
 {
-	char buf[16];
 	if(includeSeconds)
-		m_snprintf(buf, sizeof(buf), _F("%02d:%02d:%02d"), Hour, Minute, Second);
+		return format(_F("%T"));
 	else
-		m_snprintf(buf, sizeof(buf), _F("%02d:%02d"), Hour, Minute);
-
-	return String(buf);
+		return format(_F("%r"));
 }
 
 String DateTime::toFullDateTimeString()
 {
-	return toShortDateString() + ' ' + toShortTimeString(true);
+	return format(_F("%x %T"));
 }
 
 String DateTime::toISO8601()
 {
-	char buf[32];
-	m_snprintf(buf, sizeof(buf), _F("%04d-%02d-%02dT%02d:%02d:%02dZ"), Year, Month + 1, Day, Hour, Minute, Second);
-	return String(buf);
+	return format(_F("%FT%TZ"));
 }
 
 String DateTime::toHTTPDate()
 {
-	char buf[30];
-	m_snprintf(buf, sizeof(buf), _F("%s, %02d %s %04d %02d:%02d:%02d GMT"), getShortName(CStringArray(flashDayNames)[DayofWeek]).c_str(), Day, getShortName(CStringArray(flashMonthNames)[Month]).c_str(), Year, Hour, Minute, Second);
-	return String(buf);
+	return format(_F("%a, %d %b %Y %T GMT"));
 }
 
 void DateTime::addMilliseconds(long add)
@@ -249,7 +247,6 @@ time_t DateTime::toUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int
 String DateTime::format(String sFormat)
 {
 	//!@todo Add localisation (maybe via pre-compiler conditions)
-	//!@todo Rationalise comments (taken from two sources)
 	String sReturn;
 	char buf[64]; //!@todo Check size of buffer is optimal
 
@@ -263,48 +260,48 @@ String DateTime::format(String sFormat)
 				switch(sFormat[pos + 1])
 				{
 					//Year (not implemented: EY, Oy, Ey, EC, G, g)
-					case 'Y': //writes year as a decimal number, e.g. 2017
+					case 'Y': //Full year as a decimal number, e.g. 2018
 						m_snprintf(buf, sizeof(buf), _F("%04d"), Year);
 						break;
-					case 'y': //writes last 2 digits of year as a decimal number (range [00,99])
+					case 'y': //Year, last 2 digits as a decimal number [00..99]
 						m_snprintf(buf, sizeof(buf), _F("%02d"), Year%100);
 						break;
-					case 'C': //writes first 2 digits of year as a decimal number (range [00,99])
+					case 'C': //Year, first 2 digits as a decimal number [00..99]
 						m_snprintf(buf, sizeof(buf), _F("%02d"), Year/100);
 						break;
 					//Month (not implemented: Om)
-					case 'b': //writes abbreviated month name, e.g. Oct (always English)
-					case 'h': //synonym of b
+					case 'b': //Abbreviated month name, e.g. Oct (always English)
+					case 'h': //Synonym of b
+						//!@todo Implement locale
 						m_snprintf(buf, sizeof(buf), _F("%s"), getShortName(CStringArray(flashMonthNames)[Month]).c_str());
 						break;
-					case 'B': //writes full month name, e.g. October (locale dependent)
+					case 'B': //Full month name, e.g. October (always English)
+						//!@todo Implement locale
 						m_snprintf(buf, sizeof(buf), _F("%s"), CStringArray(flashMonthNames)[Month]);
 						break;
-					case 'm': //writes month as a decimal number (range [01,12])
+					case 'm': //Month as a decimal number [01..12]
 						m_snprintf(buf, sizeof(buf), _F("%02d"), Month + 1);
 						break;
 					//Week (not implemented: OU, OW, V, OV)
-					case 'U': //writes week of the year as a decimal number (Sunday is the first day of the week) (range [00,53])
+					case 'U': //Week of the year as a decimal number (Sunday is the first day of the week) [00..53]
 						//!@todo Implement week of the year (from Sunday)
-						m_snprintf(buf, sizeof(buf), _F("??"));
 						break;
-					case 'w': //Weekday as a decimal number with Sunday as 0 (0-6)
+					case 'w': //Weekday as a decimal number with Sunday as 0 [0..6]
 						m_snprintf(buf, sizeof(buf), _F("%d"), DayofWeek);
 						break;
-					case 'W': //writes week of the year as a decimal number (Monday is the first day of the week) (range [00,53])
+					case 'W': //Week of the year as a decimal number (Monday is the first day of the week) [00..53]
 						//!@todo Implement week of the year (from Monday)
-						m_snprintf(buf, sizeof(buf), _F("??"));
 						break;
-					case 'x': //Date representation
-						//!@todo Date locale
+					case 'x': //Short date (DD/MM/YYYY)
+						//!@todo Implement locale
 						m_snprintf(buf, sizeof(buf), _F("%s"), format("%d/%m/%Y").c_str());
 						break;
-					case 'X': //Time representation
-						//!@todo Time locale
+					case 'X': //Time (HH:MM:SS)
+						//!@todo Implement locale
 						m_snprintf(buf, sizeof(buf), _F("%s"), format("%H:%M:%S").c_str());
 						break;
-					// Day of year/month (Not implemented: Od, e, Oe)
-					case 'j': //writes day of the year as a decimal number (range [001,366])
+					// Day of year/month (Not implemented: Od, Oe)
+					case 'j': //Day of the year as a decimal number [001..366]
 					{
 						//!@todo Store day of year during timestamp parsing
 						unsigned int nDays = 0;
@@ -329,70 +326,72 @@ String DateTime::format(String sFormat)
 						m_snprintf(buf, sizeof(buf), _F("%03d"), nDays);
 						break;
 					}
-					case 'd': //writes day of the month as a decimal number (range [01,31])
+					case 'd': //Day of the month as a decimal number [01..31]
 						m_snprintf(buf, sizeof(buf), _F("%02d"), Day);
 						break;
-					case 'e': //writes day of the month as a decimal number (range [1,31])
+					case 'e': //Day of the month as a decimal number [ 1,31]
 						m_snprintf(buf, sizeof(buf), _F("% 2d"), Day);
 						break;
 					// Day of week (Not implemented: Ow, Ou)
-					case 'a': //writes abbreviated weekday name, e.g. Fri (locale dependent)
+					case 'a': //Abbreviated weekday name, e.g. Fri (English only)
+						//!@todo Implement locale
 						m_snprintf(buf, sizeof(buf), _F("%s"), getShortName(CStringArray(flashDayNames)[DayofWeek]).c_str());
 						break;
-					case 'A': //writes full weekday name, e.g. Friday (locale dependent)
+					case 'A': //Full weekday name, e.g. Friday (English only)
+						//!@todo Implement locale
 						m_snprintf(buf, sizeof(buf), _F("%s"), (CStringArray(flashDayNames)[DayofWeek]));
 						break;
-					case 'u': //writes weekday as a decimal number, where Monday is 1 (ISO 8601 format) (range [1-7])
+					case 'u': //Weekday as a decimal number, where Monday is 1 (ISO 8601 format) [1..7]
 						m_snprintf(buf, sizeof(buf), _F("%d"), (DayofWeek == 0)?7:DayofWeek);
 						break;
-					//Hour, minute, second (not implemented: OH, OI, OM, OS)
-					case 'H': //writes hour as a decimal number, 24 hour clock (range [00-23])
+					//Time (not implemented: OH, OI, OM, OS)
+					case 'H': //Hour as a decimal number, 24 hour clock [00..23]
 						m_snprintf(buf, sizeof(buf), _F("%02d"), Hour);
 						break;
-					case 'I': //writes hour as a decimal number, 12 hour clock (range [1,12])
+					case 'I': //Hour as a decimal number, 12 hour clock [0..12]
 						m_snprintf(buf, sizeof(buf), _F("%02d"), Hour?((Hour > 12)?Hour-12:Hour):12);
 						break;
-					case 'M': //writes minute as a decimal number (range [00,59])
+					case 'M': //Minute as a decimal number [00..59]
 						m_snprintf(buf, sizeof(buf), _F("%02d"), Minute);
 						break;
-					case 'S': //writes second as a decimal number (range [00,60])
+					case 'S': //Second as a decimal number [00..61]
 						m_snprintf(buf, sizeof(buf), _F("%02d"), Second);
 						break;
 					// Other (not implemented: Ec, Ex, EX, z, Z)
 					case 'c': //writes standard date and time string, e.g. Sun Oct 17 04:41:13 2010 (English only)
+						//!@todo Implement locale
 						m_snprintf(buf, sizeof(buf), _F("%s"), format("%a %b %d %H:%M:%S %Y").c_str());
 						break;
-					case 'D': //equivalent to "%m/%d/%y"
+					case 'D': //Short date (MM/DD/YY)
 						m_snprintf(buf, sizeof(buf), _F("%s"), format("%m/%d/%y").c_str());
 						break;
-					case 'F': //equivalent to "%Y-%m-%d" (the ISO 8601 date format)
+					case 'F': //ISO 8601 date format (YYYY-mm-dd)
 						m_snprintf(buf, sizeof(buf), _F("%s"), format("%Y-%m-%d").c_str());
 						break;
-					case 'r': //12-hour clock time
-						//!@todo Adjust for locale
-						//!@todo 12 hour time looks wrong with leading zero
+					case 'r': //12-hour clock time (hh:MM:SS AM)
+						//!@todo Implement locale
 						m_snprintf(buf, sizeof(buf), _F("%s"), format("%I:%M:%S %p").c_str());
 						break;
-					case 'R': //equivalent to "%H:%M"
+					case 'R': //Short time (HH:MM)
 						m_snprintf(buf, sizeof(buf), _F("%02d:%02d"), Hour, Minute);
 						break;
-					case 'T': //equivalent to "%H:%M:%S" (the ISO 8601 time format)
+					case 'T': //ISO 8601 time format (HH:MM:SS)
 						m_snprintf(buf, sizeof(buf), _F("%s"), format("%H:%M:%S").c_str());
 						break;
-					case 'p': //writes localized a.m. or p.m. (English only)
-						m_snprintf(buf, sizeof(buf), _F("%s"), (Hour < 12)?"AM":"PM"); //!@todo Should am/pm, upper/lowercase, with/without delimitets?
+					case 'p': //Meridiem [AM,PM]
+						m_snprintf(buf, sizeof(buf), _F("%s"), (Hour < 12)?"AM":"PM");
 						break;
-					case '%': //writes literal %. The full conversion specification must be %%
+					case '%': //Literal percent (%). The full conversion specification must be %%
 						m_snprintf(buf, sizeof(buf), _F("%s"), "%");
 						break;
-					case 'n': //writes newline character
+					case 'n': //Newline character (\n)
 						m_snprintf(buf, sizeof(buf), _F("%s"), "\n");
 						break;
-					case 't': //writes horizontal tab character
+					case 't': //Horizontal tab (\t)
 						m_snprintf(buf, sizeof(buf), _F("%s"), "\t");
 						break;
-					default:
-						m_snprintf(buf, sizeof(buf), _F("%s"), "??");
+					default: //Silently ignore % and process next character
+						--pos;
 				}
 				sReturn += buf;
 				++pos; //Skip format charachter
@@ -407,6 +406,8 @@ String DateTime::format(String sFormat)
 	return sReturn;
 }
 
+// Helper function to return first 3 characters
+//!@todo Return a c_str as we don't use any features of String and have to convert back to c_str each time
 String DateTime::getShortName(const char* longname)
 {
 	String sReturn(longname, 3);
