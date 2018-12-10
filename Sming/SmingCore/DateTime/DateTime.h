@@ -242,6 +242,17 @@ public:
 		return toUnixTime(sec, min, hour, day, month, year);
 	}
 
+	/** @brief  Create string with arbitary formatting
+	 *  @param  format String including date and time formatting
+	 *  @retval String Formatted string
+	 *  @note   Uses strftime style formatting, e.g. format("Today is %a, %d %b %Y") returns "Today is Mon, 10 Dec 2012"
+	 *	@note   Does not support localisation
+	 */
+	String format(String format);
+
+private:
+	String getShortName(const char* longname);
+
 public:
 	int8_t Hour = 0; ///< Hour (0-23)
 	int8_t Minute = 0; ///< Minute (0-59)
