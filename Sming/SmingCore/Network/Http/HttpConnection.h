@@ -14,7 +14,7 @@
 #define _SMING_CORE_NETWORK_HTTP_CONNECTION_H_
 
 #include "HttpConnectionBase.h"
-#include "../Services/DateTime/DateTime.h"
+#include <DateTime.h>
 #include "Data/ObjectQueue.h"
 
 /** @defgroup   HTTP client connection

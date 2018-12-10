@@ -14,7 +14,7 @@
 #define LEAP_YEAR(year) ((year % 4) == 0)
 
 /*
- * Used to parse HTTP date strings - see parseHttpDate()
+ * Used to parse HTTP date strings - see fromHttpDate()
  */
 static DEFINE_FSTR(flashMonthNames, "Jan\0Feb\0Mar\0Apr\0May\0Jun\0Jul\0Aug\0Sep\0Oct\0Nov\0Dec");
 static DEFINE_FSTR(flashDayNames, "Sun\0Mon\0Tue\0Wed\0Thu\0Fri\0Sat");
@@ -41,7 +41,7 @@ DateTime::DateTime(time_t time)
 
 void DateTime::setTime(time_t time)
 {
-	convertFromUnixTime(time, &Second, &Minute, &Hour, &Day, &DayofWeek, &Month, &Year);
+	fromUnixTime(time, &Second, &Minute, &Hour, &Day, &DayofWeek, &Month, &Year);
 	Milliseconds = 0;
 }
 
@@ -62,7 +62,7 @@ bool DateTime::isNull()
 		   Milliseconds == 0;
 }
 
-bool DateTime::parseHttpDate(const String& httpDate)
+bool DateTime::fromHttpDate(const String& httpDate)
 {
 	int first = httpDate.indexOf(',');
 	if(first < 0 || httpDate.length() - first < 20)
@@ -120,7 +120,7 @@ bool DateTime::parseHttpDate(const String& httpDate)
 
 time_t DateTime::toUnixTime()
 {
-	return convertToUnixTime(Second + (Milliseconds / 1000), Minute, Hour, Day, Month, Year);
+	return toUnixTime(Second + (Milliseconds / 1000), Minute, Hour, Day, Month, Year);
 }
 
 String DateTime::toShortDateString()
@@ -171,7 +171,7 @@ void DateTime::addMilliseconds(long add)
 	Milliseconds = ms;
 }
 
-void DateTime::convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday, int8_t* pwday,
+void DateTime::fromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday, int8_t* pwday,
 								   int8_t* pmonth, int16_t* pyear)
 {
 	// convert the given time_t to time components
@@ -218,7 +218,7 @@ void DateTime::convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int
 		*pday = epoch + 1; // day of month
 }
 
-time_t DateTime::convertToUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year)
+time_t DateTime::toUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year)
 {
 	// converts time components to time_t
 	// note year argument is full four digit year (or digits since 2000), i.e.1975, (year 8 is 2008)
