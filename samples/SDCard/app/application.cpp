@@ -106,7 +106,7 @@ void stat_file(char* fname)
 }
 
 FRESULT ls(const char* path /* Start node to be scanned (also used as work area) */
-)
+		   )
 {
 	FRESULT res;
 	FILINFO fno;

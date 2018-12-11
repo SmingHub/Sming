@@ -18,7 +18,7 @@
 #include "UdpConnection.h"
 #include "Platform/System.h"
 #include "Timer.h"
-#include <DateTime/DateTime.h>
+#include <DateTime.h>
 #include "Delegate.h"
 
 #define NTP_PORT 123

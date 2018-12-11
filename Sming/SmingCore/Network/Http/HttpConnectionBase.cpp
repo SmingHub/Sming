@@ -44,7 +44,7 @@ void HttpConnectionBase::init(http_parser_type type)
 #endif
 		parserSettings.on_url = staticOnPath;
 
-		// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
+// Data callbacks: on_url, (common) on_header_field, on_header_value, on_body;
 #ifndef COMPACT_MODE
 		parserSettings.on_status = staticOnStatus;
 #endif

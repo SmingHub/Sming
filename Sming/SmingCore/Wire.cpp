@@ -271,7 +271,7 @@ void TwoWire::onRequest(void (*function)(void))
 	//user_onRequest = function;
 }
 
-	// Preinstantiate Objects //////////////////////////////////////////////////////
+// Preinstantiate Objects //////////////////////////////////////////////////////
 
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)
 TwoWire Wire;

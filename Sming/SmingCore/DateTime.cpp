@@ -75,8 +75,7 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	auto parseNumber = [&ptr]() { return strtol(ptr, const_cast<char**>(&ptr), 10); };
 
 	char dayName[] = {ptr[0], ptr[1], ptr[2], '\0'};
-	for(DayofWeek = 0; DayofWeek < 7; ++DayofWeek)
-	{
+	for(DayofWeek = 0; DayofWeek < 7; ++DayofWeek) {
 		if(strncmp(CStringArray(flashDayNames)[DayofWeek], dayName, 3) == 0)
 			break;
 	}
@@ -94,8 +93,7 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	ptr += 4; // Skip space as well as month
 
 	// Search is case insensitive
-	for(Month = 0; Month < 12; ++Month)
-	{
+	for(Month = 0; Month < 12; ++Month) {
 		if(strncmp(CStringArray(flashMonthNames)[Month], monthName, 3) == 0)
 			break;
 	}
@@ -173,7 +171,7 @@ void DateTime::addMilliseconds(long add)
 }
 
 void DateTime::fromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday, int8_t* pwday,
-								   int8_t* pmonth, int16_t* pyear)
+							int8_t* pmonth, int16_t* pyear)
 {
 	// convert the given time_t to time components
 	// this is a more compact version of the C library localtime function
@@ -253,131 +251,126 @@ String DateTime::format(String sFormat)
 	String sReturn;
 	char buf[64]; //!@todo Check size of buffer is optimal
 
-    for(unsigned int pos = 0; pos < sFormat.length(); ++pos)
-	{
-		if(sFormat[pos] == '%')
-		{
+	for(unsigned int pos = 0; pos < sFormat.length(); ++pos) {
+		if(sFormat[pos] == '%') {
 			if(pos < sFormat.length() - 1) //Ignore % as last character
 			{
 				buf[0] = '\0'; //Empty string in case no format character matches
-				switch(sFormat[pos + 1])
+				switch(sFormat[pos + 1]) {
+				//Year (not implemented: EY, Oy, Ey, EC, G, g)
+				case 'Y': //Full year as a decimal number, e.g. 2018
+					m_snprintf(buf, sizeof(buf), _F("%04d"), Year);
+					break;
+				case 'y': //Year, last 2 digits as a decimal number [00..99]
+					m_snprintf(buf, sizeof(buf), _F("%02d"), Year % 100);
+					break;
+				case 'C': //Year, first 2 digits as a decimal number [00..99]
+					m_snprintf(buf, sizeof(buf), _F("%02d"), Year / 100);
+					break;
+				//Month (not implemented: Om)
+				case 'b': //Abbreviated month name, e.g. Oct (always English)
+				case 'h': //Synonym of b
+					m_snprintf(buf, 4, _F("%s"), CStringArray(flashMonthNames)[Month]);
+					break;
+				case 'B': //Full month name, e.g. October (always English)
+					m_snprintf(buf, sizeof(buf), _F("%s"), CStringArray(flashMonthNames)[Month]);
+					break;
+				case 'm': //Month as a decimal number [01..12]
+					m_snprintf(buf, sizeof(buf), _F("%02d"), Month + 1);
+					break;
+				//Week (not implemented: OU, OW, V, OV)
+				case 'U': //Week of the year as a decimal number (Sunday is the first day of the week) [00..53]
+					//!@todo Implement week number (Sunday as first day of week)
+					break;
+				case 'V': //ISO 8601 week number (01-53)
+					//!@todo Implement ISO 8601 week number
+					break;
+				case 'W': //Week of the year as a decimal number (Monday is the first day of the week) [00..53]
+					//!@todo Implement week number (Monday as first day of week)
+					break;
+				case 'x': //Locale preferred date format
+					m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_DATE).c_str());
+					break;
+				case 'X': //Locale preferred time format
+					//!@todo Implement locale
+					m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_TIME).c_str());
+					break;
+				// Day of year/month (Not implemented: Od, Oe)
+				case 'j': //Day of the year as a decimal number [001..366]
 				{
-					//Year (not implemented: EY, Oy, Ey, EC, G, g)
-					case 'Y': //Full year as a decimal number, e.g. 2018
-						m_snprintf(buf, sizeof(buf), _F("%04d"), Year);
-						break;
-					case 'y': //Year, last 2 digits as a decimal number [00..99]
-						m_snprintf(buf, sizeof(buf), _F("%02d"), Year%100);
-						break;
-					case 'C': //Year, first 2 digits as a decimal number [00..99]
-						m_snprintf(buf, sizeof(buf), _F("%02d"), Year/100);
-						break;
-					//Month (not implemented: Om)
-					case 'b': //Abbreviated month name, e.g. Oct (always English)
-					case 'h': //Synonym of b
-						m_snprintf(buf, 4, _F("%s"), CStringArray(flashMonthNames)[Month]);
-						break;
-					case 'B': //Full month name, e.g. October (always English)
-						m_snprintf(buf, sizeof(buf), _F("%s"), CStringArray(flashMonthNames)[Month]);
-						break;
-					case 'm': //Month as a decimal number [01..12]
-						m_snprintf(buf, sizeof(buf), _F("%02d"), Month + 1);
-						break;
-					//Week (not implemented: OU, OW, V, OV)
-					case 'U': //Week of the year as a decimal number (Sunday is the first day of the week) [00..53]
-						//!@todo Implement week number (Sunday as first day of week)
-						break;
-					case 'V': //ISO 8601 week number (01-53)
-						//!@todo Implement ISO 8601 week number
-						break;
-					case 'W': //Week of the year as a decimal number (Monday is the first day of the week) [00..53]
-						//!@todo Implement week number (Monday as first day of week)
-						break;
-					case 'x': //Locale preferred date format
-						m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_DATE).c_str());
-						break;
-					case 'X': //Locale preferred time format
-						//!@todo Implement locale
-						m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_TIME).c_str());
-						break;
-					// Day of year/month (Not implemented: Od, Oe)
-					case 'j': //Day of the year as a decimal number [001..366]
-					{
-						m_snprintf(buf, sizeof(buf), _F("%03d"), DayofYear);
-						break;
-					}
-					case 'd': //Day of the month as a decimal number [01..31]
-						m_snprintf(buf, sizeof(buf), _F("%02d"), Day);
-						break;
-					case 'e': //Day of the month as a decimal number [ 1,31]
-						m_snprintf(buf, sizeof(buf), _F("% 2d"), Day);
-						break;
-					// Day of week (Not implemented: Ow, Ou)
-					case 'w': //Weekday as a decimal number with Sunday as 0 [0..6]
-						m_snprintf(buf, sizeof(buf), _F("%d"), DayofWeek);
-						break;
-					case 'a': //Abbreviated weekday name, e.g. Fri
-						m_snprintf(buf, 4, _F("%s"), CStringArray(flashDayNames)[DayofWeek]);
-						break;
-					case 'A': //Full weekday name, e.g. Friday
-						m_snprintf(buf, sizeof(buf), _F("%s"), (CStringArray(flashDayNames)[DayofWeek]));
-						break;
-					case 'u': //Weekday as a decimal number, where Monday is 1 (ISO 8601 format) [1..7]
-						m_snprintf(buf, sizeof(buf), _F("%d"), (DayofWeek == 0)?7:DayofWeek);
-						break;
-					//Time (not implemented: OH, OI, OM, OS)
-					case 'H': //Hour as a decimal number, 24 hour clock [00..23]
-						m_snprintf(buf, sizeof(buf), _F("%02d"), Hour);
-						break;
-					case 'I': //Hour as a decimal number, 12 hour clock [0..12]
-						m_snprintf(buf, sizeof(buf), _F("%02d"), Hour?((Hour > 12)?Hour-12:Hour):12);
-						break;
-					case 'M': //Minute as a decimal number [00..59]
-						m_snprintf(buf, sizeof(buf), _F("%02d"), Minute);
-						break;
-					case 'S': //Second as a decimal number [00..61]
-						m_snprintf(buf, sizeof(buf), _F("%02d"), Second);
-						break;
-					// Other (not implemented: Ec, Ex, EX, z, Z)
-					case 'c': //Locale preferred date and time format, e.g. Tue Dec 11 08:48:32 2018
-						m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_DATE_TIME).c_str());
-						break;
-					case 'D': //US date (MM/DD/YY)
-						m_snprintf(buf, sizeof(buf), _F("%s"), format("%m/%d/%y").c_str());
-						break;
-					case 'F': //ISO 8601 date format (YYYY-mm-dd)
-						m_snprintf(buf, sizeof(buf), _F("%s"), format("%Y-%m-%d").c_str());
-						break;
-					case 'r': //12-hour clock time (hh:MM:SS AM)
-						m_snprintf(buf, sizeof(buf), _F("%s"), format("%I:%M:%S %p").c_str());
-						break;
-					case 'R': //Short time (HH:MM)
-						m_snprintf(buf, sizeof(buf), _F("%02d:%02d"), Hour, Minute);
-						break;
-					case 'T': //ISO 8601 time format (HH:MM:SS)
-						m_snprintf(buf, sizeof(buf), _F("%s"), format("%H:%M:%S").c_str());
-						break;
-					case 'p': //Meridiem [AM,PM]
-						m_snprintf(buf, sizeof(buf), _F("%s"), (Hour < 12)?"AM":"PM");
-						break;
-					case '%': //Literal percent (%). The full conversion specification must be %%
-						m_snprintf(buf, sizeof(buf), _F("%s"), "%");
-						break;
-					case 'n': //Newline character (\n)
-						m_snprintf(buf, sizeof(buf), _F("%s"), "\n");
-						break;
-					case 't': //Horizontal tab (\t)
-						m_snprintf(buf, sizeof(buf), _F("%s"), "\t");
-						break;
-					default: //Silently ignore % and process next character
-						--pos;
+					m_snprintf(buf, sizeof(buf), _F("%03d"), DayofYear);
+					break;
+				}
+				case 'd': //Day of the month as a decimal number [01..31]
+					m_snprintf(buf, sizeof(buf), _F("%02d"), Day);
+					break;
+				case 'e': //Day of the month as a decimal number [ 1,31]
+					m_snprintf(buf, sizeof(buf), _F("% 2d"), Day);
+					break;
+				// Day of week (Not implemented: Ow, Ou)
+				case 'w': //Weekday as a decimal number with Sunday as 0 [0..6]
+					m_snprintf(buf, sizeof(buf), _F("%d"), DayofWeek);
+					break;
+				case 'a': //Abbreviated weekday name, e.g. Fri
+					m_snprintf(buf, 4, _F("%s"), CStringArray(flashDayNames)[DayofWeek]);
+					break;
+				case 'A': //Full weekday name, e.g. Friday
+					m_snprintf(buf, sizeof(buf), _F("%s"), (CStringArray(flashDayNames)[DayofWeek]));
+					break;
+				case 'u': //Weekday as a decimal number, where Monday is 1 (ISO 8601 format) [1..7]
+					m_snprintf(buf, sizeof(buf), _F("%d"), (DayofWeek == 0) ? 7 : DayofWeek);
+					break;
+				//Time (not implemented: OH, OI, OM, OS)
+				case 'H': //Hour as a decimal number, 24 hour clock [00..23]
+					m_snprintf(buf, sizeof(buf), _F("%02d"), Hour);
+					break;
+				case 'I': //Hour as a decimal number, 12 hour clock [0..12]
+					m_snprintf(buf, sizeof(buf), _F("%02d"), Hour ? ((Hour > 12) ? Hour - 12 : Hour) : 12);
+					break;
+				case 'M': //Minute as a decimal number [00..59]
+					m_snprintf(buf, sizeof(buf), _F("%02d"), Minute);
+					break;
+				case 'S': //Second as a decimal number [00..61]
+					m_snprintf(buf, sizeof(buf), _F("%02d"), Second);
+					break;
+				// Other (not implemented: Ec, Ex, EX, z, Z)
+				case 'c': //Locale preferred date and time format, e.g. Tue Dec 11 08:48:32 2018
+					m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_DATE_TIME).c_str());
+					break;
+				case 'D': //US date (MM/DD/YY)
+					m_snprintf(buf, sizeof(buf), _F("%s"), format("%m/%d/%y").c_str());
+					break;
+				case 'F': //ISO 8601 date format (YYYY-mm-dd)
+					m_snprintf(buf, sizeof(buf), _F("%s"), format("%Y-%m-%d").c_str());
+					break;
+				case 'r': //12-hour clock time (hh:MM:SS AM)
+					m_snprintf(buf, sizeof(buf), _F("%s"), format("%I:%M:%S %p").c_str());
+					break;
+				case 'R': //Short time (HH:MM)
+					m_snprintf(buf, sizeof(buf), _F("%02d:%02d"), Hour, Minute);
+					break;
+				case 'T': //ISO 8601 time format (HH:MM:SS)
+					m_snprintf(buf, sizeof(buf), _F("%s"), format("%H:%M:%S").c_str());
+					break;
+				case 'p': //Meridiem [AM,PM]
+					m_snprintf(buf, sizeof(buf), _F("%s"), (Hour < 12) ? "AM" : "PM");
+					break;
+				case '%': //Literal percent (%). The full conversion specification must be %%
+					m_snprintf(buf, sizeof(buf), _F("%s"), "%");
+					break;
+				case 'n': //Newline character (\n)
+					m_snprintf(buf, sizeof(buf), _F("%s"), "\n");
+					break;
+				case 't': //Horizontal tab (\t)
+					m_snprintf(buf, sizeof(buf), _F("%s"), "\t");
+					break;
+				default: //Silently ignore % and process next character
+					--pos;
 				}
 				sReturn += buf;
 				++pos; //Skip format charachter
 			}
-		}
-		else
-		{
+		} else {
 			//Normal character
 			sReturn += sFormat[pos];
 		}
@@ -388,21 +381,19 @@ String DateTime::format(String sFormat)
 void DateTime::calcDayOfYear()
 {
 	DayofYear = 0;
-	for(unsigned int i = 0; i < Month; ++i)
-	{
-		switch(i)
-		{
-			case 8: //Sep
-			case 3: //Apr
-			case 5: //Jun
-			case 10: //Nov
-				DayofYear += 30;
-				break;
-			case 1: //Feb
-				DayofYear += LEAP_YEAR(Year)?29:28;
-				break;
-			default:
-				DayofYear += 31;
+	for(unsigned int i = 0; i < Month; ++i) {
+		switch(i) {
+		case 8:  //Sep
+		case 3:  //Apr
+		case 5:  //Jun
+		case 10: //Nov
+			DayofYear += 30;
+			break;
+		case 1: //Feb
+			DayofYear += LEAP_YEAR(Year) ? 29 : 28;
+			break;
+		default:
+			DayofYear += 31;
 		}
 	}
 	DayofYear += Day;

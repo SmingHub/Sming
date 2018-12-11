@@ -309,7 +309,7 @@ private:
 
 	// client flags
 	uint8_t flags = 0;
-	/* 7 8 6 5 4 3 2 1 0
+/* 7 8 6 5 4 3 2 1 0
 	*                   |
 	*				    --- set when connected ...
 	*/

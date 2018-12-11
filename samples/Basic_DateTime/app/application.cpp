@@ -29,7 +29,7 @@ void showTime(time_t timestamp)
 	//Week
 	Serial.println(dt.format("%%U Week number with the first Sunday as the first day of week one (00-53): %U")); //NYI
 	Serial.println(dt.format("%%W Week number with the first Monday as the first day of week one (00-53): %W")); //NYI
-	Serial.println(dt.format("%%V ISO 8601 week number (01-53): %V")); //NYI
+	Serial.println(dt.format("%%V ISO 8601 week number (01-53): %V"));											 //NYI
 	//Day
 	Serial.println(dt.format("%%j Day of the year (001-366): %j"));
 	Serial.println(dt.format("%%d Day of the month, zero-padded (01-31)%: %d"));
@@ -70,46 +70,43 @@ void showTime(time_t timestamp)
 	Serial.println(dt.toShortDateString());
 	Serial.print("toShortTimeString: ");
 	Serial.println(dt.toShortTimeString());
-
 }
 
 void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 {
-	switch(arrivedChar)
-	{
-		case '\n':
-			Serial.println();
-			Serial.println();
-			Serial.print("****Showing DateTime formating options for Unix timestamp: ");
-			Serial.println(g_timestamp);
-			showTime(g_timestamp);
-			Serial.print("Enter Unix timestamp: ");
-			g_timestamp = 0;
-			g_tsLength = 0;
-			break;
-		case '0' ... '9':
-			g_timestamp *= 10;
-			g_timestamp += arrivedChar - '0';
-			++g_tsLength;
-			Serial.print(arrivedChar);
-			break;
-		case '\b':
-			if(g_tsLength)
-			{
-				Serial.print('\b');
-				Serial.print(" ");
-				Serial.print('\b');
-				--g_tsLength;
-				g_timestamp /= 10;
-			}
-			break;
-		case 27:
-			g_timestamp = 0;
-			g_tsLength = 0;
-			Serial.print('\r');
-			Serial.print("                                                     ");
-			Serial.print('\r');
-			Serial.print("Enter Unix timestamp: ");
+	switch(arrivedChar) {
+	case '\n':
+		Serial.println();
+		Serial.println();
+		Serial.print("****Showing DateTime formating options for Unix timestamp: ");
+		Serial.println(g_timestamp);
+		showTime(g_timestamp);
+		Serial.print("Enter Unix timestamp: ");
+		g_timestamp = 0;
+		g_tsLength = 0;
+		break;
+	case '0' ... '9':
+		g_timestamp *= 10;
+		g_timestamp += arrivedChar - '0';
+		++g_tsLength;
+		Serial.print(arrivedChar);
+		break;
+	case '\b':
+		if(g_tsLength) {
+			Serial.print('\b');
+			Serial.print(" ");
+			Serial.print('\b');
+			--g_tsLength;
+			g_timestamp /= 10;
+		}
+		break;
+	case 27:
+		g_timestamp = 0;
+		g_tsLength = 0;
+		Serial.print('\r');
+		Serial.print("                                                     ");
+		Serial.print('\r');
+		Serial.print("Enter Unix timestamp: ");
 	}
 }
 

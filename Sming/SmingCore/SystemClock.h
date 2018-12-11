@@ -13,7 +13,7 @@
 #ifndef SMINGCORE_SYSTEMCLOCK_H_
 #define SMINGCORE_SYSTEMCLOCK_H_
 
-#include <DateTime/DateTime.h>
+#include <DateTime.h>
 #include "WString.h"
 
 /** @addtogroup constants
