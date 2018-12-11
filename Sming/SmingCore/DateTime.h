@@ -50,6 +50,16 @@
 /** Get quantity of seconds since midnight at start of previous Sunday from given Unix time */
 #define elapsedSecsThisWeek(_time_)  (elapsedSecsToday(_time_) +  (dayOfWeek(_time_) * SECS_PER_DAY) )
 
+/** Define default locale settings as en_GB:en */
+#ifndef LOCALE
+#define LOCALE en_GB:en
+#define LOCALE_MONTH_NAMES "January\0February\0March\0April\0May\0June\0July\0August\0September\0October\0November\0December"
+#define LOCALE_DAY_NAMES "Sunday\0Monday\0Tuesday\0Wednesday\0Thursday\0Friday\0Saturday"
+#define LOCALE_DATE "%d/%m/%Y"
+#define LOCALE_TIME "%H:%M:%S"
+#define LOCALE_DATE_TIME "%a %b %d %H:%M:%S %Y"
+#endif // LOCALE
+
 // todo add date math macros
 /*============================================================================*/
 
@@ -82,7 +92,7 @@ public:
 	{
 	}
 
-	/** @brief  Instantiate a date and time object
+	/** @brief  Instantiate a date and time object from a Unix timestamp
 	 *  @param  time Unix time to assign to object
 	 */
 	DateTime(time_t time);
@@ -92,7 +102,7 @@ public:
 	 */
 	operator time_t() { return toUnixTime(); }
 
-    /** @brief  Set time using Unix time
+    /** @brief  Set time using Unix timestamp
      *  @param  time Unix time to set object time to
      */
 	void setTime(time_t time);
@@ -119,7 +129,7 @@ public:
 	 *  @retval bool True on success
 	 *  @note   Also supports obsolete RFC 850 date format, e.g. Sunday, 06-Nov-94 08:49:37 GMT where 2 digit year represents range 1970-2069
 	 *  @note   GMT suffix is optional and is always assumed / ignored
-	 *  @deprecated Use 'fromHttpDat' instead
+	 *  @deprecated Use 'fromHttpDate' instead
 	 */
 	bool parseHttpDate(const String& httpDate) __attribute__ ((deprecated))
 	{
@@ -242,11 +252,47 @@ public:
 		return toUnixTime(sec, min, hour, day, month, year);
 	}
 
-	/** @brief  Create string with arbitary formatting
+	/** @brief  Create string with strftime style formatting
 	 *  @param  format String including date and time formatting
 	 *  @retval String Formatted string
-	 *  @note   Uses strftime style formatting, e.g. format("Today is %a, %d %b %Y") returns "Today is Mon, 10 Dec 2012"
-	 *	@note   Does not support localisation
+	 *  @note   Uses strftime style formatting, e.g. format("Today is %a, %d %b %Y") returns "Today is Mon, 10 Dec 2018"
+	 *  @note   Localisation may be implemented in libsming at compile time
+	 *  @note   Formatting parameters (braced param not yet implemented):
+	 *  | Param | Description | Locale |
+	 *  | :----:| :---------- | :----: |
+	 *  | %%a   | Abbreviated weekday name| * |
+	 *  | %%A   | Full weekday name | * |
+	 *  | %%b   | Abbreviate month name | * |
+	 *  | %%B   | Full month name | * |
+	 *  | %%c   | Locale preferred date and time format | * |
+	 *  | %%C   | Century number (2 digits) |  |
+	 *  | %%d   | Day of month as decimal number with leading zero (2 digits) |  |
+	 *  | %%D   | US date format (mm/dd/yyyy) |  |
+	 *  | %%e   | Day of month as decimal number with leading space (2 digits) |  |
+	 *  | %%F   | ISO 8601 date format (YYYY-mm-dd) |  |
+	 *  | %%h   | Equivalent to %%b | * |
+	 *  | %%H   | Hour as a decimal number using a 24-hour clock (range 00 to 23) |  |
+	 *  | %%I   | Hour as a decimal number using a 12-hour clock (range 00 to 12 |  |
+	 *  | %%j   | Day of the year as a decimal number (range 001 to 366) |  |
+	 *  | %%m   | Month as a decimal number (range 01 to 12) |  |
+	 *  | %%M   | Minute as a decimal number (range 00 to 59) |  |
+	 *  | %%n   | Newline |  |
+	 *  | %%p   | Meridiem indicator: AM or PM. Midnight is AM and noon is PM |  |
+	 *  | %%r   | Locale 12-hour clock time notation. This is equivalent to %%I:%%M:%%S %%p | * |
+	 *  | %%R   | Time in 24-hour notation (HH:MM) |  |
+	 *  | %%S   | Second as a decimal number (range 00 to 60) |  |
+	 *  | %%t   | Horizontal tab |  |
+	 *  | %%T   | Time in 24-hour notation (HH:MM:SS) |  |
+	 *  | %%u   | Day of the week as a decimal (range 1 to 7, Monday is 1) |  |
+	 *  | (%%U) | Week number as a decimal number (range 00 to 53, first Sunday as the first day of week 01) |  |
+	 *  | (%%V) | ISO 8601 week number as a decimal number (range 01 to 53, where week 1 is the first week including a Thursday) |  |
+	 *  | %%w   | Day of the week as a decimal (range 0 to 6, Sunday is 0) |  |
+	 *  | (%%W) | Week number as a decimal number (range 00 to 53, first Monday as the first day of week 01) |  |
+	 *  | %%x   | Locale preferred date representation | * |
+	 *  | %%X   | Locale preferred time representation | * |
+	 *  | %%y   | Year as a decimal number without a century (range 00 to 99) |  |
+	 *  | %%Y   | The year as a decimal number (range 1970 to ...) |  |
+	 *  | %%    | Percent sign |  |
 	 */
 	String format(String format);
 

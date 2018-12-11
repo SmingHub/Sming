@@ -16,8 +16,8 @@
 /*
  * Used to parse HTTP date strings - see fromHttpDate()
  */
-static DEFINE_FSTR(flashMonthNames, "January\0February\0March\0April\0May\0June\0July\0August\0September\0October\0November\0December");
-static DEFINE_FSTR(flashDayNames, "Sunday\0Monday\0Tuesday\0Wednesday\0Thursday\0Friday\0Saturday");
+static DEFINE_FSTR(flashMonthNames, LOCALE_MONTH_NAMES);
+static DEFINE_FSTR(flashDayNames, LOCALE_DAY_NAMES);
 
 /** @brief Get the number of days in a month, taking leap years into account
  *  @param month 0=jan
@@ -106,7 +106,7 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	if(*ptr == '\0')
 		return false;
 
-	if(Year < 69)
+	if(Year < 70)
 		Year += 2000;
 	else if(Year < 100)
 		Year += 1900;
@@ -275,11 +275,9 @@ String DateTime::format(String sFormat)
 					//Month (not implemented: Om)
 					case 'b': //Abbreviated month name, e.g. Oct (always English)
 					case 'h': //Synonym of b
-						//!@todo Implement locale
 						m_snprintf(buf, 4, _F("%s"), CStringArray(flashMonthNames)[Month]);
 						break;
 					case 'B': //Full month name, e.g. October (always English)
-						//!@todo Implement locale
 						m_snprintf(buf, sizeof(buf), _F("%s"), CStringArray(flashMonthNames)[Month]);
 						break;
 					case 'm': //Month as a decimal number [01..12]
@@ -295,13 +293,12 @@ String DateTime::format(String sFormat)
 					case 'W': //Week of the year as a decimal number (Monday is the first day of the week) [00..53]
 						//!@todo Implement week number (Monday as first day of week)
 						break;
-					case 'x': //Short date (DD/MM/YYYY)
-						//!@todo Implement locale
-						m_snprintf(buf, sizeof(buf), _F("%s"), format("%d/%m/%Y").c_str());
+					case 'x': //Locale preferred date format
+						m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_DATE).c_str());
 						break;
-					case 'X': //Time (HH:MM:SS)
+					case 'X': //Locale preferred time format
 						//!@todo Implement locale
-						m_snprintf(buf, sizeof(buf), _F("%s"), format("%H:%M:%S").c_str());
+						m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_TIME).c_str());
 						break;
 					// Day of year/month (Not implemented: Od, Oe)
 					case 'j': //Day of the year as a decimal number [001..366]
@@ -319,12 +316,10 @@ String DateTime::format(String sFormat)
 					case 'w': //Weekday as a decimal number with Sunday as 0 [0..6]
 						m_snprintf(buf, sizeof(buf), _F("%d"), DayofWeek);
 						break;
-					case 'a': //Abbreviated weekday name, e.g. Fri (English only)
-						//!@todo Implement locale
+					case 'a': //Abbreviated weekday name, e.g. Fri
 						m_snprintf(buf, 4, _F("%s"), CStringArray(flashDayNames)[DayofWeek]);
 						break;
-					case 'A': //Full weekday name, e.g. Friday (English only)
-						//!@todo Implement locale
+					case 'A': //Full weekday name, e.g. Friday
 						m_snprintf(buf, sizeof(buf), _F("%s"), (CStringArray(flashDayNames)[DayofWeek]));
 						break;
 					case 'u': //Weekday as a decimal number, where Monday is 1 (ISO 8601 format) [1..7]
@@ -344,18 +339,16 @@ String DateTime::format(String sFormat)
 						m_snprintf(buf, sizeof(buf), _F("%02d"), Second);
 						break;
 					// Other (not implemented: Ec, Ex, EX, z, Z)
-					case 'c': //writes standard date and time string, e.g. Sun Oct 17 04:41:13 2010 (English only)
-						//!@todo Implement locale
-						m_snprintf(buf, sizeof(buf), _F("%s"), format("%a %b %d %H:%M:%S %Y").c_str());
+					case 'c': //Locale preferred date and time format, e.g. Tue Dec 11 08:48:32 2018
+						m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_DATE_TIME).c_str());
 						break;
-					case 'D': //Short date (MM/DD/YY)
+					case 'D': //US date (MM/DD/YY)
 						m_snprintf(buf, sizeof(buf), _F("%s"), format("%m/%d/%y").c_str());
 						break;
 					case 'F': //ISO 8601 date format (YYYY-mm-dd)
 						m_snprintf(buf, sizeof(buf), _F("%s"), format("%Y-%m-%d").c_str());
 						break;
 					case 'r': //12-hour clock time (hh:MM:SS AM)
-						//!@todo Implement locale
 						m_snprintf(buf, sizeof(buf), _F("%s"), format("%I:%M:%S %p").c_str());
 						break;
 					case 'R': //Short time (HH:MM)
@@ -385,7 +378,7 @@ String DateTime::format(String sFormat)
 		}
 		else
 		{
-			//Normal charachter
+			//Normal character
 			sReturn += sFormat[pos];
 		}
 	}
