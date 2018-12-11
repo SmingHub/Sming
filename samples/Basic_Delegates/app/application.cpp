@@ -53,8 +53,8 @@ public:
 		taskTimer
 			.initializeMs(
 				taskInterval,
-				[foo]   // capture just foo by value (Note it would be bad to pass by reference as foo would be out of scope when the lamda function runs later)
-				()		// No parameters to the callback
+				[foo] // capture just foo by value (Note it would be bad to pass by reference as foo would be out of scope when the lamda function runs later)
+				()	// No parameters to the callback
 				-> void // Returns nothing
 				{
 					if(foo == 123) {
