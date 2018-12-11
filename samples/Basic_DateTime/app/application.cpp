@@ -7,8 +7,8 @@
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
 
-time_t g_timestamp = 0;
-size_t g_tsLength = 0;
+time_t timestamp = 0;
+size_t tsLength = 0;
 
 void showTime(time_t timestamp)
 {
@@ -42,7 +42,7 @@ void showTime(time_t timestamp)
 	Serial.println(dt.format("%%p Meridiem (AM|PM): %p"));
 	Serial.println(dt.format("%%H Hour in 24h format (00-23): %H"));
 	Serial.println(dt.format("%%h Hour in 12h format (01-12): %I"));
-	//Mnute
+	//Minute
 	Serial.println(dt.format("%%M Minute (00-59): %M"));
 	//Second
 	Serial.println(dt.format("%%S Second (00-61): %S"));
@@ -79,30 +79,30 @@ void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 		Serial.println();
 		Serial.println();
 		Serial.print("****Showing DateTime formating options for Unix timestamp: ");
-		Serial.println(g_timestamp);
-		showTime(g_timestamp);
+		Serial.println(timestamp);
+		showTime(timestamp);
 		Serial.print("Enter Unix timestamp: ");
-		g_timestamp = 0;
-		g_tsLength = 0;
+		timestamp = 0;
+		tsLength = 0;
 		break;
 	case '0' ... '9':
-		g_timestamp *= 10;
-		g_timestamp += arrivedChar - '0';
-		++g_tsLength;
+		timestamp *= 10;
+		timestamp += arrivedChar - '0';
+		++tsLength;
 		Serial.print(arrivedChar);
 		break;
 	case '\b':
-		if(g_tsLength) {
+		if(tsLength) {
 			Serial.print('\b');
 			Serial.print(" ");
 			Serial.print('\b');
-			--g_tsLength;
-			g_timestamp /= 10;
+			--tsLength;
+			timestamp /= 10;
 		}
 		break;
 	case 27:
-		g_timestamp = 0;
-		g_tsLength = 0;
+		timestamp = 0;
+		tsLength = 0;
 		Serial.print('\r');
 		Serial.print("                                                     ");
 		Serial.print('\r');

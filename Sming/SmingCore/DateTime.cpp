@@ -279,8 +279,15 @@ String DateTime::format(String sFormat)
 					break;
 				//Week (not implemented: OU, OW, V, OV)
 				case 'U': //Week of the year as a decimal number (Sunday is the first day of the week) [00..53]
-					//!@todo Implement week number (Sunday as first day of week)
+				{
+					int16_t sunday = DayofYear - DayofWeek;
+					int8_t firstSunday = sunday % 7;
+					if(firstSunday < 0)
+						firstSunday += 7;
+					int16_t weekNumber = (sunday + 7 - firstSunday) / 7;
+					m_snprintf(buf, sizeof(buf), _F("%03d"), weekNumber);
 					break;
+				}
 				case 'V': //ISO 8601 week number (01-53)
 					//!@todo Implement ISO 8601 week number
 					break;

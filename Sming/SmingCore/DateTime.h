@@ -52,9 +52,7 @@
 
 /** Define default locale settings as en_GB:en */
 #ifndef LOCALE
-#define LOCALE                                                                                                         \
-	en_GB:                                                                                                             \
-	en
+#define LOCALE LOCALE_EN_GB
 #define LOCALE_MONTH_NAMES                                                                                             \
 	"January\0February\0March\0April\0May\0June\0July\0August\0September\0October\0November\0December"
 #define LOCALE_DAY_NAMES "Sunday\0Monday\0Tuesday\0Wednesday\0Thursday\0Friday\0Saturday"
@@ -293,7 +291,7 @@ public:
 	 *  | %%t   | Horizontal tab |  |
 	 *  | %%T   | Time in 24-hour notation (HH:MM:SS) |  |
 	 *  | %%u   | Day of the week as a decimal (range 1 to 7, Monday is 1) |  |
-	 *  | (%%U) | Week number as a decimal number (range 00 to 53, first Sunday as the first day of week 01) |  |
+	 *  |  %%U  | Week number as a decimal number (range 00 to 53, first Sunday as the first day of week 01) |  |
 	 *  | (%%V) | ISO 8601 week number as a decimal number (range 01 to 53, where week 1 is the first week including a Thursday) |  |
 	 *  | %%w   | Day of the week as a decimal (range 0 to 6, Sunday is 0) |  |
 	 *  | (%%W) | Week number as a decimal number (range 00 to 53, first Monday as the first day of week 01) |  |
