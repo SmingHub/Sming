@@ -48,9 +48,9 @@ void showTime(time_t timestamp)
 	Serial.println(dt.format("%%S Second (00-61): %S"));
 	//Formatted strings
 	Serial.println(dt.format("%%R 24-hour time (HH:MM): %R"));
-	Serial.println(dt.format("%%r 12-hour time (hh:MM AM): %r"));
+	Serial.println(dt.format("%%r 12-hour time (hh:MM:SS AM): %r"));
 	Serial.println(dt.format("%%c Date and time (ddd mmm DD HH:MM:SS YYYY): %c"));
-	Serial.println(dt.format("%%D Short date (MM/DD/YY: %D"));
+	Serial.println(dt.format("%%D Short date (MM/DD/YY): %D"));
 	Serial.println(dt.format("%%F Short date (YYYY-MM-DD): %F"));
 	Serial.println(dt.format("%%T ISO 8601 time format (HH:MM:SS): %T"));
 	Serial.println(dt.format("%%x Local date (DD/MM/YYYY): %x"));
@@ -62,6 +62,15 @@ void showTime(time_t timestamp)
 	dt2.fromHttpDate(dt.toHTTPDate());
 	Serial.print("fromHTTPDate: ");
 	Serial.println(dt2.toHTTPDate());
+	Serial.print("toFullDateTimeString: ");
+	Serial.println(dt.toFullDateTimeString());
+	Serial.print("toISO8601: ");
+	Serial.println(dt.toISO8601());
+	Serial.print("toShortDateString: ");
+	Serial.println(dt.toShortDateString());
+	Serial.print("toShortTimeString: ");
+	Serial.println(dt.toShortTimeString());
+
 }
 
 void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)

@@ -251,7 +251,7 @@ public:
 	String format(String format);
 
 private:
-	String getShortName(const char* longname);
+	void calcDayOfYear();
 
 public:
 	int8_t Hour = 0; ///< Hour (0-23)
@@ -260,6 +260,7 @@ public:
 	int16_t Milliseconds = 0; ///< Milliseconds (0-999)
 	int8_t Day = 0; ///< Day of month (1-31)
 	int8_t DayofWeek = 0; ///< Day of week (0-6 Sunday is day 0)
+	int16_t DayofYear = 0; ///< Day of year (0-365)
 	int8_t Month = 0; ///< Month (0-11 Jan is month 0)
 	int16_t Year = 0;  ///< Full Year number
 };

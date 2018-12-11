@@ -43,6 +43,7 @@ void DateTime::setTime(time_t time)
 {
 	fromUnixTime(time, &Second, &Minute, &Hour, &Day, &DayofWeek, &Month, &Year);
 	Milliseconds = 0;
+	calcDayOfYear();
 }
 
 void DateTime::setTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year)
@@ -54,6 +55,7 @@ void DateTime::setTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t m
 	Month = month;
 	Year = year;
 	Milliseconds = 0;
+	calcDayOfYear();
 }
 
 bool DateTime::isNull()
@@ -121,6 +123,7 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	ptr++;
 	Second = parseNumber();
 	Milliseconds = 0;
+	calcDayOfYear();
 
 	return true;
 }
@@ -273,7 +276,7 @@ String DateTime::format(String sFormat)
 					case 'b': //Abbreviated month name, e.g. Oct (always English)
 					case 'h': //Synonym of b
 						//!@todo Implement locale
-						m_snprintf(buf, sizeof(buf), _F("%s"), getShortName(CStringArray(flashMonthNames)[Month]).c_str());
+						m_snprintf(buf, 4, _F("%s"), CStringArray(flashMonthNames)[Month]);
 						break;
 					case 'B': //Full month name, e.g. October (always English)
 						//!@todo Implement locale
@@ -284,13 +287,13 @@ String DateTime::format(String sFormat)
 						break;
 					//Week (not implemented: OU, OW, V, OV)
 					case 'U': //Week of the year as a decimal number (Sunday is the first day of the week) [00..53]
-						//!@todo Implement week of the year (from Sunday)
+						//!@todo Implement week number (Sunday as first day of week)
 						break;
-					case 'w': //Weekday as a decimal number with Sunday as 0 [0..6]
-						m_snprintf(buf, sizeof(buf), _F("%d"), DayofWeek);
+					case 'V': //ISO 8601 week number (01-53)
+						//!@todo Implement ISO 8601 week number
 						break;
 					case 'W': //Week of the year as a decimal number (Monday is the first day of the week) [00..53]
-						//!@todo Implement week of the year (from Monday)
+						//!@todo Implement week number (Monday as first day of week)
 						break;
 					case 'x': //Short date (DD/MM/YYYY)
 						//!@todo Implement locale
@@ -303,27 +306,7 @@ String DateTime::format(String sFormat)
 					// Day of year/month (Not implemented: Od, Oe)
 					case 'j': //Day of the year as a decimal number [001..366]
 					{
-						//!@todo Store day of year during timestamp parsing
-						unsigned int nDays = 0;
-						for(unsigned int i=0; i<Month;++i)
-						{
-							switch(i)
-							{
-								case 8: //Sep
-								case 3: //Apr
-								case 5: //Jun
-								case 10: //Nov
-									nDays += 30;
-									break;
-								case 1: //Feb
-									nDays += LEAP_YEAR(Year)?29:28;
-									break;
-								default:
-									nDays += 31;
-							}
-						}
-						nDays += Day;
-						m_snprintf(buf, sizeof(buf), _F("%03d"), nDays);
+						m_snprintf(buf, sizeof(buf), _F("%03d"), DayofYear);
 						break;
 					}
 					case 'd': //Day of the month as a decimal number [01..31]
@@ -333,9 +316,12 @@ String DateTime::format(String sFormat)
 						m_snprintf(buf, sizeof(buf), _F("% 2d"), Day);
 						break;
 					// Day of week (Not implemented: Ow, Ou)
+					case 'w': //Weekday as a decimal number with Sunday as 0 [0..6]
+						m_snprintf(buf, sizeof(buf), _F("%d"), DayofWeek);
+						break;
 					case 'a': //Abbreviated weekday name, e.g. Fri (English only)
 						//!@todo Implement locale
-						m_snprintf(buf, sizeof(buf), _F("%s"), getShortName(CStringArray(flashDayNames)[DayofWeek]).c_str());
+						m_snprintf(buf, 4, _F("%s"), CStringArray(flashDayNames)[DayofWeek]);
 						break;
 					case 'A': //Full weekday name, e.g. Friday (English only)
 						//!@todo Implement locale
@@ -406,11 +392,25 @@ String DateTime::format(String sFormat)
 	return sReturn;
 }
 
-// Helper function to return first 3 characters
-//!@todo Return a c_str as we don't use any features of String and have to convert back to c_str each time
-String DateTime::getShortName(const char* longname)
+void DateTime::calcDayOfYear()
 {
-	String sReturn(longname, 3);
-	return sReturn;
+	DayofYear = 0;
+	for(unsigned int i = 0; i < Month; ++i)
+	{
+		switch(i)
+		{
+			case 8: //Sep
+			case 3: //Apr
+			case 5: //Jun
+			case 10: //Nov
+				DayofYear += 30;
+				break;
+			case 1: //Feb
+				DayofYear += LEAP_YEAR(Year)?29:28;
+				break;
+			default:
+				DayofYear += 31;
+		}
+	}
+	DayofYear += Day;
 }
-
