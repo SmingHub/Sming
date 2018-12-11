@@ -247,9 +247,8 @@ time_t DateTime::toUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int
 
 String DateTime::format(String sFormat)
 {
-	//!@todo Add localisation (maybe via pre-compiler conditions)
 	String sReturn;
-	char buf[64]; //!@todo Check size of buffer is optimal
+	char buf[64]; //64 characters should be sufficient for most locale
 
 	for(unsigned int pos = 0; pos < sFormat.length(); ++pos) {
 		if(sFormat[pos] == '%') {
@@ -292,7 +291,6 @@ String DateTime::format(String sFormat)
 					m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_DATE).c_str());
 					break;
 				case 'X': //Locale preferred time format
-					//!@todo Implement locale
 					m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_TIME).c_str());
 					break;
 				// Day of year/month (Not implemented: Od, Oe)
