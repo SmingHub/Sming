@@ -19,6 +19,7 @@
 
 #include <time.h>
 #include "WString.h"
+#include "Locale.h"
 
 /*==============================================================================*/
 /* Useful Constants */
@@ -49,17 +50,6 @@
 #define nextMidnight(_time_) (previousMidnight(_time_) + SECS_PER_DAY) // time at the end of the given day
 /** Get quantity of seconds since midnight at start of previous Sunday from given Unix time */
 #define elapsedSecsThisWeek(_time_) (elapsedSecsToday(_time_) + (dayOfWeek(_time_) * SECS_PER_DAY))
-
-/** Define default locale settings as en_GB:en */
-#ifndef LOCALE
-#define LOCALE LOCALE_EN_GB
-#define LOCALE_MONTH_NAMES                                                                                             \
-	"January\0February\0March\0April\0May\0June\0July\0August\0September\0October\0November\0December"
-#define LOCALE_DAY_NAMES "Sunday\0Monday\0Tuesday\0Wednesday\0Thursday\0Friday\0Saturday"
-#define LOCALE_DATE "%d/%m/%Y"
-#define LOCALE_TIME "%H:%M:%S"
-#define LOCALE_DATE_TIME "%a %b %d %H:%M:%S %Y"
-#endif // LOCALE
 
 // todo add date math macros
 /*============================================================================*/
