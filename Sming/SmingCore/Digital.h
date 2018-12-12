@@ -69,6 +69,6 @@ inline uint16_t analogRead(uint16_t pin)
 		return -1; // Not supported
 }
 
-/** @} */
+	/** @} */
 
 #endif
