@@ -123,7 +123,7 @@ void testFSTR(Print& out)
 	}
 	out.println("}");
 
-	// Test equality operators
+// Test equality operators
 #define TEST(_test) out.printf(_F("%s: %s\n"), (_test) ? _F("PASS") : _F("FAIL"), _F(#_test));
 	TEST(demoFSTR1 == demoFSTR2)
 	TEST(demoFSTR1 != _FLOAD(demoPSTR1))
@@ -137,8 +137,7 @@ void testFSTR(Print& out)
 	static DEFINE_FSTR(fstr2, "Test string #2");
 
 	static FSTR_TABLE(table) = {
-		FSTR_PTR(fstr1),
-		FSTR_PTR(fstr2),
+		FSTR_PTR(fstr1), FSTR_PTR(fstr2),
 	};
 
 	// Table entries may be accessed directly as they are word-aligned

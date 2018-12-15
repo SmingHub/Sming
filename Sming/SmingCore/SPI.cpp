@@ -119,8 +119,9 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
 	regvalue |= SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
 	WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
-	WRITE_PERI_REG(SPI_USER1(SPI_NO), (((bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
-										  (((bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
+	WRITE_PERI_REG(SPI_USER1(SPI_NO),
+				   (((bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
+					   (((bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
 	// copy data to W0
 	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_WR_BYTE_ORDER) {
@@ -214,8 +215,9 @@ void SPIClass::transfer(uint8* buffer, size_t numberBytes)
 		WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
 
 		// setup bit lenght
-		WRITE_PERI_REG(SPI_USER1(SPI_NO), (((num_bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
-											  (((num_bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
+		WRITE_PERI_REG(SPI_USER1(SPI_NO),
+					   (((num_bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
+						   (((num_bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
 		// copy the registers starting from last index position
 		memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], bufLength);
@@ -355,10 +357,10 @@ void SPIClass::setClock(uint8 prediv, uint8 cntdiv)
 		// go full speed = SYSTEMCLOCK
 		WRITE_PERI_REG(SPI_CLOCK(SPI_NO), SPI_CLK_EQU_SYSCLK);
 	} else {
-		WRITE_PERI_REG(SPI_CLOCK(SPI_NO), (((prediv - 1) & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
-											  (((cntdiv - 1) & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
-											  (((cntdiv >> 1) & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) |
-											  ((0 & SPI_CLKCNT_L) << SPI_CLKCNT_L_S));
+		WRITE_PERI_REG(SPI_CLOCK(SPI_NO),
+					   (((prediv - 1) & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
+						   (((cntdiv - 1) & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
+						   (((cntdiv >> 1) & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) | ((0 & SPI_CLKCNT_L) << SPI_CLKCNT_L_S));
 	}
 }
 
