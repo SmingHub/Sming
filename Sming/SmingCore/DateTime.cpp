@@ -13,9 +13,6 @@
 
 #define LEAP_YEAR(year) ((year % 4) == 0)
 
-/*
- * Used to parse HTTP date strings - see fromHttpDate()
- */
 static DEFINE_FSTR(flashMonthNames, LOCALE_MONTH_NAMES);
 static DEFINE_FSTR(flashDayNames, LOCALE_DAY_NAMES);
 
@@ -66,9 +63,10 @@ bool DateTime::isNull()
 
 bool DateTime::fromHttpDate(const String& httpDate)
 {
-	if(httpDate.length() < 29)
+	int first = httpDate.indexOf(',');
+	if(first < 0 || httpDate.length() - first < 20)
 		return false;
-
+	first += 2; // Skip ", "
 	auto ptr = httpDate.c_str();
 
 	// Parse and return a decimal number and update ptr to the first non-numeric character after it
@@ -81,7 +79,8 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	}
 	if(DayofWeek > 6)
 		return false; // Invalid day of week
-	ptr += 5;
+
+	ptr += first;
 
 	Day = parseNumber();
 	if(*ptr == '\0')

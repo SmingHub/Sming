@@ -249,17 +249,18 @@ public:
 		return toUnixTime(sec, min, hour, day, month, year);
 	}
 
-	/** @brief  Create string with strftime style formatting
+	/** @brief  Create string formatted with time and date placeholders
 	 *  @param  format String including date and time formatting
 	 *  @retval String Formatted string
 	 *  @note   Uses strftime style formatting, e.g. format("Today is %a, %d %b %Y") returns "Today is Mon, 10 Dec 2018"
-	 *  @note   Localisation may be implemented in libsming at compile time
-	 *  @note   Formatting parameters (braced param not yet implemented):
+	 *  @note   Localisation may be implemented in libsming at compile time by setting LOCALE, e.g. LOCALE=LOCALE_DE_DE
+	 *	@note   Default localisation is EN_GB
+	 *  @note   Formatting parameters
 	 *  | Param | Description | Locale |
 	 *  | :----:| :---------- | :----: |
 	 *  | %%a   | Abbreviated weekday name| * |
 	 *  | %%A   | Full weekday name | * |
-	 *  | %%b   | Abbreviate month name | * |
+	 *  | %%b   | Abbreviated month name | * |
 	 *  | %%B   | Full month name | * |
 	 *  | %%c   | Locale preferred date and time format | * |
 	 *  | %%C   | Century number (2 digits) |  |
@@ -269,7 +270,7 @@ public:
 	 *  | %%F   | ISO 8601 date format (YYYY-mm-dd) |  |
 	 *  | %%h   | Equivalent to %%b | * |
 	 *  | %%H   | Hour as a decimal number using a 24-hour clock (range 00 to 23) |  |
-	 *  | %%I   | Hour as a decimal number using a 12-hour clock (range 00 to 12 |  |
+	 *  | %%I   | Hour as a decimal number using a 12-hour clock (range 00 to 12) |  |
 	 *  | %%j   | Day of the year as a decimal number (range 001 to 366) |  |
 	 *  | %%m   | Month as a decimal number (range 01 to 12) |  |
 	 *  | %%M   | Minute as a decimal number (range 00 to 59) |  |
@@ -281,14 +282,14 @@ public:
 	 *  | %%t   | Horizontal tab |  |
 	 *  | %%T   | Time in 24-hour notation (HH:MM:SS) |  |
 	 *  | %%u   | Day of the week as a decimal (range 1 to 7, Monday is 1) |  |
-	 *  |  %%U  | Week number as a decimal number (range 00 to 53, first Sunday as the first day of week 01) |  |
-	 *  | (%%V) | ISO 8601 week number as a decimal number (range 01 to 53, where week 1 is the first week including a Thursday) |  |
+	 *  | %%U   | Week number as a decimal number (range 00 to 53, first Sunday as the first day of week 01) |  |
+	 *  | %%V   | ISO 8601 week number as a decimal number (range 01 to 53, where week 1 is the first week including a Thursday) |  |
 	 *  | %%w   | Day of the week as a decimal (range 0 to 6, Sunday is 0) |  |
-	 *  | (%%W) | Week number as a decimal number (range 00 to 53, first Monday as the first day of week 01) |  |
+	 *  | %%W   | Week number as a decimal number (range 00 to 53, first Monday as the first day of week 01) |  |
 	 *  | %%x   | Locale preferred date representation | * |
 	 *  | %%X   | Locale preferred time representation | * |
 	 *  | %%y   | Year as a decimal number without a century (range 00 to 99) |  |
-	 *  | %%Y   | The year as a decimal number (range 1970 to ...) |  |
+	 *  | %%Y   | Year as a decimal number (range 1970 to ...) |  |
 	 *  | %%    | Percent sign |  |
 	 */
 	String format(String format);

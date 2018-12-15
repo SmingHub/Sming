@@ -49,12 +49,12 @@ void showTime(time_t timestamp)
 	//Formatted strings
 	Serial.println(dt.format("%%R 24-hour time (HH:MM): %R"));
 	Serial.println(dt.format("%%r 12-hour time (hh:MM:SS AM): %r"));
-	Serial.println(dt.format("%%c Date and time (ddd mmm DD HH:MM:SS YYYY): %c"));
-	Serial.println(dt.format("%%D Short date (MM/DD/YY): %D"));
-	Serial.println(dt.format("%%F Short date (YYYY-MM-DD): %F"));
-	Serial.println(dt.format("%%T ISO 8601 time format (HH:MM:SS): %T"));
-	Serial.println(dt.format("%%x Local date (DD/MM/YYYY): %x"));
-	Serial.println(dt.format("%%X Local time (HH:MM:SS): %X"));
+	Serial.println(dt.format("%%c Locale date and time: %c"));
+	Serial.println(dt.format("%%D US short date (MM/DD/YY): %D"));
+	Serial.println(dt.format("%%F ISO 8601 date (YYYY-MM-DD): %F"));
+	Serial.println(dt.format("%%T ISO 8601 time (HH:MM:SS): %T"));
+	Serial.println(dt.format("%%x Locale date: %x"));
+	Serial.println(dt.format("%%X Locale time: %X"));
 	//HTTP date
 	Serial.print("toHTTPDate: ");
 	Serial.println(dt.toHTTPDate());

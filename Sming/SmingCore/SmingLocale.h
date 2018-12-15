@@ -1,4 +1,4 @@
-/**	Localization is defined within Locale.h
+/**	Localization is defined within SmingLocale.h
 *	Each locale has a unique ID (usually its international dial code, e.g. GB=44
 *	The default locale is GB and the default values are those used by GB.
 *	To add a new locale:
@@ -22,12 +22,12 @@
 
 #if LOCALE == LOCALE_EN_US
 #define LOCALE_DATE "%m/%d/%Y"
+#define LOCALE_DATE_TIME "%a %b %d %H:%M:%S %Y"
 
 #elif LOCALE == LOCALE_FR_FR
 #define LOCALE_MONTH_NAMES                                                                                             \
 	"janvier\0février\0mars\0avril\0mai\0juin\0juillet\0août\0septembre\0octobre\0novembre\0décembre"
 #define LOCALE_DAY_NAMES "dimanche\0lundi\0mardi\0mercredi\0jeudi\0vendredi\0samedi"
-#define LOCALE_DATE "%d-%m-%Y"
 
 #elif LOCALE == LOCALE_DE_DE
 #define LOCALE_MONTH_NAMES                                                                                             \
@@ -59,7 +59,7 @@
 #endif // LOCALE_TIME
 #ifndef LOCALE_DATE_TIME
 //String with time and date format (see DateTime::format for options - this implements %c format)
-#define LOCALE_DATE_TIME "%a %b %d %H:%M:%S %Y"
+#define LOCALE_DATE_TIME "%a %d %b %Y %X"
 #endif // LOCALE_DATE_TIME
 
 #endif // LOCALE_H_INCLUDED
