@@ -277,22 +277,16 @@ String DateTime::format(String sFormat)
 				case 'm': //Month as a decimal number [01..12]
 					m_snprintf(buf, sizeof(buf), _F("%02d"), Month + 1);
 					break;
-				//Week (not implemented: OU, OW, V, OV)
+				//Week (not implemented: OU, OW, OV)
 				case 'U': //Week of the year as a decimal number (Sunday is the first day of the week) [00..53]
-				{
-					int16_t sunday = DayofYear - DayofWeek;
-					int8_t firstSunday = sunday % 7;
-					if(firstSunday < 0)
-						firstSunday += 7;
-					int16_t weekNumber = (sunday + 7 - firstSunday) / 7;
-					m_snprintf(buf, sizeof(buf), _F("%03d"), weekNumber);
+					m_snprintf(buf, sizeof(buf), _F("%02d"), calcWeek(0));
 					break;
-				}
 				case 'V': //ISO 8601 week number (01-53)
-					//!@todo Implement ISO 8601 week number
+					//!@todo Calculation of ISO 8601 week number is crude and frankly wrong but does anyone care?
+					m_snprintf(buf, sizeof(buf), _F("%02d"), calcWeek(1) + 1);
 					break;
 				case 'W': //Week of the year as a decimal number (Monday is the first day of the week) [00..53]
-					//!@todo Implement week number (Monday as first day of week)
+					m_snprintf(buf, sizeof(buf), _F("%02d"), calcWeek(1));
 					break;
 				case 'x': //Locale preferred date format
 					m_snprintf(buf, sizeof(buf), _F("%s"), format(LOCALE_DATE).c_str());
@@ -402,4 +396,13 @@ void DateTime::calcDayOfYear()
 		}
 	}
 	DayofYear += Day;
+}
+
+uint8_t DateTime::calcWeek(uint8_t firstDay)
+{
+	int16_t startOfWeek = DayofYear - DayofWeek + firstDay;
+	int8_t firstDayofWeek = startOfWeek % 7;
+	if(firstDayofWeek < 0)
+		firstDayofWeek += 7;
+	return (startOfWeek + 7 - firstDayofWeek) / 7;
 }

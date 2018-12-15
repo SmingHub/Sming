@@ -19,7 +19,7 @@
 
 #include <time.h>
 #include "WString.h"
-#include "Locale.h"
+#include "SmingLocale.h"
 
 /*==============================================================================*/
 /* Useful Constants */
@@ -294,7 +294,8 @@ public:
 	String format(String format);
 
 private:
-	void calcDayOfYear();
+	void calcDayOfYear(); // Helper function calculates day of year
+	uint8_t calcWeek(uint8_t firstDay); //Helper function calculates week number based on firstDay of week
 
 public:
 	int8_t Hour = 0;		  ///< Hour (0-23)
