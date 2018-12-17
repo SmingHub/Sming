@@ -89,7 +89,7 @@ DateTime HttpConnection::getLastModifiedDate()
 {
 	DateTime res;
 	String strLM = response.headers[HTTP_HEADER_LAST_MODIFIED];
-	if(res.parseHttpDate(strLM))
+	if(res.fromHttpDate(strLM))
 		return res;
 	else
 		return DateTime();
@@ -99,7 +99,7 @@ DateTime HttpConnection::getServerDate()
 {
 	DateTime res;
 	String strSD = response.headers[HTTP_HEADER_DATE];
-	if(res.parseHttpDate(strSD))
+	if(res.fromHttpDate(strSD))
 		return res;
 	else
 		return DateTime();
