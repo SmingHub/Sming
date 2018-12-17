@@ -1,0 +1,17 @@
+"\x81\x05hello\x82\x07goodbye\x89\x0ca ping frame\x8a\x0ca pong frame\x88\x0bseeya later"
+
+data_begin: text
+data_payload: 'hello'
+data_end
+data_begin: binary
+data_payload: 'goodbye'
+data_end
+control_begin: ping
+control_payload: 'a ping frame'
+control_end
+control_begin: pong
+control_payload: 'a pong frame'
+control_end
+control_begin: close
+control_payload: 'seeya later'
+control_end

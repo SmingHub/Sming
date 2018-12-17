@@ -1,0 +1,28 @@
+var class_nex_button =
+[
+    [ "NexButton", "class_nex_button.html#a57d346614059bac40aff955a0dc9d76a", null ],
+    [ "Get_background_color_bco", "class_nex_button.html#a85eb673a290ee35f3a73e9b02193fc70", null ],
+    [ "Get_background_cropi_picc", "class_nex_button.html#a4be9d316efb2e3c537fdbcbc74c5597c", null ],
+    [ "Get_background_image_pic", "class_nex_button.html#a81c5a95583a9561f4a188b3e3e082280", null ],
+    [ "Get_font_color_pco", "class_nex_button.html#a51b1b698696d7d4969ebb21754bb7e4d", null ],
+    [ "Get_place_xcen", "class_nex_button.html#ab970c6e27b5d1d9082b0b3bf47ed9d47", null ],
+    [ "Get_place_ycen", "class_nex_button.html#aea0a8ea4e9a28ae3769414f2532483e9", null ],
+    [ "Get_press_background_color_bco2", "class_nex_button.html#abb5a765ca9079944757480a9fda1a6ac", null ],
+    [ "Get_press_background_crop_picc2", "class_nex_button.html#ab85cad116c12d13fef9fcfb7dd7ae32e", null ],
+    [ "Get_press_background_image_pic2", "class_nex_button.html#afce48613e87933b48e3b29901633c341", null ],
+    [ "Get_press_font_color_pco2", "class_nex_button.html#a970789126a0781810f499ae064fed942", null ],
+    [ "getFont", "class_nex_button.html#aba350b47585e53ece6c5f6a83fe58698", null ],
+    [ "getText", "class_nex_button.html#a5ba1f74aa94b41b98172e42583ee13d6", null ],
+    [ "Set_background_color_bco", "class_nex_button.html#ae6ade99045d0f97594eac50adc7c12f7", null ],
+    [ "Set_background_crop_picc", "class_nex_button.html#a71fc4f96d4700bd50cd6c937a0bfd43d", null ],
+    [ "Set_background_image_pic", "class_nex_button.html#a926c09d2615d74ef67d577c2934e2982", null ],
+    [ "Set_font_color_pco", "class_nex_button.html#a9fbfe6df7a285e470fb8bc3fd77df00a", null ],
+    [ "Set_place_xcen", "class_nex_button.html#a76cdf6324e05d7a2c30f397e947e7cc7", null ],
+    [ "Set_place_ycen", "class_nex_button.html#a50c8c3678dd815ec8d4e111c79251b53", null ],
+    [ "Set_press_background_color_bco2", "class_nex_button.html#acdc1da7ffea8791a8237b201d572d1e3", null ],
+    [ "Set_press_background_crop_picc2", "class_nex_button.html#a8f63f08fa00609546011b0a66e7070a7", null ],
+    [ "Set_press_background_image_pic2", "class_nex_button.html#a2c1ded80df08c3726347b8acc68d1678", null ],
+    [ "Set_press_font_color_pco2", "class_nex_button.html#a5fe5e3331795ecb43eacf5aead7f5f4a", null ],
+    [ "setFont", "class_nex_button.html#a0fc4598f87578079127ea33a303962ff", null ],
+    [ "setText", "class_nex_button.html#a649dafc5afb1dc7f1fc1bde1e6270290", null ]
+];

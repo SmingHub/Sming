@@ -1,0 +1,4 @@
+<map id="NexDSButton" name="NexDSButton">
+<area shape="rect" id="node2" href="$class_nex_touch.html" title="Father class of the components with touch events. " alt="" coords="15,80,98,107"/>
+<area shape="rect" id="node3" href="$class_nex_object.html" title="Root class of all Nextion components. " alt="" coords="15,5,99,32"/>
+</map>

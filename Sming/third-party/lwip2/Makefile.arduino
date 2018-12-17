@@ -1,0 +1,8 @@
+
+%:
+	make -f makefiles/Makefile.build-lwip2 \
+			SDK=../.. \
+			LWIP_LIB=liblwip2.a \
+			LWIP_LIB_RELEASE=../../lib/liblwip2.a \
+			TOOLS=../../../xtensa-lx106-elf/bin/xtensa-lx106-elf- \
+			$@

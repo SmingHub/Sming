@@ -168,7 +168,7 @@ TARGET		= app
 
 CUSTOM_TARGETS ?=
 
-ARDUINO_LIBRARIES = $(shell git submodule status Libraries | cut -c2- | cut -f2 -d ' ' | sed -r 's/Libraries\/([^/]*)/Libraries\/\1\/library.properties/g' )
+ARDUINO_LIBRARIES =
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES     = system system/helpers Wiring appinit \

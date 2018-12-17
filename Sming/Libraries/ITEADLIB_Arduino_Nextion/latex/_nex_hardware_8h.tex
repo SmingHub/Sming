@@ -1,0 +1,40 @@
+\hypertarget{_nex_hardware_8h}{\section{Nex\+Hardware.\+h File Reference}
+\label{_nex_hardware_8h}\index{Nex\+Hardware.\+h@{Nex\+Hardware.\+h}}
+}
+{\ttfamily \#include $<$Arduino.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}Nex\+Config.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}Nex\+Touch.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{group___core_a_p_i_gab09ddba6b72334d30ae091a7b038d790}{nex\+Init} (void)
+\item 
+void \hyperlink{group___core_a_p_i_ga91c549e696b0ca035cf18901e6a50d5a}{nex\+Loop} (\hyperlink{class_nex_touch}{Nex\+Touch} $\ast$nex\+\_\+listen\+\_\+list\mbox{[}$\,$\mbox{]})
+\item 
+\hypertarget{_nex_hardware_8h_abf17ad67ff76ea33805be435460c7848}{bool {\bfseries recv\+Ret\+Number} (uint32\+\_\+t $\ast$number, uint32\+\_\+t timeout=100)}\label{_nex_hardware_8h_abf17ad67ff76ea33805be435460c7848}
+
+\item 
+\hypertarget{_nex_hardware_8h_a96e44dd6c8d1eb261046c51e0bd029c2}{uint16\+\_\+t {\bfseries recv\+Ret\+String} (char $\ast$buffer, uint16\+\_\+t len, uint32\+\_\+t timeout=100)}\label{_nex_hardware_8h_a96e44dd6c8d1eb261046c51e0bd029c2}
+
+\item 
+\hypertarget{_nex_hardware_8h_aa382dfd2890722f1891f4924d87f2f79}{void {\bfseries send\+Command} (const char $\ast$cmd)}\label{_nex_hardware_8h_aa382dfd2890722f1891f4924d87f2f79}
+
+\item 
+\hypertarget{_nex_hardware_8h_ac750b0217e885b937e0f8ad31e0a2657}{bool {\bfseries recv\+Ret\+Command\+Finished} (uint32\+\_\+t timeout=100)}\label{_nex_hardware_8h_ac750b0217e885b937e0f8ad31e0a2657}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The definition of base A\+P\+I for using Nextion.
+
+\begin{DoxyAuthor}{Author}
+Wu Pengfei (email\+:\href{mailto:pengfei.wu@itead.cc}{\tt pengfei.\+wu@itead.\+cc}) 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2015/8/11 
+\end{DoxyDate}
+\begin{DoxyCopyright}{Copyright}
+Copyright (C) 2014-\/2015 I\+T\+E\+A\+D Intelligent Systems Co., Ltd. ~\newline
+This program is free software; you can redistribute it and/or modify it under the terms of the G\+N\+U General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version. 
+\end{DoxyCopyright}

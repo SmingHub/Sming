@@ -1,0 +1,55 @@
+\hypertarget{group___touch_event}{\section{Touch Event}
+\label{group___touch_event}\index{Touch Event@{Touch Event}}
+}
+
+
+How to attach(or detach) callback function called when touch event occurs.  
+
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_nex_touch}{Nex\+Touch}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{group___touch_event_ga748c37a9bbe04ddc680fe1686154fefb}{N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+U\+S\+H}~(0x01)
+\item 
+\#define \hyperlink{group___touch_event_ga5db3d99f88ac878875ca47713b7a54b6}{N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+O\+P}~(0x00)
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \hyperlink{group___touch_event_ga162dea47b078e8878d10d6981a9dd0c6}{Nex\+Touch\+Event\+Cb} )(void $\ast$ptr)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+How to attach(or detach) callback function called when touch event occurs. 
+
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{group___touch_event_ga5db3d99f88ac878875ca47713b7a54b6}{\index{Touch Event@{Touch Event}!N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+O\+P@{N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+O\+P}}
+\index{N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+O\+P@{N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+O\+P}!Touch Event@{Touch Event}}
+\subsubsection[{N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+O\+P}]{\setlength{\rightskip}{0pt plus 5cm}\#define N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+O\+P~(0x00)}}\label{group___touch_event_ga5db3d99f88ac878875ca47713b7a54b6}
+Pop touch event occuring when your finger or pen leaving from Nextion touch pannel. \hypertarget{group___touch_event_ga748c37a9bbe04ddc680fe1686154fefb}{\index{Touch Event@{Touch Event}!N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+U\+S\+H@{N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+U\+S\+H}}
+\index{N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+U\+S\+H@{N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+U\+S\+H}!Touch Event@{Touch Event}}
+\subsubsection[{N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+U\+S\+H}]{\setlength{\rightskip}{0pt plus 5cm}\#define N\+E\+X\+\_\+\+E\+V\+E\+N\+T\+\_\+\+P\+U\+S\+H~(0x01)}}\label{group___touch_event_ga748c37a9bbe04ddc680fe1686154fefb}
+Push touch event occuring when your finger or pen coming to Nextion touch pannel. 
+
+\subsection{Typedef Documentation}
+\hypertarget{group___touch_event_ga162dea47b078e8878d10d6981a9dd0c6}{\index{Touch Event@{Touch Event}!Nex\+Touch\+Event\+Cb@{Nex\+Touch\+Event\+Cb}}
+\index{Nex\+Touch\+Event\+Cb@{Nex\+Touch\+Event\+Cb}!Touch Event@{Touch Event}}
+\subsubsection[{Nex\+Touch\+Event\+Cb}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ Nex\+Touch\+Event\+Cb)(void $\ast$ptr)}}\label{group___touch_event_ga162dea47b078e8878d10d6981a9dd0c6}
+Type of callback funciton when an touch event occurs.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ptr} & -\/ user pointer for any purpose. Commonly, it is a pointer to a object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+none. 
+\end{DoxyReturn}

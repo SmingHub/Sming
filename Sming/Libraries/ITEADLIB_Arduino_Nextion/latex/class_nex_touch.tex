@@ -1,0 +1,144 @@
+\hypertarget{class_nex_touch}{\section{Nex\+Touch Class Reference}
+\label{class_nex_touch}\index{Nex\+Touch@{Nex\+Touch}}
+}
+
+
+{\ttfamily \#include $<$Nex\+Touch.\+h$>$}
+
+Inheritance diagram for Nex\+Touch\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=12.000000cm]{class_nex_touch}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_nex_touch_a9e028e45e0d2d2cc39c8bf8d03dbb887}{Nex\+Touch} (uint8\+\_\+t pid, uint8\+\_\+t cid, const char $\ast$name)
+\item 
+void \hyperlink{class_nex_touch_a685a753aae5eb9fb9866a7807a310132}{attach\+Push} (\hyperlink{group___touch_event_ga162dea47b078e8878d10d6981a9dd0c6}{Nex\+Touch\+Event\+Cb} push, void $\ast$ptr=N\+U\+L\+L)
+\item 
+void \hyperlink{class_nex_touch_a2bc36096119534344c2bcd8021b93289}{detach\+Push} (void)
+\item 
+void \hyperlink{class_nex_touch_a4da1c4fcdfadb7eabfb9ccaba9ecad11}{attach\+Pop} (\hyperlink{group___touch_event_ga162dea47b078e8878d10d6981a9dd0c6}{Nex\+Touch\+Event\+Cb} pop, void $\ast$ptr=N\+U\+L\+L)
+\item 
+void \hyperlink{class_nex_touch_af656640c1078a553287a68bf792dd291}{detach\+Pop} (void)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_nex_touch_aa17cd9f742159ab61b60362b8d752b6f}{static void {\bfseries iterate} (\hyperlink{class_nex_touch}{Nex\+Touch} $\ast$$\ast$list, uint8\+\_\+t pid, uint8\+\_\+t cid, int32\+\_\+t event)}\label{class_nex_touch_aa17cd9f742159ab61b60362b8d752b6f}
+
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Father class of the components with touch events.
+
+Derives from \hyperlink{class_nex_object}{Nex\+Object} and provides methods allowing user to attach (or detach) a callback function called when push(or pop) touch event occurs. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_nex_touch_a9e028e45e0d2d2cc39c8bf8d03dbb887}{\index{Nex\+Touch@{Nex\+Touch}!Nex\+Touch@{Nex\+Touch}}
+\index{Nex\+Touch@{Nex\+Touch}!Nex\+Touch@{Nex\+Touch}}
+\subsubsection[{Nex\+Touch}]{\setlength{\rightskip}{0pt plus 5cm}Nex\+Touch\+::\+Nex\+Touch (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{pid, }
+\item[{uint8\+\_\+t}]{cid, }
+\item[{const char $\ast$}]{name}
+\end{DoxyParamCaption}
+)}}\label{class_nex_touch_a9e028e45e0d2d2cc39c8bf8d03dbb887}
+
+
+
+
+Constructor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pid} & -\/ page id. \\
+\hline
+{\em cid} & -\/ component id. \\
+\hline
+{\em name} & -\/ pointer to an unique name in range of all components. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_nex_touch_a4da1c4fcdfadb7eabfb9ccaba9ecad11}{\index{Nex\+Touch@{Nex\+Touch}!attach\+Pop@{attach\+Pop}}
+\index{attach\+Pop@{attach\+Pop}!Nex\+Touch@{Nex\+Touch}}
+\subsubsection[{attach\+Pop}]{\setlength{\rightskip}{0pt plus 5cm}void Nex\+Touch\+::attach\+Pop (
+\begin{DoxyParamCaption}
+\item[{{\bf Nex\+Touch\+Event\+Cb}}]{pop, }
+\item[{void $\ast$}]{ptr = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}\label{class_nex_touch_a4da1c4fcdfadb7eabfb9ccaba9ecad11}
+Attach an callback function of pop touch event.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pop} & -\/ callback called with ptr when a pop touch event occurs. \\
+\hline
+{\em ptr} & -\/ parameter passed into pop\mbox{[}default\+:N\+U\+L\+L\mbox{]}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+none.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+If calling this method multiply, the last call is valid. 
+\end{DoxyNote}
+\hypertarget{class_nex_touch_a685a753aae5eb9fb9866a7807a310132}{\index{Nex\+Touch@{Nex\+Touch}!attach\+Push@{attach\+Push}}
+\index{attach\+Push@{attach\+Push}!Nex\+Touch@{Nex\+Touch}}
+\subsubsection[{attach\+Push}]{\setlength{\rightskip}{0pt plus 5cm}void Nex\+Touch\+::attach\+Push (
+\begin{DoxyParamCaption}
+\item[{{\bf Nex\+Touch\+Event\+Cb}}]{push, }
+\item[{void $\ast$}]{ptr = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}\label{class_nex_touch_a685a753aae5eb9fb9866a7807a310132}
+Attach an callback function of push touch event.
+
+
+\begin{DoxyParams}{Parameters}
+{\em push} & -\/ callback called with ptr when a push touch event occurs. \\
+\hline
+{\em ptr} & -\/ parameter passed into push\mbox{[}default\+:N\+U\+L\+L\mbox{]}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+none.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+If calling this method multiply, the last call is valid. 
+\end{DoxyNote}
+\hypertarget{class_nex_touch_af656640c1078a553287a68bf792dd291}{\index{Nex\+Touch@{Nex\+Touch}!detach\+Pop@{detach\+Pop}}
+\index{detach\+Pop@{detach\+Pop}!Nex\+Touch@{Nex\+Touch}}
+\subsubsection[{detach\+Pop}]{\setlength{\rightskip}{0pt plus 5cm}void Nex\+Touch\+::detach\+Pop (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{class_nex_touch_af656640c1078a553287a68bf792dd291}
+Detach an callback function.
+
+\begin{DoxyReturn}{Returns}
+none. 
+\end{DoxyReturn}
+\hypertarget{class_nex_touch_a2bc36096119534344c2bcd8021b93289}{\index{Nex\+Touch@{Nex\+Touch}!detach\+Push@{detach\+Push}}
+\index{detach\+Push@{detach\+Push}!Nex\+Touch@{Nex\+Touch}}
+\subsubsection[{detach\+Push}]{\setlength{\rightskip}{0pt plus 5cm}void Nex\+Touch\+::detach\+Push (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{class_nex_touch_a2bc36096119534344c2bcd8021b93289}
+Detach an callback function.
+
+\begin{DoxyReturn}{Returns}
+none. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{_nex_touch_8h}{Nex\+Touch.\+h}\item 
+\hyperlink{_nex_touch_8cpp}{Nex\+Touch.\+cpp}\end{DoxyCompactItemize}
