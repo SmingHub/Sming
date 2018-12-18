@@ -29,9 +29,6 @@
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
-# Com port speed
-COM_SPEED = 115200
-
 # Git command
 GIT ?= git
 
@@ -160,10 +157,12 @@ USER_LIBDIR = compiler/lib
 LIBSMING = libsming
 ifeq ($(ENABLE_SSL),1)
 	LIBSMING := $(LIBSMING)ssl
+	BUILD_BASE := $(BUILD_BASE)ssl
 endif
 
 ifeq ($(ENABLE_GDB),1)
 	LIBSMING := $(LIBSMING)d
+	BUILD_BASE := $(BUILD_BASE)d
 endif
 
 # name for the target project
