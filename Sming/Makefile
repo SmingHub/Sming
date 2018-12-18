@@ -29,9 +29,6 @@
 # MacOS / Linux:
 # COM_PORT = /dev/tty.usbserial
 
-# Com port speed
-COM_SPEED = 115200
-
 # Git command
 GIT ?= git
 
@@ -159,16 +156,21 @@ USER_LIBDIR = compiler/lib
 
 LIBSMING = libsming
 ifeq ($(ENABLE_SSL),1)
-	LIBSMING= libsmingssl
+	LIBSMING := $(LIBSMING)ssl
+	BUILD_BASE := $(BUILD_BASE)ssl
 endif
 
+ifeq ($(ENABLE_GDB),1)
+	LIBSMING := $(LIBSMING)d
+	BUILD_BASE := $(BUILD_BASE)d
+endif
 
 # name for the target project
 TARGET		= app
 
 CUSTOM_TARGETS ?=
 
-ARDUINO_LIBRARIES = $(shell git submodule status Libraries | cut -c2- | cut -f2 -d ' ' | sed -r 's/Libraries\/([^/]*)/Libraries\/\1\/library.properties/g' )
+ARDUINO_LIBRARIES =
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES     = system system/helpers Wiring appinit \
