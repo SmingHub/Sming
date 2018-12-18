@@ -1,0 +1,11 @@
+# Temporary editor files
+*.swp
+
+# Object files
+*.o
+
+# Other files
+.DS_Store
+
+# Unity Test Framework output directory
+build

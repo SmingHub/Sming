@@ -1,0 +1,26 @@
+var class_nex_scrolltext =
+[
+    [ "NexScrolltext", "class_nex_scrolltext.html#a212aa1505ed7c0bfdb47de3e6e2045fb", null ],
+    [ "Get_background_color_bco", "class_nex_scrolltext.html#ac3861fec5efd8cde4535307f231244e7", null ],
+    [ "Get_background_crop_picc", "class_nex_scrolltext.html#a0d8e8997419f4d6460cc1e64f20cfb8c", null ],
+    [ "Get_background_image_pic", "class_nex_scrolltext.html#a86ffab21e76beed5d801c05b94da6150", null ],
+    [ "Get_cycle_tim", "class_nex_scrolltext.html#a5d881dcad2360b42327cf95f8e91955f", null ],
+    [ "Get_font_color_pco", "class_nex_scrolltext.html#a266a3c44131eec0a40b1e12f6cf7d3a1", null ],
+    [ "Get_place_xcen", "class_nex_scrolltext.html#a066d8439ea088a7ef604abb87802add6", null ],
+    [ "Get_place_ycen", "class_nex_scrolltext.html#a987a74978f764f74540c8ee0de200564", null ],
+    [ "Get_scroll_dir", "class_nex_scrolltext.html#a4a437ad158a3be51e61dd469b77ee450", null ],
+    [ "Get_scroll_distance", "class_nex_scrolltext.html#a46ac65d7561b32fd4c5ac2f0aacf9bf1", null ],
+    [ "getFont", "class_nex_scrolltext.html#a2caedb7b97a6028abedaf0b25f9c03e0", null ],
+    [ "getText", "class_nex_scrolltext.html#a7cead053146075e7c31d43349d4c897c", null ],
+    [ "Set_background_color_bco", "class_nex_scrolltext.html#a50a5211fc6913b97afda045a762cb0c4", null ],
+    [ "Set_background_crop_picc", "class_nex_scrolltext.html#a0a4d02fef0a0a1f9a1e41c66709b97c1", null ],
+    [ "Set_background_image_pic", "class_nex_scrolltext.html#a629fa1d39761144ec1e421c3c79a51aa", null ],
+    [ "Set_cycle_tim", "class_nex_scrolltext.html#ad639bf79aa963966241db4f45c7c8bd6", null ],
+    [ "Set_font_color_pco", "class_nex_scrolltext.html#ac34d68211c4c3c70834c7e7e49ece03f", null ],
+    [ "Set_place_xcen", "class_nex_scrolltext.html#a5126fc70854f0f12f1573ee1eb8959b0", null ],
+    [ "Set_place_ycen", "class_nex_scrolltext.html#ae1c1181755c9334a4ea21fa2782aecbf", null ],
+    [ "Set_scroll_dir", "class_nex_scrolltext.html#ad9ab4f129779d40fe5d108cac8c3a842", null ],
+    [ "Set_scroll_distance", "class_nex_scrolltext.html#a039a5f4dae5046142c4605097593545c", null ],
+    [ "setFont", "class_nex_scrolltext.html#af2e8602fae103ccadfee037382844ce6", null ],
+    [ "setText", "class_nex_scrolltext.html#a71b8e2b2bff22e3c0cbdf961a55b8d12", null ]
+];

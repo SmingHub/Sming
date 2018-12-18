@@ -242,8 +242,12 @@ EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME
 USER_LIBDIR  = $(SMING_HOME)/compiler/lib/
 
 # compiler flags using during compilation of source files
-CFLAGS   = -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+CFLAGS   = -Wall -Wundef -Wpointer-arith -Wno-comment -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
            -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DSMING_INCLUDED=1 
+ifneq ($(STRICT),1)
+CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
+endif
+
 # => SDK
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	CFLAGS += -DSDK_INTERNAL
@@ -253,9 +257,9 @@ ifeq ($(SMING_RELEASE),1)
 	#      for full list of optimization options
 	CFLAGS += -Os -DSMING_RELEASE=1
 else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
-	MODULES		 += $(THIRD_PARTY_DIR)/gdbstub
-	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/gdbstub
+	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0
+	MODULES		 += $(THIRD_PARTY_DIR)/esp-gdbstub
+	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/esp-gdbstub
 	STRIP := @true
 else
 	CFLAGS += -Os -g

@@ -1,8 +1,26 @@
 diff --git a/Makefile b/Makefile
-index ca234de..f76fbaa 100644
+index ca234de..5f1c72b 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -55,6 +55,16 @@ endif
+@@ -22,10 +22,16 @@ else
+ Q := @
+ endif
+
+-CFLAGS    = -Os -O3 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
++CFLAGS    = -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
+ LDFLAGS   = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
+ LD_SCRIPT = eagle.app.v6.ld
+
++ifeq ($(ENABLE_GDB),1)
++	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0
++else
++	CFLAGS += -Os -O3
++endif
++
+ E2_OPTS = -quiet -bin -boot0
+
+ ifeq ($(RBOOT_BIG_FLASH),1)
+@@ -55,6 +61,16 @@ endif
  ifeq ($(RBOOT_IROM_CHKSUM),1)
  	CFLAGS += -DBOOT_IROM_CHKSUM
  endif
@@ -52,7 +70,7 @@ index 6e10a2f..03cc87b 100644
 @@ -291,86 +309,94 @@ uint32 NOINLINE find_image(void) {
  	ets_delay_us(BOOT_DELAY_MICROS);
  #endif
- 
+
 -	ets_printf("\r\nrBoot v1.4.2 - richardaburton@gmail.com\r\n");
 +#ifndef BOOT_SILENT
 +#define echof(fmt, ...) ets_printf(fmt, ##__VA_ARGS__)
@@ -61,10 +79,10 @@ index 6e10a2f..03cc87b 100644
 +#endif
 +
 +	echof("\r\nrBoot v1.4.2 - richardaburton@gmail.com\r\n");
- 
+
  	// read rom header
  	SPIRead(0, header, sizeof(rom_header));
- 
+
  	// print and get flash size
 -	ets_printf("Flash Size:   ");
 +	echof("Flash Size:   ");
@@ -103,7 +121,7 @@ index 6e10a2f..03cc87b 100644
  		// assume at least 4mbit
  		flashsize = 0x80000;
  	}
- 
+
  	// print spi mode
 -	ets_printf("Flash Mode:   ");
 +	echof("Flash Mode:   ");
@@ -123,7 +141,7 @@ index 6e10a2f..03cc87b 100644
 -		ets_printf("unknown\r\n");
 +		echof("unknown\r\n");
  	}
- 
+
  	// print spi speed
 -	ets_printf("Flash Speed:  ");
 +	echof("Flash Speed:  ");
@@ -138,7 +156,7 @@ index 6e10a2f..03cc87b 100644
 +	else if (flag == 2) echof("20 MHz\r\n");
 +	else if (flag == 0x0f) echof("80 MHz\r\n");
 +	else echof("unknown\r\n");
- 
+
  	// print enabled options
  #ifdef BOOT_BIG_FLASH
 -	ets_printf("rBoot Option: Big flash\r\n");
@@ -168,7 +186,7 @@ index 6e10a2f..03cc87b 100644
 +	echof("\r\n");
 +
 +#undef echof
- 
+
  	// read boot config
  	SPIRead(BOOT_CONFIG_SECTOR * SECTOR_SIZE, buffer, SECTOR_SIZE);
 diff --git a/rboot.h b/rboot.h
@@ -181,6 +199,6 @@ index 93ae317..bd3ad6d 100644
  // cannot be used at same time as BOOT_GPIO_ENABLED
 -#define BOOT_GPIO_SKIP_ENABLED
 +//#define BOOT_GPIO_SKIP_ENABLED
- 
+
  // set the GPIO pin used by GPIO modes above (will default
  // to 16 if not manually set), only applicable when

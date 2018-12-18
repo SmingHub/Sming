@@ -1,0 +1,4 @@
+<map id="NexCheckbox" name="NexCheckbox">
+<area shape="rect" id="node2" href="$class_nex_touch.html" title="Father class of the components with touch events. " alt="" coords="17,80,99,107"/>
+<area shape="rect" id="node3" href="$class_nex_object.html" title="Root class of all Nextion components. " alt="" coords="16,5,100,32"/>
+</map>

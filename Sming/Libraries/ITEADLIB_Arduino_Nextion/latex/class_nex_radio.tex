@@ -1,0 +1,179 @@
+\hypertarget{class_nex_radio}{\section{Nex\+Radio Class Reference}
+\label{class_nex_radio}\index{Nex\+Radio@{Nex\+Radio}}
+}
+
+
+{\ttfamily \#include $<$Nex\+Radio.\+h$>$}
+
+Inheritance diagram for Nex\+Radio\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_nex_radio}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_nex_radio_a52264cd95aaa3ba7b4b07bdf64bb7a65}{Nex\+Radio} (uint8\+\_\+t pid, uint8\+\_\+t cid, const char $\ast$name)
+\item 
+uint32\+\_\+t \hyperlink{class_nex_radio_adb3672f10ce98ec7ad22f7b29a9ec0e6}{get\+Value} (uint32\+\_\+t $\ast$number)
+\item 
+bool \hyperlink{class_nex_radio_aa92d6f41ff30467a965e8a802e7d8b83}{set\+Value} (uint32\+\_\+t number)
+\item 
+uint32\+\_\+t \hyperlink{class_nex_radio_abdc8f654237d900eb3ddc955bc9e0038}{Get\+\_\+background\+\_\+color\+\_\+bco} (uint32\+\_\+t $\ast$number)
+\item 
+bool \hyperlink{class_nex_radio_a7bbd252dc78876d0831badbe791dbbc8}{Set\+\_\+background\+\_\+color\+\_\+bco} (uint32\+\_\+t number)
+\item 
+uint32\+\_\+t \hyperlink{class_nex_radio_a7a052fb745dfea5fe6f341692eb0ca1a}{Get\+\_\+font\+\_\+color\+\_\+pco} (uint32\+\_\+t $\ast$number)
+\item 
+bool \hyperlink{class_nex_radio_afd379837becbcf4a8f126820658a7f78}{Set\+\_\+font\+\_\+color\+\_\+pco} (uint32\+\_\+t number)
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+\hyperlink{class_nex_radio}{Nex\+Radio} component.
+
+Commonly, you want to do something after push and pop it. It is recommanded that only call \hyperlink{class_nex_touch_a4da1c4fcdfadb7eabfb9ccaba9ecad11}{Nex\+Touch\+::attach\+Pop} to satisfy your purpose.
+
+\begin{DoxyWarning}{Warning}
+Please do not call \hyperlink{class_nex_touch_a685a753aae5eb9fb9866a7807a310132}{Nex\+Touch\+::attach\+Push} on this component, even though you can. 
+\end{DoxyWarning}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_nex_radio_a52264cd95aaa3ba7b4b07bdf64bb7a65}{\index{Nex\+Radio@{Nex\+Radio}!Nex\+Radio@{Nex\+Radio}}
+\index{Nex\+Radio@{Nex\+Radio}!Nex\+Radio@{Nex\+Radio}}
+\subsubsection[{Nex\+Radio}]{\setlength{\rightskip}{0pt plus 5cm}Nex\+Radio\+::\+Nex\+Radio (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{pid, }
+\item[{uint8\+\_\+t}]{cid, }
+\item[{const char $\ast$}]{name}
+\end{DoxyParamCaption}
+)}}\label{class_nex_radio_a52264cd95aaa3ba7b4b07bdf64bb7a65}
+
+
+
+
+Constructor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pid} & -\/ page id. \\
+\hline
+{\em cid} & -\/ component id. \\
+\hline
+{\em name} & -\/ pointer to an unique name in range of all components. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_nex_radio_abdc8f654237d900eb3ddc955bc9e0038}{\index{Nex\+Radio@{Nex\+Radio}!Get\+\_\+background\+\_\+color\+\_\+bco@{Get\+\_\+background\+\_\+color\+\_\+bco}}
+\index{Get\+\_\+background\+\_\+color\+\_\+bco@{Get\+\_\+background\+\_\+color\+\_\+bco}!Nex\+Radio@{Nex\+Radio}}
+\subsubsection[{Get\+\_\+background\+\_\+color\+\_\+bco}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Nex\+Radio\+::\+Get\+\_\+background\+\_\+color\+\_\+bco (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t $\ast$}]{number}
+\end{DoxyParamCaption}
+)}}\label{class_nex_radio_abdc8f654237d900eb3ddc955bc9e0038}
+Get bco attribute of component
+
+
+\begin{DoxyParams}{Parameters}
+{\em number} & -\/ buffer storing data retur \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the length of the data 
+\end{DoxyReturn}
+\hypertarget{class_nex_radio_a7a052fb745dfea5fe6f341692eb0ca1a}{\index{Nex\+Radio@{Nex\+Radio}!Get\+\_\+font\+\_\+color\+\_\+pco@{Get\+\_\+font\+\_\+color\+\_\+pco}}
+\index{Get\+\_\+font\+\_\+color\+\_\+pco@{Get\+\_\+font\+\_\+color\+\_\+pco}!Nex\+Radio@{Nex\+Radio}}
+\subsubsection[{Get\+\_\+font\+\_\+color\+\_\+pco}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Nex\+Radio\+::\+Get\+\_\+font\+\_\+color\+\_\+pco (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t $\ast$}]{number}
+\end{DoxyParamCaption}
+)}}\label{class_nex_radio_a7a052fb745dfea5fe6f341692eb0ca1a}
+Get pco attribute of component
+
+
+\begin{DoxyParams}{Parameters}
+{\em number} & -\/ buffer storing data retur \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the length of the data 
+\end{DoxyReturn}
+\hypertarget{class_nex_radio_adb3672f10ce98ec7ad22f7b29a9ec0e6}{\index{Nex\+Radio@{Nex\+Radio}!get\+Value@{get\+Value}}
+\index{get\+Value@{get\+Value}!Nex\+Radio@{Nex\+Radio}}
+\subsubsection[{get\+Value}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Nex\+Radio\+::get\+Value (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t $\ast$}]{number}
+\end{DoxyParamCaption}
+)}}\label{class_nex_radio_adb3672f10ce98ec7ad22f7b29a9ec0e6}
+Get val attribute of component
+
+
+\begin{DoxyParams}{Parameters}
+{\em number} & -\/ buffer storing data retur \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the length of the data 
+\end{DoxyReturn}
+\hypertarget{class_nex_radio_a7bbd252dc78876d0831badbe791dbbc8}{\index{Nex\+Radio@{Nex\+Radio}!Set\+\_\+background\+\_\+color\+\_\+bco@{Set\+\_\+background\+\_\+color\+\_\+bco}}
+\index{Set\+\_\+background\+\_\+color\+\_\+bco@{Set\+\_\+background\+\_\+color\+\_\+bco}!Nex\+Radio@{Nex\+Radio}}
+\subsubsection[{Set\+\_\+background\+\_\+color\+\_\+bco}]{\setlength{\rightskip}{0pt plus 5cm}bool Nex\+Radio\+::\+Set\+\_\+background\+\_\+color\+\_\+bco (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{number}
+\end{DoxyParamCaption}
+)}}\label{class_nex_radio_a7bbd252dc78876d0831badbe791dbbc8}
+Set bco attribute of component
+
+
+\begin{DoxyParams}{Parameters}
+{\em number} & -\/ To set up the data \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+\hypertarget{class_nex_radio_afd379837becbcf4a8f126820658a7f78}{\index{Nex\+Radio@{Nex\+Radio}!Set\+\_\+font\+\_\+color\+\_\+pco@{Set\+\_\+font\+\_\+color\+\_\+pco}}
+\index{Set\+\_\+font\+\_\+color\+\_\+pco@{Set\+\_\+font\+\_\+color\+\_\+pco}!Nex\+Radio@{Nex\+Radio}}
+\subsubsection[{Set\+\_\+font\+\_\+color\+\_\+pco}]{\setlength{\rightskip}{0pt plus 5cm}bool Nex\+Radio\+::\+Set\+\_\+font\+\_\+color\+\_\+pco (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{number}
+\end{DoxyParamCaption}
+)}}\label{class_nex_radio_afd379837becbcf4a8f126820658a7f78}
+Set pco attribute of component
+
+
+\begin{DoxyParams}{Parameters}
+{\em number} & -\/ To set up the data \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+\hypertarget{class_nex_radio_aa92d6f41ff30467a965e8a802e7d8b83}{\index{Nex\+Radio@{Nex\+Radio}!set\+Value@{set\+Value}}
+\index{set\+Value@{set\+Value}!Nex\+Radio@{Nex\+Radio}}
+\subsubsection[{set\+Value}]{\setlength{\rightskip}{0pt plus 5cm}bool Nex\+Radio\+::set\+Value (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{number}
+\end{DoxyParamCaption}
+)}}\label{class_nex_radio_aa92d6f41ff30467a965e8a802e7d8b83}
+Set val attribute of component
+
+
+\begin{DoxyParams}{Parameters}
+{\em number} & -\/ To set up the data \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{_nex_radio_8h}{Nex\+Radio.\+h}\item 
+\hyperlink{_nex_radio_8cpp}{Nex\+Radio.\+cpp}\end{DoxyCompactItemize}

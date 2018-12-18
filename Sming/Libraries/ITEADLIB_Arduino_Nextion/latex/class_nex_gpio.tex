@@ -1,0 +1,141 @@
+\hypertarget{class_nex_gpio}{\section{Nex\+Gpio Class Reference}
+\label{class_nex_gpio}\index{Nex\+Gpio@{Nex\+Gpio}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{class_nex_gpio_adbe08eb11827d75c6b2e9c935d9da19a}{pin\+\_\+mode} (uint32\+\_\+t port, uint32\+\_\+t mode, uint32\+\_\+t control\+\_\+id)
+\item 
+bool \hyperlink{class_nex_gpio_aaea4cb428fa0a2e26927073c20ed64ac}{digital\+\_\+write} (uint32\+\_\+t port, uint32\+\_\+t value)
+\item 
+uint32\+\_\+t \hyperlink{class_nex_gpio_a36386b97898f0960abda51c6010378eb}{digital\+\_\+read} (uint32\+\_\+t port)
+\item 
+bool \hyperlink{class_nex_gpio_af21eb91b041d149193bc716202d4a462}{analog\+\_\+write} (uint32\+\_\+t port, uint32\+\_\+t value)
+\item 
+bool \hyperlink{class_nex_gpio_a62c2cb633e321ef2273eb3a7af6a5b47}{set\+\_\+pwmfreq} (uint32\+\_\+t value)
+\item 
+uint32\+\_\+t \hyperlink{class_nex_gpio_a8fca87ac0cdfbc8a62dec807b949c36d}{get\+\_\+pwmfreq} (uint32\+\_\+t $\ast$number)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_nex_gpio_af21eb91b041d149193bc716202d4a462}{\index{Nex\+Gpio@{Nex\+Gpio}!analog\+\_\+write@{analog\+\_\+write}}
+\index{analog\+\_\+write@{analog\+\_\+write}!Nex\+Gpio@{Nex\+Gpio}}
+\subsubsection[{analog\+\_\+write}]{\setlength{\rightskip}{0pt plus 5cm}bool Nex\+Gpio\+::analog\+\_\+write (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{port, }
+\item[{uint32\+\_\+t}]{value}
+\end{DoxyParamCaption}
+)}}\label{class_nex_gpio_af21eb91b041d149193bc716202d4a462}
+writes an analog value (P\+W\+M wave) to a pin
+
+
+\begin{DoxyParams}{Parameters}
+{\em port} & -\/ the gpio port number \\
+\hline
+{\em value} & -\/ the duty cycle\+: between 0 (always off) and 100 (always on). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+\hypertarget{class_nex_gpio_a36386b97898f0960abda51c6010378eb}{\index{Nex\+Gpio@{Nex\+Gpio}!digital\+\_\+read@{digital\+\_\+read}}
+\index{digital\+\_\+read@{digital\+\_\+read}!Nex\+Gpio@{Nex\+Gpio}}
+\subsubsection[{digital\+\_\+read}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Nex\+Gpio\+::digital\+\_\+read (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{port}
+\end{DoxyParamCaption}
+)}}\label{class_nex_gpio_a36386b97898f0960abda51c6010378eb}
+read a high or a L\+O\+W value to a digital pin
+
+
+\begin{DoxyParams}{Parameters}
+{\em port} & -\/ the gpio port number \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the value from a specified digital pin, either high or low 
+\end{DoxyReturn}
+\hypertarget{class_nex_gpio_aaea4cb428fa0a2e26927073c20ed64ac}{\index{Nex\+Gpio@{Nex\+Gpio}!digital\+\_\+write@{digital\+\_\+write}}
+\index{digital\+\_\+write@{digital\+\_\+write}!Nex\+Gpio@{Nex\+Gpio}}
+\subsubsection[{digital\+\_\+write}]{\setlength{\rightskip}{0pt plus 5cm}bool Nex\+Gpio\+::digital\+\_\+write (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{port, }
+\item[{uint32\+\_\+t}]{value}
+\end{DoxyParamCaption}
+)}}\label{class_nex_gpio_aaea4cb428fa0a2e26927073c20ed64ac}
+write a high or a L\+O\+W value to a digital pin
+
+
+\begin{DoxyParams}{Parameters}
+{\em port} & -\/ the gpio port number \\
+\hline
+{\em mode} & -\/ the gpio port number \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+\hypertarget{class_nex_gpio_a8fca87ac0cdfbc8a62dec807b949c36d}{\index{Nex\+Gpio@{Nex\+Gpio}!get\+\_\+pwmfreq@{get\+\_\+pwmfreq}}
+\index{get\+\_\+pwmfreq@{get\+\_\+pwmfreq}!Nex\+Gpio@{Nex\+Gpio}}
+\subsubsection[{get\+\_\+pwmfreq}]{\setlength{\rightskip}{0pt plus 5cm}uint32\+\_\+t Nex\+Gpio\+::get\+\_\+pwmfreq (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t $\ast$}]{number}
+\end{DoxyParamCaption}
+)}}\label{class_nex_gpio_a8fca87ac0cdfbc8a62dec807b949c36d}
+read pwm output frequency
+
+
+\begin{DoxyParams}{Parameters}
+{\em number} & -\/ the frequency \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+\hypertarget{class_nex_gpio_adbe08eb11827d75c6b2e9c935d9da19a}{\index{Nex\+Gpio@{Nex\+Gpio}!pin\+\_\+mode@{pin\+\_\+mode}}
+\index{pin\+\_\+mode@{pin\+\_\+mode}!Nex\+Gpio@{Nex\+Gpio}}
+\subsubsection[{pin\+\_\+mode}]{\setlength{\rightskip}{0pt plus 5cm}bool Nex\+Gpio\+::pin\+\_\+mode (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{port, }
+\item[{uint32\+\_\+t}]{mode, }
+\item[{uint32\+\_\+t}]{control\+\_\+id}
+\end{DoxyParamCaption}
+)}}\label{class_nex_gpio_adbe08eb11827d75c6b2e9c935d9da19a}
+Set gpio mode
+
+
+\begin{DoxyParams}{Parameters}
+{\em port} & -\/ the gpio port number \\
+\hline
+{\em mode} & -\/ set gpio port mode(0--Pull on the input 1--the control input binding 2--Push-\/pull output 3--pwm output 4--open mode leakage) \\
+\hline
+{\em control\+\_\+id} & -\/ nextion controls id ,when the modeel is 1 to be valid \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+\hypertarget{class_nex_gpio_a62c2cb633e321ef2273eb3a7af6a5b47}{\index{Nex\+Gpio@{Nex\+Gpio}!set\+\_\+pwmfreq@{set\+\_\+pwmfreq}}
+\index{set\+\_\+pwmfreq@{set\+\_\+pwmfreq}!Nex\+Gpio@{Nex\+Gpio}}
+\subsubsection[{set\+\_\+pwmfreq}]{\setlength{\rightskip}{0pt plus 5cm}bool Nex\+Gpio\+::set\+\_\+pwmfreq (
+\begin{DoxyParamCaption}
+\item[{uint32\+\_\+t}]{value}
+\end{DoxyParamCaption}
+)}}\label{class_nex_gpio_a62c2cb633e321ef2273eb3a7af6a5b47}
+writes pwm output frequency
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & -\/ the frequency\+: between 1 and 65535 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if success, false for failure 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Nex\+Gpio.\+h\item 
+\hyperlink{_nex_gpio_8cpp}{Nex\+Gpio.\+cpp}\end{DoxyCompactItemize}

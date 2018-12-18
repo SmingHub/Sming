@@ -1,0 +1,8 @@
+RingBufCPP		KEYWORD1
+
+isFull	KEYWORD2
+isEmpty	KEYWORD2
+numElements	KEYWORD2
+add	KEYWORD2
+peek	KEYWORD2
+pull	KEYWORD2

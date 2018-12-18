@@ -1,0 +1,70 @@
+CC = $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc
+AR = $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-ar
+DEFS = -DLWIP_OPEN_SRC -DPBUF_RSV_FOR_WLAN -DEBUF_LWIP -DICACHE_FLASH
+COPT = -Os
+
+CFLAGS = $(DEFS) $(COPT) -Iinclude -I$(SDK_BASE)/include -Wl,-EL -mlongcalls -mtext-section-literals $(CFLAGS_EXTRA)
+
+# Install prefix of esp-open-sdk toolchain
+PREFIX = ~/toolchain/xtensa-lx106-elf
+
+
+OBJS = \
+lwip/core/def.o \
+lwip/core/dhcp.o \
+lwip/core/dns.o \
+lwip/core/init.o \
+lwip/core/mem.o \
+lwip/core/memp.o \
+lwip/core/netif.o \
+lwip/core/pbuf.o \
+lwip/core/raw.o \
+lwip/core/sntp.o \
+lwip/core/stats.o \
+lwip/core/sys_arch.o \
+lwip/core/sys.o \
+lwip/core/tcp.o \
+lwip/core/tcp_in.o \
+lwip/core/tcp_out.o \
+lwip/core/timers.o \
+lwip/core/udp.o \
+lwip/core/ipv4/autoip.o \
+lwip/core/ipv4/icmp.o \
+lwip/core/ipv4/igmp.o \
+lwip/core/ipv4/inet.o \
+lwip/core/ipv4/inet_chksum.o \
+lwip/core/ipv4/ip_addr.o \
+lwip/core/ipv4/ip.o \
+lwip/core/ipv4/ip_frag.o \
+lwip/netif/etharp.o \
+\
+lwip/app/dhcpserver.o
+
+
+ifneq ($(ENABLE_ESPCONN),1)
+    OBJS += espconn_dummy.o
+else
+    OBJS += lwip/app/espconn.o \
+lwip/app/espconn_tcp.o \
+lwip/app/espconn_udp.o \
+lwip/app/espconn_mdns.o \
+lwip/api/err.o \
+lwip/core/mdns.o
+
+endif
+
+LIB = $(USER_LIBDIR)liblwip_open.a
+ifeq ($(ENABLE_ESPCONN),1)
+    LIB = $(USER_LIBDIR)liblwip_full.a
+endif
+
+all: $(LIB)
+
+$(LIB): $(OBJS)
+	$(AR) rcs $@ $^
+
+install: $(LIB)
+	cp $(LIB) $(PREFIX)/xtensa-lx106-elf/sysroot/usr/lib/
+
+clean:
+	rm -f $(OBJS) $(LIB)

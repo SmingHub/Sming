@@ -1,0 +1,17 @@
+language: python
+python:
+    - "2.7"
+env:
+    - BOARD=uno
+    - BOARD=leonardo
+    - BOARD=esp01
+
+install:
+    - python -c "$(curl -fsSL https://raw.githubusercontent.com/platformio/platformio/master/scripts/get-platformio.py)"
+
+script:
+    - cd examples/FullFunction
+    - platformio ci -l ../.. FullFunction.ino --board=$BOARD
+    - cd ../GetStarted
+    - platformio ci -l ../.. getStarted.ino --board=$BOARD
+

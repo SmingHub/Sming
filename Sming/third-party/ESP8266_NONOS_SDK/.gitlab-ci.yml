@@ -1,0 +1,70 @@
+stages:
+  - build
+  - deploy
+
+.build_template: &build_template
+  stage: build
+  image: $CI_DOCKER_REGISTRY/esp8266-ci-env
+  tags:
+    - build
+
+  variables:
+    GIT_STRATEGY: clone
+
+  before_script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -n $GITLAB_KEY >> ~/.ssh/id_rsa_base64
+    - base64 --decode --ignore-garbage ~/.ssh/id_rsa_base64 > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - echo -e "Host gitlab.espressif.cn\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+
+
+build_ssc:
+  <<: *build_template
+  artifacts:
+    paths:
+      - ./SSC/ssc_bin
+    expire_in: 6 mos
+  script:
+    - git clone $GITLAB_SSH_SERVER/yinling/SSC.git
+    - cd SSC
+    # try checkout same branch
+    - git checkout ${CI_BUILD_REF_NAME} || echo "Using default branch..."
+    - chmod +x gen_misc_non_os.sh
+    - ./gen_misc_non_os.sh
+
+build_at:
+  <<: *build_template
+  artifacts:
+    paths:
+      - ./bin/upgrade
+      - ./bin/*.bin
+    expire_in: 6 mos
+  script:
+    - cp -rf examples/at at
+    - cd at
+    - make COMPILE=gcc BOOT=new APP=1 SPI_SPEED=40 SPI_MODE=QIO SPI_SIZE_MAP=5
+
+push_master_to_github:
+  stage: deploy
+  only:
+    - master
+    - /^release\/v.*$/
+  tags:
+    - deploy
+  when: on_success
+  image: $CI_DOCKER_REGISTRY/esp8266-ci-env
+  variables:
+    GIT_STRATEGY: clone
+    GITHUB_PUSH_REFS: refs/remotes/origin/release refs/remotes/origin/master
+  script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -n $GH_PUSH_KEY > ~/.ssh/id_rsa_base64
+    - base64 --decode --ignore-garbage ~/.ssh/id_rsa_base64 > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    - git remote add github git@github.com:espressif/ESP8266_NONOS_SDK.git
+    # - git push --follow-tags github HEAD:master
+    - eval $(git for-each-ref --shell bash --format 'if [ $CI_COMMIT_SHA == %(objectname) ]; then git checkout -B %(refname:strip=3); git push --follow-tags github %(refname:strip=3); fi;' $GITHUB_PUSH_REFS)
