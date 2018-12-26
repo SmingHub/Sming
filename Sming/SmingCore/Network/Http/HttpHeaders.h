@@ -169,6 +169,15 @@ public:
 		remove(fromString(name));
 	}
 
+	void setMultiple(const HttpHeaders& headers)
+	{
+		for(unsigned i = 0; i < headers.count(); i++) {
+			HttpHeaderFieldName fieldName = headers.keyAt(i);
+			auto fieldNameString = headers.toString(fieldName);
+			operator[](fieldNameString) = headers.valueAt(i);
+		}
+	}
+
 	HttpHeaders& operator=(const HttpHeaders& headers)
 	{
 		clear();
