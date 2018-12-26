@@ -90,7 +90,7 @@ enum HttpHeaderFieldName {
  *
  *  @todo add name and/or value escaping
  */
-class HttpHeaders : public HashMap<HttpHeaderFieldName, String>
+class HttpHeaders : private HashMap<HttpHeaderFieldName, String>
 {
 public:
 	String toString(HttpHeaderFieldName name) const;
@@ -190,6 +190,8 @@ public:
 		customFieldNames.clear();
 		HashMap::clear();
 	}
+
+	using HashMap::count;
 
 private:
 	/** @brief Try to match a string against the list of custom field names
