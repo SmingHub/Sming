@@ -25,7 +25,7 @@
 # COM_PORT = COM3
 
 ## MacOS / Linux:
-COM_PORT = /dev/ttyUSB0
+# COM_PORT = /dev/ttyUSB0
 
 ## Com port speed
 #COM_SPEED	= 230400
