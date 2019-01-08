@@ -29,7 +29,7 @@ bool DNSServer::start(uint16_t port, const String& domainName, const IPAddress& 
 void DNSServer::stop()
 {
 	close();
-	free(buffer);
+	delete[] buffer;
 	buffer = nullptr;
 }
 
