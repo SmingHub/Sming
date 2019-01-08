@@ -16,20 +16,10 @@
 #include "NetUtils.h"
 #include "../Wiring/WString.h"
 
-DNSServer::DNSServer()
-{
-	ttl = 60;
-	errorReplyCode = DNSReplyCode::NonExistentDomain;
-}
-
-DNSServer::~DNSServer()
-{
-}
-
 bool DNSServer::start(const uint16_t& port, const String& domainName, const IPAddress& resolvedIP)
 {
 	this->port = port;
-	buffer = NULL;
+	buffer = nullptr;
 	this->domainName = domainName;
 	this->resolvedIP[0] = resolvedIP[0];
 	this->resolvedIP[1] = resolvedIP[1];
@@ -43,23 +33,13 @@ void DNSServer::stop()
 {
 	close();
 	free(buffer);
-	buffer = NULL;
-}
-
-void DNSServer::setErrorReplyCode(const DNSReplyCode& replyCode)
-{
-	errorReplyCode = replyCode;
-}
-
-void DNSServer::setTTL(const uint32_t& ttl)
-{
-	this->ttl = ttl;
+	buffer = nullptr;
 }
 
 void DNSServer::downcaseAndRemoveWwwPrefix(String& domainName)
 {
 	domainName.toLowerCase();
-	domainName.replace("www.", "");
+	domainName.replace(_F("www."), String::empty);
 }
 
 bool DNSServer::requestIncludesOnlyOneQuestion()
@@ -70,12 +50,13 @@ bool DNSServer::requestIncludesOnlyOneQuestion()
 
 void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 {
-	if(buffer != NULL) {
+	if(buffer != nullptr) {
 		free(buffer);
 	}
 	buffer = (char*)malloc(buf->tot_len * sizeof(char));
-	if(buffer == NULL)
+	if(buffer == nullptr) {
 		return;
+	}
 	pbuf_copy_partial(buf, buffer, buf->tot_len, 0);
 	debug_d("DNS REQ for %s from %s:%d", getDomainNameWithoutWwwPrefix().c_str(), remoteIP.toString().c_str(),
 			remotePort);
@@ -100,7 +81,7 @@ void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 		response[idx + 5] = 0x01;
 
 		//TTL
-		ttln = htonl(ttl);
+		auto ttln = htonl(ttl);
 		response[idx + 6] = ttln >> 24;
 		response[idx + 7] = ttln >> 16;
 		response[idx + 8] = ttln >> 8;
@@ -124,18 +105,20 @@ void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 		sendTo(remoteIP, remotePort, buffer, sizeof(DNSHeader));
 	}
 	free(buffer);
-	buffer = NULL;
+	buffer = nullptr;
 	UdpConnection::onReceive(buf, remoteIP, remotePort);
 }
 
 String DNSServer::getDomainNameWithoutWwwPrefix()
 {
 	String parsedDomainName = "";
-	if(buffer == NULL)
+	if(buffer == nullptr) {
 		return parsedDomainName;
+	}
 	char* start = buffer + 12;
-	if(*start == 0)
+	if(*start == 0) {
 		return parsedDomainName;
+	}
 
 	int pos = 0;
 	while(true) {

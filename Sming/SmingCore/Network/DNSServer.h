@@ -20,7 +20,7 @@
 #define DNSServer_h
 
 #include "UdpConnection.h"
-#include "../Wiring/WString.h"
+#include "WString.h"
 
 #define DNS_QR_QUERY 0
 #define DNS_QR_RESPONSE 1
@@ -57,10 +57,23 @@ struct DNSHeader {
 class DNSServer : public UdpConnection
 {
 public:
-	DNSServer();
-	virtual ~DNSServer();
-	void setErrorReplyCode(const DNSReplyCode& replyCode);
-	void setTTL(const uint32_t& ttl);
+	DNSServer()
+	{
+	}
+
+	virtual ~DNSServer()
+	{
+	}
+
+	void setErrorReplyCode(DNSReplyCode replyCode)
+	{
+		errorReplyCode = replyCode;
+	}
+
+	void setTTL(uint32_t ttl)
+	{
+		this->ttl = ttl;
+	}
 
 	// Returns true if successful, false if there are no sockets available
 	bool start(const uint16_t& port, const String& domainName, const IPAddress& resolvedIP);
@@ -72,10 +85,10 @@ private:
 	uint16_t port = 0;
 	String domainName;
 	char resolvedIP[4];
-	char* buffer = NULL;
-	DNSHeader* dnsHeader = NULL;
-	uint32_t ttl;
-	DNSReplyCode errorReplyCode;
+	char* buffer = nullptr;
+	DNSHeader* dnsHeader = nullptr;
+	uint32_t ttl = 60;
+	DNSReplyCode errorReplyCode = DNSReplyCode::NonExistentDomain;
 
 	virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
 	void downcaseAndRemoveWwwPrefix(String& domainName);
