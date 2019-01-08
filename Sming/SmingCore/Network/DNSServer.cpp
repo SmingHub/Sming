@@ -18,7 +18,7 @@
 
 DNSServer::DNSServer()
 {
-	ttl = htonl(60);
+	ttl = 60;
 	errorReplyCode = DNSReplyCode::NonExistentDomain;
 }
 
@@ -53,7 +53,7 @@ void DNSServer::setErrorReplyCode(const DNSReplyCode& replyCode)
 
 void DNSServer::setTTL(const uint32_t& ttl)
 {
-	this->ttl = htonl(ttl);
+	this->ttl = ttl;
 }
 
 void DNSServer::downcaseAndRemoveWwwPrefix(String& domainName)
@@ -100,10 +100,11 @@ void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 		response[idx + 5] = 0x01;
 
 		//TTL
-		response[idx + 6] = ttl >> 24;
-		response[idx + 7] = ttl >> 16;
-		response[idx + 8] = ttl >> 8;
-		response[idx + 9] = ttl;
+		ttln = htonl(ttl);
+		response[idx + 6] = ttln >> 24;
+		response[idx + 7] = ttln >> 16;
+		response[idx + 8] = ttln >> 8;
+		response[idx + 9] = ttln;
 
 		//RDATA length
 		response[idx + 10] = 0x00;
