@@ -76,7 +76,7 @@ public:
 	}
 
 	// Returns true if successful, false if there are no sockets available
-	bool start(const uint16_t& port, const String& domainName, const IPAddress& resolvedIP);
+	bool start(uint16_t port, const String& domainName, const IPAddress& resolvedIP);
 
 	// stops the DNS server
 	void stop();
@@ -84,14 +84,14 @@ public:
 private:
 	uint16_t port = 0;
 	String domainName;
-	char resolvedIP[4];
+	ip_addr resolvedIP;
 	char* buffer = nullptr;
 	DNSHeader* dnsHeader = nullptr;
 	uint32_t ttl = 60;
 	DNSReplyCode errorReplyCode = DNSReplyCode::NonExistentDomain;
 
 	virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
-	void downcaseAndRemoveWwwPrefix(String& domainName);
+	static void downcaseAndRemoveWwwPrefix(String& domainName);
 	String getDomainNameWithoutWwwPrefix();
 	bool requestIncludesOnlyOneQuestion();
 };
