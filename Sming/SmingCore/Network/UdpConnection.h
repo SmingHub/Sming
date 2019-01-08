@@ -14,46 +14,72 @@
 #ifndef SMINGCORE_NETWORK_UDPCONNECTION_H_
 #define SMINGCORE_NETWORK_UDPCONNECTION_H_
 
-#include "../Wiring/WiringFrameworkDependencies.h"
-#include "../Delegate.h"
+#include "WiringFrameworkDependencies.h"
+#include "Delegate.h"
 #include "IPAddress.h"
 
 class UdpConnection;
 
-//typedef void (*UdpConnectionDataCallback)(UdpConnection& connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort);
 typedef Delegate<void(UdpConnection& connection, char* data, int size, IPAddress remoteIP, uint16_t remotePort)>
 	UdpConnectionDataDelegate;
 
 class UdpConnection
 {
 public:
-	UdpConnection();
-	UdpConnection(UdpConnectionDataDelegate dataHandler);
-	virtual ~UdpConnection();
+	UdpConnection()
+	{
+		initialize();
+	}
+
+	UdpConnection(UdpConnectionDataDelegate dataHandler) : onDataCallback(dataHandler)
+	{
+		initialize();
+	}
+
+	virtual ~UdpConnection()
+	{
+		close();
+	}
 
 	virtual bool listen(int port);
 	virtual bool connect(IPAddress ip, uint16_t port);
 	virtual void close();
 
 	// After connect(..)
-	virtual void send(const char* data, int length);
-	void sendString(const char* data);
-	void sendString(const String& data);
+	virtual bool send(const char* data, int length);
 
-	virtual void sendTo(IPAddress remoteIP, uint16_t remotePort, const char* data, int length);
-	void sendStringTo(IPAddress remoteIP, uint16_t remotePort, const char* data);
-	void sendStringTo(IPAddress remoteIP, uint16_t remotePort, const String& data);
+	bool sendString(const char* data)
+	{
+		return send(data, strlen(data));
+	}
+
+	bool sendString(const String& data)
+	{
+		return send(data.c_str(), data.length());
+	}
+
+	virtual bool sendTo(IPAddress remoteIP, uint16_t remotePort, const char* data, int length);
+
+	bool sendStringTo(IPAddress remoteIP, uint16_t remotePort, const char* data)
+	{
+		sendTo(remoteIP, remotePort, data, strlen(data));
+	}
+
+	bool sendStringTo(IPAddress remoteIP, uint16_t remotePort, const String& data)
+	{
+		sendTo(remoteIP, remotePort, data.c_str(), data.length());
+	}
 
 protected:
 	virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
 
 protected:
-	void initialize(udp_pcb* pcb = NULL);
+	bool initialize(udp_pcb* pcb = nullptr);
 	static void staticOnReceive(void* arg, struct udp_pcb* pcb, struct pbuf* p, LWIP_IP_ADDR_T* addr, u16_t port);
 
 protected:
-	udp_pcb* udp;
-	UdpConnectionDataDelegate onDataCallback;
+	udp_pcb* udp = nullptr;
+	UdpConnectionDataDelegate onDataCallback = nullptr;
 };
 
 /** @} */
