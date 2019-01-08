@@ -20,7 +20,7 @@
 #define DNSServer_h
 
 #include "UdpConnection.h"
-#include "../Wiring/WString.h"
+#include "WString.h"
 
 #define DNS_QR_QUERY 0
 #define DNS_QR_RESPONSE 1
@@ -57,28 +57,41 @@ struct DNSHeader {
 class DNSServer : public UdpConnection
 {
 public:
-	DNSServer();
-	virtual ~DNSServer();
-	void setErrorReplyCode(const DNSReplyCode& replyCode);
-	void setTTL(const uint32_t& ttl);
+	DNSServer()
+	{
+	}
+
+	virtual ~DNSServer()
+	{
+	}
+
+	void setErrorReplyCode(DNSReplyCode replyCode)
+	{
+		errorReplyCode = replyCode;
+	}
+
+	void setTTL(uint32_t ttl)
+	{
+		this->ttl = ttl;
+	}
 
 	// Returns true if successful, false if there are no sockets available
-	bool start(const uint16_t& port, const String& domainName, const IPAddress& resolvedIP);
+	bool start(uint16_t port, const String& domainName, const IPAddress& resolvedIP);
 
 	// stops the DNS server
 	void stop();
 
 private:
-	uint16_t _port = 0;
-	String _domainName;
-	char _resolvedIP[4];
-	char* _buffer = NULL;
-	DNSHeader* _dnsHeader = NULL;
-	uint32_t _ttl;
-	DNSReplyCode _errorReplyCode;
+	uint16_t port = 0;
+	String domainName;
+	ip_addr resolvedIP;
+	char* buffer = nullptr;
+	DNSHeader* dnsHeader = nullptr;
+	uint32_t ttl = 60;
+	DNSReplyCode errorReplyCode = DNSReplyCode::NonExistentDomain;
 
 	virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
-	void downcaseAndRemoveWwwPrefix(String& domainName);
+	static void downcaseAndRemoveWwwPrefix(String& domainName);
 	String getDomainNameWithoutWwwPrefix();
 	bool requestIncludesOnlyOneQuestion();
 };

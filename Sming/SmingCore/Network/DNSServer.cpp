@@ -14,79 +14,56 @@
 #include "DNSServer.h"
 #include "UdpConnection.h"
 #include "NetUtils.h"
-#include "../Wiring/WString.h"
+#include "WString.h"
 
-DNSServer::DNSServer()
+bool DNSServer::start(uint16_t port, const String& domainName, const IPAddress& resolvedIP)
 {
-	_ttl = htonl(60);
-	_errorReplyCode = DNSReplyCode::NonExistentDomain;
-}
-
-DNSServer::~DNSServer()
-{
-}
-
-bool DNSServer::start(const uint16_t& port, const String& domainName, const IPAddress& resolvedIP)
-{
-	_port = port;
-	_buffer = NULL;
-	_domainName = domainName;
-	_resolvedIP[0] = resolvedIP[0];
-	_resolvedIP[1] = resolvedIP[1];
-	_resolvedIP[2] = resolvedIP[2];
-	_resolvedIP[3] = resolvedIP[3];
-	downcaseAndRemoveWwwPrefix(_domainName);
-	return listen(_port) == 1;
+	this->port = port;
+	buffer = nullptr;
+	this->domainName = domainName;
+	this->resolvedIP = resolvedIP;
+	downcaseAndRemoveWwwPrefix(this->domainName);
+	return listen(this->port) == 1;
 }
 
 void DNSServer::stop()
 {
 	close();
-	free(_buffer);
-	_buffer = NULL;
-}
-
-void DNSServer::setErrorReplyCode(const DNSReplyCode& replyCode)
-{
-	_errorReplyCode = replyCode;
-}
-
-void DNSServer::setTTL(const uint32_t& ttl)
-{
-	_ttl = htonl(ttl);
+	delete[] buffer;
+	buffer = nullptr;
 }
 
 void DNSServer::downcaseAndRemoveWwwPrefix(String& domainName)
 {
 	domainName.toLowerCase();
-	domainName.replace("www.", "");
+	domainName.replace(F("www."), String::empty);
 }
 
 bool DNSServer::requestIncludesOnlyOneQuestion()
 {
-	return ntohs(_dnsHeader->QDCount) == 1 && _dnsHeader->ANCount == 0 && _dnsHeader->NSCount == 0 &&
-		   _dnsHeader->ARCount == 0;
+	return ntohs(dnsHeader->QDCount) == 1 && dnsHeader->ANCount == 0 && dnsHeader->NSCount == 0 &&
+		   dnsHeader->ARCount == 0;
 }
 
 void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 {
-	if(_buffer != NULL) {
-		free(_buffer);
-	}
-	_buffer = (char*)malloc(buf->tot_len * sizeof(char));
-	if(_buffer == NULL)
+	delete[] buffer;
+	buffer = new char[buf->tot_len];
+	if(buffer == nullptr) {
 		return;
-	pbuf_copy_partial(buf, _buffer, buf->tot_len, 0);
+	}
+
+	pbuf_copy_partial(buf, buffer, buf->tot_len, 0);
 	debug_d("DNS REQ for %s from %s:%d", getDomainNameWithoutWwwPrefix().c_str(), remoteIP.toString().c_str(),
 			remotePort);
-	_dnsHeader = (DNSHeader*)_buffer;
-	if(_dnsHeader->QR == DNS_QR_QUERY && _dnsHeader->OPCode == DNS_OPCODE_QUERY && requestIncludesOnlyOneQuestion() &&
-	   (_domainName == "*" || getDomainNameWithoutWwwPrefix() == _domainName)) {
+	dnsHeader = reinterpret_cast<DNSHeader*>(buffer);
+	if(dnsHeader->QR == DNS_QR_QUERY && dnsHeader->OPCode == DNS_OPCODE_QUERY && requestIncludesOnlyOneQuestion() &&
+	   (domainName == "*" || getDomainNameWithoutWwwPrefix() == domainName)) {
 		char response[buf->tot_len + 16];
 		int idx = buf->tot_len;
-		_dnsHeader->QR = DNS_QR_RESPONSE;
-		_dnsHeader->ANCount = _dnsHeader->QDCount;
-		memcpy(response, _buffer, idx);
+		dnsHeader->QR = DNS_QR_RESPONSE;
+		dnsHeader->ANCount = dnsHeader->QDCount;
+		memcpy(response, buffer, idx);
 		//Set a pointer to the domain name in the question section
 		response[idx] = 0xC0;
 		response[idx + 1] = 0x0C;
@@ -100,55 +77,60 @@ void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
 		response[idx + 5] = 0x01;
 
 		//TTL
-		response[idx + 6] = _ttl >> 24;
-		response[idx + 7] = _ttl >> 16;
-		response[idx + 8] = _ttl >> 8;
-		response[idx + 9] = _ttl;
+		auto ttln = htonl(ttl);
+		response[idx + 6] = ttln >> 24;
+		response[idx + 7] = ttln >> 16;
+		response[idx + 8] = ttln >> 8;
+		response[idx + 9] = ttln;
 
 		//RDATA length
 		response[idx + 10] = 0x00;
 		response[idx + 11] = 0x04; //4 byte IP address
 
 		//The IP address
-		response[idx + 12] = _resolvedIP[0];
-		response[idx + 13] = _resolvedIP[1];
-		response[idx + 14] = _resolvedIP[2];
-		response[idx + 15] = _resolvedIP[3];
+		response[idx + 12] = ip4_addr1(&resolvedIP);
+		response[idx + 13] = ip4_addr2(&resolvedIP);
+		response[idx + 14] = ip4_addr3(&resolvedIP);
+		response[idx + 15] = ip4_addr4(&resolvedIP);
 
 		sendTo(remoteIP, remotePort, response, idx + 16);
-	} else if(_dnsHeader->QR == DNS_QR_QUERY) {
-		_dnsHeader->QR = DNS_QR_RESPONSE;
-		_dnsHeader->RCode = (char)_errorReplyCode;
-		_dnsHeader->QDCount = 0;
-		sendTo(remoteIP, remotePort, _buffer, sizeof(DNSHeader));
+	} else if(dnsHeader->QR == DNS_QR_QUERY) {
+		dnsHeader->QR = DNS_QR_RESPONSE;
+		dnsHeader->RCode = char(errorReplyCode);
+		dnsHeader->QDCount = 0;
+		sendTo(remoteIP, remotePort, buffer, sizeof(DNSHeader));
 	}
-	free(_buffer);
-	_buffer = NULL;
+
+	delete[] buffer;
+	buffer = nullptr;
+
 	UdpConnection::onReceive(buf, remoteIP, remotePort);
 }
 
 String DNSServer::getDomainNameWithoutWwwPrefix()
 {
-	String parsedDomainName = "";
-	if(_buffer == NULL)
+	String parsedDomainName;
+	if(buffer == nullptr) {
 		return parsedDomainName;
-	char* start = _buffer + 12;
-	if(*start == 0)
+	}
+	char* start = buffer + 12;
+	if(*start == 0) {
 		return parsedDomainName;
+	}
 
-	int pos = 0;
+	unsigned pos = 0;
 	while(true) {
-		unsigned char labelLength = *(start + pos);
-		for(int i = 0; i < labelLength; i++) {
+		unsigned labelLength = *(start + pos);
+		for(unsigned i = 0; i < labelLength; i++) {
 			pos++;
-			parsedDomainName += (char)*(start + pos);
+			parsedDomainName += start[pos];
 		}
 		pos++;
-		if(*(start + pos) == 0) {
+		if(start[pos] == 0) {
 			downcaseAndRemoveWwwPrefix(parsedDomainName);
 			return parsedDomainName;
 		} else {
-			parsedDomainName += ".";
+			parsedDomainName += '.';
 		}
 	}
 }
