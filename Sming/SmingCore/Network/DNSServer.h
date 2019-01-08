@@ -69,13 +69,13 @@ public:
 	void stop();
 
 private:
-	uint16_t _port = 0;
-	String _domainName;
-	char _resolvedIP[4];
-	char* _buffer = NULL;
-	DNSHeader* _dnsHeader = NULL;
-	uint32_t _ttl;
-	DNSReplyCode _errorReplyCode;
+	uint16_t port = 0;
+	String domainName;
+	char resolvedIP[4];
+	char* buffer = NULL;
+	DNSHeader* dnsHeader = NULL;
+	uint32_t ttl;
+	DNSReplyCode errorReplyCode;
 
 	virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
 	void downcaseAndRemoveWwwPrefix(String& domainName);
