@@ -46,26 +46,26 @@ public:
 	virtual void close();
 
 	// After connect(..)
-	virtual void send(const char* data, int length);
+	virtual bool send(const char* data, int length);
 
-	void sendString(const char* data)
+	bool sendString(const char* data)
 	{
-		send(data, strlen(data));
+		return send(data, strlen(data));
 	}
 
-	void sendString(const String& data)
+	bool sendString(const String& data)
 	{
-		send(data.c_str(), data.length());
+		return send(data.c_str(), data.length());
 	}
 
-	virtual void sendTo(IPAddress remoteIP, uint16_t remotePort, const char* data, int length);
+	virtual bool sendTo(IPAddress remoteIP, uint16_t remotePort, const char* data, int length);
 
-	void sendStringTo(IPAddress remoteIP, uint16_t remotePort, const char* data)
+	bool sendStringTo(IPAddress remoteIP, uint16_t remotePort, const char* data)
 	{
 		sendTo(remoteIP, remotePort, data, strlen(data));
 	}
 
-	void sendStringTo(IPAddress remoteIP, uint16_t remotePort, const String& data)
+	bool sendStringTo(IPAddress remoteIP, uint16_t remotePort, const String& data)
 	{
 		sendTo(remoteIP, remotePort, data.c_str(), data.length());
 	}
@@ -74,7 +74,7 @@ protected:
 	virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
 
 protected:
-	void initialize(udp_pcb* pcb = nullptr);
+	bool initialize(udp_pcb* pcb = nullptr);
 	static void staticOnReceive(void* arg, struct udp_pcb* pcb, struct pbuf* p, LWIP_IP_ADDR_T* addr, u16_t port);
 
 protected:

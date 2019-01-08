@@ -8,13 +8,19 @@
 #include "UdpConnection.h"
 #include "WString.h"
 
-void UdpConnection::initialize(udp_pcb* pcb)
+bool UdpConnection::initialize(udp_pcb* pcb)
 {
 	if(pcb == nullptr) {
 		pcb = udp_new();
+		if(pcb == nullptr) {
+			return false;
+		}
 	}
+
 	udp = pcb;
-	udp_recv(udp, staticOnReceive, (void*)this);
+	udp_recv(udp, staticOnReceive, this);
+
+	return true;
 }
 
 void UdpConnection::close()
@@ -26,10 +32,12 @@ void UdpConnection::close()
 
 bool UdpConnection::listen(int port)
 {
-	if(udp != nullptr && udp->local_port != 0) {
+	if(udp == nullptr) {
+		if(!initialize()) {
+			return false;
+		}
+	} else if(udp->local_port != 0) {
 		return false;
-	} else if(udp == nullptr) {
-		initialize();
 	}
 
 	debug_d("UDP listen port %d", port);
@@ -40,7 +48,9 @@ bool UdpConnection::listen(int port)
 bool UdpConnection::connect(IPAddress ip, uint16_t port)
 {
 	if(udp == nullptr) {
-		initialize();
+		if(!initialize()) {
+			return false;
+		}
 	}
 
 	if(udp->local_port == 0) {
@@ -53,23 +63,29 @@ bool UdpConnection::connect(IPAddress ip, uint16_t port)
 	return res == ERR_OK;
 }
 
-void UdpConnection::send(const char* data, int length)
+bool UdpConnection::send(const char* data, int length)
 {
 	pbuf* p = pbuf_alloc(PBUF_TRANSPORT, length, PBUF_RAM);
-	if(p != nullptr) {
+	if(p == nullptr) {
+		return false;
+	} else {
 		memcpy(p->payload, data, length);
-		udp_send(udp, p);
+		err_t res = udp_send(udp, p);
 		pbuf_free(p);
+		return res == ERR_OK;
 	}
 }
 
-void UdpConnection::sendTo(IPAddress remoteIP, uint16_t remotePort, const char* data, int length)
+bool UdpConnection::sendTo(IPAddress remoteIP, uint16_t remotePort, const char* data, int length)
 {
 	pbuf* p = pbuf_alloc(PBUF_TRANSPORT, length, PBUF_RAM);
-	if(p != nullptr) {
+	if(p == nullptr) {
+		return false;
+	} else {
 		memcpy(p->payload, data, length);
-		udp_sendto(udp, p, remoteIP, remotePort);
+		err_t res = udp_sendto(udp, p, remoteIP, remotePort);
 		pbuf_free(p);
+		return res == ERR_OK;
 	}
 }
 
@@ -77,7 +93,7 @@ void UdpConnection::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort
 {
 	debug_d("UDP received: %d bytes", buf->tot_len);
 	if(onDataCallback) {
-		char* data = new char[buf->tot_len + 1];
+		auto data = new char[buf->tot_len + 1];
 		pbuf_copy_partial(buf, data, buf->tot_len, 0);
 		data[buf->tot_len] = '\0';
 
