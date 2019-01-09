@@ -27,6 +27,11 @@
 #define STORE_TYPEDEF_ATTR __attribute__((aligned(4),packed))
 #define STORE_ATTR __attribute__((aligned(4)))
 
+/*
+ * Use this definition in the cases where a function or a variable is meant to be possibly unused. GCC will not produce a warning for it.
+ */
+#define SMING_UNUSED  __attribute__((unused))
+
 #ifdef ENABLE_GDB
 	#define GDB_IRAM_ATTR IRAM_ATTR
 #else

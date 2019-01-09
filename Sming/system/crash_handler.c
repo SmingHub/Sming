@@ -31,7 +31,7 @@ extern int ets_printf(const char*, ...);
 void uart_write_char_d(char c);
 static void uart0_write_char_d(char c);
 static void uart1_write_char_d(char c);
-static void print_stack(uint32_t start, uint32_t end);
+static void print_stack(uint32_t start, uint32_t end) SMING_UNUSED;
 //static void print_pcs(uint32_t start, uint32_t end);
 
 extern void __custom_crash_callback( struct rst_info * rst_info, uint32_t stack, uint32_t stack_end ) {
@@ -93,7 +93,6 @@ void __wrap_system_restart_local() {
     os_delay_us(10000);
     __real_system_restart_local();
 }
-
 
 static void print_stack(uint32_t start, uint32_t end) {
     uint32_t pos = 0;
