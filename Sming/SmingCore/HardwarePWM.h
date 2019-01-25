@@ -51,12 +51,27 @@ public:
      */
 	bool analogWrite(uint8 pin, uint32 duty);
 
+	/** @brief  Set PWM duty cycle for a channel
+     *  @param  channel Channel to set
+     *  @param  duty Value of duty cycle to set channel to
+     *  @param  update Update PWM output
+     *  @retval bool True on success
+     */
+	bool setDutyChan(uint8 chan, uint32 duty, bool update = true);
+
 	/** @brief  Set PWM duty cycle
      *  @param  pin GPIO to set
      *  @param  duty Value of duty cycle to set pin to
+     *  @param  update Update PWM output
      *  @retval bool True on success
      */
-	bool setDuty(uint8 pin, uint32 duty);
+	bool setDuty(uint8 pin, uint32 duty, bool update = true);
+
+	/** @brief  Get PWM duty cycle
+	 *  @param  chan Channel to get duty cycle for
+	 *  @retval uint32 Value of PWM duty cycle
+	 */
+	uint32 getDutyChan(uint8 chan);
 
 	/** @brief  Get PWM duty cycle
      *  @param  pin GPIO to get duty cycle for
@@ -86,6 +101,10 @@ public:
      *  @note   Attempt to set duty of a pin above this value will fail
      */
 	uint32 getMaxDuty();
+
+	/** @brief  This function is used to actually update the PWM.
+	 */
+	void updatePWM();
 
 private:
 	uint8 channel_count;
