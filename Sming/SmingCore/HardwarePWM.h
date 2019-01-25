@@ -104,7 +104,7 @@ public:
 
 	/** @brief  This function is used to actually update the PWM.
 	 */
-	void updatePWM();
+	void update();
 
 private:
 	uint8 channel_count;
