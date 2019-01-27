@@ -62,12 +62,12 @@ public:
 
 	bool sendStringTo(IPAddress remoteIP, uint16_t remotePort, const char* data)
 	{
-		sendTo(remoteIP, remotePort, data, strlen(data));
+		return sendTo(remoteIP, remotePort, data, strlen(data));
 	}
 
 	bool sendStringTo(IPAddress remoteIP, uint16_t remotePort, const String& data)
 	{
-		sendTo(remoteIP, remotePort, data.c_str(), data.length());
+		return sendTo(remoteIP, remotePort, data.c_str(), data.length());
 	}
 
 protected:
