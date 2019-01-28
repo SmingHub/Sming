@@ -48,7 +48,7 @@ esp-open-sdk (v1.5, v2.0, v3.0 **) | :sunny:  | :sunny: | n/a | :sunny: |
 - ** = experimental support
 
 ## Latest Stable Release
-- [Sming V3.7.0](https://github.com/SmingHub/Sming/releases/tag/3.7.0)
+- [Sming V3.7.1](https://github.com/SmingHub/Sming/releases/tag/3.7.1)
 
 
 ## Getting started
