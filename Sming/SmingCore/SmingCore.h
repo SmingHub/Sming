@@ -8,7 +8,7 @@
 #ifndef _SMING_CORE_H_
 #define _SMING_CORE_H_
 
-#define SMING_VERSION "3.7.0" // Major Minor Sub
+#define SMING_VERSION "3.7.1" // Major Minor Sub
 
 #include <functional>
 
@@ -55,8 +55,8 @@
 #include "Data/Stream/FileStream.h"
 #include "Data/Stream/TemplateFileStream.h"
 
-#include "../Services/DateTime/DateTime.h"
-#include "../Services/libemqtt/libemqtt.h"
+#include "DateTime.h"
+
 #include "../Services/FATFS/ff.h"
 #include "../Services/Yeelight/YeelightBulb.h"
 

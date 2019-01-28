@@ -89,7 +89,7 @@ void rBootHttpUpdate::setBaseRequest(HttpRequest* request)
 
 void rBootHttpUpdate::start()
 {
-	for(int i = 0; i < items.count(); i++) {
+	for(unsigned i = 0; i < items.count(); i++) {
 		rBootHttpUpdateItem& it = items[i];
 		debug_d("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
 

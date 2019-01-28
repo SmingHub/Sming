@@ -38,7 +38,7 @@ HardwarePWM::HardwarePWM(uint8* pins, uint8 no_of_pins)
 		}
 		const int initial_period = 1000;
 		pwm_init(initial_period, pwm_duty_init, no_of_pins, io_info);
-		pwm_start();
+		update();
 		maxduty = PERIOD_TO_MAX_DUTY(initial_period); // for period of 1000
 	}
 }
@@ -75,6 +75,19 @@ bool HardwarePWM::analogWrite(uint8 pin, uint32 duty)
 	return setDuty(pin, duty);
 }
 
+/* Function Name: getDutyChan
+ * Description: This function is used to get the duty cycle number for a given channel
+ * Parameters: chan -Esp8266 channel number
+ */
+uint32 HardwarePWM::getDutyChan(uint8 chan)
+{
+	if(chan == PWM_BAD_CHANNEL) {
+		return 0;
+	} else {
+		return pwm_get_duty(chan);
+	}
+}
+
 /* Function Name: getDuty
  * Description: This function is used to get the duty cycle number for a given pin
  * Parameters: pin -Esp8266 pin number
@@ -82,30 +95,43 @@ bool HardwarePWM::analogWrite(uint8 pin, uint32 duty)
 uint32 HardwarePWM::getDuty(uint8 pin)
 {
 	uint8 chan = getChannel(pin);
-	if(chan == PWM_BAD_CHANNEL)
-		return 0;
-	else
-		return pwm_get_duty(chan);
+	return getDutyChan(chan);
 }
 
-/* Function Name: setDuty
- * Description: This function is used to set the pwm duty cycle for a given pin
- * Parameters: pin - pin number
+/* Function Name: setDutyChan
+ * Description: This function is used to set the pwm duty cycle for a given channel. If parameter 'update' is false
+ *              then you have to call update() later to update duties.
+ * Parameters: chan - channel number
  *             duty - duty cycle value
+ *             update - update PWM output
  */
-bool HardwarePWM::setDuty(uint8 pin, uint32 duty)
+bool HardwarePWM::setDutyChan(uint8 chan, uint32 duty, bool update)
 {
-	uint8 chan = getChannel(pin);
 	if(chan == PWM_BAD_CHANNEL) {
 		return false;
 	} else if(duty <= maxduty) {
 		pwm_set_duty(duty, chan);
-		pwm_start();
+		if(update) {
+			this->update();
+		}
 		return true;
 	} else {
 		debugf("Duty cycle value too high for current period.");
 		return false;
 	}
+}
+
+/* Function Name: setDuty
+ * Description: This function is used to set the pwm duty cycle for a given pin. If parameter 'update' is false
+ *              then you have to call update() later to update duties.
+ * Parameters: pin - pin number
+ *             duty - duty cycle value
+ *             update - update PWM output
+ */
+bool HardwarePWM::setDuty(uint8 pin, uint32 duty, bool update)
+{
+	uint8 chan = getChannel(pin);
+	return setDutyChan(chan, duty, update);
 }
 
 /* Function Name: getMaxDuty
@@ -134,5 +160,13 @@ void HardwarePWM::setPeriod(uint32 period)
 {
 	maxduty = PERIOD_TO_MAX_DUTY(period);
 	pwm_set_period(period);
+	update();
+}
+
+/* Function Name: update
+ * Description: This function is used to actually update the PWM.
+ */
+void HardwarePWM::update()
+{
 	pwm_start();
 }

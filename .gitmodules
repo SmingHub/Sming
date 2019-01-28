@@ -89,3 +89,7 @@
 	path = Sming/Libraries/TM1637
 	url = https://github.com/avishorp/TM1637.git
 	ignore = dirty
+[submodule "Sming/third-party/mqtt-codec"]
+	path = Sming/third-party/mqtt-codec
+	url = https://github.com/slaff/mqtt-codec.git
+	ignore = dirty

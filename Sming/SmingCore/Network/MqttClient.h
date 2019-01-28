@@ -5,54 +5,83 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+#ifndef _SMING_CORE_NETWORK_MqttClient_H_
+#define _SMING_CORE_NETWORK_MqttClient_H_
+
+#include "TcpClient.h"
+#include "../Network/URL.h"
+#include "../../Wiring/WString.h"
+#include "../../Wiring/WHashMap.h"
+#include "Data/ObjectQueue.h"
+#include "Mqtt/MqttPayloadParser.h"
+#include "../mqtt-codec/src/message.h"
+#include "../mqtt-codec/src/serialiser.h"
+#include "../mqtt-codec/src/parser.h"
+#include <functional>
+
 /** @defgroup   mqttclient MQTT client
  *  @brief      Provides MQTT client
  *  @ingroup    tcpclient
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_MqttClient_H_
-#define _SMING_CORE_NETWORK_MqttClient_H_
-
-#define MQTT_MAX_BUFFER_SIZE 1024
-
-#include "TcpClient.h"
-#include "../Delegate.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WHashMap.h"
-#include "../../Services/libemqtt/libemqtt.h"
-#include "../Network/URL.h"
-
-//typedef void (*MqttStringSubscriptionCallback)(String topic, String message);
 typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
 typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
 
+enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
+
+#ifndef MQTT_REQUEST_POOL_SIZE
+#define MQTT_REQUEST_POOL_SIZE 10
+#endif
+
+#define MQTT_CLIENT_CONNECTED bit(1)
+
+#define MQTT_FLAG_RETAINED 1
+
+#ifndef MQTT_NO_COMPAT
+/* @deprecated */
+#define MQTT_MAX_BUFFER_SIZE MQTT_PAYLOAD_LENGTH
+/* @deprecated */
+#define MQTT_MSG_PUBREC MQTT_TYPE_PUBREC
+#endif
+
 class MqttClient;
-class URL;
+
+typedef std::function<int(MqttClient& client, mqtt_message_t* message)> MqttDelegate;
+typedef ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE> MqttRequestQueue;
+
+#ifndef MQTT_NO_COMPAT
+/* @deprecated: use MqttDelegate instead */
+typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
+/* @deprecated: use MqttDelegate instead */
+typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
+#endif
 
 class MqttClient : protected TcpClient
 {
 public:
-	MqttClient(bool autoDestruct = false);
-
-	/** @brief  Construct an MQTT client 
-	*  @deprecated Use instead the empty contructor
-	*/
-	MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback = NULL);
-	/** @brief  Construct an MQTT client
-	*  @deprecated Use instead the empty contructor
-	*/
-	MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback = NULL);
+	MqttClient(bool withDefaultPayloadParser = true, bool autoDestruct = false);
 	virtual ~MqttClient();
 
-	/** @brief  Provide a funcion to be called when a message is received from the broker
-	*/
-	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = NULL);
+	/**
+	 * Sets keep-alive time. That information is sent during connection to the server
+	 * @param uint16_t seconds
+	 */
+	void setKeepAlive(uint16_t seconds); //send to broker
 
-	void setKeepAlive(int seconds);		 //send to broker
-	void setPingRepeatTime(int seconds); //used by client
-	// Sets Last Will and Testament
-	bool setWill(const String& topic, const String& message, int QoS, bool retained = false);
+	/**
+	 * Sets the interval in which to ping the remote server if there was no activity
+	 * @param int seconds
+	 */
+	void setPingRepeatTime(int seconds);
+
+	/**
+	 * Sets last will and testament
+	 * @param const String& topic
+	 * @param const String& message
+	 * @param uint8_t flags -QoS, retain, etc flags
+	 */
+	bool setWill(const String& topic, const String& message, uint8_t flags = 0);
 
 	/** @brief  Connect to a MQTT server
 	*  @param  url, in the form "mqtt://user:password@server:port" or "mqtts://user:password@server:port"
@@ -60,33 +89,68 @@ public:
 	*/
 	bool connect(const URL& url, const String& uniqueClientName, uint32_t sslOptions = 0);
 
-	/** @brief  connect
-	*  @deprecated Use connect(const String& url, const String& uniqueClientName) instead
-	*/
-	bool connect(const String& clientName, boolean useSsl = false, uint32_t sslOptions = 0);
-	/** @brief  connect
-	*  @deprecated Use connect(const String& url, const String& uniqueClientName) instead
-	*/
-	bool connect(const String& clientName, const String& username, const String& password, boolean useSsl = false,
-				 uint32_t sslOptions = 0);
-
-	using TcpClient::setCompleteDelegate;
-
-	__forceinline bool isProcessing()
-	{
-		return TcpClient::isProcessing();
-	}
-	__forceinline TcpClientState getConnectionState()
-	{
-		return TcpClient::getConnectionState();
-	}
-
-	bool publish(String topic, String message, bool retained = false);
-	bool publishWithQoS(String topic, String message, int QoS, bool retained = false,
-						MqttMessageDeliveredCallback onDelivery = NULL);
+	bool publish(const String& topic, const String& message, uint8_t flags = 0);
+	bool publish(const String& topic, ReadWriteStream* stream, uint8_t flags = 0);
 
 	bool subscribe(const String& topic);
 	bool unsubscribe(const String& topic);
+
+	void setEventHandler(mqtt_type_t type, MqttDelegate handler);
+
+	/**
+	 * Sets or clears a payload parser (for PUBLISH messages from the server to us)
+	 * Notice: we no longer have size limitation for incoming or outgoing messages
+	 *         but in order to prevent running out of memory we have a "sane" payload parser
+	 *         that will read up to 1K of payload
+	 */
+	void setPayloadParser(MqttPayloadParser payloadParser = 0)
+	{
+		this->payloadParser = payloadParser;
+	}
+
+	/* [ Convenience methods ] */
+
+	/**
+	 * Sets a handler to be called after successful MQTT connection
+	 *
+	 * @param MqttDelegate handler
+	 */
+	void setConnectedHandler(MqttDelegate handler)
+	{
+		eventHandler[MQTT_TYPE_CONNACK] = handler;
+	}
+
+	/**
+	 * Sets a handler to be called after receiving confirmation from the server
+	 * for a published message from the client
+	 *
+	 * @param MqttDelegate handler
+	 */
+	void setPublishedHandler(MqttDelegate handler)
+	{
+		eventHandler[MQTT_TYPE_PUBACK] = handler;
+		eventHandler[MQTT_TYPE_PUBREC] = handler;
+	}
+
+	/**
+	 * Sets a handler to be called after receiving a PUBLISH message from the server
+	 *
+	 * @param MqttDelegate handler
+	 */
+	void setMessageHandler(MqttDelegate handler)
+	{
+		eventHandler[MQTT_TYPE_PUBLISH] = handler;
+	}
+
+	/**
+	 * Sets a handler to be called on disconnect from the server
+	 *
+	 * @param  TcpClientCompleteDelegate handler
+	 */
+	void setDisconnectHandler(TcpClientCompleteDelegate handler)
+	{
+		TcpClient::setCompleteDelegate(handler);
+	}
 
 #ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
@@ -97,27 +161,165 @@ public:
 	using TcpClient::setSslKeyCert;
 #endif
 
+	// deprecated methods below
+	using TcpClient::setCompleteDelegate;
+
+	using TcpClient::getConnectionState;
+	using TcpClient::isProcessing;
+
+#ifndef MQTT_NO_COMPAT
+	/**
+	 * @deprecated Use setWill(const String& topic, const String& message,uint8_t flags) instead
+	 */
+	bool setWill(const String& topic, const String& message, int QoS, bool retained = false)
+	{
+		uint8_t flags = (uint8_t)(retained + (QoS << 1));
+		return setWill(topic, message, flags);
+	}
+
+	/**
+	 * @removed
+	 * 		bool publish(String& topic, String& message, bool retained = false)
+	 * Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
+	 */
+
+	/**
+	 * @deprecated Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
+	 * 			   If you want to have a callback that should be triggered on successful delivery of messages
+	 * 			   then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.
+	 */
+	bool publishWithQoS(const String& topic, const String& message, int QoS, bool retained = false,
+						MqttMessageDeliveredCallback onDelivery = NULL)
+	{
+		if(onDelivery) {
+			if(QoS == 1) {
+				setEventHandler(MQTT_TYPE_PUBACK, onPuback);
+				this->onDelivery = onDelivery;
+			} else if(QoS == 2) {
+				setEventHandler(MQTT_TYPE_PUBREC, onPuback);
+				this->onDelivery = onDelivery;
+			} else {
+				debug_w("No callback is set for QoS == 0");
+			}
+		}
+
+		uint8_t flags = (uint8_t)(retained + (QoS << 1));
+		return publish(topic, message, flags);
+	}
+
+	/** @brief  Provide a function to be called when a message is received from the broker
+	 * @deprecated Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
+	*/
+	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = NULL)
+	{
+		this->subscriptionCallback = subscriptionCallback;
+		setEventHandler(MQTT_TYPE_PUBLISH, onPublish);
+	}
+#endif
+
 protected:
-	virtual err_t onReceive(pbuf* buf);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-	void debugPrintResponseType(int type, int len);
-	static int staticSendPacket(void* userInfo, const void* buf, unsigned int count);
+	virtual void onFinished(TcpClientState finishState);
 
 private:
-	bool privateConnect(const String& clientName, const String& username, const String& password,
-						boolean useSsl = false, uint32_t sslOptions = 0);
+	// TCP methods
+	virtual bool onTcpReceive(TcpClient& client, char* data, int size);
 
+	// MQTT parser methods
+	static int staticOnMessageBegin(void* user_data, mqtt_message_t* message);
+	static int staticOnDataBegin(void* user_data, mqtt_message_t* message);
+	static int staticOnDataPayload(void* user_data, mqtt_message_t* message, const char* data, size_t length);
+	static int staticOnDataEnd(void* user_data, mqtt_message_t* message);
+	static int staticOnMessageEnd(void* user_data, mqtt_message_t* message);
+
+#ifndef MQTT_NO_COMPAT
+	/* @deprecated This method is only for compatibility with the previous release and will be removed soon. */
+	static int onPuback(MqttClient& client, mqtt_message_t* message)
+	{
+		if(!message) {
+			return 1;
+		}
+
+		if(client.onDelivery) {
+			uint16_t msgId = 0;
+			if(message->common.type == MQTT_TYPE_PUBACK) {
+				msgId = message->puback.message_id;
+			} else if(message->common.type == MQTT_TYPE_PUBREC) {
+				msgId = message->pubrec.message_id;
+			}
+
+			if(msgId) {
+				client.onDelivery(msgId, (int)message->common.type);
+			}
+		}
+
+		return 0;
+	}
+
+	/* @deprecated This method is only for compatibility with the previous release and will be removed soon. */
+	static int onPublish(MqttClient& client, mqtt_message_t* message)
+	{
+		if(!message) {
+			return -1;
+		}
+
+		if(message->common.length > MQTT_PAYLOAD_LENGTH) {
+			return -2;
+		}
+
+		if(client.subscriptionCallback) {
+			String topic = String((const char*)message->publish.topic_name.data, message->publish.topic_name.length);
+			String content;
+			if(message->publish.content.data) {
+				content.concat((const char*)message->publish.content.data, message->publish.content.length);
+			}
+			client.subscriptionCallback(topic, content);
+		}
+
+		return 0;
+	}
+#endif
+
+private:
 	URL url;
-	mqtt_broker_handle_t broker;
-	int waitingSize;
-	uint8_t buffer[MQTT_MAX_BUFFER_SIZE + 1];
-	uint8_t* current;
-	int posHeader;
-	MqttStringSubscriptionCallback callback;
-	int keepAlive = 60;
+
+	// callbacks
+	HashMap<mqtt_type_t, MqttDelegate> eventHandler;
+	MqttPayloadParser payloadParser = 0;
+
+	// states
+	MqttClientState state = eMCS_Ready;
+	MqttPayloadParserState payloadState;
+
+	// keep-alives and pings
+	uint16_t keepAlive = 60;
 	int pingRepeatTime = 20;
 	unsigned long lastMessage = 0;
-	HashMap<uint16_t, MqttMessageDeliveredCallback> onDeliveryQueue;
+
+	// messages
+	MqttRequestQueue requestQueue;
+	mqtt_message_t connectMessage;
+	mqtt_message_t* outgoingMessage = nullptr;
+	mqtt_message_t incomingMessage;
+
+	// parsers and serializers
+	static mqtt_serialiser_t serialiser;
+	static mqtt_parser_callbacks_t callbacks;
+	mqtt_parser_t parser;
+
+	// client flags
+	uint8_t flags = 0;
+	/* 7 8 6 5 4 3 2 1 0
+	*                   |
+	*				    --- set when connected ...
+	*/
+
+#ifndef MQTT_NO_COMPAT
+	// @deprecated
+	MqttMessageDeliveredCallback onDelivery = 0;
+	// @deprecated
+	MqttStringSubscriptionCallback subscriptionCallback = 0;
+#endif
 };
 
 /** @} */

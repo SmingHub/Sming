@@ -25,10 +25,10 @@
 # COM_PORT = COM3
 
 ## MacOS / Linux:
-# COM_PORT = /dev/ttyUSB0
+# COM_PORT = /dev/tty.usbserial
 
 ## Com port speed
-#COM_SPEED	= 230400
+# COM_SPEED	= 115200
 
 ## Configure flash parameters (for ESP12-E and other new boards):
 # SPI_MODE = dio

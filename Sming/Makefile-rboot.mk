@@ -8,6 +8,8 @@
 
 ### Defaults ###
 
+SERVER_OTA_PORT ?= 9999
+
 # rBoot options, overwrite them in the projects Makefile-user.mk
 RBOOT_BIG_FLASH  ?= 1
 RBOOT_TWO_ROMS   ?= 0
@@ -236,8 +238,12 @@ EXTRA_INCDIR += $(SMING_HOME)/include $(SMING_HOME)/ $(LWIP_INCDIR) $(SMING_HOME
 USER_LIBDIR  = $(SMING_HOME)/compiler/lib/
 
 # compiler flags using during compilation of source files
-CFLAGS   = -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+CFLAGS   = -Wall -Wundef -Wpointer-arith -Wno-comment -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
            -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DSMING_INCLUDED=1 
+ifneq ($(STRICT),1)
+CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
+endif
+
 # => SDK
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	CFLAGS += -DSDK_INTERNAL
@@ -247,9 +253,9 @@ ifeq ($(SMING_RELEASE),1)
 	#      for full list of optimization options
 	CFLAGS += -Os -DSMING_RELEASE=1
 else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
-	MODULES		 += $(THIRD_PARTY_DIR)/gdbstub
-	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/gdbstub
+	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0
+	MODULES		 += $(THIRD_PARTY_DIR)/esp-gdbstub
+	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/esp-gdbstub
 	STRIP := @true
 else
 	CFLAGS += -Os -g
@@ -257,6 +263,11 @@ else
 endif
 ifeq ($(ENABLE_WPS),1)
    CFLAGS += -DENABLE_WPS=1
+endif
+
+# Flags for compatability with old versions (most of them should disappear with the next major release)
+ifeq ($(MQTT_NO_COMPAT),1)
+	CFLAGS += -DMQTT_NO_COMPAT=1
 endif
 
 #Append debug options
@@ -312,7 +323,7 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBPWM).a
 endif
 
-LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa $(LIBSMING) $(LIBMAIN) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) mqttc wpa $(LIBSMING) $(LIBMAIN) crypto $(LIBPWM) smartconfig $(EXTRA_LIBS)
 ifeq ($(ENABLE_WPS),1)
    LIBS += wps
 endif
@@ -604,11 +615,24 @@ else
 	fi
 endif
 
+flashboot: $(USER_LIBDIR)/lib$(LIBSMING).a $(RBOOT_BIN)
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN)
+	
 flashconfig:
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
 	-$(Q) $(KILL_TERM)
 	$(vecho) "Deleting rBoot config sector"
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x01000 $(SDK_BASE)/bin/blank.bin 
+
+flashapp: all
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x02000 $(RBOOT_ROM_0)
+
+flashfs: $(USER_LIBDIR)/lib$(LIBSMING).a $(SPIFF_BIN_OUT)
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(vecho) "SPIFFS are not enabled!"
+else
+	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
+endif
 
 flash: all
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
@@ -621,6 +645,10 @@ else
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN) 0x02000 $(RBOOT_ROM_0) $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
 endif
 	$(TERMINAL)
+	
+otaserver: all
+	$(vecho) "Starting OTA server for TESTING"
+	$(Q) cd $(FW_BASE) && python -m SimpleHTTPServer $(SERVER_OTA_PORT)
 
 terminal:
 	$(vecho) "Killing Terminal to free $(COM_PORT)"

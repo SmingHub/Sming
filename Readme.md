@@ -48,7 +48,7 @@ esp-open-sdk (v1.5, v2.0, v3.0 **) | :sunny:  | :sunny: | n/a | :sunny: |
 - ** = experimental support
 
 ## Latest Stable Release
-- [Sming V3.7.0](https://github.com/SmingHub/Sming/releases/tag/3.7.0)
+- [Sming V3.7.1](https://github.com/SmingHub/Sming/releases/tag/3.7.1)
 
 
 ## Getting started
@@ -71,9 +71,9 @@ This feature is still **experimental** which means that we do not recommend it i
 - **Custom heap allocation**: (default: OFF) If your application is experiencing heap fragmentation then you can try the [umm_malloc](https://github.com/rhempel/umm_malloc) heap allocation. To enable it compile Sming with `ENABLE_CUSTOM_HEAP=1`. In order to use it in your sample/application make sure to compile the sample with `ENABLE_CUSTOM_HEAP=1`. **Do not enable custom heap allocation and -mforce-l32 compiler flag at the same time**.
 - **Debug information log level and format**: There are four debug levels: debug=3, info=2, warn=1, error=0. Using `DEBUG_VERBOSE_LEVEL` you can set the desired level (0-3). For example `DEBUG_VERBOSE_LEVEL=2` will show only info messages and above. Another make directive is `DEBUG_PRINT_FILENAME_AND_LINE=1` which enables printing the filename and line number of every debug line. This will require extra space on flash. Note: you can compile the Sming library with a set of debug directives and your project with another settings, this way you can control debugging separately for Sming and your application code.
 - **Debug information for custom LWIP**: If you use custom LWIP (see above) some debug information will be printed for critical errors and situations. You can enable all debug information printing using `ENABLE_LWIPDEBUG=1`. To increase debugging for certain areas you can modify debug options in `third-party/esp-open-lwip/include/lwipopts.h`.
-- **Interactive debugging on the device**: (default: OFF) In order to be able to debug live directly on the ESP8266 microcontroller you should re-compile the Sming library and your application with `ENABLE_GDB=1` directive. See [Basic_Debug](https://github.com/SmingHub/Sming/tree/develop/samples/Basic_Debug) sample for more details.
+- **Interactive debugging on the device**: (default: OFF) In order to be able to debug live directly on the ESP8266 microcontroller you should re-compile the Sming library and your application with `ENABLE_GDB=1` directive. See [LiveDebug](https://github.com/SmingHub/Sming/tree/develop/samples/LiveDebug) sample for more details.
 - **CommandExecutor feature**: (default: ON) This feature enables execution of certain commands by registering token handlers for text received via serial, websocket or telnet connection. If this feature is not used additional RAM/Flash can be obtained by setting `ENABLE_CMD_EXECUTOR=0`. This will save ~1KB RAM and ~3KB of flash memory.
-- **SDK 2.1.0+**: (default: OFF) In order to use SDK 2.1 you should set one environment variable before (re)compiling Sming AND applications based on it.  The variable is SDK_BASE and it should point to `$SMING_HOME/third-party/ESP8266_NONOS_SDK`.
+- **SDK 3.0+**: (default: OFF) In order to use SDK 3.0.0 or newer you should set one environment variable before (re)compiling Sming AND applications based on it.  The variable is SDK_BASE and it should point to `$SMING_HOME/third-party/ESP8266_NONOS_SDK`.
 
 For Windows you need to do:
 ```

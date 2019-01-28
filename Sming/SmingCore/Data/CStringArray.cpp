@@ -42,7 +42,7 @@ int CStringArray::indexOf(const char* str) const
 
 const char* CStringArray::getValue(unsigned index) const
 {
-	if(index < stringCount) {
+	if(index < count()) {
 		for(unsigned offset = 0; offset < length(); --index) {
 			const char* s = buffer + offset;
 			if(index == 0)
@@ -52,4 +52,16 @@ const char* CStringArray::getValue(unsigned index) const
 	}
 
 	return nullptr;
+}
+
+unsigned CStringArray::count() const
+{
+	if(stringCount == 0 && length() > 0) {
+		//If array is created by assignment (e.g. CStringsArray csa = "Hello\0World";) then stringCount is not set so set it here
+		for(unsigned offset = 0; offset <= length(); offset++) {
+			if(buffer[offset] == '\0')
+				++stringCount;
+		}
+	}
+	return stringCount;
 }

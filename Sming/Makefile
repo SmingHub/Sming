@@ -17,13 +17,13 @@
 
 ## SMING_HOME sets the path where Sming framework is located.
 ## Windows:
-# SMING_HOME = c:/tools/sming/Sming 
+# SMING_HOME = c:/tools/sming/Sming
 
 # MacOS / Linux
 # SMING_HOME = /opt/esp-open-sdk
 
 ## COM port parameter is reqruied to flash firmware correctly.
-## Windows: 
+## Windows:
 # COM_PORT = COM3
 
 # MacOS / Linux:
@@ -87,7 +87,7 @@ else
       # Default ESP_HOME. Can be overriden.
       ESP_HOME ?= /opt/esp-open-sdk
 
-      include Makefile-macos.mk      
+      include Makefile-macos.mk
   else ifeq ($(UNAME),Linux)
       # Linux Detected
       UNAME := Linux
@@ -140,7 +140,7 @@ COM_SPEED_SERIAL  ?= $(COM_SPEED)
 # By default `debugf` does not print file name and line number. If you want this enabled set the directive below to 1
 DEBUG_PRINT_FILENAME_AND_LINE ?= 0
 
-# Default debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0 
+# Default debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0
 DEBUG_VERBOSE_LEVEL ?= 2
 
 # Disable CommandExecutor functionality if not used and save some ROM and RAM
@@ -178,9 +178,9 @@ MODULES     = system system/helpers Wiring appinit \
 EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
 
 # Place a file that should exist in a submodule that is fetched separately
-# => rboot 
+# => rboot
 THIRD_PARTY_DATA = third-party/rboot/Makefile
-EXTRA_INCDIR += third-party/rboot third-party/rboot/appcode 
+EXTRA_INCDIR += third-party/rboot third-party/rboot/appcode
 
 # => spiffs
 THIRD_PARTY_DATA += third-party/spiffs/makefile
@@ -194,8 +194,18 @@ EXTRA_INCDIR     += third-party/http-parser/
 
 # => websocket-parser
 THIRD_PARTY_DATA += third-party/ws_parser/Makefile
-MODULES              += third-party/ws_parser/
+MODULES          += third-party/ws_parser/
 EXTRA_INCDIR     += third-party/ws_parser/
+
+# mqtt-codec in here...
+THIRD_PARTY_DATA += third-party/mqtt-codec/Makefile
+EXTRA_INCDIR     += third-party/mqtt-codec/src
+CUSTOM_TARGETS   += $(USER_LIBDIR)/libmqttc.a
+
+# => LOCALE
+ifdef LOCALE
+	CFLAGS += -DLOCALE=$(LOCALE)
+endif
 
 # => SDK
 SDK_INTERNAL = 0
@@ -226,7 +236,7 @@ endif
 LIBLWIP = lwip
 ENABLE_CUSTOM_LWIP ?= 1
 ENABLE_ESPCONN ?= 0
-ifeq ($(ENABLE_CUSTOM_LWIP), 0) 
+ifeq ($(ENABLE_CUSTOM_LWIP), 0)
 	EXTRA_INCDIR += system/esp-lwip
 endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
@@ -256,7 +266,7 @@ ifeq ($(LWIP_EXTRA_FLAGS),1)
 endif
 
 # libraries used in this project, mainly provided by the SDK
-LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) wpa main
+LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) mqttc wpa main
 
 ENABLE_CUSTOM_PWM ?= 1
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
@@ -266,10 +276,10 @@ endif
 
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 
+CFLAGS_COMMON = -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS += -Wall -Wundef -Wpointer-arith -Wno-comment \
-			-Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
-         	-D__ets__ -DICACHE_FLASH -DUSE_OPTIMIZE_PRINTF -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1 
+CFLAGS += -Wall -Wundef -Wpointer-arith -Wno-comment $(CFLAGS_COMMON) \
+         	-D__ets__ -DICACHE_FLASH -DUSE_OPTIMIZE_PRINTF -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1
 ifneq ($(STRICT),1)
 CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
 endif
@@ -278,18 +288,24 @@ ifeq ($(SMING_RELEASE),1)
 	#      for full list of optimization options
 	CFLAGS += -Os -DSMING_RELEASE=1 -DLWIP_NOASSERT
 else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
+	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0
 else
 	CFLAGS += -Os -g
 endif
 ifneq ($(MFORCE32),)
-    # Your compiler supports the -mforce-l32 flag which means that 
+    # Your compiler supports the -mforce-l32 flag which means that
     # constants can be stored in flash (program) memory instead of SRAM.
     # See: https://www.arduino.cc/en/Reference/PROGMEM
     CFLAGS += -DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" -mforce-l32
-else 
+else
     CFLAGS += -DPROGMEM_L32=""
 endif
+
+# Flags for compatability with old versions (most of them should disappear with the next major release)
+ifeq ($(MQTT_NO_COMPAT),1)
+	CFLAGS += -DMQTT_NO_COMPAT=1
+endif
+
 #Append debug options
 CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 
@@ -299,7 +315,7 @@ CXXFLAGS += -Wno-reorder
 endif
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-wrap,system_restart_local 
+LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-wrap,system_restart_local
 
 # linker script used for the above linkier step
 LD_PATH     = compiler/ld/
@@ -315,14 +331,14 @@ ifeq ($(ENABLE_SSL),1)
 	THIRD_PARTY_DATA += third-party/axtls-8266/Makefile
 	LIBS += axtls
 	MODULES		 += third-party/axtls-8266/compat third-party/axtls-8266/replacements
-	EXTRA_INCDIR += third-party/axtls-8266 axtls-8266/ssl third-party/axtls-8266/crypto 
+	EXTRA_INCDIR += third-party/axtls-8266 axtls-8266/ssl third-party/axtls-8266/crypto
 	AXTLS_FLAGS = -DLWIP_RAW=1 -DENABLE_SSL=1
-	ifeq ($(SSL_DEBUG),1) # 
+	ifeq ($(SSL_DEBUG),1) #
 		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1 -DAXL_DEBUG=1
 	endif
 	CUSTOM_TARGETS += $(USER_LIBDIR)/libaxtls.a
 #	EXTRA_CFLAGS_AXTLS = -I../../system/include -I../../Wiring
-	CFLAGS += $(AXTLS_FLAGS)  
+	CFLAGS += $(AXTLS_FLAGS)
 	CXXFLAGS += $(AXTLS_FLAGS)
 endif
 
@@ -339,7 +355,7 @@ SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
 AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.s))
 ifeq ($(ENABLE_GDB), 1)
-	AS_SRC += $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S)) 
+	AS_SRC += $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 endif
 C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
@@ -386,11 +402,11 @@ define compile-objects
 $1/%.o: %.s
 	$(vecho) "AS $$<"
 	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-ifeq ($(ENABLE_GDB), 1)	
+ifeq ($(ENABLE_GDB), 1)
 $1/%.o: %.S
 	$(vecho) "AS $$<"
 	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-endif	
+endif
 $1/%.o: %.c $1/%.c.d
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
@@ -401,7 +417,7 @@ $1/%.c.d: %.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -MM -MT $1/$$*.o $$< -o $$@
 $1/%.cpp.d: %.cpp
 	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -MM -MT $1/$$*.o $$< -o $$@
- 
+
 .PRECIOUS: $1/%.c.d $1/%.cpp.d
 endef
 
@@ -409,11 +425,11 @@ endef
 
 all: checkdirs $(APP_AR) tools
 
-ifeq ($(ENABLE_CUSTOM_PWM), 1)	
+ifeq ($(ENABLE_CUSTOM_PWM), 1)
 $(USER_LIBDIR)/libpwm_open.a: third-party/pwm/pwm.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $< -o $(dir $<)/pwm.o
 	$(Q) $(AR) rcs $@ $(dir $<)/pwm.o
-endif 
+endif
 
 ifeq ($(ENABLE_SSL), 1)
 $(USER_LIBDIR)/libaxtls.a:
@@ -423,19 +439,24 @@ endif
 ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 $(USER_LIBDIR)/libmainmm.a: $(addprefix $(SDK_LIBDIR)/,libmain.a)
 	$(vecho) "Enabling custom heap implementation"
-	$(Q) cp $^ $@ 
+	$(Q) cp $^ $@
 	$(Q) $(AR) -d $@ mem_manager.o
 endif
 
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 $(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
-	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
+	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP) $(CFLAGS_COMMON)" all
 endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 $(USER_LIBDIR)/liblwip%.a: third-party/lwip2/Makefile.sming
 	$(Q) $(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" SDK_INTERNAL="$(SDK_INTERNAL)" \
 				 USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
 endif
+
+$(USER_LIBDIR)/libmqttc.a:
+	$(Q) $(MAKE) -C third-party/mqtt-codec MQTT_ENABLE_SERVER=0 MQTT_ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
+			CFLAGS_EXTRA="-Iinclude -I$(SDK_BASE)/include $(CFLAGS_COMMON)" \
+			LIB_FOLDER="$(SMING_HOME)/$(USER_LIBDIR)/" lib
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
@@ -446,7 +467,7 @@ ifeq ($(ENABLE_SSL), 1)
 else
 	$(vecho) "(!) SSL support is not enabled. To enable it type: 'make clean; make ENABLE_SSL=1'"
 endif
-	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/$(LIBSMING).a  
+	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/$(LIBSMING).a
 	$(vecho) "Done"
 
 checkdirs: $(ARDUINO_LIBRARIES) $(THIRD_PARTY_DATA) reload $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
@@ -466,7 +487,7 @@ clean:
 	$(Q) rm -rf $(FW_BASE)
 ifeq ($(ENABLE_SSL), 1)
 	$(Q) -$(MAKE) --no-print-directory -C third-party/axtls-8266 clean -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)" CFLAGS_EXTRA="$(EXTRA_CFLAGS_AXTLS)"
-endif	
+endif
 ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	$(Q) -$(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" clean
 endif
@@ -474,11 +495,11 @@ ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 	$(Q) -$(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" clean
 endif
 
-test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM 
+test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM
 
-docs/wiki/Home.md: 
+docs/wiki/Home.md:
 	$(vecho) "No Wiki submodule found. Using git to fetch it..."
-	$(Q) $(GIT) submodule update --init ../docs/wiki	
+	$(Q) $(GIT) submodule update --init ../docs/wiki
 
 docs/api/error.log:
 ifndef DOXYGEN
@@ -493,32 +514,32 @@ docs/api/sming/index.html: docs/api/error.log
 	$(vecho) "Undocumented parameters: $(shell grep "The following parameters of .* are not documented" $(SMING_HOME)/../docs/api/error.log | wc -l) "
 	$(vecho) "Open in your browser: file://$(SMING_HOME)/../$@"
 
-wiki: docs/wiki/Home.md 
-api: docs/api/sming/index.html 
+wiki: docs/wiki/Home.md
+api: docs/api/sming/index.html
 
 docs: wiki api
 
-third-party/%: 
+third-party/%:
 	$(vecho) "Fetching $(dir $@) ..."
 	$(Q) $(GIT) submodule update --init --recursive $(dir $@)
 	$(Q) touch $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@))
 	$(Q) -cd $(dir $@); $(GIT) apply -v $(patsubst third-party/%/,$(SMING_HOME)/third-party/.patches/%.patch, $(dir $@)) --ignore-whitespace --whitespace=nowarn
 # if the new submodule brings source code files that need to be compiled inside Sming
-# then we need somehow to be able to "see" these new files. 
+# then we need somehow to be able to "see" these new files.
 # For now we solve this by "reloading" the makefile after fetching a module.
     RELOAD_MKFILE=1
 
-Libraries/%: 
+Libraries/%:
 	$(vecho) "Fetching Arduino Library $(dir $@) ..."
 	$(Q) $(GIT) submodule update --init --recursive $(dir $@)
 	$(Q) touch $(patsubst Libraries/%/,Libraries/.patches/%.patch, $(dir $@))
 	$(Q) -cd $(dir $@); $(GIT) apply -v $(patsubst Libraries/%/,$(SMING_HOME)/Libraries/.patches/%.patch, $(dir $@)) --ignore-whitespace --whitespace=nowarn
 # if the new submodule brings source code files that need to be compiled inside Sming
-# then we need somehow to be able to "see" these new files. 
+# then we need somehow to be able to "see" these new files.
 # For now we solve this by "reloading" the makefile after fetching a module.
     RELOAD_MKFILE=1
 
-reload: 
+reload:
 	$(Q) if [ $(RELOAD_MKFILE) -eq 1 ]; then \
         $(MAKE) -C $(SMING_HOME) $(MAKECMDGOALS) RELOAD_MKFILE=0; \
     fi
@@ -532,16 +553,16 @@ samples-clean:
 	$(Q) for dir in $(SAMPLES_DIRS); do \
           $(MAKE) -C $(SMING_HOME)/../samples/$$dir clean; \
         done
-        
+
 third-party-clean:
 	$(Q) for dir in $(THIRD_PARTY_DIRS); do \
           rm -rf third-party/$$dir; \
         done
-	$(Q) $(GIT) checkout third-party     
-	
+	$(Q) $(GIT) checkout third-party
+
 libraries-clean:
 	$(Q) rm -rf Libraries
-	$(Q) $(GIT) checkout Libraries 
+	$(Q) $(GIT) checkout Libraries
 
 tools: third-party/spiffs/makefile $(TOOLS_DIRS)
 
@@ -557,7 +578,7 @@ tools-clean:
 		  if [ ! -d $(SMING_HOME)/../tools/$$dir ]; then continue; fi; \
           $(MAKE) --no-print-directory -C $(SMING_HOME)/../tools/$$dir clean V=$(V); \
         done
-       
+
 dist-clean: clean samples-clean third-party-clean libraries-clean tools-clean
 	$(Q) for file in $(shell ls $(USER_LIBDIR)/lib*.a ); do \
  	   rm $$file; \

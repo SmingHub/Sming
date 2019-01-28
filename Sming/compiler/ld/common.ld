@@ -1,6 +1,6 @@
-/*  
+/*
     common.ld
-*/    
+*/
 
 PHDRS
 {
@@ -81,11 +81,11 @@ SECTIONS
     *(.jcr)
     _data_end = ABSOLUTE(.);
   } >dram0_0_seg :dram0_0_phdr
-  
+
   .irom0.text : ALIGN(4)
   {
     _irom0_text_start = ABSOLUTE(.);
-    
+
     *libsmartconfig.a:(.literal .text .literal.* .text.*)
     *libstdc++.a:(.literal .text .literal.* .text.*)
     *liblwip_open.a:(.literal .text .literal.* .text.*)
@@ -105,21 +105,22 @@ SECTIONS
     *libwpa.a:(.literal.* .text.*)
     *libwpa2.a:(.literal.* .text.*)
     *libwps.a:(.literal.* .text.*)
-    
+
     *libmbedtls.a:(.literal.* .text.*)
 
     *libm.a:(.literal .text .literal.* .text.*)
 
-     *(.rodata._ZTV*) /* C++ vtables */    
+     *(.rodata._ZTV*) /* C++ vtables */
     *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text .irom.debug.*)
     out/build/app_app.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
   *libsming.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
   *libsmingssl.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
+  *libmqttc.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
 
     _irom0_text_end = ABSOLUTE(.);
     _flash_code_end = ABSOLUTE(.);
   } >irom0_0_seg :irom0_0_phdr
-  
+
   .text : ALIGN(4)
   {
     _stext = .;
@@ -159,7 +160,7 @@ SECTIONS
     _text_end = ABSOLUTE(.);
     _etext = .;
   } >iram1_0_seg :iram1_0_phdr
-  
+
   .rodata : ALIGN(4)
   {
     _rodata_start = ABSOLUTE(.);
@@ -202,8 +203,8 @@ SECTIONS
     _bss_table_end = ABSOLUTE(.);
     _rodata_end = ABSOLUTE(.);
   } >dram0_0_seg :dram0_0_phdr
-  
-  
+
+
   .bss ALIGN(8) (NOLOAD) : ALIGN(4)
   {
     . = ALIGN (8);
