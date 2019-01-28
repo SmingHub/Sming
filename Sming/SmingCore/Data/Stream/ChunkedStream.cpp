@@ -10,7 +10,7 @@
 
 #include "ChunkedStream.h"
 
-ChunkedStream::ChunkedStream(ReadWriteStream* stream, size_t resultSize /* = 512 */)
+ChunkedStream::ChunkedStream(IDataSourceStream* stream, size_t resultSize /* = 512 */)
 	: StreamTransformer(stream, nullptr, resultSize, resultSize - 12)
 {
 	transformCallback = std::bind(&ChunkedStream::encode, this, std::placeholders::_1, std::placeholders::_2,

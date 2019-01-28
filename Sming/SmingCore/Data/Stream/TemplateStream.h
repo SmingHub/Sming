@@ -37,7 +37,7 @@ enum TemplateExpandState {
  *  @{
  */
 
-class TemplateStream : public ReadWriteStream
+class TemplateStream : public IDataSourceStream
 {
 public:
 	/** @brief Create a template stream

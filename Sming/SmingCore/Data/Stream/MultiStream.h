@@ -8,9 +8,9 @@
 #ifndef SMINGCORE_DATA_STREAM_MULTISTREAM_H_
 #define SMINGCORE_DATA_STREAM_MULTISTREAM_H_
 
-#include "ReadWriteStream.h"
+#include "DataSourceStream.h"
 
-class MultiStream : public ReadWriteStream
+class MultiStream : public IDataSourceStream
 {
 public:
 	virtual ~MultiStream();
@@ -29,19 +29,6 @@ public:
 		return -1;
 	}
 
-	/** @brief  Write a single char to stream
-	 *  @param  charToWrite Char to write to the stream
-	 *  @retval size_t Quantity of chars written to stream (always 1)
-	 */
-	virtual size_t write(uint8_t charToWrite);
-
-	/** @brief  Write chars to stream
-	 *  @param  buffer Pointer to buffer to write to the stream
-	 *  @param  size Quantity of chars to written
-	 *  @retval size_t Quantity of chars written to stream
-	 */
-	virtual size_t write(const uint8_t* buffer, size_t size);
-
 	//Use base class documentation
 	virtual uint16_t readMemoryBlock(char* data, int bufSize);
 
@@ -52,7 +39,7 @@ public:
 	virtual bool isFinished();
 
 protected:
-	virtual ReadWriteStream* getNextStream() = 0;
+	virtual IDataSourceStream* getNextStream() = 0;
 
 	virtual bool onCompleted()
 	{
@@ -66,8 +53,8 @@ protected:
 	}
 
 protected:
-	ReadWriteStream* stream = nullptr;
-	ReadWriteStream* nextStream = nullptr;
+	IDataSourceStream* stream = nullptr;
+	IDataSourceStream* nextStream = nullptr;
 
 	bool finished = false;
 };

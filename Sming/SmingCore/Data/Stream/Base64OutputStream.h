@@ -26,18 +26,17 @@ class Base64OutputStream : public StreamTransformer
 public:
 	/**
 	 * @brief Stream that transforms bytes of data into base64 data stream
-	 * @param ReadWriteStream *stream - source stream
-	 * @param size_t resultSize - the size of the intermediate buffer.
-	 * 							- it will be created once per object, reused multiple times and kept until the end of the object
+	 * @param stream - source stream
+	 * @param resultSize The size of the intermediate buffer, created once per object and reused multiple times
 	 */
-	Base64OutputStream(ReadWriteStream* stream, size_t resultSize = 500);
+	Base64OutputStream(IDataSourceStream* stream, size_t resultSize = 500);
 
 	/**
 	 * Encodes a chunk of data into base64. Keeps a state of the progress.
-	 * @param uint8_t* source - the incoming data
-	 * @param size_t sourceLength -length of the incoming data
-	 * @param uint8_t* target - the result data. The pointer must point to an already allocated memory
-	 * @param int* targetLength - the length of the result data
+	 * @param source The incoming data
+	 * @param sourceLength Length of the incoming data
+	 * @param target The result data. The pointer must point to an already allocated memory
+	 * @param targetLength The length of the result data
 	 *
 	 * @return the length of the encoded target.
 	 */

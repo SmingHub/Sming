@@ -21,9 +21,10 @@ MultipartStream::~MultipartStream()
 
 bool MultipartStream::onCompleted()
 {
-	stream = new MemoryDataStream();
+	auto mem = new MemoryDataStream();
 	String line = F("\r\n--") + getBoundary() + F("--\r\n");
-	stream->print(line);
+	mem->print(line);
+	stream = mem;
 
 	return true;
 }

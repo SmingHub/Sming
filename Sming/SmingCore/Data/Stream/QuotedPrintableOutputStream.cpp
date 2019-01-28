@@ -37,7 +37,7 @@ static int quotedPrintableTransformer(uint8_t* source, size_t sourceLength, uint
 	return count;
 }
 
-QuotedPrintableOutputStream::QuotedPrintableOutputStream(ReadWriteStream* stream, size_t resultSize /* = 512 */)
+QuotedPrintableOutputStream::QuotedPrintableOutputStream(IDataSourceStream* stream, size_t resultSize /* = 512 */)
 	: StreamTransformer(stream, nullptr, resultSize, resultSize / 2)
 
 {

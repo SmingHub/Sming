@@ -14,19 +14,15 @@
 #define _SMING_CORE_HTTP_RESPONSE_H_
 
 #include "HttpCommon.h"
-#include "Data/Stream/TemplateStream.h"
 #include "Data/Stream/ReadWriteStream.h"
-#include "Network/Http/HttpHeaders.h"
+#include "HttpHeaders.h"
 #include "FileSystem.h"
 
 class JsonObjectStream; // << TODO: deprecated and should be removed in the next version
+class TemplateStream;
 
 class HttpResponse
 {
-	friend class HttpClient;
-	friend class HttpConnection;
-	friend class HttpServerConnection;
-
 public:
 	~HttpResponse();
 
@@ -79,23 +75,45 @@ public:
 
 	// @end deprecated
 
-	// Send Datastream, can be called with Classes derived from
-	bool sendDataStream(ReadWriteStream* newDataStream, enum MimeType type)
+	/** @brief Send data from the given stream object
+	 *  @param newDataStream
+	 *  @param type
+	 *  @retval false on error
+	 */
+	bool sendDataStream(IDataSourceStream* newDataStream, enum MimeType type)
 	{
 		return sendDataStream(newDataStream, ContentType::toString(type));
 	}
 
-	// Send Datastream, can be called with Classes derived from
-	bool sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType = nullptr);
+	/** @brief Send data from the given stream object
+	 *  @param newDataStream
+	 *  @param reqContentType
+	 *  @retval on error returns false and stream will have been destroyed so any external
+	 *  references to it must be invalidated.
+	 *  @note all data is submitted via stream so called by internal routines
+	 */
+	bool sendDataStream(IDataSourceStream* newDataStream, const String& reqContentType = nullptr);
 
 	String getBody();
 
 	void reset();
 
+	/*
+	 * Called by connection to specify where incoming response data is written.
+	 * If this is null or not called then a circular buffer is used. See bodyReceived().
+	 */
+	void setBuffer(ReadWriteStream* stream);
+
+	void freeStreams();
+
+private:
+	void setBodyStream(IDataSourceStream* stream);
+
 public:
-	int code;
+	unsigned code = HTTP_STATUS_OK; ///< The HTTP status response code
 	HttpHeaders headers;
-	ReadWriteStream* stream = nullptr;
+	ReadWriteStream* buffer = nullptr;   ///< Internal stream for storing strings and receiving responses
+	IDataSourceStream* stream = nullptr; ///< The body stream
 };
 
 #endif /* _SMING_CORE_HTTP_RESPONSE_H_ */

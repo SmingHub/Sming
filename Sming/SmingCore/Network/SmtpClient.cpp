@@ -75,18 +75,12 @@ SmtpClient::SmtpClient(bool autoDestroy /* =false */) : TcpClient(autoDestroy), 
 
 SmtpClient::~SmtpClient()
 {
-	// TODO: clear all pointers...
-	delete stream;
 	delete outgoingMail;
-	stream = nullptr;
 	outgoingMail = nullptr;
-	do {
-		MailMessage* mail = mailQ.dequeue();
-		if(mail == nullptr) {
-			break;
-		}
-		delete mail;
-	} while(1);
+
+	while(mailQ.count() != 0) {
+		delete mailQ.dequeue();
+	}
 }
 
 bool SmtpClient::connect(const URL& url)

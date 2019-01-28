@@ -24,7 +24,7 @@
 
 typedef struct {
 	HttpHeaders* headers = nullptr;
-	ReadWriteStream* stream = nullptr;
+	IDataSourceStream* stream = nullptr;
 } HttpPartResult;
 
 typedef Delegate<HttpPartResult()> HttpPartProducerDelegate;
@@ -44,7 +44,7 @@ public:
 	const char* getBoundary();
 
 protected:
-	virtual ReadWriteStream* getNextStream()
+	virtual IDataSourceStream* getNextStream()
 	{
 		result = producer();
 		return result.stream;

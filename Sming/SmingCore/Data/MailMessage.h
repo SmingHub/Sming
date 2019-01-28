@@ -54,7 +54,7 @@ public:
 	 * @param Stream& stream
 	 * @param MimeType mime
 	 */
-	MailMessage& setBody(ReadWriteStream* stream, MimeType mime = MIME_TEXT);
+	MailMessage& setBody(IDataSourceStream* stream, MimeType mime = MIME_TEXT);
 
 	/**
 	 * @brief Adds attachment to the email
@@ -64,20 +64,15 @@ public:
 	/**
 	 * @brief Adds attachment to the email
 	 */
-	MailMessage& addAttachment(ReadWriteStream* stream, MimeType mime, const String& filename = "");
+	MailMessage& addAttachment(IDataSourceStream* stream, MimeType mime, const String& filename = "");
 
 	/**
 	 * @brief Adds attachment to the email
 	 */
-	MailMessage& addAttachment(ReadWriteStream* stream, const String& mime, const String& filename = "");
-
-	/**
-	 * @brief Get the generated data stream
-	 */
-	ReadWriteStream* getData();
+	MailMessage& addAttachment(IDataSourceStream* stream, const String& mime, const String& filename = "");
 
 private:
-	ReadWriteStream* stream = nullptr;
+	IDataSourceStream* stream = nullptr;
 	HttpHeaders headers;
 	Vector<HttpPartResult> attachments;
 };

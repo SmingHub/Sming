@@ -96,7 +96,7 @@ String HttpRequest::getBody()
 	return ret;
 }
 
-ReadWriteStream* HttpRequest::getBodyStream()
+IDataSourceStream* HttpRequest::getBodyStream()
 {
 	return bodyStream;
 }
@@ -124,7 +124,7 @@ HttpRequest* HttpRequest::setBody(uint8_t* rawData, size_t length)
 	return setBody(memory);
 }
 
-HttpRequest* HttpRequest::setBody(ReadWriteStream* stream)
+HttpRequest* HttpRequest::setBody(IDataSourceStream* stream)
 {
 	if(bodyStream != nullptr) {
 		debug_e("HttpRequest::setBody: Discarding already set stream!");

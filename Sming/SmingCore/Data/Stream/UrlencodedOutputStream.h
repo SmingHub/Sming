@@ -21,12 +21,12 @@
  *  @{
  */
 
-class UrlencodedOutputStream : public ReadWriteStream
+class UrlencodedOutputStream : public IDataSourceStream
 {
 public:
 	/**
 	 * @brief Represents key-value pairs as urlencoded string
-	 * @param const HttpParams& params - the key-value parameters
+	 * @param params The key-value parameters
 	 */
 	UrlencodedOutputStream(const HttpParams& params);
 
@@ -47,25 +47,6 @@ public:
 	int available()
 	{
 		return stream.available();
-	}
-
-	/** @brief  Write a single char to stream
-	 *  @param  charToWrite Char to write to the stream
-	 *  @retval size_t Quantity of chars written to stream (always 1)
-	 */
-	virtual size_t write(uint8_t charToWrite)
-	{
-		return 0;
-	}
-
-	/** @brief  Write chars to stream
-	 *  @param  buffer Pointer to buffer to write to the stream
-	 *  @param  size Quantity of chars to written
-	 *  @retval size_t Quantity of chars written to stream
-	 */
-	virtual size_t write(const uint8_t* buffer, size_t size)
-	{
-		return 0;
 	}
 
 	//Use base class documentation
