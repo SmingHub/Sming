@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: DateTime Directory Reference</title>
+<title>Sming Framework API: Provides MQTT payload parser</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('dir_466d4fc1770ef5f2bd42421dc5f5ba5b.html','');});
+$(document).ready(function(){initNavTree('group__mqttpayload.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -97,22 +97,71 @@ $(document).ready(function(){initNavTree('dir_466d4fc1770ef5f2bd42421dc5f5ba5b.h
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#define-members">Macros</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">DateTime Directory Reference</div>  </div>
+<div class="title">Provides MQTT payload parser</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>MQTT streaming processor for the payload data of a PUBLISH message.  
+<a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
-Files</h2></td></tr>
-<tr class="memitem:DateTime_8h"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><b>DateTime.h</b> <a href="DateTime_8h_source.html">[code]</a></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMqttPayloadParserState.html">MqttPayloadParserState</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:gad941e8b880a5580e628c3f368c7b0a12"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad941e8b880a5580e628c3f368c7b0a12"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_PAYLOAD_PARSER_START</b>&#160;&#160;&#160;-1</td></tr>
+<tr class="separator:gad941e8b880a5580e628c3f368c7b0a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga659b25440bcf65598a633c72dcb8d306"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga659b25440bcf65598a633c72dcb8d306"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_PAYLOAD_PARSER_END</b>&#160;&#160;&#160;-2</td></tr>
+<tr class="separator:ga659b25440bcf65598a633c72dcb8d306"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4fefde643a3cd6899a58dd183a5e19d8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4fefde643a3cd6899a58dd183a5e19d8"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_PAYLOAD_LENGTH</b>&#160;&#160;&#160;1024</td></tr>
+<tr class="separator:ga4fefde643a3cd6899a58dd183a5e19d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ga75ebca39fa3a961b5d4b9f8ec9930b08"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; int(<a class="el" href="structMqttPayloadParserState.html">MqttPayloadParserState</a> <br class="typebreak"/>
+&amp;state, mqtt_message_t <br class="typebreak"/>
+*message, const char *buffer, <br class="typebreak"/>
+int length)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mqttpayload.html#ga75ebca39fa3a961b5d4b9f8ec9930b08">MqttPayloadParser</a></td></tr>
+<tr class="separator:ga75ebca39fa3a961b5d4b9f8ec9930b08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga547a1ece8393ab953ad810f63b027325"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga547a1ece8393ab953ad810f63b027325"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>defaultPayloadParser</b> (<a class="el" href="structMqttPayloadParserState.html">MqttPayloadParserState</a> &amp;state, mqtt_message_t *message, const char *buffer, int length)</td></tr>
+<tr class="separator:ga547a1ece8393ab953ad810f63b027325"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<p>MQTT streaming processor for the payload data of a PUBLISH message. </p>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="ga75ebca39fa3a961b5d4b9f8ec9930b08"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt;int(<a class="el" href="structMqttPayloadParserState.html">MqttPayloadParserState</a>&amp; state, mqtt_message_t* message, const char* buffer, int length)&gt; <a class="el" href="group__mqttpayload.html#ga75ebca39fa3a961b5d4b9f8ec9930b08">MqttPayloadParser</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>A payload parser must return 0 on success </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_b4c9897f718d9414148b24a4e5afb621.html">Sming</a></li><li class="navelem"><a class="el" href="dir_4f9dd49743b823308b5933acfb94bd76.html">Services</a></li><li class="navelem"><a class="el" href="dir_466d4fc1770ef5f2bd42421dc5f5ba5b.html">DateTime</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

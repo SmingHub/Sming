@@ -128,66 +128,59 @@ Inheritance diagram for MqttClient:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aca826499db4be9e37d7fff152920c2c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aca826499db4be9e37d7fff152920c2c7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MqttClient</b> (bool autoDestruct=false)</td></tr>
-<tr class="separator:aca826499db4be9e37d7fff152920c2c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae81fd0caf267d95579f2b17689a94b9d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#ae81fd0caf267d95579f2b17689a94b9d">MqttClient</a> (<a class="el" href="classString.html">String</a> serverHost, int serverPort, <a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a> callback=NULL)</td></tr>
-<tr class="memdesc:ae81fd0caf267d95579f2b17689a94b9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an MQTT client.  <a href="#ae81fd0caf267d95579f2b17689a94b9d">More...</a><br/></td></tr>
-<tr class="separator:ae81fd0caf267d95579f2b17689a94b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96ab456e6b4d872eddf26e7e454dd2de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a96ab456e6b4d872eddf26e7e454dd2de">MqttClient</a> (<a class="el" href="classIPAddress.html">IPAddress</a> serverIp, int serverPort, <a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a> callback=NULL)</td></tr>
-<tr class="memdesc:a96ab456e6b4d872eddf26e7e454dd2de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an MQTT client.  <a href="#a96ab456e6b4d872eddf26e7e454dd2de">More...</a><br/></td></tr>
-<tr class="separator:a96ab456e6b4d872eddf26e7e454dd2de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08119a1be647d78053ded9956c8a4c06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a08119a1be647d78053ded9956c8a4c06">setCallback</a> (<a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a> subscriptionCallback=NULL)</td></tr>
-<tr class="memdesc:a08119a1be647d78053ded9956c8a4c06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provide a funcion to be called when a message is received from the broker.  <a href="#a08119a1be647d78053ded9956c8a4c06">More...</a><br/></td></tr>
-<tr class="separator:a08119a1be647d78053ded9956c8a4c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf4a81cdeeaeaa10ce6ade5471919688"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf4a81cdeeaeaa10ce6ade5471919688"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setKeepAlive</b> (int seconds)</td></tr>
-<tr class="separator:abf4a81cdeeaeaa10ce6ade5471919688"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40c240c945c2d9b8f6221d59120c30e7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a40c240c945c2d9b8f6221d59120c30e7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setPingRepeatTime</b> (int seconds)</td></tr>
+<tr class="memitem:a132c2998607306a0fd79a75134326786"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a132c2998607306a0fd79a75134326786"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MqttClient</b> (bool withDefaultPayloadParser=true, bool autoDestruct=false)</td></tr>
+<tr class="separator:a132c2998607306a0fd79a75134326786"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af562b6cd9f6cdc189f22d0ae8ead7446"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#af562b6cd9f6cdc189f22d0ae8ead7446">setKeepAlive</a> (uint16_t seconds)</td></tr>
+<tr class="separator:af562b6cd9f6cdc189f22d0ae8ead7446"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40c240c945c2d9b8f6221d59120c30e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a40c240c945c2d9b8f6221d59120c30e7">setPingRepeatTime</a> (int seconds)</td></tr>
 <tr class="separator:a40c240c945c2d9b8f6221d59120c30e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa0e59ce9d22a30b6079ca597ab03881"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaa0e59ce9d22a30b6079ca597ab03881"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>setWill</b> (const <a class="el" href="classString.html">String</a> &amp;topic, const <a class="el" href="classString.html">String</a> &amp;message, int QoS, bool retained=false)</td></tr>
-<tr class="separator:aaa0e59ce9d22a30b6079ca597ab03881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7598a2fad17cafcbcb55697eb4c9a947"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a7598a2fad17cafcbcb55697eb4c9a947">setWill</a> (const <a class="el" href="classString.html">String</a> &amp;topic, const <a class="el" href="classString.html">String</a> &amp;message, uint8_t flags=0)</td></tr>
+<tr class="separator:a7598a2fad17cafcbcb55697eb4c9a947"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a894bac3f513eec987e979ecf2b050797"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a894bac3f513eec987e979ecf2b050797">connect</a> (const <a class="el" href="classURL.html">URL</a> &amp;url, const <a class="el" href="classString.html">String</a> &amp;uniqueClientName, uint32_t sslOptions=0)</td></tr>
 <tr class="memdesc:a894bac3f513eec987e979ecf2b050797"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect to a MQTT server.  <a href="#a894bac3f513eec987e979ecf2b050797">More...</a><br/></td></tr>
 <tr class="separator:a894bac3f513eec987e979ecf2b050797"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cd10cecb2ca557b7d77e2e6a4d50116"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a3cd10cecb2ca557b7d77e2e6a4d50116">connect</a> (const <a class="el" href="classString.html">String</a> &amp;clientName, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="memdesc:a3cd10cecb2ca557b7d77e2e6a4d50116"><td class="mdescLeft">&#160;</td><td class="mdescRight">connect  <a href="#a3cd10cecb2ca557b7d77e2e6a4d50116">More...</a><br/></td></tr>
-<tr class="separator:a3cd10cecb2ca557b7d77e2e6a4d50116"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6ee6d98c3810d5f3ef6b8f593bbd4c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#aa6ee6d98c3810d5f3ef6b8f593bbd4c5">connect</a> (const <a class="el" href="classString.html">String</a> &amp;clientName, const <a class="el" href="classString.html">String</a> &amp;username, const <a class="el" href="classString.html">String</a> &amp;password, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
-<tr class="memdesc:aa6ee6d98c3810d5f3ef6b8f593bbd4c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">connect  <a href="#aa6ee6d98c3810d5f3ef6b8f593bbd4c5">More...</a><br/></td></tr>
-<tr class="separator:aa6ee6d98c3810d5f3ef6b8f593bbd4c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae79eaa6ffbd4b60073660f19372bb231"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae79eaa6ffbd4b60073660f19372bb231"></a>
-__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>isProcessing</b> ()</td></tr>
-<tr class="separator:ae79eaa6ffbd4b60073660f19372bb231"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af70295d93a6c8e7f7a3d7130522ac81d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af70295d93a6c8e7f7a3d7130522ac81d"></a>
-__forceinline TcpClientState&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectionState</b> ()</td></tr>
-<tr class="separator:af70295d93a6c8e7f7a3d7130522ac81d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e2571378d6466093b36d411472d0e75"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8e2571378d6466093b36d411472d0e75"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>publish</b> (<a class="el" href="classString.html">String</a> topic, <a class="el" href="classString.html">String</a> message, bool retained=false)</td></tr>
-<tr class="separator:a8e2571378d6466093b36d411472d0e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4172160ac5d247bdb31e23238e8c324a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4172160ac5d247bdb31e23238e8c324a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>publishWithQoS</b> (<a class="el" href="classString.html">String</a> topic, <a class="el" href="classString.html">String</a> message, int QoS, bool retained=false, <a class="el" href="classDelegate.html">MqttMessageDeliveredCallback</a> onDelivery=NULL)</td></tr>
-<tr class="separator:a4172160ac5d247bdb31e23238e8c324a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cd4a6d370f3a66c906ad25f9c6f8aed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5cd4a6d370f3a66c906ad25f9c6f8aed"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>publish</b> (const <a class="el" href="classString.html">String</a> &amp;topic, const <a class="el" href="classString.html">String</a> &amp;message, uint8_t flags=0)</td></tr>
+<tr class="separator:a5cd4a6d370f3a66c906ad25f9c6f8aed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c35d5aa0d8022437215305972a4e901"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6c35d5aa0d8022437215305972a4e901"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>publish</b> (const <a class="el" href="classString.html">String</a> &amp;topic, <a class="el" href="classReadWriteStream.html">ReadWriteStream</a> *stream, uint8_t flags=0)</td></tr>
+<tr class="separator:a6c35d5aa0d8022437215305972a4e901"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6aac80a8d8f338be7b4738f5a3c97e09"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6aac80a8d8f338be7b4738f5a3c97e09"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>subscribe</b> (const <a class="el" href="classString.html">String</a> &amp;topic)</td></tr>
 <tr class="separator:a6aac80a8d8f338be7b4738f5a3c97e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ef860b229d3dd45e1b0a8b4cecb0736"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ef860b229d3dd45e1b0a8b4cecb0736"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>unsubscribe</b> (const <a class="el" href="classString.html">String</a> &amp;topic)</td></tr>
 <tr class="separator:a0ef860b229d3dd45e1b0a8b4cecb0736"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2e6443bfc4028151e4cfa34b5b1ba53"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2e6443bfc4028151e4cfa34b5b1ba53"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setEventHandler</b> (mqtt_type_t type, MqttDelegate handler)</td></tr>
+<tr class="separator:ae2e6443bfc4028151e4cfa34b5b1ba53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a6322f080933d6ea0fd728285cb7916"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a0a6322f080933d6ea0fd728285cb7916">setPayloadParser</a> (<a class="el" href="group__mqttpayload.html#ga75ebca39fa3a961b5d4b9f8ec9930b08">MqttPayloadParser</a> payloadParser=0)</td></tr>
+<tr class="separator:a0a6322f080933d6ea0fd728285cb7916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36d7528a67eb83fef83c6d03c48c521f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a36d7528a67eb83fef83c6d03c48c521f">setConnectedHandler</a> (MqttDelegate handler)</td></tr>
+<tr class="separator:a36d7528a67eb83fef83c6d03c48c521f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb671cdea2e74aa283ee3986ef42f9c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#aeb671cdea2e74aa283ee3986ef42f9c9">setPublishedHandler</a> (MqttDelegate handler)</td></tr>
+<tr class="separator:aeb671cdea2e74aa283ee3986ef42f9c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56c47a26aad91556456f2ff19f0401b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a56c47a26aad91556456f2ff19f0401b2">setMessageHandler</a> (MqttDelegate handler)</td></tr>
+<tr class="separator:a56c47a26aad91556456f2ff19f0401b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8164833a5dbe4db21c2c5058020e625a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a8164833a5dbe4db21c2c5058020e625a">setDisconnectHandler</a> (<a class="el" href="classDelegate.html">TcpClientCompleteDelegate</a> handler)</td></tr>
+<tr class="separator:a8164833a5dbe4db21c2c5058020e625a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa0e59ce9d22a30b6079ca597ab03881"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#aaa0e59ce9d22a30b6079ca597ab03881">setWill</a> (const <a class="el" href="classString.html">String</a> &amp;topic, const <a class="el" href="classString.html">String</a> &amp;message, int QoS, bool retained=false)</td></tr>
+<tr class="separator:aaa0e59ce9d22a30b6079ca597ab03881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3421fa426b409d7951c368306f321f9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#ad3421fa426b409d7951c368306f321f9">publishWithQoS</a> (const <a class="el" href="classString.html">String</a> &amp;topic, const <a class="el" href="classString.html">String</a> &amp;message, int QoS, bool retained=false, <a class="el" href="classDelegate.html">MqttMessageDeliveredCallback</a> onDelivery=NULL)</td></tr>
+<tr class="separator:ad3421fa426b409d7951c368306f321f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08119a1be647d78053ded9956c8a4c06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMqttClient.html#a08119a1be647d78053ded9956c8a4c06">setCallback</a> (<a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a> subscriptionCallback=NULL)</td></tr>
+<tr class="memdesc:a08119a1be647d78053ded9956c8a4c06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provide a function to be called when a message is received from the broker.  <a href="#a08119a1be647d78053ded9956c8a4c06">More...</a><br/></td></tr>
+<tr class="separator:a08119a1be647d78053ded9956c8a4c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a5d4c0cc4c7c380205d975dbcb55fcd3d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d4c0cc4c7c380205d975dbcb55fcd3d"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onReceive</b> (pbuf *buf)</td></tr>
-<tr class="separator:a5d4c0cc4c7c380205d975dbcb55fcd3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93c29106c69c1d228b53129d993badf4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a93c29106c69c1d228b53129d993badf4"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onReadyToSendData</b> (TcpConnectionEvent sourceEvent)</td></tr>
 <tr class="separator:a93c29106c69c1d228b53129d993badf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a515cf9e00ae813a7dbfa172a081db6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a515cf9e00ae813a7dbfa172a081db6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>debugPrintResponseType</b> (int type, int len)</td></tr>
-<tr class="separator:a6a515cf9e00ae813a7dbfa172a081db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c79a41b75ec98bb4f84c3ebdcc43fca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4c79a41b75ec98bb4f84c3ebdcc43fca"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onFinished</b> (TcpClientState finishState)</td></tr>
+<tr class="separator:a4c79a41b75ec98bb4f84c3ebdcc43fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b3b36c4859145c5686126d4051e33b7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6b3b36c4859145c5686126d4051e33b7"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (<a class="el" href="classString.html">String</a> server, int port, boolean useSsl=false, uint32_t sslOptions=0)</td></tr>
 <tr class="separator:a6b3b36c4859145c5686126d4051e33b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -215,18 +208,24 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> (const char 
 <tr class="memitem:a8dd63ab71d144b13b50a1f3b794df6b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8dd63ab71d144b13b50a1f3b794df6b3"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendString</b> (const <a class="el" href="classString.html">String</a> &amp;data, bool forceCloseAfterSent=false)</td></tr>
 <tr class="separator:a8dd63ab71d144b13b50a1f3b794df6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af97510bea711663fbe4803829561c968"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af97510bea711663fbe4803829561c968"></a>
+__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>isProcessing</b> ()</td></tr>
+<tr class="separator:af97510bea711663fbe4803829561c968"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab43f1c197e419d8797afeb3dec22f3c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab43f1c197e419d8797afeb3dec22f3c1"></a>
+__forceinline TcpClientState&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectionState</b> ()</td></tr>
+<tr class="separator:ab43f1c197e419d8797afeb3dec22f3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae74805076dbab04337d9380f747f3a79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae74805076dbab04337d9380f747f3a79"></a>
 virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onConnected</b> (err_t err)</td></tr>
 <tr class="separator:ae74805076dbab04337d9380f747f3a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab53a0cb83da5446192093340b0fe1878"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab53a0cb83da5446192093340b0fe1878"></a>
+virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onReceive</b> (pbuf *buf)</td></tr>
+<tr class="separator:ab53a0cb83da5446192093340b0fe1878"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77d3f60c92cf69adac748389b8bfe1cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a77d3f60c92cf69adac748389b8bfe1cb"></a>
 virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>onSent</b> (uint16_t len)</td></tr>
 <tr class="separator:a77d3f60c92cf69adac748389b8bfe1cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a250c3c5bcefeed7f40b7b18d72fa765e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a250c3c5bcefeed7f40b7b18d72fa765e"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onError</b> (err_t err)</td></tr>
 <tr class="separator:a250c3c5bcefeed7f40b7b18d72fa765e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15313b195b32d51e2b4db5701d0ecbab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a15313b195b32d51e2b4db5701d0ecbab"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onFinished</b> (TcpClientState finishState)</td></tr>
-<tr class="separator:a15313b195b32d51e2b4db5701d0ecbab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a162be33aa3e851eb92ccd361f64c6706"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a162be33aa3e851eb92ccd361f64c6706"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>pushAsyncPart</b> ()</td></tr>
 <tr class="separator:a162be33aa3e851eb92ccd361f64c6706"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -272,9 +271,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (tcp_p
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:af12a176a75e3993beea3e9e260f785ce"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af12a176a75e3993beea3e9e260f785ce"></a>
-static int&#160;</td><td class="memItemRight" valign="bottom"><b>staticSendPacket</b> (void *userInfo, const void *buf, unsigned int count)</td></tr>
-<tr class="separator:af12a176a75e3993beea3e9e260f785ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62aaab47c81466e17dd2ca52f5c12368"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a62aaab47c81466e17dd2ca52f5c12368"></a>
 static err_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticOnConnected</b> (void *arg, tcp_pcb *tcp, err_t err)</td></tr>
 <tr class="separator:a62aaab47c81466e17dd2ca52f5c12368"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -321,77 +317,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>autoSelfDestruct</b><
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</td></tr>
 <tr class="separator:a1f713f30d71b5015ae1ee0cf98607298"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ae81fd0caf267d95579f2b17689a94b9d"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MqttClient::MqttClient </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classString.html">String</a>&#160;</td>
-          <td class="paramname"><em>serverHost</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>serverPort</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a>&#160;</td>
-          <td class="paramname"><em>callback</em> = <code>NULL</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Construct an MQTT client. </p>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000013">Deprecated:</a></b></dt><dd>Use instead the empty contructor </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a96ab456e6b4d872eddf26e7e454dd2de"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MqttClient::MqttClient </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classIPAddress.html">IPAddress</a>&#160;</td>
-          <td class="paramname"><em>serverIp</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>serverPort</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classDelegate.html">MqttStringSubscriptionCallback</a>&#160;</td>
-          <td class="paramname"><em>callback</em> = <code>NULL</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Construct an MQTT client. </p>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000014">Deprecated:</a></b></dt><dd>Use instead the empty contructor </dd></dl>
-
-</div>
-</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a894bac3f513eec987e979ecf2b050797"></a>
 <div class="memitem">
@@ -434,27 +359,42 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
 
 </div>
 </div>
-<a class="anchor" id="a3cd10cecb2ca557b7d77e2e6a4d50116"></a>
+<a class="anchor" id="ad3421fa426b409d7951c368306f321f9"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool MqttClient::connect </td>
+          <td class="memname">bool MqttClient::publishWithQoS </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
-          <td class="paramname"><em>clientName</em>, </td>
+          <td class="paramname"><em>topic</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">boolean&#160;</td>
-          <td class="paramname"><em>useSsl</em> = <code>false</code>, </td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>sslOptions</em> = <code>0</code>&#160;</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>QoS</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>retained</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">MqttMessageDeliveredCallback</a>&#160;</td>
+          <td class="paramname"><em>onDelivery</em> = <code>NULL</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -462,63 +402,23 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-
-<p>connect </p>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000015">Deprecated:</a></b></dt><dd>Use connect(const String&amp; url, const String&amp; uniqueClientName) instead </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="aa6ee6d98c3810d5f3ef6b8f593bbd4c5"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool MqttClient::connect </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
-          <td class="paramname"><em>clientName</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
-          <td class="paramname"><em>username</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
-          <td class="paramname"><em>password</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">boolean&#160;</td>
-          <td class="paramname"><em>useSsl</em> = <code>false</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>sslOptions</em> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>connect </p>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000016">Deprecated:</a></b></dt><dd>Use connect(const String&amp; url, const String&amp; uniqueClientName) instead </dd></dl>
+<p>bool publish(<a class="el" href="classString.html" title="The string class. ">String</a>&amp; topic, <a class="el" href="classString.html" title="The string class. ">String</a>&amp; message, bool retained = false) Use publish(const <a class="el" href="classString.html" title="The string class. ">String</a>&amp; topic, const <a class="el" href="classString.html" title="The string class. ">String</a>&amp; message, uint8_t flags = 0) instead. </p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000017">Deprecated:</a></b></dt><dd>Use publish(const <a class="el" href="classString.html" title="The string class. ">String</a>&amp; topic, const <a class="el" href="classString.html" title="The string class. ">String</a>&amp; message, uint8_t flags = 0) instead. If you want to have a callback that should be triggered on successful delivery of messages then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead. </dd></dl>
 
 </div>
 </div>
 <a class="anchor" id="a08119a1be647d78053ded9956c8a4c06"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void MqttClient::setCallback </td>
@@ -528,9 +428,15 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Provide a funcion to be called when a message is received from the broker. </p>
+<p>Provide a function to be called when a message is received from the broker. </p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000018">Deprecated:</a></b></dt><dd>Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead. </dd></dl>
 
 </div>
 </div>
@@ -560,6 +466,37 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">completeCb</td><td>callback delegate or NULL </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a36d7528a67eb83fef83c6d03c48c521f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MqttClient::setConnectedHandler </td>
+          <td>(</td>
+          <td class="paramtype">MqttDelegate&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Sets a handler to be called after successful MQTT connection</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">MqttDelegate</td><td>handler </td></tr>
   </table>
   </dd>
 </dl>
@@ -598,6 +535,170 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
 
 </div>
 </div>
+<a class="anchor" id="a8164833a5dbe4db21c2c5058020e625a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MqttClient::setDisconnectHandler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">TcpClientCompleteDelegate</a>&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Sets a handler to be called on disconnect from the server</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">TcpClientCompleteDelegate</td><td>handler </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="af562b6cd9f6cdc189f22d0ae8ead7446"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MqttClient::setKeepAlive </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sets keep-alive time. That information is sent during connection to the server </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uint16_t</td><td>seconds </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a56c47a26aad91556456f2ff19f0401b2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MqttClient::setMessageHandler </td>
+          <td>(</td>
+          <td class="paramtype">MqttDelegate&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Sets a handler to be called after receiving a PUBLISH message from the server</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">MqttDelegate</td><td>handler </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a0a6322f080933d6ea0fd728285cb7916"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MqttClient::setPayloadParser </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__mqttpayload.html#ga75ebca39fa3a961b5d4b9f8ec9930b08">MqttPayloadParser</a>&#160;</td>
+          <td class="paramname"><em>payloadParser</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Sets or clears a payload parser (for PUBLISH messages from the server to us) Notice: we no longer have size limitation for incoming or outgoing messages but in order to prevent running out of memory we have a "sane" payload parser that will read up to 1K of payload </p>
+
+</div>
+</div>
+<a class="anchor" id="a40c240c945c2d9b8f6221d59120c30e7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MqttClient::setPingRepeatTime </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sets the interval in which to ping the remote server if there was no activity </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">int</td><td>seconds </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aeb671cdea2e74aa283ee3986ef42f9c9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MqttClient::setPublishedHandler </td>
+          <td>(</td>
+          <td class="paramtype">MqttDelegate&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Sets a handler to be called after receiving confirmation from the server for a published message from the client</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">MqttDelegate</td><td>handler </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ab9a6e4aeee94b7712bf2add4c286a3a0"></a>
 <div class="memitem">
 <div class="memproto">
@@ -627,6 +728,94 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>useSsl</b> = false</t
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a7598a2fad17cafcbcb55697eb4c9a947"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MqttClient::setWill </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>topic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>flags</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sets last will and testament </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">const</td><td><a class="el" href="classString.html" title="The string class. ">String</a>&amp; topic </td></tr>
+    <tr><td class="paramname">const</td><td><a class="el" href="classString.html" title="The string class. ">String</a>&amp; message </td></tr>
+    <tr><td class="paramname">uint8_t</td><td>flags -QoS, retain, etc flags </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aaa0e59ce9d22a30b6079ca597ab03881"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MqttClient::setWill </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>topic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>QoS</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>retained</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000016">Deprecated:</a></b></dt><dd>Use <a class="el" href="classMqttClient.html#a7598a2fad17cafcbcb55697eb4c9a947">setWill(const String&amp; topic, const String&amp; message,uint8_t flags)</a> instead </dd></dl>
 
 </div>
 </div>

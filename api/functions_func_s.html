@@ -160,7 +160,7 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 , <a class="el" href="classIDataSourceStream.html#a3a2c1c9c686a6c99041316dc0531c255">IDataSourceStream</a>
 , <a class="el" href="classLimitedMemoryStream.html#aeed6c5ad52d3c05781a31448dc5baea7">LimitedMemoryStream</a>
 , <a class="el" href="classMemoryDataStream.html#a0897a2b2380dc5dd066805db859f8436">MemoryDataStream</a>
-, <a class="el" href="classMultipartStream.html#ad8b6e9b3328f54b384c751fc60a52141">MultipartStream</a>
+, <a class="el" href="classMultiStream.html#adfcfde2fe175ea0402e1bc94b5999e0c">MultiStream</a>
 , <a class="el" href="classrBootItemOutputStream.html#aa0be5fcf6d244d58722de12383ed4e78">rBootItemOutputStream</a>
 , <a class="el" href="classStreamTransformer.html#a16f3665f5b4f9144a7c780720b39c2dc">StreamTransformer</a>
 , <a class="el" href="classTemplateStream.html#ae98356ca680104f36e04658df721eea4">TemplateStream</a>
@@ -382,6 +382,9 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 <li>setCompleteDelegate()
 : <a class="el" href="classTcpClient.html#abf18cea760e8efbf3a204b4e6d4055c3">TcpClient</a>
 </li>
+<li>setConnectedHandler()
+: <a class="el" href="classMqttClient.html#a36d7528a67eb83fef83c6d03c48c521f">MqttClient</a>
+</li>
 <li>setConnection()
 : <a class="el" href="classWebsocketConnection.html#a4b3b35e870d1d7ee413b80576825ea4d">WebsocketConnection</a>
 </li>
@@ -404,7 +407,7 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 : <a class="el" href="classRF24.html#aeb9920e7a95699748b003c4a839b0814">RF24</a>
 </li>
 <li>setDebug()
-: <a class="el" href="classDebugClass.html#a338322a7a8d6ba9fd466b11c2865d311">DebugClass</a>
+: <a class="el" href="classDebugClass.html#ac2a5d94e67e3e893409883f7946d6d50">DebugClass</a>
 </li>
 <li>setDegree()
 : <a class="el" href="classServoChannel.html#a9de30308054d75791b7fdc1c6a3309d7">ServoChannel</a>
@@ -415,11 +418,17 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 <li>setDestroyedDelegate()
 : <a class="el" href="classTcpConnection.html#a39d7fe38dceaf464a09f6a1cab7463b4">TcpConnection</a>
 </li>
+<li>setDisconnectHandler()
+: <a class="el" href="classMqttClient.html#a8164833a5dbe4db21c2c5058020e625a">MqttClient</a>
+</li>
 <li>setDisconnectionHandler()
 : <a class="el" href="classWebsocketConnection.html#ac08bc601bf5491cfe5767fa39dbe5a59">WebsocketConnection</a>
 </li>
 <li>setDuty()
-: <a class="el" href="classHardwarePWM.html#a964f560b8817c1adb2eaf9f7998fa952">HardwarePWM</a>
+: <a class="el" href="classHardwarePWM.html#acb2c6ed5cae47e7ddd59a3c742437f68">HardwarePWM</a>
+</li>
+<li>setDutyChan()
+: <a class="el" href="classHardwarePWM.html#a457424b7ab503fc7fc4505cd937b49ea">HardwarePWM</a>
 </li>
 <li>setFile()
 : <a class="el" href="classHttpRequest.html#a3583249e24fddc45a8e26ee250bc7f66">HttpRequest</a>
@@ -444,7 +453,10 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 </li>
 <li>setIP()
 : <a class="el" href="group__wifi__ap.html#ga5fcd3f84c68fcaada0a548055c45b3cb">AccessPointClass</a>
-, <a class="el" href="group__wifi__sta.html#gad7419d830a45e093079ddad59e7b8577">StationClass</a>
+, <a class="el" href="group__wifi__sta.html#ga1a00baaffe6a6fe057c83a8074963963">StationClass</a>
+</li>
+<li>setKeepAlive()
+: <a class="el" href="classMqttClient.html#af562b6cd9f6cdc189f22d0ae8ead7446">MqttClient</a>
 </li>
 <li>setLength()
 : <a class="el" href="classString.html#a47497811b505f952505d2dd2c2063640">String</a>
@@ -456,7 +468,8 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 : <a class="el" href="classServoChannel.html#a8a1e8f71cb89df56c8c82b498f36a2c9">ServoChannel</a>
 </li>
 <li>setMessageHandler()
-: <a class="el" href="classWebsocketConnection.html#ac92a24f91eea1188d17ec57b7918d3ec">WebsocketConnection</a>
+: <a class="el" href="classMqttClient.html#a56c47a26aad91556456f2ff19f0401b2">MqttClient</a>
+, <a class="el" href="classWebsocketConnection.html#ac92a24f91eea1188d17ec57b7918d3ec">WebsocketConnection</a>
 </li>
 <li>setMinval()
 : <a class="el" href="classNexSlider.html#ad38503fd3a6bfe3eaaa57764ac90f244">NexSlider</a>
@@ -470,6 +483,9 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 <li>setPALevel()
 : <a class="el" href="classRF24.html#ae14164610ab5af94cf44b2743daa8dc9">RF24</a>
 </li>
+<li>setPayloadParser()
+: <a class="el" href="classMqttClient.html#a0a6322f080933d6ea0fd728285cb7916">MqttClient</a>
+</li>
 <li>setPayloadSize()
 : <a class="el" href="classRF24.html#a343e5d23477181011dea030fafb1954f">RF24</a>
 </li>
@@ -480,8 +496,14 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 : <a class="el" href="classNexCrop.html#aac34fc2f8ead1e330918089ea8a339db">NexCrop</a>
 , <a class="el" href="classNexPicture.html#ab1c6adff615d48261ce10c2095859abd">NexPicture</a>
 </li>
+<li>setPingRepeatTime()
+: <a class="el" href="classMqttClient.html#a40c240c945c2d9b8f6221d59120c30e7">MqttClient</a>
+</li>
 <li>setPostParameters()
 : <a class="el" href="classHttpRequest.html#aa0070188501551d1a063e2316a376379">HttpRequest</a>
+</li>
+<li>setPublishedHandler()
+: <a class="el" href="classMqttClient.html#aeb671cdea2e74aa283ee3986ef42f9c9">MqttClient</a>
 </li>
 <li>setReceiveDelegate()
 : <a class="el" href="classTcpClient.html#ab9a6e4aeee94b7712bf2add4c286a3a0">TcpClient</a>
@@ -512,7 +534,7 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 , <a class="el" href="classNexVariable.html#aab59ac44eb0804664a03c09932be70eb">NexVariable</a>
 </li>
 <li>setTime()
-: <a class="el" href="classDateTime.html#a9d7e7be864d50b4049a14956706af5af">DateTime</a>
+: <a class="el" href="classDateTime.html#a76cec1408d44dba7b3b9b350e7e93af4">DateTime</a>
 , <a class="el" href="classSystemClockClass.html#a450854f26498c1f58fd9d330618ad388">SystemClockClass</a>
 </li>
 <li>setTimeZoneOffset()
@@ -552,6 +574,9 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 </li>
 <li>setVerboseMode()
 : <a class="el" href="classCommandHandler.html#a79143301ac3a4481cb898d23f9cd18aa">CommandHandler</a>
+</li>
+<li>setWill()
+: <a class="el" href="classMqttClient.html#aaa0e59ce9d22a30b6079ca597ab03881">MqttClient</a>
 </li>
 <li>show()
 : <a class="el" href="classNexPage.html#a5714e41d4528b991eda4bbe578005418">NexPage</a>
@@ -621,7 +646,7 @@ $(document).ready(function(){initNavTree('functions_func_s.html','');});
 : <a class="el" href="classRF24.html#a6f144d73fc447c8ac2d1a4166210fd88">RF24</a>
 </li>
 <li>swap()
-: <a class="el" href="classHardwareSerial.html#aa22dd228add6fd97290d33a494741d6d">HardwareSerial</a>
+: <a class="el" href="classHardwareSerial.html#a882af872c2285039539c3cf248977a63">HardwareSerial</a>
 </li>
 <li>systemDebugOutput()
 : <a class="el" href="classHardwareSerial.html#a1365b152178ff99287c1e700b593a0e0">HardwareSerial</a>

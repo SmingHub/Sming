@@ -11,10 +11,12 @@ var searchData=
   ['tm1637display',['TM1637Display',['../classTM1637Display.html#ac0e4e625d817f79760db8ec525fd7c86',1,'TM1637Display']]],
   ['tofulldatetimestring',['toFullDateTimeString',['../classDateTime.html#a21f09ede608e518181983b00fa9ed3e9',1,'DateTime']]],
   ['toggle_5ffeatures',['toggle_features',['../classRF24.html#a4a22253276f00b24dc8ab9309c03e8da',1,'RF24']]],
+  ['tohttpdate',['toHTTPDate',['../classDateTime.html#a41733fc61e9370f29893bffe31101128',1,'DateTime']]],
+  ['toiso8601',['toISO8601',['../classDateTime.html#a4e9a2532b650cc746cdc784ea5438764',1,'DateTime']]],
   ['toshortdatestring',['toShortDateString',['../classDateTime.html#a67ae33e61bac3267c8709e986e5c9865',1,'DateTime']]],
   ['toshorttimestring',['toShortTimeString',['../classDateTime.html#ae96f4c5682e7df9a3af768e42d6d3b86',1,'DateTime']]],
   ['tostring',['toString',['../classHttpHeaders.html#affa499da692928fda398efce62ffd61c',1,'HttpHeaders::toString()'],['../classHttpRequest.html#ac5653ef5c07aa61c345fd2e6aa418dbf',1,'HttpRequest::toString()']]],
-  ['tounixtime',['toUnixTime',['../classDateTime.html#a9e19ab63fe8ee41e00ffee8740a1d29c',1,'DateTime']]],
+  ['tounixtime',['toUnixTime',['../classDateTime.html#a9e19ab63fe8ee41e00ffee8740a1d29c',1,'DateTime::toUnixTime()'],['../classDateTime.html#a43d743d1251ea018eab49ba48ad9e077',1,'DateTime::toUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year)']]],
   ['transfer',['transfer',['../group__hw__spi.html#ga0701976a831f9cae78ba386f326e3616',1,'SPIClass::transfer(unsigned char val)'],['../group__hw__spi.html#ga0053673662dfac3b5f45dc25d010b462',1,'SPIClass::transfer(uint8 *buffer, size_t numberBytes)'],['../group__base__spi.html#ga40f6c5273d46c59daa4ddfe4afb48c17',1,'SPIBase::transfer()'],['../classSPISoft.html#af278fc0c4ff05a66c26006751fde2b65',1,'SPISoft::transfer()']]],
   ['transfer16',['transfer16',['../group__hw__spi.html#ga7453fccb6465fb72ed62f043f327e7ca',1,'SPIClass']]]
 ];

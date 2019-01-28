@@ -139,34 +139,43 @@ $(document).ready(function(){initNavTree('HardwarePWM_8h_source.html','');});
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwarePWM.html#a7db328897857470679ff875e11bbca3f">analogWrite</a>(uint8 pin, uint32 duty);</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwarePWM.html#a964f560b8817c1adb2eaf9f7998fa952">setDuty</a>(uint8 pin, uint32 duty);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    uint32 <a class="code" href="classHardwarePWM.html#a797480dbeaed019fb9500b3f9ae1e1d2">getDuty</a>(uint8 pin);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwarePWM.html#a9387e16aa1ad74ea6e9c372342d7b8d1">setPeriod</a>(uint32 period);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    uint32 <a class="code" href="classHardwarePWM.html#ac6b15f9b61b4ad54b83214c7df292eed">getPeriod</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    uint8 <a class="code" href="classHardwarePWM.html#a8d9dfd7e6d057a4d6ac2d90db8d69e35">getChannel</a>(uint8 pin);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    uint32 <a class="code" href="classHardwarePWM.html#a01453da7cd6c96d7d278d6df45e9932a">getMaxDuty</a>();</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    uint8 channel_count;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    uint8 channels[PWM_CHANNEL_NUM_MAX];</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    uint32 maxduty;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;};</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* HARDWAREPWM_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwarePWM.html#a457424b7ab503fc7fc4505cd937b49ea">setDutyChan</a>(uint8 chan, uint32 duty, <span class="keywordtype">bool</span> <a class="code" href="classHardwarePWM.html#a6df79afa4a56698ae2644827bb132aaa">update</a> = <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwarePWM.html#acb2c6ed5cae47e7ddd59a3c742437f68">setDuty</a>(uint8 pin, uint32 duty, <span class="keywordtype">bool</span> <a class="code" href="classHardwarePWM.html#a6df79afa4a56698ae2644827bb132aaa">update</a> = <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    uint32 <a class="code" href="classHardwarePWM.html#ad277780c1b6a2d13b86db4bae781e43a">getDutyChan</a>(uint8 chan);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    uint32 <a class="code" href="classHardwarePWM.html#a797480dbeaed019fb9500b3f9ae1e1d2">getDuty</a>(uint8 pin);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwarePWM.html#a9387e16aa1ad74ea6e9c372342d7b8d1">setPeriod</a>(uint32 period);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    uint32 <a class="code" href="classHardwarePWM.html#ac6b15f9b61b4ad54b83214c7df292eed">getPeriod</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    uint8 <a class="code" href="classHardwarePWM.html#a8d9dfd7e6d057a4d6ac2d90db8d69e35">getChannel</a>(uint8 pin);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    uint32 <a class="code" href="classHardwarePWM.html#a01453da7cd6c96d7d278d6df45e9932a">getMaxDuty</a>();</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwarePWM.html#a6df79afa4a56698ae2644827bb132aaa">update</a>();</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    uint8 channel_count;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    uint8 channels[PWM_CHANNEL_NUM_MAX];</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    uint32 maxduty;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;};</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* HARDWAREPWM_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classHardwarePWM_html_a457424b7ab503fc7fc4505cd937b49ea"><div class="ttname"><a href="classHardwarePWM.html#a457424b7ab503fc7fc4505cd937b49ea">HardwarePWM::setDutyChan</a></div><div class="ttdeci">bool setDutyChan(uint8 chan, uint32 duty, bool update=true)</div><div class="ttdoc">Set PWM duty cycle for a channel. </div></div>
+<div class="ttc" id="classHardwarePWM_html_ad277780c1b6a2d13b86db4bae781e43a"><div class="ttname"><a href="classHardwarePWM.html#ad277780c1b6a2d13b86db4bae781e43a">HardwarePWM::getDutyChan</a></div><div class="ttdeci">uint32 getDutyChan(uint8 chan)</div><div class="ttdoc">Get PWM duty cycle. </div></div>
 <div class="ttc" id="classHardwarePWM_html_a797480dbeaed019fb9500b3f9ae1e1d2"><div class="ttname"><a href="classHardwarePWM.html#a797480dbeaed019fb9500b3f9ae1e1d2">HardwarePWM::getDuty</a></div><div class="ttdeci">uint32 getDuty(uint8 pin)</div><div class="ttdoc">Get PWM duty cycle. </div></div>
 <div class="ttc" id="classHardwarePWM_html_a7db328897857470679ff875e11bbca3f"><div class="ttname"><a href="classHardwarePWM.html#a7db328897857470679ff875e11bbca3f">HardwarePWM::analogWrite</a></div><div class="ttdeci">bool analogWrite(uint8 pin, uint32 duty)</div><div class="ttdoc">Set PWM duty cycle. </div></div>
-<div class="ttc" id="classHardwarePWM_html_a964f560b8817c1adb2eaf9f7998fa952"><div class="ttname"><a href="classHardwarePWM.html#a964f560b8817c1adb2eaf9f7998fa952">HardwarePWM::setDuty</a></div><div class="ttdeci">bool setDuty(uint8 pin, uint32 duty)</div><div class="ttdoc">Set PWM duty cycle. </div></div>
 <div class="ttc" id="classHardwarePWM_html"><div class="ttname"><a href="classHardwarePWM.html">HardwarePWM</a></div><div class="ttdoc">Hardware pulse width modulation. </div><div class="ttdef"><b>Definition:</b> HardwarePWM.h:37</div></div>
 <div class="ttc" id="classHardwarePWM_html_a01453da7cd6c96d7d278d6df45e9932a"><div class="ttname"><a href="classHardwarePWM.html#a01453da7cd6c96d7d278d6df45e9932a">HardwarePWM::getMaxDuty</a></div><div class="ttdeci">uint32 getMaxDuty()</div><div class="ttdoc">Get the maximum duty cycle value. </div></div>
 <div class="ttc" id="classHardwarePWM_html_aeacd85a6a647dc99f3c04c0ece523ce0"><div class="ttname"><a href="classHardwarePWM.html#aeacd85a6a647dc99f3c04c0ece523ce0">HardwarePWM::HardwarePWM</a></div><div class="ttdeci">HardwarePWM(uint8 *pins, uint8 no_of_pins)</div><div class="ttdoc">Instantiate hardware PWM object. </div></div>
+<div class="ttc" id="classHardwarePWM_html_acb2c6ed5cae47e7ddd59a3c742437f68"><div class="ttname"><a href="classHardwarePWM.html#acb2c6ed5cae47e7ddd59a3c742437f68">HardwarePWM::setDuty</a></div><div class="ttdeci">bool setDuty(uint8 pin, uint32 duty, bool update=true)</div><div class="ttdoc">Set PWM duty cycle. </div></div>
 <div class="ttc" id="classHardwarePWM_html_ac6b15f9b61b4ad54b83214c7df292eed"><div class="ttname"><a href="classHardwarePWM.html#ac6b15f9b61b4ad54b83214c7df292eed">HardwarePWM::getPeriod</a></div><div class="ttdeci">uint32 getPeriod(void)</div><div class="ttdoc">Get PWM period. </div></div>
 <div class="ttc" id="classHardwarePWM_html_a8d9dfd7e6d057a4d6ac2d90db8d69e35"><div class="ttname"><a href="classHardwarePWM.html#a8d9dfd7e6d057a4d6ac2d90db8d69e35">HardwarePWM::getChannel</a></div><div class="ttdeci">uint8 getChannel(uint8 pin)</div><div class="ttdoc">Get channel number for a pin. </div></div>
 <div class="ttc" id="classHardwarePWM_html_a9387e16aa1ad74ea6e9c372342d7b8d1"><div class="ttname"><a href="classHardwarePWM.html#a9387e16aa1ad74ea6e9c372342d7b8d1">HardwarePWM::setPeriod</a></div><div class="ttdeci">void setPeriod(uint32 period)</div><div class="ttdoc">Set PWM period. </div></div>
+<div class="ttc" id="classHardwarePWM_html_a6df79afa4a56698ae2644827bb132aaa"><div class="ttname"><a href="classHardwarePWM.html#a6df79afa4a56698ae2644827bb132aaa">HardwarePWM::update</a></div><div class="ttdeci">void update()</div><div class="ttdoc">This function is used to actually update the PWM. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

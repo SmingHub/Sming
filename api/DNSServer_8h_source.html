@@ -118,7 +118,7 @@ $(document).ready(function(){initNavTree('DNSServer_8h_source.html','');});
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DNSServer_h</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;UdpConnection.h&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;../Wiring/WString.h&quot;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;WString.h&quot;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#define DNS_QR_QUERY 0</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DNS_QR_RESPONSE 1</span></div>
@@ -155,34 +155,47 @@ $(document).ready(function(){initNavTree('DNSServer_8h_source.html','');});
 <div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classDNSServer.html">   57</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDNSServer.html">DNSServer</a> : <span class="keyword">public</span> <a class="code" href="classUdpConnection.html">UdpConnection</a></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;{</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="classDNSServer.html">DNSServer</a>();</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classDNSServer.html">DNSServer</a>();</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">void</span> setErrorReplyCode(<span class="keyword">const</span> DNSReplyCode&amp; replyCode);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">void</span> setTTL(<span class="keyword">const</span> uint32_t&amp; ttl);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// Returns true if successful, false if there are no sockets available</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">bool</span> start(<span class="keyword">const</span> uint16_t&amp; port, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; domainName, <span class="keyword">const</span> <a class="code" href="classIPAddress.html">IPAddress</a>&amp; resolvedIP);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="classDNSServer.html">DNSServer</a>()</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    }</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classDNSServer.html">DNSServer</a>()</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="comment">// stops the DNS server</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordtype">void</span> stop();</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    uint16_t _port = 0;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="classString.html">String</a> _domainName;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">char</span> _resolvedIP[4];</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">char</span>* _buffer = NULL;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <a class="code" href="structDNSHeader.html">DNSHeader</a>* _dnsHeader = NULL;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    uint32_t _ttl;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    DNSReplyCode _errorReplyCode;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReceive(pbuf* buf, <a class="code" href="classIPAddress.html">IPAddress</a> remoteIP, uint16_t remotePort);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordtype">void</span> downcaseAndRemoveWwwPrefix(<a class="code" href="classString.html">String</a>&amp; domainName);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <a class="code" href="classString.html">String</a> getDomainNameWithoutWwwPrefix();</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">bool</span> requestIncludesOnlyOneQuestion();</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;};</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#endif //DNSServer_h</span></div>
-<div class="ttc" id="classUdpConnection_html"><div class="ttname"><a href="classUdpConnection.html">UdpConnection</a></div><div class="ttdef"><b>Definition:</b> UdpConnection.h:27</div></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordtype">void</span> setErrorReplyCode(DNSReplyCode replyCode)</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    {</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        errorReplyCode = replyCode;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    }</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordtype">void</span> setTTL(uint32_t ttl)</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        this-&gt;ttl = ttl;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="comment">// Returns true if successful, false if there are no sockets available</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">bool</span> start(uint16_t port, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; domainName, <span class="keyword">const</span> <a class="code" href="classIPAddress.html">IPAddress</a>&amp; resolvedIP);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="comment">// stops the DNS server</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">void</span> stop();</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    uint16_t port = 0;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <a class="code" href="classString.html">String</a> domainName;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    ip_addr resolvedIP;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">char</span>* buffer = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <a class="code" href="structDNSHeader.html">DNSHeader</a>* dnsHeader = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    uint32_t ttl = 60;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    DNSReplyCode errorReplyCode = DNSReplyCode::NonExistentDomain;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReceive(pbuf* buf, <a class="code" href="classIPAddress.html">IPAddress</a> remoteIP, uint16_t remotePort);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> downcaseAndRemoveWwwPrefix(<a class="code" href="classString.html">String</a>&amp; domainName);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="classString.html">String</a> getDomainNameWithoutWwwPrefix();</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">bool</span> requestIncludesOnlyOneQuestion();</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;};</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor">#endif //DNSServer_h</span></div>
+<div class="ttc" id="classUdpConnection_html"><div class="ttname"><a href="classUdpConnection.html">UdpConnection</a></div><div class="ttdef"><b>Definition:</b> UdpConnection.h:26</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
 <div class="ttc" id="classDNSServer_html"><div class="ttname"><a href="classDNSServer.html">DNSServer</a></div><div class="ttdef"><b>Definition:</b> DNSServer.h:57</div></div>
 <div class="ttc" id="structDNSHeader_html"><div class="ttname"><a href="structDNSHeader.html">DNSHeader</a></div><div class="ttdef"><b>Definition:</b> DNSServer.h:41</div></div>

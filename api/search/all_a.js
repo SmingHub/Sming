@@ -2,7 +2,7 @@ var searchData=
 [
   ['lcd',['LCD',['../classLCD.html',1,'LCD'],['../classLCD.html#a00bb2db1390721abc7b24ac4b8c276c8',1,'LCD::LCD()']]],
   ['lefttoright',['leftToRight',['../classLCD.html#a238e9f6476dc7df64af04eb6c87f6ac7',1,'LCD']]],
-  ['length',['length',['../classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c',1,'IDataSourceStream::length()'],['../classMultipartStream.html#ad8cc82e9d879f26d143c808b6b34bb3d',1,'MultipartStream::length()']]],
+  ['length',['length',['../classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c',1,'IDataSourceStream']]],
   ['libraries',['Libraries',['../group__libraries.html',1,'']]],
   ['light',['light',['../structsensors__event__t.html#adefd2ce2da44e4449ef7cadeaecc6cfd',1,'sensors_event_t']]],
   ['limitedmemorystream',['LimitedMemoryStream',['../classLimitedMemoryStream.html',1,'']]],

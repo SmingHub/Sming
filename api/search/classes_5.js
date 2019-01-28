@@ -5,6 +5,8 @@ var searchData=
   ['fifo_3c_20atcommand_2c_2010_20_3e',['FIFO&lt; AtCommand, 10 &gt;',['../classFIFO.html',1,'']]],
   ['fifo_3c_20httprequest_20_2a_2c_20rawsize_20_3e',['FIFO&lt; HttpRequest *, rawSize &gt;',['../classFIFO.html',1,'']]],
   ['fifo_3c_20mailmessage_20_2a_2c_20rawsize_20_3e',['FIFO&lt; MailMessage *, rawSize &gt;',['../classFIFO.html',1,'']]],
+  ['fifo_3c_20mqtt_5fmessage_5ft_20_2a_2c_20rawsize_20_3e',['FIFO&lt; mqtt_message_t *, rawSize &gt;',['../classFIFO.html',1,'']]],
+  ['fifo_3c_20readwritestream_20_2a_2c_20rawsize_20_3e',['FIFO&lt; ReadWriteStream *, rawSize &gt;',['../classFIFO.html',1,'']]],
   ['fifo_3c_20t_20_2a_2c_20rawsize_20_3e',['FIFO&lt; T *, rawSize &gt;',['../classFIFO.html',1,'']]],
   ['fil',['FIL',['../structFIL.html',1,'']]],
   ['filestream',['FileStream',['../classFileStream.html',1,'']]],

@@ -6,6 +6,5 @@ var searchData=
   ['micros',['micros',['../group__timedelay.html#gafedd2cfd96377da1c9520ab53bf8dda5',1,'Clock.h']]],
   ['millis',['millis',['../group__timedelay.html#gad830491fbafb87ec7f7de280a58b52bf',1,'Clock.h']]],
   ['movecursorleft',['moveCursorLeft',['../classLCD.html#aad2abc99d1aca5403873579d9d72c2d4',1,'LCD']]],
-  ['movecursorright',['moveCursorRight',['../classLCD.html#a09eec0c712e54b066f5894635c1fe75c',1,'LCD']]],
-  ['mqttclient',['MqttClient',['../classMqttClient.html#ae81fd0caf267d95579f2b17689a94b9d',1,'MqttClient::MqttClient(String serverHost, int serverPort, MqttStringSubscriptionCallback callback=NULL)'],['../classMqttClient.html#a96ab456e6b4d872eddf26e7e454dd2de',1,'MqttClient::MqttClient(IPAddress serverIp, int serverPort, MqttStringSubscriptionCallback callback=NULL)']]]
+  ['movecursorright',['moveCursorRight',['../classLCD.html#a09eec0c712e54b066f5894635c1fe75c',1,'LCD']]]
 ];

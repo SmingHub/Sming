@@ -17,6 +17,7 @@ var modules =
     [ "Networking", "group__networking.html", "group__networking" ],
     [ "Nextion Component", "group__Component.html", "group__Component" ],
     [ "Print stream functions", "group__print.html", "group__print" ],
+    [ "Provides MQTT payload parser", "group__mqttpayload.html", "group__mqttpayload" ],
     [ "RC Servo functions", "group__Servo.html", "group__Servo" ],
     [ "SPI Hardware support", "group__hw__spi.html", "group__hw__spi" ],
     [ "SPI support classes", "group__base__spi.html", "group__base__spi" ],

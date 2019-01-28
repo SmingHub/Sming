@@ -126,9 +126,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7db328897857470679ff875e11bbca3f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwarePWM.html#a7db328897857470679ff875e11bbca3f">analogWrite</a> (uint8 pin, uint32 duty)</td></tr>
 <tr class="memdesc:a7db328897857470679ff875e11bbca3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set PWM duty cycle.  <a href="#a7db328897857470679ff875e11bbca3f">More...</a><br/></td></tr>
 <tr class="separator:a7db328897857470679ff875e11bbca3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a964f560b8817c1adb2eaf9f7998fa952"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwarePWM.html#a964f560b8817c1adb2eaf9f7998fa952">setDuty</a> (uint8 pin, uint32 duty)</td></tr>
-<tr class="memdesc:a964f560b8817c1adb2eaf9f7998fa952"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set PWM duty cycle.  <a href="#a964f560b8817c1adb2eaf9f7998fa952">More...</a><br/></td></tr>
-<tr class="separator:a964f560b8817c1adb2eaf9f7998fa952"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a457424b7ab503fc7fc4505cd937b49ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwarePWM.html#a457424b7ab503fc7fc4505cd937b49ea">setDutyChan</a> (uint8 chan, uint32 duty, bool <a class="el" href="classHardwarePWM.html#a6df79afa4a56698ae2644827bb132aaa">update</a>=true)</td></tr>
+<tr class="memdesc:a457424b7ab503fc7fc4505cd937b49ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set PWM duty cycle for a channel.  <a href="#a457424b7ab503fc7fc4505cd937b49ea">More...</a><br/></td></tr>
+<tr class="separator:a457424b7ab503fc7fc4505cd937b49ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb2c6ed5cae47e7ddd59a3c742437f68"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwarePWM.html#acb2c6ed5cae47e7ddd59a3c742437f68">setDuty</a> (uint8 pin, uint32 duty, bool <a class="el" href="classHardwarePWM.html#a6df79afa4a56698ae2644827bb132aaa">update</a>=true)</td></tr>
+<tr class="memdesc:acb2c6ed5cae47e7ddd59a3c742437f68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set PWM duty cycle.  <a href="#acb2c6ed5cae47e7ddd59a3c742437f68">More...</a><br/></td></tr>
+<tr class="separator:acb2c6ed5cae47e7ddd59a3c742437f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad277780c1b6a2d13b86db4bae781e43a"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwarePWM.html#ad277780c1b6a2d13b86db4bae781e43a">getDutyChan</a> (uint8 chan)</td></tr>
+<tr class="memdesc:ad277780c1b6a2d13b86db4bae781e43a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get PWM duty cycle.  <a href="#ad277780c1b6a2d13b86db4bae781e43a">More...</a><br/></td></tr>
+<tr class="separator:ad277780c1b6a2d13b86db4bae781e43a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a797480dbeaed019fb9500b3f9ae1e1d2"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwarePWM.html#a797480dbeaed019fb9500b3f9ae1e1d2">getDuty</a> (uint8 pin)</td></tr>
 <tr class="memdesc:a797480dbeaed019fb9500b3f9ae1e1d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get PWM duty cycle.  <a href="#a797480dbeaed019fb9500b3f9ae1e1d2">More...</a><br/></td></tr>
 <tr class="separator:a797480dbeaed019fb9500b3f9ae1e1d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -144,6 +150,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a01453da7cd6c96d7d278d6df45e9932a"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwarePWM.html#a01453da7cd6c96d7d278d6df45e9932a">getMaxDuty</a> ()</td></tr>
 <tr class="memdesc:a01453da7cd6c96d7d278d6df45e9932a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the maximum duty cycle value.  <a href="#a01453da7cd6c96d7d278d6df45e9932a">More...</a><br/></td></tr>
 <tr class="separator:a01453da7cd6c96d7d278d6df45e9932a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6df79afa4a56698ae2644827bb132aaa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwarePWM.html#a6df79afa4a56698ae2644827bb132aaa">update</a> ()</td></tr>
+<tr class="memdesc:a6df79afa4a56698ae2644827bb132aaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is used to actually update the PWM.  <a href="#a6df79afa4a56698ae2644827bb132aaa">More...</a><br/></td></tr>
+<tr class="separator:a6df79afa4a56698ae2644827bb132aaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Hardware pulse width modulation. </p>
@@ -285,6 +294,36 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ad277780c1b6a2d13b86db4bae781e43a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32 HardwarePWM::getDutyChan </td>
+          <td>(</td>
+          <td class="paramtype">uint8&#160;</td>
+          <td class="paramname"><em>chan</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get PWM duty cycle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>Channel to get duty cycle for </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">uint32</td><td>Value of PWM duty cycle </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a01453da7cd6c96d7d278d6df45e9932a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -333,7 +372,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a964f560b8817c1adb2eaf9f7998fa952"></a>
+<a class="anchor" id="acb2c6ed5cae47e7ddd59a3c742437f68"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -347,7 +386,13 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32&#160;</td>
-          <td class="paramname"><em>duty</em>&#160;</td>
+          <td class="paramname"><em>duty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>update</em> = <code>true</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -362,6 +407,55 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">pin</td><td>GPIO to set </td></tr>
     <tr><td class="paramname">duty</td><td>Value of duty cycle to set pin to </td></tr>
+    <tr><td class="paramname">update</td><td>Update PWM output </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>True on success </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a457424b7ab503fc7fc4505cd937b49ea"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool HardwarePWM::setDutyChan </td>
+          <td>(</td>
+          <td class="paramtype">uint8&#160;</td>
+          <td class="paramname"><em>chan</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32&#160;</td>
+          <td class="paramname"><em>duty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>update</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set PWM duty cycle for a channel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">channel</td><td>Channel to set </td></tr>
+    <tr><td class="paramname">duty</td><td>Value of duty cycle to set channel to </td></tr>
+    <tr><td class="paramname">update</td><td>Update PWM output </td></tr>
   </table>
   </dd>
 </dl>
@@ -396,6 +490,23 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>All PWM pins share the same period </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a6df79afa4a56698ae2644827bb132aaa"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HardwarePWM::update </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This function is used to actually update the PWM. </p>
 
 </div>
 </div>

@@ -47,8 +47,18 @@ var hierarchy =
         [ "ObjectQueue< MailMessage, SMTP_QUEUE_SIZE >", "classObjectQueue.html", null ]
       ] ]
     ] ],
+    [ "Countable< mqtt_message_t * >", "classCountable.html", [
+      [ "FIFO< mqtt_message_t *, rawSize >", "classFIFO.html", [
+        [ "ObjectQueue< mqtt_message_t, MQTT_REQUEST_POOL_SIZE >", "classObjectQueue.html", null ]
+      ] ]
+    ] ],
     [ "Countable< rBootHttpUpdateItem >", "classCountable.html", [
       [ "Vector< rBootHttpUpdateItem >", "classVector.html", null ]
+    ] ],
+    [ "Countable< ReadWriteStream * >", "classCountable.html", [
+      [ "FIFO< ReadWriteStream *, rawSize >", "classFIFO.html", [
+        [ "ObjectQueue< ReadWriteStream, MAX_STREAM_CHAIN_SIZE >", "classObjectQueue.html", null ]
+      ] ]
     ] ],
     [ "Countable< ServoChannel * >", "classCountable.html", [
       [ "Vector< ServoChannel * >", "classVector.html", null ]
@@ -78,6 +88,7 @@ var hierarchy =
     [ "Delegate< int(HttpServerConnection &, HttpRequest &, HttpResponse &)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpServerConnection &connection, HttpRequest &, char *at, int length)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpServerConnection &connection, HttpRequest &, const char *at, int length)>", "classDelegate.html", null ],
+    [ "Delegate< int(MqttPayloadParserState &state, mqtt_message_t *message, const char *buffer, int length)>", "classDelegate.html", null ],
     [ "Delegate< ReturnType(ParamsList...)>", "classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html", null ],
     [ "Delegate< void()>", "classDelegate.html", null ],
     [ "Delegate< void(bool, BssList)>", "classDelegate.html", null ],
@@ -99,6 +110,7 @@ var hierarchy =
     [ "Delegate< void(TcpClient *client)>", "classDelegate.html", null ],
     [ "Delegate< void(TcpConnection &)>", "classDelegate.html", null ],
     [ "Delegate< void(UdpConnection &connection, char *data, int size, IPAddress remoteIP, uint16_t remotePort)>", "classDelegate.html", null ],
+    [ "Delegate< void(uint16_t msgId, int type)>", "classDelegate.html", null ],
     [ "Delegate< void(uint8_t, uint8_t)>", "classDelegate.html", null ],
     [ "Delegate< void(uint8_t[6], uint8_t)>", "classDelegate.html", null ],
     [ "Delegate< void(WebsocketConnection &)>", "classDelegate.html", null ],
@@ -127,6 +139,7 @@ var hierarchy =
     [ "HashMap< HttpHeaderFieldName, String >", "classHashMap.html", [
       [ "HttpHeaders", "classHttpHeaders.html", null ]
     ] ],
+    [ "HashMap< mqtt_type_t, MqttDelegate >", "classHashMap.html", null ],
     [ "HashMap< String, CommandDelegate >", "classHashMap.html", null ],
     [ "HashMap< String, HttpConnection * >", "classHashMap.html", null ],
     [ "HashMap< String, ObjectQueue * >", "classHashMap.html", null ],
@@ -135,7 +148,6 @@ var hierarchy =
       [ "HttpParams", "classHttpParams.html", null ],
       [ "TemplateVariables", "classTemplateVariables.html", null ]
     ] ],
-    [ "HashMap< uint16_t, Delegate >", "classHashMap.html", null ],
     [ "HexDump", "classHexDump.html", null ],
     [ "RCSwitch::HighLow", "structRCSwitch_1_1HighLow.html", null ],
     [ "HMC5883L", "classHMC5883L.html", null ],
@@ -193,7 +205,7 @@ var hierarchy =
       [ "MirfHardwareSpiDriver", "classMirfHardwareSpiDriver.html", null ]
     ] ],
     [ "MMA_7455", "classMMA__7455.html", null ],
-    [ "mqtt_broker_handle_t", "structmqtt__broker__handle__t.html", null ],
+    [ "MqttPayloadParserState", "structMqttPayloadParserState.html", null ],
     [ "NetUtils", "classNetUtils.html", null ],
     [ "NexGpio", "classNexGpio.html", null ],
     [ "NexObject", "classNexObject.html", [
@@ -251,7 +263,10 @@ var hierarchy =
             [ "MemoryDataStream", "classMemoryDataStream.html", [
               [ "JsonObjectStream", "classJsonObjectStream.html", null ]
             ] ],
-            [ "MultipartStream", "classMultipartStream.html", null ],
+            [ "MultiStream", "classMultiStream.html", [
+              [ "MultipartStream", "classMultipartStream.html", null ],
+              [ "StreamChain", "classStreamChain.html", null ]
+            ] ],
             [ "rBootItemOutputStream", "classrBootItemOutputStream.html", null ],
             [ "StreamTransformer", "classStreamTransformer.html", [
               [ "Base64OutputStream", "classBase64OutputStream.html", null ],

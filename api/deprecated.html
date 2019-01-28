@@ -102,43 +102,47 @@ $(document).ready(function(){initNavTree('deprecated.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt><a class="anchor" id="_deprecated000002"></a>Class <a class="el" href="classHardware__Timer.html">Hardware_Timer</a>  </dt>
+<dt><a class="anchor" id="_deprecated000003"></a>Member <a class="el" href="classDateTime.html#a1748e17f80d1c178a2c492b2903f6462">DateTime::convertFromUnixTime</a>  (time_t tImep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear) __attribute__((deprecated))</dt>
+<dd>Use 'fromUnixTime' instead  </dd>
+<dt><a class="anchor" id="_deprecated000004"></a>Member <a class="el" href="classDateTime.html#ab89a5805ede081bd5850e834a85b471b">DateTime::convertToUnixTime</a>  (int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year) __attribute__((deprecated))</dt>
+<dd>Use 'toUnixTime' instead  </dd>
+<dt><a class="anchor" id="_deprecated000002"></a>Member <a class="el" href="classDateTime.html#a25cfa69bbe2b6a809b0ef01d9172f7c1">DateTime::parseHttpDate</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;httpDate) __attribute__((deprecated))</dt>
+<dd>Use 'fromHttpDate' instead  </dd>
+<dt><a class="anchor" id="_deprecated000005"></a>Class <a class="el" href="classHardware__Timer.html">Hardware_Timer</a>  </dt>
 <dd>Use <a class="el" href="classHardwareTimer.html" title="Hardware timer class. ">HardwareTimer</a> class instead  </dd>
-<dt><a class="anchor" id="_deprecated000006"></a>Member <a class="el" href="classHttpConnection.html#ae38daf9c615d8374c4605367e8c779d9">HttpConnection::getLastModifiedDate</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000009"></a>Member <a class="el" href="classHttpConnection.html#ae38daf9c615d8374c4605367e8c779d9">HttpConnection::getLastModifiedDate</a>  ()</dt>
 <dd>Use <code>getResponse().headers[HTTP_HEADER_LAST_MODIFIED]</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000003"></a>Member <a class="el" href="classHttpConnection.html#a8096f420efc2a724109be9b9f804b210">HttpConnection::getResponseCode</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000006"></a>Member <a class="el" href="classHttpConnection.html#a8096f420efc2a724109be9b9f804b210">HttpConnection::getResponseCode</a>  ()</dt>
 <dd>Use <code>getResponse().code</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000004"></a>Member <a class="el" href="classHttpConnection.html#a937f2f9106a2530a1fd67f8c41d51285">HttpConnection::getResponseHeader</a>  (<a class="el" href="classString.html" title="The string class. ">String</a> headerName, <a class="el" href="classString.html" title="The string class. ">String</a> defaultValue=nullptr)</dt>
+<dt><a class="anchor" id="_deprecated000007"></a>Member <a class="el" href="classHttpConnection.html#a937f2f9106a2530a1fd67f8c41d51285">HttpConnection::getResponseHeader</a>  (<a class="el" href="classString.html" title="The string class. ">String</a> headerName, <a class="el" href="classString.html" title="The string class. ">String</a> defaultValue=nullptr)</dt>
 <dd>Use <code>getResponse().headers[headerName]</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000005"></a>Member <a class="el" href="classHttpConnection.html#aa1d5c9b4c59591f5c97d2f08df65a868">HttpConnection::getResponseHeaders</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000008"></a>Member <a class="el" href="classHttpConnection.html#aa1d5c9b4c59591f5c97d2f08df65a868">HttpConnection::getResponseHeaders</a>  ()</dt>
 <dd>Use <code>getResponse().headers</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000008"></a>Member <a class="el" href="classHttpConnection.html#a917b52602302f4b7f913c8da574556bf">HttpConnection::getResponseString</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000011"></a>Member <a class="el" href="classHttpConnection.html#a917b52602302f4b7f913c8da574556bf">HttpConnection::getResponseString</a>  ()</dt>
 <dd>Use <code>getResponse().stream</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000007"></a>Member <a class="el" href="classHttpConnection.html#ac5a7f0ec9c6273ca3519a8b5d078034f">HttpConnection::getServerDate</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000010"></a>Member <a class="el" href="classHttpConnection.html#ac5a7f0ec9c6273ca3519a8b5d078034f">HttpConnection::getServerDate</a>  ()</dt>
 <dd>Use <code>getResponse().headers[HTTP_HEADER_DATE]</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000009"></a>Member <a class="el" href="classHttpRequest.html#aa0070188501551d1a063e2316a376379">HttpRequest::setPostParameters</a>  (const <a class="el" href="classHttpParams.html">HttpParams</a> &amp;params)</dt>
+<dt><a class="anchor" id="_deprecated000012"></a>Member <a class="el" href="classHttpRequest.html#aa0070188501551d1a063e2316a376379">HttpRequest::setPostParameters</a>  (const <a class="el" href="classHttpParams.html">HttpParams</a> &amp;params)</dt>
 <dd>This method is deprecated and will be removed in the coming versions. Please set postParams directly, i.e. request.postParams = params  </dd>
-<dt><a class="anchor" id="_deprecated000010"></a>Member <a class="el" href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">HttpResponse::forbidden</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000013"></a>Member <a class="el" href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">HttpResponse::forbidden</a>  ()</dt>
 <dd>Use response.code = HTTP_STATUS_FORBIDDEN instead  </dd>
-<dt><a class="anchor" id="_deprecated000011"></a>Member <a class="el" href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">HttpResponse::notFound</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000014"></a>Member <a class="el" href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">HttpResponse::notFound</a>  ()</dt>
 <dd>Use response.code = HTTP_STATUS_NOT_FOUND instead  </dd>
-<dt><a class="anchor" id="_deprecated000012"></a>Member <a class="el" href="classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d">HttpResponse::sendJsonObject</a>  (<a class="el" href="classJsonObjectStream.html" title="JsonObject stream class. ">JsonObjectStream</a> *newJsonStreamInstance)</dt>
+<dt><a class="anchor" id="_deprecated000015"></a>Member <a class="el" href="classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d">HttpResponse::sendJsonObject</a>  (<a class="el" href="classJsonObjectStream.html" title="JsonObject stream class. ">JsonObjectStream</a> *newJsonStreamInstance)</dt>
 <dd>use response.sendDataStream(stream, MIME_JSON) instead  </dd>
 <dt><a class="anchor" id="_deprecated000001"></a>Member <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">IDataSourceStream::length</a>  ()</dt>
 <dd>This method is deprecated and will be removed in the coming versions. Please, use available() instead.  </dd>
-<dt><a class="anchor" id="_deprecated000016"></a>Member <a class="el" href="classMqttClient.html#aa6ee6d98c3810d5f3ef6b8f593bbd4c5">MqttClient::connect</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;clientName, const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;username, const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;password, boolean useSsl=false, uint32_t sslOptions=0)</dt>
-<dd>Use connect(const String&amp; url, const String&amp; uniqueClientName) instead  </dd>
-<dt><a class="anchor" id="_deprecated000015"></a>Member <a class="el" href="classMqttClient.html#a3cd10cecb2ca557b7d77e2e6a4d50116">MqttClient::connect</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;clientName, boolean useSsl=false, uint32_t sslOptions=0)</dt>
-<dd>Use connect(const String&amp; url, const String&amp; uniqueClientName) instead  </dd>
-<dt><a class="anchor" id="_deprecated000013"></a>Member <a class="el" href="classMqttClient.html#ae81fd0caf267d95579f2b17689a94b9d">MqttClient::MqttClient</a>  (<a class="el" href="classString.html" title="The string class. ">String</a> serverHost, int serverPort, MqttStringSubscriptionCallback callback=NULL)</dt>
-<dd>Use instead the empty contructor  </dd>
-<dt><a class="anchor" id="_deprecated000014"></a>Member <a class="el" href="classMqttClient.html#a96ab456e6b4d872eddf26e7e454dd2de">MqttClient::MqttClient</a>  (<a class="el" href="classIPAddress.html">IPAddress</a> serverIp, int serverPort, MqttStringSubscriptionCallback callback=NULL)</dt>
-<dd>Use instead the empty contructor  </dd>
-<dt><a class="anchor" id="_deprecated000018"></a>Member <a class="el" href="group__timer.html#ga08a7832f90bfcbee7ab526960060abfd">Timer::initializeMs</a>  (uint32_t milliseconds, TimerDelegate delegateFunction=nullptr)</dt>
+<dt><a class="anchor" id="_deprecated000017"></a>Member <a class="el" href="classMqttClient.html#ad3421fa426b409d7951c368306f321f9">MqttClient::publishWithQoS</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;topic, const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;message, int QoS, bool retained=false, MqttMessageDeliveredCallback onDelivery=NULL)</dt>
+<dd>Use publish(const <a class="el" href="classString.html" title="The string class. ">String</a>&amp; topic, const <a class="el" href="classString.html" title="The string class. ">String</a>&amp; message, uint8_t flags = 0) instead. If you want to have a callback that should be triggered on successful delivery of messages then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.  </dd>
+<dt><a class="anchor" id="_deprecated000018"></a>Member <a class="el" href="classMqttClient.html#a08119a1be647d78053ded9956c8a4c06">MqttClient::setCallback</a>  (MqttStringSubscriptionCallback subscriptionCallback=NULL)</dt>
+<dd>Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.  </dd>
+<dt><a class="anchor" id="_deprecated000016"></a>Member <a class="el" href="classMqttClient.html#aaa0e59ce9d22a30b6079ca597ab03881">MqttClient::setWill</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;topic, const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;message, int QoS, bool retained=false)</dt>
+<dd>Use setWill(const String&amp; topic, const String&amp; message,uint8_t flags) instead  </dd>
+<dt><a class="anchor" id="_deprecated000020"></a>Member <a class="el" href="group__timer.html#ga08a7832f90bfcbee7ab526960060abfd">Timer::initializeMs</a>  (uint32_t milliseconds, TimerDelegate delegateFunction=nullptr)</dt>
 <dd>Use initializeMs(xx, TimerDelegateStdFunction); instead.  </dd>
-<dt><a class="anchor" id="_deprecated000019"></a>Member <a class="el" href="group__timer.html#gad75f5acb2413187e064eee4c58bd0dcc">Timer::initializeUs</a>  (uint32_t microseconds, TimerDelegate delegateFunction=nullptr)</dt>
+<dt><a class="anchor" id="_deprecated000021"></a>Member <a class="el" href="group__timer.html#gad75f5acb2413187e064eee4c58bd0dcc">Timer::initializeUs</a>  (uint32_t microseconds, TimerDelegate delegateFunction=nullptr)</dt>
 <dd>Use initializeMs(xx, TimerDelegateStdFunction); instead.  </dd>
-<dt><a class="anchor" id="_deprecated000017"></a>Member <a class="el" href="classWebsocketClient.html#a11a66333f7a1052421efffe191de3bc5">WebsocketClient::disconnect</a>  ()</dt>
+<dt><a class="anchor" id="_deprecated000019"></a>Member <a class="el" href="classWebsocketClient.html#a11a66333f7a1052421efffe191de3bc5">WebsocketClient::disconnect</a>  ()</dt>
 <dd>use close() instead </dd>
 </dl>
 </div></div><!-- contents -->

@@ -4,7 +4,6 @@ var classWebsocketResource =
     [ "~WebsocketResource", "classWebsocketResource.html#aa584e437e0a61d1bc03c913f8ddac349", null ],
     [ "checkHeaders", "classWebsocketResource.html#a1c734e07f6240f0d2494556464162e50", null ],
     [ "onConnect", "classWebsocketResource.html#a1dd792067c820be168269c083d2cf498", null ],
-    [ "processData", "classWebsocketResource.html#a90df74bb67d552eb3aec6928eb8d62a1", null ],
     [ "setBinaryHandler", "classWebsocketResource.html#af0875e6768fc0f74fd21e88822693346", null ],
     [ "setConnectionHandler", "classWebsocketResource.html#a1c84e6cb43aa524ca62e2e4ec91da804", null ],
     [ "setDisconnectionHandler", "classWebsocketResource.html#a9f1ca831155b1458920670fd1272c245", null ],

@@ -4,7 +4,6 @@ var classWsCommandHandlerResource =
     [ "checkHeaders", "classWsCommandHandlerResource.html#ae2504a3e5162694161a69979d22b782e", null ],
     [ "onConnect", "classWsCommandHandlerResource.html#a1dd792067c820be168269c083d2cf498", null ],
     [ "onMessage", "classWsCommandHandlerResource.html#a85d8ce936f51f568be0a238dfaadbe33", null ],
-    [ "processData", "classWsCommandHandlerResource.html#a90df74bb67d552eb3aec6928eb8d62a1", null ],
     [ "setBinaryHandler", "classWsCommandHandlerResource.html#af0875e6768fc0f74fd21e88822693346", null ],
     [ "setConnectionHandler", "classWsCommandHandlerResource.html#a1c84e6cb43aa524ca62e2e4ec91da804", null ],
     [ "setDisconnectionHandler", "classWsCommandHandlerResource.html#a9f1ca831155b1458920670fd1272c245", null ],

@@ -24,6 +24,9 @@ var searchData=
   ['flush_5frx',['flush_rx',['../classRF24.html#a575c061519e7820e1850ad380c617d95',1,'RF24']]],
   ['flush_5ftx',['flush_tx',['../classRF24.html#adb7915b1d2661a82137573344f659e81',1,'RF24']]],
   ['forbidden',['forbidden',['../classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad',1,'HttpResponse']]],
+  ['format',['format',['../classDateTime.html#aa0f4700ab8dfaf8462ac7f84a122be04',1,'DateTime']]],
+  ['fromhttpdate',['fromHttpDate',['../classDateTime.html#ab1efe126d4de99fdb6a2dee23dc5d7bf',1,'DateTime']]],
   ['fromstring',['fromString',['../classHttpHeaders.html#acd4421b68c3c3d8992bec3ada744c938',1,'HttpHeaders']]],
+  ['fromunixtime',['fromUnixTime',['../classDateTime.html#a2f363795a6cb04d6f0639f5485606223',1,'DateTime']]],
   ['functioncaller',['FunctionCaller',['../classFunctionCaller.html#a57489bd2e7cd5a17d454c5d3ab98cecc',1,'FunctionCaller']]]
 ];

@@ -155,19 +155,19 @@ Macros</h2></td></tr>
 <tr class="separator:ga94ff5ea07f4794d50dc5d01096add141"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga18f7fc096014902f56ff651a8c59e5b2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#ga18f7fc096014902f56ff651a8c59e5b2">numberOfMinutes</a>(_time_)&#160;&#160;&#160;((_time_ / SECS_PER_MIN) % SECS_PER_MIN)</td></tr>
 <tr class="separator:ga18f7fc096014902f56ff651a8c59e5b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9e92a9faf927c4981f9fd8bf9b055900"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#ga9e92a9faf927c4981f9fd8bf9b055900">numberOfHours</a>(_time_)&#160;&#160;&#160;(( _time_% SECS_PER_DAY) / SECS_PER_HOUR)</td></tr>
+<tr class="memitem:ga9e92a9faf927c4981f9fd8bf9b055900"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#ga9e92a9faf927c4981f9fd8bf9b055900">numberOfHours</a>(_time_)&#160;&#160;&#160;((_time_ % SECS_PER_DAY) / SECS_PER_HOUR)</td></tr>
 <tr class="separator:ga9e92a9faf927c4981f9fd8bf9b055900"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa94d1e45a936805cd2446037978d6b42"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#gaa94d1e45a936805cd2446037978d6b42">dayOfWeek</a>(_time_)&#160;&#160;&#160;(( _time_ / SECS_PER_DAY + 4)  % DAYS_PER_WEEK)</td></tr>
+<tr class="memitem:gaa94d1e45a936805cd2446037978d6b42"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#gaa94d1e45a936805cd2446037978d6b42">dayOfWeek</a>(_time_)&#160;&#160;&#160;((_time_ / SECS_PER_DAY + 4) % DAYS_PER_WEEK)</td></tr>
 <tr class="separator:gaa94d1e45a936805cd2446037978d6b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga663e6da77405eb7d27389c8829b4e4a7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#ga663e6da77405eb7d27389c8829b4e4a7">elapsedDays</a>(_time_)&#160;&#160;&#160;( _time_ / SECS_PER_DAY)</td></tr>
+<tr class="memitem:ga663e6da77405eb7d27389c8829b4e4a7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#ga663e6da77405eb7d27389c8829b4e4a7">elapsedDays</a>(_time_)&#160;&#160;&#160;(_time_ / SECS_PER_DAY)</td></tr>
 <tr class="separator:ga663e6da77405eb7d27389c8829b4e4a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7f05f38a481674d6bdd4c7da1a497279"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#ga7f05f38a481674d6bdd4c7da1a497279">elapsedSecsToday</a>(_time_)&#160;&#160;&#160;(_time_ % SECS_PER_DAY)</td></tr>
 <tr class="separator:ga7f05f38a481674d6bdd4c7da1a497279"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae8a46cb159a8169121a33e39a520b5a8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#gae8a46cb159a8169121a33e39a520b5a8">previousMidnight</a>(_time_)&#160;&#160;&#160;(( _time_ / SECS_PER_DAY) * SECS_PER_DAY)</td></tr>
+<tr class="memitem:gae8a46cb159a8169121a33e39a520b5a8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#gae8a46cb159a8169121a33e39a520b5a8">previousMidnight</a>(_time_)&#160;&#160;&#160;((_time_ / SECS_PER_DAY) * SECS_PER_DAY)</td></tr>
 <tr class="separator:gae8a46cb159a8169121a33e39a520b5a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga78fd408d137a42cd0d9a1e5f64e4a1dc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#ga78fd408d137a42cd0d9a1e5f64e4a1dc">nextMidnight</a>(_time_)&#160;&#160;&#160;( <a class="el" href="group__datetime.html#gae8a46cb159a8169121a33e39a520b5a8">previousMidnight</a>(_time_)  + SECS_PER_DAY )</td></tr>
+<tr class="memitem:ga78fd408d137a42cd0d9a1e5f64e4a1dc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#ga78fd408d137a42cd0d9a1e5f64e4a1dc">nextMidnight</a>(_time_)&#160;&#160;&#160;(<a class="el" href="group__datetime.html#gae8a46cb159a8169121a33e39a520b5a8">previousMidnight</a>(_time_) + SECS_PER_DAY)</td></tr>
 <tr class="separator:ga78fd408d137a42cd0d9a1e5f64e4a1dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9275d0472258b52b713ab8acc152027b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#ga9275d0472258b52b713ab8acc152027b">elapsedSecsThisWeek</a>(_time_)&#160;&#160;&#160;(<a class="el" href="group__datetime.html#ga7f05f38a481674d6bdd4c7da1a497279">elapsedSecsToday</a>(_time_) +  (<a class="el" href="group__datetime.html#gaa94d1e45a936805cd2446037978d6b42">dayOfWeek</a>(_time_) * SECS_PER_DAY) )</td></tr>
+<tr class="memitem:ga9275d0472258b52b713ab8acc152027b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__datetime.html#ga9275d0472258b52b713ab8acc152027b">elapsedSecsThisWeek</a>(_time_)&#160;&#160;&#160;(<a class="el" href="group__datetime.html#ga7f05f38a481674d6bdd4c7da1a497279">elapsedSecsToday</a>(_time_) + (<a class="el" href="group__datetime.html#gaa94d1e45a936805cd2446037978d6b42">dayOfWeek</a>(_time_) * SECS_PER_DAY))</td></tr>
 <tr class="separator:ga9275d0472258b52b713ab8acc152027b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
@@ -202,7 +202,7 @@ Enumerations</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">_time_</td><td>)</td>
-          <td>&#160;&#160;&#160;(( _time_ / SECS_PER_DAY + 4)  % DAYS_PER_WEEK)</td>
+          <td>&#160;&#160;&#160;((_time_ / SECS_PER_DAY + 4) % DAYS_PER_WEEK)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -219,7 +219,7 @@ Enumerations</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">_time_</td><td>)</td>
-          <td>&#160;&#160;&#160;( _time_ / SECS_PER_DAY)</td>
+          <td>&#160;&#160;&#160;(_time_ / SECS_PER_DAY)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -236,7 +236,7 @@ Enumerations</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">_time_</td><td>)</td>
-          <td>&#160;&#160;&#160;(<a class="el" href="group__datetime.html#ga7f05f38a481674d6bdd4c7da1a497279">elapsedSecsToday</a>(_time_) +  (<a class="el" href="group__datetime.html#gaa94d1e45a936805cd2446037978d6b42">dayOfWeek</a>(_time_) * SECS_PER_DAY) )</td>
+          <td>&#160;&#160;&#160;(<a class="el" href="group__datetime.html#ga7f05f38a481674d6bdd4c7da1a497279">elapsedSecsToday</a>(_time_) + (<a class="el" href="group__datetime.html#gaa94d1e45a936805cd2446037978d6b42">dayOfWeek</a>(_time_) * SECS_PER_DAY))</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -270,7 +270,7 @@ Enumerations</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">_time_</td><td>)</td>
-          <td>&#160;&#160;&#160;( <a class="el" href="group__datetime.html#gae8a46cb159a8169121a33e39a520b5a8">previousMidnight</a>(_time_)  + SECS_PER_DAY )</td>
+          <td>&#160;&#160;&#160;(<a class="el" href="group__datetime.html#gae8a46cb159a8169121a33e39a520b5a8">previousMidnight</a>(_time_) + SECS_PER_DAY)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -287,7 +287,7 @@ Enumerations</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">_time_</td><td>)</td>
-          <td>&#160;&#160;&#160;(( _time_% SECS_PER_DAY) / SECS_PER_HOUR)</td>
+          <td>&#160;&#160;&#160;((_time_ % SECS_PER_DAY) / SECS_PER_HOUR)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -338,7 +338,7 @@ Enumerations</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">_time_</td><td>)</td>
-          <td>&#160;&#160;&#160;(( _time_ / SECS_PER_DAY) * SECS_PER_DAY)</td>
+          <td>&#160;&#160;&#160;((_time_ / SECS_PER_DAY) * SECS_PER_DAY)</td>
         </tr>
       </table>
 </div><div class="memdoc">

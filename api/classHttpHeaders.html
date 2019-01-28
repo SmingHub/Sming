@@ -106,10 +106,11 @@ $(document).ready(function(){initNavTree('classHttpHeaders.html','');});
 
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pri-types">Private Types</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classHttpHeaders-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">HttpHeaders Class Reference</div>  </div>
@@ -130,12 +131,6 @@ Inheritance diagram for HttpHeaders:</div>
 </map>
  </div></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a3578cedd0ccd29e695882bcdb4232c70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3578cedd0ccd29e695882bcdb4232c70"></a>
-typedef bool(*&#160;</td><td class="memItemRight" valign="bottom"><b>comparator</b> )(const HttpHeaderFieldName &amp;, const HttpHeaderFieldName &amp;)</td></tr>
-<tr class="separator:a3578cedd0ccd29e695882bcdb4232c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:adcca2dc573e69782fc1a5eb184723c9b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adcca2dc573e69782fc1a5eb184723c9b"></a>
@@ -162,12 +157,30 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (const <
 <tr class="memitem:a39dfc8aff6abe7dcd23a5556fb0383e8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39dfc8aff6abe7dcd23a5556fb0383e8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>remove</b> (const <a class="el" href="classString.html">String</a> &amp;name)</td></tr>
 <tr class="separator:a39dfc8aff6abe7dcd23a5556fb0383e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae135628ac6bb2c9e39a827f2d648f18e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae135628ac6bb2c9e39a827f2d648f18e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setMultiple</b> (const <a class="el" href="classHttpHeaders.html">HttpHeaders</a> &amp;headers)</td></tr>
+<tr class="separator:ae135628ac6bb2c9e39a827f2d648f18e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ba911067fffa760d3a1eb48378529ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ba911067fffa760d3a1eb48378529ea"></a>
 <a class="el" href="classHttpHeaders.html">HttpHeaders</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classHttpHeaders.html">HttpHeaders</a> &amp;headers)</td></tr>
 <tr class="separator:a5ba911067fffa760d3a1eb48378529ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a530939377882fbb86604c6b71f7802a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a530939377882fbb86604c6b71f7802a3"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
 <tr class="separator:a530939377882fbb86604c6b71f7802a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:affa499da692928fda398efce62ffd61c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpHeaders.html#affa499da692928fda398efce62ffd61c">toString</a> (const <a class="el" href="classString.html">String</a> &amp;name, const <a class="el" href="classString.html">String</a> &amp;value)</td></tr>
+<tr class="memdesc:affa499da692928fda398efce62ffd61c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produce a string for output in the HTTP header, with line ending.  <a href="#affa499da692928fda398efce62ffd61c">More...</a><br/></td></tr>
+<tr class="separator:affa499da692928fda398efce62ffd61c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
+Private Types</h2></td></tr>
+<tr class="memitem:a3578cedd0ccd29e695882bcdb4232c70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3578cedd0ccd29e695882bcdb4232c70"></a>
+typedef bool(*&#160;</td><td class="memItemRight" valign="bottom"><b>comparator</b> )(const HttpHeaderFieldName &amp;, const HttpHeaderFieldName &amp;)</td></tr>
+<tr class="separator:a3578cedd0ccd29e695882bcdb4232c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
 <tr class="memitem:a7d6a983573e5e82d11cb5025ef647766"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d6a983573e5e82d11cb5025ef647766"></a>
 unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>count</b> () const</td></tr>
 <tr class="separator:a7d6a983573e5e82d11cb5025ef647766"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -211,14 +224,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setMultiple</b> (cons
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setNullValue</b> (const <a class="el" href="classString.html">String</a> &amp;nullv)</td></tr>
 <tr class="separator:a56eb2196a19098d71feace56812bed31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:affa499da692928fda398efce62ffd61c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpHeaders.html#affa499da692928fda398efce62ffd61c">toString</a> (const <a class="el" href="classString.html">String</a> &amp;name, const <a class="el" href="classString.html">String</a> &amp;value)</td></tr>
-<tr class="memdesc:affa499da692928fda398efce62ffd61c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produce a string for output in the HTTP header, with line ending.  <a href="#affa499da692928fda398efce62ffd61c">More...</a><br/></td></tr>
-<tr class="separator:affa499da692928fda398efce62ffd61c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
 <tr class="memitem:a655e048c02f3bdbc0c3f300d5a73ab88"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a655e048c02f3bdbc0c3f300d5a73ab88"></a>
 HttpHeaderFieldName **&#160;</td><td class="memItemRight" valign="bottom"><b>keys</b></td></tr>
 <tr class="separator:a655e048c02f3bdbc0c3f300d5a73ab88"><td class="memSeparator" colspan="2">&#160;</td></tr>

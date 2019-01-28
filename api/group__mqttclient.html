@@ -100,7 +100,8 @@ $(document).ready(function(){initNavTree('group__mqttclient.html','');});
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">MQTT client<div class="ingroups"><a class="el" href="group__tcpclient.html">Clients</a></div></div>  </div>
 </div><!--header-->
@@ -116,20 +117,52 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:gafbe17db0733539be88c87a5fb56264a4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafbe17db0733539be88c87a5fb56264a4"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_REQUEST_POOL_SIZE</b>&#160;&#160;&#160;10</td></tr>
+<tr class="separator:gafbe17db0733539be88c87a5fb56264a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7da3c245f8b7f405d95a2867649f38da"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7da3c245f8b7f405d95a2867649f38da"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_CLIENT_CONNECTED</b>&#160;&#160;&#160;bit(1)</td></tr>
+<tr class="separator:ga7da3c245f8b7f405d95a2867649f38da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae10ef9fca4c65d44735ec8fa26fd5081"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae10ef9fca4c65d44735ec8fa26fd5081"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_FLAG_RETAINED</b>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:gae10ef9fca4c65d44735ec8fa26fd5081"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga44ac1be7b53998b8e15982d1de3ea34b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga44ac1be7b53998b8e15982d1de3ea34b"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_MAX_BUFFER_SIZE</b>&#160;&#160;&#160;1024</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_MAX_BUFFER_SIZE</b>&#160;&#160;&#160;MQTT_PAYLOAD_LENGTH</td></tr>
 <tr class="separator:ga44ac1be7b53998b8e15982d1de3ea34b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf3068e6873d3332b0e5f3aa580806c3b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf3068e6873d3332b0e5f3aa580806c3b"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_MSG_PUBREC</b>&#160;&#160;&#160;MQTT_TYPE_PUBREC</td></tr>
+<tr class="separator:gaf3068e6873d3332b0e5f3aa580806c3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:gaf15209166818832b0c4ad94d520235a5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf15209166818832b0c4ad94d520235a5"></a>
+<tr class="memitem:gae8678fa4a7e2a210ee21e879b8d86f94"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae8678fa4a7e2a210ee21e879b8d86f94"></a>
 typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void(<a class="el" href="classString.html">String</a> <br class="typebreak"/>
 topic, <a class="el" href="classString.html">String</a> message)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MqttStringSubscriptionCallback</b></td></tr>
-<tr class="separator:gaf15209166818832b0c4ad94d520235a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6ce02600b8a3f9d0eb4bdd68bfc92df0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6ce02600b8a3f9d0eb4bdd68bfc92df0"></a>
+<tr class="separator:gae8678fa4a7e2a210ee21e879b8d86f94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2de3392cb10bb78a5c523049ea2daaf2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2de3392cb10bb78a5c523049ea2daaf2"></a>
 typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void(uint16_t <br class="typebreak"/>
 msgId, int type)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MqttMessageDeliveredCallback</b></td></tr>
-<tr class="separator:ga6ce02600b8a3f9d0eb4bdd68bfc92df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:ga2de3392cb10bb78a5c523049ea2daaf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga67cd63186d2b04feaf0ebd222a776c1b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga67cd63186d2b04feaf0ebd222a776c1b"></a>
+typedef std::function&lt; int(<a class="el" href="classMqttClient.html">MqttClient</a> <br class="typebreak"/>
+&amp;client, mqtt_message_t <br class="typebreak"/>
+*message)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MqttDelegate</b></td></tr>
+<tr class="separator:ga67cd63186d2b04feaf0ebd222a776c1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga69c39c276df151d7619d356d56ec960e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga69c39c276df151d7619d356d56ec960e"></a>
+typedef <a class="el" href="classObjectQueue.html">ObjectQueue</a><br class="typebreak"/>
+&lt; mqtt_message_t, <br class="typebreak"/>
+MQTT_REQUEST_POOL_SIZE &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MqttRequestQueue</b></td></tr>
+<tr class="separator:ga69c39c276df151d7619d356d56ec960e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ga4962cf68fc8b67cdc2fdd8d5be59ff00"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>MqttClientState</b> { <br/>
+&#160;&#160;<b>eMCS_Ready</b> = 0, 
+<br/>
+&#160;&#160;<b>eMCS_SendingData</b>
+<br/>
+ }</td></tr>
+<tr class="separator:ga4962cf68fc8b67cdc2fdd8d5be59ff00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Provides MQTT client. </p>

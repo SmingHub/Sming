@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: mqtt_broker_handle_t Struct Reference</title>
+<title>Sming Framework API: Member List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -87,7 +87,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('structmqtt__broker__handle__t.html','');});
+$(document).ready(function(){initNavTree('structMqttPayloadParserState.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -105,59 +105,20 @@ $(document).ready(function(){initNavTree('structmqtt__broker__handle__t.html',''
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structmqtt__broker__handle__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">mqtt_broker_handle_t Struct Reference</div>  </div>
+<div class="title">MqttPayloadParserState Member List</div>  </div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:a92aed5f346d3407642bf44950727393f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a92aed5f346d3407642bf44950727393f"></a>
-void *&#160;</td><td class="memItemRight" valign="bottom"><b>socket_info</b></td></tr>
-<tr class="separator:a92aed5f346d3407642bf44950727393f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a420e36e20511ac5b84d390d89cd8a175"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a420e36e20511ac5b84d390d89cd8a175"></a>
-int(*&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> )(void *socket_info, const void *buf, unsigned int count)</td></tr>
-<tr class="separator:a420e36e20511ac5b84d390d89cd8a175"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f9fdb05560127c6c421db782f51032d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f9fdb05560127c6c421db782f51032d"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><b>clientid</b></td></tr>
-<tr class="separator:a0f9fdb05560127c6c421db782f51032d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a455e056d0808b9985959dfd9a1119b13"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a455e056d0808b9985959dfd9a1119b13"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><b>username</b></td></tr>
-<tr class="separator:a455e056d0808b9985959dfd9a1119b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a36da0ead08ea5ad1b9f505e6f6b179"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0a36da0ead08ea5ad1b9f505e6f6b179"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><b>password</b></td></tr>
-<tr class="separator:a0a36da0ead08ea5ad1b9f505e6f6b179"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c13600b493f9de4c681e8f613174e26"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8c13600b493f9de4c681e8f613174e26"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>will_retain</b></td></tr>
-<tr class="separator:a8c13600b493f9de4c681e8f613174e26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e072b6ccb3d43b3900915b4a7a6de5b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9e072b6ccb3d43b3900915b4a7a6de5b"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>will_qos</b></td></tr>
-<tr class="separator:a9e072b6ccb3d43b3900915b4a7a6de5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e625c7dc7f472550be1239d5d44d78d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2e625c7dc7f472550be1239d5d44d78d"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><b>will_topic</b></td></tr>
-<tr class="separator:a2e625c7dc7f472550be1239d5d44d78d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08a89a61e2245b694db6a27537b697f4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a08a89a61e2245b694db6a27537b697f4"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><b>will_message</b></td></tr>
-<tr class="separator:a08a89a61e2245b694db6a27537b697f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe6a10fec995a17c758f57a47fdec3df"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe6a10fec995a17c758f57a47fdec3df"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>clean_session</b></td></tr>
-<tr class="separator:abe6a10fec995a17c758f57a47fdec3df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb7402c8cdef8cd741361db4408c4a7f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adb7402c8cdef8cd741361db4408c4a7f"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>seq</b></td></tr>
-<tr class="separator:adb7402c8cdef8cd741361db4408c4a7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ab69668005e780ba5d967f9407a1226"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9ab69668005e780ba5d967f9407a1226"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>alive</b></td></tr>
-<tr class="separator:a9ab69668005e780ba5d967f9407a1226"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-</div><!-- contents -->
+
+<p>This is the complete list of members for <a class="el" href="structMqttPayloadParserState.html">MqttPayloadParserState</a>, including all inherited members.</p>
+<table class="directory">
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>offset</b> (defined in <a class="el" href="structMqttPayloadParserState.html">MqttPayloadParserState</a>)</td><td class="entry"><a class="el" href="structMqttPayloadParserState.html">MqttPayloadParserState</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>userData</b> (defined in <a class="el" href="structMqttPayloadParserState.html">MqttPayloadParserState</a>)</td><td class="entry"><a class="el" href="structMqttPayloadParserState.html">MqttPayloadParserState</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="structmqtt__broker__handle__t.html">mqtt_broker_handle_t</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

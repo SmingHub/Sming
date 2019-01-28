@@ -19,6 +19,7 @@ var searchData=
   ['spisoft',['SPISoft',['../classSPISoft.html',1,'']]],
   ['stationclass',['StationClass',['../classStationClass.html',1,'']]],
   ['stream',['Stream',['../classStream.html',1,'']]],
+  ['streamchain',['StreamChain',['../classStreamChain.html',1,'']]],
   ['streamtransformer',['StreamTransformer',['../classStreamTransformer.html',1,'']]],
   ['string',['String',['../classString.html',1,'']]],
   ['stringsumhelper',['StringSumHelper',['../classStringSumHelper.html',1,'']]],
