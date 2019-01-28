@@ -75,6 +75,9 @@ void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_excep
 int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
 void xthal_set_intenable(unsigned);
 
+extern void ets_wdt_enable(void);
+extern void ets_wdt_disable(void);
+
 #endif
 
 #define EXCEPTION_GDB_SP_OFFSET 0x100
