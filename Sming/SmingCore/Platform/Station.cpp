@@ -157,11 +157,11 @@ IPAddress StationClass::getIP()
 	return info.ip;
 }
 
-String StationClass::getMAC()
+String StationClass::getMAC(char sep)
 {
 	uint8 hwaddr[6];
 	if(wifi_get_macaddr(STATION_IF, hwaddr))
-		return makeHexString(hwaddr, sizeof(hwaddr), ':');
+		return makeHexString(hwaddr, sizeof(hwaddr), sep);
 	else
 		return nullptr;
 }

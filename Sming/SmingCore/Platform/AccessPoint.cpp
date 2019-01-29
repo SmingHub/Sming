@@ -138,11 +138,11 @@ bool AccessPointClass::setIP(IPAddress address)
 	return true;
 }
 
-String AccessPointClass::getMAC()
+String AccessPointClass::getMAC(char sep)
 {
 	uint8 hwaddr[6];
 	if(wifi_get_macaddr(SOFTAP_IF, hwaddr))
-		return makeHexString(hwaddr, sizeof(hwaddr), ':');
+		return makeHexString(hwaddr, sizeof(hwaddr), sep);
 	else
 		return nullptr;
 }
