@@ -331,7 +331,7 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		ReadWriteStream* payloadStream = nullptr;
 		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH &&
 		   outgoingMessage->publish.content.length == MQTT_PUBLISH_STREAM) {
-			ReadWriteStream* payloadStream = reinterpret_cast<ReadWriteStream*>(outgoingMessage->publish.content.data);
+			payloadStream = reinterpret_cast<ReadWriteStream*>(outgoingMessage->publish.content.data);
 			if(payloadStream) {
 				outgoingMessage->publish.content.length = payloadStream->available();
 			}
