@@ -21,8 +21,8 @@ TcpClient::TcpClient(bool autoDestruct) : TcpConnection(autoDestruct), state(eTC
 	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
-TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend /* = nullptr*/,
-					 TcpClientDataDelegate onReceive /* = nullptr*/)
+TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend,
+					 TcpClientDataDelegate onReceive)
 	: TcpConnection(false), state(eTCS_Ready)
 {
 	completed = onCompleted;
@@ -31,7 +31,7 @@ TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelega
 	timeOut = TCP_CLIENT_TIMEOUT;
 }
 
-TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive /* = nullptr*/)
+TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive)
 	: TcpConnection(false), state(eTCS_Ready)
 {
 	completed = onCompleted;
@@ -64,6 +64,13 @@ void TcpClient::freeStreams()
 	stream = nullptr;
 }
 
+void TcpClient::setBuffer(ReadWriteStream* stream)
+{
+	freeStreams();
+	buffer = stream;
+	this->stream = buffer;
+}
+
 bool TcpClient::connect(String server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	if(isProcessing())
@@ -87,49 +94,19 @@ bool TcpClient::sendString(const String& data, bool forceCloseAfterSent /* = fal
 	return send(data.c_str(), data.length(), forceCloseAfterSent);
 }
 
-bool TcpClient::send(IDataSourceStream* stream, bool forceCloseAfterSent)
-{
-	if(stream == nullptr) {
-		debug_e("TcpClient::send() ERROR - supplied stream is null");
-		return false;
-	}
-
-	if(this->stream != nullptr) {
-		debug_w("TcpClient::send() - existing stream being discarded");
-		freeStreams();
-	}
-
-	this->stream = stream;
-
-	asyncTotalLen += stream->available();
-	asyncCloseAfterSent = forceCloseAfterSent;
-
-	return true;
-}
-
 bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent /* = false*/)
 {
 	if(state != eTCS_Connecting && state != eTCS_Connected)
 		return false;
 
-	if(buffer != nullptr) {
-		// We can send a user-provided stream, or use our internal buffer stream, but not both
-		if(buffer != stream) {
-			/*
-			 * Because we manage both _buffer and _stream internally this should
-			 * never happen. If it doesn, there's a problem somewhere in this class.
-			 */
-			debug_e("TcpClient::send ERROR buffer doesn't match stream");
-			debug_hex(ERR, "send data", data, len);
+	if(buffer == nullptr) {
+		setBuffer(new MemoryDataStream());
+		if(buffer == nullptr) {
 			return false;
 		}
-	} else {
-		auto buf = new MemoryDataStream();
-		send(buf, forceCloseAfterSent);
-		buffer = buf;
 	}
 
-	if(buffer->write(reinterpret_cast<const uint8_t*>(data), len) != len) {
+	if(buffer->write((const uint8_t*)data, len) != len) {
 		debug_e("TcpClient::send ERROR: Unable to store %d bytes in buffer", len);
 		return false;
 	}
@@ -276,7 +253,7 @@ err_t TcpClient::onSslConnected(SSL* ssl)
 	return hasSuccess ? ERR_OK : ERR_ABRT;
 }
 
-void TcpClient::addSslValidator(SslValidatorCallback callback, void* data /* = nullptr */)
+void TcpClient::addSslValidator(SslValidatorCallback callback, void* data)
 {
 	sslValidators.addElement(callback);
 	sslValidatorsData.addElement(data);

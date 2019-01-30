@@ -83,98 +83,68 @@ void HttpResponse::redirect(const String& location)
 
 bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)
 {
-	FileStream* fileStream;
 	String compressed = fileName + ".gz";
 	if(allowGzipFileCheck && fileExist(compressed)) {
 		debug_d("found %s", compressed.c_str());
-		fileStream = new FileStream(compressed);
+		setStream(new FileStream(compressed));
 		headers[HTTP_HEADER_CONTENT_ENCODING] = _F("gzip");
 	} else if(fileExist(fileName)) {
 		debug_d("found %s", fileName.c_str());
-		fileStream = new FileStream(fileName);
+		setStream(new FileStream(fileName));
 	} else {
+		setStream(nullptr);
 		code = HTTP_STATUS_NOT_FOUND;
 		return false;
 	}
 
-	String mime;
 	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
-		mime = ContentType::fromFullFileName(fileName);
+		String mime = ContentType::fromFullFileName(fileName);
+		if(mime)
+			setContentType(mime);
 	}
 
-	return sendDataStream(fileStream, mime);
+	return true;
 }
 
 bool HttpResponse::sendTemplate(TemplateStream* newTemplateInstance)
 {
+	setStream(newTemplateInstance);
 	if(!newTemplateInstance->isValid()) {
 		code = HTTP_STATUS_NOT_FOUND;
-		delete newTemplateInstance;
+		freeStreams();
 		return false;
 	}
 
-	String mime;
 	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
-		mime = ContentType::fromFullFileName(newTemplateInstance->getName());
-	}
-
-	return sendDataStream(newTemplateInstance, mime);
-}
-
-void HttpResponse::setBuffer(ReadWriteStream* stream)
-{
-	freeStreams();
-	buffer = stream;
-
-	this->stream = buffer;
-}
-
-void HttpResponse::setBodyStream(IDataSourceStream* stream)
-{
-	if(this->stream != nullptr) {
-		SYSTEM_ERROR("Stream already created");
-		if(buffer == this->stream) {
-			buffer = nullptr;
+		String mime = ContentType::fromFullFileName(newTemplateInstance->getName());
+		if(mime) {
+			setContentType(mime);
 		}
-		delete this->stream;
 	}
 
-	this->stream = stream;
-}
-
-void HttpResponse::freeStreams()
-{
-	if(buffer != nullptr) {
-		if(buffer != stream) {
-			debug_e("HttpResponse: buffer doesn't match stream");
-			delete buffer;
-		}
-		buffer = nullptr;
+	if(!headers.contains(HTTP_HEADER_TRANSFER_ENCODING) && stream->available() < 0) {
+		headers[HTTP_HEADER_TRANSFER_ENCODING] = _F("chunked");
 	}
 
-	delete stream;
-	stream = nullptr;
+	return true;
 }
 
 bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 {
-	return sendDataStream(newJsonStreamInstance, MIME_JSON);
+	setStream(newJsonStreamInstance);
+	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
+		setContentType(MIME_JSON);
+	}
+
+	return true;
 }
 
 bool HttpResponse::sendDataStream(IDataSourceStream* newDataStream, const String& reqContentType)
 {
-	if(stream != nullptr) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = nullptr;
-	}
+	setStream(newDataStream);
+
 	if(reqContentType) {
 		setContentType(reqContentType);
-	}
-	stream = newDataStream;
-
-	if(!headers.contains(HTTP_HEADER_TRANSFER_ENCODING) && stream->available() < 0) {
-		headers[HTTP_HEADER_TRANSFER_ENCODING] = _F("chunked");
 	}
 
 	return true;
@@ -206,4 +176,44 @@ void HttpResponse::reset()
 	code = HTTP_STATUS_OK;
 	headers.clear();
 	freeStreams();
+}
+
+void HttpResponse::freeStreams()
+{
+	// Consistency check
+	if(buffer != nullptr) {
+		if(buffer != stream) {
+			debug_e("HttpResponse: buffer doesn't match stream");
+			delete buffer;
+		}
+		buffer = nullptr;
+	}
+
+	delete stream;
+	stream = nullptr;
+}
+
+void HttpResponse::setBuffer(ReadWriteStream* buffer)
+{
+	if(buffer == this->buffer) {
+		return;
+	}
+
+	// Must set stream first
+	setStream(buffer);
+	// Now safe to set buffer
+	this->buffer = buffer;
+}
+
+void HttpResponse::setStream(IDataSourceStream* stream)
+{
+	if(stream == this->stream) {
+		return;
+	}
+
+	if(this->stream != nullptr) {
+		SYSTEM_ERROR("Stream already created");
+		freeStreams();
+	}
+	this->stream = stream;
 }

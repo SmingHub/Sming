@@ -60,7 +60,6 @@ public:
 	 */
 	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = nullptr);
 
-	bool send(IDataSourceStream* stream, bool forceCloseAfterSent = false);
 	bool send(const char* data, uint16_t len, bool forceCloseAfterSent = false);
 	bool sendString(const String& data, bool forceCloseAfterSent = false);
 	__forceinline bool isProcessing()
@@ -138,6 +137,8 @@ protected:
 	void freeStreams();
 
 protected:
+	void setBuffer(ReadWriteStream* stream);
+
 	ReadWriteStream* buffer = nullptr;   ///< Used internally to buffer arbitrary data via send() methods
 	IDataSourceStream* stream = nullptr; ///< The currently active stream being sent
 

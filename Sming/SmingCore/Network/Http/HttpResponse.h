@@ -100,14 +100,13 @@ public:
 
 	/*
 	 * Called by connection to specify where incoming response data is written.
-	 * If this is null or not called then a circular buffer is used. See bodyReceived().
 	 */
-	void setBuffer(ReadWriteStream* stream);
+	void setBuffer(ReadWriteStream* buffer);
 
 	void freeStreams();
 
 private:
-	void setBodyStream(IDataSourceStream* stream);
+	void setStream(IDataSourceStream* stream);
 
 public:
 	unsigned code = HTTP_STATUS_OK; ///< The HTTP status response code

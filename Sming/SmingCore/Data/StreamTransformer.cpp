@@ -58,7 +58,7 @@ uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 			}
 
 			saveState();
-			int outLength = transformCallback((uint8_t*)data, len, result, resultSize);
+			size_t outLength = transformCallback((uint8_t*)data, len, result, resultSize);
 			if(outLength > tempStream->room()) {
 				restoreState();
 				break;

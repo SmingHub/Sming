@@ -265,7 +265,7 @@ int HttpConnection::onBody(const char* at, size_t length)
 	}
 
 	if(response.buffer != nullptr) {
-		int res = response.buffer->write((const uint8_t*)at, length);
+		auto res = response.buffer->write((const uint8_t*)at, length);
 		if(res != length) {
 			// unable to write the requested bytes - stop here...
 			response.freeStreams();
