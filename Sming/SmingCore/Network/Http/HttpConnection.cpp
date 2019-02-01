@@ -243,10 +243,10 @@ int HttpConnection::onHeadersComplete(const HttpHeaders& headers)
 	if(!error) {
 		// set the response stream
 		if(incomingRequest->responseStream != nullptr) {
-			response.stream = incomingRequest->responseStream;
+			response.setBuffer(incomingRequest->responseStream);
 			incomingRequest->responseStream = nullptr; // the response object will release that stream
 		} else {
-			response.stream = new LimitedMemoryStream(NETWORK_SEND_BUFFER_SIZE);
+			response.setBuffer(new LimitedMemoryStream(NETWORK_SEND_BUFFER_SIZE));
 		}
 	}
 
@@ -264,12 +264,11 @@ int HttpConnection::onBody(const char* at, size_t length)
 		return incomingRequest->requestBodyDelegate(*this, at, length);
 	}
 
-	if(response.stream != nullptr) {
-		int res = response.stream->write((const uint8_t*)at, length);
+	if(response.buffer != nullptr) {
+		auto res = response.buffer->write((const uint8_t*)at, length);
 		if(res != length) {
 			// unable to write the requested bytes - stop here...
-			delete response.stream;
-			response.stream = nullptr;
+			response.freeStreams();
 			return 1;
 		}
 	}

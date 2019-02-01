@@ -13,7 +13,7 @@
 // Produce line breaks in output encodings
 const unsigned CHARS_PER_LINE = 72;
 
-Base64OutputStream::Base64OutputStream(ReadWriteStream* stream, size_t resultSize /* = 512 */)
+Base64OutputStream::Base64OutputStream(IDataSourceStream* stream, size_t resultSize /* = 512 */)
 	: StreamTransformer(stream, nullptr, resultSize, (resultSize / 4))
 
 {

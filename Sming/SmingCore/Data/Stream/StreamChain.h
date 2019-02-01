@@ -18,7 +18,7 @@
 #define MAX_STREAM_CHAIN_SIZE 10
 #endif
 
-typedef ObjectQueue<ReadWriteStream, MAX_STREAM_CHAIN_SIZE> StreamChainQueue;
+typedef ObjectQueue<IDataSourceStream, MAX_STREAM_CHAIN_SIZE> StreamChainQueue;
 
 class StreamChain : public MultiStream
 {
@@ -27,13 +27,13 @@ public:
 	{
 	}
 
-	bool attachStream(ReadWriteStream* stream)
+	bool attachStream(IDataSourceStream* stream)
 	{
 		return queue.enqueue(stream);
 	}
 
 protected:
-	virtual ReadWriteStream* getNextStream()
+	virtual IDataSourceStream* getNextStream()
 	{
 		return queue.dequeue();
 	}

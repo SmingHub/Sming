@@ -41,12 +41,7 @@ void HttpServerConnection::setBodyParsers(BodyParsers* bodyParsers)
 int HttpServerConnection::onMessageBegin(http_parser* parser)
 {
 	// Reset Response ...
-	response.code = 200;
-	response.headers.clear();
-	if(response.stream != nullptr) {
-		delete response.stream;
-		response.stream = nullptr;
-	}
+	response.reset();
 
 	// ... and Request
 	request.setMethod((const HttpMethod)parser->method);

@@ -90,7 +90,7 @@ public:
 	bool connect(const URL& url, const String& uniqueClientName, uint32_t sslOptions = 0);
 
 	bool publish(const String& topic, const String& message, uint8_t flags = 0);
-	bool publish(const String& topic, ReadWriteStream* stream, uint8_t flags = 0);
+	bool publish(const String& topic, IDataSourceStream* stream, uint8_t flags = 0);
 
 	bool subscribe(const String& topic);
 	bool unsubscribe(const String& topic);

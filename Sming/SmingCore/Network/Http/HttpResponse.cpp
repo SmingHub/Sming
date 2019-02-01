@@ -15,11 +15,11 @@
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/JsonObjectStream.h"
 #include "Data/Stream/FileStream.h"
+#include "Data/Stream/TemplateStream.h"
 
 HttpResponse::~HttpResponse()
 {
-	delete stream;
-	stream = nullptr;
+	freeStreams();
 }
 
 HttpResponse* HttpResponse::setContentType(const String& type)
@@ -61,20 +61,14 @@ HttpResponse* HttpResponse::setHeader(const String& name, const String& value)
 
 bool HttpResponse::sendString(const String& text)
 {
-	if(stream != nullptr && stream->getStreamType() != eSST_Memory) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = nullptr;
+	if(buffer == nullptr) {
+		setBuffer(new MemoryDataStream());
+		if(buffer == nullptr) {
+			return false;
+		}
 	}
 
-	if(stream == nullptr) {
-		stream = new MemoryDataStream();
-	}
-
-	MemoryDataStream* writable = static_cast<MemoryDataStream*>(stream);
-	bool success = (writable->write((const uint8_t*)text.c_str(), text.length()) == text.length());
-
-	return success;
+	return buffer->print(text) == text.length();
 }
 
 bool HttpResponse::hasHeader(const String& name)
@@ -89,21 +83,16 @@ void HttpResponse::redirect(const String& location)
 
 bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)
 {
-	if(stream != nullptr) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = nullptr;
-	}
-
 	String compressed = fileName + ".gz";
 	if(allowGzipFileCheck && fileExist(compressed)) {
 		debug_d("found %s", compressed.c_str());
-		stream = new FileStream(compressed);
+		setStream(new FileStream(compressed));
 		headers[HTTP_HEADER_CONTENT_ENCODING] = _F("gzip");
 	} else if(fileExist(fileName)) {
 		debug_d("found %s", fileName.c_str());
-		stream = new FileStream(fileName);
+		setStream(new FileStream(fileName));
 	} else {
+		setStream(nullptr);
 		code = HTTP_STATUS_NOT_FOUND;
 		return false;
 	}
@@ -119,24 +108,18 @@ bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/
 
 bool HttpResponse::sendTemplate(TemplateStream* newTemplateInstance)
 {
-	if(stream != nullptr) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = nullptr;
-	}
-
-	stream = newTemplateInstance;
+	setStream(newTemplateInstance);
 	if(!newTemplateInstance->isValid()) {
 		code = HTTP_STATUS_NOT_FOUND;
-		delete stream;
-		stream = nullptr;
+		freeStreams();
 		return false;
 	}
 
 	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		String mime = ContentType::fromFullFileName(newTemplateInstance->getName());
-		if(mime)
+		if(mime) {
 			setContentType(mime);
+		}
 	}
 
 	if(!headers.contains(HTTP_HEADER_TRANSFER_ENCODING) && stream->available() < 0) {
@@ -148,13 +131,7 @@ bool HttpResponse::sendTemplate(TemplateStream* newTemplateInstance)
 
 bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 {
-	if(stream != nullptr) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = nullptr;
-	}
-
-	stream = newJsonStreamInstance;
+	setStream(newJsonStreamInstance);
 	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		setContentType(MIME_JSON);
 	}
@@ -162,17 +139,13 @@ bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
 	return true;
 }
 
-bool HttpResponse::sendDataStream(ReadWriteStream* newDataStream, const String& reqContentType)
+bool HttpResponse::sendDataStream(IDataSourceStream* newDataStream, const String& reqContentType)
 {
-	if(stream != nullptr) {
-		SYSTEM_ERROR("Stream already created");
-		delete stream;
-		stream = nullptr;
-	}
+	setStream(newDataStream);
+
 	if(reqContentType) {
 		setContentType(reqContentType);
 	}
-	stream = newDataStream;
 
 	return true;
 }
@@ -180,16 +153,15 @@ bool HttpResponse::sendDataStream(ReadWriteStream* newDataStream, const String& 
 String HttpResponse::getBody()
 {
 	if(stream == nullptr) {
-		return "";
+		return nullptr;
 	}
 
 	String ret;
-	if(stream->available() != -1 && stream->getStreamType() == eSST_Memory) {
-		MemoryDataStream* memory = (MemoryDataStream*)stream;
+	if(stream->available() > 0 && stream->getStreamType() == eSST_Memory) {
 		char buf[1024];
 		while(stream->available() > 0) {
-			int available = memory->readMemoryBlock(buf, 1024);
-			memory->seek(available);
+			int available = stream->readMemoryBlock(buf, 1024);
+			stream->seek(available);
 			ret += String(buf, available);
 			if(available < 1024) {
 				break;
@@ -201,8 +173,47 @@ String HttpResponse::getBody()
 
 void HttpResponse::reset()
 {
-	code = 0;
+	code = HTTP_STATUS_OK;
 	headers.clear();
+	freeStreams();
+}
+
+void HttpResponse::freeStreams()
+{
+	// Consistency check
+	if(buffer != nullptr) {
+		if(buffer != stream) {
+			debug_e("HttpResponse: buffer doesn't match stream");
+			delete buffer;
+		}
+		buffer = nullptr;
+	}
+
 	delete stream;
 	stream = nullptr;
+}
+
+void HttpResponse::setBuffer(ReadWriteStream* buffer)
+{
+	if(buffer == this->buffer) {
+		return;
+	}
+
+	// Must set stream first
+	setStream(buffer);
+	// Now safe to set buffer
+	this->buffer = buffer;
+}
+
+void HttpResponse::setStream(IDataSourceStream* stream)
+{
+	if(stream == this->stream) {
+		return;
+	}
+
+	if(this->stream != nullptr) {
+		SYSTEM_ERROR("Stream already created");
+		freeStreams();
+	}
+	this->stream = stream;
 }

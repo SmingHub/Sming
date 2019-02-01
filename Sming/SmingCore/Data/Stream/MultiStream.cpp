@@ -18,18 +18,6 @@ MultiStream::~MultiStream()
 	nextStream = nullptr;
 }
 
-size_t MultiStream::write(uint8_t charToWrite)
-{
-	// those methods should not be used...
-	return 0;
-}
-
-size_t MultiStream::write(const uint8_t* buffer, size_t size)
-{
-	// those methods should not be used...
-	return 0;
-}
-
 //Use base class documentation
 uint16_t MultiStream::readMemoryBlock(char* data, int bufSize)
 {

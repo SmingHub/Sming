@@ -258,7 +258,7 @@ bool MqttClient::publish(const String& topic, const String& content, uint8_t fla
 	return requestQueue.enqueue(message);
 }
 
-bool MqttClient::publish(const String& topic, ReadWriteStream* stream, uint8_t flags)
+bool MqttClient::publish(const String& topic, IDataSourceStream* stream, uint8_t flags)
 {
 	if(!stream || stream->available() < 1) {
 		debug_e("Sending empty stream or stream with unknown size is not supported");
@@ -328,10 +328,10 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 			outgoingMessage->common.type = MQTT_TYPE_PINGREQ;
 		}
 
-		ReadWriteStream* payloadStream = nullptr;
+		IDataSourceStream* payloadStream = nullptr;
 		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH &&
 		   outgoingMessage->publish.content.length == MQTT_PUBLISH_STREAM) {
-			payloadStream = reinterpret_cast<ReadWriteStream*>(outgoingMessage->publish.content.data);
+			payloadStream = reinterpret_cast<IDataSourceStream*>(outgoingMessage->publish.content.data);
 			if(payloadStream) {
 				outgoingMessage->publish.content.length = payloadStream->available();
 			}

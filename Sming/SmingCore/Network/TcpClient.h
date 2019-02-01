@@ -25,10 +25,6 @@ class TcpClient;
 class ReadWriteStream;
 class IPAddress;
 
-//typedef void (*TcpClientEventDelegate)(TcpClient& client, TcpConnectionEvent sourceEvent);
-//typedef void (*TcpClientBoolDelegate)(TcpClient& client, bool successful);
-//typedef bool (*TcpClientDataDelegate)(TcpClient& client, char *data, int size);
-
 typedef Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)> TcpClientEventDelegate;
 typedef Delegate<void(TcpClient& client, bool successful)> TcpClientCompleteDelegate;
 typedef Delegate<bool(TcpClient& client, char* data, int size)> TcpClientDataDelegate;
@@ -44,8 +40,8 @@ public:
 	TcpClient(bool autoDestruct);
 	TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted);
 	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend,
-			  TcpClientDataDelegate onReceive = NULL);
-	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive = NULL);
+			  TcpClientDataDelegate onReceive = nullptr);
+	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive = nullptr);
 	TcpClient(TcpClientDataDelegate onReceive);
 	virtual ~TcpClient();
 
@@ -55,14 +51,14 @@ public:
 	virtual void close();
 
 	/**	@brief	Set or clear the callback for received data
-	 *	@param	receiveCb callback delegate or NULL
+	 *	@param	receiveCb callback delegate or nullptr
 	 */
-	void setReceiveDelegate(TcpClientDataDelegate receiveCb = NULL);
+	void setReceiveDelegate(TcpClientDataDelegate receiveCb = nullptr);
 
 	/**	@brief	Set or clear the callback for connection close
-	 *	@param	completeCb callback delegate or NULL
+	 *	@param	completeCb callback delegate or nullptr
 	 */
-	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = NULL);
+	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = nullptr);
 
 	bool send(const char* data, uint16_t len, bool forceCloseAfterSent = false);
 	bool sendString(const String& data, bool forceCloseAfterSent = false);
@@ -70,6 +66,7 @@ public:
 	{
 		return state == eTCS_Connected || state == eTCS_Connecting;
 	}
+
 	__forceinline TcpClientState getConnectionState()
 	{
 		return state;
@@ -84,7 +81,7 @@ public:
 	 * 					   to delete it.
 	 *
 	 */
-	void addSslValidator(SslValidatorCallback callback, void* data = NULL);
+	void addSslValidator(SslValidatorCallback callback, void* data = nullptr);
 
 	/**
 	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
@@ -137,9 +134,13 @@ protected:
 #endif
 
 	void pushAsyncPart();
+	void freeStreams();
 
 protected:
-	ReadWriteStream* stream = nullptr;
+	void setBuffer(ReadWriteStream* stream);
+
+	ReadWriteStream* buffer = nullptr;   ///< Used internally to buffer arbitrary data via send() methods
+	IDataSourceStream* stream = nullptr; ///< The currently active stream being sent
 
 private:
 	TcpClientState state;

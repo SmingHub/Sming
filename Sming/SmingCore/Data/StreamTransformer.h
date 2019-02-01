@@ -36,10 +36,10 @@
  */
 typedef std::function<int(uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)> StreamTransformerCallback;
 
-class StreamTransformer : public ReadWriteStream
+class StreamTransformer : public IDataSourceStream
 {
 public:
-	StreamTransformer(ReadWriteStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
+	StreamTransformer(IDataSourceStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
 					  size_t blockSize = 64);
 	virtual ~StreamTransformer();
 
@@ -57,19 +57,6 @@ public:
 	{
 		return -1;
 	}
-
-	/** @brief  Write a single char to stream
-	 *  @param  charToWrite Char to write to the stream
-	 *  @retval size_t Quantity of chars written to stream (always 1)
-	 */
-	virtual size_t write(uint8_t charToWrite);
-
-	/** @brief  Write chars to stream
-	 *  @param  buffer Pointer to buffer to write to the stream
-	 *  @param  size Quantity of chars to written
-	 *  @retval size_t Quantity of chars written to stream
-	 */
-	virtual size_t write(const uint8_t* buffer, size_t size);
 
 	//Use base class documentation
 	virtual uint16_t readMemoryBlock(char* data, int bufSize);
@@ -95,8 +82,8 @@ protected:
 	StreamTransformerCallback transformCallback = nullptr;
 
 private:
-	ReadWriteStream* sourceStream = NULL;
-	CircularBuffer* tempStream = NULL;
+	IDataSourceStream* sourceStream = nullptr;
+	CircularBuffer* tempStream = nullptr;
 	uint8_t* result = nullptr;
 	size_t resultSize;
 	size_t blockSize;

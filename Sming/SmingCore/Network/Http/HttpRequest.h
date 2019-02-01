@@ -20,7 +20,7 @@
 #include "../TcpConnection.h"
 #include "Data/Stream/DataSourceStream.h"
 #include "Data/Stream/MultipartStream.h"
-#include "Network/Http/HttpHeaders.h"
+#include "HttpHeaders.h"
 #include "HttpParams.h"
 
 class HttpClient;
@@ -106,11 +106,11 @@ public:
 	/**
 	 * @brief Sets a file to be sent
 	 * @param const String& formElementName the name of the element in the form
-	 * @param ReadWriteStream* stream - pointer to the stream (doesn't have to be a FileStream)
+	 * @param IDataSourceStream* stream - pointer to the stream (doesn't have to be a FileStream)
 	 *
 	 * @return HttpRequest*
 	 */
-	HttpRequest* setFile(const String& formElementName, ReadWriteStream* stream)
+	HttpRequest* setFile(const String& formElementName, IDataSourceStream* stream)
 	{
 		if(stream) {
 			files[formElementName] = stream;
@@ -160,10 +160,10 @@ public:
 
 	/**
 	 * @brief Return the current body stream and pass ownership to the caller
-	 * @retval ReadWriteStream*
+	 * @retval IDataSourceStream*
 	 * @note may return null
 	 */
-	ReadWriteStream* getBodyStream();
+	IDataSourceStream* getBodyStream();
 
 	HttpRequest* setBody(const String& body)
 	{
@@ -171,14 +171,13 @@ public:
 		return this;
 	}
 
-	HttpRequest* setBody(ReadWriteStream* stream);
+	HttpRequest* setBody(IDataSourceStream* stream);
 
 	HttpRequest* setBody(uint8_t* rawData, size_t length);
 
 	/**
 	 * @brief Instead of storing the response body we can set a stream that will take care to process it
-	 * @param ReadWriteStream *stream
-	 *
+	 * @param stream
 	 * @retval HttpRequest*
 	 *
 	 * @note The response to this request will be stored in the user-provided stream.
@@ -186,7 +185,7 @@ public:
 	HttpRequest* setResponseStream(ReadWriteStream* stream);
 
 	/**
-	 * @brief Get access to the currently set response stream.
+	 * @brief Get the response stream (if any)
 	 */
 	ReadWriteStream* getResponseStream()
 	{
@@ -276,8 +275,8 @@ protected:
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
 
-	ReadWriteStream* bodyStream = nullptr;
-	ReadWriteStream* responseStream = nullptr;
+	IDataSourceStream* bodyStream = nullptr;
+	ReadWriteStream* responseStream = nullptr; ///< User-requested stream to store response
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	AuthAdapter* auth = nullptr;
@@ -290,7 +289,7 @@ protected:
 #endif
 
 private:
-	HashMap<String, ReadWriteStream*> files;
+	HashMap<String, IDataSourceStream*> files;
 
 	HttpParams* queryParams = nullptr; // << deprecated
 };
