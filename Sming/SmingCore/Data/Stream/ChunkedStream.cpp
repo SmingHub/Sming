@@ -18,26 +18,18 @@ ChunkedStream::ChunkedStream(IDataSourceStream* stream, size_t resultSize)
 size_t ChunkedStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
 {
 	if(sourceLength == 0) {
-		const char* end = "0\r\n\r\n";
-		memcpy(target, end, strlen(end));
-		return strlen(end);
+		memcpy(target, _F("0\r\n\r\n"), 5);
+		return 5;
 	}
 
-	int offset = 0;
-	char chunkSize[5] = {0};
-	ets_sprintf(chunkSize, "%X", sourceLength);
+	// Header
+	unsigned offset = m_snprintf(reinterpret_cast<char*>(target), targetLength, "%X\r\n", sourceLength);
 
-	memcpy(target, chunkSize, strlen(chunkSize));
-	offset += strlen(chunkSize);
-
-	// \r\n
-	memcpy(target + offset, "\r\n", 2);
-	offset += 2;
-
+	// Content
 	memcpy(target + offset, source, sourceLength);
 	offset += sourceLength;
 
-	// \r\n
+	// Footer
 	memcpy(target + offset, "\r\n", 2);
 	offset += 2;
 
