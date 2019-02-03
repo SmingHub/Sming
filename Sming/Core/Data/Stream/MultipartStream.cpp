@@ -15,19 +15,22 @@
 
 bool MultipartStream::onCompleted()
 {
-	auto mem = new MemoryDataStream();
-	String line = F("\r\n--") + getBoundary() + F("--\r\n");
-	mem->print(line);
-	stream = mem;
-
+	auto stream = new MemoryDataStream();
+	stream->ensureCapacity(4 + 16 + 4);
+	stream->print(_F("\r\n--"));
+	stream->print(getBoundary());
+	stream->print(_F("--\r\n"));
 	return true;
 }
 
 void MultipartStream::onNextStream()
 {
-	stream = new MemoryDataStream();
-	String line = F("\r\n--") + getBoundary() + "\r\n";
-	stream->print(line);
+	auto stream = new MemoryDataStream();
+	stream->ensureCapacity(4 + 16 + 4);
+	stream->print(_F("\r\n--"));
+	stream->print(getBoundary());
+	stream->print("\r\n");
+
 	if(result.headers != nullptr) {
 		if(!result.headers->contains(HTTP_HEADER_CONTENT_LENGTH)) {
 			if(result.stream != nullptr && result.stream->available() >= 0) {
