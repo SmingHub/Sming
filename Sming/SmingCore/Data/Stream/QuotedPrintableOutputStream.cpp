@@ -20,9 +20,7 @@
 size_t QuotedPrintableOutputStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target,
 											  size_t targetLength)
 {
-	const char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-
-	int count = 0;
+	unsigned count = 0;
 	for(unsigned i = 0; i < sourceLength; i++) {
 		char byte = source[i];
 
@@ -30,8 +28,8 @@ size_t QuotedPrintableOutputStream::transform(const uint8_t* source, size_t sour
 			target[count++] = byte;
 		} else {
 			target[count++] = '=';
-			target[count++] = hex[((byte >> 4) & 0x0F)];
-			target[count++] = hex[(byte & 0x0F)];
+			target[count++] = hexchar(byte >> 4);
+			target[count++] = hexchar(byte & 0x0F);
 		}
 	}
 
