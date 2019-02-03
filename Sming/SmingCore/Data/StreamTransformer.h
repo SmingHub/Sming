@@ -13,10 +13,6 @@
 
 #include "CircularBuffer.h"
 
-#undef max
-#undef min
-#include <functional>
-
 /**
  * @brief      Class that can be used to transform streams of data on the fly
  * @ingroup    stream data
@@ -26,15 +22,10 @@
 
 /**
  * @brief Callback specification for the stream transformers
- *
- * @param uint8_t* in incoming stream
- * @param int inLength incoming stream length
- * @param uint8_t* out output stream
- * @param int outLength max bytes in the output stream
- *
- * @return int number of output bytes
+ * @note See StreamTransformer::transform() method for details
  */
-typedef std::function<int(uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)> StreamTransformerCallback;
+typedef std::function<size_t(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)>
+	StreamTransformerCallback;
 
 class StreamTransformer : public IDataSourceStream
 {
@@ -79,6 +70,20 @@ public:
 	virtual void restoreState(){};
 
 protected:
+	/**
+	 * @brief Inherited class implements this method to transform a block of data
+	 * @param const uint8_t* in source data
+	 * @param size_t inLength source data length
+	 * @param uint8_t* out output buffer
+	 * @param size_t outLength size of output buffer
+	 * @retval size_t number of output bytes written
+	 * @note Called with `in = nullptr` and `inLength = 0' at end of input stream
+	 */
+	virtual size_t transform(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)
+	{
+		return (transformCallback == nullptr) ? 0 : transformCallback(in, inLength, out, outLength);
+	}
+
 	StreamTransformerCallback transformCallback = nullptr;
 
 private:

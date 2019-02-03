@@ -31,16 +31,7 @@ public:
 	 */
 	Base64OutputStream(IDataSourceStream* stream, size_t resultSize = 500);
 
-	/**
-	 * Encodes a chunk of data into base64. Keeps a state of the progress.
-	 * @param source The incoming data
-	 * @param sourceLength Length of the incoming data
-	 * @param target The result data. The pointer must point to an already allocated memory
-	 * @param targetLength The length of the result data
-	 *
-	 * @return the length of the encoded target.
-	 */
-	int encode(uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength);
+	virtual size_t transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength);
 
 	/**
 	 * @brief A method that backs up the current state

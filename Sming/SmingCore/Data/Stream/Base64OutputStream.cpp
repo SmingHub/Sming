@@ -13,19 +13,15 @@
 // Produce line breaks in output encodings
 const unsigned CHARS_PER_LINE = 72;
 
-Base64OutputStream::Base64OutputStream(IDataSourceStream* stream, size_t resultSize /* = 512 */)
+Base64OutputStream::Base64OutputStream(IDataSourceStream* stream, size_t resultSize)
 	: StreamTransformer(stream, nullptr, resultSize, (resultSize / 4))
-
 {
 	base64_init_encodestate(&state, CHARS_PER_LINE);
-
-	transformCallback = std::bind(&Base64OutputStream::encode, this, std::placeholders::_1, std::placeholders::_2,
-								  std::placeholders::_3, std::placeholders::_4);
 }
 
-int Base64OutputStream::encode(uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
+size_t Base64OutputStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
 {
-	int count = 0;
+	size_t count = 0;
 	if(sourceLength == 0) {
 		count = base64_encode_blockend((char*)target, &state);
 	} else {

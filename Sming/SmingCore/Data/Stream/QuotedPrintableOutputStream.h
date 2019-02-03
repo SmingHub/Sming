@@ -28,7 +28,14 @@ public:
 	 * @param stream source stream
 	 * @param resultSize The size of the intermediate buffer, created once per object and reused multiple times
 	 */
-	QuotedPrintableOutputStream(IDataSourceStream* stream, size_t resultSize = 512);
+	QuotedPrintableOutputStream(IDataSourceStream* stream, size_t resultSize = 512)
+		: StreamTransformer(stream, nullptr, resultSize, resultSize / 2)
+
+	{
+	}
+
+protected:
+	virtual size_t transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength);
 };
 
 /** @} */
