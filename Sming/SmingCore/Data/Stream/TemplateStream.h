@@ -8,7 +8,7 @@
 #ifndef _SMING_CORE_DATA_TEMPLATE_STREAM_H_
 #define _SMING_CORE_DATA_TEMPLATE_STREAM_H_
 
-#include "ReadWriteStream.h"
+#include "DataSourceStream.h"
 #include "WHashMap.h"
 #include "WString.h"
 
@@ -110,12 +110,6 @@ public:
 	 *
 	 * 	int available()
 	 */
-
-	/* @deprecated to be removed once class is migrated to IDataSourceStream base */
-	virtual size_t write(const uint8_t* buffer, size_t size)
-	{
-		return 0;
-	}
 
 private:
 	IDataSourceStream* stream = nullptr;
