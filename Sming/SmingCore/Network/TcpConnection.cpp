@@ -696,27 +696,6 @@ bool TcpConnection::setSslKeyCert(const SSLKeyCertPair& keyCertPair, bool freeAf
 	return true;
 }
 
-void TcpConnection::freeSslKeyCert()
-{
-	if(sslKeyCert.key) {
-		delete[] sslKeyCert.key;
-		sslKeyCert.key = nullptr;
-	}
-
-	if(sslKeyCert.certificate) {
-		delete[] sslKeyCert.certificate;
-		sslKeyCert.certificate = nullptr;
-	}
-
-	if(sslKeyCert.keyPassword) {
-		delete[] sslKeyCert.keyPassword;
-		sslKeyCert.keyPassword = nullptr;
-	}
-
-	sslKeyCert.keyLength = 0;
-	sslKeyCert.certificateLength = 0;
-}
-
 void TcpConnection::closeSsl()
 {
 	if(ssl == nullptr) {

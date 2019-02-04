@@ -48,6 +48,14 @@ enum SslFingerprintType {
 typedef struct {
 	uint8_t* certSha1 = nullptr; // << certificate SHA1 fingerprint
 	uint8_t* pkSha256 = nullptr; // << public key SHA256 fingerprint
+
+	void free()
+	{
+		delete certSha1;
+		certSha1 = nullptr;
+		delete pkSha256;
+		pkSha256 = nullptr;
+	}
 } SSLFingerprints;
 
 typedef struct {
@@ -56,6 +64,21 @@ typedef struct {
 	char* keyPassword = nullptr;
 	uint8_t* certificate = nullptr;
 	int certificateLength = 0;
+
+	void free()
+	{
+		delete[] key;
+		key = nullptr;
+
+		delete[] certificate;
+		certificate = nullptr;
+
+		delete[] keyPassword;
+		keyPassword = nullptr;
+
+		keyLength = 0;
+		certificateLength = 0;
+	}
 } SSLKeyCertPair;
 
 typedef struct {
@@ -239,7 +262,10 @@ public:
 	/**
 	 * @brief Frees the memory used for the key and certificate pair
 	 */
-	void freeSslKeyCert();
+	void freeSslKeyCert()
+	{
+		sslKeyCert.free();
+	}
 
 	// Called by TcpServer
 	void setSsl(SSL* ssl)
