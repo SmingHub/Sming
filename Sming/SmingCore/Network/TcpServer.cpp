@@ -120,8 +120,7 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 		}
 
 		debug_d("SSL: handshake start (%d ms)", millis());
-		client->ssl = ssl_server_new(sslContext, clientfd);
-		client->useSsl = true;
+		client->setSsl(ssl_server_new(sslContext, clientfd));
 	}
 #endif
 

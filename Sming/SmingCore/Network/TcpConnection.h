@@ -69,15 +69,12 @@ struct pbuf;
 class String;
 class IDataSourceStream;
 class IPAddress;
-class TcpServer;
 class TcpConnection;
 
 typedef Delegate<void(TcpConnection&)> TcpConnectionDestroyedDelegate;
 
 class TcpConnection
 {
-	friend class TcpServer;
-
 public:
 	TcpConnection(bool autoDestruct) : autoSelfDestruct(autoDestruct)
 	{
@@ -243,6 +240,13 @@ public:
 	 * @brief Frees the memory used for the key and certificate pair
 	 */
 	void freeSslKeyCert();
+
+	// Called by TcpServer
+	void setSsl(SSL* ssl)
+	{
+		this->ssl = ssl;
+		useSsl = true;
+	}
 
 	SSL* getSsl()
 	{
