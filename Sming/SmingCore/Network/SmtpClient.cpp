@@ -402,7 +402,7 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 
 			if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
 				useSsl = true;
-				TcpConnection::staticOnConnected((void*)this, tcp, ERR_OK);
+				TcpConnection::tcpOnConnected(ERR_OK);
 			}
 
 			sendString(F("EHLO ") + url.Host + "\r\n");

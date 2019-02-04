@@ -28,7 +28,7 @@ TcpConnection::~TcpConnection()
 	}
 }
 
-bool TcpConnection::connect(const String& server, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_t sslOptions)
 {
 	if(tcp == nullptr) {
 		initialize(tcp_new());
@@ -55,17 +55,13 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl /* = fal
 	canSend = false; // Wait for connection
 	DnsLookup* look = new DnsLookup{this, port};
 	err_t dnslook = dns_gethostbyname(server.c_str(), &addr, staticDnsResponse, look);
-	if(dnslook != ERR_OK) {
-		if(dnslook == ERR_INPROGRESS) {
-			return true;
-		} else {
-			delete look;
-			return false;
-		}
+	if(dnslook == ERR_INPROGRESS) {
+		// Operation pending - see tcpOnDnsResponse()
+		return true;
 	}
 	delete look;
 
-	return internalTcpConnect(addr, port);
+	return (dnslook == ERR_OK) ? internalTcpConnect(addr, port) : false;
 }
 
 bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
@@ -219,7 +215,7 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WR
 int TcpConnection::write(IDataSourceStream* stream)
 {
 #ifdef ENABLE_SSL
-	if(ssl && !sslConnected) {
+	if(ssl != nullptr && !sslConnected) {
 		// wait until the SSL handshake is done.
 		return 0;
 	}
@@ -354,32 +350,37 @@ bool TcpConnection::internalTcpConnect(IPAddress addr, uint16_t port)
 
 err_t TcpConnection::staticOnConnected(void* arg, tcp_pcb* tcp, err_t err)
 {
-	TcpConnection* con = (TcpConnection*)arg;
+	auto con = static_cast<TcpConnection*>(arg);
 	if(con == nullptr) {
 		debug_d("OnConnected ABORT");
 		//closeTcpConnection(tcp);
 		tcp_abort(tcp);
 		return ERR_ABRT;
 	} else {
-		debug_d("OnConnected");
+		return con->tcpOnConnected(err);
 	}
+}
+
+err_t TcpConnection::tcpOnConnected(err_t err)
+{
+	debug_d("OnConnected");
 
 #ifndef ENABLE_SSL
-	if(con->useSsl) {
+	if(useSsl) {
 		debug_w("WARNING: SSL is not compiled. Make sure to compile Sming with 'make ENABLE_SSL=1' ");
 	}
 #else
-	debug_d("staticOnConnected: useSSL: %d, Error: %d", con->useSsl, err);
+	debug_d("tcpOnConnected: useSSL: %d, Error: %d", useSsl, err);
 
-	if(con->useSsl && err == ERR_OK) {
+	if(useSsl && err == ERR_OK) {
 		int clientfd = axl_append(tcp);
-		if(clientfd == -1) {
+		if(clientfd < 0) {
 			debug_d("SSL: Unable to add LWIP tcp -> clientfd mapping");
 			return ERR_OK;
 		} else {
-			uint32_t sslOptions = con->sslOptions;
+			uint32_t localSslOptions = sslOptions;
 #ifdef SSL_DEBUG
-			sslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
+			localSslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
 			debug_d("SSL: Show debug data ...");
 #endif
 			debug_d("SSL: Starting connection...");
@@ -389,41 +390,34 @@ err_t TcpConnection::staticOnConnected(void* arg, tcp_pcb* tcp, err_t err)
 #endif
 			debug_d("SSL: handshake start (%d ms)", millis());
 
-			if(con->sslContext != nullptr) {
-				ssl_ctx_free(con->sslContext);
-			}
+			ssl_ctx_free(sslContext);
+			sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | localSslOptions, 1);
 
-			con->sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | sslOptions, 1);
-
-			if(con->sslKeyCert.keyLength && con->sslKeyCert.certificateLength) {
+			if(sslKeyCert.keyLength != 0 && sslKeyCert.certificateLength != 0) {
 				// if we have client certificate -> try to use it.
-				if(ssl_obj_memory_load(con->sslContext, SSL_OBJ_RSA_KEY, con->sslKeyCert.key, con->sslKeyCert.keyLength,
-									   con->sslKeyCert.keyPassword) != SSL_OK) {
+				if(ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY, sslKeyCert.key, sslKeyCert.keyLength,
+									   sslKeyCert.keyPassword) != SSL_OK) {
 					debug_d("SSL: Unable to load client private key");
-				} else if(ssl_obj_memory_load(con->sslContext, SSL_OBJ_X509_CERT, con->sslKeyCert.certificate,
-											  con->sslKeyCert.certificateLength, nullptr) != SSL_OK) {
+				} else if(ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT, sslKeyCert.certificate,
+											  sslKeyCert.certificateLength, nullptr) != SSL_OK) {
 					debug_d("SSL: Unable to load client certificate");
 				}
 
-				if(con->freeKeyCert) {
-					con->freeSslKeyCert();
+				if(freeKeyCert) {
+					freeSslKeyCert();
 				}
 			}
 
-			debug_d("SSL: Session Id Length: %d", (con->sslSessionId != nullptr ? con->sslSessionId->length : 0));
-			if(con->sslSessionId != nullptr && con->sslSessionId->length > 0) {
+			debug_d("SSL: Session Id Length: %d", sslSessionId != nullptr ? sslSessionId->length : 0);
+			if(sslSessionId != nullptr && sslSessionId->length > 0) {
 				debug_d("-----BEGIN SSL SESSION PARAMETERS-----");
-				for(int i = 0; i < con->sslSessionId->length; i++) {
-					m_printf("%02x", con->sslSessionId->value[i]);
-				}
-
+				debug_hex(DBG, "Session", sslSessionId->value, sslSessionId->length);
 				debug_d("\n-----END SSL SESSION PARAMETERS-----");
 			}
 
-			con->ssl = ssl_client_new(
-				con->sslContext, clientfd, (con->sslSessionId != nullptr ? con->sslSessionId->value : nullptr),
-				(con->sslSessionId != nullptr ? con->sslSessionId->length : 0), con->sslExtension);
-			if(ssl_handshake_status(con->ssl) != SSL_OK) {
+			ssl = ssl_client_new(sslContext, clientfd, sslSessionId != nullptr ? sslSessionId->value : nullptr,
+								 sslSessionId != nullptr ? sslSessionId->length : 0, sslExtension);
+			if(ssl_handshake_status(ssl) != SSL_OK) {
 				debug_d("SSL: handshake is in progress...");
 				return SSL_OK;
 			}
@@ -432,26 +426,26 @@ err_t TcpConnection::staticOnConnected(void* arg, tcp_pcb* tcp, err_t err)
 			debug_d("SSL: Switching back 80 MHz");
 			System.setCpuFrequency(eCF_80MHz);
 #endif
-			if(con->sslSessionId) {
-				if(con->sslSessionId->value == nullptr) {
-					con->sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
+			if(sslSessionId != nullptr) {
+				if(sslSessionId->value == nullptr) {
+					sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
 				}
-				memcpy((void*)con->sslSessionId->value, (void*)con->ssl->session_id, con->ssl->sess_id_size);
-				con->sslSessionId->length = con->ssl->sess_id_size;
+				memcpy(sslSessionId->value, ssl->session_id, ssl->sess_id_size);
+				sslSessionId->length = ssl->sess_id_size;
 			}
 		}
 	}
 #endif
 
-	err_t res = con->onConnected(err);
-	con->checkSelfFree();
-	//debug_d("<staticOnConnected");
+	err_t res = onConnected(err);
+	checkSelfFree();
+	//debug_d("<tcpOnConnected");
 	return res;
 }
 
 err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err)
 {
-	TcpConnection* con = (TcpConnection*)arg;
+	auto con = static_cast<TcpConnection*>(arg);
 	//Serial.println("echo_recv!");
 
 	if(con == nullptr) {
@@ -463,8 +457,13 @@ err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err
 		closeTcpConnection(tcp);
 		return ERR_OK;
 	} else {
-		con->sleep = 0;
+		return con->tcpOnReceive(p, err);
 	}
+}
+
+err_t TcpConnection::tcpOnReceive(pbuf* p, err_t err)
+{
+	sleep = 0;
 
 	if(err != ERR_OK /*&& err != ERR_CLSD && err != ERR_RST*/) {
 		debug_d("Received ERROR %d", err);
@@ -475,9 +474,9 @@ err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err
 			pbuf_free(p);
 		}
 		closeTcpConnection(tcp); // ??
-		con->tcp = nullptr;
-		con->onError(err);
-		//con->close();
+		tcp = nullptr;
+		onError(err);
+		//close();
 		return err == ERR_ABRT ? ERR_ABRT : ERR_OK;
 	}
 
@@ -486,15 +485,15 @@ err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err
 	if(p != nullptr) {
 		tcp_recved(tcp, p->tot_len);
 	} else {
-		debug_d("TcpConnection::staticOnReceive: pbuf is nullptr");
+		debug_d("TcpConnection::tcpOnReceive: pbuf is NULL");
 	}
 
 #ifdef ENABLE_SSL
-	if(con->ssl && p != nullptr) {
+	if(ssl != nullptr && p != nullptr) {
 		WDT.alive(); /* SSL handshake needs time. In theory we have max 8 seconds before the hardware watchdog resets the device */
-		struct pbuf* pout;
 
-		int read_bytes = axl_ssl_read(con->ssl, tcp, p, &pout);
+		struct pbuf* pout;
+		int read_bytes = axl_ssl_read(ssl, tcp, p, &pout);
 
 		// free the SSL pbuf and put the decrypted data in the brand new pout pbuf
 		if(p != nullptr) {
@@ -507,36 +506,37 @@ err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err
 				return ERR_OK;
 			}
 
-			con->close();
+			close();
 			closeTcpConnection(tcp);
 			return read_bytes;
 		}
 
 		if(read_bytes == 0) {
-			if(!con->sslConnected && ssl_handshake_status(con->ssl) == SSL_OK) {
-				con->sslConnected = true;
+			if(!sslConnected && ssl_handshake_status(ssl) == SSL_OK) {
+				sslConnected = true;
 				debug_d("SSL: Handshake done (%d ms).", millis());
 #ifndef SSL_SLOW_CONNECT
 				debug_d("SSL: Switching back to 80 MHz");
 				System.setCpuFrequency(eCF_80MHz); // Preserve some CPU cycles
 #endif
-				if(con->onSslConnected(con->ssl) != ERR_OK) {
-					con->close();
+				if(onSslConnected(ssl) != ERR_OK) {
+					close();
 					closeTcpConnection(tcp);
 
 					return ERR_ABRT;
 				}
 
-				if(con->sslSessionId) {
-					if(con->sslSessionId->value == nullptr) {
-						con->sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
+				if(sslSessionId != nullptr) {
+					if(sslSessionId->value == nullptr) {
+						sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
 					}
-					memcpy((void*)con->sslSessionId->value, (void*)con->ssl->session_id, con->ssl->sess_id_size);
-					con->sslSessionId->length = con->ssl->sess_id_size;
+					assert(ssl->sess_id_size <= SSL_SESSION_ID_SIZE);
+					memcpy(sslSessionId->value, ssl->session_id, ssl->sess_id_size);
+					sslSessionId->length = ssl->sess_id_size;
 				}
 
-				err_t res = con->onConnected(err);
-				con->checkSelfFree();
+				err_t res = onConnected(err);
+				checkSelfFree();
 
 				return res;
 			}
@@ -553,91 +553,106 @@ err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err
 	}
 #endif
 
-	err_t res = con->onReceive(p);
+	err_t res = onReceive(p);
 
 	if(p != nullptr) {
 		pbuf_free(p);
 	} else {
-		con->close();
+		close();
 		closeTcpConnection(tcp);
 	}
 
-	con->checkSelfFree();
-	//debug_d("<staticOnReceive");
+	checkSelfFree();
+	//debug_d("<tcpOnReceive");
 	return res;
 }
 
 err_t TcpConnection::staticOnSent(void* arg, tcp_pcb* tcp, uint16_t len)
 {
-	TcpConnection* con = (TcpConnection*)arg;
+	auto con = static_cast<TcpConnection*>(arg);
 
 	if(con == nullptr) {
 		return ERR_OK;
 	} else {
-		con->sleep = 0;
+		return con->tcpOnSent(len);
 	}
+}
 
-	err_t res = con->onSent(len);
-	con->checkSelfFree();
-	//debug_d("<staticOnSent");
+err_t TcpConnection::tcpOnSent(uint16_t len)
+{
+	sleep = 0;
+	err_t res = onSent(len);
+	checkSelfFree();
+	//debug_d("<tcpOnSent");
 	return res;
 }
 
 err_t TcpConnection::staticOnPoll(void* arg, tcp_pcb* tcp)
 {
-	TcpConnection* con = (TcpConnection*)arg;
+	auto con = static_cast<TcpConnection*>(arg);
 
 	if(con == nullptr) {
 		closeTcpConnection(tcp);
 		return ERR_OK;
+	} else {
+		return con->tcpOnPoll();
 	}
+}
 
+err_t TcpConnection::tcpOnPoll()
+{
 	//if (tcp->state != ESTABLISHED)
 	//	return ERR_OK;
 
-	con->sleep++;
-	err_t res = con->onPoll();
-	con->checkSelfFree();
-	//debug_d("<staticOnPoll");
+	sleep++;
+	err_t res = onPoll();
+	checkSelfFree();
+	//debug_d("<tcpOnPoll");
 	return res;
 }
 
 void TcpConnection::staticOnError(void* arg, err_t err)
 {
-	TcpConnection* con = (TcpConnection*)arg;
-	if(con == nullptr) {
-		return;
-	}
+	auto con = static_cast<TcpConnection*>(arg);
 
-	con->tcp = nullptr; // IMPORTANT. No available connection after error!
-	con->onError(err);
-	con->checkSelfFree();
+	if(con != nullptr) {
+		con->tcpOnError(err);
+	}
+}
+
+void TcpConnection::tcpOnError(err_t err)
+{
+	tcp = nullptr; // IMPORTANT. No available connection after error!
+	onError(err);
+	checkSelfFree();
 	//debug_d("<staticOnError");
 }
 
 void TcpConnection::staticDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, void* arg)
 {
-	DnsLookup* dlook = (DnsLookup*)arg;
-	if(dlook == nullptr) {
-		return;
+	auto dlook = static_cast<DnsLookup*>(arg);
+	if(dlook != nullptr) {
+		dlook->con->tcpOnDnsResponse(name, ipaddr, dlook->port);
+		delete dlook;
 	}
+}
 
+void TcpConnection::tcpOnDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, int port)
+{
 	if(ipaddr != nullptr) {
 		IPAddress ip = *ipaddr;
-		debug_d("DNS record found: %s = %d.%d.%d.%d", name, ip[0], ip[1], ip[2], ip[3]);
+		debug_d("DNS record found: %s = %s", name, ip.toString().c_str());
 
-		dlook->con->internalTcpConnect(ip, dlook->port);
+		internalTcpConnect(ip, port);
 	} else {
 #ifdef NETWORK_DEBUG
 		debug_d("DNS record _not_ found: %s", name);
 #endif
 
-		closeTcpConnection(dlook->con->tcp);
-		dlook->con->tcp = nullptr;
-		dlook->con->close();
+		closeTcpConnection(tcp);
+		tcp = nullptr;
+		close();
 	}
-
-	delete dlook;
 }
 
 #ifdef ENABLE_SSL
@@ -679,7 +694,7 @@ bool TcpConnection::setSslKeyCert(const uint8_t* key, int keyLength, const uint8
 bool TcpConnection::setSslKeyCert(const SSLKeyCertPair& keyCertPair, bool freeAfterHandshake /* = false */)
 {
 	freeSslKeyCert();
-	this->sslKeyCert = keyCertPair;
+	sslKeyCert = keyCertPair;
 	freeKeyCert = freeAfterHandshake;
 
 	return true;

@@ -256,6 +256,7 @@ public:
 #endif
 
 protected:
+	void initialize(tcp_pcb* pcb);
 	bool internalTcpConnect(IPAddress addr, uint16_t port);
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf* buf);
@@ -267,6 +268,16 @@ protected:
 	virtual err_t onSslConnected(SSL* ssl);
 #endif
 
+	// These do most of the work - called from static methods
+	err_t tcpOnConnected(err_t err);
+	err_t tcpOnReceive(pbuf* p, err_t err);
+	err_t tcpOnSent(uint16_t len);
+	err_t tcpOnPoll();
+	void tcpOnError(err_t err);
+	void tcpOnDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, int port);
+
+private:
+	// Methods called directly from TCP stack
 	static err_t staticOnConnected(void* arg, tcp_pcb* tcp, err_t err);
 	static err_t staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err);
 	static err_t staticOnSent(void* arg, tcp_pcb* tcp, uint16_t len);
@@ -275,7 +286,6 @@ protected:
 	static void staticDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, void* arg);
 
 	static void closeTcpConnection(tcp_pcb* tpcb);
-	void initialize(tcp_pcb* pcb);
 
 private:
 	inline void checkSelfFree()
