@@ -15,9 +15,9 @@
 #define _SMING_CORE_FTPSERVER_H_
 
 #include "TcpServer.h"
-#include "../../Wiring/WHashMap.h"
-#include "../../Wiring/WVector.h"
-#include "../../Wiring/WString.h"
+#include "WHashMap.h"
+#include "WVector.h"
+#include "WString.h"
 
 class FTPServerConnection;
 
@@ -29,8 +29,8 @@ public:
 	FTPServer();
 	virtual ~FTPServer();
 
-	void addUser(String login, String pass);
-	bool checkUser(String login, const String& pass);
+	void addUser(const String& login, const String& pass);
+	bool checkUser(const String& login, const String& pass);
 
 protected:
 	virtual TcpConnection* createClient(tcp_pcb* clientTcp);

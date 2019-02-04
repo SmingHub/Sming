@@ -15,14 +15,11 @@
 #define APP_TELNETSERVER_H_
 
 #include <user_config.h>
-#include "../Delegate.h"
-#include "../Debug.h"
+#include "Delegate.h"
 #include "TcpClient.h"
 #include "TcpServer.h"
 #include "SystemClock.h"
 #include "../Services/CommandProcessing/CommandExecutor.h"
-
-#include <stdio.h>
 
 #define TELNETSERVER_MAX_COMMANDSIZE 64
 
@@ -31,8 +28,14 @@ typedef Delegate<void(TcpClient* client, char* data, int size)> TelnetServerComm
 class TelnetServer : public TcpServer
 {
 public:
-	TelnetServer();
-	virtual ~TelnetServer();
+	TelnetServer()
+	{
+	}
+
+	virtual ~TelnetServer()
+	{
+	}
+
 	//	void setCommandDelegate(TelnetServerCommandDelegate reqDelegate);
 	void enableDebug(bool reqStatus);
 	void enableCommand(bool reqStatus);
@@ -40,7 +43,7 @@ public:
 private:
 	void onClient(TcpClient* client);
 	bool onClientReceive(TcpClient& client, char* data, int size);
-	void onClientComplete(TcpClient& client, bool succesfull);
+	void onClientComplete(TcpClient& client, bool successful);
 	void wrchar(char c);
 	TcpClient* curClient = nullptr;
 	CommandExecutor* commandExecutor = nullptr;

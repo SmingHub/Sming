@@ -9,15 +9,15 @@
 #define _SMING_CORE_NETWORK_MqttClient_H_
 
 #include "TcpClient.h"
-#include "../Network/URL.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WHashMap.h"
+#include "URL.h"
+#include "WString.h"
+#include "WHashMap.h"
 #include "Data/ObjectQueue.h"
 #include "Mqtt/MqttPayloadParser.h"
 #include "../mqtt-codec/src/message.h"
 #include "../mqtt-codec/src/serialiser.h"
 #include "../mqtt-codec/src/parser.h"
-#include <functional>
+//#include <functional>
 
 /** @defgroup   mqttclient MQTT client
  *  @brief      Provides MQTT client
@@ -67,13 +67,16 @@ public:
 	 * Sets keep-alive time. That information is sent during connection to the server
 	 * @param uint16_t seconds
 	 */
-	void setKeepAlive(uint16_t seconds); //send to broker
+	void setKeepAlive(uint16_t seconds) //send to broker
+	{
+		keepAlive = seconds;
+	}
 
 	/**
 	 * Sets the interval in which to ping the remote server if there was no activity
-	 * @param int seconds
+	 * @param unsigned int seconds
 	 */
-	void setPingRepeatTime(int seconds);
+	void setPingRepeatTime(unsigned seconds);
 
 	/**
 	 * Sets last will and testament
@@ -95,7 +98,10 @@ public:
 	bool subscribe(const String& topic);
 	bool unsubscribe(const String& topic);
 
-	void setEventHandler(mqtt_type_t type, MqttDelegate handler);
+	void setEventHandler(mqtt_type_t type, MqttDelegate handler)
+	{
+		eventHandler[type] = handler;
+	}
 
 	/**
 	 * Sets or clears a payload parser (for PUBLISH messages from the server to us)
@@ -259,7 +265,7 @@ private:
 	/* @deprecated This method is only for compatibility with the previous release and will be removed soon. */
 	static int onPublish(MqttClient& client, mqtt_message_t* message)
 	{
-		if(!message) {
+		if(message == nullptr) {
 			return -1;
 		}
 
@@ -293,7 +299,7 @@ private:
 
 	// keep-alives and pings
 	uint16_t keepAlive = 60;
-	int pingRepeatTime = 20;
+	unsigned pingRepeatTime = 20;
 	unsigned long lastMessage = 0;
 
 	// messages
@@ -316,9 +322,9 @@ private:
 
 #ifndef MQTT_NO_COMPAT
 	// @deprecated
-	MqttMessageDeliveredCallback onDelivery = 0;
+	MqttMessageDeliveredCallback onDelivery = nullptr;
 	// @deprecated
-	MqttStringSubscriptionCallback subscriptionCallback = 0;
+	MqttStringSubscriptionCallback subscriptionCallback = nullptr;
 #endif
 };
 

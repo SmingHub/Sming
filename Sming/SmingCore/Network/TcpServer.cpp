@@ -6,55 +6,16 @@
  ****/
 
 #include "TcpServer.h"
-#include "TcpClient.h"
 
-#include "../../SmingCore/Digital.h"
-#include "../../SmingCore/Timer.h"
-
-int16_t TcpServer::totalConnections = 0;
-
-TcpServer::TcpServer() : TcpConnection(false)
-{
-	timeOut = TCP_SERVER_TIMEOUT;
-}
-
-TcpServer::TcpServer(TcpClientConnectDelegate onClientHandler, TcpClientDataDelegate clientReceiveDataHandler,
-					 TcpClientCompleteDelegate clientCompleteHandler)
-	: TcpConnection(false), clientConnectDelegate(onClientHandler), clientReceiveDelegate(clientReceiveDataHandler),
-	  clientCompleteDelegate(clientCompleteHandler)
-{
-	timeOut = TCP_SERVER_TIMEOUT;
-}
-
-TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler, TcpClientCompleteDelegate clientCompleteHandler)
-	: TcpConnection(false), clientReceiveDelegate(clientReceiveDataHandler),
-	  clientCompleteDelegate(clientCompleteHandler)
-{
-	timeOut = TCP_SERVER_TIMEOUT;
-}
-
-TcpServer::TcpServer(TcpClientDataDelegate clientReceiveDataHandler)
-	: TcpConnection(false), clientReceiveDelegate(clientReceiveDataHandler)
-{
-	timeOut = TCP_SERVER_TIMEOUT;
-}
-
-TcpServer::~TcpServer()
-{
-	debug_i("Server is destroyed.");
-}
+uint16_t TcpServer::totalConnections = 0;
 
 TcpConnection* TcpServer::createClient(tcp_pcb* clientTcp)
 {
-	if(clientTcp == NULL) {
-		debug_d("TCP Server createClient NULL\r\n");
-	} else {
-		debug_d("TCP Server createClient not NULL");
-	}
+	debug_d("TCP Server createClient %sNULL\r\n", clientTcp ? "not" : "");
 
 	if(!active) {
 		debug_w("Refusing new connections. The server is shutting down");
-		return NULL;
+		return nullptr;
 	}
 
 	TcpConnection* con = new TcpClient(clientTcp, TcpClientDataDelegate(&TcpServer::onClientReceive, this),
@@ -66,23 +27,25 @@ TcpConnection* TcpServer::createClient(tcp_pcb* clientTcp)
 //Timer stateTimer;
 void list_mem()
 {
-	debug_d("Free heap size=%d, K=%d", system_get_free_heap_size(), TcpServer::totalConnections);
+	debug_d("Free heap size=%u, K=%u", system_get_free_heap_size(), TcpServer::totalConnections);
 }
 
 void TcpServer::setKeepAlive(uint16_t seconds)
 {
-	debug_d("Server keep-alive updating: %d -> %d", keepAlive, seconds);
+	debug_d("Server keep-alive updating: %u -> %u", keepAlive, seconds);
 	keepAlive = seconds;
 }
 
-bool TcpServer::listen(int port, bool useSsl /*= false */)
+bool TcpServer::listen(int port, bool useSsl)
 {
-	if(tcp == NULL)
+	if(tcp == nullptr) {
 		initialize(tcp_new());
+	}
 
 	err_t res = tcp_bind(tcp, IP_ADDR_ANY, port);
-	if(res != ERR_OK)
+	if(res != ERR_OK) {
 		return res;
+	}
 
 #ifdef ENABLE_SSL
 	this->useSsl = useSsl;
@@ -106,7 +69,7 @@ bool TcpServer::listen(int port, bool useSsl /*= false */)
 		}
 
 		if(ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT, sslKeyCert.certificate, sslKeyCert.certificateLength,
-							   NULL) != SSL_OK) {
+							   nullptr) != SSL_OK) {
 			debug_e("SSL: Unable to load server certificate");
 			return false;
 		}
@@ -137,13 +100,14 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 #endif
 
 	if(err != ERR_OK) {
-		//closeTcpConnection(clientTcp, NULL);
+		//closeTcpConnection(clientTcp, nullptr);
 		return err;
 	}
 
 	TcpConnection* client = createClient(clientTcp);
-	if(client == NULL)
+	if(client == nullptr) {
 		return ERR_MEM;
+	}
 	client->setTimeOut(keepAlive);
 
 #ifdef ENABLE_SSL
@@ -180,12 +144,12 @@ void TcpServer::onClient(TcpClient* client)
 	}
 }
 
-void TcpServer::onClientComplete(TcpClient& client, bool succesfull)
+void TcpServer::onClientComplete(TcpClient& client, bool successful)
 {
 	activeClients--;
 	debug_d("TcpSever onComplete: %s\r\n", client.getRemoteIp().toString().c_str());
 	if(clientCompleteDelegate) {
-		clientCompleteDelegate(client, succesfull);
+		clientCompleteDelegate(client, successful);
 	}
 }
 
@@ -201,15 +165,16 @@ bool TcpServer::onClientReceive(TcpClient& client, char* data, int size)
 
 err_t TcpServer::staticAccept(void* arg, tcp_pcb* new_tcp, err_t err)
 {
-	TcpServer* con = (TcpServer*)arg;
+	auto con = static_cast<TcpServer*>(arg);
 
-	if(con == NULL) {
+	if(con == nullptr) {
 		debug_e("NO CONNECTION ON TCP");
 		//closeTcpConnection(new_tcp);
 		tcp_abort(new_tcp);
 		return ERR_ABRT;
-	} else
+	} else {
 		con->sleep = 0;
+	}
 
 	err_t res = con->onAccept(new_tcp, err);
 	return res;
@@ -222,21 +187,21 @@ void TcpServer::shutdown()
 	debug_i("Shutting down the server ...");
 
 	if(tcp) {
-		tcp_arg(tcp, NULL);
-		tcp_accept(tcp, NULL);
+		tcp_arg(tcp, nullptr);
+		tcp_accept(tcp, nullptr);
 		tcp_close(tcp);
 
-		tcp = NULL;
+		tcp = nullptr;
 	}
 
-	if(!connections.count()) {
+	if(connections.count() == 0) {
 		delete this;
 		return;
 	}
 
-	for(int i = 0; i < connections.count(); i++) {
+	for(unsigned i = 0; i < connections.count(); i++) {
 		TcpConnection* connection = connections[i];
-		if(connection == NULL) {
+		if(connection == nullptr) {
 			continue;
 		}
 

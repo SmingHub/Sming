@@ -13,21 +13,27 @@
 #include "../Clock.h"
 #include <algorithm>
 
-#define COPY_STRING(TO, FROM)                                                                                          \
-	{                                                                                                                  \
-		TO.length = FROM.length();                                                                                     \
-		TO.data = (uint8_t*)malloc(FROM.length());                                                                     \
-		if(!TO.data) {                                                                                                 \
-			debug_e("Not enough memory");                                                                              \
-			return false;                                                                                              \
-		}                                                                                                              \
-		memcpy(TO.data, FROM.c_str(), FROM.length());                                                                  \
-	}
-
 #define MQTT_PUBLISH_STREAM 0
 
 mqtt_serialiser_t MqttClient::serialiser;
 mqtt_parser_callbacks_t MqttClient::callbacks;
+
+static bool copyString(mqtt_buffer_t& destBuffer, const String& sourceString)
+{
+	destBuffer.length = sourceString.length();
+	destBuffer.data = (uint8_t*)malloc(sourceString.length());
+	if(destBuffer.data == nullptr) {
+		debug_e("Not enough memory");
+		return false;
+	}
+	memcpy(destBuffer.data, sourceString.c_str(), sourceString.length());
+	return true;
+}
+
+#define COPY_STRING(TO, FROM)                                                                                          \
+	if(!copyString(TO, FROM)) {                                                                                        \
+		return false;                                                                                                  \
+	}
 
 MqttClient::MqttClient(bool withDefaultPayloadParser /* = true */, bool autoDestruct /* = false*/)
 	: TcpClient(autoDestruct)
@@ -64,7 +70,7 @@ MqttClient::~MqttClient()
 	}
 
 	mqtt_message_clear(&connectMessage, 0);
-	if(outgoingMessage) {
+	if(outgoingMessage != nullptr) {
 		mqtt_message_clear(outgoingMessage, 1);
 		outgoingMessage = nullptr;
 	}
@@ -161,17 +167,7 @@ int MqttClient::staticOnMessageEnd(void* userData, mqtt_message_t* message)
 	return 0;
 }
 
-void MqttClient::setEventHandler(mqtt_type_t type, MqttDelegate handler)
-{
-	eventHandler[type] = handler;
-}
-
-void MqttClient::setKeepAlive(uint16_t seconds)
-{
-	keepAlive = seconds;
-}
-
-void MqttClient::setPingRepeatTime(int seconds)
+void MqttClient::setPingRepeatTime(unsigned seconds)
 {
 	if(pingRepeatTime > keepAlive) {
 		pingRepeatTime = keepAlive;
@@ -213,7 +209,7 @@ bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslO
 
 	debug_d("MQTT start connection");
 
-	String protocolName = "MQTT";
+	String protocolName = F("MQTT");
 	COPY_STRING(connectMessage.connect.protocol_name, protocolName);
 
 	connectMessage.connect.keep_alive = keepAlive;
