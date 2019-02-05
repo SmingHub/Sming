@@ -75,7 +75,7 @@ bool TcpServer::listen(int port, bool useSsl)
 		}
 
 		// TODO: test: free the certificate data on server destroy...
-		freeKeyCert = true;
+		freeKeyCertAfterHandshake = true;
 	}
 #endif
 

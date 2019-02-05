@@ -24,9 +24,6 @@ TcpConnection::~TcpConnection()
 	autoSelfDestruct = false;
 	close();
 
-#ifdef ENABLE_SSL
-	freeSslKeyCert();
-#endif
 	debug_d("~TCP connection");
 
 	if(destroyedDelegate) {
@@ -47,10 +44,7 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_
 	this->sslOptions |= sslOptions;
 
 	if(useSsl) {
-		if(sslExtension != nullptr) {
-			ssl_ext_free(sslExtension);
-		}
-
+		ssl_ext_free(sslExtension);
 		sslExtension = ssl_ext_new();
 		ssl_ext_set_host_name(sslExtension, server.c_str());
 		ssl_ext_set_max_fragment_size(sslExtension, 4); // 4K max size
@@ -436,7 +430,7 @@ err_t TcpConnection::internalOnConnected(err_t err)
 			ssl_ctx_free(sslContext);
 			sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | localSslOptions, 1);
 
-			if(sslKeyCert.keyLength != 0 && sslKeyCert.certificateLength != 0) {
+			if(sslKeyCert.isValid()) {
 				// if we have client certificate -> try to use it.
 				if(ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY, sslKeyCert.key, sslKeyCert.keyLength,
 									   sslKeyCert.keyPassword) != SSL_OK) {
@@ -446,8 +440,8 @@ err_t TcpConnection::internalOnConnected(err_t err)
 					debug_d("SSL: Unable to load client certificate");
 				}
 
-				if(freeKeyCert) {
-					freeSslKeyCert();
+				if(freeKeyCertAfterHandshake) {
+					sslKeyCert.free();
 				}
 			}
 
@@ -652,49 +646,6 @@ void TcpConnection::internalOnDnsResponse(const char* name, LWIP_IP_ADDR_T* ipad
 }
 
 #ifdef ENABLE_SSL
-
-bool TcpConnection::setSslKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
-								  const char* keyPassword, bool freeAfterHandshake)
-{
-	delete[] sslKeyCert.key;
-	delete[] sslKeyCert.certificate;
-	delete[] sslKeyCert.keyPassword;
-	sslKeyCert.keyPassword = nullptr;
-
-	sslKeyCert.key = new uint8_t[keyLength];
-	sslKeyCert.certificate = new uint8_t[certificateLength];
-	int passwordLength = 0;
-	if(keyPassword != nullptr) {
-		passwordLength = strlen(keyPassword);
-		sslKeyCert.keyPassword = new char[passwordLength + 1];
-	}
-
-	if(!(sslKeyCert.key && sslKeyCert.certificate && (passwordLength == 0 || sslKeyCert.keyPassword))) {
-		return false;
-	}
-
-	memcpy(sslKeyCert.key, key, keyLength);
-	memcpy(sslKeyCert.certificate, certificate, certificateLength);
-	if(keyPassword != nullptr) {
-		memcpy(sslKeyCert.keyPassword, keyPassword, passwordLength);
-	}
-	freeKeyCert = freeAfterHandshake;
-
-	sslKeyCert.keyLength = keyLength;
-	sslKeyCert.certificateLength = certificateLength;
-	sslKeyCert.keyLength = keyLength;
-
-	return true;
-}
-
-bool TcpConnection::setSslKeyCert(const SSLKeyCertPair& keyCertPair, bool freeAfterHandshake /* = false */)
-{
-	freeSslKeyCert();
-	sslKeyCert = keyCertPair;
-	freeKeyCert = freeAfterHandshake;
-
-	return true;
-}
 
 void TcpConnection::closeSsl()
 {
