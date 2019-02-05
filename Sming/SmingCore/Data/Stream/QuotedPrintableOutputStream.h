@@ -29,7 +29,7 @@ public:
 	 * @param resultSize The size of the intermediate buffer, created once per object and reused multiple times
 	 */
 	QuotedPrintableOutputStream(IDataSourceStream* stream, size_t resultSize = 512)
-		: StreamTransformer(stream, nullptr, resultSize, resultSize / 2)
+		: StreamTransformer(stream, resultSize, resultSize / 2)
 
 	{
 	}

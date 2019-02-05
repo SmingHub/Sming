@@ -30,9 +30,27 @@ typedef std::function<size_t(const uint8_t* in, size_t inLength, uint8_t* out, s
 class StreamTransformer : public IDataSourceStream
 {
 public:
+	StreamTransformer(IDataSourceStream* stream, size_t resultSize = 256, size_t blockSize = 64)
+		: sourceStream(stream), resultSize(resultSize), result(new uint8_t[resultSize]), blockSize(blockSize)
+	{
+	}
+
+	/** @brief Constructor with external callback function
+	 *  @deprecated
+	 */
 	StreamTransformer(IDataSourceStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
-					  size_t blockSize = 64);
-	virtual ~StreamTransformer();
+					  size_t blockSize = 64) __attribute__((deprecated))
+	: transformCallback(callback), sourceStream(stream), resultSize(resultSize), result(new uint8_t[resultSize]),
+	  blockSize(blockSize)
+	{
+	}
+
+	virtual ~StreamTransformer()
+	{
+		delete[] result;
+		delete tempStream;
+		delete sourceStream;
+	}
 
 	//Use base class documentation
 	virtual StreamType getStreamType() const
@@ -84,6 +102,9 @@ protected:
 		return (transformCallback == nullptr) ? 0 : transformCallback(in, inLength, out, outLength);
 	}
 
+	/** @brief Callback function to perform transformation
+	 *  @deprecated The virtual transform() method should be used instead in an inherited class
+	 */
 	StreamTransformerCallback transformCallback = nullptr;
 
 private:

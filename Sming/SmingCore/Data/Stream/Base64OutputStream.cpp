@@ -14,7 +14,7 @@
 const unsigned CHARS_PER_LINE = 72;
 
 Base64OutputStream::Base64OutputStream(IDataSourceStream* stream, size_t resultSize)
-	: StreamTransformer(stream, nullptr, resultSize, (resultSize / 4))
+	: StreamTransformer(stream, resultSize, (resultSize / 4))
 {
 	base64_init_encodestate(&state, CHARS_PER_LINE);
 }

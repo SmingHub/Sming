@@ -11,7 +11,7 @@
 #include "ChunkedStream.h"
 
 ChunkedStream::ChunkedStream(IDataSourceStream* stream, size_t resultSize)
-	: StreamTransformer(stream, nullptr, resultSize, resultSize - 12)
+	: StreamTransformer(stream, resultSize, resultSize - 12)
 {
 }
 
