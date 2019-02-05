@@ -290,8 +290,9 @@ private:
 private:
 	inline void checkSelfFree()
 	{
-		if(tcp == nullptr && autoSelfDestruct)
+		if(tcp == nullptr && autoSelfDestruct) {
 			delete this;
+		}
 	}
 
 protected:
