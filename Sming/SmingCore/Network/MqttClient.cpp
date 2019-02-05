@@ -59,15 +59,9 @@ MqttClient::MqttClient(bool withDefaultPayloadParser /* = true */, bool autoDest
 
 MqttClient::~MqttClient()
 {
-	mqtt_message_t* message = nullptr;
-	do {
-		message = requestQueue.dequeue();
-		if(message) {
-			break;
-		}
-
-		mqtt_message_clear(message, 1);
-	} while(true);
+	while(requestQueue.count() != 0) {
+		mqtt_message_clear(requestQueue.dequeue(), 1);
+	}
 
 	mqtt_message_clear(&connectMessage, 0);
 	if(outgoingMessage) {
