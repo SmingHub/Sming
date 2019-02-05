@@ -13,10 +13,6 @@
 
 #include "CircularBuffer.h"
 
-#undef max
-#undef min
-#include <functional>
-
 /**
  * @brief      Class that can be used to transform streams of data on the fly
  * @ingroup    stream data
@@ -26,22 +22,35 @@
 
 /**
  * @brief Callback specification for the stream transformers
- *
- * @param uint8_t* in incoming stream
- * @param int inLength incoming stream length
- * @param uint8_t* out output stream
- * @param int outLength max bytes in the output stream
- *
- * @return int number of output bytes
+ * @note See StreamTransformer::transform() method for details
  */
-typedef std::function<int(uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)> StreamTransformerCallback;
+typedef std::function<size_t(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)>
+	StreamTransformerCallback;
 
 class StreamTransformer : public IDataSourceStream
 {
 public:
+	StreamTransformer(IDataSourceStream* stream, size_t resultSize = 256, size_t blockSize = 64)
+		: sourceStream(stream), resultSize(resultSize), result(new uint8_t[resultSize]), blockSize(blockSize)
+	{
+	}
+
+	/** @brief Constructor with external callback function
+	 *  @deprecated
+	 */
 	StreamTransformer(IDataSourceStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
-					  size_t blockSize = 64);
-	virtual ~StreamTransformer();
+					  size_t blockSize = 64) __attribute__((deprecated))
+	: transformCallback(callback), sourceStream(stream), resultSize(resultSize), result(new uint8_t[resultSize]),
+	  blockSize(blockSize)
+	{
+	}
+
+	virtual ~StreamTransformer()
+	{
+		delete[] result;
+		delete tempStream;
+		delete sourceStream;
+	}
 
 	//Use base class documentation
 	virtual StreamType getStreamType() const
@@ -79,6 +88,23 @@ public:
 	virtual void restoreState(){};
 
 protected:
+	/**
+	 * @brief Inherited class implements this method to transform a block of data
+	 * @param const uint8_t* in source data
+	 * @param size_t inLength source data length
+	 * @param uint8_t* out output buffer
+	 * @param size_t outLength size of output buffer
+	 * @retval size_t number of output bytes written
+	 * @note Called with `in = nullptr` and `inLength = 0' at end of input stream
+	 */
+	virtual size_t transform(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)
+	{
+		return (transformCallback == nullptr) ? 0 : transformCallback(in, inLength, out, outLength);
+	}
+
+	/** @brief Callback function to perform transformation
+	 *  @deprecated The virtual transform() method should be used instead in an inherited class
+	 */
 	StreamTransformerCallback transformCallback = nullptr;
 
 private:

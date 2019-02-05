@@ -12,27 +12,6 @@
 
 #define NETWORK_SEND_BUFFER_SIZE 1024
 
-StreamTransformer::StreamTransformer(IDataSourceStream* stream, const StreamTransformerCallback& callback,
-									 size_t resultSize /* = 256 */, size_t blockSize /* = 64 */
-									 )
-	: transformCallback(callback)
-{
-	sourceStream = stream;
-	this->resultSize = resultSize;
-	result = new uint8_t[this->resultSize];
-	this->blockSize = blockSize;
-}
-
-StreamTransformer::~StreamTransformer()
-{
-	delete[] result;
-	delete tempStream;
-	delete sourceStream;
-	result = nullptr;
-	tempStream = nullptr;
-	sourceStream = nullptr;
-}
-
 uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 {
 	if(tempStream == nullptr) {
@@ -58,7 +37,7 @@ uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 			}
 
 			saveState();
-			size_t outLength = transformCallback((uint8_t*)data, len, result, resultSize);
+			size_t outLength = transform(reinterpret_cast<const uint8_t*>(data), len, result, resultSize);
 			if(outLength > tempStream->room()) {
 				restoreState();
 				break;
@@ -74,7 +53,7 @@ uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 		} while(--i);
 
 		if(sourceStream->isFinished()) {
-			int outLength = transformCallback(nullptr, 0, result, resultSize);
+			int outLength = transform(nullptr, 0, result, resultSize);
 			tempStream->write(result, outLength);
 		}
 
