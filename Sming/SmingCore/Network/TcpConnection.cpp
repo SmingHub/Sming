@@ -13,6 +13,12 @@
 #include "WString.h"
 #include "IPAddress.h"
 
+#ifdef DEBUG_TCP_EXTENDED
+#define debug_tcp(fmt, ...) debug_d(fmt, ##__VA_ARGS__)
+#else
+#define debug_tcp(fmt, ...) debug_none(fmt, ##__VA_ARGS__)
+#endif
+
 TcpConnection::~TcpConnection()
 {
 	autoSelfDestruct = false;
@@ -56,12 +62,12 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_
 	DnsLookup* look = new DnsLookup{this, port};
 	err_t dnslook = dns_gethostbyname(server.c_str(), &addr, staticDnsResponse, look);
 	if(dnslook == ERR_INPROGRESS) {
-		// Operation pending - see tcpOnDnsResponse()
+		// Operation pending - see internalOnDnsResponse()
 		return true;
 	}
 	delete look;
 
-	return (dnslook == ERR_OK) ? internalTcpConnect(addr, port) : false;
+	return (dnslook == ERR_OK) ? internalConnect(addr, port) : false;
 }
 
 bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
@@ -75,7 +81,7 @@ bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl /* = fals
 	this->sslOptions |= sslOptions;
 #endif
 
-	return internalTcpConnect(addr, port);
+	return internalConnect(addr, port);
 }
 
 void TcpConnection::setTimeOut(uint16_t waitTimeOut)
@@ -102,7 +108,7 @@ err_t TcpConnection::onSent(uint16_t len)
 {
 	debug_d("TCP sent: %d", len);
 
-	//debug_d("%d %d", tcp->state, tcp->flags); // WRONG!
+	debug_tcp("%d %d", tcp->state, tcp->flags); // WRONG!
 	if(tcp != nullptr && getAvailableWriteSize() > 0) {
 		onReadyToSendData(eTCE_Sent);
 	}
@@ -155,7 +161,7 @@ void TcpConnection::onError(err_t err)
 void TcpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	if(sourceEvent != eTCE_Poll) {
-		debug_d("onReadyToSendData: %d", sourceEvent);
+		debug_d("TCP onReadyToSendData: %d", sourceEvent);
 	}
 }
 
@@ -176,13 +182,13 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WR
 	if(ssl) {
 		u16_t expected = ssl_calculate_write_length(ssl, len);
 		u16_t available = tcp ? tcp_sndbuf(tcp) : 0;
-		//		debug_d("SSL: Expected: %d, Available: %d", expected, available);
+		debug_tcp("SSL: Expected: %d, Available: %d", expected, available);
 		if(expected < 0 || available < expected) {
 			return -1; // No memory
 		}
 
 		int written = axl_ssl_write(ssl, (const uint8_t*)data, len);
-		// debug_d("SSL: Write len: %d, Written: %d", len, written);
+		debug_tcp("SSL: Write len: %d, Written: %d", len, written);
 		if(written < ERR_OK) {
 			err = written;
 			debug_d("SSL: Write Error: %d", err);
@@ -204,10 +210,10 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WR
 #endif
 
 	if(err == ERR_OK) {
-		//debug_d("TCP connection send: %d (%d)", len, original);
+		debug_tcp("TCP connection send: %d (%d)", len, original);
 		return len;
 	} else {
-		//debug_d("TCP connection failed with err %d (\"%s\")", err, lwip_strerr(err));
+		debug_tcp("TCP connection failed with err %d (\"%s\")", err, lwip_strerr(err));
 		return -1;
 	}
 }
@@ -251,8 +257,8 @@ int TcpConnection::write(IDataSourceStream* stream)
 				int written = write(buffer, available, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
 				total += written;
 				stream->seek(std::max(written, 0));
-				debug_d("Written: %d, Available: %d, isFinished: %d, PushCount: %d [TcpBuf: %d]", written, available,
-						(stream->isFinished() ? 1 : 0), pushCount, tcp_sndbuf(tcp));
+				debug_d("TCP Written: %d, Available: %d, isFinished: %d, PushCount: %d [TcpBuf: %d]", written,
+						available, (stream->isFinished() ? 1 : 0), pushCount, tcp_sndbuf(tcp));
 				repeat = written == available && !stream->isFinished() && pushCount < 25;
 			} else {
 				repeat = false;
@@ -335,16 +341,16 @@ void TcpConnection::closeTcpConnection(tcp_pcb* tpcb)
 void TcpConnection::flush()
 {
 	if(tcp && tcp->state == ESTABLISHED) {
-		//debug_d("TCP flush()");
+		debug_tcp("TCP flush()");
 		tcp_output(tcp);
 	}
 }
 
-bool TcpConnection::internalTcpConnect(IPAddress addr, uint16_t port)
+bool TcpConnection::internalConnect(IPAddress addr, uint16_t port)
 {
 	NetUtils::FixNetworkRouting();
 	err_t res = tcp_connect(tcp, addr, port, staticOnConnected);
-	debug_d("TcpConnection::connect result:, %d", res);
+	debug_d("TCP connect result: %d", res);
 	return res == ERR_OK;
 }
 
@@ -357,20 +363,20 @@ err_t TcpConnection::staticOnConnected(void* arg, tcp_pcb* tcp, err_t err)
 		tcp_abort(tcp);
 		return ERR_ABRT;
 	} else {
-		return con->tcpOnConnected(err);
+		return con->internalOnConnected(err);
 	}
 }
 
-err_t TcpConnection::tcpOnConnected(err_t err)
+err_t TcpConnection::internalOnConnected(err_t err)
 {
-	debug_d("OnConnected");
+	debug_d("TCP connected");
 
 #ifndef ENABLE_SSL
 	if(useSsl) {
 		debug_w("WARNING: SSL is not compiled. Make sure to compile Sming with 'make ENABLE_SSL=1' ");
 	}
 #else
-	debug_d("tcpOnConnected: useSSL: %d, Error: %d", useSsl, err);
+	debug_d("TCP connected: useSSL: %d, Error: %d", useSsl, err);
 
 	if(useSsl && err == ERR_OK) {
 		int clientfd = axl_append(tcp);
@@ -439,7 +445,7 @@ err_t TcpConnection::tcpOnConnected(err_t err)
 
 	err_t res = onConnected(err);
 	checkSelfFree();
-	//debug_d("<tcpOnConnected");
+	debug_tcp("<TCP connected");
 	return res;
 }
 
@@ -457,16 +463,16 @@ err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err
 		closeTcpConnection(tcp);
 		return ERR_OK;
 	} else {
-		return con->tcpOnReceive(p, err);
+		return con->internalOnReceive(p, err);
 	}
 }
 
-err_t TcpConnection::tcpOnReceive(pbuf* p, err_t err)
+err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 {
 	sleep = 0;
 
 	if(err != ERR_OK /*&& err != ERR_CLSD && err != ERR_RST*/) {
-		debug_d("Received ERROR %d", err);
+		debug_d("TCP receive ERROR %d", err);
 		/* exit and free resources, for unknown reason */
 		if(p != nullptr) {
 			/* Inform TCP that we have taken the data. */
@@ -485,7 +491,7 @@ err_t TcpConnection::tcpOnReceive(pbuf* p, err_t err)
 	if(p != nullptr) {
 		tcp_recved(tcp, p->tot_len);
 	} else {
-		debug_d("TcpConnection::tcpOnReceive: pbuf is NULL");
+		debug_d("TCP receive: pbuf is NULL");
 	}
 
 #ifdef ENABLE_SSL
@@ -563,7 +569,7 @@ err_t TcpConnection::tcpOnReceive(pbuf* p, err_t err)
 	}
 
 	checkSelfFree();
-	//debug_d("<tcpOnReceive");
+	debug_tcp("<TCP receive");
 	return res;
 }
 
@@ -574,16 +580,16 @@ err_t TcpConnection::staticOnSent(void* arg, tcp_pcb* tcp, uint16_t len)
 	if(con == nullptr) {
 		return ERR_OK;
 	} else {
-		return con->tcpOnSent(len);
+		return con->internalOnSent(len);
 	}
 }
 
-err_t TcpConnection::tcpOnSent(uint16_t len)
+err_t TcpConnection::internalOnSent(uint16_t len)
 {
 	sleep = 0;
 	err_t res = onSent(len);
 	checkSelfFree();
-	//debug_d("<tcpOnSent");
+	debug_tcp("<TCP sent");
 	return res;
 }
 
@@ -595,11 +601,11 @@ err_t TcpConnection::staticOnPoll(void* arg, tcp_pcb* tcp)
 		closeTcpConnection(tcp);
 		return ERR_OK;
 	} else {
-		return con->tcpOnPoll();
+		return con->internalOnPoll();
 	}
 }
 
-err_t TcpConnection::tcpOnPoll()
+err_t TcpConnection::internalOnPoll()
 {
 	//if (tcp->state != ESTABLISHED)
 	//	return ERR_OK;
@@ -607,7 +613,7 @@ err_t TcpConnection::tcpOnPoll()
 	sleep++;
 	err_t res = onPoll();
 	checkSelfFree();
-	//debug_d("<tcpOnPoll");
+	debug_tcp("<TCP poll");
 	return res;
 }
 
@@ -616,28 +622,28 @@ void TcpConnection::staticOnError(void* arg, err_t err)
 	auto con = static_cast<TcpConnection*>(arg);
 
 	if(con != nullptr) {
-		con->tcpOnError(err);
+		con->internalOnError(err);
 	}
 }
 
-void TcpConnection::tcpOnError(err_t err)
+void TcpConnection::internalOnError(err_t err)
 {
 	tcp = nullptr; // IMPORTANT. No available connection after error!
 	onError(err);
 	checkSelfFree();
-	//debug_d("<staticOnError");
+	debug_tcp("<TCP error");
 }
 
 void TcpConnection::staticDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, void* arg)
 {
 	auto dlook = static_cast<DnsLookup*>(arg);
 	if(dlook != nullptr) {
-		dlook->con->tcpOnDnsResponse(name, ipaddr, dlook->port);
+		dlook->con->internalOnDnsResponse(name, ipaddr, dlook->port);
 		delete dlook;
 	}
 }
 
-void TcpConnection::tcpOnDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, int port)
+void TcpConnection::internalOnDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, int port)
 {
 	if(ipaddr != nullptr) {
 		IPAddress ip = *ipaddr;

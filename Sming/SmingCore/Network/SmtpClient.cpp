@@ -402,7 +402,7 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 
 			if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
 				useSsl = true;
-				TcpConnection::tcpOnConnected(ERR_OK);
+				TcpConnection::internalOnConnected(ERR_OK);
 			}
 
 			sendString(F("EHLO ") + url.Host + "\r\n");
@@ -424,9 +424,6 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 				// Process authentication methods
 				// Ex: 250-AUTH CRAM-MD5 PLAIN LOGIN
 				// See: https://tools.ietf.org/html/rfc4954
-				int offset = 0;
-				int pos = -1;
-
 				String text(line + 5, lineLength - 5);
 				splitString(text, ' ', authMethods);
 			}

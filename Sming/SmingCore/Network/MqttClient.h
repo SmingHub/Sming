@@ -17,7 +17,6 @@
 #include "../mqtt-codec/src/message.h"
 #include "../mqtt-codec/src/serialiser.h"
 #include "../mqtt-codec/src/parser.h"
-//#include <functional>
 
 /** @defgroup   mqttclient MQTT client
  *  @brief      Provides MQTT client
