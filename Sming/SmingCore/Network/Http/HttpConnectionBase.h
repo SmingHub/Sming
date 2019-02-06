@@ -14,9 +14,7 @@
 #define _SMING_CORE_NETWORK_HTTP_HTTPCONNECTIONBASE_H_
 
 #include "../TcpClient.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WHashMap.h"
-#include "../../Delegate.h"
+#include "WString.h"
 #include "HttpCommon.h"
 #include "HttpResponse.h"
 #include "HttpRequest.h"
@@ -30,10 +28,26 @@
 class HttpConnectionBase : public TcpClient
 {
 public:
-	HttpConnectionBase(http_parser_type type, bool autoDestruct = false);
-	HttpConnectionBase(tcp_pcb* connection, http_parser_type type);
-	virtual void reset();
-	virtual void cleanup();
+	HttpConnectionBase(http_parser_type type, bool autoDestruct = false) : TcpClient(autoDestruct)
+	{
+		init(type);
+	}
+
+	HttpConnectionBase(tcp_pcb* connection, http_parser_type type) : TcpClient(connection, nullptr, nullptr)
+	{
+		init(type);
+	}
+
+	virtual void reset()
+	{
+		resetHeaders();
+	}
+
+	virtual void cleanup()
+	{
+		reset();
+	}
+
 	virtual void setDefaultParser();
 
 	using TcpConnection::getRemoteIp;
@@ -143,8 +157,8 @@ protected:
 	static http_parser_settings parserSettings;
 	static bool parserSettingsInitialized;
 	bool lastWasValue = true;
-	String lastData = "";
-	String currentField = "";
+	String lastData;
+	String currentField;
 	HttpHeaders incomingHeaders;
 	HttpConnectionState state = eHCS_Ready;
 };

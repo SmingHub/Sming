@@ -15,16 +15,6 @@
 bool HttpConnectionBase::parserSettingsInitialized = false;
 http_parser_settings HttpConnectionBase::parserSettings;
 
-HttpConnectionBase::HttpConnectionBase(http_parser_type type, bool autoDestruct) : TcpClient(autoDestruct)
-{
-	init(type);
-}
-
-HttpConnectionBase::HttpConnectionBase(tcp_pcb* connection, http_parser_type type) : TcpClient(connection, 0, 0)
-{
-	init(type);
-}
-
 void HttpConnectionBase::init(http_parser_type type)
 {
 	http_parser_init(&parser, type);
@@ -66,19 +56,9 @@ void HttpConnectionBase::setDefaultParser()
 void HttpConnectionBase::resetHeaders()
 {
 	lastWasValue = true;
-	lastData = "";
-	currentField = "";
+	lastData = nullptr;
+	currentField = nullptr;
 	incomingHeaders.clear();
-}
-
-void HttpConnectionBase::reset()
-{
-	resetHeaders();
-}
-
-void HttpConnectionBase::cleanup()
-{
-	reset();
 }
 
 int HttpConnectionBase::staticOnMessageBegin(http_parser* parser)
@@ -149,10 +129,10 @@ int HttpConnectionBase::staticOnHeaderField(http_parser* parser, const char* at,
 
 	if(connection->lastWasValue) {
 		// we are starting to process new header
-		connection->lastData = "";
+		connection->lastData = nullptr;
 		connection->lastWasValue = false;
 	}
-	connection->lastData += String(at, length);
+	connection->lastData.concat(at, length);
 
 	return 0;
 }
@@ -170,14 +150,14 @@ int HttpConnectionBase::staticOnHeaderValue(http_parser* parser, const char* at,
 		connection->incomingHeaders[connection->currentField] = nullptr;
 		connection->lastWasValue = true;
 	}
-	connection->incomingHeaders[connection->currentField] += String(at, length);
+	connection->incomingHeaders[connection->currentField].concat(at, length);
 
 	return 0;
 }
 
 int HttpConnectionBase::staticOnHeadersComplete(http_parser* parser)
 {
-	HttpConnectionBase* connection = static_cast<HttpConnectionBase*>(parser->data);
+	auto connection = static_cast<HttpConnectionBase*>(parser->data);
 	if(connection == nullptr) {
 		// something went wrong
 		return -1;
@@ -207,7 +187,7 @@ int HttpConnectionBase::staticOnHeadersComplete(http_parser* parser)
 
 int HttpConnectionBase::staticOnBody(http_parser* parser, const char* at, size_t length)
 {
-	HttpConnectionBase* connection = static_cast<HttpConnectionBase*>(parser->data);
+	auto connection = static_cast<HttpConnectionBase*>(parser->data);
 	if(connection == nullptr) {
 		// something went wrong
 		return -1;
@@ -218,7 +198,7 @@ int HttpConnectionBase::staticOnBody(http_parser* parser, const char* at, size_t
 
 int HttpConnectionBase::staticOnMessageComplete(http_parser* parser)
 {
-	HttpConnectionBase* connection = static_cast<HttpConnectionBase*>(parser->data);
+	auto connection = static_cast<HttpConnectionBase*>(parser->data);
 	if(connection == nullptr) {
 		// something went wrong
 		return -1;
