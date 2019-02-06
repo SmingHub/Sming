@@ -31,7 +31,7 @@ class StreamTransformer : public IDataSourceStream
 {
 public:
 	StreamTransformer(IDataSourceStream* stream, size_t resultSize = 256, size_t blockSize = 64)
-		: sourceStream(stream), resultSize(resultSize), result(new uint8_t[resultSize]), blockSize(blockSize)
+		: sourceStream(stream), result(new uint8_t[resultSize]), resultSize(resultSize), blockSize(blockSize)
 	{
 	}
 
@@ -40,7 +40,7 @@ public:
 	 */
 	StreamTransformer(IDataSourceStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
 					  size_t blockSize = 64) __attribute__((deprecated))
-	: transformCallback(callback), sourceStream(stream), resultSize(resultSize), result(new uint8_t[resultSize]),
+	: transformCallback(callback), sourceStream(stream), result(new uint8_t[resultSize]), resultSize(resultSize),
 	  blockSize(blockSize)
 	{
 	}
