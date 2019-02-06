@@ -58,7 +58,6 @@ typedef struct {
 	}
 } SSLFingerprints;
 
-
 /** @brief Structure to manage an SSL key certificate with optional password
  *  @note Do not set member variables directly, use provided methods
  */
@@ -89,7 +88,7 @@ struct SSLKeyCertPair {
 	 *  @note We take a new copy of the certificate
 	 */
 	bool assign(const uint8_t* newKey, unsigned newKeyLength, const uint8_t* newCertificate,
-					unsigned newCertificateLength, const char* newKeyPassword = nullptr)
+				unsigned newCertificateLength, const char* newKeyPassword = nullptr)
 	{
 		free();
 
@@ -127,10 +126,11 @@ struct SSLKeyCertPair {
 	 */
 	bool assign(const SSLKeyCertPair& keyCert)
 	{
-		return assign(keyCert.key, keyCert.keyLength, keyCert.certificate, keyCert.certificateLength, keyCert.keyPassword);
+		return assign(keyCert.key, keyCert.keyLength, keyCert.certificate, keyCert.certificateLength,
+					  keyCert.keyPassword);
 	}
 
-	SSLKeyCertPair& operator = (const SSLKeyCertPair& keyCert)
+	SSLKeyCertPair& operator=(const SSLKeyCertPair& keyCert)
 	{
 		assign(keyCert);
 		return *this;
