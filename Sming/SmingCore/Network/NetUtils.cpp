@@ -175,30 +175,26 @@ static DEFINE_FSTR(deb_tcp_state_str, "CLOSED\0"	  // 0  CLOSED
 									  "LAST_ACK\0"	// 9  LAST_ACK
 									  "TIME_WAIT");   // 10 TIME_WAIT
 
-static void debugPrintTcp(const struct tcp_pcb* pcb)
+static void debugPrintTcp(const char* type, const struct tcp_pcb* pcb)
 {
+	debugf("********** Lwip %s PCB states:", type);
 	CStringArray stateStr(deb_tcp_state_str);
 	unsigned active = 0;
 	while(pcb != nullptr) {
-		debugf("LWIP_DEBUG: Port %u | %u flg:%02x tmr:%04x %s\r\n", pcb->local_port, pcb->remote_port, pcb->flags,
-			   pcb->tmr, stateStr[pcb->state]);
+		debugf("LWIP_DEBUG: Port %u | %u flg:%02x tmr:%04x %s", pcb->local_port, pcb->remote_port, pcb->flags, pcb->tmr,
+			   stateStr[pcb->state]);
 		active++;
 		pcb = pcb->next;
 	}
 
 	if(active == 0) {
-		debugf("LWIP_DEBUG: none\r\n");
+		debugf("LWIP_DEBUG: none");
 	}
 }
 
 void NetUtils::debugPrintTcpList()
 {
-	debugf("********** Lwip Active PCB states:\r\n");
-	debugPrintTcp(tcp_active_pcbs);
-
-	debugf("********** Lwip Listen PCB states:\r\n");
-	debugPrintTcp(tcp_listen_pcbs.pcbs);
-
-	debugf("********** Lwip TIME-WAIT PCB states:\r\n");
-	debugPrintTcp(tcp_tw_pcbs);
+	debugPrintTcp(_F("Active"), tcp_active_pcbs);
+	debugPrintTcp(_F("Listen"), tcp_listen_pcbs.pcbs);
+	debugPrintTcp(_F("TIME-WAIT"), tcp_tw_pcbs);
 }
