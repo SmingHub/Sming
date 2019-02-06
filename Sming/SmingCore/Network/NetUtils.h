@@ -19,19 +19,28 @@ class NetUtils
 {
 public:
 	// Helpers
-	static bool pbufIsStrEqual(pbuf* buf, const char* compared, int startPos);
-	static int pbufFindChar(pbuf* buf, char wtf, int startPos = 0);
-	static int pbufFindStr(pbuf* buf, const char* wtf, int startPos = 0);
-	static char* pbufAllocateStrCopy(pbuf* buf, int startPos, int length);
-	static String pbufStrCopy(pbuf* buf, int startPos, int length);
+	static bool pbufIsStrEqual(const pbuf* buf, const char* compared, unsigned startPos);
+	static int pbufFindChar(const pbuf* buf, char wtf, unsigned startPos = 0);
+	static int pbufFindStr(const pbuf* buf, const char* wtf, unsigned startPos = 0);
+	static char* pbufAllocateStrCopy(const pbuf* buf, unsigned startPos, unsigned length);
+	static String pbufStrCopy(const pbuf* buf, unsigned startPos, unsigned length);
 
+#ifdef FIX_NETWORK_ROUTING
 	static bool FixNetworkRouting();
+#else
+	static bool FixNetworkRouting()
+	{
+		return true; // Should work on standard lwip
+	}
+#endif
 
 	// Debug
 	static void debugPrintTcpList();
 
 private:
+#ifdef FIX_NETWORK_ROUTING
 	static bool ipClientRoutingFixed;
+#endif
 };
 
 /** @} */

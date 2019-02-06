@@ -13,7 +13,6 @@
  */
 #include "DNSServer.h"
 #include "UdpConnection.h"
-#include "NetUtils.h"
 #include "WString.h"
 
 bool DNSServer::start(uint16_t port, const String& domainName, const IPAddress& resolvedIP)
