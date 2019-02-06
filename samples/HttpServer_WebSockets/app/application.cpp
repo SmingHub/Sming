@@ -55,7 +55,16 @@ void wsMessageReceived(WebsocketConnection& socket, const String& message)
 	if(message == "shutdown") {
 		String message = "The server is shutting down...";
 		socket.broadcast(message.c_str(), message.length());
-		server.shutdown();
+
+		// Don't shutdown immediately, wait a bit to allow messages to propagate
+		auto timer = new SimpleTimer;
+		timer->setCallback(
+			[](void* timer) {
+				delete static_cast<SimpleTimer*>(timer);
+				server.shutdown();
+			},
+			timer);
+		timer->startMs(1000);
 		return;
 	}
 
