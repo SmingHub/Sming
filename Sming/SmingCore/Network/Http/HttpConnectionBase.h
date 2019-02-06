@@ -154,8 +154,7 @@ private:
 
 protected:
 	http_parser parser;
-	static http_parser_settings parserSettings;
-	static bool parserSettingsInitialized;
+	static const http_parser_settings parserSettings;
 	bool lastWasValue = true;
 	String lastData;
 	String currentField;
