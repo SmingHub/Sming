@@ -8,48 +8,6 @@
 #include "TcpClient.h"
 #include "Data/Stream/MemoryDataStream.h"
 
-TcpClient::TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted)
-	: TcpConnection(clientTcp, true), state(eTCS_Connected)
-{
-	completed = onCompleted;
-	receive = clientReceive;
-	timeOut = TCP_CLIENT_TIMEOUT;
-}
-
-TcpClient::TcpClient(bool autoDestruct) : TcpConnection(autoDestruct), state(eTCS_Ready)
-{
-	timeOut = TCP_CLIENT_TIMEOUT;
-}
-
-TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend,
-					 TcpClientDataDelegate onReceive)
-	: TcpConnection(false), state(eTCS_Ready)
-{
-	completed = onCompleted;
-	ready = onReadyToSend;
-	receive = onReceive;
-	timeOut = TCP_CLIENT_TIMEOUT;
-}
-
-TcpClient::TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive)
-	: TcpConnection(false), state(eTCS_Ready)
-{
-	completed = onCompleted;
-	receive = onReceive;
-	timeOut = TCP_CLIENT_TIMEOUT;
-}
-
-TcpClient::TcpClient(TcpClientDataDelegate onReceive) : TcpConnection(false), state(eTCS_Ready)
-{
-	receive = onReceive;
-	timeOut = TCP_CLIENT_TIMEOUT;
-}
-
-TcpClient::~TcpClient()
-{
-	freeStreams();
-}
-
 void TcpClient::freeStreams()
 {
 	if(buffer != nullptr) {
@@ -71,33 +29,31 @@ void TcpClient::setBuffer(ReadWriteStream* stream)
 	this->stream = buffer;
 }
 
-bool TcpClient::connect(String server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool TcpClient::connect(const String& server, int port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
-	if(isProcessing())
+	if(isProcessing()) {
 		return false;
+	}
 
 	state = eTCS_Connecting;
 	return TcpConnection::connect(server.c_str(), port, useSsl, sslOptions);
 }
 
-bool TcpClient::connect(IPAddress addr, uint16_t port, boolean useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool TcpClient::connect(IPAddress addr, uint16_t port, boolean useSsl, uint32_t sslOptions)
 {
-	if(isProcessing())
+	if(isProcessing()) {
 		return false;
+	}
 
 	state = eTCS_Connecting;
 	return TcpConnection::connect(addr, port, useSsl, sslOptions);
 }
 
-bool TcpClient::sendString(const String& data, bool forceCloseAfterSent /* = false*/)
+bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent)
 {
-	return send(data.c_str(), data.length(), forceCloseAfterSent);
-}
-
-bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent /* = false*/)
-{
-	if(state != eTCS_Connecting && state != eTCS_Connected)
+	if(state != eTCS_Connecting && state != eTCS_Connected) {
 		return false;
+	}
 
 	if(buffer == nullptr) {
 		setBuffer(new MemoryDataStream());
@@ -164,8 +120,9 @@ err_t TcpClient::onReceive(pbuf* buf)
 void TcpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	TcpConnection::onReadyToSendData(sourceEvent);
-	if(ready)
+	if(ready) {
 		ready(*this, sourceEvent);
+	}
 
 	pushAsyncPart();
 }
@@ -283,7 +240,7 @@ bool TcpClient::pinCertificate(const uint8_t* fingerprint, SslFingerprintType ty
 	return true;
 }
 
-bool TcpClient::pinCertificate(SSLFingerprints fingerprints)
+bool TcpClient::pinCertificate(const SSLFingerprints& fingerprints)
 {
 	bool success = false;
 	if(fingerprints.certSha1 != nullptr) {
@@ -297,13 +254,3 @@ bool TcpClient::pinCertificate(SSLFingerprints fingerprints)
 	return success;
 }
 #endif
-
-void TcpClient::setReceiveDelegate(TcpClientDataDelegate receiveCb)
-{
-	receive = receiveCb;
-}
-
-void TcpClient::setCompleteDelegate(TcpClientCompleteDelegate completeCb)
-{
-	completed = completeCb;
-}

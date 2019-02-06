@@ -6,22 +6,12 @@
  */
 
 #include "TelnetServer.h"
-#include "TcpServer.h"
-
-TelnetServer::TelnetServer() : TcpServer()
-{
-	// TODO Auto-generated constructor stub
-}
-
-TelnetServer::~TelnetServer()
-{
-	// TODO Auto-generated destructor stub
-}
+#include "Debug.h"
 
 void TelnetServer::enableDebug(bool reqStatus)
 {
 	telnetDebug = reqStatus;
-	if(telnetDebug && curClient) /* only setSetDebug when already connected */
+	if(telnetDebug && curClient != nullptr) /* only setSetDebug when already connected */
 	{
 		Debug.setDebug(DebugPrintCharDelegate(&TelnetServer::wrchar, this));
 	} else {
@@ -32,23 +22,24 @@ void TelnetServer::enableDebug(bool reqStatus)
 void TelnetServer::enableCommand(bool reqStatus)
 {
 #if ENABLE_CMD_EXECUTOR
-	if(reqStatus && curClient && !commandExecutor) {
+	if(reqStatus && curClient != nullptr && commandExecutor == nullptr) {
 		commandExecutor = new CommandExecutor(curClient);
 	}
-	if(!reqStatus && commandExecutor) {
+	if(!reqStatus && commandExecutor != nullptr) {
 		delete commandExecutor;
 		commandExecutor = nullptr;
 	}
 #endif
 	telnetCommand = reqStatus;
 }
+
 void TelnetServer::onClient(TcpClient* client)
 {
 	debug_d("TelnetServer onClient %s", client->getRemoteIp().toString().c_str());
 
 	TcpServer::onClient(client);
 
-	if(curClient) {
+	if(curClient != nullptr) {
 		debug_d("TCP Client already connected");
 		client->sendString("Telnet Client already connected\r\n");
 		client->close();
@@ -68,7 +59,7 @@ void TelnetServer::onClient(TcpClient* client)
 	}
 }
 
-void TelnetServer::onClientComplete(TcpClient& client, bool succesfull)
+void TelnetServer::onClientComplete(TcpClient& client, bool successful)
 {
 	if(&client == curClient) {
 #if ENABLE_CMD_EXECUTOR
@@ -82,7 +73,7 @@ void TelnetServer::onClientComplete(TcpClient& client, bool succesfull)
 	}
 
 	debug_d("TelnetServer onClientComplete %s", client.getRemoteIp().toString().c_str());
-	TcpServer::onClientComplete(client, succesfull);
+	TcpServer::onClientComplete(client, successful);
 	Debug.setDebug(Serial);
 }
 
@@ -98,7 +89,7 @@ bool TelnetServer::onClientReceive(TcpClient& client, char* data, int size)
 	debug_d("TelnetServer onClientReceive : %s, %d bytes \r\n", client.getRemoteIp().toString().c_str(), size);
 	debug_d("Data : %s", data);
 #if ENABLE_CMD_EXECUTOR
-	if(commandExecutor) {
+	if(commandExecutor != nullptr) {
 		commandExecutor->executorReceive(data, size);
 	}
 #endif

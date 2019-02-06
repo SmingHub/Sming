@@ -2,60 +2,69 @@
 #include "FTPServer.h"
 #include "NetUtils.h"
 #include "TcpConnection.h"
-#include "../FileSystem.h"
+#include "FileSystem.h"
 
 class FTPDataStream : public TcpConnection
 {
 public:
-	FTPDataStream(FTPServerConnection* connection)
-		: TcpConnection(true), parent(connection), completed(false), sent(0), written(0)
+	FTPDataStream(FTPServerConnection* connection) : TcpConnection(true), parent(connection)
 	{
 	}
+
 	virtual err_t onConnected(err_t err)
 	{
 		//response(125, "Connected");
 		setTimeOut(300); // Update timeout
 		return TcpConnection::onConnected(err);
 	}
+
 	virtual err_t onSent(uint16_t len)
 	{
 		sent += len;
-		if(written < sent || !completed)
+		if(written < sent || !completed) {
 			return TcpConnection::onSent(len);
+		}
 		finishTransfer();
 		return TcpConnection::onSent(len);
 	}
+
 	void finishTransfer()
 	{
 		close();
 		parent->dataTransferFinished(this);
 	}
-	void response(int code, String text = "")
+
+	void response(int code, String text = nullptr)
 	{
 		parent->response(code, text);
 	}
+
 	int write(const char* data, int len, uint8_t apiflags = 0)
 	{
 		written += len;
 		return TcpConnection::write(data, len, apiflags);
 	}
+
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent)
 	{
-		if(!parent->isCanTransfer())
+		if(!parent->isCanTransfer()) {
 			return;
-		if(completed && written == 0)
+		}
+		if(completed && written == 0) {
 			finishTransfer();
+		}
 		transferData(sourceEvent);
 	}
+
 	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
 	}
 
 protected:
-	FTPServerConnection* parent;
-	bool completed;
-	int written;
-	int sent;
+	FTPServerConnection* parent = nullptr;
+	bool completed = false;
+	unsigned written = 0;
+	unsigned sent = 0;
 };
 
 class FTPDataFileList : public FTPDataStream
@@ -64,14 +73,17 @@ public:
 	FTPDataFileList(FTPServerConnection* connection) : FTPDataStream(connection)
 	{
 	}
+
 	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
-		if(completed)
+		if(completed) {
 			return;
+		}
 		Vector<String> list = fileList();
 		debug_d("send file list: %d", list.count());
-		for(int i = 0; i < list.count(); i++)
+		for(unsigned i = 0; i < list.count(); i++) {
 			writeString("01-01-15  01:00AM               " + String(fileGetSize(list[i])) + " " + list[i] + "\r\n");
+		}
 		completed = true;
 		finishTransfer();
 	}
@@ -84,14 +96,17 @@ public:
 	{
 		file = fileOpen(fileName, eFO_ReadOnly);
 	}
+
 	~FTPDataRetrieve()
 	{
 		fileClose(file);
 	}
+
 	virtual void transferData(TcpConnectionEvent sourceEvent)
 	{
-		if(completed)
+		if(completed) {
 			return;
+		}
 		char buf[1024];
 		int len = fileRead(file, buf, 1024);
 		write(buf, len, TCP_WRITE_FLAG_COPY);
@@ -112,23 +127,26 @@ public:
 	{
 		file = fileOpen(fileName, eFO_WriteOnly | eFO_CreateNewAlways);
 	}
+
 	~FTPDataStore()
 	{
 		fileClose(file);
 	}
+
 	virtual err_t onReceive(pbuf* buf)
 	{
-		if(completed)
+		if(completed) {
 			return TcpConnection::onReceive(buf);
+		}
 
-		if(buf == NULL) {
+		if(buf == nullptr) {
 			completed = true;
 			response(226, "Transfer completed");
 			return TcpConnection::onReceive(buf);
 		}
 
 		pbuf* cur = buf;
-		while(cur != NULL && cur->len > 0) {
+		while(cur != nullptr && cur->len > 0) {
 			fileWrite(file, (uint8_t*)cur->payload, cur->len);
 			cur = cur->next;
 		}
@@ -142,47 +160,38 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-FTPServerConnection::FTPServerConnection(FTPServer* parentServer, tcp_pcb* clientTcp)
-	: TcpConnection(clientTcp, true), server(parentServer), state(eFCS_Ready)
-{
-	dataConnection = NULL;
-	port = 0;
-	canTransfer = true;
-}
-
-FTPServerConnection::~FTPServerConnection()
-{
-}
-
 err_t FTPServerConnection::onReceive(pbuf* buf)
 {
-	if(buf == NULL)
+	if(buf == nullptr)
 		return ERR_OK;
 	int p = 0, prev = 0;
 
 	while(true) {
 		p = NetUtils::pbufFindStr(buf, "\r\n", prev);
-		if(p == -1 || p - prev > MAX_FTP_CMD)
+		if(p < 0 || p - prev > MAX_FTP_CMD) {
 			break;
+		}
 		int split = NetUtils::pbufFindChar(buf, ' ', prev);
 		String cmd, data;
-		if(split != -1 && split < p) {
+		if(split >= 0 && split < p) {
 			cmd = NetUtils::pbufStrCopy(buf, prev, split - prev);
 			split++;
 			data = NetUtils::pbufStrCopy(buf, split, p - split);
-		} else
+		} else {
 			cmd = NetUtils::pbufStrCopy(buf, prev, p - prev);
+		}
 		debug_d("%s: '%s'", cmd.c_str(), data.c_str());
 		onCommand(cmd, data);
 		prev = p + 1;
-	};
+	}
+
 	return ERR_OK;
 }
 
 void FTPServerConnection::cmdPort(const String& data)
 {
 	int last = getSplitterPos(data, ',', 4);
-	if(last == -1) {
+	if(last < 0) {
 		response(550); // Invalid arguments
 					   //return;
 	}
@@ -297,13 +306,15 @@ err_t FTPServerConnection::onSent(uint16_t len)
 
 String FTPServerConnection::makeFileName(String name, bool shortIt)
 {
-	if(name.startsWith("/"))
+	if(name.startsWith("/")) {
 		name = name.substring(1);
+	}
 
 	if(shortIt && name.length() > 20) {
 		String ext = "";
-		if(name.lastIndexOf('.') != -1)
+		if(name.lastIndexOf('.') != -1) {
 			ext = name.substring(name.lastIndexOf('.'));
+		}
 
 		return name.substring(0, 16) + ext;
 	}
@@ -319,10 +330,11 @@ void FTPServerConnection::createDataConnection(TcpConnection* connection)
 
 void FTPServerConnection::dataTransferFinished(TcpConnection* connection)
 {
-	if(connection != dataConnection)
+	if(connection != dataConnection) {
 		SYSTEM_ERROR("FTP Wrong state: connection != dataConnection");
+	}
 
-	dataConnection = NULL;
+	dataConnection = nullptr;
 	response(226, F("Transfer Complete."));
 }
 
@@ -330,7 +342,7 @@ int FTPServerConnection::getSplitterPos(String data, char splitter, uint8_t numb
 {
 	uint8_t k = 0;
 
-	for(int i = 0; i < data.length(); i++) {
+	for(unsigned i = 0; i < data.length(); i++) {
 		if(data[i] == splitter) {
 			if(k == number) {
 				return i;
@@ -346,16 +358,18 @@ void FTPServerConnection::response(int code, String text /* = "" */)
 {
 	String response = String(code, DEC);
 	if(text.length() == 0) {
-		if(code >= 200 && code <= 399) // Just for simplify
+		if(code >= 200 && code <= 399) { // Just for simplify
 			response += _F(" OK");
-		else
+		} else {
 			response += _F(" FAIL");
-	} else
+		}
+	} else {
 		response += ' ' + text;
+	}
 	response += "\r\n";
 
 	debug_d("> %s", response.c_str());
-	writeString(response.c_str(), TCP_WRITE_FLAG_COPY); // Dynamic memory, should copy
+	writeString(response, TCP_WRITE_FLAG_COPY); // Dynamic memory, should copy
 	canTransfer = false;
 	flush();
 }

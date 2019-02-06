@@ -37,31 +37,75 @@ enum TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successf
 class TcpClient : public TcpConnection
 {
 public:
-	TcpClient(bool autoDestruct);
-	TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted);
+	TcpClient(bool autoDestruct) : TcpConnection(autoDestruct)
+	{
+		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
+	}
+
+	TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted)
+		: TcpConnection(clientTcp, true), state(eTCS_Connected)
+	{
+		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
+		completed = onCompleted;
+		receive = clientReceive;
+	}
+
 	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend,
-			  TcpClientDataDelegate onReceive = nullptr);
-	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive = nullptr);
-	TcpClient(TcpClientDataDelegate onReceive);
-	virtual ~TcpClient();
+			  TcpClientDataDelegate onReceive = nullptr)
+		: TcpConnection(false)
+	{
+		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
+		completed = onCompleted;
+		ready = onReadyToSend;
+		receive = onReceive;
+	}
+
+	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive = nullptr) : TcpConnection(false)
+	{
+		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
+		completed = onCompleted;
+		receive = onReceive;
+	}
+
+	TcpClient(TcpClientDataDelegate onReceive) : TcpConnection(false)
+	{
+		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
+		receive = onReceive;
+	}
+
+	virtual ~TcpClient()
+	{
+		freeStreams();
+	}
 
 public:
-	virtual bool connect(String server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(const String& server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
 	virtual bool connect(IPAddress addr, uint16_t port, boolean useSsl = false, uint32_t sslOptions = 0);
 	virtual void close();
 
 	/**	@brief	Set or clear the callback for received data
 	 *	@param	receiveCb callback delegate or nullptr
 	 */
-	void setReceiveDelegate(TcpClientDataDelegate receiveCb = nullptr);
+	void setReceiveDelegate(TcpClientDataDelegate receiveCb = nullptr)
+	{
+		receive = receiveCb;
+	}
 
 	/**	@brief	Set or clear the callback for connection close
 	 *	@param	completeCb callback delegate or nullptr
 	 */
-	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = nullptr);
+	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = nullptr)
+	{
+		completed = completeCb;
+	}
 
 	bool send(const char* data, uint16_t len, bool forceCloseAfterSent = false);
-	bool sendString(const String& data, bool forceCloseAfterSent = false);
+
+	bool sendString(const String& data, bool forceCloseAfterSent = false)
+	{
+		return send(data.c_str(), data.length(), forceCloseAfterSent);
+	}
+
 	__forceinline bool isProcessing()
 	{
 		return state == eTCS_Connected || state == eTCS_Connecting;
@@ -118,7 +162,7 @@ public:
 	 *
 	 * @return bool  true of success, false or failure
 	 */
-	bool pinCertificate(SSLFingerprints fingerprints);
+	bool pinCertificate(const SSLFingerprints& fingerprints);
 #endif
 
 protected:
@@ -143,14 +187,14 @@ protected:
 	IDataSourceStream* stream = nullptr; ///< The currently active stream being sent
 
 private:
-	TcpClientState state;
+	TcpClientState state = eTCS_Ready;
 	TcpClientCompleteDelegate completed = nullptr;
 	TcpClientDataDelegate receive = nullptr;
 	TcpClientEventDelegate ready = nullptr;
 
 	bool asyncCloseAfterSent = false;
-	int16_t asyncTotalSent = 0;
-	int16_t asyncTotalLen = 0;
+	uint16_t asyncTotalSent = 0;
+	uint16_t asyncTotalLen = 0;
 #ifdef ENABLE_SSL
 	Vector<SslValidatorCallback> sslValidators;
 	Vector<void*> sslValidatorsData;

@@ -2,7 +2,7 @@
 #include <SmingCore/SmingCore.h>
 //#include <SmingCore/Network/WebConstants.h>
 #include <SmingCore/Network/TelnetServer.h>
-//#include <SmingCore/Debug.h>
+#include <SmingCore/Debug.h>
 //#include <Libraries/ArduCAM/ArduCAM.h>
 //#include <Libraries/ArduCAM/ov2640_regs.h>
 

@@ -14,12 +14,6 @@
 
 struct pbuf;
 class String;
-class TcpConnection;
-
-struct DnsLookup {
-	TcpConnection* con;
-	int port;
-};
 
 class NetUtils
 {
