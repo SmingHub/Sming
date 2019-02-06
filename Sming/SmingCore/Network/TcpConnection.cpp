@@ -59,8 +59,21 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_
 
 	debug_d("connect to: %s", server.c_str());
 	canSend = false; // Wait for connection
+
+	struct DnsLookup {
+		TcpConnection* con;
+		int port;
+	};
 	DnsLookup* look = new DnsLookup{this, port};
-	err_t dnslook = dns_gethostbyname(server.c_str(), &addr, staticDnsResponse, look);
+	err_t dnslook = dns_gethostbyname(server.c_str(), &addr,
+									  [](const char* name, LWIP_IP_ADDR_T* ipaddr, void* arg) {
+										  auto dlook = static_cast<DnsLookup*>(arg);
+										  if(dlook != nullptr) {
+											  dlook->con->internalOnDnsResponse(name, ipaddr, dlook->port);
+											  delete dlook;
+										  }
+									  },
+									  look);
 	if(dnslook == ERR_INPROGRESS) {
 		// Operation pending - see internalOnDnsResponse()
 		return true;
@@ -305,9 +318,36 @@ void TcpConnection::initialize(tcp_pcb* pcb)
 
 	tcp_nagle_disable(tcp);
 	tcp_arg(tcp, (void*)this);
-	tcp_sent(tcp, staticOnSent);
-	tcp_recv(tcp, staticOnReceive);
-	tcp_err(tcp, staticOnError);
+
+	tcp_sent(tcp, [](void* arg, tcp_pcb* tcp, uint16_t len) -> err_t {
+		auto con = static_cast<TcpConnection*>(arg);
+		return (con == nullptr) ? ERR_OK : con->internalOnSent(len);
+	});
+
+	tcp_recv(tcp, [](void* arg, tcp_pcb* tcp, pbuf* p, err_t err) -> err_t {
+		auto con = static_cast<TcpConnection*>(arg);
+		//Serial.println("echo_recv!");
+
+		if(con == nullptr) {
+			if(p != nullptr) {
+				/* Inform TCP that we have taken the data. */
+				tcp_recved(tcp, p->tot_len);
+				pbuf_free(p);
+			}
+			closeTcpConnection(tcp);
+			return ERR_OK;
+		} else {
+			return con->internalOnReceive(p, err);
+		}
+	});
+
+	tcp_err(tcp, [](void* arg, err_t err) {
+		auto con = static_cast<TcpConnection*>(arg);
+		if(con != nullptr) {
+			con->internalOnError(err);
+		}
+	});
+
 	tcp_poll(tcp, staticOnPoll, 4);
 
 #ifdef NETWORK_DEBUG
@@ -349,22 +389,19 @@ void TcpConnection::flush()
 bool TcpConnection::internalConnect(IPAddress addr, uint16_t port)
 {
 	NetUtils::FixNetworkRouting();
-	err_t res = tcp_connect(tcp, addr, port, staticOnConnected);
+	err_t res = tcp_connect(tcp, addr, port, [](void* arg, tcp_pcb* tcp, err_t err) -> err_t {
+		auto con = static_cast<TcpConnection*>(arg);
+		if(con == nullptr) {
+			debug_d("TCP connect ABORT");
+			//closeTcpConnection(tcp);
+			tcp_abort(tcp);
+			return ERR_ABRT;
+		} else {
+			return con->internalOnConnected(err);
+		}
+	});
 	debug_d("TCP connect result: %d", res);
 	return res == ERR_OK;
-}
-
-err_t TcpConnection::staticOnConnected(void* arg, tcp_pcb* tcp, err_t err)
-{
-	auto con = static_cast<TcpConnection*>(arg);
-	if(con == nullptr) {
-		debug_d("OnConnected ABORT");
-		//closeTcpConnection(tcp);
-		tcp_abort(tcp);
-		return ERR_ABRT;
-	} else {
-		return con->internalOnConnected(err);
-	}
 }
 
 err_t TcpConnection::internalOnConnected(err_t err)
@@ -447,24 +484,6 @@ err_t TcpConnection::internalOnConnected(err_t err)
 	checkSelfFree();
 	debug_tcp("<TCP connected");
 	return res;
-}
-
-err_t TcpConnection::staticOnReceive(void* arg, tcp_pcb* tcp, pbuf* p, err_t err)
-{
-	auto con = static_cast<TcpConnection*>(arg);
-	//Serial.println("echo_recv!");
-
-	if(con == nullptr) {
-		if(p != nullptr) {
-			/* Inform TCP that we have taken the data. */
-			tcp_recved(tcp, p->tot_len);
-			pbuf_free(p);
-		}
-		closeTcpConnection(tcp);
-		return ERR_OK;
-	} else {
-		return con->internalOnReceive(p, err);
-	}
 }
 
 err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
@@ -573,17 +592,6 @@ err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 	return res;
 }
 
-err_t TcpConnection::staticOnSent(void* arg, tcp_pcb* tcp, uint16_t len)
-{
-	auto con = static_cast<TcpConnection*>(arg);
-
-	if(con == nullptr) {
-		return ERR_OK;
-	} else {
-		return con->internalOnSent(len);
-	}
-}
-
 err_t TcpConnection::internalOnSent(uint16_t len)
 {
 	sleep = 0;
@@ -617,15 +625,6 @@ err_t TcpConnection::internalOnPoll()
 	return res;
 }
 
-void TcpConnection::staticOnError(void* arg, err_t err)
-{
-	auto con = static_cast<TcpConnection*>(arg);
-
-	if(con != nullptr) {
-		con->internalOnError(err);
-	}
-}
-
 void TcpConnection::internalOnError(err_t err)
 {
 	tcp = nullptr; // IMPORTANT. No available connection after error!
@@ -634,22 +633,13 @@ void TcpConnection::internalOnError(err_t err)
 	debug_tcp("<TCP error");
 }
 
-void TcpConnection::staticDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, void* arg)
-{
-	auto dlook = static_cast<DnsLookup*>(arg);
-	if(dlook != nullptr) {
-		dlook->con->internalOnDnsResponse(name, ipaddr, dlook->port);
-		delete dlook;
-	}
-}
-
 void TcpConnection::internalOnDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, int port)
 {
 	if(ipaddr != nullptr) {
 		IPAddress ip = *ipaddr;
 		debug_d("DNS record found: %s = %s", name, ip.toString().c_str());
 
-		internalTcpConnect(ip, port);
+		internalConnect(ip, port);
 	} else {
 #ifdef NETWORK_DEBUG
 		debug_d("DNS record _not_ found: %s", name);
