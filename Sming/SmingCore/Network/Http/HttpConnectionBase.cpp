@@ -62,9 +62,7 @@ void HttpConnectionBase::setDefaultParser()
 
 void HttpConnectionBase::resetHeaders()
 {
-	lastWasValue = true;
-	lastData = nullptr;
-	currentField = nullptr;
+	header.reset();
 	incomingHeaders.clear();
 }
 
@@ -110,28 +108,14 @@ int HttpConnectionBase::staticOnHeaderField(http_parser* parser, const char* at,
 {
 	GET_CONNECTION()
 
-	if(connection->lastWasValue) {
-		// we are starting to process new header
-		connection->lastData = nullptr;
-		connection->lastWasValue = false;
-	}
-	connection->lastData.concat(at, length);
-
-	return 0;
+	return connection->header.onHeaderField(at, length);
 }
 
 int HttpConnectionBase::staticOnHeaderValue(http_parser* parser, const char* at, size_t length)
 {
 	GET_CONNECTION()
 
-	if(!connection->lastWasValue) {
-		connection->currentField = connection->lastData;
-		connection->incomingHeaders[connection->currentField] = nullptr;
-		connection->lastWasValue = true;
-	}
-	connection->incomingHeaders[connection->currentField].concat(at, length);
-
-	return 0;
+	return connection->header.onHeaderValue(connection->incomingHeaders, at, length);
 }
 
 int HttpConnectionBase::staticOnHeadersComplete(http_parser* parser)
