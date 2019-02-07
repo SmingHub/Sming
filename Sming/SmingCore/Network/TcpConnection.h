@@ -48,15 +48,109 @@ enum SslFingerprintType {
 typedef struct {
 	uint8_t* certSha1 = nullptr; // << certificate SHA1 fingerprint
 	uint8_t* pkSha256 = nullptr; // << public key SHA256 fingerprint
+
+	void free()
+	{
+		delete certSha1;
+		certSha1 = nullptr;
+		delete pkSha256;
+		pkSha256 = nullptr;
+	}
 } SSLFingerprints;
 
-typedef struct {
+/** @brief Structure to manage an SSL key certificate with optional password
+ *  @note Do not set member variables directly, use provided methods
+ */
+struct SSLKeyCertPair {
 	uint8_t* key = nullptr;
-	int keyLength = 0;
+	unsigned keyLength = 0;
 	char* keyPassword = nullptr;
 	uint8_t* certificate = nullptr;
-	int certificateLength = 0;
-} SSLKeyCertPair;
+	unsigned certificateLength = 0;
+
+	~SSLKeyCertPair()
+	{
+		free();
+	}
+
+	bool isValid()
+	{
+		return keyLength != 0 && certificateLength != 0;
+	}
+
+	/** @brief Create certificate using provided values
+	 *  @param newKey
+	 *  @param newKeyLength
+	 *  @param newCertificate
+	 *  @param newCertificateLength
+	 *  @param newKeyPassword
+	 *  @retval bool false on memory allocation failure
+	 *  @note We take a new copy of the certificate
+	 */
+	bool assign(const uint8_t* newKey, unsigned newKeyLength, const uint8_t* newCertificate,
+				unsigned newCertificateLength, const char* newKeyPassword = nullptr)
+	{
+		free();
+
+		key = new uint8_t[newKeyLength];
+		if(key == nullptr) {
+			return false;
+		}
+		memcpy(key, newKey, newKeyLength);
+		keyLength = newKeyLength;
+
+		certificate = new uint8_t[newCertificateLength];
+		if(certificate == nullptr) {
+			return false;
+		}
+		memcpy(certificate, newCertificate, newCertificateLength);
+		certificateLength = newCertificateLength;
+
+		unsigned passwordLength = (newKeyPassword == nullptr) ? 0 : strlen(newKeyPassword);
+		if(passwordLength > 0) {
+			keyPassword = new char[passwordLength + 1];
+			if(keyPassword == nullptr) {
+				return false;
+			}
+			memcpy(keyPassword, newKeyPassword, passwordLength);
+			keyPassword[passwordLength] = '\0';
+		}
+
+		return true;
+	}
+
+	/** @brief Assign another certificate to this structure
+	 *  @param keyCert
+	 *  @retval bool false on memory allocation failure
+	 *  @note We take a new copy of the certificate
+	 */
+	bool assign(const SSLKeyCertPair& keyCert)
+	{
+		return assign(keyCert.key, keyCert.keyLength, keyCert.certificate, keyCert.certificateLength,
+					  keyCert.keyPassword);
+	}
+
+	SSLKeyCertPair& operator=(const SSLKeyCertPair& keyCert)
+	{
+		assign(keyCert);
+		return *this;
+	}
+
+	void free()
+	{
+		delete[] key;
+		key = nullptr;
+
+		delete[] certificate;
+		certificate = nullptr;
+
+		delete[] keyPassword;
+		keyPassword = nullptr;
+
+		keyLength = 0;
+		certificateLength = 0;
+	}
+};
 
 typedef struct {
 	uint8_t* value = nullptr;
@@ -217,7 +311,11 @@ public:
 	 * @return bool  true of success, false or failure
 	 */
 	bool setSslKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
-					   const char* keyPassword = nullptr, bool freeAfterHandshake = false);
+					   const char* keyPassword = nullptr, bool freeAfterHandshake = false)
+	{
+		freeKeyCertAfterHandshake = freeAfterHandshake;
+		return sslKeyCert.assign(key, keyLength, certificate, certificateLength, keyPassword);
+	}
 
 	/**
 	* @brief Sets private key, certificate and password from memory for the SSL connection
@@ -234,12 +332,19 @@ public:
 	*
 	* @return bool  true of success, false or failure
 	*/
-	bool setSslKeyCert(const SSLKeyCertPair& keyCert, bool freeAfterHandshake = false);
+	bool setSslKeyCert(const SSLKeyCertPair& keyCert, bool freeAfterHandshake = false)
+	{
+		freeKeyCertAfterHandshake = freeAfterHandshake;
+		return sslKeyCert.assign(keyCert);
+	}
 
 	/**
 	 * @brief Frees the memory used for the key and certificate pair
 	 */
-	void freeSslKeyCert();
+	void freeSslKeyCert()
+	{
+		sslKeyCert.free();
+	}
 
 	// Called by TcpServer
 	void setSsl(SSL* ssl)
@@ -301,7 +406,7 @@ protected:
 	bool sslConnected = false;
 	uint32_t sslOptions = 0;
 	SSLKeyCertPair sslKeyCert;
-	bool freeKeyCert = false;
+	bool freeKeyCertAfterHandshake = false;
 	SSLSessionId* sslSessionId = nullptr;
 #endif
 	bool useSsl = false;
