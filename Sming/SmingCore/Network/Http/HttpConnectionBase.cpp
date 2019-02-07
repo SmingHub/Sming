@@ -39,6 +39,15 @@ const http_parser_settings HttpConnectionBase::parserSettings PROGMEM = {
 #endif
 };
 
+/** @brief Boilerplate code for http_parser callbacks
+ *  @note Obtain connection object and check it
+ */
+#define GET_CONNECTION()                                                                                               \
+	auto connection = static_cast<HttpConnectionBase*>(parser->data);                                                  \
+	if(connection == nullptr) {                                                                                        \
+		return -1;                                                                                                     \
+	}
+
 void HttpConnectionBase::init(http_parser_type type)
 {
 	http_parser_init(&parser, type);
@@ -61,11 +70,7 @@ void HttpConnectionBase::resetHeaders()
 
 int HttpConnectionBase::staticOnMessageBegin(http_parser* parser)
 {
-	HttpConnectionBase* connection = static_cast<HttpConnectionBase*>(parser->data);
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
+	GET_CONNECTION()
 
 	connection->reset();
 	return connection->onMessageBegin(parser);
@@ -73,11 +78,7 @@ int HttpConnectionBase::staticOnMessageBegin(http_parser* parser)
 
 int HttpConnectionBase::staticOnPath(http_parser* parser, const char* at, size_t length)
 {
-	HttpConnectionBase* connection = static_cast<HttpConnectionBase*>(parser->data);
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
+	GET_CONNECTION()
 
 	return connection->onPath(URL(String(at, length)));
 }
@@ -85,33 +86,21 @@ int HttpConnectionBase::staticOnPath(http_parser* parser, const char* at, size_t
 #ifndef COMPACT_MODE
 int HttpConnectionBase::staticOnStatus(http_parser* parser, const char* at, size_t length)
 {
-	HttpConnectionBase* connection = static_cast<HttpConnectionBase*>(parser->data);
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
+	GET_CONNECTION()
 
 	return connection->onStatus(parser);
 }
 
 int HttpConnectionBase::staticOnChunkHeader(http_parser* parser)
 {
-	HttpConnectionBase* connection = static_cast<HttpConnectionBase*>(parser->data);
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
+	GET_CONNECTION()
 
 	return connection->onChunkHeader(parser);
 }
 
 int HttpConnectionBase::staticOnChunkComplete(http_parser* parser)
 {
-	HttpConnectionBase* connection = static_cast<HttpConnectionBase*>(parser->data);
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
+	GET_CONNECTION()
 
 	return connection->onChunkComplete(parser);
 }
@@ -119,11 +108,7 @@ int HttpConnectionBase::staticOnChunkComplete(http_parser* parser)
 
 int HttpConnectionBase::staticOnHeaderField(http_parser* parser, const char* at, size_t length)
 {
-	HttpConnectionBase* connection = static_cast<HttpConnectionBase*>(parser->data);
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
+	GET_CONNECTION()
 
 	if(connection->lastWasValue) {
 		// we are starting to process new header
@@ -137,11 +122,7 @@ int HttpConnectionBase::staticOnHeaderField(http_parser* parser, const char* at,
 
 int HttpConnectionBase::staticOnHeaderValue(http_parser* parser, const char* at, size_t length)
 {
-	HttpConnectionBase* connection = static_cast<HttpConnectionBase*>(parser->data);
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
+	GET_CONNECTION()
 
 	if(!connection->lastWasValue) {
 		connection->currentField = connection->lastData;
@@ -155,11 +136,7 @@ int HttpConnectionBase::staticOnHeaderValue(http_parser* parser, const char* at,
 
 int HttpConnectionBase::staticOnHeadersComplete(http_parser* parser)
 {
-	auto connection = static_cast<HttpConnectionBase*>(parser->data);
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
+	GET_CONNECTION()
 
 	debug_d("The headers are complete");
 
@@ -185,22 +162,14 @@ int HttpConnectionBase::staticOnHeadersComplete(http_parser* parser)
 
 int HttpConnectionBase::staticOnBody(http_parser* parser, const char* at, size_t length)
 {
-	auto connection = static_cast<HttpConnectionBase*>(parser->data);
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
+	GET_CONNECTION()
 
 	return connection->onBody(at, length);
 }
 
 int HttpConnectionBase::staticOnMessageComplete(http_parser* parser)
 {
-	auto connection = static_cast<HttpConnectionBase*>(parser->data);
-	if(connection == nullptr) {
-		// something went wrong
-		return -1;
-	}
+	GET_CONNECTION()
 
 	int error = connection->onMessageComplete(parser);
 	connection->reset();
