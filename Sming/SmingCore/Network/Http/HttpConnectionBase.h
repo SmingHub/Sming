@@ -54,36 +54,33 @@ public:
 	using TcpConnection::getRemotePort;
 
 protected:
+	/** @brief Called after all headers have been received and processed */
 	void resetHeaders();
 
-	/**
-	 * @brief Initializes the http parser for a specific type of HTTP message
-	 * @param http_parser_type
+	/** @brief Initializes the http parser for a specific type of HTTP message
+	 * 	@param http_parser_type
 	 */
 	virtual void init(http_parser_type type);
 
 	// HTTP parser methods
-	/**
-	 * Called when a new incoming data is beginning to come
-	 * @paran http_parser* parser
-	 * @return 0 on success, non-0 on error
+	/** @brief Called when a new incoming data is beginning to come
+	 * 	@paran http_parser* parser
+	 * 	@return 0 on success, non-0 on error
 	 */
 	virtual int onMessageBegin(http_parser* parser) = 0;
 
-	/**
-	 * Called when the URL path is known
-	 * @param String path
-	 * @return 0 on success, non-0 on error
+	/** @brief Called when the URL path is known
+	 * 	@param String path
+	 * 	@return 0 on success, non-0 on error
 	 */
 	virtual int onPath(const URL& uri)
 	{
 		return 0;
 	}
 
-	/**
-	 * Called when all headers are received
-	 * @param HttpHeaders headers - the processed headers
-	 * @return 0 on success, non-0 on error
+	/** @brief Called when all headers are received
+	 * 	@param HttpHeaders headers - the processed headers
+	 * 	@return 0 on success, non-0 on error
 	 */
 	virtual int onHeadersComplete(const HttpHeaders& headers) = 0;
 
@@ -105,25 +102,22 @@ protected:
 
 #endif /* COMPACT MODE */
 
-	/**
-	 * Called when a piece of body data is received
-	 * @param const char* at -  the data
-	 * @paran size_t length
-	 * @return 0 on success, non-0 on error
+	/** @brief Called when a piece of body data is received
+	 * 	@param at the data
+	 * 	@param length
+	 * 	@retval int 0 on success, non-0 on error
 	 */
 	virtual int onBody(const char* at, size_t length) = 0;
 
-	/**
-	 * Called when the incoming data is complete
-	 * @paran http_parser* parser
-	 * @return 0 on success, non-0 on error
+	/** @brief Called when the incoming data is complete
+	 * 	@param parser
+	 * 	@retval int 0 on success, non-0 on error
 	 */
 	virtual int onMessageComplete(http_parser* parser) = 0;
 
-	/**
-	 * Called when the HTTP protocol should be upgraded
-	 * @param http_parser* parser
-	 * @return bool true on success
+	/** @brief Called when the HTTP protocol should be upgraded
+	 * 	@param parser
+	 * 	@retval bool true on success
 	 */
 	virtual bool onProtocolUpgrade(http_parser* parser)
 	{
@@ -137,6 +131,7 @@ protected:
 	virtual void onError(err_t err);
 
 private:
+	// http_parser callback functions
 	static int staticOnMessageBegin(http_parser* parser);
 	static int staticOnPath(http_parser* parser, const char* at, size_t length);
 #ifndef COMPACT_MODE
@@ -154,11 +149,11 @@ private:
 
 protected:
 	http_parser parser;
-	static const http_parser_settings parserSettings;
+	static const http_parser_settings parserSettings; ///< Callback table for parser
 	bool lastWasValue = true;
 	String lastData;
 	String currentField;
-	HttpHeaders incomingHeaders;
+	HttpHeaders incomingHeaders; ///< Full set of incoming headers
 	HttpConnectionState state = eHCS_Ready;
 };
 
