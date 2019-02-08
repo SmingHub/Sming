@@ -38,14 +38,14 @@ index ca234de..0c830d8 100644
  	CFLAGS += $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
  endif
 diff --git a/appcode/rboot-api.c b/appcode/rboot-api.c
-index 523560f..dada359 100644
+index 523560f..110718d 100644
 --- a/appcode/rboot-api.c
 +++ b/appcode/rboot-api.c
 @@ -28,6 +28,8 @@
  extern "C" {
  #endif
  
-+#define FLASH_INT_MASK ((1 << ETS_SDIO_INUM) | (1 << ETS_GPIO_INUM) | (1 << ETS_UART_INUM) | (1 << ETS_FRC_TIMER1_INUM))
++#define FLASH_INT_MASK ((1 << ETS_GPIO_INUM) | (1 << ETS_UART_INUM) | (1 << ETS_FRC_TIMER1_INUM))
 +
  #if defined(BOOT_CONFIG_CHKSUM) || defined(BOOT_RTC_ENABLED)
  // calculate checksum for block of data
