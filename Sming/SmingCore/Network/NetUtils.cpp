@@ -86,10 +86,7 @@ int NetUtils::pbufFindStr(const pbuf* buf, const char* wtf, unsigned startPos)
 		return -1;
 	}
 
-	unsigned cur = startPos;
-	if(startPos < 0) {
-		startPos = 0;
-	}
+	int cur = startPos;
 	while(true) {
 		cur = pbufFindChar(buf, wtf[0], cur);
 		if(cur < 0) {
