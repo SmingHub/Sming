@@ -238,7 +238,7 @@ bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslO
 
 bool MqttClient::publish(const String& topic, const String& content, uint8_t flags)
 {
-	if (requestQueue.full()) {
+	if(requestQueue.full()) {
 		return false;
 	}
 
@@ -263,7 +263,7 @@ bool MqttClient::publish(const String& topic, IDataSourceStream* stream, uint8_t
 		return false;
 	}
 
-	if (requestQueue.full()) {
+	if(requestQueue.full()) {
 		return false;
 	}
 
@@ -286,7 +286,7 @@ bool MqttClient::subscribe(const String& topic)
 {
 	debug_d("subscription '%s' registered", topic.c_str());
 
-	if (requestQueue.full()) {
+	if(requestQueue.full()) {
 		return false;
 	}
 
@@ -305,7 +305,7 @@ bool MqttClient::unsubscribe(const String& topic)
 {
 	debug_d("unsubscribing from '%s'", topic.c_str());
 
-	if (requestQueue.full()) {
+	if(requestQueue.full()) {
 		return false;
 	}
 
