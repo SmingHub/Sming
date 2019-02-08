@@ -1,16 +1,16 @@
 diff --git a/Makefile b/Makefile
-index ca234de..5f1c72b 100644
+index ca234de..0c830d8 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,10 +22,16 @@ else
  Q := @
  endif
-
+ 
 -CFLAGS    = -Os -O3 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
 +CFLAGS    = -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
  LDFLAGS   = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
  LD_SCRIPT = eagle.app.v6.ld
-
+ 
 +ifeq ($(ENABLE_GDB),1)
 +	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0
 +else
@@ -18,7 +18,7 @@ index ca234de..5f1c72b 100644
 +endif
 +
  E2_OPTS = -quiet -bin -boot0
-
+ 
  ifeq ($(RBOOT_BIG_FLASH),1)
 @@ -55,6 +61,16 @@ endif
  ifeq ($(RBOOT_IROM_CHKSUM),1)
@@ -37,6 +37,60 @@ index ca234de..5f1c72b 100644
  ifneq ($(RBOOT_EXTRA_INCDIR),)
  	CFLAGS += $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
  endif
+diff --git a/appcode/rboot-api.c b/appcode/rboot-api.c
+index 523560f..dada359 100644
+--- a/appcode/rboot-api.c
++++ b/appcode/rboot-api.c
+@@ -28,6 +28,8 @@
+ extern "C" {
+ #endif
+ 
++#define FLASH_INT_MASK ((1 << ETS_SDIO_INUM) | (1 << ETS_GPIO_INUM) | (1 << ETS_UART_INUM) | (1 << ETS_FRC_TIMER1_INUM))
++
+ #if defined(BOOT_CONFIG_CHKSUM) || defined(BOOT_RTC_ENABLED)
+ // calculate checksum for block of data
+ // from start up to (but excluding) end
+@@ -66,9 +68,11 @@ bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf) {
+ 	
+ 	spi_flash_read(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32*)((void*)buffer), SECTOR_SIZE);
+ 	memcpy(buffer, conf, sizeof(rboot_config));
++	ets_isr_mask(FLASH_INT_MASK);
+ 	spi_flash_erase_sector(BOOT_CONFIG_SECTOR);
+ 	//spi_flash_write(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32*)((void*)buffer), SECTOR_SIZE);
+ 	spi_flash_write(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32*)((void*)buffer), SECTOR_SIZE);
++	ets_isr_unmask(FLASH_INT_MASK);
+ 	
+ 	os_free(buffer);
+ 	return true;
+@@ -120,7 +124,8 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8 *data
+ 	bool ret = false;
+ 	uint8 *buffer;
+ 	int32 lastsect;
+-	
++	SpiFlashOpResult fop;
++
+ 	if (data == NULL || len == 0) {
+ 		return true;
+ 	}
+@@ -153,12 +158,17 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8 *data
+ 		lastsect = ((status->start_addr + len) - 1) / SECTOR_SIZE;
+ 		while (lastsect > status->last_sector_erased) {
+ 			status->last_sector_erased++;
++			ets_isr_mask(FLASH_INT_MASK);
+ 			spi_flash_erase_sector(status->last_sector_erased);
++			ets_isr_unmask(FLASH_INT_MASK);
+ 		}
+ 
+ 		// write current chunk
+ 		//os_printf("write addr: 0x%08x, len: 0x%04x\r\n", status->start_addr, len);
+-		if (spi_flash_write(status->start_addr, (uint32 *)((void*)buffer), len) == SPI_FLASH_RESULT_OK) {
++		ets_isr_mask(FLASH_INT_MASK);
++		fop = spi_flash_write(status->start_addr, (uint32 *)((void*)buffer), len);
++		ets_isr_unmask(FLASH_INT_MASK);
++		if (fop == SPI_FLASH_RESULT_OK) {
+ 			ret = true;
+ 			status->start_addr += len;
+ 		}
 diff --git a/rboot.c b/rboot.c
 index 6e10a2f..03cc87b 100644
 --- a/rboot.c
@@ -70,7 +124,7 @@ index 6e10a2f..03cc87b 100644
 @@ -291,86 +309,94 @@ uint32 NOINLINE find_image(void) {
  	ets_delay_us(BOOT_DELAY_MICROS);
  #endif
-
+ 
 -	ets_printf("\r\nrBoot v1.4.2 - richardaburton@gmail.com\r\n");
 +#ifndef BOOT_SILENT
 +#define echof(fmt, ...) ets_printf(fmt, ##__VA_ARGS__)
@@ -79,10 +133,10 @@ index 6e10a2f..03cc87b 100644
 +#endif
 +
 +	echof("\r\nrBoot v1.4.2 - richardaburton@gmail.com\r\n");
-
+ 
  	// read rom header
  	SPIRead(0, header, sizeof(rom_header));
-
+ 
  	// print and get flash size
 -	ets_printf("Flash Size:   ");
 +	echof("Flash Size:   ");
@@ -121,7 +175,7 @@ index 6e10a2f..03cc87b 100644
  		// assume at least 4mbit
  		flashsize = 0x80000;
  	}
-
+ 
  	// print spi mode
 -	ets_printf("Flash Mode:   ");
 +	echof("Flash Mode:   ");
@@ -141,7 +195,7 @@ index 6e10a2f..03cc87b 100644
 -		ets_printf("unknown\r\n");
 +		echof("unknown\r\n");
  	}
-
+ 
  	// print spi speed
 -	ets_printf("Flash Speed:  ");
 +	echof("Flash Speed:  ");
@@ -156,7 +210,7 @@ index 6e10a2f..03cc87b 100644
 +	else if (flag == 2) echof("20 MHz\r\n");
 +	else if (flag == 0x0f) echof("80 MHz\r\n");
 +	else echof("unknown\r\n");
-
+ 
  	// print enabled options
  #ifdef BOOT_BIG_FLASH
 -	ets_printf("rBoot Option: Big flash\r\n");
@@ -186,7 +240,7 @@ index 6e10a2f..03cc87b 100644
 +	echof("\r\n");
 +
 +#undef echof
-
+ 
  	// read boot config
  	SPIRead(BOOT_CONFIG_SECTOR * SECTOR_SIZE, buffer, SECTOR_SIZE);
 diff --git a/rboot.h b/rboot.h
@@ -199,6 +253,6 @@ index 93ae317..bd3ad6d 100644
  // cannot be used at same time as BOOT_GPIO_ENABLED
 -#define BOOT_GPIO_SKIP_ENABLED
 +//#define BOOT_GPIO_SKIP_ENABLED
-
+ 
  // set the GPIO pin used by GPIO modes above (will default
  // to 16 if not manually set), only applicable when
