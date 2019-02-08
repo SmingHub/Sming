@@ -238,6 +238,10 @@ bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslO
 
 bool MqttClient::publish(const String& topic, const String& content, uint8_t flags)
 {
+	if (requestQueue.full()) {
+		return false;
+	}
+
 	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
 	mqtt_message_init(message);
 	message->common.type = MQTT_TYPE_PUBLISH;
@@ -256,6 +260,10 @@ bool MqttClient::publish(const String& topic, IDataSourceStream* stream, uint8_t
 {
 	if(!stream || stream->available() < 1) {
 		debug_e("Sending empty stream or stream with unknown size is not supported");
+		return false;
+	}
+
+	if (requestQueue.full()) {
 		return false;
 	}
 
@@ -278,6 +286,10 @@ bool MqttClient::subscribe(const String& topic)
 {
 	debug_d("subscription '%s' registered", topic.c_str());
 
+	if (requestQueue.full()) {
+		return false;
+	}
+
 	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
 	mqtt_message_init(message);
 	message->common.type = MQTT_TYPE_SUBSCRIBE;
@@ -292,6 +304,10 @@ bool MqttClient::subscribe(const String& topic)
 bool MqttClient::unsubscribe(const String& topic)
 {
 	debug_d("unsubscribing from '%s'", topic.c_str());
+
+	if (requestQueue.full()) {
+		return false;
+	}
 
 	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
 	mqtt_message_init(message);
