@@ -181,7 +181,7 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 
 	// Or if you want to directly save the response body to a file then the following can be done
 	//	FileStream* responseBodyFile = new FileStream();
-	//	responseBodyFile->attach("file.name", eFO_CreateNewAlways | eFO_WriteOnly);
+	//	responseBodyFile->open("file.name", eFO_CreateNewAlways | eFO_WriteOnly);
 	//	putRequest->setResponseStream(responseBodyFile); // << the complete body will be stored on your file system
 	// see the implementation of `bool HttpClient::downloadFile(const String& url, const String& saveFileName, ...` for details.
 

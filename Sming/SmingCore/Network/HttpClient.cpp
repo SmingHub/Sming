@@ -85,7 +85,7 @@ bool HttpClient::downloadFile(const String& url, const String& saveFileName,
 		file = saveFileName;
 
 	FileStream* fileStream = new FileStream();
-	fileStream->attach(file, eFO_CreateNewAlways | eFO_WriteOnly);
+	fileStream->open(file, eFO_CreateNewAlways | eFO_WriteOnly);
 
 	return send(request(url)->setResponseStream(fileStream)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 }

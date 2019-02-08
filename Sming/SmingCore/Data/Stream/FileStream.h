@@ -45,7 +45,7 @@ public:
 	void attach(file_t file, size_t size);
 
 	/* @deprecated: use open() method */
-	bool attach(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly)
+	bool attach(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly) __attribute__((deprecated))
 	{
 		return open(fileName, openFlags);
 	}
