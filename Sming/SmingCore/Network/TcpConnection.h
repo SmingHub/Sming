@@ -92,22 +92,26 @@ struct SSLKeyCertPair {
 	{
 		free();
 
-		key = new uint8_t[newKeyLength];
-		if(key == nullptr) {
-			return false;
+		if(newKeyLength != 0 && newKey != nullptr) {
+			key = new uint8_t[newKeyLength];
+			if(key == nullptr) {
+				return false;
+			}
+			memcpy(key, newKey, newKeyLength);
+			keyLength = newKeyLength;
 		}
-		memcpy(key, newKey, newKeyLength);
-		keyLength = newKeyLength;
 
-		certificate = new uint8_t[newCertificateLength];
-		if(certificate == nullptr) {
-			return false;
+		if(newCertificateLength != 0 && newCertificate != nullptr) {
+			certificate = new uint8_t[newCertificateLength];
+			if(certificate == nullptr) {
+				return false;
+			}
+			memcpy(certificate, newCertificate, newCertificateLength);
+			certificateLength = newCertificateLength;
 		}
-		memcpy(certificate, newCertificate, newCertificateLength);
-		certificateLength = newCertificateLength;
 
 		unsigned passwordLength = (newKeyPassword == nullptr) ? 0 : strlen(newKeyPassword);
-		if(passwordLength > 0) {
+		if(passwordLength != 0) {
 			keyPassword = new char[passwordLength + 1];
 			if(keyPassword == nullptr) {
 				return false;
