@@ -76,16 +76,19 @@ size_t FileStream::write(const uint8_t* buffer, size_t size)
 		return 0;
 	}
 
-	int pos = fileSeek(handle, 0, eSO_FileEnd);
-	if(!check(pos)) {
+	int writePos = fileSeek(handle, 0, eSO_FileEnd);
+	if(!check(writePos)) {
 		return 0;
 	}
 
-	this->pos = size_t(pos);
+	pos = size_t(writePos);
 
 	int written = fileWrite(handle, buffer, size);
 	if(check(written)) {
-		this->pos += size_t(written);
+		pos += size_t(written);
+		if(pos > this->size) {
+			this->size = pos;
+		}
 	}
 
 	return written;
@@ -98,7 +101,10 @@ bool FileStream::seek(int len)
 		return false;
 	}
 
-	pos = newpos;
+	pos = size_t(newpos);
+	if(pos > size) {
+		size = pos;
+	}
 
 	return true;
 }
