@@ -6,6 +6,7 @@
  ****/
 
 #include "System.h"
+#include "SimpleTimer.h"
 
 SystemClass System;
 
@@ -80,6 +81,22 @@ void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 				handler->onSystemReady();
 			},
 			reinterpret_cast<uint32_t>(readyHandler));
+	}
+}
+
+void SystemClass::restart(unsigned deferMillis)
+{
+	if(deferMillis == 0) {
+		queueCallback([](uint32_t) { system_restart(); });
+	} else {
+		auto timer = new SimpleTimer;
+		timer->setCallback(
+			[](void* timer) {
+				delete static_cast<SimpleTimer*>(timer);
+				system_restart();
+			},
+			timer);
+		timer->startMs(deferMillis);
 	}
 }
 
