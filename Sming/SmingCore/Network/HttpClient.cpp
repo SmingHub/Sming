@@ -13,6 +13,13 @@
 #include "HttpClient.h"
 #include "Data/Stream/FileStream.h"
 
+HashMap<String, HttpConnection*> HttpClient::httpConnectionPool;
+HashMap<String, RequestQueue*> HttpClient::queue;
+
+#ifdef ENABLE_SSL
+HashMap<String, SSLSessionId*> HttpClient::sslSessionIdPool;
+#endif
+
 /* Low Level Methods */
 bool HttpClient::send(HttpRequest* request)
 {
@@ -36,7 +43,7 @@ bool HttpClient::send(HttpRequest* request)
 				(int)httpConnectionPool[cacheKey]->getConnectionState(),
 				(httpConnectionPool[cacheKey]->isActive() ? 1 : 0));
 		delete httpConnectionPool[cacheKey];
-		httpConnectionPool[cacheKey] = NULL;
+		httpConnectionPool[cacheKey] = nullptr;
 		httpConnectionPool.remove(cacheKey);
 	}
 
@@ -63,50 +70,40 @@ bool HttpClient::send(HttpRequest* request)
 
 // Convenience methods
 
-bool HttpClient::downloadString(const String& url, RequestCompletedDelegate requestComplete)
+bool HttpClient::downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete)
 {
-	return send(request(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
-}
-
-bool HttpClient::downloadFile(const String& url, const String& saveFileName,
-							  RequestCompletedDelegate requestComplete /* = NULL */)
-{
-	URL uri = URL(url);
+	URL uri(url);
 
 	String file;
 	if(saveFileName.length() == 0) {
 		file = uri.Path;
 		int p = file.lastIndexOf('/');
-		if(p != -1)
-			file = file.substring(p + 1);
-	} else
+		if(p >= 0) {
+			file.remove(0, p + 1);
+		}
+	} else {
 		file = saveFileName;
+	}
 
-	FileStream* fileStream = new FileStream();
-	fileStream->open(file, eFO_CreateNewAlways | eFO_WriteOnly);
+	auto fileStream = new FileStream();
+	if(!fileStream->open(file, eFO_CreateNewAlways | eFO_WriteOnly)) {
+		debug_e("HttpClient failed to open \"%s\"", file.c_str());
+		return false;
+	}
 
 	return send(request(url)->setResponseStream(fileStream)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 }
 
 // end convenience methods
 
-HttpRequest* HttpClient::request(const String& url)
-{
-	return new HttpRequest(URL(url));
-}
-
-HashMap<String, HttpConnection*> HttpClient::httpConnectionPool;
-HashMap<String, RequestQueue*> HttpClient::queue;
-
 #ifdef ENABLE_SSL
-HashMap<String, SslSessionId*> HttpClient::sslSessionIdPool;
 
 void HttpClient::freeSslSessionPool()
 {
 	for(unsigned i = 0; i < sslSessionIdPool.count(); i++) {
 		String key = sslSessionIdPool.keyAt(i);
 		delete sslSessionIdPool[key];
-		sslSessionIdPool[key] = NULL;
+		sslSessionIdPool[key] = nullptr;
 	}
 	sslSessionIdPool.clear();
 }
@@ -118,7 +115,7 @@ void HttpClient::freeRequestQueue()
 		String key = queue.keyAt(i);
 		RequestQueue* requestQueue = queue[key];
 		HttpRequest* request = requestQueue->dequeue();
-		while(request != NULL) {
+		while(request != nullptr) {
 			delete request;
 			request = requestQueue->dequeue();
 		}
@@ -133,7 +130,7 @@ void HttpClient::freeHttpConnectionPool()
 	for(unsigned i = 0; i < httpConnectionPool.count(); i++) {
 		String key = httpConnectionPool.keyAt(i);
 		delete httpConnectionPool[key];
-		httpConnectionPool[key] = NULL;
+		httpConnectionPool[key] = nullptr;
 		httpConnectionPool.remove(key);
 	}
 	httpConnectionPool.clear();
@@ -158,5 +155,5 @@ HttpClient::~HttpClient()
 
 String HttpClient::getCacheKey(URL url)
 {
-	return String(url.Host) + ":" + String(url.Port);
+	return url.Host + ':' + url.Port;
 }
