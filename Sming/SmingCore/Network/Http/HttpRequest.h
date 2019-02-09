@@ -36,8 +36,8 @@ typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedD
  */
 class HttpRequest
 {
-	friend class HttpClient;
 	friend class HttpConnection;
+	friend class HttpClientConnection;
 	friend class HttpServerConnection;
 
 public:

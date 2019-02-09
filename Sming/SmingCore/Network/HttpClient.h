@@ -22,7 +22,7 @@
 #include "TcpClient.h"
 #include "Http/HttpCommon.h"
 #include "Http/HttpRequest.h"
-#include "Http/HttpConnection.h"
+#include "Http/HttpClientConnection.h"
 
 class HttpClient
 {
@@ -77,12 +77,6 @@ public:
 		return new HttpRequest(URL(url));
 	}
 
-#ifdef ENABLE_SSL
-	static void freeSslSessionPool();
-#endif
-	static void freeHttpConnectionPool();
-	static void freeRequestQueue();
-
 	/**
 	 * Use this method to clean all request queues and object pools
 	 */
@@ -94,12 +88,7 @@ protected:
 	String getCacheKey(URL url);
 
 protected:
-	static HashMap<String, HttpConnection*> httpConnectionPool;
-	static HashMap<String, RequestQueue*> queue;
-
-#ifdef ENABLE_SSL
-	static HashMap<String, SslSessionId*> sslSessionIdPool;
-#endif
+	static HashMap<String, HttpClientConnection*> httpConnectionPool;
 };
 
 /** @} */
