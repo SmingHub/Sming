@@ -203,7 +203,7 @@ void WebsocketConnection::send(const char* message, int length, ws_frame_type_t 
 
 void WebsocketConnection::broadcast(const char* message, int length, ws_frame_type_t type /* = WS_FRAME_TEXT */)
 {
-	for(int i = 0; i < websocketList.count(); i++) {
+	for(unsigned i = 0; i < websocketList.count(); i++) {
 		websocketList[i]->send(message, length, type);
 	}
 }

@@ -42,7 +42,7 @@ bool YeelightBulb::connect()
 
 bool isNumeric(String str)
 {
-  for (int i = 0; i < str.length(); i++)
+  for (unsigned i = 0; i < str.length(); i++)
   {
 	  if (!isDigit(str[i]))
 		  return false;
@@ -59,7 +59,7 @@ void YeelightBulb::sendCommand(String method, Vector<String> params)
 	root["id"] = requestId++;
 	root["method"] = method;
 	auto &arr = root.createNestedArray("params");
-	for (int i = 0; i < params.count(); i++)
+	for (unsigned i = 0; i < params.count(); i++)
 	{
 		if (isNumeric(params[i]))
 			arr.add(params[i].toInt());
@@ -154,14 +154,14 @@ bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
 	String source(data, size);
 	debugf("LED > %s", source.c_str());
 
-	int p = 0;
+	unsigned p = 0;
 	while (p < source.length())
 	{
 		int p2 = source.indexOf("\r\n", p);
-		if (p2 == -1)
+		if (p2 < 0)
 			p2 = source.length();
 		String buf = source.substring(p, p2);
-		p = p2 + 2;
+		p = unsigned(p2) + 2;
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject& root = jsonBuffer.parseObject(buf);
 		bool parsed = root.success();

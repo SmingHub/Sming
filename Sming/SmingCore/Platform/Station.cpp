@@ -495,7 +495,7 @@ const char* BssInfo::getAuthorizationMethodName()
 
 uint32_t BssInfo::getHashId()
 {
-	uint32_t a = *(uint16_t*)(&bssid[4]);
-	uint32_t b = *(uint32_t*)bssid;
+	uint32_t a = bssid[4] | (bssid[5] << 8);
+	uint32_t b = bssid[0] | (bssid[1] << 8) | (bssid[2] << 16) | (bssid[3] << 24);
 	return a ^ b;
 }

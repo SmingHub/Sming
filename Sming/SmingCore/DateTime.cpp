@@ -379,7 +379,7 @@ String DateTime::format(String sFormat)
 void DateTime::calcDayOfYear()
 {
 	DayofYear = 0;
-	for(unsigned int i = 0; i < Month; ++i) {
+	for(int i = 0; i < Month; ++i) {
 		switch(i) {
 		case 8:  //Sep
 		case 3:  //Apr

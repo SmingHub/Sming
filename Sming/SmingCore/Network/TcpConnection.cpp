@@ -115,9 +115,12 @@ err_t TcpConnection::onSent(uint16_t len)
 {
 	debug_d("TCP sent: %d", len);
 
-	debug_tcp("%d %d", tcp->state, tcp->flags); // WRONG!
-	if(tcp != nullptr && getAvailableWriteSize() > 0) {
-		onReadyToSendData(eTCE_Sent);
+	if(tcp != nullptr) {
+		debug_tcp("%d %d", tcp->state, tcp->flags); // WRONG!
+
+		if(getAvailableWriteSize() > 0) {
+			onReadyToSendData(eTCE_Sent);
+		}
 	}
 
 	return ERR_OK;

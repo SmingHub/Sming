@@ -16,7 +16,7 @@
 uint16_t CircularBuffer::readMemoryBlock(char* data, int bufSize)
 {
 	size_t bytesAvailable = available();
-	size_t sizeToRead = (bufSize < bytesAvailable) ? bufSize : bytesAvailable;
+	size_t sizeToRead = (size_t(bufSize) < bytesAvailable) ? bufSize : bytesAvailable;
 	size_t sizeRead = sizeToRead;
 	char* start = readPos;
 	if(writePos < readPos && sizeToRead > (size_t)((buffer + size) - readPos)) {
