@@ -156,6 +156,14 @@ void HardwareSerial::callbackHandler(uint32_t status)
 	}
 }
 
+void HardwareSerial::staticCallbackHandler(uart_t* uart, uint32_t status)
+{
+	auto serial = reinterpret_cast<HardwareSerial*>(uart_get_callback_param(uart));
+	if(serial) {
+		serial->callbackHandler(status);
+	}
+}
+
 bool HardwareSerial::updateUartCallback()
 {
 	if(uart == nullptr) {
@@ -167,14 +175,7 @@ bool HardwareSerial::updateUartCallback()
 #else
 	if(HWSDelegate || transmitComplete) {
 #endif
-		setUartCallback(
-			[](uart_t* uart, uint32_t status) {
-				auto serial = reinterpret_cast<HardwareSerial*>(uart_get_callback_param(uart));
-				if(serial) {
-					serial->callbackHandler(status);
-				}
-			},
-			this);
+		setUartCallback(staticCallbackHandler, this);
 		return true;
 	} else {
 		setUartCallback(nullptr, nullptr);

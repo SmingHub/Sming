@@ -419,10 +419,11 @@ private:
 	size_t rxSize = DEFAULT_RX_BUFFER_SIZE;
 
 	/**
-	 * @brief  Interrupt handler for UART0 receive events
+	 * @brief Serial interrupt handler, called by serial driver
 	 * @param uart_t* pointer to UART object
 	 * @param status UART status flags indicating cause(s) of interrupt
 	 */
+	static void IRAM_ATTR staticCallbackHandler(uart_t* uart, uint32_t status);
 	void IRAM_ATTR callbackHandler(uint32_t status);
 
 	/**
