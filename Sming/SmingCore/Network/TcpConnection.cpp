@@ -445,15 +445,15 @@ err_t TcpConnection::internalOnConnected(err_t err)
 				}
 			}
 
-			debug_d("SSL: Session Id Length: %d", sslSessionId != nullptr ? sslSessionId->length : 0);
-			if(sslSessionId != nullptr && sslSessionId->length > 0) {
+			debug_d("SSL: Session Id Length: %u", sslSessionId->getLength());
+			if(sslSessionId->isValid()) {
 				debug_d("-----BEGIN SSL SESSION PARAMETERS-----");
 				debug_hex(DBG, "Session", sslSessionId->value, sslSessionId->length);
 				debug_d("\n-----END SSL SESSION PARAMETERS-----");
 			}
 
-			ssl = ssl_client_new(sslContext, clientfd, sslSessionId != nullptr ? sslSessionId->value : nullptr,
-								 sslSessionId != nullptr ? sslSessionId->length : 0, sslExtension);
+			ssl =
+				ssl_client_new(sslContext, clientfd, sslSessionId->getValue(), sslSessionId->getLength(), sslExtension);
 			if(ssl_handshake_status(ssl) != SSL_OK) {
 				debug_d("SSL: handshake is in progress...");
 				return SSL_OK;
@@ -464,11 +464,7 @@ err_t TcpConnection::internalOnConnected(err_t err)
 			System.setCpuFrequency(eCF_80MHz);
 #endif
 			if(sslSessionId != nullptr) {
-				if(sslSessionId->value == nullptr) {
-					sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
-				}
-				memcpy(sslSessionId->value, ssl->session_id, ssl->sess_id_size);
-				sslSessionId->length = ssl->sess_id_size;
+				sslSessionId->assign(ssl->session_id, ssl->sess_id_size);
 			}
 		}
 	}
@@ -546,12 +542,7 @@ err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 				}
 
 				if(sslSessionId != nullptr) {
-					if(sslSessionId->value == nullptr) {
-						sslSessionId->value = new uint8_t[SSL_SESSION_ID_SIZE];
-					}
-					assert(ssl->sess_id_size <= SSL_SESSION_ID_SIZE);
-					memcpy(sslSessionId->value, ssl->session_id, ssl->sess_id_size);
-					sslSessionId->length = ssl->sess_id_size;
+					sslSessionId->assign(ssl->session_id, ssl->sess_id_size);
 				}
 
 				err_t res = onConnected(err);

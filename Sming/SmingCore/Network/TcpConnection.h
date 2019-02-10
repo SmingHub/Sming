@@ -156,10 +156,55 @@ struct SSLKeyCertPair {
 	}
 };
 
-typedef struct {
+/** @brief Manages buffer to store SSL Session ID
+ */
+struct SSLSessionId {
 	uint8_t* value = nullptr;
-	int length = 0;
-} SSLSessionId;
+	unsigned length = 0;
+
+	~SSLSessionId()
+	{
+		free();
+	}
+
+	/** @brief May be called even when SSLSessionId is nullptr */
+	uint8_t* getValue()
+	{
+		return this ? value : nullptr;
+	}
+
+	/** @brief May be called even when SSLSessionId is nullptr */
+	unsigned getLength()
+	{
+		return this ? length : 0;
+	}
+
+	bool isValid()
+	{
+		return (this != nullptr) && (value != nullptr) && (length != 0);
+	}
+
+	bool assign(const uint8_t* newValue, unsigned newLength)
+	{
+		assert(newLength <= SSL_SESSION_ID_SIZE);
+		if(value == nullptr) {
+			value = new uint8_t[SSL_SESSION_ID_SIZE];
+			if(value == nullptr) {
+				return false;
+			}
+		}
+		memcpy(value, newValue, newLength);
+		length = newLength;
+		return true;
+	}
+
+	void free()
+	{
+		delete[] value;
+		value = nullptr;
+		length = 0;
+	}
+};
 
 #endif
 
