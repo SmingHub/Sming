@@ -232,9 +232,9 @@ public:
 	 *
 	 * @return bool  true of success, false or failure
 	 */
-	HttpRequest* pinCertificate(const SSLFingerprints& fingerprints)
+	HttpRequest* pinCertificate(SSLFingerprints& fingerprints)
 	{
-		sslFingerprint = fingerprints;
+		sslFingerprints = fingerprints;
 		return this;
 	}
 
@@ -284,7 +284,7 @@ protected:
 
 #ifdef ENABLE_SSL
 	uint32_t sslOptions = 0;
-	SSLFingerprints sslFingerprint;
+	SSLFingerprints sslFingerprints;
 	SSLKeyCertPair sslKeyCertPair;
 #endif
 

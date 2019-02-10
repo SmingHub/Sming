@@ -125,7 +125,10 @@ public:
 	 * 					   to delete it.
 	 *
 	 */
-	void addSslValidator(SslValidatorCallback callback, void* data = nullptr);
+	void addSslValidator(SslValidatorCallback callback, void* data = nullptr)
+	{
+		sslValidators.add(callback, data);
+	}
 
 	/**
 	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
@@ -162,7 +165,7 @@ public:
 	 *
 	 * @return bool  true of success, false or failure
 	 */
-	bool pinCertificate(const SSLFingerprints& fingerprints);
+	bool pinCertificate(SSLFingerprints& fingerprints);
 #endif
 
 protected:
@@ -196,8 +199,7 @@ private:
 	uint16_t asyncTotalSent = 0;
 	uint16_t asyncTotalLen = 0;
 #ifdef ENABLE_SSL
-	Vector<SslValidatorCallback> sslValidators;
-	Vector<void*> sslValidatorsData;
+	SSLValidatorList sslValidators;
 #endif
 };
 

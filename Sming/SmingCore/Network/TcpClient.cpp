@@ -199,21 +199,7 @@ void TcpClient::onFinished(TcpClientState finishState)
 #ifdef ENABLE_SSL
 err_t TcpClient::onSslConnected(SSL* ssl)
 {
-	bool hasSuccess = (sslValidators.count() == 0);
-	for(unsigned i = 0; i < sslValidators.count(); i++) {
-		if(sslValidators[i](ssl, sslValidatorsData[i])) {
-			hasSuccess = true;
-			break;
-		}
-	}
-
-	return hasSuccess ? ERR_OK : ERR_ABRT;
-}
-
-void TcpClient::addSslValidator(SslValidatorCallback callback, void* data)
-{
-	sslValidators.addElement(callback);
-	sslValidatorsData.addElement(data);
+	return sslValidators.validate(ssl) ? ERR_OK : ERR_ABRT;
 }
 
 bool TcpClient::pinCertificate(const uint8_t* fingerprint, SslFingerprintType type)
@@ -235,20 +221,22 @@ bool TcpClient::pinCertificate(const uint8_t* fingerprint, SslFingerprintType ty
 		return false;
 	}
 
-	addSslValidator(callback, (void*)fingerprint);
+	addSslValidator(callback, const_cast<uint8_t*>(fingerprint));
 
 	return true;
 }
 
-bool TcpClient::pinCertificate(const SSLFingerprints& fingerprints)
+bool TcpClient::pinCertificate(SSLFingerprints& fingerprints)
 {
 	bool success = false;
 	if(fingerprints.certSha1 != nullptr) {
 		success = pinCertificate(fingerprints.certSha1, eSFT_CertSha1);
+		fingerprints.certSha1 = nullptr;
 	}
 
 	if(fingerprints.pkSha256 != nullptr) {
 		success = pinCertificate(fingerprints.pkSha256, eSFT_PkSha256);
+		fingerprints.pkSha256 = nullptr;
 	}
 
 	return success;

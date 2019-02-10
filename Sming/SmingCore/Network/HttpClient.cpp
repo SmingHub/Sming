@@ -54,7 +54,7 @@ bool HttpClient::send(HttpRequest* request)
 			sslSessionIdPool[cacheKey]->length = 0;
 		}
 		httpConnectionPool[cacheKey]->addSslOptions(request->getSslOptions());
-		httpConnectionPool[cacheKey]->pinCertificate(request->sslFingerprint);
+		httpConnectionPool[cacheKey]->pinCertificate(request->sslFingerprints);
 		httpConnectionPool[cacheKey]->setSslKeyCert(request->sslKeyCertPair);
 		httpConnectionPool[cacheKey]->sslSessionId = sslSessionIdPool[cacheKey];
 	}

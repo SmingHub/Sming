@@ -8,15 +8,15 @@
  *
  ****/
 
-#include "SslValidator.h"
-
 #ifdef ENABLE_SSL
+
+#include "SslValidator.h"
 
 bool sslValidateCertificateSha1(SSL* ssl, void* data)
 {
-	uint8_t* hash = (uint8_t*)data;
+	uint8_t* hash = static_cast<uint8_t*>(data);
 	bool success = false;
-	if(hash != NULL) {
+	if(hash != nullptr) {
 		success = (ssl_match_fingerprint(ssl, hash) == 0);
 		delete[] hash;
 	}
@@ -26,14 +26,42 @@ bool sslValidateCertificateSha1(SSL* ssl, void* data)
 
 bool sslValidatePublicKeySha256(SSL* ssl, void* data)
 {
-	uint8_t* hash = (uint8_t*)data;
+	uint8_t* hash = static_cast<uint8_t*>(data);
 	bool success = false;
-	if(hash != NULL) {
+	if(hash != nullptr) {
 		success = (ssl_match_spki_sha256(ssl, hash) == 0);
 		delete[] hash;
 	}
 
 	return success;
+}
+
+/* SSLValidatorList */
+
+SSLValidatorList::~SSLValidatorList()
+{
+	// Ensure any remaining fingerprint data is released
+	for(unsigned i = 0; i < count(); ++i) {
+		delete[] static_cast<uint8_t*>(elementAt(i).data);
+	}
+}
+
+bool SSLValidatorList::validate(SSL* ssl)
+{
+	if(count() == 0) {
+		// No validators specified, always succeed
+		return true;
+	}
+
+	// Need a match against a fingerprint
+	for(unsigned i = 0; i < count(); i++) {
+		auto& validator = elementAt(i);
+		if(validator.callback(ssl, validator.data)) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 #endif /* ENABLE_SSL */
