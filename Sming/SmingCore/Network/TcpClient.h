@@ -125,7 +125,10 @@ public:
 	 * 					   to delete it.
 	 *
 	 */
-	void addSslValidator(SslValidatorCallback callback, void* data = nullptr);
+	void addSslValidator(SslValidatorCallback callback, void* data = nullptr)
+	{
+		sslValidators.add(callback, data);
+	}
 
 	/**
 	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
@@ -149,20 +152,18 @@ public:
 	 * 			The SHA1 hash of the remote certificate will be calculated and compared with the given one.
 	 * 			Disadvantages: The hash needs to be updated every time the remote server updates its certificate
 	 *
-	 * @return bool  true of success, false or failure
+	 * @retval bool true on success, false on failure
 	 */
 	bool pinCertificate(const uint8_t* fingerprint, SslFingerprintType type);
 
 	/**
 	 * @brief	Requires(pins) the remote SSL certificate to match certain fingerprints
-	 *
 	 * @note	The data inside the fingerprints parameter is passed by reference
-	 *
 	 * @param	fingerprints - passes the certificate fingerprints by reference.
 	 *
-	 * @retval	bool  true of success, false or failure
+	 * @retval bool  true of success, false or failure
 	 */
-	bool pinCertificate(const SslFingerprints& fingerprints);
+	bool pinCertificate(SslFingerprints& fingerprints);
 #endif
 
 protected:
@@ -196,8 +197,7 @@ private:
 	uint16_t asyncTotalSent = 0;
 	uint16_t asyncTotalLen = 0;
 #ifdef ENABLE_SSL
-	Vector<SslValidatorCallback> sslValidators;
-	Vector<void*> sslValidatorsData;
+	SSLValidatorList sslValidators;
 #endif
 };
 
