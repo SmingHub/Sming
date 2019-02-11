@@ -9,25 +9,16 @@
 #define SMINGCORE_NETWORK_SSLKEYCERTPAIR_H_
 
 #include "ssl/ssl.h"
+#include "WString.h"
 
-/** @brief Structure to manage an SSL key certificate with optional password
- *  @note Do not set member variables directly, use provided methods
+/** @brief Class to manage an SSL key certificate with optional password
  */
-struct SslKeyCertPair {
-	uint8_t* key = nullptr;
-	unsigned keyLength = 0;
-	char* keyPassword = nullptr;
-	uint8_t* certificate = nullptr;
-	unsigned certificateLength = 0;
-
-	~SslKeyCertPair()
-	{
-		free();
-	}
-
+class SslKeyCertPair
+{
+public:
 	bool isValid()
 	{
-		return keyLength != 0 && certificateLength != 0;
+		return key && certificate;
 	}
 
 	/** @brief Create certificate using provided values
@@ -45,31 +36,25 @@ struct SslKeyCertPair {
 		free();
 
 		if(newKeyLength != 0 && newKey != nullptr) {
-			key = new uint8_t[newKeyLength];
-			if(key == nullptr) {
+			if(!key.setLength(newKeyLength)) {
 				return false;
 			}
-			memcpy(key, newKey, newKeyLength);
-			keyLength = newKeyLength;
+			memcpy(key.begin(), newKey, newKeyLength);
 		}
 
 		if(newCertificateLength != 0 && newCertificate != nullptr) {
-			certificate = new uint8_t[newCertificateLength];
-			if(certificate == nullptr) {
+			if(!certificate.setLength(newCertificateLength)) {
 				return false;
 			}
-			memcpy(certificate, newCertificate, newCertificateLength);
-			certificateLength = newCertificateLength;
+			memcpy(certificate.begin(), newCertificate, newCertificateLength);
 		}
 
 		unsigned passwordLength = (newKeyPassword == nullptr) ? 0 : strlen(newKeyPassword);
 		if(passwordLength != 0) {
-			keyPassword = new char[passwordLength + 1];
-			if(keyPassword == nullptr) {
+			keyPassword.setString(newKeyPassword, passwordLength);
+			if(!keyPassword) {
 				return false;
 			}
-			memcpy(keyPassword, newKeyPassword, passwordLength);
-			keyPassword[passwordLength] = '\0';
 		}
 
 		return true;
@@ -82,30 +67,46 @@ struct SslKeyCertPair {
 	 */
 	bool assign(const SslKeyCertPair& keyCert)
 	{
-		return assign(keyCert.key, keyCert.keyLength, keyCert.certificate, keyCert.certificateLength,
-					  keyCert.keyPassword);
-	}
-
-	SslKeyCertPair& operator=(const SslKeyCertPair& keyCert)
-	{
-		assign(keyCert);
-		return *this;
+		*this = keyCert;
+		return (key == keyCert.key) && (keyPassword == keyCert.keyPassword) && (certificate == keyCert.certificate);
 	}
 
 	void free()
 	{
-		delete[] key;
 		key = nullptr;
-
-		delete[] certificate;
-		certificate = nullptr;
-
-		delete[] keyPassword;
 		keyPassword = nullptr;
-
-		keyLength = 0;
-		certificateLength = 0;
+		certificate = nullptr;
 	}
+
+	const uint8_t* getKey()
+	{
+		return reinterpret_cast<const uint8_t*>(key.c_str());
+	}
+
+	unsigned getKeyLength()
+	{
+		return key.length();
+	}
+
+	const char* getKeyPassword()
+	{
+		return keyPassword.c_str();
+	}
+
+	const uint8_t* getCertificate()
+	{
+		return reinterpret_cast<const uint8_t*>(certificate.c_str());
+	}
+
+	unsigned getCertificateLength()
+	{
+		return certificate.length();
+	}
+
+private:
+	String key;
+	String keyPassword;
+	String certificate;
 };
 
 #endif /* SMINGCORE_NETWORK_SSLKEYCERTPAIR_H_ */

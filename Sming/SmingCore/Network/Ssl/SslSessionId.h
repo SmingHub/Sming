@@ -9,55 +9,41 @@
 #define SMINGCORE_NETWORK_SSLSESSIONID_H_
 
 #include "ssl/ssl.h"
+#include "WString.h"
 
 /** @brief Manages buffer to store SSL Session ID
  */
-struct SslSessionId {
-	uint8_t* value = nullptr;
-	unsigned length = 0;
-
-	~SslSessionId()
-	{
-		free();
-	}
-
+class SslSessionId
+{
+public:
 	/** @brief May be called even when object is null */
-	uint8_t* getValue()
+	const uint8_t* getValue()
 	{
-		return this ? value : nullptr;
+		return this ? reinterpret_cast<const uint8_t*>(value.c_str()) : nullptr;
 	}
 
 	/** @brief May be called even when object is null */
 	unsigned getLength()
 	{
-		return this ? length : 0;
+		return this ? value.length() : 0;
 	}
 
 	bool isValid()
 	{
-		return (this != nullptr) && (value != nullptr) && (length != 0);
+		return getLength() != 0;
 	}
 
 	bool assign(const uint8_t* newValue, unsigned newLength)
 	{
-		assert(newLength <= SSL_SESSION_ID_SIZE);
-		if(value == nullptr) {
-			value = new uint8_t[SSL_SESSION_ID_SIZE];
-			if(value == nullptr) {
-				return false;
-			}
+		if(!value.setLength(newLength)) {
+			return false;
 		}
-		memcpy(value, newValue, newLength);
-		length = newLength;
+		memcpy(value.begin(), newValue, newLength);
 		return true;
 	}
 
-	void free()
-	{
-		delete[] value;
-		value = nullptr;
-		length = 0;
-	}
+private:
+	String value;
 };
 
 #endif /* SMINGCORE_NETWORK_SSLSESSIONID_H_ */

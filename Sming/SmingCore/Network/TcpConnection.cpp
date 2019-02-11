@@ -432,11 +432,11 @@ err_t TcpConnection::internalOnConnected(err_t err)
 
 			if(sslKeyCert.isValid()) {
 				// if we have client certificate -> try to use it.
-				if(ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY, sslKeyCert.key, sslKeyCert.keyLength,
-									   sslKeyCert.keyPassword) != SSL_OK) {
+				if(ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
+									   sslKeyCert.getKeyPassword()) != SSL_OK) {
 					debug_d("SSL: Unable to load client private key");
-				} else if(ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT, sslKeyCert.certificate,
-											  sslKeyCert.certificateLength, nullptr) != SSL_OK) {
+				} else if(ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT, sslKeyCert.getCertificate(),
+											  sslKeyCert.getCertificateLength(), nullptr) != SSL_OK) {
 					debug_d("SSL: Unable to load client certificate");
 				}
 
@@ -448,7 +448,7 @@ err_t TcpConnection::internalOnConnected(err_t err)
 			debug_d("SSL: Session Id Length: %u", sslSessionId->getLength());
 			if(sslSessionId->isValid()) {
 				debug_d("-----BEGIN SSL SESSION PARAMETERS-----");
-				debug_hex(DBG, "Session", sslSessionId->value, sslSessionId->length);
+				debug_hex(DBG, "Session", sslSessionId->getValue(), sslSessionId->getLength());
 				debug_d("\n-----END SSL SESSION PARAMETERS-----");
 			}
 
