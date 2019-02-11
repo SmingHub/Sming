@@ -12,22 +12,22 @@
 
 /** @brief Manages buffer to store SSL Session ID
  */
-struct SSLSessionId {
+struct SslSessionId {
 	uint8_t* value = nullptr;
 	unsigned length = 0;
 
-	~SSLSessionId()
+	~SslSessionId()
 	{
 		free();
 	}
 
-	/** @brief May be called even when SSLSessionId is nullptr */
+	/** @brief May be called even when object is null */
 	uint8_t* getValue()
 	{
 		return this ? value : nullptr;
 	}
 
-	/** @brief May be called even when SSLSessionId is nullptr */
+	/** @brief May be called even when object is null */
 	unsigned getLength()
 	{
 		return this ? length : 0;

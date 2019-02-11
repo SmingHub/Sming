@@ -8,8 +8,15 @@
 #ifndef SMINGCORE_NETWORK_SSL_SSLSTRUCTS_H_
 #define SMINGCORE_NETWORK_SSL_SSLSTRUCTS_H_
 
-#include "SSLFingerprints.h"
-#include "SSLKeyCertPair.h"
-#include "SSLSessionId.h"
+#include "SslFingerprints.h"
+#include "SslKeyCertPair.h"
+#include "SslSessionId.h"
+
+/*
+ * These structures have been renamed, please use the revised convention SslXXX
+ */
+typedef SslKeyCertPair SSLKeyCertPair __attribute__((deprecated));
+typedef SslSessionId SSLSessionId __attribute__((deprecated));
+typedef SslFingerprints SSLFingerprints __attribute__((deprecated));
 
 #endif /* SMINGCORE_NETWORK_SSL_SSLSTRUCTS_H_ */

@@ -91,7 +91,7 @@ protected:
 	static HashMap<String, RequestQueue*> queue;
 
 #ifdef ENABLE_SSL
-	static HashMap<String, SSLSessionId*> sslSessionIdPool;
+	static HashMap<String, SslSessionId*> sslSessionIdPool;
 #endif
 };
 

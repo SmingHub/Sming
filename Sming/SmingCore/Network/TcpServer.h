@@ -68,7 +68,7 @@ public:
 	 * @brief Adds SSL support and specifies the server certificate and private key.
 	 * @deprecated: Use setSslKeyCert instead
 	 */
-	void setServerKeyCert(SSLKeyCertPair serverKeyCert)
+	void setServerKeyCert(SslKeyCertPair serverKeyCert)
 	{
 		setSslKeyCert(serverKeyCert);
 	}

@@ -13,14 +13,14 @@
 /** @brief Structure to manage an SSL key certificate with optional password
  *  @note Do not set member variables directly, use provided methods
  */
-struct SSLKeyCertPair {
+struct SslKeyCertPair {
 	uint8_t* key = nullptr;
 	unsigned keyLength = 0;
 	char* keyPassword = nullptr;
 	uint8_t* certificate = nullptr;
 	unsigned certificateLength = 0;
 
-	~SSLKeyCertPair()
+	~SslKeyCertPair()
 	{
 		free();
 	}
@@ -80,13 +80,13 @@ struct SSLKeyCertPair {
 	 *  @retval bool false on memory allocation failure
 	 *  @note We take a new copy of the certificate
 	 */
-	bool assign(const SSLKeyCertPair& keyCert)
+	bool assign(const SslKeyCertPair& keyCert)
 	{
 		return assign(keyCert.key, keyCert.keyLength, keyCert.certificate, keyCert.certificateLength,
 					  keyCert.keyPassword);
 	}
 
-	SSLKeyCertPair& operator=(const SSLKeyCertPair& keyCert)
+	SslKeyCertPair& operator=(const SslKeyCertPair& keyCert)
 	{
 		assign(keyCert);
 		return *this;

@@ -25,4 +25,4 @@ typedef struct {
 		delete pkSha256;
 		pkSha256 = nullptr;
 	}
-} SSLFingerprints;
+} SslFingerprints;

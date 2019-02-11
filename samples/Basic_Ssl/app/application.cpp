@@ -100,7 +100,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 	HttpRequest* request = new HttpRequest(URL("https://www.google.com/"));
 	request->setSslOptions(SSL_SERVER_VERIFY_LATER);
 
-	SSLFingerprints fingerprint;
+	SslFingerprints fingerprint;
 
 	/*
 	 * The line below shows how to trust only a certificate that matches the SHA1 fingerprint.

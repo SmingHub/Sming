@@ -154,15 +154,15 @@ public:
 	bool pinCertificate(const uint8_t* fingerprint, SslFingerprintType type);
 
 	/**
-	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
+	 * @brief	Requires(pins) the remote SSL certificate to match certain fingerprints
 	 *
-	 * @note  The data inside the fingerprints parameter is passed by reference
+	 * @note	The data inside the fingerprints parameter is passed by reference
 	 *
-	 * @param SSLFingerprints - passes the certificate fingerprints by reference.
+	 * @param	fingerprints - passes the certificate fingerprints by reference.
 	 *
-	 * @return bool  true of success, false or failure
+	 * @retval	bool  true of success, false or failure
 	 */
-	bool pinCertificate(const SSLFingerprints& fingerprints);
+	bool pinCertificate(const SslFingerprints& fingerprints);
 #endif
 
 protected:

@@ -154,7 +154,7 @@ public:
 	*
 	* @return bool  true of success, false or failure
 	*/
-	bool setSslClientKeyCert(const SSLKeyCertPair& clientKeyCert, bool freeAfterHandshake = false)
+	bool setSslClientKeyCert(const SslKeyCertPair& clientKeyCert, bool freeAfterHandshake = false)
 	{
 		return setSslKeyCert(clientKeyCert, freeAfterHandshake);
 	}
@@ -211,7 +211,7 @@ public:
 	*
 	* @return bool  true of success, false or failure
 	*/
-	bool setSslKeyCert(const SSLKeyCertPair& keyCert, bool freeAfterHandshake = false)
+	bool setSslKeyCert(const SslKeyCertPair& keyCert, bool freeAfterHandshake = false)
 	{
 		freeKeyCertAfterHandshake = freeAfterHandshake;
 		return sslKeyCert.assign(keyCert);
@@ -284,9 +284,9 @@ protected:
 	SSL_EXTENSIONS* sslExtension = nullptr;
 	bool sslConnected = false;
 	uint32_t sslOptions = 0;
-	SSLKeyCertPair sslKeyCert;
+	SslKeyCertPair sslKeyCert;
 	bool freeKeyCertAfterHandshake = false;
-	SSLSessionId* sslSessionId = nullptr;
+	SslSessionId* sslSessionId = nullptr;
 #endif
 	bool useSsl = false;
 
