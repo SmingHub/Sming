@@ -107,12 +107,13 @@ public:
 		return state == eSS_Ready;
 	}
 
-	/** @brief  Restart system
+	/** @brief Request a restart of the system
+	 *  @param deferMillis defer restart request by a number of milliseconds
+	 *  @note A delay is often required to allow network callback code to complete correctly.
+	 *  The restart is always deferred, either using the task queue (if deferMillis == 0)
+	 *  or using a timer. This method always returns immediately.
      */
-	void restart()
-	{
-		system_restart();
-	}
+	void restart(unsigned deferMillis = 0);
 
 	/** @brief  Set the CPU frequency
      *  @param  freq Frequency to set CPU
