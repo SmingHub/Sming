@@ -41,6 +41,11 @@ class FIFO : public Countable<T>
       return numberOfElements;
     }
 
+    bool full() const
+    {
+      return (count() >= rawSize);
+    }
+
     const T &operator[](unsigned int index) const
     {
       return raw[index]; /* unsafe */
@@ -67,7 +72,7 @@ FIFO<T, rawSize>::FIFO() : size(rawSize)
 template<typename T, int rawSize>
 bool FIFO<T, rawSize>::enqueue(T element)
 {
-  if (count() >= rawSize)
+  if (full())
   {
     return false;
   }
