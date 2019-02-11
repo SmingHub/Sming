@@ -18,7 +18,7 @@
 #include "Delegate.h"
 
 #ifdef ENABLE_SSL
-#include "SslValidator.h"
+#include "Ssl/SslValidator.h"
 #endif
 
 class TcpClient;

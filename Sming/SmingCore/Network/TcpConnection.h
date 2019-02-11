@@ -16,9 +16,7 @@
 #ifdef ENABLE_SSL
 #include "../axtls-8266/compat/lwipr_compat.h"
 #include "Clock.h"
-#include "SSLFingerprints.h"
-#include "SSLKeyCertPair.h"
-#include "SSLSessionId.h"
+#include "Ssl/SslStructs.h"
 #endif
 
 #include "WiringFrameworkDependencies.h"
