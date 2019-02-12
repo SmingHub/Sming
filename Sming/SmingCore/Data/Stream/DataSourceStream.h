@@ -19,6 +19,7 @@
 enum StreamType {
 	eSST_Invalid,	///< Stream content not valid
 	eSST_Memory,	 ///< Memory data stream
+	eSST_Serial,	 ///< Serial port
 	eSST_File,		 ///< File data stream
 	eSST_Template,   ///< Template data stream
 	eSST_JsonObject, ///< JSON object data stream

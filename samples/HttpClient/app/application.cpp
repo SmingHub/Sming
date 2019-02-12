@@ -111,13 +111,13 @@ void setSslFingerprints(HttpRequest* request)
 	 * The line below shows how to trust only a certificate in which the public key matches the SHA256 fingerprint.
 	 * When google changes the private key that they use in their certificate the SHA256 fingerprint should not match any longer.
 	 */
-	fingerprints.setSha256_P(publicKeyFingerprint);
+	fingerprints.setSha256_P(publicKeyFingerprint, sizeof(publicKeyFingerprint));
 
 	/*
 	 * The line below shows how to trust only a certificate that matches the SHA1 fingerprint.
 	 * When google changes their certificate the SHA1 fingerprint should not match any longer.
 	 */
-	fingerprints.setSha1_P(sha1Fingerprint);
+	fingerprints.setSha1_P(sha1Fingerprint, sizeof(sha1Fingerprint));
 
 	// request->pinCertificate(fingerprints);
 }

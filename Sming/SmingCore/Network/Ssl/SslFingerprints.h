@@ -39,50 +39,35 @@ struct SslFingerprints {
 		pkSha256 = nullptr;
 	}
 
-	void setSha1(const uint8_t* cert)
+	bool setSha1(const uint8_t* cert, unsigned length)
 	{
-		if(cert == nullptr) {
-			delete[] certSha1;
-			certSha1 = nullptr;
-		} else {
-			if(certSha1 == nullptr) {
-				certSha1 = new uint8_t[SHA1_SIZE];
-			}
-			memcpy(certSha1, cert, SHA1_SIZE);
-		}
+		return setValue(certSha1, SHA1_SIZE, cert, length);
 	}
 
-	void setSha256(const uint8_t* cert)
+	bool setSha256(const uint8_t* cert, unsigned length)
 	{
-		if(cert == nullptr) {
-			delete[] pkSha256;
-			pkSha256 = nullptr;
-		} else {
-			if(pkSha256 == nullptr) {
-				pkSha256 = new uint8_t[SHA256_SIZE];
-			}
-			memcpy(pkSha256, cert, SHA256_SIZE);
-		}
+		return setValue(pkSha256, SHA256_SIZE, cert, length);
 	}
 
 	/** @brief Make copy of SHA1 certificate from data stored in flash
 	 *  @param cert
 	 */
-	void setSha1_P(const uint8_t* cert)
+	bool setSha1_P(const uint8_t* cert, unsigned length)
 	{
 		// Word-aligned and sized buffers don't need special handling
-		setSha1(cert);
+		return setSha1(cert, length);
 	}
 
 	/** @brief Make copy of SHA256 certificate from data stored in flash
 	 *  @param cert
 	 */
-	void setSha256_P(const uint8_t* cert)
+	bool setSha256_P(const uint8_t* cert, unsigned length)
 	{
 		// Word-aligned and sized buffers don't need special handling
-		setSha256(cert);
+		return setSha256(cert, length);
 	}
 
+	/** @brief Moves values out of source */
 	SslFingerprints& operator=(SslFingerprints& source)
 	{
 		delete[] certSha1;
@@ -96,11 +81,40 @@ struct SslFingerprints {
 		return *this;
 	}
 
+	/** @brief Make copy of values from source */
 	SslFingerprints& operator=(const SslFingerprints& source)
 	{
-		setSha1(source.certSha1);
-		setSha256(source.pkSha256);
+		setSha1(source.certSha1, SHA1_SIZE);
+		setSha256(source.pkSha256, SHA256_SIZE);
 
 		return *this;
+	}
+
+private:
+	/** @brief Internal method to set a fingerprint
+	 *  @param value Reference to fingerprint value in this structure
+	 *  @param length Required length for value
+	 *  @param newValue
+	 *  @param newLength
+	 *  @retval bool true on success, false on invalid length or memory allocation failure
+	 */
+	bool setValue(uint8_t*& value, unsigned length, const uint8_t* newValue, unsigned newLength)
+	{
+		if(newValue == nullptr || newLength == 0) {
+			delete[] value;
+			value = nullptr;
+			return true;
+		} else if(newLength != length) {
+			return false;
+		} else {
+			if(value == nullptr) {
+				value = new uint8_t[length];
+				if(value == nullptr) {
+					return false;
+				}
+			}
+			memcpy(value, newValue, length);
+			return true;
+		}
 	}
 };
