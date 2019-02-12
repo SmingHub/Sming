@@ -228,11 +228,11 @@ public:
 	/**
 	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
 	 * 			Check if SHA256 hash of Subject Public Key Info matches the one given.
-	 * @param SSLFingerprints - passes the certificate fingerprints by reference.
+	 * @param	fingerprints - passes the certificate fingerprints by reference.
 	 *
 	 * @return bool  true of success, false or failure
 	 */
-	HttpRequest* pinCertificate(const SSLFingerprints& fingerprints)
+	HttpRequest* pinCertificate(const SslFingerprints& fingerprints)
 	{
 		sslFingerprint = fingerprints;
 		return this;
@@ -245,7 +245,7 @@ public:
 	 *
 	 * @return HttpRequest pointer
 	 */
-	HttpRequest* setSslKeyCert(const SSLKeyCertPair& keyCertPair)
+	HttpRequest* setSslKeyCert(const SslKeyCertPair& keyCertPair)
 	{
 		sslKeyCertPair = keyCertPair;
 		return this;
@@ -284,8 +284,8 @@ protected:
 
 #ifdef ENABLE_SSL
 	uint32_t sslOptions = 0;
-	SSLFingerprints sslFingerprint;
-	SSLKeyCertPair sslKeyCertPair;
+	SslFingerprints sslFingerprint;
+	SslKeyCertPair sslKeyCertPair;
 #endif
 
 private:

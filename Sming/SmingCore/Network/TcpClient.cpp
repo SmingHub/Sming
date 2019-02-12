@@ -240,7 +240,7 @@ bool TcpClient::pinCertificate(const uint8_t* fingerprint, SslFingerprintType ty
 	return true;
 }
 
-bool TcpClient::pinCertificate(const SSLFingerprints& fingerprints)
+bool TcpClient::pinCertificate(const SslFingerprints& fingerprints)
 {
 	bool success = false;
 	if(fingerprints.certSha1 != nullptr) {

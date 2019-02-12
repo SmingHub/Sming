@@ -57,19 +57,19 @@ bool TcpServer::listen(int port, bool useSsl)
 
 		sslContext = ssl_ctx_new(sslOptions, sslSessionCacheSize);
 
-		if(!(sslKeyCert.keyLength && sslKeyCert.certificateLength)) {
+		if(!sslKeyCert.isValid()) {
 			debug_e("SSL: server certificate and key are not provided!");
 			return false;
 		}
 
-		if(ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY, sslKeyCert.key, sslKeyCert.keyLength,
-							   sslKeyCert.keyPassword) != SSL_OK) {
+		if(ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
+							   sslKeyCert.getKeyPassword()) != SSL_OK) {
 			debug_e("SSL: Unable to load server private key");
 			return false;
 		}
 
-		if(ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT, sslKeyCert.certificate, sslKeyCert.certificateLength,
-							   nullptr) != SSL_OK) {
+		if(ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT, sslKeyCert.getCertificate(),
+							   sslKeyCert.getCertificateLength(), nullptr) != SSL_OK) {
 			debug_e("SSL: Unable to load server certificate");
 			return false;
 		}

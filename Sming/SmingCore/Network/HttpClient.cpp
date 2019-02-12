@@ -49,9 +49,7 @@ bool HttpClient::send(HttpRequest* request)
 	// Based on the URL decide if we should reuse the SSL and TCP pool
 	if(useSsl) {
 		if(!sslSessionIdPool.contains(cacheKey)) {
-			sslSessionIdPool[cacheKey] = (SSLSessionId*)malloc(sizeof(SSLSessionId));
-			sslSessionIdPool[cacheKey]->value = NULL;
-			sslSessionIdPool[cacheKey]->length = 0;
+			sslSessionIdPool[cacheKey] = new SslSessionId;
 		}
 		httpConnectionPool[cacheKey]->addSslOptions(request->getSslOptions());
 		httpConnectionPool[cacheKey]->pinCertificate(request->sslFingerprint);
@@ -101,15 +99,13 @@ HashMap<String, HttpConnection*> HttpClient::httpConnectionPool;
 HashMap<String, RequestQueue*> HttpClient::queue;
 
 #ifdef ENABLE_SSL
-HashMap<String, SSLSessionId*> HttpClient::sslSessionIdPool;
+HashMap<String, SslSessionId*> HttpClient::sslSessionIdPool;
 
 void HttpClient::freeSslSessionPool()
 {
-	for(int i = 0; i < sslSessionIdPool.count(); i++) {
+	for(unsigned i = 0; i < sslSessionIdPool.count(); i++) {
 		String key = sslSessionIdPool.keyAt(i);
-		free(sslSessionIdPool[key]->value);
-		sslSessionIdPool[key]->value = NULL;
-		free(sslSessionIdPool[key]);
+		delete sslSessionIdPool[key];
 		sslSessionIdPool[key] = NULL;
 	}
 	sslSessionIdPool.clear();
