@@ -119,51 +119,44 @@ public:
 #ifdef ENABLE_SSL
 	/**
 	 * @brief Allows setting of multiple SSL validators after a successful handshake
-	 * @param SslValidatorCallback callback
-	 * @param void* data - The data that should be passed to the callback.
-	 * 					   The callback will cast the data to the correct type and take care
-	 * 					   to delete it.
-	 *
-	 */
-	void addSslValidator(SslValidatorCallback callback, void* data = nullptr)
-	{
-		sslValidators.add(callback, data);
-	}
-
-	/**
-	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
-	 * 			Check if SHA256 hash of Subject Public Key Info matches the one given.
-	 * @note    For HTTP public key pinning (RFC7469), the SHA-256 hash of the
-	 * 		    Subject Public Key Info (which usually only changes when the public key changes)
-	 * 		    is used rather than the SHA-1 hash of the entire certificate
-	 * 		    (which will change on each certificate renewal).
-	 * @param const uint8_t *finterprint - the fingeprint data against which the match should be performed
-	 * 									   The fingerprint will be deleted after use and should
-	 * 									   not be reused outside of this method
-	 * @param SslFingerprintType type - the fingerprint type
-	 * @note    Type: eSFT_PkSha256
-	 * 			For HTTP public key pinning (RFC7469), the SHA-256 hash of the
-	 * 		    Subject Public Key Info (which usually only changes when the public key changes)
-	 * 		    is used rather than the SHA-1 hash of the entire certificate
-	 * 		    (which will change on each certificate renewal).
-	 * 		    Advantages: The
-	 * 		    Disadvantages: Takes more time (in ms) to verify.
-	 * @note    Type: eSFT_CertSha1
-	 * 			The SHA1 hash of the remote certificate will be calculated and compared with the given one.
-	 * 			Disadvantages: The hash needs to be updated every time the remote server updates its certificate
+	 * @param callback The callback function to be invoked on validation
+	 * @param data The data to pass to the callback
+	 * @note The callback is responsible for releasing the data if appropriate.
+	 * See SslValidatorCallback for further details.
 	 *
 	 * @retval bool true on success, false on failure
 	 */
-	bool pinCertificate(const uint8_t* fingerprint, SslFingerprintType type);
+	bool addSslValidator(SslValidatorCallback callback, void* data = nullptr)
+	{
+		return sslValidators.add(callback, data);
+	}
 
 	/**
-	 * @brief	Requires(pins) the remote SSL certificate to match certain fingerprints
+	 * @brief Requires (pins) the remote SSL certificate to match certain fingerprints
+	 * @param fingerprint	The fingerprint data against which the match should be performed.
+	 * 						Must be allocated on the heap and will be deleted after use.
+	 * 						Do not re-use outside of this method.
+	 * @param type			The fingerprint type - see SslFingerprintType for details.
+	 *
+	 * @retval bool true on success, false on failure
+	 */
+	bool pinCertificate(const uint8_t* fingerprint, SslFingerprintType type)
+	{
+		return sslValidators.add(fingerprint, type);
+	}
+
+	/**
+	 * @brief	Requires (pins) the remote SSL certificate to match certain fingerprints
 	 * @note	The data inside the fingerprints parameter is passed by reference
 	 * @param	fingerprints - passes the certificate fingerprints by reference.
 	 *
 	 * @retval bool  true on success, false on failure
 	 */
-	bool pinCertificate(SslFingerprints& fingerprints);
+	bool pinCertificate(SslFingerprints& fingerprints)
+	{
+		return sslValidators.add(fingerprints);
+	}
+
 #endif
 
 protected:
@@ -175,7 +168,11 @@ protected:
 	virtual void onFinished(TcpClientState finishState);
 
 #ifdef ENABLE_SSL
-	virtual err_t onSslConnected(SSL* ssl);
+	virtual err_t onSslConnected(SSL* ssl)
+	{
+		return sslValidators.validate(ssl) ? ERR_OK : ERR_ABRT;
+	}
+
 #endif
 
 	void pushAsyncPart();

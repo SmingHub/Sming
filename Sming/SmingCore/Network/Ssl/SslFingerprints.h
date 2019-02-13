@@ -5,13 +5,28 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
+#ifndef SMINGCORE_NETWORK_SSLFINGERPRINTS_H_
+#define SMINGCORE_NETWORK_SSLFINGERPRINTS_H_
+
 #include "ssl/ssl.h"
 
+/**
+ * @brief SSL Certificate fingerprint type
+ */
 enum SslFingerprintType {
-	eSFT_CertSha1 = 0, // << Fingerprint based on the SHA1 value of the certificate.
-					   //     Every time a certificate is renewed this value will change.
-	eSFT_PkSha256,	 // << Fingerprint based on the SHA256 value of the public key subject in the certificate.
-					   //    Only when the private key used to generate the certificate is used then that fingerprint
+	/* The SHA1 hash of the entire certificate. This changes on each certificate renewal so needs
+	 * to be updated every time the remote server updates its certificate.
+	 * Advantages: Takes less time to verify than SHA256
+	 * Disadvantages: Likely to change periodically
+	 */
+	eSFT_CertSha1 = 0, ///< Fingerprint based on the SHA1 value of the certificate
+
+	/* For HTTP public key pinning (RFC7469), the SHA-256 hash of the Subject Public Key Info
+	 * (which usually only changes when the public key changes) is used.
+	 * Advantages: Doesn't change frequently
+	 * Disadvantages: Takes more time (in ms) to verify.
+	 */
+	eSFT_PkSha256, // << Fingerprint based on the SHA256 value of the Public Key Subject in the certificate
 };
 
 /** @brief Contains SSL fingerprint data
@@ -123,3 +138,5 @@ private:
 		}
 	}
 };
+
+#endif // SMINGCORE_NETWORK_SSLFINGERPRINTS_H_
