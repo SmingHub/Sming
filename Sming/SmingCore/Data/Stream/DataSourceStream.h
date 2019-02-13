@@ -19,7 +19,6 @@
 enum StreamType {
 	eSST_Invalid,	///< Stream content not valid
 	eSST_Memory,	 ///< Memory data stream
-	eSST_Serial,	 ///< Serial port
 	eSST_File,		 ///< File data stream
 	eSST_Template,   ///< Template data stream
 	eSST_JsonObject, ///< JSON object data stream
@@ -45,7 +44,10 @@ public:
      *  @retval StreamType The stream type.
      *  @todo   Return value of IDataSourceStream:getStreamType base class function should be of type StreamType, e.g. eSST_User
      */
-	virtual StreamType getStreamType() const = 0;
+	virtual StreamType getStreamType() const
+	{
+		return eSST_Unknown;
+	}
 
 	/** @brief Determine if the stream object contains valid data
 	 *  @retval bool true if valid, false if invalid

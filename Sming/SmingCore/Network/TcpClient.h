@@ -161,7 +161,7 @@ public:
 	 * @note	The data inside the fingerprints parameter is passed by reference
 	 * @param	fingerprints - passes the certificate fingerprints by reference.
 	 *
-	 * @retval bool  true of success, false or failure
+	 * @retval bool  true on success, false on failure
 	 */
 	bool pinCertificate(SslFingerprints& fingerprints);
 #endif

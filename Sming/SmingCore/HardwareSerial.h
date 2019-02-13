@@ -101,11 +101,6 @@ public:
 
 	~HardwareSerial();
 
-	virtual StreamType getStreamType() const
-	{
-		return eSST_Serial;
-	}
-
 	void setPort(int uartPort)
 	{
 		end();

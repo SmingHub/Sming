@@ -70,13 +70,15 @@ struct SslFingerprints {
 	/** @brief Moves values out of source */
 	SslFingerprints& operator=(SslFingerprints& source)
 	{
-		delete[] certSha1;
-		certSha1 = source.certSha1;
-		source.certSha1 = nullptr;
+		if(this != &source) {
+			delete[] certSha1;
+			certSha1 = source.certSha1;
+			source.certSha1 = nullptr;
 
-		delete[] pkSha256;
-		pkSha256 = source.pkSha256;
-		source.pkSha256 = nullptr;
+			delete[] pkSha256;
+			pkSha256 = source.pkSha256;
+			source.pkSha256 = nullptr;
+		}
 
 		return *this;
 	}
@@ -84,8 +86,10 @@ struct SslFingerprints {
 	/** @brief Make copy of values from source */
 	SslFingerprints& operator=(const SslFingerprints& source)
 	{
-		setSha1(source.certSha1, SHA1_SIZE);
-		setSha256(source.pkSha256, SHA256_SIZE);
+		if(this != &source) {
+			setSha1(source.certSha1, SHA1_SIZE);
+			setSha256(source.pkSha256, SHA256_SIZE);
+		}
 
 		return *this;
 	}
@@ -105,6 +109,7 @@ private:
 			value = nullptr;
 			return true;
 		} else if(newLength != length) {
+			debug_e("ERROR! Invalid fingerprint length");
 			return false;
 		} else {
 			if(value == nullptr) {
