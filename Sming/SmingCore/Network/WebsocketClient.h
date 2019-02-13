@@ -83,7 +83,7 @@ public:
 	/** @brief  Disconnects websocket client from server
 	  * @deprecated use close() instead
 	  */
-	void disconnect()
+	void disconnect() __deprecated
 	{
 		close();
 	}

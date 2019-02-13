@@ -138,7 +138,7 @@ public:
 	 * @return bool  true of success, false or failure
 	 */
 	bool setSslClientKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
-							 const char* keyPassword = nullptr, bool freeAfterHandshake = false)
+							 const char* keyPassword = nullptr, bool freeAfterHandshake = false) __deprecated
 	{
 		return setSslKeyCert(key, keyLength, certificate, certificateLength, keyPassword, freeAfterHandshake);
 	}
@@ -154,7 +154,7 @@ public:
 	*
 	* @return bool  true of success, false or failure
 	*/
-	bool setSslClientKeyCert(const SslKeyCertPair& clientKeyCert, bool freeAfterHandshake = false)
+	bool setSslClientKeyCert(const SslKeyCertPair& clientKeyCert, bool freeAfterHandshake = false) __deprecated
 	{
 		return setSslKeyCert(clientKeyCert, freeAfterHandshake);
 	}
@@ -163,7 +163,7 @@ public:
 	 * @brief Frees the memory used for the key and certificate pair
 	 * @deprecated: Use freeSslKeyCert instead
 	 */
-	void freeSslClientKeyCert()
+	void freeSslClientKeyCert() __deprecated
 	{
 		freeSslKeyCert();
 	}

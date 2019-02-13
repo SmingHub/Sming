@@ -61,7 +61,7 @@ public:
      *  @note   Delegate callback method
      *  @deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
      */
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = nullptr);
+	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = nullptr) __deprecated;
 
 	/** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
@@ -69,7 +69,7 @@ public:
      *  @note   Delegate callback method
      *  @deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
      */
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = nullptr);
+	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = nullptr) __deprecated;
 
 	/** @brief  Initialise millisecond timer
      *  @param  milliseconds Duration of timer in milliseconds

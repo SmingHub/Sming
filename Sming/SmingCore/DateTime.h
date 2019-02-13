@@ -138,7 +138,7 @@ public:
 	 *  @note   GMT suffix is optional and is always assumed / ignored
 	 *  @deprecated Use 'fromHttpDate' instead
 	 */
-	bool parseHttpDate(const String& httpDate) __attribute__((deprecated))
+	bool parseHttpDate(const String& httpDate) __deprecated
 	{
 		return fromHttpDate(httpDate);
 	}
@@ -207,7 +207,7 @@ public:
 
 	/** @deprecated used unsigned version */
 	static void fromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday, int8_t* pwday,
-							 int8_t* pmonth, int16_t* pyear) __attribute__((deprecated))
+							 int8_t* pmonth, int16_t* pyear) __deprecated
 	{
 		fromUnixTime(timep, reinterpret_cast<uint8_t*>(psec), reinterpret_cast<uint8_t*>(pmin),
 					 reinterpret_cast<uint8_t*>(phour), reinterpret_cast<uint8_t*>(pday),
@@ -234,7 +234,7 @@ public:
 	 *  @deprecated Use 'fromUnixTime' instead
 	 */
 	static void convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday,
-									int8_t* pwday, int8_t* pmonth, int16_t* pyear) __attribute__((deprecated))
+									int8_t* pwday, int8_t* pmonth, int16_t* pyear) __deprecated
 	{
 		fromUnixTime(timep, reinterpret_cast<uint8_t*>(psec), reinterpret_cast<uint8_t*>(pmin),
 					 reinterpret_cast<uint8_t*>(phour), reinterpret_cast<uint8_t*>(pday),
@@ -269,8 +269,8 @@ public:
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
 	 *  @deprecated Use 'toUnixTime' instead
 	 */
-	static time_t convertToUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)
-		__attribute__((deprecated))
+	static time_t convertToUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month,
+									uint16_t year) __deprecated
 	{
 		return toUnixTime(sec, min, hour, day, month, year);
 	}

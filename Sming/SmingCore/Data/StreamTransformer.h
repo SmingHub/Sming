@@ -39,9 +39,11 @@ public:
 	 *  @deprecated
 	 */
 	StreamTransformer(IDataSourceStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
-					  size_t blockSize = 64) __attribute__((deprecated))
-	: transformCallback(callback), sourceStream(stream), result(new uint8_t[resultSize]), resultSize(resultSize),
-	  blockSize(blockSize)
+					  size_t blockSize = 64) __deprecated : transformCallback(callback),
+															sourceStream(stream),
+															result(new uint8_t[resultSize]),
+															resultSize(resultSize),
+															blockSize(blockSize)
 	{
 	}
 

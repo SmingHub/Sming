@@ -114,7 +114,7 @@ public:
 	 * @deprecated This method is deprecated and will be removed in the coming versions.
 	 * 			   Please, use available() instead.
 	 */
-	int length()
+	int length() __deprecated
 	{
 		return available();
 	}

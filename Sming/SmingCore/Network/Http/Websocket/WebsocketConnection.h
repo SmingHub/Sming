@@ -121,9 +121,9 @@ public:
 	void* getUserData();
 
 	// @deprecated
-	bool operator==(const WebsocketConnection& rhs) const;
+	bool operator==(const WebsocketConnection& rhs) const __deprecated;
 
-	WebsocketList& getActiveWebsockets();
+	WebsocketList& getActiveWebsockets() __deprecated;
 	// @end deprecated
 
 	/**

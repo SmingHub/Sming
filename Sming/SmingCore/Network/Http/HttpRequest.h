@@ -91,7 +91,7 @@ public:
 	 * @deprecated This method is deprecated and will be removed in the coming versions.
 	 * 			   Please set postParams directly, i.e. request.postParams = params
 	 */
-	HttpRequest* setPostParameters(const HttpParams& params)
+	HttpRequest* setPostParameters(const HttpParams& params) __deprecated
 	{
 		postParams = params;
 		return this;
@@ -139,12 +139,11 @@ public:
 	}
 
 	/* @deprecated  use uri methods */
-	String getPath()
+	String getPath() __deprecated
 	{
 		return uri.Path;
 	}
 
-	/* @deprecated  use uri methods */
 	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr);
 
 	/**
@@ -291,7 +290,7 @@ protected:
 private:
 	HashMap<String, IDataSourceStream*> files;
 
-	HttpParams* queryParams = nullptr; // << deprecated
+	HttpParams* queryParams = nullptr;
 };
 
 #endif /* _SMING_CORE_HTTP_REQUEST_H_ */

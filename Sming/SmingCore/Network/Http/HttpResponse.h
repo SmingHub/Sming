@@ -37,7 +37,7 @@ public:
 	/**
 	 * @deprecated Use response.code = HTTP_STATUS_FORBIDDEN instead
 	 */
-	__forceinline void forbidden()
+	void forbidden() __deprecated
 	{
 		code = HTTP_STATUS_FORBIDDEN;
 	}
@@ -45,7 +45,7 @@ public:
 	/**
 	 * @deprecated Use response.code = HTTP_STATUS_NOT_FOUND instead
 	 */
-	__forceinline void notFound()
+	void notFound() __deprecated
 	{
 		code = HTTP_STATUS_NOT_FOUND;
 	}
@@ -64,14 +64,14 @@ public:
 	// @deprecated
 
 	// Parse and send template file
-	bool sendTemplate(TemplateStream* newTemplateInstance);
+	bool sendTemplate(TemplateStream* newTemplateInstance) __deprecated;
 
 	/**
 	 * @brief Build and send JSON string
 	 *
 	 * @deprecated use response.sendDataStream(stream, MIME_JSON) instead
 	 */
-	bool sendJsonObject(JsonObjectStream* newJsonStreamInstance);
+	bool sendJsonObject(JsonObjectStream* newJsonStreamInstance) __deprecated;
 
 	// @end deprecated
 

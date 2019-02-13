@@ -176,7 +176,7 @@ public:
 	/**
 	 * @deprecated Use setWill(const String& topic, const String& message,uint8_t flags) instead
 	 */
-	bool setWill(const String& topic, const String& message, int QoS, bool retained = false)
+	bool setWill(const String& topic, const String& message, int QoS, bool retained = false) __deprecated
 	{
 		uint8_t flags = (uint8_t)(retained + (QoS << 1));
 		return setWill(topic, message, flags);
@@ -194,7 +194,7 @@ public:
 	 * 			   then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.
 	 */
 	bool publishWithQoS(const String& topic, const String& message, int QoS, bool retained = false,
-						MqttMessageDeliveredCallback onDelivery = NULL)
+						MqttMessageDeliveredCallback onDelivery = NULL) __deprecated
 	{
 		if(onDelivery) {
 			if(QoS == 1) {
@@ -215,7 +215,7 @@ public:
 	/** @brief  Provide a function to be called when a message is received from the broker
 	 * @deprecated Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
 	*/
-	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = NULL)
+	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = NULL) __deprecated
 	{
 		this->subscriptionCallback = subscriptionCallback;
 		setEventHandler(MQTT_TYPE_PUBLISH, onPublish);

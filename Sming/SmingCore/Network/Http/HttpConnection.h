@@ -62,7 +62,7 @@ public:
 	/**
 	 * @deprecated Use `getResponse().code` instead
 	 */
-	__forceinline int getResponseCode()
+	int getResponseCode() __deprecated
 	{
 		return response.code;
 	}
@@ -70,27 +70,27 @@ public:
 	/**
 	 * @deprecated Use `getResponse().headers[headerName]` instead
 	 */
-	String getResponseHeader(String headerName, String defaultValue = nullptr);
+	String getResponseHeader(String headerName, String defaultValue = nullptr) __deprecated;
 
 	/**
 	* @deprecated Use `getResponse().headers` instead
 	*/
-	HttpHeaders& getResponseHeaders();
+	HttpHeaders& getResponseHeaders() __deprecated;
 
 	/**
 	* @deprecated Use `getResponse().headers[HTTP_HEADER_LAST_MODIFIED]` instead
 	*/
-	DateTime getLastModifiedDate(); // Last-Modified header
+	DateTime getLastModifiedDate() __deprecated; // Last-Modified header
 
 	/**
 	 * @deprecated Use `getResponse().headers[HTTP_HEADER_DATE]` instead
 	 */
-	DateTime getServerDate(); // Date header
+	DateTime getServerDate() __deprecated; // Date header
 
 	/**
 	 * @deprecated Use `getResponse().stream` instead
 	 */
-	String getResponseString();
+	String getResponseString() __deprecated;
 	// @enddeprecated
 
 	virtual void reset();

@@ -27,7 +27,7 @@ typedef Delegate<int(HttpServerConnection& connection, HttpRequest&, const char*
 typedef Delegate<int(HttpServerConnection& connection, HttpRequest&, char* at, int length)>
 	HttpServerConnectionUpgradeDelegate;
 typedef Delegate<int(HttpServerConnection&, HttpRequest&, HttpResponse&)> HttpResourceDelegate;
-typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathDelegate; // << deprecated
+typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathDelegate;
 
 class HttpResource
 {

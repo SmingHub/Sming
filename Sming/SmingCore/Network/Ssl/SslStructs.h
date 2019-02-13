@@ -15,8 +15,8 @@
 /*
  * These structures have been renamed, please use the revised convention SslXXX
  */
-typedef SslKeyCertPair SSLKeyCertPair __attribute__((deprecated));
-typedef SslSessionId SSLSessionId __attribute__((deprecated));
-typedef SslFingerprints SSLFingerprints __attribute__((deprecated));
+typedef SslKeyCertPair SSLKeyCertPair __deprecated;
+typedef SslSessionId SSLSessionId __deprecated;
+typedef SslFingerprints SSLFingerprints __deprecated;
 
 #endif /* SMINGCORE_NETWORK_SSL_SSLSTRUCTS_H_ */
