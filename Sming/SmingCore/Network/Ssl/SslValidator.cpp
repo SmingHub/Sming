@@ -87,7 +87,7 @@ bool SslValidatorList::add(const uint8_t* fingerprint, SslFingerprintType type)
 		debug_d("Unsupported SSL certificate fingerprint type");
 	}
 
-	if(!callback) {
+	if(callback == nullptr) {
 		delete[] fingerprint;
 		return false;
 	}
