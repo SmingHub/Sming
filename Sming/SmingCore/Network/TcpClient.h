@@ -194,7 +194,7 @@ private:
 	uint16_t asyncTotalSent = 0;
 	uint16_t asyncTotalLen = 0;
 #ifdef ENABLE_SSL
-	SSLValidatorList sslValidators;
+	SslValidatorList sslValidators;
 #endif
 };
 

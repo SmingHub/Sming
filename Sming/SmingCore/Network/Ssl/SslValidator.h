@@ -33,15 +33,15 @@
  */
 typedef std::function<bool(SSL* ssl, void* data)> SslValidatorCallback;
 
-struct SSLValidator {
+struct SslValidator {
 	SslValidatorCallback callback;
 	void* data; ///< Callback-specific data, e.g. fingerprint to compare against
 };
 
-class SSLValidatorList : private Vector<SSLValidator>
+class SslValidatorList : private Vector<SslValidator>
 {
 public:
-	~SSLValidatorList()
+	~SslValidatorList()
 	{
 		// Make sure memory gets released
 		validate(nullptr);
@@ -49,7 +49,7 @@ public:
 
 	bool add(SslValidatorCallback callback, void* data)
 	{
-		return Vector::add(SSLValidator{callback, data});
+		return Vector::add(SslValidator{callback, data});
 	}
 
 	/**

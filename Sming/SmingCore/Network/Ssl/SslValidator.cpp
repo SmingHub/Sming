@@ -40,9 +40,9 @@ static bool sslValidatePublicKeySha256(SSL* ssl, void* data)
 	return success;
 }
 
-/* SSLValidatorList */
+/* SslValidatorList */
 
-bool SSLValidatorList::validate(SSL* ssl)
+bool SslValidatorList::validate(SSL* ssl)
 {
 	if(ssl != nullptr && count() == 0) {
 		// No validators specified, always succeed
@@ -73,7 +73,7 @@ bool SSLValidatorList::validate(SSL* ssl)
 	return success;
 }
 
-bool SSLValidatorList::add(const uint8_t* fingerprint, SslFingerprintType type)
+bool SslValidatorList::add(const uint8_t* fingerprint, SslFingerprintType type)
 {
 	SslValidatorCallback callback = nullptr;
 	switch(type) {
@@ -95,7 +95,7 @@ bool SSLValidatorList::add(const uint8_t* fingerprint, SslFingerprintType type)
 	return add(callback, const_cast<uint8_t*>(fingerprint));
 }
 
-bool SSLValidatorList::add(SslFingerprints& fingerprints)
+bool SslValidatorList::add(SslFingerprints& fingerprints)
 {
 	bool success = false;
 	if(fingerprints.certSha1 != nullptr) {
