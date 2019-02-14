@@ -31,25 +31,25 @@ public:
 
 	bool sendRequest(const String& url, RequestCompletedDelegate requestComplete)
 	{
-		return send(request(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
+		return send(createRequest(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 	}
 
 	bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers,
 					 RequestCompletedDelegate requestComplete)
 	{
-		return send(request(url)->setMethod(method)->setHeaders(headers)->onRequestComplete(requestComplete));
+		return send(createRequest(url)->setMethod(method)->setHeaders(headers)->onRequestComplete(requestComplete));
 	}
 
 	bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers, const String& body,
 					 RequestCompletedDelegate requestComplete)
 	{
-		return send(
-			request(url)->setMethod(method)->setHeaders(headers)->setBody(body)->onRequestComplete(requestComplete));
+		return send(createRequest(url)->setMethod(method)->setHeaders(headers)->setBody(body)->onRequestComplete(
+			requestComplete));
 	}
 
 	bool downloadString(const String& url, RequestCompletedDelegate requestComplete)
 	{
-		return send(request(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
+		return send(createRequest(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 	}
 
 	bool downloadFile(const String& url, RequestCompletedDelegate requestComplete = nullptr)
@@ -72,7 +72,12 @@ public:
 	 */
 	bool send(HttpRequest* request);
 
-	HttpRequest* request(const String& url)
+	HttpRequest* request(const String& url) __attribute__((deprecated))
+	{
+		return createRequest(url);
+	}
+
+	HttpRequest* createRequest(const String& url)
 	{
 		return new HttpRequest(URL(url));
 	}

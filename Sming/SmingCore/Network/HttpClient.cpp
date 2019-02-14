@@ -72,7 +72,8 @@ bool HttpClient::downloadFile(const String& url, const String& saveFileName, Req
 		return false;
 	}
 
-	return send(request(url)->setResponseStream(fileStream)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
+	return send(
+		createRequest(url)->setResponseStream(fileStream)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 }
 
 // end convenience methods
