@@ -9,7 +9,6 @@
  ****/
 
 #include "HttpClientConnection.h"
-#include "Data/Stream/FileStream.h"
 
 HttpClientConnection::~HttpClientConnection()
 {

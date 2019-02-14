@@ -72,11 +72,16 @@ public:
 	 */
 	bool send(HttpRequest* request);
 
+	/** @deprecated Please use createRequest instead */
 	HttpRequest* request(const String& url) __attribute__((deprecated))
 	{
 		return createRequest(url);
 	}
 
+	/** @brief Helper function to create a new request on a URL
+	 *  @param url
+	 *  @retval HttpRequest*
+	 */
 	HttpRequest* createRequest(const String& url)
 	{
 		return new HttpRequest(URL(url));
