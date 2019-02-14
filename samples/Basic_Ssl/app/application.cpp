@@ -9,6 +9,7 @@
 
 #include <user_config.h>
 #include <SmingCore/SmingCore.h>
+#include "Data/HexString.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -22,17 +23,14 @@ HttpClient downloadClient;
 /* Debug SSL functions */
 void displaySessionId(SSL* ssl)
 {
-	int i;
 	const uint8_t* session_id = ssl_get_session_id(ssl);
-	int sess_id_size = ssl_get_session_id_size(ssl);
+	unsigned sess_id_size = ssl_get_session_id_size(ssl);
 
-	if(sess_id_size > 0) {
+	if(sess_id_size != 0) {
 		debugf("-----BEGIN SSL SESSION PARAMETERS-----");
-		for(i = 0; i < sess_id_size; i++) {
-			m_printf("%02x", session_id[i]);
-		}
-
-		debugf("\n-----END SSL SESSION PARAMETERS-----");
+		m_puts(makeHexString(session_id, sess_id_size).c_str());
+		m_putc('\n');
+		debugf("-----END SSL SESSION PARAMETERS-----");
 	}
 }
 
@@ -60,7 +58,7 @@ void displayCipher(SSL* ssl)
 		break;
 
 	default:
-		m_printf("Unknown - %d", ssl_get_cipher_id(ssl));
+		m_printf("Unknown - %u", ssl_get_cipher_id(ssl));
 		break;
 	}
 
@@ -70,7 +68,6 @@ void displayCipher(SSL* ssl)
 int onDownload(HttpConnection& connection, bool success)
 {
 	debugf("Got response code: %d", connection.getResponseCode());
-	debugf("Got content starting with: %s", connection.getResponseString().substring(0, 50).c_str());
 	debugf("Success: %d", success);
 
 	SSL* ssl = connection.getSsl();
@@ -88,37 +85,42 @@ int onDownload(HttpConnection& connection, bool success)
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
-	const uint8_t googleSha1Fingerprint[] = {0x07, 0xf0, 0xb0, 0x8d, 0x41, 0xfb, 0xee, 0x6b, 0x34, 0xfb,
-											 0x9a, 0xd0, 0x9a, 0xa7, 0x73, 0xab, 0xcc, 0x8b, 0xb2, 0x64};
+	// Use the Gibson Research fingerprints web page as an example. Unlike Google, the fingerprints don't change!
+	static const uint8_t grcSha1Fingerprint[] PROGMEM = {0x15, 0x9A, 0x76, 0xC5, 0xAE, 0xF4, 0x90, 0x15, 0x79, 0xE6,
+														 0xA4, 0x99, 0x96, 0xC1, 0xD6, 0xA1, 0xD9, 0x3B, 0x07, 0x43};
 
-	const uint8_t googlePublicKeyFingerprint[] = {0xe7, 0x06, 0x09, 0xc7, 0xef, 0xb0, 0x69, 0xe8, 0x0a, 0xeb, 0x21,
-												  0x16, 0x4c, 0xd4, 0x2d, 0x86, 0x65, 0x09, 0x62, 0x37, 0xeb, 0x75,
-												  0x92, 0xaa, 0x10, 0x03, 0xe7, 0x99, 0x01, 0x9d, 0x9f, 0x0c};
+	static const uint8_t grcPublicKeyFingerprint[] PROGMEM = {
+		0xEB, 0xA0, 0xFE, 0x70, 0xFE, 0xCB, 0xF8, 0xA8, 0x7A, 0xB9, 0x1D, 0xAC, 0x1E, 0xAC, 0xA0, 0xF6,
+		0x62, 0xCB, 0xCD, 0xE4, 0x16, 0x72, 0xE6, 0xBC, 0x82, 0x9B, 0x32, 0x39, 0x43, 0x15, 0x76, 0xD4};
 
 	debugf("Connected. Got IP: %s", ip.toString().c_str());
 
-	HttpRequest* request = new HttpRequest(URL("https://www.google.com/"));
+	HttpRequest* request = new HttpRequest(URL(F("https://www.grc.com/fingerprints.htm")));
 	request->setSslOptions(SSL_SERVER_VERIFY_LATER);
 
-	SslFingerprints fingerprint;
+	/*
+	 * GET probably won't work as sites tend to use 16K blocks which we can't handle,
+	 * so just fetch the header and leave it at that. To return actual data requires a web server
+	 * configured to use smaller encrytion blocks, e.g. 4K.
+	 */
+	request->setMethod(HTTP_HEAD);
+
+	SslFingerprints fingerprints;
 
 	/*
 	 * The line below shows how to trust only a certificate that matches the SHA1 fingerprint.
-	 * When google changes their certificate the SHA1 fingerprint should not match any longer.
 	 */
-	fingerprint.certSha1 = new uint8_t[SHA1_SIZE];
-	memcpy(fingerprint.certSha1, googleSha1Fingerprint, SHA1_SIZE);
+	fingerprints.setSha1_P(grcSha1Fingerprint, sizeof(grcSha1Fingerprint));
 
 	/*
 	* The line below shows how to trust only a certificate in which the public key matches the SHA256 fingerprint.
-	* When google changes the private key that they use in their certificate the SHA256 fingerprint should not match any longer.
 	*/
-	fingerprint.pkSha256 = new uint8_t[SHA256_SIZE];
-	memcpy(fingerprint.pkSha256, googlePublicKeyFingerprint, SHA256_SIZE);
+	fingerprints.setSha256_P(grcPublicKeyFingerprint, sizeof(grcPublicKeyFingerprint));
 
-	request->pinCertificate(fingerprint);
+	request->pinCertificate(fingerprints);
 	request->onRequestComplete(onDownload);
 
+	request->setResponseStream(&Serial);
 	downloadClient.send(request);
 }
 
@@ -131,7 +133,7 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
-	Serial.println("Ready for SSL tests");
+	Serial.println(F("Ready for SSL tests"));
 
 	// Setup the WIFI connection
 	WifiStation.enable(true);

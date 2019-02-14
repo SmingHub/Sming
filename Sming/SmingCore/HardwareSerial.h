@@ -14,7 +14,7 @@
 #define _HARDWARESERIAL_H_
 
 #include "WiringFrameworkDependencies.h"
-#include "Stream.h"
+#include "Data/Stream/ReadWriteStream.h"
 #include "Delegate.h"
 #include "espinc/uart.h"
 
@@ -88,7 +88,7 @@ enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL
 #endif
 
 /// Hardware serial class
-class HardwareSerial : public Stream
+class HardwareSerial : public ReadWriteStream
 {
 public:
 	/** @brief  Create instance of a hardware serial port object
@@ -239,9 +239,19 @@ public:
 	 *  @note Although this shares the same name as the method in IDataSourceStream,
 	 *  behaviour is different because in effect the 'seek' position is changed by this call.
 	 */
-	virtual uint16_t readMemoryBlock(char* buf, size_t max_len)
+	virtual uint16_t readMemoryBlock(char* buf, int max_len)
 	{
 		return uart_read(uart, buf, max_len);
+	}
+
+	virtual bool seek(int len)
+	{
+		return false;
+	}
+
+	virtual bool isFinished()
+	{
+		return false;
 	}
 
 	/** @brief  Read a character from serial port without removing from input buffer

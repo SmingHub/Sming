@@ -28,7 +28,7 @@ HttpRequest::HttpRequest(const HttpRequest& value) : uri(value.uri)
 
 #ifdef ENABLE_SSL
 	sslOptions = value.sslOptions;
-	sslFingerprint = value.sslFingerprint;
+	sslFingerprints = value.sslFingerprints;
 	sslKeyCertPair = value.sslKeyCertPair;
 #endif
 }
@@ -163,9 +163,9 @@ String HttpRequest::toString()
 #ifdef ENABLE_SSL
 	content += F("> SSL options: ") + String(sslOptions) + '\n';
 	content +=
-		F("> SSL Cert Fingerprint Length: ") + String((sslFingerprint.certSha1 == nullptr) ? 0 : SHA1_SIZE) + '\n';
+		F("> SSL Cert Fingerprint Length: ") + String((sslFingerprints.certSha1 == nullptr) ? 0 : SHA1_SIZE) + '\n';
 	content +=
-		F("> SSL PK Fingerprint Length: ") + String((sslFingerprint.pkSha256 == nullptr) ? 0 : SHA256_SIZE) + '\n';
+		F("> SSL PK Fingerprint Length: ") + String((sslFingerprints.pkSha256 == nullptr) ? 0 : SHA256_SIZE) + '\n';
 	content += F("> SSL ClientCert Length: ") + String(sslKeyCertPair.getCertificateLength()) + '\n';
 	content += F("> SSL ClientCert PK Length: ") + String(sslKeyCertPair.getKeyLength()) + '\n';
 	content += '\n';

@@ -92,30 +92,33 @@ int onDownload(HttpConnection& connection, bool success)
 
 void setSslFingerprints(HttpRequest* request)
 {
-	// SSL validation: If you want to check the remote server certificate against a fingerprint,
-	// you can also add the lines below
-	// Note: SSL is not compiled by default. In our example we set the ENABLE_SSL directive to 1
-	// (See: ../Makefile-user.mk )
+	/*
+	 * SSL validation: We check the remote server certificate against a fingerprint
+	 * Note that fingerprints _may_ change, in which case these need to be updated.
+	 *
+	 * Note: SSL is not compiled by default. In our example we set the ENABLE_SSL directive to 1
+	 * (See: ../Makefile-user.mk )
+	 */
 	request->setSslOptions(SSL_SERVER_VERIFY_LATER);
 
-	const uint8_t sha1Fingerprint[] = {0xc5, 0xf9, 0xf0, 0x66, 0xc9, 0x0a, 0x21, 0x4a, 0xbc, 0x37,
-									   0xae, 0x6c, 0x48, 0xcc, 0x97, 0xa5, 0xc3, 0x35, 0x16, 0xdc};
+	// These are the fingerprints for httpbin.org
+	static const uint8_t sha1Fingerprint[] PROGMEM = {0x2B, 0xF0, 0x48, 0x9D, 0x78, 0xB4, 0xDE, 0xE9, 0x69, 0xE2,
+													  0x73, 0xE0, 0x14, 0xD0, 0xDC, 0xCC, 0xA8, 0xD8, 0x3B, 0x40};
 
-	const uint8_t publicKeyFingerprint[] = {0x33, 0x47, 0xd1, 0x8a, 0xc8, 0x52, 0xd4, 0xd6, 0xd0, 0xa2, 0xcb,
-											0x3f, 0x4b, 0x54, 0x1f, 0x91, 0x64, 0x94, 0xa0, 0x9c, 0xa1, 0xe2,
-											0xf2, 0x4c, 0x68, 0xae, 0xc5, 0x27, 0x1c, 0x60, 0x83, 0xad};
+	static const uint8_t publicKeyFingerprint[] PROGMEM = {
+		0xE3, 0x88, 0xC4, 0x0A, 0x2A, 0x99, 0x8F, 0xA4, 0x8C, 0x38, 0x4E, 0xE7, 0xCB, 0x4F, 0x8B, 0x99,
+		0x19, 0x48, 0x63, 0x9A, 0x2E, 0xD6, 0x05, 0x7D, 0xB1, 0xD3, 0x56, 0x6C, 0xC0, 0x7E, 0x74, 0x1A};
 
-	/*
-	 * The line below shows how to trust only a certificate in which the public key matches the SHA256 fingerprint.
-	 * When google changes the private key that they use in their certificate the SHA256 fingerprint should not match any longer.
-	 */
-	//	request->pinCertificate(publicKeyFingerprint, eSFT_PkSha256);
+	SslFingerprints fingerprints;
 
-	/*
-	 * The line below shows how to trust only a certificate that matches the SHA1 fingerprint.
-	 * When google changes their certificate the SHA1 fingerprint should not match any longer.
-	 */
-	//	request->->pinCertificate(sha1Fingerprint, eSFT_CertSha1)
+	// Trust only a certificate in which the public key matches the SHA256 fingerprint...
+	fingerprints.setSha256_P(publicKeyFingerprint, sizeof(publicKeyFingerprint));
+
+	// ... or a certificate that matches the SHA1 fingerprint.
+	fingerprints.setSha1_P(sha1Fingerprint, sizeof(sha1Fingerprint));
+
+	// Attached fingerprints to request for validation
+	request->pinCertificate(fingerprints);
 }
 
 void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
