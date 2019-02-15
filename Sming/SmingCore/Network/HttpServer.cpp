@@ -29,7 +29,7 @@ HttpServer::HttpServer(const HttpServerSettings& settings)
 void HttpServer::configure(const HttpServerSettings& settings)
 {
 	this->settings = settings;
-	if(settings.minHeapSize != -1 && settings.minHeapSize > -1) {
+	if(settings.minHeapSize > -1) {
 		minHeapSize = settings.minHeapSize;
 	}
 

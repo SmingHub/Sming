@@ -139,7 +139,7 @@ int rBootHttpUpdate::itemComplete(HttpConnection& client, bool success)
 int rBootHttpUpdate::updateComplete(HttpConnection& client, bool success)
 {
 	debug_d("\r\nFirmware download finished!");
-	for(int i = 0; i < items.count(); i++) {
+	for(unsigned i = 0; i < items.count(); i++) {
 		debug_d(" - item: %d, addr: %X, len: %d bytes", i, items[i].targetOffset, items[i].size);
 	}
 

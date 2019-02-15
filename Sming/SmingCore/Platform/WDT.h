@@ -1,7 +1,7 @@
 /*
  * WDT.h
  *
- *  Created on: 06 апр. 2015 г.
+ *  Created on: 06 пїЅпїЅпїЅ. 2015 пїЅ.
  *      Author: Anakod
  */
 /**	@defgroup wdt Watchdog Timer
@@ -45,7 +45,7 @@ protected:
 	void internalApplyEnabled();
 
 private:
-	bool enabled;
+	bool enabled = true;
 };
 
 /**	@brief	Global instance of watchdog timer object

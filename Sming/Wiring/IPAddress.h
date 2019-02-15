@@ -74,7 +74,7 @@ public:
 		IP4_ADDR(&this->address, address[0], address[1], address[2], address[3]);
 	}
 
-    IPAddress(const String address)
+    IPAddress(const String& address)
     {
     	fromString(address);
     }
