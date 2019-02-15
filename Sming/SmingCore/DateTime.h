@@ -8,7 +8,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
   ///
-  Partially rewritten for Sming Framework
+  Heavily rewritten for Sming Framework
 */
 
 /** @defgroup datetime Date and time functions
@@ -86,7 +86,10 @@ public:
 	/** @brief  Instantiate a date and time object from a Unix timestamp
 	 *  @param  time Unix time to assign to object
 	 */
-	DateTime(time_t time);
+	DateTime(time_t time)
+	{
+		setTime(time);
+	}
 
 	/** @brief  Get current Unix time
 	 *  @retval time_t Quantity of seconds since 00:00:00 1970-01-01
@@ -108,7 +111,17 @@ public:
 	 *  @param  month Month (0=Jan, 11=Dec)
 	 *  @param  year Year
 	 */
-	void setTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year);
+	void setTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)
+	{
+		Second = sec;
+		Minute = min;
+		Hour = hour;
+		Day = day;
+		Month = month;
+		Year = year;
+		Milliseconds = 0;
+		calcDayOfYear();
+	}
 
 	/** @brief  Parse a HTTP full date and set time and date
 	 *  @param  httpDate HTTP full date in RFC 1123 format, e.g. Sun, 06 Nov 1994 08:49:37 GMT
@@ -189,8 +202,18 @@ public:
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
 	 *  @note   All of the return values are optional, specify nullptr if not required
 	 */
+	static void fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t* phour, uint8_t* pday, uint8_t* pwday,
+							 uint8_t* pmonth, uint16_t* pyear);
+
+	/** @deprecated used unsigned version */
 	static void fromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday, int8_t* pwday,
-							 int8_t* pmonth, int16_t* pyear);
+							 int8_t* pmonth, int16_t* pyear) __attribute__((deprecated))
+	{
+		fromUnixTime(timep, reinterpret_cast<uint8_t*>(psec), reinterpret_cast<uint8_t*>(pmin),
+					 reinterpret_cast<uint8_t*>(phour), reinterpret_cast<uint8_t*>(pday),
+					 reinterpret_cast<uint8_t*>(pwday), reinterpret_cast<uint8_t*>(pmonth),
+					 reinterpret_cast<uint16_t*>(pyear));
+	}
 
 	// functions to convert to and from time components (hrs, secs, days, years etc) to time_t
 	/** @brief  Convert from Unix time to individual time components
@@ -210,10 +233,13 @@ public:
 	 *  @note   All of the return values are optional, specify nullptr if not required
 	 *  @deprecated Use 'fromUnixTime' instead
 	 */
-	static void convertFromUnixTime(time_t tImep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday,
+	static void convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday,
 									int8_t* pwday, int8_t* pmonth, int16_t* pyear) __attribute__((deprecated))
 	{
-		return fromUnixTime(tImep, psec, pmin, phour, pday, pwday, pmonth, pyear);
+		fromUnixTime(timep, reinterpret_cast<uint8_t*>(psec), reinterpret_cast<uint8_t*>(pmin),
+					 reinterpret_cast<uint8_t*>(phour), reinterpret_cast<uint8_t*>(pday),
+					 reinterpret_cast<uint8_t*>(pwday), reinterpret_cast<uint8_t*>(pmonth),
+					 reinterpret_cast<uint16_t*>(pyear));
 	}
 
 	/** @brief  Convert from individual time components to Unix time
@@ -228,7 +254,7 @@ public:
 	 *  @note   32-bit Unix time is valid between 1901-12-13 and 03:14:07 2038-01-19
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
 	 */
-	static time_t toUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year);
+	static time_t toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year);
 
 	/** @brief  Convert from individual time components to Unix time
 	 *  @param  sec Seconds
@@ -243,14 +269,14 @@ public:
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
 	 *  @deprecated Use 'toUnixTime' instead
 	 */
-	static time_t convertToUnixTime(int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year)
+	static time_t convertToUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)
 		__attribute__((deprecated))
 	{
 		return toUnixTime(sec, min, hour, day, month, year);
 	}
 
 	/** @brief  Create string formatted with time and date placeholders
-	 *  @param  format String including date and time formatting
+	 *  @param  formatString String including date and time formatting
 	 *  @retval String Formatted string
 	 *  @note   Uses strftime style formatting, e.g. format("Today is %a, %d %b %Y") returns "Today is Mon, 10 Dec 2018"
 	 *  @note   Localisation may be implemented in libsming at compile time by setting LOCALE, e.g. LOCALE=LOCALE_DE_DE
@@ -292,22 +318,32 @@ public:
 	 *  | %%Y   | Year as a decimal number (range 1970 to ...) |  |
 	 *  | %%    | Percent sign |  |
 	 */
-	String format(String format);
+	String format(const char* formatString);
+
+	/** @brief  Create string formatted with time and date placeholders
+	 *  @param  formatString String including date and time formatting
+	 *  @retval String Formatted string
+	 *  @note see format(const char*) for parameter details
+	 */
+	String format(const String& formatString)
+	{
+		return format(formatString.c_str());
+	}
 
 private:
 	void calcDayOfYear();				// Helper function calculates day of year
 	uint8_t calcWeek(uint8_t firstDay); //Helper function calculates week number based on firstDay of week
 
 public:
-	int8_t Hour = 0;		  ///< Hour (0-23)
-	int8_t Minute = 0;		  ///< Minute (0-59)
-	int8_t Second = 0;		  ///< Second (0-59)
-	int16_t Milliseconds = 0; ///< Milliseconds (0-999)
-	int8_t Day = 0;			  ///< Day of month (1-31)
-	int8_t DayofWeek = 0;	 ///< Day of week (0-6 Sunday is day 0)
-	int16_t DayofYear = 0;	///< Day of year (0-365)
-	int8_t Month = 0;		  ///< Month (0-11 Jan is month 0)
-	int16_t Year = 0;		  ///< Full Year number
+	uint8_t Hour = 0;		   ///< Hour (0-23)
+	uint8_t Minute = 0;		   ///< Minute (0-59)
+	uint8_t Second = 0;		   ///< Second (0-59)
+	uint16_t Milliseconds = 0; ///< Milliseconds (0-999)
+	uint8_t Day = 0;		   ///< Day of month (1-31)
+	uint8_t DayofWeek = 0;	 ///< Day of week (0-6 Sunday is day 0)
+	uint16_t DayofYear = 0;	///< Day of year (0-365)
+	uint8_t Month = 0;		   ///< Month (0-11 Jan is month 0)
+	uint16_t Year = 0;		   ///< Full Year number
 };
 
 /** @} */
