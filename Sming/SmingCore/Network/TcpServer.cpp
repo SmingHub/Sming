@@ -129,8 +129,7 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 	connections.add(client);
 	debug_d("Opening connection. Total connections: %d", connections.count());
 
-	// @todo Dangerous up-cast - needs looking at
-	onClient(reinterpret_cast<TcpClient*>(client));
+	onClient((TcpClient*)client);
 
 	return ERR_OK;
 }
