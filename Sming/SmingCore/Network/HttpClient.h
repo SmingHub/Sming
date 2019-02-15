@@ -22,39 +22,43 @@
 #include "TcpClient.h"
 #include "Http/HttpCommon.h"
 #include "Http/HttpRequest.h"
-#include "Http/HttpConnection.h"
+#include "Http/HttpClientConnection.h"
 
 class HttpClient
 {
 public:
-	/* High-Level Method */
+	/* High-Level Methods */
 
-	__forceinline bool sendRequest(const String& url, RequestCompletedDelegate requestComplete)
+	bool sendRequest(const String& url, RequestCompletedDelegate requestComplete)
 	{
-		return send(request(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
+		return send(createRequest(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 	}
 
-	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers,
-								   RequestCompletedDelegate requestComplete)
+	bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers,
+					 RequestCompletedDelegate requestComplete)
 	{
-		return send(request(url)->setMethod(method)->setHeaders(headers)->onRequestComplete(requestComplete));
+		return send(createRequest(url)->setMethod(method)->setHeaders(headers)->onRequestComplete(requestComplete));
 	}
 
-	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers,
-								   const String& body, RequestCompletedDelegate requestComplete)
+	bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers, const String& body,
+					 RequestCompletedDelegate requestComplete)
 	{
-		return send(
-			request(url)->setMethod(method)->setHeaders(headers)->setBody(body)->onRequestComplete(requestComplete));
+		return send(createRequest(url)->setMethod(method)->setHeaders(headers)->setBody(body)->onRequestComplete(
+			requestComplete));
 	}
 
-	bool downloadString(const String& url, RequestCompletedDelegate requestComplete);
-
-	__forceinline bool downloadFile(const String& url, RequestCompletedDelegate requestComplete = NULL)
+	bool downloadString(const String& url, RequestCompletedDelegate requestComplete)
 	{
-		return downloadFile(url, "", requestComplete);
+		return send(createRequest(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 	}
 
-	bool downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete = NULL);
+	bool downloadFile(const String& url, RequestCompletedDelegate requestComplete = nullptr)
+	{
+		return downloadFile(url, nullptr, requestComplete);
+	}
+
+	bool downloadFile(const String& url, const String& saveFileName,
+					  RequestCompletedDelegate requestComplete = nullptr);
 
 	/* Low Level Methods */
 
@@ -68,13 +72,20 @@ public:
 	 */
 	bool send(HttpRequest* request);
 
-	HttpRequest* request(const String& url);
+	/** @deprecated Please use createRequest instead */
+	HttpRequest* request(const String& url) __attribute__((deprecated))
+	{
+		return createRequest(url);
+	}
 
-#ifdef ENABLE_SSL
-	static void freeSslSessionPool();
-#endif
-	static void freeHttpConnectionPool();
-	static void freeRequestQueue();
+	/** @brief Helper function to create a new request on a URL
+	 *  @param url
+	 *  @retval HttpRequest*
+	 */
+	HttpRequest* createRequest(const String& url)
+	{
+		return new HttpRequest(URL(url));
+	}
 
 	/**
 	 * Use this method to clean all request queues and object pools
@@ -87,12 +98,7 @@ protected:
 	String getCacheKey(URL url);
 
 protected:
-	static HashMap<String, HttpConnection*> httpConnectionPool;
-	static HashMap<String, RequestQueue*> queue;
-
-#ifdef ENABLE_SSL
-	static HashMap<String, SslSessionId*> sslSessionIdPool;
-#endif
+	static HashMap<String, HttpClientConnection*> httpConnectionPool;
 };
 
 /** @} */
