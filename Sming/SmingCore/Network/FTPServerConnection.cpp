@@ -11,14 +11,14 @@ public:
 	{
 	}
 
-	virtual err_t onConnected(err_t err)
+	err_t onConnected(err_t err) override
 	{
 		//response(125, "Connected");
 		setTimeOut(300); // Update timeout
 		return TcpConnection::onConnected(err);
 	}
 
-	virtual err_t onSent(uint16_t len)
+	err_t onSent(uint16_t len) override
 	{
 		sent += len;
 		if(written < sent || !completed) {
@@ -45,7 +45,7 @@ public:
 		return TcpConnection::write(data, len, apiflags);
 	}
 
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent)
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override
 	{
 		if(!parent->isCanTransfer()) {
 			return;

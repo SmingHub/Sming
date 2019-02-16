@@ -58,10 +58,6 @@ public:
      */
 	NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb = nullptr);
 
-	virtual ~NtpClient()
-	{
-	}
-
 	/** @brief  Request time from NTP server
      *  @note   Instigates request. Result is handled by NTP result handler function if defined
      */

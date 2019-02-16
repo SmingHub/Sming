@@ -14,16 +14,16 @@
 #include "../HttpServerConnection.h"
 #include "../HttpResource.h"
 #include "WebsocketConnection.h"
-#include "../../Wiring/WString.h"
+#include "WString.h"
 
 class WebsocketResource : public HttpResource
 {
 public:
 	WebsocketResource();
-	~WebsocketResource();
+
 	int checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
 
-	virtual void shutdown(HttpServerConnection& connection);
+	void shutdown(HttpServerConnection& connection) override;
 
 	void setConnectionHandler(WebsocketDelegate handler);
 	void setMessageHandler(WebsocketMessageDelegate handler);

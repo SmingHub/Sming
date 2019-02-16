@@ -34,20 +34,22 @@ public:
      *  @{
      */
 	SPIClass();
-	virtual ~SPIClass();
 
 	/* @brief begin()
 	 *
 	 * Initializes the SPI bus using the default SPISettings
 	 */
-	virtual void begin();
+	void begin() override;
 
 	/** @brief end()
 	 *
 	 * Method for compatibility with Arduino API. Provides NOP
 	 *
 	 */
-	virtual void end();
+	void end() override
+	{
+		// Do nothing
+	}
 
 	/** @brief beginTransaction()
 	 *
@@ -57,7 +59,7 @@ public:
 	 * setup the SPI after SPI.begin()
 	 *
 	 */
-	virtual void beginTransaction(SPISettings mySettings);
+	void beginTransaction(SPISettings mySettings) override;
 
 	/** @brief endTransaction()
 	 *
@@ -66,7 +68,7 @@ public:
 	 * endTransaction(): Stop using the SPI bus. Normally this is called after
 	 * de-asserting the chip select, to allow other libraries to use the SPI bus.
 	 */
-	virtual void endTransaction();
+	void endTransaction() override;
 
 	/** @brief 	transfer()
 	 * @param	byte to send
@@ -81,10 +83,10 @@ public:
 	 * 		receivedVal = SPI.transfer(val)			: single byte
 	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
 	 */
-	virtual unsigned char transfer(unsigned char val)
+	unsigned char transfer(unsigned char val) override
 	{
 		return transfer32((uint32)val, 8);
-	};
+	}
 
 	/** @brief read8() read a byte from SPI without setting up registers
 	 * @param	none
@@ -114,7 +116,7 @@ public:
 	 * 		receivedVal = SPI.transfer(val)			: single byte
 	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
 	 */
-	virtual unsigned short transfer16(unsigned short val)
+	unsigned short transfer16(unsigned short val) override
 	{
 		return transfer32((uint32)val, 16);
 	};
@@ -130,7 +132,7 @@ public:
 	 *
 	 * 		SPI.transfer(buffer, size)				: memory buffer of length size
 	 */
-	virtual void transfer(uint8* buffer, size_t numberBytes);
+	void transfer(uint8* buffer, size_t numberBytes) override;
 
 	/** @brief  Default settings used by the SPI bus
 	 * until reset by beginTransaction(SPISettings)

@@ -23,6 +23,7 @@ template<typename T>
 class Countable
 {
   public:
+	virtual ~Countable() {}
 	virtual unsigned int count() const = 0;
 	virtual const T& operator[](unsigned int) const = 0;
 	virtual T& operator[](unsigned int) = 0;

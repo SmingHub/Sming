@@ -25,7 +25,7 @@ public:
 	}
 
 protected:
-	int checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+	int checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override
 	{
 		int err = WebsocketResource::checkHeaders(connection, request, response);
 		if(err != 0) {

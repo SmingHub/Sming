@@ -32,9 +32,9 @@ typedef Delegate<HttpPartResult()> HttpPartProducerDelegate;
 class MultipartStream : public MultiStream
 {
 public:
-	MultipartStream(HttpPartProducerDelegate delegate);
-
-	virtual ~MultipartStream();
+	MultipartStream(HttpPartProducerDelegate delegate) : producer(delegate)
+	{
+	}
 
 	/**
 	 * @brief Returns the generated boundary
@@ -44,14 +44,14 @@ public:
 	const char* getBoundary();
 
 protected:
-	virtual IDataSourceStream* getNextStream()
+	IDataSourceStream* getNextStream() override
 	{
 		result = producer();
 		return result.stream;
 	}
 
-	virtual void onNextStream();
-	virtual bool onCompleted();
+	void onNextStream() override;
+	bool onCompleted() override;
 
 private:
 	HttpPartProducerDelegate producer;

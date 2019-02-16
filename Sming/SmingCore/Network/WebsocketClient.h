@@ -35,7 +35,7 @@ public:
 	WebsocketClient();
 	WebsocketClient(HttpConnectionBase* connection);
 
-	virtual ~WebsocketClient();
+	~WebsocketClient();
 
 	using WebsocketConnection::setBinaryHandler;
 	using WebsocketConnection::setConnectionHandler;

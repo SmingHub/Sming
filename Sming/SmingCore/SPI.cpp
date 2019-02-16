@@ -29,10 +29,6 @@ SPIClass::SPIClass()
 	spiSettings = this->SPIDefaultSettings;
 }
 
-SPIClass::~SPIClass()
-{
-}
-
 /* @defgroup SPI hardware implementation
  * @brief begin()
  *
@@ -48,16 +44,6 @@ void SPIClass::begin()
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, 2); // CLK		 == GPIO14
 
 	prepare(this->SPIDefaultSettings);
-}
-
-/* @defgroup SPI hardware implementation
- * @brief end()
- *
- * Method for compatibility with Arduino API. Provides NOP
- *
- */
-void SPIClass::end()
-{
 }
 
 /* @defgroup SPI hardware implementation

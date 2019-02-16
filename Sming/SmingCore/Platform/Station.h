@@ -18,10 +18,10 @@
 
 #include <user_config.h>
 #include "System.h"
-#include "../SmingCore/Delegate.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
-#include "../../Wiring/IPAddress.h"
+#include "Delegate.h"
+#include "WString.h"
+#include "WVector.h"
+#include "IPAddress.h"
 
 extern "C" {
 #include <smartconfig.h>
@@ -213,7 +213,7 @@ public:
 	 *	@param	sctype Smart configuration type
 	 *	@param	callback Function to call on WiFi staton smart configuration complete (Default: none)
 	 */
-	void smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback = NULL);
+	void smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback = nullptr);
 
 	/**	@brief	Stop WiFi station smart configuration
 	 */
@@ -223,7 +223,7 @@ public:
 	/**	@brief	Start WiFi station by WPS method
 	 *	@param	callback Function to call on WiFi WPS Events (Default: none)
 	 */
-	bool wpsConfigStart(WPSConfigDelegate callback = NULL);
+	bool wpsConfigStart(WPSConfigDelegate callback = nullptr);
 
 	/**	@brief	Start WiFi station by WPS method 
 	 */
@@ -238,7 +238,7 @@ public:
 #endif
 
 protected:
-	virtual void onSystemReady();
+	void onSystemReady() override;
 	static void staticScanCompleted(void* arg, STATUS status);
 
 	void internalCheckConnection();

@@ -85,6 +85,7 @@ String HttpConnection::getResponseHeader(String headerName, String defaultValue)
 	return defaultValue;
 }
 
+// @deprecated
 DateTime HttpConnection::getLastModifiedDate()
 {
 	DateTime res;
@@ -95,6 +96,7 @@ DateTime HttpConnection::getLastModifiedDate()
 		return DateTime();
 }
 
+// @deprecated
 DateTime HttpConnection::getServerDate()
 {
 	DateTime res;

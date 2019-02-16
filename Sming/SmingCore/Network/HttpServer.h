@@ -20,9 +20,9 @@
 #define _SMING_CORE_HTTPSERVER_H_
 
 #include "TcpServer.h"
-#include "../Wiring/WString.h"
-#include "../Wiring/WHashMap.h"
-#include "../Delegate.h"
+#include "WString.h"
+#include "WHashMap.h"
+#include "Delegate.h"
 #include "Http/HttpResponse.h"
 #include "Http/HttpRequest.h"
 #include "Http/HttpResource.h"
@@ -48,7 +48,7 @@ class HttpServer : public TcpServer
 public:
 	HttpServer();
 	HttpServer(const HttpServerSettings& settings);
-	virtual ~HttpServer();
+	~HttpServer();
 
 	/**
 	 * @brief Allows changing the server configuration
@@ -79,7 +79,7 @@ public:
 	void setDefaultResource(HttpResource* resource);
 
 protected:
-	virtual TcpConnection* createClient(tcp_pcb* clientTcp);
+	TcpConnection* createClient(tcp_pcb* clientTcp) override;
 
 protected:
 #ifdef ENABLE_SSL

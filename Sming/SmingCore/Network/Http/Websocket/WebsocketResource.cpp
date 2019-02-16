@@ -17,10 +17,6 @@ WebsocketResource::WebsocketResource()
 	onHeadersComplete = HttpResourceDelegate(&WebsocketResource::checkHeaders, this);
 }
 
-WebsocketResource::~WebsocketResource()
-{
-}
-
 int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	WebsocketConnection* socket = new WebsocketConnection(&connection, false);

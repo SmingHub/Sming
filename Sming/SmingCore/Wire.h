@@ -68,12 +68,13 @@ public:
 	uint8_t requestFrom(int, int);
 	uint8_t requestFrom(int, int, int);
 
-	virtual size_t write(uint8_t);
-	virtual size_t write(const uint8_t*, size_t);
-	virtual int available(void);
-	virtual int read(void);
-	virtual int peek(void);
-	virtual void flush(void);
+	size_t write(uint8_t) override;
+	size_t write(const uint8_t*, size_t) override;
+	int available() override;
+	int read() override;
+	int peek() override;
+	void flush() override;
+
 	void onReceive(void (*)(int));
 	void onRequest(void (*)(void));
 

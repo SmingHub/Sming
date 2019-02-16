@@ -33,7 +33,6 @@ public:
      *  @{
 	 */
 	SPISettings();
-	virtual ~SPISettings();
 
 	/** @brief constructor for SPISettings
 	 *
@@ -61,10 +60,14 @@ public:
 	 */
 	SPISettings(int speed, uint8 byteOrder, uint8 dataMode);
 
+	virtual ~SPISettings()
+	{
+	}
+
 	inline uint8 getDataMode()
 	{
 		return dataMode;
-	};
+	}
 
 	// overload operator to check wheter the settings are equal
 	bool operator==(const SPISettings& other) const;

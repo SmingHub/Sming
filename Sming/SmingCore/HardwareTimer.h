@@ -38,7 +38,7 @@ public:
 	/** @brief  Hardware timer
     */
 	HardwareTimer();
-	virtual ~HardwareTimer();
+	~HardwareTimer();
 
 	/** @brief  Initialise hardware timer
      *  @param  microseconds Timer interval in microseconds

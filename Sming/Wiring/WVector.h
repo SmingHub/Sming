@@ -31,7 +31,7 @@ class Vector : public Countable<Element>
     // constructors
 	Vector(unsigned int initialCapacity = 10, unsigned int capacityIncrement = 10);
 	Vector(const Vector& rhv);
-	virtual ~Vector();
+	~Vector();
 
     // methods
      unsigned int capacity() const;

@@ -25,9 +25,6 @@ public:
      *  @{
      */
 	WDTClass();
-	virtual ~WDTClass()
-	{
-	}
 
 	/** @brief  Enable or disable watchdog timer
      *  @param  enableWatchDog True to enable. False to disable.
@@ -41,7 +38,8 @@ public:
 	void alive();
 
 protected:
-	virtual void onSystemReady();
+	void onSystemReady() override;
+
 	void internalApplyEnabled();
 
 private:

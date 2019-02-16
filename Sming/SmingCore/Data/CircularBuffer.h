@@ -31,7 +31,7 @@ public:
 	{
 	}
 
-	virtual ~CircularBuffer()
+	~CircularBuffer()
 	{
 		delete[] buffer;
 	}
@@ -40,7 +40,7 @@ public:
      *  @retval StreamType The stream type.
      *  @todo   Return value of IDataSourceStream:getStreamType base class function should be of type StreamType, e.g. eSST_User
      */
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return StreamType::eSST_Memory;
 	}
@@ -51,18 +51,18 @@ public:
      *  @retval uint16_t Quantity of chars read
      *  @todo   Should IDataSourceStream::readMemoryBlock return same data type as its bufSize param?
      */
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	/** @brief  Move read cursor
 	 *  @param  len Position within stream to move cursor to
 	 *  @retval bool True on success.
 	 */
-	virtual bool seek(int len);
+	bool seek(int len) override;
 
 	/** @brief  Check if stream is finished
 	 *  @retval bool true on success.
 	 */
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return available() < 1;
 	}
@@ -71,32 +71,33 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	virtual int available();
+	int available() override;
 
 	/**
 	 * @brief Returns unique id of the resource.
 	 * @retval String the unique id of the stream.
 	 */
-	virtual String id() const
+	String id() const override
 	{
 		return String(reinterpret_cast<uint32_t>(&buffer), HEX);
 	}
 
-	virtual size_t write(uint8_t charToWrite);
+	size_t write(uint8_t charToWrite) override;
 
 	/** @brief  Write chars to stream
      *  @param  buffer Pointer to buffer to write to the stream
      *  @param  size Quantity of chars to writen
      *  @retval size_t Quantity of chars written to stream
      */
-	virtual size_t write(const uint8_t* data, size_t size);
+	size_t write(const uint8_t* data, size_t size) override;
 
 	/** @brief Get the maximum number of bytes for which write() will succeed
 		@retval size_t
 	*/
 	size_t room() const;
 
-	inline void flush()
+	// Stream::flush()
+	void flush() override
 	{
 		readPos = buffer;
 		writePos = buffer;

@@ -218,7 +218,7 @@ public:
 	/** @brief  Get quantity characters available from serial input
      *  @retval int Quantity of characters in receive buffer
      */
-	virtual int available()
+	int available() override
 	{
 		return (int)uart_rx_available(uart);
 	}
@@ -227,7 +227,7 @@ public:
      *  @retval int Character read from serial port or -1 if buffer empty
      *  @note   The character is removed from the serial port input buffer
     */
-	virtual int read()
+	int read() override
 	{
 		return uart_read_char(uart);
 	}
@@ -239,17 +239,17 @@ public:
 	 *  @note Although this shares the same name as the method in IDataSourceStream,
 	 *  behaviour is different because in effect the 'seek' position is changed by this call.
 	 */
-	virtual uint16_t readMemoryBlock(char* buf, int max_len)
+	uint16_t readMemoryBlock(char* buf, int max_len) override
 	{
 		return uart_read(uart, buf, max_len);
 	}
 
-	virtual bool seek(int len)
+	bool seek(int len) override
 	{
 		return false;
 	}
 
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return false;
 	}
@@ -258,7 +258,7 @@ public:
      *  @retval int Character read from serial port or -1 if buffer empty
      *  @note   The character remains in serial port input buffer
      */
-	virtual int peek()
+	int peek() override
 	{
 		return uart_peek_char(uart);
 	}
@@ -281,21 +281,12 @@ public:
 
 	using Stream::write;
 
-	/** @brief  write a character to serial port
-	 *  @param  oneChar Character to write to the serial port
-	 *  @retval size_t Quantity of characters written (always 1)
-	 */
-	virtual size_t write(uint8_t oneChar)
-	{
-		return uart_write_char(uart, oneChar);
-	}
-
 	/** @brief  write multiple characters to serial port
 	 *  @param buffer data to write
 	 *  @param size number of characters to write
 	 *  @retval size_t Quantity of characters written, may be less than size
 	 */
-	virtual size_t write(const uint8_t* buffer, size_t size)
+	size_t write(const uint8_t* buffer, size_t size) override
 	{
 		return uart_write(uart, buffer, size);
 	}
@@ -402,7 +393,7 @@ public:
 	 * @param char c - character to search for
 	 * @retval int -1 if not found 0 or positive number otherwise
 	 */
-	virtual int indexOf(char c)
+	int indexOf(char c) override
 	{
 		return uart_rx_find(uart, c);
 	}

@@ -31,17 +31,17 @@ public:
 	 */
 	Base64OutputStream(IDataSourceStream* stream, size_t resultSize = 500);
 
-	virtual size_t transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength);
+	size_t transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength) override;
 
 	/**
 	 * @brief A method that backs up the current state
 	 */
-	virtual void saveState();
+	void saveState() override;
 
 	/**
 	 * @brief A method that restores the last backed up state
 	 */
-	virtual void restoreState();
+	void restoreState() override;
 
 private:
 	base64_encodestate state;

@@ -22,27 +22,10 @@ public:
 		m_delay = delay;
 	}
 
-	virtual ~SPISoft(){};
-
 	/*
 	 *  begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
 	 */
 	virtual void begin(); //setup pins
-
-	/*
-	 * end(): Disables the SPI bus (leaving pin modes unchanged).
-	 */
-	virtual void end(){};
-
-	/*
-	 * beginTransaction(): Initializes the SPI bus using the defined SPISettings.
-	 */
-	virtual void beginTransaction(SPISettings mySettings){};
-
-	/*
-	 * endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.
-	 */
-	virtual void endTransaction(){};
 
 	/*
 	 * transfer(), transfer16()
@@ -54,16 +37,18 @@ public:
 	 * 		SPI.transfer(buffer, size)
 	 */
 	void transfer(uint8* buffer, size_t size);
+
 	unsigned char transfer(unsigned char val)
 	{
 		transfer(&val, 1);
 		return val;
-	};
+	}
+
 	unsigned short transfer16(unsigned short val)
 	{
 		transfer((uint8*)&val, 2);
 		return val;
-	};
+	}
 
 	/**
 	\brief Set microsecond delay for the SCK signal. Impacts SPI speed

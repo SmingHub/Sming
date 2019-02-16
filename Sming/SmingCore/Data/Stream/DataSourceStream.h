@@ -36,10 +36,6 @@ enum StreamType {
 class IDataSourceStream : public Stream
 {
 public:
-	virtual ~IDataSourceStream()
-	{
-	}
-
 	/** @brief  Get the stream type
      *  @retval StreamType The stream type.
      *  @todo   Return value of IDataSourceStream:getStreamType base class function should be of type StreamType, e.g. eSST_User
@@ -71,13 +67,13 @@ public:
 	 * @brief Read one character and moves the stream pointer
 	 * @retval The character that was read or -1 if none is available
 	 */
-	virtual int read();
+	int read() override;
 
 	/**
 	 * @brief Read a character without advancing the stream pointer
 	 * @retval int The character that was read or -1 if none is available
 	 */
-	virtual int peek();
+	int peek() override;
 
 	/** @brief  Move read cursor
 	 *  @param  len Relative cursor adjustment
@@ -102,7 +98,7 @@ public:
 	/*
 	 * From Stream class: We don't write using this stream
 	 */
-	virtual size_t write(uint8_t charToWrite)
+	size_t write(uint8_t charToWrite) override
 	{
 		return 0;
 	}
@@ -122,7 +118,7 @@ public:
 	/*
 	 * @brief Flushes the stream
 	 */
-	virtual void flush()
+	void flush() override
 	{
 	}
 

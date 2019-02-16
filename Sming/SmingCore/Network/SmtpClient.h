@@ -17,13 +17,14 @@
  *
  ****/
 
+#ifndef _SMING_CORE_NETWORK_SMTPCLIENT_H_
+#define _SMING_CORE_NETWORK_SMTPCLIENT_H_
+
 /** @defgroup   smtpclient SMTP client
  *  @brief      Provides SMTP/S client
  *  @ingroup    tcpclient
  *  @{
  */
-
-#pragma once
 
 #include "TcpClient.h"
 #include "Data/MailMessage.h"
@@ -94,7 +95,7 @@ class SmtpClient : protected TcpClient
 {
 public:
 	SmtpClient(bool autoDestroy = false);
-	virtual ~SmtpClient();
+	~SmtpClient();
 
 	/**
 	 * @brief Connects to remote URL
@@ -180,8 +181,8 @@ public:
 #endif
 
 protected:
-	virtual err_t onReceive(pbuf* buf);
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	err_t onReceive(pbuf* buf) override;
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	void sendMailHeaders(MailMessage* mail);
 	bool sendMailBody(MailMessage* mail);
@@ -209,10 +210,11 @@ private:
 	 */
 	int smtpParse(char* data, size_t len);
 
-private:
 	/**
 	 * @brief Takes care to fetch the correct streams for a message
 	 * @note The magic where all streams and attachments are packed together is happening here
 	 */
 	HttpPartResult multipartProducer();
 };
+
+#endif /* _SMING_CORE_NETWORK_SMTPCLIENT_H_ */

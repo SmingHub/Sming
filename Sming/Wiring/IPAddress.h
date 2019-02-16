@@ -133,7 +133,7 @@ public:
         return *this;
     }
 
-    virtual size_t printTo(Print& p) const;
+    size_t printTo(Print& p) const override;
 };
 
 // Making this extern saves 100's of bytes; each usage otherwise incurs 4 bytes of BSS

@@ -14,8 +14,8 @@
 /** @defgroup datetime Date and time functions
  *  @{
  */
-#ifndef _DateTime_h
-#define _DateTime_h
+#ifndef _SMING_CORE_DATETIME_H_
+#define _SMING_CORE_DATETIME_H_
 
 #include <time.h>
 #include "WString.h"
@@ -347,4 +347,4 @@ public:
 };
 
 /** @} */
-#endif /* DateTime_h */
+#endif /* _SMING_CORE_DATETIME_H_ */

@@ -11,14 +11,6 @@
 #include "MultipartStream.h"
 #include "MemoryDataStream.h"
 
-MultipartStream::MultipartStream(HttpPartProducerDelegate delegate) : producer(delegate)
-{
-}
-
-MultipartStream::~MultipartStream()
-{
-}
-
 bool MultipartStream::onCompleted()
 {
 	auto mem = new MemoryDataStream();

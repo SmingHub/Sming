@@ -22,13 +22,9 @@ public:
 	{
 	}
 
-	virtual ~FTPServerConnection()
-	{
-	}
-
-	virtual err_t onReceive(pbuf* buf);
-	virtual err_t onSent(uint16_t len);
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	err_t onReceive(pbuf* buf) override;
+	err_t onSent(uint16_t len) override;
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	void dataTransferFinished(TcpConnection* connection);
 

@@ -35,7 +35,7 @@ public:
 	}
 
 protected:
-	virtual size_t transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength);
+	size_t transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength) override;
 };
 
 /** @} */

@@ -12,6 +12,8 @@
 #include "URL.h"
 #include "../Platform/WDT.h"
 
+/* rBootItemOutputStream */
+
 void rBootItemOutputStream::setItem(rBootHttpUpdateItem* item)
 {
 	this->item = item;
@@ -62,15 +64,13 @@ rBootItemOutputStream::~rBootItemOutputStream()
 	close();
 }
 
+/* rBootHttpUpdate */
+
 rBootHttpUpdate::rBootHttpUpdate()
 {
 	currentItem = 0;
 	romSlot = NO_ROM_SWITCH;
 	updateDelegate = nullptr;
-}
-
-rBootHttpUpdate::~rBootHttpUpdate()
-{
 }
 
 void rBootHttpUpdate::addItem(int offset, String firmwareFileUrl)

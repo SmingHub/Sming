@@ -10,7 +10,6 @@
 
 #include "Network/TcpServer.h"
 #include "../HttpConnectionBase.h"
-#include "Data/Stream/EndlessMemoryStream.h"
 extern "C" {
 #include "../ws_parser/ws_parser.h"
 }
@@ -123,6 +122,7 @@ public:
 	// @deprecated
 	bool operator==(const WebsocketConnection& rhs) const __deprecated;
 
+	// @deprecated
 	WebsocketList& getActiveWebsockets() __deprecated;
 	// @end deprecated
 

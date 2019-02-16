@@ -30,36 +30,34 @@ struct rBootHttpUpdateItem {
 class rBootItemOutputStream : public ReadWriteStream
 {
 public:
+	~rBootItemOutputStream();
+
 	void setItem(rBootHttpUpdateItem* item);
 	virtual bool init();
-	virtual size_t write(const uint8_t* data, size_t size);
-	virtual size_t write(uint8_t charToWrite)
-	{
-		return write(&charToWrite, 1);
-	}
 
-	virtual StreamType getStreamType() const
+	size_t write(const uint8_t* data, size_t size) override;
+
+	StreamType getStreamType() const override
 	{
 		return eSST_File;
 	}
 
-	virtual uint16_t readMemoryBlock(char* data, int bufSize)
+	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
 		return 0;
 	}
 
-	virtual bool seek(int len)
+	bool seek(int len) override
 	{
 		return false;
 	}
 
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return true;
 	}
 
 	virtual bool close();
-	virtual ~rBootItemOutputStream();
 
 protected:
 	bool initilized = false;
@@ -71,7 +69,7 @@ class rBootHttpUpdate : protected HttpClient
 {
 public:
 	rBootHttpUpdate();
-	virtual ~rBootHttpUpdate();
+
 	void addItem(int offset, String firmwareFileUrl);
 	void start();
 	void switchToRom(uint8_t romSlot);

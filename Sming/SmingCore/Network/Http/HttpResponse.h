@@ -30,9 +30,15 @@ public:
 
 	// @deprecated method
 
-	bool hasHeader(const String& name);
+	/**
+	 * @deprecated use headers.contains() method
+	 */
+	bool hasHeader(const String& name) __deprecated;
 
-	void redirect(const String& location);
+	/**
+	 * @deprecated use headers[HTTP_HEADER_LOCATION]
+	 */
+	void redirect(const String& location) __deprecated;
 
 	/**
 	 * @deprecated Use response.code = HTTP_STATUS_FORBIDDEN instead

@@ -31,9 +31,6 @@ public:
      *  @{
      */
 	AccessPointClass();
-	virtual ~AccessPointClass()
-	{
-	}
 
 	/** @brief  Enable or disable WiFi AP
      *  @param  enabled True to enable AP. False to disable.
@@ -102,7 +99,7 @@ public:
 	/** @} */
 
 protected:
-	virtual void onSystemReady();
+	void onSystemReady() override;
 
 private:
 	softap_config* runConfig;

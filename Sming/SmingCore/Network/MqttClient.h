@@ -60,7 +60,8 @@ class MqttClient : protected TcpClient
 {
 public:
 	MqttClient(bool withDefaultPayloadParser = true, bool autoDestruct = false);
-	virtual ~MqttClient();
+
+	~MqttClient();
 
 	/**
 	 * Sets keep-alive time. That information is sent during connection to the server
@@ -194,7 +195,7 @@ public:
 	 * 			   then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.
 	 */
 	bool publishWithQoS(const String& topic, const String& message, int QoS, bool retained = false,
-						MqttMessageDeliveredCallback onDelivery = NULL) __deprecated
+						MqttMessageDeliveredCallback onDelivery = nullptr) __deprecated
 	{
 		if(onDelivery) {
 			if(QoS == 1) {
@@ -215,7 +216,7 @@ public:
 	/** @brief  Provide a function to be called when a message is received from the broker
 	 * @deprecated Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
 	*/
-	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = NULL) __deprecated
+	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = nullptr) __deprecated
 	{
 		this->subscriptionCallback = subscriptionCallback;
 		setEventHandler(MQTT_TYPE_PUBLISH, onPublish);
@@ -223,8 +224,8 @@ public:
 #endif
 
 protected:
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-	virtual void onFinished(TcpClientState finishState);
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
+	void onFinished(TcpClientState finishState) override;
 
 private:
 	// TCP methods

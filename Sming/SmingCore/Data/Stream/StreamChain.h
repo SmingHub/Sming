@@ -23,7 +23,7 @@ typedef ObjectQueue<IDataSourceStream, MAX_STREAM_CHAIN_SIZE> StreamChainQueue;
 class StreamChain : public MultiStream
 {
 public:
-	virtual ~StreamChain()
+	~StreamChain()
 	{
 	}
 
@@ -33,7 +33,7 @@ public:
 	}
 
 protected:
-	virtual IDataSourceStream* getNextStream()
+	IDataSourceStream* getNextStream() override
 	{
 		return queue.dequeue();
 	}

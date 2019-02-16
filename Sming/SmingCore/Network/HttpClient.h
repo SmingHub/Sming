@@ -27,6 +27,8 @@
 class HttpClient
 {
 public:
+	~HttpClient();
+
 	/* High-Level Methods */
 
 	bool sendRequest(const String& url, RequestCompletedDelegate requestComplete)
@@ -73,7 +75,7 @@ public:
 	bool send(HttpRequest* request);
 
 	/** @deprecated Please use createRequest instead */
-	HttpRequest* request(const String& url) __attribute__((deprecated))
+	HttpRequest* request(const String& url) __deprecated
 	{
 		return createRequest(url);
 	}
@@ -91,8 +93,6 @@ public:
 	 * Use this method to clean all request queues and object pools
 	 */
 	static void cleanup();
-
-	virtual ~HttpClient();
 
 protected:
 	String getCacheKey(URL url);

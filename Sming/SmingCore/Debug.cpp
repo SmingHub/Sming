@@ -11,10 +11,6 @@ DebugClass::DebugClass()
 	setDebug(Serial);
 }
 
-DebugClass::~DebugClass()
-{
-}
-
 void DebugClass::initCommand()
 {
 #if ENABLE_CMD_EXECUTOR

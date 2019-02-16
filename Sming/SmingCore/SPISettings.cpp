@@ -36,10 +36,6 @@ SPISettings::SPISettings(int speed, uint8 byteOrder, uint8 dataMode)
 	this->dataMode = dataMode;
 }
 
-SPISettings::~SPISettings()
-{
-}
-
 bool SPISettings::operator==(const SPISettings& other) const
 {
 	int res = speed == other.speed && byteOrder == other.byteOrder && dataMode == other.dataMode;

@@ -49,24 +49,24 @@ public:
 		varName.reserve(TEMPLATE_MAX_VAR_NAME_LEN);
 	}
 
-	virtual ~TemplateStream()
+	~TemplateStream()
 	{
 		delete stream;
 	}
 
 	//Use base class documentation
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return stream ? eSST_Template : eSST_Invalid;
 	}
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	//Use base class documentation
-	virtual bool seek(int len);
+	bool seek(int len) override;
 
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return stream ? stream->isFinished() : true;
 	}
@@ -97,7 +97,7 @@ public:
 		return templateData;
 	}
 
-	virtual String getName() const
+	String getName() const override
 	{
 		return stream ? stream->getName() : nullptr;
 	}

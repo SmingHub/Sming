@@ -168,7 +168,8 @@ protected:
 
 	// TCP methods
 	virtual bool onTcpReceive(TcpClient& client, char* data, int size);
-	virtual void onError(err_t err);
+
+	void onError(err_t err) override;
 
 private:
 	// http_parser callback functions

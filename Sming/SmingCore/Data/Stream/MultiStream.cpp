@@ -10,14 +10,6 @@
 
 #include "MultiStream.h"
 
-MultiStream::~MultiStream()
-{
-	delete stream;
-	stream = nullptr;
-	delete nextStream;
-	nextStream = nullptr;
-}
-
 //Use base class documentation
 uint16_t MultiStream::readMemoryBlock(char* data, int bufSize)
 {

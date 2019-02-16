@@ -47,7 +47,7 @@ public:
 	{
 	}
 
-	virtual ~StreamTransformer()
+	~StreamTransformer()
 	{
 		delete[] result;
 		delete tempStream;
@@ -55,7 +55,7 @@ public:
 	}
 
 	//Use base class documentation
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return sourceStream->getStreamType();
 	}
@@ -64,19 +64,19 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	int available()
+	int available() override
 	{
 		return -1;
 	}
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	//Use base class documentation
-	virtual bool seek(int len);
+	bool seek(int len) override;
 
 	//Use base class documentation
-	virtual bool isFinished();
+	bool isFinished() override;
 
 	/**
 	 * @brief A method that backs up the current state
