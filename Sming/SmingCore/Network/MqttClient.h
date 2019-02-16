@@ -175,9 +175,9 @@ public:
 
 #ifndef MQTT_NO_COMPAT
 	/**
-	 * @deprecated Use setWill(const String& topic, const String& message,uint8_t flags) instead
+	 * @todo deprecated Use setWill(const String& topic, const String& message,uint8_t flags) instead
 	 */
-	bool setWill(const String& topic, const String& message, int QoS, bool retained = false) __deprecated
+	bool setWill(const String& topic, const String& message, int QoS, bool retained = false)
 	{
 		uint8_t flags = (uint8_t)(retained + (QoS << 1));
 		return setWill(topic, message, flags);
@@ -190,12 +190,12 @@ public:
 	 */
 
 	/**
-	 * @deprecated Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
+	 * @todo deprecated Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
 	 * 			   If you want to have a callback that should be triggered on successful delivery of messages
 	 * 			   then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.
 	 */
 	bool publishWithQoS(const String& topic, const String& message, int QoS, bool retained = false,
-						MqttMessageDeliveredCallback onDelivery = nullptr) __deprecated
+						MqttMessageDeliveredCallback onDelivery = nullptr)
 	{
 		if(onDelivery) {
 			if(QoS == 1) {
@@ -214,9 +214,9 @@ public:
 	}
 
 	/** @brief  Provide a function to be called when a message is received from the broker
-	 * @deprecated Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
+	 * @todo deprecated Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
 	*/
-	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = nullptr) __deprecated
+	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = nullptr)
 	{
 		this->subscriptionCallback = subscriptionCallback;
 		setEventHandler(MQTT_TYPE_PUBLISH, onPublish);

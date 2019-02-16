@@ -67,7 +67,7 @@ void displayCipher(SSL* ssl)
 
 int onDownload(HttpConnection& connection, bool success)
 {
-	debugf("Got response code: %d", connection.getResponseCode());
+	debugf("Got response code: %d", connection.getResponse()->code);
 	debugf("Success: %d", success);
 
 	SSL* ssl = connection.getSsl();

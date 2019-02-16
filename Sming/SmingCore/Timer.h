@@ -157,6 +157,7 @@ public:
 	*  @note   Delegate callback method
 	*/
 	void IRAM_ATTR setCallback(TimerDelegate delegateFunction);
+
 	/** @brief  Set timer trigger function
 	*  @param  delegateFunction Function to be called on timer trigger
 	*  @note   Delegate callback method

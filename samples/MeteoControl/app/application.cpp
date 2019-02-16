@@ -162,7 +162,7 @@ const int clockUpdateIntervalMs = 10 * 60 * 1000; // Update web clock every 10 m
 int onClockUpdating(HttpConnection& client, bool successful)
 {
 	if(!successful) {
-		debugf("CLOCK UPDATE FAILED %d (code: %d)", successful, client.getResponseCode());
+		debugf("CLOCK UPDATE FAILED %d (code: %d)", successful, client.getResponse()->code);
 		lastClockUpdate = 0;
 		return -1;
 	}

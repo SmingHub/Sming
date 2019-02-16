@@ -13,7 +13,7 @@
 ServoChannel* channel;
 
 Timer procTimer;
-TimerDelegate procDelegate;
+TimerDelegateStdFunction procDelegate;
 
 uint16 centerdelay = 0;
 uint32 value = 0;

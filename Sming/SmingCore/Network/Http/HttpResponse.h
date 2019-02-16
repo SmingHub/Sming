@@ -67,10 +67,11 @@ public:
 	// Send file by name
 	bool sendFile(String fileName, bool allowGzipFileCheck = true);
 
-	// @deprecated
+	/** @brief Parse and send template file
+	 */
+	bool sendTemplate(TemplateStream* newTemplateInstance);
 
-	// Parse and send template file
-	bool sendTemplate(TemplateStream* newTemplateInstance) __deprecated;
+	// @deprecated
 
 	/**
 	 * @brief Build and send JSON string

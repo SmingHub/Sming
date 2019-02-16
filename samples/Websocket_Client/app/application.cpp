@@ -91,7 +91,7 @@ void wsMessageSent()
 
 	if(msg_cnt > 10) {
 		Serial.println("End Websocket client session");
-		wsClient.disconnect(); // clean disconnect.
+		wsClient.close(); // clean disconnect.
 		msgTimer.stop();
 
 		return;

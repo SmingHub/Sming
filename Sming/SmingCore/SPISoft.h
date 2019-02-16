@@ -25,7 +25,28 @@ public:
 	/*
 	 *  begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
 	 */
-	virtual void begin(); //setup pins
+	void begin() override; //setup pins
+
+	/*
+	 * end(): Disables the SPI bus (leaving pin modes unchanged).
+	 */
+	void end() override
+	{
+	}
+
+	/*
+	 * beginTransaction(): Initializes the SPI bus using the defined SPISettings.
+	 */
+	void beginTransaction(SPISettings mySettings) override
+	{
+	}
+
+	/*
+	 * endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.
+	 */
+	void endTransaction() override
+	{
+	}
 
 	/*
 	 * transfer(), transfer16()
@@ -36,7 +57,7 @@ public:
 	 * 		receivedVal16 = SPI.transfer16(val16)
 	 * 		SPI.transfer(buffer, size)
 	 */
-	void transfer(uint8* buffer, size_t size);
+	void transfer(uint8* buffer, size_t size) override;
 
 	unsigned char transfer(unsigned char val)
 	{

@@ -65,7 +65,7 @@ public:
 
 	int processed(HttpConnection& client, bool successful)
 	{
-		Serial.println(client.getResponseString());
+		Serial.println(client.getResponse()->getBody());
 
 		return 0;
 	}

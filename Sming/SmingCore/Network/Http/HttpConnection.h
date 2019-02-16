@@ -58,9 +58,9 @@ public:
 #endif
 
 	// Backported for compatibility reasons
-	// @deprecated
+
 	/**
-	 * @deprecated Use `getResponse().code` instead
+	 * @deprecated Use `getResponse()->code` instead
 	 */
 	int getResponseCode() __deprecated
 	{
@@ -68,30 +68,29 @@ public:
 	}
 
 	/**
-	 * @deprecated Use `getResponse().headers[headerName]` instead
+	 * @deprecated Use `getResponse()->headers[headerName]` instead
 	 */
 	String getResponseHeader(String headerName, String defaultValue = nullptr) __deprecated;
 
 	/**
-	* @deprecated Use `getResponse().headers` instead
+	* @deprecated Use `getResponse()->headers` instead
 	*/
 	HttpHeaders& getResponseHeaders() __deprecated;
 
 	/**
-	* @deprecated Use `getResponse().headers[HTTP_HEADER_LAST_MODIFIED]` instead
+	* @todo Use `getResponse()->headers[HTTP_HEADER_LAST_MODIFIED]` instead
 	*/
-	DateTime getLastModifiedDate() __deprecated; // Last-Modified header
+	DateTime getLastModifiedDate(); // Last-Modified header
 
 	/**
-	 * @deprecated Use `getResponse().headers[HTTP_HEADER_DATE]` instead
+	 * @todo Use `getResponse()->headers[HTTP_HEADER_DATE]` instead
 	 */
-	DateTime getServerDate() __deprecated; // Date header
+	DateTime getServerDate(); // Date header
 
 	/**
-	 * @deprecated Use `getResponse().stream` instead
+	 * @deprecated Use `getResponse()->getBody()` instead
 	 */
 	String getResponseString() __deprecated;
-	// @enddeprecated
 
 	virtual void reset();
 

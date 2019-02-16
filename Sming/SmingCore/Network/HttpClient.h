@@ -27,7 +27,7 @@
 class HttpClient
 {
 public:
-	~HttpClient();
+	virtual ~HttpClient();
 
 	/* High-Level Methods */
 
