@@ -27,7 +27,16 @@
 class HttpClient
 {
 public:
-	virtual ~HttpClient();
+	/**
+	 * @brief HttpClient destructor
+	 * @note DON'T call cleanup.
+	 * 	If you want to free all resources from HttpClients the correct sequence will be to
+	 * 		1. Delete all instances of HttpClient
+	 * 		2. Call the static method HttpClient::cleanup();
+	*/
+	~HttpClient()
+	{
+	}
 
 	/* High-Level Methods */
 

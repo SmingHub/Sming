@@ -108,7 +108,7 @@ private:
 	bool sendResponseBody(HttpResponse* response);
 
 public:
-	void* userData = nullptr; // << use to pass user data between requests
+	void* userData = nullptr; ///< use to pass user data between requests
 
 private:
 	ResourceTree* resourceTree = nullptr;

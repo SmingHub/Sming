@@ -133,7 +133,7 @@ public:
 	 */
 	MailMessage* getCurrentMessage();
 
-	inline size_t countPending()
+	size_t countPending()
 	{
 		return mailQ.count();
 	}
@@ -155,7 +155,7 @@ public:
 	 * @brief Callback that will be called every time a message is sent successfully
 	 * @param SmtpClientCallback callback
 	 */
-	inline void onMessageSent(SmtpClientCallback callback)
+	void onMessageSent(SmtpClientCallback callback)
 	{
 		messageSentCallback = callback;
 	}
@@ -164,7 +164,7 @@ public:
 	 * @brief Callback that will be called every an error occurs
 	 * @param SmtpClientCallback callback
 	 */
-	inline void onServerError(SmtpClientCallback callback)
+	void onServerError(SmtpClientCallback callback)
 	{
 		errorCallback = callback;
 	}

@@ -17,11 +17,9 @@
 #ifndef SMINGCORE_PLATFORM_ACCESSPOINT_H_
 #define SMINGCORE_PLATFORM_ACCESSPOINT_H_
 
-#include <user_config.h>
 #include "System.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
-#include "../../Wiring/IPAddress.h"
+#include "WString.h"
+#include "IPAddress.h"
 
 class AccessPointClass : protected ISystemReadyHandler
 {
@@ -30,7 +28,10 @@ public:
      *  @addtogroup wifi_ap
      *  @{
      */
-	AccessPointClass();
+	AccessPointClass()
+	{
+		System.onReady(this);
+	}
 
 	/** @brief  Enable or disable WiFi AP
      *  @param  enabled True to enable AP. False to disable.
@@ -102,7 +103,7 @@ protected:
 	void onSystemReady() override;
 
 private:
-	softap_config* runConfig;
+	softap_config* runConfig = nullptr;
 };
 
 /**	@brief	Global instance of WiFi access point object

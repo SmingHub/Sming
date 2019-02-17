@@ -32,10 +32,13 @@
 class WebsocketClient : protected WebsocketConnection
 {
 public:
-	WebsocketClient();
-	WebsocketClient(HttpConnectionBase* connection);
+	WebsocketClient() : WebsocketConnection(new HttpConnection(new RequestQueue()))
+	{
+	}
 
-	~WebsocketClient();
+	WebsocketClient(HttpConnectionBase* connection) : WebsocketConnection(connection)
+	{
+	}
 
 	using WebsocketConnection::setBinaryHandler;
 	using WebsocketConnection::setConnectionHandler;
@@ -60,7 +63,7 @@ public:
 	 *
 	 *  @retval bool true if the data can be send, false otherwise
 	 */
-	__forceinline void sendPing(const String& payload = "")
+	void sendPing(const String& payload = nullptr)
 	{
 		debug_d("Sending PING");
 		WebsocketConnection::send(payload.c_str(), payload.length(), WS_FRAME_PING);
@@ -71,7 +74,7 @@ public:
      *
      *  @retval bool true if the data can be send, false otherwise
      */
-	__forceinline void sendPong(const String& payload = "")
+	void sendPong(const String& payload = nullptr)
 	{
 		debug_d("Sending PONG");
 		WebsocketConnection::send(payload.c_str(), payload.length(), WS_FRAME_PONG);

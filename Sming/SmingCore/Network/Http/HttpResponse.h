@@ -24,21 +24,28 @@ class TemplateStream;
 class HttpResponse
 {
 public:
-	~HttpResponse();
+	~HttpResponse()
+	{
+		freeStreams();
+	}
 
 	bool sendString(const String& text);
-
-	// @deprecated method
 
 	/**
 	 * @deprecated use headers.contains() method
 	 */
-	bool hasHeader(const String& name) __deprecated;
+	bool hasHeader(const String& name) __deprecated
+	{
+		return headers.contains(name);
+	}
 
 	/**
 	 * @deprecated use headers[HTTP_HEADER_LOCATION]
 	 */
-	void redirect(const String& location) __deprecated;
+	void redirect(const String& location) __deprecated
+	{
+		headers[HTTP_HEADER_LOCATION] = location;
+	}
 
 	/**
 	 * @deprecated Use response.code = HTTP_STATUS_FORBIDDEN instead
@@ -64,14 +71,20 @@ public:
 	HttpResponse* setAllowCrossDomainOrigin(
 		const String& controlAllowOrigin); // Access-Control-Allow-Origin for AJAX from a different domain
 
-	// Send file by name
+	/**
+	 * @brief Send file by name
+	 * @param fileName
+	 * @param allowGzipFileCheck If true, check file extension to see if content commpressed
+	 * @retval bool
+	 */
 	bool sendFile(String fileName, bool allowGzipFileCheck = true);
 
-	/** @brief Parse and send template file
+	/**
+	 * @brief Parse and send template file
+	 * @param newTemplateInstance
+	 * @retval bool
 	 */
-	bool sendTemplate(TemplateStream* newTemplateInstance);
-
-	// @deprecated
+	bool sendTemplate(TemplateStream* newTemplateInstance) __deprecated;
 
 	/**
 	 * @brief Build and send JSON string
@@ -79,8 +92,6 @@ public:
 	 * @deprecated use response.sendDataStream(stream, MIME_JSON) instead
 	 */
 	bool sendJsonObject(JsonObjectStream* newJsonStreamInstance) __deprecated;
-
-	// @end deprecated
 
 	/** @brief Send data from the given stream object
 	 *  @param newDataStream
@@ -101,15 +112,27 @@ public:
 	 */
 	bool sendDataStream(IDataSourceStream* newDataStream, const String& reqContentType = nullptr);
 
+	/**
+	 * @brief Get response body as a string
+	 * @retval String
+	 * @note Use with caution if response is large
+	 */
 	String getBody();
 
+	/**
+	 * @brief reset response so it can be re-used
+	 */
 	void reset();
 
-	/*
-	 * Called by connection to specify where incoming response data is written.
+	/**
+	 * @brief Called by connection to specify where incoming response data is written
+	 * @param buffer
 	 */
 	void setBuffer(ReadWriteStream* buffer);
 
+	/**
+	 * @brief release allocated stream memory
+	 */
 	void freeStreams();
 
 private:

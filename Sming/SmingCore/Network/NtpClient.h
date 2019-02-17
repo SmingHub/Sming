@@ -44,12 +44,17 @@ class NtpClient : protected UdpConnection
 public:
 	/** @brief  Instantiates NTP client object
      */
-	NtpClient();
+	NtpClient() : NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, nullptr)
+	{
+	}
 
 	/** @brief  Instantiates NTP client object
      *  @param  onTimeReceivedCb Callback delegate to be called when NTP time result is received
      */
-	NtpClient(NtpTimeResultDelegate onTimeReceivedCb);
+	NtpClient(NtpTimeResultDelegate onTimeReceivedCb)
+		: NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, onTimeReceivedCb)
+	{
+	}
 
 	/** @brief  Instantiates NTP client object
      *  @param  reqServer IP address or hostname of NTP server

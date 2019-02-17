@@ -32,7 +32,16 @@ public:
      *  @addtogroup base_spi
      *  @{
 	 */
-	SPISettings();
+	SPISettings()
+	{
+#ifdef SPI_DEBUG
+		debugf("SPISettings() default");
+#endif
+	}
+
+	virtual ~SPISettings()
+	{
+	}
 
 	/** @brief constructor for SPISettings
 	 *
@@ -58,10 +67,11 @@ public:
 	 * 		SPI_MODE2		1					0
 	 * 		SPI_MODE3		1					1
 	 */
-	SPISettings(int speed, uint8 byteOrder, uint8 dataMode);
-
-	virtual ~SPISettings()
+	SPISettings(int speed, uint8 byteOrder, uint8 dataMode) : speed(speed), byteOrder(byteOrder), dataMode(dataMode)
 	{
+#ifdef SPI_DEBUG
+		debugf("SPISettings(int %i, uint8 %d, uint8 %d)", speed, byteOrder, dataMode);
+#endif
 	}
 
 	inline uint8 getDataMode()
@@ -70,9 +80,17 @@ public:
 	}
 
 	// overload operator to check wheter the settings are equal
-	bool operator==(const SPISettings& other) const;
+	bool operator==(const SPISettings& other) const
+	{
+		return (speed == other.speed) && (byteOrder == other.byteOrder) && (dataMode == other.dataMode);
+	}
 
-	void print(const char* s);
+	void print(const char* s)
+	{
+#ifdef SPI_DEBUG
+		debugf("->  %s -> SPISettings::print(int %i, uint8 %d, uint8 %d)", s, speed, byteOrder, dataMode);
+#endif
+	}
 
 	friend class SPIClass;
 

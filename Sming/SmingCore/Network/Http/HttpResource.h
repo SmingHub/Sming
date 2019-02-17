@@ -35,6 +35,7 @@ public:
 	virtual ~HttpResource()
 	{
 	}
+
 	/**
 	 * @brief Takes care to cleanup the connection
 	 */
@@ -43,11 +44,10 @@ public:
 	}
 
 public:
-	HttpServerConnectionBodyDelegate onBody = nullptr; // << called when the resource wants to process the raw body data
-	HttpResourceDelegate onHeadersComplete = nullptr;  // << called when the headers are ready
-	HttpResourceDelegate onRequestComplete = nullptr;  // << called when the request is complete OR upgraded
-	HttpServerConnectionUpgradeDelegate onUpgrade = nullptr;
-	// ^ called when the request is upgraded and raw data is passed to it
+	HttpServerConnectionBodyDelegate onBody = nullptr;		 ///< resource wants to process the raw body data
+	HttpResourceDelegate onHeadersComplete = nullptr;		 ///< headers are ready
+	HttpResourceDelegate onRequestComplete = nullptr;		 ///< request is complete OR upgraded
+	HttpServerConnectionUpgradeDelegate onUpgrade = nullptr; ///< request is upgraded and raw data is passed to it
 };
 
 class HttpCompatResource : public HttpResource

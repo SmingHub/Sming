@@ -26,15 +26,14 @@
 
 #define SPI_NO 1
 
+/** @brief  Hardware SPI object
+ *  @addtogroup hw_spi
+ *  @{
+ */
+
 class SPIClass : public SPIBase
 {
 public:
-	/** @brief  Instantiate hardware SPI object
-     *  @addtogroup hw_spi
-     *  @{
-     */
-	SPIClass();
-
 	/* @brief begin()
 	 *
 	 * Initializes the SPI bus using the default SPISettings
@@ -67,7 +66,12 @@ public:
 	 * endTransaction(): Stop using the SPI bus. Normally this is called after
 	 * de-asserting the chip select, to allow other libraries to use the SPI bus.
 	 */
-	void endTransaction() override;
+	void endTransaction() override
+	{
+#ifdef SPI_DEBUG
+		debugf("SPIhw::endTransaction()");
+#endif
+	}
 
 	/** @brief 	transfer()
 	 * @param	byte to send
@@ -138,7 +142,7 @@ public:
 	 *
 	 * Note: not included in std Arduino lib
 	 */
-	SPISettings SPIDefaultSettings = SPISettings(4000000, MSBFIRST, SPI_MODE0);
+	SPISettings SPIDefaultSettings;
 
 private:
 	/** @brief transfer32()

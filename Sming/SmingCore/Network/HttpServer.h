@@ -30,14 +30,13 @@
 #include "Http/HttpBodyParser.h"
 
 typedef struct {
-	int maxActiveConnections = 10;  // << the maximum number of concurrent requests..
-	int keepAliveSeconds = 0;		// << the default seconds to keep the connection alive before closing it
-	int minHeapSize = -1;			// << defines the min heap size that is required to accept connection.
-									//  -1 - means use server default
-	bool useDefaultBodyParsers = 1; // << if the default body parsers,  as form-url-encoded, should be used
+	int maxActiveConnections = 10; ///< maximum number of concurrent requests..
+	int keepAliveSeconds = 0;	  ///< default seconds to keep the connection alive before closing it
+	int minHeapSize = -1;		   ///< min heap size that is required to accept connection, -1 means use server default
+	bool useDefaultBodyParsers = 1; ///< if the default body parsers,  as form-url-encoded, should be used
 #ifdef ENABLE_SSL
 	int sslSessionCacheSize =
-		10; // << number of SSL session ids to cache. Setting this to 0 will disable SSL session resumption.
+		10; ///< number of SSL session ids to cache. Setting this to 0 will disable SSL session resumption.
 #endif
 } HttpServerSettings;
 
@@ -46,8 +45,17 @@ class HttpServer : public TcpServer
 	friend class HttpServerConnection;
 
 public:
-	HttpServer();
-	HttpServer(const HttpServerSettings& settings);
+	HttpServer()
+	{
+		settings.keepAliveSeconds = 2;
+		configure(settings);
+	}
+
+	HttpServer(const HttpServerSettings& settings)
+	{
+		configure(settings);
+	}
+
 	~HttpServer();
 
 	/**

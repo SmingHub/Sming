@@ -17,11 +17,6 @@
 #include "Data/Stream/FileStream.h"
 #include "Data/Stream/TemplateStream.h"
 
-HttpResponse::~HttpResponse()
-{
-	freeStreams();
-}
-
 HttpResponse* HttpResponse::setContentType(const String& type)
 {
 	headers[HTTP_HEADER_CONTENT_TYPE] = type;
@@ -69,16 +64,6 @@ bool HttpResponse::sendString(const String& text)
 	}
 
 	return buffer->print(text) == text.length();
-}
-
-bool HttpResponse::hasHeader(const String& name)
-{
-	return headers.contains(name);
-}
-
-void HttpResponse::redirect(const String& location)
-{
-	headers[HTTP_HEADER_LOCATION] = location;
 }
 
 bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)

@@ -8,9 +8,9 @@
 #ifndef SMINGCORE_PLATFORM_WIFIEVENTS_H_
 #define SMINGCORE_PLATFORM_WIFIEVENTS_H_
 
-#include "../SmingCore/Delegate.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/IPAddress.h"
+#include "Delegate.h"
+#include "WString.h"
+#include "IPAddress.h"
 
 //Define WifiEvents Delegates types
 typedef Delegate<void(String, uint8_t, uint8_t[6], uint8_t)> StationConnectDelegate;

@@ -106,12 +106,12 @@ public:
 		return send(data.c_str(), data.length(), forceCloseAfterSent);
 	}
 
-	__forceinline bool isProcessing()
+	bool isProcessing()
 	{
 		return state == eTCS_Connected || state == eTCS_Connecting;
 	}
 
-	__forceinline TcpClientState getConnectionState()
+	TcpClientState getConnectionState()
 	{
 		return state;
 	}

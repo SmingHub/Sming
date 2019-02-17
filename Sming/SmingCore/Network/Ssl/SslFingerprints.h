@@ -14,19 +14,21 @@
  * @brief SSL Certificate fingerprint type
  */
 enum SslFingerprintType {
-	/* The SHA1 hash of the entire certificate. This changes on each certificate renewal so needs
-	 * to be updated every time the remote server updates its certificate.
-	 * Advantages: Takes less time to verify than SHA256
-	 * Disadvantages: Likely to change periodically
+	/** @brief Fingerprint based on the SHA1 value of the certificate
+	 * 	@note The SHA1 hash of the entire certificate. This changes on each certificate renewal so needs
+	 * 	to be updated every time the remote server updates its certificate.
+	 * 	Advantages: Takes less time to verify than SHA256
+	 * 	Disadvantages: Likely to change periodically
 	 */
-	eSFT_CertSha1 = 0, ///< Fingerprint based on the SHA1 value of the certificate
+	eSFT_CertSha1 = 0,
 
-	/* For HTTP public key pinning (RFC7469), the SHA-256 hash of the Subject Public Key Info
-	 * (which usually only changes when the public key changes) is used.
-	 * Advantages: Doesn't change frequently
-	 * Disadvantages: Takes more time (in ms) to verify.
+	/**	@brief Fingerprint based on the SHA256 value of the Public Key Subject in the certificate
+	 * 	@note For HTTP public key pinning (RFC7469), the SHA-256 hash of the Subject Public Key Info
+	 * 	(which usually only changes when the public key changes) is used.
+	 * 	Advantages: Doesn't change frequently
+	 * 	Disadvantages: Takes more time (in ms) to verify.
 	 */
-	eSFT_PkSha256, // << Fingerprint based on the SHA256 value of the Public Key Subject in the certificate
+	eSFT_PkSha256,
 };
 
 /** @brief Contains SSL fingerprint data
@@ -38,8 +40,8 @@ enum SslFingerprintType {
  *
  */
 struct SslFingerprints {
-	const uint8_t* certSha1 = nullptr; // << certificate SHA1 fingerprint
-	const uint8_t* pkSha256 = nullptr; // << public key SHA256 fingerprint
+	const uint8_t* certSha1 = nullptr; ///< certificate SHA1 fingerprint
+	const uint8_t* pkSha256 = nullptr; ///< public key SHA256 fingerprint
 
 	~SslFingerprints()
 	{

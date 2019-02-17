@@ -24,9 +24,6 @@
  *  @{
  */
 
-typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
-typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
-
 enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 
 #ifndef MQTT_REQUEST_POOL_SIZE
@@ -175,7 +172,7 @@ public:
 
 #ifndef MQTT_NO_COMPAT
 	/**
-	 * @todo deprecated Use setWill(const String& topic, const String& message,uint8_t flags) instead
+	 * @todo deprecate: Use setWill(const String& topic, const String& message,uint8_t flags) instead
 	 */
 	bool setWill(const String& topic, const String& message, int QoS, bool retained = false)
 	{
@@ -190,7 +187,7 @@ public:
 	 */
 
 	/**
-	 * @todo deprecated Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
+	 * @todo deprecate: Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
 	 * 			   If you want to have a callback that should be triggered on successful delivery of messages
 	 * 			   then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.
 	 */
@@ -214,7 +211,7 @@ public:
 	}
 
 	/** @brief  Provide a function to be called when a message is received from the broker
-	 * @todo deprecated Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
+	 * @todo deprecate: Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
 	*/
 	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = nullptr)
 	{

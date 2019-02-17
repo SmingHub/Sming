@@ -65,7 +65,10 @@ public:
 	/** @brief  Get debug status
      *  @retval bool True if debug enabled
      */
-	bool status();
+	bool status()
+	{
+		return started;
+	}
 
 	/** @brief  Configure debug to use delegate handler for its output
      *  @param  reqDelegate Function to handle debug output

@@ -108,7 +108,7 @@ protected:
 	Vector<TcpConnection*> connections;
 
 private:
-	uint16_t keepAlive = 70; // << The time to wait after the connection is established. If there is no data
+	uint16_t keepAlive = 70; ///< The time to wait after the connection is established. If there is no data
 							 //  coming or going to the client within that period the client connection will be closed
 	TcpClientConnectDelegate clientConnectDelegate = nullptr;
 	TcpClientDataDelegate clientReceiveDelegate = nullptr;

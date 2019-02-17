@@ -56,7 +56,7 @@ public:
 private:
 	String username;
 	String password;
-	HttpRequest* request = NULL;
+	HttpRequest* request = nullptr;
 };
 
 #endif /* _SMING_CORE_HTTP_REQUEST_AUTH_H_ */

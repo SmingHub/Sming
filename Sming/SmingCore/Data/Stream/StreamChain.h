@@ -25,6 +25,10 @@ class StreamChain : public MultiStream
 public:
 	~StreamChain()
 	{
+		// Free any remaining streams in queue
+		while(queue.count() != 0) {
+			delete queue.dequeue();
+		}
 	}
 
 	bool attachStream(IDataSourceStream* stream)

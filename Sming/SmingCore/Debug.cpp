@@ -31,11 +31,6 @@ void DebugClass::stop()
 	started = false;
 }
 
-bool DebugClass::status()
-{
-	return started;
-}
-
 void DebugClass::setDebug(DebugPrintCharDelegate reqDelegate)
 {
 	debugOut.debugStream = nullptr;

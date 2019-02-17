@@ -23,11 +23,6 @@
 #include "lwip/tcp_impl.h"
 #endif
 
-HttpConnection::HttpConnection(RequestQueue* queue) : HttpConnectionBase(HTTP_RESPONSE)
-{
-	this->waitingQueue = queue;
-}
-
 bool HttpConnection::connect(const String& host, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
 {
 	debug_d("HttpConnection::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != nullptr ? tcp->state : -1),
@@ -50,11 +45,6 @@ bool HttpConnection::connect(const String& host, int port, bool useSsl /* = fals
 	return TcpClient::connect(host, port, useSsl, sslOptions);
 }
 
-bool HttpConnection::send(HttpRequest* request)
-{
-	return waitingQueue->enqueue(request);
-}
-
 bool HttpConnection::isActive()
 {
 	if(tcp == nullptr) {
@@ -72,11 +62,6 @@ bool HttpConnection::isActive()
 }
 
 // @deprecated
-HttpHeaders& HttpConnection::getResponseHeaders()
-{
-	return response.headers;
-}
-
 String HttpConnection::getResponseHeader(String headerName, String defaultValue)
 {
 	if(response.headers.contains(headerName))
@@ -104,13 +89,6 @@ DateTime HttpConnection::getServerDate()
 	else
 		return DateTime();
 }
-
-String HttpConnection::getResponseString()
-{
-	return response.getBody();
-}
-
-// @enddeprecated
 
 void HttpConnection::reset()
 {
@@ -422,16 +400,6 @@ bool HttpConnection::sendRequestBody(HttpRequest* request)
 	return true;
 }
 
-HttpRequest* HttpConnection::getRequest()
-{
-	return incomingRequest;
-}
-
-HttpResponse* HttpConnection::getResponse()
-{
-	return &response;
-}
-
 // end of public methods for HttpConnection
 
 void HttpConnection::cleanup()
@@ -442,9 +410,4 @@ void HttpConnection::cleanup()
 	for(unsigned i = 0; i < executionQueue.count(); i++) {
 		waitingQueue->enqueue(executionQueue.dequeue());
 	}
-}
-
-HttpConnection::~HttpConnection()
-{
-	cleanup();
 }

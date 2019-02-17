@@ -314,7 +314,7 @@ void TcpConnection::initialize(tcp_pcb* pcb)
 #endif
 
 	tcp_nagle_disable(tcp);
-	tcp_arg(tcp, (void*)this);
+	tcp_arg(tcp, this);
 
 	tcp_sent(tcp, [](void* arg, tcp_pcb* tcp, uint16_t len) -> err_t {
 		auto con = static_cast<TcpConnection*>(arg);

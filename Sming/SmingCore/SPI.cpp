@@ -24,11 +24,6 @@
 // define the static singleton
 SPIClass SPI;
 
-SPIClass::SPIClass()
-{
-	spiSettings = this->SPIDefaultSettings;
-}
-
 /* @defgroup SPI hardware implementation
  * @brief begin()
  *
@@ -61,27 +56,13 @@ void SPIClass::beginTransaction(SPISettings mySettings)
 	debugf("SPIhw::beginTransaction(SPISettings mySettings)");
 #endif
 	// check if we need to change settings
-	if(this->spiSettings == mySettings)
+	if(this->spiSettings == mySettings) {
 		return;
+	}
 
 	// prepare SPI settings
 	prepare(mySettings);
 }
-
-/* @defgroup SPI hardware implementation
- * @brief endTransaction()
- *
- * Method for compatibility with Arduino API. Provides NOP
- *
- * endTransaction(): Stop using the SPI bus. Normally this is called after
- * de-asserting the chip select, to allow other libraries to use the SPI bus.
- */
-void SPIClass::endTransaction()
-{
-#ifdef SPI_DEBUG
-	debugf("SPIhw::endTransaction()");
-#endif
-};
 
 /* @defgroup SPI hardware implementation
  * @brief transfer32()

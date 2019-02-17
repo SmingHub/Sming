@@ -16,7 +16,6 @@
 #ifndef SMINGCORE_PLATFORM_STATION_H_
 #define SMINGCORE_PLATFORM_STATION_H_
 
-#include <user_config.h>
 #include "System.h"
 #include "Delegate.h"
 #include "WString.h"
@@ -80,8 +79,10 @@ public:
      *  @addtogroup wifi_sta
      *  @{
      */
-	StationClass();
-	~StationClass();
+	StationClass()
+	{
+		System.onReady(this);
+	}
 
 	/**	@brief	Enable / disable WiFi station
 	 *	@note	Disabling WiFi station will also disable and clear the handler set with <i>waitConnection</i>.
@@ -248,12 +249,12 @@ protected:
 	static void staticSmartConfigCallback(sc_status status, void* pdata);
 
 private:
-	ScanCompletedDelegate scanCompletedCallback;
-	SmartConfigDelegate smartConfigCallback = NULL;
+	ScanCompletedDelegate scanCompletedCallback = nullptr;
+	SmartConfigDelegate smartConfigCallback = nullptr;
 #ifdef ENABLE_WPS
-	WPSConfigDelegate wpsConfigCallback = NULL;
+	WPSConfigDelegate wpsConfigCallback = nullptr;
 #endif
-	bool runScan;
+	bool runScan = false;
 };
 
 class BssInfo

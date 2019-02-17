@@ -17,15 +17,14 @@
 #include <user_config.h>
 #include "System.h"
 
+/** @brief  Watchdog timer class
+ *  @addtogroup wdt
+ *  @{
+ */
+
 class WDTClass : protected ISystemReadyHandler
 {
 public:
-	/** @brief  Watchdog timer class
-     *  @addtogroup wdt
-     *  @{
-     */
-	WDTClass();
-
 	/** @brief  Enable or disable watchdog timer
      *  @param  enableWatchDog True to enable. False to disable.
      */

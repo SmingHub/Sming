@@ -27,15 +27,23 @@ typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
 class HttpConnection : public HttpConnectionBase
 {
-	friend class HttpClient;
-
 public:
-	HttpConnection(RequestQueue* queue);
-	~HttpConnection();
+	HttpConnection(RequestQueue* queue) : HttpConnectionBase(HTTP_RESPONSE)
+	{
+		this->waitingQueue = queue;
+	}
+
+	~HttpConnection()
+	{
+		cleanup();
+	}
 
 	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0);
 
-	bool send(HttpRequest* request);
+	bool send(HttpRequest* request)
+	{
+		return waitingQueue->enqueue(request);
+	}
 
 	bool isActive();
 
@@ -43,13 +51,19 @@ public:
 	 * @brief Returns pointer to the current request
 	 * @return HttpRequest*
 	 */
-	HttpRequest* getRequest();
+	HttpRequest* getRequest()
+	{
+		return incomingRequest;
+	}
 
 	/**
 	 * @brief Returns pointer to the current response
 	 * @return HttpResponse*
 	 */
-	HttpResponse* getResponse();
+	HttpResponse* getResponse()
+	{
+		return &response;
+	}
 
 	using TcpClient::close;
 
@@ -75,7 +89,10 @@ public:
 	/**
 	* @deprecated Use `getResponse()->headers` instead
 	*/
-	HttpHeaders& getResponseHeaders() __deprecated;
+	HttpHeaders& getResponseHeaders() __deprecated
+	{
+		return response.headers;
+	}
 
 	/**
 	* @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_LAST_MODIFIED]` instead
@@ -90,7 +107,10 @@ public:
 	/**
 	 * @deprecated Use `getResponse()->getBody()` instead
 	 */
-	String getResponseString() __deprecated;
+	String getResponseString() __deprecated
+	{
+		return response.getBody();
+	}
 
 	virtual void reset();
 

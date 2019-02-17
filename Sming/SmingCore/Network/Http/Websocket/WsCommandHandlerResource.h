@@ -33,8 +33,8 @@ protected:
 		}
 
 		WebsocketConnection* socket = (WebsocketConnection*)connection.userData;
-		if(socket != NULL) {
-			socket->setMessageHandler()
+		if(socket != nullptr) {
+			socket->setMessageHandler();
 
 			// create new command handler
 		}

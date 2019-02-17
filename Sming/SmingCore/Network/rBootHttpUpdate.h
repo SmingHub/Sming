@@ -61,15 +61,13 @@ public:
 
 protected:
 	bool initilized = false;
-	rBootHttpUpdateItem* item = NULL;
+	rBootHttpUpdateItem* item = nullptr;
 	rboot_write_status rBootWriteStatus;
 };
 
 class rBootHttpUpdate : protected HttpClient
 {
 public:
-	rBootHttpUpdate();
-
 	void addItem(int offset, String firmwareFileUrl);
 	void start();
 	void switchToRom(uint8_t romSlot);
@@ -99,12 +97,12 @@ protected:
 
 protected:
 	Vector<rBootHttpUpdateItem> items;
-	int currentItem;
+	int currentItem = 0;
 	rboot_write_status rBootWriteStatus;
-	uint8_t romSlot;
-	OtaUpdateDelegate updateDelegate;
+	uint8_t romSlot = NO_ROM_SWITCH;
+	OtaUpdateDelegate updateDelegate = nullptr;
 
-	HttpRequest* baseRequest = NULL;
+	HttpRequest* baseRequest = nullptr;
 };
 
 #endif /* SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_ */

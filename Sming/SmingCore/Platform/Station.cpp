@@ -6,20 +6,10 @@
  ****/
 
 #include "Station.h"
-#include "../../SmingCore/SmingCore.h"
+#include "Interrupts.h"
 #include "Data/HexString.h"
 
 StationClass WifiStation;
-
-StationClass::StationClass()
-{
-	System.onReady(this);
-	runScan = false;
-}
-
-StationClass::~StationClass()
-{
-}
 
 void StationClass::enable(bool enabled, bool save)
 {
@@ -265,7 +255,7 @@ bool StationClass::startScan(ScanCompletedDelegate scanCompleted)
 	if(!scanCompleted)
 		return false;
 
-	bool res = wifi_station_scan(NULL, staticScanCompleted);
+	bool res = wifi_station_scan(nullptr, staticScanCompleted);
 	if(!res) {
 		if(!System.isReady()) {
 			// It's OK, queue this task
@@ -286,7 +276,7 @@ void StationClass::staticScanCompleted(void* arg, STATUS status)
 		if(WifiStation.scanCompletedCallback) {
 			bss_info* cur = (bss_info*)arg;
 
-			while(cur != NULL) {
+			while(cur != nullptr) {
 				list.add(BssInfo(cur));
 				cur = cur->next.stqe_next;
 			}
@@ -304,7 +294,7 @@ void StationClass::staticScanCompleted(void* arg, STATUS status)
 void StationClass::onSystemReady()
 {
 	if(runScan) {
-		wifi_station_scan(NULL, staticScanCompleted);
+		wifi_station_scan(nullptr, staticScanCompleted);
 		runScan = false;
 	}
 }
@@ -377,7 +367,7 @@ void StationClass::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate 
 void StationClass::smartConfigStop()
 {
 	smartconfig_stop();
-	smartConfigCallback = NULL;
+	smartConfigCallback = nullptr;
 }
 
 #ifdef ENABLE_WPS

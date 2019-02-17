@@ -26,8 +26,8 @@
 #define MQTT_PAYLOAD_LENGTH 1024
 
 typedef struct {
-	void* userData; // << custom user data
-	size_t offset;  // << bytes read so far.
+	void* userData; ///< custom user data
+	size_t offset;  ///< bytes read so far.
 } MqttPayloadParserState;
 
 /**

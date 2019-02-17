@@ -13,8 +13,8 @@
 #ifndef _NWDigital_H_
 #define _NWDigital_H_
 
-#include "../SmingCore/ESP8266EX.h"
-#include "../Wiring/WiringFrameworkDependencies.h"
+#include "ESP8266EX.h"
+#include "WiringFrameworkDependencies.h"
 
 /** @brief  Set the mode of a GPIO pin
  *  @param  pin GPIO pin to configure

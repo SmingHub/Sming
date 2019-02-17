@@ -18,18 +18,6 @@
 #include "../../Services/WebHelpers/aw-sha1.h"
 #include "../../Services/WebHelpers/base64.h"
 
-WebsocketClient::WebsocketClient() : WebsocketConnection(new HttpConnection(new RequestQueue()))
-{
-}
-
-WebsocketClient::WebsocketClient(HttpConnectionBase* connection) : WebsocketConnection(connection)
-{
-}
-
-WebsocketClient::~WebsocketClient()
-{
-}
-
 HttpConnection* WebsocketClient::getHttpConnection()
 {
 	HttpConnection* connection = static_cast<HttpConnection*>(WebsocketConnection::getConnection());
@@ -84,7 +72,7 @@ bool WebsocketClient::connect(const String& url, uint32_t sslOptions /* = 0 */)
 		return false;
 	}
 
-	WebsocketConnection::userData = (void*)this;
+	WebsocketConnection::setUserData(this);
 
 	return true;
 }
