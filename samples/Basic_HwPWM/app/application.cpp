@@ -16,7 +16,7 @@
  * http://espressif.com/sites/default/files/documentation/esp8266-technical_reference_en.pdf
  */
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <HardwarePWM.h>
 
 uint8_t pins[8] = {4, 5, 0, 2, 15, 13, 12, 14}; // List of pins that you want to connect to pwm

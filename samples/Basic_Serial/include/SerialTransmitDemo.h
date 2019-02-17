@@ -1,7 +1,7 @@
 #ifndef _SERIAL_TRANSMIT_DEMO_H_
 #define _SERIAL_TRANSMIT_DEMO_H_
 
-#include "SmingCore/SmingCore.h"
+#include <SmingCore.h>
 
 class SerialTransmitDemo
 {

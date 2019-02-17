@@ -27,7 +27,7 @@ as well as Adafruit raw 1.8" TFT display
  ***************************************************/
 
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/Adafruit_ST7735/Adafruit_ST7735.h>
 #include "BPMDraw.h"
 

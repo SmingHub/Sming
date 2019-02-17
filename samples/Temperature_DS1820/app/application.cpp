@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/OneWire/OneWire.h>
 
 #include <Libraries/DS18S20/ds18s20.h>

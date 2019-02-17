@@ -3,7 +3,7 @@
  ****************************************************/
 
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/IR/src/IRrecv.h>
 #include <Libraries/IR/src/IRsend.h>
 #include <Libraries/IR/src/IRutils.h>

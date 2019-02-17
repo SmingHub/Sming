@@ -9,7 +9,7 @@
  */
 
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/Ultrasonic/Ultrasonic.h>
 
 #define TRIG_PIN 2

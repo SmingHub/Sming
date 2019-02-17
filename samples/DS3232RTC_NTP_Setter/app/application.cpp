@@ -1,7 +1,7 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
-#include <SmingCore/Wire.h>
+#include <Wire.h>
 #include <Libraries/DS3232RTC/DS3232RTC.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables

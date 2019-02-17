@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include "Libraries/AM2321/AM2321.h"
 
 AM2321 am2321;

@@ -8,7 +8,7 @@
  */
 
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include "Data/HexString.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables

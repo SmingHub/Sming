@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/Adafruit_ILI9341/Adafruit_ILI9341.h>
 
 #include "BPMDraw.h"

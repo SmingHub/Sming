@@ -1,8 +1,8 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
-//#include <SmingCore/Network/WebConstants.h>
-#include <SmingCore/Network/TelnetServer.h>
-#include <SmingCore/Debug.h>
+#include <SmingCore.h>
+//#include <Network/WebConstants.h>
+#include <Network/TelnetServer.h>
+#include <Debug.h>
 //#include <Libraries/ArduCAM/ArduCAM.h>
 //#include <Libraries/ArduCAM/ov2640_regs.h>
 
@@ -14,7 +14,7 @@
 
 #include <Libraries/ArduCAM/ArduCAMStream.h>
 #include <Services/HexDump/HexDump.h>
-#include <SmingCore/Data/Stream/MultipartStream.h>
+#include <Data/Stream/MultipartStream.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID

@@ -1,7 +1,7 @@
 #ifndef INCLUDE_SERIALREADINGDELEGATEDEMO_H_
 #define INCLUDE_SERIALREADINGDELEGATEDEMO_H_
 
-#include "SmingCore/SmingCore.h"
+#include <SmingCore.h>
 
 typedef std::function<void(const String& command)> CommandCallbackFunction;
 

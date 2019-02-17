@@ -2,7 +2,7 @@
 #define INCLUDE_SI7021_H_
 
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/SI7021/SI7021.h>
 
 #include "configuration.h"

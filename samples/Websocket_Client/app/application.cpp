@@ -10,8 +10,8 @@
  * websocket client.
  */
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
-#include <SmingCore/Network/WebsocketClient.h>
+#include <SmingCore.h>
+#include <Network/WebsocketClient.h>
 
 #ifndef WIFI_SSID
 #define WIFI_SSID "PutSsidHere" // Put you SSID and Password here

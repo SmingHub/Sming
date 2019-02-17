@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 /*** mDNS Demo (instruction for usage)
  * The multicast Domain Name System (mDNS) resolves host names to IP addresses

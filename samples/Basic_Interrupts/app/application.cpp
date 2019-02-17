@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 // Input pin for demonstrating a call to a low-level interrupt handler callback
 #define INT_PIN_A 0 // GPIO0
