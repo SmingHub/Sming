@@ -43,20 +43,27 @@ public:
 	}
 
 public:
-	HttpServerConnectionBodyDelegate onBody = 0; // << called when the resource wants to process the raw body data
-	HttpResourceDelegate onHeadersComplete = 0;  // << called when the headers are ready
-	HttpResourceDelegate onRequestComplete = 0;  // << called when the request is complete OR upgraded
-	HttpServerConnectionUpgradeDelegate onUpgrade = 0;
+	HttpServerConnectionBodyDelegate onBody = nullptr; // << called when the resource wants to process the raw body data
+	HttpResourceDelegate onHeadersComplete = nullptr;  // << called when the headers are ready
+	HttpResourceDelegate onRequestComplete = nullptr;  // << called when the request is complete OR upgraded
+	HttpServerConnectionUpgradeDelegate onUpgrade = nullptr;
 	// ^ called when the request is upgraded and raw data is passed to it
 };
 
 class HttpCompatResource : public HttpResource
 {
 public:
-	HttpCompatResource(const HttpPathDelegate& callback);
+	HttpCompatResource(const HttpPathDelegate& callback) : callback(callback)
+	{
+		onRequestComplete = HttpResourceDelegate(&HttpCompatResource::requestComplete, this);
+	}
 
 private:
-	int requestComplete(HttpServerConnection&, HttpRequest&, HttpResponse&);
+	int requestComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+	{
+		callback(request, response);
+		return 0;
+	}
 
 private:
 	HttpPathDelegate callback;

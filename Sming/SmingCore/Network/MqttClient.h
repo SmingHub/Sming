@@ -291,7 +291,7 @@ private:
 
 	// callbacks
 	HashMap<mqtt_type_t, MqttDelegate> eventHandler;
-	MqttPayloadParser payloadParser = 0;
+	MqttPayloadParser payloadParser = nullptr;
 
 	// states
 	MqttClientState state = eMCS_Ready;

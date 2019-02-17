@@ -138,12 +138,13 @@ public:
 		return static_cast<const HttpParams&>(postParams)[name];
 	}
 
-	/* @deprecated  use uri methods */
+	/* @deprecated use uri.Path */
 	String getPath() __deprecated
 	{
 		return uri.Path;
 	}
 
+	/* @todo deprecate: use uri methods */
 	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr);
 
 	/**
@@ -290,7 +291,7 @@ protected:
 private:
 	HashMap<String, IDataSourceStream*> files;
 
-	HttpParams* queryParams = nullptr;
+	HttpParams* queryParams = nullptr; // << @todo deprecate
 };
 
 #endif /* _SMING_CORE_HTTP_REQUEST_H_ */

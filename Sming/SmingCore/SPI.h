@@ -48,7 +48,6 @@ public:
 	 */
 	void end() override
 	{
-		// Do nothing
 	}
 
 	/** @brief beginTransaction()

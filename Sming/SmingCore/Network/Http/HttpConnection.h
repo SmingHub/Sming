@@ -78,12 +78,12 @@ public:
 	HttpHeaders& getResponseHeaders() __deprecated;
 
 	/**
-	* @todo Use `getResponse()->headers[HTTP_HEADER_LAST_MODIFIED]` instead
+	* @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_LAST_MODIFIED]` instead
 	*/
 	DateTime getLastModifiedDate(); // Last-Modified header
 
 	/**
-	 * @todo Use `getResponse()->headers[HTTP_HEADER_DATE]` instead
+	 * @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_DATE]` instead
 	 */
 	DateTime getServerDate(); // Date header
 

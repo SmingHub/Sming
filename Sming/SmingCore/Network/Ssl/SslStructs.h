@@ -18,5 +18,6 @@
 typedef SslKeyCertPair SSLKeyCertPair __deprecated;
 typedef SslSessionId SSLSessionId __deprecated;
 typedef SslFingerprints SSLFingerprints __deprecated;
+typedef SslFingerprintType SSLFingerprintType __deprecated;
 
 #endif /* SMINGCORE_NETWORK_SSL_SSLSTRUCTS_H_ */

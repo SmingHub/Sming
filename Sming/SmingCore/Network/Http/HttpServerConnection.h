@@ -117,13 +117,13 @@ private:
 	HttpRequest request = HttpRequest(URL());
 	HttpResponse response;
 
-	HttpResourceDelegate headersCompleteDelegate = 0;
-	HttpResourceDelegate requestCompletedDelegate = 0;
-	HttpServerConnectionBodyDelegate onBodyDelegate = 0;
+	HttpResourceDelegate headersCompleteDelegate = nullptr;
+	HttpResourceDelegate requestCompletedDelegate = nullptr;
+	HttpServerConnectionBodyDelegate onBodyDelegate = nullptr;
 	HttpServerProtocolUpgradeCallback upgradeCallback = nullptr;
 
 	BodyParsers* bodyParsers = nullptr;
-	HttpBodyParserDelegate bodyParser = 0;
+	HttpBodyParserDelegate bodyParser = nullptr;
 };
 
 /** @} */

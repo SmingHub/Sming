@@ -204,10 +204,10 @@ protected:
 					   bool useMask = true, bool isFin = true);
 
 protected:
-	WebsocketDelegate wsConnect = 0;
-	WebsocketMessageDelegate wsMessage = 0;
-	WebsocketBinaryDelegate wsBinary = 0;
-	WebsocketDelegate wsDisconnect = 0;
+	WebsocketDelegate wsConnect = nullptr;
+	WebsocketMessageDelegate wsMessage = nullptr;
+	WebsocketBinaryDelegate wsBinary = nullptr;
+	WebsocketDelegate wsDisconnect = nullptr;
 
 	void* userData = nullptr;
 

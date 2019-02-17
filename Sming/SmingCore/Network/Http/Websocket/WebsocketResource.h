@@ -21,7 +21,7 @@ class WebsocketResource : public HttpResource
 public:
 	WebsocketResource();
 
-	int checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
+	virtual int checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
 
 	void shutdown(HttpServerConnection& connection) override;
 
@@ -34,10 +34,10 @@ protected:
 	bool onConnect();
 
 protected:
-	WebsocketDelegate wsConnect = 0;
-	WebsocketMessageDelegate wsMessage = 0;
-	WebsocketBinaryDelegate wsBinary = 0;
-	WebsocketDelegate wsDisconnect = 0;
+	WebsocketDelegate wsConnect = nullptr;
+	WebsocketMessageDelegate wsMessage = nullptr;
+	WebsocketBinaryDelegate wsBinary = nullptr;
+	WebsocketDelegate wsDisconnect = nullptr;
 };
 
 #endif /* _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_ */
