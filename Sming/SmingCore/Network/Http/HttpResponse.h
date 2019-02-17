@@ -84,7 +84,7 @@ public:
 	 * @param newTemplateInstance
 	 * @retval bool
 	 */
-	bool sendTemplate(TemplateStream* newTemplateInstance) __deprecated;
+	bool sendTemplate(TemplateStream* newTemplateInstance);
 
 	/**
 	 * @brief Build and send JSON string
