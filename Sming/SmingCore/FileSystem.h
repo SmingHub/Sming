@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * FileSystem.h
+ *
  ****/
 
 /**	@defgroup filesystem File system
@@ -10,11 +13,11 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_FILESYSTEM_H_
-#define _SMING_CORE_FILESYSTEM_H_
+#ifndef _SMING_CORE_FILE_SYSTEM_H_
+#define _SMING_CORE_FILE_SYSTEM_H_
 
 #include "../Services/SpifFS/spiffs_sming.h"
-#include "../Wiring/WVector.h"
+#include "WVector.h"
 
 class String;
 
@@ -197,4 +200,4 @@ void fileDelete(file_t file);
 bool fileExist(const String& name);
 
 /** @} */
-#endif /* _SMING_CORE_FILESYSTEM_H_ */
+#endif /* _SMING_CORE_FILE_SYSTEM_H_ */

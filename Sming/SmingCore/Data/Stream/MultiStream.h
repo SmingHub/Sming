@@ -1,12 +1,18 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * MultiStream.h
  *
  *  Created on: Nov 7, 2018
  *      Author: slavey
- */
+ *
+ ****/
 
-#ifndef SMINGCORE_DATA_STREAM_MULTISTREAM_H_
-#define SMINGCORE_DATA_STREAM_MULTISTREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_MULTISTREAM_H_
+#define _SMING_CORE_DATA_STREAM_MULTISTREAM_H_
 
 #include "DataSourceStream.h"
 
@@ -63,4 +69,4 @@ protected:
 	bool finished = false;
 };
 
-#endif /* SMINGCORE_DATA_STREAM_MULTISTREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_MULTISTREAM_H_ */

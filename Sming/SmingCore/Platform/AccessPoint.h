@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * AccessPoint.h
+ *
  ****/
 
 /**	@defgroup wifi_ap WiFi Access Point
@@ -14,8 +17,8 @@
  *  @todo   How is wifi access point dhcp controlled?
 */
 
-#ifndef SMINGCORE_PLATFORM_ACCESSPOINT_H_
-#define SMINGCORE_PLATFORM_ACCESSPOINT_H_
+#ifndef _SMING_CORE_PLATFORM_ACCESS_POINT_H_
+#define _SMING_CORE_PLATFORM_ACCESS_POINT_H_
 
 #include "System.h"
 #include "WString.h"
@@ -116,4 +119,4 @@ private:
  */
 extern AccessPointClass WifiAccessPoint;
 
-#endif /* SMINGCORE_PLATFORM_ACCESSPOINT_H_ */
+#endif /* _SMING_CORE_PLATFORM_ACCESS_POINT_H_ */

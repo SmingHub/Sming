@@ -3,6 +3,8 @@
  * http://github.com/anakod/Sming
  * This file is provided under the LGPL v3 license.
  *
+ * DnsServer.cpp
+ *
  * File Author: https://github.com/patrickjahns
  *
  * The code is a port of the following projects
@@ -10,7 +12,9 @@
  * https://github.com/esp8266/Arduino/tree/master/libraries/DNSServer
  *
  * Created on March 4, 2016
- */
+ *
+ ****/
+
 #include "DNSServer.h"
 #include "UdpConnection.h"
 #include "WString.h"

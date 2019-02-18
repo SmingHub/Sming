@@ -1,12 +1,12 @@
 /*
  * lwip_includes.h
  *
- *  Created on: 23 февр. 2015 г.
+ *  Created on: 23 пїЅпїЅпїЅпїЅ. 2015 пїЅ.
  *      Author: Anakonda
  */
 
-#ifndef SYSTEM_INCLUDE_ESPINC_LWIP_INCLUDES_H_
-#define SYSTEM_INCLUDE_ESPINC_LWIP_INCLUDES_H_
+#ifndef _SYSTEM_INCLUDE_ESPINC_LWIP_INCLUDES_H_
+#define _SYSTEM_INCLUDE_ESPINC_LWIP_INCLUDES_H_
 
 #include <lwipopts.h>
 #include <lwip/init.h>
@@ -16,4 +16,4 @@
 #include <lwip/udp.h>
 #include <lwip/dns.h>
 
-#endif /* SYSTEM_INCLUDE_ESPINC_LWIP_INCLUDES_H_ */
+#endif /* _SYSTEM_INCLUDE_ESPINC_LWIP_INCLUDES_H_ */

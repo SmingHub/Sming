@@ -1,5 +1,11 @@
-/*
- * File: HardwarePWM.cpp
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HardwarePWM.cpp
+ *
  * Original Author: https://github.com/hrsavla
  *
  * This HardwarePWM library enables Sming framework user to use ESP SDK PWM API
@@ -14,6 +20,7 @@
  *
  * See also ESP8266 Technical Reference, Chapter 12:
  * http://espressif.com/sites/default/files/documentation/esp8266-technical_reference_en.pdf
+ *
  */
 
 #include "Clock.h"

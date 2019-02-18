@@ -1,7 +1,10 @@
-/* This file is part of Sming Framework Project
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
- * This file is provided under the LGPL v3 license.
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * DnsServer.h
  *
  * File Author: https://github.com/patrickjahns
  *
@@ -9,15 +12,16 @@
  * https://github.com/israellot/esp-ginx/tree/master/app/dns
  * https://github.com/esp8266/Arduino/tree/master/libraries/DNSServer
  * Created on March 4, 2016
- */
+ *
+ ****/
 
 /** @defgroup   dnsserver DNS server
  *  @brief      Provides DNS server
  *  @ingroup    udp
  *  @{
  */
-#ifndef DNSServer_h
-#define DNSServer_h
+#ifndef _SMING_CORE_NETWORK_DNS_SERVER_H_
+#define _SMING_CORE_NETWORK_DNS_SERVER_H_
 
 #include "UdpConnection.h"
 #include "WString.h"
@@ -95,4 +99,4 @@ private:
 };
 
 /** @} */
-#endif //DNSServer_h
+#endif /* _SMING_CORE_NETWORK_DNS_SERVER_H_ */

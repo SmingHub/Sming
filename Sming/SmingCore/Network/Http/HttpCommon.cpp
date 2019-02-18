@@ -4,6 +4,8 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * HttpCommon.cpp
+ *
  * @author: 2018 - Mikee47 <mike@sillyhouse.net>
  *
  * 	httpGetErrorName(), httpGetErrorDescription() and httpGetStatusText() functions added

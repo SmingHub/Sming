@@ -4,6 +4,8 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * CircularBuffer.h
+ *
  * Initial code done by Ivan Grokhotkov as part of the esp8266 core for Arduino environment.
  * https://github.com/esp8266/Arduino/blob/master/cores/esp8266/cbuf.h
  *

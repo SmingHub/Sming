@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * SslStructs.h
+ *
  ****/
 
-#ifndef SMINGCORE_NETWORK_SSL_SSLSTRUCTS_H_
-#define SMINGCORE_NETWORK_SSL_SSLSTRUCTS_H_
+#ifndef _SMING_CORE_NETWORK_SSL_SSL_STRUCTS_H_
+#define _SMING_CORE_NETWORK_SSL_SSL_STRUCTS_H_
 
 #include "SslFingerprints.h"
 #include "SslKeyCertPair.h"
@@ -20,4 +23,4 @@ typedef SslSessionId SSLSessionId SMING_DEPRECATED;				///< @deprecated Use SslS
 typedef SslFingerprints SSLFingerprints SMING_DEPRECATED;		///< @deprecated Use SslFingerprints instead
 typedef SslFingerprintType SSLFingerprintType SMING_DEPRECATED; ///< @deprecated Use SslFingerprintType instead
 
-#endif /* SMINGCORE_NETWORK_SSL_SSLSTRUCTS_H_ */
+#endif /* _SMING_CORE_NETWORK_SSL_SSL_STRUCTS_H_ */

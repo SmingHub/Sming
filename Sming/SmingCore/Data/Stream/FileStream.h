@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * FileStream.h
+ *
  ****/
 
 #ifndef _SMING_CORE_DATA_FILE_STREAM_H_

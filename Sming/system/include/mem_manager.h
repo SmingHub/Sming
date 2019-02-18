@@ -1,10 +1,20 @@
-#ifndef __MEM_MANAGER_H__
-#define __MEM_MANAGER_H__
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * mem_manager.h
+ *
+ ****/
+
+#ifndef _SYSTEM_INCLUDE_MEM_MANAGER_H_
+#define _SYSTEM_INCLUDE_MEM_MANAGER_H_
 
 //#include "c_types.h"
 #include <mem.h>
 
-/*------------------------±äÁ¿¶¨Òå------------------------*/
+/*------------------------ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½------------------------*/
 
 #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 #ifndef IOT_SIP_MODE
@@ -62,7 +72,7 @@ static xBlockLink xStart, *pxEnd = NULL;
 //static size_t xFreeBytesRemaining = ( ( size_t ) configADJUSTED_HEAP_SIZE ) & ( ( size_t ) ~portBYTE_ALIGNMENT_MASK );
 
 
-/*------------------------º¯ÊýÉùÃ÷-----------------------------------*/
+/*------------------------ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-----------------------------------*/
 
 static void prvInsertBlockIntoFreeList( xBlockLink *pxBlockToInsert ) ;//ICACHE_FLASH_ATTR;
 
@@ -75,4 +85,4 @@ size_t xPortGetFreeHeapSize( void ) ;//ICACHE_FLASH_ATTR;
 void vPortInitialiseBlocks( void ) ;//ICACHE_FLASH_ATTR;
 /*-----------------------------------------------------------*/
 
-#endif
+#endif /* _SYSTEM_INCLUDE_MEM_MANAGER_H_ */

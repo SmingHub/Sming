@@ -4,7 +4,7 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpServer
+ * HttpServer.h
  *
  * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -16,8 +16,8 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_HTTPSERVER_H_
-#define _SMING_CORE_HTTPSERVER_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_SERVER_H_
+#define _SMING_CORE_NETWORK_HTTP_SERVER_H_
 
 #include "TcpServer.h"
 #include "WString.h"
@@ -101,4 +101,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_HTTPSERVER_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_SERVER_H_ */

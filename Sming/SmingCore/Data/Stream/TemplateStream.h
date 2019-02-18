@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * TemplateStream.h
+ *
  ****/
 
-#ifndef _SMING_CORE_DATA_TEMPLATE_STREAM_H_
-#define _SMING_CORE_DATA_TEMPLATE_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_TEMPLATE_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_TEMPLATE_STREAM_H_
 
 #include "DataSourceStream.h"
 #include "WHashMap.h"
@@ -123,4 +126,4 @@ private:
 
 /** @} */
 
-#endif /* _SMING_CORE_DATA_TEMPLATESTREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_TEMPLATE_STREAM_H_ */

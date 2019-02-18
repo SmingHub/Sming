@@ -4,6 +4,8 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * NtpClient.h
+ *
  ****/
 
 /** @defgroup   ntp Network Time Protocol client
@@ -12,8 +14,8 @@
  *  @ingroup    udp
  *  @{
  */
-#ifndef _SMING_CORE_NETWORK_NTPCLIENT_H_
-#define _SMING_CORE_NETWORK_NTPCLIENT_H_
+#ifndef _SMING_CORE_NETWORK_NTP_CLIENT_H_
+#define _SMING_CORE_NETWORK_NTP_CLIENT_H_
 
 #include "UdpConnection.h"
 #include "Platform/System.h"
@@ -134,4 +136,4 @@ protected:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_NTPCLIENT_H_ */
+#endif /* _SMING_CORE_NETWORK_NTP_CLIENT_H_ */

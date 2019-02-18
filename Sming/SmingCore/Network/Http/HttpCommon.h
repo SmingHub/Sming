@@ -2,16 +2,16 @@
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpServerResource
+ * HttpCommon.h
  *
  * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
- * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#ifndef _SMING_CORE_HTTP_COMMON_H_
-#define _SMING_CORE_HTTP_COMMON_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_COMMON_H_
+#define _SMING_CORE_NETWORK_HTTP_HTTP_COMMON_H_
 
 #define ENABLE_HTTP_REQUEST_AUTH 1
 
@@ -73,4 +73,4 @@ static inline String httpGetStatusText(unsigned code)
 	return httpGetStatusText((enum http_status)code);
 }
 
-#endif /* _SMING_CORE_HTTP_COMMON_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_COMMON_H_ */

@@ -3,9 +3,12 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * URL.cpp
+ *
+ * Code based on http://stackoverflow.com/questions/2616011/easy-way-to-parse-a-url-in-c-cross-platform
+ *
  ****/
-
-// Code based on http://stackoverflow.com/questions/2616011/easy-way-to-parse-a-url-in-c-cross-platform
 
 #include "URL.h"
 

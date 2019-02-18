@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * EndlessMemoryStream.h
+ *
  ****/
 
-#ifndef _SMING_CORE_ENDLESS_MEMORY_STREAM_H_
-#define _SMING_CORE_ENDLESS_MEMORY_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_ENDLESS_MEMORY_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_ENDLESS_MEMORY_STREAM_H_
 
 #include "MemoryDataStream.h"
 
@@ -59,4 +62,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_ENDLESS_MEMORY_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_ENDLESS_MEMORY_STREAM_H_ */

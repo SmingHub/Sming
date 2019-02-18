@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * ReadWriteStream.h
+ *
  ****/
 
-#ifndef _SMING_CORE_DATA_READ_WRITE_STREAM_H_
-#define _SMING_CORE_DATA_READ_WRITE_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_READ_WRITE_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_READ_WRITE_STREAM_H_
 
 #include "DataSourceStream.h"
 
@@ -44,4 +47,4 @@ public:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_READ_WRITE_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_READ_WRITE_STREAM_H_ */

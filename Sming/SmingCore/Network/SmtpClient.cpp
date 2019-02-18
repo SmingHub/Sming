@@ -4,7 +4,7 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * SmtpClient
+ * SmtpClient.cpp
  *
  * Author: 2018 - Slavey Karadzhov <slav@attachix.com>
  *

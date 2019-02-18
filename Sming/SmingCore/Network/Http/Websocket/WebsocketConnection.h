@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * WebsocketConnection.h
+ *
  ****/
 
-#ifndef SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_
-#define SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_CONNECTION_H_
+#define _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_CONNECTION_H_
 
 #include "Network/TcpServer.h"
 #include "../HttpConnectionBase.h"
@@ -231,4 +234,4 @@ private:
 };
 
 /** @} */
-#endif /* SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_CONNECTION_H_ */

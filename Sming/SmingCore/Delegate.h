@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Delegate.h
+ *
  ****/
 
 /** @defgroup   delegate Delegate
@@ -10,8 +13,8 @@
  *              Several handlers may be triggered for each event
  *  @{
  */
-#ifndef SMINGCORE_DELEGATE_H_
-#define SMINGCORE_DELEGATE_H_
+#ifndef _SMING_CORE_DELEGATE_H_
+#define _SMING_CORE_DELEGATE_H_
 
 #include <user_config.h>
 
@@ -239,4 +242,4 @@ private:
 };
 
 /** @} */
-#endif /* SMINGCORE_DELEGATE_H_ */
+#endif /* _SMING_CORE_DELEGATE_H_ */

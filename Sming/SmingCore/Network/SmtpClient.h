@@ -4,7 +4,8 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * SmtpClient - asynchronous SmtpClient that supports the following features:
+ * SmtpClient.h - Asynchronous SmtpClient that supports the following features:
+ *
  * - extended HELO command set
  * - support for PIPELINING
  * - support for STARTTLS (if the directive ENABLE_SSL=1 is set)
@@ -17,13 +18,14 @@
  *
  ****/
 
+#ifndef _SMING_CORE_NETWORK_SMTPCLIENT_H_
+#define _SMING_CORE_NETWORK_SMTPCLIENT_H_
+
 /** @defgroup   smtpclient SMTP client
  *  @brief      Provides SMTP/S client
  *  @ingroup    tcpclient
  *  @{
  */
-
-#pragma once
 
 #include "TcpClient.h"
 #include "Data/MailMessage.h"
@@ -215,3 +217,5 @@ private:
 	 */
 	HttpPartResult multipartProducer();
 };
+
+#endif /* _SMING_CORE_NETWORK_SMTPCLIENT_H_ */

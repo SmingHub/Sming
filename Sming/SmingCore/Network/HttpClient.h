@@ -4,7 +4,7 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpClient
+ * HttpClient.h
  *
  * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -16,8 +16,8 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_HTTPCLIENT_H_
-#define _SMING_CORE_NETWORK_HTTPCLIENT_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_CLIENT_H_
+#define _SMING_CORE_NETWORK_HTTP_CLIENT_H_
 
 #include "TcpClient.h"
 #include "Http/HttpCommon.h"
@@ -111,4 +111,4 @@ protected:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_HTTPCLIENT_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_CLIENT_H_ */

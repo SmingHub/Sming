@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * TcpConnection.h
+ *
  ****/
 
 /** @defgroup tcp TCP
@@ -10,8 +13,8 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_TCPCONNECTION_H_
-#define _SMING_CORE_TCPCONNECTION_H_
+#ifndef _SMING_CORE_NETWORK_TCP_CONNECTION_H_
+#define _SMING_CORE_NETWORK_TCP_CONNECTION_H_
 
 #ifdef ENABLE_SSL
 #include "../axtls-8266/compat/lwipr_compat.h"
@@ -296,4 +299,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_TCPCONNECTION_H_ */
+#endif /* _SMING_CORE_NETWORK_TCP_CONNECTION_H_ */

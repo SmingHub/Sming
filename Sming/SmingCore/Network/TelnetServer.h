@@ -1,9 +1,15 @@
-/*
- * telnetServer.h
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * TelnetServer.h
  *
  *  Created on: 18 apr. 2015
  *      Author: Herman
- */
+ *
+ ****/
 
 /** @defgroup   telnetserver Telnet server
  *  @brief      Provides Telnet server
@@ -11,8 +17,8 @@
  *  @{
  */
 
-#ifndef APP_TELNETSERVER_H_
-#define APP_TELNETSERVER_H_
+#ifndef _SMING_CORE_NETWORK_TELNET_SERVER_H_
+#define _SMING_CORE_NETWORK_TELNET_SERVER_H_
 
 #include <user_config.h>
 #include "Delegate.h"
@@ -51,4 +57,4 @@ private:
 };
 
 /** @} */
-#endif /* APP_TELNETSERVER_H_ */
+#endif /* _SMING_CORE_NETWORK_TELNET_SERVER_H_ */

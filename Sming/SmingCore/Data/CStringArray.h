@@ -4,12 +4,14 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * CStringArray.h
+ *
  * @author: 2018 - Mikee47 <mike@sillyhouse.net>
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STRING_ARRAY_H_
-#define _SMING_CORE_DATA_STRING_ARRAY_H_
+#ifndef _SMING_CORE_DATA_C_STRING_ARRAY_H_
+#define _SMING_CORE_DATA_C_STRING_ARRAY_H_
 
 #include "WString.h"
 
@@ -119,4 +121,4 @@ private:
 	mutable unsigned stringCount = 0;
 };
 
-#endif // _SMING_CORE_DATA_STRING_ARRAY_H_
+#endif // _SMING_CORE_DATA_C_STRING_ARRAY_H_

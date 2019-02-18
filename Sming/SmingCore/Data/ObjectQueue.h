@@ -4,6 +4,8 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * ObjectQueue.h
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  * @author: 12 Aug 2018 - Mikee47 <mike@sillyhouse.net>

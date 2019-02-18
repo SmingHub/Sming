@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * SmingCore.h
+ *
  ****/
 
 #ifndef _SMING_CORE_H_
@@ -12,7 +15,7 @@
 
 #include <functional>
 
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "WiringFrameworkIncludes.h"
 
 #include "Delegate.h"
 #include "Clock.h"

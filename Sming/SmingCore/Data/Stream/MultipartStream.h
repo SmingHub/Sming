@@ -4,12 +4,14 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * MultipartStream.h
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_MULTIPART_STREAM_H_
-#define _SMING_CORE_DATA_MULTIPART_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_MULTIPART_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_MULTIPART_STREAM_H_
 
 #include "MultiStream.h"
 #include "Delegate.h"
@@ -61,4 +63,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_MULTIPART_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_MULTIPART_STREAM_H_ */

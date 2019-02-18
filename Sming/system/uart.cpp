@@ -18,6 +18,10 @@
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+ @author 2018 mikee47 <mike@sillyhouse.net>
+
+ Additional features to support flexible transmit buffering and callbacks
+
  */
 
 

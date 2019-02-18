@@ -1,13 +1,22 @@
-/**	Localization is defined within SmingLocale.h
-*	Each locale has a unique ID (usually its international dial code, e.g. GB=44
-*	The default locale is GB and the default values are those used by GB.
-*	To add a new locale:
-*		#define LOCALE_xx_yy zz (where xx_yy is the locale identifier and zz is the IDC)
-*		Override any variation from GB settings within a "#elifdef LOCALE_xx_yy zz" block
-*	Default settings are at end of file
-*/
-#ifndef LOCALE_H_INCLUDED
-#define LOCALE_H_INCLUDED
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * SmingLocale.h
+ *
+ * Localization is defined within SmingLocale.h
+ *	Each locale has a unique ID (usually its international dial code, e.g. GB=44
+ *	The default locale is GB and the default values are those used by GB.
+ *	To add a new locale:
+ *		#define LOCALE_xx_yy zz (where xx_yy is the locale identifier and zz is the IDC)
+ *		Override any variation from GB settings within a "#elifdef LOCALE_xx_yy zz" block
+ *	Default settings are at end of file
+ */
+
+#ifndef _SMING_CORE_SMING_LOCALE_H_
+#define _SMING_CORE_SMING_LOCALE_H_
 
 // Define unique values for each locale (try to use ISD codes if appropriate)
 #define LOCALE_EN_US 1
@@ -71,4 +80,4 @@
 #define LOCALE_DATE_TIME "%a %d %b %Y %X"
 #endif // LOCALE_DATE_TIME
 
-#endif // LOCALE_H_INCLUDED
+#endif /* _SMING_CORE_SMING_LOCALE_H_ */

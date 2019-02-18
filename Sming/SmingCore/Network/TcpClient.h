@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * TcpClient.h
+ *
  ****/
 
 /** @defgroup   tcpclient Clients
@@ -11,8 +14,8 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_TCPCLIENT_H_
-#define _SMING_CORE_TCPCLIENT_H_
+#ifndef _SMING_CORE_NETWORK_TCP_CLIENT_H_
+#define _SMING_CORE_NETWORK_TCP_CLIENT_H_
 
 #include "TcpConnection.h"
 #include "Delegate.h"
@@ -200,4 +203,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_TCPCLIENT_H_ */
+#endif /* _SMING_CORE_NETWORK_TCP_CLIENT_H_ */

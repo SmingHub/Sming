@@ -1,10 +1,20 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * RTC.h
+ *
+ ****/
+
 /**	@defgroup rtc Real Time Clock
  *	@brief	Access to the real time clock
  *	@note   Provides ability to set and read the ESP8266 RTC.
  *  @ingroup datetime
 */
-#ifndef SMINGCORE_RTC_H_
-#define SMINGCORE_RTC_H_
+#ifndef _SMING_CORE_PLATFORM_RTC_H_
+#define _SMING_CORE_PLATFORM_RTC_H_
 
 #include "../Wiring/WiringFrameworkDependencies.h"
 
@@ -73,4 +83,4 @@ private:
  *  @ingroup rtc
  */
 extern RtcClass RTC;
-#endif /* SMINGCORE_RTC_H_ */
+#endif /* _SMING_CORE_PLATFORM_RTC_H_ */

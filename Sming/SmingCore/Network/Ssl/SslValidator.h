@@ -4,6 +4,8 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * SslValidator.h
+ *
  * @author: 2018 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
@@ -13,8 +15,8 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_SSLVALIDATOR_H_
-#define _SMING_CORE_SSLVALIDATOR_H_
+#ifndef _SMING_CORE_SSL_VALIDATOR_H_
+#define _SMING_CORE_SSL_VALIDATOR_H_
 
 #include "ssl/ssl.h"
 #include "ssl/tls1.h"
@@ -76,4 +78,4 @@ public:
 };
 
 /** @} */
-#endif /* _SMING_CORE_SSLVALIDATOR_H_ */
+#endif /* _SMING_CORE_SSL_VALIDATOR_H_ */

@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * URL.h
+ *
  ****/
 
 /** @defgroup   url URL
@@ -15,7 +18,7 @@
 #ifndef _SMING_CORE_NETWORK_URL_H_
 #define _SMING_CORE_NETWORK_URL_H_
 
-#include "../../Wiring/WString.h"
+#include "WString.h"
 
 #define DEFAULT_URL_PROTOCOL _F("http")
 #define HTTPS_URL_PROTOCOL _F("https")
