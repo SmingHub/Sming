@@ -23,7 +23,7 @@
 #include "lwip/tcp_impl.h"
 #endif
 
-bool HttpConnection::connect(const String& host, int port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool HttpConnection::connect(const String& host, int port, bool useSsl, uint32_t sslOptions)
 {
 	debug_d("HttpConnection::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != nullptr ? tcp->state : -1),
 			(int)(getConnectionState() != eTCS_Ready), (int)isActive());

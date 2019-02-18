@@ -34,7 +34,7 @@ HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
 	return this;
 }
 
-HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic /* = false */)
+HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic)
 {
 	String cache = isPublic ? F("public") : F("private");
 	cache += F(", max-age=") + String(maxAgeSeconds) + F(", must-revalidate");
@@ -66,7 +66,7 @@ bool HttpResponse::sendString(const String& text)
 	return buffer->print(text) == text.length();
 }
 
-bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)
+bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck)
 {
 	String compressed = fileName + ".gz";
 	if(allowGzipFileCheck && fileExist(compressed)) {

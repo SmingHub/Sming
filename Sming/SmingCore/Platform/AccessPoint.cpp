@@ -31,8 +31,8 @@ bool AccessPointClass::isEnabled()
 	return wifi_get_opmode() & SOFTAP_MODE;
 }
 
-bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mode, bool hidden /* = false*/,
-							  int channel /* = 7*/, int beaconInterval /* = 200*/)
+bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mode, bool hidden, int channel,
+							  int beaconInterval)
 {
 	softap_config config = {0};
 	if(mode == AUTH_WEP)

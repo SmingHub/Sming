@@ -31,8 +31,7 @@ bool StationClass::isEnabled()
 	return wifi_get_opmode() & STATION_MODE;
 }
 
-bool StationClass::config(const String& ssid, const String& password, bool autoConnectOnStartup /* = true*/,
-						  bool save /* = true */)
+bool StationClass::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
 {
 	station_config config = {0};
 
