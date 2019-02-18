@@ -42,13 +42,32 @@ typedef std::function<bool()> HttpServerProtocolUpgradeCallback;
 class HttpServerConnection : public HttpConnectionBase
 {
 public:
-	HttpServerConnection(tcp_pcb* clientTcp);
-	virtual ~HttpServerConnection();
+	HttpServerConnection(tcp_pcb* clientTcp) : HttpConnectionBase(clientTcp, HTTP_REQUEST)
+	{
+	}
 
-	void setResourceTree(ResourceTree* resourceTree);
-	void setBodyParsers(BodyParsers* bodyParsers);
+	~HttpServerConnection()
+	{
+		if(this->resource != nullptr) {
+			this->resource->shutdown(*this);
+		}
+	}
 
-	void send();
+	void setResourceTree(ResourceTree* resourceTree)
+	{
+		this->resourceTree = resourceTree;
+	}
+
+	void setBodyParsers(BodyParsers* bodyParsers)
+	{
+		this->bodyParsers = bodyParsers;
+	}
+
+	void send()
+	{
+		state = eHCS_StartSending;
+		onReadyToSendData(eTCE_Received);
+	}
 
 	using TcpClient::send;
 
@@ -95,7 +114,14 @@ protected:
 	 */
 	int onMessageComplete(http_parser* parser) override;
 
-	bool onProtocolUpgrade(http_parser* parser) override;
+	bool onProtocolUpgrade(http_parser* parser) override
+	{
+		if(upgradeCallback) {
+			return upgradeCallback();
+		}
+
+		return true;
+	}
 
 	void onHttpError(http_errno error) override;
 
