@@ -7,7 +7,7 @@
 class FTPDataStream : public TcpConnection
 {
 public:
-	FTPDataStream(FTPServerConnection* connection) : TcpConnection(true), parent(connection)
+	explicit FTPDataStream(FTPServerConnection* connection) : TcpConnection(true), parent(connection)
 	{
 	}
 
@@ -70,7 +70,7 @@ protected:
 class FTPDataFileList : public FTPDataStream
 {
 public:
-	FTPDataFileList(FTPServerConnection* connection) : FTPDataStream(connection)
+	explicit FTPDataFileList(FTPServerConnection* connection) : FTPDataStream(connection)
 	{
 	}
 
@@ -164,10 +164,10 @@ err_t FTPServerConnection::onReceive(pbuf* buf)
 {
 	if(buf == nullptr)
 		return ERR_OK;
-	int p = 0, prev = 0;
+	int prev = 0;
 
 	while(true) {
-		p = NetUtils::pbufFindStr(buf, "\r\n", prev);
+		int p = NetUtils::pbufFindStr(buf, "\r\n", prev);
 		if(p < 0 || p - prev > MAX_FTP_CMD) {
 			break;
 		}

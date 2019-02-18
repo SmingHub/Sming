@@ -56,9 +56,8 @@ int Stream::timedPeek()
 // discards non-numeric characters
 int Stream::peekNextDigit()
 {
-  int c;
   while (1) {
-    c = timedPeek();
+    int c = timedPeek();
     if (c < 0) return c;  // timeout
     if (c == '-') return c;
     if (c >= '0' && c <= '9') return c;

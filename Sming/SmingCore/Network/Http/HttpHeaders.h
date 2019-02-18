@@ -90,9 +90,18 @@ enum HttpHeaderFieldName {
  *
  *  @todo add name and/or value escaping
  */
-class HttpHeaders : private HashMap<HttpHeaderFieldName, String>
+class HttpHeaders : protected HashMap<HttpHeaderFieldName, String>
 {
 public:
+	HttpHeaders()
+	{
+	}
+
+	HttpHeaders(const HttpHeaders& headers)
+	{
+		*this = headers;
+	}
+
 	String toString(HttpHeaderFieldName name) const;
 
 	/** @brief Produce a string for output in the HTTP header, with line ending

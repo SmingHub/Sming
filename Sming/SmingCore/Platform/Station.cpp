@@ -451,17 +451,12 @@ void StationClass::wpsConfigStop()
 
 BssInfo::BssInfo(bss_info* info)
 {
-	ssid = String((char*)info->ssid);
+	ssid = reinterpret_cast<const char*>(info->ssid);
 	memcpy(bssid, info->bssid, sizeof(bssid));
 	authorization = info->authmode;
 	channel = info->channel;
 	rssi = info->rssi;
 	hidden = info->is_hidden;
-}
-
-bool BssInfo::isOpen()
-{
-	return authorization == AUTH_OPEN;
 }
 
 const char* BssInfo::getAuthorizationMethodName()

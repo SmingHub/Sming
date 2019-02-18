@@ -56,7 +56,8 @@ public:
 		return new HttpRequest(*this);
 	}
 
-	HttpRequest& operator=(const HttpRequest& rhs);
+	/** @deprecated Please use `clone()` instead */
+	HttpRequest& operator=(const HttpRequest& rhs) SMING_DEPRECATED;
 
 	~HttpRequest()
 	{

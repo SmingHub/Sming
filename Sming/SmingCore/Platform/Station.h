@@ -265,7 +265,10 @@ public:
 	/**	@brief	Get BSS open status
 	 *	@retval	bool True if BSS open
 	*/
-	bool isOpen();
+	bool isOpen()
+	{
+		return authorization == AUTH_OPEN;
+	}
 
 	/**	@brief	Get BSS authorisation method name
 	 *	@retval	char* Pointer to c string BSS authoristation method name

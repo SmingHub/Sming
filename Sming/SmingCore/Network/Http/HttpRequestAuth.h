@@ -34,10 +34,8 @@ public:
 class HttpBasicAuth : public AuthAdapter
 {
 public:
-	HttpBasicAuth(const String& username, const String& password)
+	HttpBasicAuth(const String& username, const String& password) : username(username), password(password)
 	{
-		this->username = username;
-		this->password = password;
 	}
 
 	void setRequest(HttpRequest* request);
@@ -50,10 +48,8 @@ private:
 class HttpDigestAuth : public AuthAdapter
 {
 public:
-	HttpDigestAuth(const String& username, const String& password)
+	HttpDigestAuth(const String& username, const String& password) : username(username), password(password)
 	{
-		this->username = username;
-		this->password = password;
 	}
 
 	void setRequest(HttpRequest* request)

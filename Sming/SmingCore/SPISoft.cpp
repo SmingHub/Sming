@@ -45,14 +45,11 @@ void SPISoft::begin()
 
 void SPISoft::transfer(uint8_t* buffer, uint32_t size)
 {
-	uint8_t d;
-	uint8_t r;
 	do {
-		d = *buffer;
-		r = 0;
+		uint8_t d = *buffer;
 
-		GP_OUT(mMOSI, d & 0x80); /* bit7 */
-		r = GP_IN(mMISO);		 //bit 7
+		GP_OUT(mMOSI, d & 0x80);  /* bit7 */
+		uint8_t r = GP_IN(mMISO); //bit 7
 		SCK_PULSE
 		GP_OUT(mMOSI, d & 0x40);   /* bit6 */
 		r = r << 1 | GP_IN(mMISO); //bit 6
