@@ -83,8 +83,8 @@ public:
 	 */
 	bool send(HttpRequest* request);
 
-	/** @deprecated Please use createRequest instead */
-	HttpRequest* request(const String& url) __deprecated
+	/** @deprecated Use `createRequest()` instead */
+	HttpRequest* request(const String& url) SMING_DEPRECATED
 	{
 		return createRequest(url);
 	}

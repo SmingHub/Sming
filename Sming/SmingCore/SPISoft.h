@@ -5,8 +5,8 @@ License: MIT
 Date: 15.07.2015
 Descr: Implement software SPI for HW configs other than hardware SPI pins(GPIO 12,13,14)
 */
-#ifndef _SMING_CORE_SPISOFT_H_
-#define _SMING_CORE_SPISOFT_H_
+#ifndef _SPI_SOFT_
+#define _SPI_SOFT_
 
 #include "SPIBase.h"
 #include "SPISettings.h"
@@ -82,4 +82,4 @@ private:
 	uint8_t m_delay;
 };
 
-#endif /* _SMING_CORE_SPISOFT_H_ */
+#endif /*_SPI_SOFT_*/

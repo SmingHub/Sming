@@ -61,7 +61,6 @@ bool HttpConnection::isActive()
 	return false;
 }
 
-// @deprecated
 String HttpConnection::getResponseHeader(String headerName, String defaultValue)
 {
 	if(response.headers.contains(headerName))

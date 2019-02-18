@@ -3,7 +3,7 @@
  *
  */
 
-#include <Debug.h>
+#include "Debug.h"
 
 DebugClass::DebugClass()
 {

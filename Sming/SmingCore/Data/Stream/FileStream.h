@@ -44,8 +44,8 @@ public:
 	 */
 	void attach(file_t file, size_t size);
 
-	/* @deprecated: use open() method */
-	bool attach(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly) __deprecated
+	/** @deprecated Use `open()` instead */
+	bool attach(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly) SMING_DEPRECATED
 	{
 		return open(fileName, openFlags);
 	}

@@ -13,9 +13,9 @@
 #ifndef _SMING_CORE_HTTP_RESOURCE_H_
 #define _SMING_CORE_HTTP_RESOURCE_H_
 
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WHashMap.h"
-#include "../../Delegate.h"
+#include "WString.h"
+#include "WHashMap.h"
+#include "Delegate.h"
 
 #include "HttpResponse.h"
 #include "HttpRequest.h"

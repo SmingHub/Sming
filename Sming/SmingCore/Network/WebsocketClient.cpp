@@ -15,8 +15,8 @@
 
 #include "WebsocketClient.h"
 #include "Network/Http/HttpHeaders.h"
-#include "../../Services/WebHelpers/aw-sha1.h"
-#include "../../Services/WebHelpers/base64.h"
+#include "../Services/WebHelpers/aw-sha1.h"
+#include "../Services/WebHelpers/base64.h"
 
 HttpConnection* WebsocketClient::getHttpConnection()
 {

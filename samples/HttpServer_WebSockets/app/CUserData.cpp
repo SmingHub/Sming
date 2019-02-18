@@ -18,7 +18,7 @@ void CUserData::addSession(WebsocketConnection& connection)
 void CUserData::removeSession(WebsocketConnection& connection)
 {
 	for(int i = 0; i < activeWebSockets.count(); i++) {
-		if(&connection == activeWebSockets[i]) {
+		if(connection == *(activeWebSockets[i])) {
 			activeWebSockets[i]->setUserData(nullptr);
 			activeWebSockets.remove(i);
 			Serial.println("Removed user session");
@@ -31,7 +31,7 @@ void CUserData::printMessage(WebsocketConnection& connection, const String& msg)
 {
 	int i = 0;
 	for(; i < activeWebSockets.count(); i++) {
-		if(&connection == activeWebSockets[i]) {
+		if(connection == *(activeWebSockets[i])) {
 			break;
 		}
 	}

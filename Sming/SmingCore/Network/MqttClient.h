@@ -35,10 +35,8 @@ enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 #define MQTT_FLAG_RETAINED 1
 
 #ifndef MQTT_NO_COMPAT
-/* @deprecated */
-#define MQTT_MAX_BUFFER_SIZE MQTT_PAYLOAD_LENGTH
-/* @deprecated */
-#define MQTT_MSG_PUBREC MQTT_TYPE_PUBREC
+#define MQTT_MAX_BUFFER_SIZE MQTT_PAYLOAD_LENGTH ///< @deprecated
+#define MQTT_MSG_PUBREC MQTT_TYPE_PUBREC		 ///< @deprecated
 #endif
 
 class MqttClient;
@@ -47,9 +45,9 @@ typedef std::function<int(MqttClient& client, mqtt_message_t* message)> MqttDele
 typedef ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE> MqttRequestQueue;
 
 #ifndef MQTT_NO_COMPAT
-/* @deprecated: use MqttDelegate instead */
+/** @deprecated Use MqttDelegate instead */
 typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
-/* @deprecated: use MqttDelegate instead */
+/** @deprecated Use MqttDelegate instead */
 typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
 #endif
 
@@ -236,7 +234,7 @@ private:
 	static int staticOnMessageEnd(void* user_data, mqtt_message_t* message);
 
 #ifndef MQTT_NO_COMPAT
-	/* @deprecated This method is only for compatibility with the previous release and will be removed soon. */
+	/** @deprecated This method is only for compatibility with the previous release and will be removed soon. */
 	static int onPuback(MqttClient& client, mqtt_message_t* message)
 	{
 		if(!message) {
@@ -259,7 +257,7 @@ private:
 		return 0;
 	}
 
-	/* @deprecated This method is only for compatibility with the previous release and will be removed soon. */
+	/** @deprecated This method is only for compatibility with the previous release and will be removed soon. */
 	static int onPublish(MqttClient& client, mqtt_message_t* message)
 	{
 		if(message == nullptr) {
@@ -318,10 +316,8 @@ private:
 	*/
 
 #ifndef MQTT_NO_COMPAT
-	// @deprecated
-	MqttMessageDeliveredCallback onDelivery = nullptr;
-	// @deprecated
-	MqttStringSubscriptionCallback subscriptionCallback = nullptr;
+	MqttMessageDeliveredCallback onDelivery = nullptr;			   ///< @deprecated
+	MqttStringSubscriptionCallback subscriptionCallback = nullptr; ///< @deprecated
 #endif
 };
 

@@ -32,8 +32,10 @@
  */
 #define SMING_UNUSED  __attribute__((unused))
 
-/* Flags a compiler warning when Sming framework methods, functions or types are changed */
-#define __deprecated __attribute__((deprecated))
+/*
+ * Flags a compiler warning when Sming framework methods, functions or types are changed
+ */
+#define SMING_DEPRECATED __attribute__((deprecated))
 
 #ifdef ENABLE_GDB
 	#define GDB_IRAM_ATTR IRAM_ATTR

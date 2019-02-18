@@ -119,12 +119,14 @@ public:
 	 */
 	void* getUserData();
 
-	// @deprecated
-	bool operator==(const WebsocketConnection& rhs) const __deprecated;
+	/** @brief	Test if another connection refers to the same object
+	 *  @param	rhs The other WebsocketConnection to compare with
+	 *  @retval	bool
+	 */
+	bool operator==(const WebsocketConnection& rhs) const;
 
-	// @deprecated
-	WebsocketList& getActiveWebsockets() __deprecated;
-	// @end deprecated
+	/** @deprecated Will be removed */
+	WebsocketList& getActiveWebsockets() SMING_DEPRECATED;
 
 	/**
 	 * @brief Sets the callback handler to be called after successful websocket connection

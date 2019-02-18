@@ -32,33 +32,33 @@ public:
 	bool sendString(const String& text);
 
 	/**
-	 * @deprecated use headers.contains() method
+	 * @deprecated Use `headers.contains()` instead
 	 */
-	bool hasHeader(const String& name) __deprecated
+	bool hasHeader(const String& name) SMING_DEPRECATED
 	{
 		return headers.contains(name);
 	}
 
 	/**
-	 * @deprecated use headers[HTTP_HEADER_LOCATION]
+	 * @deprecated Use `headers[HTTP_HEADER_LOCATION]` instead
 	 */
-	void redirect(const String& location) __deprecated
+	void redirect(const String& location) SMING_DEPRECATED
 	{
 		headers[HTTP_HEADER_LOCATION] = location;
 	}
 
 	/**
-	 * @deprecated Use response.code = HTTP_STATUS_FORBIDDEN instead
+	 * @deprecated Use `response.code = HTTP_STATUS_FORBIDDEN` instead
 	 */
-	void forbidden() __deprecated
+	void forbidden() SMING_DEPRECATED
 	{
 		code = HTTP_STATUS_FORBIDDEN;
 	}
 
 	/**
-	 * @deprecated Use response.code = HTTP_STATUS_NOT_FOUND instead
+	 * @deprecated Use `response.code = HTTP_STATUS_NOT_FOUND` instead
 	 */
-	void notFound() __deprecated
+	void notFound() SMING_DEPRECATED
 	{
 		code = HTTP_STATUS_NOT_FOUND;
 	}
@@ -89,9 +89,9 @@ public:
 	/**
 	 * @brief Build and send JSON string
 	 *
-	 * @deprecated use response.sendDataStream(stream, MIME_JSON) instead
+	 * @deprecated Use `response.sendDataStream(stream, MIME_JSON)` instead
 	 */
-	bool sendJsonObject(JsonObjectStream* newJsonStreamInstance) __deprecated;
+	bool sendJsonObject(JsonObjectStream* newJsonStreamInstance) SMING_DEPRECATED;
 
 	/** @brief Send data from the given stream object
 	 *  @param newDataStream

@@ -88,10 +88,9 @@ public:
 	}
 
 	/**
-	 * @deprecated This method is deprecated and will be removed in the coming versions.
-	 * 			   Please set postParams directly, i.e. request.postParams = params
+	 * @deprecated Set postParams directly, i.e. `request.postParams = params`
 	 */
-	HttpRequest* setPostParameters(const HttpParams& params) __deprecated
+	HttpRequest* setPostParameters(const HttpParams& params) SMING_DEPRECATED
 	{
 		postParams = params;
 		return this;
@@ -138,8 +137,8 @@ public:
 		return static_cast<const HttpParams&>(postParams)[name];
 	}
 
-	/* @deprecated use uri.Path */
-	String getPath() __deprecated
+	/** @deprecated Use `uri.Path` instead */
+	String getPath() SMING_DEPRECATED
 	{
 		return uri.Path;
 	}

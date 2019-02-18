@@ -21,7 +21,7 @@
 #define HARDWAREPWM_H
 
 #include "ESP8266EX.h"
-#include "../Wiring/WiringFrameworkDependencies.h"
+#include "WiringFrameworkDependencies.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,8 +68,8 @@ public:
      *  @param  duty Value of duty cycle to set pin to
      *  @param  update Update PWM output
      *  @retval bool True on success
-	 *  @note   This function is used to set the pwm duty cycle for a given pin. If parameter 'update' is false
-	 *        	then you have to call update() later to update duties.
+     *  @note   This function is used to set the pwm duty cycle for a given pin. If parameter 'update' is false
+     *        	then you have to call update() later to update duties.
      */
 	bool setDuty(uint8 pin, uint32 duty, bool update = true)
 	{

@@ -108,7 +108,7 @@ private:
 	bool sendResponseBody(HttpResponse* response);
 
 public:
-	void* userData = nullptr; ///< use to pass user data between requests
+	void* userData = nullptr; // << use to pass user data between requests
 
 private:
 	ResourceTree* resourceTree = nullptr;
@@ -117,13 +117,13 @@ private:
 	HttpRequest request = HttpRequest(URL());
 	HttpResponse response;
 
-	HttpResourceDelegate headersCompleteDelegate = nullptr;
-	HttpResourceDelegate requestCompletedDelegate = nullptr;
-	HttpServerConnectionBodyDelegate onBodyDelegate = nullptr;
+	HttpResourceDelegate headersCompleteDelegate = 0;
+	HttpResourceDelegate requestCompletedDelegate = 0;
+	HttpServerConnectionBodyDelegate onBodyDelegate = 0;
 	HttpServerProtocolUpgradeCallback upgradeCallback = nullptr;
 
 	BodyParsers* bodyParsers = nullptr;
-	HttpBodyParserDelegate bodyParser = nullptr;
+	HttpBodyParserDelegate bodyParser = 0;
 };
 
 /** @} */

@@ -17,14 +17,13 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_SMTPCLIENT_H_
-#define _SMING_CORE_NETWORK_SMTPCLIENT_H_
-
 /** @defgroup   smtpclient SMTP client
  *  @brief      Provides SMTP/S client
  *  @ingroup    tcpclient
  *  @{
  */
+
+#pragma once
 
 #include "TcpClient.h"
 #include "Data/MailMessage.h"
@@ -216,5 +215,3 @@ private:
 	 */
 	HttpPartResult multipartProducer();
 };
-
-#endif /* _SMING_CORE_NETWORK_SMTPCLIENT_H_ */

@@ -1,4 +1,4 @@
-#include "RTC.h"
+#include "../SmingCore/Platform/RTC.h"
 
 RtcClass::RtcClass()
 {

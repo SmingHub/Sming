@@ -762,7 +762,7 @@ INPUT                  = api.dox sdk.dox \
 			../Sming/SmingCore \
 			../Sming/Services \
 			../Sming/Wiring \
-                        ../Sming/rboot \
+                        ../Sming/third-party/rboot \
                         ../Sming/Libraries \
 			$(ESP_HOME)/sdk/include/gpio.h
 
@@ -2006,7 +2006,7 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             = __cplusplus
+PREDEFINED             = __cplusplus ENABLE_SSL=1 ENABLE_CMD_EXECUTOR=1 ENABLE_CUSTOM_PWM=1
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The

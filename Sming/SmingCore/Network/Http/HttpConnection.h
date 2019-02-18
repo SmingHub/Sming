@@ -76,7 +76,7 @@ public:
 	/**
 	 * @deprecated Use `getResponse()->code` instead
 	 */
-	int getResponseCode() __deprecated
+	int getResponseCode() SMING_DEPRECATED
 	{
 		return response.code;
 	}
@@ -84,12 +84,12 @@ public:
 	/**
 	 * @deprecated Use `getResponse()->headers[headerName]` instead
 	 */
-	String getResponseHeader(String headerName, String defaultValue = nullptr) __deprecated;
+	String getResponseHeader(String headerName, String defaultValue = nullptr) SMING_DEPRECATED;
 
 	/**
 	* @deprecated Use `getResponse()->headers` instead
 	*/
-	HttpHeaders& getResponseHeaders() __deprecated
+	HttpHeaders& getResponseHeaders() SMING_DEPRECATED
 	{
 		return response.headers;
 	}
@@ -107,7 +107,7 @@ public:
 	/**
 	 * @deprecated Use `getResponse()->getBody()` instead
 	 */
-	String getResponseString() __deprecated
+	String getResponseString() SMING_DEPRECATED
 	{
 		return response.getBody();
 	}

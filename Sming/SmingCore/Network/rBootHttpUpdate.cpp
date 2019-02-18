@@ -8,9 +8,9 @@
  */
 
 #include "rBootHttpUpdate.h"
-#include "../Platform/System.h"
+#include "Platform/System.h"
 #include "URL.h"
-#include "../Platform/WDT.h"
+#include "Platform/WDT.h"
 
 /* rBootItemOutputStream */
 

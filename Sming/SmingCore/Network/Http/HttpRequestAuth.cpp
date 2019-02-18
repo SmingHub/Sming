@@ -12,7 +12,7 @@
 
 #include "HttpRequestAuth.h"
 #include "HttpRequest.h"
-#include "../../Services/WebHelpers/base64.h"
+#include "../Services/WebHelpers/base64.h"
 
 HttpBasicAuth::HttpBasicAuth(const String& username, const String& password)
 {

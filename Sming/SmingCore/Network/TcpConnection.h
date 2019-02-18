@@ -121,10 +121,9 @@ public:
 		this->sslOptions |= sslOptions;
 	}
 
-	// start deprecated
 	/**
 	 * @brief Sets client private key, certificate and password from memory
-	 * @deprecated: Use setSslKeyCert instead
+	 * @deprecated Use `setSslKeyCert(const uint8_t*, int, const uint8_t*, int, const char*, bool)` instead
 	 *
 	 * @note  This method makes copy of the data.
 	 *
@@ -138,14 +137,14 @@ public:
 	 * @return bool  true of success, false or failure
 	 */
 	bool setSslClientKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
-							 const char* keyPassword = nullptr, bool freeAfterHandshake = false) __deprecated
+							 const char* keyPassword = nullptr, bool freeAfterHandshake = false) SMING_DEPRECATED
 	{
 		return setSslKeyCert(key, keyLength, certificate, certificateLength, keyPassword, freeAfterHandshake);
 	}
 
 	/**
 	* @brief Sets client private key, certificate and password from memory
-	* @deprecated: Use setSslKeyCert instead
+	* @deprecated Use `setSslKeyCert(const SslKeyCertPair&, bool)` instead
 	*
 	* @note  This method passes the certificate key chain by reference
 	*
@@ -154,21 +153,19 @@ public:
 	*
 	* @return bool  true of success, false or failure
 	*/
-	bool setSslClientKeyCert(const SslKeyCertPair& clientKeyCert, bool freeAfterHandshake = false) __deprecated
+	bool setSslClientKeyCert(const SslKeyCertPair& clientKeyCert, bool freeAfterHandshake = false) SMING_DEPRECATED
 	{
 		return setSslKeyCert(clientKeyCert, freeAfterHandshake);
 	}
 
 	/**
 	 * @brief Frees the memory used for the key and certificate pair
-	 * @deprecated: Use freeSslKeyCert instead
+	 * @deprecated Use `freeSslKeyCert()` instead
 	 */
-	void freeSslClientKeyCert() __deprecated
+	void freeSslClientKeyCert() SMING_DEPRECATED
 	{
 		freeSslKeyCert();
 	}
-
-	// end deprecated
 
 	/**
 	 * @brief Sets private key, certificate and password from memory for the SSL connection

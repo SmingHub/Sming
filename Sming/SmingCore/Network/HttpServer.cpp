@@ -13,7 +13,7 @@
 #include "HttpServer.h"
 
 #include "TcpClient.h"
-#include "../Wiring/WString.h"
+#include "WString.h"
 
 void HttpServer::configure(const HttpServerSettings& settings)
 {

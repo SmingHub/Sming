@@ -67,7 +67,7 @@ public:
 #ifdef ENABLE_SSL
 	/**
 	 * @brief Adds SSL support and specifies the server certificate and private key.
-	 * @deprecated: Use setSslKeyCert instead
+	 * @deprecated Use setSslKeyCert instead
 	 */
 	void setServerKeyCert(SslKeyCertPair serverKeyCert)
 	{

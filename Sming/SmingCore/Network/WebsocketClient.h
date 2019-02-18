@@ -84,9 +84,9 @@ public:
 	using WebsocketConnection::getState;
 
 	/** @brief  Disconnects websocket client from server
-	  * @deprecated use close() instead
+	  * @deprecated Use `close()` instead
 	  */
-	void disconnect() __deprecated
+	void disconnect() SMING_DEPRECATED
 	{
 		close();
 	}

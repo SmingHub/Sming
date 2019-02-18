@@ -6,7 +6,7 @@
 #ifndef SMINGCORE_RTC_H_
 #define SMINGCORE_RTC_H_
 
-#include "WiringFrameworkDependencies.h"
+#include "../Wiring/WiringFrameworkDependencies.h"
 
 #define RTC_MAGIC 0x55aaaa55
 #define RTC_DES_ADDR 64

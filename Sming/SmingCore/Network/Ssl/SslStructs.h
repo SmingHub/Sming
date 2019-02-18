@@ -15,8 +15,9 @@
 /*
  * These structures have been renamed, please use the revised convention SslXXX
  */
-typedef SslKeyCertPair SSLKeyCertPair __deprecated;
-typedef SslSessionId SSLSessionId __deprecated;
-typedef SslFingerprints SSLFingerprints __deprecated;
+typedef SslKeyCertPair SSLKeyCertPair SMING_DEPRECATED;			///< @deprecated Use SslKeyCertPair instead
+typedef SslSessionId SSLSessionId SMING_DEPRECATED;				///< @deprecated Use SslSessionId instead
+typedef SslFingerprints SSLFingerprints SMING_DEPRECATED;		///< @deprecated Use SslFingerprints instead
+typedef SslFingerprintType SSLFingerprintType SMING_DEPRECATED; ///< @deprecated Use SslFingerprintType instead
 
 #endif /* SMINGCORE_NETWORK_SSL_SSLSTRUCTS_H_ */

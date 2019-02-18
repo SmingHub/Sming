@@ -38,7 +38,6 @@ class IDataSourceStream : public Stream
 public:
 	/** @brief  Get the stream type
      *  @retval StreamType The stream type.
-     *  @todo   Return value of IDataSourceStream:getStreamType base class function should be of type StreamType, e.g. eSST_User
      */
 	virtual StreamType getStreamType() const
 	{
@@ -107,10 +106,9 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 *
-	 * @deprecated This method is deprecated and will be removed in the coming versions.
-	 * 			   Please, use available() instead.
+	 * @deprecated Use `available()` instead
 	 */
-	int length() __deprecated
+	int length() SMING_DEPRECATED
 	{
 		return available();
 	}

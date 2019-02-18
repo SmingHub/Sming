@@ -14,8 +14,8 @@
  *  @brief    Provides SPI support
  */
 
-#ifndef _SMING_CORE_SPIBASE_H_
-#define _SMING_CORE_SPIBASE_H_
+#ifndef SMINGCORE_SPIBASE_H_
+#define SMINGCORE_SPIBASE_H_
 
 #include "SPISettings.h"
 
@@ -69,4 +69,4 @@ public:
 	SPISettings SPIDefaultSettings;
 };
 
-#endif /* _SMING_CORE_SPIBASE_H_ */
+#endif /* SMINGCORE_SPIBASE_H_ */

@@ -5,8 +5,8 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "Digital.h"
-#include "WiringFrameworkIncludes.h"
+#include "../SmingCore/Digital.h"
+#include "../Wiring/WiringFrameworkIncludes.h"
 #include "espinc/peri.h"
 
 const unsigned int A0 = 17; // Single ESP8266EX analog input pin (TOUT) 10 bit, 0..1v
