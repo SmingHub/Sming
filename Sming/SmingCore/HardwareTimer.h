@@ -66,7 +66,7 @@ public:
 	 *  @retval bool True if timer started
 	 *  @note   Timer starts and will run for configured period then stop
 	 */
-	bool __forceinline IRAM_ATTR startOnce()
+	__forceinline bool IRAM_ATTR startOnce()
 	{
 		return start(false);
 	}
@@ -126,7 +126,7 @@ public:
 	/** @brief  Call timer callback
      *  @note   Calls the timer callback function
      */
-	void __forceinline IRAM_ATTR call()
+	__forceinline void IRAM_ATTR call()
 	{
 		if(callback) {
 			callback();

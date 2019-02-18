@@ -87,7 +87,7 @@ public:
 
 	int write(IDataSourceStream* stream);
 
-	__forceinline uint16_t getAvailableWriteSize()
+	uint16_t getAvailableWriteSize()
 	{
 		return (canSend && tcp) ? tcp_sndbuf(tcp) : 0;
 	}

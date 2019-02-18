@@ -93,7 +93,7 @@ public:
 	/** @brief  Start one-shot timer running
      *  @note   Will start timer and trigger once after configured duration.
      */
-	void __forceinline IRAM_ATTR startOnce()
+	__forceinline void IRAM_ATTR startOnce()
 	{
 		start(false);
 	}
