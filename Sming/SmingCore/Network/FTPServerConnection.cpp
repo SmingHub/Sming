@@ -74,7 +74,7 @@ public:
 	{
 	}
 
-	virtual void transferData(TcpConnectionEvent sourceEvent)
+	void transferData(TcpConnectionEvent sourceEvent) override
 	{
 		if(completed) {
 			return;
@@ -102,7 +102,7 @@ public:
 		fileClose(file);
 	}
 
-	virtual void transferData(TcpConnectionEvent sourceEvent)
+	void transferData(TcpConnectionEvent sourceEvent) override
 	{
 		if(completed) {
 			return;

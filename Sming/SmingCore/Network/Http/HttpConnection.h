@@ -97,12 +97,12 @@ public:
 	/**
 	* @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_LAST_MODIFIED]` instead
 	*/
-	DateTime getLastModifiedDate(); // Last-Modified header
+	DateTime getLastModifiedDate();
 
 	/**
 	 * @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_DATE]` instead
 	 */
-	DateTime getServerDate(); // Date header
+	DateTime getServerDate();
 
 	/**
 	 * @deprecated Use `getResponse()->getBody()` instead
@@ -112,7 +112,7 @@ public:
 		return response.getBody();
 	}
 
-	virtual void reset();
+	void reset() override;
 
 protected:
 	// HTTP parser methods
@@ -122,14 +122,14 @@ protected:
 	 * @paran http_parser* parser
 	 * @return 0 on success, non-0 on error
 	 */
-	virtual int onMessageBegin(http_parser* parser);
+	int onMessageBegin(http_parser* parser) override;
 
 	/**
 	 * Called when all headers are received
 	 * @param HttpHeaders headers - the processed headers
 	 * @return 0 on success, non-0 on error
 	 */
-	virtual int onHeadersComplete(const HttpHeaders& headers);
+	int onHeadersComplete(const HttpHeaders& headers) override;
 
 	/**
 	 * Called when a piece of body data is received
@@ -137,19 +137,19 @@ protected:
 	 * @paran size_t length
 	 * @return 0 on success, non-0 on error
 	 */
-	virtual int onBody(const char* at, size_t length);
+	int onBody(const char* at, size_t length) override;
 
 	/**
 	 * Called when the incoming data is complete
 	 * @paran http_parser* parser
 	 * @return 0 on success, non-0 on error
 	 */
-	virtual int onMessageComplete(http_parser* parser);
+	int onMessageComplete(http_parser* parser) override;
 
 	// TCP methods
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
-	virtual void cleanup();
+	void cleanup() override;
 
 private:
 	void sendRequestHeaders(HttpRequest* request);
