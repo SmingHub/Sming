@@ -49,15 +49,27 @@ public:
 	{
 	}
 
+	/**
+	 * @brief Copy constructor
+	 * @note Internal streams are not copied so these must be dealt with afterwards
+	 */
 	HttpRequest(const HttpRequest& value);
 
+	/**
+	 * @brief Clone this request into a new object using the copy constructor
+	 * @retval HttpRequest* The new request object
+	 * @see HttpRequest(const HttpRequest& value)
+	 */
 	HttpRequest* clone() const
 	{
 		return new HttpRequest(*this);
 	}
 
 	/** @deprecated Please use `clone()` instead */
-	HttpRequest& operator=(const HttpRequest& rhs) SMING_DEPRECATED;
+	HttpRequest& operator=(const HttpRequest& rhs) SMING_DEPRECATED
+	{
+		return *this;
+	}
 
 	~HttpRequest()
 	{

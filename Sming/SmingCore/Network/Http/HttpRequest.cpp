@@ -21,25 +21,11 @@ HttpRequest::HttpRequest(const HttpRequest& value) : uri(value.uri), method(valu
 	requestBodyDelegate = value.requestBodyDelegate;
 	requestCompletedDelegate = value.requestCompletedDelegate;
 
-	debug_w("Warning: HttpRequest streams are not copied..");
-
 #ifdef ENABLE_SSL
 	sslOptions = value.sslOptions;
 	sslFingerprints = value.sslFingerprints;
 	sslKeyCertPair = value.sslKeyCertPair;
 #endif
-}
-
-HttpRequest& HttpRequest::operator=(const HttpRequest& rhs)
-{
-	if(this == &rhs)
-		return *this;
-
-	// TODO: FIX this...
-	//	if (rhs.buffer) copy(rhs.buffer, rhs.len);
-	//	else invalidate();
-
-	return *this;
 }
 
 String HttpRequest::getQueryParameter(const String& parameterName, const String& defaultValue)
