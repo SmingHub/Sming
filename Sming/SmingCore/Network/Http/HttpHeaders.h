@@ -96,6 +96,13 @@ enum HttpHeaderFieldName {
 class HttpHeaders : private HashMap<HttpHeaderFieldName, String>
 {
 public:
+	HttpHeaders() = default;
+
+	HttpHeaders(const HttpHeaders& headers)
+	{
+		*this = headers;
+	}
+
 	String toString(HttpHeaderFieldName name) const;
 
 	/** @brief Produce a string for output in the HTTP header, with line ending

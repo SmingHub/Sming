@@ -47,14 +47,27 @@ public:
 	{
 	}
 
+	/**
+	 * @brief Copy constructor
+	 * @note Internal streams are not copied so these must be dealt with afterwards
+	 */
 	HttpRequest(const HttpRequest& value);
 
+	/**
+	 * @brief Clone this request into a new object using the copy constructor
+	 * @retval HttpRequest* The new request object
+	 * @see HttpRequest(const HttpRequest& value)
+	 */
 	HttpRequest* clone() const
 	{
 		return new HttpRequest(*this);
 	}
 
-	HttpRequest& operator=(const HttpRequest& rhs);
+	/** @deprecated Please use `clone()` instead */
+	HttpRequest& operator=(const HttpRequest& rhs) SMING_DEPRECATED
+	{
+		return *this;
+	}
 
 	~HttpRequest()
 	{
@@ -164,13 +177,13 @@ public:
 
 	HttpRequest* setBody(const String& body)
 	{
-		setBody((uint8_t*)body.c_str(), body.length());
+		setBody(reinterpret_cast<const uint8_t*>(body.c_str()), body.length());
 		return this;
 	}
 
 	HttpRequest* setBody(IDataSourceStream* stream);
 
-	HttpRequest* setBody(uint8_t* rawData, size_t length);
+	HttpRequest* setBody(const uint8_t* rawData, size_t length);
 
 	/**
 	 * @brief Instead of storing the response body we can set a stream that will take care to process it

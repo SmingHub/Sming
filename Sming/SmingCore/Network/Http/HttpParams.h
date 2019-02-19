@@ -32,6 +32,20 @@
 class HttpParams : public HashMap<String, String>, public Printable
 {
 public:
+	HttpParams() = default;
+
+	HttpParams(const HttpParams& params)
+	{
+		*this = params;
+	}
+
+	HttpParams& operator=(const HttpParams& params)
+	{
+		clear();
+		setMultiple(params);
+		return *this;
+	}
+
 	// Printable
 	size_t printTo(Print& p) const override;
 };
