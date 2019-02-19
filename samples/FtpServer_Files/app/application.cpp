@@ -7,7 +7,7 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-FTPServer ftp;
+FtpServer ftp;
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {

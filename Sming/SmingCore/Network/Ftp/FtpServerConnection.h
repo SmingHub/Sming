@@ -17,17 +17,17 @@
 
 #define MAX_FTP_CMD 255
 
-class FTPServer;
+class FtpServer;
 
-enum FTPConnectionState { eFCS_Ready, eFCS_Authorization, eFCS_Active };
+enum FtpConnectionState { eFCS_Ready, eFCS_Authorization, eFCS_Active };
 
-class FTPServerConnection : public TcpConnection
+class FtpServerConnection : public TcpConnection
 {
-	friend class FTPDataStream;
-	friend class FTPServer;
+	friend class FtpDataStream;
+	friend class FtpServer;
 
 public:
-	FTPServerConnection(FTPServer* parentServer, tcp_pcb* clientTcp)
+	FtpServerConnection(FtpServer* parentServer, tcp_pcb* clientTcp)
 		: TcpConnection(clientTcp, true), server(parentServer), state(eFCS_Ready)
 	{
 	}
@@ -54,8 +54,8 @@ protected:
 	}
 
 private:
-	FTPServer* server;
-	FTPConnectionState state;
+	FtpServer* server;
+	FtpConnectionState state;
 	String userName;
 	String renameFrom;
 

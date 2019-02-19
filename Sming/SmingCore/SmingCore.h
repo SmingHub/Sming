@@ -46,7 +46,7 @@
 #include "Network/Http/HttpRequest.h"
 #include "Network/Http/HttpResponse.h"
 #include "Network/Http/Websocket/WebsocketConnection.h"
-#include "Network/FTPServer.h"
+#include "Network/FtpServer.h"
 #include "Network/NetUtils.h"
 #include "Network/TcpClient.h"
 #include "Network/TcpConnection.h"

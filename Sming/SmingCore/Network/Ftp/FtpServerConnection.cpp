@@ -8,16 +8,16 @@
  *
  ****/
 
-#include <Network/Ftp/FtpServerConnection.h>
-#include "FTPServer.h"
+#include "FtpServerConnection.h"
+#include "../FtpServer.h"
 #include "NetUtils.h"
 #include "TcpConnection.h"
 #include "FileSystem.h"
 
-class FTPDataStream : public TcpConnection
+class FtpDataStream : public TcpConnection
 {
 public:
-	explicit FTPDataStream(FTPServerConnection* connection) : TcpConnection(true), parent(connection)
+	explicit FtpDataStream(FtpServerConnection* connection) : TcpConnection(true), parent(connection)
 	{
 	}
 
@@ -71,16 +71,16 @@ public:
 	}
 
 protected:
-	FTPServerConnection* parent = nullptr;
+	FtpServerConnection* parent = nullptr;
 	bool completed = false;
 	unsigned written = 0;
 	unsigned sent = 0;
 };
 
-class FTPDataFileList : public FTPDataStream
+class FtpDataFileList : public FtpDataStream
 {
 public:
-	explicit FTPDataFileList(FTPServerConnection* connection) : FTPDataStream(connection)
+	explicit FtpDataFileList(FtpServerConnection* connection) : FtpDataStream(connection)
 	{
 	}
 
@@ -99,15 +99,15 @@ public:
 	}
 };
 
-class FTPDataRetrieve : public FTPDataStream
+class FtpDataRetrieve : public FtpDataStream
 {
 public:
-	FTPDataRetrieve(FTPServerConnection* connection, const String& fileName) : FTPDataStream(connection)
+	FtpDataRetrieve(FtpServerConnection* connection, const String& fileName) : FtpDataStream(connection)
 	{
 		file = fileOpen(fileName, eFO_ReadOnly);
 	}
 
-	~FTPDataRetrieve()
+	~FtpDataRetrieve()
 	{
 		fileClose(file);
 	}
@@ -130,15 +130,15 @@ private:
 	file_t file;
 };
 
-class FTPDataStore : public FTPDataStream
+class FtpDataStore : public FtpDataStream
 {
 public:
-	FTPDataStore(FTPServerConnection* connection, const String& fileName) : FTPDataStream(connection)
+	FtpDataStore(FtpServerConnection* connection, const String& fileName) : FtpDataStream(connection)
 	{
 		file = fileOpen(fileName, eFO_WriteOnly | eFO_CreateNewAlways);
 	}
 
-	~FTPDataStore()
+	~FtpDataStore()
 	{
 		fileClose(file);
 	}
@@ -170,7 +170,7 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-err_t FTPServerConnection::onReceive(pbuf* buf)
+err_t FtpServerConnection::onReceive(pbuf* buf)
 {
 	if(buf == nullptr)
 		return ERR_OK;
@@ -198,7 +198,7 @@ err_t FTPServerConnection::onReceive(pbuf* buf)
 	return ERR_OK;
 }
 
-void FTPServerConnection::cmdPort(const String& data)
+void FtpServerConnection::cmdPort(const String& data)
 {
 	int last = getSplitterPos(data, ',', 4);
 	if(last < 0) {
@@ -218,7 +218,7 @@ void FTPServerConnection::cmdPort(const String& data)
 	response(200);
 }
 
-void FTPServerConnection::onCommand(String cmd, String data)
+void FtpServerConnection::onCommand(String cmd, String data)
 {
 	cmd.toUpperCase();
 	// We ready to quit always :)
@@ -289,11 +289,11 @@ void FTPServerConnection::onCommand(String cmd, String data)
 				response(550);
 		}*/
 		else if(cmd == _F("RETR")) {
-			createDataConnection(new FTPDataRetrieve(this, makeFileName(data, false)));
+			createDataConnection(new FtpDataRetrieve(this, makeFileName(data, false)));
 		} else if(cmd == _F("STOR")) {
-			createDataConnection(new FTPDataStore(this, makeFileName(data, true)));
+			createDataConnection(new FtpDataStore(this, makeFileName(data, true)));
 		} else if(cmd == _F("LIST")) {
-			createDataConnection(new FTPDataFileList(this));
+			createDataConnection(new FtpDataFileList(this));
 		} else if(cmd == _F("PASV")) {
 			response(500, F("Passive mode not supported"));
 		} else if(cmd == _F("NOOP")) {
@@ -307,14 +307,14 @@ void FTPServerConnection::onCommand(String cmd, String data)
 	debug_e("!!!CASE NOT IMPLEMENTED?!!!");
 }
 
-err_t FTPServerConnection::onSent(uint16_t len)
+err_t FtpServerConnection::onSent(uint16_t len)
 {
 	canTransfer = true;
 
 	return ERR_OK;
 }
 
-String FTPServerConnection::makeFileName(String name, bool shortIt)
+String FtpServerConnection::makeFileName(String name, bool shortIt)
 {
 	if(name.startsWith("/")) {
 		name = name.substring(1);
@@ -331,14 +331,14 @@ String FTPServerConnection::makeFileName(String name, bool shortIt)
 	return name;
 }
 
-void FTPServerConnection::createDataConnection(TcpConnection* connection)
+void FtpServerConnection::createDataConnection(TcpConnection* connection)
 {
 	dataConnection = connection;
 	dataConnection->connect(ip, port);
 	response(150, F("Connecting"));
 }
 
-void FTPServerConnection::dataTransferFinished(TcpConnection* connection)
+void FtpServerConnection::dataTransferFinished(TcpConnection* connection)
 {
 	if(connection != dataConnection) {
 		SYSTEM_ERROR("FTP Wrong state: connection != dataConnection");
@@ -348,7 +348,7 @@ void FTPServerConnection::dataTransferFinished(TcpConnection* connection)
 	response(226, F("Transfer Complete."));
 }
 
-int FTPServerConnection::getSplitterPos(String data, char splitter, uint8_t number)
+int FtpServerConnection::getSplitterPos(String data, char splitter, uint8_t number)
 {
 	uint8_t k = 0;
 
@@ -364,7 +364,7 @@ int FTPServerConnection::getSplitterPos(String data, char splitter, uint8_t numb
 	return -1;
 }
 
-void FTPServerConnection::response(int code, String text /* = "" */)
+void FtpServerConnection::response(int code, String text /* = "" */)
 {
 	String response = String(code, DEC);
 	if(text.length() == 0) {
@@ -384,7 +384,7 @@ void FTPServerConnection::response(int code, String text /* = "" */)
 	flush();
 }
 
-void FTPServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
+void FtpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
 	case eFCS_Ready:

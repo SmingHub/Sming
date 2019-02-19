@@ -4,7 +4,7 @@
 #include "Data/Stream/TemplateFlashMemoryStream.h"
 
 HttpServer server;
-FTPServer ftp;
+FtpServer ftp;
 
 BssList networks;
 String network, password;
