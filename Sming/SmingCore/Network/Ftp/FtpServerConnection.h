@@ -28,7 +28,7 @@ class FtpServerConnection : public TcpConnection
 
 public:
 	FtpServerConnection(FtpServer* parentServer, tcp_pcb* clientTcp)
-		: TcpConnection(clientTcp, true), server(parentServer), state(eFCS_Ready)
+		: TcpConnection(clientTcp, true), server(parentServer)
 	{
 	}
 
@@ -54,8 +54,8 @@ protected:
 	}
 
 private:
-	FtpServer* server;
-	FtpConnectionState state;
+	FtpServer* server = nullptr;
+	FtpConnectionState state = eFCS_Ready;
 	String userName;
 	String renameFrom;
 

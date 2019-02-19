@@ -9,17 +9,17 @@
  ****/
 
 #include "FtpServerConnection.h"
-//#include "../FtpServer.h"
-//#include "NetUtils.h"
-//#include "TcpConnection.h"
 #include "FtpDataStore.h"
 #include "FtpDataRetrieve.h"
 #include "FtpDataFileList.h"
+#include "../FtpServer.h"
+#include "NetUtils.h"
 
 err_t FtpServerConnection::onReceive(pbuf* buf)
 {
-	if(buf == nullptr)
+	if(buf == nullptr) {
 		return ERR_OK;
+	}
 	int prev = 0;
 
 	while(true) {
@@ -167,7 +167,7 @@ String FtpServerConnection::makeFileName(String name, bool shortIt)
 	}
 
 	if(shortIt && name.length() > 20) {
-		String ext = "";
+		String ext;
 		if(name.lastIndexOf('.') != -1) {
 			ext = name.substring(name.lastIndexOf('.'));
 		}
@@ -234,7 +234,7 @@ void FtpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
 	case eFCS_Ready:
-		this->writeString(_F("220 Welcome to Sming FTP\r\n"), 0);
+		writeString(_F("220 Welcome to Sming FTP\r\n"), 0);
 		state = eFCS_Authorization;
 		break;
 

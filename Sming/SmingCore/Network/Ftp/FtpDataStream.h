@@ -12,8 +12,6 @@
 #define _SMING_CORE_NETWORK_FTP_FTP_DATA_STREAM_H_
 
 #include "FtpServerConnection.h"
-#include "../FtpServer.h"
-#include "NetUtils.h"
 #include "TcpConnection.h"
 
 class FtpDataStream : public TcpConnection
