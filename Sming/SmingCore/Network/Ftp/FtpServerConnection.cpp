@@ -8,7 +8,7 @@
  *
  ****/
 
-#include "FTPServerConnection.h"
+#include <Network/Ftp/FtpServerConnection.h>
 #include "FTPServer.h"
 #include "NetUtils.h"
 #include "TcpConnection.h"

@@ -8,8 +8,8 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_FTP_SERVER_CONNECTION_H_
-#define _SMING_CORE_NETWORK_FTP_SERVER_CONNECTION_H_
+#ifndef _SMING_CORE_NETWORK_FTP_FTP_SERVER_CONNECTION_H_
+#define _SMING_CORE_NETWORK_FTP_FTP_SERVER_CONNECTION_H_
 
 #include "TcpConnection.h"
 #include "IPAddress.h"
@@ -65,4 +65,4 @@ private:
 	bool canTransfer = true;
 };
 
-#endif /* _SMING_CORE_NETWORK_FTP_SERVER_CONNECTION_H_ */
+#endif /* _SMING_CORE_NETWORK_FTP_FTP_SERVER_CONNECTION_H_ */

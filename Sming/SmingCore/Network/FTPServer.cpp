@@ -12,7 +12,7 @@
 
 #include "HttpRequest.h"
 #include "HttpResponse.h"
-#include "FTPServerConnection.h"
+#include "Ftp/FtpServerConnection.h"
 #include "TcpClient.h"
 #include "WString.h"
 
