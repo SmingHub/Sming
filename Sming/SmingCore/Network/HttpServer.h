@@ -40,8 +40,6 @@ typedef struct {
 #endif
 } HttpServerSettings;
 
-const int SSL_MIN_HEAP_SIZE = 16384;
-
 class HttpServer : public TcpServer
 {
 	friend class HttpServerConnection;
@@ -49,18 +47,12 @@ class HttpServer : public TcpServer
 public:
 	HttpServer()
 	{
-#ifdef ENABLE_SSL
-		minHeapSize = SSL_MIN_HEAP_SIZE;
-#endif
 		settings.keepAliveSeconds = 2;
 		configure(settings);
 	}
 
 	HttpServer(const HttpServerSettings& settings)
 	{
-#ifdef ENABLE_SSL
-		minHeapSize = SSL_MIN_HEAP_SIZE;
-#endif
 		configure(settings);
 	}
 

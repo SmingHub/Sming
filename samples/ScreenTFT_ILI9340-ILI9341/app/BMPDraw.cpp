@@ -50,7 +50,6 @@ void bmpDraw(Adafruit_ILI9341 tft, String fileName, uint8_t x, uint8_t y)
 	uint8_t sdbuffer[3 * BUFFPIXEL];	// pixel buffer (R+G+B per pixel)
 	uint8_t buffidx = sizeof(sdbuffer); // Current position in sdbuffer
 	bool goodBmp = false;				// Set to true on valid header parse
-	bool flip = true;					// BMP is stored bottom-to-top
 	int w, h, row, col;
 	uint8_t r, g, b;
 	uint32_t pos = 0, startTime = millis();
@@ -92,6 +91,7 @@ void bmpDraw(Adafruit_ILI9341 tft, String fileName, uint8_t x, uint8_t y)
 
 				// If bmpHeight is negative, image is in top-down order.
 				// This is not canon but has been observed in the wild.
+				bool flip = true; // BMP is stored bottom-to-top
 				if(bmpHeight < 0) {
 					bmpHeight = -bmpHeight;
 					flip = false;
