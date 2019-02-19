@@ -20,11 +20,6 @@
 
 /* rBootItemOutputStream */
 
-void rBootItemOutputStream::setItem(rBootHttpUpdateItem* item)
-{
-	this->item = item;
-}
-
 bool rBootItemOutputStream::init()
 {
 	if(item == nullptr) {
@@ -33,19 +28,19 @@ bool rBootItemOutputStream::init()
 	}
 
 	rBootWriteStatus = rboot_write_init(this->item->targetOffset);
-	initilized = true;
+	initialized = true;
 
 	return true;
 }
 
 size_t rBootItemOutputStream::write(const uint8_t* data, size_t size)
 {
-	if(!initilized && size > 0) {
+	if(!initialized && size > 0) {
 		if(!init()) { // unable to initialize
 			return -1;
 		}
 
-		initilized = true;
+		initialized = true;
 	}
 
 	if(!rboot_write_flash(&rBootWriteStatus, (uint8_t*)data, size)) {
@@ -65,11 +60,6 @@ bool rBootItemOutputStream::close()
 	return rboot_write_end(&rBootWriteStatus);
 }
 
-rBootItemOutputStream::~rBootItemOutputStream()
-{
-	close();
-}
-
 /* rBootHttpUpdate */
 
 void rBootHttpUpdate::addItem(int offset, String firmwareFileUrl)
@@ -79,11 +69,6 @@ void rBootHttpUpdate::addItem(int offset, String firmwareFileUrl)
 	add.url = firmwareFileUrl;
 	add.size = 0;
 	items.add(add);
-}
-
-void rBootHttpUpdate::setBaseRequest(HttpRequest* request)
-{
-	baseRequest = request;
 }
 
 void rBootHttpUpdate::start()
@@ -120,11 +105,6 @@ void rBootHttpUpdate::start()
 	}
 }
 
-rBootItemOutputStream* rBootHttpUpdate::getStream()
-{
-	return new rBootItemOutputStream();
-}
-
 int rBootHttpUpdate::itemComplete(HttpConnection& client, bool success)
 {
 	if(!success) {
@@ -156,21 +136,6 @@ int rBootHttpUpdate::updateComplete(HttpConnection& client, bool success)
 	return 0;
 }
 
-void rBootHttpUpdate::switchToRom(uint8_t romSlot)
-{
-	this->romSlot = romSlot;
-}
-
-void rBootHttpUpdate::setCallback(OtaUpdateDelegate reqUpdateDelegate)
-{
-	setDelegate(reqUpdateDelegate);
-}
-
-void rBootHttpUpdate::setDelegate(OtaUpdateDelegate reqUpdateDelegate)
-{
-	this->updateDelegate = reqUpdateDelegate;
-}
-
 void rBootHttpUpdate::updateFailed()
 {
 	debug_e("\r\nFirmware download failed..");
@@ -192,9 +157,4 @@ void rBootHttpUpdate::applyUpdate()
 	debug_d("Firmware updated, rebooting to rom %d...\r\n", romSlot);
 	rboot_set_current_rom(romSlot);
 	System.restart();
-}
-
-rBootHttpUpdateItem rBootHttpUpdate::getItem(unsigned int index)
-{
-	return items.elementAt(index);
 }

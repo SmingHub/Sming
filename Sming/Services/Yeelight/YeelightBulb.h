@@ -27,7 +27,10 @@ enum YeelightBulbState
 class YeelightBulb
 {
 public:
-	YeelightBulb(IPAddress addr);
+	YeelightBulb(IPAddress addr) : lamp(addr)
+	{
+	}
+
 	~YeelightBulb();
 
 	/** @brief Can be skipped. This method will be called automatically from any action method below
@@ -64,7 +67,7 @@ private:
 
 	TcpClient* connection = nullptr;
 	long requestId = 0;
-	long propsId;
+	long propsId = 0;
 	YeelightBulbState state = eYBS_Unknown;
 };
 

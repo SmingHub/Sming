@@ -52,7 +52,7 @@ Timer& Timer::initializeUs(uint32_t microseconds, TimerDelegateStdFunction deleg
 	return *this;
 }
 
-void Timer::start(bool repeating /* = true*/)
+void Timer::start(bool repeating)
 {
 	this->repeating = repeating;
 	stop();
@@ -85,7 +85,7 @@ void Timer::stop()
 	}
 }
 
-void Timer::setIntervalUs(uint64_t microseconds /* = 1000000*/)
+void Timer::setIntervalUs(uint64_t microseconds)
 {
 	if(microseconds > MAX_OS_TIMER_INTERVAL_US) {
 		// interval too large, calculate a good divider
@@ -110,7 +110,7 @@ void Timer::setIntervalUs(uint64_t microseconds /* = 1000000*/)
 		restart();
 }
 
-void Timer::setIntervalMs(uint32_t milliseconds /* = 1000000*/)
+void Timer::setIntervalMs(uint32_t milliseconds)
 {
 	setIntervalUs(((uint64_t)milliseconds) * 1000);
 }

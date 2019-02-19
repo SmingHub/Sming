@@ -12,7 +12,7 @@ CUserData::~CUserData()
 void CUserData::addSession(WebsocketConnection& connection)
 {
 	activeWebSockets.addElement(&connection);
-	connection.setUserData((void*)this);
+	connection.setUserData(this);
 }
 
 void CUserData::removeSession(WebsocketConnection& connection)

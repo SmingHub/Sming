@@ -46,34 +46,27 @@ public:
 	}
 
 	TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted)
-		: TcpConnection(clientTcp, true), state(eTCS_Connected)
+		: TcpConnection(clientTcp, true), state(eTCS_Connected), completed(onCompleted), receive(clientReceive)
 	{
 		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
-		completed = onCompleted;
-		receive = clientReceive;
 	}
 
 	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend,
 			  TcpClientDataDelegate onReceive = nullptr)
-		: TcpConnection(false)
+		: TcpConnection(false), completed(onCompleted), ready(onReadyToSend), receive(onReceive)
 	{
 		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
-		completed = onCompleted;
-		ready = onReadyToSend;
-		receive = onReceive;
 	}
 
-	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive = nullptr) : TcpConnection(false)
+	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive = nullptr)
+		: TcpConnection(false), completed(onCompleted), receive(onReceive)
 	{
 		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
-		completed = onCompleted;
-		receive = onReceive;
 	}
 
-	TcpClient(TcpClientDataDelegate onReceive) : TcpConnection(false)
+	explicit TcpClient(TcpClientDataDelegate onReceive) : TcpConnection(false), receive(onReceive)
 	{
 		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
-		receive = onReceive;
 	}
 
 	~TcpClient()
@@ -172,7 +165,7 @@ protected:
 	virtual void onFinished(TcpClientState finishState);
 
 #ifdef ENABLE_SSL
-	virtual err_t onSslConnected(SSL* ssl)
+	err_t onSslConnected(SSL* ssl) override
 	{
 		return sslValidators.validate(ssl) ? ERR_OK : ERR_ABRT;
 	}
@@ -191,8 +184,8 @@ protected:
 private:
 	TcpClientState state = eTCS_Ready;
 	TcpClientCompleteDelegate completed = nullptr;
-	TcpClientDataDelegate receive = nullptr;
 	TcpClientEventDelegate ready = nullptr;
+	TcpClientDataDelegate receive = nullptr;
 
 	bool asyncCloseAfterSent = false;
 	uint16_t asyncTotalSent = 0;

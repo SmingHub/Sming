@@ -49,8 +49,8 @@ void bmpDraw(Adafruit_ILI9341 tft, String fileName, uint8_t x, uint8_t y)
 	uint32_t rowSize;					// Not always = bmpWidth; may have padding
 	uint8_t sdbuffer[3 * BUFFPIXEL];	// pixel buffer (R+G+B per pixel)
 	uint8_t buffidx = sizeof(sdbuffer); // Current position in sdbuffer
-	boolean goodBmp = false;			// Set to true on valid header parse
-	boolean flip = true;				// BMP is stored bottom-to-top
+	bool goodBmp = false;				// Set to true on valid header parse
+	bool flip = true;					// BMP is stored bottom-to-top
 	int w, h, row, col;
 	uint8_t r, g, b;
 	uint32_t pos = 0, startTime = millis();

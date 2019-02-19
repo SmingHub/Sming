@@ -24,7 +24,6 @@
 
 class rBootHttpUpdate;
 
-//typedef void (*otaCallback)(bool result);
 typedef Delegate<void(rBootHttpUpdate& client, bool result)> OtaUpdateDelegate;
 
 struct rBootHttpUpdateItem {
@@ -36,9 +35,16 @@ struct rBootHttpUpdateItem {
 class rBootItemOutputStream : public ReadWriteStream
 {
 public:
-	~rBootItemOutputStream();
+	virtual ~rBootItemOutputStream()
+	{
+		close();
+	}
 
-	void setItem(rBootHttpUpdateItem* item);
+	void setItem(rBootHttpUpdateItem* item)
+	{
+		this->item = item;
+	}
+
 	virtual bool init();
 
 	size_t write(const uint8_t* data, size_t size) override;
@@ -66,7 +72,7 @@ public:
 	virtual bool close();
 
 protected:
-	bool initilized = false;
+	bool initialized = false;
 	rBootHttpUpdateItem* item = nullptr;
 	rboot_write_status rBootWriteStatus;
 };
@@ -76,9 +82,21 @@ class rBootHttpUpdate : protected HttpClient
 public:
 	void addItem(int offset, String firmwareFileUrl);
 	void start();
-	void switchToRom(uint8_t romSlot);
-	void setCallback(OtaUpdateDelegate reqUpdateDelegate);
-	void setDelegate(OtaUpdateDelegate reqUpdateDelegate);
+
+	void switchToRom(uint8_t romSlot)
+	{
+		this->romSlot = romSlot;
+	}
+
+	void setCallback(OtaUpdateDelegate reqUpdateDelegate)
+	{
+		setDelegate(reqUpdateDelegate);
+	}
+
+	void setDelegate(OtaUpdateDelegate reqUpdateDelegate)
+	{
+		this->updateDelegate = reqUpdateDelegate;
+	}
 
 	/* Sets the base request that can be used to pass
 	 * - default request parameters, like request headers...
@@ -88,16 +106,26 @@ public:
 	 *
 	 * @param HttpRequest *
 	 */
-	void setBaseRequest(HttpRequest* request);
+	void setBaseRequest(HttpRequest* request)
+	{
+		baseRequest = request;
+	}
 
 	// Allow reading items
-	rBootHttpUpdateItem getItem(unsigned int index);
+	rBootHttpUpdateItem getItem(unsigned int index)
+	{
+		return items.elementAt(index);
+	}
 
 protected:
 	void applyUpdate();
 	void updateFailed();
 
-	virtual rBootItemOutputStream* getStream();
+	virtual rBootItemOutputStream* getStream()
+	{
+		return new rBootItemOutputStream();
+	}
+
 	virtual int itemComplete(HttpConnection& client, bool success);
 	virtual int updateComplete(HttpConnection& client, bool success);
 

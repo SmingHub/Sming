@@ -533,9 +533,9 @@ void String::setCharAt(unsigned int index, char c)
 
 char & String::operator[](unsigned int index)
 {
-  static char dummy_writable_char;
   if (index >= len || !buffer)
   {
+    static char dummy_writable_char;
     dummy_writable_char = '\0';
     return dummy_writable_char;
   }
@@ -616,7 +616,7 @@ int String::lastIndexOf(const String &s2) const
 
 int String::lastIndexOf(const String &s2, unsigned int fromIndex) const
 {
-  if (s2.len == 0 || len == 0 || s2.len > len || fromIndex < 0) return -1;
+  if (s2.len == 0 || len == 0 || s2.len > len) return -1;
   if (fromIndex >= len) fromIndex = len - 1;
   int found = -1;
   for (char *p = buffer; p <= buffer + fromIndex; p++)
@@ -723,7 +723,7 @@ void String::remove(unsigned int index)
 void String::remove(unsigned int index, unsigned int count)
 {
 	if (index >= len) { return; }
-	if (count <= 0) { return; }
+	if (count == 0) { return; }
 	if (index + count > len) { count = len - index; }
 	char *writeTo = buffer + index;
 	len -= count;

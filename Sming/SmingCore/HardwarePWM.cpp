@@ -30,9 +30,8 @@
 
 #define PERIOD_TO_MAX_DUTY(x) (x * 25)
 
-HardwarePWM::HardwarePWM(uint8* pins, uint8 no_of_pins)
+HardwarePWM::HardwarePWM(uint8* pins, uint8 no_of_pins) : channel_count(no_of_pins)
 {
-	channel_count = no_of_pins;
 	if(no_of_pins > 0) {
 		uint32 io_info[PWM_CHANNEL_NUM_MAX][3];	// pin information
 		uint32 pwm_duty_init[PWM_CHANNEL_NUM_MAX]; // pwm duty

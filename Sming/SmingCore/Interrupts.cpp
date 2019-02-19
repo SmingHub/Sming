@@ -23,7 +23,7 @@ static bool gpioInterruptsInitialied = false;
  */
 static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 {
-	boolean processed;
+	bool processed;
 	uint32 gpioStatus;
 
 	do {

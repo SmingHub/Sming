@@ -36,7 +36,7 @@ HttpHeaders& MailMessage::getHeaders()
 	return headers;
 }
 
-MailMessage& MailMessage::setBody(const String& body, MimeType mime /* = MIME_TEXT */)
+MailMessage& MailMessage::setBody(const String& body, MimeType mime)
 {
 	MemoryDataStream* memory = new MemoryDataStream();
 	auto written = memory->write((uint8_t*)body.c_str(), body.length());
@@ -47,7 +47,7 @@ MailMessage& MailMessage::setBody(const String& body, MimeType mime /* = MIME_TE
 	return setBody(memory, mime);
 }
 
-MailMessage& MailMessage::setBody(IDataSourceStream* stream, MimeType mime /* = MIME_TEXT */)
+MailMessage& MailMessage::setBody(IDataSourceStream* stream, MimeType mime)
 {
 	if(this->stream != nullptr) {
 		debug_e("MailMessage::setBody: Discarding already set stream!");
@@ -73,13 +73,12 @@ MailMessage& MailMessage::addAttachment(FileStream* stream)
 	return addAttachment(stream, mime, filename);
 }
 
-MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, MimeType mime, const String& filename /* = "" */)
+MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, MimeType mime, const String& filename)
 {
 	return addAttachment(stream, ContentType::toString(mime), filename);
 }
 
-MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, const String& mime,
-										const String& filename /* = "" */)
+MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, const String& mime, const String& filename)
 {
 	HttpPartResult attachment;
 	attachment.stream = stream;

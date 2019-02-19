@@ -69,7 +69,7 @@ void ssl_hmac_md5(const uint8_t* msg, int length, const uint8_t* key, int key_le
 		break;                                                                                                         \
 	}
 
-SmtpClient::SmtpClient(bool autoDestroy /* =false */) : TcpClient(autoDestroy), outgoingMail(nullptr)
+SmtpClient::SmtpClient(bool autoDestroy) : TcpClient(autoDestroy), outgoingMail(nullptr)
 {
 }
 

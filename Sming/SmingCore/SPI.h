@@ -139,13 +139,6 @@ public:
 	 */
 	void transfer(uint8* buffer, size_t numberBytes) override;
 
-	/** @brief  Default settings used by the SPI bus
-	 * until reset by beginTransaction(SPISettings)
-	 *
-	 * Note: not included in std Arduino lib
-	 */
-	SPISettings SPIDefaultSettings;
-
 private:
 	/** @brief transfer32()
 	 *
