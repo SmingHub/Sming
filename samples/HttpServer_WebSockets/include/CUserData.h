@@ -8,8 +8,15 @@
 class CUserData
 {
 public:
-	CUserData(const char* uName, const char* uData);
-	~CUserData();
+	CUserData(const char* uName, const char* uData) : userName(uName), userData(uData)
+	{
+	}
+
+	~CUserData()
+	{
+		logOut();
+	}
+
 	void addSession(WebsocketConnection& connection);
 	void removeSession(WebsocketConnection& connection);
 	void printMessage(WebsocketConnection& connection, const String& msg);
