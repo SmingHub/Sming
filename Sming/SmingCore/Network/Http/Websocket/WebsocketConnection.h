@@ -43,9 +43,9 @@ typedef Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)> Websock
 enum WsConnectionState { eWSCS_Ready, eWSCS_Open, eWSCS_Closed };
 
 typedef struct {
-	ws_frame_type_t type;
-	char* payload;
-	size_t payloadLegth;
+	ws_frame_type_t type = WS_FRAME_TEXT;
+	char* payload = nullptr;
+	size_t payloadLegth = 0;
 } WsFrameInfo;
 
 class WebsocketConnection

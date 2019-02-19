@@ -15,7 +15,8 @@
 #include "Data/Stream/ChunkedStream.h"
 #include "Data/Stream/UrlencodedOutputStream.h"
 
-HttpRequest::HttpRequest(const HttpRequest& value) : uri(value.uri), method(value.method), headers(value.headers)
+HttpRequest::HttpRequest(const HttpRequest& value)
+	: uri(value.uri), method(value.method), headers(value.headers), postParams(value.postParams)
 {
 	headersCompletedDelegate = value.headersCompletedDelegate;
 	requestBodyDelegate = value.requestBodyDelegate;
