@@ -10,13 +10,13 @@
 #endif
 
 HttpServer server;
-int totalActiveSockets = 0;
+unsigned totalActiveSockets = 0;
 
 CUserData userGeorge("George", "I like SMING");
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
-	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
+	auto tmpl = new TemplateFileStream(F("index.html"));
 	auto& vars = tmpl->variables();
 	//vars["counter"] = String(counter);
 	response.sendTemplate(tmpl); // this template object will be deleted automatically
@@ -25,12 +25,13 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 void onFile(HttpRequest& request, HttpResponse& response)
 {
 	String file = request.uri.Path;
-	if(file[0] == '/')
+	if(file[0] == '/') {
 		file = file.substring(1);
+	}
 
-	if(file[0] == '.')
+	if(file[0] == '.') {
 		response.code = HTTP_STATUS_FORBIDDEN;
-	else {
+	} else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
 	}
@@ -44,17 +45,17 @@ void wsConnected(WebsocketConnection& socket)
 	userGeorge.addSession(socket);
 	// Notify everybody about new connection
 
-	String message = "New friend arrived! Total: " + String(totalActiveSockets);
-	socket.broadcast(message.c_str(), message.length());
+	String message = F("New friend arrived! Total: ") + String(totalActiveSockets);
+	socket.broadcast(message);
 }
 
 void wsMessageReceived(WebsocketConnection& socket, const String& message)
 {
 	Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
 
-	if(message == "shutdown") {
-		String message = "The server is shutting down...";
-		socket.broadcast(message.c_str(), message.length());
+	if(message == _F("shutdown")) {
+		String message(F("The server is shutting down..."));
+		socket.broadcast(message);
 
 		// Don't shutdown immediately, wait a bit to allow messages to propagate
 		auto timer = new SimpleTimer;
@@ -68,19 +69,19 @@ void wsMessageReceived(WebsocketConnection& socket, const String& message)
 		return;
 	}
 
-	String response = "Echo: " + message;
+	String response = F("Echo: ") + message;
 	socket.sendString(response);
 
 	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
-	CUserData* user = (CUserData*)socket.getUserData();
-	if(user) {
+	auto user = reinterpret_cast<CUserData*>(socket.getUserData());
+	if(user != nullptr) {
 		user->printMessage(socket, message);
 	}
 }
 
 void wsBinaryReceived(WebsocketConnection& socket, uint8_t* data, size_t size)
 {
-	Serial.printf("Websocket binary data recieved, size: %d\r\n", size);
+	Serial.printf(_F("Websocket binary data recieved, size: %d\r\n"), size);
 }
 
 void wsDisconnected(WebsocketConnection& socket)
@@ -88,14 +89,14 @@ void wsDisconnected(WebsocketConnection& socket)
 	totalActiveSockets--;
 
 	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
-	CUserData* user = (CUserData*)socket.getUserData();
-	if(user) {
+	auto user = reinterpret_cast<CUserData*>(socket.getUserData());
+	if(user != nullptr) {
 		user->removeSession(socket);
 	}
 
 	// Notify everybody about lost connection
-	String message = "We lost our friend :( Total: " + String(totalActiveSockets);
-	socket.broadcast(message.c_str(), message.length());
+	String message = F("We lost our friend :( Total: ") + String(totalActiveSockets);
+	socket.broadcast(message);
 }
 
 void startWebServer()
@@ -105,7 +106,7 @@ void startWebServer()
 	server.setDefaultHandler(onFile);
 
 	// Web Sockets configuration
-	WebsocketResource* wsResource = new WebsocketResource();
+	auto wsResource = new WebsocketResource();
 	wsResource->setConnectionHandler(wsConnected);
 	wsResource->setMessageHandler(wsMessageReceived);
 	wsResource->setBinaryHandler(wsBinaryReceived);
@@ -113,9 +114,9 @@ void startWebServer()
 
 	server.addPath("/ws", wsResource);
 
-	Serial.println("\r\n=== WEB SERVER STARTED ===");
+	Serial.println(F("\r\n=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println("==============================\r\n");
+	Serial.println(F("==============================\r\n"));
 }
 
 // Will be called when WiFi station becomes fully operational
