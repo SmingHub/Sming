@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/Adafruit_PCD8544/Adafruit_PCD8544.h>
 
 // GPIO13/D7 - Serial clock out (SCLK)

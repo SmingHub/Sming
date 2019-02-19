@@ -15,28 +15,7 @@
 #include "HttpServer.h"
 #include "TcpServer.h"
 #include "WebConstants.h"
-#include "../../Data/Stream/ChunkedStream.h"
-
-HttpServerConnection::HttpServerConnection(tcp_pcb* clientTcp) : HttpConnectionBase(clientTcp, HTTP_REQUEST)
-{
-}
-
-HttpServerConnection::~HttpServerConnection()
-{
-	if(this->resource) {
-		this->resource->shutdown(*this);
-	}
-}
-
-void HttpServerConnection::setResourceTree(ResourceTree* resourceTree)
-{
-	this->resourceTree = resourceTree;
-}
-
-void HttpServerConnection::setBodyParsers(BodyParsers* bodyParsers)
-{
-	this->bodyParsers = bodyParsers;
-}
+#include "Data/Stream/ChunkedStream.h"
 
 int HttpServerConnection::onMessageBegin(http_parser* parser)
 {
@@ -48,7 +27,7 @@ int HttpServerConnection::onMessageBegin(http_parser* parser)
 
 	// and temp data...
 	reset();
-	bodyParser = 0;
+	bodyParser = nullptr;
 
 	return 0;
 }
@@ -160,15 +139,6 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 	}
 
 	return error;
-}
-
-bool HttpServerConnection::onProtocolUpgrade(http_parser* parser)
-{
-	if(upgradeCallback) {
-		return upgradeCallback();
-	}
-
-	return true;
 }
 
 int HttpServerConnection::onBody(const char* at, size_t length)
@@ -326,12 +296,6 @@ bool HttpServerConnection::sendResponseBody(HttpResponse* response)
 	}
 
 	return true;
-}
-
-void HttpServerConnection::send()
-{
-	state = eHCS_StartSending;
-	onReadyToSendData(eTCE_Received);
 }
 
 void HttpServerConnection::sendError(const String& message, enum http_status code)

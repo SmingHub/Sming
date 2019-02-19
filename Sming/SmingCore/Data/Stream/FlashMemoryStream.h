@@ -30,7 +30,7 @@ public:
 	{
 	}
 
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return eSST_Memory;
 	}
@@ -39,16 +39,16 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	int available()
+	int available() override
 	{
 		return flashString.length() - readPos;
 	}
 
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	virtual bool seek(int len);
+	bool seek(int len) override;
 
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return readPos >= flashString.length();
 	}

@@ -136,9 +136,9 @@ public:
 	 *  @retval bool True on success
 	 *  @note   Also supports obsolete RFC 850 date format, e.g. Sunday, 06-Nov-94 08:49:37 GMT where 2 digit year represents range 1970-2069
 	 *  @note   GMT suffix is optional and is always assumed / ignored
-	 *  @deprecated Use 'fromHttpDate' instead
+	 *  @deprecated Use `fromHttpDate()` instead
 	 */
-	bool parseHttpDate(const String& httpDate) __attribute__((deprecated))
+	bool parseHttpDate(const String& httpDate) SMING_DEPRECATED
 	{
 		return fromHttpDate(httpDate);
 	}
@@ -205,9 +205,10 @@ public:
 	static void fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t* phour, uint8_t* pday, uint8_t* pwday,
 							 uint8_t* pmonth, uint16_t* pyear);
 
-	/** @deprecated used unsigned version */
+	/** @deprecated Use unsigned version instead
+	 * 		`fromUnixTime(time_t, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint16_t*)` */
 	static void fromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday, int8_t* pwday,
-							 int8_t* pmonth, int16_t* pyear) __attribute__((deprecated))
+							 int8_t* pmonth, int16_t* pyear) SMING_DEPRECATED
 	{
 		fromUnixTime(timep, reinterpret_cast<uint8_t*>(psec), reinterpret_cast<uint8_t*>(pmin),
 					 reinterpret_cast<uint8_t*>(phour), reinterpret_cast<uint8_t*>(pday),
@@ -231,10 +232,10 @@ public:
 	 *  @note   32-bit Unix time has year 2036 issue.
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
 	 *  @note   All of the return values are optional, specify nullptr if not required
-	 *  @deprecated Use 'fromUnixTime' instead
+	 *  @deprecated Use `fromUnixTime(time_t, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint16_t*)` instead
 	 */
 	static void convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday,
-									int8_t* pwday, int8_t* pmonth, int16_t* pyear) __attribute__((deprecated))
+									int8_t* pwday, int8_t* pmonth, int16_t* pyear) SMING_DEPRECATED
 	{
 		fromUnixTime(timep, reinterpret_cast<uint8_t*>(psec), reinterpret_cast<uint8_t*>(pmin),
 					 reinterpret_cast<uint8_t*>(phour), reinterpret_cast<uint8_t*>(pday),
@@ -267,10 +268,10 @@ public:
 	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. time_t unixTime = DateTime::convertToUnixTime(...);
 	 *  @note   32-bit Unix time is valid between 1901-12-13 and 03:14:07 2038-01-19
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
-	 *  @deprecated Use 'toUnixTime' instead
+	 *  @deprecated Use 'toUnixTime()' instead
 	 */
-	static time_t convertToUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)
-		__attribute__((deprecated))
+	static time_t convertToUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month,
+									uint16_t year) SMING_DEPRECATED
 	{
 		return toUnixTime(sec, min, hour, day, month, year);
 	}

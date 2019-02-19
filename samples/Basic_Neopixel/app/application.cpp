@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 #include <Adafruit_NeoPixel/Adafruit_NeoPixel.h>
 

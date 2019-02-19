@@ -1,11 +1,11 @@
 /*
  * AppSettings.h
  *
- *  Created on: 13 мая 2015 г.
+ *  Created on: 13 пїЅпїЅпїЅ 2015 пїЅ.
  *      Author: Anakod
  */
 
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 #ifndef INCLUDE_APPSETTINGS_H_
 #define INCLUDE_APPSETTINGS_H_

@@ -17,7 +17,7 @@
  */
 
 #include "Clock.h"
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "WiringFrameworkIncludes.h"
 
 #include "HardwarePWM.h"
 
@@ -64,17 +64,6 @@ uint8 HardwarePWM::getChannel(uint8 pin)
 	return PWM_BAD_CHANNEL;
 }
 
-/* Function Name: analogWrite
- * Description: This function is used to set the pwm duty cycle for a given pin
- * Parameters: pin - Esp8266 pin number
- *             duty - duty cycle value
- * Default frequency is 1khz but can be varied by various function
- */
-bool HardwarePWM::analogWrite(uint8 pin, uint32 duty)
-{
-	return setDuty(pin, duty);
-}
-
 /* Function Name: getDutyChan
  * Description: This function is used to get the duty cycle number for a given channel
  * Parameters: chan -Esp8266 channel number
@@ -86,16 +75,6 @@ uint32 HardwarePWM::getDutyChan(uint8 chan)
 	} else {
 		return pwm_get_duty(chan);
 	}
-}
-
-/* Function Name: getDuty
- * Description: This function is used to get the duty cycle number for a given pin
- * Parameters: pin -Esp8266 pin number
- */
-uint32 HardwarePWM::getDuty(uint8 pin)
-{
-	uint8 chan = getChannel(pin);
-	return getDutyChan(chan);
 }
 
 /* Function Name: setDutyChan
@@ -119,27 +98,6 @@ bool HardwarePWM::setDutyChan(uint8 chan, uint32 duty, bool update)
 		debugf("Duty cycle value too high for current period.");
 		return false;
 	}
-}
-
-/* Function Name: setDuty
- * Description: This function is used to set the pwm duty cycle for a given pin. If parameter 'update' is false
- *              then you have to call update() later to update duties.
- * Parameters: pin - pin number
- *             duty - duty cycle value
- *             update - update PWM output
- */
-bool HardwarePWM::setDuty(uint8 pin, uint32 duty, bool update)
-{
-	uint8 chan = getChannel(pin);
-	return setDutyChan(chan, duty, update);
-}
-
-/* Function Name: getMaxDuty
- * Description: This function is used to get the max duty cycle for the currently set period
- */
-uint32 HardwarePWM::getMaxDuty()
-{
-	return maxduty;
 }
 
 /* Function Name: getPeriod

@@ -7,22 +7,6 @@
 
 #include "LimitedMemoryStream.h"
 
-LimitedMemoryStream::LimitedMemoryStream(size_t length)
-{
-	buffer = new uint8_t[length];
-	this->length = length;
-}
-
-LimitedMemoryStream::~LimitedMemoryStream()
-{
-	delete[] buffer;
-}
-
-StreamType LimitedMemoryStream::getStreamType() const
-{
-	return eSST_Memory;
-}
-
 uint16_t LimitedMemoryStream::readMemoryBlock(char* data, int bufSize)
 {
 	int written = std::min(bufSize, available());
@@ -42,11 +26,6 @@ bool LimitedMemoryStream::seek(int len)
 	return true;
 }
 
-size_t LimitedMemoryStream::write(uint8_t charToWrite)
-{
-	return write(&charToWrite, 1);
-}
-
 size_t LimitedMemoryStream::write(const uint8_t* data, size_t size)
 {
 	if(writePos + size <= length) {
@@ -55,9 +34,4 @@ size_t LimitedMemoryStream::write(const uint8_t* data, size_t size)
 	}
 
 	return size;
-}
-
-bool LimitedMemoryStream::isFinished()
-{
-	return (readPos >= length);
 }

@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 /*** Direct PUSH notifications on your mobile phone!
  *
@@ -65,7 +65,7 @@ public:
 
 	int processed(HttpConnection& client, bool successful)
 	{
-		Serial.println(client.getResponseString());
+		Serial.println(client.getResponse()->getBody());
 
 		return 0;
 	}

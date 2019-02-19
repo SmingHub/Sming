@@ -17,11 +17,6 @@
 #include "Data/Stream/FileStream.h"
 #include "Data/Stream/TemplateStream.h"
 
-HttpResponse::~HttpResponse()
-{
-	freeStreams();
-}
-
 HttpResponse* HttpResponse::setContentType(const String& type)
 {
 	headers[HTTP_HEADER_CONTENT_TYPE] = type;
@@ -39,7 +34,7 @@ HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
 	return this;
 }
 
-HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic /* = false */)
+HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic)
 {
 	String cache = isPublic ? F("public") : F("private");
 	cache += F(", max-age=") + String(maxAgeSeconds) + F(", must-revalidate");
@@ -71,17 +66,7 @@ bool HttpResponse::sendString(const String& text)
 	return buffer->print(text) == text.length();
 }
 
-bool HttpResponse::hasHeader(const String& name)
-{
-	return headers.contains(name);
-}
-
-void HttpResponse::redirect(const String& location)
-{
-	headers[HTTP_HEADER_LOCATION] = location;
-}
-
-bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck /* = true*/)
+bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck)
 {
 	String compressed = fileName + ".gz";
 	if(allowGzipFileCheck && fileExist(compressed)) {

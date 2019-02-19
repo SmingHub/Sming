@@ -32,19 +32,18 @@ public:
 	{
 	}
 
-	virtual ~TelnetServer()
-	{
-	}
-
 	//	void setCommandDelegate(TelnetServerCommandDelegate reqDelegate);
 	void enableDebug(bool reqStatus);
 	void enableCommand(bool reqStatus);
 
 private:
-	void onClient(TcpClient* client);
-	bool onClientReceive(TcpClient& client, char* data, int size);
-	void onClientComplete(TcpClient& client, bool successful);
+	void onClient(TcpClient* client) override;
+	bool onClientReceive(TcpClient& client, char* data, int size) override;
+	void onClientComplete(TcpClient& client, bool successful) override;
+
 	void wrchar(char c);
+
+private:
 	TcpClient* curClient = nullptr;
 	CommandExecutor* commandExecutor = nullptr;
 	bool telnetDebug = true;

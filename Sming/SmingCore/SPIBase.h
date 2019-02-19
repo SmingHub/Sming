@@ -30,8 +30,13 @@ public:
      *  @addtogroup base_spi
      *  @{
 	 */
-	SPIBase();
-	virtual ~SPIBase();
+	SPIBase()
+	{
+	}
+
+	virtual ~SPIBase()
+	{
+	}
 
 	/** @brief begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
 	 */

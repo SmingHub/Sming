@@ -24,12 +24,6 @@ public:
 		return true;
 	}
 
-	// This example show the way delegates have been used in Sming in the past.
-	void callOldDelegate()
-	{
-		taskTimer.initializeMs(taskInterval, TimerDelegate(&Task::doOldDelegate, this)).start();
-	}
-
 	// This example shows how to use a plain old ordinary function as a callback
 	void callPlainOldOrdinaryFunction()
 	{
@@ -78,10 +72,6 @@ public:
 		taskTimer.initializeMs(taskInterval, b).start();
 	}
 
-	void doOldDelegate()
-	{
-		debugf("doOldDelegate");
-	}
 	void callbackMemberFunction()
 	{
 		debugf("callMemberFunction");
@@ -101,9 +91,6 @@ Task task5;
 void init()
 {
 	Serial.begin(115200);
-
-	task1.setTimer(1500);
-	task1.callOldDelegate();
 
 	task2.setTimer(1600);
 	task2.callPlainOldOrdinaryFunction();

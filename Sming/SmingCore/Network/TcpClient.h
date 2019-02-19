@@ -73,15 +73,15 @@ public:
 		receive = onReceive;
 	}
 
-	virtual ~TcpClient()
+	~TcpClient()
 	{
 		freeStreams();
 	}
 
 public:
-	virtual bool connect(const String& server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
-	virtual bool connect(IPAddress addr, uint16_t port, boolean useSsl = false, uint32_t sslOptions = 0);
-	virtual void close();
+	bool connect(const String& server, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
+	bool connect(IPAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0) override;
+	void close() override;
 
 	/**	@brief	Set or clear the callback for received data
 	 *	@param	receiveCb callback delegate or nullptr
@@ -106,12 +106,12 @@ public:
 		return send(data.c_str(), data.length(), forceCloseAfterSent);
 	}
 
-	__forceinline bool isProcessing()
+	bool isProcessing()
 	{
 		return state == eTCS_Connected || state == eTCS_Connecting;
 	}
 
-	__forceinline TcpClientState getConnectionState()
+	TcpClientState getConnectionState()
 	{
 		return state;
 	}
@@ -160,11 +160,12 @@ public:
 #endif
 
 protected:
-	virtual err_t onConnected(err_t err);
-	virtual err_t onReceive(pbuf* buf);
-	virtual err_t onSent(uint16_t len);
-	virtual void onError(err_t err);
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	err_t onConnected(err_t err) override;
+	err_t onReceive(pbuf* buf) override;
+	err_t onSent(uint16_t len) override;
+	void onError(err_t err) override;
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
+
 	virtual void onFinished(TcpClientState finishState);
 
 #ifdef ENABLE_SSL

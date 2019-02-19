@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <AppSettings.h>
 #include "Data/Stream/TemplateFlashMemoryStream.h"
 
@@ -73,12 +73,12 @@ void onFile(HttpRequest& request, HttpResponse& response)
 		return;
 	}
 
-	String file = request.getPath();
+	String file = request.uri.Path;
 	if(file[0] == '/')
 		file = file.substring(1);
 
 	if(file[0] == '.')
-		response.forbidden();
+		response.code = HTTP_STATUS_FORBIDDEN;
 	else {
 		if(lastModified.length() > 0) {
 			response.headers[HTTP_HEADER_LAST_MODIFIED] = lastModified;

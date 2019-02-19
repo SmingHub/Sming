@@ -35,7 +35,7 @@
 #ifndef SPI_APP_H
 #define SPI_APP_H
 
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 //#include "spi_register.h"
 //#include "ets_sys.h"
 //#include "osapi.h"

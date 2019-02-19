@@ -1,7 +1,7 @@
 #ifndef INCLUDE_TYTHERM_H_
 #define INCLUDE_TYTHERM_H_
 #include <configuration.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/OneWire/OneWire.h>
 
 //OneWire stuff

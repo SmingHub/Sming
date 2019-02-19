@@ -20,11 +20,11 @@
 class ReadWriteStream : public IDataSourceStream
 {
 public:
-	virtual ~ReadWriteStream()
-	{
-	}
-
-	virtual size_t write(uint8_t charToWrite)
+	/** @brief Write a single character to the stream
+	 *  @param charToWrite
+	 *  @retval size_t Number of chars written (1 on success, 0 on failure)
+	 */
+	size_t write(uint8_t charToWrite) override
 	{
 		return write(&charToWrite, 1);
 	}
@@ -33,11 +33,14 @@ public:
      *  @param  buffer Pointer to buffer to write to the stream
      *  @param  size Quantity of chars to write
      *  @retval size_t Quantity of chars written to stream
+     *  @note Although this is defined in the Print class, ReadWriteStream
+     *  uses this as the core output method so descendants are required
+     *  to implement it
      */
 	virtual size_t write(const uint8_t* buffer, size_t size) = 0;
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize) = 0;
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 };
 
 /** @} */

@@ -13,18 +13,7 @@
 #include "HttpServer.h"
 
 #include "TcpClient.h"
-#include "../Wiring/WString.h"
-
-HttpServer::HttpServer()
-{
-	settings.keepAliveSeconds = 2;
-	configure(settings);
-}
-
-HttpServer::HttpServer(const HttpServerSettings& settings)
-{
-	configure(settings);
-}
+#include "WString.h"
 
 void HttpServer::configure(const HttpServerSettings& settings)
 {
@@ -46,9 +35,7 @@ void HttpServer::configure(const HttpServerSettings& settings)
 HttpServer::~HttpServer()
 {
 	for(unsigned i = 0; i < resourceTree.count(); i++) {
-		if(resourceTree.valueAt(i) != NULL) {
-			delete resourceTree.valueAt(i);
-		}
+		delete resourceTree.valueAt(i);
 	}
 }
 

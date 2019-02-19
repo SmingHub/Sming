@@ -8,9 +8,11 @@
  */
 
 #include "rBootHttpUpdate.h"
-#include "../Platform/System.h"
+#include "Platform/System.h"
 #include "URL.h"
-#include "../Platform/WDT.h"
+#include "Platform/WDT.h"
+
+/* rBootItemOutputStream */
 
 void rBootItemOutputStream::setItem(rBootHttpUpdateItem* item)
 {
@@ -19,7 +21,7 @@ void rBootItemOutputStream::setItem(rBootHttpUpdateItem* item)
 
 bool rBootItemOutputStream::init()
 {
-	if(item == NULL) {
+	if(item == nullptr) {
 		debug_e("rBootItemOutputStream: Item must be set!");
 		return false;
 	}
@@ -62,16 +64,7 @@ rBootItemOutputStream::~rBootItemOutputStream()
 	close();
 }
 
-rBootHttpUpdate::rBootHttpUpdate()
-{
-	currentItem = 0;
-	romSlot = NO_ROM_SWITCH;
-	updateDelegate = nullptr;
-}
-
-rBootHttpUpdate::~rBootHttpUpdate()
-{
-}
+/* rBootHttpUpdate */
 
 void rBootHttpUpdate::addItem(int offset, String firmwareFileUrl)
 {
@@ -94,7 +87,7 @@ void rBootHttpUpdate::start()
 		debug_d("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
 
 		HttpRequest* request;
-		if(baseRequest != NULL) {
+		if(baseRequest != nullptr) {
 			request = baseRequest->clone();
 			request->setURL(URL(it.url));
 		} else {

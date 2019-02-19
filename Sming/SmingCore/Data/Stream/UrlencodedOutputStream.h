@@ -30,12 +30,8 @@ public:
 	 */
 	UrlencodedOutputStream(const HttpParams& params);
 
-	virtual ~UrlencodedOutputStream()
-	{
-	}
-
 	//Use base class documentation
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return stream.getStreamType();
 	}
@@ -44,25 +40,25 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	int available()
+	int available() override
 	{
 		return stream.available();
 	}
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize)
+	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
 		return stream.readMemoryBlock(data, bufSize);
 	}
 
 	//Use base class documentation
-	virtual bool seek(int len)
+	bool seek(int len) override
 	{
 		return stream.seek(len);
 	}
 
 	//Use base class documentation
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return stream.isFinished();
 	}

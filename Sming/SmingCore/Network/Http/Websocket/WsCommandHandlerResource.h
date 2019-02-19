@@ -13,8 +13,8 @@
 
 #include "../HttpResource.h"
 #include "WebsocketConnection.h"
-#include "../../Wiring/WString.h"
-#include "../../Services/CommandProcessing/CommandProcessingIncludes.h" // TODO: ....
+#include "WString.h"
+#include "../Services/CommandProcessing/CommandProcessingIncludes.h" // TODO: ....
 
 class WsCommandHandlerResource : protected WebsocketResource
 {
@@ -25,7 +25,7 @@ public:
 	}
 
 protected:
-	int checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+	int checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override
 	{
 		int err = WebsocketResource::checkHeaders(connection, request, response);
 		if(err != 0) {
@@ -33,8 +33,8 @@ protected:
 		}
 
 		WebsocketConnection* socket = (WebsocketConnection*)connection.userData;
-		if(socket != NULL) {
-			socket->setMessageHandler()
+		if(socket != nullptr) {
+			socket->setMessageHandler();
 
 			// create new command handler
 		}

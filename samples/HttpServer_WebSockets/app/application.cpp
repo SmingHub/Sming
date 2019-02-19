@@ -1,6 +1,6 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
-#include <SmingCore/Network/Http/Websocket/WebsocketResource.h>
+#include <SmingCore.h>
+#include <Network/Http/Websocket/WebsocketResource.h>
 #include "CUserData.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -24,12 +24,12 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 
 void onFile(HttpRequest& request, HttpResponse& response)
 {
-	String file = request.getPath();
+	String file = request.uri.Path;
 	if(file[0] == '/')
 		file = file.substring(1);
 
 	if(file[0] == '.')
-		response.forbidden();
+		response.code = HTTP_STATUS_FORBIDDEN;
 	else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);

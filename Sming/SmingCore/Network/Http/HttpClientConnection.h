@@ -26,7 +26,7 @@ public:
 	{
 	}
 
-	virtual ~HttpClientConnection();
+	~HttpClientConnection();
 
 	/** @brief Queue a request
 	 *  @param request

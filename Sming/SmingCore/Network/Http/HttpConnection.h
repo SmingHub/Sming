@@ -27,15 +27,23 @@ typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
 class HttpConnection : public HttpConnectionBase
 {
-	friend class HttpClient;
-
 public:
-	HttpConnection(RequestQueue* queue);
-	~HttpConnection();
+	HttpConnection(RequestQueue* queue) : HttpConnectionBase(HTTP_RESPONSE)
+	{
+		this->waitingQueue = queue;
+	}
+
+	~HttpConnection()
+	{
+		cleanup();
+	}
 
 	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0);
 
-	bool send(HttpRequest* request);
+	bool send(HttpRequest* request)
+	{
+		return waitingQueue->enqueue(request);
+	}
 
 	bool isActive();
 
@@ -43,13 +51,19 @@ public:
 	 * @brief Returns pointer to the current request
 	 * @return HttpRequest*
 	 */
-	HttpRequest* getRequest();
+	HttpRequest* getRequest()
+	{
+		return incomingRequest;
+	}
 
 	/**
 	 * @brief Returns pointer to the current response
 	 * @return HttpResponse*
 	 */
-	HttpResponse* getResponse();
+	HttpResponse* getResponse()
+	{
+		return &response;
+	}
 
 	using TcpClient::close;
 
@@ -58,42 +72,47 @@ public:
 #endif
 
 	// Backported for compatibility reasons
-	// @deprecated
+
 	/**
-	 * @deprecated Use `getResponse().code` instead
+	 * @deprecated Use `getResponse()->code` instead
 	 */
-	__forceinline int getResponseCode()
+	int getResponseCode() SMING_DEPRECATED
 	{
 		return response.code;
 	}
 
 	/**
-	 * @deprecated Use `getResponse().headers[headerName]` instead
+	 * @deprecated Use `getResponse()->headers[headerName]` instead
 	 */
-	String getResponseHeader(String headerName, String defaultValue = nullptr);
+	String getResponseHeader(String headerName, String defaultValue = nullptr) SMING_DEPRECATED;
 
 	/**
-	* @deprecated Use `getResponse().headers` instead
+	* @deprecated Use `getResponse()->headers` instead
 	*/
-	HttpHeaders& getResponseHeaders();
+	HttpHeaders& getResponseHeaders() SMING_DEPRECATED
+	{
+		return response.headers;
+	}
 
 	/**
-	* @deprecated Use `getResponse().headers[HTTP_HEADER_LAST_MODIFIED]` instead
+	* @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_LAST_MODIFIED]` instead
 	*/
-	DateTime getLastModifiedDate(); // Last-Modified header
+	DateTime getLastModifiedDate();
 
 	/**
-	 * @deprecated Use `getResponse().headers[HTTP_HEADER_DATE]` instead
+	 * @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_DATE]` instead
 	 */
-	DateTime getServerDate(); // Date header
+	DateTime getServerDate();
 
 	/**
-	 * @deprecated Use `getResponse().stream` instead
+	 * @deprecated Use `getResponse()->getBody()` instead
 	 */
-	String getResponseString();
-	// @enddeprecated
+	String getResponseString() SMING_DEPRECATED
+	{
+		return response.getBody();
+	}
 
-	virtual void reset();
+	void reset() override;
 
 protected:
 	// HTTP parser methods
@@ -103,14 +122,14 @@ protected:
 	 * @paran http_parser* parser
 	 * @return 0 on success, non-0 on error
 	 */
-	virtual int onMessageBegin(http_parser* parser);
+	int onMessageBegin(http_parser* parser) override;
 
 	/**
 	 * Called when all headers are received
 	 * @param HttpHeaders headers - the processed headers
 	 * @return 0 on success, non-0 on error
 	 */
-	virtual int onHeadersComplete(const HttpHeaders& headers);
+	int onHeadersComplete(const HttpHeaders& headers) override;
 
 	/**
 	 * Called when a piece of body data is received
@@ -118,19 +137,19 @@ protected:
 	 * @paran size_t length
 	 * @return 0 on success, non-0 on error
 	 */
-	virtual int onBody(const char* at, size_t length);
+	int onBody(const char* at, size_t length) override;
 
 	/**
 	 * Called when the incoming data is complete
 	 * @paran http_parser* parser
 	 * @return 0 on success, non-0 on error
 	 */
-	virtual int onMessageComplete(http_parser* parser);
+	int onMessageComplete(http_parser* parser) override;
 
 	// TCP methods
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
-	virtual void cleanup();
+	void cleanup() override;
 
 private:
 	void sendRequestHeaders(HttpRequest* request);

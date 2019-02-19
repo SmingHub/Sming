@@ -27,13 +27,14 @@ class FTPServer : public TcpServer
 
 public:
 	FTPServer();
-	virtual ~FTPServer();
+	~FTPServer();
 
 	void addUser(const String& login, const String& pass);
 	bool checkUser(const String& login, const String& pass);
 
 protected:
-	virtual TcpConnection* createClient(tcp_pcb* clientTcp);
+	TcpConnection* createClient(tcp_pcb* clientTcp) override;
+
 	virtual bool onCommand(String cmd, String data, FTPServerConnection& connection);
 
 private:

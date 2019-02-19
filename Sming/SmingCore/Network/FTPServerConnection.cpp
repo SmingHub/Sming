@@ -7,18 +7,18 @@
 class FTPDataStream : public TcpConnection
 {
 public:
-	FTPDataStream(FTPServerConnection* connection) : TcpConnection(true), parent(connection)
+	explicit FTPDataStream(FTPServerConnection* connection) : TcpConnection(true), parent(connection)
 	{
 	}
 
-	virtual err_t onConnected(err_t err)
+	err_t onConnected(err_t err) override
 	{
 		//response(125, "Connected");
 		setTimeOut(300); // Update timeout
 		return TcpConnection::onConnected(err);
 	}
 
-	virtual err_t onSent(uint16_t len)
+	err_t onSent(uint16_t len) override
 	{
 		sent += len;
 		if(written < sent || !completed) {
@@ -45,7 +45,7 @@ public:
 		return TcpConnection::write(data, len, apiflags);
 	}
 
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent)
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override
 	{
 		if(!parent->isCanTransfer()) {
 			return;
@@ -70,11 +70,11 @@ protected:
 class FTPDataFileList : public FTPDataStream
 {
 public:
-	FTPDataFileList(FTPServerConnection* connection) : FTPDataStream(connection)
+	explicit FTPDataFileList(FTPServerConnection* connection) : FTPDataStream(connection)
 	{
 	}
 
-	virtual void transferData(TcpConnectionEvent sourceEvent)
+	void transferData(TcpConnectionEvent sourceEvent) override
 	{
 		if(completed) {
 			return;
@@ -102,7 +102,7 @@ public:
 		fileClose(file);
 	}
 
-	virtual void transferData(TcpConnectionEvent sourceEvent)
+	void transferData(TcpConnectionEvent sourceEvent) override
 	{
 		if(completed) {
 			return;
@@ -164,10 +164,10 @@ err_t FTPServerConnection::onReceive(pbuf* buf)
 {
 	if(buf == nullptr)
 		return ERR_OK;
-	int p = 0, prev = 0;
+	int prev = 0;
 
 	while(true) {
-		p = NetUtils::pbufFindStr(buf, "\r\n", prev);
+		int p = NetUtils::pbufFindStr(buf, "\r\n", prev);
 		if(p < 0 || p - prev > MAX_FTP_CMD) {
 			break;
 		}

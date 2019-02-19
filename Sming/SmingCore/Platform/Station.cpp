@@ -6,20 +6,10 @@
  ****/
 
 #include "Station.h"
-#include "../../SmingCore/SmingCore.h"
+#include "Interrupts.h"
 #include "Data/HexString.h"
 
 StationClass WifiStation;
-
-StationClass::StationClass()
-{
-	System.onReady(this);
-	runScan = false;
-}
-
-StationClass::~StationClass()
-{
-}
 
 void StationClass::enable(bool enabled, bool save)
 {
@@ -41,8 +31,7 @@ bool StationClass::isEnabled()
 	return wifi_get_opmode() & STATION_MODE;
 }
 
-bool StationClass::config(const String& ssid, const String& password, bool autoConnectOnStartup /* = true*/,
-						  bool save /* = true */)
+bool StationClass::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
 {
 	station_config config = {0};
 
@@ -265,7 +254,7 @@ bool StationClass::startScan(ScanCompletedDelegate scanCompleted)
 	if(!scanCompleted)
 		return false;
 
-	bool res = wifi_station_scan(NULL, staticScanCompleted);
+	bool res = wifi_station_scan(nullptr, staticScanCompleted);
 	if(!res) {
 		if(!System.isReady()) {
 			// It's OK, queue this task
@@ -286,7 +275,7 @@ void StationClass::staticScanCompleted(void* arg, STATUS status)
 		if(WifiStation.scanCompletedCallback) {
 			bss_info* cur = (bss_info*)arg;
 
-			while(cur != NULL) {
+			while(cur != nullptr) {
 				list.add(BssInfo(cur));
 				cur = cur->next.stqe_next;
 			}
@@ -304,7 +293,7 @@ void StationClass::staticScanCompleted(void* arg, STATUS status)
 void StationClass::onSystemReady()
 {
 	if(runScan) {
-		wifi_station_scan(NULL, staticScanCompleted);
+		wifi_station_scan(nullptr, staticScanCompleted);
 		runScan = false;
 	}
 }
@@ -377,7 +366,7 @@ void StationClass::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate 
 void StationClass::smartConfigStop()
 {
 	smartconfig_stop();
-	smartConfigCallback = NULL;
+	smartConfigCallback = nullptr;
 }
 
 #ifdef ENABLE_WPS
@@ -461,17 +450,12 @@ void StationClass::wpsConfigStop()
 
 BssInfo::BssInfo(bss_info* info)
 {
-	ssid = String((char*)info->ssid);
+	ssid = reinterpret_cast<const char*>(info->ssid);
 	memcpy(bssid, info->bssid, sizeof(bssid));
 	authorization = info->authmode;
 	channel = info->channel;
 	rssi = info->rssi;
 	hidden = info->is_hidden;
-}
-
-bool BssInfo::isOpen()
-{
-	return authorization == AUTH_OPEN;
 }
 
 const char* BssInfo::getAuthorizationMethodName()

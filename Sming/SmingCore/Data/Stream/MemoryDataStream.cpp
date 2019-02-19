@@ -28,7 +28,7 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 			//realloc can fail, store the result in temporary pointer
 			new_buf = (char*)realloc(buf, capacity);
 
-			if(new_buf == NULL) {
+			if(new_buf == nullptr) {
 				return 0;
 			}
 			buf = new_buf;

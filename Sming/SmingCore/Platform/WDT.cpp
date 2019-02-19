@@ -9,11 +9,6 @@
 
 WDTClass WDT;
 
-WDTClass::WDTClass()
-{
-	//enabled = true;
-}
-
 void WDTClass::enable(bool enableWatchDog)
 {
 	enabled = enableWatchDog;

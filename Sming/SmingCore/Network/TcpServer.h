@@ -52,13 +52,14 @@ public:
 		TcpConnection::timeOut = TCP_SERVER_TIMEOUT;
 	}
 
-	virtual ~TcpServer()
+	~TcpServer()
 	{
 		debug_i("TcpServer destroyed");
 	}
 
 public:
 	virtual bool listen(int port, bool useSsl = false);
+
 	void setKeepAlive(uint16_t seconds);
 
 	void shutdown();
@@ -66,7 +67,7 @@ public:
 #ifdef ENABLE_SSL
 	/**
 	 * @brief Adds SSL support and specifies the server certificate and private key.
-	 * @deprecated: Use setSslKeyCert instead
+	 * @deprecated Use setSslKeyCert instead
 	 */
 	void setServerKeyCert(SslKeyCertPair serverKeyCert)
 	{
@@ -89,6 +90,7 @@ protected:
 	virtual void onClientComplete(TcpClient& client, bool successful);
 	virtual void onClientDestroy(TcpConnection& connection);
 
+private:
 	static err_t staticAccept(void* arg, tcp_pcb* new_tcp, err_t err);
 
 public:
@@ -106,7 +108,7 @@ protected:
 	Vector<TcpConnection*> connections;
 
 private:
-	uint16_t keepAlive = 70; // << The time to wait after the connection is established. If there is no data
+	uint16_t keepAlive = 70; ///< The time to wait after the connection is established. If there is no data
 							 //  coming or going to the client within that period the client connection will be closed
 	TcpClientConnectDelegate clientConnectDelegate = nullptr;
 	TcpClientDataDelegate clientReceiveDelegate = nullptr;

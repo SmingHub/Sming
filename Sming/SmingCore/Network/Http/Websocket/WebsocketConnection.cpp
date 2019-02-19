@@ -7,12 +7,12 @@
 
 #include "WebsocketConnection.h"
 
-#include "../../Services/WebHelpers/aw-sha1.h"
-#include "../../Services/WebHelpers/base64.h"
+#include "../Services/WebHelpers/aw-sha1.h"
+#include "../Services/WebHelpers/base64.h"
 
 WebsocketList WebsocketConnection::websocketList;
 
-WebsocketConnection::WebsocketConnection(HttpConnectionBase* connection, bool isClientConnection /* = true */)
+WebsocketConnection::WebsocketConnection(HttpConnectionBase* connection, bool isClientConnection)
 {
 	setConnection(connection, isClientConnection);
 
@@ -181,7 +181,7 @@ void WebsocketConnection::sendBinary(const uint8_t* data, int size)
 	send((char*)data, size, WS_FRAME_BINARY);
 }
 
-void WebsocketConnection::send(const char* message, int length, ws_frame_type_t type /* = WS_FRAME_TEXT */)
+void WebsocketConnection::send(const char* message, int length, ws_frame_type_t type)
 {
 	debug_d("Sending: %s, Type: %d\n", message, type);
 	if(connection == nullptr) {
@@ -201,7 +201,7 @@ void WebsocketConnection::send(const char* message, int length, ws_frame_type_t 
 	}
 }
 
-void WebsocketConnection::broadcast(const char* message, int length, ws_frame_type_t type /* = WS_FRAME_TEXT */)
+void WebsocketConnection::broadcast(const char* message, int length, ws_frame_type_t type)
 {
 	for(unsigned i = 0; i < websocketList.count(); i++) {
 		websocketList[i]->send(message, length, type);
@@ -209,7 +209,7 @@ void WebsocketConnection::broadcast(const char* message, int length, ws_frame_ty
 }
 
 size_t WebsocketConnection::encodeFrame(ws_frame_type_t type, const char* inData, size_t inLength, char* outData,
-										size_t outLength, bool useMask /* =true */, bool isFin /*=true */)
+										size_t outLength, bool useMask, bool isFin)
 {
 	if(inLength > 0xFFFF) {
 		return 0; // we don't support big payloads yet

@@ -3,16 +3,12 @@
  *
  */
 
-#include <Debug.h>
+#include "Debug.h"
 
 DebugClass::DebugClass()
 {
 	debugf("DebugClass Instantiating");
 	setDebug(Serial);
-}
-
-DebugClass::~DebugClass()
-{
 }
 
 void DebugClass::initCommand()
@@ -33,11 +29,6 @@ void DebugClass::stop()
 {
 	println(_F("Debug stopped"));
 	started = false;
-}
-
-bool DebugClass::status()
-{
-	return started;
 }
 
 void DebugClass::setDebug(DebugPrintCharDelegate reqDelegate)

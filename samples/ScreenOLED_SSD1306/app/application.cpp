@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/Adafruit_SSD1306/Adafruit_SSD1306.h>
 
 /*

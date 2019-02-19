@@ -2,7 +2,7 @@
 #define INCLUDE_BMP180_H_
 
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/BMP180/BMP180.h>
 
 #include "configuration.h"

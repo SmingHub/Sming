@@ -12,13 +12,7 @@
 
 #include "HttpRequestAuth.h"
 #include "HttpRequest.h"
-#include "../../Services/WebHelpers/base64.h"
-
-HttpBasicAuth::HttpBasicAuth(const String& username, const String& password)
-{
-	this->username = username;
-	this->password = password;
-}
+#include "../Services/WebHelpers/base64.h"
 
 // Basic Auth
 void HttpBasicAuth::setRequest(HttpRequest* request)
@@ -27,16 +21,6 @@ void HttpBasicAuth::setRequest(HttpRequest* request)
 }
 
 // Digest Auth
-HttpDigestAuth::HttpDigestAuth(const String& username, const String& password)
-{
-	this->username = username;
-	this->password = password;
-}
-
-void HttpDigestAuth::setRequest(HttpRequest* request)
-{
-	this->request = request;
-}
 
 void HttpDigestAuth::setResponse(HttpResponse* response)
 {

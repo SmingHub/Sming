@@ -77,7 +77,7 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_
 	return (dnslook == ERR_OK) ? internalConnect(addr, port) : false;
 }
 
-bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl /* = false */, uint32_t sslOptions /* = 0 */)
+bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl, uint32_t sslOptions)
 {
 	if(tcp == nullptr) {
 		initialize(tcp_new());
@@ -182,7 +182,7 @@ err_t TcpConnection::onSslConnected(SSL* ssl)
 }
 #endif
 
-int TcpConnection::write(const char* data, int len, uint8_t apiflags /* = TCP_WRITE_FLAG_COPY*/)
+int TcpConnection::write(const char* data, int len, uint8_t apiflags)
 {
 	WDT.alive();
 
@@ -314,7 +314,7 @@ void TcpConnection::initialize(tcp_pcb* pcb)
 #endif
 
 	tcp_nagle_disable(tcp);
-	tcp_arg(tcp, (void*)this);
+	tcp_arg(tcp, this);
 
 	tcp_sent(tcp, [](void* arg, tcp_pcb* tcp, uint16_t len) -> err_t {
 		auto con = static_cast<TcpConnection*>(arg);

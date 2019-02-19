@@ -12,15 +12,6 @@
 
 #include <functional>
 
-WebsocketResource::WebsocketResource()
-{
-	onHeadersComplete = HttpResourceDelegate(&WebsocketResource::checkHeaders, this);
-}
-
-WebsocketResource::~WebsocketResource()
-{
-}
-
 int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	WebsocketConnection* socket = new WebsocketConnection(&connection, false);
@@ -52,26 +43,6 @@ void WebsocketResource::shutdown(HttpServerConnection& connection)
 {
 	WebsocketConnection* socket = static_cast<WebsocketConnection*>(connection.userData);
 	delete socket;
-	connection.userData = NULL;
+	connection.userData = nullptr;
 	connection.setTimeOut(1);
-}
-
-void WebsocketResource::setConnectionHandler(WebsocketDelegate handler)
-{
-	wsConnect = handler;
-}
-
-void WebsocketResource::setMessageHandler(WebsocketMessageDelegate handler)
-{
-	wsMessage = handler;
-}
-
-void WebsocketResource::setBinaryHandler(WebsocketBinaryDelegate handler)
-{
-	wsBinary = handler;
-}
-
-void WebsocketResource::setDisconnectionHandler(WebsocketDelegate handler)
-{
-	wsDisconnect = handler;
 }

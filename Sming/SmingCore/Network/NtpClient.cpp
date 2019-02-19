@@ -10,15 +10,6 @@
 #include "Platform/Station.h"
 #include "SystemClock.h"
 
-NtpClient::NtpClient() : NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, nullptr)
-{
-}
-
-NtpClient::NtpClient(NtpTimeResultDelegate onTimeReceivedCb)
-	: NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, onTimeReceivedCb)
-{
-}
-
 NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate delegateFunction)
 {
 	debug_d("NtpClient(\"%s\", %u)", reqServer.c_str(), reqIntervalSeconds);

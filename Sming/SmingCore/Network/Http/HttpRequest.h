@@ -88,10 +88,9 @@ public:
 	}
 
 	/**
-	 * @deprecated This method is deprecated and will be removed in the coming versions.
-	 * 			   Please set postParams directly, i.e. request.postParams = params
+	 * @deprecated Set postParams directly, i.e. `request.postParams = params`
 	 */
-	HttpRequest* setPostParameters(const HttpParams& params)
+	HttpRequest* setPostParameters(const HttpParams& params) SMING_DEPRECATED
 	{
 		postParams = params;
 		return this;
@@ -138,13 +137,13 @@ public:
 		return static_cast<const HttpParams&>(postParams)[name];
 	}
 
-	/* @deprecated  use uri methods */
-	String getPath()
+	/** @deprecated Use `uri.Path` instead */
+	String getPath() SMING_DEPRECATED
 	{
 		return uri.Path;
 	}
 
-	/* @deprecated  use uri methods */
+	/* @todo deprecate: use uri methods */
 	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr);
 
 	/**
@@ -291,7 +290,7 @@ protected:
 private:
 	HashMap<String, IDataSourceStream*> files;
 
-	HttpParams* queryParams = nullptr; // << deprecated
+	HttpParams* queryParams = nullptr; // << @todo deprecate
 };
 
 #endif /* _SMING_CORE_HTTP_REQUEST_H_ */

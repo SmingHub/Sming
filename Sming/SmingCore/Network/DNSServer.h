@@ -61,10 +61,6 @@ public:
 	{
 	}
 
-	virtual ~DNSServer()
-	{
-	}
-
 	void setErrorReplyCode(DNSReplyCode replyCode)
 	{
 		errorReplyCode = replyCode;
@@ -81,6 +77,9 @@ public:
 	// stops the DNS server
 	void stop();
 
+protected:
+	void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort) override;
+
 private:
 	uint16_t port = 0;
 	String domainName;
@@ -90,7 +89,6 @@ private:
 	uint32_t ttl = 60;
 	DNSReplyCode errorReplyCode = DNSReplyCode::NonExistentDomain;
 
-	virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
 	static void downcaseAndRemoveWwwPrefix(String& domainName);
 	String getDomainNameWithoutWwwPrefix();
 	bool requestIncludesOnlyOneQuestion();

@@ -94,7 +94,7 @@ class SmtpClient : protected TcpClient
 {
 public:
 	SmtpClient(bool autoDestroy = false);
-	virtual ~SmtpClient();
+	~SmtpClient();
 
 	/**
 	 * @brief Connects to remote URL
@@ -132,7 +132,7 @@ public:
 	 */
 	MailMessage* getCurrentMessage();
 
-	inline size_t countPending()
+	size_t countPending()
 	{
 		return mailQ.count();
 	}
@@ -154,7 +154,7 @@ public:
 	 * @brief Callback that will be called every time a message is sent successfully
 	 * @param SmtpClientCallback callback
 	 */
-	inline void onMessageSent(SmtpClientCallback callback)
+	void onMessageSent(SmtpClientCallback callback)
 	{
 		messageSentCallback = callback;
 	}
@@ -163,7 +163,7 @@ public:
 	 * @brief Callback that will be called every an error occurs
 	 * @param SmtpClientCallback callback
 	 */
-	inline void onServerError(SmtpClientCallback callback)
+	void onServerError(SmtpClientCallback callback)
 	{
 		errorCallback = callback;
 	}
@@ -180,8 +180,8 @@ public:
 #endif
 
 protected:
-	virtual err_t onReceive(pbuf* buf);
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	err_t onReceive(pbuf* buf) override;
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	void sendMailHeaders(MailMessage* mail);
 	bool sendMailBody(MailMessage* mail);
@@ -209,7 +209,6 @@ private:
 	 */
 	int smtpParse(char* data, size_t len);
 
-private:
 	/**
 	 * @brief Takes care to fetch the correct streams for a message
 	 * @note The magic where all streams and attachments are packed together is happening here

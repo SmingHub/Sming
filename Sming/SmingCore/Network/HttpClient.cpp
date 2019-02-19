@@ -88,14 +88,6 @@ void HttpClient::cleanup()
 	httpConnectionPool.clear();
 }
 
-HttpClient::~HttpClient()
-{
-	// DON'T call cleanup.
-	// If you want to free all resources from HttpClients the correct sequence will be to
-	// 1. Delete all instances of HttpClient
-	// 2. Call the static method HttpClient::cleanup();
-}
-
 String HttpClient::getCacheKey(URL url)
 {
 	return url.Host + ':' + url.Port;

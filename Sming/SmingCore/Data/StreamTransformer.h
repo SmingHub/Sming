@@ -36,16 +36,18 @@ public:
 	}
 
 	/** @brief Constructor with external callback function
-	 *  @deprecated
+	 *  @deprecated Create inherited class, override `transform()` method and use alternative constructor instead
 	 */
 	StreamTransformer(IDataSourceStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
-					  size_t blockSize = 64) __attribute__((deprecated))
-	: transformCallback(callback), sourceStream(stream), result(new uint8_t[resultSize]), resultSize(resultSize),
-	  blockSize(blockSize)
+					  size_t blockSize = 64) SMING_DEPRECATED : transformCallback(callback),
+																sourceStream(stream),
+																result(new uint8_t[resultSize]),
+																resultSize(resultSize),
+																blockSize(blockSize)
 	{
 	}
 
-	virtual ~StreamTransformer()
+	~StreamTransformer()
 	{
 		delete[] result;
 		delete tempStream;
@@ -53,7 +55,7 @@ public:
 	}
 
 	//Use base class documentation
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return sourceStream->getStreamType();
 	}
@@ -62,19 +64,19 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	int available()
+	int available() override
 	{
 		return -1;
 	}
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	//Use base class documentation
-	virtual bool seek(int len);
+	bool seek(int len) override;
 
 	//Use base class documentation
-	virtual bool isFinished();
+	bool isFinished() override;
 
 	/**
 	 * @brief A method that backs up the current state
@@ -95,7 +97,7 @@ protected:
 	 * @param uint8_t* out output buffer
 	 * @param size_t outLength size of output buffer
 	 * @retval size_t number of output bytes written
-	 * @note Called with `in = nullptr` and `inLength = 0' at end of input stream
+	 * @note Called with `in = nullptr` and `inLength = 0` at end of input stream
 	 */
 	virtual size_t transform(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)
 	{
@@ -103,7 +105,7 @@ protected:
 	}
 
 	/** @brief Callback function to perform transformation
-	 *  @deprecated The virtual transform() method should be used instead in an inherited class
+	 *  @deprecated Create inherited class and verride transform() method instead
 	 */
 	StreamTransformerCallback transformCallback = nullptr;
 

@@ -24,9 +24,6 @@
  *  @{
  */
 
-typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
-typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
-
 enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 
 #ifndef MQTT_REQUEST_POOL_SIZE
@@ -38,10 +35,8 @@ enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 #define MQTT_FLAG_RETAINED 1
 
 #ifndef MQTT_NO_COMPAT
-/* @deprecated */
-#define MQTT_MAX_BUFFER_SIZE MQTT_PAYLOAD_LENGTH
-/* @deprecated */
-#define MQTT_MSG_PUBREC MQTT_TYPE_PUBREC
+#define MQTT_MAX_BUFFER_SIZE MQTT_PAYLOAD_LENGTH ///< @deprecated
+#define MQTT_MSG_PUBREC MQTT_TYPE_PUBREC		 ///< @deprecated
 #endif
 
 class MqttClient;
@@ -50,9 +45,9 @@ typedef std::function<int(MqttClient& client, mqtt_message_t* message)> MqttDele
 typedef ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE> MqttRequestQueue;
 
 #ifndef MQTT_NO_COMPAT
-/* @deprecated: use MqttDelegate instead */
+/** @deprecated Use MqttDelegate instead */
 typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
-/* @deprecated: use MqttDelegate instead */
+/** @deprecated Use MqttDelegate instead */
 typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
 #endif
 
@@ -60,7 +55,8 @@ class MqttClient : protected TcpClient
 {
 public:
 	MqttClient(bool withDefaultPayloadParser = true, bool autoDestruct = false);
-	virtual ~MqttClient();
+
+	~MqttClient();
 
 	/**
 	 * Sets keep-alive time. That information is sent during connection to the server
@@ -174,7 +170,7 @@ public:
 
 #ifndef MQTT_NO_COMPAT
 	/**
-	 * @deprecated Use setWill(const String& topic, const String& message,uint8_t flags) instead
+	 * @todo deprecate: Use setWill(const String& topic, const String& message,uint8_t flags) instead
 	 */
 	bool setWill(const String& topic, const String& message, int QoS, bool retained = false)
 	{
@@ -189,12 +185,12 @@ public:
 	 */
 
 	/**
-	 * @deprecated Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
+	 * @todo deprecate: Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
 	 * 			   If you want to have a callback that should be triggered on successful delivery of messages
 	 * 			   then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.
 	 */
 	bool publishWithQoS(const String& topic, const String& message, int QoS, bool retained = false,
-						MqttMessageDeliveredCallback onDelivery = NULL)
+						MqttMessageDeliveredCallback onDelivery = nullptr)
 	{
 		if(onDelivery) {
 			if(QoS == 1) {
@@ -213,9 +209,9 @@ public:
 	}
 
 	/** @brief  Provide a function to be called when a message is received from the broker
-	 * @deprecated Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
+	 * @todo deprecate: Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
 	*/
-	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = NULL)
+	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = nullptr)
 	{
 		this->subscriptionCallback = subscriptionCallback;
 		setEventHandler(MQTT_TYPE_PUBLISH, onPublish);
@@ -223,8 +219,8 @@ public:
 #endif
 
 protected:
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-	virtual void onFinished(TcpClientState finishState);
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
+	void onFinished(TcpClientState finishState) override;
 
 private:
 	// TCP methods
@@ -238,7 +234,7 @@ private:
 	static int staticOnMessageEnd(void* user_data, mqtt_message_t* message);
 
 #ifndef MQTT_NO_COMPAT
-	/* @deprecated This method is only for compatibility with the previous release and will be removed soon. */
+	/** @deprecated This method is only for compatibility with the previous release and will be removed soon. */
 	static int onPuback(MqttClient& client, mqtt_message_t* message)
 	{
 		if(!message) {
@@ -261,7 +257,7 @@ private:
 		return 0;
 	}
 
-	/* @deprecated This method is only for compatibility with the previous release and will be removed soon. */
+	/** @deprecated This method is only for compatibility with the previous release and will be removed soon. */
 	static int onPublish(MqttClient& client, mqtt_message_t* message)
 	{
 		if(message == nullptr) {
@@ -290,7 +286,7 @@ private:
 
 	// callbacks
 	HashMap<mqtt_type_t, MqttDelegate> eventHandler;
-	MqttPayloadParser payloadParser = 0;
+	MqttPayloadParser payloadParser = nullptr;
 
 	// states
 	MqttClientState state = eMCS_Ready;
@@ -320,10 +316,8 @@ private:
 	*/
 
 #ifndef MQTT_NO_COMPAT
-	// @deprecated
-	MqttMessageDeliveredCallback onDelivery = nullptr;
-	// @deprecated
-	MqttStringSubscriptionCallback subscriptionCallback = nullptr;
+	MqttMessageDeliveredCallback onDelivery = nullptr;			   ///< @deprecated
+	MqttStringSubscriptionCallback subscriptionCallback = nullptr; ///< @deprecated
 #endif
 };
 

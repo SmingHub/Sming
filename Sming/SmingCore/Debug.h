@@ -49,7 +49,6 @@ public:
      *  @note   Default output is Serial stream
      */
 	DebugClass();
-	virtual ~DebugClass();
 
 	/** @brief  Enable control of debug output from CLI command handler output
      */
@@ -66,7 +65,10 @@ public:
 	/** @brief  Get debug status
      *  @retval bool True if debug enabled
      */
-	bool status();
+	bool status()
+	{
+		return started;
+	}
 
 	/** @brief  Configure debug to use delegate handler for its output
      *  @param  reqDelegate Function to handle debug output
@@ -80,6 +82,9 @@ public:
      */
 	void setDebug(Stream& reqStream);
 
+	/* implementation of write for Print Class */
+	size_t write(uint8_t) override;
+
 private:
 	bool started = false;
 	bool useDebugPrefix = true;
@@ -87,8 +92,6 @@ private:
 	DebugOuputOptions debugOut;
 	void printPrefix();
 	void processDebugCommands(String commandLine, CommandOutput* commandOutput);
-
-	size_t write(uint8_t); /* implementation of write for Print Class */
 };
 
 /**	@brief	Global instance of Debug object

@@ -10,7 +10,6 @@
 
 #include "Network/TcpServer.h"
 #include "../HttpConnectionBase.h"
-#include "Data/Stream/EndlessMemoryStream.h"
 extern "C" {
 #include "../ws_parser/ws_parser.h"
 }
@@ -44,9 +43,9 @@ typedef Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)> Websock
 enum WsConnectionState { eWSCS_Ready, eWSCS_Open, eWSCS_Closed };
 
 typedef struct {
-	ws_frame_type_t type;
-	char* payload;
-	size_t payloadLegth;
+	ws_frame_type_t type = WS_FRAME_TEXT;
+	char* payload = nullptr;
+	size_t payloadLegth = 0;
 } WsFrameInfo;
 
 class WebsocketConnection
@@ -120,11 +119,14 @@ public:
 	 */
 	void* getUserData();
 
-	// @deprecated
+	/** @brief	Test if another connection refers to the same object
+	 *  @param	rhs The other WebsocketConnection to compare with
+	 *  @retval	bool
+	 */
 	bool operator==(const WebsocketConnection& rhs) const;
 
-	WebsocketList& getActiveWebsockets();
-	// @end deprecated
+	/** @deprecated Will be removed */
+	WebsocketList& getActiveWebsockets() SMING_DEPRECATED;
 
 	/**
 	 * @brief Sets the callback handler to be called after successful websocket connection
@@ -204,10 +206,10 @@ protected:
 					   bool useMask = true, bool isFin = true);
 
 protected:
-	WebsocketDelegate wsConnect = 0;
-	WebsocketMessageDelegate wsMessage = 0;
-	WebsocketBinaryDelegate wsBinary = 0;
-	WebsocketDelegate wsDisconnect = 0;
+	WebsocketDelegate wsConnect = nullptr;
+	WebsocketMessageDelegate wsMessage = nullptr;
+	WebsocketBinaryDelegate wsBinary = nullptr;
+	WebsocketDelegate wsDisconnect = nullptr;
 
 	void* userData = nullptr;
 

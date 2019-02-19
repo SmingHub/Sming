@@ -30,12 +30,8 @@
 class HttpParams : public HashMap<String, String>, public Printable
 {
 public:
-	virtual ~HttpParams()
-	{
-	}
-
 	// Printable
-	virtual size_t printTo(Print& p) const;
+	size_t printTo(Print& p) const override;
 };
 
 #endif // _SMINGCORE_HTTP_HTTP_PARAMS_H_

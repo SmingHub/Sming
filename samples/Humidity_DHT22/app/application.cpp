@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/DHTesp/DHTesp.h>
 
 //#define WORK_PIN 14 // GPIO14

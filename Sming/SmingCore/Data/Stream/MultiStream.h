@@ -13,9 +13,13 @@
 class MultiStream : public IDataSourceStream
 {
 public:
-	virtual ~MultiStream();
+	~MultiStream()
+	{
+		delete stream;
+		delete nextStream;
+	}
 
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return eSST_Unknown;
 	}
@@ -24,19 +28,19 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	virtual int available()
+	int available() override
 	{
 		return -1;
 	}
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	//Use base class documentation
-	virtual bool seek(int len);
+	bool seek(int len) override;
 
 	//Use base class documentation
-	virtual bool isFinished();
+	bool isFinished() override;
 
 protected:
 	virtual IDataSourceStream* getNextStream() = 0;

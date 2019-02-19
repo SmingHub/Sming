@@ -26,19 +26,13 @@
 class MemoryDataStream : public ReadWriteStream
 {
 public:
-	/** @brief Memory data stream base class
-    */
-	MemoryDataStream()
-	{
-	}
-
-	virtual ~MemoryDataStream()
+	~MemoryDataStream()
 	{
 		free(buf);
 	}
 
 	//Use base class documentation
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return eSST_Memory;
 	}
@@ -55,7 +49,7 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	int available()
+	int available() override
 	{
 		return size - (pos - buf);
 	}
@@ -67,16 +61,16 @@ public:
      *  @param  size Quantity of chars to write
      *  @retval size_t Quantity of chars written to stream
      */
-	virtual size_t write(const uint8_t* buffer, size_t size);
+	size_t write(const uint8_t* buffer, size_t size) override;
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	//Use base class documentation
-	virtual bool seek(int len);
+	bool seek(int len) override;
 
 	//Use base class documentation
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return size == (pos - buf);
 	}

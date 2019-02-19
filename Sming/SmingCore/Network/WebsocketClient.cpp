@@ -15,20 +15,8 @@
 
 #include "WebsocketClient.h"
 #include "Network/Http/HttpHeaders.h"
-#include "../../Services/WebHelpers/aw-sha1.h"
-#include "../../Services/WebHelpers/base64.h"
-
-WebsocketClient::WebsocketClient() : WebsocketConnection(new HttpConnection(new RequestQueue()))
-{
-}
-
-WebsocketClient::WebsocketClient(HttpConnectionBase* connection) : WebsocketConnection(connection)
-{
-}
-
-WebsocketClient::~WebsocketClient()
-{
-}
+#include "../Services/WebHelpers/aw-sha1.h"
+#include "../Services/WebHelpers/base64.h"
 
 HttpConnection* WebsocketClient::getHttpConnection()
 {
@@ -41,7 +29,7 @@ HttpConnection* WebsocketClient::getHttpConnection()
 	return connection;
 }
 
-bool WebsocketClient::connect(const String& url, uint32_t sslOptions /* = 0 */)
+bool WebsocketClient::connect(const String& url, uint32_t sslOptions)
 {
 	uri = URL(url);
 	bool useSsl = false;
@@ -84,7 +72,7 @@ bool WebsocketClient::connect(const String& url, uint32_t sslOptions /* = 0 */)
 		return false;
 	}
 
-	WebsocketConnection::userData = (void*)this;
+	WebsocketConnection::setUserData(this);
 
 	return true;
 }

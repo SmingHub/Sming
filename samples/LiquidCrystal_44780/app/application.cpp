@@ -5,7 +5,7 @@
 // Can be changed by call Wire.pins(...)
 
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/LiquidCrystal/LiquidCrystal_I2C.h>
 
 // For more information visit useful wiki page: http://arduino-info.wikispaces.com/LCD-Blue-I2C

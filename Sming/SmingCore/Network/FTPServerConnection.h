@@ -22,24 +22,22 @@ public:
 	{
 	}
 
-	virtual ~FTPServerConnection()
-	{
-	}
-
-	virtual err_t onReceive(pbuf* buf);
-	virtual err_t onSent(uint16_t len);
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	err_t onReceive(pbuf* buf) override;
+	err_t onSent(uint16_t len) override;
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	void dataTransferFinished(TcpConnection* connection);
 
 protected:
 	virtual void onCommand(String cmd, String data);
 	virtual void response(int code, String text = "");
+
 	int getSplitterPos(String data, char splitter, uint8_t number);
 	String makeFileName(String name, bool shortIt);
 
 	void cmdPort(const String& data);
 	void createDataConnection(TcpConnection* connection);
+
 	bool isCanTransfer()
 	{
 		return canTransfer;

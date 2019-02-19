@@ -27,6 +27,17 @@
 class HttpClient
 {
 public:
+	/**
+	 * @brief HttpClient destructor
+	 * @note DON'T call cleanup.
+	 * 	If you want to free all resources from HttpClients the correct sequence will be to
+	 * 		1. Delete all instances of HttpClient
+	 * 		2. Call the static method HttpClient::cleanup();
+	*/
+	virtual ~HttpClient()
+	{
+	}
+
 	/* High-Level Methods */
 
 	bool sendRequest(const String& url, RequestCompletedDelegate requestComplete)
@@ -72,8 +83,8 @@ public:
 	 */
 	bool send(HttpRequest* request);
 
-	/** @deprecated Please use createRequest instead */
-	HttpRequest* request(const String& url) __attribute__((deprecated))
+	/** @deprecated Use `createRequest()` instead */
+	HttpRequest* request(const String& url) SMING_DEPRECATED
 	{
 		return createRequest(url);
 	}
@@ -91,8 +102,6 @@ public:
 	 * Use this method to clean all request queues and object pools
 	 */
 	static void cleanup();
-
-	virtual ~HttpClient();
 
 protected:
 	String getCacheKey(URL url);
