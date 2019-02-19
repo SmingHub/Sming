@@ -2,21 +2,21 @@
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * WebsocketClient
+ * WebsocketClient.h
  *
  * @authors:
  * 		 Originally - hrsavla <https://github.com/hrsavla>
  * 		 Refactored - Alexander V, Ribchansky <https://github.com/avr39-ripe>
  * 		 Refactored - Slavey Karadzhov <slav@attachix.com>
  *
- * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
 //TODO: Add stream support for sending big chunks of data via websockets.
 
-#ifndef _SMING_CORE_NETWORK_WEBSOCKETCLIENT_H
-#define _SMING_CORE_NETWORK_WEBSOCKETCLIENT_H
+#ifndef _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_
+#define _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_
 
 #include "Http/HttpConnection.h"
 #include "Http/Websocket/WebsocketConnection.h"
@@ -100,4 +100,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_WEBSOCKETCLIENT_H */
+#endif /* _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_ */

@@ -1,12 +1,18 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * WifiEvents.h
  *
  *  Created on: 19 февр. 2016 г.
  *      Author: shurik
- */
+ *
+ ****/
 
-#ifndef SMINGCORE_PLATFORM_WIFIEVENTS_H_
-#define SMINGCORE_PLATFORM_WIFIEVENTS_H_
+#ifndef _SMING_CORE_PLATFORM_WIFI_EVENTS_H_
+#define _SMING_CORE_PLATFORM_WIFI_EVENTS_H_
 
 #include "../SmingCore/Delegate.h"
 #include "../../Wiring/WString.h"
@@ -48,4 +54,4 @@ private:
 };
 
 extern WifiEventsClass WifiEvents;
-#endif /* SMINGCORE_PLATFORM_WIFIEVENTS_H_ */
+#endif /* _SMING_CORE_PLATFORM_WIFI_EVENTS_H_ */

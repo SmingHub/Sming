@@ -1,10 +1,16 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * rBootHttpUpdate.cpp
  *
  *  Created on: 2015/09/03.
  *      Author: Richard A Burton & Anakod
  *
  *  Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
+ *
  */
 
 #include "rBootHttpUpdate.h"

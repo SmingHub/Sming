@@ -4,12 +4,14 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * SerialBuffer.h
+ *
  * @author 22 Aug 2018 - mikee47 <mike@sillyhouse.net>
  *
  ****/
 
-#ifndef _SERIAL_BUFFER_H_
-#define _SERIAL_BUFFER_H_
+#ifndef _SYSTEM_INCLUDE_SERIAL_BUFFER_H_
+#define _SYSTEM_INCLUDE_SERIAL_BUFFER_H_
 
 /** @brief FIFO buffer used for both receive and transmit data
  *  @note For receive operations, data is written via ISR and read via task
@@ -170,4 +172,4 @@ private:
 	uint8_t* buffer = nullptr;
 };
 
-#endif //  _SERIAL_BUFFER_H_
+#endif //  _SYSTEM_INCLUDE_SERIAL_BUFFER_H_

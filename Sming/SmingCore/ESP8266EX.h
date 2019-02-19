@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * ESP8266EX.h
+ *
  ****/
 
 #ifndef _SMING_CORE_ESP8266EX_H_

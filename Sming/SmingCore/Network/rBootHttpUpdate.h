@@ -1,14 +1,20 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * rBootHttpUpdate.h
  *
  *  Created on: 2015/09/03.
  *      Author: Richard A Burton & Anakod
  *
  *  Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
- */
+ *
+ ****/
 
-#ifndef SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
-#define SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
+#ifndef _SMING_CORE_NETWORK_RBOOT_HTTP_UPDATE_H_
+#define _SMING_CORE_NETWORK_RBOOT_HTTP_UPDATE_H_
 
 #include "Data/Stream/DataSourceStream.h"
 #include "HttpClient.h"
@@ -105,4 +111,4 @@ protected:
 	HttpRequest* baseRequest = nullptr;
 };
 
-#endif /* SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_ */
+#endif /* _SMING_CORE_NETWORK_RBOOT_HTTP_UPDATE_H_ */

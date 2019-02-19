@@ -1,9 +1,16 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * WDT.h
  *
  *  Created on: 06 ���. 2015 �.
  *      Author: Anakod
- */
+ *
+ ****/
+
 /**	@defgroup wdt Watchdog Timer
  *	@brief	Access to the ESP8266 watchdog timer
  *	@note   Provides control of the ESP8266 watchdog timer.
@@ -11,8 +18,8 @@
  *          To use WDT, enable the WDT then poke it regularly with WDT.alive();
 */
 
-#ifndef SMINGCORE_PLATFORM_WDT_H_
-#define SMINGCORE_PLATFORM_WDT_H_
+#ifndef _SMING_CORE_PLATFORM_WDT_H_
+#define _SMING_CORE_PLATFORM_WDT_H_
 
 #include <user_config.h>
 #include "System.h"
@@ -53,4 +60,4 @@ private:
  */
 extern WDTClass WDT;
 
-#endif /* SMINGCORE_PLATFORM_WDT_H_ */
+#endif /* _SMING_CORE_PLATFORM_WDT_H_ */

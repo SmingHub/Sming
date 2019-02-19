@@ -4,14 +4,14 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpBodyParser
+ * HttpBodyParser.h
  *
  * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
 
-#ifndef _SMING_CORE_HTTP_BODY_PARSER_H_
-#define _SMING_CORE_HTTP_BODY_PARSER_H_
+#ifndef _SMING_CORE_HTTP_HTTP_BODY_PARSER_H_
+#define _SMING_CORE_HTTP_HTTP_BODY_PARSER_H_
 
 #include "HttpCommon.h"
 #include "HttpRequest.h"
@@ -49,4 +49,4 @@ void formUrlParser(HttpRequest& request, const char* at, int length);
  */
 void bodyToStringParser(HttpRequest& request, const char* at, int length);
 
-#endif /* _SMING_CORE_HTTP_BODY_PARSER_H_ */
+#endif /* _SMING_CORE_HTTP_HTTP_BODY_PARSER_H_ */

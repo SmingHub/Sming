@@ -4,6 +4,8 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * MailMessage.h
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/
@@ -14,13 +16,12 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_DATA_MESSAGE_H_
-#define _SMING_CORE_DATA_MESSAGE_H_
+#ifndef _SMING_CORE_DATA_MAIL_MESSAGE_H_
+#define _SMING_CORE_DATA_MAIL_MESSAGE_H_
 
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
-#include "../Network/WebConstants.h"
-
+#include "WString.h"
+#include "WVector.h"
+#include "Network/WebConstants.h"
 #include "Network/Http/HttpHeaders.h"
 #include "Stream/MultipartStream.h"
 #include "Stream/DataSourceStream.h"
@@ -78,4 +79,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_MESSAGE_H_ */
+#endif /* _SMING_CORE_DATA_MAIL_MESSAGE_H_ */

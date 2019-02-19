@@ -21,8 +21,8 @@
   Modified April 2015 by Hrsto Gochkov (ficeto@ficeto.com) - alternative esp8266 support
 */
 
-#ifndef TwoWire_h
-#define TwoWire_h
+#ifndef _SMING_CORE_WIRE_H_
+#define _SMING_CORE_WIRE_H_
 
 #include <inttypes.h>
 #include "Stream.h"
@@ -101,4 +101,4 @@ public:
 extern TwoWire Wire;
 #endif
 
-#endif
+#endif /* _SMING_CORE_WIRE_H_ */

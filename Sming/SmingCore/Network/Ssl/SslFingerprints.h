@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * SslFingerprints.h
+ *
  ****/
 
-#ifndef SMINGCORE_NETWORK_SSLFINGERPRINTS_H_
-#define SMINGCORE_NETWORK_SSLFINGERPRINTS_H_
+#ifndef _SMING_CORE_NETWORK_SSL_SSL_FINGERPRINTS_H_
+#define _SMING_CORE_NETWORK_SSL_SSL_FINGERPRINTS_H_
 
 #include "ssl/ssl.h"
 
@@ -99,4 +102,4 @@ private:
 	bool setValue(const uint8_t*& value, unsigned requiredLength, const uint8_t* newValue, unsigned newLength);
 };
 
-#endif // SMINGCORE_NETWORK_SSLFINGERPRINTS_H_
+#endif // _SMING_CORE_NETWORK_SSL_SSL_FINGERPRINTS_H_

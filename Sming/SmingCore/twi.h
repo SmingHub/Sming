@@ -18,9 +18,11 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-#ifndef SI2C_h
-#define SI2C_h
-#include "../Wiring/WiringFrameworkDependencies.h"
+
+#ifndef _SMING_CORE_TWI_H_
+#define _SMING_CORE_TWI_H_
+
+#include "WiringFrameworkDependencies.h"
 #include "espinc/peri.h"
 
 #ifdef __cplusplus
@@ -45,4 +47,4 @@ uint8_t twi_status();
 }
 #endif
 
-#endif
+#endif /* _SMING_CORE_TWI_H_ */

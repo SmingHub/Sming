@@ -4,12 +4,14 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * FlashMemoryStream.h
+ *
  * @author: 23 Oct 2018 - mikee47 <mike@sillyhouse.net>
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_FLASH_MEMORY_STREAM_H_
-#define _SMING_CORE_DATA_FLASH_MEMORY_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_FLASH_MEMORY_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_FLASH_MEMORY_STREAM_H_
 
 #include "DataSourceStream.h"
 
@@ -59,4 +61,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_FLASH_MEMORY_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_FLASH_MEMORY_STREAM_H_ */

@@ -1,12 +1,18 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * StringConversion.h
  *
- *  Created on: 28 ÿíâ. 2015 ã.
+ *  Created on: 28 ï¿½ï¿½ï¿½. 2015 ï¿½.
  *      Author: Anakonda
- */
+ *
+ ****/
 
-#ifndef INCLUDE_STRINGCONVERSION_H_
-#define INCLUDE_STRINGCONVERSION_H_
+#ifndef _SYSTEM_INCLUDE_STRINGCONVERSION_H_
+#define _SYSTEM_INCLUDE_STRINGCONVERSION_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,4 +40,4 @@ double os_atof(const char* s);
 }
 #endif
 
-#endif /* INCLUDE_STRINGCONVERSION_H_ */
+#endif /* _SYSTEM_INCLUDE_STRINGCONVERSION_H_ */

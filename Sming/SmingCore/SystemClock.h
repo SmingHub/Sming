@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * SystemClock.h
+ *
  ****/
 
 /** @defgroup   systemclock System clock functions
@@ -10,8 +13,8 @@
  *  @brief      Provides system clock functions
 */
 
-#ifndef SMINGCORE_SYSTEMCLOCK_H_
-#define SMINGCORE_SYSTEMCLOCK_H_
+#ifndef _SMING_CORE_SYSTEM_CLOCK_H_
+#define _SMING_CORE_SYSTEM_CLOCK_H_
 
 #include "DateTime.h"
 #include "WString.h"
@@ -91,4 +94,4 @@ private:
 extern SystemClockClass SystemClock;
 
 /** @} */
-#endif /* SMINGCORE_SYSTEMCLOCK_H_ */
+#endif /* _SMING_CORE_SYSTEM_CLOCK_H_ */

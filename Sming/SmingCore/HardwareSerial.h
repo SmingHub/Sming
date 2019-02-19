@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HardwareSerial.h
+ *
  ****/
 
 /**	@defgroup serial Hardware serial
@@ -10,8 +13,8 @@
  *  @{
  */
 
-#ifndef _HARDWARESERIAL_H_
-#define _HARDWARESERIAL_H_
+#ifndef _SMING_CORE_HARDWARE_SERIAL_H_
+#define _SMING_CORE_HARDWARE_SERIAL_H_
 
 #include "WiringFrameworkDependencies.h"
 #include "Data/Stream/ReadWriteStream.h"
@@ -446,4 +449,4 @@ private:
 extern HardwareSerial Serial;
 
 /** @} */
-#endif /* _HARDWARESERIAL_H_ */
+#endif /* _SMING_CORE_HARDWARE_SERIAL_H_ */

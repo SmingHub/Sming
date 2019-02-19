@@ -4,12 +4,14 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * ChunkedStream.h
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_CHUNKED_STREAM_H_
-#define _SMING_CORE_DATA_CHUNKED_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_CHUNKED_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_CHUNKED_STREAM_H_
 
 #include "../StreamTransformer.h"
 
@@ -30,4 +32,4 @@ protected:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_CHUNKED_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_CHUNKED_STREAM_H_ */

@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * MqttClient.h
+ *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_MqttClient_H_
-#define _SMING_CORE_NETWORK_MqttClient_H_
+#ifndef _SMING_CORE_NETWORK_MQTT_CLIENT_H_
+#define _SMING_CORE_NETWORK_MQTT_CLIENT_H_
 
 #include "TcpClient.h"
 #include "URL.h"
@@ -322,4 +325,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_MqttClient_H_ */
+#endif /* _SMING_CORE_NETWORK_MQTT_CLIENT_H_ */

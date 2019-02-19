@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * DataSourceStream.h
+ *
  ****/
 
-#ifndef _SMING_CORE_DATA_DATA_SOURCE_STREAM_H_
-#define _SMING_CORE_DATA_DATA_SOURCE_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_DATA_SOURCE_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_DATA_SOURCE_STREAM_H_
 
 #include <user_config.h>
 #include "Stream.h"
@@ -141,4 +144,4 @@ public:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_DATA_SOURCE_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_DATA_SOURCE_STREAM_H_ */

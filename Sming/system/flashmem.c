@@ -4,6 +4,8 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * flashmem.c
+ *
  * Based on NodeMCU platform_flash
  * https://github.com/nodemcu/nodemcu-firmware
  *

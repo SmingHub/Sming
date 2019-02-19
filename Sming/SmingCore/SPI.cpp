@@ -1,4 +1,4 @@
-/*
+/****
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
@@ -12,7 +12,7 @@
  *  Some code is derived from:
  *  	David Ogilvy (MetalPhreak)
  *
- */
+ ****/
 
 #include "SPI.h"
 

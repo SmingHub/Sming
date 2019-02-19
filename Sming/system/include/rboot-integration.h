@@ -1,5 +1,15 @@
-#ifndef __RBOOT_INTEGRATION_H__
-#define __RBOOT_INTEGRATION_H__
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * rboot-integration.h
+ *
+ ****/
+
+#ifndef _SYSTEM_INCLUDE_RBOOT_INTEGRATION_H_
+#define _SYSTEM_INCLUDE_RBOOT_INTEGRATION_H_
 
 // prevent sming user_config.h being included
 #define __USER_CONFIG_H__
@@ -10,4 +20,4 @@
 // missing prototypes for sdk functions
 #include <esp_systemapi.h>
 
-#endif /* __RBOOT_INTEGRATION_H__ */
+#endif /* _SYSTEM_INCLUDE_RBOOT_INTEGRATION_H_ */

@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Station.h
+ *
  ****/
 
 /**	@defgroup wifi_sta WiFi Station Interface
@@ -13,8 +16,8 @@
  *  @see    \ref wifi_ap
 */
 
-#ifndef SMINGCORE_PLATFORM_STATION_H_
-#define SMINGCORE_PLATFORM_STATION_H_
+#ifndef _SMING_CORE_PLATFORM_STATION_H_
+#define _SMING_CORE_PLATFORM_STATION_H_
 
 #include "System.h"
 #include "Delegate.h"
@@ -299,4 +302,4 @@ public:
 extern StationClass WifiStation;
 
 /** @} */
-#endif /* SMINGCORE_PLATFORM_STATION_H_ */
+#endif /* _SMING_CORE_PLATFORM_STATION_H_ */

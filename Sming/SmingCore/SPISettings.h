@@ -1,9 +1,16 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * SPISettings.h
  *
  *  Created on: Mar 2, 2016
  *      Author: harry
- */
+ *
+ ****/
+
 /** @defgroup base_spi SPI support classes
  *  @brief    Provides SPI support
  */

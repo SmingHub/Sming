@@ -1,7 +1,17 @@
-// Based on mziwisky espmissingincludes.h && ESP8266_IoT_SDK_Programming Guide_v0.9.1.pdf && ESP SDK defines
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * esp_systemapi.h
+ *
+ * Based on mziwisky espmissingincludes.h && ESP8266_IoT_SDK_Programming Guide_v0.9.1.pdf && ESP SDK defines
+ *
+ ****/
 
-#ifndef __ESP_SYSTEM_API_H__
-#define __ESP_SYSTEM_API_H__
+#ifndef _SYSTEM_INCLUDE_ESP_SYSTEMAPI_H_
+#define _SYSTEM_INCLUDE_ESP_SYSTEMAPI_H_
 
 #include <ets_sys.h>
 #include <osapi.h>
@@ -127,4 +137,4 @@ extern void ets_isr_unmask(unsigned intr);
 
 typedef signed short file_t;
 
-#endif
+#endif /* _SYSTEM_INCLUDE_ESP_SYSTEMAPI_H_ */

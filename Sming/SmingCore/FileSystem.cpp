@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * FileSystem.cpp
+ *
  ****/
 
 #include "FileSystem.h"
-#include "../Wiring/WString.h"
+#include "WString.h"
 
 file_t fileOpen(const String& name, FileOpenFlags flags)
 {

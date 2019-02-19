@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * SslKeyCertPair.h
+ *
  ****/
 
-#ifndef SMINGCORE_NETWORK_SSLKEYCERTPAIR_H_
-#define SMINGCORE_NETWORK_SSLKEYCERTPAIR_H_
+#ifndef _SMING_CORE_NETWORK_SSL_KEY_CERT_PAIR_H_
+#define _SMING_CORE_NETWORK_SSL_KEY_CERT_PAIR_H_
 
 #include "ssl/ssl.h"
 #include "WString.h"
@@ -109,4 +112,4 @@ private:
 	String certificate;
 };
 
-#endif /* SMINGCORE_NETWORK_SSLKEYCERTPAIR_H_ */
+#endif /* _SMING_CORE_NETWORK_SSL_KEY_CERT_PAIR_H_ */

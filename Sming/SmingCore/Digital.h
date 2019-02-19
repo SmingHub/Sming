@@ -3,15 +3,19 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Digital.h
+ *
  ****/
+
 /** @defgroup   gpio GPIO functions
  *  @brief      Provides general purpose input and output (GPIO) functions
  *  @see        pwm
  *  @{
 */
 
-#ifndef _NWDigital_H_
-#define _NWDigital_H_
+#ifndef _SMING_CORE_DIGITAL_H_
+#define _SMING_CORE_DIGITAL_H_
 
 #include "../SmingCore/ESP8266EX.h"
 #include "../Wiring/WiringFrameworkDependencies.h"
@@ -71,4 +75,4 @@ inline uint16_t analogRead(uint16_t pin)
 
 /** @} */
 
-#endif
+#endif /* _SMING_CORE_DIGITAL_H_ */

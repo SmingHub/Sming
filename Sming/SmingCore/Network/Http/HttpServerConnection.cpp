@@ -4,7 +4,7 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpServerConnection
+ * HttpServerConnection.cpp
  *
  * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
  *

@@ -3,12 +3,15 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * pins_arduino.h
+ *
  ****/
 
 // File name selected for compatibility
 
-#ifndef WIRING_PINS_ARDUINO_H_
-#define WIRING_PINS_ARDUINO_H_
+#ifndef _SMING_CORE_PINS_ARDUINO_H_
+#define _SMING_CORE_PINS_ARDUINO_H_
 
 #include "espinc/peri.h"
 
@@ -33,4 +36,4 @@ extern const unsigned int A0; // Single ESP8266EX analog input pin (TOUT) 10 bit
 #define portInputRegister(port) ((volatile uint32_t*)&GPI)
 #define portModeRegister(port) ((volatile uint32_t*)&GPE)
 
-#endif /* WIRING_PINS_ARDUINO_H_ */
+#endif /* _SMING_CORE_PINS_ARDUINO_H_ */

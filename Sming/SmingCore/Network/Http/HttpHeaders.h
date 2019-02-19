@@ -4,6 +4,8 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * HttpHeaders.h
+ *
  * @author: 2018 - Mikee47 <mike@sillyhouse.net>
  *
  *  Encapsulate encoding and decoding of HTTP header fields
@@ -15,8 +17,8 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HEADERS_H_
-#define _SMING_CORE_NETWORK_HTTP_HEADERS_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_HEADERS_H_
+#define _SMING_CORE_NETWORK_HTTP_HTTP_HEADERS_H_
 
 #include "Data/CStringArray.h"
 #include "WString.h"
@@ -203,4 +205,4 @@ private:
 	CStringArray customFieldNames;
 };
 
-#endif /* _SMING_CORE_NETWORK_HTTP_HEADERS_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_HEADERS_H_ */

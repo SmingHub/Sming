@@ -3,7 +3,11 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Clock.h
+ *
  ****/
+
 /** @defgroup   timedelay Time and Delay
  *  @brief      Provides time and delay functions
  *  @ingroup    datetime

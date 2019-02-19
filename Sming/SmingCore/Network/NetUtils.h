@@ -3,14 +3,17 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * NetUtils.h
+ *
  ****/
 
 /** @defgroup   networking Networking
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_NETUTILS_H_
-#define _SMING_CORE_NETWORK_NETUTILS_H_
+#ifndef _SMING_CORE_NETWORK_NET_UTILS_H_
+#define _SMING_CORE_NETWORK_NET_UTILS_H_
 
 struct pbuf;
 class String;
@@ -44,4 +47,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_NETUTILS_H_ */
+#endif /* _SMING_CORE_NETWORK_NET_UTILS_H_ */

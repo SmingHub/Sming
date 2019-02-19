@@ -1,5 +1,11 @@
-/*
- * File: HardwarePWM.h
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HardwarePWM.h
+ *
  * Original Author: https://github.com/hrsavla
  *
  * This HW_PWM library enables Sming framework user to use ESP SDK PWM API
@@ -11,14 +17,16 @@
  *
  * PWM can be generated on upto 8 pins (ie All pins except pin 16)
  * Created on August 17, 2015, 2:27 PM
- */
+ *
+ ****/
+
 /** @defgroup   hw_pwm Hardware PWM functions
  *  @brief      Provides hardware pulse width modulation functions
  *  @{
 */
 
-#ifndef HARDWAREPWM_H
-#define HARDWAREPWM_H
+#ifndef _SMING_CORE_HARDWARE_PWM_H_
+#define _SMING_CORE_HARDWARE_PWM_H_
 
 #include "ESP8266EX.h"
 #include "WiringFrameworkDependencies.h"
@@ -130,4 +138,4 @@ private:
 };
 
 /** @} */
-#endif /* HARDWAREPWM_H */
+#endif /* _SMING_CORE_HARDWARE_PWM_H_ */

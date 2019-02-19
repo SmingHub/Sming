@@ -1,4 +1,9 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * debug_progmem.h
  *
  *  Contains debug functions that facilitate using strings stored in flash(irom). 
@@ -6,9 +11,11 @@
  *
  *  Created on: 27.01.2017
  *  Author: (github.com/)ADiea
- */
-#ifndef DEBUG_PROGMEM_H
-#define DEBUG_PROGMEM_H
+ *
+ ****/
+
+#ifndef _SYSTEM_INCLUDE_DEBUG_PROGMEM_H
+#define _SYSTEM_INCLUDE_DEBUG_PROGMEM_H
 
 #include <stdarg.h>
 #include "FakePgmSpace.h"
@@ -125,4 +132,4 @@ extern "C" {
 }
 #endif
 
-#endif /*#ifndef DEBUG_PROGMEM_H*/
+#endif /* _SYSTEM_INCLUDE_DEBUG_PROGMEM_H */

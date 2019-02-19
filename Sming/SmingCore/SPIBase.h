@@ -10,12 +10,13 @@
  *      Author: harry-boe
  *
  */
+
 /** @defgroup base_spi SPI support classes
  *  @brief    Provides SPI support
  */
 
-#ifndef SMINGCORE_SPIBASE_H_
-#define SMINGCORE_SPIBASE_H_
+#ifndef _SMING_CORE_SPI_BASE_H_
+#define _SMING_CORE_SPI_BASE_H_
 
 #include "SPISettings.h"
 
@@ -69,4 +70,4 @@ public:
 	SPISettings SPIDefaultSettings;
 };
 
-#endif /* SMINGCORE_SPIBASE_H_ */
+#endif /* _SMING_CORE_SPI_BASE_H_ */

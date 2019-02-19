@@ -4,13 +4,14 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * HexString.h - Utility functions to deal with hex-encoded strings
+ *
  * @author: 2018 - Mikee47 <mike@sillyhouse.net>
  *
- * Utility functions to deal with hex-encoded strings
  */
 
-#ifndef _HEX_STRING_H_
-#define _HEX_STRING_H_
+#ifndef _SMING_CORE_DATA_HEX_STRING_H_
+#define _SMING_CORE_DATA_HEX_STRING_H_
 
 #include "WString.h"
 
@@ -22,4 +23,4 @@
  */
 String makeHexString(const uint8_t* data, unsigned length, char separator = '\0');
 
-#endif // _HEX_STRING_H_
+#endif /* _SMING_CORE_DATA_HEX_STRING_H_ */

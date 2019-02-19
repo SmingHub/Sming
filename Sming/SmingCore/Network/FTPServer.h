@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * FtpServer.h
+ *
  ****/
 
 /** @defgroup   ftpserver FTP server
@@ -11,8 +14,8 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_FTPSERVER_H_
-#define _SMING_CORE_FTPSERVER_H_
+#ifndef _SMING_CORE_NETWORK_FTP_SERVER_H_
+#define _SMING_CORE_NETWORK_FTP_SERVER_H_
 
 #include "TcpServer.h"
 #include "WHashMap.h"
@@ -42,4 +45,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_FTPServer_H_ */
+#endif /* _SMING_CORE_NETWORK_FTP_SERVER_H_ */

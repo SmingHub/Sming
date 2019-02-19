@@ -3,11 +3,12 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * MemoryDataStream.cpp
+ *
  ****/
 
 #include "MemoryDataStream.h"
-
-/* MemoryDataStream */
 
 size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 {
