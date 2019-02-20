@@ -27,7 +27,7 @@ public:
 		fileClose(file);
 	}
 
-	virtual err_t onReceive(pbuf* buf)
+	err_t onReceive(pbuf* buf) override
 	{
 		if(completed) {
 			return TcpConnection::onReceive(buf);

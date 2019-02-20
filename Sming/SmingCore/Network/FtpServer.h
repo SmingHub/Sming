@@ -19,7 +19,6 @@
 
 #include "TcpServer.h"
 #include "WHashMap.h"
-#include "WVector.h"
 #include "WString.h"
 
 class FtpServerConnection;
@@ -29,8 +28,10 @@ class FtpServer : public TcpServer
 	friend class FtpServerConnection;
 
 public:
-	FtpServer();
-	~FtpServer();
+	FtpServer()
+	{
+		setTimeOut(900); // Update timeout
+	}
 
 	void addUser(const String& login, const String& pass);
 	bool checkUser(const String& login, const String& pass);

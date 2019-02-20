@@ -163,13 +163,14 @@ err_t FtpServerConnection::onSent(uint16_t len)
 String FtpServerConnection::makeFileName(String name, bool shortIt)
 {
 	if(name.startsWith("/")) {
-		name = name.substring(1);
+		name.remove(0, 1);
 	}
 
 	if(shortIt && name.length() > 20) {
 		String ext;
-		if(name.lastIndexOf('.') != -1) {
-			ext = name.substring(name.lastIndexOf('.'));
+		int dotPos = name.lastIndexOf('.');
+		if(dotPos >= 0) {
+			ext = name.substring(dotPos);
 		}
 
 		return name.substring(0, 16) + ext;
@@ -194,7 +195,7 @@ void FtpServerConnection::dataTransferFinished(TcpConnection* connection)
 	response(226, F("Transfer Complete."));
 }
 
-int FtpServerConnection::getSplitterPos(String data, char splitter, uint8_t number)
+int FtpServerConnection::getSplitterPos(const String& data, char splitter, uint8_t number)
 {
 	uint8_t k = 0;
 
