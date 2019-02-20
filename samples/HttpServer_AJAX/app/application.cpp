@@ -8,7 +8,7 @@
 #endif
 
 HttpServer server;
-FTPServer ftp;
+FtpServer ftp;
 
 int inputs[] = {0, 2}; // Set input GPIO pins here
 Vector<String> namesInput;

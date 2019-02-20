@@ -8,8 +8,8 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_FTP_SERVER_CONNECTION_H_
-#define _SMING_CORE_NETWORK_FTP_SERVER_CONNECTION_H_
+#ifndef _SMING_CORE_NETWORK_FTP_FTP_SERVER_CONNECTION_H_
+#define _SMING_CORE_NETWORK_FTP_FTP_SERVER_CONNECTION_H_
 
 #include "TcpConnection.h"
 #include "IPAddress.h"
@@ -17,18 +17,18 @@
 
 #define MAX_FTP_CMD 255
 
-class FTPServer;
+class FtpServer;
 
-enum FTPConnectionState { eFCS_Ready, eFCS_Authorization, eFCS_Active };
+enum FtpConnectionState { eFCS_Ready, eFCS_Authorization, eFCS_Active };
 
-class FTPServerConnection : public TcpConnection
+class FtpServerConnection : public TcpConnection
 {
-	friend class FTPDataStream;
-	friend class FTPServer;
+	friend class FtpDataStream;
+	friend class FtpServer;
 
 public:
-	FTPServerConnection(FTPServer* parentServer, tcp_pcb* clientTcp)
-		: TcpConnection(clientTcp, true), server(parentServer), state(eFCS_Ready)
+	FtpServerConnection(FtpServer* parentServer, tcp_pcb* clientTcp)
+		: TcpConnection(clientTcp, true), server(parentServer)
 	{
 	}
 
@@ -42,7 +42,7 @@ protected:
 	virtual void onCommand(String cmd, String data);
 	virtual void response(int code, String text = "");
 
-	int getSplitterPos(String data, char splitter, uint8_t number);
+	int getSplitterPos(const String& data, char splitter, uint8_t number);
 	String makeFileName(String name, bool shortIt);
 
 	void cmdPort(const String& data);
@@ -54,8 +54,8 @@ protected:
 	}
 
 private:
-	FTPServer* server;
-	FTPConnectionState state;
+	FtpServer* server = nullptr;
+	FtpConnectionState state = eFCS_Ready;
 	String userName;
 	String renameFrom;
 
@@ -65,4 +65,6 @@ private:
 	bool canTransfer = true;
 };
 
-#endif /* _SMING_CORE_NETWORK_FTP_SERVER_CONNECTION_H_ */
+typedef FtpServerConnection FTPServerConnection SMING_DEPRECATED; // @deprecated Use `FtpServerConnection` instead
+
+#endif /* _SMING_CORE_NETWORK_FTP_FTP_SERVER_CONNECTION_H_ */

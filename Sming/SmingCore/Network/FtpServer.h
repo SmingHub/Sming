@@ -19,18 +19,19 @@
 
 #include "TcpServer.h"
 #include "WHashMap.h"
-#include "WVector.h"
 #include "WString.h"
 
-class FTPServerConnection;
+class FtpServerConnection;
 
-class FTPServer : public TcpServer
+class FtpServer : public TcpServer
 {
-	friend class FTPServerConnection;
+	friend class FtpServerConnection;
 
 public:
-	FTPServer();
-	~FTPServer();
+	FtpServer()
+	{
+		setTimeOut(900); // Update timeout
+	}
 
 	void addUser(const String& login, const String& pass);
 	bool checkUser(const String& login, const String& pass);
@@ -38,11 +39,13 @@ public:
 protected:
 	TcpConnection* createClient(tcp_pcb* clientTcp) override;
 
-	virtual bool onCommand(String cmd, String data, FTPServerConnection& connection);
+	virtual bool onCommand(String cmd, String data, FtpServerConnection& connection);
 
 private:
 	HashMap<String, String> users;
 };
+
+typedef FtpServer FTPServer SMING_DEPRECATED; ///< @deprecated Use `FtpServer` instead
 
 /** @} */
 #endif /* _SMING_CORE_NETWORK_FTP_SERVER_H_ */

@@ -12,7 +12,7 @@
 #endif
 
 HttpServer server;
-FTPServer ftp;
+FtpServer ftp;
 TelnetServer telnet;
 
 Timer msgTimer;
