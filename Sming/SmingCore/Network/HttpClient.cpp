@@ -13,25 +13,21 @@
 #include "HttpClient.h"
 #include "Data/Stream/FileStream.h"
 
-HashMap<String, HttpClientConnection*> HttpClient::httpConnectionPool;
+ObjectMap<String, HttpClientConnection> HttpClient::httpConnectionPool;
 
-/* Low Level Methods */
 bool HttpClient::send(HttpRequest* request)
 {
 	String cacheKey = getCacheKey(request->uri);
 
-	HttpClientConnection* connection = nullptr;
+	auto& connection = httpConnectionPool[cacheKey];
 
-	int i = httpConnectionPool.indexOf(cacheKey);
-	if(i >= 0) {
+	if(connection != nullptr) {
 		// Check existing connection
-		connection = httpConnectionPool.valueAt(i);
 		if(connection->getConnectionState() > eTCS_Connecting && !connection->isActive()) {
 			debug_d("Removing stale connection: State: %d, Active: %d", connection->getConnectionState(),
 					connection->isActive());
 			delete connection;
 			connection = nullptr;
-			httpConnectionPool.removeAt(i);
 		}
 	}
 
@@ -43,13 +39,10 @@ bool HttpClient::send(HttpRequest* request)
 			delete request;
 			return false;
 		}
-		httpConnectionPool[cacheKey] = connection;
 	}
 
 	return connection->send(request);
 }
-
-// Convenience methods
 
 bool HttpClient::downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete)
 {
@@ -74,21 +67,4 @@ bool HttpClient::downloadFile(const String& url, const String& saveFileName, Req
 
 	return send(
 		createRequest(url)->setResponseStream(fileStream)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
-}
-
-// end convenience methods
-
-void HttpClient::cleanup()
-{
-	for(unsigned i = 0; i < httpConnectionPool.count(); i++) {
-		auto& connection = httpConnectionPool.valueAt(i);
-		delete connection;
-		connection = nullptr;
-	}
-	httpConnectionPool.clear();
-}
-
-String HttpClient::getCacheKey(URL url)
-{
-	return url.Host + ':' + url.Port;
 }

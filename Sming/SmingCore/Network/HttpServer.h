@@ -21,10 +21,7 @@
 
 #include "TcpServer.h"
 #include "WString.h"
-#include "WHashMap.h"
 #include "Delegate.h"
-#include "Http/HttpResponse.h"
-#include "Http/HttpRequest.h"
 #include "Http/HttpResource.h"
 #include "Http/HttpServerConnection.h"
 #include "Http/HttpBodyParser.h"
@@ -42,8 +39,6 @@ typedef struct {
 
 class HttpServer : public TcpServer
 {
-	friend class HttpServerConnection;
-
 public:
 	HttpServer()
 	{
@@ -55,8 +50,6 @@ public:
 	{
 		configure(settings);
 	}
-
-	~HttpServer();
 
 	/**
 	 * @brief Allows changing the server configuration

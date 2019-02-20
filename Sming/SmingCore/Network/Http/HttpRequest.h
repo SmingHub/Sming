@@ -22,6 +22,7 @@
 #include "Data/Stream/MultipartStream.h"
 #include "HttpHeaders.h"
 #include "HttpParams.h"
+#include "Data/ObjectMap.h"
 
 class HttpClient;
 class HttpServerConnection;
@@ -111,8 +112,8 @@ public:
 	 */
 	HttpRequest* setFile(const String& formElementName, IDataSourceStream* stream)
 	{
-		if(stream) {
-			files[formElementName] = stream;
+		if(stream != nullptr) {
+			files.set(formElementName, stream);
 		}
 		return this;
 	}
@@ -288,7 +289,7 @@ protected:
 #endif
 
 private:
-	HashMap<String, IDataSourceStream*> files;
+	ObjectMap<String, IDataSourceStream> files;
 
 	HttpParams* queryParams = nullptr; // << @todo deprecate
 };

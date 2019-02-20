@@ -101,13 +101,19 @@ public:
 	/**
 	 * Use this method to clean all request queues and object pools
 	 */
-	static void cleanup();
+	static void cleanup()
+	{
+		httpConnectionPool.clear();
+	}
 
 protected:
-	String getCacheKey(URL url);
+	String getCacheKey(URL url)
+	{
+		return url.Host + ':' + url.Port;
+	}
 
 protected:
-	static HashMap<String, HttpClientConnection*> httpConnectionPool;
+	static ObjectMap<String, HttpClientConnection> httpConnectionPool;
 };
 
 /** @} */

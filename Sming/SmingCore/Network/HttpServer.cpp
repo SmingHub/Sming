@@ -32,13 +32,6 @@ void HttpServer::configure(const HttpServerSettings& settings)
 #endif
 }
 
-HttpServer::~HttpServer()
-{
-	for(unsigned i = 0; i < resourceTree.count(); i++) {
-		delete resourceTree.valueAt(i);
-	}
-}
-
 void HttpServer::setBodyParser(const String& contentType, HttpBodyParserDelegate parser)
 {
 	bodyParsers[contentType] = parser;

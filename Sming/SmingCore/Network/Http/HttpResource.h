@@ -14,7 +14,7 @@
 #define _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_H_
 
 #include "WString.h"
-#include "WHashMap.h"
+#include "Data/ObjectMap.h"
 #include "Delegate.h"
 
 #include "HttpResponse.h"
@@ -69,6 +69,6 @@ private:
 	HttpPathDelegate callback;
 };
 
-typedef HashMap<String, HttpResource*> ResourceTree;
+typedef ObjectMap<String, HttpResource> ResourceTree;
 
 #endif /* _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_H_ */
