@@ -20,8 +20,8 @@ Link: http://www.electrodragon.com/w/SI4432_433M-Wireless_Transceiver_Module_%28
 #define PIN_RADIO_SS 13 /* Slave Select */
 
 Timer procTimer;
-Si4432* radio = NULL;
-SPISoft* pRadioSPI = NULL;
+Si4432* radio = nullptr;
+SPISoft* pRadioSPI = nullptr;
 
 #define PING_PERIOD_MS 2000
 #define PING_WAIT_PONG_MS 100

@@ -14,15 +14,14 @@
 #endif
 
 CommandHandler::CommandHandler()
+	: currentPrompt(F("Sming>")), currentWelcomeMessage(F("Welcome to the Sming CommandProcessing\r\n"))
 {
 	registeredCommands = new HashMap<String, CommandDelegate>;
-	currentPrompt = F("Sming>");
-	currentWelcomeMessage = F("Welcome to the Sming CommandProcessing\r\n");
 }
 
 CommandHandler::~CommandHandler()
 {
-	if(registeredCommands != NULL) {
+	if(registeredCommands != nullptr) {
 		delete registeredCommands;
 	}
 }

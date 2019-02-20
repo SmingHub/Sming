@@ -14,7 +14,6 @@
 #include "Data/Stream/StreamChain.h"
 
 #include "../Clock.h"
-#include <algorithm>
 
 #define MQTT_PUBLISH_STREAM 0
 
@@ -38,8 +37,7 @@ static bool copyString(mqtt_buffer_t& destBuffer, const String& sourceString)
 		return false;                                                                                                  \
 	}
 
-MqttClient::MqttClient(bool withDefaultPayloadParser /* = true */, bool autoDestruct /* = false*/)
-	: TcpClient(autoDestruct)
+MqttClient::MqttClient(bool withDefaultPayloadParser, bool autoDestruct) : TcpClient(autoDestruct)
 {
 	// TODO:...
 	//	if(!bitSet(flags, MQTT_CLIENT_CALLBACKS)) {

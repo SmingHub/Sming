@@ -128,7 +128,7 @@ public:
      */
 	uint64_t getIntervalUs()
 	{
-		return interval * longIntervalCounterLimit ?: 1;
+		return (interval * longIntervalCounterLimit) ?: 1;
 	}
 
 	/** @brief  Get timer interval

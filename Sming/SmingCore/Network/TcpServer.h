@@ -70,9 +70,9 @@ public:
 #ifdef ENABLE_SSL
 	/**
 	 * @brief Adds SSL support and specifies the server certificate and private key.
-	 * @deprecated Use setSslKeyCert instead
+	 * @deprecated Use `setSslKeyCert()` instead
 	 */
-	void setServerKeyCert(SslKeyCertPair serverKeyCert)
+	void setServerKeyCert(const SslKeyCertPair& serverKeyCert) SMING_DEPRECATED
 	{
 		setSslKeyCert(serverKeyCert);
 	}
@@ -101,10 +101,11 @@ public:
 	uint16_t activeClients = 0;
 
 protected:
-	size_t minHeapSize = 3000;
-
 #ifdef ENABLE_SSL
 	int sslSessionCacheSize = 50;
+	size_t minHeapSize = 16384;
+#else
+	size_t minHeapSize = 3000;
 #endif
 
 	bool active = true;

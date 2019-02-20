@@ -14,7 +14,7 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 	if(request.method == HTTP_POST) {
 		debugf("Update config");
 		// Update config
-		if(request.getBody() == NULL) {
+		if(request.getBody() == nullptr) {
 			debugf("NULL bodyBuf");
 			return;
 		} else {

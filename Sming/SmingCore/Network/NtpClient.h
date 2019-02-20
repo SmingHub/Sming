@@ -102,7 +102,7 @@ protected:
      *  @param  remoteIP IP address of remote host
      *  @param  remotePort Port number of remote host
      */
-	void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
+	void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort) override;
 
 	/** @brief  Send time request to NTP server
      *  @param  serverIp IP address of NTP server

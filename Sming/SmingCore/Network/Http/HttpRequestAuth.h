@@ -38,7 +38,7 @@ public:
 	{
 	}
 
-	void setRequest(HttpRequest* request);
+	void setRequest(HttpRequest* request) override;
 
 private:
 	String username;
@@ -52,12 +52,12 @@ public:
 	{
 	}
 
-	void setRequest(HttpRequest* request)
+	void setRequest(HttpRequest* request) override
 	{
 		this->request = request;
 	}
 
-	void setResponse(HttpResponse* response);
+	void setResponse(HttpResponse* response) override;
 
 private:
 	String username;

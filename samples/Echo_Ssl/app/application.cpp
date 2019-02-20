@@ -30,7 +30,7 @@
 Timer procTimer;
 TcpClient* client;
 
-boolean showMeta = true;
+bool showMeta = true;
 
 /* Debug SSL functions */
 void displaySessionId(SSL* ssl)

@@ -131,7 +131,7 @@ public:
      */
 	__forceinline void IRAM_ATTR call()
 	{
-		if(callback) {
+		if(callback != nullptr) {
 			callback();
 		}
 	}

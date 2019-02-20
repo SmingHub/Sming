@@ -89,11 +89,6 @@ public:
 protected:
 	TcpConnection* createClient(tcp_pcb* clientTcp) override;
 
-protected:
-#ifdef ENABLE_SSL
-	int minHeapSize = 16384;
-#endif
-
 private:
 	HttpServerSettings settings;
 	ResourceTree resourceTree;

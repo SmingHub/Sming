@@ -38,7 +38,7 @@ public:
 		cleanup();
 	}
 
-	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0);
+	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
 
 	bool send(HttpRequest* request)
 	{
