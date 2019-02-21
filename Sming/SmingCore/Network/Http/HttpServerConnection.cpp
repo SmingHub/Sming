@@ -11,7 +11,7 @@
  ****/
 
 #include "HttpServerConnection.h"
-
+#include "HttpResourceTree.h"
 #include "HttpServer.h"
 #include "TcpServer.h"
 #include "WebConstants.h"
@@ -42,10 +42,9 @@ int HttpServerConnection::onPath(const URL& uri)
 
 	request.setURL(uri);
 
-	if(resourceTree->contains(request.uri.Path)) {
-		resource = (*resourceTree)[request.uri.Path];
-	} else if(resourceTree->contains("*")) {
-		resource = (*resourceTree)["*"];
+	resource = resourceTree->find(request.uri.Path);
+	if(resource == nullptr) {
+		resource = resourceTree->getDefault();
 	}
 
 	return 0;
@@ -107,7 +106,7 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 		error = 1;
 	}
 
-	if(request.headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
+	if(bodyParsers != nullptr && request.headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		String contentType = request.headers[HTTP_HEADER_CONTENT_TYPE];
 		int endPos = contentType.indexOf(';');
 		if(endPos != -1) {
@@ -124,11 +123,12 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 		Vector<String> types;
 		types.add(contentType);
 		types.add(majorType);
-		types.add("*");
+		types.add(String('*'));
 
 		for(unsigned i = 0; i < types.count(); i++) {
-			if(bodyParsers->contains(types.at(i))) {
-				bodyParser = (*bodyParsers)[types.at(i)];
+			const String& type = types[i];
+			if(bodyParsers->contains(type)) {
+				bodyParser = (*bodyParsers)[type];
 				break;
 			}
 		}

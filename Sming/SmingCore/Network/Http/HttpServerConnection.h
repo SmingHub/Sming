@@ -33,6 +33,7 @@
 #define HTTP_SERVER_EXPOSE_DATE 0
 #endif
 
+class ResourceTree;
 class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
@@ -58,7 +59,7 @@ public:
 		this->resourceTree = resourceTree;
 	}
 
-	void setBodyParsers(BodyParsers* bodyParsers)
+	void setBodyParsers(const BodyParsers* bodyParsers)
 	{
 		this->bodyParsers = bodyParsers;
 	}
@@ -137,10 +138,10 @@ public:
 	void* userData = nullptr; ///< use to pass user data between requests
 
 private:
-	ResourceTree* resourceTree = nullptr;
-	HttpResource* resource = nullptr;
+	ResourceTree* resourceTree = nullptr; ///< A reference to the current resource tree - we don't own it
+	HttpResource* resource = nullptr;	 ///< Resource for currently executing path
 
-	HttpRequest request = HttpRequest(URL());
+	HttpRequest request;
 	HttpResponse response;
 
 	HttpResourceDelegate headersCompleteDelegate = nullptr;
@@ -148,8 +149,8 @@ private:
 	HttpServerConnectionBodyDelegate onBodyDelegate = nullptr;
 	HttpServerProtocolUpgradeCallback upgradeCallback = nullptr;
 
-	BodyParsers* bodyParsers = nullptr;
-	HttpBodyParserDelegate bodyParser = nullptr;
+	const BodyParsers* bodyParsers = nullptr;	///< const reference ensures we cannot modify map, only look stuff up
+	HttpBodyParserDelegate bodyParser = nullptr; ///< Active body parser for this message, if any
 };
 
 /** @} */

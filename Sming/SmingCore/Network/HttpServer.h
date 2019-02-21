@@ -22,7 +22,7 @@
 #include "TcpServer.h"
 #include "WString.h"
 #include "Delegate.h"
-#include "Http/HttpResource.h"
+#include "Http/HttpResourceTree.h"
 #include "Http/HttpServerConnection.h"
 #include "Http/HttpBodyParser.h"
 
@@ -59,32 +59,51 @@ public:
 	/**
 	 * @briefs Allows content-type specific parsing of the body based on content-type.
 	 *
-	 * @param const String& contentType. Can be full content-type like 'application/json', or 'application/*'  or '*'.
-	 * 						If there is exact match for the content-type wildcard content-types will not be used.
-	 * 						There can be only one catch-all '*' body parser and that will be the last registered
+	 * @param contentType. Can be full content-type like 'application/json', or 'application/*'  or '*'.
+	 * 			If there is exact match for the content-type wildcard content-types will not be used.
+	 * 			There can be only one catch-all '*' body parser and that will be the last registered
 	 *
-	 * @param  HttpBodyParserDelegate parser
+	 * @param  parser
 	 */
-	void setBodyParser(const String& contentType, HttpBodyParserDelegate parser);
+	void setBodyParser(const String& contentType, HttpBodyParserDelegate parser)
+	{
+		bodyParsers[contentType] = parser;
+	}
 
 	/**
-	 * @param String path URL path.
+	 * @brief Add a new path resource with a callback
+	 * @param path URL path
 	 * @note Path should start with slash. Trailing slashes will be removed.
-	 * @param HttpPathDelegate callback - the callback that will handle this path
+	 * @param callback -The callback that will handle this path
 	 */
 	void addPath(String path, const HttpPathDelegate& callback);
-	void addPath(const String& path, const HttpResourceDelegate& onRequestComplete);
-	void addPath(const String& path, HttpResource* resource);
 
-	void setDefaultHandler(const HttpPathDelegate& callback);
-	void setDefaultResource(HttpResource* resource);
+	void addPath(const String& path, const HttpResourceDelegate& onRequestComplete);
+
+	void addPath(const String& path, HttpResource* resource)
+	{
+		resourceTree.set(path, resource);
+	}
+
+	void setDefaultHandler(const HttpPathDelegate& callback)
+	{
+		addPath(String('*'), callback);
+	}
+
+	void setDefaultResource(HttpResource* resource)
+	{
+		resourceTree.setDefault(resource);
+	}
+
+public:
+	/** @brief Maps paths to resources which deal with incoming requests */
+	ResourceTree resourceTree;
 
 protected:
 	TcpConnection* createClient(tcp_pcb* clientTcp) override;
 
 private:
 	HttpServerSettings settings;
-	ResourceTree resourceTree;
 	BodyParsers bodyParsers;
 };
 

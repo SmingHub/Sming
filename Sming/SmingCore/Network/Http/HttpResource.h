@@ -69,6 +69,4 @@ private:
 	HttpPathDelegate callback;
 };
 
-typedef ObjectMap<String, HttpResource> ResourceTree;
-
 #endif /* _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_H_ */
