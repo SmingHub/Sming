@@ -82,7 +82,7 @@ public:
 
 	void addPath(const String& path, HttpResource* resource)
 	{
-		resourceTree.set(path, resource);
+		resourceTree[path] = resource;
 	}
 
 	void setDefaultHandler(const HttpPathDelegate& callback)

@@ -113,7 +113,7 @@ public:
 	HttpRequest* setFile(const String& formElementName, IDataSourceStream* stream)
 	{
 		if(stream != nullptr) {
-			files.set(formElementName, stream);
+			files[formElementName] = stream;
 		}
 		return this;
 	}

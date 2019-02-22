@@ -16,7 +16,6 @@
 #include "HttpResource.h"
 
 /** @brief Class to map URL paths to classes which handle them
- *  @note Use `set()` method to safely set a value
  */
 class ResourceTree : public ObjectMap<String, HttpResource>
 {
@@ -24,17 +23,13 @@ public:
 	/** @brief The default resource handler, identified by "*" wildcard */
 	void setDefault(HttpResource* resource)
 	{
-		set(String('*'), resource);
+		operator[](String('*')) = resource;
 	}
 
 	HttpResource* getDefault()
 	{
 		return find(String('*'));
 	}
-
-private:
-	/* Potentially dangerous as `tree[path] = newValue` would overwrite existing value without freeing it */
-	HttpResource*& operator[](const String& key);
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_TREE_H_ */

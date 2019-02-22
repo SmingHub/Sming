@@ -47,12 +47,12 @@ void HttpServer::addPath(String path, const HttpPathDelegate& callback)
 	}
 	debug_i("'%s' registered", path.c_str());
 
-	resourceTree.set(path, new HttpCompatResource(callback));
+	resourceTree[path] = new HttpCompatResource(callback);
 }
 
 void HttpServer::addPath(const String& path, const HttpResourceDelegate& onRequestComplete)
 {
 	HttpResource* resource = new HttpResource;
 	resource->onRequestComplete = onRequestComplete;
-	resourceTree.set(path, resource);
+	resourceTree[path] = resource;
 }

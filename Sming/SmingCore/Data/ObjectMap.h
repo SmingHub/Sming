@@ -8,9 +8,6 @@
  *
  * @author: 31 Jul 2018 - Mikee47 <mike@sillyhouse.net>
  *
- * Implementation of a HashMap for owned objects, i.e. anything created with new().
- * Once added to the map the object is destroyed when no longer required.
- *
  */
 
 #ifndef _SMING_CORE_DATA_OBJECT_MAP_H_
@@ -18,6 +15,17 @@
 
 #include "WVector.h"
 
+/** @brief Implementation of a HashMap for owned objects, i.e. anything created with new().
+ *  @note Once added to the map the object is destroyed when no longer required.
+ *
+ *  To free an object, use one of:
+ *
+ *  ```
+ *  map.remove(key);
+ * 	map.removeAt(index);
+ * 	map[key] = nullptr; // Free existing object and set to null
+ * 	```
+ */
 template <typename K, typename V> class ObjectMap
 {
 public:
@@ -29,6 +37,41 @@ public:
 	{
 		clear();
 	}
+
+	/* Allows operator[] to be used to safely set values */
+	class Value
+	{
+	public:
+		/* Functor to provide guarded access to values */
+		Value(V*& value) : value(value)
+		{
+		}
+
+		Value& operator=(V* newValue)
+		{
+			delete value;
+			value = newValue;
+			return *this;
+		}
+
+		operator const V*() const
+		{
+			return value;
+		}
+
+		operator V*()
+		{
+			return value;
+		}
+
+		V* operator->()
+		{
+			return value;
+		}
+
+	private:
+		V*& value;
+	};
 
 	/**
 	 * @brief Get the number of entries in this map
@@ -76,9 +119,8 @@ public:
 	 * @retval The value at index idx
 	 * @note Because a reference is returned any existing value must be `delete`d first
 	 * @see `operator[]`
-	 * @see `set()`
 	 */
-	V*& valueAt(unsigned idx)
+	Value valueAt(unsigned idx)
 	{
 		return entries[idx].value;
 	}
@@ -95,11 +137,8 @@ public:
 
 	/** @brief Access map entry by reference
 	 *  @param key
-	 *  @retval V*& Reference to mapped value corresponding to given key
-	 *  @note If the given key does not exist in the map then it will be created
-	 *  and a null value entry returned.
-	 *  Be careful to check for existing value before assigning to avoid memory leaks.
-	 *  In most cases `set()` should be used to avoid this complication.
+	 *  @retval Value Guarded access to mapped value corresponding to given key
+	 *  @note If the given key does not exist in the map then it will be created and a null value entry returned.
 	 *
 	 *  Example:
 	 *
@@ -108,20 +147,19 @@ public:
 	 *	{
 	 *		ObjectMap<String, MyType> map;
 	 *		MyType* object1 = new MyType();
-	 *		MyType* object2 = new MyType();
 	 *		map["key1"] = object1;
-	 *		auto& value = map["key1"]; // value now refers to object1
-	 *		delete value;
+	 *		auto value = map["key1"]; // value now refers to object1
+	 *		value = nullptr; // Free object1
+	 *		MyType* object2 = new MyType();
 	 *		value = object2;
 	 *		// As soon as `map` goes out of scope, object2 is released
 	 *	}
 	 * 	```
 	 *
-	 * 	@see `set()`
 	 * 	@see `valueAt()`
 	 *
 	 */
-	V*& operator[](const K& key)
+	Value operator[](const K& key)
 	{
 		int i = indexOf(key);
 		if(i >= 0) {
@@ -133,29 +171,13 @@ public:
 		return entry->value;
 	}
 
-	/**
-	 * @brief Set a key value, ensuring any existing value is released
+	/** @brief Set a key value
 	 *  @param key
 	 *  @param value
-	 *  @note Example:
-	 *  Example:
-	 *
-	 *		void test()
-	 *		{
-	 *			ObjectMap<String, MyType> map;
-	 *			MyType* object1 = new MyType();
-	 *			MyType* object2 = new MyType();
-	 *			map.set("key1", object1);
-	 *			map.set("key1", object2); // object1 is freed automatically
-	 *			// As soon as `map` goes out of scope, object2 is released
-	 *		}
-	 *
 	 */
 	void set(const K& key, V* value)
 	{
-		auto& cur = operator[](key);
-		delete cur;
-		cur = value;
+		operator[](key) = value;
 	}
 
 	/**

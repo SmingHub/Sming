@@ -19,14 +19,13 @@ bool HttpClient::send(HttpRequest* request)
 {
 	String cacheKey = getCacheKey(request->uri);
 
-	auto& connection = httpConnectionPool[cacheKey];
+	auto connection = httpConnectionPool[cacheKey];
 
 	if(connection != nullptr) {
 		// Check existing connection
 		if(connection->getConnectionState() > eTCS_Connecting && !connection->isActive()) {
 			debug_d("Removing stale connection: State: %d, Active: %d", connection->getConnectionState(),
 					connection->isActive());
-			delete connection;
 			connection = nullptr;
 		}
 	}
