@@ -78,10 +78,10 @@ void onAjaxFrequency(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.addPath("/ajax/input", onAjaxInput);
-	server.addPath("/ajax/frequency", onAjaxFrequency);
-	server.setDefaultHandler(onFile);
+	server.resourceTree.set("/", onIndex);
+	server.resourceTree.set("/ajax/input", onAjaxInput);
+	server.resourceTree.set("/ajax/frequency", onAjaxFrequency);
+	server.resourceTree.setDefault(onFile);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());

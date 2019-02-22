@@ -102,8 +102,8 @@ void wsDisconnected(WebsocketConnection& socket)
 void startWebServer()
 {
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.setDefaultHandler(onFile);
+	server.resourceTree.set("/", onIndex);
+	server.resourceTree.setDefault(onFile);
 
 	// Web Sockets configuration
 	auto wsResource = new WebsocketResource();
@@ -112,7 +112,7 @@ void startWebServer()
 	wsResource->setBinaryHandler(wsBinaryReceived);
 	wsResource->setDisconnectionHandler(wsDisconnected);
 
-	server.addPath("/ws", wsResource);
+	server.resourceTree.set("/ws", wsResource);
 
 	Serial.println(F("\r\n=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());

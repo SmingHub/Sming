@@ -39,20 +39,3 @@ TcpConnection* HttpServer::createClient(tcp_pcb* clientTcp)
 
 	return con;
 }
-
-void HttpServer::addPath(String path, const HttpPathDelegate& callback)
-{
-	if(path.length() > 1 && path.endsWith("/")) {
-		path.remove(path.length() - 1);
-	}
-	debug_i("'%s' registered", path.c_str());
-
-	resourceTree[path] = new HttpCompatResource(callback);
-}
-
-void HttpServer::addPath(const String& path, const HttpResourceDelegate& onRequestComplete)
-{
-	HttpResource* resource = new HttpResource;
-	resource->onRequestComplete = onRequestComplete;
-	resourceTree[path] = resource;
-}

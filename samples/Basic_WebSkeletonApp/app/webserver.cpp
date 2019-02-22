@@ -93,11 +93,11 @@ void startWebServer()
 		return;
 
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.addPath("/config", onConfiguration);
-	server.addPath("/config.json", onConfiguration_json);
-	server.addPath("/state", onAJAXGetState);
-	server.setDefaultHandler(onFile);
+	server.resourceTree.set("/", onIndex);
+	server.resourceTree.set("/config", onConfiguration);
+	server.resourceTree.set("/config.json", onConfiguration_json);
+	server.resourceTree.set("/state", onAJAXGetState);
+	server.resourceTree.setDefault(onFile);
 	server.setBodyParser("application/json", bodyToStringParser);
 	serverStarted = true;
 

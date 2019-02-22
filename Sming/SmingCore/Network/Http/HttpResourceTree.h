@@ -15,21 +15,70 @@
 
 #include "HttpResource.h"
 
+typedef Delegate<void(HttpRequest& request, HttpResponse& response)> HttpPathDelegate;
+
+/** @brief Identifies the default resource path */
+#define RESOURCE_PATH_DEFAULT String('*')
+
 /** @brief Class to map URL paths to classes which handle them
  */
-class ResourceTree : public ObjectMap<String, HttpResource>
+class HttpResourceTree : public ObjectMap<String, HttpResource>
 {
 public:
-	/** @brief The default resource handler, identified by "*" wildcard */
+	/** @brief Set the default resource handler
+	 *  @param resource The default resource handler
+	 */
 	void setDefault(HttpResource* resource)
 	{
-		operator[](String('*')) = resource;
+		set(RESOURCE_PATH_DEFAULT, resource);
 	}
 
+	/** @brief Set the default resource handler, identified by "*" wildcard
+	 *  @param resource The default resource handler
+	 */
+	void setDefault(const HttpResourceDelegate& onRequestComplete)
+	{
+		set(RESOURCE_PATH_DEFAULT, onRequestComplete);
+	}
+
+	/** @brief Set the default resource handler, identified by "*" wildcard */
+	void setDefault(const HttpPathDelegate& callback)
+	{
+		set(RESOURCE_PATH_DEFAULT, callback);
+	}
+
+	/** @brief Get the current default resource handler, if any
+	 *  @retval HttpResource*
+	 */
 	HttpResource* getDefault()
 	{
-		return find(String('*'));
+		return find(RESOURCE_PATH_DEFAULT);
 	}
+
+	using ObjectMap::set;
+
+	/**
+	 * @brief Set a callback to handle the given path
+	 * @param path URL path
+	 * @param onRequestComplete Delegate to handle this path
+	 * @note Path should start with slash. Trailing slashes will be removed.
+	 * @note Any existing handler for this path is replaced
+	 */
+	void set(const String& path, const HttpResourceDelegate& onRequestComplete)
+	{
+		HttpResource* resource = new HttpResource;
+		resource->onRequestComplete = onRequestComplete;
+		set(path, resource);
+	}
+
+	/**
+	 * @brief Add a new path resource with a callback
+	 * @param path URL path
+	 * @param callback The callback that will handle this path
+	 * @note Path should start with slash. Trailing slashes will be removed
+	 * @note Any existing handler for this path is replaced
+	 */
+	void set(String path, const HttpPathDelegate& callback);
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_TREE_H_ */

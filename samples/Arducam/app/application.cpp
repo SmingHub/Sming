@@ -229,12 +229,12 @@ void onFavicon(HttpRequest& request, HttpResponse& response)
 void StartServers()
 {
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.addPath("/cam/set", onCamSetup);
-	server.addPath("/cam/capture", onCapture);
-	server.addPath("/stream", onStream);
-	server.addPath("/favicon.ico", onFavicon);
-	server.setDefaultHandler(onFile);
+	server.resourceTree.set("/", onIndex);
+	server.resourceTree.set("/cam/set", onCamSetup);
+	server.resourceTree.set("/cam/capture", onCapture);
+	server.resourceTree.set("/stream", onStream);
+	server.resourceTree.set("/favicon.ico", onFavicon);
+	server.resourceTree.setDefault(onFile);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());

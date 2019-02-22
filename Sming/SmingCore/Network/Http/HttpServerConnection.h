@@ -33,7 +33,7 @@
 #define HTTP_SERVER_EXPOSE_DATE 0
 #endif
 
-class ResourceTree;
+class HttpResourceTree;
 class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
@@ -54,7 +54,7 @@ public:
 		}
 	}
 
-	void setResourceTree(ResourceTree* resourceTree)
+	void setResourceTree(HttpResourceTree* resourceTree)
 	{
 		this->resourceTree = resourceTree;
 	}
@@ -138,8 +138,8 @@ public:
 	void* userData = nullptr; ///< use to pass user data between requests
 
 private:
-	ResourceTree* resourceTree = nullptr; ///< A reference to the current resource tree - we don't own it
-	HttpResource* resource = nullptr;	 ///< Resource for currently executing path
+	HttpResourceTree* resourceTree = nullptr; ///< A reference to the current resource tree - we don't own it
+	HttpResource* resource = nullptr;		  ///< Resource for currently executing path
 
 	HttpRequest request;
 	HttpResponse response;

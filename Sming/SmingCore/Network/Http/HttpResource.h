@@ -26,8 +26,8 @@ typedef Delegate<int(HttpServerConnection& connection, HttpRequest&, const char*
 	HttpServerConnectionBodyDelegate;
 typedef Delegate<int(HttpServerConnection& connection, HttpRequest&, char* at, int length)>
 	HttpServerConnectionUpgradeDelegate;
-typedef Delegate<int(HttpServerConnection&, HttpRequest&, HttpResponse&)> HttpResourceDelegate;
-typedef Delegate<void(HttpRequest&, HttpResponse&)> HttpPathDelegate;
+typedef Delegate<int(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)>
+	HttpResourceDelegate;
 
 class HttpResource
 {
@@ -48,25 +48,6 @@ public:
 	HttpResourceDelegate onHeadersComplete = nullptr;		 ///< headers are ready
 	HttpResourceDelegate onRequestComplete = nullptr;		 ///< request is complete OR upgraded
 	HttpServerConnectionUpgradeDelegate onUpgrade = nullptr; ///< request is upgraded and raw data is passed to it
-};
-
-class HttpCompatResource : public HttpResource
-{
-public:
-	HttpCompatResource(const HttpPathDelegate& callback) : callback(callback)
-	{
-		onRequestComplete = HttpResourceDelegate(&HttpCompatResource::requestComplete, this);
-	}
-
-private:
-	int requestComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
-	{
-		callback(request, response);
-		return 0;
-	}
-
-private:
-	HttpPathDelegate callback;
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_H_ */
