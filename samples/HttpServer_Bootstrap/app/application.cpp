@@ -51,9 +51,9 @@ void onFile(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	server.listen(80);
-	server.resourceTree.set("/", onIndex);
-	server.resourceTree.set("/hello", onHello);
-	server.resourceTree.setDefault(onFile);
+	server.paths.set("/", onIndex);
+	server.paths.set("/hello", onHello);
+	server.paths.setDefault(onFile);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());

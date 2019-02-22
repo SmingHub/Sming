@@ -70,39 +70,39 @@ public:
 		bodyParsers[contentType] = parser;
 	}
 
-	/** @deprecated Use `resourceTree.set()` instead */
+	/** @deprecated Use `paths.set()` instead */
 	void addPath(String path, const HttpPathDelegate& callback) SMING_DEPRECATED
 	{
-		resourceTree.set(path, callback);
+		paths.set(path, callback);
 	}
 
-	/** @deprecated Use `resourceTree.set()` instead */
+	/** @deprecated Use `paths.set()` instead */
 	void addPath(const String& path, const HttpResourceDelegate& onRequestComplete) SMING_DEPRECATED
 	{
-		resourceTree.set(path, onRequestComplete);
+		paths.set(path, onRequestComplete);
 	}
 
-	/** @deprecated Use `resourceTree.set()` instead */
+	/** @deprecated Use `paths.set()` instead */
 	void addPath(const String& path, HttpResource* resource) SMING_DEPRECATED
 	{
-		resourceTree.set(path, resource);
+		paths.set(path, resource);
 	}
 
-	/** @deprecated Use `resourceTree.setDefault()` instead */
+	/** @deprecated Use `paths.setDefault()` instead */
 	void setDefault(const HttpPathDelegate& callback) SMING_DEPRECATED
 	{
-		resourceTree.setDefault(callback);
+		paths.setDefault(callback);
 	}
 
-	/** @deprecated Use `resourceTree.setDefault()` instead */
+	/** @deprecated Use `paths.setDefault()` instead */
 	void setDefaultResource(HttpResource* resource) SMING_DEPRECATED
 	{
-		resourceTree.setDefault(resource);
+		paths.setDefault(resource);
 	}
 
 public:
 	/** @brief Maps paths to resources which deal with incoming requests */
-	HttpResourceTree resourceTree;
+	HttpResourceTree paths;
 
 protected:
 	TcpConnection* createClient(tcp_pcb* clientTcp) override;

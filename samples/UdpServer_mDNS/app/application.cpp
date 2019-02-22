@@ -80,7 +80,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	server.listen(80);
-	server.resourceTree.set("/", onIndex);
+	server.paths.set("/", onIndex);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());

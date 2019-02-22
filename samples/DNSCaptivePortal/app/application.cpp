@@ -15,8 +15,8 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	server.listen(80);
-	server.resourceTree.set("/", onIndex);
-	server.resourceTree.setDefault(onIndex);
+	server.paths.set("/", onIndex);
+	server.paths.setDefault(onIndex);
 }
 
 void startServers()

@@ -114,12 +114,12 @@ void startWebServer()
 		return;
 
 	server.listen(80);
-	server.resourceTree.set("/", onIndex);
-	server.resourceTree.set("/api", onApiDoc);
-	server.resourceTree.set("/api/sensors", onApiSensors);
-	server.resourceTree.set("/api/output", onApiOutput);
-	server.resourceTree.set("/config", onConfiguration);
-	server.resourceTree.setDefault(onFile);
+	server.paths.set("/", onIndex);
+	server.paths.set("/api", onApiDoc);
+	server.paths.set("/api/sensors", onApiSensors);
+	server.paths.set("/api/output", onApiOutput);
+	server.paths.set("/config", onConfiguration);
+	server.paths.setDefault(onFile);
 	serverStarted = true;
 
 	if(WifiStation.isEnabled())

@@ -34,7 +34,7 @@ void HttpServer::configure(const HttpServerSettings& settings)
 TcpConnection* HttpServer::createClient(tcp_pcb* clientTcp)
 {
 	HttpServerConnection* con = new HttpServerConnection(clientTcp);
-	con->setResourceTree(&resourceTree);
+	con->setResourceTree(&paths);
 	con->setBodyParsers(&bodyParsers);
 
 	return con;
