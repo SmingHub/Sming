@@ -103,6 +103,16 @@ public:
 			return map.remove(key);
 		}
 
+		/**
+		 * @brief Get the value for a given key and remove it from the map, without destroying it
+		 * @retval V*
+		 * @note The returned object must be freed by the caller when no longer required
+		 */
+		V* extract()
+		{
+			return map.extract(key);
+		}
+
 	private:
 		ObjectMap<K, V>& map;
 		K key;
@@ -267,6 +277,24 @@ public:
 			removeAt(index);
 			return true;
 		}
+	}
+
+	/**
+	 * @brief Get the value for a given key and remove it from the map, without destroying it
+	 * @param key
+	 * @retval V*
+	 * @note The returned object must be freed by the caller when no longer required
+	 */
+	V* extract(const K& key)
+	{
+		V* value = nullptr;
+		int i = indexOf(key);
+		if(i >= 0) {
+			value = entries[i].value;
+			entries[i].value = nullptr;
+			entries.remove(i);
+		}
+		return value;
 	}
 
 	/**
