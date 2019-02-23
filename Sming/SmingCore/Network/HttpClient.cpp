@@ -19,14 +19,18 @@ bool HttpClient::send(HttpRequest* request)
 {
 	String cacheKey = getCacheKey(request->uri);
 
-	HttpConnectionPool::Value connection = httpConnectionPool[cacheKey];
+	HttpClientConnection* connection = nullptr;
 
-	if(connection != nullptr) {
+	int i = httpConnectionPool.indexOf(cacheKey);
+	if(i >= 0) {
 		// Check existing connection
+		connection = httpConnectionPool.valueAt(i);
 		if(connection->getConnectionState() > eTCS_Connecting && !connection->isActive()) {
 			debug_d("Removing stale connection: State: %d, Active: %d", connection->getConnectionState(),
 					connection->isActive());
+			delete connection;
 			connection = nullptr;
+			httpConnectionPool.removeAt(i);
 		}
 	}
 
@@ -38,6 +42,7 @@ bool HttpClient::send(HttpRequest* request)
 			delete request;
 			return false;
 		}
+		httpConnectionPool[cacheKey] = connection;
 	}
 
 	return connection->send(request);
