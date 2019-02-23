@@ -10,13 +10,6 @@
 
 #include "HttpClientConnection.h"
 
-HttpClientConnection::~HttpClientConnection()
-{
-#ifdef ENABLE_SSL
-	delete sslSessionId;
-#endif
-}
-
 bool HttpClientConnection::send(HttpRequest* request)
 {
 	if(!HttpConnection::send(request)) {

@@ -114,11 +114,11 @@ HttpPartResult HttpConnection::multipartProducer()
 	HttpPartResult result;
 
 	if(outgoingRequest->files.count()) {
-		String name = outgoingRequest->files.keyAt(0);
+		const String& name = outgoingRequest->files.keyAt(0);
 		auto file = outgoingRequest->files.extractAt(0);
 		result.stream = file;
 
-		HttpHeaders* headers = new HttpHeaders();
+		auto headers = new HttpHeaders();
 		(*headers)[HTTP_HEADER_CONTENT_DISPOSITION] =
 			F("form-data; name=\"") + name + F("\"; filename=\"") + file->getName() + '"';
 		(*headers)[HTTP_HEADER_CONTENT_TYPE] = ContentType::fromFullFileName(file->getName());
@@ -128,18 +128,18 @@ HttpPartResult HttpConnection::multipartProducer()
 	}
 
 	if(outgoingRequest->postParams.count()) {
-		String name = outgoingRequest->postParams.keyAt(0);
-		String value = outgoingRequest->postParams[name];
+		const String& name = outgoingRequest->postParams.keyAt(0);
+		const String& value = outgoingRequest->postParams.valueAt(0);
 
-		MemoryDataStream* mStream = new MemoryDataStream();
-		mStream->write((uint8_t*)value.c_str(), value.length());
+		auto mStream = new MemoryDataStream();
+		mStream->print(value);
 		result.stream = mStream;
 
-		HttpHeaders* headers = new HttpHeaders();
+		auto headers = new HttpHeaders();
 		(*headers)[HTTP_HEADER_CONTENT_DISPOSITION] = F("form-data; name=\"") + name + '"';
 		result.headers = headers;
 
-		outgoingRequest->postParams.remove(name);
+		outgoingRequest->postParams.removeAt(0);
 		return result;
 	}
 

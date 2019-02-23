@@ -22,7 +22,12 @@
 class HttpClientConnection : public HttpConnection
 {
 public:
-	~HttpClientConnection();
+	~HttpClientConnection()
+	{
+#ifdef ENABLE_SSL
+		delete sslSessionId;
+#endif
+	}
 
 	/** @brief Queue a request
 	 *  @param request

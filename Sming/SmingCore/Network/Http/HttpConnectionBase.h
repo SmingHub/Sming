@@ -98,20 +98,21 @@ protected:
 	void resetHeaders();
 
 	/** @brief Initializes the http parser for a specific type of HTTP message
-	 * 	@param http_parser_type
+	 *  @param type
 	 */
 	virtual void init(http_parser_type type);
 
 	// HTTP parser methods
+
 	/** @brief Called when a new incoming data is beginning to come
-	 * 	@paran http_parser* parser
-	 * 	@return 0 on success, non-0 on error
+	 * 	@param parser
+	 * 	@retval int 0 on success, non-0 on error
 	 */
 	virtual int onMessageBegin(http_parser* parser) = 0;
 
 	/** @brief Called when the URL path is known
-	 * 	@param String path
-	 * 	@return 0 on success, non-0 on error
+	 * 	@param uri
+	 * 	@retval int 0 on success, non-0 on error
 	 */
 	virtual int onPath(const URL& uri)
 	{
@@ -119,8 +120,8 @@ protected:
 	}
 
 	/** @brief Called when all headers are received
-	 * 	@param HttpHeaders headers - the processed headers
-	 * 	@return 0 on success, non-0 on error
+	 * 	@param headers The processed headers
+	 * 	@retval int 0 on success, non-0 on error
 	 */
 	virtual int onHeadersComplete(const HttpHeaders& headers) = 0;
 
