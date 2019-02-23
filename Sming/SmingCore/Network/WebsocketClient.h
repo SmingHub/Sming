@@ -32,7 +32,7 @@
 class WebsocketClient : protected WebsocketConnection
 {
 public:
-	WebsocketClient() : WebsocketConnection(new HttpConnection(new RequestQueue()))
+	WebsocketClient() : WebsocketConnection(new HttpConnection)
 	{
 	}
 

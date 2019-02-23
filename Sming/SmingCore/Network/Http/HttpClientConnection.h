@@ -22,10 +22,6 @@
 class HttpClientConnection : public HttpConnection
 {
 public:
-	HttpClientConnection() : HttpConnection(&requestQueue)
-	{
-	}
-
 	~HttpClientConnection();
 
 	/** @brief Queue a request
@@ -34,9 +30,6 @@ public:
 	 *  @note we take ownership of the request. On error, it is destroyed before returning.
 	 */
 	bool send(HttpRequest* request);
-
-private:
-	RequestQueue requestQueue;
 };
 
 /** @} */

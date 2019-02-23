@@ -254,12 +254,12 @@ int HttpConnection::onBody(const char* at, size_t length)
 
 void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	debug_d("HttpConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue->count());
+	debug_d("HttpConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue.count());
 
 REENTER:
 	switch(state) {
 	case eHCS_Ready: {
-		HttpRequest* request = waitingQueue->peek();
+		HttpRequest* request = waitingQueue.peek();
 		if(request == nullptr) {
 			debug_d("Nothing in the waiting queue");
 			outgoingRequest = nullptr;
@@ -287,7 +287,7 @@ REENTER:
 			break;
 		}
 
-		waitingQueue->dequeue();
+		waitingQueue.dequeue();
 
 		outgoingRequest = request;
 		sendRequestHeaders(request);
@@ -405,7 +405,7 @@ void HttpConnection::cleanup()
 	reset();
 
 	// if there are requests in the executionQueue -> move them back to the waiting queue
-	for(unsigned i = 0; i < executionQueue.count(); i++) {
-		waitingQueue->enqueue(executionQueue.dequeue());
+	while(executionQueue.count() != 0) {
+		waitingQueue.enqueue(executionQueue.dequeue());
 	}
 }

@@ -28,21 +28,31 @@ typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 class HttpConnection : public HttpConnectionBase
 {
 public:
-	HttpConnection(RequestQueue* queue) : HttpConnectionBase(HTTP_RESPONSE)
+	HttpConnection() : HttpConnectionBase(HTTP_RESPONSE)
 	{
-		this->waitingQueue = queue;
 	}
 
 	~HttpConnection()
 	{
 		cleanup();
+
+		// Free any outstanding queued requests
+		while(waitingQueue.count() != 0) {
+			delete waitingQueue.dequeue();
+		}
 	}
 
 	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
 
 	bool send(HttpRequest* request)
 	{
-		return waitingQueue->enqueue(request);
+		bool success = waitingQueue.enqueue(request);
+		if(!success) {
+			// the queue is full and we cannot add more requests at the time.
+			debug_e("The request queue is full at the moment");
+			delete request;
+		}
+		return success;
 	}
 
 	bool isActive();
@@ -156,9 +166,9 @@ private:
 	bool sendRequestBody(HttpRequest* request);
 	HttpPartResult multipartProducer();
 
-protected:
-	RequestQueue* waitingQueue = nullptr; ///< Requests waiting to be started - we do not own this queue
-	RequestQueue executionQueue;		  ///< Requests being executed in a pipeline
+private:
+	RequestQueue waitingQueue;   ///< Requests waiting to be started
+	RequestQueue executionQueue; ///< Requests being executed in a pipeline
 
 	HttpRequest* incomingRequest = nullptr;
 	HttpRequest* outgoingRequest = nullptr;

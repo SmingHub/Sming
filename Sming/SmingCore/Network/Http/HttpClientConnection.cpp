@@ -12,10 +12,6 @@
 
 HttpClientConnection::~HttpClientConnection()
 {
-	// ObjectQueue doesn't own its objects
-	while(requestQueue.count() != 0) {
-		delete requestQueue.dequeue();
-	}
 #ifdef ENABLE_SSL
 	delete sslSessionId;
 #endif
@@ -23,10 +19,7 @@ HttpClientConnection::~HttpClientConnection()
 
 bool HttpClientConnection::send(HttpRequest* request)
 {
-	if(!requestQueue.enqueue(request)) {
-		// the queue is full and we cannot add more requests at the time.
-		debug_e("The request queue is full at the moment");
-		delete request;
+	if(!HttpConnection::send(request)) {
 		return false;
 	}
 
