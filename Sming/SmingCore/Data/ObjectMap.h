@@ -15,16 +15,35 @@
 
 #include "WVector.h"
 
-/** @brief Implementation of a HashMap for owned objects, i.e. anything created with new().
- *  @note Once added to the map the object is destroyed when no longer required.
+/**
+ * @brief Implementation of a HashMap for owned objects, i.e. anything created with new().
+ * @note Once added to the map the object is destroyed when no longer required.
  *
- *  To free an object, use one of:
+ *  Example:
  *
  *  ```
- *  map.remove(key);
- * 	map.removeAt(index);
- * 	map[key] = nullptr; // Free existing object and set to null
+ *	void test()
+ *	{
+ *		ObjectMap<String, MyType> map;
+ *		MyType* object1 = new MyType();
+ *		if (map["key1"] == nullptr) { 	// Does NOT create entry in map
+ *			map["key1"] = object1; 		// Entry now created, "key1" -> object1
+ *		}
+ *		MyType* object2 = new MyType();
+ *		map["key1"] = object2;			// object1 is destroyed, "key1" -> object2
+ *
+ *		// Demonstrate use of value reference
+ *		auto value = map["key1"];		// Returns ObjectMap<String, MyType>::Value object
+ *		value = new MyType();			// "key1" -> new object
+ *		value = nullptr; 				// Free object, "key1" -> nullptr (but still in map)
+ *		value.remove();					// Free object1 and remove from map
+ *
+ *		// As soon as `map` goes out of scope, all contained objects are detroyed
+ *		map["key1"] = new MyType();
+ *		map["key2"] = new MyType();
+ *	}
  * 	```
+ *
  */
 template <typename K, typename V> class ObjectMap
 {
@@ -38,39 +57,55 @@ public:
 		clear();
 	}
 
-	/* Allows operator[] to be used to safely set values */
+	/**
+	 * @brief Class to provide safe access to mapped value
+	 * @note ObjectMap `operator[]` returns one of these, which provides behaviour consistent with V*
+	 */
 	class Value
 	{
 	public:
-		/* Functor to provide guarded access to values */
-		Value(V*& value) : value(value)
+		Value(ObjectMap<K, V>& map, const K& key) : map(map), key(key)
 		{
+		}
+
+		const K& getKey() const
+		{
+			return key;
+		}
+
+		V* getValue() const
+		{
+			return map.find(key);
 		}
 
 		Value& operator=(V* newValue)
 		{
-			delete value;
-			value = newValue;
+			map.set(key, newValue);
 			return *this;
 		}
 
-		operator const V*() const
+		operator V*() const
 		{
-			return value;
+			return getValue();
 		}
 
-		operator V*()
+		V* operator->() const
 		{
-			return value;
+			return getValue();
 		}
 
-		V* operator->()
+		/**
+		 * @brief Remove this value from the map
+		 * @retval bool true if the value was found and removed
+		 */
+		bool remove()
 		{
-			return value;
+			return map.remove(key);
 		}
 
 	private:
-		V*& value;
+		ObjectMap<K, V>& map;
+		K key;
 	};
 
 	/**
@@ -116,19 +151,19 @@ public:
 	/*
 	 * @brief Get a value at a specified index
 	 * @param idx the index to get the value at
-	 * @retval The value at index idx
-	 * @note Because a reference is returned any existing value must be `delete`d first
+	 * @retval Value Reference to value at index idx
 	 * @see `operator[]`
 	 */
 	Value valueAt(unsigned idx)
 	{
-		return entries[idx].value;
+		return Value(*this, entries[idx].key);
 	}
 
 	/**
 	 * @brief Get value for given key, if it exists
 	 * @param key
 	 * @retval const V* Will be null if not found in the map
+	 * @note The caller must not use `delete` on the returned value
 	 */
 	const V* operator[](const K& key) const
 	{
@@ -138,37 +173,23 @@ public:
 	/** @brief Access map entry by reference
 	 *  @param key
 	 *  @retval Value Guarded access to mapped value corresponding to given key
-	 *  @note If the given key does not exist in the map then it will be created and a null value entry returned.
-	 *
-	 *  Example:
-	 *
-	 *  ```
-	 *	void test()
-	 *	{
-	 *		ObjectMap<String, MyType> map;
-	 *		MyType* object1 = new MyType();
-	 *		map["key1"] = object1;
-	 *		auto value = map["key1"]; // value now refers to object1
-	 *		value = nullptr; // Free object1
-	 *		MyType* object2 = new MyType();
-	 *		value = object2;
-	 *		// As soon as `map` goes out of scope, object2 is released
-	 *	}
-	 * 	```
-	 *
+	 *  @note If the given key does not exist in the map it will NOT be created
 	 * 	@see `valueAt()`
 	 *
 	 */
 	Value operator[](const K& key)
 	{
-		int i = indexOf(key);
-		if(i >= 0) {
-			return entries[i].value;
-		}
+		return get(key);
+	}
 
-		auto entry = new Entry(key, nullptr);
-		entries.addElement(entry);
-		return entry->value;
+	/** @brief Get map entry value
+	 *  @param key
+	 *  @retval Value
+	 *  @see `operator[]`
+	 */
+	Value get(const K& key)
+	{
+		return Value(*this, key);
 	}
 
 	/** @brief Set a key value
@@ -177,7 +198,13 @@ public:
 	 */
 	void set(const K& key, V* value)
 	{
-		operator[](key) = value;
+		int i = indexOf(key);
+		if(i >= 0) {
+			delete entries[i].value;
+			entries[i].value = value;
+		} else {
+			entries.addElement(new Entry(key, value));
+		}
 	}
 
 	/**
@@ -229,12 +256,16 @@ public:
 	/**
 	 * @brief Remove a key from this map
 	 * @param key The key identifying the entry to remove
+	 * @retval bool true if the value was found and removed
 	 */
-	void remove(const K& key)
+	bool remove(const K& key)
 	{
 		int index = indexOf(key);
-		if(index >= 0) {
+		if(index < 0) {
+			return false;
+		} else {
 			removeAt(index);
+			return true;
 		}
 	}
 
@@ -247,6 +278,9 @@ public:
 	}
 
 protected:
+	/**
+	 * @brief An entry in the ObjectMap
+	 */
 	struct Entry {
 		K key;
 		V* value = nullptr;
@@ -265,7 +299,7 @@ protected:
 
 private:
 	// Copy constructor unsafe, so prevent access
-	ObjectMap(const ObjectMap<K, V>& that);
+	ObjectMap(ObjectMap<K, V>& that);
 };
 
 #endif // _SMING_CORE_DATA_OBJECT_MAP_H_
