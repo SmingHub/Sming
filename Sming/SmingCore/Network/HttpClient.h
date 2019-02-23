@@ -113,7 +113,8 @@ protected:
 	}
 
 protected:
-	static ObjectMap<String, HttpClientConnection> httpConnectionPool;
+	typedef ObjectMap<String, HttpClientConnection> HttpConnectionPool;
+	static HttpConnectionPool httpConnectionPool;
 };
 
 /** @} */

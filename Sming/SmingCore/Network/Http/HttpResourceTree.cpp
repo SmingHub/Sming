@@ -15,7 +15,7 @@
 class HttpCompatResource : public HttpResource
 {
 public:
-	HttpCompatResource(const HttpPathDelegate& callback) : callback(callback)
+	explicit HttpCompatResource(const HttpPathDelegate& callback) : callback(callback)
 	{
 		onRequestComplete = HttpResourceDelegate(&HttpCompatResource::requestComplete, this);
 	}

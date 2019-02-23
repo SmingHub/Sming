@@ -13,13 +13,13 @@
 #include "HttpClient.h"
 #include "Data/Stream/FileStream.h"
 
-ObjectMap<String, HttpClientConnection> HttpClient::httpConnectionPool;
+HttpClient::HttpConnectionPool HttpClient::httpConnectionPool;
 
 bool HttpClient::send(HttpRequest* request)
 {
 	String cacheKey = getCacheKey(request->uri);
 
-	auto connection = httpConnectionPool[cacheKey];
+	HttpConnectionPool::Value connection = httpConnectionPool[cacheKey];
 
 	if(connection != nullptr) {
 		// Check existing connection
