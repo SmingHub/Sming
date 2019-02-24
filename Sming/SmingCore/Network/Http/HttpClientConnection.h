@@ -4,7 +4,7 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpConnection.h
+ * HttpClientConnection.h
  *
  * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -25,14 +25,14 @@
 
 typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
-class HttpConnection : public HttpConnectionBase
+class HttpClientConnection : public HttpConnectionBase
 {
 public:
-	HttpConnection() : HttpConnectionBase(HTTP_RESPONSE)
+	HttpClientConnection() : HttpConnectionBase(HTTP_RESPONSE)
 	{
 	}
 
-	~HttpConnection()
+	~HttpClientConnection()
 	{
 		cleanup();
 

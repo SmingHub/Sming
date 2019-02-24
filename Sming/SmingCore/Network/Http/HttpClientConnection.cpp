@@ -4,13 +4,13 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpConnection.cpp
+ * HttpClientConnection.cpp
  *
  * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
 
-#include "HttpConnection.h"
+#include "HttpClientConnection.h"
 #include "Data/Stream/FileStream.h"
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/LimitedMemoryStream.h"
@@ -23,9 +23,9 @@
 #include "lwip/tcp_impl.h"
 #endif
 
-bool HttpConnection::connect(const String& host, int port, bool useSsl, uint32_t sslOptions)
+bool HttpClientConnection::connect(const String& host, int port, bool useSsl, uint32_t sslOptions)
 {
-	debug_d("HttpConnection::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != nullptr ? tcp->state : -1),
+	debug_d("HttpClientConnection::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != nullptr ? tcp->state : -1),
 			(int)(getConnectionState() != eTCS_Ready), (int)isActive());
 
 	if(isProcessing()) {
@@ -33,19 +33,19 @@ bool HttpConnection::connect(const String& host, int port, bool useSsl, uint32_t
 	}
 
 	if(getConnectionState() != eTCS_Ready && isActive()) {
-		debug_d("HttpConnection::reusing TCP connection ");
+		debug_d("HttpClientConnection::reusing TCP connection ");
 
 		// we might have still alive connection
 		onConnected(ERR_OK);
 		return true;
 	}
 
-	debug_d("HttpConnection::connecting ...");
+	debug_d("HttpClientConnection::connecting ...");
 
 	return TcpClient::connect(host, port, useSsl, sslOptions);
 }
 
-bool HttpConnection::send(HttpRequest* request)
+bool HttpClientConnection::send(HttpRequest* request)
 {
 	if(!waitingQueue.enqueue(request)) {
 		// the queue is full and we cannot add more requests at the time.
@@ -71,7 +71,7 @@ bool HttpConnection::send(HttpRequest* request)
 	return connect(request->uri.Host, request->uri.Port, useSsl);
 }
 
-bool HttpConnection::isActive()
+bool HttpClientConnection::isActive()
 {
 	if(tcp == nullptr) {
 		return false;
@@ -87,7 +87,7 @@ bool HttpConnection::isActive()
 	return false;
 }
 
-String HttpConnection::getResponseHeader(String headerName, String defaultValue)
+String HttpClientConnection::getResponseHeader(String headerName, String defaultValue)
 {
 	if(response.headers.contains(headerName))
 		return response.headers[headerName];
@@ -95,7 +95,7 @@ String HttpConnection::getResponseHeader(String headerName, String defaultValue)
 	return defaultValue;
 }
 
-DateTime HttpConnection::getLastModifiedDate()
+DateTime HttpClientConnection::getLastModifiedDate()
 {
 	DateTime res;
 	String strLM = response.headers[HTTP_HEADER_LAST_MODIFIED];
@@ -105,7 +105,7 @@ DateTime HttpConnection::getLastModifiedDate()
 		return DateTime();
 }
 
-DateTime HttpConnection::getServerDate()
+DateTime HttpClientConnection::getServerDate()
 {
 	DateTime res;
 	String strSD = response.headers[HTTP_HEADER_DATE];
@@ -115,7 +115,7 @@ DateTime HttpConnection::getServerDate()
 		return DateTime();
 }
 
-void HttpConnection::reset()
+void HttpClientConnection::reset()
 {
 	delete incomingRequest;
 	incomingRequest = nullptr;
@@ -125,7 +125,7 @@ void HttpConnection::reset()
 	HttpConnectionBase::reset();
 }
 
-int HttpConnection::onMessageBegin(http_parser* parser)
+int HttpClientConnection::onMessageBegin(http_parser* parser)
 {
 	incomingRequest = executionQueue.dequeue();
 	if(incomingRequest == nullptr) {
@@ -135,7 +135,7 @@ int HttpConnection::onMessageBegin(http_parser* parser)
 	return 0;
 }
 
-HttpPartResult HttpConnection::multipartProducer()
+HttpPartResult HttpClientConnection::multipartProducer()
 {
 	HttpPartResult result;
 
@@ -172,7 +172,7 @@ HttpPartResult HttpConnection::multipartProducer()
 	return result;
 }
 
-int HttpConnection::onMessageComplete(http_parser* parser)
+int HttpClientConnection::onMessageComplete(http_parser* parser)
 {
 	if(!incomingRequest) {
 		return -2; // no current request...
@@ -204,7 +204,7 @@ int HttpConnection::onMessageComplete(http_parser* parser)
 	return hasError;
 }
 
-int HttpConnection::onHeadersComplete(const HttpHeaders& headers)
+int HttpClientConnection::onHeadersComplete(const HttpHeaders& headers)
 {
 	/* Callbacks should return non-zero to indicate an error. The parser will
 	 * then halt execution.
@@ -255,7 +255,7 @@ int HttpConnection::onHeadersComplete(const HttpHeaders& headers)
 	return error;
 }
 
-int HttpConnection::onBody(const char* at, size_t length)
+int HttpClientConnection::onBody(const char* at, size_t length)
 {
 	if(incomingRequest == nullptr) {
 		// nothing to process right now...
@@ -278,9 +278,9 @@ int HttpConnection::onBody(const char* at, size_t length)
 	return 0;
 }
 
-void HttpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
+void HttpClientConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	debug_d("HttpConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue.count());
+	debug_d("HttpClientConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue.count());
 
 REENTER:
 	switch(state) {
@@ -345,7 +345,7 @@ REENTER:
 	TcpClient::onReadyToSendData(sourceEvent);
 }
 
-void HttpConnection::sendRequestHeaders(HttpRequest* request)
+void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 {
 	sendString(String(http_method_str(request->method)) + ' ' + request->uri.getPathWithQuery() + _F(" HTTP/1.1\r\n"));
 
@@ -356,11 +356,11 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 	request->headers[HTTP_HEADER_CONTENT_LENGTH] = "0";
 	if(request->files.count()) {
 		MultipartStream* mStream =
-			new MultipartStream(HttpPartProducerDelegate(&HttpConnection::multipartProducer, this));
+			new MultipartStream(HttpPartProducerDelegate(&HttpClientConnection::multipartProducer, this));
 		request->headers[HTTP_HEADER_CONTENT_TYPE] =
 			ContentType::toString(MIME_FORM_MULTIPART) + _F("; boundary=") + mStream->getBoundary();
 		if(request->bodyStream) {
-			debug_e("HttpConnection: existing stream is discarded due to POST params");
+			debug_e("HttpClientConnection: existing stream is discarded due to POST params");
 			delete request->bodyStream;
 		}
 		request->bodyStream = mStream;
@@ -368,7 +368,7 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(request->postParams);
 		request->headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_FORM_URL_ENCODED);
 		if(request->bodyStream) {
-			debug_e("HttpConnection: existing stream is discarded due to POST params");
+			debug_e("HttpClientConnection: existing stream is discarded due to POST params");
 			delete request->bodyStream;
 		}
 		request->bodyStream = uStream;
@@ -393,7 +393,7 @@ void HttpConnection::sendRequestHeaders(HttpRequest* request)
 	sendString("\r\n");
 }
 
-bool HttpConnection::sendRequestBody(HttpRequest* request)
+bool HttpClientConnection::sendRequestBody(HttpRequest* request)
 {
 	if(state == eHCS_StartBody) {
 		state = eHCS_SendingBody;
@@ -424,9 +424,9 @@ bool HttpConnection::sendRequestBody(HttpRequest* request)
 	return true;
 }
 
-// end of public methods for HttpConnection
+// end of public methods for HttpClientConnection
 
-void HttpConnection::cleanup()
+void HttpClientConnection::cleanup()
 {
 	reset();
 

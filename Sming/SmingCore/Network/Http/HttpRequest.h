@@ -24,8 +24,6 @@
 #include "HttpParams.h"
 #include "Data/ObjectMap.h"
 
-class HttpClient;
-class HttpServerConnection;
 class HttpConnection;
 
 typedef Delegate<int(HttpConnection& client, HttpResponse& response)> RequestHeadersCompletedDelegate;
@@ -38,7 +36,6 @@ typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedD
 class HttpRequest
 {
 	friend class HttpConnection;
-	friend class HttpServerConnection;
 
 public:
 	HttpRequest()

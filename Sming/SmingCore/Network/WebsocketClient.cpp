@@ -20,9 +20,9 @@
 
 HttpConnection* WebsocketClient::getHttpConnection()
 {
-	auto connection = static_cast<HttpConnection*>(WebsocketConnection::getConnection());
+	auto connection = WebsocketConnection::getConnection();
 	if(connection == nullptr && state == eWSCS_Closed) {
-		connection = new HttpConnection();
+		connection = new HttpClientConnection();
 		setConnection(connection);
 	}
 
