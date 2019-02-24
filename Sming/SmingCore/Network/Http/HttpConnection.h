@@ -40,6 +40,10 @@ public:
 		while(waitingQueue.count() != 0) {
 			delete waitingQueue.dequeue();
 		}
+
+#ifdef ENABLE_SSL
+		delete sslSessionId;
+#endif
 	}
 
 	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0) override;

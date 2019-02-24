@@ -47,13 +47,28 @@ bool HttpConnection::connect(const String& host, int port, bool useSsl, uint32_t
 
 bool HttpConnection::send(HttpRequest* request)
 {
-	bool success = waitingQueue.enqueue(request);
-	if(!success) {
+	if(!waitingQueue.enqueue(request)) {
 		// the queue is full and we cannot add more requests at the time.
 		debug_e("The request queue is full at the moment");
 		delete request;
+		return false;
 	}
-	return success;
+
+	bool useSsl = (request->uri.Protocol == HTTPS_URL_PROTOCOL);
+
+#ifdef ENABLE_SSL
+	// Based on the URL decide if we should reuse the SSL and TCP pool
+	if(useSsl) {
+		if(sslSessionId == nullptr) {
+			sslSessionId = new SslSessionId;
+		}
+		addSslOptions(request->getSslOptions());
+		pinCertificate(request->sslFingerprints);
+		setSslKeyCert(request->sslKeyCertPair);
+	}
+#endif
+
+	return connect(request->uri.Host, request->uri.Port, useSsl);
 }
 
 bool HttpConnection::isActive()
