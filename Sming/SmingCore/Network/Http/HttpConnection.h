@@ -44,16 +44,7 @@ public:
 
 	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
 
-	bool send(HttpRequest* request)
-	{
-		bool success = waitingQueue.enqueue(request);
-		if(!success) {
-			// the queue is full and we cannot add more requests at the time.
-			debug_e("The request queue is full at the moment");
-			delete request;
-		}
-		return success;
-	}
+	bool send(HttpRequest* request);
 
 	bool isActive();
 

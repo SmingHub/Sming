@@ -45,6 +45,17 @@ bool HttpConnection::connect(const String& host, int port, bool useSsl, uint32_t
 	return TcpClient::connect(host, port, useSsl, sslOptions);
 }
 
+bool HttpConnection::send(HttpRequest* request)
+{
+	bool success = waitingQueue.enqueue(request);
+	if(!success) {
+		// the queue is full and we cannot add more requests at the time.
+		debug_e("The request queue is full at the moment");
+		delete request;
+	}
+	return success;
+}
+
 bool HttpConnection::isActive()
 {
 	if(tcp == nullptr) {
