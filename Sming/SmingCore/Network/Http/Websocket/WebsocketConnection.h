@@ -175,8 +175,12 @@ public:
 		return (this == &rhs);
 	}
 
-	/** @deprecated Will be removed */
-	WebsocketList& getActiveWebsockets() SMING_DEPRECATED
+	/**
+	 * @brief Obtain the list of active websockets
+	 * @retval const WebsocketList&
+	 * @note Return value is const as only restricted operations should be carried out on the list.
+	 */
+	static const WebsocketList& getActiveWebsockets()
 	{
 		return websocketList;
 	}
