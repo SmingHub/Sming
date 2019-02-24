@@ -67,13 +67,13 @@ public:
 
 	/**
 	 * @brief Returns pointer to the current request
-	 * @return HttpRequest*
+	 * @retval HttpRequest*
 	 */
 	virtual HttpRequest* getRequest() = 0;
 
 	/**
 	 * @brief Returns pointer to the current response
-	 * @return HttpResponse*
+	 * @retval HttpResponse*
 	 */
 	HttpResponse* getResponse()
 	{

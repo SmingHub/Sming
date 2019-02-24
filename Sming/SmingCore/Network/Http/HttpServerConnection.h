@@ -84,40 +84,11 @@ public:
 
 protected:
 	// HTTP parser methods
-	/**
-	 * Called when a new incoming data is beginning to come
-	 * @paran http_parser* parser
-	 * @return 0 on success, non-0 on error
-	 */
+
 	int onMessageBegin(http_parser* parser) override;
-
-	/**
-	 * Called when the URL path is known
-	 * @param String path
-	 * @return 0 on success, non-0 on error
-	 */
 	int onPath(const URL& path) override;
-
-	/**
-	 * Called when all headers are received
-	 * @param HttpHeaders headers - the processed headers
-	 * @return 0 on success, non-0 on error
-	 */
 	int onHeadersComplete(const HttpHeaders& headers) override;
-
-	/**
-	 * Called when a piece of body data is received
-	 * @param const char* at -  the data
-	 * @paran size_t length
-	 * @return 0 on success, non-0 on error
-	 */
 	int onBody(const char* at, size_t length) override;
-
-	/**
-	 * Called when the incoming data is complete
-	 * @paran http_parser* parser
-	 * @return 0 on success, non-0 on error
-	 */
 	int onMessageComplete(http_parser* parser) override;
 
 	bool onProtocolUpgrade(http_parser* parser) override
