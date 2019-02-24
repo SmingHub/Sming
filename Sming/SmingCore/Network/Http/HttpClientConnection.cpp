@@ -65,34 +65,6 @@ bool HttpClientConnection::send(HttpRequest* request)
 	return connect(request->uri.Host, request->uri.Port, useSsl);
 }
 
-String HttpClientConnection::getResponseHeader(String headerName, String defaultValue)
-{
-	if(response.headers.contains(headerName))
-		return response.headers[headerName];
-
-	return defaultValue;
-}
-
-DateTime HttpClientConnection::getLastModifiedDate()
-{
-	DateTime res;
-	String strLM = response.headers[HTTP_HEADER_LAST_MODIFIED];
-	if(res.fromHttpDate(strLM))
-		return res;
-	else
-		return DateTime();
-}
-
-DateTime HttpClientConnection::getServerDate()
-{
-	DateTime res;
-	String strSD = response.headers[HTTP_HEADER_DATE];
-	if(res.fromHttpDate(strSD))
-		return res;
-	else
-		return DateTime();
-}
-
 void HttpClientConnection::reset()
 {
 	delete incomingRequest;

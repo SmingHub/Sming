@@ -79,15 +79,18 @@ public:
 	/**
 	 * @deprecated Use `getResponse()->code` instead
 	 */
-	int getResponseCode() SMING_DEPRECATED
+	int getResponseCode() const SMING_DEPRECATED
 	{
 		return response.code;
 	}
 
 	/**
-	 * @deprecated Use `getResponse()->headers[headerName]` instead
+	 * @deprecated Use `getResponse()->headers[]` instead
 	 */
-	String getResponseHeader(String headerName, String defaultValue = nullptr) SMING_DEPRECATED;
+	String getResponseHeader(const String& headerName, const String& defaultValue = nullptr) const SMING_DEPRECATED
+	{
+		return response.headers[headerName] ?: defaultValue;
+	}
 
 	/**
 	* @deprecated Use `getResponse()->headers` instead
@@ -98,14 +101,20 @@ public:
 	}
 
 	/**
-	* @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_LAST_MODIFIED]` instead
+	* @deprecated Use `getResponse()->headers.getLastModifiedDate()` instead
 	*/
-	DateTime getLastModifiedDate();
+	DateTime getLastModifiedDate() const SMING_DEPRECATED
+	{
+		return response.headers.getLastModifiedDate();
+	}
 
 	/**
-	 * @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_DATE]` instead
+	 * @deprecated Use `getResponse()->headers.getServerDate()` instead
 	 */
-	DateTime getServerDate();
+	DateTime getServerDate() const SMING_DEPRECATED
+	{
+		return response.headers.getServerDate();
+	}
 
 	/**
 	 * @deprecated Use `getResponse()->getBody()` instead
