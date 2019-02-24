@@ -17,12 +17,6 @@
 #include "Data/Stream/ChunkedStream.h"
 #include "Data/Stream/UrlencodedOutputStream.h"
 
-#ifdef __linux__
-#include "lwip/priv/tcp_priv.h"
-#else
-#include "lwip/tcp_impl.h"
-#endif
-
 bool HttpClientConnection::connect(const String& host, int port, bool useSsl, uint32_t sslOptions)
 {
 	debug_d("HttpClientConnection::connect: TCP state: %d, isStarted: %d, isActive: %d",
@@ -69,22 +63,6 @@ bool HttpClientConnection::send(HttpRequest* request)
 #endif
 
 	return connect(request->uri.Host, request->uri.Port, useSsl);
-}
-
-bool HttpClientConnection::isActive()
-{
-	if(tcp == nullptr) {
-		return false;
-	}
-
-	struct tcp_pcb* pcb;
-	for(pcb = tcp_active_pcbs; pcb != nullptr; pcb = pcb->next) {
-		if(tcp == pcb) {
-			return true;
-		}
-	}
-
-	return false;
 }
 
 String HttpClientConnection::getResponseHeader(String headerName, String defaultValue)

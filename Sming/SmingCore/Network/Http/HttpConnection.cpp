@@ -12,6 +12,12 @@
 
 #include "HttpConnection.h"
 
+#ifdef __linux__
+#include "lwip/priv/tcp_priv.h"
+#else
+#include "lwip/tcp_impl.h"
+#endif
+
 /** @brief http_parser function table
  *  @note stored in flash memory; as it is word-aligned it can be accessed directly
  *  Notification callbacks: on_message_begin, on_headers_complete, on_message_complete
@@ -188,4 +194,20 @@ void HttpConnection::onError(err_t err)
 {
 	cleanup();
 	TcpClient::onError(err);
+}
+
+bool HttpConnection::isActive()
+{
+	if(tcp == nullptr) {
+		return false;
+	}
+
+	struct tcp_pcb* pcb;
+	for(pcb = tcp_active_pcbs; pcb != nullptr; pcb = pcb->next) {
+		if(tcp == pcb) {
+			return true;
+		}
+	}
+
+	return false;
 }

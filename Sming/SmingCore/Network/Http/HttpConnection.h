@@ -63,6 +63,8 @@ public:
 		return false;
 	}
 
+	bool isActive();
+
 protected:
 	/** @brief Called after all headers have been received and processed */
 	void resetHeaders();

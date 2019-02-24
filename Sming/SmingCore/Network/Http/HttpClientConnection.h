@@ -50,8 +50,6 @@ public:
 
 	bool send(HttpRequest* request) override;
 
-	bool isActive();
-
 	/**
 	 * @brief Returns pointer to the current request
 	 * @return HttpRequest*
