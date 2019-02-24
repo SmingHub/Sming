@@ -65,6 +65,71 @@ public:
 
 	bool isActive();
 
+	/**
+	 * @brief Returns pointer to the current request
+	 * @return HttpRequest*
+	 */
+	virtual HttpRequest* getRequest() = 0;
+
+	/**
+	 * @brief Returns pointer to the current response
+	 * @return HttpResponse*
+	 */
+	HttpResponse* getResponse()
+	{
+		return &response;
+	}
+
+	// Backported for compatibility reasons
+
+	/**
+	 * @deprecated Use `getResponse()->code` instead
+	 */
+	int getResponseCode() const SMING_DEPRECATED
+	{
+		return response.code;
+	}
+
+	/**
+	 * @deprecated Use `getResponse()->headers[]` instead
+	 */
+	String getResponseHeader(const String& headerName, const String& defaultValue = nullptr) const SMING_DEPRECATED
+	{
+		return response.headers[headerName] ?: defaultValue;
+	}
+
+	/**
+	* @deprecated Use `getResponse()->headers` instead
+	*/
+	HttpHeaders& getResponseHeaders() SMING_DEPRECATED
+	{
+		return response.headers;
+	}
+
+	/**
+	* @deprecated Use `getResponse()->headers.getLastModifiedDate()` instead
+	*/
+	DateTime getLastModifiedDate() const SMING_DEPRECATED
+	{
+		return response.headers.getLastModifiedDate();
+	}
+
+	/**
+	 * @deprecated Use `getResponse()->headers.getServerDate()` instead
+	 */
+	DateTime getServerDate() const SMING_DEPRECATED
+	{
+		return response.headers.getServerDate();
+	}
+
+	/**
+	 * @deprecated Use `getResponse()->getBody()` instead
+	 */
+	String getResponseString() SMING_DEPRECATED
+	{
+		return response.getBody();
+	}
+
 protected:
 	/** @brief Called after all headers have been received and processed */
 	void resetHeaders();
@@ -167,6 +232,8 @@ protected:
 	HttpHeaderBuilder header;						  ///< Header construction
 	HttpHeaders incomingHeaders;					  ///< Full set of incoming headers
 	HttpConnectionState state = eHCS_Ready;
+
+	HttpResponse response;
 };
 
 /** @} */

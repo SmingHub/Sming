@@ -50,78 +50,9 @@ public:
 
 	bool send(HttpRequest* request) override;
 
-	/**
-	 * @brief Returns pointer to the current request
-	 * @return HttpRequest*
-	 */
-	HttpRequest* getRequest()
+	HttpRequest* getRequest() override
 	{
 		return incomingRequest;
-	}
-
-	/**
-	 * @brief Returns pointer to the current response
-	 * @return HttpResponse*
-	 */
-	HttpResponse* getResponse()
-	{
-		return &response;
-	}
-
-	using TcpClient::close;
-
-#ifdef ENABLE_SSL
-	using TcpClient::getSsl;
-#endif
-
-	// Backported for compatibility reasons
-
-	/**
-	 * @deprecated Use `getResponse()->code` instead
-	 */
-	int getResponseCode() const SMING_DEPRECATED
-	{
-		return response.code;
-	}
-
-	/**
-	 * @deprecated Use `getResponse()->headers[]` instead
-	 */
-	String getResponseHeader(const String& headerName, const String& defaultValue = nullptr) const SMING_DEPRECATED
-	{
-		return response.headers[headerName] ?: defaultValue;
-	}
-
-	/**
-	* @deprecated Use `getResponse()->headers` instead
-	*/
-	HttpHeaders& getResponseHeaders() SMING_DEPRECATED
-	{
-		return response.headers;
-	}
-
-	/**
-	* @deprecated Use `getResponse()->headers.getLastModifiedDate()` instead
-	*/
-	DateTime getLastModifiedDate() const SMING_DEPRECATED
-	{
-		return response.headers.getLastModifiedDate();
-	}
-
-	/**
-	 * @deprecated Use `getResponse()->headers.getServerDate()` instead
-	 */
-	DateTime getServerDate() const SMING_DEPRECATED
-	{
-		return response.headers.getServerDate();
-	}
-
-	/**
-	 * @deprecated Use `getResponse()->getBody()` instead
-	 */
-	String getResponseString() SMING_DEPRECATED
-	{
-		return response.getBody();
 	}
 
 	void reset() override;
@@ -150,7 +81,6 @@ private:
 
 	HttpRequest* incomingRequest = nullptr;
 	HttpRequest* outgoingRequest = nullptr;
-	HttpResponse response;
 };
 
 /** @} */

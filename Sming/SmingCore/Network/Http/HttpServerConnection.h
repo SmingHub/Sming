@@ -77,6 +77,11 @@ public:
 		upgradeCallback = callback;
 	}
 
+	HttpRequest* getRequest() override
+	{
+		return &request;
+	}
+
 protected:
 	// HTTP parser methods
 	/**
@@ -142,7 +147,6 @@ private:
 	HttpResource* resource = nullptr;		  ///< Resource for currently executing path
 
 	HttpRequest request;
-	HttpResponse response;
 
 	HttpResourceDelegate headersCompleteDelegate = nullptr;
 	HttpResourceDelegate requestCompletedDelegate = nullptr;
