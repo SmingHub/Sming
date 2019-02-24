@@ -13,7 +13,7 @@
 #ifndef _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_H_
 #define _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_H_
 
-#include "HttpConnectionBase.h"
+#include "HttpConnection.h"
 #include "DateTime.h"
 #include "Data/ObjectQueue.h"
 
@@ -25,10 +25,10 @@
 
 typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
 
-class HttpClientConnection : public HttpConnectionBase
+class HttpClientConnection : public HttpConnection
 {
 public:
-	HttpClientConnection() : HttpConnectionBase(HTTP_RESPONSE)
+	HttpClientConnection() : HttpConnection(HTTP_RESPONSE)
 	{
 	}
 
@@ -48,7 +48,7 @@ public:
 
 	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
 
-	bool send(HttpRequest* request);
+	bool send(HttpRequest* request) override;
 
 	bool isActive();
 

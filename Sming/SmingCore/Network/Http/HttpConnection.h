@@ -4,7 +4,7 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpConnectionBase.h
+ * HttpConnection.h
  *
  * @author: 2018 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -18,6 +18,7 @@
 #include "HttpCommon.h"
 #include "HttpResponse.h"
 #include "HttpRequest.h"
+#include "HttpHeaderBuilder.h"
 
 /** @defgroup   HTTP base connection
  *  @brief      Provides http base used for client and server connections
@@ -25,55 +26,15 @@
  *  @{
  */
 
-/** @brief Re-assembles headers from fragments via onHeaderField / onHeaderValue callbacks */
-class HttpHeaderBuilder
+class HttpConnection : public TcpClient
 {
 public:
-	int onHeaderField(const char* at, size_t length)
-	{
-		if(lastWasValue) {
-			// we are starting to process new header - setLength keeps allocated memory
-			lastData.setLength(0);
-			lastWasValue = false;
-		}
-		lastData.concat(at, length);
-
-		return 0;
-	}
-
-	int onHeaderValue(HttpHeaders& headers, const char* at, size_t length)
-	{
-		if(!lastWasValue) {
-			currentField = lastData;
-			headers[currentField] = nullptr;
-			lastWasValue = true;
-		}
-		headers[currentField].concat(at, length);
-		return 0;
-	}
-
-	void reset()
-	{
-		lastWasValue = true;
-		lastData = nullptr;
-		currentField = nullptr;
-	}
-
-private:
-	bool lastWasValue = true; ///< Indicates whether last callback was Field or Value
-	String lastData;		  ///< Content of field or value, may be constructed over several callbacks
-	String currentField;	  ///< Header field name
-};
-
-class HttpConnectionBase : public TcpClient
-{
-public:
-	HttpConnectionBase(http_parser_type type, bool autoDestruct = false) : TcpClient(autoDestruct)
+	HttpConnection(http_parser_type type, bool autoDestruct = false) : TcpClient(autoDestruct)
 	{
 		init(type);
 	}
 
-	HttpConnectionBase(tcp_pcb* connection, http_parser_type type) : TcpClient(connection, nullptr, nullptr)
+	HttpConnection(tcp_pcb* connection, http_parser_type type) : TcpClient(connection, nullptr, nullptr)
 	{
 		init(type);
 	}
@@ -92,6 +53,15 @@ public:
 
 	using TcpConnection::getRemoteIp;
 	using TcpConnection::getRemotePort;
+
+	using TcpClient::send;
+
+	/* Overridden by HttpClientConnection */
+	virtual bool send(HttpRequest* request)
+	{
+		delete request;
+		return false;
+	}
 
 protected:
 	/** @brief Called after all headers have been received and processed */

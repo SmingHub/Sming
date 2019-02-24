@@ -4,20 +4,20 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpConnectionBase.cpp
+ * HttpConnection.cpp
  *
  * @author: 2018 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
 
-#include "HttpConnectionBase.h"
+#include "HttpConnection.h"
 
 /** @brief http_parser function table
  *  @note stored in flash memory; as it is word-aligned it can be accessed directly
  *  Notification callbacks: on_message_begin, on_headers_complete, on_message_complete
  *  Data callbacks: on_url, (common) on_header_field, on_header_value, on_body
  */
-const http_parser_settings HttpConnectionBase::parserSettings PROGMEM = {
+const http_parser_settings HttpConnection::parserSettings PROGMEM = {
 	.on_message_begin = staticOnMessageBegin,
 	.on_url = staticOnPath,
 #ifdef COMPACT_MODE
@@ -43,30 +43,30 @@ const http_parser_settings HttpConnectionBase::parserSettings PROGMEM = {
  *  @note Obtain connection object and check it
  */
 #define GET_CONNECTION()                                                                                               \
-	auto connection = static_cast<HttpConnectionBase*>(parser->data);                                                  \
+	auto connection = static_cast<HttpConnection*>(parser->data);                                                      \
 	if(connection == nullptr) {                                                                                        \
 		return -1;                                                                                                     \
 	}
 
-void HttpConnectionBase::init(http_parser_type type)
+void HttpConnection::init(http_parser_type type)
 {
 	http_parser_init(&parser, type);
 	parser.data = this;
 	setDefaultParser();
 }
 
-void HttpConnectionBase::setDefaultParser()
+void HttpConnection::setDefaultParser()
 {
-	TcpClient::setReceiveDelegate(TcpClientDataDelegate(&HttpConnectionBase::onTcpReceive, this));
+	TcpClient::setReceiveDelegate(TcpClientDataDelegate(&HttpConnection::onTcpReceive, this));
 }
 
-void HttpConnectionBase::resetHeaders()
+void HttpConnection::resetHeaders()
 {
 	header.reset();
 	incomingHeaders.clear();
 }
 
-int HttpConnectionBase::staticOnMessageBegin(http_parser* parser)
+int HttpConnection::staticOnMessageBegin(http_parser* parser)
 {
 	GET_CONNECTION()
 
@@ -74,7 +74,7 @@ int HttpConnectionBase::staticOnMessageBegin(http_parser* parser)
 	return connection->onMessageBegin(parser);
 }
 
-int HttpConnectionBase::staticOnPath(http_parser* parser, const char* at, size_t length)
+int HttpConnection::staticOnPath(http_parser* parser, const char* at, size_t length)
 {
 	GET_CONNECTION()
 
@@ -82,21 +82,21 @@ int HttpConnectionBase::staticOnPath(http_parser* parser, const char* at, size_t
 }
 
 #ifndef COMPACT_MODE
-int HttpConnectionBase::staticOnStatus(http_parser* parser, const char* at, size_t length)
+int HttpConnection::staticOnStatus(http_parser* parser, const char* at, size_t length)
 {
 	GET_CONNECTION()
 
 	return connection->onStatus(parser);
 }
 
-int HttpConnectionBase::staticOnChunkHeader(http_parser* parser)
+int HttpConnection::staticOnChunkHeader(http_parser* parser)
 {
 	GET_CONNECTION()
 
 	return connection->onChunkHeader(parser);
 }
 
-int HttpConnectionBase::staticOnChunkComplete(http_parser* parser)
+int HttpConnection::staticOnChunkComplete(http_parser* parser)
 {
 	GET_CONNECTION()
 
@@ -104,21 +104,21 @@ int HttpConnectionBase::staticOnChunkComplete(http_parser* parser)
 }
 #endif
 
-int HttpConnectionBase::staticOnHeaderField(http_parser* parser, const char* at, size_t length)
+int HttpConnection::staticOnHeaderField(http_parser* parser, const char* at, size_t length)
 {
 	GET_CONNECTION()
 
 	return connection->header.onHeaderField(at, length);
 }
 
-int HttpConnectionBase::staticOnHeaderValue(http_parser* parser, const char* at, size_t length)
+int HttpConnection::staticOnHeaderValue(http_parser* parser, const char* at, size_t length)
 {
 	GET_CONNECTION()
 
 	return connection->header.onHeaderValue(connection->incomingHeaders, at, length);
 }
 
-int HttpConnectionBase::staticOnHeadersComplete(http_parser* parser)
+int HttpConnection::staticOnHeadersComplete(http_parser* parser)
 {
 	GET_CONNECTION()
 
@@ -144,14 +144,14 @@ int HttpConnectionBase::staticOnHeadersComplete(http_parser* parser)
 	return error;
 }
 
-int HttpConnectionBase::staticOnBody(http_parser* parser, const char* at, size_t length)
+int HttpConnection::staticOnBody(http_parser* parser, const char* at, size_t length)
 {
 	GET_CONNECTION()
 
 	return connection->onBody(at, length);
 }
 
-int HttpConnectionBase::staticOnMessageComplete(http_parser* parser)
+int HttpConnection::staticOnMessageComplete(http_parser* parser)
 {
 	GET_CONNECTION()
 
@@ -161,12 +161,12 @@ int HttpConnectionBase::staticOnMessageComplete(http_parser* parser)
 	return error;
 }
 
-void HttpConnectionBase::onHttpError(http_errno error)
+void HttpConnection::onHttpError(http_errno error)
 {
 	debug_e("HTTP parser error: %s", httpGetErrorName(error).c_str());
 }
 
-bool HttpConnectionBase::onTcpReceive(TcpClient& client, char* data, int size)
+bool HttpConnection::onTcpReceive(TcpClient& client, char* data, int size)
 {
 	int parsedBytes = http_parser_execute(&parser, &parserSettings, data, size);
 	if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
@@ -184,7 +184,7 @@ bool HttpConnectionBase::onTcpReceive(TcpClient& client, char* data, int size)
 	return true;
 }
 
-void HttpConnectionBase::onError(err_t err)
+void HttpConnection::onError(err_t err)
 {
 	cleanup();
 	TcpClient::onError(err);

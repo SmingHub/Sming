@@ -36,7 +36,7 @@ public:
 	{
 	}
 
-	WebsocketClient(HttpConnectionBase* connection) : WebsocketConnection(connection)
+	WebsocketClient(HttpConnection* connection) : WebsocketConnection(connection)
 	{
 	}
 

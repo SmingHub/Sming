@@ -157,7 +157,7 @@ int HttpServerConnection::onBody(const char* at, size_t length)
 void HttpServerConnection::onHttpError(http_errno error)
 {
 	sendError(httpGetErrorName(error));
-	HttpConnectionBase::onHttpError(error);
+	HttpConnection::onHttpError(error);
 }
 
 void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)

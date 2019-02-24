@@ -13,7 +13,7 @@
 #ifndef _SMING_CORE_NETWORK_HTTP_HTTP_SERVER_CONNECTION_H_
 #define _SMING_CORE_NETWORK_HTTP_HTTP_SERVER_CONNECTION_H_
 
-#include "HttpConnectionBase.h"
+#include "HttpConnection.h"
 #include "HttpResource.h"
 #include "HttpBodyParser.h"
 
@@ -40,10 +40,10 @@ typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDel
 
 typedef std::function<bool()> HttpServerProtocolUpgradeCallback;
 
-class HttpServerConnection : public HttpConnectionBase
+class HttpServerConnection : public HttpConnection
 {
 public:
-	HttpServerConnection(tcp_pcb* clientTcp) : HttpConnectionBase(clientTcp, HTTP_REQUEST)
+	HttpServerConnection(tcp_pcb* clientTcp) : HttpConnection(clientTcp, HTTP_REQUEST)
 	{
 	}
 

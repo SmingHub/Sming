@@ -25,8 +25,8 @@
 
 bool HttpClientConnection::connect(const String& host, int port, bool useSsl, uint32_t sslOptions)
 {
-	debug_d("HttpClientConnection::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != nullptr ? tcp->state : -1),
-			(int)(getConnectionState() != eTCS_Ready), (int)isActive());
+	debug_d("HttpClientConnection::connect: TCP state: %d, isStarted: %d, isActive: %d",
+			(tcp != nullptr ? tcp->state : -1), (int)(getConnectionState() != eTCS_Ready), (int)isActive());
 
 	if(isProcessing()) {
 		return true;
@@ -122,7 +122,7 @@ void HttpClientConnection::reset()
 
 	response.reset();
 
-	HttpConnectionBase::reset();
+	HttpConnection::reset();
 }
 
 int HttpClientConnection::onMessageBegin(http_parser* parser)

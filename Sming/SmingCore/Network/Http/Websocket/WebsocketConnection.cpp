@@ -44,7 +44,7 @@ const ws_parser_callbacks_t WebsocketConnection::parserSettings PROGMEM = {.on_d
 		return -1;                                                                                                     \
 	}
 
-WebsocketConnection::WebsocketConnection(HttpConnectionBase* connection, bool isClientConnection) : userData(this)
+WebsocketConnection::WebsocketConnection(HttpConnection* connection, bool isClientConnection) : userData(this)
 {
 	setConnection(connection, isClientConnection);
 
