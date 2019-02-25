@@ -287,12 +287,23 @@ public:
 	 */
 	V* extract(const K& key)
 	{
-		V* value = nullptr;
 		int i = indexOf(key);
-		if(i >= 0) {
-			value = entries[i].value;
-			entries[i].value = nullptr;
-			entries.remove(i);
+		return (i < 0) ? nullptr : extractAt(i);
+	}
+
+	/**
+	 * @brief Get the value at a given index and remove it from the map, without destroying it
+	 * @param index
+	 * @retval V*
+	 * @note The returned object must be freed by the caller when no longer required
+	 */
+	V* extractAt(unsigned index)
+	{
+		V* value = nullptr;
+		if(index < entries.count()) {
+			value = entries[index].value;
+			entries[index].value = nullptr;
+			entries.remove(index);
 		}
 		return value;
 	}
