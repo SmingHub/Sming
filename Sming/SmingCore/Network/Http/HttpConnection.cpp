@@ -115,7 +115,7 @@ HttpPartResult HttpConnection::multipartProducer()
 
 	if(outgoingRequest->files.count()) {
 		String name = outgoingRequest->files.keyAt(0);
-		auto file = outgoingRequest->files[name];
+		auto file = outgoingRequest->files.extractAt(0);
 		result.stream = file;
 
 		HttpHeaders* headers = new HttpHeaders();
@@ -124,7 +124,6 @@ HttpPartResult HttpConnection::multipartProducer()
 		(*headers)[HTTP_HEADER_CONTENT_TYPE] = ContentType::fromFullFileName(file->getName());
 		result.headers = headers;
 
-		outgoingRequest->files.remove(name);
 		return result;
 	}
 
