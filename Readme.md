@@ -215,9 +215,9 @@ For a complete example take a look at the [Basic_rBoot](samples/Basic_rBoot/app/
 ### Embedded HTTP Web Server
 ```c++
 server.listen(80);
-server.addPath("/", onIndex);
-server.addPath("/hello", onHello);
-server.setDefaultHandler(onFile);
+server.paths.set("/", onIndex);
+server.paths.set("/hello", onHello);
+server.paths.setDefault(onFile);
 
 Serial.println("=== WEB SERVER STARTED ===");
 Serial.println(WifiStation.getIP());

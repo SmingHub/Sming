@@ -73,8 +73,8 @@ void processApplicationCommands(String commandLine, CommandOutput* commandOutput
 void StartServers()
 {
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.setDefaultHandler(onFile);
+	server.paths.set("/", onIndex);
+	server.paths.setDefault(onFile);
 
 	// Web Sockets configuration
 	WebsocketResource* wsResource = new WebsocketResource();
@@ -83,7 +83,7 @@ void StartServers()
 	wsResource->setBinaryHandler(wsBinaryReceived);
 	wsResource->setDisconnectionHandler(wsDisconnected);
 
-	server.addPath("/ws", wsResource);
+	server.paths.set("/ws", wsResource);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());

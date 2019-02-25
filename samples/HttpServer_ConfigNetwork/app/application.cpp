@@ -171,11 +171,11 @@ void onAjaxConnect(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.addPath("/ipconfig", onIpConfig);
-	server.addPath("/ajax/get-networks", onAjaxNetworkList);
-	server.addPath("/ajax/connect", onAjaxConnect);
-	server.setDefaultHandler(onFile);
+	server.paths.set("/", onIndex);
+	server.paths.set("/ipconfig", onIpConfig);
+	server.paths.set("/ajax/get-networks", onAjaxNetworkList);
+	server.paths.set("/ajax/connect", onAjaxConnect);
+	server.paths.setDefault(onFile);
 }
 
 void startFTP()
@@ -216,6 +216,7 @@ void init()
 		lastModified.trim();
 	}
 
+	Serial.setPort(UART_ID_1);
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 	AppSettings.load();

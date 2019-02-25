@@ -148,11 +148,6 @@ void HttpRequest::reset()
 	responseStream = nullptr;
 
 	postParams.clear();
-	for(unsigned i = 0; i < files.count(); i++) {
-		String key = files.keyAt(i);
-		delete files[key];
-		files[key] = nullptr;
-	}
 	files.clear();
 }
 

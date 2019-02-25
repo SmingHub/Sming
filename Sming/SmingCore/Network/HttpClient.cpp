@@ -13,9 +13,8 @@
 #include "HttpClient.h"
 #include "Data/Stream/FileStream.h"
 
-HashMap<String, HttpClientConnection*> HttpClient::httpConnectionPool;
+HttpClient::HttpConnectionPool HttpClient::httpConnectionPool;
 
-/* Low Level Methods */
 bool HttpClient::send(HttpRequest* request)
 {
 	String cacheKey = getCacheKey(request->uri);
@@ -49,8 +48,6 @@ bool HttpClient::send(HttpRequest* request)
 	return connection->send(request);
 }
 
-// Convenience methods
-
 bool HttpClient::downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete)
 {
 	URL uri(url);
@@ -74,21 +71,4 @@ bool HttpClient::downloadFile(const String& url, const String& saveFileName, Req
 
 	return send(
 		createRequest(url)->setResponseStream(fileStream)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
-}
-
-// end convenience methods
-
-void HttpClient::cleanup()
-{
-	for(unsigned i = 0; i < httpConnectionPool.count(); i++) {
-		auto& connection = httpConnectionPool.valueAt(i);
-		delete connection;
-		connection = nullptr;
-	}
-	httpConnectionPool.clear();
-}
-
-String HttpClient::getCacheKey(URL url)
-{
-	return url.Host + ':' + url.Port;
 }

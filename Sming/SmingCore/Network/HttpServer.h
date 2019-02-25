@@ -21,11 +21,8 @@
 
 #include "TcpServer.h"
 #include "WString.h"
-#include "WHashMap.h"
 #include "Delegate.h"
-#include "Http/HttpResponse.h"
-#include "Http/HttpRequest.h"
-#include "Http/HttpResource.h"
+#include "Http/HttpResourceTree.h"
 #include "Http/HttpServerConnection.h"
 #include "Http/HttpBodyParser.h"
 
@@ -42,8 +39,6 @@ typedef struct {
 
 class HttpServer : public TcpServer
 {
-	friend class HttpServerConnection;
-
 public:
 	HttpServer()
 	{
@@ -56,8 +51,6 @@ public:
 		configure(settings);
 	}
 
-	~HttpServer();
-
 	/**
 	 * @brief Allows changing the server configuration
 	 */
@@ -66,32 +59,56 @@ public:
 	/**
 	 * @briefs Allows content-type specific parsing of the body based on content-type.
 	 *
-	 * @param const String& contentType. Can be full content-type like 'application/json', or 'application/*'  or '*'.
-	 * 						If there is exact match for the content-type wildcard content-types will not be used.
-	 * 						There can be only one catch-all '*' body parser and that will be the last registered
+	 * @param contentType. Can be full content-type like 'application/json', or 'application/*'  or '*'.
+	 * 			If there is exact match for the content-type wildcard content-types will not be used.
+	 * 			There can be only one catch-all '*' body parser and that will be the last registered
 	 *
-	 * @param  HttpBodyParserDelegate parser
+	 * @param  parser
 	 */
-	void setBodyParser(const String& contentType, HttpBodyParserDelegate parser);
+	void setBodyParser(const String& contentType, HttpBodyParserDelegate parser)
+	{
+		bodyParsers[contentType] = parser;
+	}
 
-	/**
-	 * @param String path URL path.
-	 * @note Path should start with slash. Trailing slashes will be removed.
-	 * @param HttpPathDelegate callback - the callback that will handle this path
-	 */
-	void addPath(String path, const HttpPathDelegate& callback);
-	void addPath(const String& path, const HttpResourceDelegate& onRequestComplete);
-	void addPath(const String& path, HttpResource* resource);
+	/** @deprecated Use `paths.set()` instead */
+	void addPath(String path, const HttpPathDelegate& callback) SMING_DEPRECATED
+	{
+		paths.set(path, callback);
+	}
 
-	void setDefaultHandler(const HttpPathDelegate& callback);
-	void setDefaultResource(HttpResource* resource);
+	/** @deprecated Use `paths.set()` instead */
+	void addPath(const String& path, const HttpResourceDelegate& onRequestComplete) SMING_DEPRECATED
+	{
+		paths.set(path, onRequestComplete);
+	}
+
+	/** @deprecated Use `paths.set()` instead */
+	void addPath(const String& path, HttpResource* resource) SMING_DEPRECATED
+	{
+		paths.set(path, resource);
+	}
+
+	/** @deprecated Use `paths.setDefault()` instead */
+	void setDefault(const HttpPathDelegate& callback) SMING_DEPRECATED
+	{
+		paths.setDefault(callback);
+	}
+
+	/** @deprecated Use `paths.setDefault()` instead */
+	void setDefaultResource(HttpResource* resource) SMING_DEPRECATED
+	{
+		paths.setDefault(resource);
+	}
+
+public:
+	/** @brief Maps paths to resources which deal with incoming requests */
+	HttpResourceTree paths;
 
 protected:
 	TcpConnection* createClient(tcp_pcb* clientTcp) override;
 
 private:
 	HttpServerSettings settings;
-	ResourceTree resourceTree;
 	BodyParsers bodyParsers;
 };
 
