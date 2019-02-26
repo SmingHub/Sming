@@ -41,9 +41,6 @@ public:
      *  to implement it
      */
 	virtual size_t write(const uint8_t* buffer, size_t size) = 0;
-
-	//Use base class documentation
-	uint16_t readMemoryBlock(char* data, int bufSize) override;
 };
 
 /** @} */

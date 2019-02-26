@@ -49,7 +49,7 @@ public:
 		parent->response(code, text);
 	}
 
-	int write(const char* data, int len, uint8_t apiflags = 0)
+	int write(const char* data, int len, uint8_t apiflags = 0) override
 	{
 		written += len;
 		return TcpConnection::write(data, len, apiflags);
