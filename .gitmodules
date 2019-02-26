@@ -93,3 +93,6 @@
 	path = Sming/third-party/mqtt-codec
 	url = https://github.com/slaff/mqtt-codec.git
 	ignore = dirty
+[submodule "Sming/third-party/libyuarel"]
+	path = Sming/third-party/libyuarel
+	url = https://github.com/jacketizer/libyuarel.git

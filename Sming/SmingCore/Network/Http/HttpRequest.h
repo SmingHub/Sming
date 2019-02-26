@@ -154,8 +154,11 @@ public:
 		return uri.Path;
 	}
 
-	/* @todo deprecate: use uri methods */
-	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr);
+	/* @deprecated Use methods of `uri.Query` instead */
+	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr) const
+	{
+		return reinterpret_cast<const HttpParams&>(uri.Query)[parameterName] ?: defaultValue;
+	}
 
 	/**
 	 * @brief Returns content from the body stream as string.

@@ -12,8 +12,6 @@
 
 #include "HttpRequest.h"
 #include "Data/Stream/MemoryDataStream.h"
-#include "Data/Stream/ChunkedStream.h"
-#include "Data/Stream/UrlencodedOutputStream.h"
 
 HttpRequest::HttpRequest(const HttpRequest& value)
 	: uri(value.uri), method(value.method), headers(value.headers), postParams(value.postParams),
@@ -24,35 +22,6 @@ HttpRequest::HttpRequest(const HttpRequest& value)
 	  sslOptions(value.sslOptions), sslFingerprints(value.sslFingerprints), sslKeyCertPair(value.sslKeyCertPair)
 #endif
 {
-}
-
-String HttpRequest::getQueryParameter(const String& parameterName, const String& defaultValue)
-{
-	if(queryParams == nullptr) {
-		queryParams = new HttpParams();
-		if(!uri.Query.length()) {
-			return defaultValue;
-		}
-
-		String query = uri.Query.substring(1);
-		Vector<String> parts;
-		splitString(query, '&', parts);
-		for(unsigned i = 0; i < parts.count(); i++) {
-			Vector<String> pair;
-			int count = splitString(parts[i], '=', pair);
-			if(count != 2) {
-				debug_w("getQueryParameter: Missing = in query string: %s", parts[i].c_str());
-				continue;
-			}
-			(*queryParams)[pair.at(0)] = pair.at(1); // TODO: name and value URI decoding...
-		}
-	}
-
-	if(queryParams->contains(parameterName)) {
-		return (*queryParams)[parameterName];
-	}
-
-	return defaultValue;
 }
 
 String HttpRequest::getBody()

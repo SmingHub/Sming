@@ -48,7 +48,7 @@ bool HttpClientConnection::send(HttpRequest* request)
 		return false;
 	}
 
-	bool useSsl = (request->uri.Protocol == HTTPS_URL_PROTOCOL);
+	bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);
 
 #ifdef ENABLE_SSL
 	// Based on the URL decide if we should reuse the SSL and TCP pool

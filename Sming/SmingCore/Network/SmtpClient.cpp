@@ -89,15 +89,14 @@ bool SmtpClient::connect(const Url& url)
 		close();
 	}
 
+	bool isSecure = (url.Scheme == URI_SCHEME_SMTP_SECURE);
+
 	this->url = url;
-	if(!this->url.Port) {
-		this->url.Port = 25;
-		if(this->url.Protocol == SMTP_OVER_SSL_PROTOCOL) {
-			this->url.Port = 465;
-		}
+	if(this->url.Port == 0) {
+		this->url.Port = isSecure ? 465 : 25;
 	}
 
-	return TcpClient::connect(url.Host, url.Port, (url.Protocol == SMTP_OVER_SSL_PROTOCOL));
+	return TcpClient::connect(url.Host, url.Port, isSecure);
 }
 
 bool SmtpClient::send(const String& from, const String& to, const String& subject, const String& body)

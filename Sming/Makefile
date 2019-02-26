@@ -202,6 +202,11 @@ THIRD_PARTY_DATA += third-party/mqtt-codec/Makefile
 EXTRA_INCDIR     += third-party/mqtt-codec/src
 CUSTOM_TARGETS   += $(USER_LIBDIR)/libmqttc.a
 
+# => yuarel
+THIRD_PARTY_DATA += third-party/libyuarel/Makefile
+MODULES          += third-party/libyuarel/
+EXTRA_INCDIR     += third-party/libyuarel/
+
 # => LOCALE
 ifdef LOCALE
 	CFLAGS += -DLOCALE=$(LOCALE)

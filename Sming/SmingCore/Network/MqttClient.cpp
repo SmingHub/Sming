@@ -197,8 +197,8 @@ bool MqttClient::setWill(const String& topic, const String& message, uint8_t fla
 bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslOptions)
 {
 	this->url = url;
-	bool useSsl = (url.Protocol == _F("mqtts"));
-	if(!(useSsl || url.Protocol == _F("mqtt"))) {
+	bool useSsl = (url.Scheme == URI_SCHEME_MQTT_SECURE);
+	if(!useSsl && url.Scheme != URI_SCHEME_MQTT) {
 		debug_e("Only mqtt and mqtts protocols are allowed");
 		return false;
 	}
@@ -210,8 +210,7 @@ bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslO
 
 	debug_d("MQTT start connection");
 
-	String protocolName = F("MQTT");
-	COPY_STRING(connectMessage.connect.protocol_name, protocolName);
+	COPY_STRING(connectMessage.connect.protocol_name, F("MQTT"));
 
 	connectMessage.connect.keep_alive = keepAlive;
 

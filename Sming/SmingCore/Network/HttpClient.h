@@ -68,6 +68,12 @@ public:
 		return downloadFile(url, nullptr, requestComplete);
 	}
 
+	/**
+	 * @brief Queue request to download a file
+	 * @param url Source of file data
+	 * @param saveFilename Path to save file to. Optional: specify nullptr to use name from url
+	 * @param requestComplete Completion callback
+	 */
 	bool downloadFile(const String& url, const String& saveFileName,
 					  RequestCompletedDelegate requestComplete = nullptr);
 

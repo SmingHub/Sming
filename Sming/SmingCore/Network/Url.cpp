@@ -11,80 +11,129 @@
  ****/
 
 #include "Url.h"
+#include "../libyuarel/yuarel.h"
+#include "../Services/WebHelpers/escape.h"
+#include "Print.h"
 
-Url::Url()
+/**
+ * @brief Common URI scheme strings
+ */
+#define XX(name, str, port) DEFINE_FSTR(URI_SCHEME_##name, #str)
+URI_SCHEME_MAP(XX)
+#undef XX
+
+// If no scheme is specified we'll default to http
+#define URI_SCHEME_DEFAULT URI_SCHEME_HTTP
+
+Url& Url::operator=(String urlString)
 {
-	Port = 80;
+	struct yuarel url;
+	if(yuarel_parse(&url, urlString.begin()) < 0) {
+		debug_e("URL parsing failed: %s", urlString.c_str());
+		return *this;
+	}
+
+	if(url.scheme == nullptr) {
+		Scheme = URI_SCHEME_DEFAULT;
+	} else {
+		Scheme = url.scheme;
+	}
+	User = uri_unescape_inplace(url.username);
+	Password = uri_unescape_inplace(url.password);
+	Host = url.host;
+	Port = url.port ?: getDefaultPort(Scheme);
+	Path = String('/') + uri_unescape_inplace(url.path);
+	Query.parseQuery(url.query);
+	Fragment = uri_unescape_inplace(url.fragment);
+
+	return *this;
 }
 
-Url::Url(const String& urlString)
+int Url::getDefaultPort(const String& scheme)
 {
-	int len = urlString.length();
-	if(len == 0)
-		return;
+#define XX(name, str, port)                                                                                            \
+	if(scheme == URI_SCHEME_##name)                                                                                    \
+		return port;                                                                                                   \
+	else
+	URI_SCHEME_MAP(XX)
+#undef XX
+	return 0;
+}
 
-	// get query start
-	int queryStart = urlString.indexOf('?');
-	if(queryStart == -1)
-		queryStart = len;
+String Url::getHostWithPort() const
+{
+	String result = Host;
+	if(Port != 0) {
+		result += ':';
+		result += Port;
+	}
 
-	// protocol
-	int protocolEnd = urlString.indexOf(':'); //"://");
+	return result;
+}
 
-	if(protocolEnd != -1) {
-		if((len - protocolEnd > 3) && (urlString.substring(protocolEnd, protocolEnd + 3) == "://")) {
-			Protocol = urlString.substring(0, protocolEnd);
-			Protocol.toLowerCase();
-			protocolEnd += 3; //      Skip ://
-		} else {
-			protocolEnd = 0; // no protocol
-			Protocol = DEFAULT_URL_PROTOCOL;
+String Url::toString() const
+{
+	String result = Scheme;
+	if(result.length() == 0) {
+		result = URI_SCHEME_DEFAULT;
+	}
+	result += _F("://");
+	if(User.length() != 0) {
+		result += User;
+		if(Password.length() != 0) {
+			result += ':';
+			result += Password;
 		}
-	} else {
-		protocolEnd = 0; // no protocol
-		Protocol = DEFAULT_URL_PROTOCOL;
 	}
 
-	// host
-	int hostStart = protocolEnd;
-	int atStart = urlString.indexOf('@', protocolEnd);
-	if(atStart > -1) {
-		String credentials = urlString.substring(protocolEnd, atStart);
-		Vector<String> parts;
-		splitString(credentials, ':', parts);
-		User = parts[0];
-		Password = parts[1];
-		hostStart = atStart + 1;
+	result += getHostWithPort();
+	result += getPathWithQuery();
+
+	if(Fragment) {
+		result += '#';
+		result += uri_escape(Fragment);
 	}
 
-	int pathStart = urlString.indexOf('/', hostStart); // get pathStart
+	return result;
+}
 
-	int portStart = urlString.indexOf(':', hostStart); // check for port
-	int portEnd = (pathStart != -1) ? pathStart : queryStart;
-	bool hasPort = portStart != -1 && portStart < portEnd;
-	int hostEnd = portEnd;
-	if(hasPort)
-		hostEnd = portStart;
+String Url::getPathWithQuery() const
+{
+	String result = (Path.length() == 0) ? String('/') : uri_escape(Path);
+	result += Query;
+	return result;
+}
 
-	Host = urlString.substring(hostStart, hostEnd);
-	//debug_d("%d %d %s", hostStart, hostEnd, Host.c_str());
+String Url::getFileName() const
+{
+	int sepIndex = Path.lastIndexOf('/');
+	return (sepIndex < 0) ? Path : Path.substring(sepIndex + 1);
+}
 
-	// port
-	if(hasPort) // we have a port
-	{
-		portStart++;
-		Port = urlString.substring(portStart, portEnd).toInt();
-	} else if(Protocol == HTTPS_URL_PROTOCOL || Protocol == WEBSOCKET_SECURE_URL_PROTOCOL) {
-		Port = 443;
-	} else if(Protocol == DEFAULT_URL_PROTOCOL) {
-		Port = 80;
-	}
+void Url::debugPrintTo(Print& p) const
+{
+	auto emit = [&](const char* tag, const String& value) {
+		p.print(tag);
+		p.print(_F(" = "));
+		if(value) {
+			p.print('[');
+			p.print(value);
+			p.print(']');
+		} else {
+			p.print(_F("(null)"));
+		}
+		p.println();
+	};
 
-	// path
-	if(pathStart != -1)
-		Path = urlString.substring(pathStart, queryStart);
+	emit(_F("Scheme"), Scheme);
+	emit(_F("User"), User);
+	emit(_F("Password"), Password);
+	emit(_F("Host"), Host);
+	p.println(_F("Port = ") + String(Port));
+	emit(_F("Path"), Path);
 
-	// query
-	if(queryStart != len)
-		Query = urlString.substring(queryStart);
+	p.println(_F("Query:"));
+	Query.debugPrintTo(p);
+
+	emit(_F("Fragment"), Fragment);
 }

@@ -33,7 +33,7 @@ bool WebsocketClient::connect(const String& url, uint32_t sslOptions)
 {
 	uri = url;
 	bool useSsl = false;
-	if(uri.Protocol == WEBSOCKET_SECURE_URL_PROTOCOL) {
+	if(uri.Scheme == URI_SCHEME_WEBSOCKET_SECURE) {
 		useSsl = true;
 	}
 
