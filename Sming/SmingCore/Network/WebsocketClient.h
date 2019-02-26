@@ -18,7 +18,7 @@
 #ifndef _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_
 #define _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_
 
-#include "Http/HttpConnection.h"
+#include "Http/HttpClientConnection.h"
 #include "Http/Websocket/WebsocketConnection.h"
 
 /** @defgroup   wsclient Websocket client
@@ -32,11 +32,11 @@
 class WebsocketClient : protected WebsocketConnection
 {
 public:
-	WebsocketClient() : WebsocketConnection(new HttpConnection(new RequestQueue()))
+	WebsocketClient() : WebsocketConnection(new HttpClientConnection)
 	{
 	}
 
-	WebsocketClient(HttpConnectionBase* connection) : WebsocketConnection(connection)
+	WebsocketClient(HttpConnection* connection) : WebsocketConnection(connection)
 	{
 	}
 

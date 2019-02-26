@@ -6,85 +6,97 @@
  *
  * HttpConnection.h
  *
- * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
+ * @author: 2018 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_BASE_H_
+#define _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_BASE_H_
 
-#include "HttpConnectionBase.h"
-#include "DateTime.h"
-#include "Data/ObjectQueue.h"
+#include "../TcpClient.h"
+#include "WString.h"
+#include "HttpCommon.h"
+#include "HttpResponse.h"
+#include "HttpRequest.h"
+#include "HttpHeaderBuilder.h"
 
-/** @defgroup   HTTP client connection
- *  @brief      Provides http client connection
+/** @defgroup   HTTP base connection
+ *  @brief      Provides http base used for client and server connections
  *  @ingroup    http
  *  @{
  */
 
-typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
-
-class HttpConnection : public HttpConnectionBase
+class HttpConnection : public TcpClient
 {
 public:
-	HttpConnection(RequestQueue* queue) : HttpConnectionBase(HTTP_RESPONSE)
+	HttpConnection(http_parser_type type, bool autoDestruct = false) : TcpClient(autoDestruct)
 	{
-		this->waitingQueue = queue;
+		init(type);
 	}
 
-	~HttpConnection()
+	HttpConnection(tcp_pcb* connection, http_parser_type type) : TcpClient(connection, nullptr, nullptr)
 	{
-		cleanup();
+		init(type);
 	}
 
-	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
-
-	bool send(HttpRequest* request)
+	virtual void reset()
 	{
-		return waitingQueue->enqueue(request);
+		resetHeaders();
+	}
+
+	virtual void cleanup()
+	{
+		reset();
+	}
+
+	virtual void setDefaultParser();
+
+	using TcpConnection::getRemoteIp;
+	using TcpConnection::getRemotePort;
+
+	using TcpClient::send;
+
+	/* Overridden by HttpClientConnection */
+	virtual bool send(HttpRequest* request)
+	{
+		delete request;
+		return false;
 	}
 
 	bool isActive();
 
 	/**
 	 * @brief Returns pointer to the current request
-	 * @return HttpRequest*
+	 * @retval HttpRequest*
 	 */
-	HttpRequest* getRequest()
-	{
-		return incomingRequest;
-	}
+	virtual HttpRequest* getRequest() = 0;
 
 	/**
 	 * @brief Returns pointer to the current response
-	 * @return HttpResponse*
+	 * @retval HttpResponse*
 	 */
 	HttpResponse* getResponse()
 	{
 		return &response;
 	}
 
-	using TcpClient::close;
-
-#ifdef ENABLE_SSL
-	using TcpClient::getSsl;
-#endif
-
 	// Backported for compatibility reasons
 
 	/**
 	 * @deprecated Use `getResponse()->code` instead
 	 */
-	int getResponseCode() SMING_DEPRECATED
+	int getResponseCode() const SMING_DEPRECATED
 	{
 		return response.code;
 	}
 
 	/**
-	 * @deprecated Use `getResponse()->headers[headerName]` instead
+	 * @deprecated Use `getResponse()->headers[]` instead
 	 */
-	String getResponseHeader(String headerName, String defaultValue = nullptr) SMING_DEPRECATED;
+	String getResponseHeader(const String& headerName, const String& defaultValue = nullptr) const SMING_DEPRECATED
+	{
+		return response.headers[headerName] ?: defaultValue;
+	}
 
 	/**
 	* @deprecated Use `getResponse()->headers` instead
@@ -95,14 +107,20 @@ public:
 	}
 
 	/**
-	* @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_LAST_MODIFIED]` instead
+	* @deprecated Use `getResponse()->headers.getLastModifiedDate()` instead
 	*/
-	DateTime getLastModifiedDate();
+	DateTime getLastModifiedDate() const SMING_DEPRECATED
+	{
+		return response.headers.getLastModifiedDate();
+	}
 
 	/**
-	 * @todo deprecate: Use `getResponse()->headers[HTTP_HEADER_DATE]` instead
+	 * @deprecated Use `getResponse()->headers.getServerDate()` instead
 	 */
-	DateTime getServerDate();
+	DateTime getServerDate() const SMING_DEPRECATED
+	{
+		return response.headers.getServerDate();
+	}
 
 	/**
 	 * @deprecated Use `getResponse()->getBody()` instead
@@ -112,58 +130,111 @@ public:
 		return response.getBody();
 	}
 
-	void reset() override;
-
 protected:
+	/** @brief Called after all headers have been received and processed */
+	void resetHeaders();
+
+	/** @brief Initializes the http parser for a specific type of HTTP message
+	 *  @param type
+	 */
+	virtual void init(http_parser_type type);
+
 	// HTTP parser methods
 
-	/**
-	 * Called when a new incoming data is beginning to come
-	 * @paran http_parser* parser
-	 * @return 0 on success, non-0 on error
+	/** @brief Called when a new incoming data is beginning to come
+	 * 	@param parser
+	 * 	@retval int 0 on success, non-0 on error
 	 */
-	int onMessageBegin(http_parser* parser) override;
+	virtual int onMessageBegin(http_parser* parser) = 0;
 
-	/**
-	 * Called when all headers are received
-	 * @param HttpHeaders headers - the processed headers
-	 * @return 0 on success, non-0 on error
+	/** @brief Called when the URL path is known
+	 * 	@param uri
+	 * 	@retval int 0 on success, non-0 on error
 	 */
-	int onHeadersComplete(const HttpHeaders& headers) override;
+	virtual int onPath(const URL& uri)
+	{
+		return 0;
+	}
 
-	/**
-	 * Called when a piece of body data is received
-	 * @param const char* at -  the data
-	 * @paran size_t length
-	 * @return 0 on success, non-0 on error
+	/** @brief Called when all headers are received
+	 * 	@param headers The processed headers
+	 * 	@retval int 0 on success, non-0 on error
 	 */
-	int onBody(const char* at, size_t length) override;
+	virtual int onHeadersComplete(const HttpHeaders& headers) = 0;
 
-	/**
-	 * Called when the incoming data is complete
-	 * @paran http_parser* parser
-	 * @return 0 on success, non-0 on error
+#ifndef COMPACT_MODE
+	virtual int onStatus(http_parser* parser)
+	{
+		return 0;
+	}
+
+	virtual int onChunkHeader(http_parser* parser)
+	{
+		return 0;
+	}
+
+	virtual int onChunkComplete(http_parser* parser)
+	{
+		return 0;
+	}
+
+#endif /* COMPACT MODE */
+
+	/** @brief Called when a piece of body data is received
+	 * 	@param at the data
+	 * 	@param length
+	 * 	@retval int 0 on success, non-0 on error
 	 */
-	int onMessageComplete(http_parser* parser) override;
+	virtual int onBody(const char* at, size_t length) = 0;
+
+	/** @brief Called when the incoming data is complete
+	 * 	@param parser
+	 * 	@retval int 0 on success, non-0 on error
+	 */
+	virtual int onMessageComplete(http_parser* parser) = 0;
+
+	/** @brief Called when the HTTP protocol should be upgraded
+	 * 	@param parser
+	 * 	@retval bool true on success
+	 */
+	virtual bool onProtocolUpgrade(http_parser* parser)
+	{
+		return true;
+	}
+
+	virtual void onHttpError(http_errno error);
 
 	// TCP methods
-	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
+	virtual bool onTcpReceive(TcpClient& client, char* data, int size);
 
-	void cleanup() override;
+	void onError(err_t err) override;
 
 private:
-	void sendRequestHeaders(HttpRequest* request);
-	bool sendRequestBody(HttpRequest* request);
-	HttpPartResult multipartProducer();
+	// http_parser callback functions
+	static int staticOnMessageBegin(http_parser* parser);
+	static int staticOnPath(http_parser* parser, const char* at, size_t length);
+#ifndef COMPACT_MODE
+	static int staticOnStatus(http_parser* parser, const char* at, size_t length);
+#endif
+	static int staticOnHeadersComplete(http_parser* parser);
+	static int staticOnHeaderField(http_parser* parser, const char* at, size_t length);
+	static int staticOnHeaderValue(http_parser* parser, const char* at, size_t length);
+	static int staticOnBody(http_parser* parser, const char* at, size_t length);
+#ifndef COMPACT_MODE
+	static int staticOnChunkHeader(http_parser* parser);
+	static int staticOnChunkComplete(http_parser* parser);
+#endif
+	static int staticOnMessageComplete(http_parser* parser);
 
 protected:
-	RequestQueue* waitingQueue = nullptr; ///< Requests waiting to be started - we do not own this queue
-	RequestQueue executionQueue;		  ///< Requests being executed in a pipeline
+	http_parser parser;
+	static const http_parser_settings parserSettings; ///< Callback table for parser
+	HttpHeaderBuilder header;						  ///< Header construction
+	HttpHeaders incomingHeaders;					  ///< Full set of incoming headers
+	HttpConnectionState state = eHCS_Ready;
 
-	HttpRequest* incomingRequest = nullptr;
-	HttpRequest* outgoingRequest = nullptr;
 	HttpResponse response;
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_BASE_H_ */

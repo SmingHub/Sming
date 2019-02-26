@@ -12,7 +12,7 @@
 #define _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_CONNECTION_H_
 
 #include "Network/TcpServer.h"
-#include "../HttpConnectionBase.h"
+#include "../HttpConnection.h"
 extern "C" {
 #include "../ws_parser/ws_parser.h"
 }
@@ -66,7 +66,7 @@ public:
 	 * @param connection the transport connection
 	 * @param isClientConnection true when the passed connection is an http client conneciton
 	 */
-	WebsocketConnection(HttpConnectionBase* connection, bool isClientConnection = true);
+	WebsocketConnection(HttpConnection* connection, bool isClientConnection = true);
 
 	virtual ~WebsocketConnection()
 	{
@@ -175,8 +175,12 @@ public:
 		return (this == &rhs);
 	}
 
-	/** @deprecated Will be removed */
-	WebsocketList& getActiveWebsockets() SMING_DEPRECATED
+	/**
+	 * @brief Obtain the list of active websockets
+	 * @retval const WebsocketList&
+	 * @note Return value is const as only restricted operations should be carried out on the list.
+	 */
+	static const WebsocketList& getActiveWebsockets()
 	{
 		return websocketList;
 	}
@@ -231,9 +235,9 @@ public:
 
 	/**
 	 * @brief Gets the underlying HTTP connection
-	 * @retval HttpConnectionBase*
+	 * @retval HttpConnection*
 	 */
-	HttpConnectionBase* getConnection()
+	HttpConnection* getConnection()
 	{
 		return connection;
 	}
@@ -243,7 +247,7 @@ public:
 	 * @param connection the transport connection
 	 * @param isClientConnection true when the passed connection is an http client conneciton
 	 */
-	void setConnection(HttpConnectionBase* connection, bool isClientConnection = true)
+	void setConnection(HttpConnection* connection, bool isClientConnection = true)
 	{
 		this->connection = connection;
 		this->isClientConnection = isClientConnection;
@@ -308,7 +312,7 @@ private:
 
 	bool isClientConnection = true;
 
-	HttpConnectionBase* connection = nullptr;
+	HttpConnection* connection = nullptr;
 	bool activated = false;
 };
 

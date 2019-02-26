@@ -13,7 +13,7 @@
 #ifndef _SMING_CORE_NETWORK_HTTP_HTTP_SERVER_CONNECTION_H_
 #define _SMING_CORE_NETWORK_HTTP_HTTP_SERVER_CONNECTION_H_
 
-#include "HttpConnectionBase.h"
+#include "HttpConnection.h"
 #include "HttpResource.h"
 #include "HttpBodyParser.h"
 
@@ -40,10 +40,10 @@ typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDel
 
 typedef std::function<bool()> HttpServerProtocolUpgradeCallback;
 
-class HttpServerConnection : public HttpConnectionBase
+class HttpServerConnection : public HttpConnection
 {
 public:
-	HttpServerConnection(tcp_pcb* clientTcp) : HttpConnectionBase(clientTcp, HTTP_REQUEST)
+	HttpServerConnection(tcp_pcb* clientTcp) : HttpConnection(clientTcp, HTTP_REQUEST)
 	{
 	}
 
@@ -77,42 +77,18 @@ public:
 		upgradeCallback = callback;
 	}
 
+	HttpRequest* getRequest() override
+	{
+		return &request;
+	}
+
 protected:
 	// HTTP parser methods
-	/**
-	 * Called when a new incoming data is beginning to come
-	 * @paran http_parser* parser
-	 * @return 0 on success, non-0 on error
-	 */
+
 	int onMessageBegin(http_parser* parser) override;
-
-	/**
-	 * Called when the URL path is known
-	 * @param String path
-	 * @return 0 on success, non-0 on error
-	 */
 	int onPath(const URL& path) override;
-
-	/**
-	 * Called when all headers are received
-	 * @param HttpHeaders headers - the processed headers
-	 * @return 0 on success, non-0 on error
-	 */
 	int onHeadersComplete(const HttpHeaders& headers) override;
-
-	/**
-	 * Called when a piece of body data is received
-	 * @param const char* at -  the data
-	 * @paran size_t length
-	 * @return 0 on success, non-0 on error
-	 */
 	int onBody(const char* at, size_t length) override;
-
-	/**
-	 * Called when the incoming data is complete
-	 * @paran http_parser* parser
-	 * @return 0 on success, non-0 on error
-	 */
 	int onMessageComplete(http_parser* parser) override;
 
 	bool onProtocolUpgrade(http_parser* parser) override
@@ -142,7 +118,6 @@ private:
 	HttpResource* resource = nullptr;		  ///< Resource for currently executing path
 
 	HttpRequest request;
-	HttpResponse response;
 
 	HttpResourceDelegate headersCompleteDelegate = nullptr;
 	HttpResourceDelegate requestCompletedDelegate = nullptr;

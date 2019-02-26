@@ -168,9 +168,9 @@ int onClockUpdating(HttpConnection& client, bool successful)
 	}
 
 	// Extract date header from response
-	clockValue = client.getServerDate();
+	clockValue = client.getResponse()->headers.getServerDate();
 	if(clockValue.isNull())
-		clockValue = client.getLastModifiedDate();
+		clockValue = client.getResponse()->headers.getLastModifiedDate();
 	if(!clockValue.isNull())
 		clockValue.addMilliseconds(ActiveConfig.AddTZ * 1000 * 60 * 60);
 

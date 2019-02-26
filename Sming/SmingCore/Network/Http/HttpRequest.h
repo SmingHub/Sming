@@ -24,8 +24,6 @@
 #include "HttpParams.h"
 #include "Data/ObjectMap.h"
 
-class HttpClient;
-class HttpServerConnection;
 class HttpConnection;
 
 typedef Delegate<int(HttpConnection& client, HttpResponse& response)> RequestHeadersCompletedDelegate;
@@ -37,7 +35,6 @@ typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedD
  */
 class HttpRequest
 {
-	friend class HttpConnection;
 	friend class HttpClientConnection;
 	friend class HttpServerConnection;
 
@@ -108,7 +105,7 @@ public:
 	 * @param const String& formElementName the name of the element in the form
 	 * @param IDataSourceStream* stream - pointer to the stream (doesn't have to be a FileStream)
 	 *
-	 * @return HttpRequest*
+	 * @retval HttpRequest*
 	 */
 	HttpRequest* setFile(const String& formElementName, IDataSourceStream* stream)
 	{
@@ -230,7 +227,7 @@ public:
 	 * 			Check if SHA256 hash of Subject Public Key Info matches the one given.
 	 * @param	fingerprints - passes the certificate fingerprints by reference.
 	 *
-	 * @return bool  true of success, false or failure
+	 * @retval bool  true of success, false or failure
 	 */
 	HttpRequest* pinCertificate(SslFingerprints& fingerprints)
 	{
@@ -243,7 +240,7 @@ public:
 	 * @param SSLKeyCertPair
 	 * @param bool freeAfterHandshake
 	 *
-	 * @return HttpRequest pointer
+	 * @retval HttpRequest pointer
 	 */
 	HttpRequest* setSslKeyCert(const SslKeyCertPair& keyCertPair)
 	{
@@ -255,7 +252,7 @@ public:
 #ifndef SMING_RELEASE
 	/**
 	 * @brief Tries to present a readable version of the current request values
-	 * @return String
+	 * @retval String
 	 */
 	String toString();
 #endif

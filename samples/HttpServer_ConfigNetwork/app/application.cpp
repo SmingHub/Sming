@@ -216,7 +216,6 @@ void init()
 		lastModified.trim();
 	}
 
-	Serial.setPort(UART_ID_1);
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 	AppSettings.load();
