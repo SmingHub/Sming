@@ -2,73 +2,41 @@
 #define _SERIAL_TRANSMIT_DEMO_H_
 
 #include <SmingCore.h>
+#include <Data/Stream/FlashMemoryStream.h>
 
 class SerialTransmitDemo
 {
 public:
+	SerialTransmitDemo(HardwareSerial& serial, IDataSourceStream* stream) : serial(serial), stream(stream)
+	{
+		serial.onTransmitComplete(TransmitCompleteDelegate(&SerialTransmitDemo::onTransmitComplete, this));
+	}
+
 	virtual ~SerialTransmitDemo()
 	{
 		// Disconnect callback from serial port
-		if(serial) {
-			serial->onTransmitComplete(nullptr);
-		}
+		serial.onTransmitComplete(nullptr);
+		delete stream;
 	}
 
-	void begin(HardwareSerial& serial)
-	{
-		this->serial = &serial;
-		serial.onTransmitComplete(TransmitCompleteDelegate(&SerialTransmitDemo::onTransmitComplete, this));
-		debugf("SerialTransmitDemo instantiated, waiting for call to startSending()");
-	}
-
-	// Send a chunk of stream data
-	virtual void sendDataChunk() = 0;
-
-	virtual void onTransmitComplete(HardwareSerial& serial)
+	void begin()
 	{
 		sendDataChunk();
 	}
 
 protected:
-	HardwareSerial* serial = nullptr;
-};
-
-class SerialStreamTransmitDemo : public SerialTransmitDemo
-{
-public:
-	virtual ~SerialStreamTransmitDemo()
-	{
-		delete stream;
-	}
-
-	virtual void sendDataChunk();
-
-	void startSending(IDataSourceStream* newStream)
-	{
-		stream = newStream;
-		sendDataChunk();
-	}
-
-private:
-	IDataSourceStream* stream = nullptr;
-};
-
-// Demonstrates sending data stored in flash memory via serial port
-class SerialFlashMemoryTransmitDemo : public SerialTransmitDemo
-{
-public:
 	// Send a chunk of stream data
-	virtual void sendDataChunk();
+	void sendDataChunk();
 
-	void startSending(const FlashString& newData)
+	void onTransmitComplete(HardwareSerial& serial)
 	{
-		data = &newData;
 		sendDataChunk();
 	}
 
 private:
-	const FlashString* data = nullptr;
-	unsigned readPos = 0;
+	HardwareSerial& serial;
+	IDataSourceStream* stream = nullptr;
+	const size_t chunkSize = 32;
 };
 
 #endif /* _SERIAL_TRANSMIT_DEMO_H_ */

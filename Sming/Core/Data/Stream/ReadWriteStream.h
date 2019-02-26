@@ -40,6 +40,13 @@ public:
      *  to implement it
      */
 	virtual size_t write(const uint8_t* buffer, size_t size) = 0;
+
+	/** @brief  Copy data from a source stream
+     *  @param  source Stream to read data from
+     *  @param  size Quantity of chars to write, determines size of intermediate buffer to use
+     *  @retval size_t Quantity of chars actually written, may be less than requested
+     */
+	virtual size_t copyFrom(IDataSourceStream* source, size_t size);
 };
 
 /** @} */

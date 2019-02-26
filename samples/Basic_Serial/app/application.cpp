@@ -202,18 +202,16 @@ void handleCommand(const String& command)
 		FileStream* fileStream = new FileStream;
 		if(fileStream && fileStream->open(filename, eFO_ReadOnly)) {
 			Serial.printf(_F("Sending \"%s\" (%u bytes)\r\n"), filename.c_str(), fileStream->available());
-			auto demo = new SerialStreamTransmitDemo;
-			demo->begin(Serial1);
-			demo->startSending(fileStream);
+			auto demo = new SerialTransmitDemo(Serial1, fileStream);
+			demo->begin();
 		} else {
 			Serial.printf(_F("Failed to open file \"%s\"\r\n"), filename.c_str());
 			delete fileStream;
 		}
 	} else if(command.equalsIgnoreCase(_F("text"))) {
 		Serial.printf(_F("Sending flash data, %u bytes\r\n"), testFlashData.length());
-		auto demo = new SerialFlashMemoryTransmitDemo;
-		demo->begin(Serial1);
-		demo->startSending(testFlashData);
+		auto demo = new SerialTransmitDemo(Serial, new FlashMemoryStream(testFlashData));
+		demo->begin();
 	} else {
 		Serial.printf(_F("I don't know what \"%s\" means! Try typing: cat\r\n"), command.c_str());
 	}
