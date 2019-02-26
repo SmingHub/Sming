@@ -17,7 +17,7 @@
 
 #include "WString.h"
 #include "../WebConstants.h"
-#include "../URL.h"
+#include "../Url.h"
 
 #ifndef HTTP_MAX_HEADER_SIZE
 #define HTTP_MAX_HEADER_SIZE (8 * 1024)

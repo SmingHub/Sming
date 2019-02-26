@@ -14,7 +14,7 @@
 
 #define MQTT_URL MQTT_URL1
 
-const URL url(MQTT_URL);
+const Url url(MQTT_URL);
 
 // Forward declarations
 void startMqttClient();
@@ -92,7 +92,7 @@ void startMqttClient()
 #endif
 
 	// 2. [Connect]
-	URL url(MQTT_URL);
+	Url url(MQTT_URL);
 	Serial.printf("Connecting to \t%s\n", url.toString().c_str());
 	mqtt.connect(url, "esp8266");
 	mqtt.subscribe("main/status/#");

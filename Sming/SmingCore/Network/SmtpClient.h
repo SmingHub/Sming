@@ -29,7 +29,7 @@
 
 #include "TcpClient.h"
 #include "Data/MailMessage.h"
-#include "URL.h"
+#include "Url.h"
 #include "WString.h"
 #include "WVector.h"
 #include "Data/Stream/DataSourceStream.h"
@@ -105,7 +105,7 @@ public:
 	 * 					- smtp  - clear text SMTP
 	 * 					- smtps - SMTP over SSL connection
 	 */
-	bool connect(const URL& url);
+	bool connect(const Url& url);
 
 	/**
 	 * @brief Queues a single message before it is sent later to the SMTP server
@@ -189,7 +189,7 @@ protected:
 	bool sendMailBody(MailMessage* mail);
 
 private:
-	URL url;
+	Url url;
 	Vector<String> authMethods;
 	ObjectQueue<MailMessage, SMTP_QUEUE_SIZE> mailQ;
 	char code[4] = {0};

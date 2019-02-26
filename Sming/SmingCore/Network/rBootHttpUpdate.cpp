@@ -15,7 +15,7 @@
 
 #include "rBootHttpUpdate.h"
 #include "Platform/System.h"
-#include "URL.h"
+#include "Url.h"
 #include "Platform/WDT.h"
 
 /* rBootItemOutputStream */
@@ -80,9 +80,9 @@ void rBootHttpUpdate::start()
 		HttpRequest* request;
 		if(baseRequest != nullptr) {
 			request = baseRequest->clone();
-			request->setURL(URL(it.url));
+			request->setURL(it.url);
 		} else {
-			request = new HttpRequest(URL(it.url));
+			request = new HttpRequest(it.url);
 		}
 
 		request->setMethod(HTTP_GET);

@@ -59,7 +59,7 @@ void onConnected(IPAddress ip, IPAddress mask, IPAddress gateway)
 	dsn += String("://") + SMTP_USERNAME + ":" + SMTP_PASSWORD + "@" + SMTP_HOST + ":" + SMTP_PORT;
 	debugf("Connecting to SMTP server using: %s", dsn.c_str());
 
-	client.connect(URL(dsn));
+	client.connect(dsn);
 
 	MailMessage* mail = new MailMessage();
 	mail->from = MAIL_FROM;

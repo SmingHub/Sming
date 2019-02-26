@@ -84,7 +84,7 @@ int HttpConnection::staticOnPath(http_parser* parser, const char* at, size_t len
 {
 	GET_CONNECTION()
 
-	return connection->onPath(URL(String(at, length)));
+	return connection->onPath(String(at, length));
 }
 
 #ifndef COMPACT_MODE

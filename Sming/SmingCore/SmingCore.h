@@ -52,7 +52,7 @@
 #include "Network/TcpConnection.h"
 #include "Network/UdpConnection.h"
 #include "Network/rBootHttpUpdate.h"
-#include "Network/URL.h"
+#include "Network/Url.h"
 
 #include "Data/Stream/JsonObjectStream.h"
 #include "Data/Stream/FileStream.h"

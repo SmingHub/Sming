@@ -32,7 +32,7 @@ int HttpServerConnection::onMessageBegin(http_parser* parser)
 	return 0;
 }
 
-int HttpServerConnection::onPath(const URL& uri)
+int HttpServerConnection::onPath(const Url& uri)
 {
 	if(resourceTree == nullptr) {
 		debug_e("ERROR: HttpServerConnection: The resource tree is not set!");

@@ -48,7 +48,7 @@ public:
 	HttpConnection* getHttpConnection();
 
 	/**  @brief  Connects websocket client to server
-	  *  @param  url URL address of websocket server
+	  *  @param  url Url address of websocket server
 	  *  @param  sslOptions Specify the SSL options to be used when calling websocket server over SSL
 	  */
 	bool connect(const String& url, uint32_t sslOptions = 0);
@@ -95,7 +95,7 @@ protected:
 	int verifyKey(HttpConnection& connection, HttpResponse& response);
 
 private:
-	URL uri;
+	Url uri;
 	String key;
 };
 

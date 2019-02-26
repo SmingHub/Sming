@@ -151,7 +151,7 @@ protected:
 	 * 	@param uri
 	 * 	@retval int 0 on success, non-0 on error
 	 */
-	virtual int onPath(const URL& uri)
+	virtual int onPath(const Url& uri)
 	{
 		return 0;
 	}

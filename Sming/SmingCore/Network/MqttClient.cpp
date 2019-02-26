@@ -194,7 +194,7 @@ bool MqttClient::setWill(const String& topic, const String& message, uint8_t fla
 	return true;
 }
 
-bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslOptions)
+bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslOptions)
 {
 	this->url = url;
 	bool useSsl = (url.Protocol == _F("mqtts"));

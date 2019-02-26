@@ -9,7 +9,7 @@
 Timer publishTimer;
 
 String mqttUrl = "mqtt://" + String(LOG) + ":" + String(PASS) + "@" + String(MQTT_SERVER) + ":" + String(MQTT_PORT);
-URL url(mqttUrl);
+Url url(mqttUrl);
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
 

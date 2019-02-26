@@ -43,7 +43,7 @@ public:
 	{
 	}
 
-	HttpRequest(const URL& uri) : uri(uri)
+	HttpRequest(const Url& uri) : uri(uri)
 	{
 	}
 
@@ -74,7 +74,7 @@ public:
 		reset();
 	}
 
-	HttpRequest* setURL(const URL& uri)
+	HttpRequest* setURL(const Url& uri)
 	{
 		this->uri = uri;
 		return this;
@@ -271,7 +271,7 @@ public:
 #endif
 
 public:
-	URL uri;
+	Url uri;
 	HttpMethod method = HTTP_GET;
 	HttpHeaders headers;
 	HttpParams postParams;

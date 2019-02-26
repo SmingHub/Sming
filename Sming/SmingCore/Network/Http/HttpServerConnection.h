@@ -86,7 +86,7 @@ protected:
 	// HTTP parser methods
 
 	int onMessageBegin(http_parser* parser) override;
-	int onPath(const URL& path) override;
+	int onPath(const Url& path) override;
 	int onHeadersComplete(const HttpHeaders& headers) override;
 	int onBody(const char* at, size_t length) override;
 	int onMessageComplete(http_parser* parser) override;

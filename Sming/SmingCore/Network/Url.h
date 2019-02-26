@@ -4,11 +4,11 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * URL.h
+ * Url.h
  *
  ****/
 
-/** @defgroup   url URL
+/** @defgroup   url Url
  *  @brief      Provides URL handling
  *  @ingroup    httpserver
  *  @ingroup    httpclient
@@ -24,11 +24,11 @@
 #define HTTPS_URL_PROTOCOL _F("https")
 #define WEBSOCKET_SECURE_URL_PROTOCOL _F("wss")
 
-class URL
+class Url
 {
 public:
-	URL();
-	URL(const String& urlString);
+	Url();
+	Url(const String& urlString);
 
 	inline String toString()
 	{
@@ -51,6 +51,8 @@ public:
 	String Path;
 	String Query;
 };
+
+typedef Url URL SMING_DEPRECATED; ///< @deprecated Use `Url` instead
 
 /** @} */
 #endif /* _SMING_CORE_NETWORK_URL_H_ */

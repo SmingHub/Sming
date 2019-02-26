@@ -95,7 +95,7 @@ public:
 	 */
 	HttpRequest* createRequest(const String& url)
 	{
-		return new HttpRequest(URL(url));
+		return new HttpRequest(url);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public:
 	}
 
 protected:
-	String getCacheKey(URL url)
+	String getCacheKey(const Url& url)
 	{
 		return url.Host + ':' + url.Port;
 	}

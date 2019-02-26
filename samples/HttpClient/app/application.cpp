@@ -128,7 +128,7 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 	// First: The HttpRequest object contains all the data that needs to be sent
 	//    	  to the remote server.
 
-	HttpRequest* getRequest = new HttpRequest(URL("https://httpbin.org/get"));
+	HttpRequest* getRequest = new HttpRequest(F("https://httpbin.org/get"));
 	getRequest->setMethod(HTTP_GET); // << you may set the method. If not set the default HTTP_GET method will be used
 
 	// Headers: if you need to set custom headers then you can do something like ...
@@ -156,7 +156,7 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 	// [ POST request: the example below shows how to set a POST request with form data and files. ]
 	FileStream* fileStream = new FileStream("5K.txt");
 
-	HttpRequest* postRequest = new HttpRequest(URL("https://httpbin.org/post"));
+	HttpRequest* postRequest = new HttpRequest(F("https://httpbin.org/post"));
 	// For this request we will use a slightly improved syntax
 	postRequest
 		->setMethod(HTTP_POST)					  // << we set the method to POST
@@ -171,7 +171,7 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 	// [PUT request with raw data: We will send the data.txt content without any additional content encoding ]
 	FileStream* fileStream1 = new FileStream("20K.txt");
 
-	HttpRequest* putRequest = new HttpRequest(URL("https://httpbin.org/put"));
+	HttpRequest* putRequest = new HttpRequest(F("https://httpbin.org/put"));
 	putRequest->setMethod(HTTP_PUT)
 		->setBody(fileStream1) // << we set the complete HTTP body
 		->onRequestComplete(onDownload);

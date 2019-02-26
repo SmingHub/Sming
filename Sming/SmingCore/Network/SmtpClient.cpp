@@ -83,7 +83,7 @@ SmtpClient::~SmtpClient()
 	}
 }
 
-bool SmtpClient::connect(const URL& url)
+bool SmtpClient::connect(const Url& url)
 {
 	if(getConnectionState() != eTCS_Ready) {
 		close();

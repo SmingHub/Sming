@@ -50,7 +50,7 @@ bool HttpClient::send(HttpRequest* request)
 
 bool HttpClient::downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete)
 {
-	URL uri(url);
+	Url uri(url);
 
 	String file;
 	if(saveFileName.length() == 0) {
