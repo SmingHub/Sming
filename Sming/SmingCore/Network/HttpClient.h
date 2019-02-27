@@ -74,8 +74,7 @@ public:
 	 * @param saveFilename Path to save file to. Optional: specify nullptr to use name from url
 	 * @param requestComplete Completion callback
 	 */
-	bool downloadFile(const Url& url, const String& saveFileName,
-					  RequestCompletedDelegate requestComplete = nullptr);
+	bool downloadFile(const Url& url, const String& saveFileName, RequestCompletedDelegate requestComplete = nullptr);
 
 	/* Low Level Methods */
 
