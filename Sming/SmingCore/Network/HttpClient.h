@@ -115,7 +115,7 @@ public:
 protected:
 	String getCacheKey(const Url& url)
 	{
-		return url.Host + ':' + url.Port;
+		return url.Host + ':' + url.getPort();
 	}
 
 protected:

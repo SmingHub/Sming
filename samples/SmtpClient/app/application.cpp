@@ -11,10 +11,10 @@
 // Make sure to change those to your desired values
 #define MAIL_FROM "admin@sming.com"
 #define MAIL_TO "slav@attachix.com"
-#define SMTP_USERNAME
-#define SMTP_PASSWORD
+#define SMTP_USERNAME nullptr
+#define SMTP_PASSWORD nullptr
 #define SMTP_HOST "attachix.com"
-#define SMTP_PORT 25
+#define SMTP_PORT 0 // Use default port
 #define SMTP_USE_SSL false
 
 SmtpClient client;
@@ -51,13 +51,9 @@ void onConnected(IPAddress ip, IPAddress mask, IPAddress gateway)
 
 	client.onServerError(onServerError);
 
-	String dsn = "smtp";
-	if(SMTP_USE_SSL) {
-		dsn += "s";
-	}
-
-	dsn += String("://") + SMTP_USERNAME + ":" + SMTP_PASSWORD + "@" + SMTP_HOST + ":" + SMTP_PORT;
-	debugf("Connecting to SMTP server using: %s", dsn.c_str());
+	Url dsn(SMTP_USE_SSL ? URI_SCHEME_SMTP_SECURE : URI_SCHEME_SMTP, SMTP_USERNAME, SMTP_PASSWORD, SMTP_HOST,
+			SMTP_PORT);
+	debugf("Connecting to SMTP server using: %s", String(dsn).c_str());
 
 	client.connect(dsn);
 

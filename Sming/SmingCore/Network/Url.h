@@ -83,6 +83,10 @@ public:
 		: Scheme(scheme), User(user), Password(password), Host(host), Port(port), Path(path), Query(query),
 		  Fragment(fragment)
 	{
+		Scheme.toLowerCase();
+		if(Port == 0) {
+			Port = getDefaultPort(Scheme);
+		}
 	}
 
 	/** @brief Copy assignment operator
@@ -105,6 +109,15 @@ public:
 	 *  @retval int 0 if scheme is not recognised or has no standard port defined
 	 */
 	static int getDefaultPort(const String& scheme);
+
+	/** @brief Obtain the actual port number to be used
+	 *  @retval int
+	 *  @note If not specified, the default scheme port is returned
+	 */
+	int getPort() const
+	{
+		return Port ?: getDefaultPort(Scheme);
+	}
 
 	/** @brief Get hostname+port part of URL string
 	 *  @retval String

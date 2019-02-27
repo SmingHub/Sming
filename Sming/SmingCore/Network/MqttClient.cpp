@@ -229,7 +229,7 @@ bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslO
 	memcpy(message, &connectMessage, sizeof(mqtt_message_t));
 	requestQueue.enqueue(message);
 
-	return TcpClient::connect(url.Host, url.Port, useSsl, sslOptions);
+	return TcpClient::connect(url.Host, url.getPort(), useSsl, sslOptions);
 }
 
 bool MqttClient::publish(const String& topic, const String& content, uint8_t flags)

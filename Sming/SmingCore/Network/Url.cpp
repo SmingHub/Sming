@@ -37,6 +37,7 @@ Url& Url::operator=(String urlString)
 		Scheme = URI_SCHEME_DEFAULT;
 	} else {
 		Scheme = url.scheme;
+		Scheme.toLowerCase();
 	}
 	User = uri_unescape_inplace(url.username);
 	Password = uri_unescape_inplace(url.password);

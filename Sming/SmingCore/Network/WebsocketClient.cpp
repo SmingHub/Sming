@@ -46,7 +46,7 @@ bool WebsocketClient::connect(const String& url, uint32_t sslOptions)
 		return false;
 	}
 
-	httpConnection->connect(uri.Host, uri.Port, useSsl, sslOptions);
+	httpConnection->connect(uri.Host, uri.getPort(), useSsl, sslOptions);
 
 	state = eWSCS_Ready;
 
