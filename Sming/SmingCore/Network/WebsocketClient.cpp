@@ -29,7 +29,7 @@ HttpConnection* WebsocketClient::getHttpConnection()
 	return connection;
 }
 
-bool WebsocketClient::connect(const String& url, uint32_t sslOptions)
+bool WebsocketClient::connect(const Url& url, uint32_t sslOptions)
 {
 	uri = url;
 	bool useSsl = false;

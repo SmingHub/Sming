@@ -51,7 +51,7 @@ public:
 	  *  @param  url Url address of websocket server
 	  *  @param  sslOptions Specify the SSL options to be used when calling websocket server over SSL
 	  */
-	bool connect(const String& url, uint32_t sslOptions = 0);
+	bool connect(const Url& url, uint32_t sslOptions = 0);
 
 	using WebsocketConnection::send;
 	using WebsocketConnection::sendBinary;

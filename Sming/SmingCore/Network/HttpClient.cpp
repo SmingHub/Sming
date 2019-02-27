@@ -48,13 +48,11 @@ bool HttpClient::send(HttpRequest* request)
 	return connection->send(request);
 }
 
-bool HttpClient::downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete)
+bool HttpClient::downloadFile(const Url& url, const String& saveFileName, RequestCompletedDelegate requestComplete)
 {
-	Url uri(url);
-
 	String file = saveFileName;
 	if(file.length() == 0) {
-		file = uri.getFileName();
+		file = url.getFileName();
 	}
 
 	auto fileStream = new FileStream();
