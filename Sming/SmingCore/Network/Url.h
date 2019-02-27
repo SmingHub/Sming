@@ -78,6 +78,13 @@ public:
 		*this = urlString;
 	}
 
+	/** @brief Construct a URL object from a regular null-terminated escaped string
+	 *  @urlString Escaped URL
+	 */
+	Url(const char* urlString) : Url(String(urlString))
+	{
+	}
+
 	Url(const String& scheme, const String& user, const String& password, const String& host, int port = 0,
 		const String& path = nullptr, const String& query = nullptr, const String& fragment = nullptr)
 		: Scheme(scheme), User(user), Password(password), Host(host), Port(port), Path(path), Query(query),
