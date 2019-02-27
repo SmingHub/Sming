@@ -12,7 +12,7 @@
 #define _SMING_CORE_NETWORK_MQTT_CLIENT_H_
 
 #include "TcpClient.h"
-#include "URL.h"
+#include "Url.h"
 #include "WString.h"
 #include "WHashMap.h"
 #include "Data/ObjectQueue.h"
@@ -88,7 +88,7 @@ public:
 	*  @param  url, in the form "mqtt://user:password@server:port" or "mqtts://user:password@server:port"
 	*  @param  client name
 	*/
-	bool connect(const URL& url, const String& uniqueClientName, uint32_t sslOptions = 0);
+	bool connect(const Url& url, const String& uniqueClientName, uint32_t sslOptions = 0);
 
 	bool publish(const String& topic, const String& message, uint8_t flags = 0);
 	bool publish(const String& topic, IDataSourceStream* stream, uint8_t flags = 0);
@@ -285,7 +285,7 @@ private:
 #endif
 
 private:
-	URL url;
+	Url url;
 
 	// callbacks
 	HashMap<mqtt_type_t, MqttDelegate> eventHandler;

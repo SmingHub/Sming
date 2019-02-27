@@ -83,21 +83,15 @@ SmtpClient::~SmtpClient()
 	}
 }
 
-bool SmtpClient::connect(const URL& url)
+bool SmtpClient::connect(const Url& url)
 {
 	if(getConnectionState() != eTCS_Ready) {
 		close();
 	}
 
+	bool isSecure = (url.Scheme == URI_SCHEME_SMTP_SECURE);
 	this->url = url;
-	if(!this->url.Port) {
-		this->url.Port = 25;
-		if(this->url.Protocol == SMTP_OVER_SSL_PROTOCOL) {
-			this->url.Port = 465;
-		}
-	}
-
-	return TcpClient::connect(url.Host, url.Port, (url.Protocol == SMTP_OVER_SSL_PROTOCOL));
+	return TcpClient::connect(url.Host, url.getPort(), isSecure);
 }
 
 bool SmtpClient::send(const String& from, const String& to, const String& subject, const String& body)

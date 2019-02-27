@@ -89,7 +89,7 @@ public:
 	}
 
 	/** @deprecated Use `paths.setDefault()` instead */
-	void setDefault(const HttpPathDelegate& callback) SMING_DEPRECATED
+	void setDefaultHandler(const HttpPathDelegate& callback) SMING_DEPRECATED
 	{
 		paths.setDefault(callback);
 	}

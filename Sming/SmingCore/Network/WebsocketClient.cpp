@@ -29,11 +29,11 @@ HttpConnection* WebsocketClient::getHttpConnection()
 	return connection;
 }
 
-bool WebsocketClient::connect(const String& url, uint32_t sslOptions)
+bool WebsocketClient::connect(const Url& url, uint32_t sslOptions)
 {
-	uri = URL(url);
+	uri = url;
 	bool useSsl = false;
-	if(uri.Protocol == WEBSOCKET_SECURE_URL_PROTOCOL) {
+	if(uri.Scheme == URI_SCHEME_WEBSOCKET_SECURE) {
 		useSsl = true;
 	}
 
@@ -46,7 +46,7 @@ bool WebsocketClient::connect(const String& url, uint32_t sslOptions)
 		return false;
 	}
 
-	httpConnection->connect(uri.Host, uri.Port, useSsl, sslOptions);
+	httpConnection->connect(uri.Host, uri.getPort(), useSsl, sslOptions);
 
 	state = eWSCS_Ready;
 

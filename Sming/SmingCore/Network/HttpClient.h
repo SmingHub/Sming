@@ -40,36 +40,41 @@ public:
 
 	/* High-Level Methods */
 
-	bool sendRequest(const String& url, RequestCompletedDelegate requestComplete)
+	bool sendRequest(const Url& url, RequestCompletedDelegate requestComplete)
 	{
 		return send(createRequest(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 	}
 
-	bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers,
+	bool sendRequest(const HttpMethod method, const Url& url, const HttpHeaders& headers,
 					 RequestCompletedDelegate requestComplete)
 	{
 		return send(createRequest(url)->setMethod(method)->setHeaders(headers)->onRequestComplete(requestComplete));
 	}
 
-	bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers, const String& body,
+	bool sendRequest(const HttpMethod method, const Url& url, const HttpHeaders& headers, const String& body,
 					 RequestCompletedDelegate requestComplete)
 	{
 		return send(createRequest(url)->setMethod(method)->setHeaders(headers)->setBody(body)->onRequestComplete(
 			requestComplete));
 	}
 
-	bool downloadString(const String& url, RequestCompletedDelegate requestComplete)
+	bool downloadString(const Url& url, RequestCompletedDelegate requestComplete)
 	{
 		return send(createRequest(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 	}
 
-	bool downloadFile(const String& url, RequestCompletedDelegate requestComplete = nullptr)
+	bool downloadFile(const Url& url, RequestCompletedDelegate requestComplete = nullptr)
 	{
 		return downloadFile(url, nullptr, requestComplete);
 	}
 
-	bool downloadFile(const String& url, const String& saveFileName,
-					  RequestCompletedDelegate requestComplete = nullptr);
+	/**
+	 * @brief Queue request to download a file
+	 * @param url Source of file data
+	 * @param saveFilename Path to save file to. Optional: specify nullptr to use name from url
+	 * @param requestComplete Completion callback
+	 */
+	bool downloadFile(const Url& url, const String& saveFileName, RequestCompletedDelegate requestComplete = nullptr);
 
 	/* Low Level Methods */
 
@@ -93,9 +98,9 @@ public:
 	 *  @param url
 	 *  @retval HttpRequest*
 	 */
-	HttpRequest* createRequest(const String& url)
+	HttpRequest* createRequest(const Url& url)
 	{
-		return new HttpRequest(URL(url));
+		return new HttpRequest(url);
 	}
 
 	/**
@@ -107,9 +112,9 @@ public:
 	}
 
 protected:
-	String getCacheKey(URL url)
+	String getCacheKey(const Url& url)
 	{
-		return url.Host + ':' + url.Port;
+		return url.Host + ':' + url.getPort();
 	}
 
 protected:

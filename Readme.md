@@ -251,7 +251,7 @@ For more examples take a look at the [HttpServer_ConfigNetwork](samples/HttpServ
 ```c++
 SmtpClient emailClient;
 
-emailClient.connect(URL("smtp://user:password@domain.com:25"));
+emailClient.connect(Url("smtp://user:password@domain.com"));
 
 MailMessage* mail = new MailMessage();
 mail->from = "developers@sming";

@@ -48,7 +48,7 @@ bool HttpClientConnection::send(HttpRequest* request)
 		return false;
 	}
 
-	bool useSsl = (request->uri.Protocol == HTTPS_URL_PROTOCOL);
+	bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);
 
 #ifdef ENABLE_SSL
 	// Based on the URL decide if we should reuse the SSL and TCP pool
@@ -62,7 +62,7 @@ bool HttpClientConnection::send(HttpRequest* request)
 	}
 #endif
 
-	return connect(request->uri.Host, request->uri.Port, useSsl);
+	return connect(request->uri.Host, request->uri.getPort(), useSsl);
 }
 
 void HttpClientConnection::reset()
@@ -300,7 +300,7 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 	sendString(String(http_method_str(request->method)) + ' ' + request->uri.getPathWithQuery() + _F(" HTTP/1.1\r\n"));
 
 	if(!request->headers.contains(HTTP_HEADER_HOST)) {
-		request->headers[HTTP_HEADER_HOST] = request->uri.Host;
+		request->headers[HTTP_HEADER_HOST] = request->uri.getHostWithPort();
 	}
 
 	request->headers[HTTP_HEADER_CONTENT_LENGTH] = "0";

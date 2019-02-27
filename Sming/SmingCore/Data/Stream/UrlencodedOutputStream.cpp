@@ -11,7 +11,6 @@
  ****/
 
 #include "UrlencodedOutputStream.h"
-#include "../Services/WebHelpers/escape.h"
 
 /*
  * @todo Revise this so stream produces encoded output line-by-line, rather than all at once.

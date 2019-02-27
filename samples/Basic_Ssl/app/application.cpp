@@ -95,7 +95,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 
 	debugf("Connected. Got IP: %s", ip.toString().c_str());
 
-	HttpRequest* request = new HttpRequest(URL(F("https://www.grc.com/fingerprints.htm")));
+	HttpRequest* request = new HttpRequest(F("https://www.grc.com/fingerprints.htm"));
 	request->setSslOptions(SSL_SERVER_VERIFY_LATER);
 
 	/*

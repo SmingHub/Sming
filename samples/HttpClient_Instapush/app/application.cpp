@@ -39,7 +39,7 @@ public:
 	{
 		debugf("preparing request");
 
-		HttpRequest* request = new HttpRequest(URL(url));
+		HttpRequest* request = new HttpRequest(String(url));
 
 		HttpHeaders requestHeaders;
 		requestHeaders[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_JSON);

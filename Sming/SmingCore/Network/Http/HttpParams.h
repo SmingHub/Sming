@@ -32,8 +32,48 @@
 class HttpParams : public HashMap<String, String>, public Printable
 {
 public:
+	HttpParams() = default;
+
+	HttpParams(const HttpParams& params)
+	{
+		*this = params;
+	}
+
+	HttpParams(String query)
+	{
+		parseQuery(query.begin());
+	}
+
+	/** @brief Called from URL class to process query section of a URI
+	 *  @param query extracted from URI, with or without '?' prefix
+	 *  @retval bool true on success, false if parsing failed
+	 *  @note query string is modified by this call
+	 */
+	void parseQuery(char* query);
+
+	/** @brief Return full escaped content for incorporation into a URI */
+	String toString() const;
+
+	operator String() const
+	{
+		return toString();
+	}
+
+	HttpParams& operator=(const HttpParams& params)
+	{
+		clear();
+		setMultiple(params);
+		return *this;
+	}
+
 	// Printable
 	size_t printTo(Print& p) const override;
+
+	/**
+	 * @brief Printable output for debugging
+	 * @param p
+	 */
+	void debugPrintTo(Print& p) const;
 };
 
 #endif /* _SMING_CORE_NETWORK_HTTP_HTTP_PARAMS_H_ */

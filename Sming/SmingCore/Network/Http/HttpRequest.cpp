@@ -12,66 +12,16 @@
 
 #include "HttpRequest.h"
 #include "Data/Stream/MemoryDataStream.h"
-#include "Data/Stream/ChunkedStream.h"
-#include "Data/Stream/UrlencodedOutputStream.h"
 
-HttpRequest::HttpRequest(const HttpRequest& value) : uri(value.uri)
-{
-	*this = value;
-	method = value.method;
-	headers = value.headers;
-	headersCompletedDelegate = value.headersCompletedDelegate;
-	requestBodyDelegate = value.requestBodyDelegate;
-	requestCompletedDelegate = value.requestCompletedDelegate;
-
-	debug_w("Warning: HttpRequest streams are not copied..");
-
+HttpRequest::HttpRequest(const HttpRequest& value)
+	: uri(value.uri), method(value.method), headers(value.headers), postParams(value.postParams),
+	  headersCompletedDelegate(value.headersCompletedDelegate), requestBodyDelegate(value.requestBodyDelegate),
+	  requestCompletedDelegate(value.requestCompletedDelegate)
 #ifdef ENABLE_SSL
-	sslOptions = value.sslOptions;
-	sslFingerprints = value.sslFingerprints;
-	sslKeyCertPair = value.sslKeyCertPair;
+	  ,
+	  sslOptions(value.sslOptions), sslFingerprints(value.sslFingerprints), sslKeyCertPair(value.sslKeyCertPair)
 #endif
-}
-
-HttpRequest& HttpRequest::operator=(const HttpRequest& rhs)
 {
-	if(this == &rhs)
-		return *this;
-
-	// TODO: FIX this...
-	//	if (rhs.buffer) copy(rhs.buffer, rhs.len);
-	//	else invalidate();
-
-	return *this;
-}
-
-String HttpRequest::getQueryParameter(const String& parameterName, const String& defaultValue)
-{
-	if(queryParams == nullptr) {
-		queryParams = new HttpParams();
-		if(!uri.Query.length()) {
-			return defaultValue;
-		}
-
-		String query = uri.Query.substring(1);
-		Vector<String> parts;
-		splitString(query, '&', parts);
-		for(unsigned i = 0; i < parts.count(); i++) {
-			Vector<String> pair;
-			int count = splitString(parts[i], '=', pair);
-			if(count != 2) {
-				debug_w("getQueryParameter: Missing = in query string: %s", parts[i].c_str());
-				continue;
-			}
-			(*queryParams)[pair.at(0)] = pair.at(1); // TODO: name and value URI decoding...
-		}
-	}
-
-	if(queryParams->contains(parameterName)) {
-		return (*queryParams)[parameterName];
-	}
-
-	return defaultValue;
 }
 
 String HttpRequest::getBody()
@@ -106,14 +56,13 @@ HttpRequest* HttpRequest::setResponseStream(ReadWriteStream* stream)
 	if(responseStream != nullptr) {
 		debug_e("HttpRequest::setResponseStream: Discarding already set stream!");
 		delete responseStream;
-		responseStream = nullptr;
 	}
 
 	responseStream = stream;
 	return this;
 }
 
-HttpRequest* HttpRequest::setBody(uint8_t* rawData, size_t length)
+HttpRequest* HttpRequest::setBody(const uint8_t* rawData, size_t length)
 {
 	auto memory = new MemoryDataStream();
 	auto written = memory->write(rawData, length);
@@ -129,7 +78,6 @@ HttpRequest* HttpRequest::setBody(IDataSourceStream* stream)
 	if(bodyStream != nullptr) {
 		debug_e("HttpRequest::setBody: Discarding already set stream!");
 		delete bodyStream;
-		bodyStream = nullptr;
 	}
 
 	bodyStream = stream;
@@ -167,7 +115,7 @@ String HttpRequest::toString()
 #endif
 
 	content += String(http_method_str(method)) + ' ' + uri.getPathWithQuery() + _F(" HTTP/1.1\n");
-	content += headers.toString(HTTP_HEADER_HOST, uri.Host + ':' + uri.Port);
+	content += headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
 	for(unsigned i = 0; i < headers.count(); i++) {
 		content += headers[i];
 	}

@@ -48,24 +48,17 @@ bool HttpClient::send(HttpRequest* request)
 	return connection->send(request);
 }
 
-bool HttpClient::downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete)
+bool HttpClient::downloadFile(const Url& url, const String& saveFileName, RequestCompletedDelegate requestComplete)
 {
-	URL uri(url);
-
-	String file;
-	if(saveFileName.length() == 0) {
-		file = uri.Path;
-		int p = file.lastIndexOf('/');
-		if(p >= 0) {
-			file.remove(0, p + 1);
-		}
-	} else {
-		file = saveFileName;
+	String file = saveFileName;
+	if(file.length() == 0) {
+		file = url.getFileName();
 	}
 
 	auto fileStream = new FileStream();
 	if(!fileStream->open(file, eFO_CreateNewAlways | eFO_WriteOnly)) {
 		debug_e("HttpClient failed to open \"%s\"", file.c_str());
+		delete fileStream;
 		return false;
 	}
 
