@@ -35,8 +35,18 @@ void sendData()
 	// Read our sensor value :)
 	sensorValue++;
 
-	thingSpeak.downloadString("http://api.thingspeak.com/update?key=7XXUJWCWYTMXKN3L&field1=" + String(sensorValue),
-							  onDataSent);
+	/*
+	   Here is an alternative method of URL construction, which is helpful for more complex URLs.
+	   The resulting URL string is equivalent to:
+
+	     "http://api.thingspeak.com/update?key=7XXUJWCWYTMXKN3L&field1=" + String(sensorValue)
+	 */
+	Url url;
+	url.Host = "api.thingspeak.com";
+	url.Path = "/update";
+	url.Query["key"] = "7XXUJWCWYTMXKN3L";
+	url.Query["field1"] = String(sensorValue);
+	thingSpeak.downloadString(url, onDataSent);
 }
 
 // Will be called when WiFi station timeout was reached
