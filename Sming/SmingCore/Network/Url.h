@@ -102,6 +102,15 @@ public:
 	 */
 	Url& operator=(String urlString);
 
+	/** @brief Copy assignment operator, for C-style strings
+	 *  @param urlString Escaped URL
+	 */
+	Url& operator=(const char* urlString)
+	{
+		*this = String(urlString);
+		return *this;
+	}
+
 	/** @brief Get escaped URL
 	 * 	@retval String
 	 */
