@@ -112,4 +112,7 @@
 [submodule "Libraries.ArduinoJson5"]
 	path = Sming/Libraries/ArduinoJson5/ArduinoJson
 	url = https://github.com/bblanchon/ArduinoJson.git
+[submodule "Libraries.MCP_CAN_lib"]
+	path = Sming/Libraries/MCP_CAN_lib
+	url = https://github.com/coryjfowler/MCP_CAN_lib.git
 	ignore = dirty
