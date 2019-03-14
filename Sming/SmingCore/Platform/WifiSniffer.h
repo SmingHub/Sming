@@ -10,13 +10,15 @@
  *
  * Adapted for use with Sming March 2019 mikee47 <mike@sillyhouse.net>
  *
+ * See ESP8266 non-OS SDK Version 3.0, section 3.11: Sniffer Related APIs
+ *
  ****/
 
 #ifndef _SMING_CORE_WIFI_SNIFFER_H_
 #define _SMING_CORE_WIFI_SNIFFER_H_
 
-#include <functional>
-#include <WVector.h>
+#include "System.h"
+#include "WVector.h"
 
 #define ETH_MAC_LEN 6
 
@@ -26,10 +28,10 @@
 struct BeaconInfo {
 	uint8_t bssid[ETH_MAC_LEN];
 	uint8_t ssid[33];
-	int ssid_len;
-	int channel;
-	int err;
-	signed rssi;
+	uint8_t ssid_len;
+	uint8_t channel;
+	int8_t err;
+	int8_t rssi;
 	uint8_t capa[2];
 };
 
@@ -40,9 +42,9 @@ struct ClientInfo {
 	uint8_t bssid[ETH_MAC_LEN];
 	uint8_t station[ETH_MAC_LEN];
 	uint8_t ap[ETH_MAC_LEN];
-	int channel;
-	int err;
-	signed rssi;
+	uint8_t channel;
+	int8_t err;
+	int8_t rssi;
 	uint16_t seq_n;
 };
 
@@ -82,31 +84,63 @@ public:
 	}
 };
 
-typedef std::function<void(const BeaconInfo& beacon)> NewBeaconCallback;
-typedef std::function<void(const ClientInfo& client)> NewClientCallback;
+typedef std::function<void(uint8_t* data, uint16_t length)> WifiSnifferCallback;
+typedef std::function<void(const BeaconInfo& beacon)> WifiBeaconCallback;
+typedef std::function<void(const ClientInfo& client)> WifiClientCallback;
 
-class WifiSniffer
+class WifiSniffer : public ISystemReadyHandler
 {
 public:
-	/** @brief Initialise the sniffer
-	 *  @param beaconCallback when beacon information decoded
-	 *  @param clientCallback when client information decoded
-	 */
-	void begin(NewBeaconCallback beaconCallback, NewClientCallback clientCallback);
+	/** @brief Initialise the sniffer */
+	void begin();
 
 	/** @brief Stop the sniffer */
 	void end();
 
+	/** @brief Register notification for beacon (AP) info */
+	void onBeacon(WifiBeaconCallback callback)
+	{
+		beaconCallback = callback;
+	}
+
+	/** @brief Register notification for client info */
+	void onClient(WifiClientCallback callback)
+	{
+		clientCallback = callback;
+	}
+
+	/** @brief Register notification for all incoming data
+	 *  @note Callback invoked for all packet types, including beacon/client
+	 */
+	void onSniff(WifiSnifferCallback callback)
+	{
+		snifferCallback = callback;
+	}
+
 	/** @brief Set the channel to listen on
 	 *  @param channel
 	 */
-	void setChannel(unsigned channel);
+	void setChannel(unsigned channel)
+	{
+		wifi_set_channel(channel);
+	}
+
+	/** @brief Get the current channel being listened on */
+	unsigned getChannel()
+	{
+		return wifi_get_channel();
+	}
 
 private:
-	static void promisc_cb(uint8_t* buf, uint16_t len);
+	/** @brief Perform actual initialisation only when system has been fully initialised */
+	void onSystemReady() override;
 
-	static NewBeaconCallback newBeaconCallback; ///< Registered callback when new beacon found
-	static NewClientCallback newClientCallback; ///< Registered callback when new client found
+	/** @brief Parse received Wifi data */
+	static void parseData(uint8_t* buf, uint16_t len);
+
+	static WifiSnifferCallback snifferCallback;
+	static WifiBeaconCallback beaconCallback;
+	static WifiClientCallback clientCallback;
 };
 
 #endif /* _SMING_CORE_WIFI_SNIFFER_H_ */

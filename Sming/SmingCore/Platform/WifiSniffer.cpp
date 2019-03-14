@@ -15,14 +15,15 @@
 #include "WifiSniffer.h"
 #include "esp_wifi_sniffer.h"
 
-NewBeaconCallback WifiSniffer::newBeaconCallback;
-NewClientCallback WifiSniffer::newClientCallback;
+WifiSnifferCallback WifiSniffer::snifferCallback;
+WifiBeaconCallback WifiSniffer::beaconCallback;
+WifiClientCallback WifiSniffer::clientCallback;
 
 static const uint8_t broadcast1[3] = {0x01, 0x00, 0x5e};
 static const uint8_t broadcast2[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 static const uint8_t broadcast3[3] = {0x33, 0x33, 0x00};
 
-static void parseClientInfo(ClientInfo& ci, uint8_t* frame, uint16_t framelen, signed rssi, unsigned channel)
+static void parseClientInfo(ClientInfo& ci, uint8_t* frame, uint16_t framelen, int rssi, unsigned channel)
 {
 	ci.channel = channel;
 	ci.err = 0;
@@ -71,10 +72,10 @@ static void parseClientInfo(ClientInfo& ci, uint8_t* frame, uint16_t framelen, s
 	memcpy(ci.bssid, bssid, ETH_MAC_LEN);
 	memcpy(ci.ap, ap, ETH_MAC_LEN);
 
-	ci.seq_n = frame[23] * 0xFF + (frame[22] & 0xF0);
+	ci.seq_n = (frame[23] * 0xFF) + (frame[22] & 0xF0);
 }
 
-static void parseBeaconInfo(BeaconInfo& bi, uint8_t* frame, uint16_t framelen, signed rssi)
+static void parseBeaconInfo(BeaconInfo& bi, uint8_t* frame, uint16_t framelen, int rssi)
 {
 	bi.ssid_len = 0;
 	bi.channel = 0;
@@ -88,7 +89,7 @@ static void parseBeaconInfo(BeaconInfo& bi, uint8_t* frame, uint16_t framelen, s
 			case 0x00: //SSID
 				bi.ssid_len = (int)frame[pos + 1];
 				if(bi.ssid_len == 0) {
-					memset(bi.ssid, '\x00', 33);
+					memset(bi.ssid, '\0', sizeof(bi.ssid));
 					break;
 				}
 				if(bi.ssid_len < 0) {
@@ -99,7 +100,7 @@ static void parseBeaconInfo(BeaconInfo& bi, uint8_t* frame, uint16_t framelen, s
 					bi.err = -2;
 					break;
 				}
-				memset(bi.ssid, '\x00', 33);
+				memset(bi.ssid, '\0', sizeof(bi.ssid));
 				memcpy(bi.ssid, frame + pos + 2, bi.ssid_len);
 				bi.err = 0; // before was error??
 				break;
@@ -123,52 +124,53 @@ static void parseBeaconInfo(BeaconInfo& bi, uint8_t* frame, uint16_t framelen, s
 	memcpy(bi.bssid, frame + 10, ETH_MAC_LEN);
 }
 
-void WifiSniffer::promisc_cb(uint8_t* buf, uint16_t len)
+void WifiSniffer::parseData(uint8_t* buf, uint16_t len)
 {
+	if(snifferCallback) {
+		snifferCallback(buf, len);
+	}
+
 	if(len == 12) {
 		//auto data = reinterpret_cast<RxControl*>(buf);
 	} else if(len == 128) {
-		if(newBeaconCallback) {
+		if(beaconCallback) {
 			auto data = reinterpret_cast<sniffer_buf2*>(buf);
 			BeaconInfo beacon;
 			parseBeaconInfo(beacon, data->buf, 112, data->rx_ctrl.rssi);
-			newBeaconCallback(beacon);
+			beaconCallback(beacon);
 		}
 	} else {
 		auto data = reinterpret_cast<struct sniffer_buf*>(buf);
 		//Is data or QOS?
 		if(data->buf[0] == 0x08 || data->buf[0] == 0x88) {
-			if(newClientCallback) {
+			if(clientCallback) {
 				ClientInfo ci;
 				parseClientInfo(ci, data->buf, 36, data->rx_ctrl.rssi, data->rx_ctrl.channel);
 				// Check BSSID and station don't match (why ?)
 				if(memcmp(ci.bssid, ci.station, ETH_MAC_LEN) != 0) {
-					newClientCallback(ci);
+					clientCallback(ci);
 				}
 			}
 		}
 	}
 }
 
-void WifiSniffer::begin(NewBeaconCallback newBeacon, NewClientCallback newClient)
+void WifiSniffer::begin()
 {
-	wifi_set_opmode(STATION_MODE); // Promiscuous works only with station mode
-	wifi_promiscuous_enable(false);
-	wifi_set_promiscuous_rx_cb(promisc_cb); // Set up promiscuous callback
-	wifi_promiscuous_enable(true);
+	wifi_set_opmode_current(STATION_MODE); // Promiscuous works only with station mode
+	System.onReady(this);
+}
 
-	newBeaconCallback = newBeacon;
-	newClientCallback = newClient;
+void WifiSniffer::onSystemReady()
+{
+	// Set up promiscuous callback
+	wifi_station_disconnect(); // As per Espressif docs.
+	wifi_promiscuous_enable(false);
+	wifi_set_promiscuous_rx_cb(parseData);
+	wifi_promiscuous_enable(true);
 }
 
 void WifiSniffer::end()
 {
 	wifi_promiscuous_enable(false);
-	newBeaconCallback = nullptr;
-	newClientCallback = nullptr;
-}
-
-void WifiSniffer::setChannel(unsigned channel)
-{
-	wifi_set_channel(channel);
 }

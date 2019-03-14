@@ -66,7 +66,7 @@ static void printSummary()
 	Serial.println("\n-------------------------------------------------------------------------------------\n");
 }
 
-static void onNewBeacon(const BeaconInfo& beacon)
+static void onBeacon(const BeaconInfo& beacon)
 {
 	if(knownAPs.indexOf(beacon.bssid) < 0) {
 		knownAPs.add(beacon);
@@ -75,7 +75,7 @@ static void onNewBeacon(const BeaconInfo& beacon)
 	}
 }
 
-static void onNewClient(const ClientInfo& client)
+static void onClient(const ClientInfo& client)
 {
 	if(knownClients.indexOf(client.station) < 0) {
 		knownClients.add(client);
@@ -100,22 +100,18 @@ static void scanChannel(void* param)
 	}
 }
 
-void ready()
+void init()
 {
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.systemDebugOutput(true); // Debug output to serial
+
 	Serial.printf(_F("\n\nSDK version:%s\n"), system_get_sdk_version());
 	Serial.println(_F("ESP8266 mini-sniff by Ray Burnette http://www.hackster.io/rayburne/projects"));
 	Serial.println(_F("Type:   /-------MAC------/-----WiFi Access Point SSID-----/  /----MAC---/  Chnl  RSSI"));
 
-	sniffer.begin(onNewBeacon, onNewClient);
+	sniffer.onBeacon(onBeacon);
+	sniffer.onClient(onClient);
+	sniffer.begin();
 
 	scanChannel(reinterpret_cast<void*>(1));
-}
-
-void init()
-{
-	Serial.setPort(1);
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(true); // Debug output to serial
-
-	System.onReady(ready);
 }
