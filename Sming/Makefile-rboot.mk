@@ -184,8 +184,6 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
-STRIP   := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-strip
-
 CURRENT_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 
 SPIFF_FILES ?= files
@@ -256,10 +254,8 @@ else ifeq ($(ENABLE_GDB), 1)
 	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0
 	MODULES		 += $(THIRD_PARTY_DIR)/esp-gdbstub
 	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/esp-gdbstub
-	STRIP := @true
 else
 	CFLAGS += -Os -g
-	STRIP := @true
 endif
 ifeq ($(ENABLE_WPS),1)
    CFLAGS += -DENABLE_WPS=1
@@ -545,7 +541,6 @@ $(RBOOT_ROM_1): $(TARGET_OUT_1)
 $(TARGET_OUT_0): $(APP_AR)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(SMING_HOME)/compiler/ld $(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
-	$(Q) $(STRIP) $@
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 
@@ -559,7 +554,6 @@ $(TARGET_OUT_0): $(APP_AR)
 $(TARGET_OUT_1): $(APP_AR)
 	$(vecho) "LD $@"
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(SMING_HOME)/compiler/ld  $(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
-	$(Q) $(STRIP) $@
 
 # recreate it from 0, since you get into problems with same filenames
 $(APP_AR): $(OBJ)
