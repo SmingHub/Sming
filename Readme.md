@@ -40,7 +40,7 @@ If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
 OS/SDK | Linux | Mac OS X | Windows | FreeBSD-current |
 -------|-------|----------|---------|-----------------|
 UDK (v1.5)    | n/a   | n/a      |   [![Build status](https://ci.appveyor.com/api/projects/status/5aj0oi0wyk4uij00/branch/develop?svg=true)](https://ci.appveyor.com/project/slaff/sming-sb483/branch/develop)      |     n/a         |
-esp-open-sdk (v1.5, v2.0, v3.0 **) | :sunny:  | :sunny: | n/a | :sunny: |
+esp-open-sdk (v1.5.x, v2.0.0, v3.0 **) | :sunny:  | :sunny: | n/a | :sunny: |
 
 - OS = Operating System.
 - SDK = Software Development Kit.
@@ -48,7 +48,7 @@ esp-open-sdk (v1.5, v2.0, v3.0 **) | :sunny:  | :sunny: | n/a | :sunny: |
 - ** = experimental support
 
 ## Latest Stable Release
-- [Sming V3.7.1](https://github.com/SmingHub/Sming/releases/tag/3.7.1)
+- [Sming V3.8.0](https://github.com/SmingHub/Sming/releases/tag/3.8.0)
 
 
 ## Getting started
