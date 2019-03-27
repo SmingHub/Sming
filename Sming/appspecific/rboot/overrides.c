@@ -18,11 +18,11 @@ spiffs_config spiffs_get_storage_config()
 #error "Define either RBOOT_SPIFFS_0 or RBOOT_SPIFFS_1"
 #endif
 
-  maxAllowedEndAddress = INTERNAL_FLASH_SIZE;
-  requestedEndAddress =  cfg.phys_addr + SPIFF_SIZE;
+  maxAllowedEndAddress = INTERNAL_FLASH_SIZE - 1;
+  requestedEndAddress =  cfg.phys_addr + SPIFF_SIZE - 1;
   if(requestedEndAddress > maxAllowedEndAddress) {
       debug_w("The requested SPIFFS size is too big.");
-      cfg.phys_size = maxAllowedEndAddress -  ( ( u32_t )cfg.phys_addr);
+      cfg.phys_size = (maxAllowedEndAddress + 1) -  ( ( u32_t )cfg.phys_addr);
   }
   else {
       cfg.phys_size = SPIFF_SIZE;
