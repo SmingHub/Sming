@@ -8,7 +8,7 @@
 spiffs_config spiffs_get_storage_config()
 {
   spiffs_config cfg = {0};
-  u32_t maxAllowedEndAddress, requestedEndAddress;
+  u32_t maxAllowedSector, requestedSector;
 
 #ifdef RBOOT_SPIFFS_0
   cfg.phys_addr = RBOOT_SPIFFS_0;
@@ -18,15 +18,15 @@ spiffs_config spiffs_get_storage_config()
 #error "Define either RBOOT_SPIFFS_0 or RBOOT_SPIFFS_1"
 #endif
 
-  maxAllowedEndAddress = INTERNAL_FLASH_SIZE - 1;
-  requestedEndAddress =  cfg.phys_addr + SPIFF_SIZE - 1;
-  if(requestedEndAddress > maxAllowedEndAddress) {
+  cfg.phys_addr &= 0xFFFFF000; // get the start address of the sector
+
+  maxAllowedSector = flashmem_get_sector_of_address(INTERNAL_FLASH_SIZE - 1);
+  requestedSector  = flashmem_get_sector_of_address((cfg.phys_addr + SPIFF_SIZE) - 1);
+  if(requestedSector > maxAllowedSector) {
       debug_w("The requested SPIFFS size is too big.");
-      cfg.phys_size = (maxAllowedEndAddress + 1) -  ( ( u32_t )cfg.phys_addr);
+      requestedSector = maxAllowedSector;
   }
-  else {
-      cfg.phys_size = SPIFF_SIZE;
-  }
+  cfg.phys_size = ((requestedSector + 1) * INTERNAL_FLASH_SECTOR_SIZE) -  ( ( u32_t )cfg.phys_addr); // get the max size until the sector end.
 
   cfg.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE; // according to datasheet
   cfg.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2; // Important to make large
