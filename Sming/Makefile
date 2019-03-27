@@ -22,16 +22,6 @@
 # MacOS / Linux
 # SMING_HOME = /opt/esp-open-sdk
 
-## COM port parameter is reqruied to flash firmware correctly.
-## Windows:
-# COM_PORT = COM3
-
-# MacOS / Linux:
-# COM_PORT = /dev/tty.usbserial
-
-# Com port speed
-COM_SPEED = 115200
-
 # Git command
 GIT ?= git
 
@@ -117,7 +107,7 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
-# select which tools to use as compiler, librarian and linker
+# select which tools to use as assembler, compiler, librarian and linker
 AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CXX		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-g++
@@ -125,16 +115,6 @@ AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
 LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 OBJCOPY := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objcopy
 OBJDUMP := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objdump
-
-## COM port parameters
-# Default COM port speed (generic)
-COM_SPEED ?= 115200
-
-# Default COM port speed (used for flashing)
-COM_SPEED_ESPTOOL ?= $(COM_SPEED)
-
-# Default COM port speed (used in code)
-COM_SPEED_SERIAL  ?= $(COM_SPEED)
 
 ### Debug output parameters
 # By default `debugf` does not print file name and line number. If you want this enabled set the directive below to 1
@@ -220,15 +200,6 @@ ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	SDK_INTERNAL = 1
 endif
 
-# => esp-gdbstub
-ifeq ($(ENABLE_GDB), 1)
-	THIRD_PARTY_DATA += third-party/esp-gdbstub/Makefile
-	MODULES		 += third-party/esp-gdbstub
-	EXTRA_INCDIR += third-party/esp-gdbstub
-else ifneq ($(SMING_RELEASE),1)
-	MODULES += gdb
-endif
-
 # => umm_malloc (custom heap allocation)
 ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 	THIRD_PARTY_DATA += third-party/umm_malloc/Makefile
@@ -284,16 +255,21 @@ MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 CFLAGS_COMMON = -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections
 # compiler flags using during compilation of source files. Add '-pg' for debugging
 CFLAGS += -Wall -Wundef -Wpointer-arith -Wno-comment $(CFLAGS_COMMON) \
-         	-D__ets__ -DICACHE_FLASH -DUSE_OPTIMIZE_PRINTF -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1
+         	-D__ets__ -DICACHE_FLASH -DUSE_OPTIMIZE_PRINTF -DARDUINO=106 -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1
 ifneq ($(STRICT),1)
 CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
 endif
+
+ifeq ($(ENABLE_GDB), 1)
+	CFLAGS += -ggdb -DENABLE_GDB=1
+endif
+
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
 	CFLAGS += -Os -DSMING_RELEASE=1 -DLWIP_NOASSERT
 else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0
+	CFLAGS += -Og
 else
 	CFLAGS += -Os -g
 endif
@@ -319,16 +295,8 @@ ifneq ($(STRICT),1)
 CXXFLAGS += -Wno-reorder
 endif
 
-# linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -Wl,-static -Wl,--gc-sections -Wl,-wrap,system_restart_local
-
-# linker script used for the above linkier step
-LD_PATH     = compiler/ld/
-LD_SCRIPT	= $(LD_PATH)eagle.app.v6.cpp.ld
-
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
-SDK_LDDIR	= ld
 SDK_INCDIR	= include include/json
 
 # SSL support using axTLS
@@ -359,24 +327,17 @@ SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
 AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.s))
-ifeq ($(ENABLE_GDB), 1)
-	AS_SRC += $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
-endif
+AS_SRC		+= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 AS_OBJ		:= $(patsubst %.s,$(BUILD_BASE)/%.o,$(AS_SRC))
-ifeq ($(ENABLE_GDB), 1)
-	AS_OBJ		+= $(patsubst %.S,$(BUILD_BASE)/%.o,$(AS_SRC))
-endif
+AS_OBJ		+= $(patsubst %.S,$(BUILD_BASE)/%.o,$(AS_SRC))
 C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
 CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
 OBJ		:= $(AS_OBJ) $(C_OBJ) $(CXX_OBJ)
 LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
-
-#LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
-LD_SCRIPT	:= $(addprefix -T,$(LD_SCRIPT))
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
@@ -399,19 +360,15 @@ endif
 vpath %.c $(SRC_DIR)
 vpath %.cpp $(SRC_DIR)
 vpath %.s $(SRC_DIR)
-ifeq ($(ENABLE_GDB), 1)
-	vpath %.S $(SRC_DIR)
-endif
+vpath %.S $(SRC_DIR)
 
 define compile-objects
 $1/%.o: %.s
 	$(vecho) "AS $$<"
 	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-ifeq ($(ENABLE_GDB), 1)
 $1/%.o: %.S
 	$(vecho) "AS $$<"
 	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-endif
 $1/%.o: %.c $1/%.c.d
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@

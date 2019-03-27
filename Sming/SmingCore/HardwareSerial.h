@@ -24,7 +24,7 @@
 #define UART_ID_0 0 ///< ID of UART 0
 #define UART_ID_1 1 ///< ID of UART 1
 
-#define NUMBER_UARTS 2 ///< Quantity of UARTs available
+#define NUMBER_UARTS UART_COUNT ///< Quantity of UARTs available
 
 class HardwareSerial;
 
@@ -108,6 +108,11 @@ public:
 	{
 		end();
 		uartNr = uartPort;
+	}
+
+	int getPort()
+	{
+		return uartNr;
 	}
 
 	/** @brief  Initialise the serial port
@@ -277,7 +282,7 @@ public:
 	/** @brief Flush all pending data to the serial port
 	 *  @note Not to be confused with uart_flush() which is different. See clear() method.
 	 */
-	void flush()
+	void flush() override // Stream
 	{
 		uart_wait_tx_empty(uart);
 	}
@@ -429,6 +434,8 @@ private:
 	 */
 	static void IRAM_ATTR staticCallbackHandler(uart_t* uart, uint32_t status);
 	void IRAM_ATTR callbackHandler(uint32_t status);
+	static void staticOnTransmitComplete(uint32_t param);
+	static void staticOnReceive(uint32_t param);
 
 	/**
 	 * @brief Called whenever one of the user callbacks change

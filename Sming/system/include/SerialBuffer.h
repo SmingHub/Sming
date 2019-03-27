@@ -13,10 +13,12 @@
 #ifndef _SYSTEM_INCLUDE_SERIAL_BUFFER_H_
 #define _SYSTEM_INCLUDE_SERIAL_BUFFER_H_
 
+#include <user_config.h>
+
 /** @brief FIFO buffer used for both receive and transmit data
  *  @note For receive operations, data is written via ISR and read via task
  *  	  For transmit operations, data is written via task and read via ISR
- *  Only call routines marked with __forceinline or IRAM_ATTR from an interrupt context.
+ *  Only routines marked with __forceinline or IRAM_ATTR may be called from interrupt context.
  */
 struct SerialBuffer {
 public:
@@ -36,8 +38,9 @@ public:
 	__forceinline size_t available()
 	{
 		int ret = writePos - readPos;
-		if(ret < 0)
+		if(ret < 0) {
 			ret += size;
+		}
 		return ret;
 	}
 
@@ -46,15 +49,24 @@ public:
 	 */
 	__forceinline size_t getFreeSpace()
 	{
+		if(buffer == nullptr) {
+			return 0;
+		}
 		int ret = readPos - writePos - 1;
-		if(ret < 0)
+		if(ret < 0) {
 			ret += size;
+		}
 		return ret;
 	}
 
 	__forceinline bool isEmpty()
 	{
-		return writePos == readPos;
+		return (buffer == nullptr) || (writePos == readPos);
+	}
+
+	__forceinline bool isFull()
+	{
+		return getFreeSpace() == 0;
 	}
 
 	/** @brief see if there's anything in the buffer
@@ -62,10 +74,7 @@ public:
 	 */
 	__forceinline int peekChar()
 	{
-		if(!buffer || isEmpty())
-			return -1;
-
-		return buffer[readPos];
+		return isEmpty() ? -1 : buffer[readPos];
 	}
 
 	/*
@@ -73,16 +82,14 @@ public:
 	 */
 	__forceinline int peekLastChar()
 	{
-		if(!buffer || isEmpty())
-			return -1;
-
-		return buffer[getPrevPos(writePos)];
+		return isEmpty() ? -1 : buffer[getPrevPos(writePos)];
 	}
 
 	__forceinline int readChar()
 	{
-		if(!buffer || isEmpty())
+		if(isEmpty()) {
 			return -1;
+		}
 
 		uint8_t c = buffer[readPos];
 		readPos = getNextPos(readPos);
@@ -92,8 +99,10 @@ public:
 	__forceinline size_t writeChar(uint8_t c)
 	{
 		size_t nextPos = getNextPos(writePos);
-		if(nextPos == readPos)
+		if(nextPos == readPos) {
 			return 0;
+		}
+
 		buffer[writePos] = c;
 		writePos = nextPos;
 		return 1;
@@ -103,52 +112,37 @@ public:
 	 *  @param c
 	 *  @retval int position relative to current read pointer, -1 if character not found
 	 */
-	int find(uint8_t c)
-	{
-		size_t offset = readPos;
-		size_t pos = 0;
-		size_t avail = available();
-		while(pos < avail) {
-			if(buffer[offset + pos] == c)
-				return pos;
-
-			pos++;
-			if(pos + offset == writePos)
-				break;
-
-			if(pos + offset == size)
-				offset = -pos;
-		}
-
-		return -1;
-	}
+	int find(uint8_t c);
 
 	// Must be called with interrupts disabled
-	size_t resize(size_t newSize)
-	{
-		if(size == newSize)
-			return size;
-
-		uint8_t* new_buf = new uint8_t[newSize];
-		if(!new_buf)
-			return size;
-
-		size_t new_wpos = 0;
-		size_t avail = available();
-		while(avail-- && new_wpos < newSize)
-			new_buf[new_wpos++] = readChar();
-
-		delete[] buffer;
-		buffer = new_buf;
-		size = newSize;
-		readPos = 0;
-		writePos = new_wpos;
-		return size;
-	}
+	size_t resize(size_t newSize);
 
 	void clear()
 	{
 		readPos = writePos = 0;
+	}
+
+	/** @brief Access data directly within buffer
+	 *  @param void*& OUT: the data
+	 *  @retval size_t number of chars available
+	 */
+	__forceinline size_t getReadData(void*& data)
+	{
+		data = buffer + readPos;
+		auto wp = writePos; // Guard against ISR changing value
+		return (wp < readPos) ? size - readPos : wp - readPos;
+	}
+
+	/** @brief Skip a number of chars starting at the given read position
+	 *  @param length MUST be <= value returned from peek()
+	 *  @note Provided for efficient buffer access
+	 */
+	__forceinline void skipRead(size_t length)
+	{
+		readPos += length;
+		if(readPos == size) {
+			readPos = 0;
+		}
 	}
 
 private:
@@ -169,7 +163,7 @@ private:
 	size_t size = 0;
 	size_t readPos = 0;
 	size_t writePos = 0;
-	uint8_t* buffer = nullptr;
+	char* buffer = nullptr;
 };
 
 #endif //  _SYSTEM_INCLUDE_SERIAL_BUFFER_H_

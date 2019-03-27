@@ -20,19 +20,10 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
 #include <user_config.h>
-#include "espinc/peri.h"
+#include "gdb_hooks.h"
 
 extern void __real_system_restart_local();
-
-extern int ets_printf(const char*, ...);
-
-void uart_write_char_d(char c);
-static void uart0_write_char_d(char c);
-static void uart1_write_char_d(char c);
-static void print_stack(uint32_t start, uint32_t end) SMING_UNUSED;
-//static void print_pcs(uint32_t start, uint32_t end);
 
 extern void __custom_crash_callback( struct rst_info * rst_info, uint32_t stack, uint32_t stack_end ) {
 }
@@ -40,97 +31,43 @@ extern void __custom_crash_callback( struct rst_info * rst_info, uint32_t stack,
 extern void custom_crash_callback( struct rst_info * rst_info, uint32_t stack, uint32_t stack_end ) __attribute__ ((weak, alias("__custom_crash_callback")));
 
 void __wrap_system_restart_local() {
-    register uint32_t sp asm("a1");
+    register uint32_t sp_reg asm("a1");
+    uint32_t sp = sp_reg;
 
     struct rst_info rst_info = {0};
     system_rtc_mem_read(0, &rst_info, sizeof(rst_info));
-
-    if (rst_info.reason != REASON_SOFT_WDT_RST &&
-        rst_info.reason != REASON_EXCEPTION_RST &&
-        rst_info.reason != REASON_WDT_RST)
-    {
-        return;
-    }
-
-#ifndef SMING_RELEASE
-    ets_install_putc1(&uart_write_char_d);
-
-    if (rst_info.reason == REASON_EXCEPTION_RST) {
-        os_printf("\n\n***** Exception Reset (%d):\nepc1=0x%08x epc2=0x%08x epc3=0x%08x excvaddr=0x%08x depc=0x%08x\n",
-            rst_info.exccause, rst_info.epc1, rst_info.epc2, rst_info.epc3, rst_info.excvaddr, rst_info.depc);
-    }
-    else if (rst_info.reason == REASON_SOFT_WDT_RST) {
-        os_printf("\n\n***** Software Watchdog Reset\n");
-    }
-#endif
-
-    uint32_t stack_end;
 
     // amount of stack taken by interrupt or exception handler
     // and everything up to __wrap_system_restart_local
     // (determined empirically, might break)
     uint32_t offset = 0;
-    if (rst_info.reason == REASON_SOFT_WDT_RST) {
+    switch(rst_info.reason) {
+    case REASON_SOFT_WDT_RST:
         offset = 0x1b0;
-    }
-    else if (rst_info.reason == REASON_EXCEPTION_RST) {
+        break;
+    case REASON_EXCEPTION_RST:
         offset = 0x1a0;
-    }
-    else if (rst_info.reason == REASON_WDT_RST) {
+        break;
+    case REASON_WDT_RST:
         offset = 0x10;
+        break;
+    case REASON_DEFAULT_RST:
+    case REASON_SOFT_RESTART:
+    case REASON_DEEP_SLEEP_AWAKE:
+    case REASON_EXT_SYS_RST:
+    default:
+    	return;
     }
 
-    stack_end = 0x3fffffb0;
+    uint32_t stack_end = 0x3fffffb0;
     // it's actually 0x3ffffff0, but the stuff below ets_run
     // is likely not really relevant to the crash
 
-#ifndef SMING_RELEASE
-    print_stack(sp + offset, stack_end);
-#endif
+	debug_crash_callback(&rst_info, sp + offset, stack_end);
 
-    custom_crash_callback( &rst_info, sp + offset, stack_end );
+    custom_crash_callback(&rst_info, sp + offset, stack_end);
 
     os_delay_us(10000);
     __real_system_restart_local();
 }
 
-static void print_stack(uint32_t start, uint32_t end) {
-    uint32_t pos = 0;
-
-    PSTR_ARRAY(separatorLine, "\n================================================================\n");
-
-    os_printf_plus(separatorLine);
-    for (pos = start; pos < end; pos += 0x10) {
-        uint32_t* values = (uint32_t*)(pos);
-
-        // rough indicator: stack frames usually have SP saved as the second word
-        bool looksLikeStackFrame = (values[2] == pos + 0x10);
-
-        os_printf("%08x:  %08x %08x %08x %08x %c\n",
-            pos, values[0], values[1], values[2], values[3], (looksLikeStackFrame)?'<':' ');
-    }
-    os_printf_plus(separatorLine);
-}
-
-void uart_write_char_d(char c) {
-    uart0_write_char_d(c);
-    uart1_write_char_d(c);
-}
-
-static void uart0_write_char_d(char c) {
-    while (((USS(0) >> USTXC) & 0xff)) { }
-
-    if (c == '\n') {
-        USF(0) = '\r';
-    }
-    USF(0) = c;
-}
-
-static void uart1_write_char_d(char c) {
-    while (((USS(1) >> USTXC) & 0xff) >= 0x7e) { }
-
-    if (c == '\n') {
-        USF(1) = '\r';
-    }
-    USF(1) = c;
-}
