@@ -129,9 +129,6 @@ signed short fileSetContent(const String& fileName, const char* content)
 		return file;
 	}
 	res = fileWrite(file, content, strlen(content));
-	if( res < 0 ) {
-		return res;
-	}
 	fileClose(file);
 	return res;
 }
