@@ -119,7 +119,7 @@ void fileClearLastError(file_t fd);
             populates the file with the content of a c-string buffer.
             Remember to terminate your c-string buffer with a null (0).
  */
-signed int fileSetContent(const String& fileName, const char* content);
+int fileSetContent(const String& fileName, const char* content);
 
 /** @brief  Create or replace file with defined content
  *  @param  fileName Name of file to create or replace
@@ -127,7 +127,7 @@ signed int fileSetContent(const String& fileName, const char* content);
  *  @note   This function creates a new file or replaces an existing file and
             populates the file with the content of a string.
  */
-signed int fileSetContent(const String& fileName, const String& content);
+int fileSetContent(const String& fileName, const String& content);
 
 /** @brief  Get size of file
  *  @param  fileName Name of file

@@ -115,17 +115,17 @@ void fileClearLastError(file_t fd)
 	SPIFFS_clearerr(&_filesystemStorageHandle);
 }
 
-signed int fileSetContent(const String& fileName, const String& content)
+int fileSetContent(const String& fileName, const String& content)
 {
 	return fileSetContent(fileName, content.c_str());
 }
 
-signed int fileSetContent(const String& fileName, const char* content)
+int fileSetContent(const String& fileName, const char* content)
 {
-	signed int res;
+	int res;
 
 	file_t file = fileOpen(fileName.c_str(), eFO_CreateNewAlways | eFO_WriteOnly);
-	if( file < 0 ) {
+	if(file < 0) {
 		return file;
 	}
 	res = fileWrite(file, content, strlen(content));
