@@ -115,6 +115,8 @@ void fileClearLastError(file_t fd);
 /** @brief  Create or replace file with defined content
  *  @param  fileName Name of file to create or replace
  *  @param  content Pointer to c-string containing content to populate file with
+ *  @retval int Positive integer represents the numbers of bytes written.
+ *	@retval int Negative integer represents the error code of last file system operation.
  *  @note   This function creates a new file or replaces an existing file and
             populates the file with the content of a c-string buffer.
             Remember to terminate your c-string buffer with a null (0).
@@ -124,6 +126,8 @@ int fileSetContent(const String& fileName, const char* content);
 /** @brief  Create or replace file with defined content
  *  @param  fileName Name of file to create or replace
  *  @param  content String containing content to populate file with
+ *  @retval int Positive integer represents the numbers of bytes written.
+ *	@retval int Negative integer represents the error code of last file system operation.
  *  @note   This function creates a new file or replaces an existing file and
             populates the file with the content of a string.
  */
