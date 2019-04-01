@@ -115,16 +115,25 @@ void fileClearLastError(file_t fd)
 	SPIFFS_clearerr(&_filesystemStorageHandle);
 }
 
-void fileSetContent(const String& fileName, const String& content)
+signed short fileSetContent(const String& fileName, const String& content)
 {
-	fileSetContent(fileName, content.c_str());
+	return fileSetContent(fileName, content.c_str());
 }
 
-void fileSetContent(const String& fileName, const char* content)
+signed short fileSetContent(const String& fileName, const char* content)
 {
+	signed short res;
+
 	file_t file = fileOpen(fileName.c_str(), eFO_CreateNewAlways | eFO_WriteOnly);
-	fileWrite(file, content, strlen(content));
+	if( file < 0 ) {
+		return file;
+	}
+	res = fileWrite(file, content, strlen(content));
+	if( res < 0 ) {
+		return res;
+	}
 	fileClose(file);
+	return res;
 }
 
 uint32_t fileGetSize(const String& fileName)
