@@ -537,6 +537,8 @@ void uart_wait_tx_empty(uart_t* uart)
 		return;
 	}
 
+	notify(uart, UART_NOTIFY_WAIT_TX);
+
 	if(uart->tx_buffer != nullptr) {
 		while(!uart->tx_buffer->isEmpty()) {
 			delay(0);

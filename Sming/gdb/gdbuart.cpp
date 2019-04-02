@@ -227,6 +227,16 @@ static void userUartNotify(uart_t* uart, uart_notify_code_t code)
 		break;
 	}
 
+	case UART_NOTIFY_WAIT_TX: {
+		/*
+		 * Ensure all data has been written to hardware
+		 */
+		while(!uart->tx_buffer->isEmpty()) {
+			gdbstub_send_user_data();
+		}
+		break;
+	}
+
 	case UART_NOTIFY_BEFORE_READ:
 		break;
 	}

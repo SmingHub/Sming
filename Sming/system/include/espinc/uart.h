@@ -148,6 +148,9 @@ enum uart_notify_code_t {
 
 	/** @brief Called before data is read from rx buffer */
 	UART_NOTIFY_BEFORE_READ,
+
+	/** @brief Called to ensure all buffered data is output */
+	UART_NOTIFY_WAIT_TX,
 };
 
 /** @brief Port notification callback function type
