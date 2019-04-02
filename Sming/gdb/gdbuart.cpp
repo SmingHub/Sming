@@ -32,7 +32,7 @@ static bool sendUserDataQueued;			  // Ensures only one call to sendUserData() i
 // Get number of characters in receive FIFO
 __forceinline static uint8_t uart_rxfifo_count(uint8_t nr)
 {
-	return (USS(nr) >> USRXC) & 0x7f;
+	return (USS(nr) >> USRXC) & 0xff;
 }
 
 // Get number of characters in transmit FIFO
