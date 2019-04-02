@@ -185,6 +185,10 @@ static ERRNO_T ATTR_GDBEXTERNFN writeMemoryBlock(uint32_t addr, const void* data
  */
 static void ATTR_GDBEXTERNFN sendReason()
 {
+	// Flush any debug info to serial
+	while(gdbstub_send_user_data() != 0) {
+		//
+	}
 	GdbPacket packet;
 	packet.writeChar('T');
 

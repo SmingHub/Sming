@@ -148,7 +148,7 @@ size_t ATTR_GDBEXTERNFN gdbSendChar(char c)
 }
 
 #if GDBSTUB_ENABLE_UART2
-void gdbstub_send_user_data()
+size_t gdbstub_send_user_data()
 {
 	size_t avail = 0;
 
@@ -191,6 +191,8 @@ void gdbstub_send_user_data()
 		gdbstub_syscall_execute();
 	}
 #endif
+
+	return avail;
 }
 
 static void SendUserDataQueued(uint32_t)
@@ -240,8 +242,7 @@ static void userUartNotify(uart_t* uart, uart_notify_code_t code)
 		/*
 		 * Ensure all data has been written to hardware
 		 */
-		while(!uart->tx_buffer->isEmpty()) {
-			gdbstub_send_user_data();
+		while(gdbstub_send_user_data() != 0) {
 		}
 		break;
 	}
