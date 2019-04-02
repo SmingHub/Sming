@@ -13,9 +13,9 @@
 #ifndef _GDB_GDBSTUB_H_
 #define _GDB_GDBSTUB_H_
 
-#include "gdbstub-internal.h"
 
-#include <user_config.h>
+#include "gdbstub-internal.h"
+#include <gdb_hooks.h>
 
 // GDB_xx macro versions required to ensure no flash access if requested
 #if GDBSTUB_FORCE_IRAM
@@ -28,12 +28,25 @@
 
 #define gdbstub_do_break() asm("break 0,0")
 
-extern bool gdb_attached;
-extern bool gdb_enabled;
+// Additional debugging flags
+enum GdbDebugFlag {
+	DBGFLAG_DEBUG_EXCEPTION,  ///< For debug exceptions, cause is DBGCAUSE (see DebugCause bits)
+	DBGFLAG_SYSTEM_EXCEPTION, ///< For system exceptions, cause is EXCCAUSE (see EXCCAUSE_* values)
+	DBGFLAG_CTRL_BREAK,		  ///< Break caused by call to gdbstub_ctrl_break()
+};
+
+// State information in shared global structure
+struct gdb_state_t {
+	bool attached;		  ///< true if GDB is attached to stub
+	bool enabled;		  ///< Debugging may be disabled via gdb_enable()
+	uint8_t flags;		  ///< Combination of GdbDebugFlag
+	unsigned ack_count;   ///< For discarding of acknowledgement characters
+};
+
+extern volatile gdb_state_t gdb_state;
 extern const uint8_t gdb_exception_signals[];
 
 void gdbstub_init();
 void gdbstub_handle_exception(UserFrame* frame);
-void gdbstub_ctrl_break();
 
 #endif /* _GDB_GDBSTUB_H_ */

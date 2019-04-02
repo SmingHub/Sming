@@ -23,10 +23,10 @@
 static uart_t* gdb_uart; // Port debugger is attached to
 
 #if GDBSTUB_ENABLE_UART2
-static uart_t* user_uart;				  // If open, virtual port being used for user passthrough
-static volatile bool userDataSending;	 // Transmit completion callback invoked on user uart
-static volatile unsigned userPacketCount; // For discarding of acknowledgement characters
-static bool sendUserDataQueued;			  // Ensures only one call to sendUserData() is queued at a time
+static uart_t* user_uart;			  // If open, virtual port being used for user passthrough
+static uint32_t user_uart_status;	 // See gdb_uart_callback (ISR handler)
+static volatile bool userDataSending; // Transmit completion callback invoked on user uart
+static bool sendUserDataQueued;		  // Ensures only one call to gdbstub_send_user_data() is queued at a time
 #endif
 
 // Get number of characters in receive FIFO
@@ -105,9 +105,6 @@ static size_t ATTR_GDBEXTERNFN gdb_uart_write_char(char c)
 	return 1;
 }
 
-/*
- * Receive a char from the uart. Uses polling and feeds the watchdog.
- */
 int ATTR_GDBEXTERNFN gdbReceiveChar()
 {
 #if GDBSTUB_UART_READ_TIMEOUT
@@ -133,9 +130,6 @@ int ATTR_GDBEXTERNFN gdbReceiveChar()
 	return -1;
 }
 
-/*
- * Send a block of data to the uart
- */
 size_t ATTR_GDBEXTERNFN gdbSendData(const void* data, size_t length)
 {
 #if GDBSTUB_ENABLE_DEBUG >= 3
@@ -144,9 +138,6 @@ size_t ATTR_GDBEXTERNFN gdbSendData(const void* data, size_t length)
 	return gdb_uart_write(data, length);
 }
 
-/*
- * Send a char to the uart
- */
 size_t ATTR_GDBEXTERNFN gdbSendChar(char c)
 {
 #if GDBSTUB_ENABLE_DEBUG >= 3
@@ -156,58 +147,53 @@ size_t ATTR_GDBEXTERNFN gdbSendChar(char c)
 }
 
 #if GDBSTUB_ENABLE_UART2
-/**
- * @brief Send some user data from the user_uart TX buffer to the GDB serial port,
- * packetising it if necessary.
- * @note Data flows from user uart TX buffer to UART0 either during uart_write() call
- * (via notify callback) or via task callback queued from ISR. We don't do this inside
- * the ISR as all the code (including packetising) would need to be in IRAM.
- */
-static void sendUserData()
+void gdbstub_send_user_data()
 {
-	sendUserDataQueued = false;
+	size_t avail = 0;
 
 	auto txbuf = user_uart == nullptr ? nullptr : user_uart->tx_buffer;
-	if(txbuf == nullptr) {
-		return; // Uart not open or tx not enabled
-	}
+	if(txbuf != nullptr) {
+		void* data;
+		while((avail = txbuf->getReadData(data)) != 0) {
+			size_t charCount;
+			unsigned used = uart_txfifo_count(GDB_UART);
+			unsigned space = UART_TX_FIFO_SIZE - used - 1;
+			if(gdb_state.attached) {
+				// $Onn#CC is smallest packet, for a single character, but we want to avoid that as it's inefficient
+				if(used >= 8) {
+					break;
+				}
 
-	void* data;
-	size_t avail;
-	while((avail = user_uart->tx_buffer->getReadData(data)) != 0) {
-		size_t charCount;
-		unsigned used = uart_txfifo_count(GDB_UART);
-		unsigned space = UART_TX_FIFO_SIZE - used - 1;
-		if(gdb_attached) {
-			// $Onn#CC is smallest packet, for a single character, but we want to avoid that as it's inefficient
-			if(used >= 8) {
-				break;
+				charCount = std::min((space - 3) / 2, avail);
+				GdbPacket packet;
+				packet.writeChar('O');
+				packet.writeHexBlock(data, charCount);
+				uart_disable_interrupts();
+				++gdb_state.ack_count;
+				uart_restore_interrupts();
+			} else {
+				charCount = gdb_uart_write(data, std::min(space, avail));
 			}
 
-			charCount = std::min((space - 3) / 2, avail);
-			GdbPacket packet;
-			packet.writeChar('O');
-			packet.writeHexBlock(data, charCount);
-			ETS_UART_INTR_DISABLE();
-			++userPacketCount;
-			ETS_UART_INTR_ENABLE();
-		} else {
-			charCount = gdb_uart_write(data, std::min(space, avail));
-		}
+			userDataSending = true;
 
-		userDataSending = true;
-
-		user_uart->tx_buffer->skipRead(charCount);
-		if(charCount != avail) {
-			break; // That's all for now
+			user_uart->tx_buffer->skipRead(charCount);
+			if(charCount != avail) {
+				break; // That's all for now
+			}
 		}
 	}
+
+static void SendUserDataQueued(uint32_t)
+{
+	sendUserDataQueued = false;
+	gdbstub_send_user_data();
 }
 
 __forceinline void queueSendUserData()
 {
 	if(!sendUserDataQueued) {
-		System.queueCallback(TaskCallback(sendUserData));
+		System.queueCallback(SendUserDataQueued);
 		sendUserDataQueued = true;
 	}
 }
@@ -234,7 +220,7 @@ static void userUartNotify(uart_t* uart, uart_notify_code_t code)
 		 * loop indefinitely if UART_OPT_TXWAIT is set.
 		 */
 		if(uart->tx_buffer->isFull()) {
-			sendUserData();
+			gdbstub_send_user_data();
 		} else {
 			queueSendUserData();
 		}
@@ -250,7 +236,7 @@ static void userUartNotify(uart_t* uart, uart_notify_code_t code)
 static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 {
 #if GDBSTUB_ENABLE_UART2
-	uint32_t user_status = status;
+	user_uart_status = status;
 
 	// TX FIFO empty ?
 	if(bitRead(status, UIFE)) {
@@ -265,13 +251,13 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 			if(!txbuf->isEmpty()) {
 				// Yes - send it via task callback (because packetising code may not be in IRAM)
 				queueSendUserData();
-				bitClear(user_status, UIFE);
+				bitClear(user_uart_status, UIFE);
 			} else if(userDataSending) {
 				// User data has now all been sent - UIFE will remain set
 				userDataSending = false;
 			} else {
 				// No user data was in transit, so this event doesn't apply to user uart
-				bitClear(user_status, UIFE);
+				bitClear(user_uart_status, UIFE);
 			}
 		}
 	}
@@ -287,46 +273,52 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 		while(uart_rxfifo_count(GDB_UART) != 0) {
 			char c = USF(GDB_UART);
 #if GDBSTUB_CTRLC_BREAK
-			bool breakCheck = gdb_enabled;
+			bool breakCheck = gdb_state.enabled;
 #if GDBSTUB_CTRLC_BREAK == 1
-			if(!gdb_attached) {
+			if(!gdb_state.attached) {
 				breakCheck = false;
 			}
 #endif
 			if(breakCheck && c == '\x03') {
-				gdbstub_ctrl_break();
+				bitSet(gdb_state.flags, DBGFLAG_CTRL_BREAK);
+				gdbstub_do_break();
 				continue;
 			}
 #endif
+				continue;
+			}
+#endif
+
 #if GDBSTUB_ENABLE_UART2
 			if(rxbuf != nullptr) {
-				if(userPacketCount != 0) {
-					--userPacketCount; // Discard acknowledgement '+'
-				} else {
-					if(rxbuf->writeChar(c) == 0) {
-						bitSet(user_status, UIOF); // Overflow
-					}
-					isUserData = true;
+				if(gdb_state.ack_count != 0 && (c == '-' || c == '+')) {
+					--gdb_state.ack_count; // Discard acknowledgement '+'
+				} else if(rxbuf->writeChar(c) == 0) {
+					bitSet(user_uart_status, UIOF); // Overflow
 				}
 			}
 #endif
 		}
 
-		// We cleared status flags  above, but this one gets re-set almost immediately so clear it again now
-		USIC(GDB_UART) = _BV(UITO);
-
 #if GDBSTUB_ENABLE_UART2
-		if(!isUserData) {
-			// This event doesn't apply to user uart
-			bitClear(user_status, UIFF);
-			bitClear(user_status, UITO);
+		if(rxbuf != nullptr) {
+			if(rxbuf->isEmpty()) {
+				// This event doesn't apply to user uart
+				bitClear(user_uart_status, UIFF);
+				bitClear(user_uart_status, UITO);
+			} else if(rxbuf->getFreeSpace() > UART_RX_FIFO_SIZE + user_uart->rx_headroom) {
+				bitClear(user_uart_status, UIFF);
+			}
 		}
 #endif
 	}
 
 #if GDBSTUB_ENABLE_UART2
-	if(user_status != 0 && user_uart != nullptr && user_uart->callback != nullptr) {
-		user_uart->callback(user_uart, user_status);
+	if(user_uart_status != 0 && user_uart != nullptr) {
+		user_uart->status |= user_uart_status;
+		if(user_uart->callback != nullptr) {
+			user_uart->callback(user_uart, user_uart_status);
+		}
 	}
 #endif
 }

@@ -119,7 +119,13 @@ typedef struct uart_ uart_t;
 /** @brief callback invoked directly from ISR
  *  @param arg the UART object
  *  @param status UART USIS STATUS flag bits indicating cause of interrupt
- *  @param param user-supplied callback parameter
+ *  @note Values can be:
+ *  	UIFE: TX FIFO Empty
+ *  	UIFF: RX FIFO Full
+ *  	UITO: RX FIFO Timeout
+ *  	UIBD: Break Detected
+ *
+ * Errors can be detected via uart_get_status().
  */
 typedef void (*uart_callback_t)(uart_t* uart, uint32_t status);
 
@@ -167,6 +173,8 @@ struct uart_ {
 	uint8_t options;
 	uint8_t rx_pin;
 	uint8_t tx_pin;
+	uint8_t rx_headroom; ///< Callback when rx_buffer free space <= headroom
+	uint16_t status; ///< All status flags reported to callback since last uart_get_status() call
 	struct SerialBuffer* rx_buffer;  ///< Optional receive buffer
 	struct SerialBuffer* tx_buffer;  ///< Optional transmit buffer
 	uart_callback_t callback; ///< Optional User callback routine
@@ -229,6 +237,19 @@ static inline void uart_set_options(uart_t* uart, uart_options_t options)
 	if (uart)
 		uart->options = options;
 }
+
+/** @brief Get error flags and clear them
+ *  @param uart
+ *  @retval Status error bits:
+ *  @note To detect errors during a transaction, call at the start to clear the flags,
+ *  then check the value at the end.
+ *	Only these values are cleared/returned:
+ *  	UIBD: Break Detected
+ *  	UIOF: RX FIFO OverFlow
+ *  	UIFR: Frame Error
+ *  	UIPE: Parity Error
+ */
+uint8_t IRAM_ATTR uart_get_status(uart_t* uart);
 
 static inline uart_options_t uart_get_options(uart_t* uart)
 {
@@ -383,6 +404,15 @@ void uart_detach(int uart_nr);
  */
 void uart_detach_all();
 
+
+/** @brief disable interrupts and return current interrupt state
+ *  @retval state non-zero if any UART interrupts were active
+ */
+uint8_t uart_disable_interrupts();
+
+/** @brief re-enable interrupts after calling uart_disable_interrupts()
+ */
+void uart_restore_interrupts();
 
 #if defined (__cplusplus)
 } // extern "C"

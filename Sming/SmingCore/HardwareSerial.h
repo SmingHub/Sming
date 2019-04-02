@@ -90,6 +90,14 @@ enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL
 #define DEFAULT_TX_BUFFER_SIZE 0
 #endif
 
+/** @brief Notification and error status bits */
+enum SerialStatus {
+	eSERS_BreakDetected = UIBD, ///< Break condition detected on receive line
+	eSERS_Overflow = UIOF,		///< Receive buffer overflowed
+	eSERS_FramingError = UIFR,  ///< Receive framing error
+	eSERS_ParityError = UIPE,   ///< Parity check failed on received data
+};
+
 /// Hardware serial class
 class HardwareSerial : public ReadWriteStream
 {
@@ -313,7 +321,7 @@ public:
 	void commandProcessing(bool reqEnable);
 
 	/** @brief  Set handler for received data
-	 *  @param  reqCallback Function to handle received data
+	 *  @param  dataReceivedDelegate Function to handle received data
 	 *  @retval bool Returns true if the callback was set correctly
 	 */
 	bool setCallback(StreamDataReceivedDelegate dataReceivedDelegate)
@@ -322,7 +330,7 @@ public:
 	}
 
 	/** @brief  Set handler for received data
-	 *  @param  reqCallback Function to handle received data
+	 *  @param  dataReceivedDelegate Function to handle received data
 	 *  @retval bool Returns true if the callback was set correctly
 	 */
 	bool onDataReceived(StreamDataReceivedDelegate dataReceivedDelegate)
@@ -332,7 +340,7 @@ public:
 	}
 
 	/** @brief  Set handler for received data
-	 *  @param  reqCallback Function to handle received data
+	 *  @param  transmitCompleteDelegate Function to handle received data
 	 *  @retval bool Returns true if the callback was set correctly
 	 */
 	bool onTransmitComplete(TransmitCompleteDelegate transmitCompleteDelegate)
@@ -415,6 +423,16 @@ public:
 		return uart;
 	}
 
+	/**
+	 * @brief Get status error flags and clear them
+	 * @retval unsigned Status flags, combination of SerialStatus bits
+	 * @see SerialStatus
+	 */
+	unsigned getStatus()
+	{
+		return uart_get_status(uart);
+	}
+
 private:
 	int uartNr = -1;
 	TransmitCompleteDelegate transmitComplete = nullptr; ///< Callback for transmit completion
@@ -426,6 +444,9 @@ private:
 	uart_options_t options = _BV(UART_OPT_TXWAIT);
 	size_t txSize = DEFAULT_TX_BUFFER_SIZE;
 	size_t rxSize = DEFAULT_RX_BUFFER_SIZE;
+	volatile uint16_t statusMask = 0;	 ///< Which serial events require a callback
+	volatile uint16_t callbackStatus = 0; ///< Persistent uart status flags for callback
+	volatile bool callbackQueued = false;
 
 	/**
 	 * @brief Serial interrupt handler, called by serial driver
@@ -433,9 +454,8 @@ private:
 	 * @param status UART status flags indicating cause(s) of interrupt
 	 */
 	static void IRAM_ATTR staticCallbackHandler(uart_t* uart, uint32_t status);
-	void IRAM_ATTR callbackHandler(uint32_t status);
-	static void staticOnTransmitComplete(uint32_t param);
-	static void staticOnReceive(uint32_t param);
+	static void staticOnStatusChange(uint32_t param);
+	void invokeCallbacks();
 
 	/**
 	 * @brief Called whenever one of the user callbacks change

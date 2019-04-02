@@ -51,6 +51,24 @@
 
 #include "SerialBuffer.h"
 
+/*
+ * Parameters relating to RX FIFO and buffer thresholds
+ *
+ * 'headroom' is the number of characters which may be received before a receive overrun
+ * condition occurs and data is lost.
+ *
+ * For the hardware FIFO, data is processed via interrupt so the headroom can be fairly small.
+ * The greater the headroom, the more interrupts will be generated thus reducing efficiency.
+ */
+#define RX_FIFO_FULL_THRESHOLD 120 ///< UIFF interrupt when FIFO bytes > threshold
+#define RX_FIFO_HEADROOM (UART_RX_FIFO_SIZE - RX_FIFO_FULL_THRESHOLD) ///< Chars between UIFF and UIOF
+/*
+ * Using a buffer, data is typically processed via task callback so requires additional time.
+ * This figure is set to a nominal default which should provide robust operation for most situations.
+ * It can be adjusted if necessary via the rx_headroom parameter.
+*/
+#define DEFAULT_RX_HEADROOM (32 - RX_FIFO_HEADROOM)
+
 static int s_uart_debug_nr = UART_NO;
 
 // Get number of characters in receive FIFO
@@ -107,18 +125,13 @@ uart_t* uart_get_uart(uint8_t uart_nr)
 	return (uart_nr < UART_COUNT) ? uartInstances[uart_nr] : nullptr;
 }
 
-/** @brief disable interrupts and return current interrupt state
- *  @retval state non-zero if any UART interrupts were active
- */
-__forceinline static uint8_t uart_disable_interrupts()
+uint8_t uart_disable_interrupts()
 {
 	ETS_UART_INTR_DISABLE();
 	return isrMask;
 }
 
-/** @brief re-enable interrupts after calling uart_disable_interrupts()
- */
-__forceinline static void uart_restore_interrupts()
+void uart_restore_interrupts()
 {
 	if(isrMask != 0) {
 		ETS_UART_INTR_ENABLE();
@@ -204,7 +217,7 @@ size_t uart_resize_rx_buffer(uart_t* uart, size_t new_size)
 
 size_t uart_rx_buffer_size(uart_t* uart)
 {
-	return uart && uart->rx_buffer ? uart->rx_buffer->getSize() : 0;
+	return uart != nullptr && uart->rx_buffer != nullptr ? uart->rx_buffer->getSize() : 0;
 }
 
 size_t uart_resize_tx_buffer(uart_t* uart, size_t new_size)
@@ -251,18 +264,20 @@ size_t uart_read(uart_t* uart, void* buffer, size_t size)
 
 	auto buf = static_cast<uint8_t*>(buffer);
 
-	// If RX buffer not in use or it's empty then read directly from hardware FIFO
+	// First read data from RX buffer if in use
 	if(uart->rx_buffer != nullptr) {
 		while(read < size && !uart->rx_buffer->isEmpty())
 			buf[read++] = uart->rx_buffer->readChar();
 	}
 
+	// Top up from hardware FIFO
 	if(is_physical(uart)) {
 		while(read < size && uart_rxfifo_count(uart->uart_nr) != 0) {
 			buf[read++] = USF(uart->uart_nr);
 		}
 
 		// FIFO full may have been disabled if buffer overflowed, re-enabled it now
+		USIC(uart->uart_nr) = _BV(UIFF) | _BV(UITO);
 		USIE(uart->uart_nr) |= _BV(UIFF) | _BV(UITO);
 	}
 
@@ -302,9 +317,6 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 		return;
 	}
 
-	// Clear all status before proceeeding
-	USIC(uart_nr) = usis;
-
 	/*
 	 * If we haven't asked for interrupts on this UART, then disable all interrupt sources for it.
 	 *
@@ -319,6 +331,9 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 		return;
 	}
 
+	// Value to be passed to callback
+	uint32_t status = usis;
+
 	// Deal with the event, unless we're in raw mode
 	if(!bitRead(uart->options, UART_OPT_CALLBACK_RAW)) {
 		// Rx FIFO full or timeout
@@ -327,15 +342,20 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 
 			// Read as much data as possible from the RX FIFO into buffer
 			if(uart->rx_buffer != nullptr) {
+				size_t avail = uart_rxfifo_count(uart_nr);
 				size_t space = uart->rx_buffer->getFreeSpace();
-				while(space-- && uart_rxfifo_count(uart_nr) != 0) {
+				read = (avail <= space) ? avail : space;
+				space -= read;
+				avail -= read;
+				for(size_t i = 0; i < read; ++i) {
 					uart->rx_buffer->writeChar(USF(uart_nr));
-					++read;
+				}
+
+				// Don't call back until buffer is (almost) full
+				if(space > uart->rx_headroom) {
+					bitClear(status, UIFF);
 				}
 			}
-
-			// We cleared status flags  above, but this one gets re-set almost immediately so clear it again now
-			USIC(uart_nr) = _BV(UITO);
 
 			/*
 			 * If the FIFO is full and we didn't read any of the data then need to mask the interrupt out or it'll recur.
@@ -348,28 +368,39 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 
 		// Unless we replenish TX FIFO, disable after handling interrupt
 		if(bitRead(usis, UIFE)) {
+			size_t space = uart_txfifo_free(uart_nr);
+
 			// Dump as much data as we can from buffer into the TX FIFO
 			if(uart->tx_buffer != nullptr) {
 				size_t avail = uart->tx_buffer->available();
-				while(avail-- && !uart_txfifo_full(uart_nr)) {
+				size_t count = (avail <= space) ? avail : space;
+				space -= count;
+				avail -= count;
+				while(count-- != 0) {
 					USF(uart_nr) = uart->tx_buffer->readChar();
 				}
 			}
 
+			// If TX FIFO remains empty then we must disable TX FIFO EMPTY interrupt to stop it recurring.
 			if(uart_txfifo_count(uart_nr) == 0) {
-				// If TX FIFO remains empty then we must disable TX FIFO EMPTY interrupt to stop it recurring.
 				// The interrupt gets re-enabled by uart_write()
 				bitClear(USIE(uart_nr), UIFE);
 			} else {
 				// We've topped up TX FIFO so defer callback until next time
-				bitClear(usis, UIFE);
+				bitClear(status, UIFE);
 			}
 		}
 	}
 
-	if(usis != 0 && uart->callback != nullptr) {
-		uart->callback(uart, usis);
+	// Keep a note of persistent flags - cleared via uart_get_status()
+	uart->status |= status;
+
+	if(status != 0 && uart->callback != nullptr) {
+		uart->callback(uart, status);
 	}
+
+	// Final step is to clear status flags
+	USIC(uart_nr) = usis;
 }
 
 /** @brief UART interrupt service routine
@@ -396,7 +427,19 @@ void uart_start_isr(uart_t* uart)
 		 * UCTOE: RX TimeOut Enable
 		 */
 		usc1 = (120 << UCFFT) | (0x02 << UCTOT) | _BV(UCTOE);
-		usie = _BV(UIFF) | _BV(UIFR) | _BV(UITO);
+		/*
+		 * UIBD: Break Detected
+		 * UIOF: RX FIFO OverFlow
+		 * UIFF: RX FIFO Full
+		 * UIFR: Frame Error
+		 * UIPE: Parity Error
+		 * UITO: RX FIFO Timeout
+		 *
+		 * There is little benefit in generating interrupts on errors, instead these
+		 * should be cleared at the start of a transaction and checked at the end.
+		 * See uart_get_status().
+		 */
+		usie = _BV(UIFF) | _BV(UITO) | _BV(UIBD);
 	}
 
 	if(uart_tx_enabled(uart)) {
@@ -447,6 +490,9 @@ size_t uart_write(uart_t* uart, const void* buffer, size_t size)
 				while(written < size && !uart_txfifo_full(uart->uart_nr)) {
 					USF(uart->uart_nr) = buf[written++];
 				}
+				// Enable TX FIFO EMPTY interrupt
+				USIC(uart->uart_nr) = _BV(UIFE);
+				bitSet(USIE(uart->uart_nr), UIFE);
 			}
 		}
 
@@ -462,11 +508,6 @@ size_t uart_write(uart_t* uart, const void* buffer, size_t size)
 		if(!bitRead(uart->options, UART_OPT_TXWAIT)) {
 			break;
 		}
-	}
-
-	// Enable TX FIFO EMPTY interrupt
-	if(written != 0 && isPhysical) {
-		bitSet(USIE(uart->uart_nr), UIFE);
 	}
 
 	return written;
@@ -506,6 +547,24 @@ void uart_wait_tx_empty(uart_t* uart)
 		while(uart_txfifo_count(uart->uart_nr) != 0)
 			delay(0);
 	}
+}
+
+uint8_t uart_get_status(uart_t* uart)
+{
+	uint8_t status = 0;
+	if(uart != nullptr) {
+		uart_disable_interrupts();
+		// Get break/overflow flags from actual uart (physical or otherwise)
+		status = uart->status & (_BV(UIBD) | _BV(UIOF));
+		uart->status = 0;
+		// Read raw status register directly from real uart, masking out non-error bits
+		uart = get_physical(uart);
+		status |= USIR(uart->uart_nr) & (_BV(UIBD) | _BV(UIOF) | _BV(UIFR) | _BV(UIPE));
+		// Clear errors
+		USIC(uart->uart_nr) = status;
+		uart_restore_interrupts();
+	}
+	return status;
 }
 
 void uart_flush(uart_t* uart)
@@ -590,6 +649,7 @@ uart_t* uart_init_ex(const uart_config& cfg)
 	uart->options = cfg.options;
 	uart->tx_pin = 255;
 	uart->rx_pin = 255;
+	uart->rx_headroom = DEFAULT_RX_HEADROOM;
 
 	auto rxBufferSize = cfg.rx_size;
 	auto txBufferSize = cfg.tx_size;

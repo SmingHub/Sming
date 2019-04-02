@@ -15,8 +15,28 @@
 
 bool gdb_uart_init();
 
+/*
+ * Receive a char from the uart. Uses polling and feeds the watchdog.
+ */
 int gdbReceiveChar();
+
+/*
+ * Send a block of data to the uart
+ */
 size_t gdbSendData(const void* data, size_t length);
+
+/*
+ * Send a char to the uart
+ */
 size_t gdbSendChar(char c);
+
+/**
+ * @brief Send some user data from the user_uart TX buffer to the GDB serial port,
+ * packetising it if necessary.
+ * @note Data flows from user uart TX buffer to UART0 either during uart_write() call
+ * (via notify callback) or via task callback queued from ISR. We don't do this inside
+ * the ISR as all the code (including packetising) would need to be in IRAM.
+ */
+void gdbstub_send_user_data();
 
 #endif /* _GDB_GDBUART_H_ */

@@ -27,6 +27,7 @@
 #include "BitManipulations.h"
 #include "exceptions.h"
 #include "gdb/registers.h"
+#include "gdbsyscall.h"
 
 extern "C" {
 void system_restart_core();
@@ -55,13 +56,6 @@ static PGM_P const registerNames[] PROGMEM = {
 
 extern GdbstubSavedRegisters gdbstub_savedRegs;
 
-/* Additional debugging flags */
-enum DebugFlag {
-	DBGFLAG_DEBUG_EXCEPTION,  ///< For debug exceptions, cause is DBGCAUSE (see DebugCause bits)
-	DBGFLAG_SYSTEM_EXCEPTION, ///< For system exceptions, cause is EXCCAUSE (see EXCCAUSE_* values)
-	DBGFLAG_CTRL_BREAK,		  ///< Break caused by call to gdbstub_ctrl_break()
-};
-static uint8_t debugFlags = 0;
 typedef uint8_t ERRNO_T;
 
 /*
@@ -74,8 +68,7 @@ typedef uint8_t ERRNO_T;
 uint32_t exceptionStack[GDBSTUB_STACK_SIZE];
 #endif
 
-bool gdb_attached;								   ///< true if GDB is attached to stub
-bool gdb_enabled;								   ///< Debugging may be disabled via gdb_enable()
+volatile gdb_state_t gdb_state; ///< Global state
 static char commandBuffer[MAX_COMMAND_LENGTH + 1]; ///< Buffer for incoming/outgoing GDB commands
 static int32_t singleStepPs = -1; // Stores ps (Program State) when single-stepping instruction. -1 when not in use.
 
@@ -197,13 +190,13 @@ static void ATTR_GDBEXTERNFN sendReason()
 
 	uint8_t signal;
 	auto cause = gdbstub_savedRegs.cause;
-	if(bitRead(debugFlags, DBGFLAG_SYSTEM_EXCEPTION)) {
+	if(bitRead(gdb_state.flags, DBGFLAG_SYSTEM_EXCEPTION)) {
 		// Convert exception code to a signal number
 		signal = (cause <= EXCCAUSE_MAX) ? pgm_read_byte(&gdb_exception_signals[cause]) : 0;
 		packet.writeHexByte(signal);
 	} else {
 		// Debugging exception
-		signal = bitRead(debugFlags, DBGFLAG_CTRL_BREAK) ? GDB_SIGNAL_INT : GDB_SIGNAL_TRAP;
+		signal = bitRead(gdb_state.flags, DBGFLAG_CTRL_BREAK) ? GDB_SIGNAL_INT : GDB_SIGNAL_TRAP;
 		packet.writeHexByte(signal);
 // Current Xtensa GDB versions don't seem to request this, so let's leave it off.
 #if 0
@@ -713,13 +706,13 @@ GdbResult ATTR_GDBEXTERNFN commandLoop()
 		}
 		auto cmdLen = readCommand();
 		if(cmdLen != 0) {
-			gdb_attached = true;
+			gdb_state.attached = true;
 			result = handleCommand(cmdLen);
 		}
 	} while(result == ST_OK);
 
 	if(result == ST_DETACH) {
-		gdb_attached = false;
+		gdb_state.attached = false;
 	}
 
 	return result;
@@ -796,12 +789,12 @@ static void pauseHardwareTimer(bool pause)
 // Main exception handler
 static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
 {
-	bool isEnabled = gdb_enabled;
+	bool isEnabled = gdb_state.enabled;
 
 	if(isEnabled) {
 		pauseHardwareTimer(true);
 
-		bitSet(debugFlags, DBGFLAG_DEBUG_EXCEPTION);
+		bitSet(gdb_state.flags, DBGFLAG_DEBUG_EXCEPTION);
 
 		if(singleStepPs >= 0) {
 			// We come here after single-stepping an instruction
@@ -840,7 +833,7 @@ static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
 		}
 	}
 
-	debugFlags = 0;
+	gdb_state.flags = 0;
 
 	if(isEnabled) {
 		pauseHardwareTimer(false);
@@ -857,12 +850,12 @@ extern "C" void IRAM_ATTR gdbstub_handle_debug_exception()
 #if GDBSTUB_BREAK_ON_EXCEPTION
 void gdbstub_handle_exception(UserFrame* frame)
 {
-	if(!gdb_enabled) {
+	if(!gdb_state.enabled) {
 		return;
 	}
 
 	pauseHardwareTimer(true);
-	bitSet(debugFlags, DBGFLAG_SYSTEM_EXCEPTION);
+	bitSet(gdb_state.flags, DBGFLAG_SYSTEM_EXCEPTION);
 
 	// Copy registers the Xtensa HAL did save to gdbstub_savedRegs
 	memcpy(&gdbstub_savedRegs, frame, 5 * 4);
@@ -880,7 +873,7 @@ void gdbstub_handle_exception(UserFrame* frame)
 	memcpy(frame, &gdbstub_savedRegs, 5 * 4);
 	memcpy(&frame->a2, &gdbstub_savedRegs.a[2], 14 * 4);
 
-	debugFlags = 0;
+	gdb_state.flags = 0;
 	pauseHardwareTimer(false);
 }
 #endif
@@ -902,10 +895,10 @@ void ATTR_GDBINIT gdbstub_init()
 	SD(GDBSTUB_BREAK_ON_INIT);
 #undef SD
 
-	gdb_enabled = gdb_uart_init();
+	gdb_state.enabled = gdb_uart_init();
 
 #if GDBSTUB_BREAK_ON_INIT
-	if(gdb_enabled) {
+	if(gdb_state.enabled) {
 		gdbstub_do_break();
 	}
 #endif
@@ -920,16 +913,10 @@ bool IRAM_ATTR gdb_present()
 
 void gdb_enable(bool state)
 {
-	gdb_enabled = state;
+	gdb_state.enabled = state;
 }
 
 void IRAM_ATTR gdb_do_break()
 {
-	gdbstub_do_break();
-}
-
-void IRAM_ATTR gdbstub_ctrl_break()
-{
-	bitSet(debugFlags, DBGFLAG_CTRL_BREAK);
 	gdbstub_do_break();
 }
