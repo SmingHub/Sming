@@ -47,11 +47,33 @@ void CALLBACK_ATTR blink()
 	state = !state;
 }
 
+void showPrompt()
+{
+	switch(gdb_present()) {
+	case eGDB_Attached:
+		Serial.print(_F("\r(Attached) "));
+		break;
+	case eGDB_Detached:
+		Serial.print(_F("\r(Detached) "));
+		break;
+	case eGDB_NotPresent:
+	default:
+		Serial.print(_F("\r(Non-GDB) "));
+	}
+}
+
+bool handleCommand(const String& cmd);
+
 void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 {
+	static unsigned commandLength;
+	const unsigned MAX_COMMAND_LENGTH = 16;
+	static char commandBuffer[MAX_COMMAND_LENGTH + 1];
+
 	// Error detection
 	unsigned status = Serial.getStatus();
 	if(status != 0) {
+		Serial.println();
 		if(bitRead(status, eSERS_Overflow)) {
 			Serial.println(_F("** RECEIVE OVERFLOW **"));
 		}
@@ -65,18 +87,41 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 			Serial.println(_F("** PARITY ERROR **"));
 		}
 		// Discard what is likely to be garbage
-		Serial.print(_F("Discarding "));
-		Serial.print(availableCharsCount);
-		Serial.println(_F(" chars"));
 		Serial.clear(SERIAL_RX_ONLY);
+		commandLength = 0;
+		showPrompt();
 		return;
 	}
 
-	if(arrivedChar == '\n' && availableCharsCount != 0) {
-		char buffer[availableCharsCount];
-		auto count = Serial.readMemoryBlock(buffer, availableCharsCount);
-		Serial.print(_F("You typed: "));
-		Serial.write(buffer, count);
+	int c;
+	while((c = Serial.read()) >= 0) {
+		switch(c) {
+		case '\b': // delete (backspace)
+			if(commandLength > 0) {
+				--commandLength;
+				Serial.print('\b');
+				Serial.print(' ');
+				Serial.print('\b');
+			}
+			break;
+		case '\r':
+		case '\n':
+			//				m_printHex("CMD", commandBuffer, commandLength);
+			if(commandLength > 0) {
+				Serial.println();
+				String cmd(commandBuffer, commandLength);
+				commandLength = 0;
+				Serial.clear(SERIAL_RX_ONLY);
+				handleCommand(cmd);
+			}
+			showPrompt();
+			break;
+		default:
+			if(c >= 0x20 && c <= 0x7f && commandLength < MAX_COMMAND_LENGTH) {
+				commandBuffer[commandLength++] = c;
+				Serial.print(char(c));
+			}
+		}
 	}
 }
 
@@ -223,6 +268,57 @@ time_t getTimeOfDay()
 	}
 }
 
+/**
+ * @brief User typed a command. Deal with it.
+ * @retval bool true to continue reading another command
+ */
+bool handleCommand(const String& cmd)
+{
+	if(cmd.equalsIgnoreCase(F("readfile1"))) {
+		// Read a small file and display it
+		readFile(_F("Makefile"), true);
+	} else if(cmd.equalsIgnoreCase(F("readfile2"))) {
+		// Read a larger file asynchronously and analyse transfer speed
+		Serial.println(_F("Please wait..."));
+		readFileAsync(PSTR("README.md"));
+		return false; // When read has completed, readConsole() will be called again
+	} else if(cmd.equalsIgnoreCase(F("stat"))) {
+		fileStat(_F("Makefile"));
+	} else if(cmd.equalsIgnoreCase(F("time"))) {
+		getTimeOfDay();
+	} else if(cmd.equalsIgnoreCase(F("ls"))) {
+		int res = gdb_syscall_system(PSTR("ls -la"));
+		Serial.printf(_F("gdb_syscall_system() returned %d\r\n"), res);
+	} else if(cmd.equalsIgnoreCase(F("break"))) {
+		gdb_do_break();
+	} else if(cmd.equalsIgnoreCase(F("crash"))) {
+		Serial.println(_F("Crashing app by writing to address 0\n"
+						  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\n"
+						  "then enter `c` to continue"));
+		Serial.flush();
+		*(uint8_t*)0 = 0;
+		Serial.println("...still running!");
+	} else if(cmd.equalsIgnoreCase(F("exit"))) {
+		// End console test
+		Serial.println(_F("Resuming normal program execution."));
+		return false;
+	} else if(cmd.equalsIgnoreCase(F("help"))) {
+		Serial.print(_F("LiveDebug interactive debugger sample. Available commands:\n"
+						"  readfile1 : read and display a test file\n"
+						"  readfile2 : read a larger file asynchronously\n"
+						"  stat      : issue a 'stat' call\n"
+						"  ls        : list directory\n"
+						"  break     : break into debugger\n"
+						"  crash     : write to address 0x00000000, see what happens\n"
+						"  exit      : resume normal application execution\n"));
+	} else {
+		Serial.println(_F("Unknown command, try 'help'"));
+	}
+
+	// Another command, please
+	return true;
+}
+
 /*
  * Completion callback for console read test. See readConsole().
  *
@@ -249,50 +345,18 @@ void onConsoleReadCompleted(const GdbSyscallInfo& info)
 		if(bufptr[len - 1] == '\n') {
 			--len;
 		}
-		String cmd(bufptr, len);
-		delete bufptr;
-		Serial.print(_F(": \""));
-		Serial.print(cmd);
-		Serial.println('"');
-		if(cmd.equalsIgnoreCase(F("readfile1"))) {
-			// Read a small file and display it
-			readFile(_F("Makefile"), true);
-		} else if(cmd.equalsIgnoreCase(F("readfile2"))) {
-			// Read a larger file asynchronously and analyse transfer speed
-			Serial.println(_F("Please wait..."));
-			readFileAsync(PSTR("README.md"));
-			return; // When read has completed, readConsole() will be called again
-		} else if(cmd.equalsIgnoreCase(F("stat"))) {
-			fileStat(_F("Makefile"));
-		} else if(cmd.equalsIgnoreCase(F("time"))) {
-			getTimeOfDay();
-		} else if(cmd.equalsIgnoreCase(F("ls"))) {
-			int res = gdb_syscall_system(PSTR("ls -la"));
-			Serial.printf(_F("gdb_syscall_system() returned %d\r\n"), res);
-		} else if(cmd.equalsIgnoreCase(F("break"))) {
-			gdb_do_break();
-		} else if(cmd.equalsIgnoreCase(F("crash"))) {
-			Serial.println(_F("Crashing app by writing to address 0\n"
-							  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\n"
-							  "then enter `c` to continue"));
-			Serial.flush();
-			*(uint8_t*)0 = 0;
-			Serial.println("...still running!");
-		} else if(cmd.equalsIgnoreCase(F("exit"))) {
-			// End console test
-			Serial.println(_F("Resuming normal program execution."));
-			return;
-		} else if(cmd.equalsIgnoreCase(F("help"))) {
-			Serial.print(_F("LiveDebug interactive debugger sample. Available commands:\n"
-							"  readfile1 : read and display a test file\n"
-							"  readfile2 : read a larger file asynchronously\n"
-							"  stat      : issue a 'stat' call\n"
-							"  ls        : list directory\n"
-							"  break     : break into debugger\n"
-							"  crash     : write to address 0x00000000, see what happens\n"
-							"  exit      : resume normal application execution\n"));
+		if(len == 0) {
+			Serial.println();
 		} else {
-			Serial.println(_F("Unknown command, try 'help'"));
+			String cmd(bufptr, len);
+			delete bufptr;
+			Serial.print(_F(": \""));
+			Serial.print(cmd);
+			Serial.println('"');
+
+			if(!handleCommand(cmd)) {
+				return;
+			}
 		}
 	}
 
@@ -305,29 +369,30 @@ void onConsoleReadCompleted(const GdbSyscallInfo& info)
  */
 void readConsole()
 {
-	// Note GDB can read memory from any location, including flash, so PSTR() is fine
-	int res = gdb_console_write(PSTR("(LiveDebug) "), 12);
-	if(res < 0) {
-		Serial.printf(_F("gdb_console_write() failed, %d\r\n"), res);
-		Serial.println(_F("Is GDBSTUB_ENABLE_SYSCALL enabled ?"));
-		Serial.println(_F("Did you build with ENABLE_GDB=1 ?"));
-		return;
-	}
+	showPrompt();
+	if(gdb_present() == eGDB_Attached) {
+		// Issue the syscall
+		const unsigned bufsize = 256;
+		auto buffer = new char[bufsize];
+		int res = gdb_console_read(buffer, bufsize, onConsoleReadCompleted);
+		if(res < 0) {
+			Serial.printf(_F("gdb_console_read() failed, %d\r\n"), res);
+			Serial.println(_F("Is GDBSTUB_ENABLE_SYSCALL enabled ?"));
+			Serial.println(_F("Did you build with ENABLE_GDB=1 ?"));
+			delete buffer;
+			showPrompt();
+		}
 
-	// Issue the syscall
-	const unsigned bufsize = 256;
-	auto buffer = new char[bufsize];
-	res = gdb_console_read(buffer, bufsize, onConsoleReadCompleted);
-	if(res < 0) {
-		Serial.printf(_F("gdb_syscall_read() failed, %d\r\n"), res);
-		delete buffer;
+		/*
+		 * GDB executes the system call, finished in onReadCompleted().
+		 * Note that any serial output gets ignored by GDB whilst executing a system
+		 * call.
+		 */
+	} else {
+		/*
+		 * GDB is either detached or not present, serial callback will process input
+		 */
 	}
-
-	/*
-	 * GDB executes the system call, finished in onReadCompleted().
-	 * Note that any serial output gets ignored by GDB whilst executing a system
-	 * call.
-	 */
 }
 
 void GDB_IRAM_ATTR init()
