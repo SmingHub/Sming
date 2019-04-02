@@ -280,11 +280,12 @@ public:
 	}
 
 	/** @brief  Clear the serial port transmit/receive buffers
- 	 *  @note   All un-read buffered data is removed
+	 * 	@param mode Whether to flush TX, RX or both (the default)
+ 	 *  @note All un-read buffered data is removed and any error condition cleared
 	 */
-	void clear()
+	void clear(SerialMode mode = SERIAL_FULL)
 	{
-		uart_flush(uart);
+		uart_flush(uart, uart_mode_t(mode));
 	}
 
 	/** @brief Flush all pending data to the serial port

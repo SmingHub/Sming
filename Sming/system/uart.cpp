@@ -569,33 +569,46 @@ uint8_t uart_get_status(uart_t* uart)
 	return status;
 }
 
-void uart_flush(uart_t* uart)
+void uart_flush(uart_t* uart, uart_mode_t mode)
 {
 	if(uart == nullptr) {
 		return;
 	}
 
+	bool flushRx = mode != UART_TX_ONLY && uart->mode != UART_TX_ONLY;
+	bool flushTx = mode != UART_RX_ONLY && uart->mode != UART_RX_ONLY;
+
 	uart_disable_interrupts();
-	if(uart->rx_buffer != nullptr) {
+	if(flushRx && uart->rx_buffer != nullptr) {
 		uart->rx_buffer->clear();
 	}
 
-	if(uart->tx_buffer != nullptr) {
+	if(flushTx && uart->tx_buffer != nullptr) {
 		uart->tx_buffer->clear();
 	}
 
 	if(is_physical(uart)) {
-		// Prevent TX FIFO EMPTY interrupts - don't need them until uart_write is called again
-		bitClear(USIE(uart->uart_nr), UIFE);
+		// Clear the hardware FIFOs
+		uint32_t flushBits = 0;
+		if(flushTx) {
+			bitSet(flushBits, UCTXRST);
+		}
+		if(flushRx) {
+			bitSet(flushBits, UCRXRST);
+		}
+		USC0(uart->uart_nr) |= flushBits;
+		USC0(uart->uart_nr) &= ~flushBits;
 
-		// If receive overflow occurred then these interrupts will be masked
-		if(uart_rx_enabled(uart)) {
-			USIE(uart->uart_nr) |= _BV(UIFF) | _BV(UITO);
+		if(flushTx) {
+			// Prevent TX FIFO EMPTY interrupts - don't need them until uart_write is called again
+			bitClear(USIE(uart->uart_nr), UIFE);
 		}
 
-		uint32_t tmp = _BV(UCRXRST) | _BV(UCTXRST);
-		USC0(uart->uart_nr) |= tmp;
-		USC0(uart->uart_nr) &= ~tmp;
+		// If receive overflow occurred then these interrupts will be masked
+		if(flushRx) {
+			USIC(uart->uart_nr) = 0xffff & ~_BV(UIFE);
+			USIE(uart->uart_nr) |= _BV(UIFF) | _BV(UITO); // | _BV(UIOF);
+		}
 	}
 
 	uart_restore_interrupts();

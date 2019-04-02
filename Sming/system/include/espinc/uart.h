@@ -374,9 +374,10 @@ void uart_wait_tx_empty(uart_t* uart);
 
 /** @brief discard any buffered data and reset hardware FIFOs
  *  @param uart
+ *  @param mode Whether to flush TX, RX or both (the default)
  *  @note this function does not wait for any transmissions to complete
  */
-void uart_flush(uart_t* uart);
+void uart_flush(uart_t* uart, uart_mode_t mode = UART_FULL);
 
 void uart_set_debug(int uart_nr);
 int uart_get_debug();
