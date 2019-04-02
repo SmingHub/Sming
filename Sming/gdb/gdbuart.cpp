@@ -17,6 +17,7 @@
 #include "Platform/System.h"
 #include "HardwareSerial.h"
 #include "HardwareTimer.h"
+#include "gdbsyscall.h"
 
 #define GDB_UART UART0 // Only UART0 supports for debugging as RX/TX required
 
@@ -184,6 +185,14 @@ void gdbstub_send_user_data()
 		}
 	}
 
+#if GDBSTUB_ENABLE_SYSCALL
+	// When all data has been sent, see if there's a pending syscall to send
+	if(avail == 0) {
+		gdbstub_syscall_execute();
+	}
+#endif
+}
+
 static void SendUserDataQueued(uint32_t)
 {
 	sendUserDataQueued = false;
@@ -295,6 +304,12 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 				continue;
 			}
 #endif
+
+#if GDBSTUB_ENABLE_SYSCALL
+			// If packet start detected whilst handling a system call, break into debugger to process it
+			if(c == '$' && gdb_state.syscall == syscall_active) {
+				bitSet(gdb_state.flags, DBGFLAG_PACKET_STARTED);
+				gdbstub_do_break();
 				continue;
 			}
 #endif

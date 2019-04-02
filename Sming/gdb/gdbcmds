@@ -5,6 +5,9 @@
 set remote hardware-breakpoint-limit 1
 set remote hardware-watchpoint-limit 1
 
+# Enable the 'system' syscall
+set remote system-call-allowed 1
+
 # Some GDBstub settings
 set remote interrupt-on-connect on
 set remote kill-packet off

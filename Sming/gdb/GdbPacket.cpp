@@ -12,9 +12,6 @@
 
 #include "GdbPacket.h"
 
-// Swap byte ordering
-#define bswap32(value) __builtin_bswap32(value)
-
 // Send the start of a packet; reset checksum calculation.
 void ATTR_GDBEXTERNFN GdbPacket::start()
 {
@@ -51,6 +48,18 @@ void ATTR_GDBEXTERNFN GdbPacket::write(const void* data, unsigned length)
 	}
 	gdbSendData(data, length);
 	packetLength += length;
+}
+
+void ATTR_GDBEXTERNFN GdbPacket::writeStr(const char* str)
+{
+	write(str, strlen(str));
+}
+
+void ATTR_GDBEXTERNFN GdbPacket::writeStrRef(const char* str)
+{
+	writeHexWord32(uint32_t(str));
+	writeChar('/');
+	writeHexWord16(strlen_P(str) + 1);
 }
 
 void ATTR_GDBEXTERNFN GdbPacket::writeX32()

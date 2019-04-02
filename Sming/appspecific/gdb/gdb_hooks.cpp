@@ -8,7 +8,8 @@
  *
  ****/
 
-#include "gdb_hooks.h"
+#include <gdb_hooks.h>
+#include <gdb_syscall.h>
 #include "gdb/gdbstub.h"
 #include "gdb/gdbstub-entry.h"
 #include "gdb/exceptions.h"
@@ -179,7 +180,6 @@ void ATTR_GDBINIT gdb_init()
 #ifndef ENABLE_GDB
 
 extern "C" {
-
 static bool IRAM_ATTR __gdb_no_op()
 {
 	return false;
@@ -191,3 +191,8 @@ bool gdb_present(void) __attribute__((weak, alias("__gdb_no_op")));
 };
 
 #endif
+
+int __attribute__((weak)) gdb_syscall(const GdbSyscallInfo& info)
+{
+	return -1;
+}

@@ -513,6 +513,20 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 		sendOK();
 		return ST_DETACH;
 
+#if GDBSTUB_ENABLE_SYSCALL
+	/*
+	 * A file (or console) I/O request has finished.
+	 */
+	case 'F':
+		if(gdb_syscall_complete(data)) {
+			// Ctrl+C was pressed
+			sendReason();
+			return ST_OK;
+		} else {
+			return ST_CONT;
+		}
+#endif
+
 	/*
 	 * Kill
 	 *
@@ -697,13 +711,17 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
  * It is not necessary for gdb to be attached for it to be paused
  * For example, during an exception break, the program is paused but gdb might not be attached yet
 */
-GdbResult ATTR_GDBEXTERNFN commandLoop()
+GdbResult ATTR_GDBEXTERNFN commandLoop(bool waitForStart = true)
 {
 	GdbResult result = ST_OK;
 	do {
-		while(gdbReceiveChar() != '$') {
-			// wait for start
+		if(waitForStart) {
+			while(gdbReceiveChar() != '$') {
+				// wait for start
+			}
 		}
+		waitForStart = true;
+
 		auto cmdLen = readCommand();
 		if(cmdLen != 0) {
 			gdb_state.attached = true;
@@ -803,8 +821,12 @@ static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
 			singleStepPs = -1;
 		}
 
-		sendReason();
-		commandLoop();
+		if(bitRead(gdb_state.flags, DBGFLAG_PACKET_STARTED)) {
+			commandLoop(false);
+		} else {
+			sendReason();
+			commandLoop();
+		}
 	}
 
 	// Watchpoint ?

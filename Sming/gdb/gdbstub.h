@@ -33,12 +33,20 @@ enum GdbDebugFlag {
 	DBGFLAG_DEBUG_EXCEPTION,  ///< For debug exceptions, cause is DBGCAUSE (see DebugCause bits)
 	DBGFLAG_SYSTEM_EXCEPTION, ///< For system exceptions, cause is EXCCAUSE (see EXCCAUSE_* values)
 	DBGFLAG_CTRL_BREAK,		  ///< Break caused by call to gdbstub_ctrl_break()
+	DBGFLAG_PACKET_STARTED,   ///< Incoming packet detected by uart interrupt handler
+};
+
+enum SyscallState {
+	syscall_ready,   ///< Ready for new syscall
+	syscall_pending, ///< Syscall queued but not yet sent to GDB
+	syscall_active,  ///< Syscall executing, awaiting response from GDB
 };
 
 // State information in shared global structure
 struct gdb_state_t {
 	bool attached;		  ///< true if GDB is attached to stub
 	bool enabled;		  ///< Debugging may be disabled via gdb_enable()
+	SyscallState syscall; ///< State of system call
 	uint8_t flags;		  ///< Combination of GdbDebugFlag
 	unsigned ack_count;   ///< For discarding of acknowledgement characters
 };

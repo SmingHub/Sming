@@ -131,6 +131,14 @@
 #endif
 
 /*
+ * Enable gdb_syscall_* functions for use by application.
+ * If undefined, calls will do nothing and return -1.
+ */
+#ifndef GDBSTUB_ENABLE_SYSCALL
+#define GDBSTUB_ENABLE_SYSCALL 1
+#endif
+
+/*
  * Enable this if you want the GDB stub to wait for you to attach GDB before running.
  * It does this by breaking in the init routine; use the gdb 'c' command (continue) to start the program.
  */

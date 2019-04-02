@@ -6,7 +6,9 @@
  *
  * @author: 2019 - Mikee47 <mike@sillyhouse.net>
  *
- * Manages GDB packet encoding
+ * Manages GDB packet encoding. See here for details:
+ *
+ * https://sourceware.org/gdb/current/onlinedocs/gdb/Remote-Protocol.html
  *
  ****/
 
@@ -59,10 +61,10 @@ public:
 	void write(const void* data, unsigned length);
 
 	/** @brief Output a null-terminated string exactly as given without escaping */
-	__forceinline void ATTR_GDBEXTERNFN writeStr(const char* str)
-	{
-		write(str, strlen(str));
-	}
+	void writeStr(const char* str);
+
+	/** @brief Output a string reference in addr/len format */
+	void writeStrRef(const char* str);
 
 	size_t getLength()
 	{
