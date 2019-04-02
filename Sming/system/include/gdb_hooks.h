@@ -70,7 +70,7 @@ void debug_crash_callback(const struct rst_info* rst_info, uint32_t stack, uint3
 void debug_print_stack(uint32_t start, uint32_t end);
 
 #ifdef __cplusplus
-}
+} // extern "C"
 #endif
 
 #endif /* _GDB_HOOKS_H_ */

@@ -39,7 +39,7 @@ STRUCT_FIELD(UINT32_T, 4, GDBSR_, ps)
 STRUCT_FIELD(UINT32_T, 4, GDBSR_, sar)
 STRUCT_FIELD(UINT32_T, 4, GDBSR_, vpri)
 STRUCT_AFIELD(UINT32_T, 4, GDBSR_, a, 16) // a0..a15
-#define GDBSR_A(n) GDBSR_a+((n)*4)
+#define GDBSR_A(n) GDBSR_a + ((n)*4)
 // These are added manually by the exception code; the HAL doesn't set these on an exception.
 STRUCT_FIELD(UINT32_T, 4, GDBSR_, litbase)
 STRUCT_FIELD(UINT32_T, 4, GDBSR_, sr176)

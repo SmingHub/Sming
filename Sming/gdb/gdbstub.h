@@ -13,6 +13,8 @@
 #ifndef _GDB_GDBSTUB_H_
 #define _GDB_GDBSTUB_H_
 
+// Always optimise GDB stub code for size, regardless of application settings
+#pragma GCC optimize("Os")
 
 #include "gdbstub-internal.h"
 #include <gdb_hooks.h>

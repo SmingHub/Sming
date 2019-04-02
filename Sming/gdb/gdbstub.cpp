@@ -68,7 +68,7 @@ typedef uint8_t ERRNO_T;
 uint32_t exceptionStack[GDBSTUB_STACK_SIZE];
 #endif
 
-volatile gdb_state_t gdb_state; ///< Global state
+volatile gdb_state_t gdb_state;					   ///< Global state
 static char commandBuffer[MAX_COMMAND_LENGTH + 1]; ///< Buffer for incoming/outgoing GDB commands
 static int32_t singleStepPs = -1; // Stores ps (Program State) when single-stepping instruction. -1 when not in use.
 
@@ -404,8 +404,13 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 		auto regPtr = getSavedReg(regnum);
 #if GDBSTUB_ENABLE_DEBUG
 		char regName[16];
-		memcpy_P(regName, registerNames[regnum], sizeof(regName));
-//		debug_i("GET %s", name);
+		/*
+ * @todo Trying to read flash here sometimes causes a LEVEL1 interrupt exception (even though
+ * we haven't hooked it?!) According to the docs. we need to look at the INTERRUPT register
+ * and INTENABLE to determine the actual cause.
+ */
+		regName[0] = '\0';
+//		memcpy_P(regName, registerNames[regnum], sizeof(regName));
 #endif
 
 		if(commandChar == 'p') { // read

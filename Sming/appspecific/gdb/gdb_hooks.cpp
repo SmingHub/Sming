@@ -185,9 +185,11 @@ static bool IRAM_ATTR __gdb_no_op()
 	return false;
 }
 
-void gdb_enable(bool state) __attribute__((weak, alias("__gdb_no_op")));
-void gdb_do_break(void) __attribute__((weak, alias("__gdb_no_op")));
-bool gdb_present(void) __attribute__((weak, alias("__gdb_no_op")));
+#define NOOP __attribute__((weak, alias("__gdb_no_op")))
+
+void gdb_enable(bool state) NOOP;
+void gdb_do_break(void) NOOP;
+bool gdb_present(void) NOOP;
 };
 
 #endif

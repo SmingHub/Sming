@@ -4,7 +4,7 @@ GDBSTUB for Sming
 Background
 ----------
 
-This is a rewrite of gdbstub based on the [esp8266 Arduino project]https://github.com/esp8266/Arduino/pull/5559.
+This is a rewrite of gdbstub based on the [esp8266 Arduino project](https://github.com/esp8266/Arduino/pull/5559).
 
 To use the GNU Debugger (GDB) with Sming requires your application to include some code (`gdbstub`) which communicates via the serial port. On the ESP8266 only UART0 may be used for this as UART1 is transmit-only.
 
@@ -14,6 +14,9 @@ UART2 is a 'virtual' serial port to enable serial communications to work correct
 
 Note that `target` refers to the application being debugged, and `host` the development system running the GDB program.
 
+Refer to the official [GDB documention](https://sourceware.org/gdb/current/onlinedocs/gdb/index.html) for further details.
+
+
 GDB
 ---
 
@@ -21,7 +24,7 @@ This is the application which runs on your development system and talks to `gdbs
 
  * Linux: A version of this should be available in $ESP_HOME/xtesnsa-lx106-elf/bin/xtensa-lx106-elf-gdb
 
- * Windows: At time of writing, UDK doesn't provide a GDB application. You can find pre-built version of this at [SysProgs][http://gnutoolchains.com/esp8266/]. Download and run the executable installer, then copy the `C:\SysGCC\esp8266\opt\xtensa-lx106-elf\bin\xtensa-lx106-elf-gdb.exe` to a suitable location.
+ * Windows: At time of writing, UDK doesn't provide a GDB application. You can find pre-built version of this at [SysProgs](http://gnutoolchains.com/esp8266/). Download and run the executable installer, then copy the `C:\SysGCC\esp8266\opt\xtensa-lx106-elf\bin\xtensa-lx106-elf-gdb.exe` to a suitable location.
 
  * Mac: ?
 
@@ -99,7 +102,7 @@ Error reported, "packet reply is too long"
 
 Whilst GDB is attached, input cannot be passed to application
 - Cause: GDB buffers keystrokes and replays them only when the target is interrupted (e.g. via ctrl+C), rather than passing them via serial connection.
-- Solution: Unclear. Console I/O is synchronous, so would stall application whilst waiting for input.
+- Solution: Application may use gdb_syscall interface to communicate with debugger. See `$(SMING_HOME)/system/gdb_syscall.h`.
 
 No apparent way to have second 'console' (windows terminology) separate from GDB interface
 - Cause: Unknown
