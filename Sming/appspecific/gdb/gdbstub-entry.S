@@ -131,7 +131,7 @@ DebugExceptionExit:
 	l32i	a12, a2, GDBSR_A(12)
 	l32i	a11, a2, GDBSR_A(11)
 	l32i	a10, a2, GDBSR_A(10)
-	l32i	a9, a2, GDBSR_A(8)
+	l32i	a9, a2, GDBSR_A(9)
 	l32i	a8, a2, GDBSR_A(8)
 	l32i	a7, a2, GDBSR_A(7)
 	l32i	a6, a2, GDBSR_A(6)
