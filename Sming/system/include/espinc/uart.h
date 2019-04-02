@@ -372,6 +372,12 @@ size_t uart_tx_free(uart_t* uart);
 /** @deprecated don't use this - causes extended delays - use callback notification */
 void uart_wait_tx_empty(uart_t* uart);
 
+/** @brief Set or clear a break condition on the TX line
+ *  @param uart
+ *  @param state
+ */
+void uart_set_break(uart_t* uart, bool state);
+
 /** @brief discard any buffered data and reset hardware FIFOs
  *  @param uart
  *  @param mode Whether to flush TX, RX or both (the default)

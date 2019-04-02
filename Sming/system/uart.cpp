@@ -551,6 +551,14 @@ void uart_wait_tx_empty(uart_t* uart)
 	}
 }
 
+void uart_set_break(uart_t* uart, bool state)
+{
+	uart = get_physical(uart);
+	if(uart != nullptr) {
+		bitWrite(USC0(uart->uart_nr), UCBRK, state);
+	}
+}
+
 uint8_t uart_get_status(uart_t* uart)
 {
 	uint8_t status = 0;
