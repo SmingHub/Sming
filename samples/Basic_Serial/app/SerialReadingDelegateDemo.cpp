@@ -28,9 +28,29 @@ void SerialReadingDelegateDemo::onData(Stream& stream, char arrivedChar, unsigne
 	serial->print(_F("Class Delegate Demo Time = "));
 	serial->print(micros());
 	serial->print(_F(" char = 0x"));
-	serial->print(String(arrivedChar, HEX)); // char hex code
+	serial->print(arrivedChar, HEX); // char hex code
 	serial->print(_F(" available = "));
 	serial->println(availableCharsCount);
+
+	// Error detection
+	unsigned status = serial->getStatus();
+	if(status != 0) {
+		if(bitRead(status, eSERS_Overflow)) {
+			serial->println(_F("** RECEIVE OVERFLOW **"));
+		}
+		if(bitRead(status, eSERS_BreakDetected)) {
+			serial->println(_F("** BREAK DETECTED **"));
+		}
+		if(bitRead(status, eSERS_FramingError)) {
+			serial->println(_F("** FRAMING ERROR **"));
+		}
+		if(bitRead(status, eSERS_ParityError)) {
+			serial->println(_F("** PARITY ERROR **"));
+		}
+		// Discard what is likely to be garbage
+		serial->clear(SERIAL_RX_ONLY);
+		return;
+	}
 
 	numCallback++;
 

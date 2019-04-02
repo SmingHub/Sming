@@ -277,8 +277,8 @@ size_t uart_read(uart_t* uart, void* buffer, size_t size)
 		}
 
 		// FIFO full may have been disabled if buffer overflowed, re-enabled it now
-		USIC(uart->uart_nr) = _BV(UIFF) | _BV(UITO);
-		USIE(uart->uart_nr) |= _BV(UIFF) | _BV(UITO);
+		USIC(uart->uart_nr) = _BV(UIFF) | _BV(UITO) | _BV(UIOF);
+		USIE(uart->uart_nr) |= _BV(UIFF) | _BV(UITO) | _BV(UIOF);
 	}
 
 	return read;
@@ -337,7 +337,7 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 	// Deal with the event, unless we're in raw mode
 	if(!bitRead(uart->options, UART_OPT_CALLBACK_RAW)) {
 		// Rx FIFO full or timeout
-		if(usis & (_BV(UIFF) | _BV(UITO))) {
+		if(usis & (_BV(UIFF) | _BV(UITO) | _BV(UIOF))) {
 			size_t read = 0;
 
 			// Read as much data as possible from the RX FIFO into buffer
@@ -361,7 +361,9 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 			 * If the FIFO is full and we didn't read any of the data then need to mask the interrupt out or it'll recur.
 			 * The interrupt gets re-enabled by a call to uart_read() or uart_flush()
 			 */
-			if(read == 0) {
+			if(bitRead(usis, UIOF)) {
+				bitClear(USIE(uart_nr), UIOF);
+			} else if(read == 0) {
 				USIE(uart_nr) &= ~(_BV(UIFF) | _BV(UITO));
 			}
 		}
@@ -439,7 +441,7 @@ void uart_start_isr(uart_t* uart)
 		 * should be cleared at the start of a transaction and checked at the end.
 		 * See uart_get_status().
 		 */
-		usie = _BV(UIFF) | _BV(UITO) | _BV(UIBD);
+		usie = _BV(UIFF) | _BV(UITO) | _BV(UIBD) | _BV(UIOF);
 	}
 
 	if(uart_tx_enabled(uart)) {
@@ -615,7 +617,7 @@ void uart_flush(uart_t* uart, uart_mode_t mode)
 		// If receive overflow occurred then these interrupts will be masked
 		if(flushRx) {
 			USIC(uart->uart_nr) = 0xffff & ~_BV(UIFE);
-			USIE(uart->uart_nr) |= _BV(UIFF) | _BV(UITO); // | _BV(UIOF);
+			USIE(uart->uart_nr) |= _BV(UIFF) | _BV(UITO) | _BV(UIOF);
 		}
 	}
 

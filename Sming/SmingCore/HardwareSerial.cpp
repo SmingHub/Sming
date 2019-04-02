@@ -116,8 +116,8 @@ void HardwareSerial::invokeCallbacks()
 		transmitComplete(*this);
 	}
 
-	// RX FIFO Full or RX FIFO Timeout ?
-	if(status & (_BV(UIFF) | _BV(UITO))) {
+	// RX FIFO Full or RX FIFO Timeout or RX Overflow ?
+	if(status & (_BV(UIFF) | _BV(UITO) | _BV(UIOF))) {
 		auto receivedChar = uart_peek_last_char(uart);
 		if(HWSDelegate) {
 			HWSDelegate(*this, receivedChar, uart_rx_available(uart));
@@ -168,7 +168,7 @@ bool HardwareSerial::updateUartCallback()
 #else
 	if(HWSDelegate) {
 #endif
-		mask |= _BV(UIFF) | _BV(UITO);
+		mask |= _BV(UIFF) | _BV(UITO) | _BV(UIOF);
 	}
 
 	if(transmitComplete) {
