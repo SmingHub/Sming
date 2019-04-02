@@ -145,6 +145,10 @@
 #ifndef GDBSTUB_CMDENABLE_P
 #define GDBSTUB_CMDENABLE_P 1
 #endif
+// Write binary-encoded data
+#ifndef GDBSTUB_CMDENABLE_X
+#define GDBSTUB_CMDENABLE_X 1
+#endif
 
 /*
  * Specify a timeout (in milliseconds) when stub is reading from serial port.

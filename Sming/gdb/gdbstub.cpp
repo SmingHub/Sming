@@ -62,6 +62,7 @@ enum DebugFlag {
 	DBGFLAG_CTRL_BREAK,		  ///< Break caused by call to gdbstub_ctrl_break()
 };
 static uint8_t debugFlags = 0;
+typedef uint8_t ERRNO_T;
 
 /*
  * Maximum length of a GDB command packet. Has to be at least able to fit the G command.
@@ -122,13 +123,20 @@ static void ATTR_GDBEXTERNFN writeMemoryByte(uint32_t addr, uint8_t data)
 }
 
 /*
+ * Return true if addr lives within a RAM segment
+ * See xtensa/config/core-isa.h for memory range information
+ */
+static bool ATTR_GDBEXTERNFN isRamAddr(uint32_t addr)
+{
+	return (addr >= 0x3ff00000 && addr < 0x40000000) || (addr >= 0x40100000 && addr < 0x40140000);
+}
+
+/*
  * Return true if it makes sense to write to addr
  */
 static bool ATTR_GDBEXTERNFN isValidWriteAddr(uint32_t addr)
 {
-	// See xtensa/config/core-isa.h for memory range information
-	return (addr >= 0x3ff00000 && addr < 0x40000000) || (addr >= 0x40100000 && addr < 0x40140000) ||
-		   (addr >= 0x60000000 && addr < 0x60002000);
+	return isRamAddr(addr) || (addr >= 0x60000000 && addr < 0x60002000);
 }
 
 static bool ATTR_GDBEXTERNFN isValidWriteAddr(uint32_t startAddr, size_t length)
@@ -148,6 +156,34 @@ static bool ATTR_GDBEXTERNFN isValidReadAddr(uint32_t addr)
 static bool ATTR_GDBEXTERNFN isValidReadAddr(uint32_t startAddr, size_t length)
 {
 	return isValidReadAddr(startAddr) && isValidReadAddr(startAddr + length - 1);
+}
+
+/** @brief Write a block of memory
+ *  @param addr
+ *  @param length
+ *  @retval uint8_t error number
+ */
+static ERRNO_T ATTR_GDBEXTERNFN writeMemoryBlock(uint32_t addr, const void* data, unsigned length)
+{
+	// write memory from gdb
+	if(!isValidWriteAddr(addr, length)) {
+		return EFAULT;
+	}
+
+	// If writing to RAM, use memcpy for efficiency
+	if(isRamAddr(addr)) {
+		memcpy(reinterpret_cast<void*>(addr), data, length);
+	} else {
+		// Registers must be read/written in 32-bit words
+		for(unsigned i = 0; i < length; i++, addr++) {
+			writeMemoryByte(addr, static_cast<const uint8_t*>(data)[i]);
+		}
+	}
+
+	// Make sure caches are up-to-date. Procedure according to Xtensa ISA document, ISYNC inst desc.
+	asm volatile("ISYNC\nISYNC\n");
+
+	return 0;
 }
 
 /*
@@ -263,15 +299,17 @@ static unsigned ATTR_GDBEXTERNFN readCommand()
 			cmdLen = 0;
 			continue;
 		}
+		checksum += uint8_t(c);
 		if(c == '}') { // escape the next char
-			c = gdbReceiveChar() ^ 0x20;
+			c = gdbReceiveChar();
+			checksum += uint8_t(c);
+			c ^= 0x20;
 		}
 		if(cmdLen >= MAX_COMMAND_LENGTH) {
 			// Received more than the size of the command buffer
 			debug_e("Command '%c' buffer overflow", commandBuffer[0]);
 			return 0;
 		}
-		checksum += uint8_t(c);
 		commandBuffer[cmdLen++] = c;
 	}
 	commandBuffer[cmdLen] = '\0';
@@ -433,23 +471,16 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 			break;
 		}
 
-		uint8_t err = 0;
+		ERRNO_T err = 0;
 
 		// write memory from gdb
-		if(isValidWriteAddr(addr, length)) {
-			data++; // skip :
-			auto bin = reinterpret_cast<uint8_t*>(commandBuffer);
-			auto len = GdbPacket::decodeHexBlock(bin, data);
-			if(len == length) {
-				for(unsigned i = 0; i < length; i++, addr++) {
-					writeMemoryByte(addr, *bin++);
-				}
-				// Make sure caches are up-to-date. Procedure according to Xtensa ISA document, ISYNC inst desc.
-				asm volatile("ISYNC\nISYNC\n");
-			}
+		data++; // skip :
+		auto bin = reinterpret_cast<uint8_t*>(commandBuffer);
+		auto len = GdbPacket::decodeHexBlock(bin, data);
+		if(len == length) {
+			err = writeMemoryBlock(addr, bin, length);
 		} else {
-			// Trying to do a software breakpoint on a flash proc, perhaps?
-			err = EFAULT;
+			err = EINVAL;
 		}
 
 		sendReply(err);
@@ -647,9 +678,15 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 	 * `X addr,length:XX...`
 	 *
 	 */
-	case 'X':
-		// @todo
+	case 'X': {
+		uint32_t addr = GdbPacket::readHexValue(data);
+		data++; // skip ,
+		unsigned length = GdbPacket::readHexValue(data);
+		data++; // skip :
+		uint8_t err = writeMemoryBlock(addr, data, length);
+		sendReply(err);
 		break;
+	}
 #endif
 
 	default:
