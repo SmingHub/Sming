@@ -875,7 +875,7 @@ extern "C" void IRAM_ATTR gdbstub_handle_debug_exception()
 }
 
 #if GDBSTUB_BREAK_ON_EXCEPTION
-void gdbstub_handle_exception(UserFrame* frame)
+void gdbstub_handle_exception()
 {
 	if(!gdb_state.enabled) {
 		return;
@@ -884,21 +884,9 @@ void gdbstub_handle_exception(UserFrame* frame)
 	pauseHardwareTimer(true);
 	bitSet(gdb_state.flags, DBGFLAG_SYSTEM_EXCEPTION);
 
-	// Copy registers the Xtensa HAL did save to gdbstub_savedRegs
-	memcpy(&gdbstub_savedRegs, frame, 5 * 4);
-	memcpy(&gdbstub_savedRegs.a[2], &frame->a2, 14 * 4);
-	// Credits go to Cesanta for this trick. A1 seems to be destroyed, but because it
-	// has a fixed offset from the address of the passed frame, we can recover it.
-	const uint32_t EXCEPTION_GDB_SP_OFFSET = 0x100;
-	gdbstub_savedRegs.a[1] = uint32_t(frame) + EXCEPTION_GDB_SP_OFFSET;
-
 	sendReason();
 	while(commandLoop() != ST_CONT) {
 	}
-
-	// Copy any changed registers back to the frame the Xtensa HAL uses.
-	memcpy(frame, &gdbstub_savedRegs, 5 * 4);
-	memcpy(&frame->a2, &gdbstub_savedRegs.a[2], 14 * 4);
 
 	gdb_state.flags = 0;
 	pauseHardwareTimer(false);

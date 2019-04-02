@@ -87,7 +87,7 @@ void debug_crash_callback(const rst_info* rst_info, uint32_t stack, uint32_t sta
 
 #if ENABLE_EXCEPTION_DUMP
 
-void dumpExceptionInfo()
+void dumpExceptionInfo(UserFrame* frame)
 {
 	ets_wdt_disable();
 	auto& reg = gdbstub_savedRegs;
@@ -129,12 +129,25 @@ void dumpExceptionInfo()
 // Main exception handler code
 static void __attribute__((noinline)) gdbstub_exception_handler_flash(UserFrame* frame)
 {
+	// Copy registers the Xtensa HAL did save to gdbstub_savedRegs
+	memcpy(&gdbstub_savedRegs, frame, 5 * 4);
+	memcpy(&gdbstub_savedRegs.a[2], &frame->a2, 14 * 4);
+	// Credits go to Cesanta for this trick. A1 seems to be destroyed, but because it
+	// has a fixed offset from the address of the passed frame, we can recover it.
+	const uint32_t EXCEPTION_GDB_SP_OFFSET = 0x100;
+	gdbstub_savedRegs.a[1] = uint32_t(frame) + EXCEPTION_GDB_SP_OFFSET;
+
 #if ENABLE_EXCEPTION_DUMP
-	dumpExceptionInfo();
+	dumpExceptionInfo(frame);
 #endif
 
 #if defined(ENABLE_GDB) && GDBSTUB_BREAK_ON_EXCEPTION
-	gdbstub_handle_exception(frame);
+	gdbstub_handle_exception();
+
+	// Copy any changed registers back to the frame the Xtensa HAL uses.
+	memcpy(frame, &gdbstub_savedRegs, 5 * 4);
+	memcpy(&frame->a2, &gdbstub_savedRegs.a[2], 14 * 4);
+
 	return;
 #endif
 
@@ -180,16 +193,16 @@ void ATTR_GDBINIT gdb_init()
 #ifndef ENABLE_GDB
 
 extern "C" {
-static bool IRAM_ATTR __gdb_no_op()
+static unsigned IRAM_ATTR __gdb_no_op()
 {
-	return false;
+	return 0;
 }
 
 #define NOOP __attribute__((weak, alias("__gdb_no_op")))
 
 void gdb_enable(bool state) NOOP;
 void gdb_do_break(void) NOOP;
-bool gdb_present(void) NOOP;
+GdbState gdb_present(void) NOOP;
 };
 
 #endif

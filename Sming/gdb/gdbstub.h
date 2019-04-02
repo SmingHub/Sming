@@ -57,6 +57,6 @@ extern volatile gdb_state_t gdb_state;
 extern const uint8_t gdb_exception_signals[];
 
 void gdbstub_init();
-void gdbstub_handle_exception(UserFrame* frame);
+void gdbstub_handle_exception();
 
 #endif /* _GDB_GDBSTUB_H_ */
