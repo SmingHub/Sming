@@ -52,10 +52,16 @@ void gdb_enable(bool state);
  */
 void gdb_do_break(void);
 
+typedef enum {
+	eGDB_NotPresent,
+	eGDB_Detached,
+	eGDB_Attached,
+} GdbState;
+
 /**
  * @brief Check if GDB stub is present
  */
-bool gdb_present(void);
+GdbState gdb_present(void);
 
 /**
  * @brief Called on unexpected system reset

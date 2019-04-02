@@ -925,9 +925,9 @@ void ATTR_GDBINIT gdbstub_init()
 
 /* Hook functions */
 
-bool IRAM_ATTR gdb_present()
+GdbState IRAM_ATTR gdb_present()
 {
-	return true;
+	return gdb_state.attached ? eGDB_Attached : eGDB_Detached;
 }
 
 void gdb_enable(bool state)
