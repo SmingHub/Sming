@@ -49,6 +49,29 @@ void CALLBACK_ATTR blink()
 
 void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 {
+	// Error detection
+	unsigned status = Serial.getStatus();
+	if(status != 0) {
+		if(bitRead(status, eSERS_Overflow)) {
+			Serial.println(_F("** RECEIVE OVERFLOW **"));
+		}
+		if(bitRead(status, eSERS_BreakDetected)) {
+			Serial.println(_F("** BREAK DETECTED **"));
+		}
+		if(bitRead(status, eSERS_FramingError)) {
+			Serial.println(_F("** FRAMING ERROR **"));
+		}
+		if(bitRead(status, eSERS_ParityError)) {
+			Serial.println(_F("** PARITY ERROR **"));
+		}
+		// Discard what is likely to be garbage
+		Serial.print(_F("Discarding "));
+		Serial.print(availableCharsCount);
+		Serial.println(_F(" chars"));
+		Serial.clear(SERIAL_RX_ONLY);
+		return;
+	}
+
 	if(arrivedChar == '\n' && availableCharsCount != 0) {
 		char buffer[availableCharsCount];
 		auto count = Serial.readMemoryBlock(buffer, availableCharsCount);
@@ -79,7 +102,7 @@ void readFile(const char* filename, bool display)
 			}
 		} while(len == sizeof(buf));
 		auto elapsed = millis() - start;
-		Serial.printf(_F("gdb_syscall_read() = %d, total = %u, elapsed = %u ms, av. %u bytes/sec\r\n"), len, total,
+		Serial.printf(_F("\r\ngdb_syscall_read() = %d, total = %u, elapsed = %u ms, av. %u bytes/sec\r\n"), len, total,
 					  elapsed, total == 0 ? 0 : 1000U * total / elapsed);
 
 		gdb_syscall_close(fd);
