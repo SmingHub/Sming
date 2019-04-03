@@ -64,6 +64,12 @@ typedef enum {
 GdbState gdb_present(void);
 
 /**
+ * @brief Called from task queue when GDB attachment status changes
+ * @note User can implement this function to respond to attachment changes
+ */
+void gdb_on_attach(bool attached);
+
+/**
  * @brief Called on unexpected system reset
  */
 void debug_crash_callback(const struct rst_info* rst_info, uint32_t stack, uint32_t stack_end);

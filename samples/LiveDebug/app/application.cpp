@@ -390,13 +390,19 @@ void readConsole()
 	}
 }
 
+extern "C" void gdb_on_attach(bool attached)
+{
+	debug_i("GdbAttach(%d)", attached);
+	if(attached) {
+		readConsole();
+	}
+}
+
 void GDB_IRAM_ATTR init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.onDataReceived(onDataReceived);
 	Serial.systemDebugOutput(true);
-
-	System.onReady(readConsole);
 
 	pinMode(LED_PIN, OUTPUT);
 #if TIMER_TYPE == TIMERTYPE_SIMPLE

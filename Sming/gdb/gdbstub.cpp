@@ -15,6 +15,14 @@
  * Applications may use UART2, which is virtualised (using a generic callback mechanism) so
  * output may sent to debug console when GDB is attached.
  *
+ * Note from GDB manual:
+ *
+ * 		At a minimum, a stub is required to support the ‘g’ and ‘G’ commands for register access,
+ * 		and the ‘m’ and ‘M’ commands for memory access. Stubs that only control single-threaded
+ * 		targets can implement run control with the ‘c’ (continue), and ‘s’ (step) commands. Stubs
+ * 		that support multi-threading targets should support the ‘vCont’ command. All other commands
+ * 		are optional.
+ *
 *********************************************************************************/
 
 #include <xtensa/corebits.h>
@@ -28,6 +36,7 @@
 #include "exceptions.h"
 #include "gdb/registers.h"
 #include "gdbsyscall.h"
+#include "Platform/System.h"
 
 extern "C" {
 void system_restart_core();
@@ -72,13 +81,11 @@ volatile gdb_state_t gdb_state;					   ///< Global state
 static char commandBuffer[MAX_COMMAND_LENGTH + 1]; ///< Buffer for incoming/outgoing GDB commands
 static int32_t singleStepPs = -1; // Stores ps (Program State) when single-stepping instruction. -1 when not in use.
 
-// Error states used by the routines that grab stuff from the incoming gdb packet
+// Return codes from handleCommand()
 enum GdbResult {
-	ST_ENDPACKET = -1,
-	ST_ERR = -2,
-	ST_OK = -3,
-	ST_CONT = -4,
-	ST_DETACH = -5,
+	ST_OK,	 ///< Regular command
+	ST_CONT,   ///< Continue with program execution (but stay attached)
+	ST_DETACH, ///< Detach from GDB and continue with program execution
 };
 
 // For simplifying access to word-aligned data
@@ -335,7 +342,9 @@ static unsigned ATTR_GDBEXTERNFN readCommand()
 }
 
 /*
- * Handle a command as received from GDB.
+ * @brief Handle a command as received from GDB
+ * @param cmdlen Number of characters in received command
+ * @retval GdbResult One of ST_OK, ST_CONT or ST_DETACH
  */
 static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 {
@@ -717,16 +726,19 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 
 /**
  * @brief Wait for incoming commands and process them, only returning when instructed to do so by GDB
+ * @param waitForStart false if start character '$' has already been received
+ * @param allowDetach When handling exceptions we ignore detach requests
  * @retval GdbResult cause of command loop exit
  * @note Flags that gdb has been attached whenever a gdb-formatted packet is received
  * Keeps reading commands until either a continue, detach, or kill command is received
  * It is not necessary for gdb to be attached for it to be paused
  * For example, during an exception break, the program is paused but gdb might not be attached yet
 */
-GdbResult ATTR_GDBEXTERNFN commandLoop(bool waitForStart = true)
+void ATTR_GDBEXTERNFN commandLoop(bool waitForStart, bool allowDetach)
 {
-	GdbResult result = ST_OK;
-	do {
+	bool initiallyAttached = gdb_state.attached;
+
+	while(true) {
 		if(waitForStart) {
 			while(gdbReceiveChar() != '$') {
 				// wait for start
@@ -737,15 +749,19 @@ GdbResult ATTR_GDBEXTERNFN commandLoop(bool waitForStart = true)
 		auto cmdLen = readCommand();
 		if(cmdLen != 0) {
 			gdb_state.attached = true;
-			result = handleCommand(cmdLen);
+			GdbResult result = handleCommand(cmdLen);
+			if(result == ST_CONT) {
+				break;
+			} else if(result == ST_DETACH && allowDetach) {
+				gdb_state.attached = false;
+				break;
+			}
 		}
-	} while(result == ST_OK);
-
-	if(result == ST_DETACH) {
-		gdb_state.attached = false;
 	}
 
-	return result;
+	if(gdb_state.attached != initiallyAttached) {
+		System.queueCallback(TaskCallback(gdb_on_attach), gdb_state.attached);
+	}
 }
 
 /*
@@ -834,10 +850,10 @@ static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
 		}
 
 		if(bitRead(gdb_state.flags, DBGFLAG_PACKET_STARTED)) {
-			commandLoop(false);
+			commandLoop(false, true);
 		} else {
 			sendReason();
-			commandLoop();
+			commandLoop(true, true);
 		}
 	}
 
@@ -892,8 +908,7 @@ void gdbstub_handle_exception()
 	bitSet(gdb_state.flags, DBGFLAG_SYSTEM_EXCEPTION);
 
 	sendReason();
-	while(commandLoop() != ST_CONT) {
-	}
+	commandLoop(true, false);
 
 	gdb_state.flags = 0;
 	pauseHardwareTimer(false);

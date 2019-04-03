@@ -192,8 +192,6 @@ void ATTR_GDBINIT gdb_init()
 #endif
 }
 
-#ifndef ENABLE_GDB
-
 extern "C" {
 static unsigned IRAM_ATTR __gdb_no_op()
 {
@@ -205,9 +203,8 @@ static unsigned IRAM_ATTR __gdb_no_op()
 void gdb_enable(bool state) NOOP;
 void gdb_do_break(void) NOOP;
 GdbState gdb_present(void) NOOP;
+void gdb_on_attach(bool attached) NOOP;
 };
-
-#endif
 
 int __attribute__((weak)) gdb_syscall(const GdbSyscallInfo& info)
 {
