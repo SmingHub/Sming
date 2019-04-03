@@ -147,64 +147,70 @@ size_t ATTR_GDBEXTERNFN gdbSendChar(char c)
 	return gdb_uart_write_char(c);
 }
 
-#if GDBSTUB_ENABLE_UART2
 size_t gdbstub_send_user_data()
 {
-	size_t avail = 0;
-
+#if GDBSTUB_ENABLE_UART2
 	auto txbuf = user_uart == nullptr ? nullptr : user_uart->tx_buffer;
-	if(txbuf != nullptr) {
-		void* data;
-		while((avail = txbuf->getReadData(data)) != 0) {
-			size_t charCount;
-			unsigned used = uart_txfifo_count(GDB_UART);
-			unsigned space = UART_TX_FIFO_SIZE - used - 1;
-			if(gdb_state.attached) {
-				// $Onn#CC is smallest packet, for a single character, but we want to avoid that as it's inefficient
-				if(used >= 8) {
-					break;
-				}
+	if(txbuf == nullptr) {
+		return 0;
+	}
 
-				charCount = std::min((space - 3) / 2, avail);
-				GdbPacket packet;
-				packet.writeChar('O');
-				packet.writeHexBlock(data, charCount);
-				uart_disable_interrupts();
-				++gdb_state.ack_count;
-				uart_restore_interrupts();
-			} else {
-				charCount = gdb_uart_write(data, std::min(space, avail));
+	size_t avail;
+	void* data;
+	while((avail = txbuf->getReadData(data)) != 0) {
+		size_t charCount;
+		unsigned used = uart_txfifo_count(GDB_UART);
+		unsigned space = UART_TX_FIFO_SIZE - used - 1;
+		if(gdb_state.attached) {
+			// $Onn#CC is smallest packet, for a single character, but we want to avoid that as it's inefficient
+			if(used >= 8) {
+				break;
 			}
 
-			userDataSending = true;
+			charCount = std::min((space - 3) / 2, avail);
+			GdbPacket packet;
+			packet.writeChar('O');
+			packet.writeHexBlock(data, charCount);
+			uart_disable_interrupts();
+			++gdb_state.ack_count;
+			uart_restore_interrupts();
+		} else {
+			charCount = gdb_uart_write(data, std::min(space, avail));
+		}
 
-			user_uart->tx_buffer->skipRead(charCount);
-			if(charCount != avail) {
-				break; // That's all for now
-			}
+		userDataSending = true;
+
+		user_uart->tx_buffer->skipRead(charCount);
+		if(charCount != avail) {
+			break; // That's all for now
 		}
 	}
 
-#if GDBSTUB_ENABLE_SYSCALL
-	// When all data has been sent, see if there's a pending syscall to send
-	if(avail == 0) {
-		gdbstub_syscall_execute();
-	}
-#endif
-
 	return avail;
+#else
+	// UART2 disabled, no user data to send
+	return 0;
+#endif
 }
 
-static void SendUserDataQueued(uint32_t)
+#if GDBSTUB_ENABLE_UART2
+
+static void sendUserDataTask(uint32_t)
 {
 	sendUserDataQueued = false;
-	gdbstub_send_user_data();
+
+	if(gdbstub_send_user_data() == 0) {
+#if GDBSTUB_ENABLE_SYSCALL
+		// When all data has been sent, see if there's a pending syscall to send
+		gdbstub_syscall_execute();
+#endif
+	}
 }
 
 __forceinline void queueSendUserData()
 {
 	if(!sendUserDataQueued) {
-		System.queueCallback(SendUserDataQueued);
+		System.queueCallback(sendUserDataTask);
 		sendUserDataQueued = true;
 	}
 }
@@ -281,6 +287,8 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 			}
 		}
 	}
+#else
+	bitClear(USIE(GDB_UART), UIFE);
 #endif
 
 	// RX FIFO Full or RX FIFO Timeout ?

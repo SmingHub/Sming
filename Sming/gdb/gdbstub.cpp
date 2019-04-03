@@ -905,6 +905,8 @@ void ATTR_GDBINIT gdbstub_init()
 {
 	gdbstub_init_debug_entry();
 
+	gdb_state.enabled = gdb_uart_init();
+
 #define SD(xx) debug_i(#xx " = %u", xx)
 	SD(ENABLE_EXCEPTION_DUMP);
 	SD(ENABLE_CRASH_DUMP);
@@ -915,9 +917,9 @@ void ATTR_GDBINIT gdbstub_init()
 	SD(GDBSTUB_BREAK_ON_EXCEPTION);
 	SD(GDBSTUB_CTRLC_BREAK);
 	SD(GDBSTUB_BREAK_ON_INIT);
+	SD(GDBSTUB_ENABLE_UART2);
+	SD(GDBSTUB_ENABLE_SYSCALL);
 #undef SD
-
-	gdb_state.enabled = gdb_uart_init();
 
 #if GDBSTUB_BREAK_ON_INIT
 	if(gdb_state.enabled) {

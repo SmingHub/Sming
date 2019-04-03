@@ -15,6 +15,7 @@
 #if GDBSTUB_ENABLE_SYSCALL
 
 #include <gdb_syscall.h>
+#include "gdbsyscall.h"
 #include "GdbPacket.h"
 #include <sys/errno.h>
 #include "Platform/System.h"
@@ -56,135 +57,146 @@ static GdbSyscallInfo syscall_info; ///< The syscall packet
  * Otherwise we need to force send of uart data via sendUserData() (in gdbuart.cpp).
  *
  * Both of these deal with packetising whilst the debugger is attached but not paused.
- * We should combine this -
  */
 int gdb_syscall(const GdbSyscallInfo& info)
 {
 	if(!gdb_state.attached) {
+		debug_e("syscall failed, not attached");
 		return -EPERM;
 	}
 	if(gdb_state.syscall != syscall_ready) {
+		debug_e("syscall failed, not ready");
 		return -EAGAIN;
 	}
 
 	syscall_info = info;
 	gdb_state.syscall = syscall_pending;
 
-	do {
-		gdbstub_send_user_data();
-	} while(info.callback == nullptr && gdb_state.syscall != syscall_ready);
+	debug_i("syscall pending");
 
-	return syscall_info.result;
+	if(info.callback == nullptr) {
+		// Wait for all user data to be output before sending request
+		while(gdbstub_send_user_data() != 0) {
+		}
+		gdbstub_syscall_execute();
+		// No callback, wait for completion
+		while(gdb_state.syscall != syscall_ready) {
+			// Watchdog will fire if this takes too long - intentional
+		}
+		debug_i("syscall returned %d", syscall_info.result);
+		return syscall_info.result;
+	} else {
+		if(gdbstub_send_user_data() == 0) {
+			gdbstub_syscall_execute();
+		} else {
+			// will be executed via user task in gdbuart
+		}
+		return 0;
+	}
 }
 
 void gdbstub_syscall_execute()
 {
 	if(gdb_state.syscall != syscall_pending) {
 		// Nothing to execute
+		debug_w("No pending syscall");
 		return;
 	}
 
 	auto& info = syscall_info;
-	{
-		GdbPacket packet;
-		packet.writeChar('F');
-		switch(info.command) {
-		case eGDBSYS_open:
-			packet.writeStr(GDB_F("open,"));
-			packet.writeStrRef(info.open.filename);
-			packet.writeChar(',');
-			packet.writeHexWord32(info.open.flags);
-			packet.writeChar(',');
-			packet.writeHexByte(0); // mode
-			break;
+	GdbPacket packet;
+	packet.writeChar('F');
+	switch(info.command) {
+	case eGDBSYS_open:
+		packet.writeStr(GDB_F("open,"));
+		packet.writeStrRef(info.open.filename);
+		packet.writeChar(',');
+		packet.writeHexWord32(info.open.flags);
+		packet.writeChar(',');
+		packet.writeHexByte(0); // mode
+		break;
 
-		case eGDBSYS_close:
-			packet.writeStr(GDB_F("close,"));
-			packet.writeHexByte(info.close.fd);
-			break;
+	case eGDBSYS_close:
+		packet.writeStr(GDB_F("close,"));
+		packet.writeHexByte(info.close.fd);
+		break;
 
-		case eGDBSYS_read:
-			packet.writeStr(GDB_F("read,"));
-			packet.writeHexByte(info.read.fd);
-			packet.writeChar(',');
-			packet.writeHexWord32(uint32_t(info.read.buffer));
-			packet.writeChar(',');
-			packet.writeHexWord16(info.read.bufSize);
-			break;
+	case eGDBSYS_read:
+		packet.writeStr(GDB_F("read,"));
+		packet.writeHexByte(info.read.fd);
+		packet.writeChar(',');
+		packet.writeHexWord32(uint32_t(info.read.buffer));
+		packet.writeChar(',');
+		packet.writeHexWord16(info.read.bufSize);
+		break;
 
-		case eGDBSYS_write:
-			packet.writeStr(GDB_F("write,"));
-			packet.writeHexByte(info.write.fd);
-			packet.writeChar(',');
-			packet.writeHexWord32(uint32_t(info.write.buffer));
-			packet.writeChar(',');
-			packet.writeHexWord16(info.write.count);
-			break;
+	case eGDBSYS_write:
+		packet.writeStr(GDB_F("write,"));
+		packet.writeHexByte(info.write.fd);
+		packet.writeChar(',');
+		packet.writeHexWord32(uint32_t(info.write.buffer));
+		packet.writeChar(',');
+		packet.writeHexWord16(info.write.count);
+		break;
 
-		case eGDBSYS_lseek:
-			packet.writeStr(GDB_F("lseek,"));
-			packet.writeHexByte(info.lseek.fd);
-			packet.writeChar(',');
-			packet.writeHexWord32(info.lseek.offset);
-			packet.writeChar(',');
-			packet.writeHexByte(info.lseek.whence);
-			break;
+	case eGDBSYS_lseek:
+		packet.writeStr(GDB_F("lseek,"));
+		packet.writeHexByte(info.lseek.fd);
+		packet.writeChar(',');
+		packet.writeHexWord32(info.lseek.offset);
+		packet.writeChar(',');
+		packet.writeHexByte(info.lseek.whence);
+		break;
 
-		case eGDBSYS_rename:
-			packet.writeStr(GDB_F("rename,"));
-			packet.writeStrRef(info.rename.oldpath);
-			packet.writeChar(',');
-			packet.writeStrRef(info.rename.newpath);
-			break;
+	case eGDBSYS_rename:
+		packet.writeStr(GDB_F("rename,"));
+		packet.writeStrRef(info.rename.oldpath);
+		packet.writeChar(',');
+		packet.writeStrRef(info.rename.newpath);
+		break;
 
-		case eGDBSYS_unlink:
-			packet.writeStr(GDB_F("unlink,"));
-			packet.writeStrRef(info.unlink.pathname);
-			break;
+	case eGDBSYS_unlink:
+		packet.writeStr(GDB_F("unlink,"));
+		packet.writeStrRef(info.unlink.pathname);
+		break;
 
-		case eGDBSYS_stat:
-			packet.writeStr(GDB_F("stat,"));
-			packet.writeStrRef(info.stat.pathname);
-			packet.writeChar(',');
-			packet.writeHexWord32(uint32_t(info.stat.buf));
-			break;
+	case eGDBSYS_stat:
+		packet.writeStr(GDB_F("stat,"));
+		packet.writeStrRef(info.stat.pathname);
+		packet.writeChar(',');
+		packet.writeHexWord32(uint32_t(info.stat.buf));
+		break;
 
-		case eGDBSYS_fstat:
-			packet.writeStr(GDB_F("fstat,"));
-			packet.writeHexByte(info.fstat.fd);
-			packet.writeChar(',');
-			packet.writeHexWord32(uint32_t(info.fstat.buf));
-			break;
+	case eGDBSYS_fstat:
+		packet.writeStr(GDB_F("fstat,"));
+		packet.writeHexByte(info.fstat.fd);
+		packet.writeChar(',');
+		packet.writeHexWord32(uint32_t(info.fstat.buf));
+		break;
 
-		case eGDBSYS_gettimeofday:
-			packet.writeStr(GDB_F("gettimeofday,"));
-			packet.writeHexWord32(uint32_t(info.gettimeofday.tv));
-			packet.writeChar(',');
-			packet.writeHexWord32(uint32_t(info.gettimeofday.tz));
-			break;
+	case eGDBSYS_gettimeofday:
+		packet.writeStr(GDB_F("gettimeofday,"));
+		packet.writeHexWord32(uint32_t(info.gettimeofday.tv));
+		packet.writeChar(',');
+		packet.writeHexWord32(uint32_t(info.gettimeofday.tz));
+		break;
 
-		case eGDBSYS_isatty:
-			packet.writeStr(GDB_F("isatty,"));
-			packet.writeHexByte(info.isatty.fd);
-			break;
+	case eGDBSYS_isatty:
+		packet.writeStr(GDB_F("isatty,"));
+		packet.writeHexByte(info.isatty.fd);
+		break;
 
-		case eGDBSYS_system:
-			packet.writeStr(GDB_F("system,"));
-			packet.writeStrRef(info.system.command);
-			break;
-		}
+	case eGDBSYS_system:
+		packet.writeStr(GDB_F("system,"));
+		packet.writeStrRef(info.system.command);
+		break;
 	}
 
 	// Discard incoming '+' acknolwedgement from packet
 	++gdb_state.ack_count;
 	gdb_state.syscall = syscall_active;
 
-	if(info.callback == nullptr) {
-		// No callback, wait for completion
-		while(gdb_state.syscall != syscall_ready) {
-			// Watchdog will fire if this takes too long - intentional
-		}
-	}
+	debug_i("syscall active");
 }
 
 bool ATTR_GDBEXTERNFN gdb_syscall_complete(const char* data)
