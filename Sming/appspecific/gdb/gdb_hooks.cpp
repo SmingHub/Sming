@@ -138,7 +138,9 @@ static void __attribute__((noinline)) gdbstub_exception_handler_flash(UserFrame*
 	gdbstub_savedRegs.a[1] = uint32_t(frame) + EXCEPTION_GDB_SP_OFFSET;
 
 #if ENABLE_EXCEPTION_DUMP
-	dumpExceptionInfo(frame);
+	if(gdb_present() != eGDB_Attached) {
+		dumpExceptionInfo(frame);
+	}
 #endif
 
 #if defined(ENABLE_GDB) && GDBSTUB_BREAK_ON_EXCEPTION
