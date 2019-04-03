@@ -229,7 +229,6 @@ void fileStat(const char* filename)
 		return;
 	}
 
-	Serial.printf(_F("sizeof(stat) == %u, words = %u\r\n"), sizeof(stat), sizeof(stat) / 4);
 #define PRT(x) Serial.printf(_F("  " #x " = %u\r\n"), stat.x)
 #define PRT_HEX(x) Serial.printf(_F("  " #x " = 0x%08x\r\n"), stat.x)
 #define PRT_TIME(x)                                                                                                    \
@@ -298,19 +297,24 @@ bool handleCommand(const String& cmd)
 		Serial.flush();
 		*(uint8_t*)0 = 0;
 		Serial.println("...still running!");
+	} else if(cmd.equalsIgnoreCase(F("restart"))) {
+		Serial.println(_F("Restarting...."));
+		System.restart();
+		return false;
 	} else if(cmd.equalsIgnoreCase(F("exit"))) {
 		// End console test
 		Serial.println(_F("Resuming normal program execution."));
 		return false;
 	} else if(cmd.equalsIgnoreCase(F("help"))) {
 		Serial.print(_F("LiveDebug interactive debugger sample. Available commands:\n"
-						"  readfile1 : read and display a test file\n"
-						"  readfile2 : read a larger file asynchronously\n"
-						"  stat      : issue a 'stat' call\n"
-						"  ls        : list directory\n"
-						"  break     : break into debugger\n"
-						"  crash     : write to address 0x00000000, see what happens\n"
-						"  exit      : resume normal application execution\n"));
+						"  readfile1 : Read and display a test file\n"
+						"  readfile2 : Read a larger file asynchronously\n"
+						"  stat      : Issue a 'stat' call\n"
+						"  ls        : List directory\n"
+						"  break     : Break into debugger\n"
+						"  crash     : Write to address 0x00000000, see what happens\n"
+						"  restart   : Restart the system\n"
+						"  exit      : Rresume normal application execution\n"));
 	} else {
 		Serial.println(_F("Unknown command, try 'help'"));
 	}
@@ -334,25 +338,18 @@ bool handleCommand(const String& cmd)
  */
 void onConsoleReadCompleted(const GdbSyscallInfo& info)
 {
-	Serial.print(_F("gdb_read_console() returned "));
-	Serial.print(info.result);
+	debug_i("gdb_read_console() returned %d", info.result);
 	char* bufptr = static_cast<char*>(info.read.buffer);
 	if(info.result <= 0) {
-		Serial.println();
 		delete bufptr;
 	} else {
 		unsigned len = info.result;
 		if(bufptr[len - 1] == '\n') {
 			--len;
 		}
-		if(len == 0) {
-			Serial.println();
-		} else {
+		if(len > 0) {
 			String cmd(bufptr, len);
 			delete bufptr;
-			Serial.print(_F(": \""));
-			Serial.print(cmd);
-			Serial.println('"');
 
 			if(!handleCommand(cmd)) {
 				return;
