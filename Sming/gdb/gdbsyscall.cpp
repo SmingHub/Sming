@@ -14,9 +14,9 @@
 
 #if GDBSTUB_ENABLE_SYSCALL
 
-#include <gdb_syscall.h>
 #include "gdbsyscall.h"
 #include "GdbPacket.h"
+#include <gdb_syscall.h>
 #include <sys/errno.h>
 #include "Platform/System.h"
 

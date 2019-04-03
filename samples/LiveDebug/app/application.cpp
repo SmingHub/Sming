@@ -399,8 +399,9 @@ void GDB_IRAM_ATTR init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.onDataReceived(onDataReceived);
+	Serial.systemDebugOutput(true);
 
-	readConsole();
+	System.onReady(readConsole);
 
 	pinMode(LED_PIN, OUTPUT);
 #if TIMER_TYPE == TIMERTYPE_SIMPLE
