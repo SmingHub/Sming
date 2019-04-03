@@ -5,6 +5,9 @@
 
 #define LED_PIN 2 // Note: LED is attached to UART1 TX output
 
+// Max length of debug command
+const unsigned MAX_COMMAND_LENGTH = 64;
+
 #define TIMERTYPE_HARDWARE 1
 #define TIMERTYPE_SIMPLE 2
 #define TIMERTYPE_TIMER 3
@@ -338,19 +341,17 @@ bool handleCommand(const String& cmd)
  */
 void onConsoleReadCompleted(const GdbSyscallInfo& info)
 {
-	debug_i("gdb_read_console() returned %d", info.result);
+	int result = info.result;
 	char* bufptr = static_cast<char*>(info.read.buffer);
-	if(info.result <= 0) {
-		delete bufptr;
-	} else {
-		unsigned len = info.result;
+
+	debug_i("gdb_read_console() returned %d", result);
+	if(result > 0) {
+		unsigned len = result;
 		if(bufptr[len - 1] == '\n') {
 			--len;
 		}
 		if(len > 0) {
 			String cmd(bufptr, len);
-			delete bufptr;
-
 			if(!handleCommand(cmd)) {
 				return;
 			}
@@ -369,14 +370,11 @@ void readConsole()
 	showPrompt();
 	if(gdb_present() == eGDB_Attached) {
 		// Issue the syscall
-		const unsigned bufsize = 256;
-		auto buffer = new char[bufsize];
-		int res = gdb_console_read(buffer, bufsize, onConsoleReadCompleted);
+		static char buffer[MAX_COMMAND_LENGTH];
+		int res = gdb_console_read(buffer, MAX_COMMAND_LENGTH, onConsoleReadCompleted);
 		if(res < 0) {
 			Serial.printf(_F("gdb_console_read() failed, %d\r\n"), res);
 			Serial.println(_F("Is GDBSTUB_ENABLE_SYSCALL enabled ?"));
-			Serial.println(_F("Did you build with ENABLE_GDB=1 ?"));
-			delete buffer;
 			showPrompt();
 		}
 
