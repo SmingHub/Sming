@@ -116,20 +116,23 @@ static void ATTR_GDBEXTERNFN writeMemoryByte(uint32_t addr, uint8_t data)
 }
 
 /*
- * Return true if addr lives within a RAM segment
- * See xtensa/config/core-isa.h for memory range information
+ * Return true if addr lives within a given segment
+ * See xtensa/config/core-isa.h for memory range information, XCHAL_* values
  */
-static bool ATTR_GDBEXTERNFN isRamAddr(uint32_t addr)
+static bool ATTR_GDBEXTERNFN inRange(uint32_t addr, uint32_t start, uint32_t size)
 {
-	return (addr >= 0x3ff00000 && addr < 0x40000000) || (addr >= 0x40100000 && addr < 0x40140000);
+	return (addr >= start) && (addr < start + size);
 }
+
+#define IN_RANGE(addr, name) inRange(addr, XCHAL_##name##_VADDR, XCHAL_##name##_SIZE)
 
 /*
  * Return true if it makes sense to write to addr
  */
 static bool ATTR_GDBEXTERNFN isValidWriteAddr(uint32_t addr)
 {
-	return isRamAddr(addr) || (addr >= 0x60000000 && addr < 0x60002000);
+	return (addr >= 0x3ff00000 && addr < 0x40000000) || (addr >= 0x40100000 && addr < 0x40140000) ||
+		   (addr >= 0x60000000 && addr < 0x60002000);
 }
 
 static bool ATTR_GDBEXTERNFN isValidWriteAddr(uint32_t startAddr, size_t length)
@@ -163,11 +166,11 @@ static ERRNO_T ATTR_GDBEXTERNFN writeMemoryBlock(uint32_t addr, const void* data
 		return EFAULT;
 	}
 
-	// If writing to RAM, use memcpy for efficiency
-	if(isRamAddr(addr)) {
+	// If writing to Data RAM, use memcpy for efficiency
+	if(IN_RANGE(addr, DATARAM0) || IN_RANGE(addr, DATARAM1)) {
 		memcpy(reinterpret_cast<void*>(addr), data, length);
 	} else {
-		// Registers must be read/written in 32-bit words
+		// Instruction RAM and registers must be read/written in 32-bit words
 		for(unsigned i = 0; i < length; i++, addr++) {
 			writeMemoryByte(addr, static_cast<const uint8_t*>(data)[i]);
 		}
