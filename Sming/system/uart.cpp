@@ -346,8 +346,7 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 				size_t space = uart->rx_buffer->getFreeSpace();
 				read = (avail <= space) ? avail : space;
 				space -= read;
-				avail -= read;
-				for(size_t i = 0; i < read; ++i) {
+				while(read-- != 0) {
 					uart->rx_buffer->writeChar(USF(uart_nr));
 				}
 
@@ -370,14 +369,11 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 
 		// Unless we replenish TX FIFO, disable after handling interrupt
 		if(bitRead(usis, UIFE)) {
-			size_t space = uart_txfifo_free(uart_nr);
-
 			// Dump as much data as we can from buffer into the TX FIFO
 			if(uart->tx_buffer != nullptr) {
+				size_t space = uart_txfifo_free(uart_nr);
 				size_t avail = uart->tx_buffer->available();
 				size_t count = (avail <= space) ? avail : space;
-				space -= count;
-				avail -= count;
 				while(count-- != 0) {
 					USF(uart_nr) = uart->tx_buffer->readChar();
 				}
