@@ -22,7 +22,7 @@ GDB
 
 This is the application which runs on your development system and talks to `gdbstub`.
 
- * Linux: A version of this should be available in $ESP_HOME/xtesnsa-lx106-elf/bin/xtensa-lx106-elf-gdb
+ * Linux: A version of this should be available in $ESP_HOME/xtensa-lx106-elf/bin/xtensa-lx106-elf-gdb
 
  * Windows: At time of writing, UDK doesn't provide a GDB application. You can find pre-built version of this at [SysProgs](http://gnutoolchains.com/esp8266/). Download and run the executable installer, then copy the `C:\SysGCC\esp8266\opt\xtensa-lx106-elf\bin\xtensa-lx106-elf-gdb.exe` to a suitable location.
 
@@ -35,21 +35,33 @@ Usage
  * Optional: Add `gdb_do_break()` statements to your application.
  * Run `make clean`, then `make ENABLE_GDB=1 flash` to build and flash the application with debugging enabled
  * Run gdb, depending on your configuration immediately after resetting the board or after it has run into
-an exception. The easiest way to do it is to use the provided script: xtensa-lx106-elf-gdb -x $SMING_HOME/gdb/gdbcmds -b 115200
-Change the '115200' into the baud rate your code uses. You may need to change the `gdbcmds` script to fit the
-configuration of your hardware and build environment.
+an exception. The easiest way to do it is to use the provided script: `make gdb`.
+
+To run manually in Linux:
+`$ESP_HOME/xtensa-lx106-elf/bin/xtensa-lx106-elf-gdb -x $SMING_HOME/gdb/gdbcmds -b 115200 -ex "target remote /dev/ttyUSB0"`
+
+Windows command line:
+`%ESP_HOME%\xtensa-lx106-elf\bin\xtensa-lx106-elf-gdb -x %SMING_HOME%\gdb\gdbcmds -b 115200 -ex "target remote COM4"`
+
+In both cases the appropriate baud rate and COM port should be substituted.
 
 Useful GDB commands
 -------------------
 
 `c` Continue execution
+
 `q` Quit and detach
+
+`where` Display current stopped location
+
 `bt` Show stack backtrace
-`disass` Disassemble
-`disass/m` Disassemble, mix with source code
+
+`disass` Disassemble, `disass/m` to mix with source code
+
 `print expr` Display a variable or other value
-`print func()` Call a function, display result
-`call func()` Call a function, discard result
+
+`print func()` Call a function, display result, or `call func()` to discard result
+
 `tui enable` Provides a windowed interface within the console (only seems to work in Linux)
 
 Eclipse
@@ -102,7 +114,7 @@ Error reported, "packet reply is too long"
 
 Whilst GDB is attached, input cannot be passed to application
 - Cause: GDB buffers keystrokes and replays them only when the target is interrupted (e.g. via ctrl+C), rather than passing them via serial connection.
-- Solution: Application may use gdb_syscall interface to communicate with debugger. See `$(SMING_HOME)/system/gdb_syscall.h`.
+- Solution: Application may use gdb_syscall interface to communicate with debugger. See `$(SMING_HOME)/system/gdb_syscall.h`, and LiveDebug sample.
 
 No apparent way to have second 'console' (windows terminology) separate from GDB interface
 - Cause: Unknown
