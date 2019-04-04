@@ -65,7 +65,7 @@ static PGM_P const registerNames[] PROGMEM = {
 
 extern GdbstubSavedRegisters gdbstub_savedRegs;
 
-typedef uint8_t ERRNO_T;
+typedef unsigned ERRNO_T;
 
 /*
  * Maximum length of a GDB command packet. Has to be at least able to fit the G command.

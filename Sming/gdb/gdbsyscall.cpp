@@ -216,7 +216,7 @@ bool ATTR_GDBEXTERNFN gdb_syscall_complete(const char* data)
 
 	if(*data == ',') {
 		++data;
-		uint8_t err = GdbPacket::readHexValue(data);
+		unsigned err = GdbPacket::readHexValue(data);
 		syscall_info.result = -err;
 	} else {
 		syscall_info.result = len;
