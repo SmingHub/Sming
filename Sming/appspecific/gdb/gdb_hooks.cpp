@@ -44,11 +44,12 @@ GdbstubSavedRegisters gdbstub_savedRegs;
 
 void debug_print_stack(uint32_t start, uint32_t end)
 {
-	m_puts(_F("\nStack dump:\n"));
-	PSTR_ARRAY(instructions, "To decode the stack dump call from command line:\n"
-							 "   python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out\n"
-							 "and copy & paste the text enclosed in '===='.\n");
-	PSTR_ARRAY(separatorLine, "\n================================================================\n");
+	m_puts(_F("\r\n"
+			  "Stack dump:\r\n"));
+	PSTR_ARRAY(instructions, "To decode the stack dump call from command line:\r\n"
+							 "   python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out\r\n"
+							 "and copy & paste the text enclosed in '===='.\r\n");
+	PSTR_ARRAY(separatorLine, "\n================================================================\r\n");
 	m_puts(instructions);
 	m_puts(separatorLine);
 	for(uint32_t addr = start; addr < end; addr += 0x10) {
@@ -56,7 +57,7 @@ void debug_print_stack(uint32_t start, uint32_t end)
 		// rough indicator: stack frames usually have SP saved as the second word
 		bool looksLikeStackFrame = (values[2] == addr + 0x10);
 
-		m_printf(_F("%08x:  %08x %08x %08x %08x %c\n"), addr, values[0], values[1], values[2], values[3],
+		m_printf(_F("%08x:  %08x %08x %08x %08x %c\r\n"), addr, values[0], values[1], values[2], values[3],
 				 (looksLikeStackFrame) ? '<' : ' ');
 	}
 	m_puts(separatorLine);
@@ -68,13 +69,17 @@ void debug_crash_callback(const rst_info* rst_info, uint32_t stack, uint32_t sta
 #if ENABLE_CRASH_DUMP
 	switch(rst_info->reason) {
 	case REASON_EXCEPTION_RST:
-		m_printf(_F("\n\n***** Exception Reset (%u):\n"
-					"epc1=0x%08x epc2=0x%08x epc3=0x%08x excvaddr=0x%08x depc=0x%08x\n"),
+		m_printf(_F("\r\n"
+					"\n"
+					"***** Exception Reset (%u):\r\n"
+					"epc1=0x%08x epc2=0x%08x epc3=0x%08x excvaddr=0x%08x depc=0x%08x\r\n"),
 				 rst_info->exccause, rst_info->epc1, rst_info->epc2, rst_info->epc3, rst_info->excvaddr,
 				 rst_info->depc);
 		break;
 	case REASON_SOFT_WDT_RST:
-		m_puts(_F("\n\n***** Software Watchdog Reset\n"));
+		m_puts(_F("\r\n"
+				  "\n"
+				  "***** Software Watchdog Reset\r\n"));
 		break;
 	default:
 		//
@@ -92,33 +97,33 @@ void dumpExceptionInfo(UserFrame* frame)
 	ets_wdt_disable();
 	auto& reg = gdbstub_savedRegs;
 
-	m_printf(_F("\n\n***** Fatal exception %u"), reg.cause);
+	m_printf(_F("\r\n"
+				"\n"
+				"***** Fatal exception %u"),
+			 reg.cause);
 	if(reg.cause <= EXCCAUSE_MAX) {
-		m_putc(' ');
-		m_putc('(');
 		char name[32];
 		memcpy_P(name, exceptionNames[reg.cause], sizeof(name));
 		name[sizeof(name) - 1] = '\0';
-		m_puts(name);
-		m_putc(')');
+		m_printf(_F(" (%s)"), name);
 	}
-	m_putc('\n');
+	m_puts("\r\n");
 
 	// EXCVADDR isn't set for all exceptions, so zero it out rather than show potentially misleading information
 	if(reg.cause < EXCCAUSE_UNALIGNED && reg.cause != EXCCAUSE_IFETCHERROR && reg.cause != EXCCAUSE_LOAD_STORE_ERROR) {
 		reg.excvaddr = 0;
 	}
 
-	m_printf(_F("pc=0x%08x sp=0x%08x excvaddr=0x%08x\n"), reg.pc, reg.a[1], reg.excvaddr);
-	m_printf(_F("ps=0x%08x sar=0x%08x vpri=0x%08x\n"), reg.ps, reg.sar, reg.vpri);
+	m_printf(_F("pc=0x%08x sp=0x%08x excvaddr=0x%08x\r\n"), reg.pc, reg.a[1], reg.excvaddr);
+	m_printf(_F("ps=0x%08x sar=0x%08x vpri=0x%08x\r\n"), reg.ps, reg.sar, reg.vpri);
 	for(int i = 0; i < 16; i++) {
 		uint32_t r = reg.a[i];
 		m_printf(_F("r%02u: 0x%08x=%10d "), i, r, r);
 		if(i % 3 == 2) {
-			m_putc('\n');
+			m_puts("\r\n");
 		}
 	}
-	m_putc('\n');
+	m_puts("\r\n");
 	debug_print_stack(reg.a[1], 0x3fffffb0);
 	ets_wdt_enable();
 }
