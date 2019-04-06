@@ -38,6 +38,11 @@ size_t gdbSendChar(char c);
  * (via notify callback) or via task callback queued from ISR. We don't do this inside
  * the ISR as all the code (including packetising) would need to be in IRAM.
  */
-size_t gdbstub_send_user_data();
+size_t gdbSendUserData();
+
+/**
+ * @brief Ensure all user data has been written to serial port
+ */
+void gdbFlushUserData();
 
 #endif /* _GDB_GDBUART_H_ */

@@ -27,7 +27,7 @@ static uart_t* gdb_uart; // Port debugger is attached to
 static uart_t* user_uart;			  // If open, virtual port being used for user passthrough
 static uint32_t user_uart_status;	 // See gdb_uart_callback (ISR handler)
 static volatile bool userDataSending; // Transmit completion callback invoked on user uart
-static bool sendUserDataQueued;		  // Ensures only one call to gdbstub_send_user_data() is queued at a time
+static bool sendUserDataQueued;		  // Ensures only one call to gdbSendUserData() is queued at a time
 #endif
 
 // Get number of characters in receive FIFO
@@ -147,7 +147,7 @@ size_t ATTR_GDBEXTERNFN gdbSendChar(char c)
 	return gdb_uart_write_char(c);
 }
 
-size_t gdbstub_send_user_data()
+size_t ATTR_GDBEXTERNFN gdbSendUserData()
 {
 #if GDBSTUB_ENABLE_UART2
 	auto txbuf = user_uart == nullptr ? nullptr : user_uart->tx_buffer;
@@ -193,13 +193,23 @@ size_t gdbstub_send_user_data()
 #endif
 }
 
+void ATTR_GDBEXTERNFN gdbFlushUserData()
+{
+#if GDBSTUB_ENABLE_UART2
+	while(gdbSendUserData() != 0) {
+		wdt_feed();
+		system_soft_wdt_feed();
+	}
+#endif
+}
+
 #if GDBSTUB_ENABLE_UART2
 
 static void sendUserDataTask(uint32_t)
 {
 	sendUserDataQueued = false;
 
-	if(gdbstub_send_user_data() == 0) {
+	if(gdbSendUserData() == 0) {
 #if GDBSTUB_ENABLE_SYSCALL
 		// When all data has been sent, see if there's a pending syscall to send
 		gdbstub_syscall_execute();
@@ -237,7 +247,7 @@ static void userUartNotify(uart_t* uart, uart_notify_code_t code)
 		 * loop indefinitely if UART_OPT_TXWAIT is set.
 		 */
 		if(uart->tx_buffer->isFull()) {
-			gdbstub_send_user_data();
+			gdbSendUserData();
 		} else {
 			queueSendUserData();
 		}
@@ -245,11 +255,7 @@ static void userUartNotify(uart_t* uart, uart_notify_code_t code)
 	}
 
 	case UART_NOTIFY_WAIT_TX: {
-		/*
-		 * Ensure all data has been written to hardware
-		 */
-		while(gdbstub_send_user_data() != 0) {
-		}
+		gdbFlushUserData();
 		break;
 	}
 

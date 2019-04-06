@@ -16,7 +16,7 @@
 #include "gdbstub.h"
 
 /**
- * @brief Called from gdbstub_send_user_data() when user data has finished sending
+ * @brief Called from gdbSendUserData() when user data has finished sending
  */
 void gdbstub_syscall_execute();
 

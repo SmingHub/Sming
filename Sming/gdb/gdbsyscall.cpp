@@ -75,9 +75,7 @@ int gdb_syscall(const GdbSyscallInfo& info)
 	debug_i("syscall pending");
 
 	if(info.callback == nullptr) {
-		// Wait for all user data to be output before sending request
-		while(gdbstub_send_user_data() != 0) {
-		}
+		gdbFlushUserData();
 		gdbstub_syscall_execute();
 		// No callback, wait for completion
 		while(gdb_state.syscall != syscall_ready) {
@@ -86,7 +84,7 @@ int gdb_syscall(const GdbSyscallInfo& info)
 		debug_i("syscall returned %d", syscall_info.result);
 		return syscall_info.result;
 	} else {
-		if(gdbstub_send_user_data() == 0) {
+		if(gdbSendUserData() == 0) {
 			gdbstub_syscall_execute();
 		} else {
 			// will be executed via user task in gdbuart
