@@ -186,8 +186,15 @@ static void ATTR_GDBINIT installExceptionHandler()
 
 #endif // HOOK_SYSTEM_EXCEPTIONS
 
-void ATTR_GDBINIT gdb_init()
+extern "C" {
+
+void ATTR_GDBINIT gdb_init(void)
 {
+	// Reset all serial ports to user-specified baud rate
+	for(unsigned i = 0; i < UART_PHYSICAL_COUNT; ++i) {
+		uart_set_baudrate_reg(i, SERIAL_BAUD_RATE);
+	}
+
 #ifdef HOOK_SYSTEM_EXCEPTIONS
 	installExceptionHandler();
 #endif
@@ -197,8 +204,7 @@ void ATTR_GDBINIT gdb_init()
 #endif
 }
 
-extern "C" {
-static unsigned IRAM_ATTR __gdb_no_op()
+static unsigned IRAM_ATTR __gdb_no_op(void)
 {
 	return 0;
 }
