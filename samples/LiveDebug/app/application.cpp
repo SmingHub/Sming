@@ -100,16 +100,14 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 	while((c = Serial.read()) >= 0) {
 		switch(c) {
 		case '\b': // delete (backspace)
+		case 0x7f: // xterm ctrl-?
 			if(commandLength > 0) {
 				--commandLength;
-				Serial.print('\b');
-				Serial.print(' ');
-				Serial.print('\b');
+				Serial.print(_F("\b \b"));
 			}
 			break;
 		case '\r':
 		case '\n':
-			//				m_printHex("CMD", commandBuffer, commandLength);
 			if(commandLength > 0) {
 				Serial.println();
 				String cmd(commandBuffer, commandLength);
@@ -161,7 +159,7 @@ void readFile(const char* filename, bool display)
 void readConsole();
 
 /*
- * Opening, reading and closing a fill are all done using asynchronous syscalls.
+ * A more advanced way to use host File I/O using asynchronous syscalls.
  * The initial open() is performed via readFileAsync(), the remaining operations are handled
  * in this callback function.
  */
@@ -215,6 +213,7 @@ void asyncReadCallback(const GdbSyscallInfo& info)
 }
 
 /*
+ * Read a file using callbacks.
  * Note that filename must be in persistent memory (e.g. flash string) as call may not be started
  * immediately.
  */
@@ -256,18 +255,129 @@ void fileStat(const char* filename)
 #undef PRT_TIME
 }
 
-time_t getTimeOfDay()
+/*
+ * Keep commands and their description together to ensure 'help' is consistent.
+ * This also helps to keep the code clean and easy to read.
+ */
+#define COMMAND_MAP(XX)                                                                                                \
+	XX(readfile1, "Use syscall file I/O functions to read and display a host file")                                    \
+	XX(readfile2, "Read a larger host file asynchronously, so data is processed in a callback function")               \
+	XX(stat, "Use `syscall_stat` function to get details for a host file")                                             \
+	XX(ls, "Use `syscall_system` function to perform a directory listing on the host")                                 \
+	XX(time, "Use `syscall_gettimeofday` to get current time from host")                                               \
+	XX(break, "Demonstrated `gdb_do_break()` function to pause this application and obtain a GDB command prompt")      \
+	XX(read0, "Read from invalid address")                                                                             \
+	XX(write0, "Write to invalid address")                                                                             \
+	XX(restart, "Restart the system")                                                                                  \
+	XX(exit, "Detach from GDB and resume normal application execution")                                                \
+	XX(help, "Display this command summary")
+
+/*
+ * Macro to simplify command handler function creation.
+ * Function returns true to start another 'readConsole' request.
+ * If the operation is completed via callback then it returns false instead, and the readConsole called at that point.
+ */
+#define COMMAND_HANDLER(name) static bool handleCommand_##name()
+
+COMMAND_HANDLER(readfile1)
+{
+	// Read a small file and display it
+	readFile(_F("Makefile"), true);
+	return true;
+}
+
+COMMAND_HANDLER(readfile2)
+{
+	// Read a larger file asynchronously and analyse transfer speed
+	Serial.println(_F("Please wait..."));
+	readFileAsync(PSTR("README.md"));
+	return false; // When read has completed, readConsole() will be called again
+}
+
+COMMAND_HANDLER(stat)
+{
+	fileStat(_F("Makefile"));
+	return true;
+}
+
+COMMAND_HANDLER(time)
 {
 	gdb_timeval_t tv;
 	int res = gdb_syscall_gettimeofday(&tv, nullptr);
 	if(res < 0) {
 		Serial.printf(_F("gdb_syscall_gettimeofday() returned %d\r\n"), res);
-		return 0;
 	} else {
 		Serial.printf(_F("tv_sec = %u, tv_usec = %u, "), tv.tv_sec, uint32_t(tv.tv_usec));
 		Serial.println(DateTime(tv.tv_sec).toFullDateTimeString() + _F(" UTC"));
-		return tv.tv_sec;
 	}
+	return true;
+}
+
+COMMAND_HANDLER(ls)
+{
+	int res = gdb_syscall_system(PSTR("ls -la"));
+	Serial.printf(_F("gdb_syscall_system() returned %d\r\n"), res);
+	return true;
+}
+
+COMMAND_HANDLER(break)
+{
+	Serial.println(_F("Calling gdb_do_break()"));
+	gdb_do_break();
+	return true;
+}
+
+COMMAND_HANDLER(read0)
+{
+	Serial.println(_F("Crashing app by reading from address 0\r\n"
+					  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\r\n"
+					  "then enter `c` to continue"));
+	Serial.flush();
+	uint8_t value = *(uint8_t*)0;
+	Serial.printf("Value at address 0 = 0x%02x\r\n", value);
+	return true;
+}
+
+COMMAND_HANDLER(write0)
+{
+	Serial.println(_F("Crashing app by writing to address 0\r\n"
+					  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\r\n"
+					  "then enter `c` to continue"));
+	Serial.flush();
+	*(uint8_t*)0 = 0;
+	Serial.println("...still running!");
+	return true;
+}
+
+COMMAND_HANDLER(restart)
+{
+	Serial.println(_F("Restarting...."));
+	System.restart();
+	return false;
+}
+
+COMMAND_HANDLER(exit)
+{
+	// End console test
+	Serial.print(_F("Calling gdb_detach() - "));
+	if(gdb_present() == eGDB_Attached) {
+		Serial.println(_F("resuming normal program execution."));
+	} else if(gdb_present() == eGDB_Detached) {
+		Serial.println(_F("not attached, so does nothing"));
+	} else {
+		Serial.println(_F("Application isn't compiled using ENABLE_GDB so this does nothing."));
+	}
+	Serial.flush();
+	gdb_detach();
+	return false;
+}
+
+COMMAND_HANDLER(help)
+{
+	Serial.print(_F("LiveDebug interactive debugger sample. Available commands:\r\n"));
+#define XX(tag, desc) Serial.println(_F("  " #tag " : " desc));
+	COMMAND_MAP(XX)
+#undef XX
 }
 
 /**
@@ -276,53 +386,20 @@ time_t getTimeOfDay()
  */
 bool handleCommand(const String& cmd)
 {
-	if(cmd.equalsIgnoreCase(F("readfile1"))) {
-		// Read a small file and display it
-		readFile(_F("Makefile"), true);
-	} else if(cmd.equalsIgnoreCase(F("readfile2"))) {
-		// Read a larger file asynchronously and analyse transfer speed
-		Serial.println(_F("Please wait..."));
-		readFileAsync(PSTR("README.md"));
-		return false; // When read has completed, readConsole() will be called again
-	} else if(cmd.equalsIgnoreCase(F("stat"))) {
-		fileStat(_F("Makefile"));
-	} else if(cmd.equalsIgnoreCase(F("time"))) {
-		getTimeOfDay();
-	} else if(cmd.equalsIgnoreCase(F("ls"))) {
-		int res = gdb_syscall_system(PSTR("ls -la"));
-		Serial.printf(_F("gdb_syscall_system() returned %d\r\n"), res);
-	} else if(cmd.equalsIgnoreCase(F("break"))) {
-		gdb_do_break();
-	} else if(cmd.equalsIgnoreCase(F("crash"))) {
-		Serial.println(_F("Crashing app by writing to address 0\n"
-						  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\n"
-						  "then enter `c` to continue"));
-		Serial.flush();
-		*(uint8_t*)0 = 0;
-		Serial.println("...still running!");
-	} else if(cmd.equalsIgnoreCase(F("restart"))) {
-		Serial.println(_F("Restarting...."));
-		System.restart();
-		return false;
-	} else if(cmd.equalsIgnoreCase(F("exit"))) {
-		// End console test
-		Serial.println(_F("Resuming normal program execution."));
-		return false;
-	} else if(cmd.equalsIgnoreCase(F("help"))) {
-		Serial.print(_F("LiveDebug interactive debugger sample. Available commands:\n"
-						"  readfile1 : Read and display a test file\n"
-						"  readfile2 : Read a larger file asynchronously\n"
-						"  stat      : Issue a 'stat' call\n"
-						"  ls        : List directory\n"
-						"  break     : Break into debugger\n"
-						"  crash     : Write to address 0x00000000, see what happens\n"
-						"  restart   : Restart the system\n"
-						"  exit      : Rresume normal application execution\n"));
-	} else {
-		Serial.println(_F("Unknown command, try 'help'"));
+	if(logFile.isValid()) {
+		logFile.print(_F("handleCommand('"));
+		logFile.print(cmd);
+		logFile.println(_F("')"));
 	}
 
-	// Another command, please
+#define XX(tag, desc)                                                                                                  \
+	if(cmd.equalsIgnoreCase(F(#tag))) {                                                                                \
+		return handleCommand_##tag();                                                                                  \
+	}
+	COMMAND_MAP(XX)
+#undef XX
+
+	Serial.printf(_F("Unknown command '%s', try 'help'\r\n"), cmd.c_str());
 	return true;
 }
 
@@ -346,14 +423,16 @@ void onConsoleReadCompleted(const GdbSyscallInfo& info)
 
 	debug_i("gdb_read_console() returned %d", result);
 	if(result > 0) {
+		// Remove trailing newline character
 		unsigned len = result;
 		if(bufptr[len - 1] == '\n') {
 			--len;
 		}
+
 		if(len > 0) {
 			String cmd(bufptr, len);
 			if(!handleCommand(cmd)) {
-				return;
+				return; // Don't call readConsole
 			}
 		}
 	}
@@ -403,6 +482,13 @@ void GDB_IRAM_ATTR init()
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.onDataReceived(onDataReceived);
 	Serial.systemDebugOutput(true);
+
+	Serial.println(_F("LiveDebug sample\r\n"
+					  "Explore some capabilities of the GDB debugger.\r\n"));
+
+	if(gdb_present() != eGDB_Attached) {
+		System.onReady(showPrompt);
+	}
 
 	pinMode(LED_PIN, OUTPUT);
 #if TIMER_TYPE == TIMERTYPE_SIMPLE
