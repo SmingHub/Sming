@@ -70,6 +70,12 @@ GdbState gdb_present(void);
 void gdb_on_attach(bool attached);
 
 /**
+ * @brief Detach from GDB, if attached
+ * @note We send GDB an 'exit process' message
+ */
+void gdb_detach();
+
+/**
  * @brief Called on unexpected system reset
  */
 void debug_crash_callback(const struct rst_info* rst_info, uint32_t stack, uint32_t stack_end);

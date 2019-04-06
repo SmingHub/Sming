@@ -947,6 +947,16 @@ GdbState IRAM_ATTR gdb_present()
 	return gdb_state.attached ? eGDB_Attached : eGDB_Detached;
 }
 
+void gdb_detach()
+{
+	if(gdb_state.attached) {
+		GdbPacket packet;
+		packet.writeChar('W');
+		gdb_state.attached = false;
+		gdb_on_attach(false);
+	}
+}
+
 void gdb_enable(bool state)
 {
 	gdb_state.enabled = state;

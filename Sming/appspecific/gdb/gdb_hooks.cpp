@@ -215,6 +215,7 @@ void gdb_enable(bool state) NOOP;
 void gdb_do_break(void) NOOP;
 GdbState gdb_present(void) NOOP;
 void gdb_on_attach(bool attached) NOOP;
+void gdb_detach(void) NOOP;
 };
 
 int __attribute__((weak)) gdb_syscall(const GdbSyscallInfo& info)
