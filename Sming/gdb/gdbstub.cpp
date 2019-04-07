@@ -32,7 +32,6 @@
 #include "gdbstub-entry.h"
 #include "gdb_hooks.h"
 #include "GdbPacket.h"
-#include "BitManipulations.h"
 #include "exceptions.h"
 #include "gdb/registers.h"
 #include "gdbsyscall.h"

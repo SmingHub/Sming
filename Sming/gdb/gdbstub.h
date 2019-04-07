@@ -18,6 +18,7 @@
 
 #include "gdbstub-internal.h"
 #include <gdb_hooks.h>
+#include "BitManipulations.h"
 
 // GDB_xx macro versions required to ensure no flash access if requested
 #if GDBSTUB_FORCE_IRAM
@@ -28,9 +29,16 @@
 #define GDB_PROGMEM PROGMEM
 #endif
 
+// Break into debugger
 #define gdbstub_do_break() asm("break 0,0")
 
-// Additional debugging flags
+#define gdbstub_break_internal(flag)                                                                                   \
+	{                                                                                                                  \
+		bitSet(gdb_state.flags, flag);                                                                                 \
+		asm("break 0,0");                                                                                              \
+	}
+
+// Additional debugging flags mainly used to qualify reason for a debugging break
 enum GdbDebugFlag {
 	DBGFLAG_DEBUG_EXCEPTION,  ///< For debug exceptions, cause is DBGCAUSE (see DebugCause bits)
 	DBGFLAG_SYSTEM_EXCEPTION, ///< For system exceptions, cause is EXCCAUSE (see EXCCAUSE_* values)

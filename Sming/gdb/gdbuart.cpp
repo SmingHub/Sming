@@ -311,8 +311,7 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 			}
 #endif
 			if(breakCheck && c == '\x03') {
-				bitSet(gdb_state.flags, DBGFLAG_CTRL_BREAK);
-				gdbstub_do_break();
+				gdbstub_break_internal(DBGFLAG_CTRL_BREAK);
 				continue;
 			}
 #endif
@@ -320,8 +319,7 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 #if GDBSTUB_ENABLE_SYSCALL
 			// If packet start detected whilst handling a system call, break into debugger to process it
 			if(c == '$' && gdb_state.syscall == syscall_active) {
-				bitSet(gdb_state.flags, DBGFLAG_PACKET_STARTED);
-				gdbstub_do_break();
+				gdbstub_break_internal(DBGFLAG_PACKET_STARTED);
 				continue;
 			}
 #endif
