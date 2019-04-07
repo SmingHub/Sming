@@ -100,7 +100,6 @@ System crashes if debugger is paused for too long
 - Cause: The WiFi hardware is designed to be serviced by software periodically. It has some buffers so it will behave OK when some data comes in while the processor is busy, but these buffers are not infinite. If the WiFi hardware receives lots of data while the debugger has stopped the CPU, it is bound to crash. This will happen mostly when working with UDP and/or ICMP; TCP-connections in general will not send much more data when the other side doesn't send any ACKs.
 - Solution: In such situations avoid pausing the debugger for extended periods
 
-
 Software breakpoints/watchpoints ('break' and 'watch') don't work on flash code
 - Cause: GDB handles these by replacing code with a debugging instruction, therefore the code must be in RAM.
 - Solution: Use hardware breakpoint ('hbreak') or use GDB_IRAM_ATTR for code which requires testing
@@ -108,7 +107,6 @@ Software breakpoints/watchpoints ('break' and 'watch') don't work on flash code
 If hardware breakpoint is set, single-stepping won't work unless code is in RAM.
 - Cause: GDB reverts to software breakpoints if no hardware breakpoints are available
 - Solution: Delete hardware breakpoint before single-stepping
-
 
 Crash occurs when setting breakpoint in HardwareTimer callback routine 
 - Cause: By default, HardwareTimer uses Non-maskable Interrupts (NMI) which keep running when the debugger is paused
@@ -129,3 +127,16 @@ Whilst GDB is attached, input cannot be passed to application
 No apparent way to have second 'console' (windows terminology) separate from GDB interface
 - Cause: Unknown
 - Solution: Is this possible with remote targets?
+
+When GDB is running under windows, appears to hang when target reset or restarted
+- Cause: Unknown, may not happen on all devboards but presents with NodeMCU
+- Solution
+	- quit GDB `quit`
+	- Start terminal `make terminal`
+	- reset board
+	- quit terminal
+	- run GDB again `make gdb`
+
+GDB (in Windows) doesn't respond at all to Ctrl+C
+- Cause: Unknown
+- Solution: Press Ctrl+Break to 'hard kill' GDB
