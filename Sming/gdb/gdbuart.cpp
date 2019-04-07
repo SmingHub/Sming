@@ -171,9 +171,6 @@ size_t ATTR_GDBEXTERNFN gdbSendUserData()
 			GdbPacket packet;
 			packet.writeChar('O');
 			packet.writeHexBlock(data, charCount);
-			uart_disable_interrupts();
-			++gdb_state.ack_count;
-			uart_restore_interrupts();
 		} else {
 			charCount = gdb_uart_write(data, std::min(space, avail));
 		}
@@ -330,10 +327,9 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 #endif
 
 #if GDBSTUB_ENABLE_UART2
-			if(rxbuf != nullptr) {
-				if(gdb_state.ack_count != 0 && (c == '-' || c == '+')) {
-					--gdb_state.ack_count; // Discard acknowledgement '+'
-				} else if(rxbuf->writeChar(c) == 0) {
+			// When attached, nothing gets routed to UART2
+			if(!gdb_state.attached && rxbuf != nullptr) {
+				if(rxbuf->writeChar(c) == 0) {
 					bitSet(user_uart_status, UIOF); // Overflow
 				}
 			}

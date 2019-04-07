@@ -50,7 +50,6 @@ struct gdb_state_t {
 	bool enabled;		  ///< Debugging may be disabled via gdb_enable()
 	SyscallState syscall; ///< State of system call
 	uint8_t flags;		  ///< Combination of GdbDebugFlag
-	unsigned ack_count;   ///< For discarding of acknowledgement characters
 };
 
 extern volatile gdb_state_t gdb_state;

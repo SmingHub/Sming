@@ -190,8 +190,6 @@ void gdbstub_syscall_execute()
 		break;
 	}
 
-	// Discard incoming '+' acknolwedgement from packet
-	++gdb_state.ack_count;
 	gdb_state.syscall = syscall_active;
 
 	debug_i("syscall active");
