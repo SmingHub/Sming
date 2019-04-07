@@ -669,7 +669,7 @@ terminal: kill_term
 	$(TERMINAL)
 
 gdb: kill_term
-	$(GDB) -x $(SMING_HOME)/gdb/gdbcmds -b $(COM_SPEED_SERIAL) -ex "target remote $(COM_PORT)"
+	$(Q) trap '' SIGINT && $(GDB) -x $(SMING_HOME)/gdb/gdbcmds -b $(COM_SPEED_SERIAL) -ex "target remote $(COM_PORT)"
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
