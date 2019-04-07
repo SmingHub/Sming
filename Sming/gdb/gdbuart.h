@@ -31,6 +31,15 @@ size_t gdbSendData(const void* data, size_t length);
 size_t gdbSendChar(char c);
 
 /**
+ * @brief Write a block of data to the GDB console
+ * @param data
+ * @param length
+ * @retval size_t Always returns length
+ * @note Data is encoded as a single 'O' packet. Should only be used when GDB is attached.
+ */
+size_t ATTR_GDBEXTERNFN gdbWriteConsole(const char* data, size_t length);
+
+/**
  * @brief Send some user data from the user_uart TX buffer to the GDB serial port,
  * packetising it if necessary.
  * @retval size_t Number of characters still remaining in buffer

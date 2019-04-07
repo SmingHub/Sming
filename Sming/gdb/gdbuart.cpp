@@ -147,6 +147,14 @@ size_t ATTR_GDBEXTERNFN gdbSendChar(char c)
 	return gdb_uart_write_char(c);
 }
 
+size_t ATTR_GDBEXTERNFN gdbWriteConsole(const char* data, size_t length)
+{
+	GdbPacket packet;
+	packet.writeChar('O');
+	packet.writeHexBlock(data, length);
+	return length;
+}
+
 size_t ATTR_GDBEXTERNFN gdbSendUserData()
 {
 #if GDBSTUB_ENABLE_UART2
@@ -168,9 +176,7 @@ size_t ATTR_GDBEXTERNFN gdbSendUserData()
 			}
 
 			charCount = std::min((space - 3) / 2, avail);
-			GdbPacket packet;
-			packet.writeChar('O');
-			packet.writeHexBlock(data, charCount);
+			gdbWriteConsole(static_cast<const char*>(data), charCount);
 		} else {
 			charCount = gdb_uart_write(data, std::min(space, avail));
 		}
