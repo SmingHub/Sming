@@ -2,6 +2,7 @@
 #include <SmingCore.h>
 #include "HardwareTimer.h"
 #include <gdb_syscall.h>
+#include <Data/Stream/GdbFileStream.h>
 
 #define LED_PIN 2 // Note: LED is attached to UART1 TX output
 
@@ -39,6 +40,7 @@ Timer procTimer;
 #endif
 
 bool state = true;
+static GdbFileStream logFile;
 
 /*
 * Notice:  Software breakpoints work only on code that is in RAM.
@@ -265,6 +267,7 @@ void fileStat(const char* filename)
 	XX(stat, "Use `syscall_stat` function to get details for a host file")                                             \
 	XX(ls, "Use `syscall_system` function to perform a directory listing on the host")                                 \
 	XX(time, "Use `syscall_gettimeofday` to get current time from host")                                               \
+	XX(log, "Show state of log file")                                                                                  \
 	XX(break, "Demonstrated `gdb_do_break()` function to pause this application and obtain a GDB command prompt")      \
 	XX(read0, "Read from invalid address")                                                                             \
 	XX(write0, "Write to invalid address")                                                                             \
@@ -311,6 +314,15 @@ COMMAND_HANDLER(time)
 		Serial.println(DateTime(tv.tv_sec).toFullDateTimeString() + _F(" UTC"));
 	}
 	return true;
+}
+
+COMMAND_HANDLER(log)
+{
+	if(logFile.isValid()) {
+		Serial.printf(_F("Log file is open, size = %u bytes\r\n"), logFile.getPos());
+	} else {
+		Serial.println(_F("Log file not available"));
+	}
 }
 
 COMMAND_HANDLER(ls)
@@ -473,7 +485,21 @@ extern "C" void gdb_on_attach(bool attached)
 {
 	debug_i("GdbAttach(%d)", attached);
 	if(attached) {
+		// Open a log file on the host to demonstrate use of GdbFileStream
+		logFile.open(F("testlog.txt"), eFO_WriteOnly | eFO_CreateIfNotExist);
+		debug_i("open log %d", logFile.getLastError());
+		logFile.println();
+
+		logFile.println(_F("\r\n=== OPENED ==="));
+		gdb_timeval_t tv;
+		gdb_syscall_gettimeofday(&tv, nullptr);
+		logFile.println(DateTime(tv.tv_sec).toFullDateTimeString());
+
+		// Start interacting with GDB
 		readConsole();
+	} else {
+		// Note: GDB is already detached so underlying call to gdb_syscall_close() will fail silently
+		logFile.close();
 	}
 }
 
