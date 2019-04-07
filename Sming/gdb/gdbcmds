@@ -22,10 +22,13 @@ mem 0x40100000 0x4013ffff rw cache
 mem 0x40140000 0x5fffffff ro cache
 mem 0x60000000 0x60001fff rw
 
-#
+# The target object file so GDB knows where to get symbol information
 file out/build/app_0.out
 
 # Change the following to your serial port and baud
 #set serial baud 115200
 #target remote /dev/ttyUSB0
 #target remote /COM4
+
+# Display a welcome prompt
+echo \nWelcome to SMING!\nType 'c' (continue) to run application\n\n
