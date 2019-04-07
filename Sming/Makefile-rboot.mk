@@ -648,7 +648,7 @@ else
 endif
 
 # Full GDB command line
-GDB := trap '' SIGINT && $(GDB) -x $(SMING_HOME)/gdb/gdbcmds -b $(COM_SPEED_SERIAL) -ex "target remote $(COM_PORT)"
+GDB := trap '' INT && $(GDB) -x $(SMING_HOME)/gdb/gdbcmds -b $(COM_SPEED_SERIAL) -ex "target remote $(COM_PORT)"
 
 flash: all kill_term
 ifeq ($(DISABLE_SPIFFS), 1)
