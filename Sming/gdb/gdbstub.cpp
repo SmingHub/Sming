@@ -662,7 +662,7 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 		break;
 #endif
 
-#ifdef GDBSTUB_CMDENABLE_X
+#if GDBSTUB_CMDENABLE_X
 	/*
 	 * Write data to memory, where the data is transmitted in binary,
 	 * which is more efficient than hex packets (see 'M').
