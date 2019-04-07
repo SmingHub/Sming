@@ -218,16 +218,17 @@ static void ATTR_GDBEXTERNFN sendReason()
 // Current Xtensa GDB versions don't seem to request this, so let's leave it off.
 #if 0
 		if(bitRead(cause, 0)) {
-			packet.writeStr(GDB_F("break")); // Single-step (ICOUNT hits 0)
+			packet.writeStr(GDB_F("break:;")); // Single-step (ICOUNT hits 0)
 		} else if(bitRead(cause, DBGCAUSE_IBREAK)) {
-			packet.writeStr(GDB_F("hwbreak"));
+			packet.writeStr(GDB_F("hwbreak:;"));
 		} else if(bitRead(cause, DBGCAUSE_DBREAK)) {
 			packet.writeStr(GDB_F("watch:"));
-			// ToDo: send address
+			packet.writeHexWord32(gdbstub_savedRegs.excvaddr); // @todo confirm this is correct
+			packet.writeChar(';');
 		} else if(bitRead(cause, DBGCAUSE_BREAK)) {
-			packet.writeStr(GDB_F("swbreak"));
+			packet.writeStr(GDB_F("swbreak:;"));
 		} else if(bitRead(cause, DBGCAUSE_BREAKN)) {
-			packet.writeStr(GDB_F("swbreak"));
+			packet.writeStr(GDB_F("swbreak:;"));
 		}
 #endif
 	}
