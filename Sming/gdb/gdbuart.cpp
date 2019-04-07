@@ -28,6 +28,7 @@ static uart_t* user_uart;			  // If open, virtual port being used for user passt
 static uint32_t user_uart_status;	 // See gdb_uart_callback (ISR handler)
 static volatile bool userDataSending; // Transmit completion callback invoked on user uart
 static bool sendUserDataQueued;		  // Ensures only one call to gdbSendUserData() is queued at a time
+static uint8_t break_requests;		  ///< How many times Ctrl+C was received before actually breaking
 #endif
 
 // Get number of characters in receive FIFO
@@ -268,6 +269,14 @@ static void userUartNotify(uart_t* uart, uart_notify_code_t code)
 }
 #endif
 
+static void IRAM_ATTR doCtrlBreak()
+{
+	if(break_requests != 0) {
+		break_requests = 0;
+		gdbstub_break_internal(DBGFLAG_CTRL_BREAK);
+	}
+}
+
 static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 {
 #if GDBSTUB_ENABLE_UART2
@@ -317,7 +326,13 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 			}
 #endif
 			if(breakCheck && c == '\x03') {
-				gdbstub_break_internal(DBGFLAG_CTRL_BREAK);
+				if(break_requests++ == 0) {
+					// First attempt, break within a task callback
+					System.queueCallback(TaskCallback(doCtrlBreak));
+				} else if(break_requests == 3) {
+					// Application failed to stop, break immediately
+					doCtrlBreak();
+				}
 				continue;
 			}
 #endif
