@@ -86,14 +86,14 @@ int fileStats(file_t file, spiffs_stat* stat)
 	return SPIFFS_fstat(&_filesystemStorageHandle, file, stat);
 }
 
-void fileDelete(const String& name)
+int fileDelete(const String& name)
 {
-	SPIFFS_remove(&_filesystemStorageHandle, name.c_str());
+	return SPIFFS_remove(&_filesystemStorageHandle, name.c_str());
 }
 
-void fileDelete(file_t file)
+int fileDelete(file_t file)
 {
-	SPIFFS_fremove(&_filesystemStorageHandle, file);
+	return SPIFFS_fremove(&_filesystemStorageHandle, file);
 }
 
 bool fileExist(const String& name)

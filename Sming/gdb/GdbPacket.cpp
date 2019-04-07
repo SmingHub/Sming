@@ -41,6 +41,13 @@ void ATTR_GDBEXTERNFN GdbPacket::writeCharEscaped(char c)
 	writeChar(c);
 }
 
+void ATTR_GDBEXTERNFN GdbPacket::writeEscaped(const void* data, unsigned length)
+{
+	for(unsigned i = 0; i < length; ++i) {
+		writeCharEscaped(static_cast<const uint8_t*>(data)[i]);
+	}
+}
+
 void ATTR_GDBEXTERNFN GdbPacket::write(const void* data, unsigned length)
 {
 	for(unsigned i = 0; i < length; ++i) {

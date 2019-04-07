@@ -35,6 +35,7 @@
 #include "exceptions.h"
 #include "gdb/registers.h"
 #include "gdbsyscall.h"
+#include "gdbhostio.h"
 #include "Platform/System.h"
 
 extern "C" {
@@ -652,52 +653,12 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 		break;
 	}
 
-#ifdef GDBSTUB_CMDENABLE_V
+#if GDBSTUB_ENABLE_HOSTIO
 	/*
 	 * Packet starting with 'v' are identified by a multi-letter name, up to the first ':' or '?' (or end of packet)
 	 */
 	case 'v':
-		/*
-		 * `vFile:operation:parameter...`
-		 *
-		 * @todo Consider whether this might be useful
-		 */
-		if(strncmp(data, GDB_F("File:"), 5) == 0) {
-			data += 5;
-			if(strncmp(data, GDB_F("open:"), 5) == 0) {
-				data += 5;
-				char* filename;
-				size_t len = GdbPacket::decodeHexBlock(data, filename);
-				filename[len] = '\0';
-				debug_i("File:open('%s')", filename);
-				sendOK();
-				break;
-			}
-		}
-		/*
-		 * vFlashErase:addr,length
-		 */
-		else if(strncmp(data, GDB_F("FlashErase:"), 11) == 0) {
-			data += 11;
-			// @todo
-		}
-		/*
-		 * vFlashWrite:addr:XX...
-		 */
-		else if(strncmp(data, GDB_F("FlashWrite:"), 11) == 0) {
-			data += 11;
-			// @todo
-		}
-		/*
-		 * vFlashDone
-		 *
-		 * Indicates that programming operation is finished
-		 */
-		else if(strncmp(data, GDB_F("FlashDone:"), 10) == 0) {
-			data += 10;
-			// @todo
-		}
-		sendEmptyResponse();
+		gdbHandleHostIo(commandBuffer, cmdLen);
 		break;
 #endif
 
@@ -938,6 +899,7 @@ void ATTR_GDBINIT gdbstub_init()
 	SD(GDBSTUB_BREAK_ON_INIT);
 	SD(GDBSTUB_ENABLE_UART2);
 	SD(GDBSTUB_ENABLE_SYSCALL);
+	SD(GDBSTUB_ENABLE_HOSTIO);
 #undef SD
 
 #if GDBSTUB_BREAK_ON_INIT

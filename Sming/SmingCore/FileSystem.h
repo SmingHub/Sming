@@ -185,13 +185,15 @@ int fileStats(file_t file, spiffs_stat* stat);
 
 /** @brief  Delete file
  *  @param  name Name of file to delete
+ *  @retval int error code, 0 on success
  */
-void fileDelete(const String& name);
+int fileDelete(const String& name);
 
 /** @brief  Delete file
  *  @param  file ID of file to delete
+ *  @retval int error code, 0 on success
  */
-void fileDelete(file_t file);
+int fileDelete(file_t file);
 
 /** @brief  Check if a file exists on file system
  *  @param  name Name of file to check for

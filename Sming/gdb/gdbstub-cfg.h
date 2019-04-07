@@ -146,6 +146,14 @@
 #endif
 
 /*
+ * Enable Host I/O capability, where files may be accessed via GDB command prompt using
+ * `remote get`, `remote put` and `remote delete` commands.
+ */
+#ifndef GDBSTUB_ENABLE_HOSTIO
+#define GDBSTUB_ENABLE_HOSTIO 1
+#endif
+
+/*
  * Enable this if you want the GDB stub to wait for you to attach GDB before running.
  * It does this by breaking in the init routine; use the gdb 'c' command (continue) to start the program.
  */

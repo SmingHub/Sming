@@ -64,6 +64,16 @@ Useful GDB commands
 
 `tui enable` Provides a windowed interface within the console (only seems to work in Linux)
 
+
+These commands require `GDBSTUB_ENABLE_HOSTIO` to be enabled:
+
+`remote get targetfile hostfile` Read a file from SPIFFS (on the target)
+
+`remote put hostfile targetfile` Write a file to SPIFFS
+
+`remote delete targetfile` Delete a file from SPIFFS
+
+
 Eclipse
 -------
 

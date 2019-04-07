@@ -35,8 +35,11 @@ public:
 	// Send a char as part of a packet
 	void writeChar(char c);
 
-	// Send a character, escaping if required
+	/** @brief Send a character, escaping if required */
 	void writeCharEscaped(char c);
+
+	/** @brief Send a block of data, escaping as required */
+	void writeEscaped(const void* data, unsigned length);
 
 	/** @brief Output 8-bit value */
 	void writeHexByte(uint8_t value);
