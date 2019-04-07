@@ -15,12 +15,9 @@
 #include "FileSystem.h"
 
 /**
-  * @brief GDB File stream class to access to host files whilst running under debugger
-  * @ingroup stream data
-  *
-  *  @{
+  * @ingroup stream gdb_syscall
+  * @brief GDB File stream class to provide access to host files whilst running under debugger
  */
-
 class GdbFileStream : public ReadWriteStream
 {
 public:
@@ -143,7 +140,5 @@ private:
 	size_t size = 0;
 	int lastError = 0;
 };
-
-/** @} */
 
 #endif /* _SMING_CORE_DATA_GDB_FILE_STREAM_H_ */

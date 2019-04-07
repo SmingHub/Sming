@@ -24,8 +24,8 @@
  * Any register changes made by GDB are stored here.
  *
  * System exceptions are initially handled by the Xtensa HAL, which saves some (but not all)
- * registers into a `UserFrame` structure (see xtensa.h). Control passes to gdbstub_exception_handler
- * which copies those values, plus some extra ones.
+ * registers into a `UserFrame` structure (see xtensa/xtruntime-frames.h).
+ * Control passes to gdbstub_exception_handler, which copies those values plus some extra ones.
  *
  * Debug exceptions are handled entirely by gdbstub_debug_exception_entry, which saves
  * registers, calls gdbstub_handle_debug_exception, then restores them.

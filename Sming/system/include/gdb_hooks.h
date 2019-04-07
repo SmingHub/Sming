@@ -26,6 +26,10 @@
 extern "C" {
 #endif
 
+/** @defgroup GDB GDB debugging support
+ *  @{
+*/
+
 /**
  * @brief Initialise GDB stub, if present
  * @note Called by framework at startup, but does nothing if gdbstub is not linked.
@@ -39,10 +43,10 @@ void gdb_init(void);
  *
  * Calling with `enable = false` overrides configured behaviour as follows:
  *
- * 	- Debug exceptions will be silently ignored.
- * 	- System exceptions will cause a watchdog reset, as for `GDBSTUB_BREAK_ON_EXCEPTION = 0`.
- *	- All incoming serial data is passed through to UART2 without inspection,
- *		as for `GDBSTUB_CTRLC_BREAK = 0` and `GDBSTUB_FREE_ATTACH = 0`.
+ * - Debug exceptions will be silently ignored
+ * - System exceptions will cause a watchdog reset, as for `GDBSTUB_BREAK_ON_EXCEPTION = 0`
+ * - All incoming serial data is passed through to UART2 without inspection, as for `GDBSTUB_CTRLC_BREAK = 0`
+ *
  */
 void gdb_enable(bool state);
 
@@ -75,20 +79,22 @@ void gdb_on_attach(bool attached);
  */
 void gdb_detach();
 
-/**
- * @brief Called on unexpected system reset
+/*
+ * @brief Called by framekwork on unexpected system reset
  */
 void debug_crash_callback(const struct rst_info* rst_info, uint32_t stack, uint32_t stack_end);
 
 /**
  * @brief Send a stack dump to debug output
- * @param start
- * @param end
+ * @param start Start address to output
+ * @param end Output up to - but not including - this address
  */
 void debug_print_stack(uint32_t start, uint32_t end);
 
 #ifdef __cplusplus
 } // extern "C"
 #endif
+
+/** @} */
 
 #endif /* _GDB_HOOKS_H_ */

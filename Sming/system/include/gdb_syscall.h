@@ -24,11 +24,6 @@
  *
  ****/
 
-/** @defgroup GDB
- *  @brief      GDB system call API
- *  @{
-*/
-
 #ifndef _SYSTEM_INCLUDE_GDB_SYSCALL_H_
 #define _SYSTEM_INCLUDE_GDB_SYSCALL_H_
 
@@ -38,8 +33,17 @@
 #include <sys/unistd.h>
 #include <sys/time.h>
 
-/* GDB uses a specific version of the stat structure, 64 bytes in size */
-struct __attribute__((packed)) gdb_stat_t {
+/** @defgroup gdb_syscall GDB system call API
+ *  @ingroup GDB
+ *  @{
+*/
+
+#pragma pack(push, 4)
+
+/**
+ * @brief GDB uses a specific version of the stat structure, 64 bytes in size
+ */
+struct gdb_stat_t {
 	uint32_t st_dev;	 // device
 	uint32_t st_ino;	 // inode
 	mode_t st_mode;		 // protection
@@ -55,11 +59,15 @@ struct __attribute__((packed)) gdb_stat_t {
 	time_t st_ctime;	 // time of last change
 };
 
-/* GDB uses a specific version of the timeval structure, 12 bytes in size (manual says 8, which is wrong) */
-struct __attribute__((packed)) gdb_timeval_t {
+/**
+ * @brief GDB uses a specific version of the timeval structure, 12 bytes in size (manual says 8, which is wrong)
+ */
+struct gdb_timeval_t {
 	time_t tv_sec;	// second
 	uint64_t tv_usec; // microsecond
 };
+
+#pragma pack(pop)
 
 /* GDB Syscall interface */
 
