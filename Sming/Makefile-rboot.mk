@@ -647,6 +647,9 @@ else
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
 endif
 
+# Full GDB command line
+GDB := trap '' SIGINT && $(GDB) -x $(SMING_HOME)/gdb/gdbcmds -b $(COM_SPEED_SERIAL) -ex "target remote $(COM_PORT)"
+
 flash: all kill_term
 ifeq ($(DISABLE_SPIFFS), 1)
 # flashes rboot and first rom
@@ -655,8 +658,12 @@ else
 # flashes rboot, first rom and spiffs
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN) 0x02000 $(RBOOT_ROM_0) $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
 endif
+ifeq ($(ENABLE_GDB), 1)
+	$(GDB)
+else
 	$(TERMINAL)
-	
+endif
+
 otaserver: all
 	$(vecho) "Starting OTA server for TESTING"
 	$(Q) cd $(FW_BASE) && python -m SimpleHTTPServer $(SERVER_OTA_PORT)
@@ -669,7 +676,7 @@ terminal: kill_term
 	$(TERMINAL)
 
 gdb: kill_term
-	$(Q) trap '' SIGINT && $(GDB) -x $(SMING_HOME)/gdb/gdbcmds -b $(COM_SPEED_SERIAL) -ex "target remote $(COM_PORT)"
+	$(GDB)
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
