@@ -132,7 +132,7 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 void readFile(const char* filename, bool display)
 {
 	auto start = millis();
-	int fd = gdb_syscall_open(filename, O_RDONLY);
+	int fd = gdb_syscall_open(filename, O_RDONLY, 0);
 	Serial.printf(_F("gdb_syscall_open(\"%s\") = %d\r\n"), filename, fd);
 	if(fd > 0) {
 		char buf[256];
@@ -219,7 +219,7 @@ void asyncReadCallback(const GdbSyscallInfo& info)
  */
 void readFileAsync(const char* filename)
 {
-	gdb_syscall_open(filename, O_RDONLY, asyncReadCallback);
+	gdb_syscall_open(filename, O_RDONLY, 0, asyncReadCallback);
 }
 
 void fileStat(const char* filename)

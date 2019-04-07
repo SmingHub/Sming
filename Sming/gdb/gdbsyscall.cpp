@@ -111,7 +111,7 @@ void gdbstub_syscall_execute()
 		packet.writeChar(',');
 		packet.writeHexWord32(info.open.flags);
 		packet.writeChar(',');
-		packet.writeHexByte(0); // mode
+		packet.writeHexByte(info.open.mode);
 		break;
 
 	case eGDBSYS_close:
@@ -247,6 +247,9 @@ bool ATTR_GDBEXTERNFN gdb_syscall_complete(const char* data)
 	if(*data == ',') {
 		++data;
 		ctrl_c_flag = *data;
+		if(ctrl_c_flag) {
+			bitSet(gdb_state.flags, DBGFLAG_CTRL_BREAK);
+		}
 	}
 
 	if(syscall_info.callback != nullptr) {
