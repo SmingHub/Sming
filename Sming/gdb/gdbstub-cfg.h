@@ -90,6 +90,13 @@
 #endif
 
 /*
+ * Enable this to cause the program to pause and wait for gdb to be connected when an unexpected system restart occurs.
+ */
+#ifndef GDBSTUB_BREAK_ON_RESTART
+#define GDBSTUB_BREAK_ON_RESTART 1
+#endif
+
+/*
  * If this is defined, gdbstub will break the program when you press Ctrl-C in gdb.
  * It does this by monitoring for the 'x03' character in the serial receive routine. Any preceding
  * characters are passed through to the application via UART2.

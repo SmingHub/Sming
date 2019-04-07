@@ -269,6 +269,7 @@ void fileStat(const char* filename)
 	XX(time, "Use `syscall_gettimeofday` to get current time from host")                                               \
 	XX(log, "Show state of log file")                                                                                  \
 	XX(break, "Demonstrated `gdb_do_break()` function to pause this application and obtain a GDB command prompt")      \
+	XX(hang, "Enter infinite loop to force a watchdog timeout")                                                        \
 	XX(read0, "Read from invalid address")                                                                             \
 	XX(write0, "Write to invalid address")                                                                             \
 	XX(restart, "Restart the system")                                                                                  \
@@ -336,6 +337,16 @@ COMMAND_HANDLER(break)
 {
 	Serial.println(_F("Calling gdb_do_break()"));
 	gdb_do_break();
+	return true;
+}
+
+COMMAND_HANDLER(hang)
+{
+	Serial.println(_F("Entering infinite loop..."));
+	Serial.flush();
+	while(true) {
+		//
+	}
 	return true;
 }
 

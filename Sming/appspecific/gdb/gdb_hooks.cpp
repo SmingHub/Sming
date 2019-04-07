@@ -11,8 +11,10 @@
 #include <gdb_hooks.h>
 #include <gdb_syscall.h>
 #include "gdb/gdbstub.h"
+#include "gdb/gdbuart.h"
 #include "gdb/gdbstub-entry.h"
 #include "gdb/exceptions.h"
+#include <espinc/uart.h>
 
 extern "C" {
 
@@ -59,6 +61,9 @@ void debug_print_stack(uint32_t start, uint32_t end)
 
 		m_printf(_F("%08x:  %08x %08x %08x %08x %c\r\n"), addr, values[0], values[1], values[2], values[3],
 				 (looksLikeStackFrame) ? '<' : ' ');
+
+		system_soft_wdt_feed();
+		wdt_feed();
 	}
 	m_puts(separatorLine);
 	m_puts(instructions);
@@ -66,7 +71,13 @@ void debug_print_stack(uint32_t start, uint32_t end)
 
 void debug_crash_callback(const rst_info* rst_info, uint32_t stack, uint32_t stack_end)
 {
-#if ENABLE_CRASH_DUMP
+#ifdef ENABLE_GDB
+	if(gdb_state.attached) {
+		m_setPuts(gdbWriteConsole);
+	}
+#endif
+
+#if defined(ENABLE_GDB) || ENABLE_CRASH_DUMP
 	switch(rst_info->reason) {
 	case REASON_EXCEPTION_RST:
 		m_printf(_F("\r\n"
@@ -86,15 +97,19 @@ void debug_crash_callback(const rst_info* rst_info, uint32_t stack, uint32_t sta
 		;
 	}
 
+#if defined(ENABLE_GDB) && GDBSTUB_BREAK_ON_RESTART
+	gdbstub_break_internal(DBGFLAG_RESTART);
+#elif ENABLE_CRASH_DUMP
 	debug_print_stack(stack, stack_end);
 #endif
+
+#endif // defined(ENABLE_GDB) || ENABLE_CRASH_DUMP
 }
 
-#if ENABLE_EXCEPTION_DUMP
+#ifdef HOOK_SYSTEM_EXCEPTIONS
 
-void dumpExceptionInfo(UserFrame* frame)
+void dumpExceptionInfo()
 {
-	ets_wdt_disable();
 	auto& reg = gdbstub_savedRegs;
 
 	m_printf(_F("\r\n"
@@ -124,12 +139,11 @@ void dumpExceptionInfo(UserFrame* frame)
 		}
 	}
 	m_puts("\r\n");
-	debug_print_stack(reg.a[1], 0x3fffffb0);
-	ets_wdt_enable();
+	// Stack dump can be quite large, and not helpful to dump it to GDB console
+	if(gdb_present() != eGDB_Attached) {
+		debug_print_stack(reg.a[1], 0x3fffffb0);
+	}
 }
-#endif
-
-#ifdef HOOK_SYSTEM_EXCEPTIONS
 
 // Main exception handler code
 static void __attribute__((noinline)) gdbstub_exception_handler_flash(UserFrame* frame)
@@ -142,25 +156,37 @@ static void __attribute__((noinline)) gdbstub_exception_handler_flash(UserFrame*
 	const uint32_t EXCEPTION_GDB_SP_OFFSET = 0x100;
 	gdbstub_savedRegs.a[1] = uint32_t(frame) + EXCEPTION_GDB_SP_OFFSET;
 
-#if ENABLE_EXCEPTION_DUMP
-	if(gdb_present() != eGDB_Attached) {
-		dumpExceptionInfo(frame);
-	}
-#endif
-
 #if defined(ENABLE_GDB) && GDBSTUB_BREAK_ON_EXCEPTION
+	// If GDB is attached, temporarily redirect m_printf calls to the console
+	nputs_callback_t oldPuts = nullptr;
+	if(gdb_state.attached) {
+		oldPuts = m_setPuts(gdbWriteConsole);
+	}
+
+	dumpExceptionInfo();
+
+	if(gdb_state.attached) {
+		m_setPuts(oldPuts);
+	}
+
 	gdbstub_handle_exception();
 
 	// Copy any changed registers back to the frame the Xtensa HAL uses.
 	memcpy(frame, &gdbstub_savedRegs, 5 * 4);
 	memcpy(&frame->a2, &gdbstub_savedRegs.a[2], 14 * 4);
 
-	return;
+#else
+
+	dumpExceptionInfo();
+
+#if defined(ENABLE_GDB)
+	gdbFlushUserData();
 #endif
 
 	// Wait for watchdog to reset system
 	while(true)
 		;
+#endif
 }
 
 // Non-OS exception handler. Gets called by the Xtensa HAL.

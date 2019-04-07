@@ -44,6 +44,7 @@ enum GdbDebugFlag {
 	DBGFLAG_SYSTEM_EXCEPTION, ///< For system exceptions, cause is EXCCAUSE (see EXCCAUSE_* values)
 	DBGFLAG_CTRL_BREAK,		  ///< Break caused by call to gdbstub_ctrl_break()
 	DBGFLAG_PACKET_STARTED,   ///< Incoming packet detected by uart interrupt handler
+	DBGFLAG_RESTART,		  ///< Breaking into debugger because of unexpected system restart
 };
 
 enum SyscallState {

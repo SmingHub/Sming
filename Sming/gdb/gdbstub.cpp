@@ -206,7 +206,13 @@ static void ATTR_GDBEXTERNFN sendReason()
 		packet.writeHexByte(signal);
 	} else {
 		// Debugging exception
-		signal = bitRead(gdb_state.flags, DBGFLAG_CTRL_BREAK) ? GDB_SIGNAL_INT : GDB_SIGNAL_TRAP;
+		if(bitRead(gdb_state.flags, DBGFLAG_CTRL_BREAK)) {
+			signal = GDB_SIGNAL_INT;
+		} else if(bitRead(gdb_state.flags, DBGFLAG_RESTART)) {
+			signal = GDB_SIGNAL_PWR;
+		} else {
+			signal = GDB_SIGNAL_TRAP;
+		}
 		packet.writeHexByte(signal);
 // Current Xtensa GDB versions don't seem to request this, so let's leave it off.
 #if 0
@@ -927,6 +933,7 @@ void ATTR_GDBINIT gdbstub_init()
 	SD(GDBSTUB_GDB_PATCHED);
 	SD(GDBSTUB_USE_OWN_STACK);
 	SD(GDBSTUB_BREAK_ON_EXCEPTION);
+	SD(GDBSTUB_BREAK_ON_RESTART);
 	SD(GDBSTUB_CTRLC_BREAK);
 	SD(GDBSTUB_BREAK_ON_INIT);
 	SD(GDBSTUB_ENABLE_UART2);
