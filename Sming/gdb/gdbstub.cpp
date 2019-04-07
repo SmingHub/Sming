@@ -509,6 +509,7 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 	 * Continue execution
 	 */
 	case 'c':
+	case 'C':
 		return ST_CONT;
 
 	/*
