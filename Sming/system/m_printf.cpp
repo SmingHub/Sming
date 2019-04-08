@@ -34,9 +34,11 @@ static int skip_atoi(const char **s)
 	return i;
 }
 
-void m_setPuts(nputs_callback_t callback)
+nputs_callback_t m_setPuts(nputs_callback_t callback)
 {
+	nputs_callback_t previousCallback = _puts_callback;
 	_puts_callback = callback;
+	return previousCallback;
 }
 
 size_t m_putc(char c)
@@ -267,7 +269,7 @@ void m_printHex(const char* tag, const void* data, size_t len, int addr, size_t 
 			m_putc(is_print(c) ? c : '.');
 		}
 
-		m_putc('\n');
+		m_puts("\r\n");
 
 		offset += n;
 

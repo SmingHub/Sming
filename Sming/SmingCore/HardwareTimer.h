@@ -24,6 +24,12 @@
 #define MAX_HW_TIMER_INTERVAL_US 0x7fffff ///< Maximum timer interval in microseconds
 #define MIN_HW_TIMER_INTERVAL_US 0x32	 ///< Minimum hardware interval in microseconds
 
+// Hardware Timer operating mode
+enum HardwareTimerMode {
+	eHWT_Maskable,
+	eHWT_NonMaskable,
+};
+
 /** @brief Convert microseconds into timer ticks.
  *  @note Replaces the previous US_TO_RTC_TIMER_TICKS macro to guarantee we use the correct timer prescale value.
  */
@@ -39,8 +45,13 @@ class HardwareTimer
 {
 public:
 	/** @brief  Hardware timer
+	 *  @param mode
+	 *  @note NMI has highest interrupt priority on system and can therefore occur within
+	 *  any other interrupt service routine. Similarly, the NMI service routine cannot
+	 *  itself be interrupted. This provides the most stable and reliable timing possible,
+	 *  and is therefore the default behaviour.
     */
-	HardwareTimer();
+	HardwareTimer(HardwareTimerMode mode = eHWT_NonMaskable);
 	~HardwareTimer();
 
 	/** @brief  Initialise hardware timer

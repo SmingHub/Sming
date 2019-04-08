@@ -29,8 +29,9 @@ typedef std::function<size_t(const char* str, size_t length)> nputs_callback_t;
 
 /** @brief set the character output routine
  *  @param callback
+ *  @retval nputs_callback_t The existing callback
  */
-void m_setPuts(nputs_callback_t callback);
+nputs_callback_t m_setPuts(nputs_callback_t callback);
 
 } // extern "C++"
 

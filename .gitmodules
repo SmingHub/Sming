@@ -6,10 +6,6 @@
 	path = docs/wiki
 	url = https://github.com/SmingHub/Sming.wiki.git
 	ignore = dirty
-[submodule "Sming/third-party/esp-gdbstub"]
-	path = Sming/third-party/esp-gdbstub
-	url = https://github.com/espressif/esp-gdbstub.git
-        ignore = dirty
 [submodule "Sming/third-party/pwm"]
 	path = Sming/third-party/pwm
 	url = https://github.com/StefanBruens/ESP8266_new_pwm.git

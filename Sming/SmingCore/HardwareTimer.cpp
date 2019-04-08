@@ -62,11 +62,6 @@ typedef enum {		  //timer interrupt mode
 	TM_EDGE_INT = 0,  //edge interrupt
 } TIMER_INT_MODE;
 
-typedef enum {
-	FRC1_SOURCE = 0,
-	NMI_SOURCE = 1,
-} FRC1_TIMER_SOURCE_TYPE;
-
 // Used by ISR
 static HardwareTimer* isrTimer;
 
@@ -77,11 +72,15 @@ static void IRAM_ATTR hw_timer_isr_cb()
 	}
 }
 
-HardwareTimer::HardwareTimer()
+HardwareTimer::HardwareTimer(HardwareTimerMode mode)
 {
 	assert(isrTimer == nullptr);
 	isrTimer = this;
-	ETS_FRC_TIMER1_NMI_INTR_ATTACH(hw_timer_isr_cb);
+	if(mode == eHWT_Maskable) {
+		ETS_FRC_TIMER1_INTR_ATTACH(ets_isr_t(hw_timer_isr_cb), nullptr);
+	} else {
+		ETS_FRC_TIMER1_NMI_INTR_ATTACH(hw_timer_isr_cb);
+	}
 }
 
 HardwareTimer::~HardwareTimer()
@@ -153,9 +152,7 @@ bool HardwareTimer::setIntervalUs(uint32_t microseconds)
 
 void HardwareTimer::setCallback(InterruptCallback interrupt)
 {
-	ETS_INTR_LOCK();
 	callback = interrupt;
-	ETS_INTR_UNLOCK();
 
 	if(!interrupt) {
 		stop();

@@ -30,23 +30,25 @@
  * Code is now C++ only; reference to this header has been removed from esp_systemapi.h uart structure should be
  * treated as opaque and only accessed using the functions defined in this header.
  * Callback is invoked on transmit completion.
+ *
+ * Note: uart_detach_all() should be called at startup, i.e. from user_init().
  */
 
 #ifndef ESP_UART_H
 #define ESP_UART_H
 
-#include <stdbool.h>
-#include <stddef.h>
-
 #if defined (__cplusplus)
 extern "C" {
 #endif
 
+#include <esp_systemapi.h>
+
 #define UART0    0
 #define UART1    1
-#define UART_NO -1	///< No UART specified
-#define UART_COUNT 2	///< Number of UARTs on the system
-
+#define UART2    2				///< Virtualised UART0
+#define UART_NO -1				///< No UART specified
+#define UART_PHYSICAL_COUNT 2	///< Number of physical UARTs on the system
+#define UART_COUNT 3			///< Number of UARTs on the system, virtual or otherwise
 
 // Options for `config` argument of uart_init
 #define UART_NB_BIT_MASK      0B00001100
@@ -104,7 +106,8 @@ typedef uint8_t uart_options_t;
  *  @note use _BV(opt) to specify values
  */
 enum uart_option_bits_t {
-	UART_OPT_TXWAIT,	///< If buffers are full then uart_write() will wait for free space
+	UART_OPT_TXWAIT,	   ///< If buffers are full then uart_write() will wait for free space
+	UART_OPT_CALLBACK_RAW, ///< ISR invokes user callback function with no pre-processing
 };
 
 #define UART_RX_FIFO_SIZE 0x80
@@ -116,9 +119,53 @@ typedef struct uart_ uart_t;
 /** @brief callback invoked directly from ISR
  *  @param arg the UART object
  *  @param status UART USIS STATUS flag bits indicating cause of interrupt
- *  @param param user-supplied callback parameter
+ *  @note Values can be:
+ *  	UIFE: TX FIFO Empty
+ *  	UIFF: RX FIFO Full
+ *  	UITO: RX FIFO Timeout
+ *  	UIBD: Break Detected
+ *
+ * Errors can be detected via uart_get_status().
  */
 typedef void (*uart_callback_t)(uart_t* uart, uint32_t status);
+
+
+/*
+ * Port notifications
+ */
+
+/** @brief Indicates notification, parameters refer to uart_notify_info_t structure
+ */
+enum uart_notify_code_t {
+	/** @brief Called when uart has been iniitialised successfully */
+	UART_NOTIFY_AFTER_OPEN,
+
+	/** @brief Called immediately before uart is closed and destroyed */
+	UART_NOTIFY_BEFORE_CLOSE,
+
+	/** @brief Called after data has been written into tx buffer */
+	UART_NOTIFY_AFTER_WRITE,
+
+	/** @brief Called before data is read from rx buffer */
+	UART_NOTIFY_BEFORE_READ,
+
+	/** @brief Called to ensure all buffered data is output */
+	UART_NOTIFY_WAIT_TX,
+};
+
+/** @brief Port notification callback function type
+ *  @param info
+ *  @retval bool true if callback handled operation, false to default to normal operation
+ */
+typedef void (*uart_notify_callback_t)(uart_t* uart, uart_notify_code_t code);
+
+/** @brief Set the notification callback function
+ *  @param uart_nr Which uart to register notifications for
+ *  @param callback
+ *  @retval bool true on success
+ */
+bool uart_set_notify(unsigned uart_nr, uart_notify_callback_t callback);
+
 
 struct SerialBuffer;
 
@@ -129,6 +176,8 @@ struct uart_ {
 	uint8_t options;
 	uint8_t rx_pin;
 	uint8_t tx_pin;
+	uint8_t rx_headroom; ///< Callback when rx_buffer free space <= headroom
+	uint16_t status; ///< All status flags reported to callback since last uart_get_status() call
 	struct SerialBuffer* rx_buffer;  ///< Optional receive buffer
 	struct SerialBuffer* tx_buffer;  ///< Optional transmit buffer
 	uart_callback_t callback; ///< Optional User callback routine
@@ -147,7 +196,7 @@ struct uart_config {
 	size_t tx_size;
 };
 
-// @deprecated for legacy support
+// @deprecated Use `uart_init_ex()` instead
 uart_t* uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, uart_mode_t mode, uint8_t tx_pin, size_t rx_size, size_t tx_size = 0);
 
 uart_t* uart_init_ex(const uart_config& cfg);
@@ -163,14 +212,14 @@ __forceinline int uart_get_nr(uart_t* uart)
  *  @param uart_nr
  *  @retval uart_t* Returns nullptr if uart isn't initialised
  */
-uart_t* IRAM_ATTR uart_get_uart(uint8_t uart_nr);
+uart_t* uart_get_uart(uint8_t uart_nr);
 
 /** @brief Set callback handler for serial port
  *  @param uart
  *  @param callback specify nullptr to disable callbacks
  *  @param param user parameter passed to callback
  */
-void IRAM_ATTR uart_set_callback(uart_t* uart, uart_callback_t callback, void* param);
+void uart_set_callback(uart_t* uart, uart_callback_t callback, void* param);
 
 /** @brief Get the callback parameter specified by uart_set_callback()
  *  @param uart
@@ -191,6 +240,19 @@ static inline void uart_set_options(uart_t* uart, uart_options_t options)
 	if (uart)
 		uart->options = options;
 }
+
+/** @brief Get error flags and clear them
+ *  @param uart
+ *  @retval Status error bits:
+ *  @note To detect errors during a transaction, call at the start to clear the flags,
+ *  then check the value at the end.
+ *	Only these values are cleared/returned:
+ *  	UIBD: Break Detected
+ *  	UIOF: RX FIFO OverFlow
+ *  	UIFR: Frame Error
+ *  	UIPE: Parity Error
+ */
+uint8_t IRAM_ATTR uart_get_status(uart_t* uart);
 
 static inline uart_options_t uart_get_options(uart_t* uart)
 {
@@ -229,10 +291,7 @@ uint32_t uart_set_baudrate(uart_t* uart, uint32_t baud_rate);
  *  @param uart
  *  @retval uint32_t the baud rate, 0 on failure
  */
-static inline uint32_t uart_get_baudrate(uart_t* uart)
-{
-	return uart ? uart->baud_rate : 0;
-}
+uint32_t uart_get_baudrate(uart_t* uart);
 
 size_t uart_resize_rx_buffer(uart_t* uart, size_t new_size);
 size_t uart_rx_buffer_size(uart_t* uart);
@@ -290,7 +349,7 @@ int uart_peek_char(uart_t* uart);
  *  @note this is only useful if an rx buffer has been allocated of sufficient size
  *  to contain a message. This function then indicates the terminating character.
  */
-int IRAM_ATTR uart_peek_last_char(uart_t* uart);
+int uart_peek_last_char(uart_t* uart);
 
 /*
  * @brief Find a character in the receive buffer
@@ -305,7 +364,7 @@ int uart_rx_find(uart_t* uart, char c);
  *  @retval size_t
  *  @note this obtains a count of data both in the memory buffer and hardware FIFO
  */
-size_t IRAM_ATTR uart_rx_available(uart_t* uart);
+size_t uart_rx_available(uart_t* uart);
 
 /** @brief return free space in transmit buffer */
 size_t uart_tx_free(uart_t* uart);
@@ -313,11 +372,18 @@ size_t uart_tx_free(uart_t* uart);
 /** @deprecated don't use this - causes extended delays - use callback notification */
 void uart_wait_tx_empty(uart_t* uart);
 
+/** @brief Set or clear a break condition on the TX line
+ *  @param uart
+ *  @param state
+ */
+void uart_set_break(uart_t* uart, bool state);
+
 /** @brief discard any buffered data and reset hardware FIFOs
  *  @param uart
+ *  @param mode Whether to flush TX, RX or both (the default)
  *  @note this function does not wait for any transmissions to complete
  */
-void uart_flush(uart_t* uart);
+void uart_flush(uart_t* uart, uart_mode_t mode = UART_FULL);
 
 void uart_set_debug(int uart_nr);
 int uart_get_debug();
@@ -330,18 +396,33 @@ void uart_start_isr(uart_t* uart);
 /** @brief disable interrupts for a UART
  *  @param uart
  */
-void IRAM_ATTR uart_stop_isr(uart_t* uart);
+void __forceinline uart_stop_isr(uart_t* uart)
+{
+	extern void uart_detach(int);
+	if (uart != nullptr) {
+		uart_detach(uart->uart_nr);
+	}
+}
 
 /** @brief detach a UART interrupt service routine
  *  @param uart_nr
  */
-void IRAM_ATTR uart_detach(int uart_nr);
+void uart_detach(int uart_nr);
 
 /** @brief detach all UART interrupt service routines
  *  @note call at startup to put all UARTs into a known state
  */
 void uart_detach_all();
 
+
+/** @brief disable interrupts and return current interrupt state
+ *  @retval state non-zero if any UART interrupts were active
+ */
+uint8_t uart_disable_interrupts();
+
+/** @brief re-enable interrupts after calling uart_disable_interrupts()
+ */
+void uart_restore_interrupts();
 
 #if defined (__cplusplus)
 } // extern "C"

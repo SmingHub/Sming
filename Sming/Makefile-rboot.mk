@@ -48,6 +48,8 @@ BLANK_BIN_ADDR = 0x4b000
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS     ?= .text .data .rodata
 RBOOT_E2_USER_ARGS ?= -quiet -bin -boot2
+# GDB path
+GDB ?= $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-gdb
 
 ## COM port parameters
 # Default COM port speed (generic)
@@ -217,6 +219,7 @@ endif
 MODULES      ?= app     # default to app if not set by user
 MODULES      += $(THIRD_PARTY_DIR)/rboot/appcode
 MODULES      += $(SMING_HOME)/appspecific/rboot
+MODULES      += $(SMING_HOME)/appspecific/gdb
 EXTRA_INCDIR ?= include # default to include if not set by user
 
 ENABLE_CUSTOM_LWIP ?= 1
@@ -246,17 +249,22 @@ endif
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	CFLAGS += -DSDK_INTERNAL
 endif
+
+ifeq ($(ENABLE_GDB), 1)
+	CFLAGS += -ggdb -DENABLE_GDB=1
+	MODULES += $(SMING_HOME)/gdb
+endif
+
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
 	CFLAGS += -Os -DSMING_RELEASE=1
 else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0
-	MODULES		 += $(THIRD_PARTY_DIR)/esp-gdbstub
-	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/esp-gdbstub
+	CFLAGS += -Og
 else
 	CFLAGS += -Os -g
 endif
+
 ifeq ($(ENABLE_WPS),1)
    CFLAGS += -DENABLE_WPS=1
 endif
@@ -360,7 +368,8 @@ ifeq ($(DISABLE_SPIFFS), 1)
 endif
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -u custom_crash_callback -Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
+LDFLAGS		= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -u custom_crash_callback \
+			-Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions = -ff 26m
@@ -413,7 +422,8 @@ SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
 SDK_INCDIR	= include
 
-# select which tools to use as compiler, librarian and linker
+# select which tools to use as assembler, compiler, librarian and linker
+AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CXX		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-g++
 AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
@@ -428,11 +438,16 @@ SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
 C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
-CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
-
 C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
+
+CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
+
+AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.s))
 AS_OBJ		:= $(patsubst %.s,$(BUILD_BASE)/%.o,$(AS_SRC))
+AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
+AS_OBJ		+= $(patsubst %.S,$(BUILD_BASE)/%.o,$(AS_SRC))
+
 
 OBJ		:= $(AS_OBJ) $(C_OBJ) $(CXX_OBJ)
 
@@ -503,6 +518,12 @@ endif
 
 
 define compile-objects
+${BUILD_BASE}/$1/%.o: $1/%.s
+	$(vecho) "AS $$<"
+	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
+${BUILD_BASE}/$1/%.o: $1/%.S
+	$(vecho) "AS $$<"
+	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
 ${BUILD_BASE}/$1/%.o: $1/%.c ${BUILD_BASE}/$1/%.c.d
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@
@@ -517,7 +538,7 @@ ${BUILD_BASE}/$1/%.cpp.d: $1/%.cpp
 .PRECIOUS: ${BUILD_BASE}/$1/%.c.d ${BUILD_BASE}/$1/%.cpp.d
 endef
 
-.PHONY: all checkdirs spiff_update spiff_clean clean
+.PHONY: all checkdirs spiff_update spiff_clean clean kill_term terminal gdb
 
 all: $(USER_LIBDIR)/lib$(LIBSMING).a checkdirs $(LIBMAIN_DST) $(RBOOT_BIN) $(RBOOT_ROM_0) $(RBOOT_ROM_1) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2) 
 
@@ -611,10 +632,8 @@ endif
 
 flashboot: $(USER_LIBDIR)/lib$(LIBSMING).a $(RBOOT_BIN)
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN)
-	
-flashconfig:
-	$(vecho) "Killing Terminal to free $(COM_PORT)"
-	-$(Q) $(KILL_TERM)
+
+flashconfig: kill_term
 	$(vecho) "Deleting rBoot config sector"
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x01000 $(SDK_BASE)/bin/blank.bin 
 
@@ -628,9 +647,10 @@ else
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
 endif
 
-flash: all
-	$(vecho) "Killing Terminal to free $(COM_PORT)"
-	-$(Q) $(KILL_TERM)
+# Full GDB command line
+GDB := trap '' INT && $(GDB) -x $(SMING_HOME)/gdb/gdbcmds -b $(COM_SPEED_SERIAL) -ex "target remote $(COM_PORT)"
+
+flash: all kill_term
 ifeq ($(DISABLE_SPIFFS), 1)
 # flashes rboot and first rom
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN) 0x02000 $(RBOOT_ROM_0)
@@ -638,16 +658,25 @@ else
 # flashes rboot, first rom and spiffs
 	$(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL) write_flash $(flashimageoptions) 0x00000 $(RBOOT_BIN) 0x02000 $(RBOOT_ROM_0) $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
 endif
+ifeq ($(ENABLE_GDB), 1)
+	$(GDB)
+else
 	$(TERMINAL)
-	
+endif
+
 otaserver: all
 	$(vecho) "Starting OTA server for TESTING"
 	$(Q) cd $(FW_BASE) && python -m SimpleHTTPServer $(SERVER_OTA_PORT)
 
-terminal:
+kill_term:
 	$(vecho) "Killing Terminal to free $(COM_PORT)"
 	-$(Q) $(KILL_TERM)
+
+terminal: kill_term
 	$(TERMINAL)
+
+gdb: kill_term
+	$(GDB)
 
 flashinit:
 	$(vecho) "Flash init data default and blank data."
