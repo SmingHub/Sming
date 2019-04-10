@@ -3,6 +3,7 @@
 #include "HardwareTimer.h"
 #include <gdb_syscall.h>
 #include <Data/Stream/GdbFileStream.h>
+#include <sysdbg.h>
 
 #define LED_PIN 2 // Note: LED is attached to UART1 TX output
 
@@ -272,6 +273,8 @@ void fileStat(const char* filename)
 	XX(hang, "Enter infinite loop to force a watchdog timeout")                                                        \
 	XX(read0, "Read from invalid address")                                                                             \
 	XX(write0, "Write to invalid address")                                                                             \
+	XX(malloc0, "Call malloc(0)")                                                                                      \
+	XX(freetwice, "Free allocated memory twice")                                                                       \
 	XX(restart, "Restart the system")                                                                                  \
 	XX(exit, "Detach from GDB and resume normal application execution")                                                \
 	XX(help, "Display this command summary")
@@ -369,6 +372,75 @@ COMMAND_HANDLER(write0)
 	Serial.flush();
 	*(uint8_t*)0 = 0;
 	Serial.println("...still running!");
+	return true;
+}
+
+/**
+ * @brief See if the SDK debug message is something we're interested in.
+ * @param line
+ * @param length
+ * @retval bool true if we want to report this
+ */
+static bool __attribute__((noinline)) checkSystemMessage(const char* line, unsigned length)
+{
+	m_printf(_F("[SYS] %s\r\n"), line);
+	if(memcmp(line, "E:M ", 4) == 0) {
+		Serial.println(_F("** SDK Memory Error **"));
+		return true;
+	} else if(strstr(line, " assert ") != nullptr) {
+		Serial.println(_F("** SDK Assert **"));
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * @brief Called when the SDK outputs a debug message using os_printf, etc.
+ * @param line The message
+ * @param length Number of chars in message
+ */
+static void sysdbgCallback(const char* line, unsigned length)
+{
+	if(checkSystemMessage(line, length)) {
+		if(gdb_present() == eGDB_Attached) {
+			gdb_do_break();
+		} else {
+			register uint32_t sp asm("a1");
+			debug_print_stack(sp + 0x10, 0x3fffffb0);
+		}
+	}
+}
+
+/**
+ * @brief Install a debug output hook to monitor SDK debug messages
+ */
+static void monitorSdkDebugMessages()
+{
+	static char buffer[256]; // Somewhere to store debug message
+	sysdbgInstallHook(sysdbgCallback, buffer, sizeof(buffer));
+}
+
+COMMAND_HANDLER(malloc0)
+{
+	Serial.println(
+		_F("Ask the SDK to allocate a zero-length array results in a debug message we can trap.\r\n"
+		   "The message starts with 'E:M ...' and can often indicate a more serious memory allocation issue."));
+
+	os_malloc(0);
+
+	return true;
+}
+
+COMMAND_HANDLER(freetwice)
+{
+	Serial.println(_F("Attempting to free the same memory twice is a common bug.\r\n"
+					  "On the test system we see an assertion failure message from the SDK."));
+
+	auto mem = static_cast<char*>(os_malloc(123));
+	os_free(mem);
+	os_free(mem);
+
 	return true;
 }
 
@@ -522,6 +594,8 @@ void GDB_IRAM_ATTR init()
 
 	Serial.println(_F("LiveDebug sample\r\n"
 					  "Explore some capabilities of the GDB debugger.\r\n"));
+
+	monitorSdkDebugMessages();
 
 	if(gdb_present() != eGDB_Attached) {
 		System.onReady(showPrompt);

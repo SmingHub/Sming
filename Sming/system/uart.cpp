@@ -932,7 +932,7 @@ void uart_set_pins(uart_t* uart, int tx, int rx)
 	}
 }
 
-static void uart_debug_putc(char c)
+void uart_debug_putc(char c)
 {
 	uart_t* uart = uart_get_uart(s_uart_debug_nr);
 	if(uart != nullptr) {
