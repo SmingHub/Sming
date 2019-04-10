@@ -47,7 +47,7 @@ bool GdbFileStream::open(const String& fileName, FileOpenFlags openFlags)
 			this->size = size;
 			gdb_syscall_lseek(fd, 0, SEEK_SET);
 			pos = 0;
-			debug_d("opened file: '%s' (%u bytes) #0x%08X", fileName().c_str(), size, this);
+			debug_d("opened file: '%s' (%u bytes) #0x%08X", fileName.c_str(), size, this);
 		}
 		return true;
 	}
