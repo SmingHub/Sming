@@ -567,9 +567,11 @@ uint8_t uart_get_status(uart_t* uart)
 		uart->status = 0;
 		// Read raw status register directly from real uart, masking out non-error bits
 		uart = get_physical(uart);
-		status |= USIR(uart->uart_nr) & (_BV(UIBD) | _BV(UIOF) | _BV(UIFR) | _BV(UIPE));
-		// Clear errors
-		USIC(uart->uart_nr) = status;
+		if(uart != nullptr) {
+			status |= USIR(uart->uart_nr) & (_BV(UIBD) | _BV(UIOF) | _BV(UIFR) | _BV(UIPE));
+			// Clear errors
+			USIC(uart->uart_nr) = status;
+		}
 		uart_restore_interrupts();
 	}
 	return status;
