@@ -132,17 +132,19 @@ static void spiffs_mount_internal(spiffs_config *cfg)
 		debugf("Unsuccessful SPIFFS check with error %d.\r\n",check);
 		debugf("ALL DATA WILL BE ERASED. First init filesystem.\r\n");
 
-		spiffs_format_internal(cfg);
-		if( spiffs_mount_minimal(cfg) >= 0 ) {
-			debugf("SPIFFS format successful. Initing filesystem!");
-			file_t fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat", SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
-			SPIFFS_write(&_filesystemStorageHandle, fd, (u8_t *)"1", 1);
-			SPIFFS_fremove(&_filesystemStorageHandle, fd);
-			SPIFFS_close(&_filesystemStorageHandle, fd);
+		if(SPIFFS_USE_MAGIC) {
+			// See https://github.com/pellepl/spiffs/wiki/Using-spiffs - Formatting
+			debugf("SPIFFS_USE_MAGIC is set!\r\n");
+			if(res == SPIFFS_ERR_NOT_A_FS) {
+				debugf("Error SPIFFS_ERR_NOT_A_FS which is expected, continuing with format...\r\n");
+				spiffs_format_internal(cfg);
+			}
 		} else {
-			debugf("SPIFFS couldn't be mounted after format!\r\n");
-			debugf("SPIFFS init UNSUCCESFUL!");
+			debugf("Formatting fs...\r\n");
+			spiffs_format_internal(cfg);
 		}
+		res = spiffs_mount_minimal(cfg);
+		debugf("Mount result is: %d\r\n",res);
 	  } else {
 		  debugf("SPIFFS check was successful (return code %d)\r\n",check);
 		  debugf("Trying to mount FS\r\n");
@@ -152,6 +154,18 @@ static void spiffs_mount_internal(spiffs_config *cfg)
 		  }
 	  }
   }
+
+  file_t fd = SPIFFS_open(&_filesystemStorageHandle,"initialize_fs_header.dat",SPIFFS_RDONLY,0);
+  SPIFFS_close(&_filesystemStorageHandle, fd);
+	if(fd < 0) {
+		debugf("No initialized SPIFFS volume found. Initializing FS now...");
+		file_t fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat", SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
+		SPIFFS_write(&_filesystemStorageHandle, fd, (u8_t *)"1", 1);
+		//SPIFFS_fremove(&_filesystemStorageHandle, fd);
+		SPIFFS_close(&_filesystemStorageHandle, fd);
+	} else {
+		debugf("It seems that the mounted SPIFFS is properly inited.");
+	}
 
   //dat=0;
   //flashmem_read(&dat, cfg.phys_addr, 4);
