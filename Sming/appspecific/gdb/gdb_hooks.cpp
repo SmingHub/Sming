@@ -72,6 +72,7 @@ void debug_print_stack(uint32_t start, uint32_t end)
 void debug_crash_callback(const rst_info* rst_info, uint32_t stack, uint32_t stack_end)
 {
 #ifdef ENABLE_GDB
+	gdbFlushUserData();
 	if(gdb_state.attached) {
 		m_setPuts(gdbWriteConsole);
 	}
@@ -159,6 +160,8 @@ static void __attribute__((noinline)) gdbstub_exception_handler_flash(UserFrame*
 	gdbstub_savedRegs.a[1] = uint32_t(frame) + EXCEPTION_GDB_SP_OFFSET;
 
 #if defined(ENABLE_GDB) && GDBSTUB_BREAK_ON_EXCEPTION
+	gdbFlushUserData();
+
 	// If GDB is attached, temporarily redirect m_printf calls to the console
 	nputs_callback_t oldPuts = nullptr;
 	if(gdb_state.attached) {
