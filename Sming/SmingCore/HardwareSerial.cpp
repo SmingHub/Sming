@@ -44,17 +44,21 @@ void HardwareSerial::begin(uint32_t baud, SerialConfig config, SerialMode mode, 
 					   .rx_size = rxSize,
 					   .tx_size = txSize};
 	uart = uart_init_ex(cfg);
+	updateUartCallback();
 }
 
 void HardwareSerial::end()
 {
+	if(uart == nullptr) {
+		return;
+	}
+
 	if(uart_get_debug() == uartNr) {
 		uart_set_debug(UART_NO);
 	}
 
 	uart_uninit(uart);
 	uart = nullptr;
-	uart_detach(uartNr);
 }
 
 size_t HardwareSerial::setRxBufferSize(size_t size)
@@ -91,99 +95,91 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 		} else {
 			uart_set_debug(UART_NO);
 		}
-	} else {
-		// don't print debugf() data at all
+	} else if(uart_get_debug() == uartNr) {
+		// Disable system debug messages on this interface
+		uart_set_debug(UART_NO);
+		// and don't print debugf() data at all
 		m_setPuts(nullptr);
-		// and disable system debug messages on this interface
-		if(uart_get_debug() == uartNr) {
-			uart_set_debug(UART_NO);
-		}
 	}
 }
 
-void HardwareSerial::callbackHandler(uint32_t status)
+void HardwareSerial::invokeCallbacks()
 {
+	uart_disable_interrupts();
+	auto status = callbackStatus;
+	callbackStatus = 0;
+	callbackQueued = false;
+	uart_restore_interrupts();
+
 	// Transmit complete ?
-	if(status & _BV(UIFE)) {
-		if(transmitComplete)
-			System.queueCallback(
-				[](uint32_t param) {
-					auto serial = reinterpret_cast<HardwareSerial*>(param);
-					if(serial->transmitComplete) {
-						serial->transmitComplete(*serial);
-					}
-				},
-				reinterpret_cast<uint32_t>(this));
+	if(bitRead(status, UIFE) && transmitComplete) {
+		transmitComplete(*this);
 	}
 
-	// RX FIFO Full or RX FIFO Timeout ?
-	if((status & (_BV(UIFF) | _BV(UITO))) == 0) {
+	// RX FIFO Full or RX FIFO Timeout or RX Overflow ?
+	if(status & (_BV(UIFF) | _BV(UITO) | _BV(UIOF))) {
+		auto receivedChar = uart_peek_last_char(uart);
+		if(HWSDelegate) {
+			HWSDelegate(*this, receivedChar, uart_rx_available(uart));
+		}
+#if ENABLE_CMD_EXECUTOR
+		if(commandExecutor) {
+			commandExecutor->executorReceive(receivedChar);
+		}
+#endif
+	}
+}
+
+/*
+ * Called via task queue
+ */
+void HardwareSerial::staticOnStatusChange(uint32_t param)
+{
+	auto serial = reinterpret_cast<HardwareSerial*>(param);
+	if(serial != nullptr) {
+		serial->invokeCallbacks();
+	}
+}
+
+/*
+ * Called from uart interrupt handler
+ */
+void HardwareSerial::staticCallbackHandler(uart_t* uart, uint32_t status)
+{
+	auto serial = static_cast<HardwareSerial*>(uart_get_callback_param(uart));
+	if(serial == nullptr) {
 		return;
 	}
 
-#if ENABLE_CMD_EXECUTOR
-	if(HWSDelegate || commandExecutor) {
-#else
-	if(HWSDelegate) {
-#endif
+	serial->callbackStatus |= status;
 
-		// Pack parameters for callback into a single word
-		union __packed SerialParam {
-			struct {
-				uint16_t charCount;
-				uint8_t receivedChar;
-				uint8_t uartNr;
-			};
-			uint32_t param;
-		};
-
-		SerialParam serialParam = {{.charCount = static_cast<uint16_t>(uart_rx_available(uart)),
-									.receivedChar = (uint8_t)uart_peek_last_char(uart),
-									.uartNr = static_cast<uint8_t>(uartNr)}};
-
-		System.queueCallback(
-			[](uint32_t param) {
-				SerialParam serialParam = {.param = param};
-				auto uart = uart_get_uart(serialParam.uartNr);
-				auto serial = reinterpret_cast<HardwareSerial*>(uart_get_callback_param(uart));
-				if(serial->HWSDelegate) {
-					serial->HWSDelegate(*serial, serialParam.receivedChar, serialParam.charCount);
-				}
-#if ENABLE_CMD_EXECUTOR
-				if(serial->commandExecutor) {
-					serial->commandExecutor->executorReceive(serialParam.receivedChar);
-				}
-#endif
-			},
-			serialParam.param);
-	}
-}
-
-void HardwareSerial::staticCallbackHandler(uart_t* uart, uint32_t status)
-{
-	auto serial = reinterpret_cast<HardwareSerial*>(uart_get_callback_param(uart));
-	if(serial) {
-		serial->callbackHandler(status);
+	// If required, queue a callback
+	if((status & serial->statusMask) != 0 && !serial->callbackQueued) {
+		System.queueCallback(staticOnStatusChange, uint32_t(serial));
+		serial->callbackQueued = true;
 	}
 }
 
 bool HardwareSerial::updateUartCallback()
 {
-	if(uart == nullptr) {
-		return false;
+	uint16_t mask = 0;
+#if ENABLE_CMD_EXECUTOR
+	if(HWSDelegate || commandExecutor) {
+#else
+	if(HWSDelegate) {
+#endif
+		mask |= _BV(UIFF) | _BV(UITO) | _BV(UIOF);
 	}
 
-#if ENABLE_CMD_EXECUTOR
-	if(HWSDelegate || transmitComplete || commandExecutor) {
-#else
-	if(HWSDelegate || transmitComplete) {
-#endif
-		setUartCallback(staticCallbackHandler, this);
-		return true;
-	} else {
-		setUartCallback(nullptr, nullptr);
-		return false;
+	if(transmitComplete) {
+		mask |= _BV(UIFE);
 	}
+
+	statusMask = mask;
+
+	setUartCallback(mask == 0 ? nullptr : staticCallbackHandler, this);
+
+	return mask != 0;
 }
 
 void HardwareSerial::commandProcessing(bool reqEnable)

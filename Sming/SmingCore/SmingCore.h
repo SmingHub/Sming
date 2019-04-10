@@ -15,6 +15,7 @@
 
 #include <functional>
 
+#include "gdb_hooks.h"
 #include "WiringFrameworkIncludes.h"
 
 #include "Delegate.h"
