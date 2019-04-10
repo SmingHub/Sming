@@ -178,6 +178,8 @@ bool HardwareSerial::updateUartCallback()
 	statusMask = mask;
 
 	setUartCallback(mask == 0 ? nullptr : staticCallbackHandler, this);
+
+	return mask != 0;
 }
 
 void HardwareSerial::commandProcessing(bool reqEnable)
