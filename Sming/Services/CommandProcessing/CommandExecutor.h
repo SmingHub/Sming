@@ -11,6 +11,7 @@
 #include "Network/TcpClient.h"
 #include "CommandHandler.h"
 #include "CommandOutput.h"
+#include <Data/Buffer/LineBuffer.h>
 
 #define MAX_COMMANDSIZE 64
 
@@ -31,7 +32,6 @@ public:
 private :
 	CommandExecutor();
 	void processCommandLine(String cmdString);
-	char commandBuf [MAX_COMMANDSIZE+1];
-	uint16_t commandIndex = 0;
+	LineBuffer<MAX_COMMANDSIZE+1> commandBuf;
 	CommandOutput* commandOutput = nullptr;
 };

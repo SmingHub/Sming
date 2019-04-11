@@ -78,8 +78,7 @@ int CommandExecutor::executorReceive(char recvChar)
 {
 	if (recvChar == 27) // ESC -> delete current commandLine
 	{
-		commandIndex = 0;
-		commandBuf[commandIndex] = 0;
+		commandBuf.clear();
 		if (commandHandler.getVerboseMode() == VERBOSE)
 		{
 			commandOutput->print("\r\n");
@@ -88,16 +87,19 @@ int CommandExecutor::executorReceive(char recvChar)
 	}
 	else if (recvChar == commandHandler.getCommandEOL())
 	{
-
-		processCommandLine(String(commandBuf));
-		commandIndex = 0;
+		String command(commandBuf.getBuffer(), commandBuf.getLength());
+		commandBuf.clear();
+		processCommandLine(command);
+	}
+	else if (recvChar == '\b' || recvChar == 0x7f) {
+		if(commandBuf.backspace()) {
+			commandOutput->print(_F("\b \b"));
+		}
 	}
 	else
 	{
-		if ((commandIndex < MAX_COMMANDSIZE) && (isprint(recvChar)))
-		{
-			commandBuf[commandIndex++] = recvChar;
-			commandBuf[commandIndex] = 0;
+		if(commandBuf.addChar(recvChar)) {
+			commandOutput->print(recvChar);
 		}
 
 	}
