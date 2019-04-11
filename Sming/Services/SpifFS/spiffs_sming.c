@@ -1,5 +1,7 @@
 #include "spiffs_sming.h"
 
+DEFINE_PSTR(initFileName, "initialize_fs_header.dat");
+
 spiffs _filesystemStorageHandle;
 
 static u8_t spiffs_work_buf[LOG_PAGE_SIZE*2];
@@ -97,7 +99,7 @@ bool spiffs_format_internal(spiffs_config *cfg)
   return true;
 }
 
-int spiffs_mount_minimal(spiffs_config* cfg)
+static int spiffs_mount_minimal(spiffs_config* cfg)
 {
 	return SPIFFS_mount(&_filesystemStorageHandle, cfg, spiffs_work_buf, spiffs_fds, sizeof(spiffs_fds), spiffs_cache,
 						sizeof(spiffs_cache), NULL);
@@ -118,35 +120,34 @@ static void spiffs_mount_internal(spiffs_config *cfg)
   cfg->hal_erase_f = api_spiffs_erase;
 
   int res = spiffs_mount_minimal(cfg);
-  debugf("mount res: %d\n", res);
+  debug_d("Mount result: %d\n", res);
 
   if(res < 0) {
 	  int check = SPIFFS_check(&_filesystemStorageHandle);
 	  if(check < 0) {
-		  debugf("Unsuccessful SPIFFS check with error %d.\r\n", check);
-		  debugf("ALL DATA WILL BE ERASED. First init filesystem.\r\n");
+		  debug_d("Unsuccessful SPIFFS check with error %d.\r\n", check);
+		  debug_w("ALL DATA WILL BE ERASED. First init filesystem.\r\n");
 
-		  if(SPIFFS_USE_MAGIC) {
-			  // See https://github.com/pellepl/spiffs/wiki/Using-spiffs - Formatting
-			  debugf("SPIFFS_USE_MAGIC is set!\r\n");
-			  if(res == SPIFFS_ERR_NOT_A_FS) {
-				  debugf("Error SPIFFS_ERR_NOT_A_FS which is expected, continuing with format...\r\n");
-				  spiffs_unmount();
-				  spiffs_format_internal(cfg);
-			  }
-		  } else {
-			  debugf("Formatting fs...\r\n");
+#if(SPIFFS_USE_MAGIC == 1)
+		  // See https://github.com/pellepl/spiffs/wiki/Using-spiffs - Formatting
+		  debug_d("SPIFFS_USE_MAGIC is set!\r\n");
+		  if(res == SPIFFS_ERR_NOT_A_FS) {
+			  debug_d("Error SPIFFS_ERR_NOT_A_FS which is expected, continuing with format...\r\n");
 			  spiffs_unmount();
 			  spiffs_format_internal(cfg);
 		  }
+#else
+		  debug_i("Formatting fs...\r\n");
+		  spiffs_unmount();
+		  spiffs_format_internal(cfg);
+#endif
 		  res = spiffs_mount_minimal(cfg);
-		  debugf("Mount result is: %d\r\n", res);
+		  debug_i("Mount result is: %d\r\n", res);
 	  } else {
-		  debugf("SPIFFS check was successful (return code %d)\r\n", check);
-		  debugf("Trying to mount FS\r\n");
+		  debug_d("SPIFFS check was successful (return code %d)\r\n", check);
 		  res = spiffs_mount_minimal(cfg);
 		  if(res < 0) {
-			  debugf("UNSUCCESSFUL FS mount after SPIFFS check! Continuing anyway! PAY ATTENTION!\r\n");
+			  debug_w("UNSUCCESSFUL FS mount after SPIFFS check! Continuing anyway! PAY ATTENTION!\r\n");
 		  }
 	  }
   }
@@ -154,28 +155,27 @@ static void spiffs_mount_internal(spiffs_config *cfg)
   file_t fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat", SPIFFS_RDONLY, 0);
   SPIFFS_close(&_filesystemStorageHandle, fd);
   if(fd < 0) {
-	  debugf("No initialized SPIFFS volume found. Wiping flash and initializing FS now...");
+	  debug_i("No initialized SPIFFS volume found. Wiping flash and initializing FS now...");
 	  spiffs_unmount();
 	  spiffs_format_internal(cfg);
 	  res = spiffs_mount_minimal(cfg);
 	  if(res < 0) {
-		  debugf("\r\nCouldn't mount SPIFFS even on freshly wiped flash. Giving up. :(\r\n");
+		  debug_w("\r\nCouldn't mount SPIFFS even on freshly wiped flash. Giving up. :(\r\n");
 	  } else {
-		  fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat",
-						   SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
+		  fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat", SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
 		  SPIFFS_write(&_filesystemStorageHandle, fd, (u8_t*)"1", 1);
 		  //SPIFFS_fremove(&_filesystemStorageHandle, fd);
 		  SPIFFS_close(&_filesystemStorageHandle, fd);
 		  fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat", SPIFFS_RDONLY, 0);
 		  SPIFFS_close(&_filesystemStorageHandle, fd);
 		  if(fd < 0) {
-			  debugf("Flash was wiped and mount successfully, but SPIFFS initialization failed. Giving up.");
+			  debug_w("Flash was wiped and mount successfully, but SPIFFS initialization failed. Giving up.");
 		  } else {
-			  debugf("FS successfully initialized.");
+			  debug_i("FS successfully initialized.");
 		  }
 	  }
   } else {
-	  debugf("Mounting SPIFFS succeeded!");
+	  debug_i("Mounting SPIFFS succeeded!");
   }
 
   //dat=0;
