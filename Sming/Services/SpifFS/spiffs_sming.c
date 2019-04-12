@@ -1,7 +1,5 @@
 #include "spiffs_sming.h"
 
-DEFINE_PSTR(initFileName, "initialize_fs_header.dat");
-
 spiffs _filesystemStorageHandle;
 
 static u8_t spiffs_work_buf[LOG_PAGE_SIZE*2];
@@ -107,6 +105,8 @@ static int spiffs_mount_minimal(spiffs_config* cfg)
 
 static void spiffs_mount_internal(spiffs_config *cfg)
 {
+  PSTR_ARRAY(initFileName, "initialize_fs_header.dat");
+
   if (cfg->phys_addr == 0)
   {
 	  SYSTEM_ERROR("Can't start file system, wrong address");
@@ -125,7 +125,7 @@ static void spiffs_mount_internal(spiffs_config *cfg)
   if(res < 0) {
 	  int check = SPIFFS_check(&_filesystemStorageHandle);
 	  if(check < 0) {
-		  debug_d("Unsuccessful SPIFFS check with error %d.\r\n", check);
+		  debug_w("Unsuccessful SPIFFS check with error %d.\r\n", check);
 		  debug_w("ALL DATA WILL BE ERASED. First init filesystem.\r\n");
 
 #if(SPIFFS_USE_MAGIC == 1)
@@ -147,12 +147,12 @@ static void spiffs_mount_internal(spiffs_config *cfg)
 		  debug_d("SPIFFS check was successful (return code %d)\r\n", check);
 		  res = spiffs_mount_minimal(cfg);
 		  if(res < 0) {
-			  debug_w("UNSUCCESSFUL FS mount after SPIFFS check! Continuing anyway! PAY ATTENTION!\r\n");
+			  debug_w("UNSUCCESSFUL FS mount after SPIFFS check! Continuing anyway! PAY ATTENTION!");
 		  }
 	  }
   }
 
-  file_t fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat", SPIFFS_RDONLY, 0);
+  file_t fd = SPIFFS_open(&_filesystemStorageHandle, initFileName, SPIFFS_RDONLY, 0);
   SPIFFS_close(&_filesystemStorageHandle, fd);
   if(fd < 0) {
 	  debug_i("No initialized SPIFFS volume found. Wiping flash and initializing FS now...");
@@ -160,16 +160,16 @@ static void spiffs_mount_internal(spiffs_config *cfg)
 	  spiffs_format_internal(cfg);
 	  res = spiffs_mount_minimal(cfg);
 	  if(res < 0) {
-		  debug_w("\r\nCouldn't mount SPIFFS even on freshly wiped flash. Giving up. :(\r\n");
+		  debug_w("\r\nCouldn't mount SPIFFS even on freshly wiped flash. Giving up. :(");
 	  } else {
-		  fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat", SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
+		  fd = SPIFFS_open(&_filesystemStorageHandle, initFileName, SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
 		  SPIFFS_write(&_filesystemStorageHandle, fd, (u8_t*)"1", 1);
 		  //SPIFFS_fremove(&_filesystemStorageHandle, fd);
 		  SPIFFS_close(&_filesystemStorageHandle, fd);
-		  fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat", SPIFFS_RDONLY, 0);
+		  fd = SPIFFS_open(&_filesystemStorageHandle, initFileName, SPIFFS_RDONLY, 0);
 		  SPIFFS_close(&_filesystemStorageHandle, fd);
 		  if(fd < 0) {
-			  debug_w("Flash was wiped and mount successfully, but SPIFFS initialization failed. Giving up.");
+			  debug_w("Flash was wiped and mounted successfully, but SPIFFS initialization failed. Giving up.");
 		  } else {
 			  debug_i("FS successfully initialized.");
 		  }
