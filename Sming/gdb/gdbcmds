@@ -25,6 +25,10 @@ mem 0x60000000 0x60001fff rw
 # The target object file so GDB knows where to get symbol information
 file out/build/app_0.out
 
+# GDB needs to know about ROM functions in order to create a full stack trace
+# See https://github.com/jcmvbkbc/esp-elf-rom
+add-symbol-file out/build/bootrom.elf 0x40000000 -readnow
+
 # Change the following to your serial port and baud
 #set serial baud 115200
 #target remote /dev/ttyUSB0
