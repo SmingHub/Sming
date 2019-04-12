@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Support for reading flash memory the FlashString structure and associated macros for efficient flash memory string access.
+ * Support for reading flash memory
  *
  ****/
 
@@ -13,6 +13,9 @@
 
 #include "m_printf.h"
 #include "c_types.h"
+
+// Simple check to determine if a pointer refers to flash memory
+#define isFlashPtr(ptr) (uint32_t(ptr) >= 0x4020000)
 
 #define PGM_P  const char *
 
