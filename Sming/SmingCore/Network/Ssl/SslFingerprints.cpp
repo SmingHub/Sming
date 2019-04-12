@@ -12,13 +12,6 @@
 
 #include "SslFingerprints.h"
 #include <user_config.h>
-#include "flashmem.h"
-
-static inline bool isFlashPtr(const uint8_t* ptr)
-{
-	auto addr = reinterpret_cast<uint32_t>(ptr);
-	return addr >= INTERNAL_FLASH_START_ADDRESS;
-}
 
 static inline void freeValue(const uint8_t*& ptr)
 {

@@ -10,6 +10,7 @@ Descr: embedded very simple version of printf with float support
 #include "stringconversion.h"
 #include "stringutil.h"
 #include <algorithm>
+#include "FakePgmSpace.h"
 
 #define MPRINTF_BUF_SIZE 256
 
@@ -164,15 +165,20 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
                 continue;
 
             case 's': {
-                s = va_arg(args, char *);
+                s = va_arg(args, const char *);
 
                 if (!s) s = "(null)";
-                size_t len = strlen(s);
+                bool isFlash = isFlashPtr(s);
+                size_t len = isFlash ? strlen_P(s) : strlen(s);
                 if (precision >= 0 && (int)len > precision) len = precision;
 
                 int padding = width - len;
                 while (!minus && padding-- > 0) add(' ');
-                while (len--)                   add(*s++);
+                if(isFlash) {
+                	while (len--)                   add(pgm_read_byte(s++));
+                } else {
+                	while (len--)                   add(*s++);
+                }
                 while (minus && padding-- > 0)  add(' ');
                 continue;
             }
