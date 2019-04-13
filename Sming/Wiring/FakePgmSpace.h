@@ -15,7 +15,7 @@
 #include "c_types.h"
 
 // Simple check to determine if a pointer refers to flash memory
-#define isFlashPtr(ptr) (uint32_t(ptr) >= 0x4020000)
+#define isFlashPtr(ptr) (uint32_t(ptr) >= 0x40200000)
 
 #define PGM_P  const char *
 
