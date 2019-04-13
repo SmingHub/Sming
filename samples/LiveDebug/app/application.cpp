@@ -322,6 +322,7 @@ COMMAND_HANDLER(log)
 	} else {
 		Serial.println(_F("Log file not available"));
 	}
+	return true;
 }
 
 COMMAND_HANDLER(ls)
@@ -458,6 +459,7 @@ COMMAND_HANDLER(help)
 #define XX(tag, desc) Serial.println(_F("  " #tag " : " desc));
 	COMMAND_MAP(XX)
 #undef XX
+	return true;
 }
 
 /**
