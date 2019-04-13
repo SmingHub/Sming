@@ -213,6 +213,10 @@ gdbstub_init_debug_entry:
 	ASATTR_GDBFN
 	.align 4
 gdbstub_icount_ena_single_step:
+
+//Make sure we're running at sufficiently high interrupt level to prevent early triggering
+	rsil a2,XCHAL_DEBUGLEVEL
+
 	movi	a3, XCHAL_DEBUGLEVEL //Only count steps in non-debug mode
 	movi	a2, -2
 	wsr		a3, ICOUNTLEVEL

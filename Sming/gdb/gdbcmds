@@ -1,5 +1,5 @@
 # Enable this if you want to log all traffic between GDB and the stub
-# set remotelogfile gdb_rsp_logfile.txt
+set remotelogfile gdb_rsp_logfile.txt
 
 # ESP8266 HW limits the number of breakpoints/watchpoints
 set remote hardware-breakpoint-limit 1
@@ -28,6 +28,9 @@ file out/build/app_0.out
 # GDB needs to know about ROM functions in order to create a full stack trace
 # See https://github.com/jcmvbkbc/esp-elf-rom
 add-symbol-file out/build/bootrom.elf 0x40000000 -readnow
+
+# Useful for lower-level debugging to see the result of stepping through assembler code
+#set disassemble-next-line on
 
 # Change the following to your serial port and baud
 #set serial baud 115200

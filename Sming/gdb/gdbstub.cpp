@@ -538,9 +538,7 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 	case 's':
 		singleStepPs = gdbstub_savedRegs.ps;
 		gdbstub_savedRegs.ps = (gdbstub_savedRegs.ps & ~0xf) | (XCHAL_DEBUGLEVEL - 1);
-		debug_i("!! 1 !!");
 		gdbstub_icount_ena_single_step();
-		debug_i("!! 2 !!");
 		return ST_CONT;
 
 	/*
