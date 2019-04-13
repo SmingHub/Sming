@@ -423,14 +423,7 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 		auto regnum = GdbPacket::readHexValue(data);
 		auto regPtr = getSavedReg(regnum);
 #if GDBSTUB_ENABLE_DEBUG
-		char regName[16];
-		/*
- * @todo Trying to read flash here sometimes causes a LEVEL1 interrupt exception (even though
- * we haven't hooked it?!) According to the docs. we need to look at the INTERRUPT register
- * and INTENABLE to determine the actual cause.
- */
-		regName[0] = '\0';
-//		memcpy_P(regName, registerNames[regnum], sizeof(regName));
+		const char* regName = (regPtr == nullptr) ? PSTR("(unsupported)") : registerNames[regnum];
 #endif
 
 		if(commandChar == 'p') { // read

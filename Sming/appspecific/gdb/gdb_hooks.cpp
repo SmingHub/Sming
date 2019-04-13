@@ -120,10 +120,7 @@ void dumpExceptionInfo()
 				"***** Fatal exception %u"),
 			 reg.cause);
 	if(reg.cause <= EXCCAUSE_MAX) {
-		char name[32];
-		memcpy_P(name, exceptionNames[reg.cause], sizeof(name));
-		name[sizeof(name) - 1] = '\0';
-		m_printf(_F(" (%s)"), name);
+		m_printf(_F(" (%s)"), exceptionNames[reg.cause]);
 	}
 	m_puts("\r\n");
 
