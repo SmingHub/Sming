@@ -195,6 +195,11 @@ static ERRNO_T ATTR_GDBEXTERNFN writeMemoryBlock(uint32_t addr, const void* data
  */
 static void ATTR_GDBEXTERNFN sendReason()
 {
+	if(gdb_state.syscall == syscall_active) {
+		// GDB ignores this whilst processing a system call - we'll send when it's completed via 'F' response
+		return;
+	}
+
 	gdbFlushUserData();
 	GdbPacket packet;
 	packet.writeChar('T');
@@ -533,7 +538,9 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 	case 's':
 		singleStepPs = gdbstub_savedRegs.ps;
 		gdbstub_savedRegs.ps = (gdbstub_savedRegs.ps & ~0xf) | (XCHAL_DEBUGLEVEL - 1);
+		debug_i("!! 1 !!");
 		gdbstub_icount_ena_single_step();
+		debug_i("!! 2 !!");
 		return ST_CONT;
 
 	/*
@@ -546,14 +553,42 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 #if GDBSTUB_ENABLE_SYSCALL
 	/*
 	 * A file (or console) I/O request has finished.
+	 *
+	 * This can happen whilst the application is running, or when it has stopped due to
+	 * exception or debug break.
+	 *
+	 * Whilst an I/O request is in progress, GDB will ignore anything we send so if already
+	 * paused we need to call sendReason() again.
+	 *
+	 * If the user hit Ctrl+C then the syscall completes and returns true to tell us this.
+	 *
+	 * Note that GDB expects us to be paused during the entire 'F' request / reply operation,
+	 * but that makes console reading a lot less useful for us so don't actually pause until
+	 * the start of the response packet (indicated by DBGFLAG_PACKET_STARTED).
 	 */
 	case 'F':
+		//		if(gdb_syscall_complete(data)) {
+		//			// Ctrl+C was pressed
+		//			sendReason();
+		//			return ST_OK;
+		//		} else {
+		//			return ST_CONT;
+		//		}
+
+		//		if(gdb_state.syscall != syscall_active) {
+		//			break;
+		//		}
 		if(gdb_syscall_complete(data)) {
 			// Ctrl+C was pressed
 			sendReason();
 			return ST_OK;
-		} else {
+		} else if(bitRead(gdb_state.flags, DBGFLAG_PACKET_STARTED)) {
+			// Paused to deal with packet response, continue running normally
 			return ST_CONT;
+		} else {
+			// Paused for some other reason, keep debugging
+			sendReason();
+			return ST_OK;
 		}
 #endif
 
