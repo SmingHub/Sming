@@ -48,9 +48,7 @@ typedef Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsC
  */
 typedef Delegate<void(HardwareSerial& serial)> TransmitCompleteDelegate;
 
-#if ENABLE_CMD_EXECUTOR
 class CommandExecutor;
-#endif
 
 enum SerialConfig {
 	SERIAL_5N1 = UART_5N1,
@@ -438,9 +436,7 @@ private:
 	int uartNr = -1;
 	TransmitCompleteDelegate transmitComplete = nullptr; ///< Callback for transmit completion
 	StreamDataReceivedDelegate HWSDelegate = nullptr;	///< Callback for received data
-#if ENABLE_CMD_EXECUTOR
-	CommandExecutor* commandExecutor = nullptr; ///< Callback for command execution (received data)
-#endif
+	CommandExecutor* commandExecutor = nullptr;			 ///< Callback for command execution (received data)
 	uart_t* uart = nullptr;
 	uart_options_t options = _BV(UART_OPT_TXWAIT);
 	size_t txSize = DEFAULT_TX_BUFFER_SIZE;
