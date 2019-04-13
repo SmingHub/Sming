@@ -178,7 +178,7 @@
  * Set to 0 to wait indefinitely.
  */
 #ifndef GDBSTUB_UART_READ_TIMEOUT
-#define GDBSTUB_UART_READ_TIMEOUT 2000
+#define GDBSTUB_UART_READ_TIMEOUT 0
 #endif
 
 /*

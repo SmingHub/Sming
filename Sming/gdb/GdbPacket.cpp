@@ -15,6 +15,9 @@
 // Send the start of a packet; reset checksum calculation.
 void ATTR_GDBEXTERNFN GdbPacket::start()
 {
+#if GDBSTUB_ENABLE_DEBUG
+	m_puts(_F("> PKT "));
+#endif
 	gdbSendChar('$');
 }
 
@@ -22,7 +25,9 @@ void ATTR_GDBEXTERNFN GdbPacket::end()
 {
 	gdbSendChar('#');
 	writeHexByte(checksum);
-	debug_i("> PKT [%u]", packetLength);
+#if GDBSTUB_ENABLE_DEBUG
+	m_puts("\r\n");
+#endif
 }
 
 void ATTR_GDBEXTERNFN GdbPacket::writeChar(char c)

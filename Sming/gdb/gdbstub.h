@@ -13,9 +13,6 @@
 #ifndef _GDB_GDBSTUB_H_
 #define _GDB_GDBSTUB_H_
 
-// Always optimise GDB stub code for size, regardless of application settings
-#pragma GCC optimize("Os")
-
 #include "gdbstub-internal.h"
 #include <gdb_hooks.h>
 #include "BitManipulations.h"
@@ -66,5 +63,10 @@ extern const uint8_t gdb_exception_signals[];
 
 void gdbstub_init();
 void gdbstub_handle_exception();
+
+#if GDBSTUB_ENABLE_DEBUG == 0
+// Optimise GDB stub code for size, regardless of application settings
+#pragma GCC optimize("Os")
+#endif
 
 #endif /* _GDB_GDBSTUB_H_ */

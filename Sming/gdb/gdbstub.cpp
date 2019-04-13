@@ -300,12 +300,18 @@ static unsigned ATTR_GDBEXTERNFN readCommand()
 	while((c = gdbReceiveChar()) != '#') { // end of packet, checksum follows
 		if(c < 0) {
 			gdbSendChar('-');
+#if GDBSTUB_ENABLE_DEBUG
+			m_puts("\r\n");
 			debug_e("CMD TIMEOUT");
+#endif
 			return 0;
 		}
 		if(c == '$') {
 			// Wut, restart packet?
+#if GDBSTUB_ENABLE_DEBUG
+			m_puts("\r\n");
 			debug_e("Unexpected '$' received");
+#endif
 			checksum = 0;
 			cmdLen = 0;
 			continue;
@@ -318,21 +324,26 @@ static unsigned ATTR_GDBEXTERNFN readCommand()
 		}
 		if(cmdLen >= MAX_COMMAND_LENGTH) {
 			// Received more than the size of the command buffer
+#if GDBSTUB_ENABLE_DEBUG
+			m_puts("\r\n");
 			debug_e("Command '%c' buffer overflow", commandBuffer[0]);
+#endif
 			return 0;
 		}
 		commandBuffer[cmdLen++] = c;
 	}
 	commandBuffer[cmdLen] = '\0';
 
-#if GDBSTUB_ENABLE_DEBUG
-	debug_i("cmd '%c', len %u", commandBuffer[0], cmdLen);
-#endif
-
 	// Read checksum and verify
 	char checksumChars[] = {char(gdbReceiveChar()), char(gdbReceiveChar()), '\0'};
 	const char* ptr = checksumChars;
 	auto receivedChecksum = GdbPacket::readHexValue(ptr);
+
+#if GDBSTUB_ENABLE_DEBUG
+	m_puts("\r\n");
+	debug_i("cmd '%c', len %u", commandBuffer[0], cmdLen);
+#endif
+
 	if(receivedChecksum == checksum) {
 		// Acknowledge the command
 		gdbSendChar('+');
@@ -611,7 +622,7 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 					access = 2; // write
 				else if(idx == '3')
 					access = 1; // read
-				else if(idx == '4')
+				else			// can only be idx == '4' as we've checked above
 					access = 3; // access
 				if(len == 1)
 					mask = 0x3F;
@@ -694,6 +705,8 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 */
 void ATTR_GDBEXTERNFN commandLoop(bool waitForStart, bool allowDetach)
 {
+	debug_i(">> ENTER CMDLOOP");
+
 	bool initiallyAttached = gdb_state.attached;
 
 	while(true) {
@@ -720,6 +733,8 @@ void ATTR_GDBEXTERNFN commandLoop(bool waitForStart, bool allowDetach)
 	if(gdb_state.attached != initiallyAttached) {
 		System.queueCallback(TaskCallback(gdb_on_attach), gdb_state.attached);
 	}
+
+	debug_i("<< LEAVE CMDLOOP");
 }
 
 /*
@@ -793,6 +808,8 @@ static void pauseHardwareTimer(bool pause)
 // Main exception handler
 static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
 {
+	debug_i(">> DBG 0x%02x, PC = %p", gdb_state.flags, gdbstub_savedRegs.pc);
+
 	bool isEnabled = gdb_state.enabled;
 
 	if(isEnabled) {
