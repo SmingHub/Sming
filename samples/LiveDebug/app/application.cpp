@@ -264,7 +264,8 @@ void fileStat(const char* filename)
 	XX(ls, "Use `syscall_system` function to perform a directory listing on the host")                                 \
 	XX(time, "Use `syscall_gettimeofday` to get current time from host")                                               \
 	XX(log, "Show state of log file")                                                                                  \
-	XX(break, "Demonstrated `gdb_do_break()` function to pause this application and obtain a GDB command prompt")      \
+	XX(break, "Demonstrate `gdb_do_break()` function to pause this application and obtain a GDB command prompt")       \
+	XX(queueBreak, "Demonstrate `gdb_do_break()` function called via task queue")                                      \
 	XX(hang, "Enter infinite loop to force a watchdog timeout")                                                        \
 	XX(read0, "Read from invalid address")                                                                             \
 	XX(write0, "Write to invalid address")                                                                             \
@@ -336,6 +337,14 @@ COMMAND_HANDLER(break)
 {
 	Serial.println(_F("Calling gdb_do_break()"));
 	gdb_do_break();
+	return true;
+}
+
+COMMAND_HANDLER(queueBreak)
+{
+	Serial.println(_F("Queuing a call to gdb_do_break()\r\n"
+					  "This differs from `break` in that a console read will be in progress when the break is called"));
+	System.queueCallback(TaskCallback(handleCommand_break));
 	return true;
 }
 
