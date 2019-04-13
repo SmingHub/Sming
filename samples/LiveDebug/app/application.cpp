@@ -3,6 +3,8 @@
 #include "HardwareTimer.h"
 #include <gdb_syscall.h>
 #include <Data/Stream/GdbFileStream.h>
+#include <LineBuffer.h>
+#include <OsMessageInterceptor.h>
 
 #define LED_PIN 2 // Note: LED is attached to UART1 TX output
 
@@ -41,6 +43,7 @@ Timer procTimer;
 
 bool state = true;
 static GdbFileStream logFile;
+static OsMessageInterceptor osMessageInterceptor;
 
 /*
 * Notice:  Software breakpoints work only on code that is in RAM.
@@ -71,9 +74,7 @@ bool handleCommand(const String& cmd);
 
 void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 {
-	static unsigned commandLength;
-	const unsigned MAX_COMMAND_LENGTH = 16;
-	static char commandBuffer[MAX_COMMAND_LENGTH + 1];
+	static LineBuffer<MAX_COMMAND_LENGTH + 1> line;
 
 	// Error detection
 	unsigned status = Serial.getStatus();
@@ -93,37 +94,32 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 		}
 		// Discard what is likely to be garbage
 		Serial.clear(SERIAL_RX_ONLY);
-		commandLength = 0;
+		line.clear();
 		showPrompt();
 		return;
 	}
 
 	int c;
 	while((c = Serial.read()) >= 0) {
-		switch(c) {
-		case '\b': // delete (backspace)
-		case 0x7f: // xterm ctrl-?
-			if(commandLength > 0) {
-				--commandLength;
+		if(c == '\b' || c == 0x7f) { // delete (backspace) or xterm ctrl-?
+			if(line.backspace()) {
 				Serial.print(_F("\b \b"));
 			}
-			break;
-		case '\r':
-		case '\n':
-			if(commandLength > 0) {
+			continue;
+		}
+
+		c = line.addChar(c);
+		if(c == '\n') {
+			if(line.getLength() != 0) {
 				Serial.println();
-				String cmd(commandBuffer, commandLength);
-				commandLength = 0;
+				String cmd(line.getBuffer(), line.getLength());
+				line.clear();
 				Serial.clear(SERIAL_RX_ONLY);
 				handleCommand(cmd);
 			}
 			showPrompt();
-			break;
-		default:
-			if(c >= 0x20 && c <= 0x7f && commandLength < MAX_COMMAND_LENGTH) {
-				commandBuffer[commandLength++] = c;
-				Serial.print(char(c));
-			}
+		} else if(c != '\0') {
+			Serial.print(char(c));
 		}
 	}
 }
@@ -272,6 +268,8 @@ void fileStat(const char* filename)
 	XX(hang, "Enter infinite loop to force a watchdog timeout")                                                        \
 	XX(read0, "Read from invalid address")                                                                             \
 	XX(write0, "Write to invalid address")                                                                             \
+	XX(malloc0, "Call malloc(0)")                                                                                      \
+	XX(freetwice, "Free allocated memory twice")                                                                       \
 	XX(restart, "Restart the system")                                                                                  \
 	XX(exit, "Detach from GDB and resume normal application execution")                                                \
 	XX(help, "Display this command summary")
@@ -369,6 +367,65 @@ COMMAND_HANDLER(write0)
 	Serial.flush();
 	*(uint8_t*)0 = 0;
 	Serial.println("...still running!");
+	return true;
+}
+
+/**
+ * @brief See if the OS debug message is something we're interested in.
+ * @param msg
+ * @retval bool true if we want to report this
+ */
+static bool __attribute__((noinline)) parseOsMessage(OsMessage& msg)
+{
+	m_printf(_F("[OS] %s\r\n"), msg.getBuffer());
+	if(msg.startsWith(_F("E:M "))) {
+		Serial.println(_F("** OS Memory Error **"));
+		return true;
+	} else if(msg.contains(_F(" assert "))) {
+		Serial.println(_F("** OS Assert **"));
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * @brief Called when the OS outputs a debug message using os_printf, etc.
+ * @param msg The message
+ */
+static void onOsMessage(OsMessage& msg)
+{
+	// Note: We do the check in a separate function to avoid messing up the stack pointer
+	if(parseOsMessage(msg)) {
+		if(gdb_present() == eGDB_Attached) {
+			gdb_do_break();
+		} else {
+			register uint32_t sp asm("a1");
+			debug_print_stack(sp + 0x10, 0x3fffffb0);
+		}
+	}
+}
+
+COMMAND_HANDLER(malloc0)
+{
+	Serial.println(
+		_F("Attempting to allocate a zero-length array results in an OS debug message.\r\n"
+		   "The message starts with 'E:M ...' and can often indicate a more serious memory allocation issue."));
+
+	os_malloc(0);
+
+	return true;
+}
+
+COMMAND_HANDLER(freetwice)
+{
+	Serial.println(_F("Attempting to free the same memory twice is a common bug.\r\n"
+					  "On the test system we see an assertion failure message from the OS."));
+
+	auto mem = static_cast<char*>(os_malloc(123));
+	os_free(mem);
+	os_free(mem);
+
 	return true;
 }
 
@@ -522,6 +579,9 @@ void GDB_IRAM_ATTR init()
 
 	Serial.println(_F("LiveDebug sample\r\n"
 					  "Explore some capabilities of the GDB debugger.\r\n"));
+
+	// Install a debug output hook to monitor OS debug messages
+	osMessageInterceptor.begin(onOsMessage);
 
 	if(gdb_present() != eGDB_Attached) {
 		System.onReady(showPrompt);
