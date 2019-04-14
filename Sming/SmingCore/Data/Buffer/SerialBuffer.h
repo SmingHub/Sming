@@ -10,8 +10,8 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_SERIAL_BUFFER_H_
-#define _SYSTEM_INCLUDE_SERIAL_BUFFER_H_
+#ifndef _SMING_CORE_DATA_BUFFER_SERIAL_BUFFER_H_
+#define _SMING_CORE_DATA_BUFFER_SERIAL_BUFFER_H_
 
 #include <user_config.h>
 
@@ -166,4 +166,4 @@ private:
 	char* buffer = nullptr;
 };
 
-#endif //  _SYSTEM_INCLUDE_SERIAL_BUFFER_H_
+#endif //  _SMING_CORE_DATA_BUFFER_SERIAL_BUFFER_H_

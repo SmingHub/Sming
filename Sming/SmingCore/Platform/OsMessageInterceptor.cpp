@@ -10,7 +10,7 @@
  *
  ****/
 
-#include <OsMessageInterceptor.h>
+#include "OsMessageInterceptor.h"
 
 extern void uart_debug_putc(char);
 
