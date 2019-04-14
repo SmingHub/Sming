@@ -17,5 +17,6 @@ var classIRMideaAC =
     [ "setSleep", "classIRMideaAC.html#aaaca304da261fd2300351983c7619107", null ],
     [ "setTemp", "classIRMideaAC.html#a42f79e73f418d5267eed7ba5b0e266f5", null ],
     [ "stateReset", "classIRMideaAC.html#a05df6f154a4ab44e2eec4f2217080dd4", null ],
-    [ "toString", "classIRMideaAC.html#a93f6c5b8768228e13e1187830a9fb57d", null ]
+    [ "toString", "classIRMideaAC.html#a93f6c5b8768228e13e1187830a9fb57d", null ],
+    [ "validChecksum", "classIRMideaAC.html#ab6decc0fa038b3126abaaf968974aa00", null ]
 ];

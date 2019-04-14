@@ -2,7 +2,7 @@ var classFILO =
 [
     [ "FILO", "classFILO.html#a833cfde71de4389d239792dcc03765d4", null ],
     [ "at", "classFILO.html#a34441ee721d3accbb7169dc04aadaa5f", null ],
-    [ "count", "classFILO.html#a58be74f24845f0594e82f269964735ab", null ],
+    [ "count", "classFILO.html#a001f00670f1b790fb210dd47d2941dec", null ],
     [ "flush", "classFILO.html#a3e7160472456d1019e3c902cbfe95547", null ],
     [ "operator[]", "classFILO.html#a86379f5661b5ad88f68c22010c3e6c69", null ],
     [ "operator[]", "classFILO.html#a9d81652b06fe7bfd6a29e8bde8088d7f", null ],

@@ -3,7 +3,7 @@ var group__wifi__ap =
     [ "config", "group__wifi__ap.html#gad3f270bb0f97acc545893ddd1251ab51", null ],
     [ "enable", "group__wifi__ap.html#ga8cc3d2af5cd03b9aabb6589652493af6", null ],
     [ "getIP", "group__wifi__ap.html#ga86061e944d41587d5b5355c45cc3b95f", null ],
-    [ "getMAC", "group__wifi__ap.html#ga9a6e9d50aa7c0b2349acf7bf986d237e", null ],
+    [ "getMAC", "group__wifi__ap.html#ga2c9cc724abc82d5d5669cc02e7b56c0a", null ],
     [ "getNetworkBroadcast", "group__wifi__ap.html#ga8400233be6a2fd87f4a5313f3e0e7e9c", null ],
     [ "getNetworkGateway", "group__wifi__ap.html#gab6eef5b9e780667087a0a2f513d06d97", null ],
     [ "getNetworkMask", "group__wifi__ap.html#ga1e8d720bad2fa4fb09ecdd2ff48409b1", null ],

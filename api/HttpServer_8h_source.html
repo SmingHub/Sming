@@ -107,80 +107,99 @@ $(document).ready(function(){initNavTree('HttpServer_8h_source.html','');});
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * HttpServer</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * HttpServer.h</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * Modified: 2017 - Slavey Karadzhov &lt;slav@attachix.com&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> ****/</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_HTTPSERVER_H_</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_HTTPSERVER_H_</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_NETWORK_HTTP_SERVER_H_</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_NETWORK_HTTP_SERVER_H_</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;TcpServer.h&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;../Wiring/WString.h&quot;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;../Wiring/WHashMap.h&quot;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;../Delegate.h&quot;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;Http/HttpResponse.h&quot;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;Http/HttpRequest.h&quot;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;Http/HttpResource.h&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;Http/HttpServerConnection.h&quot;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;Http/HttpBodyParser.h&quot;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="structHttpServerSettings.html">   32</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">int</span> maxActiveConnections = 10;  <span class="comment">// &lt;&lt; the maximum number of concurrent requests..</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">int</span> keepAliveSeconds = 0;       <span class="comment">// &lt;&lt; the default seconds to keep the connection alive before closing it</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">int</span> minHeapSize = -1;           <span class="comment">// &lt;&lt; defines the min heap size that is required to accept connection.</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                                    <span class="comment">//  -1 - means use server default</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">bool</span> useDefaultBodyParsers = 1; <span class="comment">// &lt;&lt; if the default body parsers,  as form-url-encoded, should be used</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor"></span>    <span class="keywordtype">int</span> sslSessionCacheSize =</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        10; <span class="comment">// &lt;&lt; number of SSL session ids to cache. Setting this to 0 will disable SSL session resumption.</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor"></span>} <a class="code" href="structHttpServerSettings.html">HttpServerSettings</a>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">class </span>HttpServer : <span class="keyword">public</span> <a class="code" href="classTcpServer.html">TcpServer</a></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;{</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    HttpServer();</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    HttpServer(<span class="keyword">const</span> <a class="code" href="structHttpServerSettings.html">HttpServerSettings</a>&amp; settings);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">virtual</span> ~HttpServer();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">void</span> configure(<span class="keyword">const</span> <a class="code" href="structHttpServerSettings.html">HttpServerSettings</a>&amp; settings);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordtype">void</span> setBodyParser(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; contentType, <a class="code" href="classDelegate.html">HttpBodyParserDelegate</a> parser);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">void</span> addPath(<a class="code" href="classString.html">String</a> path, <span class="keyword">const</span> <a class="code" href="classDelegate.html">HttpPathDelegate</a>&amp; callback);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">void</span> addPath(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; path, <span class="keyword">const</span> <a class="code" href="classDelegate.html">HttpResourceDelegate</a>&amp; onRequestComplete);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordtype">void</span> addPath(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; path, <a class="code" href="classHttpResource.html">HttpResource</a>* resource);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">void</span> setDefaultHandler(<span class="keyword">const</span> <a class="code" href="classDelegate.html">HttpPathDelegate</a>&amp; callback);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">void</span> setDefaultResource(<a class="code" href="classHttpResource.html">HttpResource</a>* resource);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classTcpConnection.html">TcpConnection</a>* createClient(tcp_pcb* clientTcp);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor"></span>    <span class="keywordtype">int</span> minHeapSize = 16384;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <a class="code" href="structHttpServerSettings.html">HttpServerSettings</a> settings;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <a class="code" href="classHashMap.html">ResourceTree</a> resourceTree;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <a class="code" href="classHashMap.html">BodyParsers</a> bodyParsers;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;};</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HTTPSERVER_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;WString.h&quot;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;Delegate.h&quot;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;Http/HttpResourceTree.h&quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;Http/HttpServerConnection.h&quot;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;Http/HttpBodyParser.h&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="structHttpServerSettings.html">   29</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="group__httpserver.html#gad57b5304b1397cbb8a4a8dda7d14d134">   30</a></span>&#160;    <span class="keywordtype">int</span> maxActiveConnections = 10; </div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="group__httpserver.html#gae607dafa7f9a100f3fc464e3a50e923f">   31</a></span>&#160;    <span class="keywordtype">int</span> keepAliveSeconds = 0;     </div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="group__httpserver.html#ga4f49fc5447a3b07eae5235986a97ef4c">   32</a></span>&#160;    <span class="keywordtype">int</span> minHeapSize = -1;          </div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="group__httpserver.html#ga60aba5551f210bfed8faf98cd9a7928c">   33</a></span>&#160;    <span class="keywordtype">bool</span> useDefaultBodyParsers = 1; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="group__httpserver.html#ga2bb3d1f8dbb4033eddb907167da39267">   35</a></span>&#160;<span class="preprocessor"></span>    <span class="keywordtype">int</span> sslSessionCacheSize =</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        10; </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor"></span>} <a class="code" href="structHttpServerSettings.html">HttpServerSettings</a>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">class </span>HttpServer : <span class="keyword">public</span> <a class="code" href="classTcpServer.html">TcpServer</a></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;{</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    HttpServer()</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        settings.keepAliveSeconds = 2;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        configure(settings);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    HttpServer(<span class="keyword">const</span> <a class="code" href="structHttpServerSettings.html">HttpServerSettings</a>&amp; settings)</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        configure(settings);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">void</span> configure(<span class="keyword">const</span> <a class="code" href="structHttpServerSettings.html">HttpServerSettings</a>&amp; settings);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordtype">void</span> setBodyParser(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; contentType, <a class="code" href="classDelegate.html">HttpBodyParserDelegate</a> parser)</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    {</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        bodyParsers[contentType] = parser;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    }</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">void</span> addPath(<a class="code" href="classString.html">String</a> path, <span class="keyword">const</span> <a class="code" href="classDelegate.html">HttpPathDelegate</a>&amp; callback) SMING_DEPRECATED</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        paths.set(path, callback);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    }</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordtype">void</span> addPath(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; path, <span class="keyword">const</span> <a class="code" href="classDelegate.html">HttpResourceDelegate</a>&amp; onRequestComplete) SMING_DEPRECATED</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        paths.set(path, onRequestComplete);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    }</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">void</span> addPath(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; path, <a class="code" href="classHttpResource.html">HttpResource</a>* resource) SMING_DEPRECATED</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        paths.set(path, resource);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    }</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordtype">void</span> setDefaultHandler(<span class="keyword">const</span> <a class="code" href="classDelegate.html">HttpPathDelegate</a>&amp; callback) SMING_DEPRECATED</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    {</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        paths.setDefault(callback);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    }</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">void</span> setDefaultResource(<a class="code" href="classHttpResource.html">HttpResource</a>* resource) SMING_DEPRECATED</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    {</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        paths.setDefault(resource);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    }</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <a class="code" href="classHttpResourceTree.html">HttpResourceTree</a> paths;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <a class="code" href="classTcpConnection.html">TcpConnection</a>* createClient(tcp_pcb* clientTcp) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <a class="code" href="structHttpServerSettings.html">HttpServerSettings</a> settings;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <a class="code" href="classHashMap.html">BodyParsers</a> bodyParsers;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;};</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_NETWORK_HTTP_SERVER_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="classHashMap_html"><div class="ttname"><a href="classHashMap.html">HashMap</a></div><div class="ttdef"><b>Definition:</b> WHashMap.h:35</div></div>
-<div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:42</div></div>
-<div class="ttc" id="classTcpConnection_html"><div class="ttname"><a href="classTcpConnection.html">TcpConnection</a></div><div class="ttdef"><b>Definition:</b> TcpConnection.h:77</div></div>
+<div class="ttc" id="classTcpConnection_html"><div class="ttname"><a href="classTcpConnection.html">TcpConnection</a></div><div class="ttdef"><b>Definition:</b> TcpConnection.h:52</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
-<div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(HttpRequest &amp;, const char *at, int length)&gt;</a></div></div>
+<div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(HttpRequest &amp;request, const char *at, int length)&gt;</a></div></div>
 <div class="ttc" id="classHttpResource_html"><div class="ttname"><a href="classHttpResource.html">HttpResource</a></div><div class="ttdef"><b>Definition:</b> HttpResource.h:32</div></div>
-<div class="ttc" id="structHttpServerSettings_html"><div class="ttname"><a href="structHttpServerSettings.html">HttpServerSettings</a></div><div class="ttdef"><b>Definition:</b> HttpServer.h:32</div></div>
-<div class="ttc" id="classTcpServer_html"><div class="ttname"><a href="classTcpServer.html">TcpServer</a></div><div class="ttdef"><b>Definition:</b> TcpServer.h:26</div></div>
+<div class="ttc" id="structHttpServerSettings_html"><div class="ttname"><a href="structHttpServerSettings.html">HttpServerSettings</a></div><div class="ttdef"><b>Definition:</b> HttpServer.h:29</div></div>
+<div class="ttc" id="classTcpServer_html"><div class="ttname"><a href="classTcpServer.html">TcpServer</a></div><div class="ttdef"><b>Definition:</b> TcpServer.h:29</div></div>
+<div class="ttc" id="classHttpResourceTree_html"><div class="ttname"><a href="classHttpResourceTree.html">HttpResourceTree</a></div><div class="ttdoc">Class to map URL paths to classes which handle them. </div><div class="ttdef"><b>Definition:</b> HttpResourceTree.h:25</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

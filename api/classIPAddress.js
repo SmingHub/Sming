@@ -5,7 +5,7 @@ var classIPAddress =
     [ "IPAddress", "classIPAddress.html#a9acd9971a8fc47fa51681e9b9a95b511", null ],
     [ "IPAddress", "classIPAddress.html#a41fef26d1776762bb1e25cd23278ada8", null ],
     [ "IPAddress", "classIPAddress.html#ab747742c0a428a369f6ab73b7d28c306", null ],
-    [ "IPAddress", "classIPAddress.html#afb9b73e257da0169b7ffcb5d8122a9f7", null ],
+    [ "IPAddress", "classIPAddress.html#aa9e8ce01e8530d0f5fb53b6b8a433925", null ],
     [ "compare", "classIPAddress.html#ae788096dbbee93afddcde6d73e966195", null ],
     [ "isNull", "classIPAddress.html#ab4d00ff334ae6242c932125a1db1c98c", null ],
     [ "operator char *", "classIPAddress.html#a0add7d5bc230fb4178c26612b90f05ff", null ],
@@ -19,6 +19,6 @@ var classIPAddress =
     [ "operator==", "classIPAddress.html#af685847e3b72825b9c9f0ed5b828683f", null ],
     [ "operator[]", "classIPAddress.html#ac1e9d3628dc5bc5151324c80a69ad159", null ],
     [ "operator[]", "classIPAddress.html#ab7c569a71648e9235ebb63d7a6d58143", null ],
-    [ "printTo", "classIPAddress.html#aef9f96aef4f248973a232824743f1024", null ],
+    [ "printTo", "classIPAddress.html#ae165c8798c37f382b70fe0281dd1e062", null ],
     [ "toString", "classIPAddress.html#aa3287fa0e563f2a8ee199e11913bc008", null ]
 ];

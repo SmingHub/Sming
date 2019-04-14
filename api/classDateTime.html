@@ -134,15 +134,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a76cec1408d44dba7b3b9b350e7e93af4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a76cec1408d44dba7b3b9b350e7e93af4">setTime</a> (time_t time)</td></tr>
 <tr class="memdesc:a76cec1408d44dba7b3b9b350e7e93af4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set time using Unix timestamp.  <a href="#a76cec1408d44dba7b3b9b350e7e93af4">More...</a><br/></td></tr>
 <tr class="separator:a76cec1408d44dba7b3b9b350e7e93af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d7e7be864d50b4049a14956706af5af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a9d7e7be864d50b4049a14956706af5af">setTime</a> (int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year)</td></tr>
-<tr class="memdesc:a9d7e7be864d50b4049a14956706af5af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set time using time and date component values.  <a href="#a9d7e7be864d50b4049a14956706af5af">More...</a><br/></td></tr>
-<tr class="separator:a9d7e7be864d50b4049a14956706af5af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad100c5453e910eda477698c676f4051c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ad100c5453e910eda477698c676f4051c">setTime</a> (uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)</td></tr>
+<tr class="memdesc:ad100c5453e910eda477698c676f4051c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set time using time and date component values.  <a href="#ad100c5453e910eda477698c676f4051c">More...</a><br/></td></tr>
+<tr class="separator:ad100c5453e910eda477698c676f4051c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1efe126d4de99fdb6a2dee23dc5d7bf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ab1efe126d4de99fdb6a2dee23dc5d7bf">fromHttpDate</a> (const <a class="el" href="classString.html">String</a> &amp;httpDate)</td></tr>
 <tr class="memdesc:ab1efe126d4de99fdb6a2dee23dc5d7bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a HTTP full date and set time and date.  <a href="#ab1efe126d4de99fdb6a2dee23dc5d7bf">More...</a><br/></td></tr>
 <tr class="separator:ab1efe126d4de99fdb6a2dee23dc5d7bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25cfa69bbe2b6a809b0ef01d9172f7c1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a25cfa69bbe2b6a809b0ef01d9172f7c1">parseHttpDate</a> (const <a class="el" href="classString.html">String</a> &amp;httpDate) __attribute__((deprecated))</td></tr>
-<tr class="memdesc:a25cfa69bbe2b6a809b0ef01d9172f7c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a HTTP full date and set time and date.  <a href="#a25cfa69bbe2b6a809b0ef01d9172f7c1">More...</a><br/></td></tr>
-<tr class="separator:a25cfa69bbe2b6a809b0ef01d9172f7c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af181ab8c37399c53ebe54262b40e08bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#af181ab8c37399c53ebe54262b40e08bd">parseHttpDate</a> (const <a class="el" href="classString.html">String</a> &amp;httpDate) <a class="el" href="group__url.html#ga7589191fa2da5424fc954be1fee1fed8">SMING_DEPRECATED</a></td></tr>
+<tr class="memdesc:af181ab8c37399c53ebe54262b40e08bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a HTTP full date and set time and date.  <a href="#af181ab8c37399c53ebe54262b40e08bd">More...</a><br/></td></tr>
+<tr class="separator:af181ab8c37399c53ebe54262b40e08bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a942983c6d456157328d2efa10e06b9fb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a942983c6d456157328d2efa10e06b9fb">isNull</a> ()</td></tr>
 <tr class="memdesc:a942983c6d456157328d2efa10e06b9fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if time date object is initialised.  <a href="#a942983c6d456157328d2efa10e06b9fb">More...</a><br/></td></tr>
 <tr class="separator:a942983c6d456157328d2efa10e06b9fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,54 +167,59 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a60d049362b1d16cbe9ceae334ecd56d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a60d049362b1d16cbe9ceae334ecd56d5">addMilliseconds</a> (long add)</td></tr>
 <tr class="memdesc:a60d049362b1d16cbe9ceae334ecd56d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add time to date time object.  <a href="#a60d049362b1d16cbe9ceae334ecd56d5">More...</a><br/></td></tr>
 <tr class="separator:a60d049362b1d16cbe9ceae334ecd56d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0f4700ab8dfaf8462ac7f84a122be04"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#aa0f4700ab8dfaf8462ac7f84a122be04">format</a> (<a class="el" href="classString.html">String</a> format)</td></tr>
-<tr class="memdesc:aa0f4700ab8dfaf8462ac7f84a122be04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create string formatted with time and date placeholders.  <a href="#aa0f4700ab8dfaf8462ac7f84a122be04">More...</a><br/></td></tr>
-<tr class="separator:aa0f4700ab8dfaf8462ac7f84a122be04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae90d6218839094ebeac80fc89b4c599c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ae90d6218839094ebeac80fc89b4c599c">format</a> (const char *formatString)</td></tr>
+<tr class="memdesc:ae90d6218839094ebeac80fc89b4c599c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create string formatted with time and date placeholders.  <a href="#ae90d6218839094ebeac80fc89b4c599c">More...</a><br/></td></tr>
+<tr class="separator:ae90d6218839094ebeac80fc89b4c599c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e109e73d8a4d87c0b8020f1b3edfddd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a6e109e73d8a4d87c0b8020f1b3edfddd">format</a> (const <a class="el" href="classString.html">String</a> &amp;formatString)</td></tr>
+<tr class="memdesc:a6e109e73d8a4d87c0b8020f1b3edfddd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create string formatted with time and date placeholders.  <a href="#a6e109e73d8a4d87c0b8020f1b3edfddd">More...</a><br/></td></tr>
+<tr class="separator:a6e109e73d8a4d87c0b8020f1b3edfddd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a2f363795a6cb04d6f0639f5485606223"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a2f363795a6cb04d6f0639f5485606223">fromUnixTime</a> (time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear)</td></tr>
-<tr class="memdesc:a2f363795a6cb04d6f0639f5485606223"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from Unix time to individual time components.  <a href="#a2f363795a6cb04d6f0639f5485606223">More...</a><br/></td></tr>
-<tr class="separator:a2f363795a6cb04d6f0639f5485606223"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1748e17f80d1c178a2c492b2903f6462"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a1748e17f80d1c178a2c492b2903f6462">convertFromUnixTime</a> (time_t tImep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear) __attribute__((deprecated))</td></tr>
-<tr class="memdesc:a1748e17f80d1c178a2c492b2903f6462"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from Unix time to individual time components.  <a href="#a1748e17f80d1c178a2c492b2903f6462">More...</a><br/></td></tr>
-<tr class="separator:a1748e17f80d1c178a2c492b2903f6462"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43d743d1251ea018eab49ba48ad9e077"><td class="memItemLeft" align="right" valign="top">static time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a43d743d1251ea018eab49ba48ad9e077">toUnixTime</a> (int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year)</td></tr>
-<tr class="memdesc:a43d743d1251ea018eab49ba48ad9e077"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from individual time components to Unix time.  <a href="#a43d743d1251ea018eab49ba48ad9e077">More...</a><br/></td></tr>
-<tr class="separator:a43d743d1251ea018eab49ba48ad9e077"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab89a5805ede081bd5850e834a85b471b"><td class="memItemLeft" align="right" valign="top">static time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ab89a5805ede081bd5850e834a85b471b">convertToUnixTime</a> (int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year) __attribute__((deprecated))</td></tr>
-<tr class="memdesc:ab89a5805ede081bd5850e834a85b471b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from individual time components to Unix time.  <a href="#ab89a5805ede081bd5850e834a85b471b">More...</a><br/></td></tr>
-<tr class="separator:ab89a5805ede081bd5850e834a85b471b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4c355a82dc815feede9bb1b4ca21d7b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ad4c355a82dc815feede9bb1b4ca21d7b">fromUnixTime</a> (time_t timep, uint8_t *psec, uint8_t *pmin, uint8_t *phour, uint8_t *pday, uint8_t *pwday, uint8_t *pmonth, uint16_t *pyear)</td></tr>
+<tr class="memdesc:ad4c355a82dc815feede9bb1b4ca21d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from Unix time to individual time components.  <a href="#ad4c355a82dc815feede9bb1b4ca21d7b">More...</a><br/></td></tr>
+<tr class="separator:ad4c355a82dc815feede9bb1b4ca21d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa27a100a14ef2b7208438c5d05de6167"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#aa27a100a14ef2b7208438c5d05de6167">fromUnixTime</a> (time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear) <a class="el" href="group__url.html#ga7589191fa2da5424fc954be1fee1fed8">SMING_DEPRECATED</a></td></tr>
+<tr class="separator:aa27a100a14ef2b7208438c5d05de6167"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4940030ac60a94a78437a0040a2354cc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a4940030ac60a94a78437a0040a2354cc">convertFromUnixTime</a> (time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear) <a class="el" href="group__url.html#ga7589191fa2da5424fc954be1fee1fed8">SMING_DEPRECATED</a></td></tr>
+<tr class="memdesc:a4940030ac60a94a78437a0040a2354cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from Unix time to individual time components.  <a href="#a4940030ac60a94a78437a0040a2354cc">More...</a><br/></td></tr>
+<tr class="separator:a4940030ac60a94a78437a0040a2354cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e24bfd101390c3f29edc0f007b46a2"><td class="memItemLeft" align="right" valign="top">static time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a80e24bfd101390c3f29edc0f007b46a2">toUnixTime</a> (uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)</td></tr>
+<tr class="memdesc:a80e24bfd101390c3f29edc0f007b46a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from individual time components to Unix time.  <a href="#a80e24bfd101390c3f29edc0f007b46a2">More...</a><br/></td></tr>
+<tr class="separator:a80e24bfd101390c3f29edc0f007b46a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c5d17e687375d0ad78382283999d808"><td class="memItemLeft" align="right" valign="top">static time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a5c5d17e687375d0ad78382283999d808">convertToUnixTime</a> (uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year) <a class="el" href="group__url.html#ga7589191fa2da5424fc954be1fee1fed8">SMING_DEPRECATED</a></td></tr>
+<tr class="memdesc:a5c5d17e687375d0ad78382283999d808"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from individual time components to Unix time.  <a href="#a5c5d17e687375d0ad78382283999d808">More...</a><br/></td></tr>
+<tr class="separator:a5c5d17e687375d0ad78382283999d808"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ab306c0dd7931822b39ae58be72cebae0"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ab306c0dd7931822b39ae58be72cebae0">Hour</a> = 0</td></tr>
-<tr class="memdesc:ab306c0dd7931822b39ae58be72cebae0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hour (0-23)  <a href="#ab306c0dd7931822b39ae58be72cebae0">More...</a><br/></td></tr>
-<tr class="separator:ab306c0dd7931822b39ae58be72cebae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2281ee834b6d9be9fa4c7bc4046394c3"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a2281ee834b6d9be9fa4c7bc4046394c3">Minute</a> = 0</td></tr>
-<tr class="memdesc:a2281ee834b6d9be9fa4c7bc4046394c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minute (0-59)  <a href="#a2281ee834b6d9be9fa4c7bc4046394c3">More...</a><br/></td></tr>
-<tr class="separator:a2281ee834b6d9be9fa4c7bc4046394c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05d8e4467eb9841035b31237f3d76a58"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a05d8e4467eb9841035b31237f3d76a58">Second</a> = 0</td></tr>
-<tr class="memdesc:a05d8e4467eb9841035b31237f3d76a58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Second (0-59)  <a href="#a05d8e4467eb9841035b31237f3d76a58">More...</a><br/></td></tr>
-<tr class="separator:a05d8e4467eb9841035b31237f3d76a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52885b8a894ba0dddabc80bddad467fd"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a52885b8a894ba0dddabc80bddad467fd">Milliseconds</a> = 0</td></tr>
-<tr class="memdesc:a52885b8a894ba0dddabc80bddad467fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Milliseconds (0-999)  <a href="#a52885b8a894ba0dddabc80bddad467fd">More...</a><br/></td></tr>
-<tr class="separator:a52885b8a894ba0dddabc80bddad467fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f3d535c712aaa1d8b5cc088ea3c10ff"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a8f3d535c712aaa1d8b5cc088ea3c10ff">Day</a> = 0</td></tr>
-<tr class="memdesc:a8f3d535c712aaa1d8b5cc088ea3c10ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Day of month (1-31)  <a href="#a8f3d535c712aaa1d8b5cc088ea3c10ff">More...</a><br/></td></tr>
-<tr class="separator:a8f3d535c712aaa1d8b5cc088ea3c10ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a3d78a0f8a1cdbf7df9a026ddea4ee4"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a9a3d78a0f8a1cdbf7df9a026ddea4ee4">DayofWeek</a> = 0</td></tr>
-<tr class="memdesc:a9a3d78a0f8a1cdbf7df9a026ddea4ee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Day of week (0-6 Sunday is day 0)  <a href="#a9a3d78a0f8a1cdbf7df9a026ddea4ee4">More...</a><br/></td></tr>
-<tr class="separator:a9a3d78a0f8a1cdbf7df9a026ddea4ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5835e0ef7f523940655b48233d31bb17"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a5835e0ef7f523940655b48233d31bb17">DayofYear</a> = 0</td></tr>
-<tr class="memdesc:a5835e0ef7f523940655b48233d31bb17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Day of year (0-365)  <a href="#a5835e0ef7f523940655b48233d31bb17">More...</a><br/></td></tr>
-<tr class="separator:a5835e0ef7f523940655b48233d31bb17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2948899151acbee8819a19ad35fd511"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#ac2948899151acbee8819a19ad35fd511">Month</a> = 0</td></tr>
-<tr class="memdesc:ac2948899151acbee8819a19ad35fd511"><td class="mdescLeft">&#160;</td><td class="mdescRight">Month (0-11 Jan is month 0)  <a href="#ac2948899151acbee8819a19ad35fd511">More...</a><br/></td></tr>
-<tr class="separator:ac2948899151acbee8819a19ad35fd511"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d2fdc35a2cc020b1b24ff87d5bf2aeb"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a4d2fdc35a2cc020b1b24ff87d5bf2aeb">Year</a> = 0</td></tr>
-<tr class="memdesc:a4d2fdc35a2cc020b1b24ff87d5bf2aeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full Year number.  <a href="#a4d2fdc35a2cc020b1b24ff87d5bf2aeb">More...</a><br/></td></tr>
-<tr class="separator:a4d2fdc35a2cc020b1b24ff87d5bf2aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a358a3d920ef4af0cbceda37d46911c74"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a358a3d920ef4af0cbceda37d46911c74">Hour</a> = 0</td></tr>
+<tr class="memdesc:a358a3d920ef4af0cbceda37d46911c74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hour (0-23)  <a href="#a358a3d920ef4af0cbceda37d46911c74">More...</a><br/></td></tr>
+<tr class="separator:a358a3d920ef4af0cbceda37d46911c74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10ce50dc6e195b84e99339263f0ec775"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a10ce50dc6e195b84e99339263f0ec775">Minute</a> = 0</td></tr>
+<tr class="memdesc:a10ce50dc6e195b84e99339263f0ec775"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minute (0-59)  <a href="#a10ce50dc6e195b84e99339263f0ec775">More...</a><br/></td></tr>
+<tr class="separator:a10ce50dc6e195b84e99339263f0ec775"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ea3b0141e22e8479c979762adb85923"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a3ea3b0141e22e8479c979762adb85923">Second</a> = 0</td></tr>
+<tr class="memdesc:a3ea3b0141e22e8479c979762adb85923"><td class="mdescLeft">&#160;</td><td class="mdescRight">Second (0-59)  <a href="#a3ea3b0141e22e8479c979762adb85923">More...</a><br/></td></tr>
+<tr class="separator:a3ea3b0141e22e8479c979762adb85923"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6035b13a788489f2eaa6f5f5c77b96cb"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a6035b13a788489f2eaa6f5f5c77b96cb">Milliseconds</a> = 0</td></tr>
+<tr class="memdesc:a6035b13a788489f2eaa6f5f5c77b96cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Milliseconds (0-999)  <a href="#a6035b13a788489f2eaa6f5f5c77b96cb">More...</a><br/></td></tr>
+<tr class="separator:a6035b13a788489f2eaa6f5f5c77b96cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc1a4fb7e060c4e20001a41c29f9b045"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#afc1a4fb7e060c4e20001a41c29f9b045">Day</a> = 0</td></tr>
+<tr class="memdesc:afc1a4fb7e060c4e20001a41c29f9b045"><td class="mdescLeft">&#160;</td><td class="mdescRight">Day of month (1-31)  <a href="#afc1a4fb7e060c4e20001a41c29f9b045">More...</a><br/></td></tr>
+<tr class="separator:afc1a4fb7e060c4e20001a41c29f9b045"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f92ad1f2f46de5ad9afaa51d11abfab"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a8f92ad1f2f46de5ad9afaa51d11abfab">DayofWeek</a> = 0</td></tr>
+<tr class="memdesc:a8f92ad1f2f46de5ad9afaa51d11abfab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Day of week (0-6 Sunday is day 0)  <a href="#a8f92ad1f2f46de5ad9afaa51d11abfab">More...</a><br/></td></tr>
+<tr class="separator:a8f92ad1f2f46de5ad9afaa51d11abfab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a40f76292545f4deac05b87cc5fcb17"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#a4a40f76292545f4deac05b87cc5fcb17">DayofYear</a> = 0</td></tr>
+<tr class="memdesc:a4a40f76292545f4deac05b87cc5fcb17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Day of year (0-365)  <a href="#a4a40f76292545f4deac05b87cc5fcb17">More...</a><br/></td></tr>
+<tr class="separator:a4a40f76292545f4deac05b87cc5fcb17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe9cd9a9e199facddb9dcd8ea8a4fba0"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#afe9cd9a9e199facddb9dcd8ea8a4fba0">Month</a> = 0</td></tr>
+<tr class="memdesc:afe9cd9a9e199facddb9dcd8ea8a4fba0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Month (0-11 Jan is month 0)  <a href="#afe9cd9a9e199facddb9dcd8ea8a4fba0">More...</a><br/></td></tr>
+<tr class="separator:afe9cd9a9e199facddb9dcd8ea8a4fba0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbed12413e18157f6a2a3e5cce7be138"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDateTime.html#adbed12413e18157f6a2a3e5cce7be138">Year</a> = 0</td></tr>
+<tr class="memdesc:adbed12413e18157f6a2a3e5cce7be138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full Year number.  <a href="#adbed12413e18157f6a2a3e5cce7be138">More...</a><br/></td></tr>
+<tr class="separator:adbed12413e18157f6a2a3e5cce7be138"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Date and time class. </p>
@@ -249,6 +254,9 @@ Public Attributes</h2></td></tr>
 <a class="anchor" id="a3c663103e819ac0925be93b06a35931b"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">DateTime::DateTime </td>
@@ -258,6 +266,11 @@ Public Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Instantiate a date and time object from a Unix timestamp. </p>
@@ -295,7 +308,7 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a1748e17f80d1c178a2c492b2903f6462"></a>
+<a class="anchor" id="a4940030ac60a94a78437a0040a2354cc"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -306,7 +319,7 @@ Public Attributes</h2></td></tr>
           <td class="memname">static void DateTime::convertFromUnixTime </td>
           <td>(</td>
           <td class="paramtype">time_t&#160;</td>
-          <td class="paramname"><em>tImep</em>, </td>
+          <td class="paramname"><em>timep</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -381,18 +394,18 @@ Public Attributes</h2></td></tr>
 <dd>
 Pass the Unix timedate value and pointers to existing integers. The integers are updated with the converted values </dd>
 <dd>
-This static function may be used without instantiating a <a class="el" href="classDateTime.html" title="Date and time class. ">DateTime</a> object, e.g. <a class="el" href="classDateTime.html#a1748e17f80d1c178a2c492b2903f6462" title="Convert from Unix time to individual time components. ">DateTime::convertFromUnixTime</a>(...); </dd>
+This static function may be used without instantiating a <a class="el" href="classDateTime.html" title="Date and time class. ">DateTime</a> object, e.g. <a class="el" href="classDateTime.html#a4940030ac60a94a78437a0040a2354cc" title="Convert from Unix time to individual time components. ">DateTime::convertFromUnixTime</a>(...); </dd>
 <dd>
 32-bit Unix time has year 2036 issue. </dd>
 <dd>
 Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table. </dd>
 <dd>
 All of the return values are optional, specify nullptr if not required </dd></dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000003">Deprecated:</a></b></dt><dd>Use 'fromUnixTime' instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000007">Deprecated:</a></b></dt><dd>Use <code><a class="el" href="classDateTime.html#ad4c355a82dc815feede9bb1b4ca21d7b" title="Convert from Unix time to individual time components. ">fromUnixTime(time_t, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint16_t*)</a></code> instead </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ab89a5805ede081bd5850e834a85b471b"></a>
+<a class="anchor" id="a5c5d17e687375d0ad78382283999d808"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -402,37 +415,37 @@ All of the return values are optional, specify nullptr if not required </dd></dl
         <tr>
           <td class="memname">static time_t DateTime::convertToUnixTime </td>
           <td>(</td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>sec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>min</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>hour</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>day</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>month</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramtype">uint16_t&#160;</td>
           <td class="paramname"><em>year</em>&#160;</td>
         </tr>
         <tr>
@@ -462,24 +475,24 @@ All of the return values are optional, specify nullptr if not required </dd></dl
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Seconds, minutes, hours and days may be any value, e.g. to calculate the value for 300 days since 1970 (epoch), set day=300 </dd>
 <dd>
-This static function may be used without instantiating a <a class="el" href="classDateTime.html" title="Date and time class. ">DateTime</a> object, e.g. time_t unixTime = <a class="el" href="classDateTime.html#ab89a5805ede081bd5850e834a85b471b" title="Convert from individual time components to Unix time. ">DateTime::convertToUnixTime</a>(...); </dd>
+This static function may be used without instantiating a <a class="el" href="classDateTime.html" title="Date and time class. ">DateTime</a> object, e.g. time_t unixTime = <a class="el" href="classDateTime.html#a5c5d17e687375d0ad78382283999d808" title="Convert from individual time components to Unix time. ">DateTime::convertToUnixTime</a>(...); </dd>
 <dd>
 32-bit Unix time is valid between 1901-12-13 and 03:14:07 2038-01-19 </dd>
 <dd>
 Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table. </dd></dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000004">Deprecated:</a></b></dt><dd>Use 'toUnixTime' instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000008">Deprecated:</a></b></dt><dd>Use '<a class="el" href="classDateTime.html#a9e19ab63fe8ee41e00ffee8740a1d29c" title="Get Unix time. ">toUnixTime()</a>' instead </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="aa0f4700ab8dfaf8462ac7f84a122be04"></a>
+<a class="anchor" id="ae90d6218839094ebeac80fc89b4c599c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="classString.html">String</a> DateTime::format </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classString.html">String</a>&#160;</td>
-          <td class="paramname"><em>format</em></td><td>)</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>formatString</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -488,7 +501,7 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 <p>Create string formatted with time and date placeholders. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">format</td><td><a class="el" href="classString.html" title="The string class. ">String</a> including date and time formatting </td></tr>
+    <tr><td class="paramname">formatString</td><td><a class="el" href="classString.html" title="The string class. ">String</a> including date and time formatting </td></tr>
   </table>
   </dd>
 </dl>
@@ -578,6 +591,45 @@ Formatting parameters <table class="doxtable">
 
 </div>
 </div>
+<a class="anchor" id="a6e109e73d8a4d87c0b8020f1b3edfddd"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classString.html">String</a> DateTime::format </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>formatString</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create string formatted with time and date placeholders. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">formatString</td><td><a class="el" href="classString.html" title="The string class. ">String</a> including date and time formatting </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname"><a class="el" href="classString.html" title="The string class. ">String</a></td><td>Formatted string </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>see <a class="el" href="classDateTime.html#ae90d6218839094ebeac80fc89b4c599c" title="Create string formatted with time and date placeholders. ">format(const char*)</a> for parameter details </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ab1efe126d4de99fdb6a2dee23dc5d7bf"></a>
 <div class="memitem">
 <div class="memproto">
@@ -611,7 +663,103 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a2f363795a6cb04d6f0639f5485606223"></a>
+<a class="anchor" id="ad4c355a82dc815feede9bb1b4ca21d7b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void DateTime::fromUnixTime </td>
+          <td>(</td>
+          <td class="paramtype">time_t&#160;</td>
+          <td class="paramname"><em>timep</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>psec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>pmin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>phour</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>pday</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>pwday</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>pmonth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t *&#160;</td>
+          <td class="paramname"><em>pyear</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert from Unix time to individual time components. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">timep</td><td>Unix time date value to convert </td></tr>
+    <tr><td class="paramname">psec</td><td>Pointer to integer to hold resulting seconds </td></tr>
+    <tr><td class="paramname">pmin</td><td>Pointer to integer to hold resulting minutes </td></tr>
+    <tr><td class="paramname">phour</td><td>Pointer to integer to hold resulting hour </td></tr>
+    <tr><td class="paramname">pday</td><td>Pointer to integer to hold resulting day of month </td></tr>
+    <tr><td class="paramname">pwday</td><td>Pointer to integer to hold resulting day of week </td></tr>
+    <tr><td class="paramname">pmonth</td><td>Pointer to integer to hold resulting month </td></tr>
+    <tr><td class="paramname">pyear</td><td>Pointer to integer to hold resulting year </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>This is a more compact version of the C library localtime function </dd>
+<dd>
+Pass the Unix timedate value and pointers to existing integers. The integers are updated with the converted values </dd>
+<dd>
+This static function may be used without instantiating a <a class="el" href="classDateTime.html" title="Date and time class. ">DateTime</a> object, e.g. <a class="el" href="classDateTime.html#a4940030ac60a94a78437a0040a2354cc" title="Convert from Unix time to individual time components. ">DateTime::convertFromUnixTime</a>(...); </dd>
+<dd>
+32-bit Unix time has year 2036 issue. </dd>
+<dd>
+Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table. </dd>
+<dd>
+All of the return values are optional, specify nullptr if not required </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aa27a100a14ef2b7208438c5d05de6167"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -674,36 +822,11 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Convert from Unix time to individual time components. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">timep</td><td>Unix time date value to convert </td></tr>
-    <tr><td class="paramname">psec</td><td>Pointer to integer to hold resulting seconds </td></tr>
-    <tr><td class="paramname">pmin</td><td>Pointer to integer to hold resulting minutes </td></tr>
-    <tr><td class="paramname">phour</td><td>Pointer to integer to hold resulting hour </td></tr>
-    <tr><td class="paramname">pday</td><td>Pointer to integer to hold resulting day of month </td></tr>
-    <tr><td class="paramname">pwday</td><td>Pointer to integer to hold resulting day of week </td></tr>
-    <tr><td class="paramname">pmonth</td><td>Pointer to integer to hold resulting month </td></tr>
-    <tr><td class="paramname">pyear</td><td>Pointer to integer to hold resulting year </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>This is a more compact version of the C library localtime function </dd>
-<dd>
-Pass the Unix timedate value and pointers to existing integers. The integers are updated with the converted values </dd>
-<dd>
-This static function may be used without instantiating a <a class="el" href="classDateTime.html" title="Date and time class. ">DateTime</a> object, e.g. <a class="el" href="classDateTime.html#a1748e17f80d1c178a2c492b2903f6462" title="Convert from Unix time to individual time components. ">DateTime::convertFromUnixTime</a>(...); </dd>
-<dd>
-32-bit Unix time has year 2036 issue. </dd>
-<dd>
-Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table. </dd>
-<dd>
-All of the return values are optional, specify nullptr if not required </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000006">Deprecated:</a></b></dt><dd>Use unsigned version instead <code><a class="el" href="classDateTime.html#ad4c355a82dc815feede9bb1b4ca21d7b" title="Convert from Unix time to individual time components. ">fromUnixTime(time_t, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint16_t*)</a></code> </dd></dl>
 
 </div>
 </div>
@@ -761,7 +884,7 @@ All of the return values are optional, specify nullptr if not required </dd></dl
 
 </div>
 </div>
-<a class="anchor" id="a25cfa69bbe2b6a809b0ef01d9172f7c1"></a>
+<a class="anchor" id="af181ab8c37399c53ebe54262b40e08bd"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -799,7 +922,7 @@ All of the return values are optional, specify nullptr if not required </dd></dl
 <dl class="section note"><dt>Note</dt><dd>Also supports obsolete RFC 850 date format, e.g. Sunday, 06-Nov-94 08:49:37 GMT where 2 digit year represents range 1970-2069 </dd>
 <dd>
 GMT suffix is optional and is always assumed / ignored </dd></dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000002">Deprecated:</a></b></dt><dd>Use 'fromHttpDate' instead </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000005">Deprecated:</a></b></dt><dd>Use <code><a class="el" href="classDateTime.html#ab1efe126d4de99fdb6a2dee23dc5d7bf" title="Parse a HTTP full date and set time and date. ">fromHttpDate()</a></code> instead </dd></dl>
 
 </div>
 </div>
@@ -827,44 +950,47 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a9d7e7be864d50b4049a14956706af5af"></a>
+<a class="anchor" id="ad100c5453e910eda477698c676f4051c"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void DateTime::setTime </td>
           <td>(</td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>sec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>min</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>hour</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>day</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>month</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramtype">uint16_t&#160;</td>
           <td class="paramname"><em>year</em>&#160;</td>
         </tr>
         <tr>
@@ -873,6 +999,11 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Set time using time and date component values. </p>
@@ -1035,7 +1166,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a43d743d1251ea018eab49ba48ad9e077"></a>
+<a class="anchor" id="a80e24bfd101390c3f29edc0f007b46a2"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1045,37 +1176,37 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
         <tr>
           <td class="memname">static time_t DateTime::toUnixTime </td>
           <td>(</td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>sec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>min</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>hour</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>day</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>month</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramtype">uint16_t&#160;</td>
           <td class="paramname"><em>year</em>&#160;</td>
         </tr>
         <tr>
@@ -1105,7 +1236,7 @@ GMT suffix is optional and is always assumed / ignored </dd></dl>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Seconds, minutes, hours and days may be any value, e.g. to calculate the value for 300 days since 1970 (epoch), set day=300 </dd>
 <dd>
-This static function may be used without instantiating a <a class="el" href="classDateTime.html" title="Date and time class. ">DateTime</a> object, e.g. time_t unixTime = <a class="el" href="classDateTime.html#ab89a5805ede081bd5850e834a85b471b" title="Convert from individual time components to Unix time. ">DateTime::convertToUnixTime</a>(...); </dd>
+This static function may be used without instantiating a <a class="el" href="classDateTime.html" title="Date and time class. ">DateTime</a> object, e.g. time_t unixTime = <a class="el" href="classDateTime.html#a5c5d17e687375d0ad78382283999d808" title="Convert from individual time components to Unix time. ">DateTime::convertToUnixTime</a>(...); </dd>
 <dd>
 32-bit Unix time is valid between 1901-12-13 and 03:14:07 2038-01-19 </dd>
 <dd>
@@ -1114,12 +1245,12 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a8f3d535c712aaa1d8b5cc088ea3c10ff"></a>
+<a class="anchor" id="afc1a4fb7e060c4e20001a41c29f9b045"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::Day = 0</td>
+          <td class="memname">uint8_t DateTime::Day = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1128,12 +1259,12 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 
 </div>
 </div>
-<a class="anchor" id="a9a3d78a0f8a1cdbf7df9a026ddea4ee4"></a>
+<a class="anchor" id="a8f92ad1f2f46de5ad9afaa51d11abfab"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::DayofWeek = 0</td>
+          <td class="memname">uint8_t DateTime::DayofWeek = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1142,12 +1273,12 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 
 </div>
 </div>
-<a class="anchor" id="a5835e0ef7f523940655b48233d31bb17"></a>
+<a class="anchor" id="a4a40f76292545f4deac05b87cc5fcb17"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int16_t DateTime::DayofYear = 0</td>
+          <td class="memname">uint16_t DateTime::DayofYear = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1156,12 +1287,12 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 
 </div>
 </div>
-<a class="anchor" id="ab306c0dd7931822b39ae58be72cebae0"></a>
+<a class="anchor" id="a358a3d920ef4af0cbceda37d46911c74"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::Hour = 0</td>
+          <td class="memname">uint8_t DateTime::Hour = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1170,12 +1301,12 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 
 </div>
 </div>
-<a class="anchor" id="a52885b8a894ba0dddabc80bddad467fd"></a>
+<a class="anchor" id="a6035b13a788489f2eaa6f5f5c77b96cb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int16_t DateTime::Milliseconds = 0</td>
+          <td class="memname">uint16_t DateTime::Milliseconds = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1184,12 +1315,12 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 
 </div>
 </div>
-<a class="anchor" id="a2281ee834b6d9be9fa4c7bc4046394c3"></a>
+<a class="anchor" id="a10ce50dc6e195b84e99339263f0ec775"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::Minute = 0</td>
+          <td class="memname">uint8_t DateTime::Minute = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1198,12 +1329,12 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 
 </div>
 </div>
-<a class="anchor" id="ac2948899151acbee8819a19ad35fd511"></a>
+<a class="anchor" id="afe9cd9a9e199facddb9dcd8ea8a4fba0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::Month = 0</td>
+          <td class="memname">uint8_t DateTime::Month = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1212,12 +1343,12 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 
 </div>
 </div>
-<a class="anchor" id="a05d8e4467eb9841035b31237f3d76a58"></a>
+<a class="anchor" id="a3ea3b0141e22e8479c979762adb85923"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int8_t DateTime::Second = 0</td>
+          <td class="memname">uint8_t DateTime::Second = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1226,12 +1357,12 @@ Unix time does not account for leap seconds. To convert Unix time to UTC require
 
 </div>
 </div>
-<a class="anchor" id="a4d2fdc35a2cc020b1b24ff87d5bf2aeb"></a>
+<a class="anchor" id="adbed12413e18157f6a2a3e5cce7be138"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int16_t DateTime::Year = 0</td>
+          <td class="memname">uint16_t DateTime::Year = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">

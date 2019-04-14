@@ -105,51 +105,72 @@ $(document).ready(function(){initNavTree('WebsocketResource_8h_source.html','');
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * Created 2015 by Skurydin Alexey</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * @author: 2017 - Slavey Karadzhov &lt;slav@attachix.com&gt;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../HttpServerConnection.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;../HttpResource.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;WebsocketConnection.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;../../Wiring/WString.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classWebsocketResource.html">   19</a></span>&#160;<span class="keyword">class </span><a class="code" href="classWebsocketResource.html">WebsocketResource</a> : <span class="keyword">public</span> <a class="code" href="classHttpResource.html">HttpResource</a></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;{</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="classWebsocketResource.html">WebsocketResource</a>();</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    ~<a class="code" href="classWebsocketResource.html">WebsocketResource</a>();</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordtype">int</span> checkHeaders(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>&amp; connection, <a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; request, <a class="code" href="classHttpResponse.html">HttpResponse</a>&amp; response);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classWebsocketResource.html#a2723fe8e4a275c4f0a7806d527a977f9">shutdown</a>(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>&amp; connection);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordtype">void</span> setConnectionHandler(<a class="code" href="classDelegate.html">WebsocketDelegate</a> handler);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">void</span> setMessageHandler(<a class="code" href="classDelegate.html">WebsocketMessageDelegate</a> handler);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">void</span> setBinaryHandler(<a class="code" href="classDelegate.html">WebsocketBinaryDelegate</a> handler);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">void</span> setDisconnectionHandler(<a class="code" href="classDelegate.html">WebsocketDelegate</a> handler);</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * WebsocketResource.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * @author: 2017 - Slavey Karadzhov &lt;slav@attachix.com&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_RESOURCE_H_</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_RESOURCE_H_</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;../HttpServerConnection.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;../HttpResource.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;WebsocketConnection.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;WString.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classWebsocketResource.html">   21</a></span>&#160;<span class="keyword">class </span><a class="code" href="classWebsocketResource.html">WebsocketResource</a> : <span class="keyword">public</span> <a class="code" href="classHttpResource.html">HttpResource</a></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;{</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="classWebsocketResource.html">WebsocketResource</a>()</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <a class="code" href="classHttpResource.html#a58a1e320c9c0badb6264ec9235fff890">onHeadersComplete</a> = <a class="code" href="classDelegate.html">HttpResourceDelegate</a>(&amp;WebsocketResource::checkHeaders, <span class="keyword">this</span>);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    }</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> checkHeaders(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>&amp; connection, <a class="code" href="classHttpRequest.html">HttpRequest</a>&amp; request, <a class="code" href="classHttpResponse.html">HttpResponse</a>&amp; response);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classWebsocketResource.html#a65e1bc5aec9deac5b21d8ce420e01622">shutdown</a>(<a class="code" href="classHttpServerConnection.html">HttpServerConnection</a>&amp; connection) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">bool</span> onConnect();</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <a class="code" href="classDelegate.html">WebsocketDelegate</a> wsConnect = 0;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classDelegate.html">WebsocketMessageDelegate</a> wsMessage = 0;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="classDelegate.html">WebsocketBinaryDelegate</a> wsBinary = 0;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="classDelegate.html">WebsocketDelegate</a> wsDisconnect = 0;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;};</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">void</span> setConnectionHandler(<a class="code" href="classDelegate.html">WebsocketDelegate</a> handler)</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        wsConnect = handler;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    }</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">void</span> setMessageHandler(<a class="code" href="classDelegate.html">WebsocketMessageDelegate</a> handler)</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        wsMessage = handler;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_SMINGCORE_NETWORK_WEBSOCKET_RESOURCE_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:42</div></div>
-<div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(WebsocketConnection &amp;)&gt;</a></div></div>
-<div class="ttc" id="classWebsocketResource_html_a2723fe8e4a275c4f0a7806d527a977f9"><div class="ttname"><a href="classWebsocketResource.html#a2723fe8e4a275c4f0a7806d527a977f9">WebsocketResource::shutdown</a></div><div class="ttdeci">virtual void shutdown(HttpServerConnection &amp;connection)</div><div class="ttdoc">Takes care to cleanup the connection. </div></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">void</span> setBinaryHandler(<a class="code" href="classDelegate.html">WebsocketBinaryDelegate</a> handler)</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        wsBinary = handler;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    }</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">void</span> setDisconnectionHandler(<a class="code" href="classDelegate.html">WebsocketDelegate</a> handler)</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        wsDisconnect = handler;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    }</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">bool</span> onConnect();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <a class="code" href="classDelegate.html">WebsocketDelegate</a> wsConnect = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="classDelegate.html">WebsocketMessageDelegate</a> wsMessage = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="classDelegate.html">WebsocketBinaryDelegate</a> wsBinary = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="classDelegate.html">WebsocketDelegate</a> wsDisconnect = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;};</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_RESOURCE_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classHttpServerConnection_html"><div class="ttname"><a href="classHttpServerConnection.html">HttpServerConnection</a></div><div class="ttdef"><b>Definition:</b> HttpServerConnection.h:43</div></div>
+<div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; int(HttpServerConnection &amp;connection, HttpRequest &amp;request, HttpResponse &amp;response)&gt;</a></div></div>
 <div class="ttc" id="classHttpResource_html"><div class="ttname"><a href="classHttpResource.html">HttpResource</a></div><div class="ttdef"><b>Definition:</b> HttpResource.h:32</div></div>
-<div class="ttc" id="classHttpRequest_html"><div class="ttname"><a href="classHttpRequest.html">HttpRequest</a></div><div class="ttdef"><b>Definition:</b> HttpRequest.h:37</div></div>
-<div class="ttc" id="classWebsocketResource_html"><div class="ttname"><a href="classWebsocketResource.html">WebsocketResource</a></div><div class="ttdef"><b>Definition:</b> WebsocketResource.h:19</div></div>
+<div class="ttc" id="classWebsocketResource_html_a65e1bc5aec9deac5b21d8ce420e01622"><div class="ttname"><a href="classWebsocketResource.html#a65e1bc5aec9deac5b21d8ce420e01622">WebsocketResource::shutdown</a></div><div class="ttdeci">void shutdown(HttpServerConnection &amp;connection) override</div><div class="ttdoc">Takes care to cleanup the connection. </div></div>
+<div class="ttc" id="classHttpRequest_html"><div class="ttname"><a href="classHttpRequest.html">HttpRequest</a></div><div class="ttdef"><b>Definition:</b> HttpRequest.h:36</div></div>
+<div class="ttc" id="classHttpResource_html_a58a1e320c9c0badb6264ec9235fff890"><div class="ttname"><a href="classHttpResource.html#a58a1e320c9c0badb6264ec9235fff890">HttpResource::onHeadersComplete</a></div><div class="ttdeci">HttpResourceDelegate onHeadersComplete</div><div class="ttdoc">headers are ready </div><div class="ttdef"><b>Definition:</b> HttpResource.h:48</div></div>
+<div class="ttc" id="classWebsocketResource_html"><div class="ttname"><a href="classWebsocketResource.html">WebsocketResource</a></div><div class="ttdef"><b>Definition:</b> WebsocketResource.h:21</div></div>
 <div class="ttc" id="classHttpResponse_html"><div class="ttname"><a href="classHttpResponse.html">HttpResponse</a></div><div class="ttdef"><b>Definition:</b> HttpResponse.h:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

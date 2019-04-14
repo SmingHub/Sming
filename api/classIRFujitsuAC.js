@@ -21,5 +21,6 @@ var classIRFujitsuAC =
     [ "stateReset", "classIRFujitsuAC.html#a463084b47669d792ceebc446d24bb813", null ],
     [ "stepHoriz", "classIRFujitsuAC.html#a7efd5241b9e0d40b391f2920425768e2", null ],
     [ "stepVert", "classIRFujitsuAC.html#a17851968eb3aa98ee22df954955da1ec", null ],
-    [ "toString", "classIRFujitsuAC.html#ac2a48a2483d94061a2d65e57acf1d399", null ]
+    [ "toString", "classIRFujitsuAC.html#ac2a48a2483d94061a2d65e57acf1d399", null ],
+    [ "validChecksum", "classIRFujitsuAC.html#a89d23f0c396ceecc8db3d4fbe20ef6fe", null ]
 ];

@@ -135,9 +135,30 @@ typedef bool(*&#160;</td><td class="memItemRight" valign="bottom"><b>comparator<
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a480483b57d769d931a50b5f2106357fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a480483b57d769d931a50b5f2106357fe"></a>
-virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>printTo</b> (<a class="el" href="classPrint.html">Print</a> &amp;p) const </td></tr>
-<tr class="separator:a480483b57d769d931a50b5f2106357fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa17cf66317d5e0f297f9b3b91f4d708a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa17cf66317d5e0f297f9b3b91f4d708a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>HttpParams</b> (const <a class="el" href="classHttpParams.html">HttpParams</a> &amp;params)</td></tr>
+<tr class="separator:aa17cf66317d5e0f297f9b3b91f4d708a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c8c1004223297b774e5f959fcb79029"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4c8c1004223297b774e5f959fcb79029"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>HttpParams</b> (<a class="el" href="classString.html">String</a> query)</td></tr>
+<tr class="separator:a4c8c1004223297b774e5f959fcb79029"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac062a4c06204025dddc598011d2fb9bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpParams.html#ac062a4c06204025dddc598011d2fb9bb">parseQuery</a> (char *query)</td></tr>
+<tr class="memdesc:ac062a4c06204025dddc598011d2fb9bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called from URL class to process query section of a URI.  <a href="#ac062a4c06204025dddc598011d2fb9bb">More...</a><br/></td></tr>
+<tr class="separator:ac062a4c06204025dddc598011d2fb9bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29e9d540dde1879fa8be5b4ffc99272f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpParams.html#a29e9d540dde1879fa8be5b4ffc99272f">toString</a> () const </td></tr>
+<tr class="memdesc:a29e9d540dde1879fa8be5b4ffc99272f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return full escaped content for incorporation into a URI.  <a href="#a29e9d540dde1879fa8be5b4ffc99272f">More...</a><br/></td></tr>
+<tr class="separator:a29e9d540dde1879fa8be5b4ffc99272f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d237d8788fb785b3925f6671235f422"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d237d8788fb785b3925f6671235f422"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>operator String</b> () const </td></tr>
+<tr class="separator:a6d237d8788fb785b3925f6671235f422"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aabe94702da17fb5f361a8ef3128dec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5aabe94702da17fb5f361a8ef3128dec"></a>
+<a class="el" href="classHttpParams.html">HttpParams</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classHttpParams.html">HttpParams</a> &amp;params)</td></tr>
+<tr class="separator:a5aabe94702da17fb5f361a8ef3128dec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fd82b320ac46edbdd4f50abdd956f76"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1fd82b320ac46edbdd4f50abdd956f76"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>printTo</b> (<a class="el" href="classPrint.html">Print</a> &amp;p) const override</td></tr>
+<tr class="separator:a1fd82b320ac46edbdd4f50abdd956f76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b2f31478ce9de598151305bc693ba62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpParams.html#a3b2f31478ce9de598151305bc693ba62">debugPrintTo</a> (<a class="el" href="classPrint.html">Print</a> &amp;p) const </td></tr>
+<tr class="memdesc:a3b2f31478ce9de598151305bc693ba62"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classPrintable.html">Printable</a> output for debugging.  <a href="#a3b2f31478ce9de598151305bc693ba62">More...</a><br/></td></tr>
+<tr class="separator:a3b2f31478ce9de598151305bc693ba62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d6a983573e5e82d11cb5025ef647766"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d6a983573e5e82d11cb5025ef647766"></a>
 unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>count</b> () const</td></tr>
 <tr class="separator:a7d6a983573e5e82d11cb5025ef647766"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -206,8 +227,81 @@ comparator&#160;</td><td class="memItemRight" valign="bottom"><b>cb_comparator</
 <tr class="separator:aa81d7fa34e94848ae00b257e5f74cd3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000014">Todo:</a></b></dt><dd>values stored in escaped form, unescape return value and escape provided values. Revise HttpBodyParser.cpp as it will no longer do this job.</dd></dl>
-</div></div><!-- contents -->
+<div class="textblock"><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000013">Todo:</a></b></dt><dd>values stored in escaped form, unescape return value and escape provided values. Revise HttpBodyParser.cpp as it will no longer do this job.</dd></dl>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a3b2f31478ce9de598151305bc693ba62"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HttpParams::debugPrintTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classPrint.html">Print</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classPrintable.html">Printable</a> output for debugging. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ac062a4c06204025dddc598011d2fb9bb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HttpParams::parseQuery </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>query</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Called from URL class to process query section of a URI. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">query</td><td>extracted from URI, with or without '?' prefix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>true on success, false if parsing failed </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>query string is modified by this call </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a29e9d540dde1879fa8be5b4ffc99272f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classString.html">String</a> HttpParams::toString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return full escaped content for incorporation into a URI. </p>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

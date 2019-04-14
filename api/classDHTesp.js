@@ -38,6 +38,8 @@ var classDHTesp =
     [ "resetTimer", "classDHTesp.html#a29e83b0ed4fe37288c8492d10c506a78", null ],
     [ "setComfortProfile", "classDHTesp.html#a76b176fcdeb3468ca20ef80bc1ecfc5b", null ],
     [ "setup", "classDHTesp.html#ad42320307c600740cac784ae5dc4fa49", null ],
+    [ "toCelsius", "classDHTesp.html#a37da2f32e944ea98a8b7f0140bc307e8", null ],
+    [ "toFahrenheit", "classDHTesp.html#ae1a312c447289488a5f8cabb00fbd718", null ],
     [ "humidity", "classDHTesp.html#ae7c080a27325f560d48337e14aff2e74", null ],
     [ "pin", "classDHTesp.html#a3d96d96871489c3f7d8a62c4f2d5c862", null ],
     [ "temperature", "classDHTesp.html#af5c1ddd0c7907e1414ffb922c63b3d1c", null ],

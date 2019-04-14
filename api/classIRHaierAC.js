@@ -25,5 +25,7 @@ var classIRHaierAC =
     [ "setSleep", "classIRHaierAC.html#ae1ef9218ac968a3eded3325be14fec74", null ],
     [ "setSwing", "classIRHaierAC.html#a28c8bf6e0f45e074bf5eb13c25805627", null ],
     [ "setTemp", "classIRHaierAC.html#a9fb2a375cc1b8692fe4d5dcdd765cc46", null ],
-    [ "toString", "classIRHaierAC.html#a176966bbf509a09ef2abf9ed53d5ab85", null ]
+    [ "timeToString", "classIRHaierAC.html#a65df72d273665daab0adb6b8cc70691a", null ],
+    [ "toString", "classIRHaierAC.html#a176966bbf509a09ef2abf9ed53d5ab85", null ],
+    [ "validChecksum", "classIRHaierAC.html#a822a38f4e8c9bafcc0a0c11d4f49104f", null ]
 ];

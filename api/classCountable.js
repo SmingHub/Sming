@@ -1,5 +1,6 @@
 var classCountable =
 [
+    [ "~Countable", "classCountable.html#a5957437e9c32d30b9c183ed1adc574eb", null ],
     [ "at", "classCountable.html#a34441ee721d3accbb7169dc04aadaa5f", null ],
     [ "count", "classCountable.html#a8112c5c4a8de941c8d2dc783fbfe3c7a", null ],
     [ "operator[]", "classCountable.html#a86379f5661b5ad88f68c22010c3e6c69", null ],

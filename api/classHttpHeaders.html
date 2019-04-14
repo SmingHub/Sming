@@ -133,6 +133,9 @@ Inheritance diagram for HttpHeaders:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a8b79cdcfdd00feaff7e406edad7bec0d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b79cdcfdd00feaff7e406edad7bec0d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>HttpHeaders</b> (const <a class="el" href="classHttpHeaders.html">HttpHeaders</a> &amp;headers)</td></tr>
+<tr class="separator:a8b79cdcfdd00feaff7e406edad7bec0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcca2dc573e69782fc1a5eb184723c9b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adcca2dc573e69782fc1a5eb184723c9b"></a>
 <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>toString</b> (HttpHeaderFieldName name) const </td></tr>
 <tr class="separator:adcca2dc573e69782fc1a5eb184723c9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,9 +154,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a697ef7eb6d6737922d3c1949f7c32b3b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpHeaders.html#a697ef7eb6d6737922d3c1949f7c32b3b">operator[]</a> (unsigned index) const </td></tr>
 <tr class="memdesc:a697ef7eb6d6737922d3c1949f7c32b3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the HTTP header line for the value at the given index.  <a href="#a697ef7eb6d6737922d3c1949f7c32b3b">More...</a><br/></td></tr>
 <tr class="separator:a697ef7eb6d6737922d3c1949f7c32b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75fc7a35ed260d017f8d71917d08b13d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a75fc7a35ed260d017f8d71917d08b13d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (const <a class="el" href="classString.html">String</a> &amp;name)</td></tr>
-<tr class="separator:a75fc7a35ed260d017f8d71917d08b13d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a557d461246a5347fcd570fa03e31d268"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a557d461246a5347fcd570fa03e31d268"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (const <a class="el" href="classString.html">String</a> &amp;name) const </td></tr>
+<tr class="separator:a557d461246a5347fcd570fa03e31d268"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39dfc8aff6abe7dcd23a5556fb0383e8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39dfc8aff6abe7dcd23a5556fb0383e8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>remove</b> (const <a class="el" href="classString.html">String</a> &amp;name)</td></tr>
 <tr class="separator:a39dfc8aff6abe7dcd23a5556fb0383e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,6 +169,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setMultiple</b> (cons
 <tr class="memitem:a530939377882fbb86604c6b71f7802a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a530939377882fbb86604c6b71f7802a3"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
 <tr class="separator:a530939377882fbb86604c6b71f7802a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cde3e6d0bec9cd979153f903f2361b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3cde3e6d0bec9cd979153f903f2361b5"></a>
+<a class="el" href="classDateTime.html">DateTime</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getLastModifiedDate</b> () const </td></tr>
+<tr class="separator:a3cde3e6d0bec9cd979153f903f2361b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6524861965fd5ab15a189a1665d07b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab6524861965fd5ab15a189a1665d07b3"></a>
+<a class="el" href="classDateTime.html">DateTime</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getServerDate</b> () const </td></tr>
+<tr class="separator:ab6524861965fd5ab15a189a1665d07b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -248,7 +257,7 @@ comparator&#160;</td><td class="memItemRight" valign="bottom"><b>cb_comparator</
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Encapsulates a set of HTTP header information. </p>
 <dl class="section note"><dt>Note</dt><dd>fields are stored as a map of field names vs. values. Standard fields may be accessed using enumeration tags. Behaviour is as for <a class="el" href="classHashMap.html">HashMap</a>, with the addition of methods to support enumerated field names.</dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000013">Todo:</a></b></dt><dd>add name and/or value escaping </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000012">Todo:</a></b></dt><dd>add name and/or value escaping </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="acd4421b68c3c3d8992bec3ada744c938"></a>
 <div class="memitem">

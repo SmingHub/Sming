@@ -2,6 +2,8 @@ var searchData=
 [
   ['datetime',['DateTime',['../classDateTime.html#a3ccfb87f7a2e9683b91964e32d907161',1,'DateTime::DateTime()'],['../classDateTime.html#a3c663103e819ac0925be93b06a35931b',1,'DateTime::DateTime(time_t time)']]],
   ['debugclass',['DebugClass',['../classDebugClass.html#a2d1495646d01422050f5d000d641eae8',1,'DebugClass']]],
+  ['debugprintto',['debugPrintTo',['../classHttpParams.html#a3b2f31478ce9de598151305bc693ba62',1,'HttpParams::debugPrintTo()'],['../classUrl.html#abdc6fca55345985923aef9efdecd277e',1,'Url::debugPrintTo()']]],
+  ['decodehexblock',['decodeHexBlock',['../classGdbPacket.html#ad8988aac5d51fbbdde2113fe16acb10d',1,'GdbPacket']]],
   ['decrease',['decrease',['../classIDelegateCaller.html#a4c49d3a30a5224c1910400b9a1cbaf71',1,'IDelegateCaller']]],
   ['deepsleep',['deepSleep',['../group__system.html#ga15eb21125083b655bb83f7dbd47f0987',1,'SystemClass']]],
   ['delay',['delay',['../group__timedelay.html#ga0e0319a9c20b0e5926c903239a493a93',1,'Clock.h']]],
@@ -18,7 +20,8 @@ var searchData=
   ['digitalwrite',['digitalWrite',['../classI2CIO.html#a473206162522b847546777d16a7c6dcd',1,'I2CIO::digitalWrite()'],['../group__gpio.html#gaddcdedab0a9722dbc65f82c290541d7d',1,'digitalWrite():&#160;Digital.h']]],
   ['disable',['disable',['../classNexTimer.html#ae016d7d39ede6cf813221b26691809f1',1,'NexTimer']]],
   ['disablecrc',['disableCRC',['../classRF24.html#a5eacd9ecfbc19864801d714c292cf8be',1,'RF24']]],
-  ['disconnect',['disconnect',['../classWebsocketClient.html#a11a66333f7a1052421efffe191de3bc5',1,'WebsocketClient::disconnect()'],['../group__wifi__sta.html#gae27a3cb89d75093863b498b3f7272d35',1,'StationClass::disconnect()']]],
+  ['disconnect',['disconnect',['../classWebsocketClient.html#a6b031986e410d27dbf35d8003b4cd778',1,'WebsocketClient::disconnect()'],['../group__wifi__sta.html#gae27a3cb89d75093863b498b3f7272d35',1,'StationClass::disconnect()']]],
   ['display',['display',['../classLCD.html#a5b07cf05e8e5e7c53654f5ca0cf58b89',1,'LCD']]],
+  ['downloadfile',['downloadFile',['../classHttpClient.html#a7eaaab4ea642e56c8549a6588592d759',1,'HttpClient']]],
   ['ds18s20',['DS18S20',['../classDS18S20.html#a3e16ef1a935d255807987604f394bc2b',1,'DS18S20']]]
 ];

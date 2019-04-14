@@ -101,65 +101,65 @@ $(document).ready(function(){initNavTree('DNSServer_8h_source.html','');});
 <div class="title">DNSServer.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/* This file is part of Sming Framework Project</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Created 2015 by Skurydin Alexey</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * This file is provided under the LGPL v3 license.</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * File Author: https://github.com/patrickjahns</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> * The code is a port of the following projects</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * https://github.com/israellot/esp-ginx/tree/master/app/dns</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> * https://github.com/esp8266/Arduino/tree/master/libraries/DNSServer</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> * Created on March 4, 2016</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#ifndef DNSServer_h</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DNSServer_h</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;UdpConnection.h&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;WString.h&quot;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#define DNS_QR_QUERY 0</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DNS_QR_RESPONSE 1</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DNS_OPCODE_QUERY 0</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">enum class</span> DNSReplyCode {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    NoError = 0,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    FormError = 1,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    ServerFailure = 2,</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    NonExistentDomain = 3,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    NotImplemented = 4,</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    Refused = 5,</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    YXDomain = 6,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    YXRRSet = 7,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    NXRRSet = 8</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;};</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="structDNSHeader.html">   41</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structDNSHeader.html">DNSHeader</a> {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    uint16_t ID;      <span class="comment">// identification number</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">char</span> RD : 1;      <span class="comment">// recursion desired</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">char</span> TC : 1;      <span class="comment">// truncated message</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordtype">char</span> AA : 1;      <span class="comment">// authoritive answer</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">char</span> OPCode : 4;  <span class="comment">// message_type</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">char</span> QR : 1;      <span class="comment">// query/response flag</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">char</span> RCode : 4;   <span class="comment">// response code</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">char</span> Z : 3;       <span class="comment">// its z! reserved</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">char</span> RA : 1;      <span class="comment">// recursion available</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    uint16_t QDCount; <span class="comment">// number of question entries</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    uint16_t ANCount; <span class="comment">// number of answer entries</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    uint16_t NSCount; <span class="comment">// number of authority entries</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    uint16_t ARCount; <span class="comment">// number of resource entries</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classDNSServer.html">   57</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDNSServer.html">DNSServer</a> : <span class="keyword">public</span> <a class="code" href="classUdpConnection.html">UdpConnection</a></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;{</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="classDNSServer.html">DNSServer</a>()</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    }</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classDNSServer.html">DNSServer</a>()</div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/****</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * Created 2015 by Skurydin Alexey</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * DnsServer.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * File Author: https://github.com/patrickjahns</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> * The code is a port of the following projects</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> * https://github.com/israellot/esp-ginx/tree/master/app/dns</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> * https://github.com/esp8266/Arduino/tree/master/libraries/DNSServer</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> * Created on March 4, 2016</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_NETWORK_DNS_SERVER_H_</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_NETWORK_DNS_SERVER_H_</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;UdpConnection.h&quot;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;WString.h&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#define DNS_QR_QUERY 0</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DNS_QR_RESPONSE 1</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DNS_OPCODE_QUERY 0</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">enum class</span> DNSReplyCode {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    NoError = 0,</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    FormError = 1,</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    ServerFailure = 2,</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    NonExistentDomain = 3,</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    NotImplemented = 4,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    Refused = 5,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    YXDomain = 6,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    YXRRSet = 7,</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    NXRRSet = 8</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="structDNSHeader.html">   45</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structDNSHeader.html">DNSHeader</a> {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    uint16_t ID;      <span class="comment">// identification number</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">char</span> RD : 1;      <span class="comment">// recursion desired</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">char</span> TC : 1;      <span class="comment">// truncated message</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">char</span> AA : 1;      <span class="comment">// authoritive answer</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">char</span> OPCode : 4;  <span class="comment">// message_type</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">char</span> QR : 1;      <span class="comment">// query/response flag</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">char</span> RCode : 4;   <span class="comment">// response code</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">char</span> Z : 3;       <span class="comment">// its z! reserved</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">char</span> RA : 1;      <span class="comment">// recursion available</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    uint16_t QDCount; <span class="comment">// number of question entries</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    uint16_t ANCount; <span class="comment">// number of answer entries</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    uint16_t NSCount; <span class="comment">// number of authority entries</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    uint16_t ARCount; <span class="comment">// number of resource entries</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classDNSServer.html">   61</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDNSServer.html">DNSServer</a> : <span class="keyword">public</span> <a class="code" href="classUdpConnection.html">UdpConnection</a></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;{</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <a class="code" href="classDNSServer.html">DNSServer</a>()</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    {</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
@@ -179,26 +179,28 @@ $(document).ready(function(){initNavTree('DNSServer_8h_source.html','');});
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="comment">// stops the DNS server</span></div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">void</span> stop();</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    uint16_t port = 0;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <a class="code" href="classString.html">String</a> domainName;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    ip_addr resolvedIP;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">char</span>* buffer = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <a class="code" href="structDNSHeader.html">DNSHeader</a>* dnsHeader = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    uint32_t ttl = 60;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    DNSReplyCode errorReplyCode = DNSReplyCode::NonExistentDomain;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReceive(pbuf* buf, <a class="code" href="classIPAddress.html">IPAddress</a> remoteIP, uint16_t remotePort);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> downcaseAndRemoveWwwPrefix(<a class="code" href="classString.html">String</a>&amp; domainName);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="classString.html">String</a> getDomainNameWithoutWwwPrefix();</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">bool</span> requestIncludesOnlyOneQuestion();</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;};</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor">#endif //DNSServer_h</span></div>
-<div class="ttc" id="classUdpConnection_html"><div class="ttname"><a href="classUdpConnection.html">UdpConnection</a></div><div class="ttdef"><b>Definition:</b> UdpConnection.h:26</div></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">void</span> onReceive(pbuf* buf, <a class="code" href="classIPAddress.html">IPAddress</a> remoteIP, uint16_t remotePort) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    uint16_t port = 0;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <a class="code" href="classString.html">String</a> domainName;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    ip_addr resolvedIP;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordtype">char</span>* buffer = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <a class="code" href="structDNSHeader.html">DNSHeader</a>* dnsHeader = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    uint32_t ttl = 60;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    DNSReplyCode errorReplyCode = DNSReplyCode::NonExistentDomain;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> downcaseAndRemoveWwwPrefix(<a class="code" href="classString.html">String</a>&amp; domainName);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="classString.html">String</a> getDomainNameWithoutWwwPrefix();</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">bool</span> requestIncludesOnlyOneQuestion();</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;};</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_NETWORK_DNS_SERVER_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classUdpConnection_html"><div class="ttname"><a href="classUdpConnection.html">UdpConnection</a></div><div class="ttdef"><b>Definition:</b> UdpConnection.h:29</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
-<div class="ttc" id="classDNSServer_html"><div class="ttname"><a href="classDNSServer.html">DNSServer</a></div><div class="ttdef"><b>Definition:</b> DNSServer.h:57</div></div>
-<div class="ttc" id="structDNSHeader_html"><div class="ttname"><a href="structDNSHeader.html">DNSHeader</a></div><div class="ttdef"><b>Definition:</b> DNSServer.h:41</div></div>
+<div class="ttc" id="classDNSServer_html"><div class="ttname"><a href="classDNSServer.html">DNSServer</a></div><div class="ttdef"><b>Definition:</b> DNSServer.h:61</div></div>
+<div class="ttc" id="structDNSHeader_html"><div class="ttname"><a href="structDNSHeader.html">DNSHeader</a></div><div class="ttdef"><b>Definition:</b> DNSServer.h:45</div></div>
 <div class="ttc" id="classIPAddress_html"><div class="ttname"><a href="classIPAddress.html">IPAddress</a></div><div class="ttdef"><b>Definition:</b> IPAddress.h:37</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

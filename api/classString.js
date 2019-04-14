@@ -113,5 +113,7 @@ var classString =
     [ "operator+", "classString.html#ad7f8cc6402796f520aa6ddc33953f7fc", null ],
     [ "buffer", "classString.html#a7892a52a08b6671add931f85a19c1d46", null ],
     [ "capacity", "classString.html#a8ef08d09cb9336d7000ba41563fdd97f", null ],
-    [ "len", "classString.html#a1f92677bb5c9022417c9bfdd9aea9e3e", null ]
+    [ "empty", "classString.html#afd02116a5571fcc8bc1e6fdabe132a85", null ],
+    [ "len", "classString.html#a1f92677bb5c9022417c9bfdd9aea9e3e", null ],
+    [ "nullstr", "classString.html#a542a89a4b03d510c234c6b571ba322ae", null ]
 ];

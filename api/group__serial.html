@@ -136,7 +136,7 @@ Macros</h2></td></tr>
 <tr class="memitem:ga4414160658a1080ac3d9371dfbcc044a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serial.html#ga4414160658a1080ac3d9371dfbcc044a">UART_ID_1</a>&#160;&#160;&#160;1</td></tr>
 <tr class="memdesc:ga4414160658a1080ac3d9371dfbcc044a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ID of UART 1.  <a href="#ga4414160658a1080ac3d9371dfbcc044a">More...</a><br/></td></tr>
 <tr class="separator:ga4414160658a1080ac3d9371dfbcc044a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae453609d057b191ba45e6f85da178a1e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serial.html#gae453609d057b191ba45e6f85da178a1e">NUMBER_UARTS</a>&#160;&#160;&#160;2</td></tr>
+<tr class="memitem:gae453609d057b191ba45e6f85da178a1e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serial.html#gae453609d057b191ba45e6f85da178a1e">NUMBER_UARTS</a>&#160;&#160;&#160;UART_COUNT</td></tr>
 <tr class="memdesc:gae453609d057b191ba45e6f85da178a1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quantity of UARTs available.  <a href="#gae453609d057b191ba45e6f85da178a1e">More...</a><br/></td></tr>
 <tr class="separator:gae453609d057b191ba45e6f85da178a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9c9ea1372c766194efb1a0568d8168d3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9c9ea1372c766194efb1a0568d8168d3"></a>
@@ -238,6 +238,18 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:gab78caf3d1a1fc77e1145393984a03ab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">values equivalent to uart_mode_t  <a href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">More...</a><br/></td></tr>
 <tr class="separator:gab78caf3d1a1fc77e1145393984a03ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga71c113451bfafdaf5fcabcd807acd480"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serial.html#ga71c113451bfafdaf5fcabcd807acd480">SerialStatus</a> { <br/>
+&#160;&#160;<a class="el" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480aa84d24b59204f8e712e04671da89fca8">eSERS_BreakDetected</a> = UIBD, 
+<br/>
+&#160;&#160;<a class="el" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a448b9677894ceef10029ccfe61f3690c">eSERS_Overflow</a> = UIOF, 
+<br/>
+&#160;&#160;<a class="el" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a14d8681274cfd09fb5b653a7d1553f2d">eSERS_FramingError</a> = UIFR, 
+<br/>
+&#160;&#160;<a class="el" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a82d848660679b89062f82c42e79c07c0">eSERS_ParityError</a> = UIPE
+<br/>
+ }</td></tr>
+<tr class="memdesc:ga71c113451bfafdaf5fcabcd807acd480"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notification and error status bits.  <a href="group__serial.html#ga71c113451bfafdaf5fcabcd807acd480">More...</a><br/></td></tr>
+<tr class="separator:ga71c113451bfafdaf5fcabcd807acd480"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -254,7 +266,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define NUMBER_UARTS&#160;&#160;&#160;2</td>
+          <td class="memname">#define NUMBER_UARTS&#160;&#160;&#160;UART_COUNT</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -345,6 +357,34 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>values equivalent to uart_mode_t </p>
+
+</div>
+</div>
+<a class="anchor" id="ga71c113451bfafdaf5fcabcd807acd480"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__serial.html#ga71c113451bfafdaf5fcabcd807acd480">SerialStatus</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Notification and error status bits. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="gga71c113451bfafdaf5fcabcd807acd480aa84d24b59204f8e712e04671da89fca8"></a>eSERS_BreakDetected</em>&#160;</td><td class="fielddoc">
+<p>Break condition detected on receive line. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="gga71c113451bfafdaf5fcabcd807acd480a448b9677894ceef10029ccfe61f3690c"></a>eSERS_Overflow</em>&#160;</td><td class="fielddoc">
+<p>Receive buffer overflowed. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="gga71c113451bfafdaf5fcabcd807acd480a14d8681274cfd09fb5b653a7d1553f2d"></a>eSERS_FramingError</em>&#160;</td><td class="fielddoc">
+<p>Receive framing error. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="gga71c113451bfafdaf5fcabcd807acd480a82d848660679b89062f82c42e79c07c0"></a>eSERS_ParityError</em>&#160;</td><td class="fielddoc">
+<p>Parity check failed on received data. </p>
+</td></tr>
+</table>
 
 </div>
 </div>

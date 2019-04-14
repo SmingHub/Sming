@@ -140,9 +140,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ga5fcd3f84c68fcaada0a548055c45b3cb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wifi__ap.html#ga5fcd3f84c68fcaada0a548055c45b3cb">setIP</a> (<a class="el" href="classIPAddress.html">IPAddress</a> address)</td></tr>
 <tr class="memdesc:ga5fcd3f84c68fcaada0a548055c45b3cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set WiFi AP IP addres.  <a href="group__wifi__ap.html#ga5fcd3f84c68fcaada0a548055c45b3cb">More...</a><br/></td></tr>
 <tr class="separator:ga5fcd3f84c68fcaada0a548055c45b3cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9a6e9d50aa7c0b2349acf7bf986d237e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wifi__ap.html#ga9a6e9d50aa7c0b2349acf7bf986d237e">getMAC</a> ()</td></tr>
-<tr class="memdesc:ga9a6e9d50aa7c0b2349acf7bf986d237e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get WiFi AP MAC address.  <a href="group__wifi__ap.html#ga9a6e9d50aa7c0b2349acf7bf986d237e">More...</a><br/></td></tr>
-<tr class="separator:ga9a6e9d50aa7c0b2349acf7bf986d237e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2c9cc724abc82d5d5669cc02e7b56c0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wifi__ap.html#ga2c9cc724abc82d5d5669cc02e7b56c0a">getMAC</a> (char sep= '\0')</td></tr>
+<tr class="memdesc:ga2c9cc724abc82d5d5669cc02e7b56c0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get WiFi AP MAC address.  <a href="group__wifi__ap.html#ga2c9cc724abc82d5d5669cc02e7b56c0a">More...</a><br/></td></tr>
+<tr class="separator:ga2c9cc724abc82d5d5669cc02e7b56c0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1e8d720bad2fa4fb09ecdd2ff48409b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classIPAddress.html">IPAddress</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__wifi__ap.html#ga1e8d720bad2fa4fb09ecdd2ff48409b1">getNetworkMask</a> ()</td></tr>
 <tr class="memdesc:ga1e8d720bad2fa4fb09ecdd2ff48409b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get WiFi AP network mask.  <a href="group__wifi__ap.html#ga1e8d720bad2fa4fb09ecdd2ff48409b1">More...</a><br/></td></tr>
 <tr class="separator:ga1e8d720bad2fa4fb09ecdd2ff48409b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -161,12 +161,12 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a41e9231ad13b06bd441519dc2f1d54ad"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAccessPointClass.html#a41e9231ad13b06bd441519dc2f1d54ad">onSystemReady</a> ()</td></tr>
-<tr class="memdesc:a41e9231ad13b06bd441519dc2f1d54ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle <em>system ready</em> events.  <a href="#a41e9231ad13b06bd441519dc2f1d54ad">More...</a><br/></td></tr>
-<tr class="separator:a41e9231ad13b06bd441519dc2f1d54ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cb2a9f1bbd795cf9af77c94a1c6b863"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAccessPointClass.html#a8cb2a9f1bbd795cf9af77c94a1c6b863">onSystemReady</a> () override</td></tr>
+<tr class="memdesc:a8cb2a9f1bbd795cf9af77c94a1c6b863"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle <em>system ready</em> events.  <a href="#a8cb2a9f1bbd795cf9af77c94a1c6b863">More...</a><br/></td></tr>
+<tr class="separator:a8cb2a9f1bbd795cf9af77c94a1c6b863"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a41e9231ad13b06bd441519dc2f1d54ad"></a>
+<a class="anchor" id="a8cb2a9f1bbd795cf9af77c94a1c6b863"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -174,7 +174,7 @@ Protected Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void AccessPointClass::onSystemReady </td>
+          <td class="memname">void AccessPointClass::onSystemReady </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -182,7 +182,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

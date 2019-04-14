@@ -15,5 +15,6 @@ var classIRToshibaAC =
     [ "setRaw", "classIRToshibaAC.html#a8094752625c97abef62e96030817e49e", null ],
     [ "setTemp", "classIRToshibaAC.html#ace6c14104aaf8e4f09adb56e18dfc92d", null ],
     [ "stateReset", "classIRToshibaAC.html#aa25c56eef0b3396d56cc385325764a9d", null ],
-    [ "toString", "classIRToshibaAC.html#aa2497f1c6a06d00e08ce920fbff46443", null ]
+    [ "toString", "classIRToshibaAC.html#aa2497f1c6a06d00e08ce920fbff46443", null ],
+    [ "validChecksum", "classIRToshibaAC.html#a653354464b3e776969c3a9a2017a169f", null ]
 ];

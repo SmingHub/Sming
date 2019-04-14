@@ -119,9 +119,8 @@ Inheritance diagram for HttpResource:</div>
  <div class="center">
   <img src="classHttpResource.png" usemap="#HttpResource_map" alt=""/>
   <map id="HttpResource_map" name="HttpResource_map">
-<area href="classHttpCompatResource.html" alt="HttpCompatResource" shape="rect" coords="0,56,183,80"/>
-<area href="classWebsocketResource.html" alt="WebsocketResource" shape="rect" coords="193,56,376,80"/>
-<area href="classWsCommandHandlerResource.html" alt="WsCommandHandlerResource" shape="rect" coords="193,112,376,136"/>
+<area href="classWebsocketResource.html" alt="WebsocketResource" shape="rect" coords="0,56,183,80"/>
+<area href="classWsCommandHandlerResource.html" alt="WsCommandHandlerResource" shape="rect" coords="0,112,183,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -133,17 +132,17 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aead3473f0031a6ef2db2d29966860b2d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aead3473f0031a6ef2db2d29966860b2d"></a>
-<a class="el" href="classDelegate.html">HttpServerConnectionBodyDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onBody</b> = 0</td></tr>
+<tr class="memitem:aead3473f0031a6ef2db2d29966860b2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDelegate.html">HttpServerConnectionBodyDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpResource.html#aead3473f0031a6ef2db2d29966860b2d">onBody</a> = nullptr</td></tr>
+<tr class="memdesc:aead3473f0031a6ef2db2d29966860b2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">resource wants to process the raw body data  <a href="#aead3473f0031a6ef2db2d29966860b2d">More...</a><br/></td></tr>
 <tr class="separator:aead3473f0031a6ef2db2d29966860b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58a1e320c9c0badb6264ec9235fff890"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58a1e320c9c0badb6264ec9235fff890"></a>
-<a class="el" href="classDelegate.html">HttpResourceDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onHeadersComplete</b> = 0</td></tr>
+<tr class="memitem:a58a1e320c9c0badb6264ec9235fff890"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDelegate.html">HttpResourceDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpResource.html#a58a1e320c9c0badb6264ec9235fff890">onHeadersComplete</a> = nullptr</td></tr>
+<tr class="memdesc:a58a1e320c9c0badb6264ec9235fff890"><td class="mdescLeft">&#160;</td><td class="mdescRight">headers are ready  <a href="#a58a1e320c9c0badb6264ec9235fff890">More...</a><br/></td></tr>
 <tr class="separator:a58a1e320c9c0badb6264ec9235fff890"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66669e3aa65ed8df2a44a20713c7634e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66669e3aa65ed8df2a44a20713c7634e"></a>
-<a class="el" href="classDelegate.html">HttpResourceDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onRequestComplete</b> = 0</td></tr>
+<tr class="memitem:a66669e3aa65ed8df2a44a20713c7634e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDelegate.html">HttpResourceDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpResource.html#a66669e3aa65ed8df2a44a20713c7634e">onRequestComplete</a> = nullptr</td></tr>
+<tr class="memdesc:a66669e3aa65ed8df2a44a20713c7634e"><td class="mdescLeft">&#160;</td><td class="mdescRight">request is complete OR upgraded  <a href="#a66669e3aa65ed8df2a44a20713c7634e">More...</a><br/></td></tr>
 <tr class="separator:a66669e3aa65ed8df2a44a20713c7634e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6f291b31205ebbe8509e47700c4c49e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab6f291b31205ebbe8509e47700c4c49e"></a>
-<a class="el" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onUpgrade</b> = 0</td></tr>
+<tr class="memitem:ab6f291b31205ebbe8509e47700c4c49e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpResource.html#ab6f291b31205ebbe8509e47700c4c49e">onUpgrade</a> = nullptr</td></tr>
+<tr class="memdesc:ab6f291b31205ebbe8509e47700c4c49e"><td class="mdescLeft">&#160;</td><td class="mdescRight">request is upgraded and raw data is passed to it  <a href="#ab6f291b31205ebbe8509e47700c4c49e">More...</a><br/></td></tr>
 <tr class="separator:ab6f291b31205ebbe8509e47700c4c49e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -171,7 +170,64 @@ Public Attributes</h2></td></tr>
 
 <p>Takes care to cleanup the connection. </p>
 
-<p>Reimplemented in <a class="el" href="classWebsocketResource.html#a2723fe8e4a275c4f0a7806d527a977f9">WebsocketResource</a>.</p>
+<p>Reimplemented in <a class="el" href="classWebsocketResource.html#a65e1bc5aec9deac5b21d8ce420e01622">WebsocketResource</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="aead3473f0031a6ef2db2d29966860b2d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDelegate.html">HttpServerConnectionBodyDelegate</a> HttpResource::onBody = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>resource wants to process the raw body data </p>
+
+</div>
+</div>
+<a class="anchor" id="a58a1e320c9c0badb6264ec9235fff890"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDelegate.html">HttpResourceDelegate</a> HttpResource::onHeadersComplete = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>headers are ready </p>
+
+</div>
+</div>
+<a class="anchor" id="a66669e3aa65ed8df2a44a20713c7634e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDelegate.html">HttpResourceDelegate</a> HttpResource::onRequestComplete = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>request is complete OR upgraded </p>
+
+</div>
+</div>
+<a class="anchor" id="ab6f291b31205ebbe8509e47700c4c49e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a> HttpResource::onUpgrade = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>request is upgraded and raw data is passed to it </p>
 
 </div>
 </div>

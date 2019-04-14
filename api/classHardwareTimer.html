@@ -129,9 +129,9 @@ Inheritance diagram for HardwareTimer:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a60378b26466588ec71c20492f8963b08"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html#a60378b26466588ec71c20492f8963b08">HardwareTimer</a> ()</td></tr>
-<tr class="memdesc:a60378b26466588ec71c20492f8963b08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hardware timer.  <a href="#a60378b26466588ec71c20492f8963b08">More...</a><br/></td></tr>
-<tr class="separator:a60378b26466588ec71c20492f8963b08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f68f8c347f41612028ab25799dfa46c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html#a0f68f8c347f41612028ab25799dfa46c">HardwareTimer</a> (HardwareTimerMode mode=eHWT_NonMaskable)</td></tr>
+<tr class="memdesc:a0f68f8c347f41612028ab25799dfa46c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hardware timer.  <a href="#a0f68f8c347f41612028ab25799dfa46c">More...</a><br/></td></tr>
+<tr class="separator:a0f68f8c347f41612028ab25799dfa46c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4c6bfa7a74d4438f80569808560fe83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classHardwareTimer.html">HardwareTimer</a> &amp;IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html#ae4c6bfa7a74d4438f80569808560fe83">initializeUs</a> (uint32_t microseconds, InterruptCallback callback=nullptr)</td></tr>
 <tr class="memdesc:ae4c6bfa7a74d4438f80569808560fe83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise hardware timer.  <a href="#ae4c6bfa7a74d4438f80569808560fe83">More...</a><br/></td></tr>
 <tr class="separator:ae4c6bfa7a74d4438f80569808560fe83"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,9 +141,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7261dd28d90841d3f2a49cac5ec39286"><td class="memItemLeft" align="right" valign="top">bool IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html#a7261dd28d90841d3f2a49cac5ec39286">start</a> (bool repeating=true)</td></tr>
 <tr class="memdesc:a7261dd28d90841d3f2a49cac5ec39286"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start timer running.  <a href="#a7261dd28d90841d3f2a49cac5ec39286">More...</a><br/></td></tr>
 <tr class="separator:a7261dd28d90841d3f2a49cac5ec39286"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29c09659ed6fc285632ea63b73f9acaf"><td class="memItemLeft" align="right" valign="top">bool __forceinline IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html#a29c09659ed6fc285632ea63b73f9acaf">startOnce</a> ()</td></tr>
-<tr class="memdesc:a29c09659ed6fc285632ea63b73f9acaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start one-shot timer.  <a href="#a29c09659ed6fc285632ea63b73f9acaf">More...</a><br/></td></tr>
-<tr class="separator:a29c09659ed6fc285632ea63b73f9acaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3617ea06d8c9d6211d59f1cfc5381db"><td class="memItemLeft" align="right" valign="top">__forceinline bool IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html#ac3617ea06d8c9d6211d59f1cfc5381db">startOnce</a> ()</td></tr>
+<tr class="memdesc:ac3617ea06d8c9d6211d59f1cfc5381db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start one-shot timer.  <a href="#ac3617ea06d8c9d6211d59f1cfc5381db">More...</a><br/></td></tr>
+<tr class="separator:ac3617ea06d8c9d6211d59f1cfc5381db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34a15d2296c68f4c5c18a76b54de0e4b"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html#a34a15d2296c68f4c5c18a76b54de0e4b">stop</a> ()</td></tr>
 <tr class="memdesc:a34a15d2296c68f4c5c18a76b54de0e4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops timer.  <a href="#a34a15d2296c68f4c5c18a76b54de0e4b">More...</a><br/></td></tr>
 <tr class="separator:a34a15d2296c68f4c5c18a76b54de0e4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,32 +168,40 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae31371ae3b63ae2de72824dbdcea14fb"><td class="memItemLeft" align="right" valign="top">void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html#ae31371ae3b63ae2de72824dbdcea14fb">setCallback</a> (InterruptCallback callback)</td></tr>
 <tr class="memdesc:ae31371ae3b63ae2de72824dbdcea14fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set timer trigger callback.  <a href="#ae31371ae3b63ae2de72824dbdcea14fb">More...</a><br/></td></tr>
 <tr class="separator:ae31371ae3b63ae2de72824dbdcea14fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac49fea30f1d32ce0287b486fb64f9a45"><td class="memItemLeft" align="right" valign="top">void __forceinline IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html#ac49fea30f1d32ce0287b486fb64f9a45">call</a> ()</td></tr>
-<tr class="memdesc:ac49fea30f1d32ce0287b486fb64f9a45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call timer callback.  <a href="#ac49fea30f1d32ce0287b486fb64f9a45">More...</a><br/></td></tr>
-<tr class="separator:ac49fea30f1d32ce0287b486fb64f9a45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3d06cc7f33c0c722ebc94a659df0f1d"><td class="memItemLeft" align="right" valign="top">__forceinline void IRAM_ATTR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHardwareTimer.html#aa3d06cc7f33c0c722ebc94a659df0f1d">call</a> ()</td></tr>
+<tr class="memdesc:aa3d06cc7f33c0c722ebc94a659df0f1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call timer callback.  <a href="#aa3d06cc7f33c0c722ebc94a659df0f1d">More...</a><br/></td></tr>
+<tr class="separator:aa3d06cc7f33c0c722ebc94a659df0f1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Hardware timer class. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a60378b26466588ec71c20492f8963b08"></a>
+<a class="anchor" id="a0f68f8c347f41612028ab25799dfa46c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">HardwareTimer::HardwareTimer </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">HardwareTimerMode&#160;</td>
+          <td class="paramname"><em>mode</em> = <code>eHWT_NonMaskable</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Hardware timer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>NMI has highest interrupt priority on system and can therefore occur within any other interrupt service routine. Similarly, the NMI service routine cannot itself be interrupted. This provides the most stable and reliable timing possible, and is therefore the default behaviour. </dd></dl>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ac49fea30f1d32ce0287b486fb64f9a45"></a>
+<a class="anchor" id="aa3d06cc7f33c0c722ebc94a659df0f1d"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -201,7 +209,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void __forceinline IRAM_ATTR HardwareTimer::call </td>
+          <td class="memname">__forceinline void IRAM_ATTR HardwareTimer::call </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -528,7 +536,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a29c09659ed6fc285632ea63b73f9acaf"></a>
+<a class="anchor" id="ac3617ea06d8c9d6211d59f1cfc5381db"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -536,7 +544,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool __forceinline IRAM_ATTR HardwareTimer::startOnce </td>
+          <td class="memname">__forceinline bool IRAM_ATTR HardwareTimer::startOnce </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

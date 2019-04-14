@@ -151,6 +151,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a338322a7a8d6ba9fd466b11c2865d311"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDebugClass.html#a338322a7a8d6ba9fd466b11c2865d311">setDebug</a> (<a class="el" href="classStream.html">Stream</a> &amp;reqStream)</td></tr>
 <tr class="memdesc:a338322a7a8d6ba9fd466b11c2865d311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures debug to use stream for its output.  <a href="#a338322a7a8d6ba9fd466b11c2865d311">More...</a><br/></td></tr>
 <tr class="separator:a338322a7a8d6ba9fd466b11c2865d311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac147de586b780ec9e0374b653f9b99cb"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDebugClass.html#ac147de586b780ec9e0374b653f9b99cb">write</a> (uint8_t) override</td></tr>
+<tr class="memdesc:ac147de586b780ec9e0374b653f9b99cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a single character to output stream.  <a href="#ac147de586b780ec9e0374b653f9b99cb">More...</a><br/></td></tr>
+<tr class="separator:ac147de586b780ec9e0374b653f9b99cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88a4a829fb5d589efb43955ad0cbddcc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#a88a4a829fb5d589efb43955ad0cbddcc">getWriteError</a> ()</td></tr>
 <tr class="memdesc:a88a4a829fb5d589efb43955ad0cbddcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets last error.  <a href="#a88a4a829fb5d589efb43955ad0cbddcc">More...</a><br/></td></tr>
 <tr class="separator:a88a4a829fb5d589efb43955ad0cbddcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1251,6 +1254,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
 <a class="anchor" id="ae23e3ddc020c8ed9b5bd9aad437beb6b"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool DebugClass::status </td>
@@ -1259,6 +1265,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Get debug status. </p>
@@ -1373,7 +1384,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classHardwareSerial.html#ad147d03d04372e0f54d9829caead7165">HardwareSerial</a>, <a class="el" href="classTemplateStream.html#aa73cef1b4c6343def20f085c7d9d7be2">TemplateStream</a>, <a class="el" href="classCircularBuffer.html#af15fd63f52403b8a95e97d590adcba4c">CircularBuffer</a>, <a class="el" href="classStreamTransformer.html#a1549697adbf789f7c3ff1d6a5c867105">StreamTransformer</a>, <a class="el" href="classTwoWire.html#aae4d6ff65d9d4953e40ebeeccd908615">TwoWire</a>, <a class="el" href="classFileStream.html#a3bef6b847ea522190e66f92972b89680">FileStream</a>, <a class="el" href="classMemoryDataStream.html#acb59a4836b2336e263051096b0b40f57">MemoryDataStream</a>, <a class="el" href="classUrlencodedOutputStream.html#a283ab1e09eedc65d2fa7062a66fa503a">UrlencodedOutputStream</a>, <a class="el" href="classLimitedMemoryStream.html#a0109f9abcd3c6bde9e822d7568413437">LimitedMemoryStream</a>, <a class="el" href="classEndlessMemoryStream.html#a35bae04dc9296526134337ffea071f75">EndlessMemoryStream</a>, <a class="el" href="classMultiStream.html#a3eddb671ff438f2208e08fc32abcecff">MultiStream</a>, <a class="el" href="classReadWriteStream.html#a2d59383b573eea799e162744972a7aee">ReadWriteStream</a>, <a class="el" href="classArduCAMStream.html#ae07d3e1ea4008c0c5e447821bab25f6e">ArduCAMStream</a>, and <a class="el" href="classrBootItemOutputStream.html#ae2222af5322e4c2344112d904ac2593d">rBootItemOutputStream</a>.</p>
+<p>Reimplemented in <a class="el" href="classHardwareSerial.html#af6e2342e46c9b51628de42582917bd07">HardwareSerial</a>, <a class="el" href="classCircularBuffer.html#ad407f2813fced50ab17a90227ae06d4c">CircularBuffer</a>, <a class="el" href="classFileStream.html#a2b263c07bf1bf62ac4f821569ede3dde">FileStream</a>, <a class="el" href="classMemoryDataStream.html#ad6b27532e476132825fc97a3a2bc3ff4">MemoryDataStream</a>, <a class="el" href="classLimitedMemoryStream.html#aca8aa3ed04ea72518564fff35fda5bbc">LimitedMemoryStream</a>, <a class="el" href="classTwoWire.html#a0f8b7893b9d160a1b429a95932a7129d">TwoWire</a>, <a class="el" href="classEndlessMemoryStream.html#a84f304417441c88d464c1240c8dece22">EndlessMemoryStream</a>, <a class="el" href="classGdbFileStream.html#a5b3fe6cdb70184abfc14becc714c4d7f">GdbFileStream</a>, <a class="el" href="classrBootItemOutputStream.html#a46f3b498128885c547f59d4a19a9d654">rBootItemOutputStream</a>, and <a class="el" href="classReadWriteStream.html#a2d59383b573eea799e162744972a7aee">ReadWriteStream</a>.</p>
 
 </div>
 </div>
@@ -1423,6 +1434,46 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setWriteError</b> (in
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="ac147de586b780ec9e0374b653f9b99cb"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t DebugClass::write </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes a single character to output stream. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uint8_t</td><td>Character to write to output stream </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">size_t</td><td>Quantity of characters written to output stream </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classPrint.html#a29ff950e3418d9d9ea6ca84a612fe6a8">Print</a>.</p>
 
 </div>
 </div>

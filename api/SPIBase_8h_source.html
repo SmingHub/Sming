@@ -113,42 +113,49 @@ $(document).ready(function(){initNavTree('SPIBase_8h_source.html','');});
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *      Author: harry-boe</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#ifndef SMINGCORE_SPIBASE_H_</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMINGCORE_SPIBASE_H_</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;SPISettings.h&quot;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">/* @defgroup SPI base implementation</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> * Base class/interface for SPI implementations</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classSPIBase.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSPIBase.html">SPIBase</a></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;{</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="classSPIBase.html">SPIBase</a>();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classSPIBase.html">SPIBase</a>();</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__base__spi.html#gafbeadd11a2371ae16ff98c367c1b80dc">begin</a>() = 0;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__base__spi.html#ga9c11c8bd1a7be8104e1a004c0e964fe4">end</a>() = 0;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__base__spi.html#gad5fd61e67423191ce0bc9a0e3e8bd5c4">beginTransaction</a>(<a class="code" href="classSPISettings.html">SPISettings</a> mySettings) = 0;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__base__spi.html#gad2aec733277dc8c94a00e660d79a84f2">endTransaction</a>() = 0;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="group__base__spi.html#ga40f6c5273d46c59daa4ddfe4afb48c17">transfer</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> val) = 0;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> transfer16(<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> val) = 0;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__base__spi.html#ga40f6c5273d46c59daa4ddfe4afb48c17">transfer</a>(uint8* buffer, <span class="keywordtype">size_t</span> size) = 0;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <a class="code" href="classSPISettings.html">SPISettings</a> SPIDefaultSettings;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;};</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SMINGCORE_SPIBASE_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classSPISettings_html"><div class="ttname"><a href="classSPISettings.html">SPISettings</a></div><div class="ttdef"><b>Definition:</b> SPISettings.h:27</div></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_SPI_BASE_H_</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_SPI_BASE_H_</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;SPISettings.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">/* @defgroup SPI base implementation</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> * Base class/interface for SPI implementations</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classSPIBase.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSPIBase.html">SPIBase</a></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="classSPIBase.html">SPIBase</a>()</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    }</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classSPIBase.html">SPIBase</a>()</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    }</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__base__spi.html#gafbeadd11a2371ae16ff98c367c1b80dc">begin</a>() = 0;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__base__spi.html#ga9c11c8bd1a7be8104e1a004c0e964fe4">end</a>() = 0;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__base__spi.html#gad5fd61e67423191ce0bc9a0e3e8bd5c4">beginTransaction</a>(<a class="code" href="classSPISettings.html">SPISettings</a> mySettings) = 0;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__base__spi.html#gad2aec733277dc8c94a00e660d79a84f2">endTransaction</a>() = 0;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> <a class="code" href="group__base__spi.html#ga40f6c5273d46c59daa4ddfe4afb48c17">transfer</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> val) = 0;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> transfer16(<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> val) = 0;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="group__base__spi.html#ga40f6c5273d46c59daa4ddfe4afb48c17">transfer</a>(uint8* buffer, <span class="keywordtype">size_t</span> size) = 0;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="group__base__spi.html#gab60522af0ac50ba40d9047c99743141d">   75</a></span>&#160;    <a class="code" href="classSPISettings.html">SPISettings</a> <a class="code" href="group__base__spi.html#gab60522af0ac50ba40d9047c99743141d">SPIDefaultSettings</a>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_SPI_BASE_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classSPISettings_html"><div class="ttname"><a href="classSPISettings.html">SPISettings</a></div><div class="ttdef"><b>Definition:</b> SPISettings.h:34</div></div>
 <div class="ttc" id="group__base__spi_html_ga9c11c8bd1a7be8104e1a004c0e964fe4"><div class="ttname"><a href="group__base__spi.html#ga9c11c8bd1a7be8104e1a004c0e964fe4">SPIBase::end</a></div><div class="ttdeci">virtual void end()=0</div><div class="ttdoc">end(): Disables the SPI bus (leaving pin modes unchanged). </div></div>
 <div class="ttc" id="group__base__spi_html_gafbeadd11a2371ae16ff98c367c1b80dc"><div class="ttname"><a href="group__base__spi.html#gafbeadd11a2371ae16ff98c367c1b80dc">SPIBase::begin</a></div><div class="ttdeci">virtual void begin()=0</div><div class="ttdoc">begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low...</div></div>
 <div class="ttc" id="group__base__spi_html_gad2aec733277dc8c94a00e660d79a84f2"><div class="ttname"><a href="group__base__spi.html#gad2aec733277dc8c94a00e660d79a84f2">SPIBase::endTransaction</a></div><div class="ttdeci">virtual void endTransaction()=0</div><div class="ttdoc">endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select...</div></div>
 <div class="ttc" id="group__base__spi_html_gad5fd61e67423191ce0bc9a0e3e8bd5c4"><div class="ttname"><a href="group__base__spi.html#gad5fd61e67423191ce0bc9a0e3e8bd5c4">SPIBase::beginTransaction</a></div><div class="ttdeci">virtual void beginTransaction(SPISettings mySettings)=0</div><div class="ttdoc">beginTransaction(): Initializes the SPI bus using the defined SPISettings. </div></div>
-<div class="ttc" id="classSPIBase_html"><div class="ttname"><a href="classSPIBase.html">SPIBase</a></div><div class="ttdef"><b>Definition:</b> SPIBase.h:25</div></div>
+<div class="ttc" id="group__base__spi_html_gab60522af0ac50ba40d9047c99743141d"><div class="ttname"><a href="group__base__spi.html#gab60522af0ac50ba40d9047c99743141d">SPIBase::SPIDefaultSettings</a></div><div class="ttdeci">SPISettings SPIDefaultSettings</div><div class="ttdoc">Default settings used by the SPI bus until reset by beginTransaction(SPISettings) ...</div><div class="ttdef"><b>Definition:</b> SPIBase.h:75</div></div>
+<div class="ttc" id="classSPIBase_html"><div class="ttname"><a href="classSPIBase.html">SPIBase</a></div><div class="ttdef"><b>Definition:</b> SPIBase.h:26</div></div>
 <div class="ttc" id="group__base__spi_html_ga40f6c5273d46c59daa4ddfe4afb48c17"><div class="ttname"><a href="group__base__spi.html#ga40f6c5273d46c59daa4ddfe4afb48c17">SPIBase::transfer</a></div><div class="ttdeci">virtual unsigned char transfer(unsigned char val)=0</div><div class="ttdoc">transfer(), transfer16() </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sming Framework API: URL</title>
+<title>Sming Framework API: Url</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -99,34 +99,115 @@ $(document).ready(function(){initNavTree('group__url.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
-<div class="title">URL<div class="ingroups"><a class="el" href="group__httpserver.html">HTTP server</a> &#124; <a class="el" href="group__httpclient.html">HTTP client</a></div></div>  </div>
+<div class="title">Url<div class="ingroups"><a class="el" href="group__httpserver.html">HTTP server</a> &#124; <a class="el" href="group__httpclient.html">HTTP client</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Provides <a class="el" href="classURL.html">URL</a> handling.  
+<p>Provides URL handling.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classURL.html">URL</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUrl.html">Url</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class to manage URL instance.  <a href="classUrl.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ga26b3327960e4c4c09cee3355888a4089"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga26b3327960e4c4c09cee3355888a4089"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>DEFAULT_URL_PROTOCOL</b>&#160;&#160;&#160;_F(&quot;http&quot;)</td></tr>
-<tr class="separator:ga26b3327960e4c4c09cee3355888a4089"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga991f714d72e632093436582e328c7ae8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga991f714d72e632093436582e328c7ae8"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>HTTPS_URL_PROTOCOL</b>&#160;&#160;&#160;_F(&quot;https&quot;)</td></tr>
-<tr class="separator:ga991f714d72e632093436582e328c7ae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadd7a05788e6b223f4b1d6327e0e45d5b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gadd7a05788e6b223f4b1d6327e0e45d5b"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>WEBSOCKET_SECURE_URL_PROTOCOL</b>&#160;&#160;&#160;_F(&quot;wss&quot;)</td></tr>
-<tr class="separator:gadd7a05788e6b223f4b1d6327e0e45d5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga88a526acc5d942ea130ff7d54cd467ac"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>URI_SCHEME_MAP</b>(<a class="el" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">XX</a>)</td></tr>
+<tr class="separator:ga88a526acc5d942ea130ff7d54cd467ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4262d3b54330f90d195f3051b1fa1335"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">XX</a>(name, str, port)&#160;&#160;&#160;DECLARE_FSTR(URI_SCHEME_##name)</td></tr>
+<tr class="memdesc:ga4262d3b54330f90d195f3051b1fa1335"><td class="mdescLeft">&#160;</td><td class="mdescRight">Common URI scheme strings.  <a href="#ga4262d3b54330f90d195f3051b1fa1335">More...</a><br/></td></tr>
+<tr class="separator:ga4262d3b54330f90d195f3051b1fa1335"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ga7589191fa2da5424fc954be1fee1fed8"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classUrl.html">Url</a> URL&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__url.html#ga7589191fa2da5424fc954be1fee1fed8">SMING_DEPRECATED</a></td></tr>
+<tr class="separator:ga7589191fa2da5424fc954be1fee1fed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Provides <a class="el" href="classURL.html">URL</a> handling. </p>
+<p>Provides URL handling. </p>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="ga88a526acc5d942ea130ff7d54cd467ac"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define URI_SCHEME_MAP</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><a class="el" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">XX</a></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">XX</a>(HTTP, http, 80)                                                                                                 <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(HTTP_SECURE, https, 443)                                                                                        <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(WEBSOCKET, ws, 80)                                                                                              <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(WEBSOCKET_SECURE, wss, 443)                                                                                     <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(MQTT, mqtt, 1883)                                                                                               <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(MQTT_SECURE, mqtts, 8883)                                                                                       <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(SMTP, smtp, 25)                                                                                                 <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(SMTP_SECURE, smtps, 465)                                                                                        <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(FTP, ftp, 21)                                                                                                   <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(MAIL_TO, mailto, 0)                                                                                             <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(FILE, file, 0)                                                                                                  <a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">\</a></div>
+<div class="line"><a class="code" href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">	XX</a>(DATA, data, 0)</div>
+<div class="ttc" id="group__url_html_ga4262d3b54330f90d195f3051b1fa1335"><div class="ttname"><a href="group__url.html#ga4262d3b54330f90d195f3051b1fa1335">XX</a></div><div class="ttdeci">#define XX(name, str, port)</div><div class="ttdoc">Common URI scheme strings. </div><div class="ttdef"><b>Definition:</b> Url.h:54</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a class="anchor" id="ga4262d3b54330f90d195f3051b1fa1335"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XX</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">str, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">port&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;DECLARE_FSTR(URI_SCHEME_##name)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Common URI scheme strings. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="ga7589191fa2da5424fc954be1fee1fed8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="classUrl.html">Url</a> URL SMING_DEPRECATED</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000043">Deprecated:</a></b></dt><dd>Use <code><a class="el" href="classUrl.html" title="Class to manage URL instance. ">Url</a></code> instead </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

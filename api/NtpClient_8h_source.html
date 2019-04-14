@@ -107,114 +107,118 @@ $(document).ready(function(){initNavTree('NtpClient_8h_source.html','');});
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> ****/</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_NETWORK_NTPCLIENT_H_</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_NETWORK_NTPCLIENT_H_</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;UdpConnection.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;Platform/System.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;Timer.h&quot;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;DateTime.h&quot;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;Delegate.h&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#define NTP_PORT 123</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NTP_PACKET_SIZE 48</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NTP_VERSION 4</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NTP_MODE_CLIENT 3</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NTP_MODE_SERVER 4</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#define NTP_DEFAULT_SERVER F(&quot;pool.ntp.org&quot;)</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NTP_DEFAULT_AUTOQUERY_SECONDS 30U // (10U * SECS_PER_MIN) </span></div>
-<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="group__ntp.html#gaa0b9f53a16ca41e82d725c07b82d7ed1">   32</a></span>&#160;<span class="preprocessor">#define NTP_MIN_AUTOQUERY_SECONDS 10U    </span></div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="group__ntp.html#gaa6d00bb29b25a42786dcb0fd03cc8117">   33</a></span>&#160;<span class="preprocessor">#define NTP_CONNECTION_TIMEOUT_MS 1666U   </span></div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="group__ntp.html#gaa46039ffb362e6acd10dea85a1df87f0">   34</a></span>&#160;<span class="preprocessor">#define NTP_RESPONSE_TIMEOUT_MS 20000U  </span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor"></span><span class="keyword">class </span><a class="code" href="classNtpClient.html">NtpClient</a>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">// Delegate constructor usage: (&amp;YourClass::method, this)</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(NtpClient&amp; client, time_t ntpTime)&gt;</a> <a class="code" href="classDelegate.html">NtpTimeResultDelegate</a>;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="classNtpClient.html">   42</a></span>&#160;<span class="keyword">class </span><a class="code" href="classNtpClient.html">NtpClient</a> : <span class="keyword">protected</span> <a class="code" href="classUdpConnection.html">UdpConnection</a></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;{</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <a class="code" href="classNtpClient.html#a9b09163e448b31fed13dde7f4c710fd7">NtpClient</a>();</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="classNtpClient.html#a9b09163e448b31fed13dde7f4c710fd7">NtpClient</a>(<a class="code" href="classDelegate.html">NtpTimeResultDelegate</a> onTimeReceivedCb);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="classNtpClient.html#a9b09163e448b31fed13dde7f4c710fd7">NtpClient</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; reqServer, <span class="keywordtype">unsigned</span> reqIntervalSeconds, <a class="code" href="classDelegate.html">NtpTimeResultDelegate</a> onTimeReceivedCb = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * NtpClient.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_NETWORK_NTP_CLIENT_H_</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_NETWORK_NTP_CLIENT_H_</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;UdpConnection.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;Platform/System.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;Timer.h&quot;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;DateTime.h&quot;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;Delegate.h&quot;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#define NTP_PORT 123</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NTP_PACKET_SIZE 48</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NTP_VERSION 4</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NTP_MODE_CLIENT 3</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NTP_MODE_SERVER 4</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#define NTP_DEFAULT_SERVER F(&quot;pool.ntp.org&quot;)</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NTP_DEFAULT_AUTOQUERY_SECONDS 30U // (10U * SECS_PER_MIN) </span></div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="group__ntp.html#gaa0b9f53a16ca41e82d725c07b82d7ed1">   34</a></span>&#160;<span class="preprocessor">#define NTP_MIN_AUTOQUERY_SECONDS 10U    </span></div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="group__ntp.html#gaa6d00bb29b25a42786dcb0fd03cc8117">   35</a></span>&#160;<span class="preprocessor">#define NTP_CONNECTION_TIMEOUT_MS 1666U   </span></div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="group__ntp.html#gaa46039ffb362e6acd10dea85a1df87f0">   36</a></span>&#160;<span class="preprocessor">#define NTP_RESPONSE_TIMEOUT_MS 20000U  </span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor"></span><span class="keyword">class </span><a class="code" href="classNtpClient.html">NtpClient</a>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">// Delegate constructor usage: (&amp;YourClass::method, this)</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(NtpClient&amp; client, time_t ntpTime)&gt;</a> <a class="code" href="classDelegate.html">NtpTimeResultDelegate</a>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="classNtpClient.html">   44</a></span>&#160;<span class="keyword">class </span><a class="code" href="classNtpClient.html">NtpClient</a> : <span class="keyword">protected</span> <a class="code" href="classUdpConnection.html">UdpConnection</a></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;{</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classNtpClient.html#a9b09163e448b31fed13dde7f4c710fd7">   49</a></span>&#160;    <a class="code" href="classNtpClient.html#a9b09163e448b31fed13dde7f4c710fd7">NtpClient</a>() : <a class="code" href="classNtpClient.html">NtpClient</a>(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, nullptr)</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    }</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classNtpClient.html#a62f824bfe7d1aa2f85551bbd3230da0c">   56</a></span>&#160;    <a class="code" href="classNtpClient.html#a62f824bfe7d1aa2f85551bbd3230da0c">NtpClient</a>(<a class="code" href="classDelegate.html">NtpTimeResultDelegate</a> onTimeReceivedCb)</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        : <a class="code" href="classNtpClient.html">NtpClient</a>(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, onTimeReceivedCb)</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    }</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classNtpClient.html">NtpClient</a>()</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    {</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#af02ed50c487b0572e4b00c6159a65b95">requestTime</a>();</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classNtpClient.html#a4205f9144d89e34b43998de6d9d94ff3">   73</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#a4205f9144d89e34b43998de6d9d94ff3">setNtpServer</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; <a class="code" href="classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65">server</a>)</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        this-&gt;server = <a class="code" href="classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65">server</a>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#a5f43fe41391992dd859301c9cf8505b2">setAutoQuery</a>(<span class="keywordtype">bool</span> autoQuery);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#a4c7ba68c32d92dfaf12b5aa426696df0">setAutoQueryInterval</a>(<span class="keywordtype">unsigned</span> seconds);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="classNtpClient.html#ab347aea16a3aba444e7636cfbfefbf0e">   91</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#ab347aea16a3aba444e7636cfbfefbf0e">setAutoUpdateSystemClock</a>(<span class="keywordtype">bool</span> autoUpdateClock)</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <a class="code" href="classNtpClient.html#a3788a373550ccc201532d658c6326cd1">autoUpdateSystemClock</a> = autoUpdateClock;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    }</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#acc2092a5f662df125d7dd6600dad5ec3">onReceive</a>(pbuf* buf, <a class="code" href="classIPAddress.html">IPAddress</a> remoteIP, uint16_t remotePort);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#af2df6d79f7f3e9fb6532e9f668e9b5fe">internalRequestTime</a>(<a class="code" href="classIPAddress.html">IPAddress</a> serverIp);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno"><a class="line" href="classNtpClient.html#a6fd8fd8397d3f340b9eba3411e7f20ad">  112</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#a6fd8fd8397d3f340b9eba3411e7f20ad">startTimer</a>(uint32_t milliseconds)</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    {</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        debug_d(<span class="stringliteral">&quot;NtpClient::startTimer(%u)&quot;</span>, milliseconds);</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <a class="code" href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">timer</a>.<a class="code" href="group__timer.html#ga955fc3fdb8cea3d4dc19a1bae495fb6e">setIntervalMs</a>(milliseconds);</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        <a class="code" href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">timer</a>.<a class="code" href="group__timer.html#ga79112b78bb1930a3350858c15221ac97">startOnce</a>();</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    }</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordtype">void</span> stopTimer()</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    {</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        debug_d(<span class="stringliteral">&quot;NtpClient::stopTimer()&quot;</span>);</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        <a class="code" href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">timer</a>.<a class="code" href="group__timer.html#ga6dbdb112577bdd9db5019d3bf81bbc1c">stop</a>();</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    }</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00126"></a><span class="lineno"><a class="line" href="classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65">  126</a></span>&#160;    <a class="code" href="classString.html">String</a> <a class="code" href="classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65">server</a>; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <a class="code" href="classNtpClient.html#a9b09163e448b31fed13dde7f4c710fd7">NtpClient</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; reqServer, <span class="keywordtype">unsigned</span> reqIntervalSeconds, <a class="code" href="classDelegate.html">NtpTimeResultDelegate</a> onTimeReceivedCb = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#af02ed50c487b0572e4b00c6159a65b95">requestTime</a>();</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="classNtpClient.html#a4205f9144d89e34b43998de6d9d94ff3">   76</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#a4205f9144d89e34b43998de6d9d94ff3">setNtpServer</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; <a class="code" href="classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65">server</a>)</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    {</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        this-&gt;server = <a class="code" href="classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65">server</a>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    }</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#a5f43fe41391992dd859301c9cf8505b2">setAutoQuery</a>(<span class="keywordtype">bool</span> autoQuery);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#a4c7ba68c32d92dfaf12b5aa426696df0">setAutoQueryInterval</a>(<span class="keywordtype">unsigned</span> seconds);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="classNtpClient.html#ab347aea16a3aba444e7636cfbfefbf0e">   94</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#ab347aea16a3aba444e7636cfbfefbf0e">setAutoUpdateSystemClock</a>(<span class="keywordtype">bool</span> autoUpdateClock)</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <a class="code" href="classNtpClient.html#a3788a373550ccc201532d658c6326cd1">autoUpdateSystemClock</a> = autoUpdateClock;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    }</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#a8b993754be0dee75f4eb1f940d3a658d">onReceive</a>(pbuf* buf, <a class="code" href="classIPAddress.html">IPAddress</a> remoteIP, uint16_t remotePort) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#af2df6d79f7f3e9fb6532e9f668e9b5fe">internalRequestTime</a>(<a class="code" href="classIPAddress.html">IPAddress</a> serverIp);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="classNtpClient.html#a6fd8fd8397d3f340b9eba3411e7f20ad">  115</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classNtpClient.html#a6fd8fd8397d3f340b9eba3411e7f20ad">startTimer</a>(uint32_t milliseconds)</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    {</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        debug_d(<span class="stringliteral">&quot;NtpClient::startTimer(%u)&quot;</span>, milliseconds);</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <a class="code" href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">timer</a>.<a class="code" href="group__timer.html#ga955fc3fdb8cea3d4dc19a1bae495fb6e">setIntervalMs</a>(milliseconds);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <a class="code" href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">timer</a>.<a class="code" href="group__timer.html#ga4e73a9f0368dee23746cb312cabafbea">startOnce</a>();</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    }</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="keywordtype">void</span> stopTimer()</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        debug_d(<span class="stringliteral">&quot;NtpClient::stopTimer()&quot;</span>);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <a class="code" href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">timer</a>.<a class="code" href="group__timer.html#ga6dbdb112577bdd9db5019d3bf81bbc1c">stop</a>();</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    }</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
-<div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="classNtpClient.html#ab0963648f29c6702f0c0c427fc18cfe0">  128</a></span>&#160;    <a class="code" href="classDelegate.html">NtpTimeResultDelegate</a> <a class="code" href="classNtpClient.html#ab0963648f29c6702f0c0c427fc18cfe0">delegateCompleted</a> = <span class="keyword">nullptr</span>; </div>
-<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="classNtpClient.html#a3788a373550ccc201532d658c6326cd1">  129</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classNtpClient.html#a3788a373550ccc201532d658c6326cd1">autoUpdateSystemClock</a> = <span class="keyword">false</span>;                </div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keywordtype">bool</span> autoQueryEnabled = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keywordtype">unsigned</span> autoQuerySeconds = NTP_DEFAULT_AUTOQUERY_SECONDS;</div>
-<div class="line"><a name="l00132"></a><span class="lineno"><a class="line" href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">  132</a></span>&#160;    <a class="code" href="classTimer.html">Timer</a> <a class="code" href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">timer</a>; </div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;};</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_NETWORK_NTPCLIENT_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classNtpClient_html_ab347aea16a3aba444e7636cfbfefbf0e"><div class="ttname"><a href="classNtpClient.html#ab347aea16a3aba444e7636cfbfefbf0e">NtpClient::setAutoUpdateSystemClock</a></div><div class="ttdeci">void setAutoUpdateSystemClock(bool autoUpdateClock)</div><div class="ttdoc">Enable / disable update of system clock. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:91</div></div>
-<div class="ttc" id="classUdpConnection_html"><div class="ttname"><a href="classUdpConnection.html">UdpConnection</a></div><div class="ttdef"><b>Definition:</b> UdpConnection.h:26</div></div>
-<div class="ttc" id="classNtpClient_html_acc2092a5f662df125d7dd6600dad5ec3"><div class="ttname"><a href="classNtpClient.html#acc2092a5f662df125d7dd6600dad5ec3">NtpClient::onReceive</a></div><div class="ttdeci">void onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort)</div><div class="ttdoc">Handle UDP message reception. </div></div>
-<div class="ttc" id="classNtpClient_html_a3b8cfcd355c2100d3108e009e5a91d65"><div class="ttname"><a href="classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65">NtpClient::server</a></div><div class="ttdeci">String server</div><div class="ttdoc">IP address or Hostname of NTP server. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:126</div></div>
-<div class="ttc" id="classNtpClient_html_a4205f9144d89e34b43998de6d9d94ff3"><div class="ttname"><a href="classNtpClient.html#a4205f9144d89e34b43998de6d9d94ff3">NtpClient::setNtpServer</a></div><div class="ttdeci">void setNtpServer(const String &amp;server)</div><div class="ttdoc">Set the NTP server. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:73</div></div>
-<div class="ttc" id="classNtpClient_html_a9b09163e448b31fed13dde7f4c710fd7"><div class="ttname"><a href="classNtpClient.html#a9b09163e448b31fed13dde7f4c710fd7">NtpClient::NtpClient</a></div><div class="ttdeci">NtpClient()</div><div class="ttdoc">Instantiates NTP client object. </div></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65">  129</a></span>&#160;    <a class="code" href="classString.html">String</a> <a class="code" href="classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65">server</a>; </div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
+<div class="line"><a name="l00131"></a><span class="lineno"><a class="line" href="classNtpClient.html#ab0963648f29c6702f0c0c427fc18cfe0">  131</a></span>&#160;    <a class="code" href="classDelegate.html">NtpTimeResultDelegate</a> <a class="code" href="classNtpClient.html#ab0963648f29c6702f0c0c427fc18cfe0">delegateCompleted</a> = <span class="keyword">nullptr</span>; </div>
+<div class="line"><a name="l00132"></a><span class="lineno"><a class="line" href="classNtpClient.html#a3788a373550ccc201532d658c6326cd1">  132</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classNtpClient.html#a3788a373550ccc201532d658c6326cd1">autoUpdateSystemClock</a> = <span class="keyword">false</span>;                </div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    <span class="keywordtype">bool</span> autoQueryEnabled = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="keywordtype">unsigned</span> autoQuerySeconds = NTP_DEFAULT_AUTOQUERY_SECONDS;</div>
+<div class="line"><a name="l00135"></a><span class="lineno"><a class="line" href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">  135</a></span>&#160;    <a class="code" href="classTimer.html">Timer</a> <a class="code" href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">timer</a>; </div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;};</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_NETWORK_NTP_CLIENT_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classNtpClient_html_ab347aea16a3aba444e7636cfbfefbf0e"><div class="ttname"><a href="classNtpClient.html#ab347aea16a3aba444e7636cfbfefbf0e">NtpClient::setAutoUpdateSystemClock</a></div><div class="ttdeci">void setAutoUpdateSystemClock(bool autoUpdateClock)</div><div class="ttdoc">Enable / disable update of system clock. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:94</div></div>
+<div class="ttc" id="classUdpConnection_html"><div class="ttname"><a href="classUdpConnection.html">UdpConnection</a></div><div class="ttdef"><b>Definition:</b> UdpConnection.h:29</div></div>
+<div class="ttc" id="classNtpClient_html_a62f824bfe7d1aa2f85551bbd3230da0c"><div class="ttname"><a href="classNtpClient.html#a62f824bfe7d1aa2f85551bbd3230da0c">NtpClient::NtpClient</a></div><div class="ttdeci">NtpClient(NtpTimeResultDelegate onTimeReceivedCb)</div><div class="ttdoc">Instantiates NTP client object. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:56</div></div>
+<div class="ttc" id="classNtpClient_html_a3b8cfcd355c2100d3108e009e5a91d65"><div class="ttname"><a href="classNtpClient.html#a3b8cfcd355c2100d3108e009e5a91d65">NtpClient::server</a></div><div class="ttdeci">String server</div><div class="ttdoc">IP address or Hostname of NTP server. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:129</div></div>
+<div class="ttc" id="classNtpClient_html_a4205f9144d89e34b43998de6d9d94ff3"><div class="ttname"><a href="classNtpClient.html#a4205f9144d89e34b43998de6d9d94ff3">NtpClient::setNtpServer</a></div><div class="ttdeci">void setNtpServer(const String &amp;server)</div><div class="ttdoc">Set the NTP server. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:76</div></div>
+<div class="ttc" id="classNtpClient_html_a9b09163e448b31fed13dde7f4c710fd7"><div class="ttname"><a href="classNtpClient.html#a9b09163e448b31fed13dde7f4c710fd7">NtpClient::NtpClient</a></div><div class="ttdeci">NtpClient()</div><div class="ttdoc">Instantiates NTP client object. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:49</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
-<div class="ttc" id="group__timer_html_ga79112b78bb1930a3350858c15221ac97"><div class="ttname"><a href="group__timer.html#ga79112b78bb1930a3350858c15221ac97">Timer::startOnce</a></div><div class="ttdeci">void __forceinline IRAM_ATTR startOnce()</div><div class="ttdoc">Start one-shot timer running. </div><div class="ttdef"><b>Definition:</b> Timer.h:96</div></div>
+<div class="ttc" id="classNtpClient_html_a8b993754be0dee75f4eb1f940d3a658d"><div class="ttname"><a href="classNtpClient.html#a8b993754be0dee75f4eb1f940d3a658d">NtpClient::onReceive</a></div><div class="ttdeci">void onReceive(pbuf *buf, IPAddress remoteIP, uint16_t remotePort) override</div><div class="ttdoc">Handle UDP message reception. </div></div>
 <div class="ttc" id="classNtpClient_html_a5f43fe41391992dd859301c9cf8505b2"><div class="ttname"><a href="classNtpClient.html#a5f43fe41391992dd859301c9cf8505b2">NtpClient::setAutoQuery</a></div><div class="ttdeci">void setAutoQuery(bool autoQuery)</div><div class="ttdoc">Enable / disable periodic query. </div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(NtpClient &amp;client, time_t ntpTime)&gt;</a></div></div>
 <div class="ttc" id="classNtpClient_html_af2df6d79f7f3e9fb6532e9f668e9b5fe"><div class="ttname"><a href="classNtpClient.html#af2df6d79f7f3e9fb6532e9f668e9b5fe">NtpClient::internalRequestTime</a></div><div class="ttdeci">void internalRequestTime(IPAddress serverIp)</div><div class="ttdoc">Send time request to NTP server. </div></div>
 <div class="ttc" id="classNtpClient_html_a4c7ba68c32d92dfaf12b5aa426696df0"><div class="ttname"><a href="classNtpClient.html#a4c7ba68c32d92dfaf12b5aa426696df0">NtpClient::setAutoQueryInterval</a></div><div class="ttdeci">void setAutoQueryInterval(unsigned seconds)</div><div class="ttdoc">Set query period. </div></div>
-<div class="ttc" id="classNtpClient_html_a3788a373550ccc201532d658c6326cd1"><div class="ttname"><a href="classNtpClient.html#a3788a373550ccc201532d658c6326cd1">NtpClient::autoUpdateSystemClock</a></div><div class="ttdeci">bool autoUpdateSystemClock</div><div class="ttdoc">True to update system clock with NTP time. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:129</div></div>
-<div class="ttc" id="classNtpClient_html_ab927522f9e62edc607699a5e439759d3"><div class="ttname"><a href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">NtpClient::timer</a></div><div class="ttdeci">Timer timer</div><div class="ttdoc">Deals with timeouts, retries and autoquery updates. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:132</div></div>
-<div class="ttc" id="classNtpClient_html"><div class="ttname"><a href="classNtpClient.html">NtpClient</a></div><div class="ttdoc">NTP client class. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:42</div></div>
+<div class="ttc" id="group__timer_html_ga4e73a9f0368dee23746cb312cabafbea"><div class="ttname"><a href="group__timer.html#ga4e73a9f0368dee23746cb312cabafbea">Timer::startOnce</a></div><div class="ttdeci">__forceinline void IRAM_ATTR startOnce()</div><div class="ttdoc">Start one-shot timer running. </div><div class="ttdef"><b>Definition:</b> Timer.h:99</div></div>
+<div class="ttc" id="classNtpClient_html_a3788a373550ccc201532d658c6326cd1"><div class="ttname"><a href="classNtpClient.html#a3788a373550ccc201532d658c6326cd1">NtpClient::autoUpdateSystemClock</a></div><div class="ttdeci">bool autoUpdateSystemClock</div><div class="ttdoc">True to update system clock with NTP time. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:132</div></div>
+<div class="ttc" id="classNtpClient_html_ab927522f9e62edc607699a5e439759d3"><div class="ttname"><a href="classNtpClient.html#ab927522f9e62edc607699a5e439759d3">NtpClient::timer</a></div><div class="ttdeci">Timer timer</div><div class="ttdoc">Deals with timeouts, retries and autoquery updates. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:135</div></div>
+<div class="ttc" id="classNtpClient_html"><div class="ttname"><a href="classNtpClient.html">NtpClient</a></div><div class="ttdoc">NTP client class. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:44</div></div>
 <div class="ttc" id="group__timer_html_ga6dbdb112577bdd9db5019d3bf81bbc1c"><div class="ttname"><a href="group__timer.html#ga6dbdb112577bdd9db5019d3bf81bbc1c">Timer::stop</a></div><div class="ttdeci">void IRAM_ATTR stop()</div><div class="ttdoc">Stop timer. </div></div>
 <div class="ttc" id="group__timer_html_ga955fc3fdb8cea3d4dc19a1bae495fb6e"><div class="ttname"><a href="group__timer.html#ga955fc3fdb8cea3d4dc19a1bae495fb6e">Timer::setIntervalMs</a></div><div class="ttdeci">void IRAM_ATTR setIntervalMs(uint32_t milliseconds=1000000)</div><div class="ttdoc">Set timer interval. </div></div>
-<div class="ttc" id="classTimer_html"><div class="ttname"><a href="classTimer.html">Timer</a></div><div class="ttdef"><b>Definition:</b> Timer.h:23</div></div>
+<div class="ttc" id="classTimer_html"><div class="ttname"><a href="classTimer.html">Timer</a></div><div class="ttdef"><b>Definition:</b> Timer.h:26</div></div>
 <div class="ttc" id="classIPAddress_html"><div class="ttname"><a href="classIPAddress.html">IPAddress</a></div><div class="ttdef"><b>Definition:</b> IPAddress.h:37</div></div>
 <div class="ttc" id="classNtpClient_html_af02ed50c487b0572e4b00c6159a65b95"><div class="ttname"><a href="classNtpClient.html#af02ed50c487b0572e4b00c6159a65b95">NtpClient::requestTime</a></div><div class="ttdeci">void requestTime()</div><div class="ttdoc">Request time from NTP server. </div></div>
-<div class="ttc" id="classNtpClient_html_a6fd8fd8397d3f340b9eba3411e7f20ad"><div class="ttname"><a href="classNtpClient.html#a6fd8fd8397d3f340b9eba3411e7f20ad">NtpClient::startTimer</a></div><div class="ttdeci">void startTimer(uint32_t milliseconds)</div><div class="ttdoc">Start the timer running. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:112</div></div>
-<div class="ttc" id="classNtpClient_html_ab0963648f29c6702f0c0c427fc18cfe0"><div class="ttname"><a href="classNtpClient.html#ab0963648f29c6702f0c0c427fc18cfe0">NtpClient::delegateCompleted</a></div><div class="ttdeci">NtpTimeResultDelegate delegateCompleted</div><div class="ttdoc">NTP result handler delegate. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:128</div></div>
+<div class="ttc" id="classNtpClient_html_a6fd8fd8397d3f340b9eba3411e7f20ad"><div class="ttname"><a href="classNtpClient.html#a6fd8fd8397d3f340b9eba3411e7f20ad">NtpClient::startTimer</a></div><div class="ttdeci">void startTimer(uint32_t milliseconds)</div><div class="ttdoc">Start the timer running. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:115</div></div>
+<div class="ttc" id="classNtpClient_html_ab0963648f29c6702f0c0c427fc18cfe0"><div class="ttname"><a href="classNtpClient.html#ab0963648f29c6702f0c0c427fc18cfe0">NtpClient::delegateCompleted</a></div><div class="ttdeci">NtpTimeResultDelegate delegateCompleted</div><div class="ttdoc">NTP result handler delegate. </div><div class="ttdef"><b>Definition:</b> NtpClient.h:131</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

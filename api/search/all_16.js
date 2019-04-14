@@ -1,5 +1,31 @@
 var searchData=
 [
-  ['year',['Year',['../classDateTime.html#a4d2fdc35a2cc020b1b24ff87d5bf2aeb',1,'DateTime']]],
-  ['yeelightbulb',['YeelightBulb',['../classYeelightBulb.html',1,'']]]
+  ['wdt',['WDT',['../group__wdt.html#ga0aa7ca486c33327dabbc1ddb961df755',1,'WDT():&#160;WDT.h'],['../group__wdt.html',1,'(Global Namespace)']]],
+  ['wdtclass',['WDTClass',['../classWDTClass.html',1,'']]],
+  ['websocketclient',['WebsocketClient',['../classWebsocketClient.html',1,'']]],
+  ['websocketconnection',['WebsocketConnection',['../classWebsocketConnection.html',1,'WebsocketConnection'],['../classWebsocketConnection.html#ae3a1524bdd5f845058e3be8fb3ebae88',1,'WebsocketConnection::WebsocketConnection()']]],
+  ['websocketresource',['WebsocketResource',['../classWebsocketResource.html',1,'']]],
+  ['whathappened',['whatHappened',['../classRF24.html#afb97dc4bdf4d2d84ea44060ac5b4ed89',1,'RF24']]],
+  ['wifi_20access_20point',['WiFi Access Point',['../group__wifi__ap.html',1,'']]],
+  ['wifi_20station_20interface',['WiFi Station Interface',['../group__wifi__sta.html',1,'']]],
+  ['wifiaccesspoint',['WifiAccessPoint',['../group__wifi__ap.html#gaaedb96e14eb665db7dfcc93b7a379aac',1,'AccessPoint.h']]],
+  ['wifieventsclass',['WifiEventsClass',['../classWifiEventsClass.html',1,'']]],
+  ['wifisniffer',['WifiSniffer',['../classWifiSniffer.html',1,'']]],
+  ['write',['write',['../classCircularBuffer.html#aea48dba20ae29803be3faeb0256d0ebc',1,'CircularBuffer::write(uint8_t charToWrite) override'],['../classCircularBuffer.html#ad407f2813fced50ab17a90227ae06d4c',1,'CircularBuffer::write(const uint8_t *data, size_t size) override'],['../classIDataSourceStream.html#af79624309338a6d86beb08c47531ac91',1,'IDataSourceStream::write()'],['../classEndlessMemoryStream.html#a84f304417441c88d464c1240c8dece22',1,'EndlessMemoryStream::write()'],['../classFileStream.html#a2b263c07bf1bf62ac4f821569ede3dde',1,'FileStream::write()'],['../classGdbFileStream.html#a5b3fe6cdb70184abfc14becc714c4d7f',1,'GdbFileStream::write()'],['../classLimitedMemoryStream.html#aca8aa3ed04ea72518564fff35fda5bbc',1,'LimitedMemoryStream::write()'],['../classMemoryDataStream.html#ad6b27532e476132825fc97a3a2bc3ff4',1,'MemoryDataStream::write()'],['../classReadWriteStream.html#ae75de8a09ac730b9d33f2409c925d470',1,'ReadWriteStream::write(uint8_t charToWrite) override'],['../classReadWriteStream.html#a2d59383b573eea799e162744972a7aee',1,'ReadWriteStream::write(const uint8_t *buffer, size_t size)=0'],['../classDebugClass.html#ac147de586b780ec9e0374b653f9b99cb',1,'DebugClass::write()'],['../classHardwareSerial.html#af6e2342e46c9b51628de42582917bd07',1,'HardwareSerial::write()'],['../classFtpDataStream.html#ab250828f184e52a4d7821825313d7761',1,'FtpDataStream::write()'],['../classrBootItemOutputStream.html#a46f3b498128885c547f59d4a19a9d654',1,'rBootItemOutputStream::write()'],['../classTcpConnection.html#a17fbdcd21e00e24eae8d42096ceeb5db',1,'TcpConnection::write()'],['../classTwoWire.html#a7f6096d6f823b22b39cf732289eacd88',1,'TwoWire::write(uint8_t) override'],['../classTwoWire.html#a0f8b7893b9d160a1b429a95932a7129d',1,'TwoWire::write(const uint8_t *, size_t) override'],['../classCommandOutput.html#aace3c4069c9032087dbf379f094abc10',1,'CommandOutput::write()'],['../classPrint.html#a29ff950e3418d9d9ea6ca84a612fe6a8',1,'Print::write(uint8_t)=0'],['../classPrint.html#a5b40e0e9cab1f2fe5bb0cb22ffe5adda',1,'Print::write(const char *str)'],['../classPrint.html#ad98d820df11e2697be1e4b1ea30b4a23',1,'Print::write(const uint8_t *buffer, size_t size)'],['../classPrint.html#abfdd93a61c4b95a3ba41680188505e73',1,'Print::write(const char *buffer, size_t size)'],['../classAdafruit__GFX.html#a172c824b5616681a0ca901379089025d',1,'Adafruit_GFX::write()'],['../classI2CIO.html#ae2063569c927d0008e2593d14504fdcd',1,'I2CIO::write()'],['../classLCD.html#af58e57399b25b559099978e607d9087b',1,'LCD::write()'],['../classRF24.html#a4cd4c198a47704db20b6b5cf0731cd58',1,'RF24::write()'],['../classGdbPacket.html#a0ee18fd7daec2c4d898c3ccb7f882ac9',1,'GdbPacket::write()']]],
+  ['write_5fpayload',['write_payload',['../classRF24.html#a8485d6059fc9b73263f33087bdb0fd66',1,'RF24']]],
+  ['write_5fregister',['write_register',['../classRF24.html#af6aa2abd130178de532e9873e906296c',1,'RF24::write_register(uint8_t reg, const uint8_t *buf, uint8_t len)'],['../classRF24.html#a326cd59fa7b61ddbb40e751341fb662d',1,'RF24::write_register(uint8_t reg, uint8_t value)']]],
+  ['write_5frtc_5ftime',['write_rtc_time',['../classNexRtc.html#a9c55a15fa0a2b1511162facdc47f78b2',1,'NexRtc::write_rtc_time(char *time_type, uint32_t number)'],['../classNexRtc.html#ab11da59341b52b0f686cb85a058d0962',1,'NexRtc::write_rtc_time(uint32_t *time)']]],
+  ['writeackpayload',['writeAckPayload',['../classRF24.html#a65619238c25036c3de72dc2c1a1c6e52',1,'RF24']]],
+  ['writecharescaped',['writeCharEscaped',['../classGdbPacket.html#a7d0dbe208174fb0a4d2908c03dbac3af',1,'GdbPacket']]],
+  ['writeescaped',['writeEscaped',['../classGdbPacket.html#a5a3833a06e5f5d0affe227c99172c3b8',1,'GdbPacket']]],
+  ['writehexblock',['writeHexBlock',['../classGdbPacket.html#a635caa9230ae7c0bd884f4cbc05f9236',1,'GdbPacket']]],
+  ['writehexbyte',['writeHexByte',['../classGdbPacket.html#abaf87f2d58f7c0048d21f5fe4dccd32b',1,'GdbPacket']]],
+  ['writehexword16',['writeHexWord16',['../classGdbPacket.html#a06d8bdde86c8715913cca1ec383b44c7',1,'GdbPacket']]],
+  ['writehexword32',['writeHexWord32',['../classGdbPacket.html#a885d2c61633f0212b5d22d530501bc47',1,'GdbPacket']]],
+  ['writestr',['writeStr',['../classGdbPacket.html#af6dbd4bf8254af32074cee35a5d09dd6',1,'GdbPacket']]],
+  ['writestrref',['writeStrRef',['../classGdbPacket.html#a414fe4f4e1b954143ecf4e6b4f9162ca',1,'GdbPacket']]],
+  ['writex32',['writeX32',['../classGdbPacket.html#a7258fd8ef70701149e1d49ce080d6ed1',1,'GdbPacket']]],
+  ['websocket_20client',['Websocket client',['../group__wsclient.html',1,'']]],
+  ['wscommandhandlerresource',['WsCommandHandlerResource',['../classWsCommandHandlerResource.html',1,'']]],
+  ['wsframeinfo',['WsFrameInfo',['../structWsFrameInfo.html',1,'']]]
 ];

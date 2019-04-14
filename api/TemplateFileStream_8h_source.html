@@ -106,28 +106,31 @@ $(document).ready(function(){initNavTree('TemplateFileStream_8h_source.html','')
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * Created 2015 by Skurydin Alexey</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> ****/</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_TEMPLATE_FILE_STREAM_H_</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_TEMPLATE_FILE_STREAM_H_</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;FileStream.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;TemplateStream.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classTemplateFileStream.html">   21</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTemplateFileStream.html">TemplateFileStream</a> : <span class="keyword">public</span> <a class="code" href="classTemplateStream.html">TemplateStream</a></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;{</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classTemplateFileStream.html#ae7e7243b29ad4a34292fbe241ab4ebf4">   27</a></span>&#160;    <a class="code" href="classTemplateFileStream.html#ae7e7243b29ad4a34292fbe241ab4ebf4">TemplateFileStream</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; fileName) : <a class="code" href="classTemplateStream.html">TemplateStream</a>(new <a class="code" href="classFileStream.html">FileStream</a>(fileName))</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    }</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;};</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_TEMPLATE_FILE_STREAM_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classTemplateFileStream_html"><div class="ttname"><a href="classTemplateFileStream.html">TemplateFileStream</a></div><div class="ttdoc">Template File stream class. </div><div class="ttdef"><b>Definition:</b> TemplateFileStream.h:21</div></div>
-<div class="ttc" id="classTemplateFileStream_html_ae7e7243b29ad4a34292fbe241ab4ebf4"><div class="ttname"><a href="classTemplateFileStream.html#ae7e7243b29ad4a34292fbe241ab4ebf4">TemplateFileStream::TemplateFileStream</a></div><div class="ttdeci">TemplateFileStream(const String &amp;fileName)</div><div class="ttdoc">Create a template file stream. </div><div class="ttdef"><b>Definition:</b> TemplateFileStream.h:27</div></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * TemplateFileStream.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_STREAM_TEMPLATE_FILE_STREAM_H_</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_STREAM_TEMPLATE_FILE_STREAM_H_</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;FileStream.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;TemplateStream.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classTemplateFileStream.html">   24</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTemplateFileStream.html">TemplateFileStream</a> : <span class="keyword">public</span> <a class="code" href="classTemplateStream.html">TemplateStream</a></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classTemplateFileStream.html#ae7e7243b29ad4a34292fbe241ab4ebf4">   30</a></span>&#160;    <a class="code" href="classTemplateFileStream.html#ae7e7243b29ad4a34292fbe241ab4ebf4">TemplateFileStream</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; fileName) : <a class="code" href="classTemplateStream.html">TemplateStream</a>(new <a class="code" href="classFileStream.html">FileStream</a>(fileName))</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    }</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_STREAM_TEMPLATE_FILE_STREAM_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classTemplateFileStream_html"><div class="ttname"><a href="classTemplateFileStream.html">TemplateFileStream</a></div><div class="ttdoc">Template File stream class. </div><div class="ttdef"><b>Definition:</b> TemplateFileStream.h:24</div></div>
+<div class="ttc" id="classTemplateFileStream_html_ae7e7243b29ad4a34292fbe241ab4ebf4"><div class="ttname"><a href="classTemplateFileStream.html#ae7e7243b29ad4a34292fbe241ab4ebf4">TemplateFileStream::TemplateFileStream</a></div><div class="ttdeci">TemplateFileStream(const String &amp;fileName)</div><div class="ttdoc">Create a template file stream. </div><div class="ttdef"><b>Definition:</b> TemplateFileStream.h:30</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
-<div class="ttc" id="classFileStream_html"><div class="ttname"><a href="classFileStream.html">FileStream</a></div><div class="ttdoc">File stream class. </div><div class="ttdef"><b>Definition:</b> FileStream.h:21</div></div>
-<div class="ttc" id="classTemplateStream_html"><div class="ttname"><a href="classTemplateStream.html">TemplateStream</a></div><div class="ttdef"><b>Definition:</b> TemplateStream.h:40</div></div>
+<div class="ttc" id="classFileStream_html"><div class="ttname"><a href="classFileStream.html">FileStream</a></div><div class="ttdoc">File stream class. </div><div class="ttdef"><b>Definition:</b> FileStream.h:24</div></div>
+<div class="ttc" id="classTemplateStream_html"><div class="ttname"><a href="classTemplateStream.html">TemplateStream</a></div><div class="ttdef"><b>Definition:</b> TemplateStream.h:43</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

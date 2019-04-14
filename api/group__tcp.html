@@ -119,6 +119,10 @@ Modules</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSslValidator.html">SslValidator</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSslValidatorList.html">SslValidatorList</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTcpConnection.html">TcpConnection</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -133,6 +137,10 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:gaba7f1f0e5bdbba0576c8df40056e191b"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; bool(SSL <br class="typebreak"/>
+*ssl, void *data)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tcp.html#gaba7f1f0e5bdbba0576c8df40056e191b">SslValidatorCallback</a></td></tr>
+<tr class="memdesc:gaba7f1f0e5bdbba0576c8df40056e191b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validator callback function.  <a href="#gaba7f1f0e5bdbba0576c8df40056e191b">More...</a><br/></td></tr>
+<tr class="separator:gaba7f1f0e5bdbba0576c8df40056e191b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1bd1f51c529be7c8f2f69ba1aece03a2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga1bd1f51c529be7c8f2f69ba1aece03a2"></a>
 typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void(<a class="el" href="classTcpConnection.html">TcpConnection</a> &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>TcpConnectionDestroyedDelegate</b></td></tr>
 <tr class="separator:ga1bd1f51c529be7c8f2f69ba1aece03a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,6 +160,35 @@ Enumerations</h2></td></tr>
 <tr class="separator:gac33a1a4e37d7d8db5d743b9f75024ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="gaba7f1f0e5bdbba0576c8df40056e191b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::function&lt;bool(SSL* ssl, void* data)&gt; <a class="el" href="group__tcp.html#gaba7f1f0e5bdbba0576c8df40056e191b">SslValidatorCallback</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validator callback function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ssl</td><td>Contains certificate to validate (may be NULL) </td></tr>
+    <tr><td class="paramname">data</td><td>Data for the callback to use </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">bool</td><td>true if validation succeeded </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Callback must ALWAYS release any allocate memory before returning. If called with ssl = NULL then just release memory and return false. </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

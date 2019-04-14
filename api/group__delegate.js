@@ -11,13 +11,13 @@ var group__delegate =
       [ "MethodCaller", "classMethodCaller_3_01ReturnType_07ClassType_1_1_5_08_07ParamsList_8_8_8_08_4.html#a1438e54a0922ae6473a48e0183f95c2d", null ],
       [ "decrease", "classMethodCaller_3_01ReturnType_07ClassType_1_1_5_08_07ParamsList_8_8_8_08_4.html#a4c49d3a30a5224c1910400b9a1cbaf71", null ],
       [ "increase", "classMethodCaller_3_01ReturnType_07ClassType_1_1_5_08_07ParamsList_8_8_8_08_4.html#a3af9e79f473f57e8202c4973d5f37366", null ],
-      [ "invoke", "classMethodCaller_3_01ReturnType_07ClassType_1_1_5_08_07ParamsList_8_8_8_08_4.html#afb12bfdaa1c645537c1d09a6c67e1658", null ]
+      [ "invoke", "classMethodCaller_3_01ReturnType_07ClassType_1_1_5_08_07ParamsList_8_8_8_08_4.html#ae0f336cee1daf3190c0a940efb6db885", null ]
     ] ],
     [ "FunctionCaller", "classFunctionCaller.html", [
       [ "FunctionCaller", "classFunctionCaller.html#a57489bd2e7cd5a17d454c5d3ab98cecc", null ],
       [ "decrease", "classFunctionCaller.html#a4c49d3a30a5224c1910400b9a1cbaf71", null ],
       [ "increase", "classFunctionCaller.html#a3af9e79f473f57e8202c4973d5f37366", null ],
-      [ "invoke", "classFunctionCaller.html#a129be846b2a8a64fb7816a0f2cf8eb94", null ]
+      [ "invoke", "classFunctionCaller.html#a5cb70ff991f1d02e7e13c35b2abaf973", null ]
     ] ],
     [ "Delegate", "classDelegate.html", null ],
     [ "Delegate< ReturnType(ParamsList...)>", "classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html", [

@@ -1,8 +1,15 @@
 var searchData=
 [
-  ['temperature',['temperature',['../structsensors__event__t.html#a914f76beb75bd99aa3c13d3a8e56e21c',1,'sensors_event_t']]],
-  ['time',['time',['../group__rtc.html#ga740cfb2f8c4590588cc54fff34874de5',1,'RtcData']]],
-  ['timer',['timer',['../classNtpClient.html#ab927522f9e62edc607699a5e439759d3',1,'NtpClient']]],
-  ['timestamp',['timestamp',['../structsensors__event__t.html#acd3be1560458b3e3bf52f93f744e8238',1,'sensors_event_t']]],
-  ['type',['type',['../structsensors__event__t.html#a58401dd7f3400d9eb96c71b8fba9f8e8',1,'sensors_event_t::type()'],['../structsensor__t.html#ae1d59df64438923d3bd95f2416c32203',1,'sensor_t::type()']]]
+  ['r',['r',['../structsensors__color__t.html#acdeed981e7df8c701e09d4b2fdb9a40c',1,'sensors_color_t']]],
+  ['relative_5fhumidity',['relative_humidity',['../structsensors__event__t.html#a577b73698368fb061382ce9f31052417',1,'sensors_event_t']]],
+  ['reserved0',['reserved0',['../structsensors__event__t.html#a8be4dc00344f46abf29e06251bf9fad9',1,'sensors_event_t']]],
+  ['resolution',['resolution',['../structsensor__t.html#a926aba3216afd50e62c0a6cdbcc7433a',1,'sensor_t']]],
+  ['response2',['response2',['../structAtCommand.html#a71f45c0246ae24ce4d58aad2acdfe665',1,'AtCommand']]],
+  ['responsestream',['responseStream',['../classHttpRequest.html#a45fa6b12f6760250a84d976f85eba569',1,'HttpRequest']]],
+  ['retries',['retries',['../structAtCommand.html#a461157779581745a959af61a7257bf37',1,'AtCommand']]],
+  ['rgba',['rgba',['../structsensors__color__t.html#a0afbff980c17fbacdab1666735f3d3e6',1,'sensors_color_t']]],
+  ['roll',['roll',['../structsensors__vec__t.html#a6d8c6e288de54942e1d2be4f42f96bb2',1,'sensors_vec_t']]],
+  ['roms',['roms',['../structrboot__config.html#a7289e3a7ca39daca017620c0f06dcfc1',1,'rboot_config']]],
+  ['rssi',['rssi',['../group__wifi__sta.html#ga8401f34337a25598bd99257b8664b359',1,'BssInfo']]],
+  ['rtc',['RTC',['../group__rtc.html#ga58e005fa37b73a7ba8f8d8d478a03902',1,'RTC.h']]]
 ];

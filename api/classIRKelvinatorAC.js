@@ -2,6 +2,7 @@ var classIRKelvinatorAC =
 [
     [ "IRKelvinatorAC", "classIRKelvinatorAC.html#ab0846f4c099421802642295ed5de7cb9", null ],
     [ "begin", "classIRKelvinatorAC.html#a1d4ae0895bad1f032019434216111033", null ],
+    [ "calcBlockChecksum", "classIRKelvinatorAC.html#a385b0abcc340053c7fd575e8af22f362", null ],
     [ "getFan", "classIRKelvinatorAC.html#a557987cc43c6528a93532a7d3ff4ed9f", null ],
     [ "getIonFilter", "classIRKelvinatorAC.html#a094b9dd9e5c9e2cbd7b08348e55b4dd0", null ],
     [ "getLight", "classIRKelvinatorAC.html#a2921d8c157bf55741a1d73bbef3e1573", null ],
@@ -29,5 +30,6 @@ var classIRKelvinatorAC =
     [ "setTurbo", "classIRKelvinatorAC.html#a78d301a449572a955396369b34d7b994", null ],
     [ "setXFan", "classIRKelvinatorAC.html#a6f296d9aa35f47d126434130de419ef7", null ],
     [ "stateReset", "classIRKelvinatorAC.html#ae5c5084ff1bd0a4c3de774e63ac14905", null ],
-    [ "toString", "classIRKelvinatorAC.html#a1db02bba44563a0edf80e91b3482bf2c", null ]
+    [ "toString", "classIRKelvinatorAC.html#a1db02bba44563a0edf80e91b3482bf2c", null ],
+    [ "validChecksum", "classIRKelvinatorAC.html#ac067c13d2b31219ec169a4b8b2e566ac", null ]
 ];

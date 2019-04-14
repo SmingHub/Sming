@@ -10,6 +10,7 @@ var classNexPicture =
     [ "getObjName", "classNexPicture.html#a54267849ca7215af700a906e5e6362fd", null ],
     [ "getObjPid", "classNexPicture.html#a67621e5d7bcfb50c1a1bbc4ad1020352", null ],
     [ "getPic", "classNexPicture.html#a11bd68ef9fe1d03d9e0d02ef1c7527e9", null ],
+    [ "iterate", "classNexPicture.html#a4e228b95e8c644888018dc813ebb3485", null ],
     [ "printObjInfo", "classNexPicture.html#abeff0c61474e8b3ce6bac76771820b64", null ],
     [ "Set_background_image_pic", "classNexPicture.html#a531e22f70dbf0dcaf6e114581364acea", null ],
     [ "setPic", "classNexPicture.html#ab1c6adff615d48261ce10c2095859abd", null ]

@@ -106,60 +106,59 @@ $(document).ready(function(){initNavTree('JsonObjectStream_8h_source.html','');}
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * Created 2015 by Skurydin Alexey</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> ****/</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_JSON_OBJECT_STREAM_H_</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_JSON_OBJECT_STREAM_H_</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;MemoryDataStream.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;../Libraries/ArduinoJson/include/ArduinoJson.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="classJsonObjectStream.html">   20</a></span>&#160;<span class="keyword">class </span><a class="code" href="classJsonObjectStream.html">JsonObjectStream</a> : <span class="keyword">public</span> <a class="code" href="classMemoryDataStream.html">MemoryDataStream</a></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;{</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classJsonObjectStream.html#ac3de9134db614d0a809ce77b5c3ad49e">   25</a></span>&#160;    <a class="code" href="classJsonObjectStream.html#ac3de9134db614d0a809ce77b5c3ad49e">JsonObjectStream</a>() : rootNode(buffer.createObject())</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    }</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classJsonObjectStream.html">JsonObjectStream</a>()</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    }</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="comment">//Use base class documentation</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classJsonObjectStream.html#ab6bdf1d0002515621e3535df1cf212d9">   34</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> <a class="code" href="classJsonObjectStream.html#ab6bdf1d0002515621e3535df1cf212d9">getStreamType</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da73b520c06eece1658b28181a804ff5b4">eSST_JsonObject</a>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    }</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="classJsonObjectStream.html#ad9b08902734bf4233df1653487fe7aca">   42</a></span>&#160;    JsonObject&amp; <a class="code" href="classJsonObjectStream.html#ad9b08902734bf4233df1653487fe7aca">getRoot</a>()</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    {</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordflow">return</span> rootNode;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    }</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">//Use base class documentation</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">virtual</span> uint16_t <a class="code" href="classJsonObjectStream.html#a41dc9e938e16b20d861b70c4a5152f42">readMemoryBlock</a>(<span class="keywordtype">char</span>* data, <span class="keywordtype">int</span> bufSize);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="classJsonObjectStream.html#ae78b14c9b4177413eaffcc756f9ebe9c">   54</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classJsonObjectStream.html#ae78b14c9b4177413eaffcc756f9ebe9c">available</a>()</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordflow">return</span> rootNode.success() ? rootNode.measureLength() : 0;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    }</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    DynamicJsonBuffer buffer;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    JsonObject&amp; rootNode;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordtype">bool</span> send = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;};</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_JSON_OBJECT_STREAM_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classJsonObjectStream_html"><div class="ttname"><a href="classJsonObjectStream.html">JsonObjectStream</a></div><div class="ttdoc">JsonObject stream class. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:20</div></div>
-<div class="ttc" id="classJsonObjectStream_html_ae78b14c9b4177413eaffcc756f9ebe9c"><div class="ttname"><a href="classJsonObjectStream.html#ae78b14c9b4177413eaffcc756f9ebe9c">JsonObjectStream::available</a></div><div class="ttdeci">int available()</div><div class="ttdoc">Return the total length of the stream. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:54</div></div>
-<div class="ttc" id="group__constants_html_gga8a65141d9ea4bf9d2e2377ed6b888a1da73b520c06eece1658b28181a804ff5b4"><div class="ttname"><a href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da73b520c06eece1658b28181a804ff5b4">eSST_JsonObject</a></div><div class="ttdoc">JSON object data stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:24</div></div>
-<div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:19</div></div>
-<div class="ttc" id="classJsonObjectStream_html_ac3de9134db614d0a809ce77b5c3ad49e"><div class="ttname"><a href="classJsonObjectStream.html#ac3de9134db614d0a809ce77b5c3ad49e">JsonObjectStream::JsonObjectStream</a></div><div class="ttdeci">JsonObjectStream()</div><div class="ttdoc">Create a JSON object stream. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:25</div></div>
-<div class="ttc" id="classJsonObjectStream_html_ad9b08902734bf4233df1653487fe7aca"><div class="ttname"><a href="classJsonObjectStream.html#ad9b08902734bf4233df1653487fe7aca">JsonObjectStream::getRoot</a></div><div class="ttdeci">JsonObject &amp; getRoot()</div><div class="ttdoc">Get the JSON root node. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:42</div></div>
-<div class="ttc" id="classJsonObjectStream_html_ab6bdf1d0002515621e3535df1cf212d9"><div class="ttname"><a href="classJsonObjectStream.html#ab6bdf1d0002515621e3535df1cf212d9">JsonObjectStream::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType() const </div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:34</div></div>
-<div class="ttc" id="classJsonObjectStream_html_a41dc9e938e16b20d861b70c4a5152f42"><div class="ttname"><a href="classJsonObjectStream.html#a41dc9e938e16b20d861b70c4a5152f42">JsonObjectStream::readMemoryBlock</a></div><div class="ttdeci">virtual uint16_t readMemoryBlock(char *data, int bufSize)</div><div class="ttdoc">Read a block of memory. </div></div>
-<div class="ttc" id="classMemoryDataStream_html"><div class="ttname"><a href="classMemoryDataStream.html">MemoryDataStream</a></div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:26</div></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * JsonObjectStream.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_STREAM_JSON_OBJECT_STREAM_H_</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_STREAM_JSON_OBJECT_STREAM_H_</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;MemoryDataStream.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;../Libraries/ArduinoJson/include/ArduinoJson.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classJsonObjectStream.html">   23</a></span>&#160;<span class="keyword">class </span><a class="code" href="classJsonObjectStream.html">JsonObjectStream</a> : <span class="keyword">public</span> <a class="code" href="classMemoryDataStream.html">MemoryDataStream</a></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classJsonObjectStream.html#ac3de9134db614d0a809ce77b5c3ad49e">   28</a></span>&#160;    <a class="code" href="classJsonObjectStream.html#ac3de9134db614d0a809ce77b5c3ad49e">JsonObjectStream</a>() : rootNode(buffer.createObject())</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    }</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="comment">//Use base class documentation</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classJsonObjectStream.html#a8a721941231294f21481da498d0565a1">   33</a></span>&#160;    <a class="code" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> <a class="code" href="classJsonObjectStream.html#a8a721941231294f21481da498d0565a1">getStreamType</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da73b520c06eece1658b28181a804ff5b4">eSST_JsonObject</a>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    }</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classJsonObjectStream.html#ad9b08902734bf4233df1653487fe7aca">   41</a></span>&#160;    JsonObject&amp; <a class="code" href="classJsonObjectStream.html#ad9b08902734bf4233df1653487fe7aca">getRoot</a>()</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordflow">return</span> rootNode;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="comment">//Use base class documentation</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    uint16_t <a class="code" href="classJsonObjectStream.html#a99b0f0a1965b08302ee1c677d05006ab">readMemoryBlock</a>(<span class="keywordtype">char</span>* data, <span class="keywordtype">int</span> bufSize) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classJsonObjectStream.html#a22fc905adf452b8de6f2d6f526ddbb95">   53</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classJsonObjectStream.html#a22fc905adf452b8de6f2d6f526ddbb95">available</a>()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordflow">return</span> rootNode.success() ? rootNode.measureLength() : 0;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    DynamicJsonBuffer buffer;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    JsonObject&amp; rootNode;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordtype">bool</span> send = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;};</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_STREAM_JSON_OBJECT_STREAM_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classJsonObjectStream_html_a99b0f0a1965b08302ee1c677d05006ab"><div class="ttname"><a href="classJsonObjectStream.html#a99b0f0a1965b08302ee1c677d05006ab">JsonObjectStream::readMemoryBlock</a></div><div class="ttdeci">uint16_t readMemoryBlock(char *data, int bufSize) override</div><div class="ttdoc">Read a block of memory. </div></div>
+<div class="ttc" id="classJsonObjectStream_html_a8a721941231294f21481da498d0565a1"><div class="ttname"><a href="classJsonObjectStream.html#a8a721941231294f21481da498d0565a1">JsonObjectStream::getStreamType</a></div><div class="ttdeci">StreamType getStreamType() const override</div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:33</div></div>
+<div class="ttc" id="classJsonObjectStream_html"><div class="ttname"><a href="classJsonObjectStream.html">JsonObjectStream</a></div><div class="ttdoc">JsonObject stream class. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:23</div></div>
+<div class="ttc" id="group__constants_html_gga8a65141d9ea4bf9d2e2377ed6b888a1da73b520c06eece1658b28181a804ff5b4"><div class="ttname"><a href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da73b520c06eece1658b28181a804ff5b4">eSST_JsonObject</a></div><div class="ttdoc">JSON object data stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:27</div></div>
+<div class="ttc" id="classJsonObjectStream_html_a22fc905adf452b8de6f2d6f526ddbb95"><div class="ttname"><a href="classJsonObjectStream.html#a22fc905adf452b8de6f2d6f526ddbb95">JsonObjectStream::available</a></div><div class="ttdeci">int available() override</div><div class="ttdoc">Return the total length of the stream. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:53</div></div>
+<div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:22</div></div>
+<div class="ttc" id="classJsonObjectStream_html_ac3de9134db614d0a809ce77b5c3ad49e"><div class="ttname"><a href="classJsonObjectStream.html#ac3de9134db614d0a809ce77b5c3ad49e">JsonObjectStream::JsonObjectStream</a></div><div class="ttdeci">JsonObjectStream()</div><div class="ttdoc">Create a JSON object stream. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:28</div></div>
+<div class="ttc" id="classJsonObjectStream_html_ad9b08902734bf4233df1653487fe7aca"><div class="ttname"><a href="classJsonObjectStream.html#ad9b08902734bf4233df1653487fe7aca">JsonObjectStream::getRoot</a></div><div class="ttdeci">JsonObject &amp; getRoot()</div><div class="ttdoc">Get the JSON root node. </div><div class="ttdef"><b>Definition:</b> JsonObjectStream.h:41</div></div>
+<div class="ttc" id="classMemoryDataStream_html"><div class="ttname"><a href="classMemoryDataStream.html">MemoryDataStream</a></div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:29</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

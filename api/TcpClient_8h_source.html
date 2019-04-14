@@ -106,117 +106,182 @@ $(document).ready(function(){initNavTree('TcpClient_8h_source.html','');});
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * Created 2015 by Skurydin Alexey</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> ****/</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_TCPCLIENT_H_</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_TCPCLIENT_H_</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;TcpConnection.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;Delegate.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;SslValidator.h&quot;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">class </span><a class="code" href="classTcpClient.html">TcpClient</a>;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">class </span><a class="code" href="classReadWriteStream.html">ReadWriteStream</a>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">class </span><a class="code" href="classIPAddress.html">IPAddress</a>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">//typedef void (*TcpClientEventDelegate)(TcpClient&amp; client, TcpConnectionEvent sourceEvent);</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">//typedef void (*TcpClientBoolDelegate)(TcpClient&amp; client, bool successful);</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">//typedef bool (*TcpClientDataDelegate)(TcpClient&amp; client, char *data, int size);</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(TcpClient&amp; client, TcpConnectionEvent sourceEvent)&gt;</a> <a class="code" href="classDelegate.html">TcpClientEventDelegate</a>;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(TcpClient&amp; client, bool successful)&gt;</a> <a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;bool(TcpClient&amp; client, char* data, int size)&gt;</a> <a class="code" href="classDelegate.html">TcpClientDataDelegate</a>;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">enum</span> TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successful, eTCS_Failed };</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">// By default a TCP client connection has 70 seconds timeout</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#define TCP_CLIENT_TIMEOUT 70</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classTcpClient.html">   41</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTcpClient.html">TcpClient</a> : <span class="keyword">public</span> <a class="code" href="classTcpConnection.html">TcpConnection</a></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;{</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="classTcpClient.html">TcpClient</a>(<span class="keywordtype">bool</span> autoDestruct);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <a class="code" href="classTcpClient.html">TcpClient</a>(tcp_pcb* clientTcp, <a class="code" href="classDelegate.html">TcpClientDataDelegate</a> clientReceive, <a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a> onCompleted);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="classTcpClient.html">TcpClient</a>(<a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a> onCompleted, <a class="code" href="classDelegate.html">TcpClientEventDelegate</a> onReadyToSend,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;              <a class="code" href="classDelegate.html">TcpClientDataDelegate</a> onReceive = NULL);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="classTcpClient.html">TcpClient</a>(<a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a> onCompleted, <a class="code" href="classDelegate.html">TcpClientDataDelegate</a> onReceive = NULL);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classTcpClient.html">TcpClient</a>(<a class="code" href="classDelegate.html">TcpClientDataDelegate</a> onReceive);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classTcpClient.html">TcpClient</a>();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> connect(<a class="code" href="classString.html">String</a> server, <span class="keywordtype">int</span> port, <span class="keywordtype">boolean</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> connect(<a class="code" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, <span class="keywordtype">boolean</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> close();</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classTcpClient.html#ab9a6e4aeee94b7712bf2add4c286a3a0">setReceiveDelegate</a>(<a class="code" href="classDelegate.html">TcpClientDataDelegate</a> receiveCb = NULL);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classTcpClient.html#abf18cea760e8efbf3a204b4e6d4055c3">setCompleteDelegate</a>(<a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a> completeCb = NULL);</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * TcpClient.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_NETWORK_TCP_CLIENT_H_</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_NETWORK_TCP_CLIENT_H_</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;TcpConnection.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;Delegate.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;Ssl/SslValidator.h&quot;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">class </span><a class="code" href="classTcpClient.html">TcpClient</a>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">class </span><a class="code" href="classReadWriteStream.html">ReadWriteStream</a>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">class </span><a class="code" href="classIPAddress.html">IPAddress</a>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(TcpClient&amp; client, TcpConnectionEvent sourceEvent)&gt;</a> <a class="code" href="classDelegate.html">TcpClientEventDelegate</a>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(TcpClient&amp; client, bool successful)&gt;</a> <a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a>;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;bool(TcpClient&amp; client, char* data, int size)&gt;</a> <a class="code" href="classDelegate.html">TcpClientDataDelegate</a>;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">enum</span> TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successful, eTCS_Failed };</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">// By default a TCP client connection has 70 seconds timeout</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#define TCP_CLIENT_TIMEOUT 70</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classTcpClient.html">   40</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTcpClient.html">TcpClient</a> : <span class="keyword">public</span> <a class="code" href="classTcpConnection.html">TcpConnection</a></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;{</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <a class="code" href="classTcpClient.html">TcpClient</a>(<span class="keywordtype">bool</span> autoDestruct) : <a class="code" href="classTcpConnection.html">TcpConnection</a>(autoDestruct)</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <a class="code" href="classTcpConnection.html#a3d11a5464ae92193779dafc650597fa2">TcpConnection::timeOut</a> = TCP_CLIENT_TIMEOUT;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    }</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="classTcpClient.html">TcpClient</a>(tcp_pcb* clientTcp, <a class="code" href="classDelegate.html">TcpClientDataDelegate</a> clientReceive, <a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a> onCompleted)</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        : <a class="code" href="classTcpConnection.html">TcpConnection</a>(clientTcp, <span class="keyword">true</span>), state(eTCS_Connected), completed(onCompleted), receive(clientReceive)</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <a class="code" href="classTcpConnection.html#a3d11a5464ae92193779dafc650597fa2">TcpConnection::timeOut</a> = TCP_CLIENT_TIMEOUT;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="classTcpClient.html">TcpClient</a>(<a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a> onCompleted, <a class="code" href="classDelegate.html">TcpClientEventDelegate</a> onReadyToSend,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;              <a class="code" href="classDelegate.html">TcpClientDataDelegate</a> onReceive = <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        : <a class="code" href="classTcpConnection.html">TcpConnection</a>(<span class="keyword">false</span>), completed(onCompleted), ready(onReadyToSend), receive(onReceive)</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <a class="code" href="classTcpConnection.html#a3d11a5464ae92193779dafc650597fa2">TcpConnection::timeOut</a> = TCP_CLIENT_TIMEOUT;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <a class="code" href="classTcpClient.html">TcpClient</a>(<a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a> onCompleted, <a class="code" href="classDelegate.html">TcpClientDataDelegate</a> onReceive = <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        : <a class="code" href="classTcpConnection.html">TcpConnection</a>(<span class="keyword">false</span>), completed(onCompleted), receive(onReceive)</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    {</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <a class="code" href="classTcpConnection.html#a3d11a5464ae92193779dafc650597fa2">TcpConnection::timeOut</a> = TCP_CLIENT_TIMEOUT;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    }</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordtype">bool</span> send(<span class="keyword">const</span> <span class="keywordtype">char</span>* data, uint16_t len, <span class="keywordtype">bool</span> forceCloseAfterSent = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordtype">bool</span> sendString(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; data, <span class="keywordtype">bool</span> forceCloseAfterSent = <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    __forceinline <span class="keywordtype">bool</span> isProcessing()</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordflow">return</span> state == eTCS_Connected || state == eTCS_Connecting;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    __forceinline TcpClientState getConnectionState()</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordflow">return</span> state;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordtype">void</span> addSslValidator(SslValidatorCallback callback, <span class="keywordtype">void</span>* data = NULL);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keywordtype">bool</span> pinCertificate(<span class="keyword">const</span> uint8_t* fingerprint, SslFingerprintType type);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classTcpClient.html">TcpClient</a>(<a class="code" href="classDelegate.html">TcpClientDataDelegate</a> onReceive) : <a class="code" href="classTcpConnection.html">TcpConnection</a>(<span class="keyword">false</span>), receive(onReceive)</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <a class="code" href="classTcpConnection.html#a3d11a5464ae92193779dafc650597fa2">TcpConnection::timeOut</a> = TCP_CLIENT_TIMEOUT;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    }</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    ~<a class="code" href="classTcpClient.html">TcpClient</a>()</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        freeStreams();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    }</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">bool</span> connect(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; server, <span class="keywordtype">int</span> port, <span class="keywordtype">bool</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">bool</span> connect(<a class="code" href="classIPAddress.html">IPAddress</a> addr, uint16_t port, <span class="keywordtype">bool</span> useSsl = <span class="keyword">false</span>, uint32_t sslOptions = 0) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordtype">void</span> close() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="classTcpClient.html#a82fa9742ecac4aa52242b06688f5f128">   85</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classTcpClient.html#a82fa9742ecac4aa52242b06688f5f128">setReceiveDelegate</a>(<a class="code" href="classDelegate.html">TcpClientDataDelegate</a> receiveCb = <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        receive = receiveCb;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno"><a class="line" href="classTcpClient.html#af3e7580e0d31060826e105e1ebc5833a">   93</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classTcpClient.html#af3e7580e0d31060826e105e1ebc5833a">setCompleteDelegate</a>(<a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a> completeCb = <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    {</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        completed = completeCb;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    }</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">bool</span> send(<span class="keyword">const</span> <span class="keywordtype">char</span>* data, uint16_t len, <span class="keywordtype">bool</span> forceCloseAfterSent = <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordtype">bool</span> sendString(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; data, <span class="keywordtype">bool</span> forceCloseAfterSent = <span class="keyword">false</span>)</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        <span class="keywordflow">return</span> send(data.c_str(), data.length(), forceCloseAfterSent);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    }</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordtype">bool</span> isProcessing()</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    {</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        <span class="keywordflow">return</span> state == eTCS_Connected || state == eTCS_Connecting;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    }</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    TcpClientState getConnectionState()</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    {</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        <span class="keywordflow">return</span> state;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    }</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keywordtype">bool</span> pinCertificate(SSLFingerprints fingerprints);</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    <span class="keyword">virtual</span> err_t onConnected(err_t err);</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keyword">virtual</span> err_t onReceive(pbuf* buf);</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keyword">virtual</span> err_t onSent(uint16_t len);</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onError(err_t err);</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onReadyToSendData(TcpConnectionEvent sourceEvent);</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onFinished(TcpClientState finishState);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="preprocessor"></span>    <span class="keyword">virtual</span> err_t onSslConnected(SSL* ssl);</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <span class="keywordtype">void</span> pushAsyncPart();</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00125"></a><span class="lineno"><a class="line" href="classTcpClient.html#a19862c1664a25f4910435d77528f44dc">  125</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classTcpClient.html#a19862c1664a25f4910435d77528f44dc">addSslValidator</a>(<a class="code" href="group__tcp.html#gaba7f1f0e5bdbba0576c8df40056e191b">SslValidatorCallback</a> callback, <span class="keywordtype">void</span>* data = <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    {</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        <span class="keywordflow">return</span> sslValidators.add(callback, data);</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    }</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
+<div class="line"><a name="l00139"></a><span class="lineno"><a class="line" href="classTcpClient.html#a0d8b66ef71a9bfc2f7db39ff0c056c91">  139</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classTcpClient.html#a0d8b66ef71a9bfc2f7db39ff0c056c91">pinCertificate</a>(<span class="keyword">const</span> uint8_t* fingerprint, SslFingerprintType type)</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    {</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        <span class="keywordflow">return</span> sslValidators.add(fingerprint, type);</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    }</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    TcpClientState state;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a> completed = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <a class="code" href="classDelegate.html">TcpClientDataDelegate</a> receive = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <a class="code" href="classDelegate.html">TcpClientEventDelegate</a> ready = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    <span class="keywordtype">bool</span> asyncCloseAfterSent = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    int16_t asyncTotalSent = 0;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    int16_t asyncTotalLen = 0;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="preprocessor"></span>    <a class="code" href="classVector.html">Vector&lt;SslValidatorCallback&gt;</a> sslValidators;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <a class="code" href="classVector.html">Vector&lt;void*&gt;</a> sslValidatorsData;</div>
+<div class="line"><a name="l00151"></a><span class="lineno"><a class="line" href="classTcpClient.html#a98d7bbb4e4918f45801073e4a4aef8dd">  151</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classTcpClient.html#a98d7bbb4e4918f45801073e4a4aef8dd">pinCertificate</a>(<a class="code" href="structSslFingerprints.html">SslFingerprints</a>&amp; fingerprints)</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    {</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        <span class="keywordflow">return</span> sslValidators.add(fingerprints);</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    }</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="preprocessor"></span>};</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_TCPCLIENT_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classTcpClient_html_ab9a6e4aeee94b7712bf2add4c286a3a0"><div class="ttname"><a href="classTcpClient.html#ab9a6e4aeee94b7712bf2add4c286a3a0">TcpClient::setReceiveDelegate</a></div><div class="ttdeci">void setReceiveDelegate(TcpClientDataDelegate receiveCb=NULL)</div><div class="ttdoc">Set or clear the callback for received data. </div></div>
-<div class="ttc" id="classVector_html"><div class="ttname"><a href="classVector.html">Vector</a></div><div class="ttdef"><b>Definition:</b> WVector.h:26</div></div>
-<div class="ttc" id="classTcpConnection_html"><div class="ttname"><a href="classTcpConnection.html">TcpConnection</a></div><div class="ttdef"><b>Definition:</b> TcpConnection.h:77</div></div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    err_t onConnected(err_t err) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    err_t onReceive(pbuf* buf) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    err_t onSent(uint16_t len) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    <span class="keywordtype">void</span> onError(err_t err) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    <span class="keywordtype">void</span> onReadyToSendData(TcpConnectionEvent sourceEvent) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onFinished(TcpClientState finishState);</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="preprocessor"></span>    err_t onSslConnected(SSL* ssl)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">return</span> sslValidators.<a class="code" href="classSslValidatorList.html#acd91a92ccb52285be41dd29822b2475e">validate</a>(ssl) ? ERR_OK : ERR_ABRT;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    }</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="keywordtype">void</span> pushAsyncPart();</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    <span class="keywordtype">void</span> freeStreams();</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    <span class="keywordtype">void</span> setBuffer(<a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* <a class="code" href="classTcpClient.html#afdbf91ea5c9410eecc5c25316bd395b8">stream</a>);</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;</div>
+<div class="line"><a name="l00181"></a><span class="lineno"><a class="line" href="classTcpClient.html#ab28ef68c29adbce16d969e20ed25e5f8">  181</a></span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* <a class="code" href="classTcpClient.html#ab28ef68c29adbce16d969e20ed25e5f8">buffer</a> = <span class="keyword">nullptr</span>;   </div>
+<div class="line"><a name="l00182"></a><span class="lineno"><a class="line" href="classTcpClient.html#afdbf91ea5c9410eecc5c25316bd395b8">  182</a></span>&#160;    <a class="code" href="classIDataSourceStream.html">IDataSourceStream</a>* <a class="code" href="classTcpClient.html#afdbf91ea5c9410eecc5c25316bd395b8">stream</a> = <span class="keyword">nullptr</span>; </div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    TcpClientState state = eTCS_Ready;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    <a class="code" href="classDelegate.html">TcpClientCompleteDelegate</a> completed = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    <a class="code" href="classDelegate.html">TcpClientEventDelegate</a> ready = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <a class="code" href="classDelegate.html">TcpClientDataDelegate</a> receive = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="keywordtype">bool</span> asyncCloseAfterSent = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    uint16_t asyncTotalSent = 0;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    uint16_t asyncTotalLen = 0;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="preprocessor"></span>    <a class="code" href="classSslValidatorList.html">SslValidatorList</a> sslValidators;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="preprocessor"></span>};</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_NETWORK_TCP_CLIENT_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classTcpClient_html_a82fa9742ecac4aa52242b06688f5f128"><div class="ttname"><a href="classTcpClient.html#a82fa9742ecac4aa52242b06688f5f128">TcpClient::setReceiveDelegate</a></div><div class="ttdeci">void setReceiveDelegate(TcpClientDataDelegate receiveCb=nullptr)</div><div class="ttdoc">Set or clear the callback for received data. </div><div class="ttdef"><b>Definition:</b> TcpClient.h:85</div></div>
+<div class="ttc" id="classTcpClient_html_a0d8b66ef71a9bfc2f7db39ff0c056c91"><div class="ttname"><a href="classTcpClient.html#a0d8b66ef71a9bfc2f7db39ff0c056c91">TcpClient::pinCertificate</a></div><div class="ttdeci">bool pinCertificate(const uint8_t *fingerprint, SslFingerprintType type)</div><div class="ttdoc">Requires (pins) the remote SSL certificate to match certain fingerprints. </div><div class="ttdef"><b>Definition:</b> TcpClient.h:139</div></div>
+<div class="ttc" id="classTcpConnection_html_a3d11a5464ae92193779dafc650597fa2"><div class="ttname"><a href="classTcpConnection.html#a3d11a5464ae92193779dafc650597fa2">TcpConnection::timeOut</a></div><div class="ttdeci">uint16_t timeOut</div><div class="ttdoc">By default a TCP connection does not have a time out. </div><div class="ttdef"><b>Definition:</b> TcpConnection.h:278</div></div>
+<div class="ttc" id="classTcpClient_html_af3e7580e0d31060826e105e1ebc5833a"><div class="ttname"><a href="classTcpClient.html#af3e7580e0d31060826e105e1ebc5833a">TcpClient::setCompleteDelegate</a></div><div class="ttdeci">void setCompleteDelegate(TcpClientCompleteDelegate completeCb=nullptr)</div><div class="ttdoc">Set or clear the callback for connection close. </div><div class="ttdef"><b>Definition:</b> TcpClient.h:93</div></div>
+<div class="ttc" id="classIDataSourceStream_html"><div class="ttname"><a href="classIDataSourceStream.html">IDataSourceStream</a></div><div class="ttdoc">Base class for data source stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:39</div></div>
+<div class="ttc" id="classSslValidatorList_html"><div class="ttname"><a href="classSslValidatorList.html">SslValidatorList</a></div><div class="ttdef"><b>Definition:</b> SslValidator.h:43</div></div>
+<div class="ttc" id="classTcpConnection_html"><div class="ttname"><a href="classTcpConnection.html">TcpConnection</a></div><div class="ttdef"><b>Definition:</b> TcpConnection.h:52</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
-<div class="ttc" id="classTcpClient_html_abf18cea760e8efbf3a204b4e6d4055c3"><div class="ttname"><a href="classTcpClient.html#abf18cea760e8efbf3a204b4e6d4055c3">TcpClient::setCompleteDelegate</a></div><div class="ttdeci">void setCompleteDelegate(TcpClientCompleteDelegate completeCb=NULL)</div><div class="ttdoc">Set or clear the callback for connection close. </div></div>
-<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:41</div></div>
+<div class="ttc" id="classTcpClient_html"><div class="ttname"><a href="classTcpClient.html">TcpClient</a></div><div class="ttdef"><b>Definition:</b> TcpClient.h:40</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(TcpClient &amp;client, TcpConnectionEvent sourceEvent)&gt;</a></div></div>
-<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdoc">Base class for read/write stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:20</div></div>
+<div class="ttc" id="group__tcp_html_gaba7f1f0e5bdbba0576c8df40056e191b"><div class="ttname"><a href="group__tcp.html#gaba7f1f0e5bdbba0576c8df40056e191b">SslValidatorCallback</a></div><div class="ttdeci">std::function&lt; bool(SSL *ssl, void *data)&gt; SslValidatorCallback</div><div class="ttdoc">Validator callback function. </div><div class="ttdef"><b>Definition:</b> SslValidator.h:36</div></div>
+<div class="ttc" id="classTcpClient_html_a98d7bbb4e4918f45801073e4a4aef8dd"><div class="ttname"><a href="classTcpClient.html#a98d7bbb4e4918f45801073e4a4aef8dd">TcpClient::pinCertificate</a></div><div class="ttdeci">bool pinCertificate(SslFingerprints &amp;fingerprints)</div><div class="ttdoc">Requires (pins) the remote SSL certificate to match certain fingerprints. </div><div class="ttdef"><b>Definition:</b> TcpClient.h:151</div></div>
+<div class="ttc" id="classSslValidatorList_html_acd91a92ccb52285be41dd29822b2475e"><div class="ttname"><a href="classSslValidatorList.html#acd91a92ccb52285be41dd29822b2475e">SslValidatorList::validate</a></div><div class="ttdeci">bool validate(SSL *ssl)</div><div class="ttdoc">Used to validate certificate by invoking each validator callback until successful. </div></div>
+<div class="ttc" id="structSslFingerprints_html"><div class="ttname"><a href="structSslFingerprints.html">SslFingerprints</a></div><div class="ttdoc">Contains SSL fingerprint data. </div><div class="ttdef"><b>Definition:</b> SslFingerprints.h:45</div></div>
+<div class="ttc" id="classTcpClient_html_ab28ef68c29adbce16d969e20ed25e5f8"><div class="ttname"><a href="classTcpClient.html#ab28ef68c29adbce16d969e20ed25e5f8">TcpClient::buffer</a></div><div class="ttdeci">ReadWriteStream * buffer</div><div class="ttdoc">Used internally to buffer arbitrary data via send() methods. </div><div class="ttdef"><b>Definition:</b> TcpClient.h:181</div></div>
+<div class="ttc" id="classTcpClient_html_afdbf91ea5c9410eecc5c25316bd395b8"><div class="ttname"><a href="classTcpClient.html#afdbf91ea5c9410eecc5c25316bd395b8">TcpClient::stream</a></div><div class="ttdeci">IDataSourceStream * stream</div><div class="ttdoc">The currently active stream being sent. </div><div class="ttdef"><b>Definition:</b> TcpClient.h:182</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdoc">Base class for read/write stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:23</div></div>
 <div class="ttc" id="classIPAddress_html"><div class="ttname"><a href="classIPAddress.html">IPAddress</a></div><div class="ttdef"><b>Definition:</b> IPAddress.h:37</div></div>
+<div class="ttc" id="classTcpClient_html_a19862c1664a25f4910435d77528f44dc"><div class="ttname"><a href="classTcpClient.html#a19862c1664a25f4910435d77528f44dc">TcpClient::addSslValidator</a></div><div class="ttdeci">bool addSslValidator(SslValidatorCallback callback, void *data=nullptr)</div><div class="ttdoc">Allows setting of multiple SSL validators after a successful handshake. </div><div class="ttdef"><b>Definition:</b> TcpClient.h:125</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

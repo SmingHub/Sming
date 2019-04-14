@@ -13,12 +13,14 @@ var hierarchy =
     ] ],
     [ "base64_decodestate", "structbase64__decodestate.html", null ],
     [ "base64_encodestate", "structbase64__encodestate.html", null ],
+    [ "BeaconInfo", "structBeaconInfo.html", null ],
     [ "BH1750FVI", "classBH1750FVI.html", null ],
     [ "bme280_calib_data", "structbme280__calib__data.html", null ],
     [ "BMP180", "classBMP180.html", null ],
     [ "Bounce", "classBounce.html", null ],
     [ "BssInfo", "classBssInfo.html", null ],
     [ "CapacitiveSensor", "classCapacitiveSensor.html", null ],
+    [ "ClientInfo", "structClientInfo.html", null ],
     [ "col_t", "structcol__t.html", null ],
     [ "ComfortProfile", "structComfortProfile.html", null ],
     [ "CommandDelegate", "classCommandDelegate.html", null ],
@@ -31,6 +33,16 @@ var hierarchy =
     [ "Countable< AtCommand >", "classCountable.html", [
       [ "FIFO< AtCommand, 10 >", "classFIFO.html", null ]
     ] ],
+    [ "Countable< BeaconInfo >", "classCountable.html", [
+      [ "Vector< BeaconInfo >", "classVector.html", [
+        [ "BeaconInfoList", "classBeaconInfoList.html", null ]
+      ] ]
+    ] ],
+    [ "Countable< ClientInfo >", "classCountable.html", [
+      [ "Vector< ClientInfo >", "classVector.html", [
+        [ "ClientInfoList", "classClientInfoList.html", null ]
+      ] ]
+    ] ],
     [ "Countable< Element >", "classCountable.html", [
       [ "Vector< Element >", "classVector.html", null ]
     ] ],
@@ -40,6 +52,11 @@ var hierarchy =
     [ "Countable< HttpRequest * >", "classCountable.html", [
       [ "FIFO< HttpRequest *, rawSize >", "classFIFO.html", [
         [ "ObjectQueue< HttpRequest, HTTP_REQUEST_POOL_SIZE >", "classObjectQueue.html", null ]
+      ] ]
+    ] ],
+    [ "Countable< IDataSourceStream * >", "classCountable.html", [
+      [ "FIFO< IDataSourceStream *, rawSize >", "classFIFO.html", [
+        [ "ObjectQueue< IDataSourceStream, MAX_STREAM_CHAIN_SIZE >", "classObjectQueue.html", null ]
       ] ]
     ] ],
     [ "Countable< MailMessage * >", "classCountable.html", [
@@ -52,16 +69,19 @@ var hierarchy =
         [ "ObjectQueue< mqtt_message_t, MQTT_REQUEST_POOL_SIZE >", "classObjectQueue.html", null ]
       ] ]
     ] ],
+    [ "Countable< ObjectMap::Entry >", "classCountable.html", [
+      [ "Vector< ObjectMap::Entry >", "classVector.html", null ]
+    ] ],
     [ "Countable< rBootHttpUpdateItem >", "classCountable.html", [
       [ "Vector< rBootHttpUpdateItem >", "classVector.html", null ]
     ] ],
-    [ "Countable< ReadWriteStream * >", "classCountable.html", [
-      [ "FIFO< ReadWriteStream *, rawSize >", "classFIFO.html", [
-        [ "ObjectQueue< ReadWriteStream, MAX_STREAM_CHAIN_SIZE >", "classObjectQueue.html", null ]
-      ] ]
-    ] ],
     [ "Countable< ServoChannel * >", "classCountable.html", [
       [ "Vector< ServoChannel * >", "classVector.html", null ]
+    ] ],
+    [ "Countable< SslValidator >", "classCountable.html", [
+      [ "Vector< SslValidator >", "classVector.html", [
+        [ "SslValidatorList", "classSslValidatorList.html", null ]
+      ] ]
     ] ],
     [ "Countable< String >", "classCountable.html", [
       [ "Vector< String >", "classVector.html", null ]
@@ -85,17 +105,16 @@ var hierarchy =
     [ "Delegate< int(HttpConnection &client, bool successful)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpConnection &client, const char *at, size_t length)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpConnection &client, HttpResponse &response)>", "classDelegate.html", null ],
-    [ "Delegate< int(HttpServerConnection &, HttpRequest &, HttpResponse &)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpServerConnection &connection, HttpRequest &, char *at, int length)>", "classDelegate.html", null ],
     [ "Delegate< int(HttpServerConnection &connection, HttpRequest &, const char *at, int length)>", "classDelegate.html", null ],
+    [ "Delegate< int(HttpServerConnection &connection, HttpRequest &request, HttpResponse &response)>", "classDelegate.html", null ],
     [ "Delegate< int(MqttPayloadParserState &state, mqtt_message_t *message, const char *buffer, int length)>", "classDelegate.html", null ],
     [ "Delegate< ReturnType(ParamsList...)>", "classDelegate_3_01ReturnType_07ParamsList_8_8_8_08_4.html", null ],
     [ "Delegate< void()>", "classDelegate.html", null ],
     [ "Delegate< void(bool, BssList)>", "classDelegate.html", null ],
     [ "Delegate< void(char dbgChar)>", "classDelegate.html", null ],
     [ "Delegate< void(HardwareSerial &serial)>", "classDelegate.html", null ],
-    [ "Delegate< void(HttpRequest &, const char *at, int length)>", "classDelegate.html", null ],
-    [ "Delegate< void(HttpRequest &, HttpResponse &)>", "classDelegate.html", null ],
+    [ "Delegate< void(HttpRequest &request, const char *at, int length)>", "classDelegate.html", null ],
     [ "Delegate< void(int16_t, uint8_t[6])>", "classDelegate.html", null ],
     [ "Delegate< void(IPAddress, IPAddress, IPAddress)>", "classDelegate.html", null ],
     [ "Delegate< void(NtpClient &client, time_t ntpTime)>", "classDelegate.html", null ],
@@ -120,16 +139,17 @@ var hierarchy =
     [ "DHTesp", "classDHTesp.html", null ],
     [ "DIR", "structDIR.html", null ],
     [ "DNSHeader", "structDNSHeader.html", null ],
-    [ "DnsLookup", "structDnsLookup.html", null ],
     [ "DS18S20", "classDS18S20.html", null ],
     [ "DS3232RTC", "classDS3232RTC.html", null ],
     [ "ElapseTimer", "classElapseTimer.html", null ],
+    [ "ObjectMap< K, V >::Entry", "structObjectMap_1_1Entry.html", null ],
     [ "EspDigitalPin", "structEspDigitalPin.html", null ],
     [ "FATFS", "structFATFS.html", null ],
     [ "FIL", "structFIL.html", null ],
     [ "FILINFO", "structFILINFO.html", null ],
     [ "FlashString", "structFlashString.html", null ],
-    [ "FormUrlParserState", "structFormUrlParserState.html", null ],
+    [ "gdb_state_t", "structgdb__state__t.html", null ],
+    [ "GdbPacket", "classGdbPacket.html", null ],
     [ "gesture_data_type", "structgesture__data__type.html", null ],
     [ "HardwarePWM", "classHardwarePWM.html", null ],
     [ "HardwareTimer", "classHardwareTimer.html", [
@@ -141,9 +161,6 @@ var hierarchy =
     ] ],
     [ "HashMap< mqtt_type_t, MqttDelegate >", "classHashMap.html", null ],
     [ "HashMap< String, CommandDelegate >", "classHashMap.html", null ],
-    [ "HashMap< String, HttpConnection * >", "classHashMap.html", null ],
-    [ "HashMap< String, ObjectQueue * >", "classHashMap.html", null ],
-    [ "HashMap< String, ReadWriteStream * >", "classHashMap.html", null ],
     [ "HashMap< String, String >", "classHashMap.html", [
       [ "HttpParams", "classHttpParams.html", null ],
       [ "TemplateVariables", "classTemplateVariables.html", null ]
@@ -154,10 +171,10 @@ var hierarchy =
     [ "HttpClient", "classHttpClient.html", [
       [ "rBootHttpUpdate", "classrBootHttpUpdate.html", null ]
     ] ],
+    [ "HttpHeaderBuilder", "classHttpHeaderBuilder.html", null ],
     [ "HttpPartResult", "structHttpPartResult.html", null ],
     [ "HttpRequest", "classHttpRequest.html", null ],
     [ "HttpResource", "classHttpResource.html", [
-      [ "HttpCompatResource", "classHttpCompatResource.html", null ],
       [ "WebsocketResource", "classWebsocketResource.html", [
         [ "WsCommandHandlerResource", "classWsCommandHandlerResource.html", null ]
       ] ]
@@ -190,8 +207,11 @@ var hierarchy =
     [ "ISystemReadyHandler", "classISystemReadyHandler.html", [
       [ "AccessPointClass", "classAccessPointClass.html", null ],
       [ "StationClass", "classStationClass.html", null ],
-      [ "WDTClass", "classWDTClass.html", null ]
+      [ "WDTClass", "classWDTClass.html", null ],
+      [ "WifiSniffer", "classWifiSniffer.html", null ]
     ] ],
+    [ "LineBuffer< BUFSIZE >", "classLineBuffer.html", null ],
+    [ "LineBuffer< 128 >", "classLineBuffer.html", null ],
     [ "magiquest", "unionmagiquest.html", null ],
     [ "MailMessage", "classMailMessage.html", null ],
     [ "match_result_t", "structmatch__result__t.html", null ],
@@ -231,7 +251,13 @@ var hierarchy =
     ] ],
     [ "NexRtc", "classNexRtc.html", null ],
     [ "Nrf24l", "classNrf24l.html", null ],
+    [ "ObjectMap< K, V >", "classObjectMap.html", null ],
+    [ "ObjectMap< String, HttpResource >", "classObjectMap.html", [
+      [ "HttpResourceTree", "classHttpResourceTree.html", null ]
+    ] ],
+    [ "ObjectMap< String, IDataSourceStream >", "classObjectMap.html", null ],
     [ "OneWire", "classOneWire.html", null ],
+    [ "OsMessageInterceptor", "classOsMessageInterceptor.html", null ],
     [ "Print", "classPrint.html", [
       [ "Adafruit_GFX", "classAdafruit__GFX.html", [
         [ "Adafruit_ILI9341", "classAdafruit__ILI9341.html", null ],
@@ -251,34 +277,35 @@ var hierarchy =
         [ "LiquidCrystal_SR3W", "classLiquidCrystal__SR3W.html", null ]
       ] ],
       [ "Stream", "classStream.html", [
-        [ "HardwareSerial", "classHardwareSerial.html", null ],
         [ "IDataSourceStream", "classIDataSourceStream.html", [
+          [ "ArduCAMStream", "classArduCAMStream.html", null ],
           [ "FlashMemoryStream", "classFlashMemoryStream.html", null ],
+          [ "MultiStream", "classMultiStream.html", [
+            [ "MultipartStream", "classMultipartStream.html", null ],
+            [ "StreamChain", "classStreamChain.html", null ]
+          ] ],
           [ "ReadWriteStream", "classReadWriteStream.html", [
-            [ "ArduCAMStream", "classArduCAMStream.html", null ],
             [ "CircularBuffer", "classCircularBuffer.html", null ],
             [ "EndlessMemoryStream", "classEndlessMemoryStream.html", null ],
             [ "FileStream", "classFileStream.html", null ],
+            [ "GdbFileStream", "classGdbFileStream.html", null ],
+            [ "HardwareSerial", "classHardwareSerial.html", null ],
             [ "LimitedMemoryStream", "classLimitedMemoryStream.html", null ],
             [ "MemoryDataStream", "classMemoryDataStream.html", [
               [ "JsonObjectStream", "classJsonObjectStream.html", null ]
             ] ],
-            [ "MultiStream", "classMultiStream.html", [
-              [ "MultipartStream", "classMultipartStream.html", null ],
-              [ "StreamChain", "classStreamChain.html", null ]
-            ] ],
-            [ "rBootItemOutputStream", "classrBootItemOutputStream.html", null ],
-            [ "StreamTransformer", "classStreamTransformer.html", [
-              [ "Base64OutputStream", "classBase64OutputStream.html", null ],
-              [ "ChunkedStream", "classChunkedStream.html", null ],
-              [ "QuotedPrintableOutputStream", "classQuotedPrintableOutputStream.html", null ]
-            ] ],
-            [ "TemplateStream", "classTemplateStream.html", [
-              [ "TemplateFileStream", "classTemplateFileStream.html", null ],
-              [ "TemplateFlashMemoryStream", "classTemplateFlashMemoryStream.html", null ]
-            ] ],
-            [ "UrlencodedOutputStream", "classUrlencodedOutputStream.html", null ]
-          ] ]
+            [ "rBootItemOutputStream", "classrBootItemOutputStream.html", null ]
+          ] ],
+          [ "StreamTransformer", "classStreamTransformer.html", [
+            [ "Base64OutputStream", "classBase64OutputStream.html", null ],
+            [ "ChunkedStream", "classChunkedStream.html", null ],
+            [ "QuotedPrintableOutputStream", "classQuotedPrintableOutputStream.html", null ]
+          ] ],
+          [ "TemplateStream", "classTemplateStream.html", [
+            [ "TemplateFileStream", "classTemplateFileStream.html", null ],
+            [ "TemplateFlashMemoryStream", "classTemplateFlashMemoryStream.html", null ]
+          ] ],
+          [ "UrlencodedOutputStream", "classUrlencodedOutputStream.html", null ]
         ] ],
         [ "TwoWire", "classTwoWire.html", null ]
       ] ]
@@ -288,17 +315,23 @@ var hierarchy =
       [ "IPAddress", "classIPAddress.html", null ]
     ] ],
     [ "RCSwitch::Protocol", "structRCSwitch_1_1Protocol.html", null ],
+    [ "rboot_config", "structrboot__config.html", null ],
+    [ "rboot_write_status", "structrboot__write__status.html", null ],
     [ "rBootHttpUpdateItem", "structrBootHttpUpdateItem.html", null ],
     [ "RCSwitch", "classRCSwitch.html", null ],
     [ "RF24", "classRF24.html", null ],
     [ "RingBufCPP< Type, MaxElements >", "classRingBufCPP.html", null ],
     [ "RingBufCPP< uint16_t, RAWBUF >", "classRingBufCPP.html", null ],
+    [ "rom_header", "structrom__header.html", null ],
+    [ "rom_header_new", "structrom__header__new.html", null ],
     [ "RtcClass", "classRtcClass.html", null ],
     [ "RtcData", "structRtcData.html", null ],
+    [ "section_header", "structsection__header.html", null ],
     [ "sensor_t", "structsensor__t.html", null ],
     [ "sensors_color_t", "structsensors__color__t.html", null ],
     [ "sensors_event_t", "structsensors__event__t.html", null ],
     [ "sensors_vec_t", "structsensors__vec__t.html", null ],
+    [ "SerialBuffer", "structSerialBuffer.html", null ],
     [ "Servo", "classServo.html", null ],
     [ "ServoChannel", "classServoChannel.html", null ],
     [ "Si4432", "classSi4432.html", null ],
@@ -312,6 +345,10 @@ var hierarchy =
       [ "SPISoft", "classSPISoft.html", null ]
     ] ],
     [ "SPISettings", "classSPISettings.html", null ],
+    [ "SslFingerprints", "structSslFingerprints.html", null ],
+    [ "SslKeyCertPair", "classSslKeyCertPair.html", null ],
+    [ "SslSessionId", "classSslSessionId.html", null ],
+    [ "SslValidator", "structSslValidator.html", null ],
     [ "String", "classString.html", [
       [ "CStringArray", "classCStringArray.html", null ],
       [ "StringSumHelper", "classStringSumHelper.html", null ]
@@ -319,17 +356,22 @@ var hierarchy =
     [ "SystemClass", "classSystemClass.html", null ],
     [ "SystemClockClass", "classSystemClockClass.html", null ],
     [ "TcpConnection", "classTcpConnection.html", [
-      [ "FTPServerConnection", "classFTPServerConnection.html", null ],
+      [ "FtpDataStream", "classFtpDataStream.html", [
+        [ "FtpDataFileList", "classFtpDataFileList.html", null ],
+        [ "FtpDataRetrieve", "classFtpDataRetrieve.html", null ],
+        [ "FtpDataStore", "classFtpDataStore.html", null ]
+      ] ],
+      [ "FtpServerConnection", "classFtpServerConnection.html", null ],
       [ "TcpClient", "classTcpClient.html", [
-        [ "HttpConnectionBase", "classHttpConnectionBase.html", [
-          [ "HttpConnection", "classHttpConnection.html", null ],
+        [ "HttpConnection", "classHttpConnection.html", [
+          [ "HttpClientConnection", "classHttpClientConnection.html", null ],
           [ "HttpServerConnection", "classHttpServerConnection.html", null ]
         ] ],
         [ "MqttClient", "classMqttClient.html", null ],
         [ "SmtpClient", "classSmtpClient.html", null ]
       ] ],
       [ "TcpServer", "classTcpServer.html", [
-        [ "FTPServer", "classFTPServer.html", null ],
+        [ "FtpServer", "classFtpServer.html", null ],
         [ "TelnetServer", "classTelnetServer.html", null ]
       ] ]
     ] ],
@@ -343,7 +385,8 @@ var hierarchy =
     ] ],
     [ "MFRC522::Uid", "structMFRC522_1_1Uid.html", null ],
     [ "Ultrasonic", "classUltrasonic.html", null ],
-    [ "URL", "classURL.html", null ],
+    [ "Url", "classUrl.html", null ],
+    [ "ObjectMap< K, V >::Value", "classObjectMap_1_1Value.html", null ],
     [ "WebsocketConnection", "classWebsocketConnection.html", [
       [ "WebsocketClient", "classWebsocketClient.html", null ]
     ] ],

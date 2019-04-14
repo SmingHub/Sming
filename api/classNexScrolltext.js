@@ -21,6 +21,7 @@ var classNexScrolltext =
     [ "getObjName", "classNexScrolltext.html#a54267849ca7215af700a906e5e6362fd", null ],
     [ "getObjPid", "classNexScrolltext.html#a67621e5d7bcfb50c1a1bbc4ad1020352", null ],
     [ "getText", "classNexScrolltext.html#a7cead053146075e7c31d43349d4c897c", null ],
+    [ "iterate", "classNexScrolltext.html#a4e228b95e8c644888018dc813ebb3485", null ],
     [ "printObjInfo", "classNexScrolltext.html#abeff0c61474e8b3ce6bac76771820b64", null ],
     [ "Set_background_color_bco", "classNexScrolltext.html#a50a5211fc6913b97afda045a762cb0c4", null ],
     [ "Set_background_crop_picc", "classNexScrolltext.html#a0a4d02fef0a0a1f9a1e41c66709b97c1", null ],

@@ -107,82 +107,85 @@ $(document).ready(function(){initNavTree('SimpleTimer_8h_source.html','');});
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> * @author: 13 August 2018 - mikee47 &lt;mike@sillyhouse.net&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> * This class wraps the OS timer functions, in a class called SimpleTimer.</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> * For many timing operations the basic SimpleTimer capabilities are sufficient.</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> * The additional RAM required by the main Timer class soon adds up, so all</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> * short timer requirements are handled by an SimpleTimer. Still require Timer for</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"> * longer periods and the additional callback flexibility.</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">*/</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_SIMPLETIMER_H_</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_SIMPLETIMER_H_</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;esp_systemapi.h&quot;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;}</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment"> * According to documentation maximum value of interval for ms</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment"> * timer after doing system_timer_reinit is 268435ms.</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment"> * If we do some testing we find that higher values works,</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment"> * the actual limit seems to be about twice as high</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment"> * but we use the documented value anyway to be on the safe side.</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">*/</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#define MAX_OS_TIMER_INTERVAL_US 268435000</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classSimpleTimer.html">   39</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSimpleTimer.html">SimpleTimer</a></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;{</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="group__timer.html#gaf0c18d77bcd3a28f41fb09b3f1358543">   46</a></span>&#160;    <a class="code" href="group__timer.html#gaf0c18d77bcd3a28f41fb09b3f1358543">SimpleTimer</a>()</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    ~<a class="code" href="classSimpleTimer.html">SimpleTimer</a>()</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <a class="code" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">stop</a>();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classSimpleTimer.html#a42c15f099b22d1fe7dd3c2ad880f6bd7">   60</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classSimpleTimer.html#a42c15f099b22d1fe7dd3c2ad880f6bd7">startMs</a>(uint32_t milliseconds, <span class="keywordtype">bool</span> repeating = <span class="keyword">false</span>)</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <a class="code" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">stop</a>();</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="keywordflow">if</span>(osTimer.timer_func)</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            ets_timer_arm_new(&amp;osTimer, milliseconds, repeating, <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    }</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classSimpleTimer.html#ac472dd1705d3e2c8be98e2d7fbee64ee">   72</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classSimpleTimer.html#ac472dd1705d3e2c8be98e2d7fbee64ee">startUs</a>(uint32_t microseconds, <span class="keywordtype">bool</span> repeating = <span class="keyword">false</span>)</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <a class="code" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">stop</a>();</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordflow">if</span>(osTimer.timer_func)</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            ets_timer_arm_new(&amp;osTimer, microseconds, repeating, <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    }</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">   82</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">stop</a>()</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        ets_timer_disarm(&amp;osTimer);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    }</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="classSimpleTimer.html#a77c3cad120c8e98bf520dc6e500d5de9">   91</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSimpleTimer.html#a77c3cad120c8e98bf520dc6e500d5de9">setCallback</a>(os_timer_func_t callback, <span class="keywordtype">void</span>* arg = <span class="keyword">nullptr</span>)</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <a class="code" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">stop</a>();</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        ets_timer_setfn(&amp;osTimer, callback, arg);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    }</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    os_timer_t osTimer;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;};</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_SIMPLETIMER_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classSimpleTimer_html"><div class="ttname"><a href="classSimpleTimer.html">SimpleTimer</a></div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:39</div></div>
-<div class="ttc" id="classSimpleTimer_html_ac472dd1705d3e2c8be98e2d7fbee64ee"><div class="ttname"><a href="classSimpleTimer.html#ac472dd1705d3e2c8be98e2d7fbee64ee">SimpleTimer::startUs</a></div><div class="ttdeci">__forceinline void startUs(uint32_t microseconds, bool repeating=false)</div><div class="ttdoc">Initialise microsecond timer. </div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:72</div></div>
-<div class="ttc" id="classSimpleTimer_html_a42c15f099b22d1fe7dd3c2ad880f6bd7"><div class="ttname"><a href="classSimpleTimer.html#a42c15f099b22d1fe7dd3c2ad880f6bd7">SimpleTimer::startMs</a></div><div class="ttdeci">__forceinline void startMs(uint32_t milliseconds, bool repeating=false)</div><div class="ttdoc">Initialise millisecond timer. </div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:60</div></div>
-<div class="ttc" id="classSimpleTimer_html_a52f131e5dba40170b6babecd3e3bff52"><div class="ttname"><a href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">SimpleTimer::stop</a></div><div class="ttdeci">__forceinline void stop()</div><div class="ttdoc">Stop timer. </div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:82</div></div>
-<div class="ttc" id="group__timer_html_gaf0c18d77bcd3a28f41fb09b3f1358543"><div class="ttname"><a href="group__timer.html#gaf0c18d77bcd3a28f41fb09b3f1358543">SimpleTimer::SimpleTimer</a></div><div class="ttdeci">SimpleTimer()</div><div class="ttdoc">OSTimer class. </div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:46</div></div>
-<div class="ttc" id="classSimpleTimer_html_a77c3cad120c8e98bf520dc6e500d5de9"><div class="ttname"><a href="classSimpleTimer.html#a77c3cad120c8e98bf520dc6e500d5de9">SimpleTimer::setCallback</a></div><div class="ttdeci">void setCallback(os_timer_func_t callback, void *arg=nullptr)</div><div class="ttdoc">Set timer trigger function. </div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:91</div></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * SimpleTimer.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * @author: 13 August 2018 - mikee47 &lt;mike@sillyhouse.net&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> * This class wraps the OS timer functions, in a class called SimpleTimer.</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> * For many timing operations the basic SimpleTimer capabilities are sufficient.</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> * The additional RAM required by the main Timer class soon adds up, so all</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"> * short timer requirements are handled by an SimpleTimer. Still require Timer for</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> * longer periods and the additional callback flexibility.</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">*/</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_SIMPLE_TIMER_H_</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_SIMPLE_TIMER_H_</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;esp_systemapi.h&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment"> * According to documentation maximum value of interval for ms</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment"> * timer after doing system_timer_reinit is 268435ms.</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment"> * If we do some testing we find that higher values works,</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment"> * the actual limit seems to be about twice as high</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment"> * but we use the documented value anyway to be on the safe side.</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">*/</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#define MAX_OS_TIMER_INTERVAL_US 268435000</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">typedef</span> os_timer_func_t* SimpleTimerCallback;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="classSimpleTimer.html">   42</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSimpleTimer.html">SimpleTimer</a></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;{</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="group__timer.html#gaf0c18d77bcd3a28f41fb09b3f1358543">   49</a></span>&#160;    <a class="code" href="group__timer.html#gaf0c18d77bcd3a28f41fb09b3f1358543">SimpleTimer</a>()</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    }</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    ~<a class="code" href="classSimpleTimer.html">SimpleTimer</a>()</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    {</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <a class="code" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">stop</a>();</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classSimpleTimer.html#a42c15f099b22d1fe7dd3c2ad880f6bd7">   63</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classSimpleTimer.html#a42c15f099b22d1fe7dd3c2ad880f6bd7">startMs</a>(uint32_t milliseconds, <span class="keywordtype">bool</span> repeating = <span class="keyword">false</span>)</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <a class="code" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">stop</a>();</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordflow">if</span>(osTimer.timer_func)</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            ets_timer_arm_new(&amp;osTimer, milliseconds, repeating, <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    }</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="classSimpleTimer.html#ac472dd1705d3e2c8be98e2d7fbee64ee">   75</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classSimpleTimer.html#ac472dd1705d3e2c8be98e2d7fbee64ee">startUs</a>(uint32_t microseconds, <span class="keywordtype">bool</span> repeating = <span class="keyword">false</span>)</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <a class="code" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">stop</a>();</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keywordflow">if</span>(osTimer.timer_func)</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;            ets_timer_arm_new(&amp;osTimer, microseconds, repeating, <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    }</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">   85</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">stop</a>()</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        ets_timer_disarm(&amp;osTimer);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="classSimpleTimer.html#aa26ee7a851c08a75c933e0a6f4eaf470">   94</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classSimpleTimer.html#aa26ee7a851c08a75c933e0a6f4eaf470">setCallback</a>(SimpleTimerCallback callback, <span class="keywordtype">void</span>* arg = <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <a class="code" href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">stop</a>();</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        ets_timer_setfn(&amp;osTimer, callback, arg);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    }</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    os_timer_t osTimer;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;};</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_SIMPLE_TIMER_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classSimpleTimer_html"><div class="ttname"><a href="classSimpleTimer.html">SimpleTimer</a></div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:42</div></div>
+<div class="ttc" id="classSimpleTimer_html_aa26ee7a851c08a75c933e0a6f4eaf470"><div class="ttname"><a href="classSimpleTimer.html#aa26ee7a851c08a75c933e0a6f4eaf470">SimpleTimer::setCallback</a></div><div class="ttdeci">void setCallback(SimpleTimerCallback callback, void *arg=nullptr)</div><div class="ttdoc">Set timer trigger function. </div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:94</div></div>
+<div class="ttc" id="classSimpleTimer_html_ac472dd1705d3e2c8be98e2d7fbee64ee"><div class="ttname"><a href="classSimpleTimer.html#ac472dd1705d3e2c8be98e2d7fbee64ee">SimpleTimer::startUs</a></div><div class="ttdeci">__forceinline void startUs(uint32_t microseconds, bool repeating=false)</div><div class="ttdoc">Initialise microsecond timer. </div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:75</div></div>
+<div class="ttc" id="classSimpleTimer_html_a42c15f099b22d1fe7dd3c2ad880f6bd7"><div class="ttname"><a href="classSimpleTimer.html#a42c15f099b22d1fe7dd3c2ad880f6bd7">SimpleTimer::startMs</a></div><div class="ttdeci">__forceinline void startMs(uint32_t milliseconds, bool repeating=false)</div><div class="ttdoc">Initialise millisecond timer. </div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:63</div></div>
+<div class="ttc" id="classSimpleTimer_html_a52f131e5dba40170b6babecd3e3bff52"><div class="ttname"><a href="classSimpleTimer.html#a52f131e5dba40170b6babecd3e3bff52">SimpleTimer::stop</a></div><div class="ttdeci">__forceinline void stop()</div><div class="ttdoc">Stop timer. </div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:85</div></div>
+<div class="ttc" id="group__timer_html_gaf0c18d77bcd3a28f41fb09b3f1358543"><div class="ttname"><a href="group__timer.html#gaf0c18d77bcd3a28f41fb09b3f1358543">SimpleTimer::SimpleTimer</a></div><div class="ttdeci">SimpleTimer()</div><div class="ttdoc">OSTimer class. </div><div class="ttdef"><b>Definition:</b> SimpleTimer.h:49</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

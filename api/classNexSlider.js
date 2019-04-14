@@ -15,6 +15,7 @@ var classNexSlider =
     [ "getObjName", "classNexSlider.html#a54267849ca7215af700a906e5e6362fd", null ],
     [ "getObjPid", "classNexSlider.html#a67621e5d7bcfb50c1a1bbc4ad1020352", null ],
     [ "getValue", "classNexSlider.html#a384d5488b421efd6affbfd32f45bb107", null ],
+    [ "iterate", "classNexSlider.html#a4e228b95e8c644888018dc813ebb3485", null ],
     [ "printObjInfo", "classNexSlider.html#abeff0c61474e8b3ce6bac76771820b64", null ],
     [ "Set_background_color_bco", "classNexSlider.html#ac22c66fecb8cf03d554c3c86e6e798d5", null ],
     [ "Set_cursor_height_hig", "classNexSlider.html#a603cf3685c6d843261d8552030af9f22", null ],

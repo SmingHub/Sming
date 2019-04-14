@@ -2,7 +2,6 @@ var group__debug =
 [
     [ "DebugClass", "classDebugClass.html", [
       [ "DebugClass", "classDebugClass.html#a2d1495646d01422050f5d000d641eae8", null ],
-      [ "~DebugClass", "classDebugClass.html#aa185162550af8e0f3e4ec94dbc681db9", null ],
       [ "clearWriteError", "classDebugClass.html#aec9ecf84cc6d9087a650def3cefc459e", null ],
       [ "getWriteError", "classDebugClass.html#a88a4a829fb5d589efb43955ad0cbddcc", null ],
       [ "initCommand", "classDebugClass.html#a4b92612c788c442bf6f33439c7a8150a", null ],
@@ -36,7 +35,8 @@ var group__debug =
       [ "stop", "classDebugClass.html#a13c6e6409c563007f4ba3891c4f6c686", null ],
       [ "write", "classDebugClass.html#a5b40e0e9cab1f2fe5bb0cb22ffe5adda", null ],
       [ "write", "classDebugClass.html#ad98d820df11e2697be1e4b1ea30b4a23", null ],
-      [ "write", "classDebugClass.html#abfdd93a61c4b95a3ba41680188505e73", null ]
+      [ "write", "classDebugClass.html#abfdd93a61c4b95a3ba41680188505e73", null ],
+      [ "write", "classDebugClass.html#ac147de586b780ec9e0374b653f9b99cb", null ]
     ] ],
     [ "Debug", "group__debug.html#ga38725636e9ac9c18171e6d225d9948ea", null ]
 ];

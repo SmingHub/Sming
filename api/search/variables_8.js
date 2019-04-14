@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['light',['light',['../structsensors__event__t.html#adefd2ce2da44e4449ef7cadeaecc6cfd',1,'sensors_event_t']]]
+  ['incomingheaders',['incomingHeaders',['../classHttpConnection.html#acb73907f11523ecf86f70025dcc9080f',1,'HttpConnection']]]
 ];

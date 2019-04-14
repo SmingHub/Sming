@@ -16,6 +16,7 @@ var classNexText =
     [ "getObjName", "classNexText.html#a54267849ca7215af700a906e5e6362fd", null ],
     [ "getObjPid", "classNexText.html#a67621e5d7bcfb50c1a1bbc4ad1020352", null ],
     [ "getText", "classNexText.html#a9cf417b2f25df2872492c55bdc9f5b30", null ],
+    [ "iterate", "classNexText.html#a4e228b95e8c644888018dc813ebb3485", null ],
     [ "printObjInfo", "classNexText.html#abeff0c61474e8b3ce6bac76771820b64", null ],
     [ "Set_background_color_bco", "classNexText.html#a1b1586e5e66d76a4f8f5c40b0986f471", null ],
     [ "Set_background_crop_picc", "classNexText.html#a3727463a4fc0e1df978cd8fc7d1103ed", null ],

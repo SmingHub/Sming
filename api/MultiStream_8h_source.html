@@ -101,78 +101,83 @@ $(document).ready(function(){initNavTree('MultiStream_8h_source.html','');});
 <div class="title">MultiStream.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * MultiStream.h</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: Nov 7, 2018</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: slavey</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef SMINGCORE_DATA_STREAM_MULTISTREAM_H_</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMINGCORE_DATA_STREAM_MULTISTREAM_H_</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;ReadWriteStream.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classMultiStream.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMultiStream.html">MultiStream</a> : <span class="keyword">public</span> <a class="code" href="classReadWriteStream.html">ReadWriteStream</a></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classMultiStream.html">MultiStream</a>();</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classMultiStream.html#a1ccfeede7e68d632acad46e0a9bcb937">   18</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> <a class="code" href="classMultiStream.html#a1ccfeede7e68d632acad46e0a9bcb937">getStreamType</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da9bc885c0c8b6b89691a39d0ba980ecfc">eSST_Unknown</a>;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    }</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classMultiStream.html#a049327253192de58483aa39a710c63e9">   27</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="classMultiStream.html#a049327253192de58483aa39a710c63e9">available</a>()</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    }</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classMultiStream.html#a0060e27c2d518c08ca5d3fbd4074fcb0">write</a>(uint8_t charToWrite);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classMultiStream.html#a0060e27c2d518c08ca5d3fbd4074fcb0">write</a>(<span class="keyword">const</span> uint8_t* buffer, <span class="keywordtype">size_t</span> size);</div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/****</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * Created 2015 by Skurydin Alexey</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * MultiStream.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> *  Created on: Nov 7, 2018</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *      Author: slavey</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_STREAM_MULTISTREAM_H_</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_STREAM_MULTISTREAM_H_</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;DataSourceStream.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classMultiStream.html">   19</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMultiStream.html">MultiStream</a> : <span class="keyword">public</span> <a class="code" href="classIDataSourceStream.html">IDataSourceStream</a></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;{</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    ~<a class="code" href="classMultiStream.html">MultiStream</a>()</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keyword">delete</span> stream;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <span class="keyword">delete</span> nextStream;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    }</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classMultiStream.html#a2051c3e5904be53df24c08a2aa41cd60">   28</a></span>&#160;    <a class="code" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> <a class="code" href="classMultiStream.html#a2051c3e5904be53df24c08a2aa41cd60">getStreamType</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da9bc885c0c8b6b89691a39d0ba980ecfc">eSST_Unknown</a>;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    }</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classMultiStream.html#ac00536657c766ec687243e2c0d2c609e">   37</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classMultiStream.html#ac00536657c766ec687243e2c0d2c609e">available</a>()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    }</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="comment">//Use base class documentation</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    uint16_t <a class="code" href="classMultiStream.html#a23bff6aca3a14a9b619b2cf35a772b7d">readMemoryBlock</a>(<span class="keywordtype">char</span>* data, <span class="keywordtype">int</span> bufSize) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="comment">//Use base class documentation</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keyword">virtual</span> uint16_t <a class="code" href="classMultiStream.html#abdbdc2f0a4e4e17216438976ba58100b">readMemoryBlock</a>(<span class="keywordtype">char</span>* data, <span class="keywordtype">int</span> bufSize);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classMultiStream.html#a0836a3cae01ec50de8897fff1e18897f">seek</a>(<span class="keywordtype">int</span> len) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="comment">//Use base class documentation</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classMultiStream.html#adfcfde2fe175ea0402e1bc94b5999e0c">seek</a>(<span class="keywordtype">int</span> len);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classMultiStream.html#a7163831d56ed882234458288fb6316ef">isFinished</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="comment">//Use base class documentation</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classMultiStream.html#a7486401472eeaa23f5c77ffdbff01991">isFinished</a>();</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classIDataSourceStream.html">IDataSourceStream</a>* getNextStream() = 0;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* getNextStream() = 0;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> onCompleted()</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    }</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onNextStream()</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        stream = nextStream;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        nextStream = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* nextStream = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> onCompleted()</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> onNextStream()</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        stream = nextStream;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        nextStream = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    }</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <a class="code" href="classIDataSourceStream.html">IDataSourceStream</a>* stream = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <a class="code" href="classIDataSourceStream.html">IDataSourceStream</a>* nextStream = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordtype">bool</span> finished = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;};</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordtype">bool</span> finished = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;};</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SMINGCORE_DATA_STREAM_MULTISTREAM_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classMultiStream_html_a7486401472eeaa23f5c77ffdbff01991"><div class="ttname"><a href="classMultiStream.html#a7486401472eeaa23f5c77ffdbff01991">MultiStream::isFinished</a></div><div class="ttdeci">virtual bool isFinished()</div><div class="ttdoc">Check if all data has been read. </div></div>
-<div class="ttc" id="classMultiStream_html_adfcfde2fe175ea0402e1bc94b5999e0c"><div class="ttname"><a href="classMultiStream.html#adfcfde2fe175ea0402e1bc94b5999e0c">MultiStream::seek</a></div><div class="ttdeci">virtual bool seek(int len)</div><div class="ttdoc">Move read cursor. </div></div>
-<div class="ttc" id="classMultiStream_html"><div class="ttname"><a href="classMultiStream.html">MultiStream</a></div><div class="ttdef"><b>Definition:</b> MultiStream.h:13</div></div>
-<div class="ttc" id="classMultiStream_html_a049327253192de58483aa39a710c63e9"><div class="ttname"><a href="classMultiStream.html#a049327253192de58483aa39a710c63e9">MultiStream::available</a></div><div class="ttdeci">virtual int available()</div><div class="ttdoc">Return the total length of the stream. </div><div class="ttdef"><b>Definition:</b> MultiStream.h:27</div></div>
-<div class="ttc" id="group__constants_html_gga8a65141d9ea4bf9d2e2377ed6b888a1da9bc885c0c8b6b89691a39d0ba980ecfc"><div class="ttname"><a href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da9bc885c0c8b6b89691a39d0ba980ecfc">eSST_Unknown</a></div><div class="ttdoc">Unknown data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:26</div></div>
-<div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:19</div></div>
-<div class="ttc" id="classMultiStream_html_a1ccfeede7e68d632acad46e0a9bcb937"><div class="ttname"><a href="classMultiStream.html#a1ccfeede7e68d632acad46e0a9bcb937">MultiStream::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType() const </div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> MultiStream.h:18</div></div>
-<div class="ttc" id="classMultiStream_html_a0060e27c2d518c08ca5d3fbd4074fcb0"><div class="ttname"><a href="classMultiStream.html#a0060e27c2d518c08ca5d3fbd4074fcb0">MultiStream::write</a></div><div class="ttdeci">virtual size_t write(uint8_t charToWrite)</div><div class="ttdoc">Write a single char to stream. </div></div>
-<div class="ttc" id="classMultiStream_html_abdbdc2f0a4e4e17216438976ba58100b"><div class="ttname"><a href="classMultiStream.html#abdbdc2f0a4e4e17216438976ba58100b">MultiStream::readMemoryBlock</a></div><div class="ttdeci">virtual uint16_t readMemoryBlock(char *data, int bufSize)</div><div class="ttdoc">Read a block of memory. </div></div>
-<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdoc">Base class for read/write stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:20</div></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_STREAM_MULTISTREAM_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classMultiStream_html_a23bff6aca3a14a9b619b2cf35a772b7d"><div class="ttname"><a href="classMultiStream.html#a23bff6aca3a14a9b619b2cf35a772b7d">MultiStream::readMemoryBlock</a></div><div class="ttdeci">uint16_t readMemoryBlock(char *data, int bufSize) override</div><div class="ttdoc">Read a block of memory. </div></div>
+<div class="ttc" id="classMultiStream_html"><div class="ttname"><a href="classMultiStream.html">MultiStream</a></div><div class="ttdef"><b>Definition:</b> MultiStream.h:19</div></div>
+<div class="ttc" id="classIDataSourceStream_html"><div class="ttname"><a href="classIDataSourceStream.html">IDataSourceStream</a></div><div class="ttdoc">Base class for data source stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:39</div></div>
+<div class="ttc" id="classMultiStream_html_a7163831d56ed882234458288fb6316ef"><div class="ttname"><a href="classMultiStream.html#a7163831d56ed882234458288fb6316ef">MultiStream::isFinished</a></div><div class="ttdeci">bool isFinished() override</div><div class="ttdoc">Check if all data has been read. </div></div>
+<div class="ttc" id="group__constants_html_gga8a65141d9ea4bf9d2e2377ed6b888a1da9bc885c0c8b6b89691a39d0ba980ecfc"><div class="ttname"><a href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da9bc885c0c8b6b89691a39d0ba980ecfc">eSST_Unknown</a></div><div class="ttdoc">Unknown data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:29</div></div>
+<div class="ttc" id="classMultiStream_html_ac00536657c766ec687243e2c0d2c609e"><div class="ttname"><a href="classMultiStream.html#ac00536657c766ec687243e2c0d2c609e">MultiStream::available</a></div><div class="ttdeci">int available() override</div><div class="ttdoc">Return the total length of the stream. </div><div class="ttdef"><b>Definition:</b> MultiStream.h:37</div></div>
+<div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:22</div></div>
+<div class="ttc" id="classMultiStream_html_a0836a3cae01ec50de8897fff1e18897f"><div class="ttname"><a href="classMultiStream.html#a0836a3cae01ec50de8897fff1e18897f">MultiStream::seek</a></div><div class="ttdeci">bool seek(int len) override</div><div class="ttdoc">Move read cursor. </div></div>
+<div class="ttc" id="classMultiStream_html_a2051c3e5904be53df24c08a2aa41cd60"><div class="ttname"><a href="classMultiStream.html#a2051c3e5904be53df24c08a2aa41cd60">MultiStream::getStreamType</a></div><div class="ttdeci">StreamType getStreamType() const override</div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> MultiStream.h:28</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

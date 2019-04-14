@@ -26,5 +26,6 @@ var classIRGreeAC =
     [ "setTurbo", "classIRGreeAC.html#a72364503572de1efd1bc82389d63f8cd", null ],
     [ "setXFan", "classIRGreeAC.html#a4a2226ba5a39839b0c8a34a92f447562", null ],
     [ "stateReset", "classIRGreeAC.html#a7fbcbf67a6b2612e7cc90f03ca8341ba", null ],
-    [ "toString", "classIRGreeAC.html#ac672fd4592e27f035659c0942fb2a5ae", null ]
+    [ "toString", "classIRGreeAC.html#ac672fd4592e27f035659c0942fb2a5ae", null ],
+    [ "validChecksum", "classIRGreeAC.html#a589e3857a5f84eaf329893c5af5876ac", null ]
 ];

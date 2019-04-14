@@ -1,6 +1,6 @@
 var classHardware__Timer =
 [
-    [ "call", "classHardware__Timer.html#ac49fea30f1d32ce0287b486fb64f9a45", null ],
+    [ "call", "classHardware__Timer.html#aa3d06cc7f33c0c722ebc94a659df0f1d", null ],
     [ "getIntervalMs", "classHardware__Timer.html#a2b5d79d3f9d92a9931b2bf3130fc3448", null ],
     [ "getIntervalUs", "classHardware__Timer.html#aba40ce259005bb943173165e87370705", null ],
     [ "initializeMs", "classHardware__Timer.html#a2141c363427dc3c597c97044102a304c", null ],
@@ -11,6 +11,6 @@ var classHardware__Timer =
     [ "setIntervalMs", "classHardware__Timer.html#a8986fe583b7e5d3528524780fe81ba88", null ],
     [ "setIntervalUs", "classHardware__Timer.html#a2db18648b79f752f4fe6790a590267ce", null ],
     [ "start", "classHardware__Timer.html#a7261dd28d90841d3f2a49cac5ec39286", null ],
-    [ "startOnce", "classHardware__Timer.html#a29c09659ed6fc285632ea63b73f9acaf", null ],
+    [ "startOnce", "classHardware__Timer.html#ac3617ea06d8c9d6211d59f1cfc5381db", null ],
     [ "stop", "classHardware__Timer.html#a34a15d2296c68f4c5c18a76b54de0e4b", null ]
 ];

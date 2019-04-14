@@ -93,5 +93,7 @@ var classStringSumHelper =
     [ "trim", "classStringSumHelper.html#aeeb67e7811444d0f394eea7d99382501", null ],
     [ "buffer", "classStringSumHelper.html#a7892a52a08b6671add931f85a19c1d46", null ],
     [ "capacity", "classStringSumHelper.html#a8ef08d09cb9336d7000ba41563fdd97f", null ],
-    [ "len", "classStringSumHelper.html#a1f92677bb5c9022417c9bfdd9aea9e3e", null ]
+    [ "empty", "classStringSumHelper.html#afd02116a5571fcc8bc1e6fdabe132a85", null ],
+    [ "len", "classStringSumHelper.html#a1f92677bb5c9022417c9bfdd9aea9e3e", null ],
+    [ "nullstr", "classStringSumHelper.html#a542a89a4b03d510c234c6b571ba322ae", null ]
 ];

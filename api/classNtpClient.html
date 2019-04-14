@@ -159,9 +159,9 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:acc2092a5f662df125d7dd6600dad5ec3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNtpClient.html#acc2092a5f662df125d7dd6600dad5ec3">onReceive</a> (pbuf *buf, <a class="el" href="classIPAddress.html">IPAddress</a> remoteIP, uint16_t remotePort)</td></tr>
-<tr class="memdesc:acc2092a5f662df125d7dd6600dad5ec3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle UDP message reception.  <a href="#acc2092a5f662df125d7dd6600dad5ec3">More...</a><br/></td></tr>
-<tr class="separator:acc2092a5f662df125d7dd6600dad5ec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b993754be0dee75f4eb1f940d3a658d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNtpClient.html#a8b993754be0dee75f4eb1f940d3a658d">onReceive</a> (pbuf *buf, <a class="el" href="classIPAddress.html">IPAddress</a> remoteIP, uint16_t remotePort) override</td></tr>
+<tr class="memdesc:a8b993754be0dee75f4eb1f940d3a658d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle UDP message reception.  <a href="#a8b993754be0dee75f4eb1f940d3a658d">More...</a><br/></td></tr>
+<tr class="separator:a8b993754be0dee75f4eb1f940d3a658d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2df6d79f7f3e9fb6532e9f668e9b5fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNtpClient.html#af2df6d79f7f3e9fb6532e9f668e9b5fe">internalRequestTime</a> (<a class="el" href="classIPAddress.html">IPAddress</a> serverIp)</td></tr>
 <tr class="memdesc:af2df6d79f7f3e9fb6532e9f668e9b5fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send time request to NTP server.  <a href="#af2df6d79f7f3e9fb6532e9f668e9b5fe">More...</a><br/></td></tr>
 <tr class="separator:af2df6d79f7f3e9fb6532e9f668e9b5fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -241,6 +241,9 @@ udp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>udp</b> = nullpt
 <a class="anchor" id="a9b09163e448b31fed13dde7f4c710fd7"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">NtpClient::NtpClient </td>
@@ -249,6 +252,11 @@ udp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>udp</b> = nullpt
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Instantiates NTP client object. </p>
@@ -258,6 +266,9 @@ udp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>udp</b> = nullpt
 <a class="anchor" id="a62f824bfe7d1aa2f85551bbd3230da0c"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">NtpClient::NtpClient </td>
@@ -267,6 +278,11 @@ udp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>udp</b> = nullpt
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Instantiates NTP client object. </p>
@@ -354,7 +370,7 @@ udp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>udp</b> = nullpt
 
 </div>
 </div>
-<a class="anchor" id="acc2092a5f662df125d7dd6600dad5ec3"></a>
+<a class="anchor" id="a8b993754be0dee75f4eb1f940d3a658d"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -387,7 +403,7 @@ udp_pcb *&#160;</td><td class="memItemRight" valign="bottom"><b>udp</b> = nullpt
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

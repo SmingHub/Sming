@@ -20,6 +20,7 @@ var classNexDSButton =
     [ "getObjPid", "classNexDSButton.html#a67621e5d7bcfb50c1a1bbc4ad1020352", null ],
     [ "getText", "classNexDSButton.html#aff0f17061441139bf8797c78e4911eae", null ],
     [ "getValue", "classNexDSButton.html#a63e08f9a79f326c47aa66e1d0f9648c8", null ],
+    [ "iterate", "classNexDSButton.html#a4e228b95e8c644888018dc813ebb3485", null ],
     [ "printObjInfo", "classNexDSButton.html#abeff0c61474e8b3ce6bac76771820b64", null ],
     [ "Set_font_color_pco", "classNexDSButton.html#a25e696769de8d33a3e49db15e0b55aaa", null ],
     [ "Set_place_xcen", "classNexDSButton.html#a0bc679dfaca7aa0439f67bb91814f97a", null ],

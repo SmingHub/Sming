@@ -11,6 +11,7 @@ var classNexCheckbox =
     [ "getObjName", "classNexCheckbox.html#a54267849ca7215af700a906e5e6362fd", null ],
     [ "getObjPid", "classNexCheckbox.html#a67621e5d7bcfb50c1a1bbc4ad1020352", null ],
     [ "getValue", "classNexCheckbox.html#a6832110a49f9bbbb14a54f36db020d44", null ],
+    [ "iterate", "classNexCheckbox.html#a4e228b95e8c644888018dc813ebb3485", null ],
     [ "printObjInfo", "classNexCheckbox.html#abeff0c61474e8b3ce6bac76771820b64", null ],
     [ "Set_background_color_bco", "classNexCheckbox.html#ab430ba5908c84fea8ab910002581350a", null ],
     [ "Set_font_color_pco", "classNexCheckbox.html#aa1d52cc0170f11ec85263770fe77db2a", null ],

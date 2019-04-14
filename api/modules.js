@@ -31,5 +31,6 @@ var modules =
     [ "WiFi Access Point", "group__wifi__ap.html", "group__wifi__ap" ],
     [ "WiFi Station Interface", "group__wifi__sta.html", "group__wifi__sta" ],
     [ "client connection", "group__HTTP.html", "group__HTTP" ],
-    [ "connection", "group__Websocket.html", "group__Websocket" ]
+    [ "connection", "group__Websocket.html", "group__Websocket" ],
+    [ "rBoot API", "group__rboot.html", "group__rboot" ]
 ];

@@ -9,6 +9,6 @@ var group__system =
     [ "onReady", "group__system.html#ga3bd0122a224dfe3add3793b7d7cf23d5", null ],
     [ "onReady", "group__system.html#ga71e2a19d176b06ed76394b771a2cb487", null ],
     [ "queueCallback", "group__system.html#ga452a62223edb4c43c06efcf2f5429de6", null ],
-    [ "restart", "group__system.html#ga5f72899b23c49108b7cba82717e4246d", null ],
+    [ "restart", "group__system.html#ga586ff4c79825b6f3c2d9c7387b5661b1", null ],
     [ "setCpuFrequency", "group__system.html#ga820222ab31f457872e7bc645e998024f", null ]
 ];

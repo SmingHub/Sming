@@ -107,30 +107,32 @@ $(document).ready(function(){initNavTree('TemplateFlashMemoryStream_8h_source.ht
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * @author: 23 Oct 2018 - mikee47 &lt;mike@sillyhouse.net&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * TemplateFlashMemoryStream.h</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_TEMPLATE_FLASH_MEMORY_STREAM_H_</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_TEMPLATE_FLASH_MEMORY_STREAM_H_</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;FlashMemoryStream.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;TemplateStream.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classTemplateFlashMemoryStream.html">   24</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTemplateFlashMemoryStream.html">TemplateFlashMemoryStream</a> : <span class="keyword">public</span> <a class="code" href="classTemplateStream.html">TemplateStream</a></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;{</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classTemplateFlashMemoryStream.html#a4f7c1b708fff45a13f87b051c4930564">   30</a></span>&#160;    <a class="code" href="classTemplateFlashMemoryStream.html#a4f7c1b708fff45a13f87b051c4930564">TemplateFlashMemoryStream</a>(<span class="keyword">const</span> <a class="code" href="structFlashString.html">FlashString</a>&amp; flashString) : <a class="code" href="classTemplateStream.html">TemplateStream</a>(new <a class="code" href="classFlashMemoryStream.html">FlashMemoryStream</a>(flashString))</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    }</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_TEMPLATE_FLASH_MEMORY_STREAM_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * @author: 23 Oct 2018 - mikee47 &lt;mike@sillyhouse.net&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_STREAM_TEMPLATE_FLASH_MEMORY_STREAM_H_</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_STREAM_TEMPLATE_FLASH_MEMORY_STREAM_H_</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;FlashMemoryStream.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;TemplateStream.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classTemplateFlashMemoryStream.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="classTemplateFlashMemoryStream.html">TemplateFlashMemoryStream</a> : <span class="keyword">public</span> <a class="code" href="classTemplateStream.html">TemplateStream</a></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classTemplateFlashMemoryStream.html#a4f7c1b708fff45a13f87b051c4930564">   32</a></span>&#160;    <a class="code" href="classTemplateFlashMemoryStream.html#a4f7c1b708fff45a13f87b051c4930564">TemplateFlashMemoryStream</a>(<span class="keyword">const</span> <a class="code" href="structFlashString.html">FlashString</a>&amp; flashString) : <a class="code" href="classTemplateStream.html">TemplateStream</a>(new <a class="code" href="classFlashMemoryStream.html">FlashMemoryStream</a>(flashString))</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    }</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;};</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_STREAM_TEMPLATE_FLASH_MEMORY_STREAM_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="structFlashString_html"><div class="ttname"><a href="structFlashString.html">FlashString</a></div><div class="ttdoc">describes a counted string stored in flash memory </div><div class="ttdef"><b>Definition:</b> FlashString.h:171</div></div>
-<div class="ttc" id="classTemplateStream_html"><div class="ttname"><a href="classTemplateStream.html">TemplateStream</a></div><div class="ttdef"><b>Definition:</b> TemplateStream.h:40</div></div>
-<div class="ttc" id="classFlashMemoryStream_html"><div class="ttname"><a href="classFlashMemoryStream.html">FlashMemoryStream</a></div><div class="ttdef"><b>Definition:</b> FlashMemoryStream.h:26</div></div>
-<div class="ttc" id="classTemplateFlashMemoryStream_html"><div class="ttname"><a href="classTemplateFlashMemoryStream.html">TemplateFlashMemoryStream</a></div><div class="ttdoc">Template Flash memory stream class. </div><div class="ttdef"><b>Definition:</b> TemplateFlashMemoryStream.h:24</div></div>
-<div class="ttc" id="classTemplateFlashMemoryStream_html_a4f7c1b708fff45a13f87b051c4930564"><div class="ttname"><a href="classTemplateFlashMemoryStream.html#a4f7c1b708fff45a13f87b051c4930564">TemplateFlashMemoryStream::TemplateFlashMemoryStream</a></div><div class="ttdeci">TemplateFlashMemoryStream(const FlashString &amp;flashString)</div><div class="ttdoc">Create a template stream on top of a flash memory stream. </div><div class="ttdef"><b>Definition:</b> TemplateFlashMemoryStream.h:30</div></div>
+<div class="ttc" id="classTemplateStream_html"><div class="ttname"><a href="classTemplateStream.html">TemplateStream</a></div><div class="ttdef"><b>Definition:</b> TemplateStream.h:43</div></div>
+<div class="ttc" id="classFlashMemoryStream_html"><div class="ttname"><a href="classFlashMemoryStream.html">FlashMemoryStream</a></div><div class="ttdef"><b>Definition:</b> FlashMemoryStream.h:28</div></div>
+<div class="ttc" id="classTemplateFlashMemoryStream_html"><div class="ttname"><a href="classTemplateFlashMemoryStream.html">TemplateFlashMemoryStream</a></div><div class="ttdoc">Template Flash memory stream class. </div><div class="ttdef"><b>Definition:</b> TemplateFlashMemoryStream.h:26</div></div>
+<div class="ttc" id="classTemplateFlashMemoryStream_html_a4f7c1b708fff45a13f87b051c4930564"><div class="ttname"><a href="classTemplateFlashMemoryStream.html#a4f7c1b708fff45a13f87b051c4930564">TemplateFlashMemoryStream::TemplateFlashMemoryStream</a></div><div class="ttdeci">TemplateFlashMemoryStream(const FlashString &amp;flashString)</div><div class="ttdoc">Create a template stream on top of a flash memory stream. </div><div class="ttdef"><b>Definition:</b> TemplateFlashMemoryStream.h:32</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

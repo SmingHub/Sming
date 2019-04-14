@@ -174,5 +174,6 @@ var classMFRC522 =
     [ "setBitMask", "classMFRC522.html#a5b743b53393d88588e9d878159e89faf", null ],
     [ "setControlPins", "classMFRC522.html#a168c77281ac68b380ebc06859faaa9a0", null ],
     [ "setSPIConfig", "classMFRC522.html#a425d73a02db79e17abd78ff805770fc3", null ],
+    [ "FIFO_SIZE", "classMFRC522.html#a7bdf27d2122006aabd423ad71495e5f1", null ],
     [ "uid", "classMFRC522.html#ad456545d41962dd7f8bd4210f5618498", null ]
 ];

@@ -128,39 +128,39 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1dac277d68a075da4d31bfb861cc891e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1dac277d68a075da4d31bfb861cc891e"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>SPISoft</b> (uint16_t miso, uint16_t mosi, uint16_t sck, uint8_t <a class="el" href="group__timedelay.html#ga0e0319a9c20b0e5926c903239a493a93">delay</a>)</td></tr>
 <tr class="separator:a1dac277d68a075da4d31bfb861cc891e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7356e612b98a3a42719501bb1696cb8c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#a7356e612b98a3a42719501bb1696cb8c">begin</a> ()</td></tr>
-<tr class="memdesc:a7356e612b98a3a42719501bb1696cb8c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classSPISoft.html#a7356e612b98a3a42719501bb1696cb8c" title="begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low...">begin()</a>: Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.  <a href="#a7356e612b98a3a42719501bb1696cb8c">More...</a><br/></td></tr>
-<tr class="separator:a7356e612b98a3a42719501bb1696cb8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5ac3ce86c91b9ed1a4c352de99dd78d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#ac5ac3ce86c91b9ed1a4c352de99dd78d">end</a> ()</td></tr>
-<tr class="memdesc:ac5ac3ce86c91b9ed1a4c352de99dd78d"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classSPISoft.html#ac5ac3ce86c91b9ed1a4c352de99dd78d" title="end(): Disables the SPI bus (leaving pin modes unchanged). ">end()</a>: Disables the SPI bus (leaving pin modes unchanged).  <a href="#ac5ac3ce86c91b9ed1a4c352de99dd78d">More...</a><br/></td></tr>
-<tr class="separator:ac5ac3ce86c91b9ed1a4c352de99dd78d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56e82b3aeeea964ecec26ba0c4c3987b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#a56e82b3aeeea964ecec26ba0c4c3987b">beginTransaction</a> (<a class="el" href="classSPISettings.html">SPISettings</a> mySettings)</td></tr>
-<tr class="memdesc:a56e82b3aeeea964ecec26ba0c4c3987b"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classSPISoft.html#a56e82b3aeeea964ecec26ba0c4c3987b" title="beginTransaction(): Initializes the SPI bus using the defined SPISettings. ">beginTransaction()</a>: Initializes the SPI bus using the defined <a class="el" href="classSPISettings.html">SPISettings</a>.  <a href="#a56e82b3aeeea964ecec26ba0c4c3987b">More...</a><br/></td></tr>
-<tr class="separator:a56e82b3aeeea964ecec26ba0c4c3987b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03b0151b2c2eb279978867d29e8321bf"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#a03b0151b2c2eb279978867d29e8321bf">endTransaction</a> ()</td></tr>
-<tr class="memdesc:a03b0151b2c2eb279978867d29e8321bf"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classSPISoft.html#a03b0151b2c2eb279978867d29e8321bf" title="endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select...">endTransaction()</a>: Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.  <a href="#a03b0151b2c2eb279978867d29e8321bf">More...</a><br/></td></tr>
-<tr class="separator:a03b0151b2c2eb279978867d29e8321bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33416cb8a966c9a5378056e0d4a34779"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a33416cb8a966c9a5378056e0d4a34779"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>transfer</b> (uint8 *buffer, size_t size)</td></tr>
-<tr class="separator:a33416cb8a966c9a5378056e0d4a34779"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af278fc0c4ff05a66c26006751fde2b65"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#af278fc0c4ff05a66c26006751fde2b65">transfer</a> (unsigned char val)</td></tr>
-<tr class="memdesc:af278fc0c4ff05a66c26006751fde2b65"><td class="mdescLeft">&#160;</td><td class="mdescRight">transfer(), transfer16()  <a href="#af278fc0c4ff05a66c26006751fde2b65">More...</a><br/></td></tr>
-<tr class="separator:af278fc0c4ff05a66c26006751fde2b65"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f5d7bae1fa1d1f77bcf300f2bfc4977"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2f5d7bae1fa1d1f77bcf300f2bfc4977"></a>
-unsigned short&#160;</td><td class="memItemRight" valign="bottom"><b>transfer16</b> (unsigned short val)</td></tr>
-<tr class="separator:a2f5d7bae1fa1d1f77bcf300f2bfc4977"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1db5d2d4d72246b76653cb153e8a7637"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#a1db5d2d4d72246b76653cb153e8a7637">begin</a> () override</td></tr>
+<tr class="memdesc:a1db5d2d4d72246b76653cb153e8a7637"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classSPISoft.html#a1db5d2d4d72246b76653cb153e8a7637" title="begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low...">begin()</a>: Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.  <a href="#a1db5d2d4d72246b76653cb153e8a7637">More...</a><br/></td></tr>
+<tr class="separator:a1db5d2d4d72246b76653cb153e8a7637"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a769e526984733c7a5d567bed4d63d888"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#a769e526984733c7a5d567bed4d63d888">end</a> () override</td></tr>
+<tr class="memdesc:a769e526984733c7a5d567bed4d63d888"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classSPISoft.html#a769e526984733c7a5d567bed4d63d888" title="end(): Disables the SPI bus (leaving pin modes unchanged). ">end()</a>: Disables the SPI bus (leaving pin modes unchanged).  <a href="#a769e526984733c7a5d567bed4d63d888">More...</a><br/></td></tr>
+<tr class="separator:a769e526984733c7a5d567bed4d63d888"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc77732a782c09428c305850294fad0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#adc77732a782c09428c305850294fad0c">beginTransaction</a> (<a class="el" href="classSPISettings.html">SPISettings</a> mySettings) override</td></tr>
+<tr class="memdesc:adc77732a782c09428c305850294fad0c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classSPISoft.html#adc77732a782c09428c305850294fad0c" title="beginTransaction(): Initializes the SPI bus using the defined SPISettings. ">beginTransaction()</a>: Initializes the SPI bus using the defined <a class="el" href="classSPISettings.html">SPISettings</a>.  <a href="#adc77732a782c09428c305850294fad0c">More...</a><br/></td></tr>
+<tr class="separator:adc77732a782c09428c305850294fad0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5751a91f86d915281c36a2b7216b4a4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#a5751a91f86d915281c36a2b7216b4a4e">endTransaction</a> () override</td></tr>
+<tr class="memdesc:a5751a91f86d915281c36a2b7216b4a4e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classSPISoft.html#a5751a91f86d915281c36a2b7216b4a4e" title="endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select...">endTransaction()</a>: Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.  <a href="#a5751a91f86d915281c36a2b7216b4a4e">More...</a><br/></td></tr>
+<tr class="separator:a5751a91f86d915281c36a2b7216b4a4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f16640a6599b93ecc0301c669542e7c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4f16640a6599b93ecc0301c669542e7c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>transfer</b> (uint8 *buffer, size_t size) override</td></tr>
+<tr class="separator:a4f16640a6599b93ecc0301c669542e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1ceb28e9aab68c187c7636d3417fb47"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#ad1ceb28e9aab68c187c7636d3417fb47">transfer</a> (unsigned char val) override</td></tr>
+<tr class="memdesc:ad1ceb28e9aab68c187c7636d3417fb47"><td class="mdescLeft">&#160;</td><td class="mdescRight">transfer(), transfer16()  <a href="#ad1ceb28e9aab68c187c7636d3417fb47">More...</a><br/></td></tr>
+<tr class="separator:ad1ceb28e9aab68c187c7636d3417fb47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14626ab349bcdbb84016516ad95dca6c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14626ab349bcdbb84016516ad95dca6c"></a>
+unsigned short&#160;</td><td class="memItemRight" valign="bottom"><b>transfer16</b> (unsigned short val) override</td></tr>
+<tr class="separator:a14626ab349bcdbb84016516ad95dca6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a386eeeea1c0ac1791d2dd2507eeee66f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSPISoft.html#a386eeeea1c0ac1791d2dd2507eeee66f">setDelay</a> (uint8_t dly)</td></tr>
 <tr class="memdesc:a386eeeea1c0ac1791d2dd2507eeee66f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set microsecond delay for the SCK signal. Impacts SPI speed.  <a href="#a386eeeea1c0ac1791d2dd2507eeee66f">More...</a><br/></td></tr>
 <tr class="separator:a386eeeea1c0ac1791d2dd2507eeee66f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:gab60522af0ac50ba40d9047c99743141d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab60522af0ac50ba40d9047c99743141d"></a>
-<a class="el" href="classSPISettings.html">SPISettings</a>&#160;</td><td class="memItemRight" valign="bottom"><b>SPIDefaultSettings</b></td></tr>
+<tr class="memitem:gab60522af0ac50ba40d9047c99743141d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSPISettings.html">SPISettings</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__base__spi.html#gab60522af0ac50ba40d9047c99743141d">SPIDefaultSettings</a></td></tr>
+<tr class="memdesc:gab60522af0ac50ba40d9047c99743141d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default settings used by the SPI bus until reset by <a class="el" href="group__base__spi.html#gad5fd61e67423191ce0bc9a0e3e8bd5c4" title="beginTransaction(): Initializes the SPI bus using the defined SPISettings. ">beginTransaction(SPISettings)</a>  <a href="group__base__spi.html#gab60522af0ac50ba40d9047c99743141d">More...</a><br/></td></tr>
 <tr class="separator:gab60522af0ac50ba40d9047c99743141d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a7356e612b98a3a42719501bb1696cb8c"></a>
+<a class="anchor" id="a1db5d2d4d72246b76653cb153e8a7637"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -168,7 +168,7 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void SPISoft::begin </td>
+          <td class="memname">void SPISoft::begin </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -176,18 +176,18 @@ Public Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="classSPISoft.html#a7356e612b98a3a42719501bb1696cb8c" title="begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low...">begin()</a>: Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high. </p>
+<p><a class="el" href="classSPISoft.html#a1db5d2d4d72246b76653cb153e8a7637" title="begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low...">begin()</a>: Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high. </p>
 
 <p>Implements <a class="el" href="group__base__spi.html#gafbeadd11a2371ae16ff98c367c1b80dc">SPIBase</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a56e82b3aeeea964ecec26ba0c4c3987b"></a>
+<a class="anchor" id="adc77732a782c09428c305850294fad0c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -195,7 +195,7 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void SPISoft::beginTransaction </td>
+          <td class="memname">void SPISoft::beginTransaction </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classSPISettings.html">SPISettings</a>&#160;</td>
           <td class="paramname"><em>mySettings</em></td><td>)</td>
@@ -204,18 +204,18 @@ Public Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="classSPISoft.html#a56e82b3aeeea964ecec26ba0c4c3987b" title="beginTransaction(): Initializes the SPI bus using the defined SPISettings. ">beginTransaction()</a>: Initializes the SPI bus using the defined <a class="el" href="classSPISettings.html">SPISettings</a>. </p>
+<p><a class="el" href="classSPISoft.html#adc77732a782c09428c305850294fad0c" title="beginTransaction(): Initializes the SPI bus using the defined SPISettings. ">beginTransaction()</a>: Initializes the SPI bus using the defined <a class="el" href="classSPISettings.html">SPISettings</a>. </p>
 
 <p>Implements <a class="el" href="group__base__spi.html#gad5fd61e67423191ce0bc9a0e3e8bd5c4">SPIBase</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ac5ac3ce86c91b9ed1a4c352de99dd78d"></a>
+<a class="anchor" id="a769e526984733c7a5d567bed4d63d888"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -223,7 +223,7 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void SPISoft::end </td>
+          <td class="memname">void SPISoft::end </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -231,18 +231,18 @@ Public Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="classSPISoft.html#ac5ac3ce86c91b9ed1a4c352de99dd78d" title="end(): Disables the SPI bus (leaving pin modes unchanged). ">end()</a>: Disables the SPI bus (leaving pin modes unchanged). </p>
+<p><a class="el" href="classSPISoft.html#a769e526984733c7a5d567bed4d63d888" title="end(): Disables the SPI bus (leaving pin modes unchanged). ">end()</a>: Disables the SPI bus (leaving pin modes unchanged). </p>
 
 <p>Implements <a class="el" href="group__base__spi.html#ga9c11c8bd1a7be8104e1a004c0e964fe4">SPIBase</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a03b0151b2c2eb279978867d29e8321bf"></a>
+<a class="anchor" id="a5751a91f86d915281c36a2b7216b4a4e"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -250,7 +250,7 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void SPISoft::endTransaction </td>
+          <td class="memname">void SPISoft::endTransaction </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -258,12 +258,12 @@ Public Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="classSPISoft.html#a03b0151b2c2eb279978867d29e8321bf" title="endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select...">endTransaction()</a>: Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus. </p>
+<p><a class="el" href="classSPISoft.html#a5751a91f86d915281c36a2b7216b4a4e" title="endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select...">endTransaction()</a>: Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus. </p>
 
 <p>Implements <a class="el" href="group__base__spi.html#gad2aec733277dc8c94a00e660d79a84f2">SPIBase</a>.</p>
 
@@ -295,7 +295,7 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="af278fc0c4ff05a66c26006751fde2b65"></a>
+<a class="anchor" id="ad1ceb28e9aab68c187c7636d3417fb47"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -312,7 +312,7 @@ Public Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

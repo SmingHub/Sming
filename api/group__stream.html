@@ -129,6 +129,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFlashMemoryStream.html">FlashMemoryStream</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGdbFileStream.html">GdbFileStream</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GDB File stream class to provide access to host files whilst running under debugger.  <a href="classGdbFileStream.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classJsonObjectStream.html">JsonObjectStream</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">JsonObject stream class.  <a href="classJsonObjectStream.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,37 +160,28 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUrlencodedOutputStream.html">UrlencodedOutputStream</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">UrlEncoded <a class="el" href="classStream.html">Stream</a>.  <a href="classUrlencodedOutputStream.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga777c938832d85fbeeec5046387f66cf5"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; int(uint8_t <br class="typebreak"/>
-*in, size_t inLength, uint8_t <br class="typebreak"/>
-*out, size_t outLength)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__stream.html#ga777c938832d85fbeeec5046387f66cf5">StreamTransformerCallback</a></td></tr>
-<tr class="memdesc:ga777c938832d85fbeeec5046387f66cf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class that can be used to transform streams of data on the fly.  <a href="#ga777c938832d85fbeeec5046387f66cf5">More...</a><br/></td></tr>
-<tr class="separator:ga777c938832d85fbeeec5046387f66cf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaba3b0488dd30531ad12a522da32ec0c5"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; size_t(const <br class="typebreak"/>
+uint8_t *in, size_t inLength, <br class="typebreak"/>
+uint8_t *out, size_t outLength)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__stream.html#gaba3b0488dd30531ad12a522da32ec0c5">StreamTransformerCallback</a></td></tr>
+<tr class="memdesc:gaba3b0488dd30531ad12a522da32ec0c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class that can be used to transform streams of data on the fly.  <a href="#gaba3b0488dd30531ad12a522da32ec0c5">More...</a><br/></td></tr>
+<tr class="separator:gaba3b0488dd30531ad12a522da32ec0c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Data stream classes. </p>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="ga777c938832d85fbeeec5046387f66cf5"></a>
+<a class="anchor" id="gaba3b0488dd30531ad12a522da32ec0c5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::function&lt;int(uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)&gt; <a class="el" href="group__stream.html#ga777c938832d85fbeeec5046387f66cf5">StreamTransformerCallback</a></td>
+          <td class="memname">typedef std::function&lt;size_t(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)&gt; <a class="el" href="group__stream.html#gaba3b0488dd30531ad12a522da32ec0c5">StreamTransformerCallback</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Class that can be used to transform streams of data on the fly. </p>
-<p>Callback specification for the stream transformers</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">uint8_t*</td><td>in incoming stream </td></tr>
-    <tr><td class="paramname">int</td><td>inLength incoming stream length </td></tr>
-    <tr><td class="paramname">uint8_t*</td><td>out output stream </td></tr>
-    <tr><td class="paramname">int</td><td>outLength max bytes in the output stream</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>int number of output bytes </dd></dl>
+<p>Callback specification for the stream transformers </p>
+<dl class="section note"><dt>Note</dt><dd>See <a class="el" href="classStreamTransformer.html#ac8de5447b6d7068647087bcc5ec3bb52" title="Inherited class implements this method to transform a block of data. ">StreamTransformer::transform()</a> method for details </dd></dl>
 
 </div>
 </div>

@@ -125,46 +125,43 @@ Inheritance diagram for ReadWriteStream:</div>
  <div class="center">
   <img src="classReadWriteStream.png" usemap="#ReadWriteStream_map" alt=""/>
   <map id="ReadWriteStream_map" name="ReadWriteStream_map">
-<area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="0,112,153,136"/>
-<area href="classStream.html" alt="Stream" shape="rect" coords="0,56,153,80"/>
-<area href="classPrint.html" title="Provides formatted output to stream. " alt="Print" shape="rect" coords="0,0,153,24"/>
-<area href="classArduCAMStream.html" alt="ArduCAMStream" shape="rect" coords="163,224,316,248"/>
-<area href="classCircularBuffer.html" title="Circular stream class. " alt="CircularBuffer" shape="rect" coords="163,280,316,304"/>
-<area href="classEndlessMemoryStream.html" title="Memory stream that stores unlimited number of bytes. " alt="EndlessMemoryStream" shape="rect" coords="163,336,316,360"/>
-<area href="classFileStream.html" title="File stream class. " alt="FileStream" shape="rect" coords="163,392,316,416"/>
-<area href="classLimitedMemoryStream.html" title="Memory stream that stores limited number of bytes Once the limit is reached the stream will discard i..." alt="LimitedMemoryStream" shape="rect" coords="163,448,316,472"/>
-<area href="classMemoryDataStream.html" alt="MemoryDataStream" shape="rect" coords="163,504,316,528"/>
-<area href="classMultiStream.html" alt="MultiStream" shape="rect" coords="163,560,316,584"/>
-<area href="classrBootItemOutputStream.html" alt="rBootItemOutputStream" shape="rect" coords="163,616,316,640"/>
-<area href="classStreamTransformer.html" alt="StreamTransformer" shape="rect" coords="163,672,316,696"/>
-<area href="classTemplateStream.html" alt="TemplateStream" shape="rect" coords="163,728,316,752"/>
-<area href="classUrlencodedOutputStream.html" title="UrlEncoded Stream. " alt="UrlencodedOutputStream" shape="rect" coords="163,784,316,808"/>
+<area href="classIDataSourceStream.html" title="Base class for data source stream. " alt="IDataSourceStream" shape="rect" coords="0,112,141,136"/>
+<area href="classStream.html" alt="Stream" shape="rect" coords="0,56,141,80"/>
+<area href="classPrint.html" title="Provides formatted output to stream. " alt="Print" shape="rect" coords="0,0,141,24"/>
+<area href="classCircularBuffer.html" title="Circular stream class. " alt="CircularBuffer" shape="rect" coords="151,224,292,248"/>
+<area href="classEndlessMemoryStream.html" title="Memory stream that stores unlimited number of bytes. " alt="EndlessMemoryStream" shape="rect" coords="151,280,292,304"/>
+<area href="classFileStream.html" title="File stream class. " alt="FileStream" shape="rect" coords="151,336,292,360"/>
+<area href="classGdbFileStream.html" title="GDB File stream class to provide access to host files whilst running under debugger. " alt="GdbFileStream" shape="rect" coords="151,392,292,416"/>
+<area href="classHardwareSerial.html" title="Hardware serial class. " alt="HardwareSerial" shape="rect" coords="151,448,292,472"/>
+<area href="classLimitedMemoryStream.html" title="Memory stream that stores limited number of bytes Once the limit is reached the stream will discard i..." alt="LimitedMemoryStream" shape="rect" coords="151,504,292,528"/>
+<area href="classMemoryDataStream.html" alt="MemoryDataStream" shape="rect" coords="151,560,292,584"/>
+<area href="classrBootItemOutputStream.html" alt="rBootItemOutputStream" shape="rect" coords="151,616,292,640"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa629a6eb839d5095bc06ace8e91e9eb9"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classReadWriteStream.html#aa629a6eb839d5095bc06ace8e91e9eb9">write</a> (uint8_t charToWrite)</td></tr>
-<tr class="memdesc:aa629a6eb839d5095bc06ace8e91e9eb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a single character to output stream.  <a href="#aa629a6eb839d5095bc06ace8e91e9eb9">More...</a><br/></td></tr>
-<tr class="separator:aa629a6eb839d5095bc06ace8e91e9eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae75de8a09ac730b9d33f2409c925d470"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classReadWriteStream.html#ae75de8a09ac730b9d33f2409c925d470">write</a> (uint8_t charToWrite) override</td></tr>
+<tr class="memdesc:ae75de8a09ac730b9d33f2409c925d470"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a single character to the stream.  <a href="#ae75de8a09ac730b9d33f2409c925d470">More...</a><br/></td></tr>
+<tr class="separator:ae75de8a09ac730b9d33f2409c925d470"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d59383b573eea799e162744972a7aee"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classReadWriteStream.html#a2d59383b573eea799e162744972a7aee">write</a> (const uint8_t *buffer, size_t size)=0</td></tr>
 <tr class="memdesc:a2d59383b573eea799e162744972a7aee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write chars to stream.  <a href="#a2d59383b573eea799e162744972a7aee">More...</a><br/></td></tr>
 <tr class="separator:a2d59383b573eea799e162744972a7aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a488b605e720069e802f5d38635e4b2e0"><td class="memItemLeft" align="right" valign="top">virtual uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classReadWriteStream.html#a488b605e720069e802f5d38635e4b2e0">readMemoryBlock</a> (char *data, int bufSize)=0</td></tr>
-<tr class="memdesc:a488b605e720069e802f5d38635e4b2e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a block of memory.  <a href="#a488b605e720069e802f5d38635e4b2e0">More...</a><br/></td></tr>
-<tr class="separator:a488b605e720069e802f5d38635e4b2e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41f3759d77f948af9598c77a5e066a14"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#a41f3759d77f948af9598c77a5e066a14">getStreamType</a> () const =0</td></tr>
-<tr class="memdesc:a41f3759d77f948af9598c77a5e066a14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the stream type.  <a href="#a41f3759d77f948af9598c77a5e066a14">More...</a><br/></td></tr>
-<tr class="separator:a41f3759d77f948af9598c77a5e066a14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adac6ecd07685ad2c323ba25004247d19"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#adac6ecd07685ad2c323ba25004247d19">getStreamType</a> () const </td></tr>
+<tr class="memdesc:adac6ecd07685ad2c323ba25004247d19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the stream type.  <a href="#adac6ecd07685ad2c323ba25004247d19">More...</a><br/></td></tr>
+<tr class="separator:adac6ecd07685ad2c323ba25004247d19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab449f678d6db826bd6fd4e2b8a3a3967"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#ab449f678d6db826bd6fd4e2b8a3a3967">isValid</a> () const </td></tr>
 <tr class="memdesc:ab449f678d6db826bd6fd4e2b8a3a3967"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the stream object contains valid data.  <a href="#ab449f678d6db826bd6fd4e2b8a3a3967">More...</a><br/></td></tr>
 <tr class="separator:ab449f678d6db826bd6fd4e2b8a3a3967"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace0b653e42b9d8487cf829fedbb734f6"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#ace0b653e42b9d8487cf829fedbb734f6">read</a> ()</td></tr>
-<tr class="memdesc:ace0b653e42b9d8487cf829fedbb734f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read one character and moves the stream pointer.  <a href="#ace0b653e42b9d8487cf829fedbb734f6">More...</a><br/></td></tr>
-<tr class="separator:ace0b653e42b9d8487cf829fedbb734f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf3a3d1a1e1b0412daed308228888ae5"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#aaf3a3d1a1e1b0412daed308228888ae5">peek</a> ()</td></tr>
-<tr class="memdesc:aaf3a3d1a1e1b0412daed308228888ae5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a character without advancing the stream pointer.  <a href="#aaf3a3d1a1e1b0412daed308228888ae5">More...</a><br/></td></tr>
-<tr class="separator:aaf3a3d1a1e1b0412daed308228888ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af57326b89bc192a3e95916411681d011"><td class="memItemLeft" align="right" valign="top">virtual uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011">readMemoryBlock</a> (char *data, int bufSize)=0</td></tr>
+<tr class="memdesc:af57326b89bc192a3e95916411681d011"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a block of memory.  <a href="#af57326b89bc192a3e95916411681d011">More...</a><br/></td></tr>
+<tr class="separator:af57326b89bc192a3e95916411681d011"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a504dbe6edbff9f52ba0e18fba67423e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#a504dbe6edbff9f52ba0e18fba67423e1">read</a> () override</td></tr>
+<tr class="memdesc:a504dbe6edbff9f52ba0e18fba67423e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read one character and moves the stream pointer.  <a href="#a504dbe6edbff9f52ba0e18fba67423e1">More...</a><br/></td></tr>
+<tr class="separator:a504dbe6edbff9f52ba0e18fba67423e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05d27e36345d8ef4b3fc9a63eb21fbdc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#a05d27e36345d8ef4b3fc9a63eb21fbdc">peek</a> () override</td></tr>
+<tr class="memdesc:a05d27e36345d8ef4b3fc9a63eb21fbdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a character without advancing the stream pointer.  <a href="#a05d27e36345d8ef4b3fc9a63eb21fbdc">More...</a><br/></td></tr>
+<tr class="separator:a05d27e36345d8ef4b3fc9a63eb21fbdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a2c1c9c686a6c99041316dc0531c255"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#a3a2c1c9c686a6c99041316dc0531c255">seek</a> (int len)=0</td></tr>
 <tr class="memdesc:a3a2c1c9c686a6c99041316dc0531c255"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move read cursor.  <a href="#a3a2c1c9c686a6c99041316dc0531c255">More...</a><br/></td></tr>
 <tr class="separator:a3a2c1c9c686a6c99041316dc0531c255"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -180,12 +177,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abfdd93a61c4b95a3ba41680188505e73"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPrint.html#abfdd93a61c4b95a3ba41680188505e73">write</a> (const char *buffer, size_t size)</td></tr>
 <tr class="memdesc:abfdd93a61c4b95a3ba41680188505e73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes characters from a buffer to output stream.  <a href="#abfdd93a61c4b95a3ba41680188505e73">More...</a><br/></td></tr>
 <tr class="separator:abfdd93a61c4b95a3ba41680188505e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05ec329ab5b1237777872156d631f68c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a> ()</td></tr>
-<tr class="memdesc:a05ec329ab5b1237777872156d631f68c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total length of the stream.  <a href="#a05ec329ab5b1237777872156d631f68c">More...</a><br/></td></tr>
-<tr class="separator:a05ec329ab5b1237777872156d631f68c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a313fb97e4af1e15ed581674a1ce76d3e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a313fb97e4af1e15ed581674a1ce76d3e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> ()</td></tr>
-<tr class="separator:a313fb97e4af1e15ed581674a1ce76d3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a625450b1b93b799c653a78719879ed38"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#a625450b1b93b799c653a78719879ed38">length</a> () <a class="el" href="group__url.html#ga7589191fa2da5424fc954be1fee1fed8">SMING_DEPRECATED</a></td></tr>
+<tr class="memdesc:a625450b1b93b799c653a78719879ed38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total length of the stream.  <a href="#a625450b1b93b799c653a78719879ed38">More...</a><br/></td></tr>
+<tr class="separator:a625450b1b93b799c653a78719879ed38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e92dcdbf17d54bf95b70cd69c80b093"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4e92dcdbf17d54bf95b70cd69c80b093"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> () override</td></tr>
+<tr class="separator:a4e92dcdbf17d54bf95b70cd69c80b093"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1ef7841971cac54cfd5535b239535ad"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIDataSourceStream.html#ad1ef7841971cac54cfd5535b239535ad">id</a> () const </td></tr>
 <tr class="memdesc:ad1ef7841971cac54cfd5535b239535ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unique id of the resource.  <a href="#ad1ef7841971cac54cfd5535b239535ad">More...</a><br/></td></tr>
 <tr class="separator:ad1ef7841971cac54cfd5535b239535ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -199,7 +196,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeout</b> (unsig
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>find</b> (char *target)</td></tr>
 <tr class="separator:a4bab30ccd324efd461dee46a2339f673"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad851401f2318cdb1de05707e021b81d9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad851401f2318cdb1de05707e021b81d9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>find</b> (char *target, size_t <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a>)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>find</b> (char *target, size_t <a class="el" href="classIDataSourceStream.html#a625450b1b93b799c653a78719879ed38">length</a>)</td></tr>
 <tr class="separator:ad851401f2318cdb1de05707e021b81d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1f5f6600832396fb38a897baf4de35b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad1f5f6600832396fb38a897baf4de35b"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>findUntil</b> (char *target, char *terminator)</td></tr>
@@ -214,10 +211,10 @@ long&#160;</td><td class="memItemRight" valign="bottom"><b>parseInt</b> ()</td><
 float&#160;</td><td class="memItemRight" valign="bottom"><b>parseFloat</b> ()</td></tr>
 <tr class="separator:a5e5a0cc11eb586d89dcb7fa8e53a87e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45fd1336a323ea83b16e8507055f44ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a45fd1336a323ea83b16e8507055f44ea"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>readBytes</b> (char *buffer, size_t <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a>)</td></tr>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>readBytes</b> (char *buffer, size_t <a class="el" href="classIDataSourceStream.html#a625450b1b93b799c653a78719879ed38">length</a>)</td></tr>
 <tr class="separator:a45fd1336a323ea83b16e8507055f44ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af84672a4fb2620466958d3118d4fea00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af84672a4fb2620466958d3118d4fea00"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>readBytesUntil</b> (char terminator, char *buffer, size_t <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">length</a>)</td></tr>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>readBytesUntil</b> (char terminator, char *buffer, size_t <a class="el" href="classIDataSourceStream.html#a625450b1b93b799c653a78719879ed38">length</a>)</td></tr>
 <tr class="separator:af84672a4fb2620466958d3118d4fea00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c60bdda2b65d78e5a1362d51b856c5a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c60bdda2b65d78e5a1362d51b856c5a"></a>
 <a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>readString</b> ()</td></tr>
@@ -344,7 +341,6 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
         <tr>
           <td class="memname">virtual int IDataSourceStream::available </td>
           <td>(</td>
-          <td class="paramtype">void&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -366,7 +362,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
 
 <p>Implements <a class="el" href="classStream.html">Stream</a>.</p>
 
-<p>Reimplemented in <a class="el" href="classFileStream.html#a76d3ff678737b6603718cfae1a6e8488">FileStream</a>, <a class="el" href="classCircularBuffer.html#a58936d4f6a3d4e7b761b103b41d2d52b">CircularBuffer</a>, <a class="el" href="classMemoryDataStream.html#a2ad4270fa5b17ff81dac2f68295dd190">MemoryDataStream</a>, <a class="el" href="classStreamTransformer.html#a52dd2349122e3ba6afc4ffbe69382aef">StreamTransformer</a>, <a class="el" href="classJsonObjectStream.html#ae78b14c9b4177413eaffcc756f9ebe9c">JsonObjectStream</a>, <a class="el" href="classUrlencodedOutputStream.html#af72058d287b50a590e469fbb7068ad58">UrlencodedOutputStream</a>, <a class="el" href="classArduCAMStream.html#a8ea8284127bf1f5b9d50f51e74f3538e">ArduCAMStream</a>, <a class="el" href="classFlashMemoryStream.html#a092a32b3fcdcb057bcd4caf691ca5035">FlashMemoryStream</a>, <a class="el" href="classLimitedMemoryStream.html#a2abdbc09b63bb771585a090e647424a0">LimitedMemoryStream</a>, and <a class="el" href="classMultiStream.html#a049327253192de58483aa39a710c63e9">MultiStream</a>.</p>
+<p>Reimplemented in <a class="el" href="classHardwareSerial.html#a3ba8028d63deb239fc732ff4dcaa5596">HardwareSerial</a>, <a class="el" href="classFileStream.html#a304a5d0efe2e557b7a99640e5a9b663f">FileStream</a>, <a class="el" href="classGdbFileStream.html#ac011b22374fe89d42c8746c7942dae0c">GdbFileStream</a>, <a class="el" href="classCircularBuffer.html#a59f3bcab118f5f05132fb125f702f0cc">CircularBuffer</a>, <a class="el" href="classStreamTransformer.html#a9fafbaad7ad3e645ec451bb0f08682b1">StreamTransformer</a>, <a class="el" href="classMemoryDataStream.html#a8badcb32a2ab3552d3c346b3643507e7">MemoryDataStream</a>, <a class="el" href="classJsonObjectStream.html#a22fc905adf452b8de6f2d6f526ddbb95">JsonObjectStream</a>, <a class="el" href="classLimitedMemoryStream.html#aed4132dd56b040af0409193badfe7d62">LimitedMemoryStream</a>, <a class="el" href="classUrlencodedOutputStream.html#acadd1086a00858293559c7577ceb4dc4">UrlencodedOutputStream</a>, <a class="el" href="classFlashMemoryStream.html#ab5e84f41fdf4a63906d308daa93d8975">FlashMemoryStream</a>, <a class="el" href="classMultiStream.html#ac00536657c766ec687243e2c0d2c609e">MultiStream</a>, and <a class="el" href="classArduCAMStream.html#a8ea8284127bf1f5b9d50f51e74f3538e">ArduCAMStream</a>.</p>
 
 </div>
 </div>
@@ -425,11 +421,11 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Commonly used to obtain name of file </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classTemplateStream.html#a67dd2f957a5ba4e6f20e6d8e760b4f45">TemplateStream</a>, and <a class="el" href="classFileStream.html#ab8298a82fdbb6b29217c2d887457c027">FileStream</a>.</p>
+<p>Reimplemented in <a class="el" href="classTemplateStream.html#a62783b69173a6231ab5c0024e51c36af">TemplateStream</a>, <a class="el" href="classFileStream.html#ad504e2ba8f81d707883b80a7e569ad9d">FileStream</a>, and <a class="el" href="classGdbFileStream.html#ac41eaa11b3a4b87ce074256e2c204b4f">GdbFileStream</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a41f3759d77f948af9598c77a5e066a14"></a>
+<a class="anchor" id="adac6ecd07685ad2c323ba25004247d19"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -445,7 +441,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -457,9 +453,8 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Return value of <a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a>:getStreamType base class function should be of type StreamType, e.g. eSST_User </dd></dl>
 
-<p>Implemented in <a class="el" href="classFileStream.html#ad093b79da8e862ab03501d1be86b91b4">FileStream</a>, <a class="el" href="classTemplateStream.html#af829e9960754a5264e821c3b8fd3fd1f">TemplateStream</a>, <a class="el" href="classStreamTransformer.html#ad5af5a95599000bba12c6eecb2d48368">StreamTransformer</a>, <a class="el" href="classCircularBuffer.html#a780b1d60f82bd2e2f113400cd2ce2336">CircularBuffer</a>, <a class="el" href="classMemoryDataStream.html#a2eae8064dd5cd9c366c4263bdd49a732">MemoryDataStream</a>, <a class="el" href="classrBootItemOutputStream.html#abc2995d6ff9a5ad656276d992a99ae91">rBootItemOutputStream</a>, <a class="el" href="classUrlencodedOutputStream.html#ad35953c0f6e510309cbc5af6014206d3">UrlencodedOutputStream</a>, <a class="el" href="classJsonObjectStream.html#ab6bdf1d0002515621e3535df1cf212d9">JsonObjectStream</a>, <a class="el" href="classEndlessMemoryStream.html#a6c923308d6dc7f7669d8a5d90f4ae02b">EndlessMemoryStream</a>, <a class="el" href="classFlashMemoryStream.html#a0630edc9515da6086fa789f7a1e9a102">FlashMemoryStream</a>, <a class="el" href="classLimitedMemoryStream.html#a909c9677367dc5754cb429c20e5a4684">LimitedMemoryStream</a>, <a class="el" href="classArduCAMStream.html#ada9675549c1558c65bf23bffa8b01fd4">ArduCAMStream</a>, and <a class="el" href="classMultiStream.html#a1ccfeede7e68d632acad46e0a9bcb937">MultiStream</a>.</p>
+<p>Reimplemented in <a class="el" href="classFileStream.html#aaeab5aa9f135fbe37b264d9bbfba85b9">FileStream</a>, <a class="el" href="classTemplateStream.html#a420990139b7c33f0a78cfc21b5ea6c59">TemplateStream</a>, <a class="el" href="classStreamTransformer.html#af0460974e2e3585ca2184d5053938fac">StreamTransformer</a>, <a class="el" href="classrBootItemOutputStream.html#a13a50cfe1299a073dea3c4b6edac7ba2">rBootItemOutputStream</a>, <a class="el" href="classCircularBuffer.html#a524323d7a4c8788d8fb16d37175f7291">CircularBuffer</a>, <a class="el" href="classMemoryDataStream.html#af2ca599613599885da48a12931e88c22">MemoryDataStream</a>, <a class="el" href="classLimitedMemoryStream.html#a2aa2b3bf297b472b9ac2013eb3929dfb">LimitedMemoryStream</a>, <a class="el" href="classEndlessMemoryStream.html#a3fb8fa045d8ebf8041c9ddc6590c5c82">EndlessMemoryStream</a>, <a class="el" href="classUrlencodedOutputStream.html#a7f0b15d8b13381abf102126e37fb4c0e">UrlencodedOutputStream</a>, <a class="el" href="classFlashMemoryStream.html#a008829b1961160ece7d7051f839fc191">FlashMemoryStream</a>, <a class="el" href="classJsonObjectStream.html#a8a721941231294f21481da498d0565a1">JsonObjectStream</a>, <a class="el" href="classMultiStream.html#a2051c3e5904be53df24c08a2aa41cd60">MultiStream</a>, and <a class="el" href="classArduCAMStream.html#ada9675549c1558c65bf23bffa8b01fd4">ArduCAMStream</a>.</p>
 
 </div>
 </div>
@@ -523,7 +518,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classFileStream.html#a26478176b05aa37ddb310a648d0917dc">FileStream</a>, and <a class="el" href="classCircularBuffer.html#a7ee97b52d15c68307de71cbf868e1713">CircularBuffer</a>.</p>
+<p>Reimplemented in <a class="el" href="classFileStream.html#ad679132501b144e0bd4200cb7d71a0d3">FileStream</a>, <a class="el" href="classGdbFileStream.html#a7dbf9903b470714da264c0668b22f5ac">GdbFileStream</a>, and <a class="el" href="classCircularBuffer.html#a1ca70d0273b7b1c57997155c7fbd9d4a">CircularBuffer</a>.</p>
 
 </div>
 </div>
@@ -556,7 +551,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classUrlencodedOutputStream.html#a13712c4783df6ba345ae12f8b3a958ab">UrlencodedOutputStream</a>, <a class="el" href="classStreamTransformer.html#ac683970df1ecaaf83db0fff181f55ab3">StreamTransformer</a>, <a class="el" href="classFileStream.html#af80071bb96db8a7558d1856305186baa">FileStream</a>, <a class="el" href="classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3">MemoryDataStream</a>, <a class="el" href="classTemplateStream.html#ab936982bb34f7488c559734f4b9f9ae7">TemplateStream</a>, <a class="el" href="classCircularBuffer.html#abfe236e3b5f1e553c901ea0db38a0458">CircularBuffer</a>, <a class="el" href="classLimitedMemoryStream.html#a1be9aeb575894d133012ae739502d10b">LimitedMemoryStream</a>, <a class="el" href="classrBootItemOutputStream.html#a6b956d62775372b7c0cde4564cf10e43">rBootItemOutputStream</a>, <a class="el" href="classEndlessMemoryStream.html#af091a934dce4aea1a88072a44ee8dbad">EndlessMemoryStream</a>, <a class="el" href="classMultiStream.html#a7486401472eeaa23f5c77ffdbff01991">MultiStream</a>, <a class="el" href="classFlashMemoryStream.html#aed7689546691baac910b46d586f3336d">FlashMemoryStream</a>, and <a class="el" href="classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a">ArduCAMStream</a>.</p>
+<p>Implemented in <a class="el" href="classHardwareSerial.html#a4d2390734c93fcf3befa20afb7872bfb">HardwareSerial</a>, <a class="el" href="classFileStream.html#aac7f0694461f86d49399aca93f02ae8c">FileStream</a>, <a class="el" href="classStreamTransformer.html#a6840cee12cbdd85ec46336e9a7b93fe4">StreamTransformer</a>, <a class="el" href="classMemoryDataStream.html#abc2b25742a0fa8ea7566783cba2313a4">MemoryDataStream</a>, <a class="el" href="classTemplateStream.html#acfb3a125b10d9bf6aee9e286a85a1696">TemplateStream</a>, <a class="el" href="classCircularBuffer.html#a9e71e7bf87c8866fe83d7d62c9e2a12e">CircularBuffer</a>, <a class="el" href="classrBootItemOutputStream.html#a28c69f9d961c29c5dcda4b188c69946d">rBootItemOutputStream</a>, <a class="el" href="classLimitedMemoryStream.html#aef2c1b5b69a86c0c2837925b86ae9180">LimitedMemoryStream</a>, <a class="el" href="classUrlencodedOutputStream.html#adc2d0f59c24cbafdfea3b4fe3b9c0304">UrlencodedOutputStream</a>, <a class="el" href="classGdbFileStream.html#aada892cfc85b866c2f4ab91f43f4b1d8">GdbFileStream</a>, <a class="el" href="classEndlessMemoryStream.html#a4aa7ef9abf4c99e35324d0ce105de5d8">EndlessMemoryStream</a>, <a class="el" href="classFlashMemoryStream.html#acfc59bc31d50f86925d2049a811db6ab">FlashMemoryStream</a>, <a class="el" href="classMultiStream.html#a7163831d56ed882234458288fb6316ef">MultiStream</a>, and <a class="el" href="classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a">ArduCAMStream</a>.</p>
 
 </div>
 </div>
@@ -590,11 +585,11 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Where inherited classes are initialised by constructor this method indicates whether that was successful or not (e.g. <a class="el" href="classFileStream.html" title="File stream class. ">FileStream</a>) </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classFileStream.html#aea28e2d5e4134ca539f729ca48e96af3">FileStream</a>.</p>
+<p>Reimplemented in <a class="el" href="classFileStream.html#a1bbb511223d1842996500b3f339feee5">FileStream</a>, and <a class="el" href="classGdbFileStream.html#aca76cf57f612bd5c5c83b59c57debdb4">GdbFileStream</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a05ec329ab5b1237777872156d631f68c"></a>
+<a class="anchor" id="a625450b1b93b799c653a78719879ed38"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -622,11 +617,11 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   </table>
   </dd>
 </dl>
-<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>This method is deprecated and will be removed in the coming versions. Please, use <a class="el" href="classIDataSourceStream.html#aaa8b8889df84efdb3c030e6d11d0bb4e" title="Return the total length of the stream. ">available()</a> instead. </dd></dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>Use <code><a class="el" href="classIDataSourceStream.html#aaa8b8889df84efdb3c030e6d11d0bb4e" title="Return the total length of the stream. ">available()</a></code> instead </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="aaf3a3d1a1e1b0412daed308228888ae5"></a>
+<a class="anchor" id="a05d27e36345d8ef4b3fc9a63eb21fbdc"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -634,7 +629,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual int IDataSourceStream::peek </td>
+          <td class="memname">int IDataSourceStream::peek </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -642,7 +637,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -656,6 +651,8 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
 </dl>
 
 <p>Implements <a class="el" href="classStream.html">Stream</a>.</p>
+
+<p>Reimplemented in <a class="el" href="classHardwareSerial.html#a0bf562734b738ed06de5fb34c357b230">HardwareSerial</a>.</p>
 
 </div>
 </div>
@@ -1505,7 +1502,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
 
 </div>
 </div>
-<a class="anchor" id="ace0b653e42b9d8487cf829fedbb734f6"></a>
+<a class="anchor" id="a504dbe6edbff9f52ba0e18fba67423e1"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1513,7 +1510,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual int IDataSourceStream::read </td>
+          <td class="memname">int IDataSourceStream::read </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1521,7 +1518,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1536,9 +1533,11 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
 
 <p>Implements <a class="el" href="classStream.html">Stream</a>.</p>
 
+<p>Reimplemented in <a class="el" href="classHardwareSerial.html#aaa09c85eb59e62bfda3c48fae7dcb14c">HardwareSerial</a>.</p>
+
 </div>
 </div>
-<a class="anchor" id="a488b605e720069e802f5d38635e4b2e0"></a>
+<a class="anchor" id="af57326b89bc192a3e95916411681d011"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1546,7 +1545,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual uint16_t ReadWriteStream::readMemoryBlock </td>
+          <td class="memname">virtual uint16_t IDataSourceStream::readMemoryBlock </td>
           <td>(</td>
           <td class="paramtype">char *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
@@ -1565,7 +1564,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1584,11 +1583,9 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Should <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011" title="Read a block of memory. ">IDataSourceStream::readMemoryBlock</a> return same data type as its bufSize param? </dd></dl>
 
-<p>Implements <a class="el" href="classIDataSourceStream.html#af57326b89bc192a3e95916411681d011">IDataSourceStream</a>.</p>
-
-<p>Implemented in <a class="el" href="classStreamTransformer.html#adbfbff63f984c4c40599c052a692c2a5">StreamTransformer</a>, <a class="el" href="classFileStream.html#a7ccd3623cd9e46efe7e53715576cb5de">FileStream</a>, <a class="el" href="classMemoryDataStream.html#a9f8d375068f30fa0f56bd7b338f6e7aa">MemoryDataStream</a>, <a class="el" href="classUrlencodedOutputStream.html#a704b9add571679d2e4e520725dd0fa10">UrlencodedOutputStream</a>, <a class="el" href="classTemplateStream.html#a9e2790101647d663266ac87afb319f49">TemplateStream</a>, <a class="el" href="classCircularBuffer.html#ae4fc79d38392b70088ddba368a1a0815">CircularBuffer</a>, <a class="el" href="classJsonObjectStream.html#a41dc9e938e16b20d861b70c4a5152f42">JsonObjectStream</a>, <a class="el" href="classMultiStream.html#abdbdc2f0a4e4e17216438976ba58100b">MultiStream</a>, <a class="el" href="classrBootItemOutputStream.html#a7c972b7734b9bcf59cec1d3d2f8838c1">rBootItemOutputStream</a>, <a class="el" href="classLimitedMemoryStream.html#abfc750d64945032f0dd4a2f1a904cfc5">LimitedMemoryStream</a>, <a class="el" href="classEndlessMemoryStream.html#a2cd20326b72df9f4b6c6386dccfdd02c">EndlessMemoryStream</a>, and <a class="el" href="classArduCAMStream.html#a77a1101bf887eb69fb094b006f89affe">ArduCAMStream</a>.</p>
+<p>Implemented in <a class="el" href="classHardwareSerial.html#ac0004e0f4d56ca28fadbe66937e5bda0">HardwareSerial</a>, <a class="el" href="classFileStream.html#afc18e65f3745f349f4647e9deaeeabbf">FileStream</a>, <a class="el" href="classStreamTransformer.html#a4fc3140c0f57b1e754a8ea82022983e9">StreamTransformer</a>, <a class="el" href="classMemoryDataStream.html#a42ab984046c8467a3064d0d0fef1ec68">MemoryDataStream</a>, <a class="el" href="classTemplateStream.html#a566afc8396126c9df021708b599f27bb">TemplateStream</a>, <a class="el" href="classrBootItemOutputStream.html#a73d7c8abf8439529a37ff9b6d744ffb0">rBootItemOutputStream</a>, <a class="el" href="classCircularBuffer.html#a987ee622216046d7b75f4d8e9ee36f00">CircularBuffer</a>, <a class="el" href="classGdbFileStream.html#a43f932605815d98c1d02acb0fa40a5fd">GdbFileStream</a>, <a class="el" href="classLimitedMemoryStream.html#a1d2a4e0fa2f92f4f31237eca735c7319">LimitedMemoryStream</a>, <a class="el" href="classUrlencodedOutputStream.html#a2f0cc3ae3f54e51a1d1b83aaeef5c564">UrlencodedOutputStream</a>, <a class="el" href="classFlashMemoryStream.html#ab4031a523bbe7c17e9cb82c02911728b">FlashMemoryStream</a>, <a class="el" href="classJsonObjectStream.html#a99b0f0a1965b08302ee1c677d05006ab">JsonObjectStream</a>, <a class="el" href="classMultiStream.html#a23bff6aca3a14a9b619b2cf35a772b7d">MultiStream</a>, <a class="el" href="classEndlessMemoryStream.html#ae03402381ae4470929580492337539d3">EndlessMemoryStream</a>, and <a class="el" href="classArduCAMStream.html#a77a1101bf887eb69fb094b006f89affe">ArduCAMStream</a>.</p>
 
 </div>
 </div>
@@ -1628,11 +1625,11 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classUrlencodedOutputStream.html#a35fc5ae64324f0c6538d5403c622177e">UrlencodedOutputStream</a>, <a class="el" href="classStreamTransformer.html#a16f3665f5b4f9144a7c780720b39c2dc">StreamTransformer</a>, <a class="el" href="classFileStream.html#ac26d7d2af3efa6481fd87a20acd14b42">FileStream</a>, <a class="el" href="classMemoryDataStream.html#a0897a2b2380dc5dd066805db859f8436">MemoryDataStream</a>, <a class="el" href="classTemplateStream.html#ae98356ca680104f36e04658df721eea4">TemplateStream</a>, <a class="el" href="classCircularBuffer.html#a0117fb9e4cf234dec76217312534c904">CircularBuffer</a>, <a class="el" href="classrBootItemOutputStream.html#aa0be5fcf6d244d58722de12383ed4e78">rBootItemOutputStream</a>, <a class="el" href="classFlashMemoryStream.html#a5a533e0d20408332a48173cb30d7549f">FlashMemoryStream</a>, <a class="el" href="classMultiStream.html#adfcfde2fe175ea0402e1bc94b5999e0c">MultiStream</a>, <a class="el" href="classEndlessMemoryStream.html#af768c1377668ea48626db6e95584c736">EndlessMemoryStream</a>, <a class="el" href="classLimitedMemoryStream.html#aeed6c5ad52d3c05781a31448dc5baea7">LimitedMemoryStream</a>, and <a class="el" href="classArduCAMStream.html#ad8d52a89a9f1c99b650112d367ec2e5e">ArduCAMStream</a>.</p>
+<p>Implemented in <a class="el" href="classHardwareSerial.html#a45c71539f5e352f9c9096d5bfcc713e9">HardwareSerial</a>, <a class="el" href="classFileStream.html#a885e5451d871b3c621c8e131c313f986">FileStream</a>, <a class="el" href="classStreamTransformer.html#a2f60389c5b337a5be1336530c6a1c1a0">StreamTransformer</a>, <a class="el" href="classMemoryDataStream.html#a3329413f489ce9eb2089e409efdc8245">MemoryDataStream</a>, <a class="el" href="classTemplateStream.html#a4e0f349808a6241803e89d022fea2a3f">TemplateStream</a>, <a class="el" href="classCircularBuffer.html#a23df80320910f61547b777f37b1bd483">CircularBuffer</a>, <a class="el" href="classrBootItemOutputStream.html#aab61c78a00c9909d03e404401de2ded2">rBootItemOutputStream</a>, <a class="el" href="classGdbFileStream.html#abb988a057488908a1c38eeb318053ca0">GdbFileStream</a>, <a class="el" href="classUrlencodedOutputStream.html#a4e3b61c0141671dc827de39ffa66c60c">UrlencodedOutputStream</a>, <a class="el" href="classLimitedMemoryStream.html#a9ecb946033d7065acf0271a6d76a93cd">LimitedMemoryStream</a>, <a class="el" href="classFlashMemoryStream.html#a09e83072dfbf012e5dbc114ceca951c0">FlashMemoryStream</a>, <a class="el" href="classEndlessMemoryStream.html#a68e7518ae5bbd9f352176f2f1e36e230">EndlessMemoryStream</a>, <a class="el" href="classMultiStream.html#a0836a3cae01ec50de8897fff1e18897f">MultiStream</a>, and <a class="el" href="classArduCAMStream.html#ad8d52a89a9f1c99b650112d367ec2e5e">ArduCAMStream</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aa629a6eb839d5095bc06ace8e91e9eb9"></a>
+<a class="anchor" id="ae75de8a09ac730b9d33f2409c925d470"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1640,37 +1637,35 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual size_t ReadWriteStream::write </td>
+          <td class="memname">size_t ReadWriteStream::write </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramname"><em>charToWrite</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Writes a single character to output stream. </p>
+<p>Write a single character to the stream. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">uint8_t</td><td>Character to write to output stream </td></tr>
+    <tr><td class="paramname">charToWrite</td><td></td></tr>
   </table>
   </dd>
 </dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">size_t</td><td>Quantity of characters written to output stream </td></tr>
+    <tr><td class="paramname">size_t</td><td>Number of chars written (1 on success, 0 on failure) </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classIDataSourceStream.html#a89721f06316d5d77ee2be58c44af3268">IDataSourceStream</a>.</p>
-
-<p>Reimplemented in <a class="el" href="classCircularBuffer.html#ac9f7a35cd7612d9067b9ff300127d1a7">CircularBuffer</a>, <a class="el" href="classStreamTransformer.html#a807e5cc23e68fada24a482a6c8507f84">StreamTransformer</a>, <a class="el" href="classUrlencodedOutputStream.html#a6506dbe2faf21a850f4796a9452fc0c0">UrlencodedOutputStream</a>, <a class="el" href="classLimitedMemoryStream.html#a16d0ea5ad691b684a0ad2703bf563018">LimitedMemoryStream</a>, <a class="el" href="classMultiStream.html#a0060e27c2d518c08ca5d3fbd4074fcb0">MultiStream</a>, <a class="el" href="classrBootItemOutputStream.html#acb6f95a389464f3c6ebe262745e317e3">rBootItemOutputStream</a>, and <a class="el" href="classArduCAMStream.html#a46e38c3bc81f469493613a96719c5ffc">ArduCAMStream</a>.</p>
+<p>Reimplemented from <a class="el" href="classIDataSourceStream.html#af79624309338a6d86beb08c47531ac91">IDataSourceStream</a>.</p>
 
 </div>
 </div>
@@ -1720,10 +1715,11 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><b>startMillis<
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>Although this is defined in the <a class="el" href="classPrint.html" title="Provides formatted output to stream. ">Print</a> class, <a class="el" href="classReadWriteStream.html" title="Base class for read/write stream. ">ReadWriteStream</a> uses this as the core output method so descendants are required to implement it </dd></dl>
 
 <p>Reimplemented from <a class="el" href="classPrint.html#ad98d820df11e2697be1e4b1ea30b4a23">Print</a>.</p>
 
-<p>Implemented in <a class="el" href="classTemplateStream.html#aa73cef1b4c6343def20f085c7d9d7be2">TemplateStream</a>, <a class="el" href="classCircularBuffer.html#af15fd63f52403b8a95e97d590adcba4c">CircularBuffer</a>, <a class="el" href="classStreamTransformer.html#a1549697adbf789f7c3ff1d6a5c867105">StreamTransformer</a>, <a class="el" href="classFileStream.html#a3bef6b847ea522190e66f92972b89680">FileStream</a>, <a class="el" href="classMemoryDataStream.html#acb59a4836b2336e263051096b0b40f57">MemoryDataStream</a>, <a class="el" href="classUrlencodedOutputStream.html#a283ab1e09eedc65d2fa7062a66fa503a">UrlencodedOutputStream</a>, <a class="el" href="classLimitedMemoryStream.html#a0109f9abcd3c6bde9e822d7568413437">LimitedMemoryStream</a>, <a class="el" href="classEndlessMemoryStream.html#a35bae04dc9296526134337ffea071f75">EndlessMemoryStream</a>, <a class="el" href="classMultiStream.html#a3eddb671ff438f2208e08fc32abcecff">MultiStream</a>, <a class="el" href="classArduCAMStream.html#ae07d3e1ea4008c0c5e447821bab25f6e">ArduCAMStream</a>, and <a class="el" href="classrBootItemOutputStream.html#ae2222af5322e4c2344112d904ac2593d">rBootItemOutputStream</a>.</p>
+<p>Implemented in <a class="el" href="classHardwareSerial.html#af6e2342e46c9b51628de42582917bd07">HardwareSerial</a>, <a class="el" href="classCircularBuffer.html#ad407f2813fced50ab17a90227ae06d4c">CircularBuffer</a>, <a class="el" href="classFileStream.html#a2b263c07bf1bf62ac4f821569ede3dde">FileStream</a>, <a class="el" href="classMemoryDataStream.html#ad6b27532e476132825fc97a3a2bc3ff4">MemoryDataStream</a>, <a class="el" href="classLimitedMemoryStream.html#aca8aa3ed04ea72518564fff35fda5bbc">LimitedMemoryStream</a>, <a class="el" href="classEndlessMemoryStream.html#a84f304417441c88d464c1240c8dece22">EndlessMemoryStream</a>, <a class="el" href="classGdbFileStream.html#a5b3fe6cdb70184abfc14becc714c4d7f">GdbFileStream</a>, and <a class="el" href="classrBootItemOutputStream.html#a46f3b498128885c547f59d4a19a9d654">rBootItemOutputStream</a>.</p>
 
 </div>
 </div>

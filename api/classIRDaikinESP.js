@@ -27,6 +27,7 @@ var classIRDaikinESP =
     [ "getTemp", "classIRDaikinESP.html#a43c6675b688cad1ca714ecd726dbb411", null ],
     [ "off", "classIRDaikinESP.html#ad61b56199092c953ad85efaf7ff3d876", null ],
     [ "on", "classIRDaikinESP.html#a64adaaeee5d61be65e5be9d1330d4d61", null ],
+    [ "renderTime", "classIRDaikinESP.html#a5cc3a5a2284efe5e12a980f87b598bd4", null ],
     [ "setCommand", "classIRDaikinESP.html#a50651926da5255de7a0afdee93ce7a73", null ],
     [ "setCurrentTime", "classIRDaikinESP.html#a43d63f9b2e4360a76545b15a044f0072", null ],
     [ "setEcono", "classIRDaikinESP.html#a2466ec7782a1200badf4a8ec7b640c86", null ],
@@ -42,5 +43,6 @@ var classIRDaikinESP =
     [ "setSwingHorizontal", "classIRDaikinESP.html#a00d0514aa710ca51d45aa2f247891f22", null ],
     [ "setSwingVertical", "classIRDaikinESP.html#a85b2767ae867f849e37bc514ee8ab8e5", null ],
     [ "setTemp", "classIRDaikinESP.html#a6a414e309e1bffec45e15e4152bf22dd", null ],
-    [ "toString", "classIRDaikinESP.html#a191e2515bb2fb0d3511d8ea3500dee2b", null ]
+    [ "toString", "classIRDaikinESP.html#a191e2515bb2fb0d3511d8ea3500dee2b", null ],
+    [ "validChecksum", "classIRDaikinESP.html#a0f4172c3ab792390ecebb2543db4d2e8", null ]
 ];

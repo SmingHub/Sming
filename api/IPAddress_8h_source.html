@@ -177,7 +177,7 @@ $(document).ready(function(){initNavTree('IPAddress_8h_source.html','');});
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        IP4_ADDR(&amp;this-&gt;address, address[0], address[1], address[2], address[3]);</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    }</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a> address)</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="classIPAddress.html">IPAddress</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; address)</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    {</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        fromString(address);</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    }</div>
@@ -236,7 +236,7 @@ $(document).ready(function(){initNavTree('IPAddress_8h_source.html','');});
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    }</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> printTo(<a class="code" href="classPrint.html">Print</a>&amp; p) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="keywordtype">size_t</span> printTo(<a class="code" href="classPrint.html">Print</a>&amp; p) <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;};</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;</div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment">// Making this extern saves 100&#39;s of bytes; each usage otherwise incurs 4 bytes of BSS</span></div>
@@ -245,7 +245,7 @@ $(document).ready(function(){initNavTree('IPAddress_8h_source.html','');});
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
 <div class="ttc" id="classPrint_html"><div class="ttname"><a href="classPrint.html">Print</a></div><div class="ttdoc">Provides formatted output to stream. </div><div class="ttdef"><b>Definition:</b> Print.h:31</div></div>
-<div class="ttc" id="classPrintable_html"><div class="ttname"><a href="classPrintable.html">Printable</a></div><div class="ttdef"><b>Definition:</b> Printable.h:40</div></div>
+<div class="ttc" id="classPrintable_html"><div class="ttname"><a href="classPrintable.html">Printable</a></div><div class="ttdef"><b>Definition:</b> Printable.h:41</div></div>
 <div class="ttc" id="classIPAddress_html"><div class="ttname"><a href="classIPAddress.html">IPAddress</a></div><div class="ttdef"><b>Definition:</b> IPAddress.h:37</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

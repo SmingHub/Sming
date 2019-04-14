@@ -5,6 +5,7 @@ var searchData=
   ['websocketconnection',['WebsocketConnection',['../classWebsocketConnection.html',1,'']]],
   ['websocketresource',['WebsocketResource',['../classWebsocketResource.html',1,'']]],
   ['wifieventsclass',['WifiEventsClass',['../classWifiEventsClass.html',1,'']]],
+  ['wifisniffer',['WifiSniffer',['../classWifiSniffer.html',1,'']]],
   ['wscommandhandlerresource',['WsCommandHandlerResource',['../classWsCommandHandlerResource.html',1,'']]],
   ['wsframeinfo',['WsFrameInfo',['../structWsFrameInfo.html',1,'']]]
 ];

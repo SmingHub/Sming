@@ -108,6 +108,7 @@ $(document).ready(function(){initNavTree('classHttpClient.html','');});
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-static-attribs">Static Protected Attributes</a> &#124;
 <a href="classHttpClient-members.html">List of all members</a>  </div>
@@ -127,59 +128,91 @@ Inheritance diagram for HttpClient:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab8b3c9bb07ccfb0f32ca5ac832deb122"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab8b3c9bb07ccfb0f32ca5ac832deb122"></a>
-__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendRequest</b> (const <a class="el" href="classString.html">String</a> &amp;url, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
-<tr class="separator:ab8b3c9bb07ccfb0f32ca5ac832deb122"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9c3e3e41cb875fe708bc89f65f8ae9e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9c3e3e41cb875fe708bc89f65f8ae9e"></a>
-__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendRequest</b> (const HttpMethod method, const <a class="el" href="classString.html">String</a> &amp;url, const <a class="el" href="classHttpHeaders.html">HttpHeaders</a> &amp;headers, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
-<tr class="separator:af9c3e3e41cb875fe708bc89f65f8ae9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d2f9ebe85ec76e26742196e2468d8bb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d2f9ebe85ec76e26742196e2468d8bb"></a>
-__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendRequest</b> (const HttpMethod method, const <a class="el" href="classString.html">String</a> &amp;url, const <a class="el" href="classHttpHeaders.html">HttpHeaders</a> &amp;headers, const <a class="el" href="classString.html">String</a> &amp;body, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
-<tr class="separator:a7d2f9ebe85ec76e26742196e2468d8bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae61cd486d915debe0d626b21a688cfdf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae61cd486d915debe0d626b21a688cfdf"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadString</b> (const <a class="el" href="classString.html">String</a> &amp;url, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
-<tr class="separator:ae61cd486d915debe0d626b21a688cfdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab493c6e04af8893d59d68342c313acb5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab493c6e04af8893d59d68342c313acb5"></a>
-__forceinline bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadFile</b> (const <a class="el" href="classString.html">String</a> &amp;url, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete=NULL)</td></tr>
-<tr class="separator:ab493c6e04af8893d59d68342c313acb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5031ad272928359e25e388e71802be29"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5031ad272928359e25e388e71802be29"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadFile</b> (const <a class="el" href="classString.html">String</a> &amp;url, const <a class="el" href="classString.html">String</a> &amp;saveFileName, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete=NULL)</td></tr>
-<tr class="separator:a5031ad272928359e25e388e71802be29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a60e16cc6193d3b8d805119eed625ec"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpClient.html#a1a60e16cc6193d3b8d805119eed625ec">~HttpClient</a> ()</td></tr>
+<tr class="memdesc:a1a60e16cc6193d3b8d805119eed625ec"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classHttpClient.html">HttpClient</a> destructor.  <a href="#a1a60e16cc6193d3b8d805119eed625ec">More...</a><br/></td></tr>
+<tr class="separator:a1a60e16cc6193d3b8d805119eed625ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf61e0b5bc04eb8e5702ef8096812f98"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acf61e0b5bc04eb8e5702ef8096812f98"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendRequest</b> (const <a class="el" href="classUrl.html">Url</a> &amp;url, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
+<tr class="separator:acf61e0b5bc04eb8e5702ef8096812f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9dcab49cff25b8c58ae719ec20f09db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac9dcab49cff25b8c58ae719ec20f09db"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendRequest</b> (const HttpMethod method, const <a class="el" href="classUrl.html">Url</a> &amp;url, const <a class="el" href="classHttpHeaders.html">HttpHeaders</a> &amp;headers, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
+<tr class="separator:ac9dcab49cff25b8c58ae719ec20f09db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a510666b0a16a3afe086549661864d90a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a510666b0a16a3afe086549661864d90a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>sendRequest</b> (const HttpMethod method, const <a class="el" href="classUrl.html">Url</a> &amp;url, const <a class="el" href="classHttpHeaders.html">HttpHeaders</a> &amp;headers, const <a class="el" href="classString.html">String</a> &amp;body, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
+<tr class="separator:a510666b0a16a3afe086549661864d90a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee2859acdeff985deaa2f3f16dfd7ccd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee2859acdeff985deaa2f3f16dfd7ccd"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadString</b> (const <a class="el" href="classUrl.html">Url</a> &amp;url, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</td></tr>
+<tr class="separator:aee2859acdeff985deaa2f3f16dfd7ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90d64bb54e00ba3aac82bc887d4573d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a90d64bb54e00ba3aac82bc887d4573d2"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>downloadFile</b> (const <a class="el" href="classUrl.html">Url</a> &amp;url, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete=nullptr)</td></tr>
+<tr class="separator:a90d64bb54e00ba3aac82bc887d4573d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eaaab4ea642e56c8549a6588592d759"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpClient.html#a7eaaab4ea642e56c8549a6588592d759">downloadFile</a> (const <a class="el" href="classUrl.html">Url</a> &amp;url, const <a class="el" href="classString.html">String</a> &amp;saveFileName, <a class="el" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete=nullptr)</td></tr>
+<tr class="memdesc:a7eaaab4ea642e56c8549a6588592d759"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue request to download a file.  <a href="#a7eaaab4ea642e56c8549a6588592d759">More...</a><br/></td></tr>
+<tr class="separator:a7eaaab4ea642e56c8549a6588592d759"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e087dbb3ef19ed0369ca4c42508e599"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4e087dbb3ef19ed0369ca4c42508e599"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> (<a class="el" href="classHttpRequest.html">HttpRequest</a> *request)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>send</b> (<a class="el" href="classHttpRequest.html">HttpRequest</a> *<a class="el" href="classHttpClient.html#a9ef38a18e37f4cca6dfd66ba2bcf3ee7">request</a>)</td></tr>
 <tr class="separator:a4e087dbb3ef19ed0369ca4c42508e599"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f0c508356d4a63c70babdc1cd1a26fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f0c508356d4a63c70babdc1cd1a26fe"></a>
-<a class="el" href="classHttpRequest.html">HttpRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>request</b> (const <a class="el" href="classString.html">String</a> &amp;url)</td></tr>
-<tr class="separator:a5f0c508356d4a63c70babdc1cd1a26fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ef38a18e37f4cca6dfd66ba2bcf3ee7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classHttpRequest.html">HttpRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpClient.html#a9ef38a18e37f4cca6dfd66ba2bcf3ee7">request</a> (const <a class="el" href="classString.html">String</a> &amp;url) <a class="el" href="group__url.html#ga7589191fa2da5424fc954be1fee1fed8">SMING_DEPRECATED</a></td></tr>
+<tr class="separator:a9ef38a18e37f4cca6dfd66ba2bcf3ee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88b569a4ffcb1e8c5e321fde4328df23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classHttpRequest.html">HttpRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpClient.html#a88b569a4ffcb1e8c5e321fde4328df23">createRequest</a> (const <a class="el" href="classUrl.html">Url</a> &amp;url)</td></tr>
+<tr class="memdesc:a88b569a4ffcb1e8c5e321fde4328df23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to create a new request on a URL.  <a href="#a88b569a4ffcb1e8c5e321fde4328df23">More...</a><br/></td></tr>
+<tr class="separator:a88b569a4ffcb1e8c5e321fde4328df23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a38aacb38a3a9592f8d46a841f4eb4be7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a38aacb38a3a9592f8d46a841f4eb4be7"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>freeHttpConnectionPool</b> ()</td></tr>
-<tr class="separator:a38aacb38a3a9592f8d46a841f4eb4be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acac958f3406c3b8825788c52b8cec623"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acac958f3406c3b8825788c52b8cec623"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>freeRequestQueue</b> ()</td></tr>
-<tr class="separator:acac958f3406c3b8825788c52b8cec623"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad413282f74db55b841791acff7f1ce3f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">cleanup</a> ()</td></tr>
 <tr class="separator:ad413282f74db55b841791acff7f1ce3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-types"></a>
+Protected Types</h2></td></tr>
+<tr class="memitem:ade6cdb58d5c002a457854c02983214cc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ade6cdb58d5c002a457854c02983214cc"></a>
+typedef <a class="el" href="classObjectMap.html">ObjectMap</a>&lt; <a class="el" href="classString.html">String</a>, <br class="typebreak"/>
+<a class="el" href="classHttpClientConnection.html">HttpClientConnection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>HttpConnectionPool</b></td></tr>
+<tr class="separator:ade6cdb58d5c002a457854c02983214cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ab117465bfceeb392301b6d75bc8502de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab117465bfceeb392301b6d75bc8502de"></a>
-<a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getCacheKey</b> (<a class="el" href="classURL.html">URL</a> url)</td></tr>
-<tr class="separator:ab117465bfceeb392301b6d75bc8502de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad36d392ea836612c65571def86763868"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad36d392ea836612c65571def86763868"></a>
+<a class="el" href="classString.html">String</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getCacheKey</b> (const <a class="el" href="classUrl.html">Url</a> &amp;url)</td></tr>
+<tr class="separator:ad36d392ea836612c65571def86763868"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-attribs"></a>
 Static Protected Attributes</h2></td></tr>
-<tr class="memitem:ac70334e9580029e7930db55f90041c9f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac70334e9580029e7930db55f90041c9f"></a>
-static <a class="el" href="classHashMap.html">HashMap</a>&lt; <a class="el" href="classString.html">String</a>, <br class="typebreak"/>
-<a class="el" href="classHttpConnection.html">HttpConnection</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>httpConnectionPool</b></td></tr>
-<tr class="separator:ac70334e9580029e7930db55f90041c9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbb00b281c81f356f8e39818f32e60a4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afbb00b281c81f356f8e39818f32e60a4"></a>
-static <a class="el" href="classHashMap.html">HashMap</a>&lt; <a class="el" href="classString.html">String</a>, <br class="typebreak"/>
-<a class="el" href="classObjectQueue.html">RequestQueue</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>queue</b></td></tr>
-<tr class="separator:afbb00b281c81f356f8e39818f32e60a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace7646e62b4e35a8a6e79f69d3e53d4a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ace7646e62b4e35a8a6e79f69d3e53d4a"></a>
+static <a class="el" href="classObjectMap.html">HttpConnectionPool</a>&#160;</td><td class="memItemRight" valign="bottom"><b>httpConnectionPool</b></td></tr>
+<tr class="separator:ace7646e62b4e35a8a6e79f69d3e53d4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a1a60e16cc6193d3b8d805119eed625ec"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual HttpClient::~HttpClient </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classHttpClient.html">HttpClient</a> destructor. </p>
+<dl class="section note"><dt>Note</dt><dd>DON'T call cleanup. If you want to free all resources from HttpClients the correct sequence will be to<ol type="1">
+<li>Delete all instances of <a class="el" href="classHttpClient.html">HttpClient</a></li>
+<li>Call the static method <a class="el" href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">HttpClient::cleanup()</a>; </li>
+</ol>
+</dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ad413282f74db55b841791acff7f1ce3f"></a>
 <div class="memitem">
@@ -197,11 +230,116 @@ static <a class="el" href="classHashMap.html">HashMap</a>&lt; <a class="el" href
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 <p>Use this method to clean all request queues and object pools </p>
+
+</div>
+</div>
+<a class="anchor" id="a88b569a4ffcb1e8c5e321fde4328df23"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classHttpRequest.html">HttpRequest</a>* HttpClient::createRequest </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classUrl.html">Url</a> &amp;&#160;</td>
+          <td class="paramname"><em>url</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Helper function to create a new request on a URL. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">url</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">HttpRequest*</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a7eaaab4ea642e56c8549a6588592d759"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool HttpClient::downloadFile </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classUrl.html">Url</a> &amp;&#160;</td>
+          <td class="paramname"><em>url</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>saveFileName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classDelegate.html">RequestCompletedDelegate</a>&#160;</td>
+          <td class="paramname"><em>requestComplete</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queue request to download a file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">url</td><td>Source of file data </td></tr>
+    <tr><td class="paramname">saveFilename</td><td>Path to save file to. Optional: specify nullptr to use name from url </td></tr>
+    <tr><td class="paramname">requestComplete</td><td>Completion callback </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a9ef38a18e37f4cca6dfd66ba2bcf3ee7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classHttpRequest.html">HttpRequest</a>* HttpClient::request </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classString.html">String</a> &amp;&#160;</td>
+          <td class="paramname"><em>url</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000025">Deprecated:</a></b></dt><dd>Use <code><a class="el" href="classHttpClient.html#a88b569a4ffcb1e8c5e321fde4328df23" title="Helper function to create a new request on a URL. ">createRequest()</a></code> instead </dd></dl>
 
 </div>
 </div>

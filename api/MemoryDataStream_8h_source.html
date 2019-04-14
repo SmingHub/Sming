@@ -106,87 +106,85 @@ $(document).ready(function(){initNavTree('MemoryDataStream_8h_source.html','');}
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * Created 2015 by Skurydin Alexey</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> ****/</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_MEMORY_DATA_STREAM_H_</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_MEMORY_DATA_STREAM_H_</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;ReadWriteStream.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> * MemoryDataStream</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"> * This is intended to allow data to be streamed into it, then streamed back out at a later</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> * date.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * MemoryDataStream.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_STREAM_MEMORY_DATA_STREAM_H_</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_STREAM_MEMORY_DATA_STREAM_H_</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;ReadWriteStream.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> * MemoryDataStream</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> * It is _not_ intended to have data continuously written in and read out; memory is not reclaimed</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> * as it is read.</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMemoryDataStream.html">MemoryDataStream</a> : <span class="keyword">public</span> <a class="code" href="classReadWriteStream.html">ReadWriteStream</a></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html#a3340a2168df4ce663876e4e130cc569e">   31</a></span>&#160;    <a class="code" href="classMemoryDataStream.html#a3340a2168df4ce663876e4e130cc569e">MemoryDataStream</a>()</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    }</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classMemoryDataStream.html">MemoryDataStream</a>()</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        free(buf);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    }</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="comment">//Use base class documentation</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html#a2eae8064dd5cd9c366c4263bdd49a732">   41</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> <a class="code" href="classMemoryDataStream.html#a2eae8064dd5cd9c366c4263bdd49a732">getStreamType</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da52e12937a45fc0b53d64f8cd4a2bfafe">eSST_Memory</a>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html#a05056c0d16daae14be5557d1933acce4">   49</a></span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="classMemoryDataStream.html#a05056c0d16daae14be5557d1933acce4">getStreamPointer</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordflow">return</span> pos;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html#a2ad4270fa5b17ff81dac2f68295dd190">   58</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classMemoryDataStream.html#a2ad4270fa5b17ff81dac2f68295dd190">available</a>()</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keywordflow">return</span> size - (pos - buf);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keyword">using</span> <a class="code" href="classReadWriteStream.html#aa629a6eb839d5095bc06ace8e91e9eb9">ReadWriteStream::write</a>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classMemoryDataStream.html#acb59a4836b2336e263051096b0b40f57">write</a>(<span class="keyword">const</span> uint8_t* buffer, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> * This is intended to allow data to be streamed into it, then streamed back out at a later</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> * date.</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"> * It is _not_ intended to have data continuously written in and read out; memory is not reclaimed</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment"> * as it is read.</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html">   29</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMemoryDataStream.html">MemoryDataStream</a> : <span class="keyword">public</span> <a class="code" href="classReadWriteStream.html">ReadWriteStream</a></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;{</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    ~<a class="code" href="classMemoryDataStream.html">MemoryDataStream</a>()</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        free(buf);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    }</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="comment">//Use base class documentation</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html#af2ca599613599885da48a12931e88c22">   38</a></span>&#160;    <a class="code" href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a> <a class="code" href="classMemoryDataStream.html#af2ca599613599885da48a12931e88c22">getStreamType</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da52e12937a45fc0b53d64f8cd4a2bfafe">eSST_Memory</a>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html#a05056c0d16daae14be5557d1933acce4">   46</a></span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="classMemoryDataStream.html#a05056c0d16daae14be5557d1933acce4">getStreamPointer</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keywordflow">return</span> pos;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html#a8badcb32a2ab3552d3c346b3643507e7">   55</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classMemoryDataStream.html#a8badcb32a2ab3552d3c346b3643507e7">available</a>()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">return</span> size - (pos - buf);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keyword">using</span> <a class="code" href="classReadWriteStream.html#ae75de8a09ac730b9d33f2409c925d470">ReadWriteStream::write</a>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classMemoryDataStream.html#ad6b27532e476132825fc97a3a2bc3ff4">write</a>(<span class="keyword">const</span> uint8_t* buffer, <span class="keywordtype">size_t</span> size) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="comment">//Use base class documentation</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    uint16_t <a class="code" href="classMemoryDataStream.html#a42ab984046c8467a3064d0d0fef1ec68">readMemoryBlock</a>(<span class="keywordtype">char</span>* data, <span class="keywordtype">int</span> bufSize) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="comment">//Use base class documentation</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keyword">virtual</span> uint16_t <a class="code" href="classMemoryDataStream.html#a9f8d375068f30fa0f56bd7b338f6e7aa">readMemoryBlock</a>(<span class="keywordtype">char</span>* data, <span class="keywordtype">int</span> bufSize);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classMemoryDataStream.html#a3329413f489ce9eb2089e409efdc8245">seek</a>(<span class="keywordtype">int</span> len) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="comment">//Use base class documentation</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classMemoryDataStream.html#a0897a2b2380dc5dd066805db859f8436">seek</a>(<span class="keywordtype">int</span> len);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="comment">//Use base class documentation</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3">   79</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3">isFinished</a>()</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    {</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keywordflow">return</span> size == (pos - buf);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    }</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">char</span>* buf = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">char</span>* pos = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordtype">int</span> size = 0;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">int</span> capacity = 0;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;};</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_MEMORY_DATA_STREAM_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classMemoryDataStream_html_acb59a4836b2336e263051096b0b40f57"><div class="ttname"><a href="classMemoryDataStream.html#acb59a4836b2336e263051096b0b40f57">MemoryDataStream::write</a></div><div class="ttdeci">virtual size_t write(const uint8_t *buffer, size_t size)</div><div class="ttdoc">Write chars to end of stream. </div></div>
-<div class="ttc" id="classMemoryDataStream_html_a3340a2168df4ce663876e4e130cc569e"><div class="ttname"><a href="classMemoryDataStream.html#a3340a2168df4ce663876e4e130cc569e">MemoryDataStream::MemoryDataStream</a></div><div class="ttdeci">MemoryDataStream()</div><div class="ttdoc">Memory data stream base class. </div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:31</div></div>
-<div class="ttc" id="group__constants_html_gga8a65141d9ea4bf9d2e2377ed6b888a1da52e12937a45fc0b53d64f8cd4a2bfafe"><div class="ttname"><a href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da52e12937a45fc0b53d64f8cd4a2bfafe">eSST_Memory</a></div><div class="ttdoc">Memory data stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:21</div></div>
-<div class="ttc" id="classMemoryDataStream_html_a2eae8064dd5cd9c366c4263bdd49a732"><div class="ttname"><a href="classMemoryDataStream.html#a2eae8064dd5cd9c366c4263bdd49a732">MemoryDataStream::getStreamType</a></div><div class="ttdeci">virtual StreamType getStreamType() const </div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:41</div></div>
-<div class="ttc" id="classMemoryDataStream_html_a05056c0d16daae14be5557d1933acce4"><div class="ttname"><a href="classMemoryDataStream.html#a05056c0d16daae14be5557d1933acce4">MemoryDataStream::getStreamPointer</a></div><div class="ttdeci">const char * getStreamPointer() const </div><div class="ttdoc">Get a pointer to the current position. </div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:49</div></div>
-<div class="ttc" id="classMemoryDataStream_html_a9f8d375068f30fa0f56bd7b338f6e7aa"><div class="ttname"><a href="classMemoryDataStream.html#a9f8d375068f30fa0f56bd7b338f6e7aa">MemoryDataStream::readMemoryBlock</a></div><div class="ttdeci">virtual uint16_t readMemoryBlock(char *data, int bufSize)</div><div class="ttdoc">Read a block of memory. </div></div>
-<div class="ttc" id="classMemoryDataStream_html_a2ad4270fa5b17ff81dac2f68295dd190"><div class="ttname"><a href="classMemoryDataStream.html#a2ad4270fa5b17ff81dac2f68295dd190">MemoryDataStream::available</a></div><div class="ttdeci">int available()</div><div class="ttdoc">Return the total length of the stream. </div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:58</div></div>
-<div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:19</div></div>
-<div class="ttc" id="classMemoryDataStream_html_a0897a2b2380dc5dd066805db859f8436"><div class="ttname"><a href="classMemoryDataStream.html#a0897a2b2380dc5dd066805db859f8436">MemoryDataStream::seek</a></div><div class="ttdeci">virtual bool seek(int len)</div><div class="ttdoc">Move read cursor. </div></div>
-<div class="ttc" id="classMemoryDataStream_html_ad8ceecf3ba21b472e7c864474d18f7f3"><div class="ttname"><a href="classMemoryDataStream.html#ad8ceecf3ba21b472e7c864474d18f7f3">MemoryDataStream::isFinished</a></div><div class="ttdeci">virtual bool isFinished()</div><div class="ttdoc">Check if all data has been read. </div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:79</div></div>
-<div class="ttc" id="classReadWriteStream_html_aa629a6eb839d5095bc06ace8e91e9eb9"><div class="ttname"><a href="classReadWriteStream.html#aa629a6eb839d5095bc06ace8e91e9eb9">ReadWriteStream::write</a></div><div class="ttdeci">virtual size_t write(uint8_t charToWrite)</div><div class="ttdoc">Writes a single character to output stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:27</div></div>
-<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdoc">Base class for read/write stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:20</div></div>
-<div class="ttc" id="classMemoryDataStream_html"><div class="ttname"><a href="classMemoryDataStream.html">MemoryDataStream</a></div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:26</div></div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="classMemoryDataStream.html#abc2b25742a0fa8ea7566783cba2313a4">   76</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classMemoryDataStream.html#abc2b25742a0fa8ea7566783cba2313a4">isFinished</a>()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keywordflow">return</span> size == (pos - buf);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    }</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">char</span>* buf = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">char</span>* pos = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordtype">int</span> size = 0;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">int</span> capacity = 0;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;};</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_STREAM_MEMORY_DATA_STREAM_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classMemoryDataStream_html_abc2b25742a0fa8ea7566783cba2313a4"><div class="ttname"><a href="classMemoryDataStream.html#abc2b25742a0fa8ea7566783cba2313a4">MemoryDataStream::isFinished</a></div><div class="ttdeci">bool isFinished() override</div><div class="ttdoc">Check if all data has been read. </div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:76</div></div>
+<div class="ttc" id="group__constants_html_gga8a65141d9ea4bf9d2e2377ed6b888a1da52e12937a45fc0b53d64f8cd4a2bfafe"><div class="ttname"><a href="group__constants.html#gga8a65141d9ea4bf9d2e2377ed6b888a1da52e12937a45fc0b53d64f8cd4a2bfafe">eSST_Memory</a></div><div class="ttdoc">Memory data stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:24</div></div>
+<div class="ttc" id="classMemoryDataStream_html_a05056c0d16daae14be5557d1933acce4"><div class="ttname"><a href="classMemoryDataStream.html#a05056c0d16daae14be5557d1933acce4">MemoryDataStream::getStreamPointer</a></div><div class="ttdeci">const char * getStreamPointer() const </div><div class="ttdoc">Get a pointer to the current position. </div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:46</div></div>
+<div class="ttc" id="classMemoryDataStream_html_a8badcb32a2ab3552d3c346b3643507e7"><div class="ttname"><a href="classMemoryDataStream.html#a8badcb32a2ab3552d3c346b3643507e7">MemoryDataStream::available</a></div><div class="ttdeci">int available() override</div><div class="ttdoc">Return the total length of the stream. </div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:55</div></div>
+<div class="ttc" id="classMemoryDataStream_html_a3329413f489ce9eb2089e409efdc8245"><div class="ttname"><a href="classMemoryDataStream.html#a3329413f489ce9eb2089e409efdc8245">MemoryDataStream::seek</a></div><div class="ttdeci">bool seek(int len) override</div><div class="ttdoc">Move read cursor. </div></div>
+<div class="ttc" id="group__constants_html_ga8a65141d9ea4bf9d2e2377ed6b888a1d"><div class="ttname"><a href="group__constants.html#ga8a65141d9ea4bf9d2e2377ed6b888a1d">StreamType</a></div><div class="ttdeci">StreamType</div><div class="ttdoc">Data stream type. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:22</div></div>
+<div class="ttc" id="classReadWriteStream_html_ae75de8a09ac730b9d33f2409c925d470"><div class="ttname"><a href="classReadWriteStream.html#ae75de8a09ac730b9d33f2409c925d470">ReadWriteStream::write</a></div><div class="ttdeci">size_t write(uint8_t charToWrite) override</div><div class="ttdoc">Write a single character to the stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:30</div></div>
+<div class="ttc" id="classMemoryDataStream_html_a42ab984046c8467a3064d0d0fef1ec68"><div class="ttname"><a href="classMemoryDataStream.html#a42ab984046c8467a3064d0d0fef1ec68">MemoryDataStream::readMemoryBlock</a></div><div class="ttdeci">uint16_t readMemoryBlock(char *data, int bufSize) override</div><div class="ttdoc">Read a block of memory. </div></div>
+<div class="ttc" id="classMemoryDataStream_html_ad6b27532e476132825fc97a3a2bc3ff4"><div class="ttname"><a href="classMemoryDataStream.html#ad6b27532e476132825fc97a3a2bc3ff4">MemoryDataStream::write</a></div><div class="ttdeci">size_t write(const uint8_t *buffer, size_t size) override</div><div class="ttdoc">Write chars to end of stream. </div></div>
+<div class="ttc" id="classMemoryDataStream_html_af2ca599613599885da48a12931e88c22"><div class="ttname"><a href="classMemoryDataStream.html#af2ca599613599885da48a12931e88c22">MemoryDataStream::getStreamType</a></div><div class="ttdeci">StreamType getStreamType() const override</div><div class="ttdoc">Get the stream type. </div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:38</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdoc">Base class for read/write stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:23</div></div>
+<div class="ttc" id="classMemoryDataStream_html"><div class="ttname"><a href="classMemoryDataStream.html">MemoryDataStream</a></div><div class="ttdef"><b>Definition:</b> MemoryDataStream.h:29</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

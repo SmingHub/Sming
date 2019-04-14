@@ -126,23 +126,13 @@ Macros</h2></td></tr>
 <tr class="memitem:gae10ef9fca4c65d44735ec8fa26fd5081"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae10ef9fca4c65d44735ec8fa26fd5081"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_FLAG_RETAINED</b>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:gae10ef9fca4c65d44735ec8fa26fd5081"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga44ac1be7b53998b8e15982d1de3ea34b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga44ac1be7b53998b8e15982d1de3ea34b"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_MAX_BUFFER_SIZE</b>&#160;&#160;&#160;MQTT_PAYLOAD_LENGTH</td></tr>
+<tr class="memitem:ga44ac1be7b53998b8e15982d1de3ea34b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mqttclient.html#ga44ac1be7b53998b8e15982d1de3ea34b">MQTT_MAX_BUFFER_SIZE</a>&#160;&#160;&#160;MQTT_PAYLOAD_LENGTH</td></tr>
 <tr class="separator:ga44ac1be7b53998b8e15982d1de3ea34b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf3068e6873d3332b0e5f3aa580806c3b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf3068e6873d3332b0e5f3aa580806c3b"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>MQTT_MSG_PUBREC</b>&#160;&#160;&#160;MQTT_TYPE_PUBREC</td></tr>
+<tr class="memitem:gaf3068e6873d3332b0e5f3aa580806c3b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mqttclient.html#gaf3068e6873d3332b0e5f3aa580806c3b">MQTT_MSG_PUBREC</a>&#160;&#160;&#160;MQTT_TYPE_PUBREC</td></tr>
 <tr class="separator:gaf3068e6873d3332b0e5f3aa580806c3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:gae8678fa4a7e2a210ee21e879b8d86f94"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae8678fa4a7e2a210ee21e879b8d86f94"></a>
-typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void(<a class="el" href="classString.html">String</a> <br class="typebreak"/>
-topic, <a class="el" href="classString.html">String</a> message)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MqttStringSubscriptionCallback</b></td></tr>
-<tr class="separator:gae8678fa4a7e2a210ee21e879b8d86f94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2de3392cb10bb78a5c523049ea2daaf2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2de3392cb10bb78a5c523049ea2daaf2"></a>
-typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void(uint16_t <br class="typebreak"/>
-msgId, int type)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MqttMessageDeliveredCallback</b></td></tr>
-<tr class="separator:ga2de3392cb10bb78a5c523049ea2daaf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga67cd63186d2b04feaf0ebd222a776c1b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga67cd63186d2b04feaf0ebd222a776c1b"></a>
 typedef std::function&lt; int(<a class="el" href="classMqttClient.html">MqttClient</a> <br class="typebreak"/>
 &amp;client, mqtt_message_t <br class="typebreak"/>
@@ -153,6 +143,12 @@ typedef <a class="el" href="classObjectQueue.html">ObjectQueue</a><br class="typ
 &lt; mqtt_message_t, <br class="typebreak"/>
 MQTT_REQUEST_POOL_SIZE &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MqttRequestQueue</b></td></tr>
 <tr class="separator:ga69c39c276df151d7619d356d56ec960e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf15209166818832b0c4ad94d520235a5"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void(<a class="el" href="classString.html">String</a> <br class="typebreak"/>
+topic, <a class="el" href="classString.html">String</a> message)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mqttclient.html#gaf15209166818832b0c4ad94d520235a5">MqttStringSubscriptionCallback</a></td></tr>
+<tr class="separator:gaf15209166818832b0c4ad94d520235a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6ce02600b8a3f9d0eb4bdd68bfc92df0"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt; void(uint16_t <br class="typebreak"/>
+msgId, int type)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mqttclient.html#ga6ce02600b8a3f9d0eb4bdd68bfc92df0">MqttMessageDeliveredCallback</a></td></tr>
+<tr class="separator:ga6ce02600b8a3f9d0eb4bdd68bfc92df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -166,6 +162,60 @@ Enumerations</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Provides MQTT client. </p>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="ga44ac1be7b53998b8e15982d1de3ea34b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MQTT_MAX_BUFFER_SIZE&#160;&#160;&#160;MQTT_PAYLOAD_LENGTH</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000026">Deprecated:</a></b></dt><dd></dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf3068e6873d3332b0e5f3aa580806c3b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MQTT_MSG_PUBREC&#160;&#160;&#160;MQTT_TYPE_PUBREC</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000027">Deprecated:</a></b></dt><dd></dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="ga6ce02600b8a3f9d0eb4bdd68bfc92df0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt;void(uint16_t msgId, int type)&gt; <a class="el" href="group__mqttclient.html#ga6ce02600b8a3f9d0eb4bdd68bfc92df0">MqttMessageDeliveredCallback</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000029">Deprecated:</a></b></dt><dd>Use MqttDelegate instead </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf15209166818832b0c4ad94d520235a5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="classDelegate.html">Delegate</a>&lt;void(<a class="el" href="classString.html">String</a> topic, <a class="el" href="classString.html">String</a> message)&gt; <a class="el" href="group__mqttclient.html#gaf15209166818832b0c4ad94d520235a5">MqttStringSubscriptionCallback</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000028">Deprecated:</a></b></dt><dd>Use MqttDelegate instead </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

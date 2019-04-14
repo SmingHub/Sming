@@ -126,15 +126,15 @@ Inheritance diagram for WsCommandHandlerResource:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:ae2504a3e5162694161a69979d22b782e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2504a3e5162694161a69979d22b782e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>checkHeaders</b> (<a class="el" href="classHttpServerConnection.html">HttpServerConnection</a> &amp;connection, <a class="el" href="classHttpRequest.html">HttpRequest</a> &amp;request, <a class="el" href="classHttpResponse.html">HttpResponse</a> &amp;response)</td></tr>
-<tr class="separator:ae2504a3e5162694161a69979d22b782e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b91ee986dd1ff51eb08934eab5f7957"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b91ee986dd1ff51eb08934eab5f7957"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>checkHeaders</b> (<a class="el" href="classHttpServerConnection.html">HttpServerConnection</a> &amp;connection, <a class="el" href="classHttpRequest.html">HttpRequest</a> &amp;request, <a class="el" href="classHttpResponse.html">HttpResponse</a> &amp;response) override</td></tr>
+<tr class="separator:a7b91ee986dd1ff51eb08934eab5f7957"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85d8ce936f51f568be0a238dfaadbe33"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85d8ce936f51f568be0a238dfaadbe33"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>onMessage</b> (<a class="el" href="classWebsocketConnection.html">WebsocketConnection</a> &amp;connection, const <a class="el" href="classString.html">String</a> &amp;message)</td></tr>
 <tr class="separator:a85d8ce936f51f568be0a238dfaadbe33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2723fe8e4a275c4f0a7806d527a977f9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketResource.html#a2723fe8e4a275c4f0a7806d527a977f9">shutdown</a> (<a class="el" href="classHttpServerConnection.html">HttpServerConnection</a> &amp;connection)</td></tr>
-<tr class="memdesc:a2723fe8e4a275c4f0a7806d527a977f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes care to cleanup the connection.  <a href="#a2723fe8e4a275c4f0a7806d527a977f9">More...</a><br/></td></tr>
-<tr class="separator:a2723fe8e4a275c4f0a7806d527a977f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65e1bc5aec9deac5b21d8ce420e01622"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWebsocketResource.html#a65e1bc5aec9deac5b21d8ce420e01622">shutdown</a> (<a class="el" href="classHttpServerConnection.html">HttpServerConnection</a> &amp;connection) override</td></tr>
+<tr class="memdesc:a65e1bc5aec9deac5b21d8ce420e01622"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes care to cleanup the connection.  <a href="#a65e1bc5aec9deac5b21d8ce420e01622">More...</a><br/></td></tr>
+<tr class="separator:a65e1bc5aec9deac5b21d8ce420e01622"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c84e6cb43aa524ca62e2e4ec91da804"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c84e6cb43aa524ca62e2e4ec91da804"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setConnectionHandler</b> (<a class="el" href="classDelegate.html">WebsocketDelegate</a> handler)</td></tr>
 <tr class="separator:a1c84e6cb43aa524ca62e2e4ec91da804"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -154,32 +154,32 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>onConnect</b> ()</td>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:ae64b2192f0b5ee47e80a5047c7865d8c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae64b2192f0b5ee47e80a5047c7865d8c"></a>
-<a class="el" href="classDelegate.html">WebsocketDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsConnect</b> = 0</td></tr>
+<a class="el" href="classDelegate.html">WebsocketDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsConnect</b> = nullptr</td></tr>
 <tr class="separator:ae64b2192f0b5ee47e80a5047c7865d8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad69117da2fbe4c7b7650b54d37e26091"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad69117da2fbe4c7b7650b54d37e26091"></a>
-<a class="el" href="classDelegate.html">WebsocketMessageDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsMessage</b> = 0</td></tr>
+<a class="el" href="classDelegate.html">WebsocketMessageDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsMessage</b> = nullptr</td></tr>
 <tr class="separator:ad69117da2fbe4c7b7650b54d37e26091"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04fca3da6a87b259d1aef59415bf9eb9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a04fca3da6a87b259d1aef59415bf9eb9"></a>
-<a class="el" href="classDelegate.html">WebsocketBinaryDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsBinary</b> = 0</td></tr>
+<a class="el" href="classDelegate.html">WebsocketBinaryDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsBinary</b> = nullptr</td></tr>
 <tr class="separator:a04fca3da6a87b259d1aef59415bf9eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1cf0339c3ec4b9bc88bcabb0265ddaa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1cf0339c3ec4b9bc88bcabb0265ddaa"></a>
-<a class="el" href="classDelegate.html">WebsocketDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsDisconnect</b> = 0</td></tr>
+<a class="el" href="classDelegate.html">WebsocketDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>wsDisconnect</b> = nullptr</td></tr>
 <tr class="separator:ac1cf0339c3ec4b9bc88bcabb0265ddaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aead3473f0031a6ef2db2d29966860b2d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aead3473f0031a6ef2db2d29966860b2d"></a>
-<a class="el" href="classDelegate.html">HttpServerConnectionBodyDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onBody</b> = 0</td></tr>
+<tr class="memitem:aead3473f0031a6ef2db2d29966860b2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDelegate.html">HttpServerConnectionBodyDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpResource.html#aead3473f0031a6ef2db2d29966860b2d">onBody</a> = nullptr</td></tr>
+<tr class="memdesc:aead3473f0031a6ef2db2d29966860b2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">resource wants to process the raw body data  <a href="#aead3473f0031a6ef2db2d29966860b2d">More...</a><br/></td></tr>
 <tr class="separator:aead3473f0031a6ef2db2d29966860b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58a1e320c9c0badb6264ec9235fff890"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58a1e320c9c0badb6264ec9235fff890"></a>
-<a class="el" href="classDelegate.html">HttpResourceDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onHeadersComplete</b> = 0</td></tr>
+<tr class="memitem:a58a1e320c9c0badb6264ec9235fff890"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDelegate.html">HttpResourceDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpResource.html#a58a1e320c9c0badb6264ec9235fff890">onHeadersComplete</a> = nullptr</td></tr>
+<tr class="memdesc:a58a1e320c9c0badb6264ec9235fff890"><td class="mdescLeft">&#160;</td><td class="mdescRight">headers are ready  <a href="#a58a1e320c9c0badb6264ec9235fff890">More...</a><br/></td></tr>
 <tr class="separator:a58a1e320c9c0badb6264ec9235fff890"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66669e3aa65ed8df2a44a20713c7634e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66669e3aa65ed8df2a44a20713c7634e"></a>
-<a class="el" href="classDelegate.html">HttpResourceDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onRequestComplete</b> = 0</td></tr>
+<tr class="memitem:a66669e3aa65ed8df2a44a20713c7634e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDelegate.html">HttpResourceDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpResource.html#a66669e3aa65ed8df2a44a20713c7634e">onRequestComplete</a> = nullptr</td></tr>
+<tr class="memdesc:a66669e3aa65ed8df2a44a20713c7634e"><td class="mdescLeft">&#160;</td><td class="mdescRight">request is complete OR upgraded  <a href="#a66669e3aa65ed8df2a44a20713c7634e">More...</a><br/></td></tr>
 <tr class="separator:a66669e3aa65ed8df2a44a20713c7634e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6f291b31205ebbe8509e47700c4c49e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab6f291b31205ebbe8509e47700c4c49e"></a>
-<a class="el" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>onUpgrade</b> = 0</td></tr>
+<tr class="memitem:ab6f291b31205ebbe8509e47700c4c49e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classHttpResource.html#ab6f291b31205ebbe8509e47700c4c49e">onUpgrade</a> = nullptr</td></tr>
+<tr class="memdesc:ab6f291b31205ebbe8509e47700c4c49e"><td class="mdescLeft">&#160;</td><td class="mdescRight">request is upgraded and raw data is passed to it  <a href="#ab6f291b31205ebbe8509e47700c4c49e">More...</a><br/></td></tr>
 <tr class="separator:ab6f291b31205ebbe8509e47700c4c49e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a2723fe8e4a275c4f0a7806d527a977f9"></a>
+<a class="anchor" id="a65e1bc5aec9deac5b21d8ce420e01622"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -187,7 +187,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void WebsocketResource::shutdown </td>
+          <td class="memname">void WebsocketResource::shutdown </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classHttpServerConnection.html">HttpServerConnection</a> &amp;&#160;</td>
           <td class="paramname"><em>connection</em></td><td>)</td>
@@ -196,7 +196,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -204,6 +204,95 @@ Protected Attributes</h2></td></tr>
 <p>Takes care to cleanup the connection. </p>
 
 <p>Reimplemented from <a class="el" href="classHttpResource.html#ab5ea247e3818feb1e364fffa1958f36d">HttpResource</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="aead3473f0031a6ef2db2d29966860b2d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDelegate.html">HttpServerConnectionBodyDelegate</a> HttpResource::onBody = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>resource wants to process the raw body data </p>
+
+</div>
+</div>
+<a class="anchor" id="a58a1e320c9c0badb6264ec9235fff890"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDelegate.html">HttpResourceDelegate</a> HttpResource::onHeadersComplete = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>headers are ready </p>
+
+</div>
+</div>
+<a class="anchor" id="a66669e3aa65ed8df2a44a20713c7634e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDelegate.html">HttpResourceDelegate</a> HttpResource::onRequestComplete = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>request is complete OR upgraded </p>
+
+</div>
+</div>
+<a class="anchor" id="ab6f291b31205ebbe8509e47700c4c49e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classDelegate.html">HttpServerConnectionUpgradeDelegate</a> HttpResource::onUpgrade = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>request is upgraded and raw data is passed to it </p>
 
 </div>
 </div>

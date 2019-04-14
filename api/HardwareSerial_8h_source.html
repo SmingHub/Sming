@@ -106,296 +106,333 @@ $(document).ready(function(){initNavTree('HardwareSerial_8h_source.html','');});
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * Created 2015 by Skurydin Alexey</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> ****/</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#ifndef _HARDWARESERIAL_H_</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _HARDWARESERIAL_H_</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;WiringFrameworkDependencies.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;Stream.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;Delegate.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;espinc/uart.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="group__serial.html#ga8e6f5f702e060af6b6f62b89620786ea">   21</a></span>&#160;<span class="preprocessor">#define UART_ID_0 0 </span></div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="group__serial.html#ga4414160658a1080ac3d9371dfbcc044a">   22</a></span>&#160;<span class="preprocessor">#define UART_ID_1 1 </span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="group__serial.html#gae453609d057b191ba45e6f85da178a1e">   24</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NUMBER_UARTS 2 </span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="group__serial.html#ga06acf8677f719da1a20011835fc9b2e1">   26</a></span>&#160;<span class="preprocessor"></span><span class="keyword">class </span><a class="code" href="classHardwareSerial.html">HardwareSerial</a>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(Stream&amp; source, char arrivedChar, uint16_t availableCharsCount)&gt;</a> <a class="code" href="group__serial.html#ga06acf8677f719da1a20011835fc9b2e1">StreamDataReceivedDelegate</a>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="group__serial.html#ga9b0576461aa0204d18600b9702e44888">   46</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(HardwareSerial&amp; serial)&gt;</a> <a class="code" href="group__serial.html#ga9b0576461aa0204d18600b9702e44888">TransmitCompleteDelegate</a>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#if ENABLE_CMD_EXECUTOR</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor"></span><span class="keyword">class </span><a class="code" href="classCommandExecutor.html">CommandExecutor</a>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">enum</span> SerialConfig {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    SERIAL_5N1 = UART_5N1,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    SERIAL_6N1 = UART_6N1,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    SERIAL_7N1 = UART_7N1,</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    SERIAL_8N1 = UART_8N1,</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    SERIAL_5N2 = UART_5N2,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    SERIAL_6N2 = UART_6N2,</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    SERIAL_7N2 = UART_7N2,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    SERIAL_8N2 = UART_8N2,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    SERIAL_5E1 = UART_5E1,</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    SERIAL_6E1 = UART_6E1,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    SERIAL_7E1 = UART_7E1,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    SERIAL_8E1 = UART_8E1,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    SERIAL_5E2 = UART_5E2,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    SERIAL_6E2 = UART_6E2,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    SERIAL_7E2 = UART_7E2,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    SERIAL_8E2 = UART_8E2,</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    SERIAL_5O1 = UART_5O1,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    SERIAL_6O1 = UART_6O1,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    SERIAL_7O1 = UART_7O1,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    SERIAL_8O1 = UART_8O1,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    SERIAL_5O2 = UART_5O2,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    SERIAL_6O2 = UART_6O2,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    SERIAL_7O2 = UART_7O2,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    SERIAL_8O2 = UART_8O2,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;};</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">   80</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">SerialMode</a> { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL_TX_ONLY = UART_TX_ONLY };</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * HardwareSerial.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_HARDWARE_SERIAL_H_</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_HARDWARE_SERIAL_H_</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;WiringFrameworkDependencies.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;Data/Stream/ReadWriteStream.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;Delegate.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;espinc/uart.h&quot;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="group__serial.html#ga8e6f5f702e060af6b6f62b89620786ea">   24</a></span>&#160;<span class="preprocessor">#define UART_ID_0 0 </span></div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="group__serial.html#ga4414160658a1080ac3d9371dfbcc044a">   25</a></span>&#160;<span class="preprocessor">#define UART_ID_1 1 </span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="group__serial.html#gae453609d057b191ba45e6f85da178a1e">   27</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NUMBER_UARTS UART_COUNT </span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="group__serial.html#ga06acf8677f719da1a20011835fc9b2e1">   29</a></span>&#160;<span class="preprocessor"></span><span class="keyword">class </span><a class="code" href="classHardwareSerial.html">HardwareSerial</a>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(Stream&amp; source, char arrivedChar, uint16_t availableCharsCount)&gt;</a> <a class="code" href="group__serial.html#ga06acf8677f719da1a20011835fc9b2e1">StreamDataReceivedDelegate</a>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="group__serial.html#ga9b0576461aa0204d18600b9702e44888">   49</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(HardwareSerial&amp; serial)&gt;</a> <a class="code" href="group__serial.html#ga9b0576461aa0204d18600b9702e44888">TransmitCompleteDelegate</a>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#if ENABLE_CMD_EXECUTOR</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor"></span><span class="keyword">class </span><a class="code" href="classCommandExecutor.html">CommandExecutor</a>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keyword">enum</span> SerialConfig {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    SERIAL_5N1 = UART_5N1,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    SERIAL_6N1 = UART_6N1,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    SERIAL_7N1 = UART_7N1,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    SERIAL_8N1 = UART_8N1,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    SERIAL_5N2 = UART_5N2,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    SERIAL_6N2 = UART_6N2,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    SERIAL_7N2 = UART_7N2,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    SERIAL_8N2 = UART_8N2,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    SERIAL_5E1 = UART_5E1,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    SERIAL_6E1 = UART_6E1,</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    SERIAL_7E1 = UART_7E1,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    SERIAL_8E1 = UART_8E1,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    SERIAL_5E2 = UART_5E2,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    SERIAL_6E2 = UART_6E2,</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    SERIAL_7E2 = UART_7E2,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    SERIAL_8E2 = UART_8E2,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    SERIAL_5O1 = UART_5O1,</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    SERIAL_6O1 = UART_6O1,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    SERIAL_7O1 = UART_7O1,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    SERIAL_8O1 = UART_8O1,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    SERIAL_5O2 = UART_5O2,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    SERIAL_6O2 = UART_6O2,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    SERIAL_7O2 = UART_7O2,</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    SERIAL_8O2 = UART_8O2,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;};</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#ifndef DEFAULT_RX_BUFFER_SIZE</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DEFAULT_RX_BUFFER_SIZE 256</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#ifndef DEFAULT_TX_BUFFER_SIZE</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DEFAULT_TX_BUFFER_SIZE 0</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="classHardwareSerial.html">   91</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHardwareSerial.html">HardwareSerial</a> : <span class="keyword">public</span> <a class="code" href="classStream.html">Stream</a></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;{</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a8112dc00c544653762f10e31fdbe1945">   98</a></span>&#160;    <a class="code" href="classHardwareSerial.html#a8112dc00c544653762f10e31fdbe1945">HardwareSerial</a>(<span class="keywordtype">int</span> uartPort) : uartNr(uartPort)</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    {</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    }</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    ~<a class="code" href="classHardwareSerial.html">HardwareSerial</a>();</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordtype">void</span> setPort(<span class="keywordtype">int</span> uartPort)</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    {</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        <a class="code" href="classHardwareSerial.html#a0f86c41f580e04bdf30ea00e9014eacd">end</a>();</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        uartNr = uartPort;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    }</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">  113</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">begin</a>(uint32_t baud = 9600)</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    {</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <a class="code" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">begin</a>(baud, SERIAL_8N1, SERIAL_FULL, 1);</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    }</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00125"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a2686455ee9523cef5fe4ea6ee63c2ef9">  125</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a2686455ee9523cef5fe4ea6ee63c2ef9">begin</a>(uint32_t baud, SerialConfig config)</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    {</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        <a class="code" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">begin</a>(baud, config, SERIAL_FULL, 1);</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    }</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
-<div class="line"><a name="l00138"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a14b9a06d8a287b4697b02d798d369a12">  138</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a14b9a06d8a287b4697b02d798d369a12">begin</a>(uint32_t baud, SerialConfig config, <a class="code" href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">SerialMode</a> mode)</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    {</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        <a class="code" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">begin</a>(baud, config, mode, 1);</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    }</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">begin</a>(uint32_t baud, SerialConfig config, <a class="code" href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">SerialMode</a> mode, uint8_t txPin);</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a0f86c41f580e04bdf30ea00e9014eacd">end</a>();</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classHardwareSerial.html#a4ef13719e8ea19c6a3eb163803b08b84">setRxBufferSize</a>(<span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classHardwareSerial.html#a976b636eee007d686c8ba8df91a1cc21">setTxBufferSize</a>(<span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ac26a890953cec9b9216224c5411328f7">  169</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#ac26a890953cec9b9216224c5411328f7">setTxWait</a>(<span class="keywordtype">bool</span> wait)</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    {</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        bitWrite(options, UART_OPT_TXWAIT, wait);</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        uart_set_options(uart, options);</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    }</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;</div>
-<div class="line"><a name="l00180"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#aa22dd228add6fd97290d33a494741d6d">  180</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#aa22dd228add6fd97290d33a494741d6d">swap</a>()</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    {</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        <a class="code" href="classHardwareSerial.html#aa22dd228add6fd97290d33a494741d6d">swap</a>(1);</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    }</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;</div>
-<div class="line"><a name="l00189"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a882af872c2285039539c3cf248977a63">  189</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a882af872c2285039539c3cf248977a63">swap</a>(uint8_t tx_pin)</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    {</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        uart_swap(uart, tx_pin);</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    }</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
-<div class="line"><a name="l00201"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a6dfbef19b29c6795df1af9c8865dac08">  201</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a6dfbef19b29c6795df1af9c8865dac08">setTx</a>(uint8_t tx_pin)</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    {</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;        uart_set_tx(uart, tx_pin);</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    }</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;</div>
-<div class="line"><a name="l00213"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#affd65318986f749f7650d0825fff05fe">  213</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#affd65318986f749f7650d0825fff05fe">pins</a>(uint8_t tx, uint8_t rx)</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    {</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;        uart_set_pins(uart, tx, rx);</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    }</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;</div>
-<div class="line"><a name="l00221"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#aacc0e78343d162e539b4d18da6e57056">  221</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="classHardwareSerial.html#aacc0e78343d162e539b4d18da6e57056">available</a>()</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    {</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        <span class="keywordflow">return</span> (<span class="keywordtype">int</span>)uart_rx_available(uart);</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    }</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
-<div class="line"><a name="l00230"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a942d908c668f3e96a4cbe7d3e048a334">  230</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="classHardwareSerial.html#a942d908c668f3e96a4cbe7d3e048a334">read</a>()</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    {</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        <span class="keywordflow">return</span> uart_read_char(uart);</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    }</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;</div>
-<div class="line"><a name="l00242"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a343bb1e554d9ceb781b84ccd6568ddb9">  242</a></span>&#160;    <span class="keyword">virtual</span> uint16_t <a class="code" href="classHardwareSerial.html#a343bb1e554d9ceb781b84ccd6568ddb9">readMemoryBlock</a>(<span class="keywordtype">char</span>* buf, <span class="keywordtype">size_t</span> max_len)</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    {</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        <span class="keywordflow">return</span> uart_read(uart, buf, max_len);</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    }</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;</div>
-<div class="line"><a name="l00251"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a34b2f2505bc35794a9dede3aadbde389">  251</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="classHardwareSerial.html#a34b2f2505bc35794a9dede3aadbde389">peek</a>()</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    {</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <span class="keywordflow">return</span> uart_peek_char(uart);</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    }</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;</div>
-<div class="line"><a name="l00259"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a6c3ca342e65b01b99920f9f47c401b5c">  259</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a6c3ca342e65b01b99920f9f47c401b5c">clear</a>()</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    {</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        uart_flush(uart);</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    }</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;</div>
-<div class="line"><a name="l00267"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#af12cc7f03315df841905003d728d9b87">  267</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#af12cc7f03315df841905003d728d9b87">flush</a>()</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    {</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        uart_wait_tx_empty(uart);</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    }</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    <span class="keyword">using</span> <a class="code" href="classPrint.html#a29ff950e3418d9d9ea6ca84a612fe6a8">Stream::write</a>;</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
-<div class="line"><a name="l00278"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#adcef1cab71d4fcad4e3efa21327ff99f">  278</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classHardwareSerial.html#adcef1cab71d4fcad4e3efa21327ff99f">write</a>(uint8_t oneChar)</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    {</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;        <span class="keywordflow">return</span> uart_write_char(uart, oneChar);</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    }</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;</div>
-<div class="line"><a name="l00288"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ad147d03d04372e0f54d9829caead7165">  288</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="classHardwareSerial.html#ad147d03d04372e0f54d9829caead7165">write</a>(<span class="keyword">const</span> uint8_t* buffer, <span class="keywordtype">size_t</span> size)</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    {</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        <span class="keywordflow">return</span> uart_write(uart, buffer, size);</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    }</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a1365b152178ff99287c1e700b593a0e0">systemDebugOutput</a>(<span class="keywordtype">bool</span> enabled);</div>
+<div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">   83</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">SerialMode</a> { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL_TX_ONLY = UART_TX_ONLY };</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#ifndef DEFAULT_RX_BUFFER_SIZE</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DEFAULT_RX_BUFFER_SIZE 256</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">#ifndef DEFAULT_TX_BUFFER_SIZE</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DEFAULT_TX_BUFFER_SIZE 0</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="group__serial.html#ga71c113451bfafdaf5fcabcd807acd480">   94</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="group__serial.html#ga71c113451bfafdaf5fcabcd807acd480">SerialStatus</a> {</div>
+<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480aa84d24b59204f8e712e04671da89fca8">   95</a></span>&#160;    <a class="code" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480aa84d24b59204f8e712e04671da89fca8">eSERS_BreakDetected</a> = UIBD, </div>
+<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a448b9677894ceef10029ccfe61f3690c">   96</a></span>&#160;    <a class="code" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a448b9677894ceef10029ccfe61f3690c">eSERS_Overflow</a> = UIOF,      </div>
+<div class="line"><a name="l00097"></a><span class="lineno"><a class="line" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a14d8681274cfd09fb5b653a7d1553f2d">   97</a></span>&#160;    <a class="code" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a14d8681274cfd09fb5b653a7d1553f2d">eSERS_FramingError</a> = UIFR,  </div>
+<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a82d848660679b89062f82c42e79c07c0">   98</a></span>&#160;    <a class="code" href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a82d848660679b89062f82c42e79c07c0">eSERS_ParityError</a> = UIPE,   </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;};</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="classHardwareSerial.html">  102</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHardwareSerial.html">HardwareSerial</a> : <span class="keyword">public</span> <a class="code" href="classReadWriteStream.html">ReadWriteStream</a></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;{</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a8112dc00c544653762f10e31fdbe1945">  109</a></span>&#160;    <a class="code" href="classHardwareSerial.html#a8112dc00c544653762f10e31fdbe1945">HardwareSerial</a>(<span class="keywordtype">int</span> uartPort) : uartNr(uartPort)</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    {</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    }</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    ~<a class="code" href="classHardwareSerial.html">HardwareSerial</a>();</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keywordtype">void</span> setPort(<span class="keywordtype">int</span> uartPort)</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    {</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        <a class="code" href="classHardwareSerial.html#a0f86c41f580e04bdf30ea00e9014eacd">end</a>();</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        uartNr = uartPort;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    }</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordtype">int</span> getPort()</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    {</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        <span class="keywordflow">return</span> uartNr;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    }</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
+<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">  129</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">begin</a>(uint32_t baud = 9600)</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    {</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        <a class="code" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">begin</a>(baud, SERIAL_8N1, SERIAL_FULL, 1);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    }</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00141"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a2686455ee9523cef5fe4ea6ee63c2ef9">  141</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a2686455ee9523cef5fe4ea6ee63c2ef9">begin</a>(uint32_t baud, SerialConfig config)</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    {</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        <a class="code" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">begin</a>(baud, config, SERIAL_FULL, 1);</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    }</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
+<div class="line"><a name="l00154"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a14b9a06d8a287b4697b02d798d369a12">  154</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a14b9a06d8a287b4697b02d798d369a12">begin</a>(uint32_t baud, SerialConfig config, <a class="code" href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">SerialMode</a> mode)</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    {</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        <a class="code" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">begin</a>(baud, config, mode, 1);</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    }</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">begin</a>(uint32_t baud, SerialConfig config, <a class="code" href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">SerialMode</a> mode, uint8_t txPin);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a0f86c41f580e04bdf30ea00e9014eacd">end</a>();</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classHardwareSerial.html#a4ef13719e8ea19c6a3eb163803b08b84">setRxBufferSize</a>(<span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classHardwareSerial.html#a976b636eee007d686c8ba8df91a1cc21">setTxBufferSize</a>(<span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
+<div class="line"><a name="l00185"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ac26a890953cec9b9216224c5411328f7">  185</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#ac26a890953cec9b9216224c5411328f7">setTxWait</a>(<span class="keywordtype">bool</span> wait)</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    {</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        bitWrite(options, UART_OPT_TXWAIT, wait);</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;        uart_set_options(uart, options);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    }</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;</div>
+<div class="line"><a name="l00196"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#aa22dd228add6fd97290d33a494741d6d">  196</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#aa22dd228add6fd97290d33a494741d6d">swap</a>()</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    {</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        <a class="code" href="classHardwareSerial.html#aa22dd228add6fd97290d33a494741d6d">swap</a>(1);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    }</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
+<div class="line"><a name="l00205"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a882af872c2285039539c3cf248977a63">  205</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a882af872c2285039539c3cf248977a63">swap</a>(uint8_t tx_pin)</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    {</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        uart_swap(uart, tx_pin);</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    }</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
+<div class="line"><a name="l00217"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a6dfbef19b29c6795df1af9c8865dac08">  217</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a6dfbef19b29c6795df1af9c8865dac08">setTx</a>(uint8_t tx_pin)</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    {</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        uart_set_tx(uart, tx_pin);</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    }</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;</div>
+<div class="line"><a name="l00229"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#affd65318986f749f7650d0825fff05fe">  229</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#affd65318986f749f7650d0825fff05fe">pins</a>(uint8_t tx, uint8_t rx)</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    {</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        uart_set_pins(uart, tx, rx);</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    }</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;</div>
+<div class="line"><a name="l00237"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a3ba8028d63deb239fc732ff4dcaa5596">  237</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classHardwareSerial.html#a3ba8028d63deb239fc732ff4dcaa5596">available</a>()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        <span class="keywordflow">return</span> (<span class="keywordtype">int</span>)uart_rx_available(uart);</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    }</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;</div>
+<div class="line"><a name="l00246"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#aaa09c85eb59e62bfda3c48fae7dcb14c">  246</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classHardwareSerial.html#aaa09c85eb59e62bfda3c48fae7dcb14c">read</a>()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        <span class="keywordflow">return</span> uart_read_char(uart);</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    }</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
+<div class="line"><a name="l00258"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ac0004e0f4d56ca28fadbe66937e5bda0">  258</a></span>&#160;    uint16_t <a class="code" href="classHardwareSerial.html#ac0004e0f4d56ca28fadbe66937e5bda0">readMemoryBlock</a>(<span class="keywordtype">char</span>* buf, <span class="keywordtype">int</span> max_len)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        <span class="keywordflow">return</span> uart_read(uart, buf, max_len);</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    }</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;</div>
+<div class="line"><a name="l00263"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a45c71539f5e352f9c9096d5bfcc713e9">  263</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#a45c71539f5e352f9c9096d5bfcc713e9">seek</a>(<span class="keywordtype">int</span> len)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    }</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;</div>
+<div class="line"><a name="l00268"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a4d2390734c93fcf3befa20afb7872bfb">  268</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#a4d2390734c93fcf3befa20afb7872bfb">isFinished</a>()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    }</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;</div>
+<div class="line"><a name="l00277"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a0bf562734b738ed06de5fb34c357b230">  277</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classHardwareSerial.html#a0bf562734b738ed06de5fb34c357b230">peek</a>()<span class="keyword"> override</span></div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;        <span class="keywordflow">return</span> uart_peek_char(uart);</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    }</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;</div>
+<div class="line"><a name="l00286"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a2d0fc0b21e9938803abca4408b3e84f8">  286</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a2d0fc0b21e9938803abca4408b3e84f8">clear</a>(<a class="code" href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">SerialMode</a> mode = SERIAL_FULL)</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    {</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        uart_flush(uart, uart_mode_t(mode));</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    }</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
+<div class="line"><a name="l00294"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#aee7dc12691552f23e7576fb0fb2e132b">  294</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#aee7dc12691552f23e7576fb0fb2e132b">flush</a>() override <span class="comment">// Stream</span></div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    {</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        uart_wait_tx_empty(uart);</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    }</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a3e937f8f8412517c0dd61fe7ec453470">commandProcessing</a>(<span class="keywordtype">bool</span> reqEnable);</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;</div>
-<div class="line"><a name="l00310"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ad2d71bcd0abae09a41296f260414b601">  310</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#ad2d71bcd0abae09a41296f260414b601">setCallback</a>(<a class="code" href="classDelegate.html">StreamDataReceivedDelegate</a> dataReceivedDelegate)</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    {</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classHardwareSerial.html#a15faa3806c896ebbef19b86df916e717">onDataReceived</a>(dataReceivedDelegate);</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    }</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;</div>
-<div class="line"><a name="l00319"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a15faa3806c896ebbef19b86df916e717">  319</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#a15faa3806c896ebbef19b86df916e717">onDataReceived</a>(<a class="code" href="classDelegate.html">StreamDataReceivedDelegate</a> dataReceivedDelegate)</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    {</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        this-&gt;HWSDelegate = dataReceivedDelegate;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        <span class="keywordflow">return</span> updateUartCallback();</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    }</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;</div>
-<div class="line"><a name="l00329"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ac681dc8a834cf4198f98b25cacc2e794">  329</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#ac681dc8a834cf4198f98b25cacc2e794">onTransmitComplete</a>(<a class="code" href="classDelegate.html">TransmitCompleteDelegate</a> transmitCompleteDelegate)</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    {</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        this-&gt;transmitComplete = transmitCompleteDelegate;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        <span class="keywordflow">return</span> updateUartCallback();</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    }</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;</div>
-<div class="line"><a name="l00340"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a0ca138a3f280fffbfaf8841c5ea9f354">  340</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a0ca138a3f280fffbfaf8841c5ea9f354">setUartCallback</a>(uart_callback_t callback, <span class="keywordtype">void</span>* param = <span class="keyword">nullptr</span>)</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    {</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        uart_set_callback(uart, callback, param);</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    }</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;</div>
-<div class="line"><a name="l00349"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a33ff775243c3d1c39ef5a97be25fdb09">  349</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#a33ff775243c3d1c39ef5a97be25fdb09">isTxEnabled</a>()</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    {</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;        <span class="keywordflow">return</span> uart_tx_enabled(uart);</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    }</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;</div>
-<div class="line"><a name="l00358"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ab8505f41f58a45b83c2d37605508d4db">  358</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#ab8505f41f58a45b83c2d37605508d4db">isRxEnabled</a>()</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <span class="keyword">using</span> <a class="code" href="classPrint.html#a29ff950e3418d9d9ea6ca84a612fe6a8">Stream::write</a>;</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;</div>
+<div class="line"><a name="l00306"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#af6e2342e46c9b51628de42582917bd07">  306</a></span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classHardwareSerial.html#af6e2342e46c9b51628de42582917bd07">write</a>(<span class="keyword">const</span> uint8_t* buffer, <span class="keywordtype">size_t</span> size)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        <span class="keywordflow">return</span> uart_write(uart, buffer, size);</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    }</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a1365b152178ff99287c1e700b593a0e0">systemDebugOutput</a>(<span class="keywordtype">bool</span> enabled);</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a3e937f8f8412517c0dd61fe7ec453470">commandProcessing</a>(<span class="keywordtype">bool</span> reqEnable);</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;</div>
+<div class="line"><a name="l00328"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ad2d71bcd0abae09a41296f260414b601">  328</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#ad2d71bcd0abae09a41296f260414b601">setCallback</a>(<a class="code" href="classDelegate.html">StreamDataReceivedDelegate</a> dataReceivedDelegate)</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    {</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classHardwareSerial.html#a15faa3806c896ebbef19b86df916e717">onDataReceived</a>(dataReceivedDelegate);</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    }</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
+<div class="line"><a name="l00337"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a15faa3806c896ebbef19b86df916e717">  337</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#a15faa3806c896ebbef19b86df916e717">onDataReceived</a>(<a class="code" href="classDelegate.html">StreamDataReceivedDelegate</a> dataReceivedDelegate)</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    {</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;        this-&gt;HWSDelegate = dataReceivedDelegate;</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        <span class="keywordflow">return</span> updateUartCallback();</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    }</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;</div>
+<div class="line"><a name="l00347"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ac681dc8a834cf4198f98b25cacc2e794">  347</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#ac681dc8a834cf4198f98b25cacc2e794">onTransmitComplete</a>(<a class="code" href="classDelegate.html">TransmitCompleteDelegate</a> transmitCompleteDelegate)</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    {</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;        this-&gt;transmitComplete = transmitCompleteDelegate;</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;        <span class="keywordflow">return</span> updateUartCallback();</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    }</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;</div>
+<div class="line"><a name="l00358"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a0ca138a3f280fffbfaf8841c5ea9f354">  358</a></span>&#160;    __forceinline <span class="keywordtype">void</span> <a class="code" href="classHardwareSerial.html#a0ca138a3f280fffbfaf8841c5ea9f354">setUartCallback</a>(uart_callback_t callback, <span class="keywordtype">void</span>* param = <span class="keyword">nullptr</span>)</div>
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;    {</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;        <span class="keywordflow">return</span> uart_rx_enabled(uart);</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;        uart_set_callback(uart, callback, param);</div>
 <div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    }</div>
 <div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;</div>
-<div class="line"><a name="l00367"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#afa7367890c010ce269e49eb0a0a0b6f6">  367</a></span>&#160;    uint32_t <a class="code" href="classHardwareSerial.html#afa7367890c010ce269e49eb0a0a0b6f6">baudRate</a>()</div>
+<div class="line"><a name="l00367"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a33ff775243c3d1c39ef5a97be25fdb09">  367</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#a33ff775243c3d1c39ef5a97be25fdb09">isTxEnabled</a>()</div>
 <div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    {</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;        <span class="keywordflow">return</span> uart_get_baudrate(uart);</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;        <span class="keywordflow">return</span> uart_tx_enabled(uart);</div>
 <div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    }</div>
 <div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;</div>
-<div class="line"><a name="l00377"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a97fb2b9c2370793a66463531fd430b75">  377</a></span>&#160;    uint32_t <a class="code" href="classHardwareSerial.html#a97fb2b9c2370793a66463531fd430b75">setBaudRate</a>(uint32_t baudrate)</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    {</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        <span class="keywordflow">return</span> uart_set_baudrate(uart, baudrate);</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    }</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;</div>
-<div class="line"><a name="l00385"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a28e743f97000478452f3027a0a215579">  385</a></span>&#160;    <span class="keyword">operator</span> bool()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;        <span class="keywordflow">return</span> uart != <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00376"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ab8505f41f58a45b83c2d37605508d4db">  376</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classHardwareSerial.html#ab8505f41f58a45b83c2d37605508d4db">isRxEnabled</a>()</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    {</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="keywordflow">return</span> uart_rx_enabled(uart);</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    }</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;</div>
+<div class="line"><a name="l00385"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#afa7367890c010ce269e49eb0a0a0b6f6">  385</a></span>&#160;    uint32_t <a class="code" href="classHardwareSerial.html#afa7367890c010ce269e49eb0a0a0b6f6">baudRate</a>()</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    {</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;        <span class="keywordflow">return</span> uart_get_baudrate(uart);</div>
 <div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    }</div>
 <div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;</div>
-<div class="line"><a name="l00395"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ad3053e51a7c54cbec02e0f5ed0ef1bc9">  395</a></span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="classHardwareSerial.html#ad3053e51a7c54cbec02e0f5ed0ef1bc9">indexOf</a>(<span class="keywordtype">char</span> c)</div>
+<div class="line"><a name="l00395"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a97fb2b9c2370793a66463531fd430b75">  395</a></span>&#160;    uint32_t <a class="code" href="classHardwareSerial.html#a97fb2b9c2370793a66463531fd430b75">setBaudRate</a>(uint32_t baudrate)</div>
 <div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;    {</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        <span class="keywordflow">return</span> uart_rx_find(uart, c);</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        <span class="keywordflow">return</span> uart_set_baudrate(uart, baudrate);</div>
 <div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    }</div>
 <div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;</div>
-<div class="line"><a name="l00404"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a56883ae69e22add8048bfc302e8dc807">  404</a></span>&#160;    uart_t* <a class="code" href="classHardwareSerial.html#a56883ae69e22add8048bfc302e8dc807">getUart</a>()</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    {</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        <span class="keywordflow">return</span> uart;</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    }</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    <span class="keywordtype">int</span> uartNr = -1;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    <a class="code" href="classDelegate.html">TransmitCompleteDelegate</a> transmitComplete = <span class="keyword">nullptr</span>; </div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    <a class="code" href="classDelegate.html">StreamDataReceivedDelegate</a> HWSDelegate = <span class="keyword">nullptr</span>;   </div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;<span class="preprocessor">#if ENABLE_CMD_EXECUTOR</span></div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;<span class="preprocessor"></span>    <a class="code" href="classCommandExecutor.html">CommandExecutor</a>* commandExecutor = <span class="keyword">nullptr</span>; </div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;<span class="preprocessor"></span>    uart_t* uart = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;    uart_options_t options = _BV(UART_OPT_TXWAIT);</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    <span class="keywordtype">size_t</span> txSize = DEFAULT_TX_BUFFER_SIZE;</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    <span class="keywordtype">size_t</span> rxSize = DEFAULT_RX_BUFFER_SIZE;</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    <span class="keywordtype">void</span> IRAM_ATTR callbackHandler(uint32_t status);</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    <span class="keywordtype">bool</span> updateUartCallback();</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;};</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;<span class="keyword">extern</span> <a class="code" href="classHardwareSerial.html">HardwareSerial</a> <a class="code" href="group__serial.html#ga7b8c4a195c58f9eb8750e94955c5aa4b">Serial</a>;</div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;</div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _HARDWARESERIAL_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classHardwareSerial_html_aacc0e78343d162e539b4d18da6e57056"><div class="ttname"><a href="classHardwareSerial.html#aacc0e78343d162e539b4d18da6e57056">HardwareSerial::available</a></div><div class="ttdeci">virtual int available()</div><div class="ttdoc">Get quantity characters available from serial input. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:221</div></div>
-<div class="ttc" id="classHardwareSerial_html_ad3053e51a7c54cbec02e0f5ed0ef1bc9"><div class="ttname"><a href="classHardwareSerial.html#ad3053e51a7c54cbec02e0f5ed0ef1bc9">HardwareSerial::indexOf</a></div><div class="ttdeci">virtual int indexOf(char c)</div><div class="ttdoc">Returns the location of the searched character. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:395</div></div>
-<div class="ttc" id="classHardwareSerial_html_a2686455ee9523cef5fe4ea6ee63c2ef9"><div class="ttname"><a href="classHardwareSerial.html#a2686455ee9523cef5fe4ea6ee63c2ef9">HardwareSerial::begin</a></div><div class="ttdeci">void begin(uint32_t baud, SerialConfig config)</div><div class="ttdoc">Initialise and set its configuration. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:125</div></div>
-<div class="ttc" id="classHardwareSerial_html_a534d87595c006249dfed5872c826caaf"><div class="ttname"><a href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">HardwareSerial::begin</a></div><div class="ttdeci">void begin(uint32_t baud=9600)</div><div class="ttdoc">Initialise the serial port. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:113</div></div>
-<div class="ttc" id="classHardwareSerial_html_ac26a890953cec9b9216224c5411328f7"><div class="ttname"><a href="classHardwareSerial.html#ac26a890953cec9b9216224c5411328f7">HardwareSerial::setTxWait</a></div><div class="ttdeci">void setTxWait(bool wait)</div><div class="ttdoc">Governs write behaviour when UART transmit buffers are full If false, writes will return short count;...</div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:169</div></div>
-<div class="ttc" id="classHardwareSerial_html_affd65318986f749f7650d0825fff05fe"><div class="ttname"><a href="classHardwareSerial.html#affd65318986f749f7650d0825fff05fe">HardwareSerial::pins</a></div><div class="ttdeci">void pins(uint8_t tx, uint8_t rx)</div><div class="ttdoc">Sets the transmission and receiving PINS. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:213</div></div>
-<div class="ttc" id="classHardwareSerial_html_afa7367890c010ce269e49eb0a0a0b6f6"><div class="ttname"><a href="classHardwareSerial.html#afa7367890c010ce269e49eb0a0a0b6f6">HardwareSerial::baudRate</a></div><div class="ttdeci">uint32_t baudRate()</div><div class="ttdoc">Get the current baud rate. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:367</div></div>
-<div class="ttc" id="classHardwareSerial_html_a882af872c2285039539c3cf248977a63"><div class="ttname"><a href="classHardwareSerial.html#a882af872c2285039539c3cf248977a63">HardwareSerial::swap</a></div><div class="ttdeci">void swap(uint8_t tx_pin)</div><div class="ttdoc">Toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:189</div></div>
-<div class="ttc" id="group__serial_html_gab78caf3d1a1fc77e1145393984a03ab1"><div class="ttname"><a href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">SerialMode</a></div><div class="ttdeci">SerialMode</div><div class="ttdoc">values equivalent to uart_mode_t </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:80</div></div>
-<div class="ttc" id="classHardwareSerial_html_a56883ae69e22add8048bfc302e8dc807"><div class="ttname"><a href="classHardwareSerial.html#a56883ae69e22add8048bfc302e8dc807">HardwareSerial::getUart</a></div><div class="ttdeci">uart_t * getUart()</div><div class="ttdoc">Returns a pointer to the internal uart object. Use with care. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:404</div></div>
-<div class="ttc" id="classHardwareSerial_html_ad2d71bcd0abae09a41296f260414b601"><div class="ttname"><a href="classHardwareSerial.html#ad2d71bcd0abae09a41296f260414b601">HardwareSerial::setCallback</a></div><div class="ttdeci">bool setCallback(StreamDataReceivedDelegate dataReceivedDelegate)</div><div class="ttdoc">Set handler for received data. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:310</div></div>
+<div class="line"><a name="l00403"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a28e743f97000478452f3027a0a215579">  403</a></span>&#160;    <span class="keyword">operator</span> bool()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;        <span class="keywordflow">return</span> uart != <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    }</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;</div>
+<div class="line"><a name="l00413"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#ab54416a0c013d6aef3abff788dc32d71">  413</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classHardwareSerial.html#ab54416a0c013d6aef3abff788dc32d71">indexOf</a>(<span class="keywordtype">char</span> c)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        <span class="keywordflow">return</span> uart_rx_find(uart, c);</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    }</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
+<div class="line"><a name="l00422"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a56883ae69e22add8048bfc302e8dc807">  422</a></span>&#160;    uart_t* <a class="code" href="classHardwareSerial.html#a56883ae69e22add8048bfc302e8dc807">getUart</a>()</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    {</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;        <span class="keywordflow">return</span> uart;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    }</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;</div>
+<div class="line"><a name="l00432"></a><span class="lineno"><a class="line" href="classHardwareSerial.html#a85af7608e6a00c3e9df210b8a40b7cfc">  432</a></span>&#160;    <span class="keywordtype">unsigned</span> <a class="code" href="classHardwareSerial.html#a85af7608e6a00c3e9df210b8a40b7cfc">getStatus</a>()</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    {</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;        <span class="keywordflow">return</span> uart_get_status(uart);</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    }</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;    <span class="keywordtype">int</span> uartNr = -1;</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;    <a class="code" href="classDelegate.html">TransmitCompleteDelegate</a> transmitComplete = <span class="keyword">nullptr</span>; </div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    <a class="code" href="classDelegate.html">StreamDataReceivedDelegate</a> HWSDelegate = <span class="keyword">nullptr</span>;   </div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;<span class="preprocessor">#if ENABLE_CMD_EXECUTOR</span></div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;<span class="preprocessor"></span>    <a class="code" href="classCommandExecutor.html">CommandExecutor</a>* commandExecutor = <span class="keyword">nullptr</span>; </div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;<span class="preprocessor"></span>    uart_t* uart = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;    uart_options_t options = _BV(UART_OPT_TXWAIT);</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;    <span class="keywordtype">size_t</span> txSize = DEFAULT_TX_BUFFER_SIZE;</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;    <span class="keywordtype">size_t</span> rxSize = DEFAULT_RX_BUFFER_SIZE;</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;    <span class="keyword">volatile</span> uint16_t statusMask = 0;    </div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;    <span class="keyword">volatile</span> uint16_t callbackStatus = 0; </div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;    <span class="keyword">volatile</span> <span class="keywordtype">bool</span> callbackQueued = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> IRAM_ATTR staticCallbackHandler(uart_t* uart, uint32_t status);</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> staticOnStatusChange(uint32_t param);</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    <span class="keywordtype">void</span> invokeCallbacks();</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    <span class="keywordtype">bool</span> updateUartCallback();</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;};</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;<span class="keyword">extern</span> <a class="code" href="classHardwareSerial.html">HardwareSerial</a> <a class="code" href="group__serial.html#ga7b8c4a195c58f9eb8750e94955c5aa4b">Serial</a>;</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_HARDWARE_SERIAL_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="group__serial_html_gga71c113451bfafdaf5fcabcd807acd480aa84d24b59204f8e712e04671da89fca8"><div class="ttname"><a href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480aa84d24b59204f8e712e04671da89fca8">eSERS_BreakDetected</a></div><div class="ttdoc">Break condition detected on receive line. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:95</div></div>
+<div class="ttc" id="classHardwareSerial_html_a2686455ee9523cef5fe4ea6ee63c2ef9"><div class="ttname"><a href="classHardwareSerial.html#a2686455ee9523cef5fe4ea6ee63c2ef9">HardwareSerial::begin</a></div><div class="ttdeci">void begin(uint32_t baud, SerialConfig config)</div><div class="ttdoc">Initialise and set its configuration. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:141</div></div>
+<div class="ttc" id="classHardwareSerial_html_a534d87595c006249dfed5872c826caaf"><div class="ttname"><a href="classHardwareSerial.html#a534d87595c006249dfed5872c826caaf">HardwareSerial::begin</a></div><div class="ttdeci">void begin(uint32_t baud=9600)</div><div class="ttdoc">Initialise the serial port. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:129</div></div>
+<div class="ttc" id="classHardwareSerial_html_aee7dc12691552f23e7576fb0fb2e132b"><div class="ttname"><a href="classHardwareSerial.html#aee7dc12691552f23e7576fb0fb2e132b">HardwareSerial::flush</a></div><div class="ttdeci">void flush() override</div><div class="ttdoc">Flush all pending data to the serial port. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:294</div></div>
+<div class="ttc" id="classHardwareSerial_html_a4d2390734c93fcf3befa20afb7872bfb"><div class="ttname"><a href="classHardwareSerial.html#a4d2390734c93fcf3befa20afb7872bfb">HardwareSerial::isFinished</a></div><div class="ttdeci">bool isFinished() override</div><div class="ttdoc">Check if all data has been read. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:268</div></div>
+<div class="ttc" id="classHardwareSerial_html_ac26a890953cec9b9216224c5411328f7"><div class="ttname"><a href="classHardwareSerial.html#ac26a890953cec9b9216224c5411328f7">HardwareSerial::setTxWait</a></div><div class="ttdeci">void setTxWait(bool wait)</div><div class="ttdoc">Governs write behaviour when UART transmit buffers are full If false, writes will return short count;...</div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:185</div></div>
+<div class="ttc" id="classHardwareSerial_html_affd65318986f749f7650d0825fff05fe"><div class="ttname"><a href="classHardwareSerial.html#affd65318986f749f7650d0825fff05fe">HardwareSerial::pins</a></div><div class="ttdeci">void pins(uint8_t tx, uint8_t rx)</div><div class="ttdoc">Sets the transmission and receiving PINS. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:229</div></div>
+<div class="ttc" id="classHardwareSerial_html_afa7367890c010ce269e49eb0a0a0b6f6"><div class="ttname"><a href="classHardwareSerial.html#afa7367890c010ce269e49eb0a0a0b6f6">HardwareSerial::baudRate</a></div><div class="ttdeci">uint32_t baudRate()</div><div class="ttdoc">Get the current baud rate. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:385</div></div>
+<div class="ttc" id="classHardwareSerial_html_a882af872c2285039539c3cf248977a63"><div class="ttname"><a href="classHardwareSerial.html#a882af872c2285039539c3cf248977a63">HardwareSerial::swap</a></div><div class="ttdeci">void swap(uint8_t tx_pin)</div><div class="ttdoc">Toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:205</div></div>
+<div class="ttc" id="group__serial_html_gab78caf3d1a1fc77e1145393984a03ab1"><div class="ttname"><a href="group__serial.html#gab78caf3d1a1fc77e1145393984a03ab1">SerialMode</a></div><div class="ttdeci">SerialMode</div><div class="ttdoc">values equivalent to uart_mode_t </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:83</div></div>
+<div class="ttc" id="classHardwareSerial_html_a56883ae69e22add8048bfc302e8dc807"><div class="ttname"><a href="classHardwareSerial.html#a56883ae69e22add8048bfc302e8dc807">HardwareSerial::getUart</a></div><div class="ttdeci">uart_t * getUart()</div><div class="ttdoc">Returns a pointer to the internal uart object. Use with care. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:422</div></div>
+<div class="ttc" id="classHardwareSerial_html_ad2d71bcd0abae09a41296f260414b601"><div class="ttname"><a href="classHardwareSerial.html#ad2d71bcd0abae09a41296f260414b601">HardwareSerial::setCallback</a></div><div class="ttdeci">bool setCallback(StreamDataReceivedDelegate dataReceivedDelegate)</div><div class="ttdoc">Set handler for received data. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:328</div></div>
 <div class="ttc" id="classHardwareSerial_html_a0f86c41f580e04bdf30ea00e9014eacd"><div class="ttname"><a href="classHardwareSerial.html#a0f86c41f580e04bdf30ea00e9014eacd">HardwareSerial::end</a></div><div class="ttdeci">void end()</div><div class="ttdoc">De-inits the current UART if it is already used. </div></div>
-<div class="ttc" id="classHardwareSerial_html_adcef1cab71d4fcad4e3efa21327ff99f"><div class="ttname"><a href="classHardwareSerial.html#adcef1cab71d4fcad4e3efa21327ff99f">HardwareSerial::write</a></div><div class="ttdeci">virtual size_t write(uint8_t oneChar)</div><div class="ttdoc">write a character to serial port </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:278</div></div>
+<div class="ttc" id="classHardwareSerial_html_a2d0fc0b21e9938803abca4408b3e84f8"><div class="ttname"><a href="classHardwareSerial.html#a2d0fc0b21e9938803abca4408b3e84f8">HardwareSerial::clear</a></div><div class="ttdeci">void clear(SerialMode mode=SERIAL_FULL)</div><div class="ttdoc">Clear the serial port transmit/receive buffers. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:286</div></div>
 <div class="ttc" id="classHardwareSerial_html_a976b636eee007d686c8ba8df91a1cc21"><div class="ttname"><a href="classHardwareSerial.html#a976b636eee007d686c8ba8df91a1cc21">HardwareSerial::setTxBufferSize</a></div><div class="ttdeci">size_t setTxBufferSize(size_t size)</div><div class="ttdoc">Sets transmit buffer size. </div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(Stream &amp;source, char arrivedChar, uint16_t availableCharsCount)&gt;</a></div></div>
-<div class="ttc" id="classHardwareSerial_html_a942d908c668f3e96a4cbe7d3e048a334"><div class="ttname"><a href="classHardwareSerial.html#a942d908c668f3e96a4cbe7d3e048a334">HardwareSerial::read</a></div><div class="ttdeci">virtual int read()</div><div class="ttdoc">Read a character from serial port. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:230</div></div>
-<div class="ttc" id="classHardwareSerial_html_a6dfbef19b29c6795df1af9c8865dac08"><div class="ttname"><a href="classHardwareSerial.html#a6dfbef19b29c6795df1af9c8865dac08">HardwareSerial::setTx</a></div><div class="ttdeci">void setTx(uint8_t tx_pin)</div><div class="ttdoc">Toggle between use of GPIO1 and GPIO2 as TX on UART 0. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:201</div></div>
+<div class="ttc" id="classHardwareSerial_html_a6dfbef19b29c6795df1af9c8865dac08"><div class="ttname"><a href="classHardwareSerial.html#a6dfbef19b29c6795df1af9c8865dac08">HardwareSerial::setTx</a></div><div class="ttdeci">void setTx(uint8_t tx_pin)</div><div class="ttdoc">Toggle between use of GPIO1 and GPIO2 as TX on UART 0. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:217</div></div>
+<div class="ttc" id="group__serial_html_gga71c113451bfafdaf5fcabcd807acd480a448b9677894ceef10029ccfe61f3690c"><div class="ttname"><a href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a448b9677894ceef10029ccfe61f3690c">eSERS_Overflow</a></div><div class="ttdoc">Receive buffer overflowed. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:96</div></div>
 <div class="ttc" id="classCommandExecutor_html"><div class="ttname"><a href="classCommandExecutor.html">CommandExecutor</a></div><div class="ttdef"><b>Definition:</b> CommandExecutor.h:18</div></div>
 <div class="ttc" id="classHardwareSerial_html_a4ef13719e8ea19c6a3eb163803b08b84"><div class="ttname"><a href="classHardwareSerial.html#a4ef13719e8ea19c6a3eb163803b08b84">HardwareSerial::setRxBufferSize</a></div><div class="ttdeci">size_t setRxBufferSize(size_t size)</div><div class="ttdoc">Sets receiving buffer size. </div></div>
+<div class="ttc" id="classHardwareSerial_html_aaa09c85eb59e62bfda3c48fae7dcb14c"><div class="ttname"><a href="classHardwareSerial.html#aaa09c85eb59e62bfda3c48fae7dcb14c">HardwareSerial::read</a></div><div class="ttdeci">int read() override</div><div class="ttdoc">Read a character from serial port. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:246</div></div>
 <div class="ttc" id="classPrint_html_a29ff950e3418d9d9ea6ca84a612fe6a8"><div class="ttname"><a href="classPrint.html#a29ff950e3418d9d9ea6ca84a612fe6a8">Print::write</a></div><div class="ttdeci">virtual size_t write(uint8_t)=0</div><div class="ttdoc">Writes a single character to output stream. </div></div>
-<div class="ttc" id="classHardwareSerial_html_aa22dd228add6fd97290d33a494741d6d"><div class="ttname"><a href="classHardwareSerial.html#aa22dd228add6fd97290d33a494741d6d">HardwareSerial::swap</a></div><div class="ttdeci">void swap()</div><div class="ttdoc">Toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:180</div></div>
+<div class="ttc" id="group__serial_html_gga71c113451bfafdaf5fcabcd807acd480a14d8681274cfd09fb5b653a7d1553f2d"><div class="ttname"><a href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a14d8681274cfd09fb5b653a7d1553f2d">eSERS_FramingError</a></div><div class="ttdoc">Receive framing error. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:97</div></div>
+<div class="ttc" id="classHardwareSerial_html_af6e2342e46c9b51628de42582917bd07"><div class="ttname"><a href="classHardwareSerial.html#af6e2342e46c9b51628de42582917bd07">HardwareSerial::write</a></div><div class="ttdeci">size_t write(const uint8_t *buffer, size_t size) override</div><div class="ttdoc">write multiple characters to serial port </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:306</div></div>
+<div class="ttc" id="classHardwareSerial_html_a45c71539f5e352f9c9096d5bfcc713e9"><div class="ttname"><a href="classHardwareSerial.html#a45c71539f5e352f9c9096d5bfcc713e9">HardwareSerial::seek</a></div><div class="ttdeci">bool seek(int len) override</div><div class="ttdoc">Move read cursor. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:263</div></div>
+<div class="ttc" id="classHardwareSerial_html_aa22dd228add6fd97290d33a494741d6d"><div class="ttname"><a href="classHardwareSerial.html#aa22dd228add6fd97290d33a494741d6d">HardwareSerial::swap</a></div><div class="ttdeci">void swap()</div><div class="ttdoc">Toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:196</div></div>
 <div class="ttc" id="classHardwareSerial_html_a3e937f8f8412517c0dd61fe7ec453470"><div class="ttname"><a href="classHardwareSerial.html#a3e937f8f8412517c0dd61fe7ec453470">HardwareSerial::commandProcessing</a></div><div class="ttdeci">void commandProcessing(bool reqEnable)</div><div class="ttdoc">Configure serial port for command processing. </div></div>
-<div class="ttc" id="group__serial_html_ga9b0576461aa0204d18600b9702e44888"><div class="ttname"><a href="group__serial.html#ga9b0576461aa0204d18600b9702e44888">TransmitCompleteDelegate</a></div><div class="ttdeci">Delegate&lt; void(HardwareSerial &amp;serial)&gt; TransmitCompleteDelegate</div><div class="ttdoc">Delegate callback type for serial data transmit completion. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:46</div></div>
-<div class="ttc" id="classHardwareSerial_html_a33ff775243c3d1c39ef5a97be25fdb09"><div class="ttname"><a href="classHardwareSerial.html#a33ff775243c3d1c39ef5a97be25fdb09">HardwareSerial::isTxEnabled</a></div><div class="ttdeci">bool isTxEnabled()</div><div class="ttdoc">Checks if the current UART can transmit(print) information. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:349</div></div>
-<div class="ttc" id="group__serial_html_ga06acf8677f719da1a20011835fc9b2e1"><div class="ttname"><a href="group__serial.html#ga06acf8677f719da1a20011835fc9b2e1">StreamDataReceivedDelegate</a></div><div class="ttdeci">Delegate&lt; void(Stream &amp;source, char arrivedChar, uint16_t availableCharsCount)&gt; StreamDataReceivedDelegate</div><div class="ttdoc">Delegate callback type for serial data reception. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:26</div></div>
-<div class="ttc" id="classHardwareSerial_html"><div class="ttname"><a href="classHardwareSerial.html">HardwareSerial</a></div><div class="ttdoc">Hardware serial class. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:91</div></div>
+<div class="ttc" id="classHardwareSerial_html_ac0004e0f4d56ca28fadbe66937e5bda0"><div class="ttname"><a href="classHardwareSerial.html#ac0004e0f4d56ca28fadbe66937e5bda0">HardwareSerial::readMemoryBlock</a></div><div class="ttdeci">uint16_t readMemoryBlock(char *buf, int max_len) override</div><div class="ttdoc">Read a block of characters from serial port. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:258</div></div>
+<div class="ttc" id="group__serial_html_ga9b0576461aa0204d18600b9702e44888"><div class="ttname"><a href="group__serial.html#ga9b0576461aa0204d18600b9702e44888">TransmitCompleteDelegate</a></div><div class="ttdeci">Delegate&lt; void(HardwareSerial &amp;serial)&gt; TransmitCompleteDelegate</div><div class="ttdoc">Delegate callback type for serial data transmit completion. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:49</div></div>
+<div class="ttc" id="classHardwareSerial_html_a3ba8028d63deb239fc732ff4dcaa5596"><div class="ttname"><a href="classHardwareSerial.html#a3ba8028d63deb239fc732ff4dcaa5596">HardwareSerial::available</a></div><div class="ttdeci">int available() override</div><div class="ttdoc">Get quantity characters available from serial input. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:237</div></div>
+<div class="ttc" id="group__serial_html_ga71c113451bfafdaf5fcabcd807acd480"><div class="ttname"><a href="group__serial.html#ga71c113451bfafdaf5fcabcd807acd480">SerialStatus</a></div><div class="ttdeci">SerialStatus</div><div class="ttdoc">Notification and error status bits. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:94</div></div>
+<div class="ttc" id="group__serial_html_gga71c113451bfafdaf5fcabcd807acd480a82d848660679b89062f82c42e79c07c0"><div class="ttname"><a href="group__serial.html#gga71c113451bfafdaf5fcabcd807acd480a82d848660679b89062f82c42e79c07c0">eSERS_ParityError</a></div><div class="ttdoc">Parity check failed on received data. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:98</div></div>
+<div class="ttc" id="classHardwareSerial_html_a33ff775243c3d1c39ef5a97be25fdb09"><div class="ttname"><a href="classHardwareSerial.html#a33ff775243c3d1c39ef5a97be25fdb09">HardwareSerial::isTxEnabled</a></div><div class="ttdeci">bool isTxEnabled()</div><div class="ttdoc">Checks if the current UART can transmit(print) information. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:367</div></div>
+<div class="ttc" id="classHardwareSerial_html_a85af7608e6a00c3e9df210b8a40b7cfc"><div class="ttname"><a href="classHardwareSerial.html#a85af7608e6a00c3e9df210b8a40b7cfc">HardwareSerial::getStatus</a></div><div class="ttdeci">unsigned getStatus()</div><div class="ttdoc">Get status error flags and clear them. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:432</div></div>
+<div class="ttc" id="group__serial_html_ga06acf8677f719da1a20011835fc9b2e1"><div class="ttname"><a href="group__serial.html#ga06acf8677f719da1a20011835fc9b2e1">StreamDataReceivedDelegate</a></div><div class="ttdeci">Delegate&lt; void(Stream &amp;source, char arrivedChar, uint16_t availableCharsCount)&gt; StreamDataReceivedDelegate</div><div class="ttdoc">Delegate callback type for serial data reception. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:29</div></div>
+<div class="ttc" id="classHardwareSerial_html"><div class="ttname"><a href="classHardwareSerial.html">HardwareSerial</a></div><div class="ttdoc">Hardware serial class. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:102</div></div>
 <div class="ttc" id="classHardwareSerial_html_a1365b152178ff99287c1e700b593a0e0"><div class="ttname"><a href="classHardwareSerial.html#a1365b152178ff99287c1e700b593a0e0">HardwareSerial::systemDebugOutput</a></div><div class="ttdeci">void systemDebugOutput(bool enabled)</div><div class="ttdoc">Configure serial port for system debug output and redirect output from debugf. </div></div>
-<div class="ttc" id="classHardwareSerial_html_a0ca138a3f280fffbfaf8841c5ea9f354"><div class="ttname"><a href="classHardwareSerial.html#a0ca138a3f280fffbfaf8841c5ea9f354">HardwareSerial::setUartCallback</a></div><div class="ttdeci">__forceinline void setUartCallback(uart_callback_t callback, void *param=nullptr)</div><div class="ttdoc">Set callback ISR for received data. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:340</div></div>
-<div class="ttc" id="classHardwareSerial_html_ab8505f41f58a45b83c2d37605508d4db"><div class="ttname"><a href="classHardwareSerial.html#ab8505f41f58a45b83c2d37605508d4db">HardwareSerial::isRxEnabled</a></div><div class="ttdeci">bool isRxEnabled()</div><div class="ttdoc">Checks if the current UART can receive information. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:358</div></div>
+<div class="ttc" id="classHardwareSerial_html_a0ca138a3f280fffbfaf8841c5ea9f354"><div class="ttname"><a href="classHardwareSerial.html#a0ca138a3f280fffbfaf8841c5ea9f354">HardwareSerial::setUartCallback</a></div><div class="ttdeci">__forceinline void setUartCallback(uart_callback_t callback, void *param=nullptr)</div><div class="ttdoc">Set callback ISR for received data. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:358</div></div>
+<div class="ttc" id="classHardwareSerial_html_ab8505f41f58a45b83c2d37605508d4db"><div class="ttname"><a href="classHardwareSerial.html#ab8505f41f58a45b83c2d37605508d4db">HardwareSerial::isRxEnabled</a></div><div class="ttdeci">bool isRxEnabled()</div><div class="ttdoc">Checks if the current UART can receive information. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:376</div></div>
 <div class="ttc" id="group__serial_html_ga7b8c4a195c58f9eb8750e94955c5aa4b"><div class="ttname"><a href="group__serial.html#ga7b8c4a195c58f9eb8750e94955c5aa4b">Serial</a></div><div class="ttdeci">HardwareSerial Serial</div><div class="ttdoc">Global instance of serial port UART0. </div></div>
-<div class="ttc" id="classHardwareSerial_html_a343bb1e554d9ceb781b84ccd6568ddb9"><div class="ttname"><a href="classHardwareSerial.html#a343bb1e554d9ceb781b84ccd6568ddb9">HardwareSerial::readMemoryBlock</a></div><div class="ttdeci">virtual uint16_t readMemoryBlock(char *buf, size_t max_len)</div><div class="ttdoc">Read a block of characters from serial port. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:242</div></div>
-<div class="ttc" id="classHardwareSerial_html_a14b9a06d8a287b4697b02d798d369a12"><div class="ttname"><a href="classHardwareSerial.html#a14b9a06d8a287b4697b02d798d369a12">HardwareSerial::begin</a></div><div class="ttdeci">void begin(uint32_t baud, SerialConfig config, SerialMode mode)</div><div class="ttdoc">Initialise, set its configuration and mode. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:138</div></div>
-<div class="ttc" id="classHardwareSerial_html_a8112dc00c544653762f10e31fdbe1945"><div class="ttname"><a href="classHardwareSerial.html#a8112dc00c544653762f10e31fdbe1945">HardwareSerial::HardwareSerial</a></div><div class="ttdeci">HardwareSerial(int uartPort)</div><div class="ttdoc">Create instance of a hardware serial port object. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:98</div></div>
-<div class="ttc" id="classHardwareSerial_html_ac681dc8a834cf4198f98b25cacc2e794"><div class="ttname"><a href="classHardwareSerial.html#ac681dc8a834cf4198f98b25cacc2e794">HardwareSerial::onTransmitComplete</a></div><div class="ttdeci">bool onTransmitComplete(TransmitCompleteDelegate transmitCompleteDelegate)</div><div class="ttdoc">Set handler for received data. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:329</div></div>
-<div class="ttc" id="classHardwareSerial_html_a97fb2b9c2370793a66463531fd430b75"><div class="ttname"><a href="classHardwareSerial.html#a97fb2b9c2370793a66463531fd430b75">HardwareSerial::setBaudRate</a></div><div class="ttdeci">uint32_t setBaudRate(uint32_t baudrate)</div><div class="ttdoc">Attempt to set the requested baud rate. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:377</div></div>
-<div class="ttc" id="classHardwareSerial_html_af12cc7f03315df841905003d728d9b87"><div class="ttname"><a href="classHardwareSerial.html#af12cc7f03315df841905003d728d9b87">HardwareSerial::flush</a></div><div class="ttdeci">void flush()</div><div class="ttdoc">Flush all pending data to the serial port. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:267</div></div>
-<div class="ttc" id="classHardwareSerial_html_a34b2f2505bc35794a9dede3aadbde389"><div class="ttname"><a href="classHardwareSerial.html#a34b2f2505bc35794a9dede3aadbde389">HardwareSerial::peek</a></div><div class="ttdeci">virtual int peek()</div><div class="ttdoc">Read a character from serial port without removing from input buffer. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:251</div></div>
-<div class="ttc" id="classHardwareSerial_html_a15faa3806c896ebbef19b86df916e717"><div class="ttname"><a href="classHardwareSerial.html#a15faa3806c896ebbef19b86df916e717">HardwareSerial::onDataReceived</a></div><div class="ttdeci">bool onDataReceived(StreamDataReceivedDelegate dataReceivedDelegate)</div><div class="ttdoc">Set handler for received data. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:319</div></div>
-<div class="ttc" id="classHardwareSerial_html_a6c3ca342e65b01b99920f9f47c401b5c"><div class="ttname"><a href="classHardwareSerial.html#a6c3ca342e65b01b99920f9f47c401b5c">HardwareSerial::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clear the serial port transmit/receive buffers. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:259</div></div>
-<div class="ttc" id="classStream_html"><div class="ttname"><a href="classStream.html">Stream</a></div><div class="ttdef"><b>Definition:</b> Stream.h:30</div></div>
-<div class="ttc" id="classHardwareSerial_html_ad147d03d04372e0f54d9829caead7165"><div class="ttname"><a href="classHardwareSerial.html#ad147d03d04372e0f54d9829caead7165">HardwareSerial::write</a></div><div class="ttdeci">virtual size_t write(const uint8_t *buffer, size_t size)</div><div class="ttdoc">write multiple characters to serial port </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:288</div></div>
+<div class="ttc" id="classHardwareSerial_html_ab54416a0c013d6aef3abff788dc32d71"><div class="ttname"><a href="classHardwareSerial.html#ab54416a0c013d6aef3abff788dc32d71">HardwareSerial::indexOf</a></div><div class="ttdeci">int indexOf(char c) override</div><div class="ttdoc">Returns the location of the searched character. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:413</div></div>
+<div class="ttc" id="classHardwareSerial_html_a0bf562734b738ed06de5fb34c357b230"><div class="ttname"><a href="classHardwareSerial.html#a0bf562734b738ed06de5fb34c357b230">HardwareSerial::peek</a></div><div class="ttdeci">int peek() override</div><div class="ttdoc">Read a character from serial port without removing from input buffer. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:277</div></div>
+<div class="ttc" id="classHardwareSerial_html_a14b9a06d8a287b4697b02d798d369a12"><div class="ttname"><a href="classHardwareSerial.html#a14b9a06d8a287b4697b02d798d369a12">HardwareSerial::begin</a></div><div class="ttdeci">void begin(uint32_t baud, SerialConfig config, SerialMode mode)</div><div class="ttdoc">Initialise, set its configuration and mode. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:154</div></div>
+<div class="ttc" id="classHardwareSerial_html_a8112dc00c544653762f10e31fdbe1945"><div class="ttname"><a href="classHardwareSerial.html#a8112dc00c544653762f10e31fdbe1945">HardwareSerial::HardwareSerial</a></div><div class="ttdeci">HardwareSerial(int uartPort)</div><div class="ttdoc">Create instance of a hardware serial port object. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:109</div></div>
+<div class="ttc" id="classHardwareSerial_html_ac681dc8a834cf4198f98b25cacc2e794"><div class="ttname"><a href="classHardwareSerial.html#ac681dc8a834cf4198f98b25cacc2e794">HardwareSerial::onTransmitComplete</a></div><div class="ttdeci">bool onTransmitComplete(TransmitCompleteDelegate transmitCompleteDelegate)</div><div class="ttdoc">Set handler for received data. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:347</div></div>
+<div class="ttc" id="classHardwareSerial_html_a97fb2b9c2370793a66463531fd430b75"><div class="ttname"><a href="classHardwareSerial.html#a97fb2b9c2370793a66463531fd430b75">HardwareSerial::setBaudRate</a></div><div class="ttdeci">uint32_t setBaudRate(uint32_t baudrate)</div><div class="ttdoc">Attempt to set the requested baud rate. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:395</div></div>
+<div class="ttc" id="classHardwareSerial_html_a15faa3806c896ebbef19b86df916e717"><div class="ttname"><a href="classHardwareSerial.html#a15faa3806c896ebbef19b86df916e717">HardwareSerial::onDataReceived</a></div><div class="ttdeci">bool onDataReceived(StreamDataReceivedDelegate dataReceivedDelegate)</div><div class="ttdoc">Set handler for received data. </div><div class="ttdef"><b>Definition:</b> HardwareSerial.h:337</div></div>
+<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdoc">Base class for read/write stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:23</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

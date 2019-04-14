@@ -107,97 +107,112 @@ $(document).ready(function(){initNavTree('HttpClient_8h_source.html','');});
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * HttpClient</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * HttpClient.h</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * Modified: 2017 - Slavey Karadzhov &lt;slav@attachix.com&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> ****/</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_NETWORK_HTTPCLIENT_H_</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_NETWORK_HTTPCLIENT_H_</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_NETWORK_HTTP_CLIENT_H_</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_NETWORK_HTTP_CLIENT_H_</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;TcpClient.h&quot;</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;Http/HttpCommon.h&quot;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;Http/HttpRequest.h&quot;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;Http/HttpConnection.h&quot;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;Http/HttpClientConnection.h&quot;</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 <div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classHttpClient.html">   27</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHttpClient.html">HttpClient</a></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;{</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="comment">/* High-Level Method */</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    __forceinline <span class="keywordtype">bool</span> sendRequest(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; url, <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keywordflow">return</span> send(request(url)-&gt;setMethod(HTTP_GET)-&gt;onRequestComplete(requestComplete));</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    }</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    __forceinline <span class="keywordtype">bool</span> sendRequest(<span class="keyword">const</span> HttpMethod method, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; url, <span class="keyword">const</span> <a class="code" href="classHttpHeaders.html">HttpHeaders</a>&amp; headers,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                   <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordflow">return</span> send(request(url)-&gt;setMethod(method)-&gt;setHeaders(headers)-&gt;onRequestComplete(requestComplete));</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classHttpClient.html#a1a60e16cc6193d3b8d805119eed625ec">   37</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classHttpClient.html#a1a60e16cc6193d3b8d805119eed625ec">~HttpClient</a>()</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    }</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="comment">/* High-Level Methods */</span></div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    __forceinline <span class="keywordtype">bool</span> sendRequest(<span class="keyword">const</span> HttpMethod method, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; url, <span class="keyword">const</span> <a class="code" href="classHttpHeaders.html">HttpHeaders</a>&amp; headers,</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                                   <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; body, <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <span class="keywordflow">return</span> send(</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            request(url)-&gt;setMethod(method)-&gt;setHeaders(headers)-&gt;setBody(body)-&gt;onRequestComplete(requestComplete));</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">bool</span> downloadString(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; url, <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    __forceinline <span class="keywordtype">bool</span> downloadFile(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; url, <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete = NULL)</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordflow">return</span> downloadFile(url, <span class="stringliteral">&quot;&quot;</span>, requestComplete);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">bool</span> downloadFile(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; url, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; saveFileName, <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete = NULL);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="comment">/* Low Level Methods */</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">bool</span> sendRequest(<span class="keyword">const</span> <a class="code" href="classUrl.html">Url</a>&amp; url, <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keywordflow">return</span> send(<a class="code" href="classHttpClient.html#a88b569a4ffcb1e8c5e321fde4328df23">createRequest</a>(url)-&gt;setMethod(HTTP_GET)-&gt;onRequestComplete(requestComplete));</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    }</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">bool</span> sendRequest(<span class="keyword">const</span> HttpMethod method, <span class="keyword">const</span> <a class="code" href="classUrl.html">Url</a>&amp; url, <span class="keyword">const</span> <a class="code" href="classHttpHeaders.html">HttpHeaders</a>&amp; headers,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                     <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordflow">return</span> send(<a class="code" href="classHttpClient.html#a88b569a4ffcb1e8c5e321fde4328df23">createRequest</a>(url)-&gt;setMethod(method)-&gt;setHeaders(headers)-&gt;onRequestComplete(requestComplete));</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">bool</span> sendRequest(<span class="keyword">const</span> HttpMethod method, <span class="keyword">const</span> <a class="code" href="classUrl.html">Url</a>&amp; url, <span class="keyword">const</span> <a class="code" href="classHttpHeaders.html">HttpHeaders</a>&amp; headers, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; body,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                     <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">return</span> send(<a class="code" href="classHttpClient.html#a88b569a4ffcb1e8c5e321fde4328df23">createRequest</a>(url)-&gt;setMethod(method)-&gt;setHeaders(headers)-&gt;setBody(body)-&gt;onRequestComplete(</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            requestComplete));</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    }</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="comment">/*</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">     * @brief This method queues a request and sends it, once it is connected to the remote server.</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">     * @param HttpRequest* request The request object will be freed inside of the method.</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">     *                             Do not try to reuse it outside of the send method as it will lead to unpredicted results</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">     *</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">     * @retval bool true if the request was queued, false otherwise.</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">     *</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordtype">bool</span> send(<a class="code" href="classHttpRequest.html">HttpRequest</a>* request);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordtype">bool</span> downloadString(<span class="keyword">const</span> <a class="code" href="classUrl.html">Url</a>&amp; url, <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete)</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="keywordflow">return</span> send(<a class="code" href="classHttpClient.html#a88b569a4ffcb1e8c5e321fde4328df23">createRequest</a>(url)-&gt;setMethod(HTTP_GET)-&gt;onRequestComplete(requestComplete));</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">bool</span> downloadFile(<span class="keyword">const</span> <a class="code" href="classUrl.html">Url</a>&amp; url, <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete = <span class="keyword">nullptr</span>)</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keywordflow">return</span> downloadFile(url, <span class="keyword">nullptr</span>, requestComplete);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    }</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* request(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; url);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> freeSslSessionPool();</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> freeHttpConnectionPool();</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> freeRequestQueue();</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">bool</span> downloadFile(<span class="keyword">const</span> <a class="code" href="classUrl.html">Url</a>&amp; url, <span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; saveFileName, <a class="code" href="classDelegate.html">RequestCompletedDelegate</a> requestComplete = <span class="keyword">nullptr</span>);</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">cleanup</a>();</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classHttpClient.html">HttpClient</a>();</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <a class="code" href="classString.html">String</a> getCacheKey(<a class="code" href="classURL.html">URL</a> url);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keyword">static</span> <a class="code" href="classHashMap.html">HashMap&lt;String, HttpConnection*&gt;</a> httpConnectionPool;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keyword">static</span> <a class="code" href="classHashMap.html">HashMap&lt;String, RequestQueue*&gt;</a> queue;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor"></span>    <span class="keyword">static</span> <a class="code" href="classHashMap.html">HashMap&lt;String, SSLSessionId*&gt;</a> sslSessionIdPool;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor"></span>};</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_NETWORK_HTTPCLIENT_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classHttpClient_html_ad413282f74db55b841791acff7f1ce3f"><div class="ttname"><a href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">HttpClient::cleanup</a></div><div class="ttdeci">static void cleanup()</div></div>
-<div class="ttc" id="classHashMap_html"><div class="ttname"><a href="classHashMap.html">HashMap&lt; String, HttpConnection * &gt;</a></div></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="comment">/* Low Level Methods */</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="comment">/*</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">     * @brief This method queues a request and sends it, once it is connected to the remote server.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">     * @param HttpRequest* request The request object will be freed inside of the method.</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">     *                             Do not try to reuse it outside of the send method as it will lead to unpredicted results</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">     *</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">     * @retval bool true if the request was queued, false otherwise.</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">     *</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">bool</span> send(<a class="code" href="classHttpRequest.html">HttpRequest</a>* <a class="code" href="classHttpClient.html#a9ef38a18e37f4cca6dfd66ba2bcf3ee7">request</a>);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="classHttpClient.html#a9ef38a18e37f4cca6dfd66ba2bcf3ee7">   92</a></span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* <a class="code" href="classHttpClient.html#a9ef38a18e37f4cca6dfd66ba2bcf3ee7">request</a>(<span class="keyword">const</span> <a class="code" href="classString.html">String</a>&amp; url) SMING_DEPRECATED</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    {</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classHttpClient.html#a88b569a4ffcb1e8c5e321fde4328df23">createRequest</a>(url);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    }</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno"><a class="line" href="classHttpClient.html#a88b569a4ffcb1e8c5e321fde4328df23">  101</a></span>&#160;    <a class="code" href="classHttpRequest.html">HttpRequest</a>* <a class="code" href="classHttpClient.html#a88b569a4ffcb1e8c5e321fde4328df23">createRequest</a>(<span class="keyword">const</span> <a class="code" href="classUrl.html">Url</a>&amp; url)</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="classHttpRequest.html">HttpRequest</a>(url);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    }</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">  109</a></span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">cleanup</a>()</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    {</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;        httpConnectionPool.<a class="code" href="classObjectMap.html#a5a8c7377000cbd72a5753f00bf4f714d">clear</a>();</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    }</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <a class="code" href="classString.html">String</a> getCacheKey(<span class="keyword">const</span> <a class="code" href="classUrl.html">Url</a>&amp; url)</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    {</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        <span class="keywordflow">return</span> url.<a class="code" href="classUrl.html#a487057d4d68c5bafcce86563f807fd97">Host</a> + <span class="charliteral">&#39;:&#39;</span> + url.<a class="code" href="classUrl.html#adf050e4a50d42e01f690a71f6b321bd7">getPort</a>();</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    }</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keyword">typedef</span> <a class="code" href="classObjectMap.html">ObjectMap&lt;String, HttpClientConnection&gt;</a> HttpConnectionPool;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="keyword">static</span> HttpConnectionPool httpConnectionPool;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;};</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_NETWORK_HTTP_CLIENT_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classHttpClient_html_ad413282f74db55b841791acff7f1ce3f"><div class="ttname"><a href="classHttpClient.html#ad413282f74db55b841791acff7f1ce3f">HttpClient::cleanup</a></div><div class="ttdeci">static void cleanup()</div><div class="ttdef"><b>Definition:</b> HttpClient.h:109</div></div>
+<div class="ttc" id="classObjectMap_html"><div class="ttname"><a href="classObjectMap.html">ObjectMap</a></div><div class="ttdoc">Implementation of a HashMap for owned objects, i.e. anything created with new(). </div><div class="ttdef"><b>Definition:</b> ObjectMap.h:48</div></div>
+<div class="ttc" id="classUrl_html"><div class="ttname"><a href="classUrl.html">Url</a></div><div class="ttdoc">Class to manage URL instance. </div><div class="ttdef"><b>Definition:</b> Url.h:66</div></div>
 <div class="ttc" id="classHttpClient_html"><div class="ttname"><a href="classHttpClient.html">HttpClient</a></div><div class="ttdef"><b>Definition:</b> HttpClient.h:27</div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
-<div class="ttc" id="classHttpHeaders_html"><div class="ttname"><a href="classHttpHeaders.html">HttpHeaders</a></div><div class="ttdoc">Encapsulates a set of HTTP header information. </div><div class="ttdef"><b>Definition:</b> HttpHeaders.h:93</div></div>
+<div class="ttc" id="classHttpHeaders_html"><div class="ttname"><a href="classHttpHeaders.html">HttpHeaders</a></div><div class="ttdoc">Encapsulates a set of HTTP header information. </div><div class="ttdef"><b>Definition:</b> HttpHeaders.h:96</div></div>
+<div class="ttc" id="classHttpClient_html_a9ef38a18e37f4cca6dfd66ba2bcf3ee7"><div class="ttname"><a href="classHttpClient.html#a9ef38a18e37f4cca6dfd66ba2bcf3ee7">HttpClient::request</a></div><div class="ttdeci">HttpRequest * request(const String &amp;url) SMING_DEPRECATED</div><div class="ttdef"><b>Definition:</b> HttpClient.h:92</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; int(HttpConnection &amp;client, bool successful)&gt;</a></div></div>
-<div class="ttc" id="classURL_html"><div class="ttname"><a href="classURL.html">URL</a></div><div class="ttdef"><b>Definition:</b> URL.h:24</div></div>
-<div class="ttc" id="classHttpRequest_html"><div class="ttname"><a href="classHttpRequest.html">HttpRequest</a></div><div class="ttdef"><b>Definition:</b> HttpRequest.h:37</div></div>
+<div class="ttc" id="classUrl_html_adf050e4a50d42e01f690a71f6b321bd7"><div class="ttname"><a href="classUrl.html#adf050e4a50d42e01f690a71f6b321bd7">Url::getPort</a></div><div class="ttdeci">int getPort() const </div><div class="ttdoc">Obtain the actual port number to be used. </div><div class="ttdef"><b>Definition:</b> Url.h:133</div></div>
+<div class="ttc" id="classHttpClient_html_a1a60e16cc6193d3b8d805119eed625ec"><div class="ttname"><a href="classHttpClient.html#a1a60e16cc6193d3b8d805119eed625ec">HttpClient::~HttpClient</a></div><div class="ttdeci">virtual ~HttpClient()</div><div class="ttdoc">HttpClient destructor. </div><div class="ttdef"><b>Definition:</b> HttpClient.h:37</div></div>
+<div class="ttc" id="classObjectMap_html_a5a8c7377000cbd72a5753f00bf4f714d"><div class="ttname"><a href="classObjectMap.html#a5a8c7377000cbd72a5753f00bf4f714d">ObjectMap::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clear the map of all entries. </div><div class="ttdef"><b>Definition:</b> ObjectMap.h:314</div></div>
+<div class="ttc" id="classHttpClient_html_a88b569a4ffcb1e8c5e321fde4328df23"><div class="ttname"><a href="classHttpClient.html#a88b569a4ffcb1e8c5e321fde4328df23">HttpClient::createRequest</a></div><div class="ttdeci">HttpRequest * createRequest(const Url &amp;url)</div><div class="ttdoc">Helper function to create a new request on a URL. </div><div class="ttdef"><b>Definition:</b> HttpClient.h:101</div></div>
+<div class="ttc" id="classHttpRequest_html"><div class="ttname"><a href="classHttpRequest.html">HttpRequest</a></div><div class="ttdef"><b>Definition:</b> HttpRequest.h:36</div></div>
+<div class="ttc" id="classUrl_html_a487057d4d68c5bafcce86563f807fd97"><div class="ttname"><a href="classUrl.html#a487057d4d68c5bafcce86563f807fd97">Url::Host</a></div><div class="ttdeci">String Host</div><div class="ttdoc">hostname or IP address </div><div class="ttdef"><b>Definition:</b> Url.h:173</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

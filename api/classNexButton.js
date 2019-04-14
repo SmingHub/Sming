@@ -20,6 +20,7 @@ var classNexButton =
     [ "getObjName", "classNexButton.html#a54267849ca7215af700a906e5e6362fd", null ],
     [ "getObjPid", "classNexButton.html#a67621e5d7bcfb50c1a1bbc4ad1020352", null ],
     [ "getText", "classNexButton.html#a5ba1f74aa94b41b98172e42583ee13d6", null ],
+    [ "iterate", "classNexButton.html#a4e228b95e8c644888018dc813ebb3485", null ],
     [ "printObjInfo", "classNexButton.html#abeff0c61474e8b3ce6bac76771820b64", null ],
     [ "Set_background_color_bco", "classNexButton.html#ae6ade99045d0f97594eac50adc7c12f7", null ],
     [ "Set_background_crop_picc", "classNexButton.html#a71fc4f96d4700bd50cd6c937a0bfd43d", null ],

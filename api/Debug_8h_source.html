@@ -101,77 +101,86 @@ $(document).ready(function(){initNavTree('Debug_8h_source.html','');});
 <div class="title">Debug.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Debug.h</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#ifndef SMINGCORE_DEBUG_H_</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SMINGCORE_DEBUG_H_</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;HardwareSerial.h&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;Clock.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;WString.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;../Services/CommandProcessing/CommandProcessingIncludes.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="group__event__handlers.html#ga3e1da61acf83c2b476a5cd9e4d0c37d8">   17</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(char dbgChar)&gt;</a> <a class="code" href="group__event__handlers.html#ga3e1da61acf83c2b476a5cd9e4d0c37d8">DebugPrintCharDelegate</a>; </div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/****</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * Created 2015 by Skurydin Alexey</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * Debug.h</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DEBUG_H_</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DEBUG_H_</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;HardwareSerial.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;Clock.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;WString.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;../Services/CommandProcessing/CommandProcessingIncludes.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="structDebugOuputOptions.html">   22</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
-<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="structDebugOuputOptions.html#a5b5689d478d66f2c64faf4fdca2dab0e">   23</a></span>&#160;    <a class="code" href="classDelegate.html">DebugPrintCharDelegate</a> debugDelegate = <span class="keyword">nullptr</span>; </div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="structDebugOuputOptions.html#a2edc053d8fe638a0d1e8afeb247b5d12">   24</a></span>&#160;    <a class="code" href="classStream.html">Stream</a>* debugStream = <span class="keyword">nullptr</span>;                  </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;} <a class="code" href="structDebugOuputOptions.html">DebugOuputOptions</a>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="group__constants.html#ga37282ff3487ba0d22e4a7a8c08ba5b0b">   30</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0baac2fe60373601a6f829899bd8abb7a5f">   31</a></span>&#160;    <a class="code" href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0baac2fe60373601a6f829899bd8abb7a5f">eDBGnoPrefix</a> = 0, </div>
-<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0bac486ef8469d9c8149b7a05b50e093194">   32</a></span>&#160;    <a class="code" href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0bac486ef8469d9c8149b7a05b50e093194">eDBGusePrefix</a> = 1 </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;} <a class="code" href="group__constants.html#ga37282ff3487ba0d22e4a7a8c08ba5b0b">eDBGPrefix</a>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classDebugClass.html">   45</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDebugClass.html">DebugClass</a> : <span class="keyword">public</span> <a class="code" href="classPrint.html">Print</a></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;{</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <a class="code" href="classDebugClass.html#a2d1495646d01422050f5d000d641eae8">DebugClass</a>();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classDebugClass.html">DebugClass</a>();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDebugClass.html#a4b92612c788c442bf6f33439c7a8150a">initCommand</a>();</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="group__event__handlers.html#ga3e1da61acf83c2b476a5cd9e4d0c37d8">   22</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="classDelegate.html">Delegate&lt;void(char dbgChar)&gt;</a> <a class="code" href="group__event__handlers.html#ga3e1da61acf83c2b476a5cd9e4d0c37d8">DebugPrintCharDelegate</a>; </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="structDebugOuputOptions.html">   27</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="structDebugOuputOptions.html#a5b5689d478d66f2c64faf4fdca2dab0e">   28</a></span>&#160;    <a class="code" href="classDelegate.html">DebugPrintCharDelegate</a> debugDelegate = <span class="keyword">nullptr</span>; </div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="structDebugOuputOptions.html#a2edc053d8fe638a0d1e8afeb247b5d12">   29</a></span>&#160;    <a class="code" href="classStream.html">Stream</a>* debugStream = <span class="keyword">nullptr</span>;                  </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;} <a class="code" href="structDebugOuputOptions.html">DebugOuputOptions</a>;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="group__constants.html#ga37282ff3487ba0d22e4a7a8c08ba5b0b">   35</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span> {</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0baac2fe60373601a6f829899bd8abb7a5f">   36</a></span>&#160;    <a class="code" href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0baac2fe60373601a6f829899bd8abb7a5f">eDBGnoPrefix</a> = 0, </div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0bac486ef8469d9c8149b7a05b50e093194">   37</a></span>&#160;    <a class="code" href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0bac486ef8469d9c8149b7a05b50e093194">eDBGusePrefix</a> = 1 </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;} <a class="code" href="group__constants.html#ga37282ff3487ba0d22e4a7a8c08ba5b0b">eDBGPrefix</a>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classDebugClass.html">   50</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDebugClass.html">DebugClass</a> : <span class="keyword">public</span> <a class="code" href="classPrint.html">Print</a></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;{</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="classDebugClass.html#a2d1495646d01422050f5d000d641eae8">DebugClass</a>();</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDebugClass.html#aab8112a3d8d694437be2f0e535be03ae">start</a>();</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDebugClass.html#a4b92612c788c442bf6f33439c7a8150a">initCommand</a>();</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDebugClass.html#a13c6e6409c563007f4ba3891c4f6c686">stop</a>();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDebugClass.html#aab8112a3d8d694437be2f0e535be03ae">start</a>();</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classDebugClass.html#ae23e3ddc020c8ed9b5bd9aad437beb6b">status</a>();</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDebugClass.html#ac2a5d94e67e3e893409883f7946d6d50">setDebug</a>(<a class="code" href="classDelegate.html">DebugPrintCharDelegate</a> reqDelegate);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDebugClass.html#ac2a5d94e67e3e893409883f7946d6d50">setDebug</a>(<a class="code" href="classStream.html">Stream</a>&amp; reqStream);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordtype">bool</span> started = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">bool</span> useDebugPrefix = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">bool</span> newDebugLine = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <a class="code" href="structDebugOuputOptions.html">DebugOuputOptions</a> debugOut;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">void</span> printPrefix();</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">void</span> processDebugCommands(<a class="code" href="classString.html">String</a> commandLine, <a class="code" href="classCommandOutput.html">CommandOutput</a>* commandOutput);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordtype">size_t</span> write(uint8_t); <span class="comment">/* implementation of write for Print Class */</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;};</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keyword">extern</span> <a class="code" href="classDebugClass.html">DebugClass</a> <a class="code" href="group__debug.html#ga38725636e9ac9c18171e6d225d9948ea">Debug</a>;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SMINGCORE_DEBUG_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="group__event__handlers_html_ga3e1da61acf83c2b476a5cd9e4d0c37d8"><div class="ttname"><a href="group__event__handlers.html#ga3e1da61acf83c2b476a5cd9e4d0c37d8">DebugPrintCharDelegate</a></div><div class="ttdeci">Delegate&lt; void(char dbgChar)&gt; DebugPrintCharDelegate</div><div class="ttdoc">Delegate constructor usage: (&amp;YourClass::method, this) </div><div class="ttdef"><b>Definition:</b> Debug.h:17</div></div>
-<div class="ttc" id="classDebugClass_html"><div class="ttname"><a href="classDebugClass.html">DebugClass</a></div><div class="ttdoc">Provides debug output to stream (e.g. Serial) or delegate function handler. </div><div class="ttdef"><b>Definition:</b> Debug.h:45</div></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDebugClass.html#a13c6e6409c563007f4ba3891c4f6c686">stop</a>();</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classDebugClass.html#ae23e3ddc020c8ed9b5bd9aad437beb6b">   73</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classDebugClass.html#ae23e3ddc020c8ed9b5bd9aad437beb6b">status</a>()</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordflow">return</span> started;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDebugClass.html#ac2a5d94e67e3e893409883f7946d6d50">setDebug</a>(<a class="code" href="classDelegate.html">DebugPrintCharDelegate</a> reqDelegate);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDebugClass.html#ac2a5d94e67e3e893409883f7946d6d50">setDebug</a>(<a class="code" href="classStream.html">Stream</a>&amp; reqStream);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="comment">/* implementation of write for Print Class */</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classDebugClass.html#ac147de586b780ec9e0374b653f9b99cb">write</a>(uint8_t) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">bool</span> started = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">bool</span> useDebugPrefix = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">bool</span> newDebugLine = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="structDebugOuputOptions.html">DebugOuputOptions</a> debugOut;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">void</span> printPrefix();</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordtype">void</span> processDebugCommands(<a class="code" href="classString.html">String</a> commandLine, <a class="code" href="classCommandOutput.html">CommandOutput</a>* commandOutput);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;};</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="keyword">extern</span> <a class="code" href="classDebugClass.html">DebugClass</a> <a class="code" href="group__debug.html#ga38725636e9ac9c18171e6d225d9948ea">Debug</a>;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DEBUG_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="group__event__handlers_html_ga3e1da61acf83c2b476a5cd9e4d0c37d8"><div class="ttname"><a href="group__event__handlers.html#ga3e1da61acf83c2b476a5cd9e4d0c37d8">DebugPrintCharDelegate</a></div><div class="ttdeci">Delegate&lt; void(char dbgChar)&gt; DebugPrintCharDelegate</div><div class="ttdoc">Delegate constructor usage: (&amp;YourClass::method, this) </div><div class="ttdef"><b>Definition:</b> Debug.h:22</div></div>
+<div class="ttc" id="classDebugClass_html"><div class="ttname"><a href="classDebugClass.html">DebugClass</a></div><div class="ttdoc">Provides debug output to stream (e.g. Serial) or delegate function handler. </div><div class="ttdef"><b>Definition:</b> Debug.h:50</div></div>
 <div class="ttc" id="classDebugClass_html_a4b92612c788c442bf6f33439c7a8150a"><div class="ttname"><a href="classDebugClass.html#a4b92612c788c442bf6f33439c7a8150a">DebugClass::initCommand</a></div><div class="ttdeci">void initCommand()</div><div class="ttdoc">Enable control of debug output from CLI command handler output. </div></div>
 <div class="ttc" id="classString_html"><div class="ttname"><a href="classString.html">String</a></div><div class="ttdoc">The string class. </div><div class="ttdef"><b>Definition:</b> WString.h:104</div></div>
 <div class="ttc" id="classPrint_html"><div class="ttname"><a href="classPrint.html">Print</a></div><div class="ttdoc">Provides formatted output to stream. </div><div class="ttdef"><b>Definition:</b> Print.h:31</div></div>
 <div class="ttc" id="classDelegate_html"><div class="ttname"><a href="classDelegate.html">Delegate&lt; void(char dbgChar)&gt;</a></div></div>
 <div class="ttc" id="classDebugClass_html_ac2a5d94e67e3e893409883f7946d6d50"><div class="ttname"><a href="classDebugClass.html#ac2a5d94e67e3e893409883f7946d6d50">DebugClass::setDebug</a></div><div class="ttdeci">void setDebug(DebugPrintCharDelegate reqDelegate)</div><div class="ttdoc">Configure debug to use delegate handler for its output. </div></div>
-<div class="ttc" id="group__constants_html_gga37282ff3487ba0d22e4a7a8c08ba5b0baac2fe60373601a6f829899bd8abb7a5f"><div class="ttname"><a href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0baac2fe60373601a6f829899bd8abb7a5f">eDBGnoPrefix</a></div><div class="ttdoc">Do not use debug prefix. </div><div class="ttdef"><b>Definition:</b> Debug.h:31</div></div>
+<div class="ttc" id="group__constants_html_gga37282ff3487ba0d22e4a7a8c08ba5b0baac2fe60373601a6f829899bd8abb7a5f"><div class="ttname"><a href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0baac2fe60373601a6f829899bd8abb7a5f">eDBGnoPrefix</a></div><div class="ttdoc">Do not use debug prefix. </div><div class="ttdef"><b>Definition:</b> Debug.h:36</div></div>
 <div class="ttc" id="group__debug_html_ga38725636e9ac9c18171e6d225d9948ea"><div class="ttname"><a href="group__debug.html#ga38725636e9ac9c18171e6d225d9948ea">Debug</a></div><div class="ttdeci">DebugClass Debug</div><div class="ttdoc">Global instance of Debug object. </div></div>
 <div class="ttc" id="classCommandOutput_html"><div class="ttname"><a href="classCommandOutput.html">CommandOutput</a></div><div class="ttdef"><b>Definition:</b> CommandOutput.h:17</div></div>
-<div class="ttc" id="group__constants_html_ga37282ff3487ba0d22e4a7a8c08ba5b0b"><div class="ttname"><a href="group__constants.html#ga37282ff3487ba0d22e4a7a8c08ba5b0b">eDBGPrefix</a></div><div class="ttdeci">eDBGPrefix</div><div class="ttdoc">Debug prefix state. </div><div class="ttdef"><b>Definition:</b> Debug.h:30</div></div>
-<div class="ttc" id="structDebugOuputOptions_html"><div class="ttname"><a href="structDebugOuputOptions.html">DebugOuputOptions</a></div><div class="ttdoc">Structure for debug options. </div><div class="ttdef"><b>Definition:</b> Debug.h:22</div></div>
-<div class="ttc" id="group__constants_html_gga37282ff3487ba0d22e4a7a8c08ba5b0bac486ef8469d9c8149b7a05b50e093194"><div class="ttname"><a href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0bac486ef8469d9c8149b7a05b50e093194">eDBGusePrefix</a></div><div class="ttdoc">Use debug prefix. </div><div class="ttdef"><b>Definition:</b> Debug.h:32</div></div>
-<div class="ttc" id="classDebugClass_html_ae23e3ddc020c8ed9b5bd9aad437beb6b"><div class="ttname"><a href="classDebugClass.html#ae23e3ddc020c8ed9b5bd9aad437beb6b">DebugClass::status</a></div><div class="ttdeci">bool status()</div><div class="ttdoc">Get debug status. </div></div>
+<div class="ttc" id="classDebugClass_html_ac147de586b780ec9e0374b653f9b99cb"><div class="ttname"><a href="classDebugClass.html#ac147de586b780ec9e0374b653f9b99cb">DebugClass::write</a></div><div class="ttdeci">size_t write(uint8_t) override</div><div class="ttdoc">Writes a single character to output stream. </div></div>
+<div class="ttc" id="group__constants_html_ga37282ff3487ba0d22e4a7a8c08ba5b0b"><div class="ttname"><a href="group__constants.html#ga37282ff3487ba0d22e4a7a8c08ba5b0b">eDBGPrefix</a></div><div class="ttdeci">eDBGPrefix</div><div class="ttdoc">Debug prefix state. </div><div class="ttdef"><b>Definition:</b> Debug.h:35</div></div>
+<div class="ttc" id="structDebugOuputOptions_html"><div class="ttname"><a href="structDebugOuputOptions.html">DebugOuputOptions</a></div><div class="ttdoc">Structure for debug options. </div><div class="ttdef"><b>Definition:</b> Debug.h:27</div></div>
+<div class="ttc" id="group__constants_html_gga37282ff3487ba0d22e4a7a8c08ba5b0bac486ef8469d9c8149b7a05b50e093194"><div class="ttname"><a href="group__constants.html#gga37282ff3487ba0d22e4a7a8c08ba5b0bac486ef8469d9c8149b7a05b50e093194">eDBGusePrefix</a></div><div class="ttdoc">Use debug prefix. </div><div class="ttdef"><b>Definition:</b> Debug.h:37</div></div>
+<div class="ttc" id="classDebugClass_html_ae23e3ddc020c8ed9b5bd9aad437beb6b"><div class="ttname"><a href="classDebugClass.html#ae23e3ddc020c8ed9b5bd9aad437beb6b">DebugClass::status</a></div><div class="ttdeci">bool status()</div><div class="ttdoc">Get debug status. </div><div class="ttdef"><b>Definition:</b> Debug.h:73</div></div>
 <div class="ttc" id="classDebugClass_html_aab8112a3d8d694437be2f0e535be03ae"><div class="ttname"><a href="classDebugClass.html#aab8112a3d8d694437be2f0e535be03ae">DebugClass::start</a></div><div class="ttdeci">void start()</div><div class="ttdoc">Start debug output. </div></div>
 <div class="ttc" id="classDebugClass_html_a13c6e6409c563007f4ba3891c4f6c686"><div class="ttname"><a href="classDebugClass.html#a13c6e6409c563007f4ba3891c4f6c686">DebugClass::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdoc">Stop debug output. </div></div>
 <div class="ttc" id="classDebugClass_html_a2d1495646d01422050f5d000d641eae8"><div class="ttname"><a href="classDebugClass.html#a2d1495646d01422050f5d000d641eae8">DebugClass::DebugClass</a></div><div class="ttdeci">DebugClass()</div><div class="ttdoc">Instantiate a debug object. </div></div>

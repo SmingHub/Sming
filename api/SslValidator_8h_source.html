@@ -107,35 +107,65 @@ $(document).ready(function(){initNavTree('SslValidator_8h_source.html','');});
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/anakod/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * @author: 2018 - Slavey Karadzhov &lt;slav@attachix.com&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * SslValidator.h</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_SSLVALIDATOR_H_</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_SSLVALIDATOR_H_</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#ifdef ENABLE_SSL</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * @author: 2018 - Slavey Karadzhov &lt;slav@attachix.com&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_SSL_VALIDATOR_H_</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_SSL_VALIDATOR_H_</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;ssl/ssl.h&quot;</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;ssl/tls1.h&quot;</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">typedef</span> std::function&lt;bool(SSL* ssl, void* data)&gt; SslValidatorCallback;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">bool</span> sslValidateCertificateSha1(SSL* ssl, <span class="keywordtype">void</span>* data);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keywordtype">bool</span> sslValidatePublicKeySha256(SSL* ssl, <span class="keywordtype">void</span>* data);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ENABLE_SSL */</span><span class="preprocessor"></span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_SSLVALIDATOR_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;WVector.h&quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;SslFingerprints.h&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="group__tcp.html#gaba7f1f0e5bdbba0576c8df40056e191b">   36</a></span>&#160;<span class="keyword">typedef</span> std::function&lt;bool(SSL* ssl, void* data)&gt; <a class="code" href="group__tcp.html#gaba7f1f0e5bdbba0576c8df40056e191b">SslValidatorCallback</a>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structSslValidator.html">   38</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structSslValidator.html">SslValidator</a> {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="group__tcp.html#gaba7f1f0e5bdbba0576c8df40056e191b">SslValidatorCallback</a> callback;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structSslValidator.html#ae036c1808fcc1a8eec154844dd0f4fd4">   40</a></span>&#160;    <span class="keywordtype">void</span>* <a class="code" href="structSslValidator.html#ae036c1808fcc1a8eec154844dd0f4fd4">data</a>; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;};</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classSslValidatorList.html">   43</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSslValidatorList.html">SslValidatorList</a> : <span class="keyword">private</span> <a class="code" href="classVector.html">Vector</a>&lt;SslValidator&gt;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;{</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    ~<a class="code" href="classSslValidatorList.html">SslValidatorList</a>()</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="comment">// Make sure memory gets released</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <a class="code" href="classSslValidatorList.html#acd91a92ccb52285be41dd29822b2475e">validate</a>(<span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">bool</span> add(<a class="code" href="group__tcp.html#gaba7f1f0e5bdbba0576c8df40056e191b">SslValidatorCallback</a> callback, <span class="keywordtype">void</span>* data)</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordflow">return</span> Vector::add(<a class="code" href="structSslValidator.html">SslValidator</a>{callback, data});</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    }</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">bool</span> add(<span class="keyword">const</span> uint8_t* fingerprint, SslFingerprintType type);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordtype">bool</span> add(<a class="code" href="structSslFingerprints.html">SslFingerprints</a>&amp; fingerprints);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classSslValidatorList.html#acd91a92ccb52285be41dd29822b2475e">validate</a>(SSL* ssl);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;};</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_SSL_VALIDATOR_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="structSslValidator_html"><div class="ttname"><a href="structSslValidator.html">SslValidator</a></div><div class="ttdef"><b>Definition:</b> SslValidator.h:38</div></div>
+<div class="ttc" id="structSslValidator_html_ae036c1808fcc1a8eec154844dd0f4fd4"><div class="ttname"><a href="structSslValidator.html#ae036c1808fcc1a8eec154844dd0f4fd4">SslValidator::data</a></div><div class="ttdeci">void * data</div><div class="ttdoc">Callback-specific data, e.g. fingerprint to compare against. </div><div class="ttdef"><b>Definition:</b> SslValidator.h:40</div></div>
+<div class="ttc" id="classVector_html"><div class="ttname"><a href="classVector.html">Vector</a></div><div class="ttdef"><b>Definition:</b> WVector.h:26</div></div>
+<div class="ttc" id="classSslValidatorList_html"><div class="ttname"><a href="classSslValidatorList.html">SslValidatorList</a></div><div class="ttdef"><b>Definition:</b> SslValidator.h:43</div></div>
+<div class="ttc" id="group__tcp_html_gaba7f1f0e5bdbba0576c8df40056e191b"><div class="ttname"><a href="group__tcp.html#gaba7f1f0e5bdbba0576c8df40056e191b">SslValidatorCallback</a></div><div class="ttdeci">std::function&lt; bool(SSL *ssl, void *data)&gt; SslValidatorCallback</div><div class="ttdoc">Validator callback function. </div><div class="ttdef"><b>Definition:</b> SslValidator.h:36</div></div>
+<div class="ttc" id="classSslValidatorList_html_acd91a92ccb52285be41dd29822b2475e"><div class="ttname"><a href="classSslValidatorList.html#acd91a92ccb52285be41dd29822b2475e">SslValidatorList::validate</a></div><div class="ttdeci">bool validate(SSL *ssl)</div><div class="ttdoc">Used to validate certificate by invoking each validator callback until successful. </div></div>
+<div class="ttc" id="structSslFingerprints_html"><div class="ttname"><a href="structSslFingerprints.html">SslFingerprints</a></div><div class="ttdoc">Contains SSL fingerprint data. </div><div class="ttdef"><b>Definition:</b> SslFingerprints.h:45</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_b4c9897f718d9414148b24a4e5afb621.html">Sming</a></li><li class="navelem"><a class="el" href="dir_e684d698d8909caa82858f24d2993ae0.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_1080abda974dde0433d7a42c06142e84.html">Network</a></li><li class="navelem"><b>SslValidator.h</b></li>
+    <li class="navelem"><a class="el" href="dir_b4c9897f718d9414148b24a4e5afb621.html">Sming</a></li><li class="navelem"><a class="el" href="dir_e684d698d8909caa82858f24d2993ae0.html">SmingCore</a></li><li class="navelem"><a class="el" href="dir_1080abda974dde0433d7a42c06142e84.html">Network</a></li><li class="navelem"><a class="el" href="dir_7f4db66022e6dfe647cf1d15a202040e.html">Ssl</a></li><li class="navelem"><b>SslValidator.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>

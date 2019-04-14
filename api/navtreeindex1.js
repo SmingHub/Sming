@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"classAdafruit__PCD8544.html#a1357853a68faa9b94e5d9cfcc6c97b6d":[6,0,5,48],
 "classAdafruit__PCD8544.html#a169b128f9e22f0c15883768f580541a2":[6,0,5,44],
 "classAdafruit__PCD8544.html#a172c824b5616681a0ca901379089025d":[6,0,5,67],
 "classAdafruit__PCD8544.html#a1956ad03632c73f25b4d8d240a40d7c9":[6,0,5,29],
@@ -239,7 +240,7 @@ var NAVTREEINDEX1 =
 "classAdafruit__Sensor.html#ace6c1f26eeb956f95801b9fc1841f3a0":[6,0,6,2],
 "classArduCAMStream.html":[6,0,11],
 "classArduCAMStream.html#a018355d634ecc3c886708add67c2b93a":[6,0,11,15],
-"classArduCAMStream.html#a05ec329ab5b1237777872156d631f68c":[6,0,11,17],
+"classArduCAMStream.html#a05d27e36345d8ef4b3fc9a63eb21fbdc":[6,0,11,22],
 "classArduCAMStream.html#a065482405ca5f3f97292499a3a96e9de":[6,0,11,28],
 "classArduCAMStream.html#a07b590fdd11b8c789b7eec528fb93ba6":[6,0,11,40],
 "classArduCAMStream.html#a1061204d85492e07fd48764804ae5d09":[6,0,11,26],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "classArduCAMStream.html#a169b128f9e22f0c15883768f580541a2":[6,0,11,35],
 "classArduCAMStream.html#a1c60bdda2b65d78e5a1362d51b856c5a":[6,0,11,50],
 "classArduCAMStream.html#a1cf31254a99635695067ef40cc86aa86":[6,0,11,42],
-"classArduCAMStream.html#a1e411d07a8ffec5faf7ce485bac0f029":[6,0,11,24],
-"classArduCAMStream.html#a24f845a3039950a5df6624db2fb052b0":[6,0,11,27]
+"classArduCAMStream.html#a1e411d07a8ffec5faf7ce485bac0f029":[6,0,11,24]
 };

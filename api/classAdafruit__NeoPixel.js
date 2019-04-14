@@ -5,6 +5,7 @@ var classAdafruit__NeoPixel =
     [ "begin", "classAdafruit__NeoPixel.html#ac1cb16509be644232ce0e28d250083da", null ],
     [ "canShow", "classAdafruit__NeoPixel.html#a9e900a60b0ac2b43b99309bb118b929e", null ],
     [ "clear", "classAdafruit__NeoPixel.html#ac06a711d7bf63bada61b52a1d528e4b4", null ],
+    [ "Color", "classAdafruit__NeoPixel.html#ae7c444138dd0e6ac1008621d0a67048b", null ],
     [ "getBrightness", "classAdafruit__NeoPixel.html#a3e3dc79b4fad55ea34799c6fa5f8cb82", null ],
     [ "getPixelColor", "classAdafruit__NeoPixel.html#a309cd3fb7a3e2e87a26e7a2fcf6391f1", null ],
     [ "getPixels", "classAdafruit__NeoPixel.html#ab6f5b36247428cadcf729eb27c55e74b", null ],

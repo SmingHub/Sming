@@ -102,48 +102,82 @@ $(document).ready(function(){initNavTree('deprecated.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt><a class="anchor" id="_deprecated000003"></a>Member <a class="el" href="classDateTime.html#a1748e17f80d1c178a2c492b2903f6462">DateTime::convertFromUnixTime</a>  (time_t tImep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear) __attribute__((deprecated))</dt>
-<dd>Use 'fromUnixTime' instead  </dd>
-<dt><a class="anchor" id="_deprecated000004"></a>Member <a class="el" href="classDateTime.html#ab89a5805ede081bd5850e834a85b471b">DateTime::convertToUnixTime</a>  (int8_t sec, int8_t min, int8_t hour, int8_t day, int8_t month, int16_t year) __attribute__((deprecated))</dt>
-<dd>Use 'toUnixTime' instead  </dd>
-<dt><a class="anchor" id="_deprecated000002"></a>Member <a class="el" href="classDateTime.html#a25cfa69bbe2b6a809b0ef01d9172f7c1">DateTime::parseHttpDate</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;httpDate) __attribute__((deprecated))</dt>
-<dd>Use 'fromHttpDate' instead  </dd>
-<dt><a class="anchor" id="_deprecated000005"></a>Class <a class="el" href="classHardware__Timer.html">Hardware_Timer</a>  </dt>
+<dt><a class="anchor" id="_deprecated000007"></a>Member <a class="el" href="classDateTime.html#a4940030ac60a94a78437a0040a2354cc">DateTime::convertFromUnixTime</a>  (time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear) SMING_DEPRECATED</dt>
+<dd>Use <code>fromUnixTime(time_t, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint16_t*)</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000008"></a>Member <a class="el" href="classDateTime.html#a5c5d17e687375d0ad78382283999d808">DateTime::convertToUnixTime</a>  (uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year) SMING_DEPRECATED</dt>
+<dd>Use 'toUnixTime()' instead  </dd>
+<dt><a class="anchor" id="_deprecated000006"></a>Member <a class="el" href="classDateTime.html#aa27a100a14ef2b7208438c5d05de6167">DateTime::fromUnixTime</a>  (time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear) SMING_DEPRECATED</dt>
+<dd>Use unsigned version instead <code>fromUnixTime(time_t, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint16_t*)</code>  </dd>
+<dt><a class="anchor" id="_deprecated000005"></a>Member <a class="el" href="classDateTime.html#af181ab8c37399c53ebe54262b40e08bd">DateTime::parseHttpDate</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;httpDate) SMING_DEPRECATED</dt>
+<dd>Use <code>fromHttpDate()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000002"></a>Member <a class="el" href="classFileStream.html#a5fde323cf2f5e2695cfc8e1298358e60">FileStream::attach</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;fileName, FileOpenFlags openFlags=eFO_ReadOnly) SMING_DEPRECATED</dt>
+<dd>Use <code>open()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000009"></a>Class <a class="el" href="classHardware__Timer.html">Hardware_Timer</a>  </dt>
 <dd>Use <a class="el" href="classHardwareTimer.html" title="Hardware timer class. ">HardwareTimer</a> class instead  </dd>
-<dt><a class="anchor" id="_deprecated000009"></a>Member <a class="el" href="classHttpConnection.html#ae38daf9c615d8374c4605367e8c779d9">HttpConnection::getLastModifiedDate</a>  ()</dt>
-<dd>Use <code>getResponse().headers[HTTP_HEADER_LAST_MODIFIED]</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000006"></a>Member <a class="el" href="classHttpConnection.html#a8096f420efc2a724109be9b9f804b210">HttpConnection::getResponseCode</a>  ()</dt>
-<dd>Use <code>getResponse().code</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000007"></a>Member <a class="el" href="classHttpConnection.html#a937f2f9106a2530a1fd67f8c41d51285">HttpConnection::getResponseHeader</a>  (<a class="el" href="classString.html" title="The string class. ">String</a> headerName, <a class="el" href="classString.html" title="The string class. ">String</a> defaultValue=nullptr)</dt>
-<dd>Use <code>getResponse().headers[headerName]</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000008"></a>Member <a class="el" href="classHttpConnection.html#aa1d5c9b4c59591f5c97d2f08df65a868">HttpConnection::getResponseHeaders</a>  ()</dt>
-<dd>Use <code>getResponse().headers</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000011"></a>Member <a class="el" href="classHttpConnection.html#a917b52602302f4b7f913c8da574556bf">HttpConnection::getResponseString</a>  ()</dt>
-<dd>Use <code>getResponse().stream</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000010"></a>Member <a class="el" href="classHttpConnection.html#ac5a7f0ec9c6273ca3519a8b5d078034f">HttpConnection::getServerDate</a>  ()</dt>
-<dd>Use <code>getResponse().headers[HTTP_HEADER_DATE]</code> instead  </dd>
-<dt><a class="anchor" id="_deprecated000012"></a>Member <a class="el" href="classHttpRequest.html#aa0070188501551d1a063e2316a376379">HttpRequest::setPostParameters</a>  (const <a class="el" href="classHttpParams.html">HttpParams</a> &amp;params)</dt>
-<dd>This method is deprecated and will be removed in the coming versions. Please set postParams directly, i.e. request.postParams = params  </dd>
-<dt><a class="anchor" id="_deprecated000013"></a>Member <a class="el" href="classHttpResponse.html#ad1e2104f51af6c4be01d59bb798503ad">HttpResponse::forbidden</a>  ()</dt>
-<dd>Use response.code = HTTP_STATUS_FORBIDDEN instead  </dd>
-<dt><a class="anchor" id="_deprecated000014"></a>Member <a class="el" href="classHttpResponse.html#a679e8e926c1c0a7c234074aeee2f1a9b">HttpResponse::notFound</a>  ()</dt>
-<dd>Use response.code = HTTP_STATUS_NOT_FOUND instead  </dd>
-<dt><a class="anchor" id="_deprecated000015"></a>Member <a class="el" href="classHttpResponse.html#a4ad42c6da411ab80d938f1f07e77171d">HttpResponse::sendJsonObject</a>  (<a class="el" href="classJsonObjectStream.html" title="JsonObject stream class. ">JsonObjectStream</a> *newJsonStreamInstance)</dt>
-<dd>use response.sendDataStream(stream, MIME_JSON) instead  </dd>
-<dt><a class="anchor" id="_deprecated000001"></a>Member <a class="el" href="classIDataSourceStream.html#a05ec329ab5b1237777872156d631f68c">IDataSourceStream::length</a>  ()</dt>
-<dd>This method is deprecated and will be removed in the coming versions. Please, use available() instead.  </dd>
-<dt><a class="anchor" id="_deprecated000017"></a>Member <a class="el" href="classMqttClient.html#ad3421fa426b409d7951c368306f321f9">MqttClient::publishWithQoS</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;topic, const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;message, int QoS, bool retained=false, MqttMessageDeliveredCallback onDelivery=NULL)</dt>
-<dd>Use publish(const <a class="el" href="classString.html" title="The string class. ">String</a>&amp; topic, const <a class="el" href="classString.html" title="The string class. ">String</a>&amp; message, uint8_t flags = 0) instead. If you want to have a callback that should be triggered on successful delivery of messages then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.  </dd>
-<dt><a class="anchor" id="_deprecated000018"></a>Member <a class="el" href="classMqttClient.html#a08119a1be647d78053ded9956c8a4c06">MqttClient::setCallback</a>  (MqttStringSubscriptionCallback subscriptionCallback=NULL)</dt>
-<dd>Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.  </dd>
-<dt><a class="anchor" id="_deprecated000016"></a>Member <a class="el" href="classMqttClient.html#aaa0e59ce9d22a30b6079ca597ab03881">MqttClient::setWill</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;topic, const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;message, int QoS, bool retained=false)</dt>
-<dd>Use setWill(const String&amp; topic, const String&amp; message,uint8_t flags) instead  </dd>
-<dt><a class="anchor" id="_deprecated000020"></a>Member <a class="el" href="group__timer.html#ga08a7832f90bfcbee7ab526960060abfd">Timer::initializeMs</a>  (uint32_t milliseconds, TimerDelegate delegateFunction=nullptr)</dt>
-<dd>Use initializeMs(xx, TimerDelegateStdFunction); instead.  </dd>
-<dt><a class="anchor" id="_deprecated000021"></a>Member <a class="el" href="group__timer.html#gad75f5acb2413187e064eee4c58bd0dcc">Timer::initializeUs</a>  (uint32_t microseconds, TimerDelegate delegateFunction=nullptr)</dt>
-<dd>Use initializeMs(xx, TimerDelegateStdFunction); instead.  </dd>
-<dt><a class="anchor" id="_deprecated000019"></a>Member <a class="el" href="classWebsocketClient.html#a11a66333f7a1052421efffe191de3bc5">WebsocketClient::disconnect</a>  ()</dt>
-<dd>use close() instead </dd>
+<dt><a class="anchor" id="_deprecated000025"></a>Member <a class="el" href="classHttpClient.html#a9ef38a18e37f4cca6dfd66ba2bcf3ee7">HttpClient::request</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;url) SMING_DEPRECATED</dt>
+<dd>Use <code>createRequest()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000014"></a>Member <a class="el" href="classHttpConnection.html#ad4079e65a3b2ad494d4be7d552ea5f66">HttpConnection::getLastModifiedDate</a>  () const SMING_DEPRECATED</dt>
+<dd>Use <code>getResponse()-&gt;headers.getLastModifiedDate()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000011"></a>Member <a class="el" href="classHttpConnection.html#af93194154deae310bc073bbe70d6d15c">HttpConnection::getResponseCode</a>  () const SMING_DEPRECATED</dt>
+<dd>Use <code>getResponse()-&gt;code</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000012"></a>Member <a class="el" href="classHttpConnection.html#a21fd5d78db0bfa40365d5e056deb64b6">HttpConnection::getResponseHeader</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;headerName, const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;defaultValue=nullptr) const SMING_DEPRECATED</dt>
+<dd>Use <code>getResponse()-&gt;headers[]</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000013"></a>Member <a class="el" href="classHttpConnection.html#a611d71e248ccaf66df6cf84422eafeea">HttpConnection::getResponseHeaders</a>  () SMING_DEPRECATED</dt>
+<dd>Use <code>getResponse()-&gt;headers</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000016"></a>Member <a class="el" href="classHttpConnection.html#a5a7319bb1098ec7c37740a35a8ecd1ea">HttpConnection::getResponseString</a>  () SMING_DEPRECATED</dt>
+<dd>Use <code>getResponse()-&gt;getBody()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000015"></a>Member <a class="el" href="classHttpConnection.html#a7f30c3fce43d02d8798900651af9e62f">HttpConnection::getServerDate</a>  () const SMING_DEPRECATED</dt>
+<dd>Use <code>getResponse()-&gt;headers.getServerDate()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000019"></a>Member <a class="el" href="classHttpRequest.html#a108b95269f29adadcbc9abce81329bac">HttpRequest::getPath</a>  () SMING_DEPRECATED</dt>
+<dd>Use <code>uri.Path</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000017"></a>Member <a class="el" href="classHttpRequest.html#a5bd25004104591e035b349abc1854ec6">HttpRequest::operator=</a>  (const <a class="el" href="classHttpRequest.html">HttpRequest</a> &amp;rhs) SMING_DEPRECATED</dt>
+<dd>Please use <code>clone()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000018"></a>Member <a class="el" href="classHttpRequest.html#a393688d24a4029fe6cc5796743df56da">HttpRequest::setPostParameters</a>  (const <a class="el" href="classHttpParams.html">HttpParams</a> &amp;params) SMING_DEPRECATED</dt>
+<dd>Set postParams directly, i.e. <code>request.postParams = params</code>  </dd>
+<dt><a class="anchor" id="_deprecated000022"></a>Member <a class="el" href="classHttpResponse.html#a49f5ea266671e6bd5ad7d1bba029025d">HttpResponse::forbidden</a>  () SMING_DEPRECATED</dt>
+<dd>Use <code>response.code = HTTP_STATUS_FORBIDDEN</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000020"></a>Member <a class="el" href="classHttpResponse.html#ae8a364f48c6192e5fd41a08ea0ec0bb4">HttpResponse::hasHeader</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;name) SMING_DEPRECATED</dt>
+<dd>Use <code>headers.contains()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000023"></a>Member <a class="el" href="classHttpResponse.html#a420f2d417d95cf6399e2735572eb9f3b">HttpResponse::notFound</a>  () SMING_DEPRECATED</dt>
+<dd>Use <code>response.code = HTTP_STATUS_NOT_FOUND</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000021"></a>Member <a class="el" href="classHttpResponse.html#ae202dd7a99498e5adbe5aff283389ed7">HttpResponse::redirect</a>  (const <a class="el" href="classString.html" title="The string class. ">String</a> &amp;location) SMING_DEPRECATED</dt>
+<dd>Use <code>headers[HTTP_HEADER_LOCATION]</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000024"></a>Member <a class="el" href="classHttpResponse.html#aba0a5e84191937cb02102d3009f57120">HttpResponse::sendJsonObject</a>  (<a class="el" href="classJsonObjectStream.html" title="JsonObject stream class. ">JsonObjectStream</a> *newJsonStreamInstance) SMING_DEPRECATED</dt>
+<dd>Use <code>response.sendDataStream(stream, MIME_JSON)</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000001"></a>Member <a class="el" href="classIDataSourceStream.html#a625450b1b93b799c653a78719879ed38">IDataSourceStream::length</a>  () SMING_DEPRECATED</dt>
+<dd>Use <code>available()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000026"></a>Member <a class="el" href="group__mqttclient.html#ga44ac1be7b53998b8e15982d1de3ea34b">MQTT_MAX_BUFFER_SIZE</a>  </dt>
+<dd></dd>
+<dt><a class="anchor" id="_deprecated000027"></a>Member <a class="el" href="group__mqttclient.html#gaf3068e6873d3332b0e5f3aa580806c3b">MQTT_MSG_PUBREC</a>  </dt>
+<dd></dd>
+<dt><a class="anchor" id="_deprecated000029"></a>Member <a class="el" href="group__mqttclient.html#ga6ce02600b8a3f9d0eb4bdd68bfc92df0">MqttMessageDeliveredCallback</a>  </dt>
+<dd>Use MqttDelegate instead  </dd>
+<dt><a class="anchor" id="_deprecated000028"></a>Member <a class="el" href="group__mqttclient.html#gaf15209166818832b0c4ad94d520235a5">MqttStringSubscriptionCallback</a>  </dt>
+<dd>Use MqttDelegate instead  </dd>
+<dt><a class="anchor" id="_deprecated000010"></a>Member <a class="el" href="group__ftpserver.html#ga1b29c1d6a45929598eab3fa23ea77492">SMING_DEPRECATED</a>  </dt>
+<dd><p class="startdd">Use <code><a class="el" href="classFtpServer.html">FtpServer</a></code> instead </p>
+<p class="enddd">Use <code><a class="el" href="classUrl.html" title="Class to manage URL instance. ">Url</a></code> instead  </p>
+</dd>
+<dt><a class="anchor" id="_deprecated000003"></a>Member <a class="el" href="classStreamTransformer.html#a5a86d01938ad6aca8f342c6efaaff73a">StreamTransformer::StreamTransformer</a>  (<a class="el" href="classIDataSourceStream.html" title="Base class for data source stream. ">IDataSourceStream</a> *stream, const StreamTransformerCallback &amp;callback, size_t resultSize=256, size_t blockSize=64) SMING_DEPRECATED</dt>
+<dd>Create inherited class, override <code>transform()</code> method and use alternative constructor instead  </dd>
+<dt><a class="anchor" id="_deprecated000004"></a>Member <a class="el" href="classStreamTransformer.html#a4e3295fc5bd8e611673e8fc1aeea50d3">StreamTransformer::transformCallback</a>  </dt>
+<dd>Create inherited class and verride transform() method instead  </dd>
+<dt><a class="anchor" id="_deprecated000040"></a>Member <a class="el" href="classTcpConnection.html#ae3c4329e64d62586e354e9a9eba14402">TcpConnection::freeSslClientKeyCert</a>  () SMING_DEPRECATED</dt>
+<dd>Use <code>freeSslKeyCert()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000038"></a>Member <a class="el" href="classTcpConnection.html#a42cd74430703a3e392836a449d3b83d0">TcpConnection::setSslClientKeyCert</a>  (const uint8_t *key, int keyLength, const uint8_t *certificate, int certificateLength, const char *keyPassword=nullptr, bool freeAfterHandshake=false) SMING_DEPRECATED</dt>
+<dd>Use <code>setSslKeyCert(const uint8_t*, int, const uint8_t*, int, const char*, bool)</code> instead </dd>
+<dt><a class="anchor" id="_deprecated000039"></a>Member <a class="el" href="classTcpConnection.html#ad6a5b5778e2fceff5015de380449f505">TcpConnection::setSslClientKeyCert</a>  (const <a class="el" href="classSslKeyCertPair.html" title="Class to manage an SSL key certificate with optional password. ">SslKeyCertPair</a> &amp;clientKeyCert, bool freeAfterHandshake=false) SMING_DEPRECATED</dt>
+<dd>Use <code>setSslKeyCert(const SslKeyCertPair&amp;, bool)</code> instead </dd>
+<dt><a class="anchor" id="_deprecated000041"></a>Member <a class="el" href="classTcpServer.html#a1d03938df9c91399f0ab169d0190c0db">TcpServer::setServerKeyCert</a>  (const <a class="el" href="classSslKeyCertPair.html" title="Class to manage an SSL key certificate with optional password. ">SslKeyCertPair</a> &amp;serverKeyCert) SMING_DEPRECATED</dt>
+<dd>Use <code>setSslKeyCert()</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000042"></a>Member <a class="el" href="classTcpServer.html#aa90d058918a19fa83529320f7d1dfbd4">TcpServer::totalConnections</a>  </dt>
+<dd>not updated by framework  </dd>
+<dt><a class="anchor" id="_deprecated000045"></a>Member <a class="el" href="group__timer.html#ga9e1854fcb01a131af416ba12deb0260a">Timer::initializeMs</a>  (uint32_t milliseconds, TimerDelegate delegateFunction=nullptr) SMING_DEPRECATED</dt>
+<dd>Use <code>initializeMs(uint32_t, TimerDelegateStdFunction)</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000046"></a>Member <a class="el" href="group__timer.html#ga90e67181090d7245ba7f32b4d119b504">Timer::initializeUs</a>  (uint32_t microseconds, TimerDelegate delegateFunction=nullptr) SMING_DEPRECATED</dt>
+<dd>Use <code>initializeMs(uint32_t, TimerDelegateStdFunction)</code> instead  </dd>
+<dt><a class="anchor" id="_deprecated000044"></a>Member <a class="el" href="classWebsocketClient.html#a6b031986e410d27dbf35d8003b4cd778">WebsocketClient::disconnect</a>  () SMING_DEPRECATED</dt>
+<dd>Use <code>close()</code> instead </dd>
 </dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->

@@ -17,6 +17,7 @@ var classNexNumber =
     [ "getObjName", "classNexNumber.html#a54267849ca7215af700a906e5e6362fd", null ],
     [ "getObjPid", "classNexNumber.html#a67621e5d7bcfb50c1a1bbc4ad1020352", null ],
     [ "getValue", "classNexNumber.html#ad184ed818666ec482efddf840185c7b8", null ],
+    [ "iterate", "classNexNumber.html#a4e228b95e8c644888018dc813ebb3485", null ],
     [ "printObjInfo", "classNexNumber.html#abeff0c61474e8b3ce6bac76771820b64", null ],
     [ "Set_background_color_bco", "classNexNumber.html#a8168c315e57d9aec3b61ed4febaa6663", null ],
     [ "Set_background_crop_picc", "classNexNumber.html#a410bd4092a5874541da654edd86a01eb", null ],

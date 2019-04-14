@@ -107,26 +107,36 @@ $(document).ready(function(){initNavTree('QuotedPrintableOutputStream_8h_source.
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * http://github.com/SmingHub/Sming</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * All files of the Sming Core are provided under the LGPL v3 license.</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * @author Slavey Karadzhov &lt;slaff@attachix.com&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * QuotedPrintableOutputStream.h</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> ****/</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_QUOTED_PRINTABLE_OUTPUT_STREAM_H_</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_QUOTED_PRINTABLE_OUTPUT_STREAM_H_</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../StreamTransformer.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classQuotedPrintableOutputStream.html">   23</a></span>&#160;<span class="keyword">class </span><a class="code" href="classQuotedPrintableOutputStream.html">QuotedPrintableOutputStream</a> : <span class="keyword">public</span> <a class="code" href="classStreamTransformer.html">StreamTransformer</a></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="classQuotedPrintableOutputStream.html#ab455cfc36532e02d5524c8f6d0acee41">QuotedPrintableOutputStream</a>(<a class="code" href="classReadWriteStream.html">ReadWriteStream</a>* stream, <span class="keywordtype">size_t</span> resultSize = 512);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_QUOTED_PRINTABLE_OUTPUT_STREAM_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classStreamTransformer_html"><div class="ttname"><a href="classStreamTransformer.html">StreamTransformer</a></div><div class="ttdef"><b>Definition:</b> StreamTransformer.h:39</div></div>
-<div class="ttc" id="classQuotedPrintableOutputStream_html"><div class="ttname"><a href="classQuotedPrintableOutputStream.html">QuotedPrintableOutputStream</a></div><div class="ttdoc">Quoted-Printable Stream. </div><div class="ttdef"><b>Definition:</b> QuotedPrintableOutputStream.h:23</div></div>
-<div class="ttc" id="classQuotedPrintableOutputStream_html_ab455cfc36532e02d5524c8f6d0acee41"><div class="ttname"><a href="classQuotedPrintableOutputStream.html#ab455cfc36532e02d5524c8f6d0acee41">QuotedPrintableOutputStream::QuotedPrintableOutputStream</a></div><div class="ttdeci">QuotedPrintableOutputStream(ReadWriteStream *stream, size_t resultSize=512)</div><div class="ttdoc">Stream that transforms bytes of data into quoted printable data stream. </div></div>
-<div class="ttc" id="classReadWriteStream_html"><div class="ttname"><a href="classReadWriteStream.html">ReadWriteStream</a></div><div class="ttdoc">Base class for read/write stream. </div><div class="ttdef"><b>Definition:</b> ReadWriteStream.h:20</div></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * @author Slavey Karadzhov &lt;slaff@attachix.com&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> ****/</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#ifndef _SMING_CORE_DATA_STREAM_QUOTED_PRINTABLE_OUTPUT_STREAM_H_</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _SMING_CORE_DATA_STREAM_QUOTED_PRINTABLE_OUTPUT_STREAM_H_</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;../StreamTransformer.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classQuotedPrintableOutputStream.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="classQuotedPrintableOutputStream.html">QuotedPrintableOutputStream</a> : <span class="keyword">public</span> <a class="code" href="classStreamTransformer.html">StreamTransformer</a></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;{</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classQuotedPrintableOutputStream.html#a0c4ce0531c801726b9bef64b8ed85077">   33</a></span>&#160;    <a class="code" href="classQuotedPrintableOutputStream.html#a0c4ce0531c801726b9bef64b8ed85077">QuotedPrintableOutputStream</a>(<a class="code" href="classIDataSourceStream.html">IDataSourceStream</a>* stream, <span class="keywordtype">size_t</span> resultSize = 512)</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        : <a class="code" href="classStreamTransformer.html">StreamTransformer</a>(stream, resultSize, resultSize / 2)</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    }</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classQuotedPrintableOutputStream.html#af7cf66aa3e57f6b9be4889d7065e5e1f">transform</a>(<span class="keyword">const</span> uint8_t* source, <span class="keywordtype">size_t</span> sourceLength, uint8_t* target, <span class="keywordtype">size_t</span> targetLength) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;};</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* _SMING_CORE_DATA_STREAM_QUOTED_PRINTABLE_OUTPUT_STREAM_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classIDataSourceStream_html"><div class="ttname"><a href="classIDataSourceStream.html">IDataSourceStream</a></div><div class="ttdoc">Base class for data source stream. </div><div class="ttdef"><b>Definition:</b> DataSourceStream.h:39</div></div>
+<div class="ttc" id="classStreamTransformer_html"><div class="ttname"><a href="classStreamTransformer.html">StreamTransformer</a></div><div class="ttdef"><b>Definition:</b> StreamTransformer.h:32</div></div>
+<div class="ttc" id="classQuotedPrintableOutputStream_html_af7cf66aa3e57f6b9be4889d7065e5e1f"><div class="ttname"><a href="classQuotedPrintableOutputStream.html#af7cf66aa3e57f6b9be4889d7065e5e1f">QuotedPrintableOutputStream::transform</a></div><div class="ttdeci">size_t transform(const uint8_t *source, size_t sourceLength, uint8_t *target, size_t targetLength) override</div><div class="ttdoc">Inherited class implements this method to transform a block of data. </div></div>
+<div class="ttc" id="classQuotedPrintableOutputStream_html"><div class="ttname"><a href="classQuotedPrintableOutputStream.html">QuotedPrintableOutputStream</a></div><div class="ttdoc">Quoted-Printable Stream. </div><div class="ttdef"><b>Definition:</b> QuotedPrintableOutputStream.h:25</div></div>
+<div class="ttc" id="classQuotedPrintableOutputStream_html_a0c4ce0531c801726b9bef64b8ed85077"><div class="ttname"><a href="classQuotedPrintableOutputStream.html#a0c4ce0531c801726b9bef64b8ed85077">QuotedPrintableOutputStream::QuotedPrintableOutputStream</a></div><div class="ttdeci">QuotedPrintableOutputStream(IDataSourceStream *stream, size_t resultSize=512)</div><div class="ttdoc">Stream that transforms bytes of data into quoted printable data stream. </div><div class="ttdef"><b>Definition:</b> QuotedPrintableOutputStream.h:33</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

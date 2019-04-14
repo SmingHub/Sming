@@ -10,6 +10,7 @@ var classNexVariable =
     [ "getObjPid", "classNexVariable.html#a67621e5d7bcfb50c1a1bbc4ad1020352", null ],
     [ "getText", "classNexVariable.html#ab4d12f14dcff3f6930a2bdf5e1f3d259", null ],
     [ "getValue", "classNexVariable.html#aff06d16d022876c749d3e30f020b1557", null ],
+    [ "iterate", "classNexVariable.html#a4e228b95e8c644888018dc813ebb3485", null ],
     [ "printObjInfo", "classNexVariable.html#abeff0c61474e8b3ce6bac76771820b64", null ],
     [ "setText", "classNexVariable.html#aab59ac44eb0804664a03c09932be70eb", null ],
     [ "setValue", "classNexVariable.html#a9da9d4a74f09e1787e4e4562da1e4833", null ]

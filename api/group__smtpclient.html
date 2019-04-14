@@ -121,12 +121,6 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ga8a67e1ecf5e7444429444de8731f15fc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8a67e1ecf5e7444429444de8731f15fc"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>SMTP_PROTOCOL</b>&#160;&#160;&#160;_F(&quot;smtp&quot;)</td></tr>
-<tr class="separator:ga8a67e1ecf5e7444429444de8731f15fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacd22b99b1a448c71df9ebb5d67caa46f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gacd22b99b1a448c71df9ebb5d67caa46f"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>SMTP_OVER_SSL_PROTOCOL</b>&#160;&#160;&#160;_F(&quot;smtps&quot;)</td></tr>
-<tr class="separator:gacd22b99b1a448c71df9ebb5d67caa46f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8d2d911a474498eeaad44690a86b0086"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8d2d911a474498eeaad44690a86b0086"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>SMTP_QUEUE_SIZE</b>&#160;&#160;&#160;5</td></tr>
 <tr class="separator:ga8d2d911a474498eeaad44690a86b0086"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -229,9 +223,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga123b1a1c85662268d66a5f4550b5037d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga123b1a1c85662268d66a5f4550b5037d"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>SmtpClient::SmtpClient</b> (bool autoDestroy=false)</td></tr>
 <tr class="separator:ga123b1a1c85662268d66a5f4550b5037d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac1c9bf4ddcc56c38e9c4dd5fd9ea8351"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__smtpclient.html#gac1c9bf4ddcc56c38e9c4dd5fd9ea8351">SmtpClient::connect</a> (const <a class="el" href="classURL.html">URL</a> &amp;url)</td></tr>
-<tr class="memdesc:gac1c9bf4ddcc56c38e9c4dd5fd9ea8351"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connects to remote <a class="el" href="classURL.html">URL</a>.  <a href="#gac1c9bf4ddcc56c38e9c4dd5fd9ea8351">More...</a><br/></td></tr>
-<tr class="separator:gac1c9bf4ddcc56c38e9c4dd5fd9ea8351"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga713d5ff698ab04cd214c449afafc4fa2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__smtpclient.html#ga713d5ff698ab04cd214c449afafc4fa2">SmtpClient::connect</a> (const <a class="el" href="classUrl.html">Url</a> &amp;url)</td></tr>
+<tr class="memdesc:ga713d5ff698ab04cd214c449afafc4fa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connects to remote URL.  <a href="#ga713d5ff698ab04cd214c449afafc4fa2">More...</a><br/></td></tr>
+<tr class="separator:ga713d5ff698ab04cd214c449afafc4fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac03cef5f69bf90446bcd95f0a3ddde72"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__smtpclient.html#gac03cef5f69bf90446bcd95f0a3ddde72">SmtpClient::send</a> (const <a class="el" href="classString.html">String</a> &amp;from, const <a class="el" href="classString.html">String</a> &amp;to, const <a class="el" href="classString.html">String</a> &amp;subject, const <a class="el" href="classString.html">String</a> &amp;body)</td></tr>
 <tr class="memdesc:gac03cef5f69bf90446bcd95f0a3ddde72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queues a single message before it is sent later to the SMTP server.  <a href="#gac03cef5f69bf90446bcd95f0a3ddde72">More...</a><br/></td></tr>
 <tr class="separator:gac03cef5f69bf90446bcd95f0a3ddde72"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -256,12 +250,12 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>SmtpClient::countPe
 <tr class="memitem:ga848b25d7b7a295e1c7e08974cfc7c105"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__smtpclient.html#ga848b25d7b7a295e1c7e08974cfc7c105">SmtpClient::onServerError</a> (SmtpClientCallback callback)</td></tr>
 <tr class="memdesc:ga848b25d7b7a295e1c7e08974cfc7c105"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback that will be called every an error occurs.  <a href="#ga848b25d7b7a295e1c7e08974cfc7c105">More...</a><br/></td></tr>
 <tr class="separator:ga848b25d7b7a295e1c7e08974cfc7c105"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga471b132bcbdf4b1567060b17f1219b33"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga471b132bcbdf4b1567060b17f1219b33"></a>
-virtual err_t&#160;</td><td class="memItemRight" valign="bottom"><b>SmtpClient::onReceive</b> (pbuf *buf)</td></tr>
-<tr class="separator:ga471b132bcbdf4b1567060b17f1219b33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga68a150e4e481620e4764aa0bd3a0a654"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga68a150e4e481620e4764aa0bd3a0a654"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SmtpClient::onReadyToSendData</b> (TcpConnectionEvent sourceEvent)</td></tr>
-<tr class="separator:ga68a150e4e481620e4764aa0bd3a0a654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0c51043586f98369ae60d317610fcd11"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0c51043586f98369ae60d317610fcd11"></a>
+err_t&#160;</td><td class="memItemRight" valign="bottom"><b>SmtpClient::onReceive</b> (pbuf *buf) override</td></tr>
+<tr class="separator:ga0c51043586f98369ae60d317610fcd11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1b40417c6288af92e3c124c26b77d364"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga1b40417c6288af92e3c124c26b77d364"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SmtpClient::onReadyToSendData</b> (TcpConnectionEvent sourceEvent) override</td></tr>
+<tr class="separator:ga1b40417c6288af92e3c124c26b77d364"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab4b9bb7d2381b41c3726503c09b26078"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab4b9bb7d2381b41c3726503c09b26078"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>SmtpClient::sendMailHeaders</b> (<a class="el" href="classMailMessage.html">MailMessage</a> *mail)</td></tr>
 <tr class="separator:gab4b9bb7d2381b41c3726503c09b26078"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -286,24 +280,24 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>SmtpClient::sendMailB
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="gac1c9bf4ddcc56c38e9c4dd5fd9ea8351"></a>
+<a class="anchor" id="ga713d5ff698ab04cd214c449afafc4fa2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">bool SmtpClient::connect </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classURL.html">URL</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classUrl.html">Url</a> &amp;&#160;</td>
           <td class="paramname"><em>url</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Connects to remote <a class="el" href="classURL.html">URL</a>. </p>
+<p>Connects to remote URL. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname"><a class="el" href="classURL.html">URL</a></td><td>- provides the protocol, remote server, port and user credentials allowed protocols:<ul>
+    <tr><td class="paramname">URL</td><td>- provides the protocol, remote server, port and user credentials allowed protocols:<ul>
 <li>smtp - clear text SMTP</li>
 <li>smtps - SMTP over SSL connection </li>
 </ul>

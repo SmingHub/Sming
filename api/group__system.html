@@ -115,9 +115,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga79a7cb0d48d4f5ae35722cfff45aa454"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga79a7cb0d48d4f5ae35722cfff45aa454">SystemClass::isReady</a> ()</td></tr>
 <tr class="memdesc:ga79a7cb0d48d4f5ae35722cfff45aa454"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if system ready.  <a href="#ga79a7cb0d48d4f5ae35722cfff45aa454">More...</a><br/></td></tr>
 <tr class="separator:ga79a7cb0d48d4f5ae35722cfff45aa454"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5f72899b23c49108b7cba82717e4246d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga5f72899b23c49108b7cba82717e4246d">SystemClass::restart</a> ()</td></tr>
-<tr class="memdesc:ga5f72899b23c49108b7cba82717e4246d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restart system.  <a href="#ga5f72899b23c49108b7cba82717e4246d">More...</a><br/></td></tr>
-<tr class="separator:ga5f72899b23c49108b7cba82717e4246d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga586ff4c79825b6f3c2d9c7387b5661b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga586ff4c79825b6f3c2d9c7387b5661b1">SystemClass::restart</a> (unsigned deferMillis=0)</td></tr>
+<tr class="memdesc:ga586ff4c79825b6f3c2d9c7387b5661b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request a restart of the system.  <a href="#ga586ff4c79825b6f3c2d9c7387b5661b1">More...</a><br/></td></tr>
+<tr class="separator:ga586ff4c79825b6f3c2d9c7387b5661b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga820222ab31f457872e7bc645e998024f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__system.html#ga820222ab31f457872e7bc645e998024f">SystemClass::setCpuFrequency</a> (<a class="el" href="group__constants.html#ga1149dd3589720a23866601483758719d">CpuFrequency</a> freq)</td></tr>
 <tr class="memdesc:ga820222ab31f457872e7bc645e998024f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the CPU frequency.  <a href="#ga820222ab31f457872e7bc645e998024f">More...</a><br/></td></tr>
 <tr class="separator:ga820222ab31f457872e7bc645e998024f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -440,28 +440,28 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga5f72899b23c49108b7cba82717e4246d"></a>
+<a class="anchor" id="ga586ff4c79825b6f3c2d9c7387b5661b1"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void SystemClass::restart </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>deferMillis</em> = <code>0</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>Restart system. </p>
+<p>Request a restart of the system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">deferMillis</td><td>defer restart request by a number of milliseconds </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>A delay is often required to allow network callback code to complete correctly. The restart is always deferred, either using the task queue (if deferMillis == 0) or using a timer. This method always returns immediately. </dd></dl>
 
 </div>
 </div>
