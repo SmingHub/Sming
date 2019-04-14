@@ -41,9 +41,22 @@ Timer procTimer;
 #define CALLBACK_ATTR GDB_IRAM_ATTR
 #endif
 
-bool state = true;
+// See blink()
+bool ledState = true;
+
+// A simple log file stored on the host
 static GdbFileStream logFile;
+#define LOG_FILENAME "testlog.txt"
+
+// Handles messages from SDK
 static OsMessageInterceptor osMessageInterceptor;
+
+// Supports `consoleOff` command to prevent re-enabling when debugger is attached
+bool consoleOffRequested = false;
+
+// Forward declarations
+bool handleCommand(const String& cmd);
+void readConsole();
 
 /*
 * Notice:  Software breakpoints work only on code that is in RAM.
@@ -51,8 +64,8 @@ static OsMessageInterceptor osMessageInterceptor;
 */
 void CALLBACK_ATTR blink()
 {
-	digitalWrite(LED_PIN, state);
-	state = !state;
+	digitalWrite(LED_PIN, ledState);
+	ledState = !ledState;
 }
 
 void showPrompt()
@@ -70,11 +83,11 @@ void showPrompt()
 	}
 }
 
-bool handleCommand(const String& cmd);
-
 void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 {
-	static LineBuffer<MAX_COMMAND_LENGTH + 1> line;
+	static unsigned commandLength;
+	const unsigned MAX_COMMAND_LENGTH = 16;
+	static char commandBuffer[MAX_COMMAND_LENGTH + 1];
 
 	// Error detection
 	unsigned status = Serial.getStatus();
@@ -94,32 +107,37 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 		}
 		// Discard what is likely to be garbage
 		Serial.clear(SERIAL_RX_ONLY);
-		line.clear();
+		commandLength = 0;
 		showPrompt();
 		return;
 	}
 
 	int c;
 	while((c = Serial.read()) >= 0) {
-		if(c == '\b' || c == 0x7f) { // delete (backspace) or xterm ctrl-?
-			if(line.backspace()) {
+		switch(c) {
+		case '\b': // delete (backspace)
+		case 0x7f: // xterm ctrl-?
+			if(commandLength > 0) {
+				--commandLength;
 				Serial.print(_F("\b \b"));
 			}
-			continue;
-		}
-
-		c = line.addChar(c);
-		if(c == '\n') {
-			if(line.getLength() != 0) {
+			break;
+		case '\r':
+		case '\n':
+			if(commandLength > 0) {
 				Serial.println();
-				String cmd(line.getBuffer(), line.getLength());
-				line.clear();
+				String cmd(commandBuffer, commandLength);
+				commandLength = 0;
 				Serial.clear(SERIAL_RX_ONLY);
 				handleCommand(cmd);
 			}
 			showPrompt();
-		} else if(c != '\0') {
-			Serial.print(char(c));
+			break;
+		default:
+			if(c >= 0x20 && c <= 0x7f && commandLength < MAX_COMMAND_LENGTH) {
+				commandBuffer[commandLength++] = c;
+				Serial.print(char(c));
+			}
 		}
 	}
 }
@@ -152,9 +170,6 @@ void readFile(const char* filename, bool display)
 		gdb_syscall_close(fd);
 	}
 }
-
-// Forward declaration
-void readConsole();
 
 /*
  * A more advanced way to use host File I/O using asynchronous syscalls.
@@ -258,20 +273,37 @@ void fileStat(const char* filename)
  * This also helps to keep the code clean and easy to read.
  */
 #define COMMAND_MAP(XX)                                                                                                \
-	XX(readfile1, "Use syscall file I/O functions to read and display a host file")                                    \
-	XX(readfile2, "Read a larger host file asynchronously, so data is processed in a callback function")               \
+	XX(readfile1, "Use syscall file I/O functions to read and display a host file\n"                                   \
+				  "Calls are blocking so the application is paused during the entire operation")                       \
+	XX(readfile2, "Read a larger host file asynchronously\n"                                                           \
+				  "Data is processed in a callback function to avoid pausing the application un-necessarily")          \
 	XX(stat, "Use `syscall_stat` function to get details for a host file")                                             \
 	XX(ls, "Use `syscall_system` function to perform a directory listing on the host")                                 \
 	XX(time, "Use `syscall_gettimeofday` to get current time from host")                                               \
-	XX(log, "Show state of log file")                                                                                  \
-	XX(break, "Demonstrated `gdb_do_break()` function to pause this application and obtain a GDB command prompt")      \
-	XX(hang, "Enter infinite loop to force a watchdog timeout")                                                        \
-	XX(read0, "Read from invalid address")                                                                             \
-	XX(write0, "Write to invalid address")                                                                             \
+	XX(log, "Show state of log file\n"                                                                                 \
+			"The log file is written to \"" LOG_FILENAME "\" in the current working directory")                        \
+	XX(break, "Demonstrate `gdb_do_break()` function to pause this application and obtain a GDB command prompt\n"      \
+			  "Similar to Ctrl+C except we control exactly where the application stops")                               \
+	XX(queueBreak, "Demonstrate `gdb_do_break()` function called via task queue\n"                                     \
+				   "If you run `bt` you'll see a much smaller stack trace")                                            \
+	XX(consoleOff, "Break into debugger and stop reading from console\n"                                               \
+				   "Do this if you need to set live breakpoints or observe debug output,\n"                            \
+				   "as both are blocked during console reading")                                                       \
+	XX(hang, "Enter infinite loop to force a watchdog timeout\n"                                                       \
+			 "Tests the crash handler which should display a message,\n"                                               \
+			 "then break into the debugger, if available")                                                             \
+	XX(read0, "Read from invalid address\n"                                                                            \
+			  "Attempting to read from address #0 will trigger a LOAD_PROHIBITED exception")                           \
+	XX(write0, "Write to invalid address\n"                                                                            \
+			   "Attempting to write to address #0 will trigger a STORE_PROHIBITED exception")                          \
 	XX(malloc0, "Call malloc(0)")                                                                                      \
 	XX(freetwice, "Free allocated memory twice")                                                                       \
-	XX(restart, "Restart the system")                                                                                  \
-	XX(exit, "Detach from GDB and resume normal application execution")                                                \
+	XX(restart, "Restart the system\n"                                                                                 \
+				"GDB should reconnect automatically, but if not run from a terminal.\n"                                \
+				"Windows versions of GDB don't handle serial control lines well,\n"                                    \
+				"so a nodeMCU, for example, may restart in the wrong mode")                                            \
+	XX(disconnect, "Terminates the connection between the debugger and the remote debug target\n"                      \
+				   "Calls gdb_detach() - the application will resume normal operation")                                \
 	XX(help, "Display this command summary")
 
 /*
@@ -322,6 +354,7 @@ COMMAND_HANDLER(log)
 	} else {
 		Serial.println(_F("Log file not available"));
 	}
+	return true;
 }
 
 COMMAND_HANDLER(ls)
@@ -336,6 +369,22 @@ COMMAND_HANDLER(break)
 	Serial.println(_F("Calling gdb_do_break()"));
 	gdb_do_break();
 	return true;
+}
+
+COMMAND_HANDLER(queueBreak)
+{
+	Serial.println(_F("Queuing a call to gdb_do_break()\r\n"
+					  "This differs from `break` in that a console read will be in progress when the break is called"));
+	System.queueCallback(TaskCallback(handleCommand_break));
+	return true;
+}
+
+COMMAND_HANDLER(consoleOff)
+{
+	Serial.println(_F("To re-enable console reading, enter `call readConsole()` from GDB prompt"));
+	gdb_do_break();
+	consoleOffRequested = true;
+	return false;
 }
 
 COMMAND_HANDLER(hang)
@@ -436,7 +485,7 @@ COMMAND_HANDLER(restart)
 	return false;
 }
 
-COMMAND_HANDLER(exit)
+COMMAND_HANDLER(disconnect)
 {
 	// End console test
 	Serial.print(_F("Calling gdb_detach() - "));
@@ -455,9 +504,40 @@ COMMAND_HANDLER(exit)
 COMMAND_HANDLER(help)
 {
 	Serial.print(_F("LiveDebug interactive debugger sample. Available commands:\r\n"));
-#define XX(tag, desc) Serial.println(_F("  " #tag " : " desc));
+
+	auto print = [](const char* tag, const char* desc) {
+		const unsigned indent = 10;
+		Serial.print("  ");
+		String s(tag);
+		s.reserve(indent);
+		while(s.length() < indent) {
+			s += ' ';
+		}
+		Serial.print(s);
+		Serial.print(" : ");
+
+		// Print multi-line descriptions in sections to maintain correct line indentation
+		s.setLength(2 + indent + 3);
+		memset(s.begin(), ' ', s.length());
+
+		for(;;) {
+			auto end = strchr(desc, '\n');
+			if(end == nullptr) {
+				Serial.println(desc);
+				break;
+			} else {
+				Serial.write(desc, end - desc);
+				Serial.println();
+				desc = end + 1;
+				Serial.print(s);
+			}
+		}
+	};
+
+#define XX(tag, desc) print(_F(#tag), _F(desc));
 	COMMAND_MAP(XX)
 #undef XX
+	return true;
 }
 
 /**
@@ -523,30 +603,35 @@ void onConsoleReadCompleted(const GdbSyscallInfo& info)
 
 /*
  * Demonstrate GDB console access.
+ * We actually queue this so it can be called directly from GDB to re-enable console reading
+ * after using the `consoleOff` command.
  */
 void readConsole()
 {
-	showPrompt();
-	if(gdb_present() == eGDB_Attached) {
-		// Issue the syscall
-		static char buffer[MAX_COMMAND_LENGTH];
-		int res = gdb_console_read(buffer, MAX_COMMAND_LENGTH, onConsoleReadCompleted);
-		if(res < 0) {
-			Serial.printf(_F("gdb_console_read() failed, %d\r\n"), res);
-			Serial.println(_F("Is GDBSTUB_ENABLE_SYSCALL enabled ?"));
-			showPrompt();
-		}
+	consoleOffRequested = false;
+	System.queueCallback([](uint32_t) {
+		showPrompt();
+		if(gdb_present() == eGDB_Attached) {
+			// Issue the syscall
+			static char buffer[MAX_COMMAND_LENGTH];
+			int res = gdb_console_read(buffer, MAX_COMMAND_LENGTH, onConsoleReadCompleted);
+			if(res < 0) {
+				Serial.printf(_F("gdb_console_read() failed, %d\r\n"), res);
+				Serial.println(_F("Is GDBSTUB_ENABLE_SYSCALL enabled ?"));
+				showPrompt();
+			}
 
-		/*
-		 * GDB executes the system call, finished in onReadCompleted().
-		 * Note that any serial output gets ignored by GDB whilst executing a system
-		 * call.
-		 */
-	} else {
-		/*
-		 * GDB is either detached or not present, serial callback will process input
-		 */
-	}
+			/*
+			 * GDB executes the system call, finished in onReadCompleted().
+			 * Note that any serial output gets ignored by GDB whilst executing a system
+			 * call.
+			 */
+		} else {
+			/*
+			 * GDB is either detached or not present, serial callback will process input
+			 */
+		}
+	});
 }
 
 extern "C" void gdb_on_attach(bool attached)
@@ -554,7 +639,7 @@ extern "C" void gdb_on_attach(bool attached)
 	debug_i("GdbAttach(%d)", attached);
 	if(attached) {
 		// Open a log file on the host to demonstrate use of GdbFileStream
-		logFile.open(F("testlog.txt"), eFO_WriteOnly | eFO_CreateIfNotExist);
+		logFile.open(F(LOG_FILENAME), eFO_WriteOnly | eFO_CreateIfNotExist);
 		debug_i("open log %d", logFile.getLastError());
 		logFile.println();
 
@@ -564,7 +649,9 @@ extern "C" void gdb_on_attach(bool attached)
 		logFile.println(DateTime(tv.tv_sec).toFullDateTimeString());
 
 		// Start interacting with GDB
-		readConsole();
+		if(!consoleOffRequested) {
+			readConsole();
+		}
 	} else {
 		// Note: GDB is already detached so underlying call to gdb_syscall_close() will fail silently
 		logFile.close();

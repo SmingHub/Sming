@@ -120,10 +120,7 @@ void dumpExceptionInfo()
 				"***** Fatal exception %u"),
 			 reg.cause);
 	if(reg.cause <= EXCCAUSE_MAX) {
-		char name[32];
-		memcpy_P(name, exceptionNames[reg.cause], sizeof(name));
-		name[sizeof(name) - 1] = '\0';
-		m_printf(_F(" (%s)"), name);
+		m_printf(_F(" (%s)"), exceptionNames[reg.cause]);
 	}
 	m_puts("\r\n");
 
@@ -243,7 +240,6 @@ static unsigned IRAM_ATTR __gdb_no_op(void)
 #define NOOP __attribute__((weak, alias("__gdb_no_op")))
 
 void gdb_enable(bool state) NOOP;
-void gdb_do_break(void) NOOP;
 GdbState gdb_present(void) NOOP;
 void gdb_on_attach(bool attached) NOOP;
 void gdb_detach(void) NOOP;

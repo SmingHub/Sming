@@ -55,15 +55,6 @@
 #endif
 
 /*
- * The HardwareTimer defaults to non-maskable mode, and will continue to operate whilst paused.
- * Set this value to 1 to disable during a debugging exception, and restore it afterwards.
- * Note that to debug HardwareTimer callback routines, the timer must be initialise in maskable mode.
- */
-#ifndef GDBSTUB_PAUSE_HARDWARE_TIMER
-#define GDBSTUB_PAUSE_HARDWARE_TIMER 0
-#endif
-
-/*
  * Espressif provide a patched version of GDB which emits only those registered present in the lx106.
  * Set to 0 if an unpatched version of GDB is used.
  */
@@ -102,7 +93,7 @@
  * characters are passed through to the application via UART2.
  * If your application uses the serial port for terminal (text) communications you should be OK,
  * but binary transfers are likely to cause problems and this option should probably be disabled.
- * Instead, use GDBSTUB_BREAK_ON_INIT, or call gdbstub_do_break() in your application.
+ * Instead, use GDBSTUB_BREAK_ON_INIT, or call gdb_do_break() in your application.
  *
  * Specify:
  *  0 to disable Ctrl+C break checking completely
@@ -142,7 +133,7 @@
  * If undefined, calls will do nothing and return -1.
  */
 #ifndef GDBSTUB_ENABLE_SYSCALL
-#define GDBSTUB_ENABLE_SYSCALL 1
+#define GDBSTUB_ENABLE_SYSCALL 0
 #endif
 
 /*
@@ -178,7 +169,7 @@
  * Set to 0 to wait indefinitely.
  */
 #ifndef GDBSTUB_UART_READ_TIMEOUT
-#define GDBSTUB_UART_READ_TIMEOUT 2000
+#define GDBSTUB_UART_READ_TIMEOUT 0
 #endif
 
 /*

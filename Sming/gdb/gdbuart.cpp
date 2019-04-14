@@ -312,7 +312,6 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 	// RX FIFO Full or RX FIFO Timeout ?
 	if(status & (_BV(UIFF) | _BV(UITO))) {
 #if GDBSTUB_ENABLE_UART2
-		bool isUserData = false;
 		auto rxbuf = user_uart == nullptr ? nullptr : user_uart->rx_buffer;
 #endif
 
@@ -361,7 +360,7 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 				// This event doesn't apply to user uart
 				bitClear(user_uart_status, UIFF);
 				bitClear(user_uart_status, UITO);
-			} else if(rxbuf->getFreeSpace() > UART_RX_FIFO_SIZE + user_uart->rx_headroom) {
+			} else if(rxbuf->getFreeSpace() > size_t(UART_RX_FIFO_SIZE) + user_uart->rx_headroom) {
 				bitClear(user_uart_status, UIFF);
 			}
 		}

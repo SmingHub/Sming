@@ -1,4 +1,36 @@
+LiveDebug
+=========
+
 This project is an example of how to integrate GDB debugging into your project.
+It provides a basic command interface which you can use via regular serial terminal or with the GDB application.
+
+To use this sample application with the command-line GDB application, simply build and flash the project as usual:
+
+```bash
+make clean
+make flash
+```
+
+You should be presented with the GDB command prompt. Enter 'c' to continue running the application.
+
+	(gdb) c
+	Continuing.
+	(attached) 
+
+The `(attached)` prompt is displayed by the LiveDebug application. Type `help` to get a list of available commands.
+
+Note that if you run this application via serial terminal (`make terminal`) you'll get the `(Detached)` prompt instead.
+
+2. Debugging under eclipse
+
+Interacting with the GDB console causes problems for eclipse, so compile with the `ENABLE_GDB_CONSOLE=0` option:
+
+```bash
+make clean
+make flash ENABLE_CONSOLE=0
+```
+
+Alternatively, use the `consoleOff` command from the GDB command prompt, then quit the debugger and connect via eclipse.
 
 Exception Handling
 ------------------
@@ -58,11 +90,10 @@ But that information might not be enough. And finding the root cause may take qu
 
 GDB Debugging
 -------------
+
 Debugging is a powerful technique allowing you to interactively run your code and be able to see much more information about the things that went wrong.
 
-Here are the commands that you need to execute:
-
-1. (Re)compile your project with the `ENABLE_GDB` option and flash it to the board.
+To use, (Re)compile your project with the `ENABLE_GDB` option and flash it to the board.
 
 ```bash
 make clean
@@ -70,14 +101,15 @@ make ENABLE_GDB=1
 make flash
 ```
 
-2. Run gdb immediately after resetting the board or after it has run into an exception. 
-The easiest way to do it is to use the provided script:
+Instead of a terminal, the GDB console will be opened automatically.
+
+If you need to run GDB manually after resetting the board or after it has run into an exception, use the provided script:
 
 ```bash
 make gdb
 ```
 
-3. Software breakpoints ('br') only work on code that is in RAM. During development you can use the GDB_IRAM_ATTR attribute in your function declarations. 
+Note that software breakpoints ('br') only work on code that is in RAM. During development you can use the GDB_IRAM_ATTR attribute in your function declarations. 
 Code in flash can only have a hardware breakpoint ('hbr').
 
 Read the GDB stub [Notes](https://github.com/SmingHub/Sming/tree/develop/Sming/gdb/readme.md) for more information.

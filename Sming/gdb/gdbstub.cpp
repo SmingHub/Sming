@@ -195,6 +195,11 @@ static ERRNO_T ATTR_GDBEXTERNFN writeMemoryBlock(uint32_t addr, const void* data
  */
 static void ATTR_GDBEXTERNFN sendReason()
 {
+	if(gdb_state.syscall == syscall_active) {
+		// GDB ignores this whilst processing a system call - we'll send when it's completed via 'F' response
+		return;
+	}
+
 	gdbFlushUserData();
 	GdbPacket packet;
 	packet.writeChar('T');
@@ -300,12 +305,18 @@ static unsigned ATTR_GDBEXTERNFN readCommand()
 	while((c = gdbReceiveChar()) != '#') { // end of packet, checksum follows
 		if(c < 0) {
 			gdbSendChar('-');
+#if GDBSTUB_ENABLE_DEBUG
+			m_puts("\r\n");
 			debug_e("CMD TIMEOUT");
+#endif
 			return 0;
 		}
 		if(c == '$') {
 			// Wut, restart packet?
+#if GDBSTUB_ENABLE_DEBUG
+			m_puts("\r\n");
 			debug_e("Unexpected '$' received");
+#endif
 			checksum = 0;
 			cmdLen = 0;
 			continue;
@@ -318,21 +329,26 @@ static unsigned ATTR_GDBEXTERNFN readCommand()
 		}
 		if(cmdLen >= MAX_COMMAND_LENGTH) {
 			// Received more than the size of the command buffer
+#if GDBSTUB_ENABLE_DEBUG
+			m_puts("\r\n");
 			debug_e("Command '%c' buffer overflow", commandBuffer[0]);
+#endif
 			return 0;
 		}
 		commandBuffer[cmdLen++] = c;
 	}
 	commandBuffer[cmdLen] = '\0';
 
-#if GDBSTUB_ENABLE_DEBUG
-	debug_i("cmd '%c', len %u", commandBuffer[0], cmdLen);
-#endif
-
 	// Read checksum and verify
 	char checksumChars[] = {char(gdbReceiveChar()), char(gdbReceiveChar()), '\0'};
 	const char* ptr = checksumChars;
 	auto receivedChecksum = GdbPacket::readHexValue(ptr);
+
+#if GDBSTUB_ENABLE_DEBUG
+	m_puts("\r\n");
+	debug_i("cmd '%c', len %u", commandBuffer[0], cmdLen);
+#endif
+
 	if(receivedChecksum == checksum) {
 		// Acknowledge the command
 		gdbSendChar('+');
@@ -423,14 +439,7 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 		auto regnum = GdbPacket::readHexValue(data);
 		auto regPtr = getSavedReg(regnum);
 #if GDBSTUB_ENABLE_DEBUG
-		char regName[16];
-		/*
- * @todo Trying to read flash here sometimes causes a LEVEL1 interrupt exception (even though
- * we haven't hooked it?!) According to the docs. we need to look at the INTERRUPT register
- * and INTENABLE to determine the actual cause.
- */
-		regName[0] = '\0';
-//		memcpy_P(regName, registerNames[regnum], sizeof(regName));
+		const char* regName = (regPtr == nullptr) ? PSTR("(unsupported)") : registerNames[regnum];
 #endif
 
 		if(commandChar == 'p') { // read
@@ -542,14 +551,31 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 #if GDBSTUB_ENABLE_SYSCALL
 	/*
 	 * A file (or console) I/O request has finished.
+	 *
+	 * This can happen whilst the application is running, or when it has stopped due to
+	 * exception or debug break.
+	 *
+	 * Whilst an I/O request is in progress, GDB will ignore anything we send so if already
+	 * paused we need to call sendReason() again.
+	 *
+	 * If the user hit Ctrl+C then the syscall completes and returns true to tell us this.
+	 *
+	 * Note that GDB expects us to be paused during the entire 'F' request / reply operation,
+	 * but that makes console reading a lot less useful for us so don't actually pause until
+	 * the start of the response packet (indicated by DBGFLAG_PACKET_STARTED).
 	 */
 	case 'F':
 		if(gdb_syscall_complete(data)) {
 			// Ctrl+C was pressed
 			sendReason();
 			return ST_OK;
-		} else {
+		} else if(bitRead(gdb_state.flags, DBGFLAG_PACKET_STARTED)) {
+			// Paused to deal with packet response, continue running normally
 			return ST_CONT;
+		} else {
+			// Paused for some other reason, keep debugging
+			sendReason();
+			return ST_OK;
 		}
 #endif
 
@@ -618,7 +644,7 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 					access = 2; // write
 				else if(idx == '3')
 					access = 1; // read
-				else if(idx == '4')
+				else			// can only be idx == '4' as we've checked above
 					access = 3; // access
 				if(len == 1)
 					mask = 0x3F;
@@ -701,6 +727,8 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 */
 void ATTR_GDBEXTERNFN commandLoop(bool waitForStart, bool allowDetach)
 {
+	debug_i(">> ENTER CMDLOOP");
+
 	bool initiallyAttached = gdb_state.attached;
 
 	while(true) {
@@ -727,6 +755,8 @@ void ATTR_GDBEXTERNFN commandLoop(bool waitForStart, bool allowDetach)
 	if(gdb_state.attached != initiallyAttached) {
 		System.queueCallback(TaskCallback(gdb_on_attach), gdb_state.attached);
 	}
+
+	debug_i("<< LEAVE CMDLOOP");
 }
 
 /*
@@ -780,31 +810,14 @@ static void ATTR_GDBEXTERNFN emulLdSt()
 	}
 }
 
-/**
- * @brief If the hardware timer is operating using non-maskable interrupts, we must explicitly stop it
- * @param pause true to stop the timer, false to resume it
- */
-static void pauseHardwareTimer(bool pause)
-{
-#if GDBSTUB_PAUSE_HARDWARE_TIMER
-	static bool edgeIntEnable;
-	if(pause) {
-		edgeIntEnable = bitRead(READ_PERI_REG(EDGE_INT_ENABLE_REG), 1);
-		TM1_EDGE_INT_DISABLE();
-	} else if(edgeIntEnable) {
-		TM1_EDGE_INT_ENABLE();
-	}
-#endif
-}
-
 // Main exception handler
 static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
 {
+	debug_i(">> DBG 0x%02x, PC = %p", gdb_state.flags, gdbstub_savedRegs.pc);
+
 	bool isEnabled = gdb_state.enabled;
 
 	if(isEnabled) {
-		pauseHardwareTimer(true);
-
 		bitSet(gdb_state.flags, DBGFLAG_DEBUG_EXCEPTION);
 
 		if(singleStepPs >= 0) {
@@ -849,10 +862,6 @@ static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
 	}
 
 	gdb_state.flags = 0;
-
-	if(isEnabled) {
-		pauseHardwareTimer(false);
-	}
 }
 
 // We just caught a debug exception and need to handle it. This is called from an assembly routine in gdbstub-entry.S
@@ -869,14 +878,12 @@ void gdbstub_handle_exception()
 		return;
 	}
 
-	pauseHardwareTimer(true);
 	bitSet(gdb_state.flags, DBGFLAG_SYSTEM_EXCEPTION);
 
 	sendReason();
 	commandLoop(true, false);
 
 	gdb_state.flags = 0;
-	pauseHardwareTimer(false);
 }
 #endif
 
@@ -891,7 +898,6 @@ void ATTR_GDBINIT gdbstub_init()
 	SD(ENABLE_EXCEPTION_DUMP);
 	SD(ENABLE_CRASH_DUMP);
 	SD(GDBSTUB_ENABLE_DEBUG);
-	SD(GDBSTUB_PAUSE_HARDWARE_TIMER);
 	SD(GDBSTUB_GDB_PATCHED);
 	SD(GDBSTUB_USE_OWN_STACK);
 	SD(GDBSTUB_BREAK_ON_EXCEPTION);
@@ -905,7 +911,7 @@ void ATTR_GDBINIT gdbstub_init()
 
 #if GDBSTUB_BREAK_ON_INIT
 	if(gdb_state.enabled) {
-		gdbstub_do_break();
+		gdb_do_break();
 	}
 #endif
 }
@@ -930,9 +936,4 @@ void gdb_detach()
 void gdb_enable(bool state)
 {
 	gdb_state.enabled = state;
-}
-
-void IRAM_ATTR gdb_do_break()
-{
-	gdbstub_do_break();
 }

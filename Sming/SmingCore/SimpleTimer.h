@@ -37,6 +37,8 @@ extern "C" {
 */
 #define MAX_OS_TIMER_INTERVAL_US 268435000
 
+typedef os_timer_func_t* SimpleTimerCallback;
+
 class SimpleTimer
 {
 public:
@@ -89,7 +91,7 @@ public:
      *  @param  interrupt Function to be called on timer trigger
      *  @note   Classic c-type callback method
      */
-	void setCallback(os_timer_func_t callback, void* arg = nullptr)
+	void setCallback(SimpleTimerCallback callback, void* arg = nullptr)
 	{
 		stop();
 		ets_timer_setfn(&osTimer, callback, arg);

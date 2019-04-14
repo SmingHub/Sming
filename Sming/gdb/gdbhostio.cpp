@@ -113,7 +113,7 @@ void ATTR_GDBEXTERNFN gdbHandleHostIo(char* commandBuffer, unsigned cmdLen)
 		debug_i("File:pread(%d, %u, %u)", fd, count, offset);
 
 		packet.writeChar('F');
-		if(fileSeek(fd, offset, eSO_FileStart) == offset) {
+		if(fileSeek(fd, offset, eSO_FileStart) == int(offset)) {
 			count = fileRead(fd, commandBuffer, count);
 			if(int(count) >= 0) {
 				packet.writeHexWord16(count);
@@ -139,7 +139,7 @@ void ATTR_GDBEXTERNFN gdbHandleHostIo(char* commandBuffer, unsigned cmdLen)
 		debug_i("File:pwrite(%d, %u, %u)", fd, offset, size);
 
 		packet.writeChar('F');
-		if(fileSeek(fd, offset, eSO_FileStart) == offset) {
+		if(fileSeek(fd, offset, eSO_FileStart) == int(offset)) {
 			int count = fileWrite(fd, data, size);
 			if(count >= 0) {
 				packet.writeHexWord16(count);

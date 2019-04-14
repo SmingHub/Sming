@@ -52,9 +52,14 @@ void gdb_enable(bool state);
 
 /**
  * @brief Break into GDB, if present
- * @note When present, gdbstub triggers entry into the debugger, which looks like a breakpoint hit.
  */
-void gdb_do_break(void);
+#ifdef ENABLE_GDB
+#define gdb_do_break() asm("break 0,0")
+#else
+#define gdb_do_break()                                                                                                 \
+	do {                                                                                                               \
+	} while(0)
+#endif
 
 typedef enum {
 	eGDB_NotPresent,

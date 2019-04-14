@@ -64,6 +64,19 @@ Useful GDB commands
 
 `tui enable` Provides a windowed interface within the console (only seems to work in Linux)
 
+`x/32xw $sp` Display contents of stack
+
+`info reg` Display register values
+
+`info break` Display details of currently set breakpoints
+
+`delete` Delete all breakpoints
+
+`br` Set a breakpoint at the given address or function name
+
+`hbr` Set a hardware breakpoint
+
+`watch` Set a hardware watchpoint to detect when the value of a variable changes
 
 These commands require `GDBSTUB_ENABLE_HOSTIO` to be enabled:
 
@@ -88,6 +101,16 @@ Problems connecting?
  * Ensure serial baud rate matches your application
  * Remove or disable all breakpoints before attaching. Eclipse will attempt to set these on connection, and if any are invalid it will hang and timeout.
  * Check connectivity using command-line GDB
+ 
+ 
+GDB System Calls
+----------------
+
+Applications may interact with GDB directly using system calls, for example reading input from the GDB command prompt.
+See the `LiveDebug` sample for a demonstration.
+
+Note that system calls are disabled in the default configuration, so set `GDBSTUB_ENABLE_SYSCALL=1` to use this feature with your application.
+
 
 Known Issues and Limitations
 ----------------------------
@@ -140,3 +163,7 @@ When GDB is running under windows, appears to hang when target reset or restarte
 GDB (in Windows) doesn't respond at all to Ctrl+C
 - Cause: Unknown
 - Solution: Press Ctrl+Break to 'hard kill' GDB
+
+Debug messages don't appear in Eclipse
+- Cause: Unknown
+- Solution: Use command-line GDB, or a better visual debugger

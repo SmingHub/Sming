@@ -13,9 +13,6 @@
 #ifndef _GDB_GDBSTUB_H_
 #define _GDB_GDBSTUB_H_
 
-// Always optimise GDB stub code for size, regardless of application settings
-#pragma GCC optimize("Os")
-
 #include "gdbstub-internal.h"
 #include <gdb_hooks.h>
 #include "BitManipulations.h"
@@ -29,13 +26,10 @@
 #define GDB_PROGMEM PROGMEM
 #endif
 
-// Break into debugger
-#define gdbstub_do_break() asm("break 0,0")
-
 #define gdbstub_break_internal(flag)                                                                                   \
 	{                                                                                                                  \
 		bitSet(gdb_state.flags, flag);                                                                                 \
-		asm("break 0,0");                                                                                              \
+		gdb_do_break();                                                                                                \
 	}
 
 // Additional debugging flags mainly used to qualify reason for a debugging break
@@ -66,5 +60,10 @@ extern const uint8_t gdb_exception_signals[];
 
 void gdbstub_init();
 void gdbstub_handle_exception();
+
+#if GDBSTUB_ENABLE_DEBUG == 0
+// Optimise GDB stub code for size, regardless of application settings
+#pragma GCC optimize("Os")
+#endif
 
 #endif /* _GDB_GDBSTUB_H_ */
