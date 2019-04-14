@@ -3,8 +3,8 @@
 #include "HardwareTimer.h"
 #include <gdb_syscall.h>
 #include <Data/Stream/GdbFileStream.h>
-#include <LineBuffer.h>
-#include <OsMessageInterceptor.h>
+#include <Data/Buffer/LineBuffer.h>
+#include <Platform/OsMessageInterceptor.h>
 
 #define LED_PIN 2 // Note: LED is attached to UART1 TX output
 

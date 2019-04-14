@@ -13,7 +13,7 @@
 #include "gdbuart.h"
 #include "GdbPacket.h"
 #include "espinc/uart.h"
-#include "SerialBuffer.h"
+#include "Data/Buffer/SerialBuffer.h"
 #include "Platform/System.h"
 #include "HardwareSerial.h"
 #include "HardwareTimer.h"

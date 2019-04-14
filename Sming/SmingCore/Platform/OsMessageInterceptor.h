@@ -42,10 +42,10 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_OS_MESSAGE_INTERCEPTOR_H_
-#define _SYSTEM_INCLUDE_OS_MESSAGE_INTERCEPTOR_H_
+#ifndef _SMING_CORE_PLATFORM_OS_MESSAGE_INTERCEPTOR_H_
+#define _SMING_CORE_PLATFORM_OS_MESSAGE_INTERCEPTOR_H_
 
-#include "LineBuffer.h"
+#include "Data/Buffer/LineBuffer.h"
 
 /**
  * @brief Fixed-size buffer for OS messages
@@ -99,4 +99,4 @@ private:
 	static OsMessageInterceptor* self;
 };
 
-#endif /* _SYSTEM_INCLUDE_OS_MESSAGE_INTERCEPTOR_H_ */
+#endif /* _SMING_CORE_PLATFORM_OS_MESSAGE_INTERCEPTOR_H_ */

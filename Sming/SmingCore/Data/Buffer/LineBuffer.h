@@ -10,8 +10,8 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_LINE_BUFFER_H_
-#define _SYSTEM_INCLUDE_LINE_BUFFER_H_
+#ifndef _SMING_CORE_DATA_BUFFER_LINE_BUFFER_H_
+#define _SMING_CORE_DATA_BUFFER_LINE_BUFFER_H_
 
 #include <user_config.h>
 
@@ -114,4 +114,4 @@ template <uint16_t BUFSIZE> bool LineBuffer<BUFSIZE>::contains(const char* text)
 	return strstr(buffer, text) != nullptr;
 }
 
-#endif /* _SYSTEM_INCLUDE_LINE_BUFFER_H_ */
+#endif /* _SMING_CORE_DATA_BUFFER_LINE_BUFFER_H_ */

@@ -13,7 +13,7 @@
 #ifndef _SMING_CORE_DATA_STREAM_TRANSFORMER_H_
 #define _SMING_CORE_DATA_STREAM_TRANSFORMER_H_
 
-#include "CircularBuffer.h"
+#include "Buffer/CircularBuffer.h"
 
 /**
  * @brief      Class that can be used to transform streams of data on the fly
