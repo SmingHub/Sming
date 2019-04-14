@@ -520,7 +520,6 @@ COMMAND_HANDLER(help)
 		s.setLength(2 + indent + 3);
 		memset(s.begin(), ' ', s.length());
 
-		const unsigned lineWidth = 80;
 		for(;;) {
 			auto end = strchr(desc, '\n');
 			if(end == nullptr) {
