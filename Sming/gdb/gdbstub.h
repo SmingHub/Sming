@@ -26,13 +26,10 @@
 #define GDB_PROGMEM PROGMEM
 #endif
 
-// Break into debugger
-#define gdbstub_do_break() asm("break 0,0")
-
 #define gdbstub_break_internal(flag)                                                                                   \
 	{                                                                                                                  \
 		bitSet(gdb_state.flags, flag);                                                                                 \
-		asm("break 0,0");                                                                                              \
+		gdb_do_break();                                                                                                \
 	}
 
 // Additional debugging flags mainly used to qualify reason for a debugging break

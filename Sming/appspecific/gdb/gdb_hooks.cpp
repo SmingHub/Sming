@@ -240,7 +240,6 @@ static unsigned IRAM_ATTR __gdb_no_op(void)
 #define NOOP __attribute__((weak, alias("__gdb_no_op")))
 
 void gdb_enable(bool state) NOOP;
-void gdb_do_break(void) NOOP;
 GdbState gdb_present(void) NOOP;
 void gdb_on_attach(bool attached) NOOP;
 void gdb_detach(void) NOOP;

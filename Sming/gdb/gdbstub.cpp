@@ -911,7 +911,7 @@ void ATTR_GDBINIT gdbstub_init()
 
 #if GDBSTUB_BREAK_ON_INIT
 	if(gdb_state.enabled) {
-		gdbstub_do_break();
+		gdb_do_break();
 	}
 #endif
 }
@@ -936,9 +936,4 @@ void gdb_detach()
 void gdb_enable(bool state)
 {
 	gdb_state.enabled = state;
-}
-
-void IRAM_ATTR gdb_do_break()
-{
-	gdbstub_do_break();
 }

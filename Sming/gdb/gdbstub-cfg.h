@@ -93,7 +93,7 @@
  * characters are passed through to the application via UART2.
  * If your application uses the serial port for terminal (text) communications you should be OK,
  * but binary transfers are likely to cause problems and this option should probably be disabled.
- * Instead, use GDBSTUB_BREAK_ON_INIT, or call gdbstub_do_break() in your application.
+ * Instead, use GDBSTUB_BREAK_ON_INIT, or call gdb_do_break() in your application.
  *
  * Specify:
  *  0 to disable Ctrl+C break checking completely
