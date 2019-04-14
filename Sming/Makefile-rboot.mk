@@ -50,8 +50,6 @@ RBOOT_E2_SECTS     ?= .text .data .rodata
 RBOOT_E2_USER_ARGS ?= -quiet -bin -boot2
 # GDB path
 GDB ?= $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-gdb
-# File containing boot ROM debug symbols for GDB
-BOOTROM_ELF := bootrom.elf
 
 ## COM port parameters
 # Default COM port speed (generic)
@@ -255,6 +253,7 @@ endif
 ifeq ($(ENABLE_GDB), 1)
 	CFLAGS += -ggdb -DENABLE_GDB=1
 	MODULES += $(SMING_HOME)/gdb
+	GDB_SYMBOLS := gdb_symbols
 endif
 
 ifeq ($(SMING_RELEASE),1)
@@ -542,11 +541,13 @@ endef
 
 .PHONY: all checkdirs spiff_update spiff_clean clean kill_term terminal gdb
 
-all: $(USER_LIBDIR)/lib$(LIBSMING).a checkdirs $(LIBMAIN_DST) $(RBOOT_BIN) $(RBOOT_ROM_0) $(RBOOT_ROM_1) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2) $(BUILD_BASE)/$(BOOTROM_ELF)
+all: $(USER_LIBDIR)/lib$(LIBSMING).a checkdirs $(LIBMAIN_DST) $(RBOOT_BIN) $(RBOOT_ROM_0) $(RBOOT_ROM_1) $(SPIFF_BIN_OUT) $(FW_FILE_1) $(FW_FILE_2) $(GDB_SYMBOLS)
 
-# File contains boot rom symbols required by GDB, put it somewhere easy to find
-$(BUILD_BASE)/$(BOOTROM_ELF):
-	cp $(SMING_HOME)/gdb/$(BOOTROM_ELF) $(BUILD_BASE)
+# Copy symbols required by GDB into build directory
+gdb_symbols: $(BUILD_BASE)/bootrom.elf
+
+$(BUILD_BASE)/%.elf:
+	cp $(SMING_HOME)/gdb/symbols/$(notdir $@) $@
 
 $(RBOOT_BIN):
 	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot RBOOT_GPIO_ENABLED=$(RBOOT_GPIO_ENABLED) RBOOT_SILENT=$(RBOOT_SILENT)
