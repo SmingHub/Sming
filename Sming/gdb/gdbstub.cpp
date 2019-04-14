@@ -810,23 +810,6 @@ static void ATTR_GDBEXTERNFN emulLdSt()
 	}
 }
 
-/**
- * @brief If the hardware timer is operating using non-maskable interrupts, we must explicitly stop it
- * @param pause true to stop the timer, false to resume it
- */
-static void pauseHardwareTimer(bool pause)
-{
-#if GDBSTUB_PAUSE_HARDWARE_TIMER
-	static bool edgeIntEnable;
-	if(pause) {
-		edgeIntEnable = bitRead(READ_PERI_REG(EDGE_INT_ENABLE_REG), 1);
-		TM1_EDGE_INT_DISABLE();
-	} else if(edgeIntEnable) {
-		TM1_EDGE_INT_ENABLE();
-	}
-#endif
-}
-
 // Main exception handler
 static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
 {
@@ -835,8 +818,6 @@ static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
 	bool isEnabled = gdb_state.enabled;
 
 	if(isEnabled) {
-		pauseHardwareTimer(true);
-
 		bitSet(gdb_state.flags, DBGFLAG_DEBUG_EXCEPTION);
 
 		if(singleStepPs >= 0) {
@@ -881,10 +862,6 @@ static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
 	}
 
 	gdb_state.flags = 0;
-
-	if(isEnabled) {
-		pauseHardwareTimer(false);
-	}
 }
 
 // We just caught a debug exception and need to handle it. This is called from an assembly routine in gdbstub-entry.S
@@ -901,14 +878,12 @@ void gdbstub_handle_exception()
 		return;
 	}
 
-	pauseHardwareTimer(true);
 	bitSet(gdb_state.flags, DBGFLAG_SYSTEM_EXCEPTION);
 
 	sendReason();
 	commandLoop(true, false);
 
 	gdb_state.flags = 0;
-	pauseHardwareTimer(false);
 }
 #endif
 
@@ -923,7 +898,6 @@ void ATTR_GDBINIT gdbstub_init()
 	SD(ENABLE_EXCEPTION_DUMP);
 	SD(ENABLE_CRASH_DUMP);
 	SD(GDBSTUB_ENABLE_DEBUG);
-	SD(GDBSTUB_PAUSE_HARDWARE_TIMER);
 	SD(GDBSTUB_GDB_PATCHED);
 	SD(GDBSTUB_USE_OWN_STACK);
 	SD(GDBSTUB_BREAK_ON_EXCEPTION);

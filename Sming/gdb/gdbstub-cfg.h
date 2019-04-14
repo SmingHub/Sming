@@ -55,15 +55,6 @@
 #endif
 
 /*
- * The HardwareTimer defaults to non-maskable mode, and will continue to operate whilst paused.
- * Set this value to 1 to disable during a debugging exception, and restore it afterwards.
- * Note that to debug HardwareTimer callback routines, the timer must be initialise in maskable mode.
- */
-#ifndef GDBSTUB_PAUSE_HARDWARE_TIMER
-#define GDBSTUB_PAUSE_HARDWARE_TIMER 0
-#endif
-
-/*
  * Espressif provide a patched version of GDB which emits only those registered present in the lx106.
  * Set to 0 if an unpatched version of GDB is used.
  */
