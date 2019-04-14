@@ -14,7 +14,7 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 	if(request.method == HTTP_POST) {
 		debugf("Update config");
 		// Update config
-		if(request.getBody() == NULL) {
+		if(request.getBody() == nullptr) {
 			debugf("NULL bodyBuf");
 			return;
 		} else {
@@ -65,9 +65,7 @@ void onConfiguration_json(HttpRequest& request, HttpResponse& response)
 }
 void onFile(HttpRequest& request, HttpResponse& response)
 {
-	String file = request.uri.Path;
-	if(file[0] == '/')
-		file = file.substring(1);
+	String file = request.uri.getRelativePath();
 
 	if(file[0] == '.')
 		response.code = HTTP_STATUS_FORBIDDEN;
@@ -93,11 +91,11 @@ void startWebServer()
 		return;
 
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.addPath("/config", onConfiguration);
-	server.addPath("/config.json", onConfiguration_json);
-	server.addPath("/state", onAJAXGetState);
-	server.setDefaultHandler(onFile);
+	server.paths.set("/", onIndex);
+	server.paths.set("/config", onConfiguration);
+	server.paths.set("/config.json", onConfiguration_json);
+	server.paths.set("/state", onAJAXGetState);
+	server.paths.setDefault(onFile);
 	server.setBodyParser("application/json", bodyToStringParser);
 	serverStarted = true;
 

@@ -2,23 +2,23 @@
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * WebsocketClient
+ * WebsocketClient.h
  *
  * @authors:
  * 		 Originally - hrsavla <https://github.com/hrsavla>
  * 		 Refactored - Alexander V, Ribchansky <https://github.com/avr39-ripe>
  * 		 Refactored - Slavey Karadzhov <slav@attachix.com>
  *
- * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
 //TODO: Add stream support for sending big chunks of data via websockets.
 
-#ifndef _SMING_CORE_NETWORK_WEBSOCKETCLIENT_H
-#define _SMING_CORE_NETWORK_WEBSOCKETCLIENT_H
+#ifndef _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_
+#define _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_
 
-#include "Http/HttpConnection.h"
+#include "Http/HttpClientConnection.h"
 #include "Http/Websocket/WebsocketConnection.h"
 
 /** @defgroup   wsclient Websocket client
@@ -32,10 +32,13 @@
 class WebsocketClient : protected WebsocketConnection
 {
 public:
-	WebsocketClient();
-	WebsocketClient(HttpConnectionBase* connection);
+	WebsocketClient() : WebsocketConnection(new HttpClientConnection)
+	{
+	}
 
-	virtual ~WebsocketClient();
+	WebsocketClient(HttpConnection* connection) : WebsocketConnection(connection)
+	{
+	}
 
 	using WebsocketConnection::setBinaryHandler;
 	using WebsocketConnection::setConnectionHandler;
@@ -45,10 +48,10 @@ public:
 	HttpConnection* getHttpConnection();
 
 	/**  @brief  Connects websocket client to server
-	  *  @param  url URL address of websocket server
+	  *  @param  url Url address of websocket server
 	  *  @param  sslOptions Specify the SSL options to be used when calling websocket server over SSL
 	  */
-	bool connect(const String& url, uint32_t sslOptions = 0);
+	bool connect(const Url& url, uint32_t sslOptions = 0);
 
 	using WebsocketConnection::send;
 	using WebsocketConnection::sendBinary;
@@ -60,7 +63,7 @@ public:
 	 *
 	 *  @retval bool true if the data can be send, false otherwise
 	 */
-	__forceinline void sendPing(const String& payload = "")
+	void sendPing(const String& payload = nullptr)
 	{
 		debug_d("Sending PING");
 		WebsocketConnection::send(payload.c_str(), payload.length(), WS_FRAME_PING);
@@ -71,7 +74,7 @@ public:
      *
      *  @retval bool true if the data can be send, false otherwise
      */
-	__forceinline void sendPong(const String& payload = "")
+	void sendPong(const String& payload = nullptr)
 	{
 		debug_d("Sending PONG");
 		WebsocketConnection::send(payload.c_str(), payload.length(), WS_FRAME_PONG);
@@ -81,9 +84,9 @@ public:
 	using WebsocketConnection::getState;
 
 	/** @brief  Disconnects websocket client from server
-	  * @deprecated use close() instead
+	  * @deprecated Use `close()` instead
 	  */
-	void disconnect()
+	void disconnect() SMING_DEPRECATED
 	{
 		close();
 	}
@@ -92,9 +95,9 @@ protected:
 	int verifyKey(HttpConnection& connection, HttpResponse& response);
 
 private:
-	URL uri;
+	Url uri;
 	String key;
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_WEBSOCKETCLIENT_H */
+#endif /* _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_ */

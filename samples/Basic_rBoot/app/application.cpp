@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 // download urls, set appropriately
 #define ROM_0_URL "http://192.168.7.5:80/rom0.bin"

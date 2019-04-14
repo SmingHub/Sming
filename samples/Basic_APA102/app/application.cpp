@@ -11,7 +11,7 @@
  * 
  */
 #include "user_config.h"
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 // SPI: if defined use software SPI, else hardware SPI
 //#define _USE_SOFTSPI

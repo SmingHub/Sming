@@ -4,12 +4,14 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * MultipartStream.h
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_MULTIPART_STREAM_H_
-#define _SMING_CORE_DATA_MULTIPART_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_MULTIPART_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_MULTIPART_STREAM_H_
 
 #include "MultiStream.h"
 #include "Delegate.h"
@@ -24,7 +26,7 @@
 
 typedef struct {
 	HttpHeaders* headers = nullptr;
-	ReadWriteStream* stream = nullptr;
+	IDataSourceStream* stream = nullptr;
 } HttpPartResult;
 
 typedef Delegate<HttpPartResult()> HttpPartProducerDelegate;
@@ -32,9 +34,9 @@ typedef Delegate<HttpPartResult()> HttpPartProducerDelegate;
 class MultipartStream : public MultiStream
 {
 public:
-	MultipartStream(HttpPartProducerDelegate delegate);
-
-	virtual ~MultipartStream();
+	MultipartStream(HttpPartProducerDelegate delegate) : producer(delegate)
+	{
+	}
 
 	/**
 	 * @brief Returns the generated boundary
@@ -44,14 +46,14 @@ public:
 	const char* getBoundary();
 
 protected:
-	virtual ReadWriteStream* getNextStream()
+	IDataSourceStream* getNextStream() override
 	{
 		result = producer();
 		return result.stream;
 	}
 
-	virtual void onNextStream();
-	virtual bool onCompleted();
+	void onNextStream() override;
+	bool onCompleted() override;
 
 private:
 	HttpPartProducerDelegate producer;
@@ -61,4 +63,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_MULTIPART_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_MULTIPART_STREAM_H_ */

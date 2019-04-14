@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * FileStream.h
+ *
  ****/
 
 #ifndef _SMING_CORE_DATA_FILE_STREAM_H_
@@ -33,7 +36,7 @@ public:
 		open(fileName, openFlags);
 	}
 
-	virtual ~FileStream()
+	~FileStream()
 	{
 		close();
 	}
@@ -44,8 +47,8 @@ public:
 	 */
 	void attach(file_t file, size_t size);
 
-	/* @deprecated: use open() method */
-	bool attach(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly)
+	/** @deprecated Use `open()` instead */
+	bool attach(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly) SMING_DEPRECATED
 	{
 		return open(fileName, openFlags);
 	}
@@ -63,21 +66,21 @@ public:
 	void close();
 
 	//Use base class documentation
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return eSST_File;
 	}
 
-	virtual size_t write(const uint8_t* buffer, size_t size);
+	size_t write(const uint8_t* buffer, size_t size) override;
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	//Use base class documentation
-	virtual bool seek(int len);
+	bool seek(int len) override;
 
 	//Use base class documentation
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return fileIsEOF(handle);
 	}
@@ -95,12 +98,12 @@ public:
 		return handle >= 0;
 	}
 
-	virtual String getName() const
+	String getName() const override
 	{
 		return fileName();
 	}
 
-	virtual bool isValid() const
+	bool isValid() const override
 	{
 		return fileExist();
 	}
@@ -116,12 +119,12 @@ public:
 	/**	@brief Return the total length of the stream
 	 * 	@retval int -1 is returned when the size cannot be determined
 	 */
-	virtual int available()
+	int available() override
 	{
 		return size - pos;
 	}
 
-	virtual String id() const;
+	String id() const override;
 
 	/** @brief determine if an error occurred during operation
 	 *  @retval int filesystem error code

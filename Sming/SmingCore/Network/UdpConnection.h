@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * UdpConnection.h
+ *
  ****/
 
 /** @defgroup   udp UDP
@@ -11,8 +14,8 @@
  *  @{
  */
 
-#ifndef SMINGCORE_NETWORK_UDPCONNECTION_H_
-#define SMINGCORE_NETWORK_UDPCONNECTION_H_
+#ifndef _SMING_CORE_NETWORK_UDP_CONNECTION_H_
+#define _SMING_CORE_NETWORK_UDP_CONNECTION_H_
 
 #include "WiringFrameworkDependencies.h"
 #include "Delegate.h"
@@ -83,4 +86,4 @@ protected:
 };
 
 /** @} */
-#endif /* SMINGCORE_NETWORK_UDPCONNECTION_H_ */
+#endif /* _SMING_CORE_NETWORK_UDP_CONNECTION_H_ */

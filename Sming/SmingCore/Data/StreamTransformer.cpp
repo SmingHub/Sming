@@ -4,6 +4,8 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * StreamTransformer.cpp
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/
@@ -12,40 +14,9 @@
 
 #define NETWORK_SEND_BUFFER_SIZE 1024
 
-StreamTransformer::StreamTransformer(ReadWriteStream* stream, const StreamTransformerCallback& callback,
-									 size_t resultSize /* = 256 */, size_t blockSize /* = 64 */
-									 )
-	: transformCallback(callback)
-{
-	sourceStream = stream;
-	this->resultSize = resultSize;
-	result = new uint8_t[this->resultSize];
-	this->blockSize = blockSize;
-}
-
-StreamTransformer::~StreamTransformer()
-{
-	delete[] result;
-	delete tempStream;
-	delete sourceStream;
-	result = NULL;
-	tempStream = NULL;
-	sourceStream = NULL;
-}
-
-size_t StreamTransformer::write(uint8_t charToWrite)
-{
-	return sourceStream->write(charToWrite);
-}
-
-size_t StreamTransformer::write(const uint8_t* buffer, size_t size)
-{
-	return sourceStream->write(buffer, size);
-}
-
 uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 {
-	if(tempStream == NULL) {
+	if(tempStream == nullptr) {
 		tempStream = new CircularBuffer(NETWORK_SEND_BUFFER_SIZE + 10);
 	}
 
@@ -68,7 +39,7 @@ uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 			}
 
 			saveState();
-			int outLength = transformCallback((uint8_t*)data, len, result, resultSize);
+			size_t outLength = transform(reinterpret_cast<const uint8_t*>(data), len, result, resultSize);
 			if(outLength > tempStream->room()) {
 				restoreState();
 				break;
@@ -84,7 +55,7 @@ uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 		} while(--i);
 
 		if(sourceStream->isFinished()) {
-			int outLength = transformCallback(NULL, 0, result, resultSize);
+			int outLength = transform(nullptr, 0, result, resultSize);
 			tempStream->write(result, outLength);
 		}
 

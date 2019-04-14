@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HardwareSerial.h
+ *
  ****/
 
 /**	@defgroup serial Hardware serial
@@ -10,18 +13,18 @@
  *  @{
  */
 
-#ifndef _HARDWARESERIAL_H_
-#define _HARDWARESERIAL_H_
+#ifndef _SMING_CORE_HARDWARE_SERIAL_H_
+#define _SMING_CORE_HARDWARE_SERIAL_H_
 
 #include "WiringFrameworkDependencies.h"
-#include "Stream.h"
+#include "Data/Stream/ReadWriteStream.h"
 #include "Delegate.h"
 #include "espinc/uart.h"
 
 #define UART_ID_0 0 ///< ID of UART 0
 #define UART_ID_1 1 ///< ID of UART 1
 
-#define NUMBER_UARTS 2 ///< Quantity of UARTs available
+#define NUMBER_UARTS UART_COUNT ///< Quantity of UARTs available
 
 class HardwareSerial;
 
@@ -87,8 +90,16 @@ enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL
 #define DEFAULT_TX_BUFFER_SIZE 0
 #endif
 
+/** @brief Notification and error status bits */
+enum SerialStatus {
+	eSERS_BreakDetected = UIBD, ///< Break condition detected on receive line
+	eSERS_Overflow = UIOF,		///< Receive buffer overflowed
+	eSERS_FramingError = UIFR,  ///< Receive framing error
+	eSERS_ParityError = UIPE,   ///< Parity check failed on received data
+};
+
 /// Hardware serial class
-class HardwareSerial : public Stream
+class HardwareSerial : public ReadWriteStream
 {
 public:
 	/** @brief  Create instance of a hardware serial port object
@@ -105,6 +116,11 @@ public:
 	{
 		end();
 		uartNr = uartPort;
+	}
+
+	int getPort()
+	{
+		return uartNr;
 	}
 
 	/** @brief  Initialise the serial port
@@ -218,7 +234,7 @@ public:
 	/** @brief  Get quantity characters available from serial input
      *  @retval int Quantity of characters in receive buffer
      */
-	virtual int available()
+	int available() override
 	{
 		return (int)uart_rx_available(uart);
 	}
@@ -227,7 +243,7 @@ public:
      *  @retval int Character read from serial port or -1 if buffer empty
      *  @note   The character is removed from the serial port input buffer
     */
-	virtual int read()
+	int read() override
 	{
 		return uart_read_char(uart);
 	}
@@ -239,53 +255,55 @@ public:
 	 *  @note Although this shares the same name as the method in IDataSourceStream,
 	 *  behaviour is different because in effect the 'seek' position is changed by this call.
 	 */
-	virtual uint16_t readMemoryBlock(char* buf, size_t max_len)
+	uint16_t readMemoryBlock(char* buf, int max_len) override
 	{
 		return uart_read(uart, buf, max_len);
+	}
+
+	bool seek(int len) override
+	{
+		return false;
+	}
+
+	bool isFinished() override
+	{
+		return false;
 	}
 
 	/** @brief  Read a character from serial port without removing from input buffer
      *  @retval int Character read from serial port or -1 if buffer empty
      *  @note   The character remains in serial port input buffer
      */
-	virtual int peek()
+	int peek() override
 	{
 		return uart_peek_char(uart);
 	}
 
 	/** @brief  Clear the serial port transmit/receive buffers
- 	 *  @note   All un-read buffered data is removed
+	 * 	@param mode Whether to flush TX, RX or both (the default)
+ 	 *  @note All un-read buffered data is removed and any error condition cleared
 	 */
-	void clear()
+	void clear(SerialMode mode = SERIAL_FULL)
 	{
-		uart_flush(uart);
+		uart_flush(uart, uart_mode_t(mode));
 	}
 
 	/** @brief Flush all pending data to the serial port
 	 *  @note Not to be confused with uart_flush() which is different. See clear() method.
 	 */
-	void flush()
+	void flush() override // Stream
 	{
 		uart_wait_tx_empty(uart);
 	}
 
 	using Stream::write;
 
-	/** @brief  write a character to serial port
-	 *  @param  oneChar Character to write to the serial port
-	 *  @retval size_t Quantity of characters written (always 1)
-	 */
-	virtual size_t write(uint8_t oneChar)
-	{
-		return uart_write_char(uart, oneChar);
-	}
-
 	/** @brief  write multiple characters to serial port
 	 *  @param buffer data to write
 	 *  @param size number of characters to write
 	 *  @retval size_t Quantity of characters written, may be less than size
 	 */
-	virtual size_t write(const uint8_t* buffer, size_t size)
+	size_t write(const uint8_t* buffer, size_t size) override
 	{
 		return uart_write(uart, buffer, size);
 	}
@@ -304,7 +322,7 @@ public:
 	void commandProcessing(bool reqEnable);
 
 	/** @brief  Set handler for received data
-	 *  @param  reqCallback Function to handle received data
+	 *  @param  dataReceivedDelegate Function to handle received data
 	 *  @retval bool Returns true if the callback was set correctly
 	 */
 	bool setCallback(StreamDataReceivedDelegate dataReceivedDelegate)
@@ -313,7 +331,7 @@ public:
 	}
 
 	/** @brief  Set handler for received data
-	 *  @param  reqCallback Function to handle received data
+	 *  @param  dataReceivedDelegate Function to handle received data
 	 *  @retval bool Returns true if the callback was set correctly
 	 */
 	bool onDataReceived(StreamDataReceivedDelegate dataReceivedDelegate)
@@ -323,7 +341,7 @@ public:
 	}
 
 	/** @brief  Set handler for received data
-	 *  @param  reqCallback Function to handle received data
+	 *  @param  transmitCompleteDelegate Function to handle received data
 	 *  @retval bool Returns true if the callback was set correctly
 	 */
 	bool onTransmitComplete(TransmitCompleteDelegate transmitCompleteDelegate)
@@ -392,7 +410,7 @@ public:
 	 * @param char c - character to search for
 	 * @retval int -1 if not found 0 or positive number otherwise
 	 */
-	virtual int indexOf(char c)
+	int indexOf(char c) override
 	{
 		return uart_rx_find(uart, c);
 	}
@@ -406,6 +424,16 @@ public:
 		return uart;
 	}
 
+	/**
+	 * @brief Get status error flags and clear them
+	 * @retval unsigned Status flags, combination of SerialStatus bits
+	 * @see SerialStatus
+	 */
+	unsigned getStatus()
+	{
+		return uart_get_status(uart);
+	}
+
 private:
 	int uartNr = -1;
 	TransmitCompleteDelegate transmitComplete = nullptr; ///< Callback for transmit completion
@@ -417,13 +445,18 @@ private:
 	uart_options_t options = _BV(UART_OPT_TXWAIT);
 	size_t txSize = DEFAULT_TX_BUFFER_SIZE;
 	size_t rxSize = DEFAULT_RX_BUFFER_SIZE;
+	volatile uint16_t statusMask = 0;	 ///< Which serial events require a callback
+	volatile uint16_t callbackStatus = 0; ///< Persistent uart status flags for callback
+	volatile bool callbackQueued = false;
 
 	/**
-	 * @brief  Interrupt handler for UART0 receive events
+	 * @brief Serial interrupt handler, called by serial driver
 	 * @param uart_t* pointer to UART object
 	 * @param status UART status flags indicating cause(s) of interrupt
 	 */
-	void IRAM_ATTR callbackHandler(uint32_t status);
+	static void IRAM_ATTR staticCallbackHandler(uart_t* uart, uint32_t status);
+	static void staticOnStatusChange(uint32_t param);
+	void invokeCallbacks();
 
 	/**
 	 * @brief Called whenever one of the user callbacks change
@@ -444,4 +477,4 @@ private:
 extern HardwareSerial Serial;
 
 /** @} */
-#endif /* _HARDWARESERIAL_H_ */
+#endif /* _SMING_CORE_HARDWARE_SERIAL_H_ */

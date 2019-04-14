@@ -1,10 +1,13 @@
-/*
- * HWTimer.cpp
- *
+/****
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
- * Created 23.11.2015 by johndoe
+ * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HWTimer.cpp
+ *
+ * Created 23.11.2015 by johndoe
+ *
  ****/
 
 #include "HardwareTimer.h"
@@ -59,11 +62,6 @@ typedef enum {		  //timer interrupt mode
 	TM_EDGE_INT = 0,  //edge interrupt
 } TIMER_INT_MODE;
 
-typedef enum {
-	FRC1_SOURCE = 0,
-	NMI_SOURCE = 1,
-} FRC1_TIMER_SOURCE_TYPE;
-
 // Used by ISR
 static HardwareTimer* isrTimer;
 
@@ -74,11 +72,15 @@ static void IRAM_ATTR hw_timer_isr_cb()
 	}
 }
 
-HardwareTimer::HardwareTimer()
+HardwareTimer::HardwareTimer(HardwareTimerMode mode)
 {
 	assert(isrTimer == nullptr);
 	isrTimer = this;
-	ETS_FRC_TIMER1_NMI_INTR_ATTACH(hw_timer_isr_cb);
+	if(mode == eHWT_Maskable) {
+		ETS_FRC_TIMER1_INTR_ATTACH(ets_isr_t(hw_timer_isr_cb), nullptr);
+	} else {
+		ETS_FRC_TIMER1_NMI_INTR_ATTACH(hw_timer_isr_cb);
+	}
 }
 
 HardwareTimer::~HardwareTimer()
@@ -101,12 +103,13 @@ HardwareTimer& HardwareTimer::initializeUs(uint32_t microseconds, InterruptCallb
 	return *this;
 }
 
-bool HardwareTimer::start(bool repeating /* = true*/)
+bool HardwareTimer::start(bool repeating)
 {
 	this->repeating = repeating;
 	stop();
-	if(interval == 0 || !callback)
+	if(interval == 0 || !callback) {
 		return started;
+	}
 
 	RTC_REG_WRITE(FRC1_CTRL_ADDRESS, DIVDED_BY_16 | FRC1_ENABLE_TIMER | TM_EDGE_INT | (repeating ? FRC1_AUTO_LOAD : 0));
 
@@ -138,8 +141,9 @@ bool HardwareTimer::setIntervalUs(uint32_t microseconds)
 {
 	if(microseconds < MAX_HW_TIMER_INTERVAL_US && microseconds > MIN_HW_TIMER_INTERVAL_US) {
 		interval = microseconds;
-		if(started)
+		if(started) {
 			restart();
+		}
 	} else {
 		stop();
 	}
@@ -148,10 +152,9 @@ bool HardwareTimer::setIntervalUs(uint32_t microseconds)
 
 void HardwareTimer::setCallback(InterruptCallback interrupt)
 {
-	ETS_INTR_LOCK();
 	callback = interrupt;
-	ETS_INTR_UNLOCK();
 
-	if(!interrupt)
+	if(!interrupt) {
 		stop();
+	}
 }

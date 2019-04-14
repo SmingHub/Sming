@@ -1,10 +1,13 @@
-/*
- * HWTimer.h
- *
+/****
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
- * Created 23.11.2015 by johndoe
+ * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HardwareTimer.h
+ *
+ * Created 23.11.2015 by johndoe
+ *
  ****/
 
 /**	@defgroup hwtimer Hardware timer
@@ -21,6 +24,12 @@
 #define MAX_HW_TIMER_INTERVAL_US 0x7fffff ///< Maximum timer interval in microseconds
 #define MIN_HW_TIMER_INTERVAL_US 0x32	 ///< Minimum hardware interval in microseconds
 
+// Hardware Timer operating mode
+enum HardwareTimerMode {
+	eHWT_Maskable,
+	eHWT_NonMaskable,
+};
+
 /** @brief Convert microseconds into timer ticks.
  *  @note Replaces the previous US_TO_RTC_TIMER_TICKS macro to guarantee we use the correct timer prescale value.
  */
@@ -36,9 +45,14 @@ class HardwareTimer
 {
 public:
 	/** @brief  Hardware timer
+	 *  @param mode
+	 *  @note NMI has highest interrupt priority on system and can therefore occur within
+	 *  any other interrupt service routine. Similarly, the NMI service routine cannot
+	 *  itself be interrupted. This provides the most stable and reliable timing possible,
+	 *  and is therefore the default behaviour.
     */
-	HardwareTimer();
-	virtual ~HardwareTimer();
+	HardwareTimer(HardwareTimerMode mode = eHWT_NonMaskable);
+	~HardwareTimer();
 
 	/** @brief  Initialise hardware timer
      *  @param  microseconds Timer interval in microseconds
@@ -66,7 +80,7 @@ public:
 	 *  @retval bool True if timer started
 	 *  @note   Timer starts and will run for configured period then stop
 	 */
-	bool __forceinline IRAM_ATTR startOnce()
+	__forceinline bool IRAM_ATTR startOnce()
 	{
 		return start(false);
 	}
@@ -126,9 +140,9 @@ public:
 	/** @brief  Call timer callback
      *  @note   Calls the timer callback function
      */
-	void __forceinline IRAM_ATTR call()
+	__forceinline void IRAM_ATTR call()
 	{
-		if(callback) {
+		if(callback != nullptr) {
 			callback();
 		}
 	}

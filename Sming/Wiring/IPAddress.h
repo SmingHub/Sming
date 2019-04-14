@@ -74,7 +74,7 @@ public:
 		IP4_ADDR(&this->address, address[0], address[1], address[2], address[3]);
 	}
 
-    IPAddress(const String address)
+    IPAddress(const String& address)
     {
     	fromString(address);
     }
@@ -133,7 +133,7 @@ public:
         return *this;
     }
 
-    virtual size_t printTo(Print& p) const;
+    size_t printTo(Print& p) const override;
 };
 
 // Making this extern saves 100's of bytes; each usage otherwise incurs 4 bytes of BSS

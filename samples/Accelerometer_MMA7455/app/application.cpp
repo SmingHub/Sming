@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/MMA_7455/MMA_7455.h>
 
 // For more information read: https://code.google.com/p/mma-7455-arduino-library/

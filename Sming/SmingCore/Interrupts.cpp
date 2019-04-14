@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Interrupts.cpp
+ *
  ****/
 
 #include "Interrupts.h"
@@ -20,7 +23,7 @@ static bool gpioInterruptsInitialied = false;
  */
 static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 {
-	boolean processed;
+	bool processed;
 	uint32 gpioStatus;
 
 	do {

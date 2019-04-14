@@ -4,6 +4,8 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * MultipartStream.cpp
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/
@@ -11,19 +13,12 @@
 #include "MultipartStream.h"
 #include "MemoryDataStream.h"
 
-MultipartStream::MultipartStream(HttpPartProducerDelegate delegate) : producer(delegate)
-{
-}
-
-MultipartStream::~MultipartStream()
-{
-}
-
 bool MultipartStream::onCompleted()
 {
-	stream = new MemoryDataStream();
+	auto mem = new MemoryDataStream();
 	String line = F("\r\n--") + getBoundary() + F("--\r\n");
-	stream->print(line);
+	mem->print(line);
+	stream = mem;
 
 	return true;
 }

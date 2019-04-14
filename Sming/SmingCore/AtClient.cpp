@@ -1,9 +1,15 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * AtClient.cpp
  *
  *  Created on: Feb 23, 2017
  *      Author: slavey
- */
+ *
+ ****/
 
 #include "AtClient.h"
 #include "Clock.h"
@@ -128,7 +134,7 @@ void AtClient::sendDirect(AtCommand command)
 	stream->print(command.text);
 	debugf("Sent: timeout: %d, current %d ms, name: %s", currentCommand.timeout, millis(),
 		   command.text.substring(0, 20).c_str());
-	commandTimer.initializeMs(currentCommand.timeout, TimerDelegate(&AtClient::ticker, this)).startOnce();
+	commandTimer.initializeMs(currentCommand.timeout, std::bind(&AtClient::ticker, this)).startOnce();
 }
 
 // Low Level Queue Functions

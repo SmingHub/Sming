@@ -1,10 +1,15 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * Debug.h
  *
- */
+ ****/
 
-#ifndef SMINGCORE_DEBUG_H_
-#define SMINGCORE_DEBUG_H_
+#ifndef _SMING_CORE_DEBUG_H_
+#define _SMING_CORE_DEBUG_H_
 
 #include "HardwareSerial.h"
 #include "Clock.h"
@@ -49,7 +54,6 @@ public:
      *  @note   Default output is Serial stream
      */
 	DebugClass();
-	virtual ~DebugClass();
 
 	/** @brief  Enable control of debug output from CLI command handler output
      */
@@ -66,7 +70,10 @@ public:
 	/** @brief  Get debug status
      *  @retval bool True if debug enabled
      */
-	bool status();
+	bool status()
+	{
+		return started;
+	}
 
 	/** @brief  Configure debug to use delegate handler for its output
      *  @param  reqDelegate Function to handle debug output
@@ -80,6 +87,9 @@ public:
      */
 	void setDebug(Stream& reqStream);
 
+	/* implementation of write for Print Class */
+	size_t write(uint8_t) override;
+
 private:
 	bool started = false;
 	bool useDebugPrefix = true;
@@ -87,8 +97,6 @@ private:
 	DebugOuputOptions debugOut;
 	void printPrefix();
 	void processDebugCommands(String commandLine, CommandOutput* commandOutput);
-
-	size_t write(uint8_t); /* implementation of write for Print Class */
 };
 
 /**	@brief	Global instance of Debug object
@@ -102,4 +110,4 @@ private:
 extern DebugClass Debug;
 
 /** @} */
-#endif /* SMINGCORE_DEBUG_H_ */
+#endif /* _SMING_CORE_DEBUG_H_ */

@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Timer.h
+ *
  ****/
 
 /** @defgroup   timer Timer functions
@@ -59,17 +62,17 @@ public:
      *  @param  milliseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
-     *  @deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
+     *  @deprecated Use `initializeMs(uint32_t, TimerDelegateStdFunction)` instead
      */
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = nullptr);
+	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = nullptr) SMING_DEPRECATED;
 
 	/** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
-     *  @deprecated Use initializeMs(xx, TimerDelegateStdFunction); instead.
+     *  @deprecated Use `initializeMs(uint32_t, TimerDelegateStdFunction)` instead
      */
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = nullptr);
+	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = nullptr) SMING_DEPRECATED;
 
 	/** @brief  Initialise millisecond timer
      *  @param  milliseconds Duration of timer in milliseconds
@@ -93,7 +96,7 @@ public:
 	/** @brief  Start one-shot timer running
      *  @note   Will start timer and trigger once after configured duration.
      */
-	void __forceinline IRAM_ATTR startOnce()
+	__forceinline void IRAM_ATTR startOnce()
 	{
 		start(false);
 	}
@@ -125,7 +128,7 @@ public:
      */
 	uint64_t getIntervalUs()
 	{
-		return interval * longIntervalCounterLimit ?: 1;
+		return (interval * longIntervalCounterLimit) ?: 1;
 	}
 
 	/** @brief  Get timer interval
@@ -157,6 +160,7 @@ public:
 	*  @note   Delegate callback method
 	*/
 	void IRAM_ATTR setCallback(TimerDelegate delegateFunction);
+
 	/** @brief  Set timer trigger function
 	*  @param  delegateFunction Function to be called on timer trigger
 	*  @note   Delegate callback method

@@ -4,20 +4,13 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * NtpClient.cpp
+ *
  ****/
 
 #include "NtpClient.h"
 #include "Platform/Station.h"
 #include "SystemClock.h"
-
-NtpClient::NtpClient() : NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, nullptr)
-{
-}
-
-NtpClient::NtpClient(NtpTimeResultDelegate onTimeReceivedCb)
-	: NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, onTimeReceivedCb)
-{
-}
 
 NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate delegateFunction)
 {

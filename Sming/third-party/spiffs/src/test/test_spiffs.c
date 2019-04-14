@@ -32,7 +32,7 @@ static unsigned char *_area = NULL;
 static u32_t addr_offset = 0;
 
 static int *_erases;
-static char _path[256];
+static char _path[255+32];
 static u32_t bytes_rd = 0;
 static u32_t bytes_wr = 0;
 static u32_t reads = 0;
@@ -200,14 +200,17 @@ static s32_t _write(
   }
 
   for (i = 0; i < size; i++) {
-    if (((addr + i) & (SPIFFS_CFG_LOG_PAGE_SZ(&__fs)-1)) != offsetof(spiffs_page_header, flags)) {
-      if (check_valid_flash && ((AREA(addr + i) ^ src[i]) & src[i])) {
-        printf("trying to write %02x to %02x at addr %08x (as part of writing %d bytes to addr %08x)\n", src[i], AREA(addr + i), addr+i, size, addr);
-        spiffs_page_ix pix = (addr + i) / SPIFFS_CFG_LOG_PAGE_SZ(&__fs);
-        dump_page(&__fs, pix);
-	ERREXIT();
-        return -1;
-      }
+#if !SPIFFS_NO_BLIND_WRITES
+    if (((addr + i) & (SPIFFS_CFG_LOG_PAGE_SZ(&__fs)-1)) == offsetof(spiffs_page_header, flags)) {
+      /* Blind flag writes are allowed. */
+    } else
+#endif
+    if (check_valid_flash && ((AREA(addr + i) ^ src[i]) & src[i])) {
+      printf("trying to write %02x to %02x at addr %08x (as part of writing %d bytes to addr %08x)\n", src[i], AREA(addr + i), addr+i, size, addr);
+      spiffs_page_ix pix = (addr + i) / SPIFFS_CFG_LOG_PAGE_SZ(&__fs);
+      dump_page(&__fs, pix);
+      ERREXIT();
+      return -1;
     }
     AREA(addr + i) &= src[i];
   }

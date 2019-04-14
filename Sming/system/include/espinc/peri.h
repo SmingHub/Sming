@@ -19,8 +19,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef SYSTEM_INCLUDE_ESPINC_PERI_H_
-#define SYSTEM_INCLUDE_ESPINC_PERI_H_
+#ifndef _SYSTEM_INCLUDE_ESPINC_PERI_H_
+#define _SYSTEM_INCLUDE_ESPINC_PERI_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -851,4 +851,4 @@ extern const uint8_t esp8266_gpioToFn[16];
 }
 #endif
 
-#endif /* SYSTEM_INCLUDE_ESPINC_PERI_H_ */
+#endif /* _SYSTEM_INCLUDE_ESPINC_PERI_H_ */

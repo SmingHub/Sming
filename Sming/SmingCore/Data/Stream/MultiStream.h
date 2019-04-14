@@ -1,21 +1,31 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * MultiStream.h
  *
  *  Created on: Nov 7, 2018
  *      Author: slavey
- */
+ *
+ ****/
 
-#ifndef SMINGCORE_DATA_STREAM_MULTISTREAM_H_
-#define SMINGCORE_DATA_STREAM_MULTISTREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_MULTISTREAM_H_
+#define _SMING_CORE_DATA_STREAM_MULTISTREAM_H_
 
-#include "ReadWriteStream.h"
+#include "DataSourceStream.h"
 
-class MultiStream : public ReadWriteStream
+class MultiStream : public IDataSourceStream
 {
 public:
-	virtual ~MultiStream();
+	~MultiStream()
+	{
+		delete stream;
+		delete nextStream;
+	}
 
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return eSST_Unknown;
 	}
@@ -24,35 +34,22 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	virtual int available()
+	int available() override
 	{
 		return -1;
 	}
 
-	/** @brief  Write a single char to stream
-	 *  @param  charToWrite Char to write to the stream
-	 *  @retval size_t Quantity of chars written to stream (always 1)
-	 */
-	virtual size_t write(uint8_t charToWrite);
-
-	/** @brief  Write chars to stream
-	 *  @param  buffer Pointer to buffer to write to the stream
-	 *  @param  size Quantity of chars to written
-	 *  @retval size_t Quantity of chars written to stream
-	 */
-	virtual size_t write(const uint8_t* buffer, size_t size);
+	//Use base class documentation
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	bool seek(int len) override;
 
 	//Use base class documentation
-	virtual bool seek(int len);
-
-	//Use base class documentation
-	virtual bool isFinished();
+	bool isFinished() override;
 
 protected:
-	virtual ReadWriteStream* getNextStream() = 0;
+	virtual IDataSourceStream* getNextStream() = 0;
 
 	virtual bool onCompleted()
 	{
@@ -66,10 +63,10 @@ protected:
 	}
 
 protected:
-	ReadWriteStream* stream = nullptr;
-	ReadWriteStream* nextStream = nullptr;
+	IDataSourceStream* stream = nullptr;
+	IDataSourceStream* nextStream = nullptr;
 
 	bool finished = false;
 };
 
-#endif /* SMINGCORE_DATA_STREAM_MULTISTREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_MULTISTREAM_H_ */

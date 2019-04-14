@@ -117,7 +117,7 @@ size_t Print::print(const String &s)
 }
 
 
-size_t Print::println(void)
+size_t Print::println()
 {
   size_t n = print('\r');
   n += print('\n');

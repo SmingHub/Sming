@@ -1,9 +1,9 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/MCP23017/MCP23017.h>
 
 MCP23017 mcp;
-volatile boolean awakenByInterrupt = false;
+volatile bool awakenByInterrupt = false;
 byte mcpPinA = 0;
 byte interruptPin = 15;
 

@@ -8,7 +8,7 @@
 //
 
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <stdio.h>
 
 #include "TestProgmem.h"

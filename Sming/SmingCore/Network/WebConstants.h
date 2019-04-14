@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * WebConstants.h
+ *
  ****/
 
 /** @defgroup   httpconsts HTTP constants to be used with HTTP client or HTTP server
@@ -12,8 +15,8 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_WEBCONSTANTS_H_
-#define _SMING_CORE_NETWORK_WEBCONSTANTS_H_
+#ifndef _SMING_CORE_NETWORK_WEB_CONSTANTS_H_
+#define _SMING_CORE_NETWORK_WEB_CONSTANTS_H_
 
 #include "WString.h"
 
@@ -95,4 +98,4 @@ static inline String fromFullFileName(const String& fileName)
 }; // namespace ContentType
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_WEBCONSTANTS_H_ */
+#endif /* _SMING_CORE_NETWORK_WEB_CONSTANTS_H_ */

@@ -4,12 +4,14 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * MqttPayloadParser.h
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_MQTT_PAYLOADPARSER_H_
-#define _SMING_CORE_NETWORK_MQTT_PAYLOADPARSER_H_
+#ifndef _SMING_CORE_NETWORK_MQTT_PAYLOAD_PARSER_H_
+#define _SMING_CORE_NETWORK_MQTT_PAYLOAD_PARSER_H_
 
 #include "Delegate.h"
 #include "../mqtt-codec/src/message.h"
@@ -26,8 +28,8 @@
 #define MQTT_PAYLOAD_LENGTH 1024
 
 typedef struct {
-	void* userData; // << custom user data
-	size_t offset;  // << bytes read so far.
+	void* userData; ///< custom user data
+	size_t offset;  ///< bytes read so far.
 } MqttPayloadParserState;
 
 /**
@@ -39,4 +41,4 @@ typedef Delegate<int(MqttPayloadParserState& state, mqtt_message_t* message, con
 int defaultPayloadParser(MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer, int length);
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_MQTT_PAYLOADPARSER_H_ */
+#endif /* _SMING_CORE_NETWORK_MQTT_PAYLOAD_PARSER_H_ */

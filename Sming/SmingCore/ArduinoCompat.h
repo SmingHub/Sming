@@ -4,14 +4,14 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Arduino Compatibility Layer
+ * ArduinoCompat.h - Arduino Compatibility Layer
  *
  * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
 
-#ifndef SMINGCORE_ARDUINOCOMPAT_H_
-#define SMINGCORE_ARDUINOCOMPAT_H_
+#ifndef _SMING_CORE_ARDUINO_COMPAT_H_
+#define _SMING_CORE_ARDUINO_COMPAT_H_
 
 #include "SmingCore.h"
 #include <stdio.h> ///< sprintf()
@@ -29,4 +29,4 @@ void yield();
 }
 #endif
 
-#endif /* SMINGCORE_ARDUINOCOMPAT_H_ */
+#endif /* _SMING_CORE_ARDUINO_COMPAT_H_ */

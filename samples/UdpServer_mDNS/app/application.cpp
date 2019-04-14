@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 /*** mDNS Demo (instruction for usage)
  * The multicast Domain Name System (mDNS) resolves host names to IP addresses
@@ -65,12 +65,10 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 
 void onFile(HttpRequest& request, HttpResponse& response)
 {
-	String file = request.getPath();
-	if(file[0] == '/')
-		file = file.substring(1);
+	String file = request.uri.getRelativePath();
 
 	if(file[0] == '.')
-		response.forbidden();
+		response.code = HTTP_STATUS_FORBIDDEN;
 	else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
@@ -80,7 +78,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	server.listen(80);
-	server.addPath("/", onIndex);
+	server.paths.set("/", onIndex);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());

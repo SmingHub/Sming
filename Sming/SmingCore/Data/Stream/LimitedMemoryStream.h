@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * LimitedMemoryStream.h
+ *
  ****/
 
-#ifndef _SMING_CORE_DATA_LIMITED_MEMORY_STREAM_H_
-#define _SMING_CORE_DATA_LIMITED_MEMORY_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_LIMITED_MEMORY_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_LIMITED_MEMORY_STREAM_H_
 
 #include "ReadWriteStream.h"
 
@@ -21,40 +24,46 @@
 class LimitedMemoryStream : public ReadWriteStream
 {
 public:
-	LimitedMemoryStream(size_t length);
-	virtual ~LimitedMemoryStream();
+	LimitedMemoryStream(size_t length) : buffer(new uint8_t[length]), length(length)
+	{
+	}
+
+	~LimitedMemoryStream()
+	{
+		delete[] buffer;
+	}
 
 	//Use base class documentation
-	virtual StreamType getStreamType() const;
+	StreamType getStreamType() const override
+	{
+		return eSST_Memory;
+	}
 
 	/**
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	virtual int available()
+	int available() override
 	{
 		return writePos - readPos;
 	}
 
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	//Use base class documentation
-	virtual bool seek(int len);
-
-	/** @brief  Write a single char to stream
-	 *  @param  charToWrite Char to write to the stream
-	 *  @retval size_t Quantity of chars written to stream (always 1)
-	 */
-	virtual size_t write(uint8_t charToWrite);
+	bool seek(int len) override;
 
 	/** @brief  Write chars to stream
 	 *  @param  buffer Pointer to buffer to write to the stream
 	 *  @param  size Quantity of chars to write
 	 *  @retval size_t Quantity of chars written to stream
 	 */
-	virtual size_t write(const uint8_t* buffer, size_t size);
+	size_t write(const uint8_t* buffer, size_t size) override;
 
-	virtual bool isFinished();
+	bool isFinished() override
+	{
+		return (readPos >= length);
+	}
 
 private:
 	uint8_t* buffer = nullptr;
@@ -64,4 +73,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_LIMITED_MEMORY_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_LIMITED_MEMORY_STREAM_H_ */

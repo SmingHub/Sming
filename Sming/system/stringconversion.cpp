@@ -1,3 +1,13 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * StringConversion.cpp
+ *
+ ****/
+
 #include <user_config.h>
 #include <math.h>
 #include <stdlib.h>
@@ -96,8 +106,6 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 	if (outputBuffer == nullptr)
 		return nullptr;
 
-	char *buf = outputBuffer, *s;
-
 	if (isnan(floatVar))
 		strcpy(outputBuffer, "NaN");
 	else if (isinf(floatVar))
@@ -110,7 +118,7 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 	{
 		//start building the number
 		//buf will be the end pointer
-		buf = num;
+		char* buf = num;
 
 		if (floatVar < 0.0)
 		{
@@ -134,7 +142,7 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 		int_part = (unsigned long) floatVar;
 
 		//print the int part into num
-		s = ltoa(int_part, buf, 10);
+		char* s = ltoa(int_part, buf, 10);
 
 		//adjust end pointer
 		buf += strlen(s); //go to end of string

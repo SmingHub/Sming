@@ -14,15 +14,14 @@
 #endif
 
 CommandHandler::CommandHandler()
+	: currentPrompt(F("Sming>")), currentWelcomeMessage(F("Welcome to the Sming CommandProcessing\r\n"))
 {
 	registeredCommands = new HashMap<String, CommandDelegate>;
-	currentPrompt = F("Sming>");
-	currentWelcomeMessage = F("Welcome to the Sming CommandProcessing\r\n");
 }
 
 CommandHandler::~CommandHandler()
 {
-	if(registeredCommands != NULL) {
+	if(registeredCommands != nullptr) {
 		delete registeredCommands;
 	}
 }
@@ -126,7 +125,7 @@ void CommandHandler::procesHelpCommand(String commandLine, CommandOutput* comman
 {
 	debugf("HelpCommand entered");
 	commandOutput->print(_F("Commands available are : \r\n"));
-	for (int idx = 0;idx < registeredCommands->count();idx++)
+	for (unsigned idx = 0;idx < registeredCommands->count();idx++)
 	{
 		commandOutput->printf(registeredCommands->valueAt(idx).commandName.c_str());
 		commandOutput->printf(" | ");
@@ -140,7 +139,6 @@ void CommandHandler::procesHelpCommand(String commandLine, CommandOutput* comman
 void CommandHandler::procesStatusCommand(String commandLine, CommandOutput* commandOutput)
 {
 	debugf("StatusCommand entered");
-	char tempBuf[64];
 	commandOutput->print(_F("System information : ESP8266 Sming Framework\r\n"));
 	commandOutput->print(_F("Sming Framework Version : " SMING_VERSION "\r\n"));
 	commandOutput->print(_F("ESP SDK version : "));

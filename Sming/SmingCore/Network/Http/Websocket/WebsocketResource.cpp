@@ -2,24 +2,17 @@
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * WebsocketResource.cpp
  *
  * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
- * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
 #include "WebsocketResource.h"
 
 #include <functional>
-
-WebsocketResource::WebsocketResource()
-{
-	onHeadersComplete = HttpResourceDelegate(&WebsocketResource::checkHeaders, this);
-}
-
-WebsocketResource::~WebsocketResource()
-{
-}
 
 int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
@@ -52,26 +45,6 @@ void WebsocketResource::shutdown(HttpServerConnection& connection)
 {
 	WebsocketConnection* socket = static_cast<WebsocketConnection*>(connection.userData);
 	delete socket;
-	connection.userData = NULL;
+	connection.userData = nullptr;
 	connection.setTimeOut(1);
-}
-
-void WebsocketResource::setConnectionHandler(WebsocketDelegate handler)
-{
-	wsConnect = handler;
-}
-
-void WebsocketResource::setMessageHandler(WebsocketMessageDelegate handler)
-{
-	wsMessage = handler;
-}
-
-void WebsocketResource::setBinaryHandler(WebsocketBinaryDelegate handler)
-{
-	wsBinary = handler;
-}
-
-void WebsocketResource::setDisconnectionHandler(WebsocketDelegate handler)
-{
-	wsDisconnect = handler;
 }

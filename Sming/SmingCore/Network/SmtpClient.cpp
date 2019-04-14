@@ -4,7 +4,7 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * SmtpClient
+ * SmtpClient.cpp
  *
  * Author: 2018 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -69,41 +69,29 @@ void ssl_hmac_md5(const uint8_t* msg, int length, const uint8_t* key, int key_le
 		break;                                                                                                         \
 	}
 
-SmtpClient::SmtpClient(bool autoDestroy /* =false */) : TcpClient(autoDestroy), outgoingMail(nullptr)
+SmtpClient::SmtpClient(bool autoDestroy) : TcpClient(autoDestroy), outgoingMail(nullptr)
 {
 }
 
 SmtpClient::~SmtpClient()
 {
-	// TODO: clear all pointers...
-	delete stream;
 	delete outgoingMail;
-	stream = nullptr;
 	outgoingMail = nullptr;
-	do {
-		MailMessage* mail = mailQ.dequeue();
-		if(mail == nullptr) {
-			break;
-		}
-		delete mail;
-	} while(1);
+
+	while(mailQ.count() != 0) {
+		delete mailQ.dequeue();
+	}
 }
 
-bool SmtpClient::connect(const URL& url)
+bool SmtpClient::connect(const Url& url)
 {
 	if(getConnectionState() != eTCS_Ready) {
 		close();
 	}
 
+	bool isSecure = (url.Scheme == URI_SCHEME_SMTP_SECURE);
 	this->url = url;
-	if(!this->url.Port) {
-		this->url.Port = 25;
-		if(this->url.Protocol == SMTP_OVER_SSL_PROTOCOL) {
-			this->url.Port = 465;
-		}
-	}
-
-	return TcpClient::connect(url.Host, url.Port, (url.Protocol == SMTP_OVER_SSL_PROTOCOL));
+	return TcpClient::connect(url.Host, url.getPort(), isSecure);
 }
 
 bool SmtpClient::send(const String& from, const String& to, const String& subject, const String& body)
@@ -408,7 +396,7 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 
 			if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
 				useSsl = true;
-				TcpConnection::staticOnConnected((void*)this, tcp, ERR_OK);
+				TcpConnection::internalOnConnected(ERR_OK);
 			}
 
 			sendString(F("EHLO ") + url.Host + "\r\n");
@@ -430,9 +418,6 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 				// Process authentication methods
 				// Ex: 250-AUTH CRAM-MD5 PLAIN LOGIN
 				// See: https://tools.ietf.org/html/rfc4954
-				int offset = 0;
-				int pos = -1;
-
 				String text(line + 5, lineLength - 5);
 				splitString(text, ' ', authMethods);
 			}

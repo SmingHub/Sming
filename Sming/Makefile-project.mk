@@ -171,8 +171,6 @@ export COMPILE := gcc
 export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
 
-STRIP   := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-strip
-
 CURRENT_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 
 SPIFF_FILES ?= files
@@ -208,6 +206,7 @@ endif
 # define your custom directories in the project's own Makefile before including this one
 MODULES      ?= app     # default to app if not set by user
 EXTRA_INCDIR ?= include # default to include if not set by user
+MODULES      += $(SMING_HOME)/appspecific/gdb
 
 ENABLE_CUSTOM_LWIP ?= 1
 LWIP_INCDIR = $(SMING_HOME)/system/esp-lwip/lwip/include
@@ -263,25 +262,32 @@ ifeq ($(ENABLE_WPS),1)
 endif
 
 # compiler flags using during compilation of source files
-CFLAGS  = -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
+CFLAGS  = -Wall -Wundef -Wpointer-arith -Wno-comment -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections \
           -D__ets__ -DICACHE_FLASH -DARDUINO=106 -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS) -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DSMING_INCLUDED=1
+ifneq ($(STRICT),1)
+CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
+endif
+
 # => SDK
 ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
 	CFLAGS += -DSDK_INTERNAL
 endif
+
+ifeq ($(ENABLE_GDB), 1)
+	CFLAGS += -ggdb -DENABLE_GDB=1
+	MODULES += $(SMING_HOME)/gdb
+endif
+
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
 	CFLAGS += -Os -DSMING_RELEASE=1
 else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1  -DGDBSTUB_CTRLC_BREAK=0
-	MODULES		 += $(THIRD_PARTY_DIR)/esp-gdbstub
-	EXTRA_INCDIR += $(THIRD_PARTY_DIR)/esp-gdbstub
-	STRIP := @true
+	CFLAGS += -Og
 else
 	CFLAGS += -Os -g
-	STRIP := @true
 endif
+
 ifeq ($(ENABLE_WPS),1)
 	CFLAGS += -DENABLE_WPS=1
 endif
@@ -324,7 +330,8 @@ ifeq ($(DISABLE_SPIFFS), 1)
 endif
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -u call_user_start -u custom_crash_callback -Wl,-static -Wl,--gc-sections -Wl,-Map=$(FW_BASE)/firmware.map -Wl,-wrap,system_restart_local 
+LDFLAGS		= -nostdlib -u call_user_start -u custom_crash_callback \
+			-Wl,-static -Wl,--gc-sections -Wl,-Map=$(FW_BASE)/firmware.map -Wl,-wrap,system_restart_local 
 
 # linker script used for the above linkier step
 LD_PATH     = $(SMING_HOME)/compiler/ld
@@ -381,7 +388,8 @@ SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
 SDK_INCDIR	= include
 
-# select which tools to use as compiler, librarian and linker
+# select which tools to use as assembler, compiler, librarian and linker
+AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 CXX		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-g++
 AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
@@ -400,7 +408,11 @@ CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 
 C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
 CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
+
+AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.s))
 AS_OBJ		:= $(patsubst %.s,$(BUILD_BASE)/%.o,$(AS_SRC))
+AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
+AS_OBJ		+= $(patsubst %.S,$(BUILD_BASE)/%.o,$(AS_SRC))
 
 OBJ		:= $(AS_OBJ) $(C_OBJ) $(CXX_OBJ)
 
@@ -426,6 +438,12 @@ endif
 
 
 define compile-objects
+${BUILD_BASE}/$1/%.o: $1/%.s
+	$(vecho) "AS $$<"
+	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
+${BUILD_BASE}/$1/%.o: $1/%.S
+	$(vecho) "AS $$<"
+	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
 ${BUILD_BASE}/$1/%.o: $1/%.c ${BUILD_BASE}/$1/%.c.d
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@	
@@ -453,8 +471,6 @@ $(PROJECT_LD_PATH)/$(LD_SCRIPT):
 $(FW_BASE)/$(IMAGE_MAIN): $(APP_AR)
 # Pass 1: Generate rom0 to be able to check its size
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $(TARGET_OUT).tmp
-	
-	$(Q) $(STRIP) $(TARGET_OUT).tmp
 
 	$(Q) $(ESPTOOL2) $(ESPTOOL2_MAIN_ARGS) $(TARGET_OUT).tmp $@ $(ESPTOOL2_SECTS)
 	
@@ -468,8 +484,6 @@ $(TARGET_OUT): $(FW_BASE)/$(IMAGE_MAIN) $(PROJECT_LD_PATH)/$(LD_SCRIPT)
 	
 # Pass 2: Generate roms with correct offsets
 	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(PROJECT_LD_PATH) -L$(LD_PATH) -T$(LD_SCRIPT) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
-
-	$(Q) $(STRIP) $@
 
 	$(vecho) ""	
 	$(vecho) "#Memory / Section info:"	

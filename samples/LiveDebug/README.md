@@ -1,5 +1,36 @@
+LiveDebug
+=========
+
 This project is an example of how to integrate GDB debugging into your project.
-It relies on the GDBStub project to do the heavy-lifting.
+It provides a basic command interface which you can use via regular serial terminal or with the GDB application.
+
+To use this sample application with the command-line GDB application, simply build and flash the project as usual:
+
+```bash
+make clean
+make flash
+```
+
+You should be presented with the GDB command prompt. Enter 'c' to continue running the application.
+
+	(gdb) c
+	Continuing.
+	(attached) 
+
+The `(attached)` prompt is displayed by the LiveDebug application. Type `help` to get a list of available commands.
+
+Note that if you run this application via serial terminal (`make terminal`) you'll get the `(Detached)` prompt instead.
+
+2. Debugging under eclipse
+
+Interacting with the GDB console causes problems for eclipse, so compile with the `ENABLE_GDB_CONSOLE=0` option:
+
+```bash
+make clean
+make flash ENABLE_CONSOLE=0
+```
+
+Alternatively, use the `consoleOff` command from the GDB command prompt, then quit the debugger and connect via eclipse.
 
 Exception Handling
 ------------------
@@ -7,7 +38,7 @@ Sming comes with a built-in exception handling that takes care to display the st
 leading to the issue. Usually it looks like this
 
 ```
-***** Fatal exception 28
+***** Fatal exception 28 (LOAD_PROHIBITED)
 pc=0x40100e96 sp=0x3ffff640 excvaddr=0x000015b8
 ps=0x00000033 sar=0x00000018 vpri=0x000000f0
 r00: 0x40100d69=1074793833 r01: 0x3ffff640=1073739328 r02: 0x3fff3900=1073690880 
@@ -55,55 +86,30 @@ With the help of `decode-stacktrace.py` you can decode the stack trace to someth
 Using the information about the type of the exception (ex: `***** Fatal exception 28`)
 and the sequence of commands might help us figure out the issue.
 
-But that information might not be enough. And finding the
-root cause may take quite some time.
+But that information might not be enough. And finding the root cause may take quite some time.
 
 GDB Debugging
 -------------
+
 Debugging is a powerful technique allowing you to interactively run your code and be able to see much more information about the things that went wrong.
 
-There is already existing GDBStub that tries to make it easier to use software
-debugger. And this project is an example of what you need to do in order to 
-integrate it.
-
-Here are the commands that you need to execute:
-
-1. You will need a version of the Sming library with enabled GDBStub functionality.
-For that purpose you should compile Sming with ENABLE_GDB flag. Under Linux
-you should do the following:
+To use, (Re)compile your project with the `ENABLE_GDB` option and flash it to the board.
 
 ```bash
-cd $SMING_HOME
-make dist-clean
-ENABLE_GDB=1 make
-```
-
-2. In your project inside of your Makefile-user.mk file you should add the following
-variable:
-
-```make
-ENABLE_GDB=1
-```
-
-If you are looking for an example then take a look at the Makefile-user.mk file 
-that is in the same directory as this README.md file.
-
-3. Now compile your project and flash it to the board.
-```bash
-make ENABLE_GDB=1 
+make clean
+make ENABLE_GDB=1
 make flash
 ```
 
-4. Run gdb immediately after resetting the board or after it has run into an exception. 
-The easiest way to do it is to use the provided script: 
+Instead of a terminal, the GDB console will be opened automatically.
+
+If you need to run GDB manually after resetting the board or after it has run into an exception, use the provided script:
+
 ```bash
-xtensa-lx106-elf-gdb -x <path-to-sming-code->/Basic_Debug/gdbcmds -b 115200 
+make gdb
 ```
 
-115200 stands for the baud rate your program is using. Change it accordingly.
-You may also need to change the gdbcmds script to fit the configuration of your hardware and build environment.
-
-5. Software breakpoints ('br') only work on code that is in RAM. During development you can use the GDB_IRAM_ATTR attribute in your function declarations. 
+Note that software breakpoints ('br') only work on code that is in RAM. During development you can use the GDB_IRAM_ATTR attribute in your function declarations. 
 Code in flash can only have a hardware breakpoint ('hbr').
 
-Read the [Notes](https://github.com/espressif/esp-gdbstub#notes) for more information.
+Read the GDB stub [Notes](https://github.com/SmingHub/Sming/tree/develop/Sming/gdb/readme.md) for more information.

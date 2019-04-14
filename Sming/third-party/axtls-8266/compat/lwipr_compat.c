@@ -154,12 +154,20 @@ int axl_ssl_read(SSL *ssl, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **
 			}
 			else {
 				AXL_DEBUG_PRINT("axl_ssl_read: Got more than one SSL packet inside one TCP packet\n");
-				total_read_buffer = (uint8_t *)realloc(total_read_buffer, total_bytes + read_bytes);
+				uint8_t* new_buffer = (uint8_t *)realloc(total_read_buffer, total_bytes + read_bytes);
+				if(new_buffer == NULL) {
+					free(total_read_buffer);
+					total_read_buffer = NULL;
+				} else {
+					total_read_buffer = new_buffer;
+				}
 			}
 
 			if(total_read_buffer == NULL) {
 				AXL_DEBUG_PRINT("axl_ssl_read: Unable to allocate additional %d bytes", read_bytes);
-				while(1) {}
+				total_bytes = -1;
+				break;
+//				while(1) {}
 			}
 
 			memcpy(total_read_buffer + total_bytes, read_buffer, read_bytes);

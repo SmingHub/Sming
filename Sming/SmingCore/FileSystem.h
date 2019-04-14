@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * FileSystem.h
+ *
  ****/
 
 /**	@defgroup filesystem File system
@@ -10,11 +13,11 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_FILESYSTEM_H_
-#define _SMING_CORE_FILESYSTEM_H_
+#ifndef _SMING_CORE_FILE_SYSTEM_H_
+#define _SMING_CORE_FILE_SYSTEM_H_
 
 #include "../Services/SpifFS/spiffs_sming.h"
-#include "../Wiring/WVector.h"
+#include "WVector.h"
 
 class String;
 
@@ -112,19 +115,23 @@ void fileClearLastError(file_t fd);
 /** @brief  Create or replace file with defined content
  *  @param  fileName Name of file to create or replace
  *  @param  content Pointer to c-string containing content to populate file with
+ *  @retval int Positive integer represents the numbers of bytes written.
+ *  @retval int Negative integer represents the error code of last file system operation.
  *  @note   This function creates a new file or replaces an existing file and
             populates the file with the content of a c-string buffer.
             Remember to terminate your c-string buffer with a null (0).
  */
-void fileSetContent(const String& fileName, const char* content);
+int fileSetContent(const String& fileName, const char* content);
 
 /** @brief  Create or replace file with defined content
  *  @param  fileName Name of file to create or replace
  *  @param  content String containing content to populate file with
+ *  @retval int Positive integer represents the numbers of bytes written.
+ *  @retval int Negative integer represents the error code of last file system operation.
  *  @note   This function creates a new file or replaces an existing file and
             populates the file with the content of a string.
  */
-void fileSetContent(const String& fileName, const String& content);
+int fileSetContent(const String& fileName, const String& content);
 
 /** @brief  Get size of file
  *  @param  fileName Name of file
@@ -182,13 +189,15 @@ int fileStats(file_t file, spiffs_stat* stat);
 
 /** @brief  Delete file
  *  @param  name Name of file to delete
+ *  @retval int error code, 0 on success
  */
-void fileDelete(const String& name);
+int fileDelete(const String& name);
 
 /** @brief  Delete file
  *  @param  file ID of file to delete
+ *  @retval int error code, 0 on success
  */
-void fileDelete(file_t file);
+int fileDelete(file_t file);
 
 /** @brief  Check if a file exists on file system
  *  @param  name Name of file to check for
@@ -197,4 +206,4 @@ void fileDelete(file_t file);
 bool fileExist(const String& name);
 
 /** @} */
-#endif /* _SMING_CORE_FILESYSTEM_H_ */
+#endif /* _SMING_CORE_FILE_SYSTEM_H_ */

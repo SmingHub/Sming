@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -18,7 +18,7 @@ int onDataSent(HttpConnection& client, bool successful)
 	else
 		Serial.println("Failed");
 
-	String response = client.getResponseString();
+	String response = client.getResponse()->getBody();
 	Serial.println("Server response: '" + response + "'");
 	if(response.length() > 0) {
 		int intVal = response.toInt();
@@ -35,8 +35,18 @@ void sendData()
 	// Read our sensor value :)
 	sensorValue++;
 
-	thingSpeak.downloadString("http://api.thingspeak.com/update?key=7XXUJWCWYTMXKN3L&field1=" + String(sensorValue),
-							  onDataSent);
+	/*
+	   Here is an alternative method of URL construction, which is helpful for more complex URLs.
+	   The resulting URL string is equivalent to:
+
+	     "http://api.thingspeak.com/update?key=7XXUJWCWYTMXKN3L&field1=" + String(sensorValue)
+	 */
+	Url url;
+	url.Host = "api.thingspeak.com";
+	url.Path = "/update";
+	url.Query["key"] = "7XXUJWCWYTMXKN3L";
+	url.Query["field1"] = String(sensorValue);
+	thingSpeak.downloadString(url, onDataSent);
 }
 
 // Will be called when WiFi station timeout was reached

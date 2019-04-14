@@ -4,16 +4,16 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpServerConnection
+ * HttpServerConnection.h
  *
  * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTPSERVERCONNECTION_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTPSERVERCONNECTION_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_SERVER_CONNECTION_H_
+#define _SMING_CORE_NETWORK_HTTP_HTTP_SERVER_CONNECTION_H_
 
-#include "HttpConnectionBase.h"
+#include "HttpConnection.h"
 #include "HttpResource.h"
 #include "HttpBodyParser.h"
 
@@ -33,22 +33,42 @@
 #define HTTP_SERVER_EXPOSE_DATE 0
 #endif
 
+class HttpResourceTree;
 class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
 
 typedef std::function<bool()> HttpServerProtocolUpgradeCallback;
 
-class HttpServerConnection : public HttpConnectionBase
+class HttpServerConnection : public HttpConnection
 {
 public:
-	HttpServerConnection(tcp_pcb* clientTcp);
-	virtual ~HttpServerConnection();
+	HttpServerConnection(tcp_pcb* clientTcp) : HttpConnection(clientTcp, HTTP_REQUEST)
+	{
+	}
 
-	void setResourceTree(ResourceTree* resourceTree);
-	void setBodyParsers(BodyParsers* bodyParsers);
+	~HttpServerConnection()
+	{
+		if(this->resource != nullptr) {
+			this->resource->shutdown(*this);
+		}
+	}
 
-	void send();
+	void setResourceTree(HttpResourceTree* resourceTree)
+	{
+		this->resourceTree = resourceTree;
+	}
+
+	void setBodyParsers(const BodyParsers* bodyParsers)
+	{
+		this->bodyParsers = bodyParsers;
+	}
+
+	void send()
+	{
+		state = eHCS_StartSending;
+		onReadyToSendData(eTCE_Received);
+	}
 
 	using TcpClient::send;
 
@@ -57,50 +77,33 @@ public:
 		upgradeCallback = callback;
 	}
 
+	HttpRequest* getRequest() override
+	{
+		return &request;
+	}
+
 protected:
 	// HTTP parser methods
-	/**
-	 * Called when a new incoming data is beginning to come
-	 * @paran http_parser* parser
-	 * @return 0 on success, non-0 on error
-	 */
-	virtual int onMessageBegin(http_parser* parser);
 
-	/**
-	 * Called when the URL path is known
-	 * @param String path
-	 * @return 0 on success, non-0 on error
-	 */
-	virtual int onPath(const URL& path);
+	int onMessageBegin(http_parser* parser) override;
+	int onPath(const Url& path) override;
+	int onHeadersComplete(const HttpHeaders& headers) override;
+	int onBody(const char* at, size_t length) override;
+	int onMessageComplete(http_parser* parser) override;
 
-	/**
-	 * Called when all headers are received
-	 * @param HttpHeaders headers - the processed headers
-	 * @return 0 on success, non-0 on error
-	 */
-	virtual int onHeadersComplete(const HttpHeaders& headers);
+	bool onProtocolUpgrade(http_parser* parser) override
+	{
+		if(upgradeCallback) {
+			return upgradeCallback();
+		}
 
-	/**
-	 * Called when a piece of body data is received
-	 * @param const char* at -  the data
-	 * @paran size_t length
-	 * @return 0 on success, non-0 on error
-	 */
-	virtual int onBody(const char* at, size_t length);
+		return true;
+	}
 
-	/**
-	 * Called when the incoming data is complete
-	 * @paran http_parser* parser
-	 * @return 0 on success, non-0 on error
-	 */
-	virtual int onMessageComplete(http_parser* parser);
-
-	virtual bool onProtocolUpgrade(http_parser* parser);
-
-	virtual void onHttpError(http_errno error);
+	void onHttpError(http_errno error) override;
 
 	// TCP methods
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 	virtual void sendError(const String& message = nullptr, enum http_status code = HTTP_STATUS_BAD_REQUEST);
 
 private:
@@ -108,23 +111,22 @@ private:
 	bool sendResponseBody(HttpResponse* response);
 
 public:
-	void* userData = nullptr; // << use to pass user data between requests
+	void* userData = nullptr; ///< use to pass user data between requests
 
 private:
-	ResourceTree* resourceTree = nullptr;
-	HttpResource* resource = nullptr;
+	HttpResourceTree* resourceTree = nullptr; ///< A reference to the current resource tree - we don't own it
+	HttpResource* resource = nullptr;		  ///< Resource for currently executing path
 
-	HttpRequest request = HttpRequest(URL());
-	HttpResponse response;
+	HttpRequest request;
 
-	HttpResourceDelegate headersCompleteDelegate = 0;
-	HttpResourceDelegate requestCompletedDelegate = 0;
-	HttpServerConnectionBodyDelegate onBodyDelegate = 0;
+	HttpResourceDelegate headersCompleteDelegate = nullptr;
+	HttpResourceDelegate requestCompletedDelegate = nullptr;
+	HttpServerConnectionBodyDelegate onBodyDelegate = nullptr;
 	HttpServerProtocolUpgradeCallback upgradeCallback = nullptr;
 
-	BodyParsers* bodyParsers = nullptr;
-	HttpBodyParserDelegate bodyParser = 0;
+	const BodyParsers* bodyParsers = nullptr;	///< const reference ensures we cannot modify map, only look stuff up
+	HttpBodyParserDelegate bodyParser = nullptr; ///< Active body parser for this message, if any
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTPSERVERCONNECTION_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_SERVER_CONNECTION_H_ */

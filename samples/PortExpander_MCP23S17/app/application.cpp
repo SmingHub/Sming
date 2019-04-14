@@ -1,7 +1,7 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
-#include <SmingCore/Wire.h>
-#include <SmingCore/SPI.h>
+#include <SmingCore.h>
+#include <Wire.h>
+#include <SPI.h>
 #include <Libraries/MCP23S17/MCP23S17.h>
 
 // // Instantiate an object called "inputchip" on an MCP23S17 device at  address 1 = 0b00000001 and CS pin = GPIO16

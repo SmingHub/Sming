@@ -4,61 +4,35 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpServerConnection
+ * HttpServerConnection.cpp
  *
  * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
 
 #include "HttpServerConnection.h"
-
+#include "HttpResourceTree.h"
 #include "HttpServer.h"
 #include "TcpServer.h"
 #include "WebConstants.h"
-#include "../../Data/Stream/ChunkedStream.h"
-
-HttpServerConnection::HttpServerConnection(tcp_pcb* clientTcp) : HttpConnectionBase(clientTcp, HTTP_REQUEST)
-{
-}
-
-HttpServerConnection::~HttpServerConnection()
-{
-	if(this->resource) {
-		this->resource->shutdown(*this);
-	}
-}
-
-void HttpServerConnection::setResourceTree(ResourceTree* resourceTree)
-{
-	this->resourceTree = resourceTree;
-}
-
-void HttpServerConnection::setBodyParsers(BodyParsers* bodyParsers)
-{
-	this->bodyParsers = bodyParsers;
-}
+#include "Data/Stream/ChunkedStream.h"
 
 int HttpServerConnection::onMessageBegin(http_parser* parser)
 {
 	// Reset Response ...
-	response.code = 200;
-	response.headers.clear();
-	if(response.stream != nullptr) {
-		delete response.stream;
-		response.stream = nullptr;
-	}
+	response.reset();
 
 	// ... and Request
 	request.setMethod((const HttpMethod)parser->method);
 
 	// and temp data...
 	reset();
-	bodyParser = 0;
+	bodyParser = nullptr;
 
 	return 0;
 }
 
-int HttpServerConnection::onPath(const URL& uri)
+int HttpServerConnection::onPath(const Url& uri)
 {
 	if(resourceTree == nullptr) {
 		debug_e("ERROR: HttpServerConnection: The resource tree is not set!");
@@ -68,10 +42,9 @@ int HttpServerConnection::onPath(const URL& uri)
 
 	request.setURL(uri);
 
-	if(resourceTree->contains(request.uri.Path)) {
-		resource = (*resourceTree)[request.uri.Path];
-	} else if(resourceTree->contains("*")) {
-		resource = (*resourceTree)["*"];
+	resource = resourceTree->find(request.uri.Path);
+	if(resource == nullptr) {
+		resource = resourceTree->getDefault();
 	}
 
 	return 0;
@@ -133,7 +106,7 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 		error = 1;
 	}
 
-	if(request.headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
+	if(bodyParsers != nullptr && request.headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		String contentType = request.headers[HTTP_HEADER_CONTENT_TYPE];
 		int endPos = contentType.indexOf(';');
 		if(endPos != -1) {
@@ -150,11 +123,12 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 		Vector<String> types;
 		types.add(contentType);
 		types.add(majorType);
-		types.add("*");
+		types.add(String('*'));
 
 		for(unsigned i = 0; i < types.count(); i++) {
-			if(bodyParsers->contains(types.at(i))) {
-				bodyParser = (*bodyParsers)[types.at(i)];
+			const String& type = types[i];
+			if(bodyParsers->contains(type)) {
+				bodyParser = (*bodyParsers)[type];
 				break;
 			}
 		}
@@ -165,15 +139,6 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 	}
 
 	return error;
-}
-
-bool HttpServerConnection::onProtocolUpgrade(http_parser* parser)
-{
-	if(upgradeCallback) {
-		return upgradeCallback();
-	}
-
-	return true;
 }
 
 int HttpServerConnection::onBody(const char* at, size_t length)
@@ -192,7 +157,7 @@ int HttpServerConnection::onBody(const char* at, size_t length)
 void HttpServerConnection::onHttpError(http_errno error)
 {
 	sendError(httpGetErrorName(error));
-	HttpConnectionBase::onHttpError(error);
+	HttpConnection::onHttpError(error);
 }
 
 void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
@@ -331,12 +296,6 @@ bool HttpServerConnection::sendResponseBody(HttpResponse* response)
 	}
 
 	return true;
-}
-
-void HttpServerConnection::send()
-{
-	state = eHCS_StartSending;
-	onReadyToSendData(eTCE_Received);
 }
 
 void HttpServerConnection::sendError(const String& message, enum http_status code)

@@ -4,17 +4,14 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * user_main.cpp
+ *
  */
 
 #include <user_config.h>
 #include "Platform/System.h"
 #include "espinc/uart.h"
-
-#ifndef SMING_RELEASE
-extern "C" {
-  void gdbstub_init();
-}
-#endif
+#include "gdb_hooks.h"
 
 extern void init();
 
@@ -25,9 +22,6 @@ extern "C" void  __attribute__((weak)) user_init(void)
 
 	// Initialise UARTs to a known state
 	uart_detach_all();
-	for(unsigned i = 0; i < UART_COUNT; ++i) {
-		uart_set_baudrate_reg(i, SERIAL_BAUD_RATE);
-	}
 
 	/* Note: System is a static class so it's safe to call initialize() before cpp_core_initialize()
 	 * We need to do this so that class constructors can use the task queue or onReady()
@@ -38,16 +32,16 @@ extern "C" void  __attribute__((weak)) user_init(void)
 #ifdef SMING_RELEASE
 	// disable all debug output for release builds
 	uart_set_debug(UART_NO);
-#else
-	gdbstub_init();
 #endif
+
+	gdb_init();
+
 	init(); // User code init
 }
 
 // For compatibility with SDK v1.1
 extern "C" void __attribute__((weak)) user_rf_pre_init(void)
 {
-	uart_set_baudrate_reg(UART0, SERIAL_BAUD_RATE);
 	// RTC startup fix, author pvvx
     volatile uint32 * ptr_reg_rtc_ram = (volatile uint32 *)0x60001000;
     if((ptr_reg_rtc_ram[24] >> 16) > 4) {

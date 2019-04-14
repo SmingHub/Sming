@@ -1,14 +1,20 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * StringUtil.h
  *
  *  Contains utility functions for working with char strings.
  *
  *  Created on: 26.01.2017
  *  Author: (github.com/)ADiea
- */
+ *
+ ****/
 
-#ifndef INCLUDE_STRINGUTIL_H_
-#define INCLUDE_STRINGUTIL_H_
+#ifndef _SYSTEM_INCLUDE_STRINGUTIL_H_
+#define _SYSTEM_INCLUDE_STRINGUTIL_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,4 +70,4 @@ static inline signed char unhex(char c)
 }
 #endif
 
-#endif //INCLUDE_STRINGUTIL_H_
+#endif /* _SYSTEM_INCLUDE_STRINGUTIL_H_ */

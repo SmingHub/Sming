@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Delegate.h
+ *
  ****/
 
 /** @defgroup   delegate Delegate
@@ -10,8 +13,8 @@
  *              Several handlers may be triggered for each event
  *  @{
  */
-#ifndef SMINGCORE_DELEGATE_H_
-#define SMINGCORE_DELEGATE_H_
+#ifndef _SMING_CORE_DELEGATE_H_
+#define _SMING_CORE_DELEGATE_H_
 
 #include <user_config.h>
 
@@ -42,8 +45,9 @@ public:
 	__forceinline void decrease()
 	{
 		references--;
-		if(references == 0)
+		if(references == 0) {
 			delete this;
+		}
 	}
 
 private:
@@ -75,7 +79,7 @@ public:
      *  @param  args The delegate method parameters
      *  @retval ReturnType The return value from the invoked method
      */
-	ReturnType invoke(ParamsList... args)
+	ReturnType invoke(ParamsList... args) override
 	{
 		return (mClass->*mMethod)(args...);
 	}
@@ -102,7 +106,7 @@ public:
      *  @param  args The delegate function parameters
      *  @retval ReturnType The return value from the invoked function
      */
-	ReturnType invoke(ParamsList... args)
+	ReturnType invoke(ParamsList... args) override
 	{
 		return (mMethod)(args...);
 	}
@@ -128,7 +132,6 @@ public:
     */
 	__forceinline Delegate()
 	{
-		impl = nullptr;
 	}
 
 	// Class method
@@ -138,10 +141,9 @@ public:
 	 */
 	template <class ClassType> __forceinline Delegate(MethodDeclaration<ClassType> m, ClassType* c)
 	{
-		if(m != NULL)
+		if(m != nullptr) {
 			impl = new MethodCaller<MethodDeclaration<ClassType>>(c, m);
-		else
-			impl = nullptr;
+		}
 	}
 
 	// Function
@@ -150,16 +152,16 @@ public:
 	 */
 	__forceinline Delegate(FunctionDeclaration m)
 	{
-		if(m != NULL)
+		if(m != nullptr) {
 			impl = new FunctionCaller<FunctionDeclaration, ReturnType, ParamsList...>(m);
-		else
-			impl = nullptr;
+		}
 	}
 
 	__forceinline ~Delegate()
 	{
-		if(impl != nullptr)
+		if(impl != nullptr) {
 			impl->decrease();
+		}
 	}
 
 	/** @brief  Invoke a delegate
@@ -205,8 +207,9 @@ public:
 	Delegate& operator=(Delegate&& that) // move assignment
 	{
 		if(this != &that) {
-			if(impl)
+			if(impl != nullptr) {
 				impl->decrease();
+			}
 
 			impl = that.impl;
 			that.impl = nullptr;
@@ -226,11 +229,13 @@ protected:
 	void copy(const Delegate& other)
 	{
 		if(impl != other.impl) {
-			if(impl)
+			if(impl != nullptr) {
 				impl->decrease();
+			}
 			impl = other.impl;
-			if(impl)
+			if(impl != nullptr) {
 				impl->increase();
+			}
 		}
 	}
 
@@ -239,4 +244,4 @@ private:
 };
 
 /** @} */
-#endif /* SMINGCORE_DELEGATE_H_ */
+#endif /* _SMING_CORE_DELEGATE_H_ */

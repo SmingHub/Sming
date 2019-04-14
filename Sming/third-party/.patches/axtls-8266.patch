@@ -524,3 +524,30 @@ index fc6cc90..3113355 100644
  xxd -i axTLS.key_1024 | sed -e \
 -        "s/axTLS_key_1024/default_private_key/" > $AXDIR/../ssl/private_key.h
 +        "s/axTLS_key_1024/default_private_key/" > $AXDIR/private_key.h
+diff --git a/compat/lwipr_compat.c b/compat/lwipr_compat.c
+index c6de55b..6834f5f 100644
+--- a/compat/lwipr_compat.c
++++ b/compat/lwipr_compat.c
+@@ -154,12 +154,20 @@ int axl_ssl_read(SSL *ssl, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **
+ 			}
+ 			else {
+ 				AXL_DEBUG_PRINT("axl_ssl_read: Got more than one SSL packet inside one TCP packet\n");
+-				total_read_buffer = (uint8_t *)realloc(total_read_buffer, total_bytes + read_bytes);
++				uint8_t* new_buffer = (uint8_t *)realloc(total_read_buffer, total_bytes + read_bytes);
++				if(new_buffer == NULL) {
++					free(total_read_buffer);
++					total_read_buffer = NULL;
++				} else {
++					total_read_buffer = new_buffer;
++				}
+ 			}
+ 
+ 			if(total_read_buffer == NULL) {
+ 				AXL_DEBUG_PRINT("axl_ssl_read: Unable to allocate additional %d bytes", read_bytes);
+-				while(1) {}
++				total_bytes = -1;
++				break;
++//				while(1) {}
+ 			}
+ 
+ 			memcpy(total_read_buffer + total_bytes, read_buffer, read_bytes);

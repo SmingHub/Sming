@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * MqttClient.cpp
+ *
  ****/
 
 #include "MqttClient.h"
@@ -11,26 +14,30 @@
 #include "Data/Stream/StreamChain.h"
 
 #include "../Clock.h"
-#include <algorithm>
-
-#define COPY_STRING(TO, FROM)                                                                                          \
-	{                                                                                                                  \
-		TO.length = FROM.length();                                                                                     \
-		TO.data = (uint8_t*)malloc(FROM.length());                                                                     \
-		if(!TO.data) {                                                                                                 \
-			debug_e("Not enough memory");                                                                              \
-			return false;                                                                                              \
-		}                                                                                                              \
-		memcpy(TO.data, FROM.c_str(), FROM.length());                                                                  \
-	}
 
 #define MQTT_PUBLISH_STREAM 0
 
 mqtt_serialiser_t MqttClient::serialiser;
 mqtt_parser_callbacks_t MqttClient::callbacks;
 
-MqttClient::MqttClient(bool withDefaultPayloadParser /* = true */, bool autoDestruct /* = false*/)
-	: TcpClient(autoDestruct)
+static bool copyString(mqtt_buffer_t& destBuffer, const String& sourceString)
+{
+	destBuffer.length = sourceString.length();
+	destBuffer.data = (uint8_t*)malloc(sourceString.length());
+	if(destBuffer.data == nullptr) {
+		debug_e("Not enough memory");
+		return false;
+	}
+	memcpy(destBuffer.data, sourceString.c_str(), sourceString.length());
+	return true;
+}
+
+#define COPY_STRING(TO, FROM)                                                                                          \
+	if(!copyString(TO, FROM)) {                                                                                        \
+		return false;                                                                                                  \
+	}
+
+MqttClient::MqttClient(bool withDefaultPayloadParser, bool autoDestruct) : TcpClient(autoDestruct)
 {
 	// TODO:...
 	//	if(!bitSet(flags, MQTT_CLIENT_CALLBACKS)) {
@@ -59,18 +66,12 @@ MqttClient::MqttClient(bool withDefaultPayloadParser /* = true */, bool autoDest
 
 MqttClient::~MqttClient()
 {
-	mqtt_message_t* message = nullptr;
-	do {
-		message = requestQueue.dequeue();
-		if(message) {
-			break;
-		}
-
-		mqtt_message_clear(message, 1);
-	} while(true);
+	while(requestQueue.count() != 0) {
+		mqtt_message_clear(requestQueue.dequeue(), 1);
+	}
 
 	mqtt_message_clear(&connectMessage, 0);
-	if(outgoingMessage) {
+	if(outgoingMessage != nullptr) {
 		mqtt_message_clear(outgoingMessage, 1);
 		outgoingMessage = nullptr;
 	}
@@ -167,17 +168,7 @@ int MqttClient::staticOnMessageEnd(void* userData, mqtt_message_t* message)
 	return 0;
 }
 
-void MqttClient::setEventHandler(mqtt_type_t type, MqttDelegate handler)
-{
-	eventHandler[type] = handler;
-}
-
-void MqttClient::setKeepAlive(uint16_t seconds)
-{
-	keepAlive = seconds;
-}
-
-void MqttClient::setPingRepeatTime(int seconds)
+void MqttClient::setPingRepeatTime(unsigned seconds)
 {
 	if(pingRepeatTime > keepAlive) {
 		pingRepeatTime = keepAlive;
@@ -203,11 +194,11 @@ bool MqttClient::setWill(const String& topic, const String& message, uint8_t fla
 	return true;
 }
 
-bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslOptions)
+bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslOptions)
 {
 	this->url = url;
-	bool useSsl = (url.Protocol == _F("mqtts"));
-	if(!(useSsl || url.Protocol == _F("mqtt"))) {
+	bool useSsl = (url.Scheme == URI_SCHEME_MQTT_SECURE);
+	if(!useSsl && url.Scheme != URI_SCHEME_MQTT) {
 		debug_e("Only mqtt and mqtts protocols are allowed");
 		return false;
 	}
@@ -219,8 +210,7 @@ bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslO
 
 	debug_d("MQTT start connection");
 
-	String protocolName = "MQTT";
-	COPY_STRING(connectMessage.connect.protocol_name, protocolName);
+	COPY_STRING(connectMessage.connect.protocol_name, F("MQTT"));
 
 	connectMessage.connect.keep_alive = keepAlive;
 
@@ -239,11 +229,15 @@ bool MqttClient::connect(const URL& url, const String& clientName, uint32_t sslO
 	memcpy(message, &connectMessage, sizeof(mqtt_message_t));
 	requestQueue.enqueue(message);
 
-	return TcpClient::connect(url.Host, url.Port, useSsl, sslOptions);
+	return TcpClient::connect(url.Host, url.getPort(), useSsl, sslOptions);
 }
 
 bool MqttClient::publish(const String& topic, const String& content, uint8_t flags)
 {
+	if(requestQueue.full()) {
+		return false;
+	}
+
 	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
 	mqtt_message_init(message);
 	message->common.type = MQTT_TYPE_PUBLISH;
@@ -258,10 +252,14 @@ bool MqttClient::publish(const String& topic, const String& content, uint8_t fla
 	return requestQueue.enqueue(message);
 }
 
-bool MqttClient::publish(const String& topic, ReadWriteStream* stream, uint8_t flags)
+bool MqttClient::publish(const String& topic, IDataSourceStream* stream, uint8_t flags)
 {
 	if(!stream || stream->available() < 1) {
 		debug_e("Sending empty stream or stream with unknown size is not supported");
+		return false;
+	}
+
+	if(requestQueue.full()) {
 		return false;
 	}
 
@@ -284,6 +282,10 @@ bool MqttClient::subscribe(const String& topic)
 {
 	debug_d("subscription '%s' registered", topic.c_str());
 
+	if(requestQueue.full()) {
+		return false;
+	}
+
 	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
 	mqtt_message_init(message);
 	message->common.type = MQTT_TYPE_SUBSCRIBE;
@@ -298,6 +300,10 @@ bool MqttClient::subscribe(const String& topic)
 bool MqttClient::unsubscribe(const String& topic)
 {
 	debug_d("unsubscribing from '%s'", topic.c_str());
+
+	if(requestQueue.full()) {
+		return false;
+	}
 
 	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
 	mqtt_message_init(message);
@@ -328,10 +334,10 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 			outgoingMessage->common.type = MQTT_TYPE_PINGREQ;
 		}
 
-		ReadWriteStream* payloadStream = nullptr;
+		IDataSourceStream* payloadStream = nullptr;
 		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH &&
 		   outgoingMessage->publish.content.length == MQTT_PUBLISH_STREAM) {
-			ReadWriteStream* payloadStream = reinterpret_cast<ReadWriteStream*>(outgoingMessage->publish.content.data);
+			payloadStream = reinterpret_cast<IDataSourceStream*>(outgoingMessage->publish.content.data);
 			if(payloadStream) {
 				outgoingMessage->publish.content.length = payloadStream->available();
 			}

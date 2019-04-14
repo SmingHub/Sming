@@ -1,10 +1,10 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <AppSettings.h>
 #include "Data/Stream/TemplateFlashMemoryStream.h"
 
 HttpServer server;
-FTPServer ftp;
+FtpServer ftp;
 
 BssList networks;
 String network, password;
@@ -73,12 +73,10 @@ void onFile(HttpRequest& request, HttpResponse& response)
 		return;
 	}
 
-	String file = request.getPath();
-	if(file[0] == '/')
-		file = file.substring(1);
+	String file = request.uri.getRelativePath();
 
 	if(file[0] == '.')
-		response.forbidden();
+		response.code = HTTP_STATUS_FORBIDDEN;
 	else {
 		if(lastModified.length() > 0) {
 			response.headers[HTTP_HEADER_LAST_MODIFIED] = lastModified;
@@ -171,11 +169,11 @@ void onAjaxConnect(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.addPath("/ipconfig", onIpConfig);
-	server.addPath("/ajax/get-networks", onAjaxNetworkList);
-	server.addPath("/ajax/connect", onAjaxConnect);
-	server.setDefaultHandler(onFile);
+	server.paths.set("/", onIndex);
+	server.paths.set("/ipconfig", onIpConfig);
+	server.paths.set("/ajax/get-networks", onAjaxNetworkList);
+	server.paths.set("/ajax/connect", onAjaxConnect);
+	server.paths.setDefault(onFile);
 }
 
 void startFTP()

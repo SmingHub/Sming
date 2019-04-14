@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 #include "../include/configuration.h" // application configuration
 
@@ -7,9 +7,6 @@
 #include "../app/si7021.cpp" // htu21d configuration
 
 Timer publishTimer;
-
-String mqttUrl = "mqtt://" + String(LOG) + ":" + String(PASS) + "@" + String(MQTT_SERVER) + ":" + String(MQTT_PORT);
-URL url(mqttUrl);
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
 
@@ -54,6 +51,7 @@ void onMessageReceived(String topic, String message)
 // Run MQTT client
 void startMqttClient()
 {
+	Url url(URI_SCHEME_MQTT, F(LOG), F(PASS), F(MQTT_SERVER), MQTT_PORT);
 	mqtt.connect(url, CLIENT);
 	Serial.println("Connected to MQTT server");
 	mqtt.subscribe(SUB_TOPIC);

@@ -4,6 +4,8 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * NtpClient.h
+ *
  ****/
 
 /** @defgroup   ntp Network Time Protocol client
@@ -12,8 +14,8 @@
  *  @ingroup    udp
  *  @{
  */
-#ifndef _SMING_CORE_NETWORK_NTPCLIENT_H_
-#define _SMING_CORE_NETWORK_NTPCLIENT_H_
+#ifndef _SMING_CORE_NETWORK_NTP_CLIENT_H_
+#define _SMING_CORE_NETWORK_NTP_CLIENT_H_
 
 #include "UdpConnection.h"
 #include "Platform/System.h"
@@ -44,12 +46,17 @@ class NtpClient : protected UdpConnection
 public:
 	/** @brief  Instantiates NTP client object
      */
-	NtpClient();
+	NtpClient() : NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, nullptr)
+	{
+	}
 
 	/** @brief  Instantiates NTP client object
      *  @param  onTimeReceivedCb Callback delegate to be called when NTP time result is received
      */
-	NtpClient(NtpTimeResultDelegate onTimeReceivedCb);
+	NtpClient(NtpTimeResultDelegate onTimeReceivedCb)
+		: NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, onTimeReceivedCb)
+	{
+	}
 
 	/** @brief  Instantiates NTP client object
      *  @param  reqServer IP address or hostname of NTP server
@@ -57,10 +64,6 @@ public:
      *  @param  onTimeReceivedCb Callback delegate to be called when NTP time result is received (Default: None)
      */
 	NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate onTimeReceivedCb = nullptr);
-
-	virtual ~NtpClient()
-	{
-	}
 
 	/** @brief  Request time from NTP server
      *  @note   Instigates request. Result is handled by NTP result handler function if defined
@@ -99,7 +102,7 @@ protected:
      *  @param  remoteIP IP address of remote host
      *  @param  remotePort Port number of remote host
      */
-	void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
+	void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort) override;
 
 	/** @brief  Send time request to NTP server
      *  @param  serverIp IP address of NTP server
@@ -133,4 +136,4 @@ protected:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_NTPCLIENT_H_ */
+#endif /* _SMING_CORE_NETWORK_NTP_CLIENT_H_ */

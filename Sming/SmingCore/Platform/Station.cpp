@@ -3,23 +3,16 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Station.cpp
+ *
  ****/
 
 #include "Station.h"
-#include "../../SmingCore/SmingCore.h"
+#include "Interrupts.h"
 #include "Data/HexString.h"
 
 StationClass WifiStation;
-
-StationClass::StationClass()
-{
-	System.onReady(this);
-	runScan = false;
-}
-
-StationClass::~StationClass()
-{
-}
 
 void StationClass::enable(bool enabled, bool save)
 {
@@ -41,8 +34,7 @@ bool StationClass::isEnabled()
 	return wifi_get_opmode() & STATION_MODE;
 }
 
-bool StationClass::config(const String& ssid, const String& password, bool autoConnectOnStartup /* = true*/,
-						  bool save /* = true */)
+bool StationClass::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
 {
 	station_config config = {0};
 
@@ -157,11 +149,11 @@ IPAddress StationClass::getIP()
 	return info.ip;
 }
 
-String StationClass::getMAC()
+String StationClass::getMAC(char sep)
 {
 	uint8 hwaddr[6];
 	if(wifi_get_macaddr(STATION_IF, hwaddr))
-		return makeHexString(hwaddr, sizeof(hwaddr), ':');
+		return makeHexString(hwaddr, sizeof(hwaddr), sep);
 	else
 		return nullptr;
 }
@@ -265,7 +257,7 @@ bool StationClass::startScan(ScanCompletedDelegate scanCompleted)
 	if(!scanCompleted)
 		return false;
 
-	bool res = wifi_station_scan(NULL, staticScanCompleted);
+	bool res = wifi_station_scan(nullptr, staticScanCompleted);
 	if(!res) {
 		if(!System.isReady()) {
 			// It's OK, queue this task
@@ -286,7 +278,7 @@ void StationClass::staticScanCompleted(void* arg, STATUS status)
 		if(WifiStation.scanCompletedCallback) {
 			bss_info* cur = (bss_info*)arg;
 
-			while(cur != NULL) {
+			while(cur != nullptr) {
 				list.add(BssInfo(cur));
 				cur = cur->next.stqe_next;
 			}
@@ -304,7 +296,7 @@ void StationClass::staticScanCompleted(void* arg, STATUS status)
 void StationClass::onSystemReady()
 {
 	if(runScan) {
-		wifi_station_scan(NULL, staticScanCompleted);
+		wifi_station_scan(nullptr, staticScanCompleted);
 		runScan = false;
 	}
 }
@@ -377,7 +369,7 @@ void StationClass::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate 
 void StationClass::smartConfigStop()
 {
 	smartconfig_stop();
-	smartConfigCallback = NULL;
+	smartConfigCallback = nullptr;
 }
 
 #ifdef ENABLE_WPS
@@ -461,17 +453,12 @@ void StationClass::wpsConfigStop()
 
 BssInfo::BssInfo(bss_info* info)
 {
-	ssid = String((char*)info->ssid);
+	ssid = reinterpret_cast<const char*>(info->ssid);
 	memcpy(bssid, info->bssid, sizeof(bssid));
 	authorization = info->authmode;
 	channel = info->channel;
 	rssi = info->rssi;
 	hidden = info->is_hidden;
-}
-
-bool BssInfo::isOpen()
-{
-	return authorization == AUTH_OPEN;
 }
 
 const char* BssInfo::getAuthorizationMethodName()
@@ -495,7 +482,7 @@ const char* BssInfo::getAuthorizationMethodName()
 
 uint32_t BssInfo::getHashId()
 {
-	uint32_t a = *(uint16_t*)(&bssid[4]);
-	uint32_t b = *(uint32_t*)bssid;
+	uint32_t a = bssid[4] | (bssid[5] << 8);
+	uint32_t b = bssid[0] | (bssid[1] << 8) | (bssid[2] << 16) | (bssid[3] << 24);
 	return a ^ b;
 }

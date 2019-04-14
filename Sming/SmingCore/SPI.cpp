@@ -1,4 +1,4 @@
-/*
+/****
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
@@ -12,7 +12,7 @@
  *  Some code is derived from:
  *  	David Ogilvy (MetalPhreak)
  *
- */
+ ****/
 
 #include "SPI.h"
 
@@ -23,15 +23,6 @@
 
 // define the static singleton
 SPIClass SPI;
-
-SPIClass::SPIClass()
-{
-	spiSettings = this->SPIDefaultSettings;
-}
-
-SPIClass::~SPIClass()
-{
-}
 
 /* @defgroup SPI hardware implementation
  * @brief begin()
@@ -51,16 +42,6 @@ void SPIClass::begin()
 }
 
 /* @defgroup SPI hardware implementation
- * @brief end()
- *
- * Method for compatibility with Arduino API. Provides NOP
- *
- */
-void SPIClass::end()
-{
-}
-
-/* @defgroup SPI hardware implementation
  * @brief beginTransaction()
  *
  * Initializes the SPI bus using the defined SPISettings
@@ -75,27 +56,13 @@ void SPIClass::beginTransaction(SPISettings mySettings)
 	debugf("SPIhw::beginTransaction(SPISettings mySettings)");
 #endif
 	// check if we need to change settings
-	if(this->spiSettings == mySettings)
+	if(this->spiSettings == mySettings) {
 		return;
+	}
 
 	// prepare SPI settings
 	prepare(mySettings);
 }
-
-/* @defgroup SPI hardware implementation
- * @brief endTransaction()
- *
- * Method for compatibility with Arduino API. Provides NOP
- *
- * endTransaction(): Stop using the SPI bus. Normally this is called after
- * de-asserting the chip select, to allow other libraries to use the SPI bus.
- */
-void SPIClass::endTransaction()
-{
-#ifdef SPI_DEBUG
-	debugf("SPIhw::endTransaction()");
-#endif
-};
 
 /* @defgroup SPI hardware implementation
  * @brief transfer32()

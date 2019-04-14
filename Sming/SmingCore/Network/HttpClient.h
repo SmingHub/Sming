@@ -4,7 +4,7 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpClient
+ * HttpClient.h
  *
  * Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -16,45 +16,65 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_HTTPCLIENT_H_
-#define _SMING_CORE_NETWORK_HTTPCLIENT_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_CLIENT_H_
+#define _SMING_CORE_NETWORK_HTTP_CLIENT_H_
 
 #include "TcpClient.h"
 #include "Http/HttpCommon.h"
 #include "Http/HttpRequest.h"
-#include "Http/HttpConnection.h"
+#include "Http/HttpClientConnection.h"
 
 class HttpClient
 {
 public:
-	/* High-Level Method */
-
-	__forceinline bool sendRequest(const String& url, RequestCompletedDelegate requestComplete)
+	/**
+	 * @brief HttpClient destructor
+	 * @note DON'T call cleanup.
+	 * 	If you want to free all resources from HttpClients the correct sequence will be to
+	 * 		1. Delete all instances of HttpClient
+	 * 		2. Call the static method HttpClient::cleanup();
+	*/
+	virtual ~HttpClient()
 	{
-		return send(request(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 	}
 
-	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers,
-								   RequestCompletedDelegate requestComplete)
+	/* High-Level Methods */
+
+	bool sendRequest(const Url& url, RequestCompletedDelegate requestComplete)
 	{
-		return send(request(url)->setMethod(method)->setHeaders(headers)->onRequestComplete(requestComplete));
+		return send(createRequest(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
 	}
 
-	__forceinline bool sendRequest(const HttpMethod method, const String& url, const HttpHeaders& headers,
-								   const String& body, RequestCompletedDelegate requestComplete)
+	bool sendRequest(const HttpMethod method, const Url& url, const HttpHeaders& headers,
+					 RequestCompletedDelegate requestComplete)
 	{
-		return send(
-			request(url)->setMethod(method)->setHeaders(headers)->setBody(body)->onRequestComplete(requestComplete));
+		return send(createRequest(url)->setMethod(method)->setHeaders(headers)->onRequestComplete(requestComplete));
 	}
 
-	bool downloadString(const String& url, RequestCompletedDelegate requestComplete);
-
-	__forceinline bool downloadFile(const String& url, RequestCompletedDelegate requestComplete = NULL)
+	bool sendRequest(const HttpMethod method, const Url& url, const HttpHeaders& headers, const String& body,
+					 RequestCompletedDelegate requestComplete)
 	{
-		return downloadFile(url, "", requestComplete);
+		return send(createRequest(url)->setMethod(method)->setHeaders(headers)->setBody(body)->onRequestComplete(
+			requestComplete));
 	}
 
-	bool downloadFile(const String& url, const String& saveFileName, RequestCompletedDelegate requestComplete = NULL);
+	bool downloadString(const Url& url, RequestCompletedDelegate requestComplete)
+	{
+		return send(createRequest(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
+	}
+
+	bool downloadFile(const Url& url, RequestCompletedDelegate requestComplete = nullptr)
+	{
+		return downloadFile(url, nullptr, requestComplete);
+	}
+
+	/**
+	 * @brief Queue request to download a file
+	 * @param url Source of file data
+	 * @param saveFilename Path to save file to. Optional: specify nullptr to use name from url
+	 * @param requestComplete Completion callback
+	 */
+	bool downloadFile(const Url& url, const String& saveFileName, RequestCompletedDelegate requestComplete = nullptr);
 
 	/* Low Level Methods */
 
@@ -68,32 +88,39 @@ public:
 	 */
 	bool send(HttpRequest* request);
 
-	HttpRequest* request(const String& url);
+	/** @deprecated Use `createRequest()` instead */
+	HttpRequest* request(const String& url) SMING_DEPRECATED
+	{
+		return createRequest(url);
+	}
 
-#ifdef ENABLE_SSL
-	static void freeSslSessionPool();
-#endif
-	static void freeHttpConnectionPool();
-	static void freeRequestQueue();
+	/** @brief Helper function to create a new request on a URL
+	 *  @param url
+	 *  @retval HttpRequest*
+	 */
+	HttpRequest* createRequest(const Url& url)
+	{
+		return new HttpRequest(url);
+	}
 
 	/**
 	 * Use this method to clean all request queues and object pools
 	 */
-	static void cleanup();
-
-	virtual ~HttpClient();
-
-protected:
-	String getCacheKey(URL url);
+	static void cleanup()
+	{
+		httpConnectionPool.clear();
+	}
 
 protected:
-	static HashMap<String, HttpConnection*> httpConnectionPool;
-	static HashMap<String, RequestQueue*> queue;
+	String getCacheKey(const Url& url)
+	{
+		return url.Host + ':' + url.getPort();
+	}
 
-#ifdef ENABLE_SSL
-	static HashMap<String, SSLSessionId*> sslSessionIdPool;
-#endif
+protected:
+	typedef ObjectMap<String, HttpClientConnection> HttpConnectionPool;
+	static HttpConnectionPool httpConnectionPool;
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_HTTPCLIENT_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_CLIENT_H_ */

@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * JsonObjectStream.h
+ *
  ****/
 
-#ifndef _SMING_CORE_DATA_JSON_OBJECT_STREAM_H_
-#define _SMING_CORE_DATA_JSON_OBJECT_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_JSON_OBJECT_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_JSON_OBJECT_STREAM_H_
 
 #include "MemoryDataStream.h"
 #include "../Libraries/ArduinoJson/include/ArduinoJson.h"
@@ -26,12 +29,8 @@ public:
 	{
 	}
 
-	virtual ~JsonObjectStream()
-	{
-	}
-
 	//Use base class documentation
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return eSST_JsonObject;
 	}
@@ -45,13 +44,13 @@ public:
 	}
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	/**
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	int available()
+	int available() override
 	{
 		return rootNode.success() ? rootNode.measureLength() : 0;
 	}
@@ -63,4 +62,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_JSON_OBJECT_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_JSON_OBJECT_STREAM_H_ */

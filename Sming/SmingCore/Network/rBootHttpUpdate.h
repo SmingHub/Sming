@@ -1,14 +1,20 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * rBootHttpUpdate.h
  *
  *  Created on: 2015/09/03.
  *      Author: Richard A Burton & Anakod
  *
  *  Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
- */
+ *
+ ****/
 
-#ifndef SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
-#define SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_
+#ifndef _SMING_CORE_NETWORK_RBOOT_HTTP_UPDATE_H_
+#define _SMING_CORE_NETWORK_RBOOT_HTTP_UPDATE_H_
 
 #include "Data/Stream/DataSourceStream.h"
 #include "HttpClient.h"
@@ -18,7 +24,6 @@
 
 class rBootHttpUpdate;
 
-//typedef void (*otaCallback)(bool result);
 typedef Delegate<void(rBootHttpUpdate& client, bool result)> OtaUpdateDelegate;
 
 struct rBootHttpUpdateItem {
@@ -30,53 +35,68 @@ struct rBootHttpUpdateItem {
 class rBootItemOutputStream : public ReadWriteStream
 {
 public:
-	void setItem(rBootHttpUpdateItem* item);
-	virtual bool init();
-	virtual size_t write(const uint8_t* data, size_t size);
-	virtual size_t write(uint8_t charToWrite)
+	virtual ~rBootItemOutputStream()
 	{
-		return write(&charToWrite, 1);
+		close();
 	}
 
-	virtual StreamType getStreamType() const
+	void setItem(rBootHttpUpdateItem* item)
+	{
+		this->item = item;
+	}
+
+	virtual bool init();
+
+	size_t write(const uint8_t* data, size_t size) override;
+
+	StreamType getStreamType() const override
 	{
 		return eSST_File;
 	}
 
-	virtual uint16_t readMemoryBlock(char* data, int bufSize)
+	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
 		return 0;
 	}
 
-	virtual bool seek(int len)
+	bool seek(int len) override
 	{
 		return false;
 	}
 
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return true;
 	}
 
 	virtual bool close();
-	virtual ~rBootItemOutputStream();
 
 protected:
-	bool initilized = false;
-	rBootHttpUpdateItem* item = NULL;
+	bool initialized = false;
+	rBootHttpUpdateItem* item = nullptr;
 	rboot_write_status rBootWriteStatus;
 };
 
 class rBootHttpUpdate : protected HttpClient
 {
 public:
-	rBootHttpUpdate();
-	virtual ~rBootHttpUpdate();
 	void addItem(int offset, String firmwareFileUrl);
 	void start();
-	void switchToRom(uint8_t romSlot);
-	void setCallback(OtaUpdateDelegate reqUpdateDelegate);
-	void setDelegate(OtaUpdateDelegate reqUpdateDelegate);
+
+	void switchToRom(uint8_t romSlot)
+	{
+		this->romSlot = romSlot;
+	}
+
+	void setCallback(OtaUpdateDelegate reqUpdateDelegate)
+	{
+		setDelegate(reqUpdateDelegate);
+	}
+
+	void setDelegate(OtaUpdateDelegate reqUpdateDelegate)
+	{
+		this->updateDelegate = reqUpdateDelegate;
+	}
 
 	/* Sets the base request that can be used to pass
 	 * - default request parameters, like request headers...
@@ -86,27 +106,37 @@ public:
 	 *
 	 * @param HttpRequest *
 	 */
-	void setBaseRequest(HttpRequest* request);
+	void setBaseRequest(HttpRequest* request)
+	{
+		baseRequest = request;
+	}
 
 	// Allow reading items
-	rBootHttpUpdateItem getItem(unsigned int index);
+	rBootHttpUpdateItem getItem(unsigned int index)
+	{
+		return items.elementAt(index);
+	}
 
 protected:
 	void applyUpdate();
 	void updateFailed();
 
-	virtual rBootItemOutputStream* getStream();
+	virtual rBootItemOutputStream* getStream()
+	{
+		return new rBootItemOutputStream();
+	}
+
 	virtual int itemComplete(HttpConnection& client, bool success);
 	virtual int updateComplete(HttpConnection& client, bool success);
 
 protected:
 	Vector<rBootHttpUpdateItem> items;
-	int currentItem;
+	int currentItem = 0;
 	rboot_write_status rBootWriteStatus;
-	uint8_t romSlot;
-	OtaUpdateDelegate updateDelegate;
+	uint8_t romSlot = NO_ROM_SWITCH;
+	OtaUpdateDelegate updateDelegate = nullptr;
 
-	HttpRequest* baseRequest = NULL;
+	HttpRequest* baseRequest = nullptr;
 };
 
-#endif /* SMINGCORE_NETWORK_RBOOTHTTPUPDATE_H_ */
+#endif /* _SMING_CORE_NETWORK_RBOOT_HTTP_UPDATE_H_ */

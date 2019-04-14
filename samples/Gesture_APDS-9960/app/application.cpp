@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 #include <SparkFun_APDS9960/SparkFun_APDS9960.h>
 

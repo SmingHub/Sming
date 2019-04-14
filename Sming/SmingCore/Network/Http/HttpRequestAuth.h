@@ -2,16 +2,16 @@
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpRequestAuth
+ * HttpRequestAuth.h
  *
  * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
- * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#ifndef _SMING_CORE_HTTP_REQUEST_AUTH_H_
-#define _SMING_CORE_HTTP_REQUEST_AUTH_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_AUTH_H_
+#define _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_AUTH_H_
 
 #include "HttpResponse.h"
 
@@ -20,14 +20,13 @@ class HttpRequest;
 class AuthAdapter
 {
 public:
-	virtual void setRequest(HttpRequest* request) = 0;
-
-	__forceinline virtual void setResponse(HttpResponse* response)
+	virtual ~AuthAdapter()
 	{
-		return;
 	}
 
-	virtual ~AuthAdapter()
+	virtual void setRequest(HttpRequest* request) = 0;
+
+	virtual void setResponse(HttpResponse* response)
 	{
 	}
 };
@@ -35,9 +34,11 @@ public:
 class HttpBasicAuth : public AuthAdapter
 {
 public:
-	HttpBasicAuth(const String& username, const String& password);
+	HttpBasicAuth(const String& username, const String& password) : username(username), password(password)
+	{
+	}
 
-	void setRequest(HttpRequest* request);
+	void setRequest(HttpRequest* request) override;
 
 private:
 	String username;
@@ -47,16 +48,21 @@ private:
 class HttpDigestAuth : public AuthAdapter
 {
 public:
-	HttpDigestAuth(const String& username, const String& password);
+	HttpDigestAuth(const String& username, const String& password) : username(username), password(password)
+	{
+	}
 
-	void setRequest(HttpRequest* request);
+	void setRequest(HttpRequest* request) override
+	{
+		this->request = request;
+	}
 
-	void setResponse(HttpResponse* response);
+	void setResponse(HttpResponse* response) override;
 
 private:
 	String username;
 	String password;
-	HttpRequest* request = NULL;
+	HttpRequest* request = nullptr;
 };
 
-#endif /* _SMING_CORE_HTTP_REQUEST_AUTH_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_AUTH_H_ */

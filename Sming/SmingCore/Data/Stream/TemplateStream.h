@@ -3,12 +3,15 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * TemplateStream.h
+ *
  ****/
 
-#ifndef _SMING_CORE_DATA_TEMPLATE_STREAM_H_
-#define _SMING_CORE_DATA_TEMPLATE_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_TEMPLATE_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_TEMPLATE_STREAM_H_
 
-#include "ReadWriteStream.h"
+#include "DataSourceStream.h"
 #include "WHashMap.h"
 #include "WString.h"
 
@@ -37,7 +40,7 @@ enum TemplateExpandState {
  *  @{
  */
 
-class TemplateStream : public ReadWriteStream
+class TemplateStream : public IDataSourceStream
 {
 public:
 	/** @brief Create a template stream
@@ -49,24 +52,24 @@ public:
 		varName.reserve(TEMPLATE_MAX_VAR_NAME_LEN);
 	}
 
-	virtual ~TemplateStream()
+	~TemplateStream()
 	{
 		delete stream;
 	}
 
 	//Use base class documentation
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return stream ? eSST_Template : eSST_Invalid;
 	}
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	//Use base class documentation
-	virtual bool seek(int len);
+	bool seek(int len) override;
 
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return stream ? stream->isFinished() : true;
 	}
@@ -97,7 +100,7 @@ public:
 		return templateData;
 	}
 
-	virtual String getName() const
+	String getName() const override
 	{
 		return stream ? stream->getName() : nullptr;
 	}
@@ -111,12 +114,6 @@ public:
 	 * 	int available()
 	 */
 
-	/* @deprecated to be removed once class is migrated to IDataSourceStream base */
-	virtual size_t write(const uint8_t* buffer, size_t size)
-	{
-		return 0;
-	}
-
 private:
 	IDataSourceStream* stream = nullptr;
 	TemplateVariables templateData;
@@ -129,4 +126,4 @@ private:
 
 /** @} */
 
-#endif /* _SMING_CORE_DATA_TEMPLATESTREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_TEMPLATE_STREAM_H_ */

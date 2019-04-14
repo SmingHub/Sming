@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 DNSServer dnsServer;
 HttpServer server;
@@ -15,8 +15,8 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.setDefaultHandler(onIndex);
+	server.paths.set("/", onIndex);
+	server.paths.setDefault(onIndex);
 }
 
 void startServers()

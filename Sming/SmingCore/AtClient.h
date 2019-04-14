@@ -3,6 +3,9 @@
  * Created 2017 by Slavey Karadzhov
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * AtClient.h
+ *
  ****/
 
 /**	@defgroup serial AtCommand serial
@@ -33,13 +36,13 @@ typedef Delegate<bool(AtClient& atClient, String& reply)> AtCompleteCallback;
 //     finished successfully processing the command
 
 typedef struct {
-	String text;					   // << the actual AT command
-	String response2;				   // << alternative successful response
-	unsigned timeout;				   // << timeout in milliseconds
-	unsigned retries;				   // << number of retries before giving up
-	bool breakOnError = true;		   // << stop executing next command if that one has failed
-	AtReceiveCallback onReceive = 0;   // << if set you can process manually all incoming data in a callback
-	AtCompleteCallback onComplete = 0; // if set then you can process the complete response manually
+	String text;					   ///< the actual AT command
+	String response2;				   ///< alternative successful response
+	unsigned timeout;				   ///< timeout in milliseconds
+	unsigned retries;				   ///< number of retries before giving up
+	bool breakOnError = true;		   ///< stop executing next command if that one has failed
+	AtReceiveCallback onReceive = 0;   ///< if set you can process manually all incoming data in a callback
+	AtCompleteCallback onComplete = 0; ///< if set then you can process the complete response manually
 } AtCommand;
 
 typedef enum { eAtOK = 0, eAtRunning, eAtError } AtState;
@@ -51,6 +54,7 @@ class AtClient
 {
 public:
 	AtClient(HardwareSerial* stream);
+
 	virtual ~AtClient()
 	{
 	}
@@ -119,7 +123,7 @@ public:
 	 */
 	void next();
 
-	AtCommand currentCommand; // << The current command
+	AtCommand currentCommand; ///< The current command
 
 protected:
 	/**
@@ -128,9 +132,9 @@ protected:
 	virtual void processor(Stream& source, char arrivedChar, uint16_t availableCharsCount);
 
 private:
-	FIFO<AtCommand, 10> queue;		  // << Queue for the commands to be executed
-	HardwareSerial* stream = nullptr; // << The main communication stream
-	Timer commandTimer;				  // timer used for commands with timeout
+	FIFO<AtCommand, 10> queue;		  ///< Queue for the commands to be executed
+	HardwareSerial* stream = nullptr; ///< The main communication stream
+	Timer commandTimer;				  ///< timer used for commands with timeout
 	AtState state = eAtOK;
 
 	/**

@@ -1,18 +1,19 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * WDT.cpp
  *
  *  Created on: 06 àïð. 2015 ã.
  *      Author: Anakod
+ *
  */
 
 #include "WDT.h"
 
 WDTClass WDT;
-
-WDTClass::WDTClass()
-{
-	//enabled = true;
-}
 
 void WDTClass::enable(bool enableWatchDog)
 {

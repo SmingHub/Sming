@@ -4,6 +4,8 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * HttpHeaders.h
+ *
  * @author: 2018 - Mikee47 <mike@sillyhouse.net>
  *
  *  Encapsulate encoding and decoding of HTTP header fields
@@ -15,12 +17,13 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HEADERS_H_
-#define _SMING_CORE_NETWORK_HTTP_HEADERS_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_HEADERS_H_
+#define _SMING_CORE_NETWORK_HTTP_HTTP_HEADERS_H_
 
 #include "Data/CStringArray.h"
 #include "WString.h"
 #include "WHashMap.h"
+#include "DateTime.h"
 
 /*
  * Common HTTP header field names. Enumerating these simplifies matching
@@ -93,6 +96,13 @@ enum HttpHeaderFieldName {
 class HttpHeaders : private HashMap<HttpHeaderFieldName, String>
 {
 public:
+	HttpHeaders() = default;
+
+	HttpHeaders(const HttpHeaders& headers)
+	{
+		*this = headers;
+	}
+
 	String toString(HttpHeaderFieldName name) const;
 
 	/** @brief Produce a string for output in the HTTP header, with line ending
@@ -157,7 +167,7 @@ public:
 
 	using HashMap::contains;
 
-	bool contains(const String& name)
+	bool contains(const String& name) const
 	{
 		return contains(fromString(name));
 	}
@@ -193,6 +203,20 @@ public:
 
 	using HashMap::count;
 
+	DateTime getLastModifiedDate() const
+	{
+		DateTime dt;
+		String strLM = operator[](HTTP_HEADER_LAST_MODIFIED);
+		return dt.fromHttpDate(strLM) ? dt : DateTime();
+	}
+
+	DateTime getServerDate() const
+	{
+		DateTime dt;
+		String strSD = operator[](HTTP_HEADER_DATE);
+		return dt.fromHttpDate(strSD) ? dt : DateTime();
+	}
+
 private:
 	/** @brief Try to match a string against the list of custom field names
 	 *  @param name
@@ -203,4 +227,4 @@ private:
 	CStringArray customFieldNames;
 };
 
-#endif /* _SMING_CORE_NETWORK_HTTP_HEADERS_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_HEADERS_H_ */

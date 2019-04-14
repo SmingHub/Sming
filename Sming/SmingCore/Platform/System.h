@@ -4,6 +4,7 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * System.h
  *
  * @author: 14/8/2018 - mikee47 <mike@sillyhouse.net>
  *
@@ -13,14 +14,15 @@
  * 	simplify application code, the callback is invoked immediately in this situation.
  *
  * 	Global task queue added to class, initialised at system startup.
+ *
  */
 
 /**	@defgroup system System
  *	@brief	Access to the ESP8266 system
  *	@note   Provides system control and monitoring of the ESP8266.
 */
-#ifndef SMINGCORE_PLATFORM_SYSTEM_H_
-#define SMINGCORE_PLATFORM_SYSTEM_H_
+#ifndef _SMING_CORE_PLATFORM_SYSTEM_H_
+#define _SMING_CORE_PLATFORM_SYSTEM_H_
 
 #include "Delegate.h"
 
@@ -107,12 +109,13 @@ public:
 		return state == eSS_Ready;
 	}
 
-	/** @brief  Restart system
+	/** @brief Request a restart of the system
+	 *  @param deferMillis defer restart request by a number of milliseconds
+	 *  @note A delay is often required to allow network callback code to complete correctly.
+	 *  The restart is always deferred, either using the task queue (if deferMillis == 0)
+	 *  or using a timer. This method always returns immediately.
      */
-	void restart()
-	{
-		system_restart();
-	}
+	void restart(unsigned deferMillis = 0);
 
 	/** @brief  Set the CPU frequency
      *  @param  freq Frequency to set CPU
@@ -194,4 +197,4 @@ private:
 extern SystemClass System;
 
 /** @} */
-#endif /* SMINGCORE_PLATFORM_SYSTEM_H_ */
+#endif /* _SMING_CORE_PLATFORM_SYSTEM_H_ */

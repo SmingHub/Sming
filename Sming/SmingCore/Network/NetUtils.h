@@ -3,42 +3,48 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * NetUtils.h
+ *
  ****/
 
 /** @defgroup   networking Networking
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_NETUTILS_H_
-#define _SMING_CORE_NETWORK_NETUTILS_H_
+#ifndef _SMING_CORE_NETWORK_NET_UTILS_H_
+#define _SMING_CORE_NETWORK_NET_UTILS_H_
 
 struct pbuf;
 class String;
-class TcpConnection;
-
-struct DnsLookup {
-	TcpConnection* con;
-	int port;
-};
 
 class NetUtils
 {
 public:
 	// Helpers
-	static bool pbufIsStrEqual(pbuf* buf, const char* compared, int startPos);
-	static int pbufFindChar(pbuf* buf, char wtf, int startPos = 0);
-	static int pbufFindStr(pbuf* buf, const char* wtf, int startPos = 0);
-	static char* pbufAllocateStrCopy(pbuf* buf, int startPos, int length);
-	static String pbufStrCopy(pbuf* buf, int startPos, int length);
+	static bool pbufIsStrEqual(const pbuf* buf, const char* compared, unsigned startPos);
+	static int pbufFindChar(const pbuf* buf, char wtf, unsigned startPos = 0);
+	static int pbufFindStr(const pbuf* buf, const char* wtf, unsigned startPos = 0);
+	static char* pbufAllocateStrCopy(const pbuf* buf, unsigned startPos, unsigned length);
+	static String pbufStrCopy(const pbuf* buf, unsigned startPos, unsigned length);
 
+#ifdef FIX_NETWORK_ROUTING
 	static bool FixNetworkRouting();
+#else
+	static bool FixNetworkRouting()
+	{
+		return true; // Should work on standard lwip
+	}
+#endif
 
 	// Debug
 	static void debugPrintTcpList();
 
 private:
+#ifdef FIX_NETWORK_ROUTING
 	static bool ipClientRoutingFixed;
+#endif
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_NETUTILS_H_ */
+#endif /* _SMING_CORE_NETWORK_NET_UTILS_H_ */

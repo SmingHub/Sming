@@ -10,12 +10,13 @@
  *      Author: harry-boe
  *
  */
+
 /** @defgroup base_spi SPI support classes
  *  @brief    Provides SPI support
  */
 
-#ifndef SMINGCORE_SPIBASE_H_
-#define SMINGCORE_SPIBASE_H_
+#ifndef _SMING_CORE_SPI_BASE_H_
+#define _SMING_CORE_SPI_BASE_H_
 
 #include "SPISettings.h"
 
@@ -30,8 +31,13 @@ public:
      *  @addtogroup base_spi
      *  @{
 	 */
-	SPIBase();
-	virtual ~SPIBase();
+	SPIBase()
+	{
+	}
+
+	virtual ~SPIBase()
+	{
+	}
 
 	/** @brief begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
 	 */
@@ -61,7 +67,12 @@ public:
 	virtual unsigned short transfer16(unsigned short val) = 0;
 	virtual void transfer(uint8* buffer, size_t size) = 0;
 
+	/** @brief  Default settings used by the SPI bus
+	 * until reset by beginTransaction(SPISettings)
+	 *
+	 * Note: not included in std Arduino lib
+	 */
 	SPISettings SPIDefaultSettings;
 };
 
-#endif /* SMINGCORE_SPIBASE_H_ */
+#endif /* _SMING_CORE_SPI_BASE_H_ */

@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * FileSystem.cpp
+ *
  ****/
 
 #include "FileSystem.h"
-#include "../Wiring/WString.h"
+#include "WString.h"
 
 file_t fileOpen(const String& name, FileOpenFlags flags)
 {
@@ -14,14 +17,16 @@ file_t fileOpen(const String& name, FileOpenFlags flags)
 
 	// Special fix to prevent known spifFS bug: manual delete file
 	if((flags & eFO_CreateNewAlways) == eFO_CreateNewAlways) {
-		if(fileExist(name))
+		if(fileExist(name)) {
 			fileDelete(name);
+		}
 		flags = (FileOpenFlags)((int)flags & ~eFO_Truncate);
 	}
 
 	res = SPIFFS_open(&_filesystemStorageHandle, name.c_str(), (spiffs_flags)flags, 0);
-	if(res < 0)
+	if(res < 0) {
 		debugf("open errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
+	}
 
 	return res;
 }
@@ -81,21 +86,22 @@ int fileStats(file_t file, spiffs_stat* stat)
 	return SPIFFS_fstat(&_filesystemStorageHandle, file, stat);
 }
 
-void fileDelete(const String& name)
+int fileDelete(const String& name)
 {
-	SPIFFS_remove(&_filesystemStorageHandle, name.c_str());
+	return SPIFFS_remove(&_filesystemStorageHandle, name.c_str());
 }
 
-void fileDelete(file_t file)
+int fileDelete(file_t file)
 {
-	SPIFFS_fremove(&_filesystemStorageHandle, file);
+	return SPIFFS_fremove(&_filesystemStorageHandle, file);
 }
 
 bool fileExist(const String& name)
 {
 	spiffs_stat stat = {0};
-	if(fileStats(name.c_str(), &stat) < 0)
+	if(fileStats(name.c_str(), &stat) < 0) {
 		return false;
+	}
 	return stat.name[0] != '\0';
 }
 
@@ -109,16 +115,22 @@ void fileClearLastError(file_t fd)
 	SPIFFS_clearerr(&_filesystemStorageHandle);
 }
 
-void fileSetContent(const String& fileName, const String& content)
+int fileSetContent(const String& fileName, const String& content)
 {
-	fileSetContent(fileName, content.c_str());
+	return fileSetContent(fileName, content.c_str());
 }
 
-void fileSetContent(const String& fileName, const char* content)
+int fileSetContent(const String& fileName, const char* content)
 {
+	int res;
+
 	file_t file = fileOpen(fileName.c_str(), eFO_CreateNewAlways | eFO_WriteOnly);
-	fileWrite(file, content, strlen(content));
+	if(file < 0) {
+		return file;
+	}
+	res = fileWrite(file, content, strlen(content));
 	fileClose(file);
+	return res;
 }
 
 uint32_t fileGetSize(const String& fileName)
@@ -144,8 +156,9 @@ Vector<String> fileList()
 
 	SPIFFS_opendir(&_filesystemStorageHandle, "/", &d);
 	while(true) {
-		if(!SPIFFS_readdir(&d, &info))
+		if(!SPIFFS_readdir(&d, &info)) {
 			break;
+		}
 		result.add(String((char*)info.name));
 	}
 	SPIFFS_closedir(&d);
@@ -160,7 +173,7 @@ String fileGetContent(const String& fileName)
 	int size = fileTell(file);
 	if(size <= 0) {
 		fileClose(file);
-		return "";
+		return nullptr;
 	}
 	fileSeek(file, 0, eSO_FileStart);
 	char* buffer = new char[size + 1];
@@ -174,8 +187,9 @@ String fileGetContent(const String& fileName)
 
 int fileGetContent(const String& fileName, char* buffer, int bufSize)
 {
-	if(buffer == NULL || bufSize == 0)
+	if(buffer == nullptr || bufSize == 0) {
 		return 0;
+	}
 	*buffer = 0;
 
 	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);

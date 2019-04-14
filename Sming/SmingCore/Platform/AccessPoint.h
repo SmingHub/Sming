@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * AccessPoint.h
+ *
  ****/
 
 /**	@defgroup wifi_ap WiFi Access Point
@@ -14,14 +17,12 @@
  *  @todo   How is wifi access point dhcp controlled?
 */
 
-#ifndef SMINGCORE_PLATFORM_ACCESSPOINT_H_
-#define SMINGCORE_PLATFORM_ACCESSPOINT_H_
+#ifndef _SMING_CORE_PLATFORM_ACCESS_POINT_H_
+#define _SMING_CORE_PLATFORM_ACCESS_POINT_H_
 
-#include <user_config.h>
 #include "System.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
-#include "../../Wiring/IPAddress.h"
+#include "WString.h"
+#include "IPAddress.h"
 
 class AccessPointClass : protected ISystemReadyHandler
 {
@@ -30,9 +31,9 @@ public:
      *  @addtogroup wifi_ap
      *  @{
      */
-	AccessPointClass();
-	virtual ~AccessPointClass()
+	AccessPointClass()
 	{
+		System.onReady(this);
 	}
 
 	/** @brief  Enable or disable WiFi AP
@@ -70,9 +71,10 @@ public:
 	bool setIP(IPAddress address);
 
 	/** @brief  Get WiFi AP MAC address
+	 *  @param optional separator between bytes (e.g. ':')
      *  @retval String WiFi AP MAC address
      */
-	String getMAC();
+	String getMAC(char sep = '\0');
 
 	/** @brief  Get WiFi AP network mask
      *  @retval IPAddress WiFi AP network mask
@@ -101,10 +103,10 @@ public:
 	/** @} */
 
 protected:
-	virtual void onSystemReady();
+	void onSystemReady() override;
 
 private:
-	softap_config* runConfig;
+	softap_config* runConfig = nullptr;
 };
 
 /**	@brief	Global instance of WiFi access point object
@@ -117,4 +119,4 @@ private:
  */
 extern AccessPointClass WifiAccessPoint;
 
-#endif /* SMINGCORE_PLATFORM_ACCESSPOINT_H_ */
+#endif /* _SMING_CORE_PLATFORM_ACCESS_POINT_H_ */

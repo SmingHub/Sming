@@ -201,7 +201,7 @@ void handleCommand(const String& command)
 	if(command.equalsIgnoreCase(_F("cat"))) {
 		String filename = F("Readme.md");
 		FileStream* fileStream = new FileStream;
-		if(fileStream && fileStream->attach(filename, eFO_ReadOnly)) {
+		if(fileStream && fileStream->open(filename, eFO_ReadOnly)) {
 			Serial.printf(_F("Sending \"%s\" (%u bytes)\r\n"), filename.c_str(), fileStream->available());
 			auto demo = new SerialStreamTransmitDemo;
 			demo->begin(Serial1);

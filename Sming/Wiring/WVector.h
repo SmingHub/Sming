@@ -31,36 +31,36 @@ class Vector : public Countable<Element>
     // constructors
 	Vector(unsigned int initialCapacity = 10, unsigned int capacityIncrement = 10);
 	Vector(const Vector& rhv);
-	virtual ~Vector();
+	~Vector();
 
     // methods
      unsigned int capacity() const;
-     boolean contains(const Element& elem) const;
+     bool contains(const Element& elem) const;
      const Element& firstElement() const;
      int indexOf(const Element& elem) const;
-     boolean isEmpty() const;
+     bool isEmpty() const;
      const Element& lastElement() const;
      int lastIndexOf(const Element& elem) const;
-     unsigned int count() const
+     unsigned int count() const override
     {
       return size();
     }
      unsigned int size() const;
      void copyInto(Element* array) const;
-     inline boolean add(const Element& obj)
+     bool add(const Element& obj)
     {
       addElement(obj);
       return true;
     }
      void addElement(const Element& obj);
      void addElement(Element* objp);
-     inline void clear()
+     void clear()
     {
       removeAllElements();
     }
      void ensureCapacity(unsigned int minCapacity);
      void removeAllElements();
-     boolean removeElement(const Element& obj);
+     bool removeElement(const Element& obj);
      void setSize(unsigned int newSize);
      void trimToSize();
      const Element& elementAt(unsigned int index) const;
@@ -68,13 +68,13 @@ class Vector : public Countable<Element>
      const void remove(unsigned int index);
      void removeElementAt(unsigned int index);
      void setElementAt(const Element& obj, unsigned int index);
-     inline const Element& get(unsigned int index) const
+     const Element& get(unsigned int index) const
     {
       return elementAt(index);
     }
 
-     const Element& operator[](unsigned int index) const;
-     Element& operator[](unsigned int index);
+     const Element& operator[](unsigned int index) const override;
+     Element& operator[](unsigned int index) override;
 
      const Vector<Element>& operator=(const Vector<Element>& rhv)
      {
@@ -165,7 +165,7 @@ unsigned int Vector<Element>::capacity() const
 }
 
 template <class Element>
-boolean Vector<Element>::contains(const Element &elem) const
+bool Vector<Element>::contains(const Element &elem) const
 {
 	return indexOf(elem) >= 0;
 }
@@ -220,7 +220,7 @@ int Vector<Element>::indexOf(const Element &elem) const
 }
 
 template <class Element>
-boolean Vector<Element>::isEmpty() const
+bool Vector<Element>::isEmpty() const
 {
   return _size == 0;
 }
@@ -350,7 +350,7 @@ void Vector<Element>::removeAllElements()
 }
 
 template <class Element>
-boolean Vector<Element>::removeElement(const Element &obj)
+bool Vector<Element>::removeElement(const Element &obj)
 {
   for (unsigned int i = 0; i < _size; i++)
   {

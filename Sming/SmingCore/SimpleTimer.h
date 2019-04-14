@@ -4,6 +4,7 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * SimpleTimer.h
  *
  * @author: 13 August 2018 - mikee47 <mike@sillyhouse.net>
  *
@@ -20,8 +21,8 @@
  *  @brief      Provides basic OS timer functions
 */
 
-#ifndef _SMING_CORE_SIMPLETIMER_H_
-#define _SMING_CORE_SIMPLETIMER_H_
+#ifndef _SMING_CORE_SIMPLE_TIMER_H_
+#define _SMING_CORE_SIMPLE_TIMER_H_
 
 extern "C" {
 #include "esp_systemapi.h"
@@ -35,6 +36,8 @@ extern "C" {
  * but we use the documented value anyway to be on the safe side.
 */
 #define MAX_OS_TIMER_INTERVAL_US 268435000
+
+typedef os_timer_func_t* SimpleTimerCallback;
 
 class SimpleTimer
 {
@@ -88,7 +91,7 @@ public:
      *  @param  interrupt Function to be called on timer trigger
      *  @note   Classic c-type callback method
      */
-	void setCallback(os_timer_func_t callback, void* arg = nullptr)
+	void setCallback(SimpleTimerCallback callback, void* arg = nullptr)
 	{
 		stop();
 		ets_timer_setfn(&osTimer, callback, arg);
@@ -98,4 +101,4 @@ private:
 	os_timer_t osTimer;
 };
 
-#endif /* _SMING_CORE_SIMPLETIMER_H_ */
+#endif /* _SMING_CORE_SIMPLE_TIMER_H_ */

@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * SystemClock.cpp
+ *
  ****/
 
 #include "SystemClock.h"
@@ -10,7 +13,7 @@
 
 SystemClockClass SystemClock;
 
-time_t SystemClockClass::now(TimeZone timeType /* = eTZ_Local */)
+time_t SystemClockClass::now(TimeZone timeType)
 {
 	uint32_t systemTime = RTC.getRtcSeconds();
 
@@ -21,7 +24,7 @@ time_t SystemClockClass::now(TimeZone timeType /* = eTZ_Local */)
 	return systemTime;
 }
 
-bool SystemClockClass::setTime(time_t time, TimeZone timeType /* = eTZ_Local */)
+bool SystemClockClass::setTime(time_t time, TimeZone timeType)
 {
 	if(timeType == eTZ_UTC) {
 		time += timeZoneOffsetSecs;
@@ -37,7 +40,7 @@ bool SystemClockClass::setTime(time_t time, TimeZone timeType /* = eTZ_Local */)
 	return timeSet;
 }
 
-String SystemClockClass::getSystemTimeString(TimeZone timeType /* = eTZ_Local */)
+String SystemClockClass::getSystemTimeString(TimeZone timeType)
 {
 	DateTime dt(now(timeType));
 	return DateTime(now(timeType)).toFullDateTimeString();

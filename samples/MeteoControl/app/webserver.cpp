@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 #include "../include/configuration.h"
 
@@ -41,7 +41,7 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 		}
 		saveConfig(cfg);
 		startWebClock(); // Apply time zone settings
-		response.redirect("/");
+		response.headers[HTTP_HEADER_LOCATION] = "/";
 	}
 
 	debugf("Send template");
@@ -59,12 +59,10 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 
 void onFile(HttpRequest& request, HttpResponse& response)
 {
-	String file = request.getPath();
-	if(file[0] == '/')
-		file = file.substring(1);
+	String file = request.uri.getRelativePath();
 
 	if(file[0] == '.')
-		response.forbidden();
+		response.code = HTTP_STATUS_FORBIDDEN;
 	else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
@@ -114,12 +112,12 @@ void startWebServer()
 		return;
 
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.addPath("/api", onApiDoc);
-	server.addPath("/api/sensors", onApiSensors);
-	server.addPath("/api/output", onApiOutput);
-	server.addPath("/config", onConfiguration);
-	server.setDefaultHandler(onFile);
+	server.paths.set("/", onIndex);
+	server.paths.set("/api", onApiDoc);
+	server.paths.set("/api/sensors", onApiSensors);
+	server.paths.set("/api/output", onApiOutput);
+	server.paths.set("/config", onConfiguration);
+	server.paths.setDefault(onFile);
 	serverStarted = true;
 
 	if(WifiStation.isEnabled())

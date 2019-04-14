@@ -4,6 +4,8 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * FlashMemoryStream.cpp
+ *
  * @author: 23 Oct 2018 - mikee47 <mike@sillyhouse.net>
  *
  ****/

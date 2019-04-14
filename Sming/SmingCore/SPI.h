@@ -1,4 +1,4 @@
-/*
+/****
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
@@ -8,7 +8,9 @@
  *
  *  Created on: Mar 2, 2016
  *      Author: harry-boe
+ *
  */
+
 /** @defgroup hw_spi SPI Hardware support
  *  @brief    Provides hardware SPI support
  */
@@ -26,28 +28,28 @@
 
 #define SPI_NO 1
 
+/** @brief  Hardware SPI object
+ *  @addtogroup hw_spi
+ *  @{
+ */
+
 class SPIClass : public SPIBase
 {
 public:
-	/** @brief  Instantiate hardware SPI object
-     *  @addtogroup hw_spi
-     *  @{
-     */
-	SPIClass();
-	virtual ~SPIClass();
-
 	/* @brief begin()
 	 *
 	 * Initializes the SPI bus using the default SPISettings
 	 */
-	virtual void begin();
+	void begin() override;
 
 	/** @brief end()
 	 *
 	 * Method for compatibility with Arduino API. Provides NOP
 	 *
 	 */
-	virtual void end();
+	void end() override
+	{
+	}
 
 	/** @brief beginTransaction()
 	 *
@@ -57,7 +59,7 @@ public:
 	 * setup the SPI after SPI.begin()
 	 *
 	 */
-	virtual void beginTransaction(SPISettings mySettings);
+	void beginTransaction(SPISettings mySettings) override;
 
 	/** @brief endTransaction()
 	 *
@@ -66,7 +68,12 @@ public:
 	 * endTransaction(): Stop using the SPI bus. Normally this is called after
 	 * de-asserting the chip select, to allow other libraries to use the SPI bus.
 	 */
-	virtual void endTransaction();
+	void endTransaction() override
+	{
+#ifdef SPI_DEBUG
+		debugf("SPIhw::endTransaction()");
+#endif
+	}
 
 	/** @brief 	transfer()
 	 * @param	byte to send
@@ -81,10 +88,10 @@ public:
 	 * 		receivedVal = SPI.transfer(val)			: single byte
 	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
 	 */
-	virtual unsigned char transfer(unsigned char val)
+	unsigned char transfer(unsigned char val) override
 	{
 		return transfer32((uint32)val, 8);
-	};
+	}
 
 	/** @brief read8() read a byte from SPI without setting up registers
 	 * @param	none
@@ -114,7 +121,7 @@ public:
 	 * 		receivedVal = SPI.transfer(val)			: single byte
 	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
 	 */
-	virtual unsigned short transfer16(unsigned short val)
+	unsigned short transfer16(unsigned short val) override
 	{
 		return transfer32((uint32)val, 16);
 	};
@@ -130,14 +137,7 @@ public:
 	 *
 	 * 		SPI.transfer(buffer, size)				: memory buffer of length size
 	 */
-	virtual void transfer(uint8* buffer, size_t numberBytes);
-
-	/** @brief  Default settings used by the SPI bus
-	 * until reset by beginTransaction(SPISettings)
-	 *
-	 * Note: not included in std Arduino lib
-	 */
-	SPISettings SPIDefaultSettings = SPISettings(4000000, MSBFIRST, SPI_MODE0);
+	void transfer(uint8* buffer, size_t numberBytes) override;
 
 private:
 	/** @brief transfer32()

@@ -3,19 +3,16 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * AccessPoint.cpp
+ *
  ****/
 
 #include "AccessPoint.h"
-#include "../../SmingCore/SmingCore.h"
+#include "Interrupts.h"
 #include "Data/HexString.h"
 
 AccessPointClass WifiAccessPoint;
-
-AccessPointClass::AccessPointClass()
-{
-	System.onReady(this);
-	runConfig = NULL;
-}
 
 void AccessPointClass::enable(bool enabled, bool save)
 {
@@ -37,8 +34,8 @@ bool AccessPointClass::isEnabled()
 	return wifi_get_opmode() & SOFTAP_MODE;
 }
 
-bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mode, bool hidden /* = false*/,
-							  int channel /* = 7*/, int beaconInterval /* = 200*/)
+bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mode, bool hidden, int channel,
+							  int beaconInterval)
 {
 	softap_config config = {0};
 	if(mode == AUTH_WEP)
@@ -78,13 +75,15 @@ bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mod
 			debugf("AP configuration was updated");
 		} else {
 			debugf("Set AP configuration in background");
-			if(runConfig != NULL)
+			if(runConfig != nullptr) {
 				delete runConfig;
+			}
 			runConfig = new softap_config();
 			memcpy(runConfig, &config, sizeof(softap_config));
 		}
-	} else
+	} else {
 		debugf("AP configuration loaded");
+	}
 
 	wifi_softap_dhcps_start();
 	enable(enabled);
@@ -138,11 +137,11 @@ bool AccessPointClass::setIP(IPAddress address)
 	return true;
 }
 
-String AccessPointClass::getMAC()
+String AccessPointClass::getMAC(char sep)
 {
 	uint8 hwaddr[6];
 	if(wifi_get_macaddr(SOFTAP_IF, hwaddr))
-		return makeHexString(hwaddr, sizeof(hwaddr), ':');
+		return makeHexString(hwaddr, sizeof(hwaddr), sep);
 	else
 		return nullptr;
 }
@@ -171,18 +170,19 @@ String AccessPointClass::getPassword()
 
 void AccessPointClass::onSystemReady()
 {
-	if(runConfig != NULL) {
+	if(runConfig != nullptr) {
 		noInterrupts();
 		bool enabled = isEnabled();
 		enable(true);
 		wifi_softap_dhcps_stop();
 
-		if(!wifi_softap_set_config(runConfig))
+		if(!wifi_softap_set_config(runConfig)) {
 			debugf("Can't set AP config on system ready event!");
-		else
+		} else {
 			debugf("AP configuration was updated on system ready event");
+		}
 		delete runConfig;
-		runConfig = NULL;
+		runConfig = nullptr;
 
 		wifi_softap_dhcps_start();
 		enable(enabled);

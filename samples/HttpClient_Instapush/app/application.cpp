@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 /*** Direct PUSH notifications on your mobile phone!
  *
@@ -39,7 +39,7 @@ public:
 	{
 		debugf("preparing request");
 
-		HttpRequest* request = new HttpRequest(URL(url));
+		HttpRequest* request = new HttpRequest(String(url));
 
 		HttpHeaders requestHeaders;
 		requestHeaders[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_JSON);
@@ -65,7 +65,7 @@ public:
 
 	int processed(HttpConnection& client, bool successful)
 	{
-		Serial.println(client.getResponseString());
+		Serial.println(client.getResponse()->getBody());
 
 		return 0;
 	}

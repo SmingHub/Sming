@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * DataSourceStream.h
+ *
  ****/
 
-#ifndef _SMING_CORE_DATA_DATA_SOURCE_STREAM_H_
-#define _SMING_CORE_DATA_DATA_SOURCE_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_DATA_SOURCE_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_DATA_SOURCE_STREAM_H_
 
 #include <user_config.h>
 #include "Stream.h"
@@ -36,15 +39,13 @@ enum StreamType {
 class IDataSourceStream : public Stream
 {
 public:
-	virtual ~IDataSourceStream()
-	{
-	}
-
 	/** @brief  Get the stream type
      *  @retval StreamType The stream type.
-     *  @todo   Return value of IDataSourceStream:getStreamType base class function should be of type StreamType, e.g. eSST_User
      */
-	virtual StreamType getStreamType() const = 0;
+	virtual StreamType getStreamType() const
+	{
+		return eSST_Unknown;
+	}
 
 	/** @brief Determine if the stream object contains valid data
 	 *  @retval bool true if valid, false if invalid
@@ -68,13 +69,13 @@ public:
 	 * @brief Read one character and moves the stream pointer
 	 * @retval The character that was read or -1 if none is available
 	 */
-	virtual int read();
+	int read() override;
 
 	/**
 	 * @brief Read a character without advancing the stream pointer
 	 * @retval int The character that was read or -1 if none is available
 	 */
-	virtual int peek();
+	int peek() override;
 
 	/** @brief  Move read cursor
 	 *  @param  len Relative cursor adjustment
@@ -99,7 +100,7 @@ public:
 	/*
 	 * From Stream class: We don't write using this stream
 	 */
-	virtual size_t write(uint8_t charToWrite)
+	size_t write(uint8_t charToWrite) override
 	{
 		return 0;
 	}
@@ -108,10 +109,9 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 *
-	 * @deprecated This method is deprecated and will be removed in the coming versions.
-	 * 			   Please, use available() instead.
+	 * @deprecated Use `available()` instead
 	 */
-	int length()
+	int length() SMING_DEPRECATED
 	{
 		return available();
 	}
@@ -119,7 +119,7 @@ public:
 	/*
 	 * @brief Flushes the stream
 	 */
-	virtual void flush()
+	void flush() override
 	{
 	}
 
@@ -144,4 +144,4 @@ public:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_DATA_SOURCE_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_DATA_SOURCE_STREAM_H_ */

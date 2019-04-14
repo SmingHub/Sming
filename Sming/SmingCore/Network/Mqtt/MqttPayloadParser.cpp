@@ -4,6 +4,8 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * MqttPayloadParser.cpp
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/

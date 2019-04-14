@@ -37,7 +37,6 @@ class Stream : public Print
     int peekNextDigit(); // returns the next numeric digit in the stream or -1 if timeout
   
   public:
-    //virtual ~Stream() {}
     virtual int available() = 0;
     virtual int peek() = 0;
     virtual int read() = 0;

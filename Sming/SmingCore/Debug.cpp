@@ -1,18 +1,19 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * Debug.cpp
  *
- */
+ ****/
 
-#include <Debug.h>
+#include "Debug.h"
 
 DebugClass::DebugClass()
 {
 	debugf("DebugClass Instantiating");
 	setDebug(Serial);
-}
-
-DebugClass::~DebugClass()
-{
 }
 
 void DebugClass::initCommand()
@@ -33,11 +34,6 @@ void DebugClass::stop()
 {
 	println(_F("Debug stopped"));
 	started = false;
-}
-
-bool DebugClass::status()
-{
-	return started;
 }
 
 void DebugClass::setDebug(DebugPrintCharDelegate reqDelegate)

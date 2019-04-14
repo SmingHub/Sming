@@ -2,50 +2,38 @@
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * WebsocketClient
+ * WebsocketClient.cpp
  *
  * @authors:
  * 		 Originally - hrsavla <https://github.com/hrsavla>
  * 		 Refactored - Alexander V, Ribchansky <https://github.com/avr39-ripe>
  * 		 Refactored(2018) - Slavey Karadzhov <slav@attachix.com>
  *
- * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
 #include "WebsocketClient.h"
 #include "Network/Http/HttpHeaders.h"
-#include "../../Services/WebHelpers/aw-sha1.h"
-#include "../../Services/WebHelpers/base64.h"
-
-WebsocketClient::WebsocketClient() : WebsocketConnection(new HttpConnection(new RequestQueue()))
-{
-}
-
-WebsocketClient::WebsocketClient(HttpConnectionBase* connection) : WebsocketConnection(connection)
-{
-}
-
-WebsocketClient::~WebsocketClient()
-{
-}
+#include "../Services/WebHelpers/aw-sha1.h"
+#include "../Services/WebHelpers/base64.h"
 
 HttpConnection* WebsocketClient::getHttpConnection()
 {
-	HttpConnection* connection = static_cast<HttpConnection*>(WebsocketConnection::getConnection());
-	if(!connection && state == eWSCS_Closed) {
-		connection = new HttpConnection(new RequestQueue());
+	auto connection = WebsocketConnection::getConnection();
+	if(connection == nullptr && state == eWSCS_Closed) {
+		connection = new HttpClientConnection();
 		setConnection(connection);
 	}
 
 	return connection;
 }
 
-bool WebsocketClient::connect(const String& url, uint32_t sslOptions /* = 0 */)
+bool WebsocketClient::connect(const Url& url, uint32_t sslOptions)
 {
-	uri = URL(url);
+	uri = url;
 	bool useSsl = false;
-	if(uri.Protocol == WEBSOCKET_SECURE_URL_PROTOCOL) {
+	if(uri.Scheme == URI_SCHEME_WEBSOCKET_SECURE) {
 		useSsl = true;
 	}
 
@@ -58,7 +46,7 @@ bool WebsocketClient::connect(const String& url, uint32_t sslOptions /* = 0 */)
 		return false;
 	}
 
-	httpConnection->connect(uri.Host, uri.Port, useSsl, sslOptions);
+	httpConnection->connect(uri.Host, uri.getPort(), useSsl, sslOptions);
 
 	state = eWSCS_Ready;
 
@@ -84,7 +72,7 @@ bool WebsocketClient::connect(const String& url, uint32_t sslOptions /* = 0 */)
 		return false;
 	}
 
-	WebsocketConnection::userData = (void*)this;
+	WebsocketConnection::setUserData(this);
 
 	return true;
 }

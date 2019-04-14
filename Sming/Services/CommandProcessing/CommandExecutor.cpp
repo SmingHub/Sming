@@ -63,7 +63,7 @@ int CommandExecutor::executorReceive(char *recvData, int recvSize)
 int CommandExecutor::executorReceive(String recvString)
 {
 	int receiveReturn = 0;
-	for (int recvIdx=0;recvIdx<recvString.length();recvIdx++)
+	for (unsigned recvIdx=0;recvIdx<recvString.length();recvIdx++)
 	{
 		receiveReturn = executorReceive(recvString[recvIdx]);
 		if (receiveReturn)

@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * TcpClient.h
+ *
  ****/
 
 /** @defgroup   tcpclient Clients
@@ -11,23 +14,19 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_TCPCLIENT_H_
-#define _SMING_CORE_TCPCLIENT_H_
+#ifndef _SMING_CORE_NETWORK_TCP_CLIENT_H_
+#define _SMING_CORE_NETWORK_TCP_CLIENT_H_
 
 #include "TcpConnection.h"
 #include "Delegate.h"
 
 #ifdef ENABLE_SSL
-#include "SslValidator.h"
+#include "Ssl/SslValidator.h"
 #endif
 
 class TcpClient;
 class ReadWriteStream;
 class IPAddress;
-
-//typedef void (*TcpClientEventDelegate)(TcpClient& client, TcpConnectionEvent sourceEvent);
-//typedef void (*TcpClientBoolDelegate)(TcpClient& client, bool successful);
-//typedef bool (*TcpClientDataDelegate)(TcpClient& client, char *data, int size);
 
 typedef Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)> TcpClientEventDelegate;
 typedef Delegate<void(TcpClient& client, bool successful)> TcpClientCompleteDelegate;
@@ -41,36 +40,74 @@ enum TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successf
 class TcpClient : public TcpConnection
 {
 public:
-	TcpClient(bool autoDestruct);
-	TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted);
+	TcpClient(bool autoDestruct) : TcpConnection(autoDestruct)
+	{
+		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
+	}
+
+	TcpClient(tcp_pcb* clientTcp, TcpClientDataDelegate clientReceive, TcpClientCompleteDelegate onCompleted)
+		: TcpConnection(clientTcp, true), state(eTCS_Connected), completed(onCompleted), receive(clientReceive)
+	{
+		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
+	}
+
 	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientEventDelegate onReadyToSend,
-			  TcpClientDataDelegate onReceive = NULL);
-	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive = NULL);
-	TcpClient(TcpClientDataDelegate onReceive);
-	virtual ~TcpClient();
+			  TcpClientDataDelegate onReceive = nullptr)
+		: TcpConnection(false), completed(onCompleted), ready(onReadyToSend), receive(onReceive)
+	{
+		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
+	}
+
+	TcpClient(TcpClientCompleteDelegate onCompleted, TcpClientDataDelegate onReceive = nullptr)
+		: TcpConnection(false), completed(onCompleted), receive(onReceive)
+	{
+		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
+	}
+
+	explicit TcpClient(TcpClientDataDelegate onReceive) : TcpConnection(false), receive(onReceive)
+	{
+		TcpConnection::timeOut = TCP_CLIENT_TIMEOUT;
+	}
+
+	~TcpClient()
+	{
+		freeStreams();
+	}
 
 public:
-	virtual bool connect(String server, int port, boolean useSsl = false, uint32_t sslOptions = 0);
-	virtual bool connect(IPAddress addr, uint16_t port, boolean useSsl = false, uint32_t sslOptions = 0);
-	virtual void close();
+	bool connect(const String& server, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
+	bool connect(IPAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0) override;
+	void close() override;
 
 	/**	@brief	Set or clear the callback for received data
-	 *	@param	receiveCb callback delegate or NULL
+	 *	@param	receiveCb callback delegate or nullptr
 	 */
-	void setReceiveDelegate(TcpClientDataDelegate receiveCb = NULL);
+	void setReceiveDelegate(TcpClientDataDelegate receiveCb = nullptr)
+	{
+		receive = receiveCb;
+	}
 
 	/**	@brief	Set or clear the callback for connection close
-	 *	@param	completeCb callback delegate or NULL
+	 *	@param	completeCb callback delegate or nullptr
 	 */
-	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = NULL);
+	void setCompleteDelegate(TcpClientCompleteDelegate completeCb = nullptr)
+	{
+		completed = completeCb;
+	}
 
 	bool send(const char* data, uint16_t len, bool forceCloseAfterSent = false);
-	bool sendString(const String& data, bool forceCloseAfterSent = false);
-	__forceinline bool isProcessing()
+
+	bool sendString(const String& data, bool forceCloseAfterSent = false)
+	{
+		return send(data.c_str(), data.length(), forceCloseAfterSent);
+	}
+
+	bool isProcessing()
 	{
 		return state == eTCS_Connected || state == eTCS_Connecting;
 	}
-	__forceinline TcpClientState getConnectionState()
+
+	TcpClientState getConnectionState()
 	{
 		return state;
 	}
@@ -78,83 +115,85 @@ public:
 #ifdef ENABLE_SSL
 	/**
 	 * @brief Allows setting of multiple SSL validators after a successful handshake
-	 * @param SslValidatorCallback callback
-	 * @param void* data - The data that should be passed to the callback.
-	 * 					   The callback will cast the data to the correct type and take care
-	 * 					   to delete it.
+	 * @param callback The callback function to be invoked on validation
+	 * @param data The data to pass to the callback
+	 * @note The callback is responsible for releasing the data if appropriate.
+	 * See SslValidatorCallback for further details.
 	 *
+	 * @retval bool true on success, false on failure
 	 */
-	void addSslValidator(SslValidatorCallback callback, void* data = NULL);
+	bool addSslValidator(SslValidatorCallback callback, void* data = nullptr)
+	{
+		return sslValidators.add(callback, data);
+	}
 
 	/**
-	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
-	 * 			Check if SHA256 hash of Subject Public Key Info matches the one given.
-	 * @note    For HTTP public key pinning (RFC7469), the SHA-256 hash of the
-	 * 		    Subject Public Key Info (which usually only changes when the public key changes)
-	 * 		    is used rather than the SHA-1 hash of the entire certificate
-	 * 		    (which will change on each certificate renewal).
-	 * @param const uint8_t *finterprint - the fingeprint data against which the match should be performed
-	 * 									   The fingerprint will be deleted after use and should
-	 * 									   not be reused outside of this method
-	 * @param SslFingerprintType type - the fingerprint type
-	 * @note    Type: eSFT_PkSha256
-	 * 			For HTTP public key pinning (RFC7469), the SHA-256 hash of the
-	 * 		    Subject Public Key Info (which usually only changes when the public key changes)
-	 * 		    is used rather than the SHA-1 hash of the entire certificate
-	 * 		    (which will change on each certificate renewal).
-	 * 		    Advantages: The
-	 * 		    Disadvantages: Takes more time (in ms) to verify.
-	 * @note    Type: eSFT_CertSha1
-	 * 			The SHA1 hash of the remote certificate will be calculated and compared with the given one.
-	 * 			Disadvantages: The hash needs to be updated every time the remote server updates its certificate
+	 * @brief Requires (pins) the remote SSL certificate to match certain fingerprints
+	 * @param fingerprint	The fingerprint data against which the match should be performed.
+	 * 						Must be allocated on the heap and will be deleted after use.
+	 * 						Do not re-use outside of this method.
+	 * @param type			The fingerprint type - see SslFingerprintType for details.
 	 *
-	 * @return bool  true of success, false or failure
+	 * @retval bool true on success, false on failure
 	 */
-	bool pinCertificate(const uint8_t* fingerprint, SslFingerprintType type);
+	bool pinCertificate(const uint8_t* fingerprint, SslFingerprintType type)
+	{
+		return sslValidators.add(fingerprint, type);
+	}
 
 	/**
-	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
+	 * @brief	Requires (pins) the remote SSL certificate to match certain fingerprints
+	 * @note	The data inside the fingerprints parameter is passed by reference
+	 * @param	fingerprints - passes the certificate fingerprints by reference.
 	 *
-	 * @note  The data inside the fingerprints parameter is passed by reference
-	 *
-	 * @param SSLFingerprints - passes the certificate fingerprints by reference.
-	 *
-	 * @return bool  true of success, false or failure
+	 * @retval bool  true on success, false on failure
 	 */
-	bool pinCertificate(SSLFingerprints fingerprints);
+	bool pinCertificate(SslFingerprints& fingerprints)
+	{
+		return sslValidators.add(fingerprints);
+	}
+
 #endif
 
 protected:
-	virtual err_t onConnected(err_t err);
-	virtual err_t onReceive(pbuf* buf);
-	virtual err_t onSent(uint16_t len);
-	virtual void onError(err_t err);
-	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
+	err_t onConnected(err_t err) override;
+	err_t onReceive(pbuf* buf) override;
+	err_t onSent(uint16_t len) override;
+	void onError(err_t err) override;
+	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
+
 	virtual void onFinished(TcpClientState finishState);
 
 #ifdef ENABLE_SSL
-	virtual err_t onSslConnected(SSL* ssl);
+	err_t onSslConnected(SSL* ssl) override
+	{
+		return sslValidators.validate(ssl) ? ERR_OK : ERR_ABRT;
+	}
+
 #endif
 
 	void pushAsyncPart();
+	void freeStreams();
 
 protected:
-	ReadWriteStream* stream = nullptr;
+	void setBuffer(ReadWriteStream* stream);
+
+	ReadWriteStream* buffer = nullptr;   ///< Used internally to buffer arbitrary data via send() methods
+	IDataSourceStream* stream = nullptr; ///< The currently active stream being sent
 
 private:
-	TcpClientState state;
+	TcpClientState state = eTCS_Ready;
 	TcpClientCompleteDelegate completed = nullptr;
-	TcpClientDataDelegate receive = nullptr;
 	TcpClientEventDelegate ready = nullptr;
+	TcpClientDataDelegate receive = nullptr;
 
 	bool asyncCloseAfterSent = false;
-	int16_t asyncTotalSent = 0;
-	int16_t asyncTotalLen = 0;
+	uint16_t asyncTotalSent = 0;
+	uint16_t asyncTotalLen = 0;
 #ifdef ENABLE_SSL
-	Vector<SslValidatorCallback> sslValidators;
-	Vector<void*> sslValidatorsData;
+	SslValidatorList sslValidators;
 #endif
 };
 
 /** @} */
-#endif /* _SMING_CORE_TCPCLIENT_H_ */
+#endif /* _SMING_CORE_NETWORK_TCP_CLIENT_H_ */

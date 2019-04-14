@@ -2,16 +2,16 @@
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpRequest
+ * HttpRequest.h
  *
  * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
  *
- * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#ifndef _SMING_CORE_HTTP_REQUEST_H_
-#define _SMING_CORE_HTTP_REQUEST_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_H_
+#define _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_H_
 
 #include "HttpCommon.h"
 #ifdef ENABLE_HTTP_REQUEST_AUTH
@@ -20,11 +20,10 @@
 #include "../TcpConnection.h"
 #include "Data/Stream/DataSourceStream.h"
 #include "Data/Stream/MultipartStream.h"
-#include "Network/Http/HttpHeaders.h"
+#include "HttpHeaders.h"
 #include "HttpParams.h"
+#include "Data/ObjectMap.h"
 
-class HttpClient;
-class HttpServerConnection;
 class HttpConnection;
 
 typedef Delegate<int(HttpConnection& client, HttpResponse& response)> RequestHeadersCompletedDelegate;
@@ -36,8 +35,7 @@ typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedD
  */
 class HttpRequest
 {
-	friend class HttpClient;
-	friend class HttpConnection;
+	friend class HttpClientConnection;
 	friend class HttpServerConnection;
 
 public:
@@ -45,25 +43,38 @@ public:
 	{
 	}
 
-	HttpRequest(const URL& uri) : uri(uri)
+	HttpRequest(const Url& uri) : uri(uri)
 	{
 	}
 
+	/**
+	 * @brief Copy constructor
+	 * @note Internal streams are not copied so these must be dealt with afterwards
+	 */
 	HttpRequest(const HttpRequest& value);
 
+	/**
+	 * @brief Clone this request into a new object using the copy constructor
+	 * @retval HttpRequest* The new request object
+	 * @see HttpRequest(const HttpRequest& value)
+	 */
 	HttpRequest* clone() const
 	{
 		return new HttpRequest(*this);
 	}
 
-	HttpRequest& operator=(const HttpRequest& rhs);
+	/** @deprecated Please use `clone()` instead */
+	HttpRequest& operator=(const HttpRequest& rhs) SMING_DEPRECATED
+	{
+		return *this;
+	}
 
 	~HttpRequest()
 	{
 		reset();
 	}
 
-	HttpRequest* setURL(const URL& uri)
+	HttpRequest* setURL(const Url& uri)
 	{
 		this->uri = uri;
 		return this;
@@ -88,10 +99,9 @@ public:
 	}
 
 	/**
-	 * @deprecated This method is deprecated and will be removed in the coming versions.
-	 * 			   Please set postParams directly, i.e. request.postParams = params
+	 * @deprecated Set postParams directly, i.e. `request.postParams = params`
 	 */
-	HttpRequest* setPostParameters(const HttpParams& params)
+	HttpRequest* setPostParameters(const HttpParams& params) SMING_DEPRECATED
 	{
 		postParams = params;
 		return this;
@@ -106,13 +116,13 @@ public:
 	/**
 	 * @brief Sets a file to be sent
 	 * @param const String& formElementName the name of the element in the form
-	 * @param ReadWriteStream* stream - pointer to the stream (doesn't have to be a FileStream)
+	 * @param IDataSourceStream* stream - pointer to the stream (doesn't have to be a FileStream)
 	 *
-	 * @return HttpRequest*
+	 * @retval HttpRequest*
 	 */
-	HttpRequest* setFile(const String& formElementName, ReadWriteStream* stream)
+	HttpRequest* setFile(const String& formElementName, IDataSourceStream* stream)
 	{
-		if(stream) {
+		if(stream != nullptr) {
 			files[formElementName] = stream;
 		}
 		return this;
@@ -138,14 +148,17 @@ public:
 		return static_cast<const HttpParams&>(postParams)[name];
 	}
 
-	/* @deprecated  use uri methods */
-	String getPath()
+	/** @deprecated Use `uri.Path` instead */
+	String getPath() SMING_DEPRECATED
 	{
 		return uri.Path;
 	}
 
-	/* @deprecated  use uri methods */
-	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr);
+	/* @deprecated Use methods of `uri.Query` instead */
+	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr) const
+	{
+		return reinterpret_cast<const HttpParams&>(uri.Query)[parameterName] ?: defaultValue;
+	}
 
 	/**
 	 * @brief Returns content from the body stream as string.
@@ -160,25 +173,24 @@ public:
 
 	/**
 	 * @brief Return the current body stream and pass ownership to the caller
-	 * @retval ReadWriteStream*
+	 * @retval IDataSourceStream*
 	 * @note may return null
 	 */
-	ReadWriteStream* getBodyStream();
+	IDataSourceStream* getBodyStream();
 
 	HttpRequest* setBody(const String& body)
 	{
-		setBody((uint8_t*)body.c_str(), body.length());
+		setBody(reinterpret_cast<const uint8_t*>(body.c_str()), body.length());
 		return this;
 	}
 
-	HttpRequest* setBody(ReadWriteStream* stream);
+	HttpRequest* setBody(IDataSourceStream* stream);
 
-	HttpRequest* setBody(uint8_t* rawData, size_t length);
+	HttpRequest* setBody(const uint8_t* rawData, size_t length);
 
 	/**
 	 * @brief Instead of storing the response body we can set a stream that will take care to process it
-	 * @param ReadWriteStream *stream
-	 *
+	 * @param stream
 	 * @retval HttpRequest*
 	 *
 	 * @note The response to this request will be stored in the user-provided stream.
@@ -186,7 +198,7 @@ public:
 	HttpRequest* setResponseStream(ReadWriteStream* stream);
 
 	/**
-	 * @brief Get access to the currently set response stream.
+	 * @brief Get the response stream (if any)
 	 */
 	ReadWriteStream* getResponseStream()
 	{
@@ -229,13 +241,13 @@ public:
 	/**
 	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
 	 * 			Check if SHA256 hash of Subject Public Key Info matches the one given.
-	 * @param SSLFingerprints - passes the certificate fingerprints by reference.
+	 * @param	fingerprints - passes the certificate fingerprints by reference.
 	 *
-	 * @return bool  true of success, false or failure
+	 * @retval bool  true of success, false or failure
 	 */
-	HttpRequest* pinCertificate(const SSLFingerprints& fingerprints)
+	HttpRequest* pinCertificate(SslFingerprints& fingerprints)
 	{
-		sslFingerprint = fingerprints;
+		sslFingerprints = fingerprints;
 		return this;
 	}
 
@@ -244,9 +256,9 @@ public:
 	 * @param SSLKeyCertPair
 	 * @param bool freeAfterHandshake
 	 *
-	 * @return HttpRequest pointer
+	 * @retval HttpRequest pointer
 	 */
-	HttpRequest* setSslKeyCert(const SSLKeyCertPair& keyCertPair)
+	HttpRequest* setSslKeyCert(const SslKeyCertPair& keyCertPair)
 	{
 		sslKeyCertPair = keyCertPair;
 		return this;
@@ -256,13 +268,13 @@ public:
 #ifndef SMING_RELEASE
 	/**
 	 * @brief Tries to present a readable version of the current request values
-	 * @return String
+	 * @retval String
 	 */
 	String toString();
 #endif
 
 public:
-	URL uri;
+	Url uri;
 	HttpMethod method = HTTP_GET;
 	HttpHeaders headers;
 	HttpParams postParams;
@@ -276,8 +288,8 @@ protected:
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
 
-	ReadWriteStream* bodyStream = nullptr;
-	ReadWriteStream* responseStream = nullptr;
+	IDataSourceStream* bodyStream = nullptr;
+	ReadWriteStream* responseStream = nullptr; ///< User-requested stream to store response
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	AuthAdapter* auth = nullptr;
@@ -285,14 +297,14 @@ protected:
 
 #ifdef ENABLE_SSL
 	uint32_t sslOptions = 0;
-	SSLFingerprints sslFingerprint;
-	SSLKeyCertPair sslKeyCertPair;
+	SslFingerprints sslFingerprints;
+	SslKeyCertPair sslKeyCertPair;
 #endif
 
 private:
-	HashMap<String, ReadWriteStream*> files;
+	ObjectMap<String, IDataSourceStream> files;
 
-	HttpParams* queryParams = nullptr; // << deprecated
+	HttpParams* queryParams = nullptr; // << @todo deprecate
 };
 
-#endif /* _SMING_CORE_HTTP_REQUEST_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_H_ */

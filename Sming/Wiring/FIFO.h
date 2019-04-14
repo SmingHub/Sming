@@ -36,17 +36,22 @@ class FIFO : public Countable<T>
     void flush();                           // reset to default state
 
     //how many elements are currently in the FIFO?
-    unsigned int count() const
+    unsigned int count() const override
     {
       return numberOfElements;
     }
 
-    const T &operator[](unsigned int index) const
+    bool full() const
+    {
+      return (count() >= rawSize);
+    }
+
+    const T &operator[](unsigned int index) const override
     {
       return raw[index]; /* unsafe */
     }
 
-    T &operator[](unsigned int index)
+    T &operator[](unsigned int index) override
     {
       return raw[index]; /* unsafe */
     }
@@ -67,7 +72,7 @@ FIFO<T, rawSize>::FIFO() : size(rawSize)
 template<typename T, int rawSize>
 bool FIFO<T, rawSize>::enqueue(T element)
 {
-  if (count() >= rawSize)
+  if (full())
   {
     return false;
   }

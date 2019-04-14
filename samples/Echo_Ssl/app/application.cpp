@@ -14,7 +14,7 @@
  */
 
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -30,7 +30,7 @@
 Timer procTimer;
 TcpClient* client;
 
-boolean showMeta = true;
+bool showMeta = true;
 
 /* Debug SSL functions */
 void displaySessionId(SSL* ssl)

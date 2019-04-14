@@ -6,10 +6,12 @@ Date: 20.07.2015
 Descr: embedded very simple version of printf with float support
 */
 
+#include <user_config.h>
 #include "m_printf.h"
 #include "stringconversion.h"
 #include "stringutil.h"
 #include <algorithm>
+#include "FakePgmSpace.h"
 
 #define MPRINTF_BUF_SIZE 256
 
@@ -34,9 +36,11 @@ static int skip_atoi(const char **s)
 	return i;
 }
 
-void m_setPuts(nputs_callback_t callback)
+nputs_callback_t m_setPuts(nputs_callback_t callback)
 {
+	nputs_callback_t previousCallback = _puts_callback;
 	_puts_callback = callback;
+	return previousCallback;
 }
 
 size_t m_putc(char c)
@@ -162,15 +166,20 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
                 continue;
 
             case 's': {
-                s = va_arg(args, char *);
+                s = va_arg(args, const char *);
 
                 if (!s) s = "(null)";
-                size_t len = strlen(s);
+                bool isFlash = isFlashPtr(s);
+                size_t len = isFlash ? strlen_P(s) : strlen(s);
                 if (precision >= 0 && (int)len > precision) len = precision;
 
                 int padding = width - len;
                 while (!minus && padding-- > 0) add(' ');
-                while (len--)                   add(*s++);
+                if(isFlash) {
+                	while (len--)                   add(pgm_read_byte(s++));
+                } else {
+                	while (len--)                   add(*s++);
+                }
                 while (minus && padding-- > 0)  add(' ');
                 continue;
             }
@@ -267,7 +276,7 @@ void m_printHex(const char* tag, const void* data, size_t len, int addr, size_t 
 			m_putc(is_print(c) ? c : '.');
 		}
 
-		m_putc('\n');
+		m_puts("\r\n");
 
 		offset += n;
 

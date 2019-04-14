@@ -56,25 +56,31 @@ bool spiffs_format_internal(spiffs_config *cfg)
 {
   if (cfg->phys_addr == 0)
   {
-	SYSTEM_ERROR("Can't format file system, wrong address");
+	SYSTEM_ERROR("Can't format file system, wrong address given.");
+	return false;
+  }
+
+  if (cfg->phys_size == 0)
+  {
+	SYSTEM_ERROR("Can't format file system, wrong size given.");
 	return false;
   }
 
   u32_t sect_first, sect_last;
   sect_first = cfg->phys_addr;
   sect_first = flashmem_get_sector_of_address(sect_first);
-  sect_last = cfg->phys_addr + cfg->phys_size;
+  sect_last = cfg->phys_addr + cfg->phys_size - 1;
   sect_last = flashmem_get_sector_of_address(sect_last);
   debugf("sect_first: %x, sect_last: %x\n", sect_first, sect_last);
   ETS_INTR_LOCK();
-  int total = sect_last - sect_first;
+  int total = sect_last - sect_first + 1;
   int cur = 0;
   int last = -1;
   while( sect_first <= sect_last )
   {
 	if(flashmem_erase_sector( sect_first++ ))
 	{
-		int percent = cur++ * 100 / total;
+		int percent = ++cur * 100 / total;
 		if (percent > last)
 			debugf("%d%%", percent);
 		last = percent;
@@ -85,7 +91,7 @@ bool spiffs_format_internal(spiffs_config *cfg)
 		return false;
 	}
   }
-  debugf("formated");
+  debugf("formatted");
   ETS_INTR_UNLOCK();
 
   return true;

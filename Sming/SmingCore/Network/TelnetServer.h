@@ -1,9 +1,15 @@
-/*
- * telnetServer.h
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * TelnetServer.h
  *
  *  Created on: 18 apr. 2015
  *      Author: Herman
- */
+ *
+ ****/
 
 /** @defgroup   telnetserver Telnet server
  *  @brief      Provides Telnet server
@@ -11,18 +17,15 @@
  *  @{
  */
 
-#ifndef APP_TELNETSERVER_H_
-#define APP_TELNETSERVER_H_
+#ifndef _SMING_CORE_NETWORK_TELNET_SERVER_H_
+#define _SMING_CORE_NETWORK_TELNET_SERVER_H_
 
 #include <user_config.h>
-#include "../Delegate.h"
-#include "../Debug.h"
+#include "Delegate.h"
 #include "TcpClient.h"
 #include "TcpServer.h"
 #include "SystemClock.h"
 #include "../Services/CommandProcessing/CommandExecutor.h"
-
-#include <stdio.h>
 
 #define TELNETSERVER_MAX_COMMANDSIZE 64
 
@@ -31,17 +34,22 @@ typedef Delegate<void(TcpClient* client, char* data, int size)> TelnetServerComm
 class TelnetServer : public TcpServer
 {
 public:
-	TelnetServer();
-	virtual ~TelnetServer();
+	TelnetServer()
+	{
+	}
+
 	//	void setCommandDelegate(TelnetServerCommandDelegate reqDelegate);
 	void enableDebug(bool reqStatus);
 	void enableCommand(bool reqStatus);
 
 private:
-	void onClient(TcpClient* client);
-	bool onClientReceive(TcpClient& client, char* data, int size);
-	void onClientComplete(TcpClient& client, bool succesfull);
+	void onClient(TcpClient* client) override;
+	bool onClientReceive(TcpClient& client, char* data, int size) override;
+	void onClientComplete(TcpClient& client, bool successful) override;
+
 	void wrchar(char c);
+
+private:
 	TcpClient* curClient = nullptr;
 	CommandExecutor* commandExecutor = nullptr;
 	bool telnetDebug = true;
@@ -49,4 +57,4 @@ private:
 };
 
 /** @} */
-#endif /* APP_TELNETSERVER_H_ */
+#endif /* _SMING_CORE_NETWORK_TELNET_SERVER_H_ */

@@ -34,7 +34,7 @@ private :
 	void processCommandLine(String cmdString);
 	char commandBuf [MAX_COMMANDSIZE+1];
 	uint16_t commandIndex = 0;
-	CommandOutput* commandOutput;
+	CommandOutput* commandOutput = nullptr;
 };
 
 #endif /* SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_ */

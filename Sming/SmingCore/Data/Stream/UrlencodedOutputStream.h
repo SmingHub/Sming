@@ -4,6 +4,8 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * UrlencodedOutputStream.h
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/
@@ -21,21 +23,17 @@
  *  @{
  */
 
-class UrlencodedOutputStream : public ReadWriteStream
+class UrlencodedOutputStream : public IDataSourceStream
 {
 public:
 	/**
 	 * @brief Represents key-value pairs as urlencoded string
-	 * @param const HttpParams& params - the key-value parameters
+	 * @param params The key-value parameters
 	 */
 	UrlencodedOutputStream(const HttpParams& params);
 
-	virtual ~UrlencodedOutputStream()
-	{
-	}
-
 	//Use base class documentation
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return stream.getStreamType();
 	}
@@ -44,44 +42,25 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	int available()
+	int available() override
 	{
 		return stream.available();
 	}
 
-	/** @brief  Write a single char to stream
-	 *  @param  charToWrite Char to write to the stream
-	 *  @retval size_t Quantity of chars written to stream (always 1)
-	 */
-	virtual size_t write(uint8_t charToWrite)
-	{
-		return 0;
-	}
-
-	/** @brief  Write chars to stream
-	 *  @param  buffer Pointer to buffer to write to the stream
-	 *  @param  size Quantity of chars to written
-	 *  @retval size_t Quantity of chars written to stream
-	 */
-	virtual size_t write(const uint8_t* buffer, size_t size)
-	{
-		return 0;
-	}
-
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize)
+	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
 		return stream.readMemoryBlock(data, bufSize);
 	}
 
 	//Use base class documentation
-	virtual bool seek(int len)
+	bool seek(int len) override
 	{
 		return stream.seek(len);
 	}
 
 	//Use base class documentation
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return stream.isFinished();
 	}

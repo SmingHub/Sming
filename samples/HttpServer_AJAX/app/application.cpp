@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -8,7 +8,7 @@
 #endif
 
 HttpServer server;
-FTPServer ftp;
+FtpServer ftp;
 
 int inputs[] = {0, 2}; // Set input GPIO pins here
 Vector<String> namesInput;
@@ -24,12 +24,10 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 
 void onFile(HttpRequest& request, HttpResponse& response)
 {
-	String file = request.getPath();
-	if(file[0] == '/')
-		file = file.substring(1);
+	String file = request.uri.getRelativePath();
 
 	if(file[0] == '.')
-		response.forbidden();
+		response.code = HTTP_STATUS_FORBIDDEN;
 	else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
@@ -78,10 +76,10 @@ void onAjaxFrequency(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.addPath("/ajax/input", onAjaxInput);
-	server.addPath("/ajax/frequency", onAjaxFrequency);
-	server.setDefaultHandler(onFile);
+	server.paths.set("/", onIndex);
+	server.paths.set("/ajax/input", onAjaxInput);
+	server.paths.set("/ajax/frequency", onAjaxFrequency);
+	server.paths.setDefault(onFile);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());

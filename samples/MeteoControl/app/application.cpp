@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/LiquidCrystal/LiquidCrystal_I2C.h>
 #include <Libraries/DHTesp/DHTesp.h>
 
@@ -162,15 +162,15 @@ const int clockUpdateIntervalMs = 10 * 60 * 1000; // Update web clock every 10 m
 int onClockUpdating(HttpConnection& client, bool successful)
 {
 	if(!successful) {
-		debugf("CLOCK UPDATE FAILED %d (code: %d)", successful, client.getResponseCode());
+		debugf("CLOCK UPDATE FAILED %d (code: %d)", successful, client.getResponse()->code);
 		lastClockUpdate = 0;
 		return -1;
 	}
 
 	// Extract date header from response
-	clockValue = client.getServerDate();
+	clockValue = client.getResponse()->headers.getServerDate();
 	if(clockValue.isNull())
-		clockValue = client.getLastModifiedDate();
+		clockValue = client.getResponse()->headers.getLastModifiedDate();
 	if(!clockValue.isNull())
 		clockValue.addMilliseconds(ActiveConfig.AddTZ * 1000 * 60 * 60);
 

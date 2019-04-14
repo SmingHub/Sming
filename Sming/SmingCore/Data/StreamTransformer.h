@@ -4,18 +4,16 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * StreamTransformer.h
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAMTRANSFORMER_H_
-#define _SMING_CORE_DATA_STREAMTRANSFORMER_H_
+#ifndef _SMING_CORE_DATA_STREAM_TRANSFORMER_H_
+#define _SMING_CORE_DATA_STREAM_TRANSFORMER_H_
 
-#include "CircularBuffer.h"
-
-#undef max
-#undef min
-#include <functional>
+#include "Buffer/CircularBuffer.h"
 
 /**
  * @brief      Class that can be used to transform streams of data on the fly
@@ -26,25 +24,40 @@
 
 /**
  * @brief Callback specification for the stream transformers
- *
- * @param uint8_t* in incoming stream
- * @param int inLength incoming stream length
- * @param uint8_t* out output stream
- * @param int outLength max bytes in the output stream
- *
- * @return int number of output bytes
+ * @note See StreamTransformer::transform() method for details
  */
-typedef std::function<int(uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)> StreamTransformerCallback;
+typedef std::function<size_t(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)>
+	StreamTransformerCallback;
 
-class StreamTransformer : public ReadWriteStream
+class StreamTransformer : public IDataSourceStream
 {
 public:
-	StreamTransformer(ReadWriteStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
-					  size_t blockSize = 64);
-	virtual ~StreamTransformer();
+	StreamTransformer(IDataSourceStream* stream, size_t resultSize = 256, size_t blockSize = 64)
+		: sourceStream(stream), result(new uint8_t[resultSize]), resultSize(resultSize), blockSize(blockSize)
+	{
+	}
+
+	/** @brief Constructor with external callback function
+	 *  @deprecated Create inherited class, override `transform()` method and use alternative constructor instead
+	 */
+	StreamTransformer(IDataSourceStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
+					  size_t blockSize = 64) SMING_DEPRECATED : transformCallback(callback),
+																sourceStream(stream),
+																result(new uint8_t[resultSize]),
+																resultSize(resultSize),
+																blockSize(blockSize)
+	{
+	}
+
+	~StreamTransformer()
+	{
+		delete[] result;
+		delete tempStream;
+		delete sourceStream;
+	}
 
 	//Use base class documentation
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return sourceStream->getStreamType();
 	}
@@ -53,32 +66,19 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	*/
-	int available()
+	int available() override
 	{
 		return -1;
 	}
 
-	/** @brief  Write a single char to stream
-	 *  @param  charToWrite Char to write to the stream
-	 *  @retval size_t Quantity of chars written to stream (always 1)
-	 */
-	virtual size_t write(uint8_t charToWrite);
-
-	/** @brief  Write chars to stream
-	 *  @param  buffer Pointer to buffer to write to the stream
-	 *  @param  size Quantity of chars to written
-	 *  @retval size_t Quantity of chars written to stream
-	 */
-	virtual size_t write(const uint8_t* buffer, size_t size);
+	//Use base class documentation
+	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	//Use base class documentation
-	virtual uint16_t readMemoryBlock(char* data, int bufSize);
+	bool seek(int len) override;
 
 	//Use base class documentation
-	virtual bool seek(int len);
-
-	//Use base class documentation
-	virtual bool isFinished();
+	bool isFinished() override;
 
 	/**
 	 * @brief A method that backs up the current state
@@ -92,15 +92,32 @@ public:
 	virtual void restoreState(){};
 
 protected:
+	/**
+	 * @brief Inherited class implements this method to transform a block of data
+	 * @param const uint8_t* in source data
+	 * @param size_t inLength source data length
+	 * @param uint8_t* out output buffer
+	 * @param size_t outLength size of output buffer
+	 * @retval size_t number of output bytes written
+	 * @note Called with `in = nullptr` and `inLength = 0` at end of input stream
+	 */
+	virtual size_t transform(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)
+	{
+		return (transformCallback == nullptr) ? 0 : transformCallback(in, inLength, out, outLength);
+	}
+
+	/** @brief Callback function to perform transformation
+	 *  @deprecated Create inherited class and verride transform() method instead
+	 */
 	StreamTransformerCallback transformCallback = nullptr;
 
 private:
-	ReadWriteStream* sourceStream = NULL;
-	CircularBuffer* tempStream = NULL;
+	IDataSourceStream* sourceStream = nullptr;
+	CircularBuffer* tempStream = nullptr;
 	uint8_t* result = nullptr;
 	size_t resultSize;
 	size_t blockSize;
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_STREAMTRANSFORMER_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_TRANSFORMER_H_ */

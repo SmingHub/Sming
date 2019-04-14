@@ -31,10 +31,9 @@
 // private method to read stream with timeout
 int Stream::timedRead()
 {
-  int c;
   startMillis = millis();
   do {
-    c = read();
+    int c = read();
     if (c >= 0) return c;
   } while(millis() - startMillis < receiveTimeout);
   return -1;     // -1 indicates timeout
@@ -56,9 +55,8 @@ int Stream::timedPeek()
 // discards non-numeric characters
 int Stream::peekNextDigit()
 {
-  int c;
   while (1) {
-    c = timedPeek();
+    int c = timedPeek();
     if (c < 0) return c;  // timeout
     if (c == '-') return c;
     if (c >= '0' && c <= '9') return c;
@@ -139,7 +137,7 @@ long Stream::parseInt()
 // this allows format characters (typically commas) in values to be ignored
 long Stream::parseInt(char skipChar)
 {
-  boolean isNegative = false;
+  bool isNegative = false;
   long value = 0;
   int c;
   
@@ -175,8 +173,8 @@ float Stream::parseFloat()
 // as above but the given skipChar is ignored
 // this allows format characters (typically commas) in values to be ignored
 float Stream::parseFloat(char skipChar){
-  boolean isNegative = false;
-  boolean isFraction = false;
+  bool isNegative = false;
+  bool isFraction = false;
   long value = 0;
   char c;
   float fraction = 1.0;

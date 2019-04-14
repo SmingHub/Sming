@@ -1,43 +1,46 @@
-/*
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/anakod/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * rBootHttpUpdate.cpp
  *
  *  Created on: 2015/09/03.
  *      Author: Richard A Burton & Anakod
  *
  *  Modified: 2017 - Slavey Karadzhov <slav@attachix.com>
+ *
  */
 
 #include "rBootHttpUpdate.h"
-#include "../Platform/System.h"
-#include "URL.h"
-#include "../Platform/WDT.h"
+#include "Platform/System.h"
+#include "Url.h"
+#include "Platform/WDT.h"
 
-void rBootItemOutputStream::setItem(rBootHttpUpdateItem* item)
-{
-	this->item = item;
-}
+/* rBootItemOutputStream */
 
 bool rBootItemOutputStream::init()
 {
-	if(item == NULL) {
+	if(item == nullptr) {
 		debug_e("rBootItemOutputStream: Item must be set!");
 		return false;
 	}
 
 	rBootWriteStatus = rboot_write_init(this->item->targetOffset);
-	initilized = true;
+	initialized = true;
 
 	return true;
 }
 
 size_t rBootItemOutputStream::write(const uint8_t* data, size_t size)
 {
-	if(!initilized && size > 0) {
+	if(!initialized && size > 0) {
 		if(!init()) { // unable to initialize
 			return -1;
 		}
 
-		initilized = true;
+		initialized = true;
 	}
 
 	if(!rboot_write_flash(&rBootWriteStatus, (uint8_t*)data, size)) {
@@ -57,21 +60,7 @@ bool rBootItemOutputStream::close()
 	return rboot_write_end(&rBootWriteStatus);
 }
 
-rBootItemOutputStream::~rBootItemOutputStream()
-{
-	close();
-}
-
-rBootHttpUpdate::rBootHttpUpdate()
-{
-	currentItem = 0;
-	romSlot = NO_ROM_SWITCH;
-	updateDelegate = nullptr;
-}
-
-rBootHttpUpdate::~rBootHttpUpdate()
-{
-}
+/* rBootHttpUpdate */
 
 void rBootHttpUpdate::addItem(int offset, String firmwareFileUrl)
 {
@@ -82,11 +71,6 @@ void rBootHttpUpdate::addItem(int offset, String firmwareFileUrl)
 	items.add(add);
 }
 
-void rBootHttpUpdate::setBaseRequest(HttpRequest* request)
-{
-	baseRequest = request;
-}
-
 void rBootHttpUpdate::start()
 {
 	for(unsigned i = 0; i < items.count(); i++) {
@@ -94,11 +78,11 @@ void rBootHttpUpdate::start()
 		debug_d("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
 
 		HttpRequest* request;
-		if(baseRequest != NULL) {
+		if(baseRequest != nullptr) {
 			request = baseRequest->clone();
-			request->setURL(URL(it.url));
+			request->setURL(it.url);
 		} else {
-			request = new HttpRequest(URL(it.url));
+			request = new HttpRequest(it.url);
 		}
 
 		request->setMethod(HTTP_GET);
@@ -121,11 +105,6 @@ void rBootHttpUpdate::start()
 	}
 }
 
-rBootItemOutputStream* rBootHttpUpdate::getStream()
-{
-	return new rBootItemOutputStream();
-}
-
 int rBootHttpUpdate::itemComplete(HttpConnection& client, bool success)
 {
 	if(!success) {
@@ -139,7 +118,7 @@ int rBootHttpUpdate::itemComplete(HttpConnection& client, bool success)
 int rBootHttpUpdate::updateComplete(HttpConnection& client, bool success)
 {
 	debug_d("\r\nFirmware download finished!");
-	for(int i = 0; i < items.count(); i++) {
+	for(unsigned i = 0; i < items.count(); i++) {
 		debug_d(" - item: %d, addr: %X, len: %d bytes", i, items[i].targetOffset, items[i].size);
 	}
 
@@ -155,21 +134,6 @@ int rBootHttpUpdate::updateComplete(HttpConnection& client, bool success)
 	applyUpdate();
 
 	return 0;
-}
-
-void rBootHttpUpdate::switchToRom(uint8_t romSlot)
-{
-	this->romSlot = romSlot;
-}
-
-void rBootHttpUpdate::setCallback(OtaUpdateDelegate reqUpdateDelegate)
-{
-	setDelegate(reqUpdateDelegate);
-}
-
-void rBootHttpUpdate::setDelegate(OtaUpdateDelegate reqUpdateDelegate)
-{
-	this->updateDelegate = reqUpdateDelegate;
 }
 
 void rBootHttpUpdate::updateFailed()
@@ -193,9 +157,4 @@ void rBootHttpUpdate::applyUpdate()
 	debug_d("Firmware updated, rebooting to rom %d...\r\n", romSlot);
 	rboot_set_current_rom(romSlot);
 	System.restart();
-}
-
-rBootHttpUpdateItem rBootHttpUpdate::getItem(unsigned int index)
-{
-	return items.elementAt(index);
 }

@@ -4,12 +4,14 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
+ * QuotedPrintableOutputStream.h
+ *
  * @author Slavey Karadzhov <slaff@attachix.com>
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_QUOTED_PRINTABLE_OUTPUT_STREAM_H_
-#define _SMING_CORE_DATA_QUOTED_PRINTABLE_OUTPUT_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_QUOTED_PRINTABLE_OUTPUT_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_QUOTED_PRINTABLE_OUTPUT_STREAM_H_
 
 #include "../StreamTransformer.h"
 
@@ -25,12 +27,18 @@ class QuotedPrintableOutputStream : public StreamTransformer
 public:
 	/**
 	 * @brief Stream that transforms bytes of data into quoted printable data stream
-	 * @param ReadWriteStream *stream - source stream
-	 * @param size_t resultSize - the size of the intermediate buffer.
-	 * 							- it will be created once per object, reused multiple times and kept until the end of the object
+	 * @param stream source stream
+	 * @param resultSize The size of the intermediate buffer, created once per object and reused multiple times
 	 */
-	QuotedPrintableOutputStream(ReadWriteStream* stream, size_t resultSize = 512);
+	QuotedPrintableOutputStream(IDataSourceStream* stream, size_t resultSize = 512)
+		: StreamTransformer(stream, resultSize, resultSize / 2)
+
+	{
+	}
+
+protected:
+	size_t transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength) override;
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_QUOTED_PRINTABLE_OUTPUT_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_QUOTED_PRINTABLE_OUTPUT_STREAM_H_ */

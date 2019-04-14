@@ -35,7 +35,7 @@ class FILO : public Countable<T>
     void flush();                 // reset to default state
 
     // how many elements are currently in the FILO?
-    unsigned int count() const
+    unsigned int count() const override
     {
       return numberOfElements;
     }

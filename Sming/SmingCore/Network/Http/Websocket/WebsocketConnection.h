@@ -3,14 +3,16 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * WebsocketConnection.h
+ *
  ****/
 
-#ifndef SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_
-#define SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_
+#ifndef _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_CONNECTION_H_
+#define _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_CONNECTION_H_
 
 #include "Network/TcpServer.h"
-#include "../HttpConnectionBase.h"
-#include "Data/Stream/EndlessMemoryStream.h"
+#include "../HttpConnection.h"
 extern "C" {
 #include "../ws_parser/ws_parser.h"
 }
@@ -23,15 +25,15 @@ extern "C" {
 
 #define WEBSOCKET_VERSION 13 // 1.3
 
-#define WSSTR_CONNECTION _F("connection")
-#define WSSTR_UPGRADE _F("upgrade")
-#define WSSTR_WEBSOCKET _F("websocket")
-#define WSSTR_HOST _F("host")
-#define WSSTR_ORIGIN _F("origin")
-#define WSSTR_KEY _F("Sec-WebSocket-Key")
-#define WSSTR_PROTOCOL _F("Sec-WebSocket-Protocol")
-#define WSSTR_VERSION _F("Sec-WebSocket-Version")
-#define WSSTR_SECRET _F("258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
+DECLARE_FSTR(WSSTR_CONNECTION)
+DECLARE_FSTR(WSSTR_UPGRADE)
+DECLARE_FSTR(WSSTR_WEBSOCKET)
+DECLARE_FSTR(WSSTR_HOST)
+DECLARE_FSTR(WSSTR_ORIGIN)
+DECLARE_FSTR(WSSTR_KEY)
+DECLARE_FSTR(WSSTR_PROTOCOL)
+DECLARE_FSTR(WSSTR_VERSION)
+DECLARE_FSTR(WSSTR_SECRET)
 
 class WebsocketConnection;
 
@@ -43,60 +45,98 @@ typedef Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)> Websock
 
 enum WsConnectionState { eWSCS_Ready, eWSCS_Open, eWSCS_Closed };
 
-typedef struct {
-	ws_frame_type_t type;
-	char* payload;
-	size_t payloadLegth;
-} WsFrameInfo;
+struct WsFrameInfo {
+	ws_frame_type_t type = WS_FRAME_TEXT;
+	char* payload = nullptr;
+	size_t payloadLength = 0;
+
+	WsFrameInfo() = default;
+
+	WsFrameInfo(ws_frame_type_t type, char* payload, size_t payloadLength)
+		: type(type), payload(payload), payloadLength(payloadLength)
+	{
+	}
+};
 
 class WebsocketConnection
 {
 public:
 	/**
 	 * @brief Constructs a websocket connection on top of http client or server connection
-	 * @param HttpConnectionBase* connection the transport connection
-	 * @param bool isClientConnection true when the passed connection is an http client conneciton
+	 * @param connection the transport connection
+	 * @param isClientConnection true when the passed connection is an http client conneciton
 	 */
-	WebsocketConnection(HttpConnectionBase* connection, bool isClientConnection = true);
+	WebsocketConnection(HttpConnection* connection, bool isClientConnection = true);
 
-	virtual ~WebsocketConnection();
+	virtual ~WebsocketConnection()
+	{
+		state = eWSCS_Closed;
+		close();
+	}
 
 	/**
 	 * @brief Binds websocket connection to an http server connection
-	 * @param HttpRequest& request
-	 * @param HttpResponse& response
-	 * @retval true on success, false otherwise
+	 * @param request
+	 * @param response
+	 * @retval bool true on success, false otherwise
 	 */
 	bool bind(HttpRequest& request, HttpResponse& response);
 
 	/**
-	 * @brief Sends a websocket message
-	 * @param const char* message
-	 * @param  int length
-	 * @param  ws_frame_type_t type
+	 * @brief Sends a websocket message from a buffer
+	 * @param message
+	 * @param length Quantity of data in message
+	 * @param type
 	 */
-	virtual void send(const char* message, int length, ws_frame_type_t type = WS_FRAME_TEXT);
+	virtual void send(const char* message, size_t length, ws_frame_type_t type = WS_FRAME_TEXT);
+
+	/**
+	 * @brief Sends websocket message from a String
+	 * @param message String
+	 * @param type
+	 * @note A String may contain arbitrary data, not just text, so can use this for any frame type
+	 */
+	void send(const String& message, ws_frame_type_t type = WS_FRAME_TEXT)
+	{
+		send(message.c_str(), message.length(), type);
+	}
 
 	/**
 	 * @brief Broadcasts a message to all active websocket connections
-	 * @param const char* message
-	 * @param  int length
-	 * @param  ws_frame_type_t type
+	 * @param message
+	 * @param length
+	 * @param type
 	 */
-	static void broadcast(const char* message, int length, ws_frame_type_t type = WS_FRAME_TEXT);
+	static void broadcast(const char* message, size_t length, ws_frame_type_t type = WS_FRAME_TEXT);
+
+	/**
+	 * @brief Broadcasts a message to all active websocket connections
+	 * @param message
+	 * @param type
+	 */
+	static void broadcast(const String& message, ws_frame_type_t type = WS_FRAME_TEXT)
+	{
+		broadcast(message.c_str(), message.length(), type);
+	}
 
 	/**
 	 * @brief Sends a string websocket message
-	 * @param const String& message
+	 * @param message
 	 */
-	void sendString(const String& message);
+	void sendString(const String& message)
+	{
+		send(message, WS_FRAME_TEXT);
+	}
 
 	/**
 	 * @brief Sends a binary websocket message
-	 * @param const uint8_t* data
-	 * @param int length
+	 * @param data
+	 * @param length
 	 */
-	void sendBinary(const uint8_t* data, int length);
+	void sendBinary(const uint8_t* data, size_t length)
+	{
+		send(reinterpret_cast<const char*>(data), length, WS_FRAME_BINARY);
+	}
 
 	/**
 	 * @brief Closes a websocket connection (without closing the underlying http connection
@@ -110,45 +150,76 @@ public:
 
 	/**
 	 * @brief Attaches a user data to a websocket connection
-	 * @param void* userData
+	 * @param userData
 	 */
-	void setUserData(void* userData);
+	void setUserData(void* userData)
+	{
+		this->userData = userData;
+	}
 
 	/**
 	 * @brief Retrieves user data attached
-	 * @retval void*
+	 * @retval void* The user data previously set by `setUserData()`
 	 */
-	void* getUserData();
+	void* getUserData()
+	{
+		return userData;
+	}
 
-	// @deprecated
-	bool operator==(const WebsocketConnection& rhs) const;
+	/** @brief	Test if another connection refers to the same object
+	 *  @param	rhs The other WebsocketConnection to compare with
+	 *  @retval	bool
+	 */
+	bool operator==(const WebsocketConnection& rhs) const
+	{
+		return (this == &rhs);
+	}
 
-	WebsocketList& getActiveWebsockets();
-	// @end deprecated
+	/**
+	 * @brief Obtain the list of active websockets
+	 * @retval const WebsocketList&
+	 * @note Return value is const as only restricted operations should be carried out on the list.
+	 */
+	static const WebsocketList& getActiveWebsockets()
+	{
+		return websocketList;
+	}
 
 	/**
 	 * @brief Sets the callback handler to be called after successful websocket connection
-	 * @param WebsocketDelegate handler
+	 * @param handler
 	 */
-	void setConnectionHandler(WebsocketDelegate handler);
+	void setConnectionHandler(WebsocketDelegate handler)
+	{
+		wsConnect = handler;
+	}
 
 	/**
 	 * @brief Sets the callback handler to be called after a websocket message is received
-	 * @param WebsocketMessageDelegate handler
+	 * @param handler
 	 */
-	void setMessageHandler(WebsocketMessageDelegate handler);
+	void setMessageHandler(WebsocketMessageDelegate handler)
+	{
+		wsMessage = handler;
+	}
 
 	/**
 	 * @brief Sets the callback handler to be called after a binary websocket message is received
-	 * @param WebsocketBinaryDelegate handler
+	 * @param handler
 	 */
-	void setBinaryHandler(WebsocketBinaryDelegate handler);
+	void setBinaryHandler(WebsocketBinaryDelegate handler)
+	{
+		wsBinary = handler;
+	}
 
 	/**
 	 * @brief Sets the callback handler to be called before closing a websocket connection
-	 * @param WebsocketDelegate handler
+	 * @param handler
 	 */
-	void setDisconnectionHandler(WebsocketDelegate handler);
+	void setDisconnectionHandler(WebsocketDelegate handler)
+	{
+		wsDisconnect = handler;
+	}
 
 	/**
 	 * @brief Should be called after a websocket connection is established to activate
@@ -164,19 +235,19 @@ public:
 
 	/**
 	 * @brief Gets the underlying HTTP connection
-	 * @retval HttpConnectionBase
+	 * @retval HttpConnection*
 	 */
-	HttpConnectionBase* getConnection()
+	HttpConnection* getConnection()
 	{
 		return connection;
 	}
 
 	/**
 	 * @brief Sets the underlying (transport ) HTTP connection
-	 * @param HttpConnectionBase* connection the transport connection
-	 * @param bool isClientConnection true when the passed connection is an http client conneciton
+	 * @param connection the transport connection
+	 * @param isClientConnection true when the passed connection is an http client conneciton
 	 */
-	void setConnection(HttpConnectionBase* connection, bool isClientConnection = true)
+	void setConnection(HttpConnection* connection, bool isClientConnection = true)
 	{
 		this->connection = connection;
 		this->isClientConnection = isClientConnection;
@@ -191,6 +262,7 @@ public:
 	}
 
 protected:
+	// Static handlers for ws_parser
 	static int staticOnDataBegin(void* userData, ws_frame_type_t type);
 	static int staticOnDataPayload(void* userData, const char* at, size_t length);
 	static int staticOnDataEnd(void* userData);
@@ -198,16 +270,32 @@ protected:
 	static int staticOnControlPayload(void* userData, const char*, size_t length);
 	static int staticOnControlEnd(void* userData);
 
+	/** @brief Callback handler to process a received TCP data frame
+	 *  @param client
+	 *  @param at
+	 *  @param size
+	 *  @retval bool true if data parsing successful
+	 */
 	bool processFrame(TcpClient& client, char* at, int size);
 
+	/** @brief Encode user content into a valid websocket frame
+	 *  @param type
+	 *  @param inData
+	 *  @param inLength
+	 *  @param outData
+	 *  @param outLength
+	 *  @param useMask MUST be true for client connections
+	 *  @param isFin true if this is the final frame
+	 *  @retval size_t Size of encoded frame
+	 */
 	size_t encodeFrame(ws_frame_type_t type, const char* inData, size_t inLength, char* outData, size_t outLength,
 					   bool useMask = true, bool isFin = true);
 
 protected:
-	WebsocketDelegate wsConnect = 0;
-	WebsocketMessageDelegate wsMessage = 0;
-	WebsocketBinaryDelegate wsBinary = 0;
-	WebsocketDelegate wsDisconnect = 0;
+	WebsocketDelegate wsConnect = nullptr;
+	WebsocketMessageDelegate wsMessage = nullptr;
+	WebsocketBinaryDelegate wsBinary = nullptr;
+	WebsocketDelegate wsDisconnect = nullptr;
 
 	void* userData = nullptr;
 
@@ -218,15 +306,15 @@ private:
 	WsFrameInfo controlFrame;
 
 	ws_parser_t parser;
-	ws_parser_callbacks_t parserSettings;
+	static const ws_parser_callbacks_t parserSettings;
 
 	static WebsocketList websocketList;
 
 	bool isClientConnection = true;
 
-	HttpConnectionBase* connection = nullptr;
+	HttpConnection* connection = nullptr;
 	bool activated = false;
 };
 
 /** @} */
-#endif /* SMINGCORE_NETWORK_WEBSOCKETCONNECTION_H_ */
+#endif /* _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_CONNECTION_H_ */

@@ -3,10 +3,13 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * EndlessMemoryStream.h
+ *
  ****/
 
-#ifndef _SMING_CORE_ENDLESS_MEMORY_STREAM_H_
-#define _SMING_CORE_ENDLESS_MEMORY_STREAM_H_
+#ifndef _SMING_CORE_DATA_STREAM_ENDLESS_MEMORY_STREAM_H_
+#define _SMING_CORE_DATA_STREAM_ENDLESS_MEMORY_STREAM_H_
 
 #include "MemoryDataStream.h"
 
@@ -25,31 +28,31 @@
 class EndlessMemoryStream : public ReadWriteStream
 {
 public:
-	virtual ~EndlessMemoryStream()
+	~EndlessMemoryStream()
 	{
 		delete stream;
 	}
 
-	virtual StreamType getStreamType() const
+	StreamType getStreamType() const override
 	{
 		return eSST_Memory;
 	}
 
-	virtual uint16_t readMemoryBlock(char* data, int bufSize)
+	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
 		return stream ? stream->readMemoryBlock(data, bufSize) : 0;
 	}
 
-	virtual bool seek(int len);
+	bool seek(int len) override;
 
 	/** @brief  Write chars to stream
 	 *  @param  buffer Pointer to buffer to write to the stream
 	 *  @param  size Quantity of chars to write
 	 *  @retval size_t Quantity of chars written to stream
 	 */
-	virtual size_t write(const uint8_t* buffer, size_t size);
+	size_t write(const uint8_t* buffer, size_t size) override;
 
-	virtual bool isFinished()
+	bool isFinished() override
 	{
 		return false;
 	}
@@ -59,4 +62,4 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_ENDLESS_MEMORY_STREAM_H_ */
+#endif /* _SMING_CORE_DATA_STREAM_ENDLESS_MEMORY_STREAM_H_ */

@@ -1,8 +1,8 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
-#include <SmingCore/Network/TelnetServer.h>
-#include <SmingCore/Network/Http/Websocket/WebsocketResource.h>
-#include <SmingCore/Debug.h>
+#include <SmingCore.h>
+#include <Network/TelnetServer.h>
+#include <Network/Http/Websocket/WebsocketResource.h>
+#include <Debug.h>
 #include <ExampleCommand.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -12,7 +12,7 @@
 #endif
 
 HttpServer server;
-FTPServer ftp;
+FtpServer ftp;
 TelnetServer telnet;
 
 Timer msgTimer;
@@ -29,9 +29,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 
 void onFile(HttpRequest& request, HttpResponse& response)
 {
-	String file = request.uri.Path;
-	if(file[0] == '/')
-		file = file.substring(1);
+	String file = request.uri.getRelativePath();
 
 	if(file[0] == '.')
 		response.code = HTTP_STATUS_FORBIDDEN;
@@ -73,8 +71,8 @@ void processApplicationCommands(String commandLine, CommandOutput* commandOutput
 void StartServers()
 {
 	server.listen(80);
-	server.addPath("/", onIndex);
-	server.setDefaultHandler(onFile);
+	server.paths.set("/", onIndex);
+	server.paths.setDefault(onFile);
 
 	// Web Sockets configuration
 	WebsocketResource* wsResource = new WebsocketResource();
@@ -83,7 +81,7 @@ void StartServers()
 	wsResource->setBinaryHandler(wsBinaryReceived);
 	wsResource->setDisconnectionHandler(wsDisconnected);
 
-	server.addPath("/ws", wsResource);
+	server.paths.set("/ws", wsResource);
 
 	Serial.println("\r\n=== WEB SERVER STARTED ===");
 	Serial.println(WifiStation.getIP());

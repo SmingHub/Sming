@@ -4,7 +4,7 @@
 # and is distributed under the same license as the original script
 
 # Default clang-format points to default 3.5 version one
-CLANG_FORMAT=clang-format
+CLANG_FORMAT=/usr/bin/clang-format
 $CLANG_FORMAT --version
 
 cd $SMING_HOME/..

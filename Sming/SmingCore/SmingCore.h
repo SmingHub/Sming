@@ -3,16 +3,20 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * SmingCore.h
+ *
  ****/
 
 #ifndef _SMING_CORE_H_
 #define _SMING_CORE_H_
 
-#define SMING_VERSION "3.7.1" // Major Minor Sub
+#define SMING_VERSION "3.8.0" // Major Minor Sub
 
 #include <functional>
 
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "gdb_hooks.h"
+#include "WiringFrameworkIncludes.h"
 
 #include "Delegate.h"
 #include "Clock.h"
@@ -43,13 +47,13 @@
 #include "Network/Http/HttpRequest.h"
 #include "Network/Http/HttpResponse.h"
 #include "Network/Http/Websocket/WebsocketConnection.h"
-#include "Network/FTPServer.h"
+#include "Network/FtpServer.h"
 #include "Network/NetUtils.h"
 #include "Network/TcpClient.h"
 #include "Network/TcpConnection.h"
 #include "Network/UdpConnection.h"
 #include "Network/rBootHttpUpdate.h"
-#include "Network/URL.h"
+#include "Network/Url.h"
 
 #include "Data/Stream/JsonObjectStream.h"
 #include "Data/Stream/FileStream.h"

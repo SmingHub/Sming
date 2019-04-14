@@ -3,6 +3,9 @@
  * Created 2015 by Skurydin Alexey
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Station.h
+ *
  ****/
 
 /**	@defgroup wifi_sta WiFi Station Interface
@@ -13,15 +16,14 @@
  *  @see    \ref wifi_ap
 */
 
-#ifndef SMINGCORE_PLATFORM_STATION_H_
-#define SMINGCORE_PLATFORM_STATION_H_
+#ifndef _SMING_CORE_PLATFORM_STATION_H_
+#define _SMING_CORE_PLATFORM_STATION_H_
 
-#include <user_config.h>
 #include "System.h"
-#include "../SmingCore/Delegate.h"
-#include "../../Wiring/WString.h"
-#include "../../Wiring/WVector.h"
-#include "../../Wiring/IPAddress.h"
+#include "Delegate.h"
+#include "WString.h"
+#include "WVector.h"
+#include "IPAddress.h"
 
 extern "C" {
 #include <smartconfig.h>
@@ -80,8 +82,10 @@ public:
      *  @addtogroup wifi_sta
      *  @{
      */
-	StationClass();
-	~StationClass();
+	StationClass()
+	{
+		System.onReady(this);
+	}
 
 	/**	@brief	Enable / disable WiFi station
 	 *	@note	Disabling WiFi station will also disable and clear the handler set with <i>waitConnection</i>.
@@ -157,9 +161,10 @@ public:
 	IPAddress getIP();
 
 	/**	@brief	Get WiFi station MAC address
+	 *  @param optional separator between bytes (e.g. ':')
 	 *	@retval	String WiFi station MAC address
 	 */
-	String getMAC();
+	String getMAC(char sep = '\0');
 
 	/**	@brief	Get WiFi station network mask
 	 *	@retval	IPAddress WiFi station network mask
@@ -212,7 +217,7 @@ public:
 	 *	@param	sctype Smart configuration type
 	 *	@param	callback Function to call on WiFi staton smart configuration complete (Default: none)
 	 */
-	void smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback = NULL);
+	void smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback = nullptr);
 
 	/**	@brief	Stop WiFi station smart configuration
 	 */
@@ -222,7 +227,7 @@ public:
 	/**	@brief	Start WiFi station by WPS method
 	 *	@param	callback Function to call on WiFi WPS Events (Default: none)
 	 */
-	bool wpsConfigStart(WPSConfigDelegate callback = NULL);
+	bool wpsConfigStart(WPSConfigDelegate callback = nullptr);
 
 	/**	@brief	Start WiFi station by WPS method 
 	 */
@@ -237,7 +242,7 @@ public:
 #endif
 
 protected:
-	virtual void onSystemReady();
+	void onSystemReady() override;
 	static void staticScanCompleted(void* arg, STATUS status);
 
 	void internalCheckConnection();
@@ -247,12 +252,12 @@ protected:
 	static void staticSmartConfigCallback(sc_status status, void* pdata);
 
 private:
-	ScanCompletedDelegate scanCompletedCallback;
-	SmartConfigDelegate smartConfigCallback = NULL;
+	ScanCompletedDelegate scanCompletedCallback = nullptr;
+	SmartConfigDelegate smartConfigCallback = nullptr;
 #ifdef ENABLE_WPS
-	WPSConfigDelegate wpsConfigCallback = NULL;
+	WPSConfigDelegate wpsConfigCallback = nullptr;
 #endif
-	bool runScan;
+	bool runScan = false;
 };
 
 class BssInfo
@@ -263,7 +268,10 @@ public:
 	/**	@brief	Get BSS open status
 	 *	@retval	bool True if BSS open
 	*/
-	bool isOpen();
+	bool isOpen()
+	{
+		return authorization == AUTH_OPEN;
+	}
 
 	/**	@brief	Get BSS authorisation method name
 	 *	@retval	char* Pointer to c string BSS authoristation method name
@@ -294,4 +302,4 @@ public:
 extern StationClass WifiStation;
 
 /** @} */
-#endif /* SMINGCORE_PLATFORM_STATION_H_ */
+#endif /* _SMING_CORE_PLATFORM_STATION_H_ */

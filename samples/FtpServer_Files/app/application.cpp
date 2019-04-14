@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -7,7 +7,7 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-FTPServer ftp;
+FtpServer ftp;
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {

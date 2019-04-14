@@ -2,7 +2,7 @@
 #define INCLUDE_CONFIGURATION_H_
 
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 const char THERM_CONFIG_FILE[] = ".therm.conf"; // leading point for security reasons :)
 

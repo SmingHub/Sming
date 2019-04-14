@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/HMC5883L/HMC5883L.h>
 
 // class default I2C address is 0x1E
