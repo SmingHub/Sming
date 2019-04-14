@@ -142,7 +142,7 @@
  * If undefined, calls will do nothing and return -1.
  */
 #ifndef GDBSTUB_ENABLE_SYSCALL
-#define GDBSTUB_ENABLE_SYSCALL 1
+#define GDBSTUB_ENABLE_SYSCALL 0
 #endif
 
 /*

@@ -565,17 +565,6 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 	 * the start of the response packet (indicated by DBGFLAG_PACKET_STARTED).
 	 */
 	case 'F':
-		//		if(gdb_syscall_complete(data)) {
-		//			// Ctrl+C was pressed
-		//			sendReason();
-		//			return ST_OK;
-		//		} else {
-		//			return ST_CONT;
-		//		}
-
-		//		if(gdb_state.syscall != syscall_active) {
-		//			break;
-		//		}
 		if(gdb_syscall_complete(data)) {
 			// Ctrl+C was pressed
 			sendReason();

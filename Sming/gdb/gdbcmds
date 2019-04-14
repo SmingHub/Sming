@@ -1,5 +1,5 @@
 # Enable this if you want to log all traffic between GDB and the stub
-set remotelogfile gdb_rsp_logfile.txt
+#set remotelogfile gdb_rsp_logfile.txt
 
 # ESP8266 HW limits the number of breakpoints/watchpoints
 set remote hardware-breakpoint-limit 1
