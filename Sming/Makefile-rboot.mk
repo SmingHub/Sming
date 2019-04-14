@@ -547,7 +547,7 @@ all: $(USER_LIBDIR)/lib$(LIBSMING).a checkdirs $(LIBMAIN_DST) $(RBOOT_BIN) $(RBO
 gdb_symbols: $(BUILD_BASE)/bootrom.elf
 
 $(BUILD_BASE)/%.elf:
-	cp $(SMING_HOME)/gdb/symbols/$(notdir $@) $@
+	$(Q) cp $(SMING_HOME)/gdb/symbols/$(notdir $@) $@
 
 $(RBOOT_BIN):
 	$(MAKE) -C $(THIRD_PARTY_DIR)/rboot RBOOT_GPIO_ENABLED=$(RBOOT_GPIO_ENABLED) RBOOT_SILENT=$(RBOOT_SILENT)
