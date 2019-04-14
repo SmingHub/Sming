@@ -96,7 +96,6 @@ You can find more information about compilation and flashing process by reading 
 Official ESP8266 documentation can be found in the [Espressif website](https://espressif.com/en/support/download/documents?keys=&field_type_tid%5B%5D=14).
 
 ## Examples
-
 Once you are ready with the "Getting started" guide you can get the latest source code.
 
 ```
@@ -104,6 +103,19 @@ git clone https://github.com/SmingHub/Sming.git
 ```
 
 And check some of the examples.
+
+- [Basic Blink](#basic-blink)
+- [Simple GPIO input/output](#simple-gpio-inputoutput)
+- [Start Serial communication](#start-serial-communication)
+- [Connect to WiFi](#connect-to-wifi)
+- [Read DHT22 sensor](#read-dht22-sensor)
+- [HTTP client](#http-client)
+- [OTA application update based on rBoot](#ota-application-update-based-on-rboot)
+- [Embedded HTTP Web Server](#embedded-http-web-server)
+- [Sending emails](#sending-emails)
+
+### Basic Blink
+Blinking is something like the "Hello World" example for the embedded world. You can check it using the commands below:
 
 ```
 cd Sming/samples
@@ -284,7 +296,28 @@ int onMailSent(SmtpClient& client, int code, char* status)
 
 See the [SmtpClient sample](samples/SmtpClient/app/application.cpp) for details.
 
-### Documentation
+## Live Debugging
+Applications based on Sming Framework that are flashed and running on an ESP8266 device can be debugged using interactive debuggers.
+In order to debug an application it has to be re-compiled with the ENABLE_GDB=1 directive. And then flashed on the device. As shown below:
+
+```
+cd $SMING_HOME/../samples/LiveDebug
+make clean
+make ENABLE_GDB=1
+make flashapp # <-- this will update only the application firmware.
+```
+
+Once the debuggable application is flashed on the device the developers have to run GDB. The easiest way to run the command-line GDB is to execute the following command:
+```
+make gdb
+```
+
+Developers using Eclipse CDT can have debugging sessions like the one below:
+![Debugging Session in Eclipse CDT](https://raw.githubusercontent.com/SmingHub/Sming/gh-pages/images/eclipse-debug-session.png)
+
+See [LiveDebug sample](samples/LiveDebug/) for details.
+
+## Documentation
 We provide [generated documentation](https://sminghub.github.io/Sming/api/) online.
 
 If you want you can also generate a complete documentation locally by running the commands below. This requires `doxygen` to be installed on your system.
