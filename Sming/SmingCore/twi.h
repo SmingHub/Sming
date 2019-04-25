@@ -23,7 +23,6 @@
 #define _SMING_CORE_TWI_H_
 
 #include "WiringFrameworkDependencies.h"
-#include "espinc/peri.h"
 
 #ifdef __cplusplus
 extern "C" {

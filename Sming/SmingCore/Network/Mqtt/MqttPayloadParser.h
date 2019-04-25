@@ -14,7 +14,7 @@
 #define _SMING_CORE_NETWORK_MQTT_PAYLOAD_PARSER_H_
 
 #include "Delegate.h"
-#include "../mqtt-codec/src/message.h"
+#include "mqtt-codec/src/message.h"
 
 /** @defgroup   mqttpayload Provides MQTT payload parser
  *  @brief      MQTT streaming processor for the payload data of a PUBLISH message

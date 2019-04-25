@@ -28,7 +28,6 @@
 #ifndef _SMING_CORE_HARDWARE_PWM_H_
 #define _SMING_CORE_HARDWARE_PWM_H_
 
-#include "ESP8266EX.h"
 #include "WiringFrameworkDependencies.h"
 
 #ifdef __cplusplus

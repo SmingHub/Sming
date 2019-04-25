@@ -11,7 +11,7 @@
 #ifndef SERVICES_COMMANDPROCESSING_COMMANDDELEGATE_H_
 #define SERVICES_COMMANDPROCESSING_COMMANDDELEGATE_H_
 
-#include "../Wiring/WString.h"
+#include "WString.h"
 #include "Delegate.h"
 #include "Network/TcpClient.h"
 #include "WiringFrameworkIncludes.h"

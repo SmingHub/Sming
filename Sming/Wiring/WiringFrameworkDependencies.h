@@ -1,14 +1,14 @@
 /*
  * WiringFrameworkDependencies.h
  *
- *  Created on: 28 ÿíâ. 2015 ã.
+ *  Created on: 28 ï¿½ï¿½ï¿½. 2015 ï¿½.
  *      Author: Anakonda
  */
 
 #ifndef WIRING_WIRINGFRAMEWORKDEPENDENCIES_H_
 #define WIRING_WIRINGFRAMEWORKDEPENDENCIES_H_
 
-#include "../include/user_config.h"
+#include <user_config.h>
 
 #include <c_types.h>
 #include <ctype.h>
@@ -20,7 +20,7 @@
 #include "WConstants.h"
 #include "BitManipulations.h"
 #include "FakePgmSpace.h"
-#include "../SmingCore/pins_arduino.h"
+#include "pins_arduino.h"
 
 // std::min, etc.
 #include <algorithm>

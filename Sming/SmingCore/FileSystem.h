@@ -16,7 +16,7 @@
 #ifndef _SMING_CORE_FILE_SYSTEM_H_
 #define _SMING_CORE_FILE_SYSTEM_H_
 
-#include "../Services/SpifFS/spiffs_sming.h"
+#include "spiffs/spiffs_sming.h"
 #include "WVector.h"
 
 class String;

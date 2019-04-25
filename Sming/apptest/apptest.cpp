@@ -1,4 +1,4 @@
-#include "../SmingCore/SmingCore.h"
+#include <SmingCore.h>
 
 Timer procTimer;
 

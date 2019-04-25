@@ -14,7 +14,7 @@
 #include "HardwareSerial.h"
 #include "Clock.h"
 #include "WString.h"
-#include "../Services/CommandProcessing/CommandProcessingIncludes.h"
+#include "Services/CommandProcessing/CommandProcessingIncludes.h"
 
 /** @brief  Delegate constructor usage: (&YourClass::method, this)
  *  @ingroup event_handlers

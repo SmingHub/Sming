@@ -25,9 +25,9 @@
 #ifndef SERVICES_COMMANDPROCESSING_COMMANDHANDLER_H_
 #define SERVICES_COMMANDPROCESSING_COMMANDHANDLER_H_
 
-#include "../Wiring/WiringFrameworkIncludes.h"
+#include "WiringFrameworkIncludes.h"
 #include "CommandDelegate.h"
-#include "../Wiring/WHashMap.h"
+#include "WHashMap.h"
 #include "SystemClock.h"
 #include <stdio.h>
 #include "HardwareSerial.h"

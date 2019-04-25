@@ -9,7 +9,7 @@
  ****/
 
 #include "GdbFileStream.h"
-#include "gdb_syscall.h"
+#include <gdb/gdb_syscall.h>
 
 /* GdbFileStream */
 

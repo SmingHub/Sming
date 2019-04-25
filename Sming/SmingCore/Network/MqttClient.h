@@ -17,9 +17,9 @@
 #include "WHashMap.h"
 #include "Data/ObjectQueue.h"
 #include "Mqtt/MqttPayloadParser.h"
-#include "../mqtt-codec/src/message.h"
-#include "../mqtt-codec/src/serialiser.h"
-#include "../mqtt-codec/src/parser.h"
+#include "mqtt-codec/src/message.h"
+#include "mqtt-codec/src/serialiser.h"
+#include "mqtt-codec/src/parser.h"
 
 /** @defgroup   mqttclient MQTT client
  *  @brief      Provides MQTT client

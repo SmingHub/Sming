@@ -33,7 +33,7 @@ Descr: Low-level SDCard functions
 
 /-------------------------------------------------------------------------*/
 #include "SDCard.h"
-#include "diskio.h"		/* Declarations of disk I/O functions */
+#include "fatfs/diskio.h"	/* Declarations of disk I/O functions */
 
 FATFS *pFatFs = NULL;		/* FatFs work area needed for each volume */
 SPIBase *SDCardSPI = NULL;

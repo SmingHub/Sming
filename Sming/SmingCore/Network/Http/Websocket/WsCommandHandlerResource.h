@@ -16,7 +16,7 @@
 #include "../HttpResource.h"
 #include "WebsocketConnection.h"
 #include "WString.h"
-#include "../Services/CommandProcessing/CommandProcessingIncludes.h" // TODO: ....
+#include "Services/CommandProcessing/CommandProcessingIncludes.h" // TODO: ....
 
 class WsCommandHandlerResource : protected WebsocketResource
 {

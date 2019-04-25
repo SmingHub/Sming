@@ -12,7 +12,7 @@
 #define _SMING_CORE_DATA_STREAM_JSON_OBJECT_STREAM_H_
 
 #include "MemoryDataStream.h"
-#include "../Libraries/ArduinoJson/include/ArduinoJson.h"
+#include "Libraries/ArduinoJson/include/ArduinoJson.h"
 
 /** @brief JsonObject stream class
  * 	@ingroup    stream data

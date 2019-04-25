@@ -5,10 +5,10 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
 
-#include "../Wiring/WiringFrameworkDependencies.h"
-#include "../Wiring/WHashMap.h"
-#include "../Wiring/WVector.h"
-#include "../Wiring/WString.h"
+#include "WiringFrameworkDependencies.h"
+#include "WHashMap.h"
+#include "WVector.h"
+#include "WString.h"
 #include "IPAddress.h"
 class TcpClient;
 

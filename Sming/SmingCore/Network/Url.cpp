@@ -11,8 +11,8 @@
  ****/
 
 #include "Url.h"
-#include "../libyuarel/yuarel.h"
-#include "../Services/WebHelpers/escape.h"
+#include "libyuarel/yuarel.h"
+#include "Services/WebHelpers/escape.h"
 #include "Print.h"
 
 /**

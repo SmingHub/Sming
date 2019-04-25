@@ -15,14 +15,13 @@
 
 #include <functional>
 
-#include "gdb_hooks.h"
+#include "gdb/gdb_hooks.h"
 #include "WiringFrameworkIncludes.h"
 
 #include "Delegate.h"
 #include "Clock.h"
 #include "SystemClock.h"
 #include "Digital.h"
-#include "ESP8266EX.h"
 #include "FileSystem.h"
 #include "HardwareSerial.h"
 #include "Interrupts.h"
@@ -61,7 +60,7 @@
 
 #include "DateTime.h"
 
-#include "../Services/FATFS/ff.h"
-#include "../Services/Yeelight/YeelightBulb.h"
+#include "fatfs/ff.h"
+#include "Services/Yeelight/YeelightBulb.h"
 
 #endif /* _SMING_CORE_H_ */

@@ -17,7 +17,7 @@
  */
 
 #include "SmtpClient.h"
-#include "../Services/WebHelpers/base64.h"
+#include "Services/WebHelpers/base64.h"
 #include "Data/Stream/QuotedPrintableOutputStream.h"
 #include "Data/Stream/Base64OutputStream.h"
 #include "Data/HexString.h"

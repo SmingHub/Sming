@@ -13,7 +13,7 @@
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/StreamChain.h"
 
-#include "../Clock.h"
+#include "Clock.h"
 
 #define MQTT_PUBLISH_STREAM 0
 

@@ -25,7 +25,7 @@
 #include "TcpClient.h"
 #include "TcpServer.h"
 #include "SystemClock.h"
-#include "../Services/CommandProcessing/CommandExecutor.h"
+#include "Services/CommandProcessing/CommandExecutor.h"
 
 #define TELNETSERVER_MAX_COMMANDSIZE 64
 

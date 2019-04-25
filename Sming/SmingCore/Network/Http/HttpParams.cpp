@@ -11,9 +11,9 @@
  ****/
 
 #include "HttpParams.h"
-#include "../Services/WebHelpers/escape.h"
+#include "Services/WebHelpers/escape.h"
 #include "Print.h"
-#include "../third-party/libyuarel/yuarel.h"
+#include "libyuarel/yuarel.h"
 
 // Set a reasonable limit on the number of expected parameters in a query string
 static const unsigned MAX_PARAMS = 16;

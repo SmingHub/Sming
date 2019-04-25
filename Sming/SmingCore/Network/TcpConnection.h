@@ -17,7 +17,7 @@
 #define _SMING_CORE_NETWORK_TCP_CONNECTION_H_
 
 #ifdef ENABLE_SSL
-#include "../axtls-8266/compat/lwipr_compat.h"
+#include "axtls-8266/compat/lwipr_compat.h"
 #include "Clock.h"
 #include "Ssl/SslStructs.h"
 #endif

@@ -14,7 +14,7 @@
 #include "Network/TcpServer.h"
 #include "../HttpConnection.h"
 extern "C" {
-#include "../ws_parser/ws_parser.h"
+#include "ws_parser/ws_parser.h"
 }
 
 /** @defgroup   Websocket connection

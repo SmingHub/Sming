@@ -29,7 +29,7 @@
 #ifndef HASHMAP_H
 #define HASHMAP_H
 
-#include "Countable.h"
+#include "WiringFrameworkDependencies.h"
 
 template<typename K, typename V>
 class HashMap

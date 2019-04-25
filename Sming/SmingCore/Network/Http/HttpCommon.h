@@ -28,7 +28,7 @@
 #define HTTP_REQUEST_POOL_SIZE 20
 #endif
 
-#include "../http-parser/http_parser.h"
+#include "http-parser/http_parser.h"
 
 typedef enum http_method HttpMethod;
 
