@@ -22,8 +22,8 @@ COM_SPEED_SERIAL  ?= $(COM_SPEED)
 
 include $(SMING_HOME)/build.mk
 
-PLATFORM_BASE	:= $(SMING_HOME)/$(PLATFORM_BASE)
-THIRD_PARTY_DIR	:= $(SMING_HOME)/$(THIRD_PARTY_DIR)
+ARCH_BASE		:= $(SMING_HOME)/$(ARCH_BASE)
+COMPONENTS		:= $(SMING_HOME)/$(COMPONENTS)
 
 BUILD_BASE		:= out/build
 FW_BASE			:= out/firmware
@@ -40,24 +40,16 @@ FW_MEMINFO_SAVED = out/fwMeminfo
 # name for the target project
 TARGET = app
 
-LIBSMING = sming
-SMING_FEATURES = none
-ifeq ($(ENABLE_SSL),1)
-	LIBSMING = smingssl
-	SMING_FEATURES = SSL
-endif
-
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
 MODULES      ?= app     # default to app if not set by user
 EXTRA_INCDIR ?= include # default to include if not set by user
 
-SMING_INCDIR := System/include Wiring Libraries SmingCore Platform/Common \
+SMING_INCDIR := System/include Wiring Libraries SmingCore Platform \
 				Libraries/Adafruit_GFX Libraries/Adafruit_Sensor
 
 EXTRA_INCDIR += $(SMING_HOME) $(addprefix $(SMING_HOME)/,$(SMING_INCDIR)) \
-				$(PLATFORM_BASE) $(PLATFORM_SYS)/include $(PLATFORM_CORE) \
-				$(THIRD_PARTY_DIR)
+				$(ARCH_BASE) $(ARCH_SYS)/include $(ARCH_CORE) $(COMPONENTS)
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 WIFI_SSID ?= ""
@@ -75,5 +67,5 @@ endif
 # => Serial
 CFLAGS += -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) $(USER_CFLAGS)
 
-include $(PLATFORM_BASE)/app.mk
+include $(ARCH_BASE)/app.mk
 

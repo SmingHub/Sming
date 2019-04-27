@@ -1,6 +1,6 @@
 ##############
 #
-# Platform build environment
+# Esp8266 Architecture build environment
 #
 ##############
 
@@ -51,9 +51,13 @@ else
     CFLAGS += -DPROGMEM_L32=""
 endif
 
-# => SDK
-ifneq (,$(findstring $(THIRD_PARTY_DIR)/ESP8266_NONOS_SDK, $(SDK_BASE)))
-	CFLAGS += -DSDK_INTERNAL
+# => 'Internal' SDK - for SDK Version 3+ as submodule in Sming repository
+# SDK_BASE just needs to point into our repo as it's overridden with the correct submodule path
+# This provides backward-compatiblity, so $(SMING)/third-party/ESP8266_NONOS_SDK) still works
+ifneq (,$(findstring $(abspath $(SMING_HOME)),$(abspath $(SDK_BASE))))
+	SDK_COMPONENT	:= $(ARCH_COMPONENTS)/Sdk/ESP8266_NONOS_SDK
+	SDK_BASE		:= $(SMING_HOME)/$(SDK_COMPONENT)
+	CFLAGS			+= -DSDK_INTERNAL
 	SDK_INTERNAL = 1
 else
 	SDK_INTERNAL = 0
@@ -63,8 +67,7 @@ endif
 SDK_LIBDIR	:= $(SDK_BASE)/lib
 SDK_INCDIR	:= $(SDK_BASE)/include
 
-
 # => Tools
-ESPTOOL2	= $(PLATFORM_TOOLS)/esptool2/esptool2$(TOOL_EXT)
-SPIFFY		= $(PLATFORM_TOOLS)/spiffy/spiffy$(TOOL_EXT)
+ESPTOOL2	= $(ARCH_TOOLS)/esptool2/esptool2$(TOOL_EXT)
+SPIFFY		= $(ARCH_TOOLS)/spiffy/spiffy$(TOOL_EXT)
 

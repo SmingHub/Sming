@@ -1,6 +1,6 @@
 ###
 #
-# SMING Application Makefile for ESP8266 platform
+# SMING Application Makefile for ESP8266 architecture
 #
 ###
 
@@ -59,9 +59,9 @@ RBOOT_ROM_1		:= $(FW_BASE)/$(RBOOT_ROM_1).bin
 # Code compiled with application
 APPCODE :=
 
-EXTRA_INCDIR += $(PLATFORM_COMPONENTS) \
-				$(PLATFORM_COMPONENTS)/esp8266/include \
-				$(PLATFORM_COMPONENTS)/driver/include
+EXTRA_INCDIR += $(ARCH_COMPONENTS) \
+				$(ARCH_COMPONENTS)/esp8266/include \
+				$(ARCH_COMPONENTS)/driver/include
 
 # Macro to make an optional library
 # $1 -> The library to make
@@ -71,7 +71,7 @@ define MakeLibrary
 endef
 
 # => rBoot
-RBOOT_BASE		:= $(PLATFORM_COMPONENTS)/rboot
+RBOOT_BASE		:= $(ARCH_COMPONENTS)/rboot
 APPCODE			+= $(RBOOT_BASE)/appcode $(RBOOT_BASE)/rboot/appcode
 EXTRA_INCDIR	+= $(RBOOT_BASE)/rboot
 RBOOT_BIN		:= $(FW_BASE)/rboot.bin
@@ -110,14 +110,14 @@ ifeq ($(RBOOT_GPIO_SKIP_ENABLED),1)
 	CFLAGS += -DBOOT_GPIO_SKIP_ENABLED
 endif
 $(RBOOT_BIN):
-	$(MAKE) -C $(PLATFORM_COMPONENTS)/rboot/rboot
+	$(MAKE) -C $(ARCH_COMPONENTS)/rboot/rboot
 
 
 # => SPIFFS
 DISABLE_SPIFFS		?= 0
 SPIFF_BIN_OUT		?= spiff_rom
 SPIFF_BIN_OUT		:= $(FW_BASE)/$(SPIFF_BIN_OUT).bin
-EXTRA_INCDIR		+= $(PLATFORM_COMPONENTS)/spiffs $(THIRD_PARTY_DIR)/spiffs/src
+EXTRA_INCDIR		+= $(ARCH_COMPONENTS)/spiffs $(COMPONENTS)/spiffs/src
 CFLAGS				+= -DRBOOT_SPIFFS_0=$(RBOOT_SPIFFS_0)
 CFLAGS				+= -DRBOOT_SPIFFS_1=$(RBOOT_SPIFFS_1)
 CUSTOM_TARGETS		+= $(SPIFF_BIN_OUT)
@@ -126,11 +126,12 @@ CUSTOM_TARGETS		+= $(SPIFF_BIN_OUT)
 ENABLE_CUSTOM_LWIP	?= 1
 ifeq ($(ENABLE_CUSTOM_LWIP), 0)
 	LIBLWIP			:= lwip
-	LWIP_BASE		:= $(PLATFORM_COMPONENTS)/esp-lwip
+	LWIP_BASE		:= $(ARCH_COMPONENTS)/esp-lwip
 	EXTRA_INCDIR	+= $(LWIP_BASE)/include $(LWIP_BASE)
 else ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	LIBLWIP			:= lwip_open
-	EXTRA_INCDIR	+= $(PLATFORM_COMPONENTS)/esp-open-lwip/esp-open-lwip/include
+	LWIP_BASE		:= $(ARCH_COMPONENTS)/esp-open-lwip/esp-open-lwip
+	EXTRA_INCDIR	+= $(LWIP_BASE)/include
 	ifeq ($(ENABLE_ESPCONN), 1)
 		LIBLWIP		:= lwip_full
 	endif
@@ -139,15 +140,15 @@ else ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 		$(error LWIP2 does not support espconn_* functions. Make sure to set ENABLE_CUSTOM_LWIP to 0 or 1.)
 	endif
 	LIBLWIP			:= lwip2
-	LWIP2_BASE		:= $(PLATFORM_COMPONENTS)/lwip2/lwip2
-	EXTRA_INCDIR	+= $(LWIP2_BASE)/glue-esp/include-esp $(LWIP2_BASE)/include
+	LWIP_BASE		:= $(ARCH_COMPONENTS)/lwip2/lwip2
+	EXTRA_INCDIR	+= $(LWIP_BASE)/glue-esp/include-esp $(LWIP_BASE)/include
 else
-	EXTRA_INCDIR	+= $(PLATFORM_COMPONENTS)/esp-lwip/lwip/include
+	EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/esp-lwip/lwip/include
 endif
 LIBS				+= $(LIBLWIP)
 
 ifneq ($(ENABLE_CUSTOM_LWIP), 0)
-	LIBLWIP_DST		:= $(USER_LIBDIR)/lib$(LIBLWIP).a
+	LIBLWIP_DST		:= $(call UserLibPath,$(LIBLWIP))
 	CUSTOM_TARGETS	+= $(LIBLWIP_DST)
 
 $(LIBLWIP_DST):
@@ -155,10 +156,10 @@ $(LIBLWIP_DST):
 endif
 
 # => GDB
-APPCODE				+= $(PLATFORM_COMPONENTS)/gdbstub/appcode
-EXTRA_INCDIR		+= $(PLATFORM_COMPONENTS)/gdbstub/include
+APPCODE				+= $(ARCH_COMPONENTS)/gdbstub/appcode
+EXTRA_INCDIR		+= $(ARCH_COMPONENTS)/gdbstub/include
 ifeq ($(ENABLE_GDB), 1)
-	APPCODE			+= $(PLATFORM_COMPONENTS)/gdbstub
+	APPCODE			+= $(ARCH_COMPONENTS)/gdbstub
 	CUSTOM_TARGETS	+= gdb_symbols
 
 # Copy symbols required by GDB into build directory
@@ -166,23 +167,17 @@ ifeq ($(ENABLE_GDB), 1)
 gdb_symbols: $(BUILD_BASE)/bootrom.elf
 
 $(BUILD_BASE)/%.elf:
-	$(Q) cp $(PLATFORM_COMPONENTS)/gdbstub/symbols/$(notdir $@) $@
+	$(Q) cp $(ARCH_COMPONENTS)/gdbstub/symbols/$(notdir $@) $@
 endif
 
 # Full GDB command line
-GDB := trap '' INT; $(GDB) -x $(PLATFORM_COMPONENTS)/gdbstub/gdbcmds -b $(COM_SPEED_SERIAL) -ex "target remote $(COM_PORT)"
+GDB := trap '' INT; $(GDB) -x $(ARCH_COMPONENTS)/gdbstub/gdbcmds -b $(COM_SPEED_SERIAL) -ex "target remote $(COM_PORT)"
 
 
 # => WPS
 ifeq ($(ENABLE_WPS),1)
    CFLAGS	+= -DENABLE_WPS=1
    LIBS		+= wps
-endif
-
-# => MQTT
-# Flags for compatability with old versions (most of them should disappear with the next major release)
-ifeq ($(MQTT_NO_COMPAT),1)
-	CFLAGS	+= -DMQTT_NO_COMPAT=1
 endif
 
 # => Custom heap
@@ -220,7 +215,7 @@ ifeq ($(ENABLE_SSL),1)
 	LIBAXTLS			:= axtls
 	LIBS				+= $(LIBAXTLS)
 	LIBAXTLS_DST		:= $(call UserLibPath,$(LIBAXTLS))
-	AXTLS_BASE			:= $(PLATFORM_COMPONENTS)/axtls-8266/axtls-8266
+	AXTLS_BASE			:= $(ARCH_COMPONENTS)/axtls-8266/axtls-8266
 	EXTRA_INCDIR		+= $(AXTLS_BASE)/.. $(AXTLS_BASE) $(AXTLS_BASE)/ssl $(AXTLS_BASE)/crypto
 	AXTLS_FLAGS			:= -DLWIP_RAW=1 -DENABLE_SSL=1
 	ifeq ($(SSL_DEBUG),1) # 
@@ -236,7 +231,7 @@ $(LIBAXTLS_DST):
 include/ssl/private_key.h:
 	$(vecho) "Generating unique certificate and key. This may take some time"
 	$(Q) mkdir -p $(CURRENT_DIR)/include/ssl/
-	AXDIR=$(CURRENT_DIR)/include/ssl/ $(PLATFORM_COMPONENTS)/axtls-8266/axtls-8266/tools/make_certs.sh
+	AXDIR=$(CURRENT_DIR)/include/ssl/ $(ARCH_COMPONENTS)/axtls-8266/axtls-8266/tools/make_certs.sh
 endif
 
 
@@ -255,6 +250,7 @@ endif
 LIBS += $(LIBPWM)
 
 
+#
 LIBS := microc microgcc hal phy pp net80211 mqttc wpa $(LIBSMING) crypto smartconfig $(EXTRA_LIBS) $(LIBS)
 
 LIBS := $(addprefix -l,$(LIBS))
@@ -263,7 +259,7 @@ LIBS := $(addprefix -l,$(LIBS))
 LDFLAGS	= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -u custom_crash_callback \
 			-Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
 
-include $(PLATFORM_BASE)/flash.mk
+include $(ARCH_BASE)/flash.mk
 
 TARGET_OUT_0 := $(BUILD_BASE)/$(TARGET)_0.out
 TARGET_OUT_1 := $(BUILD_BASE)/$(TARGET)_1.out
@@ -294,7 +290,7 @@ $(RBOOT_ROM_1): $(TARGET_OUT_1)
 
 $(TARGET_OUT_0): $(APP_AR)
 	$(vecho) "LD $@"
-	$(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(PLATFORM_BASE)/Compiler/ld \
+	$(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(ARCH_BASE)/Compiler/ld \
 		-T$(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
@@ -318,7 +314,7 @@ $(TARGET_OUT_0): $(APP_AR)
 
 $(TARGET_OUT_1): $(APP_AR)
 	$(vecho) "LD $@"
-	$(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(PLATFORM_BASE)/Compiler/ld \
+	$(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(ARCH_BASE)/Compiler/ld \
 		-T$(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
 
 # recreate it from 0, since you get into problems with same filenames
@@ -327,9 +323,10 @@ $(APP_AR): $(OBJ)
 	$(Q) test ! -f $@ || rm $@
 	$(AR) rcsP $@ $^
 
+#
 .PHONY: libsming
-libsming: $(USER_LIBDIR)/lib$(LIBSMING).a
-$(USER_LIBDIR)/lib$(LIBSMING).a:
+libsming: $(LIBSMING_DST)
+$(LIBSMING_DST):
 	$(vecho) "(Re)compiling Sming. Enabled features: $(SMING_FEATURES). This may take some time"
 	$(Q) $(MAKE) -C $(SMING_HOME) clean V=$(V) ENABLE_SSL=$(ENABLE_SSL)
 	$(Q) $(MAKE) -C $(SMING_HOME) V=$(V) ENABLE_SSL=$(ENABLE_SSL)
@@ -412,7 +409,7 @@ gdb: kill_term
 FLASH_INIT_CHUNKS := $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin
 FLASH_INIT_CHUNKS += $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin
 ifneq ($(DISABLE_SPIFFS), 1)
-	FLASH_INIT_CHUNKS += $(RBOOT_SPIFFS_0) $(PLATFORM_BASE)/Compiler/data/blankfs.bin
+	FLASH_INIT_CHUNKS += $(RBOOT_SPIFFS_0) $(ARCH_BASE)/Compiler/data/blankfs.bin
 endif
 flashinit:
 	$(vecho) "Flash init data default and blank data."

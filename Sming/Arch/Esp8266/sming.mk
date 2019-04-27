@@ -1,39 +1,40 @@
 # ESP8266 Sming framework
 
 # => SDK
-SDK_INTERNAL = 0
-ifneq (,$(findstring $(THIRD_PARTY_DIR)/ESP8266_NONOS_SDK, $(SDK_BASE)))
-	SUBMODULES += $(SDK_BASE)
-	CFLAGS += -DSDK_INTERNAL
-	SDK_INTERNAL = 1
+ifeq ($(SDK_INTERNAL), 1)
+	SUBMODULES		+= $(SDK_COMPONENT)
+	CUSTOM_TARGETS	+= $(SDK_COMPONENT)/bin/esp_init_data_default.bin
+
+$(SDK_COMPONENT)/bin/esp_init_data_default.bin:
+	$(Q) cp -f $(dir $@)esp_init_data_default_v08.bin $@
 endif
 
-EXTRA_INCDIR	+= $(PLATFORM_COMPONENTS)
+EXTRA_INCDIR	+= $(ARCH_COMPONENTS)
 
-MODULES			+= $(PLATFORM_COMPONENTS)/esp8266
-EXTRA_INCDIR	+= $(PLATFORM_COMPONENTS)/esp8266/include $(PLATFORM_COMPONENTS)/driver/include
+MODULES			+= $(ARCH_COMPONENTS)/esp8266
+EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/esp8266/include
 
-MODULES			+= $(PLATFORM_COMPONENTS)/driver
-EXTRA_INCDIR	+= $(PLATFORM_COMPONENTS)/driver/include
+MODULES			+= $(ARCH_COMPONENTS)/driver
+EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/driver/include
 
-MODULES			+= $(PLATFORM_COMPONENTS)/fatfs
+MODULES			+= $(ARCH_COMPONENTS)/fatfs
 
 # => rboot
-RBOOT_BASE		:= $(PLATFORM_COMPONENTS)/rboot/rboot
+RBOOT_BASE		:= $(ARCH_COMPONENTS)/rboot/rboot
 SUBMODULES		+= $(RBOOT_BASE)
 EXTRA_INCDIR	+= $(RBOOT_BASE) $(RBOOT_BASE)/appcode
 
 # => SPIFFS
-SPIFFS_BASE		:= $(PLATFORM_COMPONENTS)/spiffs
-SUBMODULES		+= $(THIRD_PARTY_DIR)/spiffs
-MODULES			+= $(SPIFFS_BASE) $(THIRD_PARTY_DIR)/spiffs/src
-EXTRA_INCDIR	+= $(SPIFFS_BASE) $(SPIFFS_BASE)/spiffs/src
+SPIFFS_SMING	:= $(ARCH_COMPONENTS)/spiffs
+SPIFFS_BASE		:= $(COMPONENTS)/spiffs
+SUBMODULES		+= $(SPIFFS_BASE)
+MODULES			+= $(SPIFFS_SMING) $(SPIFFS_BASE)/src
 
 
 # => ESP8266_new_pwm
 ENABLE_CUSTOM_PWM	?= 1
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
-	PWM_BASE		:= $(PLATFORM_COMPONENTS)/pwm
+	PWM_BASE		:= $(ARCH_COMPONENTS)/pwm
 	SUBMODULES		+= $(PWM_BASE)/new-pwm
 	CFLAGS			+= -DSDK_PWM_PERIOD_COMPAT_MODE=1
 	LIBPWM			:= pwm_open
@@ -53,7 +54,7 @@ endif
 # => umm_malloc (custom heap allocation)
 ENABLE_CUSTOM_HEAP		?= 0
 ifeq ($(ENABLE_CUSTOM_HEAP), 1)
-	CUSTOM_HEAP_BASE	:= $(PLATFORM_COMPONENTS)/custom_heap
+	CUSTOM_HEAP_BASE	:= $(ARCH_COMPONENTS)/custom_heap
 	UMM_MALLOC_BASE		:= $(CUSTOM_HEAP_BASE)/umm_malloc
 	SUBMODULES			+= $(UMM_MALLOC_BASE)
 	MODULES				+= $(CUSTOM_HEAP_BASE) $(UMM_MALLOC_BASE)/src
@@ -74,17 +75,17 @@ ENABLE_CUSTOM_LWIP	?= 1
 ENABLE_ESPCONN		?= 0
 ifeq ($(ENABLE_CUSTOM_LWIP), 0)
 	LIBLWIP			:= lwip
-	LWIP_BASE		:= $(PLATFORM_COMPONENTS)/esp-lwip
+	LWIP_BASE		:= $(ARCH_COMPONENTS)/esp-lwip
 	EXTRA_INCDIR	+= $(LWIP_BASE)/include $(LWIP_BASE)
 else
-	EXTRA_CFLAGS_LWIP 	:= -I$(SMING_HOME)/System/include -I$(PLATFORM_SYS)/include -I$(PLATFORM_COMPONENTS)/esp8266/include -I$(SMING_HOME)/Wiring
+	EXTRA_CFLAGS_LWIP 	:= -I$(SMING_HOME)/System/include -I$(ARCH_SYS)/include -I$(ARCH_COMPONENTS)/esp8266/include -I$(SMING_HOME)/Wiring
 	ENABLE_LWIPDEBUG ?= 0
 	ifeq ($(ENABLE_LWIPDEBUG), 1)
 		EXTRA_CFLAGS_LWIP += -DLWIP_DEBUG
 	endif
 
 	ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-		LWIP_BASE		:= $(PLATFORM_COMPONENTS)/esp-open-lwip/esp-open-lwip
+		LWIP_BASE		:= $(ARCH_COMPONENTS)/esp-open-lwip/esp-open-lwip
 		SUBMODULES		+= $(LWIP_BASE)
 		EXTRA_INCDIR	+= $(LWIP_BASE)/include
 		ifeq ($(ENABLE_ESPCONN), 1)
@@ -98,7 +99,7 @@ else
 		ifeq ($(ENABLE_ESPCONN), 1)
 			$(error LWIP2 does not support espconn_* functions. Make sure to set ENABLE_CUSTOM_LWIP to 0 or 1.)
 		endif
-		LWIP_BASE		:= $(PLATFORM_COMPONENTS)/lwip2/lwip2
+		LWIP_BASE		:= $(ARCH_COMPONENTS)/lwip2/lwip2
 		SUBMODULES		+= $(LWIP_BASE)
 		EXTRA_INCDIR	+= $(LWIP_BASE)/glue-esp/include-esp $(LWIP_BASE)/include
 		LIBLWIP			?= lwip2
@@ -122,7 +123,7 @@ endif
 # => SSL support using axTLS
 ENABLE_SSL ?= 0
 ifeq ($(ENABLE_SSL),1)
-	AXTLS_BASE		:= $(PLATFORM_COMPONENTS)/axtls-8266/axtls-8266
+	AXTLS_BASE		:= $(ARCH_COMPONENTS)/axtls-8266/axtls-8266
 	SUBMODULES		+= $(AXTLS_BASE)
 	LIBAXTLS		:= axtls
 	LIBS			+= $(LIBAXTLS)
@@ -146,7 +147,7 @@ endif
 
 
 # => GDB
-EXTRA_INCDIR += $(PLATFORM_COMPONENTS)/gdbstub/include
+EXTRA_INCDIR += $(ARCH_COMPONENTS)/gdbstub/include
 
 
 # Tools
@@ -159,8 +160,8 @@ endef
 TOOLS			+= $(SPIFFY)
 TOOLS_CLEAN		+= spiffy-clean
 
-$(SPIFFY): $(THIRD_PARTY_DIR)/spiffs/.submodule
-	$(Q) $(call make-tool,$@,SPIFFS_BASE=$(SPIFFS_BASE))
+$(SPIFFY): $(COMPONENTS)/spiffs/.submodule
+	$(Q) $(call make-tool,$@,SPIFFS_SMING=$(SMING_HOME)/$(SPIFFS_SMING) SPIFFS_BASE=$(SMING_HOME)/$(SPIFFS_BASE))
 
 .PHONY: spiffy-clean
 spiffy-clean:
@@ -170,7 +171,8 @@ spiffy-clean:
 TOOLS			+= $(ESPTOOL2)
 TOOLS_CLEAN		+= esptool2-clean
 
-$(ESPTOOL2): $(dir $(ESPTOOL2)).submodule
+SUBMODULES += $(dir $(ESPTOOL2))
+$(ESPTOOL2):
 	$(Q) $(call make-tool,$@)
 
 .PHONY: esptool2-clean

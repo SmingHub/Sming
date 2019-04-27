@@ -13,4 +13,4 @@ ESPTOOL		 ?= $(SDK_TOOLS)/ESP8266/esptool.exe
 KILL_TERM    ?= taskkill.exe -f -im Terminal.exe || exit 0
 GET_FILESIZE ?= stat --printf="%s"
 TERMINAL     ?= $(SDK_TOOLS)/Terminal.exe $(COM_PORT) $(COM_SPEED_SERIAL) $(COM_OPTS)
-MEMANALYZER  ?= python $(PLATFORM_TOOLS)/memanalyzer.py $(OBJDUMP).exe
+MEMANALYZER  ?= python $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP).exe

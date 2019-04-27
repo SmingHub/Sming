@@ -3,6 +3,7 @@
 # Created by Espressif
 # UDK modifications by CHERTS <sleuthhound@gmail.com>
 # Cross platform compatability by kireevco <dmitry@kireev.co>
+# Multi-architecture support by mikee47 <mike@sillyhouse.net>
 #
 #############################################################
 
@@ -24,21 +25,12 @@ all: checkdirs libsming tools
 
 include $(SMING_HOME)/build.mk
 
-BUILD_BASE := $(PLATFORM_BASE)/out/build
+BUILD_BASE := $(ARCH_BASE)/out/build
 
 RELOAD_MKFILE = 0
 
-LIBSMING := libsming
-ifeq ($(ENABLE_SSL),1)
-	LIBSMING := libsmingssl
-endif
-
 # name for the target project
 TARGET		= app
-
-# If specified, restrict importing and building to a specific list of libraries
-ARDUINO_LIBRARIES ?= $(patsubst Libraries/%,%,$(wildcard Libraries/*/))
-ARDUINO_LIBRARIES := $(ARDUINO_LIBRARIES:/=)
 
 # List of directories containing source code to build
 MODULES :=
@@ -53,29 +45,24 @@ EXTRA_INCDIR :=
 SAMPLES_DIRS := $(shell ls -1 ../samples)
 DOXYGEN	:= $(shell command -v doxygen 2> /dev/null)
 
-# Flags for compatability with old versions (most of them should disappear with the next major release)
-ifeq ($(MQTT_NO_COMPAT),1)
-	CFLAGS += -DMQTT_NO_COMPAT=1
-endif
-
 ifeq ($(ENABLE_WPS), 1)
    CFLAGS += -DENABLE_WPS=1
 endif
 
 # => http-parser
-SUBMODULES		+= $(THIRD_PARTY_DIR)/http-parser
-MODULES			+= $(THIRD_PARTY_DIR)/http-parser
+SUBMODULES		+= $(COMPONENTS)/http-parser
+MODULES			+= $(COMPONENTS)/http-parser
 
 # => websocket-parser
-SUBMODULES		+= $(THIRD_PARTY_DIR)/ws_parser
-MODULES			+= $(THIRD_PARTY_DIR)/ws_parser
+SUBMODULES		+= $(COMPONENTS)/ws_parser
+MODULES			+= $(COMPONENTS)/ws_parser
 
 # => mqtt-codec
-SUBMODULES		+= $(THIRD_PARTY_DIR)/mqtt-codec
-EXTRA_INCDIR	+= $(THIRD_PARTY_DIR)/mqtt-codec/src
+SUBMODULES		+= $(COMPONENTS)/mqtt-codec
+EXTRA_INCDIR	+= $(COMPONENTS)/mqtt-codec/src
 LIBMQTTC		:= mqttc
 LIBS			+= $(LIBMQTTC)
-BUILD_MQTTC		:= $(MAKE) -C $(THIRD_PARTY_DIR)/mqtt-codec MQTT_ENABLE_SERVER=0 MQTT_ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
+BUILD_MQTTC		:= $(MAKE) -C $(COMPONENTS)/mqtt-codec MQTT_ENABLE_SERVER=0 MQTT_ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
 				CFLAGS_EXTRA="-ISystem/include $(CFLAGS_COMMON)" \
 				LIB_FOLDER="$(SMING_HOME)/$(USER_LIBDIR)"
 CLEAN			+= mqttc-clean
@@ -89,10 +76,10 @@ mqttc-clean:
 
 
 # => yuarel
-SUBMODULES		+= $(THIRD_PARTY_DIR)/libyuarel
-MODULES			+= $(THIRD_PARTY_DIR)/libyuarel
+SUBMODULES		+= $(COMPONENTS)/libyuarel
+MODULES			+= $(COMPONENTS)/libyuarel
 
-include $(PLATFORM_BASE)/sming.mk
+include $(ARCH_BASE)/sming.mk
 
 # Get list of subdirectory paths
 # $1 -> Root directory
@@ -100,24 +87,28 @@ define ScanModuleDirs
 	$(sort $(dir $(wildcard $1/*/ $1/*/*/ $1/*/*/*/)))
 endef
 
+# If specified, restrict importing and building to a specific list of libraries
+ARDUINO_LIBRARIES	?= $(patsubst Libraries/%,%,$(wildcard Libraries/*/))
+ARDUINO_LIBRARIES	:= $(ARDUINO_LIBRARIES:/=)
+
 # Identify which libraries have submodules
-LIBRARY_SUBMODULES	:= $(shell git submodule status Libraries | cut -c2- | cut -f2 -d ' ')
+LIBRARY_SUBMODULES	:= $(call ListSubmodules,Libraries)
 LIBRARY_SUBMODULES	:= $(patsubst Libraries/%,%,$(LIBRARY_SUBMODULES))
 LIBRARY_SUBMODULES	:= $(filter $(LIBRARY_SUBMODULES), $(ARDUINO_LIBRARIES))
-# List of .submodule targets for any third-party Arduino libraries
+# List of any Arduino library .submodule targets
 LIBRARY_SUBMODULES	:= $(foreach lib,$(LIBRARY_SUBMODULES),Libraries/$(lib)/.submodule)
 
 # which modules (subdirectories) to include in compiling
-SMING_MODULES	:= $(PLATFORM_CORE) $(PLATFORM_BASE)/Platform Platform/Common SmingCore
+SMING_MODULES	:= $(ARCH_CORE) $(ARCH_BASE)/Platform Platform SmingCore
 SMING_MODULES	:= $(foreach mod,$(SMING_MODULES),$(call ScanModuleDirs,$(mod)))
-MODULES			:= System $(PLATFORM_SYS) Wiring $(SMING_MODULES) $(MODULES)
+MODULES			:= System $(ARCH_SYS) Wiring $(SMING_MODULES) $(MODULES)
 MODULES			+= $(wildcard Services/*/)
 MODULES			+= $(foreach lib,$(ARDUINO_LIBRARIES),Libraries/$(lib) Libraries/$(lib)/src)
 MODULES			:= $(MODULES:/=)
 
-EXTRA_INCDIR	:=	System/include Wiring Libraries SmingCore Platform/Common \
-					$(PLATFORM_BASE) $(PLATFORM_SYS)/include $(PLATFORM_CORE) \
-					$(THIRD_PARTY_DIR) . $(EXTRA_INCDIR)
+EXTRA_INCDIR	:=	System/include Wiring Libraries SmingCore \
+					$(ARCH_BASE) $(ARCH_SYS)/include \
+					$(COMPONENTS) . $(EXTRA_INCDIR)
 
 include $(SMING_HOME)/modules.mk
 
@@ -132,21 +123,20 @@ endef
 $(foreach lib,$(LIBS),$(eval $(call UserLibrary,$(lib))))
 
 
-# Target library (libsming)
-
+# Main Sming library
 .PHONY: libsming
 libsming: $(APP_AR) $(CUSTOM_TARGETS)
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(AR) cru $@ $^
-	$(vecho) "Installing $(LIBSMING)"
+	$(vecho) "Installing '$(LIBSMING)' library"
 ifeq ($(ENABLE_SSL), 1)
 	$(vecho) "+ SSL support is enabled"
 else
 	$(vecho) "(!) SSL support is not enabled. To enable it type: 'make clean; make ENABLE_SSL=1'"
 endif
-	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/$(LIBSMING).a
+	$(Q) cp -r $(APP_AR) $(LIBSMING_DST)
 	$(vecho) "Done"
 
 .PHONY: checkdirs
@@ -224,7 +214,7 @@ submodules: $(LIBRARY_SUBMODULES) $(addsuffix /.submodule,$(SUBMODULES))
 
 submodules-clean:
 	-$(Q) rm -rf $(SUBMODULES)
-	$(GIT) checkout third-party
+	$(GIT) checkout Components
 	-$(Q) rm -rf Libraries
 	-$(Q) rm -rf $(BUILD_BASE)/Libraries
 	-$(Q) mkdir -p Libraries
@@ -272,7 +262,7 @@ tools-clean: $(TOOLS_CLEAN)
 rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
 
 # Files that should follow our coding standards
-CS_DIRS		:= SmingCore Platform/*/Core Platform/*/Platform ../samples
+CS_DIRS		:= SmingCore Arch/*/Core Arch/*/Platform ../samples
 CS_FILES	:= $(call rwildcard,$(patsubst %,%/*,$(CS_DIRS)),*.cpp *.h *.c)
 
 .PHONY: cs

@@ -1,14 +1,10 @@
 # Build environment definitions
 
-# Use this form to define platform as environment variable
-ifdef SMING_PLATFORM
-PLATFORM		:= $(SMING_PLATFORM)
-else
-PLATFORM		?= Esp8266
-endif
+#
+SMING_ARCH		?= Esp8266
 
-MAKECMDGOALS ?= all
-$(info Building '$(MAKECMDGOALS)' for '$(PLATFORM)' platform)
+MAKECMDGOALS	?= all
+$(info Building '$(MAKECMDGOALS)' for '$(SMING_ARCH)' architecture)
 
 LIBS			?=
 CUSTOM_TARGETS	?=
@@ -66,13 +62,13 @@ endif
 export SMING_HOME
 export COMPILE := gcc
 
-PLATFORM_BASE		:= Platform/$(PLATFORM)
-PLATFORM_SYS		= $(PLATFORM_BASE)/System
-PLATFORM_CORE		= $(PLATFORM_BASE)/Core
-PLATFORM_TOOLS		= $(PLATFORM_BASE)/Tools
-PLATFORM_COMPONENTS	= $(PLATFORM_SYS)/components
-USER_LIBDIR			= $(PLATFORM_BASE)/Compiler/lib
-THIRD_PARTY_DIR		= third-party
+ARCH_BASE		:= Arch/$(SMING_ARCH)
+ARCH_SYS		= $(ARCH_BASE)/System
+ARCH_CORE		= $(ARCH_BASE)/Core
+ARCH_TOOLS		= $(ARCH_BASE)/Tools
+ARCH_COMPONENTS	= $(ARCH_BASE)/Components
+USER_LIBDIR		= $(ARCH_BASE)/Compiler/lib
+COMPONENTS		:= Components
 
 # Git command
 GIT ?= git
@@ -132,7 +128,7 @@ ifdef LOCALE
 	CFLAGS += -DLOCALE=$(LOCALE)
 endif
 
-include $(SMING_HOME)/$(PLATFORM_BASE)/build.mk
+include $(SMING_HOME)/$(ARCH_BASE)/build.mk
 
 AS	:= $(Q)$(AS)
 CC	:= $(Q)$(CC)
@@ -146,3 +142,25 @@ define UserLibPath
 	$(USER_LIBDIR)/lib$1.a
 endef
 
+# Fetch full path for submodules matching given pattern
+# $1 -> Path pattern to match
+define ListSubmodules
+	$(shell git submodule status $1 | cut -c2- | cut -f2 -d ' ')
+endef
+
+
+# => Main Sming library
+ifeq ($(ENABLE_SSL),1)
+	LIBSMING		= smingssl
+	SMING_FEATURES	= SSL
+else
+	LIBSMING		= sming
+	SMING_FEATURES	= none
+endif
+LIBSMING_DST 		= $(call UserLibPath,$(LIBSMING))
+
+# => MQTT
+# Flags for compatability with old versions (most of them should disappear with the next major release)
+ifeq ($(MQTT_NO_COMPAT),1)
+	CFLAGS	+= -DMQTT_NO_COMPAT=1
+endif
