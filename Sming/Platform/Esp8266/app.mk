@@ -344,11 +344,11 @@ spiff_clean:
 	$(vecho) "Cleaning $(SPIFF_BIN_OUT)"
 	$(Q) rm -rf $(SPIFF_BIN_OUT)
 
+# Generating spiffs_bin
 $(SPIFF_BIN_OUT):
 ifeq ($(DISABLE_SPIFFS), 1)
 	$(vecho) "(!) Spiffs support disabled. Remove 'DISABLE_SPIFFS' make argument to enable spiffs."
 else
-# Generating spiffs_bin
 	$(vecho) "Checking for spiffs files"
 	$(Q)	if [ -d "$(SPIFF_FILES)" ]; then \
 				echo "$(SPIFF_FILES) directory exists. Creating $(SPIFF_BIN_OUT)"; \
@@ -381,18 +381,18 @@ else
 endif
 
 # flashes rboot and first rom
+FLASH_CHUNKS := 0x00000 $(RBOOT_BIN)
+FLASH_CHUNKS += $(ROM_0_ADDR) $(RBOOT_ROM_0)
+ifneq ($(DISABLE_SPIFFS), 1)
+	FLASH_CHUNKS += $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
+endif
 flash: all kill_term
-	FLASH_CHUNKS := 0x00000 $(RBOOT_BIN)
-	FLASH_CHUNKS += $(ROM_0_ADDR) $(RBOOT_ROM_0)
-	ifneq ($(DISABLE_SPIFFS), 1)
-		FLASH_CHUNKS += $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
-	endif
 	$(WRITE_FLASH) $(FLASH_CHUNKS)
-	ifeq ($(ENABLE_GDB), 1)
-		$(GDB)
-	else
-		$(TERMINAL)
-	endif
+ifeq ($(ENABLE_GDB), 1)
+	$(GDB)
+else
+	$(TERMINAL)
+endif
 
 otaserver: all
 	$(vecho) "Starting OTA server for TESTING"
@@ -409,12 +409,12 @@ gdb: kill_term
 	$(GDB)
 
 # Wipe flash
+FLASH_INIT_CHUNKS := $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin
+FLASH_INIT_CHUNKS += $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin
+ifneq ($(DISABLE_SPIFFS), 1)
+	FLASH_INIT_CHUNKS += $(RBOOT_SPIFFS_0) $(PLATFORM_BASE)/Compiler/data/blankfs.bin
+endif
 flashinit:
-	FLASH_INIT_CHUNKS := $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin
-	FLASH_INIT_CHUNKS += $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin
-	ifneq ($(DISABLE_SPIFFS), 1)
-		FLASH_INIT_CHUNKS += $(RBOOT_SPIFFS_0) $(PLATFORM_BASE)/Compiler/data/blankfs.bin
-	endif
 	$(vecho) "Flash init data default and blank data."
 	$(vecho) "DISABLE_SPIFFS = $(DISABLE_SPIFFS)"
 	$(ERASE_FLASH)

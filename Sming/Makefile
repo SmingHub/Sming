@@ -150,13 +150,13 @@ endif
 	$(vecho) "Done"
 
 .PHONY: checkdirs
-checkdirs: libraries third-party reload | $(BUILD_DIR)
+checkdirs: submodules reload | $(BUILD_DIR)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
 
 .PHONY: dist-clean
-dist-clean: clean samples-clean third-party-clean libraries-clean tools-clean user-lib-clean
+dist-clean: clean submodules-clean tools-clean user-lib-clean samples-clean
 
 .PHONY: clean
 clean: $(CLEAN)
@@ -219,19 +219,15 @@ define TryApplyPatch
 	fi
 endef
 
-.PHONY: third-party third-party-clean
-third-party: $(addsuffix /.submodule,$(SUBMODULES))
+.PHONY: submodules submodules-clean
+submodules: $(LIBRARY_SUBMODULES) $(addsuffix /.submodule,$(SUBMODULES))
 
-third-party-clean:
+submodules-clean:
 	-$(Q) rm -rf $(SUBMODULES)
 	$(GIT) checkout third-party
-
-.PHONY: libraries libraries-clean
-libraries: $(LIBRARY_SUBMODULES)
-
-libraries-clean:
 	-$(Q) rm -rf Libraries
 	-$(Q) rm -rf $(BUILD_BASE)/Libraries
+	-$(Q) mkdir -p Libraries
 	$(GIT) checkout Libraries
 
 # Update and patch submodule

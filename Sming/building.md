@@ -93,9 +93,7 @@ Targets include:
 
 > **docs** Build the documentation
 
-> **third-party** Fetch third-party submodules, but do  not build
-
-> **libraries** Fetch Arduino libraries from repos, but do not build
+> **submodules** Fetch all third-party submodules, but do not build
 
 > **samples** Build all the sample applications
 
@@ -119,9 +117,7 @@ Cleaning:
 
 > **user-lib-clean** Clear generated user libraries
 
-> **third-party-clean** Reset state of third-party repos
-
-> **libraries-clean** Reset state of Arduino libraries
+> **submodules-clean** Reset state of third-party repos
 
 > **samples-clean** Invoke **clean** on all samples
 
@@ -158,7 +154,7 @@ This mechanism is appropriate for files with multiple configurable options and a
 
 i.e. Using `make -j` doesn't work for rules which pull in submodules from GIT, so this must be done as a first step:
 
-`make third-party libraries`
+`make submodules`
 
 then you can
 
