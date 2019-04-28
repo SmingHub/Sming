@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <inttypes.h>
 
-#include "../../SmingCore/Wire.h"
+#include <Wire.h>
 
 #define BMP180_Address 0x77
 

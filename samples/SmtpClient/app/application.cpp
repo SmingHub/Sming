@@ -1,6 +1,6 @@
 #include <user_config.h>
-#include "SmingCore/SmingCore.h"
-#include "SmingCore/Network/SmtpClient.h"
+#include <SmingCore.h>
+#include <Network/SmtpClient.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID

@@ -45,7 +45,7 @@ TARGET = app
 MODULES      ?= app     # default to app if not set by user
 EXTRA_INCDIR ?= include # default to include if not set by user
 
-SMING_INCDIR := System/include Wiring Libraries SmingCore Platform \
+SMING_INCDIR := System/include Wiring Libraries Core Platform \
 				Libraries/Adafruit_GFX Libraries/Adafruit_Sensor
 
 EXTRA_INCDIR += $(SMING_HOME) $(addprefix $(SMING_HOME)/,$(SMING_INCDIR)) \

@@ -32,7 +32,7 @@
 
 #include <inttypes.h>
 
-#include "../../SmingCore/Wire.h"
+#include <Wire.h>
 #include "I2CIO.h"
 
 // CLASS VARIABLES

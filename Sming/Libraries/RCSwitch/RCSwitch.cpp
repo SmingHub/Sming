@@ -32,7 +32,7 @@
 */
 
 #include <user_config.h>
-//#include <../../SmingCore/SmingCore.h>
+//#include <SmingCore.h>
 #include "RCSwitch.h"
 
 /* Format for protocol definitions:

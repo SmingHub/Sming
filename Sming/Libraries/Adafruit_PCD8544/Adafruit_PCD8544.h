@@ -25,7 +25,7 @@ All text above, and the splash screen must be included in any redistribution
   #define WIRE_WRITE Wire.send
 #endif
 
-#include "../../SmingCore/SPI.h"
+#include <SPI.h>
 #include "../Adafruit_GFX/Adafruit_GFX.h"
 
 #ifdef __SAM3X8E__

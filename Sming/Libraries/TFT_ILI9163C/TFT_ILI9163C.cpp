@@ -2,8 +2,8 @@
 
 #include <limits.h>
 
-#include "../../SmingCore/Digital.h"
-#include "../../SmingCore/SPI.h"
+#include <Digital.h>
+#include <SPI.h>
 #include "pins_arduino.h"
 #include "wiring_private.h"
 

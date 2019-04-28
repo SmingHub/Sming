@@ -102,14 +102,14 @@ LIBRARY_SUBMODULES	:= $(filter $(LIBRARY_SUBMODULES), $(ARDUINO_LIBRARIES))
 LIBRARY_SUBMODULES	:= $(foreach lib,$(LIBRARY_SUBMODULES),Libraries/$(lib)/.submodule)
 
 # which modules (subdirectories) to include in compiling
-SMING_MODULES	:= $(ARCH_CORE) $(ARCH_BASE)/Platform Platform SmingCore
+SMING_MODULES	:= $(ARCH_CORE) $(ARCH_BASE)/Platform Platform Core
 SMING_MODULES	:= $(foreach mod,$(SMING_MODULES),$(call ScanModuleDirs,$(mod)))
 MODULES			:= System $(ARCH_SYS) Wiring $(SMING_MODULES) $(MODULES)
 MODULES			+= $(wildcard Services/*/)
 MODULES			+= $(foreach lib,$(ARDUINO_LIBRARIES),Libraries/$(lib) Libraries/$(lib)/src)
 MODULES			:= $(MODULES:/=)
 
-EXTRA_INCDIR	:=	System/include Wiring Libraries SmingCore \
+EXTRA_INCDIR	:=	System/include Wiring Libraries Core \
 					$(ARCH_BASE) $(ARCH_SYS)/include \
 					$(COMPONENTS) . $(EXTRA_INCDIR)
 
@@ -265,7 +265,7 @@ tools-clean: $(TOOLS_CLEAN)
 rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
 
 # Files that should follow our coding standards
-CS_DIRS		:= SmingCore Arch/*/Core Arch/*/Platform ../samples
+CS_DIRS		:= Core Arch/*/Core Arch/*/Platform ../samples
 CS_FILES	:= $(call rwildcard,$(patsubst %,%/*,$(CS_DIRS)),*.cpp *.h *.c)
 
 .PHONY: cs

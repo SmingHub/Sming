@@ -15,7 +15,7 @@
  *  @ingroup    libraries
  *  @{
 */
-#include "../../SmingCore/Wire.h"
+#include <Wire.h>
 
 #define MAX_SENSORS 4         ///< Maximum quantity of sensors to read
 
