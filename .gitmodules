@@ -87,8 +87,8 @@
 	ignore = dirty
 [submodule "Libraries.ITEADLIB_Arduino_Nextion"]
 	path = Sming/Libraries/ITEADLIB_Arduino_Nextion
-    url = https://github.com/itead/ITEADLIB_Arduino_Nextion.git
-    ignore = dirty
+	url = https://github.com/itead/ITEADLIB_Arduino_Nextion.git
+	ignore = dirty
 [submodule "Libraries.DFRobotDFPlayerMini"]
 	path = Sming/Libraries/DFRobotDFPlayerMini
 	url = https://github.com/DFRobot/DFRobotDFPlayerMini.git
@@ -97,4 +97,7 @@
 	path = Sming/Libraries/TM1637
 	url = https://github.com/avishorp/TM1637.git
 	ignore = dirty
-
+[submodule "Libraries.ArduinoJson"]
+	path = Sming/Libraries/ArduinoJson
+	url = https://github.com/bblanchon/ArduinoJson.git
+	ignore = dirty

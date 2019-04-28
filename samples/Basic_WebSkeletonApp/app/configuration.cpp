@@ -10,18 +10,20 @@ ThermConfig ActiveConfig;
 
 ThermConfig loadConfig()
 {
-	StaticJsonBuffer<ConfigJsonBufferSize> jsonBuffer;
+	StaticJsonDocument<ConfigJsonBufferSize> root;
 	ThermConfig cfg;
 	if(fileExist(THERM_CONFIG_FILE)) {
 		int size = fileGetSize(THERM_CONFIG_FILE);
 		char* jsonString = new char[size + 1];
 		fileGetContent(THERM_CONFIG_FILE, jsonString, size + 1);
-		JsonObject& root = jsonBuffer.parseObject(jsonString);
 
-		JsonObject& network = root["network"];
-		cfg.StaSSID = String((const char*)network["StaSSID"]);
-		cfg.StaPassword = String((const char*)network["StaPassword"]);
-		cfg.StaEnable = network["StaEnable"];
+		auto error = deserializeJson(root, jsonString);
+		if(!error) {
+			JsonObject network = root["network"];
+			cfg.StaSSID = String((const char*)network["StaSSID"]);
+			cfg.StaPassword = String((const char*)network["StaPassword"]);
+			cfg.StaEnable = network["StaEnable"];
+		}
 
 		delete[] jsonString;
 	} else {
@@ -34,16 +36,14 @@ ThermConfig loadConfig()
 
 void saveConfig(ThermConfig& cfg)
 {
-	StaticJsonBuffer<ConfigJsonBufferSize> jsonBuffer;
-	JsonObject& root = jsonBuffer.createObject();
+	StaticJsonDocument<ConfigJsonBufferSize> root;
 
-	JsonObject& network = jsonBuffer.createObject();
-	root["network"] = network;
+	JsonObject network = root.createNestedObject("network");
 	network["StaSSID"] = cfg.StaSSID.c_str();
 	network["StaPassword"] = cfg.StaPassword.c_str();
 	network["StaEnable"] = cfg.StaEnable;
 
 	char buf[ConfigFileBufferSize];
-	root.prettyPrintTo(buf, sizeof(buf));
+	serializeJsonPretty(root, buf, sizeof(buf));
 	fileSetContent(THERM_CONFIG_FILE, buf);
 }

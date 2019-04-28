@@ -37,7 +37,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 void onAjaxInput(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 	json["status"] = (bool)true;
 
 	String stringKey = "StringKey";
@@ -53,7 +53,7 @@ void onAjaxInput(HttpRequest& request, HttpResponse& response)
 		json[desiredString] = desiredString;
 	}
 
-	JsonObject& gpio = json.createNestedObject("gpio");
+	JsonObject gpio = json.createNestedObject("gpio");
 	for(int i = 0; i < countInputs; i++)
 		gpio[namesInput[i].c_str()] = digitalRead(inputs[i]);
 
@@ -66,7 +66,7 @@ void onAjaxFrequency(HttpRequest& request, HttpResponse& response)
 	System.setCpuFrequency((CpuFrequency)freq);
 
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 	json["status"] = (bool)true;
 	json["value"] = (int)System.getCpuFrequency();
 

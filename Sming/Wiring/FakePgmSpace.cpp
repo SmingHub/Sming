@@ -55,6 +55,18 @@ int strcmp_P(const char *str1, const char *str2_P)
 	return *(unsigned char *)str1 < (unsigned char)pgm_read_byte(str2_P) ? -1 : 1;
 }
 
+
+int strncmp_P(const char *str1, const char *str2_P, const size_t size)
+{
+	for (unsigned i=0; *str1 == pgm_read_byte(str2_P); str1++, str2_P++, i++) {
+		if (i == size) {
+			return 0;
+		}
+	}
+	return *(unsigned char *)str1 < (unsigned char)pgm_read_byte(str2_P) ? -1 : 1;
+}
+
+
 char *strstr_P(char *haystack, const char *needle_P)
 {
 	const char *b = needle_P;

@@ -90,7 +90,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 void onAjaxNetworkList(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 
 	json["status"] = (bool)true;
 
@@ -101,11 +101,11 @@ void onAjaxNetworkList(HttpRequest& request, HttpResponse& response)
 		json["network"] = WifiStation.getSSID();
 	}
 
-	JsonArray& netlist = json.createNestedArray("available");
+	JsonArray netlist = json.createNestedArray("available");
 	for(int i = 0; i < networks.count(); i++) {
 		if(networks[i].hidden)
 			continue;
-		JsonObject& item = netlist.createNestedObject();
+		JsonObject item = netlist.createNestedObject();
 		item["id"] = (int)networks[i].getHashId();
 		// Copy full string to JSON buffer memory
 		item["title"] = networks[i].ssid;
@@ -132,7 +132,7 @@ void makeConnection()
 void onAjaxConnect(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 
 	String curNet = request.getPostParameter("network");
 	String curPass = request.getPostParameter("password");

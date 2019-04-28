@@ -11,7 +11,7 @@
 #pragma once
 
 #include "MemoryDataStream.h"
-#include "Libraries/ArduinoJson/include/ArduinoJson.h"
+#include "Libraries/ArduinoJson/ArduinoJson.h"
 
 /** @brief JsonObject stream class
  * 	@ingroup    stream data
@@ -24,7 +24,7 @@ class JsonObjectStream : public MemoryDataStream
 public:
 	/** @brief  Create a JSON object stream
     */
-	JsonObjectStream() : rootNode(buffer.createObject())
+	JsonObjectStream(size_t capacity = 1024) : doc(capacity)
 	{
 	}
 
@@ -37,9 +37,9 @@ public:
 	/** @brief  Get the JSON root node
      *  @retval JsonObject Reference to the root node
      */
-	JsonObject& getRoot()
+	JsonObject getRoot()
 	{
-		return rootNode;
+		return doc.as<JsonObject>();
 	}
 
 	//Use base class documentation
@@ -51,12 +51,11 @@ public:
 	 */
 	int available() override
 	{
-		return rootNode.success() ? rootNode.measureLength() : 0;
+		return (doc.isNull() ? 0 : measureJson(doc));
 	}
 
 private:
-	DynamicJsonBuffer buffer;
-	JsonObject& rootNode;
+	DynamicJsonDocument doc;
 	bool send = true;
 };
 
