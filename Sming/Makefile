@@ -53,6 +53,9 @@ endif
 SUBMODULES		+= $(COMPONENTS)/http-parser
 MODULES			+= $(COMPONENTS)/http-parser
 
+# => libb64
+MODULES			+= $(COMPONENTS)/libb64
+
 # => websocket-parser
 SUBMODULES		+= $(COMPONENTS)/ws_parser
 MODULES			+= $(COMPONENTS)/ws_parser
