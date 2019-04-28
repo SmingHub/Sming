@@ -37,7 +37,7 @@ if __name__ == "__main__":
         pipe.communicate("\n".join(extractAddresses(data)).encode('ascii'))
     else:
         while True:
-            data = input()
+            data = raw_input()
             addresses = extractAddresses(data)
             if len(addresses) == 0:
                 continue

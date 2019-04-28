@@ -405,6 +405,10 @@ terminal: kill_term
 gdb: kill_term
 	$(GDB)
 
+decode-stacktrace:
+	@echo "Decode stack trace: Paste stack trace here"
+	$(Q) python $(ARCH_TOOLS)/decode-stacktrace.py $(TARGET_OUT_0)
+
 # Wipe flash
 FLASH_INIT_CHUNKS := $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin
 FLASH_INIT_CHUNKS += $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin

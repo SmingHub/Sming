@@ -49,7 +49,7 @@ void debug_print_stack(uint32_t start, uint32_t end)
 	m_puts(_F("\r\n"
 			  "Stack dump:\r\n"));
 	PSTR_ARRAY(instructions, "To decode the stack dump call from command line:\r\n"
-							 "   python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out\r\n"
+							 "   make decode-stacktrace\r\n"
 							 "and copy & paste the text enclosed in '===='.\r\n");
 	PSTR_ARRAY(separatorLine, "\n================================================================\r\n");
 	m_puts(instructions);
