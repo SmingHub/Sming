@@ -20,8 +20,10 @@ endif
 # MacOS / Linux
 # SMING_HOME = /opt/esp-open-sdk
 
+##@Building
+
 .PHONY: all
-all: checkdirs libsming tools
+all: checkdirs libsming tools ##(default) Build the Sming library, user libraries, Arduino libraries and tools
 
 include $(SMING_HOME)/build.mk
 
@@ -45,6 +47,7 @@ EXTRA_INCDIR :=
 SAMPLES_DIRS := $(shell ls -1 ../samples)
 DOXYGEN	:= $(shell command -v doxygen 2> /dev/null)
 
+CONFIG_VARS += ENABLE_WPS
 ifeq ($(ENABLE_WPS), 1)
    CFLAGS += -DENABLE_WPS=1
 endif
@@ -126,9 +129,8 @@ endef
 $(foreach lib,$(LIBS),$(eval $(call UserLibrary,$(lib))))
 
 
-# Main Sming library
 .PHONY: libsming
-libsming: $(APP_AR) $(CUSTOM_TARGETS)
+libsming: $(APP_AR) $(CUSTOM_TARGETS) ##Build the Sming framework and user libraries
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
@@ -148,29 +150,33 @@ checkdirs: submodules reload | $(BUILD_DIR)
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
 
+##@Cleaning
+
 .PHONY: dist-clean
-dist-clean: clean submodules-clean tools-clean user-lib-clean samples-clean
+dist-clean: clean submodules-clean tools-clean user-lib-clean samples-clean ##Clean everything
 
 .PHONY: clean
-clean: $(CLEAN)
+clean: $(CLEAN) ##Remove all generated build files
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f $(TARGET_OUT)
 	$(Q) rm -rf $(BUILD_BASE)
 
 .PHONY: user-lib-clean
-user-lib-clean:
+user-lib-clean: ##Remove generated user libraries
 	-$(Q) rm -f $(wildcard $(USER_LIBDIR)/lib*.a) $(APP_AR)
 	$(Q) $(GIT) checkout $(USER_LIBDIR)
 
+##@Building
+
 .PHONY: test
-test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM
+test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM ##Build a few sample applications
 
 
 # => Documentation
 DOCS_DIR := ../docs
 
 .PHONY: wiki api docs
-docs: wiki api
+docs: wiki api ##Build the Sming API and Wiki documentation
 wiki: $(DOCS_DIR)/wiki/Home.md
 api: $(DOCS_DIR)/api/sming/index.html
 
@@ -213,9 +219,10 @@ define TryApplyPatch
 endef
 
 .PHONY: submodules submodules-clean
-submodules: $(LIBRARY_SUBMODULES) $(addsuffix /.submodule,$(SUBMODULES))
+submodules: $(LIBRARY_SUBMODULES) $(addsuffix /.submodule,$(SUBMODULES)) ##Fetch all third-party submodules (but do not build)
 
-submodules-clean:
+##@Cleaning
+submodules-clean: ##Reset state of all third-party submodules
 	-$(Q) rm -rf $(SUBMODULES)
 	$(GIT) checkout Components
 	-$(Q) rm -rf Libraries
@@ -244,20 +251,30 @@ reload:
         $(MAKE) -C $(SMING_HOME) $(MAKECMDGOALS) RELOAD_MKFILE=0; \
     fi
 
+##@Building
 .PHONY: samples $(SAMPLES_DIRS) samples-clean
-samples: | $(SAMPLES_DIRS)
+samples: | $(SAMPLES_DIRS) ##Build all sample applications
 
 $(SAMPLES_DIRS):
 	$(Q) $(MAKE) -C $(SMING_HOME)/../samples/$@
 
-samples-clean:
+##@Cleaning
+samples-clean: ##Invoke 'clean' on all sample applications
 	-$(Q)	for dir in $(SAMPLES_DIRS); do \
 				$(MAKE) -C $(SMING_HOME)/../samples/$$dir clean; \
 			done
 
-.PHONY: tools tools-clean
-tools: $(TOOLS)
-tools-clean: $(TOOLS_CLEAN)
+##@Building
+.PHONY: tools
+tools: $(TOOLS) ##Build all required internal tools
+
+##@Cleaning
+.PHONY: tools-clean
+tools-clean: $(TOOLS_CLEAN) ##@Cleaning Remove intermediate files created when building tools
+
+##@Building
+.PHONY: rebuild
+rebuild: clean all ##Re-build the Sming libraries
 
 # Recursive wildcard search
 # $1 -> directory
@@ -265,11 +282,23 @@ tools-clean: $(TOOLS_CLEAN)
 rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
 
 # Files that should follow our coding standards
-CS_DIRS		:= Core Arch/*/Core Arch/*/Platform ../samples
+CS_DIRS		:= Core Platform Arch/*/Core Arch/*/Platform ../samples
 CS_FILES	:= $(call rwildcard,$(patsubst %,%/*,$(CS_DIRS)),*.cpp *.h *.c)
 
+##@Developer
+
 .PHONY: cs
-cs:
+cs: ##Apply coding style to all core files
 	$(Q) for FILE in $(CS_FILES); do \
 		clang-format -i -style=file $$FILE; \
 	done
+
+##@Help
+
+.PHONY: list-config
+list-config: ##Print the contents of internal build variables
+	$(call ListConfig)
+
+.PHONY: help
+help: ##Show this help summary
+	$(call PrintHelp)

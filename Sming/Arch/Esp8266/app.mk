@@ -8,10 +8,13 @@ ifndef ESP_HOME
 $(error ESP_HOME variable is not set to a valid directory.)
 endif
 
-.PHONY: all checkdirs app spiff_update spiff_clean clean kill_term terminal gdb
-all: libsming checkdirs app
+##@Building
+
+.PHONY: all
+all: libsming checkdirs app ##(default) Build application
 
 # rBoot options, overwrite them in the projects Makefile-user.mk
+CONFIG_VARS += RBOOT_BIG_FLASH RBOOT_TWO_ROMS RBOOT_RTC_ENABLED RBOOT_GPIO_ENABLED RBOOT_GPIO_SKIP_ENABLED
 RBOOT_BIG_FLASH			?= 1
 RBOOT_TWO_ROMS			?= 0
 RBOOT_RTC_ENABLED		?= 0
@@ -34,6 +37,7 @@ endif
 # RBOOT_SPIFFS_1 + SPIFF_SIZE 
 # BOOT_ROM2_ADDR = 0x310000
 
+CONFIG_VARS		+= RBOOT_SILENT RBOOT_ROM_0 RBOOT_ROM_1 RBOOT_LD_0 RBOOT_LD_1
 RBOOT_SILENT	?= 0
 RBOOT_ROM_0		?= rom0
 RBOOT_ROM_1		?= rom1
@@ -41,6 +45,7 @@ RBOOT_LD_0		?= rboot.rom0.ld
 RBOOT_LD_1		?= rom1.ld
 
 #
+CONFIG_VARS		+= RBOOT_SPIFFS_0 RBOOT_SPIFFS_1
 RBOOT_SPIFFS_0	?= 0x100000
 RBOOT_SPIFFS_1	?= 0x300000
 
@@ -114,6 +119,7 @@ $(RBOOT_BIN):
 
 
 # => SPIFFS
+CONFIG_VARS			+= DISABLE_SPIFFS SPIFF_BIN_OUT
 DISABLE_SPIFFS		?= 0
 SPIFF_BIN_OUT		?= spiff_rom
 SPIFF_BIN_OUT		:= $(FW_BASE)/$(SPIFF_BIN_OUT).bin
@@ -123,6 +129,7 @@ CFLAGS				+= -DRBOOT_SPIFFS_1=$(RBOOT_SPIFFS_1)
 CUSTOM_TARGETS		+= $(SPIFF_BIN_OUT)
 
 # => LWIP
+CONFIG_VARS			+= ENABLE_CUSTOM_LWIP LIBLWIP
 ENABLE_CUSTOM_LWIP	?= 1
 ifeq ($(ENABLE_CUSTOM_LWIP), 0)
 	LIBLWIP			:= lwip
@@ -156,6 +163,7 @@ $(LIBLWIP_DST):
 endif
 
 # => GDB
+CONFIG_VARS			+= ENABLE_GDB
 APPCODE				+= $(ARCH_COMPONENTS)/gdbstub/appcode
 EXTRA_INCDIR		+= $(ARCH_COMPONENTS)/gdbstub/include
 ifeq ($(ENABLE_GDB), 1)
@@ -175,12 +183,14 @@ GDB := trap '' INT; $(GDB) -x $(ARCH_COMPONENTS)/gdbstub/gdbcmds -b $(COM_SPEED_
 
 
 # => WPS
+CONFIG_VARS	+= ENABLE_WPS
 ifeq ($(ENABLE_WPS),1)
    CFLAGS	+= -DENABLE_WPS=1
    LIBS		+= wps
 endif
 
 # => Custom heap
+CONFIG_VARS += ENABLE_CUSTOM_HEAP
 ENABLE_CUSTOM_HEAP ?= 0
 ifeq ($(ENABLE_CUSTOM_HEAP),1)
 	LIBMAIN			:= mainmm
@@ -211,6 +221,7 @@ LIBS += $(LIBMAIN)
 
 
 # SSL support using axTLS
+CONFIG_VARS += ENABLE_SSL SSL_DEBUG
 ifeq ($(ENABLE_SSL),1)
 	LIBAXTLS			:= axtls
 	LIBS				+= $(LIBAXTLS)
@@ -230,12 +241,13 @@ $(LIBAXTLS_DST):
 
 include/ssl/private_key.h:
 	$(vecho) "Generating unique certificate and key. This may take some time"
-	$(Q) mkdir -p $(CURRENT_DIR)/include/ssl/
-	AXDIR=$(CURRENT_DIR)/include/ssl/ $(ARCH_COMPONENTS)/axtls-8266/axtls-8266/tools/make_certs.sh
+	$(Q) mkdir -p $(CURDIR)/include/ssl/
+	AXDIR=$(CURDIR)/include/ssl/ $(ARCH_COMPONENTS)/axtls-8266/axtls-8266/tools/make_certs.sh
 endif
 
 
 # => PWM
+CONFIG_VARS += ENABLE_CUSTOM_PWM
 ENABLE_CUSTOM_PWM ?= 1
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	LIBPWM			:= pwm_open
@@ -252,8 +264,6 @@ LIBS += $(LIBPWM)
 
 #
 LIBS := microc microgcc hal phy pp net80211 mqttc wpa $(LIBSMING) crypto smartconfig $(EXTRA_LIBS) $(LIBS)
-
-LIBS := $(addprefix -l,$(LIBS))
 
 # linker flags used to generate the main object file
 LDFLAGS	= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -u custom_crash_callback \
@@ -275,9 +285,8 @@ include $(SMING_HOME)/modules.mk
 # Add APPCODE objects and targets
 $(call ScanModules,$(APPCODE))
 
+.PHONY: app
 app: $(CUSTOM_TARGETS) $(RBOOT_ROM_0) $(RBOOT_ROM_1) $(FW_FILE_1) $(FW_FILE_2)
-
-spiff_update: spiff_clean $(SPIFF_BIN_OUT)
 
 # => Firmware images
 $(RBOOT_ROM_0): $(TARGET_OUT_0)
@@ -291,7 +300,7 @@ $(RBOOT_ROM_1): $(TARGET_OUT_1)
 $(TARGET_OUT_0): $(APP_AR)
 	$(vecho) "LD $@"
 	$(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(ARCH_BASE)/Compiler/ld \
-		-T$(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
+		-T$(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 
@@ -315,7 +324,7 @@ $(TARGET_OUT_0): $(APP_AR)
 $(TARGET_OUT_1): $(APP_AR)
 	$(vecho) "LD $@"
 	$(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(ARCH_BASE)/Compiler/ld \
-		-T$(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(LIBS) -Wl,--end-group -o $@
+		-T$(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
 
 # recreate it from 0, since you get into problems with same filenames
 $(APP_AR): $(OBJ)
@@ -323,21 +332,30 @@ $(APP_AR): $(OBJ)
 	$(Q) test ! -f $@ || rm $@
 	$(AR) rcsP $@ $^
 
-#
 .PHONY: libsming
-libsming: $(LIBSMING_DST)
+libsming: $(LIBSMING_DST) ##Build the Sming framework and user libraries
 $(LIBSMING_DST):
 	$(vecho) "(Re)compiling Sming. Enabled features: $(SMING_FEATURES). This may take some time"
 	$(Q) $(MAKE) -C $(SMING_HOME) clean V=$(V) ENABLE_SSL=$(ENABLE_SSL)
 	$(Q) $(MAKE) -C $(SMING_HOME) V=$(V) ENABLE_SSL=$(ENABLE_SSL)
 
+.PHONY: rebuild
+rebuild: clean all ##Re-build your application
 
+
+.PHONY: checkdirs
 checkdirs: | $(BUILD_DIR) $(FW_BASE)
 
 $(BUILD_DIR) $(FW_BASE):
 	$(Q) mkdir -p $@
 
-spiff_clean: 
+##@Cleaning
+
+.PHONY: spiff_update
+spiff_update: spiff_clean $(SPIFF_BIN_OUT) ##Rebuild the SPIFFS filesystem image
+
+.PHONY: spiff_clean
+spiff_clean: ##Remove SPIFFS image file
 	$(vecho) "Cleaning $(SPIFF_BIN_OUT)"
 	$(Q) rm -rf $(SPIFF_BIN_OUT)
 
@@ -358,19 +376,23 @@ else
 endif
 
 
-# Flashing
+##@Flashing
 
-flashboot: libsming $(RBOOT_BIN)
+.PHONY: flashboot
+flashboot: libsming $(RBOOT_BIN) ##Write just the rBoot boot sector
 	$(WRITE_FLASH) 0x00000 $(RBOOT_BIN)
 
-flashconfig: kill_term
-	$(vecho) "Deleting rBoot config sector"
+.PHONY: flashconfig
+flashconfig: kill_term ##Erase the rBoot config sector
+	$(vecho) "Erasing rBoot config sector"
 	$(WRITE_FLASH) 0x01000 $(SDK_BASE)/bin/blank.bin 
-
-flashapp: all kill_term
+ 
+.PHONY: flashapp
+flashapp: all kill_term ##Write just the application image
 	$(WRITE_FLASH) $(ROM_0_ADDR) $(RBOOT_ROM_0)
 
-flashfs: libsming $(SPIFF_BIN_OUT)
+.PHONY: flashfs
+flashfs: libsming $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image
 ifeq ($(DISABLE_SPIFFS), 1)
 	$(vecho) "SPIFFS are not enabled!"
 else
@@ -383,7 +405,9 @@ FLASH_CHUNKS += $(ROM_0_ADDR) $(RBOOT_ROM_0)
 ifneq ($(DISABLE_SPIFFS), 1)
 	FLASH_CHUNKS += $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
 endif
-flash: all kill_term
+
+.PHONY: flash
+flash: all kill_term ##Write the rBoot boot sector, application image and (if enabled) SPIFFS image
 	$(WRITE_FLASH) $(FLASH_CHUNKS)
 ifeq ($(ENABLE_GDB), 1)
 	$(GDB)
@@ -391,41 +415,23 @@ else
 	$(TERMINAL)
 endif
 
-otaserver: all
-	$(vecho) "Starting OTA server for TESTING"
-	$(Q) cd $(FW_BASE) && python -m SimpleHTTPServer $(SERVER_OTA_PORT)
-
-kill_term:
-	$(vecho) "Killing Terminal to free $(COM_PORT)"
-	-$(Q) $(KILL_TERM)
-
-terminal: kill_term
-	$(TERMINAL)
-
-gdb: kill_term
-	$(GDB)
-
-decode-stacktrace:
-	@echo "Decode stack trace: Paste stack trace here"
-	$(Q) python $(ARCH_TOOLS)/decode-stacktrace.py $(TARGET_OUT_0)
-
 # Wipe flash
 FLASH_INIT_CHUNKS := $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin
 FLASH_INIT_CHUNKS += $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin
 ifneq ($(DISABLE_SPIFFS), 1)
 	FLASH_INIT_CHUNKS += $(RBOOT_SPIFFS_0) $(ARCH_BASE)/Compiler/data/blankfs.bin
 endif
-flashinit:
+
+.PHONY: flashinit
+flashinit: ##Erase your device's flash memory and reset system configuration area to defaults
 	$(vecho) "Flash init data default and blank data."
 	$(vecho) "DISABLE_SPIFFS = $(DISABLE_SPIFFS)"
 	$(ERASE_FLASH)
 	$(WRITE_FLASH) $(FLASH_INIT_CHUNKS)
 
+##@Cleaning
 
-rebuild: clean all
-
-# Remove build artifacts
-clean:
+.PHONY: clean
+clean: ##Remove all generated build files
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -rf $(FW_BASE)
-

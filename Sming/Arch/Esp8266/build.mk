@@ -15,11 +15,14 @@ endif
 ## MacOS / Linux:
 # ESP_HOME = /opt/esp-open-sdk
 
-ifeq ($(OS),Windows_NT)
-  # Convert Windows paths to POSIX paths
-  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-  ESP_HOME := $(subst //,/,$(ESP_HOME))
-endif
+#ifeq ($(OS),Windows_NT)
+#  # Convert Windows paths to POSIX paths
+#  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
+#  ESP_HOME := $(subst //,/,$(ESP_HOME))
+#endif
+
+CONFIG_VARS	+= ESP_HOME
+ESP_HOME	:= $(call FixPath,$(ESP_HOME))
 
 export ESP_HOME
 
@@ -41,6 +44,7 @@ GDB		:= $(TOOLSPEC)gdb
 CFLAGS_COMMON	+= -nostdlib -mlongcalls -mtext-section-literals
 CFLAGS			+= -D__ets__ -DICACHE_FLASH -DUSE_OPTIMIZE_PRINTF -DESP8266=1
 
+CONFIG_VARS += MFORCE32
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 ifneq ($(MFORCE32),)
     # Your compiler supports the -mforce-l32 flag which means that
@@ -54,6 +58,7 @@ endif
 # => 'Internal' SDK - for SDK Version 3+ as submodule in Sming repository
 # SDK_BASE just needs to point into our repo as it's overridden with the correct submodule path
 # This provides backward-compatiblity, so $(SMING)/third-party/ESP8266_NONOS_SDK) still works
+CONFIG_VARS += SDK_BASE SDK_INTERNAL
 ifneq (,$(findstring $(abspath $(SMING_HOME)),$(abspath $(SDK_BASE))))
 	SDK_COMPONENT	:= $(ARCH_COMPONENTS)/Sdk/ESP8266_NONOS_SDK
 	SDK_BASE		:= $(SMING_HOME)/$(SDK_COMPONENT)

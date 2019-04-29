@@ -26,32 +26,31 @@ The following are internal makefiles containing shared script for both framework
 
 > **modules.mk** Parses defined MODULES, etc. and creates target rules
 
-In addition, `Sming/Platform/$(PLATFORM)` must contain:
+In addition, `Sming/Arch/$(ARCH)` must contain:
 
-> **sming.mk** to define platform-specific modules and libraries
+> **sming.mk** to define architecture-specific modules and libraries
 
 > **app.mk** to build an application
 
-`PLATFORM` may be defined as
+`SMING_ARCH` may be defined as
 
 > **Esp8266**
 
 > **Esp32** {todo}
 
-> **Host** {todo} builds a version of the library for native host debugging
+> **Host** {todo} builds a version of the library for native host debugging (e.g. Linux/Windows)
 
-If setting this as an environment variable you should use `SMING_PLATFORM` to avoid potential conflicts.
 
 ## Directories
 
 ```
 Directory				Contents
 ---------				--------
-Libraries\			Arduino Libraries
-Platform/
-	Common/			Headers and code common to all platforms
-	Esp8266/			Existing Sming platform code
+
+Arch/					Architecture-specific makefiles and code
+	Esp8266/
 		Compiler/
+		Components/
 		Core/
 		out/
 		Platform/
@@ -62,14 +61,20 @@ Platform/
 	Host/
 		...
 
-SmingCore/			Main framework core (TODO: rename to `Core`)
+Components/			Framework support code, not to be used directly by applications
 
-System/				Common framework system code
+Core/					Main framework core (TODO: rename to `Core`)
+
+Libraries/			Arduino Libraries
+
+Platform/				System-level classes
+
+Services/				Modules not considered as part of Core
+
+System/				Common framework low-level system code
 	esp8266/
 	include/
 	
-third-party/			Shared GIT submodules
-
 Wiring/
 
 ```
@@ -77,53 +82,11 @@ Wiring/
 
 ## Environment Setup
 
-You must provide `SMING_HOME` and `ESP_HOME`. All others are optional.
+You must provide `SMING_HOME` and any architecture-specific ones. For the Esp8266 you must define `ESP_HOME` for SDK & tools.
 
 # Building the framework
 
 ## Makefile
-
-Targets include:
-
-> **all** (default) Builds the Sming library, user libraries, arduino libraries and tools
-
-> **libsming** Build the Sming framework and user libraries
-
-> **mqttc** Build mqttc-codec user library
-
-> **docs** Build the documentation
-
-> **submodules** Fetch all third-party submodules, but do not build
-
-> **samples** Build all the sample applications
-
-> **test** Build a few basic test applications
-
-> **tools** Build all required internal tools
-
-Esp8266 targets:
-
-> **axtls** Build axtls-8266 library - `ENABLE_SSL=1` required
-
-> **pwm_open** Build the PWM replacement library
-
-> **pwm-clean**
-
-Cleaning:
-
-> **dist-clean** Clean everything
-
-> **clean** Remove intermediate files
-
-> **user-lib-clean** Clear generated user libraries
-
-> **submodules-clean** Reset state of third-party repos
-
-> **samples-clean** Invoke **clean** on all samples
-
-> **tools-clean**
-
-> **cs** Apply coding style to core files
 
 Flags:
 
@@ -140,7 +103,7 @@ After updating and patching, an `.submodule` file is created to confirm this has
 
 ## Makefile-app.mk
 
-This does not contain any targets, but sets up the common build environment, configures Sming variables then invokes the platform-specific makefile in `Platform$/$(PLATFORM)/app.mk`
+This does not contain any targets, but sets up the common build environment, configures Sming variables then invokes the platform-specific makefile in `Platform$/$(PLATFORM)/app.mk`.
 
 ## Application Code (APPCODE)
 

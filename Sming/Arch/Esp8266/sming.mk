@@ -32,6 +32,7 @@ MODULES			+= $(SPIFFS_SMING) $(SPIFFS_BASE)/src
 
 
 # => ESP8266_new_pwm
+CONFIG_VARS += ENABLE_CUSTOM_PWM
 ENABLE_CUSTOM_PWM	?= 1
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	PWM_BASE		:= $(ARCH_COMPONENTS)/pwm
@@ -52,6 +53,7 @@ endif
 
 
 # => umm_malloc (custom heap allocation)
+CONFIG_VARS += ENABLE_CUSTOM_HEAP
 ENABLE_CUSTOM_HEAP		?= 0
 ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 	CUSTOM_HEAP_BASE	:= $(ARCH_COMPONENTS)/custom_heap
@@ -71,6 +73,7 @@ endif
 
 
 # => Open Source LWIP
+CONFIG_VARS += ENABLE_CUSTOM_LWIP ENABLE_LWIP_DEBUG ENABLE_ESPCONN
 ENABLE_CUSTOM_LWIP	?= 1
 ENABLE_ESPCONN		?= 0
 ifeq ($(ENABLE_CUSTOM_LWIP), 0)
@@ -121,6 +124,7 @@ lwip-clean:
 endif
 
 # => SSL support using axTLS
+CONFIG_VARS += ENABLE_SSL SSL_DEBUG
 ENABLE_SSL ?= 0
 ifeq ($(ENABLE_SSL),1)
 	AXTLS_BASE		:= $(ARCH_COMPONENTS)/axtls-8266/axtls-8266
