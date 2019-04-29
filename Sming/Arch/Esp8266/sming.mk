@@ -176,7 +176,7 @@ TOOLS			+= $(ESPTOOL2)
 TOOLS_CLEAN		+= esptool2-clean
 
 SUBMODULES += $(dir $(ESPTOOL2))
-$(ESPTOOL2):
+$(ESPTOOL2): $(dir $(ESPTOOL2)).submodule
 	$(Q) $(call make-tool,$@)
 
 .PHONY: esptool2-clean
