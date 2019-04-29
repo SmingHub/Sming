@@ -27,9 +27,9 @@
 #include <string.h>
 
 #if defined(_MSC_VER)
-# define _sha1_restrict __restrict
+#define _sha1_restrict __restrict
 #else
-# define _sha1_restrict __restrict__
+#define _sha1_restrict __restrict__
 #endif
 
 #define SHA1_SIZE 20
@@ -38,11 +38,10 @@
 extern "C" {
 #endif
 
-void sha1(unsigned char h[SHA1_SIZE], const void *_sha1_restrict p, size_t n);
+void sha1(unsigned char h[SHA1_SIZE], const void* _sha1_restrict p, size_t n);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
 #endif /* AW_SHA1_H */
-

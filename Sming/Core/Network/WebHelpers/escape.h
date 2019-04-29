@@ -9,7 +9,7 @@
  *  @param len Number of characters in source text
  *  @retval unsigned number of characters for output, NOT including nul terminator
  */
-unsigned uri_escape_len(const char *s, size_t len);
+unsigned uri_escape_len(const char* s, size_t len);
 
 static inline unsigned uri_escape_len(const String& str)
 {
@@ -25,7 +25,7 @@ static inline unsigned uri_escape_len(const String& str)
  *  @retval char* points to start of dest
  *  @note destination and source MUST be different buffers
  */
-char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len);
+char* uri_escape(char* dest, size_t dest_len, const char* src, int src_len);
 
 /** @brief unescape text
  *  @param dest buffer to store result
@@ -35,18 +35,17 @@ char *uri_escape(char *dest, size_t dest_len, const char *src, int src_len);
  *  @retval char* points to start of dest
  *  @note destination and source may be the same buffer
  */
-char *uri_unescape(char *dest, size_t dest_len, const char *src, int src_len);
+char* uri_unescape(char* dest, size_t dest_len, const char* src, int src_len);
 
-unsigned html_escape_len(const char *s, size_t len);
-void html_escape(char *dest, size_t len, const char *s);
-
+unsigned html_escape_len(const char* s, size_t len);
+void html_escape(char* dest, size_t len, const char* s);
 
 /** @brief Replace a nul-terminated string with its unescaped version
  *  @param str the string to un-escape
  *  @retval char* the result, a copy of str
  *  @note unescaped string is never longer than escaped version
  */
-char* uri_unescape_inplace(char *str);
+char* uri_unescape_inplace(char* str);
 
 /** @brief escape the given URI string
  *  @param src
@@ -54,13 +53,12 @@ char* uri_unescape_inplace(char *str);
  *  @retval String the escaped string
  *  @note escaping may increase text size (but not always)
  */
-String uri_escape(const char *src, int src_len);
+String uri_escape(const char* src, int src_len);
 
 static inline String uri_escape(const String& src)
 {
 	return src ? uri_escape(src.c_str(), src.length()) : src;
 }
-
 
 /** @brief replace the given text by its unescaped version
  *  @param str the string to unescape
