@@ -59,6 +59,8 @@ script:
 - cd $SMING_HOME
 - if [ "$SDK_VERSION" == "2.0.0" ]; then ../.travis/tools/clang/format-pr.sh; fi
 - cd $SMING_HOME
+- make help
+- make list-config
 - make STRICT=1
 - make samples
 - make clean samples-clean
