@@ -14,8 +14,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_TCP_CLIENT_H_
-#define _SMING_CORE_NETWORK_TCP_CLIENT_H_
+#pragma once
 
 #include "TcpConnection.h"
 #include "Delegate.h"
@@ -196,4 +195,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_TCP_CLIENT_H_ */

@@ -18,8 +18,7 @@
  *          To use WDT, enable the WDT then poke it regularly with WDT.alive();
 */
 
-#ifndef _SMING_CORE_PLATFORM_WDT_H_
-#define _SMING_CORE_PLATFORM_WDT_H_
+#pragma once
 
 #include <user_config.h>
 #include "System.h"
@@ -59,5 +58,3 @@ private:
  *	@endcode
  */
 extern WDTClass WDT;
-
-#endif /* _SMING_CORE_PLATFORM_WDT_H_ */

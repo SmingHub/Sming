@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_FTP_FTP_DATA_STREAM_H_
-#define _SMING_CORE_NETWORK_FTP_FTP_DATA_STREAM_H_
+#pragma once
 
 #include "FtpServerConnection.h"
 #include "TcpConnection.h"
@@ -76,5 +75,3 @@ protected:
 	unsigned written = 0;
 	unsigned sent = 0;
 };
-
-#endif /* _SMING_CORE_NETWORK_FTP_FTP_DATA_STREAM_H_ */

@@ -13,8 +13,7 @@
  *              Several handlers may be triggered for each event
  *  @{
  */
-#ifndef _SMING_CORE_DELEGATE_H_
-#define _SMING_CORE_DELEGATE_H_
+#pragma once
 
 #include <user_config.h>
 
@@ -244,4 +243,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DELEGATE_H_ */

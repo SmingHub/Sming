@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_FTP_FTP_DATA_FILE_LIST_H_
-#define _SMING_CORE_NETWORK_FTP_FTP_DATA_FILE_LIST_H_
+#pragma once
 
 #include "FtpDataStream.h"
 #include "FileSystem.h"
@@ -35,5 +34,3 @@ public:
 		finishTransfer();
 	}
 };
-
-#endif /* _SMING_CORE_NETWORK_FTP_FTP_DATA_FILE_LIST_H_ */

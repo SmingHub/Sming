@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_MQTT_CLIENT_H_
-#define _SMING_CORE_NETWORK_MQTT_CLIENT_H_
+#pragma once
 
 #include "TcpClient.h"
 #include "Url.h"
@@ -325,4 +324,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_MQTT_CLIENT_H_ */

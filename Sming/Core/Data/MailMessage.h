@@ -16,8 +16,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_DATA_MAIL_MESSAGE_H_
-#define _SMING_CORE_DATA_MAIL_MESSAGE_H_
+#pragma once
 
 #include "WString.h"
 #include "WVector.h"
@@ -79,4 +78,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_MAIL_MESSAGE_H_ */

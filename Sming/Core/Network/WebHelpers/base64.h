@@ -11,8 +11,7 @@
  *
  ****/
 
-#ifndef BASE64_H
-#define BASE64_H
+#pragma once
 
 #include "WString.h"
 
@@ -67,5 +66,3 @@ static inline String base64_decode(const String& in)
 {
 	return base64_decode(in.c_str(), in.length());
 }
-
-#endif /* BASE64_H */

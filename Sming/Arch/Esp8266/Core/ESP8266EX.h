@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_ESP8266EX_H_
-#define _SMING_CORE_ESP8266EX_H_
+#pragma once
 
 #include "user_config.h"
 
@@ -37,5 +36,3 @@ struct EspDigitalPin {
  *  @ingroup gpio
  */
 extern const EspDigitalPin EspDigitalPins[];
-
-#endif /* _SMING_CORE_ESP8266EX_H_ */

@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_QUOTED_PRINTABLE_OUTPUT_STREAM_H_
-#define _SMING_CORE_DATA_STREAM_QUOTED_PRINTABLE_OUTPUT_STREAM_H_
+#pragma once
 
 #include "../StreamTransformer.h"
 
@@ -41,4 +40,3 @@ protected:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_STREAM_QUOTED_PRINTABLE_OUTPUT_STREAM_H_ */

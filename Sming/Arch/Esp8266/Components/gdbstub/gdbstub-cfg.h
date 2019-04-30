@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _GDB_GDBSTUB_CFG_H_
-#define _GDB_GDBSTUB_CFG_H_
+#pragma once
 
 /*
  * When enabled, an exception or crash dumps a stack trace to debug output
@@ -180,5 +179,3 @@
 #ifndef GDBSTUB_FORCE_IRAM
 #define GDBSTUB_FORCE_IRAM 0
 #endif
-
-#endif /* _GDB_GDBSTUB_CFG_H_ */

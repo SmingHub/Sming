@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_BASE64_OUTPUT_STREAM_H_
-#define _SMING_CORE_DATA_STREAM_BASE64_OUTPUT_STREAM_H_
+#pragma once
 
 #include "../StreamTransformer.h"
 #include "libb64/cencode.h"
@@ -51,4 +50,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_STREAM_BASE64_OUTPUT_STREAM_H_ */

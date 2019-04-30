@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _GDB_GDBSTUB_H_
-#define _GDB_GDBSTUB_H_
+#pragma once
 
 #include "gdbstub-internal.h"
 #include <gdb/gdb_hooks.h>
@@ -65,5 +64,3 @@ void gdbstub_handle_exception();
 // Optimise GDB stub code for size, regardless of application settings
 #pragma GCC optimize("Os")
 #endif
-
-#endif /* _GDB_GDBSTUB_H_ */

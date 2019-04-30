@@ -16,8 +16,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_PARAMS_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_PARAMS_H_
+#pragma once
 
 #include "WString.h"
 #include "WHashMap.h"
@@ -75,5 +74,3 @@ public:
 	 */
 	void debugPrintTo(Print& p) const;
 };
-
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_PARAMS_H_ */

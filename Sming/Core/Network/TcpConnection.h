@@ -13,8 +13,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_TCP_CONNECTION_H_
-#define _SMING_CORE_NETWORK_TCP_CONNECTION_H_
+#pragma once
 
 #ifdef ENABLE_SSL
 #include "axtls-8266/compat/lwipr_compat.h"
@@ -299,4 +298,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_TCP_CONNECTION_H_ */

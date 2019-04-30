@@ -15,8 +15,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_SSL_VALIDATOR_H_
-#define _SMING_CORE_SSL_VALIDATOR_H_
+#pragma once
 
 #include "ssl/ssl.h"
 #include "ssl/tls1.h"
@@ -78,4 +77,3 @@ public:
 };
 
 /** @} */
-#endif /* _SMING_CORE_SSL_VALIDATOR_H_ */

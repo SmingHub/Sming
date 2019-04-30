@@ -14,8 +14,7 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_DEBUG_PROGMEM_H
-#define _SYSTEM_INCLUDE_DEBUG_PROGMEM_H
+#pragma once
 
 #include <stdarg.h>
 #include "FakePgmSpace.h"
@@ -131,5 +130,3 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _SYSTEM_INCLUDE_DEBUG_PROGMEM_H */

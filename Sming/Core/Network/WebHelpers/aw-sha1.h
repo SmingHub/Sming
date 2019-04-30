@@ -21,8 +21,7 @@
    THE SOFTWARE.
  */
 
-#ifndef AW_SHA1_H
-#define AW_SHA1_H
+#pragma once
 
 #include <string.h>
 
@@ -43,5 +42,3 @@ void sha1(unsigned char h[SHA1_SIZE], const void* _sha1_restrict p, size_t n);
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-
-#endif /* AW_SHA1_H */

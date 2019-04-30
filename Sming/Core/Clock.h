@@ -14,8 +14,7 @@
  *  @{
 */
 
-#ifndef _SMING_CORE_CLOCK_H_
-#define _SMING_CORE_CLOCK_H_
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 
@@ -60,4 +59,3 @@ void delayMicroseconds(uint32_t time);
 #endif
 
 /** @} */
-#endif /* _SMING_CORE_CLOCK_H_ */

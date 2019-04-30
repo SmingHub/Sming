@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_FILE_STREAM_H_
-#define _SMING_CORE_DATA_FILE_STREAM_H_
+#pragma once
 
 #include "ReadWriteStream.h"
 #include "FileSystem.h"
@@ -160,4 +159,3 @@ private:
 
 /** @} */
 
-#endif /* _SMING_CORE_DATA_FILE_STREAM_H_ */

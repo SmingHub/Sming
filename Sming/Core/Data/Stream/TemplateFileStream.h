@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_TEMPLATE_FILE_STREAM_H_
-#define _SMING_CORE_DATA_STREAM_TEMPLATE_FILE_STREAM_H_
+#pragma once
 
 #include "FileStream.h"
 #include "TemplateStream.h"
@@ -33,5 +32,3 @@ public:
 };
 
 /** @} */
-
-#endif /* _SMING_CORE_DATA_STREAM_TEMPLATE_FILE_STREAM_H_ */

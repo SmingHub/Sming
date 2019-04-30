@@ -1,5 +1,4 @@
-#ifndef ESCAPE_H
-#define ESCAPE_H
+#pragma once
 
 #include <user_config.h>
 #include "WString.h"
@@ -76,5 +75,3 @@ static inline String uri_unescape(const String& str)
 	uri_unescape_inplace(ret);
 	return ret;
 }
-
-#endif

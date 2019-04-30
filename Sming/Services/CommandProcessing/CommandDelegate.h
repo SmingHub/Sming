@@ -8,8 +8,7 @@
  *  @{
  */
 
-#ifndef SERVICES_COMMANDPROCESSING_COMMANDDELEGATE_H_
-#define SERVICES_COMMANDPROCESSING_COMMANDDELEGATE_H_
+#pragma once
 
 #include "WString.h"
 #include "Delegate.h"
@@ -51,4 +50,3 @@ private :
 };
 
 /** @} */
-#endif /* SERVICES_COMMANDPROCESSING_COMMANDDELEGATE_H_ */

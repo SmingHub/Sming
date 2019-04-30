@@ -12,9 +12,7 @@
  *  @ingroup    datetime
  *  @brief      Provides system clock functions
 */
-
-#ifndef _SMING_CORE_SYSTEM_CLOCK_H_
-#define _SMING_CORE_SYSTEM_CLOCK_H_
+#pragma once
 
 #include "DateTime.h"
 #include "WString.h"
@@ -94,4 +92,3 @@ private:
 extern SystemClockClass SystemClock;
 
 /** @} */
-#endif /* _SMING_CORE_SYSTEM_CLOCK_H_ */

@@ -17,8 +17,7 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef _GDB_HOOKS_H_
-#define _GDB_HOOKS_H_
+#pragma once
 
 #include <user_config.h>
 
@@ -101,5 +100,3 @@ void debug_print_stack(uint32_t start, uint32_t end);
 #endif
 
 /** @} */
-
-#endif /* _GDB_HOOKS_H_ */

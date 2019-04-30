@@ -15,8 +15,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_HARDWARE_TIMER_H_
-#define _SMING_CORE_HARDWARE_TIMER_H_
+#pragma once
 
 #include "Interrupts.h"
 #include "Delegate.h"
@@ -162,4 +161,3 @@ class Hardware_Timer : public HardwareTimer
 };
 
 /** @} */
-#endif /* _SMING_CORE_HARDWARE_TIMER_H_ */

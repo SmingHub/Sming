@@ -14,8 +14,7 @@
 /** @defgroup datetime Date and time functions
  *  @{
  */
-#ifndef _DateTime_h
-#define _DateTime_h
+#pragma once
 
 #include <time.h>
 #include "WString.h"
@@ -348,4 +347,3 @@ public:
 };
 
 /** @} */
-#endif /* DateTime_h */

@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_SSL_SSL_FINGERPRINTS_H_
-#define _SMING_CORE_NETWORK_SSL_SSL_FINGERPRINTS_H_
+#pragma once
 
 #include "ssl/ssl.h"
 
@@ -101,5 +100,3 @@ private:
 	 */
 	bool setValue(const uint8_t*& value, unsigned requiredLength, const uint8_t* newValue, unsigned newLength);
 };
-
-#endif // _SMING_CORE_NETWORK_SSL_SSL_FINGERPRINTS_H_

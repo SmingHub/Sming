@@ -16,8 +16,7 @@
 ||
 */
 
-#ifndef PRINT_H
-#define PRINT_H
+#pragma once
 
 #ifdef __cplusplus
 
@@ -97,5 +96,3 @@ class Print
 };
 
 #endif  // __cplusplus
-#endif
-// PRINT_H

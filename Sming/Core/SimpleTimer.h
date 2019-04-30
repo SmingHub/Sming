@@ -21,8 +21,7 @@
  *  @brief      Provides basic OS timer functions
 */
 
-#ifndef _SMING_CORE_SIMPLE_TIMER_H_
-#define _SMING_CORE_SIMPLE_TIMER_H_
+#pragma once
 
 extern "C" {
 #include "esp_systemapi.h"
@@ -100,5 +99,3 @@ public:
 private:
 	os_timer_t osTimer;
 };
-
-#endif /* _SMING_CORE_SIMPLE_TIMER_H_ */

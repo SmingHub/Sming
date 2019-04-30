@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_GDB_FILE_STREAM_H_
-#define _SMING_CORE_DATA_GDB_FILE_STREAM_H_
+#pragma once
 
 #include "ReadWriteStream.h"
 #include "FileSystem.h"
@@ -140,5 +139,3 @@ private:
 	size_t size = 0;
 	int lastError = 0;
 };
-
-#endif /* _SMING_CORE_DATA_GDB_FILE_STREAM_H_ */

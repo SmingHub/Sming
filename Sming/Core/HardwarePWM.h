@@ -25,8 +25,7 @@
  *  @{
 */
 
-#ifndef _SMING_CORE_HARDWARE_PWM_H_
-#define _SMING_CORE_HARDWARE_PWM_H_
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 
@@ -137,4 +136,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_HARDWARE_PWM_H_ */

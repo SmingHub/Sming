@@ -12,8 +12,7 @@
  *  @brief      Provides interrupt functions
  *  @{
 */
-#ifndef _SMING_CORE_INTERRUPTS_H_
-#define _SMING_CORE_INTERRUPTS_H_
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 #include "Delegate.h"
@@ -105,4 +104,3 @@ void interrupts();
 #define sei() interrupts()
 
 /** @} */
-#endif /* _SMING_CORE_INTERRUPTS_H_ */

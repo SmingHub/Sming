@@ -15,8 +15,7 @@
  *  @brief    Provides SPI support
  */
 
-#ifndef _SMING_CORE_SPI_BASE_H_
-#define _SMING_CORE_SPI_BASE_H_
+#pragma once
 
 #include "SPISettings.h"
 
@@ -74,5 +73,3 @@ public:
 	 */
 	SPISettings SPIDefaultSettings;
 };
-
-#endif /* _SMING_CORE_SPI_BASE_H_ */

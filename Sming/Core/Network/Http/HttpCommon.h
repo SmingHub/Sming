@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_COMMON_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_COMMON_H_
+#pragma once
 
 #define ENABLE_HTTP_REQUEST_AUTH 1
 
@@ -72,5 +71,3 @@ static inline String httpGetStatusText(unsigned code)
 {
 	return httpGetStatusText((enum http_status)code);
 }
-
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_COMMON_H_ */

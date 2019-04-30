@@ -1,6 +1,6 @@
 
-#ifndef SPIFFS_SMING_H_
-#define SPIFFS_SMING_H_
+#pragma once
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -22,4 +22,3 @@ extern spiffs _filesystemStorageHandle;
 #if defined(__cplusplus)
 }
 #endif
-#endif /* SPIFFS_SMING_H_ */

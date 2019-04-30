@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_ARDUINO_COMPAT_H_
-#define _SMING_CORE_ARDUINO_COMPAT_H_
+#pragma once
 
 #include "SmingCore.h"
 #include <stdio.h> ///< sprintf()
@@ -28,5 +27,3 @@ void yield();
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _SMING_CORE_ARDUINO_COMPAT_H_ */

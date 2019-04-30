@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DEBUG_H_
-#define _SMING_CORE_DEBUG_H_
+#pragma once
 
 #include "HardwareSerial.h"
 #include "Clock.h"
@@ -110,4 +109,3 @@ private:
 extern DebugClass Debug;
 
 /** @} */
-#endif /* _SMING_CORE_DEBUG_H_ */

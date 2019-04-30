@@ -14,8 +14,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_UDP_CONNECTION_H_
-#define _SMING_CORE_NETWORK_UDP_CONNECTION_H_
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 #include "Delegate.h"
@@ -86,4 +85,3 @@ protected:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_UDP_CONNECTION_H_ */

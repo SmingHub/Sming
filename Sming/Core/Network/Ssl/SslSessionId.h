@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_SSL_SSL_SESSION_ID_H_
-#define _SMING_CORE_NETWORK_SSL_SSL_SESSION_ID_H_
+#pragma once
 
 #include "ssl/ssl.h"
 #include "WString.h"
@@ -48,5 +47,3 @@ public:
 private:
 	String value;
 };
-
-#endif /* _SMING_CORE_NETWORK_SSL_SSL_SESSION_ID_H_ */

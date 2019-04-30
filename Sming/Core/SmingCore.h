@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_H_
-#define _SMING_CORE_H_
+#pragma once
 
 #define SMING_VERSION "3.8.0" // Major Minor Sub
 
@@ -62,5 +61,3 @@
 
 #include "fatfs/ff.h"
 #include "Services/Yeelight/YeelightBulb.h"
-
-#endif /* _SMING_CORE_H_ */

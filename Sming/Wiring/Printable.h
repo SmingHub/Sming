@@ -33,8 +33,7 @@
 ||
 */
 
-#ifndef PRINTABLE_H
-#define PRINTABLE_H
+#pragma once
 
 class Print;
 
@@ -44,6 +43,3 @@ class Printable
     virtual ~Printable() { }
     virtual size_t printTo(Print &p) const = 0;
 };
-
-#endif
-// PRINTABLE_H

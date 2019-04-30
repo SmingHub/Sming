@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_ESP_CPLUSPLUS_H_
-#define _SYSTEM_INCLUDE_ESP_CPLUSPLUS_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,5 +22,3 @@ extern void (*__init_array_start)(void);
 extern void (*__init_array_end)(void);
 
 void cpp_core_initialize();
-
-#endif /* _SYSTEM_INCLUDE_ESP_CPLUSPLUS_H_ */

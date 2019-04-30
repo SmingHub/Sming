@@ -16,8 +16,7 @@
  *  @see    \ref wifi_ap
 */
 
-#ifndef _SMING_CORE_PLATFORM_STATION_H_
-#define _SMING_CORE_PLATFORM_STATION_H_
+#pragma once
 
 #include "System.h"
 #include "Delegate.h"
@@ -302,4 +301,3 @@ public:
 extern StationClass WifiStation;
 
 /** @} */
-#endif /* _SMING_CORE_PLATFORM_STATION_H_ */

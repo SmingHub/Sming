@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_URL_ENCODDED_OUTPUT_STREAM_H_
-#define _SMING_CORE_DATA_URL_ENCODDED_OUTPUT_STREAM_H_
+#pragma once
 
 #include "MemoryDataStream.h"
 #include "Network/Http/HttpParams.h"
@@ -70,4 +69,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_URL_ENCODDED_OUTPUT_STREAM_H_ */

@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_H_
+#pragma once
 
 #include "HttpCommon.h"
 #ifdef ENABLE_HTTP_REQUEST_AUTH
@@ -306,5 +305,3 @@ private:
 
 	HttpParams* queryParams = nullptr; // << @todo deprecate
 };
-
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_H_ */

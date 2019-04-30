@@ -15,8 +15,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_WEB_CONSTANTS_H_
-#define _SMING_CORE_NETWORK_WEB_CONSTANTS_H_
+#pragma once
 
 #include "WString.h"
 
@@ -98,4 +97,3 @@ static inline String fromFullFileName(const String& fileName)
 }; // namespace ContentType
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_WEB_CONSTANTS_H_ */

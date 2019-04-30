@@ -20,8 +20,7 @@
  *  @ingroup    udp
  *  @{
  */
-#ifndef _SMING_CORE_NETWORK_DNS_SERVER_H_
-#define _SMING_CORE_NETWORK_DNS_SERVER_H_
+#pragma once
 
 #include "UdpConnection.h"
 #include "WString.h"
@@ -99,4 +98,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_DNS_SERVER_H_ */

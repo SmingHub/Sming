@@ -21,8 +21,7 @@
  *	@brief	Access to the ESP8266 system
  *	@note   Provides system control and monitoring of the ESP8266.
 */
-#ifndef _SMING_CORE_PLATFORM_SYSTEM_H_
-#define _SMING_CORE_PLATFORM_SYSTEM_H_
+#pragma once
 
 #include "Delegate.h"
 
@@ -197,4 +196,3 @@ private:
 extern SystemClass System;
 
 /** @} */
-#endif /* _SMING_CORE_PLATFORM_SYSTEM_H_ */

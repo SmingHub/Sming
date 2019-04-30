@@ -11,8 +11,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_MULTISTREAM_H_
-#define _SMING_CORE_DATA_STREAM_MULTISTREAM_H_
+#pragma once
 
 #include "DataSourceStream.h"
 
@@ -68,5 +67,3 @@ protected:
 
 	bool finished = false;
 };
-
-#endif /* _SMING_CORE_DATA_STREAM_MULTISTREAM_H_ */

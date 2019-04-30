@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _GDB_EXCEPTIONS_H_
-#define _GDB_EXCEPTIONS_H_
+#pragma once
 
 #include <xtensa/corebits.h>
 #include "gdb/signals.h"
@@ -57,5 +56,3 @@
 	XX(STORE_PROHIBITED, GDB_SIGNAL_SEGV, "Cache Attribute does not allow Store")
 
 #define EXCCAUSE_MAX EXCCAUSE_STORE_PROHIBITED
-
-#endif /* _GDB_EXCEPTION_MAP_H_ */

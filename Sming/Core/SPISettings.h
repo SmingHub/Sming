@@ -15,8 +15,7 @@
  *  @brief    Provides SPI support
  */
 
-#ifndef _SMING_CORE_SPI_SETTINGS_H_
-#define _SMING_CORE_SPI_SETTINGS_H_
+#pragma once
 
 #include "Digital.h"
 
@@ -106,5 +105,3 @@ private:
 	uint8_t byteOrder = MSBFIRST;
 	uint8_t dataMode = SPI_MODE0;
 };
-
-#endif /* _SMING_CORE_SPI_SETTINGS_H_ */

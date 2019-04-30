@@ -19,8 +19,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef _SMING_CORE_TWI_H_
-#define _SMING_CORE_TWI_H_
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 
@@ -46,4 +45,3 @@ uint8_t twi_status();
 }
 #endif
 
-#endif /* _SMING_CORE_TWI_H_ */

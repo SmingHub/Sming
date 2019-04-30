@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_STREAM_CHAIN_H_
-#define _SMING_CORE_DATA_STREAM_STREAM_CHAIN_H_
+#pragma once
 
 #include "MultiStream.h"
 #include "../ObjectQueue.h"
@@ -47,5 +46,3 @@ protected:
 private:
 	StreamChainQueue queue;
 };
-
-#endif /* _SMING_CORE_DATA_STREAM_STREAM_CHAIN_H_ */

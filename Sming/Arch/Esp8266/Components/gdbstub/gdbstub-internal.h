@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _GDB_GDBSTUB_INTERNAL_H_
-#define _GDB_GDBSTUB_INTERNAL_H_
+#pragma once
 
 #include "xtensa/xtruntime-frames.h"
 #include "gdbstub-cfg.h"
@@ -74,5 +73,3 @@ STRUCT_END(GdbstubSavedRegisters)
 // Section definitions for assembler
 #define ASATTR_GDBINIT .section .irom0.text
 #define ASATTR_GDBFN .section .iram.text
-
-#endif /* _GDB_GDBSTUB_INTERNAL_H_ */

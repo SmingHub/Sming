@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_SSL_SSL_STRUCTS_H_
-#define _SMING_CORE_NETWORK_SSL_SSL_STRUCTS_H_
+#pragma once
 
 #include "SslFingerprints.h"
 #include "SslKeyCertPair.h"
@@ -22,5 +21,3 @@ typedef SslKeyCertPair SSLKeyCertPair SMING_DEPRECATED;			///< @deprecated Use S
 typedef SslSessionId SSLSessionId SMING_DEPRECATED;				///< @deprecated Use SslSessionId instead
 typedef SslFingerprints SSLFingerprints SMING_DEPRECATED;		///< @deprecated Use SslFingerprints instead
 typedef SslFingerprintType SSLFingerprintType SMING_DEPRECATED; ///< @deprecated Use SslFingerprintType instead
-
-#endif /* _SMING_CORE_NETWORK_SSL_SSL_STRUCTS_H_ */

@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_DATA_SOURCE_STREAM_H_
-#define _SMING_CORE_DATA_STREAM_DATA_SOURCE_STREAM_H_
+#pragma once
 
 #include <user_config.h>
 #include "Stream.h"
@@ -144,4 +143,3 @@ public:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_STREAM_DATA_SOURCE_STREAM_H_ */

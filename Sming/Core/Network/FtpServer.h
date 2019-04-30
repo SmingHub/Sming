@@ -14,8 +14,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_FTP_SERVER_H_
-#define _SMING_CORE_NETWORK_FTP_SERVER_H_
+#pragma once
 
 #include "TcpServer.h"
 #include "WHashMap.h"
@@ -48,4 +47,3 @@ private:
 typedef FtpServer FTPServer SMING_DEPRECATED; ///< @deprecated Use `FtpServer` instead
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_FTP_SERVER_H_ */

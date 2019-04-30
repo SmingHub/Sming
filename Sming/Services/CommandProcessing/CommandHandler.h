@@ -22,8 +22,7 @@
  * @{
  */
 
-#ifndef SERVICES_COMMANDPROCESSING_COMMANDHANDLER_H_
-#define SERVICES_COMMANDPROCESSING_COMMANDHANDLER_H_
+#pragma once
 
 #include "WiringFrameworkIncludes.h"
 #include "CommandDelegate.h"
@@ -147,4 +146,3 @@ private :
 extern CommandHandler commandHandler;
 
 /** @} */
-#endif /* SERVICES_COMMANDPROCESSING_COMMANDHANDLER_H_ */

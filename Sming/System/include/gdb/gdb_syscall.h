@@ -24,8 +24,7 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_GDB_SYSCALL_H_
-#define _SYSTEM_INCLUDE_GDB_SYSCALL_H_
+#pragma once
 
 #include <user_config.h>
 #include <sys/fcntl.h>
@@ -421,4 +420,3 @@ static inline int gdb_console_write(const void* buffer, size_t count, gdb_syscal
 }
 
 /** @} */
-#endif /* _SYSTEM_INCLUDE_GDB_SYSCALL_H_ */

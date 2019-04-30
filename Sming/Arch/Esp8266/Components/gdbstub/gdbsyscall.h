@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _GDB_GDBSYSCALL_H_
-#define _GDB_GDBSYSCALL_H_
+#pragma once
 
 #include "gdbstub.h"
 
@@ -29,5 +28,3 @@ void gdbstub_syscall_execute();
  * 	Fretcode,errno,Ctrl-C flag;call-specific attachment
  */
 bool gdb_syscall_complete(const char* data);
-
-#endif /* _GDB_GDBSYSCALL_H_ */

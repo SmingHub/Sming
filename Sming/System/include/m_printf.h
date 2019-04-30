@@ -5,8 +5,7 @@ License: MIT
 Date: 21.12.2015
 Descr: embedded very simple version of printf with float support
 */
-#ifndef _M_PRINTF_
-#define _M_PRINTF_
+#pragma once
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -76,5 +75,3 @@ void m_printHex(const char* tag, const void* data, size_t len, int addr = -1, si
 
 }
 #endif
-
-#endif /*_M_PRINTF_*/

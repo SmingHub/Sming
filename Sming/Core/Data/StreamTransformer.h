@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_TRANSFORMER_H_
-#define _SMING_CORE_DATA_STREAM_TRANSFORMER_H_
+#pragma once
 
 #include "Buffer/CircularBuffer.h"
 
@@ -120,4 +119,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_STREAM_TRANSFORMER_H_ */

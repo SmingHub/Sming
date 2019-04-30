@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_RBOOT_INTEGRATION_H_
-#define _SYSTEM_INCLUDE_RBOOT_INTEGRATION_H_
+#pragma once
 
 // prevent sming user_config.h being included
 #define __USER_CONFIG_H__
@@ -19,5 +18,3 @@
 
 // missing prototypes for sdk functions
 #include <esp_systemapi.h>
-
-#endif /* _SYSTEM_INCLUDE_RBOOT_INTEGRATION_H_ */

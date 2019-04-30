@@ -1,7 +1,6 @@
 // Just for compatibility with Arduino libraries.
 
-#ifndef WIRING_WIRING_PRIVATE_H_
-#define WIRING_WIRING_PRIVATE_H_
+#pragma once
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -23,5 +22,3 @@ typedef void (*voidFuncPtr)(void);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#endif /* WIRING_WIRING_PRIVATE_H_ */

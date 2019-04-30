@@ -10,8 +10,7 @@
  *
  */
 
-#ifndef _SMING_CORE_DATA_HEX_STRING_H_
-#define _SMING_CORE_DATA_HEX_STRING_H_
+#pragma once
 
 #include "WString.h"
 
@@ -22,5 +21,3 @@
  *  @retval String
  */
 String makeHexString(const uint8_t* data, unsigned length, char separator = '\0');
-
-#endif /* _SMING_CORE_DATA_HEX_STRING_H_ */

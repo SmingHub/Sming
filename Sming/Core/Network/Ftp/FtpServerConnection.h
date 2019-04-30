@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_FTP_FTP_SERVER_CONNECTION_H_
-#define _SMING_CORE_NETWORK_FTP_FTP_SERVER_CONNECTION_H_
+#pragma once
 
 #include "TcpConnection.h"
 #include "IPAddress.h"
@@ -66,5 +65,3 @@ private:
 };
 
 typedef FtpServerConnection FTPServerConnection SMING_DEPRECATED; // @deprecated Use `FtpServerConnection` instead
-
-#endif /* _SMING_CORE_NETWORK_FTP_FTP_SERVER_CONNECTION_H_ */

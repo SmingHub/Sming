@@ -15,8 +15,7 @@
 
 //TODO: Add stream support for sending big chunks of data via websockets.
 
-#ifndef _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_
-#define _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_
+#pragma once
 
 #include "Http/HttpClientConnection.h"
 #include "Http/Websocket/WebsocketConnection.h"
@@ -100,4 +99,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_WEBSOCKET_CLIENT_H_ */

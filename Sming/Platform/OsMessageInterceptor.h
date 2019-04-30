@@ -42,8 +42,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_PLATFORM_OS_MESSAGE_INTERCEPTOR_H_
-#define _SMING_CORE_PLATFORM_OS_MESSAGE_INTERCEPTOR_H_
+#pragma once
 
 #include "Data/Buffer/LineBuffer.h"
 
@@ -98,5 +97,3 @@ private:
 	OsMessageCallback callback = nullptr; ///< User-provided callback
 	static OsMessageInterceptor* self;
 };
-
-#endif /* _SMING_CORE_PLATFORM_OS_MESSAGE_INTERCEPTOR_H_ */

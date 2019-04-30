@@ -11,8 +11,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_PLATFORM_WIFI_EVENTS_H_
-#define _SMING_CORE_PLATFORM_WIFI_EVENTS_H_
+#pragma once
 
 #include "Delegate.h"
 #include "WString.h"
@@ -54,4 +53,3 @@ private:
 };
 
 extern WifiEventsClass WifiEvents;
-#endif /* _SMING_CORE_PLATFORM_WIFI_EVENTS_H_ */

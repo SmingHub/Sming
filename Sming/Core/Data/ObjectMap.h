@@ -10,8 +10,7 @@
  *
  */
 
-#ifndef _SMING_CORE_DATA_OBJECT_MAP_H_
-#define _SMING_CORE_DATA_OBJECT_MAP_H_
+#pragma once
 
 #include "WVector.h"
 
@@ -340,5 +339,3 @@ private:
 	// Copy constructor unsafe, so prevent access
 	ObjectMap(ObjectMap<K, V>& that);
 };
-
-#endif // _SMING_CORE_DATA_OBJECT_MAP_H_

@@ -14,8 +14,7 @@
 ||
 */
 
-#ifndef COUNTABLE_H
-#define COUNTABLE_H
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 
@@ -32,6 +31,3 @@ class Countable
       return operator[](i);
     }
 };
-
-#endif
-// COUNTABLE_H

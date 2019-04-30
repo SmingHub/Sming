@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_C_STRING_ARRAY_H_
-#define _SMING_CORE_DATA_C_STRING_ARRAY_H_
+#pragma once
 
 #include "WString.h"
 
@@ -120,5 +119,3 @@ public:
 private:
 	mutable unsigned stringCount = 0;
 };
-
-#endif // _SMING_CORE_DATA_C_STRING_ARRAY_H_

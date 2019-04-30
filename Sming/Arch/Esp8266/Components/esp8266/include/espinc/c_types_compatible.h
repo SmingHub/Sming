@@ -6,8 +6,7 @@
  // Updated, compatible version of c_types.h
  // Just removed types declared in <stdint.h>
  
-#ifndef _SYSTEM_INCLUDE_ESPINC_C_TYPES_COMPATIBLE_H_
-#define _SYSTEM_INCLUDE_ESPINC_C_TYPES_COMPATIBLE_H_
+#pragma once
 
 /*typedef unsigned char       uint8_t;
 typedef signed char         sint8_t;
@@ -100,5 +99,3 @@ typedef unsigned char   bool;
 
 
 #endif /* !__cplusplus */
-
-#endif /* _SYSTEM_INCLUDE_ESPINC_C_TYPES_COMPATIBLE_H_ */

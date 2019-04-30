@@ -13,8 +13,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_FILE_SYSTEM_H_
-#define _SMING_CORE_FILE_SYSTEM_H_
+#pragma once
 
 #include "spiffs/spiffs_sming.h"
 #include "WVector.h"
@@ -206,4 +205,3 @@ int fileDelete(file_t file);
 bool fileExist(const String& name);
 
 /** @} */
-#endif /* _SMING_CORE_FILE_SYSTEM_H_ */

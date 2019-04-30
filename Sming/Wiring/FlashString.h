@@ -78,8 +78,7 @@
  *
  */
 
-#ifndef __FLASH_STRING_H_
-#define __FLASH_STRING_H_
+#pragma once
 
 #include "WString.h"
 
@@ -254,5 +253,3 @@ struct FlashString {
 		return !isEqual(str);
 	}
 };
-
-#endif /* __FLASH_STRING_H_ */

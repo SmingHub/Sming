@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_MULTIPART_STREAM_H_
-#define _SMING_CORE_DATA_STREAM_MULTIPART_STREAM_H_
+#pragma once
 
 #include "MultiStream.h"
 #include "Delegate.h"
@@ -63,4 +62,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_STREAM_MULTIPART_STREAM_H_ */

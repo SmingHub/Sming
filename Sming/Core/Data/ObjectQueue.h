@@ -13,8 +13,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_OBJECT_QUEUE_H_
-#define _SMING_CORE_DATA_OBJECT_QUEUE_H_
+#pragma once
 
 #include "WString.h"
 #include "WHashMap.h"
@@ -41,4 +40,3 @@ public:
 	}
 };
 
-#endif /* _SMING_CORE_DATA_OBJECT_QUEUE_H_ */

@@ -22,8 +22,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_URL_H_
-#define _SMING_CORE_NETWORK_URL_H_
+#pragma once
 
 #include "WString.h"
 #include "Http/HttpParams.h"
@@ -180,4 +179,3 @@ public:
 typedef Url URL SMING_DEPRECATED; ///< @deprecated Use `Url` instead
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_URL_H_ */

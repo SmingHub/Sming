@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _GDB_REGISTERS_H_
-#define _GDB_REGISTERS_H_
+#pragma once
 
 #include "gdbstub-cfg.h"
 #include "signals.h"
@@ -175,5 +174,3 @@ enum GdbReg {
 	XT_REGISTER_MAP(XX)
 #undef XX
 };
-
-#endif /* _GDB_REGISTERS_H_ */

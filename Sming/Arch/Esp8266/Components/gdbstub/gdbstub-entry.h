@@ -6,8 +6,7 @@
  * License: ESPRESSIF MIT License
  *******************************************************************************/
 
-#ifndef _GDBSTUB_ENTRY_H_
-#define _GDBSTUB_ENTRY_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,5 +26,3 @@ extern void* gdbstub_do_break_breakpoint_addr;
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _GDBSTUB_ENTRY_H_ */

@@ -9,8 +9,7 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_FLASHMEM_H_
-#define _SYSTEM_INCLUDE_FLASHMEM_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -160,5 +159,3 @@ uint32_t flashmem_get_first_free_block_address();
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _SYSTEM_INCLUDE_FLASHMEM_H_ */

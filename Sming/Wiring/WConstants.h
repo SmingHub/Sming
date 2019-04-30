@@ -15,8 +15,7 @@
 ||
 */
 
-#ifndef WCONSTANTS_H
-#define WCONSTANTS_H
+#pragma once
 
 #include <user_config.h>
 
@@ -143,6 +142,3 @@ typedef unsigned int word;
 typedef uint8_t byte;
 typedef uint8_t boolean;
 typedef void (*voidFuncPtr)(void);
-
-#endif
-// WCONSTANTS_H

@@ -1,5 +1,5 @@
-#ifndef SERVICES_SPIFFS_SPIFFY_HOST_H_
-#define SERVICES_SPIFFS_SPIFFY_HOST_H_
+
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,6 +42,3 @@ typedef signed short s16_t;
 typedef unsigned short u16_t;
 typedef signed char s8_t;
 typedef unsigned char u8_t;
-
-
-#endif /* SERVICES_SPIFFS_SPIFFY_HOST_H_ */

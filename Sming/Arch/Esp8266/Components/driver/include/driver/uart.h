@@ -34,8 +34,7 @@
  * Note: uart_detach_all() should be called at startup, i.e. from user_init().
  */
 
-#ifndef ESP_UART_H
-#define ESP_UART_H
+#pragma once
 
 #if defined (__cplusplus)
 extern "C" {
@@ -427,5 +426,3 @@ void uart_restore_interrupts();
 #if defined (__cplusplus)
 } // extern "C"
 #endif
-
-#endif // ESP_UART_H

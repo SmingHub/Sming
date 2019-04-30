@@ -13,8 +13,7 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_STRINGUTIL_H_
-#define _SYSTEM_INCLUDE_STRINGUTIL_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,5 +68,3 @@ static inline signed char unhex(char c)
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _SYSTEM_INCLUDE_STRINGUTIL_H_ */

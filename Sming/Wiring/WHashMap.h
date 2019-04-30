@@ -26,8 +26,7 @@
  *
  */
 
-#ifndef HASHMAP_H
-#define HASHMAP_H
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 
@@ -320,6 +319,3 @@ class HashMap
   private:
     HashMap(const HashMap<K, V>& that);
 };
-
-#endif
-// HASHMAP_H

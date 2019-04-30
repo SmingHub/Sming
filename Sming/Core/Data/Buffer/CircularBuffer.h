@@ -13,8 +13,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_BUFFER_CIRCULAR_BUFFER_H_
-#define _SMING_CORE_DATA_BUFFER_CIRCULAR_BUFFER_H_
+#pragma once
 
 #include "Stream/ReadWriteStream.h"
 
@@ -119,4 +118,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_BUFFER_CIRCULAR_BUFFER_H_ */

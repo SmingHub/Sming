@@ -18,8 +18,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_SMTPCLIENT_H_
-#define _SMING_CORE_NETWORK_SMTPCLIENT_H_
+#pragma once
 
 /** @defgroup   smtpclient SMTP client
  *  @brief      Provides SMTP/S client
@@ -214,5 +213,3 @@ private:
 	 */
 	HttpPartResult multipartProducer();
 };
-
-#endif /* _SMING_CORE_NETWORK_SMTPCLIENT_H_ */

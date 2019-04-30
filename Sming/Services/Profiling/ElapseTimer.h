@@ -7,9 +7,7 @@
  * Simple class for elapse timing
  *
  ****/
-
-#ifndef __ELAPSETIMER_H
-#define __ELAPSETIMER_H
+#pragma once
 
 #include "HardwareTimer.h"
 
@@ -37,5 +35,3 @@ public:
 private:
 	uint32_t startTicks;
 };
-
-#endif // __ELAPSETIMER_H

@@ -12,8 +12,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_NET_UTILS_H_
-#define _SMING_CORE_NETWORK_NET_UTILS_H_
+#pragma once
 
 struct pbuf;
 class String;
@@ -47,4 +46,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_NET_UTILS_H_ */

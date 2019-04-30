@@ -15,8 +15,7 @@
 ||
 */
 
-#ifndef WVECTOR_H
-#define WVECTOR_H
+#pragma once
 
 #include "Countable.h"
 #include <stdlib.h>
@@ -452,6 +451,3 @@ void Vector<Element>::sort(Comparer compareFunction)
 		_data[i+1] = key;    //Put key into its proper location
     }
 }
-
-#endif
-// WVECTOR_H

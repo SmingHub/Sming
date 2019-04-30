@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_HTTP_HTTP_BODY_PARSER_H_
-#define _SMING_CORE_HTTP_HTTP_BODY_PARSER_H_
+#pragma once
 
 #include "HttpCommon.h"
 #include "HttpRequest.h"
@@ -47,5 +46,3 @@ void formUrlParser(HttpRequest& request, const char* at, int length);
  * @note The content later can be retrieved by calling request.getBody()
  */
 void bodyToStringParser(HttpRequest& request, const char* at, int length);
-
-#endif /* _SMING_CORE_HTTP_HTTP_BODY_PARSER_H_ */

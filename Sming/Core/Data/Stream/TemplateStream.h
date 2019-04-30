@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_TEMPLATE_STREAM_H_
-#define _SMING_CORE_DATA_STREAM_TEMPLATE_STREAM_H_
+#pragma once
 
 #include "DataSourceStream.h"
 #include "WHashMap.h"
@@ -125,5 +124,3 @@ private:
 };
 
 /** @} */
-
-#endif /* _SMING_CORE_DATA_STREAM_TEMPLATE_STREAM_H_ */

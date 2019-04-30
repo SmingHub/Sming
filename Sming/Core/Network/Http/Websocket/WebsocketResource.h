@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_RESOURCE_H_
-#define _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_RESOURCE_H_
+#pragma once
 
 #include "../HttpServerConnection.h"
 #include "../HttpResource.h"
@@ -59,5 +58,3 @@ protected:
 	WebsocketBinaryDelegate wsBinary = nullptr;
 	WebsocketDelegate wsDisconnect = nullptr;
 };
-
-#endif /* _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_RESOURCE_H_ */

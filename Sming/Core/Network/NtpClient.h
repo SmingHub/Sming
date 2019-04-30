@@ -14,8 +14,7 @@
  *  @ingroup    udp
  *  @{
  */
-#ifndef _SMING_CORE_NETWORK_NTP_CLIENT_H_
-#define _SMING_CORE_NETWORK_NTP_CLIENT_H_
+#pragma once
 
 #include "UdpConnection.h"
 #include "Platform/System.h"
@@ -136,4 +135,3 @@ protected:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_NTP_CLIENT_H_ */

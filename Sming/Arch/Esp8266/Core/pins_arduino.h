@@ -10,8 +10,7 @@
 
 // File name selected for compatibility
 
-#ifndef _SMING_CORE_PINS_ARDUINO_H_
-#define _SMING_CORE_PINS_ARDUINO_H_
+#pragma once
 
 #include "espinc/peri.h"
 
@@ -35,5 +34,3 @@ extern const unsigned int A0; // Single ESP8266EX analog input pin (TOUT) 10 bit
 #define portOutputRegister(port) ((volatile uint32_t*)&GPO)
 #define portInputRegister(port) ((volatile uint32_t*)&GPI)
 #define portModeRegister(port) ((volatile uint32_t*)&GPE)
-
-#endif /* _SMING_CORE_PINS_ARDUINO_H_ */

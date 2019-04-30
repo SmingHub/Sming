@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_ENDLESS_MEMORY_STREAM_H_
-#define _SMING_CORE_DATA_STREAM_ENDLESS_MEMORY_STREAM_H_
+#pragma once
 
 #include "MemoryDataStream.h"
 
@@ -62,4 +61,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_STREAM_ENDLESS_MEMORY_STREAM_H_ */

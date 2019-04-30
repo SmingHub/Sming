@@ -16,8 +16,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_NETWORK_HTTP_CLIENT_H_
-#define _SMING_CORE_NETWORK_HTTP_CLIENT_H_
+#pragma once
 
 #include "TcpClient.h"
 #include "Http/HttpCommon.h"
@@ -123,4 +122,3 @@ protected:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_HTTP_CLIENT_H_ */

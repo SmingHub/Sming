@@ -5,8 +5,7 @@
  *      Author: Anakonda
  */
 
-#ifndef WIRING_WIRINGFRAMEWORKDEPENDENCIES_H_
-#define WIRING_WIRINGFRAMEWORKDEPENDENCIES_H_
+#pragma once
 
 #include <user_config.h>
 
@@ -29,6 +28,3 @@ using std::isinf;
 using std::isnan;
 using std::max;
 using std::min;
-
-
-#endif /* WIRING_WIRINGFRAMEWORKDEPENDENCIES_H_ */

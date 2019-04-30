@@ -13,8 +13,7 @@
  *  @{
  */
 
-#ifndef _SMING_CORE_HARDWARE_SERIAL_H_
-#define _SMING_CORE_HARDWARE_SERIAL_H_
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 #include "Data/Stream/ReadWriteStream.h"
@@ -473,4 +472,3 @@ private:
 extern HardwareSerial Serial;
 
 /** @} */
-#endif /* _SMING_CORE_HARDWARE_SERIAL_H_ */

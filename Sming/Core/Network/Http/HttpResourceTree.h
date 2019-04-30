@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_TREE_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_TREE_H_
+#pragma once
 
 #include "HttpResource.h"
 
@@ -80,5 +79,3 @@ public:
 	 */
 	void set(String path, const HttpPathDelegate& callback);
 };
-
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_TREE_H_ */

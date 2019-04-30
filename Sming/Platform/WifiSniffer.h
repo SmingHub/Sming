@@ -14,8 +14,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_WIFI_SNIFFER_H_
-#define _SMING_CORE_WIFI_SNIFFER_H_
+#pragma once
 
 #include "System.h"
 #include "WVector.h"
@@ -142,5 +141,3 @@ private:
 	static WifiBeaconCallback beaconCallback;
 	static WifiClientCallback clientCallback;
 };
-
-#endif /* _SMING_CORE_WIFI_SNIFFER_H_ */

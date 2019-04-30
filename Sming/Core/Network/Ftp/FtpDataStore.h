@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_FTP_FTP_DATA_STORE_H_
-#define _SMING_CORE_NETWORK_FTP_FTP_DATA_STORE_H_
+#pragma once
 
 #include "FtpDataStream.h"
 #include "FileSystem.h"
@@ -51,5 +50,3 @@ public:
 private:
 	file_t file;
 };
-
-#endif /* _SMING_CORE_NETWORK_FTP_FTP_DATA_STORE_H_ */

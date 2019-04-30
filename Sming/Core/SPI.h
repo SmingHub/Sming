@@ -15,8 +15,7 @@
  *  @brief    Provides hardware SPI support
  */
 
-#ifndef _SMING_CORE_SPI_H_
-#define _SMING_CORE_SPI_H_
+#pragma once
 
 #include "SPIBase.h"
 #include "SPISettings.h"
@@ -184,5 +183,3 @@ private:
 
 /** @brief  Global instance of SPI class */
 extern SPIClass SPI;
-
-#endif /* _SMING_CORE_SPI_H_ */

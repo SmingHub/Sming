@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_STREAM_LIMITED_MEMORY_STREAM_H_
-#define _SMING_CORE_DATA_STREAM_LIMITED_MEMORY_STREAM_H_
+#pragma once
 
 #include "ReadWriteStream.h"
 
@@ -73,4 +72,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_DATA_STREAM_LIMITED_MEMORY_STREAM_H_ */

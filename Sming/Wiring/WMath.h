@@ -15,8 +15,7 @@
 ||
 */
 
-#ifndef WMATH_H
-#define WMATH_H
+#pragma once
 
 #include "WiringFrameworkIncludes.h"
 
@@ -26,6 +25,3 @@ long map(long, long, long, long, long);
 void randomSeed(uint16_t);
 uint16_t makeWord(uint8_t, uint8_t);
 uint16_t makeWord(uint16_t);
-
-#endif
-// WMATH_H

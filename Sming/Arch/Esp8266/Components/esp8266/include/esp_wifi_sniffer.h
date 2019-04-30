@@ -6,8 +6,7 @@
  * See ESP8266 Technical Reference, Chapter 14: Sniffer Introduction
  */
 
-#ifndef _ESP_WIFI_SNIFFER_H_
-#define _ESP_WIFI_SNIFFER_H_
+#pragma once
 
 #include <user_config.h>
 
@@ -60,5 +59,3 @@ struct sniffer_buf2 {
 	uint16_t cnt;
 	uint16_t len;
 };
-
-#endif /* _ESP_WIFI_SNIFFER_H_ */

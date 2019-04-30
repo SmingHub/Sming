@@ -17,8 +17,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_HEADERS_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_HEADERS_H_
+#pragma once
 
 #include "Data/CStringArray.h"
 #include "WString.h"
@@ -226,5 +225,3 @@ private:
 
 	CStringArray customFieldNames;
 };
-
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_HEADERS_H_ */

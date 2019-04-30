@@ -13,8 +13,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_RBOOT_HTTP_UPDATE_H_
-#define _SMING_CORE_NETWORK_RBOOT_HTTP_UPDATE_H_
+#pragma once
 
 #include "Data/Stream/DataSourceStream.h"
 #include "Network/HttpClient.h"
@@ -138,5 +137,3 @@ protected:
 
 	HttpRequest* baseRequest = nullptr;
 };
-
-#endif /* _SMING_CORE_NETWORK_RBOOT_HTTP_UPDATE_H_ */

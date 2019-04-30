@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_ESP_SYSTEMAPI_H_
-#define _SYSTEM_INCLUDE_ESP_SYSTEMAPI_H_
+#pragma once
 
 #include <ets_sys.h>
 #include <osapi.h>
@@ -126,5 +125,3 @@ extern void ets_isr_mask(unsigned intr);
 extern void ets_isr_unmask(unsigned intr);
 
 typedef signed short file_t;
-
-#endif /* _SYSTEM_INCLUDE_ESP_SYSTEMAPI_H_ */

@@ -15,8 +15,7 @@
 ||
 */
 
-#ifndef WCHARACTER_H
-#define WCHARACTER_H
+#pragma once
 
 #include "WiringFrameworkIncludes.h"
 
@@ -162,6 +161,3 @@ inline int toUpperCase(int c)
 {
   return toupper(c);
 }
-
-#endif
-// WCHARACTER_H

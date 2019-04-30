@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WS_COMMAND_HANDLER_RESOURCE_H_
-#define _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WS_COMMAND_HANDLER_RESOURCE_H_
+#pragma once
 
 #include "../HttpResource.h"
 #include "WebsocketConnection.h"
@@ -50,5 +49,3 @@ protected:
 private:
 	CommandExecutor commandExecutor;
 };
-
-#endif /* _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WS_COMMAND_HANDLER_RESOURCE_H_ */

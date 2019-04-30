@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _GDB_GDBUART_H_
-#define _GDB_GDBUART_H_
+#pragma once
 
 #include "gdbstub.h"
 
@@ -53,5 +52,3 @@ size_t gdbSendUserData();
  * @brief Ensure all user data has been written to serial port
  */
 void gdbFlushUserData();
-
-#endif /* _GDB_GDBUART_H_ */

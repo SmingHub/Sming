@@ -15,8 +15,7 @@
  *	Default settings are at end of file
  */
 
-#ifndef _SMING_CORE_SMING_LOCALE_H_
-#define _SMING_CORE_SMING_LOCALE_H_
+#pragma once
 
 // Define unique values for each locale (try to use ISD codes if appropriate)
 #define LOCALE_EN_US 1
@@ -79,5 +78,3 @@
 // String with time and date format (see DateTime::format for options - this implements %c format)
 #define LOCALE_DATE_TIME "%a %d %b %Y %X"
 #endif // LOCALE_DATE_TIME
-
-#endif /* _SMING_CORE_SMING_LOCALE_H_ */

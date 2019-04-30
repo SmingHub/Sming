@@ -14,8 +14,7 @@
  *  @{
 */
 
-#ifndef _SMING_CORE_DIGITAL_H_
-#define _SMING_CORE_DIGITAL_H_
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 
@@ -73,5 +72,3 @@ inline uint16_t analogRead(uint16_t pin)
 }
 
 /** @} */
-
-#endif /* _SMING_CORE_DIGITAL_H_ */

@@ -11,8 +11,7 @@
  *
  ****/
 
-#ifndef _SYSTEM_INCLUDE_STRINGCONVERSION_H_
-#define _SYSTEM_INCLUDE_STRINGCONVERSION_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,5 +38,3 @@ double os_atof(const char* s);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _SYSTEM_INCLUDE_STRINGCONVERSION_H_ */

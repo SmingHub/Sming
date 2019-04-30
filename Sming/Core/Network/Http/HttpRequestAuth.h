@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_AUTH_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_AUTH_H_
+#pragma once
 
 #include "HttpResponse.h"
 
@@ -64,5 +63,3 @@ private:
 	String password;
 	HttpRequest* request = nullptr;
 };
-
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_REQUEST_AUTH_H_ */

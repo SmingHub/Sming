@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_RESPONSE_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_RESPONSE_H_
+#pragma once
 
 #include "HttpCommon.h"
 #include "Data/Stream/ReadWriteStream.h"
@@ -144,5 +143,3 @@ public:
 	ReadWriteStream* buffer = nullptr;   ///< Internal stream for storing strings and receiving responses
 	IDataSourceStream* stream = nullptr; ///< The body stream
 };
-
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_RESPONSE_H_ */

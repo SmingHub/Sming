@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_H_
+#pragma once
 
 #include "WString.h"
 #include "Data/ObjectMap.h"
@@ -49,5 +48,3 @@ public:
 	HttpResourceDelegate onRequestComplete = nullptr;		 ///< request is complete OR upgraded
 	HttpServerConnectionUpgradeDelegate onUpgrade = nullptr; ///< request is upgraded and raw data is passed to it
 };
-
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_RESOURCE_H_ */

@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_DATA_BUFFER_SERIAL_BUFFER_H_
-#define _SMING_CORE_DATA_BUFFER_SERIAL_BUFFER_H_
+#pragma once
 
 #include <user_config.h>
 
@@ -165,5 +164,3 @@ private:
 	size_t writePos = 0;
 	char* buffer = nullptr;
 };
-
-#endif //  _SMING_CORE_DATA_BUFFER_SERIAL_BUFFER_H_

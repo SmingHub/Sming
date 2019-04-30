@@ -17,8 +17,7 @@
  *  @todo   How is wifi access point dhcp controlled?
 */
 
-#ifndef _SMING_CORE_PLATFORM_ACCESS_POINT_H_
-#define _SMING_CORE_PLATFORM_ACCESS_POINT_H_
+#pragma once
 
 #include "System.h"
 #include "WString.h"
@@ -118,5 +117,3 @@ private:
  *  @ingroup wifi_ap
  */
 extern AccessPointClass WifiAccessPoint;
-
-#endif /* _SMING_CORE_PLATFORM_ACCESS_POINT_H_ */

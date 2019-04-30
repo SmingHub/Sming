@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_SSL_KEY_CERT_PAIR_H_
-#define _SMING_CORE_NETWORK_SSL_KEY_CERT_PAIR_H_
+#pragma once
 
 #include "ssl/ssl.h"
 #include "WString.h"
@@ -111,5 +110,3 @@ private:
 	String keyPassword;
 	String certificate;
 };
-
-#endif /* _SMING_CORE_NETWORK_SSL_KEY_CERT_PAIR_H_ */

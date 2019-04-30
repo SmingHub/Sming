@@ -13,8 +13,7 @@
  *	@note   Provides ability to set and read the ESP8266 RTC.
  *  @ingroup datetime
 */
-#ifndef _SMING_CORE_PLATFORM_RTC_H_
-#define _SMING_CORE_PLATFORM_RTC_H_
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 
@@ -83,4 +82,3 @@ private:
  *  @ingroup rtc
  */
 extern RtcClass RTC;
-#endif /* _SMING_CORE_PLATFORM_RTC_H_ */

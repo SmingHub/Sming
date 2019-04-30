@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_BASE_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_BASE_H_
+#pragma once
 
 #include "../TcpClient.h"
 #include "WString.h"
@@ -237,4 +236,3 @@ protected:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_CONNECTION_BASE_H_ */

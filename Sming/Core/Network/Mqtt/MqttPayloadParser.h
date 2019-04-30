@@ -10,8 +10,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_MQTT_PAYLOAD_PARSER_H_
-#define _SMING_CORE_NETWORK_MQTT_PAYLOAD_PARSER_H_
+#pragma once
 
 #include "Delegate.h"
 #include "mqtt-codec/src/message.h"
@@ -41,4 +40,3 @@ typedef Delegate<int(MqttPayloadParserState& state, mqtt_message_t* message, con
 int defaultPayloadParser(MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer, int length);
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_MQTT_PAYLOAD_PARSER_H_ */

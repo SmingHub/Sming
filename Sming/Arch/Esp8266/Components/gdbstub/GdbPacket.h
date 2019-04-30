@@ -12,8 +12,7 @@
  *
  ****/
 
-#ifndef _GDB_GDB_PACKET_H_
-#define _GDB_GDB_PACKET_H_
+#pragma once
 
 #include "gdbuart.h"
 
@@ -108,5 +107,3 @@ private:
 	uint8_t checksum = 0; ///< Running checksum of the output packet
 	unsigned packetLength = 0;
 };
-
-#endif /* _GDB_GDB_PACKET_H_ */

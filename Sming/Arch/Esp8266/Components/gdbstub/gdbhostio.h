@@ -10,9 +10,6 @@
  *
  ****/
 
-#ifndef GDB_GDBHOSTIO_H_
-#define GDB_GDBHOSTIO_H_
+#pragma once
 
 void gdbHandleHostIo(char* commandBuffer, unsigned cmdLen);
-
-#endif /* GDB_GDBHOSTIO_H_ */

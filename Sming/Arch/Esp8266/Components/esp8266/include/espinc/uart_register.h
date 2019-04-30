@@ -4,8 +4,7 @@
  *
  */
 
-#ifndef _SYSTEM_INCLUDE_ESPINC_UART_REGISTER_H_
-#define _SYSTEM_INCLUDE_ESPINC_UART_REGISTER_H_
+#pragma once
 
 #define REG_UART_BASE( i )  (0x60000000+(i)*0xf00)
 //version value:32'h062000
@@ -130,5 +129,3 @@
 
 #define UART_DATE( i )                          (REG_UART_BASE( i ) + 0x78)
 #define UART_ID( i )                            (REG_UART_BASE( i ) + 0x7C)
-
-#endif /* _SYSTEM_INCLUDE_ESPINC_UART_REGISTER_H_ */

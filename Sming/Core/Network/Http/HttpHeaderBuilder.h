@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_HTTP_HEADER_BUILDER_H_
-#define _SMING_CORE_NETWORK_HTTP_HTTP_HEADER_BUILDER_H_
+#pragma once
 
 #include "HttpHeaders.h"
 
@@ -52,5 +51,3 @@ private:
 	String lastData;		  ///< Content of field or value, may be constructed over several callbacks
 	String currentField;	  ///< Header field name
 };
-
-#endif /* _SMING_CORE_NETWORK_HTTP_HTTP_HEADER_BUILDER_H_ */

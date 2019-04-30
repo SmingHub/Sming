@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_CONNECTION_H_
-#define _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_CONNECTION_H_
+#pragma once
 
 #include "Network/TcpServer.h"
 #include "../HttpConnection.h"
@@ -317,4 +316,3 @@ private:
 };
 
 /** @} */
-#endif /* _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WEBSOCKET_CONNECTION_H_ */
