@@ -219,7 +219,7 @@ define TryApplyPatch
 endef
 
 .PHONY: submodules submodules-clean
-submodules: $(LIBRARY_SUBMODULES) $(addsuffix /.submodule,$(SUBMODULES)) ##Fetch all third-party submodules (but do not build)
+submodules: | $(LIBRARY_SUBMODULES) $(addsuffix /.submodule,$(SUBMODULES)) ##Fetch all third-party submodules (but do not build)
 
 ##@Cleaning
 submodules-clean: ##Reset state of all third-party submodules

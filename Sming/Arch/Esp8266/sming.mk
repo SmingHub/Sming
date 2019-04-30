@@ -35,20 +35,20 @@ MODULES			+= $(SPIFFS_SMING) $(SPIFFS_BASE)/src
 CONFIG_VARS += ENABLE_CUSTOM_PWM
 ENABLE_CUSTOM_PWM	?= 1
 ifeq ($(ENABLE_CUSTOM_PWM), 1)
-	PWM_BASE		:= $(ARCH_COMPONENTS)/pwm
-	SUBMODULES		+= $(PWM_BASE)/new-pwm
+	PWM_BASE		:= $(ARCH_COMPONENTS)/pwm/new-pwm
+	SUBMODULES		+= $(PWM_BASE)
 	CFLAGS			+= -DSDK_PWM_PERIOD_COMPAT_MODE=1
 	LIBPWM			:= pwm_open
 	LIBS			+= $(LIBPWM)
 	CLEAN			+= pwm-clean
 
-$(call UserLibPath,$(LIBPWM)): $(PWM_BASE)/new-pwm/pwm.c
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(CFLAGS) -c $< -o $(dir $<)pwm.o
-	$(Q) $(AR) rcs $@ $(dir $<)pwm.o
+$(call UserLibPath,$(LIBPWM)): | $(PWM_BASE)/.submodule
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(CFLAGS) -c $(PWM_BASE)/pwm.c -o $(PWM_BASE)/pwm.o
+	$(Q) $(AR) rcs $@ $(PWM_BASE)/pwm.o
 
 .PHONY: pwm-clean
 pwm-clean:
-	-$(Q) rm -f $(PWM_BASE)/new-pwm/*.o
+	-$(Q) rm -f $(PWM_BASE)/*.o
 endif
 
 
@@ -65,7 +65,7 @@ ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 	LIBS				+= $(LIBMAINMM)
 
 # Make copy of libmain and remove mem_manager.o module
-$(call UserLibPath,$(LIBMAINMM)): $(SDK_LIBDIR)/libmain.a
+$(call UserLibPath,$(LIBMAINMM)): $(SDK_LIBDIR)/libmain.a | $(UMM_MALLOC_BASE)/.submodule
 	$(vecho) "Enabling custom heap implementation"
 	$(Q) cp $^ $@
 	$(Q) $(AR) -d $@ mem_manager.o
@@ -113,7 +113,7 @@ else
 	LIBS				+= $(LIBLWIP)
 	CLEAN 				+= lwip-clean
 
-$(call UserLibPath,lwip%): $(LWIP_BASE)/.submodule
+$(call UserLibPath,lwip%): | $(LWIP_BASE)/.submodule
 	$(vecho) "Building $(notdir $@)..."
 	$(Q) $(LWIP_BUILD) CC=$(CC) AR=$(AR) all
 
@@ -141,7 +141,7 @@ ifeq ($(ENABLE_SSL),1)
 	CFLAGS			+= $(AXTLS_FLAGS)
 	AXTLS_BUILD		:= $(MAKE) -C $(AXTLS_BASE) -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)"
 
-$(call UserLibPath,$(LIBAXTLS)):
+$(call UserLibPath,$(LIBAXTLS)): | $(AXTLS_BASE)/.submodule
 	$(Q) $(AXTLS_BUILD) all
 
 .PHONY: axtls-clean
@@ -164,7 +164,7 @@ endef
 TOOLS			+= $(SPIFFY)
 TOOLS_CLEAN		+= spiffy-clean
 
-$(SPIFFY): $(COMPONENTS)/spiffs/.submodule
+$(SPIFFY): | $(COMPONENTS)/spiffs/.submodule
 	$(Q) $(call make-tool,$@,SPIFFS_SMING=$(SMING_HOME)/$(SPIFFS_SMING) SPIFFS_BASE=$(SMING_HOME)/$(SPIFFS_BASE))
 
 .PHONY: spiffy-clean
@@ -176,7 +176,7 @@ TOOLS			+= $(ESPTOOL2)
 TOOLS_CLEAN		+= esptool2-clean
 
 SUBMODULES += $(dir $(ESPTOOL2))
-$(ESPTOOL2): $(dir $(ESPTOOL2)).submodule
+$(ESPTOOL2): | $(dir $(ESPTOOL2)).submodule
 	$(Q) $(call make-tool,$@)
 
 .PHONY: esptool2-clean
