@@ -97,10 +97,15 @@ terminal: kill_term ##Open the serial terminal
 gdb: kill_term ##Run the debugger console
 	$(GDB)
 
+# Stack trace decoder
+CONFIG_VARS += TRACE
+TRACE ?=
 .PHONY: decode-stacktrace
-decode-stacktrace: ##If a crash occurred, use this option then cut & paste dump text as prompted
-	@echo "Decode stack trace: Paste stack trace here"
-	$(Q) python $(ARCH_TOOLS)/decode-stacktrace.py $(TARGET_OUT_0)
+decode-stacktrace: ##Open the stack trace decoder ready to paste dump text. Alteratively, use `make decode-stacktrace TRACE=/path/to/crash.stack`
+	$(Q) if [ -z "$(TRACE)" ]; then \
+		echo "Decode stack trace: Paste stack trace here"; \
+	fi
+	$(Q) python $(ARCH_TOOLS)/decode-stacktrace.py $(TARGET_OUT_0) $(TRACE)
 
 ##@Testing
 
