@@ -211,18 +211,15 @@ define PrintHelp
 				targets[$$1, group] = $$2; \
 			} \
 			END { \
-				groupCount = asort(groups); \
-				for (g = 1; g <= groupCount; ++g) { \
-					printf "\n\033[1m%s\033[0m\n", groups[g]; \
-					targetCount = asorti(targets, idx); \
-					for (t = 1; t <= targetCount; ++t) { \
-						split(idx[t], sep, SUBSEP); \
-						if (sep[2] == groups[g]) \
-							printf "  \033[1;36m%-18s\033[0m %s\n", sep[1], targets[idx[t]] \
+				for (g in groups) { \
+					printf "\n\033[1m%s\033[0m\n", g; \
+					for (t in targets) { \
+						split(t, sep, SUBSEP); \
+						if (sep[2] == g) \
+							printf "  \033[1;36m%-18s\033[0m %s\n", sep[1], targets[t] \
 					} \
 				} \
 			} ' $(MAKEFILE_LIST)
-
 	$(info )
 endef
 
