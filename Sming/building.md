@@ -63,7 +63,7 @@ Arch/					Architecture-specific makefiles and code
 
 Components/			Framework support code, not to be used directly by applications
 
-Core/					Main framework core (TODO: rename to `Core`)
+Core/					Main framework core
 
 Libraries/			Arduino Libraries
 
