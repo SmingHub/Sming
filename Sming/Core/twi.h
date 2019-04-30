@@ -44,4 +44,3 @@ uint8_t twi_status();
 #ifdef __cplusplus
 }
 #endif
-

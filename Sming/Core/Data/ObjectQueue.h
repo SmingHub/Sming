@@ -39,4 +39,3 @@ public:
 		return FIFO<T*, rawSize>::count() ? FIFO<T*, rawSize>::dequeue() : nullptr;
 	}
 };
-

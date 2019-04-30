@@ -80,4 +80,3 @@ private:
 	uint16_t mMISO, mMOSI, mCLK;
 	uint8_t m_delay;
 };
-

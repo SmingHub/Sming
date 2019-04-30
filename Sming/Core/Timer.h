@@ -190,4 +190,3 @@ private:
 	uint16_t longIntervalCounter = 0;
 	uint16_t longIntervalCounterLimit = 0;
 };
-
