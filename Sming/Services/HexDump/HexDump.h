@@ -5,8 +5,7 @@
  *      Author: harry
  */
 
-#ifndef SAMPLES_ARDUCAM_APP_HEXDUMP_H_
-#define SAMPLES_ARDUCAM_APP_HEXDUMP_H_
+#pragma once
 
 #include "Arduino.h"
 
@@ -24,5 +23,3 @@ private:
 //	char *buf = new char(16);
 
 };
-
-#endif /* SAMPLES_ARDUCAM_APP_HEXDUMP_H_ */

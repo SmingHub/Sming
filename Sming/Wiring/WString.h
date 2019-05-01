@@ -46,8 +46,7 @@
  *
  */
 
-#ifndef WSTRING_H
-#define WSTRING_H
+#pragma once
 
 #ifdef __cplusplus
 
@@ -385,5 +384,3 @@ class StringSumHelper : public String
 #include "SplitString.h"
 
 #endif  // __cplusplus
-#endif
-// WSTRING_H

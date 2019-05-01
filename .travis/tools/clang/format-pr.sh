@@ -10,7 +10,7 @@ $CLANG_FORMAT --version
 cd $SMING_HOME/..
 
 # Get list of modified files
-files_to_lint="$(git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE | grep '^[^.]*[.]\(c\|cpp\|h\)$' | grep -e Sming/SmingCore -e samples || true)"
+files_to_lint="$(git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE | grep '^[^.]*[.]\(c\|cpp\|h\)$' | grep -e Sming/Core -e Sming/Platform -e Sming/Arch/.+/Core -e Sming/Arch/.+/Platform -e samples || true)"
 
 for f in $files_to_lint; do
 

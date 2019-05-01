@@ -1,7 +1,7 @@
 #include <user_config.h>
 #include <SmingCore.h>
 #include "HardwareTimer.h"
-#include <gdb_syscall.h>
+#include <gdb/gdb_syscall.h>
 #include <Data/Stream/GdbFileStream.h>
 #include <Data/Buffer/LineBuffer.h>
 #include <Platform/OsMessageInterceptor.h>

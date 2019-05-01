@@ -8,8 +8,7 @@
  *
  ****/
 
-#ifndef __FAKE_PGMSPACE_H_
-#define __FAKE_PGMSPACE_H_
+#pragma once
 
 #include "m_printf.h"
 #include "c_types.h"
@@ -237,5 +236,3 @@ extern "C"
 #define PSTR_ARRAY(_name, _str)                                                                                        \
 	static DEFINE_PSTR(_##_name, _str);                                                                                       \
 	LOAD_PSTR(_name, _##_name)
-
-#endif /* __FAKE_PGMSPACE_H_ */

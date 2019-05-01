@@ -17,8 +17,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef IPAddress_h
-#define IPAddress_h
+#pragma once
 
 #include <user_config.h>
 #include "Printable.h"
@@ -138,5 +137,3 @@ public:
 
 // Making this extern saves 100's of bytes; each usage otherwise incurs 4 bytes of BSS
 #define INADDR_NONE IPAddress()
-
-#endif

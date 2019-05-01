@@ -4,16 +4,14 @@
  * http://github.com/anakod/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  ****/
+#pragma once
 
-#include "../Wiring/WiringFrameworkDependencies.h"
-#include "../Wiring/WHashMap.h"
-#include "../Wiring/WVector.h"
-#include "../Wiring/WString.h"
+#include "WiringFrameworkDependencies.h"
+#include "WHashMap.h"
+#include "WVector.h"
+#include "WString.h"
 #include "IPAddress.h"
 class TcpClient;
-
-#ifndef SERVICES_YEELIGHTBULB_H_
-#define SERVICES_YEELIGHTBULB_H_
 
 enum YeelightBulbState
 {
@@ -70,5 +68,3 @@ private:
 	long propsId = 0;
 	YeelightBulbState state = eYBS_Unknown;
 };
-
-#endif /* SERVICES_YEELIGHTBULB_H_ */

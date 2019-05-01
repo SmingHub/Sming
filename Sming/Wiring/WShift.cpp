@@ -15,8 +15,8 @@
 ||
 */
 
-#include "../SmingCore/Clock.h"
-#include "../SmingCore/Digital.h"
+#include "Clock.h"
+#include "Digital.h"
 #include "WiringFrameworkIncludes.h"
 
 

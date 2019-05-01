@@ -11,7 +11,7 @@
 */
 #ifndef LIB_SERVO_H_
 #define LIB_SERVO_H_
-#include "../../SmingCore/SmingCore.h"
+#include <SmingCore.h>
 #include "ServoChannel.h"
 
 #define SERVO_CHANNEL_NUM_MAX 4	///< maximum number of servo channels

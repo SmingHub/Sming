@@ -3,17 +3,15 @@
 # Created by Espressif
 # UDK modifications by CHERTS <sleuthhound@gmail.com>
 # Cross platform compatability by kireevco <dmitry@kireev.co>
+# Multi-architecture support by mikee47 <mike@sillyhouse.net>
 #
 #############################################################
 
+ifndef SMING_HOME
+$(error SMING_HOME variable is not set to a valid directory.)
+endif
+
 ## Defaults for Sming Core
-
-## ESP_HOME sets the path where ESP tools and SDK are located.
-## Windows:
-# ESP_HOME = c:/Espressif
-
-## MacOS / Linux:
-# ESP_HOME = /opt/esp-open-sdk
 
 ## SMING_HOME sets the path where Sming framework is located.
 ## Windows:
@@ -22,549 +20,285 @@
 # MacOS / Linux
 # SMING_HOME = /opt/esp-open-sdk
 
-# Git command
-GIT ?= git
+##@Building
 
-# Detect OS and build environment
-UNAME := $(shell uname -s)
+.PHONY: all
+all: checkdirs libsming tools ##(default) Build the Sming library, user libraries, Arduino libraries and tools
 
-ifeq ($(OS),Windows_NT)
-  # Convert Windows paths to POSIX paths
-  SMING_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(SMING_HOME))))
-  SMING_HOME := $(subst //,/,$(SMING_HOME))
-  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-  ESP_HOME   := $(subst //,/,$(ESP_HOME))
-endif
+include $(SMING_HOME)/build.mk
 
-ifneq ($(filter MINGW32_NT%,$(UNAME)),)
-  UNAME := Windows
-else ifneq ($(filter CYGWIN%,$(UNAME)),)
-  # Cygwin Detected
-  UNAME := Linux
-else ifneq ($(filter CYGWIN%WOW,$(UNAME)),)
-  #Cygwin32
-  UNAME := Linux
-else ifneq ($(filter MSYS%WOW,$(UNAME)),)
-  #Msys32
-  UNAME := Linux
-else ifeq ($(UNAME), Linux)
-  #Linux
-else ifeq ($(UNAME), Darwin)
-  #OS X
-else ifeq ($(UNAME), Freebsd)
-  #BSD
-endif
-
-# OS specific configuration
-ifeq ($(UNAME),Windows)
-  # Windows detected
-
-  # Default SMING_HOME. Can be overriden.
-  SMING_HOME ?= c:\tools\Sming\Sming
-
-  # Default ESP_HOME. Can be overriden.
-  ESP_HOME ?= c:\Espressif
-
-  include $(SMING_HOME)/Makefile-windows.mk
-else
-  ifeq ($(UNAME),Darwin)
-      # MacOS Detected
-      UNAME := MacOS
-
-      # Default SMING_HOME. Can be overriden.
-      SMING_HOME ?= /opt/sming/Sming
-
-      # Default ESP_HOME. Can be overriden.
-      ESP_HOME ?= /opt/esp-open-sdk
-
-      include Makefile-macos.mk
-  else ifeq ($(UNAME),Linux)
-      # Linux Detected
-      UNAME := Linux
-
-      # Default SMING_HOME. Can be overriden.
-      SMING_HOME ?= /opt/sming/Sming
-
-      # Default ESP_HOME. Can be overriden.
-      ESP_HOME ?= /opt/esp-open-sdk
-      include Makefile-linux.mk
-  else ifeq ($(UNAME),FreeBSD)
-      # Freebsd Detected
-      UNAME := FreeBSD
-
-      # Default SMING_HOME. Can be overriden.
-      SMING_HOME ?= /usr/local/esp8266/Sming/Sming
-
-      # Default ESP_HOME. Can be overriden.
-      ESP_HOME ?= /usr/local/esp8266/esp-open-sdk
-      include Makefile-bsd.mk
-  endif
-endif
-
-export ESP_HOME
-export SMING_HOME
-export COMPILE := gcc
-export PATH := $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
-XTENSA_TOOLS_ROOT := $(ESP_HOME)/xtensa-lx106-elf/bin
-
-# select which tools to use as assembler, compiler, librarian and linker
-AS		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
-CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
-CXX		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-g++
-AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
-LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
-OBJCOPY := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objcopy
-OBJDUMP := $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-objdump
-
-### Debug output parameters
-# By default `debugf` does not print file name and line number. If you want this enabled set the directive below to 1
-DEBUG_PRINT_FILENAME_AND_LINE ?= 0
-
-# Default debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0
-DEBUG_VERBOSE_LEVEL ?= 2
-
-# Disable CommandExecutor functionality if not used and save some ROM and RAM
-ENABLE_CMD_EXECUTOR ?= 1
+BUILD_BASE := $(ARCH_BASE)/out/build
 
 RELOAD_MKFILE = 0
-
-# Sming Framework Path
-SMF = $(SMING_HOME)
-
-SPIFF_FILES = files
-
-BUILD_BASE	= out/build
-FW_BASE		= out/firmware
-USER_LIBDIR = compiler/lib
-
-LIBSMING = libsming
-ifeq ($(ENABLE_SSL),1)
-	LIBSMING= libsmingssl
-endif
-
 
 # name for the target project
 TARGET		= app
 
-CUSTOM_TARGETS ?=
+# List of directories containing source code to build
+MODULES :=
 
-ARDUINO_LIBRARIES = $(shell git submodule status Libraries | cut -c2- | cut -f2 -d ' ' | sed -r 's/Libraries\/([^/]*)/Libraries\/\1\/library.properties/g' )
+# List of dependent submodule directories which may require updating/patching
+SUBMODULES :=
 
-# which modules (subdirectories) of the project to include in compiling
-MODULES     = system system/helpers Wiring appinit \
-              $(sort $(dir $(wildcard SmingCore/*/ SmingCore/*/*/ SmingCore/*/*/*/))) \
-              $(filter %/, $(wildcard Services/*/)) \
-              $(filter %/, $(wildcard Libraries/*/)) $(wildcard Libraries/*/src/)
-EXTRA_INCDIR    = include system/include Wiring Libraries SmingCore $(SDK_BASE)/../include
+# Include directories additional to APPCODE / MODULES
+EXTRA_INCDIR :=
 
-# Place a file that should exist in a submodule that is fetched separately
-# => rboot
-THIRD_PARTY_DATA = third-party/rboot/Makefile
-EXTRA_INCDIR += third-party/rboot third-party/rboot/appcode
+#
+SAMPLES_DIRS := $(shell ls -1 ../samples)
+DOXYGEN	:= $(shell command -v doxygen 2> /dev/null)
 
-# => spiffs
-THIRD_PARTY_DATA += third-party/spiffs/makefile
-MODULES		     += third-party/spiffs/src
-EXTRA_INCDIR     += third-party/spiffs/src
-
-# => http-parser
-THIRD_PARTY_DATA += third-party/http-parser/Makefile
-MODULES		     += third-party/http-parser/
-EXTRA_INCDIR     += third-party/http-parser/
-
-# => websocket-parser
-THIRD_PARTY_DATA += third-party/ws_parser/Makefile
-MODULES          += third-party/ws_parser/
-EXTRA_INCDIR     += third-party/ws_parser/
-
-# mqtt-codec in here...
-THIRD_PARTY_DATA += third-party/mqtt-codec/Makefile
-EXTRA_INCDIR     += third-party/mqtt-codec/src
-CUSTOM_TARGETS   += $(USER_LIBDIR)/libmqttc.a
-
-# => yuarel
-THIRD_PARTY_DATA += third-party/libyuarel/Makefile
-MODULES          += third-party/libyuarel/
-EXTRA_INCDIR     += third-party/libyuarel/
-
-# => LOCALE
-ifdef LOCALE
-	CFLAGS += -DLOCALE=$(LOCALE)
-endif
-
-# => SDK
-SDK_INTERNAL = 0
-ifneq (,$(findstring third-party/ESP8266_NONOS_SDK, $(SDK_BASE)))
-	THIRD_PARTY_DATA += third-party/ESP8266_NONOS_SDK/Makefile
-	CFLAGS += -DSDK_INTERNAL
-	SDK_INTERNAL = 1
-endif
-
-# => umm_malloc (custom heap allocation)
-ifeq ($(ENABLE_CUSTOM_HEAP), 1)
-	THIRD_PARTY_DATA += third-party/umm_malloc/Makefile
-	MODULES      += custom_heap third-party/umm_malloc/src
-	EXTRA_INCDIR += third-party/umm_malloc/src third-party/umm_malloc/includes/c-helper-macros
-	CUSTOM_TARGETS += $(USER_LIBDIR)/libmainmm.a
-endif
-
-# => Open Source LWIP
-LIBLWIP = lwip
-ENABLE_CUSTOM_LWIP ?= 1
-ENABLE_ESPCONN ?= 0
-ifeq ($(ENABLE_CUSTOM_LWIP), 0)
-	EXTRA_INCDIR += system/esp-lwip
-endif
-ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-	THIRD_PARTY_DATA += third-party/esp-open-lwip/Makefile.open
-	EXTRA_INCDIR += third-party/esp-open-lwip/include
-	LIBLWIP = lwip_open
-	LWIP_EXTRA_FLAGS = 1
-endif
-ifeq ($(ENABLE_CUSTOM_LWIP), 2)
-	THIRD_PARTY_DATA += third-party/lwip2/Makefile.sming
-	EXTRA_INCDIR += third-party/lwip2/glue-esp/include-esp third-party/lwip2/include
-	LIBLWIP = lwip2
-	LWIP_EXTRA_FLAGS = 1
-endif
-
-ifeq ($(LWIP_EXTRA_FLAGS),1)
-	EXTRA_CFLAGS_LWIP = -I../../system/include -I../../Wiring
-	ENABLE_LWIPDEBUG ?= 0
-	ifeq ($(ENABLE_LWIPDEBUG), 1)
-		EXTRA_CFLAGS_LWIP += -DLWIP_DEBUG
-	endif
-
-	ifeq ($(ENABLE_ESPCONN), 1)
-		LIBLWIP = lwip_full
-	endif
-	CUSTOM_TARGETS += $(USER_LIBDIR)/lib$(LIBLWIP).a
-endif
-
-# libraries used in this project, mainly provided by the SDK
-LIBS		= microc microgcc hal phy pp net80211 $(LIBLWIP) mqttc wpa main
-
-ENABLE_CUSTOM_PWM ?= 1
-ifeq ($(ENABLE_CUSTOM_PWM), 1)
-	THIRD_PARTY_DATA += third-party/pwm/pwm.c
-	CFLAGS += -DSDK_PWM_PERIOD_COMPAT_MODE=1
-endif
-
-MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
-
-CFLAGS_COMMON = -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -finline-functions -fdata-sections -ffunction-sections
-# compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS += -Wall -Wundef -Wpointer-arith -Wno-comment $(CFLAGS_COMMON) \
-         	-D__ets__ -DICACHE_FLASH -DUSE_OPTIMIZE_PRINTF -DARDUINO=106 -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DESP8266=1 -DSMING_INCLUDED=1
-ifneq ($(STRICT),1)
-CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
-endif
-
-ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -ggdb -DENABLE_GDB=1
-endif
-
-ifeq ($(SMING_RELEASE),1)
-	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
-	#      for full list of optimization options
-	CFLAGS += -Os -DSMING_RELEASE=1 -DLWIP_NOASSERT
-else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -Og
-else
-	CFLAGS += -Os -g
-endif
-ifneq ($(MFORCE32),)
-    # Your compiler supports the -mforce-l32 flag which means that
-    # constants can be stored in flash (program) memory instead of SRAM.
-    # See: https://www.arduino.cc/en/Reference/PROGMEM
-    CFLAGS += -DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" -mforce-l32
-else
-    CFLAGS += -DPROGMEM_L32=""
-endif
-
-# Flags for compatability with old versions (most of them should disappear with the next major release)
-ifeq ($(MQTT_NO_COMPAT),1)
-	CFLAGS += -DMQTT_NO_COMPAT=1
-endif
-
-#Append debug options
-CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
-
-CXXFLAGS	= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
-ifneq ($(STRICT),1)
-CXXFLAGS += -Wno-reorder
-endif
-
-# various paths from the SDK used in this project
-SDK_LIBDIR	= lib
-SDK_INCDIR	= include include/json
-
-# SSL support using axTLS
-ifeq ($(ENABLE_SSL),1)
-	THIRD_PARTY_DATA += third-party/axtls-8266/Makefile
-	LIBS += axtls
-	MODULES		 += third-party/axtls-8266/compat third-party/axtls-8266/replacements
-	EXTRA_INCDIR += third-party/axtls-8266 axtls-8266/ssl third-party/axtls-8266/crypto
-	AXTLS_FLAGS = -DLWIP_RAW=1 -DENABLE_SSL=1
-	ifeq ($(SSL_DEBUG),1) #
-		AXTLS_FLAGS += -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1 -DAXL_DEBUG=1
-	endif
-	CUSTOM_TARGETS += $(USER_LIBDIR)/libaxtls.a
-#	EXTRA_CFLAGS_AXTLS = -I../../system/include -I../../Wiring
-	CFLAGS += $(AXTLS_FLAGS)
-	CXXFLAGS += $(AXTLS_FLAGS)
-endif
-
+CONFIG_VARS += ENABLE_WPS
 ifeq ($(ENABLE_WPS), 1)
-   LIBS += wps
    CFLAGS += -DENABLE_WPS=1
 endif
 
-SRC_DIR		:= $(MODULES)
-BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
+# => http-parser
+SUBMODULES		+= $(COMPONENTS)/http-parser
+MODULES			+= $(COMPONENTS)/http-parser
 
-SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
-SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
+# => libb64
+MODULES			+= $(COMPONENTS)/libb64
 
-AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.s))
-AS_SRC		+= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
-C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
-CXX_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
-AS_OBJ		:= $(patsubst %.s,$(BUILD_BASE)/%.o,$(AS_SRC))
-AS_OBJ		+= $(patsubst %.S,$(BUILD_BASE)/%.o,$(AS_SRC))
-C_OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(C_SRC))
-CXX_OBJ		:= $(patsubst %.cpp,$(BUILD_BASE)/%.o,$(CXX_SRC))
-OBJ		:= $(AS_OBJ) $(C_OBJ) $(CXX_OBJ)
-LIBS		:= $(addprefix -l,$(LIBS))
-APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
-TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
+# => websocket-parser
+SUBMODULES		+= $(COMPONENTS)/ws_parser
+MODULES			+= $(COMPONENTS)/ws_parser
 
-INCDIR	:= $(addprefix -I,$(SRC_DIR))
-EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
-MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
+# => mqtt-codec
+SUBMODULES		+= $(COMPONENTS)/mqtt-codec
+EXTRA_INCDIR	+= $(COMPONENTS)/mqtt-codec/src
+LIBMQTTC		:= mqttc
+LIBS			+= $(LIBMQTTC)
+BUILD_MQTTC		:= $(MAKE) -C $(COMPONENTS)/mqtt-codec MQTT_ENABLE_SERVER=0 MQTT_ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
+				CFLAGS_EXTRA="-ISystem/include $(CFLAGS_COMMON)" \
+				LIB_FOLDER="$(SMING_HOME)/$(USER_LIBDIR)"
+CLEAN			+= mqttc-clean
 
-SAMPLES_DIRS := $(shell ls -1 ../samples)
-TOOLS_DIRS   := $(shell ls -1 ../tools)
-THIRD_PARTY_DIRS := $(shell ls -1 third-party )
-DOXYGEN := $(shell command -v doxygen 2> /dev/null)
+$(call UserLibPath,$(LIBMQTTC)):
+	$(Q) $(BUILD_MQTTC) lib
 
-V ?= $(VERBOSE)
-ifeq ("$(V)","1")
-Q :=
-vecho := @true
-else
-Q := @
-vecho := @echo
-endif
+.PHONY: mqttc-clean
+mqttc-clean:
+	-$(Q) $(BUILD_MQTTC) clean
 
-vpath %.c $(SRC_DIR)
-vpath %.cpp $(SRC_DIR)
-vpath %.s $(SRC_DIR)
-vpath %.S $(SRC_DIR)
 
-define compile-objects
-$1/%.o: %.s
-	$(vecho) "AS $$<"
-	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-$1/%.o: %.S
-	$(vecho) "AS $$<"
-	$(Q) $(AS) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-$1/%.o: %.c $1/%.c.d
-	$(vecho) "CC $$<"
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
-$1/%.o: %.cpp $1/%.cpp.d
-	$(vecho) "C+ $$<"
-	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS)  -c $$< -o $$@
-$1/%.c.d: %.c
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -MM -MT $1/$$*.o $$< -o $$@
-$1/%.cpp.d: %.cpp
-	$(Q) $(CXX) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CXXFLAGS) -MM -MT $1/$$*.o $$< -o $$@
+# => yuarel
+SUBMODULES		+= $(COMPONENTS)/libyuarel
+MODULES			+= $(COMPONENTS)/libyuarel
 
-.PRECIOUS: $1/%.c.d $1/%.cpp.d
+include $(ARCH_BASE)/sming.mk
+
+# Get list of subdirectory paths
+# $1 -> Root directory
+define ScanModuleDirs
+	$(sort $(dir $(wildcard $1/*/ $1/*/*/ $1/*/*/*/)))
 endef
 
-.PHONY: all checkdirs clean tools $(TOOLS_DIRS) test samples-clean samples $(SAMPLES_DIRS) docs api wiki
+# If specified, restrict importing and building to a specific list of libraries
+ARDUINO_LIBRARIES	?= $(patsubst Libraries/%,%,$(wildcard Libraries/*/))
+ARDUINO_LIBRARIES	:= $(ARDUINO_LIBRARIES:/=)
 
-all: checkdirs $(APP_AR) tools
+# Identify which libraries have submodules
+LIBRARY_SUBMODULES	:= $(call ListSubmodules,Libraries)
+LIBRARY_SUBMODULES	:= $(patsubst Libraries/%,%,$(LIBRARY_SUBMODULES))
+LIBRARY_SUBMODULES	:= $(filter $(LIBRARY_SUBMODULES), $(ARDUINO_LIBRARIES))
+# List of any Arduino library .submodule targets
+LIBRARY_SUBMODULES	:= $(foreach lib,$(LIBRARY_SUBMODULES),Libraries/$(lib)/.submodule)
 
-ifeq ($(ENABLE_CUSTOM_PWM), 1)
-$(USER_LIBDIR)/libpwm_open.a: third-party/pwm/pwm.c
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $< -o $(dir $<)/pwm.o
-	$(Q) $(AR) rcs $@ $(dir $<)/pwm.o
-endif
+# which modules (subdirectories) to include in compiling
+SMING_MODULES	:= $(ARCH_CORE) $(ARCH_BASE)/Platform Platform Core
+SMING_MODULES	:= $(foreach mod,$(SMING_MODULES),$(call ScanModuleDirs,$(mod)))
+MODULES			:= System $(ARCH_SYS) Wiring $(SMING_MODULES) $(MODULES)
+MODULES			+= $(wildcard Services/*/)
+MODULES			+= $(foreach lib,$(ARDUINO_LIBRARIES),Libraries/$(lib) Libraries/$(lib)/src)
+MODULES			:= $(MODULES:/=)
 
-ifeq ($(ENABLE_SSL), 1)
-$(USER_LIBDIR)/libaxtls.a:
-	$(Q) $(MAKE) -C third-party/axtls-8266 -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)" CFLAGS_EXTRA="$(EXTRA_CFLAGS_AXTLS)"
-endif
+EXTRA_INCDIR	:=	System/include Wiring Libraries Core \
+					$(ARCH_BASE) $(ARCH_SYS)/include \
+					$(COMPONENTS) . $(EXTRA_INCDIR)
 
-ifeq ($(ENABLE_CUSTOM_HEAP), 1)
-$(USER_LIBDIR)/libmainmm.a: $(addprefix $(SDK_LIBDIR)/,libmain.a)
-	$(vecho) "Enabling custom heap implementation"
-	$(Q) cp $^ $@
-	$(Q) $(AR) -d $@ mem_manager.o
-endif
+include $(SMING_HOME)/modules.mk
 
-ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-$(USER_LIBDIR)/liblwip_%.a: third-party/esp-open-lwip/Makefile.open
-	$(Q) $(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP) $(CFLAGS_COMMON)" all
-endif
-ifeq ($(ENABLE_CUSTOM_LWIP), 2)
-$(USER_LIBDIR)/liblwip%.a: third-party/lwip2/Makefile.sming
-	$(Q) $(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" SDK_INTERNAL="$(SDK_INTERNAL)" \
-				 USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" all
-endif
 
-$(USER_LIBDIR)/libmqttc.a:
-	$(Q) $(MAKE) -C third-party/mqtt-codec MQTT_ENABLE_SERVER=0 MQTT_ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
-			CFLAGS_EXTRA="-Iinclude -I$(SDK_BASE)/include $(CFLAGS_COMMON)" \
-			LIB_FOLDER="$(SMING_HOME)/$(USER_LIBDIR)/" lib
+CUSTOM_TARGETS += $(LIBS)
+
+# Define secondary pseudo-targets for all libraries
+define UserLibrary
+.PHONY $1:
+$1: $(call UserLibPath,$1)
+endef
+$(foreach lib,$(LIBS),$(eval $(call UserLibrary,$(lib))))
+
+
+.PHONY: libsming
+libsming: $(APP_AR) $(CUSTOM_TARGETS) ##Build the Sming framework and user libraries
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
-	$(Q) $(AR) cru $@ $^
-	$(vecho) "Installing $(LIBSMING)"
+	$(AR) cru $@ $^
+	$(vecho) "Installing '$(LIBSMING)' library"
 ifeq ($(ENABLE_SSL), 1)
 	$(vecho) "+ SSL support is enabled"
 else
 	$(vecho) "(!) SSL support is not enabled. To enable it type: 'make clean; make ENABLE_SSL=1'"
 endif
-	$(Q) cp -r $(APP_AR) $(USER_LIBDIR)/$(LIBSMING).a
+	$(Q) cp -r $(APP_AR) $(LIBSMING_DST)
 	$(vecho) "Done"
 
-checkdirs: $(ARDUINO_LIBRARIES) $(THIRD_PARTY_DATA) reload $(BUILD_DIR) $(FW_BASE) $(CUSTOM_TARGETS)
+.PHONY: checkdirs
+checkdirs: submodules reload | $(BUILD_DIR)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
 
-$(FW_BASE):
-	$(Q) mkdir -p $@
-	$(Q) mkdir -p $@/upgrade
+##@Cleaning
 
-clean:
+.PHONY: dist-clean
+dist-clean: clean submodules-clean tools-clean user-lib-clean samples-clean ##Clean everything
+
+.PHONY: clean
+clean: $(CLEAN) ##Remove all generated build files
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f $(TARGET_OUT)
-	$(Q) rm -rf $(BUILD_DIR)
 	$(Q) rm -rf $(BUILD_BASE)
-	$(Q) rm -rf $(FW_BASE)
-ifeq ($(ENABLE_SSL), 1)
-	$(Q) -$(MAKE) --no-print-directory -C third-party/axtls-8266 clean -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)" CFLAGS_EXTRA="$(EXTRA_CFLAGS_AXTLS)"
-endif
-ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-	$(Q) -$(MAKE) -C third-party/esp-open-lwip/ -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" clean
-endif
-ifeq ($(ENABLE_CUSTOM_LWIP), 2)
-	$(Q) -$(MAKE) -C third-party/lwip2/ -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE="$(SDK_BASE)" USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)" clean
-endif
 
-test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM
+.PHONY: user-lib-clean
+user-lib-clean: ##Remove generated user libraries
+	-$(Q) rm -f $(wildcard $(USER_LIBDIR)/lib*.a) $(APP_AR)
+	$(Q) $(GIT) checkout $(USER_LIBDIR)
 
-docs/wiki/Home.md:
+##@Building
+
+.PHONY: test
+test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM ##Build a few sample applications
+
+
+# => Documentation
+DOCS_DIR := ../docs
+
+.PHONY: wiki api docs
+docs: wiki api ##Build the Sming API and Wiki documentation
+wiki: $(DOCS_DIR)/wiki/Home.md
+api: $(DOCS_DIR)/api/sming/index.html
+
+$(DOCS_DIR)/wiki/Home.md:
 	$(vecho) "No Wiki submodule found. Using git to fetch it..."
-	$(Q) $(GIT) submodule update --init ../docs/wiki
+	$(Q) $(GIT) submodule update --init $(DOCS_DIR)/wiki
 
-docs/api/error.log:
+$(DOCS_DIR)/api/error.log:
 ifndef DOXYGEN
 	$(error doxygen not found - not building API docs)
 endif
-	$(Q) mkdir -p $(SMING_HOME)/../docs/api
-	$(Q) cd $(SMING_HOME)/../docs; doxygen 2>$(SMING_HOME)/../docs/api/stderr.log 1>$(SMING_HOME)/../docs/api/doxygen.log
+	$(Q) mkdir -p $(DOCS_DIR)/api
+	$(Q) cd $(DOCS_DIR); doxygen 2>api/stderr.log 1>api/doxygen.log
 
-docs/api/sming/index.html: docs/api/error.log
-	$(vecho) "Undocumented compounds: $(shell grep "Compound.*is not documented" $(SMING_HOME)/../docs/api/error.log | wc -l)"
-	$(vecho) "Undocumented members:  $(shell grep "Member.*is not documented" $(SMING_HOME)/../docs/api/error.log | wc -l) "
-	$(vecho) "Undocumented parameters: $(shell grep "The following parameters of .* are not documented" $(SMING_HOME)/../docs/api/error.log | wc -l) "
-	$(vecho) "Open in your browser: file://$(SMING_HOME)/../$@"
+$(DOCS_DIR)/api/sming/index.html: $(DOCS_DIR)/api/error.log
+	$(vecho) "Undocumented compounds: $(shell grep "Compound.*is not documented" $(DOCS_DIR)/api/error.log | wc -l)"
+	$(vecho) "Undocumented members:  $(shell grep "Member.*is not documented" $(DOCS_DIR)/api/error.log | wc -l) "
+	$(vecho) "Undocumented parameters: $(shell grep "The following parameters of .* are not documented" $(DOCS_DIR)/api/error.log | wc -l) "
+	$(vecho) "Open in your browser: file://$(abspath $@)"
 
-wiki: docs/wiki/Home.md
-api: docs/api/sming/index.html
 
-docs: wiki api
+# Apply patch to a submodule
+# $1 -> patch file with relative path
+define ApplyPatch
+	touch $1; \
+	$(GIT) apply -v $1 --ignore-whitespace --whitespace=nowarn
+endef
 
-third-party/%:
+# If there's a patch for this submodule, apply it
+# We look for patch in .. and in ../.patches
+# $1 -> submodule path
+# $2 -> name of patch file
+define TryApplyPatch
+	cd $1; \
+	if [ -f ../$2 ]; then \
+		$(call ApplyPatch,../$2); \
+	elif [ -f ../.patches/$2 ]; then \
+		$(call ApplyPatch,../.patches/$2); \
+	fi
+endef
+
+.PHONY: submodules submodules-clean
+submodules: | $(LIBRARY_SUBMODULES) $(addsuffix /.submodule,$(SUBMODULES)) ##Fetch all third-party submodules (but do not build)
+
+##@Cleaning
+submodules-clean: ##Reset state of all third-party submodules
+	-$(Q) rm -rf $(SUBMODULES)
+	$(GIT) checkout Components
+	-$(Q) rm -rf Libraries
+	-$(Q) rm -rf $(BUILD_BASE)/Libraries
+	-$(Q) mkdir -p Libraries
+	$(GIT) checkout Libraries
+
+# Update and patch submodule
+# Patch file is either in submodule parent directory itself or subdirectory .patches from there
+%/.submodule:
 	$(vecho) "Fetching $(dir $@) ..."
-	$(Q) $(GIT) submodule update --init --recursive $(dir $@)
-	$(Q) if [ -f $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@)) ]; then \
-		touch $(patsubst third-party/%/,third-party/.patches/%.patch, $(dir $@)); \
-		cd $(dir $@); $(GIT) apply -v $(patsubst third-party/%/,$(SMING_HOME)/third-party/.patches/%.patch, $(dir $@)) --ignore-whitespace --whitespace=nowarn; \
-	fi
+	$(Q) mkdir -p $(dir $@)
+	$(Q) $(GIT) submodule update --init --force --recursive $(dir $@)
+	$(Q) $(call TryApplyPatch,$(dir $@),$(notdir $(patsubst %/,%,$(dir $@))).patch)
+	$(Q) touch $@
+    RELOAD_MKFILE=1
+
+    
 # if the new submodule brings source code files that need to be compiled inside Sming
 # then we need somehow to be able to "see" these new files.
 # For now we solve this by "reloading" the makefile after fetching a module.
-    RELOAD_MKFILE=1
-
-Libraries/%:
-	$(vecho) "Fetching Arduino Library $(dir $@) ..."
-	$(Q) $(GIT) submodule update --init --recursive $(dir $@)
-	$(Q) if [ -f $(patsubst Libraries/%/,Libraries/.patches/%.patch, $(dir $@)) ]; then \
-		touch $(patsubst Libraries/%/,Libraries/.patches/%.patch, $(dir $@)); \
-		cd $(dir $@); $(GIT) apply -v $(patsubst Libraries/%/,$(SMING_HOME)/Libraries/.patches/%.patch, $(dir $@)) --ignore-whitespace --whitespace=nowarn; \
-	fi
-# if the new submodule brings source code files that need to be compiled inside Sming
-# then we need somehow to be able to "see" these new files.
-# For now we solve this by "reloading" the makefile after fetching a module.
-    RELOAD_MKFILE=1
-
+.PHONY: reload
 reload:
 	$(Q) if [ $(RELOAD_MKFILE) -eq 1 ]; then \
+		echo "Reloading..."; \
         $(MAKE) -C $(SMING_HOME) $(MAKECMDGOALS) RELOAD_MKFILE=0; \
     fi
 
-samples: $(SAMPLES_DIRS)
+##@Building
+.PHONY: samples $(SAMPLES_DIRS) samples-clean
+samples: | $(SAMPLES_DIRS) ##Build all sample applications
 
 $(SAMPLES_DIRS):
 	$(Q) $(MAKE) -C $(SMING_HOME)/../samples/$@
 
-samples-clean:
-	$(Q) for dir in $(SAMPLES_DIRS); do \
-          $(MAKE) -C $(SMING_HOME)/../samples/$$dir clean; \
-        done
+##@Cleaning
+samples-clean: ##Invoke 'clean' on all sample applications
+	-$(Q)	for dir in $(SAMPLES_DIRS); do \
+				$(MAKE) -C $(SMING_HOME)/../samples/$$dir clean; \
+			done
 
-third-party-clean:
-	$(Q) for dir in $(THIRD_PARTY_DIRS); do \
-          rm -rf third-party/$$dir; \
-        done
-	$(Q) $(GIT) checkout third-party
+##@Building
+.PHONY: tools
+tools: $(TOOLS) ##Build all required internal tools
 
-libraries-clean:
-	$(Q) rm -rf Libraries
-	$(Q) $(GIT) checkout Libraries
+##@Cleaning
+.PHONY: tools-clean
+tools-clean: $(TOOLS_CLEAN) ##@Cleaning Remove intermediate files created when building tools
 
-tools: third-party/spiffs/makefile $(TOOLS_DIRS)
-
-$(TOOLS_DIRS):
-	$(Q) if [ -d $(SMING_HOME)/../tools/$@ ]; then \
-			echo "Making $@"; \
-			if [ ! -e $(SMING_HOME)/../tools/$@/Makefile ]; then (cd $(SMING_HOME)/../; $(GIT) submodule update --init --recursive tools/$@/;); fi; \
-			$(MAKE) --no-print-directory -C $(SMING_HOME)/../tools/$@ V=$(V); \
-		 fi
-
-tools-clean:
-	$(Q) for dir in $(TOOLS_DIRS); do \
-		  if [ ! -d $(SMING_HOME)/../tools/$$dir ]; then continue; fi; \
-          $(MAKE) --no-print-directory -C $(SMING_HOME)/../tools/$$dir clean V=$(V); \
-        done
-
-dist-clean: clean samples-clean third-party-clean libraries-clean tools-clean
-	$(Q) for file in $(shell ls $(USER_LIBDIR)/lib*.a ); do \
- 	   rm $$file; \
- 	done
-	$(Q) $(GIT) checkout $(USER_LIBDIR)
+##@Building
+.PHONY: rebuild
+rebuild: clean all ##Re-build the Sming libraries
 
 # Recursive wildcard search
+# $1 -> directory
+# $2 -> file extensions
 rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
 
 # Files that should follow our coding standards
-CS_DIRS = SmingCore ../samples
-CS_FILES := $(call rwildcard,$(patsubst %,%/*,$(CS_DIRS)),*.cpp *.h *.c)
+CS_DIRS		:= Core Platform Arch/*/Core Arch/*/Platform ../samples
+CS_FILES	:= $(call rwildcard,$(patsubst %,%/*,$(CS_DIRS)),*.cpp *.h *.c)
 
-cs:
+##@Developer
+
+.PHONY: cs
+cs: ##Apply coding style to all core files
 	$(Q) for FILE in $(CS_FILES); do \
 		clang-format -i -style=file $$FILE; \
 	done
 
+##@Help
 
-$(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
-$(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.c.d)))
-$(foreach bdir,$(BUILD_DIR),$(eval include $(wildcard $(bdir)/*.cpp.d)))
+.PHONY: list-config
+list-config: ##Print the contents of internal build variables
+	$(call ListConfig)
 
+.PHONY: help
+help: ##Show this help summary
+	$(call PrintHelp)

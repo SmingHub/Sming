@@ -5,8 +5,7 @@
  *      Author: Herman
  */
 
-#ifndef SERVICES_COMMANDPROCESSING_COMMANDOUTPUT_H_
-#define SERVICES_COMMANDPROCESSING_COMMANDOUTPUT_H_
+#pragma once
 
 #include "Network/TcpClient.h"
 #include "Stream.h"
@@ -29,5 +28,3 @@ public:
 	WebsocketConnection* outputSocket = nullptr;
 	String tempSocket = "";
 };
-
-#endif /* SERVICES_COMMANDPROCESSING_COMMANDOUTPUT_H_ */

@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/TM1637/TM1637Display.h>
 
 // Module connection pins (Digital Pins)

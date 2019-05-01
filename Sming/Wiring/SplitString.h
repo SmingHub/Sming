@@ -9,8 +9,7 @@
 ||
 */
 
-#ifndef _SPLIT_STRING_H_
-#define _SPLIT_STRING_H_
+#pragma once
 
 #include "WVector.h"
 #include "WString.h"
@@ -35,5 +34,3 @@ int splitString(String &what, char delim,  Vector<int> &splits);
  *  example: "   a,b,c,d,e" returns ["a", "b", "c", "d", "e"]
  */
 int splitString(String &what, char delim,  Vector<String> &splits);
-
-#endif

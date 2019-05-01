@@ -15,10 +15,9 @@
 ||
 */
 
-#ifndef WCONSTANTS_H
-#define WCONSTANTS_H
+#pragma once
 
-#include "../include/user_config.h"
+#include <user_config.h>
 
 // Wiring API version for libraries
 // this is passed in at compile-time
@@ -143,6 +142,3 @@ typedef unsigned int word;
 typedef uint8_t byte;
 typedef uint8_t boolean;
 typedef void (*voidFuncPtr)(void);
-
-#endif
-// WCONSTANTS_H

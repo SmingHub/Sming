@@ -12,7 +12,7 @@
 #ifndef LIB_SERVOCHANNEL_H_
 #define LIB_SERVOCHANNEL_H_
 
-#include "../../SmingCore/SmingCore.h"
+#include <SmingCore.h>
 
 #define DEFAULTMAXVALUE 2300	///< default max value for output in us
 #define DEFAULTMINVALUE 700		///< default min value for output in us

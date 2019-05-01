@@ -35,6 +35,9 @@ build_script:
   - SET PATH=%PATH%;%ESP_HOME%/utils
   - cd %SMING_HOME%
   - gcc -v
+#
+  - make help
+  - make list-config
 # Compile the tools first
   - make tools V=1
 # Followed by the library and test sample apps

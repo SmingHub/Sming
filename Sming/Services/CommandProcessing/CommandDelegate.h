@@ -8,10 +8,9 @@
  *  @{
  */
 
-#ifndef SERVICES_COMMANDPROCESSING_COMMANDDELEGATE_H_
-#define SERVICES_COMMANDPROCESSING_COMMANDDELEGATE_H_
+#pragma once
 
-#include "../Wiring/WString.h"
+#include "WString.h"
 #include "Delegate.h"
 #include "Network/TcpClient.h"
 #include "WiringFrameworkIncludes.h"
@@ -51,4 +50,3 @@ private :
 };
 
 /** @} */
-#endif /* SERVICES_COMMANDPROCESSING_COMMANDDELEGATE_H_ */

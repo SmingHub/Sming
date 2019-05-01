@@ -3,7 +3,7 @@
 #define si7021_h
 
 #include <inttypes.h>
-#include "../../SmingCore/Wire.h"
+#include <Wire.h>
 
 typedef struct si7021_env {
 	int temperature;

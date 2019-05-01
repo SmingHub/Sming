@@ -26,10 +26,9 @@
  *
  */
 
-#ifndef HASHMAP_H
-#define HASHMAP_H
+#pragma once
 
-#include "Countable.h"
+#include "WiringFrameworkDependencies.h"
 
 template<typename K, typename V>
 class HashMap
@@ -320,6 +319,3 @@ class HashMap
   private:
     HashMap(const HashMap<K, V>& that);
 };
-
-#endif
-// HASHMAP_H

@@ -5,8 +5,7 @@
  *      Author: Herman
  */
 
-#ifndef SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_
-#define SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_
+#pragma once
 
 #include "WiringFrameworkIncludes.h"
 #include "Network/TcpClient.h"
@@ -36,5 +35,3 @@ private :
 	uint16_t commandIndex = 0;
 	CommandOutput* commandOutput = nullptr;
 };
-
-#endif /* SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_ */
