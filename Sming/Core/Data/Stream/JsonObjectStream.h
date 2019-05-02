@@ -11,7 +11,7 @@
 #pragma once
 
 #include "MemoryDataStream.h"
-#include "Libraries/ArduinoJson/ArduinoJson.h"
+#include "../ArduinoJson.h"
 
 /** @brief JsonObject stream class
  * 	@ingroup    stream data
@@ -22,7 +22,16 @@
 class JsonObjectStream : public MemoryDataStream
 {
 public:
-	/** @brief  Create a JSON object stream
+	/** @brief Create a JSON object stream with a specific format
+	 * 	@param format
+	 * 	@param capacity Size of JSON buffer
+    */
+	JsonObjectStream(Json::SerializationFormat format, size_t capacity = 1024) : doc(capacity), format(format)
+	{
+	}
+
+	/** @brief Create a JSON object stream using default (Compact) format
+	 * 	@param capacity Size of JSON buffer
     */
 	JsonObjectStream(size_t capacity = 1024) : doc(capacity)
 	{
@@ -51,11 +60,12 @@ public:
 	 */
 	int available() override
 	{
-		return (doc.isNull() ? 0 : measureJson(doc));
+		return (doc.isNull() ? 0 : Json::measure(doc, format));
 	}
 
 private:
 	DynamicJsonDocument doc;
+	Json::SerializationFormat format = Json::Compact;
 	bool send = true;
 };
 

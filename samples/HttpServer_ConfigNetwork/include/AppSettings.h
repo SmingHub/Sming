@@ -1,7 +1,7 @@
 /*
  * AppSettings.h
  *
- *  Created on: 13 ��� 2015 �.
+ *  Created on: 13 ??? 2015 ?.
  *      Author: Anakod
  */
 
@@ -25,24 +25,16 @@ struct ApplicationSettingsStorage {
 	void load()
 	{
 		DynamicJsonDocument doc(1024);
-		if(exist()) {
-			int size = fileGetSize(APP_SETTINGS_FILE);
-			char* jsonString = new char[size + 1];
-			fileGetContent(APP_SETTINGS_FILE, jsonString, size + 1);
-			auto error = deserializeJson(doc, jsonString);
-			if(!error) {
-				JsonObject network = doc["network"].as<JsonObject>();
-				ssid = network["ssid"].as<const char*>();
-				password = network["password"].as<const char*>();
+		if(Json::loadFromFile(doc, APP_SETTINGS_FILE)) {
+			JsonObject network = doc["network"];
+			ssid = network["ssid"].as<const char*>();
+			password = network["password"].as<const char*>();
 
-				dhcp = network["dhcp"] | false;
+			dhcp = network["dhcp"] | false;
 
-				ip = network["ip"].as<const char*>();
-				netmask = network["netmask"].as<const char*>();
-				gateway = network["gateway"].as<const char*>();
-			}
-
-			delete[] jsonString;
+			ip = network["ip"].as<const char*>();
+			netmask = network["netmask"].as<const char*>();
+			gateway = network["gateway"].as<const char*>();
 		}
 	}
 
@@ -56,15 +48,11 @@ struct ApplicationSettingsStorage {
 
 		network["dhcp"] = dhcp;
 
-		// Make copy by value for temporary string objects
 		network["ip"] = ip.toString();
 		network["netmask"] = netmask.toString();
 		network["gateway"] = gateway.toString();
 
-		//TODO: add direct file stream writing
-		String rootString;
-		serializeJson(doc, rootString);
-		fileSetContent(APP_SETTINGS_FILE, rootString);
+		Json::saveToFile(doc, APP_SETTINGS_FILE);
 	}
 
 	bool exist()

@@ -45,7 +45,7 @@ bool isNumeric(String str)
   return true;
 }
 
-void YeelightBulb::sendCommand(String method, Vector<String> params)
+void YeelightBulb::sendCommand(const String& method, const Vector<String>& params)
 {
 	connect();
 
@@ -60,8 +60,7 @@ void YeelightBulb::sendCommand(String method, Vector<String> params)
 		else
 			arr.add(params[i]);
 	}
-	String request;
-	serializeJson(doc, request);
+	String request = Json::serialize(doc);
 	request += "\r\n";
 	debugf("LED < %s", request.c_str());
 	connection->writeString(request);
@@ -157,8 +156,7 @@ bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
 		String buf = source.substring(p, p2);
 		p = unsigned(p2) + 2;
 		DynamicJsonDocument doc(1024);
-		auto error = deserializeJson(doc, buf);
-		if (!error)
+		if(Json::deserialize(doc, buf))
 		{
 			long id = doc["id"] | -1;
 			if (id == propsId)

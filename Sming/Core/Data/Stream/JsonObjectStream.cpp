@@ -13,7 +13,7 @@
 uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 {
 	if(send && !doc.isNull()) {
-		serializeJson(doc, *this);
+		Json::serialize(doc, this, format);
 		send = false;
 	}
 

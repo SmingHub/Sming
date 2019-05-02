@@ -54,9 +54,9 @@ public:
 			trackers[trackersInfo.keyAt(i)] = trackersInfo[trackersInfo.keyAt(i)];
 		}
 
-		String tempString;
-		serializeJson(root, tempString);
-		request->setBody(tempString);
+		auto stream = new MemoryDataStream;
+		Json::serialize(root, stream);
+		request->setBody(stream);
 		request->onRequestComplete(RequestCompletedDelegate(&InstapushApplication::processed, this));
 
 		send(request);
