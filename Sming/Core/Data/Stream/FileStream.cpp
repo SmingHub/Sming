@@ -91,9 +91,7 @@ size_t FileStream::write(const uint8_t* buffer, size_t size)
 	int written = fileWrite(handle, buffer, size);
 	if(check(written)) {
 		pos += size_t(written);
-		if(pos > this->size) {
-			this->size = pos;
-		}
+		this->size = pos;
 	}
 
 	return written;
