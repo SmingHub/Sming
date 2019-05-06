@@ -35,12 +35,10 @@ bool FileStream::open(const String& fileName, FileOpenFlags openFlags)
 	}
 
 	// Get size
-	if(check(fileSeek(file, 0, eSO_FileEnd))) {
-		int size = fileTell(file);
-		if(check(size)) {
-			attach(file, size);
-			return true;
-		}
+	int size = fileSeek(file, 0, eSO_FileEnd);
+	if(check(size)) {
+		attach(file, size);
+		return true;
 	}
 
 	fileClose(file);
@@ -94,22 +92,21 @@ size_t FileStream::write(const uint8_t* buffer, size_t size)
 		this->size = pos;
 	}
 
-	return written;
+	return written > 0 ? written : 0;
 }
 
-bool FileStream::seek(int len)
+int FileStream::seekFrom(int offset, SeekOriginFlags origin)
 {
-	int newpos = fileSeek(handle, len, eSO_CurrentPos);
-	if(!check(newpos)) {
-		return false;
+	// Cannot rely on return value from fileSeek - failure does not mean position hasn't changed
+	fileSeek(handle, offset, origin);
+	int newpos = fileTell(handle);
+	if(check(newpos)) {
+		pos = size_t(newpos);
+		if(pos > size) {
+			size = pos;
+		}
 	}
-
-	pos = size_t(newpos);
-	if(pos > size) {
-		size = pos;
-	}
-
-	return true;
+	return newpos;
 }
 
 String FileStream::fileName() const
@@ -130,4 +127,16 @@ String FileStream::id() const
 			   strlen(reinterpret_cast<const char*>(stat.name)));
 
 	return String(buf);
+}
+
+bool FileStream::truncate(size_t newSize)
+{
+	bool res = check(fileTruncate(handle, newSize));
+	if(res) {
+		size = newSize;
+		if(pos > size) {
+			pos = size;
+		}
+	}
+	return res;
 }
