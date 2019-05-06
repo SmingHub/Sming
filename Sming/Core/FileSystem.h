@@ -60,17 +60,17 @@ void fileClose(file_t file);
  *  @param  file File ID
  *  @param  data Pointer to data to write to file
  *  @param  size Quantity of data elements to write to file
- *  @retval size_t Quantity of data elements actually written to file or negative error code
+ *  @retval int Quantity of data elements actually written to file or negative error code
  */
-size_t fileWrite(file_t file, const void* data, size_t size);
+int fileWrite(file_t file, const void* data, size_t size);
 
 /** @brief  Read from file
  *  @param  file File ID
  *  @param  data Pointer to data buffer in to which to read data
  *  @param  size Quantity of data elements to read from file
- *  @retval size_t Quantity of data elements actually read from file or negative error code
+ *  @retval int Quantity of data elements actually read from file or negative error code
  */
-size_t fileRead(file_t file, void* data, size_t size);
+int fileRead(file_t file, void* data, size_t size);
 
 /** @brief  Position file cursor
  *  @param  file File ID
@@ -142,8 +142,9 @@ uint32_t fileGetSize(const String& fileName);
 /** @brief  Rename file
  *  @param  oldName Original name of file to rename
  *  @param  newName New name for file
+ *  @retval int error code
  */
-void fileRename(const String& oldName, const String& newName);
+int fileRename(const String& oldName, const String& newName);
 
 /** @brief  Get list of files on file system
  *  @retval Vector<String> Vector of strings.
