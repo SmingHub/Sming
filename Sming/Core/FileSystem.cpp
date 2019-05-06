@@ -198,3 +198,26 @@ size_t fileGetContent(const String& fileName, char* buffer, size_t bufSize)
 	buffer[size] = '\0';
 	return size;
 }
+
+int fileTruncate(file_t file, size_t newSize)
+{
+	return SPIFFS_ftruncate(&_filesystemStorageHandle, file, newSize);
+}
+
+int fileTruncate(file_t file)
+{
+	int pos = fileTell(file);
+	return (pos < 0) ? pos : fileTruncate(file, pos);
+}
+
+int fileTruncate(const String& fileName, size_t newSize)
+{
+	file_t file = fileOpen(fileName, eFO_WriteOnly);
+	if(file < 0) {
+		return file;
+	}
+
+	int res = fileTruncate(file, newSize);
+	fileClose(file);
+	return res;
+}
