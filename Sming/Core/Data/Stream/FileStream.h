@@ -75,8 +75,18 @@ public:
 	//Use base class documentation
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
+	/** @brief Change position in file stream
+	 *  @param offset
+	 *  @param origin
+	 *  @retval New position, < 0 on error
+	 */
+	int lseek(int offset, SeekOriginFlags origin);
+
 	//Use base class documentation
-	bool seek(int len) override;
+	bool seek(int len) override
+	{
+		return lseek(len, eSO_CurrentPos) > 0;
+	}
 
 	//Use base class documentation
 	bool isFinished() override
@@ -115,7 +125,15 @@ public:
 		return pos;
 	}
 
-	/**	@brief Return the total length of the stream
+	/** @brief  Get the total file size
+     *  @retval size_t File size
+     */
+	size_t getSize() const
+	{
+		return size;
+	}
+
+	/**	@brief Return the maximum bytes available to read, from current position
 	 * 	@retval int -1 is returned when the size cannot be determined
 	 */
 	int available() override
@@ -132,6 +150,12 @@ public:
 	{
 		return lastError;
 	}
+
+	/** @brief Reduce the file size
+	 *  @param newSize
+	 *  @retval bool true on success
+	 */
+	bool truncate(size_t newSize);
 
 private:
 	/** @brief Check file operation result and note error code
