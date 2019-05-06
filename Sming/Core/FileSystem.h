@@ -139,6 +139,24 @@ int fileSetContent(const String& fileName, const String& content);
  */
 uint32_t fileGetSize(const String& fileName);
 
+/** @brief Truncate (reduce) the size of an open file
+ *  @param file Open file handle, must have Write access
+ *  @param newSize
+ *  @retval int error code
+ *  @note In POSIX `ftruncate()` can also make the file bigger, however SPIFFS can only
+ *  reduce the file size and will return an error if newSize > fileSize
+ */
+int fileTruncate(file_t file, size_t newSize);
+
+/** @brief Truncate (reduce) the size of a file
+ *  @param fileName
+ *  @param newSize
+ *  @retval int error code
+ *  @note In POSIX `truncate()` can also make the file bigger, however SPIFFS can only
+ *  reduce the file size and will return an error if newSize > fileSize
+ */
+int fileTruncate(const String& fileName, size_t newSize);
+
 /** @brief  Rename file
  *  @param  oldName Original name of file to rename
  *  @param  newName New name for file
