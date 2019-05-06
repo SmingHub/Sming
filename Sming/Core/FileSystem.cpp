@@ -117,18 +117,19 @@ void fileClearLastError(file_t fd)
 
 int fileSetContent(const String& fileName, const String& content)
 {
-	return fileSetContent(fileName, content.c_str());
+	return fileSetContent(fileName, content.c_str(), content.length());
 }
 
-int fileSetContent(const String& fileName, const char* content)
+int fileSetContent(const String& fileName, const char* content, int length)
 {
-	int res;
-
 	file_t file = fileOpen(fileName.c_str(), eFO_CreateNewAlways | eFO_WriteOnly);
 	if(file < 0) {
 		return file;
 	}
-	res = fileWrite(file, content, strlen(content));
+	if(length < 0) {
+		length = strlen(content);
+	}
+	int res = fileWrite(file, content, length);
 	fileClose(file);
 	return res;
 }
