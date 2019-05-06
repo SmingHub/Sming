@@ -20,6 +20,8 @@
 
 class String;
 
+typedef signed short file_t; ///< File handle
+
 /// File open flags
 enum FileOpenFlags {
 	eFO_ReadOnly = SPIFFS_RDONLY,							  ///< Read only file

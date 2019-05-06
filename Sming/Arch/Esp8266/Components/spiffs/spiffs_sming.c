@@ -135,7 +135,7 @@ static void spiffs_mount_internal(spiffs_config *cfg)
 
   if (writeFirst)
   {
-	  file_t fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat", SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
+	  spiffs_file fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat", SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
 	  SPIFFS_write(&_filesystemStorageHandle, fd, (u8_t *)"1", 1);
 	  SPIFFS_fremove(&_filesystemStorageHandle, fd);
 	  SPIFFS_close(&_filesystemStorageHandle, fd);

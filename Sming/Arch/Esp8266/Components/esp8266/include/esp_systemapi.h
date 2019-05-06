@@ -123,5 +123,3 @@ extern void xt_enable_interrupts();
 
 extern void ets_isr_mask(unsigned intr);
 extern void ets_isr_unmask(unsigned intr);
-
-typedef signed short file_t;
