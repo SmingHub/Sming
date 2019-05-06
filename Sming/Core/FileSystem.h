@@ -154,7 +154,9 @@ Vector<String> fileList();
 /** @brief  Read content of a file
  *  @param  fileName Name of file to read from
  *  @retval String String variable in to which to read the file content
- *  @note   After calling this function the content of the file is placed in to a string
+ *  @note   After calling this function the content of the file is placed in to a string.
+ *  The result will be an invalid String (equates to `false`) if the file could not be read.
+ *  If the file exists, but is empty, the result will be an empty string "".
  */
 String fileGetContent(const String& fileName);
 
@@ -166,6 +168,7 @@ String fileGetContent(const String& fileName);
  *  @note   After calling this function the content of the file is placed in to a c-string
             Ensure there is sufficient space in the buffer for file content
             plus extra trailing null, i.e. at least bufSize + 1
+    @note   Returns 0 if the file could not be read
  */
 int fileGetContent(const String& fileName, char* buffer, int bufSize);
 
