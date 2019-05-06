@@ -138,10 +138,9 @@ uint32_t fileGetSize(const String& fileName)
 {
 	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
 	// Get size
-	fileSeek(file, 0, eSO_FileEnd);
-	int size = fileTell(file);
+	int size = fileSeek(file, 0, eSO_FileEnd);
 	fileClose(file);
-	return size;
+	return (size < 0) ? 0 : size;
 }
 
 void fileRename(const String& oldName, const String& newName)
