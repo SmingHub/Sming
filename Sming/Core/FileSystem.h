@@ -136,6 +136,7 @@ int fileSetContent(const String& fileName, const String& content);
 /** @brief  Get size of file
  *  @param  fileName Name of file
  *  @retval uint32_t Size of file in bytes
+ *  @note	Returns 0 if error occurs
  */
 uint32_t fileGetSize(const String& fileName);
 
