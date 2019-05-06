@@ -13,8 +13,6 @@
 
 file_t fileOpen(const String& name, FileOpenFlags flags)
 {
-	int res;
-
 	// Special fix to prevent known spifFS bug: manual delete file
 	if((flags & eFO_CreateNewAlways) == eFO_CreateNewAlways) {
 		if(fileExist(name)) {
@@ -23,7 +21,7 @@ file_t fileOpen(const String& name, FileOpenFlags flags)
 		flags = (FileOpenFlags)((int)flags & ~eFO_Truncate);
 	}
 
-	res = SPIFFS_open(&_filesystemStorageHandle, name.c_str(), (spiffs_flags)flags, 0);
+	int res = SPIFFS_open(&_filesystemStorageHandle, name.c_str(), (spiffs_flags)flags, 0);
 	if(res < 0) {
 		debugf("open errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
 	}
@@ -36,22 +34,20 @@ void fileClose(file_t file)
 	SPIFFS_close(&_filesystemStorageHandle, file);
 }
 
-size_t fileWrite(file_t file, const void* data, size_t size)
+int fileWrite(file_t file, const void* data, size_t size)
 {
 	int res = SPIFFS_write(&_filesystemStorageHandle, file, (void*)data, size);
 	if(res < 0) {
 		debugf("write errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
-		return res;
 	}
 	return res;
 }
 
-size_t fileRead(file_t file, void* data, size_t size)
+int fileRead(file_t file, void* data, size_t size)
 {
 	int res = SPIFFS_read(&_filesystemStorageHandle, file, data, size);
 	if(res < 0) {
 		debugf("read errno %d\n", SPIFFS_errno(&_filesystemStorageHandle));
-		return res;
 	}
 	return res;
 }
@@ -63,7 +59,7 @@ int fileSeek(file_t file, int offset, SeekOriginFlags origin)
 
 bool fileIsEOF(file_t file)
 {
-	return SPIFFS_eof(&_filesystemStorageHandle, file);
+	return SPIFFS_eof(&_filesystemStorageHandle, file) != 0;
 }
 
 int32_t fileTell(file_t file)
@@ -142,9 +138,9 @@ uint32_t fileGetSize(const String& fileName)
 	return (size < 0) ? 0 : size;
 }
 
-void fileRename(const String& oldName, const String& newName)
+int fileRename(const String& oldName, const String& newName)
 {
-	SPIFFS_rename(&_filesystemStorageHandle, oldName.c_str(), newName.c_str());
+	return SPIFFS_rename(&_filesystemStorageHandle, oldName.c_str(), newName.c_str());
 }
 
 Vector<String> fileList()
