@@ -168,42 +168,39 @@ Vector<String> fileList()
 
 String fileGetContent(const String& fileName)
 {
+	String res;
 	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
-	// Get size
-	fileSeek(file, 0, eSO_FileEnd);
-	int size = fileTell(file);
-	if(size <= 0) {
-		fileClose(file);
-		return nullptr;
+	int size = fileSeek(file, 0, eSO_FileEnd);
+	if(size == 0) {
+		res = ""; // Valid String, file is empty
+	} else if(size > 0) {
+		fileSeek(file, 0, eSO_FileStart);
+		res.setLength(size);
+		if(fileRead(file, res.begin(), res.length()) != size) {
+			res = nullptr; // read failed, invalidate String
+		}
 	}
-	fileSeek(file, 0, eSO_FileStart);
-	char* buffer = new char[size + 1];
-	buffer[size] = 0;
-	fileRead(file, buffer, size);
 	fileClose(file);
-	String res(buffer, size);
-	delete[] buffer;
 	return res;
 }
 
-int fileGetContent(const String& fileName, char* buffer, int bufSize)
+size_t fileGetContent(const String& fileName, char* buffer, size_t bufSize)
 {
 	if(buffer == nullptr || bufSize == 0) {
 		return 0;
 	}
-	*buffer = 0;
 
 	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
-	// Get size
-	fileSeek(file, 0, eSO_FileEnd);
-	int size = fileTell(file);
-	if(size <= 0 || bufSize <= size) {
-		fileClose(file);
-		return 0;
+	int size = fileSeek(file, 0, eSO_FileEnd);
+	if(size <= 0 || bufSize <= size_t(size)) {
+		size = 0;
+	} else {
+		fileSeek(file, 0, eSO_FileStart);
+		if(fileRead(file, buffer, size) != size) {
+			size = 0; // Error
+		}
 	}
-	buffer[size] = 0;
-	fileSeek(file, 0, eSO_FileStart);
-	fileRead(file, buffer, size);
 	fileClose(file);
+	buffer[size] = '\0';
 	return size;
 }
