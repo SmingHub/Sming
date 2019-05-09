@@ -230,12 +230,22 @@ extern "C"
 
 /*
  * Define a flash string and load it into a named array buffer on the stack.
- * This allows sizeof(_name) to work as if the string were defined thus:
+ * For example, this:
  *
- * 	char _name[] = "text";
+ * 		PSTR_ARRAY(myText, "some text");
+ *
+ * is roughly equivalent to this:
+ *
+ * 		char myText[ALIGNED_SIZE] = "some text";
+ *
+ * where ALIGNED_SIZE is the length of the text (including NUL terminator) rounded up to the next word boundary.
+ * To get the length of the text, excluding NUL terminator, use:
+ *
+ * 		sizeof(PSTR_myText) - 1
+ *
  */
-#define PSTR_ARRAY(_name, _str)                                                                                        \
-	static DEFINE_PSTR(_##_name, _str);                                                                                       \
-	LOAD_PSTR(_name, _##_name)
+#define PSTR_ARRAY(name, str)                                                                                        \
+	static DEFINE_PSTR(PSTR_##name, str);                                                                                       \
+	LOAD_PSTR(name, PSTR_##name)
 
 #endif /* __FAKE_PGMSPACE_H_ */
