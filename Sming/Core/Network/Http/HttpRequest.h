@@ -171,7 +171,7 @@ public:
 	String getBody();
 
 	/**
-	 * @brief Return the current body stream and pass ownership to the caller
+	 * @brief Return the current body stream
 	 * @retval IDataSourceStream*
 	 * @note may return null
 	 */

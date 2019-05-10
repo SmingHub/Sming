@@ -82,9 +82,9 @@ void onApiDoc(HttpRequest& request, HttpResponse& response)
 void onApiSensors(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 	json["status"] = (bool)true;
-	JsonObject& sensors = json.createNestedObject("sensors");
+	JsonObject sensors = json.createNestedObject("sensors");
 	sensors["temperature"] = StrT.c_str();
 	sensors["humidity"] = StrRH.c_str();
 	response.sendDataStream(stream, MIME_JSON);
@@ -99,7 +99,7 @@ void onApiOutput(HttpRequest& request, HttpResponse& response)
 		val = -1;
 
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 	json["status"] = val != -1;
 	if(val == -1)
 		json["error"] = "Wrong control parameter value, please use: ?control=0|1";

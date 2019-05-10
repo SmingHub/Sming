@@ -45,15 +45,14 @@ bool isNumeric(String str)
   return true;
 }
 
-void YeelightBulb::sendCommand(String method, Vector<String> params)
+void YeelightBulb::sendCommand(const String& method, const Vector<String>& params)
 {
 	connect();
 
-	DynamicJsonBuffer jsonBuffer;
-	JsonObject& root = jsonBuffer.createObject();
-	root["id"] = requestId++;
-	root["method"] = method;
-	auto &arr = root.createNestedArray("params");
+	DynamicJsonDocument doc(1024);
+	doc["id"] = requestId++;
+	doc["method"] = method;
+	auto arr = doc.createNestedArray("params");
 	for (unsigned i = 0; i < params.count(); i++)
 	{
 		if (isNumeric(params[i]))
@@ -61,8 +60,7 @@ void YeelightBulb::sendCommand(String method, Vector<String> params)
 		else
 			arr.add(params[i]);
 	}
-	String request;
-	root.printTo(request);
+	String request = Json::serialize(doc);
 	request += "\r\n";
 	debugf("LED < %s", request.c_str());
 	connection->writeString(request);
@@ -157,33 +155,27 @@ bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
 			p2 = source.length();
 		String buf = source.substring(p, p2);
 		p = unsigned(p2) + 2;
-		DynamicJsonBuffer jsonBuffer;
-		JsonObject& root = jsonBuffer.parseObject(buf);
-		bool parsed = root.success();
-		if (parsed)
+		DynamicJsonDocument doc(1024);
+		if(Json::deserialize(doc, buf))
 		{
-			if (root.containsKey("id") && root.containsKey("result"))
+			long id = doc["id"] | -1;
+			if (id == propsId)
 			{
-				long id = root["id"];
-				if (id == propsId)
-				{
-					auto &result = root["result"].asArray();
-					String resp = result[0].asString();
-					parsePower(resp);
+				JsonArray result = doc["result"];
+				const char* value = result[0];
+				if(value != nullptr) {
+					parsePower(value);
 				}
 			}
-			if (root.containsKey("method") && root.containsKey("params"))
+
+			const char* method = doc["method"];
+			debugf("LED method %s received", method);
+			if (strcmp(method,"props") == 0)
 			{
-				String method = root["method"].asString();
-				debugf("LED method %s received", method.c_str());
-				if (method == "props")
-				{
-					auto &result = root["params"].asObject();
-					for (JsonObject::iterator it=result.begin(); it!=result.end(); ++it)
-					{
-						if (strcmp(it->key, "power") == 0)
-							parsePower(it->value);
-					}
+				JsonObject result = doc["params"];
+				const char* value = result["power"];
+				if(value != nullptr) {
+					parsePower(value);
 				}
 			}
 		}

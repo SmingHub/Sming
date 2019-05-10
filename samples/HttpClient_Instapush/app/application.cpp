@@ -46,18 +46,17 @@ public:
 		requestHeaders[F("x-instapush-appid")] = app;
 		requestHeaders[F("x-instapush-appsecret")] = secret;
 
-		DynamicJsonBuffer jsonBuffer;
-		JsonObject& root = jsonBuffer.createObject();
+		DynamicJsonDocument root(1024);
 		root["event"] = event;
-		JsonObject& trackers = root.createNestedObject("trackers");
+		JsonObject trackers = root.createNestedObject("trackers");
 		for(unsigned i = 0; i < trackersInfo.count(); i++) {
 			debugf("%s: %s", trackersInfo.keyAt(i).c_str(), trackersInfo.valueAt(i).c_str());
 			trackers[trackersInfo.keyAt(i)] = trackersInfo[trackersInfo.keyAt(i)];
 		}
 
-		String tempString;
-		root.printTo(tempString);
-		request->setBody(tempString);
+		auto stream = new MemoryDataStream;
+		Json::serialize(root, stream);
+		request->setBody(stream);
 		request->onRequestComplete(RequestCompletedDelegate(&InstapushApplication::processed, this));
 
 		send(request);

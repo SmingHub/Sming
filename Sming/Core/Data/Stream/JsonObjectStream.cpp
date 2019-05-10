@@ -12,8 +12,8 @@
 
 uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 {
-	if(send && rootNode.success()) {
-		rootNode.printTo(*this);
+	if(send && !doc.isNull()) {
+		Json::serialize(doc, this, format);
 		send = false;
 	}
 

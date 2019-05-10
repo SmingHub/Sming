@@ -117,6 +117,7 @@ extern "C"
 	char *strcpy_P(char * dest, const char * src_P);
 	char *strncpy_P(char * dest, const char * src_P, size_t size);
 	int strcmp_P(const char *str1, const char *str2_P);
+	int strncmp_P(const char *str1, const char *str2_P, const size_t size);
 	int strcasecmp_P(const char* str1, const char* str2_P);
 	char* strcat_P(char* dest, const char* src_P);
 	char *strstr_P(char *haystack, const char *needle_P);
@@ -176,6 +177,7 @@ extern "C"
 #define strcpy_P(dest, src) strcpy((dest), (src))
 #define strncpy_P(dest, src, size) strncpy((dest), (src), (size))
 #define strcmp_P(a, b) strcmp((a), (b))
+#define strncmp_P(str1, str2_P, size) strncmp(str1, str2_P, size)
 #define strcasecmp_P(a, b) strcasecmp((a), (b))
 #define strcat_P(dest, src) strcat((dest), (src))
 #define strstr_P(a, b) strstr((a), (b))

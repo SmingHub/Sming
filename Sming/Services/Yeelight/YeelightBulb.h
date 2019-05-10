@@ -37,7 +37,7 @@ public:
 
 	/** @brief Send any command to the lamp
 	 */
-	void sendCommand(String method, Vector<String> params);
+	void sendCommand(const String& method, const Vector<String>& params);
 
 	void on();
 	void off();

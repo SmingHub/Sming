@@ -6,29 +6,22 @@ MeteoConfig ActiveConfig;
 
 MeteoConfig loadConfig()
 {
-	DynamicJsonBuffer jsonBuffer;
+	DynamicJsonDocument doc(1024);
 	MeteoConfig cfg;
-	if(fileExist(METEO_CONFIG_FILE)) {
-		int size = fileGetSize(METEO_CONFIG_FILE);
-		char* jsonString = new char[size + 1];
-		fileGetContent(METEO_CONFIG_FILE, jsonString, size + 1);
-		JsonObject& root = jsonBuffer.parseObject(jsonString);
+	if(Json::loadFromFile(doc, METEO_CONFIG_FILE)) {
+		JsonObject network = doc["network"];
+		cfg.NetworkSSID = network["ssid"].as<const char*>();
+		cfg.NetworkPassword = network["password"].as<const char*>();
 
-		JsonObject& network = root["network"];
-		cfg.NetworkSSID = String((const char*)network["ssid"]);
-		cfg.NetworkPassword = String((const char*)network["password"]);
-
-		JsonObject& correction = root["correction"];
+		JsonObject correction = doc["correction"];
 		cfg.AddT = correction["T"];
 		cfg.AddRH = correction["RH"];
 		cfg.AddTZ = correction["TZ"];
 
-		JsonObject& trigger = root["trigger"];
-		cfg.Trigger = (TriggerType)(int)trigger["type"];
+		JsonObject trigger = doc["trigger"];
+		cfg.Trigger = TriggerType(trigger["type"].as<int>());
 		cfg.RangeMin = trigger["min"];
 		cfg.RangeMax = trigger["max"];
-
-		delete[] jsonString;
 	} else {
 		cfg.NetworkSSID = WIFI_SSID;
 		cfg.NetworkPassword = WIFI_PWD;
@@ -40,27 +33,20 @@ void saveConfig(MeteoConfig& cfg)
 {
 	ActiveConfig = cfg;
 
-	DynamicJsonBuffer jsonBuffer;
-	JsonObject& root = jsonBuffer.createObject();
+	DynamicJsonDocument doc(1024);
+	auto network = doc.createNestedObject("network");
+	network["ssid"] = cfg.NetworkSSID;
+	network["password"] = cfg.NetworkPassword;
 
-	JsonObject& network = jsonBuffer.createObject();
-	root["network"] = network;
-	network["ssid"] = cfg.NetworkSSID.c_str();
-	network["password"] = cfg.NetworkPassword.c_str();
-
-	JsonObject& correction = jsonBuffer.createObject();
-	root["correction"] = correction;
+	auto correction = doc.createNestedObject("correction");
 	correction["T"] = cfg.AddT;
 	correction["RH"] = cfg.AddRH;
 	correction["TZ"] = cfg.AddTZ;
 
-	JsonObject& trigger = jsonBuffer.createObject();
-	root["trigger"] = trigger;
+	auto trigger = doc.createNestedObject("trigger");
 	trigger["type"] = (int)cfg.Trigger;
 	trigger["min"] = cfg.RangeMin;
 	trigger["max"] = cfg.RangeMax;
 
-	char buf[3048];
-	root.prettyPrintTo(buf, sizeof(buf));
-	fileSetContent(METEO_CONFIG_FILE, buf);
+	Json::saveToFile(doc, METEO_CONFIG_FILE, Json::Pretty);
 }
