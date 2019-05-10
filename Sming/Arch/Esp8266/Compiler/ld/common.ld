@@ -122,6 +122,12 @@ SECTIONS
     *(.rodata._ZZ*__PRETTY_FUNCTION__)
     *(.rodata._ZZ*__func__)
 
+    /* debug_e() string pointers */
+    *(.rodata._ZZ*log_string)
+
+    /* const references, mainly in templated code */
+    *(.rodata._ZN*)
+
     _irom0_text_end = ABSOLUTE(.);
     _flash_code_end = ABSOLUTE(.);
   } >irom0_0_seg :irom0_0_phdr
