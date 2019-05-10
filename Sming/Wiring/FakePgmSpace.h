@@ -50,7 +50,7 @@ typedef uint32_t prog_uint32_t;
  */
 #define PSTR(_str)                                                                                                     \
 	(__extension__({                                                                                                   \
-		static DEFINE_PSTR(__c, _str);                                                                                 \
+		DEFINE_PSTR_LOCAL(__c, _str);                                                                                  \
 		&__c[0];                                                                                                       \
 	}))
 
@@ -60,7 +60,7 @@ typedef uint32_t prog_uint32_t;
  */
 #define _F(_str)                                                                                                       \
 	(__extension__({                                                                                                   \
-		static DEFINE_PSTR(_flash_str, _str);                                                                          \
+		DEFINE_PSTR_LOCAL(_flash_str, _str);                                                                           \
 		LOAD_PSTR(_buf, _flash_str);                                                                                   \
 		_buf;                                                                                                          \
 	}))
@@ -198,9 +198,14 @@ extern "C"
 /** @brief define a PSTR
  *  @param _name name of string
  *  @param _str the string data
- *  @note may also be used for byte arrays { 1, 2, 3 } etc.
  */
 #define DEFINE_PSTR(_name, _str) const char _name[] PROGMEM = _str;
+
+/** @brief define a PSTR for local (static) use
+ *  @param _name name of string
+ *  @param _str the string data
+ */
+#define DEFINE_PSTR_LOCAL(_name, _str) static DEFINE_PSTR(_name, _str)
 
 // Declare a global reference to a PSTR instance
 #define DECLARE_PSTR(_name) extern const char _name[] PROGMEM;
