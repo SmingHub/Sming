@@ -20,6 +20,8 @@
 
 class String;
 
+typedef signed short file_t; ///< File handle
+
 /// File open flags
 enum FileOpenFlags {
 	eFO_ReadOnly = SPIFFS_RDONLY,							  ///< Read only file
@@ -60,17 +62,17 @@ void fileClose(file_t file);
  *  @param  file File ID
  *  @param  data Pointer to data to write to file
  *  @param  size Quantity of data elements to write to file
- *  @retval size_t Quantity of data elements actually written to file or negative error code
+ *  @retval int Quantity of data elements actually written to file or negative error code
  */
-size_t fileWrite(file_t file, const void* data, size_t size);
+int fileWrite(file_t file, const void* data, size_t size);
 
 /** @brief  Read from file
  *  @param  file File ID
  *  @param  data Pointer to data buffer in to which to read data
  *  @param  size Quantity of data elements to read from file
- *  @retval size_t Quantity of data elements actually read from file or negative error code
+ *  @retval int Quantity of data elements actually read from file or negative error code
  */
-size_t fileRead(file_t file, void* data, size_t size);
+int fileRead(file_t file, void* data, size_t size);
 
 /** @brief  Position file cursor
  *  @param  file File ID
@@ -114,13 +116,14 @@ void fileClearLastError(file_t fd);
 /** @brief  Create or replace file with defined content
  *  @param  fileName Name of file to create or replace
  *  @param  content Pointer to c-string containing content to populate file with
- *  @retval int Positive integer represents the numbers of bytes written.
- *  @retval int Negative integer represents the error code of last file system operation.
+ *  @param  length (optional) number of characters to write
+ *  @retval int Positive value (>= 0) represents the numbers of bytes written
+ *  			Negative value (< 0) indicates error
  *  @note   This function creates a new file or replaces an existing file and
-            populates the file with the content of a c-string buffer.
-            Remember to terminate your c-string buffer with a null (0).
+ *  		populates the file with the content of a c-string buffer.
+            If you do not specify `length`, remember to terminate your c-string buffer with a NUL ('\0').
  */
-int fileSetContent(const String& fileName, const char* content);
+int fileSetContent(const String& fileName, const char* content, int length = -1);
 
 /** @brief  Create or replace file with defined content
  *  @param  fileName Name of file to create or replace
@@ -135,14 +138,40 @@ int fileSetContent(const String& fileName, const String& content);
 /** @brief  Get size of file
  *  @param  fileName Name of file
  *  @retval uint32_t Size of file in bytes
+ *  @note	Returns 0 if error occurs
  */
 uint32_t fileGetSize(const String& fileName);
+
+/** @brief Truncate (reduce) the size of an open file
+ *  @param file Open file handle, must have Write access
+ *  @param newSize
+ *  @retval int error code
+ *  @note In POSIX `ftruncate()` can also make the file bigger, however SPIFFS can only
+ *  reduce the file size and will return an error if newSize > fileSize
+ */
+int fileTruncate(file_t file, size_t newSize);
+
+/** @brief Truncate an open file at the current cursor position
+ *  @param file Open file handle, must have Write access
+ *  @retval int error code
+ */
+int fileTruncate(file_t file);
+
+/** @brief Truncate (reduce) the size of a file
+ *  @param fileName
+ *  @param newSize
+ *  @retval int error code
+ *  @note In POSIX `truncate()` can also make the file bigger, however SPIFFS can only
+ *  reduce the file size and will return an error if newSize > fileSize
+ */
+int fileTruncate(const String& fileName, size_t newSize);
 
 /** @brief  Rename file
  *  @param  oldName Original name of file to rename
  *  @param  newName New name for file
+ *  @retval int error code
  */
-void fileRename(const String& oldName, const String& newName);
+int fileRename(const String& oldName, const String& newName);
 
 /** @brief  Get list of files on file system
  *  @retval Vector<String> Vector of strings.
@@ -153,7 +182,9 @@ Vector<String> fileList();
 /** @brief  Read content of a file
  *  @param  fileName Name of file to read from
  *  @retval String String variable in to which to read the file content
- *  @note   After calling this function the content of the file is placed in to a string
+ *  @note   After calling this function the content of the file is placed in to a string.
+ *  The result will be an invalid String (equates to `false`) if the file could not be read.
+ *  If the file exists, but is empty, the result will be an empty string "".
  */
 String fileGetContent(const String& fileName);
 
@@ -161,12 +192,13 @@ String fileGetContent(const String& fileName);
  *  @param  fileName Name of file to read from
  *  @param  buffer Pointer to a character buffer in to which to read the file content
  *  @param  bufSize Quantity of bytes to read from file
- *  @retval int Quantity of bytes read from file or zero on failure
+ *  @retval size_t Quantity of bytes read from file or zero on failure
  *  @note   After calling this function the content of the file is placed in to a c-string
             Ensure there is sufficient space in the buffer for file content
             plus extra trailing null, i.e. at least bufSize + 1
+    @note   Returns 0 if the file could not be read
  */
-int fileGetContent(const String& fileName, char* buffer, int bufSize);
+size_t fileGetContent(const String& fileName, char* buffer, size_t bufSize);
 
 /** brief   Get file statistics
  *  @param  name File name
