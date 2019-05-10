@@ -44,7 +44,7 @@ public:
 
 	/** @brief beginTransaction(): Initializes the SPI bus using the defined SPISettings.
 	 */
-	virtual void beginTransaction(SPISettings mySettings) = 0;
+	virtual void beginTransaction(SPISettings& mySettings) = 0;
 
 	/** @brief endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.
 	 */

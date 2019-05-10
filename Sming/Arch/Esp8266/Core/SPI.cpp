@@ -22,12 +22,17 @@
 // define the static singleton
 SPIClass SPI;
 
-/* @defgroup SPI hardware implementation
- * @brief begin()
- *
- * Initializes the SPI bus using the default SPISettings
- *
- */
+static void spi_mode(uint8_t mode);
+static void spi_byte_order(uint8_t byte_order);
+static void setClock(const SPISpeed& speed);
+
+// Used internally to calculate optimum SPI speed
+struct SpiPreDiv {
+	unsigned freq;
+	unsigned prescale;
+	unsigned divisor;
+};
+
 void SPIClass::begin()
 {
 	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX, BIT9);
@@ -36,44 +41,19 @@ void SPIClass::begin()
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, 2); // HSPID MOSI == GPIO13
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, 2); // CLK		 == GPIO14
 
-	prepare(this->SPIDefaultSettings);
+	checkSpeed(SPIDefaultSettings.speed);
+	prepare(SPIDefaultSettings);
 }
 
-/* @defgroup SPI hardware implementation
- * @brief beginTransaction()
- *
- * Initializes the SPI bus using the defined SPISettings
- *
- * this methode does not initiate a transaction. So it can be used to
- * setup the SPI after SPI.begin()
- *
- */
-void SPIClass::beginTransaction(SPISettings mySettings)
+void SPIClass::beginTransaction(SPISettings& mySettings)
 {
 #ifdef SPI_DEBUG
 	debugf("SPIhw::beginTransaction(SPISettings mySettings)");
 #endif
-	// check if we need to change settings
-	if(this->spiSettings == mySettings) {
-		return;
-	}
 
-	// prepare SPI settings
 	prepare(mySettings);
 }
 
-/* @defgroup SPI hardware implementation
- * @brief transfer32()
- *
- * private method used by transfer(byte) and transfer16(sort)
- * to send/recv one uint32_t
- *
- * SPI transfer is based on a simultaneous send and receive:
- * the received data is returned in receivedVal (or receivedVal16).
- *
- * 		receivedVal = SPI.transfer(val)			: single byte
- * 		receivedVal16 = SPI.transfer16(val16)	: single short
- */
 uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 {
 	uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
@@ -110,11 +90,6 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 	}
 }
 
-/*
- * 	 used for performance tuning when doing continuous reads
- * 	 this method does not reset the registers , so make sure
- * 	 that a regular transfer(data) call was performed
- */
 uint8_t SPIClass::read8()
 {
 	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
@@ -147,26 +122,26 @@ uint8_t SPIClass::read8()
  */
 void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 {
-#define BLOCKSIZE 64 // the max length of the ESP SPI_W0 registers
+#define BLOCKSIZE 64U // the max length of the ESP SPI_W0 registers
 
-	uint16 bufIndx = 0;
+	unsigned bufIndx = 0;
 
-	int blocks = ((numberBytes - 1) / BLOCKSIZE) + 1;
+	unsigned blocks = ((numberBytes - 1) / BLOCKSIZE) + 1;
 #ifdef SPI_DEBUG
-	int total = blocks;
+	unsigned total = blocks;
 #endif
 
 	// loop number of blocks
 	while(blocks--) {
 		// get full BLOCKSIZE or number of remaining bytes
-		uint8_t bufLength = std::min(numberBytes - bufIndx, (unsigned int)BLOCKSIZE);
+		auto bufLength = std::min(numberBytes - bufIndx, BLOCKSIZE);
 
 #ifdef SPI_DEBUG
-		debugf("Write/Read Block %d total %d bytes", total - blocks, bufLength);
+		debugf("Write/Read Block %u total %u bytes", total - blocks, bufLength);
 #endif
 
 		// compute the number of bits to clock
-		uint8_t num_bits = bufLength * 8;
+		auto num_bits = bufLength * 8;
 
 		uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
 
@@ -208,39 +183,21 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 	}
 };
 
-/** @defgroup SPI hardware implementation
- * @brief  prepare	apply SPI bus settings
- *
- * 		Private method used by beginTransaction and begin (init)
- *
- * 	@param  SPISettings include frequency, byte order and SPI mode
- */
-void SPIClass::prepare(SPISettings mySettings)
+void SPIClass::prepare(SPISettings& settings)
 {
 #ifdef SPI_DEBUG
-	debugf("SPIClass::prepare(SPISettings mySettings)");
-	mySettings.print("mySettings");
+	debugf("SPIClass::prepare(SPISettings)");
+	settings.print("settings");
 #endif
-
-	// check if we need to change settings
-	if(initialised && spiSettings == mySettings)
-		return;
 
 	//  setup clock
-	setFrequency(mySettings.speed);
+	setClock(settings.speed);
 
 	//	set byte order
-	this->spi_byte_order(mySettings.byteOrder);
+	spi_byte_order(settings.byteOrder);
 
 	//	set spi mode
-	spi_mode(mySettings.dataMode);
-
-#ifdef SPI_DEBUG
-	debugf("SPIhw::prepare(SPISettings mySettings) -> updated settings");
-#endif
-
-	spiSettings = mySettings;
-	initialised = true;
+	spi_mode(settings.dataMode);
 };
 
 /** @brief  spi_mode Configures SPI mode parameters for clock edge and clock polarity.
@@ -255,7 +212,7 @@ void SPIClass::prepare(SPISettings mySettings)
  *			SPI_MODE2	1						0
  *			SPI_MODE3	1						1
  */
-void SPIClass::spi_mode(uint8_t mode)
+static void spi_mode(uint8_t mode)
 {
 	uint8_t spi_cpha = mode & 0x0F;
 	uint8_t spi_cpol = mode & 0xF0;
@@ -287,10 +244,10 @@ void SPIClass::spi_mode(uint8_t mode)
  * 	 		Data is sent out starting with the lowest BYTE, from MSB to LSB
  * 			0xABCDEFGH would be sent as 0xGHEFCDAB
  */
-void SPIClass::spi_byte_order(uint8_t byte_order)
+static void spi_byte_order(uint8_t byte_order)
 {
 #ifdef SPI_DEBUG
-	debugf("SPIClass::spi_byte_order(byte_order %d)", byte_order);
+	debugf("SPIClass::spi_byte_order(byte_order %u)", byte_order);
 #endif
 
 	if(byte_order) {
@@ -314,138 +271,108 @@ void SPIClass::spi_byte_order(uint8_t byte_order)
  * 	@param  prediv  time length LOW level
  *
  */
-void SPIClass::setClock(uint8_t prediv, uint8_t cntdiv)
+static void setClock(const SPISpeed& speed)
 {
-#ifdef SPI_DEBUG
-	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d", prediv, cntdiv, spiSettings.speed);
-#endif
-
-	if((prediv == 0) | (cntdiv == 0)) {
-		// go full speed = SYSTEMCLOCK
-		WRITE_PERI_REG(SPI_CLOCK(SPI_NO), SPI_CLK_EQU_SYSCLK);
+	// Clock register value is never 0, so indicates it hasn't been calculated
+	uint32_t regVal = speed.regVal;
+	if(regVal == 0) {
+		SPISpeed tmp = speed;
+		SPIClass::checkSpeed(tmp);
+		regVal = tmp.regVal;
 	} else {
-		WRITE_PERI_REG(SPI_CLOCK(SPI_NO), (((prediv - 1) & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
-											  (((cntdiv - 1) & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
-											  (((cntdiv >> 1) & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) |
-											  ((0 & SPI_CLKCNT_L) << SPI_CLKCNT_L_S));
-	}
-}
-
-/** @brief  gnu lib div implementation
- *          TODO: check whether there is a implementation in SMING already
- */
-div_t div(int numer, int denom)
-{
-	div_t result;
-	result.quot = numer / denom;
-	result.rem = numer % denom;
-	if(numer >= 0 && result.rem < 0) {
-		++result.quot;
-		result.rem -= denom;
-	}
-	return result;
-}
-
-/** @brief  getFrequency computes the closest pre devider for a given clock-devider and frequency
- *
- * 	Private method used by setFrequency
- *
- *  @param  freq target SPI bus frequency
- *  @param  &pre return the computed pre devider (pass by reference)reqHelp Help message shown by CLI "help" command
- *  @param  clk  clock devider
- */
-uint32_t SPIClass::getFrequency(int freq, int& pre, int clk)
-{
-	int _CPU_freq = system_get_cpu_freq() * 1000000UL;
 #ifdef SPI_DEBUG
-	debugf("SPIClass::getFrequency -> current cpu frequency %d", _CPU_freq);
+		unsigned prescale = (speed.regVal >> SPI_CLKDIV_PRE_S) + 1;
+		unsigned divisor = (speed.regVal >> SPI_CLKCNT_N_S) + 1;
+		debugf("SPIClass::setClock(prescaler %u, divisor %u) for target %u", prescale, divisor, speed.frequency);
+#endif
+	}
+
+	WRITE_PERI_REG(SPI_CLOCK(SPI_NO), regVal);
+}
+
+/** @brief Calculate the closest prescale value for a given frequency and clock-divider
+ *
+ * 	Internal function
+ *
+ *  @param  cpuFreq current CPU frequency, in Hz
+ *  @param  freq target SPI bus frequency, in Hz
+ *  @param  div divisor value to use
+ *  @retval SpiPreDiv contains resulting frequency, prescaler and divisor values
+ */
+static SpiPreDiv calculateSpeed(unsigned cpuFreq, unsigned freq, unsigned div)
+{
+	SpiPreDiv prediv;
+	unsigned pre = cpuFreq / (freq * div);
+	if(pre == 0) {
+		pre = 1;
+	}
+	unsigned n = pre * div;
+	while(true) {
+		prediv.freq = cpuFreq / n;
+		if(prediv.freq <= freq) {
+			break;
+		}
+		++pre;
+		n += div;
+	}
+	prediv.prescale = pre;
+	prediv.divisor = div;
+
+#ifdef SPI_DEBUG
+	debugf("SPI calculateSpeed(uint freq %u, uint pre %u, uint div %u)", f, pre, div);
 #endif
 
-	int divider = _CPU_freq / freq;
-
-	div_t divresult = div(divider, clk);
-	pre = divresult.quot;
-
-	int f = _CPU_freq / pre / clk;
-	while(f > freq) {
-		pre++;
-		f = _CPU_freq / pre / clk;
-	}
-#ifdef SPI_DEBUG
-	debugf("SPIClass::getFrequency(int freq %d, int &pre %d, int clk %d)", f, pre, clk);
-#endif
-	return f;
+	return prediv;
 }
 
-/** @brief  set the max SPI bus frequency
- *
- *  		Private method used by SPISetings
- *
- *  		The algorithm is testing with colock deviders 2,3 and 5 to find the best pre-devider
+/** @brief Check speed settings and perform any pre-calculation required
+ *  @param speed IN: requested bus frequency, OUT: Modified settings with prescale values
+ *  @note
+ *  		The algorithm is testing with clock dividers 2,3 and 5 to find the best pre-divider
  *  		The resulting clock frequency is not 100% accurate but delivers result within 5%
  *
  *  		It is guaranteed that the frequency will not exceed the given target
  *
  *  		Make sure that the ESP clock frequency is set before initializing the SPI bus.
  *  		Changes on the ESP clock are not recognised once initialized
- *
- *  @param  freq Max SPI bus frequency
- * @{
  */
-void SPIClass::setFrequency(int freq)
+void SPIClass::checkSpeed(SPISpeed& speed)
 {
+	unsigned cpuFreq = system_get_cpu_freq() * 1000000UL;
 #ifdef SPI_DEBUG
-	debugf("SPIClass::setFrequency(uint32_t %d)", freq);
+	debugf("SPIClass::calculateSpeed() -> current cpu frequency %u", cpuFreq);
 #endif
 
-	int _CPU_freq = system_get_cpu_freq() * 1000000UL;
+	SpiPreDiv prediv;
 
-	// dont run code if there are no changes
-	if(initialised && freq == spiSettings.speed)
-		return;
-
-	if(freq == _CPU_freq) {
-		spiSettings.speed = freq;
-		setClock(0, 0);
-		return;
-	}
-
-	freq = std::min(freq, _CPU_freq / 2);
-	spiSettings.speed = freq;
-
-	int pre2;
-	int f2 = getFrequency(freq, pre2, 2);
-	if(f2 == freq) {
-#ifdef SPI_DEBUG
-		debugf("-> Hit!! -> target freq %d -> result %d", freq, _CPU_freq / pre2 / 2);
-#endif
-		setClock(pre2, 2);
-		return;
-	}
-
-	int pre3;
-	int f3 = getFrequency(freq, pre3, 3);
-	int pre5;
-	int f5 = getFrequency(freq, pre5, 5);
-	if(f3 <= f2 && f2 >= f5) {
-#ifdef SPI_DEBUG
-		debugf("-> Using clock divider 2 -> target freq %d -> result %d", freq, _CPU_freq / pre2 / 2);
-#endif
-		setClock(pre2, 2);
-		return;
+	// If we're not running at max then need to determine appropriate prescale values
+	if(speed.frequency >= cpuFreq) {
+		// Use maximum speed
+		prediv.freq = cpuFreq;
+		prediv.prescale = 0;
+		prediv.divisor = 0;
+		speed.regVal = SPI_CLK_EQU_SYSCLK;
 	} else {
-		if(f5 <= f3) {
-#ifdef SPI_DEBUG
-			debugf("-> Using clock divider 3 -> target freq %d -> result %d", freq, _CPU_freq / pre3 / 3);
-#endif
-			setClock(pre3, 3);
-			return;
-		} else {
-#ifdef SPI_DEBUG
-			debugf("-> Using clock divider 5 -> target freq %d -> result %d", freq, _CPU_freq / pre5 / 5);
-#endif
-			setClock(pre5, 5);
-			return;
+		prediv = calculateSpeed(cpuFreq, speed.frequency, 2);
+		if(prediv.freq != speed.frequency) {
+			// Use whichever divisor gives the highest frequency
+			SpiPreDiv pd3 = calculateSpeed(cpuFreq, speed.frequency, 3);
+			SpiPreDiv pd5 = calculateSpeed(cpuFreq, speed.frequency, 5);
+			if(pd3.freq > prediv.freq || pd5.freq > prediv.freq) {
+				prediv = (pd3.freq > pd5.freq) ? pd3 : pd5;
+			}
 		}
+
+		// We have prescale and divisor values, now get regVal so we don't need to do this every time prepare() is called
+		speed.regVal = (((prediv.prescale - 1) & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
+					   (((prediv.divisor - 1) & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
+					   (((prediv.divisor >> 1) & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) |
+					   ((0 & SPI_CLKCNT_L) << SPI_CLKCNT_L_S);
 	}
+
+	//#ifdef SPI_DEBUG
+	debug_e("-> Using clock divider %u -> target freq %u -> result %u", prediv.divisor, speed.frequency, prediv.freq);
+	//#endif
+
+	speed.frequency = prediv.freq;
 }

@@ -21,7 +21,7 @@ public:
 	/*
 	 *  begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
 	 */
-	void begin() override; //setup pins
+	void begin() override;
 
 	/*
 	 * end(): Disables the SPI bus (leaving pin modes unchanged).
@@ -33,7 +33,7 @@ public:
 	/*
 	 * beginTransaction(): Initializes the SPI bus using the defined SPISettings.
 	 */
-	void beginTransaction(SPISettings mySettings) override
+	void beginTransaction(SPISettings& mySettings) override
 	{
 	}
 
