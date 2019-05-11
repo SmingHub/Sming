@@ -13,7 +13,7 @@
 #include "HttpHeaders.h"
 
 // Define field name strings and a lookup table
-#define XX(_tag, _str, _comment) static DEFINE_FSTR(hhfnStr_##_tag, _str);
+#define XX(_tag, _str, _comment) DEFINE_FSTR_LOCAL(hhfnStr_##_tag, _str);
 HTTP_HEADER_FIELDNAME_MAP(XX)
 #undef XX
 

@@ -12,8 +12,8 @@
 
 #define LEAP_YEAR(year) ((year % 4) == 0)
 
-static DEFINE_FSTR(flashMonthNames, LOCALE_MONTH_NAMES);
-static DEFINE_FSTR(flashDayNames, LOCALE_DAY_NAMES);
+DEFINE_FSTR_LOCAL(flashMonthNames, LOCALE_MONTH_NAMES);
+DEFINE_FSTR_LOCAL(flashDayNames, LOCALE_DAY_NAMES);
 
 /* We can more efficiently compare text of 4 character length by comparing as words */
 union FourDigitName {

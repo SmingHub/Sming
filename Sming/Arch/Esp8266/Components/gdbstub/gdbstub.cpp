@@ -54,7 +54,7 @@ enum DebugCause {
 };
 
 // Register names
-#define XX(num, name) static DEFINE_PSTR(xtreg_str_##name, #name)
+#define XX(num, name) DEFINE_PSTR_LOCAL(xtreg_str_##name, #name)
 XT_REGISTER_MAP(XX)
 #undef XX
 static PGM_P const registerNames[] PROGMEM = {

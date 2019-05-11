@@ -32,7 +32,7 @@ const uint8_t gdb_exception_signals[] GDB_PROGMEM = {
 };
 
 // List of exception names
-#define XX(ex, sig, desc) static DEFINE_PSTR(exception_str_##ex, #ex)
+#define XX(ex, sig, desc) DEFINE_PSTR_LOCAL(exception_str_##ex, #ex)
 SYSTEM_EXCEPTION_MAP(XX)
 #undef XX
 static PGM_P const exceptionNames[] PROGMEM = {

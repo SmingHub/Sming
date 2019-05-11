@@ -543,11 +543,11 @@ COMMAND_HANDLER(help)
 
 COMMAND_HANDLER(jsontest)
 {
-	static DEFINE_FSTR(flashString1, "FlashString-1");
-	static DEFINE_FSTR(flashString2, "FlashString-2");
-	static DEFINE_FSTR(formatStrings, "Compact\0Pretty\0MessagePack");
-	static DEFINE_FSTR(test_json, "test.json");
-	static DEFINE_FSTR(test_msgpack, "test.msgpack");
+	DEFINE_FSTR_LOCAL(flashString1, "FlashString-1");
+	DEFINE_FSTR_LOCAL(flashString2, "FlashString-2");
+	DEFINE_FSTR_LOCAL(formatStrings, "Compact\0Pretty\0MessagePack");
+	DEFINE_FSTR_LOCAL(test_json, "test.json");
+	DEFINE_FSTR_LOCAL(test_msgpack, "test.msgpack");
 
 	spiffs_mount();
 

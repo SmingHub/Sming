@@ -36,7 +36,7 @@
  *	memory so must be accessed using the appropriate xxx_P function.
  *
  *	LOAD_PSTR(_name, _flash_str) - loads pre-defined PSTR into buffer on stack
- *		static DEFINE_PSTR(testFlash, "This is a test string\n"); // Function scope requires static allocation
+ *		DEFINE_PSTR_LOCAL(testFlash, "This is a test string\n"); // Function scope requires static allocation
  *		LOAD_PSTR(test, testFlash)
  *		m_printf(test);
  *
@@ -90,8 +90,16 @@
  *  The data includes the nul terminator but the length does not.
  */
 #define DEFINE_FSTR(_name, _str)                                                                                       \
-	DEFINE_FSTR_STRUCT(_##_name, _str)                                                                                 \
-	const FlashString& _name = _##_name.fstr;
+	DEFINE_FSTR_STRUCT(_##_name, _str);                                                                                \
+	const FlashString& _name PROGMEM = _##_name.fstr;
+
+/** @Brief Define a FlashString for local (static) use
+ *  @param _name variable to identify the string
+ *  @param _str content of the string
+ */
+#define DEFINE_FSTR_LOCAL(_name, _str)                                                                                 \
+	static DEFINE_FSTR_STRUCT(_##_name, _str);                                                                         \
+	static const FlashString& _name PROGMEM = _##_name.fstr;
 
 #define DEFINE_FSTR_STRUCT(_name, _str)                                                                                \
 	constexpr struct {                                                                                                 \
@@ -145,7 +153,7 @@
  * 	char _name[] = "text";
  */
 #define FSTR_ARRAY(_name, _str)                                                                                        \
-	static DEFINE_FSTR(_##_name, _str);                                                                                \
+	DEFINE_FSTR_LOCAL(_##_name, _str);                                                                                 \
 	LOAD_FSTR(_name, _##_name)
 
 /** @brief Define a FlashString containing data from an external file

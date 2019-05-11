@@ -15,7 +15,7 @@
 #include "HttpCommon.h"
 
 // Define flash strings and lookup table for HTTP error names
-#define XX(_n, _s) static DEFINE_FSTR(hpename_##_n, "HPE_" #_n);
+#define XX(_n, _s) DEFINE_FSTR_LOCAL(hpename_##_n, "HPE_" #_n);
 HTTP_ERRNO_MAP(XX)
 #undef XX
 
@@ -34,7 +34,7 @@ String httpGetErrorName(enum http_errno err)
 }
 
 // Define flash strings and lookup table for HTTP error descriptions
-#define XX(_n, _s) static DEFINE_FSTR(hpedesc_##_n, _s);
+#define XX(_n, _s) DEFINE_FSTR_LOCAL(hpedesc_##_n, _s);
 HTTP_ERRNO_MAP(XX)
 #undef XX
 
@@ -53,7 +53,7 @@ String httpGetErrorDescription(enum http_errno err)
 }
 
 // Define flash strings for HTTP status codes
-#define XX(_num, _name, _string) static DEFINE_FSTR(hpsText_##_num, #_string);
+#define XX(_num, _name, _string) DEFINE_FSTR_LOCAL(hpsText_##_num, #_string);
 HTTP_STATUS_MAP(XX)
 #undef XX
 

@@ -71,19 +71,21 @@ extern "C" {
 #endif
 
 //A static const char[] is defined having a unique name (log_ prefix, filename and line number)
-//This will be stored in the irom section(on flash) feeing up the RAM
+//This will be stored in the irom section(on flash) freeing up the RAM
 //Next special version of printf from FakePgmSpace is called to fetch and print the message
 #if DEBUG_PRINT_FILENAME_AND_LINE
 #define debug_e(fmt, ...)                                                                                              \
 	(__extension__({                                                                                                   \
 		static const char log_string[] PROGMEM_DEBUG = "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt "\n";                \
-		printf_P(log_string, __LINE__, ##__VA_ARGS__);                                                                 \
+		LOAD_PSTR(fmtbuf, log_string);                                                                                 \
+		m_printf(fmtbuf, __LINE__, ##__VA_ARGS__);                                                                     \
 	}))
 #else
 #define debug_e(fmt, ...)                                                                                              \
 	(__extension__({                                                                                                   \
 		static const char log_string[] PROGMEM_DEBUG = "%u " fmt "\n";                                                 \
-		printf_P(log_string, system_get_time(), ##__VA_ARGS__);                                                        \
+		LOAD_PSTR(fmtbuf, log_string);                                                                                 \
+		m_printf(fmtbuf, system_get_time(), ##__VA_ARGS__);                                                            \
 	}))
 #endif
 

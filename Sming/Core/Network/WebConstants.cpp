@@ -14,7 +14,7 @@
 namespace ContentType
 {
 // MIME type strings
-#define XX(_name, _ext, _mime) static DEFINE_FSTR(mimestr_##_name, _mime);
+#define XX(_name, _ext, _mime) DEFINE_FSTR_LOCAL(mimestr_##_name, _mime);
 MIME_TYPE_MAP(XX)
 #undef XX
 
@@ -25,7 +25,7 @@ static FSTR_TABLE(mimeStrings) = {
 };
 
 // File extensions
-#define XX(_name, _ext, _mime) static DEFINE_FSTR(extstr_##_name, _ext);
+#define XX(_name, _ext, _mime) DEFINE_FSTR_LOCAL(extstr_##_name, _ext);
 MIME_TYPE_MAP(XX)
 #undef XX
 

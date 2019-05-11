@@ -163,17 +163,17 @@ bool NetUtils::FixNetworkRouting()
 /////////////////////////////////
 
 // enum tcp_state, see file /include/lwip/tcp.h
-static DEFINE_FSTR(deb_tcp_state_str, "CLOSED\0"	  // 0  CLOSED
-									  "LISTEN\0"	  // 1  LISTEN
-									  "SYN_SENT\0"	// 2  SYN_SENT
-									  "SYN_RCVD\0"	// 3  SYN_RCVD
-									  "ESTABLISHED\0" // 4  ESTABLISHED
-									  "FIN_WAIT_1\0"  // 5  FIN_WAIT_1
-									  "FIN_WAIT_2\0"  // 6  FIN_WAIT_2
-									  "CLOSE_WAIT\0"  // 7  CLOSE_WAIT
-									  "CLOSING\0"	 // 8  CLOSING
-									  "LAST_ACK\0"	// 9  LAST_ACK
-									  "TIME_WAIT");   // 10 TIME_WAIT
+DEFINE_FSTR_LOCAL(deb_tcp_state_str, "CLOSED\0"		 // 0  CLOSED
+									 "LISTEN\0"		 // 1  LISTEN
+									 "SYN_SENT\0"	// 2  SYN_SENT
+									 "SYN_RCVD\0"	// 3  SYN_RCVD
+									 "ESTABLISHED\0" // 4  ESTABLISHED
+									 "FIN_WAIT_1\0"  // 5  FIN_WAIT_1
+									 "FIN_WAIT_2\0"  // 6  FIN_WAIT_2
+									 "CLOSE_WAIT\0"  // 7  CLOSE_WAIT
+									 "CLOSING\0"	 // 8  CLOSING
+									 "LAST_ACK\0"	// 9  LAST_ACK
+									 "TIME_WAIT");   // 10 TIME_WAIT
 
 static void debugPrintTcp(const char* type, const struct tcp_pcb* pcb)
 {
