@@ -10,7 +10,7 @@
 
 #include "ArduCAM.h"
 
-#include "../../Services/HexDump/HexDump.h"
+#include <Services/HexDump/HexDump.h>
 
 
 class ArduCAMStream: public IDataSourceStream {

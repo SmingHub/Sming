@@ -1,7 +1,7 @@
 #include <user_config.h>
 #include <SmingCore.h>
 
-#include "../include/configuration.h"
+#include "configuration.h"
 
 bool serverStarted = false;
 HttpServer server;

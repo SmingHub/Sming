@@ -1,4 +1,4 @@
-#include "../include/configuration.h"
+#include "configuration.h"
 
 #include <SmingCore.h>
 

@@ -7,8 +7,8 @@
 #define ARDUCAM_COMMAND_H_
 
 #include "WString.h"
-#include "../Services/CommandProcessing/CommandProcessingIncludes.h"
-#include "../Services/CommandProcessing/CommandOutput.h"
+#include <Services/CommandProcessing/CommandProcessingIncludes.h>
+#include <Services/CommandProcessing/CommandOutput.h>
 #include <Libraries/ArduCAM/ArduCAM.h>
 
 class ArduCamCommand

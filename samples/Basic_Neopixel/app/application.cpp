@@ -1,7 +1,7 @@
 #include <user_config.h>
 #include <SmingCore.h>
 
-#include <Adafruit_NeoPixel/Adafruit_NeoPixel.h>
+#include <Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.h>
 
 #ifndef WIFI_SSID
 #define WIFI_SSID "XXX" // Put you SSID and Password here

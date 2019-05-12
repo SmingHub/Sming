@@ -5,7 +5,7 @@
 
 ///////////////////////////////////////////////////////////////////
 // Set your SSID & Pass for initial configuration
-#include "../include/configuration.h" // application configuration
+#include "configuration.h" // application configuration
 ///////////////////////////////////////////////////////////////////
 
 #include "special_chars.h"

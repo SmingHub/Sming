@@ -26,7 +26,7 @@
 #else
  #include "WProgram.h"
 #endif
-#include "../Adafruit_GFX/Adafruit_GFX.h"
+#include <Libraries/Adafruit_GFX/Adafruit_GFX.h>
 
 extern "C"
 {

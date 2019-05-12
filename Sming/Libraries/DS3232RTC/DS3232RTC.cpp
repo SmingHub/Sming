@@ -35,7 +35,7 @@
  * CC BY-SA 4.0, http://creativecommons.org/licenses/by-sa/4.0/         *
  *----------------------------------------------------------------------*/ 
 
-#include <DS3232RTC.h>
+#include "DS3232RTC.h"
 
 //define release-independent I2C functions
 #if defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
