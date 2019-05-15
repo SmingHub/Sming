@@ -24,9 +24,8 @@
 #include "WVector.h"
 #include "IPAddress.h"
 
-extern "C" {
-#include <smartconfig.h>
-}
+#include <esp_wifi.h>
+#include <esp_smartconfig.h>
 
 /** @ingroup constants
  *  @{
@@ -262,8 +261,6 @@ private:
 class BssInfo
 {
 public:
-	BssInfo(bss_info* info);
-
 	/**	@brief	Get BSS open status
 	 *	@retval	bool True if BSS open
 	*/
@@ -289,6 +286,10 @@ public:
 	uint8_t channel;		 ///< Channel number
 	int16_t rssi;			 ///< RSSI level
 	bool hidden;			 ///< True if AP is hidden
+
+private:
+	friend class StationClass;
+	BssInfo(bss_info* info);
 };
 
 /**	@brief	Global instance of WiFi station object

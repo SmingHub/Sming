@@ -17,6 +17,8 @@
 #include "WString.h"
 #include "IPAddress.h"
 
+#include <esp_wifi.h>
+
 //Define WifiEvents Delegates types
 typedef Delegate<void(String, uint8_t, uint8_t[6], uint8_t)> StationConnectDelegate;
 typedef Delegate<void(String, uint8_t, uint8_t[6], uint8_t)> StationDisconnectDelegate;
