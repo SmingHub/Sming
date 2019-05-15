@@ -113,10 +113,11 @@ void SystemClass::setCpuFrequency(CpuFrequency freq)
 	ets_update_cpu_frequency(freq);
 }
 
-bool SystemClass::deepSleep(uint32 timeMilliseconds, DeepSleepOptions options)
+bool SystemClass::deepSleep(uint32_t timeMilliseconds, DeepSleepOptions options)
 {
-	if(!system_deep_sleep_set_option((uint8)options))
+	if(!system_deep_sleep_set_option(options)) {
 		return false;
+	}
 	// Note: In SDK Version 3+ system_deep_sleep() returns bool but it's void before that
 	system_deep_sleep(timeMilliseconds * 1000);
 	return true;

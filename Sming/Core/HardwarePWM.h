@@ -47,7 +47,7 @@ public:
      *  @param  pins Pointer to array of pins to control
      *  @param  no_of_pins Quantity of elements in array of pins
      */
-	HardwarePWM(uint8* pins, uint8 no_of_pins);
+	HardwarePWM(uint8_t* pins, uint8_t no_of_pins);
 	virtual ~HardwarePWM();
 
 	/** @brief  Set PWM duty cycle
@@ -56,7 +56,7 @@ public:
      *  @retval bool True on success
      *  @note   Default frequency is 1khz but can be varied by various function
      */
-	bool analogWrite(uint8 pin, uint32 duty)
+	bool analogWrite(uint8_t pin, uint32_t duty)
 	{
 		return setDuty(pin, duty);
 	}
@@ -67,7 +67,7 @@ public:
      *  @param  update Update PWM output
      *  @retval bool True on success
      */
-	bool setDutyChan(uint8 chan, uint32 duty, bool update = true);
+	bool setDutyChan(uint8_t chan, uint32_t duty, bool update = true);
 
 	/** @brief  Set PWM duty cycle
      *  @param  pin GPIO to set
@@ -77,25 +77,25 @@ public:
      *  @note   This function is used to set the pwm duty cycle for a given pin. If parameter 'update' is false
      *        	then you have to call update() later to update duties.
      */
-	bool setDuty(uint8 pin, uint32 duty, bool update = true)
+	bool setDuty(uint8_t pin, uint32_t duty, bool update = true)
 	{
-		uint8 chan = getChannel(pin);
+		uint8_t chan = getChannel(pin);
 		return setDutyChan(chan, duty, update);
 	}
 
 	/** @brief  Get PWM duty cycle
 	 *  @param  chan Channel to get duty cycle for
-	 *  @retval uint32 Value of PWM duty cycle
+	 *  @retval uint32_t Value of PWM duty cycle
 	 */
-	uint32 getDutyChan(uint8 chan);
+	uint32_t getDutyChan(uint8_t chan);
 
 	/** @brief  Get PWM duty cycle
      *  @param  pin GPIO to get duty cycle for
-     *  @retval uint32 Value of PWM duty cycle
+     *  @retval uint32_t Value of PWM duty cycle
      */
-	uint32 getDuty(uint8 pin)
+	uint32_t getDuty(uint8_t pin)
 	{
-		uint8 chan = getChannel(pin);
+		uint8_t chan = getChannel(pin);
 		return getDutyChan(chan);
 	}
 
@@ -103,24 +103,24 @@ public:
      *  @param  period PWM period
      *  @note   All PWM pins share the same period
      */
-	void setPeriod(uint32 period);
+	void setPeriod(uint32_t period);
 
 	/** @brief  Get PWM period
-     *  @retval uint32 Value of PWM period
+     *  @retval uint32_t Value of PWM period
      */
-	uint32 getPeriod(void);
+	uint32_t getPeriod();
 
 	/** @brief  Get channel number for a pin
      *  @param  pin GPIO to interrogate
-     *  @retval uint8 Channel of GPIO
+     *  @retval uint8_t Channel of GPIO
      */
-	uint8 getChannel(uint8 pin);
+	uint8_t getChannel(uint8_t pin);
 
 	/** @brief  Get the maximum duty cycle value
-     *  @retval uint32 Maximum permissible duty cycle
+     *  @retval uint32_t Maximum permissible duty cycle
      *  @note   Attempt to set duty of a pin above this value will fail
      */
-	uint32 getMaxDuty()
+	uint32_t getMaxDuty()
 	{
 		return maxduty;
 	}
@@ -130,9 +130,9 @@ public:
 	void update();
 
 private:
-	uint8 channel_count;
-	uint8 channels[PWM_CHANNEL_NUM_MAX];
-	uint32 maxduty;
+	uint8_t channel_count;
+	uint8_t channels[PWM_CHANNEL_NUM_MAX];
+	uint32_t maxduty;
 };
 
 /** @} */

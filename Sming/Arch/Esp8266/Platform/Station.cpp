@@ -223,13 +223,13 @@ String StationClass::getSSID()
 	return String((char*)config.ssid);
 }
 
-sint8 StationClass::getRssi()
+int8_t StationClass::getRssi()
 {
 	debugf("Rssi: %d dBm", wifi_station_get_rssi());
 	return wifi_station_get_rssi();
 }
 
-uint8 StationClass::getChannel()
+uint8_t StationClass::getChannel()
 {
 	debugf("Channel: %d CH", wifi_get_channel());
 	return wifi_get_channel();

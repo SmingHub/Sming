@@ -64,7 +64,7 @@ public:
 	 */
 	virtual unsigned char transfer(unsigned char val) = 0;
 	virtual unsigned short transfer16(unsigned short val) = 0;
-	virtual void transfer(uint8* buffer, size_t size) = 0;
+	virtual void transfer(uint8_t* buffer, size_t size) = 0;
 
 	/** @brief  Default settings used by the SPI bus
 	 * until reset by beginTransaction(SPISettings)

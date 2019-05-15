@@ -76,7 +76,7 @@ void SPIClass::beginTransaction(SPISettings mySettings)
  * 		receivedVal = SPI.transfer(val)			: single byte
  * 		receivedVal16 = SPI.transfer16(val16)	: single short
  */
-uint32 SPIClass::transfer32(uint32 data, uint8 bits)
+uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 {
 	uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
 
@@ -117,7 +117,7 @@ uint32 SPIClass::transfer32(uint32 data, uint8 bits)
  * 	 this method does not reset the registers , so make sure
  * 	 that a regular transfer(data) call was performed
  */
-uint8 SPIClass::read8()
+uint8_t SPIClass::read8()
 {
 	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
 		;
@@ -138,7 +138,7 @@ uint8 SPIClass::read8()
 }
 
 /* @defgroup SPI hardware implementation
- * @brief transfer(uint8 *buffer, size_t numberBytes)
+ * @brief transfer(uint8_t *buffer, size_t numberBytes)
  *
  * SPI transfer is based on a simultaneous send and receive:
  * The buffered transfers does split up the conversation internaly into 64 byte blocks.
@@ -147,13 +147,11 @@ uint8 SPIClass::read8()
  *
  * 		SPI.transfer(buffer, size)				: memory buffer of length size
  */
-void SPIClass::transfer(uint8* buffer, size_t numberBytes)
+void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 {
 #define BLOCKSIZE 64 // the max length of the ESP SPI_W0 registers
 
 	uint16 bufIndx = 0;
-	uint8 bufLength = 0;
-	uint8 num_bits = 0;
 
 	int blocks = ((numberBytes - 1) / BLOCKSIZE) + 1;
 #ifdef SPI_DEBUG
@@ -163,14 +161,14 @@ void SPIClass::transfer(uint8* buffer, size_t numberBytes)
 	// loop number of blocks
 	while(blocks--) {
 		// get full BLOCKSIZE or number of remaining bytes
-		bufLength = std::min(numberBytes - bufIndx, (unsigned int)BLOCKSIZE);
+		uint8_t bufLength = std::min(numberBytes - bufIndx, (unsigned int)BLOCKSIZE);
 
 #ifdef SPI_DEBUG
 		debugf("Write/Read Block %d total %d bytes", total - blocks, bufLength);
 #endif
 
 		// compute the number of bits to clock
-		num_bits = bufLength * 8;
+		uint8_t num_bits = bufLength * 8;
 
 		uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
 
@@ -252,10 +250,10 @@ void SPIClass::prepare(SPISettings mySettings)
  *			SPI_MODE2	1						0
  *			SPI_MODE3	1						1
  */
-void SPIClass::spi_mode(uint8 mode)
+void SPIClass::spi_mode(uint8_t mode)
 {
-	uint8 spi_cpha = mode & 0x0F;
-	uint8 spi_cpol = mode & 0xF0;
+	uint8_t spi_cpha = mode & 0x0F;
+	uint8_t spi_cpol = mode & 0xF0;
 
 #ifdef SPI_DEBUG
 	debugf("SPIClass::spi_mode(mode %x) spi_cpha %X,spi_cpol %X)", mode, spi_cpha, spi_cpol);
@@ -284,7 +282,7 @@ void SPIClass::spi_mode(uint8 mode)
  * 	 		Data is sent out starting with the lowest BYTE, from MSB to LSB
  * 			0xABCDEFGH would be sent as 0xGHEFCDAB
  */
-void SPIClass::spi_byte_order(uint8 byte_order)
+void SPIClass::spi_byte_order(uint8_t byte_order)
 {
 #ifdef SPI_DEBUG
 	debugf("SPIClass::spi_byte_order(byte_order %d)", byte_order);
@@ -311,7 +309,7 @@ void SPIClass::spi_byte_order(uint8 byte_order)
  * 	@param  prediv  time length LOW level
  *
  */
-void SPIClass::setClock(uint8 prediv, uint8 cntdiv)
+void SPIClass::setClock(uint8_t prediv, uint8_t cntdiv)
 {
 #ifdef SPI_DEBUG
 	debugf("SPIClass::setClock(prediv %d, cntdiv %d) for target %d", prediv, cntdiv, spiSettings.speed);

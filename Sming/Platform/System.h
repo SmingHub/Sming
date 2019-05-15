@@ -133,7 +133,7 @@ public:
      *  @param  timeMilliseconds Quantity of milliseconds to remain in deep sleep mode
      *  @param  options Deep sleep options
      */
-	bool deepSleep(uint32 timeMilliseconds, DeepSleepOptions options = eDSO_RF_CAL_BY_INIT_DATA);
+	bool deepSleep(uint32_t timeMilliseconds, DeepSleepOptions options = eDSO_RF_CAL_BY_INIT_DATA);
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
