@@ -13,7 +13,7 @@
 #include "FtpDataRetrieve.h"
 #include "FtpDataFileList.h"
 #include "../FtpServer.h"
-#include "NetUtils.h"
+#include "Network/NetUtils.h"
 
 err_t FtpServerConnection::onReceive(pbuf* buf)
 {

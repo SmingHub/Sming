@@ -14,7 +14,7 @@
  ****/
 
 #include "WebsocketClient.h"
-#include "Network/Http/HttpHeaders.h"
+#include "Http/HttpHeaders.h"
 #include "WebHelpers/aw-sha1.h"
 #include "WebHelpers/base64.h"
 

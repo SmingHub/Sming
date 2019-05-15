@@ -15,7 +15,7 @@
  ****/
 
 #include "HttpBodyParser.h"
-#include "WebHelpers/escape.h"
+#include "Network/WebHelpers/escape.h"
 
 /*
  * Content is received in chunks which we need to reassemble into name=value pairs.

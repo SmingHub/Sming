@@ -11,8 +11,8 @@
 
 #include "base64.h"
 
-#include "../libb64/cencode.h"
-#include "../libb64/cdecode.h"
+#include "libb64/cencode.h"
+#include "libb64/cdecode.h"
 
 // Base-64 encoding produces 3 output bytes for every 2 input bytes
 #define MIN_ENCODE_LEN(_in_len) (((_in_len)*3 + 1) / 2)

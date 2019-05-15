@@ -12,7 +12,7 @@
 
 #include "HttpRequestAuth.h"
 #include "HttpRequest.h"
-#include "WebHelpers/base64.h"
+#include "Network/WebHelpers/base64.h"
 
 // Basic Auth
 void HttpBasicAuth::setRequest(HttpRequest* request)

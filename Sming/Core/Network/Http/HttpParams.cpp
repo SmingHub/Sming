@@ -11,7 +11,7 @@
  ****/
 
 #include "HttpParams.h"
-#include "WebHelpers/escape.h"
+#include "Network/WebHelpers/escape.h"
 #include "Print.h"
 #include "libyuarel/yuarel.h"
 

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "TcpConnection.h"
+#include "Network/TcpConnection.h"
 #include "IPAddress.h"
 #include "WString.h"
 

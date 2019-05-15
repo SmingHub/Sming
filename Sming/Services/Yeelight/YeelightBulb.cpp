@@ -6,8 +6,10 @@
  ****/
 
 #include "YeelightBulb.h"
-#include "TcpClient.h"
-#include <SmingCore.h>
+#include "Network/TcpClient.h"
+#include "Digital.h"
+#include "Data/ArduinoJson.h"
+#include "WCharacter.h"
 
 YeelightBulb::~YeelightBulb()
 {

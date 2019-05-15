@@ -12,9 +12,9 @@
 
 #include "HttpServerConnection.h"
 #include "HttpResourceTree.h"
-#include "HttpServer.h"
-#include "TcpServer.h"
-#include "WebConstants.h"
+#include "Network/HttpServer.h"
+#include "Network/TcpServer.h"
+#include "Network/WebConstants.h"
 #include "Data/Stream/ChunkedStream.h"
 
 int HttpServerConnection::onMessageBegin(http_parser* parser)

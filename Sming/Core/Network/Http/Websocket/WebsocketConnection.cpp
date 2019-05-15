@@ -10,8 +10,8 @@
 
 #include "WebsocketConnection.h"
 
-#include "WebHelpers/aw-sha1.h"
-#include "WebHelpers/base64.h"
+#include "Network/WebHelpers/aw-sha1.h"
+#include "Network/WebHelpers/base64.h"
 
 DEFINE_FSTR(WSSTR_CONNECTION, "connection")
 DEFINE_FSTR(WSSTR_UPGRADE, "upgrade")
