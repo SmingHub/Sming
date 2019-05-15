@@ -28,14 +28,7 @@
 #pragma once
 
 #include "WiringFrameworkDependencies.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <pwm.h>
-#ifdef __cplusplus
-}
-#endif
+#include <driver/pwm.h>
 
 #define PWM_BAD_CHANNEL 0xff ///< Invalid PWM channel
 
