@@ -112,7 +112,7 @@ SECTIONS
 
      *(.rodata._ZTV*) /* C++ vtables */
     *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text .irom.debug.*)
-    out/build/app_app.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
+    */app.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
   *libsming.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
   *libsmingssl.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
   *libmqttc.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)

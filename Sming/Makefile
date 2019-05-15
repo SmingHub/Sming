@@ -27,12 +27,10 @@ all: checkdirs libsming tools ##(default) Build the Sming library, user librarie
 
 include $(SMING_HOME)/build.mk
 
-BUILD_BASE := $(ARCH_BASE)/out/build
+# name for the target project
+TARGET := lib$(LIBSMING)
 
 RELOAD_MKFILE = 0
-
-# name for the target project
-TARGET		= app
 
 # List of directories containing source code to build
 MODULES :=
@@ -156,7 +154,6 @@ dist-clean: clean submodules-clean tools-clean user-lib-clean samples-clean ##Cl
 .PHONY: clean
 clean: $(CLEAN) ##Remove all generated build files
 	$(Q) rm -f $(APP_AR)
-	$(Q) rm -f $(TARGET_OUT)
 	$(Q) rm -rf $(BUILD_BASE)
 
 .PHONY: user-lib-clean

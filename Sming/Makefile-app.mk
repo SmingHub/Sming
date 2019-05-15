@@ -23,11 +23,11 @@ COM_SPEED_SERIAL  ?= $(COM_SPEED)
 
 include $(SMING_HOME)/build.mk
 
+# name for the target project
+TARGET			:= app
+
 ARCH_BASE		:= $(SMING_HOME)/$(ARCH_BASE)
 COMPONENTS		:= $(SMING_HOME)/$(COMPONENTS)
-
-BUILD_BASE		:= out/build
-FW_BASE			:= out/firmware
 
 CONFIG_VARS		+= CURDIR MAKE_VERSION SHELL
 
@@ -39,9 +39,6 @@ SPIFF_FILES		?= files
 FW_MEMINFO_NEW		:= $(FW_BASE)/fwMeminfo.new
 FW_MEMINFO_OLD		:= $(FW_BASE)/fwMeminfo.old
 FW_MEMINFO_SAVED	:= out/fwMeminfo
-
-# name for the target project
-TARGET = app
 
 # which modules (subdirectories) of the project to include in compiling
 # define your custom directories in the project's own Makefile before including this one
@@ -74,10 +71,6 @@ endif
 # => Serial
 CONFIG_VARS	+= COM_SPEED_SERIAL
 CFLAGS		+= -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL)
-
-#
-CONFIG_VARS	+= USER_CFLAGS
-CFLAGS		+= $(USER_CFLAGS)
 
 include $(ARCH_BASE)/app.mk
 
