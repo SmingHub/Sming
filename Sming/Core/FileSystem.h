@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "spiffs/spiffs_sming.h"
+#include "spiffs_sming.h"
 #include "WVector.h"
 
 class String;

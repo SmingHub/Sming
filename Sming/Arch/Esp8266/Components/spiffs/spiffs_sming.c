@@ -1,4 +1,15 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * spiffs_sming.c
+ *
+ ****/
+
 #include "spiffs_sming.h"
+#include <esp_spi_flash.h>
 
 spiffs _filesystemStorageHandle;
 
