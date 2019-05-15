@@ -61,7 +61,7 @@ public:
 	{
 		stop();
 		if(osTimer.timer_func)
-			ets_timer_arm_new(&osTimer, milliseconds, repeating, true);
+			os_timer_arm(&osTimer, milliseconds, repeating);
 	}
 
 	/** @brief  Initialise microsecond timer
@@ -73,7 +73,7 @@ public:
 	{
 		stop();
 		if(osTimer.timer_func)
-			ets_timer_arm_new(&osTimer, microseconds, repeating, false);
+			os_timer_arm_us(&osTimer, microseconds, repeating);
 	}
 
 	/** @brief  Stop timer
@@ -81,7 +81,7 @@ public:
      */
 	__forceinline void stop()
 	{
-		ets_timer_disarm(&osTimer);
+		os_timer_disarm(&osTimer);
 	}
 
 	/** @brief  Set timer trigger function
@@ -91,7 +91,7 @@ public:
 	void setCallback(SimpleTimerCallback callback, void* arg = nullptr)
 	{
 		stop();
-		ets_timer_setfn(&osTimer, callback, arg);
+		os_timer_setfn(&osTimer, callback, arg);
 	}
 
 private:
