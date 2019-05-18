@@ -191,7 +191,7 @@ extern "C"
 #define strcasecmp_P(a, b) strcasecmp((a), (b))
 #define strcat_P(dest, src) strcat((dest), (src))
 #define strstr_P(a, b) strstr((a), (b))
-#define sprintf_P(s, f, ...) m_sprintf((s), (f), ##__VA_ARGS__)
+#define sprintf_P(s, f, ...) m_snprintf(s, 1024, f, ##__VA_ARGS__)
 #define printf_P(f, ...) m_printf((f), ##__VA_ARGS__)
 
 #endif /* ICACHE_FLASH */

@@ -21,6 +21,8 @@ char* ltoa(long val, char* buffer, int base)
 	return ltoa_w(val, buffer, base, 0);
 }
 
+char* itoa (int, char*, int) __attribute__((alias("ltoa")));
+
 char* ltoa_w(long val, char* buffer, int base, int width)
 {
 	return ltoa_wp(val, buffer, base, width, ' ');
