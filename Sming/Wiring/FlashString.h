@@ -161,15 +161,33 @@
  *  The file content is bound into firmware image at link time.
  *  @note The FlashString object must be referenced or the linker won't emit it.
  */
+#ifdef __WIN32
 #define IMPORT_FSTR(name, file)                                                                                        \
-	__asm__(".section .irom.text\n"                                                                                    \
-			".global " #name "\n"                                                                                      \
-			".type " #name ", @object\n"                                                                               \
-			".align 4\n" #name ":\n"                                                                                   \
-			".word _" #name "_end - " #name " - 4\n"                                                                   \
+	__asm__(".section .rodata\n"                                                                                       \
+			".global _" #name "\n"                                                                                     \
+			".def _" #name "; .scl 2; .type 32; .endef\n"                                                              \
+			".align 4\n"                                                                                               \
+			"_" #name ":\n"                                                                                            \
+			".long _" #name "_end - _" #name " - 4\n"                                                                  \
 			".incbin \"" file "\"\n"                                                                                   \
 			"_" #name "_end:\n");                                                                                      \
 	extern const __attribute__((aligned(4))) FlashString name;
+#else
+#ifdef ARCH_HOST
+#define IROM_SECTION ".rodata"
+#else
+#define IROM_SECTION ".irom0.text"
+#endif
+#define IMPORT_FSTR(name, file)                                                                                        \
+	__asm__(".section " IROM_SECTION "\n"                                                                              \
+			".global " #name "\n"                                                                                      \
+			".type " #name ", @object\n"                                                                               \
+			".align 4\n" #name ":\n"                                                                                   \
+			".long _" #name "_end - " #name " - 4\n"                                                                   \
+			".incbin \"" file "\"\n"                                                                                   \
+			"_" #name "_end:\n");                                                                                      \
+	extern const __attribute__((aligned(4))) FlashString name;
+#endif
 
 /** @brief describes a counted string stored in flash memory
  *  @note because the string length is stored there is no need to call strlen_P before reading the
