@@ -20,3 +20,5 @@ vssver2.scc
 
 .metadata
 .submodule
+/Sming/Arch/Host/Components/lwip/Windows/src
+/Sming/Arch/Host/Components/lwip/Windows/tmp

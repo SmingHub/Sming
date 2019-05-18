@@ -12,10 +12,10 @@
 
 #include "HttpConnection.h"
 
-#ifdef __linux__
-#include "lwip/priv/tcp_priv.h"
-#else
+#ifdef __ets__
 #include "lwip/tcp_impl.h"
+#else
+#include "lwip/priv/tcp_priv.h"
 #endif
 
 /** @brief http_parser function table

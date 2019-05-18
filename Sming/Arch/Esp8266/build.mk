@@ -4,7 +4,8 @@
 #
 ##############
 
-CFLAGS += -DARCH_ESP8266
+CFLAGS		+= -DARCH_ESP8266
+CXXFLAGS	+= -fno-rtti -fno-exceptions 
 
 ifndef ESP_HOME
 $(error ESP_HOME variable is not set to a valid directory.)

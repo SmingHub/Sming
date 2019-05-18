@@ -73,6 +73,8 @@ endif
 export SMING_HOME
 export COMPILE := gcc
 
+CONFIG_VARS		+= ARCH_BASE USER_LIBDIR BUILD_BASE FW_BASE
+
 ARCH_BASE		:= Arch/$(SMING_ARCH)
 ARCH_SYS		= $(ARCH_BASE)/System
 ARCH_CORE		= $(ARCH_BASE)/Core
@@ -86,6 +88,9 @@ FW_BASE			:= out/firmware
 
 # Git command
 GIT ?= git
+
+# CMake command
+CMAKE ?= cmake
 
 ### Debug output parameters
 # By default `debugf` does not print file name and line number. If you want this enabled set the directive below to 1
@@ -143,7 +148,7 @@ CFLAGS		+= $(USER_CFLAGS)
 CONFIG_VARS += SMING_RELEASE
 CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 
-CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions -std=c++11 -felide-constructors
+CXXFLAGS = $(CFLAGS) -std=c++11 -felide-constructors
 ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
 endif

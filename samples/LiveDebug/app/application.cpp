@@ -449,8 +449,10 @@ static void onOsMessage(OsMessage& msg)
 		if(gdb_present() == eGDB_Attached) {
 			gdb_do_break();
 		} else {
+#ifdef ARCH_ESP8266
 			register uint32_t sp __asm__("a1");
 			debug_print_stack(sp + 0x10, 0x3fffffb0);
+#endif
 		}
 	}
 }

@@ -100,4 +100,8 @@
 [submodule "Libraries.ArduinoJson"]
 	path = Sming/Libraries/ArduinoJson
 	url = https://github.com/bblanchon/ArduinoJson.git
+
+[submodule "Host.lwip"]
+	path = Sming/Arch/Host/Components/lwip/lwip
+	url = git://git.savannah.gnu.org/lwip.git
 	ignore = dirty

@@ -1,0 +1,8 @@
+# Enable this if you want to log all traffic between GDB and the stub
+#set remotelogfile gdb_rsp_logfile.txt
+
+# Useful for lower-level debugging to see the result of stepping through assembler code
+#set disassemble-next-line on
+
+# Display a welcome prompt
+echo \nWelcome to SMING!\nType 'r' to run application\n\n
