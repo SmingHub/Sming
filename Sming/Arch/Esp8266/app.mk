@@ -64,9 +64,11 @@ RBOOT_ROM_1		:= $(FW_BASE)/$(RBOOT_ROM_1).bin
 # Code compiled with application
 APPCODE :=
 
-EXTRA_INCDIR += $(ARCH_COMPONENTS) \
-				$(ARCH_COMPONENTS)/esp8266/include \
-				$(ARCH_COMPONENTS)/driver/include
+EXTRA_INCDIR += $(ARCH_COMPONENTS)/esp8266/include \
+				$(SDK_INCDIR) \
+				$(ARCH_COMPONENTS)/driver/include \
+				$(ARCH_COMPONENTS)/spi_flash/include \
+				$(ARCH_COMPONENTS)/esp_wifi/include
 
 # Macro to make an optional library
 # $1 -> The library to make
@@ -78,7 +80,7 @@ endef
 # => rBoot
 RBOOT_BASE		:= $(ARCH_COMPONENTS)/rboot
 APPCODE			+= $(RBOOT_BASE)/appcode $(RBOOT_BASE)/rboot/appcode
-EXTRA_INCDIR	+= $(RBOOT_BASE)/rboot
+EXTRA_INCDIR	+= $(RBOOT_BASE)/rboot $(RBOOT_BASE)/appcode $(RBOOT_BASE)/rboot/appcode
 RBOOT_BIN		:= $(FW_BASE)/rboot.bin
 CUSTOM_TARGETS	+= $(RBOOT_BIN)
 CFLAGS			+= -DRBOOT_INTEGRATION
@@ -164,10 +166,11 @@ endif
 
 # => GDB
 CONFIG_VARS			+= ENABLE_GDB
-APPCODE				+= $(ARCH_COMPONENTS)/gdbstub/appcode
-EXTRA_INCDIR		+= $(ARCH_COMPONENTS)/gdbstub/include
+GDBSTUB_BASE		:= $(ARCH_COMPONENTS)/gdbstub
+APPCODE				+= $(GDBSTUB_BASE)/appcode
+EXTRA_INCDIR		+= $(GDBSTUB_BASE)
 ifeq ($(ENABLE_GDB), 1)
-	APPCODE			+= $(ARCH_COMPONENTS)/gdbstub
+	APPCODE			+= $(GDBSTUB_BASE)
 	CUSTOM_TARGETS	+= gdb_symbols
 
 # Copy symbols required by GDB into build directory
@@ -212,7 +215,7 @@ ifeq ($(RBOOT_BIG_FLASH),1)
 	CUSTOM_TARGETS	+= $(LIBMAIN_DST)
 
 $(LIBMAIN_DST): $(LIBMAIN_SRC)
-	echo "OC $@"
+	@echo "OC $@"
 	$(Q) $(OBJCOPY) -W Cache_Read_Enable_New $^ $@
 endif
 
@@ -349,10 +352,10 @@ checkdirs: | $(BUILD_DIR) $(FW_BASE)
 $(BUILD_DIR) $(FW_BASE):
 	$(Q) mkdir -p $@
 
-##@Cleaning
-
 .PHONY: spiff_update
 spiff_update: spiff_clean $(SPIFF_BIN_OUT) ##Rebuild the SPIFFS filesystem image
+
+##@Cleaning
 
 .PHONY: spiff_clean
 spiff_clean: ##Remove SPIFFS image file

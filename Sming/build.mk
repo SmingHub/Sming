@@ -81,6 +81,9 @@ ARCH_COMPONENTS	= $(ARCH_BASE)/Components
 USER_LIBDIR		= $(ARCH_BASE)/Compiler/lib
 COMPONENTS		:= Components
 
+BUILD_BASE		:= out/build/$(SMING_ARCH)
+FW_BASE			:= out/firmware
+
 # Git command
 GIT ?= git
 
@@ -131,6 +134,10 @@ else ifeq ($(ENABLE_GDB), 1)
 else
 	CFLAGS += -Os -g
 endif
+
+#
+CONFIG_VARS	+= USER_CFLAGS
+CFLAGS		+= $(USER_CFLAGS)
 
 #Append debug options
 CONFIG_VARS += SMING_RELEASE

@@ -48,11 +48,11 @@ TARGET = app
 MODULES      ?= app     # default to app if not set by user
 EXTRA_INCDIR ?= include # default to include if not set by user
 
-SMING_INCDIR := System/include Wiring Libraries Core Platform \
-				Libraries/Adafruit_GFX Libraries/Adafruit_Sensor
+SMING_INCDIR := System/include Wiring Core
 
-EXTRA_INCDIR += $(SMING_HOME) $(addprefix $(SMING_HOME)/,$(SMING_INCDIR)) \
-				$(ARCH_BASE) $(ARCH_SYS)/include $(ARCH_CORE) $(COMPONENTS)
+EXTRA_INCDIR += $(SMING_HOME) $(ARCH_BASE) $(ARCH_CORE) $(ARCH_SYS)/include \
+				$(ARCH_COMPONENTS) $(COMPONENTS) \
+				$(addprefix $(SMING_HOME)/,$(SMING_INCDIR))
 
 # we will use global WiFi settings from Eclipse Environment Variables, if possible
 CONFIG_VARS	+= WIFI_SSID WIFI_PWD
