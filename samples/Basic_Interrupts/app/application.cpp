@@ -35,7 +35,7 @@ void IRAM_ATTR interruptHandler()
 		 * You could also pass a function pointer to queueCallback().
 		 */
 		System.queueCallback(
-			[&](uint32_t interruptToggleCount) {
+			[](uint32_t interruptToggleCount) {
 				say("Toggle count hit ");
 				say(interruptToggleCount);
 				say(", current value is ");
