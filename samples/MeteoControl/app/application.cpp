@@ -1,11 +1,10 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/LiquidCrystal/LiquidCrystal_I2C.h>
 #include <Libraries/DHTesp/DHTesp.h>
 
 ///////////////////////////////////////////////////////////////////
 // Set your SSID & Pass for initial configuration
-#include "../include/configuration.h" // application configuration
+#include "configuration.h" // application configuration
 ///////////////////////////////////////////////////////////////////
 
 #include "special_chars.h"

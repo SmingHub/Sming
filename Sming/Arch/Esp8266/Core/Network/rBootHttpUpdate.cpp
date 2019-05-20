@@ -15,7 +15,7 @@
 
 #include "rBootHttpUpdate.h"
 #include "Platform/System.h"
-#include "Url.h"
+#include "Network/Url.h"
 #include "Platform/WDT.h"
 
 /* rBootItemOutputStream */

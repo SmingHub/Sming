@@ -11,7 +11,7 @@
 #pragma once
 
 #include "FtpServerConnection.h"
-#include "TcpConnection.h"
+#include "Network/TcpConnection.h"
 
 class FtpDataStream : public TcpConnection
 {

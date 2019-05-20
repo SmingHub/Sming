@@ -2,7 +2,6 @@
   A simple example on how to use the IR library
  ****************************************************/
 
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/IR/src/IRrecv.h>
 #include <Libraries/IR/src/IRsend.h>

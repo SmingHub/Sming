@@ -1,0 +1,13 @@
+diff --git a/Adafruit_BME280.h b/Adafruit_BME280.h
+index 61aeeed..383c8c8 100644
+--- a/Adafruit_BME280.h
++++ b/Adafruit_BME280.h
+@@ -23,7 +23,7 @@
+  #include "WProgram.h"
+ #endif
+ 
+-#include <Adafruit_Sensor.h>
++#include <Libraries/Adafruit_Sensor/Adafruit_Sensor.h>
+ #include <Wire.h>
+ 
+ /*=========================================================================

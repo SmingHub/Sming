@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/HMC5883L/HMC5883L.h>
 

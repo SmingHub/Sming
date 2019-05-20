@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/SI7021/SI7021.h>
 #include <math.h>

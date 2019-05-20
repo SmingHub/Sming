@@ -1,7 +1,6 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
-#include <SparkFun_APDS9960/SparkFun_APDS9960.h>
+#include <Libraries/SparkFun_APDS9960/SparkFun_APDS9960.h>
 
 SparkFun_APDS9960 apds = SparkFun_APDS9960();
 

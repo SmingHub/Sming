@@ -5,7 +5,6 @@ License: MIT
 Date: 17.07.2015
 Descr: SDCard/FAT file usage and write benchmark.
 */
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/SDCard/SDCard.h>
 #include <string.h>

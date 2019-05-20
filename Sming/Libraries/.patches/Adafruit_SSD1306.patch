@@ -1,8 +1,14 @@
 diff --git a/Adafruit_SSD1306.cpp b/Adafruit_SSD1306.cpp
-index 570a335..d2bb269 100644
+index 570a335..efcc3eb 100644
 --- a/Adafruit_SSD1306.cpp
 +++ b/Adafruit_SSD1306.cpp
-@@ -38,6 +38,33 @@ All text above, and the splash screen below must be included in any redistributi
+@@ -32,12 +32,38 @@ All text above, and the splash screen below must be included in any redistributi
+ 
+ #include <Wire.h>
+ #include <SPI.h>
+-#include "Adafruit_GFX.h"
+ #include "Adafruit_SSD1306.h"
+ 
  // the memory buffer for the LCD
  
  static uint8_t buffer[SSD1306_LCDHEIGHT * SSD1306_LCDWIDTH / 8] = {
@@ -36,7 +42,7 @@ index 570a335..d2bb269 100644
  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-@@ -71,7 +98,7 @@ static uint8_t buffer[SSD1306_LCDHEIGHT * SSD1306_LCDWIDTH / 8] = {
+@@ -71,7 +97,7 @@ static uint8_t buffer[SSD1306_LCDHEIGHT * SSD1306_LCDWIDTH / 8] = {
  0x00, 0x03, 0x03, 0x00, 0x00, 0x00, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
  0x03, 0x03, 0x03, 0x03, 0x03, 0x01, 0x00, 0x00, 0x00, 0x01, 0x03, 0x01, 0x00, 0x00, 0x00, 0x03,
  0x03, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -45,7 +51,7 @@ index 570a335..d2bb269 100644
  0x00, 0x00, 0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF9, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x3F, 0x1F, 0x0F,
  0x87, 0xC7, 0xF7, 0xFF, 0xFF, 0x1F, 0x1F, 0x3D, 0xFC, 0xF8, 0xF8, 0xF8, 0xF8, 0x7C, 0x7D, 0xFF,
  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F, 0x3F, 0x0F, 0x07, 0x00, 0x30, 0x30, 0x00, 0x00,
-@@ -106,6 +133,7 @@ static uint8_t buffer[SSD1306_LCDHEIGHT * SSD1306_LCDWIDTH / 8] = {
+@@ -106,6 +132,7 @@ static uint8_t buffer[SSD1306_LCDHEIGHT * SSD1306_LCDWIDTH / 8] = {
  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
  #endif
  #endif
@@ -53,7 +59,7 @@ index 570a335..d2bb269 100644
  };
  
  #define ssd1306_swap(a, b) { int16_t t = a; a = b; b = t; }
-@@ -252,7 +280,7 @@ void Adafruit_SSD1306::begin(uint8_t vccstate, uint8_t i2caddr, bool reset) {
+@@ -252,7 +279,7 @@ void Adafruit_SSD1306::begin(uint8_t vccstate, uint8_t i2caddr, bool reset) {
    ssd1306_command(SSD1306_SETCONTRAST);                   // 0x81
    ssd1306_command(0x8F);
  
@@ -62,7 +68,7 @@ index 570a335..d2bb269 100644
    ssd1306_command(SSD1306_SETCOMPINS);                    // 0xDA
    ssd1306_command(0x12);
    ssd1306_command(SSD1306_SETCONTRAST);                   // 0x81
-@@ -270,6 +298,15 @@ void Adafruit_SSD1306::begin(uint8_t vccstate, uint8_t i2caddr, bool reset) {
+@@ -270,6 +297,15 @@ void Adafruit_SSD1306::begin(uint8_t vccstate, uint8_t i2caddr, bool reset) {
    else
      { ssd1306_command(0xAF); }
  
@@ -78,7 +84,7 @@ index 570a335..d2bb269 100644
  #endif
  
    ssd1306_command(SSD1306_SETPRECHARGE);                  // 0xd9
-@@ -417,21 +454,52 @@ void Adafruit_SSD1306::dim(boolean dim) {
+@@ -417,21 +453,52 @@ void Adafruit_SSD1306::dim(boolean dim) {
  }
  
  void Adafruit_SSD1306::display(void) {
@@ -136,7 +142,7 @@ index 570a335..d2bb269 100644
  
    if (sid != -1)
    {
-@@ -482,6 +550,7 @@ void Adafruit_SSD1306::display(void) {
+@@ -482,6 +549,7 @@ void Adafruit_SSD1306::display(void) {
      TWBR = twbrbackup;
  #endif
    }
@@ -145,9 +151,18 @@ index 570a335..d2bb269 100644
  
  // clear everything
 diff --git a/Adafruit_SSD1306.h b/Adafruit_SSD1306.h
-index 1162f87..c3f7050 100644
+index 1162f87..28d783f 100644
 --- a/Adafruit_SSD1306.h
 +++ b/Adafruit_SSD1306.h
+@@ -46,7 +46,7 @@ All text above, and the splash screen must be included in any redistribution
+ #endif
+ 
+ #include <SPI.h>
+-#include <Adafruit_GFX.h>
++#include <Libraries/Adafruit_GFX/Adafruit_GFX.h>
+ 
+ #define BLACK 0
+ #define WHITE 1
 @@ -69,20 +69,29 @@ All text above, and the splash screen must be included in any redistribution
  
      SSD1306_96_16

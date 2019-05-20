@@ -7,7 +7,7 @@
 #define SMINGCORE_EXAMPLE_COMMAND_H_
 
 #include "WString.h"
-#include "../Services/CommandProcessing/CommandProcessingIncludes.h"
+#include <Services/CommandProcessing/CommandProcessingIncludes.h>
 
 class ExampleCommand
 {

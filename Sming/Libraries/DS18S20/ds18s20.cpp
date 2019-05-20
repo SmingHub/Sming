@@ -6,7 +6,7 @@
  */
 
 #include "Arduino.h"
-#include "OneWire.h"
+#include <Libraries/OneWire/OneWire.h>
 #include "ds18s20.h"
 
 #define DEBUG_DS18S20

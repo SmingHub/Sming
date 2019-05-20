@@ -26,7 +26,7 @@ All text above, and the splash screen must be included in any redistribution
 #endif
 
 #include <SPI.h>
-#include "../Adafruit_GFX/Adafruit_GFX.h"
+#include <Libraries/Adafruit_GFX/Adafruit_GFX.h>
 
 #ifdef __SAM3X8E__
  typedef volatile RwReg PortReg;

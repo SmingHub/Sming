@@ -3,7 +3,7 @@
 * NOTE: Please also check the comments in MFRC522.h - they provide useful hints and background information.
 * Released into the public domain.
 */
-#include <MFRC522.h>
+#include "MFRC522.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Functions for setting up the Arduino

@@ -10,7 +10,6 @@
  * software SPI: user defined
  * 
  */
-#include "user_config.h"
 #include <SmingCore.h>
 
 // SPI: if defined use software SPI, else hardware SPI

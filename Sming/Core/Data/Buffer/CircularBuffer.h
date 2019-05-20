@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "Stream/ReadWriteStream.h"
+#include "Data/Stream/ReadWriteStream.h"
 
 /**
  * @brief      Circular stream class

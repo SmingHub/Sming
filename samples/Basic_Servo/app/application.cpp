@@ -3,7 +3,6 @@
  *
 */
 
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/Servo/ServoChannel.h>
 

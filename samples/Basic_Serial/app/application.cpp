@@ -2,7 +2,6 @@
  * application.cpp
  */
 
-#include <user_config.h>
 #include "SerialReadingDelegateDemo.h"
 #include "SerialTransmitDemo.h"
 

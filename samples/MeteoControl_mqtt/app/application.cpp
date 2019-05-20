@@ -1,10 +1,9 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
-#include "../include/configuration.h" // application configuration
+#include "configuration.h" // application configuration
 
-#include "../app/bmp180.cpp" // bmp180 configuration
-#include "../app/si7021.cpp" // htu21d configuration
+#include "bmp180.cpp" // bmp180 configuration
+#include "si7021.cpp" // htu21d configuration
 
 Timer publishTimer;
 

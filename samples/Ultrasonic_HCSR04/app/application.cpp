@@ -8,7 +8,6 @@
  * By nik.sharky http://esp8266.ru/forum/members/sharky.396/
  */
 
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/Ultrasonic/Ultrasonic.h>
 

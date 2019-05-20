@@ -26,7 +26,6 @@ as well as Adafruit raw 1.8" TFT display
  * hbottc@gmail.com
  ***************************************************/
 
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/Adafruit_ILI9341/Adafruit_ILI9341.h>
 

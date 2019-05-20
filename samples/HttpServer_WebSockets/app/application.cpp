@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Network/Http/Websocket/WebsocketResource.h>
 #include "CUserData.h"

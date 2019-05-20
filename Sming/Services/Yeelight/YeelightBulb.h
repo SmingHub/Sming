@@ -6,8 +6,6 @@
  ****/
 #pragma once
 
-#include "WiringFrameworkDependencies.h"
-#include "WHashMap.h"
 #include "WVector.h"
 #include "WString.h"
 #include "IPAddress.h"

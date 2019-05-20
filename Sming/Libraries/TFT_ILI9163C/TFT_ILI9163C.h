@@ -92,7 +92,7 @@
 #define YELLOW          0xFFE0
 #define WHITE           0xFFFF
 
-#include "../Adafruit_GFX/Adafruit_GFX.h"
+#include <Libraries/Adafruit_GFX/Adafruit_GFX.h>
 
 //----- Define here witch display you own
 //#define __144_RED_PCB__//128x128

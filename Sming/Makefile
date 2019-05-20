@@ -40,13 +40,11 @@ MODULES :=
 # List of dependent submodule directories which may require updating/patching
 SUBMODULES :=
 
-# Include directories additional to APPCODE / MODULES
-EXTRA_INCDIR :=
-
 #
 SAMPLES_DIRS := $(shell ls -1 ../samples)
 DOXYGEN	:= $(shell command -v doxygen 2> /dev/null)
 
+# => WPS
 CONFIG_VARS += ENABLE_WPS
 ifeq ($(ENABLE_WPS), 1)
    CFLAGS += -DENABLE_WPS=1
@@ -107,14 +105,14 @@ LIBRARY_SUBMODULES	:= $(foreach lib,$(LIBRARY_SUBMODULES),Libraries/$(lib)/.subm
 # which modules (subdirectories) to include in compiling
 SMING_MODULES	:= $(ARCH_CORE) $(ARCH_BASE)/Platform Platform Core
 SMING_MODULES	:= $(foreach mod,$(SMING_MODULES),$(call ScanModuleDirs,$(mod)))
-MODULES			:= System $(ARCH_SYS) Wiring $(SMING_MODULES) $(MODULES)
+MODULES			:= $(ARCH_SYS) System Wiring $(SMING_MODULES) $(MODULES)
 MODULES			+= $(wildcard Services/*/)
 MODULES			+= $(foreach lib,$(ARDUINO_LIBRARIES),Libraries/$(lib) Libraries/$(lib)/src)
 MODULES			:= $(MODULES:/=)
 
-EXTRA_INCDIR	:=	System/include Wiring Libraries Core \
-					$(ARCH_BASE) $(ARCH_SYS)/include \
-					$(COMPONENTS) . $(EXTRA_INCDIR)
+EXTRA_INCDIR	:=	$(ARCH_BASE) $(ARCH_CORE) $(ARCH_SYS)/include \
+					$(ARCH_COMPONENTS) $(COMPONENTS) System/include Wiring Core \
+					. $(EXTRA_INCDIR)
 
 include $(SMING_HOME)/modules.mk
 

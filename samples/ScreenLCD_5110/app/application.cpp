@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/Adafruit_PCD8544/Adafruit_PCD8544.h>
 

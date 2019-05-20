@@ -9,7 +9,7 @@
  ****/
 
 #include "NetUtils.h"
-#include "CStringArray.h"
+#include "Data/CStringArray.h"
 
 #include "WString.h"
 #ifdef __linux__

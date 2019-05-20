@@ -9,13 +9,17 @@ $(SDK_COMPONENT)/bin/esp_init_data_default.bin:
 	$(Q) cp -f $(dir $@)esp_init_data_default_v08.bin $@
 endif
 
-EXTRA_INCDIR	+= $(ARCH_COMPONENTS)
-
 MODULES			+= $(ARCH_COMPONENTS)/esp8266
-EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/esp8266/include
+EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/esp8266/include $(SDK_INCDIR)
+
+MODULES			+= $(ARCH_COMPONENTS)/spi_flash
+EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/spi_flash/include
 
 MODULES			+= $(ARCH_COMPONENTS)/driver
 EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/driver/include
+
+MODULES			+= $(ARCH_COMPONENTS)/esp_wifi
+EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/esp_wifi/include
 
 MODULES			+= $(ARCH_COMPONENTS)/fatfs
 
@@ -29,6 +33,7 @@ SPIFFS_SMING	:= $(ARCH_COMPONENTS)/spiffs
 SPIFFS_BASE		:= $(COMPONENTS)/spiffs
 SUBMODULES		+= $(SPIFFS_BASE)
 MODULES			+= $(SPIFFS_SMING) $(SPIFFS_BASE)/src
+EXTRA_INCDIR	+= $(SPIFFS_SMING) $(SPIFFS_BASE)/src
 
 
 # => ESP8266_new_pwm
@@ -43,7 +48,7 @@ ifeq ($(ENABLE_CUSTOM_PWM), 1)
 	CLEAN			+= pwm-clean
 
 $(call UserLibPath,$(LIBPWM)): | $(PWM_BASE)/.submodule
-	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(CFLAGS) -c $(PWM_BASE)/pwm.c -o $(PWM_BASE)/pwm.o
+	$(Q) $(CC) $(INCDIR) $(CFLAGS) -c $(PWM_BASE)/pwm.c -o $(PWM_BASE)/pwm.o
 	$(Q) $(AR) rcs $@ $(PWM_BASE)/pwm.o
 
 .PHONY: pwm-clean
@@ -148,10 +153,6 @@ $(call UserLibPath,$(LIBAXTLS)): | $(AXTLS_BASE)/.submodule
 axtls-clean:
 	-$(Q) $(AXTLS_BUILD) clean
 endif
-
-
-# => GDB
-EXTRA_INCDIR += $(ARCH_COMPONENTS)/gdbstub/include
 
 
 # Tools

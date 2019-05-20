@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Network/TelnetServer.h>
 #include "Services/CommandProcessing/CommandProcessingIncludes.h"
