@@ -12,6 +12,7 @@
 #include "Platform/System.h"
 #include <driver/uart.h>
 #include <gdb/gdb_hooks.h>
+#include <esp_cplusplus.h>
 
 extern void init();
 

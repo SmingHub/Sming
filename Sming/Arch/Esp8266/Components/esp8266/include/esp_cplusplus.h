@@ -10,15 +10,4 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-	#include "esp_systemapi.h"
-#ifdef __cplusplus
-}
-#endif
-
-extern void (*__init_array_start)(void);
-extern void (*__init_array_end)(void);
-
 void cpp_core_initialize();

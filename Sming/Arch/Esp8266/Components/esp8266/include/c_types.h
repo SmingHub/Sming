@@ -3,78 +3,50 @@
  *
  */
 
- // Updated, compatible version of c_types.h
- // Just removed types declared in <stdint.h>
- 
-#pragma once
+// Overrides c_types.h for all SDK versions
 
-/*typedef unsigned char       uint8_t;
-typedef signed char         sint8_t;
-typedef signed char         int8_t;
-typedef unsigned short      uint16_t;
-typedef signed short        sint16_t;
-typedef signed short        int16_t;
-typedef unsigned long       uint32_t;
-typedef signed long         sint32_t;
-typedef signed long         int32_t;
-typedef signed long long    sint64_t;
-typedef unsigned long long  uint64_t;
-typedef unsigned long long  u_int64_t;
-typedef float               real32_t;
-typedef double              real64_t;*/
+#ifndef _C_TYPES_H_
+#define _C_TYPES_H_
 
-typedef unsigned char       uint8;
-typedef unsigned char       u8;
-typedef signed char         sint8;
-typedef signed char         int8;
-typedef signed char         s8;
-typedef unsigned short      uint16;
-typedef unsigned short      u16;
-typedef signed short        sint16;
-typedef signed short        s16;
-typedef unsigned int        uint32;
-typedef unsigned int        u_int;
-typedef unsigned int        u32;
-typedef signed int          sint32;
-typedef signed int          s32;
-typedef int                 int32;
-typedef signed long long    sint64;
-typedef unsigned long long  uint64;
-typedef unsigned long long  u64;
-typedef float               real32;
-typedef double              real64;
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
 
-/* Additional type names */
-typedef unsigned char       u8_t;
-typedef unsigned short      u16_t;
-typedef unsigned long       u32_t;
+#define BOOL bool
+#define TRUE true
+#define FALSE false
 
-typedef signed char         s8_t;
-typedef signed short        s16_t;
-typedef signed long         s32_t;
-
-#define __le16      u16
-
-typedef unsigned int        size_t;
+typedef uint8_t         uint8;
+typedef uint8_t         u8;
+typedef int8_t          sint8;
+typedef int8_t          int8;
+typedef int8_t          s8;
+typedef uint16_t        uint16;
+typedef uint16_t        u16;
+typedef int16_t         sint16;
+typedef int16_t         s16;
+typedef uint32_t        uint32;
+typedef unsigned int    u_int;
+typedef uint32_t        u32;
+typedef int32_t         sint32;
+typedef int32_t         s32;
+typedef int32_t         int32;
+typedef int64_t         sint64;
+typedef uint64_t        uint64;
+typedef uint64_t        u64;
+typedef float           real32;
+typedef double          real64;
 
 #define __packed        __attribute__((packed))
+#define __forceinline	__attribute__((always_inline)) inline
 
-#define LOCAL       static
+#define LOCAL           static
 
 #ifndef NULL
 #define NULL (void *)0
 #endif /* NULL */
 
-/* probably should not put STATUS here */
-typedef enum {
-    OK = 0,
-    FAIL,
-    PENDING,
-    BUSY,
-    CANCEL,
-} STATUS;
-
-#define BIT(nr)                 (1UL << (nr))
+#define BIT(nr)         (1UL << (nr))
 
 #define REG_SET_BIT(_r, _b)  (*(volatile uint32_t*)(_r) |= (_b))
 #define REG_CLR_BIT(_r, _b)  (*(volatile uint32_t*)(_r) &= ~(_b))
@@ -87,15 +59,9 @@ typedef enum {
 #define ICACHE_RODATA_ATTR __attribute__((section(".irom.text")))
 #else
 #define ICACHE_FLASH_ATTR
-#endif /* ICACHE_FLASH */
+#define ICACHE_RODATA_ATTR
+#endif
 
-#ifndef __cplusplus
-typedef unsigned char   bool;
-#define BOOL            bool
-#define true            ((bool)1)
-#define false           ((bool)0)
-#define TRUE            true
-#define FALSE           false
+#define STORE_ATTR __attribute__((aligned(4)))
 
-
-#endif /* !__cplusplus */
+#endif /* _C_TYPES_H_ */

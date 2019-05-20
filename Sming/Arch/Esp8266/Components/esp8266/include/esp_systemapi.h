@@ -12,18 +12,37 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// ESP SDK config
+#define LWIP_OPEN_SRC
+#define USE_US_TIMER
+
+// Default types
+#define __CORRECT_ISO_CPP_STDLIB_H_PROTO
+#include <limits.h>
+#include "c_types.h"
+
+// Remove buggy espconn
+#define _NO_ESPCON_
+
+/* Omitted from early SDK versions, in c_types.h in later versions (note: we don't use the SDK c_types.h) */
+typedef enum {
+    OK = 0,
+    FAIL,
+    PENDING,
+    BUSY,
+    CANCEL,
+} STATUS;
+
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
 #include <os_type.h>
 #include <user_interface.h>
-#include <spi_flash.h>
 #include <espconn.h>
-#include "espinc/spi_register.h"
-
-#include <stdarg.h>
-
-#include <user_config.h>
 
 #include "m_printf.h"
 #include "debug_progmem.h"
@@ -32,7 +51,6 @@
 #define __ESP8266_EX__ // System definition ESP8266 SOC
 
 #define IRAM_ATTR __attribute__((section(".iram.text")))
-#define __forceinline __attribute__((always_inline)) inline
 #define STORE_TYPEDEF_ATTR __attribute__((aligned(4),packed))
 #define STORE_ATTR __attribute__((aligned(4)))
 
@@ -100,12 +118,6 @@ extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (prin
 extern int os_snprintf(char *str, size_t size, const char *format, ...) __attribute__ ((format (printf, 3, 4)));
 extern int ets_vsnprintf(char * s, size_t n, const char * format, va_list arg) __attribute__ ((format (printf, 3, 0)));
 
-extern void *pvPortMalloc(size_t xWantedSize, const char *file, uint32 line);
-extern void *pvPortZalloc(size_t xWantedSize, const char *file, uint32 line);
-extern void pvPortFree(void *ptr);
-extern void vPortFree(void *ptr, const char *file, uint32 line);
-extern void *vPortMalloc(size_t xWantedSize);
-
 extern void ets_intr_lock();
 extern void ets_intr_unlock();
 
@@ -123,3 +135,7 @@ extern void xt_enable_interrupts();
 
 extern void ets_isr_mask(unsigned intr);
 extern void ets_isr_unmask(unsigned intr);
+
+#ifdef __cplusplus
+}
+#endif

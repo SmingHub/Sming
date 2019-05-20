@@ -63,7 +63,7 @@ extern "C" {
 #define MACROQUOT(x) #x
 #define MACROQUOTE(x) MACROQUOT(x)
 
-#ifdef SMING_INCLUDED
+#ifdef ICACHE_FLASH
 #define PROGMEM_DEBUG                                                                                                  \
 	__attribute__((aligned(4))) __attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug., __COUNTER__, __LINE__)))))
 #else

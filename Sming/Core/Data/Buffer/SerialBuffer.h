@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <user_config.h>
+#include <esp_systemapi.h>
 
 /** @brief FIFO buffer used for both receive and transmit data
  *  @note For receive operations, data is written via ISR and read via task

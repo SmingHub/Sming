@@ -19,7 +19,7 @@
 
 #define ESP_MAX_INTERRUPTS 16
 
-typedef void (*InterruptCallback)(void);
+typedef void (*InterruptCallback)();
 typedef Delegate<void()> InterruptDelegate;
 
 /** @brief  Attach a function to a GPIO interrupt
