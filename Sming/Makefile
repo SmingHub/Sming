@@ -61,20 +61,8 @@ MODULES			+= $(COMPONENTS)/ws_parser
 
 # => mqtt-codec
 SUBMODULES		+= $(COMPONENTS)/mqtt-codec
+MODULES			+= $(COMPONENTS)/mqtt-codec/src
 EXTRA_INCDIR	+= $(COMPONENTS)/mqtt-codec/src
-LIBMQTTC		:= mqttc
-LIBS			+= $(LIBMQTTC)
-BUILD_MQTTC		:= $(MAKE) -C $(COMPONENTS)/mqtt-codec MQTT_ENABLE_SERVER=0 MQTT_ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
-				CFLAGS_EXTRA="-ISystem/include $(CFLAGS_COMMON)" \
-				LIB_FOLDER="$(SMING_HOME)/$(USER_LIBDIR)"
-CLEAN			+= mqttc-clean
-
-$(call UserLibPath,$(LIBMQTTC)):
-	$(Q) $(BUILD_MQTTC) lib
-
-.PHONY: mqttc-clean
-mqttc-clean:
-	-$(Q) $(BUILD_MQTTC) clean
 
 
 # => yuarel
