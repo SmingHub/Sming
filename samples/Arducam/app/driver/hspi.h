@@ -35,12 +35,7 @@
 #ifndef SPI_APP_H
 #define SPI_APP_H
 
-#include <SmingCore.h>
-//#include "spi_register.h"
-//#include "ets_sys.h"
-//#include "osapi.h"
-//#include "uart.h"
-//#include "os_type.h"
+#include <esp_systemapi.h>
 
 //Define SPI hardware modules
 #define SPI 0

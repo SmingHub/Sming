@@ -1,12 +1,12 @@
 #ifndef INCLUDE_HSPI_H_
 #define INCLUDE_HSPI_H_
 
-#include <osapi.h>
-#include <os_type.h>
-#include <gpio.h>
+#include <esp_systemapi.h>
 #include "espinc/spi_register.h"
 
-//#include "spi_register.h" // from 0.9.4 IoT_Demo
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 //#define SPI         0
 #define HSPI        1
@@ -52,5 +52,9 @@ inline void hspi_send_uint32(uint32_t data)
 	*spi_fifo = data;
 	hspi_start_tx();
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INCLUDE_HSPI_H_ */
