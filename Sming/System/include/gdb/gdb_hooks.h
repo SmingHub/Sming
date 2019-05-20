@@ -53,7 +53,7 @@ void gdb_enable(bool state);
  * @brief Break into GDB, if present
  */
 #ifdef ENABLE_GDB
-#define gdb_do_break() asm("break 0,0")
+#define gdb_do_break() __asm__("break 0,0")
 #else
 #define gdb_do_break()                                                                                                 \
 	do {                                                                                                               \

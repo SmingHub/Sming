@@ -28,12 +28,12 @@ $2/%.o: $1/%.S
 	$(AS) $(INCDIR) $(CFLAGS) -c $$< -o $$@
 $2/%.o: $1/%.c $2/%.c.d
 	$(vecho) "CC $$<"
-	$(CC) $(INCDIR) $(CFLAGS) -c $$< -o $$@
+	$(CC) $(INCDIR) $(CFLAGS) -std=c11 -c $$< -o $$@
 $2/%.o: $1/%.cpp $2/%.cpp.d
 	$(vecho) "C+ $$<"
 	$(CXX) $(INCDIR) $(CXXFLAGS) -c $$< -o $$@
 $2/%.c.d: $1/%.c
-	$(CC) $(INCDIR) $(CFLAGS) -MM -MT $2/$$*.o $$< -o $$@
+	$(CC) $(INCDIR) $(CFLAGS) -std=c11 -MM -MT $2/$$*.o $$< -o $$@
 $2/%.cpp.d: $1/%.cpp
 	$(CXX) $(INCDIR) $(CXXFLAGS) -MM -MT $2/$$*.o $$< -o $$@
 

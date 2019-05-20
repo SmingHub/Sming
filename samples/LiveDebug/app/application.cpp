@@ -449,7 +449,7 @@ static void onOsMessage(OsMessage& msg)
 		if(gdb_present() == eGDB_Attached) {
 			gdb_do_break();
 		} else {
-			register uint32_t sp asm("a1");
+			register uint32_t sp __asm__("a1");
 			debug_print_stack(sp + 0x10, 0x3fffffb0);
 		}
 	}
@@ -461,7 +461,8 @@ COMMAND_HANDLER(malloc0)
 		_F("Attempting to allocate a zero-length array results in an OS debug message.\r\n"
 		   "The message starts with 'E:M ...' and can often indicate a more serious memory allocation issue."));
 
-	os_malloc(0);
+	auto mem = os_malloc(0);
+	os_free(mem);
 
 	return true;
 }

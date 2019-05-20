@@ -31,7 +31,7 @@ size_t CommandOutput::write(uint8_t outChar)
 {
 	if (outputTcpClient)
 	{
-		char outBuf[1] = { outChar };
+		char outBuf[1] = { char(outChar) };
 		return outputTcpClient->write(outBuf,1);
 	}
 
