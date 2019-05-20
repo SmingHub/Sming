@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/TFT_ILI9163C/TFT_ILI9163C.h>
 

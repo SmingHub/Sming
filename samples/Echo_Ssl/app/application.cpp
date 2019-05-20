@@ -13,7 +13,6 @@
  *
  */
 
-#include <user_config.h>
 #include <SmingCore.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables

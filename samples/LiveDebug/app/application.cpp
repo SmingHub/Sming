@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include "HardwareTimer.h"
 #include <gdb/gdb_syscall.h>

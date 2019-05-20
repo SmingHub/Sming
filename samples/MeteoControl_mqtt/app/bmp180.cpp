@@ -1,7 +1,6 @@
 #ifndef INCLUDE_BMP180_H_
 #define INCLUDE_BMP180_H_
 
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/BMP180/BMP180.h>
 

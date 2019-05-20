@@ -9,7 +9,6 @@
  * This demo shows connecton, closing , reconnection methods of
  * websocket client.
  */
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Network/WebsocketClient.h>
 

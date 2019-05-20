@@ -7,7 +7,6 @@
  * make ENABLE_SSL=1
  */
 
-#include <user_config.h>
 #include <SmingCore.h>
 #include "Data/HexString.h"
 

@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
 // Input pin for demonstrating a call to a low-level interrupt handler callback

@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
 #include <Libraries/SparkFun_APDS9960/SparkFun_APDS9960.h>

@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
 /*** Direct PUSH notifications on your mobile phone!

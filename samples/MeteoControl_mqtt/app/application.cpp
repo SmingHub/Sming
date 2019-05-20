@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
 #include "configuration.h" // application configuration

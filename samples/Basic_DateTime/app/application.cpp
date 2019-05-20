@@ -4,7 +4,6 @@
 	Provides serial interface, accepting Unix timestamp
 	Prints each type of DateTime::format option
 */
-#include <user_config.h>
 #include <SmingCore.h>
 
 time_t timestamp = 0;

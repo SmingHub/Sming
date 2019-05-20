@@ -27,7 +27,6 @@
 // Devices with higher bit address might not be seen properly.
 //
 
-#include <user_config.h>
 #include <SmingCore.h>
 
 Timer procTimer;

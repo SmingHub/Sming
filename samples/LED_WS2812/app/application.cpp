@@ -1,5 +1,3 @@
-#include <user_config.h>
-
 #include <Libraries/WS2812/WS2812.h>
 
 #define LED_PIN 2 // GPIO2

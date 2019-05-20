@@ -1,10 +1,6 @@
-#include <user_config.h>
 #include <SmingCore.h>
-//#include <Network/WebConstants.h>
 #include <Network/TelnetServer.h>
 #include <Debug.h>
-//#include <Libraries/ArduCAM/ArduCAM.h>
-//#include <Libraries/ArduCAM/ov2640_regs.h>
 
 //#include "CamSettings.h"
 #include <ArduCamCommand.h>

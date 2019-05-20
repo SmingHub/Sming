@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
 #include <Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.h>
