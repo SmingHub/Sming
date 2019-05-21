@@ -126,11 +126,9 @@ $(foreach lib,$(LIBS),$(eval $(call UserLibrary,$(lib))))
 
 
 .PHONY: libsming
-libsming: $(APP_AR) $(CUSTOM_TARGETS) ##Build the Sming framework and user libraries
+libsming: $(LIBSMING_DST)
 
-$(APP_AR): $(OBJ)
-	$(vecho) "AR $@"
-	$(AR) cru $@ $^
+$(LIBSMING_DST): $(APP_AR) $(CUSTOM_TARGETS) ##Build the Sming framework and user libraries
 	$(vecho) "Installing '$(LIBSMING)' library"
 ifeq ($(ENABLE_SSL), 1)
 	$(vecho) "+ SSL support is enabled"
@@ -140,10 +138,14 @@ endif
 	$(Q) cp -r $(APP_AR) $(LIBSMING_DST)
 	$(vecho) "Done"
 
-.PHONY: checkdirs
-checkdirs: submodules reload | $(BUILD_DIR)
+$(APP_AR): $(OBJ)
+	$(vecho) "AR $@"
+	$(AR) cru $@ $^
 
-$(BUILD_DIR):
+.PHONY: checkdirs
+checkdirs: submodules reload | $(BUILD_DIR) $(USER_LIBDIR)
+
+$(BUILD_DIR) $(USER_LIBDIR):
 	$(Q) mkdir -p $@
 
 ##@Cleaning
@@ -159,7 +161,7 @@ clean: $(CLEAN) ##Remove all generated build files
 .PHONY: user-lib-clean
 user-lib-clean: ##Remove generated user libraries
 	-$(Q) rm -f $(wildcard $(USER_LIBDIR)/lib*.a) $(APP_AR)
-	$(Q) $(GIT) checkout $(USER_LIBDIR)
+	-$(Q) $(GIT) checkout $(USER_LIBDIR)
 
 ##@Building
 
