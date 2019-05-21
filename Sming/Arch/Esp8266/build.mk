@@ -59,7 +59,8 @@ endif
 # SDK_BASE just needs to point into our repo as it's overridden with the correct submodule path
 # This provides backward-compatiblity, so $(SMING)/third-party/ESP8266_NONOS_SDK) still works
 CONFIG_VARS += SDK_BASE SDK_INTERNAL
-ifneq (,$(findstring $(abspath $(SMING_HOME)),$(abspath $(SDK_BASE))))
+SDK_BASE := $(call FixPath,$(abspath $(SDK_BASE)))
+ifneq (,$(findstring $(SMING_HOME),$(SDK_BASE)))
 	SDK_COMPONENT	:= $(ARCH_COMPONENTS)/Sdk/ESP8266_NONOS_SDK
 	SDK_BASE		:= $(SMING_HOME)/$(SDK_COMPONENT)
 	CFLAGS			+= -DSDK_INTERNAL
