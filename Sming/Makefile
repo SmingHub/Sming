@@ -208,11 +208,9 @@ submodules: | $(LIBRARY_SUBMODULES) $(addsuffix /.submodule,$(SUBMODULES)) ##Fet
 
 ##@Cleaning
 submodules-clean: ##Reset state of all third-party submodules
-	-$(Q) rm -rf $(SUBMODULES)
+	$(Q) rm -rf $(call ListSubmodules)
+	-$(Q) rm -rf $(addprefix $(BUILD_BASE),$(call ListSubmodules))
 	$(GIT) checkout Components
-	-$(Q) rm -rf Libraries
-	-$(Q) rm -rf $(BUILD_BASE)/Libraries
-	-$(Q) mkdir -p Libraries
 	$(GIT) checkout Libraries
 
 # Update and patch submodule
