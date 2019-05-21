@@ -37,6 +37,8 @@ typedef enum {
     CANCEL,
 } STATUS;
 
+#include <sming_attr.h>
+#include "esp_attr.h"
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
@@ -50,25 +52,12 @@ typedef enum {
 
 #define __ESP8266_EX__ // System definition ESP8266 SOC
 
-#define IRAM_ATTR __attribute__((section(".iram.text")))
-#define STORE_TYPEDEF_ATTR __attribute__((aligned(4),packed))
-#define STORE_ATTR __attribute__((aligned(4)))
+#define LOCAL           static
 
-/*
- * Use this definition in the cases where a function or a variable is meant to be possibly unused. GCC will not produce a warning for it.
- */
-#define SMING_UNUSED  __attribute__((unused))
+#define BIT(nr)         (1UL << (nr))
 
-/*
- * Flags a compiler warning when Sming framework methods, functions or types are changed
- */
-#define SMING_DEPRECATED __attribute__((deprecated))
-
-#ifdef ENABLE_GDB
-	#define GDB_IRAM_ATTR IRAM_ATTR
-#else
-	#define GDB_IRAM_ATTR
-#endif
+#define REG_SET_BIT(_r, _b)  (*(volatile uint32_t*)(_r) |= (_b))
+#define REG_CLR_BIT(_r, _b)  (*(volatile uint32_t*)(_r) &= ~(_b))
 
 #undef assert
 #ifdef SMING_RELEASE
