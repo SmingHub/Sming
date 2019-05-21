@@ -157,30 +157,38 @@ endif
 
 # Tools
 
+#
+# $1 -> target
+# $2 -> make directory
+# $3 -> parameters
+#
 define make-tool
-	$(MAKE) --no-print-directory -C $(dir $1) V=$(V) $2
+	$(Q) mkdir -p $(BUILD_BASE)/$(2)/$(UNAME)
+	$(MAKE) --no-print-directory -C $2 TARGET=$(abspath $1) BUILD_DIR=$(abspath $(BUILD_BASE)/$(2)/$(UNAME)) V=$(V) $3
 endef
 
 # => spiffy
 TOOLS			+= $(SPIFFY)
 TOOLS_CLEAN		+= spiffy-clean
 
+SPIFFY_BASE := $(ARCH_TOOLS)/spiffy
 $(SPIFFY): | $(COMPONENTS)/spiffs/.submodule
-	$(Q) $(call make-tool,$@,SPIFFS_SMING=$(SMING_HOME)/$(SPIFFS_SMING) SPIFFS_BASE=$(SMING_HOME)/$(SPIFFS_BASE))
+	$(Q) $(call make-tool,$@,$(SPIFFY_BASE),SPIFFS_SMING=$(SMING_HOME)/$(SPIFFS_SMING) SPIFFS_BASE=$(SMING_HOME)/$(SPIFFS_BASE))
 
 .PHONY: spiffy-clean
 spiffy-clean:
-	-$(Q) -$(call make-tool,$(SPIFFY),clean)
+	-$(Q) -$(call make-tool,$(SPIFFY),$(SPIFFY_BASE),clean)
 
 # => esptool2
 TOOLS			+= $(ESPTOOL2)
 TOOLS_CLEAN		+= esptool2-clean
 
-SUBMODULES += $(dir $(ESPTOOL2))
-$(ESPTOOL2): | $(dir $(ESPTOOL2)).submodule
-	$(Q) $(call make-tool,$@)
+ESPTOOL2_BASE := $(ARCH_TOOLS)/esptool2
+SUBMODULES += $(ESPTOOL2_BASE)
+$(ESPTOOL2): | $(ESPTOOL2_BASE)/.submodule
+	$(Q) $(call make-tool,$@,$(ESPTOOL2_BASE))
 
 .PHONY: esptool2-clean
 esptool2-clean:
-	-$(Q) -$(call make-tool,$(ESPTOOL2),clean)
+	-$(Q) -$(call make-tool,$(ESPTOOL2),$(ESPTOOL2_BASE),clean)
 

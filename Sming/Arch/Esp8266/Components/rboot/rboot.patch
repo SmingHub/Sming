@@ -1,26 +1,8 @@
 diff --git a/Makefile b/Makefile
-index ca234de..5f1c72b 100644
+index 0b43474..4c1913e 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -22,10 +22,16 @@ else
- Q := @
- endif
-
--CFLAGS    = -Os -O3 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
-+CFLAGS    = -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
- LDFLAGS   = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
- LD_SCRIPT = eagle.app.v6.ld
-
-+ifeq ($(ENABLE_GDB),1)
-+	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0
-+else
-+	CFLAGS += -Os -O3
-+endif
-+
- E2_OPTS = -quiet -bin -boot0
-
- ifeq ($(RBOOT_BIG_FLASH),1)
-@@ -55,6 +61,16 @@ endif
+@@ -58,6 +58,16 @@ endif
  ifeq ($(RBOOT_IROM_CHKSUM),1)
  	CFLAGS += -DBOOT_IROM_CHKSUM
  endif
@@ -38,11 +20,24 @@ index ca234de..5f1c72b 100644
  	CFLAGS += $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
  endif
 diff --git a/rboot.c b/rboot.c
-index 6e10a2f..03cc87b 100644
+index d622f97..00ccaeb 100644
 --- a/rboot.c
 +++ b/rboot.c
-@@ -250,7 +250,25 @@ static uint8 calc_chksum(uint8 *start, uint8 *end) {
- static uint8 default_config(rboot_config *romconf, uint32 flashsize) {
+@@ -13,6 +13,12 @@
+ #define UART_CLK_FREQ	(26000000 * 2)
+ #endif
+ 
++#ifndef BOOT_SILENT
++#define echof(fmt, ...) ets_printf(fmt, ##__VA_ARGS__)
++#else
++#define echof(fmt, ...)
++#endif
++
+ static uint32_t check_image(uint32_t readpos) {
+ 
+ 	uint8_t buffer[BUFFER_SIZE];
+@@ -258,7 +264,25 @@ static uint8_t calc_chksum(uint8_t *start, uint8_t *end) {
+ static uint8_t default_config(rboot_config *romconf, uint32_t flashsize) {
  	romconf->count = 2;
  	romconf->roms[0] = SECTOR_SIZE * (BOOT_CONFIG_SECTOR + 1);
 +
@@ -56,33 +51,27 @@ index 6e10a2f..03cc87b 100644
 +	if(flashsize > 0x200000) {
 +		romconf->count += 1;
 +#ifdef BOOT_ROM2_ADDR
-+		romconf->roms[2] = BOOT_ROM2_ADDR;
++	romconf->roms[2] = BOOT_ROM2_ADDR;
 +#else
-+		romconf->roms[2] = 0x310000;
++	romconf->roms[2] = 0x310000;
 +#endif
-+		romconf->gpio_rom = 2;
-+	}
++	romconf->gpio_rom = 2;
++}
 +#endif
 +
  #ifdef BOOT_GPIO_ENABLED
  	romconf->mode = MODE_GPIO_ROM;
  #endif
-@@ -291,86 +309,94 @@ uint32 NOINLINE find_image(void) {
+@@ -306,100 +330,100 @@ uint32_t NOINLINE find_image(void) {
  	ets_delay_us(BOOT_DELAY_MICROS);
  #endif
-
+ 
 -	ets_printf("\r\nrBoot v1.4.2 - richardaburton@gmail.com\r\n");
-+#ifndef BOOT_SILENT
-+#define echof(fmt, ...) ets_printf(fmt, ##__VA_ARGS__)
-+#else
-+#define echof(fmt, ...)
-+#endif
-+
 +	echof("\r\nrBoot v1.4.2 - richardaburton@gmail.com\r\n");
-
+ 
  	// read rom header
  	SPIRead(0, header, sizeof(rom_header));
-
+ 
  	// print and get flash size
 -	ets_printf("Flash Size:   ");
 +	echof("Flash Size:   ");
@@ -99,7 +88,7 @@ index 6e10a2f..03cc87b 100644
 -		ets_printf("8 Mbit\r\n");
 +		echof("8 Mbit\r\n");
  		flashsize = 0x100000;
- 	} else if (flag == 3) {
+ 	} else if (flag == 3 || flag == 5) {
 -		ets_printf("16 Mbit\r\n");
 +		echof("16 Mbit\r\n");
  #ifdef BOOT_BIG_FLASH
@@ -107,11 +96,27 @@ index 6e10a2f..03cc87b 100644
  #else
  		flashsize = 0x100000; // limit to 8Mbit
  #endif
- 	} else if (flag == 4) {
+ 	} else if (flag == 4 || flag == 6) {
 -		ets_printf("32 Mbit\r\n");
 +		echof("32 Mbit\r\n");
  #ifdef BOOT_BIG_FLASH
  		flashsize = 0x400000;
+ #else
+ 		flashsize = 0x100000; // limit to 8Mbit
+ #endif
+ 	} else if (flag == 8) {
+-		ets_printf("64 Mbit\r\n");
++		echof("64 Mbit\r\n");
+ #ifdef BOOT_BIG_FLASH
+ 		flashsize = 0x800000;
+ #else
+ 		flashsize = 0x100000; // limit to 8Mbit
+ #endif
+ 	} else if (flag == 9) {
+-		ets_printf("128 Mbit\r\n");
++		echof("128 Mbit\r\n");
+ #ifdef BOOT_BIG_FLASH
+ 		flashsize = 0x1000000;
  #else
  		flashsize = 0x100000; // limit to 8Mbit
  #endif
@@ -121,7 +126,7 @@ index 6e10a2f..03cc87b 100644
  		// assume at least 4mbit
  		flashsize = 0x80000;
  	}
-
+ 
  	// print spi mode
 -	ets_printf("Flash Mode:   ");
 +	echof("Flash Mode:   ");
@@ -141,7 +146,7 @@ index 6e10a2f..03cc87b 100644
 -		ets_printf("unknown\r\n");
 +		echof("unknown\r\n");
  	}
-
+ 
  	// print spi speed
 -	ets_printf("Flash Speed:  ");
 +	echof("Flash Speed:  ");
@@ -156,7 +161,7 @@ index 6e10a2f..03cc87b 100644
 +	else if (flag == 2) echof("20 MHz\r\n");
 +	else if (flag == 0x0f) echof("80 MHz\r\n");
 +	else echof("unknown\r\n");
-
+ 
  	// print enabled options
  #ifdef BOOT_BIG_FLASH
 -	ets_printf("rBoot Option: Big flash\r\n");
@@ -184,21 +189,143 @@ index 6e10a2f..03cc87b 100644
  #endif
 -	ets_printf("\r\n");
 +	echof("\r\n");
-+
-+#undef echof
-
+ 
  	// read boot config
  	SPIRead(BOOT_CONFIG_SECTOR * SECTOR_SIZE, buffer, SECTOR_SIZE);
-diff --git a/rboot.h b/rboot.h
-index 93ae317..bd3ad6d 100644
---- a/rboot.h
-+++ b/rboot.h
-@@ -34,7 +34,7 @@ extern "C" {
- // uncomment to enable GPIO rom skip mode, trigger
- // GPIO at boot time to skip to next rom
- // cannot be used at same time as BOOT_GPIO_ENABLED
--#define BOOT_GPIO_SKIP_ENABLED
-+//#define BOOT_GPIO_SKIP_ENABLED
+@@ -410,7 +434,7 @@ uint32_t NOINLINE find_image(void) {
+ #endif
+ 		) {
+ 		// create a default config for a standard 2 rom setup
+-		ets_printf("Writing default boot config.\r\n");
++		echof("Writing default boot config.\r\n");
+ 		ets_memset(romconf, 0x00, sizeof(rboot_config));
+ 		romconf->magic = BOOT_CONFIG_MAGIC;
+ 		romconf->version = BOOT_CONFIG_VERSION;
+@@ -433,10 +457,10 @@ uint32_t NOINLINE find_image(void) {
+ 
+ 		if (rtc.next_mode & MODE_TEMP_ROM) {
+ 			if (rtc.temp_rom >= romconf->count) {
+-				ets_printf("Invalid temp rom selected.\r\n");
++				echof("Invalid temp rom selected.\r\n");
+ 				return 0;
+ 			}
+-			ets_printf("Booting temp rom.\r\n");
++			echof("Booting temp rom.\r\n");
+ 			temp_boot = 1;
+ 			romToBoot = rtc.temp_rom;
+ 		}
+@@ -447,10 +471,10 @@ uint32_t NOINLINE find_image(void) {
+ 	if (perform_gpio_boot(romconf)) {
+ #if defined(BOOT_GPIO_ENABLED)
+ 		if (romconf->gpio_rom >= romconf->count) {
+-			ets_printf("Invalid GPIO rom selected.\r\n");
++			echof("Invalid GPIO rom selected.\r\n");
+ 			return 0;
+ 		}
+-		ets_printf("Booting GPIO-selected rom.\r\n");
++		echof("Booting GPIO-selected rom.\r\n");
+ 		romToBoot = romconf->gpio_rom;
+ 		gpio_boot = 1;
+ #elif defined(BOOT_GPIO_SKIP_ENABLED)
+@@ -462,7 +486,7 @@ uint32_t NOINLINE find_image(void) {
+ #endif
+ 		updateConfig = 1;
+ 		if (romconf->mode & MODE_GPIO_ERASES_SDKCONFIG) {
+-			ets_printf("Erasing SDK config sectors before booting.\r\n");
++			echof("Erasing SDK config sectors before booting.\r\n");
+ 			for (sec = 1; sec < 5; sec++) {
+ 				SPIEraseSector((flashsize / SECTOR_SIZE) - sec);
+ 			}
+@@ -474,7 +498,7 @@ uint32_t NOINLINE find_image(void) {
+ 	// gpio/temp boots will have already validated this
+ 	if (romconf->current_rom >= romconf->count) {
+ 		// if invalid rom selected try rom 0
+-		ets_printf("Invalid rom selected, defaulting to 0.\r\n");
++		echof("Invalid rom selected, defaulting to 0.\r\n");
+ 		romToBoot = 0;
+ 		romconf->current_rom = 0;
+ 		updateConfig = 1;
+@@ -486,14 +510,14 @@ uint32_t NOINLINE find_image(void) {
+ #ifdef BOOT_GPIO_ENABLED
+ 	if (gpio_boot && loadAddr == 0) {
+ 		// don't switch to backup for gpio-selected rom
+-		ets_printf("GPIO boot rom (%d) is bad.\r\n", romToBoot);
++		echof("GPIO boot rom (%d) is bad.\r\n", romToBoot);
+ 		return 0;
+ 	}
+ #endif
+ #ifdef BOOT_RTC_ENABLED
+ 	if (temp_boot && loadAddr == 0) {
+ 		// don't switch to backup for temp rom
+-		ets_printf("Temp boot rom (%d) is bad.\r\n", romToBoot);
++		echof("Temp boot rom (%d) is bad.\r\n", romToBoot);
+ 		// make sure rtc temp boot mode doesn't persist
+ 		rtc.next_mode = MODE_STANDARD;
+ 		rtc.chksum = calc_chksum((uint8_t*)&rtc, (uint8_t*)&rtc.chksum);
+@@ -504,7 +528,7 @@ uint32_t NOINLINE find_image(void) {
+ 
+ 	// check we have a good rom
+ 	while (loadAddr == 0) {
+-		ets_printf("Rom %d at %x is bad.\r\n", romToBoot, romconf->roms[romToBoot]);
++		echof("Rom %d at %x is bad.\r\n", romToBoot, romconf->roms[romToBoot]);
+ 		// for normal mode try each previous rom
+ 		// until we find a good one or run out
+ 		updateConfig = 1;
+@@ -512,7 +536,7 @@ uint32_t NOINLINE find_image(void) {
+ 		if (romToBoot < 0) romToBoot = romconf->count - 1;
+ 		if (romToBoot == romconf->current_rom) {
+ 			// tried them all and all are bad!
+-			ets_printf("No good rom available.\r\n");
++			echof("No good rom available.\r\n");
+ 			return 0;
+ 		}
+ 		loadAddr = check_image(romconf->roms[romToBoot]);
+@@ -543,7 +567,7 @@ uint32_t NOINLINE find_image(void) {
+ 	system_rtc_mem(RBOOT_RTC_ADDR, &rtc, sizeof(rboot_rtc_data), RBOOT_RTC_WRITE);
+ #endif
+ 
+-	ets_printf("Booting rom %d at %x, load addr %x.\r\n", romToBoot, romconf->roms[romToBoot], loadAddr);
++	echof("Booting rom %d at %x, load addr %x.\r\n", romToBoot, romconf->roms[romToBoot], loadAddr);
+ 	// copy the loader to top of iram
+ 	ets_memcpy((void*)_text_addr, _text_data, _text_len);
+ 	// return address to load from
+ diff --git a/appcode/rboot-api.c b/appcode/rboot-api.c
+index eb4d028..fc00ce1 100644
+--- a/appcode/rboot-api.c
++++ b/appcode/rboot-api.c
+@@ -43,7 +43,7 @@ rboot_config ICACHE_FLASH_ATTR rboot_get_config(void) {
+ // updates checksum automatically (if enabled)
+ bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf) {
+ 	uint8_t *buffer;
+-	buffer = (uint8_t*)pvPortMalloc(SECTOR_SIZE, 0, 0);
++	buffer = (uint8_t*)os_malloc(SECTOR_SIZE);
+ 	if (!buffer) {
+ 		//os_printf("No ram!\r\n");
+ 		return false;
+@@ -58,7 +58,7 @@ bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf) {
+ 	spi_flash_erase_sector(BOOT_CONFIG_SECTOR);
+ 	spi_flash_write(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32_t*)((void*)buffer), SECTOR_SIZE);
+ 	
+-	vPortFree(buffer, 0, 0);
++	os_free(buffer);
+ 	return true;
+ }
+ 
+@@ -114,7 +114,7 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8_t *da
+ 	}
+ 	
+ 	// get a buffer
+-	buffer = (uint8_t *)pvPortMalloc(len + status->extra_count, 0, 0);
++	buffer = (uint8_t *)os_malloc(len + status->extra_count);
+ 	if (!buffer) {
+ 		//os_printf("No ram!\r\n");
+ 		return false;
+@@ -152,7 +152,7 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8_t *da
+ 		}
+ 	//}
+ 
+-	vPortFree(buffer, 0, 0);
++	os_free(buffer);
+ 	return ret;
+ }
 
- // set the GPIO pin used by GPIO modes above (will default
- // to 16 if not manually set), only applicable when
