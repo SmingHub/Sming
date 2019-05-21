@@ -31,7 +31,7 @@ extern void __custom_crash_callback( struct rst_info * rst_info, uint32_t stack,
 extern void custom_crash_callback( struct rst_info * rst_info, uint32_t stack, uint32_t stack_end ) __attribute__ ((weak, alias("__custom_crash_callback")));
 
 void __wrap_system_restart_local() {
-    register uint32_t sp_reg asm("a1");
+    register uint32_t sp_reg __asm__("a1");
     uint32_t sp = sp_reg;
 
     struct rst_info rst_info = {0};

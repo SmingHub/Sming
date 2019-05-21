@@ -100,7 +100,7 @@ void debug_crash_callback(const rst_info* rst_info, uint32_t stack, uint32_t sta
 
 #if defined(ENABLE_GDB) && GDBSTUB_BREAK_ON_RESTART
 	// Drop interrupt level to enable break instruction
-	asm("rsil a2, 1"); // XCHAL_DEBUGLEVEL - 1
+	__asm__("rsil a2, 1"); // XCHAL_DEBUGLEVEL - 1
 	gdbstub_break_internal(DBGFLAG_RESTART);
 #elif ENABLE_CRASH_DUMP
 	debug_print_stack(stack, stack_end);
@@ -245,7 +245,7 @@ void gdb_on_attach(bool attached) NOOP;
 void gdb_detach(void) NOOP;
 };
 
-int __attribute__((weak)) gdb_syscall(const GdbSyscallInfo& info)
+int WEAK_ATTR gdb_syscall(const GdbSyscallInfo& info)
 {
 	return -1;
 }

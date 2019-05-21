@@ -203,8 +203,8 @@ public:
 	 *	@retval	String WiFi station password
 	 */
 	String getPassword();
-	sint8 getRssi();
-	uint8 getChannel();
+	int8_t getRssi();
+	uint8_t getChannel();
 
 	/**	@brief	Start WiFi station network scan
 	 *	@param	scanCompleted Function to call when scan completes
@@ -284,10 +284,10 @@ public:
 
 public:
 	String ssid;			 ///< SSID
-	uint8 bssid[6];			 ///< BSS ID
+	uint8_t bssid[6];		 ///< BSS ID
 	AUTH_MODE authorization; ///< Authorisation mode
-	uint8 channel;			 ///< Channel number
-	sint16 rssi;			 ///< RSSI level
+	uint8_t channel;		 ///< Channel number
+	int16_t rssi;			 ///< RSSI level
 	bool hidden;			 ///< True if AP is hidden
 };
 

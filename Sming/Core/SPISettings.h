@@ -73,14 +73,14 @@ public:
 	 * 		SPI_MODE2		1					0
 	 * 		SPI_MODE3		1					1
 	 */
-	SPISettings(int speed, uint8 byteOrder, uint8 dataMode) : speed(speed), byteOrder(byteOrder), dataMode(dataMode)
+	SPISettings(int speed, uint8_t byteOrder, uint8_t dataMode) : speed(speed), byteOrder(byteOrder), dataMode(dataMode)
 	{
 #ifdef SPI_DEBUG
 		debugf("SPISettings(int %i, uint8 %d, uint8 %d)", speed, byteOrder, dataMode);
 #endif
 	}
 
-	inline uint8 getDataMode()
+	inline uint8_t getDataMode()
 	{
 		return dataMode;
 	}

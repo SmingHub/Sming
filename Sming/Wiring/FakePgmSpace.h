@@ -73,15 +73,15 @@ typedef uint32_t prog_uint32_t;
 //     w1,     w0
 
 #define pgm_read_with_offset(addr, res)                                                                                \
-	asm("extui    %0, %1, 0, 2\n" /* Extract offset within word (in bytes) */                                          \
-		"sub      %1, %1, %0\n"   /* Subtract offset from addr, yielding an aligned address */                         \
-		"l32i.n   %1, %1, 0x0\n"  /* Load word from aligned address */                                                 \
-		"slli     %0, %0, 3\n"	/* Mulitiply offset by 8, yielding an offset in bits */                              \
-		"ssr      %0\n"			  /* Prepare to shift by offset (in bits) */                                           \
-		"srl      %0, %1\n"		  /* Shift right; now the requested byte is the first one */                           \
-		: "=r"(res), "=r"(addr)                                                                                        \
-		: "1"(addr)                                                                                                    \
-		:);
+	__asm__("extui    %0, %1, 0, 2\n" /* Extract offset within word (in bytes) */                                      \
+			"sub      %1, %1, %0\n"   /* Subtract offset from addr, yielding an aligned address */                     \
+			"l32i.n   %1, %1, 0x0\n"  /* Load word from aligned address */                                             \
+			"slli     %0, %0, 3\n"	/* Mulitiply offset by 8, yielding an offset in bits */                          \
+			"ssr      %0\n"			  /* Prepare to shift by offset (in bits) */                                       \
+			"srl      %0, %1\n"		  /* Shift right; now the requested byte is the first one */                       \
+			: "=r"(res), "=r"(addr)                                                                                    \
+			: "1"(addr)                                                                                                \
+			:);
 
 static inline uint8_t pgm_read_byte_inlined(const void* addr)
 {

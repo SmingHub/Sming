@@ -28,12 +28,7 @@
 #endif
 #include <Libraries/Adafruit_GFX/Adafruit_GFX.h>
 
-extern "C"
-{
-#include <osapi.h>
-#include <gpio.h>
 #include "hspi.h"
-}
 
 #define ILI9341_TFTWIDTH  240
 #define ILI9341_TFTHEIGHT 320

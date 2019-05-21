@@ -53,7 +53,7 @@ public:
 	 * 		receivedVal16 = SPI.transfer16(val16)
 	 * 		SPI.transfer(buffer, size)
 	 */
-	void transfer(uint8* buffer, size_t size) override;
+	void transfer(uint8_t* buffer, size_t size) override;
 
 	unsigned char transfer(unsigned char val) override
 	{
@@ -63,7 +63,7 @@ public:
 
 	unsigned short transfer16(unsigned short val) override
 	{
-		transfer(reinterpret_cast<uint8*>(&val), 2);
+		transfer(reinterpret_cast<uint8_t*>(&val), 2);
 		return val;
 	}
 

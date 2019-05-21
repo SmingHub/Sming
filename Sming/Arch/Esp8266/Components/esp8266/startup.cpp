@@ -12,10 +12,11 @@
 #include "Platform/System.h"
 #include <driver/uart.h>
 #include <gdb/gdb_hooks.h>
+#include <esp_cplusplus.h>
 
 extern void init();
 
-extern "C" void  __attribute__((weak)) user_init(void)
+extern "C" void  WEAK_ATTR user_init(void)
 {
 	// We want high resolution timing - see HardwareTimer class
 	system_timer_reinit();
@@ -40,7 +41,7 @@ extern "C" void  __attribute__((weak)) user_init(void)
 }
 
 // For compatibility with SDK v1.1
-extern "C" void __attribute__((weak)) user_rf_pre_init(void)
+extern "C" void WEAK_ATTR user_rf_pre_init(void)
 {
 	// RTC startup fix, author pvvx
     volatile uint32 * ptr_reg_rtc_ram = (volatile uint32 *)0x60001000;
@@ -50,7 +51,7 @@ extern "C" void __attribute__((weak)) user_rf_pre_init(void)
     }
 }
 
-extern "C" uint32 ICACHE_FLASH_ATTR  __attribute__((weak)) user_rf_cal_sector_set(void)
+extern "C" uint32 ICACHE_FLASH_ATTR  WEAK_ATTR user_rf_cal_sector_set(void)
 {
     enum flash_size_map size_map = system_get_flash_size_map();
     uint32 rf_cal_sec = 0;
@@ -88,7 +89,7 @@ extern "C" uint32 ICACHE_FLASH_ATTR  __attribute__((weak)) user_rf_cal_sector_se
 
 #if defined(ESP_SDK_VERSION_MAJOR) and ESP_SDK_VERSION_MAJOR>=3
 
-extern "C" void ICACHE_FLASH_ATTR  __attribute__((weak)) user_pre_init(void)
+extern "C" void ICACHE_FLASH_ATTR WEAK_ATTR user_pre_init(void)
 {
 	const uint32_t MAX_PROGRAM_SECTORS = 0x100000 / SPI_FLASH_SEC_SIZE; // 1MB addressable
 
@@ -128,7 +129,7 @@ extern "C" void ICACHE_FLASH_ATTR  __attribute__((weak)) user_pre_init(void)
 #endif /* defined(ESP_SDK_VERSION_MAJOR) and ESP_SDK_VERSION_MAJOR>=3 */
 
 namespace std {
-    void __attribute__((weak)) __throw_bad_function_call()
+    void WEAK_ATTR __throw_bad_function_call()
     {
         while(1);
     };

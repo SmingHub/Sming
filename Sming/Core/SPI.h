@@ -89,7 +89,7 @@ public:
 	 */
 	unsigned char transfer(unsigned char val) override
 	{
-		return transfer32((uint32)val, 8);
+		return transfer32(val, 8);
 	}
 
 	/** @brief read8() read a byte from SPI without setting up registers
@@ -105,7 +105,7 @@ public:
 	 * 	 USE WITH CARE !!
 	 *
 	 */
-	uint8 read8();
+	uint8_t read8();
 
 	/** @brief 	transfer16()
 	 * @param	short to send
@@ -122,10 +122,10 @@ public:
 	 */
 	unsigned short transfer16(unsigned short val) override
 	{
-		return transfer32((uint32)val, 16);
+		return transfer32(val, 16);
 	};
 
-	/** @brief 	transfer(uint8 *buffer, size_t numberBytes)
+	/** @brief 	transfer(uint8_t *buffer, size_t numberBytes)
 	 * @param	buffer in/out
 	 * @param	numberBytes lenght of buffer
 	 *
@@ -136,7 +136,7 @@ public:
 	 *
 	 * 		SPI.transfer(buffer, size)				: memory buffer of length size
 	 */
-	void transfer(uint8* buffer, size_t numberBytes) override;
+	void transfer(uint8_t* buffer, size_t numberBytes) override;
 
 private:
 	/** @brief transfer32()
@@ -150,7 +150,7 @@ private:
 	 * 		receivedVal = SPI.transfer(val)			: single byte
 	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
 	 */
-	virtual uint32 transfer32(uint32 val, uint8 bits);
+	virtual uint32_t transfer32(uint32_t val, uint8_t bits);
 
 	// prepare/configure HSPI with settings
 	void prepare(SPISettings mySettings);
@@ -158,17 +158,17 @@ private:
 	/** @brief  spi_byte_order
 	 * private method used when applying SPISettings
 	 */
-	void spi_byte_order(uint8 byte_order);
+	void spi_byte_order(uint8_t byte_order);
 
 	/** @brief  spi_mode
 	 * private method used when applying SPISettings
 	 */
-	void spi_mode(uint8 mode);
+	void spi_mode(uint8_t mode);
 
 	/** @brief  setClock
 	 * private method used when applying SPISettings
 	 */
-	void setClock(uint8 prediv, uint8 cntdiv);
+	void setClock(uint8_t prediv, uint8_t cntdiv);
 
 	/** @brief  setClock
 	 * private method used when applying SPISettings

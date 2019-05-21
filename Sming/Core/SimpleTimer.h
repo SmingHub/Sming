@@ -23,9 +23,7 @@
 
 #pragma once
 
-extern "C" {
 #include "esp_systemapi.h"
-}
 
 /*
  * According to documentation maximum value of interval for ms

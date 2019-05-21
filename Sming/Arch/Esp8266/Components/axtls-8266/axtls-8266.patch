@@ -1,7 +1,7 @@
 diff -Nuar a/replacements/libc.c b/replacements/libc.c
 --- a/replacements/libc.c   1970-01-01 01:00:00.000000000 +0100
 +++ b/replacements/libc.c   2016-11-21 11:03:47.152184514 +0100
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,28 @@
 +/*
 + libc_replacements.c - replaces libc functions with functions
 + from Espressif SDK
@@ -21,8 +21,7 @@ diff -Nuar a/replacements/libc.c b/replacements/libc.c
 + Modified 03 April 2015 by Markus Sattler
 + */
 +
-+#include <stdint.h>
-+#include "espinc/c_types_compatible.h"
++#include <c_types.h>
 +#include <stdarg.h>
 +
 +extern int ets_putc(int);

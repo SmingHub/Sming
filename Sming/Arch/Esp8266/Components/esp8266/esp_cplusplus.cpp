@@ -2,6 +2,9 @@
 #include "include/esp_cplusplus.h"
 #include <stdlib.h>
 
+extern void (*__init_array_start)();
+extern void (*__init_array_end)();
+
 ////////////////////////////////////////////////////////////////////////
 
 // Just do it! :)
