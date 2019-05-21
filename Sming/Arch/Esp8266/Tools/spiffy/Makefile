@@ -1,6 +1,8 @@
 #
 # Makefile for spiffy
 #
+# Pass in TARGET, BUILD_DIR , SPIFFS_SMING, SPIFFS_BASE
+#
 
 HOST_CC ?= gcc
 HOST_LD ?= gcc
@@ -16,20 +18,24 @@ Q := @
 vecho := @echo
 endif
 
-all: spiffy
+BUILD_DIR	?= .
+TARGET		?= spiffy
 
-%.o: $(SPIFFS_BASE)/src/%.c
+OBJS := $(addprefix $(BUILD_DIR)/,spiffy.o spiffs_cache.o spiffs_nucleus.o spiffs_hydrogen.o spiffs_gc.o spiffs_check.o)
+
+all: $(TARGET)
+
+$(BUILD_DIR)/%.o: $(SPIFFS_BASE)/src/%.c
 	$(vecho) "CC $<"
 	$(Q) $(HOST_CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 
-spiffy.o: spiffy.c
+$(BUILD_DIR)/spiffy.o: spiffy.c
 	$(vecho) "CC $<"
 	$(Q) $(HOST_CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 
-spiffy: spiffy.o spiffs_cache.o spiffs_nucleus.o spiffs_hydrogen.o spiffs_gc.o spiffs_check.o
+$(TARGET): $(OBJS)
 	$(vecho) "LD $@"
 	$(Q) $(HOST_LD) -o $@ $^
 
 clean:
-	$(Q) rm -f *.o
-	$(Q) rm -f spiffy spiffy.exe
+	rm -f $(OBJS) $(TARGET)
