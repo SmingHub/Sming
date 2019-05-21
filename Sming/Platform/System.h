@@ -126,7 +126,7 @@ public:
      */
 	CpuFrequency getCpuFrequency()
 	{
-		return static_cast<CpuFrequency>(ets_get_cpu_frequency());
+		return static_cast<CpuFrequency>(system_get_cpu_freq());
 	}
 
 	/** @brief  Enter deep sleep mode
