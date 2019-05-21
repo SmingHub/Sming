@@ -27,12 +27,10 @@ all: checkdirs libsming tools ##(default) Build the Sming library, user librarie
 
 include $(SMING_HOME)/build.mk
 
-BUILD_BASE := $(ARCH_BASE)/out/build
+# name for the target project
+TARGET := lib$(LIBSMING)
 
 RELOAD_MKFILE = 0
-
-# name for the target project
-TARGET		= app
 
 # List of directories containing source code to build
 MODULES :=
@@ -63,20 +61,8 @@ MODULES			+= $(COMPONENTS)/ws_parser
 
 # => mqtt-codec
 SUBMODULES		+= $(COMPONENTS)/mqtt-codec
+MODULES			+= $(COMPONENTS)/mqtt-codec/src
 EXTRA_INCDIR	+= $(COMPONENTS)/mqtt-codec/src
-LIBMQTTC		:= mqttc
-LIBS			+= $(LIBMQTTC)
-BUILD_MQTTC		:= $(MAKE) -C $(COMPONENTS)/mqtt-codec MQTT_ENABLE_SERVER=0 MQTT_ENABLE_CLIENT=1 CC=$(CC) AR=$(AR) \
-				CFLAGS_EXTRA="-ISystem/include $(CFLAGS_COMMON)" \
-				LIB_FOLDER="$(SMING_HOME)/$(USER_LIBDIR)"
-CLEAN			+= mqttc-clean
-
-$(call UserLibPath,$(LIBMQTTC)):
-	$(Q) $(BUILD_MQTTC) lib
-
-.PHONY: mqttc-clean
-mqttc-clean:
-	-$(Q) $(BUILD_MQTTC) clean
 
 
 # => yuarel
@@ -128,11 +114,9 @@ $(foreach lib,$(LIBS),$(eval $(call UserLibrary,$(lib))))
 
 
 .PHONY: libsming
-libsming: $(APP_AR) $(CUSTOM_TARGETS) ##Build the Sming framework and user libraries
+libsming: $(LIBSMING_DST)
 
-$(APP_AR): $(OBJ)
-	$(vecho) "AR $@"
-	$(AR) cru $@ $^
+$(LIBSMING_DST): $(APP_AR) $(CUSTOM_TARGETS) ##Build the Sming framework and user libraries
 	$(vecho) "Installing '$(LIBSMING)' library"
 ifeq ($(ENABLE_SSL), 1)
 	$(vecho) "+ SSL support is enabled"
@@ -142,10 +126,14 @@ endif
 	$(Q) cp -r $(APP_AR) $(LIBSMING_DST)
 	$(vecho) "Done"
 
-.PHONY: checkdirs
-checkdirs: submodules reload | $(BUILD_DIR)
+$(APP_AR): $(OBJ)
+	$(vecho) "AR $@"
+	$(AR) cr $@ $^
 
-$(BUILD_DIR):
+.PHONY: checkdirs
+checkdirs: submodules reload | $(BUILD_DIR) $(USER_LIBDIR)
+
+$(BUILD_DIR) $(USER_LIBDIR):
 	$(Q) mkdir -p $@
 
 ##@Cleaning
@@ -156,13 +144,12 @@ dist-clean: clean submodules-clean tools-clean user-lib-clean samples-clean ##Cl
 .PHONY: clean
 clean: $(CLEAN) ##Remove all generated build files
 	$(Q) rm -f $(APP_AR)
-	$(Q) rm -f $(TARGET_OUT)
 	$(Q) rm -rf $(BUILD_BASE)
 
 .PHONY: user-lib-clean
 user-lib-clean: ##Remove generated user libraries
 	-$(Q) rm -f $(wildcard $(USER_LIBDIR)/lib*.a) $(APP_AR)
-	$(Q) $(GIT) checkout $(USER_LIBDIR)
+	-$(Q) $(GIT) checkout $(USER_LIBDIR)
 
 ##@Building
 
@@ -221,11 +208,9 @@ submodules: | $(LIBRARY_SUBMODULES) $(addsuffix /.submodule,$(SUBMODULES)) ##Fet
 
 ##@Cleaning
 submodules-clean: ##Reset state of all third-party submodules
-	-$(Q) rm -rf $(SUBMODULES)
+	$(Q) rm -rf $(call ListSubmodules)
+	-$(Q) rm -rf $(addprefix $(BUILD_BASE),$(call ListSubmodules))
 	$(GIT) checkout Components
-	-$(Q) rm -rf Libraries
-	-$(Q) rm -rf $(BUILD_BASE)/Libraries
-	-$(Q) mkdir -p Libraries
 	$(GIT) checkout Libraries
 
 # Update and patch submodule

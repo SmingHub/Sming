@@ -12,8 +12,8 @@ BUILD_DIR :=
 # List of object files
 OBJ :=
 
-APP_AR			:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
-TARGET_OUT		:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
+# Intermediate linker target
+APP_AR	:= $(BUILD_BASE)/$(TARGET).a
 
 INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
 
