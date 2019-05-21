@@ -1,0 +1,109 @@
+diff --git a/elf.h b/elf.h
+index 2ede742..ce648fb 100644
+--- a/elf.h
++++ b/elf.h
+@@ -22,6 +22,8 @@
+ #ifndef ELF_H
+ #define ELF_H
+ 
++#include <stdint.h>
++
+ typedef uint32_t Elf32_Addr; // Program address
+ typedef uint32_t Elf32_Off;  // File offset
+ typedef uint16_t Elf32_Half;
+diff --git a/esptool2.c b/esptool2.c
+index 2342b3b..549fa2d 100644
+--- a/esptool2.c
++++ b/esptool2.c
+@@ -33,16 +33,16 @@
+ #define BIN_MAGIC_FLASH 0xE9
+ 
+ typedef struct {
+-    Elf32_Addr          addr;
+-    Elf32_Word          size;
++    Elf32_Addr    addr;
++    Elf32_Word    size;
+ } Section_Header;
+ 
+ typedef struct {
+-    unsigned char       magic;
+-    unsigned char       count;
+-    unsigned char       byte2;
+-	unsigned char       byte3;
+-    Elf32_Addr          entry;
++    uint8_t       magic;
++    uint8_t       count;
++    uint8_t       byte2;
++    uint8_t       byte3;
++    Elf32_Addr    entry;
+ } Image_Header;
+ 
+ static const char PADDING[IMAGE_PADDING] = {0};
+diff --git a/esptool2.h b/esptool2.h
+index 53da0ee..c4f8d0b 100644
+--- a/esptool2.h
++++ b/esptool2.h
+@@ -22,20 +22,8 @@
+ #ifndef ESPTOOL2_H
+ #define ESPTOOL2_H
+ 
+-#ifdef WIN32
+-typedef signed __int8     int8_t;
+-typedef signed __int16    int16_t;
+-typedef signed __int32    int32_t;
+-typedef unsigned __int8   uint8_t;
+-typedef unsigned __int16  uint16_t;
+-typedef unsigned __int32  uint32_t;
+-#else
+ #include <stdint.h>
+-#endif
+-
+-#define true 1
+-#define false 0
+-#define bool char
++#include <stdbool.h>
+ 
+ void debug( const char* format, ... );
+ void print( const char* format, ... );
+diff --git a/Makefile b/Makefile
+index 657a263..4a71118 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,25 +3,29 @@
+ # https://github.com/raburton/esp8266
+ #
+ 
+-CFLAGS = -O2 -Wall
++CFLAGS = -O2 -Wall -std=c99
+ CC = gcc
+ LD = gcc
+ 
+-all: esptool2
++BUILD_DIR	?= .
++TARGET		?= esptool2
+ 
+-esptool2.o: esptool2.c esptool2.h esptool2_elf.h elf.h
++OBJS := $(addprefix $(BUILD_DIR)/,esptool2.o esptool2_elf.o)
++
++all: $(TARGET)
++
++$(BUILD_DIR)/esptool2.o: esptool2.c esptool2.h esptool2_elf.h elf.h
+ 	@echo "CC $<"
+ 	$(CC) $(CFLAGS) -c $< -o $@
+ 
+-esptool2_elf.o: esptool2_elf.c esptool2.h esptool2_elf.h elf.h
++$(BUILD_DIR)/esptool2_elf.o: esptool2_elf.c esptool2.h esptool2_elf.h elf.h
+ 	@echo "CC $<"
+ 	$(CC) $(CFLAGS) -c $< -o $@
+ 
+-esptool2: esptool2.o esptool2_elf.o
++$(TARGET): $(OBJS)
+ 	@echo "LD $@"
+ 	$(LD) -o $@ $^
+ 
+ clean:
+-	@echo "RM *.o esptool2 esptool2.exe"
+-	@rm -f *.o
+-	@rm -f esptool2 esptool2.exe
++	@echo "RM *.o $(TARGET)"
++	@rm -f $(OBJS) $(TARGET)
