@@ -12,6 +12,7 @@
 
 #define __packed        __attribute__((packed))
 #define __forceinline	__attribute__((always_inline)) inline
+#define WEAK_ATTR		__attribute((weak))
 
 /*
  * Use this definition in the cases where a function or a variable is meant to be possibly unused. GCC will not produce a warning for it.

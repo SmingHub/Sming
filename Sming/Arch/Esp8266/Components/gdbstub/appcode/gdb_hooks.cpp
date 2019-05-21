@@ -245,7 +245,7 @@ void gdb_on_attach(bool attached) NOOP;
 void gdb_detach(void) NOOP;
 };
 
-int __attribute__((weak)) gdb_syscall(const GdbSyscallInfo& info)
+int WEAK_ATTR gdb_syscall(const GdbSyscallInfo& info)
 {
 	return -1;
 }
