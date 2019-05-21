@@ -141,14 +141,3 @@ GPIO_INT_TYPE ConvertArduinoInterruptMode(uint8_t mode)
 		return GPIO_PIN_INTR_DISABLE;
 	}
 }
-
-void noInterrupts()
-{
-	//ETS_INTR_LOCK();
-	xt_disable_interrupts(); // http://www.esp8266.com/viewtopic.php?p=16758
-}
-void interrupts()
-{
-	//ETS_INTR_UNLOCK();
-	xt_enable_interrupts();
-}

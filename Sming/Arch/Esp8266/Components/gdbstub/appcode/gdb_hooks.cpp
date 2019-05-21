@@ -16,13 +16,7 @@
 #include "gdbstub/exceptions.h"
 #include <driver/uart.h>
 
-extern "C" {
-
-void Cache_Read_Enable_New();
-
-typedef void (*xtos_handler_func)(UserFrame* frame);
-void _xtos_set_exception_handler(int, xtos_handler_func);
-}
+extern "C" void Cache_Read_Enable_New();
 
 // List of GDB signals used for exceptions
 const uint8_t gdb_exception_signals[] GDB_PROGMEM = {
@@ -207,7 +201,7 @@ static void ATTR_GDBINIT installExceptionHandler()
 	for(unsigned ex = 0; ex <= EXCCAUSE_MAX; ++ex) {
 		unsigned signal = pgm_read_byte(&gdb_exception_signals[ex]);
 		if(signal != 0) {
-			_xtos_set_exception_handler(ex, gdbstub_exception_handler);
+			_xtos_set_exception_handler(ex, (_xtos_handler)gdbstub_exception_handler);
 		}
 	}
 }

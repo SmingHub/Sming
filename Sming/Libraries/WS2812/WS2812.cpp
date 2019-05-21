@@ -43,7 +43,7 @@ int ICACHE_FLASH_ATTR ws2812_writergb(uint8_t gpio, char *buffer, size_t length)
     os_delay_us(1);
 
     // Send the buffer:
-    ets_intr_lock();
+    noInterrupts();
     const char * const end = buffer + length;
     while (buffer != end) {
         uint8_t mask = 0x80;
@@ -53,5 +53,5 @@ int ICACHE_FLASH_ATTR ws2812_writergb(uint8_t gpio, char *buffer, size_t length)
         }
         ++buffer;
     }
-    ets_intr_unlock();
+    interrupts();
 }
