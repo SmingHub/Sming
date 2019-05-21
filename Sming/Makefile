@@ -208,7 +208,7 @@ submodules: | $(LIBRARY_SUBMODULES) $(addsuffix /.submodule,$(SUBMODULES)) ##Fet
 
 ##@Cleaning
 submodules-clean: ##Reset state of all third-party submodules
-	$(Q) rm -rf $(call ListSubmodules)
+	-$(Q) rm -rf $(call ListSubmodules)
 	-$(Q) rm -rf $(addprefix $(BUILD_BASE),$(call ListSubmodules))
 	$(GIT) checkout Components
 	$(GIT) checkout Libraries
