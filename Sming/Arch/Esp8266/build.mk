@@ -75,4 +75,4 @@ SDK_INCDIR	:= $(SDK_BASE)/include
 # => Tools
 ESPTOOL2	= $(ARCH_TOOLS)/esptool2/esptool2$(TOOL_EXT)
 SPIFFY		= $(ARCH_TOOLS)/spiffy/spiffy$(TOOL_EXT)
-
+MEMANALYZER = python $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP)$(TOOL_EXT)
