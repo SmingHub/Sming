@@ -111,7 +111,7 @@ void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 
 void init()
 {
-	Serial.begin(115200);
+	Serial.begin(COM_SPEED_SERIAL);
 	delay(2000);
 	Serial.print("Enter Unix timestamp: ");
 	Serial.setCallback(onRx);

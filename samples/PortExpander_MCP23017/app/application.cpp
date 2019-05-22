@@ -16,7 +16,7 @@ void interruptCallback()
 
 void init()
 {
-	Serial.begin(115200);
+	Serial.begin(COM_SPEED_SERIAL);
 
 	// You can select ESP I2C pins here:
 	//Wire.pins(5, 4); // SDA, SCL
