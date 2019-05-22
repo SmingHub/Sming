@@ -75,7 +75,7 @@ public:
 	 *  @param  commandString Command to query
 	 *  @retval CommandDelegate The command delegate matchin the command
 	 */
-	CommandDelegate getCommandDelegate(String commandString);
+	CommandDelegate getCommandDelegate(const String& commandString);
 
 	/** @brief  Get the verbose mode
 	 *  @retval VerboseMode Verbose mode

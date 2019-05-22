@@ -60,7 +60,7 @@ int CommandExecutor::executorReceive(char *recvData, int recvSize)
 	return receiveReturn;
 }
 
-int CommandExecutor::executorReceive(String recvString)
+int CommandExecutor::executorReceive(const String& recvString)
 {
 	int receiveReturn = 0;
 	for (unsigned recvIdx=0;recvIdx<recvString.length();recvIdx++)
@@ -106,7 +106,7 @@ int CommandExecutor::executorReceive(char recvChar)
 	return 0;
 }
 
-void CommandExecutor::processCommandLine(String cmdString)
+void CommandExecutor::processCommandLine(const String& cmdString)
 {
 	debugf("Received full Command line, size = %d,cmd = %s",cmdString.length(),cmdString.c_str());
 	String cmdCommand;

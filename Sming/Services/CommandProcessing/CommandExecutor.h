@@ -25,13 +25,13 @@ public:
 
 	int executorReceive(char *recvData, int recvSize);
 	int executorReceive(char recvChar);
-	int executorReceive(String recvString);
+	int executorReceive(const String& recvString);
 	void setCommandPrompt(String reqPrompt);
 	void setCommandEOL(char reqEOL);
 
 private :
 	CommandExecutor();
-	void processCommandLine(String cmdString);
+	void processCommandLine(const String& cmdString);
 	LineBuffer<MAX_COMMANDSIZE+1> commandBuf;
 	CommandOutput* commandOutput = nullptr;
 };
