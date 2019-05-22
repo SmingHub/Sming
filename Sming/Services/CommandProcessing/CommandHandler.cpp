@@ -14,16 +14,14 @@
 #endif
 
 CommandHandler::CommandHandler()
-	: currentPrompt(F("Sming> ")), currentWelcomeMessage(F("Welcome to the Sming CommandProcessing\r\n"))
+	: currentPrompt(F("Sming>")), currentWelcomeMessage(F("Welcome to the Sming CommandProcessing\r\n"))
 {
 	registeredCommands = new HashMap<String, CommandDelegate>;
 }
 
 CommandHandler::~CommandHandler()
 {
-	if(registeredCommands != nullptr) {
-		delete registeredCommands;
-	}
+	delete registeredCommands;
 }
 
 void CommandHandler::registerSystemCommands()
@@ -37,7 +35,7 @@ void CommandHandler::registerSystemCommands()
 	registerCommand(CommandDelegate(F("command"), F("Use verbose/silent/prompt as command options"), system, commandFunctionDelegate(&CommandHandler::processCommandOptions, this)));
 }
 
-CommandDelegate CommandHandler::getCommandDelegate(String commandString)
+CommandDelegate CommandHandler::getCommandDelegate(const String& commandString)
 {
 	if (registeredCommands->contains(commandString))
 	{
@@ -85,7 +83,7 @@ bool CommandHandler::unregisterCommand(CommandDelegate reqDelegate)
 void CommandHandler::procesHelpCommand(String commandLine, CommandOutput* commandOutput)
 {
 	debugf("HelpCommand entered");
-	commandOutput->print(_F("Commands available are : \r\n"));
+	commandOutput->println(_F("Commands available are :"));
 	for (unsigned idx = 0;idx < registeredCommands->count();idx++)
 	{
 		commandOutput->printf(registeredCommands->valueAt(idx).commandName.c_str());
@@ -100,16 +98,16 @@ void CommandHandler::procesHelpCommand(String commandLine, CommandOutput* comman
 void CommandHandler::procesStatusCommand(String commandLine, CommandOutput* commandOutput)
 {
 	debugf("StatusCommand entered");
-	commandOutput->print(_F("System information : ESP8266 Sming Framework\r\n"));
-	commandOutput->print(_F("Sming Framework Version : " SMING_VERSION "\r\n"));
+	commandOutput->println(_F("System information : ESP8266 Sming Framework"));
+	commandOutput->println(_F("Sming Framework Version : " SMING_VERSION));
 	commandOutput->print(_F("ESP SDK version : "));
 	commandOutput->print(system_get_sdk_version());
-	commandOutput->print("\r\n");
+	commandOutput->println();
 	commandOutput->printf(_F("lwIP version : %d.%d.%d(%s)\r\n"), LWIP_VERSION_MAJOR, LWIP_VERSION_MINOR,
 						  LWIP_VERSION_REVISION, LWIP_HASH_STR);
 	commandOutput->print(_F("Time = "));
 	commandOutput->print(SystemClock.getSystemTimeString());
-	commandOutput->print("\r\n");
+	commandOutput->println();
 	commandOutput->printf(_F("System Start Reason : %d\r\n"), system_get_rst_info()->reason);
 }
 
@@ -118,22 +116,22 @@ void CommandHandler::procesEchoCommand(String commandLine, CommandOutput* comman
 	debugf("HelpCommand entered");
 	commandOutput->print(_F("You entered : '"));
 	commandOutput->print(commandLine);
-	commandOutput->print(_F("'\r\n"));
+	commandOutput->println('\'');
 }
 
 void CommandHandler::procesDebugOnCommand(String commandLine, CommandOutput* commandOutput)
 {
 	Serial.systemDebugOutput(true);
-	commandOutput->print(_F("Debug set to : On\r\n"));
+	commandOutput->println(_F("Debug set to : On"));
 }
 
 void CommandHandler::procesDebugOffCommand(String commandLine, CommandOutput* commandOutput)
 {
 	Serial.systemDebugOutput(false);
-	commandOutput->print(_F("Debug set to : Off\r\n"));
+	commandOutput->println(_F("Debug set to : Off"));
 }
 
-void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* commandOutput)
+void CommandHandler::processCommandOptions(String commandLine, CommandOutput* commandOutput)
 {
 	Vector<String> commandToken;
 	int numToken = splitString(commandLine, ' ' , commandToken);
@@ -150,13 +148,13 @@ void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* c
 			if (commandToken[1] == _F("verbose"))
 			{
 				commandHandler.setVerboseMode(VERBOSE);
-				commandOutput->print(_F("Verbose mode selected\r\n"));
+				commandOutput->println(_F("Verbose mode selected"));
 				break;
 			}
 			if (commandToken[1] == _F("silent"))
 			{
 				commandHandler.setVerboseMode(SILENT);
-				commandOutput->print(_F("Silent mode selected\r\n"));
+				commandOutput->println(_F("Silent mode selected"));
 				break;
 			}
 			errorCommand = true;
@@ -170,7 +168,7 @@ void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* c
 			commandHandler.setCommandPrompt(commandToken[2]);
 			commandOutput->print(_F("Prompt set to : "));
 			commandOutput->print(commandToken[2]);
-			commandOutput->print("\r\n");
+			commandOutput->println();
 			break;
 		default :
 			errorCommand = true;
@@ -179,14 +177,14 @@ void CommandHandler::processCommandOptions(String commandLine  ,CommandOutput* c
 	{
 		commandOutput->print(_F("Unknown command : "));
 		commandOutput->print(commandLine);
-		commandOutput->print("\r\n");
+		commandOutput->println();
 	}
 	if (printUsage)
 	{
-		commandOutput->print(_F("command usage : \r\n\r\n"));
-		commandOutput->print(_F("command verbose : Set verbose mode\r\n"));
-		commandOutput->print(_F("command silent : Set silent mode\r\n"));
-		commandOutput->print(_F("command prompt 'new prompt' : Set prompt to use\r\n"));
+		commandOutput->println(_F("command usage : \r\n"));
+		commandOutput->println(_F("command verbose : Set verbose mode"));
+		commandOutput->println(_F("command silent : Set silent mode"));
+		commandOutput->println(_F("command prompt 'new prompt' : Set prompt to use"));
 	}
 }
 

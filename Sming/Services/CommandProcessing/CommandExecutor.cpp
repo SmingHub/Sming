@@ -18,7 +18,7 @@ CommandExecutor::CommandExecutor(TcpClient* cmdClient) : CommandExecutor()
 	commandOutput = new CommandOutput(cmdClient);
 	if (commandHandler.getVerboseMode() != SILENT)
 	{
-		commandOutput->print(_F("Welcome to the Tcp Command executor\r\n"));
+		commandOutput->println(_F("Welcome to the Tcp Command executor"));
 	}
 }
 
@@ -27,7 +27,7 @@ CommandExecutor::CommandExecutor(Stream* reqStream) : CommandExecutor()
 	commandOutput = new CommandOutput(reqStream);
 	if (commandHandler.getVerboseMode() != SILENT)
 	{
-		commandOutput->print(_F("Welcome to the Stream Command executor\r\n"));
+		commandOutput->println(_F("Welcome to the Stream Command executor"));
 	}
 }
 
@@ -81,7 +81,7 @@ int CommandExecutor::executorReceive(char recvChar)
 		commandBuf.clear();
 		if (commandHandler.getVerboseMode() == VERBOSE)
 		{
-			commandOutput->print("\r\n");
+			commandOutput->println();
 			commandOutput->print(commandHandler.getCommandPrompt());
 		}
 	}
