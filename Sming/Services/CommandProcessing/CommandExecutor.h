@@ -26,7 +26,6 @@ public:
 	int executorReceive(char *recvData, int recvSize);
 	int executorReceive(char recvChar);
 	int executorReceive(const String& recvString);
-	void setCommandPrompt(String reqPrompt);
 	void setCommandEOL(char reqEOL);
 
 private :
