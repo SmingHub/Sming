@@ -23,11 +23,11 @@ mem 0x40140000 0x5fffffff ro cache
 mem 0x60000000 0x60001fff rw
 
 # The target object file so GDB knows where to get symbol information
-file out/build/app_0.out
+file out/build/Esp8266/app_0.out
 
 # GDB needs to know about ROM functions in order to create a full stack trace
 # See https://github.com/jcmvbkbc/esp-elf-rom
-add-symbol-file out/build/bootrom.elf 0x40000000 -readnow
+add-symbol-file out/build/Esp8266/bootrom.elf 0x40000000 -readnow
 
 # Useful for lower-level debugging to see the result of stepping through assembler code
 #set disassemble-next-line on
