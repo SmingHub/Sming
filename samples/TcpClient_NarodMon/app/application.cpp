@@ -102,7 +102,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 void init()
 {
 	// Настраиваем и включаем вывод в UART для дебага
-	Serial.begin(115200);
+	Serial.begin(COM_SPEED_SERIAL);
 	Serial.systemDebugOutput(true);
 	Serial.println("Hello friendly world! :)");
 

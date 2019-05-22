@@ -89,7 +89,7 @@ Task task5;
 
 void init()
 {
-	Serial.begin(115200);
+	Serial.begin(COM_SPEED_SERIAL);
 
 	task2.setTimer(1600);
 	task2.callPlainOldOrdinaryFunction();

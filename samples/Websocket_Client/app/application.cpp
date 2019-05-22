@@ -136,7 +136,7 @@ void STADisconnect(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reas
 
 void init()
 {
-	Serial.begin(115200);
+	Serial.begin(COM_SPEED_SERIAL);
 	Serial.systemDebugOutput(false);
 	WifiAccessPoint.enable(false);
 
