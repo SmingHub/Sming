@@ -463,7 +463,7 @@ char* RCSwitch::getCodeWordD(char sGroup, int nDevice, boolean bStatus){
  * @param sCodeWord   /^[10FS]*$/  -> see getCodeWord
  */
 void RCSwitch::sendTriState(const char* sCodeWord) {
-  xt_disable_interrupts();
+  noInterrupts();
   for (int nRepeat=0; nRepeat<nRepeatTransmit; nRepeat++) {
     int i = 0;
     while (sCodeWord[i] != '\0') {
@@ -482,7 +482,7 @@ void RCSwitch::sendTriState(const char* sCodeWord) {
     }
     this->sendSync();
   }
-  xt_enable_interrupts();
+  interrupts();
 }
 
 void RCSwitch::send(unsigned long code, unsigned int length) {
@@ -490,7 +490,7 @@ void RCSwitch::send(unsigned long code, unsigned int length) {
 }
 
 void RCSwitch::send(const char* sCodeWord) {
-  xt_disable_interrupts();
+  noInterrupts();
   for (int nRepeat=0; nRepeat<nRepeatTransmit; nRepeat++) {
     int i = 0;
     while (sCodeWord[i] != '\0') {
@@ -506,7 +506,7 @@ void RCSwitch::send(const char* sCodeWord) {
     }
     this->sendSync();
   }
-  xt_enable_interrupts();
+  interrupts();
 }
 
 void RCSwitch::transmit(int nHighPulses, int nLowPulses) {

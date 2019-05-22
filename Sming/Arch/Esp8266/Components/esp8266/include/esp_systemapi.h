@@ -119,11 +119,19 @@ extern void NmiTimSetFunc(void (*func)(void));
 extern void ets_update_cpu_frequency(uint32_t frq);
 extern uint32_t ets_get_cpu_frequency();
 
-extern void xt_disable_interrupts();
-extern void xt_enable_interrupts();
-
 extern void ets_isr_mask(unsigned intr);
 extern void ets_isr_unmask(unsigned intr);
+
+#include "xtensa/xtruntime.h"
+
+/** @brief  Disable interrupts
+ *  @note Hardware timer is unaffected if operating in non-maskable mode
+ */
+#define noInterrupts() XTOS_SET_INTLEVEL(15)
+
+/** @brief  Enable interrupts
+*/
+#define interrupts() XTOS_SET_INTLEVEL(0)
 
 #ifdef __cplusplus
 }
