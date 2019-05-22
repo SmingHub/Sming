@@ -52,7 +52,7 @@ int CommandExecutor::executorReceive(char *recvData, int recvSize)
 	for (int recvIdx=0;recvIdx<recvSize;recvIdx++)
 	{
 		receiveReturn = executorReceive(recvData[recvIdx]);
-		if (receiveReturn)
+		if (receiveReturn != 0)
 		{
 			break;
 		}
@@ -66,7 +66,7 @@ int CommandExecutor::executorReceive(const String& recvString)
 	for (unsigned recvIdx=0;recvIdx<recvString.length();recvIdx++)
 	{
 		receiveReturn = executorReceive(recvString[recvIdx]);
-		if (receiveReturn)
+		if (receiveReturn != 0)
 		{
 			break;
 		}
@@ -108,34 +108,42 @@ int CommandExecutor::executorReceive(char recvChar)
 
 void CommandExecutor::processCommandLine(const String& cmdString)
 {
-	debugf("Received full Command line, size = %d,cmd = %s",cmdString.length(),cmdString.c_str());
-	String cmdCommand;
-	int cmdLen = cmdString.indexOf(' ');
-	if (cmdLen == -1)
+	if (cmdString.length() == 0)
 	{
-		cmdCommand = cmdString;
+		commandOutput->println();
 	}
 	else
 	{
-		cmdCommand = cmdString.substring(0,cmdLen);
+		debugf("Received full Command line, size = %u,cmd = %s",cmdString.length(),cmdString.c_str());
+		String cmdCommand;
+		int cmdLen = cmdString.indexOf(' ');
+		if (cmdLen < 0)
+		{
+			cmdCommand = cmdString;
+		}
+		else
+		{
+			cmdCommand = cmdString.substring(0, cmdLen);
+		}
+
+		debugf("CommandExecutor : executing command %s",cmdCommand.c_str());
+
+		CommandDelegate cmdDelegate = commandHandler.getCommandDelegate(cmdCommand);
+
+		if (!cmdDelegate.commandFunction)
+		{
+			commandOutput->print(_F("Command not found, cmd = '"));
+			commandOutput->print(cmdCommand);
+			commandOutput->println('\'');
+		}
+		else
+		{
+			cmdDelegate.commandFunction(cmdString,commandOutput);
+		}
 	}
 
-	debugf("CommandExecutor : executing command %s",cmdCommand.c_str());
-
-	CommandDelegate cmdDelegate = commandHandler.getCommandDelegate(cmdCommand);
-
-	if (!cmdDelegate.commandFunction)
-	{
-		commandOutput->print(_F("Command not found, cmd = '"));
-		commandOutput->print(cmdCommand);
-		commandOutput->print(_F("'\r\n"));
-	}
-	else
-	{
-		cmdDelegate.commandFunction(cmdString.c_str(),commandOutput);
-	}
 	if (commandHandler.getVerboseMode() == VERBOSE)
 	{
-		commandOutput->printf(commandHandler.getCommandPrompt().c_str());
+		commandOutput->print(commandHandler.getCommandPrompt());
 	}
 }
