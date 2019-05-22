@@ -82,45 +82,6 @@ bool CommandHandler::unregisterCommand(CommandDelegate reqDelegate)
 	}
 }
 
-VerboseMode CommandHandler::getVerboseMode()
-{
-	return verboseMode;
-}
-
-void CommandHandler::setVerboseMode(VerboseMode reqVerboseMode)
-{
-	verboseMode = reqVerboseMode;
-}
-
-String CommandHandler::getCommandPrompt()
-{
-	return currentPrompt;
-}
-
-void CommandHandler::setCommandPrompt(String reqPrompt)
-{
-	currentPrompt = reqPrompt;
-}
-
-char CommandHandler::getCommandEOL()
-{
-	return currentEOL;
-}
-
-void CommandHandler::setCommandEOL(char reqEOL)
-{
-	currentEOL = reqEOL;
-}
-
-String CommandHandler::getCommandWelcomeMessage()
-{
-	return currentWelcomeMessage;
-}
-void CommandHandler::setCommandWelcomeMessage(String reqWelcomeMessage)
-{
-	currentWelcomeMessage = reqWelcomeMessage;
-}
-
 void CommandHandler::procesHelpCommand(String commandLine, CommandOutput* commandOutput)
 {
 	debugf("HelpCommand entered");
