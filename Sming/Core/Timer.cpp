@@ -106,8 +106,9 @@ void Timer::setIntervalUs(uint64_t microseconds)
 		longIntervalCounterLimit = 0;
 	}
 
-	if(started)
+	if(started) {
 		restart();
+	}
 }
 
 void Timer::setIntervalMs(uint32_t milliseconds)
@@ -117,38 +118,35 @@ void Timer::setIntervalMs(uint32_t milliseconds)
 
 void Timer::setCallback(InterruptCallback interrupt)
 {
-	ETS_INTR_LOCK();
-	callback = interrupt;
+	if(interrupt == nullptr) {
+		stop();
+	}
+
 	delegateFunc = nullptr;
 	delegateStdFunc = nullptr;
-	ETS_INTR_UNLOCK();
-
-	if(!interrupt)
-		stop();
+	callback = interrupt;
 }
 
 void Timer::setCallback(TimerDelegate delegateFunction)
 {
-	ETS_INTR_LOCK();
-	callback = nullptr;
-	delegateFunc = delegateFunction;
-	delegateStdFunc = nullptr;
-	ETS_INTR_UNLOCK();
-
-	if(!delegateFunction)
+	if(!delegateFunction) {
 		stop();
+	}
+
+	callback = nullptr;
+	delegateStdFunc = nullptr;
+	delegateFunc = delegateFunction;
 }
 
 void Timer::setCallback(const TimerDelegateStdFunction& delegateFunction)
 {
-	ETS_INTR_LOCK();
+	if(!delegateFunction) {
+		stop();
+	}
+
 	callback = nullptr;
 	delegateFunc = nullptr;
 	delegateStdFunc = delegateFunction;
-	ETS_INTR_UNLOCK();
-
-	if(!delegateFunction)
-		stop();
 }
 
 void Timer::processing()
@@ -157,16 +155,18 @@ void Timer::processing()
 		// we need to handle a long interval.
 		longIntervalCounter++;
 
-		if(longIntervalCounter < longIntervalCounterLimit)
+		if(longIntervalCounter < longIntervalCounterLimit) {
 			return;
+		}
 
 		// reset counter since callback will fire.
 		longIntervalCounter = 0;
 
 		// For long intervals os_timer is set to repeating.
 		// Stop timer if it was not a repeating timer.
-		if(!repeating)
+		if(!repeating) {
 			stop();
+		}
 	}
 
 	tick();

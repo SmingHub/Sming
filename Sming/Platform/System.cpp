@@ -105,12 +105,7 @@ void SystemClass::restart(unsigned deferMillis)
 
 void SystemClass::setCpuFrequency(CpuFrequency freq)
 {
-	if(freq == eCF_160MHz)
-		REG_SET_BIT(0x3ff00014, BIT(0));
-	else
-		REG_CLR_BIT(0x3ff00014, BIT(0));
-
-	ets_update_cpu_frequency(freq);
+	system_update_cpu_freq(freq);
 }
 
 bool SystemClass::deepSleep(uint32_t timeMilliseconds, DeepSleepOptions options)

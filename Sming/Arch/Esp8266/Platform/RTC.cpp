@@ -10,6 +10,26 @@
 
 #include "Platform/RTC.h"
 
+RtcClass RTC;
+
+#define RTC_MAGIC 0x55aaaa55
+#define RTC_DES_ADDR 64
+#define NS_PER_SECOND 1000000000
+
+/** @brief  Structure to hold RTC data
+ *  @addtogroup structures
+ */
+typedef struct {
+	uint64_t time;   ///< Quantity of nanoseconds since epoch
+	uint32_t magic;  ///< Magic ID used to identify that RTC has been initialised
+	uint32_t cycles; ///< Quantity of RTC cycles since last update
+} RtcData;
+
+static bool hardwareReset;
+static bool saveTime(RtcData& data);
+static void updateTime(RtcData& data);
+static void loadTime(RtcData& data);
+
 RtcClass::RtcClass()
 {
 	rst_info* info = system_get_rst_info();
@@ -44,7 +64,7 @@ bool RtcClass::setRtcSeconds(uint32_t seconds)
 	return setRtcNanoseconds((uint64_t)seconds * NS_PER_SECOND);
 }
 
-void RtcClass::updateTime(RtcData& data)
+void updateTime(RtcData& data)
 {
 	uint32 rtc_cycles;
 	uint32 cal, cal1, cal2;
@@ -65,11 +85,12 @@ void RtcClass::updateTime(RtcData& data)
 	data.cycles = rtc_cycles;
 }
 
-bool RtcClass::saveTime(RtcData& data)
+bool saveTime(RtcData& data)
 {
 	return system_rtc_mem_write(RTC_DES_ADDR, &data, sizeof(data));
 }
-void RtcClass::loadTime(RtcData& data)
+
+void loadTime(RtcData& data)
 {
 	system_rtc_mem_read(RTC_DES_ADDR, &data, sizeof(data));
 
@@ -81,5 +102,3 @@ void RtcClass::loadTime(RtcData& data)
 		data.cycles = 0;
 	}
 }
-
-RtcClass RTC = RtcClass();

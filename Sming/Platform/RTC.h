@@ -17,19 +17,6 @@
 
 #include "WiringFrameworkDependencies.h"
 
-#define RTC_MAGIC 0x55aaaa55
-#define RTC_DES_ADDR 64
-#define NS_PER_SECOND 1000000000
-
-/** @brief  Structure to hold RTC data
- *  @addtogroup structures
- */
-typedef struct {
-	uint64_t time;   ///< Quantity of nanoseconds since epoch
-	uint32_t magic;  ///< Magic ID used to identify that RTC has been initialised
-	uint32_t cycles; ///< Quantity of RTC cycles since last update
-} RtcData;
-
 /** @brief  Real time clock class
  *  @addtogroup rtc
  *  @{
@@ -66,12 +53,6 @@ public:
 	bool setRtcSeconds(uint32_t seconds);
 
 	/** @} */
-
-private:
-	bool hardwareReset;
-	bool saveTime(RtcData& data);
-	void updateTime(RtcData& data);
-	void loadTime(RtcData& data);
 };
 
 /**	@brief	Global instance of real time clock object

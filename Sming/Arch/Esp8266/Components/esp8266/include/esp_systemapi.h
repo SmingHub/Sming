@@ -115,9 +115,6 @@ extern void NmiTimSetFunc(void (*func)(void));
 
 #endif /* SDK_INTERNAL */
 
-// CPU Frequency
-extern void ets_update_cpu_frequency(uint32_t frq);
-extern uint32_t ets_get_cpu_frequency();
 
 extern void ets_isr_mask(unsigned intr);
 extern void ets_isr_unmask(unsigned intr);
