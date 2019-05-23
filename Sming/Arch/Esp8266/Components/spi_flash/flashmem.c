@@ -15,7 +15,7 @@
  *
  ****/
 
-#include "flashmem.h"
+#include "include/esp_spi_flash.h"
 #include "espinc/peri.h"
 
 extern char _flash_code_end[];

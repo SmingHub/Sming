@@ -269,7 +269,7 @@ LIBS += $(LIBPWM)
 LIBS := microc microgcc hal phy pp net80211 wpa $(LIBSMING) crypto smartconfig $(EXTRA_LIBS) $(LIBS)
 
 # linker flags used to generate the main object file
-LDFLAGS	= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -u custom_crash_callback \
+LDFLAGS	= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u custom_crash_callback \
 			-Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
 
 include $(ARCH_BASE)/flash.mk
