@@ -1,6 +1,6 @@
 # generated binaries
 out
-Sming/compiler/lib/lib*.a
+Sming/Arch/**/Compiler/lib/**/lib*.a
 
 # generated documentation
 docs/api
@@ -19,3 +19,4 @@ GPATH
 vssver2.scc
 
 .metadata
+.submodule
