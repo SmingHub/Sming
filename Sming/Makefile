@@ -128,7 +128,7 @@ endif
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
-	$(AR) cr $@ $^
+	$(Q) $(AR) cr $@ $^
 
 .PHONY: checkdirs
 checkdirs: submodules reload | $(BUILD_DIR) $(USER_LIBDIR)
