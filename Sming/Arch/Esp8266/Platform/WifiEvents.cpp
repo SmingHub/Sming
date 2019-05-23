@@ -16,47 +16,7 @@ WifiEventsClass WifiEvents;
 
 WifiEventsClass::WifiEventsClass()
 {
-	wifi_set_event_handler_cb(staticWifiEventHandler);
-}
-
-void WifiEventsClass::onStationConnect(StationConnectDelegate delegateFunction)
-{
-	onSTAConnect = delegateFunction;
-}
-
-void WifiEventsClass::onStationDisconnect(StationDisconnectDelegate delegateFunction)
-{
-	onSTADisconnect = delegateFunction;
-}
-
-void WifiEventsClass::onStationAuthModeChange(StationAuthModeChangeDelegate delegateFunction)
-{
-	onSTAAuthModeChange = delegateFunction;
-}
-
-void WifiEventsClass::onStationGotIP(StationGotIPDelegate delegateFunction)
-{
-	onSTAGotIP = delegateFunction;
-}
-
-void WifiEventsClass::onAccessPointConnect(AccessPointConnectDelegate delegateFunction)
-{
-	onSOFTAPConnect = delegateFunction;
-}
-
-void WifiEventsClass::onAccessPointDisconnect(AccessPointDisconnectDelegate delegateFunction)
-{
-	onSOFTAPDisconnect = delegateFunction;
-}
-
-void WifiEventsClass::onAccessPointProbeReqRecved(AccessPointProbeReqRecvedDelegate delegateFunction)
-{
-	onSOFTAPProbeReqRecved = delegateFunction;
-}
-
-void WifiEventsClass::staticWifiEventHandler(System_Event_t* evt)
-{
-	WifiEvents.WifiEventHandler(evt);
+	wifi_set_event_handler_cb([](System_Event_t* evt) { WifiEvents.WifiEventHandler(evt); });
 }
 
 void WifiEventsClass::WifiEventHandler(System_Event_t* evt)
