@@ -75,55 +75,80 @@ public:
 	 *  @param  commandString Command to query
 	 *  @retval CommandDelegate The command delegate matchin the command
 	 */
-	CommandDelegate getCommandDelegate(String commandString);
+	CommandDelegate getCommandDelegate(const String& commandString);
 
 	/** @brief  Get the verbose mode
 	 *  @retval VerboseMode Verbose mode
 	 */
-	VerboseMode getVerboseMode();
+	VerboseMode getVerboseMode()
+	{
+		return verboseMode;
+	}
 
 	/** @brief  Set the verbose mode
 	 *  @param  reqVerboseMode Verbose mode to set
 	 */
-	void setVerboseMode(VerboseMode reqVerboseMode);
+	void setVerboseMode(VerboseMode reqVerboseMode)
+	{
+		verboseMode = reqVerboseMode;
+	}
 
 	/** @brief  Get the command line prompt
 	 *  @retval String The command line prompt
 	 *  @note   This is what is shown on the command line before user input
 	 *          Default is Sming>
 	 */
-	String getCommandPrompt();
+	String getCommandPrompt()
+	{
+		return currentPrompt;
+	}
 
 	/** @brief  Set the command line prompt
 	 *  @param  reqPrompt The command line prompt
 	 *  @note   This is what is shown on the command line before user input
 	 *          Default is Sming>
 	 */
-	void setCommandPrompt(String reqPrompt);
+	void setCommandPrompt(const String& reqPrompt)
+	{
+		currentPrompt = reqPrompt;
+	}
 
 	/** @brief  Get the end of line character
 	 *  @retval char The EOL character
 	 *  @note   Only supports one EOL, unlike Windows
 	 */
-	char getCommandEOL();
+	char getCommandEOL()
+	{
+		return currentEOL;
+	}
 
 	/** @brief  Set the end of line character
 	 *  @param  reqEOL The EOL character
 	 *  @note   Only supports one EOL, unlike Windows
 	 */
-	void setCommandEOL(char reqEOL);
+	void setCommandEOL(char reqEOL)
+	{
+		currentEOL = reqEOL;
+	}
 
 	/** @brief  Get the welcome message
 	 *  @retval String The welcome message that is shown when clients connect
 	 *  @note   Only if verbose mode is enabled
 	 */
-	String getCommandWelcomeMessage();
+	String getCommandWelcomeMessage()
+	{
+		return currentWelcomeMessage;
+	}
 
 	/** @brief  Set the welcome message
 	 *  @param  reqWelcomeMessage The welcome message that is shown when clients connect
 	 *  @note   Only if verbose mode is enabled
 	 */
-	void setCommandWelcomeMessage(String reqWelcomeMessage);
+	void setCommandWelcomeMessage(const String& reqWelcomeMessage)
+	{
+		currentWelcomeMessage = reqWelcomeMessage;
+	}
+
 
 //	int deleteGroup(String reqGroup);
 

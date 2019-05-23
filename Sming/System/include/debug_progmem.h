@@ -76,14 +76,14 @@ extern "C" {
 #if DEBUG_PRINT_FILENAME_AND_LINE
 #define debug_e(fmt, ...)                                                                                              \
 	(__extension__({                                                                                                   \
-		static const char log_string[] PROGMEM_DEBUG = "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt "\n";                \
+		static const char log_string[] PROGMEM_DEBUG = "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt "\r\n";                \
 		LOAD_PSTR(fmtbuf, log_string);                                                                                 \
 		m_printf(fmtbuf, __LINE__, ##__VA_ARGS__);                                                                     \
 	}))
 #else
 #define debug_e(fmt, ...)                                                                                              \
 	(__extension__({                                                                                                   \
-		static const char log_string[] PROGMEM_DEBUG = "%u " fmt "\n";                                                 \
+		static const char log_string[] PROGMEM_DEBUG = "%u " fmt "\r\n";                                                 \
 		LOAD_PSTR(fmtbuf, log_string);                                                                                 \
 		m_printf(fmtbuf, system_get_time(), ##__VA_ARGS__);                                                            \
 	}))

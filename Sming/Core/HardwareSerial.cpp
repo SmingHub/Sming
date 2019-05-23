@@ -124,7 +124,10 @@ void HardwareSerial::invokeCallbacks()
 		}
 #if ENABLE_CMD_EXECUTOR
 		if(commandExecutor) {
-			commandExecutor->executorReceive(receivedChar);
+			int c;
+			while((c = uart_read_char(uart)) >= 0) {
+				commandExecutor->executorReceive(c);
+			}
 		}
 #endif
 	}
