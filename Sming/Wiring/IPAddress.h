@@ -84,7 +84,6 @@ public:
     operator ip_addr() const { return address; }
     operator ip_addr*() { return &address; }
 
-    operator char*() { return toString().begin(); }
 #if LWIP_VERSION_MAJOR == 2
     operator ip_addr_t*() { return &address; }
 #endif
