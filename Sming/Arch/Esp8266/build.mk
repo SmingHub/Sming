@@ -23,11 +23,10 @@ endif
 
 CONFIG_VARS	+= ESP_HOME
 ESP_HOME	:= $(call FixPath,$(ESP_HOME))
-
 export ESP_HOME
 
-export PATH			:= $(ESP_HOME)/xtensa-lx106-elf/bin:$(PATH)
 XTENSA_TOOLS_ROOT	:= $(ESP_HOME)/xtensa-lx106-elf/bin
+export PATH			:= $(XTENSA_TOOLS_ROOT):$(PATH)
 CONFIG_TOOLPREFIX	:= xtensa-lx106-elf-
 TOOLSPEC			:= $(XTENSA_TOOLS_ROOT)/$(CONFIG_TOOLPREFIX)
 
@@ -47,12 +46,7 @@ CFLAGS			+= -D__ets__ -DICACHE_FLASH -DUSE_OPTIMIZE_PRINTF -DESP8266=1
 CONFIG_VARS += MFORCE32
 MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
 ifneq ($(MFORCE32),)
-    # Your compiler supports the -mforce-l32 flag which means that
-    # constants can be stored in flash (program) memory instead of SRAM.
-    # See: https://www.arduino.cc/en/Reference/PROGMEM
-    CFLAGS += -DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" -mforce-l32
-else
-    CFLAGS += -DPROGMEM_L32=""
+	CFLAGS += -DMFORCE32 -mforce-l32
 endif
 
 # => 'Internal' SDK - for SDK Version 3+ as submodule in Sming repository

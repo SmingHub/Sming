@@ -39,6 +39,16 @@ typedef uint32_t prog_uint32_t;
 // Align a size down to the nearest word boundary
 #define ALIGNDOWN(_n) ((_n) & ~3)
 
+#ifdef MFORCE32
+// Your compiler supports the -mforce-l32 flag which means that
+// constants can be stored in flash (program) memory instead of SRAM.
+// See: https://www.arduino.cc/en/Reference/PROGMEM
+#define PROGMEM_L32 PROGMEM
+#else
+#define PROGMEM_L32
+#endif
+
+
 #ifdef ICACHE_FLASH
 
 #ifndef PROGMEM
