@@ -4,6 +4,8 @@
 #
 ##############
 
+CFLAGS += -DARCH_ESP8266
+
 ifndef ESP_HOME
 $(error ESP_HOME variable is not set to a valid directory.)
 endif
