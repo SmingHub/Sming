@@ -155,12 +155,6 @@ endif
 
 include $(SMING_HOME)/$(ARCH_BASE)/build.mk
 
-AS	:= $(Q)$(AS)
-CC	:= $(Q)$(CC)
-CXX	:= $(Q)$(CXX)
-AR	:= $(Q)$(AR)
-LD	:= $(Q)$(LD)
-
 # Declare target for user library
 # $1 -> Name of library
 define UserLibPath

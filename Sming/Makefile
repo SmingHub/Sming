@@ -81,6 +81,15 @@ endef
 ARDUINO_LIBRARIES	?= $(patsubst Libraries/%,%,$(wildcard Libraries/*/))
 ARDUINO_LIBRARIES	:= $(ARDUINO_LIBRARIES:/=)
 
+# Optionally, apply library exclusion list (e.g. not compatible with architecture)
+EXCLUDE_LIBRARIES := $(filter $(EXCLUDE_LIBRARIES),$(ARDUINO_LIBRARIES))
+ifneq (,$(EXCLUDE_LIBRARIES))
+ARDUINO_LIBRARIES := $(filter-out $(EXCLUDE_LIBRARIES),$(ARDUINO_LIBRARIES))
+ifeq ("$(V)","1")
+$(warning Excluded libraries: $(EXCLUDE_LIBRARIES))
+endif
+endif
+
 # Identify which libraries have submodules
 LIBRARY_SUBMODULES	:= $(call ListSubmodules,Libraries)
 LIBRARY_SUBMODULES	:= $(patsubst Libraries/%,%,$(LIBRARY_SUBMODULES))
@@ -128,7 +137,7 @@ endif
 
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
-	$(AR) cr $@ $^
+	$(Q) $(AR) cr $@ $^
 
 .PHONY: checkdirs
 checkdirs: submodules reload | $(BUILD_DIR) $(USER_LIBDIR)
