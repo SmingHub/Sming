@@ -6,15 +6,12 @@
 include ./Makefile-user.mk
 
 # Important parameters check.
-# We need to make sure SMING_HOME and ESP_HOME variables are set.
+# We need to make sure SMING_HOME is set.
 # You can use Makefile-user.mk in each project or use enviromental variables to set it globally.
  
 ifndef SMING_HOME
-$(error SMING_HOME is not set. Please configure it in Makefile-user.mk)
-endif
-ifndef ESP_HOME
-$(error ESP_HOME is not set. Please configure it in Makefile-user.mk)
+$(error SMING_HOME is not set. Please configure it as an environment variable, or in Makefile-user.mk)
 endif
 
 # Include application Makefile
-include $(SMING_HOME)/Makefile-rboot.mk
+include $(SMING_HOME)/Makefile-app.mk
