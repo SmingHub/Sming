@@ -1,4 +1,4 @@
-REM Appveyor Windows build script
+REM Windows build script
 
 SET SMING_HOME=%APPVEYOR_BUILD_FOLDER%\Sming
 SET ESP_HOME=c:\Espressif
