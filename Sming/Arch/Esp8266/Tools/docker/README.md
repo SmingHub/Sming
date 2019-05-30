@@ -19,7 +19,7 @@ Edit the docker-compose.yml and adjust the settings, if needed.
 # Uncomment the lines below if you want to map your local source code
 #          inside  the docker container
 # volumes:
-#   - ../../Sming/:/workspace/Sming
+#   - ../../../../:/workspace/Sming
    
  ports:
  #choose a free port to connect to the web C9 editor
@@ -40,7 +40,7 @@ docker-compose up -d
 
 http://localhost:10080
 
-[![C9 screenshot example](images/c9-1.png)](images/c9-1.png)
+[![C9 screenshot example](https://raw.githubusercontent.com/wiki/SmingHub/Sming/images/c9-1.png)](images/c9-1.png)
 
 And inside of the Terminal tab in your browser window you can type
 
