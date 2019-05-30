@@ -90,13 +90,24 @@ At present the emulator just writes output to the console. Inputs all return 0.
 
 Support is provided via TAP network interface (a virtual network layer operating at the ethernet frame level). A TAP interface must be created first, and requires root priviledge:
 
-```
-sudo ip tuntap add dev tap0 mode tap user `whoami`
-sudo ip a a dev tap0 192.168.13.1/24
-sudo ifconfig tap0 up
-```
+	sudo ip tuntap add dev tap0 mode tap user `whoami`
+	sudo ip a a dev tap0 192.168.13.1/24
+	sudo ifconfig tap0 up
 
 This creates the `tap0` interface, and is persistent across OS reboots. The emulator will automatically select the first `tap` interface found. To override this, use the `--ifname` option. An IP address will be assigned, but can be changed using the `--ipaddr` option.
+
+If your application needs to access the internet, additional setup is required:
+
+	sudo sysctl net.ipv4.ip_forward=1
+	sudo sysctl net.ipv6.conf.default.forwarding=1
+	sudo sysctl net.ipv6.conf.all.forwarding=1
+	
+	export INTERNET_IF=wlan0 # <!--- Make sure to replace wlan0 with the network interface connected to Internet
+	
+	sudo iptables -t nat -A POSTROUTING -o $INTERNET_IF -j MASQUERADE
+	sudo iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+	sudo iptables -A FORWARD -i tap0 -o $INTERNET_IF -j ACCEPT
+
 
 #### Windows
 
