@@ -4,10 +4,6 @@
 #
 ###
 
-ifndef ESP_HOME
-$(error ESP_HOME variable is not set to a valid directory.)
-endif
-
 ##@Building
 
 .PHONY: all
