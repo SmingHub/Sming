@@ -94,7 +94,7 @@ Support is provided via TAP network interface (a virtual network layer operating
 	sudo ip a a dev tap0 192.168.13.1/24
 	sudo ifconfig tap0 up
 
-This creates the `tap0` interface, and is persistent across OS reboots. The emulator will automatically select the first `tap` interface found. To override this, use the `--ifname` option. An IP address will be assigned, but can be changed using the `--ipaddr` option.
+This creates the `tap0` interface. The emulator will automatically select the first `tap` interface found. To override this, use the `--ifname` option. An IP address will be assigned, but can be changed using the `--ipaddr` option.
 
 If your application needs to access the internet, additional setup is required:
 
