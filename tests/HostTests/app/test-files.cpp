@@ -61,7 +61,7 @@ void test_files()
 	pos = fs.getPos();
 	size = fs.getSize();
 	debug_i("fs.truncate() returned %d, pos = %d, size = %d", res, pos, size);
-	assert(res == false && pos == 0 && size_t(size) == testContent.length());
+	assert(res == int(false) && pos == 0 && size_t(size) == testContent.length());
 	fs.close();
 	size = fileGetSize(testFileName);
 	debug_i("Actual file size = %d", size);
@@ -74,7 +74,7 @@ void test_files()
 	pos = fs.getPos();
 	size = fs.getSize();
 	debug_i("fs.truncate() returned %d, pos = %d, size = %d", res, pos, size);
-	assert(res == true && pos == 50 && size == 100);
+	assert(res == int(true) && pos == 50 && size == 100);
 	fs.close();
 	size = fileGetSize(testFileName);
 	debug_i("Actual file size = %d", size);
