@@ -18,12 +18,6 @@ endif
 ## MacOS / Linux:
 # ESP_HOME = /opt/esp-open-sdk
 
-#ifeq ($(OS),Windows_NT)
-#  # Convert Windows paths to POSIX paths
-#  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-#  ESP_HOME := $(subst //,/,$(ESP_HOME))
-#endif
-
 CONFIG_VARS	+= ESP_HOME
 ESP_HOME	:= $(call FixPath,$(ESP_HOME))
 export ESP_HOME
