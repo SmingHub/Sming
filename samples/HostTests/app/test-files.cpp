@@ -91,15 +91,4 @@ void test_files()
 	size = fileGetSize(testFileName);
 	debug_i("Actual file size = %d", size);
 	assert(size == 100);
-
-	//	startTest("Enumerate directories");
-	//	filedir_t dir;
-	//	if(fileOpenDir(nullptr, dir) == 0) {
-	//		dirent_t entry;
-	//		int res;
-	//		while((res = fileReadDir(dir, entry)) == 0) {
-	//			debug_i("\"%s\"  %u", entry.name, entry.size);
-	//		}
-	//	}
-	//	fileCloseDir(dir);
 }
