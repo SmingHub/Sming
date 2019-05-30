@@ -27,7 +27,8 @@ extern char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int wi
 extern char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width);
 extern char* ultoa(unsigned long val, char* buffer, unsigned int base);
 
-#define itoa ltoa
+extern char* itoa(int, char*, int);
+
 extern char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer, char pad);
 extern char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer);
 long atol(const char *nptr);

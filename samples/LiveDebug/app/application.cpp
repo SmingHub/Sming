@@ -272,7 +272,6 @@ void fileStat(const char* filename)
  * This also helps to keep the code clean and easy to read.
  */
 #define COMMAND_MAP(XX)                                                                                                \
-	XX(jsontest, "Run some ArduinoJson V6 tests")                                                                      \
 	XX(readfile1, "Use syscall file I/O functions to read and display a host file\n"                                   \
 				  "Calls are blocking so the application is paused during the entire operation")                       \
 	XX(readfile2, "Read a larger host file asynchronously\n"                                                           \
@@ -449,8 +448,10 @@ static void onOsMessage(OsMessage& msg)
 		if(gdb_present() == eGDB_Attached) {
 			gdb_do_break();
 		} else {
+#ifdef ARCH_ESP8266
 			register uint32_t sp __asm__("a1");
 			debug_print_stack(sp + 0x10, 0x3fffffb0);
+#endif
 		}
 	}
 }
@@ -538,157 +539,6 @@ COMMAND_HANDLER(help)
 #define XX(tag, desc) print(_F(#tag), _F(desc));
 	COMMAND_MAP(XX)
 #undef XX
-	return true;
-}
-
-COMMAND_HANDLER(jsontest)
-{
-	DEFINE_FSTR_LOCAL(flashString1, "FlashString-1");
-	DEFINE_FSTR_LOCAL(flashString2, "FlashString-2");
-	DEFINE_FSTR_LOCAL(formatStrings, "Compact\0Pretty\0MessagePack");
-	DEFINE_FSTR_LOCAL(test_json, "test.json");
-	DEFINE_FSTR_LOCAL(test_msgpack, "test.msgpack");
-
-	spiffs_mount();
-
-#define startTest(s) m_printf("\r\n>> %s\n", PSTR(s));
-
-	StaticJsonDocument<512> doc;
-	doc["string1"] = "string value 1";
-	doc["number2"] = 12345;
-	auto arr = doc["arr"].createNestedArray();
-	arr.add(flashString1);
-	doc[flashString2] = flashString1;
-
-	debug_i("Test doc: %s", Json::serialize(doc).c_str());
-
-	{
-		CStringArray formats(formatStrings);
-
-		for(auto fmt = Json::Compact; fmt <= Json::MessagePack; ++fmt) {
-			debug_i("Measure(doc, %s) = %u", formats[fmt], Json::measure(doc, fmt));
-		}
-	}
-
-	//
-	startTest("Json::getValue(doc[\"number2\"], value))");
-	int value;
-	if(Json::getValue(doc["number2"], value)) {
-		debug_i("number2 = %d", value);
-	} else {
-		debug_e("number2 not found");
-	}
-
-	//
-	startTest("Json::getValue(doc[\"string\"], value))");
-	if(Json::getValue(doc["string"], value)) {
-		debug_i("string = %d", value);
-	} else {
-		debug_e("string not found");
-	}
-
-	//
-	startTest("Json::getValue(doc[\"arr\"][1], value");
-	if(Json::getValue(doc["arr"][1], value)) {
-		debug_i("arr = %d", value);
-	} else {
-		debug_e("arr not found");
-	}
-
-	// Keep a reference copy for when doc gets messed up
-	StaticJsonDocument<512> sourceDoc = doc;
-
-	//
-	startTest("Json::serialize(doc, String), then save to file");
-	String s;
-	Json::serialize(doc, s);
-	fileSetContent(test_json, s);
-
-	//
-	startTest("Json::saveToFile(doc, test_json, Json::Pretty)");
-	bool res = Json::saveToFile(doc, test_json, Json::Pretty);
-	debug_i("writeToFile %s", res ? "OK" : "FAILED");
-
-	//
-	startTest("Json::loadFromFile(doc, test_json)");
-	res = Json::loadFromFile(doc, test_json);
-	debug_i("loadFromFile %s", res ? "OK" : "FAILED");
-	s = fileGetContent(test_json);
-	m_nputs(s.c_str(), s.length());
-	m_putc('\n');
-
-	//
-	startTest("Json::serialize(doc, MemoryDataStream*)");
-	doc = sourceDoc;
-	auto stream = new MemoryDataStream;
-	Json::serialize(doc, stream);
-	debug_i("stream contains %d bytes", stream->available());
-	Json::deserialize(doc, stream);
-	debug_i("doc contains %u bytes", Json::measure(doc));
-
-	//
-	startTest("nullptr checks");
-	delete stream;
-	stream = nullptr;
-	auto err = Json::deserialize(doc, stream);
-	debug_i("deserializeJson(stream = nullptr) = %u", err);
-	debug_i("doc.memoryUsage = %u", doc.memoryUsage());
-
-	//
-	startTest("String serialisation");
-	doc = sourceDoc;
-	s = Json::serialize(doc);
-	m_printHex("serialized", s.c_str(), s.length());
-	Json::deserialize(doc, s);
-	m_printHex("de-serialized", s.c_str(), s.length());
-	debug_i("doc.memoryUsage = %u", doc.memoryUsage());
-
-	//
-	startTest("Buffer serialisation");
-	doc = sourceDoc;
-	char buffer[256];
-	size_t len = Json::serialize(doc, buffer);
-	m_printHex("Serialised", buffer, len);
-	Json::deserialize(doc, buffer, len);
-	m_printHex("De-serialized", buffer, len);
-	debug_i("doc.memoryUsage = %u", doc.memoryUsage());
-
-	//
-	startTest("Buffer/Size serialisation");
-	doc = sourceDoc;
-	len = Json::serialize(doc, buffer, sizeof(buffer));
-	m_printHex("Serialised", buffer, len);
-	Json::deserialize(doc, buffer, len);
-	m_printHex("De-serialized", buffer, len);
-	debug_i("doc.memoryUsage = %u", doc.memoryUsage());
-
-	//
-	startTest("Json::saveToFile(doc, test_msgpack, Json::MessagePack)");
-	res = Json::saveToFile(doc, test_msgpack, Json::MessagePack);
-	debug_i("writeToFile(%s, MessagePack)", res ? "OK" : "FAILED");
-
-	//
-	startTest("Json::loadFromFile(doc, test_msgpack, Json::MessagePack)");
-	res = Json::loadFromFile(doc, test_msgpack, Json::MessagePack);
-	debug_i("MsgPack::loadFromFile %s", res ? "OK" : "FAILED");
-	s = fileGetContent(test_msgpack);
-	m_printHex("MSG", s.c_str(), s.length());
-
-	//
-	startTest("Json::serialize(doc, Serial)");
-	Json::serialize(doc, Serial);
-	Serial.println();
-	Json::serialize(doc, Serial, Json::Pretty);
-	Serial.println();
-
-	//
-	startTest("Json::measure(doc2)");
-	StaticJsonDocument<10> doc2;
-	debug_i("measure(doc2) = %u", Json::measure(doc2));
-	s = nullptr;
-	Json::serialize(doc2, s);
-	m_printHex("doc2", s.c_str(), s.length());
-
 	return true;
 }
 

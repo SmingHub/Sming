@@ -58,11 +58,11 @@ public:
 
     IPAddress(ip_addr address)
 	{
-		this->address = address;
+		this->address.addr = address.addr;
 	}
 
 #if LWIP_VERSION_MAJOR == 2
-    IPAddress(ip_addr_t address);
+    IPAddress(ip_addr_t address)
 	{
 		this->address = address;
 	}
@@ -81,10 +81,9 @@ public:
     // Overloaded cast operator to allow IPAddress objects to be used where a pointer
     // to a four-byte uint8_t array is expected
     operator uint32_t() const { return address.addr; }
-    operator ip_addr() const { return address; }
-    operator ip_addr*() { return &address; }
+    operator ip_addr() const { return {address.addr}; }
+    operator ip_addr*() { return reinterpret_cast<ip_addr*>(&address); }
 
-    operator char*() { return toString().begin(); }
 #if LWIP_VERSION_MAJOR == 2
     operator ip_addr_t*() { return &address; }
 #endif

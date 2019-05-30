@@ -17,6 +17,8 @@
 #include "WString.h"
 #include "IPAddress.h"
 
+#include <esp_wifi.h>
+
 //Define WifiEvents Delegates types
 typedef Delegate<void(String, uint8_t, uint8_t[6], uint8_t)> StationConnectDelegate;
 typedef Delegate<void(String, uint8_t, uint8_t[6], uint8_t)> StationDisconnectDelegate;
@@ -31,16 +33,42 @@ class WifiEventsClass
 public:
 	WifiEventsClass();
 
-	void onStationConnect(StationConnectDelegate delegateFunction);
-	void onStationDisconnect(StationDisconnectDelegate delegateFunction);
-	void onStationAuthModeChange(StationAuthModeChangeDelegate delegateFunction);
-	void onStationGotIP(StationGotIPDelegate delegateFunction);
-	void onAccessPointConnect(AccessPointConnectDelegate delegateFunction);
-	void onAccessPointDisconnect(AccessPointDisconnectDelegate delegateFunction);
-	void onAccessPointProbeReqRecved(AccessPointProbeReqRecvedDelegate delegateFunction);
+	void onStationConnect(StationConnectDelegate delegateFunction)
+	{
+		onSTAConnect = delegateFunction;
+	}
+
+	void onStationDisconnect(StationDisconnectDelegate delegateFunction)
+	{
+		onSTADisconnect = delegateFunction;
+	}
+
+	void onStationAuthModeChange(StationAuthModeChangeDelegate delegateFunction)
+	{
+		onSTAAuthModeChange = delegateFunction;
+	}
+
+	void onStationGotIP(StationGotIPDelegate delegateFunction)
+	{
+		onSTAGotIP = delegateFunction;
+	}
+
+	void onAccessPointConnect(AccessPointConnectDelegate delegateFunction)
+	{
+		onSOFTAPConnect = delegateFunction;
+	}
+
+	void onAccessPointDisconnect(AccessPointDisconnectDelegate delegateFunction)
+	{
+		onSOFTAPDisconnect = delegateFunction;
+	}
+
+	void onAccessPointProbeReqRecved(AccessPointProbeReqRecvedDelegate delegateFunction)
+	{
+		onSOFTAPProbeReqRecved = delegateFunction;
+	}
 
 private:
-	static void staticWifiEventHandler(System_Event_t* evt);
 	void WifiEventHandler(System_Event_t* evt);
 
 	StationConnectDelegate onSTAConnect = nullptr;

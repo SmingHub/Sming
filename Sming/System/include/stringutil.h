@@ -28,6 +28,7 @@ extern "C" {
    */
 const char* strstri(const char* pString, const char* pToken);
 
+#ifndef _GNU_SOURCE
 /** @brief A case-insensitive @code{strcmp}.
 	@note non-ANSI GNU C library extension
 */
@@ -38,6 +39,7 @@ int strcasecmp(const char* s1, const char* s2);
 	@note non-ANSI GNU C library extension
 */
 void* memmem(const void* haystack, size_t haystacklen, const void* needle, size_t needlelen);
+#endif
 
 static inline signed char hexchar(unsigned char c)
 {

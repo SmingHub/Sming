@@ -1,52 +1,27 @@
 os: Windows Server 2012 R2
-    
+
 environment:
-  PATH: C:\MinGW\msys\1.0\bin;C:\MinGW\bin;C:\Program Files (x86)\Mono-3.2.3\bin;C:\Python27\scripts;%PATH%  
+  PATH: C:\MinGW\msys\1.0\bin;C:\MinGW\bin;C:\Python27\scripts;%PATH%
   SDK_BUILD: 258
   matrix:
     - build_platform: "x86"
       build_compiler: "mingw"
-      build_bindings: 1
-      SDK_VERSION: 2.0.0
+      SMING_ARCH: Host
+
     - build_platform: "x86"
       build_compiler: "mingw"
-      build_bindings: 1
+      SMING_ARCH: Esp8266
+      SDK_VERSION: 2.0.0
+
+    - build_platform: "x86"
+      build_compiler: "mingw"
+      SMING_ARCH: Esp8266
       SDK_VERSION: 1.5.0
 
 # cache:
 #   - src/  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
 install:
-  - choco sources add -name sming -source 'https://www.myget.org/F/sming/'
-  - ps: if($env:SDK_VERSION -eq '1.5.0') {
-            choco install esp8266-udk --source https://www.myget.org/F/kireevco-chocolatey/;
-            mkdir c:\Espressif\utils\ESP8266;
-            cp c:\Espressif\utils\memanalyzer.exe c:\Espressif\utils\ESP8266\memanalyzer.exe;
-            cp c:\Espressif\utils\esptool.exe c:\Espressif\utils\ESP8266\esptool.exe;
-        }
-        else {
-            choco install esp8266-udk
-        }
-  
-  
-  
+  - cmd: .appveyor/install.cmd
+
 build_script:
-  - SET SMING_HOME=%APPVEYOR_BUILD_FOLDER%\Sming
-  - SET ESP_HOME=c:\Espressif
-  - SET PATH=%PATH%;%ESP_HOME%/utils
-  - cd %SMING_HOME%
-  - gcc -v
-#
-  - make help
-  - make list-config
-# Compile the tools first
-  - make tools V=1
-# Followed by the library and test sample apps
-  - cd %SMING_HOME%
-  - make STRICT=1
-  - cd %SMING_HOME%\..\samples\Basic_Blink
-  - make V=1 
-  - cd %SMING_HOME%\..\samples\Basic_Ssl
-  - make 
-  - cd %SMING_HOME%\..\samples\Basic_SmartConfig
-  - make
-  
+  - cmd: .appveyor/build.cmd

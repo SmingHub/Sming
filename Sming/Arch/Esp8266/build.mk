@@ -4,7 +4,8 @@
 #
 ##############
 
-CFLAGS += -DARCH_ESP8266
+CFLAGS		+= -DARCH_ESP8266
+CXXFLAGS	+= -fno-rtti -fno-exceptions 
 
 ifndef ESP_HOME
 $(error ESP_HOME variable is not set to a valid directory.)
@@ -16,12 +17,6 @@ endif
 
 ## MacOS / Linux:
 # ESP_HOME = /opt/esp-open-sdk
-
-#ifeq ($(OS),Windows_NT)
-#  # Convert Windows paths to POSIX paths
-#  ESP_HOME := $(subst \,/,$(addprefix /,$(subst :,,$(ESP_HOME))))
-#  ESP_HOME := $(subst //,/,$(ESP_HOME))
-#endif
 
 CONFIG_VARS	+= ESP_HOME
 ESP_HOME	:= $(call FixPath,$(ESP_HOME))

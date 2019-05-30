@@ -39,6 +39,11 @@
 
 #pragma pack(push, 4)
 
+// When compiling under Linux, these get #defined and mess things up
+#undef st_atime
+#undef st_mtime
+#undef st_ctime
+
 /**
  * @brief GDB uses a specific version of the stat structure, 64 bytes in size
  */

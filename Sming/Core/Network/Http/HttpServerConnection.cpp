@@ -79,8 +79,6 @@ int HttpServerConnection::onMessageComplete(http_parser* parser)
 
 int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 {
-	debug_d("The headers are complete");
-
 	/* Callbacks should return non-zero to indicate an error. The parser will
 	 * then halt execution.
 	 *

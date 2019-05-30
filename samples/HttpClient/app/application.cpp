@@ -70,7 +70,7 @@ void displayCipher(SSL* ssl)
 int onDownload(HttpConnection& connection, bool success)
 {
 	debugf("\n=========[ URL: %s ]============", connection.getRequest()->uri.toString().c_str());
-	debugf("RemoteIP: %s", (char*)connection.getRemoteIp());
+	debugf("RemoteIP: %s", connection.getRemoteIp().toString().c_str());
 	debugf("Got response code: %d", connection.getResponse()->code);
 	debugf("Success: %d", success);
 	if(connection.getRequest()->method != HTTP_HEAD) {
