@@ -114,6 +114,9 @@ char* strcat_P(char* dest, const char* src_P)
 	return dest;
 }
 
+#endif /* ICACHE_FLASH */
+
+
 /*
  * We implement aligned versions of some system functions to be used strictly on
  * data that is word (4-byte) aligned on all parameters.
@@ -158,5 +161,3 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len)
 	auto tail2 = pgm_read_dword(reinterpret_cast<const uint8_t*>(ptr2) + len_aligned);
 	return memcmp(&tail1, &tail2, len - len_aligned);
 }
-
-#endif
