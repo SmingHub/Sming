@@ -144,7 +144,7 @@
  */
 #define LOAD_FSTR(_name, _fstr)                                                                                        \
 	char _name[(_fstr).size()] __attribute__((aligned(4)));                                                            \
-	memcpy_aligned(_name, (_fstr).data(), sizeof(_name));
+	memcpy_aligned(_name, (_fstr).data(), (_fstr).length());
 
 /*
  * Define a flash string and load it into a named char[] buffer on the stack.

@@ -211,7 +211,7 @@ String &String::copy(flash_string_t pstr, unsigned int length)
 	}
 	else
 	{
-		memcpy_aligned(buffer, (PGM_P)pstr, length_aligned);
+		memcpy_aligned(buffer, (PGM_P)pstr, length);
 		buffer[length] = '\0';
 		len = length;
 	}

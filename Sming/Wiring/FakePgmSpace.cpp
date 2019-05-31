@@ -7,7 +7,7 @@ void *memcpy_P(void *dest, const void *src_P, size_t length)
 {
 	// Yes, it seems dest must also be aligned
 	if (IS_ALIGNED(dest) && IS_ALIGNED(src_P) && IS_ALIGNED(length))
-		return memcpy_aligned(dest, src_P, length);
+		return memcpy(dest, src_P, length);
 
 	auto dest0 = reinterpret_cast<char*>(dest);
 	auto src0 = reinterpret_cast<const char*>(src_P);
@@ -122,19 +122,16 @@ char* strcat_P(char* dest, const char* src_P)
 /** @brief copy memory aligned to word boundaries
  *  @param dst
  *  @param src
- *  @param len
- *  @note dst, src and len must all be aligned to word (4-byte) boundaries
+ *  @param len Size of the source data
+ *  @note dst and src must be aligned to word (4-byte) boundaries
+ *  `len` will be rounded up to the nearest word boundary, so the dst
+ *  buffer MUST be large enough for this.
  *
  */
 void* memcpy_aligned(void* dst, const void* src, unsigned len)
 {
-	assert(IS_ALIGNED(dst) && IS_ALIGNED(src) && IS_ALIGNED(len));
-
-	auto pd = (uint32_t*)dst;
-	auto ps = (const uint32_t*)src;
-	auto n = len / 4;
-	while (n--)
-		*pd++ = *ps++;
+	assert(IS_ALIGNED(dst) && IS_ALIGNED(src));
+	memcpy(dst, src, ALIGNUP(len));
 	return dst;
 }
 

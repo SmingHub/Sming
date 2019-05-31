@@ -236,7 +236,7 @@ extern "C"
  */
 #define LOAD_PSTR(_name, _flash_str)                                                                                   \
 	char _name[ALIGNUP(sizeof(_flash_str))] __attribute__((aligned(4)));                                               \
-	memcpy_aligned(_name, _flash_str, sizeof(_name));
+	memcpy_aligned(_name, _flash_str, sizeof(_flash_str));
 
 #define _FLOAD(_pstr)                                                                                                  \
 	(__extension__({                                                                                                   \
