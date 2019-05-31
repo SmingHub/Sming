@@ -241,7 +241,7 @@ struct FlashString {
 			return false;
 		if(flashData == str.flashData)
 			return true;
-		return memcmp_aligned(flashData, str.flashData, ALIGNUP(flashLength)) == 0;
+		return memcmp_aligned(flashData, str.flashData, flashLength) == 0;
 	}
 
 	bool isEqual(const String& str) const

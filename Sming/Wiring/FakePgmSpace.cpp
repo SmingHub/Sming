@@ -139,25 +139,24 @@ void* memcpy_aligned(void* dst, const void* src, unsigned len)
  *  @param p1
  *  @param p2
  *  @param len
- *  @retval int 0 if all bytes match, 1 if they don't
- *  @note p1, p2 and len must all be aligned to word (4-byte) boundaries
- *
- *  Note that unlike the standard memcmp routine we do not perform
- *  a relative comparison (i.e. greater/less than).
+ *  @retval int 0 if all bytes match
+ *  @note p1 and p2 must all be aligned to word (4-byte) boundaries
+ *  len is rounded up to the nearest word boundary
  */
 int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len)
 {
-	assert(IS_ALIGNED(ptr1) && IS_ALIGNED(ptr2) && IS_ALIGNED(len));
+	assert(IS_ALIGNED(ptr1) && IS_ALIGNED(ptr2));
 
-	auto p1 = (const uint32_t*)ptr1;
-	auto p2 = (const uint32_t*)ptr2;
-	auto n = len / 4;
-	while (n--)
-		if (*p1++ != *p2++)
-			return 1; // Match fail
+	unsigned len_aligned = ALIGNDOWN(len);
+	int res = memcmp(ptr1, ptr2, len_aligned);
+	if(res != 0 || len == len_aligned) {
+		return res;
+	}
 
-	// Match
-	return 0;
+	// Compare the remaining bytes
+	auto tail1 = pgm_read_dword(reinterpret_cast<const uint8_t*>(ptr1) + len_aligned);
+	auto tail2 = pgm_read_dword(reinterpret_cast<const uint8_t*>(ptr2) + len_aligned);
+	return memcmp(&tail1, &tail2, len - len_aligned);
 }
 
 #endif
