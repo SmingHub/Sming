@@ -24,18 +24,18 @@ CFLAGS		+= -DSPIFF_SIZE=$(SPIFF_SIZE)
 
 DD			:= dd
 
-FLASH_BIN	:= flash.bin
+SMING_FLASH_BIN	?= $(FW_BASE)/flash.bin
 
 # Write data to flash
 # $1 -> Start offset
 # $2 -> File containing data to write
 define WriteFlashChunk
 	$(info WriteFlash $1 -> $2)
-	$(Q) if [ ! -f $(FLASH_BIN) ]; then \
+	$(Q) if [ ! -f $(SMING_FLASH_BIN) ]; then \
 		$(ERASE_FLASH); \
 	fi
-	$(Q) $(DD) if=$2 of=$(FLASH_BIN) obs=1 seek=$$(($1)) conv=notrunc
+	$(Q) $(DD) if=$2 of=$(SMING_FLASH_BIN) obs=1 seek=$$(($1)) conv=notrunc
 endef
 
 #
-ERASE_FLASH	:= $(DD) if=/dev/zero ibs=1 count=$(SPI_SIZE) | tr "\000" "\377" > $(FLASH_BIN) 
+ERASE_FLASH	:= $(DD) if=/dev/zero ibs=1 count=$(SPI_SIZE) | tr "\000" "\377" > $(SMING_FLASH_BIN) 
