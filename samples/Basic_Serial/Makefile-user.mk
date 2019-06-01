@@ -41,8 +41,8 @@ SPIFF_SIZE      ?= 65536
 all_plus_files: files files/Readme.md all
 
 files:
-	mkdir files
+	$(Q) mkdir files
 
 # Large text file for demo purposes
 files/Readme.md: $(SMING_HOME)/../Readme.md
-	cp $< $@
+	$(Q) cp $< $@

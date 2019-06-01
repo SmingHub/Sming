@@ -3,7 +3,8 @@
 #
 
 # SPI_SIZE: 512K, 256K, 1M, 2M, 4M
-SPI_SIZE				?= 512K
+CONFIG_VARS += SPI_SPEED SPI_MODE SPI_SIZE SPIFF_SIZE
+SPI_SIZE		?= 512K
 
 ifeq ($(SPI_SIZE), 256K)
 	SPIFF_SIZE			?= 131072  #128K
@@ -24,7 +25,8 @@ CFLAGS		+= -DSPIFF_SIZE=$(SPIFF_SIZE)
 
 DD			:= dd
 
-FLASH_BIN	:= flash.bin
+CONFIG_VARS += FLASH_BIN
+FLASH_BIN	?= $(FW_BASE)/flash.bin
 
 # Write data to flash
 # $1 -> Start offset
