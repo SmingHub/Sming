@@ -83,7 +83,7 @@ TARGET_OUT_0	:= $(FW_BASE)/$(TARGET)$(TOOL_EXT)
 
 # Command-line options passed to executable
 CONFIG_VARS				+= SMING_TARGET_OPTIONS
-SMING_TARGET_OPTIONS	?= --flashfile=$(SMING_FLASH_BIN) --uart=0 --uart=1 --pause=5
+SMING_TARGET_OPTIONS	?= --flashfile=$(FLASH_BIN) --uart=0 --uart=1 --pause=5
 SMING_TARGET_OPTIONS	+= --flashsize=$(SPI_SIZE)
 
 # Full GDB command line
