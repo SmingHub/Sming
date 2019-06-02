@@ -1,6 +1,6 @@
 /* This file is part of Sming Framework Project
  * Created 2015 by Skurydin Alexey
- * http://github.com/anakod/Sming
+ * http://github.com/SmingHub/Sming
  * This file is provided under the LGPL v3 license.
  *
  * DnsServer.cpp
