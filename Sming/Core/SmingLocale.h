@@ -1,7 +1,7 @@
 /****
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
- * http://github.com/anakod/Sming
+ * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
  * SmingLocale.h
@@ -36,13 +36,13 @@
 #elif LOCALE == LOCALE_FR_FR
 
 #define LOCALE_MONTH_NAMES                                                                                             \
-	"janvier\0février\0mars\0avril\0mai\0juin\0juillet\0août\0septembre\0octobre\0novembre\0décembre"
+	"janvier\0fï¿½vrier\0mars\0avril\0mai\0juin\0juillet\0aoï¿½t\0septembre\0octobre\0novembre\0dï¿½cembre"
 #define LOCALE_DAY_NAMES "dimanche\0lundi\0mardi\0mercredi\0jeudi\0vendredi\0samedi"
 
 #elif LOCALE == LOCALE_DE_DE
 
 #define LOCALE_MONTH_NAMES                                                                                             \
-	"Januar\0Februar\0März\0April\0Mai\0Juni\0Juli\0August\0September\0Oktober\0November\0Dezember"
+	"Januar\0Februar\0Mï¿½rz\0April\0Mai\0Juni\0Juli\0August\0September\0Oktober\0November\0Dezember"
 #define LOCALE_DAY_NAMES "Sonntag\0Montag\0Dienstag\0Mittwoch\0Donnerstag\0Freitag\0Samstag"
 #define LOCALE_DATE "%d.%m.%Y"
 
