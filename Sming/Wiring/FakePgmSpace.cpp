@@ -7,7 +7,7 @@ void *memcpy_P(void *dest, const void *src_P, size_t length)
 {
 	// Yes, it seems dest must also be aligned
 	if (IS_ALIGNED(dest) && IS_ALIGNED(src_P) && IS_ALIGNED(length))
-		return memcpy_aligned(dest, src_P, length);
+		return memcpy(dest, src_P, length);
 
 	auto dest0 = reinterpret_cast<char*>(dest);
 	auto src0 = reinterpret_cast<const char*>(src_P);
@@ -114,6 +114,9 @@ char* strcat_P(char* dest, const char* src_P)
 	return dest;
 }
 
+#endif /* ICACHE_FLASH */
+
+
 /*
  * We implement aligned versions of some system functions to be used strictly on
  * data that is word (4-byte) aligned on all parameters.
@@ -122,19 +125,16 @@ char* strcat_P(char* dest, const char* src_P)
 /** @brief copy memory aligned to word boundaries
  *  @param dst
  *  @param src
- *  @param len
- *  @note dst, src and len must all be aligned to word (4-byte) boundaries
+ *  @param len Size of the source data
+ *  @note dst and src must be aligned to word (4-byte) boundaries
+ *  `len` will be rounded up to the nearest word boundary, so the dst
+ *  buffer MUST be large enough for this.
  *
  */
 void* memcpy_aligned(void* dst, const void* src, unsigned len)
 {
-	assert(IS_ALIGNED(dst) && IS_ALIGNED(src) && IS_ALIGNED(len));
-
-	auto pd = (uint32_t*)dst;
-	auto ps = (const uint32_t*)src;
-	auto n = len / 4;
-	while (n--)
-		*pd++ = *ps++;
+	assert(IS_ALIGNED(dst) && IS_ALIGNED(src));
+	memcpy(dst, src, ALIGNUP(len));
 	return dst;
 }
 
@@ -142,25 +142,22 @@ void* memcpy_aligned(void* dst, const void* src, unsigned len)
  *  @param p1
  *  @param p2
  *  @param len
- *  @retval int 0 if all bytes match, 1 if they don't
- *  @note p1, p2 and len must all be aligned to word (4-byte) boundaries
- *
- *  Note that unlike the standard memcmp routine we do not perform
- *  a relative comparison (i.e. greater/less than).
+ *  @retval int 0 if all bytes match
+ *  @note p1 and p2 must all be aligned to word (4-byte) boundaries
+ *  len is rounded up to the nearest word boundary
  */
 int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len)
 {
-	assert(IS_ALIGNED(ptr1) && IS_ALIGNED(ptr2) && IS_ALIGNED(len));
+	assert(IS_ALIGNED(ptr1) && IS_ALIGNED(ptr2));
 
-	auto p1 = (const uint32_t*)ptr1;
-	auto p2 = (const uint32_t*)ptr2;
-	auto n = len / 4;
-	while (n--)
-		if (*p1++ != *p2++)
-			return 1; // Match fail
+	unsigned len_aligned = ALIGNDOWN(len);
+	int res = memcmp(ptr1, ptr2, len_aligned);
+	if(res != 0 || len == len_aligned) {
+		return res;
+	}
 
-	// Match
-	return 0;
+	// Compare the remaining bytes
+	auto tail1 = pgm_read_dword(reinterpret_cast<const uint8_t*>(ptr1) + len_aligned);
+	auto tail2 = pgm_read_dword(reinterpret_cast<const uint8_t*>(ptr2) + len_aligned);
+	return memcmp(&tail1, &tail2, len - len_aligned);
 }
-
-#endif

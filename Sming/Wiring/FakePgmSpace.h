@@ -55,27 +55,6 @@ typedef uint32_t prog_uint32_t;
 #define PROGMEM __attribute__((aligned(4))) __attribute__((section(".irom.text")))
 #endif
 
-/*
- * Define and use a flash string inline
- */
-#define PSTR(_str)                                                                                                     \
-	(__extension__({                                                                                                   \
-		DEFINE_PSTR_LOCAL(__c, _str);                                                                                  \
-		&__c[0];                                                                                                       \
-	}))
-
-/*
- * Declare and use a flash string inline.
- * Returns a pointer to a stack-allocated buffer of the precise size required.
- */
-#define _F(_str)                                                                                                       \
-	(__extension__({                                                                                                   \
-		DEFINE_PSTR_LOCAL(_flash_str, _str);                                                                           \
-		LOAD_PSTR(_buf, _flash_str);                                                                                   \
-		_buf;                                                                                                          \
-	}))
-
-
 // flash memory must be read using 32 bit aligned addresses else a processor exception will be triggered
 // order within the 32 bit values are
 // --------------
@@ -120,8 +99,6 @@ static inline uint16_t pgm_read_word_inlined(const void* addr)
 extern "C"
 {
 #endif
-	void* memcpy_aligned(void* dst, const void* src, unsigned len);
-	int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
 	void *memcpy_P(void *dest, const void *src_P, size_t length);
 	size_t strlen_P(const char * src_P);
 	char *strcpy_P(char * dest, const char * src_P);
@@ -170,18 +147,13 @@ extern "C"
 
 #else /* ICACHE_FLASH */
 
-#define PROGMEM
-
-#define PSTR(_str) (_str)
-#define _F(_str) (_str)
+#define PROGMEM __attribute__((aligned(4)))
 
 #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
 #define pgm_read_word(addr) (*(const unsigned short *)(addr))
 #define pgm_read_dword(addr) (*(const unsigned long *)(addr))
 #define pgm_read_float(addr) (*(const float *)(addr))
 
-#define memcpy_aligned(dst, src, len) memcpy(dst, src, len)
-#define memcmp_aligned(ptr1, ptr2, len) memcmp(ptr1, ptr2, len)
 #define memcpy_P(dest, src, num) memcpy((dest), (src), (num))
 #define strlen_P(a) strlen((a))
 #define strcpy_P(dest, src) strcpy((dest), (src))
@@ -196,6 +168,27 @@ extern "C"
 
 #endif /* ICACHE_FLASH */
 
+/*
+ * Define and use a flash string inline
+ */
+#define PSTR(_str)                                                                                                     \
+	(__extension__({                                                                                                   \
+		DEFINE_PSTR_LOCAL(__c, _str);                                                                                  \
+		&__c[0];                                                                                                       \
+	}))
+
+/*
+ * Declare and use a flash string inline.
+ * Returns a pointer to a stack-allocated buffer of the precise size required.
+ */
+#define _F(_str)                                                                                                       \
+	(__extension__({                                                                                                   \
+		DEFINE_PSTR_LOCAL(_flash_str, _str);                                                                           \
+		LOAD_PSTR(_buf, _flash_str);                                                                                   \
+		_buf;                                                                                                          \
+	}))
+
+
 #define pgm_read_byte_near(addr) pgm_read_byte(addr)
 #define pgm_read_word_near(addr) pgm_read_word(addr)
 #define pgm_read_dword_near(addr) pgm_read_dword(addr)
@@ -204,6 +197,9 @@ extern "C"
 #define pgm_read_word_far(addr) pgm_read_word(addr)
 #define pgm_read_dword_far(addr) pgm_read_dword(addr)
 #define pgm_read_float_far(addr) pgm_read_float(addr)
+
+void* memcpy_aligned(void* dst, const void* src, unsigned len);
+int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
 
 /** @brief define a PSTR
  *  @param _name name of string
@@ -236,7 +232,7 @@ extern "C"
  */
 #define LOAD_PSTR(_name, _flash_str)                                                                                   \
 	char _name[ALIGNUP(sizeof(_flash_str))] __attribute__((aligned(4)));                                               \
-	memcpy_aligned(_name, _flash_str, sizeof(_name));
+	memcpy_aligned(_name, _flash_str, sizeof(_flash_str));
 
 #define _FLOAD(_pstr)                                                                                                  \
 	(__extension__({                                                                                                   \
