@@ -1,58 +1,32 @@
-# => SMING
+COMPONENT_VARS			:= SSL_DEBUG
+SSL_DEBUG				?= 0
 
-CONFIG_VARS += ENABLE_SSL SSL_DEBUG
-ENABLE_SSL ?= 0
-ifeq ($(ENABLE_SSL),1)
-	AXTLS_BASE		:= $(ARCH_COMPONENTS)/axtls-8266/axtls-8266
-	SUBMODULES		+= $(AXTLS_BASE)
-	LIBAXTLS		:= axtls
-	LIBS			+= $(LIBAXTLS)
-	MODULES			+= $(AXTLS_BASE)/compat $(AXTLS_BASE)/replacements
-	EXTRA_INCDIR	+= $(AXTLS_BASE)/.. $(AXTLS_BASE) $(AXTLS_BASE)/ssl $(AXTLS_BASE)/crypto
-	AXTLS_FLAGS		= -DLWIP_RAW=1 -DENABLE_SSL=1
-	ifeq ($(SSL_DEBUG),1) #
-		AXTLS_FLAGS	+= -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1 -DAXL_DEBUG=1
-	endif
-	CLEAN			+= axtls-clean
-	CFLAGS			+= $(AXTLS_FLAGS)
-	AXTLS_BUILD		:= $(MAKE) -C $(AXTLS_BASE) -e V=$(V) BIN_DIR="$(SMING_HOME)/$(USER_LIBDIR)"
+COMPONENT_SUBMODULES	:= axtls-8266
 
-$(call UserLibPath,$(LIBAXTLS)): | $(AXTLS_BASE)/.submodule
-	$(Q) $(AXTLS_BUILD) all
+COMPONENT_SRCDIRS := \
+	axtls-8266/compat \
+	axtls-8266/replacements \
+	axtls-8266/crypto \
+	axtls-8266/ssl
 
-.PHONY: axtls-clean
-axtls-clean:
-	-$(Q) $(AXTLS_BUILD) clean
+COMPONENT_INCDIRS := \
+	. \
+	axtls-8266 \
+	axtls-8266/ssl \
+	axtls-8266/crypto
+
+GLOBAL_CFLAGS			+= -DLWIP_RAW=1
+COMPONENT_CFLAGS		:= -DWITH_PGM_READ_HELPER=1 -DAXTLS_BUILD
+ifeq ($(SSL_DEBUG),1)
+	COMPONENT_CFLAGS	+= -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1 -DAXL_DEBUG=1
 endif
 
+# Application
+CUSTOM_TARGETS			+= include/ssl/private_key.h
 
-
-
-# => APP
-
-# SSL support using axTLS
-CONFIG_VARS += ENABLE_SSL SSL_DEBUG
-ifeq ($(ENABLE_SSL),1)
-	LIBAXTLS			:= axtls
-	LIBS				+= $(LIBAXTLS)
-	LIBAXTLS_DST		:= $(call UserLibPath,$(LIBAXTLS))
-	AXTLS_BASE			:= $(ARCH_COMPONENTS)/axtls-8266/axtls-8266
-	EXTRA_INCDIR		+= $(AXTLS_BASE)/.. $(AXTLS_BASE) $(AXTLS_BASE)/ssl $(AXTLS_BASE)/crypto
-	AXTLS_FLAGS			:= -DLWIP_RAW=1 -DENABLE_SSL=1
-	ifeq ($(SSL_DEBUG),1) # 
-		AXTLS_FLAGS		+= -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1
-	endif
-
-	CUSTOM_TARGETS		+= $(LIBAXTLS_DST) include/ssl/private_key.h
-	CFLAGS				+= $(AXTLS_FLAGS)
-
-$(LIBAXTLS_DST):
-	$(call MakeLibrary,$@,ENABLE_SSL=1)
+AXTLS_PATH				:= $(COMPONENT_PATH)/axtls-8266
 
 include/ssl/private_key.h:
-	$(vecho) "Generating unique certificate and key. This may take some time"
-	$(Q) mkdir -p $(CURDIR)/include/ssl/
-	AXDIR=$(CURDIR)/include/ssl/ $(ARCH_COMPONENTS)/axtls-8266/axtls-8266/tools/make_certs.sh
-endif
-
-
+	$(info Generating unique certificate and key. This may take some time...)
+	$(Q) mkdir -p $(PROJECT_DIR)/include/ssl/
+	AXDIR=$(PROJECT_DIR)/include/ssl/ $(AXTLS_PATH)/tools/make_certs.sh

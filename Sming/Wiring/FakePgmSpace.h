@@ -100,6 +100,7 @@ extern "C"
 {
 #endif
 	void *memcpy_P(void *dest, const void *src_P, size_t length);
+	int memcmp_P(const void *a1, const void *b1, size_t len);
 	size_t strlen_P(const char * src_P);
 	char *strcpy_P(char * dest, const char * src_P);
 	char *strncpy_P(char * dest, const char * src_P, size_t size);

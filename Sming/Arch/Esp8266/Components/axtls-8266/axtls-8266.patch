@@ -30,59 +30,11 @@ diff -Nuar a/replacements/libc.c b/replacements/libc.c
 +int vprintf(const char * format, va_list arg) {
 +    return ets_vprintf(ets_putc, format, arg);
 +}
-diff --git a/Makefile b/Makefile
-index e48e869..e632b44 100644
---- a/Makefile
-+++ b/Makefile
-@@ -5,6 +5,9 @@ LD := $(TOOLCHAIN_PREFIX)gcc
- OBJCOPY := $(TOOLCHAIN_PREFIX)objcopy
- 
- XTENSA_LIBS ?= $(shell $(CC) -print-sysroot)
-+ifeq ($(XTENSA_LIBS),)
-+   XTENSA_LIBS = $(ESP_HOME)/xtensa-lx106-elf/
-+endif
- 
- TOOLCHAIN_DIR=$(shell cd $(XTENSA_LIBS)/../../; pwd)
- 
-@@ -48,15 +51,24 @@ CFLAGS += -ffunction-sections -fdata-sections
- 
- CFLAGS += -fdebug-prefix-map=$(PWD)= -fdebug-prefix-map=$(TOOLCHAIN_DIR)=xtensa-lx106-elf -gno-record-gcc-switches
- 
--MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
--ifneq ($(MFORCE32),)
--    # If the compiler supports the -mforce-l32 flag, the compiler will generate correct code for loading
--    # 16- and 8-bit constants from program memory. So in the code we can directly access the arrays
--    # placed into program memory.
--    CFLAGS +=  -mforce-l32
--else
--	# Otherwise we need to use a helper function to load 16- and 8-bit constants from program memory.
--    CFLAGS += -DWITH_PGM_READ_HELPER
-+CFLAGS += $(CFLAGS_EXTRA)
-+
-+WITH_PGM_READ_HELPER ?= 1
-+
-+ifeq ($(WITH_PGM_READ_HELPER), 0)
-+   MFORCE32 := $(shell $(CC) --help=target | grep mforce-l32)
-+   ifneq ($(MFORCE32),)
-+        # If the compiler supports the -mforce-l32 flag, the compiler will generate correct code for loading
-+       # 16- and 8-bit constants from program memory. So in the code we can directly access the arrays
-+       # placed into program memory.
-+       CFLAGS +=  -mforce-l32
-+    else
-+       WITH_PGM_READ_HELPER=1
-+   endif
-+endif
-+
-+ifeq ($(WITH_PGM_READ_HELPER), 1)
-+   CFLAGS += -DWITH_PGM_READ_HELPER
- endif
- 
- BIN_DIR := bin
 diff --git a/replacements/time.c b/replacements/time.c
-index 4972119..f6f44f8 100644
+index 4972119..1a79aac 100644
 --- a/replacements/time.c
 +++ b/replacements/time.c
-@@ -24,17 +24,19 @@ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_
+@@ -24,20 +24,16 @@ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_
  
  static int errno_var = 0;
  
@@ -95,17 +47,20 @@ index 4972119..f6f44f8 100644
  }
  
 -unsigned long millis(void)
-+unsigned long WEAK_ATTR millis(void)
- {
- 	return system_get_time() / 1000UL;
- }
+-{
+-	return system_get_time() / 1000UL;
+-}
++extern unsigned long millis(void);
  
 -unsigned long micros(void)
-+unsigned long WEAK_ATTR micros(void)
- {
- 	return system_get_time();
- }
-@@ -79,7 +81,7 @@ static void setServer(int id, const char* name_or_ip)
+-{
+-	return system_get_time();
+-}
++extern unsigned long micros(void);
+ 
+ #ifndef _TIMEVAL_DEFINED
+ #define _TIMEVAL_DEFINED
+@@ -79,7 +75,7 @@ static void setServer(int id, const char* name_or_ip)
      }
  }
  
@@ -114,7 +69,7 @@ index 4972119..f6f44f8 100644
  {
      sntp_stop();
  
-@@ -93,7 +95,7 @@ void configTime(int timezone, int daylightOffset_sec, const char* server1, const
+@@ -93,7 +89,7 @@ void configTime(int timezone, int daylightOffset_sec, const char* server1, const
      sntp_init();
  }
  
@@ -123,7 +78,7 @@ index 4972119..f6f44f8 100644
  {
      tp->tv_sec  = millis() / 1000;
      tp->tv_nsec = micros() * 1000;
-@@ -101,14 +103,14 @@ int clock_gettime(clockid_t unused, struct timespec *tp)
+@@ -101,14 +97,14 @@ int clock_gettime(clockid_t unused, struct timespec *tp)
  }
  
  // seconds since 1970
@@ -140,7 +95,7 @@ index 4972119..f6f44f8 100644
  {
      time_t seconds = sntp_get_current_timestamp();
      if (t)
-@@ -118,24 +120,24 @@ time_t time(time_t * t)
+@@ -118,24 +114,24 @@ time_t time(time_t * t)
      return seconds;
  }
  
@@ -170,30 +125,110 @@ index 4972119..f6f44f8 100644
      if (tp)
      {
 diff --git a/ssl/os_port.h b/ssl/os_port.h
-index e0b9e46..b039417 100644
+index e0b9e46..7d85ff1 100644
 --- a/ssl/os_port.h
 +++ b/ssl/os_port.h
-@@ -53,6 +53,8 @@ extern "C" {
- #define EXP_FUNC
- #endif
+@@ -45,4 +45,5 @@ extern "C" {
+ #include "config.h"
+ #include <stdio.h>
++#include <FakePgmSpace.h>
  
-+#ifndef SMING_INCLUDED
-+
- #if defined(_WIN32_WCE)
- #undef WIN32
- #define WIN32
-@@ -92,7 +94,8 @@ extern "C" {
- #define be64toh(x) __bswap_constant_64(x)
+ #ifdef WIN32
+@@ -68,5 +69,5 @@ extern "C" {
+ #undef putc
+ #endif
+-#define putc(x, f)   ets_putc(x)
++#define putc(x, f)   m_putc(x)
+ 
+ #define SOCKET_READ(A,B,C)      ax_port_read(A,B,C)
+@@ -93,76 +94,30 @@ extern "C" {
  #endif
  
 -void ax_wdt_feed();
+-
+-#ifndef PROGMEM
+-#define PROGMEM __attribute__((aligned(4))) __attribute__((section(".irom.text")))
+-#endif
+-
+-#ifndef WITH_PGM_READ_HELPER
+-#define ax_array_read_u8(x, y) x[y]
+-#else
+-
+-static inline uint8_t pgm_read_byte(const void* addr) {
+-  register uint32_t res;
+-  __asm__("extui    %0, %1, 0, 2\n"     /* Extract offset within word (in bytes) */
+-      "sub      %1, %1, %0\n"       /* Subtract offset from addr, yielding an aligned address */
+-      "l32i.n   %1, %1, 0x0\n"      /* Load word from aligned address */
+-      "slli     %0, %0, 3\n"        /* Multiply offset by 8, yielding an offset in bits */
+-      "ssr      %0\n"               /* Prepare to shift by offset (in bits) */
+-      "srl      %0, %1\n"           /* Shift right; now the requested byte is the first one */
+-      :"=r"(res), "=r"(addr)
+-      :"1"(addr)
+-      :);
+-  return (uint8_t) res;     /* This masks the lower byte from the returned word */
+-}
 +extern void system_soft_wdt_feed(void);
 +#define ax_wdt_feed system_soft_wdt_feed
  
- #ifndef PROGMEM
- #define PROGMEM __attribute__((aligned(4))) __attribute__((section(".irom.text")))
-@@ -162,8 +165,8 @@ extern int ets_printf(const char *format, ...)  __attribute__ ((format (printf,
- extern int ets_putc(int);
+ #define ax_array_read_u8(x, y) pgm_read_byte((x)+(y))
+-#endif //WITH_PGM_READ_HELPER
+ 
+-#ifdef printf
+-#undef printf
+-#endif
+-//#define printf(...)  ets_printf(__VA_ARGS__)
+-#define PSTR(s) (__extension__({static const char __c[] PROGMEM = (s); &__c[0];}))
+-#define PGM_VOID_P const void *
+-static inline void* memcpy_P(void* dest, PGM_VOID_P src, size_t count) {
+-    const uint8_t* read = (const uint8_t*)(src);
+-    uint8_t* write = (uint8_t*)(dest);
+-
+-    while (count)
+-    {
+-        *write++ = pgm_read_byte(read++);
+-        count--;
+-    }
+-
+-    return dest;
+-}
+-static inline int strlen_P(const char *str) {
+-    int cnt = 0;
+-    while (pgm_read_byte(str++)) cnt++;
+-    return cnt;
+-}
+-static inline int memcmp_P(const void *a1, const void *b1, size_t len) {
+-    const uint8_t* a = (const uint8_t*)(a1);
+-    uint8_t* b = (uint8_t*)(b1);
+-    for (size_t i=0; i<len; i++) {
+-        uint8_t d = pgm_read_byte(a) - pgm_read_byte(b);
+-        if (d) return d;
+-        a++;
+-        b++;
+-    }
+-    return 0;
+-}
++#ifdef AXTLS_BUILD
++
++#define printf(fmt, ...) \
++	do { \
++		static const char fstr[] PROGMEM = fmt; \
++		char rstr[sizeof(fmt)]; \
++		memcpy_P(rstr, fstr, sizeof(rstr)); \
++		m_printf(rstr, ##__VA_ARGS__); \
++	} while (0)
+ 
+-#define printf(fmt, ...) do { static const char fstr[] PROGMEM = fmt; char rstr[sizeof(fmt)]; memcpy_P(rstr, fstr, sizeof(rstr)); ets_printf(rstr, ##__VA_ARGS__); } while (0)
+-#define strcpy_P(dst, src) do { static const char fstr[] PROGMEM = src; memcpy_P(dst, fstr, sizeof(src)); } while (0)
++#define strcpy_P(dst, src) \
++	do { \
++		static const char fstr[] PROGMEM = src; \
++		memcpy_P(dst, fstr, sizeof(src)); \
++	} while (0)
+ 
+-// Copied from ets_sys.h to avoid compile warnings
+-extern int ets_printf(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
+-extern int ets_putc(int);
++#endif /* AXTLS_BUILD */
  
  // The network interface in WiFiClientSecure
 -extern int ax_port_read(int fd, uint8_t* buffer, size_t count);
@@ -202,32 +237,18 @@ index e0b9e46..b039417 100644
 +extern int ax_port_write(int fd, uint8_t* buffer, uint16_t count);
  
  // TODO: Why is this not being imported from <string.h>?
- extern char *strdup(const char *orig);
-@@ -260,6 +263,7 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
- #endif  /* Not Win32 */
+@@ -261,4 +216,5 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
  
  /* some functions to mutate the way these work */
 +#ifndef ntohl
  inline uint32_t htonl(uint32_t n){
    return ((n & 0xff) << 24) |
-     ((n & 0xff00) << 8) |
-@@ -268,6 +272,7 @@ inline uint32_t htonl(uint32_t n){
- }
+@@ -269,4 +225,5 @@ inline uint32_t htonl(uint32_t n){
  
  #define ntohl htonl
 +#endif
  
  EXP_FUNC int STDCALL ax_open(const char *pathname, int flags); 
- 
-@@ -304,6 +309,8 @@ void exit_now(const char *format, ...);
- #define PROGMEM
- #endif
- 
-+#endif /* SMING_INCLUDED */
-+
- #ifdef __cplusplus
- }
- #endif
 diff --git a/ssl/tls1.c b/ssl/tls1.c
 index 10b592c..10fe9d5 100644
 --- a/ssl/tls1.c
@@ -550,3 +571,17 @@ index c6de55b..6834f5f 100644
  			}
  
  			memcpy(total_read_buffer + total_bytes, read_buffer, read_bytes);
+diff --git a/compat/lwipr_compat.h b/compat/lwipr_compat.h
+index 0916412..4bb7d07 100644
+--- a/compat/lwipr_compat.h
++++ b/compat/lwipr_compat.h
+@@ -27,9 +27,6 @@ extern "C" {
+ #define ERR_AXL_INVALID_CLIENTFD_DATA -104
+ #define ERR_AXL_INVALID_PBUF -105
+ 
+-#define SOCKET_READ(A, B, C) 	ax_port_read(A, B, C)
+-#define SOCKET_WRITE(A, B, C) 	ax_port_write(A, B, C)
+-
+ /**
+  * Define watchdog function to be called during CPU intensive operations.
+  */

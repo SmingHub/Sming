@@ -17,6 +17,19 @@ void *memcpy_P(void *dest, const void *src_P, size_t length)
 	return dest;
 }
 
+int memcmp_P(const void *a1, const void *b1, size_t len)
+{
+    auto a = static_cast<const uint8_t*>(a1);
+    auto b = static_cast<const uint8_t*>(b1);
+    for (size_t i = 0; i < len; i++, ++a, ++b) {
+        uint8_t d = pgm_read_byte(a) - pgm_read_byte(b);
+        if (d != 0) {
+        	return d;
+        }
+    }
+    return 0;
+}
+
 size_t strlen_P(const char * src_P)
 {
 	char val;
