@@ -285,7 +285,8 @@ char* RCSwitch::getCodeWordB(int nAddressCode, int nChannelCode, boolean bStatus
    
    const char* code[5] = { "FFFF", "0FFF", "F0FF", "FF0F", "FFF0" };
    if (nAddressCode < 1 || nAddressCode > 4 || nChannelCode < 1 || nChannelCode > 4) {
-    return '\0';
+     sReturn[0] = '\0';
+     return sReturn;
    }
    for (int i = 0; i<4; i++) {
      sReturn[nReturnPos++] = code[nAddressCode][i];
@@ -348,7 +349,8 @@ char* RCSwitch::getCodeWordC(char sFamily, int nGroup, int nDevice, boolean bSta
   int nReturnPos = 0;
   
   if ( (byte)sFamily < 97 || (byte)sFamily > 112 || nGroup < 1 || nGroup > 4 || nDevice < 1 || nDevice > 4) {
-    return '\0';
+     sReturn[0] = '\0';
+     return sReturn;
   }
   
   const char* sDeviceGroupCode =  dec2binWcharfill(  (nDevice-1) + (nGroup-1)*4, 4, '0'  );
@@ -418,7 +420,9 @@ char* RCSwitch::getCodeWordD(char sGroup, int nDevice, boolean bStatus){
         case 'D':
             sGroupCode = dec2binWcharfill(1, 4, 'F'); break;
         default:
-            return '\0';
+            sReturn[0] = '\0';
+            return sReturn;
+
     }
     
     for (int i = 0; i<4; i++) {
@@ -437,7 +441,8 @@ char* RCSwitch::getCodeWordD(char sGroup, int nDevice, boolean bStatus){
         case 3:
             sDevice = dec2binWcharfill(1, 3, 'F'); break;
         default:
-            return '\0';
+            sReturn[0] = '\0';
+            return sReturn;
     }
 
     for (int i = 0; i<3; i++)
@@ -751,3 +756,4 @@ char* RCSwitch::dec2binWcharfill(unsigned long dec, unsigned int bitLength, char
 
   return bin;
 }
+

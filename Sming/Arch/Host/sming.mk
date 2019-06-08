@@ -62,7 +62,7 @@ $(call UserLibPath,lwip): $(LWIP_BUILD_DIR)/Makefile
 
 $(LWIP_BUILD_DIR)/Makefile: $(LWIP_BASE)/lwip/.submodule | $(LWIP_BUILD_DIR)
 	$(Q) cd $(LWIP_BUILD_DIR); \
-	$(CMAKE) -DUSER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)" $(CMAKE_OPTIONS) $(SMING_HOME$)/$(LWIP_BASE)/$(UNAME)
+	$(CMAKE) -DUSER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)" $(CMAKE_OPTIONS) $(SMING_HOME)/$(LWIP_BASE)/$(UNAME)
 
 $(LWIP_BUILD_DIR):
 	mkdir -p $@
