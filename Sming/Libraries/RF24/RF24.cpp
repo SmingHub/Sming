@@ -324,13 +324,13 @@ void RF24::printDetails(void)
 
 #if defined(__ESP8266_EX__)
   char tmpbuf[128];
-  strcpy_P(tmpbuf, (char*)pgm_read_dword(&rf24_datarate_e_str_P[getDataRate()]));
+  strcpy_P(tmpbuf, rf24_datarate_e_str_P[getDataRate()]);
   printf_P(PSTR("Data Rate\t = %s\r\n"), tmpbuf);
-  strcpy_P(tmpbuf, (char*)pgm_read_dword(&rf24_model_e_str_P[isPVariant()]));
+  strcpy_P(tmpbuf, rf24_model_e_str_P[isPVariant()]);
   printf_P(PSTR("Model\t\t = %s\r\n"), tmpbuf);
-  strcpy_P(tmpbuf, (char*)pgm_read_dword(&rf24_crclength_e_str_P[getCRCLength()]));
+  strcpy_P(tmpbuf, rf24_crclength_e_str_P[getCRCLength()]);
   printf_P(PSTR("CRC Length\t = %s\r\n"), tmpbuf);
-  strcpy_P(tmpbuf, (char*)pgm_read_dword(&rf24_pa_dbm_e_str_P[getPALevel()]));
+  strcpy_P(tmpbuf, rf24_pa_dbm_e_str_P[getPALevel()]);
   printf_P(PSTR("PA Power\t = %s\r\n"), tmpbuf);
 #else
   printf_P(PSTR("Data Rate\t = %S\r\n"),pgm_read_word(&rf24_datarate_e_str_P[getDataRate()]));

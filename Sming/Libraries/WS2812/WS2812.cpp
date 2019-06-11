@@ -20,7 +20,7 @@ static void ICACHE_FLASH_ATTR send_ws_1(uint8_t gpio)
 }
 
 // Byte triples in the buffer are interpreted as R G B values and sent to the hardware as G R B.
-int ICACHE_FLASH_ATTR ws2812_writergb(uint8_t gpio, char *buffer, size_t length)
+void ICACHE_FLASH_ATTR ws2812_writergb(uint8_t gpio, char *buffer, size_t length)
 {
     // Initialize the output pin:
     pinMode(gpio, OUTPUT);

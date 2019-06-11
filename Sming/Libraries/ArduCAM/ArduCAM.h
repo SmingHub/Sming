@@ -334,7 +334,7 @@ class ArduCAM
 		void set_format(byte fmt);
 		byte get_format();
 		
-		int bus_write(int address, int value);
+		void bus_write(int address, int value);
 		uint8_t bus_read(int address);
 	protected:
 		regtype *P_CS;

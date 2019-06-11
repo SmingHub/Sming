@@ -157,7 +157,7 @@ void ArduCAM::set_mode(uint8_t mode)
 }
 
 //Low level SPI write operation
-int ArduCAM::bus_write(int address, int value) {
+void ArduCAM::bus_write(int address, int value) {
   // take the SS pin low to select the chip:
   cbi(P_CS, B_CS);
   //  send in the address and value via SPI:
@@ -448,16 +448,13 @@ byte ArduCAM::rdSensorReg16_16(uint16_t regID, uint16_t* regDat)
 //I2C Array Write 8bit address, 8bit data
 int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[])
 {
-	int err = 0;
 	uint16_t reg_addr = 0;
-	uint16_t reg_val = 0;
 	const struct sensor_reg *next = reglist;
 	
-	while ((reg_addr != 0xff) | (reg_val != 0xff))
-	{		
-		reg_addr = pgm_read_word(&next->reg);
-		reg_val = pgm_read_word(&next->val);
-		err = wrSensorReg8_8(reg_addr, reg_val);
+	while((reg_addr = pgm_read_word(&next->reg)) != 0xffff)
+	{
+		uint16_t reg_val = pgm_read_word(&next->val);
+		wrSensorReg8_8(reg_addr, reg_val);
    	next++;
 #if defined(ESP8266)
 	  yield();
@@ -470,18 +467,14 @@ int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[])
 //I2C Array Write 8bit address, 16bit data
 int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[])
 {
-	int err = 0;
-	
-	unsigned int reg_addr,reg_val;
+	uint16_t reg_addr;
 	const struct sensor_reg *next = reglist;
 	
-	while ((reg_addr != 0xff) | (reg_val != 0xffff))
+	while((reg_addr = pgm_read_word(&next->reg)) != 0xffff)
 	{		
 		reg_addr = pgm_read_word(&next->reg);
-		reg_val = pgm_read_word(&next->val);
-		err = wrSensorReg8_16(reg_addr, reg_val);
-		//	if (!err)
-	   	//return err;
+		uint16_t reg_val = pgm_read_word(&next->val);
+		wrSensorReg8_16(reg_addr, reg_val);
 	  next++;
 #if defined(ESP8266)
 	  yield();
@@ -494,19 +487,14 @@ int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[])
 //I2C Array Write 16bit address, 8bit data
 int ArduCAM::wrSensorRegs16_8(const struct sensor_reg reglist[])
 {
-	int err = 0;
-	
-	unsigned int reg_addr;
-	unsigned char reg_val;
+	uint16_t reg_addr;
 	const struct sensor_reg *next = reglist;
 	
-	while ((reg_addr != 0xffff) | (reg_val != 0xff))
+	while((reg_addr = pgm_read_word(&next->reg)) != 0xffff)
 	{		
 		reg_addr = pgm_read_word(&next->reg);
-		reg_val = pgm_read_word(&next->val);
-		err = wrSensorReg16_8(reg_addr, reg_val);
-		//if (!err)
-	   	//return err;
+		uint8_t reg_val = pgm_read_word(&next->val);
+		wrSensorReg16_8(reg_addr, reg_val);
 	  next++;
 #if defined(ESP8266)
 	  yield();
@@ -519,20 +507,13 @@ int ArduCAM::wrSensorRegs16_8(const struct sensor_reg reglist[])
 //I2C Array Write 16bit address, 16bit data
 int ArduCAM::wrSensorRegs16_16(const struct sensor_reg reglist[])
 {
-	int err = 0;
-	
-	unsigned int reg_addr,reg_val;
+	uint16_t reg_addr;
 	const struct sensor_reg *next = reglist;
-	reg_addr = pgm_read_word(&next->reg);
-	reg_val = pgm_read_word(&next->val);
-	while ((reg_addr != 0xffff) | (reg_val != 0xffff))
+	while((reg_addr = pgm_read_word(&next->reg)) != 0xffff)
 	{		
-		err = wrSensorReg16_16(reg_addr, reg_val);
-		//if (!err)
-	    //   return err;
+		uint16_t reg_val = pgm_read_word(&next->val);
+		wrSensorReg16_16(reg_addr, reg_val);
 	  next++;
-	  reg_addr = pgm_read_word(&next->reg);
-		reg_val = pgm_read_word(&next->val);
 #if defined(ESP8266)
 	  yield();
 #endif
@@ -584,7 +565,6 @@ void ArduCAM::OV2640_set_JPEG_size(uint8_t size)
 void ArduCAM::OV5642_set_JPEG_size(uint8_t size)
 {
 	#if defined OV5642_CAM
-	uint8_t reg_val;
 
 	wrSensorRegs16_8(ov5642_dvp_fmt_global_init);
 	delay(100);
@@ -654,9 +634,7 @@ byte ArduCAM::get_format()
 			
 void ArduCAM::InitCAM()
 {
-	byte rtn = 0;
 	byte reg_val;
-	uint16_t val;
 	switch(sensor_model)
 	{
 		case OV7660:
@@ -664,7 +642,7 @@ void ArduCAM::InitCAM()
 			#if defined OV7660_CAM
 			wrSensorReg8_8(0x12, 0x80);
 			delay(100);
-			rtn = wrSensorRegs8_8(OV7660_QVGA);
+			wrSensorRegs8_8(OV7660_QVGA);
 			#endif
 			break;
 		}
@@ -673,7 +651,7 @@ void ArduCAM::InitCAM()
 			#if defined OV7725_CAM
 			wrSensorReg8_8(0x12, 0x80);
 			delay(100);
-			rtn = wrSensorRegs8_8(OV7725_QVGA);
+			wrSensorRegs8_8(OV7725_QVGA);
 			rdSensorReg8_8(0x15,&reg_val);
 			wrSensorReg8_8(0x15, (reg_val | 0x02));
 			#endif
@@ -684,7 +662,7 @@ void ArduCAM::InitCAM()
 			#if defined OV7670_CAM
 			wrSensorReg8_8(0x12, 0x80);
 			delay(100);
-			rtn = wrSensorRegs8_8(OV7670_QVGA);
+			wrSensorRegs8_8(OV7670_QVGA);
 			#endif
 			break;
 		}
@@ -693,7 +671,7 @@ void ArduCAM::InitCAM()
 			#if defined OV7675_CAM
 			wrSensorReg8_8(0x12, 0x80);
 			delay(100);
-			rtn = wrSensorRegs8_8(OV7675_QVGA);
+			wrSensorRegs8_8(OV7675_QVGA);
 			
 			#endif
 			break;
@@ -741,7 +719,7 @@ void ArduCAM::InitCAM()
 		case OV3640:
 		{
 			#if defined OV3640_CAM
-			rtn = wrSensorRegs16_8(OV3640_QVGA);
+			wrSensorRegs16_8(OV3640_QVGA);
 			#endif
 			break;
 		}

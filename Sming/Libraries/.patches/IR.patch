@@ -1,5 +1,5 @@
 diff --git a/src/IRrecv.cpp b/src/IRrecv.cpp
-index 295d450..3a10b4b 100644
+index 295d450..8c8dde9 100644
 --- a/src/IRrecv.cpp
 +++ b/src/IRrecv.cpp
 @@ -23,62 +23,7 @@ extern "C" {
@@ -218,13 +218,13 @@ index 295d450..3a10b4b 100644
 +  uint32_t now = system_get_time();
  
 -  bool resumed = false;  // Flag indicating if we have resumed.
-+  int irqRawlen = irparams.rawBuf.numElements();
++  size_t irqRawlen = irparams.rawBuf.numElements();
 +  uint32_t diff = now < lastInterrupt ? (UINT32_MAX - lastInterrupt + now) : (now - lastInterrupt);
 +  // Only stop sequence if there is at least some data recorded
 +  if( (irqRawlen > HEADER+FOOTER || m_rawLen > HEADER+FOOTER) && diff > MS_TO_USEC(irparams.timeout) )
 +    irparams.rawBuf.add(0);
 +
-+  for( int i = 0; i < irqRawlen && m_rawLen < RAWBUF; ++i )
++  for( unsigned i = 0; i < irqRawlen && m_rawLen < RAWBUF; ++i )
 +  {
 +    irparams.rawBuf.pull(&m_decodeBuf[m_rawLen]);
 +    // Stop on first timeout
