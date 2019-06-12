@@ -48,25 +48,24 @@ class Vector : public Countable<Element>
      void copyInto(Element* array) const;
      bool add(const Element& obj)
     {
-      addElement(obj);
-      return true;
+      return addElement(obj);
     }
-     void addElement(const Element& obj);
-     void addElement(Element* objp);
+     bool addElement(const Element& obj);
+     bool addElement(Element* objp);
      void clear()
     {
       removeAllElements();
     }
-     void ensureCapacity(unsigned int minCapacity);
+     bool ensureCapacity(unsigned int minCapacity);
      void removeAllElements();
      bool removeElement(const Element& obj);
-     void setSize(unsigned int newSize);
+     bool setSize(unsigned int newSize);
      void trimToSize();
      const Element& elementAt(unsigned int index) const;
-     void insertElementAt(const Element& obj, unsigned int index);
+     bool insertElementAt(const Element& obj, unsigned int index);
      const void remove(unsigned int index);
      void removeElementAt(unsigned int index);
-     void setElementAt(const Element& obj, unsigned int index);
+     bool setElementAt(const Element& obj, unsigned int index);
      const Element& get(unsigned int index) const
     {
       return elementAt(index);
@@ -266,55 +265,49 @@ unsigned int Vector<Element>::size() const
 }
 
 template <class Element>
-void Vector<Element>::addElement(const Element &obj)
+bool Vector<Element>::addElement(const Element &obj)
 {
-  if (_size == _capacity)
-    ensureCapacity(_capacity + _increment);
-  if (_size < _capacity)
-    _data[ _size++ ] = new Element(obj);
+  if (!ensureCapacity(_size + 1)) return false;
+  _data[ _size++ ] = new Element(obj);
+  return true;
 }
 
 template <class Element>
-void Vector<Element>::addElement(Element* objp)
+bool Vector<Element>::addElement(Element* objp)
 {
-  if (_size == _capacity)
-    ensureCapacity(_capacity + _increment);
-  if (_size < _capacity)
-    _data[ _size++ ] = objp;
+  if (!ensureCapacity(_size + 1)) return false;
+  _data[ _size++ ] = objp;
+  return true;
 }
 
 template <class Element>
-void Vector<Element>::ensureCapacity(unsigned int minCapacity)
+bool Vector<Element>::ensureCapacity(unsigned int minCapacity)
 {
-  if (minCapacity > _capacity)
-  {
-    //_capacity = minCapacity;
-    Element** temp = new Element*[ minCapacity ];
+  if (_capacity >= minCapacity) return true;
+
+    auto newCapacity = std::max(minCapacity, _capacity + _increment);
+    Element** temp = new Element*[ newCapacity ];
     // copy all elements
-    if (temp != nullptr)
-    {
-      _capacity = minCapacity;
+    if (temp == nullptr) return false;
+
+      _capacity = newCapacity;
       memcpy(temp, _data, sizeof(Element*) * _size);
       delete [] _data;
       _data = temp;
-    }
-  }
+      return true;
 }
 
 template <class Element>
-void Vector<Element>::insertElementAt(const Element &obj, unsigned int index)
+bool Vector<Element>::insertElementAt(const Element &obj, unsigned int index)
 {
-  if (index == _size)
-    addElement(obj);
-  else
-  {
+  if (index == _size) return addElement(obj);
+
     //  need to verify index, right now you must know what you're doing
-    if (index > _size) return;
-    if (_size == _capacity)
-      ensureCapacity(_capacity + _increment);
-    if (_size < _capacity)
-    {
+    if (index > _size) return false;
+    if (!ensureCapacity(_size + 1)) return false;
+
       Element* newItem = new Element(obj);  //  pointer to new item
+      if (newItem == nullptr) return false;
       Element* tmp;  // temp to hold item to be moved over
 
       for (unsigned int i = index; i <= _size; i++)
@@ -328,8 +321,7 @@ void Vector<Element>::insertElementAt(const Element &obj, unsigned int index)
           break;
       }
       _size++;
-    }
-  }
+      return true;
 }
 
 template <class Element>
@@ -378,25 +370,28 @@ void Vector<Element>::removeElementAt(unsigned int index)
 }
 
 template <class Element>
-void Vector<Element>::setElementAt(const Element &obj, unsigned int index)
+bool Vector<Element>::setElementAt(const Element &obj, unsigned int index)
 {
   // check for valid index
-  if (index >= _size) return;
+  if (index >= _size) return false;
   *_data[ index ] = obj;
+  return true;
 }
 
 template <class Element>
-void Vector<Element>::setSize(unsigned int newSize)
+bool Vector<Element>::setSize(unsigned int newSize)
 {
-  if (newSize > _capacity)
-    ensureCapacity(newSize);
-  else if (newSize < _size)
+  if (!ensureCapacity(newSize)) return false;
+
+  if (newSize < _size)
   {
     for (unsigned int i = newSize; i < _size; i++)
       delete _data[i];
 
     _size = newSize;
   }
+
+  return true;
 }
 
 template <class Element>
@@ -440,10 +435,10 @@ Element & Vector<Element>::operator[](unsigned int index)
 template <class Element>
 void Vector<Element>::sort(Comparer compareFunction)
 {
-   int i, j;
-   for(j = 1; j < _size; j++)   // Start with 1 (not 0)
+   for(unsigned j = 1; j < _size; j++)   // Start with 1 (not 0)
    {
     	Element* key = _data[j];
+    	unsigned i;
 		for(i = j - 1; (i >= 0) && compareFunction(*_data[i], *key) > 0; i--)   // Smaller values move up
 		{
 			_data[i+1] = _data[i];
