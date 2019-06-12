@@ -54,23 +54,20 @@ as well as Adafruit raw 1.8" TFT display
 
 #define BUFFPIXEL 20
 
-template <class Adafruit_TFT> void bmpDraw(Adafruit_TFT& tft, String fileName, uint8_t x, uint8_t y)
+template <class Adafruit_TFT> bool bmpDraw(Adafruit_TFT& tft, String fileName, uint8_t x, uint8_t y)
 {
 	if((x >= tft.width()) || (y >= tft.height())) {
-		return;
+		return false;
 	}
 
-	Serial.println();
-	Serial.print("Loading image '");
-	Serial.print(fileName);
-	Serial.println('\'');
+	debug_i("Loading image '%s'", fileName.c_str());
 
 	uint32_t startTime = millis();
 
 	file_t handle = fileOpen(fileName.c_str(), eFO_ReadOnly);
 	if(handle < 0) {
-		debugf("File wasn't found: %s", fileName.c_str());
-		return;
+		debug_e("File wasn't found: %s", fileName.c_str());
+		return false;
 	}
 
 	// These read 16- and 32-bit types from the SPIFFS file.
@@ -98,30 +95,33 @@ template <class Adafruit_TFT> void bmpDraw(Adafruit_TFT& tft, String fileName, u
 	bool goodBmp = false; // Set to true on valid header parse
 	while(true) {
 		if(read16() != 0x4D42) { // BMP signature
+			debug_e("Invalid BMP signature");
 			break;
 		}
 
-		debugf("File size: %d\n", read32()); // get File Size
-		(void)read32();						 // Read & ignore creator bytes
-		uint32_t bmpImageoffset = read32();  // Start of image data
-		debugf("Image Offset: %d\n", bmpImageoffset);
-		debugf("Header size: %d\n", read32()); // Read DIB header
+		debug_i("File size: %d", read32()); // get File Size
+		(void)read32();						// Read & ignore creator bytes
+		uint32_t bmpImageoffset = read32(); // Start of image data
+		debug_i("Image Offset: %d", bmpImageoffset);
+		debug_i("Header size: %d", read32()); // Read DIB header
 		int bmpWidth = read32();
 		int bmpHeight = read32();
 		if(read16() != 1) { // # planes -- must be '1'
+			debug_e("Un-supported BMP planes");
 			break;
 		}
 
 		uint8_t bmpDepth = read16(); // bits per pixel
-		debugf("Bit Depth: %d\n", bmpDepth);
+		debug_i("Bit Depth: %d", bmpDepth);
 		if((bmpDepth != 24) || (read32() != 0)) { // 0 = uncompressed
+			debug_e("Un-supported BMP depth");
 			break;
 		}
 
 		// Supported BMP format -- proceed!
 		goodBmp = true;
 
-		debugf("Image size: %d x %d\n", bmpWidth, bmpHeight);
+		debug_i("Image size: %d x %d", bmpWidth, bmpHeight);
 
 		// BMP rows are padded (if needed) to 4-byte boundary
 		uint32_t rowSize = (bmpWidth * 3 + 3) & ~3;
@@ -182,12 +182,14 @@ template <class Adafruit_TFT> void bmpDraw(Adafruit_TFT& tft, String fileName, u
 				tft.pushColor(color565(r, g, b));
 			} // end pixel
 		}	 // end scanline
-		Serial.printf("Loaded in %d ms\n", millis() - startTime);
+		debug_i("Loaded in %d ms", millis() - startTime);
 		break;
 	}
 
 	fileClose(handle);
 	if(!goodBmp) {
-		Serial.println("BMP format not recognized.");
+		debug_e("BMP format not recognized.");
 	}
+
+	return goodBmp;
 }
