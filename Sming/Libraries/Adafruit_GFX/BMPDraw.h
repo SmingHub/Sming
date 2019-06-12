@@ -33,7 +33,7 @@ as well as Adafruit raw 1.8" TFT display
 
 #pragma once
 
-#include <SmingCore.h>
+#include "Arduino.h"
 
 /*
  * This function opens a Windows Bitmap (BMP) file and displays it at the given coordinates.
