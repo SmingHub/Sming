@@ -142,5 +142,6 @@ void downloadContentFiles()
 									if(success) {
 										startWebServer();
 									}
+									return 0;
 								}));
 }

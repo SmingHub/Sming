@@ -14,7 +14,7 @@ void listNetworks(bool succeeded, BssList list)
 		return;
 	}
 
-	for(int i = 0; i < list.count(); i++) {
+	for(unsigned i = 0; i < list.count(); i++) {
 		Serial.print("\tWiFi: ");
 		Serial.print(list[i].ssid);
 		Serial.print(", ");

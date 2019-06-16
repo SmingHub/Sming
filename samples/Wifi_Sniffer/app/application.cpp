@@ -16,8 +16,6 @@ static void restartTimer()
 	timer.startMs(scanTimeoutMs, false);
 }
 
-static unsigned channel = 1; ///< Channel being scanned
-
 static void printBeacon(const BeaconInfo& beacon)
 {
 	if(beacon.err != 0) {

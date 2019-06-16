@@ -77,7 +77,7 @@ void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 	// в верхний регистр
 	mac.toUpperCase();
 	// преобразуем из XXXXXXXXXXXX в XX-XX-XX-XX-XX-XX
-	for(int i = 2; i < mac.length(); i += 2) {
+	for(unsigned i = 2; i < mac.length(); i += 2) {
 		mac = mac.substring(0, i) + "-" + mac.substring(i);
 		i++;
 	}
