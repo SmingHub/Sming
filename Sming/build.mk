@@ -121,7 +121,7 @@ CFLAGS			= -Wall -Wundef -Wpointer-arith -Wno-comment $(CFLAGS_COMMON) \
          			-DARDUINO=106 -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DSMING_INCLUDED=1
 CONFIG_VARS += STRICT
 ifneq ($(STRICT),1)
-	CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-return-type -Wno-maybe-uninitialized
+	CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing
 endif
 
 CONFIG_VARS += ENABLE_GDB
