@@ -12,6 +12,12 @@ extern "C" {
 
 #define GDB_IRAM_ATTR
 
+// Weak attributes don't work for PE
+#ifdef __WIN32
+#undef WEAK_ATTR
+#define WEAK_ATTR
+#endif
+
 #ifdef __cplusplus
 }
 #endif
