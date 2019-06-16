@@ -22,10 +22,12 @@ WifiEventsClass::WifiEventsClass()
 	wifi_set_event_handler_cb([](System_Event_t* evt) { WifiEvents.WifiEventHandler(evt); });
 }
 
+#ifndef SMING_RELEASE
 static String macToStr(const uint8_t mac[])
 {
 	return makeHexString(mac, 6, ':');
 }
+#endif
 
 void WifiEventsClass::WifiEventHandler(System_Event_t* evt)
 {

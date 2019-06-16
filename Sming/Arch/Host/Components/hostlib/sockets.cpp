@@ -131,6 +131,7 @@ std::string socket_strerror()
 #else
 	ErrorCode = errno;
 	auto res = strerror_r(ErrorCode, buf, sizeof(buf));
+	(void)res;
 #endif
 	return buf[0] ? buf : std::string("Error #" + std::to_string(ErrorCode));
 }
