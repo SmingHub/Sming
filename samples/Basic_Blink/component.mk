@@ -1,39 +1,39 @@
-## Local build configuration
-## Parameters configured here will override default and ENV values.
+## Application Component configuration
+## Parameters configured here will override default and ENV values
 ## Uncomment and change examples:
 
 ## Add your source directories here separated by space
-# MODULES = app
-# EXTRA_INCDIR = include
+# COMPONENT_SRCDIRS := app
+# COMPONENT_SRCFILES :=
+# COMPONENT_INCDIRS := include
 
-## ESP_HOME sets the path where ESP tools and SDK are located.
-## Windows:
-# ESP_HOME = c:/Espressif
+## If you require any Arduino Libraries list them here
+# ARDUINO_LIBRARIES :=
 
-## MacOS / Linux:
-# ESP_HOME = /opt/esp-open-sdk
+## List the names of any additional Components required for this project
+# COMPONENT_DEPENDS :=
 
-## SMING_HOME sets the path where Sming framework is located.
-## Windows:
-# SMING_HOME = c:/tools/sming/Sming 
+## Set paths for any GIT submodules your application uses
+# COMPONENT_SUBMODULES :=
 
-## MacOS / Linux
-# SMING_HOME = /opt/sming/Sming
+## Append any targets to be built as dependencies of the project, such as generation of additional binary files
+# CUSTOM_TARGETS += 
 
-## COM port parameter is reqruied to flash firmware correctly.
-## Windows: 
-# COM_PORT = COM3
+## Additional object files to be included with the application library
+# EXTRA_OBJ :=
 
-## MacOS / Linux:
-# COM_PORT = /dev/tty.usbserial
+## Additional libraries to be linked into the project
+# EXTRA_LIBS :=
 
-## Com port speed
-# COM_SPEED	= 115200
+## Update any additional compiler flags
+# CFLAGS +=
+# CXXFLAGS +=
 
 ## Configure flash parameters (for ESP12-E and other new boards):
-# SPI_MODE = dio
+# SPI_MODE := dio
 
 ## SPIFFS options
-DISABLE_SPIFFS = 1
+DISABLE_SPIFFS := 1
 # SPIFF_FILES = files
 
+## Refer to Basic_rBoot sample for options relating to rBoot
