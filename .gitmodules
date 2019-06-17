@@ -49,7 +49,7 @@
 	ignore = dirty
 
 [submodule "ESP8266.Sdk"]
-	path = Sming/Arch/Esp8266/Components/Sdk/ESP8266_NONOS_SDK
+	path = Sming/Arch/Esp8266/Components/esp8266/ESP8266_NONOS_SDK
 	url = https://github.com/espressif/ESP8266_NONOS_SDK.git
 	ignore = dirty
 [submodule "ESP8266.esptool2"]
