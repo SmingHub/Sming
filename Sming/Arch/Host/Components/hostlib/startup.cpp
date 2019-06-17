@@ -23,7 +23,7 @@
 #include "sockets.h"
 #include "except.h"
 #include "options.h"
-#include "flashmem.h"
+#include <spi_flash/flashmem.h>
 #include "uart_server.h"
 #include <BitManipulations.h>
 #include <esp_timer_legacy.h>
