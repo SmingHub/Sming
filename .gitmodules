@@ -3,7 +3,7 @@
 	url = https://github.com/SmingHub/Sming.wiki.git
 	ignore = dirty
 [submodule "spiffs"]
-	path = Sming/Components/spiffs
+	path = Sming/Components/spiffs/spiffs
 	url = https://github.com/pellepl/spiffs.git
 	ignore = dirty
 [submodule "http-parser"]
