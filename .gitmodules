@@ -53,7 +53,7 @@
 	url = https://github.com/espressif/ESP8266_NONOS_SDK.git
 	ignore = dirty
 [submodule "ESP8266.esptool2"]
-	path = Sming/Arch/Esp8266/Tools/esptool2
+	path = Sming/Arch/Esp8266/Components/rboot/esptool2
 	url = https://github.com/raburton/esptool2.git
 	ignore = dirty
 
