@@ -19,12 +19,15 @@
 
 #pragma once
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 void host_printf(const char* fmt, ...);
 void host_printfp(const char* fmt, const char* pretty_function, ...);
+size_t host_nputs(const char* str, size_t length);
 void host_puts(const char* str);
 
 #ifdef __cplusplus

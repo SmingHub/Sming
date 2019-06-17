@@ -20,8 +20,8 @@
 #pragma once
 
 #include <driver/uart.h>
-#include "sockets.h"
-#include "threads.h"
+#include <hostlib/sockets.h>
+#include <hostlib/threads.h>
 
 #define UART_SOCKET_PORT_BASE 10000 ///< Port for UART0
 

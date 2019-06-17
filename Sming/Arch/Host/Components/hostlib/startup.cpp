@@ -24,7 +24,7 @@
 #include "except.h"
 #include "options.h"
 #include <spi_flash/flashmem.h>
-#include "uart_server.h"
+#include <driver/uart_server.h>
 #include <BitManipulations.h>
 #include <esp_timer_legacy.h>
 #include <esp_tasks.h>

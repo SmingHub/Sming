@@ -66,6 +66,11 @@ void host_printfp(const char* fmt, const char* pretty_function, ...)
 	host_puts(buffer);
 }
 
+size_t host_nputs(const char* str, size_t length)
+{
+	return fwrite(str, 1, length, stderr);
+}
+
 void host_puts(const char* str)
 {
 	fputs(str, stderr);

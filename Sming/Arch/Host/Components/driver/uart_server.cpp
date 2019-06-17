@@ -29,10 +29,32 @@ unsigned CUartServer::portBase = 10000;
 
 static CUartServer* uartServers[UART_COUNT];
 
+// Redirect the main serial port to console output
+static void redirectToConsole()
+{
+	auto onNotify = [](uart_t* uart, uart_notify_code_t code) {
+		if(code == UART_NOTIFY_AFTER_WRITE){
+			size_t avail;
+			void* data;
+			while((avail = uart->tx_buffer->getReadData(data)) != 0) {
+				host_nputs(static_cast<const char*>(data), avail);
+				uart->tx_buffer->skipRead(avail);
+			}
+		}
+	};
+	uart_set_notify(UART0, onNotify);
+}
+
 void CUartServer::startup(const UartServerConfig& config)
 {
 	if(config.portBase != 0) {
 		portBase = config.portBase;
+	}
+
+	// If no ports have been enabled then redirect port 0 output to host console
+	if(config.enableMask == 0) {
+		redirectToConsole();
+		return;
 	}
 
 	auto notify = [](uart_t* uart, uart_notify_code_t code) {
