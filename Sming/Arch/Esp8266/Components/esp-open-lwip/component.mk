@@ -1,95 +1,78 @@
-# => SMING
+COMPONENT_VARS			:= ENABLE_LWIPDEBUG ENABLE_ESPCONN
+ENABLE_LWIPDEBUG		?= 0
+ENABLE_ESPCONN			?= 0
+
+COMPONENT_CFLAGS := \
+	-DPBUF_RSV_FOR_WLAN \
+	-DEBUF_LWIP -DLWIP_OPEN_SRC \
+	-Wno-implicit-function-declaration \
+	-Wno-address \
+	-Wno-format \
+	-Wno-switch \
+	-Wno-pointer-sign \
+	-Wno-unused-function
 
 ifeq ($(SMING_RELEASE),1)
-	CFLAGS += -DLWIP_NOASSERT
+	COMPONENT_CFLAGS	+= -DLWIP_NOASSERT
 endif
 
-CONFIG_VARS += ENABLE_CUSTOM_LWIP ENABLE_LWIP_DEBUG ENABLE_ESPCONN
-ENABLE_CUSTOM_LWIP	?= 1
-ENABLE_ESPCONN		?= 0
-ifeq ($(ENABLE_CUSTOM_LWIP), 0)
-	LIBLWIP			:= lwip
-	LWIP_BASE		:= $(ARCH_COMPONENTS)/esp-lwip
-	EXTRA_INCDIR	+= $(LWIP_BASE)/include $(LWIP_BASE)
+ifeq ($(ENABLE_LWIPDEBUG), 1)
+	COMPONENT_CFLAGS	+= -DLWIP_DEBUG
+endif
+
+COMPONENT_SUBMODULES	:= esp-open-lwip
+COMPONENT_SRCDIRS		:=
+COMPONENT_SRCFILES		:= \
+	lwip/core/def.c \
+	lwip/core/dhcp.c \
+	lwip/core/dns.c \
+	lwip/core/init.c \
+	lwip/core/mem.c \
+	lwip/core/memp.c \
+	lwip/core/netif.c \
+	lwip/core/pbuf.c \
+	lwip/core/raw.c \
+	lwip/core/sntp.c \
+	lwip/core/stats.c \
+	lwip/core/sys_arch.c \
+	lwip/core/sys.c \
+	lwip/core/tcp.c \
+	lwip/core/tcp_in.c \
+	lwip/core/tcp_out.c \
+	lwip/core/timers.c \
+	lwip/core/udp.c \
+	lwip/core/ipv4/autoip.c \
+	lwip/core/ipv4/icmp.c \
+	lwip/core/ipv4/igmp.c \
+	lwip/core/ipv4/inet.c \
+	lwip/core/ipv4/inet_chksum.c \
+	lwip/core/ipv4/ip_addr.c \
+	lwip/core/ipv4/ip.c \
+	lwip/core/ipv4/ip_frag.c \
+	lwip/netif/etharp.c \
+	\
+	lwip/app/dhcpserver.c
+
+ifeq ($(ENABLE_ESPCONN),1)
+	COMPONENT_SRCFILES += \
+		$(addprefix lwip/app/,\
+			espconn.c \
+			espconn_tcp.c \
+			espconn_udp.c \
+			espconn_mdns.c) \
+		lwip/api/err.c \
+		lwip/core/mdns.c
 else
-	EXTRA_CFLAGS_LWIP 	:= -I$(SMING_HOME)/System/include -I$(ARCH_SYS)/include -I$(ARCH_COMPONENTS)/esp8266/include -I$(SMING_HOME)/Wiring
-	ENABLE_LWIPDEBUG ?= 0
-	ifeq ($(ENABLE_LWIPDEBUG), 1)
-		EXTRA_CFLAGS_LWIP += -DLWIP_DEBUG
-	endif
-
-	ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-		LWIP_BASE		:= $(ARCH_COMPONENTS)/esp-open-lwip/esp-open-lwip
-		SUBMODULES		+= $(LWIP_BASE)
-		EXTRA_INCDIR	+= $(LWIP_BASE)/include
-		ifeq ($(ENABLE_ESPCONN), 1)
-			LIBLWIP		:= lwip_full
-		else
-			LIBLWIP		:= lwip_open
-		endif
-		LWIP_BUILD = $(MAKE) -C $(LWIP_BASE) -f Makefile.open ENABLE_ESPCONN=$(ENABLE_ESPCONN) SDK_BASE=$(SDK_BASE) \
-			USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP) $(CFLAGS_COMMON)"
-	else ifeq ($(ENABLE_CUSTOM_LWIP), 2)
-		ifeq ($(ENABLE_ESPCONN), 1)
-			$(error LWIP2 does not support espconn_* functions. Make sure to set ENABLE_CUSTOM_LWIP to 0 or 1.)
-		endif
-		LWIP_BASE		:= $(ARCH_COMPONENTS)/lwip2/lwip2
-		SUBMODULES		+= $(LWIP_BASE)
-		EXTRA_INCDIR	+= $(LWIP_BASE)/glue-esp/include-esp $(LWIP_BASE)/include
-		LIBLWIP			?= lwip2
-		LWIP_BUILD		:= $(MAKE) -C $(LWIP_BASE) -f Makefile.sming ENABLE_ESPCONN=$(ENABLE_ESPCONN) \
-						SDK_BASE=$(SDK_BASE) SDK_INTERNAL=$(SDK_INTERNAL) \
-						USER_LIBDIR="$(SMING_HOME)/$(USER_LIBDIR)/" CFLAGS_EXTRA="$(EXTRA_CFLAGS_LWIP)"
-	endif
-	LIBS				+= $(LIBLWIP)
-	CLEAN 				+= lwip-clean
-
-$(call UserLibPath,lwip%): | $(LWIP_BASE)/.submodule
-	$(vecho) "Building $(notdir $@)..."
-	$(Q) $(LWIP_BUILD) CC=$(CC) AR=$(AR) all
-
-.PHONY: lwip-clean
-lwip-clean:
-	-$(Q) -$(LWIP_BUILD) clean
-
+	COMPONENT_SRCFILES	+= espconn_dummy.c
 endif
+COMPONENT_SRCFILES		:= $(addprefix esp-open-lwip/,$(COMPONENT_SRCFILES))
+COMPONENT_INCDIRS		:= esp-open-lwip/include
 
-
-
-
-
-# => APP
-
-CONFIG_VARS			+= ENABLE_CUSTOM_LWIP LIBLWIP
-ENABLE_CUSTOM_LWIP	?= 1
-ifeq ($(ENABLE_CUSTOM_LWIP), 0)
-	LIBLWIP			:= lwip
-	LWIP_BASE		:= $(ARCH_COMPONENTS)/esp-lwip
-	EXTRA_INCDIR	+= $(LWIP_BASE)/include $(LWIP_BASE)
-else ifeq ($(ENABLE_CUSTOM_LWIP), 1)
-	LIBLWIP			:= lwip_open
-	LWIP_BASE		:= $(ARCH_COMPONENTS)/esp-open-lwip/esp-open-lwip
-	EXTRA_INCDIR	+= $(LWIP_BASE)/include
-	ifeq ($(ENABLE_ESPCONN), 1)
-		LIBLWIP		:= lwip_full
-	endif
-else ifeq ($(ENABLE_CUSTOM_LWIP), 2)
-	ifeq ($(ENABLE_ESPCONN), 1)
-		$(error LWIP2 does not support espconn_* functions. Make sure to set ENABLE_CUSTOM_LWIP to 0 or 1.)
-	endif
-	LIBLWIP			:= lwip2
-	LWIP_BASE		:= $(ARCH_COMPONENTS)/lwip2/lwip2
-	EXTRA_INCDIR	+= $(LWIP_BASE)/glue-esp/include-esp $(LWIP_BASE)/include
-else
-	EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/esp-lwip/lwip/include
-endif
-LIBS				+= $(LIBLWIP)
-
-ifneq ($(ENABLE_CUSTOM_LWIP), 0)
-	LIBLWIP_DST		:= $(call UserLibPath,$(LIBLWIP))
-	CUSTOM_TARGETS	+= $(LIBLWIP_DST)
-
-$(LIBLWIP_DST):
-	$(call MakeLibrary,$@,ENABLE_CUSTOM_LWIP=$(ENABLE_CUSTOM_LWIP) ENABLE_ESPCONN=$(ENABLE_ESPCONN))
-endif
-
+# Fussy about include paths so override default
+INCDIR := \
+	$(COMPONENT_PATH)/esp-open-lwip/include \
+	$(SDK_BASE)/include \
+	$(SMING_HOME)/System/include \
+	$(ARCH_SYS)/include \
+	$(ARCH_COMPONENTS)/esp8266/include \
+	$(SMING_HOME)/Wiring 
