@@ -74,9 +74,9 @@ static xBlockLink xStart, *pxEnd = NULL;
 
 /*------------------------��������-----------------------------------*/
 
-static void prvInsertBlockIntoFreeList( xBlockLink *pxBlockToInsert ) ;//ICACHE_FLASH_ATTR;
+//static void prvInsertBlockIntoFreeList( xBlockLink *pxBlockToInsert ) ;//ICACHE_FLASH_ATTR;
 
-static void prvHeapInit( void ) ;//ICACHE_FLASH_ATTR;
+//static void prvHeapInit( void ) ;//ICACHE_FLASH_ATTR;
 
 void vApplicationMallocFailedHook( void ) ;//ICACHE_FLASH_ATTR;
 
