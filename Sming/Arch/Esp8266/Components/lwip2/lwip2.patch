@@ -81,33 +81,61 @@ index 0e42073..2846506 100644
  struct ip_addr;
  void wifi_softap_set_station_info (uint8_t* mac, struct ip_addr*);
 diff --git a/makefiles/Makefile.build-lwip2 b/makefiles/Makefile.build-lwip2
-index 928bb63..289d48f 100644
+index 928bb63..ccdbca7 100644
 --- a/makefiles/Makefile.build-lwip2
 +++ b/makefiles/Makefile.build-lwip2
-@@ -29,9 +29,9 @@ $(LWIP_LIB_RELEASE): $(LWIP_LIB)
+@@ -14,24 +14,25 @@ IRAM	+= sys_timeout_LWIP2
+ IRAM	+= sntp_time_inc sntp_get_current_timestamp
+ ####################################
  
- .PHONY: $(LWIP_LIB)
- $(LWIP_LIB):
++LWIP_LIB_BUILD = $(BUILD)/$(LWIP_LIB)
++
+ all: $(LWIP_LIB_RELEASE)
+ 
+-$(LWIP_LIB_RELEASE): $(LWIP_LIB)
++$(LWIP_LIB_RELEASE): $(LWIP_LIB_BUILD)
+ 	@# according to eagle.app.v6.common.ld:
+ 	@# putting symbols into .gnu.linkonce.literal.* instead of (default:).text.*
+ 	@# will eventually move them in iram: section .text.* instead of .irom0.text.*
+ 	@# check this with xtensa-lx106-elf-objdump -t <elfresult> | grep <symbol>
+-	@( [ ! -r $(LWIP_LIB_RELEASE) ] || [ $(LWIP_LIB) -nt $(LWIP_LIB_RELEASE) ] ) && cp $(LWIP_LIB) $(LWIP_LIB_RELEASE) && for i in $(IRAM); do \
++	@( [ ! -r $@ ] || [ $< -nt $@ ] ) && cp $< $@ && for i in $(IRAM); do \
+ 		echo "---- moving $$i in IRAM"; \
+-		$(OC) --rename-section .text.$$i=.gnu.linkonce.literal.$$i $(LWIP_LIB_RELEASE); \
++		$(OC) --rename-section .text.$$i=.gnu.linkonce.literal.$$i $@; \
+ 		true; \
+ 	done || true
+ 
+-.PHONY: $(LWIP_LIB)
+-$(LWIP_LIB):
 -	make -f makefiles/Makefile.glue-esp
 -	make -f makefiles/Makefile.glue
 -	make -C lwip2-src/src -f ../../makefiles/Makefile.lwip2 BUILD=../../$(BUILD) LWIP_LIB=../../$(LWIP_LIB)
-+	make -f makefiles/Makefile.glue-esp SDK_INTERNAL=$(SDK_INTERNAL)
-+	make -f makefiles/Makefile.glue SDK_INTERNAL=$(SDK_INTERNAL)
-+	make -C lwip2-src/src -f ../../makefiles/Makefile.lwip2 BUILD=../../$(BUILD) LWIP_LIB=../../$(LWIP_LIB) SDK_INTERNAL=$(SDK_INTERNAL)
++$(LWIP_LIB_BUILD):
++	make -f makefiles/Makefile.glue-esp SDK_INTERNAL=$(SDK_INTERNAL) LWIP_LIB=$@
++	make -f makefiles/Makefile.glue SDK_INTERNAL=$(SDK_INTERNAL) LWIP_LIB=$@
++	make -C lwip2-src/src -f ../../makefiles/Makefile.lwip2 LWIP_LIB=$@ SDK_INTERNAL=$(SDK_INTERNAL)
  
  section-show:
  	@for i in $(IRAM); do \
+@@ -53,4 +54,4 @@ install: $(LWIP_LIB_RELEASE)
+ 	touch $(LWIP_INCLUDES_RELEASE)/espconn.h
+ 
+ clean:
+-	rm -rf build $(LWIP_LIB)
++	rm -rf $(BUILD)
 diff --git a/makefiles/Makefile.defs b/makefiles/Makefile.defs
-index 7ab4f87..fb60baf 100644
+index 7ab4f87..025a23c 100644
 --- a/makefiles/Makefile.defs
 +++ b/makefiles/Makefile.defs
 @@ -4,7 +4,9 @@ AR			= $(TOOLS)ar
  OC			= $(TOOLS)objcopy
  OD			= $(TOOLS)objdump
  
+-BUILD			= build
 +SDK_INTERNAL ?= 0
 +
- BUILD			= build
++BUILD			?= build
  BUILD_FLAGS = -Wall -Wextra -std=c99 -c -Os -g -Wpointer-arith -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -falign-functions=4 -MMD -std=gnu99 -ffunction-sections -fdata-sections
 -BUILD_DEFINES = -D__ets__ -DICACHE_FLASH -U__STRICT_ANSI__ -DLWIP_OPEN_SRC -DLWIP_BUILD -DUSE_OPTIMIZE_PRINTF
 +BUILD_DEFINES = -D__ets__ -DICACHE_FLASH -U__STRICT_ANSI__ -DLWIP_OPEN_SRC -DLWIP_BUILD -DUSE_OPTIMIZE_PRINTF -DSDK_INTERNAL=$(SDK_INTERNAL)
