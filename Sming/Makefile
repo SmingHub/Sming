@@ -42,33 +42,6 @@ SUBMODULES :=
 SAMPLES_DIRS := $(shell ls -1 ../samples)
 DOXYGEN	:= $(shell command -v doxygen 2> /dev/null)
 
-# => WPS
-CONFIG_VARS += ENABLE_WPS
-ifeq ($(ENABLE_WPS), 1)
-   CFLAGS += -DENABLE_WPS=1
-endif
-
-# => http-parser
-SUBMODULES		+= $(COMPONENTS)/http-parser
-MODULES			+= $(COMPONENTS)/http-parser
-
-# => libb64
-MODULES			+= $(COMPONENTS)/libb64
-
-# => websocket-parser
-SUBMODULES		+= $(COMPONENTS)/ws_parser
-MODULES			+= $(COMPONENTS)/ws_parser
-
-# => mqtt-codec
-SUBMODULES		+= $(COMPONENTS)/mqtt-codec
-MODULES			+= $(COMPONENTS)/mqtt-codec/src
-EXTRA_INCDIR	+= $(COMPONENTS)/mqtt-codec/src
-
-
-# => yuarel
-SUBMODULES		+= $(COMPONENTS)/libyuarel
-MODULES			+= $(COMPONENTS)/libyuarel
-
 include $(ARCH_BASE)/sming.mk
 
 # Get list of subdirectory paths

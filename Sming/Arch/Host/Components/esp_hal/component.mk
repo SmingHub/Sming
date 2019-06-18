@@ -1,0 +1,10 @@
+
+#
+MODULES			+= $(ARCH_COMPONENTS)/esp_hal
+EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/esp_hal/include $(ESP8266_COMPONENTS)/esp8266/include
+
+
+
+#APP
+
+EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/esp_hal/include $(ESP8266_COMPONENTS)/esp8266/include

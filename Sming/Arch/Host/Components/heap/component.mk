@@ -1,0 +1,11 @@
+#
+MODULES			+= $(ARCH_COMPONENTS)/heap
+EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/heap/include
+
+
+
+
+# APP
+
+EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/heap/include
+

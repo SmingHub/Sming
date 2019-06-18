@@ -1,1 +1,1 @@
-include $(SMING_HOME)/Makefile-app.mk
+include $(SMING_HOME)/project.mk

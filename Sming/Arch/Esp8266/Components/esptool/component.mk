@@ -52,6 +52,20 @@ endif
 
 CFLAGS		+= -DSPIFF_SIZE=$(SPIFF_SIZE)
 
+## => Makefile-windows.mk
+ESPTOOL		 ?= $(SDK_TOOLS)/esptool/esptool.py
+## => Makefile-bsd.mk
+ESPTOOL		 ?= $(ESP_HOME)/esptool/esptool.py
+## => Makefile-linux.mk
+ESPTOOL		 ?= $(ESP_HOME)/esptool/esptool.py
+## => Makefile-macos.mk
+ESPTOOL		 ?= $(ESP_HOME)/esptool/esptool.py
+
+
 ESPTOOL		:= $(ESPTOOL) -p $(COM_PORT) -b $(COM_SPEED_ESPTOOL)
 WRITE_FLASH	:= $(ESPTOOL) write_flash $(flashimageoptions)
 ERASE_FLASH	:= $(ESPTOOL) erase_flash
+
+# Default COM port speed (used for flashing)
+COM_SPEED_ESPTOOL ?= $(COM_SPEED)
+

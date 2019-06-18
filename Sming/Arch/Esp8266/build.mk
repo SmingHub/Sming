@@ -18,6 +18,23 @@ endif
 ## MacOS / Linux:
 # ESP_HOME = /opt/esp-open-sdk
 
+## => Makefile-bsd.mk
+# ESP8266 sdk package home directory
+ESP_HOME ?= /usr/local/esp8266/esp-open-sdk
+
+## => Makefile-linux.mk
+# ESP8266 sdk package home directory
+ESP_HOME ?= /opt/esp-open-sdk
+
+## => Makefile-macos.mk
+# ESP8266 sdk package home directory
+ESP_HOME ?= /opt/esp-open-sdk
+
+## => Makefile-windows.mk
+# ESP8266 sdk package home directory
+ESP_HOME ?= c:/Espressif
+
+
 CONFIG_VARS	+= ESP_HOME
 ESP_HOME	:= $(call FixPath,$(ESP_HOME))
 export ESP_HOME
@@ -65,6 +82,4 @@ SDK_LIBDIR	:= $(SDK_BASE)/lib
 SDK_INCDIR	:= $(SDK_BASE)/include
 
 # => Tools
-ESPTOOL2	= $(ARCH_TOOLS)/esptool2/esptool2$(TOOL_EXT)
-SPIFFY		= $(ARCH_TOOLS)/spiffy/spiffy$(TOOL_EXT)
 MEMANALYZER = python $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP)$(TOOL_EXT)

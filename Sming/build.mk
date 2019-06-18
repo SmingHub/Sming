@@ -92,18 +92,6 @@ GIT ?= git
 # CMake command
 CMAKE ?= cmake
 
-### Debug output parameters
-# By default `debugf` does not print file name and line number. If you want this enabled set the directive below to 1
-CONFIG_VARS += DEBUG_PRINT_FILENAME_AND_LINE
-DEBUG_PRINT_FILENAME_AND_LINE ?= 0
-
-# Default debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0
-CONFIG_VARS += DEBUG_VERBOSE_LEVEL
-DEBUG_VERBOSE_LEVEL ?= 2
-
-# Disable CommandExecutor functionality if not used and save some ROM and RAM
-CONFIG_VARS += ENABLE_CMD_EXECUTOR
-ENABLE_CMD_EXECUTOR ?= 1
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -118,22 +106,17 @@ endif
 CFLAGS_COMMON	= -Wl,-EL -finline-functions -fdata-sections -ffunction-sections
 # compiler flags using during compilation of source files. Add '-pg' for debugging
 CFLAGS			= -Wall -Wundef -Wpointer-arith -Wno-comment $(CFLAGS_COMMON) \
-         			-DARDUINO=106 -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR) -DSMING_INCLUDED=1
+         			-DARDUINO=106 -DSMING_INCLUDED=1
 CONFIG_VARS += STRICT
 ifneq ($(STRICT),1)
 	CFLAGS += -Werror -Wno-sign-compare -Wno-parentheses -Wno-unused-variable -Wno-unused-but-set-variable -Wno-strict-aliasing
-endif
-
-CONFIG_VARS += ENABLE_GDB
-ifeq ($(ENABLE_GDB), 1)
-	CFLAGS += -ggdb -DENABLE_GDB=1
 endif
 
 CONFIG_VARS += SMING_RELEASE
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
-	CFLAGS += -Os -DSMING_RELEASE=1 -DLWIP_NOASSERT
+	CFLAGS += -Os -DSMING_RELEASE=1
 else ifeq ($(ENABLE_GDB), 1)
 	CFLAGS += -Og
 else
@@ -144,18 +127,9 @@ endif
 CONFIG_VARS	+= USER_CFLAGS
 CFLAGS		+= $(USER_CFLAGS)
 
-#Append debug options
-CONFIG_VARS += SMING_RELEASE
-CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
-
 CXXFLAGS = $(CFLAGS) -std=c++11 -felide-constructors
 ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
-endif
-
-# => LOCALE
-ifdef LOCALE
-	CFLAGS += -DLOCALE=$(LOCALE)
 endif
 
 include $(SMING_HOME)/$(ARCH_BASE)/build.mk
@@ -228,22 +202,3 @@ define PrintHelp
 			} ' $(MAKEFILE_LIST)
 	$(info )
 endef
-
-
-# => Main Sming library
-CONFIG_VARS += ENABLE_SSL
-ifeq ($(ENABLE_SSL),1)
-	LIBSMING		= smingssl
-	SMING_FEATURES	= SSL
-else
-	LIBSMING		= sming
-	SMING_FEATURES	= none
-endif
-LIBSMING_DST 		= $(call UserLibPath,$(LIBSMING))
-
-# => MQTT
-# Flags for compatability with old versions (most of them should disappear with the next major release)
-CONFIG_VARS += MQTT_NO_COMPAT
-ifeq ($(MQTT_NO_COMPAT),1)
-	CFLAGS	+= -DMQTT_NO_COMPAT=1
-endif
