@@ -12,7 +12,7 @@ Timer connectionTimer;
 String lastModified;
 
 // Instead of using a SPIFFS file, here we demonstrate usage of imported Flash Strings
-IMPORT_FSTR(flashSettings, "web/build/settings.html")
+IMPORT_FSTR(flashSettings, PROJECT_DIR "/web/build/settings.html")
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {

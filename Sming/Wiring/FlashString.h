@@ -51,7 +51,9 @@
  *
  *  IMPORT_FSTR(name, file) - binds a file into the firmware image as a FlashString object
  *  This needs to be used at file scope, example:
- *  	IMPORT_FSTR(myFlashData, "files/myFlashData.bin")
+ *  	IMPORT_FSTR(myFlashData, PROJECT_DIR "/files/myFlashData.bin")
+ *
+ *  Note the use of PROJECT_DIR to locate the file using an absolute path.
  *
  *	Both DEFINE_PSTR and PSTR_ARRAY load a PSTR into a stack buffer, but using sizeof() on that buffer will return
  *	a larger value than the string itself because it's aligned. Calling sizeof() on the original flash data will
@@ -157,9 +159,13 @@
 	LOAD_FSTR(_name, _##_name)
 
 /** @brief Define a FlashString containing data from an external file
+ *  @param name Name to use for referencing the FlashString object in code
+ *  @param file Path to the file to be included. This should be an absolute path.
  *  @note This provides a more efficient way to read constant (read-only) file data.
  *  The file content is bound into firmware image at link time.
  *  @note The FlashString object must be referenced or the linker won't emit it.
+ *  @note Use the PROJECT_DIR to locate files in your project's source tree. For example:
+ *  		IMPORT_FSTR(myFlashString, PROJECT_DIR "/files/my_flash_file.txt");
  */
 #ifdef __WIN32
 #define IMPORT_FSTR(name, file)                                                                                        \
