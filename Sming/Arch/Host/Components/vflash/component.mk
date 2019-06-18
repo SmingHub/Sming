@@ -6,21 +6,6 @@
 CONFIG_VARS += SPI_SPEED SPI_MODE SPI_SIZE SPIFF_SIZE
 SPI_SIZE		?= 512K
 
-ifeq ($(SPI_SIZE), 256K)
-	SPIFF_SIZE			?= 131072  #128K
-else ifeq ($(SPI_SIZE), 1M)
-	SPIFF_SIZE			?= 524288  #512K
-else ifeq ($(SPI_SIZE), 2M)
-	SPIFF_SIZE			?= 524288  #512K
-else ifeq ($(SPI_SIZE), 4M)
-	SPIFF_SIZE			?= 524288  #512K
-else
-	SPIFF_SIZE			?= 196608  #192K
-endif
-
-CFLAGS		+= -DSPIFF_SIZE=$(SPIFF_SIZE)
-
-
 # Use DD to update $(FW_BASE)/flash.bin
 
 DD			:= dd

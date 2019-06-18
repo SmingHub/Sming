@@ -7,7 +7,7 @@
 HOST_CC ?= gcc
 HOST_LD ?= gcc
 
-INCDIR := -I$(SPIFFS_SMING) -I$(SPIFFS_BASE)/src
+INCDIR := -I.. -I../spiffs/src
 CFLAGS := -O2 -Wall -Wno-unused-value
 
 ifeq ("$(V)","1")
@@ -25,7 +25,7 @@ OBJS := $(addprefix $(BUILD_DIR)/,spiffy.o spiffs_cache.o spiffs_nucleus.o spiff
 
 all: $(TARGET)
 
-$(BUILD_DIR)/%.o: $(SPIFFS_BASE)/src/%.c
+$(BUILD_DIR)/%.o: ../spiffs/src/%.c
 	$(vecho) "CC $<"
 	$(Q) $(HOST_CC) $(CFLAGS) $(INCDIR) -c $< -o $@
 

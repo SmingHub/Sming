@@ -18,7 +18,7 @@ static u8_t spiffs_work_buf[LOG_PAGE_SIZE*2];
 static u8_t spiffs_fds[32*4];
 static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE+32)*4];
 
-#define S_DBG
+#define S_DBG(fmt, ...)
 //#define S_DBG printf
 
 static FILE *rom = 0;
