@@ -232,6 +232,8 @@ uint8_t BMP180::SetResolution(uint8_t sampleResolution, bool oversample)
         default:
             return ErrorCode_1_Num;
     }
+
+    return 0;
 }
 
 void BMP180::Write(int address, int data)

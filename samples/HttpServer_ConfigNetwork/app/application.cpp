@@ -101,7 +101,7 @@ void onAjaxNetworkList(HttpRequest& request, HttpResponse& response)
 	}
 
 	JsonArray netlist = json.createNestedArray("available");
-	for(int i = 0; i < networks.count(); i++) {
+	for(unsigned i = 0; i < networks.count(); i++) {
 		if(networks[i].hidden)
 			continue;
 		JsonObject item = netlist.createNestedObject();
@@ -196,7 +196,7 @@ void startServers()
 void networkScanCompleted(bool succeeded, BssList list)
 {
 	if(succeeded) {
-		for(int i = 0; i < list.count(); i++)
+		for(unsigned i = 0; i < list.count(); i++)
 			if(!list[i].hidden && list[i].ssid.length() > 0)
 				networks.add(list[i]);
 	}

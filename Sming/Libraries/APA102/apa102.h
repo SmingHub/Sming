@@ -60,8 +60,8 @@ public:
 
 protected:
     uint16_t numLEDs;
-    uint8_t *LEDbuffer;
     uint8_t brightness;                 // global brightness 0..31 -> 0..100%
+    uint8_t *LEDbuffer;
     
     SPISettings SPI_APA_Settings = SPISettings(4000000, MSBFIRST, SPI_MODE3);
     SPIBase & pSPI;

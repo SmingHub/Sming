@@ -130,7 +130,10 @@ std::string socket_strerror()
 				   ErrorCode, 0, buf, sizeof(buf), nullptr);
 #else
 	ErrorCode = errno;
-	auto res = strerror_r(ErrorCode, buf, sizeof(buf));
+	char* res = strerror_r(ErrorCode, buf, sizeof(buf));
+	if(res == nullptr) {
+		strcpy(buf, "Unknown");
+	}
 #endif
 	return buf[0] ? buf : std::string("Error #" + std::to_string(ErrorCode));
 }

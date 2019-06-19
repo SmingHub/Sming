@@ -424,3 +424,223 @@ index 00000000..5f3b717
 @@ -0,0 +1,2 @@
 +name=ITEAD Arduino_Nextion Library
 +
+diff --git a/NexRtc.cpp b/NexRtc.cpp
+index 4350acf..641bc14 100755
+--- a/NexRtc.cpp
++++ b/NexRtc.cpp
+@@ -20,3 +20,2 @@ bool NexRtc::write_rtc_time(char *time)
+     String cmd = String("rtc");
+-    int i;
+     
+@@ -34,3 +33,5 @@ bool NexRtc::write_rtc_time(char *time)
+         sendCommand(cmd.c_str()); 
+-        recvRetCommandFinished();
++        if (!recvRetCommandFinished()) {
++        	return false;
++        }
+         
+@@ -40,3 +41,5 @@ bool NexRtc::write_rtc_time(char *time)
+         sendCommand(cmd.c_str());
+-        recvRetCommandFinished();
++        if (!recvRetCommandFinished()) {
++        	return false;
++        }
+         
+@@ -46,3 +49,5 @@ bool NexRtc::write_rtc_time(char *time)
+         sendCommand(cmd.c_str());
+-        recvRetCommandFinished();
++        if (!recvRetCommandFinished()) {
++        	return false;
++        }
+         
+@@ -52,3 +57,5 @@ bool NexRtc::write_rtc_time(char *time)
+         sendCommand(cmd.c_str());
+-        recvRetCommandFinished();
++        if (!recvRetCommandFinished()) {
++        	return false;
++        }
+         
+@@ -58,3 +65,5 @@ bool NexRtc::write_rtc_time(char *time)
+         sendCommand(cmd.c_str());
+-        recvRetCommandFinished();
++        if (!recvRetCommandFinished()) {
++        	return false;
++        }
+         
+@@ -64,3 +73,3 @@ bool NexRtc::write_rtc_time(char *time)
+         sendCommand(cmd.c_str());
+-        recvRetCommandFinished();
++        return recvRetCommandFinished();
+         
+@@ -77,3 +86,2 @@ bool NexRtc::write_rtc_time(uint32_t *time)
+     String cmd = String("rtc");
+-    int i;
+     
+@@ -90,3 +98,5 @@ bool NexRtc::write_rtc_time(uint32_t *time)
+      sendCommand(cmd.c_str()); 
+-     recvRetCommandFinished();
++     if (!recvRetCommandFinished()) {
++    	 return false;
++     }
+         
+@@ -96,3 +106,5 @@ bool NexRtc::write_rtc_time(uint32_t *time)
+      sendCommand(cmd.c_str());
+-     recvRetCommandFinished();
++     if (!recvRetCommandFinished()) {
++    	 return false;
++     }
+         
+@@ -102,3 +114,5 @@ bool NexRtc::write_rtc_time(uint32_t *time)
+      sendCommand(cmd.c_str());
+-     recvRetCommandFinished();
++     if (!recvRetCommandFinished()) {
++    	 return false;
++     }
+         
+@@ -108,3 +122,5 @@ bool NexRtc::write_rtc_time(uint32_t *time)
+      sendCommand(cmd.c_str());
+-     recvRetCommandFinished();
++     if (!recvRetCommandFinished()) {
++    	 return false;
++     }
+         
+@@ -114,3 +130,5 @@ bool NexRtc::write_rtc_time(uint32_t *time)
+      sendCommand(cmd.c_str());
+-     recvRetCommandFinished();
++     if (!recvRetCommandFinished()) {
++    	 return false;
++     }
+         
+@@ -120,3 +138,3 @@ bool NexRtc::write_rtc_time(uint32_t *time)
+      sendCommand(cmd.c_str());
+-     recvRetCommandFinished();
++     return recvRetCommandFinished();
+  
+@@ -173,3 +191,5 @@ uint32_t NexRtc::read_rtc_time(char *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&year);
++    if (!recvRetNumber(&year)) {
++    	return false;
++    }
+     
+@@ -178,3 +198,5 @@ uint32_t NexRtc::read_rtc_time(char *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&mon);
++    if (!recvRetNumber(&mon)) {
++    	return false;
++    }
+     
+@@ -183,3 +205,5 @@ uint32_t NexRtc::read_rtc_time(char *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&day);
++    if (!recvRetNumber(&day)) {
++    	return false;
++    }
+     
+@@ -188,3 +212,5 @@ uint32_t NexRtc::read_rtc_time(char *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&hour);
++    if (!recvRetNumber(&hour)) {
++    	return false;
++    }
+     
+@@ -193,3 +219,5 @@ uint32_t NexRtc::read_rtc_time(char *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&min);
++    if (!recvRetNumber(&min)) {
++    	return false;
++    }
+     
+@@ -198,3 +226,5 @@ uint32_t NexRtc::read_rtc_time(char *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&sec);
++    if (!recvRetNumber(&sec)) {
++    	return false;
++    }
+     
+@@ -203,3 +233,5 @@ uint32_t NexRtc::read_rtc_time(char *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&week);
++    if (!recvRetNumber(&week)) {
++    	return false;
++    }
+     
+@@ -231,3 +263,3 @@ uint32_t NexRtc::read_rtc_time(char *time,uint32_t len)
+     else{
+-        for(int i=0;i<len;i++)
++        for(unsigned i=0;i<len;i++)
+         {
+@@ -237,2 +269,3 @@ uint32_t NexRtc::read_rtc_time(char *time,uint32_t len)
+   
++    return true;
+ }
+@@ -246,3 +279,5 @@ uint32_t NexRtc::read_rtc_time(uint32_t *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&time_buf[0]);
++    if (!recvRetNumber(&time_buf[0])) {
++    	return false;
++    }
+     
+@@ -251,3 +286,5 @@ uint32_t NexRtc::read_rtc_time(uint32_t *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&time_buf[1]);
++    if (!recvRetNumber(&time_buf[1])) {
++    	return false;
++    }
+     
+@@ -256,3 +293,5 @@ uint32_t NexRtc::read_rtc_time(uint32_t *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&time_buf[2]);
++    if (!recvRetNumber(&time_buf[2])) {
++    	return false;
++    }
+     
+@@ -261,3 +300,5 @@ uint32_t NexRtc::read_rtc_time(uint32_t *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&time_buf[3]);
++    if (!recvRetNumber(&time_buf[3])) {
++    	return false;
++    }
+     
+@@ -266,3 +307,5 @@ uint32_t NexRtc::read_rtc_time(uint32_t *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&time_buf[4]);
++    if (!recvRetNumber(&time_buf[4])) {
++    	return false;
++    }
+     
+@@ -271,3 +314,5 @@ uint32_t NexRtc::read_rtc_time(uint32_t *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&time_buf[5]);
++    if (!recvRetNumber(&time_buf[5])) {
++    	return false;
++    }
+     
+@@ -276,6 +321,8 @@ uint32_t NexRtc::read_rtc_time(uint32_t *time,uint32_t len)
+     sendCommand(cmd.c_str());
+-    recvRetNumber(&time_buf[6]);
++    if (!recvRetNumber(&time_buf[6])) {
++    	return false;
++    }
+     
+ 
+-    for(int i=0;i<len;i++)
++    for(unsigned i=0;i<len;i++)
+     {
+@@ -284,2 +331,3 @@ uint32_t NexRtc::read_rtc_time(uint32_t *time,uint32_t len)
+  
++    return true;
+ }
+@@ -290,3 +338,2 @@ uint32_t NexRtc::read_rtc_time(char *time_type,uint32_t *number)
+     String cmd = String("get rtc");
+-    char buf[10] = {0};
+     
+diff --git a/NexPage.cpp b/NexPage.cpp
+index e6ca350..b701ca1 100644
+--- a/NexPage.cpp
++++ b/NexPage.cpp
+@@ -24,4 +24,2 @@ bool NexPage::show(void)
+ {
+-    uint8_t buffer[4] = {0};
+-
+     const char *name = getObjName();
