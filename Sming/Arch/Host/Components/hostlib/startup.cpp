@@ -203,7 +203,8 @@ int main(int argc, char* argv[])
 		sockets_initialise();
 		CUartServer::startup(config.uart);
 
-		if(host_lwip_init(&config.lwip)) {
+		bool lwip_initialised = host_lwip_init(&config.lwip);
+		if(lwip_initialised) {
 			host_wifi_lwip_init_complete();
 		}
 
@@ -219,7 +220,9 @@ int main(int argc, char* argv[])
 		while(!done) {
 			host_service_tasks();
 			host_service_timers();
-			host_lwip_service();
+			if(lwip_initialised) {
+				host_lwip_service();
+			}
 			system_soft_wdt_feed();
 		}
 
