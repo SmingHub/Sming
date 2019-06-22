@@ -16,7 +16,8 @@ static uint8 pinModes[PIN_MAX];
 
 static inline bool checkPin(uint16_t pin)
 {
-	if(pin < 16) {
+	// Wemos D1 mini has pin 16
+	if(pin <= 16) {
 		return true;
 	} else {
 		hostmsg("BAD PIN %u", pin);
