@@ -20,7 +20,7 @@ const uint8_t esp8266_gpioToFn[16] = {0x34, 0x18, 0x38, 0x14, 0x3C, 0x40, 0x1C, 
 
 void pinMode(uint16_t pin, uint8_t mode)
 {
-	if(pin <= 16) {
+	if(pin < 16) {
 		if(mode == SPECIAL) {
 			GPC(pin) = (GPC(pin) &
 						(0xF << GPCI)); //SOURCE(GPIO) | DRIVER(NORMAL) | INT_TYPE(UNCHANGED) | WAKEUP_ENABLE(DISABLED)
