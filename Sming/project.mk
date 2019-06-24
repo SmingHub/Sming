@@ -421,7 +421,8 @@ clean: ##Remove all generated build files (but leave build config intact)
 
 .PHONY: gdb
 gdb: kill_term ##Run the debugger console
-	$(GDB)
+	$(GDB_CMDLINE)
+
 
 # Stack trace decoder
 CACHE_VARS += TRACE

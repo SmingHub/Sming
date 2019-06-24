@@ -1,21 +1,25 @@
-# => APP
+COMPONENT_LIBNAME :=
 
-CONFIG_VARS			+= ENABLE_GDB
-GDBSTUB_BASE		:= $(ARCH_COMPONENTS)/gdbstub
-APPCODE				+= $(GDBSTUB_BASE)/appcode
-EXTRA_INCDIR		+= $(GDBSTUB_BASE)
+COMPONENT_APPCODE	:= appcode
+COMPONENT_INCDIRS	:= . $(ESP8266_COMPONENTS)/driver
+
 ifeq ($(ENABLE_GDB), 1)
-	APPCODE			+= $(GDBSTUB_BASE)
-	CUSTOM_TARGETS	+= gdb_symbols
+COMPONENT_APPCODE	+= .
+CUSTOM_TARGETS		+= gdb_symbols
+SYMBOLS_SOURCEDIR	:= $(COMPONENT_PATH)/symbols
 
 # Copy symbols required by GDB into build directory
 .PHONY: gdb_symbols
 gdb_symbols: $(BUILD_BASE)/bootrom.elf
 
 $(BUILD_BASE)/%.elf:
-	$(Q) cp $(ARCH_COMPONENTS)/gdbstub/symbols/$(notdir $@) $@
+	$(Q) cp $(SYMBOLS_SOURCEDIR)/$(@F) $@
 endif
 
-# Full GDB command line
-GDB := trap '' INT; $(GDB) -x $(ARCH_COMPONENTS)/gdbstub/gdbcmds -b $(COM_SPEED_SERIAL) -ex "target remote $(COM_PORT)"
+CACHE_VARS			+= COM_PORT_GDB COM_SPEED_GDB
+COM_PORT_GDB		?= $(COM_PORT)
+COM_SPEED_GDB		?= $(COM_SPEED)
 
+# Full GDB command line
+GDBSTUB_DIR := $(COMPONENT_PATH)
+GDB_CMDLINE = trap '' INT; $(GDB) -x $(GDBSTUB_DIR)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
