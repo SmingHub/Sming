@@ -1,6 +1,0 @@
-MODULES			+= $(ARCH_COMPONENTS)/libc
-
-
-# APP
-
-EXTRA_INCDIR +=  $(ARCH_COMPONENTS)/libc/include

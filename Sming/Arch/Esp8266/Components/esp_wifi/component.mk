@@ -1,25 +1,8 @@
+COMPONENT_LIBNAME :=
 
-# => SMING
-
-MODULES			+= $(ARCH_COMPONENTS)/esp_wifi
-EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/esp_wifi/include
-
-# => APP
-
-EXTRA_INCDIR += $(ARCH_COMPONENTS)/esp_wifi/include
-
-# => SMING
-
-CONFIG_VARS += ENABLE_WPS
+# => WPS
+COMPONENT_VARS		:= ENABLE_WPS
 ifeq ($(ENABLE_WPS), 1)
-   CFLAGS += -DENABLE_WPS=1
+   GLOBAL_CFLAGS	+= -DENABLE_WPS=1
+   EXTRA_LIBS		:= wps
 endif
-
-# => APP
-
-CONFIG_VARS	+= ENABLE_WPS
-ifeq ($(ENABLE_WPS),1)
-   CFLAGS	+= -DENABLE_WPS=1
-   LIBS		+= wps
-endif
-

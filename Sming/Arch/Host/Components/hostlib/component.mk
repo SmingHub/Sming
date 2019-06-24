@@ -1,9 +1,5 @@
-
-MODULES			+= $(ARCH_COMPONENTS)/hostlib
-
-LIBS += pthread
+EXTRA_LIBS		:= pthread
 
 ifeq ($(UNAME),Windows)
-LIBS += wsock32
+	EXTRA_LIBS	+= wsock32
 endif
-
