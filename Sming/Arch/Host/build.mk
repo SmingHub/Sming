@@ -4,23 +4,25 @@
 #
 ##############
 
-CFLAGS += -DARCH_HOST
+CFLAGS		+= -DARCH_HOST
 
-TOOLSPEC :=
+TOOLSPEC 	:=
 
-AS		:= $(TOOLSPEC)gcc
-CC		:= $(TOOLSPEC)gcc
-CXX		:= $(TOOLSPEC)g++
-AR		:= $(TOOLSPEC)ar
-LD		:= $(TOOLSPEC)g++
-OBJCOPY := $(TOOLSPEC)objcopy
-OBJDUMP := $(TOOLSPEC)objdump
-GDB		:= $(TOOLSPEC)gdb
+AS			:= $(TOOLSPEC)gcc
+CC			:= $(TOOLSPEC)gcc
+CXX			:= $(TOOLSPEC)g++
+AR			:= $(TOOLSPEC)ar
+LD			:= $(TOOLSPEC)g++
+OBJCOPY		:= $(TOOLSPEC)objcopy
+OBJDUMP		:= $(TOOLSPEC)objdump
+GDB			:= $(TOOLSPEC)gdb
 
-CFLAGS	+= -m32 -Wno-deprecated-declarations
+CFLAGS += \
+	-m32 \
+	-Wno-deprecated-declarations
 
 # Keep Windows/Linux object files separate to avoid conflict
 OUT_BASE	:= out/$(SMING_ARCH)/$(UNAME)/$(if $(SMING_RELEASE),release,debug)
 
 # => Tools
-MEMANALYZER	= size
+MEMANALYZER = size

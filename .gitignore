@@ -1,6 +1,5 @@
 # generated binaries
 out
-Sming/Arch/**/Compiler/lib/**/lib*.a
 
 # generated documentation
 docs/api

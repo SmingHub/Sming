@@ -4,64 +4,43 @@
 #
 ###
 
-##@Building
-
-.PHONY: all
-all: libsming checkdirs app ##(default) Build application
-
-
-
-# Code compiled with application
-APPCODE :=
-
-# EXTRA_INCDIR += ... component.mk
-
-# Macro to make an optional library
-# $1 -> The library to make
-# $2 -> List of options to add to make command line
-define MakeLibrary
-	$(Q) $(MAKE) -C $(SMING_HOME) $(patsubst $(SMING_HOME)/%,%,$1) $2
-endef
-
 #
-LIBS := microc microgcc hal phy pp net80211 wpa $(LIBSMING) crypto smartconfig $(EXTRA_LIBS) $(LIBS)
+LIBS += \
+	microc \
+	microgcc \
+	hal \
+	phy \
+	pp \
+	net80211 \
+	wpa \
+	crypto \
+	smartconfig \
+	$(LIBMAIN)
 
 # linker flags used to generate the main object file
-LDFLAGS	= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u custom_crash_callback \
-			-Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
+LDFLAGS		= -nostdlib \
+	-u call_user_start \
+	-u Cache_Read_Enable_New \
+	-u custom_crash_callback \
+	-Wl,-static \
+	-Wl,--gc-sections \
+	-Wl,-Map=$(basename $@).map \
+	-Wl,-wrap,system_restart_local 
 
-include $(ARCH_BASE)/flash.mk
 
-TARGET_OUT_0 := $(BUILD_BASE)/$(TARGET)_0.out
-TARGET_OUT_1 := $(BUILD_BASE)/$(TARGET)_1.out
+.PHONY: application
+application: $(CUSTOM_TARGETS) $(FW_FILE_1) $(FW_FILE_2)
 
-#############
-#
-# Target definitions
-#
-#############
+LIBDIRS += $(SDK_LIBDIR)
 
-include $(SMING_HOME)/modules.mk
+# $1 -> Linker script
+define LinkTarget
+	$(info $(notdir $(PROJECT_DIR)): Linking $@)
+	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) -T$1 $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
+endef
 
-# Add APPCODE objects and targets
-$(call ScanModules,$(APPCODE))
-
-.PHONY: app
-app: $(CUSTOM_TARGETS) $(RBOOT_ROM_0) $(RBOOT_ROM_1) $(FW_FILE_1) $(FW_FILE_2)
-
-# => Firmware images
-$(RBOOT_ROM_0): $(TARGET_OUT_0)
-	$(vecho) "E2 $@"
-	$(Q) $(ESPTOOL2) $(RBOOT_E2_USER_ARGS) $< $@ $(RBOOT_E2_SECTS)
-
-$(RBOOT_ROM_1): $(TARGET_OUT_1)
-	$(vecho) "E2 $@"
-	$(Q) $(ESPTOOL2) $(RBOOT_E2_USER_ARGS) $< $@ $(RBOOT_E2_SECTS)
-
-$(TARGET_OUT_0): $(APP_AR)
-	$(vecho) "LD $@"
-	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(ARCH_BASE)/Compiler/ld \
-		-T$(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
+$(TARGET_OUT_0): $(COMPONENTS_AR)
+	$(call LinkTarget,$(RBOOT_LD_0))
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 
@@ -82,82 +61,51 @@ $(TARGET_OUT_0): $(APP_AR)
 			fi
 
 
-$(TARGET_OUT_1): $(APP_AR)
-	$(vecho) "LD $@"
-	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(ARCH_BASE)/Compiler/ld \
-		-T$(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
+$(TARGET_OUT_1): $(COMPONENTS_AR)
+	$(call LinkTarget,$(RBOOT_LD_1))
 
-# recreate it from 0, since you get into problems with same filenames
-$(APP_AR): $(OBJ)
-	$(vecho) "AR $@"
-	$(Q) test ! -f $@ || rm $@
-	$(Q) $(AR) rcsP $@ $^
-
-.PHONY: libsming
-libsming: $(LIBSMING_DST) ##Build the Sming framework and user libraries
-$(LIBSMING_DST):
-	$(vecho) "(Re)compiling Sming. Enabled features: $(SMING_FEATURES). This may take some time"
-	$(Q) $(MAKE) -C $(SMING_HOME) clean V=$(V) ENABLE_SSL=$(ENABLE_SSL)
-	$(Q) $(MAKE) -C $(SMING_HOME) V=$(V) ENABLE_SSL=$(ENABLE_SSL)
-
-.PHONY: rebuild
-rebuild: clean all ##Re-build your application
-
-
-.PHONY: checkdirs
-checkdirs: | $(BUILD_DIR) $(FW_BASE)
-
-$(BUILD_DIR) $(FW_BASE):
-	$(Q) mkdir -p $@
 
 ##@Flashing
 
+# If enabled, add the SPIFFS image to the chunks to write
+ifneq ($(DISABLE_SPIFFS), 1)
+FLASH_SPIFFS_CHUNKS	:= $(RBOOT_SPIFFS_0)=$(SPIFF_BIN_OUT)
+FLASH_INIT_CHUNKS	+= $(RBOOT_SPIFFS_0)=$(ARCH_BASE)/Compiler/data/blankfs.bin
+endif
+
 .PHONY: flashboot
-flashboot: libsming $(RBOOT_BIN) ##Write just the rBoot boot sector
-	$(WRITE_FLASH) 0x00000 $(RBOOT_BIN)
+flashboot: $(RBOOT_BIN) ##Write just the rBoot boot sector
+	$(call WriteFlash,$(FLASH_RBOOT_BOOT_CHUNKS))
 
 .PHONY: flashconfig
 flashconfig: kill_term ##Erase the rBoot config sector
-	$(vecho) "Erasing rBoot config sector"
-	$(WRITE_FLASH) 0x01000 $(SDK_BASE)/bin/blank.bin 
+	$(info Erasing rBoot config sector)
+	$(call WriteFlash,$(FLASH_RBOOT_ERASE_CONFIG_CHUNKS))
  
 .PHONY: flashapp
 flashapp: all kill_term ##Write just the application image
-	$(WRITE_FLASH) $(ROM_0_ADDR) $(RBOOT_ROM_0)
+	$(call WriteFlash,$(FLASH_RBOOT_APP_CHUNKS))
 
-# flashes rboot and first rom
-FLASH_CHUNKS := 0x00000 $(RBOOT_BIN)
-FLASH_CHUNKS += $(ROM_0_ADDR) $(RBOOT_ROM_0)
-ifneq ($(DISABLE_SPIFFS), 1)
-	FLASH_CHUNKS += $(RBOOT_SPIFFS_0) $(SPIFF_BIN_OUT)
+.PHONY: flashfs
+flashfs: $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(info SPIFFS image creation disabled!)
+else
+	$(call WriteFlash,$(FLASH_SPIFFS_CHUNKS))
 endif
 
 .PHONY: flash
 flash: all kill_term ##Write the rBoot boot sector, application image and (if enabled) SPIFFS image
-	$(WRITE_FLASH) $(FLASH_CHUNKS)
+	$(call WriteFlash,$(FLASH_RBOOT_CHUNKS) $(FLASH_RBOOT_APP_CHUNKS) $(FLASH_SPIFFS_CHUNKS))
 ifeq ($(ENABLE_GDB), 1)
 	$(GDB)
 else
 	$(TERMINAL)
 endif
 
-# Wipe flash
-FLASH_INIT_CHUNKS := $(INIT_BIN_ADDR) $(SDK_BASE)/bin/esp_init_data_default.bin
-FLASH_INIT_CHUNKS += $(BLANK_BIN_ADDR) $(SDK_BASE)/bin/blank.bin
-ifneq ($(DISABLE_SPIFFS), 1)
-	FLASH_INIT_CHUNKS += $(RBOOT_SPIFFS_0) $(ARCH_BASE)/Compiler/data/blankfs.bin
-endif
-
 .PHONY: flashinit
 flashinit: ##Erase your device's flash memory and reset system configuration area to defaults
-	$(vecho) "Flash init data default and blank data."
-	$(vecho) "DISABLE_SPIFFS = $(DISABLE_SPIFFS)"
-	$(ERASE_FLASH)
-	$(WRITE_FLASH) $(FLASH_INIT_CHUNKS)
-
-##@Cleaning
-
-.PHONY: clean
-clean: ##Remove all generated build files
-	$(Q) rm -rf $(BUILD_BASE)
-	$(Q) rm -rf $(FW_BASE)
+	$(info Flash init data default and blank data)
+	$(info DISABLE_SPIFFS = $(DISABLE_SPIFFS))
+	$(EraseFlash)
+	$(call WriteFlash,$(FLASH_INIT_CHUNKS))
