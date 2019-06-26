@@ -114,6 +114,32 @@ private:
 	MethodDeclaration mMethod;
 };
 
+/** @brief  Delegate std::function caller class
+*/
+template <class ReturnType, typename... ParamsList>
+class StdFunctionCaller : public IDelegateCaller<ReturnType, ParamsList...>
+{
+public:
+	/** @brief  Instantiate a delegate std::function object
+	 *  @param  m std::function object
+	 */
+	StdFunctionCaller(std::function<ReturnType(ParamsList...)> m) : mMethod(m)
+	{
+	}
+
+	/** @brief  Invoke the delegate function
+	 *  @param  args The delegate function parameters
+	 *  @retval ReturnType The return value from the invoked function
+	 */
+	ReturnType invoke(ParamsList... args) override
+	{
+		return (mMethod)(args...);
+	}
+
+private:
+	std::function<ReturnType(ParamsList...)> mMethod;
+};
+
 template <class> class Delegate; /* undefined */
 
 /** @brief  Delegate class
@@ -153,6 +179,17 @@ public:
 	{
 		if(m != nullptr) {
 			impl = new FunctionCaller<FunctionDeclaration, ReturnType, ParamsList...>(m);
+		}
+	}
+
+	// Function
+	/** @brief  Delegate a function
+	 *  @param  m Function declaration to delegate
+	 */
+	__forceinline Delegate(std::function<ReturnType(ParamsList...)> m)
+	{
+		if(m != nullptr) {
+			impl = new StdFunctionCaller<ReturnType, ParamsList...>(m);
 		}
 	}
 
