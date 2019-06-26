@@ -80,21 +80,44 @@ $(DOCS_DIR)/api/sming/index.html: $(DOCS_DIR)/api/error.log
 
 ##@Building
 
-SAMPLES_DIRS = $(shell ls -1 ../samples)
+# For integration testing both samples and tests are moved outside of the repo.
+SMING_PROJECTS_DIR	?= $(abspath $(SMING_HOME)/..)
+SAMPLES_DIR			:= $(call FixPath,$(SMING_PROJECTS_DIR)/samples)
+TESTS_DIR			:= $(call FixPath,$(SMING_PROJECTS_DIR)/tests)
 
-.PHONY: samples $(SAMPLES_DIRS)
-samples: | $(SAMPLES_DIRS) ##Build all sample applications
+SAMPLE_NAMES		= $(shell ls -1 $(SAMPLES_DIR))
 
-$(SAMPLES_DIRS):
-	$(Q) $(MAKE) --no-print-directory -C ../samples/$@
+.PHONY: samples $(SAMPLE_NAMES)
+samples: | $(SAMPLE_NAMES) ##Build all sample applications
 
+$(SAMPLE_NAMES):
+	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@
+
+
+TESTS_COMPLETED = $(addsuffix /.complete,$(call ListSubDirs,$(TESTS_DIR)))
+PHONY: tests
+tests: $(TESTS_COMPLETED) ##Build and run all test applications
+
+$(TESTS_COMPLETED):
+	$(Q) $(MAKE) -C $(@D) execute
+	$(Q) touch $@
 
 ##@Cleaning
 
 .PHONY: samples-clean
 samples-clean: ##Clean all sample applications (all arch/build types)
 	@echo Cleaning all samples...
-	-$(Q) cd ../samples && rm -rf $(addsuffix /out,$(SAMPLES_DIRS))
+	-$(Q) cd $(SAMPLES_DIR) && rm -rf $(addsuffix /out,$(SAMPLE_NAMES))
+
+CLEAN_TESTS := $(TESTS_COMPLETED:complete=clean)
+.PHONY: tests-clean
+tests-clean: $(CLEAN_TESTS) ##Clean all test applications (all arch/build types)
+	-$(Q) rm -f $(TESTS_COMPLETED)
+
+.PHONY: $(CLEAN_TESTS)
+$(CLEAN_TESTS):
+	@echo Cleaning '$(@D)'
+	$(Q) $(MAKE) -C $(@D) clean
 
 
 ##@Developer
@@ -107,7 +130,7 @@ define rwildcard
 endef
 
 # Files that should follow our coding standards
-CS_DIRS		= Core Platform Arch/*/Core Arch/*/Platform ../samples
+CS_DIRS		= Core Platform Arch/*/Core Arch/*/Platform $(SAMPLES_DIR) $(TESTS_DIR)
 CS_FILES	= $(call rwildcard,$(patsubst %,%/*,$(CS_DIRS)),%.cpp %.h %.c)
 
 .PHONY: cs
