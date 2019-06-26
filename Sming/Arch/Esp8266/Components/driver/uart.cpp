@@ -49,7 +49,7 @@
 #include "driver/uart.h"
 #include "espinc/peri.h"
 
-#include "Data/Buffer/SerialBuffer.h"
+#include "SerialBuffer.h"
 
 /*
  * Parameters relating to RX FIFO and buffer thresholds

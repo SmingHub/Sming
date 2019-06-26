@@ -20,7 +20,7 @@
 #include "uart_server.h"
 
 #include <espinc/peri.h>
-#include <Data/Buffer/SerialBuffer.h>
+#include <SerialBuffer.h>
 #include <BitManipulations.h>
 
 const unsigned IDLE_SLEEP_MS = 100;
