@@ -150,9 +150,8 @@ int my_spiffs_format() {
 int write_to_spiffs(char *fname, u8_t *data, int size) {
 
 	int ret = 0;
-	spiffs_file fd = -1;
 
-	fd = SPIFFS_open(&fs, fname, SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
+	spiffs_file fd = SPIFFS_open(&fs, fname, SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
 	if (fd < 0) {
 		printf("Unable to open spiffs file '%s', error %d.\n", fname, fd);
 	} else {
@@ -174,7 +173,6 @@ int write_to_spiffs(char *fname, u8_t *data, int size) {
 int add_file(const char* fdir, char* fname) {
 
 	int ret = 0;
-	int size;
 	u8_t *buff = 0;
 	FILE *fp = 0;
 	char *path = 0;
@@ -192,7 +190,7 @@ int add_file(const char* fdir, char* fname) {
 			if (!fp) {
 				S_DBG("Unable to open '%s'.\n", fname);
 			} else {
-				size = (int)st.st_size;
+				int size = (int)st.st_size;
 				buff = malloc(size);
 				if (!buff) {
 					printf("Unable to malloc %d bytes.\n", size);
@@ -238,7 +236,7 @@ int main(int argc, char **argv) {
 	const char *folder;
 	const char *romfile;
 	int romsize;
-	int res, ret = EXIT_SUCCESS;
+	int ret = EXIT_SUCCESS;
 
 	if (argc == 1) {
 		romsize = DEFAULT_ROM_SIZE;
@@ -279,10 +277,11 @@ int main(int argc, char **argv) {
 			my_spiffs_unmount();
 		}
 
-		if ((res =  my_spiffs_format())) {
+		int res;
+		if ((res =  my_spiffs_format()) != SPIFFS_OK) {
 			printf("Failed to format spiffs, error %d.\n", res);
 			ret = EXIT_FAILURE;
-		} else if ((res = my_spiffs_mount(romsize))) {
+		} else if ((res = my_spiffs_mount(romsize)) != SPIFFS_OK) {
 			printf("Failed to mount spiffs, error %d.\n", res);
 			ret = EXIT_FAILURE;
 		} else {
