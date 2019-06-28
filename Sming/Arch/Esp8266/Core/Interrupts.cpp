@@ -15,6 +15,7 @@
 
 static InterruptCallback gpioInterruptsList[16] = {0};
 static InterruptDelegate delegateFunctionList[16];
+static InterruptDelegateStdFunction stdFunctionList[16];
 static bool gpioInterruptsInitialied = false;
 
 /** @brief  Interrupt handler
@@ -47,6 +48,14 @@ static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 							delegate();
 					},
 					i);
+			} else if(stdFunctionList[i]) {
+				System.queueCallback(
+					[](uint32_t interruptNumber) {
+						auto& fnc = stdFunctionList[interruptNumber];
+						if(fnc)
+							fnc();
+					},
+					i);
 			}
 
 			processed = true;
@@ -66,12 +75,19 @@ void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, uint8_t mo
 	attachInterrupt(pin, delegateFunction, type);
 }
 
+void attachInterrupt(uint8_t pin, InterruptDelegateStdFunction stdFunction, uint8_t mode)
+{
+	GPIO_INT_TYPE type = ConvertArduinoInterruptMode(mode);
+	attachInterrupt(pin, stdFunction, type);
+}
+
 void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode)
 {
 	if(pin >= 16)
 		return; // WTF o_O
 	gpioInterruptsList[pin] = callback;
 	delegateFunctionList[pin] = nullptr;
+	stdFunctionList[pin] = nullptr;
 	attachInterruptHandler(pin, mode);
 }
 
@@ -81,6 +97,17 @@ void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_T
 		return; // WTF o_O
 	gpioInterruptsList[pin] = nullptr;
 	delegateFunctionList[pin] = delegateFunction;
+	stdFunctionList[pin] = nullptr;
+	attachInterruptHandler(pin, mode);
+}
+
+void attachInterrupt(uint8_t pin, InterruptDelegateStdFunction stdFunction, GPIO_INT_TYPE mode)
+{
+	if(pin >= 16)
+		return; // WTF o_O
+	gpioInterruptsList[pin] = nullptr;
+	delegateFunctionList[pin] = nullptr;
+	stdFunctionList[pin] = stdFunction;
 	attachInterruptHandler(pin, mode);
 }
 

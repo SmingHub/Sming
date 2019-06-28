@@ -21,6 +21,7 @@
 
 typedef void (*InterruptCallback)();
 typedef Delegate<void()> InterruptDelegate;
+typedef std::function<void()> InterruptDelegateStdFunction;
 
 /** @brief  Attach a function to a GPIO interrupt
  *  @param  pin GPIO to configure
@@ -41,6 +42,8 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode);
  */
 void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, uint8_t mode);
 
+void attachInterrupt(uint8_t pin, InterruptDelegateStdFunction stdFunction, uint8_t mode);
+
 /** @brief  Attach a function to a GPIO interrupt
  *  @param  pin GPIO to configure
  *  @param  callback Function to call when interrupt occurs on GPIO
@@ -57,6 +60,8 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode
  *  @note   Delegate function method
  */
 void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, GPIO_INT_TYPE mode); // ESP compatible version
+
+void attachInterrupt(uint8_t pin, InterruptDelegateStdFunction stdFunction, GPIO_INT_TYPE mode);
 
 /** @brief  Enable interrupts on GPIO pin
  *  @param  pin GPIO to enable interrupts for
