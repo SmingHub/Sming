@@ -1,17 +1,11 @@
+COMPONENT_SRCFILES	:= $(ESP8266_COMPONENTS)/driver/SerialBuffer.cpp
+COMPONENT_INCDIRS	+= $(ESP8266_COMPONENTS)/driver $(ESP8266_COMPONENTS)/driver/include
 
-# => SMING
+##@Tools
 
-MODULES			+= $(ARCH_COMPONENTS)/driver
-EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/driver/include $(ESP8266_COMPONENTS)/driver/include
+DEBUG_VARS	?= UARTID
+UARTID		?= 0
 
-
-
-# APP
-
-EXTRA_INCDIR	+= $(ARCH_COMPONENTS)/driver/include $(ESP8266_COMPONENTS)/driver/include
-
-
-Terminal = start telnet localhost $$((10000 + $1))
-
-TERMINAL = $(call Terminal,$(COM_PORT))
-KILL_TERM :=
+.PHONY: telnet
+telnet: ##Run telnet to connect to a virtual serial port, specified by UARTID
+	start telnet localhost $$((10000 + $(UARTID)))
