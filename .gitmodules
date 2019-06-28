@@ -28,7 +28,7 @@
 	url = https://github.com/raburton/rboot.git
 	ignore = dirty
 [submodule "ESP8266.new-pwm"]
-	path = Sming/Arch/Esp8266/Components/pwm/new-pwm
+	path = Sming/Arch/Esp8266/Components/pwm_open/new-pwm
 	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
 	ignore = dirty
 [submodule "ESP8266.axtls-8266"]
