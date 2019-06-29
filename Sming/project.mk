@@ -309,7 +309,7 @@ endef
 define GenerateComponentTargets
 
 .PHONY: $1-build
-$1-build: $(addsuffix -build,$(filter $(CMP_$1_DEPENDS),$(BUILDABLE_COMPONENTS))) | $(CMP_$1_BUILD_DIR) $(addsuffix /.submodule,$(CMP_$1_SUBMODULES))
+$1-build: $(addsuffix -build,$(filter $(CMP_$1_DEPENDS),$(BUILDABLE_COMPONENTS))) | $(CMP_$1_BUILD_DIR) $(CMP_$1_SUBMODULES:=/.submodule)
 	@echo
 	@echo Building $(CMP_$1_TARGETS)
 	+$(Q) $(MAKE) -r -R --no-print-directory -C $(CMP_$1_BUILD_DIR) -f $(SMING_HOME)/component-wrapper.mk \
@@ -387,7 +387,11 @@ $(BUILD_DIRS) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR):
 
 # Build all Component (user) libraries
 .PHONY: components
-components: $(addsuffix /.submodule,$(SUBMODULES)) $(ALL_COMPONENT_TARGETS) $(CUSTOM_TARGETS)
+components: $(SUBMODULES:=/.submodule) $(ALL_COMPONENT_TARGETS) $(CUSTOM_TARGETS)
+
+# Pull in all submodules, regardless of whether they're used or not
+.PHONY: all-submodules
+all-submodules: $(ALL_SUBMODULES:=/.submodule) ##Fetch all third-party submodules (but do not build)
 
 
 ##@Cleaning

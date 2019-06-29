@@ -131,7 +131,7 @@ endef
 
 # Files that should follow our coding standards
 CS_DIRS		= Core Platform Arch/*/Core Arch/*/Platform $(SAMPLES_DIR) $(TESTS_DIR)
-CS_FILES	= $(call rwildcard,$(patsubst %,%/*,$(CS_DIRS)),%.cpp %.h %.c)
+CS_FILES	= $(call rwildcard,$(CS_DIRS:=/*),%.cpp %.h %.c)
 
 .PHONY: cs
 cs: ##Apply coding style to all core files

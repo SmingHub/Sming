@@ -153,8 +153,8 @@ $(foreach d,$(SOURCE_DIRS),$(eval $(call GenerateCompileTargets,$d,$(call Resolv
 BUILD_DIRS := $(sort $(BUILD_DIRS:/=))
 # Include any generated dependency files (these won't exist on first build)
 ABS_BUILD_DIRS := $(sort $(COMPONENT_BUILD_DIR) $(BUILD_DIRS))
-include $(wildcard $(addsuffix /*.c.d,$(ABS_BUILD_DIRS)))
-include $(wildcard $(addsuffix /*.cpp.d,$(ABS_BUILD_DIRS)))
+include $(wildcard $(ABS_BUILD_DIRS:=/*.c.d))
+include $(wildcard $(ABS_BUILD_DIRS:=/*.cpp.d))
 
 # Provide a target unless Component is custom built, in which case the component.mk will have defined this already
 $(COMPONENT_LIBPATH): $(OBJ) $(EXTRA_OBJ)
