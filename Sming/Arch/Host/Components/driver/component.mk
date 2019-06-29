@@ -6,6 +6,13 @@ COMPONENT_INCDIRS	+= $(ESP8266_COMPONENTS)/driver $(ESP8266_COMPONENTS)/driver/i
 DEBUG_VARS	?= UARTID
 UARTID		?= 0
 
+TELNET_CMDLINE	= telnet localhost $$((10000 + $(UARTID)))
+
 .PHONY: telnet
 telnet: ##Run telnet to connect to a virtual serial port, specified by UARTID
-	start telnet localhost $$((10000 + $(UARTID)))
+ifeq ($(UNAME),Windows)
+	start $(TELNET_CMDLINE)
+else
+	$(TELNET_CMDLINE) &
+endif
+
