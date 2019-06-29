@@ -1,12 +1,3 @@
-/**
- * Please, note, that in order to run this sample you should recompile Sming with ENABLE_SSL=1.
- * The following three commands should be enough:
- *
- * cd Sming/Sming
- * make clean
- * make ENABLE_SSL=1
- */
-
 #include <SmingCore.h>
 
 #include "Network/HttpClient.h"
