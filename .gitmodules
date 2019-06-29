@@ -45,7 +45,7 @@
 	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
 	ignore = dirty
 [submodule "ESP8266.axtls-8266"]
-	path = Sming/Arch/Esp8266/Components/axtls-8266/axtls-8266
+	path = Sming/Components/axtls-8266/axtls-8266
 	url = https://github.com/igrr/axtls-8266.git
 	ignore = dirty
 [submodule "ESP8266.umm_malloc"]
