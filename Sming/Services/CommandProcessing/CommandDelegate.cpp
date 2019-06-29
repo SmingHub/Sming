@@ -12,7 +12,7 @@ CommandDelegate::CommandDelegate()
 
 }
 
-CommandDelegate::CommandDelegate(String reqName, String reqHelp, String reqGroup, commandFunctionDelegate reqFunction)
+CommandDelegate::CommandDelegate(String reqName, String reqHelp, String reqGroup, CommandFunctionDelegate reqFunction)
 : commandName(reqName), commandHelp(reqHelp), commandGroup(reqGroup), commandFunction(reqFunction)
 {
 }
