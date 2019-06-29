@@ -26,7 +26,7 @@ public:
 	// This example shows how to use a plain old ordinary function as a callback
 	void callPlainOldOrdinaryFunction()
 	{
-		taskTimer.initializeMs(taskInterval, TimerDelegateStdFunction(plainOldOrdinaryFunction)).start();
+		taskTimer.initializeMs(taskInterval, plainOldOrdinaryFunction).start();
 		// or just
 		// taskTimer.initializeMs(taskInterval, plainOldOrdinaryFunction).start();
 	}
@@ -67,7 +67,7 @@ public:
 		// But because our callback specifies that we don't take any arguments (<void(void)>),
 		// you must use std::bind to bind the first (and the only) argument.
 
-		TimerDelegateStdFunction b = std::bind(&Task::callbackMemberFunction, this);
+		TimerDelegate b = std::bind(&Task::callbackMemberFunction, this);
 		taskTimer.initializeMs(taskInterval, b).start();
 	}
 
