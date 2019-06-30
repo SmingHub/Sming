@@ -12,7 +12,7 @@
 #include "WiringFrameworkIncludes.h"
 
 #define PIN_MAX 16
-static uint8 pinModes[PIN_MAX];
+static uint8 pinModes[PIN_MAX + 1];
 
 static inline bool checkPin(uint16_t pin)
 {
