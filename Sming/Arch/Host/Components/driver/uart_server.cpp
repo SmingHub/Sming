@@ -51,12 +51,6 @@ void CUartServer::startup(const UartServerConfig& config)
 		portBase = config.portBase;
 	}
 
-	// If no ports have been enabled then redirect port 0 output to host console
-	if(config.enableMask == 0) {
-		redirectToConsole();
-		return;
-	}
-
 	auto notify = [](uart_t* uart, uart_notify_code_t code) {
 		auto server = uartServers[uart->uart_nr];
 		if(server) {
@@ -74,6 +68,11 @@ void CUartServer::startup(const UartServerConfig& config)
 		auto& server = uartServers[i];
 		server = new CUartServer(i);
 		server->execute();
+	}
+
+	// If no ports have been enabled then redirect port 0 output to host console
+	if(config.enableMask == 0) {
+		redirectToConsole();
 	}
 }
 
