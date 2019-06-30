@@ -45,6 +45,7 @@ bool host_flashmem_init(const FlashmemConfig& config)
 	if(res < 0) {
 		hostmsg("Error seeking \"%s\"", flashFileName);
 		close(flashFile);
+		flashFile = -1;
 		return false;
 	}
 
