@@ -1,0 +1,3 @@
+ARDUINO_LIBRARIES := ArduCAM
+
+SPIFF_FILES = web/build

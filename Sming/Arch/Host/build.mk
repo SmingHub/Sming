@@ -4,30 +4,25 @@
 #
 ##############
 
-CFLAGS += -DARCH_HOST
+CFLAGS		+= -DARCH_HOST
 
-TOOLSPEC :=
+TOOLSPEC 	:=
 
-AS		:= $(TOOLSPEC)gcc
-CC		:= $(TOOLSPEC)gcc
-CXX		:= $(TOOLSPEC)g++
-AR		:= $(TOOLSPEC)ar
-LD		:= $(TOOLSPEC)g++
-OBJCOPY := $(TOOLSPEC)objcopy
-OBJDUMP := $(TOOLSPEC)objdump
-GDB		:= $(TOOLSPEC)gdb
+AS			:= $(TOOLSPEC)gcc
+CC			:= $(TOOLSPEC)gcc
+CXX			:= $(TOOLSPEC)g++
+AR			:= $(TOOLSPEC)ar
+LD			:= $(TOOLSPEC)g++
+OBJCOPY		:= $(TOOLSPEC)objcopy
+OBJDUMP		:= $(TOOLSPEC)objdump
+GDB			:= $(TOOLSPEC)gdb
 
-CFLAGS	+= -m32 -Wno-deprecated-declarations
+CFLAGS += \
+	-m32 \
+	-Wno-deprecated-declarations
 
 # Keep Windows/Linux object files separate to avoid conflict
-BUILD_BASE	:= $(BUILD_BASE)/$(UNAME)
-USER_LIBDIR	= $(ARCH_BASE)/Compiler/lib/$(UNAME)
+OUT_BASE	:= out/$(SMING_ARCH)/$(UNAME)/$(if $(SMING_RELEASE),release,debug)
 
 # => Tools
-SPIFFY		= $(ARCH_BASE)/../Esp8266/Tools/spiffy/spiffy$(TOOL_EXT)
-MEMANALYZER	= size
-
-Terminal = start telnet localhost $$((10000 + $1))
-
-TERMINAL = $(call Terminal,$(COM_PORT))
-KILL_TERM :=
+MEMANALYZER = size

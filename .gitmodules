@@ -3,7 +3,7 @@
 	url = https://github.com/SmingHub/Sming.wiki.git
 	ignore = dirty
 [submodule "spiffs"]
-	path = Sming/Components/spiffs
+	path = Sming/Components/spiffs/spiffs
 	url = https://github.com/pellepl/spiffs.git
 	ignore = dirty
 [submodule "http-parser"]
@@ -28,7 +28,7 @@
 	url = https://github.com/raburton/rboot.git
 	ignore = dirty
 [submodule "ESP8266.new-pwm"]
-	path = Sming/Arch/Esp8266/Components/pwm/new-pwm
+	path = Sming/Arch/Esp8266/Components/pwm_open/new-pwm
 	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
 	ignore = dirty
 [submodule "ESP8266.axtls-8266"]
@@ -49,11 +49,11 @@
 	ignore = dirty
 
 [submodule "ESP8266.Sdk"]
-	path = Sming/Arch/Esp8266/Components/Sdk/ESP8266_NONOS_SDK
+	path = Sming/Arch/Esp8266/Components/esp8266/ESP8266_NONOS_SDK
 	url = https://github.com/espressif/ESP8266_NONOS_SDK.git
 	ignore = dirty
 [submodule "ESP8266.esptool2"]
-	path = Sming/Arch/Esp8266/Tools/esptool2
+	path = Sming/Arch/Esp8266/Components/rboot/esptool2
 	url = https://github.com/raburton/esptool2.git
 	ignore = dirty
 

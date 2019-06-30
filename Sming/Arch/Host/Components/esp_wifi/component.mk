@@ -1,0 +1,5 @@
+COMPONENT_VARS		:= ENABLE_WPS
+ifeq ($(ENABLE_WPS),1)
+   GLOBAL_CFLAGS	+= -DENABLE_WPS=1
+   EXTRA_LIBS		:= wps
+endif

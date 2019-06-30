@@ -1,0 +1,3 @@
+ARDUINO_LIBRARIES := LiquidCrystal DHTesp
+
+SPIFF_FILES = web

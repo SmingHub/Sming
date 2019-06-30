@@ -222,9 +222,16 @@ index 1e46ee5..cfc10f8 100644
                        ipaddr != NULL ? ip4_addr2_16(ipaddr) : 0,       \
                        ipaddr != NULL ? ip4_addr3_16(ipaddr) : 0,       \
 diff --git a/lwip/app/dhcpserver.c b/lwip/app/dhcpserver.c
-index ddb5984..546a072 100644
+index ddb5984..ed8f912 100644
 --- a/lwip/app/dhcpserver.c
 +++ b/lwip/app/dhcpserver.c
+@@ -1,5 +1,5 @@
+ #include "lwip/inet.h"
+-#include "lwip/err.h"
++#include "lwip/err.h"
+ #include "lwip/pbuf.h"
+ #include "lwip/udp.h"
+ #include "lwip/mem.h"
 @@ -13,6 +13,8 @@
  
  #include "user_interface.h"
@@ -234,9 +241,16 @@ index ddb5984..546a072 100644
  #ifdef MEMLEAK_DEBUG
  static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
  #endif
-@@ -133,21 +135,16 @@ static uint8_t* ICACHE_FLASH_ATTR add_offer_options(uint8_t *optptr)
+@@ -131,23 +133,18 @@ static uint8_t* ICACHE_FLASH_ATTR add_offer_options(uint8_t *optptr)
+ {
+         struct ip_addr ipadd;
  
-         ipadd.addr = *( (uint32_t *) &server_address);
+-        ipadd.addr = *( (uint32_t *) &server_address);
++        ipadd.addr = server_address.addr;
++
++        struct ip_info if_ip;
++        os_bzero(&if_ip, sizeof(struct ip_info));
++        wifi_get_ip_info(SOFTAP_IF, &if_ip);
  
 -#ifdef USE_CLASS_B_NET
 -        *optptr++ = DHCP_OPTION_SUBNET_MASK;
@@ -246,10 +260,6 @@ index ddb5984..546a072 100644
 -        *optptr++ = 0;
 -        *optptr++ = 0;
 -#else
-+        struct ip_info if_ip;
-+        os_bzero(&if_ip, sizeof(struct ip_info));
-+        wifi_get_ip_info(SOFTAP_IF, &if_ip);
-+
          *optptr++ = DHCP_OPTION_SUBNET_MASK;
 -        *optptr++ = 4;  
 -        *optptr++ = 255;
@@ -276,6 +286,33 @@ index ddb5984..546a072 100644
  			*optptr++ = DHCP_OPTION_ROUTER;
  			*optptr++ = 4;
  			*optptr++ = ip4_addr1( &if_ip.gw);
+@@ -248,7 +241,7 @@ static void ICACHE_FLASH_ATTR create_msg(struct dhcps_msg *m)
+ {
+         struct ip_addr client;
+ 
+-        client.addr = *( (uint32_t *) &client_address);
++        client.addr = client_address.addr;
+ 
+         m->op = DHCP_REPLY;
+         m->htype = DHCP_HTYPE_ETHERNET;
+@@ -485,7 +478,7 @@ static uint8_t ICACHE_FLASH_ATTR parse_options(uint8_t *optptr, sint16_t len)
+     	bool is_dhcp_parse_end = false;
+     	struct dhcps_state s;
+ 
+-        client.addr = *( (uint32_t *) &client_address);// Ҫ�����DHCP�ͻ��˵�IP
++        client.addr = client_address.addr;// Ҫ�����DHCP�ͻ��˵�IP
+ 
+         u8_t *end = optptr + len;
+         u16_t type = 0;
+@@ -573,7 +566,7 @@ static uint8_t ICACHE_FLASH_ATTR parse_options(uint8_t *optptr, sint16_t len)
+ ///////////////////////////////////////////////////////////////////////////////////
+ ///////////////////////////////////////////////////////////////////////////////////
+ static sint16_t ICACHE_FLASH_ATTR parse_msg(struct dhcps_msg *m, u16_t len)
+-{
++{
+ 		if(os_memcmp((char *)m->options,
+               &magic_cookie,
+               sizeof(magic_cookie)) == 0){
 --- a/include/lwip/tcp_impl.h
 +++ b/include/lwip/tcp_impl.h
 @@ -130,7 +130,7 @@ u32_t            tcp_update_rcv_ann_wnd(struct tcp_pcb *pcb)ICACHE_FLASH_ATTR;
@@ -457,3 +494,40 @@ index ee50ceb..75563e9 100644
  #ifdef MEMLEAK_DEBUG
  static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
  #endif
+diff --git a/lwip/app/espconn.c b/lwip/app/espconn.c
+index 9032648..69797e5 100644
+--- a/lwip/app/espconn.c
++++ b/lwip/app/espconn.c
+@@ -676,8 +676,7 @@ sint8 ICACHE_FLASH_ATTR espconn_tcp_set_buf_count(struct espconn *espconn, uint8
+ 		}
+ 	}
+ 
+-	if (plist == NULL)
+-		return ESPCONN_ARG;
++	return (plist == NULL) ? ESPCONN_ARG : ESPCONN_OK;
+ }
+ 
+ /******************************************************************************
+diff --git a/lwip/app/espconn_tcp.c b/lwip/app/espconn_tcp.c
+index 52cd0b0..0ea6ab0 100644
+--- a/lwip/app/espconn_tcp.c
++++ b/lwip/app/espconn_tcp.c
+@@ -187,7 +187,8 @@ struct tcp_pcb *ICACHE_FLASH_ATTR espconn_find_current_pcb(espconn_msg *pcurrent
+ 	uint16 local_port = pcurrent_msg->pcommon.local_port;
+ 	uint32 local_ip = pcurrent_msg->pcommon.local_ip;
+ 	uint16 remote_port = pcurrent_msg->pcommon.remote_port;
+-	uint32 remote_ip = *((uint32*)&pcurrent_msg->pcommon.remote_ip);
++	uint32 remote_ip;
++	memcpy(&remote_ip, pcurrent_msg->pcommon.remote_ip, sizeof(remote_ip));
+ 	struct tcp_pcb *find_pcb = NULL;
+ 	if (pcurrent_msg ->preverse == NULL){/*Find the server's TCP block*/
+ 		if (local_ip == 0|| local_port == 0) return pcurrent_msg->pcommon.pcb;
+@@ -1334,7 +1335,7 @@ espconn_tcp_server(struct espconn *espconn)
+ *******************************************************************************/
+ sint8 ICACHE_FLASH_ATTR espconn_tcp_delete(struct espconn *pdeletecon)
+ {
+-	err_t err;
++	err_t err = ERR_OK;
+ 	remot_info *pinfo = NULL;
+ 	espconn_msg *pdelete_msg = NULL;
+ 	struct tcp_pcb *pcb = NULL;

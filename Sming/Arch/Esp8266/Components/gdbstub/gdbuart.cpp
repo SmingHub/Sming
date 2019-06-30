@@ -13,7 +13,7 @@
 #include "gdbuart.h"
 #include "GdbPacket.h"
 #include "driver/uart.h"
-#include "Data/Buffer/SerialBuffer.h"
+#include "driver/SerialBuffer.h"
 #include "Platform/System.h"
 #include "HardwareSerial.h"
 #include "HardwareTimer.h"

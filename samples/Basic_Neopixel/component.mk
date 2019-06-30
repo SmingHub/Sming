@@ -1,0 +1,3 @@
+ARDUINO_LIBRARIES := Adafruit_NeoPixel
+
+DISABLE_SPIFFS = 1

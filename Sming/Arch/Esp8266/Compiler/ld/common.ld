@@ -88,10 +88,6 @@ SECTIONS
 
     *libsmartconfig.a:(.literal .text .literal.* .text.*)
     *libstdc++.a:(.literal .text .literal.* .text.*)
-    *liblwip_open.a:(.literal .text .literal.* .text.*)
-    *liblwip_full.a:(.literal .text .literal.* .text.*)
-    *liblwip2.a:(.literal .text .literal.* .text.*)
-    *libaxtls.a:(.literal .text .literal.* .text.*)
     *libat.a:(.literal.* .text.*)
     *libcrypto.a:(.literal.* .text.*)
     *libespnow.a:(.literal.* .text.*)
@@ -110,12 +106,12 @@ SECTIONS
 
     *libm.a:(.literal .text .literal.* .text.*)
 
-     *(.rodata._ZTV*) /* C++ vtables */
+    *(.rodata._ZTV*) /* C++ vtables */
     *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text .irom.debug.*)
-    */app.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
-  *libsming.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
-  *libsmingssl.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
-  *libmqttc.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
+
+    /* Generated libraries */
+    *liblwip2.a:(.literal .text .literal.* .text.*)
+    */clib-*.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
 
 	/* __FUNCTION__ locals */
     *(.rodata._ZZ*__FUNCTION__)

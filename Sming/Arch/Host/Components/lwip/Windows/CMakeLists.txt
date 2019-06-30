@@ -50,7 +50,7 @@ add_library(lwip
 add_dependencies(lwip npcap)
 
 set_target_properties(lwip
-	PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${USER_LIBDIR}
+	PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${USER_LIBDIR} PREFIX "clib-" OUTPUT_NAME "${LWIP_LIBNAME}"
 )
 
 target_compile_options(lwip PRIVATE ${LWIP_COMPILER_FLAGS} -m32 -Wno-strict-aliasing)

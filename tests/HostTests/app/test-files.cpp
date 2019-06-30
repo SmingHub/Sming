@@ -1,6 +1,6 @@
 #include "common.h"
 
-IMPORT_FSTR(testContent, "../../Readme.md");
+IMPORT_FSTR(testContent, SMING_HOME "/../Readme.md");
 
 void test_files()
 {

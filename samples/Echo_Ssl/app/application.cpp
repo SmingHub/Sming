@@ -1,11 +1,4 @@
 /**
- * Please, note, that in order to run this sample you should recompile Sming with ENABLE_SSL=1.
- * The following three commands should be enough:
- *
- * cd Sming/Sming
- * make clean
- * make ENABLE_SSL=1
- *
  *
  * This example talks to SSL enabled TCP server. If you do not have such you can use ncat (from the nmap package) and run something like this
  *

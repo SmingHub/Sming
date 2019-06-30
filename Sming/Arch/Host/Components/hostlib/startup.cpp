@@ -23,8 +23,8 @@
 #include "sockets.h"
 #include "except.h"
 #include "options.h"
-#include "flashmem.h"
-#include "uart_server.h"
+#include <spi_flash/flashmem.h>
+#include <driver/uart_server.h>
 #include <BitManipulations.h>
 #include <esp_timer_legacy.h>
 #include <esp_tasks.h>
@@ -203,7 +203,8 @@ int main(int argc, char* argv[])
 		sockets_initialise();
 		CUartServer::startup(config.uart);
 
-		if(host_lwip_init(&config.lwip)) {
+		bool lwip_initialised = host_lwip_init(&config.lwip);
+		if(lwip_initialised) {
 			host_wifi_lwip_init_complete();
 		}
 
@@ -219,7 +220,9 @@ int main(int argc, char* argv[])
 		while(!done) {
 			host_service_tasks();
 			host_service_timers();
-			host_lwip_service();
+			if(lwip_initialised) {
+				host_lwip_service();
+			}
 			system_soft_wdt_feed();
 		}
 
