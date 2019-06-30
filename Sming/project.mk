@@ -213,6 +213,7 @@ endif
 
 # Append standard search directories to any defined by the application
 COMPONENT_SEARCH_DIRS	:= $(call FixPath,$(COMPONENT_SEARCH_DIRS))
+COMPONENTS_EXTRA_INCDIR	+= $(COMPONENT_SEARCH_DIRS)
 COMPONENT_SEARCH_DIRS	+= $(ARCH_COMPONENTS) $(SMING_HOME)/Components $(SMING_HOME)/Libraries
 
 # And add in any requested Arduino libraries
