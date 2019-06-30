@@ -7,7 +7,7 @@ if "%SMING_ARCH%" == "Esp8266" set ESP_HOME=c:\Espressif
 cd %SMING_HOME%
 gcc -v
 
-set MAKE_PARALLEL=make -j3
+set MAKE_PARALLEL=make -j2
 
 REM Move samples and tests into directory outside of the Sming repo.
 set SMING_PROJECTS_DIR=%APPVEYOR_BUILD_FOLDER%\..
