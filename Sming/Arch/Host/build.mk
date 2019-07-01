@@ -26,3 +26,12 @@ OUT_BASE	:= out/$(SMING_ARCH)/$(UNAME)/$(if $(SMING_RELEASE),release,debug)
 
 # => Tools
 MEMANALYZER = size
+
+
+# Run a command in a new terminal window
+# $1 -> Command to execute
+ifeq ($(UNAME),Windows)
+DetachCommand = start $1
+else
+DetachCommand = gnome-terminal -- bash -c "sleep 1; $1"
+endif

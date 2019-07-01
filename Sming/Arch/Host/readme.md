@@ -57,7 +57,9 @@ Use `make flash` to do a `flashfs` then a `run`
 
 Multiple serial terminals are supported via raw TCP network sockets.
 
-For example, start the `Basic_Serial` sample application we build above, with support for both UARTs using the following options:
+With the `Basic_Serial` sample application, when we do `make run` a telnet session is started for both serial ports automatically. We tell Sming about which ports we want by setting `ENABLE_HOST_UARTID` in the project's `component.mk` file.
+
+If you want more manual control, run the application directly like this:
 
 `out/firmware/app --pause --uart=0 --uart=1`
 

@@ -17,10 +17,7 @@ TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)
 CACHE_VARS				+= SMING_TARGET_OPTIONS
 SMING_TARGET_OPTIONS	?= \
 	--flashfile=$(FLASH_BIN) \
-	--flashsize=$(SPI_SIZE) \
-	--uart=0 \
-	--uart=1 \
-	--pause=5
+	--flashsize=$(SPI_SIZE)
 
 # Target definitions
 
@@ -41,9 +38,18 @@ ifneq ($(DISABLE_SPIFFS), 1)
 FLASH_SPIFFS_CHUNKS	:= $(RBOOT_SPIFFS_0)=$(SPIFF_BIN_OUT)
 endif
 
+
+RUN_SCRIPT := $(FW_BASE)/run.sh
+
 .PHONY: run
 run: all ##Run the application image
-	$(TARGET_OUT_0) $(SMING_TARGET_OPTIONS)
+	$(Q) echo > $(RUN_SCRIPT); \
+	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $(RUN_SCRIPT);) \
+	echo '$(TARGET_OUT_0) $(SMING_TARGET_OPTIONS) $(foreach id,$(ENABLE_HOST_UARTID),--uart=$(id))' >> $(RUN_SCRIPT); \
+	chmod +x $(RUN_SCRIPT); \
+	$(RUN_SCRIPT)
+
+#	@echo '\#!/bin/bash' > $(RUN_SCRIPT)
 
 .PHONY: flashfs
 flashfs: $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image
