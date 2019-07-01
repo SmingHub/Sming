@@ -17,6 +17,10 @@ FLASH_BIN			?= $(FW_BASE)/flash.bin
 CONFIG_VARS			+= SPI_SIZE
 SPI_SIZE			?= 4M
 
+# Options to add when running emulator
+CACHE_VARS			+= HOST_FLASH_OPTIONS
+HOST_FLASH_OPTIONS	?= --flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)
+
 # Write data to flash
 # $1 -> Start offset
 # $2 -> File containing data to write

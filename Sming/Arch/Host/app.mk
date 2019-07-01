@@ -16,9 +16,9 @@ TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)
 # Command-line options passed to executable
 CACHE_VARS				+= SMING_TARGET_OPTIONS
 SMING_TARGET_OPTIONS	?= \
-	--flashfile=$(FLASH_BIN) \
-	--flashsize=$(SPI_SIZE) \
-	$(HOST_UART_FLAGS)
+	$(HOST_FLASH_OPTIONS) \
+	$(HOST_UART_OPTIONS) \
+	$(HOST_NETWORK_OPTIONS)
 
 # Target definitions
 

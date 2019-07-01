@@ -11,8 +11,9 @@ HOST_UART_PORTBASE	?= 10000
 CACHE_VARS			+= ENABLE_HOST_UARTID
 ENABLE_HOST_UARTID	?=
 
-# Flags to add when running emulator
-HOST_UART_FLAGS		= $(foreach id,$(ENABLE_HOST_UARTID),--uart=$(id))
+# Options to add when running emulator
+CACHE_VARS			+= HOST_UART_OPTIONS
+HOST_UART_OPTIONS	= $(addprefix --uart=,$(ENABLE_HOST_UARTID))
 
 # $1 -> Uart ID
 define RunHostTerminal
