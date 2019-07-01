@@ -36,7 +36,7 @@ make SMING_ARCH=Host
 
 This builds the application as an executable in, for example, `out/Host/Windows/firmware/app.exe`. Various command-line options are supported, use `--help` for details.
 
-The easiest way to run the emulator is via `make run`. Variables are used to pass the appropriate options and are discussed below under [Features](#features). These are combined into `SMING_TARGET_OPTIONS` and passed to the emulator.
+The easiest way to run the emulator is via `make run`. Variables are used to pass the appropriate options and are discussed below under [Features](#features).
 
 To find out what options are in force, use `make list-config`.
 
