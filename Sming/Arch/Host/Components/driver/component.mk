@@ -11,6 +11,9 @@ HOST_UART_PORTBASE	?= 10000
 CACHE_VARS			+= ENABLE_HOST_UARTID
 ENABLE_HOST_UARTID	?=
 
+# Flags to add when running emulator
+HOST_UART_FLAGS		= $(foreach id,$(ENABLE_HOST_UARTID),--uart=$(id))
+
 # $1 -> Uart ID
 define RunHostTerminal
 $(call DetachCommand,telnet localhost $$(($(HOST_UART_PORTBASE) + $1)))

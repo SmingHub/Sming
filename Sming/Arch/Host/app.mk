@@ -17,7 +17,8 @@ TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)
 CACHE_VARS				+= SMING_TARGET_OPTIONS
 SMING_TARGET_OPTIONS	?= \
 	--flashfile=$(FLASH_BIN) \
-	--flashsize=$(SPI_SIZE)
+	--flashsize=$(SPI_SIZE) \
+	$(HOST_UART_FLAGS)
 
 # Target definitions
 
@@ -45,7 +46,7 @@ RUN_SCRIPT := $(FW_BASE)/run.sh
 run: all ##Run the application image
 	$(Q) echo > $(RUN_SCRIPT); \
 	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $(RUN_SCRIPT);) \
-	echo '$(TARGET_OUT_0) $(SMING_TARGET_OPTIONS) $(foreach id,$(ENABLE_HOST_UARTID),--uart=$(id))' >> $(RUN_SCRIPT); \
+	echo '$(TARGET_OUT_0) $(SMING_TARGET_OPTIONS)' >> $(RUN_SCRIPT); \
 	chmod +x $(RUN_SCRIPT); \
 	$(RUN_SCRIPT)
 
