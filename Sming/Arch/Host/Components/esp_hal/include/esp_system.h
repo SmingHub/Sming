@@ -54,6 +54,8 @@ void os_delay_us(uint32_t us);
 
 const char* system_get_sdk_version(void);
 
+uint32 system_get_chip_id(void);
+
 #ifdef __cplusplus
 }
 #endif

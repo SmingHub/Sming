@@ -45,6 +45,7 @@ bool host_flashmem_init(const FlashmemConfig& config)
 	if(res < 0) {
 		hostmsg("Error seeking \"%s\"", flashFileName);
 		close(flashFile);
+		flashFile = -1;
 		return false;
 	}
 
@@ -99,6 +100,11 @@ static int writeFlashFile(uint32_t offset, const void* data, size_t count)
 //uint8_t flashmem_get_size_type()
 //{
 //}
+
+uint32 spi_flash_get_id(void)
+{
+	return 0xFA1E0008;
+}
 
 uint32_t flashmem_get_size_bytes()
 {
