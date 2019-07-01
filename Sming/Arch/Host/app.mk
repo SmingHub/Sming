@@ -49,8 +49,6 @@ run: all ##Run the application image
 	chmod +x $(RUN_SCRIPT); \
 	$(RUN_SCRIPT)
 
-#	@echo '\#!/bin/bash' > $(RUN_SCRIPT)
-
 .PHONY: flashfs
 flashfs: $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image
 ifeq ($(DISABLE_SPIFFS), 1)
@@ -60,12 +58,7 @@ else
 endif
 
 .PHONY: flash
-flash: all flashfs ##Write the SPIFFS filesystem image then run the application
-ifeq ($(ENABLE_GDB), 1)
-	$(GDB_CMDLINE)
-else
-	$(TARGET_OUT_0) $(SMING_TARGET_OPTIONS)
-endif
+flash: all flashfs ##Write all images to (virtual) flash
 
 .PHONY: flashinit
 flashinit: | $(FW_BASE) ##Erase all flash memory

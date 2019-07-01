@@ -7,10 +7,6 @@ COMPONENT_INCDIRS	+= $(ESP8266_COMPONENTS)/driver $(ESP8266_COMPONENTS)/driver/i
 CACHE_VARS			+= HOST_UART_PORTBASE
 HOST_UART_PORTBASE	?= 10000
 
-# Identifies which uart to run telnet for
-DEBUG_VARS			+= UARTID
-UARTID				?= 0
-
 # List of UART IDs to run servers for
 CACHE_VARS			+= ENABLE_HOST_UARTID
 ENABLE_HOST_UARTID	?=
@@ -19,7 +15,3 @@ ENABLE_HOST_UARTID	?=
 define RunHostTerminal
 $(call DetachCommand,telnet localhost $$(($(HOST_UART_PORTBASE) + $1)))
 endef
-
-.PHONY: telnet
-telnet: ##Run telnet to connect to a virtual serial port, specified by UARTID
-	$(call RunHostTerminal,$(UARTID))
