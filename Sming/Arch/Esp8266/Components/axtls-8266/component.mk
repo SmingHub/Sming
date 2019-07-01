@@ -29,4 +29,5 @@ AXTLS_PATH				:= $(COMPONENT_PATH)/axtls-8266
 include/ssl/private_key.h:
 	$(info Generating unique certificate and key. This may take some time...)
 	$(Q) mkdir -p $(PROJECT_DIR)/include/ssl/
+	$(Q) chmod a+x $(AXTLS_PATH)/tools/make_certs.sh
 	AXDIR=$(PROJECT_DIR)/include/ssl/ $(AXTLS_PATH)/tools/make_certs.sh
