@@ -13,15 +13,6 @@ LDFLAGS = \
 # Executable
 TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)
 
-# Command-line options passed to executable
-CACHE_VARS				+= SMING_TARGET_OPTIONS
-SMING_TARGET_OPTIONS	?= \
-	--flashfile=$(FLASH_BIN) \
-	--flashsize=$(SPI_SIZE) \
-	--uart=0 \
-	--uart=1 \
-	--pause=5
-
 # Target definitions
 
 .PHONY: application
@@ -41,9 +32,16 @@ ifneq ($(DISABLE_SPIFFS), 1)
 FLASH_SPIFFS_CHUNKS	:= $(RBOOT_SPIFFS_0)=$(SPIFF_BIN_OUT)
 endif
 
+
+RUN_SCRIPT := $(FW_BASE)/run.sh
+
 .PHONY: run
 run: all ##Run the application image
-	$(TARGET_OUT_0) $(SMING_TARGET_OPTIONS)
+	$(Q) echo > $(RUN_SCRIPT); \
+	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $(RUN_SCRIPT);) \
+	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS)' >> $(RUN_SCRIPT); \
+	chmod +x $(RUN_SCRIPT); \
+	$(RUN_SCRIPT)
 
 .PHONY: flashfs
 flashfs: $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image
@@ -54,12 +52,7 @@ else
 endif
 
 .PHONY: flash
-flash: all flashfs ##Write the SPIFFS filesystem image then run the application
-ifeq ($(ENABLE_GDB), 1)
-	$(GDB_CMDLINE)
-else
-	$(TARGET_OUT_0) $(SMING_TARGET_OPTIONS)
-endif
+flash: all flashfs ##Write all images to (virtual) flash
 
 .PHONY: flashinit
 flashinit: | $(FW_BASE) ##Erase all flash memory

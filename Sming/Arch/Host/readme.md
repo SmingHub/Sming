@@ -34,12 +34,9 @@ cd $SMING_HOME/../samples/Basic_Serial
 make SMING_ARCH=Host
 ```
 
-This builds the application as an executable in `out/firmware/app`.
-Various command-line options are supported, use `--help` for details.
+This builds the application as an executable in, for example, `out/Host/Windows/firmware/app.exe`. Various command-line options are supported, use `--help` for details.
 
-Use `make run` to execute the application. Command-line parameters are passed in `SMING_TARGET_OPTIONS` so you can customise this via environment or application makefile thus:
-
-`export SMING_TARGET_OPTIONS="--pause --uart=0"`
+The easiest way to run the emulator is via `make run`. Variables are used to pass the appropriate options and are discussed below under [Features](#features).
 
 To find out what options are in force, use `make list-config`.
 
@@ -47,32 +44,38 @@ To find out what options are in force, use `make list-config`.
 
 ### Flash memory
 
-This is emulated using a backing file. By default, it's in `flash.bin` in the current directory.
+This is emulated using a backing file. By default it's in `flash.bin` in the firmware directory, you can change it by setting `FLASH_BIN`. The size of the flash memory is set via `SPI_SIZE`.
 
-Use `make flashinit` to clear and reset the file.
-Use `make flashfs` to copy the generated SPIFFS image into the backing file. `make flash` does the same then runs the application.
-Use `make flash` to do a `flashfs` then a `run`
+* `make flashinit` to clear and reset the file.
+* `make flashfs` to copy the generated SPIFFS image into the backing file.
+* `make flash` writes out all required images to the backing file. For now, this is the same as `make flashfs` but that will change when support is added for custom user images.
+
 
 ### UART (serial) ports
 
-Multiple serial terminals are supported via raw TCP network sockets.
+Multiple serial terminals are supported via raw TCP network sockets, so telnet can be used to provide terminal capability.
 
-For example, start the `Basic_Serial` sample application we build above, with support for both UARTs using the following options:
+`make run` starts the emulator with any required telnet sessions. By default, no serial ports are enabled, however any output from UART0 is redirected to the console. No input is possible.
+
+If your project requires proper terminal access, set `ENABLE_HOST_UARTID` to the UART numbers required. Typically this would be added to the project's `component.mk` file. For example, the `Basic_Serial` sample specifies `ENABLE_HOST_UARTID=0 1` to enable emulation for both `UART0` and `UART1`.
+
+Set `HOST_UART_PORTBASE` if you want to change the base port number used to communicate with the emulator.
+
+
+Alternatively, you can run the application manually like this:
 
 `out/firmware/app --pause --uart=0 --uart=1`
 
-Note: if you don't specify the `pause` option then the Sming application will start running immediately and any serial output will be discarded.
-
-In separate command windows, start two telnet sessions (a terminal for each serial port):
+Now start a telnet session for each serial port, in separate command windows:
 
 ```
 telnet localhost 10000
 telnet localhost 10001
 ```
 
-In the application window, press Enter.
+In the application window, press Enter. This behaviour is enabled by the `pause` option, which stops the emulator after initialisation so telnet can connect to it. Without `pause` you'll lose any serial output at startup.)
 
-Note: For Windows users, `putty` is generally a better choice. For example, you can configure it to implicitly perform carriage-return for linefeed (i.e. "\n" -> "\r\n"). Run using:
+Note: For Windows users, `putty` is a good alternative to telnet. It has options to for things like carriage-return/linefeed translation ("\n" -> "\r\n"). Run using:
 
 ```
 putty telnet://localhost:10000
@@ -117,7 +120,13 @@ By default, the first valid network adapter will be used, with address assigned 
 
 If the adapter is wrong, get a list thus:
 
-	out\firmware\app --ifname=?
+	out\Host\Windows\debug\firmware\app --ifname=?
+	
+or
+
+	make run HOST_NETWORK_OPTIONS=--ifname=?
+
+produces a listing:
 
 	...
 
@@ -134,27 +143,16 @@ If the adapter is wrong, get a list thus:
 	- 6: {0F649280-BAC2-4515-9CE3-F7DFBB6A1BF8} - Kaspersky Security Data Escort Adapter
 	        10.102.37.150 / 255.255.255.252
 
-Then use the appropriate number:
+Then use the appropriate number (or GUID), with the gateway IP address - an address will be assigned via DHCP:
 
-	out\firmware\app --ifname=5
-
-You can also specify by GUID, or a part of it:
-
-	out\firmware\app --ifname={530640FF
-
-The network adapter may be autodetected from a provided ip address, but you must also give the network gateway must also be provided. For example:
-
-	out\firmware\app --ipaddr=192.168.1.10 --gateway=192.168.1.254
+	make run HOST_NETWORK_OPTIONS="--ifname=5 --gateway=192.168.1.254"
 
 You can find gateway addresses using the `ipconfig` command.
 
-We can then run using
+If you want to use a specific IP address, the appropriate adapter will be selected but you still need to specify the gateway address:
 
-`out/firmware/app --ifname=4 --gateway=192.168.1.254 --ipaddr=192.168.1.10`
+	make run HOST_NETWORK_OPTIONS="--ipaddr=192.168.1.10 --gateway=192.168.1.254"
 
-To use these settings for a `make run`, do this:
-
-`set SMING_TARGET_OPTIONS="--ifname=4 --gateway=192.168.1.254 --ipaddr=192.168.1.10"`
 
 ## todo
 
@@ -166,4 +164,4 @@ Development platforms with SPI or I2C (e.g. Raspberry Pi) could be supported.
 
 Are there any generic device emulators available? For example, to simulate specific types of SPI slave.
 
-All code is intended to run on either Windows (MinGW) or Linux as simply as possible, without requiring any additional dependencies. If things get more complicated then we might need to consider using external libraries, such as Boost.
+All code is intended to run on either Windows (MinGW) or Linux as simply as possible, without requiring any additional dependencies.

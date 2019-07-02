@@ -6,3 +6,7 @@ CUSTOM_TARGETS	:= files/Readme.md
 files/Readme.md: $(SMING_HOME)/../Readme.md
 	$(Q) mkdir -p $(@D)
 	$(Q) cp $< $@
+
+	
+# Emulate both serial ports
+ENABLE_HOST_UARTID := 0 1
