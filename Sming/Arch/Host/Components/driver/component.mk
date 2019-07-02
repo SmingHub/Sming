@@ -14,7 +14,7 @@ ENABLE_HOST_UARTID	?=
 # Options to add when running emulator
 CACHE_VARS			+= HOST_UART_OPTIONS
 HOST_UART_OPTIONS	?= $(addprefix --uart=,$(ENABLE_HOST_UARTID))
-SMING_TARGET_OPTIONS += $(HOST_UART_OPTIONS)
+CLI_TARGET_OPTIONS += $(HOST_UART_OPTIONS)
 
 # $1 -> Uart ID
 define RunHostTerminal

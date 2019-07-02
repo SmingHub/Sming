@@ -28,7 +28,7 @@ OUT_BASE	:= out/$(SMING_ARCH)/$(UNAME)/$(if $(SMING_RELEASE),release,debug)
 MEMANALYZER = size
 
 # Command-line options passed to executable - Components add their own settings to this
-SMING_TARGET_OPTIONS =
+CLI_TARGET_OPTIONS =
 
 # Run a command in a new terminal window
 # $1 -> Command to execute
