@@ -96,7 +96,7 @@ ifeq ($(RBOOT_GPIO_SKIP_ENABLED),1)
 endif
 
 $(RBOOT_BIN):
-	$(MAKE) -C $(ARCH_COMPONENTS)/rboot/rboot
+	$(Q) $(MAKE) -C $(ARCH_COMPONENTS)/rboot/rboot
 
 
 # rBoot big flash support requires a slightly modified version of libmain (just one symbol gets weakened)
