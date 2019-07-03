@@ -10,9 +10,18 @@ unset ESPTOOL2
 
 export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
 
+cd $SMING_HOME
+
 # Check coding style
 if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
- 	.travis/tools/clang/format-pr.sh;
+ 	make cs
+ 	DIFFS=$(git diff)
+ 	if [ "$DIFFS" != "" ]; then
+ 	  echo "!!! Coding Style issues Found!!!"
+ 	  echo "    Run: 'make cs' to fix them. "
+ 	  echo "$DIFFS"
+ 	  exit 1
+ 	fi
 fi
 
 # Setup ARCH SDK paths
@@ -27,8 +36,6 @@ fi
 
 # Full compile checks please
 export STRICT=1
-
-cd $SMING_HOME
 
 # Move samples and tests into directory outside of the Sming repo.
 export SMING_PROJECTS_DIR=$HOME/projects
