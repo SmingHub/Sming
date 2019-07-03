@@ -47,7 +47,6 @@
 	path = Sming/Arch/Esp8266/Components/lwip2/lwip2
 	url = https://github.com/d-a-v/esp82xx-nonos-linklayer.git
 	ignore = dirty
-
 [submodule "ESP8266.Sdk"]
 	path = Sming/Arch/Esp8266/Components/esp8266/ESP8266_NONOS_SDK
 	url = https://github.com/espressif/ESP8266_NONOS_SDK.git
@@ -55,6 +54,11 @@
 [submodule "ESP8266.esptool2"]
 	path = Sming/Arch/Esp8266/Components/rboot/esptool2
 	url = https://github.com/raburton/esptool2.git
+	ignore = dirty
+
+[submodule "Host.lwip"]
+	path = Sming/Arch/Host/Components/lwip/lwip
+	url = git://git.savannah.gnu.org/lwip.git
 	ignore = dirty
 
 [submodule "Libraries.Adafruit_ST7735"]
@@ -100,8 +104,4 @@
 [submodule "Libraries.ArduinoJson"]
 	path = Sming/Libraries/ArduinoJson
 	url = https://github.com/bblanchon/ArduinoJson.git
-
-[submodule "Host.lwip"]
-	path = Sming/Arch/Host/Components/lwip/lwip
-	url = git://git.savannah.gnu.org/lwip.git
 	ignore = dirty
