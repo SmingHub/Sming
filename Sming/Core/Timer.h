@@ -160,7 +160,7 @@ private:
 	SimpleTimer simpleTimer; ///< We use a SimpleTimer to access the hardware
 	uint32_t interval = 0;
 	InterruptCallback callback = nullptr;
-	TimerDelegate delegateFunc = nullptr;
+	TimerDelegate delegateFunc;
 	bool repeating = false;
 	bool started = false;
 

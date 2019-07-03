@@ -23,7 +23,7 @@
 */
 #pragma once
 
-#include "Delegate.h"
+#include <esp_systemapi.h>
 
 /** @brief default number of tasks in global queue
  *  @note tasks are usually short-lived and executed very promptly. If necessary this
