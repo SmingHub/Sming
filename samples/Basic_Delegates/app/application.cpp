@@ -1,11 +1,13 @@
 #include <SmingCore.h>
 
+void evaluateSpeed();
+
 void plainOldOrdinaryFunction()
 {
 	debugf("plainOldOrdinaryFunction");
 }
 
-void functionWithMoreComlicatedSignature(int a, String b)
+void functionWithMoreComplicatedSignature(int a, String b)
 {
 	debugf("functionWithMoreComlicatedSignature %d %s", a, b.c_str());
 }
@@ -34,11 +36,10 @@ public:
 	// This example shows how to use std::bind to make us of a function that has more parameters than our signature has
 	void showHowToUseBind()
 	{
-		auto b = std::bind(functionWithMoreComlicatedSignature, 2, "parameters");
+		auto b = std::bind(functionWithMoreComplicatedSignature, 2, "parameters");
 		taskTimer.initializeMs(taskInterval, b).start();
 	}
 
-	// Sming now allows the use of std::function
 	// This example shows how to use a lamda expression as a callback
 	void callLamda()
 	{
@@ -87,6 +88,8 @@ Task task5;
 void init()
 {
 	Serial.begin(COM_SPEED_SERIAL);
+
+	evaluateSpeed();
 
 	task2.setTimer(1600);
 	task2.callPlainOldOrdinaryFunction();
