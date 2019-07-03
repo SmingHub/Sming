@@ -64,10 +64,7 @@ public:
 	{
 		// A non-static member function must be called with an object.
 		// That is, it always implicitly passes "this" pointer as its argument.
-		// But because our callback specifies that we don't take any arguments (<void(void)>),
-		// you must use std::bind to bind the first (and the only) argument.
-
-		TimerDelegate b = std::bind(&Task::callbackMemberFunction, this);
+		auto b = TimerDelegate(&Task::callbackMemberFunction, this);
 		taskTimer.initializeMs(taskInterval, b).start();
 	}
 

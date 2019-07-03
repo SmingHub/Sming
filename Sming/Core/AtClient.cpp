@@ -134,7 +134,7 @@ void AtClient::sendDirect(AtCommand command)
 	stream->print(command.text);
 	debugf("Sent: timeout: %d, current %d ms, name: %s", currentCommand.timeout, millis(),
 		   command.text.substring(0, 20).c_str());
-	commandTimer.initializeMs(currentCommand.timeout, std::bind(&AtClient::ticker, this)).startOnce();
+	commandTimer.initializeMs(currentCommand.timeout, TimerDelegate(&AtClient::ticker, this)).startOnce();
 }
 
 // Low Level Queue Functions
