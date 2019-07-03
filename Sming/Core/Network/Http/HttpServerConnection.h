@@ -37,7 +37,7 @@ class HttpServerConnection;
 
 typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
 
-typedef std::function<bool()> HttpServerProtocolUpgradeCallback;
+typedef Delegate<bool()> HttpServerProtocolUpgradeCallback;
 
 class HttpServerConnection : public HttpConnection
 {

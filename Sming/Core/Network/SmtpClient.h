@@ -86,7 +86,7 @@ enum SmtpState {
 
 class SmtpClient;
 
-typedef std::function<int(SmtpClient& client, int code, char* status)> SmtpClientCallback;
+typedef Delegate<int(SmtpClient& client, int code, char* status)> SmtpClientCallback;
 
 class SmtpClient : protected TcpClient
 {

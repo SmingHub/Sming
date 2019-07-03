@@ -43,7 +43,7 @@ enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 
 class MqttClient;
 
-typedef std::function<int(MqttClient& client, mqtt_message_t* message)> MqttDelegate;
+typedef Delegate<int(MqttClient& client, mqtt_message_t* message)> MqttDelegate;
 typedef ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE> MqttRequestQueue;
 
 #ifndef MQTT_NO_COMPAT

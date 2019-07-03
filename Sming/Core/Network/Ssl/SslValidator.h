@@ -32,7 +32,7 @@
  *  @note Callback must ALWAYS release any allocate memory before returning.
  *  If called with ssl = NULL then just release memory and return false.
  */
-typedef std::function<bool(SSL* ssl, void* data)> SslValidatorCallback;
+typedef Delegate<bool(SSL* ssl, void* data)> SslValidatorCallback;
 
 struct SslValidator {
 	SslValidatorCallback callback;

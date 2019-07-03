@@ -25,8 +25,7 @@
  * @brief Callback specification for the stream transformers
  * @note See StreamTransformer::transform() method for details
  */
-typedef std::function<size_t(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)>
-	StreamTransformerCallback;
+typedef Delegate<size_t(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)> StreamTransformerCallback;
 
 class StreamTransformer : public IDataSourceStream
 {

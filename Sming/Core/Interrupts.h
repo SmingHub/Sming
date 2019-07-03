@@ -39,7 +39,7 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode);
  *  The delegate function is called via the system task queue so does not need any special consideration.
  *  Note that this type of interrupt handler is not suitable for timing-sensitive applications.
  */
-void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, uint8_t mode);
+void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, uint8_t mode);
 
 /** @brief  Attach a function to a GPIO interrupt
  *  @param  pin GPIO to configure
@@ -56,7 +56,7 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode
  *  @param  mode Interrupt mode
  *  @note   Delegate function method
  */
-void attachInterrupt(uint8_t pin, Delegate<void()> delegateFunction, GPIO_INT_TYPE mode); // ESP compatible version
+void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_TYPE mode); // ESP compatible version
 
 /** @brief  Enable interrupts on GPIO pin
  *  @param  pin GPIO to enable interrupts for
