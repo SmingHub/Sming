@@ -23,7 +23,6 @@
 
 #include "WiringFrameworkDependencies.h"
 #include "IPAddress.h"
-#include "Delegate.h"
 
 #define NETWORK_DEBUG
 

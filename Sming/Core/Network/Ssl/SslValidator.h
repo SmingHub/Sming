@@ -20,7 +20,6 @@
 #include "ssl/ssl.h"
 #include "ssl/tls1.h"
 
-#include <functional>
 #include "WVector.h"
 
 #include "SslFingerprints.h"

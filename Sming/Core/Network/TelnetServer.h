@@ -20,7 +20,6 @@
 #pragma once
 
 #include <user_config.h>
-#include "Delegate.h"
 #include "TcpClient.h"
 #include "TcpServer.h"
 #include "SystemClock.h"

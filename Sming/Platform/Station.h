@@ -19,7 +19,6 @@
 #pragma once
 
 #include "System.h"
-#include "Delegate.h"
 #include "WString.h"
 #include "WVector.h"
 #include "IPAddress.h"

@@ -34,7 +34,6 @@ String ws_Url = "wss://echo.websocket.org";
 String ws_Url = "ws://echo.websocket.org";
 #endif /* ENABLE_SSL */
 
-void wsDisconnected(WebsocketConnection& wsConnection, bool success);
 void wsMessageSent();
 
 void wsConnected(WebsocketConnection& wsConnection)

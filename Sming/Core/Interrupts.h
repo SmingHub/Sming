@@ -15,7 +15,6 @@
 #pragma once
 
 #include "WiringFrameworkDependencies.h"
-#include "Delegate.h"
 
 #define ESP_MAX_INTERRUPTS 16
 

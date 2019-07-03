@@ -13,10 +13,7 @@
 */
 #pragma once
 
-#include <functional>
 #include "Interrupts.h"
-#include "Delegate.h"
-
 #include "SimpleTimer.h"
 
 typedef Delegate<void()> TimerDelegate;

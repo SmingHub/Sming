@@ -17,7 +17,6 @@
 
 #include "HardwareSerial.h"
 #include "FILO.h"
-#include "Delegate.h"
 #include "Timer.h"
 
 #define AT_REPLY_OK "OK"

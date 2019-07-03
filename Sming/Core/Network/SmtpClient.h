@@ -35,8 +35,6 @@
 #include "WebConstants.h"
 #include "Data/ObjectQueue.h"
 
-#include <functional>
-
 /* Maximum waiting emails in the mail queue */
 #define SMTP_QUEUE_SIZE 5
 

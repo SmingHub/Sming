@@ -11,7 +11,6 @@
 #pragma once
 
 #include "WString.h"
-#include "Delegate.h"
 #include "Network/TcpClient.h"
 #include "WiringFrameworkIncludes.h"
 #include "CommandOutput.h"

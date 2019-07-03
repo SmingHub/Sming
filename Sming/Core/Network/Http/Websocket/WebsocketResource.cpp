@@ -12,8 +12,6 @@
 
 #include "WebsocketResource.h"
 
-#include <functional>
-
 int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	WebsocketConnection* socket = new WebsocketConnection(&connection, false);

@@ -17,7 +17,6 @@
 
 #include "WiringFrameworkDependencies.h"
 #include "Data/Stream/ReadWriteStream.h"
-#include "Delegate.h"
 #include "driver/uart.h"
 
 #define UART_ID_0 0 ///< ID of UART 0
