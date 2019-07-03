@@ -301,9 +301,9 @@ void init()
 	/// Reading callback example:
 	//  * Option 1
 	//	Set Serial Callback to global routine:
-	//	   Serial.setCallback(onDataCallback);
+	//	   Serial.onDataReceived(onDataCallback);
 	// If you want to test local echo set the following callback
-	//	   Serial.setCallback(echoCallback);
+	//	   Serial.onDataReceived(echoCallback);
 
 	// 	* Option 2
 	//  Instantiate hwsDelegateDemo which includes Serial Delegate class

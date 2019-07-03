@@ -320,8 +320,9 @@ public:
 	/** @brief  Set handler for received data
 	 *  @param  dataReceivedDelegate Function to handle received data
 	 *  @retval bool Returns true if the callback was set correctly
+	 *  @deprecated Use `onDataReceived` instead
 	 */
-	bool setCallback(StreamDataReceivedDelegate dataReceivedDelegate)
+	bool setCallback(StreamDataReceivedDelegate dataReceivedDelegate) SMING_DEPRECATED
 	{
 		return onDataReceived(dataReceivedDelegate);
 	}

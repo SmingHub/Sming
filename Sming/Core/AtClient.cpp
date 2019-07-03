@@ -20,7 +20,7 @@
 
 AtClient::AtClient(HardwareSerial* stream) : stream(stream)
 {
-	this->stream->setCallback(StreamDataReceivedDelegate(&AtClient::processor, this));
+	this->stream->onDataReceived(StreamDataReceivedDelegate(&AtClient::processor, this));
 }
 
 void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCharsCount)
