@@ -266,6 +266,6 @@ void DS18S20::RegisterEndCallback(DS18S20CompletedDelegate callback)
 
 void DS18S20::UnRegisterCallback()
 {
-	readEndCallback = 0;
+	readEndCallback = nullptr;
 }
 

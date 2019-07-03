@@ -45,7 +45,7 @@ CommandDelegate CommandHandler::getCommandDelegate(const String& commandString)
 	else
 	{
 		debugf("Command %s not recognized, returning NULL\r\n",commandString.c_str());
-		return CommandDelegate("","","",NULL);
+		return CommandDelegate("","","",nullptr);
 	}
 }
 

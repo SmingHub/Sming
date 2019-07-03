@@ -106,7 +106,7 @@ public:
 	 *         but in order to prevent running out of memory we have a "sane" payload parser
 	 *         that will read up to 1K of payload
 	 */
-	void setPayloadParser(MqttPayloadParser payloadParser = 0)
+	void setPayloadParser(MqttPayloadParser payloadParser = nullptr)
 	{
 		this->payloadParser = payloadParser;
 	}
