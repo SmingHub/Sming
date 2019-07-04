@@ -10,23 +10,13 @@ LIBS += \
 	microgcc \
 	stdc++ \
 	hal \
-	phy \
-	pp \
-	net80211 \
-	wpa \
-	crypto \
-	smartconfig \
 	$(LIBMAIN)
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib \
+LDFLAGS	+= \
+	-nostdlib \
 	-u call_user_start \
-	-u Cache_Read_Enable_New \
-	-u custom_crash_callback \
 	-Wl,-static \
-	-Wl,--gc-sections \
-	-Wl,-Map=$(basename $@).map \
-	-Wl,-wrap,system_restart_local 
 
 
 .PHONY: application

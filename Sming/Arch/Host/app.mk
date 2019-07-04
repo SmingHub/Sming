@@ -5,10 +5,9 @@
 ###
 
 # linker flags used to generate the main object file
-LDFLAGS = \
-	-m32 \
-	-Wl,--gc-sections \
-	-Wl,-Map=$(basename $@).map
+LDFLAGS += \
+	-m32
+
 
 # Executable
 TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)

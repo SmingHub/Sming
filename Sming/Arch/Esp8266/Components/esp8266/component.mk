@@ -36,3 +36,9 @@ COMPONENT_INCDIRS		:= include $(SDK_INCDIR)
 export SDK_INTERNAL
 export SDK_LIBDIR
 export SDK_INCDIR
+
+# Required to ensure user-provided function gets linked instead of our 'weak' one
+COMPONENT_LDFLAGS += -u custom_crash_callback
+
+# Crash handler hooks this so debugger can be invoked
+COMPONENT_LDFLAGS += -Wl,-wrap,system_restart_local 
