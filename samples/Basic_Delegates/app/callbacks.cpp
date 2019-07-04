@@ -1,4 +1,3 @@
-
 #include "callbacks.h"
 
 int testCounter;
