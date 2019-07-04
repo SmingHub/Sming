@@ -225,6 +225,11 @@ bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslO
 		}
 	}
 
+	if(requestQueue.full()) {
+		debug_e("MQTT request queue full!");
+		return false;
+	}
+
 	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
 	memcpy(message, &connectMessage, sizeof(mqtt_message_t));
 	requestQueue.enqueue(message);
