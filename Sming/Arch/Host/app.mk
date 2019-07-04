@@ -8,7 +8,12 @@
 LDFLAGS = \
 	-m32 \
 	-Wl,--gc-sections \
-	-Wl,-Map=$(basename $@).map
+	-Wl,-Map=$(basename $@).map \
+	-Wl,-wrap,malloc \
+	-Wl,-wrap,calloc \
+	-Wl,-wrap,realloc \
+	-Wl,-wrap,free
+
 
 # Executable
 TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)
