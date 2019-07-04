@@ -20,7 +20,6 @@
 #include "Platform/System.h"
 #include "Timer.h"
 #include "DateTime.h"
-#include "Delegate.h"
 
 #define NTP_PORT 123
 #define NTP_PACKET_SIZE 48

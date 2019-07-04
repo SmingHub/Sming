@@ -406,8 +406,6 @@ bool ATTR_GDBINIT gdb_uart_init()
 	auto uart1 = uart_init(UART1, SERIAL_BAUD_RATE, UART_8N1, UART_TX_ONLY, 1, 0, 0);
 	if(uart1 != nullptr) {
 		uart_set_debug(UART1);
-
-		using namespace std::placeholders;
 		m_setPuts(std::bind(&uart_write, uart1, _1, _2));
 	}
 

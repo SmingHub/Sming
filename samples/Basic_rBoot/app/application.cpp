@@ -213,5 +213,5 @@ void init()
 	Serial.println("Type 'help' and press enter for instructions.");
 	Serial.println();
 
-	Serial.setCallback(serialCallBack);
+	Serial.onDataReceived(serialCallBack);
 }

@@ -17,7 +17,6 @@
 #pragma once
 
 #include "TcpConnection.h"
-#include "Delegate.h"
 
 #ifdef ENABLE_SSL
 #include "Ssl/SslValidator.h"

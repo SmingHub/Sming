@@ -51,7 +51,7 @@ void DS18S20::StartMeasure()
 		InProgress=true;
 		ds->begin();
 		ds->reset_search();
-		DelaysTimer.initializeMs(150, std::bind(&DS18S20::DoSearch, this)).start(false);
+		DelaysTimer.initializeMs(150, TimerDelegate(&DS18S20::DoSearch, this)).start(false);
 	}
 
 }
@@ -146,7 +146,7 @@ void DS18S20::StartReadNext()
 	  ds->select(addr);
 	  ds->write(STARTCONVO, 1);        // start conversion, with parasite power on at the end
 
-	  DelaysTimer.initializeMs(900, std::bind(&DS18S20::DoMeasure, this)).start(false);
+	  DelaysTimer.initializeMs(900, TimerDelegate(&DS18S20::DoMeasure, this)).start(false);
    }
    else
    {
@@ -210,7 +210,7 @@ void DS18S20::DoMeasure()
 	debugx("  DBG: Temperature = %f Celsius, %f Fahrenheit",celsius[numberOfread],fahrenheit[numberOfread]);
 
 	numberOfread++;
-	DelaysTimer.initializeMs(100, std::bind(&DS18S20::StartReadNext, this)).start(false);
+	DelaysTimer.initializeMs(100, TimerDelegate(&DS18S20::StartReadNext, this)).start(false);
 
 }
 
@@ -266,6 +266,6 @@ void DS18S20::RegisterEndCallback(DS18S20CompletedDelegate callback)
 
 void DS18S20::UnRegisterCallback()
 {
-	readEndCallback = 0;
+	readEndCallback = nullptr;
 }
 

@@ -13,7 +13,6 @@
 #pragma once
 
 #include "MultiStream.h"
-#include "Delegate.h"
 #include "Network/Http/HttpHeaders.h"
 
 /**

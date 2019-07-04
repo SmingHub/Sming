@@ -13,14 +13,13 @@
 */
 #pragma once
 
-#include <functional>
 #include "Interrupts.h"
-#include "Delegate.h"
-
 #include "SimpleTimer.h"
 
 typedef Delegate<void()> TimerDelegate;
-typedef std::function<void()> TimerDelegateStdFunction;
+
+/** @deprecated Use `TimerDelegate` */
+typedef std::function<void()> TimerDelegateStdFunction SMING_DEPRECATED;
 
 class Timer
 {
@@ -61,31 +60,15 @@ public:
      *  @param  milliseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
-     *  @deprecated Use `initializeMs(uint32_t, TimerDelegateStdFunction)` instead
      */
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = nullptr) SMING_DEPRECATED;
-
-	/** @brief  Initialise microsecond timer
-     *  @param  microseconds Duration of timer in milliseconds
-     *  @param  delegateFunction Function to call when timer triggers
-     *  @note   Delegate callback method
-     *  @deprecated Use `initializeMs(uint32_t, TimerDelegateStdFunction)` instead
-     */
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = nullptr) SMING_DEPRECATED;
-
-	/** @brief  Initialise millisecond timer
-     *  @param  milliseconds Duration of timer in milliseconds
-     *  @param  delegateFunction Function to call when timer triggers
-     *  @note   Delegate callback method
-     */
-	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegateStdFunction delegateFunction = nullptr);
+	Timer& IRAM_ATTR initializeMs(uint32_t milliseconds, TimerDelegate delegateFunction = nullptr);
 
 	/** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @note   Delegate callback method
      */
-	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegateStdFunction delegateFunction = nullptr);
+	Timer& IRAM_ATTR initializeUs(uint32_t microseconds, TimerDelegate delegateFunction = nullptr);
 
 	/** @brief  Start timer running
      *  @param  repeating Set to true for repeating timer. Set to false for one-shot.
@@ -160,12 +143,6 @@ public:
 	*/
 	void IRAM_ATTR setCallback(TimerDelegate delegateFunction);
 
-	/** @brief  Set timer trigger function
-	*  @param  delegateFunction Function to be called on timer trigger
-	*  @note   Delegate callback method
-	*/
-	void IRAM_ATTR setCallback(const TimerDelegateStdFunction& delegateFunction);
-
 protected:
 	void IRAM_ATTR processing();
 
@@ -180,8 +157,7 @@ private:
 	SimpleTimer simpleTimer; ///< We use a SimpleTimer to access the hardware
 	uint32_t interval = 0;
 	InterruptCallback callback = nullptr;
-	TimerDelegate delegateFunc = nullptr;
-	TimerDelegateStdFunction delegateStdFunc = nullptr;
+	TimerDelegate delegateFunc;
 	bool repeating = false;
 	bool started = false;
 

@@ -43,7 +43,7 @@ enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 
 class MqttClient;
 
-typedef std::function<int(MqttClient& client, mqtt_message_t* message)> MqttDelegate;
+typedef Delegate<int(MqttClient& client, mqtt_message_t* message)> MqttDelegate;
 typedef ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE> MqttRequestQueue;
 
 #ifndef MQTT_NO_COMPAT
@@ -106,7 +106,7 @@ public:
 	 *         but in order to prevent running out of memory we have a "sane" payload parser
 	 *         that will read up to 1K of payload
 	 */
-	void setPayloadParser(MqttPayloadParser payloadParser = 0)
+	void setPayloadParser(MqttPayloadParser payloadParser = nullptr)
 	{
 		this->payloadParser = payloadParser;
 	}

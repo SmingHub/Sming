@@ -83,9 +83,9 @@ public:
 	}
 };
 
-typedef std::function<void(uint8_t* data, uint16_t length)> WifiSnifferCallback;
-typedef std::function<void(const BeaconInfo& beacon)> WifiBeaconCallback;
-typedef std::function<void(const ClientInfo& client)> WifiClientCallback;
+typedef Delegate<void(uint8_t* data, uint16_t length)> WifiSnifferCallback;
+typedef Delegate<void(const BeaconInfo& beacon)> WifiBeaconCallback;
+typedef Delegate<void(const ClientInfo& client)> WifiClientCallback;
 
 class WifiSniffer : public ISystemReadyHandler
 {

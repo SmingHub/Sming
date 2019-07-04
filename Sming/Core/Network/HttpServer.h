@@ -20,7 +20,6 @@
 
 #include "TcpServer.h"
 #include "WString.h"
-#include "Delegate.h"
 #include "Http/HttpResourceTree.h"
 #include "Http/HttpServerConnection.h"
 #include "Http/HttpBodyParser.h"

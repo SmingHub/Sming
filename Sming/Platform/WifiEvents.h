@@ -13,7 +13,6 @@
 
 #pragma once
 
-#include "Delegate.h"
 #include "WString.h"
 #include "IPAddress.h"
 

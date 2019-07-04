@@ -90,7 +90,6 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	if(enabled) {
 		if(uart_tx_enabled(uart)) {
 			uart_set_debug(uartNr);
-			using namespace std::placeholders;
 			m_setPuts(std::bind(&uart_write, uart, _1, _2));
 		} else {
 			uart_set_debug(UART_NO);

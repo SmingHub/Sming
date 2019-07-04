@@ -14,7 +14,6 @@
 
 #include "WString.h"
 #include "Data/ObjectMap.h"
-#include "Delegate.h"
 
 #include "HttpResponse.h"
 #include "HttpRequest.h"

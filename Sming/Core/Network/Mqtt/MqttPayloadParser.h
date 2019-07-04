@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "Delegate.h"
+#include <esp_systemapi.h>
 #include "mqtt-codec/src/message.h"
 
 /** @defgroup   mqttpayload Provides MQTT payload parser

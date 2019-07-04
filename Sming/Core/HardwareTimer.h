@@ -18,7 +18,6 @@
 #pragma once
 
 #include "Interrupts.h"
-#include "Delegate.h"
 
 #define MAX_HW_TIMER_INTERVAL_US 0x7fffff ///< Maximum timer interval in microseconds
 #define MIN_HW_TIMER_INTERVAL_US 0x32	 ///< Minimum hardware interval in microseconds

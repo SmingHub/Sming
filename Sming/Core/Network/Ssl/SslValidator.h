@@ -20,7 +20,6 @@
 #include "ssl/ssl.h"
 #include "ssl/tls1.h"
 
-#include <functional>
 #include "WVector.h"
 
 #include "SslFingerprints.h"
@@ -32,7 +31,7 @@
  *  @note Callback must ALWAYS release any allocate memory before returning.
  *  If called with ssl = NULL then just release memory and return false.
  */
-typedef std::function<bool(SSL* ssl, void* data)> SslValidatorCallback;
+typedef Delegate<bool(SSL* ssl, void* data)> SslValidatorCallback;
 
 struct SslValidator {
 	SslValidatorCallback callback;

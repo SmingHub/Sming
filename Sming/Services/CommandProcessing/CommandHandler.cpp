@@ -27,12 +27,12 @@ CommandHandler::~CommandHandler()
 void CommandHandler::registerSystemCommands()
 {
 	String system = F("system");
-	registerCommand(CommandDelegate(F("status"), F("Displays System Information"), system, commandFunctionDelegate(&CommandHandler::procesStatusCommand,this)));
-	registerCommand(CommandDelegate(F("echo"), F("Displays command entered"), system, commandFunctionDelegate(&CommandHandler::procesEchoCommand,this)));
-	registerCommand(CommandDelegate(F("help"), F("Displays all available commands"), system, commandFunctionDelegate(&CommandHandler::procesHelpCommand,this)));
-	registerCommand(CommandDelegate(F("debugon"), F("Set Serial debug on"), system, commandFunctionDelegate(&CommandHandler::procesDebugOnCommand,this)));
-	registerCommand(CommandDelegate(F("debugoff"), F("Set Serial debug off"), system, commandFunctionDelegate(&CommandHandler::procesDebugOffCommand,this)));
-	registerCommand(CommandDelegate(F("command"), F("Use verbose/silent/prompt as command options"), system, commandFunctionDelegate(&CommandHandler::processCommandOptions, this)));
+	registerCommand(CommandDelegate(F("status"), F("Displays System Information"), system, CommandFunctionDelegate(&CommandHandler::procesStatusCommand,this)));
+	registerCommand(CommandDelegate(F("echo"), F("Displays command entered"), system, CommandFunctionDelegate(&CommandHandler::procesEchoCommand,this)));
+	registerCommand(CommandDelegate(F("help"), F("Displays all available commands"), system, CommandFunctionDelegate(&CommandHandler::procesHelpCommand,this)));
+	registerCommand(CommandDelegate(F("debugon"), F("Set Serial debug on"), system, CommandFunctionDelegate(&CommandHandler::procesDebugOnCommand,this)));
+	registerCommand(CommandDelegate(F("debugoff"), F("Set Serial debug off"), system, CommandFunctionDelegate(&CommandHandler::procesDebugOffCommand,this)));
+	registerCommand(CommandDelegate(F("command"), F("Use verbose/silent/prompt as command options"), system, CommandFunctionDelegate(&CommandHandler::processCommandOptions, this)));
 }
 
 CommandDelegate CommandHandler::getCommandDelegate(const String& commandString)
@@ -45,7 +45,7 @@ CommandDelegate CommandHandler::getCommandDelegate(const String& commandString)
 	else
 	{
 		debugf("Command %s not recognized, returning NULL\r\n",commandString.c_str());
-		return CommandDelegate("","","",NULL);
+		return CommandDelegate("","","",nullptr);
 	}
 }
 

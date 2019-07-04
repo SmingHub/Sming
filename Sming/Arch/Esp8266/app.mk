@@ -8,6 +8,7 @@
 LIBS += \
 	microc \
 	microgcc \
+	stdc++ \
 	hal \
 	phy \
 	pp \

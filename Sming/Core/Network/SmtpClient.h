@@ -35,8 +35,6 @@
 #include "WebConstants.h"
 #include "Data/ObjectQueue.h"
 
-#include <functional>
-
 /* Maximum waiting emails in the mail queue */
 #define SMTP_QUEUE_SIZE 5
 
@@ -86,7 +84,7 @@ enum SmtpState {
 
 class SmtpClient;
 
-typedef std::function<int(SmtpClient& client, int code, char* status)> SmtpClientCallback;
+typedef Delegate<int(SmtpClient& client, int code, char* status)> SmtpClientCallback;
 
 class SmtpClient : protected TcpClient
 {

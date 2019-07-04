@@ -17,7 +17,6 @@
 
 #include "HardwareSerial.h"
 #include "FILO.h"
-#include "Delegate.h"
 #include "Timer.h"
 
 #define AT_REPLY_OK "OK"
@@ -35,13 +34,13 @@ typedef Delegate<bool(AtClient& atClient, String& reply)> AtCompleteCallback;
 //     finished successfully processing the command
 
 typedef struct {
-	String text;					   ///< the actual AT command
-	String response2;				   ///< alternative successful response
-	unsigned timeout;				   ///< timeout in milliseconds
-	unsigned retries;				   ///< number of retries before giving up
-	bool breakOnError = true;		   ///< stop executing next command if that one has failed
-	AtReceiveCallback onReceive = 0;   ///< if set you can process manually all incoming data in a callback
-	AtCompleteCallback onComplete = 0; ///< if set then you can process the complete response manually
+	String text;				   ///< the actual AT command
+	String response2;			   ///< alternative successful response
+	unsigned timeout;			   ///< timeout in milliseconds
+	unsigned retries;			   ///< number of retries before giving up
+	bool breakOnError = true;	  ///< stop executing next command if that one has failed
+	AtReceiveCallback onReceive;   ///< if set you can process manually all incoming data in a callback
+	AtCompleteCallback onComplete; ///< if set then you can process the complete response manually
 } AtCommand;
 
 typedef enum { eAtOK = 0, eAtRunning, eAtError } AtState;

@@ -15,7 +15,7 @@ Descr: embedded very simple version of printf with float support
 
 extern "C++" {
 
-#include <functional>
+#include <Delegate.h>
 
 /** @brief callback type to output a string of data
  *  @param param
@@ -24,7 +24,7 @@ extern "C++" {
  *  @retval number of characters written, which may be less than the requested size
  *  @note data does not need to be nul terminated and may contain any 8-bit values including nul
  */
-typedef std::function<size_t(const char* str, size_t length)> nputs_callback_t;
+typedef Delegate<size_t(const char* str, size_t length)> nputs_callback_t;
 
 /** @brief set the character output routine
  *  @param callback

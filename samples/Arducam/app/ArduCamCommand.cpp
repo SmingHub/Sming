@@ -18,10 +18,10 @@ ArduCamCommand::~ArduCamCommand()
 void ArduCamCommand::initCommand()
 {
 	commandHandler.registerCommand(CommandDelegate("set", "ArduCAM config commands", "Application",
-												   commandFunctionDelegate(&ArduCamCommand::processSetCommands, this)));
+												   CommandFunctionDelegate(&ArduCamCommand::processSetCommands, this)));
 	//	commandHandler.registerCommand(
 	//			CommandDelegate("out", "ArduCAM output commands", "Application",
-	//					commandFunctionDelegate(&ArduCamCommand::processOutCommands,this)));
+	//					CommandFunctionDelegate(&ArduCamCommand::processOutCommands,this)));
 }
 
 void ArduCamCommand::showSettings(CommandOutput* commandOutput)
