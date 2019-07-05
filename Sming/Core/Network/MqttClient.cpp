@@ -15,15 +15,38 @@
 
 #include "Clock.h"
 
+// Content length set to this value to indicate data refers to a stream, not a buffer
 #define MQTT_PUBLISH_STREAM 0
 
 mqtt_serialiser_t MqttClient::serialiser;
 mqtt_parser_callbacks_t MqttClient::callbacks;
 
+static mqtt_message_t* createMessage(mqtt_type_t messageType)
+{
+	auto message = new mqtt_message_t;
+	if(message != nullptr) {
+		mqtt_message_init(message);
+		message->common.type = messageType;
+	}
+	return message;
+}
+
+static void deleteMessage(mqtt_message_t* message)
+{
+	mqtt_message_clear(message, 0);
+	delete message;
+}
+
+static void clearMessage(mqtt_message_t& message)
+{
+	mqtt_message_clear(&message, 0);
+}
+
 static bool copyString(mqtt_buffer_t& destBuffer, const String& sourceString)
 {
 	destBuffer.length = sourceString.length();
-	destBuffer.data = (uint8_t*)malloc(sourceString.length());
+	MQTT_FREE(destBuffer.data); // Avoid memory leaks
+	destBuffer.data = (uint8_t*)MQTT_MALLOC(sourceString.length());
 	if(destBuffer.data == nullptr) {
 		debug_e("Not enough memory");
 		return false;
@@ -67,16 +90,15 @@ MqttClient::MqttClient(bool withDefaultPayloadParser, bool autoDestruct) : TcpCl
 MqttClient::~MqttClient()
 {
 	while(requestQueue.count() != 0) {
-		mqtt_message_clear(requestQueue.dequeue(), 1);
+		deleteMessage(requestQueue.dequeue());
 	}
 
-	mqtt_message_clear(&connectMessage, 0);
-	if(outgoingMessage != nullptr) {
-		mqtt_message_clear(outgoingMessage, 1);
-		outgoingMessage = nullptr;
+	clearMessage(connectMessage);
+	if(outgoingMessage != &connectMessage) {
+		deleteMessage(outgoingMessage);
 	}
-
-	mqtt_message_clear(&incomingMessage, 0);
+	outgoingMessage = nullptr;
+	clearMessage(incomingMessage);
 }
 
 bool MqttClient::onTcpReceive(TcpClient& client, char* data, int size)
@@ -225,9 +247,11 @@ bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslO
 		}
 	}
 
-	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
-	memcpy(message, &connectMessage, sizeof(mqtt_message_t));
-	requestQueue.enqueue(message);
+	// We'll pick up connectMessage before sending any other queued messages
+	if(connectQueued) {
+		debug_i("MQTT replacing connect message");
+	}
+	connectQueued = true;
 
 	return TcpClient::connect(url.Host, url.getPort(), useSsl, sslOptions);
 }
@@ -238,9 +262,7 @@ bool MqttClient::publish(const String& topic, const String& content, uint8_t fla
 		return false;
 	}
 
-	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
-	mqtt_message_init(message);
-	message->common.type = MQTT_TYPE_PUBLISH;
+	auto message = createMessage(MQTT_TYPE_PUBLISH);
 
 	message->common.retain = static_cast<mqtt_retain_t>((flags >> 0) & 0x01);
 	message->common.qos = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
@@ -263,9 +285,7 @@ bool MqttClient::publish(const String& topic, IDataSourceStream* stream, uint8_t
 		return false;
 	}
 
-	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
-	mqtt_message_init(message);
-	message->common.type = MQTT_TYPE_PUBLISH;
+	auto message = createMessage(MQTT_TYPE_PUBLISH);
 
 	message->common.retain = static_cast<mqtt_retain_t>((flags >> 0) & 0x01);
 	message->common.qos = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
@@ -286,12 +306,10 @@ bool MqttClient::subscribe(const String& topic)
 		return false;
 	}
 
-	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
-	mqtt_message_init(message);
-	message->common.type = MQTT_TYPE_SUBSCRIBE;
-	message->subscribe.topics = (mqtt_topicpair_t*)malloc(sizeof(mqtt_topicpair_t));
-	memset(message->subscribe.topics, 0, sizeof(mqtt_topicpair_t));
+	auto message = createMessage(MQTT_TYPE_SUBSCRIBE);
 
+	message->subscribe.topics = (mqtt_topicpair_t*)MQTT_MALLOC(sizeof(mqtt_topicpair_t));
+	memset(message->subscribe.topics, 0, sizeof(mqtt_topicpair_t));
 	COPY_STRING(message->subscribe.topics->name, topic);
 
 	return requestQueue.enqueue(message);
@@ -305,10 +323,9 @@ bool MqttClient::unsubscribe(const String& topic)
 		return false;
 	}
 
-	mqtt_message_t* message = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
-	mqtt_message_init(message);
-	message->common.type = MQTT_TYPE_SUBSCRIBE;
-	message->unsubscribe.topics = (mqtt_topic_t*)malloc(sizeof(mqtt_topic_t));
+	auto message = createMessage(MQTT_TYPE_SUBSCRIBE);
+
+	message->unsubscribe.topics = (mqtt_topic_t*)MQTT_MALLOC(sizeof(mqtt_topic_t));
 	memset(message->unsubscribe.topics, 0, sizeof(mqtt_topic_t));
 	COPY_STRING(message->unsubscribe.topics->name, topic);
 
@@ -320,8 +337,15 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	switch(state) {
 	REENTER:
 	case eMCS_Ready: {
-		mqtt_message_clear(outgoingMessage, 1);
-		outgoingMessage = requestQueue.dequeue();
+		if(outgoingMessage != &connectMessage) {
+			deleteMessage(outgoingMessage);
+		}
+		if(connectQueued) {
+			outgoingMessage = &connectMessage;
+			connectQueued = false;
+		} else {
+			outgoingMessage = requestQueue.dequeue();
+		}
 		if(!outgoingMessage) {
 			// Send PINGREQ every PingRepeatTime time, if there is no outgoing traffic
 			// PingRepeatTime should be <= keepAlive
@@ -329,9 +353,7 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 				break;
 			}
 
-			outgoingMessage = (mqtt_message_t*)malloc(sizeof(mqtt_message_t));
-			memset(outgoingMessage, 0, sizeof(mqtt_message_t));
-			outgoingMessage->common.type = MQTT_TYPE_PINGREQ;
+			outgoingMessage = createMessage(MQTT_TYPE_PINGREQ);
 		}
 
 		IDataSourceStream* payloadStream = nullptr;
