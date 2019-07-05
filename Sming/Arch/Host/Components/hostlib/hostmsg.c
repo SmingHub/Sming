@@ -45,8 +45,10 @@ void host_printf(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	vfprintf(stderr, fmt, args);
+	char buffer[1024];
+	vsnprintf(buffer, sizeof(buffer), fmt, args);
 	va_end(args);
+	host_puts(buffer);
 }
 
 void host_printfp(const char* fmt, const char* pretty_function, ...)
