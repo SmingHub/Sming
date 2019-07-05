@@ -55,11 +55,6 @@ static bool copyString(mqtt_buffer_t& destBuffer, const String& sourceString)
 	return true;
 }
 
-#define COPY_STRING(TO, FROM)                                                                                          \
-	if(!copyString(TO, FROM)) {                                                                                        \
-		return false;                                                                                                  \
-	}
-
 MqttClient::MqttClient(bool withDefaultPayloadParser, bool autoDestruct) : TcpClient(autoDestruct)
 {
 	// TODO:...
@@ -210,10 +205,8 @@ bool MqttClient::setWill(const String& topic, const String& message, uint8_t fla
 	connectMessage.connect.flags.will_qos = (flags >> 1) & 0x03;
 	connectMessage.connect.flags.will = 1;
 
-	COPY_STRING(connectMessage.connect.will_topic, topic);
-	COPY_STRING(connectMessage.connect.will_message, message);
-
-	return true;
+	return copyString(connectMessage.connect.will_topic, topic) &&
+		   copyString(connectMessage.connect.will_message, message);
 }
 
 bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslOptions)
@@ -232,19 +225,24 @@ bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslO
 
 	debug_d("MQTT start connection");
 
-	COPY_STRING(connectMessage.connect.protocol_name, F("MQTT"));
+	bool res = copyString(connectMessage.connect.protocol_name, F("MQTT"));
 
 	connectMessage.connect.keep_alive = keepAlive;
 
-	COPY_STRING(connectMessage.connect.client_id, clientName);
+	res &= copyString(connectMessage.connect.client_id, clientName);
 
 	if(url.User.length() > 0) {
 		connectMessage.connect.flags.username_follows = 1;
-		COPY_STRING(connectMessage.connect.username, url.User);
+		res &= copyString(connectMessage.connect.username, url.User);
 		if(url.Password.length() > 0) {
 			connectMessage.connect.flags.password_follows = 1;
-			COPY_STRING(connectMessage.connect.password, url.Password);
+			res &= copyString(connectMessage.connect.password, url.Password);
 		}
+	}
+
+	if(!res) {
+		debug_e("MQTT out of memory");
+		return false;
 	}
 
 	// We'll pick up connectMessage before sending any other queued messages
@@ -268,8 +266,10 @@ bool MqttClient::publish(const String& topic, const String& content, uint8_t fla
 	message->common.qos = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
 	message->common.dup = static_cast<mqtt_dup_t>((flags >> 3) & 0x01);
 
-	COPY_STRING(message->publish.topic_name, topic);
-	COPY_STRING(message->publish.content, content);
+	if(!copyString(message->publish.topic_name, topic) || !copyString(message->publish.content, content)) {
+		delete message;
+		return false;
+	}
 
 	return requestQueue.enqueue(message);
 }
@@ -291,7 +291,12 @@ bool MqttClient::publish(const String& topic, IDataSourceStream* stream, uint8_t
 	message->common.qos = static_cast<mqtt_qos_t>((flags >> 1) & 0x03);
 	message->common.dup = static_cast<mqtt_dup_t>((flags >> 3) & 0x01);
 
-	COPY_STRING(message->publish.topic_name, topic);
+	if(!copyString(message->publish.topic_name, topic)) {
+		delete message;
+		delete stream;
+		return false;
+	}
+
 	message->publish.content.length = MQTT_PUBLISH_STREAM;
 	message->publish.content.data = (uint8_t*)stream;
 
@@ -310,7 +315,10 @@ bool MqttClient::subscribe(const String& topic)
 
 	message->subscribe.topics = (mqtt_topicpair_t*)MQTT_MALLOC(sizeof(mqtt_topicpair_t));
 	memset(message->subscribe.topics, 0, sizeof(mqtt_topicpair_t));
-	COPY_STRING(message->subscribe.topics->name, topic);
+	if(!copyString(message->subscribe.topics->name, topic)) {
+		delete message;
+		return false;
+	}
 
 	return requestQueue.enqueue(message);
 }
@@ -327,7 +335,10 @@ bool MqttClient::unsubscribe(const String& topic)
 
 	message->unsubscribe.topics = (mqtt_topic_t*)MQTT_MALLOC(sizeof(mqtt_topic_t));
 	memset(message->unsubscribe.topics, 0, sizeof(mqtt_topic_t));
-	COPY_STRING(message->unsubscribe.topics->name, topic);
+	if(!copyString(message->unsubscribe.topics->name, topic)) {
+		delete message;
+		return false;
+	}
 
 	return requestQueue.enqueue(message);
 }
