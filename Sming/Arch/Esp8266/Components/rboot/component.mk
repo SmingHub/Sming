@@ -96,7 +96,7 @@ ifeq ($(RBOOT_GPIO_SKIP_ENABLED),1)
 endif
 
 $(RBOOT_BIN):
-	$(MAKE) -C $(ARCH_COMPONENTS)/rboot/rboot
+	$(Q) $(MAKE) -C $(ARCH_COMPONENTS)/rboot/rboot
 
 
 # rBoot big flash support requires a slightly modified version of libmain (just one symbol gets weakened)
@@ -104,6 +104,7 @@ $(RBOOT_BIN):
 LIBMAIN_RBOOT			:= $(LIBMAIN)-rboot
 LIBMAIN_RBOOT_DST		:= $(APP_LIBDIR)/lib$(LIBMAIN_RBOOT).a
 CUSTOM_TARGETS			+= $(LIBMAIN_RBOOT_DST)
+COMPONENT_LDFLAGS		:= -u Cache_Read_Enable_New
 
 $(LIBMAIN_RBOOT_DST): $(LIBMAIN_SRC)
 	@echo "OC $@"

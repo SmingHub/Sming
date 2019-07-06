@@ -293,6 +293,7 @@ Set `COMPONENT_LIBNAME :=` if the Component doesn't create a library. If you don
 
 `EXTRA_LIBS` Set to names of any additional libraries to be linked.
 
+`EXTRA_LDFLAGS` Set to any additional flags to be used when linking.
 
 These values are global so must only be appended to (with `+=`) , never overwritten.
 

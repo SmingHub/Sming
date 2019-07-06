@@ -81,6 +81,12 @@ LIBDIRS				:= $(APP_LIBDIR) $(USER_LIBDIR) $(ARCH_BASE)/Compiler/lib $(ARCH_BASE
 # Standard libraries that will be linked with application (Component libraries are defined separately)
 LIBS				:= $(EXTRA_LIBS)
 
+# Common linker flags
+LDFLAGS = \
+	-Wl,--gc-sections \
+	-Wl,-Map=$(basename $@).map
+
+
 # Name of the application to use for link output targets
 APP_NAME			:= app
 
@@ -150,6 +156,7 @@ COMPONENT_BUILD_DIR		:= $$(CMP_$1_BUILD_BASE)
 COMPONENT_VARS			:=
 COMPONENT_TARGETS		:=
 EXTRA_LIBS				:=
+EXTRA_LDFLAGS			:=
 # Process any component.mk file (optional)
 ifneq (,$(wildcard $2/component.mk))
 COMPONENT_PATH			:= $2
@@ -163,6 +170,8 @@ CMP_$1_DEPENDS			:= $$(COMPONENT_DEPENDS)
 CMP_$1_VARS				:= $$(sort $$(COMPONENT_VARS))
 CMP_$1_APPCODE			:= $$(COMPONENT_APPCODE)
 LIBS					+= $$(EXTRA_LIBS)
+CMP_$1_LDFLAGS			:= $$(EXTRA_LDFLAGS)
+LDFLAGS					+= $$(CMP_$1_LDFLAGS)
 endif
 CMP_$1_TARGETS			:= $$(COMPONENT_TARGETS)
 CMP_$1_BUILD_DIR		:= $$(COMPONENT_BUILD_DIR)

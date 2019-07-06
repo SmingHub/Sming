@@ -140,6 +140,14 @@ cs: ##Apply coding style to all core files
 		clang-format -i -style=file $$FILE; \
 	done
 
+ALL_FILES = $(filter %.cpp %.h %.c %.mk %.sh %.cmd,$(shell $(GIT) ls-files))
+
+.PHONY: dos2unix
+dos2unix: ##Make sure all our files use Unix line endings
+	$(Q) dos2unix $(ALL_FILES)
+	@echo "$(words $(ALL_FILES)) files checked"
+
+
 ##@Help
 
 .PHONY: help

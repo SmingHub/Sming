@@ -5,10 +5,9 @@
 ###
 
 # linker flags used to generate the main object file
-LDFLAGS = \
-	-m32 \
-	-Wl,--gc-sections \
-	-Wl,-Map=$(basename $@).map
+LDFLAGS += \
+	-m32
+
 
 # Executable
 TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)
@@ -36,12 +35,15 @@ endif
 RUN_SCRIPT := $(FW_BASE)/run.sh
 
 .PHONY: run
-run: all ##Run the application image
-	$(Q) echo > $(RUN_SCRIPT); \
-	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $(RUN_SCRIPT);) \
-	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS)' >> $(RUN_SCRIPT); \
-	chmod +x $(RUN_SCRIPT); \
-	$(RUN_SCRIPT)
+run: all $(RUN_SCRIPT) ##Run the application image
+	$(Q) $(RUN_SCRIPT)
+
+$(RUN_SCRIPT)::
+	$(Q) echo '#!/bin/bash' > $@; \
+	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
+	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS)' >> $@; \
+	chmod a+x $@
+
 
 .PHONY: flashfs
 flashfs: $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image

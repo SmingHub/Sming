@@ -28,7 +28,6 @@ if "%SMING_ARCH%" == "Host" (
 	%MAKE_PARALLEL% Basic_Serial Basic_ProgMem STRICT=1 V=1 || goto :error
 
 	REM Run basic tests
-	set SMING_TARGET_OPTIONS="--flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)"
 	%MAKE_PARALLEL% tests || goto :error
 
 ) else (
