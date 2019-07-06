@@ -23,6 +23,10 @@
 	url = https://github.com/jacketizer/libyuarel.git
 	ignore = dirty
 
+[submodule "esptool"]
+	path = Sming/Arch/Esp8266/Components/esptool/esptool
+	url = https://github.com/espressif/esptool
+	ignore = dirty
 [submodule "ESP8266.rboot"]
 	path = Sming/Arch/Esp8266/Components/rboot/rboot
 	url = https://github.com/raburton/rboot.git
