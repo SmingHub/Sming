@@ -17,7 +17,6 @@
 #include "HttpHeaders.h"
 #include "FileSystem.h"
 
-class JsonObjectStream; // << TODO: deprecated and should be removed in the next version
 class TemplateStream;
 
 class HttpResponse
@@ -84,13 +83,6 @@ public:
 	 * @retval bool
 	 */
 	bool sendTemplate(TemplateStream* newTemplateInstance);
-
-	/**
-	 * @brief Build and send JSON string
-	 *
-	 * @deprecated Use `response.sendDataStream(stream, MIME_JSON)` instead
-	 */
-	bool sendJsonObject(JsonObjectStream* newJsonStreamInstance) SMING_DEPRECATED;
 
 	/** @brief Send data from the given stream object
 	 *  @param newDataStream

@@ -13,7 +13,6 @@
 #include "HttpResponse.h"
 #include "../WebConstants.h"
 #include "Data/Stream/MemoryDataStream.h"
-#include "Data/Stream/JsonObjectStream.h"
 #include "Data/Stream/FileStream.h"
 #include "Data/Stream/TemplateStream.h"
 
@@ -109,16 +108,6 @@ bool HttpResponse::sendTemplate(TemplateStream* newTemplateInstance)
 
 	if(!headers.contains(HTTP_HEADER_TRANSFER_ENCODING) && stream->available() < 0) {
 		headers[HTTP_HEADER_TRANSFER_ENCODING] = _F("chunked");
-	}
-
-	return true;
-}
-
-bool HttpResponse::sendJsonObject(JsonObjectStream* newJsonStreamInstance)
-{
-	setStream(newJsonStreamInstance);
-	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
-		setContentType(MIME_JSON);
 	}
 
 	return true;

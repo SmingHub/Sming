@@ -20,7 +20,6 @@ COMPONENT_DEPENDS := \
 	ws_parser \
 	mqtt-codec \
 	libyuarel \
-	ArduinoJson \
 	terminal
 
 # => SSL
