@@ -1,34 +1,33 @@
 diff --git a/src/umm_malloc_cfg.h b/src/umm_malloc_cfg.h
-index fcc4fb1..661b94a 100644
+index 6a5a7fc..a581100 100644
 --- a/src/umm_malloc_cfg.h
 +++ b/src/umm_malloc_cfg.h
-@@ -5,6 +5,25 @@
+@@ -5,6 +5,24 @@
  #ifndef _UMM_MALLOC_CFG_H
  #define _UMM_MALLOC_CFG_H
  
++#include <c_types.h>
++#include <m_printf.h>
++
 +#ifdef __cplusplus
 +extern "C" {
 +#endif
-+#include <c_types.h>
-+#ifdef __cplusplus
-+}
-+#endif
 +
-+#ifdef __ets__
 +// ESP specific code
 +extern void ets_intr_lock();
 +extern void ets_intr_unlock();
-+extern void ets_printf(const char*, ...);
 +
-+#define printf ets_printf
-+#define puts(...) ets_printf("%s",...)
-+#define ICACHE_FLASH_ATTR __attribute__((section(".irom0.text")))
++#ifdef UMM_MALLOC_H
++#define printf m_printf
++#define puts m_puts
 +#endif
++
++#define ICACHE_FLASH_ATTR __attribute__((section(".irom0.text")))
 +
  /*
   * There are a number of defines you can set at compile time that affect how
   * the memory allocator will operate.
-@@ -51,11 +70,11 @@
+@@ -39,11 +57,11 @@
   * ----------------------------------------------------------------------------
   */
  
@@ -43,7 +42,7 @@ index fcc4fb1..661b94a 100644
  
  /* A couple of macros to make packing structures less compiler dependent */
  
-@@ -107,8 +126,8 @@ extern char test_umm_heap[];
+@@ -95,8 +113,8 @@ extern char test_umm_heap[];
   * called from within umm_malloc()
   */
  
@@ -54,7 +53,7 @@ index fcc4fb1..661b94a 100644
  
  /*
   * -D UMM_INTEGRITY_CHECK :
-@@ -163,11 +182,11 @@ extern char test_umm_heap[];
+@@ -151,11 +169,11 @@ extern char test_umm_heap[];
   * callback is called: `UMM_HEAP_CORRUPTION_CB()`
   */
  
@@ -68,10 +67,14 @@ index fcc4fb1..661b94a 100644
  
  #ifdef UMM_POISON_CHECK
     void *umm_poison_malloc( size_t size );
-@@ -180,4 +199,6 @@ extern char test_umm_heap[];
+@@ -168,4 +186,10 @@ extern char test_umm_heap[];
  #  define POISON_CHECK() 0
  #endif
  
 +// #define UMM_HEAP_CORRUPTION_CB() panic()
++
++#ifdef __cplusplus
++}
++#endif
 +
  #endif /* _UMM_MALLOC_CFG_H */
