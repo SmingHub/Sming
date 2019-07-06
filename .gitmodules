@@ -105,7 +105,7 @@
 	path = Sming/Libraries/TM1637
 	url = https://github.com/avishorp/TM1637.git
 	ignore = dirty
-[submodule "Libraries.ArduinoJson"]
-	path = Sming/Libraries/ArduinoJson
+[submodule "Libraries.ArduinoJson6"]
+	path = Sming/Libraries/ArduinoJson6/ArduinoJson
 	url = https://github.com/bblanchon/ArduinoJson.git
 	ignore = dirty

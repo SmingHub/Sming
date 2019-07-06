@@ -8,7 +8,7 @@
  *
  ****/
 
-#include "JsonObjectStream.h"
+#include "include/JsonObjectStream.h"
 
 uint16_t JsonObjectStream::readMemoryBlock(char* data, int bufSize)
 {
