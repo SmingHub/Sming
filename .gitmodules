@@ -109,3 +109,7 @@
 	path = Sming/Libraries/ArduinoJson6/ArduinoJson
 	url = https://github.com/bblanchon/ArduinoJson.git
 	ignore = dirty
+[submodule "Libraries.ArduinoJson5"]
+	path = Sming/Libraries/ArduinoJson5/ArduinoJson
+	url = https://github.com/bblanchon/ArduinoJson.git
+	ignore = dirty
