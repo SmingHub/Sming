@@ -1,4 +1,5 @@
 #include "common.h"
+#include <JsonObjectStream.h>
 
 void test_json()
 {

@@ -1,4 +1,5 @@
 SPIFF_FILES = web/build
+ARDUINO_LIBRARIES := ArduinoJson6
 
 web-pack:
 	$(Q) gulp

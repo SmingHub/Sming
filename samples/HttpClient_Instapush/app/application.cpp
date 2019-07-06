@@ -1,4 +1,6 @@
 #include <SmingCore.h>
+#include <ArduinoJson.h>
+#include <Data/Stream/MemoryDataStream.h>
 
 /*** Direct PUSH notifications on your mobile phone!
  *

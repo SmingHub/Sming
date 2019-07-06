@@ -6,6 +6,7 @@
  */
 
 #include <SmingCore.h>
+#include <ArduinoJson.h>
 
 #ifndef INCLUDE_APPSETTINGS_H_
 #define INCLUDE_APPSETTINGS_H_
