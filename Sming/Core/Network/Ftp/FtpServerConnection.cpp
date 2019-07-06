@@ -162,7 +162,7 @@ err_t FtpServerConnection::onSent(uint16_t len)
 
 String FtpServerConnection::makeFileName(String name, bool shortIt)
 {
-	if(name.startsWith("/")) {
+	if(name[0] == '/') {
 		name.remove(0, 1);
 	}
 
@@ -211,7 +211,7 @@ int FtpServerConnection::getSplitterPos(const String& data, char splitter, uint8
 	return -1;
 }
 
-void FtpServerConnection::response(int code, String text /* = "" */)
+void FtpServerConnection::response(int code, String text)
 {
 	String response = String(code, DEC);
 	if(text.length() == 0) {
