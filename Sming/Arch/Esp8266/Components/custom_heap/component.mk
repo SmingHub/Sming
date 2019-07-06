@@ -1,7 +1,8 @@
 # umm_malloc (custom heap allocation)
 
 COMPONENT_SUBMODULES	:= umm_malloc
-COMPONENT_SRCDIRS		:= . umm_malloc/src
+COMPONENT_SRCDIRS		:=
+COMPONENT_SRCFILES		:= heap.c umm_malloc/src/umm_malloc.c
 COMPONENT_INCDIRS		:= umm_malloc/src umm_malloc/includes/c-helper-macros
 
 LIBMAIN					= mainmm

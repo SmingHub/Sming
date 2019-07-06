@@ -12,27 +12,27 @@
 
 void* IRAM_ATTR pvPortMalloc(size_t size, const char* file, int line)
 {
-    return malloc(size);
+    return umm_malloc(size);
 }
 
 void IRAM_ATTR vPortFree(void *ptr, const char* file, int line)
 {
-    free(ptr);
+    umm_free(ptr);
 }
 
 void* IRAM_ATTR pvPortCalloc(size_t count, size_t size, const char* file, int line)
 {
-    return calloc(count, size);
+    return umm_calloc(count, size);
 }
 
 void* IRAM_ATTR pvPortRealloc(void *ptr, size_t size, const char* file, int line)
 {
-    return realloc(ptr, size);
+    return umm_realloc(ptr, size);
 }
 
 void* IRAM_ATTR pvPortZalloc(size_t size, const char* file, int line)
 {
-    return calloc(1, size);
+    return umm_calloc(1, size);
 }
 
 void* IRAM_ATTR pvPortZallocIram(size_t size, const char* file, int line) __attribute__ ((weak, alias("pvPortZalloc")));
