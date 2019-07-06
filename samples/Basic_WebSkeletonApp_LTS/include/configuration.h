@@ -1,7 +1,5 @@
-#ifndef INCLUDE_CONFIGURATION_H_
-#define INCLUDE_CONFIGURATION_H_
+#pragma once
 
-#include <user_config.h>
 #include <SmingCore.h>
 
 const char THERM_CONFIG_FILE[] = ".therm.conf"; // leading point for security reasons :)
@@ -23,5 +21,3 @@ ThermConfig loadConfig();
 void saveConfig(ThermConfig& cfg);
 
 extern ThermConfig ActiveConfig;
-
-#endif /* INCLUDE_CONFIGURATION_H_ */

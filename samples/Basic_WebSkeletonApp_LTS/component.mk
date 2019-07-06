@@ -27,3 +27,6 @@
 # COM_SPEED	= 115200
 
 SPIFF_SIZE     = 196608
+
+#
+ARDUINO_LIBRARIES := OneWire ArduinoJson5
