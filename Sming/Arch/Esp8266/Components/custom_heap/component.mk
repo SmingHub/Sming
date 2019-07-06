@@ -9,6 +9,11 @@ LIBMAIN					= mainmm
 LIBMAIN_SRC				= $(COMPONENT_LIBDIR)/libmainmm.a
 COMPONENT_TARGETS		+= $(LIBMAIN_SRC)
 
+COMPONENT_VARS			+= UMM_POISON_CHECK
+ifeq ($(UMM_POISON_CHECK),1)
+GLOBAL_CFLAGS			+= -DUMM_POISON_CHECK
+endif
+
 # Make copy of libmain and remove mem_manager.o module
 $(COMPONENT_RULE)$(LIBMAIN_SRC): $(SDK_LIBDIR)/libmain.a
 	$(info Enabling custom heap implementation)
