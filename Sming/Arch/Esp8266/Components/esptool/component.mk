@@ -58,11 +58,8 @@ CACHE_VARS				+= COM_PORT_ESPTOOL COM_SPEED_ESPTOOL
 COM_PORT_ESPTOOL		?= $(COM_PORT)
 COM_SPEED_ESPTOOL		?= $(COM_SPEED)
 
-ifeq ($(UNAME),Windows)
-ESPTOOL					?= $(SDK_TOOLS)/esptool/esptool.py
-else
-ESPTOOL					?= $(ESP_HOME)/esptool/esptool.py
-endif
+COMPONENT_SUBMODULES	+= esptool
+ESPTOOL					:= $(COMPONENT_PATH)/esptool/esptool.py
 
 ESPTOOL_CMDLINE			:= $(ESPTOOL) -p $(COM_PORT_ESPTOOL) -b $(COM_SPEED_ESPTOOL)
 
