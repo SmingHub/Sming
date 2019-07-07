@@ -87,7 +87,7 @@ endif
 
 .PHONY: flash
 flash: all kill_term ##Write the rBoot boot sector, application image and (if enabled) SPIFFS image
-	$(call WriteFlash,$(FLASH_RBOOT_CHUNKS) $(FLASH_RBOOT_APP_CHUNKS) $(FLASH_SPIFFS_CHUNKS))
+	$(call WriteFlash,$(FLASH_RBOOT_BOOT_CHUNKS) $(FLASH_RBOOT_APP_CHUNKS) $(FLASH_SPIFFS_CHUNKS))
 ifeq ($(ENABLE_GDB), 1)
 	$(GDB_CMDLINE)
 else
