@@ -28,6 +28,7 @@ public:
     */
 	JsonObjectStream(Json::SerializationFormat format, size_t capacity = 1024) : doc(capacity), format(format)
 	{
+		doc.to<JsonObject>();
 	}
 
 	/** @brief Create a JSON object stream using default (Compact) format
@@ -35,6 +36,7 @@ public:
     */
 	JsonObjectStream(size_t capacity = 1024) : doc(capacity)
 	{
+		doc.to<JsonObject>();
 	}
 
 	//Use base class documentation
