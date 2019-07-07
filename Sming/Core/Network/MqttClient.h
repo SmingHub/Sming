@@ -302,6 +302,7 @@ private:
 	// messages
 	MqttRequestQueue requestQueue;
 	mqtt_message_t connectMessage;
+	bool connectQueued = false; ///< True if our connect message needs to be sent
 	mqtt_message_t* outgoingMessage = nullptr;
 	mqtt_message_t incomingMessage;
 
