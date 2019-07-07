@@ -1,8 +1,11 @@
 #include "common.h"
-#include <JsonObjectStream.h>
+#define ARDUINOJSON_USE_LONG_LONG 1
+#include <JsonObjectStream6.h>
 
-void test_json()
+void test_json6()
 {
+	testGroup("ArduinoJson6");
+
 	DEFINE_FSTR_LOCAL(flashString1, "FlashString-1");
 	DEFINE_FSTR_LOCAL(flashString2, "FlashString-2");
 	DEFINE_FSTR_LOCAL(formatStrings, "Compact\0Pretty\0MessagePack");
@@ -240,5 +243,17 @@ void test_json()
 		Serial.println(s);
 		assert(s == jsonTest);
 		delete stream;
+	}
+
+	// LONGLONG support
+	startTest("LONGLONG support");
+	{
+		StaticJsonDocument<256> doc;
+		JsonObject root = doc.to<JsonObject>();
+		const uint64_t testnum = 0x12345678ABCDEF99ULL;
+		root["longtest"] = testnum;
+		uint64_t num = root["longtest"];
+		debug_i("int64 test: %s, 0x%08x%08x", num == testnum ? "OK" : "FAIL", uint32_t(num >> 32), uint32_t(num));
+		assert(num == testnum);
 	}
 }
