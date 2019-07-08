@@ -13,6 +13,11 @@
 #include "m_printf.h"
 #include "c_types.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 // Simple check to determine if a pointer refers to flash memory
 #define isFlashPtr(ptr) (uint32_t(ptr) >= 0x40200000)
 
@@ -95,56 +100,49 @@ static inline uint16_t pgm_read_word_inlined(const void* addr)
 #define pgm_read_dword(addr) (*(const unsigned long*)(addr))
 #define pgm_read_float(addr) (*(const float*)(addr))
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-	void *memcpy_P(void *dest, const void *src_P, size_t length);
-	int memcmp_P(const void *a1, const void *b1, size_t len);
-	size_t strlen_P(const char * src_P);
-	char *strcpy_P(char * dest, const char * src_P);
-	char *strncpy_P(char * dest, const char * src_P, size_t size);
-	int strcmp_P(const char *str1, const char *str2_P);
-	int strncmp_P(const char *str1, const char *str2_P, const size_t size);
-	int strcasecmp_P(const char* str1, const char* str2_P);
-	char* strcat_P(char* dest, const char* src_P);
-	char *strstr_P(char *haystack, const char *needle_P);
+void *memcpy_P(void *dest, const void *src_P, size_t length);
+int memcmp_P(const void *a1, const void *b1, size_t len);
+size_t strlen_P(const char * src_P);
+char *strcpy_P(char * dest, const char * src_P);
+char *strncpy_P(char * dest, const char * src_P, size_t size);
+int strcmp_P(const char *str1, const char *str2_P);
+int strncmp_P(const char *str1, const char *str2_P, const size_t size);
+int strcasecmp_P(const char* str1, const char* str2_P);
+char* strcat_P(char* dest, const char* src_P);
+char *strstr_P(char *haystack, const char *needle_P);
 
-	#define sprintf_P(s, f_P, ...)                                                                                         \
-		(__extension__({                                                                                                   \
-			int len_P = strlen_P(f_P);                                                                                     \
-			int __result = 0;                                                                                              \
-			char* __localF = (char*)malloc(len_P + 1);                                                                     \
-			if(__localF) {                                                                                                 \
-				strcpy_P(__localF, f_P);                                                                                   \
-				__localF[len_P] = '\0';                                                                                    \
-			}                                                                                                              \
-			__result = m_snprintf(s, len_P, __localF, ##__VA_ARGS__);                                                      \
-			free(__localF);                                                                                                \
-			__result;                                                                                                      \
-		}))
+#define sprintf_P(s, f_P, ...)                                                                                         \
+	(__extension__({                                                                                                   \
+		int len_P = strlen_P(f_P);                                                                                     \
+		int __result = 0;                                                                                              \
+		char* __localF = (char*)malloc(len_P + 1);                                                                     \
+		if(__localF) {                                                                                                 \
+			strcpy_P(__localF, f_P);                                                                                   \
+			__localF[len_P] = '\0';                                                                                    \
+		}                                                                                                              \
+		__result = m_snprintf(s, len_P, __localF, ##__VA_ARGS__);                                                      \
+		free(__localF);                                                                                                \
+		__result;                                                                                                      \
+	}))
 
-	#define printf_P_heap(f_P, ...)                                                                                        \
-		(__extension__({                                                                                                   \
-			char* __localF = (char*)malloc(strlen_P(f_P) + 1);                                                             \
-			strcpy_P(__localF, f_P);                                                                                       \
-			int __result = os_printf_plus(__localF, ##__VA_ARGS__);                                                        \
-			free(__localF);                                                                                                \
-			__result;                                                                                                      \
-		}))
+#define printf_P_heap(f_P, ...)                                                                                        \
+	(__extension__({                                                                                                   \
+		char* __localF = (char*)malloc(strlen_P(f_P) + 1);                                                             \
+		strcpy_P(__localF, f_P);                                                                                       \
+		int __result = os_printf_plus(__localF, ##__VA_ARGS__);                                                        \
+		free(__localF);                                                                                                \
+		__result;                                                                                                      \
+	}))
 
-	#define printf_P_stack(f_P, ...)                                                                                       \
-		(__extension__({                                                                                                   \
-			char __localF[256];                                                                                            \
-			strncpy_P(__localF, f_P, sizeof(__localF));                                                                    \
-			__localF[sizeof(__localF) - 1] = '\0';                                                                         \
-			m_printf(__localF, ##__VA_ARGS__);                                                                             \
-		}))
+#define printf_P_stack(f_P, ...)                                                                                       \
+	(__extension__({                                                                                                   \
+		char __localF[256];                                                                                            \
+		strncpy_P(__localF, f_P, sizeof(__localF));                                                                    \
+		__localF[sizeof(__localF) - 1] = '\0';                                                                         \
+		m_printf(__localF, ##__VA_ARGS__);                                                                             \
+	}))
 
-	#define printf_P printf_P_stack
-#ifdef __cplusplus
-}
-#endif
+#define printf_P printf_P_stack
 
 #else /* ICACHE_FLASH */
 
@@ -257,6 +255,10 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  * 		sizeof(PSTR_myText) - 1
  *
  */
-#define PSTR_ARRAY(name, str)                                                                                        \
-	static DEFINE_PSTR(PSTR_##name, str);                                                                                       \
+#define PSTR_ARRAY(name, str)                                                                                          \
+	static DEFINE_PSTR(PSTR_##name, str);                                                                              \
 	LOAD_PSTR(name, PSTR_##name)
+
+#ifdef __cplusplus
+}
+#endif

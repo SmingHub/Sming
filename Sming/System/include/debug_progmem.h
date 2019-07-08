@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include <stdarg.h>
 #include "FakePgmSpace.h"
 
 #ifdef __cplusplus
@@ -69,6 +68,8 @@ extern "C" {
 #else
 #define PROGMEM_DEBUG
 #endif
+
+extern uint32_t system_get_time();
 
 //A static const char[] is defined having a unique name (log_ prefix, filename and line number)
 //This will be stored in the irom section(on flash) freeing up the RAM
