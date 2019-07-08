@@ -1,7 +1,7 @@
 #include <tytherm.h>
 
 Timer counterTimer;
-void counter_loop();
+void counterLoop();
 unsigned long counter = 0;
 
 void STADisconnect(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason);
@@ -26,10 +26,10 @@ void init()
 
 	startWebServer();
 
-	counterTimer.initializeMs(1000, counter_loop).start();
+	counterTimer.initializeMs(1000, counterLoop).start();
 }
 
-void counter_loop()
+void counterLoop()
 {
 	counter++;
 }

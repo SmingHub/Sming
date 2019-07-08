@@ -57,7 +57,7 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 	}
 }
 
-void onConfiguration_json(HttpRequest& request, HttpResponse& response)
+void onConfigurationJson(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject json = stream->getRoot();
@@ -80,7 +80,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	}
 }
 
-void onAJAXGetState(HttpRequest& request, HttpResponse& response)
+void onAjaxGetState(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject json = stream->getRoot();
@@ -98,8 +98,8 @@ void startWebServer()
 	server.listen(80);
 	server.paths.set("/", onIndex);
 	server.paths.set("/config", onConfiguration);
-	server.paths.set("/config.json", onConfiguration_json);
-	server.paths.set("/state", onAJAXGetState);
+	server.paths.set("/config.json", onConfigurationJson);
+	server.paths.set("/state", onAjaxGetState);
 	server.paths.setDefault(onFile);
 	server.setBodyParser("application/json", bodyToStringParser);
 	serverStarted = true;
