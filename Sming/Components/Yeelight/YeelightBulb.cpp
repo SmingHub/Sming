@@ -8,7 +8,7 @@
 #include "YeelightBulb.h"
 #include "Network/TcpClient.h"
 #include "Digital.h"
-#include "Data/ArduinoJson.h"
+#include <ArduinoJson6.h>
 #include "WCharacter.h"
 
 YeelightBulb::~YeelightBulb()

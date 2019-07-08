@@ -2,8 +2,6 @@
 
 #include <SmingCore.h>
 
-#define startTest(str)                                                                                                 \
-	do {                                                                                                               \
-		m_puts("\r\n");                                                                                                \
-		m_printf(_F(">> %s\r\n"), PSTR(str));                                                                          \
-	} while(0)
+#define testGroup(str) m_puts(_F("\r\n\r\n** Test Group: " str " **\r\n"))
+
+#define startTest(str) m_puts(_F("\r\n>> " str "\r\n"))

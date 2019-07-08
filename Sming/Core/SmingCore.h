@@ -54,7 +54,6 @@
 #include "Network/rBootHttpUpdate.h"
 #endif
 
-#include "Data/Stream/JsonObjectStream.h"
 #include "Data/Stream/FileStream.h"
 #include "Data/Stream/TemplateFileStream.h"
 #include "Data/Stream/FlashMemoryStream.h"
@@ -62,4 +61,3 @@
 #include "DateTime.h"
 
 #include "fatfs/ff.h"
-#include "Services/Yeelight/YeelightBulb.h"

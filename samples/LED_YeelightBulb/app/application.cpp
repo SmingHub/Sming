@@ -1,4 +1,5 @@
 #include <SmingCore.h>
+#include <YeelightBulb.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID

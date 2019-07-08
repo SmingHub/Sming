@@ -1,5 +1,6 @@
 #include <SmingCore.h>
 #include <AppSettings.h>
+#include <JsonObjectStream.h>
 #include "Data/Stream/TemplateFlashMemoryStream.h"
 
 HttpServer server;

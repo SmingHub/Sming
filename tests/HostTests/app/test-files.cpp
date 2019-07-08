@@ -4,7 +4,9 @@ IMPORT_FSTR(testContent, SMING_HOME "/../Readme.md");
 
 void test_files()
 {
-	//	hostmsg("testContent.length = 0x%08x", testContent.length());
+	testGroup("files");
+
+	debug_i("testContent.length = 0x%08x", testContent.length());
 
 	DEFINE_FSTR_LOCAL(testFileName, "test.txt");
 	spiffs_mount();

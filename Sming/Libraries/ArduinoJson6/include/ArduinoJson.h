@@ -35,9 +35,9 @@
 
 #pragma once
 
-#include <Libraries/ArduinoJson/ArduinoJson.h>
+#include "../ArduinoJson/src/ArduinoJson.h"
 #include "FlashStringRefAdapter.hpp"
-#include "Stream/FileStream.h"
+#include <Data/Stream/FileStream.h>
 
 #ifndef JSON_ENABLE_COMPACT
 #define JSON_ENABLE_COMPACT 1
@@ -83,6 +83,27 @@ template <typename TSource, typename TDest> bool getValue(const TSource& source,
 		dest = source.template as<TDest>();
 		return true;
 	}
+}
+
+/**
+ * @brief Copies a Json data value to a variable, but only if it exists and its value has changed
+ * @param source Typically provided from JsonObject[key], JsonDocument[key] or JsonVariant[key] call
+ * @param dest Variable to store value, unchanged if `data` is null
+ * @retval bool true if value exists and has changed, `value` updated
+ */
+template <typename TSource, typename TDest> bool getValueChanged(const TSource& source, TDest& dest)
+{
+	if(source.isNull()) {
+		return false;
+	}
+
+	TDest value = source.template as<TDest>();
+	if(value == dest) {
+		return false; // value unchanged
+	}
+
+	dest = value;
+	return true;
 }
 
 /**

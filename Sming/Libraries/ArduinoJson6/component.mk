@@ -1,0 +1,1 @@
+COMPONENT_SUBMODULES := ArduinoJson

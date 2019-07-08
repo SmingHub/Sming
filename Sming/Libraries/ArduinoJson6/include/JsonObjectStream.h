@@ -4,14 +4,14 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * JsonObjectStream.h
+ * JsonObjectStream.h - Stream implementation for ArduinoJson Version 6
  *
  ****/
 
 #pragma once
 
-#include "MemoryDataStream.h"
-#include "../ArduinoJson.h"
+#include <Data/Stream/MemoryDataStream.h>
+#include "ArduinoJson.h"
 
 /** @brief JsonObject stream class
  * 	@ingroup    stream data

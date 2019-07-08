@@ -18,16 +18,11 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 			debugf("NULL bodyBuf");
 			return;
 		} else {
-			StaticJsonDocument<ConfigJsonBufferSize> root;
+			StaticJsonBuffer<ConfigJsonBufferSize> jsonBuffer;
+			JsonObject& root = jsonBuffer.parseObject(request.getBody());
+			root.prettyPrintTo(Serial); //Uncomment it for debuging
 
-			if(!Json::deserialize(root, request.getBodyStream())) {
-				debug_w("Invalid JSON to un-serialize");
-				return;
-			}
-
-			Json::serialize(root, Serial, Json::Pretty); // For debugging
-
-			if(root.containsKey("StaSSID")) // Settings
+			if(root["StaSSID"].success()) // Settings
 			{
 				uint8_t PrevStaEnable = ActiveConfig.StaEnable;
 
@@ -60,7 +55,7 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 void onConfigurationJson(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject json = stream->getRoot();
+	JsonObject& json = stream->getRoot();
 
 	json["StaSSID"] = ActiveConfig.StaSSID;
 	json["StaPassword"] = ActiveConfig.StaPassword;
@@ -83,7 +78,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 void onAjaxGetState(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject json = stream->getRoot();
+	JsonObject& json = stream->getRoot();
 
 	json["counter"] = counter;
 
