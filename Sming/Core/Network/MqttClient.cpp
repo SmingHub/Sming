@@ -377,6 +377,11 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 
 		size_t packetLength = mqtt_serialiser_size(&serialiser, outgoingMessage);
+		if(!packetLength) {
+			debug_e("Error: Invalid MQTT message detected!");
+			break;
+		}
+
 		uint8_t packet[packetLength];
 		mqtt_serialiser_write(&serialiser, outgoingMessage, packet, packetLength);
 
