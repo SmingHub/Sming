@@ -1,3 +1,7 @@
+# Smart Config sample
+
+## Introduction
+
 SmartConfig is a mechanism to configure a device as quickly as possible with the intermediate help of a smart phone
 and with least interaction from a human as possible.
 

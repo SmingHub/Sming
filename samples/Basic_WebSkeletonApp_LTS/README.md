@@ -1,3 +1,7 @@
+# Basic Web Skeleton sample
+
+## Introduction
+
 Basic application that can be used as a start point for some useful App.
 
 Features:

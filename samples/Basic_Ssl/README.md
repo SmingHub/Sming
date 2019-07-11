@@ -1,4 +1,7 @@
-# Compilation
+# Basic SSL sample
+
+## Compilation
+
 In Sming the SSL support is not enabled by default.
 
 In order to enable it you should first recompile SmingFramework with *ENABLE_SSL=1* directive.
@@ -22,7 +25,8 @@ make ENABLE_SSL=1
 
 Now you can flash your application to your ESP8266 device.
 
-# Debug Information
+## Debug Information
+
 If you want to see more debug information during compile type you should 
 add the directive *SSL_DEBUG=1*. A recompilation of SmingFramework with SSL support
 and SSL dubug information can be done with the following commands:
@@ -34,7 +38,8 @@ make clean
 make ENABLE_SSL=1 SSL_DEBUG=1
 ```
 
-# Slow SSL negotiation
+## Slow SSL negotiation
+
 The initial SSL negotiation is CPU intensive. By default SmingFramework switches the CPU
 frequency from 80 to 160 MHz. After the negotiation the CPU is switched back to 80 MHz.
 

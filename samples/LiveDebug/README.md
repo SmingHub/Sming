@@ -1,5 +1,4 @@
-LiveDebug
-=========
+# LiveDebug Sample
 
 This project is an example of how to integrate GDB debugging into your project.
 It provides a basic command interface which you can use via regular serial terminal or with the GDB application.
@@ -32,8 +31,8 @@ make flash ENABLE_CONSOLE=0
 
 Alternatively, use the `consoleOff` command from the GDB command prompt, then quit the debugger and connect via eclipse.
 
-Exception Handling
-------------------
+## Exception Handling
+
 Sming comes with a built-in exception handling that takes care to display the stack trace 
 leading to the issue. Usually it looks like this
 
@@ -88,8 +87,7 @@ and the sequence of commands might help us figure out the issue.
 
 But that information might not be enough. And finding the root cause may take quite some time.
 
-GDB Debugging
--------------
+## GDB Debugging
 
 Debugging is a powerful technique allowing you to interactively run your code and be able to see much more information about the things that went wrong.
 

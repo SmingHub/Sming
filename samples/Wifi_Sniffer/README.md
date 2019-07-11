@@ -1,6 +1,12 @@
-# Adaptation of WiFi promiscuous mode demo code from Arduino
+# WiFi Sniffer sample
 
-// See https://www.hackster.io/rayburne/esp8266-mini-sniff-f6b93a
+## Introduction
+
+This is an adaptation of the WiFi promiscuous mode demo code from Arduino
+
+See https://www.hackster.io/rayburne/esp8266-mini-sniff-f6b93a
+
+```
 
 // Notes.h tab in Arduino IDE is only for comments and references!
 
@@ -95,3 +101,4 @@
 
 
 */
+```

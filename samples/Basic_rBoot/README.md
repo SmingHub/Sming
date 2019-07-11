@@ -1,5 +1,6 @@
-rBoot Sming sample
-------------------
+# rBoot Sming sample
+
+## Introduction
 
 This sample integrates rBoot and Sming, for the many people who have been asking
 for it. It demonstrates dual rom booting, big flash support, OTA updates and
@@ -15,8 +16,8 @@ Makefile-rboot.mk instead of Makefile-project.mk. In the sample the correct mk
 file is chosen automatically because of the setting RBOOT_ENABLED=1 in
 Makefile-user.mk
 
-Building
---------
+## Building
+
  1) Set ESP_HOME & SMING_HOME, as environment variables or edit Makefile-user.mk
     as you would for general Sming app compiling.
  2) Set ESPTOOL2 (env var or in Makefile-user.mk) to point to the esptool2
@@ -28,8 +29,8 @@ Building
  7) Put rom0.bin and spiff_rom.bin in the root of your webserver for OTA.
  8) Interact with the sample using a terminal, sorry no web-gui (yet).
 
-Flashing
---------
+## Flashing
+
 If flashing manually use esptool.py to flash rBoot, rom & spiffs e.g.:
  esptool.py --port <port> write_flash -fs 32m 0x00000 rboot.bin 0x02000 rom0.bin
    0x100000 spiffs.rom
@@ -38,22 +39,22 @@ Using the correct -fs parameter is important. This will be -fs 32m on an ESP12.
 
 You can also flash rom0.bin to 0x202000, but booting and using OTA is quicker!
 
-Technical Notes
----------------
+## Technical Notes
+
 spiffs_mount_manual(address, length) must be called from init. The address must
 be 0x40200000 + physical flash address. Sming does not use memory mapped flash
 so the reason for this strange addressing is not clear.
 
 Important compiler flags used:
-BOOT_BIG_FLASH - when using big flash mode, ensures flash mapping code is built
+* BOOT_BIG_FLASH - when using big flash mode, ensures flash mapping code is built
   in to the rom.
-RBOOT_INTEGRATION - ensures Sming specific options are pulled in to the rBoot
+* RBOOT_INTEGRATION - ensures Sming specific options are pulled in to the rBoot
   source at compile time.
-SPIFF_SIZE=value - passed through to code for mounting the filesystem. Also used
+* SPIFF_SIZE=value - passed through to code for mounting the filesystem. Also used
   in the Makefile to create the spiffs.
 
-Disabling big flash
--------------------
+## Disabling big flash
+
 If you want to use, for example, two 512k roms in the first 1mb block of flash
 (old style) then follow these instructions to produce two separately linked
 roms. If you are flashing a single rom to multiple 1mb flash blocks (using big
@@ -78,7 +79,7 @@ how to use this sample without bigflash support.
 If you want more than two roms you must be an advanced user and should be able
 to work out what to copy and edit to acheive this!
 
-Credits
--------
+## Credits
+
 This sample was made possible with the assistance of piperpilot, gschmott and
 robotiko on the esp8266.com forum.
