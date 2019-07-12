@@ -9,11 +9,10 @@
 
 CommandDelegate::CommandDelegate()
 {
-
 }
 
 CommandDelegate::CommandDelegate(String reqName, String reqHelp, String reqGroup, CommandFunctionDelegate reqFunction)
-: commandName(reqName), commandHelp(reqHelp), commandGroup(reqGroup), commandFunction(reqFunction)
+	: commandName(reqName), commandHelp(reqHelp), commandGroup(reqGroup), commandFunction(reqFunction)
 {
 }
 
@@ -21,4 +20,3 @@ CommandDelegate::~CommandDelegate()
 {
 	// TODO Auto-generated destructor stub
 }
-

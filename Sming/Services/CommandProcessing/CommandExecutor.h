@@ -23,14 +23,14 @@ public:
 	CommandExecutor(WebsocketConnection* reqSocket);
 	~CommandExecutor();
 
-	int executorReceive(char *recvData, int recvSize);
+	int executorReceive(char* recvData, int recvSize);
 	int executorReceive(char recvChar);
 	int executorReceive(const String& recvString);
 	void setCommandEOL(char reqEOL);
 
-private :
+private:
 	CommandExecutor();
 	void processCommandLine(const String& cmdString);
-	LineBuffer<MAX_COMMANDSIZE+1> commandBuf;
+	LineBuffer<MAX_COMMANDSIZE + 1> commandBuf;
 	CommandOutput* commandOutput = nullptr;
 };
