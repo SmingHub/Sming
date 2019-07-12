@@ -135,8 +135,8 @@ class BME280
 		int16_t BME280_REGISTER_DIG_H5;
 		int8_t BME280_REGISTER_DIG_H6;
 
-        uint8_t buffer[64];
-        int32_t t_fine;
+        uint8_t buffer[64] = {0};
+        int32_t t_fine = 0;
 };
 #endif
 
