@@ -272,7 +272,9 @@ bool MqttClient::publish(const String& topic, const String& content, uint8_t fla
 	}
 
 	bool success = requestQueue.enqueue(message);
-	if(success && message->publish.content.length < 300) {
+	if(success) {
+		// Try to force-send message to decrease latency.
+		// Should work for small size messages but there is no guarantee.
 		onReadyToSendData(TcpConnectionEvent::eTCE_Poll);
 	}
 
@@ -306,7 +308,9 @@ bool MqttClient::publish(const String& topic, IDataSourceStream* stream, uint8_t
 	message->publish.content.data = (uint8_t*)stream;
 
 	bool success = requestQueue.enqueue(message);
-	if(success && stream->available() < 300) {
+	if(success) {
+		// Try to force-send message to decrease latency.
+		// Should work for small size messages but there is no guarantee.
 		onReadyToSendData(TcpConnectionEvent::eTCE_Poll);
 	}
 
