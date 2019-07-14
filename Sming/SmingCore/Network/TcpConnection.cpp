@@ -281,7 +281,10 @@ int TcpConnection::write(IDataSourceStream* stream)
 		space = (tcp_sndqueuelen(tcp) < TCP_SND_QUEUELEN); // && tcp_sndbuf(tcp) >= FILE_STREAM_BUFFER_SIZE;
 	} while(repeat && space);
 
-	flush();
+	if(!space) {
+		flush();
+	}
+
 	return total;
 }
 
