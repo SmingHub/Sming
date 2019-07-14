@@ -130,7 +130,7 @@ define rwildcard
 endef
 
 # Files that should follow our coding standards
-CS_DIRS		= Core Platform Arch/*/Core Arch/*/Platform $(SAMPLES_DIR) $(TESTS_DIR)
+CS_DIRS		= Core Platform Services Arch/*/Core Arch/*/Platform $(SAMPLES_DIR) $(TESTS_DIR)
 CS_FILES	= $(call rwildcard,$(CS_DIRS:=/*),%.cpp %.h %.c)
 
 .PHONY: cs

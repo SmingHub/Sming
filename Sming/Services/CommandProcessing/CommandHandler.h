@@ -34,16 +34,16 @@
 /** @brief  Verbose mode
 */
 typedef enum {
-    VERBOSE,    ///< Verbose mode
-    SILENT      ///< Silent mode
-    } VerboseMode;
+	VERBOSE, ///< Verbose mode
+	SILENT   ///< Silent mode
+} VerboseMode;
 
 /** @brief  Command handler class */
 class CommandHandler
 {
 public:
-    /** @brief  Instantiate a CommandHandler
-    */
+	/** @brief  Instantiate a CommandHandler
+	*/
 	CommandHandler();
 	~CommandHandler();
 
@@ -55,20 +55,20 @@ public:
 	 */
 	bool registerCommand(CommandDelegate reqDelegate);
 
-    /** @brief  Remove a command from the command handler
-     *  @brief  reqDelegate Delegate to remove from command handler
-     */
+	/** @brief  Remove a command from the command handler
+	 *  @brief  reqDelegate Delegate to remove from command handler
+	 */
 	bool unregisterCommand(CommandDelegate reqDelegate);
 
-    /** @brief  Register default system commands
-     *  @note   Adds the following system commmands to the command handler
-     *          - status
-     *          - echo
-     *          - help
-     *          - debugon
-     *          - debugoff
-     *          - command
-     */
+	/** @brief  Register default system commands
+	 *  @note   Adds the following system commmands to the command handler
+	 *          - status
+	 *          - echo
+	 *          - help
+	 *          - debugon
+	 *          - debugoff
+	 *          - command
+	 */
 	void registerSystemCommands();
 
 	/** @brief  Get the command delegate for a command
@@ -149,17 +149,16 @@ public:
 		currentWelcomeMessage = reqWelcomeMessage;
 	}
 
+	//	int deleteGroup(String reqGroup);
 
-//	int deleteGroup(String reqGroup);
-
-private :
-	HashMap<String, CommandDelegate> *registeredCommands;
+private:
+	HashMap<String, CommandDelegate>* registeredCommands;
 	void procesHelpCommand(String commandLine, CommandOutput* commandOutput);
 	void procesStatusCommand(String commandLine, CommandOutput* commandOutput);
 	void procesEchoCommand(String commandLine, CommandOutput* commandOutput);
 	void procesDebugOnCommand(String commandLine, CommandOutput* commandOutput);
 	void procesDebugOffCommand(String commandLine, CommandOutput* commandOutput);
-	void processCommandOptions(String commandLine  ,CommandOutput* commandOutput);
+	void processCommandOptions(String commandLine, CommandOutput* commandOutput);
 
 	VerboseMode verboseMode = VERBOSE;
 	String currentPrompt;
