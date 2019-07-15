@@ -58,6 +58,7 @@ See the :doc:`Quick-start <quick-start/index>` page for your respective operatin
    quick-start/index
    host-emulator
    features
+   api/index
    information/index
    experimental/index
    contribute/index
