@@ -271,7 +271,14 @@ bool MqttClient::publish(const String& topic, const String& content, uint8_t fla
 		return false;
 	}
 
-	return requestQueue.enqueue(message);
+	bool success = requestQueue.enqueue(message);
+	if(success) {
+		// Try to force-send message to decrease latency.
+		// Should work for small size messages but there is no guarantee.
+		onReadyToSendData(TcpConnectionEvent::eTCE_Poll);
+	}
+
+	return success;
 }
 
 bool MqttClient::publish(const String& topic, IDataSourceStream* stream, uint8_t flags)
@@ -300,7 +307,14 @@ bool MqttClient::publish(const String& topic, IDataSourceStream* stream, uint8_t
 	message->publish.content.length = MQTT_PUBLISH_STREAM;
 	message->publish.content.data = (uint8_t*)stream;
 
-	return requestQueue.enqueue(message);
+	bool success = requestQueue.enqueue(message);
+	if(success) {
+		// Try to force-send message to decrease latency.
+		// Should work for small size messages but there is no guarantee.
+		onReadyToSendData(TcpConnectionEvent::eTCE_Poll);
+	}
+
+	return success;
 }
 
 bool MqttClient::subscribe(const String& topic)
