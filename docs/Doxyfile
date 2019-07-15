@@ -102,6 +102,7 @@ INPUT = \
     ../Sming/Libraries/ArduinoJson6/include \
 	$(ESP_HOME)/sdk/include/gpio.h \
 	../Sming/System \
+	../Sming/Arch/Esp8266/Components/spi_flash \
 	../Sming/Arch/Esp8266/Components/rboot \
 	../Sming/Arch/Esp8266/Components/gdbstub
 
