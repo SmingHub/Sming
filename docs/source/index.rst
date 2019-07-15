@@ -8,8 +8,10 @@ Welcome to Sming's documentation
 Sming is an Open Source framework for high efficiency WiFi SoC ESP8266
 native development with C++ language.
 
-.. image:: combine.png
-   :target: https://github.com/SmingHub/Sming/wiki/examples
+|samples|_
+
+.. |samples| image:: combine.png
+.. _samples: samples/index.html
 
 
 Summary
@@ -56,6 +58,7 @@ See the :doc:`Quick-start <quick-start/index>` page for your respective operatin
    quick-start/index
    host-emulator
    features
+   samples/index
    libraries/index
    api/index
    information/index
