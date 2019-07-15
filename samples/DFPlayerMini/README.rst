@@ -1,5 +1,5 @@
-DFPlayer Mini sample
-====================
+DFPlayer Mini
+=============
 
 Introduction
 ------------

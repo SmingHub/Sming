@@ -1,10 +1,13 @@
-BMP180 Pressure Sensor Example
-==============================
+BMP180 Pressure Sensor
+======================
 
 Introduction
 ------------
 
 Example code for I2C BMP180 sensor board
+
+.. image:: bmp180.jpg
+   :height: 192px
 
 This code uses the following GPIO:
 

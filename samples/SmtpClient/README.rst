@@ -1,5 +1,5 @@
-SMTP Client sample
-==================
+SMTP Client
+===========
 
 Purpose
 -------

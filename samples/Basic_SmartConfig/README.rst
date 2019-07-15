@@ -1,5 +1,5 @@
-Smart Config sample
-===================
+Smart Config
+============
 
 Introduction
 ------------

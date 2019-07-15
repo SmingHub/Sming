@@ -1,10 +1,13 @@
-LiquidCrystal 44780 Example
-===========================
+Liquid Crystal 44780
+====================
 
 Introduction
 ------------
 
-Example code for I2C LiquidCrystal LCDs
+Example code for I2C LiquidCrystal LCDs.
+
+.. image:: liquid-crystal.jpg
+   :height: 192px
 
 This code uses the following GPIO:
 

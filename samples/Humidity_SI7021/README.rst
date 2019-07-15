@@ -1,5 +1,5 @@
-SI7021 Humidity Sensor Example
-==============================
+SI7021 Humidity Sensor
+======================
 
 Introduction
 ------------

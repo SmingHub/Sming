@@ -1,5 +1,5 @@
-Basic Web Skeleton sample
-=========================
+Basic Web Skeleton
+==================
 
 Introduction
 ------------

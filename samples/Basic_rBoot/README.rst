@@ -1,5 +1,5 @@
-rBoot Sming sample
-==================
+rBoot Sming
+===========
 
 Introduction
 ------------
@@ -7,8 +7,8 @@ Introduction
 This sample integrates rBoot and Sming, for the many people who have
 been asking for it. It demonstrates dual rom booting, big flash support,
 OTA updates and dual spiffs filesystems. You must enable big flash
-support in rBoot and use on an ESP12 (or similar device with 4mb flash).
-When using rBoot big flash support with multiple 1mb slots only one rom
+support in rBoot and use on an ESP12 (or similar device with 4MB flash).
+When using rBoot big flash support with multiple 1MB slots only one rom
 image needs to be created. If you don’t want to use big flash support
 (e.g. for a device with smaller flash) see the separate instructions
 below. You can easily take the ota files and add them to your own
@@ -66,9 +66,9 @@ the spiffs.
 Disabling big flash
 -------------------
 
-If you want to use, for example, two 512k roms in the first 1mb block of
+If you want to use, for example, two 512k roms in the first 1MB block of
 flash (old style) then follow these instructions to produce two
-separately linked roms. If you are flashing a single rom to multiple 1mb
+separately linked roms. If you are flashing a single rom to multiple 1MB
 flash blocks (using big flash) you only need one linked rom that can be
 used on each.
 

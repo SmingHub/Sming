@@ -1,5 +1,5 @@
-WiFi Sniffer sample
-===================
+WiFi Sniffer
+============
 
 Introduction
 ------------

@@ -1,5 +1,5 @@
-HttpServer Config Network sample
-================================
+HttpServer Config Network
+=========================
 
 Introduction
 ------------

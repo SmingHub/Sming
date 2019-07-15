@@ -1,5 +1,5 @@
-HttpClient sample
-=================
+HTTP Client
+===========
 
 Compilation
 -----------
@@ -31,7 +31,7 @@ Debug Information
 -----------------
 
 If you want to see more debug information during compile type you should
-add the directive *SSL_DEBUG=1*. A recompilation of SmingFramework with
+add the directive :envvar:`SSL_DEBUG` =1. A recompilation of SmingFramework with
 SSL support and SSL dubug information can be done with the following
 commands:
 
@@ -50,4 +50,4 @@ CPU is switched back to 80 MHz.
 
 If your device is running on battery this can drain the battery much
 faster. If you do not want the switch from 80 to 160 MHz to happen then
-make sure to recompile SmingFramework with *SSL_SLOW_CONNECT* directive.
+make sure to recompile SmingFramework with :c:macro:`SSL_SLOW_CONNECT` directive.
