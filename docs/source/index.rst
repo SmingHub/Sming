@@ -367,6 +367,7 @@ Thank you to all the people who have backed Sming or sponsored it.
    :caption: Contents:
    :hidden:
 
+   host-emulator
    features
 
 

@@ -1,13 +1,17 @@
+*************
+Host Emulator
+*************
+
 The latest versions of Sming allow most of components of the library and
 the sample applications to be compiled on a Linux/Windows host system
 and be tested before uploading them to the microcontroller.
 
-If you want to try it we have `interactive
-tutorial <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__
+If you want to try it we have an
+`interactive tutorial <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__
 that can be run directly from your browser.
 
-Requirements
-============
+Requirements (Linux)
+====================
 
 Modern Linux distribution
 -------------------------
@@ -42,14 +46,28 @@ execute the commands below:
    sudo mv /usr/bin/cmake /usr/bin/cmake.orig
    sudo ln -s /opt/cmake/bin/cmake /usr/bin/cmake
 
+Requirements (Windows)
+======================
+
+For Windows, make sure your `MinGW` distro is up to date. If you run
+`gcc --version` you should get `gcc (MinGW.org GCC-6.3.0-1) 6.3.0` or
+later. If it's older, execute these commands:
+
+::
+
+   mingw-get update
+   mingw-get upgrade
+
+.. note::
+   If you don't already have MinGW installed, see :doc:`quick-start/windows` for the Esp8266.
+
 Compilation
 ===========
 
 Environment variables
 ---------------------
 
-The following environmental variable have to be set to use ``Host`` as
-the desired architecture.
+:envvar:`SMING_ARCH` must be set to use ``Host`` as the desired architecture:
 
 ::
 
@@ -58,8 +76,8 @@ the desired architecture.
 Debug Build
 -----------
 
-If you plan to use a debugger make sure to set the following
-environmental variables before compiling the code:
+If you plan to use a debugger make sure to set :envvar:`ENABLE_GDB` and (optionally)
+:envvar:`ENABLE_LWIPDEBUG` before compiling the code:
 
 ::
 
@@ -159,9 +177,9 @@ Issue 2: fatal error: bits/c++config.h: No such file or directory
 Make sure to install the 32bit version of the GNU C and C++ compiler,
 development package and libraries.
 
-Further reading
-===============
 
-Make sure to read the `Host architecture
-Readme.md <https://github.com/SmingHub/Sming/blob/develop/Sming/Arch/Host/readme.md>`__
-file.
+.. toctree::
+
+
+   /_inc/Sming/Arch/Host/README
+
