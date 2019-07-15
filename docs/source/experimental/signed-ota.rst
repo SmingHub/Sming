@@ -1,4 +1,9 @@
-**Introduction**
+*******************
+Signed OTA Updating
+*******************
+
+Introduction
+============
 
 Deploying embedded devices with (automatic) OTA functionality introduces
 new risks to local networks and the whole internet. If an attacker takes

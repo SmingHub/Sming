@@ -1,6 +1,12 @@
-I will try to split my answer into two main areas \* At the moment the
-HttpServer (also with Websockets) supports setting TLS/SSL \* but the
-question is how much sense is that making
+****************************
+How to use SSL in HttpServer
+****************************
+
+I will try to split my answer into two main areas
+
+* At the moment the HttpServer (also with Websockets) supports setting
+  TLS/SSL
+* but the question is how much sense is that making?
 
 Enabling SSL in HttpServer
 ==========================
@@ -11,7 +17,7 @@ https://github.com/SmingHub/Sming/blob/develop/samples/HttpServer_WebSockets/app
 
 That can be changed to something like:
 
-.. code:: c++
+.. code-block:: c++
 
    void startWebServer()
    {
@@ -20,7 +26,7 @@ That can be changed to something like:
 
 And what is left is the actual setting of the server certificate:
 
-.. code:: c++
+.. code-block:: c++
 
    void startWebServer()
    {
@@ -31,7 +37,7 @@ And what is left is the actual setting of the server certificate:
 
 And the final code can be something like:
 
-.. code:: c++
+.. code-block:: c++
 
    void startWebServer()
    {
@@ -56,8 +62,8 @@ And the final code can be something like:
        server.listen(80, false);
    #endif
 
-Does it really make sense to use SSL for an HttpServer on an ESP8266 device
-===========================================================================
+Does it really make sense to use SSL for an HttpServer on an ESP8266 device?
+============================================================================
 
 The certificate/private key pair should make it impossible for an
 external user do decrypt your traffic so that the things that you sent
