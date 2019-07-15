@@ -372,6 +372,7 @@ Thank you to all the people who have backed Sming or sponsored it.
    information/index
    experimental/index
    tools/index
+   troubleshooting/index
 
 
 Indices and tables

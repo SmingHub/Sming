@@ -1,3 +1,9 @@
+******************
+Sample Compilation
+******************
+
+.. highlight:: bash
+
 The first thing that you need to do is to make sure that you have a
 clean source code. And second if the sample is still not compiling you
 have to provide us with more information.
@@ -8,7 +14,7 @@ information. Sometimes this won’t be enough therefore we recommend you
 the following steps ( They are working on Linux with bash shell. If you
 have another OS and shell you should adjust them accordingly).
 
-.. code:: bash
+::
 
    cd /tmp 
    git clone https://github.com/SmingHub/Sming.git SmingForTest
@@ -25,7 +31,7 @@ any”. We will use the Basic_Ssl sample. Before we compile a sample we
 need to compile the Sming library. This can be done calling the
 following commands:
 
-.. code:: bash
+::
 
    cd /tmp/SmingForTest/Sming
    export SMING_HOME=/tmp/SmingForTest/Sming
@@ -35,10 +41,10 @@ The last makes sure to clean any intermediate files or directories. If
 we run now ``make``. It will fetch the needed submodules, compile the
 code and build a library out of it. In our case we need to compile Sming
 with an optional SSL support. In order to compile Sming with SSL we need
-to add the ENABLE_SSL=1 directive. The command that we need to run now
+to add the :envvar:`ENABLE_SSL` =1 directive. The command that we need to run now
 will look like this:
 
-.. code:: bash
+::
 
    make ENABLE_SSL=1 
 
@@ -60,7 +66,7 @@ that the developers can reproduce your problem.
 **On success** It is time to compile the Basic_Ssl sample. Do this by
 executing the commands below:
 
-.. code:: bash
+::
 
    cd /tmp/SmingForTest/samples/Basic_Ssl
    export SMING_HOME=/tmp/SmingForTest/Sming
@@ -71,7 +77,7 @@ executing the commands below:
 to your bug report. Now compile the sample with the V=1 flags, similar
 to the compilation of the Sming library.
 
-.. code:: bash
+::
 
    cd /tmp/SmingForTest/samples/Basic_Ssl
    export SMING_HOME=/tmp/SmingForTest/Sming

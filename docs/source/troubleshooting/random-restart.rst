@@ -1,3 +1,6 @@
+Random Restarts
+===============
+
 First try setting the baud rate to ``74880``. Example for Linux:
 
 ::
