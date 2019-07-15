@@ -1,3 +1,7 @@
+***************
+Command Handler
+***************
+
 Summary
 =======
 
@@ -51,7 +55,7 @@ Application options
 Applications (and Sming Core functionality) can add commands to the
 ``CommandProcesor`` using a construct like
 
-.. code:: c++
+.. code-block:: c++
 
    registerCommand(CommandDelegate(
        "status",

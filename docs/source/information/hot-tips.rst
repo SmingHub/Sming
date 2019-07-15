@@ -1,3 +1,9 @@
+*********
+Hot Tips!
+*********
+
+.. highlight:: c++
+
 Minimising Memory Usage
 =======================
 
@@ -5,53 +11,79 @@ Literals use up memory, so its a good idea to move them to flash. Be
 aware though that it can be slower! Further reading, see the header
 FlashString.h in the sming source code
 
-**F macro** Instructs the compiler to store the literal in flash (of
-which there is plenty) rather than RAM (which is limited)
+F() macro
+---------
 
-Example: ``String system = F("system");``
+Instructs the compiler to store the literal in flash (of
+which there is plenty) rather than RAM (which is limited).
 
-\**_F macro*\* This function uses the stack, and is generally preferable
-to the F() macro, but you need to be mindful of scope. The content is
+Example:
+
+::
+
+   String system = F("system");
+
+_F() macro
+----------
+
+This function uses the stack, and is generally preferable
+to the ``F()`` macro, but you need to be mindful of scope. The content is
 lost as soon as the containing block goes out of scope. Used as a
 function parameter, that means the end of the function call.
 
-Example: ``println(_F("Debug started"));``
+Examples:
 
-Example:
-``commandOutput->print(_F("Welcome to the Tcp Command executor\r\n"));``
+::
 
-Bad: ``char* s = _F("string")``
+   println(_F("Debug started"));
+
+   commandOutput->print(_F("Welcome to the Tcp Command executor\r\n"));
+
+
+Bad:
+
+::
+
+   char* s = _F("string")
 
 An assignment such as this will not work because the temporary will be
 out of scope after the statement, hence s will point to garbage. In this
 instance PSTR_ARRAY(s, “string”) can be used.
 
-**PSTR_ARRAY**
+PSTR_ARRAY() macro
+------------------
 
-PSTR_ARRAY(_name, \_str) - creates and loads string into named stack
-buffer Ensures loaded string stays in scope, unlike \_F() Example:
+This macro creates and loads string into a named stack buffer.
+This Ensures loaded string stays in scope, unlike _F() Example:
 
 ::
 
-       String testfunc() {
-       //char * test = "This is a string"; <<- BAD
-       PSTR_ARRAY(test, "This is a string");
-       m_printf(test);
-       ...
-       return test;
-       }
+   String testfunc() {
+      //char * test = "This is a string"; <<- BAD
+      PSTR_ARRAY(test, "This is a string");
+      m_printf(test);
+      ...
+      return test;
+   }
 
-**JSON keys**
+JSON keys
+---------
 
-Example: ``root[F("offset")] = something;``
+Example:
 
-Bad: ``root[_F("offset")] = something;``
+::
+
+   root[F("offset")] = something;
+
+Bad:
+
+::
+
+   root[_F("offset")] = something;
 
 According to the ArduinoJson docs it should take an internal copy of
-char\* strings, but it doesn’t! Tip - Use the F() macro without leading
+char* strings, but it doesn’t! Tip - Use the F() macro without leading
 underscore instead.
-
-Sming/Sming/Libraries/ArduinoJson/include/ArduinoJson/JsonObjectKey.hpp
 
 Webpages and Spiffs
 ===================
@@ -83,7 +115,7 @@ version.
 Webpages Performance
 ====================
 
-html markup can get quite large and the bigger the file the slower the
+HTML markup can get quite large and the bigger the file the slower the
 page loads. One way to deal with that is to remove the white space, this
 process is called minifying. The downside is that the result is
 difficult for a human to read. I recommend against it, at least in the
@@ -115,7 +147,7 @@ almost certainly end up with a timeout.
 When a browser asks for a file it doesn’t mind receiving a compressed
 version using gzip. (Note that you need to add “Content-Encoding/gzip”
 to the header in the response from the server). Using gzip vastly
-reduces the sizes of files and it’s well worth doing
+reduces the sizes of files and it’s well worth doing.
 
 Another size optimisation for CSS files is to remove unused CSS (UNCSS)
 - I recommend against this as it was too aggressive at removing stuff I
@@ -124,19 +156,19 @@ really needed - YMMV.
 I use gulp to automate the extraction and concatenation and compression
 of the CSS and JS files, here is the relevant part of my gulpfile.js:
 
-::
+.. code-block:: js
 
    function htm() {
-           return gulp.src(htmConfig.src)
-               .pipe(useref())
-               .pipe(gzip())       // compresses to a gzip file
-               .pipe(size({ showFiles: true }))
-               .pipe(gulp.dest('web/build/'))
-       }
+      return gulp.src(htmConfig.src)
+         .pipe(useref())
+         .pipe(gzip())       // compresses to a gzip file
+         .pipe(size({ showFiles: true }))
+         .pipe(gulp.dest('web/build/'))
+    }
 
 My webpage looks like this
 
-::
+.. code-block:: html
 
      <!-- build:css core.css -->
      <link rel="stylesheet" type="text/css" href="bootstrap.css">
@@ -145,6 +177,6 @@ My webpage looks like this
 
 After gulp runs it looks like this
 
-::
+.. code-block:: html
 
      <link rel="stylesheet" href="core.css">

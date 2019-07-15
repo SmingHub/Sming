@@ -1,3 +1,7 @@
+*********
+Debugging
+*********
+
 Debugging is a powerful technique allowing you to interactively run your
 code and be able to see much more information about the things that went
 wrong.
@@ -97,8 +101,8 @@ command like the one below:
 
 Notice: “break” sets a software breakpoint. This means that the
 ``blink`` function must be in IRAM. Otherwise the execution will fail.
-If you take a look at the `Live Debug
-application <https://github.com/SmingHub/Sming/blob/develop/samples/LiveDebug/app/application.cpp#L661>`__
+If you take a look at the
+`Live Debug application <https://github.com/SmingHub/Sming/blob/develop/samples/LiveDebug/app/application.cpp#L661>`__
 you will see a in the definition of the ``init`` function the following
 attribute ``GDB_IRAM_ATTR``. As shown below.
 
@@ -162,7 +166,8 @@ You can see more useful commands from
 
 Or watch the following short video
 
-|Short Video Tutorial|
+.. image:: https://img.youtube.com/vi/hVwSX_7Ey8c/3.jpg
+   :target: https://www.youtube.com/watch?v=hVwSX_7Ey8c
 
 Debugging with visual debuggers like Eclipse CDT
 ================================================
@@ -178,7 +183,7 @@ Makefile Project with Existing Code. And then point Eclipse to the
 location of the LiveDebug sample. After that import the Sming Framework
 if you haven’t done it yet.
 
-.. figure:: https://blog.attachix.com/wp-content/uploads/2015/12/1.png
+.. figure:: debugging-1.png
    :alt: Import Project
 
    Import Project
@@ -192,7 +197,7 @@ click and create a new C/C++ Remote Application. In the Main tab set the
 Project to Basic_Build, the C/C++ Application to out/build/app.out and
 disable for now the auto build.
 
-.. figure:: https://blog.attachix.com/wp-content/uploads/2015/12/2.png
+.. figure:: debugging-2.png
    :alt: Remote Debugging Session
 
    Remote Debugging Session
@@ -200,7 +205,7 @@ disable for now the auto build.
 Then go to the Debugger tab and point the GDB debugger to your
 Xtensa-gdb binary.
 
-.. figure:: https://blog.attachix.com/wp-content/uploads/2015/12/3.png
+.. figure:: debugging-3.png
    :alt: Remote Debugging Session
 
    Remote Debugging Session
@@ -215,7 +220,7 @@ Debugger->Connection tab and set the type to be Serial, the device to be
 /dev/ttyUSB0 and set the speed to 115200. Make sure to replace
 /dev/ttyUSB0 with the correct device name on your operating system.
 
-.. figure:: https://blog.attachix.com/wp-content/uploads/2015/12/4.png
+.. figure:: debugging-4.png
    :alt: Set remote connection
 
    Set remote connection
@@ -225,7 +230,7 @@ screenshot above the Debug button is on the bottom-right corner. After
 some seconds your debugging session should be up and running and you can
 enjoy live debugging.
 
-.. figure:: https://raw.githubusercontent.com/SmingHub/Sming/gh-pages/images/eclipse-debug-session.png
+.. figure:: eclipse-debug-session.png
    :alt: Live Debugging Session
 
    Live Debugging Session
@@ -236,6 +241,3 @@ breakpoints to code in RAM or add breakpoints to code that was in FLASH,
 after it was executed executed at least once.
 
 Enjoy!
-
-.. |Short Video Tutorial| image:: https://img.youtube.com/vi/hVwSX_7Ey8c/3.jpg
-   :target: https://www.youtube.com/watch?v=hVwSX_7Ey8c

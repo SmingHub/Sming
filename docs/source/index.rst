@@ -369,6 +369,7 @@ Thank you to all the people who have backed Sming or sponsored it.
 
    host-emulator
    features
+   information/index
 
 
 Indices and tables
