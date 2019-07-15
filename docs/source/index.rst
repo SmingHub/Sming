@@ -21,9 +21,9 @@ Summary
 -  Work with GPIO in Arduino style
 -  Compatible with standard Arduino libraries - use any popular hardware
    in few lines of code
--  Integrated boot loader `rBoot <https://github.com/raburton/rboot>`__
+-  Integrated boot loader :component-esp8266:`rboot`
    with support for 1MB ROMs, OTA firmware updating and ROM switching
--  Built-in file system: `spiffs <https://github.com/pellepl/spiffs>`__
+-  Built-in file system: :component:`spiffs`
 -  Built-in powerful wireless modules
 -  Powerful asynchronous (async) network stack
 
@@ -35,14 +35,13 @@ Summary
       `Lwirax <https://github.com/attachix/lwirax/>`__.
    -  Out of the box support for OTA over HTTPS.
 
--  Crash handlers for analyzing/handling system restarts due to fatal
-   errors or WDT resets.
--  PWM support based on `Stefan Bruens
+-  :doc:`Crash handlers <information/debugging>` for analyzing/handling
+   system restarts due to fatal errors or WDT resets.
+-  :component-esp8266:`PWM support <pwm_open>` based on `Stefan Bruens
    PWM <https://github.com/StefanBruens/ESP8266_new_pwm.git>`__
--  Optional custom heap allocation based on `Umm
-   Malloc <https://github.com/rhempel/umm_malloc.git>`__
--  Based on Espressif NONOS SDK. Tested with versions 1.5 and 2.0.
-   Experimental support for SDK version >= 3.0.0.
+-  Optional :component-esp8266:`custom heap allocation <custom_heap>`
+   based on `Umm Malloc <https://github.com/rhempel/umm_malloc.git>`__
+-  Based on :component-esp8266:`Espressif NONOS SDK <esp8266>`. Tested with versions 1.5, 2.0 and 3.0.
 
 
 Getting Started
