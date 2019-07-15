@@ -1,5 +1,6 @@
-Sming - Documenting the API
-===========================
+*******************
+Documenting the API
+*******************
 
 This guide describes how to document the Sming API. It is aimed at
 developers of the framework, not users of the framework.
@@ -30,7 +31,7 @@ The following elements of source code are documented:
 
 Javadoc comments use the following style:
 
--  Start with /*\*
+-  Start with /\*\*
 -  End with \*/
 -  Each line (between start and end) starts with a space and a \*
 -  Doxygen commands are prefixed with @
@@ -133,4 +134,4 @@ To add a ``See Also`` section, use ``@see``. Example:
 
 ::
 
-   @see `OtherClass()` for details
+   @see See `OtherClass()` for details

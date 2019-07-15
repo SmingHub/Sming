@@ -1,15 +1,22 @@
+***********************
+Adding External Sources
+***********************
+
 This document describes the recommended way to add source code from
 other ``git`` repositories.
 
 Introduction
 ============
 
-In Sming we have source code from other repositories
-`rboot <https://github.com/raburton/rboot>`__,
-`esp-gdbstub <https://github.com/espressif/esp-gdbstub>`__,
-`spiffs <https://github.com/pellepl/spiffs>`__, etc..
+In Sming we have source code from other repositories:
 
-Having local copies of those modules brings some disadvantages with it
+* `rboot <https://github.com/raburton/rboot>`__
+* `esp-gdbstub <https://github.com/espressif/esp-gdbstub>`__
+* `spiffs <https://github.com/pellepl/spiffs>`__
+
+etc..
+
+Having local copies of those modules brings some disadvantages with it:
 
 1. We cannot easily update the local copy from the original source code.
 2. We cannot easily send improvements to those projects once we make
@@ -23,9 +30,6 @@ addition, if we need local modifications than we can keep a .patch file
 and apply it after fetching the submodule code. This decreased our
 efforts and allowed us to use the latest versions of those third-party
 projects.
-
-Adding External Sources
-=======================
 
 Fetching Source Code
 ====================

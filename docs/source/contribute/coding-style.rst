@@ -1,10 +1,14 @@
+******************
+Coding Style Rules
+******************
+
 The benefits of coding standards are readability, maintainability and
 compatibility. Any member of the development team in Sming should be
 able to read the code of another developer. The developer who maintains
 a piece of code tomorrow may not be the coder who programmed it today.
 
-Therefore we enforce coding standards described in our `Style
-Guide <#style-guide>`__. The coding style rules are mandatory for the
+Therefore we enforce coding standards described in our
+`Style Guide <#style-guide>`__. The coding style rules are mandatory for the
 ``Sming/SmingCore`` and ``samples`` directories and all their
 sub-directories. And they should be applied to all C, C++ and header
 files in those directories.
@@ -69,9 +73,9 @@ the `CppStyle plugin <https://github.com/wangzw/CppStyle>`__. You can
 configure your IDE to auto-format the code on “Save” using the
 recommended coding style and/or format according to our coding style
 rules using Ctrl-Shift-F (for formatting of whole file or selection of
-lines). Read `Configure
-CppStyle <https://github.com/wangzw/CppStyle#configure-cppstyle>`__ for
-details.
+lines). Read
+`Configure CppStyle <https://github.com/wangzw/CppStyle#configure-cppstyle>`__
+for details.
 
 Usage
 -----
@@ -140,438 +144,40 @@ long as 4 spaces. Below are the corresponding settings in clang-format.
 Naming
 ------
 
-.. raw:: html
++---------------------------+-------------------------------------------------------------------------------+-----------------------------------+
+| Identifier type           |   Rules for naming                                                            | Examples                          |
++===========================+===============================================================================+===================================+
+| Classes                   |   |class-names|                                                               | ::                                |
+|                           |                                                                               |                                   |
+|                           |                                                                               |    class HttpClient {}            |
+|                           |                                                                               |    class HttpClientConnection {}  |
++---------------------------+-------------------------------------------------------------------------------+-----------------------------------+
+| Methods                   |   |methods|                                                                   | ::                                |
+|                           |                                                                               |                                   |
+|                           |                                                                               |    bind();                        |
+|                           |                                                                               |    getStatus();                   |
++---------------------------+-------------------------------------------------------------------------------+-----------------------------------+
+| Variables                 |   |local-vars|                                                                | ::                                |
+|                           |                                                                               |                                   |
+|                           |                                                                               |    int i;                         |
+|                           |   |varnames|                                                                  |    char c;                        |
+|                           |                                                                               |    WebsocketClient* client;       |
++---------------------------+-------------------------------------------------------------------------------+-----------------------------------+
+| Constants                 |   |constants|                                                                 | ::                                |
+|                           |                                                                               |                                   |
+|                           |                                                                               |    #define MAX_PARTICIPANTS 10    |
++---------------------------+-------------------------------------------------------------------------------+-----------------------------------+
+
+.. |methods| replace:: Methods must be either verbs in lowerCamelCase, or a multi-word name that begins with a verb in lowercase; that is, with the first letter lowercase and the first letters of subsequent words in uppercase.
+
+.. |class-names| replace:: Class names must be nouns in UpperCamelCase, with the first letter of  every word capitalised. Use whole words — avoid acronyms and abbreviations (unless the abbreviation is much more widely used than the long form, such as URL or HTML).
+
+.. |local-vars| replace:: Local variables, instance variables, and class variables must also be written in lowerCamelCase. Variable names must not start with, end with or contain underscore (\_) or dollar sign ($) characters. This is in constrast to some coding conventions which prefix all instance variables with underscore, however this is reserved by the C++ standard and can create problems.
+
+.. |varnames| replace:: Variable names should be short yet meaningful. The choice of a variable name should be mnemonic — that is, designed to indicate to the casual observer the intent of its use. One-character variable names should be avoided except for temporary “throwaway” variables. Common names for temporary variables are i, j, k, m, and n for integers; c, d, and e for characters.
+
+.. |constants| replace:: Constants must be written in uppercase characters separated by underscores. Constant names may contain digits if appropriate, but not as the first character.
 
-   <table>
-
-.. raw:: html
-
-   <thead>
-
-.. raw:: html
-
-   <tr class="header">
-
-.. raw:: html
-
-   <th>
-
-.. raw:: html
-
-   <p>
-
-Identifier type
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </th>
-
-.. raw:: html
-
-   <th>
-
-.. raw:: html
-
-   <p>
-
-Rules for naming
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </th>
-
-.. raw:: html
-
-   <th>
-
-.. raw:: html
-
-   <p>
-
-Examples
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </th>
-
-.. raw:: html
-
-   </tr>
-
-.. raw:: html
-
-   </thead>
-
-.. raw:: html
-
-   <tbody>
-
-.. raw:: html
-
-   <tr class="odd">
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <p>
-
-Classes
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <p>
-
-Class names must be nouns in UpperCamelCase, with the first letter of
-every word capitalised. Use whole words — avoid acronyms and
-abbreviations (unless the abbreviation is much more widely used than the
-long form, such as URL or HTML).
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <ul>
-
-.. raw:: html
-
-   <li>
-
-class HttpClient {}
-
-.. raw:: html
-
-   </li>
-
-.. raw:: html
-
-   <li>
-
-class HttpClientConnection {}
-
-.. raw:: html
-
-   </li>
-
-.. raw:: html
-
-   </ul>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   </tr>
-
-.. raw:: html
-
-   <tr class="even">
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <p>
-
-Methods
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <p>
-
-Methods must be either verbs in lowerCamelCase, or a multi-word name
-that begins with a verb in lowercase; that is, with the first letter
-lowercase and the first letters of subsequent words in uppercase.
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <ul>
-
-.. raw:: html
-
-   <li>
-
-bind();
-
-.. raw:: html
-
-   </li>
-
-.. raw:: html
-
-   <li>
-
-getStatus();
-
-.. raw:: html
-
-   </li>
-
-.. raw:: html
-
-   </ul>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   </tr>
-
-.. raw:: html
-
-   <tr class="odd">
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <p>
-
-Variables
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <p>
-
-Local variables, instance variables, and class variables must also be
-written in lowerCamelCase. Variable names must not start with, end with
-or contain underscore (\_) or dollar sign ($) characters. This is in
-constrast to some coding conventions which prefix all instance variables
-with underscore, however this is reserved by the C++ standard and can
-create problems.
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   <p>
-
-Variable names should be short yet meaningful. The choice of a variable
-name should be mnemonic — that is, designed to indicate to the casual
-observer the intent of its use. One-character variable names should be
-avoided except for temporary “throwaway” variables. Common names for
-temporary variables are i, j, k, m, and n for integers; c, d, and e for
-characters.
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <ul>
-
-.. raw:: html
-
-   <li>
-
-int i;
-
-.. raw:: html
-
-   </li>
-
-.. raw:: html
-
-   <li>
-
-char c;
-
-.. raw:: html
-
-   </li>
-
-.. raw:: html
-
-   <li>
-
-WebsocketClient\* client;
-
-.. raw:: html
-
-   </li>
-
-.. raw:: html
-
-   </ul>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   </tr>
-
-.. raw:: html
-
-   <tr class="even">
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <p>
-
-Constants
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <p>
-
-Constants must be written in uppercase characters separated by
-underscores. Constant names may contain digits if appropriate, but not
-as the first character.
-
-.. raw:: html
-
-   </p>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-.. raw:: html
-
-   <ul>
-
-.. raw:: html
-
-   <li>
-
-#define MAX_PARTICIPANTS 10;
-
-.. raw:: html
-
-   </li>
-
-.. raw:: html
-
-   </ul>
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   </tr>
-
-.. raw:: html
-
-   </tbody>
-
-.. raw:: html
-
-   </table>
 
 C++ Standard
 ------------
@@ -604,8 +210,7 @@ brackets. Our settings are
    SpacesInSquareBrackets: false
 
 See the meaning of those keys and their selected values in the
-`ClangFormatStyleOptions
-document <http://releases.llvm.org/5.0.0/tools/clang/docs/ClangFormatStyleOptions.html>`__.
+`ClangFormatStyleOptions document <http://releases.llvm.org/5.0.0/tools/clang/docs/ClangFormatStyleOptions.html>`__.
 
 Line length
 -----------
@@ -646,8 +251,7 @@ Braces
    BreakBeforeBraces: Linux
 
 See the meaning of those keys and their selected values in the
-`ClangFormatStyleOptions
-document <http://releases.llvm.org/5.0.0/tools/clang/docs/ClangFormatStyleOptions.html>`__.
+`ClangFormatStyleOptions document <http://releases.llvm.org/5.0.0/tools/clang/docs/ClangFormatStyleOptions.html>`__.
 
 Pointer Alignment
 -----------------
@@ -696,8 +300,7 @@ Other Elements
 
 Please follow the standard naming convention. Example:
 
-Filename:
-``SmingCore/Network/Http/Websocket/WsCommandHandlerResource.h``
+Filename: ``SmingCore/Network/Http/Websocket/WsCommandHandlerResource.h``
 
 ::
 
@@ -747,8 +350,8 @@ Deprecation requires two steps:
 Step 1: Add a @deprecated tag to the method header comment so the change
 is flagged in the auto-generated API documentation. Include a brief
 explanation of the new method or technique to be adopted. See also
-`Documenting the
-API <https://github.com/SmingHub/Sming/wiki/Documenting-the-API>`__.
+`Documenting the API <https://github.com/SmingHub/Sming/wiki/Documenting-the-API>`__.
+
 Example:
 
 ::
@@ -767,172 +370,37 @@ Virtual Classes
 Sming makes extensive use of virtual classes. If you are modifying or
 adding virtual methods then please follow these guidelines:
 
-.. raw:: html
+**Rule**: The base class must have a virtual destructor, even if it
+doesn’t do anything.
 
-   <table>
+Example: ``virtual ~Stream() {}``
 
-.. raw:: html
 
-   <thead>
+**Rule**: Inherited classes must not prepend ``virtual`` or append
+``override`` to any destructor.
 
-.. raw:: html
+Example: ``~IDataSourceStream();``
 
-   <tr class="header">
+Rationale: virtual destructors do not behave like regular virtual
+methods - they are ‘chained’ rather than overridden - therefore
+``override`` is not appropriate and ``virtual`` is both un-necessary
+and unhelpful
 
-.. raw:: html
 
-   <th>
+**Rule**: Use the ``override`` directive on inherited virtual methods
 
-Rule
+Example: ``int read() override;``
 
-.. raw:: html
+Rationale: The compiler will ensure there is actually a base method to
+inherit from and generate a warning if one is not found, or if
+parameters do not correspond.
 
-   </th>
 
-.. raw:: html
+**Rule**: Don’t use empty destructors in inherited virtual classes
 
-   <th>
+Rationale: They’re not necessary
 
-Example
 
-.. raw:: html
-
-   </th>
-
-.. raw:: html
-
-   <th>
-
-Rationale
-
-.. raw:: html
-
-   </th>
-
-.. raw:: html
-
-   </tr>
-
-.. raw:: html
-
-   </thead>
-
-.. raw:: html
-
-   <tr>
-
-.. raw:: html
-
-   <td>
-
-The base class must have a virtual destructor, even if it doesn’t do
-anything.
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-virtual ~Stream() {}
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   </tr>
-
-.. raw:: html
-
-   <tr>
-
-.. raw:: html
-
-   <td>
-
-Inherited classes must not prepend ``virtual`` or append ``override`` to
-any destructor.
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-~IDataSourceStream();
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-virtual destructors do not behave like regular virtual methods - they
-are ‘chained’ rather than overridden - therefore ``override`` is not
-appropriate and ``virtual`` is both un-necessary and unhelpful
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   </tr>
-
-.. raw:: html
-
-   <tr>
-
-.. raw:: html
-
-   <td>
-
-Use the ``override`` directive on inherited virtual methods
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-int read() override;
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   <td>
-
-The compiler will ensure there is actually a base method to inherit from
-and generate a compiler warning if one is not found, or if parameters do
-not correspond.
-
-.. raw:: html
-
-   </td>
-
-.. raw:: html
-
-   </tr>
-
-.. raw:: html
-
-   </table>
-
-Please don’t use empty destructors in inherited virtual classes -
-they’re not necessary.
 
 Common issues
 -------------
