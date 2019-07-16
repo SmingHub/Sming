@@ -144,39 +144,47 @@ long as 4 spaces. Below are the corresponding settings in clang-format.
 Naming
 ------
 
-+---------------------------+-------------------------------------------------------------------------------+-----------------------------------+
-| Identifier type           |   Rules for naming                                                            | Examples                          |
-+===========================+===============================================================================+===================================+
-| Classes                   |   |class-names|                                                               | ::                                |
-|                           |                                                                               |                                   |
-|                           |                                                                               |    class HttpClient {}            |
-|                           |                                                                               |    class HttpClientConnection {}  |
-+---------------------------+-------------------------------------------------------------------------------+-----------------------------------+
-| Methods                   |   |methods|                                                                   | ::                                |
-|                           |                                                                               |                                   |
-|                           |                                                                               |    bind();                        |
-|                           |                                                                               |    getStatus();                   |
-+---------------------------+-------------------------------------------------------------------------------+-----------------------------------+
-| Variables                 |   |local-vars|                                                                | ::                                |
-|                           |                                                                               |                                   |
-|                           |                                                                               |    int i;                         |
-|                           |   |varnames|                                                                  |    char c;                        |
-|                           |                                                                               |    WebsocketClient* client;       |
-+---------------------------+-------------------------------------------------------------------------------+-----------------------------------+
-| Constants                 |   |constants|                                                                 | ::                                |
-|                           |                                                                               |                                   |
-|                           |                                                                               |    #define MAX_PARTICIPANTS 10    |
-+---------------------------+-------------------------------------------------------------------------------+-----------------------------------+
++---------------------------+-----------------------+-----------------------------------+
+| Identifier type           |   Rules for naming    | Examples                          |
++===========================+=======================+===================================+
+| Classes                   |   |class-names|       | ::                                |
+|                           |                       |                                   |
+|                           |                       |    class HttpClient {}            |
+|                           |                       |    class HttpClientConnection {}  |
++---------------------------+-----------------------+-----------------------------------+
+| Methods                   |   |methods|           | ::                                |
+|                           |                       |                                   |
+|                           |                       |    bind();                        |
+|                           |                       |    getStatus();                   |
++---------------------------+-----------------------+-----------------------------------+
+| Variables                 |   |local-vars|        | ::                                |
+|                           |                       |                                   |
+|                           |                       |    int i;                         |
+|                           |   |varnames|          |    char c;                        |
+|                           |                       |    WebsocketClient* client;       |
++---------------------------+-----------------------+-----------------------------------+
+| Constants                 |   |constants|         | ::                                |
+|                           |                       |                                   |
+|                           |                       |    #define MAX_PARTICIPANTS 10    |
++---------------------------+-----------------------+-----------------------------------+
 
-.. |methods| replace:: Methods must be either verbs in lowerCamelCase, or a multi-word name that begins with a verb in lowercase; that is, with the first letter lowercase and the first letters of subsequent words in uppercase.
+.. |methods| replace:: Methods must be either verbs in lowerCamelCase, or a multi-word name that begins with a verb in lowercase; 
+   that is, with the first letter lowercase and the first letters of subsequent words in uppercase.
 
-.. |class-names| replace:: Class names must be nouns in UpperCamelCase, with the first letter of  every word capitalised. Use whole words — avoid acronyms and abbreviations (unless the abbreviation is much more widely used than the long form, such as URL or HTML).
+.. |class-names| replace:: Class names must be nouns in UpperCamelCase, with the first letter of  every word capitalised.
+   Use whole words — avoid acronyms and abbreviations (unless the abbreviation is much more widely used than the long form, such as URL or HTML).
 
-.. |local-vars| replace:: Local variables, instance variables, and class variables must also be written in lowerCamelCase. Variable names must not start with, end with or contain underscore (\_) or dollar sign ($) characters. This is in constrast to some coding conventions which prefix all instance variables with underscore, however this is reserved by the C++ standard and can create problems.
+.. |local-vars| replace:: Local variables, instance variables, and class variables must also be written in lowerCamelCase.
+   Variable names must not start with, end with or contain underscore (\_) or dollar sign ($) characters.
+   This is in constrast to some coding conventions which prefix all instance variables with underscore,
+   however this is reserved by the C++ standard and can create problems.
 
-.. |varnames| replace:: Variable names should be short yet meaningful. The choice of a variable name should be mnemonic — that is, designed to indicate to the casual observer the intent of its use. One-character variable names should be avoided except for temporary “throwaway” variables. Common names for temporary variables are i, j, k, m, and n for integers; c, d, and e for characters.
+.. |varnames| replace:: Variable names should be short yet meaningful. The choice of a variable name should be mnemonic — that is,
+   designed to indicate to the casual observer the intent of its use. One-character variable names should be avoided except for
+   temporary “throwaway” variables. Common names for temporary variables are i, j, k, m, and n for integers; c, d, and e for characters.
 
-.. |constants| replace:: Constants must be written in uppercase characters separated by underscores. Constant names may contain digits if appropriate, but not as the first character.
+.. |constants| replace:: Constants must be written in uppercase characters separated by underscores.
+   Constant names may contain digits if appropriate, but not as the first character.
 
 
 C++ Standard
@@ -294,22 +302,6 @@ For readability put always spaces before assignment operators.
 
 Other Elements
 ==============
-
-#include guards
----------------
-
-Please follow the standard naming convention. Example:
-
-Filename: ``SmingCore/Network/Http/Websocket/WsCommandHandlerResource.h``
-
-::
-
-   #ifndef _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WS_COMMAND_HANDLER_RESOURCE_H_
-   #define _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WS_COMMAND_HANDLER_RESOURCE_H_
-
-   ...
-
-   #endif /* _SMING_CORE_NETWORK_HTTP_WEBSOCKET_WS_COMMAND_HANDLER_RESOURCE_H_ */
 
 Standard file headers
 ---------------------
