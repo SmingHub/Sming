@@ -70,7 +70,7 @@ public:
 	bool setIP(IPAddress address);
 
 	/** @brief  Get WiFi AP MAC address
-	 *  @param optional separator between bytes (e.g. ':')
+	 *  @param	sep separator between bytes (e.g. ':')
      *  @retval String WiFi AP MAC address
      */
 	String getMAC(char sep = '\0');

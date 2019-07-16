@@ -109,7 +109,7 @@ public:
 
 	/**
 	 * @brief Sets a callback to be called when the object instance is destroyed
-	 * @param TcpServerConnectionDestroyedDelegate destroyedDelegate - callback
+	 * @param destroyedDelegate
 	 */
 	void setDestroyedDelegate(TcpConnectionDestroyedDelegate destroyedDelegate)
 	{
@@ -128,12 +128,12 @@ public:
 	 *
 	 * @note  This method makes copy of the data.
 	 *
-	 * @param const uint8_t *keyData
-	 * @param int keyLength
-	 * @param const uint8_t *certificateData
-	 * @param int certificateLength
-	 * @param const char *keyPassword
-	 * @param bool freeAfterHandshake
+	 * @param key
+	 * @param keyLength
+	 * @param certificate
+	 * @param certificateLength
+	 * @param keyPassword
+	 * @param freeAfterHandshake
 	 *
 	 * @return bool  true of success, false or failure
 	 */
@@ -149,8 +149,8 @@ public:
 	*
 	* @note  This method passes the certificate key chain by reference
 	*
-	* @param SSLKeyCertPair
-	* @param bool freeAfterHandshake
+	* @param clientKeyCert
+	* @param freeAfterHandshake
 	*
 	* @return bool  true of success, false or failure
 	*/
@@ -178,12 +178,12 @@ public:
 	 *
 	 * @note  This method makes copy of the data.
 	 *
-	 * @param const uint8_t *keyData
-	 * @param int keyLength
-	 * @param const uint8_t *certificateData
-	 * @param int certificateLength
-	 * @param const char *keyPassword
-	 * @param bool freeAfterHandshake
+	 * @param key
+	 * @param keyLength
+	 * @param certificate
+	 * @param certificateLength
+	 * @param keyPassword
+	 * @param freeAfterHandshake
 	 *
 	 * @return bool  true of success, false or failure
 	 */
@@ -204,10 +204,10 @@ public:
 	*
 	* @note  This method passes the certificate key chain by reference
 	*
-	* @param SSLKeyCertPair
-	* @param bool freeAfterHandshake
+	* @param keyCert
+	* @param freeAfterHandshake
 	*
-	* @return bool  true of success, false or failure
+	* @retval bool  true of success, false or failure
 	*/
 	bool setSslKeyCert(const SslKeyCertPair& keyCert, bool freeAfterHandshake = false)
 	{

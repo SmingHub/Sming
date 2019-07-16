@@ -8,8 +8,8 @@
  *
  ****/
 
-/**	@defgroup serial AtCommand serial
- *	@brief	Asynchronous AT command client
+/**	@ingroup serial
+ *	@brief Asynchronous AT command client
  *  @{
  */
 
@@ -59,29 +59,29 @@ public:
 
 	/**
 	 * @brief Sends AT command
-	 * @param text String The actual AT command text. For example AT+CAMSTOP
-	 * @param altResponse String Expected response on success in addition to the default one which is OK
-	 * @param timeoutMs uint32_t Time in milliseconds to wait for response
-	 * @param retries unsigned Retries on error
+	 * @param text The actual AT command text. For example AT+CAMSTOP
+	 * @param altResponse Expected response on success in addition to the default one which is OK
+	 * @param timeoutMs Time in milliseconds to wait for response
+	 * @param retries Retries on error
 	 */
 	void send(const String& text, const String& altResponse = nullptr, uint32_t timeoutMs = AT_TIMEOUT,
 			  unsigned retries = 0);
 
 	/**
 	 * @brief Sends AT command
-	 * @param text String The actual AT command text. For example AT+CAMSTOP
-	 * @param AtReceiveCallback onReceive
-	 * @param timeoutMs uint32_t Time in milliseconds to wait for response
-	 * @param retries int Retries on error
+	 * @param text The actual AT command text. For example AT+CAMSTOP
+	 * @param onReceive
+	 * @param timeoutMs Time in milliseconds to wait for response
+	 * @param retries Retries on error
 	 */
 	void send(const String& text, AtReceiveCallback onReceive, uint32_t timeoutMs = AT_TIMEOUT, unsigned retries = 0);
 
 	/**
 	 * @brief Sends AT command
 	 * @param text String The actual AT command text. For example AT+CAMSTOP
-	 * @param AtCompleteCallback onComplete
-	 * @param timeoutMs uint32_t Time in milliseconds to wait for response
-	 * @param retries int Retries on error
+	 * @param onComplete
+	 * @param timeoutMs Time in milliseconds to wait for response
+	 * @param retries Retries on error
 	 */
 	void send(const String& text, AtCompleteCallback onComplete, uint32_t timeoutMs = AT_TIMEOUT, unsigned retries = 0);
 
@@ -91,19 +91,19 @@ public:
 	 * @brief Adds a command to the queue.
 	 * 		  If you need all the flexibility then use that command
 	 * 		  and manually set your AtCommand arguments.
-	 * @param command AtCommand
+	 * @param command
 	 */
 	void send(AtCommand command);
 
 	/**
 	 * @brief Executes directly (does not queue it) a command
-	 * @param command AtCommand
+	 * @param command
 	 */
 	void sendDirect(AtCommand command);
 
 	/**
 	 * @brief Returns the current state
-	 * @return AtState
+	 * @retval AtState
 	 */
 	AtState getState()
 	{

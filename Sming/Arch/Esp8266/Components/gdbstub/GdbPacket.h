@@ -82,9 +82,9 @@ public:
 
 	/** @brief Encode a value as hex characters, LSB first
 	 *  @param dst Location for output, will NOT be nul-terminated
-	 *  @param srcData Data bytes to encode
+	 *  @param src Data bytes to encode
 	 *  @param size Size of source data in bytes
-	 *  @Note destination buffer must have enough space for (size * 2) chars
+	 *  @note destination buffer must have enough space for (size * 2) chars
 	 */
 	static void encodeHexBlock(char* dst, const void* src, size_t size);
 

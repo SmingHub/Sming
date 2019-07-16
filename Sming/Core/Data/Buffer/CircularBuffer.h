@@ -86,7 +86,7 @@ public:
 	size_t write(uint8_t charToWrite) override;
 
 	/** @brief  Write chars to stream
-     *  @param  buffer Pointer to buffer to write to the stream
+     *  @param  data Pointer to buffer to write to the stream
      *  @param  size Quantity of chars to writen
      *  @retval size_t Quantity of chars written to stream
      */

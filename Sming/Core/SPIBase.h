@@ -11,25 +11,20 @@
  *
  */
 
-/** @defgroup base_spi SPI support classes
- *  @brief    Provides SPI support
- */
-
 #pragma once
 
 #include "SPISettings.h"
 
-/* @defgroup SPI base implementation
- * Base class/interface for SPI implementations
+/** @defgroup base_spi SPI support classes
+ *  @brief    Provides SPI support
+ *  @{
+ */
+
+/* @brief Base class/interface for SPI implementations
  */
 class SPIBase
 {
 public:
-	/** @brief SPIBase()
-	 * default Constructor
-     *  @addtogroup base_spi
-     *  @{
-	 */
 	SPIBase()
 	{
 	}
@@ -73,3 +68,5 @@ public:
 	 */
 	SPISettings SPIDefaultSettings;
 };
+
+/** @} */

@@ -70,7 +70,7 @@ public:
 	Url(const Url& url) = default;
 
 	/** @brief Construct a URL object from a regular escaped string
-	 *  @urlString Escaped URL
+	 *  @param urlString Escaped URL
 	 */
 	Url(const String& urlString)
 	{
@@ -78,7 +78,7 @@ public:
 	}
 
 	/** @brief Construct a URL object from a regular null-terminated escaped string
-	 *  @urlString Escaped URL
+	 *  @param urlString Escaped URL
 	 */
 	Url(const char* urlString) : Url(String(urlString))
 	{

@@ -38,36 +38,58 @@ public:
 	String subject;
 	String cc;
 
+	/**
+	 * @brief Set a header value
+	 * @param name
+	 * @param value
+	 * @retval MailMessage&
+	 */
 	MailMessage& setHeader(const String& name, const String& value);
 
+	/**
+	 * @brief Get a reference to the current set of headers
+	 * @retval HttpHeaders&
+	 */
 	HttpHeaders& getHeaders();
 
 	/**
 	 * @brief Sets the body of the email
-	 * @param String body
-	 * @param MimeType mime
+	 * @param body
+	 * @param mime
+	 * @retval MailMessage&
 	 */
 	MailMessage& setBody(const String& body, MimeType mime = MIME_TEXT);
 
 	/**
 	 * @brief Sets the body of the email
-	 * @param Stream& stream
-	 * @param MimeType mime
+	 * @param stream
+	 * @param mime
+	 * @retval MailMessage&
 	 */
 	MailMessage& setBody(IDataSourceStream* stream, MimeType mime = MIME_TEXT);
 
 	/**
 	 * @brief Adds attachment to the email
+	 * @param stream
+	 * @retval MailMessage&
 	 */
 	MailMessage& addAttachment(FileStream* stream);
 
 	/**
 	 * @brief Adds attachment to the email
+	 * @param stream
+	 * @param mime
+	 * @param filename
+	 * @retval MailMessage&
 	 */
 	MailMessage& addAttachment(IDataSourceStream* stream, MimeType mime, const String& filename = "");
 
 	/**
 	 * @brief Adds attachment to the email
+	 * @param stream
+	 * @param mime
+	 * @param filename
+	 * @retval MailMessage&
 	 */
 	MailMessage& addAttachment(IDataSourceStream* stream, const String& mime, const String& filename = "");
 

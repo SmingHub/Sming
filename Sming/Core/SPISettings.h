@@ -11,13 +11,13 @@
  *
  ****/
 
-/** @defgroup base_spi SPI support classes
- *  @brief    Provides SPI support
- */
-
 #pragma once
 
 #include "Digital.h"
+
+/** @ingroup base_spi
+ *  @{
+ */
 
 // Mode			Clock Polarity (CPOL)	Clock Phase (CPHA)
 //	SPI_MODE0		0					0
@@ -33,11 +33,6 @@
 class SPISettings
 {
 public:
-	/** @brief SPISettings()
-	 * default Constructor
-     *  @addtogroup base_spi
-     *  @{
-	 */
 	SPISettings()
 	{
 #ifdef SPI_DEBUG
@@ -105,3 +100,5 @@ private:
 	uint8_t byteOrder = MSBFIRST;
 	uint8_t dataMode = SPI_MODE0;
 };
+
+/** @} */

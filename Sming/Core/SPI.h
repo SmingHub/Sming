@@ -75,8 +75,8 @@ public:
 	}
 
 	/** @brief 	transfer()
-	 * @param	byte to send
-	 * @retval	byte received
+	 * @param	val byte to send
+	 * @retval	unsigned char byte received
 	 *
 	 * calls private method transfer32(byte) to send/recv one uint32_t
 	 * input/output casted to rightdta type
@@ -93,8 +93,7 @@ public:
 	}
 
 	/** @brief read8() read a byte from SPI without setting up registers
-	 * @param	none
-	 * @retval	byte received
+	 * @retval	uint8_t received
 	 *
 	 * 	 used for performance tuning when doing continuous reads
 	 * 	 this method does not reset the registers , so make sure
@@ -108,8 +107,8 @@ public:
 	uint8_t read8();
 
 	/** @brief 	transfer16()
-	 * @param	short to send
-	 * @retval	short received
+	 * @param	val Value to send
+	 * @retval	unsigned short value received
 	 *
 	 * calls private method transfer32(byte) to send/recv one uint32_t
 	 * input/output casted to rightdta type
@@ -127,7 +126,7 @@ public:
 
 	/** @brief 	transfer(uint8_t *buffer, size_t numberBytes)
 	 * @param	buffer in/out
-	 * @param	numberBytes lenght of buffer
+	 * @param	numberBytes length of buffer
 	 *
 	 * SPI transfer is based on a simultaneous send and receive:
 	 * The buffered transfers does split up the conversation internaly into 64 byte blocks.
@@ -140,6 +139,8 @@ public:
 
 private:
 	/** @brief transfer32()
+	 * @param val
+	 * @param bits
 	 *
 	 * private method used by transfer(byte) and transfer16(sort)
 	 * to send/recv one uint32_t
@@ -155,23 +156,27 @@ private:
 	// prepare/configure HSPI with settings
 	void prepare(SPISettings mySettings);
 
-	/** @brief  spi_byte_order
-	 * private method used when applying SPISettings
+	/** @brief Private method used when applying SPISettings
+	 *  @param byte_order
 	 */
 	void spi_byte_order(uint8_t byte_order);
 
-	/** @brief  spi_mode
-	 * private method used when applying SPISettings
+	/** @brief Private method used when applying SPISettings
+	 *  @param mode
 	 */
 	void spi_mode(uint8_t mode);
 
-	/** @brief  setClock
-	 * private method used when applying SPISettings
+	/** @brief Private method used when applying SPISettings
+	 *  @param prediv
+	 *  @param cntdiv
 	 */
 	void setClock(uint8_t prediv, uint8_t cntdiv);
 
-	/** @brief  setClock
-	 * private method used when applying SPISettings
+	/** @brief Private method used when applying SPISettings
+	 *  @param freq
+	 *  @param pre
+	 *  @param clk
+	 *  @retval uint32_t
 	 */
 	uint32_t getFrequency(int freq, int& pre, int clk);
 	void setFrequency(int freq);
@@ -183,3 +188,5 @@ private:
 
 /** @brief  Global instance of SPI class */
 extern SPIClass SPI;
+
+/** @} */

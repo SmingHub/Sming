@@ -58,7 +58,7 @@ public:
 
 	/** @brief  Send websocket ping to server
 	 *
-	 *  @param String payload - maximum 255 bytes
+	 *  @param payload Maximum 255 bytes
 	 *
 	 *  @retval bool true if the data can be send, false otherwise
 	 */
@@ -69,7 +69,7 @@ public:
 	}
 
 	/** @brief  Send websocket ping to server
-     *  @param  String& payload  - maximum 255 bytes
+     *  @param  payload Maximum 255 bytes
      *
      *  @retval bool true if the data can be send, false otherwise
      */

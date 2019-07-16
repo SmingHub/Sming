@@ -114,8 +114,8 @@ public:
 
 	/**
 	 * @brief Sets a file to be sent
-	 * @param const String& formElementName the name of the element in the form
-	 * @param IDataSourceStream* stream - pointer to the stream (doesn't have to be a FileStream)
+	 * @param formElementName The name of the element in the form
+	 * @param stream Pointer to the stream (doesn't have to be a FileStream)
 	 *
 	 * @retval HttpRequest*
 	 */
@@ -252,10 +252,9 @@ public:
 
 	/**
 	 * @brief Sets client private key, certificate and password from memory
-	 * @param SSLKeyCertPair
-	 * @param bool freeAfterHandshake
+	 * @param keyCertPair
 	 *
-	 * @retval HttpRequest pointer
+	 * @retval HttpRequest* Pointer to this request
 	 */
 	HttpRequest* setSslKeyCert(const SslKeyCertPair& keyCertPair)
 	{

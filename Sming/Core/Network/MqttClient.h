@@ -61,8 +61,8 @@ public:
 	~MqttClient();
 
 	/**
-	 * Sets keep-alive time. That information is sent during connection to the server
-	 * @param uint16_t seconds
+	 * @brief Sets keep-alive time. That information is sent during connection to the server
+	 * @param seconds
 	 */
 	void setKeepAlive(uint16_t seconds) //send to broker
 	{
@@ -71,21 +71,24 @@ public:
 
 	/**
 	 * Sets the interval in which to ping the remote server if there was no activity
-	 * @param unsigned int seconds
+	 * @param seconds
 	 */
 	void setPingRepeatTime(unsigned seconds);
 
 	/**
 	 * Sets last will and testament
-	 * @param const String& topic
-	 * @param const String& message
-	 * @param uint8_t flags -QoS, retain, etc flags
+	 * @param topic
+	 * @param message
+	 * @param flags QoS, retain, etc flags
+	 * @retval bool
 	 */
 	bool setWill(const String& topic, const String& message, uint8_t flags = 0);
 
 	/** @brief  Connect to a MQTT server
-	*  @param  url, in the form "mqtt://user:password@server:port" or "mqtts://user:password@server:port"
-	*  @param  client name
+	*  @param  url URL in the form "mqtt://user:password@server:port" or "mqtts://user:password@server:port"
+	*  @param  uniqueClientName
+	*  @param sslOptions
+	*  @retval bool
 	*/
 	bool connect(const Url& url, const String& uniqueClientName, uint32_t sslOptions = 0);
 
@@ -101,8 +104,8 @@ public:
 	}
 
 	/**
-	 * Sets or clears a payload parser (for PUBLISH messages from the server to us)
-	 * Notice: we no longer have size limitation for incoming or outgoing messages
+	 * @brief Sets or clears a payload parser (for PUBLISH messages from the server to us)
+	 * @note We no longer have size limitation for incoming or outgoing messages
 	 *         but in order to prevent running out of memory we have a "sane" payload parser
 	 *         that will read up to 1K of payload
 	 */
@@ -114,9 +117,9 @@ public:
 	/* [ Convenience methods ] */
 
 	/**
-	 * Sets a handler to be called after successful MQTT connection
+	 * @brief Sets a handler to be called after successful MQTT connection
 	 *
-	 * @param MqttDelegate handler
+	 * @param handler
 	 */
 	void setConnectedHandler(MqttDelegate handler)
 	{
@@ -124,10 +127,10 @@ public:
 	}
 
 	/**
-	 * Sets a handler to be called after receiving confirmation from the server
+	 * @brief Sets a handler to be called after receiving confirmation from the server
 	 * for a published message from the client
 	 *
-	 * @param MqttDelegate handler
+	 * @param handler
 	 */
 	void setPublishedHandler(MqttDelegate handler)
 	{
@@ -136,9 +139,9 @@ public:
 	}
 
 	/**
-	 * Sets a handler to be called after receiving a PUBLISH message from the server
+	 * @brief Sets a handler to be called after receiving a PUBLISH message from the server
 	 *
-	 * @param MqttDelegate handler
+	 * @param handler
 	 */
 	void setMessageHandler(MqttDelegate handler)
 	{
@@ -146,9 +149,9 @@ public:
 	}
 
 	/**
-	 * Sets a handler to be called on disconnect from the server
+	 * @brief Sets a handler to be called on disconnect from the server
 	 *
-	 * @param  TcpClientCompleteDelegate handler
+	 * @param handler
 	 */
 	void setDisconnectHandler(TcpClientCompleteDelegate handler)
 	{

@@ -108,7 +108,7 @@ protected:
 	void internalRequestTime(IPAddress serverIp);
 
 	/** @brief Start the timer running
-	 *  @param time to run in milliseconds
+	 *  @param milliseconds Time to run in milliseconds
 	 */
 	void startTimer(uint32_t milliseconds)
 	{

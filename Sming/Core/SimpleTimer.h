@@ -17,7 +17,7 @@
  *
 */
 
-/** @defgroup   timer SimpleTimer functions
+/** @ingroup   	timer
  *  @brief      Provides basic OS timer functions
 */
 
@@ -54,8 +54,7 @@ public:
 
 	/** @brief  Initialise millisecond timer
      *  @param  milliseconds Duration of timer in milliseconds
-     *  @param  callback Function to call when timer triggers
-     *  @note   Classic c-style callback method
+     *  @param  repeating true if timer automatically restarts when it expires
      */
 	__forceinline void startMs(uint32_t milliseconds, bool repeating = false)
 	{
@@ -66,8 +65,7 @@ public:
 
 	/** @brief  Initialise microsecond timer
      *  @param  microseconds Duration of timer in milliseconds
-     *  @param  callback Function to call when timer triggers
-     *  @note   Classic c-style callback method
+     *  @param  repeating true if timer automatically restarts when it expires
      */
 	__forceinline void startUs(uint32_t microseconds, bool repeating = false)
 	{
@@ -85,7 +83,8 @@ public:
 	}
 
 	/** @brief  Set timer trigger function
-     *  @param  interrupt Function to be called on timer trigger
+     *  @param  callback Function to be called on timer trigger
+     *  @param	arg Passed to callback
      *  @note   Classic c-type callback method
      */
 	void setCallback(SimpleTimerCallback callback, void* arg = nullptr)

@@ -29,6 +29,7 @@ public:
 
 	/** @brief  Create a file stream
      *  @param  fileName Name of file to open
+     *  @param	openFlags
      */
 	FileStream(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly)
 	{

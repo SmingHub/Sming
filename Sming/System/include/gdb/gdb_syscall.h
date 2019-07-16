@@ -201,7 +201,6 @@ static inline int gdb_syscall_open(const char* filename, int flags, int mode, gd
 /**
  * @brief Close a host file
  * @param fd File handle
- * @param flags A combination of O_* flags defined in fcntl.h (e.g. O_RDONLY, O_CREAT, etc)
  * @param callback
  * @param param
  * @retval int

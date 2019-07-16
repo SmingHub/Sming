@@ -55,13 +55,13 @@ public:
 
 	/** @brief  Get current time as a string
      *  @param  timeType Time zone to present time as, i.e. return local or UTC time
-     *  @retval String Current time in format: dd.mm.yy hh:mm:ss
-     *  @note   Date separator may be changed by adding #define DT_DATE_SEPARATOR "/" to source code
+     *  @retval String Current time in format: `dd.mm.yy hh:mm:ss`
+     *  @note   Date separator may be changed by adding `#define DT_DATE_SEPARATOR "/"` to source code
      */
 	String getSystemTimeString(TimeZone timeType = eTZ_Local);
 
 	/** @brief  Sets the local time zone offset
-     *  @param  localTimezoneOffset Offset from UTC of local time zone in hours (-12..+12)
+     *  @param  seconds Offset from UTC of local time zone in hours (-12..+12)
      *  @retval bool True on success
      *  @todo   Why does this need to be set to 2 for UK during winter?
      *  @note   Supports whole hour and fraction of hour offsets from -12 hours to +12 hours

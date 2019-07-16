@@ -24,7 +24,7 @@ class TemplateFileStream : public TemplateStream
 {
 public:
 	/** @brief Create a template file stream
-     *  @param  templateFileName Template filename
+     *  @param  fileName Template filename
      */
 	TemplateFileStream(const String& fileName) : TemplateStream(new FileStream(fileName))
 	{

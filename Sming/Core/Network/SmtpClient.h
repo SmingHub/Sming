@@ -94,7 +94,7 @@ public:
 
 	/**
 	 * @brief Connects to remote URL
-	 * @param URL - provides the protocol, remote server, port and user credentials
+	 * @param url Provides the protocol, remote server, port and user credentials
 	 * 				allowed protocols:
 	 * 					- smtp  - clear text SMTP
 	 * 					- smtps - SMTP over SSL connection
@@ -104,27 +104,27 @@ public:
 	/**
 	 * @brief Queues a single message before it is sent later to the SMTP server
 	 *
-	 * @param String& from
-	 * @param String& to
-	 * @param String& subject
-	 * @param String& body the body in plain text format
+	 * @param from
+	 * @param to
+	 * @param subject
+	 * @param body The body in plain text format
 	 *
-	 * @return true when the message was queued successfully, false otherwise
+	 * @retval bool true when the message was queued successfully, false otherwise
 	 */
 	bool send(const String& from, const String& to, const String& subject, const String& body);
 
 	/**
 	 * @brief Powerful method to queues a single message before it is sent later to the SMTP server
-	 * @param MailMessage* message
+	 * @param message
 	 *
-	 * @return true when the message was queued successfully, false otherwise
+	 * @retval bool true when the message was queued successfully, false otherwise
 	 */
 	bool send(MailMessage* message);
 
 	/**
 	 * @brief Gets the current message
 	 *
-	 * @return MailMessage* message - the message, or NULL if none is scheduled
+	 * @retval MailMessage* The message, or NULL if none is scheduled
 	 */
 	MailMessage* getCurrentMessage();
 
@@ -148,7 +148,7 @@ public:
 
 	/**
 	 * @brief Callback that will be called every time a message is sent successfully
-	 * @param SmtpClientCallback callback
+	 * @param callback
 	 */
 	void onMessageSent(SmtpClientCallback callback)
 	{
@@ -157,7 +157,7 @@ public:
 
 	/**
 	 * @brief Callback that will be called every an error occurs
-	 * @param SmtpClientCallback callback
+	 * @param callback
 	 */
 	void onServerError(SmtpClientCallback callback)
 	{
@@ -211,3 +211,5 @@ private:
 	 */
 	HttpPartResult multipartProducer();
 };
+
+/** @} */
