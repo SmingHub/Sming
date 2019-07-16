@@ -1,15 +1,22 @@
+**********************
+Upgrading to Sming 4.0
+**********************
+
 Summary
 =======
 
-With the new Sming version 3.9.0 there will be a lot of backwards
+With Sming version 4.0 there are some backwards
 incompatible changes. This page is provided to help with migrating your
 applications.
+
+You can find more detailed information in the
+:doc:`/_inc/Sming/building` readme.
 
 Header files
 ============
 
 The folder structure has been revised to provide support for additional
-architectures, such as the ESP32.
+architectures, such as the Host Emulator, and in the future the ESP32.
 
 The ``Sming/Arch`` directory should never be accessed directly: it
 contains specific files for the target architecture, and may provide
@@ -35,6 +42,7 @@ Old-style                                                Recommended
 ``"SmingCore/Platform/Station.h"``                       ``<Platform/Station.h>``
 ====================================================     =====================================
 
+
 Changed Headers
 ---------------
 
@@ -46,7 +54,7 @@ Description        Old name                          New name
 ================== ================================= =====================
 uart driver        ``"espinc/uart.h"``               ``<driver/uart.h>``
 flesh memory       ``"flashmem.h"``                  ``<esp_spi_flash.h>``
-C compatible types ``<espinc/c_types_compatible.h>`` ``<c_types.h>``.
+C compatible types ``<espinc/c_types_compatible.h>`` ``<c_types.h>``
 ================== ================================= =====================
 
 user_include.h
@@ -66,35 +74,51 @@ If you have made customisations, please amend the file as follows:
 
    << User Customisations here >>
 
+
+If you're using ``#include <SmingCore.h>`` then you don't need
+``#include <user_config.h>`` as this is included automatically.
+
 Application Makefile
 ====================
 
-Change
+* Rename ``Makefile-user.mk`` file to ``component.mk``.
+* Replace the file ``Makefile`` with the one from the ``Basic_Blink``
+  sample project. If you've ignored the instructions and modified the
+  file (!) then you'll need to move those changes into your new
+  ``component.mk`` file instead.
+* Sming uses the ``#pragma once`` statement for header guards, so
+  consider updating your own files if you're not already doing this.
 
-::
+Arduino Libraries
+=================
 
-   include $(SMING_HOME)/Makefile-rboot.mk
+Your project must specify which Arduino Libraries it uses (if any). Do
+this by setting ``ARDUINO_LIBRARIES`` in your project's
+``component.mk`` file. For example:
 
-to
+.. code-block:: make
 
-::
+   ARDUINO_LIBRARIES := OneWire
 
-   include $(SMING_HOME)/Makefile-app.mk  
+This change means only the libraries you require for a project need to
+be built.
+
 
 JSON
 ====
 
-ArduinoJson has been updated to Version 6 from version 5. See the
-`Version 6 Migration Guide <https://arduinojson.org/v6/doc/upgrade>`__
-for details.
+ArduinoJson is now an optional Component, so you need to make a couple
+of changes to use it:
 
-Also note some methods of ``JsonVariant`` have been removed,
-replacements are:
+* Add ``ArduinoJson6`` to the ``ARDUINO_LIBRARIES`` variable in your
+  project's ``component.mk`` file. (e.g.
+  ``ARDUINO_LIBRARIES = ArduinoJson6``) To support migration of
+  existing projects, you can elect to continue using version 5 by
+  specifying ``ArduinoJson5`` instead.
+* Add ``#include <JsonObjectStream.h>`` to your source code. If you're
+  not using the stream class, add ``#include <ArduinoJson.h>`` instead.
 
-``asString()`` -> ``as<char*>()`` or ``as<const char*>``. Note that
-``as<String>`` produces a serialized version, so you’ll get “null”
-instead of an empty/invalid result String.
+See library documentation for further details:
 
-``asArray()`` -> ``as<JsonArray>()``
-
-``asObject()`` -> ``as<JsonObject>()``
+* :library:`ArduinoJson6`
+* :library:`ArduinoJson5`

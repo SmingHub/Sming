@@ -150,17 +150,15 @@ directory in a suitable location which will contain your Components and
 set ``COMPONENT_SEARCH_DIRS`` to the full path of that directory. For
 example:
 
-::
+.. code-block:: text
 
-       export COMPONENT_SEARCH_DIRS=/opt/shared/Components
-
-       |_ opt
-           |_ shared
-               |_ Components               # The repository
-                   |_ MyComponent
-                   |_ AnotherComponent
-                   |_ spiffs                   # Will be used instead of Sming version
-
+   |_ opt/
+      |_ shared/
+         |_ Components/             The repository
+            |_ MyComponent/
+            |_ AnotherComponent/
+            |_ spiffs/              Will be used instead of Sming version
+   
 User repositories are searched first, which allows replacement of any
 Component for a project. In this example, our ``spiffs`` component will
 be selected instead of the one provided with Sming.
@@ -170,84 +168,82 @@ Directory layout
 
 The main Sming repo. is laid out like this:
 
-::
+.. code-block:: text
 
-   Directory/File              Contents
-   ---------   -----               --------
-
-   |_ sming
-       .appveyor.yml               CI testing (Windows)
-       .travis.yml                 CI testing (Linux)
-       |_ .appveyor                    CI scripts (Windows)
-       |_ .travis                  CI scripts (Linux)
-       |_ docs                     Sming documentation
-       |_ samples                  Samples to demonstrate specific Sming features or libraries
-       |_ Sming
-           Makefile                    Builds documentation, performs global actions on the framework
-           project.mk              Main makefile to build a project
-           build.mk                    Defines the build environment
-           component.mk                Sming Component definition file
-           component-wrapper.mk    Used to build each Component using a separate make instance
-           |_ Arch                 Architecture-specific makefiles and code
-               |_ Esp8266
-                   sming.mk            Defines architecture-specific Components and libraries
-                   app.mk              Links the project, create output binaries and perform architecture-specific actions
-                   build.mk            Architecture-specific build definitions, such as compiler paths
-                   |_ Compiler
-                   |_ Components
-                   |_ Core
-                   |_ Platform
-                   |_ System
-                   |_ Tools            Pre-compiled or scripted tools
-               |_ Esp32
-                   ...
-               |_ Host
-                   ...
-           |_ Components           Framework support code, not to be used directly by applications
-           |_ Core                 Main framework core
-           |_ Libraries                Arduino Libraries
-               ...
-           |_ out                      All generated shared files are written here
-               |_ Esp8266          The Arch
-                   |_ debug            The build type
-                       |_ build        Intermediate object files
-                       |_ Lib          Generated libraries
-                       |_ tools        Generated tools
-                   |_ release
-                       ...
-               |_ Host
-                   ...
-           |_ Platform             System-level classes
-               ...
-           |_ Services             Modules not considered as part of Core
-               ...
-           |_ System                   Common framework low-level system code
-               |_ include
-           |_ Wiring
-               ...
-       |_ tests                        Integration test applications
-           ...
+   |_ sming/
+      |_ .appveyor.yml              CI testing (Windows)
+      |_ .travis.yml                CI testing (Linux)
+      |_ .appveyor/                 CI scripts (Windows)
+      |_ .travis                    CI scripts (Linux)
+      |_ docs/                      Sming documentation
+      |_ samples/                   Samples to demonstrate specific Sming features or libraries
+      |_ Sming/
+      |  |_ Makefile                Builds documentation, performs global actions on the framework
+      |  |_ project.mk              Main makefile to build a project
+      |  |_ build.mk                Defines the build environment
+      |  |_ component.mk            Sming Component definition file
+      |  |_ component-wrapper.mk    Used to build each Component using a separate make instance
+      |  |_ Arch/                   Architecture-specific makefiles and code
+      |  |  |_ Esp8266/
+      |  |  |  |_ sming.mk          Defines architecture-specific Components and libraries
+      |  |  |  |_ app.mk            Link the project, create output binaries
+      |  |  |  |                       and perform architecture-specific actions
+      |  |  |  |_ build.mk          Architecture-specific build definitions, such as compiler paths
+      |  |  |  |_ Compiler/
+      |  |  |  |_ Components/
+      |  |  |  |_ Core/
+      |  |  |  |_ Platform/
+      |  |  |  |_ System/
+      |  |  |  |_ Tools/            Pre-compiled or scripted tools
+      |  |  |_ Esp32/
+      |  |  |  |_ ...
+      |  |  |_ Host/
+      |  |     |_ ...
+      |  |_ Components/             Framework support code, not to be used directly by applications
+      |  |_ Core/                   Main framework core
+      |  |_ Libraries/              Arduino Libraries
+      |  |  |_ ...
+      |  |_ out/                    All generated shared files are written here
+      |  |  |_ Esp8266/             The Arch
+      |  |  |  |_ debug/            The build type
+      |  |  |     |_ build/         Intermediate object files
+      |  |  |     |  |_ Lib/        Generated libraries
+      |  |  |     |  |_ tools/      Generated tools
+      |  |  |     |_ release/
+      |  |  |        |_ ...
+      |  |  |_ Host/
+      |  |     |_ ...
+      |  |_ Platform/               System-level classes
+      |  |  |_ ...
+      |  |_ Services/               Modules not considered as part of Core
+      |  |  |_ ...
+      |  |_ System/                 Common framework low-level system code
+      |  |  |_ include/
+      |  |_ Wiring/
+      |     |_ ...
+      |_ tests/                     Integration test applications
+         |_ ...
 
 A typical Project looks like this:
 
-::
+.. code-block:: text
 
-   |_ Basic_Blink
-       Makefile                    Just calls Makefile-app.mk
-       component.mk                Project-specific definitions
-       |_ app                      Default application source directory
-       |_ include              Default application include directory
-       |_ out                      All generated shared files are written here
-           |_ Esp8266          The Arch
-               |_ debug            The build type
-                   |_ build        Intermediate object files
-                   |_ firmware Target output files
-                   |_ Lib          Generated libraries
-                   |_ tools        Generated tools
-               |_ release
-                   ...
-           |_ Host
-               ...
+   |_ Basic_Blink/
+      |_ Makefile                   Just includes project.mk
+      |_ component.mk               Project-specific definitions
+       |_ app/                      Default application source directory
+       |_ include/                  Default application include directory
+       |_ out/                      All generated shared files are written here
+          |_ Esp8266/               The Architecture
+          |  |_ debug/              The build type
+          |  |  |_ build/           Intermediate object files
+          |  |  |_ firmware/        Target output files
+          |  |  |_ lib/             Generated libraries
+          |  |  |_ tools/           Generated tools
+          |  |_ release/
+          |     |_ ...
+          |_ Host
+             |_ ...
 
 Components
 ----------
@@ -342,7 +338,7 @@ using the given filename. (Also, as the value is cached, if you then do
 cached. Variables such as ``COM_SPEED_ESPTOOL`` fall into this category.
 
 ``DEBUG_VARS`` are generally for information only, and are not cached
-(except for ``SMING_ARCH`` and ``SMING_RELEASE``).
+(except for :envvar:`SMING_ARCH` and :envvar:`SMING_RELEASE`).
 
 Dependencies
 ~~~~~~~~~~~~
@@ -516,8 +512,6 @@ expanded only when used, so the solution is to take a simple copy of
 
    GDBSTUB_DIR := $(COMPONENT_PATH)
    GDB_CMDLINE = trap '' INT; $(GDB) -x $(GDBSTUB_DIR)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
-
-.. _building-1:
 
 Building
 ~~~~~~~~
