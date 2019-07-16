@@ -1,5 +1,6 @@
+****************
 Using with CLion
-================
+****************
 
 Developing with the Sming framework can also be done in CLion.
 

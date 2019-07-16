@@ -1,3 +1,8 @@
+********************************
+Using with MS Visual Studio Code
+********************************
+
+
 `Visual Studio Code <https://code.visualstudio.com/>`__ is free (as in
 “free beer”, and they claim the code is Open Source) code editor for
 Windows, Linux and Mac. While not as sophisticated in C/C++ support as
@@ -67,7 +72,7 @@ Step by step
    ``${workspaceRoot}/.vscode/settings.json`` (create file if does not
    exist) to regenerate GNU Global database on every save, eg:
 
-.. code:: json
+.. code-block:: json
 
    {
      "emeraldwalk.runonsave": {
@@ -84,7 +89,7 @@ Step by step
 -  create file ``${workspaceRoot}/.vscode/tasks.json`` and define tasks
    you want to run from command palette, eg minimal set:
 
-.. code:: json
+.. code-block:: json
 
    {
      "version": "0.1.0",
