@@ -3,6 +3,9 @@ out
 
 # generated documentation
 docs/api
+docs/build
+docs/source/_inc
+*.pyc
 
 # dev tools, editors, etc.
 language.settings.xml
