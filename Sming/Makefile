@@ -25,7 +25,7 @@ DOXYGEN := $(shell command -v doxygen 2> /dev/null)
 ##@Cleaning
 
 .PHONY: dist-clean
-dist-clean: submodules-clean samples-clean ##Clean everything for all arch/build types
+dist-clean: submodules-clean samples-clean docs-clean ##Clean everything for all arch/build types
 	-$(Q) rm -rf out
 
 .PHONY: clean
@@ -49,6 +49,11 @@ submodules-clean: ##Reset state of all third-party submodules
 	$(Q) $(GIT) checkout $(ALL_SUBMODULES)
 
 
+.PHONY: docs-clean
+docs-clean: ##Clean the Sming documentation
+	$(Q) $(MAKE) -C ../docs clean
+
+
 ##@Building
 
 # Pull in all submodules, regardless of whether they're used or not
@@ -58,31 +63,10 @@ submodules: $(ALL_SUBMODULES:=/.submodule) ##Fetch all third-party submodules (b
 .PHONY: test
 test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM ##Build a few sample applications
 
+.PHONY: docs
+docs: submodules ##Build the Sming documentation
+	$(Q) $(MAKE) -C ../docs html
 
-# => Documentation
-DOCS_DIR := ../docs
-
-.PHONY: wiki api docs
-docs: wiki api ##Build the Sming API and Wiki documentation
-wiki: $(DOCS_DIR)/wiki/Home.md
-api: $(DOCS_DIR)/api/sming/index.html
-
-$(DOCS_DIR)/wiki/Home.md:
-	$(vecho) "No Wiki submodule found. Using git to fetch it..."
-	$(Q) $(GIT) submodule update --init $(DOCS_DIR)/wiki
-
-$(DOCS_DIR)/api/error.log:
-ifndef DOXYGEN
-	$(error doxygen not found - not building API docs)
-endif
-	$(Q) mkdir -p $(DOCS_DIR)/api
-	$(Q) cd $(DOCS_DIR) && doxygen 2>api/stderr.log 1>api/doxygen.log
-
-$(DOCS_DIR)/api/sming/index.html: $(DOCS_DIR)/api/error.log
-	$(vecho) "Undocumented compounds: $(shell grep "Compound.*is not documented" $(DOCS_DIR)/api/error.log | wc -l)"
-	$(vecho) "Undocumented members:  $(shell grep "Member.*is not documented" $(DOCS_DIR)/api/error.log | wc -l) "
-	$(vecho) "Undocumented parameters: $(shell grep "The following parameters of .* are not documented" $(DOCS_DIR)/api/error.log | wc -l) "
-	$(vecho) "Open in your browser: file://$(abspath $@)"
 
 # For integration testing both samples and tests are moved outside of the repo.
 SMING_PROJECTS_DIR	?= $(abspath $(SMING_HOME)/..)
