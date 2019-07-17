@@ -1,4 +1,10 @@
-Prerequisites:
+*******************
+Mac-OS Installation
+*******************
+
+.. highlight:: bash
+
+Pre-requisites
 ==============
 
 *(You might already have it)*
@@ -6,14 +12,14 @@ Prerequisites:
 Xcode command line tools
 ------------------------
 
-.. code:: shell
+::
 
    xcode-select --install
 
 Homebrew
 --------
 
-.. code:: shell
+::
 
    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
@@ -29,7 +35,7 @@ Eclipse
 Install build toolchain
 =======================
 
-.. code:: shell
+::
 
    brew install binutils coreutils automake wget gawk libtool gettext gperf grep
    export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
@@ -37,7 +43,7 @@ Install build toolchain
 Install gnu-sed and make sure that it is the default ``sed`` command
 line application. For the installation use the commands below:
 
-.. code:: shell
+::
 
    brew install gnu-sed --with-default-names
 
@@ -45,7 +51,7 @@ If you have already installed ``gnu-sed`` but it is not the default one
 then make sure to uninstall it and install it again with the correct
 options. This can be done using the commands below:
 
-.. code:: shell
+::
 
    brew uninstall gnu-sed
    brew install gnu-sed --with-default-names
@@ -61,14 +67,14 @@ Install prebuilt Open ESP SDK
    sudo tar -zxf esp-open-sdk-2.0-macosx.tgz -C /opt/
    sudo chmod -R 775 /opt/esp-open-sdk
 
-You can also build it yourself `with
-Homebrew <https://github.com/pfalcon/esp-open-sdk#macos>`__ or `with
-MacPorts <http://www.esp8266.com/wiki/doku.php?id=setup-osx-compiler-esp8266>`__.
+You can also build it yourself
+`with Homebrew <https://github.com/pfalcon/esp-open-sdk#macos>`__ or
+`with MacPorts <http://www.esp8266.com/wiki/doku.php?id=setup-osx-compiler-esp8266>`__.
 
-Get And Build Sming Core:
-=========================
+Get Sming Core:
+===============
 
-.. code:: shell
+::
 
    cd <your-favourite-development-folder>/
 
@@ -88,15 +94,13 @@ Get And Build Sming Core:
 
    export SMING_HOME=`pwd`
 
-   make
-
 Configure Environment Variables
 ===============================
 
 Open with a text editor the ``.profile`` file in your home directory.
 And add at the end the following lines:
 
-.. code:: shell
+::
 
    export ESP_HOME=/opt/esp-open-sdk
    export SMING_HOME=<your-favourite-development-folder>/Sming/Sming
@@ -177,14 +181,19 @@ re-flash the device though.
 Compile Sming Examples
 ======================
 
-You can find all examples coming with Sming under the ``samples``
-folder.
+You can find all examples coming with Sming under the ``samples`` folder.
 
-.. code:: shell
+::
 
    cd $SMING_HOME/../samples/
 
 If you want to test some of the examples the following sequence of
-commands can help you: \``\` cd $SMING_HOME/../samples/ cd Basic_Blink
-make # The command below will upload the sample code to your ESP8266
-device make flash
+commands can help you:
+
+::
+
+   cd $SMING_HOME/../samples
+   cd Basic_Blink
+   make
+   # The command below will upload the sample code to your ESP8266 device
+   make flash
