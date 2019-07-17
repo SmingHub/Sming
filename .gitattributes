@@ -1,1 +1,3 @@
-* -text
+# Ensure line endings are normalised when added
+# See https://git-scm.com/docs/gitattributes
+* text=auto
