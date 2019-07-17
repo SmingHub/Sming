@@ -6,7 +6,6 @@ Information
 
    /_inc/Sming/building
    upgrade
-   arduino-libs
    debugging
    rboot-ota
    command-handler

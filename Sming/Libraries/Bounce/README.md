@@ -1,4 +1,4 @@
-Bounce library for Arduino
+# Bounce library for Arduino
 
 Version 1.6
 

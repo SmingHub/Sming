@@ -19,8 +19,7 @@ Summary
 -  Simple and powerful hardware API wrappers
 -  Fast & user friendly development
 -  Work with GPIO in Arduino style
--  Compatible with standard Arduino libraries - use any popular hardware
-   in few lines of code
+-  Compatible with standard :doc:`Arduino libraries <libraries/index>` - use any popular hardware in few lines of code
 -  Integrated boot loader :component-esp8266:`rboot`
    with support for 1MB ROMs, OTA firmware updating and ROM switching
 -  Built-in file system: :component:`spiffs`
@@ -57,6 +56,7 @@ See the :doc:`Quick-start <quick-start/index>` page for your respective operatin
    quick-start/index
    host-emulator
    features
+   libraries/index
    api/index
    information/index
    experimental/index

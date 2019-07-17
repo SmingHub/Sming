@@ -1,3 +1,5 @@
+# Adafruit ILI9341
+
 This is a library for the Adafruit ILI9341 display products
 
 This library works with the Adafruit 2.8" Touch Shield V2 (SPI)
