@@ -1,24 +1,20 @@
-Quick Start
-===========
+Getting Started
+===============
 
-Development System Installation 
+Development System Installation
 -------------------------------
+Sming supports multiple architectures. Choose the architecture of your choice to install the needed development software and toolchain(s).
+
 
 .. toctree::
    :glob:
-   :maxdepth: 1
+   :titlesonly:
 
-   *
+   /arch/esp8266/getting-started/index
+   /arch/host/host-emulator
 
-
-Compilation and flashing
-------------------------
-
-You can find more information about compilation and flashing process by
-reading esp8266.com forum discussion thread. Official ESP8266
-documentation can be found in the `Espressif
-website <https://espressif.com/en/support/download/documents?keys=&field_type_tid%5B%5D=14>`__.
-
+You can also try Sming without installing anything locally.
+We have an  `interactive tutorial <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__ that can be run directly from your browser.
 
 Documentation
 -------------
@@ -32,7 +28,8 @@ following these :doc:`instructions </_inc/docs/README>`.
 Examples
 --------
 
-Once you have completed the above installation steps, you can get the latest source code.
+The examples are a great way to learn the API and brush up your C/C++ knowledge.
+Once you have completed the installation of the development tools, you can get the latest source code.
 
 ::
 
@@ -48,7 +45,9 @@ And check some of the examples.
 -  `HTTP client <#http-client>`__
 -  `OTA application update based on rBoot <#ota-application-update-based-on-rboot>`__
 -  `Embedded HTTP Web Server <#embedded-http-web-server>`__
--  `Sending emails <#sending-emails>`__
+-  `Email Client <#email-client>`__
+
+Further documentation about the :doc:`examples is available too <samples/index>`.
 
 Basic Blink
 ~~~~~~~~~~~
@@ -220,7 +219,7 @@ For more examples take a look at the
 and :sample:`HttpServer_AJAX`
 samples.
 
-Sending emails
+Email client
 ~~~~~~~~~~~~~~
 
 ::
@@ -259,7 +258,7 @@ Sending emails
 See the :sample:`SmtpClient` sample for details.
 
 Live Debugging
---------------
+~~~~~~~~~~~~~~
 
 Applications based on Sming Framework that are flashed and running on an
 ESP8266 device can be debugged using interactive debuggers. In order to

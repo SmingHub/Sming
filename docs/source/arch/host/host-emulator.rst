@@ -1,6 +1,5 @@
-*************
-Host Emulator
-*************
+Getting Started: Linux/Windows
+==============================
 
 The latest versions of Sming allow most of components of the library and
 the sample applications to be compiled on a Linux/Windows host system
@@ -40,7 +39,7 @@ execute the commands below:
 ::
 
    cd /tmp
-   wget https://github.com/Kitware/CMake/releases/download/v3.14.4/cmake-3.14.4-Linux-x86_64.sh 
+   wget https://github.com/Kitware/CMake/releases/download/v3.14.4/cmake-3.14.4-Linux-x86_64.sh
    sudo mkdir /opt/cmake
    sudo sh cmake-3.14.4-Linux-x86_64.sh --prefix=/opt/cmake
    sudo mv /usr/bin/cmake /usr/bin/cmake.orig
@@ -59,7 +58,7 @@ later. If it's older, execute these commands:
    mingw-get upgrade
 
 .. note::
-   If you don't already have MinGW installed, see :doc:`quick-start/windows` for the Esp8266.
+   If you don't already have MinGW installed, see :doc:`arch/esp8266/getting-started/windows` for the Esp8266.
 
 Compilation
 ===========
@@ -81,7 +80,7 @@ If you plan to use a debugger make sure to set :envvar:`ENABLE_GDB` and (optiona
 
 ::
 
-   export ENABLE_GDB=1  
+   export ENABLE_GDB=1
    export ENABLE_LWIPDEBUG=1  # <!-- this will compile also LWIP with debug symbols
 
 Initial Clean-up
@@ -103,7 +102,7 @@ Compile a sample as usual using the following command sequence:
 ::
 
    cd $SMING_HOME/../samples/Basic_Blink
-   make 
+   make
 
 Adapting existing code
 ----------------------
