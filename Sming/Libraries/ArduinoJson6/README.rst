@@ -19,12 +19,4 @@ There are also some useful helper functions available in the ``Json`` namespace.
 Sming definitions
 -----------------
 
-.. doxygenclass:: JsonObjectStream
-
-
-Arduino JSON
-------------
-
-.. toctree::
-
-   ArduinoJson/README
+:cpp:class:`JsonObjectStream`

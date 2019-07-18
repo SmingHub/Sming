@@ -9,7 +9,7 @@ Options:
 
 .. envvar:: ENABLE_LWIPDEBUG
 
-   0undefined (default)
+   0 (default)
       Standard build
    1
       Enable debugging output

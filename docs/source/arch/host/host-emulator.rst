@@ -58,7 +58,7 @@ later. If it's older, execute these commands:
    mingw-get upgrade
 
 .. note::
-   If you don't already have MinGW installed, see :doc:`arch/esp8266/getting-started/windows` for the Esp8266.
+   If you don't already have MinGW installed, see :doc:`/arch/esp8266/getting-started/windows` for the Esp8266.
 
 Compilation
 -----------
@@ -177,8 +177,11 @@ Make sure to install the 32bit version of the GNU C and C++ compiler,
 development package and libraries.
 
 
-.. toctree::
+Further reading
+---------------
 
+.. toctree::
+   :titlesonly:
 
    /_inc/Sming/Arch/Host/README
 

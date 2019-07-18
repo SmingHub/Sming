@@ -1,4 +1,5 @@
-# Adafruit NeoPixel Library [![Build Status](https://travis-ci.org/adafruit/Adafruit_NeoPixel.svg?branch=master)](https://travis-ci.org/adafruit/Adafruit_NeoPixel)
+# Adafruit NeoPixel Library
+[![Build Status](https://travis-ci.org/adafruit/Adafruit_NeoPixel.svg?branch=master)](https://travis-ci.org/adafruit/Adafruit_NeoPixel)
 
 *This library edited and adapted for Sming project by alonewolfx2 alonewolf07@gmail.com*
 

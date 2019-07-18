@@ -1,5 +1,5 @@
-GDBSTUB for Sming
-=================
+Esp8266 GDBSTUB for Sming
+=========================
 
 Background
 ----------

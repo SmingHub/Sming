@@ -1,5 +1,5 @@
-Esp8266 Driver
-==============
+Esp8266 Drivers
+===============
 
 Provides low-level peripheral support classes.
 

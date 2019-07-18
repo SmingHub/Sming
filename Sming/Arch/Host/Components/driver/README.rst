@@ -1,5 +1,5 @@
-Host Driver
-===========
+Host Drivers
+============
 
 Provides low-level peripheral support classes.
 

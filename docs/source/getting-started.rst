@@ -1,13 +1,14 @@
 Getting Started
 ===============
 
+.. highlight:: c++
+
 Development System Installation
 -------------------------------
 Sming supports multiple architectures. Choose the architecture of your choice to install the needed development software and toolchain(s).
 
 
 .. toctree::
-   :glob:
    :titlesonly:
    :maxdepth: 1
 
@@ -20,9 +21,8 @@ We have an  `interactive tutorial <https://www.katacoda.com/slaff/scenarios/smin
 Documentation
 -------------
 
-We provide `generated documentation <https://sming.readthedocs.io/>`__ online.
-
-If you want you can also generate a complete documentation locally by
+In addition to our `online documentation <https://sming.readthedocs.io/>`__,
+you can also generate a complete documentation locally by
 following these :doc:`instructions </_inc/docs/README>`.
 
 

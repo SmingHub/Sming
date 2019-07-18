@@ -69,24 +69,26 @@ The `ESP8266` folder is for ArduCAM-ESP8266-UNO board examples for library compa
 Selecting correct COM port and Arduino boards then upload the sketches.  <br>
 
 ## Arducam MINI Camera Demo Tutorial for Arduino
+
 [![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_MINI_Camera.jpeg)](https://youtu.be/hybQpjwJ4aA  "Arducam MINI Camera Demo Tutorial for Arduino")
 
 ## Arducam Camera Shield V2 Demo Tutorial for Arduino
+
 [![IMAGE ALT TEXT](https://github.com/UCTRONICS/pic/blob/master/Arducam_Shield_V2_Camera.jpeg)](https://youtu.be/XMik38TNqGk  "Arducam MINI Camera Demo Tutorial for Arduino")
 
 ### 4. How To Connect Bluetooth Module
 - Using this demo 
+
 ```Bash
 https://github.com/ArduCAM/Arduino/blob/master/ArduCAM/examples/mini/ArduCAM_Mini_Video_Streaming_Bluetooth/ArduCAM_Mini_Video_Streaming_Bluetooth.ino
 ```
- ![Alt text](https://github.com/ArduCAM/Arduino/blob/master/Arducam_Mini_VideoStreaming_BlueTooth.png)
-## 5. How to download the Host V2 ?
-- For ArduCAM_Host_V2.0_Mac.app, please refer to this link:
-```bash
-www.arducam.com/downloads/app/ArduCAM_Host_V2.0_Mac.app.zip
-```
-- For ArduCAM_Mini_V2.0_Linux_x86_64bit, Please refer to this link:
-```bash
-www.arducam.com/downloads/app/ArduCAM_Mini_V2.0_Linux_x86_64bit.zip
-```
 
+ ![Alt text](https://github.com/ArduCAM/Arduino/blob/master/Arducam_Mini_VideoStreaming_BlueTooth.png)
+
+## 5. How to download the Host V2 ?
+
+- For ArduCAM_Host_V2.0_Mac.app, please refer to this link:
+https://www.arducam.com/downloads/app/ArduCAM_Host_V2.0_Mac.app.zip
+
+- For ArduCAM_Mini_V2.0_Linux_x86_64bit, Please refer to this link:
+https://www.arducam.com/downloads/app/ArduCAM_Mini_V2.0_Linux_x86_64bit.zip
