@@ -198,7 +198,7 @@ define PrintHelp
 			} /^##@/ { \
 				group = $$2; \
 				groups[group] = group; \
-			} /^[a-zA-Z_-]+:.*?##/ { \
+			} /^[a-zA-Z0-9_-]+:.*?##/ { \
 				targets[$$1, group] = $$2; \
 			} \
 			END { \
@@ -232,3 +232,39 @@ $(shell	mkdir -p $(dir $1);
 	echo >> $1;
 	$(foreach v,$2,echo '$v = $($v)' >> $1;) )
 endef
+
+
+## PATCHING
+
+# Apply patch to a submodule
+# $1 -> patch file with relative path
+define ApplyPatch
+	$(GIT) apply -v $1 --ignore-whitespace --whitespace=nowarn
+endef
+
+# If there's a patch for this submodule, apply it
+# We look for patch in .. and in ../.patches
+# If a matching subdirectory is found in ../.patches/ then the contents
+# are copied, overwriting any existing files with the same name
+# $1 -> submodule path
+# $2 -> name of patch file
+define TryApplyPatch
+	cd $1 && if [ -f ../$2 ]; then \
+		$(call ApplyPatch,../$2); \
+	elif [ -f ../.patches/$2 ]; then \
+		$(call ApplyPatch,../.patches/$2); \
+	fi && \
+	if [ -d ../.patches/$(basename $2)/ ]; then \
+		cp -f ../.patches/$(basename $2)/* . ; \
+	fi
+endef
+
+# Update and patch submodule
+# Patch file is either in submodule parent directory itself or subdirectory .patches from there
+%/.submodule:
+	$(info )
+	$(info Fetching submodule '$*' ...)
+	$(Q) cd $(abspath $*/..) && (rm -rf $(*F); $(GIT) submodule update --init --force --recursive $(*F))
+	$(Q) $(call TryApplyPatch,$*,$(*F).patch)
+	$(Q) touch $@
+

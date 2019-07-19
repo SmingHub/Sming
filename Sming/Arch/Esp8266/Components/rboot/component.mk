@@ -1,5 +1,7 @@
 COMPONENT_LIBNAME		:=
 
+COMPONENT_DEPENDS		:= esp8266
+
 COMPONENT_SUBMODULES	:= rboot esptool2
 COMPONENT_INCDIRS		:= rboot appcode rboot/appcode
 

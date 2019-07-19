@@ -253,6 +253,50 @@ The type of a configuration variable is defined by adding its _name_ to one of t
 For example, the `axtls-8266` Component declares `SSL_DEBUG` as a `COMPONENT_VAR`. Because `Sming` depends on `sming-arch`, which in turn depends on `axtls-8266`, all of these Components get rebuilt as different variants when `SSL_DEBUG` changes values. The project code (`App` Component) also gets rebuilt as it implicitly depends on `Sming`.
 
 
+### GIT Submodules
+
+Sming uses source code from other repositories. Instead of including local copies, these are handled using GIT submodules.
+Where changes are required, patches may be provided as a diff .patch file and/or set of files to be added/replaced.
+Only those submodules necessary for a build are pulled in, as follows:
+
+* The submodule is fetched from its remote repository
+* If a .patch file exists, it is applied
+* Any additional files are copied into the submodule directory
+* An empty `.submodule` file is created to tells the build system that the submodule is present and correct.
+
+The patch file must have the same name as the submodule, with a .patch extension.
+It can be located in the submodule's parent directory:
+
+	|_ Components/
+	   |_ custom_heap/
+	      |_ .component.mk             Component definition
+	      |_ umm_malloc.patch          Diff patch file
+	      |_ umm_malloc/               Submodule directory
+	         |_ .submodule             Created after successful patching
+	      ...
+
+However, if the Component is itself a submodule, then patch files must be placed in a `../.patches` directory:
+
+	|_ Libraries/
+	   |_ .patches/
+	   |  |_ Adafruit_SSD1306.patch    Diff patch file
+	   |  |_ Adafruit_SSD1306/
+	   |     |_ component.mk           This file is added to submodule
+	   |_ Adafruit_SSD1306/            The submodule directory
+	      |_ .submodule                Created after successful patching
+	      ...
+
+This example includes additional files for the submodule. There are some advantages to this approach:
+
+1. Don't need to modify or create .patch
+2. Changes to the file are easier to follow than in a .patch
+3. **IMPORTANT** Adding a component.mk file in this manner allows the build system to resolve dependencies
+before any submodules are fetched.
+
+In the above example, the `component.mk` file defines a dependency on the `Adafruit_GFX` library,
+so that will automatically get pulled in as well.
+
+
 ### Component configuration
 
 The `component.mk` is parsed twice, first from the top-level makefile and the second time from the sub-make which does the actual building. A number of variables are used to define behaviour.
@@ -275,7 +319,7 @@ Set `COMPONENT_LIBNAME :=` if the Component doesn't create a library. If you don
 
 `COMPONENT_RULE` This is a special value used to prefix any custom targets which are to be built as part of the Component. The target must be prefixed by `$(COMPONENT_RULE)` without any space between it and the target. This ensures the rule only gets invoked during a component build, and is ignored by the top-level make.
 
-`COMPONENT_SUBMODULES` Relative paths to dependent submodule directories for this Component. These will be fetched/patched automatically before building. The patch file should be located in the submodule's parent directory (usually the Component directory itself). If the Component is itself a submodule, then patch files must be placed in `../.patches`. A `.submodule` file is created once the submodule has been fetched and successfully patched.
+`COMPONENT_SUBMODULES` Relative paths to dependent submodule directories for this Component. These will be fetched/patched automatically before building.
 
 `COMPONENT_SRCDIRS` Locations for source code relative to COMPONENT_PATH (defaults to ". src")
 
@@ -371,5 +415,4 @@ to be completed
 
 **Empty Component directories** Every sub-directory in the `COMPONENT_SEARCH_DIRS` is interpreted as a Component. For example, `spiffs` was moved out of Arch/Esp8266/Components but if an empty directory called 'spiffs' still remains then it will be picked up instead of the main one. These sorts of issues can be checked using `make list-components` to ensure the correct Component path has been selected.
 
-**Components as submodules** All component.mk files must be available for parsing. If they are contained in a GIT submodule then that must be fetched first. Some settings may be specified in a components.mk file instead. 
-
+**Components as submodules** All component.mk files must be available for parsing. For submodules, it can be provided in a .patch/ sub-directory. Placing the component.mk file within the submodule itself is not currently supported.

@@ -38,15 +38,22 @@ components-clean: ##Remove generated Component (user) libraries
 	-$(Q) rm -f $(USER_LIBDIR)/*
 	-$(Q) rm -rf $(OUT_BASE)
 
+
+ALL_SUBMODULES = $(ListSubmodules)
+
 .PHONY: submodules-clean
 submodules-clean: ##Reset state of all third-party submodules
 	@echo Cleaning all submodules...
-	-$(Q) rm -rf $(ListSubmodules)
-	-$(Q) rm -rf $(addprefix $(BUILD_BASE),$(ListSubmodules))
-	$(Q) $(GIT) checkout $(ListSubmodules)
+	-$(Q) rm -rf $(ALL_SUBMODULES)
+	-$(Q) rm -rf $(addprefix $(BUILD_BASE),$(ALL_SUBMODULES))
+	$(Q) $(GIT) checkout $(ALL_SUBMODULES)
 
 
 ##@Building
+
+# Pull in all submodules, regardless of whether they're used or not
+.PHONY: submodules
+submodules: $(ALL_SUBMODULES:=/.submodule) ##Fetch all third-party submodules (but do not build)
 
 .PHONY: test
 test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM ##Build a few sample applications
@@ -76,9 +83,6 @@ $(DOCS_DIR)/api/sming/index.html: $(DOCS_DIR)/api/error.log
 	$(vecho) "Undocumented members:  $(shell grep "Member.*is not documented" $(DOCS_DIR)/api/error.log | wc -l) "
 	$(vecho) "Undocumented parameters: $(shell grep "The following parameters of .* are not documented" $(DOCS_DIR)/api/error.log | wc -l) "
 	$(vecho) "Open in your browser: file://$(abspath $@)"
-
-
-##@Building
 
 # For integration testing both samples and tests are moved outside of the repo.
 SMING_PROJECTS_DIR	?= $(abspath $(SMING_HOME)/..)
