@@ -233,11 +233,11 @@ To refer to a sample application README:
 Source code
 ~~~~~~~~~~~
 
-To refer to source code use the full path relative to the `Sming` directory, for example:
+To refer to source code use the path relative to the root working directory, for example:
 
 ::
 
-   See :api-file:`Core/Network/Url.h`
+   See :source:`Sming/Core/Network/Url.h`
 
 If the documentation is built locally, it will use the local file path, otherwise it will create
 a link to the source file on github.

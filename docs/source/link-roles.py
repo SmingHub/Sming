@@ -37,15 +37,15 @@ def setup(app):
     else:
         basepath = baseurl + '/blob/' + get_github_rev()
 
-    app.add_role('api-file', autolink(basepath + '/Sming/{}'))
+    app.add_role('source', autolink(basepath + '/{}'))
     app.add_role('issue', autolink('Issue #{0} <' + baseurl + '/issue/{0}>'))
     app.add_role('pull-request', autolink('Pull Request #{0} <' + baseurl + '/pull/{0}>'))
 
-    app.add_role('sample', doclink('/_inc/samples/{}/README'))
-    app.add_role('component', doclink('/_inc/Sming/Components/{}/README'))
-    app.add_role('component-esp8266', doclink('/_inc/Sming/Arch/Esp8266/Components/{}/README'))
-    app.add_role('component-host', doclink('/_inc/Sming/Arch/Host/Components/{}/README'))
-    app.add_role('library', doclink('/_inc/Sming/Libraries/{}/README'))
+    app.add_role('sample', doclink('/_inc/samples/{}/index'))
+    app.add_role('component', doclink('/_inc/Sming/Components/{}/index'))
+    app.add_role('component-esp8266', doclink('/_inc/Sming/Arch/Esp8266/Components/{}/index'))
+    app.add_role('component-host', doclink('/_inc/Sming/Arch/Host/Components/{}/index'))
+    app.add_role('library', doclink('/_inc/Sming/Libraries/{}/index'))
 
 # Insert a link to a file or issue in the repo
 # Both pattern and user text may use optional format, e.g. `title <link {}>`

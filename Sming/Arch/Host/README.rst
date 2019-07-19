@@ -224,8 +224,8 @@ Components
    :maxdepth: 1
    :titlesonly:
 
-   Components/sming-arch/README
-   Components/*/README
+   Components/sming-arch/index
+   Components/*/index
 
 
 todo

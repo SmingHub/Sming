@@ -93,5 +93,6 @@ Components
 
  .. toctree::
    :glob:
+   :maxdepth: 1
  
-   Components/*/README
+   Components/*/index

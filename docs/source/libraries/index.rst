@@ -12,5 +12,5 @@ These are all the libraries included with Sming:
    :maxdepth: 1
    :titlesonly:
 
-   /_inc/Sming/Libraries/*/README
+   /_inc/Sming/Libraries/*/index
 

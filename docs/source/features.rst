@@ -12,5 +12,5 @@ The features available are dependent upon the architecture for which Sming is be
    :maxdepth: 1
    :titlesonly:
 
-   /_inc/Sming/README
+   /_inc/Sming/index
    /_inc/Sming/Arch/*/README

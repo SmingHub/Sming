@@ -103,6 +103,26 @@ define GetSubmoduleURL
 $(subst $1=,,$(filter $1=%,$(SUBMODULE_URLS)))
 endef
 
+# Get a path string acceptable to sphinx
+# $1 -> Path to file
+ifeq ($(OS),Windows_NT)
+DRIVE		:= $(firstword $(subst /, ,$(CURDIR)))
+GetDocPath	= $(DRIVE):/$(subst /$(DRIVE)/,,$(abspath $1))
+else
+GetDocPath	= $(abspath $1)
+endif
+
+# This is used with 'include' directives
+# For Windows, sphinx has a problem with the /c/ style drives and wants c:/ instead
+# For linux, 'include' requires a relative path. If it starts with '/' that's taken as the source directory 
+ifeq ($(OS),Windows_NT)
+GetIncludePath = GetDocPath
+GetMdIncludePath = GetDocPath
+else
+GetIncludePath = /../../$(patsubst $(abspath $(SMINGDIR))/%,%,$(abspath $1))
+GetMdIncludePath = $(abspath $1)
+endif
+
 include index.mk
 
 # Used to escape generated text so it can be handled as a single line
@@ -139,6 +159,8 @@ CMP_$2_DIRS := \
 CMP_$2_FILES := \
 	$$(call FindSourceFiles,$$(CMP_$2_DIRS)) \
 	$$(wildcard $$(addprefix $$(COMPONENT_PATH)/,$$(COMPONENT_DOCFILES)))
+CMP_$2_README			:= $$(filter $2/README.%,$$(CMP_$2_FILES))
+CMP_$2_FILES			:= $$(filter-out $$(CMP_$2_README),$$(CMP_$2_FILES))
 SOURCE_FILES			+= $$(CMP_$2_FILES)
 
 #
@@ -151,17 +173,17 @@ CMP_$2_DEPENDS := $$(COMPONENT_DEPENDS)
 # If this is an Arch component, then match this Arch only, or **main components** (e.g. Host/heap -> malloc_count)
 #
 ifneq (,$(findstring /Arch/,$2))
-FILTERED_DIRS	:= $$(filter $(dir $2)% $(SMING_HOME)/Components/%,$(COMPONENT_DIRS))
+FILTERED_DIRS := $$(filter $(dir $2)% $(SMING_HOME)/Components/%,$(COMPONENT_DIRS))
 else
-FILTERED_DIRS	:= $(COMPONENT_DIRS)
+FILTERED_DIRS := $(COMPONENT_DIRS)
 endif
 COMPONENT_DEPEND_DIRS := \
 	$(if $(findstring /samples/,$2),/_inc/Sming) \
 	$$(foreach d,$$(patsubst $(SMINGDIR)/%,/_inc/%,$$(foreach c,$$(COMPONENT_DEPENDS),$$(filter %/$$c,$$(FILTERED_DIRS)))),$$d)
 
-CMP_$2_INDEX			:= $$(subst $$(NewLine),\n,$$(call GenIndex,$1,$2,$(patsubst $(SMINGDIR)/%,%,$2)))
+CMP_$2_INDEX := $$(subst $$(NewLine),\n,$$(call GenIndex,$1,$2,$(patsubst $(SMINGDIR)/%,%,$2)))
 
-$$(call GetIncPath,$$(COMPONENT_PATH))/index.rst: $$(call GetIncPath,$$(CMP_$2_FILES))
+$$(call GetIncPath,$$(COMPONENT_PATH))/index.rst: $$(CMP_$2_README) $$(call GetIncPath,$$(CMP_$2_FILES))
 ifeq ($V,1)
 	$$(info Creating $$@...)
 endif
@@ -179,29 +201,35 @@ clean:
 	$(call Sphinx)
 	$(Q) rm -rf $(SOURCE_INCDIR) api
 
-SOURCE_INCDIRS			:= $(call GetIncPath,$(SOURCE_FILE_DIRS))
-SOURCE_INCFILES			:= $(call GetIncPath,$(SOURCE_FILES)) $(addsuffix /index.rst,$(call GetIncPath,$(COMPONENT_DIRS)))
+SOURCE_INCDIRS			:= $(sort $(call GetIncPath,$(COMPONENT_DIRS) $(SOURCE_FILE_DIRS)))
+# Each Sample, Library or Component README.* is included directly rather than added to the toctree
+SOURCE_FILES			:= $(filter-out $(addsuffix /README.%,$(COMPONENT_DIRS)),$(SOURCE_FILES))
+SOURCE_INCFILES			:= $(call GetIncPath,$(SOURCE_FILES))
+COMPONENT_INDEXFILES	:= $(addsuffix /index.rst,$(call GetIncPath,$(COMPONENT_DIRS)))
 
 .PHONY: setup
-setup: checkdirs $(SOURCE_INCFILES)
+setup: checkdirs $(SOURCE_INCFILES) $(COMPONENT_INDEXFILES)
 ifeq ($V,1)
 	$(call PrintVariable,SOURCE_DIRS)
 	$(call PrintVariable,SOURCE_FILES)
+	$(call PrintVariable,COMPONENT_INCFILES)
 endif
 	$(if $(MISSING_README_DIRS),$(call PrintVariable,MISSING_README_DIRS))
 
-# $1 -> document file in Sming code tree
+# Copy source -> dest file
+# $1 -> Source file
+# $2 -> Destination file
 define CopyFileTarget
-$(call GetIncPath,$1): $1
+$1: $2
 	$(Q) cp $$< $$@
 endef
 
-$(foreach f,$(SOURCE_FILES),$(eval $(call CopyFileTarget,$f)))
+$(foreach f,$(SOURCE_FILES),$(eval $(call CopyFileTarget,$(call GetIncPath,$f),$f)))
+
 
 .PHONY: checkdirs
-checkdirs: | $(SOURCE_INCDIRS)
-$(SOURCE_INCDIRS):
-	$(Q) mkdir -p $@
+checkdirs:
+	$(Q) mkdir -p $(SOURCE_INCDIRS)
 
 .PHONY: api
 api: api/xml/index.xml
@@ -216,7 +244,6 @@ endif
 	@echo Generating Doxygen information
 	$(Q) mkdir -p $(@D)
 	$(Q) doxygen 2>$@ 1>$(@D)/doxygen.log
-	$(Q) cp -f $(@D)/html/*.dot $(SOURCE_INCDIR)
 
 api/xml/index.xml: api/error.log
 	@echo "Undocumented:"

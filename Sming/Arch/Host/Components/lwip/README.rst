@@ -13,8 +13,3 @@ Options:
       Standard build
    1
       Enable debugging output
-
-
-.. toctree::
-
-   lwip/README

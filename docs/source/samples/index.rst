@@ -13,4 +13,4 @@ List of sample projects
    :maxdepth: 1
    :titlesonly:
 
-   /_inc/samples/*/README
+   /_inc/samples/*/index

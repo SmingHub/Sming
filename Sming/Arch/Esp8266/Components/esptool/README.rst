@@ -34,10 +34,3 @@ Options
 .. envvar:: COM_SPEED_ESPTOOL
 
    Baud rate to use for flashing device. Default is :envvar:`COM_SPEED`.
-
-Documentation
--------------
-
-.. toctree::
-
-   esptool/README

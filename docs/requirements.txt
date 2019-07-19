@@ -2,6 +2,5 @@
 # list of Python packages used in documentation build
 sphinx==1.8.5
 sphinx-rtd-theme
-recommonmark
-sphinx-markdown-tables
+m2r
 breathe==4.11.1
