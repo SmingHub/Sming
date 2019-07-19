@@ -1,7 +1,7 @@
 # Sming Documentation
 
 This directory contains the build system for Sming's documentation.
-It is intended to be read online via (Read The Docs)[https://sming.readthedocs.io].
+It is intended to be read online via [Read The Docs](https://sming.readthedocs.io).
 
 The `source` directory contains some top-level files however most of the
 information is obtained from the various README files associated with the source code.
@@ -14,12 +14,12 @@ Should already be available as part of Sming build system
 
 ### doxygen
 
-See http://www.doxygen.nl/
+See [http://www.doxygen.nl/](http://www.doxygen.nl/)
 
 For Linux:
 
 	sudo apt install doxygen
-	
+
 ### Python 3 + Sphinx
 
 For Linux, run `sudo apt install python3-sphinx python3-pip python3-setuptools`.

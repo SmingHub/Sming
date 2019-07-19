@@ -9,6 +9,7 @@ Sming supports multiple architectures. Choose the architecture of your choice to
 .. toctree::
    :glob:
    :titlesonly:
+   :maxdepth: 1
 
    /arch/esp8266/getting-started/index
    /arch/host/host-emulator
