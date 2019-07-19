@@ -1,3 +1,5 @@
+COMPONENT_DEPENDS	:= lwip
+
 # Options to add for configuring host network behaviour
 CACHE_VARS				+= HOST_NETWORK_OPTIONS
 HOST_NETWORK_OPTIONS	?=

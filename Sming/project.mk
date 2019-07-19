@@ -15,6 +15,8 @@ endif
 # Don't bother with implicit checks
 .SUFFIXES:
 
+.NOTPARALLEL:
+
 .PHONY: all
 all: checkdirs components application ##(default) Build all Component libraries
 
@@ -155,19 +157,20 @@ CMP_$1_BUILD_BASE		:= $3/$1
 COMPONENT_BUILD_DIR		:= $$(CMP_$1_BUILD_BASE)
 COMPONENT_VARS			:=
 COMPONENT_TARGETS		:=
+COMPONENT_DEPENDS		:=
 EXTRA_LIBS				:=
 EXTRA_LDFLAGS			:=
 # Process any component.mk file (optional)
 ifneq (,$(wildcard $2/component.mk))
 COMPONENT_PATH			:= $2
+COMPONENT_LIBPATH		:= $$(COMPONENT_LIBDIR)/$$(COMPONENT_LIBNAME).a
 COMPONENT_SUBMODULES	:=
-COMPONENT_DEPENDS		:=
 COMPONENT_APPCODE		:=
 include $2/component.mk
 CMP_$1_SUBMODULES		:= $$(addprefix $2/,$$(COMPONENT_SUBMODULES))
 SUBMODULES				+= $$(CMP_$1_SUBMODULES)
-CMP_$1_DEPENDS			:= $$(COMPONENT_DEPENDS)
 CMP_$1_VARS				:= $$(sort $$(COMPONENT_VARS))
+CONFIG_VARS				+= $$(CMP_$1_VARS)
 CMP_$1_APPCODE			:= $$(COMPONENT_APPCODE)
 LIBS					+= $$(EXTRA_LIBS)
 CMP_$1_LDFLAGS			:= $$(EXTRA_LDFLAGS)
@@ -178,16 +181,16 @@ CMP_$1_BUILD_DIR		:= $$(COMPONENT_BUILD_DIR)
 CMP_$1_LIBNAME			:= $$(COMPONENT_LIBNAME)
 CMP_$1_INCDIRS			:= $$(COMPONENT_INCDIRS)
 # Variables including those inherited from dependencies (will be recursively expanded when required)
+CMP_$1_DEPENDS			:= $$(COMPONENT_DEPENDS)
 CMP_$1_DEPVARS			= $$(CMP_$1_VARS) $$(foreach c,$$(CMP_$1_DEPENDS),$$(CMP_$$c_DEPVARS))
-CONFIG_VARS				+= $$(CMP_$1_VARS)
 APPCODE					+= $$(call AbsoluteSourcePath,$2,$$(CMP_$1_APPCODE))
-PARSED_COMPONENTS		+= $1
 COMPONENTS				+= $$(filter-out $$(COMPONENTS),$$(CMP_$1_DEPENDS))
 ifneq (App,$1)
 COMPONENTS_EXTRA_INCDIR	+= $$(call AbsoluteSourcePath,$2,$$(CMP_$1_INCDIRS))
 # Recursively parse any dependencies
 DEPENDENCIES			:= $$(filter-out $$(PARSED_COMPONENTS),$$(CMP_$1_DEPENDS))
 ifneq (,$$(DEPENDENCIES))
+PARSED_COMPONENTS		+= $$(DEPENDENCIES)
 $$(call ParseComponentList,$$(DEPENDENCIES))
 endif
 endif # App
@@ -225,13 +228,12 @@ COMPONENT_SEARCH_DIRS	:= $(call FixPath,$(COMPONENT_SEARCH_DIRS))
 COMPONENTS_EXTRA_INCDIR	+= $(COMPONENT_SEARCH_DIRS)
 COMPONENT_SEARCH_DIRS	+= $(ARCH_COMPONENTS) $(SMING_HOME)/Components $(SMING_HOME)/Libraries
 
+# Perform whole-file patching to ensure submodule component.mk files are present
+$(foreach d,$(COMPONENT_SEARCH_DIRS),\
+	$(if $(wildcard $d/.patches/*/.),$(shell cd $d && cp -r .patches/*/ .)))
+
 # And add in any requested Arduino libraries
 COMPONENTS				+= $(sort $(ARDUINO_LIBRARIES))
-
-# Each Component search directory can have an optional 'components.mk' file.
-# This is primarily for defining dependencies for Arduino Libraries; many of these are submodules,
-# so we can establish dependencies without resorting to elaborate recursive fetch/scan strategies.
-$(foreach d,$(COMPONENT_SEARCH_DIRS),$(eval -include $d/components.mk))
 
 # Pull in all Component definitions
 $(eval $(call ParseComponentList,$(COMPONENTS)))
@@ -282,35 +284,6 @@ $(foreach v,$(CONFIG_VARS) $(CACHE_VARS),$(eval export $v))
 
 
 ##@Building
-
-# Apply patch to a submodule
-# $1 -> patch file with relative path
-define ApplyPatch
-	$(GIT) apply -v $1 --ignore-whitespace --whitespace=nowarn
-endef
-
-# If there's a patch for this submodule, apply it
-# We look for patch in .. and in ../.patches
-# $1 -> submodule path
-# $2 -> name of patch file
-define TryApplyPatch
-	cd $1 && if [ -f ../$2 ]; then \
-		$(call ApplyPatch,../$2); \
-	elif [ -f ../.patches/$2 ]; then \
-		$(call ApplyPatch,../.patches/$2); \
-	fi
-endef
-
-# Update and patch submodule
-# Patch file is either in submodule parent directory itself or subdirectory .patches from there
-.NOTPARALLEL: %/.submodule
-%/.submodule:
-	$(info )
-	$(info Fetching submodule '$*' ...)
-	$(Q) cd $*/.. && $(GIT) submodule update --init --force --recursive $(*F)
-	$(Q) $(call TryApplyPatch,$*,$(*F).patch)
-	$(Q) touch $@
-
 
 # Define target for building a component library
 # We add a pseudo-target for each Component (using its name) to (re)build all contained targets
@@ -398,11 +371,6 @@ $(BUILD_DIRS) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR):
 # Build all Component (user) libraries
 .PHONY: components
 components: $(SUBMODULES:=/.submodule) $(ALL_COMPONENT_TARGETS) $(CUSTOM_TARGETS)
-
-# Pull in all submodules, regardless of whether they're used or not
-.PHONY: all-submodules
-all-submodules: $(ALL_SUBMODULES:=/.submodule) ##Fetch all third-party submodules (but do not build)
-
 
 ##@Cleaning
 

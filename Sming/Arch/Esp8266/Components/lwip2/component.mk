@@ -1,6 +1,8 @@
 # For now, build as a regular library using existing makefile (variants not supported)
 COMPONENT_LIBNAME :=
 
+COMPONENT_DEPENDS		:= esp8266
+
 ifeq ($(SMING_RELEASE),1)
 	COMPONENT_CFLAGS := \
 		-DLWIP_NOASSERT \

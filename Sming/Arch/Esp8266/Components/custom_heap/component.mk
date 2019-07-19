@@ -5,6 +5,8 @@ COMPONENT_SRCDIRS		:=
 COMPONENT_SRCFILES		:= heap.c umm_malloc/src/umm_malloc.c
 COMPONENT_INCDIRS		:= umm_malloc/src umm_malloc/includes/c-helper-macros
 
+COMPONENT_DEPENDS		:= esp8266
+
 LIBMAIN					= mainmm
 LIBMAIN_SRC				= $(COMPONENT_LIBDIR)/libmainmm.a
 COMPONENT_TARGETS		+= $(LIBMAIN_SRC)
