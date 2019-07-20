@@ -4,9 +4,6 @@ Linux Installation
 
 .. highlight:: bash
 
-You will need Sming 1.1 or newer to support cross-platform tools. You
-might want to use `sming-bootstrap <#>`__.
-
 Pre-requisites
 ==============
 
@@ -53,7 +50,7 @@ or 1.4.0:
 
    # be careful this command can do damage if used
    # in the wrong directory, try without sudo first!
-   sudo chown -R [username] ./   
+   sudo chown -R [username] ./
 
    # This will take a while...
    make VENDOR_SDK=1.5.4 STANDALONE=y
@@ -95,8 +92,8 @@ Get Sming Core
    #          Our build mechanism will take care to get the third-party
    #          sources and patch them, if needed.
 
-   # You will get a copy of our `develop` branch which intended for developers 
-   # and it is the one where all new cool (unstable) features are landing. 
+   # You will get a copy of our `develop` branch which intended for developers
+   # and it is the one where all new cool (unstable) features are landing.
 
 
    cd Sming
