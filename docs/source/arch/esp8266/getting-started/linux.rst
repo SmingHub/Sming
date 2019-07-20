@@ -71,10 +71,14 @@ Set ENV Variables
    export ESP_HOME=/opt/esp-open-sdk
    export SMING_HOME=/opt/Sming/Sming
 
-To Sming environment paths permanently: Just go to the Sming home
-directory /opt/Sming/Sming and edit the file Makefile: because this
-library has defaults for a nutter and programmers (like myself add
-config options and never document them)
+To set these permanently, add them to your home ``.profile`` file.
+
+You can alternatively add them to ``/etc/environment`` for all users, like this:
+
+::
+
+   SMING_HOME="/opt/Sming/Sming"
+
 
 See also
 `Setting up Sming and Netbeans <https://primalcortex.wordpress.com/2015/10/08/esp8266-setting-up-sming-and-netbeans/>`__
@@ -116,7 +120,3 @@ Build and flash a ‘Basic Blink’ example (using ttyUSB0):
    cd $SMING_HOME/../samples/Basic_Blink
    make flash
 
-Configuration
-=============
-
-You might want to configure your project before building. Edit **component.mk**.
