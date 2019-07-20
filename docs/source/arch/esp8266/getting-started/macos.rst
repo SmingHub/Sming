@@ -129,14 +129,16 @@ Using Eclipse (Oxygen) on Mac
 If you are using Eclipse to build the samples you need to make sure the
 path is set correctly for the make process.
 
-First make sure the Makefile_macos.mk references the correct serial port
-for your ESP8266. This file is found in SMING_HOME and the entry for
-Default COM Port should show the device name your ESP8266 gets when it
-is plugged in.
+Your project must also be configured to use the correct serial port
+for your ESP8266. You can change it like this:
 
-Next Ensure that you can build the sample Basic_Blink from a terminal
-window by changing to the sample folder and executing ‘make’. If this
-works without errors then type ‘echo $PATH’ and copy the resulting path
+::
+
+   make COM_PORT=/dev/tty.usbserial
+
+Next Ensure that you can build the :sample:`Basic_Blink` from a terminal
+window by changing to the sample folder and executing ``make``. If this
+works without errors then type ``echo $PATH`` and copy the resulting path
 to the clipboard.
 
 Now fire up Eclipse and go to
@@ -144,11 +146,11 @@ Now fire up Eclipse and go to
 *Eclipse==>Preferences==>C/C++==>Build==>Environment*
 
 and add a new variable PATH. Paste in the path saved from the terminal
-session above. You can also add SMING_HOME and ESP_HOME variables here
+session above. You can also add :envvar:`SMING_HOME` and :envvar:`ESP_HOME` variables here
 the same way as you set in the export commands above which will then be
 set for all the projects.
 
-The standard make files use miniterm.py to provide a serial terminal for
+The standard make files use ``miniterm.py`` to provide a serial :component:`terminal` for
 debugging the ESP8266. Miniterm does not work inside Eclipse so you
 should disable it like this:
 
@@ -163,14 +165,14 @@ You can use the built in terminal in Eclipse Oxygen by adding it using
 
 *Window==>Show View==>Terminal*
 
-then setting terminal type to Serial and setting the port to the port
+then setting terminal type to ``Serial`` and setting the port to the port
 the ESP8266 is connected to. Remember to disconnect before tying to
 re-flash the device though.
 
 Compile Sming Examples
 ======================
 
-You can find all examples coming with Sming under the ``samples`` folder.
+See :doc:`/samples` for a list of all examples provided with Sming.
 
 ::
 
