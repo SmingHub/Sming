@@ -48,7 +48,7 @@ And check some of the examples.
 -  `Embedded HTTP Web Server <#embedded-http-web-server>`__
 -  `Email Client <#email-client>`__
 
-Further documentation about the :doc:`examples is available too <samples/index>`.
+Further documentation about the :doc:`samples` is available too.
 
 Basic Blink
 ~~~~~~~~~~~

@@ -12,7 +12,7 @@ It supports multiple architectures as ESP8266 for example.
 |samples|_
 
 .. |samples| image:: combine.png
-.. _samples: samples/index.html
+.. _samples: samples.html
 
 
 Summary
@@ -20,7 +20,7 @@ Summary
 -  Superb performance and memory usage (Sming compiles to native firmware!)
 -  Fast and user friendly development
 -  Simple yet powerful hardware API wrappers
--  Compatible with standard :doc:`Arduino libraries <libraries/index>` - use any popular hardware in few lines of code
+-  Compatible with standard :doc:`libraries` - use any popular hardware in few lines of code
 -  Built-in file system: :component:`spiffs`
 -  Built-in powerful wireless modules
 -  Powerful asynchronous (async) network stack.
@@ -50,8 +50,8 @@ Summary
 
    getting-started
    features
-   samples/index
-   libraries/index
+   samples
+   libraries
    api/index
    information/index
    experimental/index
