@@ -14,3 +14,12 @@ See :envvar:`ENABLE_CUSTOM_LWIP`.
    
    You can increase debugging for certain areas by modifying debug options in ``esp-open-lwip/include/lwipopts.h``.
 
+.. envvar:: ENABLE_ESPCONN
+
+   The Espressif SDK defines a network API consisting of functions which start with ``espconn_``.
+
+   0 (default)
+      Disabled
+
+   1
+      Enable espconn\_ functions

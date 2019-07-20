@@ -1,6 +1,8 @@
 Sming (main)
 ============
 
+.. highlight:: bash
+
 This is the main Sming Component containing all architecture-independent code.
 All architecture-specific stuff is in either :component-esp8266:`sming-arch` or :component-host:`sming-arch`.
 
@@ -17,7 +19,7 @@ Serial baud rate
 
 The default rate for serial ports is 115200 baud. You can change it like this:
 
-.. code-block:: bash
+::
 
    make COM_SPEED=921600
 
@@ -36,7 +38,7 @@ Debug information log level and format
 
 Change it like this:
 
-.. code-block:: bash
+::
 
    make DEBUG_VERBOSE_LEVEL=3
 
@@ -50,7 +52,7 @@ Change it like this:
    If you change these settings and want them applied to Sming, not just your project, then you'll
    need to recompile all components like this:
 
-   .. code-block:: bash
+   ::
    
       make components-clean
       make DEBUG_VERBOSE_LEVEL=3
@@ -64,13 +66,13 @@ Release builds
    By default, this value is undefined to produce a build with debug output.
    To build for release, do this:
 
-   .. code-block:: bash
+   ::
    
       make SMING_RELEASE=1
 
    This remains in force until you change it back:
    
-   .. code-block:: bash
+   ::
    
       make SMING_RELEASE=
 
@@ -78,16 +80,51 @@ Release builds
 Command Executor
 ----------------
 
-Default: ON. This feature enables
-execution of certain commands by registering token handlers for text
-received via serial, websocket or telnet connection. If this feature
-is not used additional RAM/Flash can be obtained by setting
-``ENABLE_CMD_EXECUTOR=0``. This will save ~1KB RAM and ~3KB of flash
-memory.
+.. envvar:: ENABLE_CMD_EXECUTOR
+
+   Default: ON. This feature enables
+   execution of certain commands by registering token handlers for text
+   received via serial, websocket or telnet connection. If this feature
+   is not used additional RAM/Flash can be obtained by setting
+   ``ENABLE_CMD_EXECUTOR=0``. This will save ~1KB RAM and ~3KB of flash
+   memory.
 
 .. doxygengroup:: commandhandler
  
- 
+
+WiFi Connection
+---------------
+
+If you want to provide a default SSID and Password for connection to your default Access Point, you can do this:
+
+::
+
+   make WIFI_SSID=MyAccessPoint WIFI_PWD=secret
+
+These are provided as #defined symbols for your application to use. See :sample:`Basic_WiFi` for a simple example,
+or :sample:`MeteoControl` for a more flexible solution using configuration files.
+
+.. envvar:: WIFI_SSID
+
+   SSID identifying default Access Point to connect to. By default, this is undefined.
+
+
+.. envvar:: WIFI_PWD
+
+   Password for the :envvar:`WIFI_SSID` Access Point, if required. If the AP is open then
+   leave this undefined.
+
+
+Localisation
+------------
+
+.. envvar:: LOCALE
+
+   Sming can format dates/time values based on a country code identified by this value.
+   This is provided as a #define symbol for your application to use.
+   See :source:`Sming/Core/SmingLocale.h` for further details.
+
+
 Components
 ----------
 

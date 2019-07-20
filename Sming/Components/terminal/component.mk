@@ -14,6 +14,7 @@ endif
 
 
 # Universal python terminal application
+CACHE_VARS		+= KILL_TERM TERMINAL
 KILL_TERM		?= pkill -9 -f "$(COM_PORT) $(COM_SPEED_SERIAL)" || exit 0
 TERMINAL		?= python -m serial.tools.miniterm $(COM_PORT) $(COM_SPEED_SERIAL) $(COM_OPTS)
 

@@ -83,11 +83,7 @@ telnet can be used to provide terminal capability.
 default, no serial ports are enabled, however any output from UART0 is
 redirected to the console. No input is possible.
 
-If your project requires proper terminal access, set
-:envvar:`ENABLE_HOST_UARTID` to the UART numbers required. Typically this
-would be added to the project’s ``component.mk`` file. For example, the
-``Basic_Serial`` sample specifies ``ENABLE_HOST_UARTID=0 1`` to enable
-emulation for both ``UART0`` and ``UART1``.
+If your project requires proper terminal access, set :envvar:`ENABLE_HOST_UARTID`.
 
 Set :envvar:`HOST_UART_PORTBASE` if you want to change the base port number
 used to communicate with the emulator.

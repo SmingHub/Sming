@@ -150,22 +150,11 @@ set for all the projects.
 
 The standard make files use miniterm.py to provide a serial terminal for
 debugging the ESP8266. Miniterm does not work inside Eclipse so you
-should open Makefile_macos.mk in the SMING_HOME folder and comment out
-the line
+should disable it like this:
 
-``KILL_TERM    ?= pkill -9 -f "$(COM_PORT) $(COM_SPEED_SERIAL)" || exit 0``
+::
 
-replacing it with
-
-``KILL_TERM ?=``
-
-Next comment out the line
-
-``TERMINAL     ?= python -m serial.tools.miniterm $(COM_PORT) $(COM_SPEED_SERIAL) $(COM_OPTS)``
-
-and replace it with
-
-``TERMINAL ?=``
+   make KILL_TERM= TERMINAL=
 
 This will prevent Eclipse from trying to launch miniterm and throwing an
 error about Inappropriate ioctl for device.
