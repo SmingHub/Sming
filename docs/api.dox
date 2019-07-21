@@ -17,18 +17,7 @@
  */
 
 /** @mainpage
- *  @section Overview
-This is the documentation for the API of Sming - a C++ framework for development on the ESP8266 microcontroller platform.
- *  @section Description
-The ESP8266 is a microcontroller with Wi-Fi, manufactured by Espressif Systems. The microcontroller is available on several modules which present a subset of the interface pins, for example the ESP-01 only provides 2 digital GPIO whereas the ESP-12 provides 9 digital GPIO plus the ADC analogue input. Sming provides a C++ framework that facilitates the creation of application code for the ESP8266. The core framework provides access to the ESP8266 functions such as GPIO, timers, WiFi configuration, etc. A set of libraries extend this functionality such as switch debounce, SD Card interface, etc. This API documentation covers the core functionality. Library documentation is provided by upstream projects.
 
 The API documentation is provided as a set of modules, each describing a logical element of the API. Each module generally relates to a C++ class or group of related global functions. There are also modules for other global elements such as constant values.
- *  @section Licenses
- *  @par Sming Core
-LGPL v3
- *  @par Espressif SDK
-ESPRSSIF MIT License (with some closed-source blobs)
- *  @par Libraries
-See each library for details of its own open source license
  */
 

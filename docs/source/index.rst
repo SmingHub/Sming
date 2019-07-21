@@ -58,6 +58,7 @@ Summary
    contribute/index
    tools/index
    troubleshooting/index
+   about
 
 Indices and tables
 ------------------
