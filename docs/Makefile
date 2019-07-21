@@ -103,24 +103,15 @@ define GetSubmoduleURL
 $(subst $1=,,$(filter $1=%,$(SUBMODULE_URLS)))
 endef
 
-# Get a path string acceptable to sphinx
-# $1 -> Path to file
-ifeq ($(OS),Windows_NT)
-DRIVE		:= $(firstword $(subst /, ,$(CURDIR)))
-GetDocPath	= $(DRIVE):/$(subst /$(DRIVE)/,,$(abspath $1))
-else
-GetDocPath	= $(abspath $1)
-endif
+# If a Sphinx 'include' directive starts with '/' that's the source directory, so we need a path relative to that
+GetIncludePath = /../$(SMINGDIR)/$(patsubst $(abspath $(SMINGDIR))/%,%,$(abspath $1))
 
-# This is used with 'include' directives
-# For Windows, sphinx has a problem with the /c/ style drives and wants c:/ instead
-# For linux, 'include' requires a relative path. If it starts with '/' that's taken as the source directory 
+# For Windows, Sphinx has a problem with the /c/ style drives and wants c:/ instead
 ifeq ($(OS),Windows_NT)
-GetIncludePath = GetDocPath
-GetMdIncludePath = GetDocPath
+DRIVE				:= $(firstword $(subst /, ,$(CURDIR)))
+GetMdIncludePath	= $(DRIVE):/$(subst /$(DRIVE)/,,$(abspath $1))
 else
-GetIncludePath = /../../$(patsubst $(abspath $(SMINGDIR))/%,%,$(abspath $1))
-GetMdIncludePath = $(abspath $1)
+GetMdIncludePath	= $(abspath $1)
 endif
 
 include index.mk
@@ -242,7 +233,7 @@ ifndef DOXYGEN
 	$(error doxygen not found - not building API docs)
 endif
 	@echo Generating Doxygen information
-	$(Q) mkdir -p $(@D)
+	$(Q) mkdir -p api api/html
 	$(Q) doxygen 2>$@ 1>$(@D)/doxygen.log
 
 api/xml/index.xml: api/error.log

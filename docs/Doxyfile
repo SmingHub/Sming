@@ -5,7 +5,7 @@
 
 PROJECT_NAME           = "Sming Framework API"
 PROJECT_BRIEF          = "Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native development with C++ language."
-OUTPUT_DIRECTORY       = api
+OUTPUT_DIRECTORY       =
 
 # If the ALWAYS_DETAILED_SEC and REPEAT_BRIEF tags are both set to YES then
 # doxygen will generate a detailed section even if there is only a brief
@@ -94,7 +94,7 @@ WARN_LOGFILE           = api/error.log
 
 STRIP_FROM_PATH        = $(SMING_HOME)
 
-INPUT = \
+INPUT = api.dox sdk.dox \
 	../Sming/Core \
 	../Sming/Platform \
 	../Sming/Services \
@@ -311,16 +311,26 @@ COLS_IN_ALPHA_INDEX    = 5
 IGNORE_PREFIX          =
 
 ##
-GENERATE_HTML          = NO
+GENERATE_HTML          = YES
+HTML_OUTPUT            = api/html/api
+
 GENERATE_LATEX         = NO
 GENERATE_MAN           = NO
 GENERATE_RTF           = NO
-HAVE_DOT               = NO
+
+# Graph creation
+HAVE_DOT               = YES
+DOT_MULTI_TARGETS      = YES
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = NO
+DOT_CLEANUP            = YES
+GENERATE_TREEVIEW      = YES
 
 WARN_IF_UNDOCUMENTED   = NO
 
+#
 GENERATE_XML           = YES
-XML_OUTPUT             = xml
+XML_OUTPUT             = api/xml
 
 # If the XML_PROGRAMLISTING tag is set to YES, doxygen will dump the program
 # listings (including syntax highlighting and cross-referencing information) to

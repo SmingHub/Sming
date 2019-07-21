@@ -1,5 +1,0 @@
-**********
-Networking
-**********
-
-To be completed.

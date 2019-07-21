@@ -12,17 +12,24 @@ information is obtained from the various README files associated with the source
 
 Should already be available as part of Sming build system
 
-### doxygen
-
-See [http://www.doxygen.nl/](http://www.doxygen.nl/)
+### doxygen & graphviz
 
 For Linux:
 
-	sudo apt install doxygen
+	sudo apt install doxygen graphviz-dev
+
+For Windows, see:
+
+* *Doxygen* [www.doxygen.nl](http://www.doxygen.nl/)
+* *Graphviz* [graphviz.org](https://graphviz.org/)
+
+GraphViz is used by Doxygen (and Sphinx) to render graphs from .dot files.
 
 ### Python 3 + Sphinx
 
-For Linux, run `sudo apt install python3-sphinx python3-pip python3-setuptools`.
+For Linux:
+
+	sudo apt install python3-sphinx python3-pip python3-setuptools
 
 For Windows, see [Sphinx Installation Guide](https://www.sphinx-doc.org/en/master/usage/installation.html).
 
