@@ -50,16 +50,14 @@ COMPONENT_SRCFILES	:= $(EXTRA_SRCFILES)
 endif
 
 ifeq (App,$(COMPONENT_NAME))
-COMPONENT_SRCDIRS	+= $(APPCODE)
 CFLAGS				+= $(APP_CFLAGS)
-EXTRA_INCDIR		:= $(call AbsoluteSourcePath,$(COMPONENT_PATH),$(EXTRA_INCDIR) $(COMPONENT_INCDIRS))
 else ifneq ($(STRICT),1)
 # Enforce strictest building for regular Components and treat as errors
 CFLAGS				:= $(filter-out -Wno-sign-compare -Wno-strict-aliasing,$(CFLAGS)) -Werror
 CXXFLAGS			:= $(filter-out -Wno-reorder,$(CXXFLAGS))
 endif
 
-INCDIR				:= $(EXTRA_INCDIR) $(COMPONENTS_EXTRA_INCDIR)
+INCDIR				= $(EXTRA_INCDIR) $(COMPONENTS_EXTRA_INCDIR)
 
 # Build a Component target using MAKE
 # The makefile should accept TARGET and BUILD_DIR variables
@@ -77,6 +75,11 @@ COMPONENT_LIBPATH := $(COMPONENT_LIBDIR)/$(CLIB_PREFIX)$(COMPONENT_VARIANT).a
 
 # component.mk is optional
 -include $(COMPONENT_PATH)/component.mk
+
+ifeq (App,$(COMPONENT_NAME))
+COMPONENT_SRCDIRS	+= $(APPCODE)
+EXTRA_INCDIR		:= $(call AbsoluteSourcePath,$(COMPONENT_PATH),$(EXTRA_INCDIR) $(COMPONENT_INCDIRS))
+endif
 
 # COMPONENT_LIBNAME gets undefined if Component doesn't create a library
 ifneq (,$(COMPONENT_LIBNAME))
