@@ -11,10 +11,9 @@ $(if $(filter %.rst,$(CMP_$2_README)),
 
 References
 ------------
-* :source:`Source Code <$3>`
 $(if $(findstring $3=,$(SUBMODULE_URLS)),
-* This is a submodule: `GIT repository <$(call GetSubmoduleURL,$3)>`__.
-)
+* `Soure Code <$(call GetSubmoduleURL,$3)>`__ (submodule, may be patched).,
+* :source:`Source Code <$3>`)
 $(foreach d,$(sort $(COMPONENT_DEPEND_DIRS)),
 * :doc:`$d/index` Component
 )
