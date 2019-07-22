@@ -14,6 +14,11 @@ jobs:
         - clang-format-6.0
         - gcc-multilib
         - g++-multilib
+        - doxygen
+        - python3-sphinx
+        - python3-pip
+        - python3-setuptools
+        - graphviz-dev
     env: SMING_ARCH=Host
 
   - stage: build

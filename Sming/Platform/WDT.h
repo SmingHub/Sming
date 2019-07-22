@@ -58,3 +58,5 @@ private:
  *	@endcode
  */
 extern WDTClass WDT;
+
+/** @} */

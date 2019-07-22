@@ -18,9 +18,8 @@
 
 #include <functional>
 
-/** @defgroup   HTTP server connection
+/** @ingroup   	http
  *  @brief      Provides http server connection
- *  @ingroup    http
  *  @{
  */
 

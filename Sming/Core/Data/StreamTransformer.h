@@ -23,7 +23,7 @@
 
 /**
  * @brief Callback specification for the stream transformers
- * @note See StreamTransformer::transform() method for details
+ * @see See `StreamTransformer::transform()` method for details
  */
 typedef Delegate<size_t(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)> StreamTransformerCallback;
 
@@ -92,10 +92,10 @@ public:
 protected:
 	/**
 	 * @brief Inherited class implements this method to transform a block of data
-	 * @param const uint8_t* in source data
-	 * @param size_t inLength source data length
-	 * @param uint8_t* out output buffer
-	 * @param size_t outLength size of output buffer
+	 * @param in source data
+	 * @param inLength source data length
+	 * @param out output buffer
+	 * @param outLength size of output buffer
 	 * @retval size_t number of output bytes written
 	 * @note Called with `in = nullptr` and `inLength = 0` at end of input stream
 	 */

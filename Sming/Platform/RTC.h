@@ -63,3 +63,5 @@ public:
  *  @ingroup rtc
  */
 extern RtcClass RTC;
+
+/** @} */

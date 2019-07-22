@@ -1,0 +1,6 @@
+# Requirements file for pip
+# list of Python packages used in documentation build
+sphinx==1.8.5
+sphinx-rtd-theme
+m2r
+breathe==4.11.1

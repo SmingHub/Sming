@@ -129,10 +129,11 @@ public:
 
 	/**
 	 * @brief Initialise and set its configuration.
-	 * @param SerialConfig can be 5, 6, 7, 8 data bits, odd (O),
-	 * 					   even (E), and no (N) parity, and 1 or 2 stop bits.
-	 * 		  			   To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
-	 * 		  			   Serial.begin(baudrate, SERIAL_6E2), etc.
+	 * @param baud Baud rate to use
+	 * @param config can be 5, 6, 7, 8 data bits, odd (O),
+	 * 				 even (E), and no (N) parity, and 1 or 2 stop bits.
+	 * 		  		 To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
+	 * 		  		 Serial.begin(baudrate, SERIAL_6E2), etc.
 	 */
 	void begin(uint32_t baud, SerialConfig config)
 	{
@@ -141,17 +142,25 @@ public:
 
 	/**
 	 * @brief Initialise, set its configuration and mode.
-	 * @param SerialConfig can be 5, 6, 7, 8 data bits, odd (O),
-	 * 					   even (E), and no (N) parity, and 1 or 2 stop bits.
-	 * 		  			   To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
-	 * 		  			   Serial.begin(baudrate, SERIAL_6E2), etc.
-	 * @param SerialMode specifies if the UART supports receiving (RX), transmitting (TX) or both (FULL) operations
+	 * @param baud Baud rate to use
+	 * @param config can be 5, 6, 7, 8 data bits, odd (O),
+	 * 				 even (E), and no (N) parity, and 1 or 2 stop bits.
+	 * 		  		 To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
+	 * 		  		 Serial.begin(baudrate, SERIAL_6E2), etc.
+	 * @param mode specifies if the UART supports receiving (RX), transmitting (TX) or both (FULL) operations
 	 */
 	void begin(uint32_t baud, SerialConfig config, SerialMode mode)
 	{
 		begin(baud, config, mode, 1);
 	}
 
+	/**
+	 * @brief Initialise, set its configuration and mode.
+	 * @param baud Baud rate to use
+	 * @param config
+	 * @param mode
+	 * @param txPin Can specify alternate pin for TX
+	 */
 	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin);
 
 	/**
@@ -161,20 +170,21 @@ public:
 
 	/**
 	 * @brief Sets receiving buffer size
-	 * @param size_t requested size
+	 * @param size requested size
 	 * @retval size_t actual size
 	 */
 	size_t setRxBufferSize(size_t size);
 
 	/**
 	 * @brief Sets transmit buffer size
-	 * @param size_t requested size
+	 * @param size requested size
 	 * @retval size_t actual size
 	 */
 	size_t setTxBufferSize(size_t size);
 
 	/**
 	 * @brief Governs write behaviour when UART transmit buffers are full
+	 * @param wait
 	 * If false, writes will return short count; applications can use the txComplete callback to send more data.
 	 * If true, writes will wait for more buffer space so that all requested data is written
 	 */
@@ -196,7 +206,7 @@ public:
 
 	/**
 	 * @brief Toggle between use of GPIO13/GPIO15 or GPIO3/GPIO(1/2) as RX and TX
-	 * @param uint8_t Pin number.
+	 * @param tx_pin Pin number.
 	 */
 	void swap(uint8_t tx_pin)
 	{
@@ -205,6 +215,7 @@ public:
 
 	/**
 	 * @brief Toggle between use of GPIO1 and GPIO2 as TX on UART 0.
+	 * @param tx_pin
 	 * @note: UART 1 can't be used if GPIO2 is used with UART 0!
 	 * @note: If UART1 is not used and UART0 is not swapped - TX for UART0 can be mapped to GPIO2 by calling .setTx(2) after
 	 * 		  .begin or directly with .begin(baud, config, mode, 2).
@@ -217,8 +228,8 @@ public:
 
 	/**
 	 * @brief Sets the transmission and receiving PINS
-	 * @param uint8_t tx Transmission pin number
-	 * @param uint8_t rx Receiving pin number
+	 * @param tx Transmission pin number
+	 * @param rx Receiving pin number
 	 * @note UART 0 possible options are (1, 3), (2, 3) or (15, 13)
 	 * @note UART 1 allows only TX on 2 if UART 0 is not (2, 3)
 	 */
@@ -247,7 +258,7 @@ public:
 	/** @brief  Read a block of characters from serial port
 	 *  @param  buf Pointer to buffer to hold received data
 	 *  @param  max_len Maximum quantity of characters to read
-	 *  @retval size_t Quantity of characters read
+	 *  @retval uint16_t Quantity of characters read
 	 *  @note Although this shares the same name as the method in IDataSourceStream,
 	 *  behaviour is different because in effect the 'seek' position is changed by this call.
 	 */
@@ -349,7 +360,8 @@ public:
 
 	/**
 	 * @brief  Set callback ISR for received data
-	 * @param  reqCallback Function to handle received data
+	 * @param  callback Function to handle received data
+	 * @param  param Set as return value for `uart_get_callback_param()`
 	 * @note callback is invoked directly from serial ISR and bypasses any registered delgates
 	 */
 	__forceinline void setUartCallback(uart_callback_t callback, void* param = nullptr)
@@ -404,7 +416,7 @@ public:
 
 	/**
 	 * @brief Returns the location of the searched character
-	 * @param char c - character to search for
+	 * @param c - character to search for
 	 * @retval int -1 if not found 0 or positive number otherwise
 	 */
 	int indexOf(char c) override
@@ -446,7 +458,7 @@ private:
 
 	/**
 	 * @brief Serial interrupt handler, called by serial driver
-	 * @param uart_t* pointer to UART object
+	 * @param uart pointer to UART object
 	 * @param status UART status flags indicating cause(s) of interrupt
 	 */
 	static void IRAM_ATTR staticCallbackHandler(uart_t* uart, uint32_t status);

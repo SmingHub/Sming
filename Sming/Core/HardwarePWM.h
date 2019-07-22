@@ -55,7 +55,7 @@ public:
 	}
 
 	/** @brief  Set PWM duty cycle for a channel
-     *  @param  channel Channel to set
+     *  @param  chan Channel to set
      *  @param  duty Value of duty cycle to set channel to
      *  @param  update Update PWM output
      *  @retval bool True on success

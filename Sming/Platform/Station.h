@@ -72,13 +72,13 @@ typedef Delegate<bool(wps_cb_status status)> WPSConfigDelegate;
 #endif
 /** @} */
 
+/** @brief  WiFi station class
+ *  @addtogroup wifi_sta
+ *  @{
+ */
 class StationClass : protected ISystemReadyHandler
 {
 public:
-	/** @brief  WiFi station class
-     *  @addtogroup wifi_sta
-     *  @{
-     */
 	StationClass()
 	{
 		System.onReady(this);
@@ -158,7 +158,7 @@ public:
 	IPAddress getIP();
 
 	/**	@brief	Get WiFi station MAC address
-	 *  @param optional separator between bytes (e.g. ':')
+	 *  @param sep Optional separator between bytes (e.g. ':')
 	 *	@retval	String WiFi station MAC address
 	 */
 	String getMAC(char sep = '\0');

@@ -12,7 +12,7 @@
 
 #pragma once
 
-/*
+/**
  * When enabled, an exception or crash dumps a stack trace to debug output
  * Default is ON for debug builds, OFF for release builds
  *
@@ -27,7 +27,7 @@
 #endif
 #endif
 
-/*
+/**
  * When enabled, an unexpected reset (i.e. system crash) dumps a stack trace to debug output
  * Default is ON for debug builds, OFF for release builds
  *
@@ -41,7 +41,7 @@
 #endif
 #endif
 
-/*
+/**
  * When defined, GDB communications are echoed to UART1 for testing GDB stub operation.
  *
  * 0: No debug output
@@ -53,7 +53,7 @@
 #define GDBSTUB_ENABLE_DEBUG 0
 #endif
 
-/*
+/**
  * Espressif provide a patched version of GDB which emits only those registered present in the lx106.
  * Set to 0 if an unpatched version of GDB is used.
  */
@@ -61,7 +61,7 @@
 #define GDBSTUB_GDB_PATCHED 1
 #endif
 
-/*
+/**
  * Enable this to make the exception and debugging handlers switch to a private stack. This will use
  * up 1K of RAM, but may be useful if you're debugging stack or stack pointer corruption problems. It's
  * normally disabled because not many situations need it. If for some reason the GDB communication
@@ -72,21 +72,21 @@
 #define GDBSTUB_STACK_SIZE 256 // In dwords
 #endif
 
-/*
+/**
  * Enable this to cause the program to pause and wait for gdb to be connected when an exception is encountered.
  */
 #ifndef GDBSTUB_BREAK_ON_EXCEPTION
 #define GDBSTUB_BREAK_ON_EXCEPTION 1
 #endif
 
-/*
+/**
  * Enable this to cause the program to pause and wait for gdb to be connected when an unexpected system restart occurs.
  */
 #ifndef GDBSTUB_BREAK_ON_RESTART
 #define GDBSTUB_BREAK_ON_RESTART 1
 #endif
 
-/*
+/**
  * If this is defined, gdbstub will break the program when you press Ctrl-C in gdb.
  * It does this by monitoring for the 'x03' character in the serial receive routine. Any preceding
  * characters are passed through to the application via UART2.
@@ -105,7 +105,7 @@
 #define GDBSTUB_CTRLC_BREAK 2
 #endif
 
-/*
+/**
  * The GDB stub has exclusive access to UART0, so applications cannot use it directly and attempts to
  * open it will fail.
  *
@@ -127,7 +127,7 @@
 #define GDBSTUB_ENABLE_UART2 1
 #endif
 
-/*
+/**
  * Enable gdb_syscall_* functions for use by application.
  * If undefined, calls will do nothing and return -1.
  */
@@ -135,7 +135,7 @@
 #define GDBSTUB_ENABLE_SYSCALL 0
 #endif
 
-/*
+/**
  * Enable Host I/O capability, where files may be accessed via GDB command prompt using
  * `remote get`, `remote put` and `remote delete` commands.
  */
@@ -143,7 +143,7 @@
 #define GDBSTUB_ENABLE_HOSTIO 1
 #endif
 
-/*
+/**
  * Enable this if you want the GDB stub to wait for you to attach GDB before running.
  * It does this by breaking in the init routine; use the gdb 'c' command (continue) to start the program.
  */
@@ -151,7 +151,7 @@
 #define GDBSTUB_BREAK_ON_INIT 1
 #endif
 
-/*
+/**
  * Some commands are not required by GDB, so if neccessary can be disabled to save memory.
  */
 // Read/write individual registers
@@ -163,7 +163,7 @@
 #define GDBSTUB_CMDENABLE_X 1
 #endif
 
-/*
+/**
  * Specify a timeout (in milliseconds) when stub is reading from serial port.
  * Set to 0 to wait indefinitely.
  */
@@ -171,7 +171,7 @@
 #define GDBSTUB_UART_READ_TIMEOUT 0
 #endif
 
-/*
+/**
  * Wherever possible gdbstub code is placed in flash memory.
  * This is fine for most cases, but if debugging whilst flash is disabled or busy (eg during SPI operations
  * or flash write/erase) then you will need to enable this option to move stub code into IRAM.

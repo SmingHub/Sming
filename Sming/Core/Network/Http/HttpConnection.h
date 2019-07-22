@@ -19,9 +19,8 @@
 #include "HttpRequest.h"
 #include "HttpHeaderBuilder.h"
 
-/** @defgroup   HTTP base connection
+/** @ingroup	HTTP
  *  @brief      Provides http base used for client and server connections
- *  @ingroup    http
  *  @{
  */
 

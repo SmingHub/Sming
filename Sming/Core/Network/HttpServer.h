@@ -55,9 +55,9 @@ public:
 	void configure(const HttpServerSettings& settings);
 
 	/**
-	 * @briefs Allows content-type specific parsing of the body based on content-type.
+	 * @brief Allows content-type specific parsing of the body based on content-type.
 	 *
-	 * @param contentType. Can be full content-type like 'application/json', or 'application/*'  or '*'.
+	 * @param contentType Can be full content-type like 'application/json', or 'application/*'  or '*'.
 	 * 			If there is exact match for the content-type wildcard content-types will not be used.
 	 * 			There can be only one catch-all '*' body parser and that will be the last registered
 	 *

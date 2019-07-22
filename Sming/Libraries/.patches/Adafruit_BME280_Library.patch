@@ -11,3 +11,12 @@ index 61aeeed..383c8c8 100644
  #include <Wire.h>
  
  /*=========================================================================
+diff --git a/README.md b/README.md
+index ed49542..720c754 100644
+--- a/README.md
++++ b/README.md
+@@ -1 +1,3 @@
++# Adafruit BME280 sensor
++
+ This is a library for the Adafruit BME280 Humidity, Barometric Pressure + Temp sensor
+

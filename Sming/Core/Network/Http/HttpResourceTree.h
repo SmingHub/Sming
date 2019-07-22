@@ -33,7 +33,7 @@ public:
 	}
 
 	/** @brief Set the default resource handler, identified by "*" wildcard
-	 *  @param resource The default resource handler
+	 *  @param onRequestComplete The default resource handler
 	 */
 	void setDefault(const HttpResourceDelegate& onRequestComplete)
 	{

@@ -106,6 +106,7 @@ public:
 	/** @brief  Set time using time and date component values
 	 *  @param  sec Seconds
 	 *  @param  min Minutes
+	 *  @param  hour Hour
 	 *  @param  day Day of month
 	 *  @param  month Month (0=Jan, 11=Dec)
 	 *  @param  year Year
