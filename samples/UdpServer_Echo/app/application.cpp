@@ -22,7 +22,7 @@ void onReceive(UdpConnection& connection, char* data, int size, IPAddress remote
 
 	// Send echo to remote sender
 	String text = String("echo: ") + data;
-	udp.sendStringTo(remoteIP, EchoPort, text);
+	udp.sendStringTo(remoteIP, remotePort, text);
 }
 
 void gotIP(IPAddress ip, IPAddress gateway, IPAddress netmask)
@@ -34,9 +34,6 @@ void gotIP(IPAddress ip, IPAddress gateway, IPAddress netmask)
 	Serial.print(":");
 	Serial.println(EchoPort);
 	Serial.println("=============================\r\n");
-
-	//udp.connect(IPAddress(192, 168, 1, 180), 1234);
-	//udp.sendString("Hello!");
 }
 
 void init()
