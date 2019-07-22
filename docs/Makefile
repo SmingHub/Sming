@@ -49,6 +49,12 @@ define GetIncPath
 $(patsubst $(SMINGDIR)/%,$(SOURCE_INCDIR)/%,$1)
 endef
 
+# Translate a source path into the corresponding document link path
+# $1 -> Path(s) to source file in code tree
+define GetDocPath
+$(patsubst $(SMINGDIR)/%,/_inc/%,$1)
+endef
+
 # Put it first so that "make" without argument is like "make help".
 .PHONY: help
 help:
@@ -114,6 +120,11 @@ else
 GetMdIncludePath	= $(abspath $1)
 endif
 
+# $1 -> Path to a Component, sample or Library
+define GetComponentType
+$(if $(findstring /Libraries/,$1),Library,$(if $(findstring /samples/,$1),Sample,Component))
+endef
+
 include index.mk
 
 # Used to escape generated text so it can be handled as a single line
@@ -144,6 +155,8 @@ ENABLE_ESPCONN			:=
 ENABLE_CUSTOM_LWIP		:=
 -include $2/component.mk
 CMP_$2_VARS				:= $$(sort $$(COMPONENT_VARS))
+CMP_$2_LIBRARIES		:= $$(ARDUINO_LIBRARIES)
+CMP_$2_SUBMODULES		:= $$(COMPONENT_SUBMODULES)
 CMP_$2_DIRS := \
 	$$(COMPONENT_PATH) \
 	$$(addprefix $$(COMPONENT_PATH)/,$$(COMPONENT_SUBMODULES))
@@ -156,8 +169,10 @@ SOURCE_FILES			+= $$(CMP_$2_FILES)
 
 #
 COMPONENT_ENVVARS		:= $$(sort $$(COMPONENT_VARS) $$(CONFIG_VARS) $$(RELINK_VARS) $$(CACHE_VARS) $$(DEBUG_VARS))
+CMP_$2_ENVVARS			:= $$(COMPONENT_ENVVARS)
 
-CMP_$2_DEPENDS := $$(COMPONENT_DEPENDS)
+CMP_$2_DEPENDS	:= $$(COMPONENT_DEPENDS)
+$$(foreach c,$$(COMPONENT_DEPENDS) $$(ARDUINO_LIBRARIES),$$(eval CMP_$$c_XREF += $2))
 
 # Resolve dependencies
 #
@@ -168,11 +183,11 @@ FILTERED_DIRS := $$(filter $(dir $2)% $(SMING_HOME)/Components/%,$(COMPONENT_DIR
 else
 FILTERED_DIRS := $(COMPONENT_DIRS)
 endif
-COMPONENT_DEPEND_DIRS := \
+CMP_$2_DEPEND_DIRS := \
 	$(if $(findstring /samples/,$2),/_inc/Sming) \
-	$$(foreach d,$$(patsubst $(SMINGDIR)/%,/_inc/%,$$(foreach c,$$(COMPONENT_DEPENDS),$$(filter %/$$c,$$(FILTERED_DIRS)))),$$d)
+	$$(foreach d,$$(call GetDocPath,$$(foreach c,$$(COMPONENT_DEPENDS),$$(filter %/$$c,$$(FILTERED_DIRS)))),$$d)
 
-CMP_$2_INDEX := $$(subst $$(NewLine),\n,$$(call GenIndex,$1,$2,$(patsubst $(SMINGDIR)/%,%,$2)))
+CMP_$2_INDEX = $$(subst $$(NewLine),\n,$$(call GenIndex,$1,$2,$(patsubst $(SMINGDIR)/%,%,$2)))
 
 $$(call GetIncPath,$$(COMPONENT_PATH))/index.rst: $$(CMP_$2_README) $$(call GetIncPath,$$(CMP_$2_FILES))
 ifeq ($V,1)
