@@ -11,3 +11,17 @@ index 5e82c94..4feab77 100644
  #include <Arduino.h>
  
  #define TM1637_I2C_COMM1    0x40
+diff --git a/README.md b/README.md
+index 403028a..a49e831 100644
+--- a/README.md
++++ b/README.md
+@@ -1,7 +1,5 @@
+-TM1637
+-======
+-Arduino library for TM1637 (LED Driver)
+-
++TM1637 LED Driver
++=================
+ 
+ Description
+ -----------

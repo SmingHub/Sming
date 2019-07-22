@@ -1,4 +1,4 @@
-# Adafruit PCD8544
+# Adafruit PCD8544 Display
 
 This is a library for our Monochrome Nokia 5110 LCD Displays
 

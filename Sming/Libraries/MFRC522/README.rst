@@ -1,5 +1,5 @@
-MFRC522
-=======
+MFRC522 RFID Module
+===================
 
 .. note::
    This is a copy of the readme from 12/6/19, however the code in this library was last updated 23/3/2017.

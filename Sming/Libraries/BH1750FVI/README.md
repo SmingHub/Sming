@@ -1,5 +1,5 @@
-BH1750FVI_Master
-================
+BH1750FVI Light Sensor
+======================
 
 https://github.com/Genotronex/BH1750FVI_Master.git
 

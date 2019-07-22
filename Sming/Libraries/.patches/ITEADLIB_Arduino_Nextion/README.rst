@@ -1,5 +1,5 @@
-Nextion
-=======
+Nextion Serial Displays
+=======================
 
 Introduction
 ------------

@@ -1,4 +1,4 @@
-# TFT_ILI9163C
+# ILI9163C TFT Display
 
 ILI9163C- A fast SPI driver for TFT that use Ilitek ILI9163C.
 

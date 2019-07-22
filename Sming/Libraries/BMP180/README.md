@@ -1,4 +1,4 @@
-# BMP180
+# BMP180 Pressure/Temperature Sensor
 
 Arduino library for BMP180 Bosch pressure/temperature sensor
 

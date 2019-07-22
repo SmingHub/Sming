@@ -1,5 +1,5 @@
-MCP23S17
-========
+MCP23S17 SPI Port Expander
+==========================
 
 https://github.com/n0mjs710/MCP23S17.git
 

@@ -519,3 +519,62 @@ index a0c0df0..71d6e04 100644
  #else
  #include <string>
  #endif
+diff --git a/README.md b/README.md
+index 7a86bd9..50b51c1 100644
+--- a/README.md
++++ b/README.md
+@@ -8,7 +8,7 @@
+ This library enables you to **send _and_ receive** infra-red signals on an [ESP8266 using the Arduino framework](https://github.com/esp8266/Arduino) using common 940nm IR LEDs and common IR receiver modules. e.g. TSOP{17,22,24,36,38,44,48}* etc.
+ 
+ ## v2.3.3 Now Available
+-Version 2.3.3 of the library is now [available](https://github.com/markszabo/IRremoteESP8266/releases/latest). You can view the [Release Notes](ReleaseNotes.md) for all the significant changes.
++Version 2.3.3 of the library is now [available](https://github.com/markszabo/IRremoteESP8266/releases/latest). You can view the [Release Notes](ReleaseNotes.html) for all the significant changes.
+ 
+ #### Upgrading from pre-v2.0
+ Usage of the library slight changed at v2.0. You will need to change your usage to work with v2.0 and beyond. You can read more about the changes required on our [Upgrade to v2.0](https://github.com/markszabo/IRremoteESP8266/wiki/Upgrading-to-v2.0) page.
+@@ -75,12 +75,19 @@ $ make run
+ ```
+ 
+ ## Contributing
+-If you want to [contribute](.github/CONTRIBUTING.md#how-can-i-contribute) to this project, consider:
+-- [Report](.github/CONTRIBUTING.md#reporting-bugs) bugs and errors
++If you want to [contribute](.github/CONTRIBUTING.html#how-can-i-contribute) to this project, consider:
++- [Report](.github/CONTRIBUTING.html#reporting-bugs) bugs and errors
+ - Ask for enhancements
+ - Improve our documentation
+-- [Create issues](.github/CONTRIBUTING.md#reporting-bugs) and [pull requests](.github/CONTRIBUTING.md#pull-requests)
++- [Create issues](.github/CONTRIBUTING.html#reporting-bugs) and [pull requests](.github/CONTRIBUTING.html#pull-requests)
+ - Tell other people about this library
+ 
+ ## Contributors
+-Available [here](.github/Contributors.md)
++Available [here](.github/Contributors.html)
++
++.. toctree::
++
++   ReleaseNotes
++   .github/CONTRIBUTING
++   .github/Contributors
++   .github/issue_template
+diff --git a/.github/CONTRIBUTING.md b/.github/CONTRIBUTING.md
+index 9614d90..9556468 100644
+--- a/.github/CONTRIBUTING.md
++++ b/.github/CONTRIBUTING.md
+@@ -27,7 +27,7 @@ This project and everyone participating in it is governed by the principle of ["
+ 
+ This section guides you through submitting a bug report for the library. Following these guidelines helps maintainers and the community understand your report :pencil:, reproduce the behavior :computer: :computer:, and find related reports :mag_right:.
+ 
+-Before creating bug reports, please check [this list](#before-submitting-a-bug-report) as you might find out that you don't need to create one. When you are creating a bug report, please [include as much detail as possible](#how-do-i-submit-a-good-bug-report). Fill out [the required template](issue_template.md), the information it asks for helps us resolve issues faster.
++Before creating bug reports, please check [this list](#before-submitting-a-bug-report) as you might find out that you don't need to create one. When you are creating a bug report, please [include as much detail as possible](#how-do-i-submit-a-good-bug-report). Fill out [the required template](issue_template.html), the information it asks for helps us resolve issues faster.
+ 
+ > **Note:** If you find a **Closed** issue that seems like it's the same thing that you're experiencing, open a new issue and include a link to the original issue in the body of your new one.
+ 
+@@ -38,7 +38,7 @@ Before creating bug reports, please check [this list](#before-submitting-a-bug-r
+ 
+ #### How Do I Submit A (Good) Bug Report?
+ 
+-Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). Create an issue and provide the following information by filling in [the template](issue_template.md).
++Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). Create an issue and provide the following information by filling in [the template](issue_template.html).
+ 
+ Explain the problem and include any additional details to help maintainers reproduce the problem:
+ 

@@ -1,4 +1,4 @@
-# AM2321
+# AM2321 Temperature/Humidity Sensor
 
 - AM2321 sensor support for Arduino.
 - See [Arduino AM2321](http://playground.arduino.cc/Main/AM2321)

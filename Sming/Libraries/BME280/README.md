@@ -1,4 +1,5 @@
-# BME280
+# BME280 Barometric Pressure Sensor
+
 BME280 is Barometric Pressure Sensor.
 
 Datasheet for BME280:

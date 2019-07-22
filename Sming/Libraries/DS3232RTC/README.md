@@ -3,7 +3,7 @@ https://github.com/JChristensen/DS3232RTC
 ReadMe file  
 Jack Christensen Mar 2013
 
-![CC BY-SA](http://mirrors.creativecommons.org/presskit/buttons/80x15/png/by-sa.png)
+![CC BY-SA](by-sa.png)
 
 ## Introduction ##
 **DS3232RTC** is an Arduino library that supports the Maxim Integrated DS3232 and DS3231 Real-Time Clocks. This library is intended to be used with the [Arduino Time library](http://www.arduino.cc/playground/Code/Time).

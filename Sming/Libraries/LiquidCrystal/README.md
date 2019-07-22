@@ -1,4 +1,4 @@
-# LiquidCrystal
+# Liquid Crystal
 
 ## Introduction ##
 

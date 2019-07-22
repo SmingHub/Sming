@@ -1,0 +1,12 @@
+diff --git a/README.md b/README.md
+index b2a18fe..c06d09b 100644
+--- a/README.md
++++ b/README.md
+@@ -1,5 +1,5 @@
+-DHTesp
+-===
++DHT ESP Temperature/Humidity Sensors
++====================================
+ 
+ An Arduino library for reading the DHT family of temperature and humidity sensors.    
+ Forked from [arduino-DHT](https://github.com/markruys/arduino-DHT)     
