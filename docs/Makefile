@@ -27,6 +27,9 @@ Q			:= @
 vecho		:= @echo
 endif
 
+# Define anything required to get all optional code included
+include defines.mk
+
 define Sphinx
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 endef
@@ -151,8 +154,7 @@ CACHE_VARS				:=
 DEBUG_VARS				:=
 COMPONENT_DEPENDS		:=
 ARDUINO_LIBRARIES		:=
-ENABLE_ESPCONN			:=
-ENABLE_CUSTOM_LWIP		:=
+include defines.mk
 -include $2/component.mk
 CMP_$2_VARS				:= $$(sort $$(COMPONENT_VARS))
 CMP_$2_LIBRARIES		:= $$(ARDUINO_LIBRARIES)
