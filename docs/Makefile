@@ -252,6 +252,7 @@ endif
 	@echo Generating Doxygen information
 	$(Q) mkdir -p api api/html
 	$(Q) doxygen 2>$@ 1>$(@D)/doxygen.log
+	-$(Q) rm api/html/api/*.md5 api/html/api/*.map
 
 api/xml/index.xml: api/error.log
 	@echo "Undocumented:"
