@@ -4,8 +4,10 @@
 #
 
 PROJECT_NAME           = "Sming Framework API"
-PROJECT_BRIEF          = "Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native development with C++ language."
-OUTPUT_DIRECTORY       =
+PROJECT_NUMBER         = $(API_VERSION)
+PROJECT_BRIEF          = "Open Source framework for high efficiency WiFi SoC ESP8266 native development with C++ language."
+PROJECT_LOGO           = api-logo.png
+OUTPUT_DIRECTORY       = api
 
 # If the ALWAYS_DETAILED_SEC and REPEAT_BRIEF tags are both set to YES then
 # doxygen will generate a detailed section even if there is only a brief
@@ -67,14 +69,14 @@ SORT_GROUP_NAMES       = YES
 # list will mention the files that were used to generate the documentation.
 # The default value is: YES.
 
-SHOW_USED_FILES        = NO
+SHOW_USED_FILES        = YES
 
 # Set the SHOW_FILES tag to NO to disable the generation of the Files page. This
 # will remove the Files entry from the Quick Index and from the Folder Tree View
 # (if specified).
 # The default value is: YES.
 
-SHOW_FILES             = NO
+SHOW_FILES             = YES
 
 # The WARN_LOGFILE tag can be used to specify a file to which warning and error
 # messages should be written. If left blank the output is written to standard
@@ -99,6 +101,7 @@ INPUT = api.dox sdk.dox \
 	../Sming/Platform \
 	../Sming/Services \
 	../Sming/Wiring \
+	../Sming/Components/spiffs \
     ../Sming/Libraries/ArduinoJson6/include \
 	$(ESP_HOME)/sdk/include/gpio.h \
 	../Sming/System \
@@ -312,7 +315,19 @@ IGNORE_PREFIX          =
 
 ##
 GENERATE_HTML          = YES
-HTML_OUTPUT            = api/html/api
+HTML_OUTPUT            = html/api
+HTML_DYNAMIC_SECTIONS  = NO
+HTML_HEADER            = api-header.html
+HTML_FOOTER            = api-footer.html
+HTML_EXTRA_STYLESHEET  = doxy-boot/customdoxygen.css
+HTML_EXTRA_FILES = \
+	doxy-boot/doxy-boot.js \
+	doxy-boot/jquery.smartmenus.min.js \
+	doxy-boot/addons/bootstrap/jquery.smartmenus.bootstrap.min.js \
+	doxy-boot/addons/bootstrap/jquery.smartmenus.bootstrap.css
+
+	
+#LAYOUT_FILE            = api-layout.xml
 
 GENERATE_LATEX         = NO
 GENERATE_MAN           = NO
@@ -324,13 +339,16 @@ DOT_MULTI_TARGETS      = YES
 DOT_IMAGE_FORMAT       = svg
 INTERACTIVE_SVG        = NO
 DOT_CLEANUP            = YES
-GENERATE_TREEVIEW      = YES
+DISABLE_INDEX          = NO
+GENERATE_TREEVIEW      = NO
+
+HIDE_UNDOC_RELATIONS   = NO
 
 WARN_IF_UNDOCUMENTED   = NO
 
 #
 GENERATE_XML           = YES
-XML_OUTPUT             = api/xml
+XML_OUTPUT             = xml
 
 # If the XML_PROGRAMLISTING tag is set to YES, doxygen will dump the program
 # listings (including syntax highlighting and cross-referencing information) to
