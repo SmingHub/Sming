@@ -24,6 +24,13 @@ $(TARGET_OUT_0): $(COMPONENTS_AR)
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 	$(Q) cat $(FW_MEMINFO_NEW)
 
+##@Tools
+.PHONY: valgrind
+valgrind: all ##Run the application under valgrind to detect memory issues. Requires `valgrind` to be installed on the host system.
+	$(Q) valgrind --track-origins=yes --leak-check=full \
+	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
+	$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS)
+
 
 ##@Flashing
 
@@ -43,7 +50,6 @@ $(RUN_SCRIPT)::
 	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
 	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS)' >> $@; \
 	chmod a+x $@
-
 
 .PHONY: flashfs
 flashfs: $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image
