@@ -9,5 +9,4 @@ Information
    debugging
    rboot-ota
    command-handler
-   API Documentation <https://sminghub.github.io/Sming/api/>
    hot-tips
