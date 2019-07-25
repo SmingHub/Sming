@@ -1,4 +1,4 @@
-Sming makefile build system
+Sming build system
 ===========================
 
 Introduction

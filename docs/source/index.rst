@@ -54,6 +54,7 @@ Summary
    libraries
    api/start
    information/index
+   upgrading/index
    experimental/index
    contribute/index
    tools/index
