@@ -30,7 +30,8 @@ struct task_queue_t {
 
 	void process()
 	{
-		while(count != 0) {
+		// Don't service any newly queued events
+		for(unsigned n = count; n != 0; --n) {
 			auto evt = events[read];
 			read = (read + 1) % length;
 			--count;
@@ -85,7 +86,7 @@ void host_service_tasks()
 	}
 }
 
-void host_queue_callback(host_task_callback_t callback, uint32_t param)
+bool host_queue_callback(host_task_callback_t callback, uint32_t param)
 {
-	task_queues[HOST_TASK_PRIO].post(os_signal_t(callback), param);
+	return task_queues[HOST_TASK_PRIO].post(os_signal_t(callback), param);
 }
