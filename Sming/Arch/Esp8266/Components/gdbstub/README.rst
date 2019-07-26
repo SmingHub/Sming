@@ -12,7 +12,7 @@ include some code (``gdbstub``) which communicates via the serial port.
 On the ESP8266 only UART0 may be used for this as UART1 is
 transmit-only.
 
-The gdbstub code will only be built if you specify :c:macro:`ENABLE_GDB`
+The gdbstub code will only be built if you specify :envvar:`ENABLE_GDB`
 =1 when compiling your application. At startup, before your init()
 function is called, it will claim UART0 so your application will be
 unable to use it directly. Therefore, the default port for ``Serial``
