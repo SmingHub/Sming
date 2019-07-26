@@ -12,8 +12,7 @@ the devices into zombies.
 
 To prevent this, you can either provide a secure connection between
 device and update server (e. g. VPN or TLS) or add a cryptographic
-signature to all OTA files. [pr893]
-(https://github.com/SmingHub/Sming/pull/893) provides hooks to the OTA
+signature to all OTA files. :pull-request:`893` provides hooks to the OTA
 functionality to allow checking of such signatures.
 
 A proven method for this is, for example, ECDSA in conjunction with
@@ -22,7 +21,7 @@ Cryptosuite).
 
 To use it, you can subclass rBootHttpUpdate like this:
 
-::
+.. code-block:: c++
 
    #define PREFIX_MAGIC    0x54, 0x49, 0x55, 0x53
    #define PREFIX_TYPE     0x00, 0x01
