@@ -1,10 +1,12 @@
-rBoot Sming
+Basic rBoot
 ===========
+
+.. highlight:: bash
 
 Introduction
 ------------
 
-This sample integrates rBoot and Sming, for the many people who have
+This sample integrates :component-esp8266:`rboot` and Sming, for the many people who have
 been asking for it. It demonstrates dual rom booting, big flash support,
 OTA updates and dual spiffs filesystems. You must enable big flash
 support in rBoot and use on an ESP12 (or similar device with 4MB flash).
@@ -14,54 +16,40 @@ image needs to be created. If you don’t want to use big flash support
 below. You can easily take the ota files and add them to your own
 project to add OTA support.
 
-To build any Sming project (in threory) with rBoot support you should
-use Makefile-rboot.mk instead of Makefile-project.mk. In the sample the
-correct mk file is chosen automatically because of the setting
-RBOOT_ENABLED=1 in Makefile-user.mk
-
 Building
 --------
 
-1) Set ESP_HOME & SMING_HOME, as environment variables or edit
-   Makefile-user.mk as you would for general Sming app compiling.
-2) Set ESPTOOL2 (env var or in Makefile-user.mk) to point to the
-   esptool2 binary. Source for esptool2 is here:
-   https://github.com/raburton/esp8266
-3) Set WIFI_SSID & WIFI_PWD environment variables with your wifi
-   details.
-4) Edit the OTA server details at the top of app/application.cpp
-5) Check overridable variables in Makefile-user.mk, or set as env vars.
-6) make && make flash
-7) Put rom0.bin and spiff_rom.bin in the root of your webserver for OTA.
-8) Interact with the sample using a terminal, sorry no web-gui (yet).
+1) Set :envvar:`ESP_HOME` & :envvar:`SMING_HOME`, as environment variables or edit
+   component.mk as you would for general Sming app compiling.
+2) Set :envvar:`WIFI_SSID` & :envvar:`WIFI_PWD` environment variables with your wifi details.
+3) Edit the OTA server details at the top of ``app/application.cpp``.
+4) Check overridable variables in component.mk, or set as env vars.
+5) ``make && make flash``
+6) Put *rom0.bin* and *spiff_rom.bin* in the root of your webserver for OTA.
+7) Interact with the sample using a terminal (``make terminal``). Sorry - no web-gui (yet).
 
 Flashing
 --------
 
-If flashing manually use esptool.py to flash rBoot, rom & spiffs e.g.:
-esptool.py –port write_flash -fs 32m 0x00000 rboot.bin 0x02000 rom0.bin
-0x100000 spiffs.rom
+If flashing manually use *esptool.py* to flash rBoot, rom & spiffs e.g.::
 
-Using the correct -fs parameter is important. This will be -fs 32m on an
-ESP12.
+   esptool.py –port write_flash -fs 32m 0x00000 rboot.bin 0x02000 rom0.bin 0x100000 spiffs.rom
 
-You can also flash rom0.bin to 0x202000, but booting and using OTA is
-quicker!
+Using the correct -fs parameter is important. This will be ``-fs 32m`` on an ESP12.
+
+You can also flash rom0.bin to 0x202000, but booting and using OTA is quicker!
 
 Technical Notes
 ---------------
 
-spiffs_mount_manual(address, length) must be called from init. The
-address must be 0x40200000 + physical flash address. Sming does not use
-memory mapped flash so the reason for this strange addressing is not
-clear.
+``spiffs_mount_manual(address, length)`` must be called from init.
 
-Important compiler flags used: \* BOOT_BIG_FLASH - when using big flash
-mode, ensures flash mapping code is built in to the rom. \*
-RBOOT_INTEGRATION - ensures Sming specific options are pulled in to the
-rBoot source at compile time. \* SPIFF_SIZE=value - passed through to
-code for mounting the filesystem. Also used in the Makefile to create
-the spiffs.
+Important compiler flags used:
+
+-  BOOT_BIG_FLASH - when using big flash mode, ensures flash mapping code is built in to the rom.
+-  RBOOT_INTEGRATION - ensures Sming specific options are pulled in to the rBoot source at compile time.
+-  SPIFF_SIZE=value - passed through to code for mounting the filesystem.
+   Also used in the Makefile to create the SPIFFS.
 
 Disabling big flash
 -------------------
@@ -78,15 +66,12 @@ covered here, just how to use this sample without bigflash support.
 
 -  Copy rom0.ld to rom1.ld.
 -  Adjust the rom offsets and length as appropriate in each ld file.
--  Uncomment ‘RBOOT_TWO_ROMS ?= 1’ in Makefile-user.mk (or set as an
-   environment variable).
--  Ensure RBOOT_BIG_FLASH is set to 0 in Makefile-user.mk
+-  Set *RBOOT_TWO_ROMS = 1* in component.mk (or as an environment variable).
+-  Set *RBOOT_BIG_FLASH = 0* in component.mk
 -  If using a very small flash (e.g. 512k) there may be no room for a
-   spiffs fileystem, disable it with DISABLE_SPIFFS = 1
--  If you are using spiffs set RBOOT_SPIFFS_0 & RBOOT_SPIFFS_1 to
-   indicate where the filesystems are located on the flash. This is the
-   real flash offset, not the address + 0x40200000 used in the mount
-   call.
+   spiffs fileystem, disable it with *DISABLE_SPIFFS = 1*
+-  If you are using spiffs set *RBOOT_SPIFFS_0* & *RBOOT_SPIFFS_1* to
+   indicate where the filesystems are located on the flash.
 -  After building copy all the rom*.bin files to the root of your web
    server.
 
