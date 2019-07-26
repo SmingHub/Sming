@@ -16,9 +16,7 @@ Library
 -------
 
 If you want to debug inside of the Sming Framework library make sure to
-(re)compile it with ``ENABLE_GDB=1`` directive.
-
-::
+(re)compile it with :envvar:`ENABLE_GDB` =1 directive::
 
    cd $SMING_HOME
    make dist-clean
@@ -31,10 +29,8 @@ Application
 -----------
 
 To use, (re)compile your application with the ENABLE_GDB option and
-flash it to the board. For this example we will use the LiveDebug
-application.
-
-::
+flash it to the board. For this example we will use the :sample:`LiveDebug`
+sample application::
 
    cd $SMING_HOME/../samples/LiveDebug
    make clean
@@ -43,17 +39,13 @@ application.
 
 The application will start running on your device and will wait for a
 debugger to pause its execution. To connect a debugger to the remote
-application use the provided command:
-
-::
+application use the provided command::
 
    make gdb
 
 This will start a new debugging session where you can run your code
 interactively. Once the debugger is connect it will pause the execution
-and you will be able to take control.
-
-::
+and you will be able to take control::
 
    Remote debugging using /dev/ttyUSB0
    gdbstub_init () at /home/slavey/dev/esp8266.dev.box/dev/Sming/Sming//gdb/gdbstub.cpp:914
@@ -70,10 +62,8 @@ List current source code
 ------------------------
 
 One possibility is to see the source code of the current line where the
-execution has stopped. To achieve this you should type “list” in the gdb
-console.
-
-::
+execution has stopped. To achieve this you should type ``list`` in the gdb
+console::
 
    (gdb) list
    909     SD(GDBSTUB_ENABLE_HOSTIO);
@@ -91,22 +81,16 @@ Break the execution
 -------------------
 
 This command will pause the debugger once it reaches a specific function
-or line in the code. This is called “breakpoint” and can be set using a
-command like the one below:
-
-::
+or line in the code. This is called ``breakpoint`` and can be set like this::
 
    (gdb) break blink
    Breakpoint 1 at 0x40105d4c: file app/application.cpp, line 66.
 
-Notice: “break” sets a software breakpoint. This means that the
+Notice: ``break`` sets a software breakpoint. This means that the
 ``blink`` function must be in IRAM. Otherwise the execution will fail.
-If you take a look at the
-`Live Debug application <https://github.com/SmingHub/Sming/blob/develop/samples/LiveDebug/app/application.cpp#L661>`__
+If you take a look at :source:`samples/LiveDebug/app/application.cpp#L663`,
 you will see a in the definition of the ``init`` function the following
-attribute ``GDB_IRAM_ATTR``. As shown below.
-
-::
+attribute ``GDB_IRAM_ATTR``::
 
    void GDB_IRAM_ATTR init()
 
@@ -117,9 +101,7 @@ Continue the execution
 ----------------------
 
 To continue the execution of the application we can use the ``continue``
-command. As shown below:
-
-::
+command::
 
    (gdb) continue
    Continuing.
@@ -142,9 +124,7 @@ variables.
 Go to the next line
 -------------------
 
-This can be done using ``next``
-
-::
+This can be done using ``next``::
 
    (gdb) next
    67      digitalWrite(LED_PIN, ledState);
@@ -154,15 +134,12 @@ See variable value
 
 The command to see a value is ``print`` followed by the name of the
 value. For example to see the value of the ``ledState`` variable inside
-the ``blink`` function we could type:
-
-::
+the ``blink`` function we could type::
 
    (gdb) print ledState
    $1 = true
 
-You can see more useful commands from
-`here <https://github.com/SmingHub/Sming/tree/develop/Sming/gdb#useful-gdb-commands>`__.
+You can see more useful commands :ref:`here <useful-gdb-commands>`.
 
 Or watch the following short video
 
@@ -177,25 +154,31 @@ is use `Eclipse CDT <https://eclipse.org/cdt/downloads.php>`__ and its
 debugging plugins to do remote debugging as we did from the command
 line.
 
-Here is how this can be done. Start Eclipse CDT. Import the LiveDebug
-sample. This can be done by calling File->New->Project->C/C++ ->
-Makefile Project with Existing Code. And then point Eclipse to the
-location of the LiveDebug sample. After that import the Sming Framework
-if you haven’t done it yet.
+Here is how this can be done:
+
+- Start Eclipse CDT and import the :sample:`LiveDebug` sample:
+
+  - Select *File* -> *New* -> *Project* -> *C/C++* -> *Makefile Project with Existing Code*
+  - Point Eclipse to the location of the LiveDebug sample
+  - Import the Sming Framework (if you haven’t done it yet)
 
 .. figure:: debugging-1.png
    :alt: Import Project
 
    Import Project
 
-Once the two projects are in Eclipse set the LiveDebug project to
-reference the Sming project.
+Once the two projects are in Eclipse, set the *LiveDebug* project to
+reference the *Sming* project.
 
-Now create a new Remote Debugging Configuration. This can be done from
-Run -> Debug Configurations -> C/C++ Remote Application. In there right
-click and create a new C/C++ Remote Application. In the Main tab set the
-Project to Basic_Build, the C/C++ Application to out/build/app.out and
-disable for now the auto build.
+Now create a new *Remote Debugging* Configuration:
+
+- Select *Run* -> *Debug Configurations* -> *C/C++ Remote Application*
+- Right-click and create a new *C/C++ Remote Application*
+- In the *Main* tab set, set:
+
+  - *Project*: *Basic_Build*
+  - *C/C++ Application*: *out/build/Esp8266/Debug/app.out*
+  - disable for now the *auto* build
 
 .. figure:: debugging-2.png
    :alt: Remote Debugging Session
@@ -203,30 +186,32 @@ disable for now the auto build.
    Remote Debugging Session
 
 Then go to the Debugger tab and point the GDB debugger to your
-Xtensa-gdb binary.
+Xtensa-gdb binary. (Type ``make list-config`` and look for :envvar:`GDB`.)
 
 .. figure:: debugging-3.png
    :alt: Remote Debugging Session
 
    Remote Debugging Session
 
-Make sure to load also “GDB command file”. The one that you will need is
-located in under
-`Sming/gdb/gdbcmds <https://github.com/SmingHub/Sming/blob/develop/Sming/gdb/gdbcmds>`__
-.
+Make sure to load also *GDB command file*. To find out its location, run ``make list-config``
+and look for :envvar:`GDBSTUB_DIR`. The file is called ``gdbcmds``, and you may wish to place
+a copy of the file somewhere else, especially if you intend to modify it.
+You can see the file here :source:`Sming/Arch/Esp8266/Components/gdbstub/gdbcmds`.
 
 Finally we should configure the remote connection. Go to the
-Debugger->Connection tab and set the type to be Serial, the device to be
-/dev/ttyUSB0 and set the speed to 115200. Make sure to replace
-/dev/ttyUSB0 with the correct device name on your operating system.
+*Debugger* -> *Connection* tab and set:
+
+- type: *Serial*
+- device: */dev/ttyUSB0* (or as required for your operating system)
+- speed: 115200
 
 .. figure:: debugging-4.png
    :alt: Set remote connection
 
    Set remote connection
 
-We are now ready for debugging. Press the Debug button. In the
-screenshot above the Debug button is on the bottom-right corner. After
+We are now ready for debugging. Press the *Debug* button. (In the
+screenshot above the Debug button is in the bottom-right corner.) After
 some seconds your debugging session should be up and running and you can
 enjoy live debugging.
 

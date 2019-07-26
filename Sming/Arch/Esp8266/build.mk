@@ -25,6 +25,7 @@ CONFIG_TOOLPREFIX	:= xtensa-lx106-elf-
 TOOLSPEC			:= $(XTENSA_TOOLS_ROOT)/$(CONFIG_TOOLPREFIX)
 
 # select which tools to use as assembler, compiler, librarian and linker
+DEBUG_VARS			+= GDB
 AS					:= $(TOOLSPEC)gcc
 CC					:= $(TOOLSPEC)gcc
 CXX					:= $(TOOLSPEC)g++
