@@ -52,7 +52,7 @@ Summary
    features
    samples
    libraries
-   api/start
+   api/index
    information/index
    upgrading/index
    experimental/index

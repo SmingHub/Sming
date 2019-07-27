@@ -1,4 +1,4 @@
-# MMA-7455
+# MMA-7455 Accelerometer
 
 Library for the MMA-7455 3-axis accelerometer
 

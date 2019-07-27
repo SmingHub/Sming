@@ -1,4 +1,4 @@
-# Adafruit ILI9341
+# Adafruit ILI9341 Display
 
 This is a library for the Adafruit ILI9341 display products
 

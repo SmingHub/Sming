@@ -1,106 +1,110 @@
 # Contributing to Sming Framework
-All contributions (PRs) to Sming Framework have to be done to the _develop_ branch. 
+All contributions (PRs) to Sming Framework have to be done to the _develop_ branch.
 
 __master__: Branch that contains latest production (stable) release. No PRs other than Final Release updates will be merged into __master__.
 __develop__: Main development branch: contains all current new features.
 
-This means that __all contributors__ will have to submit a PR to a _develop_ , it will be tested and then merged to __develop__ for automated integration testing (via TravisCI, Jenkins or SemaphoreCI), as well as manual testing on a real device. 
+This means that __all contributors__ will have to submit a PR to a _develop_ , it will be tested and then merged to __develop__ for automated integration testing (via TravisCI, Jenkins or SemaphoreCI), as well as manual testing on a real device.
 
 __Sming Contributing flow__:
-- Fork [_Sming_ repo](https://github.com/SmingHub/Sming#fork-destination-box) 
 
-After that clone your own fork.
+1. Fork [_Sming_ repo](https://github.com/SmingHub/Sming#fork-destination-box)
 
-`git clone https://github.com/<my-fork>/Sming.git`
+  After that clone your own fork.
 
-- Create a new branch off the _develop_ branch
+  `git clone https://github.com/<my-fork>/Sming.git`
 
-```
-cd Sming
-git checkout develop
-git branch feature/<short-explanation>
-git checkout feature/<short-explanation>
-```
+2. Create a new branch off the _develop_ branch
 
-Make sure to replace `short-explanation` with one or two words describing the purpose of the feature.
-If you want to commit a fix use `fix/` as prefix for your branch name.
+  ```
+  cd Sming
+  git checkout develop
+  git branch feature/<short-explanation>
+  git checkout feature/<short-explanation>
+  ```
 
-- Build, test your code
+  Make sure to replace `short-explanation` with one or two words describing the purpose of the feature.
+  If you want to commit a fix use `fix/` as prefix for your branch name.
 
-Make sure that your code compiles and it is tested on real device. Sometimes you will be asked for a proof (usually screenshot) that it was tested on your device(s). 
+3. Build, test your code
 
-- Commit changes
+  Make sure that your code compiles and it is tested on real device. Sometimes you will be asked for a proof (usually screenshot) that it was tested on your device(s).
 
-```
-git add <changed-files>
-git commit -m "<Description of the change(s)>"
-```
+4. Document your code
 
-- Push your changes to your fork on github
+  As a bare minimum, please include a `README.rst` or `README.md` file. See :doc:`/contribute/documentation` for further information.
 
-```
-git push
-```
+5. Commit changes
 
-- Rebase if needed
+  ```
+  git add <changed-files>
+  git commit -m "<Description of the change(s)>"
+  ```
 
-If your branch cannot be merged automatically because there are new changes in the official __develop__
-branch that conflict with yours then make sure to rebase your branch. The following steps can help
-you do this.
+6. Push your changes to your fork on github
 
-First step: 
-You will need to add the `upstream` repository. This step should be executed ONLY once.
+  ```
+  git push
+  ```
 
-```
-cd Sming
-git remote add upstream https://github.com/SmingHub/Sming.git 
-git fetch upstream develop
-git checkout develop
-git reset --hard upstream/develop
-```
+7. Rebase if needed
 
-Second step: 
-If you have already defined `upstream` repository and synchronized your `develop` branch to fetch the updates
-from `upstream` ( the commands above do this) the next step is to get the latest changes from the official `develop` branch.
+  If your branch cannot be merged automatically because there are new changes in the official __develop__
+  branch that conflict with yours then make sure to rebase your branch. The following steps can help
+  you do this.
 
-This can be done using
+  - First step: 
+    You will need to add the `upstream` repository. This step should be executed ONLY once.
 
-```
-cd Sming
-git checkout develop
-git pull
-```
+    ```
+    cd Sming
+    git remote add upstream https://github.com/SmingHub/Sming.git 
+    git fetch upstream develop
+    git checkout develop
+    git reset --hard upstream/develop
+    ```
 
-Final step:
-Now you are ready to merge the latest changes from official `develop` branch into your branch and place your changes on top. 
-The commands below help you achieve this.
+  - Second step: 
+    If you have already defined `upstream` repository and synchronized your `develop` branch to fetch the updates
+    from `upstream` ( the commands above do this) the next step is to get the latest changes from the official `develop` branch.
 
-```
-cd Sming
-git checkout develop
-git pull
-git checkout feature/<short-explanation>
-git merge develop
-# Fix any merge conflicts if needed. 
-git rebase develop
-# Fix any merge conflicts if needed.  
-```
+    This can be done using
 
-If there were merge conflicts you will have to resolve them locally. This usually involves calling the following commands:
+    ```
+    cd Sming
+    git checkout develop
+    git pull
+    ```
 
-```
-git mergetool
-# After resolving conflicts you should type the command below to see what are the next steps
-# Newer versions of `git` are kind enough to show hints
-git status 
-```
+  - Final step: 
+    Now you are ready to merge the latest changes from official `develop` branch into your branch and place your changes on top. 
+    The commands below help you achieve this.
 
-After that operation you should have a branch that has all latest changes from __develop__ 
-with your changes on top. 
+    ```
+    cd Sming
+    git checkout develop
+    git pull
+    git checkout feature/<short-explanation>
+    git merge develop
+    # Fix any merge conflicts if needed. 
+    git rebase develop
+    # Fix any merge conflicts if needed.  
+    ```
 
+    If there were merge conflicts you will have to resolve them locally. This usually involves calling the following commands:
 
-- Submit PR to the main Sming repo, __develop__ branch.
-- Work with other contributors to test your feature and get it merged to _develop_
+    ```
+    git mergetool
+    # After resolving conflicts you should type the command below to see what are the next steps
+    # Newer versions of `git` are kind enough to show hints
+    git status 
+    ```
+
+    After that operation you should have a branch that has all latest changes from __develop__ 
+    with your changes on top. 
+
+8. Submit PR to the main Sming repo, __develop__ branch.
+9. Work with other contributors to test your feature and get it merged to _develop_
 
 This is the most common approach for a git-flow:
 http://nvie.com/posts/a-successful-git-branching-model/

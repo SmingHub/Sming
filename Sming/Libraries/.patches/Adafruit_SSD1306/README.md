@@ -1,4 +1,4 @@
-# Adafruit_SSD1306
+# Adafruit SSD1306 Display
 
 ## Introduction
 

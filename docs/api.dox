@@ -19,5 +19,8 @@
 /** @mainpage
 
 The API documentation is provided as a set of modules, each describing a logical element of the API. Each module generally relates to a C++ class or group of related global functions. There are also modules for other global elements such as constant values.
+
+Return to the main [Sphinx documentation pages](../index.html).
+
  */
 

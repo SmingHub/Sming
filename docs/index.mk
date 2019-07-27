@@ -10,26 +10,31 @@ $(if $(filter %.rst,$(CMP_$2_README)),
 )
 
 References
-------------
-* :source:`Source Code <$3>`
+----------
 $(if $(findstring $3=,$(SUBMODULE_URLS)),
-* This is a submodule: `GIT repository <$(call GetSubmoduleURL,$3)>`__.
-)
-$(foreach d,$(sort $(COMPONENT_DEPEND_DIRS)),
+* `Soure Code <$(call GetSubmoduleURL,$3)>`__ (submodule, may be patched).,
+* :source:`Source Code <$3>`)
+$(foreach d,$(sort $(CMP_$2_DEPEND_DIRS)),
 * :doc:`$d/index` Component
 )
-$(foreach l,$(sort $(ARDUINO_LIBRARIES)),
+$(foreach l,$(sort $(CMP_$2_LIBRARIES)),
 * :library:`$l` Library
 )
 
-$(if $(COMPONENT_ENVVARS),
+$(if $(CMP_$1_XREF),
+Used by
+-------
+$(foreach c,$(sort $(CMP_$1_XREF)),
+* :doc:`$(call GetDocPath,$c)/index` $(call GetComponentType,$c)))
+
+$(if $(CMP_$2_ENVVARS),
 Environment Variables
 ---------------------
-$(foreach v,$(COMPONENT_ENVVARS),
+$(foreach v,$(CMP_$2_ENVVARS),
 * :envvar:`$v`
 ))
 
-$(foreach m,$(COMPONENT_SUBMODULES),
+$(foreach m,$(CMP_$2_SUBMODULES),
 Submodule: `$m <$(call GetSubmoduleURL,$3/$m)>`__
 -----------------------------------------------------------------------------------------------------
 

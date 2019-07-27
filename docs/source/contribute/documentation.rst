@@ -65,26 +65,32 @@ files.
 README files
 ============
 
-Samples must include a ``README.rst`` or ``README.md`` file describing:
+All Components, Libraries and Samples must include a ``README.rst`` or ``README.md`` file as follows:
 
-* The purpose of the sample
-* What is demonstrated
-* Useful relevant information for a beginner developer
-* Screenshot (optional) as a ``.png``, ``.jpg`` or ``.svg`` file
+  - **Main Heading**: This will be used as the title in the online documentation, so keep it brief but informative.
+    For example, ``BME280 Barometric Pressure Sensor``.
+  - **Purpose**: What is the purpose of the code?
+  - **References**: Is this based on or does it use existing code? Please include details.
+  - **Datasheets**: If appropriate, please include links to manufacturer's or external development websites.
+    Note that any submodules or dependencies are automatically documented: see :doc:`/_inc/Sming/building` for details,
+    specifically `COMPONENT_SUBMODULES` and `COMPONENT_DEPENDS`.
 
-Libraries and Components should also provide either a ``README.rst`` or
-``README.md`` file.
+You should also try to include any other information which could be useful information for a new developer.
+The purpose of samples projects is to demonstrate specific features or libraries, so please ensure this is adequately described.
 
-Any missing README files will be reported during the build.
+Optionally, you may also like to include a screenshot or other diagrams or illustrations.
+Please use ``.png``, ``.jpg`` or ``.svg`` files.
 
 .. attention::
    The README filename is case-sensitive
 
-You should use the available annotations to make browsing the
-documentation easier. Using the
+.. attention::
+   Please ensure there is only one top-level heading or the documentation contents will not display correctly.
+
+You should use the available annotations to make browsing the documentation easier. Using the
 `Sphinx roles <https://www.sphinx-doc.org/en/master/usage/restructuredtext/roles.html>`
-will insert hyper links to the corresponding definitions. The
-non-standard ones are detailed in the following sections.
+will insert hyper links to the corresponding definitions.
+Additional roles are provided specifically for the Sming documentation - see `link-roles`_ below.
 
 Code blocks
 -----------
@@ -191,8 +197,13 @@ You can refer to them like this:
 
    Change baud rate using the :envvar:`COM_SPEED` variable.
 
-Pre-defined references
-----------------------
+
+.. _link-roles:
+
+Link Roles
+----------
+
+The documentation build system provides some custom roles for creating links.
 
 Components
 ~~~~~~~~~~
@@ -251,7 +262,7 @@ If you want to refer to discussions on github, insert links like this:
 ::
 
    See :pull-request:`787`
-   
+
    See :issue:`1764`
 
 

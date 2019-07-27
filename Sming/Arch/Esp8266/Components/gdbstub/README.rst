@@ -12,7 +12,7 @@ include some code (``gdbstub``) which communicates via the serial port.
 On the ESP8266 only UART0 may be used for this as UART1 is
 transmit-only.
 
-The gdbstub code will only be built if you specify :c:macro:`ENABLE_GDB`
+The gdbstub code will only be built if you specify :envvar:`ENABLE_GDB`
 =1 when compiling your application. At startup, before your init()
 function is called, it will claim UART0 so your application will be
 unable to use it directly. Therefore, the default port for ``Serial``
@@ -61,20 +61,34 @@ Usage
    resetting the board or after it has run into an exception. The
    easiest way to do it is to use the provided script: ``make gdb``.
 
-To run manually in Linux:
+To run manually, see the following variables which you can inspect using ``make list-config``.
 
-.. code-block:: bash
+.. envvar:: GDB_CMDLINE
 
-   $ESP_HOME/xtensa-lx106-elf/bin/xtensa-lx106-elf-gdb -x $SMING_HOME/gdb/gdbcmds -b 115200 -ex "target remote /dev/ttyUSB0"
+   Command line used to run GDB.
 
-Windows command line:
 
-.. code-block:: batch
+.. envvar:: GDBSTUB_DIR
 
-   %ESP_HOME%\xtensa-lx106-elf\bin\xtensa-lx106-elf-gdb -x %SMING_HOME%\gdb\gdbcmds -b 115200 -ex "target remote COM4"
+   Location of the GDB stub component, and the ``gdbcmds`` file.
 
-In both cases the appropriate baud rate and COM port should be
-substituted.
+
+.. envvar:: COM_PORT_GDB
+
+   Defaults to :envvar:`COM_PORT`, but if necessary you can change it to a different value.
+
+
+.. envvar:: COM_SPEED_GDB
+
+   Same as :envvar:`COM_SPEED_SERIAL`, which is the value compiled into the gdbstub code.
+
+
+.. envvar:: GDB
+
+   Path to the GDB executable being used.
+
+
+.. _useful-gdb-commands:
 
 Useful GDB commands
 -------------------

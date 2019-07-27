@@ -13,8 +13,6 @@ from docutils import nodes, utils
 from sphinx import roles, addnodes
 from sphinx.util.nodes import set_role_source_info, split_explicit_title
 
-baseurl = 'https://github.com/SmingHub/Sming'
-
 def run_cmd_get_output(cmd):
     return os.popen(cmd).read().strip()
 
@@ -29,6 +27,8 @@ def get_github_rev():
 
 
 def setup(app):
+    baseurl = os.path.splitext(run_cmd_get_output('git ls-remote --get-url'))[0]
+
     sming_home = os.environ.get('SMING_HOME', None)
     if sming_home:
         smingdir = os.path.abspath(sming_home + '/..')

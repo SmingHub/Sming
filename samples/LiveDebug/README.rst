@@ -1,22 +1,22 @@
 Live Debug
 ==========
 
+.. highlight:: bash
+
 This project is an example of how to integrate GDB debugging into your
 project. It provides a basic command interface which you can use via
 regular serial terminal or with the GDB application.
 
 To use this sample application with the command-line GDB application,
-simply build and flash the project as usual:
-
-.. code:: bash
+simply build and flash the project as usual::
 
    make clean
    make flash
 
 You should be presented with the GDB command prompt. Enter ‘c’ to
-continue running the application.
+continue running the application:
 
-::
+.. code-block:: text
 
    (gdb) c
    Continuing.
@@ -31,9 +31,7 @@ Note that if you run this application via serial terminal
 2. Debugging under eclipse
 
 Interacting with the GDB console causes problems for eclipse, so compile
-with the ``ENABLE_GDB_CONSOLE=0`` option:
-
-.. code:: bash
+with the ``ENABLE_GDB_CONSOLE=0`` option::
 
    make clean
    make flash ENABLE_CONSOLE=0
@@ -45,9 +43,9 @@ Exception Handling
 ------------------
 
 Sming comes with a built-in exception handling that takes care to
-display the stack trace leading to the issue. Usually it looks like this
+display the stack trace leading to the issue. Usually it looks like this:
 
-::
+.. code-block:: text
 
    ***** Fatal exception 28 (LOAD_PROHIBITED)
    pc=0x40100e96 sp=0x3ffff640 excvaddr=0x000015b8
@@ -61,7 +59,7 @@ display the stack trace leading to the issue. Usually it looks like this
 
    Stack dump:
    To decode the stack dump call from command line:
-      python $SMING_HOME/../tools/decode-stacktrace.py out/build/app.out
+      make decode-stacktrace
    and copy & paste the text enclosed in '===='.
    ================================================================
    3ffff640:  40100e96 00000033 00000018 000000f0
@@ -76,10 +74,10 @@ display the stack trace leading to the issue. Usually it looks like this
 
    ================================================================
 
-With the help of ``decode-stacktrace.py`` you can decode the stack trace
-to something readable like:
+Enter ``make decode-stacktrace`` then copy & paste the text
+to produce something readable like this:
 
-::
+.. code-block:: text
 
    0x40100e96: pvPortRealloc at ??:                                                       ?
    0x40100d69: pvPortMalloc at ??:?
@@ -93,6 +91,10 @@ to something readable like:
    0x40221d60: pbuf_alloc at ??:?
    0x40221f0a: pbuf_copy at ??:?
    0x4023d3e4: m_vsnprintf at C:\tools\Sming-3.1.2\Sming/system/m_printf.cpp:69
+
+Note that you can also put the stack trace into a file, for example ``dump.txt`` then enter::
+
+   make decode-stacktrace TRACE=dump.txt
 
 Using the information about the type of the exception (ex:
 ``***** Fatal exception 28``) and the sequence of commands might help us
@@ -109,9 +111,7 @@ code and be able to see much more information about the things that went
 wrong.
 
 To use, (Re)compile your project with the ``ENABLE_GDB`` option and
-flash it to the board.
-
-.. code:: bash
+flash it to the board::
 
    make clean
    make ENABLE_GDB=1
@@ -120,9 +120,7 @@ flash it to the board.
 Instead of a terminal, the GDB console will be opened automatically.
 
 If you need to run GDB manually after resetting the board or after it
-has run into an exception, use the provided script:
-
-.. code:: bash
+has run into an exception, use the provided script::
 
    make gdb
 
@@ -131,6 +129,4 @@ During development you can use the GDB_IRAM_ATTR attribute in your
 function declarations. Code in flash can only have a hardware breakpoint
 (‘hbr’).
 
-Read the GDB stub
-`Notes <https://github.com/SmingHub/Sming/tree/develop/Sming/gdb/readme.md>`__
-for more information.
+Read the GDB stub :component-esp8266:`Notes <gdbstub>` for more information.

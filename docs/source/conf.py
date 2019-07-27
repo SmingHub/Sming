@@ -26,10 +26,6 @@ sys.path.insert(0, os.path.abspath('.'))
 project = 'Sming'
 copyright = 'Sming Developer Team'
 
-# The full version, including alpha/beta/rc tags
-# release = '4.0.0'
-
-
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
@@ -98,9 +94,6 @@ html_extra_path = [
 
 
 ##
-subprocess.call(["make", "-C", "../../Sming", "submodules", "SMING_ARCH=Host"])
-subprocess.call(["make", "-C", "..", "setup", "api"])
-
 # -- Use sphinx_rtd_theme for local builds --------------------------------
 # ref. https://github.com/snide/sphinx_rtd_theme#using-this-theme-locally-then-building-on-read-the-docs
 #
@@ -108,11 +101,17 @@ subprocess.call(["make", "-C", "..", "setup", "api"])
 env_readthedocs = os.environ.get('READTHEDOCS', None)
 print(env_readthedocs)
 
-if not env_readthedocs:  # only import and set the theme if we're building docs locally
+if env_readthedocs:
+    # Start the build from a clean slate
+    subprocess.call('make -C ../../Sming dist-clean SMING_ARCH=Host', shell=True)
+else:
+    # only import and set the theme if we're building docs locally
     import sphinx_rtd_theme
     html_theme = 'sphinx_rtd_theme'
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
+subprocess.call('make -C ../../Sming submodules SMING_ARCH=Host', shell=True)
+subprocess.call('make -C .. setup api API_VERSION="' + version + '"', shell=True)
 
 def setup(app):
     app.add_stylesheet('custom.css')

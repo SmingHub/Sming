@@ -1,4 +1,4 @@
-# MCP23017
+# MCP23017 I2C Port Expander
 
 https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library.git
 

@@ -1,5 +1,5 @@
-SI7021
-======
+SI7020/SI7021 Environmental Sensors
+===================================
 
 Arduino library for SI7020 and SI7021 environmental sensors
 

@@ -1,4 +1,4 @@
-# CapacitiveSensor Library
+# Capacitive Sensor Library
 
 CapacitiveSensor lets you create sensors that can detect touch or proximity. 
 
