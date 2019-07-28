@@ -146,7 +146,6 @@ class MultipartParser
   private:
     multipart_parser_settings_t settings;
 
-    HttpParams params;
     bool useValue = false;
 
     HttpRequest* request;
@@ -184,9 +183,8 @@ MultipartParser::MultipartParser(HttpRequest* request)
 
 MultipartParser::~MultipartParser()
 {
-    if (parser != NULL) {
-        multipart_parser_free(parser);
-    }
+    multipart_parser_free(parser);
+    parser = nullptr;
 }
 
 void MultipartParser::execute(const char* at, size_t length)
@@ -197,7 +195,7 @@ void MultipartParser::execute(const char* at, size_t length)
 int MultipartParser::partBegin(multipart_parser_t* p)
 {
     MultipartParser* parser = (MultipartParser*)p->data;
-    if (parser == NULL) {
+    if (parser == nullptr) {
         return -1;
     }
 
@@ -209,7 +207,7 @@ int MultipartParser::readHeaderName(multipart_parser_t* p, const char* at,
                                     size_t length)
 {
     MultipartParser* parser = (MultipartParser*)p->data;
-    if (parser == NULL) {
+    if (parser == nullptr) {
         return -1;
     }
 
@@ -224,7 +222,7 @@ int MultipartParser::readHeaderValue(multipart_parser_t* p, const char* at,
                                      size_t length)
 {
     MultipartParser* parser = (MultipartParser*)p->data;
-    if (parser == NULL) {
+    if (parser == nullptr) {
         return -1;
     }
 
@@ -252,22 +250,24 @@ int MultipartParser::partData(multipart_parser_t* p, const char* at,
                               size_t length)
 {
     MultipartParser* parser = (MultipartParser*)p->data;
-    if (parser == NULL) {
+    if (parser == nullptr) {
         return -1;
     }
 
-    parser->params[parser->name] += String(at, length);
+    ReadWriteStream* stream = parser->request->files[parser->name];
+    if(stream != nullptr) {
+    	stream->write((uint8_t*)at, length);
+    }
+
     return 0;
 }
 
 int MultipartParser::partEnd(multipart_parser_t* p)
 {
     MultipartParser* parser = (MultipartParser*)p->data;
-    if (parser == NULL) {
+    if (parser == nullptr) {
         return -1;
     }
-
-    parser->request->postParams[parser->name] = parser->params[parser->name];
 
     return 0;
 }
@@ -275,14 +275,8 @@ int MultipartParser::partEnd(multipart_parser_t* p)
 int MultipartParser::bodyEnd(multipart_parser_t* p)
 {
     MultipartParser* parser = (MultipartParser*)p->data;
-    if (parser == NULL) {
+    if (parser == nullptr) {
         return -1;
-    }
-
-    for (unsigned i = 0; i < parser->params.count(); i++) {
-        String name = parser->params.keyAt(i);
-        String value = parser->params.valueAt(i);
-        parser->request->postParams[name] = value;
     }
 
     return 0;
@@ -293,9 +287,7 @@ void formMultipartParser(HttpRequest& request, const char* at, int length)
     MultipartParser* parser = (MultipartParser*)request.args;
 
     if (length == -1) {
-        if (parser != NULL) {
-            delete parser;
-        }
+        delete parser;
 
         parser = new MultipartParser(&request);
         request.args = parser;
@@ -304,9 +296,9 @@ void formMultipartParser(HttpRequest& request, const char* at, int length)
     }
 
     if (length == -2) {
-        if (parser != NULL) {
-            delete parser;
-        }
+        delete parser;
+        request.args = nullptr;
+
         return;
     }
 

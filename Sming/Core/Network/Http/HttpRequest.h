@@ -119,7 +119,7 @@ public:
 	 *
 	 * @retval HttpRequest*
 	 */
-	HttpRequest* setFile(const String& formElementName, IDataSourceStream* stream)
+	HttpRequest* setFile(const String& formElementName, ReadWriteStream* stream)
 	{
 		if(stream != nullptr) {
 			files[formElementName] = stream;
@@ -276,6 +276,7 @@ public:
 	HttpMethod method = HTTP_GET;
 	HttpHeaders headers;
 	HttpParams postParams;
+	HttpFiles files;
 
 	int retries = 0; // how many times the request should be send again...
 
@@ -300,7 +301,5 @@ protected:
 #endif
 
 private:
-	ObjectMap<String, IDataSourceStream> files;
-
 	HttpParams* queryParams = nullptr; // << @todo deprecate
 };
