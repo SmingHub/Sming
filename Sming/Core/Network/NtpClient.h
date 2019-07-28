@@ -44,7 +44,7 @@ class NtpClient : protected UdpConnection
 public:
 	/** @brief  Instantiates NTP client object
      */
-	NtpClient() : NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, nullptr)
+	NtpClient() : NtpClient(nullptr, NTP_DEFAULT_AUTOQUERY_SECONDS, nullptr)
 	{
 	}
 
@@ -52,12 +52,12 @@ public:
      *  @param  onTimeReceivedCb Callback delegate to be called when NTP time result is received
      */
 	NtpClient(NtpTimeResultDelegate onTimeReceivedCb)
-		: NtpClient(NTP_DEFAULT_SERVER, NTP_DEFAULT_AUTOQUERY_SECONDS, onTimeReceivedCb)
+		: NtpClient(nullptr, NTP_DEFAULT_AUTOQUERY_SECONDS, onTimeReceivedCb)
 	{
 	}
 
 	/** @brief  Instantiates NTP client object
-     *  @param  reqServer IP address or hostname of NTP server
+     *  @param  reqServer IP address or hostname of NTP server; nullptr to use default server
      *  @param  reqIntervalSeconds Quantity of seconds between NTP requests
      *  @param  onTimeReceivedCb Callback delegate to be called when NTP time result is received (Default: None)
      */
