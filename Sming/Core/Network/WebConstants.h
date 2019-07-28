@@ -27,6 +27,7 @@
 	/* Type, extension start, Mime type */                                                                             \
                                                                                                                        \
 	/* Texts */                                                                                                        \
+	XX(UNKNOWN, "", "")                                                                                                \
 	XX(HTML, "html", "text/html")                                                                                      \
 	XX(TEXT, "txt", "text/plain")                                                                                      \
 	XX(JS, "js", "text/javascript")                                                                                    \
@@ -36,7 +37,7 @@
                                                                                                                        \
 	/* Images */                                                                                                       \
 	XX(JPEG, "jpg", "image/jpeg")                                                                                      \
-	XX(GIF, "git", "image/gif")                                                                                        \
+	XX(GIF, "gif", "image/gif")                                                                                        \
 	XX(PNG, "png", "image/png")                                                                                        \
 	XX(SVG, "svg", "image/svg+xml")                                                                                    \
 	XX(ICO, "ico", "image/x-icon")                                                                                     \
@@ -78,6 +79,21 @@ static inline String fromFileExtension(const String& extension)
  *  @retval String
  */
 String toString(enum MimeType m);
+
+/** @brief Get enumerated value for a MIME type string
+ *  @param str
+ *  @retval MimeType If empty, null or unrecognised returns MIME_UNKNOWN
+ */
+MimeType fromString(const char* str);
+
+/** @brief Get enumerated value for a MIME type string
+ *  @param str
+ *  @retval MimeType If empty, null or unrecognised returns MIME_UNKNOWN
+ */
+inline MimeType fromString(const String& str)
+{
+	return fromString(str.c_str());
+}
 
 /** @brief Obtain content type string from file name or path, with extension
  *  @param fileName

@@ -10,58 +10,54 @@
 
 #include "WebConstants.h"
 #include "FakePgmSpace.h"
+#include <Data/CStringArray.h>
 
 namespace ContentType
 {
 // MIME type strings
-#define XX(_name, _ext, _mime) DEFINE_FSTR_LOCAL(mimestr_##_name, _mime);
-MIME_TYPE_MAP(XX)
+#define XX(name, ext, mime) mime "\0"
+DEFINE_FSTR_LOCAL(fstr_mime, MIME_TYPE_MAP(XX))
 #undef XX
-
-static FSTR_TABLE(mimeStrings) = {
-#define XX(_name, _ext, _mime) FSTR_PTR(mimestr_##_name),
-	MIME_TYPE_MAP(XX)
-#undef XX
-};
 
 // File extensions
-#define XX(_name, _ext, _mime) DEFINE_FSTR_LOCAL(extstr_##_name, _ext);
-MIME_TYPE_MAP(XX)
+#define XX(name, ext, mime) ext "\0"
+DEFINE_FSTR_LOCAL(fstr_ext, MIME_TYPE_MAP(XX))
 #undef XX
-
-static FSTR_TABLE(extensionStrings) = {
-#define XX(_name, _ext, _mime) FSTR_PTR(extstr_##_name),
-	MIME_TYPE_MAP(XX)
-#undef XX
-};
 
 String fromFileExtension(const char* extension)
 {
-	// We accept 'htm' or 'html', but the latter is preferred
-	if(strcasecmp(extension, _F("htm")) == 0)
-		return mimestr_HTML;
+	CStringArray mimeStrings(fstr_mime);
 
-	for(unsigned i = 0; i < ARRAY_SIZE(extensionStrings); ++i) {
-		if(*extensionStrings[i] == extension)
-			return *mimeStrings[i];
+	// We accept 'htm' or 'html', but the latter is preferred
+	if(strcasecmp(extension, _F("htm")) == 0) {
+		return mimeStrings[MIME_HTML];
 	}
 
-	// Type undefined - if (String) will return false
-	return nullptr;
+	int i = CStringArray(fstr_ext).indexOf(extension);
+	if(i < 0) {
+		// Type undefined - if (String) will return false
+		return nullptr;
+	}
+
+	return mimeStrings[i];
 }
 
 String toString(enum MimeType m)
 {
-	if(m >= ARRAY_SIZE(mimeStrings))
-		return nullptr;
+	return CStringArray(fstr_mime)[m];
+}
 
-	return *mimeStrings[m];
+MimeType fromString(const char* str)
+{
+	int i = CStringArray(fstr_mime).indexOf(str);
+	return (i < 0) ? MIME_UNKNOWN : MimeType(i);
 }
 
 String fromFullFileName(const char* fileName)
 {
-	if(!fileName)
+	if(fileName == nullptr) {
 		return nullptr;
+	}
 
 	const char* extension = strrchr(fileName, '.');
 
