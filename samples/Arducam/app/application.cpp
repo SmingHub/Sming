@@ -121,7 +121,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 {
 	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
 	auto& vars = tmpl->variables();
-	response.sendTemplate(tmpl); // will be automatically deleted
+	response.sendNamedStream(tmpl); // will be automatically deleted
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)

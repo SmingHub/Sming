@@ -12,7 +12,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	auto& vars = tmpl->variables();
 	vars["T"] = StrT;
 	vars["RH"] = StrRH;
-	response.sendTemplate(tmpl);
+	response.sendNamedStream(tmpl);
 }
 
 void onConfiguration(HttpRequest& request, HttpResponse& response)
@@ -53,7 +53,7 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 	vars["Trigger"] = String((int)cfg.Trigger);
 	vars["RMin"] = String(cfg.RangeMin, 2);
 	vars["RMax"] = String(cfg.RangeMax, 2);
-	response.sendTemplate(tmpl);
+	response.sendNamedStream(tmpl);
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)
@@ -75,7 +75,7 @@ void onApiDoc(HttpRequest& request, HttpResponse& response)
 	TemplateFileStream* tmpl = new TemplateFileStream("api.html");
 	auto& vars = tmpl->variables();
 	vars["IP"] = (WifiStation.isConnected() ? WifiStation.getIP() : WifiAccessPoint.getIP()).toString();
-	response.sendTemplate(tmpl);
+	response.sendNamedStream(tmpl);
 }
 
 void onApiSensors(HttpRequest& request, HttpResponse& response)

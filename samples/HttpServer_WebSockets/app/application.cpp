@@ -18,7 +18,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	auto tmpl = new TemplateFileStream(F("index.html"));
 	auto& vars = tmpl->variables();
 	//vars["counter"] = String(counter);
-	response.sendTemplate(tmpl); // this template object will be deleted automatically
+	response.sendNamedStream(tmpl); // this template object will be deleted automatically
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)

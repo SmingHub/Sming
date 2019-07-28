@@ -23,7 +23,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	//vars["ledstate"] = (*portOutputRegister(digitalPinToPort(LED_PIN)) & digitalPinToBitMask(LED_PIN)) ? "checked" : "";
 	vars["IP"] = WifiStation.getIP().toString();
 	vars["MAC"] = WifiStation.getMAC();
-	response.sendTemplate(tmpl); // this template object will be deleted automatically
+	response.sendNamedStream(tmpl); // this template object will be deleted automatically
 }
 
 void onHello(HttpRequest& request, HttpResponse& response)

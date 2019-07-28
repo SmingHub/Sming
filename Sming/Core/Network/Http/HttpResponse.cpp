@@ -14,7 +14,6 @@
 #include "../WebConstants.h"
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/FileStream.h"
-#include "Data/Stream/TemplateStream.h"
 
 HttpResponse* HttpResponse::setContentType(const String& type)
 {
@@ -65,60 +64,47 @@ bool HttpResponse::sendString(const String& text)
 	return memoryStream->print(text) == text.length();
 }
 
-bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck)
+bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
 {
+	IDataSourceStream* stream = nullptr;
 	String compressed = fileName + ".gz";
 	if(allowGzipFileCheck && fileExist(compressed)) {
 		debug_d("found %s", compressed.c_str());
-		setStream(new FileStream(compressed));
+		stream = new FileStream(compressed);
 		headers[HTTP_HEADER_CONTENT_ENCODING] = _F("gzip");
 	} else if(fileExist(fileName)) {
 		debug_d("found %s", fileName.c_str());
-		setStream(new FileStream(fileName));
-	} else {
-		setStream(nullptr);
-		code = HTTP_STATUS_NOT_FOUND;
-		return false;
+		stream = new FileStream(fileName);
 	}
 
-	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
-		String mime = ContentType::fromFullFileName(fileName);
-		if(mime)
-			setContentType(mime);
-	}
-
-	return true;
+	return sendNamedStream(stream);
 }
 
-bool HttpResponse::sendTemplate(TemplateStream* newTemplateInstance)
+bool HttpResponse::sendNamedStream(IDataSourceStream* newDataStream)
 {
-	setStream(newTemplateInstance);
-	if(!newTemplateInstance->isValid()) {
-		code = HTTP_STATUS_NOT_FOUND;
-		freeStreams();
-		return false;
-	}
-
+	String contentType;
 	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
-		String mime = ContentType::fromFullFileName(newTemplateInstance->getName());
-		if(mime) {
-			setContentType(mime);
-		}
+		contentType = ContentType::fromFullFileName(newDataStream->getName());
 	}
 
-	if(!headers.contains(HTTP_HEADER_TRANSFER_ENCODING) && stream->available() < 0) {
-		headers[HTTP_HEADER_TRANSFER_ENCODING] = _F("chunked");
-	}
-
-	return true;
+	return sendDataStream(newDataStream, contentType);
 }
 
 bool HttpResponse::sendDataStream(IDataSourceStream* newDataStream, const String& reqContentType)
 {
 	setStream(newDataStream);
+	if(newDataStream == nullptr || !newDataStream->isValid()) {
+		code = HTTP_STATUS_NOT_FOUND;
+		freeStreams();
+		return false;
+	}
 
 	if(reqContentType) {
 		setContentType(reqContentType);
+	}
+
+	if(!headers.contains(HTTP_HEADER_TRANSFER_ENCODING) && stream->available() < 0) {
+		headers[HTTP_HEADER_TRANSFER_ENCODING] = _F("chunked");
 	}
 
 	return true;
