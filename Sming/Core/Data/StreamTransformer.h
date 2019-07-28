@@ -78,6 +78,11 @@ public:
 	//Use base class documentation
 	bool isFinished() override;
 
+	String getName() const override
+	{
+		return (sourceStream == nullptr) ? nullptr : sourceStream->getName();
+	}
+
 	/**
 	 * @brief A method that backs up the current state
 	 *

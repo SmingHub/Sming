@@ -73,5 +73,5 @@ bool StreamTransformer::seek(int len)
 //Use base class documentation
 bool StreamTransformer::isFinished()
 {
-	return (sourceStream->isFinished() && tempStream->isFinished());
+	return (sourceStream->isFinished() && (tempStream == nullptr || tempStream->isFinished()));
 }
