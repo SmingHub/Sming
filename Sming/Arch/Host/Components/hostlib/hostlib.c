@@ -17,7 +17,7 @@
  *
  ****/
 
-#include "hostlib.h"
+#include "include/hostlib/hostlib.h"
 #include <time.h>
 #include <string.h>
 

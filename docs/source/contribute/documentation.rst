@@ -141,7 +141,7 @@ which is then made available using the
 `Breathe <https://breathe.readthedocs.io/en/latest/>`_ sphinx
 extension. You can then pull in definitions like this::
 
-   .. doxygenclass::`String`
+   .. doxygenclass:: String
       :members:
 
 If you wish to refer to a type within documentation, you can add a link

@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <hostlib/hostlib.h>
+#include <cstddef>
 
 struct FlashmemConfig {
 	const char* filename; ///< Path to flash backing file

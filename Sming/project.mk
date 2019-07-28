@@ -53,7 +53,7 @@ RELINK_VARS		:=
 CACHE_VARS		:=
 
 # Use PROJECT_DIR to identify the project source directory, from where this makefile must be included
-CONFIG_VARS			+= PROJECT_DIR
+DEBUG_VARS			+= PROJECT_DIR
 PROJECT_DIR			:= $(CURDIR)
 
 ifeq ($(MAKELEVEL),0)
@@ -98,7 +98,8 @@ LDFLAGS = \
 
 
 # Name of the application to use for link output targets
-APP_NAME			:= app
+CACHE_VARS			+= APP_NAME
+APP_NAME			?= app
 
 # Firmware memory layout info files
 FW_MEMINFO_NEW		:= $(FW_BASE)/fwMeminfo.new
@@ -432,9 +433,9 @@ include $(ARCH_BASE)/app.mk
 rebuild: clean all ##Re-build application
 
 .PHONY: checkdirs
-checkdirs: | $(BUILD_DIRS) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR)
+checkdirs: | $(BUILD_BASE) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR)
 
-$(BUILD_DIRS) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR):
+$(BUILD_BASE) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR):
 	$(Q) mkdir -p $@
 
 # Build all Component (user) libraries
@@ -460,7 +461,7 @@ components-clean: ##Remove generated Component libraries
 .PHONY: config-clean
 config-clean: ##Clear build configuration, so next make will use original defaults
 	@echo Cleaning build configuration
-	-$(Q) rm -f $(BUILD_TYPE_FILE) $(CONFIG_CACHE_FILE)
+	-$(Q) rm -f $(CONFIG_CACHE_FILE)
 
 .PHONY: clean
 clean: ##Remove all generated build files (but leave build config intact)
