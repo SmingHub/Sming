@@ -7,7 +7,7 @@
 
 #pragma once
 
-#define 	_BV(bit)   (1 << (bit))
+#define 	_BV(bit)   (1 << (unsigned)(bit))
 
 #define bit(x) _BV(x)
 #define setBits(x, y) ((x) |= (y))
