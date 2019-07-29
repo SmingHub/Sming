@@ -4,9 +4,9 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * WebsocketResource.h
+ * HttpMultipartResource.h
  *
- * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
+ * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
 
@@ -15,17 +15,28 @@
 #include "HttpServerConnection.h"
 #include "HttpResource.h"
 #include "WString.h"
-#include "WHashMap.h"
 
 typedef Delegate<void(HttpFiles&)> HttpFilesMapper;
 
 class HttpMultipartResource : public HttpResource
 {
 public:
-	HttpMultipartResource(const HttpFilesMapper& mapper, HttpResourceDelegate process)
+	/**
+	 * @brief HttpResource that allows handling of HTTP file upload.
+	 * @param mapper callback that provides information where the desired upload fields will be stored.
+	 * @param complete callback that will be called after the request has completed.
+	 * @note:
+	 * 		 On a normal computer the file uploads are usually using
+	 * 		 temporary space on the hard disk or in memory to store the incoming data.
+	 * 		 On an embedded device that is a luxury that we can hardly afford.
+	 * 		 Therefore we should define a `map` that specifies explicitly
+	 * 		 where every form field will be stored.
+	 * 		 If a field is not specified then its content will be discarded.
+	 */
+	HttpMultipartResource(const HttpFilesMapper& mapper, HttpResourceDelegate complete)
 	{
 		onHeadersComplete = HttpResourceDelegate(&HttpMultipartResource::setFileMap, this);
-		onRequestComplete = process;
+		onRequestComplete = complete;
 		this->mapper = mapper;
 	}
 

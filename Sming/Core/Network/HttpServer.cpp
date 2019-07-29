@@ -24,7 +24,7 @@ void HttpServer::configure(const HttpServerSettings& settings)
 	if(settings.useDefaultBodyParsers) {
 		setBodyParser(ContentType::toString(MIME_FORM_URL_ENCODED), formUrlParser);
 #ifdef ENABLE_HTTP_SERVER_MULTIPART
-        setBodyParser(ContentType::toString(MIME_FORM_MULTIPART), formMultipartParser);
+		setBodyParser(ContentType::toString(MIME_FORM_MULTIPART), formMultipartParser);
 #endif
 	}
 

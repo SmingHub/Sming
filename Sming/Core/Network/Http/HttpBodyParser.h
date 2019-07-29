@@ -48,5 +48,5 @@ void formUrlParser(HttpRequest& request, const char* at, int length);
 void bodyToStringParser(HttpRequest& request, const char* at, int length);
 
 #ifdef ENABLE_HTTP_SERVER_MULTIPART
-void formMultipartParser(HttpRequest& request, const char *at, int length);
+void formMultipartParser(HttpRequest& request, const char* at, int length);
 #endif

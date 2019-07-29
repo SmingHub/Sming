@@ -4,9 +4,9 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * WebsocketResource.cpp
+ * HttpMultipartResource.cpp
  *
- * @author: 2017 - Slavey Karadzhov <slav@attachix.com>
+ * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
 
@@ -14,8 +14,9 @@
 
 int HttpMultipartResource::setFileMap(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
-	const String& contentType = request.headers[HTTP_HEADER_CONTENT_TYPE];
-	if(request.method != HTTP_POST /* || !contentType.startsWith(String(MIME_FORM_MULTIPART)) */) {
+	String contentType = request.headers[HTTP_HEADER_CONTENT_TYPE];
+	String mimeType = ContentType::toString(MIME_FORM_MULTIPART);
+	if(!(request.method == HTTP_POST && contentType.startsWith(mimeType))) {
 		return 0;
 	}
 
@@ -26,5 +27,4 @@ int HttpMultipartResource::setFileMap(HttpServerConnection& connection, HttpRequ
 
 void HttpMultipartResource::shutdown(HttpServerConnection& connection)
 {
-
 }
