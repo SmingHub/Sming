@@ -168,33 +168,43 @@
  *  @note Use the PROJECT_DIR to locate files in your project's source tree. For example:
  *  		IMPORT_FSTR(myFlashString, PROJECT_DIR "/files/my_flash_file.txt");
  */
-#ifdef __WIN32
 #define IMPORT_FSTR(name, file)                                                                                        \
-	__asm__(".section .rodata\n"                                                                                       \
-			".global _" #name "\n"                                                                                     \
-			".def _" #name "; .scl 2; .type 32; .endef\n"                                                              \
-			".align 4\n"                                                                                               \
-			"_" #name ":\n"                                                                                            \
-			".long _" #name "_end - _" #name " - 4\n"                                                                  \
-			".incbin \"" file "\"\n"                                                                                   \
-			"_" #name "_end:\n");                                                                                      \
+	IMPORT_FSTR_STRUCT(name, file)                                                                                     \
 	extern const __attribute__((aligned(4))) FlashString name;
+
+/*
+ * We need inline assembler's `.incbin` instruction to actually import the data.
+ * This links the contents of the file and defines a global symbol.
+ * We use a macro STR() so that if required the name can be resolved from a #defined value.
+ */
+#define STR(x) XSTR(x)
+#define XSTR(x) #x
+#ifdef __WIN32
+#define IMPORT_FSTR_STRUCT(name, file)                                                                                 \
+	__asm__(".section .rodata\n"                                                                                       \
+			".global _" STR(name) "\n"                                                                                 \
+			".def _" STR(name) "; .scl 2; .type 32; .endef\n"                                                          \
+			".align 4\n"                                                                                               \
+			"_" STR(name) ":\n"                                                                                        \
+			".long _" STR(name) "_end - _" STR(name) " - 4\n"                                                          \
+			".incbin \"" file "\"\n"                                                                                   \
+			"_" STR(name) "_end:\n");
 #else
 #ifdef ARCH_HOST
 #define IROM_SECTION ".rodata"
 #else
 #define IROM_SECTION ".irom0.text"
 #endif
-#define IMPORT_FSTR(name, file)                                                                                        \
+#define IMPORT_FSTR_STRUCT(name, file)                                                                                 \
 	__asm__(".section " IROM_SECTION "\n"                                                                              \
-			".global " #name "\n"                                                                                      \
-			".type " #name ", @object\n"                                                                               \
-			".align 4\n" #name ":\n"                                                                                   \
-			".long _" #name "_end - " #name " - 4\n"                                                                   \
+			".global " STR(name) "\n"                                                                                  \
+			".type " STR(name) ", @object\n"                                                                           \
+			".align 4\n" STR(name) ":\n"                                                                               \
+			".long _" STR(name) "_end - " STR(name) " - 4\n"                                                           \
 			".incbin \"" file "\"\n"                                                                                   \
-			"_" #name "_end:\n");                                                                                      \
-	extern const __attribute__((aligned(4))) FlashString name;
+			"_" STR(name) "_end:\n");
 #endif
+
 
 /** @brief describes a counted string stored in flash memory
  *  @note because the string length is stored there is no need to call strlen_P before reading the
