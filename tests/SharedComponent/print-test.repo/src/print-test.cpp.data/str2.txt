@@ -1,0 +1,26 @@
+If this file contained HTML, for example, it's much easier using a separate file
+for the content since you don't need to worry about escaping text. For example:
+
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Index of {path}</title>
+</head>
+<body>
+<h1>Index of {path}</h1>
+<table>
+<tr>
+<th>Name</th>
+<th>Last modified</th>
+<th>Size</th>
+<th>Attributes</th>
+<th>Access</th>
+</tr>
+<tr>
+<th colspan="6"><hr></th>
+</tr>
+<tr>
+<td><img src="back.gif" alt="[PARENTDIR]"></td>
+<td colspan="5"><a href="/">Parent Directory</a></td>
+</tr>
