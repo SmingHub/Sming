@@ -3,7 +3,7 @@
  */
 
 #include <SmingCore.h>
-#include <Services/Profiling/ElapseTimer.h>
+#include <Services/Profiling/CycleCounter.h>
 #include "callbacks.h"
 
 #ifdef ARCH_HOST
@@ -15,17 +15,6 @@ const unsigned ITERATIONS = 100000;
 typedef Delegate<void(int)> TestDelegate;
 typedef void (*TestCallback)(int);
 
-static uint32_t __forceinline getCycleCount()
-{
-#ifdef ARCH_ESP8266
-	uint32_t ccount;
-	__asm__ __volatile__("rsr %0,ccount" : "=a"(ccount));
-	return ccount;
-#else
-	return NOW();
-#endif
-}
-
 static void printTime(const char* name, unsigned elapsed)
 {
 	Serial.printf("%s: %u\r\n", name, elapsed / ITERATIONS);
@@ -33,21 +22,21 @@ static void printTime(const char* name, unsigned elapsed)
 
 static void __attribute__((noinline)) evaluateCallback(const char* name, TestCallback callback, int testParam)
 {
-	unsigned startTicks = getCycleCount();
+	CycleCounter counter;
 	for(unsigned i = 0; i < ITERATIONS; ++i) {
 		callback(testParam);
 	}
-	unsigned elapsed = getCycleCount() - startTicks;
+	unsigned elapsed = counter.elapsed();
 	printTime(name, elapsed);
 }
 
 static void __attribute__((noinline)) evaluateDelegate(const char* name, TestDelegate delegate, int testParam)
 {
-	unsigned startTicks = getCycleCount();
+	CycleCounter counter;
 	for(unsigned i = 0; i < ITERATIONS; ++i) {
 		delegate(testParam);
 	}
-	unsigned elapsed = getCycleCount() - startTicks;
+	unsigned elapsed = counter.elapsed();
 	printTime(name, elapsed);
 }
 
