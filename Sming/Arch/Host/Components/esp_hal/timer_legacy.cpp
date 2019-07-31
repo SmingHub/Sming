@@ -53,10 +53,13 @@ void host_service_timers()
 		if(t->timer_period == 0) {
 			// Non-repeating timer, remove now
 			t_prev->timer_next = t->timer_next;
+		} else {
+			t->timer_expire = time_now + t->timer_period;
 		}
 		if(t->timer_func != nullptr) {
 			t->timer_func(t->timer_arg);
+			// Timers may have been deleted, added, etc. so try again later
+			break;
 		}
-		t->timer_expire = time_now + t->timer_period;
 	}
 }
