@@ -289,10 +289,28 @@ index d622f97..00ccaeb 100644
  	// copy the loader to top of iram
  	ets_memcpy((void*)_text_addr, _text_data, _text_len);
  	// return address to load from
- diff --git a/appcode/rboot-api.c b/appcode/rboot-api.c
-index eb4d028..fc00ce1 100644
+diff --git a/appcode/rboot-api.c b/appcode/rboot-api.c
+index eb4d028..490a763 100644
 --- a/appcode/rboot-api.c
 +++ b/appcode/rboot-api.c
+@@ -9,7 +9,7 @@
+ #include <string.h>
+ // c_types.h needed for spi_flash.h
+ #include <c_types.h>
+-#include <spi_flash.h>
++#include <esp_spi_flash.h>
+ 
+ #include "rboot-api.h"
+ 
+@@ -33,7 +33,7 @@ static uint8_t calc_chksum(uint8_t *start, uint8_t *end) {
+ // get the rboot config
+ rboot_config ICACHE_FLASH_ATTR rboot_get_config(void) {
+ 	rboot_config conf;
+-	spi_flash_read(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32_t*)&conf, sizeof(rboot_config));
++	flashmem_read(&conf, BOOT_CONFIG_SECTOR * SECTOR_SIZE, sizeof(rboot_config));
+ 	return conf;
+ }
+ 
 @@ -43,7 +43,7 @@ rboot_config ICACHE_FLASH_ATTR rboot_get_config(void) {
  // updates checksum automatically (if enabled)
  bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf) {
@@ -302,9 +320,17 @@ index eb4d028..fc00ce1 100644
  	if (!buffer) {
  		//os_printf("No ram!\r\n");
  		return false;
-@@ -58,7 +58,7 @@ bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf) {
- 	spi_flash_erase_sector(BOOT_CONFIG_SECTOR);
- 	spi_flash_write(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32_t*)((void*)buffer), SECTOR_SIZE);
+@@ -53,12 +53,12 @@ bool ICACHE_FLASH_ATTR rboot_set_config(rboot_config *conf) {
+ 	conf->chksum = calc_chksum((uint8_t*)conf, (uint8_t*)&conf->chksum);
+ #endif
+ 	
+-	spi_flash_read(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32_t*)((void*)buffer), SECTOR_SIZE);
++	flashmem_read(buffer, BOOT_CONFIG_SECTOR * SECTOR_SIZE, SECTOR_SIZE);
+ 	memcpy(buffer, conf, sizeof(rboot_config));
+-	spi_flash_erase_sector(BOOT_CONFIG_SECTOR);
+-	spi_flash_write(BOOT_CONFIG_SECTOR * SECTOR_SIZE, (uint32_t*)((void*)buffer), SECTOR_SIZE);
++	flashmem_erase_sector(BOOT_CONFIG_SECTOR);
++	flashmem_write(buffer, BOOT_CONFIG_SECTOR * SECTOR_SIZE, SECTOR_SIZE);
  	
 -	vPortFree(buffer, 0, 0);
 +	os_free(buffer);
@@ -320,7 +346,20 @@ index eb4d028..fc00ce1 100644
  	if (!buffer) {
  		//os_printf("No ram!\r\n");
  		return false;
-@@ -152,7 +152,7 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8_t *da
+@@ -141,18 +141,18 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8_t *da
+ 		lastsect = ((status->start_addr + len) - 1) / SECTOR_SIZE;
+ 		while (lastsect > status->last_sector_erased) {
+ 			status->last_sector_erased++;
+-			spi_flash_erase_sector(status->last_sector_erased);
++			flashmem_erase_sector(status->last_sector_erased);
+ 		}
+ 
+ 		// write current chunk
+ 		//os_printf("write addr: 0x%08x, len: 0x%04x\r\n", status->start_addr, len);
+-		if (spi_flash_write(status->start_addr, (uint32_t *)((void*)buffer), len) == SPI_FLASH_RESULT_OK) {
++		if (flashmem_write(buffer, status->start_addr, len) == len) {
+ 			ret = true;
+ 			status->start_addr += len;
  		}
  	//}
  
@@ -328,4 +367,4 @@ index eb4d028..fc00ce1 100644
 +	os_free(buffer);
  	return ret;
  }
-
+ 

@@ -1,16 +1,22 @@
 COMPONENT_LIBNAME		:=
 
+ifeq ($(SMING_ARCH),Esp8266)
 COMPONENT_DEPENDS		:= esp8266
+else
+RBOOT_EMULATION			:= 1
+endif
 
-COMPONENT_SUBMODULES	:= rboot esptool2
+COMPONENT_SUBMODULES	:= rboot
 COMPONENT_INCDIRS		:= rboot appcode rboot/appcode
 
+ifndef RBOOT_EMULATION
+COMPONENT_SUBMODULES	+= esptool2
 DEBUG_VARS				+= ESPTOOL2
 ESPTOOL2				:= $(TOOLS_BASE)/esptool2$(TOOL_EXT)
 COMPONENT_TARGETS		:= $(ESPTOOL2)
 $(COMPONENT_RULE)$(ESPTOOL2):
 	$(call MakeTarget,esptool2/Makefile)
-
+endif
 
 # => APP
 
@@ -66,8 +72,6 @@ RBOOT_ROM_1_BIN			:= $(FW_BASE)/$(RBOOT_ROM_1).bin
 
 
 COMPONENT_APPCODE		:= appcode rboot/appcode
-RBOOT_BIN				:= $(FW_BASE)/rboot.bin
-CUSTOM_TARGETS			+= $(RBOOT_BIN)
 APP_CFLAGS				+= -DRBOOT_INTEGRATION
 
 # these are exported for use by the rBoot Makefile
@@ -98,9 +102,12 @@ ifeq ($(RBOOT_GPIO_SKIP_ENABLED),1)
 	APP_CFLAGS			+= -DBOOT_GPIO_SKIP_ENABLED
 endif
 
+ifndef RBOOT_EMULATION
+RBOOT_BIN				:= $(FW_BASE)/rboot.bin
+CUSTOM_TARGETS			+= $(RBOOT_BIN)
+RBOOT_DIR := $(COMPONENT_PATH)/rboot
 $(RBOOT_BIN):
-	$(Q) $(MAKE) -C $(ARCH_COMPONENTS)/rboot/rboot
-
+	$(Q) $(MAKE) -C $(RBOOT_DIR)
 
 # rBoot big flash support requires a slightly modified version of libmain (just one symbol gets weakened)
 # Note that LIBMAIN/LIBMAIN_SRC changes depends on whether we're using a custom heap allocator
@@ -118,11 +125,14 @@ LIBMAIN					:= $(LIBMAIN_RBOOT)
 APP_CFLAGS				+= -DBOOT_BIG_FLASH
 endif
 
+endif # RBOOT_EMULATION
+
 # Define our flash chunks
 FLASH_RBOOT_BOOT_CHUNKS				:= 0x00000=$(RBOOT_BIN)
 FLASH_RBOOT_APP_CHUNKS				:= $(ROM_0_ADDR)=$(RBOOT_ROM_0_BIN)
 FLASH_RBOOT_ERASE_CONFIG_CHUNKS		:= 0x01000=$(SDK_BASE)/bin/blank.bin
 
+ifndef RBOOT_EMULATION
 # => Firmware images
 CUSTOM_TARGETS += $(RBOOT_ROM_0_BIN)
 $(RBOOT_ROM_0_BIN): $(TARGET_OUT_0)
@@ -135,3 +145,4 @@ $(RBOOT_ROM_1_BIN): $(TARGET_OUT_1)
 	$(info ESPTOOL2 $@)
 	$(Q) $(ESPTOOL2) $(RBOOT_E2_USER_ARGS) $< $@ $(RBOOT_E2_SECTS)
 	$(Q) $(call WriteFirmwareConfigFile,$@)
+endif

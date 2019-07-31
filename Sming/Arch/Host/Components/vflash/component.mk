@@ -1,12 +1,5 @@
 COMPONENT_LIBNAME	:=
 
-# spiffs_get_storage_config()
-COMPONENT_APPCODE	:= $(ESP8266_COMPONENTS)/rboot/appcode
-RBOOT_SPIFFS_0		?= 0x100000
-RBOOT_SPIFFS_1		?= 0x300000
-APP_CFLAGS			+= -DRBOOT_SPIFFS_0=$(RBOOT_SPIFFS_0)
-APP_CFLAGS			+= -DRBOOT_SPIFFS_1=$(RBOOT_SPIFFS_1)
-
 # Use DD to update FLASH_BIN, which represents the entire flash device contents
 
 DD					:= dd

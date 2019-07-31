@@ -1,4 +1,5 @@
 #include <SmingCore.h>
+#include <esp_spi_flash.h>
 
 // download urls, set appropriately
 #define ROM_0_URL "http://192.168.7.5:80/rom0.bin"
