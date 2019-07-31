@@ -18,6 +18,15 @@
 
 #include "WiringFrameworkDependencies.h"
 
+#ifdef ARCH_HOST
+#include <DigitalHooks.h>
+/** @brief Replace (or remove) existing hooks
+ *  @param hooks The new hooks, or nullptr to remove
+ *  @retval DigitalHooks* The previous hooks
+ */
+DigitalHooks* setDigitalHooks(DigitalHooks* hooks);
+#endif
+
 /** @brief  Set the mode of a GPIO pin
  *  @param  pin GPIO pin to configure
  *  @param  mode Mode of pin [INPUT | INPUT_PULLUP | OUTPUT]

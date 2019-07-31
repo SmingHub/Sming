@@ -8,65 +8,88 @@
  *
  ****/
 
-#include "Digital.h"
-#include "WiringFrameworkIncludes.h"
+#include <Digital.h>
+#include <WiringFrameworkIncludes.h>
+#include "DigitalHooks.h"
 
+// Wemos D1 mini has pin 16
 #define PIN_MAX 16
 static uint8 pinModes[PIN_MAX + 1];
 
-static inline bool checkPin(uint16_t pin)
+DigitalHooks defaultHooks;
+static DigitalHooks* activeHooks = &defaultHooks;
+
+DigitalHooks* setDigitalHooks(DigitalHooks* hooks)
 {
-	// Wemos D1 mini has pin 16
-	if(pin <= 16) {
+	DigitalHooks* current = activeHooks;
+	activeHooks = hooks;
+	return current;
+}
+
+static inline bool checkPin(const char* function, uint16_t pin)
+{
+	if(pin <= PIN_MAX) {
 		return true;
-	} else {
-		hostmsg("BAD PIN %u", pin);
-		return false;
 	}
+
+	if(activeHooks != nullptr) {
+		activeHooks->badPin(function, pin);
+	}
+
+	return false;
 }
 
 void pinMode(uint16_t pin, uint8_t mode)
 {
-	if(checkPin(pin)) {
+	if(checkPin(__FUNCTION__, pin)) {
+		if(activeHooks != nullptr && !activeHooks->pinMode(pin, mode)) {
+			return; // Don't change mode
+		}
 		pinModes[pin] = mode;
-		hostmsg("pinMode(%u, %u)", pin, mode);
 	}
 }
 
 //Detect if pin is input
 bool isInputPin(uint16_t pin)
 {
-	return checkPin(pin) ? pinModes[pin] : false;
+	return checkPin(__FUNCTION__, pin) ? pinModes[pin] : false;
 }
 
 void digitalWrite(uint16_t pin, uint8_t val)
 {
-	checkPin(pin);
-	hostmsg("digitalWrite(%u, %u)", pin, val);
+	if(checkPin(__FUNCTION__, pin) && activeHooks != nullptr) {
+		activeHooks->digitalWrite(pin, val);
+	}
 }
 
 uint8_t digitalRead(uint16_t pin)
 {
-	checkPin(pin);
-	hostmsg("digitalRead(%u)", pin);
+	if(checkPin(__FUNCTION__, pin) && activeHooks != nullptr) {
+		return activeHooks->digitalRead(pin, pinModes[pin]);
+	}
+
 	return 0;
 }
 
 void pullup(uint16_t pin)
 {
-	checkPin(pin);
-	hostmsg("pullup(%u)", pin);
+	if(checkPin(__FUNCTION__, pin) && activeHooks != nullptr) {
+		activeHooks->pullup(pin, true);
+	}
 }
 
 void noPullup(uint16_t pin)
 {
-	checkPin(pin);
-	hostmsg("noPullup(%u)", pin);
+	if(checkPin(__FUNCTION__, pin) && activeHooks != nullptr) {
+		activeHooks->pullup(pin, false);
+	}
 }
 
 unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 {
-	checkPin(pin);
-	hostmsg("pulseIn(%u, %u, %lu)", pin, state, timeout);
-	return 0;
+	if(checkPin(__FUNCTION__, pin) && activeHooks != nullptr) {
+		return activeHooks->pulseIn(pin, state, timeout);
+	} else {
+		return 0;
+	}
 }
