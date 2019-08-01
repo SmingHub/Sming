@@ -268,9 +268,9 @@ int MultipartParser::bodyEnd(multipart_parser_t* p)
 
 void formMultipartParser(HttpRequest& request, const char* at, int length)
 {
-	MultipartParser* parser = (MultipartParser*)request.args;
+	auto parser = static_cast<MultipartParser*>(request.args);
 
-	if(length == -1) {
+	if(length == PARSE_DATASTART) {
 		delete parser;
 
 		parser = new MultipartParser(&request);
@@ -279,7 +279,7 @@ void formMultipartParser(HttpRequest& request, const char* at, int length)
 		return;
 	}
 
-	if(length == -2) {
+	if(length == PARSE_DATAEND) {
 		delete parser;
 		request.args = nullptr;
 
