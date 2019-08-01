@@ -13,9 +13,17 @@
 #include <Platform/System.h>
 #include <BitManipulations.h>
 
-static InterruptCallback gpioInterruptsList[16] = {0};
-static InterruptDelegate delegateFunctionList[16];
-static bool gpioInterruptsInitialied = false;
+static InterruptCallback gpioInterruptsList[ESP_MAX_INTERRUPTS] = {0};
+static InterruptDelegate delegateFunctionList[ESP_MAX_INTERRUPTS];
+static bool interruptHandlerAttached = false;
+
+static void interruptDelegateCallback(uint32_t interruptNumber)
+{
+	auto& delegate = delegateFunctionList[interruptNumber];
+	if(delegate) {
+		delegate();
+	}
+}
 
 /** @brief  Interrupt handler
  *  @param  intr_mask Interrupt mask
@@ -35,18 +43,12 @@ static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 			}
 
 			// clear interrupt status
-			GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpioStatus & _BV(i));
+			GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, _BV(i));
 
 			if(gpioInterruptsList[i]) {
 				gpioInterruptsList[i]();
 			} else if(delegateFunctionList[i]) {
-				System.queueCallback(
-					[](uint32_t interruptNumber) {
-						auto& delegate = delegateFunctionList[interruptNumber];
-						if(delegate)
-							delegate();
-					},
-					i);
+				System.queueCallback(interruptDelegateCallback, i);
 			}
 
 			processed = true;
@@ -68,8 +70,9 @@ void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, uint8_t mo
 
 void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode)
 {
-	if(pin >= 16)
+	if(pin >= ESP_MAX_INTERRUPTS) {
 		return; // WTF o_O
+	}
 	gpioInterruptsList[pin] = callback;
 	delegateFunctionList[pin] = nullptr;
 	attachInterruptHandler(pin, mode);
@@ -77,8 +80,9 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode
 
 void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_TYPE mode)
 {
-	if(pin >= 16)
+	if(pin >= ESP_MAX_INTERRUPTS) {
 		return; // WTF o_O
+	}
 	gpioInterruptsList[pin] = nullptr;
 	delegateFunctionList[pin] = delegateFunction;
 	attachInterruptHandler(pin, mode);
@@ -88,9 +92,9 @@ void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
 {
 	ETS_GPIO_INTR_DISABLE();
 
-	if(!gpioInterruptsInitialied) {
+	if(!interruptHandlerAttached) {
 		ETS_GPIO_INTR_ATTACH((ets_isr_t)interruptHandler, nullptr); // Register interrupt handler
-		gpioInterruptsInitialied = true;
+		interruptHandlerAttached = true;
 	}
 
 	pinMode(pin, INPUT);

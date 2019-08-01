@@ -35,7 +35,7 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode);
 /** @brief  Attach a function to a GPIO interrupt
  *  @param  pin GPIO to configure
  *  @param  delegateFunction Function to call when interrupt occurs on GPIO
- *  @param  mode Arduino type interrupt mode
+ *  @param  mode Arduino type interrupt mode (LOW, HIGH, CHANGE, RISING, FALLING)
  *  @note   Delegate function method, can be a regular function, method, etc.
  *  The delegate function is called via the system task queue so does not need any special consideration.
  *  Note that this type of interrupt handler is not suitable for timing-sensitive applications.
