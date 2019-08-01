@@ -417,7 +417,7 @@ template <class Element> void Vector<Element>::sort(Comparer compareFunction)
 	for(unsigned j = 1; j < _size; j++) // Start with 1 (not 0)
 	{
 		Element* key = _data[j];
-		unsigned i;
+		int i;
 		for(i = j - 1; (i >= 0) && compareFunction(*_data[i], *key) > 0; i--) // Smaller values move up
 		{
 			_data[i + 1] = _data[i];
