@@ -23,10 +23,15 @@
 	path = Sming/Arch/Esp8266/Components/esptool/esptool
 	url = https://github.com/espressif/esptool
 	ignore = dirty
-[submodule "ESP8266.rboot"]
-	path = Sming/Arch/Esp8266/Components/rboot/rboot
+[submodule "rboot"]
+	path = Sming/Components/rboot/rboot
 	url = https://github.com/raburton/rboot.git
 	ignore = dirty
+[submodule "esptool2"]
+	path = Sming/Components/rboot/esptool2
+	url = https://github.com/raburton/esptool2.git
+	ignore = dirty
+
 [submodule "ESP8266.new-pwm"]
 	path = Sming/Arch/Esp8266/Components/pwm_open/new-pwm
 	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
@@ -50,10 +55,6 @@
 [submodule "ESP8266.Sdk"]
 	path = Sming/Arch/Esp8266/Components/esp8266/ESP8266_NONOS_SDK
 	url = https://github.com/espressif/ESP8266_NONOS_SDK.git
-	ignore = dirty
-[submodule "ESP8266.esptool2"]
-	path = Sming/Arch/Esp8266/Components/rboot/esptool2
-	url = https://github.com/raburton/esptool2.git
 	ignore = dirty
 
 [submodule "Host.lwip"]
