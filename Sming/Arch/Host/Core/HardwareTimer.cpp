@@ -10,36 +10,89 @@
  *
  ****/
 
+#include <hostlib/threads.h>
+#include <sys/time.h>
 #include "HardwareTimer.h"
 #include <esp_timer_legacy.h>
+#include <Services/Profiling/ElapseTimer.h>
 
-void os_timer_arm(struct os_timer_t* ptimer, uint32_t time, bool repeat_flag);
-void os_timer_arm_us(struct os_timer_t* ptimer, uint32_t time, bool repeat_flag);
-void os_timer_disarm(struct os_timer_t* ptimer);
-void os_timer_setfn(struct os_timer_t* ptimer, os_timer_func_t* pfunction, void* parg);
+static HardwareTimerMode hw_timer_mode;
 
-static os_timer_t timer;
-
-uint32_t usToTimerTicks(uint32_t us)
+/*
+ * Simulate interrupts using a secondary thread
+ */
+class CTimerThread : public CThread
 {
-	return us;
-}
-
-uint32_t timerTicksToUs(uint32_t ticks)
-{
-	return ticks;
-}
-
-static void hw_timer_isr_cb(void* param)
-{
-	if(param != nullptr) {
-		static_cast<HardwareTimer*>(param)->call();
+public:
+	CTimerThread(HardwareTimer& timer, bool repeating)
+		: CThread("hwtimer", hw_timer_mode == eHWT_Maskable ? 1 : 3), timer(timer), repeating(repeating)
+	{
 	}
+
+	~CTimerThread()
+	{
+		sem.post();
+	}
+
+protected:
+	void* thread_routine() override;
+
+private:
+	CSemaphore sem;
+	HardwareTimer& timer;
+	bool repeating;
+};
+
+static CTimerThread* thread;
+
+void* CTimerThread::thread_routine()
+{
+#ifdef __WIN32
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
+#endif
+
+	do {
+		auto interval = timer.getIntervalUs();
+		ElapseTimer elapseTimer(interval);
+		/*
+		 * Typical scheduler minimum timeslice
+		 * @todo Determine this value by asking OS
+		 */
+		const unsigned SCHED_MIN = 1500;
+		if(interval > SCHED_MIN) {
+			timeval tv;
+			gettimeofday(&tv, nullptr);
+			tv.tv_usec += interval - SCHED_MIN;
+			timespec to;
+			to.tv_sec = tv.tv_sec + tv.tv_usec / 1000000;
+			to.tv_nsec = (tv.tv_usec % 1000000) * 1000;
+			if(sem.timedwait(&to)) {
+				break; // cancelled
+			}
+			if(errno != ETIMEDOUT) {
+				hostmsg("Warning! Timer thread errno = %u", errno);
+				break;
+			}
+		}
+		/*
+		 * Can't guarantee we won't get pre-empted here but if we've
+		 * just come out of a wait state should be fine.
+		 */
+		while(!elapseTimer.expired()) {
+			if(sem.trywait()) {
+				return nullptr; // cancelled
+			}
+		}
+		interrupt_begin();
+		timer.call();
+		interrupt_end();
+	} while(repeating);
+	return nullptr;
 }
 
 HardwareTimer::HardwareTimer(HardwareTimerMode mode)
 {
-	os_timer_setfn(&timer, hw_timer_isr_cb, this);
+	hw_timer_mode = mode;
 }
 
 HardwareTimer::~HardwareTimer()
@@ -69,16 +122,17 @@ bool HardwareTimer::start(bool repeating)
 		return started;
 	}
 
+	thread = new CTimerThread(*this, repeating);
+	thread->execute();
 	started = true;
-
-	os_timer_arm_us(&timer, interval, repeating);
 
 	return started;
 }
 
 void HardwareTimer::stop()
 {
-	os_timer_disarm(&timer);
+	delete thread;
+	thread = nullptr;
 }
 
 bool HardwareTimer::restart()
