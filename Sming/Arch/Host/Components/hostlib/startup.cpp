@@ -242,11 +242,15 @@ int main(int argc, char* argv[])
 
 		init();
 
+		const uint32_t lwipServiceInterval = 50000;
+		uint32_t lwipNextService = 0;
 		while(!done) {
+			auto now = system_get_time();
 			host_service_tasks();
 			host_service_timers();
-			if(lwip_initialised) {
+			if(lwip_initialised && (now >= lwipNextService)) {
 				host_lwip_service();
+				lwipNextService = now + lwipServiceInterval;
 			}
 			system_soft_wdt_feed();
 		}
