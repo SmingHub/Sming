@@ -17,8 +17,6 @@
 #include "HttpHeaders.h"
 #include "FileSystem.h"
 
-class TemplateStream;
-
 class HttpResponse
 {
 public:
@@ -75,14 +73,25 @@ public:
 	 * @param allowGzipFileCheck If true, check file extension to see if content commpressed
 	 * @retval bool
 	 */
-	bool sendFile(String fileName, bool allowGzipFileCheck = true);
+	bool sendFile(const String& fileName, bool allowGzipFileCheck = true);
 
 	/**
 	 * @brief Parse and send template file
 	 * @param newTemplateInstance
 	 * @retval bool
+	 * @deprecated Use `sendNamedStream()` instead
 	 */
-	bool sendTemplate(TemplateStream* newTemplateInstance);
+	bool sendTemplate(IDataSourceStream* newTemplateInstance) SMING_DEPRECATED
+	{
+		return sendNamedStream(newTemplateInstance);
+	}
+
+	/**
+	 * @brief Parse and send stream, using the name to determine the content type
+	 * @param newDataStream If not set already, the contentType will be obtained from the name of this stream
+	 * @retval bool
+	 */
+	bool sendNamedStream(IDataSourceStream* newDataStream);
 
 	/** @brief Send data from the given stream object
 	 *  @param newDataStream

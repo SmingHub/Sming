@@ -19,7 +19,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 {
 	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
 	auto& vars = tmpl->variables();
-	response.sendTemplate(tmpl); // will be automatically deleted
+	response.sendNamedStream(tmpl); // will be automatically deleted
 }
 
 int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
@@ -61,7 +61,7 @@ int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpRespo
 		vars["gateway"] = "192.168.1.1";
 	}
 
-	response.sendTemplate(tmpl); // will be automatically deleted
+	response.sendNamedStream(tmpl); // will be automatically deleted
 
 	return 0;
 }
