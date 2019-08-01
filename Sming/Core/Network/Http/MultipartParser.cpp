@@ -14,7 +14,6 @@
 
 #ifdef ENABLE_HTTP_SERVER_MULTIPART
 
-
 /** @brief Boilerplate code for multipart_parser callbacks
  *  @note Obtain parser object and check it
  */
