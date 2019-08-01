@@ -132,25 +132,27 @@ int CUartServer::serviceRead()
 		return avail;
 	}
 
+	interrupt_begin();
+
 	int space = uart->rx_buffer->getFreeSpace();
 	int read = std::min(space, avail);
-	if(read == 0) {
-		return 0;
+	if(read != 0) {
+		char buffer[read];
+		read = socket->recv(buffer, read);
+		if(read > 0) {
+			for(int i = 0; i < read; ++i) {
+				uart->rx_buffer->writeChar(buffer[i]);
+			}
+			space -= read;
+			if(space == 0) {
+				bitSet(uart->status, UIFF);
+			} else {
+				bitSet(uart->status, UITO);
+			}
+		}
 	}
 
-	char buffer[read];
-	read = socket->recv(buffer, read);
-	if(read > 0) {
-		for(int i = 0; i < read; ++i) {
-			uart->rx_buffer->writeChar(buffer[i]);
-		}
-		space -= read;
-		if(space == 0) {
-			bitSet(uart->status, UIFF);
-		} else {
-			bitSet(uart->status, UITO);
-		}
-	}
+	interrupt_end();
 
 	return read;
 }
@@ -162,10 +164,16 @@ int CUartServer::serviceWrite()
 	}
 
 	int result = 0;
-	size_t avail;
 	void* data;
 	auto txbuf = uart->tx_buffer;
-	while((avail = txbuf->getReadData(data)) != 0) {
+	size_t avail = txbuf->getReadData(data);
+	if(avail == 0) {
+		return 0;
+	}
+
+	interrupt_begin();
+
+	do {
 		int sent = socket->send(data, avail);
 		if(sent < 0) {
 			hostmsg("Uart send returned %d", sent);
@@ -174,13 +182,15 @@ int CUartServer::serviceWrite()
 		}
 		txbuf->skipRead(sent);
 		result += sent;
-	}
+	} while((avail = txbuf->getReadData(data)) != 0);
 
 	if(txbuf->isEmpty()) {
 		bitSet(uart->status, UIFE);
 	} else {
 		txsem.post();
 	}
+
+	interrupt_end();
 
 	return result;
 }
@@ -217,11 +227,15 @@ void* CUartServer::thread_routine()
 			}
 
 			if(uart != nullptr) {
+				interrupt_begin();
+
 				auto status = uart->status;
 				uart->status = 0;
 				if(status != 0 && uart->callback != nullptr) {
 					uart->callback(uart, status);
 				}
+
+				interrupt_end();
 			}
 		}
 

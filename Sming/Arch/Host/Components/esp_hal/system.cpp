@@ -1,5 +1,6 @@
 #include "include/esp_system.h"
 #include <hostlib/hostapi.h>
+#include <hostlib/threads.h>
 
 /* System time */
 
@@ -74,16 +75,20 @@ uint32 system_get_chip_id(void)
 
 void ets_intr_lock()
 {
+	CThread::interrupt_lock();
 }
 
 void ets_intr_unlock()
 {
+	CThread::interrupt_unlock();
 }
 
 void xt_disable_interrupts()
 {
+	ets_intr_lock();
 }
 
 void xt_enable_interrupts()
 {
+	ets_intr_unlock();
 }

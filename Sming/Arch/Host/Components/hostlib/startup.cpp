@@ -21,6 +21,7 @@
 #define __USER_CONFIG_H__
 
 #include "sockets.h"
+#include "threads.h"
 #include "except.h"
 #include "options.h"
 #include <spi_flash/flashmem.h>
@@ -223,6 +224,8 @@ int main(int argc, char* argv[])
 	if(config.initonly) {
 		hostmsg("Initialise-only requested");
 	} else {
+		CThread::startup();
+
 		host_init_tasks();
 
 		sockets_initialise();
