@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include "HttpServerConnection.h"
-#include "HttpResource.h"
-#include "WString.h"
+#include <Network/Http/HttpServerConnection.h>
+#include <Network/Http/HttpResource.h>
+#include <WString.h>
 
 typedef Delegate<void(HttpFiles&)> HttpFilesMapper;
 

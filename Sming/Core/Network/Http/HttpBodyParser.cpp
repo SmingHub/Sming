@@ -121,30 +121,3 @@ void bodyToStringParser(HttpRequest& request, const char* at, int length)
 
 	data->concat(at, length);
 }
-
-#ifdef ENABLE_HTTP_SERVER_MULTIPART
-#include "MultipartParser.h"
-
-void formMultipartParser(HttpRequest& request, const char* at, int length)
-{
-	auto parser = static_cast<MultipartParser*>(request.args);
-
-	if(length == PARSE_DATASTART) {
-		delete parser;
-
-		parser = new MultipartParser(&request);
-		request.args = parser;
-
-		return;
-	}
-
-	if(length == PARSE_DATAEND) {
-		delete parser;
-		request.args = nullptr;
-
-		return;
-	}
-
-	parser->execute(at, length);
-}
-#endif /* ENABLE_HTTP_SERVER_MULTIPART */

@@ -12,10 +12,8 @@
 
 #pragma once
 
-#ifdef ENABLE_HTTP_SERVER_MULTIPART
-
-#include "HttpCommon.h"
-#include "HttpRequest.h"
+#include <Network/Http/HttpCommon.h>
+#include <Network/Http/HttpRequest.h>
 
 #include "multipart-parser/multipart_parser.h"
 
@@ -45,4 +43,5 @@ private:
 	String name; // current parameter name
 };
 
-#endif /* ENABLE_HTTP_SERVER_MULTIPART */
+
+void formMultipartParser(HttpRequest& request, const char* at, int length);
