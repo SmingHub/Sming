@@ -1,26 +1,21 @@
 diff --git a/multipart_parser.c b/multipart_parser.c
-index 981dabb..014f7d0 100644
+index 981dabb..52e0200 100644
 --- a/multipart_parser.c
 +++ b/multipart_parser.c
-@@ -1,13 +1,13 @@
--/* Based on node-formidable by Felix Geisendörfer 
-+/* Based on node-formidable by Felix Geisendörfer
-  * Igor Afonov - afonov@gmail.com - 2012
-  * MIT License - http://www.opensource.org/licenses/mit-license.php
-  */
+@@ -5,9 +5,10 @@
  
  #include "multipart_parser.h"
  
 -#include <stdio.h>
 -#include <stdarg.h>
--#include <string.h>
+ #include <string.h>
 +#ifndef tolower
 +	int tolower (int __c);
 +#endif
  
  static void multipart_log(const char * format, ...)
  {
-@@ -43,20 +43,6 @@ do {                                                                   \
+@@ -43,20 +44,6 @@ do {                                                                   \
  #define LF 10
  #define CR 13
  
@@ -41,7 +36,7 @@ index 981dabb..014f7d0 100644
  enum state {
    s_uninitialized = 1,
    s_start,
-@@ -77,16 +63,16 @@ enum state {
+@@ -77,10 +64,10 @@ enum state {
    s_end
  };
  
@@ -55,14 +50,7 @@ index 981dabb..014f7d0 100644
                                 strlen(boundary) +
                                 strlen(boundary) + 9);
  
-   strcpy(p->multipart_boundary, boundary);
-   p->boundary_length = strlen(boundary);
--  
-+
-   p->lookbehind = (p->multipart_boundary + p->boundary_length + 1);
- 
-   p->index = 0;
-@@ -96,22 +82,22 @@ multipart_parser* multipart_parser_init
+@@ -96,22 +83,22 @@ multipart_parser* multipart_parser_init
    return p;
  }
  
@@ -90,32 +78,15 @@ index 981dabb..014f7d0 100644
    int is_last = 0;
  
    while(i < len) {
-@@ -272,7 +258,7 @@ size_t multipart_parser_execute(multipart_parser* p, const char *buf, size_t len
-             break;
-         }
-         return i;
--   
-+
-       case s_part_data_final_hyphen:
-         multipart_log("s_part_data_final_hyphen");
-         if (c == '-') {
 diff --git a/multipart_parser.h b/multipart_parser.h
-index 05429d7..3b67a3f 100644
+index 05429d7..5fe695e 100644
 --- a/multipart_parser.h
 +++ b/multipart_parser.h
-@@ -1,4 +1,4 @@
--/* Based on node-formidable by Felix Geisendörfer 
-+/* Based on node-formidable by Felix Geisendörfer
-  * Igor Afonov - afonov@gmail.com - 2012
-  * MIT License - http://www.opensource.org/licenses/mit-license.php
-  */
-@@ -10,15 +10,14 @@ extern "C"
- {
+@@ -11,14 +11,13 @@ extern "C"
  #endif
  
--#include <stdlib.h>
+ #include <stdlib.h>
 -#include <ctype.h>
-+#include <user_config.h>
  
 -typedef struct multipart_parser multipart_parser;
 -typedef struct multipart_parser_settings multipart_parser_settings;
@@ -130,14 +101,14 @@ index 05429d7..3b67a3f 100644
  
  struct multipart_parser_settings {
    multipart_data_cb on_header_field;
-@@ -31,15 +30,29 @@ struct multipart_parser_settings {
+@@ -31,15 +30,28 @@ struct multipart_parser_settings {
    multipart_notify_cb on_body_end;
  };
  
 -multipart_parser* multipart_parser_init
 -    (const char *boundary, const multipart_parser_settings* settings);
 +struct multipart_parser {
-+  void * data;
++  void* data;
  
 -void multipart_parser_free(multipart_parser* p);
 +  size_t index;
@@ -148,21 +119,21 @@ index 05429d7..3b67a3f 100644
  
 -void multipart_parser_set_data(multipart_parser* p, void* data);
 -void * multipart_parser_get_data(multipart_parser* p);
-+  const multipart_parser_settings_t * settings;
++  const multipart_parser_settings_t* settings;
 +
 +  char* lookbehind;
 +  char multipart_boundary[1];
 +};
 +
-+multipart_parser_t* multipart_parser_init
-+    (const char *boundary, const multipart_parser_settings_t* settings);
++multipart_parser_t* multipart_parser_init(const char* boundary, const multipart_parser_settings_t* settings);
 +
 +void multipart_parser_free(multipart_parser_t* p);
 +
-+size_t multipart_parser_execute(multipart_parser_t* p, const char *buf, size_t len);
++size_t multipart_parser_execute(multipart_parser_t* p, const char* buf, size_t len);
 +
 +void multipart_parser_set_data(multipart_parser_t* p, void* data);
 +void * multipart_parser_get_data(multipart_parser_t* p);
  
  #ifdef __cplusplus
  } /* extern "C" */
+   

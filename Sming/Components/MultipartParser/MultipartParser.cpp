@@ -11,8 +11,31 @@
  ****/
 
 #include "MultipartParser.h"
+#include <Network/Http/HttpBodyParser.h>
 
-#ifdef ENABLE_HTTP_SERVER_MULTIPART
+void formMultipartParser(HttpRequest& request, const char* at, int length)
+{
+	auto parser = static_cast<MultipartParser*>(request.args);
+
+	if(length == PARSE_DATASTART) {
+		delete parser;
+
+		parser = new MultipartParser(&request);
+		request.args = parser;
+
+		return;
+	}
+
+	if(length == PARSE_DATAEND) {
+		delete parser;
+		request.args = nullptr;
+
+		return;
+	}
+
+	parser->execute(at, length);
+}
+
 
 /** @brief Boilerplate code for multipart_parser callbacks
  *  @note Obtain parser object and check it
@@ -128,5 +151,3 @@ int MultipartParser::bodyEnd(multipart_parser_t* p)
 
 	return 0;
 }
-
-#endif /* ENABLE_HTTP_SERVER_MULTIPART */

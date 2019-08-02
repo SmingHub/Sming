@@ -1,7 +1,7 @@
 #include <SmingCore.h>
 
 #include <Data/Stream/LimitedMemoryStream.h>
-#include <Network/Http/HttpMultipartResource.h>
+#include <MultipartParser/HttpMultipartResource.h>
 #include <Network/rBootHttpUpdate.h>
 
 HttpServer server;
