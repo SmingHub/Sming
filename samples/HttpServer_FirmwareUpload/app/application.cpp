@@ -96,7 +96,7 @@ void fileUploadMapper(HttpFiles& files)
 
 	// We create a rBoot item to be stored
 	auto item = new rBootHttpUpdateItem();
-	item->size = 1;						  // must be bigger than 0
+	item->size = 0;
 	item->targetOffset = romStartAddress; // the start location on flash memory
 	item->url = "http://localhost";		  // will be discarded
 

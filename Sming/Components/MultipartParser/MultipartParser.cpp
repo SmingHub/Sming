@@ -121,6 +121,7 @@ int MultipartParser::readHeaderValue(multipart_parser_t* p, const char* at, size
 		} else {
 			parser->name = value.substring(startPos, endPos - 1);
 		}
+		parser->useValue = false;
 	}
 
 	return 0;
