@@ -33,7 +33,8 @@ struct FlashmemConfig {
  * @retval bool true if backing file was opened successfully
  * @note Specify nullptr, 0 to use default values
  * All flash operations will be restricted to size of initial backing file
+ * On success, config will be updated with actual values in use
  */
-bool host_flashmem_init(const FlashmemConfig& config);
+bool host_flashmem_init(FlashmemConfig& config);
 
 void host_flashmem_cleanup();

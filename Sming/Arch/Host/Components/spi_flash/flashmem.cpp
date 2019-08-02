@@ -30,10 +30,12 @@ static const char* flashFileName = "flash.bin";
 #define CHECK_ALIGNMENT(_x) assert(((uint32_t)(_x)&0x00000003) == 0)
 #define CHECK_RANGE(_addr, _size) assert((_addr) + (_size) <= flashFileSize);
 
-bool host_flashmem_init(const FlashmemConfig& config)
+bool host_flashmem_init(FlashmemConfig& config)
 {
 	if(config.filename != NULL) {
 		flashFileName = config.filename;
+	} else {
+		config.filename = flashFileName;
 	}
 	flashFile = open(flashFileName, O_CREAT | O_RDWR | O_BINARY, 0644);
 	if(flashFile < 0) {
@@ -64,6 +66,7 @@ bool host_flashmem_init(const FlashmemConfig& config)
 	}
 
 	flashFileSize = res;
+	config.createSize = flashFileSize;
 
 	return true;
 }
