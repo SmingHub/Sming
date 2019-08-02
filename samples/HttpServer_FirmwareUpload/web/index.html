@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Sming Firmware Updater</title>
+  </head>
+  <body>
+
+     <h1>Update Firmware</h1>
+
+     <p>
+      This sample demonstrates how to update the current firmware by uploading a new firmware directly on the device.
+      Behind the scenes the newly uploaded firmware will be stored on the FLASH memory into the next available slot.
+
+
+      <form action="/upload" method="post" enctype="multipart/form-data">
+              <input type="file" name="firmware" /> <input type="submit" value="Update"/>
+      </form>
+     </p>
+  </body>
+</html>

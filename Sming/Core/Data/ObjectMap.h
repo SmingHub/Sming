@@ -37,7 +37,7 @@
  *		value = nullptr; 				// Free object, "key1" -> nullptr (but still in map)
  *		value.remove();					// Free object1 and remove from map
  *
- *		// As soon as `map` goes out of scope, all contained objects are detroyed
+ *		// As soon as `map` goes out of scope, all contained objects are destroyed
  *		map["key1"] = new MyType();
  *		map["key2"] = new MyType();
  *	}

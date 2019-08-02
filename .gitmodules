@@ -18,6 +18,10 @@
 	path = Sming/Components/libyuarel
 	url = https://github.com/jacketizer/libyuarel.git
 	ignore = dirty
+[submodule "multipart-parser"]
+	path = Sming/Components/MultipartParser/multipart-parser
+	url = https://github.com/iafonov/multipart-parser-c.git
+	ignore = dirty
 
 [submodule "esptool"]
 	path = Sming/Arch/Esp8266/Components/esptool/esptool

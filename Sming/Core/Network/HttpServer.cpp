@@ -14,6 +14,10 @@
 #include "TcpClient.h"
 #include "WString.h"
 
+#ifdef ENABLE_HTTP_SERVER_MULTIPART
+#include <MultipartParser/MultipartParser.h>
+#endif
+
 void HttpServer::configure(const HttpServerSettings& settings)
 {
 	this->settings = settings;
@@ -23,6 +27,9 @@ void HttpServer::configure(const HttpServerSettings& settings)
 
 	if(settings.useDefaultBodyParsers) {
 		setBodyParser(ContentType::toString(MIME_FORM_URL_ENCODED), formUrlParser);
+#ifdef ENABLE_HTTP_SERVER_MULTIPART
+		setBodyParser(ContentType::toString(MIME_FORM_MULTIPART), formMultipartParser);
+#endif
 	}
 
 	setKeepAlive(settings.keepAliveSeconds);

@@ -17,6 +17,8 @@
 #include "WString.h"
 #include "../WebConstants.h"
 #include "../Url.h"
+#include "Data/Stream/ReadWriteStream.h"
+#include "Data/ObjectMap.h"
 
 #ifndef HTTP_MAX_HEADER_SIZE
 #define HTTP_MAX_HEADER_SIZE (8 * 1024)
@@ -39,6 +41,8 @@ enum HttpConnectionState {
 	eHCS_SendingBody,
 	eHCS_Sent
 };
+
+typedef ObjectMap<String, ReadWriteStream> HttpFiles;
 
 /**
  * @brief Return a string name of the given error
