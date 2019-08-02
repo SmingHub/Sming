@@ -77,13 +77,15 @@ bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
 		stream = new FileStream(fileName);
 	}
 
+	headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::fromFullFileName(fileName);
+
 	return sendNamedStream(stream);
 }
 
 bool HttpResponse::sendNamedStream(IDataSourceStream* newDataStream)
 {
 	String contentType;
-	if(!headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
+	if(newDataStream != nullptr && !headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		contentType = ContentType::fromFullFileName(newDataStream->getName());
 	}
 
