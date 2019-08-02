@@ -1,27 +1,27 @@
 #include <SmingCore.h>
 
-void smartConfigCallback(sc_status status, void* pdata)
+void smartConfigCallback(SmartConfigEvent status, void* pdata)
 {
 	switch(status) {
-	case SC_STATUS_WAIT:
-		debugf("SC_STATUS_WAIT\n");
+	case SCE_Wait:
+		debugf("SCE_Wait\n");
 		break;
-	case SC_STATUS_FIND_CHANNEL:
-		debugf("SC_STATUS_FIND_CHANNEL\n");
+	case SCE_FindChannel:
+		debugf("SCE_FindChannel\n");
 		break;
-	case SC_STATUS_GETTING_SSID_PSWD:
-		debugf("SC_STATUS_GETTING_SSID_PSWD\n");
+	case SCE_GotSsid:
+		debugf("SCE_GotSsid\n");
 		break;
-	case SC_STATUS_LINK: {
-		debugf("SC_STATUS_LINK\n");
+	case SCE_Link: {
+		debugf("SCE_Link\n");
 		station_config* sta_conf = (station_config*)pdata;
 		char* ssid = (char*)sta_conf->ssid;
 		char* password = (char*)sta_conf->password;
 		WifiStation.config(ssid, password);
 		WifiStation.connect();
 	} break;
-	case SC_STATUS_LINK_OVER:
-		debugf("SC_STATUS_LINK_OVER\n");
+	case SCE_LinkOver:
+		debugf("SCE_LinkOver\n");
 		WifiStation.smartConfigStop();
 		break;
 	}

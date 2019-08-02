@@ -4,17 +4,32 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Station.cpp
+ * StationImpl.cpp
  *
  ****/
 
-#include "Platform/Station.h"
-#include "Interrupts.h"
-#include "Data/HexString.h"
+#include "StationImpl.h"
+#include <Interrupts.h>
+#include <esp_smartconfig.h>
 
-StationClass WifiStation;
+static StationImpl station;
+StationClass& WifiStation = station;
 
-void StationClass::enable(bool enabled, bool save)
+class BssInfoImpl : public BssInfo
+{
+public:
+	explicit BssInfoImpl(const bss_info* info)
+	{
+		ssid = reinterpret_cast<const char*>(info->ssid);
+		memcpy(bssid, info->bssid, sizeof(bssid));
+		authorization = info->authmode;
+		channel = info->channel;
+		rssi = info->rssi;
+		hidden = info->is_hidden;
+	}
+};
+
+void StationImpl::enable(bool enabled, bool save)
 {
 	uint8 mode;
 	if(save) {
@@ -32,13 +47,14 @@ void StationClass::enable(bool enabled, bool save)
 	}
 }
 
-bool StationClass::isEnabled() const
+bool StationImpl::isEnabled() const
 {
 	return wifi_get_opmode() & STATION_MODE;
 }
 
-bool StationClass::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
+bool StationImpl::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
 {
+	station_config config = {0};
 	if(ssid.length() >= sizeof(config.ssid)) {
 		return false;
 	}
@@ -49,11 +65,10 @@ bool StationClass::config(const String& ssid, const String& password, bool autoC
 	bool enabled = isEnabled();
 	bool dhcp = isEnabledDHCP();
 	if(!enabled) {
-		enable(true); // Power on for configuration
+		enable(true, false); // Power on for configuration
 	}
 
 	bool setConfig;
-	station_config config = {0};
 	if(wifi_station_get_config(&config)) {
 		// Determine if config has changed
 		setConfig =
@@ -96,9 +111,8 @@ bool StationClass::config(const String& ssid, const String& password, bool autoC
 	if(!dhcp) {
 		enableDHCP(false);
 	}
-
 	if(!enabled) {
-		enable(false);
+		enable(false, false);
 	}
 
 	if(success) {
@@ -108,40 +122,22 @@ bool StationClass::config(const String& ssid, const String& password, bool autoC
 	return success;
 }
 
-bool StationClass::connect()
+bool StationImpl::connect()
 {
 	return wifi_station_connect();
 }
 
-bool StationClass::disconnect()
+bool StationImpl::disconnect()
 {
 	return wifi_station_disconnect();
 }
 
-bool StationClass::isConnected() const
-{
-	if(getConnectionStatus() != eSCS_GotIP) {
-		return false;
-	}
-	if(getIP().isNull()) {
-		return false;
-	}
-
-	return true;
-}
-
-bool StationClass::isConnectionFailed() const
-{
-	EStationConnectionStatus status = getConnectionStatus();
-	return status == eSCS_WrongPassword || status == eSCS_AccessPointNotFound || status == eSCS_ConnectionFailed;
-}
-
-bool StationClass::isEnabledDHCP() const
+bool StationImpl::isEnabledDHCP() const
 {
 	return wifi_station_dhcpc_status() == DHCP_STARTED;
 }
 
-void StationClass::enableDHCP(bool enable)
+void StationImpl::enableDHCP(bool enable)
 {
 	if(enable) {
 		wifi_station_dhcpc_start();
@@ -150,63 +146,50 @@ void StationClass::enableDHCP(bool enable)
 	}
 }
 
-void StationClass::setHostname(const String& hostname)
+void StationImpl::setHostname(const String& hostname)
 {
 	wifi_station_set_hostname(const_cast<char*>(hostname.c_str()));
 }
 
-String StationClass::getHostname() const
+String StationImpl::getHostname() const
 {
 	return wifi_station_get_hostname();
 }
 
-IPAddress StationClass::getIP() const
+IPAddress StationImpl::getIP() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return info.ip;
 }
 
-String StationClass::getMAC(char sep) const
+bool StationImpl::getMacAddr(uint8_t hwaddr[6]) const
 {
-	uint8 hwaddr[6];
-	if(wifi_get_macaddr(STATION_IF, hwaddr)) {
-		return makeHexString(hwaddr, sizeof(hwaddr), sep);
-	} else {
-		return nullptr;
-	}
+	return wifi_get_macaddr(STATION_IF, hwaddr);
 }
 
-IPAddress StationClass::getNetworkBroadcast() const
+IPAddress StationImpl::getNetworkBroadcast() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return (info.ip.addr | ~info.netmask.addr);
 }
 
-IPAddress StationClass::getNetworkMask() const
+IPAddress StationImpl::getNetworkMask() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return info.netmask;
 }
 
-IPAddress StationClass::getNetworkGateway() const
+IPAddress StationImpl::getNetworkGateway() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return info.gw;
 }
 
-bool StationClass::setIP(IPAddress address)
-{
-	IPAddress mask = IPAddress(255, 255, 255, 0);
-	IPAddress gateway = IPAddress(address);
-	gateway[3] = 1; // x.x.x.1
-	return setIP(address, mask, gateway);
-}
-
-bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway)
+bool StationImpl::setIP(IPAddress address, IPAddress netmask, IPAddress gateway)
 {
 	if(System.isReady()) {
 		debugf("IP can be changed only in init() method");
@@ -230,46 +213,48 @@ bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway
 	return true;
 }
 
-String StationClass::getSSID() const
+String StationImpl::getSSID() const
 {
 	station_config config = {0};
 	if(!wifi_station_get_config(&config)) {
 		debugf("Can't read station configuration!");
 		return "";
 	}
-	debugf("SSID: %s", reinterpret_cast<const char*>(config.ssid));
-	return reinterpret_cast<const char*>(config.ssid);
+	auto ssid = reinterpret_cast<const char*>(config.ssid);
+	debugf("SSID: '%s'", ssid);
+	return ssid;
 }
 
-int8_t StationClass::getRssi() const
+int8_t StationImpl::getRssi() const
 {
 	debugf("Rssi: %d dBm", wifi_station_get_rssi());
 	return wifi_station_get_rssi();
 }
 
-uint8_t StationClass::getChannel() const
+uint8_t StationImpl::getChannel() const
 {
 	debugf("Channel: %d CH", wifi_get_channel());
 	return wifi_get_channel();
 }
 
-String StationClass::getPassword() const
+String StationImpl::getPassword() const
 {
 	station_config config = {0};
 	if(!wifi_station_get_config(&config)) {
 		debugf("Can't read station configuration!");
-		return "";
+		return nullptr;
 	}
-	debugf("Pass: %s", reinterpret_cast<const char*>(config.password));
-	return reinterpret_cast<const char*>(config.password);
+	auto pwd = reinterpret_cast<const char*>(config.password);
+	debugf("Pass: '%s'", pwd);
+	return pwd;
 }
 
-EStationConnectionStatus StationClass::getConnectionStatus()
+StationConnectionStatus StationImpl::getConnectionStatus() const
 {
-	return (EStationConnectionStatus)wifi_station_get_connect_status();
+	return StationConnectionStatus(wifi_station_get_connect_status());
 }
 
-bool StationClass::startScan(ScanCompletedDelegate scanCompleted)
+bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 {
 	scanCompletedCallback = scanCompleted;
 	if(!scanCompleted) {
@@ -288,31 +273,29 @@ bool StationClass::startScan(ScanCompletedDelegate scanCompleted)
 	return res;
 }
 
-////////////
-
-void StationClass::staticScanCompleted(void* arg, STATUS status)
+void StationImpl::staticScanCompleted(void* arg, STATUS status)
 {
 	BssList list;
 	if(status == OK) {
-		if(WifiStation.scanCompletedCallback) {
+		if(station.scanCompletedCallback) {
 			auto cur = static_cast<bss_info*>(arg);
 			while(cur != nullptr) {
-				list.addElement(new BssInfo(cur));
+				list.addElement(new BssInfoImpl(cur));
 				cur = cur->next.stqe_next;
 			}
-			WifiStation.scanCompletedCallback(true, list);
+			station.scanCompletedCallback(true, list);
 		}
 
 		debugf("scan completed: %d found", list.count());
 	} else {
 		debugf("scan failed %d", status);
-		if(WifiStation.scanCompletedCallback) {
-			WifiStation.scanCompletedCallback(false, list);
+		if(station.scanCompletedCallback) {
+			station.scanCompletedCallback(false, list);
 		}
 	}
 }
 
-void StationClass::onSystemReady()
+void StationImpl::onSystemReady()
 {
 	if(runScan) {
 		wifi_station_scan(nullptr, staticScanCompleted);
@@ -320,33 +303,9 @@ void StationClass::onSystemReady()
 	}
 }
 
-String StationClass::getConnectionStatusName()
-{
-	switch(getConnectionStatus()) {
-	case eSCS_Idle:
-		return F("Idle");
-	case eSCS_Connecting:
-		return F("Connecting");
-	case eSCS_WrongPassword:
-		return F("Wrong password");
-	case eSCS_AccessPointNotFound:
-		return F("Access point not found");
-	case eSCS_ConnectionFailed:
-		return F("Connection failed");
-	case eSCS_GotIP:
-		return F("Successful connected");
-	default:
-		SYSTEM_ERROR("Unknown status: %d", getConnectionStatus());
-		return nullptr;
-	};
-}
+#ifdef ENABLE_SMART_CONFIG
 
-void StationClass::staticSmartConfigCallback(sc_status status, void* pdata)
-{
-	WifiStation.internalSmartConfig(status, pdata);
-}
-
-void StationClass::internalSmartConfig(sc_status status, void* pdata)
+void StationImpl::internalSmartConfig(SmartConfigEvent status, void* pdata)
 {
 	if(smartConfigCallback) {
 		smartConfigCallback(status, pdata);
@@ -368,7 +327,7 @@ void StationClass::internalSmartConfig(sc_status status, void* pdata)
 		auto cfg = static_cast<const station_config*>(pdata);
 		auto ssid = reinterpret_cast<const char*>(cfg->ssid);
 		auto password = reinterpret_cast<const char*>(cfg->password);
-		config(ssid, password);
+		config(ssid, password, true, true);
 		connect();
 	} break;
 	case SC_STATUS_LINK_OVER:
@@ -378,21 +337,30 @@ void StationClass::internalSmartConfig(sc_status status, void* pdata)
 	}
 }
 
-void StationClass::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback)
+void StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback)
 {
 	smartConfigCallback = callback;
+<<<<<<< HEAD:Sming/Arch/Esp8266/Platform/Station.cpp
 	smartconfig_set_type((sc_type)sctype);
 	smartconfig_start(staticSmartConfigCallback);
+=======
+	smartconfig_set_type(sc_type(sctype));
+	smartconfig_start(
+		[](sc_status status, void* pdata) { station.internalSmartConfig(SmartConfigEvent(status), pdata); });
+>>>>>>> 17e4e252b... Make `StationClass` virtual:Sming/Arch/Esp8266/Platform/StationImpl.cpp
 }
 
-void StationClass::smartConfigStop()
+void StationImpl::smartConfigStop()
 {
 	smartconfig_stop();
 	smartConfigCallback = nullptr;
 }
 
+#endif // ENABLE_SMART_CONFIG
+
 #ifdef ENABLE_WPS
-void StationClass::internalWpsConfig(wps_cb_status status)
+
+void StationImpl::internalWpsConfig(wps_cb_status status)
 {
 	bool processInternal = true;
 	if(wpsConfigCallback) {
@@ -426,12 +394,7 @@ void StationClass::internalWpsConfig(wps_cb_status status)
 	}
 }
 
-void StationClass::staticWpsConfigCallback(wps_cb_status status)
-{
-	WifiStation.internalWpsConfig(status);
-}
-
-bool StationClass::wpsConfigStart(WPSConfigDelegate callback)
+bool StationImpl::wpsConfigStart(WPSConfigDelegate callback)
 {
 	debugf("WPS start\n");
 	wpsConfigCallback = callback;
@@ -439,69 +402,26 @@ bool StationClass::wpsConfigStart(WPSConfigDelegate callback)
 	wifi_set_opmode_current(wifi_get_opmode() | STATION_MODE);
 	debugf("WPS stationmode activated\n");
 	if(!wifi_wps_enable(WPS_TYPE_PBC)) {
-		debugf("StationClass::wpsConfigStart() : wps enable failed\n");
+		debugf("Station::wpsConfigStart() : wps enable failed\n");
 		return false;
 	}
-	if(!wifi_set_wps_cb((wps_st_cb_t)&staticWpsConfigCallback)) {
-		debugf("StationClass::wpsConfigStart() : cb failed\n");
+	if(!wifi_set_wps_cb([](int status) { station.internalWpsConfig(wps_cb_status(status)); })) {
+		debugf("Station::wpsConfigStart() : cb failed\n");
 		return false;
 	}
 
 	if(!wifi_wps_start()) {
-		debugf("StationClass::wpsConfigStart() : wifi_wps_start() failed\n");
+		debugf("Station::wpsConfigStart() : wifi_wps_start() failed\n");
 		return false;
 	}
 	return true;
 }
 
-bool StationClass::beginWPSConfig()
-{
-	debugf("StationClass::beginWPSConfig()\n");
-	return (wpsConfigStart());
-}
-
-void StationClass::wpsConfigStop()
+void StationImpl::wpsConfigStop()
 {
 	if(!wifi_wps_disable()) {
-		debugf("StationClass::wpsConfigStop() : wifi_wps_disable() failed\n");
-	}
-}
-#endif
-
-////////////
-
-BssInfo::BssInfo(bss_info* info)
-{
-	ssid = reinterpret_cast<const char*>(info->ssid);
-	memcpy(bssid, info->bssid, sizeof(bssid));
-	authorization = info->authmode;
-	channel = info->channel;
-	rssi = info->rssi;
-	hidden = info->is_hidden;
-}
-
-String BssInfo::getAuthorizationMethodName() const
-{
-	switch(authorization) {
-	case AUTH_OPEN:
-		return F("OPEN");
-	case AUTH_WEP:
-		return F("WEP");
-	case AUTH_WPA_PSK:
-		return F("WPA_PSK");
-	case AUTH_WPA2_PSK:
-		return F("WPA2_PSK");
-	case AUTH_WPA_WPA2_PSK:
-		return F("WPA_WPA2_PSK");
-	default:
-		SYSTEM_ERROR("Unknown auth: %d", authorization);
-		return nullptr;
+		debugf("Station::wpsConfigStop() : wifi_wps_disable() failed\n");
 	}
 }
 
-uint32_t BssInfo::getHashId() const
-{
-	uint32_t a = bssid[4] | (bssid[5] << 8);
-	uint32_t b = bssid[0] | (bssid[1] << 8) | (bssid[2] << 16) | (bssid[3] << 24);
-	return a ^ b;
-}
+#endif // ENABLE_WPS

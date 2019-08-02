@@ -18,6 +18,11 @@ COMPONENT_DEPENDS := \
 	gdbstub \
 	spi_flash
 
+# => Platform WiFi
+COMPONENT_VARS := \
+	ENABLE_WPS \
+	ENABLE_SMART_CONFIG
+
 # => SSL
 ifeq ($(ENABLE_SSL),1)
 	COMPONENT_DEPENDS	+= axtls-8266
