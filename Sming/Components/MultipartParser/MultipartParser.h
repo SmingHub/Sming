@@ -33,9 +33,9 @@ public:
 	static int bodyEnd(multipart_parser_t* p);
 
 private:
-	multipart_parser_settings_t settings;
+	static multipart_parser_settings_t settings;
 
-	bool useValue = false;
+	String headerName; ///< Current header field name
 
 	HttpRequest* request = nullptr;
 

@@ -13,6 +13,17 @@
 #include "MultipartParser.h"
 #include <Network/Http/HttpBodyParser.h>
 
+multipart_parser_settings_t MultipartParser::settings = {
+	.on_header_field = readHeaderName,
+	.on_header_value = readHeaderValue,
+	.on_part_data = partData,
+	.on_part_data_begin = partBegin,
+	.on_headers_complete = nullptr,
+	.on_part_data_end = partEnd,
+	.on_body_end = bodyEnd,
+};
+
+
 void formMultipartParser(HttpRequest& request, const char* at, int length)
 {
 	auto parser = static_cast<MultipartParser*>(request.args);
@@ -48,14 +59,6 @@ void formMultipartParser(HttpRequest& request, const char* at, int length)
 
 MultipartParser::MultipartParser(HttpRequest* request)
 {
-	memset(&settings, 0, sizeof(settings));
-	settings.on_header_field = readHeaderName;
-	settings.on_header_value = readHeaderValue;
-	settings.on_part_data_begin = partBegin;
-	settings.on_part_data = partData;
-	settings.on_part_data_end = partEnd;
-	settings.on_body_end = bodyEnd;
-
 	if(request->headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		// Content-Type: multipart/form-data; boundary=------------------------a48863c0572edce6
 		int startPost = request->headers[HTTP_HEADER_CONTENT_TYPE].indexOf("boundary=");
@@ -87,7 +90,6 @@ int MultipartParser::partBegin(multipart_parser_t* p)
 {
 	GET_PARSER();
 
-	parser->useValue = false;
 	return 0;
 }
 
@@ -95,9 +97,7 @@ int MultipartParser::readHeaderName(multipart_parser_t* p, const char* at, size_
 {
 	GET_PARSER();
 
-	if(memcmp(at, "Content-Disposition", length) == 0) {
-		parser->useValue = true;
-	}
+	parser->headerName.setString(at, length);
 
 	return 0;
 }
@@ -106,22 +106,22 @@ int MultipartParser::readHeaderValue(multipart_parser_t* p, const char* at, size
 {
 	GET_PARSER();
 
-	if(parser->useValue) {
+	if(parser->headerName == _F("Content-Disposition")) {
 		// Content-Disposition: form-data; name="image"; filename=".gitignore"
 		// Content-Disposition: form-data; name="data"
 		String value = String(at, length);
-		int startPos = value.indexOf("name=");
-		if(startPos == -1) {
+		int startPos = value.indexOf(_F("name="));
+		if(startPos < 0) {
+			debug_e("Invalid header content");
 			return -1; // Invalid header content
 		}
 		startPos += 6; // name="
 		int endPos = value.indexOf(';', startPos);
-		if(endPos == -1) {
+		if(endPos < 0) {
 			parser->name = value.substring(startPos, value.length() - 1);
 		} else {
 			parser->name = value.substring(startPos, endPos - 1);
 		}
-		parser->useValue = false;
 	}
 
 	return 0;
