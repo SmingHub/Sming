@@ -11,7 +11,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 {
 	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
 	auto& vars = tmpl->variables();
-	response.sendTemplate(tmpl);
+	response.sendNamedStream(tmpl);
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)
