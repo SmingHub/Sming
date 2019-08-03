@@ -28,7 +28,12 @@ static const char* flashFileName = "flash.bin";
 #define SPI_FLASH_SEC_SIZE 4096
 
 #define CHECK_ALIGNMENT(_x) assert(((uint32_t)(_x)&0x00000003) == 0)
-#define CHECK_RANGE(_addr, _size) assert((_addr) + (_size) <= flashFileSize);
+
+#define CHECK_RANGE(_addr, _size)                                                                                      \
+	if((_addr) + (_size) > flashFileSize) {                                                                            \
+		hostmsg("addr = 0x%08x, size = 0x%08x", _addr, _size);                                                         \
+		return false;                                                                                                  \
+	}
 
 bool host_flashmem_init(FlashmemConfig& config)
 {
@@ -124,6 +129,7 @@ uint32_t flashmem_write_internal(const void* from, uint32_t toaddr, uint32_t siz
 	CHECK_ALIGNMENT(from);
 	CHECK_ALIGNMENT(toaddr);
 	CHECK_ALIGNMENT(size);
+	CHECK_RANGE(toaddr, size);
 	return flashmem_write(from, toaddr, size);
 }
 
@@ -132,6 +138,7 @@ uint32_t flashmem_read_internal(void* to, uint32_t fromaddr, uint32_t size)
 	CHECK_ALIGNMENT(to);
 	CHECK_ALIGNMENT(fromaddr);
 	CHECK_ALIGNMENT(size);
+	CHECK_RANGE(fromaddr, size);
 	int res = readFlashFile(fromaddr, to, size);
 	return (res < 0) ? 0 : res;
 }
