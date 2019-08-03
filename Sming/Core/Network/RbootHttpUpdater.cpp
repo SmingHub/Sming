@@ -19,13 +19,30 @@
 #include <Network/Url.h>
 #include <Platform/WDT.h>
 
-void RbootHttpUpdater::addItem(int offset, String firmwareFileUrl, size_t maxSize)
+bool RbootHttpUpdater::addItem(int offset, const String& firmwareFileUrl, size_t maxSize)
 {
 	RbootHttpUpdaterItem add;
 	add.targetOffset = offset;
 	add.url = firmwareFileUrl;
 	add.size = maxSize;
-	items.add(add);
+	add.stream = nullptr;
+	return items.add(add);
+}
+
+bool RbootHttpUpdater::addItem(const String& firmwareFileUrl, RbootOutputStream* stream)
+{
+	if(stream == nullptr) {
+		return false;
+	}
+
+	RbootHttpUpdaterItem add;
+	memset(&add, 0, sizeof(RbootHttpUpdaterItem));
+	add.targetOffset = stream->getStartAddress();
+	add.url = firmwareFileUrl;
+	add.size = stream->getMaxLength();
+	add.stream = stream;
+
+	return items.add(add);
 }
 
 void RbootHttpUpdater::start()
@@ -44,9 +61,11 @@ void RbootHttpUpdater::start()
 
 		request->setMethod(HTTP_GET);
 
-		RbootOutputStream* responseStream = new RbootOutputStream(it.targetOffset, it.size);
+		if(it.stream == nullptr) {
+			it.stream = new RbootOutputStream(it.targetOffset, it.size);
+		}
 
-		request->setResponseStream(responseStream);
+		request->setResponseStream(it.stream);
 
 		if(i == items.count() - 1) {
 			request->onRequestComplete(RequestCompletedDelegate(&RbootHttpUpdater::updateComplete, this));
@@ -68,15 +87,23 @@ int RbootHttpUpdater::itemComplete(HttpConnection& client, bool success)
 		return -1;
 	}
 
-	HttpRequest* request = client.getRequest();
-	ReadWriteStream* stream = request->getResponseStream();
-	debug_d("Finished: URL: %s, Length: %d", request->uri.toString.c_str(), stream->available());
+	RbootHttpUpdaterItem& it = items[currentItem];
+	debug_d("Finished: URL: %s, Offset: %d, Length: %d", it.url.c_str(), it.stream->getStartAddress(),
+			it.stream->available());
+
+	it.stream = nullptr; // the actual deletion will happen outside of this class
+	currentItem++;
 
 	return 0;
 }
 
 int RbootHttpUpdater::updateComplete(HttpConnection& client, bool success)
 {
+	auto hasError = itemComplete(client, success);
+	if(hasError) {
+		return hasError;
+	}
+
 	debug_d("\r\nFirmware download finished!");
 	for(unsigned i = 0; i < items.count(); i++) {
 		debug_d(" - item: %d, addr: %X, url: %s", i, items[i].targetOffset, items[i].url.c_str());
@@ -102,12 +129,12 @@ void RbootHttpUpdater::updateFailed()
 	if(updateDelegate) {
 		updateDelegate(*this, false);
 	}
-	items.clear();
+	cleanup();
 }
 
 void RbootHttpUpdater::applyUpdate()
 {
-	items.clear();
+	cleanup();
 	if(romSlot == NO_ROM_SWITCH) {
 		debug_d("Firmware updated.");
 		return;

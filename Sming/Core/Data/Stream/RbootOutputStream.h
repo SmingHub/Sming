@@ -63,6 +63,16 @@ public:
 
 	virtual bool close();
 
+	size_t getStartAddress() const
+	{
+		return startAddress;
+	}
+
+	size_t getMaxLength() const
+	{
+		return maxLength;
+	}
+
 protected:
 	bool initialized = false;
 	rboot_write_status rBootWriteStatus;

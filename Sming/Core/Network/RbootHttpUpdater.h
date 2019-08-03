@@ -27,13 +27,21 @@ typedef Delegate<void(RbootHttpUpdater& client, bool result)> OtaUpdateDelegate;
 struct RbootHttpUpdaterItem {
 	String url;
 	uint32_t targetOffset;
-	size_t size; // << max allowed size
+	size_t size;						 // << max allowed size
+	RbootOutputStream* stream = nullptr; // (optional) output stream to use.
 };
 
 class RbootHttpUpdater : protected HttpClient
 {
 public:
-	void addItem(int offset, String firmwareFileUrl, size_t maxSize = 0);
+	virtual ~RbootHttpUpdater()
+	{
+		cleanup();
+	}
+
+	bool addItem(int offset, const String& firmwareFileUrl, size_t maxSize = 0);
+	bool addItem(const String& firmwareFileUrl, RbootOutputStream* stream = nullptr);
+
 	void start();
 
 	void switchToRom(uint8_t romSlot)
@@ -85,6 +93,16 @@ protected:
 	OtaUpdateDelegate updateDelegate = nullptr;
 
 	HttpRequest* baseRequest = nullptr;
+
+private:
+	void cleanup()
+	{
+		for(unsigned i = 0; i < items.count(); i++) {
+			delete items[i].stream;
+			items[i].stream = nullptr;
+		}
+		items.clear();
+	}
 };
 
 /** @deprecated Use `RbootOutputStream` */
