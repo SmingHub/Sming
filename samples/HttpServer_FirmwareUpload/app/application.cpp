@@ -70,7 +70,7 @@ void simpleUploadMapper(HttpFiles& files)
 	 * If a field is not specified then its content will be discarded.
 	 */
 
-	// Below we instruct the server to store max 1024 bytes
+	// Below we instruct the server to store max 1024 bytes in memory
 	// from the incoming data for the "firmware" form fields.
 	files["firmware"] = new LimitedMemoryStream(1024);
 }
@@ -94,16 +94,10 @@ void fileUploadMapper(HttpFiles& files)
 	slot = (slot == 0 ? 1 : 0);
 	int romStartAddress = bootConfig.roms[slot];
 
-	// We create a rBoot item to be stored
-	auto item = new rBootHttpUpdateItem();
-	item->size = 0;
-	item->targetOffset = romStartAddress; // the start location on flash memory
-	item->url = "http://localhost";		  // will be discarded
+	size_t maxLength = 0; // 0  means that there is no max length.
+						  // Set this according to your flash memory layout
 
-	auto rBootStream = new rBootItemOutputStream();
-	rBootStream->setItem(item);
-
-	files["firmware"] = rBootStream;
+	files["firmware"] = new rBootOutputStream(romStartAddress, maxLength);
 }
 
 void startWebServer()

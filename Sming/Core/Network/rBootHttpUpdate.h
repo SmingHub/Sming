@@ -15,9 +15,8 @@
 
 #pragma once
 
-#include "Data/Stream/DataSourceStream.h"
-#include "Network/HttpClient.h"
-#include <rboot-api.h>
+#include <Data/Stream/rBootOutputStream.h>
+#include <Network/HttpClient.h>
 
 #define NO_ROM_SWITCH 0xff
 
@@ -28,60 +27,13 @@ typedef Delegate<void(rBootHttpUpdate& client, bool result)> OtaUpdateDelegate;
 struct rBootHttpUpdateItem {
 	String url;
 	uint32_t targetOffset;
-	int size;
-};
-
-class rBootItemOutputStream : public ReadWriteStream
-{
-public:
-	virtual ~rBootItemOutputStream()
-	{
-		close();
-		delete item;
-		item = nullptr;
-	}
-
-	void setItem(rBootHttpUpdateItem* item)
-	{
-		this->item = item;
-	}
-
-	virtual bool init();
-
-	size_t write(const uint8_t* data, size_t size) override;
-
-	StreamType getStreamType() const override
-	{
-		return eSST_File;
-	}
-
-	uint16_t readMemoryBlock(char* data, int bufSize) override
-	{
-		return 0;
-	}
-
-	bool seek(int len) override
-	{
-		return false;
-	}
-
-	bool isFinished() override
-	{
-		return true;
-	}
-
-	virtual bool close();
-
-protected:
-	bool initialized = false;
-	rBootHttpUpdateItem* item = nullptr;
-	rboot_write_status rBootWriteStatus;
+	size_t size; // << max allowed size
 };
 
 class rBootHttpUpdate : protected HttpClient
 {
 public:
-	void addItem(int offset, String firmwareFileUrl);
+	void addItem(int offset, String firmwareFileUrl, size_t maxSize = 0);
 	void start();
 
 	void switchToRom(uint8_t romSlot)
@@ -121,11 +73,6 @@ public:
 protected:
 	void applyUpdate();
 	void updateFailed();
-
-	virtual rBootItemOutputStream* getStream()
-	{
-		return new rBootItemOutputStream();
-	}
 
 	virtual int itemComplete(HttpConnection& client, bool success);
 	virtual int updateComplete(HttpConnection& client, bool success);

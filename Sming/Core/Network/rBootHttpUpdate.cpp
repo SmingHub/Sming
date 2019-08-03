@@ -14,60 +14,17 @@
  */
 
 #include "rBootHttpUpdate.h"
-#include "Platform/System.h"
-#include "Network/Url.h"
-#include "Platform/WDT.h"
-
-/* rBootItemOutputStream */
-
-bool rBootItemOutputStream::init()
-{
-	if(item == nullptr) {
-		debug_e("rBootItemOutputStream: Item must be set!");
-		return false;
-	}
-
-	rBootWriteStatus = rboot_write_init(this->item->targetOffset);
-	initialized = true;
-
-	return true;
-}
-
-size_t rBootItemOutputStream::write(const uint8_t* data, size_t size)
-{
-	if(!initialized && size > 0) {
-		if(!init()) { // unable to initialize
-			return -1;
-		}
-
-		initialized = true;
-	}
-
-	if(!rboot_write_flash(&rBootWriteStatus, (uint8_t*)data, size)) {
-		debug_e("rboot_write_flash: Failed. Size: %d", size);
-		return -1;
-	}
-
-	item->size += size;
-
-	debug_d("rboot_write_flash: item.size: %d", item->size);
-
-	return size;
-}
-
-bool rBootItemOutputStream::close()
-{
-	return rboot_write_end(&rBootWriteStatus);
-}
+#include <Platform/System.h>
+#include <Network/Url.h>
+#include <Platform/WDT.h>
 
 /* rBootHttpUpdate */
-
-void rBootHttpUpdate::addItem(int offset, String firmwareFileUrl)
+void rBootHttpUpdate::addItem(int offset, String firmwareFileUrl, size_t maxSize)
 {
 	rBootHttpUpdateItem add;
 	add.targetOffset = offset;
 	add.url = firmwareFileUrl;
-	add.size = 0;
+	add.size = maxSize;
 	items.add(add);
 }
 
@@ -87,8 +44,7 @@ void rBootHttpUpdate::start()
 
 		request->setMethod(HTTP_GET);
 
-		rBootItemOutputStream* responseStream = getStream();
-		responseStream->setItem(&it);
+		rBootOutputStream* responseStream = new rBootOutputStream(it.targetOffset, it.size);
 
 		request->setResponseStream(responseStream);
 
@@ -112,6 +68,10 @@ int rBootHttpUpdate::itemComplete(HttpConnection& client, bool success)
 		return -1;
 	}
 
+	HttpRequest* request = client.getRequest();
+	ReadWriteStream* stream = request->getResponseStream();
+	debug_d("Finished: URL: %s, Length: %d", request->uri.c_str(), stream->available());
+
 	return 0;
 }
 
@@ -119,7 +79,7 @@ int rBootHttpUpdate::updateComplete(HttpConnection& client, bool success)
 {
 	debug_d("\r\nFirmware download finished!");
 	for(unsigned i = 0; i < items.count(); i++) {
-		debug_d(" - item: %d, addr: %X, len: %d bytes", i, items[i].targetOffset, items[i].size);
+		debug_d(" - item: %d, addr: %X, url: %s", i, items[i].targetOffset, items[i].url.c_str());
 	}
 
 	if(!success) {
