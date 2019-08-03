@@ -39,8 +39,6 @@ bool StationClass::isEnabled() const
 
 bool StationClass::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
 {
-	station_config config = {0};
-
 	if(ssid.length() >= sizeof(config.ssid)) {
 		return false;
 	}
@@ -54,55 +52,60 @@ bool StationClass::config(const String& ssid, const String& password, bool autoC
 		enable(true); // Power on for configuration
 	}
 
-	bool cfgreaded = wifi_station_get_config(&config);
-	if(!cfgreaded) {
+	bool setConfig;
+	station_config config = {0};
+	if(wifi_station_get_config(&config)) {
+		// Determine if config has changed
+		setConfig =
+			strncmp(ssid.c_str(), reinterpret_cast<const char*>(config.ssid), sizeof(config.ssid)) != 0 ||
+			strncmp(password.c_str(), reinterpret_cast<const char*>(config.password), sizeof(config.password)) != 0 ||
+			config.bssid_set;
+	} else {
 		debugf("Can't read station configuration!");
+		setConfig = true;
 	}
 
-	if(strncmp(ssid.c_str(), (char*)config.ssid, sizeof(config.ssid)) != 0 ||
-	   strncmp(password.c_str(), (char*)config.password, sizeof(config.password)) != 0 || config.bssid_set) {
+	bool success;
+	if(setConfig) {
 		memset(config.ssid, 0, sizeof(config.ssid));
 		memset(config.password, 0, sizeof(config.password));
 		config.bssid_set = false;
-		strcpy((char*)config.ssid, ssid.c_str());
-		strcpy((char*)config.password, password.c_str());
+		ssid.getBytes(config.ssid, sizeof(config.ssid));
+		password.getBytes(config.password, sizeof(config.password));
 
 		noInterrupts();
 
-		bool success = false;
 		if(save) {
 			success = wifi_station_set_config(&config);
 		} else {
 			success = wifi_station_set_config_current(&config);
 		}
 
-		if(!success) {
-			interrupts();
-			debugf("Can't set station configuration!");
-			if(!dhcp) {
-				enableDHCP(dhcp);
-			}
-			if(!enabled) {
-				enable(enabled);
-			}
-			return false;
-		}
-		debugf("Station configuration was updated to: %s", ssid.c_str());
-
 		interrupts();
+
+		if(success) {
+			debugf("Station configuration was updated to: %s", ssid.c_str());
+		} else {
+			debugf("Can't set station configuration!");
+		}
 	} else {
 		debugf("Station configuration is: %s", ssid.c_str());
+		success = true;
 	}
+
 	if(!dhcp) {
-		enableDHCP(dhcp);
+		enableDHCP(false);
 	}
+
 	if(!enabled) {
-		enable(enabled);
+		enable(false);
 	}
 
-	wifi_station_set_auto_connect(autoConnectOnStartup);
+	if(success) {
+		wifi_station_set_auto_connect(autoConnectOnStartup);
+	}
 
-	return true;
+	return success;
 }
 
 bool StationClass::connect()
