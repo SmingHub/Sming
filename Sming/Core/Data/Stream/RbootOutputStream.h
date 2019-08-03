@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * rBootHttpUpdate.h
+ * RbootOutputStream.h
  *
  *  Created on: 2015/09/03.
  *      Author: Richard A Burton & Anakod

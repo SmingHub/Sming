@@ -19,7 +19,7 @@ A proven method for this is, for example, ECDSA in conjunction with
 SHA-256. For both steps libraries are available (micro-ecc and Arduino
 Cryptosuite).
 
-To use it, you can subclass rBootHttpUpdate like this:
+To use it, you can subclass RbootHttpUpdater like this:
 
 .. code-block:: c++
 
@@ -36,7 +36,7 @@ To use it, you can subclass rBootHttpUpdate like this:
    } MyHdr;
 
    //-----------------------------------------------------------------------------
-   class MyUpdate : public rBootHttpUpdate {
+   class MyUpdate : public RbootHttpUpdater {
 
    protected:
        virtual void writeInit();
@@ -51,7 +51,7 @@ To use it, you can subclass rBootHttpUpdate like this:
 
    //-----------------------------------------------------------------------------
    void MyUpdate::writeInit() {
-       rBootHttpUpdate::writeInit();
+       RbootHttpUpdater::writeInit();
        sha256  = new Sha256;
        hdr_len = 0;
    }
@@ -79,11 +79,11 @@ To use it, you can subclass rBootHttpUpdate like this:
        sha256->update(data, size);
 
        //  save data
-       return rBootHttpUpdate::writeFlash(data, size);
+       return RbootHttpUpdater::writeFlash(data, size);
    }
 
    bool MyUpdate::writeEnd() {
-       if (!rBootHttpUpdate::writeEnd()) return 0;
+       if (!RbootHttpUpdater::writeEnd()) return 0;
 
        u8 hash[SHA256_BLOCK_SIZE];
        sha256->final( hash );

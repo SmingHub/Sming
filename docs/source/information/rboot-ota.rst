@@ -86,9 +86,9 @@ Add the following code:
 
 .. code-block:: c++
 
-   rBootHttpUpdate* otaUpdater = nullptr;
+   RbootHttpUpdater* otaUpdater = nullptr;
 
-   void OtaUpdate_CallBack(rBootHttpUpdate& client, bool result)
+   void OtaUpdate_CallBack(RbootHttpUpdater& client, bool result)
    {
        if (result) {
            // success - switch slot
@@ -112,7 +112,7 @@ Add the following code:
    {
        // need a clean object, otherwise if run before and failed will not run again
        delete otaUpdater;
-       otaUpdater = new rBootHttpUpdate();
+       otaUpdater = new RbootHttpUpdater();
        
        // select ROM slot to flash
        rboot_config bootconf = rboot_get_config();
