@@ -2,7 +2,7 @@
 
 #include <Data/Stream/LimitedMemoryStream.h>
 #include <MultipartParser/HttpMultipartResource.h>
-#include <Network/rBootHttpUpdate.h>
+#include <Data/Stream/RbootOutputStream.h>
 
 HttpServer server;
 String lastModified;

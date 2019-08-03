@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * rBootOutputStream.cpp
+ * RbootOutputStream.cpp
  *
  *  Created on: 2015/09/03.
  *      Author: Richard A Burton & Anakod
@@ -13,9 +13,9 @@
  *
  */
 
-#include "rBootOutputStream.h"
+#include "RbootOutputStream.h"
 
-bool rBootOutputStream::init()
+bool RbootOutputStream::init()
 {
 	rBootWriteStatus = rboot_write_init(startAddress);
 	initialized = true;
@@ -23,7 +23,7 @@ bool rBootOutputStream::init()
 	return true;
 }
 
-size_t rBootOutputStream::write(const uint8_t* data, size_t size)
+size_t RbootOutputStream::write(const uint8_t* data, size_t size)
 {
 	if(!initialized && size > 0) {
 		if(!init()) { // unable to initialize
@@ -50,7 +50,7 @@ size_t rBootOutputStream::write(const uint8_t* data, size_t size)
 	return size;
 }
 
-bool rBootOutputStream::close()
+bool RbootOutputStream::close()
 {
 	return rboot_write_end(&rBootWriteStatus);
 }

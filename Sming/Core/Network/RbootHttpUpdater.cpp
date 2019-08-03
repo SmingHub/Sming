@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * rBootHttpUpdate.cpp
+ * RbootHttpUpdater.cpp
  *
  *  Created on: 2015/09/03.
  *      Author: Richard A Burton & Anakod
@@ -13,25 +13,25 @@
  *
  */
 
-#include "rBootHttpUpdate.h"
+#include "RbootHttpUpdater.h"
+
 #include <Platform/System.h>
 #include <Network/Url.h>
 #include <Platform/WDT.h>
 
-/* rBootHttpUpdate */
-void rBootHttpUpdate::addItem(int offset, String firmwareFileUrl, size_t maxSize)
+void RbootHttpUpdater::addItem(int offset, String firmwareFileUrl, size_t maxSize)
 {
-	rBootHttpUpdateItem add;
+	RbootHttpUpdaterItem add;
 	add.targetOffset = offset;
 	add.url = firmwareFileUrl;
 	add.size = maxSize;
 	items.add(add);
 }
 
-void rBootHttpUpdate::start()
+void RbootHttpUpdater::start()
 {
 	for(unsigned i = 0; i < items.count(); i++) {
-		rBootHttpUpdateItem& it = items[i];
+		RbootHttpUpdaterItem& it = items[i];
 		debug_d("Download file:\r\n    (%d) %s -> %X", currentItem, it.url.c_str(), it.targetOffset);
 
 		HttpRequest* request;
@@ -44,14 +44,14 @@ void rBootHttpUpdate::start()
 
 		request->setMethod(HTTP_GET);
 
-		rBootOutputStream* responseStream = new rBootOutputStream(it.targetOffset, it.size);
+		RbootOutputStream* responseStream = new RbootOutputStream(it.targetOffset, it.size);
 
 		request->setResponseStream(responseStream);
 
 		if(i == items.count() - 1) {
-			request->onRequestComplete(RequestCompletedDelegate(&rBootHttpUpdate::updateComplete, this));
+			request->onRequestComplete(RequestCompletedDelegate(&RbootHttpUpdater::updateComplete, this));
 		} else {
-			request->onRequestComplete(RequestCompletedDelegate(&rBootHttpUpdate::itemComplete, this));
+			request->onRequestComplete(RequestCompletedDelegate(&RbootHttpUpdater::itemComplete, this));
 		}
 
 		if(!send(request)) {
@@ -61,7 +61,7 @@ void rBootHttpUpdate::start()
 	}
 }
 
-int rBootHttpUpdate::itemComplete(HttpConnection& client, bool success)
+int RbootHttpUpdater::itemComplete(HttpConnection& client, bool success)
 {
 	if(!success) {
 		updateFailed();
@@ -70,12 +70,12 @@ int rBootHttpUpdate::itemComplete(HttpConnection& client, bool success)
 
 	HttpRequest* request = client.getRequest();
 	ReadWriteStream* stream = request->getResponseStream();
-	debug_d("Finished: URL: %s, Length: %d", request->uri.c_str(), stream->available());
+	debug_d("Finished: URL: %s, Length: %d", request->uri.toString.c_str(), stream->available());
 
 	return 0;
 }
 
-int rBootHttpUpdate::updateComplete(HttpConnection& client, bool success)
+int RbootHttpUpdater::updateComplete(HttpConnection& client, bool success)
 {
 	debug_d("\r\nFirmware download finished!");
 	for(unsigned i = 0; i < items.count(); i++) {
@@ -96,7 +96,7 @@ int rBootHttpUpdate::updateComplete(HttpConnection& client, bool success)
 	return 0;
 }
 
-void rBootHttpUpdate::updateFailed()
+void RbootHttpUpdater::updateFailed()
 {
 	debug_e("\r\nFirmware download failed..");
 	if(updateDelegate) {
@@ -105,7 +105,7 @@ void rBootHttpUpdate::updateFailed()
 	items.clear();
 }
 
-void rBootHttpUpdate::applyUpdate()
+void RbootHttpUpdater::applyUpdate()
 {
 	items.clear();
 	if(romSlot == NO_ROM_SWITCH) {

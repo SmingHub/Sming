@@ -18,18 +18,18 @@
 #include <Data/Stream/ReadWriteStream.h>
 #include <rboot-api.h>
 
-class rBootOutputStream : public ReadWriteStream
+class RbootOutputStream : public ReadWriteStream
 {
 public:
 	/**
 	 * @param startAddress the start address on the storage media
 	 * @param maxLength the maximum allowed length of the rom. Use 0 if unlimited.
 	 */
-	rBootOutputStream(uint32_t startAddress, size_t maxLength = 0) : startAddress(startAddress), maxLength(maxLength)
+	RbootOutputStream(uint32_t startAddress, size_t maxLength = 0) : startAddress(startAddress), maxLength(maxLength)
 	{
 	}
 
-	virtual ~rBootOutputStream()
+	virtual ~RbootOutputStream()
 	{
 		close();
 	}
@@ -73,3 +73,6 @@ protected:
 protected:
 	virtual bool init();
 };
+
+/** @deprecated Use `RbootOutputStream` */
+typedef RbootOutputStream rBootOutputStream SMING_DEPRECATED;
