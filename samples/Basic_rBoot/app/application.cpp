@@ -12,9 +12,9 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-rBootHttpUpdate* otaUpdater = 0;
+RbootHttpUpdater* otaUpdater = 0;
 
-void OtaUpdate_CallBack(rBootHttpUpdate& client, bool result)
+void OtaUpdate_CallBack(RbootHttpUpdater& client, bool result)
 {
 	Serial.println("In callback...");
 	if(result == true) {
@@ -45,7 +45,7 @@ void OtaUpdate()
 	// need a clean object, otherwise if run before and failed will not run again
 	if(otaUpdater)
 		delete otaUpdater;
-	otaUpdater = new rBootHttpUpdate();
+	otaUpdater = new RbootHttpUpdater();
 
 	// select rom slot to flash
 	bootconf = rboot_get_config();

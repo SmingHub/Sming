@@ -49,7 +49,7 @@
 #include "Network/TcpConnection.h"
 #include "Network/UdpConnection.h"
 #include "Network/Url.h"
-#include "Network/rBootHttpUpdate.h"
+#include "Network/RbootHttpUpdater.h"
 
 #include "Data/Stream/FileStream.h"
 #include "Data/Stream/TemplateFileStream.h"

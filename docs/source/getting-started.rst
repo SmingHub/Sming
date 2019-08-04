@@ -154,7 +154,7 @@ OTA application update based on rBoot
        delete otaUpdater;
      }
 
-     otaUpdater = new rBootHttpUpdate();
+     otaUpdater = new RbootHttpUpdater();
 
      // select rom slot to flash
      bootconf = rboot_get_config();

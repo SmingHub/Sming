@@ -19,7 +19,7 @@ A proven method for this is, for example, ECDSA in conjunction with
 SHA-256. For both steps libraries are available (micro-ecc and Arduino
 Cryptosuite).
 
-To use it, you can subclass rBootHttpUpdate like this:
+To use it, you can subclass RbootOutputStream like this:
 
 .. code-block:: c++
 
@@ -28,7 +28,7 @@ To use it, you can subclass rBootHttpUpdate like this:
    #define PREFIX_SIZE     sizeof(_my_prefix)
    #define SIGNATURE_SIZE  64
 
-   const u8 _my_prefix[6] = { PREFIX_MAGIC, PREFIX_TYPE };    
+   const u8 _my_prefix[6] = { PREFIX_MAGIC, PREFIX_TYPE };
 
    typedef struct {
        u8  prefix[PREFIX_SIZE];
@@ -36,27 +36,38 @@ To use it, you can subclass rBootHttpUpdate like this:
    } MyHdr;
 
    //-----------------------------------------------------------------------------
-   class MyUpdate : public rBootHttpUpdate {
+   class MyStream : public RbootOutputStream {
+   public:
+      MyStream(uint32_t startAddress, size_t maxLength = 0): RbootOutputStream(startAddress, maxLength)
+      {
+         // do some initialization if needed.
+      }
+
+      size_t write(const uint8_t* data, size_t size) override;
+      bool close() override;
+      virtual ~MyStream()
+      {
+        delete sha256;
+      }
 
    protected:
-       virtual void writeInit();
-       virtual bool writeFlash(const u8 *data, u16 size);
-       virtual bool writeEnd();
-       
+       bool init() override;
+
    private:
-       Sha256 *sha256;
+       Sha256 *sha256 = nullptr;
        u8      hdr_len;
        MyHdr   hdr;
    };
 
    //-----------------------------------------------------------------------------
-   void MyUpdate::writeInit() {
-       rBootHttpUpdate::writeInit();
+   bool MyStream::init() {
+       RbootOutputStream::init();
+       delete sha256;
        sha256  = new Sha256;
        hdr_len = 0;
    }
 
-   bool MyUpdate::writeFlash(const u8 *data, u16 size) {
+   size_t MyStream::write(const uint8_t* data, size_t size) {
        //  store header
        u8 missing = sizeof(hdr) - hdr_len;
        if (missing) {
@@ -65,7 +76,7 @@ To use it, you can subclass rBootHttpUpdate like this:
            size    -= missing;
            data    += missing;
            hdr_len += missing;
-           
+
            //  check prefix
            if ( hdr_len >= PREFIX_SIZE ) {
                if ( memcmp(hdr.prefix, _my_prefix, PREFIX_SIZE) ) {
@@ -79,11 +90,13 @@ To use it, you can subclass rBootHttpUpdate like this:
        sha256->update(data, size);
 
        //  save data
-       return rBootHttpUpdate::writeFlash(data, size);
+       return RbootOutputStream::write(data, size);
    }
 
-   bool MyUpdate::writeEnd() {
-       if (!rBootHttpUpdate::writeEnd()) return 0;
+   bool MyStream::close() {
+       if (!RbootOutputStream::close()) {
+         return false;
+       }
 
        u8 hash[SHA256_BLOCK_SIZE];
        sha256->final( hash );
@@ -91,7 +104,23 @@ To use it, you can subclass rBootHttpUpdate like this:
        bool sig_ok = /* add signature check here */;
        if (!sig_ok) {
            debugf("wrong signature");
+           // TODO: if needed delete the block at the startAddress
            return 0;
        }
        return 1;
    }
+
+
+And then in your application you can use your MyStream with the following setup:
+
+.. code-block:: c++
+
+  RbootHttpUpdater* otaUpdater = new RbootHttpUpdater();
+
+  MyStream* stream = new MyStream(1234); // Replace 1234 with the right start address
+
+  otaUpdater->addItem(ROM_0_URL, new MyStream()); // << the second parameter specifies that your stream will be used to store the data.
+
+  // and/or set a callback (called on failure or success without switching requested)
+  otaUpdater->setCallback(OtaUpdate_CallBack);
+
