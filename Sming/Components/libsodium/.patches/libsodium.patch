@@ -1548,10 +1548,46 @@ index 9dfe54f8..32faeee5 100644
 +    return 0;
  }
 diff --git a/src/libsodium/sodium/utils.c b/src/libsodium/sodium/utils.c
-index 1fbd3a37..741b73eb 100644
+index 1fbd3a37..2e28e9d6 100644
 --- a/src/libsodium/sodium/utils.c
 +++ b/src/libsodium/sodium/utils.c
-@@ -380,29 +380,6 @@ sodium_sub(unsigned char *a, const unsigned char *b, const size_t len)
+@@ -14,12 +14,7 @@
+ # include <sys/mman.h>
+ #endif
+ 
+-#ifdef _WIN32
+-# include <windows.h>
+-# include <wincrypt.h>
+-#else
+ # include <unistd.h>
+-#endif
+ 
+ #ifndef HAVE_C_VARARRAYS
+ # ifdef HAVE_ALLOCA_H
+@@ -50,11 +45,6 @@ void *alloca (size_t);
+ # define ENOSYS ENXIO
+ #endif
+ 
+-#if defined(_WIN32) && \
+-    (!defined(WINAPI_FAMILY) || WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+-# define WINAPI_DESKTOP
+-#endif
+-
+ #define CANARY_SIZE 16U
+ #define GARBAGE_VALUE 0xdb
+ 
+@@ -102,9 +92,7 @@ _sodium_dummy_symbol_to_prevent_memzero_lto(void *const  pnt,
+ void
+ sodium_memzero(void * const pnt, const size_t len)
+ {
+-#ifdef _WIN32
+-    SecureZeroMemory(pnt, len);
+-#elif defined(HAVE_MEMSET_S)
++#if defined(HAVE_MEMSET_S)
+     if (len > 0U && memset_s(pnt, (rsize_t) len, 0, (rsize_t) len) != 0) {
+         sodium_misuse(); /* LCOV_EXCL_LINE */
+     }
+@@ -380,29 +368,6 @@ sodium_sub(unsigned char *a, const unsigned char *b, const size_t len)
      }
  }
  
@@ -1581,3 +1617,4 @@ index 1fbd3a37..741b73eb 100644
  int
  sodium_mlock(void *const addr, const size_t len)
  {
+
