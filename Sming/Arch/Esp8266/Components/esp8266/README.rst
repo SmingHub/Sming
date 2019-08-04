@@ -7,6 +7,11 @@ Contains startup code, crash handling and additional Esp8266-specific
 support code. Sming may be built using a pre-installed SDK, or by using
 the current version 3 SDK as a submodule.
 
+.. attention::
+
+   At time of writing, SDK 3 does not appear to support use of devices with 256K or 512K memory,
+   such as the ESP-01. For now, please use the default SDK 1.5.4 or SDK 2.0.0.
+
 .. envvar:: SDK_BASE
 
    Points to the location of the Espressif Non-OS SDK. To use the Espressif version 3 SDK, you need

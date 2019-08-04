@@ -56,7 +56,11 @@ extern "C" uint32 ICACHE_FLASH_ATTR  WEAK_ATTR user_rf_cal_sector_set(void)
     enum flash_size_map size_map = system_get_flash_size_map();
     uint32 rf_cal_sec = 0;
 
-    switch (size_map) {
+    switch (int(size_map)) {
+        case FLASH_SIZE_2M:
+            rf_cal_sec = 64 - 5;
+            break;
+
         case FLASH_SIZE_4M_MAP_256_256:
             rf_cal_sec = 128 - 5;
             break;
@@ -73,6 +77,14 @@ extern "C" uint32 ICACHE_FLASH_ATTR  WEAK_ATTR user_rf_cal_sector_set(void)
         case FLASH_SIZE_32M_MAP_512_512:
         case FLASH_SIZE_32M_MAP_1024_1024:
             rf_cal_sec = 1024 - 5;
+            break;
+
+        case 8: // FLASH_SIZE_64M_MAP_1024_1024
+            rf_cal_sec = 2048 - 5;
+            break;
+
+        case 9: // FLASH_SIZE_128M_MAP_1024_1024
+            rf_cal_sec = 4096 - 5;
             break;
 
         default:
@@ -106,7 +118,7 @@ extern "C" void ICACHE_FLASH_ATTR WEAK_ATTR user_pre_init(void)
 	static const partition_item_t partitions[] = {
 			PARTITION_ITEM(SYSTEM_PARTITION_BOOTLOADER,			0,					1),
 			PARTITION_ITEM(SYSTEM_PARTITION_RBOOT_CONFIG,		1,					1),
-			PARTITION_ITEM(SYSTEM_PARTITION_PROGRAM,			2,					MAX_PROGRAM_SECTORS - 2),
+			PARTITION_ITEM(SYSTEM_PARTITION_PROGRAM,			2,					std::min(MAX_PROGRAM_SECTORS, rfCalSector) - 2),
 			PARTITION_ITEM(SYSTEM_PARTITION_RF_CAL,				rfCalSector,		1),
 			PARTITION_ITEM(SYSTEM_PARTITION_PHY_DATA,			rfCalSector + 1,	1),
 			PARTITION_ITEM(SYSTEM_PARTITION_SYSTEM_PARAMETER,	rfCalSector + 2,	3),
