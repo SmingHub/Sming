@@ -97,7 +97,7 @@ void fileUploadMapper(HttpFiles& files)
 	size_t maxLength = 0; // 0  means that there is no max length.
 						  // Set this according to your flash memory layout
 
-	files["firmware"] = new rBootOutputStream(romStartAddress, maxLength);
+	files["firmware"] = new RbootOutputStream(romStartAddress, maxLength);
 }
 
 void startWebServer()
