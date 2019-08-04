@@ -45,12 +45,16 @@ To use it, you can subclass RbootOutputStream like this:
 
       size_t write(const uint8_t* data, size_t size) override;
       bool close() override;
+      virtual ~MyStream()
+      {
+        delete sha256;
+      }
 
    protected:
        bool init() override;
 
    private:
-       Sha256 *sha256;
+       Sha256 *sha256 = nullptr;
        u8      hdr_len;
        MyHdr   hdr;
    };
@@ -58,6 +62,7 @@ To use it, you can subclass RbootOutputStream like this:
    //-----------------------------------------------------------------------------
    bool MyStream::init() {
        RbootOutputStream::init();
+       delete sha256;
        sha256  = new Sha256;
        hdr_len = 0;
    }
@@ -99,7 +104,7 @@ To use it, you can subclass RbootOutputStream like this:
        bool sig_ok = /* add signature check here */;
        if (!sig_ok) {
            debugf("wrong signature");
-           // TODO: if neededed delete the block at the startAddress
+           // TODO: if needed delete the block at the startAddress
            return 0;
        }
        return 1;
