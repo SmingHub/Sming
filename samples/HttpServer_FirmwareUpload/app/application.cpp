@@ -4,6 +4,7 @@
 #include <MultipartParser/HttpMultipartResource.h>
 #include <Data/Stream/RbootOutputStream.h>
 #include <sodium/crypto_sign.h>
+#include <esp_spi_flash.h>
 #include "FirmwareVerificationKey.h"
 
 HttpServer server;
@@ -109,7 +110,7 @@ public:
 				(crypto_sign_final_verify(&verifierState_, header_.signature, verificationKey_) == 0);
 			if(!signatureMatch) {
 				// destroy start sector of updated ROM to avoid accidental booting an unsanctioned firmware
-				spi_flash_erase_sector(startAddress / SECTOR_SIZE);
+				flashmem_erase_sector(startAddress / SECTOR_SIZE);
 				setError("Signature mismatch");
 			}
 		}
