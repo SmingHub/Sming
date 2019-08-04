@@ -19,7 +19,7 @@ NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTi
 	// Setup timer, but don't start it
 	timer.setCallback(TimerDelegate(&NtpClient::requestTime, this));
 
-	this->server = reqServer;
+	this->server = reqServer ?: NTP_DEFAULT_SERVER;
 	this->delegateCompleted = delegateFunction;
 	if(!delegateFunction) {
 		autoUpdateSystemClock = true;

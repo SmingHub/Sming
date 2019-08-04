@@ -62,6 +62,7 @@ if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
 	# Build the documentation
 	mv $SMING_PROJECTS_DIR/samples ..
 	mv $SMING_PROJECTS_DIR/tests ..
+	unset SMING_PROJECTS_DIR
 	make docs V=1
 else
 	$MAKE_PARALLEL samples
