@@ -32,7 +32,6 @@
 #include <esp_tasks.h>
 #include <host_lwip.h>
 #include <stdlib.h>
-#include <esp_wifi.h>
 
 #include <Platform/System.h>
 
@@ -40,6 +39,7 @@ static int exitCode = 0;
 static bool done = false;
 
 extern void init();
+extern void host_wifi_lwip_init_complete();
 
 static void cleanup()
 {
