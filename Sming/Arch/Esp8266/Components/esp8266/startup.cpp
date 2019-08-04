@@ -139,10 +139,3 @@ extern "C" void ICACHE_FLASH_ATTR WEAK_ATTR user_pre_init(void)
 }
 
 #endif /* defined(ESP_SDK_VERSION_MAJOR) and ESP_SDK_VERSION_MAJOR>=3 */
-
-namespace std {
-    void WEAK_ATTR __throw_bad_function_call()
-    {
-        while(1);
-    };
-}
