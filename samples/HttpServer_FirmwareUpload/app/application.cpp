@@ -226,8 +226,8 @@ void init()
 	}
 
 	WifiStation.enable(true);
-	WifiStation.config(WIFI_SSID, WIFI_PWD);
-	WifiStation.enableDHCP(true);
+	//WifiStation.config(WIFI_SSID, WIFI_PWD);
+	//WifiStation.enableDHCP(true);
 
 	// Run WEB server on system ready
 	System.onReady(startWebServer);
