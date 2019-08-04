@@ -1,8 +1,9 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 import argparse
 import sys, os
 import struct
+import codecs
 # image signing via libsodium
 try:
     import nacl.bindings
@@ -38,7 +39,7 @@ extern "C" {
 #endif
 
 static const uint8_t firmwareVerificationKey[''' + str(len(pk)) + '''] = {
-    ''' + ', '.join('0x%02X' % ord(b) for b in pk) + '''
+    ''' + ', '.join('0x%02X' % (b if isinstance(b, int) else ord(b)) for b in pk) + '''
 };
 #ifdef __cplusplus
 }
@@ -84,11 +85,11 @@ def make_signed_image(address, image, sk, pk = None):
     sig_state = nacl.bindings.crypto_sign_ed25519ph_state()
     nacl.bindings.crypto_sign_ed25519ph_update(sig_state, image)
     signature = nacl.bindings.crypto_sign_ed25519ph_final_create(sig_state, sk)
-    print("OTA signature (EdDSA25519ph): " + signature.encode('Hex'))
+    print("OTA signature (EdDSA25519ph): " + codecs.encode(signature, 'hex').decode('ascii'))
     
     if pk is not None:
         # test signature verification
-        print("Verification key: " + pk.encode('Hex'))
+        print("Verification key: " + codecs.encode(pk, 'hex').decode('ascii'))
         verify_state = nacl.bindings.crypto_sign_ed25519ph_state()
         nacl.bindings.crypto_sign_ed25519ph_update(verify_state, image)
         nacl.bindings.crypto_sign_ed25519ph_final_verify(verify_state, signature, pk)
@@ -108,14 +109,14 @@ def main():
         
         if args.keyfile:                
             with open(args.keyfile, 'wb') as privkeyfile:
-                privkeyfile.write(sk_seed.encode('Hex'))
+                privkeyfile.write(codecs.encode(sk_seed, 'hex'))
             print("Private signing key written to '%s'." % args.keyfile)
         else:
             sys.stderr.write("Warning: Not output file for generated key is given ('--keyfile'). Generated key will be lost.\n")
     elif args.keyfile:
         print("Read signing key from '%s'" % args.keyfile)
-        with open(args.keyfile, 'r') as keyfile:
-            sk_seed = keyfile.read().decode('Hex')
+        with open(args.keyfile, 'rb') as keyfile:
+            sk_seed = codecs.decode(keyfile.read(), 'hex')
     
     else:
         sys.exit("Neither '--genkey' nor '--keyfile' is given. No signing key available.\n");
