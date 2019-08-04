@@ -31,29 +31,15 @@ else
 	flashimageoptions	+= -fm qio
 endif
 
-ifeq ($(SPI_SIZE), 256K)
-	flashimageoptions	+= -fs 256KB
-else ifeq ($(SPI_SIZE), 1M)
-	flashimageoptions	+= -fs 1MB
-	INIT_BIN_ADDR		:= 0x0fc000
-	BLANK_BIN_ADDR		:= 0x0fe000
-else ifeq ($(SPI_SIZE), 2M)
-	flashimageoptions	+= -fs 2MB
-	INIT_BIN_ADDR		:= 0x1fc000
-	BLANK_BIN_ADDR		:= 0x1fe000
-else ifeq ($(SPI_SIZE), 4M)
-	flashimageoptions	+= -fs 4MB
-	INIT_BIN_ADDR		:= 0x3fc000
-	BLANK_BIN_ADDR		:= 0x3fe000
-else
-	flashimageoptions	+= -fs 512KB
-	INIT_BIN_ADDR		:= 0x07c000
-	BLANK_BIN_ADDR		:= 0x04b000
-endif
-
-#
-FLASH_INIT_CHUNKS		+= $(INIT_BIN_ADDR)=$(SDK_BASE)/bin/esp_init_data_default.bin
-FLASH_INIT_CHUNKS		+= $(BLANK_BIN_ADDR)=$(SDK_BASE)/bin/blank.bin
+# Calculate parameters from SPI_SIZE value (esptool will check validity)
+flashimageoptions	+= -fs $(SPI_SIZE)B
+FLASH_SIZE			:= $(subst M,*1024K,$(SPI_SIZE))
+FLASH_SIZE			:= $(subst K,*1024,$(FLASH_SIZE))
+FlashOffset			= $$(($(FLASH_SIZE)-$1))
+FLASH_INIT_CHUNKS += \
+	$(call FlashOffset,0x5000)=$(SDK_BASE)/bin/blank.bin \
+	$(call FlashOffset,0x4000)=$(SDK_BASE)/bin/esp_init_data_default.bin \
+	$(call FlashOffset,0x2000)=$(SDK_BASE)/bin/blank.bin
 
 # Default COM port and speed used for flashing
 CACHE_VARS				+= COM_PORT_ESPTOOL COM_SPEED_ESPTOOL

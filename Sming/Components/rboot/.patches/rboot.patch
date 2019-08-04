@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 0b43474..4c1913e 100644
+index 0b43474..7cb71f4 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -58,6 +58,16 @@ endif
@@ -19,6 +19,18 @@ index 0b43474..4c1913e 100644
  ifneq ($(RBOOT_EXTRA_INCDIR),)
  	CFLAGS += $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
  endif
+@@ -75,6 +85,10 @@ else ifeq ($(SPI_SIZE), 2Mb)
+ 	E2_OPTS += -2048b
+ else ifeq ($(SPI_SIZE), 4M)
+ 	E2_OPTS += -4096
++else ifeq ($(SPI_SIZE), 8M)
++	E2_OPTS += -8192
++else ifeq ($(SPI_SIZE), 16M)
++	E2_OPTS += -16384
+ endif
+ ifeq ($(SPI_MODE), qio)
+ 	E2_OPTS += -qio
+
 diff --git a/rboot.c b/rboot.c
 index d622f97..00ccaeb 100644
 --- a/rboot.c
