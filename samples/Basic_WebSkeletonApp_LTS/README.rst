@@ -23,5 +23,7 @@ This is how it was done:
 
    * Add `ARDUINO_LIBRARIES=ArduinoJson6` to the project's component.mk file.
    * Add `#include <JsonObjectStream.h>`. If you're not using the stream class, add `#include <ArduinoJson6.h>` to code.
+9. Update callback function parameter lists for ``STADisconnect`` and ``STAGotIP``.
+   See :source:`Sming/Platform/StationClass.h`.
 
 That's it.
