@@ -1,4 +1,5 @@
 #include "SignedRbootOutputStream.h"
+#include <esp_spi_flash.h>
 
 SignedRbootOutputStream::SignedRbootOutputStream(int32_t startAddress, size_t maxLength, const uint8_t* verificationKey)
 	: RbootOutputStream(startAddress, maxLength), verificationKey(verificationKey),
@@ -58,7 +59,7 @@ bool SignedRbootOutputStream::close()
 		const bool signatureMatch = (crypto_sign_final_verify(&verifierState, header.signature, verificationKey) == 0);
 		if(!signatureMatch) {
 			// destroy start sector of updated ROM to avoid accidental booting an unsanctioned firmware
-			spi_flash_erase_sector(startAddress / SECTOR_SIZE);
+			flashmem_erase_sector(startAddress / SECTOR_SIZE);
 			setError("Signature mismatch");
 		}
 	}
