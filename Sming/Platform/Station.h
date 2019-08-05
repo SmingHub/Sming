@@ -21,6 +21,7 @@
 #include <WString.h>
 #include <WVector.h>
 #include <IPAddress.h>
+#include <MACAddress.h>
 #include "BssInfo.h"
 
 /** @ingroup constants
@@ -167,10 +168,9 @@ public:
 	virtual IPAddress getIP() const = 0;
 
 	/**	@brief	Get WiFi station MAC address
-	 *  @param hwaddr
-	 *	@retval	bool true on success
+	 *	@retval	MACAddress
 	 */
-	virtual bool getMacAddr(uint8_t hwaddr[6]) const = 0;
+	virtual MACAddress getMacAddr() const = 0;
 
 	/**	@brief	Get WiFi station MAC address
 	 *  @param sep Optional separator between bytes (e.g. ':')

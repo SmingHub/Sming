@@ -21,7 +21,7 @@ public:
 	explicit BssInfoImpl(const bss_info* info)
 	{
 		ssid = reinterpret_cast<const char*>(info->ssid);
-		memcpy(bssid, info->bssid, sizeof(bssid));
+		bssid = info->bssid;
 		authorization = info->authmode;
 		channel = info->channel;
 		rssi = info->rssi;
@@ -163,9 +163,14 @@ IPAddress StationImpl::getIP() const
 	return info.ip;
 }
 
-bool StationImpl::getMacAddr(uint8_t hwaddr[6]) const
+MACAddress StationImpl::getMacAddr() const
 {
-	return wifi_get_macaddr(STATION_IF, hwaddr);
+	MACAddress addr;
+	if(wifi_get_macaddr(STATION_IF, &addr[0])) {
+		return addr;
+	} else {
+		return MACADDR_NONE;
+	}
 }
 
 IPAddress StationImpl::getNetworkBroadcast() const

@@ -21,6 +21,7 @@
 
 #include <WString.h>
 #include <IPAddress.h>
+#include <MACAddress.h>
 #include "BssInfo.h"
 
 /** @brief  Access point class
@@ -65,10 +66,9 @@ public:
 	virtual bool setIP(IPAddress address) = 0;
 
 	/**	@brief	Get WiFi AP MAC address
-	 *  @param hwaddr
-	 *	@retval	bool true on success
+	 *	@retval	MACAddress
 	 */
-	virtual bool getMacAddr(uint8_t hwaddr[6]) const = 0;
+	virtual MACAddress getMacAddr() const = 0;
 
 	/** @brief  Get WiFi AP MAC address
 	 *  @param	sep separator between bytes (e.g. ':')
@@ -104,10 +104,10 @@ public:
 /** @} */
 
 /**	@brief	Global instance of WiFi access point object
- *	@note	Use WiFiAccessPoint.<i>function</i> to access WiFi access point functions
+ *	@note	Use WifiAccessPoint.<i>function</i> to access WiFi access point functions
  *	@note	Example:
- *	@code	if(WiFiAccessPoint.config("ESP_AP", AUTH_OPEN))
- *              WiFiAccessPoint.enable(true);
+ *	@code	if(WifiAccessPoint.config("ESP_AP", AUTH_OPEN))
+ *              WifiAccessPoint.enable(true);
  *	@endcode
  *  @ingroup wifi_ap
  */

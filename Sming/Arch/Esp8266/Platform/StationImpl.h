@@ -33,7 +33,7 @@ public:
 	void setHostname(const String& hostname) override;
 	String getHostname() const override;
 	IPAddress getIP() const override;
-	bool getMacAddr(uint8_t hwaddr[6]) const override;
+	MACAddress getMacAddr() const override;
 	IPAddress getNetworkMask() const override;
 	IPAddress getNetworkGateway() const override;
 	IPAddress getNetworkBroadcast() const override;

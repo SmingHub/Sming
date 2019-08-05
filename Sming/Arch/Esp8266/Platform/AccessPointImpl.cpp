@@ -143,9 +143,14 @@ bool AccessPointImpl::setIP(IPAddress address)
 	return true;
 }
 
-bool AccessPointImpl::getMacAddr(uint8_t hwaddr[6]) const
+MACAddress AccessPointImpl::getMacAddr() const
 {
-	return wifi_get_macaddr(SOFTAP_IF, hwaddr);
+	MACAddress addr;
+	if(wifi_get_macaddr(SOFTAP_IF, &addr[0])) {
+		return addr;
+	} else {
+		return MACADDR_NONE;
+	}
 }
 
 String AccessPointImpl::getSSID() const

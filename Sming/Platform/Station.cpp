@@ -9,7 +9,6 @@
  ****/
 
 #include "Station.h"
-#include <Data/HexString.h>
 
 /* StationClass */
 
@@ -41,12 +40,8 @@ bool StationClass::setIP(IPAddress address)
 
 String StationClass::getMAC(char sep) const
 {
-	uint8 hwaddr[6];
-	if(getMacAddr(hwaddr)) {
-		return makeHexString(hwaddr, sizeof(hwaddr), sep);
-	} else {
-		return nullptr;
-	}
+	auto mac = getMacAddr();
+	return mac ? mac.toString(sep) : nullptr;
 }
 
 String StationClass::getConnectionStatusName() const

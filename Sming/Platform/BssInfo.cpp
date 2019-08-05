@@ -19,10 +19,3 @@ String BssInfo::getAuthorizationMethodName() const
 		return nullptr;
 	}
 }
-
-uint32_t BssInfo::getHashId() const
-{
-	uint32_t a = bssid[4] | (bssid[5] << 8);
-	uint32_t b = bssid[0] | (bssid[1] << 8) | (bssid[2] << 16) | (bssid[3] << 24);
-	return a ^ b;
-}

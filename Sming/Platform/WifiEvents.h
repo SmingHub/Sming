@@ -15,6 +15,7 @@
 
 #include <WString.h>
 #include <IPAddress.h>
+#include <MACAddress.h>
 #include <Delegate.h>
 #include "BssInfo.h"
 
@@ -68,13 +69,14 @@ enum WifiDisconnectReason {
 };
 
 // Define WifiEvents Delegates types
-typedef Delegate<void(String ssid, uint8_t ssidLen, uint8_t bssid[6], uint8_t channel)> StationConnectDelegate;
-typedef Delegate<void(String ssid, uint8_t ssidLen, uint8_t bssid[6], uint8_t reason)> StationDisconnectDelegate;
+typedef Delegate<void(const String& ssid, const MACAddress& bssid, uint8_t channel)> StationConnectDelegate;
+typedef Delegate<void(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)>
+	StationDisconnectDelegate;
 typedef Delegate<void(WifiAuthMode oldMode, WifiAuthMode newMode)> StationAuthModeChangeDelegate;
 typedef Delegate<void(IPAddress ip, IPAddress netmask, IPAddress gateway)> StationGotIPDelegate;
-typedef Delegate<void(uint8_t mac[6], uint8_t aid)> AccessPointConnectDelegate;
-typedef Delegate<void(uint8_t mac[6], uint8_t aid)> AccessPointDisconnectDelegate;
-typedef Delegate<void(int16_t rssi, uint8_t mac[6])> AccessPointProbeReqRecvedDelegate;
+typedef Delegate<void(const MACAddress& mac, uint8_t aid)> AccessPointConnectDelegate;
+typedef Delegate<void(const MACAddress& mac, uint8_t aid)> AccessPointDisconnectDelegate;
+typedef Delegate<void(int rssi, const MACAddress& mac)> AccessPointProbeReqRecvedDelegate;
 
 class WifiEventsClass
 {

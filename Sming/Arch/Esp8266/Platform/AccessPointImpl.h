@@ -27,7 +27,7 @@ public:
 				int beaconInterval) override;
 	IPAddress getIP() const override;
 	bool setIP(IPAddress address) override;
-	bool getMacAddr(uint8_t hwaddr[6]) const override;
+	MACAddress getMacAddr() const override;
 	IPAddress getNetworkMask() const override;
 	IPAddress getNetworkGateway() const override;
 	IPAddress getNetworkBroadcast() const override;

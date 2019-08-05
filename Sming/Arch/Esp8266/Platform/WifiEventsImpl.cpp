@@ -29,16 +29,19 @@ void WifiEventsImpl::WifiEventHandler(System_Event_t* evt)
 	case EVENT_STAMODE_CONNECTED:
 		debugf("connect to ssid %s, channel %d\n", evt->event_info.connected.ssid, evt->event_info.connected.channel);
 		if(onSTAConnect) {
-			onSTAConnect((const char*)evt->event_info.connected.ssid, evt->event_info.connected.ssid_len,
-						 evt->event_info.connected.bssid, evt->event_info.connected.channel);
+			String ssid(reinterpret_cast<const char*>(evt->event_info.connected.ssid),
+						evt->event_info.connected.ssid_len);
+			onSTAConnect(ssid, evt->event_info.connected.bssid, evt->event_info.connected.channel);
 		}
 		break;
 	case EVENT_STAMODE_DISCONNECTED:
 		debugf("disconnect from ssid %s, reason %d\n", evt->event_info.disconnected.ssid,
 			   evt->event_info.disconnected.reason);
 		if(onSTADisconnect) {
-			onSTADisconnect((const char*)evt->event_info.disconnected.ssid, evt->event_info.disconnected.ssid_len,
-							evt->event_info.disconnected.bssid, evt->event_info.disconnected.reason);
+			String ssid(reinterpret_cast<const char*>(evt->event_info.disconnected.ssid),
+						evt->event_info.disconnected.ssid_len);
+			auto reason = WifiDisconnectReason(evt->event_info.disconnected.reason);
+			onSTADisconnect(ssid, evt->event_info.disconnected.bssid, reason);
 		}
 		break;
 	case EVENT_STAMODE_AUTHMODE_CHANGE: {
@@ -49,6 +52,7 @@ void WifiEventsImpl::WifiEventHandler(System_Event_t* evt)
 			onSTAAuthModeChange(oldMode, newMode);
 		}
 		break;
+	}
 	case EVENT_STAMODE_GOT_IP:
 		debugf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR "\n", IP2STR(&evt->event_info.got_ip.ip),
 			   IP2STR(&evt->event_info.got_ip.mask), IP2STR(&evt->event_info.got_ip.gw));

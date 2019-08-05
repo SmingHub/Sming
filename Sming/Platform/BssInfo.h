@@ -12,6 +12,7 @@
 
 #include <WString.h>
 #include <WVector.h>
+#include <MACAddress.h>
 
 #ifdef ARCH_HOST
 enum WifiAuthMode {
@@ -45,11 +46,14 @@ public:
 	/**	@brief	Get BSS hash ID
 	 *	@retval	uint32_t BSS hash ID
 	*/
-	uint32_t getHashId() const;
+	uint32_t getHashId() const
+	{
+		return bssid.getHash();
+	}
 
 public:
 	String ssid;				///< SSID
-	uint8_t bssid[6] = {0};		///< BSS ID
+	MACAddress bssid;			///< BSS ID
 	WifiAuthMode authorization; ///< Authorisation mode
 	uint8_t channel;			///< Channel number
 	int16_t rssi;				///< RSSI level
