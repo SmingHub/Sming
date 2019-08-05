@@ -385,6 +385,13 @@ bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate c
 		return false;
 	}
 
+	// Bug in SDK Version 3 where a debug statement attempts to read from flash and throws a memory exception
+	// This is a workaround
+	auto os_print = system_get_os_print();
+	if(os_print) {
+		system_set_os_print(false);
+	}
+
 	smartConfigCallback = callback;
 	if(!smartconfig_start([](sc_status status, void* pdata) { station.internalSmartConfig(status, pdata); })) {
 		debug_e("smartconfig_start() failed");
@@ -392,6 +399,10 @@ bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate c
 		delete smartConfigEventInfo;
 		smartConfigEventInfo = nullptr;
 		return false;
+	}
+
+	if(os_print) {
+		system_set_os_print(true);
 	}
 
 	return true;
