@@ -21,12 +21,7 @@ class SignedRbootOutputStream : public RbootOutputStream
 
 	crypto_sign_state verifierState;
 
-	void setError(const char* message)
-	{
-		okFlag = false;
-		errorMessage = message;
-		debug_e(errorMessage);
-	}
+	void setError(const char* message);
 
 public:
 	SignedRbootOutputStream(int32_t startAddress, size_t maxLength, const uint8_t* verificationKey);

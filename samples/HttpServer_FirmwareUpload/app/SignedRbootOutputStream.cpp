@@ -8,6 +8,14 @@ SignedRbootOutputStream::SignedRbootOutputStream(int32_t startAddress, size_t ma
 {
 	crypto_sign_init(&verifierState);
 }
+
+void SignedRbootOutputStream::setError(const char* message)
+{
+	okFlag = false;
+	errorMessage = message;
+	debug_e("%s", errorMessage.c_str());
+}
+
 size_t SignedRbootOutputStream::write(const uint8_t* data, size_t size)
 {
 	size_t consumed = 0;
