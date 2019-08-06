@@ -14,6 +14,10 @@
 #include <Platform/System.h>
 #include <esp_wifi.h>
 
+#ifdef ENABLE_SMART_CONFIG
+#include <esp_smartconfig.h>
+#endif
+
 class StationImpl : public StationClass, protected ISystemReadyHandler
 {
 public:
@@ -45,7 +49,7 @@ public:
 	bool startScan(ScanCompletedDelegate scanCompleted) override;
 
 #ifdef ENABLE_SMART_CONFIG
-	void smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback) override;
+	bool smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback) override;
 	void smartConfigStop() override;
 #endif
 
@@ -68,4 +72,7 @@ private:
 
 private:
 	bool runScan = false;
+#ifdef ENABLE_SMART_CONFIG
+	SmartConfigEventInfo* smartConfigEventInfo = nullptr; ///< Set during smart handling
+#endif
 };

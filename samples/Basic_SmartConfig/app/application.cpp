@@ -1,30 +1,30 @@
 #include <SmingCore.h>
 
-void smartConfigCallback(SmartConfigEvent status, void* pdata)
+bool smartConfigCallback(SmartConfigEvent event, const SmartConfigEventInfo& info)
 {
-	switch(status) {
+	switch(event) {
 	case SCE_Wait:
 		debugf("SCE_Wait\n");
 		break;
 	case SCE_FindChannel:
 		debugf("SCE_FindChannel\n");
 		break;
-	case SCE_GotSsid:
-		debugf("SCE_GotSsid\n");
+	case SCE_GettingSsid:
+		debugf("SCE_GettingSsid, type = %d\n", info.type);
 		break;
-	case SCE_Link: {
+	case SCE_Link:
 		debugf("SCE_Link\n");
-		station_config* sta_conf = (station_config*)pdata;
-		char* ssid = (char*)sta_conf->ssid;
-		char* password = (char*)sta_conf->password;
-		WifiStation.config(ssid, password);
+		WifiStation.config(info.ssid, info.password);
 		WifiStation.connect();
-	} break;
+		break;
 	case SCE_LinkOver:
 		debugf("SCE_LinkOver\n");
 		WifiStation.smartConfigStop();
 		break;
 	}
+
+	// Don't do any internal processing
+	return false;
 }
 
 void init()
@@ -34,7 +34,7 @@ void init()
 
 	WifiAccessPoint.enable(false);
 	WifiStation.enable(true);
-	// autmoatic (acts as the sample callback above)
+	// automatic (acts as the sample callback above)
 	//WifiStation.smartConfigStart(SCT_EspTouch);
 	// manual, use callback above
 	WifiStation.smartConfigStart(SCT_EspTouch, smartConfigCallback);

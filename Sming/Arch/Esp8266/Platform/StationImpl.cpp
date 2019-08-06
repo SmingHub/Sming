@@ -10,7 +10,6 @@
 
 #include "StationImpl.h"
 #include <Interrupts.h>
-#include <esp_smartconfig.h>
 
 static StationImpl station;
 StationClass& WifiStation = station;
@@ -310,12 +309,14 @@ void StationImpl::onSystemReady()
 
 #ifdef ENABLE_SMART_CONFIG
 
-void StationImpl::internalSmartConfig(SmartConfigEvent status, void* pdata)
+void StationImpl::internalSmartConfig(sc_status status, void* pdata)
 {
-	if(smartConfigCallback) {
-		smartConfigCallback(status, pdata);
+	if(smartConfigEventInfo == nullptr) {
+		debug_e("smartconfig eventInfo is NULL");
 		return;
 	}
+
+	auto& evt = *smartConfigEventInfo;
 
 	switch(status) {
 	case SC_STATUS_WAIT:
@@ -326,39 +327,82 @@ void StationImpl::internalSmartConfig(SmartConfigEvent status, void* pdata)
 		break;
 	case SC_STATUS_GETTING_SSID_PSWD:
 		debugf("SC_STATUS_GETTING_SSID_PSWD\n");
+		assert(pdata != nullptr);
+		smartConfigEventInfo->type = SmartConfigType(*static_cast<sc_type*>(pdata));
 		break;
 	case SC_STATUS_LINK: {
 		debugf("SC_STATUS_LINK\n");
 		auto cfg = static_cast<const station_config*>(pdata);
-		auto ssid = reinterpret_cast<const char*>(cfg->ssid);
-		auto password = reinterpret_cast<const char*>(cfg->password);
-		config(ssid, password, true, true);
-		connect();
-	} break;
+		assert(cfg != nullptr);
+		evt.ssid = reinterpret_cast<const char*>(cfg->ssid);
+		evt.password = reinterpret_cast<const char*>(cfg->password);
+		evt.bssidSet = (cfg->bssid_set != 0);
+		evt.bssid = cfg->bssid;
+		break;
+	}
 	case SC_STATUS_LINK_OVER:
 		debugf("SC_STATUS_LINK_OVER\n");
-		smartConfigStop();
 		break;
+	}
+
+	bool processInternal = true;
+	if(smartConfigCallback) {
+		processInternal = smartConfigCallback(SmartConfigEvent(status), evt);
+	}
+
+	if(processInternal) {
+		switch(status) {
+		case SC_STATUS_WAIT:
+			break;
+		case SC_STATUS_FIND_CHANNEL:
+			break;
+		case SC_STATUS_GETTING_SSID_PSWD:
+			break;
+		case SC_STATUS_LINK:
+			config(evt.ssid, evt.password, true, true);
+			connect();
+			break;
+		case SC_STATUS_LINK_OVER:
+			smartConfigStop();
+			break;
+		}
 	}
 }
 
-void StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback)
+bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback)
 {
+	if(smartConfigEventInfo != nullptr) {
+		return false; // Already in progress
+	}
+
+	if(!smartconfig_set_type(sc_type(sctype))) {
+		debug_e("smartconfig_set_type(%u) failed", sctype);
+		return false;
+	}
+
+	smartConfigEventInfo = new SmartConfigEventInfo;
+	if(smartConfigEventInfo == nullptr) {
+		return false;
+	}
+
 	smartConfigCallback = callback;
-<<<<<<< HEAD:Sming/Arch/Esp8266/Platform/Station.cpp
-	smartconfig_set_type((sc_type)sctype);
-	smartconfig_start(staticSmartConfigCallback);
-=======
-	smartconfig_set_type(sc_type(sctype));
-	smartconfig_start(
-		[](sc_status status, void* pdata) { station.internalSmartConfig(SmartConfigEvent(status), pdata); });
->>>>>>> 17e4e252b... Make `StationClass` virtual:Sming/Arch/Esp8266/Platform/StationImpl.cpp
+	if(!smartconfig_start([](sc_status status, void* pdata) { station.internalSmartConfig(status, pdata); })) {
+		debug_e("smartconfig_start() failed");
+		smartConfigCallback = nullptr;
+		delete smartConfigEventInfo;
+		smartConfigEventInfo = nullptr;
+		return false;
+	}
+
+	return true;
 }
 
 void StationImpl::smartConfigStop()
 {
 	smartconfig_stop();
 	smartConfigCallback = nullptr;
+	delete smartConfigEventInfo;
+	smartConfigEventInfo = nullptr;
 }
 
 #endif // ENABLE_SMART_CONFIG
@@ -369,7 +413,7 @@ void StationImpl::internalWpsConfig(wps_cb_status status)
 {
 	bool processInternal = true;
 	if(wpsConfigCallback) {
-		processInternal = wpsConfigCallback(status);
+		processInternal = wpsConfigCallback(WpsStatus(status));
 	}
 	if(processInternal) {
 		switch(status) {

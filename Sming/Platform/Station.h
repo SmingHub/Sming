@@ -39,6 +39,7 @@ enum StationConnectionStatus {
 
 /// Smart configuration type
 enum SmartConfigType {
+	SCT_None = -1,
 	SCT_EspTouch,		  ///< ESP Touch
 	SCT_AirKiss,		  ///< Air Kiss
 	SCT_EspTouch_AirKiss, ///< ESP Touch and Air Kiss
@@ -48,9 +49,18 @@ enum SmartConfigType {
 enum SmartConfigEvent {
 	SCE_Wait,		 ///< Wait
 	SCE_FindChannel, ///< Find channel
-	SCE_GotSsid,	 ///< Getting SSID & password
+	SCE_GettingSsid, ///< Getting SSID & password
 	SCE_Link,		 ///< Link established
 	SCE_LinkOver,	///< Link-over
+};
+
+/// Smart Config callback information
+struct SmartConfigEventInfo {
+	SmartConfigType type = SCT_None; ///< Type of configuration underway
+	String ssid;					 ///< AP SSID
+	String password;				 ///< AP Password
+	bool bssidSet = false;			 ///< true if connection should match both SSID and BSSID
+	MACAddress bssid;				 ///< AP BSSID
 };
 
 /// WiFi WPS callback status
@@ -74,8 +84,11 @@ typedef Delegate<void(bool success, BssList& list)> ScanCompletedDelegate;
 
 /**
  * @brief Smart configuration handler function
+ * @param event
+ * @param info
+ * @retval bool return true to perform default configuration
  */
-typedef Delegate<void(sc_status status, void* pdata)> SmartConfigDelegate;
+typedef Delegate<bool(SmartConfigEvent event, const SmartConfigEventInfo& info)> SmartConfigDelegate;
 
 /**
  * @brief WPS configuration callback function
@@ -237,8 +250,10 @@ public:
 	/**	@brief	Start WiFi station smart configuration
 	 *	@param	sctype Smart configuration type
 	 *	@param	callback Function to call on WiFi staton smart configuration complete (Default: none)
+	 *	@retval true if request successfully started, false on failure
+	 *	@note If operation already in progress call will fail
 	 */
-	virtual void smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback = nullptr) = 0;
+	virtual bool smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback = nullptr) = 0;
 
 	/**	@brief	Stop WiFi station smart configuration
 	 */
@@ -266,7 +281,9 @@ public:
 
 protected:
 	ScanCompletedDelegate scanCompletedCallback = nullptr;
+#ifdef ENABLE_SMART_CONFIG
 	SmartConfigDelegate smartConfigCallback = nullptr;
+#endif
 #ifdef ENABLE_WPS
 	WPSConfigDelegate wpsConfigCallback = nullptr;
 #endif
