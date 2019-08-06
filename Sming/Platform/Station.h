@@ -68,7 +68,7 @@ typedef Vector<BssInfo> BssList; ///< List of BSS
 /**
  * @brief Scan complete handler function
  */
-typedef Delegate<void(bool success, BssList list)> ScanCompletedDelegate;
+typedef Delegate<void(bool success, BssList& list)> ScanCompletedDelegate;
 
 /**
  * @brief Smart configuration handler function

@@ -7,7 +7,7 @@
 #endif
 
 // Will be called when WiFi station network scan was completed
-void listNetworks(bool succeeded, BssList list)
+void listNetworks(bool succeeded, BssList& list)
 {
 	if(!succeeded) {
 		Serial.println("Failed to scan networks");

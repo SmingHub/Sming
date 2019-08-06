@@ -194,7 +194,7 @@ void startServers()
 	startWebServer();
 }
 
-void networkScanCompleted(bool succeeded, BssList list)
+void networkScanCompleted(bool succeeded, BssList& list)
 {
 	if(succeeded) {
 		for(unsigned i = 0; i < list.count(); i++)
