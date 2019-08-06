@@ -72,6 +72,7 @@ private:
 private:
 	ApInfo* currentAp;
 	ApInfo* savedAp;
+	IPAddress ipaddr, netmask, gateway;
 
 	struct StationConfig {
 		bool enabled = true;
