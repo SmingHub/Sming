@@ -44,15 +44,15 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 	}
 
 	SignedRbootOutputStream* uploadStream = static_cast<SignedRbootOutputStream*>(file);
-	uploadStream->close();
 
-	if(uploadStream->ok()) {
+	if(uploadStream->verifySignature(firmwareVerificationKey)) {
 		rboot_config bootConfig = rboot_get_config();
 		uint8_t slot = bootConfig.current_rom;
 		slot = (slot == 0 ? 1 : 0);
 		Serial.printf("Firmware updated, rebooting to rom %d...\r\n", slot);
 		rboot_set_current_rom(slot);
-		System.restart(5); // defer the restart with 5 seconds to give time to the web server to return the response
+		System.restart(
+			1000); // defer the reboot with 1000 milliseconds to give time to the web server to return the response
 
 		response.sendFile("restart.html");
 		response.headers[HTTP_HEADER_CONNECTION] = "close";
@@ -93,7 +93,7 @@ void fileUploadMapper(HttpFiles& files)
 		maxLength = std::min<size_t>(maxLength, RBOOT_SPIFFS_0);
 	}
 
-	files["firmware"] = new SignedRbootOutputStream(romStartAddress, maxLength, firmwareVerificationKey);
+	files["firmware"] = new SignedRbootOutputStream(romStartAddress, maxLength);
 }
 
 void startWebServer()

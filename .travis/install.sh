@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex # exit with nonzero exit code if anything fails
 
-pip install --user PyNaCl
+pip install --user -r $TRAVIS_BUILD_DIR/samples/HttpServer_FirmwareUpload/requirements.txt
 
 if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
 	sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-6.0 100

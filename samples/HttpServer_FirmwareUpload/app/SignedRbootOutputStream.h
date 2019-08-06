@@ -3,8 +3,6 @@
 
 class SignedRbootOutputStream : public RbootOutputStream
 {
-	const uint8_t* const verificationKey;
-
 	struct {
 		uint32_t magic;
 		uint32_t loadAddress;
@@ -15,8 +13,7 @@ class SignedRbootOutputStream : public RbootOutputStream
 	size_t missingHeaderBytes;
 	static const uint32_t HEADER_MAGIC_EXPECTED = 0xf01af02a;
 
-	bool okFlag;
-	bool closeCalled = false;
+	bool errorFlag;
 	uint32_t startAddress;
 
 	crypto_sign_state verifierState;
@@ -24,16 +21,16 @@ class SignedRbootOutputStream : public RbootOutputStream
 	void setError(const char* message);
 
 public:
-	SignedRbootOutputStream(int32_t startAddress, size_t maxLength, const uint8_t* verificationKey);
+	SignedRbootOutputStream(int32_t startAddress, size_t maxLength);
 
 	String errorMessage;
 
-	bool ok() const
+	bool hasError() const
 	{
-		return okFlag;
+		return errorFlag;
 	}
 
 	size_t write(const uint8_t* data, size_t size) override;
 
-	bool close() override;
+	bool verifySignature(const uint8_t* verificationKey);
 };
