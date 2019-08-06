@@ -7,7 +7,7 @@
 #endif
 
 // Will be called when WiFi station network scan was completed
-void listNetworks(bool succeeded, BssList list)
+void listNetworks(bool succeeded, BssList& list)
 {
 	if(!succeeded) {
 		Serial.println("Failed to scan networks");
@@ -33,7 +33,7 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 }
 
 // Will be called when WiFi station was disconnected
-void connectFail(String ssid, uint8_t ssidLength, uint8_t* bssid, uint8_t reason)
+void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
 {
 	// The different reason codes can be found in user_interface.h. in your SDK.
 	debugf("Disconnected from %s. Reason: %d", ssid.c_str(), reason);

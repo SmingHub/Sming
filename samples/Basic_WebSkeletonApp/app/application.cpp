@@ -4,7 +4,7 @@ Timer counterTimer;
 void counterLoop();
 unsigned long counter = 0;
 
-void STADisconnect(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason);
+void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason);
 void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway);
 
 void init()
@@ -34,7 +34,7 @@ void counterLoop()
 	counter++;
 }
 
-void STADisconnect(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
 {
 	debugf("DISCONNECT - SSID: %s, REASON: %d\n", ssid.c_str(), reason);
 

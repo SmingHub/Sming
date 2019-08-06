@@ -26,7 +26,6 @@
 #ifdef __WIN32
 // Prevent early inclusion of winsock.h
 #include <winsock2.h>
-#undef EVENT_MAX // Conflicts with definitions in esp_wifi_types.h
 #endif
 
 #include <fcntl.h>

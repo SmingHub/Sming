@@ -18,7 +18,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 }
 
 // Will be called when WiFi station timeout was reached
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
 {
 	Serial.println("I'm NOT CONNECTED. Need help!!! :(");
 

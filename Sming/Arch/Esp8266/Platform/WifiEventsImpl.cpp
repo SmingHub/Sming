@@ -4,22 +4,24 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * WifiEvents.cpp
+ * WifiEventsImpl.cpp
  *
  *  Created on: 19 февр. 2016 г.
  *      Author: shurik
  */
 
-#include "Platform/WifiEvents.h"
+#include "WifiEventsImpl.h"
+#include <esp_wifi.h>
 
-WifiEventsClass WifiEvents;
+static WifiEventsImpl events;
+WifiEventsClass& WifiEvents = events;
 
-WifiEventsClass::WifiEventsClass()
+WifiEventsImpl::WifiEventsImpl()
 {
-	wifi_set_event_handler_cb([](System_Event_t* evt) { WifiEvents.WifiEventHandler(evt); });
+	wifi_set_event_handler_cb([](System_Event_t* evt) { events.WifiEventHandler(evt); });
 }
 
-void WifiEventsClass::WifiEventHandler(System_Event_t* evt)
+void WifiEventsImpl::WifiEventHandler(System_Event_t* evt)
 {
 	//	debugf("event %x\n", evt->event);
 
@@ -27,28 +29,33 @@ void WifiEventsClass::WifiEventHandler(System_Event_t* evt)
 	case EVENT_STAMODE_CONNECTED:
 		debugf("connect to ssid %s, channel %d\n", evt->event_info.connected.ssid, evt->event_info.connected.channel);
 		if(onSTAConnect) {
-			onSTAConnect((const char*)evt->event_info.connected.ssid, evt->event_info.connected.ssid_len,
-						 evt->event_info.connected.bssid, evt->event_info.connected.channel);
+			String ssid(reinterpret_cast<const char*>(evt->event_info.connected.ssid),
+						evt->event_info.connected.ssid_len);
+			onSTAConnect(ssid, evt->event_info.connected.bssid, evt->event_info.connected.channel);
 		}
 		break;
 	case EVENT_STAMODE_DISCONNECTED:
 		debugf("disconnect from ssid %s, reason %d\n", evt->event_info.disconnected.ssid,
 			   evt->event_info.disconnected.reason);
 		if(onSTADisconnect) {
-			onSTADisconnect((const char*)evt->event_info.disconnected.ssid, evt->event_info.disconnected.ssid_len,
-							evt->event_info.disconnected.bssid, evt->event_info.disconnected.reason);
+			String ssid(reinterpret_cast<const char*>(evt->event_info.disconnected.ssid),
+						evt->event_info.disconnected.ssid_len);
+			auto reason = WifiDisconnectReason(evt->event_info.disconnected.reason);
+			onSTADisconnect(ssid, evt->event_info.disconnected.bssid, reason);
 		}
 		break;
-	case EVENT_STAMODE_AUTHMODE_CHANGE:
-		debugf("mode: %d -> %d\n", evt->event_info.auth_change.old_mode, evt->event_info.auth_change.new_mode);
+	case EVENT_STAMODE_AUTHMODE_CHANGE: {
+		auto oldMode = WifiAuthMode(evt->event_info.auth_change.old_mode);
+		auto newMode = WifiAuthMode(evt->event_info.auth_change.new_mode);
+		debugf("mode: %d -> %d\n", oldMode, newMode);
 		if(onSTAAuthModeChange) {
-			onSTAAuthModeChange(evt->event_info.auth_change.old_mode, evt->event_info.auth_change.new_mode);
+			onSTAAuthModeChange(oldMode, newMode);
 		}
 		break;
+	}
 	case EVENT_STAMODE_GOT_IP:
-		debugf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR, IP2STR(&evt->event_info.got_ip.ip),
+		debugf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR "\n", IP2STR(&evt->event_info.got_ip.ip),
 			   IP2STR(&evt->event_info.got_ip.mask), IP2STR(&evt->event_info.got_ip.gw));
-		debugf("\n");
 		if(onSTAGotIP) {
 			onSTAGotIP(evt->event_info.got_ip.ip, evt->event_info.got_ip.mask, evt->event_info.got_ip.gw);
 		}

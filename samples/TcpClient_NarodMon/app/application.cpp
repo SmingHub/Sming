@@ -67,7 +67,7 @@ void sendData()
 }
 
 // Когда удачно подключились к роутеру
-void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
+void connectOk(const String& SSID, const MACAddress& bssid, uint8_t channel)
 {
 	// debug msg
 	debugf("I'm CONNECTED to WiFi");
@@ -85,7 +85,7 @@ void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
 	debugf("mac: %s", mac.c_str());
 }
 
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
 {
 	// Если подключение к роутеру не удалось, выводим сообщение
 	debugf("I'm NOT CONNECTED!");

@@ -128,7 +128,7 @@ void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway)
 #endif
 }
 
-void STADisconnect(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
 {
 	Serial.printf("DISCONNECT - SSID: %s, REASON: %d\n", ssid.c_str(), reason);
 }

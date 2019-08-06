@@ -37,3 +37,8 @@ COMPONENT_DEPENDS := \
 	spi_flash \
 	vflash \
 	rboot
+
+# => Platform WiFi
+COMPONENT_VARS := \
+	ENABLE_WPS \
+	ENABLE_SMART_CONFIG

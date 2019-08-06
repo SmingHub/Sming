@@ -122,3 +122,23 @@ See library documentation for further details:
 
 * :library:`ArduinoJson6`
 * :library:`ArduinoJson5`
+
+WiFi Classes
+============
+
+Additions
+---------
+
+New class to handle MAC addresses: :source:`Sming/Wiring/MACAddress.h`.
+
+:source:`Sming/Platform/StationClass.h`
+---------------------------------------
+
+-  `getConnectionStatusName()` returns String instead of `char*`
+-  `EStationConnectionStatus` renamed to `StationConnectionStatus`
+
+:source:`Sming/Platform/WifiEventsClass.h`
+------------------------------------------
+
+- Callback handler parameter lists have changed
+

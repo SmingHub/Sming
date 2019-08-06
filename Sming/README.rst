@@ -95,6 +95,17 @@ Command Executor
 WiFi Connection
 ---------------
 
+.. envvar:: ENABLE_WPS
+
+   Set to 1 to enable WiFi Protected Setup (WPS)
+   WPS is not enabled by default to preserve resources, and because there may be security implications which you should consider carefully.
+
+.. envvar:: ENABLE_SMART_CONFIG
+
+   Set to 1 to enable WiFi Smart Configuration API
+   SmartConfig requires extra libraries and :envvar:`ENABLE_ESPCONN`.
+   See :sample:`Basic_SmartConfig` sample application.
+
 If you want to provide a default SSID and Password for connection to your default Access Point, you can do this:
 
 ::

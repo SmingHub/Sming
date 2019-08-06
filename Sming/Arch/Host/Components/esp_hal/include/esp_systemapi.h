@@ -34,7 +34,6 @@ struct ip_addr {
 #include <driver/gpio.h>
 #include <driver/adc.h>
 #include <hostlib/hostapi.h>
-#include <esp_wifi.h>
 #include "esp_sleep.h"
 
 #include <stdarg.h>

@@ -4,48 +4,54 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * AccessPoint.cpp
+ * AccessPointImpl.cpp
  *
  ****/
 
-#include "Platform/AccessPoint.h"
-#include "Interrupts.h"
-#include "Data/HexString.h"
+#include "AccessPointImpl.h"
+#include <Interrupts.h>
+#include <Data/HexString.h>
 
-AccessPointClass WifiAccessPoint;
+static AccessPointImpl accessPoint;
+AccessPointClass& WifiAccessPoint = accessPoint;
 
-void AccessPointClass::enable(bool enabled, bool save)
+void AccessPointImpl::enable(bool enabled, bool save)
 {
 	uint8 mode;
-	if(save)
+	if(save) {
 		mode = wifi_get_opmode_default() & ~SOFTAP_MODE;
-	else
+	} else {
 		mode = wifi_get_opmode() & ~SOFTAP_MODE;
-	if(enabled)
+	}
+	if(enabled) {
 		mode |= SOFTAP_MODE;
-	if(save)
+	}
+	if(save) {
 		wifi_set_opmode(mode);
-	else
+	} else {
 		wifi_set_opmode_current(mode);
+	}
 }
 
-bool AccessPointClass::isEnabled()
+bool AccessPointImpl::isEnabled() const
 {
 	return wifi_get_opmode() & SOFTAP_MODE;
 }
 
-bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mode, bool hidden, int channel,
-							  int beaconInterval)
+bool AccessPointImpl::config(const String& ssid, String password, AUTH_MODE mode, bool hidden, int channel,
+							 int beaconInterval)
 {
 	softap_config config = {0};
-	if(mode == AUTH_WEP)
+	if(mode == AUTH_WEP) {
 		return false; // Not supported!
+	}
 
-	if(mode == AUTH_OPEN)
-		password = "";
+	if(mode == AUTH_OPEN) {
+		password = nullptr;
+	}
 
 	bool enabled = isEnabled();
-	enable(true);
+	enable(true, false);
 	wifi_softap_dhcps_stop();
 	wifi_softap_get_config(&config);
 	if(channel != config.channel || hidden != config.ssid_hidden || mode != config.authmode ||
@@ -67,7 +73,7 @@ bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mod
 			if(!wifi_softap_set_config(&config)) {
 				interrupts();
 				wifi_softap_dhcps_start();
-				enable(enabled);
+				enable(enabled, false);
 				debugf("Can't set AP configuration!");
 				return false;
 			}
@@ -86,40 +92,40 @@ bool AccessPointClass::config(const String& ssid, String password, AUTH_MODE mod
 	}
 
 	wifi_softap_dhcps_start();
-	enable(enabled);
+	enable(enabled, false);
 
 	return true;
 }
 
-IPAddress AccessPointClass::getIP()
+IPAddress AccessPointImpl::getIP() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(SOFTAP_IF, &info);
 	return info.ip;
 }
 
-IPAddress AccessPointClass::getNetworkBroadcast()
+IPAddress AccessPointImpl::getNetworkBroadcast() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(SOFTAP_IF, &info);
 	return (info.ip.addr | ~info.netmask.addr);
 }
 
-IPAddress AccessPointClass::getNetworkMask()
+IPAddress AccessPointImpl::getNetworkMask() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(SOFTAP_IF, &info);
 	return info.netmask;
 }
 
-IPAddress AccessPointClass::getNetworkGateway()
+IPAddress AccessPointImpl::getNetworkGateway() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(SOFTAP_IF, &info);
 	return info.gw;
 }
 
-bool AccessPointClass::setIP(IPAddress address)
+bool AccessPointImpl::setIP(IPAddress address)
 {
 	if(System.isReady()) {
 		debugf("IP can be changed only in init() method");
@@ -137,43 +143,46 @@ bool AccessPointClass::setIP(IPAddress address)
 	return true;
 }
 
-String AccessPointClass::getMAC(char sep)
+MACAddress AccessPointImpl::getMacAddr() const
 {
-	uint8 hwaddr[6];
-	if(wifi_get_macaddr(SOFTAP_IF, hwaddr))
-		return makeHexString(hwaddr, sizeof(hwaddr), sep);
-	else
+	MACAddress addr;
+	if(wifi_get_macaddr(SOFTAP_IF, &addr[0])) {
+		return addr;
+	} else {
+		return MACADDR_NONE;
+	}
+}
+
+String AccessPointImpl::getSSID() const
+{
+	softap_config config = {0};
+	if(!wifi_softap_get_config(&config)) {
+		debugf("Can't read AP configuration!");
 		return nullptr;
+	}
+	auto ssid = reinterpret_cast<const char*>(config.ssid);
+	debugf("SSID: %s", ssid);
+	return ssid;
 }
 
-String AccessPointClass::getSSID()
+String AccessPointImpl::getPassword() const
 {
 	softap_config config = {0};
 	if(!wifi_softap_get_config(&config)) {
 		debugf("Can't read AP configuration!");
-		return "";
+		return nullptr;
 	}
-	debugf("SSID: %s", (char*)config.ssid);
-	return String((char*)config.ssid);
+	auto pwd = reinterpret_cast<const char*>(config.password);
+	debugf("Pass: %s", pwd);
+	return pwd;
 }
 
-String AccessPointClass::getPassword()
-{
-	softap_config config = {0};
-	if(!wifi_softap_get_config(&config)) {
-		debugf("Can't read AP configuration!");
-		return "";
-	}
-	debugf("Pass: %s", (char*)config.password);
-	return String((char*)config.password);
-}
-
-void AccessPointClass::onSystemReady()
+void AccessPointImpl::onSystemReady()
 {
 	if(runConfig != nullptr) {
 		noInterrupts();
 		bool enabled = isEnabled();
-		enable(true);
+		enable(true, false);
 		wifi_softap_dhcps_stop();
 
 		if(!wifi_softap_set_config(runConfig)) {
@@ -185,7 +194,7 @@ void AccessPointClass::onSystemReady()
 		runConfig = nullptr;
 
 		wifi_softap_dhcps_start();
-		enable(enabled);
+		enable(enabled, false);
 		interrupts();
 	}
 }

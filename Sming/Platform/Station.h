@@ -18,83 +18,105 @@
 
 #pragma once
 
-#include "System.h"
-#include "WString.h"
-#include "WVector.h"
-#include "IPAddress.h"
-
-#include <esp_wifi.h>
-#include <esp_smartconfig.h>
+#include <WString.h>
+#include <WVector.h>
+#include <IPAddress.h>
+#include <MACAddress.h>
+#include "BssInfo.h"
 
 /** @ingroup constants
  *  @{
  */
 /// WiFi station connection states
-enum EStationConnectionStatus {
-	eSCS_Idle = 0,			  ///< WiFi station connection idle
-	eSCS_Connecting,		  ///< Wifi station connecting
-	eSCS_WrongPassword,		  ///< WiFi station wrong password
-	eSCS_AccessPointNotFound, ///< WiFi station AP not found
-	eSCS_ConnectionFailed,	///< WiFi station connectoin failed
-	eSCS_GotIP				  ///< WiFi station got IP address
+enum StationConnectionStatus {
+	eSCS_Idle,				  ///< Connection idle
+	eSCS_Connecting,		  ///< Connecting
+	eSCS_WrongPassword,		  ///< Wrong password
+	eSCS_AccessPointNotFound, ///< AP not found
+	eSCS_ConnectionFailed,	///< Connection failed
+	eSCS_GotIP				  ///< Got IP address
 };
 
 /// Smart configuration type
 enum SmartConfigType {
-	SCT_EspTouch = SC_TYPE_ESPTOUCH,				///< WiFi station smart configuration ESP touch
-	SCT_AirKiss = SC_TYPE_AIRKISS,					///< WiFi station smart configuration Air Kiss
-	SCT_EspTouch_AirKiss = SC_TYPE_ESPTOUCH_AIRKISS ///< WiFi station smart configuration ESP Touch and Air Kiss
+	SCT_None = -1,
+	SCT_EspTouch,		  ///< ESP Touch
+	SCT_AirKiss,		  ///< Air Kiss
+	SCT_EspTouch_AirKiss, ///< ESP Touch and Air Kiss
 };
 
 /// Smart configuration event
 enum SmartConfigEvent {
-	SCE_Wait = SC_STATUS_WAIT,				   ///< Smart configuration wait state
-	SCE_FindChannel = SC_STATUS_FIND_CHANNEL,  ///< Smart configuration find channel state
-	SCE_GotSsid = SC_STATUS_GETTING_SSID_PSWD, ///< Smart configuration getting SSID & password state
-	SEC_Link = SC_STATUS_LINK,				   ///< Smart configuration link established state
-	SEC_LinkOver = SC_STATUS_LINK_OVER		   ///< Smart configuration link over status
+	SCE_Wait,		 ///< Wait
+	SCE_FindChannel, ///< Find channel
+	SCE_GettingSsid, ///< Getting SSID & password
+	SCE_Link,		 ///< Link established
+	SCE_LinkOver,	///< Link-over
 };
 
-class BssInfo;
-class Timer;
+/// Smart Config callback information
+struct SmartConfigEventInfo {
+	SmartConfigType type = SCT_None; ///< Type of configuration underway
+	String ssid;					 ///< AP SSID
+	String password;				 ///< AP Password
+	bool bssidSet = false;			 ///< true if connection should match both SSID and BSSID
+	MACAddress bssid;				 ///< AP BSSID
+};
 
-typedef Vector<BssInfo> BssList; ///< List of BSS
+/// WiFi WPS callback status
+enum WpsStatus {
+	eWPS_Success = 0,
+	eWPS_Failed,
+	eWPS_Timeout,
+	eWPS_WEP,
+};
+
 /** @} */
 
 /** @ingroup event_handlers
  *  @{
  */
-typedef Delegate<void(bool, BssList)> ScanCompletedDelegate;			   ///< Scan complete handler function
-typedef Delegate<void()> ConnectionDelegate;							   ///< Connection handler function
-typedef Delegate<void(sc_status status, void* pdata)> SmartConfigDelegate; ///< Smart configuration handler function
-#ifdef ENABLE_WPS
-typedef Delegate<bool(wps_cb_status status)> WPSConfigDelegate;
-#endif
+
+/**
+ * @brief Scan complete handler function
+ */
+typedef Delegate<void(bool success, BssList& list)> ScanCompletedDelegate;
+
+/**
+ * @brief Smart configuration handler function
+ * @param event
+ * @param info
+ * @retval bool return true to perform default configuration
+ */
+typedef Delegate<bool(SmartConfigEvent event, const SmartConfigEventInfo& info)> SmartConfigDelegate;
+
+/**
+ * @brief WPS configuration callback function
+ * @param status
+ * @retval bool return true to perform default configuration
+ */
+typedef Delegate<bool(WpsStatus status)> WPSConfigDelegate;
+
 /** @} */
 
 /** @brief  WiFi station class
  *  @addtogroup wifi_sta
  *  @{
  */
-class StationClass : protected ISystemReadyHandler
+class StationClass
 {
 public:
-	StationClass()
-	{
-		System.onReady(this);
-	}
-
 	/**	@brief	Enable / disable WiFi station
 	 *	@note	Disabling WiFi station will also disable and clear the handler set with <i>waitConnection</i>.
 	 *	@param	enabled True to enable station. False to disable.
 	 *	@param	save True to save operational mode to flash, False to set current operational mode only
      */
-	void enable(bool enabled, bool save = false);
+	virtual void enable(bool enabled, bool save = false) = 0;
 
 	/**	@brief	Get WiFi station enable status
 	 *	@retval	bool True if WiFi station enabled
 	 */
-	bool isEnabled();
+	virtual bool isEnabled() const = 0;
 
 	/**	@brief	Configure WiFi station
 	 *	@param	ssid WiFi SSID
@@ -102,81 +124,87 @@ public:
 	 *	@param	autoConnectOnStartup True to auto connect. False for manual. (Default: True)
 	 *	@param  save True to save the SSID and password in Flash. False otherwise. (Default: True)
 	 */
-	bool config(const String& ssid, const String& password, bool autoConnectOnStartup = true, bool save = true);
+	virtual bool config(const String& ssid, const String& password, bool autoConnectOnStartup = true,
+						bool save = true) = 0;
 
 	/**	@brief	Connect WiFi station to network
 	 */
-	bool connect();
+	virtual bool connect() = 0;
 
 	/**	@brief	Disconnect WiFi station from network
 	 */
-	bool disconnect();
+	virtual bool disconnect() = 0;
 
 	/**	@brief	Get WiFi station connectoin status
 	 *	@retval	bool True if connected.
 	 */
-	bool isConnected();
+	bool isConnected() const;
 
 	/**	@brief Get WiFi station connection failure status
 	 *	@retval	bool True if connection failed
 	 */
-	bool isConnectionFailed();
+	bool isConnectionFailed() const;
 
 	/**	@brief  Get WiFi station connection status
-	 *	@retval	EStationConnectionStatus Connection status structure
+	 *	@retval	StationConnectionStatus Connection status structure
 	 */
-	EStationConnectionStatus getConnectionStatus();
+	virtual StationConnectionStatus getConnectionStatus() const = 0;
 
 	/**	@brief	Get WiFi station connection status name
-	 *	@retval	char* Pointer to c string name of connection status
+	 *	@retval	String String representing connection status
 	 */
-	const char* getConnectionStatusName();
+	String getConnectionStatusName() const;
 
 	/**	@brief	Get WiFi station DHCP enabled status
 	 *	@retval	bool True if DHCP enabled
 	 */
-	bool isEnabledDHCP();
+	virtual bool isEnabledDHCP() const = 0;
 
 	/**	@brief	Enable or disable WiFi station DHCP
 	 *	@param	enable True to enable WiFi station DHCP
 	 */
-	void enableDHCP(bool enable);
+	virtual void enableDHCP(bool enable) = 0;
 
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@param	hostname - WiFi station DHCP hostname
 	 */
-	void setHostname(const String& hostname);
+	virtual void setHostname(const String& hostname) = 0;
 
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@retval WiFi station DHCP hostname
 	 */
-	String getHostname();
+	virtual String getHostname() const = 0;
 
 	/**	@brief	Get WiFi station IP address
 	 *	@retval	IPAddress IP address of WiFi station
 	 */
-	IPAddress getIP();
+	virtual IPAddress getIP() const = 0;
+
+	/**	@brief	Get WiFi station MAC address
+	 *	@retval	MACAddress
+	 */
+	virtual MACAddress getMacAddr() const = 0;
 
 	/**	@brief	Get WiFi station MAC address
 	 *  @param sep Optional separator between bytes (e.g. ':')
 	 *	@retval	String WiFi station MAC address
 	 */
-	String getMAC(char sep = '\0');
+	String getMAC(char sep = '\0') const;
 
 	/**	@brief	Get WiFi station network mask
 	 *	@retval	IPAddress WiFi station network mask
 	 */
-	IPAddress getNetworkMask();
+	virtual IPAddress getNetworkMask() const = 0;
 
 	/**	@brief	Get WiFi station default gateway
 	 *	@retval	IPAddress WiFi station default gateway
 	 */
-	IPAddress getNetworkGateway();
+	virtual IPAddress getNetworkGateway() const = 0;
 
 	/**	@brief	GetWiFi station broadcast address
 	 *	@retval	IPAddress WiFi statoin broadcast address
 	 */
-	IPAddress getNetworkBroadcast();
+	virtual IPAddress getNetworkBroadcast() const = 0;
 
 	/**	@brief	Set WiFi station IP address
 	 *	@param	address IP address
@@ -190,114 +218,84 @@ public:
 	 *	@param	gateway Default gatway
 	 *	@retval	bool True on success
 	 */
-	bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway);
+	virtual bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway) = 0;
 
 	/**	@brief	Get WiFi station SSID
 	 *	@retval	String WiFi station SSID
 	 */
-	String getSSID();
+	virtual String getSSID() const = 0;
 
 	/**	@brief	Get WiFi station password
 	 *	@retval	String WiFi station password
 	 */
-	String getPassword();
-	int8_t getRssi();
-	uint8_t getChannel();
+	virtual String getPassword() const = 0;
+
+	/**	@brief	Get WiFi signal strength
+	 *	@retval	int8_t Value in dBm
+	 */
+	virtual int8_t getRssi() const = 0;
+
+	/**	@brief	Get active WiFi channel
+	 *	@retval	uint8_t channel number
+	 */
+	virtual uint8_t getChannel() const = 0;
 
 	/**	@brief	Start WiFi station network scan
 	 *	@param	scanCompleted Function to call when scan completes
 	 *	@retval	bool True on success
 	 */
-	bool startScan(ScanCompletedDelegate scanCompleted);
+	virtual bool startScan(ScanCompletedDelegate scanCompleted) = 0;
 
+#ifdef ENABLE_SMART_CONFIG
 	/**	@brief	Start WiFi station smart configuration
 	 *	@param	sctype Smart configuration type
 	 *	@param	callback Function to call on WiFi staton smart configuration complete (Default: none)
+	 *	@retval true if request successfully started, false on failure
+	 *	@note If operation already in progress call will fail
 	 */
-	void smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback = nullptr);
+	virtual bool smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback = nullptr) = 0;
 
 	/**	@brief	Stop WiFi station smart configuration
 	 */
-	void smartConfigStop();
+	virtual void smartConfigStop() = 0;
+#endif
 
 #ifdef ENABLE_WPS
 	/**	@brief	Start WiFi station by WPS method
 	 *	@param	callback Function to call on WiFi WPS Events (Default: none)
 	 */
-	bool wpsConfigStart(WPSConfigDelegate callback = nullptr);
+	virtual bool wpsConfigStart(WPSConfigDelegate callback = nullptr) = 0;
 
-	/**	@brief	Start WiFi station by WPS method 
+	/**	@brief	Start WiFi station by WPS method
+	 * 	@deprecated Use `wpsConfigStart()`
 	 */
-	bool beginWPSConfig();
+	bool beginWPSConfig() SMING_DEPRECATED
+	{
+		return wpsConfigStart(nullptr);
+	}
 
 	/**	@brief	Stop WiFi station WPS configuration
 	 */
-	void wpsConfigStop();
-
-	void internalWpsConfig(wps_cb_status status);
-	static void staticWpsConfigCallback(wps_cb_status status);
+	virtual void wpsConfigStop() = 0;
 #endif
 
 protected:
-	void onSystemReady() override;
-	static void staticScanCompleted(void* arg, STATUS status);
-
-	void internalCheckConnection();
-	static void staticCheckConnection();
-
-	void internalSmartConfig(sc_status status, void* pdata);
-	static void staticSmartConfigCallback(sc_status status, void* pdata);
-
-private:
 	ScanCompletedDelegate scanCompletedCallback = nullptr;
+#ifdef ENABLE_SMART_CONFIG
 	SmartConfigDelegate smartConfigCallback = nullptr;
+#endif
 #ifdef ENABLE_WPS
 	WPSConfigDelegate wpsConfigCallback = nullptr;
 #endif
-	bool runScan = false;
-};
-
-class BssInfo
-{
-public:
-	/**	@brief	Get BSS open status
-	 *	@retval	bool True if BSS open
-	*/
-	bool isOpen()
-	{
-		return authorization == AUTH_OPEN;
-	}
-
-	/**	@brief	Get BSS authorisation method name
-	 *	@retval	char* Pointer to c string BSS authoristation method name
-	*/
-	const char* getAuthorizationMethodName();
-
-	/**	@brief	Get BSS hash ID
-	 *	@retval	uint32_t BSS hash ID
-	*/
-	uint32_t getHashId();
-
-public:
-	String ssid;			 ///< SSID
-	uint8_t bssid[6];		 ///< BSS ID
-	AUTH_MODE authorization; ///< Authorisation mode
-	uint8_t channel;		 ///< Channel number
-	int16_t rssi;			 ///< RSSI level
-	bool hidden;			 ///< True if AP is hidden
-
-private:
-	friend class StationClass;
-	BssInfo(bss_info* info);
 };
 
 /**	@brief	Global instance of WiFi station object
- *	@note	Use WiFiStation.<i>function</i> to access WiFi station functions
+ *	@note	Use WifiStation.<i>function</i> to access WiFi station functions
  *	@note	Example:
- *  @code   if(WiFiStation.config("My_WiFi", "My_Password"))
-                WiFiStation.enable(true);
+ *  @code   if(WifiStation.config("My_WiFi", "My_Password"))
+                WifiStation.enable(true);
 	@endcode
  */
-extern StationClass WifiStation;
+extern StationClass& WifiStation;
 
 /** @} */
