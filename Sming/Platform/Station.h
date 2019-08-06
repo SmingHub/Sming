@@ -140,9 +140,9 @@ public:
 	EStationConnectionStatus getConnectionStatus() const;
 
 	/**	@brief	Get WiFi station connection status name
-	 *	@retval	char* Pointer to c string name of connection status
+	 *	@retval	String String representing connection status
 	 */
-	const char* getConnectionStatusName() const;
+	String getConnectionStatusName() const;
 
 	/**	@brief	Get WiFi station DHCP enabled status
 	 *	@retval	bool True if DHCP enabled

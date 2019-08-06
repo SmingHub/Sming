@@ -317,24 +317,24 @@ void StationClass::onSystemReady()
 	}
 }
 
-const char* StationClass::getConnectionStatusName()
+String StationClass::getConnectionStatusName()
 {
 	switch(getConnectionStatus()) {
 	case eSCS_Idle:
-		return "Idle";
+		return F("Idle");
 	case eSCS_Connecting:
-		return "Connecting";
+		return F("Connecting");
 	case eSCS_WrongPassword:
-		return "Wrong password";
+		return F("Wrong password");
 	case eSCS_AccessPointNotFound:
-		return "Access point not found";
+		return F("Access point not found");
 	case eSCS_ConnectionFailed:
-		return "Connection failed";
+		return F("Connection failed");
 	case eSCS_GotIP:
-		return "Successful connected";
+		return F("Successful connected");
 	default:
 		SYSTEM_ERROR("Unknown status: %d", getConnectionStatus());
-		return "";
+		return nullptr;
 	};
 }
 
@@ -477,22 +477,22 @@ BssInfo::BssInfo(bss_info* info)
 	hidden = info->is_hidden;
 }
 
-const char* BssInfo::getAuthorizationMethodName()
+String BssInfo::getAuthorizationMethodName() const
 {
 	switch(authorization) {
 	case AUTH_OPEN:
-		return "OPEN";
+		return F("OPEN");
 	case AUTH_WEP:
-		return "WEP";
+		return F("WEP");
 	case AUTH_WPA_PSK:
-		return "WPA_PSK";
+		return F("WPA_PSK");
 	case AUTH_WPA2_PSK:
-		return "WPA2_PSK";
+		return F("WPA2_PSK");
 	case AUTH_WPA_WPA2_PSK:
-		return "WPA_WPA2_PSK";
+		return F("WPA_WPA2_PSK");
 	default:
 		SYSTEM_ERROR("Unknown auth: %d", authorization);
-		return "";
+		return nullptr;
 	}
 }
 

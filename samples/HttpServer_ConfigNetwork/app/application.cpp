@@ -155,7 +155,7 @@ void onAjaxConnect(HttpRequest& request, HttpResponse& response)
 			connectionTimer.initializeMs(1200, makeConnection).startOnce();
 		} else {
 			json["connected"] = WifiStation.isConnected();
-			debugf("Network already selected. Current status: %s", WifiStation.getConnectionStatusName());
+			debugf("Network already selected. Current status: %s", WifiStation.getConnectionStatusName().c_str());
 		}
 	}
 
