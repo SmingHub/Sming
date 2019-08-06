@@ -71,7 +71,7 @@ RBOOT_ROM_0_BIN			:= $(FW_BASE)/$(RBOOT_ROM_0).bin
 RBOOT_ROM_1_BIN			:= $(FW_BASE)/$(RBOOT_ROM_1).bin
 
 
-COMPONENT_APPCODE		:= appcode rboot/appcode
+COMPONENT_APPCODE		:= appcode rboot/appcode $(if $(RBOOT_EMULATION),host)
 APP_CFLAGS				+= -DRBOOT_INTEGRATION
 
 # these are exported for use by the rBoot Makefile

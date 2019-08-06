@@ -25,8 +25,6 @@
 #include "except.h"
 #include "options.h"
 #include <spi_flash/flashmem.h>
-#include <esp_attr.h>
-#include <rboot-api.h>
 #include <driver/uart_server.h>
 #include <BitManipulations.h>
 #include <esp_timer_legacy.h>
@@ -41,6 +39,7 @@ static bool done = false;
 
 extern void init();
 extern void host_wifi_lwip_init_complete();
+extern void host_init_bootloader();
 
 static void cleanup()
 {
@@ -98,27 +97,6 @@ static void pause(int secs)
 	} else if(secs > 0) {
 		hostmsg("Waiting for %u seconds...", secs);
 		msleep(secs * 1000);
-	}
-}
-
-static void rboot_check(size_t flashsize)
-{
-	rboot_config romconf = rboot_get_config();
-	// fresh install or old version?
-	if(romconf.magic != BOOT_CONFIG_MAGIC || romconf.version != BOOT_CONFIG_VERSION) {
-		// create a default config for a standard 2 rom setup
-		hostmsg("Writing default rboot config");
-		memset(&romconf, 0, sizeof(romconf));
-		romconf.magic = BOOT_CONFIG_MAGIC;
-		romconf.version = BOOT_CONFIG_VERSION;
-		romconf.count = 2;
-		romconf.roms[0] = SECTOR_SIZE * (BOOT_CONFIG_SECTOR + 1);
-#ifdef BOOT_ROM1_ADDR
-		romconf.roms[1] = BOOT_ROM1_ADDR;
-#else
-		romconf.roms[1] = (flashsize / 2) + (SECTOR_SIZE * (BOOT_CONFIG_SECTOR + 1));
-#endif
-		rboot_set_config(&romconf);
 	}
 }
 
@@ -217,7 +195,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	rboot_check(config.flash.createSize);
+	host_init_bootloader();
 
 	atexit(cleanup);
 
