@@ -17,19 +17,22 @@ StationClass WifiStation;
 void StationClass::enable(bool enabled, bool save)
 {
 	uint8 mode;
-	if(save)
+	if(save) {
 		mode = wifi_get_opmode_default() & ~STATION_MODE;
-	else
+	} else {
 		mode = wifi_get_opmode() & ~STATION_MODE;
-	if(enabled)
+	}
+	if(enabled) {
 		mode |= STATION_MODE;
-	if(save)
+	}
+	if(save) {
 		wifi_set_opmode(mode);
-	else
+	} else {
 		wifi_set_opmode_current(mode);
+	}
 }
 
-bool StationClass::isEnabled()
+bool StationClass::isEnabled() const
 {
 	return wifi_get_opmode() & STATION_MODE;
 }
@@ -38,19 +41,23 @@ bool StationClass::config(const String& ssid, const String& password, bool autoC
 {
 	station_config config = {0};
 
-	if(ssid.length() >= sizeof(config.ssid))
+	if(ssid.length() >= sizeof(config.ssid)) {
 		return false;
-	if(password.length() >= sizeof(config.password))
+	}
+	if(password.length() >= sizeof(config.password)) {
 		return false;
+	}
 
 	bool enabled = isEnabled();
 	bool dhcp = isEnabledDHCP();
-	if(!enabled)
+	if(!enabled) {
 		enable(true); // Power on for configuration
+	}
 
 	bool cfgreaded = wifi_station_get_config(&config);
-	if(!cfgreaded)
+	if(!cfgreaded) {
 		debugf("Can't read station configuration!");
+	}
 
 	if(strncmp(ssid.c_str(), (char*)config.ssid, sizeof(config.ssid)) != 0 ||
 	   strncmp(password.c_str(), (char*)config.password, sizeof(config.password)) != 0 || config.bssid_set) {
@@ -72,21 +79,26 @@ bool StationClass::config(const String& ssid, const String& password, bool autoC
 		if(!success) {
 			interrupts();
 			debugf("Can't set station configuration!");
-			if(!dhcp)
+			if(!dhcp) {
 				enableDHCP(dhcp);
-			if(!enabled)
+			}
+			if(!enabled) {
 				enable(enabled);
+			}
 			return false;
 		}
 		debugf("Station configuration was updated to: %s", ssid.c_str());
 
 		interrupts();
-	} else
+	} else {
 		debugf("Station configuration is: %s", ssid.c_str());
-	if(!dhcp)
+	}
+	if(!dhcp) {
 		enableDHCP(dhcp);
-	if(!enabled)
+	}
+	if(!enabled) {
 		enable(enabled);
+	}
 
 	wifi_station_set_auto_connect(autoConnectOnStartup);
 
@@ -103,76 +115,80 @@ bool StationClass::disconnect()
 	return wifi_station_disconnect();
 }
 
-bool StationClass::isConnected()
+bool StationClass::isConnected() const
 {
-	if(getConnectionStatus() != eSCS_GotIP)
+	if(getConnectionStatus() != eSCS_GotIP) {
 		return false;
-	if(getIP().isNull())
+	}
+	if(getIP().isNull()) {
 		return false;
+	}
 
 	return true;
 }
 
-bool StationClass::isConnectionFailed()
+bool StationClass::isConnectionFailed() const
 {
 	EStationConnectionStatus status = getConnectionStatus();
 	return status == eSCS_WrongPassword || status == eSCS_AccessPointNotFound || status == eSCS_ConnectionFailed;
 }
 
-bool StationClass::isEnabledDHCP()
+bool StationClass::isEnabledDHCP() const
 {
 	return wifi_station_dhcpc_status() == DHCP_STARTED;
 }
 
 void StationClass::enableDHCP(bool enable)
 {
-	if(enable)
+	if(enable) {
 		wifi_station_dhcpc_start();
-	else
+	} else {
 		wifi_station_dhcpc_stop();
+	}
 }
 
 void StationClass::setHostname(const String& hostname)
 {
-	wifi_station_set_hostname((char*)hostname.c_str());
+	wifi_station_set_hostname(const_cast<char*>(hostname.c_str()));
 }
 
-String StationClass::getHostname()
+String StationClass::getHostname() const
 {
-	return (String)wifi_station_get_hostname();
+	return wifi_station_get_hostname();
 }
 
-IPAddress StationClass::getIP()
+IPAddress StationClass::getIP() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return info.ip;
 }
 
-String StationClass::getMAC(char sep)
+String StationClass::getMAC(char sep) const
 {
 	uint8 hwaddr[6];
-	if(wifi_get_macaddr(STATION_IF, hwaddr))
+	if(wifi_get_macaddr(STATION_IF, hwaddr)) {
 		return makeHexString(hwaddr, sizeof(hwaddr), sep);
-	else
+	} else {
 		return nullptr;
+	}
 }
 
-IPAddress StationClass::getNetworkBroadcast()
+IPAddress StationClass::getNetworkBroadcast() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return (info.ip.addr | ~info.netmask.addr);
 }
 
-IPAddress StationClass::getNetworkMask()
+IPAddress StationClass::getNetworkMask() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return info.netmask;
 }
 
-IPAddress StationClass::getNetworkGateway()
+IPAddress StationClass::getNetworkGateway() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
@@ -201,49 +217,48 @@ bool StationClass::setIP(IPAddress address, IPAddress netmask, IPAddress gateway
 	ipinfo.ip = address;
 	ipinfo.netmask = netmask;
 	ipinfo.gw = gateway;
-	if(wifi_set_ip_info(STATION_IF, &ipinfo))
+	if(wifi_set_ip_info(STATION_IF, &ipinfo)) {
 		debugf("Station IP succesfully updated");
-	else {
+	} else {
 		debugf("Station IP can't be updated");
 		enableDHCP(true);
 	}
 	wifi_station_connect();
-	//wifi_station_dhcpc_start();
 	return true;
 }
 
-String StationClass::getSSID()
+String StationClass::getSSID() const
 {
 	station_config config = {0};
 	if(!wifi_station_get_config(&config)) {
 		debugf("Can't read station configuration!");
 		return "";
 	}
-	debugf("SSID: %s", (char*)config.ssid);
-	return String((char*)config.ssid);
+	debugf("SSID: %s", reinterpret_cast<const char*>(config.ssid));
+	return reinterpret_cast<const char*>(config.ssid);
 }
 
-int8_t StationClass::getRssi()
+int8_t StationClass::getRssi() const
 {
 	debugf("Rssi: %d dBm", wifi_station_get_rssi());
 	return wifi_station_get_rssi();
 }
 
-uint8_t StationClass::getChannel()
+uint8_t StationClass::getChannel() const
 {
 	debugf("Channel: %d CH", wifi_get_channel());
 	return wifi_get_channel();
 }
 
-String StationClass::getPassword()
+String StationClass::getPassword() const
 {
 	station_config config = {0};
 	if(!wifi_station_get_config(&config)) {
 		debugf("Can't read station configuration!");
 		return "";
 	}
-	debugf("Pass: %s", (char*)config.password);
-	return String((char*)config.password);
+	debugf("Pass: %s", reinterpret_cast<const char*>(config.password));
+	return reinterpret_cast<const char*>(config.password);
 }
 
 EStationConnectionStatus StationClass::getConnectionStatus()
@@ -254,8 +269,9 @@ EStationConnectionStatus StationClass::getConnectionStatus()
 bool StationClass::startScan(ScanCompletedDelegate scanCompleted)
 {
 	scanCompletedCallback = scanCompleted;
-	if(!scanCompleted)
+	if(!scanCompleted) {
 		return false;
+	}
 
 	bool res = wifi_station_scan(nullptr, staticScanCompleted);
 	if(!res) {
@@ -276,10 +292,9 @@ void StationClass::staticScanCompleted(void* arg, STATUS status)
 	BssList list;
 	if(status == OK) {
 		if(WifiStation.scanCompletedCallback) {
-			bss_info* cur = (bss_info*)arg;
-
+			auto cur = static_cast<bss_info*>(arg);
 			while(cur != nullptr) {
-				list.add(BssInfo(cur));
+				list.addElement(new BssInfo(cur));
 				cur = cur->next.stqe_next;
 			}
 			WifiStation.scanCompletedCallback(true, list);
@@ -288,8 +303,9 @@ void StationClass::staticScanCompleted(void* arg, STATUS status)
 		debugf("scan completed: %d found", list.count());
 	} else {
 		debugf("scan failed %d", status);
-		if(WifiStation.scanCompletedCallback)
+		if(WifiStation.scanCompletedCallback) {
 			WifiStation.scanCompletedCallback(false, list);
+		}
 	}
 }
 
@@ -346,9 +362,9 @@ void StationClass::internalSmartConfig(sc_status status, void* pdata)
 		break;
 	case SC_STATUS_LINK: {
 		debugf("SC_STATUS_LINK\n");
-		station_config* sta_conf = (station_config*)pdata;
-		char* ssid = (char*)sta_conf->ssid;
-		char* password = (char*)sta_conf->password;
+		auto cfg = static_cast<const station_config*>(pdata);
+		auto ssid = reinterpret_cast<const char*>(cfg->ssid);
+		auto password = reinterpret_cast<const char*>(cfg->password);
 		config(ssid, password);
 		connect();
 	} break;
@@ -421,18 +437,18 @@ bool StationClass::wpsConfigStart(WPSConfigDelegate callback)
 	debugf("WPS stationmode activated\n");
 	if(!wifi_wps_enable(WPS_TYPE_PBC)) {
 		debugf("StationClass::wpsConfigStart() : wps enable failed\n");
-		return (false);
+		return false;
 	}
 	if(!wifi_set_wps_cb((wps_st_cb_t)&staticWpsConfigCallback)) {
 		debugf("StationClass::wpsConfigStart() : cb failed\n");
-		return (false);
+		return false;
 	}
 
 	if(!wifi_wps_start()) {
 		debugf("StationClass::wpsConfigStart() : wifi_wps_start() failed\n");
-		return (false);
+		return false;
 	}
-	return (true);
+	return true;
 }
 
 bool StationClass::beginWPSConfig()
@@ -480,7 +496,7 @@ const char* BssInfo::getAuthorizationMethodName()
 	}
 }
 
-uint32_t BssInfo::getHashId()
+uint32_t BssInfo::getHashId() const
 {
 	uint32_t a = bssid[4] | (bssid[5] << 8);
 	uint32_t b = bssid[0] | (bssid[1] << 8) | (bssid[2] << 16) | (bssid[3] << 24);

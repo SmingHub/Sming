@@ -64,12 +64,24 @@ typedef Vector<BssInfo> BssList; ///< List of BSS
 /** @ingroup event_handlers
  *  @{
  */
-typedef Delegate<void(bool, BssList)> ScanCompletedDelegate;			   ///< Scan complete handler function
-typedef Delegate<void()> ConnectionDelegate;							   ///< Connection handler function
-typedef Delegate<void(sc_status status, void* pdata)> SmartConfigDelegate; ///< Smart configuration handler function
-#ifdef ENABLE_WPS
+
+/**
+ * @brief Scan complete handler function
+ */
+typedef Delegate<void(bool success, BssList list)> ScanCompletedDelegate;
+
+/**
+ * @brief Smart configuration handler function
+ */
+typedef Delegate<void(sc_status status, void* pdata)> SmartConfigDelegate;
+
+/**
+ * @brief WPS configuration callback function
+ * @param status
+ * @retval bool return true to perform default configuration
+ */
 typedef Delegate<bool(wps_cb_status status)> WPSConfigDelegate;
-#endif
+
 /** @} */
 
 /** @brief  WiFi station class
@@ -94,7 +106,7 @@ public:
 	/**	@brief	Get WiFi station enable status
 	 *	@retval	bool True if WiFi station enabled
 	 */
-	bool isEnabled();
+	bool isEnabled() const;
 
 	/**	@brief	Configure WiFi station
 	 *	@param	ssid WiFi SSID
@@ -115,27 +127,27 @@ public:
 	/**	@brief	Get WiFi station connectoin status
 	 *	@retval	bool True if connected.
 	 */
-	bool isConnected();
+	bool isConnected() const;
 
 	/**	@brief Get WiFi station connection failure status
 	 *	@retval	bool True if connection failed
 	 */
-	bool isConnectionFailed();
+	bool isConnectionFailed() const;
 
 	/**	@brief  Get WiFi station connection status
 	 *	@retval	EStationConnectionStatus Connection status structure
 	 */
-	EStationConnectionStatus getConnectionStatus();
+	EStationConnectionStatus getConnectionStatus() const;
 
 	/**	@brief	Get WiFi station connection status name
 	 *	@retval	char* Pointer to c string name of connection status
 	 */
-	const char* getConnectionStatusName();
+	const char* getConnectionStatusName() const;
 
 	/**	@brief	Get WiFi station DHCP enabled status
 	 *	@retval	bool True if DHCP enabled
 	 */
-	bool isEnabledDHCP();
+	bool isEnabledDHCP() const;
 
 	/**	@brief	Enable or disable WiFi station DHCP
 	 *	@param	enable True to enable WiFi station DHCP
@@ -150,33 +162,33 @@ public:
 	/**	@brief	Set WiFi station DHCP hostname
 	 *	@retval WiFi station DHCP hostname
 	 */
-	String getHostname();
+	String getHostname() const;
 
 	/**	@brief	Get WiFi station IP address
 	 *	@retval	IPAddress IP address of WiFi station
 	 */
-	IPAddress getIP();
+	IPAddress getIP() const;
 
 	/**	@brief	Get WiFi station MAC address
 	 *  @param sep Optional separator between bytes (e.g. ':')
 	 *	@retval	String WiFi station MAC address
 	 */
-	String getMAC(char sep = '\0');
+	String getMAC(char sep = '\0') const;
 
 	/**	@brief	Get WiFi station network mask
 	 *	@retval	IPAddress WiFi station network mask
 	 */
-	IPAddress getNetworkMask();
+	IPAddress getNetworkMask() const;
 
 	/**	@brief	Get WiFi station default gateway
 	 *	@retval	IPAddress WiFi station default gateway
 	 */
-	IPAddress getNetworkGateway();
+	IPAddress getNetworkGateway() const;
 
 	/**	@brief	GetWiFi station broadcast address
 	 *	@retval	IPAddress WiFi statoin broadcast address
 	 */
-	IPAddress getNetworkBroadcast();
+	IPAddress getNetworkBroadcast() const;
 
 	/**	@brief	Set WiFi station IP address
 	 *	@param	address IP address
@@ -195,14 +207,22 @@ public:
 	/**	@brief	Get WiFi station SSID
 	 *	@retval	String WiFi station SSID
 	 */
-	String getSSID();
+	String getSSID() const;
 
 	/**	@brief	Get WiFi station password
 	 *	@retval	String WiFi station password
 	 */
-	String getPassword();
-	int8_t getRssi();
-	uint8_t getChannel();
+	String getPassword() const;
+
+	/**	@brief	Get WiFi signal strength
+	 *	@retval	int8_t Value in dBm
+	 */
+	int8_t getRssi() const;
+
+	/**	@brief	Get active WiFi channel
+	 *	@retval	uint8_t channel number
+	 */
+	uint8_t getChannel() const;
 
 	/**	@brief	Start WiFi station network scan
 	 *	@param	scanCompleted Function to call when scan completes
@@ -210,6 +230,7 @@ public:
 	 */
 	bool startScan(ScanCompletedDelegate scanCompleted);
 
+#ifndef ARCH_HOST
 	/**	@brief	Start WiFi station smart configuration
 	 *	@param	sctype Smart configuration type
 	 *	@param	callback Function to call on WiFi staton smart configuration complete (Default: none)
@@ -219,6 +240,7 @@ public:
 	/**	@brief	Stop WiFi station smart configuration
 	 */
 	void smartConfigStop();
+#endif
 
 #ifdef ENABLE_WPS
 	/**	@brief	Start WiFi station by WPS method
@@ -245,8 +267,10 @@ protected:
 	void internalCheckConnection();
 	static void staticCheckConnection();
 
+#ifndef ARCH_HOST
 	void internalSmartConfig(sc_status status, void* pdata);
 	static void staticSmartConfigCallback(sc_status status, void* pdata);
+#endif
 
 private:
 	ScanCompletedDelegate scanCompletedCallback = nullptr;
@@ -263,20 +287,20 @@ public:
 	/**	@brief	Get BSS open status
 	 *	@retval	bool True if BSS open
 	*/
-	bool isOpen()
+	bool isOpen() const
 	{
 		return authorization == AUTH_OPEN;
 	}
 
 	/**	@brief	Get BSS authorisation method name
-	 *	@retval	char* Pointer to c string BSS authoristation method name
+	 *	@retval	String
 	*/
-	const char* getAuthorizationMethodName();
+	String getAuthorizationMethodName() const;
 
 	/**	@brief	Get BSS hash ID
 	 *	@retval	uint32_t BSS hash ID
 	*/
-	uint32_t getHashId();
+	uint32_t getHashId() const;
 
 public:
 	String ssid;			 ///< SSID
@@ -288,14 +312,14 @@ public:
 
 private:
 	friend class StationClass;
-	BssInfo(bss_info* info);
+	BssInfo(const bss_info* info);
 };
 
 /**	@brief	Global instance of WiFi station object
- *	@note	Use WiFiStation.<i>function</i> to access WiFi station functions
+ *	@note	Use WifiStation.<i>function</i> to access WiFi station functions
  *	@note	Example:
- *  @code   if(WiFiStation.config("My_WiFi", "My_Password"))
-                WiFiStation.enable(true);
+ *  @code   if(WifiStation.config("My_WiFi", "My_Password"))
+                WifiStation.enable(true);
 	@endcode
  */
 extern StationClass WifiStation;
