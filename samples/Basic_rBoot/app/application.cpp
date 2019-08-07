@@ -136,7 +136,10 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 			WifiStation.enable(true);
 			WifiStation.connect();
 		} else if(!strcmp(str, "ip")) {
-			Serial.printf("ip: %s mac: %s\r\n", WifiStation.getIP().toString().c_str(), WifiStation.getMAC().c_str());
+			Serial.print("ip: ");
+			Serial.print(WifiStation.getIP());
+			Serial.print("mac: ");
+			Serial.println(WifiStation.getMacAddress());
 		} else if(!strcmp(str, "ota")) {
 			OtaUpdate();
 		} else if(!strcmp(str, "switch")) {

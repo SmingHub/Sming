@@ -199,7 +199,7 @@ Embedded HTTP Web Server
      auto &vars = tmpl->variables();
      vars["counter"] = String(counter);
      vars["IP"] = WifiStation.getIP().toString();
-     vars["MAC"] = WifiStation.getMAC();
+     vars["MAC"] = WifiStation.getMacAddress().toString();
      response.sendTemplate(tmpl);
    }
 

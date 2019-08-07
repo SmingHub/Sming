@@ -25,6 +25,7 @@
 #pragma once
 
 #include "WString.h"
+#include "Print.h"
 #include <stdint.h>
 
 /**
@@ -33,8 +34,7 @@
  * @author mikee47 <mike@sillyhouse.net>
  * 	Sming integration
  */
-
-class MACAddress
+class MACAddress : public Printable
 {
 	// https://www.artima.com/cppsource/safebool.html
 	typedef void (MACAddress::*bool_type)() const;
@@ -84,6 +84,11 @@ public:
 
 	/**
 	 * @brief Return a String representation of the MACAddress.
+	 * @param sep Character to insert between octets
+	 * @note Various conventions exist for display MAC addresses.
+	 * 	- The IEEE standard specifies '-', `"01-02-03-04-05-06"`
+	 * 	- A more common convention (as used in linux) is ':', `"01:02:03:04:05:06"`
+	 * 	- To omit the separator use '\0', `"010203040506"`
 	 */
 	String toString(char sep = ':') const;
 
@@ -130,6 +135,11 @@ public:
 	 * @note This does not uniquely identify the key
 	 */
 	uint32_t getHash() const;
+
+	size_t printTo(Print& p) const override
+	{
+		return p.print(toString());
+	}
 
 private:
 	Octets octets = {0};

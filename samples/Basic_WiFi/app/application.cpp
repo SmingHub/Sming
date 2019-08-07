@@ -53,7 +53,7 @@ void ready()
 		Serial.print(_F("AP. ip: "));
 		Serial.print(WifiAccessPoint.getIP());
 		Serial.print(_F(" mac: "));
-		Serial.println(WifiAccessPoint.getMacAddr());
+		Serial.println(WifiAccessPoint.getMacAddress());
 	}
 }
 
