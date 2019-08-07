@@ -5,18 +5,23 @@ COMPONENT_DEPENDS := libsodium
 # The line below enables the form upload support on the server
 ENABLE_HTTP_SERVER_MULTIPART = 1
 
+##@Building
+
 web-pack:
 	$(Q) date +'%a, %d %b %Y %H:%M:%S GMT' -u > web/.lastModified
 
 web-upload: web-pack spiffs-image-update
 	$(call WriteFlash,$(RBOOT_SPIFFS_0)=$(SPIFF_BIN_OUT))
 
+.PHONY: python-requirements
+python-requirements:
+	python -m pip install --user -r $(COMPONENT_PATH)/requirements.txt
 
 SIGNTOOL := python $(COMPONENT_PATH)/signtool.py
 SIGNING_KEY := $(COMPONENT_PATH)/signing.key
 VERIFICATION_HEADER := $(COMPONENT_PATH)/app/FirmwareVerificationKey.h
 
-$(SIGNING_KEY):	
+$(SIGNING_KEY):
 	@echo "#########################################################"
 	@echo "# Generating new signing key for firmware update images #"
 	@echo "#                                                       #"
@@ -26,9 +31,8 @@ $(SIGNING_KEY):
 	@echo "#########################################################"
 	$(Q) $(SIGNTOOL) --genkey --keyfile=$@
 
-.PHONY: generate_signing_key
-generate_signing_key: 
-	@echo Generate a new firmware update signing key on explicit request.
+.PHONY: generate-signing-key
+generate-signing-key: ##Generate a new firmware update signing key on explicit request.
 	$(Q) $(SIGNTOOL) --genkey --keyfile=$(SIGNING_KEY)
 
 $(VERIFICATION_HEADER): $(SIGNING_KEY)
@@ -43,7 +47,7 @@ $(SIGNED_ROM0): $(RBOOT_ROM_0_BIN) $(SIGNING_KEY)
 	$(Q) $(SIGNTOOL) --keyfile=$(SIGNING_KEY) --out "$(SIGNED_ROM0)" --rom "$(ROM_0_ADDR)=$(RBOOT_ROM_0_BIN)"
 
 .PHONY: signedrom
-signedrom: $(SIGNED_ROM0)
+signedrom: $(SIGNED_ROM0) ##Create signed ROM image
 
 
 

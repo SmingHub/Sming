@@ -12,9 +12,9 @@ try:
 except:
     sys.stderr.write("""\
 It seems you have not installed libsodium bindings for python.
-To install them, use a command like 'python -m pip install pynacl' or
-search your distribution's package repository. The package name may be
-'python-nacl', 'python2-pynacl' or something similar.
+Run 'make python-requirements' to install the necessary files using pip (recommended for Windows users).
+Linux users are advised to use their distribution's package manager instead. Search for a package 
+named 'python-nacl', 'python2-pynacl' or something similar.
 """)
     sys.exit(2)
     
