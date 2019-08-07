@@ -5,7 +5,7 @@
 ##############
 
 CFLAGS				+= -DARCH_ESP8266
-CXXFLAGS			+= -fno-rtti -fno-exceptions 
+CXXFLAGS			+= -fno-rtti -fno-exceptions -fno-threadsafe-statics
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 DEBUG_VARS			+= ESP_HOME

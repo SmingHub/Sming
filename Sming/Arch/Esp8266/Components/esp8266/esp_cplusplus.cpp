@@ -53,17 +53,6 @@ extern "C" void __cxa_deleted_virtual(void)
 	abort();
 }
 
-
-extern "C" void __cxa_guard_acquire(uint64_t* guard_object)
-{
-}
-extern "C" void __cxa_guard_release(uint64_t* guard_object)
-{
-}
-extern "C" void __cxa_guard_abort(uint64_t* guard_object)
-{
-}
-
 namespace std {
     void WEAK_ATTR __throw_bad_function_call()
     {
