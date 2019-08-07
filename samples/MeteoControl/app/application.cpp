@@ -132,7 +132,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 
 void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
 {
-	debugf("connection FAILED");
+	debugf("connection FAILED: %s", WifiEvents.getDisconnectReasonDesc(reason).c_str());
 	WifiAccessPoint.config("MeteoConfig", "", AUTH_OPEN);
 	WifiAccessPoint.enable(true);
 	// Stop main screen output

@@ -10,17 +10,18 @@
 void listNetworks(bool succeeded, BssList& list)
 {
 	if(!succeeded) {
-		Serial.println("Failed to scan networks");
+		Serial.println(_F("Failed to scan networks"));
 		return;
 	}
 
 	for(unsigned i = 0; i < list.count(); i++) {
-		Serial.print("\tWiFi: ");
+		Serial.print(_F("\tWiFi: "));
 		Serial.print(list[i].ssid);
 		Serial.print(", ");
 		Serial.print(list[i].getAuthorizationMethodName());
-		if(list[i].hidden)
-			Serial.print(" (hidden)");
+		if(list[i].hidden) {
+			Serial.print(_F(" (hidden)"));
+		}
 		Serial.println();
 	}
 }
@@ -28,7 +29,7 @@ void listNetworks(bool succeeded, BssList& list)
 // Will be called when WiFi station was connected to AP
 void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 {
-	debugf("I'm CONNECTED");
+	Serial.print(_F("I'm CONNECTED to "));
 	Serial.println(ip.toString());
 }
 
@@ -36,39 +37,54 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
 {
 	// The different reason codes can be found in user_interface.h. in your SDK.
-	debugf("Disconnected from %s. Reason: %d", ssid.c_str(), reason);
+	Serial.print(_F("Disconnected from \""));
+	Serial.print(ssid);
+	Serial.print(_F("\", reason: "));
+	Serial.println(WifiEvents.getDisconnectReasonDesc(reason));
 }
 
 // Will be called when WiFi hardware and software initialization was finished
 // And system initialization was completed
 void ready()
 {
-	debugf("READY!");
+	Serial.println(_F("READY!"));
 
-	// If AP is enabled:
-	debugf("AP. ip: %s mac: %s", WifiAccessPoint.getIP().toString().c_str(), WifiAccessPoint.getMAC().c_str());
+	if(WifiAccessPoint.isEnabled()) {
+		Serial.print(_F("AP. ip: "));
+		Serial.print(WifiAccessPoint.getIP());
+		Serial.print(_F(" mac: "));
+		Serial.println(WifiAccessPoint.getMacAddr());
+	}
 }
 
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
-	Serial.println("Sming. Let's do smart things!");
+	Serial.println(_F("Sming. Let's do smart things!"));
 
 	// Set system ready callback method
 	System.onReady(ready);
 
 	// Soft access point
 	WifiAccessPoint.enable(true);
-	WifiAccessPoint.config("Sming InternetOfThings", "", AUTH_OPEN);
+	WifiAccessPoint.config(_F("Sming InternetOfThings"), nullptr, AUTH_OPEN);
 
 	// Station - WiFi client
 	WifiStation.enable(true);
-	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
+	WifiStation.config(_F(WIFI_SSID), _F(WIFI_PWD));
 
 	// Optional: Change IP addresses (and disable DHCP)
 	WifiAccessPoint.setIP(IPAddress(192, 168, 2, 1));
 	WifiStation.setIP(IPAddress(192, 168, 1, 171));
+
+	// Optional: Print details of any incoming probe requests
+	WifiEvents.onAccessPointProbeReqRecved([](int rssi, const MACAddress& mac) {
+		Serial.print(_F("Probe request: RSSI = "));
+		Serial.print(rssi);
+		Serial.print(_F(", mac = "));
+		Serial.println(mac);
+	});
 
 	// Print available access points
 	WifiStation.startScan(listNetworks); // In Sming we can start network scan from init method without additional code

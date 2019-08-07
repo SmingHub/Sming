@@ -36,7 +36,7 @@ void counterLoop()
 
 void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
 {
-	debugf("DISCONNECT - SSID: %s, REASON: %d\n", ssid.c_str(), reason);
+	debugf("DISCONNECT - SSID: %s, REASON: %s\n", ssid.c_str(), WifiEvents.getDisconnectReasonDesc(reason).c_str());
 
 	if(!WifiAccessPoint.isEnabled()) {
 		debugf("Starting OWN AP");

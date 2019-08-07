@@ -130,7 +130,7 @@ void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway)
 
 void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
 {
-	Serial.printf("DISCONNECT - SSID: %s, REASON: %d\n", ssid.c_str(), reason);
+	Serial.printf("DISCONNECT - SSID: %s, REASON: %s\n", ssid.c_str(), WifiEvents.getDisconnectReasonDesc(reason));
 }
 
 void init()
