@@ -135,6 +135,11 @@ public:
 	 */
 	void freeStreams();
 
+	bool isSuccess()
+	{
+		return (code >= HTTP_STATUS_OK && code <= 399);
+	}
+
 private:
 	void setStream(IDataSourceStream* stream);
 

@@ -26,8 +26,9 @@ const int PARSE_DATAEND = -2;   ///< End of incoming data
  * @param length Negative lengths have special meanings
  * @see `PARSE_DATASTART`
  * @see `PARSE_DATAEND`
+ * @return parsed bytes
  */
-typedef Delegate<void(HttpRequest& request, const char* at, int length)> HttpBodyParserDelegate;
+typedef Delegate<size_t(HttpRequest& request, const char* at, int length)> HttpBodyParserDelegate;
 
 /**
  * @brief Maps body parsers to a specific content type
@@ -38,11 +39,11 @@ typedef HashMap<String, HttpBodyParserDelegate> BodyParsers;
  * @brief Parses application/x-www-form-urlencoded body data
  * @see `HttpBodyParserDelegate`
  */
-void formUrlParser(HttpRequest& request, const char* at, int length);
+size_t formUrlParser(HttpRequest& request, const char* at, int length);
 
 /**
  * @brief Stores the complete body into memory
  * @see `HttpBodyParserDelegate`
  * @note The content later can be retrieved by calling request.getBody()
  */
-void bodyToStringParser(HttpRequest& request, const char* at, int length);
+size_t bodyToStringParser(HttpRequest& request, const char* at, int length);

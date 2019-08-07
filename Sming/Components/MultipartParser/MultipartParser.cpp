@@ -24,7 +24,7 @@ multipart_parser_settings_t MultipartParser::settings = {
 };
 
 
-void formMultipartParser(HttpRequest& request, const char* at, int length)
+size_t formMultipartParser(HttpRequest& request, const char* at, int length)
 {
 	auto parser = static_cast<MultipartParser*>(request.args);
 
@@ -34,17 +34,17 @@ void formMultipartParser(HttpRequest& request, const char* at, int length)
 		parser = new MultipartParser(&request);
 		request.args = parser;
 
-		return;
+		return 0;
 	}
 
 	if(length == PARSE_DATAEND) {
 		delete parser;
 		request.args = nullptr;
 
-		return;
+		return 0;
 	}
 
-	parser->execute(at, length);
+	return parser->execute(at, length);
 }
 
 
@@ -81,9 +81,9 @@ MultipartParser::~MultipartParser()
 	parser = nullptr;
 }
 
-void MultipartParser::execute(const char* at, size_t length)
+size_t MultipartParser::execute(const char* at, size_t length)
 {
-	multipart_parser_execute(parser, at, length);
+	return multipart_parser_execute(parser, at, length);
 }
 
 int MultipartParser::partBegin(multipart_parser_t* p)
@@ -133,7 +133,10 @@ int MultipartParser::partData(multipart_parser_t* p, const char* at, size_t leng
 
 	ReadWriteStream* stream = parser->request->files[parser->name];
 	if(stream != nullptr) {
-		stream->write((uint8_t*)at, length);
+		size_t written = stream->write((uint8_t*)at, length);
+		if(written != length) {
+			return 1;
+		}
 	}
 
 	return 0;

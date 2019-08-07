@@ -134,8 +134,8 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 	// we are finished with this request
 	int hasError = 0;
 	if(incomingRequest->requestCompletedDelegate) {
-		bool success = (HTTP_PARSER_ERRNO(parser) == HPE_OK) &&		   // false when the parsing has failed
-					   (response.code >= 200 && response.code <= 399); // false when the HTTP status code is not ok
+		bool success = (HTTP_PARSER_ERRNO(parser) == HPE_OK) && // false when the parsing has failed
+					   (response.isSuccess());					// false when the HTTP status code is not ok
 		hasError = incomingRequest->requestCompletedDelegate(*this, success);
 	}
 
