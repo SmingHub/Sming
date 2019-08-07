@@ -36,7 +36,6 @@ bool RbootHttpUpdater::addItem(const String& firmwareFileUrl, RbootOutputStream*
 	}
 
 	RbootHttpUpdaterItem add;
-	memset(&add, 0, sizeof(RbootHttpUpdaterItem));
 	add.targetOffset = stream->getStartAddress();
 	add.url = firmwareFileUrl;
 	add.size = stream->getMaxLength();
