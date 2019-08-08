@@ -250,7 +250,7 @@ MACAddress StationImpl::getMacAddr() const
 	if(nif == nullptr) {
 		return MACADDR_NONE;
 	} else {
-		return nif->hwaddr;
+		return MACAddress(nif->hwaddr);
 	}
 }
 

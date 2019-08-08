@@ -43,9 +43,11 @@ class MACAddress
 	}
 
 public:
+	typedef uint8_t Octets[6];
+
 	MACAddress() = default;
 
-	MACAddress(const uint8_t octets[6])
+	MACAddress(const Octets& octets)
 	{
 		setOctets(octets);
 	}
@@ -53,7 +55,7 @@ public:
 	/**
 	 * @brief Get the octets of the MAC address.
 	 */
-	void getOctets(uint8_t octets[6]) const
+	void getOctets(Octets& octets) const
 	{
 		memcpy(octets, this->octets, 6);
 	}
@@ -61,7 +63,7 @@ public:
 	/**
 	 * @brief Set the octets of the MAC address.
 	 */
-	void setOctets(const uint8_t octets[6])
+	void setOctets(const Octets& octets)
 	{
 		memcpy(this->octets, octets, 6);
 	}
@@ -130,7 +132,7 @@ public:
 	uint32_t getHash() const;
 
 private:
-	uint8_t octets[6] = {0};
+	Octets octets = {0};
 };
 
 #define MACADDR_NONE MACAddress()
