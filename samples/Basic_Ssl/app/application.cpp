@@ -114,7 +114,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 	downloadClient.send(request);
 }
 
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }

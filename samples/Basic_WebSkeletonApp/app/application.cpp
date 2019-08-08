@@ -4,7 +4,7 @@ Timer counterTimer;
 void counterLoop();
 unsigned long counter = 0;
 
-void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason);
+void STADisconnect(const String& ssid, MACAddress bssid, WifiDisconnectReason reason);
 void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway);
 
 void init()
@@ -34,7 +34,7 @@ void counterLoop()
 	counter++;
 }
 
-void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void STADisconnect(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("DISCONNECT - SSID: %s, REASON: %s\n", ssid.c_str(), WifiEvents.getDisconnectReasonDesc(reason).c_str());
 

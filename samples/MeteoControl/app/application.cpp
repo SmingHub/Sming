@@ -24,8 +24,8 @@ bool state = true;
 String StrT, StrRH, StrTime;
 
 void process();
-void connectOk(const String& SSID, const MACAddress& bssid, uint8_t channel);
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason);
+void connectOk(const String& SSID, MACAddress bssid, uint8_t channel);
+void connectFail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason);
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
 
 void init()
@@ -106,7 +106,7 @@ void process()
 		displayTimer.initializeMs(1000, showValues).start();
 }
 
-void connectOk(const String& SSID, const MACAddress& bssid, uint8_t channel)
+void connectOk(const String& SSID, MACAddress bssid, uint8_t channel)
 {
 	debugf("connected");
 	WifiAccessPoint.enable(false);
@@ -130,7 +130,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 		startWebServer();
 }
 
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("connection FAILED: %s", WifiEvents.getDisconnectReasonDesc(reason).c_str());
 	WifiAccessPoint.config("MeteoConfig", "", AUTH_OPEN);

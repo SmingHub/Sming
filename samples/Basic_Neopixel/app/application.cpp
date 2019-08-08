@@ -147,7 +147,7 @@ void got_IP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 }
 
 // Will be called when WiFi station loses connection
-void connect_Fail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connect_Fail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
 {
 	Serial.println("I'm NOT CONNECTED!");
 }

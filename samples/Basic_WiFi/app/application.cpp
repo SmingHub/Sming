@@ -34,7 +34,7 @@ void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 }
 
 // Will be called when WiFi station was disconnected
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
 {
 	// The different reason codes can be found in user_interface.h. in your SDK.
 	Serial.print(_F("Disconnected from \""));
@@ -79,7 +79,7 @@ void init()
 	WifiStation.setIP(IPAddress(192, 168, 1, 171));
 
 	// Optional: Print details of any incoming probe requests
-	WifiEvents.onAccessPointProbeReqRecved([](int rssi, const MACAddress& mac) {
+	WifiEvents.onAccessPointProbeReqRecved([](int rssi, MACAddress mac) {
 		Serial.print(_F("Probe request: RSSI = "));
 		Serial.print(rssi);
 		Serial.print(_F(", mac = "));

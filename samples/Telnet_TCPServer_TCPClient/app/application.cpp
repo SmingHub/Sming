@@ -100,7 +100,7 @@ void startServers()
 												   "testGroup", applicationCommand));
 }
 
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }

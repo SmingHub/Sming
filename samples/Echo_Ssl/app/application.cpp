@@ -99,7 +99,7 @@ bool onReceive(TcpClient& tcpClient, char* data, int size)
 	return tcpClient.send(data, size);
 }
 
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }
