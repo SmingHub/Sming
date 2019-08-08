@@ -48,7 +48,7 @@ String MACAddress::toString(char sep) const
 
 bool MACAddress::operator!() const
 {
-	return *this != MACADDR_NONE;
+	return *this == MACADDR_NONE;
 }
 
 uint32_t MACAddress::getHash() const
