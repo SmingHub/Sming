@@ -53,7 +53,7 @@ bool AccessPointImpl::setIP(IPAddress address)
 	return false;
 }
 
-MACAddress AccessPointImpl::getMacAddr() const
+MACAddress AccessPointImpl::getMacAddress() const
 {
 	return MACADDR_NONE;
 }

@@ -243,7 +243,7 @@ IPAddress StationImpl::getIP() const
 	return nif ? nif->ip_addr.addr : IPADDR_NONE;
 }
 
-MACAddress StationImpl::getMacAddr() const
+MACAddress StationImpl::getMacAddress() const
 {
 	netif* nif = netif_default;
 

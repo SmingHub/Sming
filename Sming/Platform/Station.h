@@ -185,7 +185,7 @@ public:
 	/**	@brief	Get WiFi station MAC address
 	 *	@retval	MACAddress
 	 */
-	virtual MACAddress getMacAddr() const = 0;
+	virtual MACAddress getMacAddress() const = 0;
 
 	/**	@brief	Get WiFi station MAC address
 	 *  @param sep Optional separator between bytes (e.g. ':')

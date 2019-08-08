@@ -70,7 +70,7 @@ public:
 	/**	@brief	Get WiFi AP MAC address
 	 *	@retval	MACAddress
 	 */
-	virtual MACAddress getMacAddr() const = 0;
+	virtual MACAddress getMacAddress() const = 0;
 
 	/** @brief  Get WiFi AP MAC address
 	 *  @param	sep separator between bytes (e.g. ':')

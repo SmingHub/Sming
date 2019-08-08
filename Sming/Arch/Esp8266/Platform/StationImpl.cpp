@@ -162,7 +162,7 @@ IPAddress StationImpl::getIP() const
 	return info.ip;
 }
 
-MACAddress StationImpl::getMacAddr() const
+MACAddress StationImpl::getMacAddress() const
 {
 	MACAddress addr;
 	if(wifi_get_macaddr(STATION_IF, &addr[0])) {

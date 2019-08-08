@@ -143,7 +143,7 @@ bool AccessPointImpl::setIP(IPAddress address)
 	return true;
 }
 
-MACAddress AccessPointImpl::getMacAddr() const
+MACAddress AccessPointImpl::getMacAddress() const
 {
 	MACAddress addr;
 	if(wifi_get_macaddr(SOFTAP_IF, &addr[0])) {

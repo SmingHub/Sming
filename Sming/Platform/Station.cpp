@@ -40,7 +40,7 @@ bool StationClass::setIP(IPAddress address)
 
 String StationClass::getMAC(char sep) const
 {
-	auto mac = getMacAddr();
+	auto mac = getMacAddress();
 	return mac ? mac.toString(sep) : nullptr;
 }
 
