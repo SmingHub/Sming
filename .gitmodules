@@ -35,6 +35,10 @@
 	path = Sming/Components/rboot/esptool2
 	url = https://github.com/raburton/esptool2.git
 	ignore = dirty
+[submodule "libsodium"]
+	path = Sming/Components/libsodium/libsodium
+	url = https://github.com/jedisct1/libsodium.git
+	ignore = dirty
 
 [submodule "ESP8266.new-pwm"]
 	path = Sming/Arch/Esp8266/Components/pwm_open/new-pwm
