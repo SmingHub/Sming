@@ -31,13 +31,6 @@ void IPAddress::fromString(const String& address)
 	}
 }
 
-bool IPAddress::operator==(const uint8_t* addr)
-{
-    ip_addr_t a;
-    IP4_ADDR(&a, addr[0], addr[1], addr[2], addr[3]);
-    return address.addr == a.addr;
-}
-
 size_t IPAddress::printTo(Print& p) const
 {
     size_t n = 0;
