@@ -23,7 +23,7 @@ public:
 	explicit MultipartParser(HttpRequest* request);
 	~MultipartParser();
 
-	void execute(const char* at, size_t length);
+	size_t execute(const char* at, size_t length);
 
 	static int readHeaderName(multipart_parser_t* p, const char* at, size_t length);
 	static int readHeaderValue(multipart_parser_t* p, const char* at, size_t length);
@@ -44,4 +44,4 @@ private:
 };
 
 
-void formMultipartParser(HttpRequest& request, const char* at, int length);
+size_t formMultipartParser(HttpRequest& request, const char* at, int length);

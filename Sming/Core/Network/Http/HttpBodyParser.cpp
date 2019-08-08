@@ -30,14 +30,14 @@ typedef struct {
 /*
  * The incoming URL is parsed
  */
-void formUrlParser(HttpRequest& request, const char* at, int length)
+size_t formUrlParser(HttpRequest& request, const char* at, int length)
 {
 	auto state = static_cast<FormUrlParserState*>(request.args);
 
 	if(length == PARSE_DATASTART) {
 		delete state;
 		request.args = new FormUrlParserState;
-		return;
+		return 0;
 	}
 
 	assert(state != nullptr);
@@ -54,14 +54,15 @@ void formUrlParser(HttpRequest& request, const char* at, int length)
 		delete state;
 		request.args = nullptr;
 
-		return;
+		return 0;
 	}
 
 	if(state == nullptr) {
 		debug_e("Invalid request argument");
-		return;
+		return 0;
 	}
 
+	size_t consumed = length;
 	while(length > 0) {
 		// Look for search character ('=' or '&') in received text
 		auto found = static_cast<const char*>(memchr(at, state->searchChar, length));
@@ -94,9 +95,11 @@ void formUrlParser(HttpRequest& request, const char* at, int length)
 		at += foundLength;
 		length -= foundLength;
 	}
+
+	return (consumed - length);
 }
 
-void bodyToStringParser(HttpRequest& request, const char* at, int length)
+size_t bodyToStringParser(HttpRequest& request, const char* at, int length)
 {
 	auto data = static_cast<String*>(request.args);
 
@@ -104,20 +107,24 @@ void bodyToStringParser(HttpRequest& request, const char* at, int length)
 		delete data;
 		data = new String();
 		request.args = data;
-		return;
+		return 0;
 	}
 
 	if(data == nullptr) {
 		debug_e("Invalid request argument");
-		return;
+		return 0;
 	}
 
 	if(length == PARSE_DATAEND || length < 0) {
 		request.setBody(*data);
 		delete data;
 		request.args = nullptr;
-		return;
+		return 0;
 	}
 
-	data->concat(at, length);
+	if(!data->concat(at, length)) {
+		return 0;
+	}
+
+	return length;
 }

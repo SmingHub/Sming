@@ -37,6 +37,11 @@ void onFile(HttpRequest& request, HttpResponse& response)
 
 int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
+	if(!response.isSuccess()) {
+		debug_e("Request failed.");
+		return -1;
+	}
+
 	ReadWriteStream* file = request.files["firmware"];
 	if(file == nullptr) {
 		debug_e("Something went wrong with the file upload");

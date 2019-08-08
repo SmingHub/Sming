@@ -50,6 +50,10 @@ public:
 		if(this->resource != nullptr) {
 			this->resource->shutdown(*this);
 		}
+
+		if(bodyParser) {
+			bodyParser(request, nullptr, PARSE_DATAEND);
+		}
 	}
 
 	void setResourceTree(HttpResourceTree* resourceTree)

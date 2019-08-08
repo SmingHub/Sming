@@ -52,5 +52,9 @@ size_t RbootOutputStream::write(const uint8_t* data, size_t size)
 
 bool RbootOutputStream::close()
 {
-	return rboot_write_end(&rBootWriteStatus);
+	if(initialized) {
+		return rboot_write_end(&rBootWriteStatus);
+	}
+
+	return true;
 }

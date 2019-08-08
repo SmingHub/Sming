@@ -54,10 +54,6 @@ int HttpServerConnection::onMessageComplete(http_parser* parser)
 {
 	// we are finished with this request
 	int hasError = 0;
-	if(HTTP_PARSER_ERRNO(parser) != HPE_OK) {
-		sendError(httpGetErrorName(HTTP_PARSER_ERRNO(parser)));
-		return 0;
-	}
 
 	if(bodyParser) {
 		bodyParser(request, nullptr, PARSE_DATAEND);
@@ -67,11 +63,13 @@ int HttpServerConnection::onMessageComplete(http_parser* parser)
 		hasError = resource->onRequestComplete(*this, request, response);
 	}
 
-	send();
-
 	if(request.responseStream != nullptr) {
 		delete request.responseStream;
 		request.responseStream = nullptr;
+	}
+
+	if(!hasError) {
+		send();
 	}
 
 	return hasError;
@@ -142,7 +140,10 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 int HttpServerConnection::onBody(const char* at, size_t length)
 {
 	if(bodyParser) {
-		bodyParser(request, at, length);
+		size_t consumed = bodyParser(request, at, length);
+		if(consumed != length) {
+			return -1;
+		}
 	}
 
 	if(resource != nullptr && resource->onBody) {
@@ -154,7 +155,12 @@ int HttpServerConnection::onBody(const char* at, size_t length)
 
 void HttpServerConnection::onHttpError(http_errno error)
 {
-	sendError(httpGetErrorName(error));
+	response.code = HTTP_STATUS_BAD_REQUEST;
+	int hasError = onMessageComplete(nullptr);
+	if(hasError) {
+		sendError(httpGetErrorName(error));
+	}
+
 	HttpConnection::onHttpError(error);
 }
 
@@ -299,6 +305,7 @@ bool HttpServerConnection::sendResponseBody(HttpResponse* response)
 void HttpServerConnection::sendError(const String& message, enum http_status code)
 {
 	debug_d("SEND ERROR PAGE");
+	response.reset();
 	response.code = code;
 	response.setContentType(MIME_HTML);
 
