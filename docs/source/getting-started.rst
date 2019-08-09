@@ -249,7 +249,7 @@ Email client
 
        ...
 
-       if(!client.countPending()) {
+       if(client.countPending() == 0) {
            client.quit();
        }
 
