@@ -96,7 +96,7 @@ size_t formUrlParser(HttpRequest& request, const char* at, int length)
 		length -= foundLength;
 	}
 
-	return (consumed - length);
+	return consumed;
 }
 
 size_t bodyToStringParser(HttpRequest& request, const char* at, int length)
