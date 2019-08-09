@@ -9,11 +9,13 @@
  ****/
 
 /**	@defgroup wifi_sta WiFi Station Interface
+ *  @ingroup wifi
  *	@brief	Control and monitoring of WiFi station interface
  *	@note   The WiFi station interface provides client access to a WiFi network.
             Control of WiFi connection including WiFi SSID and password and
             IP address, DHCP, etc.
  *  @see    \ref wifi_ap
+ *  @see    \ref wifi_ev
 */
 
 #pragma once
@@ -202,7 +204,7 @@ public:
 	virtual IPAddress getNetworkGateway() const = 0;
 
 	/**	@brief	GetWiFi station broadcast address
-	 *	@retval	IPAddress WiFi statoin broadcast address
+	 *	@retval	IPAddress WiFi station broadcast address
 	 */
 	virtual IPAddress getNetworkBroadcast() const = 0;
 

@@ -16,6 +16,10 @@
  *  @brief  Libraries provided by third parties, adapted to work with Sming
  */
 
+/** @defgroup wifi WiFi
+ *  @brief  Sming WiFi support classes and definitions
+ */
+
 /** @mainpage
 
 The API documentation is provided as a set of modules, each describing a logical element of the API. Each module generally relates to a C++ class or group of related global functions. There are also modules for other global elements such as constant values.

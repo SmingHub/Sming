@@ -9,11 +9,13 @@
  ****/
 
 /**	@defgroup wifi_ap WiFi Access Point
+ *  @ingroup wifi
  *	@brief	Control and monitoring of WiFi access point interface
  *	@note   The WiFi access point interface provides a WiFi network access point.
             Control of WiFi AP including WiFi SSID and password and
             IP address.
  *  @see    \ref wifi_sta
+ *  @see    \ref wifi_ev
  *  @todo   How is wifi access point dhcp controlled?
 */
 
