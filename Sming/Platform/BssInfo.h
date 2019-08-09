@@ -12,7 +12,7 @@
 
 #include <WString.h>
 #include <WVector.h>
-#include <MACAddress.h>
+#include <MacAddress.h>
 
 #ifdef ARCH_HOST
 enum WifiAuthMode {
@@ -53,7 +53,7 @@ public:
 
 public:
 	String ssid;				///< SSID
-	MACAddress bssid;			///< BSS ID
+	MacAddress bssid;			///< BSS ID
 	WifiAuthMode authorization; ///< Authorisation mode
 	uint8_t channel;			///< Channel number
 	int16_t rssi;				///< RSSI level

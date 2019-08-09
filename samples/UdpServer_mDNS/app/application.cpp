@@ -50,12 +50,12 @@ void startWebServer()
 	Serial.println("==============================\r\n");
 }
 
-void connectFail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	if(!fileExist("index.html"))
 		fileSetContent("index.html",

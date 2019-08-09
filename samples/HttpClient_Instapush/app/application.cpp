@@ -90,7 +90,7 @@ void publishMessage()
 }
 
 // Will be called when WiFi station was connected to AP
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	Serial.println("I'm CONNECTED");
 

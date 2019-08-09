@@ -73,7 +73,7 @@ void downloadContentFiles()
 								}));
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	if(!fileExist("index.html") || !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz")) {
 		// Download server content at first

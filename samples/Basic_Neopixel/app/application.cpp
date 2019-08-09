@@ -140,7 +140,7 @@ void StartDemo()
 	}
 }
 
-void got_IP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void got_IP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	Serial.print("IP: ");
 	Serial.println(ip);
@@ -148,7 +148,7 @@ void got_IP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 }
 
 // Will be called when WiFi station loses connection
-void connect_Fail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
+void connect_Fail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	Serial.println("I'm NOT CONNECTED!");
 }

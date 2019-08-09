@@ -42,7 +42,7 @@ bool TcpClient::connect(const String& server, int port, bool useSsl, uint32_t ss
 	return TcpConnection::connect(server.c_str(), port, useSsl, sslOptions);
 }
 
-bool TcpClient::connect(IPAddress addr, uint16_t port, bool useSsl, uint32_t sslOptions)
+bool TcpClient::connect(IpAddress addr, uint16_t port, bool useSsl, uint32_t sslOptions)
 {
 	if(isProcessing()) {
 		return false;

@@ -1,5 +1,5 @@
 /*
-  IPAddress.h - Base class that provides IPAddress
+  IpAddress.h - Base class that provides IP Address
   Copyright (c) 2011 Adrian McEwen.  All right reserved.
 
   This library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ typedef struct ip_addr ip_addr_t;
 
 // A class to make it easier to handle and pass around IP addresses
 
-class IPAddress : public Printable
+class IpAddress : public Printable
 {
 private:
 	ip_addr_t address = {0}; ///< IPv4 address
@@ -41,43 +41,43 @@ private:
 
 public:
 	// Constructors
-	IPAddress()
+	IpAddress()
 	{
 	}
 
-	IPAddress(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet)
+	IpAddress(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet)
 	{
 		IP4_ADDR(&address, first_octet, second_octet, third_octet, fourth_octet);
 	}
 
-	IPAddress(uint32_t address)
+	IpAddress(uint32_t address)
 	{
 		this->address.addr = address;
 	}
 
-	IPAddress(ip_addr address)
+	IpAddress(ip_addr address)
 	{
 		this->address.addr = address.addr;
 	}
 
 #if LWIP_VERSION_MAJOR == 2
-	IPAddress(ip_addr_t address)
+	IpAddress(ip_addr_t address)
 	{
 		this->address = address;
 	}
 #endif
 
-	IPAddress(const uint8_t* address)
+	IpAddress(const uint8_t* address)
 	{
 		IP4_ADDR(&this->address, address[0], address[1], address[2], address[3]);
 	}
 
-	IPAddress(const String& address)
+	IpAddress(const String& address)
 	{
 		fromString(address);
 	}
 
-	// Overloaded cast operator to allow IPAddress objects to be used where a pointer
+	// Overloaded cast operator to allow IpAddress objects to be used where a pointer
 	// to a four-byte uint8_t array is expected
 	operator uint32_t() const
 	{
@@ -101,24 +101,24 @@ public:
 	}
 #endif
 
-	bool operator==(const IPAddress& addr) const
+	bool operator==(const IpAddress& addr) const
 	{
 		return ip_addr_cmp(&address, &addr.address);
 	}
 
 	bool operator==(const uint8_t* addr) const
 	{
-		return *this == IPAddress(addr);
+		return *this == IpAddress(addr);
 	}
 
-	bool operator!=(const IPAddress& addr) const
+	bool operator!=(const IpAddress& addr) const
 	{
 		return !ip_addr_cmp(&address, &addr.address);
 	}
 
 	bool operator!=(const uint8_t* addr) const
 	{
-		return *this != IPAddress(addr);
+		return *this != IpAddress(addr);
 	}
 
 	bool isNull() const
@@ -128,7 +128,7 @@ public:
 
 	String toString() const;
 
-	bool compare(const IPAddress& addr, const IPAddress& mask) const
+	bool compare(const IpAddress& addr, const IpAddress& mask) const
 	{
 		return ip_addr_netcmp(&address, &addr.address, &mask.address);
 	}
@@ -150,20 +150,20 @@ public:
 		return reinterpret_cast<uint8_t*>(&address)[index];
 	}
 
-	// Overloaded copy operators to allow initialisation of IPAddress objects from other types
-	IPAddress& operator=(const uint8_t* address)
+	// Overloaded copy operators to allow initialisation of IpAddress objects from other types
+	IpAddress& operator=(const uint8_t* address)
 	{
 		IP4_ADDR(&this->address, address[0], address[1], address[2], address[3]);
 		return *this;
 	}
 
-	IPAddress& operator=(uint32_t address)
+	IpAddress& operator=(uint32_t address)
 	{
 		this->address.addr = address;
 		return *this;
 	}
 
-	IPAddress& operator=(const String address)
+	IpAddress& operator=(const String address)
 	{
 		fromString(address);
 		return *this;
@@ -172,5 +172,8 @@ public:
 	size_t printTo(Print& p) const override;
 };
 
+/** @deprecated Use `IpAddress` instead. */
+typedef IpAddress IPAddress SMING_DEPRECATED;
+
 // Making this extern saves 100's of bytes; each usage otherwise incurs 4 bytes of BSS
-#define INADDR_NONE IPAddress()
+#define INADDR_NONE IpAddress()

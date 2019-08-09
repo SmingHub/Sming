@@ -75,13 +75,13 @@ public:
 	}
 
 	// Returns true if successful, false if there are no sockets available
-	bool start(uint16_t port, const String& domainName, const IPAddress& resolvedIP);
+	bool start(uint16_t port, const String& domainName, const IpAddress& resolvedIP);
 
 	// stops the DNS server
 	void stop();
 
 protected:
-	void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort) override;
+	void onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort) override;
 
 private:
 	uint16_t port = 0;

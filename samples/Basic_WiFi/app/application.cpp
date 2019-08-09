@@ -27,14 +27,14 @@ void listNetworks(bool succeeded, BssList& list)
 }
 
 // Will be called when WiFi station was connected to AP
-void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
+void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	Serial.print(_F("I'm CONNECTED to "));
 	Serial.println(ip);
 }
 
 // Will be called when WiFi station was disconnected
-void connectFail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	// The different reason codes can be found in user_interface.h. in your SDK.
 	Serial.print(_F("Disconnected from \""));
@@ -75,11 +75,11 @@ void init()
 	WifiStation.config(_F(WIFI_SSID), _F(WIFI_PWD));
 
 	// Optional: Change IP addresses (and disable DHCP)
-	WifiAccessPoint.setIP(IPAddress(192, 168, 2, 1));
-	WifiStation.setIP(IPAddress(192, 168, 1, 171));
+	WifiAccessPoint.setIP(IpAddress(192, 168, 2, 1));
+	WifiStation.setIP(IpAddress(192, 168, 1, 171));
 
 	// Optional: Print details of any incoming probe requests
-	WifiEvents.onAccessPointProbeReqRecved([](int rssi, MACAddress mac) {
+	WifiEvents.onAccessPointProbeReqRecved([](int rssi, MacAddress mac) {
 		Serial.print(_F("Probe request: RSSI = "));
 		Serial.print(rssi);
 		Serial.print(_F(", mac = "));

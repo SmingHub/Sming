@@ -8,7 +8,7 @@
 
 FtpServer ftp;
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	Serial.print("IP: ");
 	Serial.println(ip);
@@ -19,7 +19,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 }
 
 // Will be called when WiFi station timeout was reached
-void connectFail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	Serial.println("I'm NOT CONNECTED. Need help!!! :(");
 

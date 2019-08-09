@@ -129,7 +129,7 @@ WiFi Classes
 Additions
 ---------
 
-New class to handle MAC addresses: :source:`Sming/Wiring/MACAddress.h`.
+New class to handle MAC addresses: :source:`Sming/Wiring/MacAddress.h`.
 
 :source:`Sming/Platform/StationClass.h`
 ---------------------------------------

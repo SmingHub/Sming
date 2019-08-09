@@ -30,7 +30,7 @@ void onNtpReceive(NtpClient& client, time_t timestamp)
 	Serial.printf("Time synchronized: %s\n", SystemClock.getSystemTimeString().c_str());
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	ntpClient.requestTime();
 }

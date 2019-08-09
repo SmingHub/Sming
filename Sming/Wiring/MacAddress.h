@@ -34,10 +34,10 @@
  * @author mikee47 <mike@sillyhouse.net>
  * 	Sming integration
  */
-class MACAddress : public Printable
+class MacAddress : public Printable
 {
 	// https://www.artima.com/cppsource/safebool.html
-	typedef void (MACAddress::*bool_type)() const;
+	typedef void (MacAddress::*bool_type)() const;
 	void Testable() const
 	{
 	}
@@ -45,9 +45,9 @@ class MACAddress : public Printable
 public:
 	typedef uint8_t Octets[6];
 
-	MACAddress() = default;
+	MacAddress() = default;
 
-	MACAddress(const Octets& octets)
+	MacAddress(const Octets& octets)
 	{
 		setOctets(octets);
 	}
@@ -83,7 +83,7 @@ public:
 	uint8_t& operator[](unsigned index);
 
 	/**
-	 * @brief Return a String representation of the MACAddress.
+	 * @brief Return a String representation of the MacAddress.
 	 * @param sep Character to insert between octets
 	 * @note Various conventions exist for display MAC addresses.
 	 * 	- The IEEE standard specifies '-', `"01-02-03-04-05-06"`
@@ -95,7 +95,7 @@ public:
 	/**
 	 * @brief Equality operator.
 	 */
-	bool operator==(const MACAddress& other) const
+	bool operator==(const MacAddress& other) const
 	{
 		return memcmp(octets, other.octets, sizeof(octets)) == 0;
 	}
@@ -103,7 +103,7 @@ public:
 	/**
 	 * @brief Inequality operator.
 	 */
-	inline bool operator!=(const MACAddress& other) const
+	inline bool operator!=(const MacAddress& other) const
 	{
 		return !operator==(other);
 	}
@@ -118,7 +118,7 @@ public:
 	 */
 	operator bool_type() const
 	{
-		return operator!() ? nullptr : &MACAddress::Testable;
+		return operator!() ? nullptr : &MacAddress::Testable;
 	}
 
 	/**
@@ -145,4 +145,4 @@ private:
 	Octets octets = {0};
 };
 
-#define MACADDR_NONE MACAddress()
+#define MACADDR_NONE MacAddress()

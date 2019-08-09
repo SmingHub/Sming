@@ -117,7 +117,7 @@ void wsMessageSent()
 #endif
 }
 
-void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway)
+void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	Serial.print(_F("GOTIP - IP: "));
 	Serial.print(ip);
@@ -139,7 +139,7 @@ void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway)
 #endif
 }
 
-void STADisconnect(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
+void STADisconnect(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	Serial.print(_F("DISCONNECT - SSID: "));
 	Serial.print(ssid);

@@ -17,11 +17,11 @@
 #pragma once
 
 #include "WiringFrameworkDependencies.h"
-#include "IPAddress.h"
+#include "IpAddress.h"
 
 class UdpConnection;
 
-typedef Delegate<void(UdpConnection& connection, char* data, int size, IPAddress remoteIP, uint16_t remotePort)>
+typedef Delegate<void(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort)>
 	UdpConnectionDataDelegate;
 
 class UdpConnection
@@ -43,7 +43,7 @@ public:
 	}
 
 	virtual bool listen(int port);
-	virtual bool connect(IPAddress ip, uint16_t port);
+	virtual bool connect(IpAddress ip, uint16_t port);
 	virtual void close();
 
 	// After connect(..)
@@ -59,20 +59,20 @@ public:
 		return send(data.c_str(), data.length());
 	}
 
-	virtual bool sendTo(IPAddress remoteIP, uint16_t remotePort, const char* data, int length);
+	virtual bool sendTo(IpAddress remoteIP, uint16_t remotePort, const char* data, int length);
 
-	bool sendStringTo(IPAddress remoteIP, uint16_t remotePort, const char* data)
+	bool sendStringTo(IpAddress remoteIP, uint16_t remotePort, const char* data)
 	{
 		return sendTo(remoteIP, remotePort, data, strlen(data));
 	}
 
-	bool sendStringTo(IPAddress remoteIP, uint16_t remotePort, const String& data)
+	bool sendStringTo(IpAddress remoteIP, uint16_t remotePort, const String& data)
 	{
 		return sendTo(remoteIP, remotePort, data.c_str(), data.length());
 	}
 
 protected:
-	virtual void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort);
+	virtual void onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort);
 
 protected:
 	bool initialize(udp_pcb* pcb = nullptr);

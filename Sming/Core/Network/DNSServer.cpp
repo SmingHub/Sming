@@ -19,7 +19,7 @@
 #include "UdpConnection.h"
 #include "WString.h"
 
-bool DNSServer::start(uint16_t port, const String& domainName, const IPAddress& resolvedIP)
+bool DNSServer::start(uint16_t port, const String& domainName, const IpAddress& resolvedIP)
 {
 	this->port = port;
 	buffer = nullptr;
@@ -48,7 +48,7 @@ bool DNSServer::requestIncludesOnlyOneQuestion()
 		   dnsHeader->ARCount == 0;
 }
 
-void DNSServer::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
+void DNSServer::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
 	delete[] buffer;
 	buffer = new char[buf->tot_len];

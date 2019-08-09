@@ -42,7 +42,7 @@ int onMailSent(SmtpClient& client, int code, char* status)
 	return 0;
 }
 
-void onConnected(IPAddress ip, IPAddress mask, IPAddress gateway)
+void onConnected(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 #ifdef ENABLE_SSL
 	client.addSslOptions(SSL_SERVER_VERIFY_LATER);

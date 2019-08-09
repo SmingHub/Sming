@@ -100,12 +100,12 @@ protected:
      *  @param  remoteIP IP address of remote host
      *  @param  remotePort Port number of remote host
      */
-	void onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort) override;
+	void onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort) override;
 
 	/** @brief  Send time request to NTP server
      *  @param  serverIp IP address of NTP server
      */
-	void internalRequestTime(IPAddress serverIp);
+	void internalRequestTime(IpAddress serverIp);
 
 	/** @brief Start the timer running
 	 *  @param milliseconds Time to run in milliseconds

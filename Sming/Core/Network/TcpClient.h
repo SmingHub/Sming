@@ -24,7 +24,7 @@
 
 class TcpClient;
 class ReadWriteStream;
-class IPAddress;
+class IpAddress;
 
 typedef Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)> TcpClientEventDelegate;
 typedef Delegate<void(TcpClient& client, bool successful)> TcpClientCompleteDelegate;
@@ -74,7 +74,7 @@ public:
 
 public:
 	bool connect(const String& server, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
-	bool connect(IPAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0) override;
+	bool connect(IpAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0) override;
 	void close() override;
 
 	/**	@brief	Set or clear the callback for received data

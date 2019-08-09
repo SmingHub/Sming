@@ -107,7 +107,7 @@ void startExampleApplicationCommand()
 		CommandDelegate("example", "Example Command from Class", "Application", processApplicationCommands));
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	StartServers();
 

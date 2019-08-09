@@ -25,7 +25,7 @@ Timer procTimer;
 
 // Переменная для хранения mac-адреса
 // Variable for storing MAC address
-MACAddress mac;
+MacAddress mac;
 
 // Переменная, в которой у нас хранится температура с датчика
 // Variable to store temperature from sensor
@@ -101,7 +101,7 @@ void sendData()
 
 // Successful connection to AP
 // Когда удачно подключились к роутеру
-void connectOk(const String& SSID, MACAddress bssid, uint8_t channel)
+void connectOk(const String& SSID, MacAddress bssid, uint8_t channel)
 {
 	// debug msg
 	debugf("I'm CONNECTED to WiFi");
@@ -112,14 +112,14 @@ void connectOk(const String& SSID, MACAddress bssid, uint8_t channel)
 	debugf("mac: %s", mac.toString().c_str());
 }
 
-void connectFail(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	// Display a message on failed connection
 	// Если подключение к роутеру не удалось, выводим сообщение
 	debugf("I'm NOT CONNECTED!");
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	// Call the sendData function by timer, every 6 minutes
 	// вызываем по таймеру функцию sendData

@@ -7,7 +7,7 @@
 
 Timer publishTimer;
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway);
 
 void init()
 {
@@ -56,7 +56,7 @@ void startMqttClient()
 	mqtt.subscribe(SUB_TOPIC);
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	Serial.print("Connected: ");
 	Serial.println(ip);

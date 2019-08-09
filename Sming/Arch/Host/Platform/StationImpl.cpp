@@ -241,38 +241,38 @@ String StationImpl::getHostname() const
 	return hostName;
 }
 
-IPAddress StationImpl::getIP() const
+IpAddress StationImpl::getIP() const
 {
 	return ipaddr;
 }
 
-MACAddress StationImpl::getMacAddress() const
+MacAddress StationImpl::getMacAddress() const
 {
 	netif* nif = netif_default;
 
 	if(nif == nullptr) {
 		return MACADDR_NONE;
 	} else {
-		return MACAddress(nif->hwaddr);
+		return MacAddress(nif->hwaddr);
 	}
 }
 
-IPAddress StationImpl::getNetworkBroadcast() const
+IpAddress StationImpl::getNetworkBroadcast() const
 {
 	return ipaddr | ~netmask;
 }
 
-IPAddress StationImpl::getNetworkMask() const
+IpAddress StationImpl::getNetworkMask() const
 {
 	return netmask;
 }
 
-IPAddress StationImpl::getNetworkGateway() const
+IpAddress StationImpl::getNetworkGateway() const
 {
 	return gateway;
 }
 
-bool StationImpl::setIP(IPAddress address, IPAddress netmask, IPAddress gateway)
+bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 {
 	netif* nif = netif_default;
 

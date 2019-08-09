@@ -21,8 +21,8 @@
 #pragma once
 
 #include <WString.h>
-#include <IPAddress.h>
-#include <MACAddress.h>
+#include <IpAddress.h>
+#include <MacAddress.h>
 #include <Delegate.h>
 #include "BssInfo.h"
 
@@ -100,7 +100,7 @@ enum WifiDisconnectReason {
  * @note This event occurs when the station successfully connects to the target AP. Upon receiving this event,
  * the DHCP client begins the process of getting an IP address.
  */
-typedef Delegate<void(const String& ssid, MACAddress bssid, uint8_t channel)> StationConnectDelegate;
+typedef Delegate<void(const String& ssid, MacAddress bssid, uint8_t channel)> StationConnectDelegate;
 
 /**
  * @brief Delegate type for 'station disconnected' event
@@ -115,7 +115,7 @@ typedef Delegate<void(const String& ssid, MACAddress bssid, uint8_t channel)> St
  * 	- When the Wi-Fi connection is disrupted because of specific reasons, e.g., the station continuously loses N beacons, the AP kicks off the station,
  * 	  the AP's authentication mode is changed, etc.
  */
-typedef Delegate<void(const String& ssid, MACAddress bssid, WifiDisconnectReason reason)> StationDisconnectDelegate;
+typedef Delegate<void(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)> StationDisconnectDelegate;
 
 /**
  * @brief Delegate type for 'station authorisation mode changed' event
@@ -137,7 +137,7 @@ typedef Delegate<void(WifiAuthMode oldMode, WifiAuthMode newMode)> StationAuthMo
  *	- The DHCP client rebinds to a different address.
  *	- The static-configured IPV4 address is changed.
  */
-typedef Delegate<void(IPAddress ip, IPAddress netmask, IPAddress gateway)> StationGotIPDelegate;
+typedef Delegate<void(IpAddress ip, IpAddress netmask, IpAddress gateway)> StationGotIPDelegate;
 
 /**
  * @brief Delegate type for 'Access Point Connect' event
@@ -145,7 +145,7 @@ typedef Delegate<void(IPAddress ip, IPAddress netmask, IPAddress gateway)> Stati
  * @param aid Association ID representing the connected station
  * @note This event occurs every time a station is connected to our Access Point.
  */
-typedef Delegate<void(MACAddress mac, uint16_t aid)> AccessPointConnectDelegate;
+typedef Delegate<void(MacAddress mac, uint16_t aid)> AccessPointConnectDelegate;
 
 /**
  * @brief Delegate type for 'Access Point Disconnect' event
@@ -153,7 +153,7 @@ typedef Delegate<void(MACAddress mac, uint16_t aid)> AccessPointConnectDelegate;
  * @param aid Association ID assigned to the station
  * @note This event occurs every time a station is disconnected from our Access Point.
  */
-typedef Delegate<void(MACAddress mac, uint16_t aid)> AccessPointDisconnectDelegate;
+typedef Delegate<void(MacAddress mac, uint16_t aid)> AccessPointDisconnectDelegate;
 
 /**
  * @brief Delegate type for 'Access Point Probe Request Received' event
@@ -162,7 +162,7 @@ typedef Delegate<void(MACAddress mac, uint16_t aid)> AccessPointDisconnectDelega
  * @note Probe Requests are a low-level management frame which are used to determine
  * informaton about our Access Point, such as which authentication modes are supported.
  */
-typedef Delegate<void(int rssi, MACAddress mac)> AccessPointProbeReqRecvedDelegate;
+typedef Delegate<void(int rssi, MacAddress mac)> AccessPointProbeReqRecvedDelegate;
 
 /** @} */
 

@@ -24,4 +24,4 @@
 #include "Stream.h"
 #include "Display.h"
 #include "WHashMap.h"
-#include "IPAddress.h"
+#include "IpAddress.h"

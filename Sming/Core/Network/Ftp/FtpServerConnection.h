@@ -11,7 +11,7 @@
 #pragma once
 
 #include "Network/TcpConnection.h"
-#include "IPAddress.h"
+#include "IpAddress.h"
 #include "WString.h"
 
 #define MAX_FTP_CMD 255
@@ -58,7 +58,7 @@ private:
 	String userName;
 	String renameFrom;
 
-	IPAddress ip;
+	IpAddress ip;
 	int port = 0;
 	TcpConnection* dataConnection = nullptr;
 	bool canTransfer = true;

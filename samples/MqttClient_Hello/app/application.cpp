@@ -98,7 +98,7 @@ void startMqttClient()
 	mqtt.subscribe("main/status/#");
 }
 
-void onConnected(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void onConnected(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	// Run MQTT client
 	startMqttClient();
