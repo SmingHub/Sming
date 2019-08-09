@@ -1,4 +1,4 @@
 AM2321 Humidity Sensor
 ======================
 
-To be completed.
+Example application demonstrating the use of the :library:`AM2321` library.

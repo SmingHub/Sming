@@ -1,4 +1,4 @@
 Yeelight LED bulbs
 ==================
 
-To be completed.
+Demonstrates how to control Yeelight WiFi devices.

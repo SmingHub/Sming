@@ -1,4 +1,4 @@
 Basic Neopixel
 ==============
 
-To be completed.
+Demonstration of the Adafruit Neopixel library for controlling single-wire-based LED pixels and strip.

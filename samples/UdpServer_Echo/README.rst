@@ -1,4 +1,5 @@
 UDP Server Echo
 ===============
 
-To be completed.
+Sets up a UDP server which echoes back incoming packets.
+By default listens on port 1234.

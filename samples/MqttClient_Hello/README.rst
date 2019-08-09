@@ -1,4 +1,4 @@
 MQTT Client Hello
 =================
 
-To be completed.
+Simple MQTT client example.

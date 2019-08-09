@@ -1,4 +1,4 @@
 MeteoControl MQTT
 =================
 
-To be completed.
+Similar to :sample:`MeteoControl` sample without LCD interface and instead controlled via MQTT.
