@@ -30,7 +30,7 @@ void gotIP(IPAddress ip, IPAddress gateway, IPAddress netmask)
 	udp.listen(EchoPort);
 
 	Serial.println("\r\n=== UDP SERVER STARTED ===");
-	Serial.print(WifiStation.getIP().toString());
+	Serial.print(WifiStation.getIP());
 	Serial.print(":");
 	Serial.println(EchoPort);
 	Serial.println("=============================\r\n");

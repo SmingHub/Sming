@@ -59,7 +59,7 @@ void startMqttClient()
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
 	Serial.print("Connected: ");
-	Serial.println(ip.toString());
+	Serial.println(ip);
 	startMqttClient();
 	publishMessage(); // run once publishMessage
 }

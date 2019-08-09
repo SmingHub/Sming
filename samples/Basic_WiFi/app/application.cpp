@@ -30,7 +30,7 @@ void listNetworks(bool succeeded, BssList& list)
 void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
 {
 	Serial.print(_F("I'm CONNECTED to "));
-	Serial.println(ip.toString());
+	Serial.println(ip);
 }
 
 // Will be called when WiFi station was disconnected

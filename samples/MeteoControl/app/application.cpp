@@ -116,7 +116,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
 	lcd.clear();
 	lcd.print("\7 ");
-	lcd.print(ip.toString());
+	lcd.print(ip);
 	// Restart main screen output
 	procTimer.restart();
 	displayTimer.stop();

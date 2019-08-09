@@ -10,7 +10,8 @@ FtpServer ftp;
 
 void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 {
-	Serial.printf("IP: %s\n", ip.toString().c_str());
+	Serial.print("IP: ");
+	Serial.println(ip);
 	// Start FTP server
 	ftp.listen(21);
 	ftp.addUser("me", "123"); // FTP account

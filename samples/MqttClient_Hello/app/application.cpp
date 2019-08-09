@@ -92,7 +92,8 @@ void startMqttClient()
 
 	// 2. [Connect]
 	Url url(MQTT_URL);
-	Serial.printf("Connecting to \t%s\n", url.toString().c_str());
+	Serial.print("Connecting to \t");
+	Serial.println(url);
 	mqtt.connect(url, "esp8266");
 	mqtt.subscribe("main/status/#");
 }
