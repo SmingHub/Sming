@@ -1,4 +1,4 @@
 SD Card
 =======
 
-To be completed.
+SDCard/FAT file usage and write benchmark.

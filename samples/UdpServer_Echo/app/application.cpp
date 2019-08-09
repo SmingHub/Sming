@@ -14,7 +14,7 @@ UdpConnection udp(onReceive);
 
 void onReceive(UdpConnection& connection, char* data, int size, IPAddress remoteIP, uint16_t remotePort)
 {
-	debugf("UDP Sever callback from %s:%d, %d bytes", remoteIP.toString().c_str(), remotePort, size);
+	debugf("UDP Server callback from %s:%d, %d bytes", remoteIP.toString().c_str(), remotePort, size);
 
 	// We implement string mode server for example
 	Serial.print(">\t");

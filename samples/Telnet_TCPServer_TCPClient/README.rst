@@ -1,4 +1,4 @@
 Telnet TCP Client / Server
 ==========================
 
-To be completed.
+Demonstrates a simple Telnet server application.

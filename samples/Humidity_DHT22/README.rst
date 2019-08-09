@@ -1,7 +1,7 @@
 DHT22 Humidity Sensor
 =====================
 
-ESP8266 DHT22 sensor reader.
+Example application demonstrating the use of the :library:`DHTEsp` library with a DHT22 humidity sensor.
 
 .. image:: dht22.jpg
    :height: 192px

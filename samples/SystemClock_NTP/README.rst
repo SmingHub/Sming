@@ -1,4 +1,5 @@
 SystemClock NTP
 ===============
 
-To be completed.
+Demonstrates various methods for keeping the system clock updated from a
+Network Time Server using the *NtpClient* class.

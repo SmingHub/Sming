@@ -1,4 +1,4 @@
 IR Library
 ==========
 
-To be completed.
+Example application demonstrating how to receive IR remote signals using the ESP8266.

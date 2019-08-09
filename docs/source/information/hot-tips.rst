@@ -17,9 +17,7 @@ F() macro
 Instructs the compiler to store the literal in flash (of
 which there is plenty) rather than RAM (which is limited).
 
-Example:
-
-::
+Example::
 
    String system = F("system");
 
@@ -31,18 +29,14 @@ to the ``F()`` macro, but you need to be mindful of scope. The content is
 lost as soon as the containing block goes out of scope. Used as a
 function parameter, that means the end of the function call.
 
-Examples:
-
-::
+Examples::
 
    println(_F("Debug started"));
 
    commandOutput->print(_F("Welcome to the Tcp Command executor\r\n"));
 
 
-Bad:
-
-::
+Bad::
 
    char* s = _F("string")
 
@@ -54,30 +48,29 @@ PSTR_ARRAY() macro
 ------------------
 
 This macro creates and loads string into a named stack buffer.
-This Ensures loaded string stays in scope, unlike _F() Example:
-
-::
+This Ensures loaded string stays in scope, unlike _F() Example::
 
    String testfunc() {
       //char * test = "This is a string"; <<- BAD
       PSTR_ARRAY(test, "This is a string");
       m_printf(test);
       ...
-      return test;
+      return test; // Implicit conversion to String
    }
 
 JSON keys
 ---------
 
-Example:
+.. note::
 
-::
+   This issue applies only to :library:`ArduinoJson5`. However, Sming
+   supports :library:`ArduinoJson6` which is recommended for new projects.
+
+Example::
 
    root[F("offset")] = something;
 
-Bad:
-
-::
+Bad::
 
    root[_F("offset")] = something;
 
@@ -99,9 +92,7 @@ of preserving any user files while refreshing just a few.
 One solution is to use a FlashString hooked up to a FlashMemoryStream
 instead. In the example below, the CSS file is sent compressed to save
 time and space. The browser asks for core.js and gets a compressed
-version.
-
-::
+version::
 
    IMPORT_FSTR(flash_corejsgz, "web/build/core.js.gz")
 
@@ -111,6 +102,8 @@ version.
        auto stream = new FlashMemoryStream(flash_corejsgz);
        response.sendDataStream(stream, MimeType::MIME_JS);
    }
+
+See :source:`Sming/Wiring/FlashString.h` for further details. 
 
 Webpages Performance
 ====================
