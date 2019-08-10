@@ -1618,3 +1618,7 @@ index 1fbd3a37..2e28e9d6 100644
  sodium_mlock(void *const addr, const size_t len)
  {
 
+diff --git a/README.markdown b/README.md
+similarity index 100%
+rename from README.markdown
+rename to README.md
