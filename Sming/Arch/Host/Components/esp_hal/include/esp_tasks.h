@@ -33,7 +33,7 @@ void host_service_tasks();
 
 typedef void (*host_task_callback_t)(uint32_t param);
 
-void host_queue_callback(host_task_callback_t callback, uint32_t param);
+bool host_queue_callback(host_task_callback_t callback, uint32_t param);
 
 #ifdef __cplusplus
 }

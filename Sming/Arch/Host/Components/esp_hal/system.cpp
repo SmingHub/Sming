@@ -1,19 +1,60 @@
 #include "include/esp_system.h"
 #include <hostlib/hostapi.h>
+#include <hostlib/threads.h>
+#include <sys/time.h>
 
 /* System time */
-
-#include <chrono>
-using namespace std::chrono;
-
-static high_resolution_clock::time_point system_start_time = high_resolution_clock::now();
 
 // From pthreads library
 extern "C" int sched_yield(void);
 
+#ifdef __WIN32
+
+static struct {
+	LARGE_INTEGER cps;
+	LARGE_INTEGER startCount;
+} timeref;
+
+#endif
+
+// Return base time in us
+static uint64_t initTime()
+{
+#ifdef __WIN32
+	QueryPerformanceFrequency(&timeref.cps);
+	QueryPerformanceCounter(&timeref.startCount);
+#endif
+
+	timeval tv;
+	gettimeofday(&tv, nullptr);
+	return (1000000ULL * tv.tv_sec) + tv.tv_usec;
+}
+
+static uint64_t system_start_time = initTime();
+
+uint32_t usToTimerTicks(uint32_t us)
+{
+	return us;
+}
+
+uint32_t timerTicksToUs(uint32_t ticks)
+{
+	return ticks;
+}
+
 uint32_t os_get_ticks()
 {
-	return duration_cast<microseconds>(high_resolution_clock::now() - system_start_time).count();
+	uint32_t us;
+#ifdef __WIN32
+	LARGE_INTEGER count;
+	QueryPerformanceCounter(&count);
+	us = 1000000ULL * (count.QuadPart - timeref.startCount.QuadPart) / timeref.cps.QuadPart;
+#else
+	timeval tv;
+	gettimeofday(&tv, nullptr);
+	us = ((1000000ULL * tv.tv_sec) + tv.tv_usec) - system_start_time;
+#endif
+	return us;
 }
 
 uint32_t system_get_time()
@@ -74,16 +115,20 @@ uint32 system_get_chip_id(void)
 
 void ets_intr_lock()
 {
+	CThread::interrupt_lock();
 }
 
 void ets_intr_unlock()
 {
+	CThread::interrupt_unlock();
 }
 
 void xt_disable_interrupts()
 {
+	ets_intr_lock();
 }
 
 void xt_enable_interrupts()
 {
+	ets_intr_unlock();
 }

@@ -27,7 +27,7 @@
 
 struct UartServerConfig {
 	unsigned enableMask; ///< Bit mask for required servers
-	unsigned portBase; ///< Base port address (optional)
+	unsigned portBase;   ///< Base port address (optional)
 };
 
 /*
@@ -52,7 +52,7 @@ public:
 
 	static void shutdown();
 
-	CUartServer(unsigned uart_nr) : uart_nr(uart_nr)
+	CUartServer(unsigned uart_nr) : CThread("uart", 1), uart_nr(uart_nr)
 	{
 	}
 

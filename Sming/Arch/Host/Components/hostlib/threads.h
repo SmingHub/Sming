@@ -23,9 +23,20 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+class CMutex;
+
 class CThread
 {
 public:
+	static void startup();
+
+	// Sets interrupt level for current thread
+	static void set_interrupt_level(unsigned new_level);
+
+	CThread(const char* name, unsigned interrupt_level) : name(name), interrupt_level(interrupt_level)
+	{
+	}
+
 	virtual ~CThread()
 	{
 		join();
@@ -51,15 +62,44 @@ public:
 		pthread_join(m_thread, nullptr);
 	}
 
+	/*
+	 * Called at the start of any code which affects framework variables.
+	 * Will block if any another thread is running in interrupt context.
+	 *
+	 * @todo Only block if another thread is running at the same or higher level
+	 * i.e. high-priority interrupts can pre-empty lower-priority ones.
+	 */
+	void interrupt_begin()
+	{
+		set_interrupt_level(interrupt_level);
+	}
+
+	/*
+	 * Allows other waiting threads to resume.
+	 */
+	void interrupt_end()
+	{
+		set_interrupt_level(0);
+	}
+
+	static void interrupt_lock();
+	static void interrupt_unlock();
+
 protected:
 	virtual void* thread_routine() = 0;
 
 private:
-	pthread_t m_thread = {0};
 	static void* thread_start(void* param)
 	{
-		return ((CThread*)param)->thread_routine();
+		auto thread = static_cast<CThread*>(param);
+		return thread->thread_routine();
 	}
+
+private:
+	pthread_t m_thread = {0};
+	const char* name;		  // Helps to identify purpose for debugging
+	unsigned interrupt_level; // Interrupt level associated with this thread
+	static CMutex interrupt;
 };
 
 class CMutex
