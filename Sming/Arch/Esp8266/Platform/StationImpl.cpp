@@ -155,16 +155,16 @@ String StationImpl::getHostname() const
 	return wifi_station_get_hostname();
 }
 
-IPAddress StationImpl::getIP() const
+IpAddress StationImpl::getIP() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return info.ip;
 }
 
-MACAddress StationImpl::getMacAddr() const
+MacAddress StationImpl::getMacAddress() const
 {
-	MACAddress addr;
+	MacAddress addr;
 	if(wifi_get_macaddr(STATION_IF, &addr[0])) {
 		return addr;
 	} else {
@@ -172,28 +172,28 @@ MACAddress StationImpl::getMacAddr() const
 	}
 }
 
-IPAddress StationImpl::getNetworkBroadcast() const
+IpAddress StationImpl::getNetworkBroadcast() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return (info.ip.addr | ~info.netmask.addr);
 }
 
-IPAddress StationImpl::getNetworkMask() const
+IpAddress StationImpl::getNetworkMask() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return info.netmask;
 }
 
-IPAddress StationImpl::getNetworkGateway() const
+IpAddress StationImpl::getNetworkGateway() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(STATION_IF, &info);
 	return info.gw;
 }
 
-bool StationImpl::setIP(IPAddress address, IPAddress netmask, IPAddress gateway)
+bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 {
 	if(System.isReady()) {
 		debugf("IP can be changed only in init() method");

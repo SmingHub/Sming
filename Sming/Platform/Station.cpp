@@ -30,17 +30,17 @@ bool StationClass::isConnectionFailed() const
 	return status == eSCS_WrongPassword || status == eSCS_AccessPointNotFound || status == eSCS_ConnectionFailed;
 }
 
-bool StationClass::setIP(IPAddress address)
+bool StationClass::setIP(IpAddress address)
 {
-	IPAddress mask = IPAddress(255, 255, 255, 0);
-	IPAddress gateway = IPAddress(address);
+	IpAddress mask = IpAddress(255, 255, 255, 0);
+	IpAddress gateway = IpAddress(address);
 	gateway[3] = 1; // x.x.x.1
 	return setIP(address, mask, gateway);
 }
 
 String StationClass::getMAC(char sep) const
 {
-	auto mac = getMacAddr();
+	auto mac = getMacAddress();
 	return mac ? mac.toString(sep) : nullptr;
 }
 

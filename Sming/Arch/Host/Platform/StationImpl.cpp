@@ -104,8 +104,8 @@ void StationImpl::initialise(netif* nif)
 	netif_create_ip6_linklocal_address(&nif, 1);
 #endif
 
+	connectionStatus = eSCS_Connecting;
 	if(ip4_addr_isany_val(nif->ip_addr)) {
-		connectionStatus = eSCS_Connecting;
 		dhcp_start(nif);
 	}
 }
@@ -113,15 +113,10 @@ void StationImpl::initialise(netif* nif)
 void StationImpl::statusCallback(netif* nif)
 {
 	if(nif == nullptr) {
-		if(currentAp != nullptr) {
-			wifiEventsImpl.stationDisconnected(*currentAp, WIFI_DISCONNECT_REASON_CONNECTION_FAIL);
-		}
 		return;
 	}
 
 	static uint32_t prev_flags;
-
-	hostmsg("NETIF 0x%08x -> 0x%08x", prev_flags, nif->flags);
 
 	uint32_t changed_flags = prev_flags ^ nif->flags;
 	prev_flags = nif->flags;
@@ -129,16 +124,26 @@ void StationImpl::statusCallback(netif* nif)
 	if(changed_flags & NETIF_FLAG_UP) {
 		assert(currentAp != nullptr);
 		if(nif->flags & NETIF_FLAG_UP) {
+			host_printf("IF_UP, AP: %s\n", currentAp->ssid);
 			wifiEventsImpl.stationConnected(*currentAp);
 		} else {
+			host_printf("IF_DOWN, AP: %s\n", currentAp->ssid);
 			wifiEventsImpl.stationDisconnected(*currentAp, WIFI_DISCONNECT_REASON_CONNECTION_FAIL);
 		}
 	}
 
 	if((nif->flags & NETIF_FLAG_UP) && !ip4_addr_isany_val(nif->ip_addr)) {
 		connectionStatus = eSCS_GotIP;
-		wifiEventsImpl.stationGotIp(nif->ip_addr, nif->netmask, nif->gw);
+		if(ipaddr != nif->ip_addr || netmask != nif->netmask || gateway != nif->gw) {
+			ipaddr = nif->ip_addr;
+			netmask = nif->netmask;
+			gateway = nif->gw;
+			host_printf("IP_CHANGE, ip: %s, netmask: %s, gateway: %s\n", ipaddr.toString().c_str(),
+						netmask.toString().c_str(), gateway.toString().c_str());
+			wifiEventsImpl.stationGotIp(ipaddr, netmask, gateway);
+		}
 	} else {
+		hostmsg("No IP address");
 		connectionStatus = eSCS_ConnectionFailed;
 	}
 }
@@ -236,50 +241,38 @@ String StationImpl::getHostname() const
 	return hostName;
 }
 
-IPAddress StationImpl::getIP() const
+IpAddress StationImpl::getIP() const
 {
-	netif* nif = netif_default;
-
-	return nif ? nif->ip_addr.addr : IPADDR_NONE;
+	return ipaddr;
 }
 
-MACAddress StationImpl::getMacAddr() const
+MacAddress StationImpl::getMacAddress() const
 {
 	netif* nif = netif_default;
 
 	if(nif == nullptr) {
 		return MACADDR_NONE;
 	} else {
-		return nif->hwaddr;
+		return MacAddress(nif->hwaddr);
 	}
 }
 
-IPAddress StationImpl::getNetworkBroadcast() const
+IpAddress StationImpl::getNetworkBroadcast() const
 {
-	netif* nif = netif_default;
-
-	if(nif == nullptr) {
-		return INADDR_NONE;
-	} else {
-		return nif->ip_addr.addr | ~nif->netmask.addr;
-	}
+	return ipaddr | ~netmask;
 }
 
-IPAddress StationImpl::getNetworkMask() const
+IpAddress StationImpl::getNetworkMask() const
 {
-	netif* nif = netif_default;
-
-	return nif ? nif->netmask : INADDR_NONE;
+	return netmask;
 }
 
-IPAddress StationImpl::getNetworkGateway() const
+IpAddress StationImpl::getNetworkGateway() const
 {
-	netif* nif = netif_default;
-
-	return nif ? nif->gw : INADDR_NONE;
+	return gateway;
 }
 
-bool StationImpl::setIP(IPAddress address, IPAddress netmask, IPAddress gateway)
+bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 {
 	netif* nif = netif_default;
 

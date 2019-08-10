@@ -20,10 +20,10 @@
    ---------------------------------------------------------------------------
 */
 
-#include "MACAddress.h"
+#include "MacAddress.h"
 #include <Data/HexString.h>
 
-uint8_t MACAddress::operator[](unsigned index) const
+uint8_t MacAddress::operator[](unsigned index) const
 {
 	if(index >= sizeof(octets)) {
 		abort();
@@ -32,7 +32,7 @@ uint8_t MACAddress::operator[](unsigned index) const
 	return octets[index];
 }
 
-uint8_t& MACAddress::operator[](unsigned index)
+uint8_t& MacAddress::operator[](unsigned index)
 {
 	if(index >= sizeof(octets)) {
 		abort();
@@ -41,17 +41,17 @@ uint8_t& MACAddress::operator[](unsigned index)
 	return octets[index];
 }
 
-String MACAddress::toString(char sep) const
+String MacAddress::toString(char sep) const
 {
 	return makeHexString(octets, sizeof(octets), sep);
 }
 
-bool MACAddress::operator!() const
+bool MacAddress::operator!() const
 {
-	return *this != MACADDR_NONE;
+	return *this == MACADDR_NONE;
 }
 
-uint32_t MACAddress::getHash() const
+uint32_t MacAddress::getHash() const
 {
 	uint32_t a = octets[4] | (octets[5] << 8);
 	uint32_t b = octets[0] | (octets[1] << 8) | (octets[2] << 16) | (octets[3] << 24);

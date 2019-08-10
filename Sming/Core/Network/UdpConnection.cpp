@@ -48,7 +48,7 @@ bool UdpConnection::listen(int port)
 	return res == ERR_OK;
 }
 
-bool UdpConnection::connect(IPAddress ip, uint16_t port)
+bool UdpConnection::connect(IpAddress ip, uint16_t port)
 {
 	if(udp == nullptr) {
 		if(!initialize()) {
@@ -79,7 +79,7 @@ bool UdpConnection::send(const char* data, int length)
 	}
 }
 
-bool UdpConnection::sendTo(IPAddress remoteIP, uint16_t remotePort, const char* data, int length)
+bool UdpConnection::sendTo(IpAddress remoteIP, uint16_t remotePort, const char* data, int length)
 {
 	pbuf* p = pbuf_alloc(PBUF_TRANSPORT, length, PBUF_RAM);
 	if(p == nullptr) {
@@ -92,7 +92,7 @@ bool UdpConnection::sendTo(IPAddress remoteIP, uint16_t remotePort, const char* 
 	}
 }
 
-void UdpConnection::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
+void UdpConnection::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
 	debug_d("UDP received: %d bytes", buf->tot_len);
 	if(onDataCallback) {
@@ -110,7 +110,7 @@ void UdpConnection::staticOnReceive(void* arg, struct udp_pcb* pcb, struct pbuf*
 {
 	auto conn = static_cast<UdpConnection*>(arg);
 	if(conn != nullptr) {
-		IPAddress reip = addr != nullptr ? IPAddress(*addr) : IPAddress();
+		IpAddress reip = addr != nullptr ? IpAddress(*addr) : IpAddress();
 		conn->onReceive(p, reip, port);
 	}
 	pbuf_free(p);

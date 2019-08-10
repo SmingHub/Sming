@@ -73,7 +73,7 @@ int onDownload(HttpConnection& connection, bool success)
 	return 0; // return 0 on success in your callbacks
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	// Use the Gibson Research fingerprints web page as an example. Unlike Google, the fingerprints don't change!
 	static const uint8_t grcSha1Fingerprint[] PROGMEM = {0x15, 0x9A, 0x76, 0xC5, 0xAE, 0xF4, 0x90, 0x15, 0x79, 0xE6,
@@ -114,7 +114,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 	downloadClient.send(request);
 }
 
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }

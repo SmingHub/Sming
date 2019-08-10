@@ -100,12 +100,12 @@ void startServers()
 												   "testGroup", applicationCommand));
 }
 
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	startServers();
 }

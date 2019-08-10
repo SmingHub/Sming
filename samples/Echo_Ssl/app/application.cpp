@@ -99,17 +99,17 @@ bool onReceive(TcpClient& tcpClient, char* data, int size)
 	return tcpClient.send(data, size);
 }
 
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	debugf("IP: %s", ip.toString().c_str());
 	client = new TcpClient(TcpClientDataDelegate(onReceive));
 	client->addSslOptions(SSL_SERVER_VERIFY_LATER);
-	client->connect(IPAddress(SERVER_IP), 4444, true);
+	client->connect(IpAddress(SERVER_IP), 4444, true);
 }
 
 void init()

@@ -27,7 +27,7 @@ int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpRespo
 	if(request.method == HTTP_POST) {
 		debugf("Request coming from IP: %s", connection.getRemoteIp().toString().c_str());
 		// If desired you can also limit the access based on remote IP. Example below:
-		//		if(!(IPAddress("192.168.4.23") == connection.getRemoteIp())) {
+		//		if(IpAddress("192.168.4.23") != connection.getRemoteIp()) {
 		//			return 1; // error
 		//		}
 

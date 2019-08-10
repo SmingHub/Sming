@@ -97,35 +97,35 @@ bool AccessPointImpl::config(const String& ssid, String password, AUTH_MODE mode
 	return true;
 }
 
-IPAddress AccessPointImpl::getIP() const
+IpAddress AccessPointImpl::getIP() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(SOFTAP_IF, &info);
 	return info.ip;
 }
 
-IPAddress AccessPointImpl::getNetworkBroadcast() const
+IpAddress AccessPointImpl::getNetworkBroadcast() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(SOFTAP_IF, &info);
 	return (info.ip.addr | ~info.netmask.addr);
 }
 
-IPAddress AccessPointImpl::getNetworkMask() const
+IpAddress AccessPointImpl::getNetworkMask() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(SOFTAP_IF, &info);
 	return info.netmask;
 }
 
-IPAddress AccessPointImpl::getNetworkGateway() const
+IpAddress AccessPointImpl::getNetworkGateway() const
 {
 	struct ip_info info = {0};
 	wifi_get_ip_info(SOFTAP_IF, &info);
 	return info.gw;
 }
 
-bool AccessPointImpl::setIP(IPAddress address)
+bool AccessPointImpl::setIP(IpAddress address)
 {
 	if(System.isReady()) {
 		debugf("IP can be changed only in init() method");
@@ -143,9 +143,9 @@ bool AccessPointImpl::setIP(IPAddress address)
 	return true;
 }
 
-MACAddress AccessPointImpl::getMacAddr() const
+MacAddress AccessPointImpl::getMacAddress() const
 {
-	MACAddress addr;
+	MacAddress addr;
 	if(wifi_get_macaddr(SOFTAP_IF, &addr[0])) {
 		return addr;
 	} else {

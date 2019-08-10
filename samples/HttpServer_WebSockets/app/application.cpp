@@ -116,7 +116,7 @@ void startWebServer()
 }
 
 // Will be called when WiFi station becomes fully operational
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	startWebServer();
 }

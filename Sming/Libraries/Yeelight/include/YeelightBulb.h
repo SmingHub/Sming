@@ -8,7 +8,7 @@
 
 #include "WVector.h"
 #include "WString.h"
-#include "IPAddress.h"
+#include "IpAddress.h"
 class TcpClient;
 
 enum YeelightBulbState
@@ -23,7 +23,7 @@ enum YeelightBulbState
 class YeelightBulb
 {
 public:
-	YeelightBulb(IPAddress addr) : lamp(addr)
+	YeelightBulb(IpAddress addr) : lamp(addr)
 	{
 	}
 
@@ -58,7 +58,7 @@ protected:
 	void parsePower(const String& resp);
 
 private:
-	IPAddress lamp;
+	IpAddress lamp;
 	uint16_t port = 55443;
 
 	TcpClient* connection = nullptr;

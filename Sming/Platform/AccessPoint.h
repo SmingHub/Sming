@@ -9,19 +9,21 @@
  ****/
 
 /**	@defgroup wifi_ap WiFi Access Point
+ *  @ingroup wifi
  *	@brief	Control and monitoring of WiFi access point interface
  *	@note   The WiFi access point interface provides a WiFi network access point.
             Control of WiFi AP including WiFi SSID and password and
             IP address.
  *  @see    \ref wifi_sta
+ *  @see    \ref wifi_ev
  *  @todo   How is wifi access point dhcp controlled?
 */
 
 #pragma once
 
 #include <WString.h>
-#include <IPAddress.h>
-#include <MACAddress.h>
+#include <IpAddress.h>
+#include <MacAddress.h>
 #include "BssInfo.h"
 
 /** @brief  Access point class
@@ -55,20 +57,20 @@ public:
 						int beaconInterval = 200) = 0;
 
 	/** @brief  Get WiFi AP IP address
-     *  @retval IPAddress WiFi AP IP address
+     *  @retval IpAddress WiFi AP IP address
      */
-	virtual IPAddress getIP() const = 0;
+	virtual IpAddress getIP() const = 0;
 
 	/** @brief  Set WiFi AP IP addres
      *  @param  address New IP address for WiFi AP
      *  @retval bool True on success
      */
-	virtual bool setIP(IPAddress address) = 0;
+	virtual bool setIP(IpAddress address) = 0;
 
 	/**	@brief	Get WiFi AP MAC address
-	 *	@retval	MACAddress
+	 *	@retval	MacAddress
 	 */
-	virtual MACAddress getMacAddr() const = 0;
+	virtual MacAddress getMacAddress() const = 0;
 
 	/** @brief  Get WiFi AP MAC address
 	 *  @param	sep separator between bytes (e.g. ':')
@@ -77,19 +79,19 @@ public:
 	String getMAC(char sep = '\0') const;
 
 	/** @brief  Get WiFi AP network mask
-     *  @retval IPAddress WiFi AP network mask
+     *  @retval IpAddress WiFi AP network mask
      */
-	virtual IPAddress getNetworkMask() const = 0;
+	virtual IpAddress getNetworkMask() const = 0;
 
 	/** @brief  Get WiFi AP default gateway
-     *  @retval IPAddress WiFi AP default gateway
+     *  @retval IpAddress WiFi AP default gateway
      */
-	virtual IPAddress getNetworkGateway() const = 0;
+	virtual IpAddress getNetworkGateway() const = 0;
 
 	/** @brief  Get WiFi AP broadcast address
-     *  @retval IPAddress WiFi AP broadcast address
+     *  @retval IpAddress WiFi AP broadcast address
      */
-	virtual IPAddress getNetworkBroadcast() const = 0;
+	virtual IpAddress getNetworkBroadcast() const = 0;
 
 	/**	@brief	Get WiFi access point SSID
 	 *	@retval	String WiFi access point SSID

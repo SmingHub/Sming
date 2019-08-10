@@ -49,7 +49,7 @@ void sendData()
 }
 
 // Will be called when WiFi station timeout was reached
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	Serial.println("I'm NOT CONNECTED. Need help :(");
 
@@ -60,7 +60,7 @@ void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReas
 	// .. some you code for configuration ..
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	// Start send data loop
 	procTimer.initializeMs(25 * 1000, sendData).start(); // every 25 seconds

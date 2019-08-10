@@ -97,7 +97,7 @@ void startFTP()
 	ftp.addUser("me", "123"); // FTP account
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	startFTP();
 	startWebServer();

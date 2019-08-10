@@ -19,12 +19,12 @@ public:
 	bool isEnabled() const override;
 	bool config(const String& ssid, String password, WifiAuthMode mode, bool hidden, int channel,
 				int beaconInterval) override;
-	IPAddress getIP() const override;
-	bool setIP(IPAddress address) override;
-	MACAddress getMacAddr() const override;
-	IPAddress getNetworkMask() const override;
-	IPAddress getNetworkGateway() const override;
-	IPAddress getNetworkBroadcast() const override;
+	IpAddress getIP() const override;
+	bool setIP(IpAddress address) override;
+	MacAddress getMacAddress() const override;
+	IpAddress getNetworkMask() const override;
+	IpAddress getNetworkGateway() const override;
+	IpAddress getNetworkBroadcast() const override;
 	String getSSID() const override;
 	String getPassword() const override;
 };

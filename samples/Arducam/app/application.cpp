@@ -242,7 +242,7 @@ void StartServers()
 }
 
 // Will be called when station is fully operational
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	StartServers();
 }

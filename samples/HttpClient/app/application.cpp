@@ -111,7 +111,7 @@ void setSslFingerprints(HttpRequest* request)
 	request->pinCertificate(fingerprints);
 }
 
-void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
+void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	// [ GET request: The example below shows how to make HTTP requests ]
 

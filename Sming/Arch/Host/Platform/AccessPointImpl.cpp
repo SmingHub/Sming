@@ -28,32 +28,32 @@ bool AccessPointImpl::config(const String& ssid, String password, WifiAuthMode m
 	return false;
 }
 
-IPAddress AccessPointImpl::getIP() const
+IpAddress AccessPointImpl::getIP() const
 {
 	return INADDR_NONE;
 }
 
-IPAddress AccessPointImpl::getNetworkBroadcast() const
+IpAddress AccessPointImpl::getNetworkBroadcast() const
 {
 	return INADDR_NONE;
 }
 
-IPAddress AccessPointImpl::getNetworkMask() const
+IpAddress AccessPointImpl::getNetworkMask() const
 {
 	return INADDR_NONE;
 }
 
-IPAddress AccessPointImpl::getNetworkGateway() const
+IpAddress AccessPointImpl::getNetworkGateway() const
 {
 	return INADDR_NONE;
 }
 
-bool AccessPointImpl::setIP(IPAddress address)
+bool AccessPointImpl::setIP(IpAddress address)
 {
 	return false;
 }
 
-MACAddress AccessPointImpl::getMacAddr() const
+MacAddress AccessPointImpl::getMacAddress() const
 {
 	return MACADDR_NONE;
 }

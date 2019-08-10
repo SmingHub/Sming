@@ -24,34 +24,41 @@ WebsocketClient wsClient;
 Timer msgTimer;
 Timer restartTimer;
 
-#define RESTART_PERIOD 20
+// Number of messages to send
+const unsigned MESSAGES_TO_SEND = 10;
+
+// Interval (in seconds) between sending of messages
+const unsigned MESSAGE_INTERVAL = 1;
+
+// Time (in seconds) to wait before restarting client and sending another group of messages
+const unsigned RESTART_PERIOD = 20;
 
 int msg_cnt = 0;
 
 #ifdef ENABLE_SSL
-String ws_Url = "wss://echo.websocket.org";
+DEFINE_FSTR_LOCAL(ws_Url, "wss://echo.websocket.org");
 #else
-String ws_Url = "ws://echo.websocket.org";
+DEFINE_FSTR_LOCAL(ws_Url, "ws://echo.websocket.org");
 #endif /* ENABLE_SSL */
 
 void wsMessageSent();
 
 void wsConnected(WebsocketConnection& wsConnection)
 {
-	Serial.printf("Start sending messages every second...");
-	msgTimer.initializeMs(1 * 1000, wsMessageSent);
+	Serial.printf(_F("Start sending messages every %u second(s)...\n"), MESSAGE_INTERVAL);
+	msgTimer.initializeMs(MESSAGE_INTERVAL * 1000, wsMessageSent);
 	msgTimer.start();
 }
 
 void wsMessageReceived(WebsocketConnection& wsConnection, const String& message)
 {
-	Serial.printf("WebSocket message received: %s\n", message.c_str());
-	Serial.printf("Free Heap: %d\n", system_get_free_heap_size());
+	Serial.printf(_F("WebSocket message received: %s\n"), message.c_str());
+	Serial.printf(_F("Free Heap: %d\n"), system_get_free_heap_size());
 }
 
 void wsBinReceived(WebsocketConnection& wsConnection, uint8_t* data, size_t size)
 {
-	Serial.printf("WebSocket BINARY received\n");
+	Serial.println(_F("WebSocket BINARY received"));
 	for(uint8_t i = 0; i < size; i++) {
 		Serial.printf("wsBin[%u] = 0x%02X\n", i, data[i]);
 	}
@@ -61,20 +68,18 @@ void wsBinReceived(WebsocketConnection& wsConnection, uint8_t* data, size_t size
 
 void restart()
 {
+	Serial.println("restart...");
+
 	msg_cnt = 0;
-	wsClient.connect(ws_Url);
+	wsClient.connect(String(ws_Url));
 #ifdef ENABLE_SSL
 	wsClient.getHttpConnection()->addSslOptions(SSL_SERVER_VERIFY_LATER);
 #endif
-
-	msgTimer.setCallback(wsMessageSent);
-	msgTimer.setIntervalMs(1 * 1000);
-	msgTimer.start();
 }
 
 void wsDisconnected(WebsocketConnection& wsConnection)
 {
-	Serial.printf("Restarting websocket client after %d seconds\n", RESTART_PERIOD);
+	Serial.printf(_F("Restarting websocket client after %d seconds\n"), RESTART_PERIOD);
 	msgTimer.setCallback(restart);
 	msgTimer.setIntervalMs(RESTART_PERIOD * 1000);
 	msgTimer.startOnce();
@@ -87,22 +92,23 @@ void wsMessageSent()
 		return;
 	}
 
-	if(msg_cnt > 10) {
-		Serial.println("End Websocket client session");
-		wsClient.close(); // clean disconnect.
+	if(msg_cnt > MESSAGES_TO_SEND) {
+		Serial.println(_F("End Websocket client session"));
 		msgTimer.stop();
+		wsClient.close(); // clean disconnect.
 
 		return;
 	}
 
 #ifndef WS_BINARY
-	String message = "Hello " + String(msg_cnt++);
-	Serial.printf("Sending websocket message: %s\n", message.c_str());
+	String message = F("Hello ") + String(msg_cnt++);
+	Serial.print(_F("Sending websocket message: "));
+	Serial.println(message);
 	wsClient.sendString(message);
 #else
 	uint8_t buf[] = {0xF0, 0x00, 0xF0};
 	buf[1] = msg_cnt++;
-	Serial.printf("Sending websocket binary buffer\n");
+	Serial.println(_F("Sending websocket binary buffer"));
 	for(uint8_t i = 0; i < 3; i++) {
 		Serial.printf("wsBin[%u] = 0x%02X\n", i, buf[i]);
 	}
@@ -111,26 +117,34 @@ void wsMessageSent()
 #endif
 }
 
-void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway)
+void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
-	Serial.printf("GOTIP - IP: %s, MASK: %s, GW: %s\n", ip.toString().c_str(), mask.toString().c_str(),
-				  gateway.toString().c_str());
+	Serial.print(_F("GOTIP - IP: "));
+	Serial.print(ip);
+	Serial.print(_F(", MASK: "));
+	Serial.print(mask);
+	Serial.print(_F(", GW: "));
+	Serial.println(gateway);
 
-	Serial.printf("Connecting to Websocket Server %s\n", ws_Url.c_str());
+	Serial.print(_F("Connecting to Websocket Server "));
+	Serial.println(ws_Url);
 
 	wsClient.setMessageHandler(wsMessageReceived);
 	wsClient.setBinaryHandler(wsBinReceived);
 	wsClient.setDisconnectionHandler(wsDisconnected);
 	wsClient.setConnectionHandler(wsConnected);
-	wsClient.connect(ws_Url);
+	wsClient.connect(String(ws_Url));
 #ifdef ENABLE_SSL
 	wsClient.getHttpConnection()->addSslOptions(SSL_SERVER_VERIFY_LATER);
 #endif
 }
 
-void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void STADisconnect(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
-	Serial.printf("DISCONNECT - SSID: %s, REASON: %d\n", ssid.c_str(), reason);
+	Serial.print(_F("DISCONNECT - SSID: "));
+	Serial.print(ssid);
+	Serial.print(_F(", REASON: "));
+	Serial.println(WifiEvents.getDisconnectReasonDesc(reason));
 }
 
 void init()

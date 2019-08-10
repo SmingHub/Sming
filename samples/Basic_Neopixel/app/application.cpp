@@ -140,14 +140,15 @@ void StartDemo()
 	}
 }
 
-void got_IP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void got_IP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial.printf("IP: %s\n", ip.toString().c_str());
+	Serial.print("IP: ");
+	Serial.println(ip);
 	//You can put here other job like web,tcp etc.
 }
 
 // Will be called when WiFi station loses connection
-void connect_Fail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connect_Fail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	Serial.println("I'm NOT CONNECTED!");
 }

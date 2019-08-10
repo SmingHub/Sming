@@ -19,9 +19,9 @@ struct ApplicationSettingsStorage {
 
 	bool dhcp = true;
 
-	IPAddress ip;
-	IPAddress netmask;
-	IPAddress gateway;
+	IpAddress ip;
+	IpAddress netmask;
+	IpAddress gateway;
 
 	void load()
 	{

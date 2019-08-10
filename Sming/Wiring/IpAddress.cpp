@@ -1,5 +1,5 @@
 /*
-  IPAddress.cpp - Base class that provides IPAddress
+  IpAddress.cpp - Base class that provides IpAddress
   Copyright (c) 2011 Adrian McEwen.  All right reserved.
 
   This library is free software; you can redistribute it and/or
@@ -17,10 +17,10 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "IPAddress.h"
+#include "IpAddress.h"
 #include "Print.h"
 
-void IPAddress::fromString(const String& address)
+void IpAddress::fromString(const String& address)
 {
 	this->address.addr = 0;
 	const char* p = address.c_str();
@@ -31,14 +31,7 @@ void IPAddress::fromString(const String& address)
 	}
 }
 
-bool IPAddress::operator==(const uint8_t* addr)
-{
-    ip_addr_t a;
-    IP4_ADDR(&a, addr[0], addr[1], addr[2], addr[3]);
-    return address.addr == a.addr;
-}
-
-size_t IPAddress::printTo(Print& p) const
+size_t IpAddress::printTo(Print& p) const
 {
     size_t n = 0;
     for (unsigned i = 0; i < 3; i++) {
@@ -49,7 +42,7 @@ size_t IPAddress::printTo(Print& p) const
     return n;
 }
 
-String IPAddress::toString() const
+String IpAddress::toString() const
 {
 	String res;
     res.reserve(sizeof(address) * 4);

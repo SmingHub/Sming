@@ -75,7 +75,7 @@ void NtpClient::requestTime()
 	}
 }
 
-void NtpClient::internalRequestTime(IPAddress serverIp)
+void NtpClient::internalRequestTime(IpAddress serverIp)
 {
 	debug_d("NtpClient::internalRequestTime()");
 
@@ -116,7 +116,7 @@ void NtpClient::setAutoQueryInterval(unsigned seconds)
 	}
 }
 
-void NtpClient::onReceive(pbuf* buf, IPAddress remoteIP, uint16_t remotePort)
+void NtpClient::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
 	debug_d("NtpClient::onReceive(%s:%u)", remoteIP.toString().c_str(), remotePort);
 

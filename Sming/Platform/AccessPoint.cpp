@@ -12,6 +12,6 @@
 
 String AccessPointClass::getMAC(char sep) const
 {
-	auto mac = getMacAddr();
+	auto mac = getMacAddress();
 	return mac ? mac.toString(sep) : nullptr;
 }

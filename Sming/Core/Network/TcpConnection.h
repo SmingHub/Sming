@@ -22,7 +22,7 @@
 #endif
 
 #include "WiringFrameworkDependencies.h"
-#include "IPAddress.h"
+#include "IpAddress.h"
 
 #define NETWORK_DEBUG
 
@@ -42,7 +42,7 @@ enum TcpConnectionEvent {
 struct pbuf;
 class String;
 class IDataSourceStream;
-class IPAddress;
+class IpAddress;
 class TcpConnection;
 
 typedef Delegate<void(TcpConnection&)> TcpConnectionDestroyedDelegate;
@@ -63,7 +63,7 @@ public:
 
 public:
 	virtual bool connect(const String& server, int port, bool useSsl = false, uint32_t sslOptions = 0);
-	virtual bool connect(IPAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(IpAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0);
 	virtual void close();
 
 	// return -1 on error
@@ -97,9 +97,9 @@ public:
 
 	void setTimeOut(uint16_t waitTimeOut);
 
-	IPAddress getRemoteIp() const
+	IpAddress getRemoteIp() const
 	{
-		return (tcp == nullptr) ? INADDR_NONE : IPAddress(tcp->remote_ip);
+		return (tcp == nullptr) ? INADDR_NONE : IpAddress(tcp->remote_ip);
 	}
 
 	uint16_t getRemotePort() const
@@ -239,7 +239,7 @@ public:
 
 protected:
 	void initialize(tcp_pcb* pcb);
-	bool internalConnect(IPAddress addr, uint16_t port);
+	bool internalConnect(IpAddress addr, uint16_t port);
 
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf* buf);

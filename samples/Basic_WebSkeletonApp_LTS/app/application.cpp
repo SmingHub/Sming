@@ -4,8 +4,8 @@ Timer counterTimer;
 void counterLoop();
 unsigned long counter = 0;
 
-void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason);
-void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway);
+void STADisconnect(const String& ssid, const MacAddress& bssid, WifiDisconnectReason reason);
+void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway);
 
 void init()
 {
@@ -34,9 +34,9 @@ void counterLoop()
 	counter++;
 }
 
-void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void STADisconnect(const String& ssid, const MacAddress& bssid, WifiDisconnectReason reason)
 {
-	debugf("DISCONNECT - SSID: %s, REASON: %d\n", ssid.c_str(), reason);
+	debugf("DISCONNECT - SSID: %s, REASON: %s\n", ssid.c_str(), WifiEvents.getDisconnectReasonDesc(reason).c_str());
 
 	if(!WifiAccessPoint.isEnabled()) {
 		debugf("Starting OWN AP");
@@ -46,7 +46,7 @@ void STADisconnect(const String& ssid, const MACAddress& bssid, WifiDisconnectRe
 	}
 }
 
-void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway)
+void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	debugf("GOTIP - IP: %s, MASK: %s, GW: %s\n", ip.toString().c_str(), mask.toString().c_str(),
 		   gateway.toString().c_str());

@@ -64,12 +64,12 @@ void onNtpReceive(NtpClient& client, time_t timestamp)
 }
 
 // Will be called when WiFi station timeout was reached
-void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	// Set specific parameters if started by option 1 or 2
 	// Set client to do automatic time requests every 60 seconds.

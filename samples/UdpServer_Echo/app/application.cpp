@@ -6,13 +6,13 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-void onReceive(UdpConnection& connection, char* data, int size, IPAddress remoteIP, uint16_t remotePort); // Declaration
+void onReceive(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort); // Declaration
 
 // UDP server
 const uint16_t EchoPort = 1234;
 UdpConnection udp(onReceive);
 
-void onReceive(UdpConnection& connection, char* data, int size, IPAddress remoteIP, uint16_t remotePort)
+void onReceive(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort)
 {
 	debugf("UDP Server callback from %s:%d, %d bytes", remoteIP.toString().c_str(), remotePort, size);
 
@@ -25,12 +25,12 @@ void onReceive(UdpConnection& connection, char* data, int size, IPAddress remote
 	udp.sendStringTo(remoteIP, remotePort, text);
 }
 
-void gotIP(IPAddress ip, IPAddress gateway, IPAddress netmask)
+void gotIP(IpAddress ip, IpAddress gateway, IpAddress netmask)
 {
 	udp.listen(EchoPort);
 
 	Serial.println("\r\n=== UDP SERVER STARTED ===");
-	Serial.print(WifiStation.getIP().toString());
+	Serial.print(WifiStation.getIP());
 	Serial.print(":");
 	Serial.println(EchoPort);
 	Serial.println("=============================\r\n");

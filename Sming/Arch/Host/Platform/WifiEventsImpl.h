@@ -30,7 +30,7 @@ public:
 		}
 	}
 
-	void stationGotIp(ip_addr_t ip, ip_addr_t netmask, ip_addr_t gw)
+	void stationGotIp(IpAddress ip, IpAddress netmask, IpAddress gw)
 	{
 		if(onSTAGotIP) {
 			onSTAGotIP(ip, netmask, gw);

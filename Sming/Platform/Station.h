@@ -9,19 +9,21 @@
  ****/
 
 /**	@defgroup wifi_sta WiFi Station Interface
+ *  @ingroup wifi
  *	@brief	Control and monitoring of WiFi station interface
  *	@note   The WiFi station interface provides client access to a WiFi network.
             Control of WiFi connection including WiFi SSID and password and
             IP address, DHCP, etc.
  *  @see    \ref wifi_ap
+ *  @see    \ref wifi_ev
 */
 
 #pragma once
 
 #include <WString.h>
 #include <WVector.h>
-#include <IPAddress.h>
-#include <MACAddress.h>
+#include <IpAddress.h>
+#include <MacAddress.h>
 #include "BssInfo.h"
 
 /** @ingroup constants
@@ -60,7 +62,7 @@ struct SmartConfigEventInfo {
 	String ssid;					 ///< AP SSID
 	String password;				 ///< AP Password
 	bool bssidSet = false;			 ///< true if connection should match both SSID and BSSID
-	MACAddress bssid;				 ///< AP BSSID
+	MacAddress bssid;				 ///< AP BSSID
 };
 
 /// WiFi WPS callback status
@@ -176,14 +178,14 @@ public:
 	virtual String getHostname() const = 0;
 
 	/**	@brief	Get WiFi station IP address
-	 *	@retval	IPAddress IP address of WiFi station
+	 *	@retval	IpAddress IP address of WiFi station
 	 */
-	virtual IPAddress getIP() const = 0;
+	virtual IpAddress getIP() const = 0;
 
 	/**	@brief	Get WiFi station MAC address
-	 *	@retval	MACAddress
+	 *	@retval	MacAddress
 	 */
-	virtual MACAddress getMacAddr() const = 0;
+	virtual MacAddress getMacAddress() const = 0;
 
 	/**	@brief	Get WiFi station MAC address
 	 *  @param sep Optional separator between bytes (e.g. ':')
@@ -192,25 +194,25 @@ public:
 	String getMAC(char sep = '\0') const;
 
 	/**	@brief	Get WiFi station network mask
-	 *	@retval	IPAddress WiFi station network mask
+	 *	@retval	IpAddress WiFi station network mask
 	 */
-	virtual IPAddress getNetworkMask() const = 0;
+	virtual IpAddress getNetworkMask() const = 0;
 
 	/**	@brief	Get WiFi station default gateway
-	 *	@retval	IPAddress WiFi station default gateway
+	 *	@retval	IpAddress WiFi station default gateway
 	 */
-	virtual IPAddress getNetworkGateway() const = 0;
+	virtual IpAddress getNetworkGateway() const = 0;
 
 	/**	@brief	GetWiFi station broadcast address
-	 *	@retval	IPAddress WiFi statoin broadcast address
+	 *	@retval	IpAddress WiFi station broadcast address
 	 */
-	virtual IPAddress getNetworkBroadcast() const = 0;
+	virtual IpAddress getNetworkBroadcast() const = 0;
 
 	/**	@brief	Set WiFi station IP address
 	 *	@param	address IP address
 	 *	@retval	bool True on success
 	 */
-	bool setIP(IPAddress address);
+	bool setIP(IpAddress address);
 
 	/**	@brief	Set WiFi station IP parameters
 	 *	@param	address IP address
@@ -218,7 +220,7 @@ public:
 	 *	@param	gateway Default gatway
 	 *	@retval	bool True on success
 	 */
-	virtual bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway) = 0;
+	virtual bool setIP(IpAddress address, IpAddress netmask, IpAddress gateway) = 0;
 
 	/**	@brief	Get WiFi station SSID
 	 *	@retval	String WiFi station SSID

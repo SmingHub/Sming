@@ -19,7 +19,7 @@ class StationImpl : public StationClass
 public:
 	struct ApInfo {
 		const char* ssid;
-		MACAddress bssid;
+		MacAddress bssid;
 		WifiAuthMode authMode;
 		uint8_t channel;
 		bool hidden;
@@ -44,12 +44,12 @@ public:
 	void enableDHCP(bool enable) override;
 	void setHostname(const String& hostname) override;
 	String getHostname() const override;
-	IPAddress getIP() const override;
-	MACAddress getMacAddr() const override;
-	IPAddress getNetworkMask() const override;
-	IPAddress getNetworkGateway() const override;
-	IPAddress getNetworkBroadcast() const override;
-	bool setIP(IPAddress address, IPAddress netmask, IPAddress gateway) override;
+	IpAddress getIP() const override;
+	MacAddress getMacAddress() const override;
+	IpAddress getNetworkMask() const override;
+	IpAddress getNetworkGateway() const override;
+	IpAddress getNetworkBroadcast() const override;
+	bool setIP(IpAddress address, IpAddress netmask, IpAddress gateway) override;
 	String getSSID() const override;
 	String getPassword() const override;
 	int8_t getRssi() const override;
@@ -72,6 +72,7 @@ private:
 private:
 	ApInfo* currentAp;
 	ApInfo* savedAp;
+	IpAddress ipaddr, netmask, gateway;
 
 	struct StationConfig {
 		bool enabled = true;

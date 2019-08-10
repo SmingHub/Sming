@@ -129,16 +129,20 @@ WiFi Classes
 Additions
 ---------
 
-New class to handle MAC addresses: :source:`Sming/Wiring/MACAddress.h`.
+New class to handle MAC addresses: :source:`Sming/Wiring/MacAddress.h`.
 
-:source:`Sming/Platform/StationClass.h`
----------------------------------------
+:source:`Sming/Platform/Station.h`
+----------------------------------
 
 -  `getConnectionStatusName()` returns String instead of `char*`
 -  `EStationConnectionStatus` renamed to `StationConnectionStatus`
 
-:source:`Sming/Platform/WifiEventsClass.h`
-------------------------------------------
+:source:`Sming/Platform/WifiEvents.h`
+-------------------------------------
 
 - Callback handler parameter lists have changed
 
+Deprecated / Changed types
+==========================
+
+Deprecated types will generate a compiler warning. See `Deprecated List <../api/deprecated.html>`_.
