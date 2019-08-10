@@ -103,3 +103,8 @@ unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 		return 0;
 	}
 }
+
+uint16_t analogRead(uint16_t pin)
+{
+	return (activeHooks == nullptr) ? 0 : activeHooks->analogRead(pin);
+}
