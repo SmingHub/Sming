@@ -51,7 +51,7 @@ public:
 			this->resource->shutdown(*this);
 		}
 
-		if(bodyParser) {
+		if(bodyParser && request.args != nullptr) {
 			bodyParser(request, nullptr, PARSE_DATAEND);
 		}
 	}

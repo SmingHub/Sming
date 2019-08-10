@@ -37,6 +37,11 @@ size_t formMultipartParser(HttpRequest& request, const char* at, int length)
 		return 0;
 	}
 
+	if(parser == nullptr) {
+		debug_e("Invalid request argument");
+		return 0;
+	}
+
 	if(length == PARSE_DATAEND) {
 		delete parser;
 		request.args = nullptr;
