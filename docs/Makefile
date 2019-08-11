@@ -206,8 +206,7 @@ MISSING_README_DIRS		:= $(filter-out $(SOURCE_FILE_DIRS:/=),$(SOURCE_DIRS))
 
 .PHONY: clean
 clean:
-	$(call Sphinx)
-	$(Q) rm -rf $(SOURCE_INCDIR) api
+	$(Q) rm -rf $(SOURCE_INCDIR) api $(BUILDDIR)
 
 SOURCE_INCDIRS			:= $(sort $(call GetIncPath,$(COMPONENT_DIRS) $(SOURCE_FILE_DIRS)))
 # Each Sample, Library or Component README.* is included directly rather than added to the toctree
